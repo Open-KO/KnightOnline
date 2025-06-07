@@ -1253,6 +1253,8 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 			this->CommandTargetSelect_NearstEnemy();	// 가장 가까운 적 타겟 잡기..
 		if(s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_PARTY))
 			this->CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_NPC))
+			this->CommandTargetSelect_NearstNPC();
 
 		float fRotKeyDelta = D3DXToRadian(60); // 초당 60 도 돌기..
 		if(s_pLocalInput->IsKeyDown(KM_ROTATE_LEFT) || s_pLocalInput->IsKeyDown(DIK_LEFT))	
@@ -2770,7 +2772,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 {
 	int		iID			= pkt.read<int16_t>(); // Server에서 관리하는 고유 ID
 	int		iIDResrc	= pkt.read<int16_t>(); // 리소스 ID
-	int		iType		= pkt.read<uint8_t>();	// NPC Type - 0x05 : 상인
+	e_NpcType iType		= (e_NpcType)pkt.read<uint8_t>();	// NPC Type - 0x05 : 상인
 	int		iItemTrdeID	= pkt.read<uint32_t>();	// 아이템 거래할 그룹 ID 서버에 요청할 ID
 	int		iScale		= pkt.read<int16_t>(); // 스케일 100 은 1.0 
 	int		iItemID0	= pkt.read<uint32_t>(); // 리소스 ID
@@ -2825,7 +2827,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 	pNPC->m_InfoBase.eRace = RACE_NPC;			// NPC 라는 걸 알린다.
 	pNPC->m_InfoBase.iLevel = iLevel;
 	pNPC->m_InfoBase.iAuthority = AUTHORITY_NPC;// 권한 NPC는 권한이 없고..
-	
+	pNPC->m_InfoBase.iNpcType = iType;
 	s_pOPMgr->NPCAdd(pNPC);						// 캐릭터 추가...
 
 	// 이제 패킷에 따라 캐릭터를 치장..(?) 시켜준다.. 아이템장착, 무기 장착등...
@@ -5268,6 +5270,13 @@ void CGameProcMain::CommandTargetSelect_NearstEnemy() // 가장 가까운 적 �
 void CGameProcMain::CommandTargetSelect_NearstOurForce() // 가장 가까운 파티 타겟잡기..
 {
 	CPlayerOther* pTarget = m_pUIPartyOrForce->MemberGetByNearst(s_pPlayer->Position());
+	this->TargetSelect(pTarget);
+	s_pPlayer->RotateTo(pTarget);
+}
+
+void CGameProcMain::CommandTargetSelect_NearstNPC() // 가장 가까운 적 타겟 잡기..
+{
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearstNPC(s_pPlayer->Position());
 	this->TargetSelect(pTarget);
 	s_pPlayer->RotateTo(pTarget);
 }

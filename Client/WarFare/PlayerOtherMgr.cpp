@@ -553,6 +553,41 @@ CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearstEnemy(e_Nation eNation, const _
 	return pTarget;
 }
 
+CPlayerNPC* CPlayerOtherMgr::CharacterGetByNearstNPC(const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
+{
+	CPlayerNPC* pTarget = NULL;
+	float fDistMin = FLT_MAX;
+
+	for (auto& it : m_NPCs)
+	{
+		CPlayerNPC* pNPC = it.second;
+		
+		if (pNPC == nullptr)
+			continue;
+
+		//filter base,myself,other
+		if (pNPC->m_ePlayerType != PLAYER_NPC)
+			continue;
+		
+		//filter monsters
+		if (pNPC->m_InfoBase.iNpcType == NPC_MONSTER ||
+			pNPC->m_InfoBase.iNpcType == NPC_EVENT ||
+			pNPC->m_InfoBase.iNpcType == NPC_BOSS || 
+			pNPC->m_InfoBase.iNpcType == NPC_DUNGEON_MONSTER ||
+			pNPC->m_InfoBase.iNpcType == NPC_TRAP_MONSTER)
+			continue;
+
+		float fDist = pNPC->Distance(vPosPlayer);
+		if (fDist < fDistMin)
+		{
+			fDistMin = fDist;
+			pTarget = pNPC;
+		}
+	}
+
+	return pTarget;
+}
+
 bool CPlayerOtherMgr::CharacterDelete(int iID) // User, NPC 안 가리고 지운다..
 {
 	it_UPC it = m_UPCs.find(iID); // User를 찾아보고...
