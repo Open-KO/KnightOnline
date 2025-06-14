@@ -136,10 +136,10 @@ POINT CN3UIBase::GetPos() const
 	return p;
 }
 
-// 위치 바꾸기
+// Reposition
 void CN3UIBase::SetPos(int x, int y)
 {
-	// 움직인 차이 구하기
+	// Find the delta
 	int dx, dy;
 	dx = x - m_rcRegion.left;
 	dy = y - m_rcRegion.top;

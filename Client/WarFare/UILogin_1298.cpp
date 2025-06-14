@@ -189,6 +189,15 @@ bool CUILogIn_1298::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
+	// fit to screen
+	const int xOffset = static_cast<int>((s_CameraData.vp.Width - (m_rcRegion.right - m_rcRegion.left))/2);
+	const int yOffset = static_cast<int>((s_CameraData.vp.Height - (m_rcRegion.bottom - m_rcRegion.top))/2);
+	SetPos(xOffset, yOffset);
+	m_rcRegion.left = 0;
+	m_rcRegion.top = 0;
+	m_rcRegion.right = static_cast<int>(s_CameraData.vp.Width);
+	m_rcRegion.bottom = static_cast<int>(s_CameraData.vp.Height);
+	
 	N3_VERIFY_UI_COMPONENT(m_pGroup_LogIn, GetChildByID("Group_LogIn"));
 
 	if (m_pGroup_LogIn != nullptr)

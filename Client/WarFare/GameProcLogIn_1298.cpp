@@ -68,16 +68,9 @@ void CGameProcLogIn_1298::Init()
 	std::string szFN = "Snd\\Intro_Sound.mp3";
 	s_pSnd_BGM = s_SndMgr.CreateStreamObj(szFN);
 
-	RECT rc = m_pUILogIn->GetRegion();
-	int iX = (CN3Base::s_CameraData.vp.Width - (rc.right - rc.left))/2;
-	int iY = CN3Base::s_CameraData.vp.Height - (rc.bottom - rc.top);
-	m_pUILogIn->SetPos(iX, iY);
-	
-	rc.left = 0; rc.top = 0; rc.right = CN3Base::s_CameraData.vp.Width; rc.bottom = CN3Base::s_CameraData.vp.Height;
-	m_pUILogIn->SetRegion(rc); // 이걸 꼭 해줘야 UI 처리가 제대로 된다..
-	s_pUIMgr->SetFocusedUI((CN3UIBase*)m_pUILogIn);
+	s_pUIMgr->SetFocusedUI(m_pUILogIn);
 
-	// 소켓 접속..
+	// Socket connection..
 	char szIniPath[_MAX_PATH] = {};
 	lstrcpy(szIniPath, CN3Base::PathGet().c_str());
 	lstrcat(szIniPath, "Server.Ini");
@@ -104,15 +97,15 @@ void CGameProcLogIn_1298::Init()
 	if (iServer >= 0
 		&& lstrlen(szIPs[iServer]) > 0)
 	{
-		s_bNeedReportConnectionClosed = false; // 서버접속이 끊어진걸 보고해야 하는지..
+		s_bNeedReportConnectionClosed = false; // Should I report that the server connection was lost?
 		int iErr = s_pSocket->Connect(s_hWndBase, szIPs[iServer], SOCKET_PORT_LOGIN);
-		s_bNeedReportConnectionClosed = true; // 서버접속이 끊어진걸 보고해야 하는지..
+		s_bNeedReportConnectionClosed = true; // Should I report that the server connection was lost?
 
 		if (iErr != 0)
 			ReportServerConnectionFailed("LogIn Server", iErr, true);
 		else
 		{
-			m_pUILogIn->FocusToID(); // 아이디 입력창에 포커스를 맞추고..
+			m_pUILogIn->FocusToID(); // Focus on the ID input box..
 
 			// 게임 서버 리스트 요청..
 			int iOffset = 0;
