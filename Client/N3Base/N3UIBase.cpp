@@ -676,7 +676,24 @@ bool CN3UIBase::Save(HANDLE hFile)
 
 	// child 정보
 	int iCC = m_Children.size();
-	WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL); // Child 갯수 ㅆ고..고..
+
+	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
+	{
+		
+		int16_t sCC = static_cast<int16_t>(iCC);
+		int16_t sIdk0 = 1; // unknown
+
+		WriteFile(hFile, &sCC, sizeof(int16_t), &dwRWC, NULL); // children count
+		WriteFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, NULL); //unknown
+
+	}
+	else
+	{
+		WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL);
+	}
+
+	//WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL); // Child 갯수 ㅆ고..고..
+
 	for(UIListReverseItor itor = m_Children.rbegin(); m_Children.rend() != itor; ++itor)
 	// childadd할때 push_front이므로 저장할 때 거꾸로 저장해야 한다.
 	{
@@ -685,6 +702,7 @@ bool CN3UIBase::Save(HANDLE hFile)
 
 		WriteFile(hFile, &eUIType, sizeof(eUIType), &dwRWC, NULL); // UI Type 쓰고..
 		pChild->Save(hFile);
+
 	}
 
 	// base 정보

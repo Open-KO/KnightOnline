@@ -471,6 +471,11 @@ bool CN3UIString::Save(HANDLE hFile)
 	{
 		WriteFile(hFile, m_szString.c_str(), iStrLen, &dwNum, NULL);				// string
 	}
+
+	//note: to imitate original file structure, 00 00 00 00 after each string.
+	char padding[4] = { 0, 0, 0, 0 };
+	WriteFile(hFile, padding, 4, &dwNum, NULL);
+
 	return true;
 }
 
