@@ -1028,7 +1028,7 @@ void CUIEDoc::OnFileExport()
 	CFileDialog dlg(FALSE, "uif", NULL, dwFlags, "UI Files(*.uif)|*.uif;||", NULL);
 	if (IDCANCEL == dlg.DoModal()) return;
 
-	std::string szFN = dlg.GetPathName();
+	std::string szFN = std::string(CT2A(dlg.GetPathName()));
 	pUI->SaveToFile(szFN);
 }
 
@@ -1041,7 +1041,7 @@ void CUIEDoc::OnFileImport()
 	CFileDialog dlg(TRUE, "uif", NULL, dwFlags, "UI Files(*.uif)|*.uif;||", NULL);
 	if (IDCANCEL == dlg.DoModal()) return;
 
-	std::string szFN = dlg.GetPathName();
+	std::string szFN = std::string(CT2A(dlg.GetPathName()));
 	pUI->LoadFromFile(szFN);
 }
 
@@ -1094,8 +1094,8 @@ void CUIEDoc::OnBatchToolChangeImagePath()
 	CN3Texture Tex;
 	POSITION pos = dlg.GetStartPosition();
 	CString FileName;
-	std::string szFNOld = dlg2.m_szFN_Old;
-	std::string szFNNew = dlg2.m_szFN_New;
+	std::string szFNOld = std::string(CT2A(dlg2.m_szFN_Old));
+	std::string szFNNew = std::string(CT2A(dlg2.m_szFN_New));
 
 	while(pos != NULL)
 	{
