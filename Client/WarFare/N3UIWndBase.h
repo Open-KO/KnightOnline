@@ -50,6 +50,8 @@ enum e_UIWND_DISTRICT		{
 								UIWND_DISTRICT_TRADE_MY,			// Npc 와의 거래에서 내 영역..
 								UIWND_DISTRICT_PER_TRADE_INV,		// Inv District of Per Trade Wnd ..
 								UIWND_DISTRICT_UNKNOWN,				// District Unknown..
+								UIWND_DISTRICT_UPGRADE,			// Upgrade Wnd District..
+								UIWND_DISTRICT_RING_UPGRADE,		// Ring Upgrade Wnd District..
 							};
 
 enum e_UIIconState			{

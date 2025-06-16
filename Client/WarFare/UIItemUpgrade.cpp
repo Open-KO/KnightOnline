@@ -91,7 +91,7 @@ void CUIItemUpgrade::Render()
 	int i;
 
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
-		m_pUITooltipDlg->DisplayTooltipsDisable();
+	m_pUITooltipDlg->DisplayTooltipsDisable();
 
 	bool bTooltipRender = false;
 	__IconItemSkill* spItem = NULL;
@@ -102,14 +102,14 @@ void CUIItemUpgrade::Render()
 		if (pChild->GetID().find("img_cover") && pChild->GetID().find("img_s_load") && pChild->GetID().find("img_f_load"))
 		{
 			if ((GetState() == UI_STATE_ICON_MOVING) && (pChild->UIType() == UI_TYPE_ICON) && (CN3UIWndBase::m_sSelectedIconInfo.pItemSelect) &&
-				((CN3UIIcon*)pChild == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon))	continue;
+				((CN3UIIcon*) pChild == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon))	continue;
 			pChild->Render();
 		}
 		if ((GetState() == UI_STATE_COMMON_NONE) &&
 			(pChild->UIType() == UI_TYPE_ICON) && (pChild->GetStyle() & UISTYLE_ICON_HIGHLIGHT))
 		{
 			bTooltipRender = true;
-			spItem = GetHighlightIconItem((CN3UIIcon*)pChild);
+			spItem = GetHighlightIconItem((CN3UIIcon*) pChild);
 		}
 	}
 
@@ -159,12 +159,12 @@ void CUIItemUpgrade::Render()
 		e_UIWND_DISTRICT eUD = GetWndDistrict(spItem);
 		switch (eUD)
 		{
-		case UIWND_DISTRICT_INVENTORY_SLOT:
-			m_pUITooltipDlg->DisplayTooltipsEnable(ptCur.x, ptCur.y, spItem, true, true);
-			break;
-		case UIWND_DISTRICT_INVENTORY_INV:
- 			m_pUITooltipDlg->DisplayTooltipsEnable(ptCur.x, ptCur.y, spItem, true, false);
-			break;
+			case UIWND_DISTRICT_UPGRADE:
+				m_pUITooltipDlg->DisplayTooltipsEnable(ptCur.x, ptCur.y, spItem, true, true);
+				break;
+			case UIWND_DISTRICT_INVENTORY_INV:
+				m_pUITooltipDlg->DisplayTooltipsEnable(ptCur.x, ptCur.y, spItem, true, false);
+				break;
 		}
 	}
 }
@@ -181,7 +181,7 @@ void CUIItemUpgrade::InitIconWnd(e_UIWND eWnd)
 
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	m_pStrMyGold = (CN3UIString*)GetChildByID("text_gold"); __ASSERT(m_pStrMyGold, "NULL UI Component!!");
+	m_pStrMyGold = (CN3UIString*) GetChildByID("text_gold"); __ASSERT(m_pStrMyGold, "NULL UI Component!!");
 	if (m_pStrMyGold) m_pStrMyGold->SetString("0");
 
 }
@@ -360,7 +360,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	// 내가 가졌던 아이콘이 아니면..
 	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != m_eUIWnd)
 		FAIL_RETURN
-		if ((CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_INVENTORY_SLOT) &&
+		if ((CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_UPGRADE) &&
 			(CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_INVENTORY_INV))
 			FAIL_RETURN
 
@@ -372,7 +372,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 		if ((pArea) && (pArea->IsIn(ptCur.x, ptCur.y)))
 		{
 			bFound = true;
-			eUIWnd = UIWND_DISTRICT_INVENTORY_SLOT;
+			eUIWnd = UIWND_DISTRICT_UPGRADE;
 			break;
 		}
 	}
@@ -420,30 +420,30 @@ void CUIItemUpgrade::IconRestore()
 	CN3UIArea* pArea;
 	switch (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict)
 	{
-		
-	case UIWND_DISTRICT_INVENTORY_SLOT:
-		if (m_pMyUpgradeSLot[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
-		{
-			pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SLOT, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
-			if (pArea)
-			{
-				m_pMyUpgradeSLot[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
-				m_pMyUpgradeSLot[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetMoveRect(pArea->GetRegion());
-			}
-		}
-		break;
 
-	case UIWND_DISTRICT_INVENTORY_INV:
-		if (m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
-		{
-			pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
-			if (pArea)
+		case UIWND_DISTRICT_UPGRADE:
+			if (m_pMyUpgradeSLot[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
 			{
-				m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
-				m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetMoveRect(pArea->GetRegion());
+				pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SLOT, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
+				if (pArea)
+				{
+					m_pMyUpgradeSLot[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
+					m_pMyUpgradeSLot[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetMoveRect(pArea->GetRegion());
+				}
 			}
-		}
-		break;
+			break;
+
+		case UIWND_DISTRICT_INVENTORY_INV:
+			if (m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
+			{
+				pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
+				if (pArea)
+				{
+					m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
+					m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetMoveRect(pArea->GetRegion());
+				}
+			}
+			break;
 	}
 }
 
@@ -451,11 +451,14 @@ uint32_t CUIItemUpgrade::MouseProc(uint32_t dwFlags, const POINT& ptCur, const P
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer)
+	{
+		dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet;
+	}
 
-	// 드래그 되는 아이콘 갱신..
+// 드래그 되는 아이콘 갱신..
 	if ((GetState() == UI_STATE_ICON_MOVING) &&
-		(CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd == UIWND_UNKNOWN))
+		(CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd == UIWND_UPGRADE))
 	{
 		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetRegion(GetSampleRect());
 		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetMoveRect(GetSampleRect());
@@ -471,21 +474,21 @@ int CUIItemUpgrade::GetItemiOrder(__IconItemSkill* spItem, e_UIWND_DISTRICT eWnd
 
 	switch (eWndDist)
 	{
-	case UIWND_DISTRICT_INVENTORY_SLOT:
-		for (i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
-		{
-			if ((m_pMyUpgradeSLot[i] != NULL) && (m_pMyUpgradeSLot[i] == spItem))
-				return i;
-		}
-		break;
+		case UIWND_DISTRICT_INVENTORY_SLOT:
+			for (i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
+			{
+				if ((m_pMyUpgradeSLot[i] != NULL) && (m_pMyUpgradeSLot[i] == spItem))
+					return i;
+			}
+			break;
 
-	case UIWND_DISTRICT_INVENTORY_INV:
-		for (i = 0; i < MAX_ITEM_INVENTORY; i++)
-		{
-			if ((m_pMyUpgradeInv[i] != NULL) && (m_pMyUpgradeInv[i] == spItem))
-				return i;
-		}
-		break;
+		case UIWND_DISTRICT_INVENTORY_INV:
+			for (i = 0; i < MAX_ITEM_INVENTORY; i++)
+			{
+				if ((m_pMyUpgradeInv[i] != NULL) && (m_pMyUpgradeInv[i] == spItem))
+					return i;
+			}
+			break;
 	}
 
 	return iReturn;
@@ -498,11 +501,11 @@ RECT CUIItemUpgrade::GetSampleRect()
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
 	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_INV, 0);
 	rect = pArea->GetRegion();
-	float fWidth = (float)(rect.right - rect.left);
-	float fHeight = (float)(rect.bottom - rect.top);
+	float fWidth = (float) (rect.right - rect.left);
+	float fHeight = (float) (rect.bottom - rect.top);
 	fWidth *= 0.5f; fHeight *= 0.5f;
-	rect.left = ptCur.x - (int)fWidth;  rect.right = ptCur.x + (int)fWidth;
-	rect.top = ptCur.y - (int)fHeight; rect.bottom = ptCur.y + (int)fHeight;
+	rect.left = ptCur.x - (int) fWidth;  rect.right = ptCur.x + (int) fWidth;
+	rect.top = ptCur.y - (int) fHeight; rect.bottom = ptCur.y + (int) fHeight;
 	return rect;
 }
 
@@ -511,7 +514,7 @@ e_UIWND_DISTRICT CUIItemUpgrade::GetWndDistrict(__IconItemSkill* spItem)
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
 	{
 		if ((m_pMyUpgradeSLot[i] != NULL) && (m_pMyUpgradeSLot[i] == spItem))
-			return UIWND_DISTRICT_INVENTORY_SLOT;
+			return UIWND_DISTRICT_UPGRADE;
 	}
 
 	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
@@ -546,44 +549,44 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 	switch (dwMsg & dwBitMask)
 	{
-	case UIMSG_ICON_DOWN_FIRST:
-		CN3UIWndBase::AllHighLightIconFree();
+		case UIMSG_ICON_DOWN_FIRST:
+			CN3UIWndBase::AllHighLightIconFree();
 
-		// Get Item..
-		spItem = GetHighlightIconItem((CN3UIIcon*)pSender);
+			// Get Item..
+			spItem = GetHighlightIconItem((CN3UIIcon*) pSender);
 
-		// Save Select Info..
-		CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_UPGRADE;
-		eUIWnd = GetWndDistrict(spItem);
-		if (eUIWnd == UIWND_DISTRICT_UNKNOWN)	FAIL_CODE
-			CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = eUIWnd;
-		iOrder = GetItemiOrder(spItem, eUIWnd);
-		if (iOrder == -1)	FAIL_CODE
-			CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder = iOrder;
-		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
-		// Do Ops..
-		((CN3UIIcon*)pSender)->SetRegion(GetSampleRect());
-		((CN3UIIcon*)pSender)->SetMoveRect(GetSampleRect());
-		// Sound..
-		if (spItem) PlayItemSound(spItem->pItemBasic);
-		break;
+			// Save Select Info..
+			CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_UPGRADE;
+			eUIWnd = GetWndDistrict(spItem);
+			if (eUIWnd == UIWND_DISTRICT_UNKNOWN)	FAIL_CODE
+				CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = eUIWnd;
+			iOrder = GetItemiOrder(spItem, eUIWnd);
+			if (iOrder == -1)	FAIL_CODE
+				CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder = iOrder;
+			CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
+			// Do Ops..
+			((CN3UIIcon*) pSender)->SetRegion(GetSampleRect());
+			((CN3UIIcon*) pSender)->SetMoveRect(GetSampleRect());
+			// Sound..
+			if (spItem) PlayItemSound(spItem->pItemBasic);
+			break;
 
-	case UIMSG_ICON_UP:
-		// 아이콘 매니저 윈도우들을 돌아 다니면서 검사..
-		if (!CGameProcedure::s_pUIMgr->BroadcastIconDropMsg(CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
-			// 아이콘 위치 원래대로..
-			IconRestore();
-		// Sound..
-		if (CN3UIWndBase::m_sSelectedIconInfo.pItemSelect) PlayItemSound(CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pItemBasic);
-		break;
+		case UIMSG_ICON_UP:
+			// 아이콘 매니저 윈도우들을 돌아 다니면서 검사..
+			if (!CGameProcedure::s_pUIMgr->BroadcastIconDropMsg(CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
+				// 아이콘 위치 원래대로..
+				IconRestore();
+			// Sound..
+			if (CN3UIWndBase::m_sSelectedIconInfo.pItemSelect) PlayItemSound(CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pItemBasic);
+			break;
 
-	case UIMSG_ICON_DOWN:
-		if (GetState() == UI_STATE_ICON_MOVING)
-		{
-			CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetRegion(GetSampleRect());
-			CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetMoveRect(GetSampleRect());
-		}
-		break;
+		case UIMSG_ICON_DOWN:
+			if (GetState() == UI_STATE_ICON_MOVING)
+			{
+				CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetRegion(GetSampleRect());
+				CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetMoveRect(GetSampleRect());
+			}
+			break;
 	}
 
 	return true;
@@ -626,10 +629,10 @@ bool CUIItemUpgrade::Load(HANDLE hFile)
 {
 	if (CN3UIBase::Load(hFile) == false) return false;
 
-	m_pBtnClose = (CN3UIButton*)(this->GetChildByID("btn_close"));		__ASSERT(m_pBtnClose, "NULL UI Component!!");
-	m_pBtnOk = (CN3UIButton*)(this->GetChildByID("btn_ok"));	__ASSERT(m_pBtnOk, "NULL UI Component!!");
-	m_pBtnCancel = (CN3UIButton*)(this->GetChildByID("btn_cancel"));	__ASSERT(m_pBtnCancel, "NULL UI Component!!");
-	m_pBtnConversation = (CN3UIButton*)(this->GetChildByID("btn_conversation"));	__ASSERT(m_pBtnConversation, "NULL UI Component!!");
+	m_pBtnClose = (CN3UIButton*) (this->GetChildByID("btn_close"));		__ASSERT(m_pBtnClose, "NULL UI Component!!");
+	m_pBtnOk = (CN3UIButton*) (this->GetChildByID("btn_ok"));	__ASSERT(m_pBtnOk, "NULL UI Component!!");
+	m_pBtnCancel = (CN3UIButton*) (this->GetChildByID("btn_cancel"));	__ASSERT(m_pBtnCancel, "NULL UI Component!!");
+	m_pBtnConversation = (CN3UIButton*) (this->GetChildByID("btn_conversation"));	__ASSERT(m_pBtnConversation, "NULL UI Component!!");
 
 	return true;
 }
@@ -639,10 +642,10 @@ bool CUIItemUpgrade::OnKeyPress(int iKey)
 	switch (iKey)
 	{
 
-	case DIK_ESCAPE:
-		ReceiveMessage(m_pBtnClose, UIMSG_BUTTON_CLICK);
-		if (m_pUITooltipDlg) m_pUITooltipDlg->DisplayTooltipsDisable();
-		return true;
+		case DIK_ESCAPE:
+			ReceiveMessage(m_pBtnClose, UIMSG_BUTTON_CLICK);
+			if (m_pUITooltipDlg) m_pUITooltipDlg->DisplayTooltipsDisable();
+			return true;
 	}
 
 	return CN3UIBase::OnKeyPress(iKey);

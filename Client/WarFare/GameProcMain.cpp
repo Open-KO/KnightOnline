@@ -4176,11 +4176,21 @@ void CGameProcMain::InitUI()
 	m_pUIItemUpgrade->Init(s_pUIMgr);
 	m_pUIItemUpgrade->LoadFromFile(pTbl->szItemUpgrade);
 	m_pUIItemUpgrade->SetVisibleWithNoSound(false);
+		rc = m_pUIItemUpgrade->GetRegion();
+	m_pUIItemUpgrade->SetPos(iW - (rc.right-rc.left), 10);
+	m_pUIItemUpgrade->InitIconWnd(UIWND_UPGRADE);
+	m_pUIItemUpgrade->SetUIType(UI_TYPE_ICON_MANAGER);
+	m_pUIItemUpgrade->SetState(UI_STATE_COMMON_NONE);
 	m_pUIItemUpgrade->SetStyle(UISTYLE_USER_MOVE_HIDE | UISTYLE_SHOW_ME_ALONE);
 
 	m_pUIRingUpgrade->Init(s_pUIMgr);
 	m_pUIRingUpgrade->LoadFromFile(pTbl->szUpgradeRing);
 	m_pUIRingUpgrade->SetVisibleWithNoSound(false);
+		rc = m_pUIRingUpgrade->GetRegion();
+	m_pUIRingUpgrade->SetPos(iW - (rc.right-rc.left), 10);
+	m_pUIRingUpgrade->InitIconWnd(UIWND_RING_UPGRADE);
+	m_pUIRingUpgrade->SetUIType(UI_TYPE_ICON_MANAGER);
+	m_pUIRingUpgrade->SetState(UI_STATE_COMMON_NONE);
 	m_pUIRingUpgrade->SetStyle(UISTYLE_USER_MOVE_HIDE | UISTYLE_SHOW_ME_ALONE);
 }
 
