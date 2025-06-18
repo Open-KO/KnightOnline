@@ -9,6 +9,7 @@
 #include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "UIInventory.h"
+#include "UIItemUpgrade.h"
 #include "UITransactionDlg.h"
 #include "SubProcPerTrade.h"
 #include "N3UIWndBase.h"
@@ -333,6 +334,9 @@ bool CUIManager::BroadcastIconDropMsg(__IconItemSkill* spItem)
 			case UIWND_EXCHANGE_REPAIR:
 				CGameProcedure::s_pProcMain->m_pUIItemREDlg->CancelIconDrop(spItem);
 				break;
+			case UIWND_UPGRADE:
+				CGameProcedure::s_pProcMain->m_pUIItemUpgrade->CancelIconDrop(spItem);
+
 		}
 	}
 	return false;

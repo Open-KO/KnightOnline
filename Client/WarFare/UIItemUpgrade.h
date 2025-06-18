@@ -31,6 +31,7 @@ public:
 	// 직접 접근해야 할 객체 참조 포인터
 	__IconItemSkill* m_pMyUpgradeSLot[MAX_ITEM_UPGRADE_SLOT]; // Upgrade and Trina Scroll Slot
 	__IconItemSkill* m_pMyUpgradeInv[MAX_ITEM_INVENTORY];
+	__IconItemSkill* m_pBackupUpgradeInv[MAX_ITEM_INVENTORY];
 	__IconItemSkill* m_pUpgradeResultSlot;	// Result Slot after upgrade
 	__IconItemSkill* m_pUpgradeItemSlot;	// Which item to upgrade
 	CN3UIString* m_pStrMyGold;
@@ -44,6 +45,10 @@ public:
 	CN3UIButton* m_pBtnOk;
 	CN3UIButton* m_pBtnCancel;
 	CN3UIButton* m_pBtnConversation;
+	CN3UIArea* m_pAreaUpgrade;
+	CN3UIArea* m_pAreaResult;
+	CN3UIImage* m_pImageCover1;
+	CN3UIImage* m_pImageCover2;
 	//this_ui_add_end
 
 
@@ -51,6 +56,7 @@ protected:
 	int					GetItemiOrder(__IconItemSkill* spItem, e_UIWND_DISTRICT eWndDist);
 	RECT GetSampleRect();
 	e_UIWND_DISTRICT	GetWndDistrict(__IconItemSkill* spItem);
+	void				SendToServerUpgradeMsg(int itemID, byte pos, int iCount){};
 
 public:
 	CUIItemUpgrade();
@@ -81,8 +87,12 @@ public:
 	void				AcceptIconDrop(__IconItemSkill* spItem) override;
 	void				ItemMoveFromInvToThis();
 	void				ItemMoveFromThisToInv();
+	void                RestoreInventoryFromBackup();
 	void				GoldUpdate();
 	void				InitIconUpdate() {} ;
+	bool				IsUpgradeScrollorTrina(uint32_t dwID);
+	bool IsAllowedUpgradeItem(__IconItemSkill* spItem);
+	void DeleteIconItemSkill(__IconItemSkill*& pItem);
 };
 
 #endif // !defined(AFX_UIItemUpgrade_H__fd9f5093_0ed3_4c08_9e31_19c40773b24d__INCLUDED_)

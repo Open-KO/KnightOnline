@@ -12,6 +12,7 @@
 #include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "UIItemExchange.h"
+#include "UIItemUpgrade.h"
 #include "UINpcTalk.h"
 
 #include "SubProcPerTrade.h"
@@ -66,6 +67,9 @@ bool CUINPCEvent::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			Close();
 			if (CGameProcedure::s_pProcMain->m_pUIInventory->IsVisible())
 				return true;
+			
+        	if (CGameProcedure::s_pProcMain->m_pUIItemUpgrade->IsVisible())
+            	CGameProcedure::s_pProcMain->m_pUIItemUpgrade->Close();	
 			if (CGameProcedure::s_pProcMain->m_pUITransactionDlg->IsVisible())
 				return true;
 			if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->IsVisible())
