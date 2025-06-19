@@ -29,10 +29,11 @@ class CUIRingUpgrade : public CN3UIWndBase
 
 public:
 	// 직접 접근해야 할 객체 참조 포인터
-	__IconItemSkill* m_pRingUpgradeScrollSlot;	// Ring Upgrade Scroll Slot
+	__IconItemSkill* m_pRingUpgradeScrollSlot[MAX_RING_UPGRADE_SCROLL_SLOT];	// Ring Upgrade Scroll Slot
 	__IconItemSkill* m_pRingUpgradeResultSlot;	//Result Slot after uprade
 	__IconItemSkill* m_pMyUpgradeSLot[MAX_RING_UPGRADE_SLOT]; //3 Ring slot for merge
 	__IconItemSkill* m_pMyUpgradeInv[MAX_ITEM_INVENTORY];
+	__IconItemSkill* m_pBackupUpgradeInv[MAX_ITEM_INVENTORY];
 	CN3UIString* m_pStrMyGold;
 
 
@@ -44,6 +45,7 @@ public:
 	CN3UIButton* m_pBtnOk;
 	CN3UIButton* m_pBtnCancel;
 	CN3UIButton* m_pBtnConversation;
+	CN3UIArea* m_pAreaUpgradeScroll;
 	//this_ui_add_end
 
 
@@ -51,6 +53,7 @@ protected:
 	int					GetItemiOrder(__IconItemSkill* spItem, e_UIWND_DISTRICT eWndDist);
 	RECT GetSampleRect();
 	e_UIWND_DISTRICT	GetWndDistrict(__IconItemSkill* spItem);
+	uint32_t m_dwRingUpgradeSlotRefID = 0;
 
 public:
 	CUIRingUpgrade();
@@ -83,6 +86,10 @@ public:
 	void				ItemMoveFromThisToInv();
 	void				GoldUpdate();
 	void				InitIconUpdate() {};
+	void                RestoreInventoryFromBackup();
+	bool				IsRingUpgradeScrollorBlueTrina(uint32_t dwID);
+	bool IsAllowedRingItem(__IconItemSkill* spItem);
+	void DeleteIconItemSkill(__IconItemSkill*& pItem);
 };
 
 #endif // !defined(AFX_UIRingUpgrade_H__fd9f5093_0ed3_4c08_9e31_19c40773b24d__INCLUDED_)
