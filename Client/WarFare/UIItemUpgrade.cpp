@@ -54,7 +54,7 @@ CUIItemUpgrade::CUIItemUpgrade()
 		m_pMyUpgradeInv[i] = NULL;
 		m_pBackupUpgradeInv[i] = NULL;
 	}
-	
+
 	m_pUpgradeItemSlot = NULL;
 	m_pUpgradeResultSlot = NULL;
 	m_pUITooltipDlg = NULL;
@@ -73,7 +73,7 @@ void CUIItemUpgrade::Release()
 {
 	CN3UIBase::Release();
 
-	
+
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
 	{
 		DeleteIconItemSkill(m_pMyUpgradeSLot[i]);
@@ -125,7 +125,7 @@ void CUIItemUpgrade::Render()
 		if (m_pMyUpgradeInv[i] && ((m_pMyUpgradeInv[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) ||
 			(m_pMyUpgradeInv[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)))
 		{
-			CN3UIString* pStr = GetChildStringByiOrder(i);
+			CN3UIString* pStr = GetChildStringByiOrderWithPrefix(i, "s_count_");
 			if (pStr)
 			{
 				if ((GetState() == UI_STATE_ICON_MOVING) && (m_pMyUpgradeInv[i] == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
@@ -149,7 +149,7 @@ void CUIItemUpgrade::Render()
 		}
 		else
 		{
-			CN3UIString* pStr = GetChildStringByiOrder(i);
+			CN3UIString* pStr = GetChildStringByiOrderWithPrefix(i, "s_count_");
 			if (pStr)
 				pStr->SetVisible(false);
 		}
@@ -244,7 +244,7 @@ void CUIItemUpgrade::ItemMoveFromInvToThis()
 			pInven->m_pMyInvWnd[i] = NULL;
 			CN3UIArea* pArea;
 
-			pArea = GetChildAreaByiOrder(UI_AREA_TYPE_INV, i);
+			pArea = GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, i, "a_slot_");
 			if (pArea)
 			{
 				spItem->pUIIcon->SetRegion(pArea->GetRegion());
@@ -267,13 +267,13 @@ void CUIItemUpgrade::Close()
 		SetVisible(false);
 
 	RestoreInventoryFromBackup();
-	
+
 
 	if (GetState() == UI_STATE_ICON_MOVING)
 		IconRestore();
 	SetState(UI_STATE_COMMON_NONE);
 	CN3UIWndBase::AllHighLightIconFree();
-	
+
 	ItemMoveFromThisToInv();
 
 	if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg) CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
@@ -333,10 +333,10 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 			FAIL_RETURN
 
 	// Find which slot or area the item is being dropped onto.
-	int iDestiOrder = -1; bool bFound = false;
+			int iDestiOrder = -1; bool bFound = false;
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
 	{
-		pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SLOT, i);
+		pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, i, "a_m_");
 		if ((pArea) && (pArea->IsIn(ptCur.x, ptCur.y)))
 		{
 			bFound = true;
@@ -354,14 +354,14 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 			FAIL_RETURN
 
 		// any item can be dropped here, but only one at a time
-		if (m_pUpgradeItemSlot != nullptr)
-			FAIL_RETURN
+			if (m_pUpgradeItemSlot != nullptr)
+				FAIL_RETURN
 
-		// Move the item to the upgrade slot.
-			m_pUpgradeItemSlot = spItem;
+			// Move the item to the upgrade slot.
+				m_pUpgradeItemSlot = spItem;
 
 
-		// remove the item from inventory
+			// remove the item from inventory
 		for (int i = 0; i < MAX_ITEM_INVENTORY; ++i)
 		{
 			if (m_pMyUpgradeInv[i] == spItem)
@@ -384,8 +384,8 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 		return true;
 	}
 
-	
-	
+
+
 
 	if (spItem != CN3UIWndBase::m_sSelectedIconInfo.pItemSelect)
 		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
@@ -399,12 +399,12 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd = UIWND_UPGRADE;
 	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict = eUIWnd;
-	
+
 
 	switch (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict)
 	{
 		case UIWND_DISTRICT_UPGRADE_SLOT:
-			if (eUIWnd == UI_AREA_TYPE_INV)	
+			if (eUIWnd == UI_AREA_TYPE_INV)
 			{
 				if ((CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) ||
 					(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL))
@@ -430,7 +430,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 					if (!bFound)
 					{
-						if (m_pMyUpgradeInv[iDestiOrder])	
+						if (m_pMyUpgradeInv[iDestiOrder])
 						{
 							for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 							{
@@ -486,7 +486,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 					if (m_pMyUpgradeInv[iDestiOrder])
 					{
-						
+
 						bFound = false;
 						for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 						{
@@ -536,7 +536,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					spItemNew->pUIIcon->SetUIType(UI_TYPE_ICON);
 					spItemNew->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
 					spItemNew->pUIIcon->SetVisible(true);
-					pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_INV, iDestiOrder);
+					pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, iDestiOrder,"a_slot_");
 					if (pArea)
 					{
 						spItemNew->pUIIcon->SetRegion(pArea->GetRegion());
@@ -568,9 +568,9 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						__IconItemSkill* pSrc = m_pMyUpgradeInv[iSourceOrder];
 						if (!IsUpgradeScrollorTrina(pSrc->pItemBasic->dwID))
 							FAIL_RETURN
-		
+
 						// If  item with the same dwID is already in the slot, do not add it again.
-						bool bAlreadyInSlot = false;
+							bool bAlreadyInSlot = false;
 						for (int k = 0; k < MAX_ITEM_UPGRADE_SLOT; ++k)
 						{
 							if (m_pMyUpgradeSLot[k])
@@ -607,62 +607,62 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 							FAIL_RETURN
 
 						// If it is countable, only 1 piece should be carried
-						if (pSrc->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE ||
-							pSrc->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)
-						{
-							if (pSrc->iCount > 1)
+							if (pSrc->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE ||
+								pSrc->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)
 							{
-								// Create a new icon, put it in 1 slot, reduce the number in the inventory
-								__IconItemSkill* pNew = new __IconItemSkill(*pSrc); // Shallow copy
-								pNew->iCount = 1;
-
-								// new icon must be created
-								pNew->pUIIcon = new CN3UIIcon;
-								pNew->pUIIcon->Init(this);
-								pNew->pUIIcon->SetTex(pSrc->szIconFN);
-								float fUVAspect = 45.0f / 64.0f;
-								pNew->pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
-								pNew->pUIIcon->SetUIType(UI_TYPE_ICON);
-								pNew->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
-								pNew->pUIIcon->SetVisible(true);
-
-								CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SLOT, iDestiOrder);
-								if (pSlotArea)
+								if (pSrc->iCount > 1)
 								{
-									pNew->pUIIcon->SetRegion(pSlotArea->GetRegion());
-									pNew->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
-								}
+									// Create a new icon, put it in 1 slot, reduce the number in the inventory
+									__IconItemSkill* pNew = new __IconItemSkill(*pSrc); // Shallow copy
+									pNew->iCount = 1;
 
-								m_pMyUpgradeSLot[iDestiOrder] = pNew;
-								pSrc->iCount -= 1;
+									// new icon must be created
+									pNew->pUIIcon = new CN3UIIcon;
+									pNew->pUIIcon->Init(this);
+									pNew->pUIIcon->SetTex(pSrc->szIconFN);
+									float fUVAspect = 45.0f / 64.0f;
+									pNew->pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
+									pNew->pUIIcon->SetUIType(UI_TYPE_ICON);
+									pNew->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
+									pNew->pUIIcon->SetVisible(true);
+
+									CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+									if (pSlotArea)
+									{
+										pNew->pUIIcon->SetRegion(pSlotArea->GetRegion());
+										pNew->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
+									}
+
+									m_pMyUpgradeSLot[iDestiOrder] = pNew;
+									pSrc->iCount -= 1;
+								}
+								else
+								{
+									// If the last one, move directly
+									m_pMyUpgradeSLot[iDestiOrder] = pSrc;
+									m_pMyUpgradeInv[iSourceOrder] = nullptr;
+
+									CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+									if (pSlotArea)
+									{
+										pSrc->pUIIcon->SetRegion(pSlotArea->GetRegion());
+										pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
+									}
+								}
 							}
 							else
 							{
-								// If the last one, move directly
+								// if is not countable item, just move it
 								m_pMyUpgradeSLot[iDestiOrder] = pSrc;
 								m_pMyUpgradeInv[iSourceOrder] = nullptr;
 
-								CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SLOT, iDestiOrder);
+								CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
 								if (pSlotArea)
 								{
 									pSrc->pUIIcon->SetRegion(pSlotArea->GetRegion());
 									pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
 								}
 							}
-						}
-						else
-						{
-							// if is not countable item, just move it
-							m_pMyUpgradeSLot[iDestiOrder] = pSrc;
-							m_pMyUpgradeInv[iSourceOrder] = nullptr;
-
-							CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SLOT, iDestiOrder);
-							if (pSlotArea)
-							{
-								pSrc->pUIIcon->SetRegion(pSlotArea->GetRegion());
-								pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
-							}
-						}
 					}
 				}
 				FAIL_RETURN
@@ -698,7 +698,7 @@ void CUIItemUpgrade::IconRestore()
 	{
 		if (m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
 		{
-			pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
+			pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder,"a_slot_");
 			if (pArea)
 			{
 				m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
@@ -761,7 +761,7 @@ RECT CUIItemUpgrade::GetSampleRect()
 	RECT rect;
 	CN3UIArea* pArea;
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
-	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_INV, 0);
+	pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, 0,"a_slot_");
 	rect = pArea->GetRegion();
 	float fWidth = (float) (rect.right - rect.left);
 	float fHeight = (float) (rect.bottom - rect.top);
@@ -804,7 +804,7 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if (pSender == m_pBtnClose)
 			Close();
 		else if (pSender == m_pBtnCancel)
-			RestoreInventoryFromBackup(); 
+			RestoreInventoryFromBackup();
 		else if (pSender == m_pBtnOk)
 		{
 
@@ -844,7 +844,7 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 		case UIMSG_ICON_UP:
 			if (!CGameProcedure::s_pUIMgr->BroadcastIconDropMsg(CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
-				
+
 				// Restore the icon position to its original place if drop failed.
 				IconRestore();
 
@@ -871,8 +871,8 @@ void CUIItemUpgrade::SetVisible(bool bVisible)
 	else
 	{
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
-		RestoreInventoryFromBackup(); 
-		
+		RestoreInventoryFromBackup();
+
 
 	}
 }
@@ -891,9 +891,9 @@ void CUIItemUpgrade::SetVisibleWithNoSound(bool bVisible, bool bWork, bool bReFo
 
 
 		//Move the items from this window's inventory area to the inventory area of this inventory window.
-		
+
 		RestoreInventoryFromBackup();
-		
+
 		ItemMoveFromThisToInv();
 
 		if (m_pUITooltipDlg) m_pUITooltipDlg->DisplayTooltipsDisable();
@@ -937,7 +937,7 @@ bool CUIItemUpgrade::OnKeyPress(int iKey)
 // Restores the inventory and slots from the backup, recreating icons as needed.
 void CUIItemUpgrade::RestoreInventoryFromBackup()
 {
-	
+
 	//Clear existing slots first
 	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
@@ -972,9 +972,9 @@ void CUIItemUpgrade::RestoreInventoryFromBackup()
 				m_pMyUpgradeInv[i]->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
 				m_pMyUpgradeInv[i]->pUIIcon->SetVisible(true);
 
-				
+
 				//Set the UI position based on the inventory area
-				CN3UIArea* pArea = GetChildAreaByiOrder(UI_AREA_TYPE_INV, i);
+				CN3UIArea* pArea = GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, i, "a_slot_");
 				if (pArea)
 				{
 					m_pMyUpgradeInv[i]->pUIIcon->SetRegion(pArea->GetRegion());
@@ -987,14 +987,14 @@ void CUIItemUpgrade::RestoreInventoryFromBackup()
 
 // Checks if the given item ID is an upgrade scroll or Trina.
 bool CUIItemUpgrade::IsUpgradeScrollorTrina(uint32_t dwID)
-{	
+{
 
-	return ((dwID >= MIN_UPGRADE_ITEM_ID && dwID <= MAX_UPGRADE_ITEM_ID) || dwID == TRINA_ITEM_ID); 
-	
+	return ((dwID >= MIN_UPGRADE_ITEM_ID && dwID <= MAX_UPGRADE_ITEM_ID) || dwID == TRINA_ITEM_ID);
+
 }
 
 // Checks if the given item is allowed to be upgraded (unique or upgrade type).
-bool CUIItemUpgrade::IsAllowedUpgradeItem(__IconItemSkill* spItem) 
+bool CUIItemUpgrade::IsAllowedUpgradeItem(__IconItemSkill* spItem)
 {
 	e_ItemAttrib eTA = (e_ItemAttrib) (spItem->pItemExt->byMagicOrRare);
 	return (eTA == ITEM_ATTRIB_UNIQUE || eTA == ITEM_ATTRIB_UPGRADE);

@@ -90,7 +90,7 @@ CN3UIArea* CN3UIWndBase::GetChildAreaByiOrder(eUI_AREA_TYPE eUAT, int iOrder)
 	return NULL;
 }
 
-CN3UIArea* CN3UIWndBase::GetChildAreaByiOrderPrefix(eUI_AREA_TYPE eUAT, int iOrder, const std::string& prefix /* = "" */)
+CN3UIArea* CN3UIWndBase::GetChildAreaByiOrderWithPrefix(eUI_AREA_TYPE eUAT, int iOrder, const std::string& prefix /* = "" */)
 {
 	char pszID[128];
 
@@ -109,7 +109,7 @@ CN3UIArea* CN3UIWndBase::GetChildAreaByiOrderPrefix(eUI_AREA_TYPE eUAT, int iOrd
 	return NULL;
 }
 
-CN3UIString* CN3UIWndBase::GetChildStringByiOrderPrefix(int iOrder, const std::string& prefix /* = "" */)
+CN3UIString* CN3UIWndBase::GetChildStringByiOrderWithPrefix(int iOrder, const std::string& prefix /* = "" */)
 {
 	char pszID[128];
 
