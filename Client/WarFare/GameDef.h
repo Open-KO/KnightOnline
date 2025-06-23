@@ -807,6 +807,7 @@ typedef struct __TABLE_ITEM_BASIC // 장착 아이템에 관한 리소스 레코
 
 const int MAX_ITEM_EXTENSION = 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
 const int LIMIT_FX_DAMAGE = 64;
+const int LIMIT_FX_GLOW = 80; //When an item starts to glow
 const int ITEM_LIMITED_EXHAUST = 17;
 
 typedef struct __TABLE_ITEM_EXT // 장착 아이템에 관한 리소스 레코드...
@@ -902,6 +903,26 @@ enum e_ItemSlot {	ITEM_SLOT_EAR_RIGHT = 0,	ITEM_SLOT_HEAD	= 1,	ITEM_SLOT_EAR_LEF
 					ITEM_SLOT_RING_RIGHT = 9,	ITEM_SLOT_LOWER = 10,	ITEM_SLOT_RING_LEFT = 11,
 					ITEM_SLOT_GLOVES = 12,		ITEM_SLOT_SHOES = 13, 
 					ITEM_SLOT_COUNT = 14, ITEM_SLOT_UNKNOWN = 0xffffffff };
+
+//fx glow type
+enum e_GlowType {
+	ITEM_GLOW_NORMAL = 0,
+	ITEM_GLOW_UNIQUE = 1
+};
+
+enum e_NormalItemsGlowingUnique {
+	ITEM_ID_RAPTOR = 156210000,
+	ITEM_ID_IRON_IMPACT = 146210000,
+	ITEM_ID_TOTAMIC_SPEAR = 151210000,
+};
+
+enum e_UniqueItemsGlowingNormal {
+	ITEM_ID_SWORD_OF_BEAST = 120550000,
+	ITEM_ID_SWORD_OF_THE_DEAD = 125350000,
+	ITEM_ID_TOOTH = 120510000,
+	ITEM_ID_LOBO_HAMMER = 190250000, //lobo hammer,lycaon hammer,lupus hammer,skull hammer,priest morning star
+	ITEM_ID_SCORPION_SCYTHE = 155550000,
+};
 
 
 typedef struct __TABLE_PLAYER_LOOKS // NPC, Mob 모습 관한 리소스 레코드...
@@ -1308,6 +1329,14 @@ constexpr int	FXID_CLAN_RANK_1				= 10041;
 constexpr int	FXID_WARP_KARUS					= 10046;
 constexpr int	FXID_WARP_ELMORAD				= 10047;
 constexpr int	FXID_REGION_POISON				= 10100;
+constexpr int	FXID_SWORD_UNIQ_FIRE_MAIN		= 12060;
+constexpr int	FXID_SWORD_UNIQ_FIRE_TAIL		= 12061;
+constexpr int	FXID_SWORD_UNIQ_ICE_MAIN		= 12050;
+constexpr int	FXID_SWORD_UNIQ_ICE_TAIL		= 12051;
+constexpr int	FXID_SWORD_UNIQ_LIGHTNING_MAIN	= 12130;
+constexpr int	FXID_SWORD_UNIQ_LIGHTNING_TAIL	= 12131;
+constexpr int	FXID_SWORD_UNIQ_POISON_MAIN		= 12070;
+constexpr int	FXID_SWORD_UNIQ_POISON_TAIL		= 12071;
 constexpr int	FXID_TARGET_POINTER				= 30001;
 constexpr int	FXID_ZONE_POINTER				= 30002;
 
