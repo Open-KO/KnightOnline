@@ -1848,8 +1848,8 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	s_pPlayer->m_InfoBase.iHP = pkt.read<int16_t>(); 
 	s_pPlayer->m_InfoExt.iMSPMax = pkt.read<int16_t>();
 	s_pPlayer->m_InfoExt.iMSP = pkt.read<int16_t>();
-	s_pPlayer->m_InfoExt.iWeightMax = pkt.read<int16_t>(); 
-	s_pPlayer->m_InfoExt.iWeight = pkt.read<int16_t>(); 
+	s_pPlayer->m_InfoExt.iWeightMax = static_cast<int>(pkt.read<uint16_t>());
+	s_pPlayer->m_InfoExt.iWeight = static_cast<int>(pkt.read<uint16_t>());
 
 	s_pPlayer->m_InfoExt.iStrength = pkt.read<uint8_t>();
 	s_pPlayer->m_InfoExt.iStrength_Delta = pkt.read<uint8_t>();
@@ -3299,7 +3299,7 @@ bool CGameProcMain::MsgRecv_ItemMove(Packet& pkt)
 	{
 		pInfoExt->iAttack = pkt.read<int16_t>();
 		pInfoExt->iGuard =	pkt.read<int16_t>();
-		pInfoExt->iWeightMax = pkt.read<int16_t>();
+		pInfoExt->iWeightMax = static_cast<int>(pkt.read<uint16_t>());
 		
 		pInfoBase->iHPMax = pkt.read<int16_t>();
 		pInfoExt->iMSPMax = pkt.read<int16_t>();
@@ -3655,8 +3655,8 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 		pInfoExt->iMSPMax		= pkt.read<int16_t>();
 		pInfoExt->iMSP			= pkt.read<int16_t>();
 
-		pInfoExt->iWeightMax	= pkt.read<int16_t>();
-		pInfoExt->iWeight		= pkt.read<int16_t>();
+		pInfoExt->iWeightMax	= static_cast<int>(pkt.read<uint16_t>());
+		pInfoExt->iWeight		= static_cast<int>(pkt.read<uint16_t>());
 
 		m_pUIVar->UpdateAllStates(&(s_pPlayer->m_InfoBase), &(s_pPlayer->m_InfoExt)); // 모든 정보 업데이트..
 
@@ -3745,7 +3745,7 @@ void CGameProcMain::MsgRecv_MyInfo_PointChange(Packet& pkt)
 	s_pPlayer->m_InfoBase.iHPMax =		pkt.read<int16_t>();
 	s_pPlayer->m_InfoExt.iMSPMax =		pkt.read<int16_t>();
 	s_pPlayer->m_InfoExt.iAttack =		pkt.read<int16_t>();
-	s_pPlayer->m_InfoExt.iWeightMax =	pkt.read<int16_t>();
+	s_pPlayer->m_InfoExt.iWeightMax =	static_cast<int>(pkt.read<uint16_t>());
 
 	m_pUIVar->m_pPageState->UpdateHP(s_pPlayer->m_InfoBase.iHP, s_pPlayer->m_InfoBase.iHPMax);
 	m_pUIStateBarAndMiniMap->UpdateHP(s_pPlayer->m_InfoBase.iHP, s_pPlayer->m_InfoBase.iHPMax, false);
@@ -6520,7 +6520,7 @@ void CGameProcMain::MsgRecv_AllPointInit(Packet& pkt)			// All Point 초기화..
 			s_pPlayer->m_InfoBase.iHPMax =		pkt.read<int16_t>();
 			s_pPlayer->m_InfoExt.iMSPMax =		pkt.read<int16_t>();
 			s_pPlayer->m_InfoExt.iAttack =		pkt.read<int16_t>();
-			s_pPlayer->m_InfoExt.iWeightMax =	pkt.read<int16_t>();
+			s_pPlayer->m_InfoExt.iWeightMax		= static_cast<int>(pkt.read<uint16_t>());
 
 			m_pUIVar->m_pPageState->UpdateHP(s_pPlayer->m_InfoBase.iHP, s_pPlayer->m_InfoBase.iHPMax);
 			m_pUIStateBarAndMiniMap->UpdateHP(s_pPlayer->m_InfoBase.iHP, s_pPlayer->m_InfoBase.iHPMax, false);
