@@ -52,7 +52,7 @@ BOOL EVENT::LoadEvent(int zone)
 	if (!pFile.Open(filename, CFile::modeRead))
 		return TRUE;
 
-	length = pFile.GetLength();
+	length = static_cast<DWORD>(pFile.GetLength());
 
 	CArchive in(&pFile, CArchive::load);
 

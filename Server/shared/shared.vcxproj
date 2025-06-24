@@ -153,7 +153,6 @@
     <ClInclude Include="ByteBuffer.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="crc32.h" />
-    <ClInclude Include="DateTime.h" />
     <ClInclude Include="DebugUtils.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="Ini.h" />
