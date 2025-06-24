@@ -14,11 +14,11 @@
 
 typedef CSTLMap <EVENT_DATA>				EventDataArray;
 
-class EVENT  
+class EVENT
 {
 public:
 	void DeleteAll();
-	void Parsing(char *pBuf);
+	void Parsing(char* pBuf);
 	void Init();
 	BOOL LoadEvent(int zone);
 	int m_Zone;

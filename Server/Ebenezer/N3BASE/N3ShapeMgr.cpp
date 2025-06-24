@@ -485,7 +485,7 @@ void CN3ShapeMgr::GenerateCollisionData()
 						|| (dwOC0 != 0 && dwOC1 == 0))
 						bWriteID = true;
 					// 두 꿑점 모두 셀 외부에 있지만 판단을 다시 해야 한다.
-					else if ((dwOC0 & dwOC1) == 0) 
+					else if ((dwOC0 & dwOC1) == 0)
 					{
 						// 위의 변과의 교차점을 계산하고..
 						float fXCross = vEdge[j][0].x + (fZMax - vEdge[j][0].z) * (vEdge[j][1].x - vEdge[j][0].x) / (vEdge[j][1].z - vEdge[j][0].z);

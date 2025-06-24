@@ -13,7 +13,7 @@
 class CMagicType4Set : public CRecordset
 {
 public:
-	CMagicType4Set(CDatabase* pDatabase = NULL);
+	CMagicType4Set(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CMagicType4Set)
 
 // Field/Param Data
@@ -48,7 +48,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMagicType4Set)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support

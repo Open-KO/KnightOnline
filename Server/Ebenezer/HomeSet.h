@@ -13,7 +13,7 @@
 class CHomeSet : public CRecordset
 {
 public:
-	CHomeSet(CDatabase* pDatabase = NULL);
+	CHomeSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CHomeSet)
 
 // Field/Param Data
@@ -43,7 +43,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CHomeSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support

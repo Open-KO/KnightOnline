@@ -1,134 +1,141 @@
 ﻿#pragma once
 
-#define WIZ_LOGIN				0x01	// Account Login
-#define WIZ_NEW_CHAR			0x02	// Create Character DB
-#define WIZ_DEL_CHAR			0x03	// Delete Character DB
-#define WIZ_SEL_CHAR			0x04	// Select Character
-#define WIZ_SEL_NATION			0x05	// Select Nation
-#define WIZ_MOVE				0x06	// Move ( 1 Second )
-#define WIZ_USER_INOUT			0x07	// User Info Insert, delete
-#define WIZ_ATTACK				0x08	// General Attack 
-#define WIZ_ROTATE				0x09	// Rotate
-#define WIZ_NPC_INOUT			0x0A	// Npc Info Insert, delete
-#define WIZ_NPC_MOVE			0x0B	// Npc Move ( 1 Second )
-#define WIZ_ALLCHAR_INFO_REQ	0x0C	// Account All Character Info Request
-#define WIZ_GAMESTART			0x0D	// Request Other User, Npc Info
-#define WIZ_MYINFO				0x0E	// User Detail Data Download
-#define WIZ_LOGOUT				0x0F	// Request Logout
-#define WIZ_CHAT				0x10	// User Chatting..
-#define WIZ_DEAD				0x11	// User Dead
-#define WIZ_REGENE				0x12	// User	Regeneration
-#define WIZ_TIME				0x13	// Game Timer
-#define WIZ_WEATHER				0x14	// Game Weather
-#define WIZ_REGIONCHANGE		0x15	// Region UserInfo Receive
-#define WIZ_REQ_USERIN			0x16	// Client Request UnRegistered User List
-#define WIZ_HP_CHANGE			0x17	// Current HP Download
-#define WIZ_MSP_CHANGE			0x18	// Current MP Download
-#define WIZ_ITEM_LOG			0x19	// Send To Agent for Writing Log
-#define WIZ_EXP_CHANGE			0x1A	// Current EXP Download
-#define WIZ_LEVEL_CHANGE		0x1B	// Max HP, MP, SP, Weight, Exp Download
-#define WIZ_NPC_REGION			0x1C	// Npc Region Change Receive
-#define WIZ_REQ_NPCIN			0x1D	// Client Request UnRegistered NPC List
-#define WIZ_WARP				0x1E	// User Remote Warp
-#define WIZ_ITEM_MOVE			0x1F	// User Item Move
-#define WIZ_NPC_EVENT			0x20	// User Click Npc Event
-#define WIZ_ITEM_TRADE			0x21	// Item Trade 
-#define WIZ_TARGET_HP			0x22	// Attack Result Target HP 
-#define WIZ_ITEM_DROP			0x23	// Zone Item Insert
-#define WIZ_BUNDLE_OPEN_REQ		0x24	// Zone Item list Request
-#define WIZ_TRADE_NPC			0x25	// ITEM Trade start
-#define WIZ_ITEM_GET			0x26	// Zone Item Get
-#define WIZ_ZONE_CHANGE			0x27	// Zone Change
-#define WIZ_POINT_CHANGE		0x28	// Str, Sta, dex, intel, cha, point up down
-#define WIZ_STATE_CHANGE		0x29	// User Sitdown or Stand
-#define WIZ_LOYALTY_CHANGE		0x2A	// Nation Contribution
-#define WIZ_VERSION_CHECK		0x2B	// Client version check 
-#define WIZ_CRYPTION			0x2C	// Cryption
-#define WIZ_USERLOOK_CHANGE		0x2D	// User Slot Item Resource Change
-#define WIZ_NOTICE				0x2E	// Update Notice Alarm 
-#define WIZ_PARTY				0x2F	// Party Related Packet
-#define WIZ_EXCHANGE			0x30	// Exchange Related Packet
-#define WIZ_MAGIC_PROCESS		0x31	// Magic Related Packet
-#define WIZ_SKILLPT_CHANGE		0x32	// User changed particular skill point
-#define WIZ_OBJECT_EVENT		0x33	// Map Object Event Occur ( ex : Bind Point Setting )
-#define WIZ_CLASS_CHANGE		0x34	// 10 level over can change class 
-#define WIZ_CHAT_TARGET			0x35	// Select Private Chanting User
-#define WIZ_CONCURRENTUSER		0x36	// Current Game User Count
-#define WIZ_DATASAVE			0x37	// User GameData DB Save Request
-#define WIZ_DURATION			0x38	// Item Durability Change
-#define WIZ_TIMENOTIFY			0x39	// Time Adaption Magic Time Notify Packet ( 2 Seconds )
-#define WIZ_REPAIR_NPC			0x3A	// Item Trade, Upgrade and Repair
-#define WIZ_ITEM_REPAIR			0x3B	// Item Repair Processing
-#define WIZ_KNIGHTS_PROCESS		0x3C	// Knights Related Packet..
-#define WIZ_ITEM_COUNT_CHANGE   0x3D    // Item cout change.  
-#define WIZ_KNIGHTS_LIST		0x3E	// All Knights List Info download
-#define WIZ_ITEM_REMOVE			0x3F	// Item Remove from inventory
-#define WIZ_OPERATOR			0x40	// Operator Authority Packet
-#define WIZ_SPEEDHACK_CHECK		0x41	// Speed Hack Using Check
-#define WIZ_COMPRESS_PACKET		0x42	// Data Compressing Packet
-#define WIZ_SERVER_CHECK		0x43	// Server Status Check Packet
-#define WIZ_CONTINOUS_PACKET	0x44	// Region Data Packet 
-#define WIZ_WAREHOUSE			0x45	// Warehouse Open, In, Out
-#define WIZ_SERVER_CHANGE		0x46	// When you change the server
-#define WIZ_REPORT_BUG			0x47	// Report Bug to the manager
-#define WIZ_HOME				0x48    // 'Come back home' by Seo Taeji & Boys
-#define WIZ_FRIEND_PROCESS		0x49	// Get the status of your friend
-#define WIZ_GOLD_CHANGE			0x4A	// When you get the gold of your enemy.
-#define WIZ_WARP_LIST			0x4B	// Warp List by NPC or Object
-#define WIZ_VIRTUAL_SERVER		0x4C	// Battle zone Server Info packet	(IP, Port)
-#define WIZ_ZONE_CONCURRENT		0x4D	// Battle zone concurrent users request packet
-#define WIZ_CORPSE				0x4e	// To have your corpse have an ID on top of it.
-#define WIZ_PARTY_BBS			0x4f	// For the party wanted bulletin board service..
-#define WIZ_MARKET_BBS			0x50	// For the market bulletin board service...
-#define WIZ_KICKOUT				0x51	// Account ID forbid duplicate connection
-#define WIZ_CLIENT_EVENT		0x52	// Client Event (for quest)
-#define WIZ_MAP_EVENT			0x53	// 클라이언트에서 무슨 에코로 쓰고 있데요.
-#define WIZ_WEIGHT_CHANGE		0x54	// Notify change of weight
-#define WIZ_SELECT_MSG			0x55	// Select Event Message...
-#define WIZ_NPC_SAY				0x56	// Select Event Message...
-#define WIZ_BATTLE_EVENT		0x57	// Battle Event Result
-#define WIZ_AUTHORITY_CHANGE	0x58	// Authority change 
-#define WIZ_EDIT_BOX			0x59	// Activate/Receive info from Input_Box.
-#define WIZ_SANTA				0x5A	// Activate motherfucking Santa Claus!!! :(
-#define WIZ_ITEM_UPGRADE		0x5B
-#define WIZ_PACKET1				0x5C
-#define WIZ_PACKET2				0x5D
-#define WIZ_ZONEABILITY			0x5E	
-#define WIZ_EVENT				0x5F
-#define WIZ_STEALTH				0x60 // stealth related.
-#define WIZ_ROOM_PACKETPROCESS	0x61 // room system
-#define WIZ_ROOM				0x62
-#define WIZ_ROOM_MATCH			0x63
-#define WIZ_QUEST				0x64
-#define WIZ_PP_CARD				0x65
-#define WIZ_KISS				0x66
-#define WIZ_RECOMMEND_USER		0x67
-#define WIZ_MERCHANT			0x68
-#define WIZ_MERCHANT_INOUT		0x69
-#define WIZ_SHOPPING_MALL		0x6A
-#define WIZ_SERVER_INDEX		0x6B
-#define WIZ_EFFECT				0x6C
-#define WIZ_SIEGE				0x6D
-#define WIZ_NAME_CHANGE			0x6E
-#define WIZ_WEBPAGE				0x6F
-#define WIZ_CAPE				0x70
-#define WIZ_PREMIUM				0x71
-#define WIZ_HACKTOOL			0x72
-#define WIZ_RENTAL				0x73
-#define WIZ_REWARD_ITEMS		0x74
-#define WIZ_CHALLENGE			0x75
-#define WIZ_PET					0x76
-#define WIZ_CHINA				0x77 // we shouldn't need to worry about this
-#define WIZ_KING				0x78
-#define WIZ_SKILLDATA			0x79
-#define WIZ_PROGRAMCHECK		0x7A
-#define WIZ_BIFROST				0x7B
-#define WIZ_SERVER_KILL			0x7F
+enum e_GameOpcode
+{
+	WIZ_LOGIN						= 0x01,	// Account Login
+	WIZ_NEW_CHAR					= 0x02,	// Create Character DB
+	WIZ_DEL_CHAR					= 0x03,	// Delete Character DB
+	WIZ_SEL_CHAR					= 0x04,	// Select Character
+	WIZ_SEL_NATION					= 0x05,	// Select Nation
+	WIZ_MOVE						= 0x06,	// Move ( 1 Second )
+	WIZ_USER_INOUT					= 0x07,	// User Info Insert, delete
+	WIZ_ATTACK						= 0x08,	// General Attack 
+	WIZ_ROTATE						= 0x09,	// Rotate
+	WIZ_NPC_INOUT					= 0x0A,	// Npc Info Insert, delete
+	WIZ_NPC_MOVE					= 0x0B,	// Npc Move ( 1 Second )
+	WIZ_ALLCHAR_INFO_REQ			= 0x0C,	// Account All Character Info Request
+	WIZ_GAMESTART					= 0x0D,	// Request Other User, Npc Info
+	WIZ_MYINFO						= 0x0E,	// User Detail Data Download
+	WIZ_LOGOUT						= 0x0F,	// Request Logout
+	WIZ_CHAT						= 0x10,	// User Chatting..
+	WIZ_DEAD						= 0x11,	// User Dead
+	WIZ_REGENE						= 0x12,	// User	Regeneration
+	WIZ_TIME						= 0x13,	// Game Timer
+	WIZ_WEATHER						= 0x14,	// Game Weather
+	WIZ_REGIONCHANGE				= 0x15,	// Region UserInfo Receive
+	WIZ_REQ_USERIN					= 0x16,	// Client Request UnRegistered User List
+	WIZ_HP_CHANGE					= 0x17,	// Current HP Download
+	WIZ_MSP_CHANGE					= 0x18,	// Current MP Download
+	WIZ_ITEM_LOG					= 0x19,	// Send To Agent for Writing Log
+	WIZ_EXP_CHANGE					= 0x1A,	// Current EXP Download
+	WIZ_LEVEL_CHANGE				= 0x1B,	// Max HP, MP, SP, Weight, Exp Download
+	WIZ_NPC_REGION					= 0x1C,	// Npc Region Change Receive
+	WIZ_REQ_NPCIN					= 0x1D,	// Client Request UnRegistered NPC List
+	WIZ_WARP						= 0x1E,	// User Remote Warp
+	WIZ_ITEM_MOVE					= 0x1F,	// User Item Move
+	WIZ_NPC_EVENT					= 0x20,	// User Click Npc Event
+	WIZ_ITEM_TRADE					= 0x21,	// Item Trade 
+	WIZ_TARGET_HP					= 0x22,	// Attack Result Target HP 
+	WIZ_ITEM_DROP					= 0x23,	// Zone Item Insert
+	WIZ_BUNDLE_OPEN_REQ				= 0x24,	// Zone Item list Request
+	WIZ_TRADE_NPC					= 0x25,	// ITEM Trade start
+	WIZ_ITEM_GET					= 0x26,	// Zone Item Get
+	WIZ_ZONE_CHANGE					= 0x27,	// Zone Change
+	WIZ_POINT_CHANGE				= 0x28,	// Str, Sta, dex, intel, cha, point up down
+	WIZ_STATE_CHANGE				= 0x29,	// User Sitdown or Stand
+	WIZ_LOYALTY_CHANGE				= 0x2A,	// Nation Contribution
+	WIZ_VERSION_CHECK				= 0x2B,	// Client version check 
+	WIZ_CRYPTION					= 0x2C,	// Cryption
+	WIZ_USERLOOK_CHANGE				= 0x2D,	// User Slot Item Resource Change
+	WIZ_NOTICE						= 0x2E,	// Update Notice Alarm 
+	WIZ_PARTY						= 0x2F,	// Party Related Packet
+	WIZ_EXCHANGE					= 0x30,	// Exchange Related Packet
+	WIZ_MAGIC_PROCESS				= 0x31,	// Magic Related Packet
+	WIZ_SKILLPT_CHANGE				= 0x32,	// User changed particular skill point
+	WIZ_OBJECT_EVENT				= 0x33,	// Map Object Event Occur ( ex : Bind Point Setting )
+	WIZ_CLASS_CHANGE				= 0x34,	// 10 level over can change class 
+	WIZ_CHAT_TARGET					= 0x35,	// Select Private Chanting User
+	WIZ_CONCURRENTUSER				= 0x36,	// Current Game User Count
+	WIZ_DATASAVE					= 0x37,	// User GameData DB Save Request
+	WIZ_DURATION					= 0x38,	// Item Durability Change
+	WIZ_TIMENOTIFY					= 0x39,	// Time Adaption Magic Time Notify Packet ( 2 Seconds )
+	WIZ_REPAIR_NPC					= 0x3A,	// Item Trade, Upgrade and Repair
+	WIZ_ITEM_REPAIR					= 0x3B,	// Item Repair Processing
+	WIZ_KNIGHTS_PROCESS				= 0x3C,	// Knights Related Packet..
+	WIZ_ITEM_COUNT_CHANGE			= 0x3D,    // Item cout change.  
+	WIZ_KNIGHTS_LIST				= 0x3E,	// All Knights List Info download
+	WIZ_ITEM_REMOVE					= 0x3F,	// Item Remove from inventory
+	WIZ_OPERATOR					= 0x40,	// Operator Authority Packet
+	WIZ_SPEEDHACK_CHECK				= 0x41,	// Speed Hack Using Check
+	WIZ_COMPRESS_PACKET				= 0x42,	// Data Compressing Packet
+	WIZ_SERVER_CHECK				= 0x43,	// Server Status Check Packet
+	WIZ_CONTINOUS_PACKET			= 0x44,	// Region Data Packet 
+	WIZ_WAREHOUSE					= 0x45,	// Warehouse Open, In, Out
+	WIZ_SERVER_CHANGE				= 0x46,	// When you change the server
+	WIZ_REPORT_BUG					= 0x47,	// Report Bug to the manager
+	WIZ_HOME						= 0x48,    // 'Come back home' by Seo Taeji & Boys
+	WIZ_FRIEND_PROCESS				= 0x49,	// Get the status of your friend
+	WIZ_GOLD_CHANGE					= 0x4A,	// When you get the gold of your enemy.
+	WIZ_WARP_LIST					= 0x4B,	// Warp List by NPC or Object
+	WIZ_VIRTUAL_SERVER				= 0x4C,	// Battle zone Server Info packet	(IP, Port)
+	WIZ_ZONE_CONCURRENT				= 0x4D,	// Battle zone concurrent users request packet
+	WIZ_CORPSE						= 0x4e,	// To have your corpse have an ID on top of it.
+	WIZ_PARTY_BBS					= 0x4f,	// For the party wanted bulletin board service..
+	WIZ_MARKET_BBS					= 0x50,	// For the market bulletin board service...
+	WIZ_KICKOUT						= 0x51,	// Account ID forbid duplicate connection
+	WIZ_CLIENT_EVENT				= 0x52,	// Client Event (for quest)
+	WIZ_MAP_EVENT					= 0x53,	// 클라이언트에서 무슨 에코로 쓰고 있데요.
+	WIZ_WEIGHT_CHANGE				= 0x54,	// Notify change of weight
+	WIZ_SELECT_MSG					= 0x55,	// Select Event Message...
+	WIZ_NPC_SAY						= 0x56,	// Select Event Message...
+	WIZ_BATTLE_EVENT				= 0x57,	// Battle Event Result
+	WIZ_AUTHORITY_CHANGE			= 0x58,	// Authority change 
+	WIZ_EDIT_BOX					= 0x59,	// Activate/Receive info from Input_Box.
+	WIZ_SANTA						= 0x5A,	// Activate motherfucking Santa Claus!!! :(
+	WIZ_ITEM_UPGRADE				= 0x5B,
+	WIZ_PACKET1						= 0x5C,
+	WIZ_PACKET2						= 0x5D,
+	WIZ_ZONEABILITY					= 0x5E,	
+	WIZ_EVENT						= 0x5F,
+	WIZ_STEALTH						= 0x60, // stealth related.
+	WIZ_ROOM_PACKETPROCESS			= 0x61, // room system
+	WIZ_ROOM						= 0x62,
+	WIZ_ROOM_MATCH					= 0x63,
+	WIZ_QUEST						= 0x64,
+	WIZ_PP_CARD						= 0x65,
+	WIZ_KISS						= 0x66,
+	WIZ_RECOMMEND_USER				= 0x67,
+	WIZ_MERCHANT					= 0x68,
+	WIZ_MERCHANT_INOUT				= 0x69,
+	WIZ_SHOPPING_MALL				= 0x6A,
+	WIZ_SERVER_INDEX				= 0x6B,
+	WIZ_EFFECT						= 0x6C,
+	WIZ_SIEGE						= 0x6D,
+	WIZ_NAME_CHANGE					= 0x6E,
+	WIZ_WEBPAGE						= 0x6F,
+	WIZ_CAPE						= 0x70,
+	WIZ_PREMIUM						= 0x71,
+	WIZ_HACKTOOL					= 0x72,
+	WIZ_RENTAL						= 0x73,
+	WIZ_REWARD_ITEMS				= 0x74,
+	WIZ_CHALLENGE					= 0x75,
+	WIZ_PET							= 0x76,
+	WIZ_CHINA						= 0x77, // we shouldn't need to worry about this
+	WIZ_KING						= 0x78,
+	WIZ_SKILLDATA					= 0x79,
+	WIZ_PROGRAMCHECK				= 0x7A,
+	WIZ_BIFROST						= 0x7B,
+	WIZ_SERVER_KILL					= 0x7F,
 
-// NOTE(srmeier): testing this debug string functionality
-#define WIZ_DEBUG_STRING_PACKET 0xFE
+	// NOTE(srmeier): testing this debug string functionality
+	WIZ_DEBUG_STRING_PACKET			= 0xFE,
 
-#define WIZ_TEST_PACKET			0xFF	// Test packet
+	WIZ_TEST_PACKET					= 0xFF	// Test packet
+};
+
+// TODO: DB opcodes.
+// Currently they're somewhat shared with game opcodes but they should be defined separately.
+#define WIZ_LOGIN_INFO			0x50	// define for DBAgent Communication
 
 enum e_LoginOpcode
 {
@@ -154,17 +161,17 @@ enum e_AuthResult
 	AUTH_FAILED			= 0xFF
 };
 
-enum e_CoinChangeOpcode
+enum e_NoahChangeOpcode
 {
-	CoinGain = 1,
-	CoinLoss = 2,
-	CoinEvent = 5
+	NOAH_CHANGE_GAIN	= 1,
+	NOAH_CHANGE_LOSS	= 2,
+	NOAH_CHANGE_EVENT	= 5
 };
 
 ////////////////////////////////////////////////////////////////
 // chat define
 ////////////////////////////////////////////////////////////////
-enum ChatType
+enum e_ChatType
 {
 	GENERAL_CHAT				= 1,
 	PRIVATE_CHAT				= 2,
@@ -185,14 +192,6 @@ enum ChatType
 	SEEKING_PARTY_CHAT			= 19,
 };
 
-enum e_DeathNoticeType
-{
-	DEATH_NOTICE_COORDINATES	= 0, // - %s defeat %s ( %d, %d ) -
-	DEATH_NOTICE_REGULAR		= 1, // - %s has been defeated by %s -
-	DEATH_NOTICE_GUARD_TOWER	= 2, // - Guard Tower defeat %s -
-	DEATH_NOTICE_NONE			= 0xFF
-};
-
 enum e_ZoneChangeOpcode
 {
 	ZONE_CHANGE_LOADING		= 1,
@@ -206,45 +205,41 @@ enum e_QuestOpcode
 	QUEST_UPDATE	= 2
 };
 
-enum e_PremiumPropertyType
-{
-	PremiumExpRestorePercent = 0,
-	PremiumNoahPercent = 1,
-	PremiumDropPercent = 2,
-	PremiumBonusLoyalty = 3,
-	PremiumRepairDiscountPercent = 4,
-	PremiumItemSellPercent = 5,
-	PremiumExpPercent = 6
-};
-
 ////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
 // weather define
 ////////////////////////////////////////////////////////////////
-#define WEATHER_FINE			0x01
-#define WEATHER_RAIN			0x02
-#define WEATHER_SNOW			0x03
+enum e_WeatherType
+{
+	WEATHER_FINE			= 0x01,
+	WEATHER_RAIN			= 0x02,
+	WEATHER_SNOW			= 0x03
+};
 ////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
 // Party Related subpacket define
 ////////////////////////////////////////////////////////////////
-#define PARTY_CREATE			0x01	// Party Group Create
-#define PARTY_PERMIT			0x02	// Party Insert Permit
-#define PARTY_INSERT			0x03	// Party Member Insert
-#define PARTY_REMOVE			0x04	// Party Member Remove
-#define PARTY_DELETE			0x05	// Party Group Delete
-#define PARTY_HPCHANGE			0x06	// Party Member HP change
-#define PARTY_LEVELCHANGE		0x07	// Party Member Level change
-#define PARTY_CLASSCHANGE		0x08	// Party Member Class Change
-#define PARTY_STATUSCHANGE		0x09	// Party Member Status ( disaster, poison ) Change
-#define PARTY_REGISTER			0x0A	// Party Message Board Register
-#define PARTY_REPORT			0x0B	// Party Request Message Board Messages
-#define PARTY_PROMOTE			0x1C	// Promotes user to party leader
-#define PARTY_ALL_STATUSCHANGE	0x1D	// Sets the specified status of the selected party members to 1.
+enum e_PartyOpcode
+{
+	PARTY_CREATE			= 0x01,	// Party Group Create
+	PARTY_PERMIT			= 0x02,	// Party Insert Permit
+	PARTY_INSERT			= 0x03,	// Party Member Insert
+	PARTY_REMOVE			= 0x04,	// Party Member Remove
+	PARTY_DELETE			= 0x05,	// Party Group Delete
+	PARTY_HPCHANGE			= 0x06,	// Party Member HP change
+	PARTY_LEVELCHANGE		= 0x07,	// Party Member Level change
+	PARTY_CLASSCHANGE		= 0x08,	// Party Member Class Change
+	PARTY_STATUSCHANGE		= 0x09,	// Party Member Status ( disaster, poison ) Change
+	PARTY_REGISTER			= 0x0A,	// Party Message Board Register
+	PARTY_REPORT			= 0x0B,	// Party Request Message Board Messages
+	PARTY_PROMOTE			= 0x1C,	// Promotes user to party leader
+	PARTY_ALL_STATUSCHANGE	= 0x1D	// Sets the specified status of the selected party members to 1.
+};
 
-enum TradeOpcodes
+// NOTE: Used for trading
+enum e_ExchangeOpcode
 {
 	EXCHANGE_REQ			= 1,
 	EXCHANGE_AGREE			= 2,
@@ -256,7 +251,7 @@ enum TradeOpcodes
 	EXCHANGE_CANCEL			= 8
 };
 
-enum MerchantOpcodes
+enum e_MerchantOpcode
 {
 	MERCHANT_OPEN				= 1,
 	MERCHANT_CLOSE				= 2,
@@ -269,17 +264,18 @@ enum MerchantOpcodes
 	MERCHANT_ITEM_PURCHASED		= 9,
 };
 
-enum NameChangeOpcode
+// NOTE: This needs downgrading.
+enum e_NameChangeOpcode
 {
-	NameChangePlayerRequest	= 0, // contains the request with the player's name
-	NameChangeShowDialog	= 1,
-	NameChangeInvalidName	= 2,
-	NameChangeSuccess		= 3,
-	NameChangeInClan		= 4,
-	NameChangeKing			= 5
+	NAME_CHANGE_PLAYER_REQUEST	= 0, // contains the request with the player's name
+	NAME_CHANGE_SHOW_DIALOG		= 1,
+	NAME_CHANGE_INVALID_NAME	= 2,
+	NAME_CHANGE_SUCCESS			= 3,
+	NAME_CHANGE_IN_CLAN			= 4,
+	NAME_CHANGE_KING			= 5
 };
 
-enum KingSystemOpcodes
+enum e_KingSystemOpcode
 {
 	KING_ELECTION		= 1,
 	KING_IMPEACHMENT	= 2,
@@ -289,7 +285,7 @@ enum KingSystemOpcodes
 	KING_NATION_INTRO	= 6
 };
 
-enum KingEventOpcodes
+enum e_KingEventOpcode
 {
 	KING_EVENT_NOAH		= 1,
 	KING_EVENT_EXP		= 2,
@@ -299,7 +295,7 @@ enum KingEventOpcodes
 	KING_EVENT_NOTICE	= 6
 };
 
-enum KingSystemElectionOpcodes
+enum e_KingSystemElectionOpcode
 {
 	KING_ELECTION_SCHEDULE		= 1,
 	KING_ELECTION_NOMINATE		= 2,
@@ -308,20 +304,20 @@ enum KingSystemElectionOpcodes
 	KING_ELECTION_RESIGN		= 5
 }; 
 
-enum KingSystemElectionDBOpcodes
+enum e_KingSystemElectionDBOpcode
 {
 	KING_ELECTION_UPDATE_STATUS,
 	KING_ELECTION_UPDATE_LIST
 };
 
-enum KingSystemCandidacyNoticeBoardOpcodes
+enum e_KingSystemCandidacyNoticeBoardOpcode
 {
 	KING_CANDIDACY_BOARD_WRITE	= 1,
 	KING_CANDIDACY_BOARD_READ	= 2,
 	// 4, 5
 };
 
-enum KingSystemImpeachmentOpcodes
+enum e_KingSystemImpeachmentOpcode
 {
 	KING_IMPEACHMENT_REQUEST			= 1,
 	KING_IMPEACHMENT_REQUEST_ELECT		= 2,
@@ -334,13 +330,15 @@ enum KingSystemImpeachmentOpcodes
 ////////////////////////////////////////////////////////////////
 // Magic Packet sub define 
 ////////////////////////////////////////////////////////////////
-enum MagicOpcode
+enum e_MagicOpcode
 {
 	MAGIC_CASTING				= 1,
 	MAGIC_FLYING				= 2,
 	MAGIC_EFFECTING				= 3,
 	MAGIC_FAIL					= 4,
 	MAGIC_DURATION_EXPIRED		= 5,	// For the removal of durational (i.e. type 3/4) skills.
+	MAGIC_TYPE3_END				= MAGIC_DURATION_EXPIRED,
+	MAGIC_TYPE4_END				= MAGIC_DURATION_EXPIRED,
 	MAGIC_CANCEL				= 6,	// When the client requests a buff to be removed.
 	MAGIC_CANCEL_TRANSFORMATION	= 7,	// When removing a transformation.
 	MAGIC_TYPE4_EXTEND			= 8	,	// Extends the time of your type4 buffs by 2 times (requires "Duration Item" (PUS))
@@ -363,7 +361,7 @@ enum e_SkillMagicFailMsg
 ////////////////////////////////////////////////////////////////
 // Knights Packet sub define 
 ////////////////////////////////////////////////////////////////
-enum
+enum e_KnightsOpcode
 {
 	KNIGHTS_CREATE			= 0x01, // clan creation
 	KNIGHTS_JOIN			= 0x02, // joining a clan
@@ -405,24 +403,17 @@ enum
 	KNIGHTS_UPDATE_GRADE	= 0x30,
 };
 
-enum OperatorCommands
+enum e_OperatorOpcode
 {
-	OPERATOR_ARREST			=	1,
-	OPERATOR_BAN			=	2,
-	OPERATOR_MUTE			=	3,
-	OPERATOR_UNMUTE			=	4,
-	OPERATOR_CUTOFF			=	5,
-	OPERATOR_BAN_ACCOUNT	=	6,
-	OPERATOR_SUMMON			=	7,
-	OPERATOR_DISABLE_ATTACK	=	8,
-	OPERATOR_ENABLE_ATTACK	=	9
-};
-
-enum RankTypes
-{
-	RANK_TYPE_PK_ZONE = 1,
-	RANK_TYPE_ZONE_BORDER_DEFENSE_WAR = 2,
-	RANK_TYPE_CHAOS_DUNGEON = 3,
+	OPERATOR_ARREST			= 1,
+	OPERATOR_FORBID_CONNECT	= 2,
+	OPERATOR_CHAT_FORBID	= 3,
+	OPERATOR_CHAT_PERMIT	= 4,
+	OPERATOR_CUTOFF			= 5,
+	OPERATOR_FORBID_USER	= 6,
+	OPERATOR_SUMMONUSER		= 7,
+	OPERATOR_ATTACKDISABLE	= 8,
+	OPERATOR_ATTACKENABLE	= 9
 };
 
 enum e_WarpListError : uint8_t
@@ -445,34 +436,34 @@ enum e_WarpListError : uint8_t
 ////////////////////////////////////////////////////////////////
 // WareHouse Packet sub define
 ////////////////////////////////////////////////////////////////
-#define WAREHOUSE_OPEN			0x01
-#define WAREHOUSE_INPUT			0x02
-#define WAREHOUSE_OUTPUT		0x03
-#define WAREHOUSE_MOVE			0x04
-#define WAREHOUSE_INVENMOVE		0x05
+enum e_WarehouseOpcode
+{
+	WAREHOUSE_OPEN			= 0x01,
+	WAREHOUSE_INPUT			= 0x02,
+	WAREHOUSE_OUTPUT		= 0x03,
+	WAREHOUSE_MOVE			= 0x04,
+	WAREHOUSE_INVENMOVE		= 0x05,
 
-#define WAREHOUSE_REQ			0x10
-
-////////////////////////////////////////////////////////////////
-// Clan Packet sub define
-////////////////////////////////////////////////////////////////
-#define CLAN_CREATE				0x01
-#define CLAN_JOIN				0x02
+	WAREHOUSE_REQ			= 0x10,
+};
 
 ////////////////////////////////////////////////////////////////
 // Class change define
 ////////////////////////////////////////////////////////////////
-#define CLASS_CHANGE_REQ		0x01
-#define CLASS_CHANGE_RESULT		0x02
-#define ALL_POINT_CHANGE		0x03
-#define ALL_SKILLPT_CHANGE		0x04
-#define CHANGE_MONEY_REQ		0x05
-#define NOVICE_CLASS_CHANGE_REQ 0x06
+enum e_ClassChangeOpcode
+{
+	CLASS_CHANGE_REQ		= 0x01,
+	CLASS_CHANGE_RESULT		= 0x02,
+	ALL_POINT_CHANGE		= 0x03,
+	ALL_SKILLPT_CHANGE		= 0x04,
+	CHANGE_MONEY_REQ		= 0x05,
+	NOVICE_CLASS_CHANGE_REQ = 0x06
+};
 
 ////////////////////////////////////////////////////////////////
 // Friend subpacket define
 ////////////////////////////////////////////////////////////////
-enum FriendOpcodes
+enum e_FriendOpcode
 {
 	FRIEND_REQUEST	= 1,
 	FRIEND_REPORT	= 2,
@@ -480,7 +471,7 @@ enum FriendOpcodes
 	FRIEND_REMOVE	= 4
 };
 
-enum FriendAddResult
+enum e_FriendAddResult
 {
 	FRIEND_ADD_SUCCESS	= 0,
 	FRIEND_ADD_ERROR	= 1,
@@ -489,7 +480,7 @@ enum FriendAddResult
 	FRIEND_ADD_MAX
 };
 
-enum FriendRemoveResult
+enum e_FriendRemoveResult
 {
 	FRIEND_REMOVE_SUCCESS	= 0,
 	FRIEND_REMOVE_ERROR		= 1,
@@ -510,31 +501,36 @@ enum e_ItemUpgradeOpcode
 ////////////////////////////////////////////////////////////////
 // Party BBS subpacket define
 ////////////////////////////////////////////////////////////////
-#define PARTY_BBS_REGISTER		0x01
-#define PARTY_BBS_DELETE		0x02
-#define PARTY_BBS_NEEDED		0x03
-#define PARTY_BBS_WANTED		0x04
-#define PARTY_BBS_LIST			0x0B
+enum e_PartyBBSOpcode
+{
+	PARTY_BBS_REGISTER				= 0x01,
+	PARTY_BBS_DELETE				= 0x02,
+	PARTY_BBS_NEEDED				= 0x03,
+	PARTY_BBS_WANTED				= 0x04,
+	PARTY_BBS_LIST					= 0x0B
+};
 
 ////////////////////////////////////////////////////////////////
 // Market BBS primary subpacket define
 ////////////////////////////////////////////////////////////////
-#define MARKET_BBS_REGISTER			0x01
-#define MARKET_BBS_DELETE			0x02
-#define MARKET_BBS_REPORT			0x03
-#define MARKET_BBS_OPEN				0x04
-#define MARKET_BBS_REMOTE_PURCHASE	0x05
-#define MARKET_BBS_MESSAGE			0x06
+enum e_MarketBBSOpcode
+{
+	MARKET_BBS_REGISTER				= 0x01,
+	MARKET_BBS_DELETE				= 0x02,
+	MARKET_BBS_REPORT				= 0x03,
+	MARKET_BBS_OPEN					= 0x04,
+	MARKET_BBS_REMOTE_PURCHASE		= 0x05,
+	MARKET_BBS_MESSAGE				= 0x06
+};
 
 ////////////////////////////////////////////////////////////////
 // Market BBS secondary subpacket define
 ////////////////////////////////////////////////////////////////
-#define MARKET_BBS_BUY			0x01
-#define MARKET_BBS_SELL			0x02
-
-////////////////////////////////////////////////////////////////
-#define WIZ_LOGIN_INFO			0x50	// define for DBAgent Communication
-////////////////////////////////////////////////////////////////
+enum e_MarketBBSType
+{
+	MARKET_BBS_BUY			= 0x01,
+	MARKET_BBS_SELL			= 0x02
+};
 
 ////////////////////////////////////////////////////////////////
 // Server to Server Communication
@@ -607,84 +603,66 @@ enum ObjectType
 	OBJECT_NPC			= 11
 };
 
-enum BattleWinnerTypes
-{
-	BATTLE_WINNER_NPC		= 0,
-	BATTLE_WINNER_KILL		= 1,
-	BATTLE_WINNER_MONUMENT	= 2
-};
-
-
 // ---------------------------------------------------------------------
 // AI Server와 게임서버간의 Npc에 관련된 패킷은 1번~49번 
 // ---------------------------------------------------------------------
-const uint8_t AI_SERVER_CONNECT	= 1;
-const uint8_t	NPC_INFO_ALL		= 2;
-const uint8_t	MOVE_REQ			= 3;
-const uint8_t	MOVE_RESULT			= 4;
-const uint8_t	MOVE_END_REQ		= 5;
-const uint8_t	MOVE_END_RESULT		= 6;
-const uint8_t	AG_NPC_INFO			= 7;	
-const uint8_t	AG_NPC_GIVE_ITEM	= 8;
-const uint8_t	AG_NPC_GATE_OPEN	= 9;	
-const uint8_t	AG_NPC_GATE_DESTORY	= 10;	
-const uint8_t	AG_NPC_INOUT		= 11;	
-const uint8_t	AG_NPC_EVENT_ITEM	= 12;	
-const uint8_t	AG_NPC_HP_REQ		= 13;
-const uint8_t AG_NPC_SPAWN_REQ	= 14;	// spawns an NPC/monster at the desired location
-const uint8_t AG_NPC_REGION_UPDATE	= 15;
-const uint8_t AG_NPC_UPDATE	= 16;
-const uint8_t AG_NPC_KILL_REQ	= 17;
+constexpr uint8_t	AI_SERVER_CONNECT		= 1;
+constexpr uint8_t	NPC_INFO_ALL			= 2;
+constexpr uint8_t	MOVE_REQ				= 3;
+constexpr uint8_t	MOVE_RESULT				= 4;
+constexpr uint8_t	MOVE_END_REQ			= 5;
+constexpr uint8_t	MOVE_END_RESULT			= 6;
+constexpr uint8_t	AG_NPC_INFO				= 7;	
+constexpr uint8_t	AG_NPC_GIVE_ITEM		= 8;
+constexpr uint8_t	AG_NPC_GATE_OPEN		= 9;	
+constexpr uint8_t	AG_NPC_GATE_DESTORY		= 10;	
+constexpr uint8_t	AG_NPC_INOUT			= 11;	
+constexpr uint8_t	AG_NPC_EVENT_ITEM		= 12;	
+constexpr uint8_t	AG_NPC_HP_REQ			= 13;
 
 // ---------------------------------------------------------------------
 // AI Server와 게임서버간의 User, Npc 공통 관련된 패킷은 50번~100번 
 // ---------------------------------------------------------------------
-const uint8_t	AG_SERVER_INFO			= 50;	// 
-const uint8_t	AG_ATTACK_REQ			= 51;	// Attck Packet
-const uint8_t	AG_ATTACK_RESULT		= 52;	// Attck Packet
-const uint8_t	AG_DEAD					= 53;	// Dead Packet
-const uint8_t	AG_SYSTEM_MSG			= 54;	// System message Packet
-const uint8_t	AG_CHECK_ALIVE_REQ		= 55;	// Server alive check
-const uint8_t	AG_COMPRESSED_DATA		= 56;	// Packet Data compressed
-const uint8_t	AG_ZONE_CHANGE			= 57;	// Zone change
-const uint8_t	AG_MAGIC_ATTACK_REQ		= 58;	// Magic Attck Packet
-const uint8_t	AG_MAGIC_ATTACK_RESULT	= 59;	// Magic Attck Packet
-const uint8_t	AG_USER_INFO_ALL		= 60;	// User의 모든 정보 전송
-const uint8_t	AG_LONG_MAGIC_ATTACK	= 61;	// Magic Attck Packet
-const uint8_t	AG_PARTY_INFO_ALL		= 62;	// Party의 모든 정보 전송
-const uint8_t	AG_HEAL_MAGIC			= 63;	// Healing magic
-const uint8_t	AG_TIME_WEATHER			= 64;	// time and whether info
-const uint8_t	AG_BATTLE_EVENT			= 65;	// battle event
-const uint8_t AG_COMPRESSED			= 66;
-
-enum AISkillOpcode
-{
-	AISkillOpcodeBuff,		// or debuff
-	AISkillOpcodeRemoveBuff
-};
+constexpr uint8_t	AG_SERVER_INFO			= 50;	// 
+constexpr uint8_t	AG_ATTACK_REQ			= 51;	// Attck Packet
+constexpr uint8_t	AG_ATTACK_RESULT		= 52;	// Attck Packet
+constexpr uint8_t	AG_DEAD					= 53;	// Dead Packet
+constexpr uint8_t	AG_SYSTEM_MSG			= 54;	// System message Packet
+constexpr uint8_t	AG_CHECK_ALIVE_REQ		= 55;	// Server alive check
+constexpr uint8_t	AG_COMPRESSED_DATA		= 56;	// Packet Data compressed
+constexpr uint8_t	AG_ZONE_CHANGE			= 57;	// Zone change
+constexpr uint8_t	AG_MAGIC_ATTACK_REQ		= 58;	// Magic Attck Packet
+constexpr uint8_t	AG_MAGIC_ATTACK_RESULT	= 59;	// Magic Attck Packet
+constexpr uint8_t	AG_USER_INFO_ALL		= 60;	// User의 모든 정보 전송
+constexpr uint8_t	AG_LONG_MAGIC_ATTACK	= 61;	// Magic Attck Packet
+constexpr uint8_t	AG_PARTY_INFO_ALL		= 62;	// Party의 모든 정보 전송
+constexpr uint8_t	AG_HEAL_MAGIC			= 63;	// Healing magic
+constexpr uint8_t	AG_TIME_WEATHER			= 64;	// time and whether info
+constexpr uint8_t	AG_BATTLE_EVENT			= 65;	// battle event
+constexpr uint8_t	AG_COMPRESSED			= 66;
 
 // ---------------------------------------------------------------------
 // Battle Event Sub Packet
 // ---------------------------------------------------------------------
-const uint8_t	BATTLE_EVENT_OPEN   = 1;	// battle event open
-const uint8_t	BATTLE_MAP_EVENT_RESULT = 2;	// battle zone map event result
-const uint8_t	BATTLE_EVENT_RESULT		= 3;	// battle event result ( victory nation )
-const uint8_t	BATTLE_EVENT_MAX_USER	= 4;	// battle event result ( user name )
-const uint8_t	BATTLE_EVENT_KILL_USER	= 5;	// battle event result ( user kill count )
+constexpr uint8_t	BATTLE_EVENT_OPEN		= 1;	// battle event open
+constexpr uint8_t	BATTLE_MAP_EVENT_RESULT = 2;	// battle zone map event result
+constexpr uint8_t	BATTLE_EVENT_RESULT		= 3;	// battle event result ( victory nation )
+constexpr uint8_t	BATTLE_EVENT_MAX_USER	= 4;	// battle event result ( user name )
+constexpr uint8_t	BATTLE_EVENT_KILL_USER	= 5;	// battle event result ( user kill count )
 
 // ---------------------------------------------------------------------
 // AI Server와 게임서버간의 User에 관련된 패킷은 101번 부터 시작
 // ---------------------------------------------------------------------
-const uint8_t	AG_USER_INFO		= 101;	// User의 정보
-const uint8_t	AG_USER_INOUT		= 102;	// User의 In,Out 정보
-const uint8_t	AG_USER_MOVE		= 103;	// User의 move 정보
-const uint8_t	AG_USER_MOVEEDGE	= 104;	// User의 move end 정보
-const uint8_t	AG_USER_SET_HP		= 105;	// User의 HP
-const uint8_t	AG_USER_LOG_OUT		= 106;	// User의 LogOut
-const uint8_t	AG_USER_REGENE		= 107;	// User의 Regene
-const uint8_t	AG_USER_EXP			= 108;	// User의 경험치
-const uint8_t	AG_USER_UPDATE		= 109;	// User의 Update Info
-const uint8_t	AG_USER_FAIL		= 110;	// 잘못된 유저 처리...
-const uint8_t	AG_USER_PARTY		= 111;	// 파티처리 담당
-const uint8_t	AG_USER_VISIBILITY  = 112;	// updates invisibility status
-const uint8_t	AG_NPC_HP_CHANGE	= 113;	// updates an NPC's HP
+constexpr uint8_t	AG_USER_INFO		= 101;	// User의 정보
+constexpr uint8_t	AG_USER_INOUT		= 102;	// User의 In,Out 정보
+constexpr uint8_t	AG_USER_MOVE		= 103;	// User의 move 정보
+constexpr uint8_t	AG_USER_MOVEEDGE	= 104;	// User의 move end 정보
+constexpr uint8_t	AG_USER_SET_HP		= 105;	// User의 HP
+constexpr uint8_t	AG_USER_LOG_OUT		= 106;	// User의 LogOut
+constexpr uint8_t	AG_USER_REGENE		= 107;	// User의 Regene
+constexpr uint8_t	AG_USER_EXP			= 108;	// User의 경험치
+constexpr uint8_t	AG_USER_UPDATE		= 109;	// User의 Update Info
+constexpr uint8_t	AG_USER_FAIL		= 110;	// 잘못된 유저 처리...
+constexpr uint8_t	AG_USER_PARTY		= 111;	// 파티처리 담당
+constexpr uint8_t	AG_USER_VISIBILITY  = 112;	// updates invisibility status
+constexpr uint8_t	AG_NPC_HP_CHANGE	= 113;	// updates an NPC's HP

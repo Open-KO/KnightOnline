@@ -28,7 +28,7 @@ CZoneInfoSet::CZoneInfoSet(CDatabase* pdb)
 	m_InitY = 0;
 	m_Type = 0;
 	// dungeon work
-	m_RoomEvent = 0;	
+	m_RoomEvent = 0;
 	m_nFields = 8;
 	//}}AFX_FIELD_INIT
 	m_nDefaultType = snapshot;

@@ -13,7 +13,7 @@
 class CKnightsSet : public CRecordset
 {
 public:
-	CKnightsSet(CDatabase* pDatabase = NULL);
+	CKnightsSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CKnightsSet)
 
 // Field/Param Data
@@ -40,7 +40,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CKnightsSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support

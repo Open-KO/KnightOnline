@@ -6,32 +6,16 @@
 
 #define MAP_DIR				"../MAP/"
 
-#define MAX_USER			3000
+constexpr int MAX_USER			= 3000;
 
-constexpr int MIN_ID_SIZE	= 6;
-constexpr int MAX_ID_SIZE	= 20;
-constexpr int MAX_PW_SIZE	= 28;
-constexpr int MAX_IP_SIZE	= 15; // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
+constexpr int MIN_ID_SIZE		= 6;
+constexpr int MAX_ID_SIZE		= 20;
+constexpr int MAX_PW_SIZE		= 28;
+constexpr int MAX_IP_SIZE		= 15; // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
 
-#define MAX_ITEM_COUNT		9999
+constexpr int MAX_ITEM_COUNT	= 9999;	// 한 슬롯에 가지는 최대 화살/송편 개수
 
-#define MAX_ZONE_ID			255
-
-#define VIEW_DISTANCE		48
-
-enum e_NameType
-{
-	NAME_TYPE_ACCOUNT,
-	NAME_TYPE_CHARACTER
-};
-
-enum e_Nation
-{
-	NATION_ALL = 0,
-	NATION_KARUS,
-	NATION_ELMORAD,
-	NATION_NONE
-};
+constexpr int VIEW_DISTANCE		= 48;
 
 enum e_NpcState
 {
@@ -200,22 +184,25 @@ enum e_NpcType : uint8_t
 	NPC_BATTLE_MONUMENT		= 211
 };
 
-enum ZoneAbilityType
+enum e_ZoneAbilityType
 {
 	// these control neutrality-related settings client-side, 
 	// including whether collision is enabled for other players.
-	ZoneAbilityNeutral			= 0, // Players cannot attack each other, or NPCs. Can walk through players.
-	ZoneAbilityPVP				= 1, // Players can attack each other, and only NPCs from the opposite nation. Cannot walk through players.
-	ZoneAbilitySpectator		= 2, // player is spectating a 1v1 match (ZoneAbilityPVP is sent for the attacker)
-	ZoneAbilitySiege1			= 3, // siege state 1 (unknown)
-	ZoneAbilitySiege2			= 4, // siege state 2/4: if they have 0 NP & this is set, it will not show the message telling them to buy more.
-	ZoneAbilitySiege3			= 5, // siege state 3 (unknown)
-	ZoneAbilitySiegeDisabled	= 6, // CSW not running
-	ZoneAbilityCaitharosArena	= 7, // Players can attack each other (don't seem to be able to anymore?), but not NPCs. Can walk through players.
-	ZoneAbilityPVPNeutralNPCs	= 8 // Players can attack each other, but not NPCs. Cannot walk through players.
+	ZONE_ABILITY_NEUTRAL				= 0, // Players cannot attack each other, or NPCs. Can walk through players.
+	ZONE_ABILITY_PVP					= 1, // Players can attack each other, and only NPCs from the opposite nation. Cannot walk through players.
+	ZONE_ABILITY_SPECTATOR				= 2, // player is spectating a 1v1 match (ZoneAbilityPVP is sent for the attacker)
+	ZONE_ABILITY_SIEGE_1				= 3, // siege state 1 (unknown)
+	ZONE_ABILITY_SIEGE_2				= 4, // siege state 2/4: if they have 0 NP & this is set, it will not show the message telling them to buy mo	 re.
+	ZONE_ABILITY_SIEGE_3				= 5, // siege state 3 (unknown)
+	ZONE_ABILITY_SIEGE_DISABLED			= 6, // CSW not running
+	ZONE_ABILITY_CAITHAROS_ARENA		= 7, // Players can attack each other (don't seem to be able to anymore?), but not NPCs. Can walk through players.
+	ZONE_ABILITY_SIEGE_PVP_NEUTRAL_NPCS	= 8 // Players can attack each other, but not NPCs. Cannot walk through players.
 };
 
-enum ZoneFlags
+// TODO: Remove this. It was used by the server unofficially,
+// and is currently still used by the client.
+// Officially the client doesn't need flags like this.
+enum e_ZoneFlags
 {
 	ZF_TRADE_OTHER_NATION	= (1 << 0),
 	ZF_TALK_OTHER_NATION	= (1 << 1),
@@ -243,8 +230,9 @@ constexpr uint8_t GLOVE				= 12;
 constexpr uint8_t FOOT				= 13;
 constexpr uint8_t RESERVED			= 14;
 
-constexpr uint8_t SLOT_MAX			= 14; // 14 equipped item slots
-constexpr uint8_t HAVE_MAX			= 28; // 28 inventory slots
+constexpr uint8_t SLOT_MAX			= 14;	// 14 equipped item slots
+constexpr uint8_t HAVE_MAX			= 28;	// 28 inventory slots
+constexpr uint8_t WAREHOUSE_MAX		= 192;	// 창고 아이템 MAX
 
 // Start of inventory area
 constexpr int INVENTORY_INVENT		= SLOT_MAX;
@@ -252,7 +240,6 @@ constexpr int INVENTORY_INVENT		= SLOT_MAX;
 // Total slots in the general-purpose inventory storage
 constexpr int INVENTORY_TOTAL		= SLOT_MAX + HAVE_MAX;
 
-constexpr uint8_t WAREHOUSE_MAX		= 192;
 constexpr uint8_t MAX_MERCH_ITEMS	= 12;
 
 constexpr int MAX_MERCH_MESSAGE		= 40;
@@ -284,12 +271,14 @@ enum e_ItemFlag
 
 enum e_Authority
 {
-	AUTHORITY_GAME_MASTER			= 0,
-	AUTHORITY_PLAYER				= 1,
-	AUTHORITY_MUTED					= 11,
-	AUTHORITY_ATTACK_DISABLED		= 12,
-	AUTHORITY_LIMITED_GAME_MASTER	= 250,
-	AUTHORITY_BANNED				= 255
+	AUTHORITY_MANAGER			= 0,
+	AUTHORITY_USER				= 1,
+	// AUTHORITY_NOCHAT			= 2,
+	AUTHORITY_NPC				= 3,
+	AUTHORITY_NOCHAT			= 11,
+	AUTHORITY_ATTACK_DISABLED	= 12,
+	AUTHORITY_LIMITED_MANAGER	= 250,
+	AUTHORITY_BLOCK_USER		= 255
 };
 
 enum e_AttackResult

@@ -18,7 +18,7 @@ CN3WorldBase::CN3WorldBase()
 {
 	m_byTariff = 0x00;
 	m_zoneFlags = 0x0000;
-	m_zoneType = ZoneAbilityNeutral;
+	m_zoneType = ZONE_ABILITY_NEUTRAL;
 	m_byMinLevel = m_byMaxLevel = 0x00;
 }
 

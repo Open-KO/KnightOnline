@@ -167,7 +167,6 @@
     <ClCompile Include="ZoneInfoSet.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIPacket.h" />
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="BattleSet.h" />
     <ClInclude Include="CircularBuffer.h" />
@@ -206,7 +205,6 @@
     <ClInclude Include="N3Base\N3ShapeMgr.h" />
     <ClInclude Include="N3Base\StdAfxBase.h" />
     <ClInclude Include="Npc.h" />
-    <ClInclude Include="PacketDefine.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SharedMem.h" />

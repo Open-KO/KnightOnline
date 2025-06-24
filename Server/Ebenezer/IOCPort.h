@@ -15,21 +15,21 @@ typedef  std::list<int>  SidList;
 
 class CIOCPSocket2;
 
-class CIOCPort  
+class CIOCPort
 {
 public:
 	void CreateSendWorkerThread();
 	int GetClientSid();
 	void CreateAcceptThread();
 	void CreateClientWorkerThread();
-	void RidIOCPSocket(int index, CIOCPSocket2 *pSock);
+	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
 	CIOCPSocket2* GetIOCPSocket(int index);
 	void CreateReceiveWorkerThread(int workernum);
 	void PutOldSid(int sid);
 	int GetNewSid();
-	BOOL Associate(CIOCPSocket2 *pIocpSock, HANDLE hPort);
-	BOOL Listen( int port );
-	void Init( int serversocksize, int clientsocksize, int workernum = 0 );
+	BOOL Associate(CIOCPSocket2* pIocpSock, HANDLE hPort);
+	BOOL Listen(int port);
+	void Init(int serversocksize, int clientsocksize, int workernum = 0);
 	void DeleteAllArray();
 	CIOCPort();
 	virtual ~CIOCPort();
@@ -47,10 +47,10 @@ public:
 	int m_ClientSockSize;
 
 	SidList m_SidList;
-	CIOCPSocket2 **m_SockArray;
-	CIOCPSocket2 **m_SockArrayInActive;
+	CIOCPSocket2** m_SockArray;
+	CIOCPSocket2** m_SockArrayInActive;
 
-	CIOCPSocket2 **m_ClientSockArray;		// Connect¿ë ¼ÒÄÏ
+	CIOCPSocket2** m_ClientSockArray;		// Connect용 소켓
 
 protected:
 	DWORD m_dwNumberOfWorkers;

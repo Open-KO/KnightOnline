@@ -31,7 +31,7 @@ public:
 	// packet and set this information.
 	uint8_t m_byTariff;
 	uint16_t m_zoneFlags;
-	ZoneAbilityType m_zoneType;
+	e_ZoneAbilityType m_zoneType;
 	uint8_t m_byMinLevel, m_byMaxLevel;
 
 	bool canTradeWithOtherNation() { return (m_zoneFlags & ZF_TRADE_OTHER_NATION) != 0; }

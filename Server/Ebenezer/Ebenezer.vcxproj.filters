@@ -140,9 +140,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIPacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AISocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -246,9 +243,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Npc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketDefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Region.h">

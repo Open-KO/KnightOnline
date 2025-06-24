@@ -4,8 +4,8 @@
 #include <string>
 #include <dinput.h>
 
-#include "shared/types.h"
-#include "shared/version.h"
+#include <shared/types.h>
+#include <shared/version.h>
 
 // TODO: Shift this logic into a separate header and generally clean this shared logic up
 #ifndef ASSERT
@@ -16,7 +16,10 @@
 #define ASSERT
 #endif
 #endif
-#include "shared/Packet.h"
+
+#include <shared/Packet.h>
+
+#include <shared/globals.h>
 
 constexpr int CURRENT_VERSION = 1298;//1068; // 현재 버전
 
@@ -35,32 +38,6 @@ enum e_ExitType
 };
 
 constexpr int EXIT_TIME_AFTER_BATTLE	= 10;
-
-enum ZoneFlags
-{
-	ZF_TRADE_OTHER_NATION = (1 << 0),
-	ZF_TALK_OTHER_NATION = (1 << 1),
-	ZF_ATTACK_OTHER_NATION = (1 << 2),
-	ZF_ATTACK_SAME_NATION = (1 << 3),
-	ZF_FRIENDLY_NPCS = (1 << 4),
-	ZF_WAR_ZONE = (1 << 5),
-	ZF_CLAN_UPDATE = (1 << 6)  // Joining, disbanding, creating etc.
-};
-
-enum ZoneAbilityType
-{
-	// these control neutrality-related settings client-side, 
-	// including whether collision is enabled for other players.
-	ZoneAbilityNeutral = 0, // Players cannot attack each other, or NPCs. Can walk through players.
-	ZoneAbilityPVP = 1, // Players can attack each other, and only NPCs from the opposite nation. Cannot walk through players.
-	ZoneAbilitySpectator = 2, // player is spectating a 1v1 match (ZoneAbilityPVP is sent for the attacker)
-	ZoneAbilitySiege1 = 3, // siege state 1 (unknown)
-	ZoneAbilitySiege2 = 4, // siege state 2/4: if they have 0 NP & this is set, it will not show the message telling them to buy more.
-	ZoneAbilitySiege3 = 5, // siege state 3 (unknown)
-	ZoneAbilitySiegeDisabled = 6, // CSW not running
-	ZoneAbilityCaitharosArena = 7, // Players can attack each other (don't seem to be able to anymore?), but not NPCs. Can walk through players.
-	ZoneAbilityPVPNeutralNPCs = 8 // Players can attack each other, but not NPCs. Cannot walk through players.
-};
 
 // 단축키 지정해 놓은 부분..
 enum eKeyMap {	KM_HOTKEY1 = DIK_1, 
@@ -357,8 +334,6 @@ enum e_Nation { NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNK
 struct __TABLE_ITEM_BASIC;
 struct __TABLE_ITEM_EXT;
 struct __TABLE_PLAYER;
-
-enum e_Authority { AUTHORITY_MANAGER = 0, AUTHORITY_USER, AUTHORITY_NOCHAT, AUTHORITY_NPC, AUTHORITY_BLOCK_USER = 0xff };
 
 struct __InfoPlayerOther
 {

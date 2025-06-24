@@ -6,7 +6,7 @@ static std::mt19937 s_randomNumberGenerator;
 static std::recursive_mutex s_rngLock;
 static bool s_rngSeeded = false;
 
-INLINE void SeedRNG()
+void SeedRNG()
 {
 	if (!s_rngSeeded)
 	{

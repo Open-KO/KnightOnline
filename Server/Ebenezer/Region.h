@@ -17,7 +17,7 @@ typedef CSTLMap <_ZONE_ITEM>	ZoneItemArray;
 typedef CSTLMap <int>			ZoneUserArray;
 typedef CSTLMap <int>			ZoneNpcArray;
 
-class CRegion  
+class CRegion
 {
 public:
 	CRegion();

@@ -44,9 +44,9 @@ BOOL AFXAPI AfxCheckMemory();
 
 enum AfxMemDF // memory debug/diagnostic flags
 {
-	allocMemDF          = 0x01,         // turn on debugging allocator
-	delayFreeMemDF      = 0x02,         // delay freeing memory
-	checkAlwaysMemDF    = 0x04          // AfxCheckMemory on every alloc/free
+	allocMemDF = 0x01,         // turn on debugging allocator
+	delayFreeMemDF = 0x02,         // delay freeing memory
+	checkAlwaysMemDF = 0x04          // AfxCheckMemory on every alloc/free
 };
 
 #ifdef _UNICODE
@@ -67,7 +67,7 @@ BOOL AFXAPI AfxEnableMemoryTracking(BOOL bTrack);
 BOOL AFXAPI AfxDiagnosticInit(void);
 
 // A failure hook returns whether to permit allocation
-typedef BOOL (AFXAPI* AFX_ALLOC_HOOK)(size_t nSize, BOOL bObject, LONG lRequestNumber);
+typedef BOOL(AFXAPI* AFX_ALLOC_HOOK)(size_t nSize, BOOL bObject, LONG lRequestNumber);
 
 // Set new hook, return old (never NULL)
 AFX_ALLOC_HOOK AFXAPI AfxSetAllocHook(AFX_ALLOC_HOOK pfnAllocHook);

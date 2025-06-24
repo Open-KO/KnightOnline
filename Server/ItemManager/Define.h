@@ -166,16 +166,16 @@ inline void Setfloat(char* tBuf, float sFloat, int& index)
 	index += 4;
 }
 
-inline void SetInt64(char* tBuf, __int64 nInt64, int& index)
+inline void SetInt64(char* tBuf, int64_t nInt64, int& index)
 {
 	CopyMemory(tBuf + index, &nInt64, 8);
 	index += 8;
 }
 
-inline __int64 GetInt64(char* sBuf, int& index)
+inline int64_t GetInt64(char* sBuf, int& index)
 {
 	index += 8;
-	return *(__int64*) (sBuf + index - 8);
+	return *(int64_t*) (sBuf + index - 8);
 }
 
 inline CString GetProgPath()

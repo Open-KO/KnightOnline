@@ -13,11 +13,11 @@
 #include "MagicProcess.h"
 
 class CEbenezerDlg;
-class CAISocket  : public CIOCPSocket2  
+class CAISocket : public CIOCPSocket2
 {
 private:
 	CEbenezerDlg* m_pMain;
-	
+
 	BOOL m_bAllNpcInfoRecv;
 	CMagicProcess m_MagicProcess;
 
@@ -28,13 +28,17 @@ public:
 	virtual ~CAISocket();
 
 	void Initialize();
-	int GetZoneNumber() { return m_iZoneNum; };
-	void Parsing( int len, char* pData );
+
+	int GetZoneNumber() const {
+		return m_iZoneNum;
+	}
+
+	void Parsing(int len, char* pData);
 	void CloseProcess();
 
 	void InitEventMonster(int index);
 	// Packet recv
-	void LoginProcess( char* pBuf );
+	void LoginProcess(char* pBuf);
 	void RecvCheckAlive(char* pBuf);
 	void RecvServerInfo(char* pBuf);
 	void RecvNpcInfoAll(char* pBuf);
@@ -52,9 +56,8 @@ public:
 	void RecvNpcDead(char* pBuf);
 	void RecvNpcInOut(char* pBuf);
 	void RecvBattleEvent(char* pBuf);
-	void RecvNpcEventItem( char* pBuf );
-	void RecvGateOpen( char* pBuf );
-
+	void RecvNpcEventItem(char* pBuf);
+	void RecvGateOpen(char* pBuf);
 };
 
 #endif // !defined(AFX_AISOCKET_H__DA918EB3_F688_48B4_A48B_87B773A83CA6__INCLUDED_)

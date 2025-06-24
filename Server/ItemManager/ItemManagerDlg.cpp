@@ -184,7 +184,7 @@ void CItemManagerDlg::ItemLogWrite(char* pBuf)
 {
 	int index = 0, srclen = 0, tarlen = 0, type = 0, putitem = 0, putcount = 0, putdure = 0;
 	int getitem = 0, getcount = 0, getdure = 0;
-	__int64 putserial = 0, getserial = 0;
+	int64_t putserial = 0, getserial = 0;
 	char srcid[MAX_ID_SIZE + 1] = {},
 		tarid[MAX_ID_SIZE + 1] = {},
 		strLog[100] = {};

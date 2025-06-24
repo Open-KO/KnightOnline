@@ -179,12 +179,14 @@ public:
 	int			SubCellPathThru(const __Vector3& vFrom, const __Vector3& vAt, __CellSub** ppSubCells);
 
 	// 맵의 너비. 단위는 미터이다.
-	float Width() const {
+	float Width() const
+	{
 		return m_fMapWidth;
 	}
 
 	// 맵의 너비. 단위는 미터이다.
-	float Height() const {
+	float Height() const
+	{
 		return m_fMapWidth;
 	}
 

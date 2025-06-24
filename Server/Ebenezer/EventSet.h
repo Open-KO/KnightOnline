@@ -13,7 +13,7 @@
 class CEventSet : public CRecordset
 {
 public:
-	CEventSet(CDatabase* pDatabase = NULL);
+	CEventSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CEventSet)
 
 // Field/Param Data
@@ -37,7 +37,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CEventSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support
