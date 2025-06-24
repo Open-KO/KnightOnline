@@ -6,7 +6,7 @@
 #include <string>
 
 #include <shared/types.h>
-#if defined(_N3TOOL)
+#if defined(_N3TOOL) || defined(_3DSERVER)
 #include <afx.h>
 #else
 #include <shared/DebugUtils.h>
@@ -1446,6 +1446,17 @@ template <class T> void T_Delete(T*& ptr) { delete ptr; ptr = NULL; } // Templat
 template <class T> void T_DeleteArray(T*& ptr) { delete [] ptr; ptr = NULL; } // Template Delete Pointer
 template <class T> void T_Tick(T& obj) { obj.Tick(); } // Template Delete Pointer
 template <class T> void T_Render(T& obj) { obj.Render(); } // Template Delete Pointer
+
+#if defined(_3DSERVER)
+inline void _LoadStringFromResource(DWORD dwID, std::string& szText)
+{
+	static char szBuffer[512];
+	szBuffer[0] = '\0';
+	//	::LoadString(nullptr, MAKEINTRESOURCE(dwID), szBuffer, 256);
+	::LoadString(nullptr, dwID, szBuffer, 256);
+	szText = szBuffer;
+}
+#endif
 
 #endif // __MY_3DSTRUCT_H_
 

@@ -122,7 +122,7 @@
     <ClCompile Include="ZoneInfoSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3BASE\N3ShapeMgr.cpp">
+    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
       <Filter>N3Base</Filter>
     </ClCompile>
   </ItemGroup>
@@ -241,17 +241,17 @@
     <ClInclude Include="ZoneInfoSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3BASE\My_3DStruct.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="N3BASE\N3ShapeMgr.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="N3BASE\StdAfxBase.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h">
+      <Filter>N3Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h">
+      <Filter>N3Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h">
+      <Filter>N3Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

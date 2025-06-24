@@ -52,7 +52,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;_WINDOWS;_3DSERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;..\;..\..\Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;..\..;..\..\Client;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -122,6 +122,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="BattleSet.cpp" />
     <ClCompile Include="CoefficientSet.cpp" />
@@ -153,9 +157,6 @@
     <ClCompile Include="MagicType5Set.cpp" />
     <ClCompile Include="MagicType8Set.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="N3Base\N3ShapeMgr.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="SharedMem.cpp" />
@@ -167,6 +168,9 @@
     <ClCompile Include="ZoneInfoSet.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h" />
+    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h" />
+    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="BattleSet.h" />
     <ClInclude Include="CoefficientSet.h" />
@@ -200,9 +204,6 @@
     <ClInclude Include="MagicType5Set.h" />
     <ClInclude Include="MagicType8Set.h" />
     <ClInclude Include="Map.h" />
-    <ClInclude Include="N3Base\My_3DStruct.h" />
-    <ClInclude Include="N3Base\N3ShapeMgr.h" />
-    <ClInclude Include="N3Base\StdAfxBase.h" />
     <ClInclude Include="Npc.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />

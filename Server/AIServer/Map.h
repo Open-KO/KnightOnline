@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include ".\N3Base\N3ShapeMgr.h"
+#include <N3Base/N3ShapeMgr.h>
 #include <shared/STLMap.h>
 #include "RoomEvent.h"
 
