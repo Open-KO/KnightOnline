@@ -70,16 +70,11 @@ struct _VERSION_INFO
 
 struct _SERVER_INFO
 {
-	char	strServerIP[20];
-	char	strServerName[20];
-	short	sUserCount;
-
-	_SERVER_INFO()
-	{
-		memset(strServerIP, 0, sizeof(strServerIP));
-		memset(strServerName, 0, sizeof(strServerName));
-		sUserCount = 0;
-	}
+	char	strServerIP[20]		= {};
+	char	strServerName[20]	= {};
+	short	sUserCount			= 0;
+	short	sUserLimit			= 0;
+	short	sServerID			= 1;
 };
 
 //////////////////////////////////////////////////////////////////

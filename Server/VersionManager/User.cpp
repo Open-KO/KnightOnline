@@ -56,12 +56,18 @@ void CUser::Parsing(int len, char* pData)
 
 			SetByte(buff, LS_SERVERLIST, send_index);
 			SetByte(buff, m_pMain->m_nServerCount, send_index);
-			for (_SERVER_INFO* pInfo : m_pMain->m_ServerList)
+
+			for (const _SERVER_INFO* pInfo : m_pMain->m_ServerList)
 			{
 				SetString2(buff, pInfo->strServerIP, (short) strlen(pInfo->strServerIP), send_index);
 				SetString2(buff, pInfo->strServerName, (short) strlen(pInfo->strServerName), send_index);
-				SetShort(buff, pInfo->sUserCount, send_index);   // 기범이가 ^^;
+
+				if (pInfo->sUserCount <= pInfo->sUserLimit)
+					SetShort(buff, pInfo->sUserCount, send_index);   // 기범이가 ^^;
+				else
+					SetShort(buff, -1, send_index);
 			}
+
 			Send(buff, send_index);
 			break;
 

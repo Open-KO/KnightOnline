@@ -153,10 +153,17 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 		_SERVER_INFO* pInfo = new _SERVER_INFO;
 
 		snprintf(key, sizeof(key), "SERVER_%02d", i);
-		ini.GetString("SERVER_LIST", key, "", pInfo->strServerIP, _countof(pInfo->strServerIP));
+		ini.GetString("SERVER_LIST", key, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
 
 		snprintf(key, sizeof(key), "NAME_%02d", i);
-		ini.GetString("SERVER_LIST", key, "", pInfo->strServerName, _countof(pInfo->strServerName));
+		ini.GetString("SERVER_LIST", key, "TEST|Server 1", pInfo->strServerName, _countof(pInfo->strServerName));
+
+		snprintf(key, sizeof(key), "ID_%02d", i);
+		pInfo->sServerID = static_cast<short>(ini.GetInt("SERVER_LIST", key, 1));
+
+		snprintf(key, sizeof(key), "USER_LIMIT_%02d", i);
+		pInfo->sUserLimit = static_cast<short>(ini.GetInt("SERVER_LIST", key, MAX_USER));
+
 		m_ServerList.push_back(pInfo);
 	}
 
