@@ -768,8 +768,7 @@ void CEbenezerDlg::OnTimer(UINT nIDEvent)
 // sungyong 2002.05.22
 BOOL CEbenezerDlg::AIServerConnect()
 {
-	std::string szAIServerIP = m_Ini.GetString("AI_SERVER", "IP", "192.203.143.119");
-	strcpy_s(m_AIServerIP, szAIServerIP.c_str());
+	m_Ini.GetString("AI_SERVER", "IP", "192.203.143.119", m_AIServerIP, _countof(m_AIServerIP));
 
 	for (int i = 0; i < MAX_AI_SOCKET; i++)
 	{
@@ -1761,12 +1760,13 @@ void CEbenezerDlg::GetTimeFromIni()
 	for (int i = 0; i < server_count; i++)
 	{
 		_ZONE_SERVERINFO* pInfo = new _ZONE_SERVERINFO;
+
 		sprintf(ipkey, "SERVER_%02d", i);
 		pInfo->sServerNo = m_Ini.GetInt("ZONE_INFO", ipkey, 1);
-		sprintf(ipkey, "SERVER_IP_%02d", i);
 
-		std::string szServerIP = m_Ini.GetString("ZONE_INFO", ipkey, "210.92.91.242");
-		strcpy_s(pInfo->strServerIP, szServerIP.c_str());
+		sprintf(ipkey, "SERVER_IP_%02d", i);
+		m_Ini.GetString("ZONE_INFO", ipkey, "210.92.91.242", pInfo->strServerIP, _countof(pInfo->strServerIP));
+
 		pInfo->sPort = _LISTEN_PORT + pInfo->sServerNo;
 
 		m_ServerArray.PutData(pInfo->sServerNo, pInfo);
@@ -1785,12 +1785,13 @@ void CEbenezerDlg::GetTimeFromIni()
 		for (int i = 0; i < sgroup_count; i++)
 		{
 			_ZONE_SERVERINFO* pInfo = new _ZONE_SERVERINFO;
+
 			sprintf(ipkey, "GSERVER_%02d", i);
 			pInfo->sServerNo = m_Ini.GetInt("SG_INFO", ipkey, 1);
-			sprintf(ipkey, "GSERVER_IP_%02d", i);
 
-			std::string szServerIP = m_Ini.GetString("SG_INFO", ipkey, "210.92.91.242");
-			strcpy_s(pInfo->strServerIP, szServerIP.c_str());
+			sprintf(ipkey, "GSERVER_IP_%02d", i);
+			m_Ini.GetString("SG_INFO", ipkey, "210.92.91.242", pInfo->strServerIP, _countof(pInfo->strServerIP));
+
 			pInfo->sPort = _LISTEN_PORT + pInfo->sServerNo;
 
 			m_ServerGroupArray.PutData(pInfo->sServerNo, pInfo);

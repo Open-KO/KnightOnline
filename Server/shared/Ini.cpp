@@ -127,7 +127,7 @@ void CIni::Save(
 		}
 
 		// Use a trailing newline to finish the section, to make it easier to read
-		fputc('\c', fp);
+		fputc('\n', fp);
 	}
 
 	fclose(fp);

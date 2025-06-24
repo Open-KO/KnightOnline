@@ -978,6 +978,54 @@ CString CZipArchive::GetDrive(LPCTSTR lpszFilePath)
 	return szDrive;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	특정 디렉토리를 제거한체 압축한다. 2001.5.30
+//
+BOOL CZipArchive::AddNewFile(LPCTSTR lpszFilePath, LPCTSTR strPath, int iLevel, unsigned long nBufSize)
+{
+	CString strFileName;
+	CString strDirPath;
+
+	if (nBufSize == 0)
+		return FALSE;
+
+	CZipFileHeader header;
+	//	strFileName = GetFileDirAndName(lpszFilePath);
+	//	strFileName.TrimLeft(strPath);
+	strFileName.Format(_T("%s"), lpszFilePath);
+	strDirPath.Format(_T("%s"), strPath); 
+	strFileName.Delete(0, strDirPath.GetLength());
+
+	header.SetFileName(strFileName);
+
+	if (header.GetFileNameSize() == 0)
+		return FALSE;
+
+	if (!OpenNewFile(header, iLevel, lpszFilePath))
+		return FALSE;
+
+	if (!IsDirectory(header.m_uExternalAttr))
+	{
+		CFile f;
+		CFileException* e = new CFileException;
+		BOOL bRet = f.Open(lpszFilePath, CFile::modeRead | CFile::shareDenyWrite, e);
+		e->Delete();
+		if (!bRet) return FALSE;
+
+		DWORD iRead;
+		CZipAutoBuffer buf(nBufSize);
+		do
+		{
+			iRead = f.Read(buf, nBufSize);
+			if (iRead) WriteNewFile(buf, iRead);
+		}
+		while (iRead == buf.GetSize());
+	}
+	CloseNewFile();
+	return TRUE;
+}
+
 bool CZipArchive::AddNewFile(LPCTSTR lpszFilePath,  
 							 int iLevel,          
                              bool bFullPath,      

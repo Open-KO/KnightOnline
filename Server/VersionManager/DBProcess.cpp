@@ -233,6 +233,58 @@ int CDBProcess::MgameLogin(const char* id, const char* pwd)
 	return sParmRet;
 }
 
+BOOL CDBProcess::InsertVersion(int version, const char* filename, const char* compname, int historyversion)
+{
+	SQLHSTMT		hstmt = nullptr;
+	SQLRETURN		retcode;
+	TCHAR			szSQL[1024] = {};
+	BOOL			retvalue = TRUE;
+
+	wsprintf(szSQL, TEXT("INSERT INTO %s (sVersion, strFileName, strCompressName, sHistoryVersion) VALUES (%d, \'%s\', \'%s\', %d)"), m_pMain->m_TableName, version, filename, compname, historyversion);
+
+	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
+	if (retcode == SQL_SUCCESS)
+	{
+		retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+		if (retcode != SQL_SUCCESS
+			&& retcode != SQL_SUCCESS_WITH_INFO)
+		{
+			DisplayErrorMsg(hstmt);
+			retvalue = FALSE;
+		}
+
+		SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+	}
+
+	return retvalue;
+}
+
+BOOL CDBProcess::DeleteVersion(const char* filename)
+{
+	SQLHSTMT		hstmt = nullptr;
+	SQLRETURN		retcode;
+	TCHAR			szSQL[1024] = {};
+	BOOL			retvalue = TRUE;
+
+	wsprintf(szSQL, TEXT("DELETE FROM %s WHERE strFileName = \'%s\'"), m_pMain->m_TableName, filename);
+
+	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
+	if (retcode == SQL_SUCCESS)
+	{
+		retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+		if (retcode != SQL_SUCCESS
+			&& retcode != SQL_SUCCESS_WITH_INFO)
+		{
+			DisplayErrorMsg(hstmt);
+			retvalue = FALSE;
+		}
+
+		SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+	}
+
+	return retvalue;
+}
+
 BOOL CDBProcess::LoadUserCountList()
 {
 	SQLHSTMT		hstmt = nullptr;

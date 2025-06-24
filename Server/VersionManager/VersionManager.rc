@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+//Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
 
@@ -13,11 +13,13 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Korean (Korea) resources
+// Korean resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#ifdef _WIN32
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 #pragma code_page(949)
+#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -25,18 +27,18 @@ LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -64,8 +66,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\VersionManager.ico"
-
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\VersionManager.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -73,15 +74,66 @@ IDR_MAINFRAME           ICON                    "res\\VersionManager.ico"
 //
 
 IDD_VERSIONMANAGER_DIALOG DIALOGEX 0, 0, 211, 163
-STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "VersionManager"
+FONT 9, "굴림"
+BEGIN
+    LISTBOX         IDC_LIST1,7,7,197,127,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Version Setting...(&S)",IDC_SETTING,7,142,197,14
+END
+
+IDD_SETTING DIALOG DISCARDABLE  0, 0, 341, 265
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Version Setting"
+FONT 9, "굴림"
+BEGIN
+    EDITTEXT        IDC_VERSION_EDIT,53,202,31,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CTEXT           "",IDC_STATUS,7,244,214,8
+    DEFPUSHBUTTON   "OK",IDOK,227,244,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,284,244,50,14
+    LTEXT           "Version :",IDC_STATIC,13,206,30,8
+    GROUPBOX        "File Compress",IDC_STATIC,7,7,327,176
+    LISTBOX         IDC_FILE_LIST,13,19,258,135,LBS_MULTIPLESEL | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add(&A)...",IDC_ADDFILE,277,20,50,14
+    PUSHBUTTON      "Delete(&D)",IDC_DELETEFILE,277,40,50,14
+    PUSHBUTTON      "Compress(&C)",IDC_COMPRESS,277,61,50,14
+    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",WS_BORDER,
+                    13,166,316,7
+    GROUPBOX        "Configuration",IDC_STATIC,7,191,327,47
+    LTEXT           "Base Path :",IDC_STATIC,13,223,39,8
+    EDITTEXT        IDC_PATH_EDIT,53,220,277,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse(&B)...",IDC_PATH_BROWSE,280,201,50,14
+    PUSHBUTTON      "Refresh(&R)",IDC_REFRESH,277,81,50,14
+    CONTROL         "CurrentVer.",IDC_CHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,278,128,47,10
+    CONTROL         "All File Add",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,278,146,50,10
+    PUSHBUTTON      "DBCS Test",IDC_DBCSTEST,277,104,50,14
+END
+
+IDD_BROWSE_PATH DIALOGEX 0, 0, 167, 272
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Browse Path"
 FONT 9, "굴림", 0, 0, 0x1
 BEGIN
-    LISTBOX         IDC_LIST1,7,7,197,149,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,6,249,72,14
+    PUSHBUTTON      "Cancel",IDCANCEL,90,249,68,14
+    CONTROL         "Tree1",IDC_BROWSE_TREE,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,
+                    6,24,153,219
+    COMBOBOX        IDC_FILELIST,5,5,133,80,CBS_DROPDOWN | CBS_AUTOHSCROLL | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "->",IDC_SYNCH_FOLDERS,144,6,15,14
 END
 
 
+#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -104,13 +156,15 @@ BEGIN
     BEGIN
         BLOCK "041204B0"
         BEGIN
-            VALUE "FileDescription", "VersionManager MFC 응용 프로그램"
-            VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "VersionManager"
-            VALUE "LegalCopyright", "Copyright (C) 2002"
-            VALUE "OriginalFilename", "VersionManager.EXE"
-            VALUE "ProductName", "VersionManager 응용 프로그램"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "VersionManager MFC 응용 프로그램\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "VersionManager\0"
+            VALUE "LegalCopyright", "Copyright (C) 2002\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "VersionManager.EXE\0"
+            VALUE "ProductName", "VersionManager 응용 프로그램\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -119,6 +173,8 @@ BEGIN
     END
 END
 
+#endif    // !_MAC
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -126,7 +182,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO DISCARDABLE 
 BEGIN
     IDD_VERSIONMANAGER_DIALOG, DIALOG
     BEGIN
@@ -135,19 +191,16 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 156
     END
+
+    IDD_SETTING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 334
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 258
+    END
 END
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_VERSIONMANAGER_DIALOG AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -155,12 +208,12 @@ END
 // String Table
 //
 
-STRINGTABLE
+STRINGTABLE DISCARDABLE 
 BEGIN
     IDP_SOCKETS_INIT_FAILED "Windows 소켓 초기화에 실패하였습니다."
 END
 
-#endif    // Korean (Korea) resources
+#endif    // Korean resources
 /////////////////////////////////////////////////////////////////////////////
 
 

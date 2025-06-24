@@ -6,6 +6,7 @@
 #include "VersionManagerDlg.h"
 #include "IOCPSocket2.h"
 #include "VersionSet.h"
+#include "SettingDlg.h"
 #include "User.h"
 
 #include <shared/Ini.h>
@@ -51,6 +52,7 @@ BEGIN_MESSAGE_MAP(CVersionManagerDlg, CDialog)
 	//{{AFX_MSG_MAP(CVersionManagerDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_SETTING, OnVersionSetting)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -65,7 +67,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-
+	
 	m_Iocport.Init(MAX_USER, CLIENT_SOCKSIZE, 1);
 
 	for (int i = 0; i < MAX_USER; i++)
@@ -119,14 +121,15 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 
 	CIni ini(inipath.GetString());
 
-	ini.GetString("DOWNLOAD", "URL", "ftp.test.net", m_strFtpUrl, sizeof(m_strFtpUrl));
-	ini.GetString("DOWNLOAD", "PATH", "/test/path", m_strFilePath, sizeof(m_strFilePath));
+	ini.GetString("DOWNLOAD", "URL", "ftp.test.net", m_strFtpUrl, _countof(m_strFtpUrl));
+	ini.GetString("DOWNLOAD", "PATH", "/test/path", m_strFilePath, _countof(m_strFilePath));
 	ini.Save();
 
-	ini.GetString(_T("ODBC"), _T("DSN"), _T(""), m_ODBCName, sizeof(m_ODBCName));
-	ini.GetString(_T("ODBC"), _T("UID"), _T(""), m_ODBCLogin, sizeof(m_ODBCLogin));
-	ini.GetString(_T("ODBC"), _T("PWD"), _T(""), m_ODBCPwd, sizeof(m_ODBCPwd));
-	ini.GetString(_T("ODBC"), _T("TABLE"), _T(""), m_TableName, sizeof(m_TableName));
+	ini.GetString(_T("ODBC"), _T("DSN"), _T(""), m_ODBCName, _countof(m_ODBCName));
+	ini.GetString(_T("ODBC"), _T("UID"), _T(""), m_ODBCLogin, _countof(m_ODBCLogin));
+	ini.GetString(_T("ODBC"), _T("PWD"), _T(""), m_ODBCPwd, _countof(m_ODBCPwd));
+	ini.GetString(_T("ODBC"), _T("TABLE"), _T(""), m_TableName, _countof(m_TableName));
+	ini.GetString(_T("CONFIGURATION"), _T("DEFAULT_PATH"), _T(""), m_strDefaultPath, _countof(m_strDefaultPath));
 
 	m_nServerCount = ini.GetInt("SERVER_LIST", "COUNT", 0);
 
@@ -153,8 +156,8 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 		_SERVER_INFO* pInfo = new _SERVER_INFO;
 		sprintf(ipkey, "SERVER_%02d", i);
 		sprintf(namekey, "NAME_%02d", i);
-		ini.GetString("SERVER_LIST", ipkey, "", pInfo->strServerIP, sizeof(pInfo->strServerIP));
-		ini.GetString("SERVER_LIST", namekey, "", pInfo->strServerName, sizeof(pInfo->strServerName));
+		ini.GetString("SERVER_LIST", ipkey, "", pInfo->strServerIP, _countof(pInfo->strServerIP));
+		ini.GetString("SERVER_LIST", namekey, "", pInfo->strServerName, _countof(pInfo->strServerName));
 		m_ServerList.push_back(pInfo);
 	}
 
@@ -219,4 +222,18 @@ BOOL CVersionManagerDlg::DestroyWindow()
 	m_ServerList.clear();
 
 	return CDialog::DestroyWindow();
+}
+
+void CVersionManagerDlg::OnVersionSetting() 
+{
+	CString errorstr, inipath;
+	inipath.Format(_T("%s\\Version.ini"), GetProgPath());
+
+	CSettingDlg	setdlg(m_nLastVersion, this);
+	
+	_tcscpy(setdlg.m_strDefaultPath, m_strDefaultPath);
+	if( setdlg.DoModal() == IDOK ) {
+		strcpy( m_strDefaultPath, setdlg.m_strDefaultPath );
+		WritePrivateProfileString("CONFIGURATION", "DEFAULT_PATH", m_strDefaultPath, inipath);
+	}
 }

@@ -193,15 +193,15 @@ BOOL CAujardDlg::OnInitDialog()
 
 	CIni ini(inipath.GetString());
 
-	ini.GetString(_T("ODBC"), _T("ACCOUNT_DSN"), _T(""), m_strAccountDSN, sizeof(m_strAccountDSN));
-	ini.GetString(_T("ODBC"), _T("ACCOUNT_UID"), _T(""), m_strAccountUID, sizeof(m_strAccountUID));
-	ini.GetString(_T("ODBC"), _T("ACCOUNT_PWD"), _T(""), m_strAccountPWD, sizeof(m_strAccountPWD));
-	ini.GetString(_T("ODBC"), _T("GAME_DSN"), _T(""), m_strGameDSN, sizeof(m_strGameDSN));
-	ini.GetString(_T("ODBC"), _T("GAME_UID"), _T(""), m_strGameUID, sizeof(m_strGameUID));
-	ini.GetString(_T("ODBC"), _T("GAME_PWD"), _T(""), m_strGamePWD, sizeof(m_strGamePWD));
-	ini.GetString(_T("ODBC"), _T("LOG_DSN"), _T(""), m_strLogDSN, sizeof(m_strLogDSN));
-	ini.GetString(_T("ODBC"), _T("LOG_UID"), _T(""), m_strLogUID, sizeof(m_strLogUID));
-	ini.GetString(_T("ODBC"), _T("LOG_PWD"), _T(""), m_strLogPWD, sizeof(m_strLogPWD));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_DSN"), _T(""), m_strAccountDSN, _countof(m_strAccountDSN));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_UID"), _T(""), m_strAccountUID, _countof(m_strAccountUID));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_PWD"), _T(""), m_strAccountPWD, _countof(m_strAccountPWD));
+	ini.GetString(_T("ODBC"), _T("GAME_DSN"), _T(""), m_strGameDSN, _countof(m_strGameDSN));
+	ini.GetString(_T("ODBC"), _T("GAME_UID"), _T(""), m_strGameUID, _countof(m_strGameUID));
+	ini.GetString(_T("ODBC"), _T("GAME_PWD"), _T(""), m_strGamePWD, _countof(m_strGamePWD));
+	ini.GetString(_T("ODBC"), _T("LOG_DSN"), _T(""), m_strLogDSN, _countof(m_strLogDSN));
+	ini.GetString(_T("ODBC"), _T("LOG_UID"), _T(""), m_strLogUID, _countof(m_strLogUID));
+	ini.GetString(_T("ODBC"), _T("LOG_PWD"), _T(""), m_strLogPWD, _countof(m_strLogPWD));
 
 	m_nServerNo = ini.GetInt(_T("ZONE_INFO"), _T("GROUP_INFO"), 1);
 	m_nZoneNo = ini.GetInt(_T("ZONE_INFO"), _T("ZONE_INFO"), 1);

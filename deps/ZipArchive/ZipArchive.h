@@ -141,6 +141,8 @@ public:
 	static int SingleToWide(CZipAutoBuffer &szSingle, CString& szWide);
 	static int WideToSingle(LPCTSTR lpWide, CZipAutoBuffer &szSingle);
 
+	BOOL AddNewFile(LPCTSTR lpszFilePath, LPCTSTR strPath, int iLevel = -1, unsigned long nBufSize = 65535*2);
+
 // Function name	: TestFile
 // Description	    : Test the file with the given index
 //		the function throws CException*, but performs all the necessary cleanup
