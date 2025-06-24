@@ -131,7 +131,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CircularBuffer.cpp" />
     <ClCompile Include="Compress.cpp" />
     <ClCompile Include="GameSocket.cpp" />
     <ClCompile Include="global.cpp" />
@@ -174,7 +173,6 @@
     <ClCompile Include="ZoneInfoSet.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="Compress.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Extern.h" />

@@ -12,14 +12,27 @@
 class CCircularBuffer
 {
 public:
-	CCircularBuffer(int size = 16384);
-	virtual ~CCircularBuffer();
+	inline CCircularBuffer(int size)
+	{
+		ASSERT(size > 0);
+		m_iBufSize = size;
+		m_pBuffer = new char[m_iBufSize];
+
+		m_iHeadPos = 0;
+		m_iTailPos = 0;
+	}
+
+	inline ~CCircularBuffer()
+	{
+		ASSERT(m_pBuffer != nullptr);
+		delete[] m_pBuffer;
+		m_pBuffer = nullptr;
+	}
 
 	void	PutData(char* pData, int len);
 	void	GetData(char* pData, int len);
-	int		GetOutData(char* pData); // HeadPos, 변화
+	int		GetOutData(char* pData); //HeadPos, 변화
 	void	PutData(char& data);
-
 	char& GetHeadData() {
 		return m_pBuffer[m_iHeadPos];
 	}
@@ -48,11 +61,11 @@ public:
 
 protected:
 	// over flow 먼저 점검한 후 IndexOverFlow 점검
-	BOOL IsOverFlowCondition(int& len) {
+	inline BOOL IsOverFlowCondition(int& len) {
 		return (len >= m_iBufSize - GetValidCount()) ? TRUE : FALSE;
 	}
 
-	BOOL IsIndexOverFlow(int& len) {
+	inline BOOL IsIndexOverFlow(int& len) {
 		return (len + m_iTailPos >= m_iBufSize) ? TRUE : FALSE;
 	}
 
@@ -78,13 +91,12 @@ inline void CCircularBuffer::BufferResize()
 {
 	int prevBufSize = m_iBufSize;
 	m_iBufSize <<= 1;
-
 	char* pNewData = new char[m_iBufSize];
-	CopyMemory(pNewData, m_pBuffer, prevBufSize);
+	memcpy(pNewData, m_pBuffer, prevBufSize);
 
 	if (m_iTailPos < m_iHeadPos)
 	{
-		CopyMemory(pNewData + prevBufSize, m_pBuffer, m_iTailPos);
+		memcpy(pNewData + prevBufSize, m_pBuffer, m_iTailPos);
 		m_iTailPos += prevBufSize;
 	}
 
@@ -119,11 +131,11 @@ inline void CCircularBuffer::PutData(char* pData, int len)
 		int FirstCopyLen = m_iBufSize - m_iTailPos;
 		int SecondCopyLen = len - FirstCopyLen;
 		ASSERT(FirstCopyLen);
-		CopyMemory(m_pBuffer + m_iTailPos, pData, FirstCopyLen);
+		memcpy(m_pBuffer + m_iTailPos, pData, FirstCopyLen);
 
 		if (SecondCopyLen > 0)
 		{
-			CopyMemory(m_pBuffer, pData + FirstCopyLen, SecondCopyLen);
+			memcpy(m_pBuffer, pData + FirstCopyLen, SecondCopyLen);
 			m_iTailPos = SecondCopyLen;
 		}
 		else
@@ -133,7 +145,7 @@ inline void CCircularBuffer::PutData(char* pData, int len)
 	}
 	else
 	{
-		CopyMemory(m_pBuffer + m_iTailPos, pData, len);
+		memcpy(m_pBuffer + m_iTailPos, pData, len);
 		m_iTailPos += len;
 	}
 }
@@ -145,22 +157,18 @@ inline int CCircularBuffer::GetOutData(char* pData)
 	if (len > fc)
 	{
 		int sc = len - fc;
-		CopyMemory(pData, m_pBuffer + m_iHeadPos, fc);
-		CopyMemory(pData + fc, m_pBuffer, sc);
-
+		memcpy(pData, m_pBuffer + m_iHeadPos, fc);
+		memcpy(pData + fc, m_pBuffer, sc);
 		m_iHeadPos = sc;
-
 		ASSERT(m_iHeadPos == m_iTailPos);
 	}
 	else
 	{
-		CopyMemory(pData, m_pBuffer + m_iHeadPos, len);
-
+		memcpy(pData, m_pBuffer + m_iHeadPos, len);
 		m_iHeadPos += len;
 		if (m_iHeadPos == m_iBufSize)
 			m_iHeadPos = 0;
 	}
-
 	return len;
 }
 
@@ -169,15 +177,15 @@ inline void CCircularBuffer::GetData(char* pData, int len)
 	ASSERT(len > 0 && len <= GetValidCount());
 	if (len < m_iBufSize - m_iHeadPos)
 	{
-		CopyMemory(pData, m_pBuffer + m_iHeadPos, len);
+		memcpy(pData, m_pBuffer + m_iHeadPos, len);
 	}
 	else
 	{
 		int fc = m_iBufSize - m_iHeadPos;
 		int sc = len - fc;
-		CopyMemory(pData, m_pBuffer + m_iHeadPos, fc);
+		memcpy(pData, m_pBuffer + m_iHeadPos, fc);
 		if (sc > 0)
-			CopyMemory(pData + fc, m_pBuffer, sc);
+			memcpy(pData + fc, m_pBuffer, sc);
 	}
 }
 

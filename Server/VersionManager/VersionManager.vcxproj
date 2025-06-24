@@ -122,7 +122,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CircularBuffer.cpp" />
     <ClCompile Include="DBProcess.cpp" />
     <ClCompile Include="DlgBrowsePath.cpp" />
     <ClCompile Include="IOCPort.cpp" />
@@ -141,7 +140,6 @@
     <ResourceCompile Include="VersionManager.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="DBProcess.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="DlgBrowsePath.h" />

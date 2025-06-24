@@ -124,7 +124,6 @@
   <ItemGroup>
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="BattleSet.cpp" />
-    <ClCompile Include="CircularBuffer.cpp" />
     <ClCompile Include="CoefficientSet.cpp" />
     <ClCompile Include="Compress.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
@@ -170,7 +169,6 @@
   <ItemGroup>
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="BattleSet.h" />
-    <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="CoefficientSet.h" />
     <ClInclude Include="Compress.h" />
     <ClInclude Include="Define.h" />

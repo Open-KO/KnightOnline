@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 #include "IOCPSocket2.h"
-#include "CircularBuffer.h"
 #include "Compress.h"
-#include "define.h"
+#include "Define.h"
 
+#include <shared/CircularBuffer.h>
 #include <shared/packets.h>
 
 #ifdef _DEBUG
