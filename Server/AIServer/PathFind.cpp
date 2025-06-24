@@ -86,7 +86,7 @@ void CPathFind::SetMap(int x, int y, int* pMap)
 		m_pMap = map;
 		::InterlockedExchange(&m_lMapUse, 0);
 	}
-	else TRACE("잘못된 맵셋팅\n");	*/
+	else TRACE(_T("잘못된 맵셋팅\n"));	*/
 }
 
 _PathNode* CPathFind::FindPath(int start_x, int start_y, int dest_x, int dest_y)
@@ -117,7 +117,7 @@ _PathNode* CPathFind::FindPath(int start_x, int start_y, int dest_x, int dest_y)
 		if (count > maxtry * 2)
 		{
 //			BREAKPOINT();
-			//TRACE("패스파인드 중도포기...%d\n", count);
+			//TRACE(_T("패스파인드 중도포기...%d\n"), count);
 			return nullptr;
 		}
 

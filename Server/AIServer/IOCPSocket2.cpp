@@ -38,7 +38,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 	if (m_Socket == INVALID_SOCKET)
 	{
 		ret = WSAGetLastError();
-		TRACE("Socket Create Fail! - %d\n", ret);
+		TRACE(_T("Socket Create Fail! - %d\n"), ret);
 		return FALSE;
 	}
 
@@ -46,7 +46,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 	if (m_hSockEvent == WSA_INVALID_EVENT)
 	{
 		ret = WSAGetLastError();
-		TRACE("Event Create Fail! - %d\n", ret);
+		TRACE(_T("Event Create Fail! - %d\n"), ret);
 		return FALSE;
 	}
 
@@ -66,7 +66,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 	if (result == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
-//		TRACE("CONNECT FAIL : %d\n", err);
+//		TRACE(_T("CONNECT FAIL : %d\n"), err);
 		closesocket(m_Socket);
 		return FALSE;
 	}
@@ -83,7 +83,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 
 	if (!m_pIOCPort->Associate(this, m_pIOCPort->m_hClientIOCPort))
 	{
-		TRACE("Socket Connecting Fail - Associate\n");
+		TRACE(_T("Socket Connecting Fail - Associate\n"));
 		return FALSE;
 	}
 
@@ -129,7 +129,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 
 	ret_value = WSASend(m_Socket, &out, 1, &sent, dwFlag, pOvl, nullptr);
 	//if( sent > 100 )
-	//	TRACE("Send %d BYtes\n", sent);
+	//	TRACE(_T("Send %d BYtes\n"), sent);
 
 	if (ret_value == SOCKET_ERROR)
 	{
@@ -138,7 +138,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 
 		if (last_err == WSA_IO_PENDING)
 		{
-			TRACE("SEND : IO_PENDING[SID=%d]\n", m_Sid);
+			TRACE(_T("SEND : IO_PENDING[SID=%d]\n"), m_Sid);
 			m_nPending++;
 #ifdef __SAMMA
 			if (m_nPending > 3)
@@ -148,7 +148,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		}
 		else if (last_err == WSAEWOULDBLOCK)
 		{
-			TRACE("SEND : WOULDBLOCK[SID=%d]\n", m_Sid);
+			TRACE(_T("SEND : WOULDBLOCK[SID=%d]\n"), m_Sid);
 
 			m_nWouldblock++;
 			if (m_nWouldblock > 3)
@@ -157,7 +157,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		}
 		else
 		{
-			TRACE("SEND : ERROR [SID=%d] - %d\n", m_Sid, last_err);
+			TRACE(_T("SEND : ERROR [SID=%d] - %d\n"), m_Sid, last_err);
 			m_nSocketErr++;
 			goto close_routine;
 		}
@@ -209,7 +209,7 @@ int CIOCPSocket2::Receive()
 
 		if (last_err == WSA_IO_PENDING)
 		{
-//			TRACE("RECV : IO_PENDING[SID=%d]\n", m_Sid);
+//			TRACE(_T("RECV : IO_PENDING[SID=%d]\n"), m_Sid);
 //			m_nPending++;
 //			if( m_nPending > 3 )
 //				goto close_routine;
@@ -217,7 +217,7 @@ int CIOCPSocket2::Receive()
 		}
 		else if (last_err == WSAEWOULDBLOCK)
 		{
-			TRACE("RECV : WOULDBLOCK[SID=%d]\n", m_Sid);
+			TRACE(_T("RECV : WOULDBLOCK[SID=%d]\n"), m_Sid);
 
 			m_nWouldblock++;
 			if (m_nWouldblock > 3)
@@ -226,7 +226,7 @@ int CIOCPSocket2::Receive()
 		}
 		else
 		{
-			TRACE("RECV : ERROR [SID=%d] - %d\n", m_Sid, last_err);
+			TRACE(_T("RECV : ERROR [SID=%d] - %d\n"), m_Sid, last_err);
 
 			m_nSocketErr++;
 			if (m_nSocketErr == 2)
@@ -267,7 +267,7 @@ void CIOCPSocket2::ReceivedData(int length)
 	if (m_Type == TYPE_CONNECT
 		&& length == 7)
 	{
-		TRACE("Received Data : %d\n", m_Sid);
+		TRACE(_T("Received Data : %d\n"), m_Sid);
 	}
 
 	char* pData = nullptr;
@@ -345,8 +345,8 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 				data[length] = 0;
 				foundCore = TRUE;
 				int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
-//				TRACE("data : %s, len : %d\n", data, length);
-//				TRACE("head : %d, tail : %d\n", head, tail );
+//				TRACE(_T("data : %hs, len : %d\n"), data, length);
+//				TRACE(_T("head : %d, tail : %d\n"), head, tail );
 				break;
 			}
 			else
@@ -407,7 +407,7 @@ void CIOCPSocket2::Close()
 	if (retValue == 0)
 	{
 		int errValue = GetLastError();
-		TRACE("PostQueuedCompletionStatus Error : %d\n", errValue);
+		TRACE(_T("PostQueuedCompletionStatus Error : %d\n"), errValue);
 	}
 }
 
@@ -438,7 +438,7 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, sockaddr* addr, int* len)
 	if (m_Socket == INVALID_SOCKET)
 	{
 		int err = WSAGetLastError();
-		TRACE("Socket Accepting Fail - %d\n", err);
+		TRACE(_T("Socket Accepting Fail - %d\n"), err);
 		return FALSE;
 	}
 
@@ -448,7 +448,7 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, sockaddr* addr, int* len)
 //	int lensize, socklen=0;
 
 //	getsockopt( m_Socket, SOL_SOCKET, SO_RCVBUF, (char*)&socklen, &lensize);
-//	TRACE("getsockopt : %d\n", socklen);
+//	TRACE(_T("getsockopt : %d\n"), socklen);
 
 //	struct linger lingerOpt;
 

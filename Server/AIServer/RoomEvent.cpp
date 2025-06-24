@@ -93,7 +93,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 	if (m_byLogicNumber == 0
 		|| m_byLogicNumber > MAX_CHECK_EVENT)
 	{
-		TRACE("### Check Event Fail :: array overflow = %d ###\n", m_byLogicNumber);
+		TRACE(_T("### Check Event Fail :: array overflow = %d ###\n"), m_byLogicNumber);
 		return FALSE;
 	}
 
@@ -110,9 +110,9 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			}
 			else
 			{
-				TRACE("### CheckEvent Error : monster nid = %d, logic=%d ###\n", nOption_1, m_byLogicNumber);
+				TRACE(_T("### CheckEvent Error : monster nid = %d, logic=%d ###\n"), nOption_1, m_byLogicNumber);
 			}
-			//TRACE("---Check Event : monster dead = %d \n", nMonsterNid);
+			//TRACE(_T("---Check Event : monster dead = %d \n"), nMonsterNid);
 			break;
 
 		// 모든 몬스터를 죽여라
@@ -120,7 +120,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			bRetValue = CheckMonsterCount(0, 0, 3);
 			if (bRetValue)
 			{
-				TRACE("모든 몬스터를 죽여라 죽임\n");
+				TRACE(_T("모든 몬스터를 죽여라 죽임\n"));
 				return TRUE;
 			}
 			break;
@@ -133,11 +133,11 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			// 제한시간 종료
 			if (fcurtime >= m_fDelayTime + nMinute)
 			{
-				TRACE("---Check Event : curtime=%.2f, starttime=%.2f \n", fcurtime, m_fDelayTime);
-				TRACE("버티기 성공\n");
+				TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), fcurtime, m_fDelayTime);
+				TRACE(_T("버티기 성공\n"));
 				return TRUE;
 			}
-			//TRACE("---Check Event : curtime=%.2f, starttime=%.2f \n", fcurtime, m_fDelayTime);
+			//TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), fcurtime, m_fDelayTime);
 			break;
 
 		// 목표지점까지 이동
@@ -151,13 +151,13 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			bRetValue = CheckMonsterCount(nOption_1, nOption_2, 1);
 			if (bRetValue)
 			{
-				TRACE("특정몬스터(%d)를 %d마리 죽임\n", nOption_1, nOption_2);
+				TRACE(_T("특정몬스터(%d)를 %d마리 죽임\n"), nOption_1, nOption_2);
 				return TRUE;
 			}
 			break;
 
 		default:
-			TRACE("### Check Event Fail :: event number = %d ###\n", event_num);
+			TRACE(_T("### Check Event Fail :: event number = %d ###\n"), event_num);
 			break;
 	}
 
@@ -183,7 +183,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			}
 			else
 			{
-				TRACE("### RunEvent Error : 몬스터 출현 할 수 없당 = %d, logic=%d ###\n", nOption_1, m_byLogicNumber);
+				TRACE(_T("### RunEvent Error : 몬스터 출현 할 수 없당 = %d, logic=%d ###\n"), nOption_1, m_byLogicNumber);
 			}
 
 			// 방이 클리어
@@ -199,7 +199,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			pNpc = GetNpcPtr(nOption_1);
 			if (pNpc == nullptr)
 			{
-				TRACE("### RunEvent Error : 문 담당 몬스터 출현 할 수 없당 = %d, logic=%d ###\n", nOption_1, m_byLogicNumber);
+				TRACE(_T("### RunEvent Error : 문 담당 몬스터 출현 할 수 없당 = %d, logic=%d ###\n"), nOption_1, m_byLogicNumber);
 			}
 
 			//wsprintf(notify, "** 알림 : [%d] 문이 열립니다 **", m_sRoomNumber);
@@ -240,7 +240,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			nOption_1 = m_Exec[m_byLogicNumber - 1].sOption_1;
 			nOption_2 = m_Exec[m_byLogicNumber - 1].sOption_2;
 
-			TRACE("RunEvent - room=%d, option1=%d, option2=%d\n", m_sRoomNumber, nOption_1, nOption_2);
+			TRACE(_T("RunEvent - room=%d, option1=%d, option2=%d\n"), m_sRoomNumber, nOption_1, nOption_2);
 			if (nOption_1 != 0)
 				EndEventSay(nOption_1, nOption_2);
 
@@ -252,7 +252,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			break;
 
 		default:
-			TRACE("### RunEvent Fail :: event number = %d ###\n", event_num);
+			TRACE(_T("### RunEvent Fail :: event number = %d ###\n"), event_num);
 			break;
 	}
 
@@ -270,7 +270,7 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 	int nMonster = m_mapRoomNpcArray.GetSize();
 	if (nMonster == 0)
 	{
-		TRACE("### RoomEvent-GetNpcPtr() : monster empty ###\n");
+		TRACE(_T("### RoomEvent-GetNpcPtr() : monster empty ###\n"));
 		LeaveCriticalSection(&g_region_critical);
 		return nullptr;
 	}
@@ -324,7 +324,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 	int nMonster = m_mapRoomNpcArray.GetSize();
 	if (nMonster == 0)
 	{
-		TRACE("### RoomEvent-GetNpcPtr() : monster empty ###\n");
+		TRACE(_T("### RoomEvent-GetNpcPtr() : monster empty ###\n"));
 		LeaveCriticalSection(&g_region_critical);
 		return FALSE;
 	}

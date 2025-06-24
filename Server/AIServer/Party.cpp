@@ -88,7 +88,7 @@ void CParty::PartyCreate(char* pBuf)
 
 	if (m_pMain->m_arParty.PutData(pParty->wIndex, pParty))
 	{
-		TRACE("Party - Create() : Party 생성  number = %d, uid=%d, %d \n", sPartyIndex, pParty->uid[0], pParty->uid[1]);
+		TRACE(_T("Party - Create() : Party 생성  number = %d, uid=%d, %d \n"), sPartyIndex, pParty->uid[0], pParty->uid[1]);
 	}
 	LeaveCriticalSection(&g_region_critical);
 }

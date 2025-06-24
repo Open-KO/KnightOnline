@@ -432,7 +432,7 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 				pUser->m_sItemArray[i].sCount = count;
 			}
 
-			TRACE("%s : %d slot (%d : %I64d)\n", pUser->m_id, i, pUser->m_sItemArray[i].nNum, pUser->m_sItemArray[i].nSerialNum);
+			TRACE(_T("%hs : %d slot (%d : %I64d)\n"), pUser->m_id, i, pUser->m_sItemArray[i].nNum, pUser->m_sItemArray[i].nSerialNum);
 			sprintf(logstr, "%s : %d slot (%d : %I64d)\n", pUser->m_id, i, pUser->m_sItemArray[i].nNum, pUser->m_sItemArray[i].nSerialNum);
 			//m_pMain->WriteLogFile( logstr );
 			//m_pMain->m_LogFile.Write(logstr, strlen(logstr));
@@ -565,7 +565,7 @@ int CDBAgent::UpdateUser(const char* userid, int uid, int type)
 		if (pUser->m_sItemArray[i].nNum > 0)
 		{
 			if (m_pMain->m_ItemtableArray.GetData(pUser->m_sItemArray[i].nNum) == nullptr)
-				TRACE("Item Drop Saved(%d) : %d (%s)\n", i, pUser->m_sItemArray[i].nNum, pUser->m_id);
+				TRACE(_T("Item Drop Saved(%d) : %d (%hs)\n"), i, pUser->m_sItemArray[i].nNum, pUser->m_id);
 		}
 
 		SetDWORD(strItem, pUser->m_sItemArray[i].nNum, index);
@@ -608,10 +608,9 @@ int CDBAgent::UpdateUser(const char* userid, int uid, int type)
 
 				SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 
-				char logstr[1024] = {};
-				sprintf(logstr, "[Error-DB Fail] %s, Skill[%s] Item[%s] \r\n", szSQL, strSkill, strItem);
-				m_pMain->WriteLogFile(logstr);
-				//m_pMain->m_LogFile.Write(logstr, strlen(logstr));
+				TCHAR logstr[1024] = {};
+				wsprintf(logstr, _T("[Error-DB Fail] %s, Skill[%hs] Item[%hs] \r\n"), szSQL, strSkill, strItem);
+				LogFileWrite(logstr);
 				return 0;
 			}
 
@@ -1087,7 +1086,7 @@ int CDBAgent::UpdateKnights(int type, char* userid, int knightsindex, int domina
 				return sParmRet;
 			}
 
-			TRACE("DB - UpdateKnights - command=%d, name=%s, index=%d, result=%d \n", type, userid, knightsindex, domination);
+			TRACE(_T("DB - UpdateKnights - command=%d, name=%hs, index=%d, result=%d \n"), type, userid, knightsindex, domination);
 			SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 			return sParmRet;
 		}
@@ -1378,7 +1377,7 @@ BOOL CDBAgent::LoadWarehouseData(const char* accountid, int uid)
 
 			pUser->m_sWarehouseArray[i].sCount = count;
 			pUser->m_sWarehouseArray[i].nSerialNum = serial;
-			TRACE("%s : %d ware slot (%d : %I64d)\n", pUser->m_id, i, pUser->m_sWarehouseArray[i].nNum, pUser->m_sWarehouseArray[i].nSerialNum);
+			TRACE(_T("%hs : %d ware slot (%d : %I64d)\n"), pUser->m_id, i, pUser->m_sWarehouseArray[i].nNum, pUser->m_sWarehouseArray[i].nSerialNum);
 		}
 		else
 		{
@@ -1465,10 +1464,9 @@ int CDBAgent::UpdateWarehouseData(const char* accountid, int uid, int type)
 
 				SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 
-				char logstr[2048] = {};
-				sprintf(logstr, "%s, Item[%s] \r\n", szSQL, strItem);
-				m_pMain->WriteLogFile(logstr);
-				//m_pMain->m_LogFile.Write(logstr, strlen(logstr));
+				TCHAR logstr[2048] = {};
+				wsprintf(logstr, _T("%s, Item[%hs] \r\n"), szSQL, strItem);
+				LogFileWrite(logstr);
 				return FALSE;
 			}
 
@@ -1855,7 +1853,7 @@ void CDBAgent::LoadKnightsAllList(int nation)
 void CDBAgent::DBProcessNumber(int number)
 {
 	CString strDBNum;
-	strDBNum.Format(_T(" %4d ", number));
+	strDBNum.Format(_T(" %4d "), number);
 
 	m_pMain->GetDlgItem(IDC_DB_PROCESS)->SetWindowText(strDBNum);
 	m_pMain->GetDlgItem(IDC_DB_PROCESS)->UpdateWindow();

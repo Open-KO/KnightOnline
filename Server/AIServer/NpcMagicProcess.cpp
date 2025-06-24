@@ -348,7 +348,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 	damage = GetMagicDamage(tid, pType->sFirstDamage, pType->bAttribute, dexpoint);
 //	if(damage == 0)	damage = -1;
 
-	//TRACE("magictype3 ,, magicid=%d, damage=%d\n", magicid, damage);
+	//TRACE(_T("magictype3 ,, magicid=%d, damage=%d\n"), magicid, damage);
 
 	// Non-Durational Spells.
 	if (pType->sDuration == 0)

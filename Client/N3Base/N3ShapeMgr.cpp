@@ -153,7 +153,7 @@ bool CN3ShapeMgr::Load(HANDLE hFile)
 				m_ShapesHaveID.push_back(pShape);
 				pShape->MakeCollisionMeshByParts(); // 현재 모습 그대로... 충돌 메시를 만든다...
 
-				//TRACE("  Load OBject Event : ID(%d) Type(%d) CtrlID(%d) Status(%d)\n",
+				//TRACE(_T("  Load OBject Event : ID(%d) Type(%d) CtrlID(%d) Status(%d)\n"),
 					//pShape->m_iEventID, pShape->m_iEventType, pShape->m_iNPC_ID, pShape->m_iNPC_Status);
 
 				if(	1 == pShape->m_iEventType || // 좌우열림성문,

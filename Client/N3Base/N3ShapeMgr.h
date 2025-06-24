@@ -54,7 +54,7 @@ public:
 
 				ReadFile(hFile, pdwCCVertIndices, nCCPolyCount * 3 * 4, &dwRWC, nullptr);
 
-				// TRACE("CollisionCheckPolygon : %d\n", nCCPolyCount);
+				// TRACE(_T("CollisionCheckPolygon : %d\n"), nCCPolyCount);
 			}
 		}
 

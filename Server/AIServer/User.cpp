@@ -190,7 +190,7 @@ void CUser::SendAttackSuccess(int tuid, BYTE result, short sDamage, int nHP, sho
 	SetDWORD(buff, nHP, send_index);
 	SetByte(buff, sAttack_type, send_index);
 
-	//TRACE("User - SendAttackSuccess() : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n", sid, tid, bResult, sDamage, sHP);
+	//TRACE(_T("User - SendAttackSuccess() : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n"), sid, tid, bResult, sDamage, sHP);
 
 	SendAll(buff, send_index);   // thread 에서 send
 }
@@ -216,7 +216,7 @@ void CUser::SendMagicAttackResult(int tuid, BYTE result, short sDamage, short sH
 	SetShort(buff, sDamage, send_index);
 	SetShort(buff, sHP, send_index);
 
-	//TRACE("User - SendAttackSuccess() : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n", sid, tid, bResult, sDamage, sHP);
+	//TRACE(_T("User - SendAttackSuccess() : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n"), sid, tid, bResult, sDamage, sHP);
 
 	SendAll(buff, send_index);   // thread 에서 send
 }
@@ -231,7 +231,7 @@ void CUser::SendAll(const char* pBuf, int nLength)
 	if (m_iUserId < 0
 		|| m_iUserId >= MAX_USER)
 	{
-		TRACE("#### User SendAll Fail : point fail ,, nid=%d, name=%s ####\n", m_iUserId, m_strUserID);
+		TRACE(_T("#### User SendAll Fail : point fail ,, nid=%d, name=%hs ####\n"), m_iUserId, m_strUserID);
 		return;
 	}
 
@@ -272,7 +272,7 @@ void CUser::SetDamage(int damage, int tid)
 
 	m_sHP -= (short) damage;
 
-	//TRACE("User - SetDamage() : old=%d, damage=%d, curHP = %d, id=%s, uid=%d\n", sHP, damage, m_sHP, m_strUserID, m_iUserId);
+	//TRACE(_T("User - SetDamage() : old=%d, damage=%d, curHP = %d, id=%hs, uid=%d\n"), sHP, damage, m_sHP, m_strUserID, m_iUserId);
 
 	if (m_sHP <= 0)
 	{
@@ -299,14 +299,14 @@ void CUser::Dead(int tid, int nDamage)
 	if (m_sZoneIndex < 0
 		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 	{
-		TRACE("#### User-Dead ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_strUserID, m_sZoneIndex);
+		TRACE(_T("#### User-Dead ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_strUserID, m_sZoneIndex);
 		return;
 	}
 
 	MAP* pMap = m_pMain->g_arZone[m_sZoneIndex];
 	if (pMap == nullptr)
 	{
-		TRACE("#### CUser-Dead() Fail : [nid=%d, name=%s], pMap == NULL #####\n", m_iUserId, m_strUserID);
+		TRACE(_T("#### CUser-Dead() Fail : [nid=%d, name=%hs], pMap == NULL #####\n"), m_iUserId, m_strUserID);
 		return;
 	}
 
@@ -316,13 +316,13 @@ void CUser::Dead(int tid, int nDamage)
 		|| m_sRegionX > pMap->GetXRegionMax()
 		|| m_sRegionZ > pMap->GetZRegionMax())
 	{
-		TRACE("#### CUser-Dead() Fail : [nid=%d, name=%s], x1=%d, z1=%d #####\n", m_iUserId, m_strUserID, m_sRegionX, m_sRegionZ);
+		TRACE(_T("#### CUser-Dead() Fail : [nid=%d, name=%hs], x1=%d, z1=%d #####\n"), m_iUserId, m_strUserID, m_sRegionX, m_sRegionZ);
 		return;
 	}
 
 	//pMap->m_ppRegion[m_sRegionX][m_sRegionZ].DeleteUser(m_iUserId);
 	pMap->RegionUserRemove(m_sRegionX, m_sRegionZ, m_iUserId);
-	//TRACE("*** User Dead()-> User(%s, %d)를 Region에 삭제,, region_x=%d, y=%d\n", m_strUserID, m_iUserId, m_sRegionX, m_sRegionZ);
+	//TRACE(_T("*** User Dead()-> User(%hs, %d)를 Region에 삭제,, region_x=%d, y=%d\n"), m_strUserID, m_iUserId, m_sRegionX, m_sRegionZ);
 
 	m_sRegionX = -1;
 	m_sRegionZ = -1;
@@ -333,9 +333,9 @@ void CUser::Dead(int tid, int nDamage)
 	char buff[256] = {};
 
 	CString logstr;
-	logstr.Format(_T("*** User Dead = %d, %s ***"), m_iUserId, m_strUserID);
+	logstr.Format(_T("*** User Dead = %d, %hs ***"), m_iUserId, m_strUserID);
 	TimeTrace(logstr);
-	//TRACE("*** User Dead = %d, %s ********\n", m_iUserId, m_strUserID);
+	//TRACE(_T("*** User Dead = %d, %hs ********\n"), m_iUserId, m_strUserID);
 	memset(buff, 0, sizeof(buff));
 
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
@@ -354,7 +354,7 @@ void CUser::Dead(int tid, int nDamage)
 	SetDWORD(buff, m_sHP, send_index);
 	//SetShort( buff, m_sMaxHP, send_index );
 
-	//TRACE("Npc - SendAttackSuccess()-User Dead : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n", sid, targid, result, nDamage, m_sHP);
+	//TRACE(_T("Npc - SendAttackSuccess()-User Dead : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n"), sid, targid, result, nDamage, m_sHP);
 
 	if (tid > 0)
 		SendAll(buff, send_index);   // thread 에서 send
@@ -393,7 +393,7 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 
 	if (nLevel <= -14)
 	{
-		//TRACE("$$ User - SetExp Level Fail : %s, exp=%d, loyalty=%d, mylevel=%d, level=%d $$\n", m_strUserID, iNpcExp, iLoyalty, m_sLevel, iLevel);
+		//TRACE(_T("$$ User - SetExp Level Fail : %hs, exp=%d, loyalty=%d, mylevel=%d, level=%d $$\n"), m_strUserID, iNpcExp, iLoyalty, m_sLevel, iLevel);
 		//return;
 		TempValue = iNpcExp * 0.2;
 		nExp = (int) TempValue;
@@ -468,7 +468,7 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 		nLoyalty = iLoyalty * 2;
 	}*/
 
-	//TRACE("$$ User - SetExp Level : %s, exp=%d->%d, loy=%d->%d, mylevel=%d, monlevel=%d $$\n", m_strUserID, iNpcExp, nExp, iLoyalty, nLoyalty, m_sLevel, iLevel);
+	//TRACE(_T("$$ User - SetExp Level : %hs, exp=%d->%d, loy=%d->%d, mylevel=%d, monlevel=%d $$\n"), m_strUserID, iNpcExp, nExp, iLoyalty, nLoyalty, m_sLevel, iLevel);
 
 	SendExp(nExp, nLoyalty);
 }
@@ -483,7 +483,7 @@ void CUser::SetPartyExp(int iNpcExp, int iLoyalty, int iPartyLevel, int iMan)
 	TempValue = (double) iPartyLevel / 100.0;
 	nExpPercent = iNpcExp * TempValue;
 
-	//TRACE("$$ User - SetPartyExp Level : %s, exp=%d->%d, loy=%d->%d, mylevel=%d, iPartyLevel=%d $$\n", m_strUserID, iNpcExp, nExpPercent, iLoyalty, nLoyalty, m_sLevel, iPartyLevel);
+	//TRACE(_T("$$ User - SetPartyExp Level : %hs, exp=%d->%d, loy=%d->%d, mylevel=%d, iPartyLevel=%d $$\n"), m_strUserID, iNpcExp, nExpPercent, iLoyalty, nLoyalty, m_sLevel, iPartyLevel);
 
 	SendExp(iNpcExp, iLoyalty);
 }
@@ -499,7 +499,7 @@ void CUser::SendExp(int iExp, int iLoyalty, int tType)
 	SetShort(buff, iExp, send_index);
 	SetShort(buff, iLoyalty, send_index);
 
-	//TRACE("$$ User - SendExp : %s, exp=%d, loyalty=%d $$\n", m_strUserID, iExp, iLoyalty);
+	//TRACE(_T("$$ User - SendExp : %hs, exp=%d, loyalty=%d $$\n"), m_strUserID, iExp, iLoyalty);
 
 	SendAll(buff, send_index);
 }
@@ -952,7 +952,7 @@ int CUser::IsSurroundCheck(float fX, float fY, float fZ, int NpcID)
 	}
 
 
-/*	TRACE("User-Sur : [0=%d,1=%d,2=%d,3=%d,4=%d,5=%d,6=%d,7=%d]\n", m_sSurroundNpcNumber[0],
+/*	TRACE(_T("User-Sur : [0=%d,1=%d,2=%d,3=%d,4=%d,5=%d,6=%d,7=%d]\n"), m_sSurroundNpcNumber[0],
 		m_sSurroundNpcNumber[1], m_sSurroundNpcNumber[2], m_sSurroundNpcNumber[3], m_sSurroundNpcNumber[4],
 		m_sSurroundNpcNumber[5],m_sSurroundNpcNumber[6], m_sSurroundNpcNumber[7]);
 	*/
@@ -989,7 +989,7 @@ void CUser::HealMagic()
 	if (m_sZoneIndex < 0
 		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 	{
-		TRACE("#### CUser--HealMagic ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_strUserID, m_sZoneIndex);
+		TRACE(_T("#### CUser--HealMagic ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_strUserID, m_sZoneIndex);
 		return;
 	}
 
@@ -1031,7 +1031,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 	if (m_sZoneIndex < 0
 		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 	{
-		TRACE("#### CUser--HealAreaCheck ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_strUserID, m_sZoneIndex);
+		TRACE(_T("#### CUser--HealAreaCheck ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_strUserID, m_sZoneIndex);
 		return;
 	}
 
@@ -1045,7 +1045,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 		|| rx > pMap->GetXRegionMax()
 		|| rz > pMap->GetZRegionMax())
 	{
-		TRACE("#### CUser-HealAreaCheck() Fail : [nid=%d, name=%s], nRX=%d, nRZ=%d #####\n", m_iUserId, m_strUserID, rx, rz);
+		TRACE(_T("#### CUser-HealAreaCheck() Fail : [nid=%d, name=%hs], nRX=%d, nRZ=%d #####\n"), m_iUserId, m_strUserID, rx, rz);
 		return;
 	}
 

@@ -54,7 +54,7 @@ void CMagicProcess::MagicPacket(char* pBuf)
 	TotalDex = GetShort(pBuf, index);
 	righthand_damage = GetShort(pBuf, index);
 
-	//TRACE("MagicPacket - command=%d, tid=%d, magicid=%d\n", command, tid, magicid);
+	//TRACE(_T("MagicPacket - command=%d, tid=%d, magicid=%d\n"), command, tid, magicid);
 
 	// If magic was successful.......
 	pTable = IsAvailable(magicid, tid, command);
@@ -195,7 +195,7 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int
 
 	damage = m_pSrcUser->GetDamage(tid, magicid);  // Get damage points of enemy.	
 // 	if(damage <= 0)	damage = 1;
-	//TRACE("magictype1 ,, magicid=%d, damage=%d\n", magicid, damage);
+	//TRACE(_T("magictype1 ,, magicid=%d, damage=%d\n"), magicid, damage);
 
 //	if (damage > 0) {
 	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
@@ -258,7 +258,7 @@ BYTE CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, int
 
 	damage = m_pSrcUser->GetDamage(tid, magicid);  // Get damage points of enemy.	
 //	if(damage <= 0)	damage = 1;
-	//TRACE("magictype2 ,, magicid=%d, damage=%d\n", magicid, damage);
+	//TRACE(_T("magictype2 ,, magicid=%d, damage=%d\n"), magicid, damage);
 
 	if (damage > 0)
 	{
@@ -372,7 +372,7 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 	else
 		damage = pType->sFirstDamage;
 
-	//TRACE("magictype3 ,, magicid=%d, damage=%d\n", magicid, damage);
+	//TRACE(_T("magictype3 ,, magicid=%d, damage=%d\n"), magicid, damage);
 
 	// Non-Durational Spells.
 	if (pType->sDuration == 0)
@@ -515,7 +515,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 	if (pType == nullptr)
 		return;
 
-	//TRACE("magictype4 ,, magicid=%d\n", magicid);
+	//TRACE(_T("magictype4 ,, magicid=%d\n"), magicid);
 
 	// Depending on which buff-type it is.....
 	switch (pType->bBuffType)
@@ -543,7 +543,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 			pNpc->m_MagicType4[pType->bBuffType - 1].fStartTime = TimeGet();
 			pNpc->m_fSpeed_1 = pNpc->m_fOldSpeed_1 * ((double) pType->bSpeed / 100);
 			pNpc->m_fSpeed_2 = pNpc->m_fOldSpeed_2 * ((double) pType->bSpeed / 100);
-			//TRACE("executeType4 ,, speed1=%.2f, %.2f,, type=%d, cur=%.2f, %.2f\n", pNpc->m_fOldSpeed_1, pNpc->m_fOldSpeed_2, pType->bSpeed, pNpc->m_fSpeed_1, pNpc->m_fSpeed_2);
+			//TRACE(_T("executeType4 ,, speed1=%.2f, %.2f,, type=%d, cur=%.2f, %.2f\n"), pNpc->m_fOldSpeed_1, pNpc->m_fOldSpeed_2, pType->bSpeed, pNpc->m_fSpeed_1, pNpc->m_fSpeed_2);
 //			}
 			break;
 
@@ -721,7 +721,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 		pType3 = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
 		if (pType3 == nullptr)
 		{
-			TRACE("#### CMagicProcess-AreaAttack Fail : magic table3 error ,, magicid=%d\n", magicid);
+			TRACE(_T("#### CMagicProcess-AreaAttack Fail : magic table3 error ,, magicid=%d\n"), magicid);
 			return 0;
 		}
 
@@ -732,7 +732,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 		pType4 = m_pMain->m_Magictype4Array.GetData(magicid);      // Get magic skill table type 3.
 		if (pType4 == nullptr)
 		{
-			TRACE("#### CMagicProcess-AreaAttack Fail : magic table4 error ,, magicid=%d\n", magicid);
+			TRACE(_T("#### CMagicProcess-AreaAttack Fail : magic table4 error ,, magicid=%d\n"), magicid);
 			return 0;
 		}
 
@@ -741,7 +741,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 
 	if (radius <= 0)
 	{
-		TRACE("#### CMagicProcess-AreaAttack Fail : magicid=%d, radius = %d\n", magicid, radius);
+		TRACE(_T("#### CMagicProcess-AreaAttack Fail : magicid=%d, radius = %d\n"), magicid, radius);
 		return 0;
 	}
 
@@ -751,7 +751,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 	if (m_pSrcUser->m_sZoneIndex < 0
 		|| m_pSrcUser->m_sZoneIndex > m_pMain->g_arZone.size())
 	{
-		TRACE("#### CMagicProcess--AreaAttack ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_pSrcUser->m_strUserID, m_pSrcUser->m_sZoneIndex);
+		TRACE(_T("#### CMagicProcess--AreaAttack ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_pSrcUser->m_strUserID, m_pSrcUser->m_sZoneIndex);
 		return 0;
 	}
 
@@ -797,7 +797,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	if (m_pSrcUser->m_sZoneIndex < 0
 		|| m_pSrcUser->m_sZoneIndex > m_pMain->g_arZone.size())
 	{
-		TRACE("#### CMagicProcess--AreaAttackDamage ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_pSrcUser->m_strUserID, m_pSrcUser->m_sZoneIndex);
+		TRACE(_T("#### CMagicProcess--AreaAttackDamage ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_pSrcUser->m_strUserID, m_pSrcUser->m_sZoneIndex);
 		return;
 	}
 
@@ -811,7 +811,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		|| rx > pMap->GetXRegionMax()
 		|| rz > pMap->GetZRegionMax())
 	{
-		TRACE("#### CMagicProcess-AreaAttackDamage() Fail : [nid=%d, name=%s], nRX=%d, nRZ=%d #####\n", m_pSrcUser->m_iUserId, m_pSrcUser->m_strUserID, rx, rz);
+		TRACE(_T("#### CMagicProcess-AreaAttackDamage() Fail : [nid=%d, name=%hs], nRX=%d, nRZ=%d #####\n"), m_pSrcUser->m_iUserId, m_pSrcUser->m_strUserID, rx, rz);
 		return;
 	}
 
@@ -825,7 +825,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 	{
-		TRACE("#### CMagicProcess-AreaAttackDamage Fail : magic maintable error ,, magicid=%d\n", magicid);
+		TRACE(_T("#### CMagicProcess-AreaAttackDamage Fail : magic maintable error ,, magicid=%d\n"), magicid);
 		return;
 	}
 
@@ -834,7 +834,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		pType3 = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
 		if (pType3 == nullptr)
 		{
-			TRACE("#### CMagicProcess-AreaAttackDamage Fail : magic table3 error ,, magicid=%d\n", magicid);
+			TRACE(_T("#### CMagicProcess-AreaAttackDamage Fail : magic table3 error ,, magicid=%d\n"), magicid);
 			return;
 		}
 
@@ -847,7 +847,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		pType4 = m_pMain->m_Magictype4Array.GetData(magicid);      // Get magic skill table type 3.
 		if (pType4 == nullptr)
 		{
-			TRACE("#### CMagicProcess-AreaAttackDamage Fail : magic table4 error ,, magicid=%d\n", magicid);
+			TRACE(_T("#### CMagicProcess-AreaAttackDamage Fail : magic table4 error ,, magicid=%d\n"), magicid);
 			return;
 		}
 
@@ -856,7 +856,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 
 	if (fRadius <= 0)
 	{
-		TRACE("#### CMagicProcess-AreaAttackDamage Fail : magicid=%d, radius = %d\n", magicid, fRadius);
+		TRACE(_T("#### CMagicProcess-AreaAttackDamage Fail : magicid=%d, radius = %d\n"), magicid, fRadius);
 		return;
 	}
 
@@ -908,7 +908,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 			if (magictype == 3)
 			{
 				damage = GetMagicDamage(pNpc->m_sNid + NPC_BAND, target_damage, attribute, dexpoint, righthand_damage);
-				TRACE("Area magictype3 ,, magicid=%d, damage=%d\n", magicid, damage);
+				TRACE(_T("Area magictype3 ,, magicid=%d, damage=%d\n"), magicid, damage);
 				if (damage >= 0)
 				{
 					result = pNpc->SetHMagicDamage(damage, m_pSrcUser->m_pIocport);
@@ -1002,7 +1002,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 						break;
 				}
 
-				TRACE("Area magictype4 ,, magicid=%d\n", magicid);
+				TRACE(_T("Area magictype4 ,, magicid=%d\n"), magicid);
 
 				SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
 				SetByte(send_buff, MAGIC_EFFECTING, send_index);

@@ -408,7 +408,7 @@ BOOL CAujardDlg::LoadItemTable()
 
 		if (!m_ItemtableArray.PutData(pTableItem->m_iNum, pTableItem))
 		{
-			TRACE("ItemTable PutData Fail - %d\n", pTableItem->m_iNum);
+			TRACE(_T("ItemTable PutData Fail - %d\n"), pTableItem->m_iNum);
 			delete pTableItem;
 			pTableItem = nullptr;
 		}
@@ -774,7 +774,7 @@ void CAujardDlg::DeleteChar(char* pBuf)
 
 	result = m_DBAgent.DeleteChar(charindex, accountid, charid, socno);
 
-	TRACE("*** DeleteChar == charid=%s, socno=%s ***\n", charid, socno);
+	TRACE(_T("*** DeleteChar == charid=%hs, socno=%hs ***\n"), charid, socno);
 
 	SetByte(send_buff, WIZ_DEL_CHAR, send_index);
 	SetShort(send_buff, uid, send_index);
@@ -895,7 +895,7 @@ void CAujardDlg::AllSaveRoutine()
 	char logstr[256] = {};
 
 	CTime cur = CTime::GetCurrentTime();
-	TRACE("Dead Time : %d년 %d월 %d일 %d시 %d분\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
+	TRACE(_T("Dead Time : %d년 %d월 %d일 %d시 %d분\n"), cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
 
 	t_count = m_DBAgent.m_UserDataArray.size();
 	for (int i = 0; i < t_count; i++)
@@ -915,7 +915,7 @@ void CAujardDlg::AllSaveRoutine()
 
 		if (m_DBAgent.UpdateUser(pUser->m_id, i, UPDATE_ALL_SAVE))
 		{
-			TRACE("GameServer Dead!! - %s Saved\n", pUser->m_id);
+			TRACE(_T("GameServer Dead!! - %hs Saved\n"), pUser->m_id);
 			Sleep(100);
 
 			count = 0;
@@ -961,7 +961,7 @@ void CAujardDlg::AllSaveRoutine()
 		}
 		else
 		{
-			TRACE("GameServer Dead!! - %s Not Saved\n", pUser->m_id);
+			TRACE(_T("GameServer Dead!! - %hs Not Saved\n"), pUser->m_id);
 		}
 
 		Sleep(100);
@@ -989,7 +989,7 @@ void CAujardDlg::ConCurrentUserCount()
 		t_count++;
 	}
 
-	TRACE("*** ConCurrentUserCount : server=%d, zone=%d, usercount=%d ***\n", m_nServerNo, m_nZoneNo, t_count);
+	TRACE(_T("*** ConCurrentUserCount : server=%d, zone=%d, usercount=%d ***\n"), m_nServerNo, m_nZoneNo, t_count);
 
 	m_DBAgent.UpdateConCurrentUserCount(m_nServerNo, m_nZoneNo, t_count);
 }
@@ -1191,7 +1191,7 @@ void CAujardDlg::CreateKnights(char* pBuf)
 
 	result = m_DBAgent.CreateKnights(knightindex, nation, knightsname, chiefname, community);
 
-	TRACE("CreateKnights - nid=%d, index=%d, result=%d \n", uid, knightindex, result);
+	TRACE(_T("CreateKnights - nid=%d, index=%d, result=%d \n"), uid, knightindex, result);
 
 	SetByte(send_buff, KNIGHTS_CREATE, send_index);
 	SetShort(send_buff, uid, send_index);
@@ -1237,7 +1237,7 @@ void CAujardDlg::JoinKnights(char* pBuf)
 
 	result = m_DBAgent.UpdateKnights(KNIGHTS_JOIN, pUser->m_id, knightindex, 0);
 
-	TRACE("JoinKnights - nid=%d, name=%s, index=%d, result=%d \n", uid, pUser->m_id, knightindex, result);
+	TRACE(_T("JoinKnights - nid=%d, name=%hs, index=%d, result=%d \n"), uid, pUser->m_id, knightindex, result);
 
 	SetByte(send_buff, KNIGHTS_JOIN, send_index);
 	SetShort(send_buff, uid, send_index);
@@ -1274,7 +1274,7 @@ void CAujardDlg::WithdrawKnights(char* pBuf)
 	pUser = (_USER_DATA*) m_DBAgent.m_UserDataArray[uid];
 
 	result = m_DBAgent.UpdateKnights(KNIGHTS_WITHDRAW, pUser->m_id, knightindex, 0);
-	TRACE("WithDrawKnights - nid=%d, index=%d, result=%d \n", uid, knightindex, result);
+	TRACE(_T("WithDrawKnights - nid=%d, index=%d, result=%d \n"), uid, knightindex, result);
 
 	SetByte(send_buff, KNIGHTS_WITHDRAW, send_index);
 	SetShort(send_buff, uid, send_index);
@@ -1313,12 +1313,12 @@ void CAujardDlg::ModifyKnightsMember(char* pBuf, BYTE command)
 
 /*	if( remove_flag == 0 && command == KNIGHTS_REMOVE )	{		// 없는 유저 추방시에는 디비에서만 처리한다
 		result = m_DBAgent.UpdateKnights( command, userid, knightindex, remove_flag );
-		TRACE("ModifyKnights - command=%d, nid=%d, index=%d, result=%d \n", command, uid, knightindex, result);
+		TRACE(_T("ModifyKnights - command=%d, nid=%d, index=%d, result=%d \n"), command, uid, knightindex, result);
 		return;
 	}	*/
 
 	result = m_DBAgent.UpdateKnights(command, userid, knightindex, remove_flag);
-	TRACE("ModifyKnights - command=%d, nid=%d, index=%d, result=%d \n", command, uid, knightindex, result);
+	TRACE(_T("ModifyKnights - command=%d, nid=%d, index=%d, result=%d \n"), command, uid, knightindex, result);
 
 	//SetByte( send_buff, WIZ_KNIGHTS_PROCESS, send_index );
 	SetByte(send_buff, command, send_index);
@@ -1355,7 +1355,7 @@ void CAujardDlg::DestroyKnights(char* pBuf)
 		return;
 
 	result = m_DBAgent.DeleteKnights(knightindex);
-	TRACE("DestoryKnights - nid=%d, index=%d, result=%d \n", uid, knightindex, result);
+	TRACE(_T("DestoryKnights - nid=%d, index=%d, result=%d \n"), uid, knightindex, result);
 
 	SetByte(send_buff, KNIGHTS_DESTROY, send_index);
 	SetShort(send_buff, uid, send_index);
@@ -1565,7 +1565,7 @@ void CAujardDlg::WriteLogFile(char* pData)
 	int nLen = strlen(strLog);
 	if (nLen >= 1024)
 	{
-		TRACE("### WriteLogFile Fail : length = %d ###\n", nLen);
+		TRACE(_T("### WriteLogFile Fail : length = %d ###\n"), nLen);
 		return;
 	}
 
@@ -1584,7 +1584,7 @@ void CAujardDlg::BattleEventResult(char* pData)
 		&& nLen < MAX_ID_SIZE + 1)
 	{
 		GetString(strMaxUserName, pData, nLen, index);
-		TRACE("--> BattleEventResult : 적국의 대장을 죽인 유저이름은? %s, len=%d, nation=%d \n", strMaxUserName, nResult, nResult);
+		TRACE(_T("--> BattleEventResult : 적국의 대장을 죽인 유저이름은? %hs, len=%d, nation=%d \n"), strMaxUserName, nResult, nResult);
 		m_DBAgent.UpdateBattleEvent(strMaxUserName, nResult);
 	}
 }

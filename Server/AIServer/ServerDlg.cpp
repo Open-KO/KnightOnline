@@ -506,7 +506,7 @@ BOOL CServerDlg::GetMagicTableData()
 
 		if (!m_MagictableArray.PutData(pTableMagic->iNum, pTableMagic))
 		{
-			TRACE("MagicTable PutData Fail - %d\n", pTableMagic->iNum);
+			TRACE(_T("MagicTable PutData Fail - %d\n"), pTableMagic->iNum);
 			delete pTableMagic;
 			pTableMagic = nullptr;
 		}
@@ -556,7 +556,7 @@ BOOL CServerDlg::GetMakeWeaponItemTableData()
 
 		if (!m_MakeWeaponItemArray.PutData(pTable->byIndex, pTable))
 		{
-			TRACE("GetMakeWeaponItemTableData PutData Fail - %d\n", pTable->byIndex);
+			TRACE(_T("GetMakeWeaponItemTableData PutData Fail - %d\n"), pTable->byIndex);
 			delete pTable;
 			pTable = nullptr;
 		}
@@ -601,7 +601,7 @@ BOOL CServerDlg::GetMakeDefensiveItemTableData()
 
 		if (!m_MakeDefensiveItemArray.PutData(pTable->byIndex, pTable))
 		{
-			TRACE("GetMakeDefensiveItemTableData PutData Fail - %d\n", pTable->byIndex);
+			TRACE(_T("GetMakeDefensiveItemTableData PutData Fail - %d\n"), pTable->byIndex);
 			delete pTable;
 			pTable = nullptr;
 		}
@@ -648,7 +648,7 @@ BOOL CServerDlg::GetMakeGradeItemTableData()
 
 		if (!m_MakeGradeItemArray.PutData(pTable->byItemIndex, pTable))
 		{
-			TRACE("MakeGradeItemTable PutData Fail - %d\n", pTable->byItemIndex);
+			TRACE(_T("MakeGradeItemTable PutData Fail - %d\n"), pTable->byItemIndex);
 			delete pTable;
 			pTable = nullptr;
 		}
@@ -689,7 +689,7 @@ BOOL CServerDlg::GetMakeLareItemTableData()
 
 		if (!m_MakeLareItemArray.PutData(pTable->byItemLevel, pTable))
 		{
-			TRACE("MakeItemTable PutData Fail - %d\n", pTable->byItemLevel);
+			TRACE(_T("MakeItemTable PutData Fail - %d\n"), pTable->byItemLevel);
 			delete pTable;
 			pTable = nullptr;
 		}
@@ -875,7 +875,7 @@ BOOL CServerDlg::GetMonsterTableData()
 
 			if (!m_arMonTable.PutData(Npc->m_sSid, Npc))
 			{
-				TRACE("GetMonsterTableData - PutData Fail - %d\n", Npc->m_sSid);
+				TRACE(_T("GetMonsterTableData - PutData Fail - %d\n"), Npc->m_sSid);
 				delete Npc;
 				Npc = nullptr;
 			}
@@ -995,7 +995,7 @@ BOOL CServerDlg::GetNpcTableData()
 
 			if (!m_arNpcTable.PutData(Npc->m_sSid, Npc))
 			{
-				TRACE("GetNpcTableData - PutData Fail - %d\n", Npc->m_sSid);
+				TRACE(_T("GetNpcTableData - PutData Fail - %d\n"), Npc->m_sSid);
 				delete Npc;
 				Npc = nullptr;
 			}
@@ -1126,7 +1126,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 					if (!bFindNpcTable)
 					{
-						TRACE("#### CreateNpcThread Fail : [nid = %d, sid = %d] #####\n", pNpc->m_sNid, pNpc->m_sSid);
+						TRACE(_T("#### CreateNpcThread Fail : [nid = %d, sid = %d] #####\n"), pNpc->m_sNid, pNpc->m_sSid);
 						break;
 					}
 
@@ -1226,7 +1226,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 					if (NpcPosSet.m_RegTime < 15)
 					{
-						TRACE("##### ServerDlg:CreateNpcThread - RegenTime Error :  nid=%d, name=%s, regentime=%d #####\n", pNpc->m_sNid + NPC_BAND, pNpc->m_strName, NpcPosSet.m_RegTime);
+						TRACE(_T("##### ServerDlg:CreateNpcThread - RegenTime Error :  nid=%d, name=%hs, regentime=%d #####\n"), pNpc->m_sNid + NPC_BAND, pNpc->m_strName, NpcPosSet.m_RegTime);
 						NpcPosSet.m_RegTime = 30;
 					}
 
@@ -1237,7 +1237,7 @@ BOOL CServerDlg::CreateNpcThread()
 					if (pNpc->m_byMoveType >= 2
 						&& NpcPosSet.m_DotCnt == 0)
 					{
-						TRACE("##### ServerDlg:CreateNpcThread - Path type Error :  nid=%d, sid=%d, name=%s, acttype=%d, path=%d #####\n", pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byMoveType, pNpc->m_sMaxPathCount);
+						TRACE(_T("##### ServerDlg:CreateNpcThread - Path type Error :  nid=%d, sid=%d, name=%hs, acttype=%d, path=%d #####\n"), pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byMoveType, pNpc->m_sMaxPathCount);
 						return FALSE;
 					}
 
@@ -1255,7 +1255,7 @@ BOOL CServerDlg::CreateNpcThread()
 							GetString(szZ, szPath, 4, index);
 							pNpc->m_PathList.pPattenPos[l].x = atoi(szX);
 							pNpc->m_PathList.pPattenPos[l].z = atoi(szZ);
-						//	TRACE(" l=%d, x=%d, z=%d\n", l, pNpc->m_PathList.pPattenPos[l].x, pNpc->m_PathList.pPattenPos[l].z);
+						//	TRACE(_T(" l=%d, x=%d, z=%d\n"), l, pNpc->m_PathList.pPattenPos[l].x, pNpc->m_PathList.pPattenPos[l].z);
 						}
 					}
 
@@ -1303,7 +1303,7 @@ BOOL CServerDlg::CreateNpcThread()
 					//m_arNpc.Add(pNpc);
 					if (!m_arNpc.PutData(pNpc->m_sNid, pNpc))
 					{
-						TRACE("Npc PutData Fail - %d\n", pNpc->m_sNid);
+						TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
 						delete pNpc;
 						pNpc = nullptr;
 					}
@@ -1317,7 +1317,7 @@ BOOL CServerDlg::CreateNpcThread()
 						pRoom = g_arZone[pNpc->m_ZoneIndex]->m_arRoomEventArray.GetData(pNpc->m_byDungeonFamily);
 						if (pRoom == nullptr)
 						{
-							TRACE("Error : CServerDlg,, Map Room Npc Fail!! : nid=%d, sid=%d, name=%s, fam=%d, zoneindex=%d\n", pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
+							TRACE(_T("Error : CServerDlg,, Map Room Npc Fail!! : nid=%d, sid=%d, name=%hs, fam=%d, zoneindex=%d\n"), pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
 							AfxMessageBox(_T("Error : CServerDlg,, Map Room Npc Fail!!"));
 							return FALSE;
 						}
@@ -1328,7 +1328,7 @@ BOOL CServerDlg::CreateNpcThread()
 						if (!pRoom->m_mapRoomNpcArray.PutData(pNpc->m_sNid, pInt))
 						{
 							delete pInt;
-							TRACE("### Map - Room Array MonsterNid Fail : nid=%d, sid=%d ###\n", pNpc->m_sNid, pNpc->m_sSid);
+							TRACE(_T("### Map - Room Array MonsterNid Fail : nid=%d, sid=%d ###\n"), pNpc->m_sNid, pNpc->m_sSid);
 						}
 					}
 
@@ -1411,7 +1411,7 @@ BOOL CServerDlg::CreateNpcThread()
 		pNpc->m_lEventNpc = 0;
 		pNpcThread->m_pNpc[i] = pNpc;
 		if( !m_arNpc.PutData( pNpc->m_sNid, pNpc) )	{
-			TRACE("Npc PutData Fail - %d\n", pNpc->m_sNid);
+			TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
 			delete pNpc;
 			pNpc = nullptr;
 		}
@@ -1423,7 +1423,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 	m_pZoneEventThread = AfxBeginThread(ZoneEventThreadProc, this, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
 
-	//TRACE("m_TotalNPC = %d \n", m_TotalNPC);
+	//TRACE(_T("m_TotalNPC = %d \n"), m_TotalNPC);
 	CString logstr;
 	logstr.Format(_T("[Monster Init - %d]"), m_TotalNPC);
 	m_StatusList.AddString(logstr);
@@ -1586,7 +1586,7 @@ void CServerDlg::DeleteUserList(int uid)
 	if (uid < 0
 		|| uid >= MAX_USER)
 	{
-		TRACE("#### ServerDlg:DeleteUserList Uid Fail : uid=%d\n", uid);
+		TRACE(_T("#### ServerDlg:DeleteUserList Uid Fail : uid=%d\n"), uid);
 		return;
 	}
 
@@ -1597,19 +1597,19 @@ void CServerDlg::DeleteUserList(int uid)
 	if (!pUser)
 	{
 		LeaveCriticalSection(&g_User_critical);
-		TRACE("#### ServerDlg:DeleteUserList UserPtr Fail : uid=%d\n", uid);
+		TRACE(_T("#### ServerDlg:DeleteUserList UserPtr Fail : uid=%d\n"), uid);
 		return;
 	}
 	if (pUser->m_iUserId == uid)
 	{
-		TRACE("*** UserLogOut으로 포인터 반환 : uid=%d, %s ***\n", uid, pUser->m_strUserID);
+		TRACE(_T("*** UserLogOut으로 포인터 반환 : uid=%d, %hs ***\n"), uid, pUser->m_strUserID);
 		pUser->m_lUsed = 1;
 		delete m_pUser[uid];
 		m_pUser[uid] = nullptr;
 	}
 	else
 	{
-		TRACE("#### ServerDlg:DeleteUserList Not Uid Fail : uid=%d\n", uid);
+		TRACE(_T("#### ServerDlg:DeleteUserList Not Uid Fail : uid=%d\n"), uid);
 	}
 
 	LeaveCriticalSection(&g_User_critical);
@@ -1660,7 +1660,7 @@ BOOL CServerDlg::MapFileLoad()
 
 		if (!file.Open(szFullPath, CFile::modeRead))
 		{
-			errormsg.Format(_T("파일 Open 실패 - %s\n"), szFullPath);
+			errormsg.Format(_T("파일 Open 실패 - %s\n"), szFullPath.GetString());
 			AfxMessageBox(errormsg);
 			return FALSE;
 		}
@@ -1672,7 +1672,7 @@ BOOL CServerDlg::MapFileLoad()
 
 		if (!pMap->LoadMap(file.m_hFile))
 		{
-			errormsg.Format(_T("Map Load 실패 - %s\n"), szFullPath);
+			errormsg.Format(_T("Map Load 실패 - %s\n"), szFullPath.GetString());
 			AfxMessageBox(errormsg);
 			delete pMap;
 			return FALSE;
@@ -1683,7 +1683,7 @@ BOOL CServerDlg::MapFileLoad()
 		{
 			if (!pMap->LoadRoomEvent(ZoneInfoSet.m_RoomEvent))
 			{
-				errormsg.Format(_T("Map Room Event Load 실패 - %s\n"), szFullPath);
+				errormsg.Format(_T("Map Room Event Load 실패 - %s\n"), szFullPath.GetString());
 				AfxMessageBox(errormsg);
 				delete pMap;
 				return FALSE;
@@ -1740,14 +1740,14 @@ void CServerDlg::AllNpcInfo()
 		m_iCompIndex = 0;
 		memset(send_buff, 0, sizeof(send_buff));
 
-		TRACE("****  allNpcInfo start = %d *****\n", nZone);
+		TRACE(_T("****  allNpcInfo start = %d *****\n"), nZone);
 
 		for (int i = 0; i < size; i++)
 		{
 			pNpc = m_arNpc.GetData(i);
 			if (pNpc == nullptr)
 			{
-				TRACE("##### allNpcInfo Fail = %d\n", i);
+				TRACE(_T("##### allNpcInfo Fail = %d\n"), i);
 				continue;
 			}
 
@@ -1771,13 +1771,13 @@ void CServerDlg::AllNpcInfo()
 				send_count = 0;
 				count = 0;
 				send_tot++;
-				//TRACE("AllNpcInfo - send_count=%d, count=%d, zone=%d\n", send_tot, count, nZone);
+				//TRACE(_T("AllNpcInfo - send_count=%d, count=%d, zone=%d\n"), send_tot, count, nZone);
 				memset(send_buff, 0, sizeof(send_buff));
 				Sleep(50);
 			}
 		}
 
-		//if( count != 0 )	TRACE("--> AllNpcInfo - send_count=%d, count=%d, zone=%d\n", send_tot, count, nZone);
+		//if( count != 0 )	TRACE(_T("--> AllNpcInfo - send_count=%d, count=%d, zone=%d\n"), send_tot, count, nZone);
 		if (count != 0
 			&& count < NPC_NUM)
 		{
@@ -1786,7 +1786,7 @@ void CServerDlg::AllNpcInfo()
 			SetByte(send_buff, (BYTE) count, send_count);
 			Send(send_buff, send_index, nZone);
 			send_tot++;
-			//TRACE("AllNpcInfo - send_count=%d, count=%d, zone=%d\n", send_tot, count, nZone);
+			//TRACE(_T("AllNpcInfo - send_count=%d, count=%d, zone=%d\n"), send_tot, count, nZone);
 			Sleep(50);
 		}
 
@@ -1798,7 +1798,7 @@ void CServerDlg::AllNpcInfo()
 		SetShort(send_buff, (short) m_TotalNPC, send_index);
 		packet_size = Send(send_buff, send_index, nZone);
 
-		TRACE("****  allNpcInfo end = %d *****\n", nZone);
+		TRACE(_T("****  allNpcInfo end = %d *****\n"), nZone);
 	}
 
 	Sleep(1000);
@@ -1813,7 +1813,7 @@ CUser* CServerDlg::GetUserPtr(int nid)
 		|| nid >= MAX_USER)
 	{
 		if (nid != -1)
-			TRACE("### GetUserPtr :: User Array Overflow [%d] ###\n", nid);
+			TRACE(_T("### GetUserPtr :: User Array Overflow [%d] ###\n"), nid);
 
 		return nullptr;
 	}
@@ -1891,7 +1891,7 @@ void CServerDlg::CheckAliveTest()
 			}
 			count++;
 		}
-		//TRACE("size = %d, socket_num = %d, i=%d \n", size, pSocket->m_sSocketID, i);
+		//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
 	}
 
 	if (count <= 0)
@@ -1911,7 +1911,7 @@ void CServerDlg::DeleteAllUserList(int zone)
 	if (zone == 9999
 		&& m_bFirstServerFlag)
 	{
-		TRACE("*** DeleteAllUserList - Start *** \n");
+		TRACE(_T("*** DeleteAllUserList - Start *** \n"));
 
 		for (MAP* pMap : g_arZone)
 		{
@@ -1945,7 +1945,7 @@ void CServerDlg::DeleteAllUserList(int zone)
 			m_arParty.DeleteAllData();
 
 		m_bFirstServerFlag = FALSE;
-		TRACE("*** DeleteAllUserList - End *** \n");
+		TRACE(_T("*** DeleteAllUserList - End *** \n"));
 
 		logstr.Format(_T("[ DELETE All User List ]"));
 		m_StatusList.AddString(logstr);
@@ -1968,7 +1968,7 @@ void CServerDlg::SendCompressedData(int nZone)
 	{
 		m_CompCount = 0;
 		m_iCompIndex = 0;
-		TRACE("#### SendCompressData Fail --> count=%d, index=%d\n", m_CompCount, m_iCompIndex);
+		TRACE(_T("#### SendCompressData Fail --> count=%d, index=%d\n"), m_CompCount, m_iCompIndex);
 		return;
 	}
 
@@ -1997,7 +1997,7 @@ void CServerDlg::SendCompressedData(int nZone)
 		m_CompCount = 0;
 		m_iCompIndex = 0;
 		m_CompMng.FlushAddData();
-		TRACE("#### SendCompressData Fail packet==null\n");
+		TRACE(_T("#### SendCompressData Fail packet==null\n"));
 		return;
 	}
 
@@ -2102,7 +2102,7 @@ void CServerDlg::SyncTest()
 		pNpc = m_arNpc.GetData(i);
 		if(pNpc == nullptr)
 		{
-			TRACE("##### allNpcInfo Fail = %d\n", i);
+			TRACE(_T("##### allNpcInfo Fail = %d\n"), i);
 			continue;
 		}
 
@@ -2162,7 +2162,7 @@ CUser* CServerDlg::GetActiveUserPtr(int index)
 	CUser* pUser = nullptr;
 
 /*	if(index < 0 || index > MAX_USER)	{
-		TRACE("### Fail :: User Array Overflow[%d] ###\n", index );
+		TRACE(_T("### Fail :: User Array Overflow[%d] ###\n"), index );
 		return nullptr;
 	}
 
@@ -2170,14 +2170,14 @@ CUser* CServerDlg::GetActiveUserPtr(int index)
 
 	if ( m_ppUserActive[index] ) {
 		LeaveCriticalSection( &g_User_critical );
-		TRACE("### Fail : ActiveUser Array Invalid[%d] ###\n", index );
+		TRACE(_T("### Fail : ActiveUser Array Invalid[%d] ###\n"), index );
 		return nullptr;
 	}
 	else {
 		pUser = (CUser *)m_ppUserInActive[index];
 		if( !pUser ) {
 			LeaveCriticalSection( &g_User_critical );
-			TRACE("### Fail : InActiveUser Array Invalid[%d] ###\n", index );
+			TRACE(_T("### Fail : InActiveUser Array Invalid[%d] ###\n"), index );
 			return nullptr;
 		}
 	}
@@ -2226,14 +2226,14 @@ int  CServerDlg::MonsterSummon(const char* pNpcName, int zone, float fx, float f
 	if (zone < 0
 		|| zone > (g_arZone.size() + 1))
 	{
-		TRACE("#### 소환 실패 : %s, zoneindex=%d #####\n", pNpcName, zone);
+		TRACE(_T("#### 소환 실패 : %hs, zoneindex=%d #####\n"), pNpcName, zone);
 		return -1;
 	}
 
 	CNpc* pNpc = GetNpcPtr(pNpcName);
 	if (pNpc == nullptr)
 	{
-		TRACE("소환할  몬스터의 이름(%s)이 잘못되었습니다.\n", pNpcName);
+		TRACE(_T("소환할  몬스터의 이름(%hs)이 잘못되었습니다.\n"), pNpcName);
 		return  -1;
 	}
 
@@ -2251,7 +2251,7 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz)
 
 	if (pEventNpc == nullptr)
 	{
-		TRACE("소환할수 있는 몹은 최대 20마리입니다.\n");
+		TRACE(_T("소환할수 있는 몹은 최대 20마리입니다.\n"));
 		return FALSE;
 	}
 
@@ -2342,7 +2342,7 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz)
 
 	if (pEventNpc->m_ZoneIndex == -1)
 	{
-		TRACE("Invaild zone Index!!\n");
+		TRACE(_T("Invaild zone Index!!\n"));
 		return FALSE;
 	}
 
@@ -2355,7 +2355,7 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz)
 	for (int i = 0; i < NPC_NUM; i++)
 	{
 		test = m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i];
-		TRACE("setsummon == %d, used=%d\n", i, test);
+		TRACE(_T("setsummon == %d, used=%d\n"), i, test);
 		if (m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] == 0)
 		{
 			m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] = 1;
@@ -2368,11 +2368,11 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz)
 	if (!bSuccess)
 	{
 		pEventNpc->m_lEventNpc = 0;
-		TRACE("### 소환에 실패했습니다. ###\n");
+		TRACE(_T("### 소환에 실패했습니다. ###\n"));
 		return FALSE;
 	}
 
-	TRACE("*** %d, %s 를 소환하였습니다. state = %d ***\n", pEventNpc->m_sNid + NPC_BAND, pEventNpc->m_strName, pEventNpc->m_NpcState);
+	TRACE(_T("*** %d, %hs 를 소환하였습니다. state = %d ***\n"), pEventNpc->m_sNid + NPC_BAND, pEventNpc->m_strName, pEventNpc->m_NpcState);
 
 	return TRUE;
 }
@@ -2395,7 +2395,7 @@ void CServerDlg::TestCode()
 			count_3++;
 	}
 
-	//TRACE("$$$ random test == 1=%d, 2=%d, 3=%d,, %d,%s $$$\n", count_1, count_2, count_3, __FILE__, __LINE__);
+	//TRACE(_T("$$$ random test == 1=%d, 2=%d, 3=%d,, %d,%hs $$$\n"), count_1, count_2, count_3, __FILE__, __LINE__);
 
 }
 
@@ -2434,7 +2434,7 @@ BOOL CServerDlg::GetMagicType1Data()
 
 		if (!m_Magictype1Array.PutData(pType1Magic->iNum, pType1Magic))
 		{
-			TRACE("MagicType1 PutData Fail - %d\n", pType1Magic->iNum);
+			TRACE(_T("MagicType1 PutData Fail - %d\n"), pType1Magic->iNum);
 			delete pType1Magic;
 			pType1Magic = nullptr;
 		}
@@ -2477,7 +2477,7 @@ BOOL CServerDlg::GetMagicType2Data()
 
 		if (!m_Magictype2Array.PutData(pType2Magic->iNum, pType2Magic))
 		{
-			TRACE("MagicType2 PutData Fail - %d\n", pType2Magic->iNum);
+			TRACE(_T("MagicType2 PutData Fail - %d\n"), pType2Magic->iNum);
 			delete pType2Magic;
 			pType2Magic = nullptr;
 		}
@@ -2524,7 +2524,7 @@ BOOL CServerDlg::GetMagicType3Data()
 
 		if (!m_Magictype3Array.PutData(pType3Magic->iNum, pType3Magic))
 		{
-			TRACE("MagicType3 PutData Fail - %d\n", pType3Magic->iNum);
+			TRACE(_T("MagicType3 PutData Fail - %d\n"), pType3Magic->iNum);
 			delete pType3Magic;
 			pType3Magic = nullptr;
 		}
@@ -2583,7 +2583,7 @@ BOOL CServerDlg::GetMagicType4Data()
 
 		if (!m_Magictype4Array.PutData(pType4Magic->iNum, pType4Magic))
 		{
-			TRACE("MagicType4 PutData Fail - %d\n", pType4Magic->iNum);
+			TRACE(_T("MagicType4 PutData Fail - %d\n"), pType4Magic->iNum);
 			delete pType4Magic;
 			pType4Magic = nullptr;
 		}
@@ -2635,7 +2635,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	if (pNpcTable == nullptr)
 	{
 		bFindNpcTable = FALSE;
-		TRACE("#### AddObjectEventNpc Fail : [sid = %d], zone=%d #####\n", pEvent->sIndex, zone_number);
+		TRACE(_T("#### AddObjectEventNpc Fail : [sid = %d], zone=%d #####\n"), pEvent->sIndex, zone_number);
 		return FALSE;
 	}
 
@@ -2741,7 +2741,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	//pNpc->Init();
 	if (!m_arNpc.PutData(pNpc->m_sNid, pNpc))
 	{
-		TRACE("Npc PutData Fail - %d\n", pNpc->m_sNid);
+		TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
 		delete pNpc;
 		pNpc = nullptr;
 	}
@@ -2789,7 +2789,7 @@ void CServerDlg::ClostSocket(int zonenumber)
 
 		if (pSocket->m_sSocketID == zonenumber)
 		{
-			//TRACE("size = %d, socket_num = %d, i=%d \n", size, pSocket->m_sSocketID, i);
+			//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
 			pSocket->CloseProcess();
 			m_Iocport.RidIOCPSocket(pSocket->GetSocketID(), pSocket);
 		}
@@ -2827,7 +2827,7 @@ void CServerDlg::SendSystemMsg(char* pMsg, int zone, int type, int who)
 
 void CServerDlg::ResetBattleZone()
 {
-	TRACE("ServerDlg - ResetBattleZone() : start \n");
+	TRACE(_T("ServerDlg - ResetBattleZone() : start \n"));
 
 	for (MAP* pMap : g_arZone)
 	{
@@ -2845,7 +2845,7 @@ void CServerDlg::ResetBattleZone()
 		pMap->InitializeRoom();
 	}
 
-	TRACE("ServerDlg - ResetBattleZone() : end \n");
+	TRACE(_T("ServerDlg - ResetBattleZone() : end \n"));
 }
 
 CString CServerDlg::GetGameDBConnectionString()

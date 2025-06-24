@@ -63,7 +63,7 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 			dwTickTime = fTime3 * 1000;
 
 			//if(i==0)
-			//TRACE("thread time = %.2f, %.2f, %.2f, delay=%d, state=%d, nid=%d\n", pNpc->m_fDelayTime, fTime2, fTime3, dwTickTime, pNpc->m_NpcState, pNpc->m_sNid+NPC_BAND);
+			//TRACE(_T("thread time = %.2f, %.2f, %.2f, delay=%d, state=%d, nid=%d\n"), pNpc->m_fDelayTime, fTime2, fTime3, dwTickTime, pNpc->m_NpcState, pNpc->m_sNid+NPC_BAND);
 
 			if (pNpc->m_Delay > (int) dwTickTime
 				&& !pNpc->m_bFirstLive

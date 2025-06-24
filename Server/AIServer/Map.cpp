@@ -331,11 +331,11 @@ void MAP::RegionNpcAdd(int rx, int rz, int nid)
 	if (!region->m_RegionNpcArray.PutData(nid, pInt))
 	{
 		delete pInt;
-		TRACE("### Map - RegionNpcAdd Fail : x=%d,z=%d, nid=%d ###\n", rx, rz, nid);
+		TRACE(_T("### Map - RegionNpcAdd Fail : x=%d,z=%d, nid=%d ###\n"), rx, rz, nid);
 	}
 
 	int nSize = m_ppRegion[rx][rz].m_RegionNpcArray.GetSize();
-	//TRACE("+++ Map - RegionNpcAdd : x=%d,z=%d, nid=%d, total=%d \n", rx,rz,nid, nSize);
+	//TRACE(_T("+++ Map - RegionNpcAdd : x=%d,z=%d, nid=%d, total=%d \n"), rx,rz,nid, nSize);
 
 	LeaveCriticalSection(&g_region_critical);
 }
@@ -399,7 +399,7 @@ void MAP::LoadMapTile(HANDLE hFile)
 		//	m_pMap[j][i].m_dwType = 0;
 		}
 	}
-	TRACE("move = %d\n", count);
+	TRACE(_T("move = %d\n"), count);
 
 /*	FILE* stream = fopen("c:\\move1.txt", "w");
 
@@ -482,7 +482,7 @@ void MAP::LoadObjectEvent(HANDLE hFile)
 		ReadFile(hFile, &pEvent->fPosY, 4, &dwNum, nullptr);
 		ReadFile(hFile, &pEvent->fPosZ, 4, &dwNum, nullptr);
 
-		//TRACE("Object - belong=%d, index=%d, type=%d, con=%d, sta=%d\n", pEvent->sBelong, pEvent->sIndex, pEvent->sType, pEvent->sControlNpcID, pEvent->sStatus);
+		//TRACE(_T("Object - belong=%d, index=%d, type=%d, con=%d, sta=%d\n"), pEvent->sBelong, pEvent->sIndex, pEvent->sType, pEvent->sControlNpcID, pEvent->sStatus);
 
 		// 작업할것 : 맵데이터가 바뀌면 Param1이 2이면 성문인것을 판단..  3이면 레버..
 		if (pEvent->sType == 1
@@ -498,7 +498,7 @@ void MAP::LoadObjectEvent(HANDLE hFile)
 
 		if (!m_ObjectEventArray.PutData(pEvent->sIndex, pEvent))
 		{
-			TRACE("Object Event PutData Fail - %d\n", pEvent->sIndex);
+			TRACE(_T("Object Event PutData Fail - %d\n"), pEvent->sIndex);
 			delete pEvent;
 			pEvent = nullptr;
 		}
@@ -578,7 +578,7 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 
 				if (m_arRoomEventArray.GetData(event_num) != nullptr)
 				{
-					TRACE("Event Double !!\n");
+					TRACE(_T("Event Double !!\n"));
 					goto cancel_event_load;
 				}
 
@@ -784,7 +784,7 @@ int MAP::IsRoomCheck(float fx, float fz)
 				pRoom->m_byStatus = 2;	// 진행중 상태로 방상태 변환
 				pRoom->m_fDelayTime = TimeGet();
 				room_number = i;
-				TRACE(" Room Check - number = %d, x=%d, z=%d\n", i, nX, nZ);
+				TRACE(_T(" Room Check - number = %d, x=%d, z=%d\n"), i, nX, nZ);
 				//wsprintf(notify, "** 알림 : [%d Zone][%d] 방에 들어오신것을 환영합니다 **", m_nZoneNumber, pRoom->m_sRoomNumber);
 				//m_pMain->SendSystemMsg( notify, m_nZoneNumber, PUBLIC_CHAT, SEND_ALL);
 			}
@@ -808,7 +808,7 @@ CRoomEvent* MAP::SetRoomEvent(int number)
 	CRoomEvent* pEvent = m_arRoomEventArray.GetData(number);
 	if (pEvent != nullptr)
 	{
-		TRACE("#### SetRoom Error : double event number = %d ####\n", number);
+		TRACE(_T("#### SetRoom Error : double event number = %d ####\n"), number);
 		return nullptr;
 	}
 
@@ -840,7 +840,7 @@ BOOL MAP::IsRoomStatusCheck()
 		pRoom = m_arRoomEventArray.GetData(i);
 		if (pRoom == nullptr)
 		{
-			TRACE("#### IsRoomStatusCheck Error : room empty number = %d ####\n", i);
+			TRACE(_T("#### IsRoomStatusCheck Error : room empty number = %d ####\n"), i);
 			continue;
 			//return nullptr;
 		}
@@ -857,7 +857,7 @@ BOOL MAP::IsRoomStatusCheck()
 				if (nTotalRoom == nClearRoom)
 				{
 					m_byRoomStatus = 2;
-					TRACE("방이 다 클리어 되었어여.. 초기화 해줘여,, zone=%d, type=%d, status=%d\n", m_nZoneNumber, m_byRoomType, m_byRoomStatus);
+					TRACE(_T("방이 다 클리어 되었어여.. 초기화 해줘여,, zone=%d, type=%d, status=%d\n"), m_nZoneNumber, m_byRoomType, m_byRoomStatus);
 					return TRUE;
 				}
 			}
@@ -874,7 +874,7 @@ BOOL MAP::IsRoomStatusCheck()
 				if (nTotalRoom == nClearRoom)
 				{
 					m_byRoomStatus = 3;
-					TRACE("방이 초기화 되었어여..  status=%d\n", m_byRoomStatus);
+					TRACE(_T("방이 초기화 되었어여..  status=%d\n"), m_byRoomStatus);
 					return TRUE;
 				}
 			}
@@ -884,7 +884,7 @@ BOOL MAP::IsRoomStatusCheck()
 		{
 			m_byRoomStatus = 1;
 			m_byInitRoomCount = 0;
-			TRACE("방이 다시 시작되었군여..  status=%d\n", m_byRoomStatus);
+			TRACE(_T("방이 다시 시작되었군여..  status=%d\n"), m_byRoomStatus);
 			return TRUE;
 		}
 	}
@@ -902,7 +902,7 @@ void MAP::InitializeRoom()
 		pRoom = m_arRoomEventArray.GetData(i);
 		if (pRoom == nullptr)
 		{
-			TRACE("#### InitializeRoom Error : room empty number = %d ####\n", i);
+			TRACE(_T("#### InitializeRoom Error : room empty number = %d ####\n"), i);
 			continue;
 		}
 

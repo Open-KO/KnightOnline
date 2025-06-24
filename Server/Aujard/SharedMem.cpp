@@ -68,7 +68,7 @@ BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lp
 	if (m_lpMMFile == nullptr)
 		return FALSE;
 
-	TRACE("%s Address : %p\n", lpname, m_lpMMFile);
+	TRACE(_T("%s Address : %p\n"), lpname, m_lpMMFile);
 
 	m_bMMFCreate	= bCreate;
 	m_pHeader		= (_SMQ_HEADER*) m_lpMMFile;
@@ -135,7 +135,7 @@ int CSharedMemQueue::PutData(char* pBuf, int size)
 
 	m_pHeader->RearMode = WR;
 
-//	TRACE("Queue Writing : %d %d %x\n", m_pHeader->nCount, m_pHeader->Rear, m_pHeader);
+//	TRACE(_T("Queue Writing : %d %d %x\n"), m_pHeader->nCount, m_pHeader->Rear, m_pHeader);
 
 	return 1;
 }
@@ -184,7 +184,7 @@ int CSharedMemQueue::GetData(char* pBuf)
 
 	m_pHeader->FrontMode = WR;
 
-//	TRACE("Queue Reading : %d %d %x\n", m_pHeader->nCount, m_pHeader->Front, m_pHeader);
+//	TRACE(_T("Queue Reading : %d %d %x\n"), m_pHeader->nCount, m_pHeader->Front, m_pHeader);
 
 	return size;
 }
