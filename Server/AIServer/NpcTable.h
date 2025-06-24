@@ -13,7 +13,7 @@ class CNpcTable
 {
 public:
 	short	m_sSid;							// MONSTER(NPC) Serial ID
-	char	m_strName[MAX_ID_SIZE + 1];		// MONSTER(NPC) Name
+	char	m_strName[MAX_NPC_NAME_SIZE + 1];	// MONSTER(NPC) Name
 	short	m_sPid;							// MONSTER(NPC) Picture ID
 	short   m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
 	int 	m_iWeapon_1;		// 무기계열(오른손)

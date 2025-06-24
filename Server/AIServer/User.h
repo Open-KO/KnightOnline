@@ -31,9 +31,9 @@ public:
 
 	// 필요한 정보 변수만 선언,,,
 	// 캐릭터 기본 속성
-	char m_strUserID[MAX_ID_SIZE + 1];	// 캐릭터의 이름
-	int		m_iUserId;					// User의 번호
-	BYTE	m_bLive;					// 죽었니? 살았니?
+	char			m_strUserID[MAX_ID_SIZE + 1];	// 캐릭터의 이름
+	int				m_iUserId;			// User의 번호
+	BYTE			m_bLive;			// 죽었니? 살았니?
 
 	float			m_curx;				// 현재 X 좌표
 	float			m_cury;				// 현재 Y 좌표

@@ -812,7 +812,12 @@ BOOL CServerDlg::GetMonsterTableData()
 			Npc->Initialize();
 
 			Npc->m_sSid = NpcTableSet.m_sSid;						// MONSTER(NPC) Serial ID
-			strcpy(Npc->m_strName, CT2A(NpcTableSet.m_strName));	// MONSTER(NPC) Name
+
+			if (NpcTableSet.m_strName.GetLength() <= MAX_NPC_NAME_SIZE)
+				strcpy(Npc->m_strName, CT2A(NpcTableSet.m_strName)); // MONSTER(NPC) Name
+			else
+				strncpy(Npc->m_strName, CT2A(NpcTableSet.m_strName), MAX_NPC_NAME_SIZE);
+
 			Npc->m_sPid = NpcTableSet.m_sPid;						// MONSTER(NPC) Picture ID
 			Npc->m_sSize = NpcTableSet.m_sSize;						// MONSTER(NPC) 캐릭 크기 비율
 			Npc->m_iWeapon_1 = NpcTableSet.m_iWeapon1;				// 착용무기
@@ -927,7 +932,12 @@ BOOL CServerDlg::GetNpcTableData()
 			Npc->Initialize();
 
 			Npc->m_sSid = NpcTableSet.m_sSid;						// MONSTER(NPC) Serial ID
-			strcpy(Npc->m_strName, CT2A(NpcTableSet.m_strName));	// MONSTER(NPC) Name
+
+			if (NpcTableSet.m_strName.GetLength() <= MAX_NPC_NAME_SIZE)
+				strcpy(Npc->m_strName, CT2A(NpcTableSet.m_strName)); // MONSTER(NPC) Name
+			else
+				strncpy(Npc->m_strName, CT2A(NpcTableSet.m_strName), MAX_NPC_NAME_SIZE);
+
 			Npc->m_sPid = NpcTableSet.m_sPid;						// MONSTER(NPC) Picture ID
 			Npc->m_sSize = NpcTableSet.m_sSize;						// MONSTER(NPC) 캐릭 크기 비율
 			Npc->m_iWeapon_1 = NpcTableSet.m_iWeapon1;				// 착용무기
@@ -1114,6 +1124,7 @@ BOOL CServerDlg::CreateNpcThread()
 					if (!bFindNpcTable)
 					{
 						TRACE("#### CreateNpcThread Fail : [nid = %d, sid = %d] #####\n", pNpc->m_sNid, pNpc->m_sSid);
+						break;
 					}
 
 					if (bMoveNext)
@@ -1123,6 +1134,7 @@ BOOL CServerDlg::CreateNpcThread()
 					}
 
 					strcpy(pNpc->m_strName, CT2A(pNpcTable->m_strName));	// MONSTER(NPC) Name
+
 					pNpc->m_sPid = pNpcTable->m_sPid;						// MONSTER(NPC) Picture ID
 					pNpc->m_sSize = pNpcTable->m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
 					pNpc->m_iWeapon_1 = pNpcTable->m_iWeapon_1;				// 착용무기

@@ -276,7 +276,7 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 	short		sSize = 100;				// NPC Size
 	int			iweapon_1;
 	int			iweapon_2;
-	char		szName[MAX_ID_SIZE + 1];		// NPC Name
+	char		szName[MAX_NPC_NAME_SIZE + 1];		// NPC Name
 	BYTE		byGroup;		// 소속 집단
 	BYTE		byLevel;		// level
 	float		fPosX;			// X Position
@@ -323,7 +323,7 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		//TRACE("RecvNpcInfoAll  : nid=%d, szName=%s, count=%d\n", nid, szName, byCount);
 
 		if (nLength < 0
-			|| nLength > MAX_ID_SIZE)
+			|| nLength > MAX_NPC_NAME_SIZE)
 		{
 			TRACE("#### RecvNpcInfoAll Fail : szName=%s\n", szName);
 			continue;		// 잘못된 monster 아이디 
@@ -861,7 +861,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	int			iWeapon_2;					// 왼손  무기
 	short       sZone;						// Current zone number
 	short       sZoneIndex;					// Current zone index
-	char		szName[MAX_ID_SIZE + 1];	// NPC Name
+	char		szName[MAX_NPC_NAME_SIZE + 1];	// NPC Name
 	BYTE		byGroup;					// 소속 집단
 	BYTE		byLevel;					// level
 	float		fPosX;						// X Position
@@ -893,7 +893,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 	// 잘못된 monster 아이디 
 	if (nLength < 0
-		|| nLength > MAX_ID_SIZE)
+		|| nLength > MAX_NPC_NAME_SIZE)
 		return;
 
 	byGroup = GetByte(pBuf, index);

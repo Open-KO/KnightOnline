@@ -30,7 +30,6 @@
 
 #define NOW_TEST_MODE		1
 
-#define MAX_ID_SIZE			20
 #define MAX_WEAPON_NAME_SIZE	40
 #define MAX_ITEM			28
 #define VIEW_DIST			48		// 가시거리
