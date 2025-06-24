@@ -142,6 +142,7 @@
     <ResourceCompile Include="Aujard.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\shared\_USER_DATA.h" />
     <ClInclude Include="Aujard.h" />
     <ClInclude Include="AujardDlg.h" />
     <ClInclude Include="DBAgent.h" />

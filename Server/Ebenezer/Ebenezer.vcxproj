@@ -171,6 +171,7 @@
     <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h" />
     <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h" />
     <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
+    <ClInclude Include="..\shared\_USER_DATA.h" />
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="BattleSet.h" />
     <ClInclude Include="CoefficientSet.h" />

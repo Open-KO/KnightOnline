@@ -285,7 +285,7 @@ void CVersionManagerDlg::OnVersionSetting()
 	std::filesystem::path iniPath(GetProgPath().GetString());
 	iniPath /= L"Version.ini";
 
-	CIni ini(inipath.GetString());
+	CIni ini(iniPath);
 	ini.SetString(_T("CONFIGURATION"), _T("DEFAULT_PATH"), m_strDefaultPath);
 	ini.Save();
 }

@@ -269,6 +269,9 @@
     <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h">
       <Filter>N3Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\shared\_USER_DATA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Ebenezer.ico">
