@@ -24,7 +24,7 @@ bool CIni::Load()
 bool CIni::Load(
 	const std::filesystem::path& path)
 {
-	m_szPath = path.native();
+	m_szPath = path;
 
 	std::wifstream file(m_szPath);
 	if (!file)
@@ -106,7 +106,7 @@ void CIni::Save()
 void CIni::Save(
 	const std::filesystem::path& path)
 {
-	FILE* fp = _wfopen(path.native().c_str(), L"w");
+	FILE* fp = _wfopen(path.c_str(), L"w");
 	if (fp == nullptr)
 		return;
 

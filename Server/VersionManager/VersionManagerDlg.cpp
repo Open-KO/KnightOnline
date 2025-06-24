@@ -75,38 +75,38 @@ BOOL CVersionManagerDlg::OnInitDialog()
 
 	if (!m_Iocport.Listen(_LISTEN_PORT))
 	{
-		AfxMessageBox("FAIL TO CREATE LISTEN STATE");
+		AfxMessageBox(_T("FAIL TO CREATE LISTEN STATE"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
 	if (!GetInfoFromIni())
 	{
-		AfxMessageBox("Ini File Info Error!!");
+		AfxMessageBox(_T("Ini File Info Error!!"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	char strconnection[256] = {};
-	sprintf(strconnection, "ODBC;DSN=%s;UID=%s;PWD=%s", m_ODBCName, m_ODBCLogin, m_ODBCPwd);
+	CString strConnection;
+	strConnection.Format(_T("ODBC;DSN=%s;UID=%s;PWD=%s"), m_ODBCName, m_ODBCLogin, m_ODBCPwd);
 
-	if (!m_DBProcess.InitDatabase(strconnection))
+	if (!m_DBProcess.InitDatabase(strConnection))
 	{
-		AfxMessageBox("Database Connection Fail!!");
+		AfxMessageBox(_T("Database Connection Fail!!"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
 	if (!m_DBProcess.LoadVersionList())
 	{
-		AfxMessageBox("Load Version List Fail!!");
+		AfxMessageBox(_T("Load Version List Fail!!"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	m_OutputList.AddString(strconnection);
+	m_OutputList.AddString(strConnection);
 	CString version;
-	version.Format("Latest Version : %d", m_nLastVersion);
+	version.Format(_T("Latest Version : %d"), m_nLastVersion);
 	m_OutputList.AddString(version);
 
 	::ResumeThread(m_Iocport.m_hAcceptThread);
@@ -231,8 +231,12 @@ void CVersionManagerDlg::OnVersionSetting()
 	CSettingDlg	setdlg(m_nLastVersion, this);
 	
 	_tcscpy(setdlg.m_strDefaultPath, m_strDefaultPath);
-	if( setdlg.DoModal() == IDOK ) {
-		strcpy( m_strDefaultPath, setdlg.m_strDefaultPath );
-		WritePrivateProfileString("CONFIGURATION", "DEFAULT_PATH", m_strDefaultPath, inipath);
-	}
+	if (setdlg.DoModal() != IDOK)
+		return;
+
+	_tcscpy(m_strDefaultPath, setdlg.m_strDefaultPath);
+
+	CIni ini(inipath.GetString());
+	ini.SetString(_T("CONFIGURATION"), _T("DEFAULT_PATH"), m_strDefaultPath);
+	ini.Save();
 }

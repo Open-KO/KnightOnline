@@ -68,19 +68,18 @@ BOOL CDlgBrowsePath::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// 최근에 쓴 폴더를 가져온다...
-	char szInitDir[256];
+	TCHAR szInitDir[256] = {};
 	DWORD dwLength = 256;
-	memset(szInitDir, 0, 256);
 	CString szKey;
 	HKEY hKey;
 	DWORD dwKeyType = REG_SZ;
-	if(ERROR_SUCCESS == RegOpenKey(HKEY_CURRENT_USER, "Recenet used folder", &hKey))
+	if (ERROR_SUCCESS == RegOpenKey(HKEY_CURRENT_USER, _T("Recenet used folder"), &hKey))
 	{
-		for(int i = 0; i < 10; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			szKey.Format("Folder%.1d", i);
-			LONG success = RegQueryValueEx(hKey, szKey, NULL, &dwKeyType, (BYTE*)szInitDir, &dwLength);
-			if(success == ERROR_SUCCESS && lstrlen(szInitDir) != 0)
+			szKey.Format(_T("Folder%.1d", i));
+			LONG success = RegQueryValueEx(hKey, szKey, NULL, &dwKeyType, (BYTE*) szInitDir, &dwLength);
+			if (success == ERROR_SUCCESS && lstrlen(szInitDir) != 0)
 			{
 				m_CBPath.AddString(szInitDir);
 			}
@@ -189,17 +188,17 @@ void CDlgBrowsePath::OnOK()
 	}
 
 	// 최근에 쓴 폴더를 저장해둔다....
-	char szInitDir[256] = "";
+	TCHAR szInitDir[256] = {};
 	CString szKey;
 	HKEY hKey;
 	DWORD dwKeyType = REG_SZ;
-	if(ERROR_SUCCESS == RegCreateKey(HKEY_CURRENT_USER, "Recenet used folder", &hKey))
+	if(ERROR_SUCCESS == RegCreateKey(HKEY_CURRENT_USER, _T("Recenet used folder"), &hKey))
 	{
 		int nCBC = m_CBPath.GetCount();
 		if(nCBC > 10) nCBC = 10;
 		for(int i = 0; i < nCBC; i++)
 		{
-			szKey.Format("Folder%.1d", i);
+			szKey.Format(_T("Folder%.1d"), i);
 			m_CBPath.GetLBText(i, szInitDir);
 			int nLength = m_CBPath.GetLBTextLen(i);
 			if(nLength > 0)

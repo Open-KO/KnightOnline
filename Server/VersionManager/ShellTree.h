@@ -24,10 +24,10 @@ public:
 
 private:
 	CString		m_szFileName;
-	char		m_szDrive[_MAX_DRIVE];
-	char		m_szDir[_MAX_DIR];
-	char		m_szFname[_MAX_FNAME];
-	char		m_szExt[_MAX_EXT];
+	TCHAR		m_szDrive[_MAX_DRIVE + 1];
+	TCHAR		m_szDir[_MAX_DIR + 1];
+	TCHAR		m_szFname[_MAX_FNAME + 1];
+	TCHAR		m_szExt[_MAX_EXT + 1];
 };
 
 class CShellPidl
@@ -50,14 +50,14 @@ public:
 
 public:
 
-    // Functions that deal with PIDLs
-    LPITEMIDLIST	ConcatPidls(LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2);
-    LPITEMIDLIST	GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi);
-    LPITEMIDLIST	CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi);
-    BOOL			GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST  lpi, DWORD dwFlags, LPSTR lpFriendlyName);
-    LPITEMIDLIST	CreatePidl(UINT cbSize);
-    UINT			GetSize(LPCITEMIDLIST pidl);
-    LPITEMIDLIST	Next(LPCITEMIDLIST pidl);
+	// Functions that deal with PIDLs
+	LPITEMIDLIST	ConcatPidls(LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2);
+	LPITEMIDLIST	GetFullyQualPidl(LPSHELLFOLDER lpsf, LPITEMIDLIST lpi);
+	LPITEMIDLIST	CopyITEMID(LPMALLOC lpMalloc, LPITEMIDLIST lpi);
+	BOOL			GetName(LPSHELLFOLDER lpsf, LPITEMIDLIST  lpi, DWORD dwFlags, LPTSTR* lpFriendlyName);
+	LPITEMIDLIST	CreatePidl(UINT cbSize);
+	UINT			GetSize(LPCITEMIDLIST pidl);
+	LPITEMIDLIST	Next(LPCITEMIDLIST pidl);
 
 	// Utility Functions
 	BOOL	DoTheMenuThing(HWND hwnd, LPSHELLFOLDER lpsfParent, LPITEMIDLIST  lpi, LPPOINT lppt);
@@ -69,15 +69,15 @@ class CShellTree : public CTreeCtrl, public CShellPidl
 public:
 	enum FindAttribs{type_drive,type_folder};
 
-// Construction
+	// Construction
 public:
 	CShellTree();
 
-// Attributes
+	// Attributes
 public:
-    BOOL m_bOutaHere;
+	BOOL m_bOutaHere;
 
-// Operations
+	// Operations
 public:
 	void	PopulateTree();
 	void	PopulateTree(int nFolder);
@@ -93,16 +93,16 @@ public:
 	LPITEMIDLIST	GetRelativeIDLIST(HTREEITEM folderNode);
 	LPITEMIDLIST	GetFullyQualifiedID(HTREEITEM folderNode);
 	void	FindTreePidl(	HTREEITEM nextNode,
-							HTREEITEM& folderNode, 
-							LPLVITEMDATA lplvid, 
-							bool& valid);
+		HTREEITEM& folderNode, 
+		LPLVITEMDATA lplvid, 
+		bool& valid);
 
-// Overrides
+	// Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CShellTree)
 	//}}AFX_VIRTUAL
 
-// Implementation
+	// Implementation
 public:
 	virtual ~CShellTree();
 
@@ -110,8 +110,8 @@ public:
 protected:
 	void	FillTreeView(LPSHELLFOLDER lpsf, LPITEMIDLIST  lpifq, HTREEITEM     hParent);
 	void	GetNormalAndSelectedIcons(LPITEMIDLIST lpifq, LPTV_ITEM lptvitem);
- 	static int CALLBACK TreeViewCompareProc(LPARAM, LPARAM, LPARAM);
-	
+	static int CALLBACK TreeViewCompareProc(LPARAM, LPARAM, LPARAM);
+
 	//{{AFX_MSG(CShellTree)
 	//}}AFX_MSG
 

@@ -26,7 +26,7 @@ CDBProcess::~CDBProcess()
 {
 }
 
-BOOL CDBProcess::InitDatabase(TCHAR* strconnection)
+BOOL CDBProcess::InitDatabase(const TCHAR* strconnection)
 {
 	m_VersionDB.SetLoginTimeout(100);
 
@@ -40,10 +40,10 @@ BOOL CDBProcess::InitDatabase(TCHAR* strconnection)
 
 void CDBProcess::ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd)
 {
-	char strlog[256] = {};
+	CString logstr;
 	CTime t = CTime::GetCurrentTime();
-	sprintf(strlog, "Try ReConnectODBC... %d월 %d일 %d시 %d분\r\n", t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute());
-	LogFileWrite(strlog);
+	logstr.Format(_T("Try ReConnectODBC... %d월 %d일 %d시 %d분\r\n"), t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute());
+	LogFileWrite(logstr);
 
 	// DATABASE 연결...
 	CString strConnect;
@@ -75,10 +75,10 @@ BOOL CDBProcess::LoadVersionList()
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	TCHAR			szSQL[1024] = {};
+	SQLTCHAR		szSQL[1024] = {};
 
 	CString tempfilename, tempcompname;
-	wsprintf(szSQL, TEXT("select * from %s"), m_pMain->m_TableName);
+	wsprintf((TCHAR*) szSQL, TEXT("select * from %s"), m_pMain->m_TableName);
 
 	SQLSMALLINT	version = 0, historyversion = 0;
 	TCHAR strfilename[256] = {}, strcompname[256] = {};
@@ -88,7 +88,7 @@ BOOL CDBProcess::LoadVersionList()
 	if (retcode != SQL_SUCCESS)
 		return FALSE;
 
-	retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+	retcode = SQLExecDirect(hstmt, szSQL, SQL_NTS);
 	if (retcode != SQL_SUCCESS
 		&& retcode != SQL_SUCCESS_WITH_INFO)
 	{
@@ -127,8 +127,8 @@ BOOL CDBProcess::LoadVersionList()
 			tempcompname.TrimRight();
 
 			pInfo->sVersion = version;
-			pInfo->strFileName = tempfilename;
-			pInfo->strCompName = tempcompname;
+			pInfo->strFileName = CT2A(tempfilename);
+			pInfo->strCompName = CT2A(tempcompname);
 			pInfo->sHistoryVersion = historyversion;
 
 			if (!m_pMain->m_VersionList.PutData(pInfo->strFileName, pInfo))
@@ -171,7 +171,7 @@ int CDBProcess::AccountLogin(const char* id, const char* pwd)
 		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, &sParmRet, 0, &cbParmRet);
 		if (retcode == SQL_SUCCESS)
 		{
-			retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+			retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
 			if (retcode != SQL_SUCCESS
 				&& retcode != SQL_SUCCESS_WITH_INFO)
 			{
@@ -198,11 +198,11 @@ int CDBProcess::MgameLogin(const char* id, const char* pwd)
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	TCHAR			szSQL[1024] = {};
+	SQLTCHAR		szSQL[1024] = {};
 	SQLSMALLINT		sParmRet = -1;
 	SQLINTEGER		cbParmRet = SQL_NTS;
 
-	wsprintf(szSQL, TEXT("{call MGAME_LOGIN(\'%s\',\'%s\',?)}"), id, pwd);
+	wsprintf((TCHAR*) szSQL, TEXT("{call MGAME_LOGIN(\'%s\',\'%s\',?)}"), id, pwd);
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
 	if (retcode == SQL_SUCCESS)
@@ -210,7 +210,7 @@ int CDBProcess::MgameLogin(const char* id, const char* pwd)
 		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, &sParmRet, 0, &cbParmRet);
 		if (retcode == SQL_SUCCESS)
 		{
-			retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+			retcode = SQLExecDirect(hstmt, szSQL, SQL_NTS);
 			if (retcode != SQL_SUCCESS
 				&& retcode != SQL_SUCCESS_WITH_INFO)
 			{
@@ -237,15 +237,15 @@ BOOL CDBProcess::InsertVersion(int version, const char* filename, const char* co
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	TCHAR			szSQL[1024] = {};
+	SQLTCHAR		szSQL[1024] = {};
 	BOOL			retvalue = TRUE;
 
-	wsprintf(szSQL, TEXT("INSERT INTO %s (sVersion, strFileName, strCompressName, sHistoryVersion) VALUES (%d, \'%s\', \'%s\', %d)"), m_pMain->m_TableName, version, filename, compname, historyversion);
+	wsprintf((TCHAR*) szSQL, TEXT("INSERT INTO %s (sVersion, strFileName, strCompressName, sHistoryVersion) VALUES (%d, \'%s\', \'%s\', %d)"), m_pMain->m_TableName, version, filename, compname, historyversion);
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
 	if (retcode == SQL_SUCCESS)
 	{
-		retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+		retcode = SQLExecDirect(hstmt, szSQL, SQL_NTS);
 		if (retcode != SQL_SUCCESS
 			&& retcode != SQL_SUCCESS_WITH_INFO)
 		{
@@ -263,15 +263,15 @@ BOOL CDBProcess::DeleteVersion(const char* filename)
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	TCHAR			szSQL[1024] = {};
+	SQLTCHAR		szSQL[1024] = {};
 	BOOL			retvalue = TRUE;
 
-	wsprintf(szSQL, TEXT("DELETE FROM %s WHERE strFileName = \'%s\'"), m_pMain->m_TableName, filename);
+	wsprintf((TCHAR*) szSQL, TEXT("DELETE FROM %s WHERE strFileName = \'%s\'"), m_pMain->m_TableName, filename);
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
 	if (retcode == SQL_SUCCESS)
 	{
-		retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+		retcode = SQLExecDirect(hstmt, szSQL, SQL_NTS);
 		if (retcode != SQL_SUCCESS
 			&& retcode != SQL_SUCCESS_WITH_INFO)
 		{
@@ -289,20 +289,21 @@ BOOL CDBProcess::LoadUserCountList()
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	TCHAR			szSQL[1024] = {};
+	SQLTCHAR		szSQL[1024] = {};
 
 	CString tempfilename, tempcompname;
 
-	wsprintf(szSQL, TEXT("select * from CONCURRENT"));
+	wsprintf((TCHAR*) szSQL, TEXT("select * from CONCURRENT"));
 
 	SQLCHAR serverid;
 	SQLSMALLINT	zone_1 = 0, zone_2 = 0, zone_3 = 0;
 	SQLINTEGER Indexind = SQL_NTS;
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
-	if (retcode != SQL_SUCCESS)	return FALSE;
+	if (retcode != SQL_SUCCESS)
+		return FALSE;
 
-	retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+	retcode = SQLExecDirect(hstmt, szSQL, SQL_NTS);
 	if (retcode != SQL_SUCCESS
 		&& retcode != SQL_SUCCESS_WITH_INFO)
 	{
@@ -347,19 +348,19 @@ BOOL CDBProcess::IsCurrentUser(const char* accountid, char* strServerIP, int& se
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
 	BOOL			retval;
-	TCHAR			szSQL[1024] = {};
+	SQLTCHAR		szSQL[1024] = {};
 
 	SQLINTEGER		nServerNo = 0;
 	char			strIP[20] = {};
 	SQLINTEGER		Indexind = SQL_NTS;
 
-	wsprintf(szSQL, TEXT("SELECT nServerNo, strServerIP FROM CURRENTUSER WHERE strAccountID = \'%s\'"), accountid);
+	wsprintf((TCHAR*) szSQL, TEXT("SELECT nServerNo, strServerIP FROM CURRENTUSER WHERE strAccountID = \'%s\'"), accountid);
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
 	if (retcode != SQL_SUCCESS)
 		return FALSE;
 
-	retcode = SQLExecDirect(hstmt, (SQLCHAR*) szSQL, SQL_NTS);
+	retcode = SQLExecDirect(hstmt, szSQL, SQL_NTS);
 	if (retcode == SQL_SUCCESS
 		|| retcode == SQL_SUCCESS_WITH_INFO)
 	{
