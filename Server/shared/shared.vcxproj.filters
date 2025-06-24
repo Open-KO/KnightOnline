@@ -51,7 +51,7 @@
     <ClCompile Include="pkware\pklib.c">
       <Filter>Compression\PKWARE</Filter>
     </ClCompile>
-    <ClCompile Include="string_utilities.cpp">
+    <ClCompile Include="StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StringConversion.cpp">
@@ -104,7 +104,7 @@
     <ClInclude Include="pkware\pklib.h">
       <Filter>Compression\PKWARE</Filter>
     </ClInclude>
-    <ClInclude Include="string_utilities.h">
+    <ClInclude Include="StringUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StringConversion.h">

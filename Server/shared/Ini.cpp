@@ -2,8 +2,8 @@
 #include "Ini.h"
 #include <iostream>
 #include <fstream>
-#include "string_utilities.h"
 #include "StringConversion.h"
+#include "StringUtils.h"
 
 constexpr wchar_t INI_SECTION_START	= L'[';
 constexpr wchar_t INI_SECTION_END	= L']';

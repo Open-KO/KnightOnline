@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "string_utilities.h"
+#include "StringUtils.h"
 #include <stdarg.h>
 #include <cctype>
 #include <functional>
