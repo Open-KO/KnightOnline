@@ -77,7 +77,7 @@ BOOL CDlgBrowsePath::OnInitDialog()
 	{
 		for (int i = 0; i < 10; i++)
 		{
-			szKey.Format(_T("Folder%.1d", i));
+			szKey.Format(_T("Folder%.1d"), i);
 			LONG success = RegQueryValueEx(hKey, szKey, NULL, &dwKeyType, (BYTE*) szInitDir, &dwLength);
 			if (success == ERROR_SUCCESS && lstrlen(szInitDir) != 0)
 			{

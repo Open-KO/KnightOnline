@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "CoefficientSet.h"
 
 #ifdef _DEBUG
@@ -40,10 +40,9 @@ CCoefficientSet::CCoefficientSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CCoefficientSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CCoefficientSet::GetDefaultSQL()

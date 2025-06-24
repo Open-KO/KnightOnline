@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "BattleSet.h"
 
 #ifdef _DEBUG
@@ -27,10 +27,9 @@ CBattleSet::CBattleSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CBattleSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CBattleSet::GetDefaultSQL()

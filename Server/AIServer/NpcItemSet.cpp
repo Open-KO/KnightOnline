@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "NpcItemSet.h"
 
 #ifdef _DEBUG
@@ -36,10 +36,9 @@ CNpcItemSet::CNpcItemSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CNpcItemSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CNpcItemSet::GetDefaultSQL()

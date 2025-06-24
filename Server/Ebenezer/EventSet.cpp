@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "EventSet.h"
 
 #ifdef _DEBUG
@@ -40,7 +40,7 @@ CEventSet::CEventSet(CDatabase* pdb)
 
 CString CEventSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CEventSet::GetDefaultSQL()

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MagicType4Set.h"
 
 #ifdef _DEBUG
@@ -49,10 +49,9 @@ CMagicType4Set::CMagicType4Set(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMagicType4Set::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMagicType4Set::GetDefaultSQL()

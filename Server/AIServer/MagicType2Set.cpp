@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MagicType2Set.h"
 
 #ifdef _DEBUG
@@ -33,10 +33,9 @@ CMagicType2Set::CMagicType2Set(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMagicType2Set::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMagicType2Set::GetDefaultSQL()

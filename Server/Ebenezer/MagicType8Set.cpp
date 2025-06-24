@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "MagicType8Set.h"
 
 #ifdef _DEBUG
@@ -32,10 +32,9 @@ CMagicType8Set::CMagicType8Set(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMagicType8Set::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMagicType8Set::GetDefaultSQL()

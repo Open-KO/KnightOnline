@@ -32,7 +32,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
 BOOL g_bNpcExit = FALSE;
 ZoneArray g_arZone;
 
@@ -105,6 +104,8 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CServerDlg dialog
 
+CServerDlg* CServerDlg::s_pInstance = nullptr;
+
 CServerDlg::CServerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialog(CServerDlg::IDD, pParent)
 {
@@ -130,6 +131,10 @@ CServerDlg::CServerDlg(CWnd* pParent /*=nullptr*/)
 	m_byTestMode = 0;
 	//m_ppUserActive = nullptr;
 	//m_ppUserInActive = nullptr;
+
+	memset(m_strGameDSN, 0, sizeof(m_strGameDSN));
+	memset(m_strGameUID, 0, sizeof(m_strGameUID));
+	memset(m_strGamePWD, 0, sizeof(m_strGamePWD));
 }
 
 void CServerDlg::DoDataExchange(CDataExchange* pDX)
@@ -160,6 +165,8 @@ END_MESSAGE_MAP()
 BOOL CServerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	s_pInstance = this;
 
 	// Default Init ...
 	DefaultInit();
@@ -1552,6 +1559,8 @@ BOOL CServerDlg::DestroyWindow()
 	DeleteCriticalSection(&g_User_critical);
 	DeleteCriticalSection(&g_LogFileWrite);
 
+	s_pInstance = nullptr;
+
 	return CDialog::DestroyWindow();
 }
 
@@ -2769,8 +2778,12 @@ void CServerDlg::ClostSocket(int zonenumber)
 void CServerDlg::GetServerInfoIni()
 {
 	CIni inifile;
-	inifile.Load("server.ini");
-	m_byZone = inifile.GetInt("SERVER", "ZONE", 1);
+	inifile.Load(_T("server.ini"));
+	m_byZone = inifile.GetInt(_T("SERVER"), _T("ZONE"), 1);
+
+	inifile.GetString(_T("ODBC"), _T("GAME_DSN"), _T("KN_Online"), m_strGameDSN, sizeof(m_strGameDSN));
+	inifile.GetString(_T("ODBC"), _T("GAME_UID"), _T("knight"), m_strGameUID, sizeof(m_strGameUID));
+	inifile.GetString(_T("ODBC"), _T("GAME_PWD"), _T("knight"), m_strGamePWD, sizeof(m_strGamePWD));
 }
 
 void CServerDlg::SendSystemMsg(char* pMsg, int zone, int type, int who)
@@ -2809,4 +2822,15 @@ void CServerDlg::ResetBattleZone()
 	}
 
 	TRACE("ServerDlg - ResetBattleZone() : end \n");
+}
+
+CString CServerDlg::GetGameDBConnectionString()
+{
+	CString strConnection;
+	strConnection.Format(
+		_T("ODBC;DSN=%s;UID=%s;PWD=%s"),
+		m_strGameDSN,
+		m_strGameUID,
+		m_strGamePWD);
+	return strConnection;
 }

@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "Ebenezer.h"
 #include "EbenezerDlg.h"
 #include "User.h"
 
@@ -43,10 +42,12 @@ static char THIS_FILE[] = __FILE__;
 CRITICAL_SECTION g_serial_critical;
 CRITICAL_SECTION g_region_critical;
 CRITICAL_SECTION g_LogFile_critical;
-CIOCPort	CEbenezerDlg::m_Iocport;
 
-WORD	g_increase_serial = 1;
-BYTE	g_serverdown_flag = FALSE;
+CEbenezerDlg* CEbenezerDlg::s_pInstance = nullptr;
+CIOCPort CEbenezerDlg::m_Iocport;
+
+WORD g_increase_serial = 1;
+BYTE g_serverdown_flag = FALSE;
 
 DWORD WINAPI ReadQueueThread(LPVOID lp)
 {
@@ -258,16 +259,19 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 		m_fSellStartTime[h] = 0.0f;
 	}
 
-	for (int i = 0; i < 20; i++)
-		memset(m_ppNotice[i], 0, sizeof(m_ppNotice[i]));
-
+	memset(m_ppNotice, 0, sizeof(m_ppNotice));
 	memset(m_AIServerIP, 0, sizeof(m_AIServerIP));
 
 	m_bPermanentChatMode = FALSE;			// 비러머글 남는 공지 --;
 	m_bPermanentChatFlag = FALSE;
 	memset(m_strPermanentChat, 0, sizeof(m_strPermanentChat));
+
 	memset(m_strKarusCaptain, 0, sizeof(m_strKarusCaptain));
 	memset(m_strElmoradCaptain, 0, sizeof(m_strElmoradCaptain));
+
+	memset(m_strGameDSN, 0, sizeof(m_strGameDSN));
+	memset(m_strGameUID, 0, sizeof(m_strGameUID));
+	memset(m_strGamePWD, 0, sizeof(m_strGamePWD));
 
 	m_bSanta = FALSE;		// 갓댐 산타!!! >.<
 }
@@ -296,6 +300,8 @@ END_MESSAGE_MAP()
 BOOL CEbenezerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	s_pInstance = this;
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
@@ -669,6 +675,8 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 	delete m_pUdpSocket;
 	m_pUdpSocket = nullptr;
+
+	s_pInstance = nullptr;
 
 	return CDialog::DestroyWindow();
 }
@@ -1735,7 +1743,7 @@ void CEbenezerDlg::GetTimeFromIni()
 	int year = 0, month = 0, date = 0, hour = 0, server_count = 0, sgroup_count = 0;
 	char ipkey[20] = {};
 
-	m_Ini.Load("server.ini");
+	m_Ini.Load("gameserver.ini");
 	m_nYear = m_Ini.GetInt("TIMER", "YEAR", 1);
 	m_nMonth = m_Ini.GetInt("TIMER", "MONTH", 1);
 	m_nDate = m_Ini.GetInt("TIMER", "DATE", 1);
@@ -1746,6 +1754,10 @@ void CEbenezerDlg::GetTimeFromIni()
 	m_nBattleZoneOpenWeek = m_Ini.GetInt("BATTLE", "WEEK", 5);
 	m_nBattleZoneOpenHourStart = m_Ini.GetInt("BATTLE", "START_TIME", 20);
 	m_nBattleZoneOpenHourEnd = m_Ini.GetInt("BATTLE", "END_TIME", 0);
+
+	m_Ini.GetString(_T("ODBC"), _T("GAME_DSN"), _T("KN_online"), m_strGameDSN, _countof(m_strGameDSN));
+	m_Ini.GetString(_T("ODBC"), _T("GAME_UID"), _T("knight"), m_strGameUID, _countof(m_strGameUID));
+	m_Ini.GetString(_T("ODBC"), _T("GAME_PWD"), _T("knight"), m_strGamePWD, _countof(m_strGamePWD));
 
 	m_nCastleCapture = m_Ini.GetInt("CASTLE", "NATION", 1);
 	m_nServerNo = m_Ini.GetInt("ZONE_INFO", "MY_INFO", 1);
@@ -4321,4 +4333,15 @@ void CEbenezerDlg::WriteEventLog(char* pBuf)
 	EnterCriticalSection(&g_LogFile_critical);
 	m_EvnetLogFile.Write(strLog, strlen(strLog));
 	LeaveCriticalSection(&g_LogFile_critical);
+}
+
+CString CEbenezerDlg::GetGameDBConnectionString()
+{
+	CString strConnection;
+	strConnection.Format(
+		_T("ODBC;DSN=%s;UID=%s;PWD=%s"),
+		m_strGameDSN,
+		m_strGameUID,
+		m_strGamePWD);
+	return strConnection;
 }

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Ebenezer.h"
+#include "EbenezerDlg.h"
 #include "LevelUpTableSet.h"
 
 #ifdef _DEBUG
@@ -27,10 +27,9 @@ CLevelUpTableSet::CLevelUpTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CLevelUpTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CLevelUpTableSet::GetDefaultSQL()
