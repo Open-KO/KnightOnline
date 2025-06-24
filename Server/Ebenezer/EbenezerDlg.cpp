@@ -308,6 +308,8 @@ BOOL CEbenezerDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
+	srand(time(nullptr));
+
 	// Compress Init
 	memset(m_CompBuf, 0, sizeof(m_CompBuf));	// 압축할 데이터를 모으는 버퍼
 	m_iCompIndex = 0;							// 압축할 데이터의 길이
@@ -507,8 +509,6 @@ BOOL CEbenezerDlg::OnInitDialog()
 	LogFileWrite("after map file\r\n");
 
 	LoadNoticeData();
-
-	srand(time(nullptr));
 
 	DWORD id;
 	m_hReadQueueThread = ::CreateThread(nullptr, 0, ReadQueueThread, this, 0, &id);
@@ -2808,7 +2808,9 @@ BOOL CEbenezerDlg::LoadNoticeData()
 
 	if (!txt_file.Open(NoticePath, CFile::modeRead))
 	{
+#if !defined(_DEBUG)
 		AfxMessageBox("cannot open Notice.txt!!");
+#endif
 		return FALSE;
 	}
 
