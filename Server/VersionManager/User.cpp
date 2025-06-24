@@ -99,6 +99,7 @@ void CUser::LogInReq(char* pBuf)
 		serverip[MAX_IP_SIZE + 1] = {},
 		accountid[MAX_ID_SIZE + 1] = {},
 		pwd[MAX_PW_SIZE + 1] = {};
+	short sPremiumTimeDaysRemaining = -1;
 
 	idlen = GetShort(pBuf, index);
 	if (idlen > MAX_ID_SIZE
@@ -132,6 +133,11 @@ void CUser::LogInReq(char* pBuf)
 		else
 		{
 			SetByte(send_buff, result, send_index);
+
+			if (!m_pMain->m_DBProcess.LoadPremiumServiceUser(accountid, &sPremiumTimeDaysRemaining))
+				sPremiumTimeDaysRemaining = -1;
+
+			SetShort(send_buff, sPremiumTimeDaysRemaining, send_index);
 		}
 	}
 	else

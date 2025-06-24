@@ -112,7 +112,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 
 	::ResumeThread(m_Iocport.m_hAcceptThread);
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
 BOOL CVersionManagerDlg::GetInfoFromIni()
@@ -254,7 +254,7 @@ BOOL CVersionManagerDlg::PreTranslateMessage(MSG* pMsg)
 	if (pMsg->message == WM_KEYDOWN)
 	{
 		if (pMsg->wParam == VK_RETURN
-		|| pMsg->wParam == VK_ESCAPE)
+			|| pMsg->wParam == VK_ESCAPE)
 			return TRUE;
 	}
 

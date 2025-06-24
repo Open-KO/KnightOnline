@@ -450,3 +450,40 @@ BOOL CDBProcess::IsCurrentUser(const char* accountid, char* strServerIP, int& se
 
 	return retval;
 }
+
+BOOL CDBProcess::LoadPremiumServiceUser(const char* accountid, short* psPremiumDaysRemaining)
+{
+	SQLHSTMT		hstmt = nullptr;
+	SQLRETURN		retcode;
+	TCHAR			szSQL[1024] = {};
+	SQLINTEGER		cbParmRet = SQL_NTS;
+	BYTE			byPremiumType = 0; // NOTE: we don't need this in the login server
+
+	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
+	if (retcode != SQL_SUCCESS)
+		return FALSE;
+
+	wsprintf(szSQL, _T("{call LOAD_PREMIUM_SERVICE_USER(\'%s\',?,?)}"), accountid);
+
+	SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_TINYINT, SQL_TINYINT, 0, 0, &byPremiumType, 0, &cbParmRet);
+	SQLBindParameter(hstmt, 2, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, psPremiumDaysRemaining, 0, &cbParmRet);
+
+	retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
+	if (retcode != SQL_SUCCESS
+		&& retcode != SQL_SUCCESS_WITH_INFO)
+	{
+		if (DisplayErrorMsg(hstmt) == -1)
+		{
+			m_VersionDB.Close();
+
+			if (!m_VersionDB.IsOpen())
+			{
+				ReConnectODBC(&m_VersionDB, m_pMain->m_ODBCName, m_pMain->m_ODBCLogin, m_pMain->m_ODBCPwd);
+				return FALSE;
+			}
+		}
+	}
+
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+	return TRUE;
+}

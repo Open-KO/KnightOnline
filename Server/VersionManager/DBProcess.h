@@ -13,6 +13,7 @@ class CVersionManagerDlg;
 class CDBProcess
 {
 public:
+	BOOL LoadPremiumServiceUser(const char* accountid, short* psPremiumDaysRemaining);
 	BOOL IsCurrentUser(const char* accountid, char* strServerIP, int& serverno);
 	void ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd);
 	BOOL DeleteVersion(const char* filename);
