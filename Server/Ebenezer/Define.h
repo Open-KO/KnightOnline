@@ -2,163 +2,93 @@
 #define _DEFINE_H
 
 #include <mmsystem.h>
+#include <shared/globals.h>
 
-#define _LISTEN_PORT		15000
-#define _UDP_PORT			8888
-#define AI_KARUS_SOCKET_PORT		10020
-#define AI_ELMO_SOCKET_PORT			10030
-#define AI_BATTLE_SOCKET_PORT		10040
-#define MAX_USER			3000
-#define CLIENT_SOCKSIZE		100
-#define MAX_AI_SOCKET		10			// sungyong~ 2002.05.22
+constexpr int _LISTEN_PORT			= 15000;
+constexpr int _UDP_PORT				= 8888;
+constexpr int AI_KARUS_SOCKET_PORT	= 10020;
+constexpr int AI_ELMO_SOCKET_PORT	= 10030;
+constexpr int AI_BATTLE_SOCKET_PORT	= 10040;
+constexpr int CLIENT_SOCKSIZE		= 100;
+constexpr int MAX_AI_SOCKET			= 10;			// sungyong~ 2002.05.22
 
-#define MAX_TYPE3_REPEAT    20
-#define MAX_TYPE4_BUFF		9
+constexpr int MAX_TYPE3_REPEAT		= 20;
+constexpr int MAX_TYPE4_BUFF		= 9;
 
-#define MAX_ITEM_COUNT		9999		// 한 슬롯에 가지는 최대 화살/송편 개수
+constexpr int MAX_ITEM				= 28;
 
-#define MAX_ID_SIZE			20
-#define MAX_PW_SIZE			12
-#define MAX_ITEM			28
-#define VIEW_DISTANCE		48			// 가시거리
+constexpr int NPC_HAVE_ITEM_LIST	= 6;
+constexpr int ZONEITEM_MAX			= 2'100'000'000;	// 존에 떨어지는 최대 아이템수...
 
-const BYTE SLOT_MAX			= 14;		// 착용 아템 MAX
-const BYTE HAVE_MAX			= 28;		// 소유 아템 MAX (인벤토리창)
-const BYTE WAREHOUSE_MAX	= 196;		// 창고 아이템 MAX
+constexpr int MAX_LEVEL				= 60;			// 최고렙...
 
-#define NPC_HAVE_ITEM_LIST	6
-#define ZONEITEM_MAX		2100000000	// 존에 떨어지는 최대 아이템수...
-
-#define MAX_CLASS			26			// 직업 MAX
-#define MAX_LEVEL			60			// 최고렙...
-
-#define SERVER_INFO_START			0X01
-#define SERVER_INFO_END				0X02
+constexpr int SERVER_INFO_START		= 1;
+constexpr int SERVER_INFO_END		= 2;
 
 //////////////  Quest 관련 Define ////////////////////////////
-#define MAX_EVENT					2000
-#define MAX_EVENT_SIZE				400
-#define MAX_EVENT_NUM				2000
-#define MAX_EXEC_INT				30
-#define MAX_LOGIC_ELSE_INT			10
-#define MAX_MESSAGE_EVENT			10
-#define MAX_COUPON_ID_LENGTH		20
-#define MAX_CURRENT_EVENT			20
+constexpr int MAX_EVENT				= 2000;
+constexpr int MAX_EVENT_SIZE		= 400;
+constexpr int MAX_EVENT_NUM			= 2000;
+constexpr int MAX_EXEC_INT			= 30;
+constexpr int MAX_LOGIC_ELSE_INT	= 10;
+constexpr int MAX_MESSAGE_EVENT		= 10;
+constexpr int MAX_COUPON_ID_LENGTH	= 20;
+constexpr int MAX_CURRENT_EVENT		= 20;
 
 // 지금 쓰이는것만 정의 해 놨습니다.
 // logic관련 define
-#define LOGIC_CHECK_UNDER_WEIGHT	0X01
-#define LOGIC_CHECK_OVER_WEIGHT		0X02
-#define LOGIC_CHECK_SKILL_POINT		0X03
-#define LOGIC_EXIST_ITEM			0X04
-#define LOGIC_CHECK_CLASS			0x05
-#define LOGIC_CHECK_WEIGHT			0x06
-#define LOGIC_CHECK_EDITBOX			0x07
-#define LOGIC_RAND					0x08
-#define LOGIC_HOWMUCH_ITEM			0x09 
-#define	LOGIC_CHECK_LEVEL			0x0A
-#define LOGIC_NOEXIST_COM_EVENT		0x0B
-#define LOGIC_EXIST_COM_EVENT		0x0C
-#define LOGIC_CHECK_NOAH			0x0D
-
-/*
-#define	LOGIC_CHECK_NATION			0X01
-#define	LOGIC_CHECK_LEVEL			0X02
-#define	LOGIC_NOEXIST_ITEM			0X03
-#define	LOGIC_QUEST_END				0X04
-#define	LOGIC_QUEST_LOG				0X05
-#define	LOGIC_EXIST_ITEM			0X06
-#define	LOGIC_CHECK_NOAH			0X07
-#define LOGIC_CHECK_CLASS			0x08
-#define LOGIC_CHECK_WEIGHT			0x09
-#define LOGIC_CHECK_RACE			0x0A
-#define LOGIC_CHECK_LOYALTY			0x0B
-#define LOGIC_CHECK_AUTHORITY		0x0C
-#define LOGIC_CHECK_STR				0X0D
-#define LOGIC_CHECK_STA				0x0D
-#define LOGIC_CHECK_DEX				0x0E
-#define LOGIC_CHECK_INT				0x0F
-#define LOGIC_CHECK_CHA				0x10
-#define LOGIC_CHECK_SKILLPOINT		0x11
-#define LOGIC_CHECK_DAY				0x12
-*/
+enum e_LogicCheck
+{
+	LOGIC_CHECK_UNDER_WEIGHT		= 0x01,
+	LOGIC_CHECK_OVER_WEIGHT			= 0x02,
+	LOGIC_CHECK_SKILL_POINT			= 0x03,
+	LOGIC_EXIST_ITEM				= 0x04,
+	LOGIC_CHECK_CLASS				= 0x05,
+	LOGIC_CHECK_WEIGHT				= 0x06,
+	LOGIC_CHECK_EDITBOX				= 0x07,
+	LOGIC_RAND						= 0x08,
+	LOGIC_HOWMUCH_ITEM				= 0x09,
+	LOGIC_CHECK_LEVEL				= 0x0A,
+	LOGIC_NOEXIST_COM_EVENT			= 0x0B,
+	LOGIC_EXIST_COM_EVENT			= 0x0C,
+	LOGIC_CHECK_NOAH				= 0x0D
+};
 
 // 실행관련 define
-#define EXEC_SAY					0X01
-#define EXEC_SELECT_MSG				0X02
-#define EXEC_RUN_EVENT				0X03
-#define EXEC_GIVE_ITEM				0X04
-#define EXEC_ROB_ITEM				0X05
-#define EXEC_RETURN					0X06
-#define EXEC_OPEN_EDITBOX			0x07
-#define EXEC_GIVE_NOAH				0x08
-#define EXEC_LOG_COUPON_ITEM		0x09
-#define EXEC_SAVE_COM_EVENT			0x0A
-#define EXEC_ROB_NOAH				0x0B
-
-/*
-#define EXEC_SAY					0X01
-#define EXEC_SELECT_MSG				0X02
-#define EXEC_RUN_EVENT				0X03
-#define EXEC_RETURN					0X04
-#define EXEC_ROB_ITEM				0X05
-#define EXEC_ROB_NOAH				0X06
-#define EXEC_GIVE_ITEM				0X07
-#define EXEC_GIVE_QUEST				0X08
-#define EXEC_QUEST_END				0X09
-#define EXEC_QUEST_SAVE				0X0A
-#define EXEC_GIVE_NOAH				0x0B
-*/
+enum e_Exec
+{
+	EXEC_SAY						= 0x01,
+	EXEC_SELECT_MSG					= 0x02,
+	EXEC_RUN_EVENT					= 0x03,
+	EXEC_GIVE_ITEM					= 0x04,
+	EXEC_ROB_ITEM					= 0x05,
+	EXEC_RETURN						= 0x06,
+	EXEC_OPEN_EDITBOX				= 0x07,
+	EXEC_GIVE_NOAH					= 0x08,
+	EXEC_LOG_COUPON_ITEM			= 0x09,
+	EXEC_SAVE_COM_EVENT				= 0x0A,
+	EXEC_ROB_NOAH					= 0x0B
+};
 
 // EVENT 시작 번호들 :)
-#define EVENT_POTION				1
-#define EVENT_LOGOS_ELMORAD			1001
-#define EVENT_LOGOS_KARUS			2001
-#define EVENT_COUPON				3001
-
+constexpr int EVENT_POTION			= 1;
+constexpr int EVENT_LOGOS_ELMORAD	= 1001;
+constexpr int EVENT_LOGOS_KARUS		= 2001;
+constexpr int EVENT_COUPON			= 3001;
 
 ////////////////////////////////////////////////////////////
 
 ///////////////// BBS RELATED //////////////////////////////
-#define MAX_BBS_PAGE			23
-#define MAX_BBS_MESSAGE			40
-#define MAX_BBS_TITLE			20
-#define MAX_BBS_POST			500
+constexpr int MAX_BBS_PAGE			= 23;
+constexpr int MAX_BBS_MESSAGE		= 40;
+constexpr int MAX_BBS_TITLE			= 20;
+constexpr int MAX_BBS_POST			= 500;
 
-#define BUY_POST_PRICE			500
-#define SELL_POST_PRICE			1000
+constexpr int BUY_POST_PRICE		= 500;
+constexpr int SELL_POST_PRICE		= 1000;
 
-#define REMOTE_PURCHASE_PRICE	5000
-#define BBS_CHECK_TIME			36000
-
-///////////////// NPC  STATUS //////////////////////////////
-#define NPC_DEAD				0X00
-#define NPC_LIVE				0X01
-
-///////////////// NPC TYPE /////////////////////////////////
-#define NPC_MONSTER				00
-#define NPC_GENERAL				01		//
-#define NPC_BOSS				03		// Unique Mop
-#define NPC_PATROL_GUARD		11		// 경비병
-#define NPC_MERCHANT			21		// 상인
-#define NPC_TINKER				22		// 대장장이
-#define NPC_WAREHOUSE			31		// 창고지기
-#define NPC_CAPTAIN				35		// 전직
-#define NPC_OFFICER				36		// 기사단 관리 NPC
-#define NPC_CLERIC				37		// 대사제 NPC
-#define NPC_HEALER				40		// Healer
-#define NPC_WARP				41		// Warp Npc
-#define NPC_GATE				50		// 성문형태 NPC 
-#define NPC_PHOENIX_GATE		51		// 깨지지 않는 문 (8->51)
-#define NPC_SPECIAL_GATE		52		// 깨지지 않는 문이면서 2분마다 열렸다 닫혔다 하는 문
-#define NPC_GATE_LEVER			55		// 성문 레버...	(9->55)	
-#define NPC_ARTIFACT			60		// 결계석 (7->60)
-#define NPC_DESTORY_ARTIFACT	61		// 파괴되는 결계석
-#define NPC_MONK_ELMORAD		71		// 비러머글 수도승 >.<
-#define NPC_MONK_KARUS			72		// 비러머글 수도승 >.<	
-#define NPC_DOMESTIC_ANIMAL		99		// 가축 NPC
-#define NPC_COUPON				100		// 비러머글 복권 >.<
-
+constexpr int REMOTE_PURCHASE_PRICE	= 5000;
+constexpr int BBS_CHECK_TIME		= 36000;
 
 ///////////////// NATION ///////////////////////////////////
 #define UNIFY_NATION		0
@@ -294,38 +224,45 @@ const BYTE WAREHOUSE_MAX	= 196;		// 창고 아이템 MAX
 //////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////
-typedef union{
+typedef union
+{
 	WORD		w;
 	BYTE		b[2];
 } MYSHORT;
 
-typedef union{
+typedef union
+{
 	int			i;
 	BYTE		b[4];
 } MYINT;
 
-typedef union{
+typedef union
+{
 	DWORD		w;
 	BYTE		b[4];
 } MYDWORD;
 
-typedef union{
-	__int64		i;
+typedef union
+{
+	int64_t		i;
 	BYTE		b[8];
 } MYINT64;
 
-struct _REGION_BUFFER {
+struct _REGION_BUFFER
+{
 	int		iLength;
 	BYTE	bFlag;
 	DWORD	dwThreadID;
 
 	char	pDataBuff[REGION_BUFF_SIZE];
-	_REGION_BUFFER() {
+
+	_REGION_BUFFER()
+	{
 		iLength = 0;
 		bFlag = E;
 		dwThreadID = 0;
-		memset(pDataBuff, 0x00, REGION_BUFF_SIZE);
-	};
+		memset(pDataBuff, 0, sizeof(pDataBuff));
+	}
 };
 
 //////////////////////////////////////////////////////////////////
@@ -336,117 +273,132 @@ struct _REGION_BUFFER {
 
 inline void GetString(char* tBuf, char* sBuf, int len, int& index)
 {
-	memcpy(tBuf, sBuf+index, len);
+	memcpy(tBuf, sBuf + index, len);
 	index += len;
-};
+}
 
 inline BYTE GetByte(char* sBuf, int& index)
 {
 	int t_index = index;
 	index++;
-	return (BYTE)(*(sBuf+t_index));
-};
+	return (BYTE) (*(sBuf + t_index));
+}
 
 inline int GetShort(char* sBuf, int& index)
 {
 	index += 2;
-	return *(short*)(sBuf+index-2);
-};
+	return *(short*) (sBuf + index - 2);
+}
 
 inline DWORD GetDWORD(char* sBuf, int& index)
 {
 	index += 4;
-	return *(DWORD*)(sBuf+index-4);
-};
+	return *(DWORD*) (sBuf + index - 4);
+}
 
 inline float Getfloat(char* sBuf, int& index)
 {
 	index += 4;
-	return *(float*)(sBuf+index-4);
-};
+	return *(float*) (sBuf + index - 4);
+}
 
-inline __int64 GetInt64(char* sBuf, int& index)
+inline int64_t GetInt64(char* sBuf, int& index)
 {
 	index += 8;
-	return *(__int64*)(sBuf+index-8);
-};
+	return *(int64_t*) (sBuf + index - 8);
+}
 
 inline void SetString(char* tBuf, char* sBuf, int len, int& index)
 {
-	memcpy(tBuf+index, sBuf, len);
+	memcpy(tBuf + index, sBuf, len);
 	index += len;
-};
+}
 
 inline void SetByte(char* tBuf, BYTE sByte, int& index)
 {
-	*(tBuf+index) = (char)sByte;
+	*(tBuf + index) = (char) sByte;
 	index++;
-};
+}
 
 inline void SetShort(char* tBuf, int sShort, int& index)
 {
-	short temp = (short)sShort;
+	short temp = (short) sShort;
 
-	CopyMemory( tBuf+index, &temp, 2);
+	CopyMemory(tBuf + index, &temp, 2);
 	index += 2;
-};
+}
 
 inline void SetDWORD(char* tBuf, DWORD sDWORD, int& index)
 {
-	CopyMemory( tBuf+index, &sDWORD, 4);
+	CopyMemory(tBuf + index, &sDWORD, 4);
 	index += 4;
-};
+}
 
-inline void Setfloat ( char* tBuf, float sFloat, int& index )
+inline void Setfloat(char* tBuf, float sFloat, int& index)
 {
-	CopyMemory( tBuf+index, &sFloat, 4);
+	CopyMemory(tBuf + index, &sFloat, 4);
 	index += 4;
-};
+}
 
-inline void SetInt64 ( char* tBuf, __int64 nInt64, int& index )
+inline void SetInt64(char* tBuf, int64_t nInt64, int& index)
 {
-	CopyMemory( tBuf+index, &nInt64, 8);
+	CopyMemory(tBuf + index, &nInt64, 8);
 	index += 8;
-};
+}
+
 // sungyong 2001.11.06
-inline int GetVarString(TCHAR* tBuf, TCHAR* sBuf, int nSize, int& index)
+inline int GetVarString(char* tBuf, char* sBuf, int nSize, int& index)
 {
 	int nLen = 0;
-	
-	if(nSize == sizeof(BYTE))	nLen = GetByte(sBuf, index);
-	else nLen = GetShort(sBuf, index);
+	if (nSize == sizeof(BYTE))
+		nLen = GetByte(sBuf, index);
+	else
+		nLen = GetShort(sBuf, index);
 
 	GetString(tBuf, sBuf, nLen, index);
 	*(tBuf + nLen) = 0;
 
 	return nLen;
-};
+}
 
-inline void SetVarString(TCHAR *tBuf, TCHAR* sBuf, int len, int &index)
+inline void SetVarString(char* tBuf, char* sBuf, int len, int& index)
 {
-	*(tBuf+index) = (BYTE)len;
+	*(tBuf + index) = (BYTE) len;
 	index ++;
 
-	CopyMemory(tBuf+index, sBuf, len);
+	CopyMemory(tBuf + index, sBuf, len);
 	index += len;
-};
+}
+
 // ~sungyong 2001.11.06
-inline int ParseSpace( char* tBuf, char* sBuf)
+inline int ParseSpace(char* tBuf, char* sBuf)
 {
 	int i = 0, index = 0;
 	BOOL flag = FALSE;
-	
-	while(sBuf[index] == ' ' || sBuf[index] == '\t')index++;
-	while(sBuf[index] !=' ' && sBuf[index] !='\t' && sBuf[index] !=(BYTE) 0){
+
+	while (sBuf[index] == ' '
+		|| sBuf[index] == '\t')
+		index++;
+
+	while (sBuf[index] != ' '
+		&& sBuf[index] != '\t'
+		&& sBuf[index] != (BYTE) 0)
+	{
 		tBuf[i++] = sBuf[index++];
 		flag = TRUE;
 	}
+
 	tBuf[i] = 0;
 
-	while(sBuf[index] == ' ' || sBuf[index] == '\t')index++;
-	if(!flag) return 0;	
+	while (sBuf[index] == ' '
+		|| sBuf[index] == '\t')
+		index++;
+
+	if (!flag)
+		return 0;
+
 	return index;
-};
+}
 
 inline CString GetProgPath()
 {
@@ -454,30 +406,29 @@ inline CString GetProgPath()
 	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 
 	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_splitpath(Buf,drive,dir,fname,ext);
+	_splitpath(Buf, drive, dir, fname, ext);
 	strcpy(Path, drive);
-	strcat(Path, dir);		
-	CString _Path = Path;
-	return _Path;
-};
+	strcat(Path, dir);
+	return Path;
+}
 
-inline void LogFileWrite( LPCTSTR logstr )
+inline void LogFileWrite(LPCTSTR logstr)
 {
 	CString ProgPath, LogFileName;
 	CFile file;
 	int loglength;
 
 	ProgPath = GetProgPath();
-	loglength = strlen( logstr );
+	loglength = strlen(logstr);
 
 	LogFileName.Format("%s\\Ebenezer.log", ProgPath);
-	
-	file.Open( LogFileName, CFile::modeCreate|CFile::modeNoTruncate|CFile::modeWrite );
+
+	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
 
 	file.SeekToEnd();
 	file.Write(logstr, loglength);
 	file.Close();
-};
+}
 
 inline void DisplayErrorMsg(SQLHANDLE hstmt)
 {
@@ -489,49 +440,50 @@ inline void DisplayErrorMsg(SQLHANDLE hstmt)
 	i = 1;
 	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
 	{
-		TRACE("*** %s, %d, %s, %d ***\n", SqlState,NativeError,Msg,MsgLen);
+		TRACE("*** %s, %d, %s, %d ***\n", SqlState, NativeError, Msg, MsgLen);
 
 		i++;
 	}
-};
+}
 
-inline int myrand( int min, int max )
+inline int myrand(int min, int max)
 {
-	if( min == max ) return min;
-	if( min > max )
-	{
-		int temp = min;
-		min = max;
-		max = temp;
-	}
+	if (min == max)
+		return min;
+
+	if (min > max)
+		std::swap(min, max);
 
 	double gap = max - min + 1;
-	double rrr = (double)RAND_MAX / gap;
+	double rrr = (double) RAND_MAX / gap;
 
 	double rand_result;
 
-	rand_result = (double)rand() / rrr;
+	rand_result = (double) rand() / rrr;
 
-	if( (int)( min + (int)rand_result ) < min ) return min;
-	if( (int)( min + (int)rand_result ) > max ) return max;
+	if ((int) (min + (int) rand_result) < min)
+		return min;
 
-	return (int)( min + (int)rand_result );
-};
+	if ((int) (min + (int) rand_result) > max)
+		return max;
+
+	return (int) (min + (int) rand_result);
+}
 
 inline float TimeGet()
 {
 	static bool bInit = false;
 	static bool bUseHWTimer = FALSE;
 	static LARGE_INTEGER nTime, nFrequency;
-	
-	if(bInit == false)
+
+	if (!bInit)
 	{
-		if(TRUE == ::QueryPerformanceCounter(&nTime))
+		if (::QueryPerformanceCounter(&nTime))
 		{
 			::QueryPerformanceFrequency(&nFrequency);
 			bUseHWTimer = TRUE;
 		}
-		else 
+		else
 		{
 			bUseHWTimer = FALSE;
 		}
@@ -539,21 +491,21 @@ inline float TimeGet()
 		bInit = true;
 	}
 
-	if(bUseHWTimer)
+	if (bUseHWTimer)
 	{
 		::QueryPerformanceCounter(&nTime);
-		return (float)((double)(nTime.QuadPart)/(double)nFrequency.QuadPart);
+		return (float) ((double) (nTime.QuadPart) / (double) nFrequency.QuadPart);
 	}
 
-	return (float)timeGetTime();
-};
+	return (float) timeGetTime();
+}
 
 inline void	TimeTrace(TCHAR* pMsg)
 {
-	CString szMsg = _T("");
+	CString szMsg;
 	CTime time = CTime::GetCurrentTime();
-	szMsg.Format("%s,,  time : %d-%d-%d, %d:%d]\n", pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute() );
+	szMsg.Format("%s,,  time : %d-%d-%d, %d:%d]\n", pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	TRACE(szMsg);
-};
+}
 
 #endif

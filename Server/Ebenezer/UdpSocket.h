@@ -10,22 +10,22 @@
 #endif // _MSC_VER > 1000
 
 class CEbenezerDlg;
-class CUdpSocket  
+class CUdpSocket
 {
 public:
-	void RecvBattleZoneCurrentUsers( char* pBuf );
-	void RecvDestroyKnights( char* pBuf );
-	void RecvModifyFame( char* pBuf, BYTE command );
-	void RecvJoinKnights( char* pBuf, BYTE command );
-	void RecvCreateKnights( char* pBuf );
-	void ReceiveKnightsProcess( char* pBuf );
-	void RecvBattleEvent(char *pBuf);
-	void ServerChat( char* pBuf );
-	void Parsing( char* pBuf, int len );
+	void RecvBattleZoneCurrentUsers(char* pBuf);
+	void RecvDestroyKnights(char* pBuf);
+	void RecvModifyFame(char* pBuf, BYTE command);
+	void RecvJoinKnights(char* pBuf, BYTE command);
+	void RecvCreateKnights(char* pBuf);
+	void ReceiveKnightsProcess(char* pBuf);
+	void RecvBattleEvent(char* pBuf);
+	void ServerChat(char* pBuf);
+	void Parsing(char* pBuf, int len);
 	bool PacketProcess(int len);
 	int  SendUDPPacket(char* strAddress, char* pBuf, int len);
 	bool CreateSocket();
-	CUdpSocket(CEbenezerDlg* pMain=NULL);
+	CUdpSocket(CEbenezerDlg* pMain = nullptr);
 	virtual ~CUdpSocket();
 
 	SOCKET m_hUDPSocket;

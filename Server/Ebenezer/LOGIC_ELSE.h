@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class LOGIC_ELSE  
+class LOGIC_ELSE
 {
 public:
 	void Parse_and(char* pBuf);

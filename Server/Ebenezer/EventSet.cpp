@@ -38,7 +38,6 @@ CEventSet::CEventSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CEventSet::GetDefaultConnect()
 {
 	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");

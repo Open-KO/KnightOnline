@@ -10,10 +10,10 @@
 #endif // _MSC_VER > 1000
 
 class CUser;
-class CGameEvent  
+class CGameEvent
 {
 public:
-	void RunEvent( CUser* pUser=NULL );
+	void RunEvent(CUser* pUser = nullptr);
 	CGameEvent();
 	virtual ~CGameEvent();
 

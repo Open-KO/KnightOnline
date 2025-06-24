@@ -8,7 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Launcher", "Launcher.vcxpro
 		{6E97FD6E-7530-4BE3-B8E6-9E17ED45CD45} = {6E97FD6E-7530-4BE3-B8E6-9E17ED45CD45}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZipArchive", "..\ZipArchive\ZipArchive.vcxproj", "{6E97FD6E-7530-4BE3-B8E6-9E17ED45CD45}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZipArchive", "..\..\deps\ZipArchive\ZipArchive.vcxproj", "{6E97FD6E-7530-4BE3-B8E6-9E17ED45CD45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -23,7 +23,7 @@ class CEbenezerDlg;
 class CUser;
 struct _MAGIC_TABLE;
 
-class CMagicProcess  
+class CMagicProcess
 {
 public:
 	short GetWeatherDamage(short damage, short attribute);
@@ -42,16 +42,16 @@ public:
 	void ExecuteType4(int magicid, int sid, int tid, int data1, int data2, int data3);
 	void ExecuteType3(int magicid, int sid, int tid, int data1, int data2, int data3);
 	BYTE ExecuteType2(int magicid, int sid, int tid, int data1, int data2, int data3);
-	BYTE ExecuteType1(int magicid, int sid, int tid, int data1, int data2, int data3);	
+	BYTE ExecuteType1(int magicid, int sid, int tid, int data1, int data2, int data3);
 
-	_MAGIC_TABLE* IsAvailable( int magicid, int tid, int sid, BYTE type, int data1, int data2, int data3 );
-	void MagicPacket( char* pBuf, int len );
+	_MAGIC_TABLE* IsAvailable(int magicid, int tid, int sid, BYTE type, int data1, int data2, int data3);
+	void MagicPacket(char* pBuf, int len);
 
 	CMagicProcess();
 	virtual ~CMagicProcess();
 
 	CEbenezerDlg*	m_pMain;
-	CUser*			m_pSrcUser;	
+	CUser*			m_pSrcUser;
 
 	BYTE	m_bMagicState;
 };

@@ -12,7 +12,8 @@
 #include "PlayerMySelf.h"
 #include "GameProcMain.h"
 #include "N3WorldManager.h"
-#include "../Server/shared/Ini.h"
+
+#include <shared/Ini.h>
 
 #include <WinSock2.h>
 #include <time.h>

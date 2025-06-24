@@ -56,30 +56,12 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -87,13 +69,15 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -105,7 +89,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -119,7 +103,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -134,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -145,144 +129,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CircularBuffer.cpp" />
-    <ClCompile Include="Compression.cpp" />
-    <ClCompile Include="Compression_LZF.cpp" />
-    <ClCompile Include="Compression_PKWARE.cpp" />
-    <ClCompile Include="Condition.cpp" />
-    <ClCompile Include="crc32.cpp">
+    <ClCompile Include="crc32.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="database\OdbcCommand.cpp">
-      <PrecompiledHeaderOutputFile>$(IntDir)database_$(TargetName).pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="database\OdbcConnection.cpp">
-      <PrecompiledHeaderOutputFile>$(IntDir)database_$(TargetName).pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="database\OdbcParameter.cpp">
-      <PrecompiledHeaderOutputFile>$(IntDir)database_$(TargetName).pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="database\OdbcRecordset.cpp">
-      <PrecompiledHeaderOutputFile>$(IntDir)database_$(TargetName).pch</PrecompiledHeaderOutputFile>
-    </ClCompile>
-    <ClCompile Include="database\stdafx.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>$(IntDir)database_$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>database_stdafx.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="DebugUtils.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="JvCryption.cpp" />
-    <ClCompile Include="KOSocket.cpp" />
-    <ClCompile Include="lzf.cpp" />
+    <ClCompile Include="lzf.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="pkware\pklib.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ReferenceObject.cpp" />
-    <ClCompile Include="RWLock.cpp" />
-    <ClCompile Include="signal_handler.cpp" />
-    <ClCompile Include="SMDFile.cpp" />
-    <ClCompile Include="Socket.cpp" />
-    <ClCompile Include="SocketMgr.cpp" />
-    <ClCompile Include="SocketOpsWin32.cpp" />
-    <ClCompile Include="SocketWin32.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="StringConversion.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="TimeThread.cpp" />
-    <ClCompile Include="tstring.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Atomic.h" />
     <ClInclude Include="ByteBuffer.h" />
     <ClInclude Include="CircularBuffer.h" />
-    <ClInclude Include="ClientSocketMgr.h" />
-    <ClInclude Include="Compression.h" />
-    <ClInclude Include="Compression_LZF.h" />
-    <ClInclude Include="Compression_PKWARE.h" />
-    <ClInclude Include="Condition.h" />
     <ClInclude Include="crc32.h" />
-    <ClInclude Include="database\BattleSet.h" />
-    <ClInclude Include="database\CoefficientSet.h" />
-    <ClInclude Include="database\EventSet.h" />
-    <ClInclude Include="database\EventTriggerSet.h" />
-    <ClInclude Include="database\ItemExchangeSet.h" />
-    <ClInclude Include="database\ItemTableSet.h" />
-    <ClInclude Include="database\ItemUpgradeSet.h" />
-    <ClInclude Include="database\KingCandidacyNoticeBoardSet.h" />
-    <ClInclude Include="database\KingElectionListSet.h" />
-    <ClInclude Include="database\KingSystemSet.h" />
-    <ClInclude Include="database\KnightsAllianceSet.h" />
-    <ClInclude Include="database\KnightsCapeSet.h" />
-    <ClInclude Include="database\KnightsRankSet.h" />
-    <ClInclude Include="database\KnightsSet.h" />
-    <ClInclude Include="database\KnightsSiegeWar.h" />
-    <ClInclude Include="database\KnightsUserSet.h" />
-    <ClInclude Include="database\LevelUpTableSet.h" />
-    <ClInclude Include="database\MagicTableSet.h" />
-    <ClInclude Include="database\MagicType1Set.h" />
-    <ClInclude Include="database\MagicType2Set.h" />
-    <ClInclude Include="database\MagicType3Set.h" />
-    <ClInclude Include="database\MagicType4Set.h" />
-    <ClInclude Include="database\MagicType5Set.h" />
-    <ClInclude Include="database\MagicType6Set.h" />
-    <ClInclude Include="database\MagicType7Set.h" />
-    <ClInclude Include="database\MagicType8Set.h" />
-    <ClInclude Include="database\MagicType9Set.h" />
-    <ClInclude Include="database\MakeDefensiveTableSet.h" />
-    <ClInclude Include="database\MakeGradeItemTableSet.h" />
-    <ClInclude Include="database\MakeItemGroupSet.h" />
-    <ClInclude Include="database\MakeLareItemTableSet.h" />
-    <ClInclude Include="database\MakeWeaponTableSet.h" />
-    <ClInclude Include="database\MonsterChallenge.h" />
-    <ClInclude Include="database\MonsterChallengeSummonList.h" />
-    <ClInclude Include="database\MonsterSummonListSet.h" />
-    <ClInclude Include="database\NpcItemSet.h" />
-    <ClInclude Include="database\NpcPosSet.h" />
-    <ClInclude Include="database\NpcTableSet.h" />
-    <ClInclude Include="database\OdbcCommand.h" />
-    <ClInclude Include="database\OdbcConnection.h" />
-    <ClInclude Include="database\OdbcParameter.h" />
-    <ClInclude Include="database\OdbcRecordset.h" />
-    <ClInclude Include="database\RentalItemSet.h" />
-    <ClInclude Include="database\ServerResourceSet.h" />
-    <ClInclude Include="database\StartPositionSet.h" />
-    <ClInclude Include="database\stdafx.h" />
-    <ClInclude Include="database\structs.h" />
-    <ClInclude Include="database\UserKnightsRankSet.h" />
-    <ClInclude Include="database\UserPersonalRankSet.h" />
-    <ClInclude Include="database\ZoneInfoSet.h" />
-    <ClInclude Include="DateTime.h" />
     <ClInclude Include="DebugUtils.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="JvCryption.h" />
-    <ClInclude Include="KOSocket.h" />
-    <ClInclude Include="KOSocketMgr.h" />
-    <ClInclude Include="ListenSocketWin32.h" />
     <ClInclude Include="lzf.h" />
-    <ClInclude Include="Network.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="packets.h" />
     <ClInclude Include="pkware\pklib.h" />
-    <ClInclude Include="ReferenceObject.h" />
-    <ClInclude Include="RWLock.h" />
-    <ClInclude Include="signal_handler.h" />
-    <ClInclude Include="SMDFile.h" />
-    <ClInclude Include="Socket.h" />
-    <ClInclude Include="SocketDefines.h" />
-    <ClInclude Include="SocketMgr.h" />
-    <ClInclude Include="SocketOps.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
-    <ClInclude Include="Thread.h" />
+    <ClInclude Include="StringConversion.h" />
+    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="TimeThread.h" />
-    <ClInclude Include="tstring.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>

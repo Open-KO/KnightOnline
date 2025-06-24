@@ -46,7 +46,6 @@ CHomeSet::CHomeSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CHomeSet::GetDefaultConnect()
 {
 //	return _T("ODBC;DSN=KN_Online");

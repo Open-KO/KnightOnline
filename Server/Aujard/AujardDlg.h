@@ -11,7 +11,7 @@
 #include "SharedMem.h"
 #include "DBAgent.h"
 #include "define.h"
-#include "STLMap.h"
+#include <shared/STLMap.h>
 
 typedef CSTLMap <_ITEM_TABLE>		ItemtableArray;
 /////////////////////////////////////////////////////////////////////////////
@@ -21,58 +21,58 @@ class CAujardDlg : public CDialog
 {
 // Construction
 public:
-	void CouponEvent( char* pData );
-	void BattleEventResult( char* pData );
-	void WriteLogFile( char* pData );
+	void CouponEvent(char* pData);
+	void BattleEventResult(char* pData);
+	void WriteLogFile(char* pData);
 	void SaveUserData();
 	void WritePacketLog();
-	void UserKickOut( char* pBuf );
-	void SetLogInInfo( char* pBuf );
-	void KnightsList( char* pBuf );
+	void UserKickOut(char* pBuf);
+	void SetLogInInfo(char* pBuf);
+	void KnightsList(char* pBuf);
 	void ConCurrentUserCount();
-	void AllKnightsMember( char* pBuf );
-	void DestroyKnights( char* pBuf );
-	void ModifyKnightsMember( char* pBuf, BYTE command );
-	void WithdrawKnights( char* pBuf );
-	void JoinKnights( char* pBuf );
-	void CreateKnights( char* pBuf );
-	void KnightsPacket( char* pBuf );
-	_USER_DATA* GetUserPtr( const char* struserid, int& uid );
-	void UserDataSave( char* pBuf );
+	void AllKnightsMember(char* pBuf);
+	void DestroyKnights(char* pBuf);
+	void ModifyKnightsMember(char* pBuf, BYTE command);
+	void WithdrawKnights(char* pBuf);
+	void JoinKnights(char* pBuf);
+	void CreateKnights(char* pBuf);
+	void KnightsPacket(char* pBuf);
+	_USER_DATA* GetUserPtr(const char* struserid, int& uid);
+	void UserDataSave(char* pBuf);
 	void AllSaveRoutine();
-	void AllCharInfoReq( char* pBuf );
-	void AccountLogIn( char* pBuf );
-	void DeleteChar( char* pBuf );
-	void CreateNewChar( char* pBuf );
-	void SelectNation( char* pBuf );
+	void AllCharInfoReq(char* pBuf);
+	void AccountLogIn(char* pBuf);
+	void DeleteChar(char* pBuf);
+	void CreateNewChar(char* pBuf);
+	void SelectNation(char* pBuf);
 	BOOL LoadItemTable();
-	void UserLogOut(char *pBuf);
-	CAujardDlg(CWnd* pParent = NULL);	// standard constructor
+	void UserLogOut(char* pBuf);
+	CAujardDlg(CWnd* pParent = nullptr);	// standard constructor
 
 	BOOL InitializeMMF();
-	void SelectCharacter( char* pBuf );
+	void SelectCharacter(char* pBuf);
 
-	CSharedMemQueue	m_LoggerSendQueue;
-	CSharedMemQueue	m_LoggerRecvQueue;
+	CSharedMemQueue		m_LoggerSendQueue;
+	CSharedMemQueue		m_LoggerRecvQueue;
 
-	HANDLE	m_hReadQueueThread;
-	HANDLE	m_hMMFile;
-	char*	m_lpMMFile;
+	HANDLE				m_hReadQueueThread;
+	HANDLE				m_hMMFile;
+	char*				m_lpMMFile;
 
-	CDBAgent	m_DBAgent;
+	CDBAgent			m_DBAgent;
 
 	ItemtableArray		m_ItemtableArray;
-	
+
 	int	m_nServerNo, m_nZoneNo;
-	char m_strGameDSN[24], m_strAccountDSN[24], m_strLogDSN[24];
-	char m_strGameUID[24], m_strAccountUID[24], m_strLogUID[24];
-	char m_strGamePWD[24], m_strAccountPWD[24], m_strLogPWD[24];
+	TCHAR m_strGameDSN[24], m_strAccountDSN[24], m_strLogDSN[24];
+	TCHAR m_strGameUID[24], m_strAccountUID[24], m_strLogUID[24];
+	TCHAR m_strGamePWD[24], m_strAccountPWD[24], m_strLogPWD[24];
 
 	CFile					m_LogFile;
 
 	int m_iPacketCount;		// packet의 수를 체크
-	int m_iSendPacketCount;		// packet의 수를 체크
-	int m_iRecvPacketCount;		// packet의 수를 체크
+	int m_iSendPacketCount;	// packet의 수를 체크
+	int m_iRecvPacketCount;	// packet의 수를 체크
 	int m_iLogFileDay;
 
 // Dialog Data
@@ -84,10 +84,10 @@ public:
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAujardDlg)
-	public:
+public:
 	virtual BOOL DestroyWindow();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//}}AFX_VIRTUAL
 

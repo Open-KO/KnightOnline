@@ -1,84 +1,200 @@
+﻿// CircularBuffer.h: interface for the CCircularBuffer class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#if !defined(AFX_CIRCULARBUFFER_H__F4D345A4_CE05_11D1_8BEE_0060979C5900__INCLUDED_)
+#define AFX_CIRCULARBUFFER_H__F4D345A4_CE05_11D1_8BEE_0060979C5900__INCLUDED_
+
+#if _MSC_VER >= 1000
 #pragma once
+#endif // _MSC_VER >= 1000
 
-class CircularBuffer
+class CCircularBuffer
 {
-	// allocated whole block pointer
-	uint8_t * m_buffer;
-	uint8_t * m_bufferEnd;
-
-	// region A pointer, and size
-	uint8_t * m_regionAPointer;
-	size_t m_regionASize;
-
-	// region size
-	uint8_t * m_regionBPointer;
-	size_t m_regionBSize;
-
-	// allocated size
-	size_t m_bufferSize;
-
-
-	// pointer magic!
-	INLINE size_t GetAFreeSpace()  { return (m_bufferEnd - m_regionAPointer - m_regionASize); }
-	INLINE size_t GetSpaceBeforeA() { return (m_regionAPointer - m_buffer); }
-	INLINE size_t GetSpaceAfterA() { return (m_bufferEnd - m_regionAPointer - m_regionASize); }
-	INLINE size_t GetBFreeSpace() { if(m_regionBPointer == nullptr) { return 0; } return (m_regionAPointer - m_regionBPointer - m_regionBSize); }
-
 public:
-	CircularBuffer();
-	~CircularBuffer();
+	inline CCircularBuffer(int size)
+	{
+		ASSERT(size > 0);
+		m_iBufSize = size;
+		m_pBuffer = new char[m_iBufSize];
 
-	/** Read bytes from the buffer
-	* @param destination pointer to destination where bytes will be written
-	* @param bytes number of bytes to read
-	* @return true if there was enough data, false otherwise
-	*/
-	bool Read(void * destination, size_t bytes);
-	void AllocateB();
+		m_iHeadPos = 0;
+		m_iTailPos = 0;
+	}
 
-	/** Write bytes to the buffer
-	* @param data pointer to the data to be written
-	* @param bytes number of bytes to be written
-	* @return true if was successful, otherwise false
-	*/
-	bool Write(const void * data, size_t bytes);
+	inline ~CCircularBuffer()
+	{
+		ASSERT(m_pBuffer != nullptr);
+		delete[] m_pBuffer;
+		m_pBuffer = nullptr;
+	}
 
-	/** Returns the allocated size of the buffer.
-	*/
-	INLINE size_t GetAllocatedSize() const { return m_bufferSize; }
+	void	PutData(char* pData, int len);
+	void	GetData(char* pData, int len);
+	int		GetOutData(char* pData); //HeadPos, 변화
+	void	PutData(char& data);
+	char& GetHeadData() {
+		return m_pBuffer[m_iHeadPos];
+	}
 
-	/** Returns the number of available bytes left.
-	*/
-	size_t GetSpace();
+	// 1 Byte Operation;
+	// false : 모든데이터 다빠짐, TRUE: 정상적으로 진행중
+	BOOL	HeadIncrease(int increasement = 1);
 
-	/** Returns the number of bytes currently stored in the buffer.
-	*/
-	size_t GetSize();
+	void SetEmpty() {
+		m_iHeadPos = m_iTailPos = 0;
+	}
 
-	/** Returns the number of contiguous bytes (that can be pushed out in one operation)
-	*/
-	size_t GetContiguousBytes();
+	int& GetBufferSize() {
+		return m_iBufSize;
+	}
 
-	/** Removes len bytes from the front of the buffer
-	* @param len the number of bytes to "cut"
-	*/
-	void Remove(size_t len);
+	int& GetHeadPos() {
+		return m_iHeadPos;
+	}
 
-	/** Returns a pointer at the "end" of the buffer, where new data can be written
-	*/
-	void * GetBuffer();
+	int& GetTailPos() {
+		return m_iTailPos;
+	}
 
-	/** Allocate the buffer with room for size bytes
-	* @param size the number of bytes to allocate
-	*/
-	void Allocate(size_t size);
+	int		GetValidCount();
 
-	/** Increments the "written" pointer forward len bytes
-	* @param len number of bytes to step
-	*/
-	void IncrementWritten(size_t len);			// i.e. "commit"
+protected:
+	// over flow 먼저 점검한 후 IndexOverFlow 점검
+	inline BOOL IsOverFlowCondition(int& len) {
+		return (len >= m_iBufSize - GetValidCount()) ? TRUE : FALSE;
+	}
 
-	/** Returns a pointer at the "beginning" of the buffer, where data can be pulled from
-	*/
-	void * GetBufferStart();
+	inline BOOL IsIndexOverFlow(int& len) {
+		return (len + m_iTailPos >= m_iBufSize) ? TRUE : FALSE;
+	}
+
+	void	BufferResize(); //overflow condition 일때 size를 현재의 두배로 늘림
+
+protected:
+	int		m_iBufSize;
+	char*	m_pBuffer;
+
+	int		m_iHeadPos;
+	int		m_iTailPos;
 };
+
+inline int CCircularBuffer::GetValidCount()
+{
+	int count = m_iTailPos - m_iHeadPos;
+	if (count < 0)
+		count = m_iBufSize + count;
+	return count;
+}
+
+inline void CCircularBuffer::BufferResize()
+{
+	int prevBufSize = m_iBufSize;
+	m_iBufSize <<= 1;
+	char* pNewData = new char[m_iBufSize];
+	memcpy(pNewData, m_pBuffer, prevBufSize);
+
+	if (m_iTailPos < m_iHeadPos)
+	{
+		memcpy(pNewData + prevBufSize, m_pBuffer, m_iTailPos);
+		m_iTailPos += prevBufSize;
+	}
+
+	delete[] m_pBuffer;
+	m_pBuffer = pNewData;
+}
+
+inline void CCircularBuffer::PutData(char& data)
+{
+	int len = 1;
+	while (IsOverFlowCondition(len))
+		BufferResize();
+
+	m_pBuffer[m_iTailPos++] = data;
+	if (m_iTailPos == m_iBufSize)
+		m_iTailPos = 0;
+}
+
+inline void CCircularBuffer::PutData(char* pData, int len)
+{
+	if (len <= 0)
+	{
+		TRACE("CCircularBuffer::PutData len is <=0\n");
+		return;
+	}
+
+	while (IsOverFlowCondition(len))
+		BufferResize();
+
+	if (IsIndexOverFlow(len))
+	{
+		int FirstCopyLen = m_iBufSize - m_iTailPos;
+		int SecondCopyLen = len - FirstCopyLen;
+		ASSERT(FirstCopyLen);
+		memcpy(m_pBuffer + m_iTailPos, pData, FirstCopyLen);
+
+		if (SecondCopyLen > 0)
+		{
+			memcpy(m_pBuffer, pData + FirstCopyLen, SecondCopyLen);
+			m_iTailPos = SecondCopyLen;
+		}
+		else
+		{
+			m_iTailPos = 0;
+		}
+	}
+	else
+	{
+		memcpy(m_pBuffer + m_iTailPos, pData, len);
+		m_iTailPos += len;
+	}
+}
+
+inline int CCircularBuffer::GetOutData(char* pData)
+{
+	int len = GetValidCount();
+	int fc = m_iBufSize - m_iHeadPos;
+	if (len > fc)
+	{
+		int sc = len - fc;
+		memcpy(pData, m_pBuffer + m_iHeadPos, fc);
+		memcpy(pData + fc, m_pBuffer, sc);
+		m_iHeadPos = sc;
+		ASSERT(m_iHeadPos == m_iTailPos);
+	}
+	else
+	{
+		memcpy(pData, m_pBuffer + m_iHeadPos, len);
+		m_iHeadPos += len;
+		if (m_iHeadPos == m_iBufSize)
+			m_iHeadPos = 0;
+	}
+	return len;
+}
+
+inline void CCircularBuffer::GetData(char* pData, int len)
+{
+	ASSERT(len > 0 && len <= GetValidCount());
+	if (len < m_iBufSize - m_iHeadPos)
+	{
+		memcpy(pData, m_pBuffer + m_iHeadPos, len);
+	}
+	else
+	{
+		int fc = m_iBufSize - m_iHeadPos;
+		int sc = len - fc;
+		memcpy(pData, m_pBuffer + m_iHeadPos, fc);
+		if (sc > 0)
+			memcpy(pData + fc, m_pBuffer, sc);
+	}
+}
+
+inline BOOL CCircularBuffer::HeadIncrease(int increasement)
+{
+	ASSERT(increasement <= GetValidCount());
+	m_iHeadPos += increasement;
+	m_iHeadPos %= m_iBufSize;
+	return m_iHeadPos != m_iTailPos;
+}
+
+#endif // !defined(AFX_CIRCULARBUFFER_H__F4D345A4_CE05_11D1_8BEE_0060979C5900__INCLUDED_)

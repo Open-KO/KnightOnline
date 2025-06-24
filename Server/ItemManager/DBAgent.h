@@ -9,16 +9,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "define.h"
 #include <vector>
 
 class CItemManagerDlg;
-class CDBAgent  
+class CDBAgent
 {
 public:
-	void ReConnectODBC(CDatabase *m_db, char *strdb, char *strname, char *strpwd);
+	void ReConnectODBC(CDatabase* m_db, TCHAR* strdb, TCHAR* strname, TCHAR* strpwd);
 	BOOL DatabaseInit();
 	CDBAgent();
 	virtual ~CDBAgent();

@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "My_3DStruct.h"
 #include "N3Mng.h"
 #include "N3AlphaPrimitiveManager.h"

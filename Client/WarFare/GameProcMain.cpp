@@ -823,7 +823,7 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 			switch (opcode) {
 				case 0x03://0x01:
 					uint16_t zoneFlags = pkt.read<uint16_t>();
-					ZoneAbilityType zoneType = (ZoneAbilityType)pkt.read<uint8_t>();
+					e_ZoneAbilityType zoneType = (e_ZoneAbilityType)pkt.read<uint8_t>();
 					uint8_t zoneTariff = pkt.read<uint8_t>();
 					uint8_t minLevel = pkt.read<uint8_t>();
 					uint8_t maxLevel = pkt.read<uint8_t>();
@@ -7683,7 +7683,7 @@ bool CGameProcMain::OnMouseRBtnPress(POINT ptCur, POINT ptPrev)
 			// NOTE: an NPC has been clicked on
 			// TODO(srmeier): need to use ZoneAbilityType here
 			// NOTE(srmeier): using the zone type to decide if you can talk with NPC
-			if(ACT_WORLD->GetZoneType()==ZoneAbilityNeutral || (pNPC->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation)) // 같은 국가 일때만..
+			if(ACT_WORLD->GetZoneType()==ZONE_ABILITY_NEUTRAL || (pNPC->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation)) // 같은 국가 일때만..
 			{
 				float fD = (s_pPlayer->Position() - pNPC->Position()).Magnitude();
 				float fDLimit = (s_pPlayer->Radius() + pNPC->Radius()) * 3.0f;

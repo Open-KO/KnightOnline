@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "IOCPSocket2.h"
 #include "define.h"
 #include "GameDefine.h"
@@ -23,18 +21,18 @@
 
 #include <list>
 typedef	 std::list<_EXCHANGE_ITEM*>		ItemList;
-typedef  list<int>				UserEventList;	// 이밴트를 위하여 ^^;
+typedef  std::list<int>				UserEventList;	// 이밴트를 위하여 ^^;
 
 #define BANISH_DELAY_TIME    30
 
 class CEbenezerDlg;
-class CUser : public CIOCPSocket2  
+class CUser : public CIOCPSocket2
 {
 public:
-	_USER_DATA*	m_pUserData;
+	_USER_DATA* m_pUserData;
 
-	char	m_strAccountID[MAX_ID_SIZE+1];	// Login -> Select Char 까지 한시적으로만 쓰는변수. 이외에는 _USER_DATA 안에있는 변수를 쓴다...agent 와의 데이터 동기화를 위해...
-	
+	char	m_strAccountID[MAX_ID_SIZE + 1];	// Login -> Select Char 까지 한시적으로만 쓰는변수. 이외에는 _USER_DATA 안에있는 변수를 쓴다...agent 와의 데이터 동기화를 위해...
+
 	short	m_RegionX;						// 현재 영역 X 좌표
 	short	m_RegionZ;						// 현재 영역 Z 좌표
 
@@ -83,7 +81,7 @@ public:
 
 	short	m_iMaxHp;
 	short	m_iMaxMp;
-	
+
 	short	m_iZoneIndex;
 
 	float	m_fWill_x;
@@ -139,21 +137,21 @@ public:
 	BYTE	m_bLightningRAmount;
 	BYTE	m_bMagicRAmount;
 	BYTE	m_bDiseaseRAmount;
-	BYTE	m_bPoisonRAmount;	
-	
-	short   m_sDuration1 ;  float   m_fStartTime1 ;
-	short   m_sDuration2 ;  float   m_fStartTime2 ;
-	short   m_sDuration3 ;  float   m_fStartTime3 ;
-	short   m_sDuration4 ;  float   m_fStartTime4 ;
-	short   m_sDuration5 ;  float   m_fStartTime5 ;
-	short   m_sDuration6 ;  float   m_fStartTime6 ;
-	short   m_sDuration7 ;  float   m_fStartTime7 ;
-	short   m_sDuration8 ;  float   m_fStartTime8 ;
-	short   m_sDuration9 ;  float   m_fStartTime9 ;
+	BYTE	m_bPoisonRAmount;
+
+	short   m_sDuration1;  float   m_fStartTime1;
+	short   m_sDuration2;  float   m_fStartTime2;
+	short   m_sDuration3;  float   m_fStartTime3;
+	short   m_sDuration4;  float   m_fStartTime4;
+	short   m_sDuration5;  float   m_fStartTime5;
+	short   m_sDuration6;  float   m_fStartTime6;
+	short   m_sDuration7;  float   m_fStartTime7;
+	short   m_sDuration8;  float   m_fStartTime8;
+	short   m_sDuration9;  float   m_fStartTime9;
 
 	BYTE	m_bType4Buff[MAX_TYPE4_BUFF];
 	BOOL	m_bType4Flag;
-		
+
 	CEbenezerDlg* m_pMain;
 	CMagicProcess m_MagicProcess;
 
@@ -191,22 +189,22 @@ public:
 	int		m_iEditBoxEvent;
 
 	short	m_sEvent[MAX_CURRENT_EVENT];				// 이미 실행된 이밴트 리스트들 :)
-	
+
 
 public:
-	void RecvDeleteChar( char* pBuf );
+	void RecvDeleteChar(char* pBuf);
 	BOOL ExistComEvent(int eventid);
 	void SaveComEvent(int eventid);
 	BOOL CheckItemCount(int itemid, short min, short max);
-	void CouponEvent( char* pBuf );
+	void CouponEvent(char* pBuf);
 	void LogCoupon(int itemid, int count);
-	void RecvEditBox(char *pBuf);
+	void RecvEditBox(char* pBuf);
 	BOOL CheckCouponUsed();
 	BOOL CheckRandom(short percent);
 	void OpenEditBox(int message, int event);
 	BOOL CheckEditBox();
 	void NativeZoneReturn();
-	void EventMoneyItemGet( int itemid, int count );
+	void EventMoneyItemGet(int itemid, int count);
 	void KickOutZoneUser(BOOL home = FALSE);
 	void TrapProcess();
 	BOOL JobGroupCheck(short jobgroupid);
@@ -214,7 +212,7 @@ public:
 	void SendNpcSay(EXEC* pExec);
 	BOOL CheckClass(short class1, short class2, short class3, short class4, short class5, short class6);
 	void Make_public_key();
-	void RecvSelectMsg(char *pBuf);
+	void RecvSelectMsg(char* pBuf);
 	BOOL GiveItem(int itemid, short count);
 	BOOL RobItem(int itemid, short count);
 	BOOL CheckExistItem(int itemid, short count);
@@ -223,149 +221,149 @@ public:
 	BOOL GoldLose(int gold);
 	void GoldGain(int gold);
 	void SendItemWeight();
-	void ItemLogToAgent(const char *srcid, const char *tarid, int type, __int64 serial, int itemid, int count, int durability);
-	void TestPacket( char* pBuf );
-	BOOL RunEvent(EVENT_DATA *pEventData);
+	void ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial, int itemid, int count, int durability);
+	void TestPacket(char* pBuf);
+	BOOL RunEvent(EVENT_DATA* pEventData);
 	BOOL RunNpcEvent(CNpc* pNpc, EXEC* pExec);
 	BOOL CheckEventLogic(EVENT_DATA* pEventData);
 	void ClientEvent(char* pBuf);
-	void KickOut( char* pBuf );
+	void KickOut(char* pBuf);
 	void SetLogInInfoToDB(BYTE bInit);
 	void BlinkTimeCheck(float currenttime);
 	void MarketBBSSellPostFilter();
 	void MarketBBSBuyPostFilter();
-	void MarketBBSMessage(char *pBuf);
+	void MarketBBSMessage(char* pBuf);
 	void MarketBBSSellDelete(short index);
 	void MarketBBSBuyDelete(short index);
 	void MarketBBSUserDelete();
 	void MarketBBSTimeCheck();
-	void MarketBBSRemotePurchase(char *pBuf);
-	void MarketBBSReport(char *pBuf, BYTE type);
-	void MarketBBSDelete(char *pBuf);
-	void MarketBBSRegister(char *pBuf);
-	void MarketBBS(char *pBuf);
-	void PartyBBSNeeded(char *pBuf, BYTE type);
-	void PartyBBSDelete(char *pBuf);
-	void PartyBBSRegister(char *pBuf);
-	void PartyBBS(char *pBuf);
+	void MarketBBSRemotePurchase(char* pBuf);
+	void MarketBBSReport(char* pBuf, BYTE type);
+	void MarketBBSDelete(char* pBuf);
+	void MarketBBSRegister(char* pBuf);
+	void MarketBBS(char* pBuf);
+	void PartyBBSNeeded(char* pBuf, BYTE type);
+	void PartyBBSDelete(char* pBuf);
+	void PartyBBSRegister(char* pBuf);
+	void PartyBBS(char* pBuf);
 	void Corpse();
-	void FriendAccept(char *pBuf);
-	void FriendRequest(char *pBuf);
-	void Friend(char *pBuf);
+	void FriendAccept(char* pBuf);
+	void FriendRequest(char* pBuf);
+	void Friend(char* pBuf);
 	BOOL WarpListObjectEvent(short objectindex, short nid);
 	BOOL FlagObjectEvent(short objectindex, short nid);
 	BOOL GateLeverObjectEvent(short objectindex, short nid);
 	BOOL GateObjectEvent(short objectindex, short nid);
 	BOOL BindObjectEvent(short objectindex, short nid);
 	void InitType3();
-	BOOL GetWarpList( int warp_group );
-	void ServerChangeOk( char* pBuf );
-	void ZoneConCurrentUsers( char* pBuf );
-	void SelectWarpList( char* pBuf );
+	BOOL GetWarpList(int warp_group);
+	void ServerChangeOk(char* pBuf);
+	void ZoneConCurrentUsers(char* pBuf);
+	void SelectWarpList(char* pBuf);
 	void GoldChange(short tid, int gold);
 	void AllSkillPointChange();
 	void AllPointChange();
 	void ClassChangeReq();
-	void FriendReport( char* pBuf );
+	void FriendReport(char* pBuf);
 	CUser* GetItemRoutingUser(int itemid, short itemcount);
 	void Home();
-	void ReportBug(char *pBuf);
-	int GetEmptySlot( int itemid, int bCountable );
+	void ReportBug(char* pBuf);
+	int GetEmptySlot(int itemid, int bCountable);
 	void InitType4();
-	void WarehouseProcess( char* pBuf );
+	void WarehouseProcess(char* pBuf);
 	short GetACDamage(int damage, short tid);
 	short GetMagicDamage(int damage, short tid);
-	void Type3AreaDuration( float currenttime);
+	void Type3AreaDuration(float currenttime);
 	void ServerStatusCheck();
-	void SpeedHackTime( char* pBuf );
-	void OperatorCommand( char* pBuf );
-	void ItemRemove( char* pBuf );
+	void SpeedHackTime(char* pBuf);
+	void OperatorCommand(char* pBuf);
+	void ItemRemove(char* pBuf);
 	void SendAllKnightsID();
 	BYTE ItemCountChange(int itemid, int type, int amount);
 	void Type4Duration(float currenttime);
-	void ItemRepair( char* pBuf );
+	void ItemRepair(char* pBuf);
 	int ExchangeDone();
-	void HPTimeChange( float currenttime );
-	void HPTimeChangeType3( float currenttime );
-	void ItemDurationChange( int slot, int maxvalue, int curvalue, int amount );
-	void ItemWoreOut( int type, int damage );
+	void HPTimeChange(float currenttime);
+	void HPTimeChangeType3(float currenttime);
+	void ItemDurationChange(int slot, int maxvalue, int curvalue, int amount);
+	void ItemWoreOut(int type, int damage);
 	void Dead();
-	void LoyaltyDivide( short tid );
+	void LoyaltyDivide(short tid);
 	void UserDataSaveToAgent();
 	void CountConcurrentUser();
-	void SendUserInfo(char *temp_send, int &index);
-	void ChatTargetSelect( char* pBuf );
-	BOOL ItemEquipAvailable( _ITEM_TABLE* pTable );
-	void ClassChange( char* pBuf );
+	void SendUserInfo(char* temp_send, int& index);
+	void ChatTargetSelect(char* pBuf);
+	BOOL ItemEquipAvailable(_ITEM_TABLE* pTable);
+	void ClassChange(char* pBuf);
 	void MSpChange(int amount);
-	void UpdateGameWeather( char* pBuf, BYTE type );
-	void ObjectEvent( char* pBuf );
-	void SkillPointChange( char* pBuf );
+	void UpdateGameWeather(char* pBuf, BYTE type);
+	void ObjectEvent(char* pBuf);
+	void SkillPointChange(char* pBuf);
 	BOOL ExecuteExchange();
 	void InitExchange(BOOL bStart);
 	void ExchangeCancel();
 	void ExchangeDecide();
-	void ExchangeAdd( char* pBuf );
-	void ExchangeAgree( char* pBuf );
-	void ExchangeReq( char* pBuf );
-	void ExchangeProcess( char* pBuf );
+	void ExchangeAdd(char* pBuf);
+	void ExchangeAgree(char* pBuf);
+	void ExchangeReq(char* pBuf);
+	void ExchangeProcess(char* pBuf);
 	void PartyDelete();
-	void PartyRemove( int memberid );
+	void PartyRemove(int memberid);
 	void PartyInsert();
 	void PartyCancel();
-	void PartyRequest( int memberid, BOOL bCreate );
-	void PartyProcess( char* pBuf );
+	void PartyRequest(int memberid, BOOL bCreate);
+	void PartyProcess(char* pBuf);
 	void SendNotice();
-	void UserLookChange( int pos, int itemid, int durability );
+	void UserLookChange(int pos, int itemid, int durability);
 	void SpeedHackUser();
 	void VersionCheck();
-	void LoyaltyChange( short tid );
-	void StateChange( char* pBuf );
-	void PointChange( char* pBuf );
-	void ZoneChange( int zone, float x, float z );
-	void ItemGet( char* pBuf );
-	BOOL IsValidName( char* name );
+	void LoyaltyChange(short tid);
+	void StateChange(char* pBuf);
+	void PointChange(char* pBuf);
+	void ZoneChange(int zone, float x, float z);
+	void ItemGet(char* pBuf);
+	BOOL IsValidName(char* name);
 	void AllCharInfoToAgent();
-	void SelNationToAgent( char* pBuf );
-	void DelCharToAgent( char* pBuf );
-	void NewCharToAgent( char* pBuf );
-	void BundleOpenReq( char* pBuf );
-	void SendTargetHP( BYTE echo, int tid, int damage = 0 );
-	void ItemTrade( char* pBuf );
-	void NpcEvent( char* pBuf );
-	BOOL IsValidSlotPos( _ITEM_TABLE* pTable, int destpos );
-	void ItemMove( char* pBuf );
-	void Warp( char* pBuf );
-	void RequestNpcIn( char* pBuf );
+	void SelNationToAgent(char* pBuf);
+	void DelCharToAgent(char* pBuf);
+	void NewCharToAgent(char* pBuf);
+	void BundleOpenReq(char* pBuf);
+	void SendTargetHP(BYTE echo, int tid, int damage = 0);
+	void ItemTrade(char* pBuf);
+	void NpcEvent(char* pBuf);
+	BOOL IsValidSlotPos(_ITEM_TABLE* pTable, int destpos);
+	void ItemMove(char* pBuf);
+	void Warp(char* pBuf);
+	void RequestNpcIn(char* pBuf);
 	void SetUserAbility();
-	void LevelChange(short level, BYTE type=TRUE);	// type : TRUE => level up, FALSE => level down
-	void HpChange(int amount, int type=0, bool attack=false);
+	void LevelChange(short level, BYTE type = TRUE);	// type : TRUE => level up, FALSE => level down
+	void HpChange(int amount, int type = 0, bool attack = false);
 	short GetDamage(short tid, int magicid);
 	void SetSlotItemValue();
 	BYTE GetHitRate(float rate);
-	void RequestUserIn( char* pBuf );
+	void RequestUserIn(char* pBuf);
 	void InsertRegion(int del_x, int del_z);
-	void RemoveRegion( int del_x, int del_z );
+	void RemoveRegion(int del_x, int del_z);
 	void RegisterRegion();
 	void SetDetailData();
 	void SendTimeStatus();
 	void Regene(char* pBuf, int magicid = 0);
 	void SetMaxMp();
-	void SetMaxHp(int iFlag=0); // 0:default, 1:hp를 maxhp만큼 채워주기
+	void SetMaxHp(int iFlag = 0); // 0:default, 1:hp를 maxhp만큼 채워주기
 	void ExpChange(int iExp);
-	void Chat( char* pBuf );
+	void Chat(char* pBuf);
 	void LogOut();
-	void SelCharToAgent( char* pBuf );
+	void SelCharToAgent(char* pBuf);
 	void SendMyInfo();
-	void SelectCharacter( char* pBuf );
+	void SelectCharacter(char* pBuf);
 	void Send2AI_UserUpdateInfo();
-	void Attack( char* pBuf );
-	void UserInOut( BYTE Type );
+	void Attack(char* pBuf);
+	void UserInOut(BYTE Type);
 	void Initialize();
-	void MoveProcess( char* pBuf );
-	void Rotate( char* pBuf );
-	void LoginProcess( char* pBuf );
-	void Parsing( int len, char* pData );
+	void MoveProcess(char* pBuf);
+	void Rotate(char* pBuf);
+	void LoginProcess(char* pBuf);
+	void Parsing(int len, char* pData);
 	void CloseProcess();
 	CUser();
 	virtual ~CUser();

@@ -46,7 +46,7 @@
 #include "MagicSkillMng.h"
 #include "GameCursor.h"
 
-#include "shared/Compression.h"
+#include <shared/lzf.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -925,17 +925,38 @@ void CGameProcedure::MsgSend_CharacterSelect() // virtual
 
 void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이터 이다... 한번 더 파싱해야 한다!!!
 {
-	uint16_t compressedLength = pkt.read<uint16_t>();
-	uint16_t originalLength = pkt.read<uint16_t>();
-	uint32_t crc = pkt.read<uint32_t>();
+	uint16_t compressedLength	= pkt.read<uint16_t>();
+	uint16_t originalLength		= pkt.read<uint16_t>();
+	uint32_t originalChecksum	= pkt.read<uint32_t>();
 
-	uint8_t * decompressedBuffer = Compression::DecompressWithCRC32(pkt.contents() + pkt.rpos(), compressedLength, originalLength, crc);
-	if (decompressedBuffer == NULL)
+	std::vector<uint8_t> decompressedBuffer(originalLength);
+
+	uint32_t decompressedLength = lzf_decompress(
+		pkt.contents() + pkt.rpos(),
+		compressedLength,
+		&decompressedBuffer[0],
+		originalLength);
+
+	_ASSERT(decompressedLength == originalLength);
+
+	if (decompressedLength != originalLength)
 		return;
 
+	// Don't bother to verify checksums in release.
+	// It's just unnecessarily slow.
+#if defined(_DEBUG)
+	if (originalChecksum != 0)
+	{
+		uint32_t actualChecksum = crc32(&decompressedBuffer[0], decompressedLength);
+		_ASSERT(actualChecksum == originalChecksum);
+
+		if (actualChecksum != originalChecksum)
+			return;
+	}
+#endif
+
 	Packet decompressedPkt;
-	decompressedPkt.append(decompressedBuffer, originalLength);
-	delete[] decompressedBuffer;
+	decompressedPkt.append(&decompressedBuffer[0], originalLength);
 
 	ProcessPacket(decompressedPkt);
 }

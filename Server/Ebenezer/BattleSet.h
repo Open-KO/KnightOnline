@@ -13,7 +13,7 @@
 class CBattleSet : public CRecordset
 {
 public:
-	CBattleSet(CDatabase* pDatabase = NULL);
+	CBattleSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CBattleSet)
 
 // Field/Param Data
@@ -26,7 +26,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CBattleSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support

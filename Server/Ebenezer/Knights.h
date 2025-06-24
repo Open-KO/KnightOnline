@@ -14,7 +14,7 @@
 
 class CUser;
 class CEbenezerDlg;
-class CKnights  
+class CKnights
 {
 public:
 	short	m_sIndex;
@@ -22,13 +22,13 @@ public:
 	BYTE	m_byNation;			// nation
 	BYTE	m_byGrade;			// clan 등급 (1 ~ 5등급)
 	BYTE	m_byRanking;		// clan 등급 (1 ~ 5등)
-	char	m_strName[MAX_ID_SIZE+1];
+	char	m_strName[MAX_ID_SIZE + 1];
 	short	m_sMembers;
-	char	m_strChief[MAX_ID_SIZE+1];
-	char	m_strViceChief_1[MAX_ID_SIZE+1];		// 부단장 1
-	char	m_strViceChief_2[MAX_ID_SIZE+1];		// 부단장 2 (기사단에서는 장교)
-	char	m_strViceChief_3[MAX_ID_SIZE+1];		// 부단장 3	(기사단에서는 사용하지 않음)
-	__int64	m_nMoney;
+	char	m_strChief[MAX_ID_SIZE + 1];
+	char	m_strViceChief_1[MAX_ID_SIZE + 1];		// 부단장 1
+	char	m_strViceChief_2[MAX_ID_SIZE + 1];		// 부단장 2 (기사단에서는 장교)
+	char	m_strViceChief_3[MAX_ID_SIZE + 1];		// 부단장 3	(기사단에서는 사용하지 않음)
+	int64_t	m_nMoney;
 	short	m_sDomination;
 	int		m_nPoints;
 	BYTE	m_Image[MAX_KNIGHTS_MARK];
@@ -40,9 +40,6 @@ public:
 	virtual ~CKnights();
 
 	void InitializeValue();
-
-private:
-	
 };
 
 #endif // !defined(AFX_KNIGHTS_H__741B63A3_F081_45B0_9918_012D2E88A8BC__INCLUDED_)

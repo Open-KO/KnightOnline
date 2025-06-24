@@ -1,11 +1,12 @@
 ﻿#pragma once
 
 #include <vector>
+#include <string>
 
 class ByteBuffer
 {
 public:
-	const static size_t DEFAULT_SIZE = 32;
+	constexpr static size_t DEFAULT_SIZE = 32;
 	bool m_doubleByte;
 
 	ByteBuffer(): _rpos(0), _wpos(0), m_doubleByte(true) { _storage.reserve(DEFAULT_SIZE); }
@@ -95,10 +96,10 @@ public:
 
 	uint8_t operator[](size_t pos) { return read<uint8_t>(pos); }
 
-	INLINE size_t rpos() const { return _rpos; };
-	INLINE size_t rpos(size_t rpos) { return _rpos = rpos; };
-	INLINE size_t wpos() const { return _wpos; };
-	INLINE size_t wpos(size_t wpos) { return _wpos = wpos; };
+	size_t rpos() const { return _rpos; };
+	size_t rpos(size_t rpos) { return _rpos = rpos; };
+	size_t wpos() const { return _wpos; };
+	size_t wpos(size_t wpos) { return _wpos = wpos; };
 
 	template <typename T>
 	T read() 
@@ -155,7 +156,7 @@ public:
 	}
 
 	const uint8_t *contents() const { return &_storage[0]; }
-	INLINE size_t size() const { return _storage.size(); }
+	size_t size() const { return _storage.size(); }
 
 	// one should never use resize
 	void resize(size_t newsize) 

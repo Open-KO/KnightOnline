@@ -1,114 +1,111 @@
 ﻿#ifndef _GAMEDEFINE_H
 #define _GAMEDEFINE_H
 
-#define __VERSION			1081
-
 //////////////////// 직업별 Define ////////////////////
-#define KARUWARRRIOR		101		// 카루전사
-#define KARUROGUE			102		// 카루로그
-#define KARUWIZARD			103		// 카루마법
-#define KARUPRIEST			104		// 카루사제
-#define BERSERKER			105		// 버서커
-#define GUARDIAN			106		// 가디언
-#define HUNTER				107		// 헌터
-#define PENETRATOR			108		// 페너트레이터
-#define SORSERER			109		// 소서러
-#define NECROMANCER			110		// 네크로맨서
-#define SHAMAN				111		// 샤만
-#define DARKPRIEST			112		// 다크프리스트
-
-#define ELMORWARRRIOR		201		// 엘모전사
-#define ELMOROGUE			202		// 엘모로그
-#define ELMOWIZARD			203		// 엘모마법
-#define ELMOPRIEST			204		// 엘모사제
-#define BLADE				205		// 블레이드
-#define PROTECTOR			206		// 프로텍터
-#define RANGER				207		// 레인져
-#define ASSASSIN			208		// 어쌔신
-#define MAGE				209		// 메이지
-#define ENCHANTER			210		// 엔첸터
-#define CLERIC				211		// 클레릭
-#define DRUID				212		// 드루이드
+constexpr int KARUWARRRIOR		= 101;		// 카루전사
+constexpr int KARUROGUE			= 102;		// 카루로그
+constexpr int KARUWIZARD		= 103;		// 카루마법
+constexpr int KARUPRIEST		= 104;		// 카루사제
+constexpr int BERSERKER			= 105;		// 버서커
+constexpr int GUARDIAN			= 106;		// 가디언
+constexpr int HUNTER			= 107;		// 헌터
+constexpr int PENETRATOR		= 108;		// 페너트레이터
+constexpr int SORSERER			= 109;		// 소서러
+constexpr int NECROMANCER		= 110;		// 네크로맨서
+constexpr int SHAMAN			= 111;		// 샤만
+constexpr int DARKPRIEST		= 112;		// 다크프리스트
+constexpr int ELMORWARRRIOR		= 201;		// 엘모전사
+constexpr int ELMOROGUE			= 202;		// 엘모로그
+constexpr int ELMOWIZARD		= 203;		// 엘모마법
+constexpr int ELMOPRIEST		= 204;		// 엘모사제
+constexpr int BLADE				= 205;		// 블레이드
+constexpr int PROTECTOR			= 206;		// 프로텍터
+constexpr int RANGER			= 207;		// 레인져
+constexpr int ASSASSIN			= 208;		// 어쌔신
+constexpr int MAGE				= 209;		// 메이지
+constexpr int ENCHANTER			= 210;		// 엔첸터
+constexpr int CLERIC			= 211;		// 클레릭
+constexpr int DRUID				= 212;		// 드루이드
 /////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////
 // Race Define
 /////////////////////////////////////////////////////
-#define KARUS_BIG			1
-#define KARUS_MIDDLE		2
-#define KARUS_SMALL			3
-#define KARUS_WOMAN			4
-#define BABARIAN			11
-#define ELMORAD_MAN			12
-#define ELMORAD_WOMAN		13
-
-/////////////////////////////////////////////////////
-// ITEM_SLOT DEFINE
-const BYTE RIGHTEAR			= 0;
-const BYTE HEAD				= 1;
-const BYTE LEFTEAR			= 2;
-const BYTE NECK				= 3;
-const BYTE BREAST			= 4;
-const BYTE SHOULDER			= 5;
-const BYTE RIGHTHAND		= 6;
-const BYTE WAIST			= 7;
-const BYTE LEFTHAND			= 8;
-const BYTE RIGHTRING		= 9;
-const BYTE LEG				= 10;
-const BYTE LEFTRING			= 11;
-const BYTE GLOVE			= 12;
-const BYTE FOOT				= 13;
-const BYTE RESERVED			= 14;
-/////////////////////////////////////////////////////
+constexpr int KARUS_BIG			= 1;
+constexpr int KARUS_MIDDLE		= 2;
+constexpr int KARUS_SMALL		= 3;
+constexpr int KARUS_WOMAN		= 4;
+constexpr int BABARIAN			= 11;
+constexpr int ELMORAD_MAN		= 12;
+constexpr int ELMORAD_WOMAN		= 13;
 
 // 타격비별 성공률 //
-#define GREAT_SUCCESS			0X01		// 대성공
-#define SUCCESS					0X02		// 성공
-#define NORMAL					0X03		// 보통
-#define	FAIL					0X04		// 실패 
+constexpr int GREAT_SUCCESS		= 1;	// 대성공
+constexpr int SUCCESS			= 2;	// 성공
+constexpr int NORMAL			= 3;	// 보통
+constexpr int FAIL				= 4;	// 실패 
 
 // Item Move Direction Define 
-#define ITEM_INVEN_SLOT			0x01
-#define ITEM_SLOT_INVEN			0x02
-#define ITEM_INVEN_INVEN		0x03
-#define ITEM_SLOT_SLOT			0x04
-#define ITEM_INVEN_ZONE			0x05
-#define ITEM_ZONE_INVEN			0x06
+enum e_ItemMoveDirection
+{
+	ITEM_MOVE_INVEN_SLOT	= 1,
+	ITEM_MOVE_SLOT_INVEN	= 2,
+	ITEM_MOVE_INVEN_INVEN	= 3,
+	ITEM_MOVE_SLOT_SLOT		= 4,
+	ITEM_MOVE_INVEN_ZONE	= 5,
+	ITEM_MOVE_ZONE_INVEN	= 6
+};
 
 // Item Weapon Type Define
-#define WEAPON_DAGGER			1
-#define WEAPON_SWORD			2
-#define WEAPON_AXE				3
-#define WEAPON_MACE				4
-#define WEAPON_SPEAR			5
-#define WEAPON_SHIELD			6
-#define WEAPON_BOW				7
-#define WEAPON_LONGBOW			8
-#define WEAPON_LAUNCHER			10
-#define WEAPON_STAFF			11
-#define WEAPON_ARROW			12	// 스킬 없음
-#define WEAPON_JAVELIN			13	// 스킬 없음
-#define WEAPON_WORRIOR_AC		21	// 스킬 없음
-#define WEAPON_LOG_AC			22	// 스킬 없음
-#define WEAPON_WIZARD_AC		23	// 스킬 없음
-#define WEAPON_PRIEST_AC		24	// 스킬 없음
+enum e_WeaponType
+{
+	WEAPON_DAGGER		= 1,
+	WEAPON_SWORD		= 2,
+	WEAPON_AXE			= 3,
+	WEAPON_MACE			= 4,
+	WEAPON_SPEAR		= 5,
+	WEAPON_SHIELD		= 6,
+	WEAPON_BOW			= 7,
+	WEAPON_LONGBOW		= 8,
+	WEAPON_LAUNCHER		= 10,
+	WEAPON_STAFF		= 11,
+	WEAPON_ARROW		= 12,	// 스킬 없음
+	WEAPON_JAVELIN		= 13,	// 스킬 없음
+	WEAPON_WORRIOR_AC	= 21,	// 스킬 없음
+	WEAPON_LOG_AC		= 22,	// 스킬 없음
+	WEAPON_WIZARD_AC	= 23,	// 스킬 없음
+	WEAPON_PRIEST_AC	= 24,	// 스킬 없음
+};
+
 ////////////////////////////////////////////////////////////
 // User Status //
-#define USER_STANDING			0X01		// 서 있다.
-#define USER_SITDOWN			0X02		// 앉아 있다.
-#define USER_DEAD				0x03		// 듀거떠
-//#define USER_BLINKING			0x04		// 방금 살아났어!!!
+enum e_UserStatus
+{
+	USER_STANDING				= 1,	// 서 있다.
+	USER_SITDOWN				= 2,	// 앉아 있다.
+	USER_DEAD					= 3,	// 듀거떠
+	USER_BLINKING				= 4		// 방금 살아났어!!!
+};
 ////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////
 // Magic State
-#define NONE				0x01
-#define CASTING				0x02
+enum e_MagicState
+{
+	MAGIC_STATE_NONE			= 1,
+	MAGIC_STATE_CASTING			= 2
+};
 ////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////
 // Durability Type
-#define ATTACK				0x01
-#define DEFENCE				0x02
+enum e_DurabilityType
+{
+	DURABILITY_TYPE_ATTACK		= 1,
+	DURABILITY_TYPE_DEFENCE		= 2
+};
 ////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////
 // Knights Authority Type
 /*
@@ -131,12 +128,11 @@ const BYTE RESERVED			= 14;
 #define KNIGHTS_TYPE		0x02
 ////////////////////////////////////////////////////////////
 
-#define MAX_CLAN			24
-#define MAX_KNIGHTS_BANK	200
-#define MAX_KNIGHTS_MARK	512
+constexpr int MAX_CLAN			= 24;
+constexpr int MAX_KNIGHTS_BANK	= 200;
 
-#define ITEM_GOLD			900000000	// 돈 아이템 번호...
-#define ITEM_NO_TRADE		900000001	// 거래 불가 아이템들.... 비러머글 크리스마스 이밴트 >.<		
+constexpr int ITEM_GOLD			= 900000000;	// 돈 아이템 번호...
+constexpr int ITEM_NO_TRADE		= 900000001;	// 거래 불가 아이템들.... 비러머글 크리스마스 이밴트 >.<		
 
 ////////////////////////////////////////////////////////////
 // EVENT TYPE DEFINE
@@ -153,65 +149,83 @@ const BYTE RESERVED			= 14;
 
 ////////////////////////////////////////////////////////////
 // USER POINT DEFINE
-#define STR					0x01
-#define STA					0x02
-#define DEX					0x03
-#define INTEL				0x04
-#define CHA					0x05
+enum e_StatType
+{ /* explicitly used by CUser::PointChange() */
+	STAT_TYPE_STR			= 1,
+	STAT_TYPE_STA			= 2,
+	STAT_TYPE_DEX			= 3,
+	STAT_TYPE_INTEL			= 4,
+	STAT_TYPE_CHA			= 5
+};
 
-#define ORDER_SKILL			0x01
-#define MANNER_SKILL		0X02
-#define LANGUAGE_SKILL		0x03
-#define BATTLE_SKILL		0x04
-#define PRO_SKILL1			0x05
-#define PRO_SKILL2			0x06
-#define PRO_SKILL3			0x07
-#define PRO_SKILL4			0x08
+enum e_SkillPtType
+{
+	SKILLPT_TYPE_ORDER		= 1,
+	SKILLPT_TYPE_MANNER		= 2,
+	SKILLPT_TYPE_LANGUAGE	= 3,
+	SKILLPT_TYPE_BATTLE		= 4,
+	SKILLPT_TYPE_PRO_1		= 5,
+	SKILLPT_TYPE_PRO_2		= 6,
+	SKILLPT_TYPE_PRO_3		= 7,
+	SKILLPT_TYPE_PRO_4		= 8
+};
 
 /////////////////////////////////////////////////////////////
 // ITEM TYPE DEFINE
-#define ITEM_TYPE_FIRE				0x01
-#define ITEM_TYPE_COLD				0x02
-#define ITEM_TYPE_LIGHTNING			0x03
-#define ITEM_TYPE_POISON			0x04
-#define ITEM_TYPE_HP_DRAIN			0x05
-#define ITEM_TYPE_MP_DAMAGE			0x06
-#define ITEM_TYPE_MP_DRAIN			0x07
-#define ITEM_TYPE_MIRROR_DAMAGE		0x08
+enum e_ItemType
+{
+	ITEM_TYPE_FIRE			= 1,
+	ITEM_TYPE_COLD			= 2,
+	ITEM_TYPE_LIGHTNING		= 3,
+	ITEM_TYPE_POISON		= 4,
+	ITEM_TYPE_HP_DRAIN		= 5,
+	ITEM_TYPE_MP_DAMAGE		= 6,
+	ITEM_TYPE_MP_DRAIN		= 7,
+	ITEM_TYPE_MIRROR_DAMAGE	= 8
+};
 
 /////////////////////////////////////////////////////////////
-// ITEM LOG TYPE 
-#define ITEM_MERCHANT_BUY			0x01
-#define ITEM_MERCHANT_SELL			0x02
-#define ITEM_MONSTER_GET			0x03
-#define ITEM_EXCHANGE_PUT			0x04
-#define ITEM_EXCHANGE_GET			0x05
-#define ITEM_DESTROY				0x06
-#define ITEM_WAREHOUSE_PUT			0x07
-#define ITEM_WAREHOUSE_GET			0x08
-#define ITEM_UPGRADE				0x09
+// ITEM LOG TYPE
+enum e_ItemLogType
+{
+	ITEM_LOG_MERCHANT_BUY	= 1,
+	ITEM_LOG_MERCHANT_SELL	= 2,
+	ITEM_LOG_MONSTER_GET	= 3,
+	ITEM_LOG_EXCHANGE_PUT	= 4,
+	ITEM_LOG_EXCHANGE_GET	= 5,
+	ITEM_LOG_DESTROY		= 6,
+	ITEM_LOG_WAREHOUSE_PUT	= 7,
+	ITEM_LOG_WAREHOUSE_GET	= 8,
+	ITEM_LOG_UPGRADE		= 9
+};
 
 /////////////////////////////////////////////////////////////
 // JOB GROUP TYPES
-#define GROUP_WARRIOR				1
-#define GROUP_ROGUE					2
-#define GROUP_MAGE					3
-#define GROUP_CLERIC				4
-#define GROUP_ATTACK_WARRIOR		5
-#define GROUP_DEFENSE_WARRIOR		6
-#define GROUP_ARCHERER				7
-#define GROUP_ASSASSIN				8
-#define GROUP_ATTACK_MAGE			9
-#define GROUP_PET_MAGE				10
-#define GROUP_HEAL_CLERIC			11
-#define GROUP_CURSE_CLERIC			12
+enum e_JobGroupType
+{
+	JOB_GROUP_WARRIOR				= 1,
+	JOB_GROUP_ROGUE					= 2,
+	JOB_GROUP_MAGE					= 3,
+	JOB_GROUP_CLERIC				= 4,
+	JOB_GROUP_ATTACK_WARRIOR		= 5,
+	JOB_GROUP_DEFENSE_WARRIOR		= 6,
+	JOB_GROUP_ARCHERER				= 7,
+	JOB_GROUP_ASSASSIN				= 8,
+	JOB_GROUP_ATTACK_MAGE			= 9,
+	JOB_GROUP_PET_MAGE				= 10,
+	JOB_GROUP_HEAL_CLERIC			= 11,
+	JOB_GROUP_CURSE_CLERIC			= 12
+};
 
 //////////////////////////////////////////////////////////////
 // USER ABNORMAL STATUS TYPES
-#define ABNORMAL_NORMAL			0x01
-#define ABNORMAL_GIANT			0x02
-#define ABNORMAL_DWARF			0x03
-#define ABNORMAL_BLINKING		0x04
+enum e_AbnormalStatusType
+{
+	ABNORMAL_NORMAL					= 1,
+	ABNORMAL_GIANT					= 2,
+	ABNORMAL_DWARF					= 3,
+	ABNORMAL_BLINKING				= 4
+};
 
 //////////////////////////////////////////////////////////////
 // Object Type
@@ -229,8 +243,6 @@ const BYTE RESERVED			= 14;
 #define ATTRIBUTE_FIRE				1
 #define ATTRIBUTE_ICE				2
 #define ATTRIBUTE_LIGHTNING			3
-
-//extern CRITICAL_SECTION g_LogFile_critical;
 
 struct _CLASS_COEFFICIENT
 {
@@ -252,7 +264,9 @@ struct _CLASS_COEFFICIENT
 	float	Evasionrate;
 };
 
-struct _ZONE_ITEM {		// Bundle unit
+// Bundle unit
+struct _ZONE_ITEM
+{
 	DWORD bundle_index;
 	int itemid[6];
 	short count[6];
@@ -262,21 +276,21 @@ struct _ZONE_ITEM {		// Bundle unit
 	float time;
 };
 
-struct	_ITEM_DATA
+struct _ITEM_DATA
 {
 	int		nNum;		// item 번호
 	short	sDuration;	// item 내구력
 	short	sCount;		// item 갯수 or item 축복 속성에 해당 값
-	__int64	nSerialNum;	// item serial code
+	int64_t	nSerialNum;	// item serial code
 };
 
-struct	_EXCHANGE_ITEM
+struct _EXCHANGE_ITEM
 {
 	int itemid;
 	int count;
 	short duration;
 	BYTE pos;			//  교환후 들어갈 자리..
-	__int64	nSerialNum;	// item serial code
+	int64_t	nSerialNum;	// item serial code
 };
 
 struct _ITEM_TABLE
@@ -340,10 +354,11 @@ struct _ITEM_TABLE
 	BYTE  m_bCurseR;			// 저주 마법 저항력
 };
 
+// TODO: Share this implementation with Aujard
 struct _USER_DATA
 {
-	char	m_id[MAX_ID_SIZE+1];				// 유저 ID
-	char	m_Accountid[MAX_ID_SIZE+1];			// 계정 ID
+	char	m_id[MAX_ID_SIZE + 1];				// 유저 ID
+	char	m_Accountid[MAX_ID_SIZE + 1];			// 계정 ID
 
 	BYTE	m_bZone;						// 현재 Zone
 	float	m_curx;							// 현재 X 좌표
@@ -378,13 +393,12 @@ struct _USER_DATA
 	int		m_iBank;						// 창고의 돈(21억)
 
 	BYTE    m_bstrSkill[9];					// 직업별 스킬
-	_ITEM_DATA m_sItemArray[HAVE_MAX+SLOT_MAX];		// 42*8 bytes
+	_ITEM_DATA m_sItemArray[HAVE_MAX + SLOT_MAX];	// 42*8 bytes
 	_ITEM_DATA m_sWarehouseArray[WAREHOUSE_MAX];	// 창고 아이템	196*8 bytes
 
 	BYTE	m_bLogout;						// 로그아웃 플래그
 	BYTE	m_bWarehouse;					// 창고 거래 했었나?
 	DWORD	m_dwTime;						// 플레이 타임...
-
 };
 
 struct _LEVELUP
@@ -402,12 +416,19 @@ struct	_PARTY_GROUP
 	BYTE bLevel[8];
 	short sClass[8];
 	BYTE bItemRouting;
-	_PARTY_GROUP() {
-		for(int i=0;i<8;i++) {
-			uid[i] = -1; sMaxHp[i] = 0; sHp[i] = 0; bLevel[i] = 0; sClass[i] = 0;
+	_PARTY_GROUP()
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			uid[i] = -1;
+			sMaxHp[i] = 0;
+			sHp[i] = 0;
+			bLevel[i] = 0;
+			sClass[i] = 0;
 		}
+
 		bItemRouting = 0;
-	};
+	}
 };
 
 struct _OBJECT_EVENT
@@ -436,7 +457,7 @@ struct _REGENE_EVENT
 struct _KNIGHTS_USER
 {
 	BYTE    byUsed;								// 사용중 : 1, 비사용중 : 0
-	char	strUserName[MAX_ID_SIZE+1];			// 캐릭터의 이름
+	char	strUserName[MAX_ID_SIZE + 1];		// 캐릭터의 이름
 };
 
 struct _MAGIC_TABLE
@@ -444,7 +465,7 @@ struct _MAGIC_TABLE
 	int		iNum;
 	short	sFlyingEffect;
 	BYTE	bMoral;
-	BYTE	bSkillLevel;	
+	BYTE	bSkillLevel;
 	short	sSkill;
 	short	sMsp;
 	short   sHP;
@@ -544,7 +565,11 @@ struct _ZONE_SERVERINFO
 	short		sServerNo;
 	short		sPort;
 	char		strServerIP[20];
-	_ZONE_SERVERINFO() {memset(strServerIP, 0x00, 20);};
+
+	_ZONE_SERVERINFO()
+	{
+		memset(strServerIP, 0, sizeof(strServerIP));
+	}
 };
 
 struct _WARP_INFO
@@ -559,11 +584,14 @@ struct _WARP_INFO
 	float	fZ;
 	float	fR;
 
-	_WARP_INFO() {
-		sWarpID = 0; sZone = 0;
+	_WARP_INFO()
+	{
+		sWarpID = 0;
+		sZone = 0;
 		fX = fZ = fY = fR = 0.0f;
-		memset( strWarpName, 0x00, 32 ); memset( strAnnounce, 0x00, 256 );
-	};
+		memset(strWarpName, 0, sizeof(strWarpName));
+		memset(strAnnounce, 0, sizeof(strAnnounce));
+	}
 };
 
 struct _HOME_INFO

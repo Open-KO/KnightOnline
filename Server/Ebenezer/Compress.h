@@ -1,7 +1,7 @@
 ﻿#ifndef __COMPRESS_H
 #define __COMPRESS_H
 
-typedef enum 
+typedef enum
 {
 	COMPRESSING = 1,
 	UNCOMPRESSING
@@ -12,7 +12,7 @@ typedef enum
 #define W	0x02
 #define WR	0x03
 
-class CCompressMng  
+class CCompressMng
 {
 public:
 	CCompressMng();
@@ -22,28 +22,28 @@ public:
 	DWORD	m_dwCrc;
 	DWORD	m_dwThreadID;
 
-	int m_nOrgDataLength;
+	int		m_nOrgDataLength;
 
-	char* m_pInputBuffer;
-	char* m_pOutputBuffer;
+	char*	m_pInputBuffer;
+	char*	m_pOutputBuffer;
 
-	int m_nInputBufferCount;
-	int m_nOutputBufferCount;
+	int		m_nInputBufferCount;
+	int		m_nOutputBufferCount;
 
-	int m_nInputBufferCurPos;
-	int m_nOutputBufferCurPos;
+	int		m_nInputBufferCurPos;
+	int		m_nOutputBufferCurPos;
 
-	int	m_nBufferStatus;
-	int m_nMode;
-	int m_nErrorOccurred;
+	int		m_nBufferStatus;
+	int		m_nMode;
+	int		m_nErrorOccurred;
 
 	void Initialize();
 
-	//Compress Part...
+	// Compress Part...
 	int PreCompressWork(const char* OriginData, int OriginSize);
 	int Compress();
 
-	//Extract Part...
+	// Extract Part...
 	int PreUncompressWork(const char* pCompData, int nCompLen, int orgDataLen = 0);
 	int Extract();
 };

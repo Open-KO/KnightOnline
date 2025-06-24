@@ -13,7 +13,7 @@
 class CLevelUpTableSet : public CRecordset
 {
 public:
-	CLevelUpTableSet(CDatabase* pDatabase = NULL);
+	CLevelUpTableSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CLevelUpTableSet)
 
 // Field/Param Data
@@ -26,7 +26,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CLevelUpTableSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support

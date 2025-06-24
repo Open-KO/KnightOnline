@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{023CD26D-5809-4716-A245-B1E146C6E7FE}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <Import Project="$(PropsDir)cp949_strings.props" />
+  <Import Project="$(PropsDir)directx9.props" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;AI_SERVER;_WINDOWS;_3DSERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.;..;..\..;..\..\Client;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>..\..\Server\shared\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BrowseInformation>false</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\Client\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0412</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalLibraryDirectories>..\..\Client\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Compress.cpp" />
+    <ClCompile Include="GameSocket.cpp" />
+    <ClCompile Include="global.cpp" />
+    <ClCompile Include="IOCPort.cpp" />
+    <ClCompile Include="IOCPSocket2.cpp" />
+    <ClCompile Include="MagicProcess.cpp" />
+    <ClCompile Include="MagicTableSet.cpp" />
+    <ClCompile Include="MagicType1Set.cpp" />
+    <ClCompile Include="MagicType2Set.cpp" />
+    <ClCompile Include="MagicType3Set.cpp" />
+    <ClCompile Include="MagicType4Set.cpp" />
+    <ClCompile Include="MakeDefensiveTableSet.cpp" />
+    <ClCompile Include="MakeGradeItemTableSet.cpp" />
+    <ClCompile Include="MakeLareItemTableSet.cpp" />
+    <ClCompile Include="MakeWeaponTableSet.cpp" />
+    <ClCompile Include="MAP.cpp" />
+    <ClCompile Include="MonTableSet.cpp" />
+    <ClCompile Include="Npc.cpp" />
+    <ClCompile Include="NpcItem.cpp" />
+    <ClCompile Include="NpcItemSet.cpp" />
+    <ClCompile Include="NpcMagicProcess.cpp" />
+    <ClCompile Include="NpcPosSet.cpp" />
+    <ClCompile Include="NpcTable.cpp" />
+    <ClCompile Include="NpcTableSet.cpp" />
+    <ClCompile Include="NpcThread.cpp" />
+    <ClCompile Include="Party.cpp" />
+    <ClCompile Include="PartyUser.cpp" />
+    <ClCompile Include="PathFind.cpp" />
+    <ClCompile Include="Region.cpp" />
+    <ClCompile Include="RoomEvent.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="ServerDlg.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="User.cpp" />
+    <ClCompile Include="ZoneInfoSet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h" />
+    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h" />
+    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
+    <ClInclude Include="Compress.h" />
+    <ClInclude Include="Define.h" />
+    <ClInclude Include="Extern.h" />
+    <ClInclude Include="GameSocket.h" />
+    <ClInclude Include="global.h" />
+    <ClInclude Include="IOCPort.h" />
+    <ClInclude Include="IOCPSocket2.h" />
+    <ClInclude Include="MagicProcess.h" />
+    <ClInclude Include="MagicTableSet.h" />
+    <ClInclude Include="MagicType1Set.h" />
+    <ClInclude Include="MagicType2Set.h" />
+    <ClInclude Include="MagicType3Set.h" />
+    <ClInclude Include="MagicType4Set.h" />
+    <ClInclude Include="MakeDefensiveTableSet.h" />
+    <ClInclude Include="MakeGradeItemTableSet.h" />
+    <ClInclude Include="MakeLareItemTableSet.h" />
+    <ClInclude Include="MakeWeaponTableSet.h" />
+    <ClInclude Include="MAP.h" />
+    <ClInclude Include="MonTableSet.h" />
+    <ClInclude Include="Npc.h" />
+    <ClInclude Include="NpcItem.h" />
+    <ClInclude Include="NpcItemSet.h" />
+    <ClInclude Include="NpcMagicProcess.h" />
+    <ClInclude Include="NpcPosSet.h" />
+    <ClInclude Include="NpcTable.h" />
+    <ClInclude Include="NpcTableSet.h" />
+    <ClInclude Include="NpcThread.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="Party.h" />
+    <ClInclude Include="PartyUser.h" />
+    <ClInclude Include="PathFind.h" />
+    <ClInclude Include="Region.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RoomEvent.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerDlg.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="User.h" />
+    <ClInclude Include="ZoneInfoSet.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Server.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Server.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

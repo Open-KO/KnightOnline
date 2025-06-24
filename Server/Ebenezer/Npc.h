@@ -13,7 +13,7 @@
 
 class CEbenezerDlg;
 
-class CNpc  
+class CNpc
 {
 public:
 	CEbenezerDlg* m_pMain;
@@ -63,8 +63,11 @@ public:
 	void RegisterRegion();
 	void RemoveRegion(int del_x, int del_z);
 	void InsertRegion(int del_x, int del_z);
-	int GetRegionNpcList(int region_x, int region_z, char *buff, int &t_count);
-	BYTE GetState()		{ return m_byState; };
+	int GetRegionNpcList(int region_x, int region_z, char* buff, int& t_count);
+	BYTE GetState()
+	{
+		return m_byState;
+	};
 
 };
 

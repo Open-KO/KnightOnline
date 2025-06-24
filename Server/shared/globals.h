@@ -1,51 +1,23 @@
 ﻿#pragma once
 
-#ifndef _WIN32 
-#include <sys/time.h>
-#endif
-
 #include "version.h"
 #include "packets.h"
 #include "Packet.h"
 
 #define MAP_DIR				"../MAP/"
 
-#define MAX_USER			3000
+constexpr int MAX_USER			= 3000;
 
-constexpr int MIN_ID_SIZE	= 6;
-constexpr int MAX_ID_SIZE	= 20;
-constexpr int MAX_PW_SIZE	= 28;
-constexpr int MAX_IP_SIZE	= 15; // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
+constexpr int MIN_ID_SIZE		= 6;
+constexpr int MAX_ID_SIZE		= 20;
+constexpr int MAX_PW_SIZE		= 28;
+constexpr int MAX_IP_SIZE		= 15; // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
 
-#define MAX_ITEM_COUNT		9999
+constexpr int MAX_ITEM_COUNT	= 9999;	// 한 슬롯에 가지는 최대 화살/송편 개수
 
-#define MAX_ZONE_ID			255
+constexpr int VIEW_DISTANCE		= 48;
 
-#define VIEW_DISTANCE		48
-
-#define DAY                HOUR   * 24
-
-#define HOUR               MINUTE * 60
-// Define a minute as 60s.
-#define MINUTE				60u
-// Define a second as 1000ms.
-#define SECOND				1000u
-
-enum NameType
-{
-	TYPE_ACCOUNT,
-	TYPE_CHARACTER
-};
-
-enum Nation
-{
-	ALL = 0,
-	KARUS,
-	ELMORAD,
-	NONE
-};
-
-enum NpcState
+enum e_NpcState
 {
 	NPC_DEAD = 0,
 	NPC_LIVE,
@@ -212,22 +184,25 @@ enum e_NpcType : uint8_t
 	NPC_BATTLE_MONUMENT		= 211
 };
 
-enum ZoneAbilityType
+enum e_ZoneAbilityType
 {
 	// these control neutrality-related settings client-side, 
 	// including whether collision is enabled for other players.
-	ZoneAbilityNeutral			= 0, // Players cannot attack each other, or NPCs. Can walk through players.
-	ZoneAbilityPVP				= 1, // Players can attack each other, and only NPCs from the opposite nation. Cannot walk through players.
-	ZoneAbilitySpectator		= 2, // player is spectating a 1v1 match (ZoneAbilityPVP is sent for the attacker)
-	ZoneAbilitySiege1			= 3, // siege state 1 (unknown)
-	ZoneAbilitySiege2			= 4, // siege state 2/4: if they have 0 NP & this is set, it will not show the message telling them to buy more.
-	ZoneAbilitySiege3			= 5, // siege state 3 (unknown)
-	ZoneAbilitySiegeDisabled	= 6, // CSW not running
-	ZoneAbilityCaitharosArena	= 7, // Players can attack each other (don't seem to be able to anymore?), but not NPCs. Can walk through players.
-	ZoneAbilityPVPNeutralNPCs	= 8 // Players can attack each other, but not NPCs. Cannot walk through players.
+	ZONE_ABILITY_NEUTRAL				= 0, // Players cannot attack each other, or NPCs. Can walk through players.
+	ZONE_ABILITY_PVP					= 1, // Players can attack each other, and only NPCs from the opposite nation. Cannot walk through players.
+	ZONE_ABILITY_SPECTATOR				= 2, // player is spectating a 1v1 match (ZoneAbilityPVP is sent for the attacker)
+	ZONE_ABILITY_SIEGE_1				= 3, // siege state 1 (unknown)
+	ZONE_ABILITY_SIEGE_2				= 4, // siege state 2/4: if they have 0 NP & this is set, it will not show the message telling them to buy mo	 re.
+	ZONE_ABILITY_SIEGE_3				= 5, // siege state 3 (unknown)
+	ZONE_ABILITY_SIEGE_DISABLED			= 6, // CSW not running
+	ZONE_ABILITY_CAITHAROS_ARENA		= 7, // Players can attack each other (don't seem to be able to anymore?), but not NPCs. Can walk through players.
+	ZONE_ABILITY_SIEGE_PVP_NEUTRAL_NPCS	= 8 // Players can attack each other, but not NPCs. Cannot walk through players.
 };
 
-enum ZoneFlags
+// TODO: Remove this. It was used by the server unofficially,
+// and is currently still used by the client.
+// Officially the client doesn't need flags like this.
+enum e_ZoneFlags
 {
 	ZF_TRADE_OTHER_NATION	= (1 << 0),
 	ZF_TALK_OTHER_NATION	= (1 << 1),
@@ -255,8 +230,9 @@ constexpr uint8_t GLOVE				= 12;
 constexpr uint8_t FOOT				= 13;
 constexpr uint8_t RESERVED			= 14;
 
-constexpr uint8_t SLOT_MAX			= 14; // 14 equipped item slots
-constexpr uint8_t HAVE_MAX			= 28; // 28 inventory slots
+constexpr uint8_t SLOT_MAX			= 14;	// 14 equipped item slots
+constexpr uint8_t HAVE_MAX			= 28;	// 28 inventory slots
+constexpr uint8_t WAREHOUSE_MAX		= 192;	// 창고 아이템 MAX
 
 // Start of inventory area
 constexpr int INVENTORY_INVENT		= SLOT_MAX;
@@ -264,7 +240,6 @@ constexpr int INVENTORY_INVENT		= SLOT_MAX;
 // Total slots in the general-purpose inventory storage
 constexpr int INVENTORY_TOTAL		= SLOT_MAX + HAVE_MAX;
 
-constexpr uint8_t WAREHOUSE_MAX		= 192;
 constexpr uint8_t MAX_MERCH_ITEMS	= 12;
 
 constexpr int MAX_MERCH_MESSAGE		= 40;
@@ -287,69 +262,26 @@ constexpr int CLAN_SYMBOL_COST		= 5000000;
 #define NEWCHAR_POINTS_REMAINING			uint8_t(10)
 #define NEWCHAR_STAT_TOO_LOW				uint8_t(11)
 
-enum ItemFlag
+enum e_ItemFlag
 {
 	ITEM_FLAG_NONE		= 0,
 	ITEM_FLAG_RENTED	= 1,
 	ITEM_FLAG_DUPLICATE = 3
 };
 
-struct	_ITEM_DATA
+enum e_Authority
 {
-	uint32_t		nNum;
-	int16_t		sDuration;
-	uint16_t		sCount;	
-	uint8_t		bFlag; // see ItemFlag
-	uint16_t		sRemainingRentalTime; // in minutes
-	uint32_t		nExpirationTime; // in unix time
-	uint64_t		nSerialNum;
-	bool		IsSelling;
-
-	INLINE bool isRented() { return bFlag == ITEM_FLAG_RENTED; }
-	INLINE bool isDuplicate() { return bFlag == ITEM_FLAG_DUPLICATE; }
+	AUTHORITY_MANAGER			= 0,
+	AUTHORITY_USER				= 1,
+	// AUTHORITY_NOCHAT			= 2,
+	AUTHORITY_NPC				= 3,
+	AUTHORITY_NOCHAT			= 11,
+	AUTHORITY_ATTACK_DISABLED	= 12,
+	AUTHORITY_LIMITED_MANAGER	= 250,
+	AUTHORITY_BLOCK_USER		= 255
 };
 
-enum HairData
-{
-	HAIR_R,
-	HAIR_G,
-	HAIR_B,
-	HAIR_TYPE
-};
-
-struct _MERCH_DATA
-{
-	uint32_t nNum;
-	int16_t sDuration;
-	uint16_t sCount;
-	uint16_t bCount;
-	uint64_t nSerialNum;
-	uint32_t nPrice;
-	uint8_t bOriginalSlot;
-	bool IsSoldOut;
-};
-
-enum AuthorityTypes
-{
-	AUTHORITY_GAME_MASTER			= 0,
-	AUTHORITY_PLAYER				= 1,
-	AUTHORITY_MUTED					= 11,
-	AUTHORITY_ATTACK_DISABLED		= 12,
-	AUTHORITY_LIMITED_GAME_MASTER	= 250,
-	AUTHORITY_BANNED				= 255
-};
-
-enum StatType
-{
-	STAT_STR = 0,
-	STAT_STA = 1,
-	STAT_DEX = 2,
-	STAT_INT = 3, 
-	STAT_CHA = 4, // MP
-	STAT_COUNT
-};
-
-enum AttackResult
+enum e_AttackResult
 {
 	ATTACK_FAIL					= 0,
 	ATTACK_SUCCESS				= 1,
@@ -358,81 +290,5 @@ enum AttackResult
 	MAGIC_ATTACK_TARGET_DEAD	= 4
 };
 
-#define STAT_MAX 255
-#define QUEST_ARRAY_SIZE	600 // That's a limit of 200 quests (3 bytes per quest)
-#define QUEST_LIMIT			(QUEST_ARRAY_SIZE / 3)
-
-enum InvisibilityType
-{
-	INVIS_NONE				= 0,
-	INVIS_DISPEL_ON_MOVE	= 1,
-	INVIS_DISPEL_ON_ATTACK	= 2
-};
-
-int32_t myrand(int32_t min, int32_t max);
 uint64_t RandUInt64();
-
-INLINE bool CheckPercent(int16_t percent)
-{
-	if (percent < 0 || percent > 1000) 
-		return false;
-
-	return (percent > myrand(0, 1000));
-}
-
-INLINE time_t getMSTime()
-{
-#ifdef _WIN32
-#if WINVER >= 0x0600
-	typedef ULONGLONG (WINAPI *GetTickCount64_t)(void);
-	static GetTickCount64_t pGetTickCount64 = nullptr;
-
-	if (!pGetTickCount64)
-	{
-		HMODULE hModule = LoadLibraryA("KERNEL32.DLL");
-		pGetTickCount64 = (GetTickCount64_t)GetProcAddress(hModule, "GetTickCount64");
-		if (!pGetTickCount64)
-			pGetTickCount64 = (GetTickCount64_t)GetTickCount;
-		FreeLibrary(hModule);
-	}
-
-	return pGetTickCount64();
-#else
-	return GetTickCount();
-#endif
-#else
-	struct timeval tv;
-	gettimeofday(&tv, nullptr);
-	return (tv.tv_sec * SECOND) + (tv.tv_usec / SECOND);
-#endif
-}
-
-INLINE void STRTOLOWER(std::string& str)
-{
-	for(size_t i = 0; i < str.length(); ++i)
-		str[i] = (char)tolower(str[i]);
-};
-
-INLINE void STRTOUPPER(std::string& str)
-{
-	for(size_t i = 0; i < str.length(); ++i)
-		str[i] = (char)toupper(str[i]);
-};
-
-#define foreach(itr, arr) \
-	for (auto itr = arr.begin(); itr != arr.end(); itr++)
-
-// ideally this guard should be scoped within the loop...
-#define foreach_stlmap(itr, arr) \
-	Guard _lock(arr.m_lock); \
-	foreach_stlmap_nolock(itr, arr)
-
-#define foreach_stlmap_nolock(itr, arr) \
-	for (auto itr = arr.m_UserTypeMap.begin(); itr != arr.m_UserTypeMap.end(); itr++)
-
-#define foreach_array(itr, arr) foreach_array_n(itr, arr, sizeof(arr) / sizeof(arr[0]))
-#define foreach_array_n(itr, arr, len) for (auto itr = 0; itr < len; itr++)
-
-#define foreach_region(x, z) for (int x = -1; x <= 1; x++) \
-	for (int z = -1; z <= 1; z++)
-
+time_t getMSTime();

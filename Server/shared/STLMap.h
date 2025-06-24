@@ -3,69 +3,55 @@
 #include <map>
 
 template <
-	class T>
-class CSTLMap  
+	class ValueType,
+	class KeyType = int>
+class CSTLMap
 {
 public:
-	using MapType = std::map<uint32_t, T*>;
+	using MapType = std::map<KeyType, ValueType*>;
 	MapType m_UserTypeMap;
 
-	mutable std::recursive_mutex m_lock;
-
-	// TODO: This should simply return size_t, but since this is used by everything
-	// I won't fix this for now until I can go over it.
-	int GetSize() const
-	{
+	int GetSize() const {
 		return (int) m_UserTypeMap.size(); 
 	}
 
-	std::recursive_mutex& GetLock()
-	{
-		return m_lock;
-	}
-
 	bool IsExist(
-		uint32_t key)
+		const KeyType& key)
 		const
 	{
-		Guard lock(m_lock);
-		return (m_UserTypeMap.find(key) != m_UserTypeMap.end()); 
+		return m_UserTypeMap.find(key) != m_UserTypeMap.end(); 
 	}
 
-	bool IsEmpty() const
-	{ 
+	bool IsEmpty() const { 
 		return m_UserTypeMap.empty(); 
 	}
 
 	bool PutData(
-		uint32_t key_value,
-		T* pData) 
+		const KeyType& key_value,
+		ValueType* pData) 
 	{
-		Guard lock(m_lock);
-		return m_UserTypeMap.insert(std::make_pair(key_value, pData)).second; 
+		return m_UserTypeMap.insert(
+			std::make_pair(key_value, pData)).second; 
 	}
 
-	T* GetData(
-		uint32_t key_value)
+	ValueType* GetData(
+		const KeyType& key_value)
 	{
-		Guard lock(m_lock);
 		auto itr = m_UserTypeMap.find(key_value);
 		return (itr != m_UserTypeMap.end() ? itr->second : nullptr);
 	}
 
-	const T* GetData(
-		uint32_t key_value)
+	const ValueType* GetData(
+		const KeyType& key_value)
 		const
 	{
-		Guard lock(m_lock);
 		auto itr = m_UserTypeMap.find(key_value);
 		return (itr != m_UserTypeMap.end() ? itr->second : nullptr);
 	}
 
 	void DeleteData(
-		uint32_t key_value)
+		const KeyType& key_value)
 	{
-		Guard lock(m_lock);
 		auto itr = m_UserTypeMap.find(key_value);
 		if (itr!= m_UserTypeMap.end())
 		{
@@ -76,7 +62,6 @@ public:
 
 	void DeleteAllData()
 	{
-		Guard lock(m_lock);
 		if (m_UserTypeMap.empty())
 			return;
 
@@ -91,43 +76,35 @@ public:
 		DeleteAllData();
 	}
 
-	typename MapType::const_iterator begin() const
-	{
+	typename MapType::const_iterator begin() const {
 		return m_UserTypeMap.begin();
 	}
 
-	typename MapType::const_iterator end() const
-	{
+	typename MapType::const_iterator end() const {
 		return m_UserTypeMap.end();
 	}
 
-	typename MapType::iterator begin()
-	{
+	typename MapType::iterator begin() {
 		return m_UserTypeMap.begin();
 	}
 
-	typename MapType::iterator end()
-	{
+	typename MapType::iterator end() {
 		return m_UserTypeMap.end();
 	}
 
-	typename MapType::const_reverse_iterator rbegin() const
-	{
+	typename MapType::const_reverse_iterator rbegin() const {
 		return m_UserTypeMap.rbegin();
 	}
 
-	typename MapType::const_reverse_iterator rend() const
-	{
+	typename MapType::const_reverse_iterator rend() const {
 		return m_UserTypeMap.rend();
 	}
 
-	typename MapType::reverse_iterator rbegin()
-	{
+	typename MapType::reverse_iterator rbegin() {
 		return m_UserTypeMap.rbegin();
 	}
 
-	typename MapType::reverse_iterator rend()
-	{
+	typename MapType::reverse_iterator rend() {
 		return m_UserTypeMap.rend();
 	}
 };

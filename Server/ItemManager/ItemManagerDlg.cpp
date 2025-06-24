@@ -12,50 +12,49 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
-DWORD WINAPI	ReadQueueThread(LPVOID lp);
-
 DWORD WINAPI ReadQueueThread(LPVOID lp)
 {
-	CItemManagerDlg* pMain = (CItemManagerDlg*)lp;
+	CItemManagerDlg* pMain = (CItemManagerDlg*) lp;
 	int recvlen = 0, index = 0;
 	BYTE command;
-	char recv_buff[1024];
-	memset( recv_buff, NULL, 1024 );
+	char recv_buff[1024] = {};
 	CString string;
 	//char logstr[256];
 
-	while(TRUE) {
-		if( pMain->m_LoggerRecvQueue.GetFrontMode() != R ) {
+	while (TRUE)
+	{
+		if (pMain->m_LoggerRecvQueue.GetFrontMode() != R)
+		{
 			index = 0;
-			recvlen = pMain->m_LoggerRecvQueue.GetData( recv_buff );
-			if( recvlen > MAX_PKTSIZE ) {
+			recvlen = pMain->m_LoggerRecvQueue.GetData(recv_buff);
+			if (recvlen > MAX_PKTSIZE)
+			{
 				Sleep(1);
 				continue;
 			}
 
-			command = GetByte( recv_buff, index );
-			switch( command ) {
-			case WIZ_ITEM_LOG:
-				pMain->ItemLogWrite( recv_buff+index );
-				break;
-			case WIZ_DATASAVE:
-				pMain->ExpLogWrite( recv_buff+index );
-				break;
+			command = GetByte(recv_buff, index);
+			switch (command)
+			{
+				case WIZ_ITEM_LOG:
+					pMain->ItemLogWrite(recv_buff + index);
+					break;
+
+				case WIZ_DATASAVE:
+					pMain->ExpLogWrite(recv_buff + index);
+					break;
 			}
 
 			recvlen = 0;
-			memset( recv_buff, NULL, 1024 );
+			memset(recv_buff, 0, sizeof(recv_buff));
 		}
 	}
 }
 
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CItemManagerDlg dialog
 
-CItemManagerDlg::CItemManagerDlg(CWnd* pParent /*=NULL*/)
+CItemManagerDlg::CItemManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialog(CItemManagerDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CItemManagerDlg)
@@ -63,9 +62,9 @@ CItemManagerDlg::CItemManagerDlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	memset( m_strGameDSN, 0x00, 24 );
-	memset( m_strGameUID, 0x00, 24 );
-	memset( m_strGamePWD, 0x00, 24 );
+	memset(m_strGameDSN, 0, sizeof(m_strGameDSN));
+	memset(m_strGameUID, 0, sizeof(m_strGameUID));
+	memset(m_strGamePWD, 0, sizeof(m_strGamePWD));
 	m_nItemLogFileDay = 0;
 	m_nServerNo = 0; m_nZoneNo = 0;
 }
@@ -94,29 +93,28 @@ BOOL CItemManagerDlg::OnInitDialog()
 {
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
+
 	//----------------------------------------------------------------------
 	//	Logfile initialize
 	//----------------------------------------------------------------------
-	CTime time=CTime::GetCurrentTime();
-	char strLogFile[50];		memset(strLogFile, 0x00, 50);
+	CTime time = CTime::GetCurrentTime();
+	char strLogFile[50] = {};
 	wsprintf(strLogFile, "ItemLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
-	m_ItemLogFile.Open( strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone );
+	m_ItemLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_ItemLogFile.SeekToEnd();
 
-	memset(strLogFile, 0x00, 50);
+	memset(strLogFile, 0, sizeof(strLogFile));
 	wsprintf(strLogFile, "ExpLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
-	m_ExpLogFile.Open( strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone );
+	m_ExpLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_ExpLogFile.SeekToEnd();
-
 
 	m_nItemLogFileDay = time.GetDay();
 	m_nExpLogFileDay = time.GetDay();
 
-	m_LoggerRecvQueue.InitailizeMMF( MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER, FALSE );	// Dispatcher 의 Send Queue
+	m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER, FALSE);	// Dispatcher 의 Send Queue
 /*
 	CString inipath;
-	inipath.Format( "%s\\ItemDB.ini", GetProgPath() );
+	inipath.Format(_T("%s\\ItemDB.ini"), GetProgPath());
 
 	GetPrivateProfileString( "ODBC", "GAME_DSN", "", m_strGameDSN, 24, inipath );
 	GetPrivateProfileString( "ODBC", "GAME_UID", "", m_strGameUID, 24, inipath );
@@ -131,7 +129,7 @@ BOOL CItemManagerDlg::OnInitDialog()
 	}	*/
 
 	DWORD id;
-	m_hReadQueueThread = ::CreateThread( NULL, 0, ReadQueueThread, (LPVOID)this, 0, &id);
+	m_hReadQueueThread = ::CreateThread(nullptr, 0, ReadQueueThread, this, 0, &id);
 
 	CTime cur = CTime::GetCurrentTime();
 	CString starttime;
@@ -150,7 +148,7 @@ void CItemManagerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void CItemManagerDlg::OnPaint() 
+void CItemManagerDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -182,32 +180,40 @@ HCURSOR CItemManagerDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void CItemManagerDlg::ItemLogWrite( char* pBuf )
+void CItemManagerDlg::ItemLogWrite(char* pBuf)
 {
-	int index = 0, srclen = 0, tarlen = 0, type = 0, putitem=0, putcount=0, putdure=0;
-	int getitem=0, getcount=0, getdure=0;
-	__int64 putserial = 0, getserial = 0;
-	char srcid[MAX_ID_SIZE+1]; memset( srcid, 0x00, MAX_ID_SIZE+1 );
-	char tarid[MAX_ID_SIZE+1]; memset( tarid, 0x00, MAX_ID_SIZE+1 );
-	char strLog[100]; memset( strLog, 0x00, 100 );
+	int index = 0, srclen = 0, tarlen = 0, type = 0, putitem = 0, putcount = 0, putdure = 0;
+	int getitem = 0, getcount = 0, getdure = 0;
+	int64_t putserial = 0, getserial = 0;
+	char srcid[MAX_ID_SIZE + 1] = {},
+		tarid[MAX_ID_SIZE + 1] = {},
+		strLog[100] = {};
 
-	srclen = GetShort( pBuf, index );
-	if( srclen <= 0 || srclen > MAX_ID_SIZE )	{
+	srclen = GetShort(pBuf, index);
+	if (srclen <= 0
+		|| srclen > MAX_ID_SIZE)
+	{
 		TRACE("### ItemLogWrite Fail : srclen = %d ###\n", srclen);
 		return;
 	}
-	GetString( srcid, pBuf, srclen, index );
-	tarlen = GetShort( pBuf, index );
-	if( tarlen <= 0 || tarlen > MAX_ID_SIZE )	{
+
+	GetString(srcid, pBuf, srclen, index);
+
+	tarlen = GetShort(pBuf, index);
+	if (tarlen <= 0
+		|| tarlen > MAX_ID_SIZE)
+	{
 		TRACE("### ItemLogWrite Fail : tarlen = %d ###\n", tarlen);
 		return;
 	}
-	GetString( tarid, pBuf, tarlen, index );
-	type = GetByte( pBuf, index );
-	putserial = GetInt64( pBuf, index );
-	putitem = GetDWORD( pBuf, index );
-	putcount = GetShort( pBuf, index );
-	putdure = GetShort( pBuf, index );
+
+	GetString(tarid, pBuf, tarlen, index);
+
+	type = GetByte(pBuf, index);
+	putserial = GetInt64(pBuf, index);
+	putitem = GetDWORD(pBuf, index);
+	putcount = GetShort(pBuf, index);
+	putdure = GetShort(pBuf, index);
 //	getserial = GetInt64( pBuf, index );
 //	getitem = GetDWORD( pBuf, index );
 //	getcount = GetShort( pBuf, index );
@@ -215,105 +221,119 @@ void CItemManagerDlg::ItemLogWrite( char* pBuf )
 
 	/// 
 	//wsprintf( strLog, "%d, %s, %d, %s, %d, %20d, %d, %d, %d, %20d, %d, %d, %d", srclen, srcid, tarlen, tarid, type, putserial, putitem, putcount, putdure, getserial, getitem, getcount, getdure);
-	sprintf( strLog, "%s, %s, %d, %I64d, %d, %d, %d", srcid, tarid, type, putserial, putitem, putcount, putdure);
-	WriteItemLogFile( strLog );
+	sprintf(strLog, "%s, %s, %d, %I64d, %d, %d, %d", srcid, tarid, type, putserial, putitem, putcount, putdure);
+	WriteItemLogFile(strLog);
 }
 
-void CItemManagerDlg::WriteItemLogFile( char* pData )
+void CItemManagerDlg::WriteItemLogFile(char* pData)
 {
 	CTime cur = CTime::GetCurrentTime();
-	char strLog[512];	memset(strLog, 0x00, 512);
+	char strLog[512] = {};
 	int nDay = cur.GetDay();
 
-	if( m_nItemLogFileDay != nDay )	{
-		if(m_ItemLogFile.m_hFile != CFile::hFileNull) m_ItemLogFile.Close();
+	if (m_nItemLogFileDay != nDay)
+	{
+		if (m_ItemLogFile.m_hFile != CFile::hFileNull)
+			m_ItemLogFile.Close();
 
 		wsprintf(strLog, "ItemLog-%d-%d-%d.txt", cur.GetYear(), cur.GetMonth(), cur.GetDay());
-		m_ItemLogFile.Open( strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone );
+		m_ItemLogFile.Open(strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 		m_ItemLogFile.SeekToEnd();
 		m_nItemLogFileDay = nDay;
 	}
 
 	wsprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
 	int nLen = strlen(strLog);
-	if( nLen >= 512 )	{
+	if (nLen >= 512)
+	{
 		TRACE("### WriteLogFile Fail : length = %d ###\n", nLen);
 		return;
 	}
-	
+
 	m_ItemLogFile.Write(strLog, nLen);
 }
 
-void CItemManagerDlg::WriteExpLogFile( char* pData )
+void CItemManagerDlg::WriteExpLogFile(char* pData)
 {
 	CTime cur = CTime::GetCurrentTime();
-	char strLog[512];	memset(strLog, 0x00, 512);
+	char strLog[512] = {};
 	int nDay = cur.GetDay();
 
-	if( m_nExpLogFileDay != nDay )	{
-		if(m_ExpLogFile.m_hFile != CFile::hFileNull) m_ExpLogFile.Close();
+	if (m_nExpLogFileDay != nDay)
+	{
+		if (m_ExpLogFile.m_hFile != CFile::hFileNull)
+			m_ExpLogFile.Close();
 
 		wsprintf(strLog, "ExpLog-%d-%d-%d.txt", cur.GetYear(), cur.GetMonth(), cur.GetDay());
-		m_ExpLogFile.Open( strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone );
+		m_ExpLogFile.Open(strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 		m_ExpLogFile.SeekToEnd();
 		m_nExpLogFileDay = nDay;
 	}
 
 	wsprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
 	int nLen = strlen(strLog);
-	if( nLen >= 512 )	{
+	if (nLen >= 512)
+	{
 		TRACE("### WriteLogFile Fail : length = %d ###\n", nLen);
 		return;
 	}
-	
+
 	m_ExpLogFile.Write(strLog, nLen);
 }
 
-BOOL CItemManagerDlg::DestroyWindow() 
+BOOL CItemManagerDlg::DestroyWindow()
 {
 	// TODO: Add your specialized code here and/or call the base class
-	if( m_hReadQueueThread ) {
-		::TerminateThread( m_hReadQueueThread, 0 );
-	}
-	
-	if(m_ItemLogFile.m_hFile != CFile::hFileNull) m_ItemLogFile.Close();
-	if(m_ExpLogFile.m_hFile != CFile::hFileNull) m_ExpLogFile.Close();
-	
+	if (m_hReadQueueThread != nullptr)
+		::TerminateThread(m_hReadQueueThread, 0);
+
+	if (m_ItemLogFile.m_hFile != CFile::hFileNull)
+		m_ItemLogFile.Close();
+
+	if (m_ExpLogFile.m_hFile != CFile::hFileNull)
+		m_ExpLogFile.Close();
+
 	return CDialog::DestroyWindow();
 }
 
-void CItemManagerDlg::ExpLogWrite( char* pBuf )
+void CItemManagerDlg::ExpLogWrite(char* pBuf)
 {
-	int index = 0, aclen = 0, charlen = 0, type = 0, level = 0, exp=0, loyalty=0, money=0;
-	char acname[MAX_ID_SIZE+1]; memset( acname, 0x00, MAX_ID_SIZE+1 );
-	char charid[MAX_ID_SIZE+1]; memset( charid, 0x00, MAX_ID_SIZE+1 );
-	char strLog[100]; memset( strLog, 0x00, 100 );
+	int index = 0, aclen = 0, charlen = 0, type = 0, level = 0, exp = 0, loyalty = 0, money = 0;
+	char acname[MAX_ID_SIZE + 1] = {},
+		charid[MAX_ID_SIZE + 1] = {},
+		strLog[100] = {};
 
-	aclen = GetShort( pBuf, index );
-	if( aclen <= 0 || aclen > MAX_ID_SIZE )	{
+	aclen = GetShort(pBuf, index);
+	if (aclen <= 0
+		|| aclen > MAX_ID_SIZE)
+	{
 		TRACE("### ItemLogWrite Fail : tarlen = %d ###\n", aclen);
 		return;
 	}
-	GetString( acname, pBuf, aclen, index );
-	charlen = GetShort( pBuf, index );
-	if( charlen <= 0 || charlen > MAX_ID_SIZE )	{
+
+	GetString(acname, pBuf, aclen, index);
+	charlen = GetShort(pBuf, index);
+	if (charlen <= 0
+		|| charlen > MAX_ID_SIZE)
+	{
 		TRACE("### ItemLogWrite Fail : tarlen = %d ###\n", charlen);
 		return;
 	}
-	GetString( charid, pBuf, charlen, index );
-	type = GetByte( pBuf, index );
-	level = GetByte( pBuf, index );
-	exp = GetDWORD( pBuf, index );
-	loyalty = GetDWORD( pBuf, index );
-	money = GetDWORD( pBuf, index );
 
-	wsprintf( strLog, "%s, %s, %d, %d, %d, %d, %d", acname, charid, type, level, exp, loyalty, money);
-	WriteExpLogFile( strLog );
+	GetString(charid, pBuf, charlen, index);
+	type = GetByte(pBuf, index);
+	level = GetByte(pBuf, index);
+	exp = GetDWORD(pBuf, index);
+	loyalty = GetDWORD(pBuf, index);
+	money = GetDWORD(pBuf, index);
+
+	wsprintf(strLog, "%s, %s, %d, %d, %d, %d, %d", acname, charid, type, level, exp, loyalty, money);
+	WriteExpLogFile(strLog);
 }
 
-void CItemManagerDlg::OnExitBtn() 
+void CItemManagerDlg::OnExitBtn()
 {
 	// TODO: Add your control notification handler code here
-	if( AfxMessageBox("진짜 끝낼까요?", MB_YESNO) == IDYES )
+	if (AfxMessageBox(_T("진짜 끝낼까요?"), MB_YESNO) == IDYES)
 		CDialog::OnOK();
 }

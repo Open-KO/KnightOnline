@@ -13,7 +13,7 @@
 class CZoneInfoSet : public CRecordset
 {
 public:
-	CZoneInfoSet(CDatabase* pDatabase = NULL);
+	CZoneInfoSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CZoneInfoSet)
 
 // Field/Param Data
@@ -32,7 +32,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CZoneInfoSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support

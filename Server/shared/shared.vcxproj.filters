@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\database">
-      <UniqueIdentifier>{68c7f784-3bf8-4088-b8f1-939e86bc93d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\database">
-      <UniqueIdentifier>{6483c8fa-7bbb-4967-ac72-de38835bee1a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Compression">
       <UniqueIdentifier>{6fd0dbfb-2073-4526-9b04-732c71157705}</UniqueIdentifier>
     </Filter>
@@ -30,15 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CircularBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Condition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DebugUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,99 +36,33 @@
     <ClCompile Include="JvCryption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KOSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ReferenceObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RWLock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="signal_handler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SMDFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Socket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SocketMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SocketOpsWin32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SocketWin32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TimeThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tstring.cpp">
+    <ClCompile Include="crc32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="database\OdbcCommand.cpp">
-      <Filter>Source Files\database</Filter>
-    </ClCompile>
-    <ClCompile Include="database\OdbcConnection.cpp">
-      <Filter>Source Files\database</Filter>
-    </ClCompile>
-    <ClCompile Include="database\OdbcParameter.cpp">
-      <Filter>Source Files\database</Filter>
-    </ClCompile>
-    <ClCompile Include="database\OdbcRecordset.cpp">
-      <Filter>Source Files\database</Filter>
-    </ClCompile>
-    <ClCompile Include="database\stdafx.cpp">
-      <Filter>Source Files\database</Filter>
-    </ClCompile>
-    <ClCompile Include="Compression.cpp">
-      <Filter>Compression</Filter>
-    </ClCompile>
-    <ClCompile Include="crc32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lzf.cpp">
-      <Filter>Compression\LZF</Filter>
-    </ClCompile>
-    <ClCompile Include="Compression_PKWARE.cpp">
-      <Filter>Compression\PKWARE</Filter>
-    </ClCompile>
-    <ClCompile Include="Compression_LZF.cpp">
+    <ClCompile Include="lzf.c">
       <Filter>Compression\LZF</Filter>
     </ClCompile>
     <ClCompile Include="pkware\pklib.c">
       <Filter>Compression\PKWARE</Filter>
     </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringConversion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Atomic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ByteBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CircularBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientSocketMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Condition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="crc32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DebugUtils.h">
@@ -158,46 +77,10 @@
     <ClInclude Include="JvCryption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KOSocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KOSocketMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ListenSocketWin32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Network.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="packets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReferenceObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RWLock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="signal_handler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SMDFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Socket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketDefines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketOps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -206,13 +89,7 @@
     <ClInclude Include="STLMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Thread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TimeThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tstring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="types.h">
@@ -221,170 +98,20 @@
     <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="database\BattleSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\CoefficientSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\EventSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\EventTriggerSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\ItemExchangeSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\ItemTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\ItemUpgradeSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KingCandidacyNoticeBoardSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KingElectionListSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KingSystemSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KnightsAllianceSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KnightsCapeSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KnightsRankSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KnightsSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KnightsSiegeWar.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\KnightsUserSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\LevelUpTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType1Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType2Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType3Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType4Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType5Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType6Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType7Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType8Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MagicType9Set.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MakeDefensiveTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MakeGradeItemTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MakeItemGroupSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MakeLareItemTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MakeWeaponTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MonsterChallenge.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MonsterChallengeSummonList.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\MonsterSummonListSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\NpcItemSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\NpcPosSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\NpcTableSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\OdbcCommand.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\OdbcConnection.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\OdbcParameter.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\OdbcRecordset.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\RentalItemSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\ServerResourceSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\StartPositionSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\stdafx.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\structs.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\UserKnightsRankSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\UserPersonalRankSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="database\ZoneInfoSet.h">
-      <Filter>Header Files\database</Filter>
-    </ClInclude>
-    <ClInclude Include="Compression.h">
-      <Filter>Compression</Filter>
-    </ClInclude>
     <ClInclude Include="lzf.h">
       <Filter>Compression\LZF</Filter>
     </ClInclude>
     <ClInclude Include="pkware\pklib.h">
       <Filter>Compression\PKWARE</Filter>
     </ClInclude>
-    <ClInclude Include="Compression_PKWARE.h">
-      <Filter>Compression\PKWARE</Filter>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compression_LZF.h">
-      <Filter>Compression\LZF</Filter>
+    <ClInclude Include="StringConversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularBuffer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

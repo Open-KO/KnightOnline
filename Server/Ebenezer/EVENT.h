@@ -10,16 +10,15 @@
 #endif // _MSC_VER > 1000
 
 #include "EVENT_DATA.h"
-#pragma warning(disable : 4786)
-#include "STLMap.h"
+#include <shared/STLMap.h>
 
 typedef CSTLMap <EVENT_DATA>				EventDataArray;
 
-class EVENT  
+class EVENT
 {
 public:
 	void DeleteAll();
-	void Parsing(char *pBuf);
+	void Parsing(char* pBuf);
 	void Init();
 	BOOL LoadEvent(int zone);
 	int m_Zone;

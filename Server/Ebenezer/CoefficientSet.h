@@ -13,7 +13,7 @@
 class CCoefficientSet : public CRecordset
 {
 public:
-	CCoefficientSet(CDatabase* pDatabase = NULL);
+	CCoefficientSet(CDatabase* pDatabase = nullptr);
 	DECLARE_DYNAMIC(CCoefficientSet)
 
 // Field/Param Data
@@ -39,7 +39,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CCoefficientSet)
-	public:
+public:
 	virtual CString GetDefaultConnect();    // Default connection string
 	virtual CString GetDefaultSQL();    // Default SQL for Recordset
 	virtual void DoFieldExchange(CFieldExchange* pFX);  // RFX support
