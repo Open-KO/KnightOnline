@@ -41,11 +41,11 @@ public:
 	bool GetBool(std::string_view szAppName, std::string_view szKeyName, const bool bDefault);
 	bool GetBool(std::wstring_view szAppName, std::wstring_view szKeyName, const bool bDefault);
 
-	std::string GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault, bool bAllowEmptyStrings = true);
-	std::wstring GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault, bool bAllowEmptyStrings = true);
+	std::string GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault);
+	std::wstring GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault);
 
-	void GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault, char* szOutBuffer, size_t nBufferLength, bool bAllowEmptyStrings = true);
-	void GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault, wchar_t* szOutBuffer, size_t nBufferLength, bool bAllowEmptyStrings = true);
+	void GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault, char* szOutBuffer, size_t nBufferLength);
+	void GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault, wchar_t* szOutBuffer, size_t nBufferLength);
 
 	int SetInt(std::string_view szAppName, std::string_view szKeyName, const int iDefault);
 	int SetInt(std::wstring_view szAppName, std::wstring_view szKeyName, const int iDefault);
