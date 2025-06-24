@@ -121,9 +121,8 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 
 	CIni ini(inipath.GetString());
 
-	ini.GetString("DOWNLOAD", "URL", "ftp.test.net", m_strFtpUrl, _countof(m_strFtpUrl));
-	ini.GetString("DOWNLOAD", "PATH", "/test/path", m_strFilePath, _countof(m_strFilePath));
-	ini.Save();
+	ini.GetString("DOWNLOAD", "URL", "", m_strFtpUrl, _countof(m_strFtpUrl));
+	ini.GetString("DOWNLOAD", "PATH", "", m_strFilePath, _countof(m_strFilePath));
 
 	ini.GetString(_T("ODBC"), _T("DSN"), _T(""), m_ODBCName, _countof(m_ODBCName));
 	ini.GetString(_T("ODBC"), _T("UID"), _T(""), m_ODBCLogin, _countof(m_ODBCLogin));
