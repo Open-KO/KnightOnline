@@ -60,7 +60,7 @@ CUser::~CUser()
 
 void CUser::Initialize()
 {
-	m_pMain = (CServerDlg*) AfxGetMainWnd();
+	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	m_pIocport = (CIOCPort*) &m_pMain->m_Iocport;
 
 	m_MagicProcess.m_pMain = m_pMain;

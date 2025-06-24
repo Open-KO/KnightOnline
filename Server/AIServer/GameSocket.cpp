@@ -46,7 +46,7 @@ CGameSocket::~CGameSocket()
 void CGameSocket::Initialize()
 {
 	m_sSocketID = -1;
-	m_pMain = (CServerDlg*) AfxGetMainWnd();
+	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	//m_pParty = new CParty;
 	//m_pParty->Initialize();
 	m_Party.Initialize();

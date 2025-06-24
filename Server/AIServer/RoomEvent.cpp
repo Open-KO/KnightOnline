@@ -35,7 +35,7 @@ CRoomEvent::CRoomEvent()
 	m_iEndMaxZ = 0;
 	m_byCheck = 0;
 	m_byRoomType = 0;
-	m_pMain = (CServerDlg*) AfxGetMainWnd();
+	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 
 	Initialize();
 }

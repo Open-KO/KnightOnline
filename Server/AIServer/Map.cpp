@@ -31,7 +31,7 @@ CMapInfo::~CMapInfo()
 
 MAP::MAP()
 {
-	m_pMain = (CServerDlg*) AfxGetMainWnd();
+	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	m_nMapSize = 0;
 	m_fUnitDist = 0.0f;
 	m_fHeight = nullptr;

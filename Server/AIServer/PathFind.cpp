@@ -32,7 +32,7 @@ CPathFind::CPathFind()
 	m_pClosed = nullptr;
 	m_pMap = nullptr;
 	m_lMapUse = 0;
-	m_pMain = (CServerDlg*) AfxGetMainWnd();
+	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 }
 
 CPathFind::~CPathFind()

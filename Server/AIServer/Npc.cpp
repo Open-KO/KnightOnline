@@ -178,7 +178,7 @@ CNpc::CNpc()
 	InitUserList();
 	InitMagicValuable();
 
-	m_pMain = (CServerDlg*) AfxGetMainWnd();
+	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	m_MagicProcess.m_pMain = m_pMain;
 	m_MagicProcess.m_pSrcNpc = this;
 
