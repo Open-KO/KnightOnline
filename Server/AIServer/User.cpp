@@ -682,19 +682,19 @@ short CUser::GetMagicDamage(int damage, short tid)
 	switch (m_bMagicTypeRightHand)
 	{
 		case 1:	// Fire Damage
-			total_r = pNpc->m_byFireR;
+			total_r = pNpc->m_sFireR;
 			break;
 
 		case 2:	// Ice Damage
-			total_r = pNpc->m_byColdR;
+			total_r = pNpc->m_sColdR;
 			break;
 
 		case 3:	// Lightning Damage
-			total_r = pNpc->m_byLightningR;
+			total_r = pNpc->m_sLightningR;
 			break;
 
 		case 4:	// Poison Damage
-			total_r = pNpc->m_byPoisonR;
+			total_r = pNpc->m_sPoisonR;
 			break;
 
 		case 5:	// HP Drain						
@@ -728,19 +728,19 @@ short CUser::GetMagicDamage(int damage, short tid)
 	switch (m_bMagicTypeLeftHand)
 	{
 		case 1:	// Fire Damage
-			total_r = pNpc->m_byFireR;
+			total_r = pNpc->m_sFireR;
 			break;
 
 		case 2:	// Ice Damage
-			total_r = pNpc->m_byColdR;
+			total_r = pNpc->m_sColdR;
 			break;
 
 		case 3:	// Lightning Damage
-			total_r = pNpc->m_byLightningR;
+			total_r = pNpc->m_sLightningR;
 			break;
 
 		case 4:	// Poison Damage
-			total_r = pNpc->m_byPoisonR;
+			total_r = pNpc->m_sPoisonR;
 			break;
 
 		case 5:	// HP Drain					

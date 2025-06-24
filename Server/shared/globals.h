@@ -5,8 +5,7 @@
 #include "Packet.h"
 
 #define MAP_DIR				"../MAP/"
-
-constexpr int MAX_USER			= 3000;
+#define QUESTS_DIR			"../QUESTS/"
 
 constexpr int MIN_ID_SIZE		= 6;
 constexpr int MAX_ID_SIZE		= 20;

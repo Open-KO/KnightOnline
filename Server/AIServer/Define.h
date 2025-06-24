@@ -1,6 +1,8 @@
 ﻿#ifndef _DEFINE_H
 #define _DEFINE_H
 
+#include <shared/globals.h>
+
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
 	1. #define AI_SOCKET_PORT	10020 -> 11020으로 수정됨..
@@ -241,23 +243,6 @@ struct _OBJECT_EVENT
 #define		DEFAULT_AT_DELAY	700
 #define		DEFAULT_SP_DEC		1
 
-const BYTE	ATTACK_FAIL		=	0;
-const BYTE	ATTACK_SUCCESS	=	1;
-const BYTE	ATTACK_TARGET_DEAD	= 2;
-const BYTE	ATTACK_TARGET_DEAD_OK = 3;
-const BYTE	MAGIC_ATTACK_TARGET_DEAD	= 4;
-
-/*
-const BYTE	ATTACK_FAIL		=   0;
-const BYTE  ATTACK_NORMAL   =   1;
-const BYTE	ATTACK_SUCCESS	=	2;
-const BYTE  ATTACK_GREAT_SUCCESS  =   3;
-
-const BYTE	ATTACK_TARGET_DEAD	= 4;
-const BYTE	ATTACK_TARGET_DEAD_OK = 5;
-const BYTE	MAGIC_ATTACK_TARGET_DEAD = 6;
-*/
-
 const BYTE	ATTACK_MIN		=	20;
 const BYTE	ATTACK_MAX		=	80;
 
@@ -366,14 +351,6 @@ const BYTE	ATTACK_MAX		=	80;
 #define BATTLEZONE_CLOSE        0x01           
 #define DECLARE_WINNER          0x02
 #define DECLARE_BAN				0x03
-
-////////////////////////////////////////////////////////////////
-// weather define
-////////////////////////////////////////////////////////////////
-#define WEATHER_FINE			0x01
-#define WEATHER_RAIN			0x02
-#define WEATHER_SNOW			0x03
-////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
 // magic define

@@ -325,13 +325,6 @@ BOOL CEbenezerDlg::OnInitDialog()
 	m_fReConnectStart = 0.0f;
 	// sungyong~ 2002.05.23
 
-	if (IDCANCEL == AfxMessageBox(
-		"If you are restarting, please restart after all data is saved...do you want to continue?", MB_OKCANCEL))
-	{
-		AfxPostQuitMessage(0);
-		return FALSE;
-	}
-
 	//----------------------------------------------------------------------
 	//	Logfile initialize
 	//----------------------------------------------------------------------
@@ -1169,11 +1162,21 @@ BOOL CEbenezerDlg::MapFileLoad()
 
 	m_ZoneArray.reserve(10);
 
+	// Build the base MAP directory
+	std::filesystem::path mapDir(GetProgPath().GetString());
+	mapDir /= MAP_DIR;
+
+	// Resolve it to strip the relative references to be nice.
+	mapDir = std::filesystem::canonical(mapDir);
+
 	ZoneInfoSet.MoveFirst();
 
 	while (!ZoneInfoSet.IsEOF())
 	{
-		szFullPath.Format(_T(".\\MAP\\%s"), ZoneInfoSet.m_strZoneName);
+		std::filesystem::path mapPath
+			= mapDir / ZoneInfoSet.m_strZoneName.GetString();
+
+		szFullPath.Format(_T("%ls"), mapPath.c_str());
 
 		LogFileWrite("mapfile load\r\n");
 		if (!file.Open(szFullPath, CFile::modeRead))
@@ -1743,7 +1746,10 @@ void CEbenezerDlg::GetTimeFromIni()
 	int year = 0, month = 0, date = 0, hour = 0, server_count = 0, sgroup_count = 0;
 	char ipkey[20] = {};
 
-	m_Ini.Load("gameserver.ini");
+	std::filesystem::path iniPath(GetProgPath().GetString());
+	iniPath /= L"gameserver.ini";
+
+	m_Ini.Load(iniPath);
 	m_nYear = m_Ini.GetInt("TIMER", "YEAR", 1);
 	m_nMonth = m_Ini.GetInt("TIMER", "MONTH", 1);
 	m_nDate = m_Ini.GetInt("TIMER", "DATE", 1);

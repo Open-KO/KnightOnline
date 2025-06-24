@@ -1,7 +1,8 @@
 ﻿#ifndef _DEFINE_H
 #define _DEFINE_H
 
-#define MAX_USER			3000
+#include <shared/globals.h>
+
 #define MAX_ID_SIZE			20
 #define MAX_PW_SIZE			12
 #define MAX_ITEM			28

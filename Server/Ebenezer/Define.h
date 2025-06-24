@@ -4,6 +4,8 @@
 #include <mmsystem.h>
 #include <shared/globals.h>
 
+constexpr int MAX_USER				= 3000;
+
 constexpr int _LISTEN_PORT			= 15000;
 constexpr int _UDP_PORT				= 8888;
 constexpr int AI_KARUS_SOCKET_PORT	= 10020;

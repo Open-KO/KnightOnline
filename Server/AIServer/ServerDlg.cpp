@@ -22,6 +22,7 @@
 #include "MakeLareItemTableSet.h"
 #include "Region.h"
 
+#include <shared/globals.h>
 #include <shared/Ini.h>
 
 //#include "extern.h"			// 전역 객체
@@ -839,13 +840,13 @@ BOOL CServerDlg::GetMonsterTableData()
 			Npc->m_iMagic1 = NpcTableSet.m_iMagic1;					// 사용마법 1
 			Npc->m_iMagic2 = NpcTableSet.m_iMagic2;					// 사용마법 2
 			Npc->m_iMagic3 = NpcTableSet.m_iMagic3;					// 사용마법 3	
-			Npc->m_byFireR = NpcTableSet.m_byFireR;					// 화염 저항력
-			Npc->m_byColdR = NpcTableSet.m_byColdR;					// 냉기 저항력
-			Npc->m_byLightningR = NpcTableSet.m_byLightningR;		// 전기 저항력
-			Npc->m_byMagicR = NpcTableSet.m_byMagicR;				// 마법 저항력
-			Npc->m_byDiseaseR = NpcTableSet.m_byDiseaseR;			// 저주 저항력
-			Npc->m_byPoisonR = NpcTableSet.m_byPoisonR;				// 독 저항력
-			Npc->m_byLightR = NpcTableSet.m_byLightR;				// 빛 저항력
+			Npc->m_sFireR = NpcTableSet.m_sFireR;					// 화염 저항력
+			Npc->m_sColdR = NpcTableSet.m_sColdR;					// 냉기 저항력
+			Npc->m_sLightningR = NpcTableSet.m_sLightningR;			// 전기 저항력
+			Npc->m_sMagicR = NpcTableSet.m_sMagicR;					// 마법 저항력
+			Npc->m_sDiseaseR = NpcTableSet.m_sDiseaseR;				// 저주 저항력
+			Npc->m_sPoisonR = NpcTableSet.m_sPoisonR;				// 독 저항력
+			Npc->m_sLightR = NpcTableSet.m_sLightR;					// 빛 저항력
 			Npc->m_sBulk = NpcTableSet.m_sBulk;
 			Npc->m_bySearchRange = NpcTableSet.m_bySearchRange;		// 적 탐지 범위
 			Npc->m_byAttackRange = NpcTableSet.m_byAttackRange;		// 사정거리
@@ -954,13 +955,13 @@ BOOL CServerDlg::GetNpcTableData()
 			Npc->m_iMagic1 = NpcTableSet.m_iMagic1;					// 사용마법 1
 			Npc->m_iMagic2 = NpcTableSet.m_iMagic2;					// 사용마법 2
 			Npc->m_iMagic3 = NpcTableSet.m_iMagic3;					// 사용마법 3	
-			Npc->m_byFireR = NpcTableSet.m_byFireR;					// 화염 저항력
-			Npc->m_byColdR = NpcTableSet.m_byColdR;					// 냉기 저항력
-			Npc->m_byLightningR = NpcTableSet.m_byLightningR;		// 전기 저항력
-			Npc->m_byMagicR = NpcTableSet.m_byMagicR;				// 마법 저항력
-			Npc->m_byDiseaseR = NpcTableSet.m_byDiseaseR;			// 저주 저항력
-			Npc->m_byPoisonR = NpcTableSet.m_byPoisonR;				// 독 저항력
-			Npc->m_byLightR = NpcTableSet.m_byLightR;				// 빛 저항력
+			Npc->m_sFireR = NpcTableSet.m_sFireR;					// 화염 저항력
+			Npc->m_sColdR = NpcTableSet.m_sColdR;					// 냉기 저항력
+			Npc->m_sLightningR = NpcTableSet.m_sLightningR;			// 전기 저항력
+			Npc->m_sMagicR = NpcTableSet.m_sMagicR;					// 마법 저항력
+			Npc->m_sDiseaseR = NpcTableSet.m_sDiseaseR;				// 저주 저항력
+			Npc->m_sPoisonR = NpcTableSet.m_sPoisonR;				// 독 저항력
+			Npc->m_sLightR = NpcTableSet.m_sLightR;					// 빛 저항력
 			Npc->m_sBulk = NpcTableSet.m_sBulk;
 			Npc->m_bySearchRange = NpcTableSet.m_bySearchRange;		// 적 탐지 범위
 			Npc->m_byAttackRange = NpcTableSet.m_byAttackRange;		// 사정거리
@@ -1155,13 +1156,13 @@ BOOL CServerDlg::CreateNpcThread()
 					pNpc->m_iMagic1 = pNpcTable->m_iMagic1;					// 사용마법 1
 					pNpc->m_iMagic2 = pNpcTable->m_iMagic2;					// 사용마법 2
 					pNpc->m_iMagic3 = pNpcTable->m_iMagic3;					// 사용마법 3
-					pNpc->m_byFireR = pNpcTable->m_byFireR;					// 화염 저항력
-					pNpc->m_byColdR = pNpcTable->m_byColdR;					// 냉기 저항력
-					pNpc->m_byLightningR = pNpcTable->m_byLightningR;		// 전기 저항력
-					pNpc->m_byMagicR = pNpcTable->m_byMagicR;				// 마법 저항력
-					pNpc->m_byDiseaseR = pNpcTable->m_byDiseaseR;			// 저주 저항력
-					pNpc->m_byPoisonR = pNpcTable->m_byPoisonR;				// 독 저항력
-					pNpc->m_byLightR = pNpcTable->m_byLightR;				// 빛 저항력
+					pNpc->m_sFireR = pNpcTable->m_sFireR;					// 화염 저항력
+					pNpc->m_sColdR = pNpcTable->m_sColdR;					// 냉기 저항력
+					pNpc->m_sLightningR = pNpcTable->m_sLightningR;			// 전기 저항력
+					pNpc->m_sMagicR = pNpcTable->m_sMagicR;					// 마법 저항력
+					pNpc->m_sDiseaseR = pNpcTable->m_sDiseaseR;				// 저주 저항력
+					pNpc->m_sPoisonR = pNpcTable->m_sPoisonR;				// 독 저항력
+					pNpc->m_sLightR = pNpcTable->m_sLightR;					// 빛 저항력
 					pNpc->m_fBulk = (float) (((double) pNpcTable->m_sBulk / 100) * ((double) pNpcTable->m_sSize / 100));
 					pNpc->m_bySearchRange = pNpcTable->m_bySearchRange;		// 적 탐지 범위
 					pNpc->m_byAttackRange = pNpcTable->m_byAttackRange;		// 사정거리
@@ -1620,13 +1621,25 @@ BOOL CServerDlg::MapFileLoad()
 		return FALSE;
 	}
 
+	// Build the base MAP directory
+	std::filesystem::path mapDir(GetProgPath().GetString());
+	mapDir /= MAP_DIR;
+
+	// Resolve it to strip the relative references to be nice.
+	mapDir = std::filesystem::canonical(mapDir);
+
 	ZoneInfoSet.MoveFirst();
 
 	while (!ZoneInfoSet.IsEOF())
 	{
 		sZoneName = ZoneInfoSet.m_strZoneName;
 
-		szFullPath.Format(_T(".\\MAP\\%s"), sZoneName);
+		std::filesystem::path mapPath
+			= mapDir / sZoneName.GetString();
+
+		szFullPath.Format(
+			_T("%ls"),
+			mapPath.c_str());
 
 		if (!file.Open(szFullPath, CFile::modeRead))
 		{
@@ -2273,13 +2286,13 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz)
 	pEventNpc->m_iMagic1 = pNpc->m_iMagic1;					// 사용마법 1
 	pEventNpc->m_iMagic2 = pNpc->m_iMagic2;					// 사용마법 2
 	pEventNpc->m_iMagic3 = pNpc->m_iMagic3;					// 사용마법 3
-	pEventNpc->m_byFireR = pNpc->m_byFireR;					// 화염 저항력
-	pEventNpc->m_byColdR = pNpc->m_byColdR;					// 냉기 저항력
-	pEventNpc->m_byLightningR = pNpc->m_byLightningR;		// 전기 저항력
-	pEventNpc->m_byMagicR = pNpc->m_byMagicR;				// 마법 저항력
-	pEventNpc->m_byDiseaseR = pNpc->m_byDiseaseR;			// 저주 저항력
-	pEventNpc->m_byPoisonR = pNpc->m_byPoisonR;				// 독 저항력
-	pEventNpc->m_byLightR = pNpc->m_byLightR;				// 빛 저항력
+	pEventNpc->m_sFireR = pNpc->m_sFireR;					// 화염 저항력
+	pEventNpc->m_sColdR = pNpc->m_sColdR;					// 냉기 저항력
+	pEventNpc->m_sLightningR = pNpc->m_sLightningR;			// 전기 저항력
+	pEventNpc->m_sMagicR = pNpc->m_sMagicR;					// 마법 저항력
+	pEventNpc->m_sDiseaseR = pNpc->m_sDiseaseR;				// 저주 저항력
+	pEventNpc->m_sPoisonR = pNpc->m_sPoisonR;				// 독 저항력
+	pEventNpc->m_sLightR = pNpc->m_sLightR;					// 빛 저항력
 	pEventNpc->m_fBulk = pNpc->m_fBulk;
 	pEventNpc->m_bySearchRange = pNpc->m_bySearchRange;		// 적 탐지 범위
 	pEventNpc->m_byAttackRange = pNpc->m_byAttackRange;		// 사정거리
@@ -2668,13 +2681,13 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	pNpc->m_iMagic1 = pNpcTable->m_iMagic1;					// 사용마법 1
 	pNpc->m_iMagic2 = pNpcTable->m_iMagic2;					// 사용마법 2
 	pNpc->m_iMagic3 = pNpcTable->m_iMagic3;					// 사용마법 3
-	pNpc->m_byFireR = pNpcTable->m_byFireR;					// 화염 저항력
-	pNpc->m_byColdR = pNpcTable->m_byColdR;					// 냉기 저항력
-	pNpc->m_byLightningR = pNpcTable->m_byLightningR;		// 전기 저항력
-	pNpc->m_byMagicR = pNpcTable->m_byMagicR;				// 마법 저항력
-	pNpc->m_byDiseaseR = pNpcTable->m_byDiseaseR;			// 저주 저항력
-	pNpc->m_byPoisonR = pNpcTable->m_byPoisonR;				// 독 저항력
-	pNpc->m_byLightR = pNpcTable->m_byLightR;				// 빛 저항력
+	pNpc->m_sFireR = pNpcTable->m_sFireR;					// 화염 저항력
+	pNpc->m_sColdR = pNpcTable->m_sColdR;					// 냉기 저항력
+	pNpc->m_sLightningR = pNpcTable->m_sLightningR;			// 전기 저항력
+	pNpc->m_sMagicR = pNpcTable->m_sMagicR;					// 마법 저항력
+	pNpc->m_sDiseaseR = pNpcTable->m_sDiseaseR;				// 저주 저항력
+	pNpc->m_sPoisonR = pNpcTable->m_sPoisonR;				// 독 저항력
+	pNpc->m_sLightR = pNpcTable->m_sLightR;					// 빛 저항력
 	pNpc->m_fBulk = (float) (((double) pNpcTable->m_sBulk / 100) * ((double) pNpcTable->m_sSize / 100));
 	pNpc->m_bySearchRange = pNpcTable->m_bySearchRange;		// 적 탐지 범위
 	pNpc->m_byAttackRange = pNpcTable->m_byAttackRange;		// 사정거리
@@ -2777,8 +2790,11 @@ void CServerDlg::ClostSocket(int zonenumber)
 
 void CServerDlg::GetServerInfoIni()
 {
+	std::filesystem::path iniPath(GetProgPath().GetString());
+	iniPath /= L"server.ini";
+
 	CIni inifile;
-	inifile.Load(_T("server.ini"));
+	inifile.Load(iniPath);
 	m_byZone = inifile.GetInt(_T("SERVER"), _T("ZONE"), 1);
 
 	inifile.GetString(_T("ODBC"), _T("GAME_DSN"), _T("KN_Online"), m_strGameDSN, sizeof(m_strGameDSN));

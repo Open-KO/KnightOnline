@@ -6,21 +6,21 @@
 
 #include <shared/globals.h>
 
-#define _LISTEN_PORT		15100
+constexpr int MAX_USER			= 3000;
 
-#define MAX_USER			3000
-#define CLIENT_SOCKSIZE		10
+#define _LISTEN_PORT			15100
+#define CLIENT_SOCKSIZE			10
 
 ////////////////////////////////////////////////////////////
 // Socket Define
 ////////////////////////////////////////////////////////////
-#define SOCKET_BUFF_SIZE	(1024*16)
-#define MAX_PACKET_SIZE		(1024*8)
+#define SOCKET_BUFF_SIZE		(1024*16)
+#define MAX_PACKET_SIZE			(1024*8)
 
-#define PACKET_START1				0XAA
-#define PACKET_START2				0X55
-#define PACKET_END1					0X55
-#define PACKET_END2					0XAA
+#define PACKET_START1			0XAA
+#define PACKET_START2			0X55
+#define PACKET_END1				0X55
+#define PACKET_END2				0XAA
 
 // status
 #define STATE_CONNECTED			0X01

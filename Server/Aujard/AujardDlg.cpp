@@ -191,10 +191,10 @@ BOOL CAujardDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	CString inipath;
-	inipath.Format(_T("%s\\Aujard.ini"), GetProgPath());
+	std::filesystem::path iniPath(GetProgPath().GetString());
+	iniPath /= L"Aujard.ini";
 
-	CIni ini(inipath.GetString());
+	CIni ini(iniPath);
 
 	ini.GetString(_T("ODBC"), _T("ACCOUNT_DSN"), _T(""), m_strAccountDSN, _countof(m_strAccountDSN));
 	ini.GetString(_T("ODBC"), _T("ACCOUNT_UID"), _T(""), m_strAccountUID, _countof(m_strAccountUID));

@@ -116,10 +116,10 @@ BOOL CVersionManagerDlg::OnInitDialog()
 
 BOOL CVersionManagerDlg::GetInfoFromIni()
 {
-	CString inipath;
-	inipath.Format(_T("%s\\Version.ini"), GetProgPath());
+	std::filesystem::path iniPath(GetProgPath().GetString());
+	iniPath /= L"Version.ini";
 
-	CIni ini(inipath.GetString());
+	CIni ini(iniPath);
 
 	ini.GetString("DOWNLOAD", "URL", "127.0.0.1", m_strFtpUrl, _countof(m_strFtpUrl));
 	ini.GetString("DOWNLOAD", "PATH", "/", m_strFilePath, _countof(m_strFilePath));
@@ -274,9 +274,6 @@ BOOL CVersionManagerDlg::DestroyWindow()
 
 void CVersionManagerDlg::OnVersionSetting() 
 {
-	CString errorstr, inipath;
-	inipath.Format(_T("%s\\Version.ini"), GetProgPath());
-
 	CSettingDlg	setdlg(m_nLastVersion, this);
 	
 	_tcscpy(setdlg.m_strDefaultPath, m_strDefaultPath);
@@ -284,6 +281,9 @@ void CVersionManagerDlg::OnVersionSetting()
 		return;
 
 	_tcscpy(m_strDefaultPath, setdlg.m_strDefaultPath);
+
+	std::filesystem::path iniPath(GetProgPath().GetString());
+	iniPath /= L"Version.ini";
 
 	CIni ini(inipath.GetString());
 	ini.SetString(_T("CONFIGURATION"), _T("DEFAULT_PATH"), m_strDefaultPath);

@@ -72,7 +72,7 @@ void CGameSocket::Parsing(int length, char* pData)
 
 	switch (bType)
 	{
-		case SERVER_CONNECT:
+		case AI_SERVER_CONNECT:
 			RecvServerConnect(pData);
 			break;
 
@@ -180,14 +180,14 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 
 	if (byZoneNumber < 0)
 	{
-		SetByte(pData, SERVER_CONNECT, outindex);
+		SetByte(pData, AI_SERVER_CONNECT, outindex);
 		SetByte(pData, -1, outindex);
 		Send(pData, outindex);
 	}
 
 	m_sSocketID = byZoneNumber;
 
-	SetByte(pData, SERVER_CONNECT, outindex);
+	SetByte(pData, AI_SERVER_CONNECT, outindex);
 	SetByte(pData, byZoneNumber, outindex);
 	SetByte(pData, byReConnect, outindex);
 	Send(pData, outindex);

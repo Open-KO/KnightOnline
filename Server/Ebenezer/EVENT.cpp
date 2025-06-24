@@ -10,6 +10,8 @@
 #include "EXEC.h"
 #include "LOGIC_ELSE.h"
 
+#include <filesystem>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -45,7 +47,15 @@ BOOL EVENT::LoadEvent(int zone)
 	EVENT_DATA* newData = nullptr;
 	EVENT_DATA* eventData = nullptr;
 
-	filename.Format(".\\MAP\\%d.evt", zone);
+	// Build the base MAP directory
+	std::filesystem::path evtPath(GetProgPath().GetString());
+	evtPath /= QUESTS_DIR;
+	evtPath /= std::to_wstring(zone) + L".evt";
+
+	// Resolve it to strip the relative references to be nice.
+	evtPath = std::filesystem::canonical(evtPath);
+
+	filename.Format(_T("%ls"), evtPath.c_str());
 
 	m_Zone = zone;
 

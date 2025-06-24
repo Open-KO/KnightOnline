@@ -10,6 +10,10 @@
 #include "User.h"
 #include "RoomEvent.h"
 
+#include <shared/globals.h>
+
+#include <filesystem>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -514,7 +518,16 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 	int			event_num = 0, nation = 0;
 
 	CRoomEvent* pEvent = nullptr;
-	filename.Format(_T(".\\MAP\\%d.evt"), zone_number);
+
+	// Build the base MAP directory
+	std::filesystem::path evtPath(GetProgPath().GetString());
+	evtPath /= MAP_DIR;
+	evtPath /= std::to_wstring(zone_number) + L".evt";
+
+	// Resolve it to strip the relative references to be nice.
+	evtPath = std::filesystem::canonical(evtPath);
+
+	filename.Format(_T("%ls"), evtPath.c_str());
 
 	if (!pFile.Open(filename, CFile::modeRead))
 		return FALSE;

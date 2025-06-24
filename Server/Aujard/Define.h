@@ -1,9 +1,10 @@
 ﻿#ifndef _DEFINE_H
 #define _DEFINE_H
 
-#define MAX_USER			3000
-#define MAX_ID_SIZE			20
-#define MAX_PW_SIZE			12
+#include <shared/globals.h>
+
+constexpr int MAX_USER			= 3000;
+
 #define MAX_ITEM			28
 
 ////////////////////////////////////////////////////////////
@@ -57,10 +58,6 @@ typedef union {
 	DWORD		w;
 	BYTE		b[4];
 } MYDWORD;
-
-
-// DEFINE MACRO PART...
-#define BufInc(x) (x)++;(x) %= SOCKET_BUF_SIZE;
 
 // DEFINE Shared Memory Queue Flag
 

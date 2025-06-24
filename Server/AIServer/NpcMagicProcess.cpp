@@ -484,27 +484,27 @@ short CNpcMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, in
 				break;
 
 			case FIRE_R:
-				total_r = pNpc->m_byFireR;
+				total_r = pNpc->m_sFireR;
 				break;
 
 			case COLD_R:
-				total_r = pNpc->m_byColdR;
+				total_r = pNpc->m_sColdR;
 				break;
 
 			case LIGHTNING_R:
-				total_r = pNpc->m_byLightningR;
+				total_r = pNpc->m_sLightningR;
 				break;
 
 			case MAGIC_R:
-				total_r = pNpc->m_byMagicR;
+				total_r = pNpc->m_sMagicR;
 				break;
 
 			case DISEASE_R:
-				total_r = pNpc->m_byDiseaseR;
+				total_r = pNpc->m_sDiseaseR;
 				break;
 
 			case POISON_R:
-				total_r = pNpc->m_byPoisonR;
+				total_r = pNpc->m_sPoisonR;
 				break;
 
 			case LIGHT_R:

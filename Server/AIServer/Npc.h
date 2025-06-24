@@ -233,13 +233,13 @@ public:
 	int		m_iMagic1;			// 사용마법 1 (공격)
 	int		m_iMagic2;			// 사용마법 2 (지역)	
 	int		m_iMagic3;			// 사용마법 3 (능력치, 힐링)	
-	BYTE	m_byFireR;			// 화염 저항력
-	BYTE	m_byColdR;			// 냉기 저항력
-	BYTE	m_byLightningR;		// 전기 저항력
-	BYTE	m_byMagicR;			// 마법 저항력
-	BYTE	m_byDiseaseR;		// 저주 저항력
-	BYTE	m_byPoisonR;		// 독 저항력
-	BYTE	m_byLightR;			// 빛 저항력
+	short	m_sFireR;			// 화염 저항력
+	short	m_sColdR;			// 냉기 저항력
+	short	m_sLightningR;		// 전기 저항력
+	short	m_sMagicR;			// 마법 저항력
+	short	m_sDiseaseR;		// 저주 저항력
+	short	m_sPoisonR;		// 독 저항력
+	short	m_sLightR;			// 빛 저항력
 	float	m_fBulk;			// 몬스터의 크기 (실제 비율)
 	BYTE	m_bySearchRange;	// 적 탐지 범위
 	BYTE	m_byAttackRange;	// 사정거리
