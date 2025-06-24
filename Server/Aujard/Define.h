@@ -293,12 +293,14 @@ inline void SetInt64(char* tBuf, int64_t nInt64, int& index)
 }
 
 // sungyong 2001.11.06
-inline int GetVarString(TCHAR* tBuf, TCHAR* sBuf, int nSize, int& index)
+inline int GetVarString(char* tBuf, char* sBuf, int nSize, int& index)
 {
 	int nLen = 0;
 
-	if (nSize == sizeof(BYTE))	nLen = GetByte(sBuf, index);
-	else nLen = GetShort(sBuf, index);
+	if (nSize == sizeof(BYTE))
+		nLen = GetByte(sBuf, index);
+	else
+		nLen = GetShort(sBuf, index);
 
 	GetString(tBuf, sBuf, nLen, index);
 	*(tBuf + nLen) = 0;
@@ -306,7 +308,7 @@ inline int GetVarString(TCHAR* tBuf, TCHAR* sBuf, int nSize, int& index)
 	return nLen;
 }
 
-inline void SetVarString(TCHAR* tBuf, TCHAR* sBuf, int len, int& index)
+inline void SetVarString(char* tBuf, TCHAR* sBuf, int len, int& index)
 {
 	*(tBuf + index) = (BYTE) len;
 	index ++;
@@ -317,15 +319,14 @@ inline void SetVarString(TCHAR* tBuf, TCHAR* sBuf, int len, int& index)
 
 inline CString GetProgPath()
 {
-	char Buf[256], Path[256];
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	TCHAR Buf[256], Path[256];
+	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 
 	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_splitpath(Buf, drive, dir, fname, ext);
-	strcpy(Path, drive);
-	strcat(Path, dir);
-	CString _Path = Path;
-	return _Path;
+	_tsplitpath(Buf, drive, dir, fname, ext);
+	_tcscpy(Path, drive);
+	_tcscat(Path, dir);
+	return Path;
 }
 
 inline void LogFileWrite(LPCTSTR logstr)
@@ -335,9 +336,9 @@ inline void LogFileWrite(LPCTSTR logstr)
 	int loglength;
 
 	ProgPath = GetProgPath();
-	loglength = strlen(logstr);
+	loglength = _tcslen(logstr);
 
-	LogFileName.Format("%s\\Aujard.log", ProgPath);
+	LogFileName.Format(_T("%s\\Aujard.log"), ProgPath);
 
 	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
 
@@ -348,22 +349,22 @@ inline void LogFileWrite(LPCTSTR logstr)
 
 inline int DisplayErrorMsg(SQLHANDLE hstmt)
 {
-	SQLCHAR       SqlState[6], Msg[1024];
+	SQLTCHAR      SqlState[6], Msg[1024];
 	SQLINTEGER    NativeError;
 	SQLSMALLINT   i, MsgLen;
 	SQLRETURN     rc2;
-	char		  logstr[512] = {};
+	TCHAR		  logstr[512] = {};
 
 	i = 1;
 	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
 	{
-		sprintf(logstr, "*** %s, %d, %s, %d ***\r\n", SqlState, NativeError, Msg, MsgLen);
+		_stprintf(logstr, _T("*** %s, %d, %s, %d ***\r\n"), SqlState, NativeError, Msg, MsgLen);
 		LogFileWrite(logstr);
 
 		i++;
 	}
 
-	if (strcmp((char*) SqlState, "08S01") == 0)
+	if (_tcscmp((TCHAR*) SqlState, _T("08S01")) == 0)
 		return -1;
 	else
 		return 0;

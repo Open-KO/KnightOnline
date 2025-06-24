@@ -44,7 +44,7 @@ BOOL CDBAgent::DatabaseInit()
 	return TRUE;
 }
 
-void CDBAgent::ReConnectODBC(CDatabase* m_db, TCHAR* strdb, TCHAR* strname, TCHAR* strpwd)
+void CDBAgent::ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd)
 {
 	TCHAR strlog[256] = {};
 	CTime t = CTime::GetCurrentTime();

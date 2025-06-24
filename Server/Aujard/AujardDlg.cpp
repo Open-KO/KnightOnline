@@ -169,8 +169,8 @@ BOOL CAujardDlg::OnInitDialog()
 	//	Logfile initialize
 	//----------------------------------------------------------------------
 	CTime time = CTime::GetCurrentTime();
-	char strLogFile[50] = {};
-	wsprintf(strLogFile, "AujardLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
+	TCHAR strLogFile[50] = {};
+	wsprintf(strLogFile, _T("AujardLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
 	m_LogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_LogFile.SeekToEnd();
 
@@ -178,12 +178,12 @@ BOOL CAujardDlg::OnInitDialog()
 
 	InitializeCriticalSection(&g_LogFileWrite);
 
-	m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERSEND, FALSE);	// Dispatcher 의 Send Queue
-	m_LoggerSendQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERRECV, FALSE);	// Dispatcher 의 Read Queue
+	m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), FALSE);	// Dispatcher 의 Send Queue
+	m_LoggerSendQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), FALSE);	// Dispatcher 의 Read Queue
 
 	if (!InitializeMMF())
 	{
-		AfxMessageBox("Main Shared Memory Initialize Fail");
+		AfxMessageBox(_T("Main Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
@@ -213,7 +213,7 @@ BOOL CAujardDlg::OnInitDialog()
 
 	if (!LoadItemTable())
 	{
-		AfxMessageBox("Load ItemTable Fail!!");
+		AfxMessageBox(_T("Load ItemTable Fail!!"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
@@ -302,12 +302,12 @@ BOOL CAujardDlg::InitializeMMF()
 	m_hMMFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, _T("KNIGHT_DB"));
 	if (m_hMMFile == nullptr)
 	{
-		logstr = "Shared Memory Load Fail!!";
+		logstr = _T("Shared Memory Load Fail!!");
 		m_hMMFile = INVALID_HANDLE_VALUE;
 		return FALSE;
 	}
 
-	logstr = "Shared Memory Load Success!!";
+	logstr = _T("Shared Memory Load Success!!");
 	m_OutputList.AddString(logstr);
 
 	m_lpMMFile = (char*) MapViewOfFile(m_hMMFile, FILE_MAP_WRITE, 0, 0, 0);
@@ -349,7 +349,7 @@ BOOL CAujardDlg::LoadItemTable()
 		_ITEM_TABLE* pTableItem = new _ITEM_TABLE;
 
 		pTableItem->m_iNum = ItemTableSet.m_Num;
-		strcpy(pTableItem->m_strName, ItemTableSet.m_strName);
+		strcpy(pTableItem->m_strName, CT2A(ItemTableSet.m_strName));
 		pTableItem->m_bKind = ItemTableSet.m_Kind;
 		pTableItem->m_bSlot = ItemTableSet.m_Slot;
 		pTableItem->m_bRace = ItemTableSet.m_Race;
@@ -498,7 +498,7 @@ void CAujardDlg::SelectCharacter(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Sel char Packet Drop!!!");
+		m_OutputList.AddString(_T("Sel char Packet Drop!!!"));
 
 	return;
 
@@ -637,7 +637,7 @@ void CAujardDlg::UserLogOut(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Logout Packet Drop!!!");
+		m_OutputList.AddString(_T("Logout Packet Drop!!!"));
 }
 
 void CAujardDlg::AccountLogIn(char* pBuf)
@@ -671,7 +671,7 @@ void CAujardDlg::AccountLogIn(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Login Packet Drop!!!");
+		m_OutputList.AddString(_T("Login Packet Drop!!!"));
 }
 
 void CAujardDlg::SelectNation(char* pBuf)
@@ -708,7 +708,7 @@ void CAujardDlg::SelectNation(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Sel Nation Packet Drop!!!");
+		m_OutputList.AddString(_T("Sel Nation Packet Drop!!!"));
 }
 
 void CAujardDlg::CreateNewChar(char* pBuf)
@@ -751,7 +751,7 @@ void CAujardDlg::CreateNewChar(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("New Char Packet Drop!!!");
+		m_OutputList.AddString(_T("New Char Packet Drop!!!"));
 }
 
 void CAujardDlg::DeleteChar(char* pBuf)
@@ -794,7 +794,7 @@ void CAujardDlg::DeleteChar(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Del Char Packet Drop!!!");
+		m_OutputList.AddString(_T("Del Char Packet Drop!!!"));
 }
 
 void CAujardDlg::AllCharInfoReq(char* pBuf)
@@ -835,7 +835,7 @@ void CAujardDlg::AllCharInfoReq(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("All Char Packet Drop!!!");
+		m_OutputList.AddString(_T("All Char Packet Drop!!!"));
 }
 
 BOOL CAujardDlg::PreTranslateMessage(MSG* pMsg)
@@ -1214,7 +1214,7 @@ void CAujardDlg::CreateKnights(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Create Knight Packet Drop!!!");
+		m_OutputList.AddString(_T("Create Knight Packet Drop!!!"));
 }
 
 void CAujardDlg::JoinKnights(char* pBuf)
@@ -1254,7 +1254,7 @@ void CAujardDlg::JoinKnights(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Join Packet Drop!!!");
+		m_OutputList.AddString(_T("Join Packet Drop!!!"));
 }
 
 void CAujardDlg::WithdrawKnights(char* pBuf)
@@ -1291,7 +1291,7 @@ void CAujardDlg::WithdrawKnights(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Withdraw Packet Drop!!!");
+		m_OutputList.AddString(_T("Withdraw Packet Drop!!!"));
 }
 
 void CAujardDlg::ModifyKnightsMember(char* pBuf, BYTE command)
@@ -1339,7 +1339,7 @@ void CAujardDlg::ModifyKnightsMember(char* pBuf, BYTE command)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Modify Packet Drop!!!");
+		m_OutputList.AddString(_T("Modify Packet Drop!!!"));
 }
 
 void CAujardDlg::DestroyKnights(char* pBuf)
@@ -1372,7 +1372,7 @@ void CAujardDlg::DestroyKnights(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("Destroy Packet Drop!!!");
+		m_OutputList.AddString(_T("Destroy Packet Drop!!!"));
 }
 
 void CAujardDlg::AllKnightsMember(char* pBuf)
@@ -1413,7 +1413,7 @@ void CAujardDlg::AllKnightsMember(char* pBuf)
 	while (t_count < 50);
 
 	if (t_count >= 50)
-		m_OutputList.AddString("Member Packet Drop!!!");
+		m_OutputList.AddString(_T("Member Packet Drop!!!"));
 }
 
 void CAujardDlg::KnightsList(char* pBuf)
@@ -1445,7 +1445,7 @@ void CAujardDlg::KnightsList(char* pBuf)
 	while (count < 50);
 
 	if (count >= 50)
-		m_OutputList.AddString("KnightsList Packet Drop!!!");
+		m_OutputList.AddString(_T("KnightsList Packet Drop!!!"));
 }
 
 void CAujardDlg::SetLogInInfo(char* pBuf)
@@ -1485,7 +1485,7 @@ void CAujardDlg::SetLogInInfo(char* pBuf)
 		while (count < 50);
 
 		if (count >= 50)
-			m_OutputList.AddString("Login Info Packet Drop!!!");
+			m_OutputList.AddString(_T("Login Info Packet Drop!!!"));
 
 		char logstr[256] = {};
 		sprintf(logstr, "LoginINFO Insert Fail : %s, %s, %d\r\n", accountid, charid, bInit);
@@ -1554,13 +1554,14 @@ void CAujardDlg::WriteLogFile(char* pData)
 		if (m_LogFile.m_hFile != CFile::hFileNull)
 			m_LogFile.Close();
 
-		wsprintf(strLog, "AujardLog-%d-%d-%d.txt", cur.GetYear(), cur.GetMonth(), cur.GetDay());
-		m_LogFile.Open(strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
+		CString filename;
+		filename.Format(_T("AujardLog-%d-%d-%d.txt"), cur.GetYear(), cur.GetMonth(), cur.GetDay());
+		m_LogFile.Open(filename, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 		m_LogFile.SeekToEnd();
 		m_iLogFileDay = nDay;
 	}
 
-	wsprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
+	sprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
 	int nLen = strlen(strLog);
 	if (nLen >= 1024)
 	{
@@ -1627,7 +1628,7 @@ void CAujardDlg::CouponEvent(char* pData)
 		while (count < 50);
 
 		if (count >= 50)
-			m_OutputList.AddString("CouponEvent Packet Drop!!!");
+			m_OutputList.AddString(_T("CouponEvent Packet Drop!!!"));
 	}
 	else if (nType == UPDATE_COUPON_EVENT)
 	{

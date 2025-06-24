@@ -16,7 +16,7 @@ class CItemManagerDlg;
 class CDBAgent
 {
 public:
-	void ReConnectODBC(CDatabase* m_db, TCHAR* strdb, TCHAR* strname, TCHAR* strpwd);
+	void ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd);
 	BOOL DatabaseInit();
 	CDBAgent();
 	virtual ~CDBAgent();

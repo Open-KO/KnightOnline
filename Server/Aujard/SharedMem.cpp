@@ -52,14 +52,14 @@ BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lp
 	m_wOffset = dwOffsetsize;
 
 	if (bCreate)
-		m_hMMFile = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, dwfullsize, lpname);
+		m_hMMFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, dwfullsize, lpname);
 	else
-		m_hMMFile = OpenFileMappingA(FILE_MAP_ALL_ACCESS, TRUE, lpname);
+		m_hMMFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, lpname);
 
 	if (m_hMMFile == nullptr)
 	{
-		char logstr[256] = {};
-		strcpy(logstr, "Shared Memory Open Fail!!\r\n");
+		TCHAR logstr[256] = {};
+		_tcscpy(logstr, _T("Shared Memory Open Fail!!\r\n"));
 		LogFileWrite(logstr);
 		return FALSE;
 	}
@@ -94,8 +94,8 @@ int CSharedMemQueue::PutData(char* pBuf, int size)
 
 	if (size > static_cast<int>(m_wOffset))
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "DataSize Over.. - %d bytes\r\n", size);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("DataSize Over.. - %d bytes\r\n"), size);
 		LogFileWrite(logstr);
 		return SMQ_PKTSIZEOVER;
 	}
