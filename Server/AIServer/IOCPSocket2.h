@@ -30,11 +30,11 @@ public:
 	void ReceivedData(int length);
 	int  Receive();
 	int  Send(char* pBuf, long length, int dwFlag = 0);
-	BOOL Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostPort);
+	BOOL Connect(CIOCPort* pIocp, const char*  lpszHostAddress, UINT nHostPort);
 	BOOL Create(UINT nSocketPort = 0,
 				 int nSocketType = SOCK_STREAM,
 				 long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE,
-				 LPCTSTR lpszSocketAddress = nullptr);
+				 const char* lpszSocketAddress = nullptr);
 	BOOL Accept(SOCKET listensocket, struct sockaddr* addr, int* len);
 
 	int GetSocketID() const {
@@ -85,7 +85,7 @@ protected:
 	BYTE				m_Type;
 	BYTE				m_State;
 	int					m_Sid;
-	LPCTSTR				m_ConnectAddress;
+	std::string			m_ConnectAddress;
 
 	DWORD				m_wPacketSerial;
 

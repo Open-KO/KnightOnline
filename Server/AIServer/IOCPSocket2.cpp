@@ -30,7 +30,7 @@ CIOCPSocket2::~CIOCPSocket2()
 	delete m_pBuffer;
 }
 
-BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTSTR lpszSocketAddress)
+BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const char* lpszSocketAddress)
 {
 	int ret;
 
@@ -53,7 +53,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTST
 	return TRUE;
 }
 
-BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostPort)
+BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort)
 {
 	sockaddr_in addr;
 

@@ -222,10 +222,10 @@ void CUser::SendMagicAttackResult(int tuid, BYTE result, short sDamage, short sH
 }
 
 // sungyong 2002.05.22
-void CUser::SendAll(TCHAR* pBuf, int nLength)
+void CUser::SendAll(const char* pBuf, int nLength)
 {
 	if (nLength <= 0
-		|| nLength >= SOCKET_BUFF_SIZE)
+		|| nLength > sizeof(SEND_DATA::pBuf))
 		return;
 
 	if (m_iUserId < 0
@@ -332,8 +332,9 @@ void CUser::Dead(int tid, int nDamage)
 	BYTE type, result;
 	char buff[256] = {};
 
-	wsprintf(buff, "*** User Dead = %d, %s ***", m_iUserId, m_strUserID);
-	TimeTrace(buff);
+	CString logstr;
+	logstr.Format(_T("*** User Dead = %d, %s ***"), m_iUserId, m_strUserID);
+	TimeTrace(logstr);
 	//TRACE("*** User Dead = %d, %s ********\n", m_iUserId, m_strUserID);
 	memset(buff, 0, sizeof(buff));
 
@@ -885,7 +886,7 @@ BYTE CUser::GetHitRate(float rate)
 }
 
 
-void CUser::SendSystemMsg(TCHAR* pMsg, BYTE type, int nWho)
+void CUser::SendSystemMsg(const char* pMsg, BYTE type, int nWho)
 {
 	int send_index = 0;
 	char buff[1024] = {};

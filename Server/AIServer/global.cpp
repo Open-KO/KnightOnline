@@ -140,15 +140,14 @@ int ParseSpace(char* tBuf, char* sBuf)
 
 CString GetProgPath()
 {
-	char Buf[256], Path[256];
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	TCHAR Buf[256], Path[256];
+	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 
 	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_splitpath(Buf, drive, dir, fname, ext);
-	strcpy(Path, drive);
-	strcat(Path, dir);
-	CString _Path = Path;
-	return _Path;
+	_tsplitpath(Buf, drive, dir, fname, ext);
+	_tcscpy(Path, drive);
+	_tcscat(Path, dir);
+	return Path;
 }
 
 int myrand(int min, int max, BOOL bSame)
@@ -189,33 +188,6 @@ int XdY(int x, int y)
 		temp += myrand(1, y, TRUE);
 
 	return temp;
-}
-
-///////////////////////////////////////////////////////////////////////////
-//	string의 길이가 size 보다 작으면 size 만큼 공백을 채워서 복사한다.
-//
-void SpaceCopy(LPSTR source, CString dest, int size)
-{
-	strncpy(source, dest, size);
-
-	int len = strlen(source);
-	for (int i = size - 1; i >= len; i--)
-		source[i] = ' ';
-}
-
-///////////////////////////////////////////////////////////////////////////
-//	string의 길이가 size 보다 작으면 size 만큼 공백을 채워서 복사한다.
-//
-void SpaceCopy(CString& source, CString dest, int size)
-{
-	source = dest.Left(size);
-
-	int len = source.GetLength();
-	if (len < size)
-	{
-		for (int i = size; i > len; i--)
-			source += ' ';
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -285,7 +257,7 @@ void LogFileWrite(CString logstr)
 	file.Close();
 }
 
-void TimeTrace(TCHAR* pMsg)
+void TimeTrace(const TCHAR* pMsg)
 {
 	CString szMsg;
 	CTime time = CTime::GetCurrentTime();

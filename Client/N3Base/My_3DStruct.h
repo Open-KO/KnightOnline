@@ -1453,7 +1453,7 @@ inline void _LoadStringFromResource(DWORD dwID, std::string& szText)
 	static char szBuffer[512];
 	szBuffer[0] = '\0';
 	//	::LoadString(nullptr, MAKEINTRESOURCE(dwID), szBuffer, 256);
-	::LoadString(nullptr, dwID, szBuffer, 256);
+	::LoadStringA(nullptr, dwID, szBuffer, 256);
 	szText = szBuffer;
 }
 #endif

@@ -1176,7 +1176,7 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 		if (m_pMain->m_TotalNPC == m_pMain->m_CurrentNPC)
 		{
 			CString logstr;
-			logstr.Format("Monster All Init Success - %d", m_pMain->m_CurrentNPC);
+			logstr.Format(_T("Monster All Init Success - %d"), m_pMain->m_CurrentNPC);
 			m_pMain->m_StatusList.AddString(logstr);
 			TRACE("Npc - SerLive : GameServerAcceptThread, cur = %d\n", m_pMain->m_CurrentNPC);
 			m_pMain->GameServerAcceptThread();				// 게임서버 Accept
@@ -5672,10 +5672,10 @@ __Vector3 CNpc::GetDirection(__Vector3 vStart, __Vector3 vEnd)
 }
 
 // sungyong 2002.05.22
-void CNpc::SendAll(CIOCPort* pIOCP, TCHAR* pBuf, int nLength)
+void CNpc::SendAll(CIOCPort* pIOCP, const char* pBuf, int nLength)
 {
 	if (nLength <= 0
-		|| nLength >= SOCKET_BUFF_SIZE)
+		|| nLength > sizeof(SEND_DATA::pBuf))
 		return;
 
 	SEND_DATA* pNewData = nullptr;

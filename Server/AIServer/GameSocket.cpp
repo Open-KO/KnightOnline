@@ -56,7 +56,7 @@ void CGameSocket::CloseProcess()
 {
 	CString logstr;
 	CTime time = CTime::GetCurrentTime();
-	logstr.Format("*** CloseProcess - socketID=%d ... sSid = %d ***  %d-%d-%d, %d:%d]\r\n", m_Sid, m_sSocketID, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	logstr.Format(_T("*** CloseProcess - socketID=%d ... sSid = %d ***  %d-%d-%d, %d:%d]\r\n"), m_Sid, m_sSocketID, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	LogFileWrite(logstr);
 
 	TRACE("*** CloseProcess - socketID=%d ... sSid = %d *** \n", m_Sid, m_sSocketID);
@@ -722,8 +722,8 @@ void CGameSocket::RecvUserRegene(char* pBuf)
 	pUser->m_bLive = USER_LIVE;
 	pUser->m_sHP = sHP;
 
-	char buff[256] = {};
-	wsprintf(buff, "**** RecvUserRegene -- uid = (%s,%d), HP = %d", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
+	TCHAR buff[256] = {};
+	wsprintf(buff, _T("**** RecvUserRegene -- uid = (%s,%d), HP = %d"), pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
 	TimeTrace(buff);
 	//TRACE("**** RecvUserRegene -- uid = (%s,%d), HP = %d\n", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
 }
@@ -814,8 +814,8 @@ void CGameSocket::RecvUserUpdate(char* pBuf)
 	pUser->m_sMagicAmountLeftHand = sAmountLeft;
 	pUser->m_sMagicAmountRightHand = sAmountRight;
 //
-	char buff[256] = {};
-	wsprintf(buff, "**** RecvUserUpdate -- uid = (%s,%d), HP = %d, level=%d->%d", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP, byLevel, pUser->m_sLevel);
+	//TCHAR buff[256] = {};
+	//wsprintf(buff, _T("**** RecvUserUpdate -- uid = (%s,%d), HP = %d, level=%d->%d"), pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP, byLevel, pUser->m_sLevel);
 	//TimeTrace(buff);
 	//TRACE("**** RecvUserUpdate -- uid = (%s,%d), HP = %d\n", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
 }

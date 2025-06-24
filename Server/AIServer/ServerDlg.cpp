@@ -217,13 +217,13 @@ BOOL CServerDlg::OnInitDialog()
 	//----------------------------------------------------------------------
 	//	Logfile initialize
 	//----------------------------------------------------------------------
-	char strLogFile[50] = {};
-	wsprintf(strLogFile, "UserLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
+	TCHAR strLogFile[50] = {};
+	wsprintf(strLogFile, _T("UserLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
 	m_UserLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_UserLogFile.SeekToEnd();
 
 	memset(strLogFile, 0, sizeof(strLogFile));
-	wsprintf(strLogFile, "ItemLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
+	wsprintf(strLogFile, _T("ItemLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
 	m_ItemLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_ItemLogFile.SeekToEnd();
 
@@ -371,17 +371,17 @@ BOOL CServerDlg::OnInitDialog()
 		|| m_byZone == UNIFY_ZONE)
 	{
 		if (!m_Iocport.Listen(AI_KARUS_SOCKET_PORT))
-			AfxMessageBox("FAIL TO CREATE LISTEN STATE", MB_OK);
+			AfxMessageBox(_T("FAIL TO CREATE LISTEN STATE"), MB_OK);
 	}
 	else if (m_byZone == ELMORAD_ZONE)
 	{
 		if (!m_Iocport.Listen(AI_ELMO_SOCKET_PORT))
-			AfxMessageBox("FAIL TO CREATE LISTEN STATE", MB_OK);
+			AfxMessageBox(_T("FAIL TO CREATE LISTEN STATE"), MB_OK);
 	}
 	else if (m_byZone == BATTLE_ZONE)
 	{
 		if (!m_Iocport.Listen(AI_BATTLE_SOCKET_PORT))
-			AfxMessageBox("FAIL TO CREATE LISTEN STATE", MB_OK);
+			AfxMessageBox(_T("FAIL TO CREATE LISTEN STATE"), MB_OK);
 	}
 
 	//::ResumeThread( m_Iocport.m_hAcceptThread );
@@ -1136,7 +1136,7 @@ BOOL CServerDlg::CreateNpcThread()
 						nNpcCount = NpcPosSet.m_NumNPC;
 					}
 
-					strcpy(pNpc->m_strName, CT2A(pNpcTable->m_strName));	// MONSTER(NPC) Name
+					strcpy(pNpc->m_strName, pNpcTable->m_strName);			// MONSTER(NPC) Name
 
 					pNpc->m_sPid = pNpcTable->m_sPid;						// MONSTER(NPC) Picture ID
 					pNpc->m_sSize = pNpcTable->m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
@@ -1243,7 +1243,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 					int index = 0;
 					memset(szPath, 0, 500);
-					strcpy(szPath, NpcPosSet.m_path);
+					strcpy(szPath, CT2A(NpcPosSet.m_path));
 
 					if (NpcPosSet.m_DotCnt != 0)
 					{
@@ -1295,7 +1295,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 					if (pNpc->m_ZoneIndex == -1)
 					{
-						AfxMessageBox("Error : CServerDlg,, Invaild zone Index!!");
+						AfxMessageBox(_T("Error : CServerDlg,, Invaild zone Index!!"));
 						return FALSE;
 					}
 
@@ -1318,7 +1318,7 @@ BOOL CServerDlg::CreateNpcThread()
 						if (pRoom == nullptr)
 						{
 							TRACE("Error : CServerDlg,, Map Room Npc Fail!! : nid=%d, sid=%d, name=%s, fam=%d, zoneindex=%d\n", pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
-							AfxMessageBox("Error : CServerDlg,, Map Room Npc Fail!!");
+							AfxMessageBox(_T("Error : CServerDlg,, Map Room Npc Fail!!"));
 							return FALSE;
 						}
 
@@ -1425,7 +1425,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 	//TRACE("m_TotalNPC = %d \n", m_TotalNPC);
 	CString logstr;
-	logstr.Format("[Monster Init - %d]", m_TotalNPC);
+	logstr.Format(_T("[Monster Init - %d]"), m_TotalNPC);
 	m_StatusList.AddString(logstr);
 
 	return TRUE;
@@ -1947,14 +1947,14 @@ void CServerDlg::DeleteAllUserList(int zone)
 		m_bFirstServerFlag = FALSE;
 		TRACE("*** DeleteAllUserList - End *** \n");
 
-		logstr.Format("[ DELETE All User List ]");
+		logstr.Format(_T("[ DELETE All User List ]"));
 		m_StatusList.AddString(logstr);
 	}
 	else
 	{
 		if (zone != 9999)
 		{
-			logstr.Format("[GameServer DisConnect - zone = %d]", zone);
+			logstr.Format(_T("[GameServer DisConnect - zone = %d]"), zone);
 			m_StatusList.AddString(logstr);
 		}
 	}
@@ -2190,19 +2190,12 @@ CUser* CServerDlg::GetActiveUserPtr(int index)
 	return pUser;
 }
 
-CNpc* CServerDlg::GetNpcPtr(TCHAR* pNpcName)
+CNpc* CServerDlg::GetNpcPtr(const char* pNpcName)
 {
-	CNpc* pNpc = nullptr;
-
-	int nSize = m_arNpc.GetSize();
-
-	for (int i = 0; i < nSize; i++)
+	for (const auto& [_, pNpc] : m_arNpc)
 	{
-		pNpc = m_arNpc.GetData(i);
-		if (pNpc == nullptr)
-			continue;
-
-		if (strcmp(pNpc->m_strName, pNpcName) == 0)
+		if (pNpc != nullptr
+			&& strcmp(pNpc->m_strName, pNpcName) == 0)
 			return pNpc;
 	}
 
@@ -2213,10 +2206,8 @@ CNpc* CServerDlg::GetNpcPtr(TCHAR* pNpcName)
 //	추가할 소환몹의 메모리를 참조하기위해 플래그가 0인 상태것만 넘긴다.
 CNpc* CServerDlg::GetEventNpcPtr()
 {
-	CNpc* pNpc = nullptr;
-	for (int i = m_TotalNPC; i < m_arNpc.GetSize(); i++)
+	for (auto& [_, pNpc] : m_arNpc)
 	{
-		pNpc = m_arNpc.GetData(i);
 		if (pNpc == nullptr)
 			continue;
 
@@ -2230,7 +2221,7 @@ CNpc* CServerDlg::GetEventNpcPtr()
 	return nullptr;
 }
 
-int  CServerDlg::MonsterSummon(TCHAR* pNpcName, int zone, float fx, float fz)
+int  CServerDlg::MonsterSummon(const char* pNpcName, int zone, float fx, float fz)
 {
 	if (zone < 0
 		|| zone > (g_arZone.size() + 1))

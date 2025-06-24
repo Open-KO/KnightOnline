@@ -19,14 +19,12 @@ void	SetDWORD(char* tBuf, DWORD sDword, int& index);
 void	Setfloat(char* tBuf, float sFloat, int& index);
 int		ParseSpace(char* tBuf, char* sBuf);
 CString	GetProgPath();
-void LogFileWrite(CString logstr);
+void	LogFileWrite(CString logstr);
 int		myrand(int min, int max, BOOL bSame = FALSE);
 int		XdY(int x, int y);
-void	SpaceCopy(LPSTR source, CString dest, int size);
-void	SpaceCopy(CString& source, CString dest, int size);
 
 void	CheckMaxValue(DWORD& dest, DWORD add);
 void	CheckMaxValue(int& dest, int add);
 void	CheckMaxValue(short& dest, short add);
 BOOL	CheckMaxValueReturn(DWORD& dest, DWORD add);
-void	TimeTrace(TCHAR* pMsg);
+void	TimeTrace(const TCHAR* pMsg);

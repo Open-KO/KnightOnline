@@ -86,10 +86,10 @@ public:
 	void AllNpcInfo();			// ~sungyong 2002.05.23
 	CUser* GetUserPtr(int nid);
 	CUser* GetActiveUserPtr(int index);
-	CNpc* GetNpcPtr(TCHAR* pNpcName);
+	CNpc* GetNpcPtr(const char* pNpcName);
 	CNpc* GetEventNpcPtr();
 	BOOL   SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz);
-	int    MonsterSummon(TCHAR* pNpcName, int zone, float fx, float fz);
+	int    MonsterSummon(const char* pNpcName, int zone, float fx, float fz);
 	int GetZoneIndex(int zonenumber);
 	int GetServerNumber(int zonenumber);
 	void ClostSocket(int zonenumber);
@@ -185,7 +185,7 @@ private:
 	// 패킷 압축에 필요 변수   -------------
 	CCompressManager	m_CompMng;
 	int					m_CompCount;
-	TCHAR				m_CompBuf[10240];
+	char				m_CompBuf[10240];
 	int					m_iCompIndex;
 	// ~패킷 압축에 필요 변수   -------------
 

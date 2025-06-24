@@ -58,7 +58,7 @@ struct  _NpcGiveItem
 
 struct	_ExpUserList
 {
-	TCHAR	strUserID[MAX_ID_SIZE + 1];		// 아이디(캐릭터 이름)
+	char	strUserID[MAX_ID_SIZE + 1];		// 아이디(캐릭터 이름)
 	int		iUid;							// User uid
 	int		nDamage;						// 타격치 합
 	BOOL	bIs;							// 시야에 존재하는지를 판단(true:존재)
@@ -422,7 +422,7 @@ public:
 	int GetNearPathPoint();			//
 
 	// Packet Send부분..
-	void SendAll(CIOCPort* pIOCP, TCHAR* pBuf, int nLength);
+	void SendAll(CIOCPort* pIOCP, const char* pBuf, int nLength);
 	void SendAttackSuccess(CIOCPort* pIOCP, BYTE byResult, int tuid, short sDamage, int nHP = 0, BYTE byFlag = 0, short sAttack_type = 1);
 	void SendNpcInfoAll(char* temp_send, int& index, int count);	// game server에 npc정보를 전부 전송...
 
