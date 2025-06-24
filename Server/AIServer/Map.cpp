@@ -114,7 +114,7 @@ BOOL MAP::IsMovable(int dest_x, int dest_y)
 		|| dest_y < 0)
 		return FALSE;
 
-	if (!m_pMap)
+	if (m_pMap == nullptr)
 		return FALSE;
 
 	if (dest_x >= m_sizeMap.cx
@@ -391,7 +391,12 @@ void MAP::LoadMapTile(HANDLE hFile)
 		for (int j = 0; j < m_sizeMap.cx; j++)
 		{
 			m_pMap[j][i].m_sEvent = (short) pEvent[j][i];
-			//m_pMap[j][i].m_sEvent	= (short)1;
+
+			// NOTE: The SMDs don't have the correct data.
+			// Since we can't trust their data, we must assume every tile is movable.
+			m_pMap[j][i].m_sEvent = 1;
+			//
+
 			if (m_pMap[j][i].m_sEvent >= 1)
 				count++;
 		//	m_pMap[j][i].m_lUser	= 0;

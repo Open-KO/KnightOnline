@@ -1004,10 +1004,10 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 	m_byActionFlag = NO_ACTION;
 	m_byMaxDamagedNation = KARUS_MAN;
 
-	m_iRegion_X = -1;	m_iRegion_Z = -1;
-	m_fAdd_x = 0.0f;	m_fAdd_z = 0.0f;
-	m_fStartPoint_X = 0.0f;		m_fStartPoint_Y = 0.0f;
-	m_fEndPoint_X = 0.0f;		m_fEndPoint_Y = 0.0f;
+	m_iRegion_X = m_iRegion_Z = -1;
+	m_fAdd_x = m_fAdd_z = 0.0f;
+	m_fStartPoint_X = m_fStartPoint_Y = 0.0f;
+	m_fEndPoint_X = m_fEndPoint_Y = 0.0f;
 	m_min_x = m_min_y = m_max_x = m_max_y = 0;
 
 	InitTarget();

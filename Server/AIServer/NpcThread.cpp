@@ -49,7 +49,7 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 		{
 			pNpc = pInfo->pNpc[i];
 			pIOCP = pInfo->pIOCP;
-			if (!pNpc)
+			if (pNpc == nullptr)
 				continue;
 
 			//if((pNpc->m_tNpcType == NPCTYPE_DOOR || pNpc->m_tNpcType == NPCTYPE_ARTIFACT || pNpc->m_tNpcType == NPCTYPE_PHOENIX_GATE || pNpc->m_tNpcType == NPCTYPE_GATE_LEVER) && !pNpc->m_bFirstLive) continue;
