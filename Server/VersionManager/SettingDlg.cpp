@@ -100,7 +100,7 @@ void CSettingDlg::OnAddfile()
 
 	if (m_bAllFileAdd)
 	{
-		if (AfxMessageBox("All files of Base Path will be inserted.", MB_OKCANCEL) == IDCANCEL)
+		if (AfxMessageBox(_T("All files of Base Path will be inserted."), MB_OKCANCEL) == IDCANCEL)
 			return;
 
 		BeginWaitCursor();
@@ -144,7 +144,7 @@ void CSettingDlg::OnDeletefile()
 	selcount = m_FileList.GetSelCount();
 	if (selcount == 0)
 	{
-		AfxMessageBox("File Not Selected.");
+		AfxMessageBox(_T("File Not Selected."));
 		return;
 	}
 
@@ -165,7 +165,7 @@ void CSettingDlg::OnDeletefile()
 
 		if (!m_pMain->m_DBProcess.DeleteVersion(filename.c_str()))
 		{
-			errmsg.Format("%hs DB Delete Fail", filename.c_str());
+			errmsg.Format(_T("%hs DB Delete Fail"), filename.c_str());
 			AfxMessageBox(errmsg);
 			return;
 		}
@@ -315,7 +315,7 @@ void CSettingDlg::RepackingHistory()
 		}
 	}
 
-	SetDlgItemText(IDC_STATUS, "Repacked");
+	SetDlgItemText(IDC_STATUS, _T("Repacked"));
 }
 
 bool CSettingDlg::Repacking(int version)
@@ -377,7 +377,7 @@ bool CSettingDlg::InsertProcess(const TCHAR* filename)
 	compname.Format(_T("patch%.4d.zip"), m_nVersion);
 
 	pInfo1 = m_pMain->m_VersionList.GetData(addfilename);
-	if (pInfo1)
+	if (pInfo1 != nullptr)
 	{
 		historyversion = pInfo1->sVersion;
 		m_pMain->m_VersionList.DeleteData(addfilename);
@@ -393,7 +393,7 @@ bool CSettingDlg::InsertProcess(const TCHAR* filename)
 	pInfo2 = new _VERSION_INFO;
 	pInfo2->sVersion = m_nVersion;
 	pInfo2->strFileName = addfilename;
-	pInfo2->strCompName = compname;
+	pInfo2->strCompName = CT2A(compname);
 	pInfo2->sHistoryVersion = historyversion;
 	if (!m_pMain->m_VersionList.PutData(addfilename, pInfo2))
 	{
@@ -401,11 +401,15 @@ bool CSettingDlg::InsertProcess(const TCHAR* filename)
 		return false;
 	}
 
-	if (!m_pMain->m_DBProcess.InsertVersion(m_nVersion, addfilename.c_str(), CT2A(compname), historyversion))
+	if (!m_pMain->m_DBProcess.InsertVersion(
+		m_nVersion,
+		addfilename.c_str(),
+		pInfo2->strCompName.c_str(),
+		historyversion))
 	{
 		m_pMain->m_VersionList.DeleteData(addfilename);
 
-		errmsg.Format(_T("%s DB Insert Fail"), addfilename.c_str());
+		errmsg.Format(_T("%hs DB Insert Fail"), addfilename.c_str());
 		AfxMessageBox(errmsg);
 		return false;
 	}
@@ -480,5 +484,5 @@ bool CSettingDlg::IsDBCSString(const char* string)
 void CSettingDlg::OnDbcstest()
 {
 	FolderRecurse(m_strDefaultPath, true);
-	AfxMessageBox("Test Done..");
+	AfxMessageBox(_T("Test Done.."));
 }

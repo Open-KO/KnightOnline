@@ -28,9 +28,9 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 	DWORD				wait_return;
 	int					sid;
 	CIOCPSocket2*		pSocket = nullptr;
-	char				logstr[1024] = {};
+	TCHAR				logstr[1024] = {};
 
-	struct sockaddr_in  addr;
+	sockaddr_in			addr;
 	int					len;
 
 	while (1)
@@ -61,7 +61,7 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 				if (pSocket == nullptr)
 				{
 					TRACE("Socket Array has Broken...\n");
-					sprintf(logstr, "Socket Array has Broken...[sid:%d]\r\n", sid);
+					_stprintf(logstr, _T("Socket Array has Broken...[sid:%d]\r\n"), sid);
 					LogFileWrite(logstr);
 //					pIocport->PutOldSid( sid );				// Invalid sid must forbidden to use
 					continue;

@@ -13,17 +13,18 @@ class CVersionManagerDlg;
 class CDBProcess
 {
 public:
+	BOOL LoadPremiumServiceUser(const char* accountid, short* psPremiumDaysRemaining);
 	BOOL IsCurrentUser(const char* accountid, char* strServerIP, int& serverno);
 	void ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd);
 	BOOL DeleteVersion(const char* filename);
 	BOOL InsertVersion(int version, const char* filename, const char* compname, int historyversion);
-	BOOL InitDatabase(TCHAR* strconnection);
+	BOOL InitDatabase(const TCHAR* strconnection);
 	int MgameLogin(const char* id, const char* pwd);
 	int AccountLogin(const char* id, const char* pwd);
 	BOOL LoadVersionList();
 	BOOL LoadUserCountList();
 
-	CDBProcess();
+	CDBProcess(CVersionManagerDlg* pMain);
 	virtual ~CDBProcess();
 
 	CDatabase	m_VersionDB;

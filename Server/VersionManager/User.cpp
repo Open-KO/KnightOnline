@@ -3,9 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "versionmanager.h"
-#include "versionmanagerdlg.h"
+#include "VersionManager.h"
+#include "VersionManagerdlg.h"
 #include "User.h"
+
+#include <shared/packets.h>
 
 #include <set>
 
@@ -19,7 +21,8 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CUser::CUser()
+CUser::CUser(CVersionManagerDlg* pMain)
+	: m_pMain(pMain)
 {
 }
 
@@ -29,14 +32,7 @@ CUser::~CUser()
 
 void CUser::Initialize()
 {
-	m_pMain = (CVersionManagerDlg*) AfxGetMainWnd();
-
 	CIOCPSocket2::Initialize();
-}
-
-void CUser::CloseProcess()
-{
-	CIOCPSocket2::CloseProcess();
 }
 
 void CUser::Parsing(int len, char* pData)
@@ -59,14 +55,18 @@ void CUser::Parsing(int len, char* pData)
 
 			SetByte(buff, LS_SERVERLIST, send_index);
 			SetByte(buff, m_pMain->m_nServerCount, send_index);
-			for (_SERVER_INFO* pInfo : m_pMain->m_ServerList)
+
+			for (const _SERVER_INFO* pInfo : m_pMain->m_ServerList)
 			{
-				SetShort(buff, strlen(pInfo->strServerIP), send_index);
-				SetString(buff, pInfo->strServerIP, strlen(pInfo->strServerIP), send_index);
-				SetShort(buff, strlen(pInfo->strServerName), send_index);
-				SetString(buff, pInfo->strServerName, strlen(pInfo->strServerName), send_index);
-				SetShort(buff, pInfo->sUserCount, send_index);   // 기범이가 ^^;
+				SetString2(buff, pInfo->strServerIP, (short) strlen(pInfo->strServerIP), send_index);
+				SetString2(buff, pInfo->strServerName, (short) strlen(pInfo->strServerName), send_index);
+
+				if (pInfo->sUserCount <= pInfo->sUserLimit)
+					SetShort(buff, pInfo->sUserCount, send_index);   // 기범이가 ^^;
+				else
+					SetShort(buff, -1, send_index);
 			}
+
 			Send(buff, send_index);
 			break;
 
@@ -79,8 +79,14 @@ void CUser::Parsing(int len, char* pData)
 			LogInReq(pData + index);
 			break;
 
+#if defined(USE_MGAME_LOGIN)
 		case LS_MGAME_LOGIN:
 			MgameLogin(pData + index);
+			break;
+#endif
+
+		case LS_NEWS:
+			NewsReq(pData + index);
 			break;
 	}
 }
@@ -90,9 +96,10 @@ void CUser::LogInReq(char* pBuf)
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0, serverno = 0;
 	BOOL bCurrentuser = FALSE;
 	char send_buff[256] = {},
-		serverip[20] = {},
+		serverip[MAX_IP_SIZE + 1] = {},
 		accountid[MAX_ID_SIZE + 1] = {},
-		pwd[13] = {};
+		pwd[MAX_PW_SIZE + 1] = {};
+	short sPremiumTimeDaysRemaining = -1;
 
 	idlen = GetShort(pBuf, index);
 	if (idlen > MAX_ID_SIZE
@@ -102,7 +109,7 @@ void CUser::LogInReq(char* pBuf)
 	GetString(accountid, pBuf, idlen, index);
 
 	pwdlen = GetShort(pBuf, index);
-	if (pwdlen > 12
+	if (pwdlen > MAX_PW_SIZE
 		|| pwdlen < 0)
 		goto fail_return;
 
@@ -111,21 +118,26 @@ void CUser::LogInReq(char* pBuf)
 	result = m_pMain->m_DBProcess.AccountLogin(accountid, pwd);
 	SetByte(send_buff, LS_LOGIN_REQ, send_index);
 
-	// success 
-	if (result == 1)
+	if (result == AUTH_OK)
 	{
 		bCurrentuser = m_pMain->m_DBProcess.IsCurrentUser(accountid, serverip, serverno);
 		if (bCurrentuser)
 		{
-			result = 0x05;		// Kick out
+			// Kick out
+			result = AUTH_IN_GAME;
+
 			SetByte(send_buff, result, send_index);
-			SetShort(send_buff, strlen(serverip), send_index);
-			SetString(send_buff, serverip, strlen(serverip), send_index);
+			SetString2(send_buff, serverip, (short) strlen(serverip), send_index);
 			SetShort(send_buff, serverno, send_index);
 		}
 		else
 		{
 			SetByte(send_buff, result, send_index);
+
+			if (!m_pMain->m_DBProcess.LoadPremiumServiceUser(accountid, &sPremiumTimeDaysRemaining))
+				sPremiumTimeDaysRemaining = -1;
+
+			SetShort(send_buff, sPremiumTimeDaysRemaining, send_index);
 		}
 	}
 	else
@@ -138,16 +150,17 @@ void CUser::LogInReq(char* pBuf)
 
 fail_return:
 	SetByte(send_buff, LS_LOGIN_REQ, send_index);
-	SetByte(send_buff, 0x02, send_index);				// id, pwd 이상...
+	SetByte(send_buff, AUTH_NOT_FOUND, send_index);				// id, pwd 이상...
 	Send(send_buff, send_index);
 }
 
+#if defined(USE_MGAME_LOGIN)
 void CUser::MgameLogin(char* pBuf)
 {
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0;
 	char send_buff[256] = {};
 	char accountid[MAX_ID_SIZE + 1] = {},
-		pwd[13] = {};
+		pwd[MAX_PW_SIZE + 1] = {};
 
 	idlen = GetShort(pBuf, index);
 	if (idlen > MAX_ID_SIZE
@@ -156,7 +169,7 @@ void CUser::MgameLogin(char* pBuf)
 
 	GetString(accountid, pBuf, idlen, index);
 	pwdlen = GetShort(pBuf, index);
-	if (pwdlen > 12)
+	if (pwdlen > MAX_PW_SIZE)
 		goto fail_return;
 
 	GetString(pwd, pBuf, pwdlen, index);
@@ -169,9 +182,10 @@ void CUser::MgameLogin(char* pBuf)
 
 fail_return:
 	SetByte(send_buff, LS_MGAME_LOGIN, send_index);
-	SetByte(send_buff, 0x02, send_index);				// login fail...
+	SetByte(send_buff, AUTH_NOT_FOUND, send_index);				// login fail...
 	Send(send_buff, send_index);
 }
+#endif
 
 void CUser::SendDownloadInfo(int version)
 {
@@ -186,17 +200,32 @@ void CUser::SendDownloadInfo(int version)
 	}
 
 	SetByte(buff, LS_DOWNLOADINFO_REQ, send_index);
-	SetShort(buff, strlen(m_pMain->m_strFtpUrl), send_index);
-	SetString(buff, m_pMain->m_strFtpUrl, strlen(m_pMain->m_strFtpUrl), send_index);
-	SetShort(buff, strlen(m_pMain->m_strFilePath), send_index);
-	SetString(buff, m_pMain->m_strFilePath, strlen(m_pMain->m_strFilePath), send_index);
+
+	SetString2(buff, m_pMain->m_strFtpUrl, (short) strlen(m_pMain->m_strFtpUrl), send_index);
+	SetString2(buff, m_pMain->m_strFilePath, (short) strlen(m_pMain->m_strFilePath), send_index);
 	SetShort(buff, downloadset.size(), send_index);
 
 	for (const std::string& filename : downloadset)
-	{
-		SetShort(buff, (short) filename.size(), send_index);
-		SetString(buff, filename.c_str(), (int) filename.size(), send_index);
-	}
+		SetString2(buff, filename.c_str(), (short) filename.size(), send_index);
 
 	Send(buff, send_index);
+}
+
+void CUser::NewsReq(char* pBuf)
+{
+	char send_buff[8192];
+	int send_index = 0;
+
+	const char szHeader[]	= "Login Notice";	// this isn't really used, but it's always set to this
+	const char szEmpty[]	= "<empty>";		// unofficial but when used, will essentially cause it to skip since it's not formatted.
+
+	SetByte(send_buff, LS_NEWS, send_index);
+	SetString2(send_buff, szHeader, _countof(szHeader) - 1, send_index);
+
+	if (m_pMain->m_News.Size > 0)
+		SetString2(send_buff, m_pMain->m_News.Content, m_pMain->m_News.Size, send_index);
+	else
+		SetString2(send_buff, szEmpty, _countof(szEmpty) - 1, send_index);
+
+	Send(send_buff, send_index);
 }

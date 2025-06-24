@@ -45,7 +45,9 @@ public:
 
 	VersionInfoList		m_VersionList;
 	ServerInfoList		m_ServerList;
-	int		m_nServerCount;
+	int					m_nServerCount;
+
+	_NEWS				m_News;
 
 	CDBProcess	m_DBProcess;
 
