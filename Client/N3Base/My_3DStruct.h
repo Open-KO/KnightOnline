@@ -1448,13 +1448,13 @@ template <class T> void T_Tick(T& obj) { obj.Tick(); } // Template Delete Pointe
 template <class T> void T_Render(T& obj) { obj.Render(); } // Template Delete Pointer
 
 #if defined(_3DSERVER)
-inline void _LoadStringFromResource(DWORD dwID, std::string& szText)
+inline void _LoadStringFromResource(DWORD dwID, std::string& szText, const int iOutputCodepage = 949)
 {
-	static char szBuffer[512];
+	static wchar_t szBuffer[512];
 	szBuffer[0] = '\0';
-	//	::LoadString(nullptr, MAKEINTRESOURCE(dwID), szBuffer, 256);
-	::LoadStringA(nullptr, dwID, szBuffer, 256);
-	szText = szBuffer;
+	::LoadStringW(nullptr, dwID, szBuffer, _countof(szBuffer));
+
+	szText = CW2A(szBuffer, iOutputCodepage);
 }
 #endif
 
