@@ -128,9 +128,6 @@ CAujardDlg::CAujardDlg(CWnd* pParent /*=nullptr*/)
 	memset(m_strAccountDSN, 0, sizeof(m_strAccountDSN));
 	memset(m_strAccountUID, 0, sizeof(m_strAccountUID));
 	memset(m_strAccountPWD, 0, sizeof(m_strAccountPWD));
-	memset(m_strLogDSN, 0, sizeof(m_strLogDSN));
-	memset(m_strLogUID, 0, sizeof(m_strLogUID));
-	memset(m_strLogPWD, 0, sizeof(m_strLogPWD));
 
 	m_iSendPacketCount = 0;
 	m_iPacketCount = 0;
@@ -196,15 +193,14 @@ BOOL CAujardDlg::OnInitDialog()
 
 	CIni ini(iniPath);
 
-	ini.GetString(_T("ODBC"), _T("ACCOUNT_DSN"), _T(""), m_strAccountDSN, _countof(m_strAccountDSN));
-	ini.GetString(_T("ODBC"), _T("ACCOUNT_UID"), _T(""), m_strAccountUID, _countof(m_strAccountUID));
-	ini.GetString(_T("ODBC"), _T("ACCOUNT_PWD"), _T(""), m_strAccountPWD, _countof(m_strAccountPWD));
-	ini.GetString(_T("ODBC"), _T("GAME_DSN"), _T(""), m_strGameDSN, _countof(m_strGameDSN));
-	ini.GetString(_T("ODBC"), _T("GAME_UID"), _T(""), m_strGameUID, _countof(m_strGameUID));
-	ini.GetString(_T("ODBC"), _T("GAME_PWD"), _T(""), m_strGamePWD, _countof(m_strGamePWD));
-	ini.GetString(_T("ODBC"), _T("LOG_DSN"), _T(""), m_strLogDSN, _countof(m_strLogDSN));
-	ini.GetString(_T("ODBC"), _T("LOG_UID"), _T(""), m_strLogUID, _countof(m_strLogUID));
-	ini.GetString(_T("ODBC"), _T("LOG_PWD"), _T(""), m_strLogPWD, _countof(m_strLogPWD));
+	// TODO: This should be Knight_Account
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_DSN"), _T("KN_online"), m_strAccountDSN, _countof(m_strAccountDSN));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_UID"), _T("knight"), m_strAccountUID, _countof(m_strAccountUID));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_PWD"), _T("knight"), m_strAccountPWD, _countof(m_strAccountPWD));
+
+	ini.GetString(_T("ODBC"), _T("GAME_DSN"), _T("KN_online"), m_strGameDSN, _countof(m_strGameDSN));
+	ini.GetString(_T("ODBC"), _T("GAME_UID"), _T("knight"), m_strGameUID, _countof(m_strGameUID));
+	ini.GetString(_T("ODBC"), _T("GAME_PWD"), _T("knight"), m_strGamePWD, _countof(m_strGamePWD));
 
 	m_nServerNo = ini.GetInt(_T("ZONE_INFO"), _T("GROUP_INFO"), 1);
 	m_nZoneNo = ini.GetInt(_T("ZONE_INFO"), _T("ZONE_INFO"), 1);

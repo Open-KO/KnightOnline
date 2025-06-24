@@ -71,9 +71,9 @@ public:
 	ItemtableArray		m_ItemtableArray;
 
 	int	m_nServerNo, m_nZoneNo;
-	TCHAR m_strGameDSN[24], m_strAccountDSN[24], m_strLogDSN[24];
-	TCHAR m_strGameUID[24], m_strAccountUID[24], m_strLogUID[24];
-	TCHAR m_strGamePWD[24], m_strAccountPWD[24], m_strLogPWD[24];
+	TCHAR m_strGameDSN[24], m_strAccountDSN[24];
+	TCHAR m_strGameUID[24], m_strAccountUID[24];
+	TCHAR m_strGamePWD[24], m_strAccountPWD[24];
 
 	CFile					m_LogFile;
 
