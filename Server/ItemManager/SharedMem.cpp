@@ -29,6 +29,7 @@ CSharedMemQueue::CSharedMemQueue()
 	m_nMaxCount = 0;
 	m_wOffset = 0;
 	m_pHeader = nullptr;
+	m_lReference = 0;
 }
 
 CSharedMemQueue::~CSharedMemQueue()
@@ -116,7 +117,7 @@ int CSharedMemQueue::PutData(char* pBuf, int size)
 
 	BlockMode = GetByte((char*) pQueue, index);
 	if (BlockMode == WR
-		&& m_pHeader->nCount >= MAX_COUNT - 1)
+		&& m_pHeader->nCount >= m_nMaxCount - 1)
 	{
 		m_pHeader->RearMode = WR;
 		return SMQ_FULL;
@@ -129,7 +130,7 @@ int CSharedMemQueue::PutData(char* pBuf, int size)
 
 	m_pHeader->nCount++;
 
-	temp_rear = (m_pHeader->Rear + 1) % MAX_COUNT;
+	temp_rear = (m_pHeader->Rear + 1) % m_nMaxCount;
 	m_pHeader->Rear = temp_rear;
 
 	m_pHeader->RearMode = WR;
@@ -176,7 +177,7 @@ int CSharedMemQueue::GetData(char* pBuf)
 
 	m_pHeader->nCount--;
 
-	temp_front = (m_pHeader->Front + 1) % MAX_COUNT;
+	temp_front = (m_pHeader->Front + 1) % m_nMaxCount;
 	m_pHeader->Front = temp_front;
 
 	memset((void*) pQueue, 0, m_wOffset);
