@@ -38,10 +38,9 @@ CGameSocket::CGameSocket()
 CGameSocket::~CGameSocket()
 {
 	/*
-	if(m_pParty)	{
-		delete m_pParty;
-		m_pParty = nullptr;
-	}	*/
+	delete m_pParty;
+	m_pParty = nullptr;
+	*/
 }
 
 void CGameSocket::Initialize()
@@ -76,67 +75,88 @@ void CGameSocket::Parsing(int length, char* pData)
 		case SERVER_CONNECT:
 			RecvServerConnect(pData);
 			break;
+
 		case AG_USER_INFO:
 			RecvUserInfo(pData + index);
 			break;
+
 		case AG_USER_INOUT:
 			RecvUserInOut(pData + index);
 			break;
+
 		case AG_USER_MOVE:
 			RecvUserMove(pData + index);
 			break;
+
 		case AG_USER_MOVEEDGE:
 			RecvUserMoveEdge(pData + index);
 			break;
+
 		case AG_ATTACK_REQ:
 			RecvAttackReq(pData + index);
 			break;
+
 		case AG_USER_LOG_OUT:
 			RecvUserLogOut(pData + index);
 			break;
+
 		case AG_USER_REGENE:
 			RecvUserRegene(pData + index);
 			break;
+
 		case AG_USER_SET_HP:
 			RecvUserSetHP(pData + index);
 			break;
+
 		case AG_USER_UPDATE:
 			RecvUserUpdate(pData + index);
 			break;
+
 		case AG_ZONE_CHANGE:
 			RecvZoneChange(pData + index);
 			break;
+
 		case AG_USER_PARTY:
 			//if(m_pParty)
 			m_Party.PartyProcess(pData + index);
 			break;
+
 		case AG_MAGIC_ATTACK_REQ:
 			RecvMagicAttackReq(pData + index);
 			break;
+
 		case AG_COMPRESSED_DATA:
 			RecvCompressedData(pData + index);
 			break;
+
 		case AG_USER_INFO_ALL:
 			RecvUserInfoAllData(pData + index);
 			break;
+
 		case AG_PARTY_INFO_ALL:
 			RecvPartyInfoAllData(pData + index);
 			break;
+
 		case AG_CHECK_ALIVE_REQ:
 			RecvCheckAlive(pData + index);
 			break;
+
 		case AG_HEAL_MAGIC:
 			RecvHealMagic(pData + index);
 			break;
+
 		case AG_TIME_WEATHER:
 			RecvTimeAndWeather(pData + index);
 			break;
+
 		case AG_USER_FAIL:
 			RecvUserFail(pData + index);
 			break;
+
 		case AG_BATTLE_EVENT:
 			RecvBattleEvent(pData + index);
 			break;
+
 		case AG_NPC_GATE_OPEN:
 			RecvGateOpen(pData + index);
 			break;
@@ -149,13 +169,12 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 	int index = 1;
 	int outindex = 0, zone_index = 0;
 	float fReConnectEndTime = 0.0f;
-	char pData[1024];
-	memset(pData, 0, 1024);
+	char pData[1024] = {};
 	BYTE byZoneNumber = GetByte(pBuf, index);
 	BYTE byReConnect = GetByte(pBuf, index);	// 0 : 처음접속, 1 : 재접속
 
 	CString logstr;
-	logstr.Format("[GameServer Connect - %d]", byZoneNumber);
+	logstr.Format(_T("[GameServer Connect - %d]"), byZoneNumber);
 	m_pMain->m_StatusList.AddString(logstr);
 	TRACE(logstr);
 
@@ -178,8 +197,11 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 	{
 		if (m_pMain->m_sReSocketCount == 0)
 			m_pMain->m_fReConnectStart = TimeGet();
+
 		m_pMain->m_sReSocketCount++;
+
 		TRACE("**** ReConnect - zone=%d,  socket = %d ****\n ", byZoneNumber, m_pMain->m_sReSocketCount);
+
 		fReConnectEndTime = TimeGet();
 
 		// 2분안에 모든 소켓이 재접됐다면...
@@ -234,8 +256,7 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 	BYTE bNation, bLevel, bZone, bAuthority = 1;
 	short sDamage, sAC;
 	float fHitAgi, fAvoidAgi;
-	char strName[MAX_ID_SIZE + 1];
-	memset(strName, 0x00, MAX_ID_SIZE + 1);
+	char strName[MAX_ID_SIZE + 1] = {};
 //
 	short  sItemAC;
 	BYTE   bTypeLeft;
@@ -324,8 +345,7 @@ void CGameSocket::RecvUserInOut(char* pBuf)
 	int index = 0;
 	BYTE bType = -1;
 	short uid = -1, len = 0;
-	char strName[MAX_ID_SIZE + 1];
-	memset(strName, 0x00, MAX_ID_SIZE + 1);
+	char strName[MAX_ID_SIZE + 1] = {};
 	float fX = -1, fZ = -1;
 
 	bType = GetByte(pBuf, index);
@@ -579,8 +599,7 @@ void CGameSocket::RecvAttackReq(char* pBuf)
 	int index = 0;
 	int sid = -1, tid = -1;
 	BYTE type, result;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 	float fDir = 0.0f;
 	short sDamage, sAC;
@@ -611,8 +630,7 @@ void CGameSocket::RecvAttackReq(char* pBuf)
 
 	//TRACE("RecvAttackReq : [sid=%d, tid=%d, zone_num=%d] \n", sid, tid, m_sSocketID);
 
-	CUser* pUser = nullptr;
-	pUser = m_pMain->GetUserPtr(sid);
+	CUser* pUser = m_pMain->GetUserPtr(sid);
 	if (pUser == nullptr)
 		return;
 
@@ -634,6 +652,7 @@ void CGameSocket::RecvAttackReq(char* pBuf)
 			return;
 		}
 	}
+
 	pUser->m_sHitDamage = sDamage;
 	pUser->m_fHitrate = fHitAgi;
 	pUser->m_fAvoidrate = fAvoidAgi;
@@ -659,6 +678,7 @@ void CGameSocket::RecvUserLogOut(char* pBuf)
 	uid = GetShort(pBuf, index);
 	len = GetShort(pBuf, index);
 	GetString(strName, pBuf, len, index);
+
 	if (len > MAX_ID_SIZE
 		|| len <= 0)
 	{
@@ -702,8 +722,7 @@ void CGameSocket::RecvUserRegene(char* pBuf)
 	pUser->m_bLive = USER_LIVE;
 	pUser->m_sHP = sHP;
 
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 	wsprintf(buff, "**** RecvUserRegene -- uid = (%s,%d), HP = %d", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
 	TimeTrace(buff);
 	//TRACE("**** RecvUserRegene -- uid = (%s,%d), HP = %d\n", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
@@ -713,7 +732,6 @@ void CGameSocket::RecvUserSetHP(char* pBuf)
 {
 	int index = 0, nHP = 0;
 	short uid = -1;
-
 
 	uid = GetShort(pBuf, index);
 	nHP = GetDWORD(pBuf, index);
@@ -796,7 +814,7 @@ void CGameSocket::RecvUserUpdate(char* pBuf)
 	pUser->m_sMagicAmountLeftHand = sAmountLeft;
 	pUser->m_sMagicAmountRightHand = sAmountRight;
 //
-	char buff[256];	memset(buff, 0x00, 256);
+	char buff[256] = {};
 	wsprintf(buff, "**** RecvUserUpdate -- uid = (%s,%d), HP = %d, level=%d->%d", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP, byLevel, pUser->m_sLevel);
 	//TimeTrace(buff);
 	//TRACE("**** RecvUserUpdate -- uid = (%s,%d), HP = %d\n", pUser->m_strUserID, pUser->m_iUserId, pUser->m_sHP);
@@ -805,8 +823,7 @@ void CGameSocket::RecvUserUpdate(char* pBuf)
 void CGameSocket::Send_UserError(short uid, short tid)
 {
 	int send_index = 0;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 	SetByte(buff, AG_USER_FAIL, send_index);
 	SetShort(buff, uid, send_index);
 	SetShort(buff, tid, send_index);
@@ -875,11 +892,10 @@ void CGameSocket::RecvCompressedData(char* pBuf)
 {
 	int index = 0;
 	short sCompLen, sOrgLen, sCompCount;
-	char pTempBuf[10001];
-	memset(pTempBuf, 0x00, 10001);
+	char pTempBuf[10001] = {};
 	DWORD dwCrcValue;
 	sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
-	sOrgLen = GetShort(pBuf, index);		// 원래데이타길이얻기...
+	sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
 	dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
 	sCompCount = GetShort(pBuf, index);	// 압축 데이타 수 얻기...
 	// 압축 데이타 얻기...
@@ -919,8 +935,7 @@ void CGameSocket::RecvCompressedData(char* pBuf)
 	}
 
 	// 압축 풀린 데이타 읽기
-	char* pDecodeBuf = (char*) cmpMgrDecode.GetExtractedBufferPtr();
-
+	char* pDecodeBuf = cmpMgrDecode.GetExtractedBufferPtr();
 	Parsing(sOrgLen, pDecodeBuf);
 
 	// 압축 풀기 끝
@@ -943,7 +958,7 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 	for (int i = 0; i < byCount; i++)
 	{
 		len = 0;
-		memset(strName, 0x00, MAX_ID_SIZE + 1);
+		memset(strName, 0, sizeof(strName));
 
 		uid = GetShort(pBuf, index);
 		len = GetShort(pBuf, index);
@@ -969,8 +984,8 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 		}
 
 		//CUser* pUser = m_pMain->GetActiveUserPtr(uid);
-		//if(pUser == nullptr)	continue;
-		CUser* pUser = new CUser;
+		//if (pUser == nullptr)	continue;
+		CUser* pUser = new CUser();
 		pUser->Initialize();
 
 		pUser->m_iUserId = uid;
@@ -1064,6 +1079,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 	}
 
 	EnterCriticalSection(&g_region_critical);
+
 	pParty = new _PARTY_GROUP;
 	pParty->wIndex = sPartyIndex;
 
@@ -1086,6 +1102,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 	{
 		TRACE("****  RecvPartyInfoAllData()---> PartyIndex = %d  ******\n", sPartyIndex);
 	}
+
 	LeaveCriticalSection(&g_region_critical);
 }
 
@@ -1104,8 +1121,7 @@ void CGameSocket::RecvHealMagic(char* pBuf)
 
 	//TRACE("RecvHealMagic : [sid=%d] \n", sid);
 
-	CUser* pUser = nullptr;
-	pUser = m_pMain->GetUserPtr(sid);
+	CUser* pUser = m_pMain->GetUserPtr(sid);
 	if (pUser == nullptr)
 		return;
 
@@ -1173,9 +1189,7 @@ void CGameSocket::RecvUserFail(char* pBuf)
 
 void CGameSocket::RecvBattleEvent(char* pBuf)
 {
-	int index = 0, i = 0;
-	int nType = 0, nEvent = 0;
-	CNpc* pNpc = nullptr;
+	int index = 0, nType = 0, nEvent = 0;
 
 	nType = GetByte(pBuf, index);
 	nEvent = GetByte(pBuf, index);
@@ -1196,12 +1210,9 @@ void CGameSocket::RecvBattleEvent(char* pBuf)
 		m_pMain->ResetBattleZone();
 	}
 
-	int nSize = m_pMain->m_arNpc.GetSize();
-
-	for (i = 0; i < nSize; i++)
+	for (const auto& [_, pNpc] : m_pMain->m_arNpc)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(i);
-		if (!pNpc)
+		if (pNpc == nullptr)
 			continue;
 
 		// npc에만 적용되고, 국가에 소속된 npc

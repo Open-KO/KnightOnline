@@ -276,7 +276,7 @@ void LogFileWrite(CString logstr)
 	ProgPath = GetProgPath();
 	loglength = logstr.GetLength();
 
-	LogFileName.Format("%s\\AIServer.log", ProgPath);
+	LogFileName.Format(_T("%s\\AIServer.log"), ProgPath);
 
 	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
 
@@ -287,8 +287,8 @@ void LogFileWrite(CString logstr)
 
 void TimeTrace(TCHAR* pMsg)
 {
-	CString szMsg = _T("");
+	CString szMsg;
 	CTime time = CTime::GetCurrentTime();
-	szMsg.Format("%s,,  time : %d-%d-%d, %d:%d]\n", pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	szMsg.Format(_T("%s,,  time : %d-%d-%d, %d:%d]\n"), pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	TRACE(szMsg);
 }

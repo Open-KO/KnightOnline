@@ -31,7 +31,6 @@ CIOCPSocket2::~CIOCPSocket2()
 	delete m_pBuffer;
 }
 
-
 BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTSTR lpszSocketAddress)
 {
 	int ret;
@@ -57,14 +56,14 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTST
 
 BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostPort)
 {
-	struct sockaddr_in addr;
+	sockaddr_in addr;
 
-	memset((void*) &addr, 0, sizeof(addr));
+	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = inet_addr(lpszHostAddress);
 	addr.sin_port = htons(nHostPort);
 
-	int result = connect(m_Socket, (struct sockaddr*) &addr, sizeof(addr));
+	int result = connect(m_Socket, (sockaddr*) &addr, sizeof(addr));
 	if (result == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
@@ -104,7 +103,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 	WSABUF out;
 	DWORD sent = 0;
 	OVERLAPPED* pOvl;
-	HANDLE	hComport = nullptr;
+	HANDLE hComport = nullptr;
 
 	if (length > MAX_PACKET_SIZE)
 		return 0;
@@ -164,7 +163,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 			goto close_routine;
 		}
 	}
-	else if (!ret_value)
+	else if (ret_value == 0)
 	{
 		m_nPending = 0;
 		m_nWouldblock = 0;
@@ -182,7 +181,7 @@ close_routine:
 	else
 		hComport = m_pIOCPort->m_hClientIOCPort;
 
-	PostQueuedCompletionStatus(hComport, (DWORD) 0, (DWORD) m_Sid, pOvl);
+	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
 }
@@ -248,22 +247,26 @@ close_routine:
 	else
 		hComport = m_pIOCPort->m_hClientIOCPort;
 
-	PostQueuedCompletionStatus(hComport, (DWORD) 0, (DWORD) m_Sid, pOvl);
+	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
 }
 
 void CIOCPSocket2::ReceivedData(int length)
 {
-	if (!length) return;
+	if (length <= 0)
+		return;
 
 	int len = 0;
 
-	if (!strlen(m_pRecvBuff))		// 패킷길이는 존재하나 실 데이터가 없는 경우가 발생...
+	// 패킷길이는 존재하나 실 데이터가 없는 경우가 발생...
+	if (strlen(m_pRecvBuff) == 0)
 		return;
+
 	m_pBuffer->PutData(m_pRecvBuff, length);		// 받은 Data를 버퍼에 넣는다
 
-	if (m_Type == TYPE_CONNECT && length == 7)
+	if (m_Type == TYPE_CONNECT
+		&& length == 7)
 	{
 		TRACE("Received Data : %d\n", m_Sid);
 	}
@@ -273,9 +276,9 @@ void CIOCPSocket2::ReceivedData(int length)
 
 	while (PullOutCore(pData, len))
 	{
-		if (pData)
+		if (pData != nullptr)
 		{
-			Parsing(len, pData);//		실제 파싱 함수...
+			Parsing(len, pData); // 실제 파싱 함수...
 
 			delete[] pData;
 			pData = nullptr;
@@ -285,7 +288,7 @@ void CIOCPSocket2::ReceivedData(int length)
 
 BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 {
-	BYTE* pTmp;
+	BYTE*		pTmp;
 	int			len;
 	BOOL		foundCore;
 	MYSHORT		slen;
@@ -293,7 +296,8 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 
 	len = m_pBuffer->GetValidCount();
 
-	if (len == 0 || len < 0) return FALSE;
+	if (len <= 0)
+		return FALSE;
 
 	pTmp = new BYTE[len];
 
@@ -305,11 +309,15 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 
 	for (int i = 0; i < len && !foundCore; i++)
 	{
-		if (i + 2 >= len) break;
+		if (i + 2 >= len)
+			break;
 
-		if (pTmp[i] == PACKET_START1 && pTmp[i + 1] == PACKET_START2)
+		if (pTmp[i] == PACKET_START1
+			&& pTmp[i + 1] == PACKET_START2)
 		{
-//			if( m_wPacketSerial >= wSerial ) goto cancelRoutine;
+//			if (m_wPacketSerial >= wSerial)
+//				goto cancelRoutine;
+
 			sPos = i + 2;
 
 			slen.b[0] = pTmp[sPos];
@@ -317,18 +325,24 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 
 			length = slen.i;
 
-			if (length < 0) goto cancelRoutine;
-			if (length > len) goto cancelRoutine;
+			if (length < 0)
+				goto cancelRoutine;
+
+			if (length > len)
+				goto cancelRoutine;
 
 			ePos = sPos + length + 2;
 
-			if ((ePos + 2) > len) goto cancelRoutine;
+			if ((ePos + 2) > len)
+				goto cancelRoutine;
+
 //			ASSERT(ePos+2 <= len);
 
-			if (pTmp[ePos] == PACKET_END1 && pTmp[ePos + 1] == PACKET_END2)
+			if (pTmp[ePos] == PACKET_END1
+				&& pTmp[ePos + 1] == PACKET_END2)
 			{
 				data = new char[length + 1];
-				CopyMemory((void*) data, (const void*) (pTmp + sPos + 2), length);
+				CopyMemory(data, (pTmp + sPos + 2), length);
 				data[length] = 0;
 				foundCore = TRUE;
 				int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
@@ -343,7 +357,9 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 			}
 		}
 	}
-	if (foundCore) m_pBuffer->HeadIncrease(6 + length); //6: header 2+ end 2+ length 2
+
+	if (foundCore)
+		m_pBuffer->HeadIncrease(6 + length); //6: header 2+ end 2+ length 2
 
 	delete[] pTmp;
 
@@ -356,28 +372,21 @@ cancelRoutine:
 
 BOOL CIOCPSocket2::AsyncSelect(long lEvent)
 {
-	int retEventResult, err;
-
-	retEventResult = WSAEventSelect(m_Socket, m_hSockEvent, lEvent);
-	err = WSAGetLastError();
-
-	return (!retEventResult);
+	int retEventResult = WSAEventSelect(m_Socket, m_hSockEvent, lEvent);
+	int err = WSAGetLastError();
+	return (retEventResult == 0);
 }
 
 BOOL CIOCPSocket2::SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel)
 {
-	int retValue;
-	retValue = setsockopt(m_Socket, nLevel, nOptionName, (char*) lpOptionValue, nOptionLen);
-
-	return (!retValue);
+	int retValue = setsockopt(m_Socket, nLevel, nOptionName, (char*) lpOptionValue, nOptionLen);
+	return (retValue == 0);
 }
 
 BOOL CIOCPSocket2::ShutDown(int nHow)
 {
-	int retValue;
-	retValue = shutdown(m_Socket, nHow);
-
-	return (!retValue);
+	int retValue = shutdown(m_Socket, nHow);
+	return (retValue == 0);
 }
 
 void CIOCPSocket2::Close()
@@ -385,7 +394,7 @@ void CIOCPSocket2::Close()
 	if (m_pIOCPort == nullptr)
 		return;
 
-	HANDLE	hComport = nullptr;
+	HANDLE hComport = nullptr;
 	OVERLAPPED* pOvl;
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
@@ -395,12 +404,10 @@ void CIOCPSocket2::Close()
 	else
 		hComport = m_pIOCPort->m_hClientIOCPort;
 
-	int retValue = PostQueuedCompletionStatus(hComport, (DWORD) 0, (DWORD) m_Sid, pOvl);
-
-	if (!retValue)
+	int retValue = PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
+	if (retValue == 0)
 	{
-		int errValue;
-		errValue = GetLastError();
+		int errValue = GetLastError();
 		TRACE("PostQueuedCompletionStatus Error : %d\n", errValue);
 	}
 }
@@ -426,7 +433,7 @@ void CIOCPSocket2::InitSocket(CIOCPort* pIOCPort)
 	Initialize();
 }
 
-BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
+BOOL CIOCPSocket2::Accept(SOCKET listensocket, sockaddr* addr, int* len)
 {
 	m_Socket = accept(listensocket, addr, len);
 	if (m_Socket == INVALID_SOCKET)
@@ -456,7 +463,6 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 
 void CIOCPSocket2::Parsing(int length, char* pData)
 {
-
 }
 
 void CIOCPSocket2::Initialize()

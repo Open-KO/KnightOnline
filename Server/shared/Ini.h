@@ -3,40 +3,53 @@
 #include <map>
 #include <string_view>
 #include <string>
+#include <filesystem>
 
 class CIni
 {
 protected:
 	struct ci_less
 	{
-		inline bool operator() (const std::string& str1, const std::string& str2) const {
-			return _stricmp(str1.c_str(), str2.c_str()) < 0;
+		inline bool operator() (const std::wstring& str1, const std::wstring& str2) const {
+			return _wcsicmp(str1.c_str(), str2.c_str()) < 0;
 		}
 	};
 
-	std::string m_szPath;
+	std::wstring m_szPath;
 
 	// Defines key/value pairs within sections
-	using ConfigEntryMap = std::map<std::string, std::string, ci_less>;
+	using ConfigEntryMap = std::map<std::wstring, std::wstring, ci_less>;
 
 	// Defines the sections containing the key/value pairs
-	using ConfigMap = std::map<std::string, ConfigEntryMap, ci_less>;
+	using ConfigMap = std::map<std::wstring, ConfigEntryMap, ci_less>;
 
 	ConfigMap m_configMap;
 
 public:
 	CIni() = default;
-	CIni(std::string_view szPath);
+	CIni(const std::filesystem::path& path);
 
 	bool Load();
-	bool Load(std::string_view szPath);
+	bool Load(const std::filesystem::path& path);
 
 	void Save();
-	void Save(std::string_view szPath);
+	void Save(const std::filesystem::path& path);
 
-	int GetInt(std::string_view szAppName, std::string_view szKeyName, const int nDefault);
+	int GetInt(std::string_view szAppName, std::string_view szKeyName, const int iDefault);
+	int GetInt(std::wstring_view szAppName, std::wstring_view szKeyName, const int iDefault);
+
 	bool GetBool(std::string_view szAppName, std::string_view szKeyName, const bool bDefault);
+	bool GetBool(std::wstring_view szAppName, std::wstring_view szKeyName, const bool bDefault);
+
 	std::string GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault, bool bAllowEmptyStrings = true);
-	int SetInt(std::string_view szAppName, std::string_view szKeyName, const int nDefault);
+	std::wstring GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault, bool bAllowEmptyStrings = true);
+
+	void GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault, char* szOutBuffer, size_t nBufferLength, bool bAllowEmptyStrings = true);
+	void GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault, wchar_t* szOutBuffer, size_t nBufferLength, bool bAllowEmptyStrings = true);
+
+	int SetInt(std::string_view szAppName, std::string_view szKeyName, const int iDefault);
+	int SetInt(std::wstring_view szAppName, std::wstring_view szKeyName, const int iDefault);
+
 	int SetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault);
+	int SetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault);
 };

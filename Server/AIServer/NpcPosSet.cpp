@@ -44,7 +44,6 @@ CNpcPosSet::CNpcPosSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CNpcPosSet::GetDefaultConnect()
 {
 	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");

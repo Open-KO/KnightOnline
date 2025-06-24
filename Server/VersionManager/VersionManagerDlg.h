@@ -37,10 +37,10 @@ public:
 
 	int		m_nLastVersion;
 
-	char	m_ODBCName[32];
-	char	m_ODBCLogin[32];
-	char	m_ODBCPwd[32];
-	char	m_TableName[32];
+	TCHAR	m_ODBCName[32];
+	TCHAR	m_ODBCLogin[32];
+	TCHAR	m_ODBCPwd[32];
+	TCHAR	m_TableName[32];
 
 	VersionInfoList		m_VersionList;
 	ServerInfoList		m_ServerList;

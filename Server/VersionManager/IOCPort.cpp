@@ -36,7 +36,6 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 	while (1)
 	{
 		wait_return = WaitForSingleObject(pIocport->m_hListenEvent, INFINITE);
-
 		if (wait_return == WAIT_FAILED)
 		{
 			TRACE("Wait failed Error %d\n", GetLastError());
@@ -59,7 +58,7 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 				}
 
 				pSocket = pIocport->GetIOCPSocket(sid);
-				if (!pSocket)
+				if (pSocket == nullptr)
 				{
 					TRACE("Socket Array has Broken...\n");
 					sprintf(logstr, "Socket Array has Broken...[sid:%d]\r\n", sid);
@@ -69,7 +68,7 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 				}
 
 				len = sizeof(addr);
-				if (!pSocket->Accept(pIocport->m_ListenSocket, (struct sockaddr*) &addr, &len))
+				if (!pSocket->Accept(pIocport->m_ListenSocket, (sockaddr*) &addr, &len))
 				{
 					TRACE("Accept Fail %d\n", sid);
 					EnterCriticalSection(&g_critical);
@@ -122,21 +121,21 @@ DWORD WINAPI ReceiveWorkerThread(LPVOID lp)
 			&pOvl,
 			INFINITE);
 		if (b
-			|| pOvl)
+			|| pOvl != nullptr)
 		{
 			if (b)
 			{
-				if (WorkIndex > (DWORD) pIocport->m_SocketArraySize)
+				if (WorkIndex >= (DWORD) pIocport->m_SocketArraySize)
 					continue;
 
-				pSocket = (CIOCPSocket2*) pIocport->m_SockArray[WorkIndex];
-				if (!pSocket)
+				pSocket = pIocport->m_SockArray[WorkIndex];
+				if (pSocket == nullptr)
 					continue;
 
 				switch (pOvl->Offset)
 				{
 					case OVL_RECEIVE:
-						if (!nbytes)
+						if (nbytes == 0)
 						{
 							EnterCriticalSection(&g_critical);
 							TRACE("User Closed By 0 byte Notify...%d\n", WorkIndex);
@@ -171,13 +170,13 @@ DWORD WINAPI ReceiveWorkerThread(LPVOID lp)
 						break;
 				}
 			}
-			else if (pOvl)
+			else if (pOvl != nullptr)
 			{
-				if (WorkIndex > (DWORD) pIocport->m_SocketArraySize)
+				if (WorkIndex >= (DWORD) pIocport->m_SocketArraySize)
 					continue;
 
-				pSocket = (CIOCPSocket2*) pIocport->m_SockArray[WorkIndex];
-				if (!pSocket)
+				pSocket = pIocport->m_SockArray[WorkIndex];
+				if (pSocket == nullptr)
 					continue;
 
 				EnterCriticalSection(&g_critical);
@@ -215,15 +214,15 @@ DWORD WINAPI ClientWorkerThread(LPVOID lp)
 			&pOvl,
 			INFINITE);
 		if (b
-			|| pOvl)
+			|| pOvl != nullptr)
 		{
 			if (b)
 			{
-				if (WorkIndex > (DWORD) pIocport->m_ClientSockSize)
+				if (WorkIndex >= (DWORD) pIocport->m_ClientSockSize)
 					continue;
 
-				pSocket = (CIOCPSocket2*) pIocport->m_ClientSockArray[WorkIndex];
-				if (!pSocket)
+				pSocket = pIocport->m_ClientSockArray[WorkIndex];
+				if (pSocket == nullptr)
 					continue;
 
 				switch (pOvl->Offset)
@@ -266,13 +265,13 @@ DWORD WINAPI ClientWorkerThread(LPVOID lp)
 						break;
 				}
 			}
-			else if (pOvl)
+			else if (pOvl != nullptr)
 			{
-				if (WorkIndex > (DWORD) pIocport->m_ClientSockSize)
+				if (WorkIndex >= (DWORD) pIocport->m_ClientSockSize)
 					continue;
 
-				pSocket = (CIOCPSocket2*) pIocport->m_ClientSockArray[WorkIndex];
-				if (!pSocket)
+				pSocket = pIocport->m_ClientSockArray[WorkIndex];
+				if (pSocket == nullptr)
 					continue;
 
 				EnterCriticalSection(&g_critical);
@@ -295,6 +294,12 @@ DWORD WINAPI ClientWorkerThread(LPVOID lp)
 
 CIOCPort::CIOCPort()
 {
+	m_ListenSocket = INVALID_SOCKET;
+	m_hListenEvent = nullptr;
+	m_hServerIOCPort = nullptr;
+	m_hClientIOCPort = nullptr;
+	m_hAcceptThread = nullptr;
+
 	m_SockArray = nullptr;
 	m_SockArrayInActive = nullptr;
 	m_ClientSockArray = nullptr;
@@ -302,7 +307,14 @@ CIOCPort::CIOCPort()
 	m_SocketArraySize = 0;
 	m_ClientSockSize = 0;
 
+	m_dwNumberOfWorkers = 0;
 	m_dwConcurrency = 1;
+
+	WSADATA wsaData;
+	WORD wVersionRequested = MAKEWORD(2, 2);
+	(void) WSAStartup(wVersionRequested, &wsaData);
+
+	InitializeCriticalSection(&g_critical);
 }
 
 CIOCPort::~CIOCPort()
@@ -369,26 +381,20 @@ void CIOCPort::Init(int serversocksize, int clientsocksize, int workernum)
 	for (int i = 0; i < serversocksize; i++)
 		m_SidList.push_back(i);
 
-	InitializeCriticalSection(&g_critical);
-
 	CreateReceiveWorkerThread(workernum);
 	CreateClientWorkerThread();
-
-	WSADATA wsaData;
-	WORD wVersionRequested = MAKEWORD(2, 2);
-	(void) WSAStartup(wVersionRequested, &wsaData);
-
 }
 
 BOOL CIOCPort::Listen(int port)
 {
 	int opt;
-	struct sockaddr_in addr;
-	struct linger lingerOpt;
+	sockaddr_in addr;
+	linger lingerOpt;
 
 	// Open a TCP socket (an Internet stream socket).
 	//
-	if ((m_ListenSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	m_ListenSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (m_ListenSocket < 0)
 	{
 		TRACE("Can't open stream socket\n");
 		return FALSE;
@@ -492,7 +498,7 @@ int CIOCPort::GetNewSid()
 void CIOCPort::PutOldSid(int sid)
 {
 	if (sid < 0
-		|| sid > m_SocketArraySize)
+		|| sid >= m_SocketArraySize)
 	{
 		TRACE("recycle sid invalid value : %d\n", sid);
 		return;
@@ -580,7 +586,7 @@ void CIOCPort::CreateClientWorkerThread()
 
 CIOCPSocket2* CIOCPort::GetIOCPSocket(int index)
 {
-	if (index > m_SocketArraySize)
+	if (index >= m_SocketArraySize)
 	{
 		TRACE("InActiveSocket Array Overflow[%d]\n", index);
 		return nullptr;

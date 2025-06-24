@@ -14,8 +14,8 @@ class CDBProcess
 {
 public:
 	BOOL IsCurrentUser(const char* accountid, char* strServerIP, int& serverno);
-	void ReConnectODBC(CDatabase* m_db, const char* strdb, const char* strname, const char* strpwd);
-	BOOL InitDatabase(char* strconnection);
+	void ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd);
+	BOOL InitDatabase(TCHAR* strconnection);
 	int MgameLogin(const char* id, const char* pwd);
 	int AccountLogin(const char* id, const char* pwd);
 	BOOL LoadVersionList();

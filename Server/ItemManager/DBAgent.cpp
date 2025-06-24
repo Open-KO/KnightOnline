@@ -19,12 +19,10 @@ static char THIS_FILE[] = __FILE__;
 
 CDBAgent::CDBAgent()
 {
-
 }
 
 CDBAgent::~CDBAgent()
 {
-
 }
 
 BOOL CDBAgent::DatabaseInit()
@@ -46,11 +44,11 @@ BOOL CDBAgent::DatabaseInit()
 	return TRUE;
 }
 
-void CDBAgent::ReConnectODBC(CDatabase* m_db, char* strdb, char* strname, char* strpwd)
+void CDBAgent::ReConnectODBC(CDatabase* m_db, TCHAR* strdb, TCHAR* strname, TCHAR* strpwd)
 {
-	char strlog[256] = {};
+	TCHAR strlog[256] = {};
 	CTime t = CTime::GetCurrentTime();
-	sprintf(strlog, "Try ReConnectODBC... %d월 %d일 %d시 %d분\r\n", t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute());
+	wsprintf(strlog, _T("Try ReConnectODBC... %d월 %d일 %d시 %d분\r\n"), t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute());
 	m_pMain->m_ItemLogFile.Write(strlog, strlen(strlog));
 
 	// DATABASE 연결...
@@ -68,7 +66,7 @@ void CDBAgent::ReConnectODBC(CDatabase* m_db, char* strdb, char* strname, char* 
 
 		try
 		{
-			m_db->OpenEx((LPCTSTR) strConnect, CDatabase::noOdbcDialog);
+			m_db->OpenEx(strConnect, CDatabase::noOdbcDialog);
 		}
 		catch (CDBException* e)
 		{

@@ -70,7 +70,6 @@ CNpcTableSet::CNpcTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CNpcTableSet::GetDefaultConnect()
 {
 	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");

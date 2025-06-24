@@ -34,7 +34,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 BOOL g_bNpcExit = FALSE;
-ZoneArray			g_arZone;
+ZoneArray g_arZone;
 
 CRITICAL_SECTION g_User_critical;
 CRITICAL_SECTION g_region_critical;
@@ -172,7 +172,7 @@ BOOL CServerDlg::OnInitDialog()
 	//----------------------------------------------------------------------
 	SetTimer(CHECK_ALIVE, 10000, nullptr);
 
-	srand((unsigned) time(nullptr));
+	srand((unsigned int) time(nullptr));
 	for (int i = 0; i < 10; i++)
 		myrand(1, 10000);	// don't delete
 
@@ -197,21 +197,21 @@ BOOL CServerDlg::OnInitDialog()
 	// Server Start
 	CString logstr;
 	CTime time = CTime::GetCurrentTime();
-	logstr.Format("[AI ServerStart - %d-%d-%d, %d:%d]", time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	logstr.Format(_T("[AI ServerStart - %d-%d-%d, %d:%d]"), time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	m_StatusList.AddString(logstr);
-	logstr.Format("[AI ServerStart - %d-%d-%d, %d:%d]\r\n", time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	logstr.Format(_T("[AI ServerStart - %d-%d-%d, %d:%d]\r\n"), time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	TRACE(logstr);
 	LogFileWrite(logstr);
 
 	//----------------------------------------------------------------------
 	//	Logfile initialize
 	//----------------------------------------------------------------------
-	char strLogFile[50];		memset(strLogFile, 0x00, 50);
+	char strLogFile[50] = {};
 	wsprintf(strLogFile, "UserLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
 	m_UserLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_UserLogFile.SeekToEnd();
 
-	memset(strLogFile, 0x00, 50);
+	memset(strLogFile, 0, sizeof(strLogFile));
 	wsprintf(strLogFile, "ItemLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
 	m_ItemLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_ItemLogFile.SeekToEnd();
@@ -223,13 +223,13 @@ BOOL CServerDlg::OnInitDialog()
 	GetServerInfoIni();
 
 	if (m_byZone == UNIFY_ZONE)
-		m_strStatus.Format("UNIFY_ZONE 서버의 현재 상태");
+		m_strStatus.Format(_T("UNIFY_ZONE 서버의 현재 상태"));
 	else if (m_byZone == KARUS_ZONE)
-		m_strStatus.Format("KARUS 서버의 현재 상태");
+		m_strStatus.Format(_T("KARUS 서버의 현재 상태"));
 	else if (m_byZone == ELMORAD_ZONE)
-		m_strStatus.Format("ELMORAD 서버의 현재 상태");
+		m_strStatus.Format(_T("ELMORAD 서버의 현재 상태"));
 	else if (m_byZone == BATTLE_ZONE)
-		m_strStatus.Format("BATTLE 서버의 현재 상태");
+		m_strStatus.Format(_T("BATTLE 서버의 현재 상태"));
 
 	//----------------------------------------------------------------------
 	//	DB part initialize
@@ -804,7 +804,7 @@ BOOL CServerDlg::GetMonsterTableData()
 			Npc->Initialize();
 
 			Npc->m_sSid = NpcTableSet.m_sSid;						// MONSTER(NPC) Serial ID
-			_tcscpy(Npc->m_strName, NpcTableSet.m_strName);			// MONSTER(NPC) Name
+			strcpy(Npc->m_strName, CT2A(NpcTableSet.m_strName));	// MONSTER(NPC) Name
 			Npc->m_sPid = NpcTableSet.m_sPid;						// MONSTER(NPC) Picture ID
 			Npc->m_sSize = NpcTableSet.m_sSize;						// MONSTER(NPC) 캐릭 크기 비율
 			Npc->m_iWeapon_1 = NpcTableSet.m_iWeapon1;				// 착용무기
@@ -919,7 +919,7 @@ BOOL CServerDlg::GetNpcTableData()
 			Npc->Initialize();
 
 			Npc->m_sSid = NpcTableSet.m_sSid;						// MONSTER(NPC) Serial ID
-			_tcscpy(Npc->m_strName, NpcTableSet.m_strName);			// MONSTER(NPC) Name
+			strcpy(Npc->m_strName, CT2A(NpcTableSet.m_strName));	// MONSTER(NPC) Name
 			Npc->m_sPid = NpcTableSet.m_sPid;						// MONSTER(NPC) Picture ID
 			Npc->m_sSize = NpcTableSet.m_sSize;						// MONSTER(NPC) 캐릭 크기 비율
 			Npc->m_iWeapon_1 = NpcTableSet.m_iWeapon1;				// 착용무기
@@ -1103,7 +1103,7 @@ BOOL CServerDlg::CreateNpcThread()
 
 					pNpc->InitPos();
 
-					if (bFindNpcTable == FALSE)
+					if (!bFindNpcTable)
 					{
 						TRACE("#### CreateNpcThread Fail : [nid = %d, sid = %d] #####\n", pNpc->m_sNid, pNpc->m_sSid);
 					}
@@ -1114,7 +1114,7 @@ BOOL CServerDlg::CreateNpcThread()
 						nNpcCount = NpcPosSet.m_NumNPC;
 					}
 
-					_tcscpy(pNpc->m_strName, pNpcTable->m_strName);			// MONSTER(NPC) Name
+					strcpy(pNpc->m_strName, CT2A(pNpcTable->m_strName));	// MONSTER(NPC) Name
 					pNpc->m_sPid = pNpcTable->m_sPid;						// MONSTER(NPC) Picture ID
 					pNpc->m_sSize = pNpcTable->m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
 					pNpc->m_iWeapon_1 = pNpcTable->m_iWeapon_1;				// 착용무기
@@ -1286,12 +1286,13 @@ BOOL CServerDlg::CreateNpcThread()
 					}
 
 					// 
-					if (g_arZone[pNpc->m_ZoneIndex]->m_byRoomEvent > 0
+					if (pNpc != nullptr
+						&& g_arZone[pNpc->m_ZoneIndex]->m_byRoomEvent > 0
 						&& pNpc->m_byDungeonFamily > 0)
 					{
 						pRoom = nullptr;
 						pRoom = g_arZone[pNpc->m_ZoneIndex]->m_arRoomEventArray.GetData(pNpc->m_byDungeonFamily);
-						if (!pRoom)
+						if (pRoom == nullptr)
 						{
 							TRACE("Error : CServerDlg,, Map Room Npc Fail!! : nid=%d, sid=%d, name=%s, fam=%d, zoneindex=%d\n", pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
 							AfxMessageBox("Error : CServerDlg,, Map Room Npc Fail!!");
@@ -1303,6 +1304,7 @@ BOOL CServerDlg::CreateNpcThread()
 						*pInt = pNpc->m_sNid;
 						if (!pRoom->m_mapRoomNpcArray.PutData(pNpc->m_sNid, pInt))
 						{
+							delete pInt;
 							TRACE("### Map - Room Array MonsterNid Fail : nid=%d, sid=%d ###\n", pNpc->m_sNid, pNpc->m_sSid);
 						}
 					}
@@ -1572,7 +1574,6 @@ void CServerDlg::DeleteUserList(int uid)
 		TRACE("#### ServerDlg:DeleteUserList UserPtr Fail : uid=%d\n", uid);
 		return;
 	}
-
 	if (pUser->m_iUserId == uid)
 	{
 		TRACE("*** UserLogOut으로 포인터 반환 : uid=%d, %s ***\n", uid, pUser->m_strUserID);
@@ -1616,11 +1617,11 @@ BOOL CServerDlg::MapFileLoad()
 	{
 		sZoneName = ZoneInfoSet.m_strZoneName;
 
-		szFullPath.Format(".\\MAP\\%s", sZoneName);
+		szFullPath.Format(_T(".\\MAP\\%s"), sZoneName);
 
 		if (!file.Open(szFullPath, CFile::modeRead))
 		{
-			errormsg.Format("파일 Open 실패 - %s\n", szFullPath);
+			errormsg.Format(_T("파일 Open 실패 - %s\n"), szFullPath);
 			AfxMessageBox(errormsg);
 			return FALSE;
 		}
@@ -1628,11 +1629,11 @@ BOOL CServerDlg::MapFileLoad()
 		pMap = new MAP;
 		pMap->m_nServerNo = ZoneInfoSet.m_ServerNo;
 		pMap->m_nZoneNumber = ZoneInfoSet.m_ZoneNo;
-		strcpy(pMap->m_MapName, (char*) (LPCTSTR) sZoneName);
+		strcpy(pMap->m_MapName, CT2A(sZoneName));
 
-		if (!pMap->LoadMap((HANDLE) file.m_hFile))
+		if (!pMap->LoadMap(file.m_hFile))
 		{
-			errormsg.Format("Map Load 실패 - %s\n", szFullPath);
+			errormsg.Format(_T("Map Load 실패 - %s\n"), szFullPath);
 			AfxMessageBox(errormsg);
 			delete pMap;
 			return FALSE;
@@ -1643,7 +1644,7 @@ BOOL CServerDlg::MapFileLoad()
 		{
 			if (!pMap->LoadRoomEvent(ZoneInfoSet.m_RoomEvent))
 			{
-				errormsg.Format("Map Room Event Load 실패 - %s\n", szFullPath);
+				errormsg.Format(_T("Map Room Event Load 실패 - %s\n"), szFullPath);
 				AfxMessageBox(errormsg);
 				delete pMap;
 				return FALSE;
@@ -1675,8 +1676,7 @@ void CServerDlg::AllNpcInfo()
 
 	int send_index = 0, zone_index = 0, packet_size = 0;
 	int count = 0, send_count = 0, send_tot = 0;
-	char send_buff[2048];
-	::ZeroMemory(send_buff, sizeof(send_buff));
+	char send_buff[2048] = {};
 
 	for (i = 0; i < m_sTotalMap; i++)
 	{
@@ -1686,7 +1686,7 @@ void CServerDlg::AllNpcInfo()
 
 		nZone = pMap->m_nZoneNumber;
 
-		::ZeroMemory(send_buff, sizeof(send_buff));
+		memset(send_buff, 0, sizeof(send_buff));
 		send_index = 0;
 		SetByte(send_buff, AG_SERVER_INFO, send_index);
 		SetByte(send_buff, SERVER_INFO_START, send_index);
@@ -1699,7 +1699,7 @@ void CServerDlg::AllNpcInfo()
 		send_count = 0;
 		m_CompCount = 0;
 		m_iCompIndex = 0;
-		::ZeroMemory(send_buff, sizeof(send_buff));
+		memset(send_buff, 0, sizeof(send_buff));
 
 		TRACE("****  allNpcInfo start = %d *****\n", nZone);
 
@@ -1724,7 +1724,7 @@ void CServerDlg::AllNpcInfo()
 				SetByte(send_buff, (BYTE) count, send_count);
 				m_CompCount++;
 				//::CopyMemory(m_CompBuf+m_iCompIndex, send_buff, send_index);
-				memset(m_CompBuf, 0x00, 10240);
+				memset(m_CompBuf, 0, sizeof(m_CompBuf));
 				::CopyMemory(m_CompBuf, send_buff, send_index);
 				m_iCompIndex = send_index;
 				SendCompressedData(nZone);
@@ -1733,7 +1733,7 @@ void CServerDlg::AllNpcInfo()
 				count = 0;
 				send_tot++;
 				//TRACE("AllNpcInfo - send_count=%d, count=%d, zone=%d\n", send_tot, count, nZone);
-				::ZeroMemory(send_buff, sizeof(send_buff));
+				memset(send_buff, 0, sizeof(send_buff));
 				Sleep(50);
 			}
 		}
@@ -1752,7 +1752,7 @@ void CServerDlg::AllNpcInfo()
 		}
 
 		send_index = 0;
-		::ZeroMemory(send_buff, sizeof(send_buff));
+		memset(send_buff, 0, sizeof(send_buff));
 		SetByte(send_buff, AG_SERVER_INFO, send_index);
 		SetByte(send_buff, SERVER_INFO_END, send_index);
 		SetByte(send_buff, nZone, send_index);
@@ -1824,8 +1824,7 @@ void CServerDlg::OnTimer(UINT nIDEvent)
 void CServerDlg::CheckAliveTest()
 {
 	int send_index = 0;
-	char send_buff[256];
-	::ZeroMemory(send_buff, sizeof(send_buff));
+	char send_buff[256] = {};
 	int iErrorCode = 0;
 
 	SetByte(send_buff, AG_CHECK_ALIVE_REQ, send_index);
@@ -1848,7 +1847,7 @@ void CServerDlg::CheckAliveTest()
 			++m_sErrorSocketCount;
 			if (m_sErrorSocketCount == 10)
 			{
-				logstr.Format("*** All Socket Closed ***  %d-%d-%d, %d:%d]\r\n", time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+				logstr.Format(_T("*** All Socket Closed ***  %d-%d-%d, %d:%d]\r\n"), time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 				//LogFileWrite( logstr );
 			}
 			count++;
@@ -1925,10 +1924,8 @@ void CServerDlg::DeleteAllUserList(int zone)
 
 void CServerDlg::SendCompressedData(int nZone)
 {
-	if (!m_CompCount
-		|| m_CompCount < 0
-		|| !m_iCompIndex
-		|| m_iCompIndex < 0)
+	if (m_CompCount <= 0
+		|| m_iCompIndex <= 0)
 	{
 		m_CompCount = 0;
 		m_iCompIndex = 0;
@@ -1946,7 +1943,7 @@ void CServerDlg::SendCompressedData(int nZone)
 	DWORD crc_value = m_CompMng.GetCrcValue();
 
 	int send_index = 0, packet_size = 0;
-	char send_buff[2048];		::ZeroMemory(send_buff, sizeof(send_buff));
+	char send_buff[2048] = {};
 	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
 	SetShort(send_buff, (short) comp_data_len, send_index);
 	SetShort(send_buff, (short) org_data_len, send_index);
@@ -2031,8 +2028,7 @@ void CServerDlg::SyncTest()
 	fprintf(stream, "*****   Check ... List  *****\n");
 
 	int send_index = 0;
-	char send_buff[256];
-	::ZeroMemory(send_buff, sizeof(send_buff));
+	char send_buff[256] = {};
 	int iErrorCode = 0;
 
 	SetByte(send_buff, AG_CHECK_ALIVE_REQ, send_index);
@@ -2164,10 +2160,10 @@ CNpc* CServerDlg::GetNpcPtr(TCHAR* pNpcName)
 	for (int i = 0; i < nSize; i++)
 	{
 		pNpc = m_arNpc.GetData(i);
-		if (!pNpc)
+		if (pNpc == nullptr)
 			continue;
 
-		if (_tcscmp(pNpc->m_strName, pNpcName) == 0)
+		if (strcmp(pNpc->m_strName, pNpcName) == 0)
 			return pNpc;
 	}
 
@@ -2182,7 +2178,7 @@ CNpc* CServerDlg::GetEventNpcPtr()
 	for (int i = m_TotalNPC; i < m_arNpc.GetSize(); i++)
 	{
 		pNpc = m_arNpc.GetData(i);
-		if (!pNpc)
+		if (pNpc == nullptr)
 			continue;
 
 		if (pNpc->m_lEventNpc != 0)
@@ -2229,13 +2225,13 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone, float fx, float fz)
 		return FALSE;
 	}
 
-	CString strMsg = _T("");
+	CString strMsg;
 
 	pEventNpc->m_sSid = pNpc->m_sSid;						// MONSTER(NPC) Serial ID
 	pEventNpc->m_byMoveType = 1;
 	pEventNpc->m_byInitMoveType = 1;
 	pEventNpc->m_byBattlePos = 0;
-	_tcscpy(pEventNpc->m_strName, pNpc->m_strName);			// MONSTER(NPC) Name
+	strcpy(pEventNpc->m_strName, pNpc->m_strName);			// MONSTER(NPC) Name
 	pEventNpc->m_sPid = pNpc->m_sPid;						// MONSTER(NPC) Picture ID
 	pEventNpc->m_sSize = pNpc->m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
 	pEventNpc->m_iWeapon_1 = pNpc->m_iWeapon_1;				// 착용무기
@@ -2630,7 +2626,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 	pNpc->m_byBattlePos = 0;
 
-	_tcscpy(pNpc->m_strName, pNpcTable->m_strName);			// MONSTER(NPC) Name
+	strcpy(pNpc->m_strName, pNpcTable->m_strName);			// MONSTER(NPC) Name
 	pNpc->m_sPid = pNpcTable->m_sPid;						// MONSTER(NPC) Picture ID
 	pNpc->m_sSize = pNpcTable->m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
 	pNpc->m_iWeapon_1 = pNpcTable->m_iWeapon_1;				// 착용무기
@@ -2780,9 +2776,8 @@ void CServerDlg::GetServerInfoIni()
 void CServerDlg::SendSystemMsg(char* pMsg, int zone, int type, int who)
 {
 	int send_index = 0;
-	char buff[256];
-	memset(buff, 0x00, 256);
-	short sLength = _tcslen(pMsg);
+	char buff[256] = {};
+	short sLength = static_cast<short>(strlen(pMsg));
 
 	SetByte(buff, AG_SYSTEM_MSG, send_index);
 	SetByte(buff, type, send_index);				// 채팅형식
@@ -2799,7 +2794,7 @@ void CServerDlg::ResetBattleZone()
 
 	for (MAP* pMap : g_arZone)
 	{
-		if (!pMap)
+		if (pMap== nullptr)
 			continue;
 
 		// 현재의 존이 던젼담당하는 존이 아니면 리턴..

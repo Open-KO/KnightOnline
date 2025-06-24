@@ -26,7 +26,7 @@ CDBProcess::~CDBProcess()
 {
 }
 
-BOOL CDBProcess::InitDatabase(char* strconnection)
+BOOL CDBProcess::InitDatabase(TCHAR* strconnection)
 {
 	m_VersionDB.SetLoginTimeout(100);
 
@@ -38,9 +38,9 @@ BOOL CDBProcess::InitDatabase(char* strconnection)
 	return TRUE;
 }
 
-void CDBProcess::ReConnectODBC(CDatabase* m_db, const char* strdb, const char* strname, const char* strpwd)
+void CDBProcess::ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd)
 {
-	char strlog[256];	memset(strlog, 0x00, 256);
+	char strlog[256] = {};
 	CTime t = CTime::GetCurrentTime();
 	sprintf(strlog, "Try ReConnectODBC... %d월 %d일 %d시 %d분\r\n", t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute());
 	LogFileWrite(strlog);

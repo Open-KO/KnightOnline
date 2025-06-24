@@ -60,7 +60,7 @@ void MAP::RemoveMapData()
 {
 //	int i, j, k;
 
-	if (m_ppRegion)
+	if (m_ppRegion != nullptr)
 	{
 		for (int i = 0; i < m_sizeRegion.cx; i++)
 		{
@@ -72,7 +72,7 @@ void MAP::RemoveMapData()
 		m_ppRegion = nullptr;
 	}
 
-	if (m_fHeight)
+	if (m_fHeight != nullptr)
 	{
 		for (int i = 0; i < m_nMapSize; i++)
 		{
@@ -83,7 +83,7 @@ void MAP::RemoveMapData()
 		delete[] m_fHeight;
 	}
 
-	if (m_pMap)
+	if (m_pMap != nullptr)
 	{
 		for (int i = 0; i < m_sizeMap.cx; i++)
 		{
@@ -133,7 +133,11 @@ BOOL MAP::IsMovable(int dest_x, int dest_y)
 BOOL MAP::LoadMap(HANDLE hFile)
 {
 	LoadTerrain(hFile);
-	m_N3ShapeMgr.Create((m_nMapSize - 1) * m_fUnitDist, (m_nMapSize - 1) * m_fUnitDist);
+
+	m_N3ShapeMgr.Create(
+		(m_nMapSize - 1) * m_fUnitDist,
+		(m_nMapSize - 1) * m_fUnitDist);
+
 	if (!m_N3ShapeMgr.LoadCollisionData(hFile))
 		return FALSE;
 
@@ -149,7 +153,7 @@ BOOL MAP::LoadMap(HANDLE hFile)
 	m_sizeMap.cx = m_nMapSize;
 	m_sizeMap.cy = m_nMapSize;
 
-	m_ppRegion = new CRegion * [m_sizeRegion.cx];
+	m_ppRegion = new CRegion* [m_sizeRegion.cx];
 	for (int i = 0; i < m_sizeRegion.cx; i++)
 	{
 		m_ppRegion[i] = new CRegion[m_sizeRegion.cy];
@@ -279,13 +283,15 @@ void MAP::RegionUserAdd(int rx, int rz, int uid)
 		|| rz >= m_sizeRegion.cy)
 		return;
 
-	int* pInt = nullptr;
+	int* pInt = new int;
+	*pInt = uid;
+
+	CRegion* region = &m_ppRegion[rx][rz];
 
 	EnterCriticalSection(&g_region_critical);
-
-	pInt = new int;
-	*pInt = uid;
-	m_ppRegion[rx][rz].m_RegionUserArray.PutData(uid, pInt);
+	
+	if (!region->m_RegionUserArray.PutData(uid, pInt))
+		delete pInt;
 
 	LeaveCriticalSection(&g_region_critical);
 }
@@ -298,11 +304,10 @@ void MAP::RegionUserRemove(int rx, int rz, int uid)
 		|| rz > m_sizeRegion.cy)
 		return;
 
-	CRegion* region = nullptr;
+	CRegion* region = &m_ppRegion[rx][rz];
 
 	EnterCriticalSection(&g_region_critical);
 
-	region = &m_ppRegion[rx][rz];
 	region->m_RegionUserArray.DeleteData(uid);
 
 	LeaveCriticalSection(&g_region_critical);
@@ -316,14 +321,16 @@ void MAP::RegionNpcAdd(int rx, int rz, int nid)
 		|| rz >= m_sizeRegion.cy)
 		return;
 
-	int* pInt = nullptr;
+	int* pInt = new int;
+	*pInt = nid;
+
+	CRegion* region = &m_ppRegion[rx][rz];
 
 	EnterCriticalSection(&g_region_critical);
 
-	pInt = new int;
-	*pInt = nid;
-	if (!m_ppRegion[rx][rz].m_RegionNpcArray.PutData(nid, pInt))
+	if (!region->m_RegionNpcArray.PutData(nid, pInt))
 	{
+		delete pInt;
 		TRACE("### Map - RegionNpcAdd Fail : x=%d,z=%d, nid=%d ###\n", rx, rz, nid);
 	}
 
@@ -341,11 +348,10 @@ void MAP::RegionNpcRemove(int rx, int rz, int nid)
 		|| rz > m_sizeRegion.cy)
 		return;
 
-	CRegion* region = nullptr;
+	CRegion* region = &m_ppRegion[rx][rz];
 
 	EnterCriticalSection(&g_region_critical);
 
-	region = &m_ppRegion[rx][rz];
 	region->m_RegionNpcArray.DeleteData(nid);
 
 	LeaveCriticalSection(&g_region_critical);
@@ -361,15 +367,14 @@ void MAP::LoadMapTile(HANDLE hFile)
 	int x1 = m_sizeMap.cx;
 	int z1 = m_sizeMap.cy;
 	DWORD dwNum;
-	short** pEvent;
-	pEvent = new short* [m_sizeMap.cx];
-
-	for (int a = 0; a < m_sizeMap.cx; a++)
-		pEvent[a] = new short[m_sizeMap.cx];
+	short** pEvent = new short* [m_sizeMap.cx];
 
 	// 잠시 막아놓고..
 	for (int x = 0; x < m_sizeMap.cx; x++)
+	{
+		pEvent[x] = new short[m_sizeMap.cx];
 		ReadFile(hFile, pEvent[x], sizeof(short) * m_sizeMap.cy, &dwNum, nullptr);
+	}
 
 	m_pMap = new CMapInfo* [m_sizeMap.cx];
 
@@ -405,7 +410,7 @@ void MAP::LoadMapTile(HANDLE hFile)
 	fclose(stream);	*/
 
 
-	if (pEvent)
+	if (pEvent != nullptr)
 	{
 		for (int i = 0; i < m_sizeMap.cx; i++)
 		{
@@ -426,9 +431,9 @@ int MAP::GetRegionUserSize(int rx, int rz)
 		|| rz >= m_sizeRegion.cy)
 		return 0;
 
+	CRegion* region = &m_ppRegion[rx][rz];
+
 	EnterCriticalSection(&g_region_critical);
-	CRegion* region = nullptr;
-	region = &m_ppRegion[rx][rz];
 	int nRet = region->m_RegionUserArray.GetSize();
 	LeaveCriticalSection(&g_region_critical);
 
@@ -443,9 +448,9 @@ int  MAP::GetRegionNpcSize(int rx, int rz)
 		|| rz >= m_sizeRegion.cy)
 		return 0;
 
+	CRegion* region = &m_ppRegion[rx][rz];
+
 	EnterCriticalSection(&g_region_critical);
-	CRegion* region = nullptr;
-	region = &m_ppRegion[rx][rz];
 	int nRet = region->m_RegionNpcArray.GetSize();
 	LeaveCriticalSection(&g_region_critical);
 
@@ -509,7 +514,7 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 	int			event_num = 0, nation = 0;
 
 	CRoomEvent* pEvent = nullptr;
-	filename.Format(".\\MAP\\%d.evt", zone_number);
+	filename.Format(_T(".\\MAP\\%d.evt"), zone_number);
 
 	if (!pFile.Open(filename, CFile::modeRead))
 		return FALSE;
@@ -545,13 +550,15 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 
 			t_index += ParseSpace(first, buf + t_index);
 
-			if (!strcmp(first, "ROOM"))
+			if (0 == strcmp(first, "ROOM"))
 			{
-				logic = 0; exec = 0;
+				logic = 0;
+				exec = 0;
+
 				t_index += ParseSpace(temp, buf + t_index);
 				event_num = atoi(temp);
 
-				if (m_arRoomEventArray.GetData(event_num))
+				if (m_arRoomEventArray.GetData(event_num) != nullptr)
 				{
 					TRACE("Event Double !!\n");
 					goto cancel_event_load;
@@ -559,19 +566,19 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 
 				pEvent = SetRoomEvent(event_num);
 			}
-			else if (!strcmp(first, "TYPE"))
+			else if (0 == strcmp(first, "TYPE"))
 			{
 				t_index += ParseSpace(temp, buf + t_index);
 				m_byRoomType = atoi(temp);
 			}
-			else if (!strcmp(first, "L"))
+			else if (0 == strcmp(first, "L"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 			}
-			else if (!strcmp(first, "E"))
+			else if (0 == strcmp(first, "E"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 
 				t_index += ParseSpace(temp, buf + t_index);
@@ -585,9 +592,9 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 
 				exec++;
 			}
-			else if (!strcmp(first, "A"))
+			else if (0 == strcmp(first, "A"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 
 				t_index += ParseSpace(temp, buf + t_index);
@@ -602,27 +609,27 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 				logic++;
 				pEvent->m_byCheck = logic;
 			}
-			else if (!strcmp(first, "O"))
+			else if (0 == strcmp(first, "O"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 			}
-			else if (!strcmp(first, "NATION"))
+			else if (0 == strcmp(first, "NATION"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 
 				t_index += ParseSpace(temp, buf + t_index);
 				nation = atoi(temp);
 
 				if (nation == KARUS_ZONE)
-					m_sKarusRoom++;
+					++m_sKarusRoom;
 				else if (nation == ELMORAD_ZONE)
-					m_sElmoradRoom++;
+					++m_sElmoradRoom;
 			}
-			else if (!strcmp(first, "POS"))
+			else if (0 == strcmp(first, "POS"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 
 				t_index += ParseSpace(temp, buf + t_index);
@@ -637,9 +644,9 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 				t_index += ParseSpace(temp, buf + t_index);
 				pEvent->m_iInitMaxZ = atoi(temp);
 			}
-			else if (!strcmp(first, "POSEND"))
+			else if (0 == strcmp(first, "POSEND"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 
 				t_index += ParseSpace(temp, buf + t_index);
@@ -654,9 +661,9 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 				t_index += ParseSpace(temp, buf + t_index);
 				pEvent->m_iEndMaxZ = atoi(temp);
 			}
-			else if (!strcmp(first, "END"))
+			else if (0 == strcmp(first, "END"))
 			{
-				if (!pEvent)
+				if (pEvent == nullptr)
 					goto cancel_event_load;
 			}
 
@@ -671,7 +678,7 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 
 cancel_event_load:
 	CString str;
-	str.Format("이벤트 정보 읽기 실패(%d)(%d)", zone_number, event_num);
+	str.Format(_T("이벤트 정보 읽기 실패(%d)(%d)"), zone_number, event_num);
 	AfxMessageBox(str);
 	in.Close();
 	pFile.Close();
@@ -686,7 +693,7 @@ int MAP::IsRoomCheck(float fx, float fz)
 	// 현재의 존이 던젼인지를 판단, 아니면 리턴처리
 
 	CRoomEvent* pRoom = nullptr;
-	char notify[100]; memset(notify, 0x00, 100);
+	char notify[100] = {};
 
 	int nSize = m_arRoomEventArray.GetSize();
 	int nX = (int) fx;
@@ -697,7 +704,7 @@ int MAP::IsRoomCheck(float fx, float fz)
 	for (int i = 1; i < nSize + 1; i++)
 	{
 		pRoom = m_arRoomEventArray.GetData(i);
-		if (!pRoom)
+		if (pRoom == nullptr)
 			continue;
 
 		// 방이 실행중이거나 깬(clear) 상태라면 검색하지 않음
@@ -781,7 +788,7 @@ int MAP::IsRoomCheck(float fx, float fz)
 CRoomEvent* MAP::SetRoomEvent(int number)
 {
 	CRoomEvent* pEvent = m_arRoomEventArray.GetData(number);
-	if (pEvent)
+	if (pEvent != nullptr)
 	{
 		TRACE("#### SetRoom Error : double event number = %d ####\n", number);
 		return nullptr;
@@ -813,7 +820,7 @@ BOOL MAP::IsRoomStatusCheck()
 	for (int i = 1; i < nTotalRoom; i++)
 	{
 		pRoom = m_arRoomEventArray.GetData(i);
-		if (!pRoom)
+		if (pRoom == nullptr)
 		{
 			TRACE("#### IsRoomStatusCheck Error : room empty number = %d ####\n", i);
 			continue;
@@ -875,7 +882,7 @@ void MAP::InitializeRoom()
 	for (int i = 1; i < nTotalRoom; i++)
 	{
 		pRoom = m_arRoomEventArray.GetData(i);
-		if (!pRoom)
+		if (pRoom == nullptr)
 		{
 			TRACE("#### InitializeRoom Error : room empty number = %d ####\n", i);
 			continue;

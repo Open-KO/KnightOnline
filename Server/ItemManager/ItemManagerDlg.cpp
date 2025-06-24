@@ -114,7 +114,7 @@ BOOL CItemManagerDlg::OnInitDialog()
 	m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER, FALSE);	// Dispatcher 의 Send Queue
 /*
 	CString inipath;
-	inipath.Format( "%s\\ItemDB.ini", GetProgPath() );
+	inipath.Format(_T("%s\\ItemDB.ini"), GetProgPath());
 
 	GetPrivateProfileString( "ODBC", "GAME_DSN", "", m_strGameDSN, 24, inipath );
 	GetPrivateProfileString( "ODBC", "GAME_UID", "", m_strGameUID, 24, inipath );

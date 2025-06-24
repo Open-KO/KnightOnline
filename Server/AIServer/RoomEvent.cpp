@@ -66,7 +66,7 @@ void CRoomEvent::MainRoom(float fcurtime)
 {
 	// 조건 검색먼저 해야 겠지..
 	BOOL bCheck = FALSE, bRunCheck = FALSE;
-	char notify[50];	memset(notify, 0x00, 50);
+	char notify[50] = {};
 
 	int event_num = m_Logic[m_byLogicNumber - 1].sNumber;
 
@@ -84,7 +84,7 @@ void CRoomEvent::MainRoom(float fcurtime)
 	}
 }
 
-BOOL  CRoomEvent::CheckEvent(int event_num, float fcurtime)
+BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 {
 	int nMinute = 0, nOption_1 = 0, nOption_2 = 0;
 	CNpc* pNpc = nullptr;
@@ -103,7 +103,7 @@ BOOL  CRoomEvent::CheckEvent(int event_num, float fcurtime)
 		case 1:
 			nOption_1 = m_Logic[m_byLogicNumber - 1].sOption_1;
 			pNpc = GetNpcPtr(nOption_1);
-			if (pNpc)
+			if (pNpc != nullptr)
 			{
 				if (pNpc->m_byChangeType == 100)
 					return TRUE;
@@ -166,7 +166,7 @@ BOOL  CRoomEvent::CheckEvent(int event_num, float fcurtime)
 
 BOOL  CRoomEvent::RunEvent(int event_num)
 {
-	char notify[50];	memset(notify, 0x00, 50);
+	char notify[50] = {};
 	CNpc* pNpc = nullptr;
 	int nOption_1 = 0, nOption_2 = 0;
 	BOOL bRetValue = FALSE;
@@ -176,7 +176,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 		case 1:
 			nOption_1 = m_Exec[m_byLogicNumber - 1].sOption_1;
 			pNpc = GetNpcPtr(nOption_1);
-			if (pNpc)
+			if (pNpc != nullptr)
 			{
 				pNpc->m_byChangeType = 3;	// 몬스터 출현해주세여...
 				pNpc->SetLive(&m_pMain->m_Iocport);
@@ -197,11 +197,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 		case 2:
 			nOption_1 = m_Exec[m_byLogicNumber - 1].sOption_1;
 			pNpc = GetNpcPtr(nOption_1);
-			if (pNpc)
-			{
-
-			}
-			else
+			if (pNpc == nullptr)
 			{
 				TRACE("### RunEvent Error : 문 담당 몬스터 출현 할 수 없당 = %d, logic=%d ###\n", nOption_1, m_byLogicNumber);
 			}
@@ -298,7 +294,7 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 			continue;
 
 		pNpc = m_pMain->m_arNpc.GetData(nMonsterid);
-		if (!pNpc)
+		if (pNpc == nullptr)
 			continue;
 
 		if (pNpc->m_sSid == sid)
@@ -352,7 +348,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 			continue;
 
 		pNpc = m_pMain->m_arNpc.GetData(nMonsterid);
-		if (!pNpc)
+		if (pNpc == nullptr)
 			continue;
 
 		if (type == 4)
@@ -411,8 +407,8 @@ void CRoomEvent::InitializeRoom()
 
 void CRoomEvent::EndEventSay(int option1, int option2)
 {
-	char notify[256];		memset(notify, 0x00, 256);
-	char send_buff[128];	memset(send_buff, 0x00, 128);
+	char notify[256] = {};
+	char send_buff[128] = {};
 	int send_index = 0;
 
 	std::string buff;

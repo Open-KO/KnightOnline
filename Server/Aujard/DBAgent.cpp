@@ -393,7 +393,7 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 	index = 0;
 	DWORD itemid = 0;
 	short count = 0, duration = 0;
-	__int64 serial = 0;
+	int64_t serial = 0;
 	_ITEM_TABLE* pTable = nullptr;
 
 	// 착용갯수 + 소유갯수(14+28=42)
@@ -1356,7 +1356,7 @@ BOOL CDBAgent::LoadWarehouseData(const char* accountid, int uid)
 	int index = 0, serial_index = 0;
 	DWORD itemid = 0;
 	short count = 0, duration = 0;
-	__int64 serial = 0;
+	int64_t serial = 0;
 	for (int i = 0; i < WAREHOUSE_MAX; i++)
 	{
 		itemid = GetDWORD(strItem, index);

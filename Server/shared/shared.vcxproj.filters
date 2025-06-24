@@ -63,6 +63,9 @@
     <ClCompile Include="string_utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StringConversion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ByteBuffer.h">
@@ -123,6 +126,9 @@
       <Filter>Compression\LZF</Filter>
     </ClInclude>
     <ClInclude Include="string_utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringConversion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

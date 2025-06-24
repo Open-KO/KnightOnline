@@ -57,14 +57,14 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTST
 
 BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostPort)
 {
-	struct sockaddr_in addr;
+	sockaddr_in addr;
 
-	memset((void*) &addr, 0, sizeof(addr));
+	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = inet_addr(lpszHostAddress);
 	addr.sin_port = htons(nHostPort);
 
-	int result = connect(m_Socket, (struct sockaddr*) &addr, sizeof(addr));
+	int result = connect(m_Socket, (sockaddr*) &addr, sizeof(addr));
 	if (result == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
@@ -159,7 +159,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 			goto close_routine;
 		}
 	}
-	else if (!ret_value)
+	else if (ret_value == 0)
 	{
 		m_nPending = 0;
 		m_nWouldblock = 0;
@@ -177,7 +177,7 @@ close_routine:
 	else
 		hComport = m_pIOCPort->m_hClientIOCPort;
 
-	PostQueuedCompletionStatus(hComport, (DWORD) 0, (DWORD) m_Sid, pOvl);
+	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
 }
@@ -201,14 +201,12 @@ int CIOCPSocket2::Receive()
 
 	if (RetValue == SOCKET_ERROR)
 	{
-		int last_err;
-		last_err = WSAGetLastError();
-
+		int last_err = WSAGetLastError();
 		if (last_err == WSA_IO_PENDING)
 		{
 //			TRACE("RECV : IO_PENDING[SID=%d]\n", m_Sid);
 //			m_nPending++;
-//			if( m_nPending > 3 )
+//			if (m_nPending > 3)
 //				goto close_routine;
 			return 0;
 		}
@@ -243,14 +241,14 @@ close_routine:
 	else
 		hComport = m_pIOCPort->m_hClientIOCPort;
 
-	PostQueuedCompletionStatus(hComport, (DWORD) 0, (DWORD) m_Sid, pOvl);
+	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
 }
 
 void CIOCPSocket2::ReceivedData(int length)
 {
-	if (!length)
+	if (length <= 0)
 		return;
 
 	int len = 0;
@@ -265,7 +263,7 @@ void CIOCPSocket2::ReceivedData(int length)
 
 	while (PullOutCore(pData, len))
 	{
-		if (pData)
+		if (pData != nullptr)
 		{
 			Parsing(len, pData); // 실제 파싱 함수...
 
@@ -398,9 +396,8 @@ void CIOCPSocket2::Close()
 	else
 		hComport = m_pIOCPort->m_hClientIOCPort;
 
-	int retValue = PostQueuedCompletionStatus(hComport, (DWORD) 0, (DWORD) m_Sid, pOvl);
-
-	if (!retValue)
+	int retValue = PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
+	if (retValue == 0)
 	{
 		int errValue;
 		errValue = GetLastError();
@@ -429,7 +426,7 @@ void CIOCPSocket2::InitSocket(CIOCPort* pIOCPort)
 	Initialize();
 }
 
-BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
+BOOL CIOCPSocket2::Accept(SOCKET listensocket, sockaddr* addr, int* len)
 {
 	m_Socket = accept(listensocket, addr, len);
 	if (m_Socket == INVALID_SOCKET)
@@ -447,7 +444,7 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 //	getsockopt( m_Socket, SOL_SOCKET, SO_RCVBUF, (char*)&socklen, &lensize);
 //	TRACE("getsockopt : %d\n", socklen);
 
-//	struct linger lingerOpt;
+//	linger lingerOpt;
 
 //	lingerOpt.l_onoff = 1;
 //	lingerOpt.l_linger = 0;

@@ -56,10 +56,13 @@ void CMagicProcess::MagicPacket(char* pBuf)
 
 	//TRACE("MagicPacket - command=%d, tid=%d, magicid=%d\n", command, tid, magicid);
 
-	pTable = IsAvailable(magicid, tid, command);     // If magic was successful.......
-	if (!pTable) return;
+	// If magic was successful.......
+	pTable = IsAvailable(magicid, tid, command);
+	if (pTable == nullptr)
+		return;
 
-	if (command == MAGIC_EFFECTING)     // Is target another player? 
+	// Is target another player?
+	if (command == MAGIC_EFFECTING)
 	{
 		switch (pTable->bType1)
 		{
@@ -159,11 +162,11 @@ _MAGIC_TABLE* CMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 	int modulator = 0, Class = 0, send_index = 0, moral = 0;
 
 	char send_buff[128] = {};
-	if (!m_pSrcUser)
+	if (m_pSrcUser == nullptr)
 		return FALSE;
 
 	pTable = m_pMain->m_MagictableArray.GetData(magicid);     // Get main magic table.
-	if (!pTable)
+	if (pTable == nullptr)
 		goto fail_return;
 
 	return pTable;      // Magic was successful! 
@@ -180,13 +183,14 @@ fail_return:    // In case the magic failed.
 	return nullptr;     // Magic was a failure!
 }
 
-BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int data3, BYTE sequence)   // Applied to an attack skill using a weapon.
+// Applied to an attack skill using a weapon.
+BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int data3, BYTE sequence)
 {
 	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 	_MAGIC_TABLE* pMagic = nullptr;
 	pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
-	if (!pMagic)
+	if (pMagic == nullptr)
 		return 0;
 
 	damage = m_pSrcUser->GetDamage(tid, magicid);  // Get damage points of enemy.	
@@ -194,8 +198,7 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int
 	//TRACE("magictype1 ,, magicid=%d, damage=%d\n", magicid, damage);
 
 //	if (damage > 0) {
-	CNpc* pNpc = nullptr;      // Pointer initialization!
-	pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -222,7 +225,8 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int
 //		result = 0;
 
 packet_send:
-	if (pMagic->bType2 == 0 || pMagic->bType2 == 1)
+	if (pMagic->bType2 == 0
+		|| pMagic->bType2 == 1)
 	{
 		SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
 		SetByte(send_buff, MAGIC_EFFECTING, send_index);
@@ -258,8 +262,7 @@ BYTE CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, int
 
 	if (damage > 0)
 	{
-		CNpc* pNpc = nullptr;      // Pointer initialization!
-		pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+		CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
 		if (pNpc == nullptr
 			|| pNpc->m_NpcState == NPC_DEAD
 			|| pNpc->m_iHP == 0)
@@ -328,16 +331,16 @@ packet_send:
 	return result;
 }
 
-void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int data3, int moral, int dexpoint, int righthand_damage)   // Applied when a magical attack, healing, and mana restoration is done.
+// Applied when a magical attack, healing, and mana restoration is done.
+void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int data3, int moral, int dexpoint, int righthand_damage)
 {
 	int damage = 0, result = 1, send_index = 0, attack_type = 0;
 	char send_buff[256];	memset(send_buff, 0x00, 256);
 	_MAGIC_TYPE3* pType = nullptr;
 	CNpc* pNpc = nullptr;      // Pointer initialization!
 
-	_MAGIC_TABLE* pMagic = nullptr;
-	pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
-	if (!pMagic)
+	_MAGIC_TABLE* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	if (pMagic == nullptr)
 		return;
 
 	// 지역 공격
@@ -359,20 +362,15 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 	}
 
 	pType = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
-	if (!pType)
+	if (pType == nullptr)
 		return;
 
-//	if (pType->sFirstDamage < 0) {
 	if (pType->sFirstDamage < 0
 		&& pType->bDirectType == 1
 		&& magicid < 400000)
-	{
 		damage = GetMagicDamage(tid, pType->sFirstDamage, pType->bAttribute, dexpoint, righthand_damage);
-	}
 	else
-	{
 		damage = pType->sFirstDamage;
-	}
 
 	//TRACE("magictype3 ,, magicid=%d, damage=%d\n", magicid, damage);
 
@@ -391,8 +389,12 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 			else
 			{
 				damage = abs(damage);
-				if (pType->bAttribute == 3)   attack_type = 3; // 기절시키는 마법이라면.....
-				else attack_type = magicid;
+
+				// 기절시키는 마법이라면.....
+				if (pType->bAttribute == 3)
+					attack_type = 3;
+				else
+					attack_type = magicid;
 
 				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
 				{
@@ -425,8 +427,12 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 		else
 		{
 			damage = abs(damage);
-			if (pType->bAttribute == 3)   attack_type = 3; // 기절시키는 마법이라면.....
-			else attack_type = magicid;
+
+			// 기절시키는 마법이라면.....
+			if (pType->bAttribute == 3)
+				attack_type = 3;
+			else
+				attack_type = magicid;
 
 			if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
 			{
@@ -460,7 +466,8 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 	}
 
 packet_send:
-	//if ( pMagic->bType2 == 0 || pMagic->bType2 == 3 ) 
+	//if (pMagic->bType2 == 0
+	//	|| pMagic->bType2 == 3)
 	{
 		SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
 		SetByte(send_buff, MAGIC_EFFECTING, send_index);
@@ -475,7 +482,6 @@ packet_send:
 		SetShort(send_buff, 0, send_index);
 		m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
 	}
-
 }
 
 void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int data2, int data3, int moral)
@@ -506,7 +512,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 	}
 
 	pType = m_pMain->m_Magictype4Array.GetData(magicid);     // Get magic skill table type 4.
-	if (!pType)
+	if (pType == nullptr)
 		return;
 
 	//TRACE("magictype4 ,, magicid=%d\n", magicid);
@@ -586,32 +592,26 @@ fail_return:
 
 void CMagicProcess::ExecuteType5(int magicid)
 {
-	return;
 }
 
 void CMagicProcess::ExecuteType6(int magicid)
 {
-	return;
 }
 
 void CMagicProcess::ExecuteType7(int magicid)
 {
-	return;
 }
 
 void CMagicProcess::ExecuteType8(int magicid)
 {
-	return;
 }
 
 void CMagicProcess::ExecuteType9(int magicid)
 {
-	return;
 }
 
 void CMagicProcess::ExecuteType10(int magicid)
 {
-	return;
 }
 
 short CMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int dexpoint, int righthand_damage)
@@ -626,8 +626,7 @@ short CMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int d
 		|| tid > INVALID_BAND)
 		return 0;
 
-	CNpc* pNpc = nullptr;
-	pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -720,7 +719,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 	if (magictype == 3)
 	{
 		pType3 = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
-		if (!pType3)
+		if (pType3 == nullptr)
 		{
 			TRACE("#### CMagicProcess-AreaAttack Fail : magic table3 error ,, magicid=%d\n", magicid);
 			return 0;
@@ -731,7 +730,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 	else if (magictype == 4)
 	{
 		pType4 = m_pMain->m_Magictype4Array.GetData(magicid);      // Get magic skill table type 3.
-		if (!pType4)
+		if (pType4 == nullptr)
 		{
 			TRACE("#### CMagicProcess-AreaAttack Fail : magic table4 error ,, magicid=%d\n", magicid);
 			return 0;
@@ -763,10 +762,21 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 	int max_xx = pMap->m_sizeRegion.cx;
 	int max_zz = pMap->m_sizeRegion.cy;
 
-	int min_x = region_x - 1;	if (min_x < 0) min_x = 0;
-	int min_z = region_z - 1;	if (min_z < 0) min_z = 0;
-	int max_x = region_x + 1;	if (max_x >= max_xx) max_x = max_xx - 1;
-	int max_z = region_z + 1;	if (min_z >= max_zz) min_z = max_zz - 1;
+	int min_x = region_x - 1;
+	if (min_x < 0)
+		min_x = 0;
+
+	int min_z = region_z - 1;
+	if (min_z < 0)
+		min_z = 0;
+
+	int max_x = region_x + 1;
+	if (max_x >= max_xx)
+		max_x = max_xx - 1;
+
+	int max_z = region_z + 1;
+	if (min_z >= max_zz)
+		min_z = max_zz - 1;
 
 	int search_x = max_x - min_x + 1;
 	int search_z = max_z - min_z + 1;
@@ -774,9 +784,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 	for (int i = 0; i < search_x; i++)
 	{
 		for (int j = 0; j < search_z; j++)
-		{
 			AreaAttackDamage(magictype, min_x + i, min_z + j, magicid, moral, data1, data2, data3, dexpoint, righthand_damage);
-		}
 	}
 
 	//damage = GetMagicDamage(tid, pType->sFirstDamage, pType->bAttribute);
@@ -815,7 +823,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	float fRadius = 0;
 
 	pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
-	if (!pMagic)
+	if (pMagic == nullptr)
 	{
 		TRACE("#### CMagicProcess-AreaAttackDamage Fail : magic maintable error ,, magicid=%d\n", magicid);
 		return;
@@ -824,7 +832,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	if (magictype == 3)
 	{
 		pType3 = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
-		if (!pType3)
+		if (pType3 == nullptr)
 		{
 			TRACE("#### CMagicProcess-AreaAttackDamage Fail : magic table3 error ,, magicid=%d\n", magicid);
 			return;
@@ -837,7 +845,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	else if (magictype == 4)
 	{
 		pType4 = m_pMain->m_Magictype4Array.GetData(magicid);      // Get magic skill table type 3.
-		if (!pType4)
+		if (pType4 == nullptr)
 		{
 			TRACE("#### CMagicProcess-AreaAttackDamage Fail : magic table4 error ,, magicid=%d\n", magicid);
 			return;
@@ -852,13 +860,12 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		return;
 	}
 
-
 	__Vector3 vStart, vEnd;
 	CNpc* pNpc = nullptr;      // Pointer initialization!
 	float fDis = 0.0f;
 	vStart.Set((float) data1, (float) 0, (float) data3);
-	char send_buff[256];	memset(send_buff, 0x00, 256);
-	int nid = 0, send_index = 0, result = 1, count = 0, total_mon = 0, attack_type = 0;;
+	char send_buff[256] = {};
+	int nid = 0, send_index = 0, result = 1, count = 0, total_mon = 0, attack_type = 0;
 	int* pNpcIDList = nullptr;
 
 	EnterCriticalSection(&g_region_critical);
@@ -882,7 +889,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = (CNpc*) m_pMain->m_arNpc.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->m_arNpc.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD)
@@ -925,7 +932,9 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 					}
 				}
 
-				memset(send_buff, 0x00, 256);	send_index = 0;
+				memset(send_buff, 0, sizeof(send_buff));
+				send_index = 0;
+
 				// 패킷 전송.....
 				//if ( pMagic->bType2 == 0 || pMagic->bType2 == 3 ) 
 				{
@@ -947,7 +956,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 			// 타잎 4일 경우...
 			else if (magictype == 4)
 			{
-				memset(send_buff, 0x00, 256);
+				memset(send_buff, 0, sizeof(send_buff));
 				send_index = 0;
 				result = 1;
 

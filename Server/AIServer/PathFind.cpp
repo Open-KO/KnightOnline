@@ -43,12 +43,12 @@ CPathFind::~CPathFind()
 
 void CPathFind::ClearData()
 {
-	_PathNode* t_node1, * t_node2;
+	_PathNode* t_node1, *t_node2;
 
-	if (m_pOpen)
+	if (m_pOpen != nullptr)
 	{
 		t_node1 = m_pOpen->NextNode;
-		while (t_node1)
+		while (t_node1 != nullptr)
 		{
 			t_node2 = t_node1->NextNode;
 			free(t_node1);
@@ -59,10 +59,10 @@ void CPathFind::ClearData()
 		m_pOpen = nullptr;
 	}
 
-	if (m_pClosed)
+	if (m_pClosed != nullptr)
 	{
 		t_node1 = m_pClosed->NextNode;
-		while (t_node1)
+		while (t_node1 != nullptr)
 		{
 			t_node2 = t_node1->NextNode;
 			free(t_node1);
@@ -249,6 +249,7 @@ void CPathFind::FindChildPathSub(_PathNode* node, int x, int y, int dx, int dy, 
 			if (node->Child[c] == nullptr)
 				break;
 		}
+
 		node->Child[c] = t_node;
 	}
 }

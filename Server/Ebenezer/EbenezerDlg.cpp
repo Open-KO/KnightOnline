@@ -3713,7 +3713,7 @@ BOOL CEbenezerDlg::LoadAllKnightsUserData()
 	return TRUE;
 }
 
-int  CEbenezerDlg::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type)
+int CEbenezerDlg::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type)
 {
 	if (knightsindex <= 0)
 		return 0;

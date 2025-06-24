@@ -7,6 +7,8 @@
 #include "ItemTableset.h"
 #include <process.h>
 
+#include <shared/Ini.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -187,20 +189,22 @@ BOOL CAujardDlg::OnInitDialog()
 	}
 
 	CString inipath;
-	inipath.Format("%s\\Aujard.ini", GetProgPath());
+	inipath.Format(_T("%s\\Aujard.ini"), GetProgPath());
 
-	GetPrivateProfileString("ODBC", "ACCOUNT_DSN", "", m_strAccountDSN, 24, inipath);
-	GetPrivateProfileString("ODBC", "ACCOUNT_UID", "", m_strAccountUID, 24, inipath);
-	GetPrivateProfileString("ODBC", "ACCOUNT_PWD", "", m_strAccountPWD, 24, inipath);
-	GetPrivateProfileString("ODBC", "GAME_DSN", "", m_strGameDSN, 24, inipath);
-	GetPrivateProfileString("ODBC", "GAME_UID", "", m_strGameUID, 24, inipath);
-	GetPrivateProfileString("ODBC", "GAME_PWD", "", m_strGamePWD, 24, inipath);
-	GetPrivateProfileString("ODBC", "LOG_DSN", "", m_strLogDSN, 24, inipath);
-	GetPrivateProfileString("ODBC", "LOG_UID", "", m_strLogUID, 24, inipath);
-	GetPrivateProfileString("ODBC", "LOG_PWD", "", m_strLogPWD, 24, inipath);
+	CIni ini(inipath.GetString());
 
-	m_nServerNo = GetPrivateProfileInt("ZONE_INFO", "GROUP_INFO", 1, inipath);
-	m_nZoneNo = GetPrivateProfileInt("ZONE_INFO", "ZONE_INFO", 1, inipath);
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_DSN"), _T(""), m_strAccountDSN, sizeof(m_strAccountDSN));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_UID"), _T(""), m_strAccountUID, sizeof(m_strAccountUID));
+	ini.GetString(_T("ODBC"), _T("ACCOUNT_PWD"), _T(""), m_strAccountPWD, sizeof(m_strAccountPWD));
+	ini.GetString(_T("ODBC"), _T("GAME_DSN"), _T(""), m_strGameDSN, sizeof(m_strGameDSN));
+	ini.GetString(_T("ODBC"), _T("GAME_UID"), _T(""), m_strGameUID, sizeof(m_strGameUID));
+	ini.GetString(_T("ODBC"), _T("GAME_PWD"), _T(""), m_strGamePWD, sizeof(m_strGamePWD));
+	ini.GetString(_T("ODBC"), _T("LOG_DSN"), _T(""), m_strLogDSN, sizeof(m_strLogDSN));
+	ini.GetString(_T("ODBC"), _T("LOG_UID"), _T(""), m_strLogUID, sizeof(m_strLogUID));
+	ini.GetString(_T("ODBC"), _T("LOG_PWD"), _T(""), m_strLogPWD, sizeof(m_strLogPWD));
+
+	m_nServerNo = ini.GetInt(_T("ZONE_INFO"), _T("GROUP_INFO"), 1);
+	m_nZoneNo = ini.GetInt(_T("ZONE_INFO"), _T("ZONE_INFO"), 1);
 
 	if (!m_DBAgent.DatabaseInit())
 	{
@@ -225,7 +229,7 @@ BOOL CAujardDlg::OnInitDialog()
 
 	CTime cur = CTime::GetCurrentTime();
 	CString starttime;
-	starttime.Format("Aujard Start : %d월 %d일 %d시 %d분\r\n", cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
+	starttime.Format(_T("Aujard Start : %d월 %d일 %d시 %d분\r\n"), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
 	m_LogFile.Write(starttime, starttime.GetLength());
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -419,7 +423,8 @@ void CAujardDlg::SelectCharacter(char* pBuf)
 	int index = 0, uid = -1, send_index = 0, idlen1 = 0, idlen2 = 0, t_uid = -1, count = 0, packetindex = 0;
 	BYTE bInit = 0x01;
 	char send_buff[256] = {},
-		accountid[MAX_ID_SIZE + 1] = {}, userid[MAX_ID_SIZE + 1] = {};
+		accountid[MAX_ID_SIZE + 1] = {},
+		userid[MAX_ID_SIZE + 1] = {};
 
 	_USER_DATA* pUser = nullptr;
 

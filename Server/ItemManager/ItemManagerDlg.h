@@ -30,12 +30,12 @@ public:
 	//ItemtableArray		m_ItemtableArray;
 
 	int	m_nServerNo, m_nZoneNo;
-	char m_strGameDSN[24];
-	char m_strGameUID[24];
-	char m_strGamePWD[24];
+	TCHAR m_strGameDSN[24];
+	TCHAR m_strGameUID[24];
+	TCHAR m_strGamePWD[24];
 
-	CFile	m_ItemLogFile;		// log file
-	CFile	m_ExpLogFile;		// log file
+	CFile m_ItemLogFile;		// log file
+	CFile m_ExpLogFile;			// log file
 	int	m_nItemLogFileDay;		// 
 	int	m_nExpLogFileDay;		// 
 

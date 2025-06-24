@@ -66,7 +66,7 @@ void CUser::Initialize()
 	m_MagicProcess.m_pMain = m_pMain;
 	m_MagicProcess.m_pSrcUser = this;
 
-	memset(m_strUserID, 0, MAX_ID_SIZE + 1);	// 캐릭터의 이름
+	memset(m_strUserID, 0, sizeof(m_strUserID));// 캐릭터의 이름
 	m_iUserId = -1;								// User의 번호
 	m_bLive = USER_DEAD;						// 죽었니? 살았니?
 	m_curx = 0.0f;								// 현재 X 좌표
@@ -173,8 +173,7 @@ void CUser::SendAttackSuccess(int tuid, BYTE result, short sDamage, int nHP, sho
 	int send_index = 0;
 	int sid = -1, tid = -1;
 	BYTE type, bResult;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
 	type = 0x01;
@@ -201,8 +200,7 @@ void CUser::SendMagicAttackResult(int tuid, BYTE result, short sDamage, short sH
 	int send_index = 0;
 	int sid = -1, tid = -1;
 	BYTE type, bResult;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
 	type = 0x01;
@@ -241,7 +239,7 @@ void CUser::SendAll(TCHAR* pBuf, int nLength)
 		return;
 
 	if (m_sZoneIndex < 0
-		|| m_sZoneIndex > m_pMain->g_arZone.size())
+		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 		return;
 
 	SEND_DATA* pNewData = nullptr;
@@ -299,7 +297,7 @@ void CUser::Dead(int tid, int nDamage)
 
 	// region에서 삭제...
 	if (m_sZoneIndex < 0
-		|| m_sZoneIndex > m_pMain->g_arZone.size())
+		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 	{
 		TRACE("#### User-Dead ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_strUserID, m_sZoneIndex);
 		return;
@@ -332,13 +330,12 @@ void CUser::Dead(int tid, int nDamage)
 	int send_index = 0;
 	int sid = -1, targid = -1;
 	BYTE type, result;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 
 	wsprintf(buff, "*** User Dead = %d, %s ***", m_iUserId, m_strUserID);
 	TimeTrace(buff);
 	//TRACE("*** User Dead = %d, %s ********\n", m_iUserId, m_strUserID);
-	memset(buff, 0x00, 256);
+	memset(buff, 0, sizeof(buff));
 
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
@@ -376,8 +373,7 @@ void CUser::SendHP()
 
 	// HP 변동량을 게임서버로...
 	int send_index = 0;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 
 	SetByte(buff, AG_USER_SET_HP, send_index);
 	SetShort(buff, m_iUserId, send_index);
@@ -401,12 +397,12 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 		TempValue = iNpcExp * 0.2;
 		nExp = (int) TempValue;
 		if (TempValue > nExp)
-			nExp = nExp + 1;
+			++nExp;
 
 		TempValue = iLoyalty * 0.2;
 		nLoyalty = (int) TempValue;
 		if (TempValue > nLoyalty)
-			nLoyalty = nLoyalty + 1;
+			++nLoyalty;
 	}
 	else if (nLevel <= -8
 		&& nLevel >= -13)
@@ -414,12 +410,12 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 		TempValue = iNpcExp * 0.5;
 		nExp = (int) TempValue;
 		if (TempValue > nExp)
-			nExp = nExp + 1;
+			++nExp;
 
 		TempValue = iLoyalty * 0.5;
 		nLoyalty = (int) TempValue;
 		if (TempValue > nLoyalty)
-			nLoyalty = nLoyalty + 1;
+			++nLoyalty;
 	}
 	else if (nLevel <= -2
 		&& nLevel >= -7)
@@ -427,17 +423,17 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 		TempValue = iNpcExp * 0.8;
 		nExp = (int) TempValue;
 		if (TempValue > nExp)
-			nExp = nExp + 1;
+			++nExp;
 
 		TempValue = iLoyalty * 0.8;
 		nLoyalty = (int) TempValue;
 		if (TempValue > nLoyalty)
-			nLoyalty = nLoyalty + 1;
+			++nLoyalty;
 	}
 	else if (nLevel >= -1) // && nLevel < 2)
 	{
-		nExp = iNpcExp * 1;
-		nLoyalty = iLoyalty * 1;
+		nExp = iNpcExp;
+		nLoyalty = iLoyalty;
 	}
 	/* else if (nLevel >= 2
 		&& nLevel < 5)
@@ -445,12 +441,12 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 		TempValue = iNpcExp * 1.2;
 		nExp = (int) TempValue;
 		if (TempValue > nExp)
-			nExp = nExp + 1;
+			++nExp;
 
 		TempValue = iLoyalty * 1.2;
 		nLoyalty = (int) TempValue;
 		if (TempValue > nLoyalty)
-			nLoyalty = nLoyalty + 1;
+			++nLoyalty;
 	}
 	else if (nLevel >= 5
 		&& nLevel < 8)
@@ -458,12 +454,12 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 		TempValue = iNpcExp * 1.5;
 		nExp = (int) TempValue;
 		if (TempValue > nExp)
-			nExp = nExp + 1;
+			++nExp;
 
 		TempValue = iLoyalty * 1.5;
 		nLoyalty = (int) TempValue;
 		if (TempValue > nLoyalty)
-			nLoyalty = nLoyalty + 1;
+			++nLoyalty;
 	}
 	else if (nLevel >= 8)
 	{
@@ -495,8 +491,7 @@ void CUser::SetPartyExp(int iNpcExp, int iLoyalty, int iPartyLevel, int iMan)
 void CUser::SendExp(int iExp, int iLoyalty, int tType)
 {
 	int send_index = 0;
-	char buff[256];
-	memset(buff, 0x00, 256);
+	char buff[256] = {};
 
 	SetByte(buff, AG_USER_EXP, send_index);
 	SetShort(buff, m_iUserId, send_index);
@@ -515,7 +510,7 @@ short CUser::GetDamage(int tid, int magicid)
 	short Hit = 0, HitB = 0;
 	short Ac = 0;
 	int random = 0;
-	BYTE result;
+	BYTE result = FAIL;
 
 	_MAGIC_TABLE* pTable = nullptr;
 	_MAGIC_TYPE1* pType1 = nullptr;
@@ -547,7 +542,7 @@ short CUser::GetDamage(int tid, int magicid)
 	{
 		// Get main magic table.
 		pTable = m_pMain->m_MagictableArray.GetData(magicid);
-		if (!pTable)
+		if (pTable == nullptr)
 			return -1;
 
 		// SKILL HIT!
@@ -591,7 +586,7 @@ short CUser::GetDamage(int tid, int magicid)
 		{
 			// Get magic skill table type 2.
 			pType2 = m_pMain->m_Magictype2Array.GetData(magicid);
-			if (!pType2)
+			if (pType2 == nullptr)
 				return -1;
 
 			// Non-relative/Penetration hit.
@@ -672,11 +667,10 @@ short CUser::GetDamage(int tid, int magicid)
 
 short CUser::GetMagicDamage(int damage, short tid)
 {
-	short total_r = 0;
-	short temp_damage = 0;
+	short total_r = 0, temp_damage = 0;
 
 	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
-	if (!pNpc)
+	if (pNpc == nullptr)
 		return damage;
 
 	// RIGHT HAND!!! by Yookozuna
@@ -712,16 +706,13 @@ short CUser::GetMagicDamage(int damage, short tid)
 
 		case 7:	// MP Drain				
 			break;
-
-		case 0:
-			break;
 	}
 
 	if (m_bMagicTypeRightHand > 0
 		&& m_bMagicTypeRightHand < 5)
 	{
 		temp_damage = m_sMagicAmountRightHand - m_sMagicAmountRightHand * total_r / 200;
-		damage = damage + temp_damage;
+		damage += temp_damage;
 	}
 
 	// Reset all temporary data.
@@ -761,9 +752,6 @@ short CUser::GetMagicDamage(int damage, short tid)
 
 		case 7:	// MP Drain		
 			break;
-
-		case 0:
-			break;
 	}
 
 	if (m_bMagicTypeLeftHand > 0
@@ -773,7 +761,7 @@ short CUser::GetMagicDamage(int damage, short tid)
 			total_r = 200;
 
 		temp_damage = m_sMagicAmountLeftHand - m_sMagicAmountLeftHand * total_r / 200;
-		damage = damage + temp_damage;
+		damage += temp_damage;
 	}
 
 	return damage;
@@ -781,137 +769,11 @@ short CUser::GetMagicDamage(int damage, short tid)
 
 BYTE CUser::GetHitRate(float rate)
 {
-/*
-	BYTE result;
+	BYTE result = FAIL;
 	int random = 0;
 	random = myrand(1, 10000);
 
-	if( rate >= 5.0 )
-	{
-		if( random >= 1 && random <= 3500)
-			result = GREAT_SUCCESS;
-		else if( random >= 3501 && random <= 7500)
-			result = SUCCESS;
-		else if( random >= 7501 && random <= 9500)
-			result = NORMAL;
-		else if( random >= 9501 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 5.0 && rate >= 3.0)
-	{
-		if( random >= 1 && random <= 2500)
-			result = GREAT_SUCCESS;
-		else if( random >= 2501 && random <= 6000)
-			result = SUCCESS;
-		else if( random >= 6001 && random <= 9000)
-			result = NORMAL;
-		else if( random >= 9001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 3.0 && rate >= 2.0)
-	{
-		if( random >= 1 && random <= 2000)
-			result = GREAT_SUCCESS;
-		else if( random >= 2001 && random <= 5000)
-			result = SUCCESS;
-		else if( random >= 5001 && random <= 9000)
-			result = NORMAL;
-		else if( random >= 9001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 2.0 && rate >= 1.25)
-	{
-		if( random >= 1 && random <= 1500)
-			result = GREAT_SUCCESS;
-		else if( random >= 1501 && random <= 4000)
-			result = SUCCESS;
-		else if( random >= 4001 && random <= 8500)
-			result = NORMAL;
-		else if( random >= 8501 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 1.25 && rate >= 0.8)
-	{
-		if( random >= 1 && random <= 1000)
-			result = GREAT_SUCCESS;
-		else if( random >= 1001 && random <= 3000)
-			result = SUCCESS;
-		else if( random >= 3001 && random <= 8000)
-			result = NORMAL;
-		else if( random >= 8001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 0.8 && rate >= 0.5)
-	{
-		if( random >= 1 && random <= 800)
-			result = GREAT_SUCCESS;
-		else if( random >= 801 && random <= 2400)
-			result = SUCCESS;
-		else if( random >= 2401 && random <= 7000)
-			result = NORMAL;
-		else if( random >= 7001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 0.5 && rate >= 0.33)
-	{
-		if( random >= 1 && random <= 600)
-			result = GREAT_SUCCESS;
-		else if( random >= 601 && random <= 1800)
-			result = SUCCESS;
-		else if( random >= 1801 && random <= 6000)
-			result = NORMAL;
-		else if( random >= 6001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else if ( rate < 0.33 && rate >= 0.2)
-	{
-		if( random >= 1 && random <= 400)
-			result = GREAT_SUCCESS;
-		else if( random >= 401 && random <= 1300)
-			result = SUCCESS;
-		else if( random >= 1301 && random <= 5000)
-			result = NORMAL;
-		else if( random >= 5001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-	else
-	{
-		if( random >= 1 && random <= 200)
-			result = GREAT_SUCCESS;
-		else if( random >= 201 && random <= 800)
-			result = SUCCESS;
-		else if( random >= 801 && random <= 4000)
-			result = NORMAL;
-		else if( random >= 4001 && random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
-	}
-
-	return result;
-*/
-
-	BYTE result;
-	int random = 0;
-	random = myrand(1, 10000);
-
-	if (rate >= 5.0)
+	if (rate >= 5.0f)
 	{
 		if (random >= 1
 			&& random <= 3500)
@@ -922,14 +784,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 7501
 			&& random <= 9800)
 			result = NORMAL;
-		else if (random >= 9801
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 5.0
-		&&*/ rate >= 3.0)
+	else if (rate >= 3.0f)
 	{
 		if (random >= 1
 			&& random <= 2500)
@@ -940,14 +796,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 6001
 			&& random <= 9600)
 			result = NORMAL;
-		else if (random >= 9601
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 3.0
-		&&*/ rate >= 2.0)
+	else if (rate >= 2.0f)
 	{
 		if (random >= 1
 			&& random <= 2000)
@@ -958,14 +808,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 5001
 			&& random <= 9400)
 			result = NORMAL;
-		else if (random >= 9401
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 2.0
-		&&*/ rate >= 1.25)
+	else if (rate >= 1.25f)
 	{
 		if (random >= 1
 			&& random <= 1500)
@@ -976,14 +820,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 4001
 			&& random <= 9200)
 			result = NORMAL;
-		else if (random >= 9201
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 1.25
-		&&*/ rate >= 0.8)
+	else if (rate >= 0.8f)
 	{
 		if (random >= 1
 			&& random <= 1000)
@@ -994,14 +832,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 3001
 			&& random <= 9000)
 			result = NORMAL;
-		else if (random >= 9001
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 0.8
-		&&*/ rate >= 0.5)
+	else if (rate >= 0.5f)
 	{
 		if (random >= 1
 			&& random <= 800)
@@ -1012,14 +844,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 2501
 			&& random <= 8000)
 			result = NORMAL;
-		else if (random >= 8001
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 0.5 &&*/
-		rate >= 0.33)
+	else if (rate >= 0.33f)
 	{
 		if (random >= 1
 			&& random <= 600)
@@ -1030,14 +856,8 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 2001
 			&& random <= 7000)
 			result = NORMAL;
-		else if (random >= 7001
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
-	else if (/*rate < 0.33
-		&&*/ rate >= 0.2)
+	else if (rate >= 0.2f)
 	{
 		if (random >= 1
 			&& random <= 400)
@@ -1048,11 +868,6 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 1501
 			&& random <= 6000)
 			result = NORMAL;
-		else if (random >= 6001
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
 	else
 	{
@@ -1065,11 +880,6 @@ BYTE CUser::GetHitRate(float rate)
 		else if (random >= 1001
 			&& random <= 5000)
 			result = NORMAL;
-		else if (random >= 5001
-			&& random <= 10000)
-			result = FAIL;
-		else
-			result = FAIL;
 	}
 
 	return result;
@@ -1079,9 +889,8 @@ BYTE CUser::GetHitRate(float rate)
 void CUser::SendSystemMsg(TCHAR* pMsg, BYTE type, int nWho)
 {
 	int send_index = 0;
-	char buff[1024];
-	memset(buff, 0x00, 1024);
-	short sLength = _tcslen(pMsg);
+	char buff[1024] = {};
+	short sLength = static_cast<short>(strlen(pMsg));
 
 	SetByte(buff, AG_SYSTEM_MSG, send_index);
 	SetByte(buff, type, send_index);				// 채팅형식
@@ -1178,7 +987,7 @@ void CUser::HealMagic()
 	int region_z = m_curz / VIEW_DIST;
 
 	if (m_sZoneIndex < 0
-		|| m_sZoneIndex > m_pMain->g_arZone.size())
+		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 	{
 		TRACE("#### CUser--HealMagic ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_strUserID, m_sZoneIndex);
 		return;
@@ -1220,7 +1029,7 @@ void CUser::HealMagic()
 void CUser::HealAreaCheck(int rx, int rz)
 {
 	if (m_sZoneIndex < 0
-		|| m_sZoneIndex > m_pMain->g_arZone.size())
+		|| m_sZoneIndex >= m_pMain->g_arZone.size())
 	{
 		TRACE("#### CUser--HealAreaCheck ZoneIndex Fail : [name=%s], zoneindex=%d #####\n", m_strUserID, m_sZoneIndex);
 		return;
@@ -1246,7 +1055,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 	CNpc* pNpc = nullptr;      // Pointer initialization!
 	float fDis = 0.0f;
 	vStart.Set(m_curx, (float) 0, m_curz);
-	char send_buff[256];	memset(send_buff, 0x00, 256);
+	char send_buff[256] = {};
 	int nid = 0, send_index = 0, result = 1, count = 0, total_mon = 0;
 	int* pNpcIDList = nullptr;
 
@@ -1271,7 +1080,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = (CNpc*) m_pMain->m_arNpc.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->m_arNpc.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD)
@@ -1301,11 +1110,11 @@ void CUser::WriteUserLog()
 	for (const _USERLOG* pUserLog : m_UserLogList)
 	{
 		if (pUserLog->byFlag == USER_LOGIN)
-			string.Format("%d-%d-%d %d:%d, %s, %d, %s\r\n", pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), "LogIn", pUserLog->byLevel, pUserLog->strUserID);
+			string.Format(_T("%d-%d-%d %d:%d, %s, %d, %hs\r\n"), pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), _T("LogIn"), pUserLog->byLevel, pUserLog->strUserID);
 		else if (pUserLog->byFlag == USER_LOGOUT)
-			string.Format("%d-%d-%d %d:%d, %s, %d, %s\r\n", pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), "LogOut", pUserLog->byLevel, pUserLog->strUserID);
+			string.Format(_T("%d-%d-%d %d:%d, %s, %d, %hs\r\n"), pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), _T("LogOut"), pUserLog->byLevel, pUserLog->strUserID);
 		else if (pUserLog->byFlag == USER_LEVEL_UP)
-			string.Format("%d-%d-%d %d:%d, %s, %d, %s\r\n", pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), "LevelUp", pUserLog->byLevel, pUserLog->strUserID);
+			string.Format(_T("%d-%d-%d %d:%d, %s, %d, %hs\r\n"), pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), _T("LevelUp"), pUserLog->byLevel, pUserLog->strUserID);
 		EnterCriticalSection(&g_LogFileWrite);
 		m_pMain->m_UserLogFile.Write(string, string.GetLength());
 		LeaveCriticalSection(&g_LogFileWrite);
@@ -1316,13 +1125,9 @@ void CUser::WriteUserLog()
 
 void CUser::InitUserLog()
 {
-	_USERLOG* pUserLog = nullptr;
-
-	while (m_UserLogList.size())
+	while (!m_UserLogList.empty())
 	{
-		pUserLog = m_UserLogList.front();
-		if (pUserLog)
-			delete pUserLog;
+		delete m_UserLogList.front();
 		m_UserLogList.pop_front();
 	}
 	m_UserLogList.clear();

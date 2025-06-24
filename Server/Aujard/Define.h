@@ -158,7 +158,7 @@ struct	_ITEM_DATA
 	int		nNum;		// item 번호
 	short	sDuration;	// item 내구력
 	short	sCount;		// item 갯수 or item 축복 속성에 해당 값
-	__int64	nSerialNum;	// item serial code
+	int64_t	nSerialNum;	// item serial code
 };
 
 struct _ITEM_TABLE
@@ -307,10 +307,10 @@ inline float Getfloat(char* sBuf, int& index)
 	return *(float*) (sBuf + index - 4);
 }
 
-inline __int64 GetInt64(char* sBuf, int& index)
+inline int64_t GetInt64(char* sBuf, int& index)
 {
 	index += 8;
-	return *(__int64*) (sBuf + index - 8);
+	return *(int64_t*) (sBuf + index - 8);
 }
 
 inline void SetString(char* tBuf, char* sBuf, int len, int& index)
@@ -345,7 +345,7 @@ inline void Setfloat(char* tBuf, float sFloat, int& index)
 	index += 4;
 }
 
-inline void SetInt64(char* tBuf, __int64 nInt64, int& index)
+inline void SetInt64(char* tBuf, int64_t nInt64, int& index)
 {
 	CopyMemory(tBuf + index, &nInt64, 8);
 	index += 8;

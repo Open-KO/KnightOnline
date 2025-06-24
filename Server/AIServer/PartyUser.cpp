@@ -18,10 +18,8 @@ static char THIS_FILE[] = __FILE__;
 
 CPartyUser::CPartyUser()
 {
-
 }
 
 CPartyUser::~CPartyUser()
 {
-
 }

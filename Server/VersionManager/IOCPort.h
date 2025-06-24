@@ -9,14 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include <list>
 
 typedef  std::list<int>  SidList;
 
 class CIOCPSocket2;
-
 class CIOCPort
 {
 public:
@@ -48,7 +45,7 @@ public:
 	CIOCPSocket2** m_SockArray;
 	CIOCPSocket2** m_SockArrayInActive;
 
-	CIOCPSocket2** m_ClientSockArray;		// Connect¿ë ¼ÒÄÏ
+	CIOCPSocket2** m_ClientSockArray;		// Connect용 소켓
 
 protected:
 	DWORD m_dwNumberOfWorkers;

@@ -30,4 +30,3 @@ CRegion::~CRegion()
 	if (!m_RegionNpcArray.IsEmpty())
 		m_RegionNpcArray.DeleteAllData();
 }
-

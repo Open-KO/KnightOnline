@@ -16,9 +16,6 @@
 
 #define DELAY				250
 
-DWORD	g_dwLastTimeCount = GetTickCount();
-DWORD	g_dwCurrTimeCount = GetTickCount();
-
 //////////////////////////////////////////////////////////////////////
 // NPC Thread Callback Function
 //
@@ -33,14 +30,15 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 	DWORD				dwDiffTime	= 0;
 	DWORD				dwSleep		= 250;
 	DWORD				dwTickTime	= 0;
-	srand((unsigned) time(nullptr));
-	myrand(1, 10000); myrand(1, 10000);
+	srand((unsigned int) time(nullptr));
+	myrand(1, 10000);
+	myrand(1, 10000);
 
 	float  fTime2 = 0.0f;
 	float  fTime3 = 0.0f;
 	int    duration_damage = 0;
 
-	if (!pInfo)
+	if (pInfo == nullptr)
 		return 0;
 
 	while (!g_bNpcExit)
@@ -174,7 +172,7 @@ UINT ZoneEventThreadProc(LPVOID pParam/* = nullptr */)
 		for (i = 0; i < m_pMain->g_arZone.size(); i++)
 		{
 			pMap = m_pMain->g_arZone[i];
-			if (!pMap)
+			if (pMap == nullptr)
 				continue;
 
 			// 현재의 존이 던젼담당하는 존이 아니면 리턴..
@@ -189,7 +187,7 @@ UINT ZoneEventThreadProc(LPVOID pParam/* = nullptr */)
 			for (j = 1; j < pMap->m_arRoomEventArray.GetSize() + 1; j++)
 			{
 				pRoom = pMap->m_arRoomEventArray.GetData(j);
-				if (!pRoom)
+				if (pRoom == nullptr)
 					continue;
 
 				// 1:init, 2:progress, 3:clear

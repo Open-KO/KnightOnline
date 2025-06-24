@@ -7,7 +7,6 @@
 #include "versionmanagerdlg.h"
 #include "User.h"
 
-#pragma warning(disable : 4786)		// Visual C++ Only
 #include <set>
 
 #ifdef _DEBUG
@@ -42,7 +41,7 @@ void CUser::CloseProcess()
 
 void CUser::Parsing(int len, char* pData)
 {
-	int index = 0, send_index = 0, i = 0, client_version = 0;
+	int index = 0, send_index = 0, client_version = 0;
 	char buff[2048] = {};
 	BYTE command = GetByte(pData, index);
 
@@ -55,17 +54,18 @@ void CUser::Parsing(int len, char* pData)
 			break;
 
 		case LS_SERVERLIST:
-			m_pMain->m_DBProcess.LoadUserCountList();		// 기범이가 ^^;
+			// 기범이가 ^^;
+			m_pMain->m_DBProcess.LoadUserCountList();
 
 			SetByte(buff, LS_SERVERLIST, send_index);
 			SetByte(buff, m_pMain->m_nServerCount, send_index);
-			for (i = 0; i < m_pMain->m_ServerList.size(); i++)
+			for (_SERVER_INFO* pInfo : m_pMain->m_ServerList)
 			{
-				SetShort(buff, strlen(m_pMain->m_ServerList[i]->strServerIP), send_index);
-				SetString(buff, m_pMain->m_ServerList[i]->strServerIP, strlen(m_pMain->m_ServerList[i]->strServerIP), send_index);
-				SetShort(buff, strlen(m_pMain->m_ServerList[i]->strServerName), send_index);
-				SetString(buff, m_pMain->m_ServerList[i]->strServerName, strlen(m_pMain->m_ServerList[i]->strServerName), send_index);
-				SetShort(buff, m_pMain->m_ServerList[i]->sUserCount, send_index);   // 기범이가 ^^;
+				SetShort(buff, strlen(pInfo->strServerIP), send_index);
+				SetString(buff, pInfo->strServerIP, strlen(pInfo->strServerIP), send_index);
+				SetShort(buff, strlen(pInfo->strServerName), send_index);
+				SetString(buff, pInfo->strServerName, strlen(pInfo->strServerName), send_index);
+				SetShort(buff, pInfo->sUserCount, send_index);   // 기범이가 ^^;
 			}
 			Send(buff, send_index);
 			break;
@@ -89,18 +89,21 @@ void CUser::LogInReq(char* pBuf)
 {
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0, serverno = 0;
 	BOOL bCurrentuser = FALSE;
-	char send_buff[256] = {};
-	char serverip[20] = {};
-	char accountid[MAX_ID_SIZE + 1] = {}, pwd[13] = {};
+	char send_buff[256] = {},
+		serverip[20] = {},
+		accountid[MAX_ID_SIZE + 1] = {},
+		pwd[13] = {};
 
 	idlen = GetShort(pBuf, index);
-	if (idlen > MAX_ID_SIZE || idlen <= 0)
+	if (idlen > MAX_ID_SIZE
+		|| idlen <= 0)
 		goto fail_return;
 
 	GetString(accountid, pBuf, idlen, index);
 
 	pwdlen = GetShort(pBuf, index);
-	if (pwdlen > 12 || pwdlen < 0)
+	if (pwdlen > 12
+		|| pwdlen < 0)
 		goto fail_return;
 
 	GetString(pwd, pBuf, pwdlen, index);
@@ -143,10 +146,12 @@ void CUser::MgameLogin(char* pBuf)
 {
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0;
 	char send_buff[256] = {};
-	char accountid[MAX_ID_SIZE + 1] = {}, pwd[13] = {};
+	char accountid[MAX_ID_SIZE + 1] = {},
+		pwd[13] = {};
 
 	idlen = GetShort(pBuf, index);
-	if (idlen > MAX_ID_SIZE || idlen <= 0)
+	if (idlen > MAX_ID_SIZE
+		|| idlen <= 0)
 		goto fail_return;
 
 	GetString(accountid, pBuf, idlen, index);
@@ -171,7 +176,7 @@ fail_return:
 void CUser::SendDownloadInfo(int version)
 {
 	int send_index = 0;
-	std::set <std::string>	downloadset;
+	std::set<std::string> downloadset;
 	char buff[2048];
 
 	for (const auto& [_, pInfo] : m_pMain->m_VersionList)

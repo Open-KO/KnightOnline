@@ -17,7 +17,7 @@ CCompressManager::CCompressManager()
 	addList = nullptr;
 	CompressBufferPtr = nullptr;
 	ExtractBufferPtr = nullptr;
-	pScratchPad = (PCHAR)new char[CMP_BUFFER_SIZE];
+	pScratchPad = new char[CMP_BUFFER_SIZE];
 }
 
 CCompressManager::~CCompressManager()
@@ -47,7 +47,7 @@ int CCompressManager::AddData(char* add_data, long nLen)
 
 	pData = new CCompressData;
 	dataPtr = new char[l_len + 1 + sizeof(short)];
-	memcpy(dataPtr, (char*) (&l_len), sizeof(short));
+	memcpy(dataPtr, &l_len, sizeof(short));
 	memcpy(&dataPtr[sizeof(short)], add_data, l_len);
 	dataPtr[l_len + sizeof(short)] = '\0';
 	pData->SetDataPtr(dataPtr);
@@ -191,7 +191,7 @@ int CCompressManager::PreCompressWork()
 	for (pos = addList->GetHeadPosition(); pos != nullptr; addList->GetNext(pos))
 	{
 		pData = (CCompressData*) addList->GetAt(pos);
-		memcpy((char*) (&strLength), pData->GetDataPtr(), sizeof(short));
+		memcpy(&strLength, pData->GetDataPtr(), sizeof(short));
 		bytes_count = strLength;
 		memcpy((CompressBufferPtr + CompressCurPos), (pData->GetDataPtr() + sizeof(short)), bytes_count);
 		CompressCurPos += bytes_count;
@@ -226,7 +226,6 @@ int CCompressManager::Compress()
 
 	// COMPRESS THE FILE
 	iStatus = implode(ReadBuffer, WriteBuffer, pScratchPad, this, &DataType, &DictSize);
-
 	if (iStatus != 0)
 		return false;
 
@@ -256,17 +255,11 @@ void CCompressManager::FlushAddData()
 	}
 	adding_data_count = 0;
 
-	if (CompressBufferPtr != nullptr)
-	{
-		delete[] CompressBufferPtr;
-		CompressBufferPtr = nullptr;
-	}
+	delete[] CompressBufferPtr;
+	CompressBufferPtr = nullptr;
 
-	if (ExtractBufferPtr != nullptr)
-	{
-		delete[] ExtractBufferPtr;
-		ExtractBufferPtr = nullptr;
-	}
+	delete[] ExtractBufferPtr;
+	ExtractBufferPtr = nullptr;
 
 	nCompressBufferCount = 0;
 	nUnCompressBufferCount = 0;
@@ -284,26 +277,23 @@ void CCompressManager::FlushAddData()
 //Extract Part...
 void CCompressManager::SetCompressionData(char* b_ptr, long nLen)
 {
-	int l_len;
+	size_t l_len;
 	if (nLen == 0)
 		l_len = strlen(b_ptr);
 	else
-		l_len = nLen;
+		l_len = static_cast<size_t>(nLen);
 
 	memcpy(CompressBufferPtr, b_ptr, l_len);
 }
 
 int CCompressManager::PreUncompressWork(long nLen, long orgDataLen)
 {
-	if (CompressBufferPtr != nullptr)
-		delete[] CompressBufferPtr;
-
+	delete[] CompressBufferPtr;
 	CompressBufferPtr = new char[nLen + 1];
 	nCompressBufferCount = nLen + 1;
 	CompressCurPos = 0;
 
-	if (ExtractBufferPtr != nullptr)
-		delete[] ExtractBufferPtr;
+	delete[] ExtractBufferPtr;
 
 	if (orgDataLen == 0)
 	{
@@ -349,20 +339,14 @@ int CCompressManager::Extract()
 
 void CCompressManager::FlushExtractedData()
 {
-	if (CompressBufferPtr != nullptr)
-	{
-		delete[] CompressBufferPtr;
-		CompressBufferPtr = nullptr;
-	}
+	delete[] CompressBufferPtr;
+	CompressBufferPtr = nullptr;
 
 	nCompressBufferCount = 0;
 	CompressCurPos = 0;
 
-	if (ExtractBufferPtr != nullptr)
-	{
-		delete[] ExtractBufferPtr;
-		ExtractBufferPtr = nullptr;
-	}
+	delete[] ExtractBufferPtr;
+	ExtractBufferPtr = nullptr;
 
 	nUnCompressBufferCount = 0;
 	ErrorOccurred = 0;

@@ -8,13 +8,15 @@
 #include "VersionSet.h"
 #include "User.h"
 
+#include <shared/Ini.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
-CIOCPort	CVersionManagerDlg::m_Iocport;
+CIOCPort CVersionManagerDlg::m_Iocport;
 
 /////////////////////////////////////////////////////////////////////////////
 // CVersionManagerDlg dialog
@@ -112,44 +114,47 @@ BOOL CVersionManagerDlg::OnInitDialog()
 
 BOOL CVersionManagerDlg::GetInfoFromIni()
 {
-	int errorcode = 0;
-	CString errorstr, inipath;
+	CString inipath;
+	inipath.Format(_T("%s\\Version.ini"), GetProgPath());
 
-	inipath.Format("%s\\Version.ini", GetProgPath());
-	GetPrivateProfileString("DOWNLOAD", "URL", "", m_strFtpUrl, 256, inipath);
-	GetPrivateProfileString("DOWNLOAD", "PATH", "", m_strFilePath, 256, inipath);
+	CIni ini(inipath.GetString());
 
-	GetPrivateProfileString("ODBC", "DSN", "", m_ODBCName, 32, inipath);
-	GetPrivateProfileString("ODBC", "UID", "", m_ODBCLogin, 32, inipath);
-	GetPrivateProfileString("ODBC", "PWD", "", m_ODBCPwd, 32, inipath);
-	GetPrivateProfileString("ODBC", "TABLE", "", m_TableName, 32, inipath);
+	ini.GetString("DOWNLOAD", "URL", "ftp.test.net", m_strFtpUrl, sizeof(m_strFtpUrl));
+	ini.GetString("DOWNLOAD", "PATH", "/test/path", m_strFilePath, sizeof(m_strFilePath));
+	ini.Save();
 
-	m_nServerCount = GetPrivateProfileInt("SERVER_LIST", "COUNT", 0, inipath);
+	ini.GetString(_T("ODBC"), _T("DSN"), _T(""), m_ODBCName, sizeof(m_ODBCName));
+	ini.GetString(_T("ODBC"), _T("UID"), _T(""), m_ODBCLogin, sizeof(m_ODBCLogin));
+	ini.GetString(_T("ODBC"), _T("PWD"), _T(""), m_ODBCPwd, sizeof(m_ODBCPwd));
+	ini.GetString(_T("ODBC"), _T("TABLE"), _T(""), m_TableName, sizeof(m_TableName));
 
-	if (!strlen(m_strFtpUrl)
-		|| !strlen(m_strFilePath))
+	m_nServerCount = ini.GetInt("SERVER_LIST", "COUNT", 0);
+
+	if (strlen(m_strFtpUrl) == 0
+		|| strlen(m_strFilePath) == 0)
 		return FALSE;
 
-	if (!strlen(m_ODBCName)
-		|| !strlen(m_ODBCLogin)
-		|| !strlen(m_ODBCPwd)
-		|| !strlen(m_TableName))
+	if (_tcslen(m_ODBCName) == 0
+		|| _tcslen(m_ODBCLogin) == 0
+		|| _tcslen(m_ODBCPwd) == 0
+		|| _tcslen(m_TableName) == 0)
 		return FALSE;
 
 	if (m_nServerCount <= 0)
 		return FALSE;
 
-	char ipkey[20] = {}, namekey[20] = {};
-	_SERVER_INFO* pInfo = nullptr;
+	char ipkey[20] = {},
+		namekey[20] = {};
 
 	m_ServerList.reserve(20);
+
 	for (int i = 0; i < m_nServerCount; i++)
 	{
-		pInfo = new _SERVER_INFO;
+		_SERVER_INFO* pInfo = new _SERVER_INFO;
 		sprintf(ipkey, "SERVER_%02d", i);
 		sprintf(namekey, "NAME_%02d", i);
-		GetPrivateProfileString("SERVER_LIST", ipkey, "", pInfo->strServerIP, 32, inipath);
-		GetPrivateProfileString("SERVER_LIST", namekey, "", pInfo->strServerName, 32, inipath);
+		ini.GetString("SERVER_LIST", ipkey, "", pInfo->strServerIP, sizeof(pInfo->strServerIP));
+		ini.GetString("SERVER_LIST", namekey, "", pInfo->strServerName, sizeof(pInfo->strServerName));
 		m_ServerList.push_back(pInfo);
 	}
 
@@ -196,7 +201,8 @@ BOOL CVersionManagerDlg::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
 	{
-		if (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE)
+		if (pMsg->wParam == VK_RETURN
+		|| pMsg->wParam == VK_ESCAPE)
 			return TRUE;
 	}
 
@@ -208,8 +214,8 @@ BOOL CVersionManagerDlg::DestroyWindow()
 	if (!m_VersionList.IsEmpty())
 		m_VersionList.DeleteAllData();
 
-	for (int i = 0; i < m_ServerList.size(); i++)
-		delete m_ServerList[i];
+	for (_SERVER_INFO* pInfo : m_ServerList)
+		delete pInfo;
 	m_ServerList.clear();
 
 	return CDialog::DestroyWindow();
