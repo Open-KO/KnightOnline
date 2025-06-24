@@ -121,16 +121,16 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 
 	CIni ini(inipath.GetString());
 
-	ini.GetString("DOWNLOAD", "URL", "", m_strFtpUrl, _countof(m_strFtpUrl));
-	ini.GetString("DOWNLOAD", "PATH", "", m_strFilePath, _countof(m_strFilePath));
+	ini.GetString("DOWNLOAD", "URL", "127.0.0.1", m_strFtpUrl, _countof(m_strFtpUrl));
+	ini.GetString("DOWNLOAD", "PATH", "/", m_strFilePath, _countof(m_strFilePath));
 
-	ini.GetString(_T("ODBC"), _T("DSN"), _T(""), m_ODBCName, _countof(m_ODBCName));
-	ini.GetString(_T("ODBC"), _T("UID"), _T(""), m_ODBCLogin, _countof(m_ODBCLogin));
-	ini.GetString(_T("ODBC"), _T("PWD"), _T(""), m_ODBCPwd, _countof(m_ODBCPwd));
-	ini.GetString(_T("ODBC"), _T("TABLE"), _T(""), m_TableName, _countof(m_TableName));
+	ini.GetString(_T("ODBC"), _T("DSN"), _T("KN_online"), m_ODBCName, _countof(m_ODBCName));
+	ini.GetString(_T("ODBC"), _T("UID"), _T("knight"), m_ODBCLogin, _countof(m_ODBCLogin));
+	ini.GetString(_T("ODBC"), _T("PWD"), _T("knight"), m_ODBCPwd, _countof(m_ODBCPwd));
+	ini.GetString(_T("ODBC"), _T("TABLE"), _T("VERSION"), m_TableName, _countof(m_TableName));
 	ini.GetString(_T("CONFIGURATION"), _T("DEFAULT_PATH"), _T(""), m_strDefaultPath, _countof(m_strDefaultPath));
 
-	m_nServerCount = ini.GetInt("SERVER_LIST", "COUNT", 0);
+	m_nServerCount = ini.GetInt("SERVER_LIST", "COUNT", 1);
 
 	if (strlen(m_strFtpUrl) == 0
 		|| strlen(m_strFilePath) == 0)
