@@ -104,8 +104,6 @@ void MAP::RemoveMapData()
 
 	if (!m_arRoomEventArray.IsEmpty())
 		m_arRoomEventArray.DeleteAllData();
-
-	DeleteCriticalSection(&g_region_critical);
 }
 
 BOOL MAP::IsMovable(int dest_x, int dest_y)
@@ -166,8 +164,6 @@ BOOL MAP::LoadMap(HANDLE hFile)
 
 	LoadObjectEvent(hFile);
 	LoadMapTile(hFile);
-
-	InitializeCriticalSection(&g_region_critical);
 
 	return TRUE;
 }

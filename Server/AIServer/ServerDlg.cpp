@@ -188,8 +188,11 @@ BOOL CServerDlg::OnInitDialog()
 	memset(m_CompBuf, 0, sizeof(m_CompBuf));	// 압축할 데이터를 모으는 버퍼
 	m_iCompIndex = 0;							// 압축할 데이터의 길이
 	m_CompCount = 0;							// 압축할 데이터의 개수
+
 	InitializeCriticalSection(&g_User_critical);
 	InitializeCriticalSection(&g_LogFileWrite);
+	InitializeCriticalSection(&g_region_critical);
+
 	m_sSocketCount = 0;
 	m_sErrorSocketCount = 0;
 	m_sMapEventNpc = 0;
@@ -1571,6 +1574,7 @@ BOOL CServerDlg::DestroyWindow()
 
 	DeleteCriticalSection(&g_User_critical);
 	DeleteCriticalSection(&g_LogFileWrite);
+	DeleteCriticalSection(&g_region_critical);
 
 	s_pInstance = nullptr;
 

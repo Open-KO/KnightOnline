@@ -340,6 +340,7 @@ BOOL CEbenezerDlg::OnInitDialog()
 
 	InitializeCriticalSection(&g_LogFile_critical);
 	InitializeCriticalSection(&g_serial_critical);
+	InitializeCriticalSection(&g_region_critical);
 
 	GetTimeFromIni();
 
@@ -604,9 +605,6 @@ BOOL CEbenezerDlg::DestroyWindow()
 	if (m_LogFile.m_hFile != CFile::hFileNull)
 		m_LogFile.Close();
 
-	DeleteCriticalSection(&g_LogFile_critical);
-	DeleteCriticalSection(&g_serial_critical);
-
 	if (!m_ItemtableArray.IsEmpty())
 		m_ItemtableArray.DeleteAllData();
 
@@ -670,6 +668,10 @@ BOOL CEbenezerDlg::DestroyWindow()
 	m_pUdpSocket = nullptr;
 
 	s_pInstance = nullptr;
+
+	DeleteCriticalSection(&g_LogFile_critical);
+	DeleteCriticalSection(&g_serial_critical);
+	DeleteCriticalSection(&g_region_critical);
 
 	return CDialog::DestroyWindow();
 }
