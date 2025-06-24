@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "ZoneInfoSet.h"
 
 #ifdef _DEBUG
@@ -36,7 +36,7 @@ CZoneInfoSet::CZoneInfoSet(CDatabase* pdb)
 
 CString CZoneInfoSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CZoneInfoSet::GetDefaultSQL()

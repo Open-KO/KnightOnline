@@ -25,6 +25,8 @@
 #include <shared/STLMap.h>
 #include <vector>
 
+#include "resource.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CEbenezerDlg dialog
 
@@ -58,6 +60,11 @@ class CEbenezerDlg : public CDialog
 {
 // Construction
 public:
+	static inline CEbenezerDlg* GetInstance() {
+		return s_pInstance;
+	}
+
+	CString GetGameDBConnectionString();
 	void WriteEventLog(char* pBuf);
 	void FlySanta();
 	void BattleZoneCurrentUsers();
@@ -135,6 +142,7 @@ public:
 	static CUser* GetUserPtr(const char* userid, NameType type);
 	CEbenezerDlg(CWnd* pParent = nullptr);	// standard constructor
 
+	static CEbenezerDlg* s_pInstance;
 	static CIOCPort	m_Iocport;
 
 	CSharedMemQueue	m_LoggerSendQueue;
@@ -143,7 +151,7 @@ public:
 
 	HANDLE	m_hReadQueueThread;
 	HANDLE	m_hMMFile;
-	char* m_lpMMFile;
+	char*	m_lpMMFile;
 	BOOL	m_bMMFCreate;
 	DWORD	m_ServerOffset;
 
@@ -198,25 +206,25 @@ public:
 	BYTE    m_byKarusOpenFlag, m_byElmoradOpenFlag, m_byBanishFlag, m_byBattleSave;
 	short   m_sDiscount;	// 능력치와 포인트 초기화 할인 (0:할인없음, 1:할인(50%) )
 	short	m_sKarusDead, m_sElmoradDead, m_sBanishDelay, m_sKarusCount, m_sElmoradCount;
-	int m_nBattleZoneOpenWeek, m_nBattleZoneOpenHourStart, m_nBattleZoneOpenHourEnd;
-	char m_strKarusCaptain[MAX_ID_SIZE + 1];
-	char m_strElmoradCaptain[MAX_ID_SIZE + 1];
+	int		m_nBattleZoneOpenWeek, m_nBattleZoneOpenHourStart, m_nBattleZoneOpenHourEnd;
+	char	m_strKarusCaptain[MAX_ID_SIZE + 1];
+	char	m_strElmoradCaptain[MAX_ID_SIZE + 1];
 
 	// ~Yookozuna 2002.07.17
 	BYTE	m_bMaxRegenePoint;
 
 	// ~Yookozuna 2002.09.21 - Today is Chusok :( 
-	short m_sBuyID[MAX_BBS_POST];
-	char  m_strBuyTitle[MAX_BBS_POST][MAX_BBS_TITLE];
-	char  m_strBuyMessage[MAX_BBS_POST][MAX_BBS_MESSAGE];
-	int   m_iBuyPrice[MAX_BBS_POST];
-	float m_fBuyStartTime[MAX_BBS_POST];
+	short	m_sBuyID[MAX_BBS_POST];
+	char	m_strBuyTitle[MAX_BBS_POST][MAX_BBS_TITLE];
+	char	m_strBuyMessage[MAX_BBS_POST][MAX_BBS_MESSAGE];
+	int		m_iBuyPrice[MAX_BBS_POST];
+	float	m_fBuyStartTime[MAX_BBS_POST];
 
-	short m_sSellID[MAX_BBS_POST];
-	char  m_strSellTitle[MAX_BBS_POST][MAX_BBS_TITLE];
-	char  m_strSellMessage[MAX_BBS_POST][MAX_BBS_MESSAGE];
-	int   m_iSellPrice[MAX_BBS_POST];
-	float m_fSellStartTime[MAX_BBS_POST];
+	short	m_sSellID[MAX_BBS_POST];
+	char	m_strSellTitle[MAX_BBS_POST][MAX_BBS_TITLE];
+	char	m_strSellMessage[MAX_BBS_POST][MAX_BBS_MESSAGE];
+	int		m_iSellPrice[MAX_BBS_POST];
+	float	m_fSellStartTime[MAX_BBS_POST];
 
 	// ~Yookozuna 2002.11.26 - 비러머글 남는 공지 --;
 	BOOL	m_bPermanentChatMode;
@@ -238,10 +246,16 @@ public:
 	int					m_nServerGroup;	// server의 번호(0:서버군이 없다, 1:서버1군, 2:서버2군)
 	ServerArray			m_ServerArray;
 	ServerArray			m_ServerGroupArray;
-	CUdpSocket* m_pUdpSocket;
-	CFile m_RegionLogFile;
-	CFile m_LogFile;
-	CFile m_EvnetLogFile;
+	CUdpSocket*			m_pUdpSocket;
+
+	CFile				m_RegionLogFile;
+	CFile				m_LogFile;
+	CFile				m_EvnetLogFile;
+
+	TCHAR				m_strGameDSN[24];
+	TCHAR				m_strGameUID[24];
+	TCHAR				m_strGamePWD[24];
+
 // Dialog Data
 	//{{AFX_DATA(CEbenezerDlg)
 	enum { IDD = IDD_EBENEZER_DIALOG };

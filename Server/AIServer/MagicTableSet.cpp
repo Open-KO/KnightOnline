@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MagicTableSet.h"
 
 #ifdef _DEBUG
@@ -48,10 +48,9 @@ CMagicTableSet::CMagicTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMagicTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMagicTableSet::GetDefaultSQL()

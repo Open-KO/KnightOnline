@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "KnightsUserSet.h"
 
 #ifdef _DEBUG
@@ -27,10 +27,9 @@ CKnightsUserSet::CKnightsUserSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CKnightsUserSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CKnightsUserSet::GetDefaultSQL()

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MakeLareItemTableSet.h"
 
 #ifdef _DEBUG
@@ -29,10 +29,9 @@ CMakeLareItemTableSet::CMakeLareItemTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMakeLareItemTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMakeLareItemTableSet::GetDefaultSQL()

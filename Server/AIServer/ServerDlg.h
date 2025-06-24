@@ -8,8 +8,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "IOCPort.h"
 #include "GameSocket.h"
 
@@ -25,6 +23,8 @@
 #include "Party.h"
 
 #include "extern.h"			// 전역 객체
+
+#include "resource.h"
 
 #include <shared/STLMap.h>
 #include <vector>
@@ -101,14 +101,17 @@ public:
 	int Send(char* pData, int length, int nZone = 0);
 	void SendSystemMsg(char* pMsg, int zone, int type = 0, int who = 0);
 	void ResetBattleZone();
+	CString GetGameDBConnectionString();
 
 	CServerDlg(CWnd* pParent = nullptr);	// standard constructor
 
+	static inline CServerDlg* GetInstance() {
+		return s_pInstance;
+	}
+
 // Dialog Data
 	//{{AFX_DATA(CServerDlg)
-	enum {
-		IDD = IDD_SERVER_DIALOG
-	};
+	enum { IDD = IDD_SERVER_DIALOG };
 	CListBox	m_StatusList;
 	CString	m_strStatus;
 	//}}AFX_DATA
@@ -176,6 +179,8 @@ public:
 
 	CIOCPort m_Iocport;
 
+	static CServerDlg* s_pInstance;
+
 private:
 	// 패킷 압축에 필요 변수   -------------
 	CCompressManager	m_CompMng;
@@ -186,6 +191,9 @@ private:
 
 	BYTE				m_byZone;
 
+	TCHAR				m_strGameDSN[24];
+	TCHAR				m_strGameUID[24];
+	TCHAR				m_strGamePWD[24];
 
 // Implementation
 protected:

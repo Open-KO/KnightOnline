@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MakeDefensiveTableSet.h"
 
 #ifdef _DEBUG
@@ -33,10 +33,9 @@ CMakeDefensiveTableSet::CMakeDefensiveTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMakeDefensiveTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMakeDefensiveTableSet::GetDefaultSQL()

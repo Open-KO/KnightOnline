@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "ebenezer.h"
+#include "EbenezerDlg.h"
 #include "HomeSet.h"
 
 #ifdef _DEBUG
@@ -48,8 +48,7 @@ CHomeSet::CHomeSet(CDatabase* pdb)
 
 CString CHomeSet::GetDefaultConnect()
 {
-//	return _T("ODBC;DSN=KN_Online");
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CEbenezerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CHomeSet::GetDefaultSQL()

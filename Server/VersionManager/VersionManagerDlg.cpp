@@ -5,7 +5,6 @@
 #include "VersionManager.h"
 #include "VersionManagerDlg.h"
 #include "IOCPSocket2.h"
-#include "VersionSet.h"
 #include "SettingDlg.h"
 #include "User.h"
 

@@ -10,7 +10,9 @@
 
 #include "SharedMem.h"
 #include "DBAgent.h"
-#include "define.h"
+#include "Define.h"
+#include "resource.h"
+
 #include <shared/STLMap.h>
 
 typedef CSTLMap <_ITEM_TABLE>		ItemtableArray;
@@ -21,6 +23,11 @@ class CAujardDlg : public CDialog
 {
 // Construction
 public:
+	static inline CAujardDlg* GetInstance() {
+		return s_pInstance;
+	}
+
+	CString GetGameDBConnectionString();
 	void CouponEvent(char* pData);
 	void BattleEventResult(char* pData);
 	void WriteLogFile(char* pData);
@@ -94,6 +101,8 @@ protected:
 // Implementation
 protected:
 	HICON m_hIcon;
+
+	static CAujardDlg* s_pInstance;
 
 	// Generated message map functions
 	//{{AFX_MSG(CAujardDlg)

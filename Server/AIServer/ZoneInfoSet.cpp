@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Server.h"
+#include "ServerDlg.h"
 #include "ZoneInfoSet.h"
 
 #ifdef _DEBUG
@@ -35,10 +35,9 @@ CZoneInfoSet::CZoneInfoSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CZoneInfoSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=KN_Online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CZoneInfoSet::GetDefaultSQL()

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MakeGradeItemTableSet.h"
 
 #ifdef _DEBUG
@@ -35,10 +35,9 @@ CMakeGradeItemTableSet::CMakeGradeItemTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMakeGradeItemTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMakeGradeItemTableSet::GetDefaultSQL()

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "MakeWeaponTableSet.h"
 
 #ifdef _DEBUG
@@ -38,10 +38,9 @@ CMakeWeaponTableSet::CMakeWeaponTableSet(CDatabase* pdb)
 	m_nDefaultType = snapshot;
 }
 
-
 CString CMakeWeaponTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CMakeWeaponTableSet::GetDefaultSQL()

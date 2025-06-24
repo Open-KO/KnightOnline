@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "server.h"
+#include "ServerDlg.h"
 #include "NpcTableSet.h"
 
 #ifdef _DEBUG
@@ -72,7 +72,7 @@ CNpcTableSet::CNpcTableSet(CDatabase* pdb)
 
 CString CNpcTableSet::GetDefaultConnect()
 {
-	return _T("ODBC;DSN=kn_online;UID=knight;PWD=knight");
+	return CServerDlg::GetInstance()->GetGameDBConnectionString();
 }
 
 CString CNpcTableSet::GetDefaultSQL()

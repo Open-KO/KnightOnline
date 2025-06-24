@@ -20,10 +20,11 @@ static char THIS_FILE[] = __FILE__;
 #define SERIAL_TIME			300
 #define PACKET_CHECK		400
 
-WORD	g_increase_serial = 50001;
+WORD g_increase_serial = 50001;
 
-DWORD WINAPI	ReadQueueThread(LPVOID lp);
 CRITICAL_SECTION g_LogFileWrite;
+
+CAujardDlg* CAujardDlg::s_pInstance = nullptr;
 
 DWORD WINAPI ReadQueueThread(LPVOID lp)
 {
@@ -160,6 +161,8 @@ BOOL CAujardDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	s_pInstance = this;
+
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -288,6 +291,8 @@ BOOL CAujardDlg::DestroyWindow()
 		m_LogFile.Close();
 
 	DeleteCriticalSection(&g_LogFileWrite);
+
+	s_pInstance = nullptr;
 
 	return CDialog::DestroyWindow();
 }
@@ -1642,4 +1647,15 @@ void CAujardDlg::CouponEvent(char* pData)
 
 		nResult = m_DBAgent.UpdateCouponEvent(strAccountName, strCharName, strCouponID, nItemID, nItemCount);
 	}
+}
+
+CString CAujardDlg::GetGameDBConnectionString()
+{
+	CString strConnection;
+	strConnection.Format(
+		_T("ODBC;DSN=%s;UID=%s;PWD=%s"),
+		m_strGameDSN,
+		m_strGameUID,
+		m_strGamePWD);
+	return strConnection;	
 }
