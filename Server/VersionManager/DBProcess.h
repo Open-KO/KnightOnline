@@ -23,7 +23,7 @@ public:
 	BOOL LoadVersionList();
 	BOOL LoadUserCountList();
 
-	CDBProcess();
+	CDBProcess(CVersionManagerDlg* pMain);
 	virtual ~CDBProcess();
 
 	CDatabase	m_VersionDB;

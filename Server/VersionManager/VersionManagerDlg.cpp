@@ -23,7 +23,8 @@ CIOCPort CVersionManagerDlg::m_Iocport;
 // CVersionManagerDlg dialog
 
 CVersionManagerDlg::CVersionManagerDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(CVersionManagerDlg::IDD, pParent)
+	: CDialog(CVersionManagerDlg::IDD, pParent),
+	m_DBProcess(this)
 {
 	//{{AFX_DATA_INIT(CVersionManagerDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -71,7 +72,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	m_Iocport.Init(MAX_USER, CLIENT_SOCKSIZE, 1);
 
 	for (int i = 0; i < MAX_USER; i++)
-		m_Iocport.m_SockArrayInActive[i] = new CUser;
+		m_Iocport.m_SockArrayInActive[i] = new CUser(this);
 
 	if (!m_Iocport.Listen(_LISTEN_PORT))
 	{

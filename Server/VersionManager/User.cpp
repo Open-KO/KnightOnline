@@ -21,7 +21,8 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CUser::CUser()
+CUser::CUser(CVersionManagerDlg* pMain)
+	: m_pMain(pMain)
 {
 }
 
@@ -31,8 +32,6 @@ CUser::~CUser()
 
 void CUser::Initialize()
 {
-	m_pMain = (CVersionManagerDlg*) AfxGetMainWnd();
-
 	CIOCPSocket2::Initialize();
 }
 

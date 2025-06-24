@@ -18,7 +18,8 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDBProcess::CDBProcess()
+CDBProcess::CDBProcess(CVersionManagerDlg* pMain)
+	: m_pMain(pMain)
 {
 }
 
@@ -29,8 +30,6 @@ CDBProcess::~CDBProcess()
 BOOL CDBProcess::InitDatabase(const TCHAR* strconnection)
 {
 	m_VersionDB.SetLoginTimeout(100);
-
-	m_pMain = (CVersionManagerDlg*) AfxGetMainWnd();
 
 	if (!m_VersionDB.Open(nullptr, FALSE, FALSE, strconnection))
 		return FALSE;
