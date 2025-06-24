@@ -10,7 +10,7 @@ constexpr int MAX_USER			= 3000;
 
 constexpr int MIN_ID_SIZE		= 6;
 constexpr int MAX_ID_SIZE		= 20;
-constexpr int MAX_PW_SIZE		= 28;
+constexpr int MAX_PW_SIZE		= 12;
 constexpr int MAX_IP_SIZE		= 15; // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
 
 constexpr int MAX_ITEM_COUNT	= 9999;	// 한 슬롯에 가지는 최대 화살/송편 개수

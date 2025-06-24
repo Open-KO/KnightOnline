@@ -4,12 +4,13 @@
 #include <string>
 #include <mmsystem.h>
 
+#include <shared/globals.h>
+
 #define _LISTEN_PORT		15100
 
 #define MAX_USER			3000
 #define CLIENT_SOCKSIZE		10
 
-#define MAX_ID_SIZE			20
 ////////////////////////////////////////////////////////////
 // Socket Define
 ////////////////////////////////////////////////////////////

@@ -159,36 +159,88 @@ int CDBProcess::AccountLogin(const char* id, const char* pwd)
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
 	TCHAR			szSQL[1024] = {};
-	SQLSMALLINT		sParmRet = 3;
+	SQLSMALLINT		sParmRet = AUTH_FAILED;
 	SQLINTEGER		cbParmRet = SQL_NTS;
 
-	wsprintf(szSQL, TEXT("{call ACCOUNT_LOGIN(\'%s\',\'%s\',?)}"), id, pwd);
-
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);
+	if (retcode != SQL_SUCCESS)
+		return sParmRet;
+
+	// TODO: Restore this, but it should be handled ideally in its own database, or a separate stored procedure.
+	// As we're currently using a singular database (and we expect people to be using our database), and we have
+	// no means of syncing this currently, we'll temporarily hack this to fetch and handle basic auth logic
+	// without a procedure.
+#if 1
+	char strPasswd[MAX_PW_SIZE + 1] = {};
+	BYTE byAuthority = 1;
+
+	_tcscpy(szSQL, _T("SELECT strPasswd, strAuthority FROM TB_USER WHERE strAccountID=?"));
+
+	retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, MAX_ID_SIZE, 0, (SQLPOINTER) id, 0, &cbParmRet);
 	if (retcode == SQL_SUCCESS)
 	{
-		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, &sParmRet, 0, &cbParmRet);
+		retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
 		if (retcode == SQL_SUCCESS)
 		{
-			retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
-			if (retcode != SQL_SUCCESS
-				&& retcode != SQL_SUCCESS_WITH_INFO)
+			retcode = SQLFetch(hstmt);
+			if (retcode == SQL_SUCCESS
+				|| retcode == SQL_SUCCESS_WITH_INFO)
 			{
-				if (DisplayErrorMsg(hstmt) == -1)
-				{
-					m_VersionDB.Close();
+				SQLGetData(hstmt, 1, SQL_C_CHAR, strPasswd, MAX_PW_SIZE, &cbParmRet);
+				SQLGetData(hstmt, 2, SQL_C_TINYINT, &byAuthority, 0, &cbParmRet);
 
-					if (!m_VersionDB.IsOpen())
-					{
-						ReConnectODBC(&m_VersionDB, m_pMain->m_ODBCName, m_pMain->m_ODBCLogin, m_pMain->m_ODBCPwd);
-						return 2;
-					}
+				// NOTE: This is the account authority
+				if (byAuthority == AUTHORITY_BLOCK_USER)
+					sParmRet = AUTH_BANNED;
+				else if (strcmp(strPasswd, pwd) != 0)
+					sParmRet = AUTH_NOT_FOUND; // use not found instead of invalid password because this just gives attackers unnecessary info.
+				else
+					sParmRet = AUTH_OK;
+			}
+			else
+			{
+				sParmRet = AUTH_NOT_FOUND;
+			}
+		}
+		else
+		{
+			if (DisplayErrorMsg(hstmt) == -1)
+			{
+				m_VersionDB.Close();
+
+				if (!m_VersionDB.IsOpen())
+				{
+					ReConnectODBC(&m_VersionDB, m_pMain->m_ODBCName, m_pMain->m_ODBCLogin, m_pMain->m_ODBCPwd);
+					return AUTH_FAILED;
 				}
 			}
 		}
-
-		SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 	}
+#else
+	wsprintf(szSQL, TEXT("{call ACCOUNT_LOGIN(\'%s\',\'%s\',?)}"), id, pwd);
+
+	retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, &sParmRet, 0, &cbParmRet);
+	if (retcode == SQL_SUCCESS)
+	{
+		retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
+		if (retcode != SQL_SUCCESS
+			&& retcode != SQL_SUCCESS_WITH_INFO)
+		{
+			if (DisplayErrorMsg(hstmt) == -1)
+			{
+				m_VersionDB.Close();
+
+				if (!m_VersionDB.IsOpen())
+				{
+					ReConnectODBC(&m_VersionDB, m_pMain->m_ODBCName, m_pMain->m_ODBCLogin, m_pMain->m_ODBCPwd);
+					return AUTH_FAILED;
+				}
+			}
+		}
+	}
+#endif
+
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 
 	return sParmRet;
 }

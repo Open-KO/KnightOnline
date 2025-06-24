@@ -96,9 +96,9 @@ void CUser::LogInReq(char* pBuf)
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0, serverno = 0;
 	BOOL bCurrentuser = FALSE;
 	char send_buff[256] = {},
-		serverip[20] = {},
+		serverip[MAX_IP_SIZE + 1] = {},
 		accountid[MAX_ID_SIZE + 1] = {},
-		pwd[13] = {};
+		pwd[MAX_PW_SIZE + 1] = {};
 
 	idlen = GetShort(pBuf, index);
 	if (idlen > MAX_ID_SIZE
@@ -108,7 +108,7 @@ void CUser::LogInReq(char* pBuf)
 	GetString(accountid, pBuf, idlen, index);
 
 	pwdlen = GetShort(pBuf, index);
-	if (pwdlen > 12
+	if (pwdlen > MAX_PW_SIZE
 		|| pwdlen < 0)
 		goto fail_return;
 
@@ -117,13 +117,14 @@ void CUser::LogInReq(char* pBuf)
 	result = m_pMain->m_DBProcess.AccountLogin(accountid, pwd);
 	SetByte(send_buff, LS_LOGIN_REQ, send_index);
 
-	// success 
-	if (result == 1)
+	if (result == AUTH_OK)
 	{
 		bCurrentuser = m_pMain->m_DBProcess.IsCurrentUser(accountid, serverip, serverno);
 		if (bCurrentuser)
 		{
-			result = 5;		// Kick out
+			// Kick out
+			result = AUTH_IN_GAME;
+
 			SetByte(send_buff, result, send_index);
 			SetString2(send_buff, serverip, (short) strlen(serverip), send_index);
 			SetShort(send_buff, serverno, send_index);
@@ -143,7 +144,7 @@ void CUser::LogInReq(char* pBuf)
 
 fail_return:
 	SetByte(send_buff, LS_LOGIN_REQ, send_index);
-	SetByte(send_buff, 2, send_index);				// id, pwd 이상...
+	SetByte(send_buff, AUTH_NOT_FOUND, send_index);				// id, pwd 이상...
 	Send(send_buff, send_index);
 }
 
@@ -153,7 +154,7 @@ void CUser::MgameLogin(char* pBuf)
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0;
 	char send_buff[256] = {};
 	char accountid[MAX_ID_SIZE + 1] = {},
-		pwd[13] = {};
+		pwd[MAX_PW_SIZE + 1] = {};
 
 	idlen = GetShort(pBuf, index);
 	if (idlen > MAX_ID_SIZE
@@ -162,7 +163,7 @@ void CUser::MgameLogin(char* pBuf)
 
 	GetString(accountid, pBuf, idlen, index);
 	pwdlen = GetShort(pBuf, index);
-	if (pwdlen > 12)
+	if (pwdlen > MAX_PW_SIZE)
 		goto fail_return;
 
 	GetString(pwd, pBuf, pwdlen, index);
@@ -175,7 +176,7 @@ void CUser::MgameLogin(char* pBuf)
 
 fail_return:
 	SetByte(send_buff, LS_MGAME_LOGIN, send_index);
-	SetByte(send_buff, 2, send_index);				// login fail...
+	SetByte(send_buff, AUTH_NOT_FOUND, send_index);				// login fail...
 	Send(send_buff, send_index);
 }
 #endif

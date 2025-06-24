@@ -150,9 +150,9 @@ enum e_LoginOpcode
 	NUM_LS_OPCODES
 };
 
-enum e_AuthResult
+enum e_AuthResult : uint8_t
 {
-	AUTH_SUCCESS		= 0x01,
+	AUTH_OK				= 0x01,
 	AUTH_NOT_FOUND		= 0x02,
 	AUTH_INVALID_PW		= 0x03,
 	AUTH_BANNED			= 0x04,
