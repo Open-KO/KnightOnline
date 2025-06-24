@@ -145,19 +145,61 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 	if (m_nServerCount <= 0)
 		return FALSE;
 
-	char ipkey[20] = {},
-		namekey[20] = {};
-
+	char key[20] = {};
 	m_ServerList.reserve(20);
 
 	for (int i = 0; i < m_nServerCount; i++)
 	{
 		_SERVER_INFO* pInfo = new _SERVER_INFO;
-		sprintf(ipkey, "SERVER_%02d", i);
-		sprintf(namekey, "NAME_%02d", i);
-		ini.GetString("SERVER_LIST", ipkey, "", pInfo->strServerIP, _countof(pInfo->strServerIP));
-		ini.GetString("SERVER_LIST", namekey, "", pInfo->strServerName, _countof(pInfo->strServerName));
+
+		snprintf(key, sizeof(key), "SERVER_%02d", i);
+		ini.GetString("SERVER_LIST", key, "", pInfo->strServerIP, _countof(pInfo->strServerIP));
+
+		snprintf(key, sizeof(key), "NAME_%02d", i);
+		ini.GetString("SERVER_LIST", key, "", pInfo->strServerName, _countof(pInfo->strServerName));
 		m_ServerList.push_back(pInfo);
+	}
+
+	// Read news from INI (max 3 blocks)
+	std::stringstream ss;
+	std::string title, message;
+
+	m_News.Size = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		snprintf(key, sizeof(key), "TITLE_%02d", i);
+		title = ini.GetString("NEWS", key, "");
+		if (title.empty())
+			continue;
+
+		snprintf(key, sizeof(key), "MESSAGE_%02d", i);
+		message = ini.GetString("NEWS", key, "");
+		if (message.empty())
+			continue;
+
+#define BOX_START			'#' << uint8_t(0) << '\n'
+#define LINE_ENDING			uint8_t(0) << '\n'
+#define BOX_END				BOX_START << LINE_ENDING
+
+		ss << title << BOX_START;
+		ss << message << LINE_ENDING << BOX_END;
+
+#undef BOX_START
+#undef LINE_ENDING
+#undef BOX_END
+	}
+
+	const std::string newsContent = ss.str();
+	if (!newsContent.empty())
+	{
+		if (newsContent.size() > sizeof(m_News.Content))
+		{
+			AfxMessageBox(_T("News too long"));
+			return FALSE;
+		}
+
+		memcpy(&m_News.Content, newsContent.c_str(), newsContent.size());
+		m_News.Size = static_cast<short>(newsContent.size());
 	}
 
 	return TRUE;

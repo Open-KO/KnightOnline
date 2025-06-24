@@ -20,8 +20,8 @@ public:
 
 	void Initialize();
 	void Parsing(int len, char* pData);
-	void CloseProcess();
 
+	void NewsReq(char* pBuf);
 	void SendDownloadInfo(int version);
 	void MgameLogin(char* pBuf);
 	void LogInReq(char* pBuf);
