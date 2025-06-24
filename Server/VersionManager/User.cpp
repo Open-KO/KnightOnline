@@ -3,9 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "versionmanager.h"
-#include "versionmanagerdlg.h"
+#include "VersionManager.h"
+#include "VersionManagerdlg.h"
 #include "User.h"
+
+#include <shared/packets.h>
 
 #include <set>
 
@@ -79,9 +81,11 @@ void CUser::Parsing(int len, char* pData)
 			LogInReq(pData + index);
 			break;
 
+#if defined(USE_MGAME_LOGIN)
 		case LS_MGAME_LOGIN:
 			MgameLogin(pData + index);
 			break;
+#endif
 	}
 }
 
@@ -142,6 +146,7 @@ fail_return:
 	Send(send_buff, send_index);
 }
 
+#if defined(USE_MGAME_LOGIN)
 void CUser::MgameLogin(char* pBuf)
 {
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0;
@@ -172,6 +177,7 @@ fail_return:
 	SetByte(send_buff, 0x02, send_index);				// login fail...
 	Send(send_buff, send_index);
 }
+#endif
 
 void CUser::SendDownloadInfo(int version)
 {

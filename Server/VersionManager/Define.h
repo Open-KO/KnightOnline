@@ -73,15 +73,6 @@ struct _SERVER_INFO
 	}
 };
 
-
-// Packet Define...
-
-#define LS_VERSION_REQ				0x01
-#define LS_DOWNLOADINFO_REQ			0x02
-#define LS_LOGIN_REQ				0xF3
-#define LS_MGAME_LOGIN				0xF4
-#define LS_SERVERLIST				0xF5
-
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 //
