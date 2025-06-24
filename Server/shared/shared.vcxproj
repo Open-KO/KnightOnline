@@ -129,17 +129,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Compression.cpp" />
-    <ClCompile Include="Compression_LZF.cpp" />
-    <ClCompile Include="Compression_PKWARE.cpp" />
-    <ClCompile Include="crc32.cpp">
+    <ClCompile Include="crc32.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DebugUtils.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="JvCryption.cpp" />
-    <ClCompile Include="lzf.cpp" />
+    <ClCompile Include="lzf.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="pkware\pklib.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -152,9 +151,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ByteBuffer.h" />
-    <ClInclude Include="Compression.h" />
-    <ClInclude Include="Compression_LZF.h" />
-    <ClInclude Include="Compression_PKWARE.h" />
     <ClInclude Include="crc32.h" />
     <ClInclude Include="DateTime.h" />
     <ClInclude Include="DebugUtils.h" />

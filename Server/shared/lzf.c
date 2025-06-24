@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include "lzf.h"
+﻿#include "lzf.h"
 
 unsigned int
 	lzf_compress (const void *const in_data, unsigned int in_len,

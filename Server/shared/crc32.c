@@ -13,7 +13,7 @@
 /* The implementation here was originally done by Gary S. Brown.  I have
    borrowed the tables directly, and made some minor changes to the
    crc32-function (including changing the interface). //ylo */
-#include "stdafx.h"
+
 #include "crc32.h"
 
   /* ============================================================= */
@@ -56,7 +56,7 @@
   /*																		*/
   /*  --------------------------------------------------------------------  */
 
-static uint32_t crc32_tab[] = {
+static unsigned int crc32_tab[] = {
 	  0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
 	  0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
 	  0xe0d5e91eL, 0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L,
@@ -113,9 +113,9 @@ static uint32_t crc32_tab[] = {
 
 /* Return a 32-bit CRC of the contents of the buffer. */
 
-uint32_t crc32(const uint8_t* s, uint32_t len, uint32_t startVal)
+unsigned int crc32(const unsigned char* s, unsigned int len, unsigned int startVal)
 {
-	uint32_t i, crc32val = startVal;
+	unsigned int i, crc32val = startVal;
 	for (i = 0; i < len; i++)
 		crc32val = crc32_tab[(crc32val ^ s[i]) & 0xff] ^ (crc32val >> 8);
 

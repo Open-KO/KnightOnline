@@ -5,11 +5,6 @@
 #endif
 
 #include <Windows.h>
-
-#include <thread>
-#include <chrono>
-#include <mutex>
-
 #include "DebugUtils.h"
 
 // Ignore the warning "nonstandard extension used: enum '<enum name>' used in qualified name"
@@ -23,4 +18,3 @@
 #include "types.h"
 
 #include "globals.h"
-#include "TimeThread.h"
