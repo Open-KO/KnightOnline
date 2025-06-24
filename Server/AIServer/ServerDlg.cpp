@@ -1626,7 +1626,8 @@ BOOL CServerDlg::MapFileLoad()
 	mapDir /= MAP_DIR;
 
 	// Resolve it to strip the relative references to be nice.
-	mapDir = std::filesystem::canonical(mapDir);
+	if (std::filesystem::exists(mapDir))
+		mapDir = std::filesystem::canonical(mapDir);
 
 	ZoneInfoSet.MoveFirst();
 

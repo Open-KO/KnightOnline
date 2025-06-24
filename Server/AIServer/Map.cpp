@@ -529,7 +529,11 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 	evtPath /= MAP_DIR;
 	evtPath /= std::to_wstring(zone_number) + L".evt";
 
+	if (!std::filesystem::exists(evtPath))
+		return TRUE;
+
 	// Resolve it to strip the relative references to be nice.
+	// NOTE: Requires the file to exist.
 	evtPath = std::filesystem::canonical(evtPath);
 
 	filename.Format(_T("%ls"), evtPath.c_str());

@@ -770,8 +770,7 @@ short CUser::GetMagicDamage(int damage, short tid)
 BYTE CUser::GetHitRate(float rate)
 {
 	BYTE result = FAIL;
-	int random = 0;
-	random = myrand(1, 10000);
+	int random = myrand(1, 10000);
 
 	if (rate >= 5.0f)
 	{

@@ -101,7 +101,11 @@ BOOL C3DMap::LoadMap(HANDLE hFile)
 
 	LoadTerrain(hFile);
 
-	m_N3ShapeMgr.Create((m_nMapSize - 1) * m_fUnitDist, (m_nMapSize - 1) * m_fUnitDist);
+	if (!m_N3ShapeMgr.Create(
+		(m_nMapSize - 1) * m_fUnitDist,
+		(m_nMapSize - 1) * m_fUnitDist))
+		return FALSE;
+
 	if (!m_N3ShapeMgr.LoadCollisionData(hFile))
 		return FALSE;
 
@@ -261,10 +265,11 @@ void C3DMap::LoadTerrain(HANDLE hFile)
 	ReadFile(hFile, &m_fUnitDist, sizeof(float), &dwRWC, nullptr);
 
 	m_fHeight = new float* [m_nMapSize];
+	for (int z = 0; z < m_nMapSize; z++)
+		m_fHeight[z] = new float[m_nMapSize];
 
 	for (int z = 0; z < m_nMapSize; z++)
 	{
-		m_fHeight[z] = new float[m_nMapSize];
 		for (int x = 0; x < m_nMapSize; x++)
 			ReadFile(hFile, &m_fHeight[x][z], sizeof(float), &dwRWC, nullptr);	// 높이값 읽어오기
 	}

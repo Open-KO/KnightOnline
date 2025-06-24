@@ -196,17 +196,21 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 {
 	DWORD dwRWC;
 
-	ReadFile(hFile, &m_fMapWidth, 4, &dwRWC, NULL); // Shape Count
-	ReadFile(hFile, &m_fMapLength, 4, &dwRWC, NULL); // Shape Count
-	this->Create(m_fMapWidth, m_fMapLength);
+	ReadFile(hFile, &m_fMapWidth, 4, &dwRWC, nullptr);
+	ReadFile(hFile, &m_fMapLength, 4, &dwRWC, nullptr);
+
+	if (!Create(m_fMapWidth, m_fMapLength))
+		return false;
 
 	// 충돌 체크 폴리곤 데이터 읽기..
-	ReadFile(hFile, &m_nCollisionFaceCount, 4, &dwRWC, NULL);
-	delete [] m_pvCollisions; m_pvCollisions = NULL;
-	if(m_nCollisionFaceCount > 0)
+	ReadFile(hFile, &m_nCollisionFaceCount, 4, &dwRWC, nullptr);
+	delete[] m_pvCollisions;
+	m_pvCollisions = nullptr;
+
+	if (m_nCollisionFaceCount > 0)
 	{
 		m_pvCollisions = new __Vector3[m_nCollisionFaceCount * 3];
-		ReadFile(hFile, m_pvCollisions, sizeof(__Vector3) * m_nCollisionFaceCount * 3, &dwRWC, NULL);
+		ReadFile(hFile, m_pvCollisions, sizeof(__Vector3) * m_nCollisionFaceCount * 3, &dwRWC, nullptr);
 	}
 
 #if !defined(_3DSERVER)
@@ -214,7 +218,7 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 	{
 		// NOTE(srmeier): for the "ah_hapbi_zone.opd" the jump seems to be specifically 0x338 bytes
 		uint8_t* tmp = new uint8_t[0x338];
-		ReadFile(hFile, tmp, 0x338, &dwRWC, NULL);
+		ReadFile(hFile, tmp, 0x338, &dwRWC, nullptr);
 		delete[] tmp;
 	}
 #endif
@@ -222,14 +226,14 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 	// Cell Data 쓰기.
 	BOOL bExist = FALSE;
 	int z = 0;
-	for(float fZ = 0.0f; fZ < m_fMapLength; fZ += CELL_MAIN_SIZE, z++)
+	for (float fZ = 0.0f; fZ < m_fMapLength; fZ += CELL_MAIN_SIZE, z++)
 	{
 		int x = 0;
-		for(float fX = 0.0f; fX < m_fMapWidth;  fX += CELL_MAIN_SIZE, x++)
+		for (float fX = 0.0f; fX < m_fMapWidth; fX += CELL_MAIN_SIZE, x++)
 		{
-			delete m_pCells[x][z]; m_pCells[x][z] = NULL;
+			delete m_pCells[x][z]; m_pCells[x][z] = nullptr;
 
-			ReadFile(hFile, &bExist, 4, &dwRWC, NULL); // 데이터가 있는 셀인지 쓰고..
+			ReadFile(hFile, &bExist, 4, &dwRWC, nullptr); // 데이터가 있는 셀인지 쓰고..
 
 			if (!bExist)
 				continue;
@@ -305,13 +309,14 @@ bool CN3ShapeMgr::SaveCollisionData(HANDLE hFile)
 }
 #endif // end of _N3TOOL
 
-bool CN3ShapeMgr::Create(float fMapWidth, float fMapLength) // 맵의 너비와 높이를 미터 단위로 넣는다..
+// 맵의 너비와 높이를 미터 단위로 넣는다..
+bool CN3ShapeMgr::Create(float fMapWidth, float fMapLength)
 {
-	if(	fMapWidth <= 0.0f || fMapWidth > MAX_CELL_MAIN * CELL_MAIN_SIZE ||
-		fMapLength <= 0.0f || fMapLength > MAX_CELL_MAIN * CELL_MAIN_SIZE )
-	{
+	if (fMapWidth <= 0.0f
+		|| fMapWidth > MAX_CELL_MAIN * CELL_MAIN_SIZE
+		|| fMapLength <= 0.0f
+		|| fMapLength > MAX_CELL_MAIN * CELL_MAIN_SIZE)
 		return false;
-	}
 
 	m_fMapWidth = fMapWidth;
 	m_fMapLength = fMapLength;

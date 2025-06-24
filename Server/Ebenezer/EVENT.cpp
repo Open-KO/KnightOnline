@@ -52,7 +52,11 @@ BOOL EVENT::LoadEvent(int zone)
 	evtPath /= QUESTS_DIR;
 	evtPath /= std::to_wstring(zone) + L".evt";
 
+	if (!std::filesystem::exists(evtPath))
+		return TRUE;
+
 	// Resolve it to strip the relative references to be nice.
+	// NOTE: Requires the file to exist.
 	evtPath = std::filesystem::canonical(evtPath);
 
 	filename.Format(_T("%ls"), evtPath.c_str());
@@ -60,7 +64,7 @@ BOOL EVENT::LoadEvent(int zone)
 	m_Zone = zone;
 
 	if (!pFile.Open(filename, CFile::modeRead))
-		return TRUE;
+		return FALSE;
 
 	length = static_cast<DWORD>(pFile.GetLength());
 
@@ -76,7 +80,8 @@ BOOL EVENT::LoadEvent(int zone)
 			&& (char) byte != '\n')
 			buf[index++] = byte;
 
-		if (((char) byte == '\n' || count == length)
+		if (((char) byte == '\n'
+			|| count == length)
 			&& index > 1)
 		{
 			buf[index] = (BYTE) 0;

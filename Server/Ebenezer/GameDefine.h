@@ -572,6 +572,10 @@ struct _ZONE_SERVERINFO
 	}
 };
 
+// NOTE: This is loaded as-is from the SMD, padding and all.
+// As such, this struct cannot be touched.
+// If it needs to be extended, they should be split.
+#pragma pack(push, 4)
 struct _WARP_INFO
 {
 	short	sWarpID;
@@ -583,6 +587,7 @@ struct _WARP_INFO
 	float	fY;
 	float	fZ;
 	float	fR;
+	short	sNation;
 
 	_WARP_INFO()
 	{
@@ -591,8 +596,10 @@ struct _WARP_INFO
 		fX = fZ = fY = fR = 0.0f;
 		memset(strWarpName, 0, sizeof(strWarpName));
 		memset(strAnnounce, 0, sizeof(strAnnounce));
+		sNation = 0;
 	}
 };
+#pragma pack(pop)
 
 struct _HOME_INFO
 {
