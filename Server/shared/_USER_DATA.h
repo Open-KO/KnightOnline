@@ -70,3 +70,6 @@ struct _USER_DATA
 	short	m_sPremiumTime;
 	int		m_iMannerPoint;
 };
+
+constexpr int ALLOCATED_USER_DATA_BLOCK = 8000;
+static_assert(sizeof(_USER_DATA) <= ALLOCATED_USER_DATA_BLOCK);

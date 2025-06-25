@@ -1104,7 +1104,7 @@ BOOL CEbenezerDlg::InitializeMMF()
 	BOOL bCreate = TRUE;
 	CString logstr;
 
-	DWORD filesize = MAX_USER * 4000;	// 1명당 4000 bytes 이내 소요
+	DWORD filesize = MAX_USER * ALLOCATED_USER_DATA_BLOCK;
 	m_hMMFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, filesize, _T("KNIGHT_DB"));
 
 	if (m_hMMFile != nullptr
@@ -1113,7 +1113,7 @@ BOOL CEbenezerDlg::InitializeMMF()
 		m_hMMFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, _T("KNIGHT_DB"));
 		if (m_hMMFile == nullptr)
 		{
-			logstr = "Shared Memory Load Fail!!";
+			logstr = _T("Shared Memory Load Fail!!");
 			m_hMMFile = INVALID_HANDLE_VALUE;
 			return FALSE;
 		}
@@ -1121,7 +1121,7 @@ BOOL CEbenezerDlg::InitializeMMF()
 		bCreate = FALSE;
 	}
 
-	logstr = "Shared Memory Create Success!!";
+	logstr = _T("Shared Memory Create Success!!");
 	m_StatusList.AddString(logstr);
 
 	m_lpMMFile = (char*) MapViewOfFile(m_hMMFile, FILE_MAP_WRITE, 0, 0, 0);
@@ -1136,7 +1136,7 @@ BOOL CEbenezerDlg::InitializeMMF()
 	{
 		CUser* pUser = (CUser*) m_Iocport.m_SockArrayInActive[i];
 		if (pUser != nullptr)
-			pUser->m_pUserData = (_USER_DATA*) (m_lpMMFile + i * 4000);	// 1 Person Offset are 4000 bytes
+			pUser->m_pUserData = (_USER_DATA*) (m_lpMMFile + i * ALLOCATED_USER_DATA_BLOCK);
 	}
 
 	return TRUE;

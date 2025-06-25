@@ -297,7 +297,7 @@ BOOL CAujardDlg::InitializeMMF()
 {
 	CString logstr;
 
-	DWORD filesize = MAX_USER * 4000;	// 1명당 4000 bytes 이내 소요
+	DWORD filesize = MAX_USER * ALLOCATED_USER_DATA_BLOCK;
 
 	m_hMMFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, _T("KNIGHT_DB"));
 	if (m_hMMFile == nullptr)
@@ -318,7 +318,7 @@ BOOL CAujardDlg::InitializeMMF()
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
-		_USER_DATA* pUser = (_USER_DATA*) (m_lpMMFile + i * 4000);
+		_USER_DATA* pUser = (_USER_DATA*) (m_lpMMFile + i * ALLOCATED_USER_DATA_BLOCK);
 		m_DBAgent.m_UserDataArray.push_back(pUser);
 	}
 
