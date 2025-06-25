@@ -110,7 +110,7 @@ void CDBAgent::MUserInit(int uid)
 	pUser->m_bAuthority = AUTHORITY_USER;
 }
 
-BOOL CDBAgent::LoadUserData(char* userid, int uid)
+BOOL CDBAgent::LoadUserData(const char* accountid, const char* userid, int uid)
 {
 	SQLHSTMT		hstmt;
 	SQLRETURN		retcode;
@@ -119,16 +119,17 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 	TCHAR			szSQL[1024] = {};
 
 	//wsprintf(szSQL, TEXT("{? = call LOAD_USER_DATA ('%hs')}"), userid);
-	wsprintf(szSQL, TEXT("{call LOAD_USER_DATA ('%hs', ?)}"), userid);
+	wsprintf(szSQL, TEXT("{call LOAD_USER_DATA ('%hs', '%hs', ?)}"), accountid, userid);
 
 	SQLCHAR Nation, Race, HairColor, Rank, Title, Level;
-	SQLINTEGER Exp, Loyalty, Gold, PX, PZ, PY, dwTime;
+	SQLINTEGER Exp, Loyalty, Gold, PX, PZ, PY, dwTime, MannerPoint, LoyaltyMonthly;
 	SQLCHAR Face, City, Fame, Authority, Points;
-	SQLSMALLINT Hp, Mp, Sp, sRet, Class, Bind, Knights;
+	SQLSMALLINT Hp, Mp, Sp, sRet, Class, Bind, Knights, QuestCount;
 	SQLCHAR Str, Sta, Dex, Intel, Cha, Zone;
 	char strSkill[10] = {},
 		strItem[400] = {},
-		strSerial[400] = {};
+		strSerial[400] = {},
+		strQuest[400] = {};
 
 	SQLINTEGER Indexind = SQL_NTS;
 
@@ -199,6 +200,10 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 			SQLGetData(hstmt, 31, SQL_C_CHAR, strSkill, 10, &Indexind);
 			SQLGetData(hstmt, 32, SQL_C_CHAR, strItem, 400, &Indexind);
 			SQLGetData(hstmt, 33, SQL_C_CHAR, strSerial, 400, &Indexind);
+			SQLGetData(hstmt, 34, SQL_C_SSHORT, &QuestCount, 0, &Indexind);
+			SQLGetData(hstmt, 35, SQL_C_CHAR, strQuest, 400, &Indexind);
+			SQLGetData(hstmt, 36, SQL_C_LONG, &MannerPoint, 0, &Indexind);
+			SQLGetData(hstmt, 37, SQL_C_LONG, &LoyaltyMonthly, 0, &Indexind);
 			retval = TRUE;
 		}
 		else
@@ -213,8 +218,7 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 	{
 		if (DisplayErrorMsg(hstmt) == -1)
 		{
-			char logstr[256];
-			memset(logstr, 0x00, 256);
+			char logstr[256] = {};
 			sprintf(logstr, "[Error-DB Fail] LoadUserData : name=%s\r\n", userid);
 	//		m_pMain->m_LogFile.Write(logstr, strlen(logstr));
 
@@ -243,7 +247,7 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 		return FALSE;
 	}	*/
 
-	if (!retval)
+	if (retval == 0)
 	{
 		memset(logstr, 0, sizeof(logstr));
 		sprintf(logstr, "LoadUserData Fail : name=%s, retval= %d \r\n", userid, retval);
@@ -325,6 +329,9 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 	pUser->m_sBind = Bind;
 	pUser->m_dwTime = dwTime + 1;
 
+	pUser->m_iMannerPoint = MannerPoint;
+	pUser->m_iLoyaltyMonthly = LoyaltyMonthly;
+
 	CTime t = CTime::GetCurrentTime();
 	memset(logstr, 0, sizeof(logstr));
 	sprintf(logstr, "[LoadUserData %d-%d-%d]: name=%s, nation=%d, zone=%d, level=%d, exp=%d, money=%d\r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), userid, Nation, Zone, Level, Exp, Gold);
@@ -402,6 +409,28 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 			continue;
 		}
 	}
+
+	int iFinalQuestCount = 0;
+	index = 0;
+	for (int i = 0; i < MAX_QUEST; i++)
+	{
+		_USER_QUEST& quest = pUser->m_quests[i];
+		quest.sQuestID = GetShort(strQuest, index);
+		quest.byQuestState = GetByte(strQuest, index);
+
+		if (quest.sQuestID > 100
+			|| quest.byQuestState > 3)
+		{
+			memset(&quest, 0, sizeof(_USER_QUEST));
+			continue;
+		}
+
+		if (quest.sQuestID > 0)
+			++iFinalQuestCount;
+	}
+
+	if (QuestCount != iFinalQuestCount)
+		pUser->m_sQuestCount = iFinalQuestCount;
 
 	if (pUser->m_bLevel == 1
 		&& pUser->m_iExp == 0

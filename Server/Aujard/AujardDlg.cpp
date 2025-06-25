@@ -466,7 +466,7 @@ void CAujardDlg::SelectCharacter(char* pBuf)
 		return;
 	}
 
-	if (!m_DBAgent.LoadUserData(userid, uid))
+	if (!m_DBAgent.LoadUserData(accountid, userid, uid))
 		goto fail_return;
 
 	if (!m_DBAgent.LoadWarehouseData(accountid, uid))

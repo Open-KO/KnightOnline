@@ -43,7 +43,7 @@ public:
 	int CreateNewChar(char* accountid, int index, char* charid, int race, int Class, int hair, int face, int str, int sta, int dex, int intel, int cha);
 	int	 AccountLogInReq(char* id, char* pw);	// return Nation value
 	int UpdateUser(const char* userid, int uid, int type);
-	BOOL LoadUserData(char* userid, int uid);
+	BOOL LoadUserData(const char* accountid, const char* userid, int uid);
 	void ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* strname, const TCHAR* strpwd);
 	BOOL DatabaseInit();
 	void MUserInit(int uid);
