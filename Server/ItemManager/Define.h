@@ -201,33 +201,34 @@ inline void LogFileWrite(LPCTSTR logstr)
 	ProgPath = GetProgPath();
 	loglength = strlen(logstr);
 
-	LogFileName.Format("%s\\Aujard.log", ProgPath);
+	LogFileName.Format(_T("%s\\ItemManager.log"), ProgPath.GetString());
 
-	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
-
-	file.SeekToEnd();
-	file.Write(logstr, loglength);
-	file.Close();
+	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+	{
+		file.SeekToEnd();
+		file.Write(logstr, loglength);
+		file.Close();
+	}
 }
 
 inline int DisplayErrorMsg(SQLHANDLE hstmt)
 {
-	SQLCHAR       SqlState[6], Msg[1024];
+	SQLTCHAR      SqlState[6], Msg[1024];
 	SQLINTEGER    NativeError;
 	SQLSMALLINT   i, MsgLen;
 	SQLRETURN     rc2;
 	char		  logstr[512] = {};
 
 	i = 1;
-	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
+	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
 	{
-		sprintf(logstr, "*** %s, %d, %s, %d ***\r\n", SqlState, NativeError, Msg, MsgLen);
+		_stprintf(logstr, _T("*** %s, %d, %s, %d ***\r\n"), SqlState, NativeError, Msg, MsgLen);
 		LogFileWrite(logstr);
 
 		i++;
 	}
 
-	if (strcmp((char*) SqlState, "08S01") == 0)
+	if (_tcscmp((TCHAR*) SqlState, "08S01") == 0)
 		return -1;
 	else
 		return 0;

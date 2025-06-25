@@ -197,7 +197,7 @@ inline CString GetProgPath()
 	return Path;
 }
 
-inline void LogFileWrite(LPCTSTR logstr)
+inline void LogFileWrite(const TCHAR* logstr)
 {
 	CString ProgPath, LogFileName;
 	CFile file;
@@ -206,7 +206,7 @@ inline void LogFileWrite(LPCTSTR logstr)
 	ProgPath = GetProgPath();
 	loglength = static_cast<int>(_tcslen(logstr));
 
-	LogFileName.Format(_T("%s\\Login.log"), ProgPath);
+	LogFileName.Format(_T("%s\\Login.log"), ProgPath.GetString());
 
 	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
 	{
@@ -218,7 +218,7 @@ inline void LogFileWrite(LPCTSTR logstr)
 
 inline int DisplayErrorMsg(SQLHANDLE hstmt)
 {
-	SQLTCHAR       SqlState[6], Msg[1024];
+	SQLTCHAR      SqlState[6], Msg[1024];
 	SQLINTEGER    NativeError;
 	SQLSMALLINT   i, MsgLen;
 	SQLRETURN     rc2;

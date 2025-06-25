@@ -89,7 +89,7 @@ void CNpc::MoveResult(float xpos, float ypos, float zpos, float speed)
 	SetShort(pOutBuf, (short) speed * 10, send_index);
 
 	m_pMain->Send_Region(pOutBuf, send_index, m_sCurZone, m_sRegion_X, m_sRegion_Z, nullptr, false);
-	//TRACE("RecvNpcMove ==> nid = %d, zone=%d, x = %f, z = %f\n", m_sNid, m_sCurZone, m_fCurX, m_fCurZ);
+	//TRACE(_T("RecvNpcMove ==> nid = %d, zone=%d, x = %f, z = %f\n"), m_sNid, m_sCurZone, m_fCurX, m_fCurZ);
 }
 
 void CNpc::NpcInOut(BYTE Type, float fx, float fz, float fy)
@@ -100,7 +100,7 @@ void CNpc::NpcInOut(BYTE Type, float fx, float fz, float fy)
 	C3DMap* pMap = m_pMain->m_ZoneArray[m_sZoneIndex];
 	if (pMap == nullptr)
 	{
-		TRACE("NpcInOut : ,, nid=%d, zone=%d, type, region_x=%d, y=%d\n", m_sNid, m_sZoneIndex, Type, m_sRegion_X, m_sRegion_Z);
+		TRACE(_T("NpcInOut : ,, nid=%d, zone=%d, type, region_x=%d, y=%d\n"), m_sNid, m_sZoneIndex, Type, m_sRegion_X, m_sRegion_Z);
 		return;
 	}
 
@@ -190,7 +190,7 @@ void CNpc::RemoveRegion(int del_x, int del_z)
 		m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + del_x * 2, m_sRegion_Z + del_z);
 		m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + del_x * 2, m_sRegion_Z + del_z + 1);
 
-		// TRACE("Remove : (%d %d), (%d %d), (%d %d)\n", m_sRegion_X+del_x*2, m_sRegion_Z+del_z-1, m_sRegion_X+del_x*2, m_sRegion_Z+del_z, m_sRegion_X+del_x*2, m_sRegion_Z+del_z+1 );
+		// TRACE(_T("Remove : (%d %d), (%d %d), (%d %d)\n"), m_sRegion_X+del_x*2, m_sRegion_Z+del_z-1, m_sRegion_X+del_x*2, m_sRegion_Z+del_z, m_sRegion_X+del_x*2, m_sRegion_Z+del_z+1 );
 	}
 
 	// z 축으로 이동되었을때...
@@ -212,7 +212,7 @@ void CNpc::RemoveRegion(int del_x, int del_z)
 			m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + del_x - 1, m_sRegion_Z + del_z * 2);
 			m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + del_x + 1, m_sRegion_Z + del_z * 2);
 
-			// TRACE("Remove : (%d %d), (%d %d), (%d %d)\n", m_sRegion_X+del_x-1, m_sRegion_Z+del_z*2, m_sRegion_X+del_x, m_sRegion_Z+del_z*2, m_sRegion_X+del_x+1, m_sRegion_Z+del_z*2 );
+			// TRACE(_T("Remove : (%d %d), (%d %d), (%d %d)\n"), m_sRegion_X+del_x-1, m_sRegion_Z+del_z*2, m_sRegion_X+del_x, m_sRegion_Z+del_z*2, m_sRegion_X+del_x+1, m_sRegion_Z+del_z*2 );
 		}
 	}
 }
@@ -253,7 +253,7 @@ void CNpc::InsertRegion(int del_x, int del_z)
 		m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + del_x, m_sRegion_Z);
 		m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + del_x, m_sRegion_Z + 1);
 
-		// TRACE("Insert : (%d %d), (%d %d), (%d %d)\n", m_sRegion_X+del_x, m_sRegion_Z-1, m_sRegion_X+del_x, m_sRegion_Z, m_sRegion_X+del_x, m_sRegion_Z+1 );
+		// TRACE(_T("Insert : (%d %d), (%d %d), (%d %d)\n"), m_sRegion_X+del_x, m_sRegion_Z-1, m_sRegion_X+del_x, m_sRegion_Z, m_sRegion_X+del_x, m_sRegion_Z+1 );
 	}
 
 	// z 축으로 이동되었을때...
@@ -275,7 +275,7 @@ void CNpc::InsertRegion(int del_x, int del_z)
 			m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X - 1, m_sRegion_Z + del_z);
 			m_pMain->Send_UnitRegion(buff, send_index, m_sZoneIndex, m_sRegion_X + 1, m_sRegion_Z + del_z);
 
-			// TRACE("Insert : (%d %d), (%d %d), (%d %d)\n", m_sRegion_X-1, m_sRegion_Z+del_z, m_sRegion_X, m_sRegion_Z+del_z, m_sRegion_X+1, m_sRegion_Z+del_z );
+			// TRACE(_T("Insert : (%d %d), (%d %d), (%d %d)\n"), m_sRegion_X-1, m_sRegion_Z+del_z, m_sRegion_X, m_sRegion_Z+del_z, m_sRegion_X+1, m_sRegion_Z+del_z );
 		}
 	}
 }

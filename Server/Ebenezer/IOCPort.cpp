@@ -39,9 +39,10 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 		wait_return = WaitForSingleObject(pIocport->m_hListenEvent, INFINITE);
 		if (wait_return == WAIT_FAILED)
 		{
-			TRACE("Wait failed Error %d\n", GetLastError());
-			char logstr[1024] = {};
-			sprintf(logstr, "Wait failed Error %d\r\n", GetLastError());
+			TRACE(_T("Wait failed Error %d\n"), GetLastError());
+
+			TCHAR logstr[1024] = {};
+			_stprintf(logstr, _T("Wait failed Error %d\r\n"), GetLastError());
 			LogFileWrite(logstr);
 			return 1;
 		}
@@ -57,52 +58,58 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 				LeaveCriticalSection(&g_critical);
 				if (sid < 0)
 				{
-					TRACE("Accepting User Socket Fail - New Uid is -1\n");
-					char logstr[1024] = {};
-					sprintf(logstr, "Accepting User Socket Fail - New Uid is -1\r\n");
+					TRACE(_T("Accepting User Socket Fail - New Uid is -1\n"));
+
+					TCHAR logstr[1024] = {};
+					_stprintf(logstr,_T( "Accepting User Socket Fail - New Uid is -1\r\n"));
 					LogFileWrite(logstr);
-					goto loop_pass_accept;
+					continue;
 				}
 
 				pSocket = pIocport->GetIOCPSocket(sid);
-				if (!pSocket)
+				if (pSocket == nullptr)
 				{
-					TRACE("Socket Array has Broken...\n");
-					char logstr[1024] = {};
-					sprintf(logstr, "Socket Array has Broken...\r\n");
+					TRACE(_T("Socket Array has Broken...\n"));
+
+					TCHAR logstr[1024] = {};
+					_stprintf(logstr, _T("Socket Array has Broken...\r\n"));
 					LogFileWrite(logstr);
 //					pIocport->PutOldSid( sid );				// Invalid sid must forbidden to use
-					goto loop_pass_accept;
+					continue;
 				}
 
 				len = sizeof(addr);
 				if (!pSocket->Accept(pIocport->m_ListenSocket, (sockaddr*) &addr, &len))
 				{
-					TRACE("Accept Fail %d\n", sid);
-					char logstr[1024] = {};
-					sprintf(logstr, "Accept Fail %d\r\n", sid);
+					TRACE(_T("Accept Fail %d\n"), sid);
+
+					TCHAR logstr[1024] = {};
+					_stprintf(logstr, _T("Accept Fail %d\r\n"), sid);
 					LogFileWrite(logstr);
+
 					EnterCriticalSection(&g_critical);
 					pIocport->RidIOCPSocket(sid, pSocket);
 					pIocport->PutOldSid(sid);
 					LeaveCriticalSection(&g_critical);
-					goto loop_pass_accept;
+					continue;
 				}
 
 				pSocket->InitSocket(pIocport);
 
 				if (!pIocport->Associate(pSocket, pIocport->m_hServerIOCPort))
 				{
-					TRACE("Socket Associate Fail\n");
-					char logstr[1024] = {};
-					sprintf(logstr, "Socket Associate Fail\r\n");
+					TRACE(_T("Socket Associate Fail\n"));
+
+					TCHAR logstr[1024] = {};
+					_stprintf(logstr, _T("Socket Associate Fail\r\n"));
 					LogFileWrite(logstr);
+
 					EnterCriticalSection(&g_critical);
 					pSocket->CloseProcess();
 					pIocport->RidIOCPSocket(sid, pSocket);
 					pIocport->PutOldSid(sid);
 					LeaveCriticalSection(&g_critical);
-					goto loop_pass_accept;
+					continue;
 				}
 
 				// Crytion
@@ -110,11 +117,8 @@ DWORD WINAPI AcceptThread(LPVOID lp)
 				// ~
 				pSocket->Receive();
 
-				TRACE("Success Accepting...%d\n", sid);
+				TRACE(_T("Success Accepting...%d\n"), sid);
 			}
-
-		loop_pass_accept:
-			continue;
 		}
 	}
 
@@ -158,7 +162,7 @@ DWORD WINAPI ReceiveWorkerThread(LPVOID lp)
 						EnterCriticalSection(&g_critical);
 						if (nbytes == 0)
 						{
-							TRACE("User Closed By 0 byte Notify...%d\n", WorkIndex);
+							TRACE(_T("User Closed By 0 byte Notify...%d\n"), WorkIndex);
 							pSocket->CloseProcess();
 							pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
 							pIocport->PutOldSid(pSocket->GetSocketID());
@@ -181,7 +185,7 @@ DWORD WINAPI ReceiveWorkerThread(LPVOID lp)
 
 					case OVL_CLOSE:
 						EnterCriticalSection(&g_critical);
-						TRACE("User Closed By Close()...%d\n", WorkIndex);
+						TRACE(_T("User Closed By Close()...%d\n"), WorkIndex);
 
 						pSocket->CloseProcess();
 						pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
@@ -210,12 +214,12 @@ DWORD WINAPI ReceiveWorkerThread(LPVOID lp)
 
 				if (pOvl != nullptr)
 				{
-					TRACE("User Closed By Abnormal Termination...%d\n", WorkIndex);
+					TRACE(_T("User Closed By Abnormal Termination...%d\n"), WorkIndex);
 				}
 				else
 				{
 					DWORD ioError = GetLastError();
-					TRACE("User Closed By IOCP Error[%d] - %d \n", ioError, WorkIndex);
+					TRACE(_T("User Closed By IOCP Error[%d] - %d \n"), ioError, WorkIndex);
 				}
 			}
 		}
@@ -261,7 +265,7 @@ DWORD WINAPI ClientWorkerThread(LPVOID lp)
 						EnterCriticalSection(&g_critical);
 						if (nbytes == 0)
 						{
-							TRACE("AISocket Closed By 0 Byte Notify\n");
+							TRACE(_T("AISocket Closed By 0 Byte Notify\n"));
 							pSocket->CloseProcess();
 							pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
 	//						pIocport->PutOldSid( pSocket->GetSocketID() );		// 클라이언트 소켓은 Sid 관리하지 않음
@@ -286,7 +290,7 @@ DWORD WINAPI ClientWorkerThread(LPVOID lp)
 					case OVL_CLOSE:
 						EnterCriticalSection(&g_critical);
 
-						TRACE("AISocket Closed By Close()\n");
+						TRACE(_T("AISocket Closed By Close()\n"));
 						pSocket->CloseProcess();
 						pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
 	//					pIocport->PutOldSid( pSocket->GetSocketID() );
@@ -308,7 +312,7 @@ DWORD WINAPI ClientWorkerThread(LPVOID lp)
 
 					EnterCriticalSection(&g_critical);
 
-					TRACE("AISocket Closed By Abnormal Termination\n");
+					TRACE(_T("AISocket Closed By Abnormal Termination\n"));
 					pSocket->CloseProcess();
 					pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
 
@@ -367,7 +371,7 @@ DWORD WINAPI SendWorkerThread(LPVOID lp)
 								else
 								{
 									pSocket->SendCompressingPacket(pBuff, len);
-	//								TRACE("Region Packet %d Bytes\n", len);
+	//								TRACE(_T("Region Packet %d Bytes\n"), len);
 								}
 							}
 						}
@@ -485,7 +489,7 @@ BOOL CIOCPort::Listen(int port)
 	m_ListenSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (m_ListenSocket < 0)
 	{
-		TRACE("Can't open stream socket\n");
+		TRACE(_T("Can't open stream socket\n"));
 		return FALSE;
 	}
 
@@ -513,7 +517,7 @@ BOOL CIOCPort::Listen(int port)
 
 	if (bind(m_ListenSocket, (sockaddr*) &addr, sizeof(addr)) < 0)
 	{
-		TRACE("Can't bind local address\n");
+		TRACE(_T("Can't bind local address\n"));
 		return FALSE;
 	}
 
@@ -526,7 +530,7 @@ BOOL CIOCPort::Listen(int port)
 	err = getsockopt(m_ListenSocket, SOL_SOCKET, SO_RCVBUF, (char*) &socklen, &len);
 	if (err == SOCKET_ERROR)
 	{
-		TRACE("FAIL : Set Socket RecvBuf of port(%d) as %d\n", port, socklen);
+		TRACE(_T("FAIL : Set Socket RecvBuf of port(%d) as %d\n"), port, socklen);
 		return FALSE;
 	}
 
@@ -537,7 +541,7 @@ BOOL CIOCPort::Listen(int port)
 
 	if (err == SOCKET_ERROR)
 	{
-		TRACE("FAIL: Set Socket SendBuf of port(%d) as %d\n", port, socklen);
+		TRACE(_T("FAIL: Set Socket SendBuf of port(%d) as %d\n"), port, socklen);
 		return FALSE;
 	}
 
@@ -547,13 +551,13 @@ BOOL CIOCPort::Listen(int port)
 	if (m_hListenEvent == WSA_INVALID_EVENT)
 	{
 		err = WSAGetLastError();
-		TRACE("Listen Event Create Fail!! %d \n", err);
+		TRACE(_T("Listen Event Create Fail!! %d \n"), err);
 		return FALSE;
 	}
 
 	WSAEventSelect(m_ListenSocket, m_hListenEvent, FD_ACCEPT);
 
-	TRACE("Port (%05d) initialzed\n", port);
+	TRACE(_T("Port (%05d) initialzed\n"), port);
 
 	CreateAcceptThread();
 
@@ -564,7 +568,7 @@ BOOL CIOCPort::Associate(CIOCPSocket2* pIocpSock, HANDLE hPort)
 {
 	if (hPort == nullptr)
 	{
-		TRACE("ERROR : No Completion Port\n");
+		TRACE(_T("ERROR : No Completion Port\n"));
 		return FALSE;
 	}
 
@@ -577,7 +581,7 @@ int CIOCPort::GetNewSid()
 {
 	if (m_SidList.empty())
 	{
-		TRACE("SID List Is Empty !!\n");
+		TRACE(_T("SID List Is Empty !!\n"));
 		return -1;
 	}
 
@@ -592,7 +596,7 @@ void CIOCPort::PutOldSid(int sid)
 	if (sid < 0
 		|| sid >= m_SocketArraySize)
 	{
-		TRACE("recycle sid invalid value : %d\n", sid);
+		TRACE(_T("recycle sid invalid value : %d\n"), sid);
 		return;
 	}
 
@@ -703,14 +707,14 @@ CIOCPSocket2* CIOCPort::GetIOCPSocket(int index)
 {
 	if (index >= m_SocketArraySize)
 	{
-		TRACE("InActiveSocket Array Overflow[%d]\n", index);
+		TRACE(_T("InActiveSocket Array Overflow[%d]\n"), index);
 		return nullptr;
 	}
 
 	CIOCPSocket2* pIOCPSock = m_SockArrayInActive[index];
 	if (pIOCPSock == nullptr)
 	{
-		TRACE("InActiveSocket Array Invalid[%d]\n", index);
+		TRACE(_T("InActiveSocket Array Invalid[%d]\n"), index);
 		return nullptr;
 	}
 
@@ -728,7 +732,7 @@ void CIOCPort::RidIOCPSocket(int index, CIOCPSocket2* pSock)
 		|| (pSock->GetSockType() == TYPE_ACCEPT && index >= m_SocketArraySize)
 		|| (pSock->GetSockType() == TYPE_CONNECT && index >= m_ClientSockSize))
 	{
-		TRACE("Invalid Sock index - RidIOCPSocket\n");
+		TRACE(_T("Invalid Sock index - RidIOCPSocket\n"));
 		return;
 	}
 

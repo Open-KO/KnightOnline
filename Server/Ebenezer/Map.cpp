@@ -95,8 +95,6 @@ BOOL C3DMap::LoadMap(HANDLE hFile)
 {
 	m_pMain = (CEbenezerDlg*) AfxGetMainWnd();
 
-	LogFileWrite("load teerr\r\n");
-
 	LoadTerrain(hFile);
 
 	if (!m_N3ShapeMgr.Create(
@@ -111,7 +109,6 @@ BOOL C3DMap::LoadMap(HANDLE hFile)
 		|| (m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Height())
 		return FALSE;
 
-	LogFileWrite("mapfile adfasfdasdd\r\n");
 	int mapwidth = (int) m_N3ShapeMgr.Width();
 
 	m_nXRegion = (int) (mapwidth / VIEW_DISTANCE) + 1;
@@ -122,17 +119,13 @@ BOOL C3DMap::LoadMap(HANDLE hFile)
 		m_ppRegion[i] = new CRegion[m_nZRegion];
 
 	LoadObjectEvent(hFile);
-	LogFileWrite("amp tile\r\n");
 	LoadMapTile(hFile);
-	LogFileWrite("regene\r\n");
 	LoadRegeneEvent(hFile);		// 이건 내가 추가했슴
-	LogFileWrite("warplist\r\n");
 	LoadWarpList(hFile);
 
-	LogFileWrite("load event before\r\n");
 	if (!LoadEvent())
 	{
-		AfxMessageBox("Event Load Fail!!");
+		AfxMessageBox(_T("Event Load Fail!!"));
 		return FALSE;
 	}
 
@@ -169,7 +162,7 @@ void C3DMap::LoadObjectEvent(HANDLE hFile)
 
 		if (!m_ObjectEventArray.PutData(pEvent->sIndex, pEvent))
 		{
-			TRACE("Object Event PutData Fail - %d\n", pEvent->sIndex);
+			TRACE(_T("Object Event PutData Fail - %d\n"), pEvent->sIndex);
 			delete pEvent;
 			pEvent = nullptr;
 		}
@@ -216,17 +209,17 @@ void C3DMap::LoadRegeneEvent(HANDLE hFile)
 
 		if (!m_ObjectRegeneArray.PutData(pEvent->sRegenePoint, pEvent))
 		{
-			TRACE("Regene Event PutData Fail - %d\n", pEvent->sRegenePoint);
+			TRACE(_T("Regene Event PutData Fail - %d\n"), pEvent->sRegenePoint);
 			delete pEvent;
 			pEvent = nullptr;
 		}
 
-		// TRACE("Num: %d , (x, z, y) : (%f, %f, %f) , length_x : %f  length_z : %f\n", i,
+		// TRACE(_T("Num: %d , (x, z, y) : (%f, %f, %f) , length_x : %f  length_z : %f\n"), i,
 		// pEvent->fRegenePosX, pEvent->fRegenePosZ, pEvent->fRegenePosY,
 		// pEvent->fRegeneAreaX, pEvent->fRegeneAreaZ);
 	}
 
-	//TRACE("\n\n");
+	//TRACE(_T("\n\n"));
 
 //	m_pMain->m_bMaxRegenePoint = iEventObjectCount;
 }
@@ -247,7 +240,7 @@ void C3DMap::LoadWarpList(HANDLE hFile)
 
 		if (!m_WarpArray.PutData(pWarp->sWarpID, pWarp))
 		{
-			TRACE("Warp list PutData Fail - %d\n", pWarp->sWarpID);
+			TRACE(_T("Warp list PutData Fail - %d\n"), pWarp->sWarpID);
 			delete pWarp;
 			pWarp = nullptr;
 		}
@@ -457,7 +450,7 @@ void C3DMap::RegionUserAdd(int rx, int rz, int uid)
 
 	LeaveCriticalSection(&g_region_critical);
 
-	//TRACE("++++ Region Add(%d) : x=%d, z=%d, uid=%d ++++\n", m_nZoneNumber, rx, rz, uid);
+	//TRACE(_T("++++ Region Add(%d) : x=%d, z=%d, uid=%d ++++\n"), m_nZoneNumber, rx, rz, uid);
 }
 
 void C3DMap::RegionUserRemove(int rx, int rz, int uid)
@@ -474,7 +467,7 @@ void C3DMap::RegionUserRemove(int rx, int rz, int uid)
 	region->m_RegionUserArray.DeleteData(uid);
 	LeaveCriticalSection(&g_region_critical);
 
-	//TRACE("---- Region Remove(%d) : x=%d, z=%d, uid=%d ----\n", m_nZoneNumber, rx, rz, uid);
+	//TRACE(_T("---- Region Remove(%d) : x=%d, z=%d, uid=%d ----\n"), m_nZoneNumber, rx, rz, uid);
 }
 
 void C3DMap::RegionNpcAdd(int rx, int rz, int nid)
@@ -548,7 +541,7 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 		{
 			if (m_pMain->m_sKarusCount > MAX_BATTLE_ZONE_USERS)
 			{
-				TRACE("### BattleZone karus full users = %d, name=%s \n", m_pMain->m_sKarusCount, pUser->m_pUserData->m_id);
+				TRACE(_T("### BattleZone karus full users = %d, name=%hs \n"), m_pMain->m_sKarusCount, pUser->m_pUserData->m_id);
 				return FALSE;
 			}
 		}
@@ -557,7 +550,7 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 		{
 			if (m_pMain->m_sElmoradCount > MAX_BATTLE_ZONE_USERS)
 			{
-				TRACE("### BattleZone elmorad full users = %d, name=%s \n", m_pMain->m_sElmoradCount, pUser->m_pUserData->m_id);
+				TRACE(_T("### BattleZone elmorad full users = %d, name=%hs \n"), m_pMain->m_sElmoradCount, pUser->m_pUserData->m_id);
 				return FALSE;
 			}
 		}
@@ -574,11 +567,8 @@ BOOL C3DMap::LoadEvent()
 	CEventSet	EventSet;
 	CGameEvent* pEvent = nullptr;
 
-	LogFileWrite("LoadEvent start \r\n");
-
 	if (!EventSet.Open())
 	{
-		LogFileWrite("LoadEvent 22 \r\n");
 		AfxMessageBox(_T("EventTable Open Fail!"));
 		return FALSE;
 	}
@@ -586,7 +576,6 @@ BOOL C3DMap::LoadEvent()
 	if (EventSet.IsBOF()
 		|| EventSet.IsEOF())
 	{
-		LogFileWrite("LoadEvent 33 \r\n");
 		AfxMessageBox(_T("EventTable Empty!"));
 		return FALSE;
 	}
@@ -600,27 +589,21 @@ BOOL C3DMap::LoadEvent()
 
 			pEvent->m_sIndex = EventSet.m_EventNum;
 			pEvent->m_bType = EventSet.m_Type;
-			pEvent->m_iCond[0] = atoi(EventSet.m_Cond1);
-			pEvent->m_iCond[1] = atoi(EventSet.m_Cond2);
-			pEvent->m_iCond[2] = atoi(EventSet.m_Cond3);
-			pEvent->m_iCond[3] = atoi(EventSet.m_Cond4);
-			pEvent->m_iCond[4] = atoi(EventSet.m_Cond5);
+			pEvent->m_iCond[0] = _ttoi(EventSet.m_Cond1);
+			pEvent->m_iCond[1] = _ttoi(EventSet.m_Cond2);
+			pEvent->m_iCond[2] = _ttoi(EventSet.m_Cond3);
+			pEvent->m_iCond[3] = _ttoi(EventSet.m_Cond4);
+			pEvent->m_iCond[4] = _ttoi(EventSet.m_Cond5);
 
-			pEvent->m_iExec[0] = atoi(EventSet.m_Exec1);
-			pEvent->m_iExec[1] = atoi(EventSet.m_Exec2);
-			pEvent->m_iExec[2] = atoi(EventSet.m_Exec3);
-			pEvent->m_iExec[3] = atoi(EventSet.m_Exec4);
-			pEvent->m_iExec[4] = atoi(EventSet.m_Exec5);
-
-			strcpy(pEvent->m_strExec[0], EventSet.m_Exec1);
-			strcpy(pEvent->m_strExec[1], EventSet.m_Exec2);
-			strcpy(pEvent->m_strExec[2], EventSet.m_Exec3);
-			strcpy(pEvent->m_strExec[3], EventSet.m_Exec4);
-			strcpy(pEvent->m_strExec[4], EventSet.m_Exec5);
+			pEvent->m_iExec[0] = _ttoi(EventSet.m_Exec1);
+			pEvent->m_iExec[1] = _ttoi(EventSet.m_Exec2);
+			pEvent->m_iExec[2] = _ttoi(EventSet.m_Exec3);
+			pEvent->m_iExec[3] = _ttoi(EventSet.m_Exec4);
+			pEvent->m_iExec[4] = _ttoi(EventSet.m_Exec5);
 
 			if (!m_EventArray.PutData(pEvent->m_sIndex, pEvent))
 			{
-				TRACE("Event PutData Fail - %d\n", pEvent->m_sIndex);
+				TRACE(_T("Event PutData Fail - %d\n"), pEvent->m_sIndex);
 				delete pEvent;
 				pEvent = nullptr;
 			}
@@ -628,7 +611,6 @@ BOOL C3DMap::LoadEvent()
 		EventSet.MoveNext();
 	}
 
-	LogFileWrite("LoadEvent 44 \r\n");
 	return TRUE;
 }
 

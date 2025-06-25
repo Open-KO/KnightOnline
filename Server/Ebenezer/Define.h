@@ -404,13 +404,13 @@ inline int ParseSpace(char* tBuf, char* sBuf)
 
 inline CString GetProgPath()
 {
-	char Buf[256], Path[256];
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	TCHAR Buf[256], Path[256];
+	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 
 	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_splitpath(Buf, drive, dir, fname, ext);
-	strcpy(Path, drive);
-	strcat(Path, dir);
+	_tsplitpath(Buf, drive, dir, fname, ext);
+	_tcscpy(Path, drive);
+	_tcscat(Path, dir);
 	return Path;
 }
 
@@ -421,29 +421,29 @@ inline void LogFileWrite(LPCTSTR logstr)
 	int loglength;
 
 	ProgPath = GetProgPath();
-	loglength = strlen(logstr);
+	loglength = static_cast<int>(_tcslen(logstr));
 
-	LogFileName.Format("%s\\Ebenezer.log", ProgPath);
+	LogFileName.Format(_T("%s\\Ebenezer.log"), ProgPath.GetString());
 
-	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
-
-	file.SeekToEnd();
-	file.Write(logstr, loglength);
-	file.Close();
+	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+	{
+		file.SeekToEnd();
+		file.Write(logstr, loglength);
+		file.Close();
+	}
 }
 
 inline void DisplayErrorMsg(SQLHANDLE hstmt)
 {
-	SQLCHAR       SqlState[6], Msg[1024];
+	SQLTCHAR      SqlState[6], Msg[1024];
 	SQLINTEGER    NativeError;
 	SQLSMALLINT   i, MsgLen;
 	SQLRETURN     rc2;
 
 	i = 1;
-	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
+	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
 	{
-		TRACE("*** %s, %d, %s, %d ***\n", SqlState, NativeError, Msg, MsgLen);
-
+		TRACE(_T("*** %s, %d, %hs, %d ***\n"), SqlState, NativeError, Msg, MsgLen);
 		i++;
 	}
 }
@@ -506,7 +506,7 @@ inline void	TimeTrace(TCHAR* pMsg)
 {
 	CString szMsg;
 	CTime time = CTime::GetCurrentTime();
-	szMsg.Format("%s,,  time : %d-%d-%d, %d:%d]\n", pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	szMsg.Format(_T("%s,,  time : %d-%d-%d, %d:%d]\n"), pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	TRACE(szMsg);
 }
 

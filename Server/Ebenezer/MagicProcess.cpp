@@ -128,7 +128,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 		if (pUser->m_bResHpType == USER_DEAD
 			|| pUser->m_pUserData->m_sHp == 0)
 		{
-			TRACE("### Magic&Skill Fail : name=%s(%d), m_bResHpType=%d, hp=%d###\n", pUser->m_pUserData->m_id, pUser->GetSocketID(), pUser->m_bResHpType, pUser->m_pUserData->m_sHp);
+			TRACE(_T("### Magic&Skill Fail : name=%hs(%d), m_bResHpType=%d, hp=%d###\n"), pUser->m_pUserData->m_id, pUser->GetSocketID(), pUser->m_bResHpType, pUser->m_pUserData->m_sHp);
 			return;
 		}
 	}
@@ -1156,7 +1156,7 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int sid, int tid, int data1, int d
 			&& pTUser->m_pUserData->m_bZone < 3)
 		{
 			pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-			//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+			//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 		}
 //
 		pTUser->m_sWhoKilledMe = sid;		// Who the hell killed me?
@@ -1275,7 +1275,7 @@ BYTE CMagicProcess::ExecuteType2(int magicid, int sid, int tid, int data1, int d
 			&& pTUser->m_pUserData->m_bZone < 3)
 		{
 			pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-			//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+			//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 		}
 //
 		pTUser->m_sWhoKilledMe = sid;		// Who the hell killed me?
@@ -1458,7 +1458,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 							&& pTUser->m_pUserData->m_bZone < 3)
 						{
 							pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-							//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+							//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 						}
 						else
 						{
@@ -1476,7 +1476,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 						{
 							m_pSrcUser->GoldGain(SNOW_EVENT_MONEY);	// 10000노아를 주는 부분,,,,,
 
-							wsprintf(strLogData, "%s -> %s userdead", m_pSrcUser->m_pUserData->m_id, pTUser->m_pUserData->m_id);
+							sprintf(strLogData, "%s -> %s userdead", m_pSrcUser->m_pUserData->m_id, pTUser->m_pUserData->m_id);
 							m_pMain->WriteEventLog(strLogData);
 
 							if (m_pSrcUser->m_pUserData->m_bZone == ZONE_SNOW_BATTLE
@@ -1485,12 +1485,12 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 								if (pTUser->m_pUserData->m_bNation == KARUS)
 								{
 									++m_pMain->m_sKarusDead;
-									//TRACE("++ ExecuteType3 - ka=%d, el=%d\n", m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
+									//TRACE(_T("++ ExecuteType3 - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 								}
 								else if (pTUser->m_pUserData->m_bNation == ELMORAD)
 								{
 									++m_pMain->m_sElmoradDead;
-									//TRACE("++ ExecuteType3 - ka=%d, el=%d\n", m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
+									//TRACE(_T("++ ExecuteType3 - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 								}
 							}
 						}
@@ -1517,7 +1517,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 							&& pTUser->m_pUserData->m_bZone < 3)
 						{
 							pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-							//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+							//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 						}
 //
 						pTUser->m_sWhoKilledMe = sid;	// Who the hell killed me?
@@ -1558,7 +1558,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 							&& pTUser->m_pUserData->m_bZone < 3)
 						{
 							pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-							//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+							//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 						}
 						else
 						{
@@ -1591,7 +1591,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 							&& pTUser->m_pUserData->m_bZone < 3)
 						{
 							pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-							//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+							//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 						}
 //
 						pTUser->m_sWhoKilledMe = sid;	// Who the hell killed me?
@@ -2647,7 +2647,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int d
 				pTUser->ZoneChange(m_pSrcUser->m_pUserData->m_bZone, m_pSrcUser->m_pUserData->m_curx, m_pSrcUser->m_pUserData->m_curz);
 				//pTUser->UserInOut( USER_IN );
 				pTUser->UserInOut(USER_REGENE);
-				//TRACE(" Summon ,, name=%s, x=%.2f, z=%.2f\n", pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_curx, pTUser->m_pUserData->m_curz);
+				//TRACE(_T(" Summon ,, name=%hs, x=%.2f, z=%.2f\n"), pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_curx, pTUser->m_pUserData->m_curz);
 				break;
 
 			// Randomly teleport the source (within 20 meters)

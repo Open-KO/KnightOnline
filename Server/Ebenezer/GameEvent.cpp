@@ -21,11 +21,11 @@ static char THIS_FILE[] = __FILE__;
 CGameEvent::CGameEvent()
 {
 	m_bType = 0;
+
 	for (int i = 0; i < 5; i++)
 	{
 		m_iCond[i] = 0;
 		m_iExec[i] = 0;
-		memset(m_strExec[i], 0, sizeof(m_strExec[i]));
 	}
 }
 
@@ -45,7 +45,7 @@ void CGameEvent::RunEvent(CUser* pUser)
 			break;
 
 		case ZONE_TRAP_DEAD:
-		//	TRACE("&&& User - zone trap dead ,, name=%s\n", pUser->m_pUserData->m_id);
+		//	TRACE(_T("&&& User - zone trap dead ,, name=%hs\n"), pUser->m_pUserData->m_id);
 		//	pUser->Dead();
 			break;
 

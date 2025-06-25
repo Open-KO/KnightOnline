@@ -47,7 +47,7 @@ void CAISocket::Parsing(int len, char* pData)
 
 	BYTE command = GetByte(pData, index);
 
-	//TRACE("Parsing - command=%d, length = %d\n", command, len);
+	//TRACE(_T("Parsing - command=%d, length = %d\n"), command, len);
 
 	switch (command)
 	{
@@ -141,7 +141,7 @@ void CAISocket::CloseProcess()
 {
 	CString logstr;
 	CTime time = CTime::GetCurrentTime();
-	logstr.Format("*** CloseProcess - socketID=%d...  ***  %d-%d-%d, %d:%d]\r\n", m_Sid, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	logstr.Format(_T("*** CloseProcess - socketID=%d...  ***  %d-%d-%d, %d:%d]\r\n"), m_Sid, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
 	LogFileWrite(logstr);
 
 	Initialize();
@@ -166,7 +166,7 @@ void CAISocket::LoginProcess(char* pBuf)
 	// 틀리면 에러 
 	else
 	{
-		logstr.Format("AI Server Connect Success!! - %d", ver);
+		logstr.Format(_T("AI Server Connect Success!! - %d"), ver);
 		m_pMain->m_StatusList.AddString(logstr);
 
 		if (byReConnect == 0)
@@ -176,7 +176,7 @@ void CAISocket::LoginProcess(char* pBuf)
 			{
 				m_pMain->m_bServerCheckFlag = TRUE;
 				m_pMain->m_sSocketCount = 0;
-				TRACE("*** 유저의 정보를 보낼 준비단계 ****\n");
+				TRACE(_T("*** 유저의 정보를 보낼 준비단계 ****\n"));
 				m_pMain->SendAllUserInfo();
 			}
 		}
@@ -187,12 +187,12 @@ void CAISocket::LoginProcess(char* pBuf)
 
 			m_pMain->m_sReSocketCount++;
 
-			TRACE("**** ReConnect - zone=%d,  socket = %d ****\n ", ver, m_pMain->m_sReSocketCount);
+			TRACE(_T("**** ReConnect - zone=%d,  socket = %d ****\n "), ver, m_pMain->m_sReSocketCount);
 
 			fReConnectEndTime = TimeGet();
 			if (fReConnectEndTime > m_pMain->m_fReConnectStart + 120)
 			{	// 2분안에 모든 소켓이 재접됐다면...
-				TRACE("**** ReConnect - 단순한 접속... socket = %d ****\n ", m_pMain->m_sReSocketCount);
+				TRACE(_T("**** ReConnect - 단순한 접속... socket = %d ****\n "), m_pMain->m_sReSocketCount);
 				m_pMain->m_sReSocketCount = 0;
 				m_pMain->m_fReConnectStart = 0.0f;
 			}
@@ -204,10 +204,10 @@ void CAISocket::LoginProcess(char* pBuf)
 				// 1분안에 모든 소켓이 재접됐다면...
 				if (fReConnectEndTime < m_pMain->m_fReConnectStart + 60)
 				{
-					TRACE("**** ReConnect - 모든 소켓 초기화 완료 socket = %d ****\n ", m_pMain->m_sReSocketCount);
+					TRACE(_T("**** ReConnect - 모든 소켓 초기화 완료 socket = %d ****\n "), m_pMain->m_sReSocketCount);
 					m_pMain->m_bServerCheckFlag = TRUE;
 					m_pMain->m_sReSocketCount = 0;
-					TRACE("*** 유저의 정보를 보낼 준비단계 ****\n");
+					TRACE(_T("*** 유저의 정보를 보낼 준비단계 ****\n"));
 					m_pMain->SendAllUserInfo();
 				}
 				// 하나의 떨어진 소켓이라면...
@@ -231,31 +231,31 @@ void CAISocket::RecvServerInfo(char* pBuf)
 
 	if (type == SERVER_INFO_START)
 	{
-		TRACE("몬스터의 정보를 받기 시작합니다..%d\n", byZone);
+		TRACE(_T("몬스터의 정보를 받기 시작합니다..%d\n"), byZone);
 	}
 	else if (type == SERVER_INFO_END)
 	{
 		short sTotalMonster = 0;
 		sTotalMonster = GetShort(pBuf, index);
-		m_pMain->m_StatusList.AddString("All Monster info Received!!");
+		m_pMain->m_StatusList.AddString(_T("All Monster info Received!!"));
 		//Sleep(100);
 
 		m_pMain->m_sZoneCount++;
 
-		TRACE("몬스터의 정보를 다 받았음....%d, total=%d, socketcount=%d\n", byZone, sTotalMonster, m_pMain->m_sZoneCount);
+		TRACE(_T("몬스터의 정보를 다 받았음....%d, total=%d, socketcount=%d\n"), byZone, sTotalMonster, m_pMain->m_sZoneCount);
 
 		if (m_pMain->m_sZoneCount == size)
 		{
 			if (!m_pMain->m_bFirstServerFlag)
 			{
 				m_pMain->UserAcceptThread();
-				TRACE("+++ 몬스터의 모든 정보를 다 받았음, User AcceptThread Start ....%d, socketcount=%d\n", byZone, m_pMain->m_sZoneCount);
+				TRACE(_T("+++ 몬스터의 모든 정보를 다 받았음, User AcceptThread Start ....%d, socketcount=%d\n"), byZone, m_pMain->m_sZoneCount);
 			}
 
 			m_pMain->m_sZoneCount = 0;
 			m_pMain->m_bFirstServerFlag = TRUE;
 			m_pMain->m_bPointCheckFlag = TRUE;
-			TRACE("몬스터의 모든 정보를 다 받았음, User AcceptThread Start ....%d, socketcount=%d\n", byZone, m_pMain->m_sZoneCount);
+			TRACE(_T("몬스터의 모든 정보를 다 받았음, User AcceptThread Start ....%d, socketcount=%d\n"), byZone, m_pMain->m_sZoneCount);
 			// 여기에서 Event Monster의 포인터를 미리 할당 하도록 하장~~
 			//InitEventMonster( sTotalMonster );
 		}
@@ -320,12 +320,12 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		sHitRate = GetShort(pBuf, index);
 		byObjectType = GetByte(pBuf, index);
 
-		//TRACE("RecvNpcInfoAll  : nid=%d, szName=%s, count=%d\n", nid, szName, byCount);
+		//TRACE(_T("RecvNpcInfoAll  : nid=%d, szName=%hs, count=%d\n"), nid, szName, byCount);
 
 		if (nLength < 0
 			|| nLength > MAX_NPC_NAME_SIZE)
 		{
-			TRACE("#### RecvNpcInfoAll Fail : szName=%s\n", szName);
+			TRACE(_T("#### RecvNpcInfoAll Fail : szName=%hs\n"), szName);
 			continue;		// 잘못된 monster 아이디 
 		}
 
@@ -334,18 +334,18 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 			|| nid < 0
 			|| sPid < 0)
 		{
-			TRACE("#### Recv --> NpcUserInfoAll Fail: uid=%d, sid=%d, name=%s, zoneindex=%d, x=%f, z=%f.. \n", nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			TRACE(_T("#### Recv --> NpcUserInfoAll Fail: uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
 			//delete pNpc;
 			//pNpc = nullptr;
 			continue;
 		}
 
-		//TRACE("Recv --> NpcUserInfo : uid = %d, x=%f, z=%f.. \n", nid, fPosX, fPosZ);
+		//TRACE(_T("Recv --> NpcUserInfo : uid = %d, x=%f, z=%f.. \n"), nid, fPosX, fPosZ);
 
 		CNpc* pNpc = new CNpc();
 		if (pNpc == nullptr)
 		{
-			TRACE("#### Recv --> NpcUserInfoAll POINT Fail: uid=%d, sid=%d, name=%s, zoneindex=%d, x=%f, z=%f.. \n", nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			TRACE(_T("#### Recv --> NpcUserInfoAll POINT Fail: uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
 			continue;
 		}
 
@@ -397,17 +397,17 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 			|| nRegX < 0
 			|| nRegZ < 0)
 		{
-			TRACE("#### Recv --> NpcUserInfoAll Fail: uid=%d, sid=%d, name=%s, zoneindex=%d, x=%f, z=%f.. \n", nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			TRACE(_T("#### Recv --> NpcUserInfoAll Fail: uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
 			delete pNpc;
 			pNpc = nullptr;
 			continue;
 		}
 
-		// TRACE("Recv --> NpcUserInfoAll : uid=%d, sid=%d, name=%s, x=%f, z=%f. gate=%d, objecttype=%d \n", nid, sPid, szName, fPosX, fPosZ, byGateOpen, byObjectType);
+		// TRACE(_T("Recv --> NpcUserInfoAll : uid=%d, sid=%d, name=%hs, x=%f, z=%f. gate=%d, objecttype=%d \n"), nid, sPid, szName, fPosX, fPosZ, byGateOpen, byObjectType);
 
 		if (!m_pMain->m_arNpcArray.PutData(pNpc->m_sNid, pNpc))
 		{
-			TRACE("Npc PutData Fail - %d\n", pNpc->m_sNid);
+			TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
 			delete pNpc;
 			pNpc = nullptr;
 			continue;
@@ -415,14 +415,14 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 
 		if (byType == 0)
 		{
-			TRACE("Recv --> NpcUserInfoAll : 등록하면 안돼여,, uid=%d, sid=%d, name=%s\n", nid, sPid, szName);
+			TRACE(_T("Recv --> NpcUserInfoAll : 등록하면 안돼여,, uid=%d, sid=%d, name=%hs\n"), nid, sPid, szName);
 			continue;		// region에 등록하지 말기...
 		}
 
 		C3DMap* pMap = m_pMain->m_ZoneArray[(int) pNpc->m_sZoneIndex];
 		if (pMap == nullptr)
 		{
-			TRACE("Recv --> NpcUserInfoAll : fail,, uid=%d, sid=%d, name=%s\n", nid, sPid, szName);
+			TRACE(_T("Recv --> NpcUserInfoAll : fail,, uid=%d, sid=%d, name=%hs\n"), nid, sPid, szName);
 			continue;		// region에 등록하지 말기...
 		}
 
@@ -493,7 +493,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 	nHP = GetDWORD(pBuf, index);
 	byAttackType = GetByte(pBuf, index);
 
-	//TRACE("CAISocket-RecvNpcAttack : sid=%s, tid=%d, zone_num=%d\n", sid, tid, m_iZoneNum);
+	//TRACE(_T("CAISocket-RecvNpcAttack : sid=%hs, tid=%d, zone_num=%d\n"), sid, tid, m_iZoneNum);
 
 	// user attack -> npc
 	if (type == 0x01)
@@ -546,7 +546,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 					// HP Drain
 					case ITEM_TYPE_HP_DRAIN:
 						((CUser*) (m_pMain->m_Iocport.m_SockArray[sid]))->HpChange(temp_damage, 0);
-						// TRACE("%d : 흡수 HP : %d  ,  현재 HP : %d", sid, temp_damage, ((CUser*)(m_pMain->m_Iocport.m_SockArray[sid]))->m_pUserData->m_sHp);
+						// TRACE(_T("%d : 흡수 HP : %d  ,  현재 HP : %d"), sid, temp_damage, ((CUser*)(m_pMain->m_Iocport.m_SockArray[sid]))->m_pUserData->m_sHp);
 						break;
 
 					// MP Drain
@@ -566,7 +566,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 					// HP Drain
 					case ITEM_TYPE_HP_DRAIN:
 						((CUser*) (m_pMain->m_Iocport.m_SockArray[sid]))->HpChange(temp_damage, 0);
-						// TRACE("%d : 흡수 HP : %d  ,  현재 HP : %d", sid, temp_damage, ((CUser*)(m_pMain->m_Iocport.m_SockArray[sid]))->m_pUserData->m_sHp);
+						// TRACE(_T("%d : 흡수 HP : %d  ,  현재 HP : %d"), sid, temp_damage, ((CUser*)(m_pMain->m_Iocport.m_SockArray[sid]))->m_pUserData->m_sHp);
 						break;
 
 					// MP Drain
@@ -584,7 +584,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 			C3DMap* pMap = m_pMain->m_ZoneArray[(int) pNpc->m_sZoneIndex];
 			pMap->RegionNpcRemove(pNpc->m_sRegion_X, pNpc->m_sRegion_Z, tid);
 
-			// TRACE("--- Npc Dead : Npc를 Region에서 삭제처리.. ,, region_x=%d, y=%d\n", pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
+			// TRACE(_T("--- Npc Dead : Npc를 Region에서 삭제처리.. ,, region_x=%d, y=%d\n"), pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
 			pNpc->m_sRegion_X = 0;
 			pNpc->m_sRegion_Z = 0;
 			pNpc->m_NpcState = NPC_DEAD;
@@ -613,7 +613,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 		if (pNpc == nullptr)
 			return;
 
-		//TRACE("CAISocket-RecvNpcAttack 222 : sid=%s, tid=%d, zone_num=%d\n", sid, tid, m_iZoneNum);
+		//TRACE(_T("CAISocket-RecvNpcAttack 222 : sid=%hs, tid=%d, zone_num=%d\n"), sid, tid, m_iZoneNum);
 
 		if (tid >= USER_BAND
 			&& tid < NPC_BAND)
@@ -628,7 +628,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 
 			// sungyong 2002. 02.04
 /*			if( sHP <= 0 && pUser->m_pUserData->m_sHp > 0 ) {
-				TRACE("Npc Attack : id=%s, result=%d, AI_HP=%d, GM_HP=%d\n", pUser->m_pUserData->m_id, result, sHP, pUser->m_pUserData->m_sHp);
+				TRACE(_T("Npc Attack : id=%hs, result=%d, AI_HP=%d, GM_HP=%d\n"), pUser->m_pUserData->m_id, result, sHP, pUser->m_pUserData->m_sHp);
 				if(result == 0x02)
 					pUser->HpChange(-1000, 1);
 			}
@@ -654,8 +654,8 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 
 			m_pMain->Send_Region(pOutBuf, send_index, pNpc->m_sCurZone, pNpc->m_sRegion_X, pNpc->m_sRegion_Z, nullptr, false);
 
-//			TRACE("RecvNpcAttack : id=%s, result=%d, AI_HP=%d, GM_HP=%d\n", pUser->m_pUserData->m_id, result, sHP, pUser->m_pUserData->m_sHp);
-			//TRACE("RecvNpcAttack ==> sid = %d, tid = %d, result = %d\n", sid, tid, result);
+//			TRACE(_T("RecvNpcAttack : id=%hs, result=%d, AI_HP=%d, GM_HP=%d\n"), pUser->m_pUserData->m_id, result, sHP, pUser->m_pUserData->m_sHp);
+			//TRACE(_T("RecvNpcAttack ==> sid = %d, tid = %d, result = %d\n"), sid, tid, result);
 
 			// user dead
 			if (result == 0x02)
@@ -668,9 +668,13 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 
 				pUser->m_bResHpType = USER_DEAD;
 
-				char buff[256] = {};
-				wsprintf(buff, "*** User Dead, id=%s, result=%d, AI_HP=%d, GM_HP=%d, x=%d, z=%d", pUser->m_pUserData->m_id, result, nHP, pUser->m_pUserData->m_sHp, (int) pUser->m_pUserData->m_curx, (int) pUser->m_pUserData->m_curz);
-				TimeTrace(buff);
+#if defined(_DEBUG)
+				{
+					TCHAR buff[256] = {};
+					_stprintf(buff, _T("*** User Dead, id=%hs, result=%d, AI_HP=%d, GM_HP=%d, x=%d, z=%d"), pUser->m_pUserData->m_id, result, nHP, pUser->m_pUserData->m_sHp, (int) pUser->m_pUserData->m_curx, (int) pUser->m_pUserData->m_curz);
+					TimeTrace(buff);
+				}
+#endif
 
 				memset(pOutBuf, 0, sizeof(pOutBuf));
 				send_index = 0;
@@ -687,9 +691,11 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 					// sungyong tw
 					pUser->Send(pOutBuf, send_index);
 					// ~sungyong tw
-					TRACE("---> AISocket->RecvNpcAttack() Dead Captain Deprive - %s\n", pUser->m_pUserData->m_id);
-					if (pUser->m_pUserData->m_bNation == KARUS)			m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
-					else if (pUser->m_pUserData->m_bNation == ELMORAD)	m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, ELMORAD);
+					TRACE(_T("---> AISocket->RecvNpcAttack() Dead Captain Deprive - %hs\n"), pUser->m_pUserData->m_id);
+					if (pUser->m_pUserData->m_bNation == KARUS)
+						m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
+					else if (pUser->m_pUserData->m_bNation == ELMORAD)
+						m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, ELMORAD);
 
 				}
 
@@ -697,20 +703,20 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 				if (pNpc->m_tNpcType == NPC_PATROL_GUARD)
 				{
 					pUser->ExpChange(-pUser->m_iMaxExp / 100);
-					//TRACE("RecvNpcAttack : 경험치를 1%깍기 id = %s\n", pUser->m_pUserData->m_id);
+					//TRACE(_T("RecvNpcAttack : 경험치를 1%깍기 id = %hs\n"), pUser->m_pUserData->m_id);
 				}
 				else
 				{
 					if (pUser->m_pUserData->m_bZone != pUser->m_pUserData->m_bNation && pUser->m_pUserData->m_bZone < 3)
 					{
 						pUser->ExpChange(-pUser->m_iMaxExp / 100);
-						//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ");
+						//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ"));
 					}
 					else
 					{
 						pUser->ExpChange(-pUser->m_iMaxExp / 20);
 					}
-					//TRACE("RecvNpcAttack : 경험치를 5%깍기 id = %s\n", pUser->m_pUserData->m_id);
+					//TRACE(_T("RecvNpcAttack : 경험치를 5%깍기 id = %hs\n"), pUser->m_pUserData->m_id);
 				}
 			}
 		}
@@ -738,7 +744,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 			{
 				C3DMap* pMap = m_pMain->m_ZoneArray[(int) pMon->m_sZoneIndex];
 				pMap->RegionNpcRemove(pMon->m_sRegion_X, pMon->m_sRegion_Z, tid);
-				// TRACE("--- Npc Dead : Npc를 Region에서 삭제처리.. ,, region_x=%d, y=%d\n", pMon->m_sRegion_X, pMon->m_sRegion_Z);
+				// TRACE(_T("--- Npc Dead : Npc를 Region에서 삭제처리.. ,, region_x=%d, y=%d\n"), pMon->m_sRegion_X, pMon->m_sRegion_Z);
 				pMon->m_sRegion_X = 0;
 				pMon->m_sRegion_Z = 0;
 				pMon->m_NpcState = NPC_DEAD;
@@ -924,7 +930,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	{
 		memset(strLog, 0, sizeof(strLog));
 		CTime t = CTime::GetCurrentTime();
-		wsprintf(strLog, "## time(%d:%d-%d) npc regen check(%d) : nid=%d, name=%s, x=%d, z=%d, rx=%d, rz=%d ## \r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), pNpc->m_NpcState, nid, szName, (int) pNpc->m_fCurX, (int) pNpc->m_fCurZ, pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
+		sprintf(strLog, "## time(%d:%d-%d) npc regen check(%d) : nid=%d, name=%s, x=%d, z=%d, rx=%d, rz=%d ## \r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), pNpc->m_NpcState, nid, szName, (int) pNpc->m_fCurX, (int) pNpc->m_fCurZ, pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
 		EnterCriticalSection(&g_LogFile_critical);
 		m_pMain->m_RegionLogFile.Write(strLog, strlen(strLog));
 		LeaveCriticalSection(&g_LogFile_critical);
@@ -973,7 +979,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 	if (Mode == 0)
 	{
-		TRACE("RecvNpcInfo - dead monster nid=%d, name=%s\n", pNpc->m_sNid, pNpc->m_strName);
+		TRACE(_T("RecvNpcInfo - dead monster nid=%d, name=%hs\n"), pNpc->m_sNid, pNpc->m_strName);
 		return;
 	}
 
@@ -1005,7 +1011,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	pMap->RegionNpcAdd(pNpc->m_sRegion_X, pNpc->m_sRegion_Z, pNpc->m_sNid);
 
 	int nTotMon = m_pMain->m_arNpcArray.GetSize();
-//	TRACE("Recv --> NpcUserInfo : uid = %d, x=%f, z=%f.. ,, tot = %d\n", nid, fPosX, fPosZ, nTotMon);
+//	TRACE(_T("Recv --> NpcUserInfo : uid = %d, x=%f, z=%f.. ,, tot = %d\n"), nid, fPosX, fPosZ, nTotMon);
 }
 
 void CAISocket::RecvUserHP(char* pBuf)
@@ -1037,7 +1043,7 @@ void CAISocket::RecvUserHP(char* pBuf)
 		int nOldHP = pNpc->m_iHP;
 		pNpc->m_iHP = nHP;
 		pNpc->m_iMaxHP = nMaxHP;
-//		TRACE("RecvNpcHP - (%d,%s), %d->%d\n", pNpc->m_sNid, pNpc->m_strName, nOldHP, pNpc->m_sHP);
+//		TRACE(_T("RecvNpcHP - (%d,%hs), %d->%d\n"), pNpc->m_sNid, pNpc->m_strName, nOldHP, pNpc->m_sHP);
 	}
 }
 
@@ -1059,7 +1065,7 @@ void CAISocket::RecvUserExp(char* pBuf)
 	if (sExp < 0
 		|| sLoyalty < 0)
 	{
-		TRACE("#### AISocket - RecvUserExp : exp=%d, loyalty=%d,, 잘못된 경험치가 온다,, 수정해!!\n", sExp, sLoyalty);
+		TRACE(_T("#### AISocket - RecvUserExp : exp=%d, loyalty=%d,, 잘못된 경험치가 온다,, 수정해!!\n"), sExp, sLoyalty);
 		return;
 	}
 
@@ -1090,7 +1096,7 @@ void CAISocket::RecvSystemMsg(char* pBuf)
 	sLength = GetShort(pBuf, index);
 	GetString(strSysMsg, pBuf, sLength, index);
 
-	//TRACE("RecvSystemMsg - type=%d, who=%d, len=%d, msg=%s\n", bType, sWho, sLength, strSysMsg);
+	//TRACE(_T("RecvSystemMsg - type=%d, who=%d, len=%d, msg=%hs\n"), bType, sWho, sLength, strSysMsg);
 
 	switch (sWho)
 	{
@@ -1241,7 +1247,7 @@ void CAISocket::RecvUserFail(char* pBuf)
 	SetShort(pOutBuf, sid, send_index);
 	SetShort(pOutBuf, nid, send_index);
 
-	TRACE("### AISocket - RecvUserFail : sid=%d, tid=%d, id=%s ####\n", sid, nid, pUser->m_pUserData->m_id);
+	TRACE(_T("### AISocket - RecvUserFail : sid=%d, tid=%d, id=%hs ####\n"), sid, nid, pUser->m_pUserData->m_id);
 
 	m_pMain->Send_Region(pOutBuf, send_index, pUser->m_pUserData->m_bZone, pUser->m_RegionX, pUser->m_RegionZ);
 
@@ -1304,7 +1310,7 @@ void CAISocket::InitEventMonster(int index)
 	if (count < 0
 		|| count > NPC_BAND)
 	{
-		TRACE("### InitEventMonster index Fail = %d ###\n", index);
+		TRACE(_T("### InitEventMonster index Fail = %d ###\n"), index);
 		return;
 	}
 
@@ -1318,23 +1324,23 @@ void CAISocket::InitEventMonster(int index)
 		pNpc->Initialize();
 
 		pNpc->m_sNid = i + NPC_BAND;
-		//TRACE("InitEventMonster : uid = %d\n", pNpc->m_sNid);
+		//TRACE(_T("InitEventMonster : uid = %d\n"), pNpc->m_sNid);
 
 		if (!m_pMain->m_arNpcArray.PutData(pNpc->m_sNid, pNpc))
 		{
-			TRACE("Npc PutData Fail - %d\n", pNpc->m_sNid);
+			TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
 			delete pNpc;
 			pNpc = nullptr;
 		}
 	}
 
 	count = m_pMain->m_arNpcArray.GetSize();
-	TRACE("TotalMonster = %d\n", count);
+	TRACE(_T("TotalMonster = %d\n"), count);
 }
 
 void CAISocket::RecvCheckAlive(char* pBuf)
 {
-//	TRACE("CAISocket-RecvCheckAlive : zone_num=%d\n", m_iZoneNum);
+//	TRACE(_T("CAISocket-RecvCheckAlive : zone_num=%d\n"), m_iZoneNum);
 	m_pMain->m_sErrorSocketCount = 0;
 
 	int len = 0;
@@ -1362,7 +1368,7 @@ void CAISocket::RecvGateDestory(char* pBuf)
 			return;
 
 		pNpc->m_byGateOpen = gate_status;
-		TRACE("RecvGateDestory - (%d,%s), gate_status=%d\n", pNpc->m_sNid, pNpc->m_strName, pNpc->m_byGateOpen);
+		TRACE(_T("RecvGateDestory - (%d,%hs), gate_status=%d\n"), pNpc->m_sNid, pNpc->m_strName, pNpc->m_byGateOpen);
 /*
 		SetByte( send_buff, WIZ_OBJECT_EVENT, send_index );
 		SetByte( send_buff, 1, send_index );					// type
@@ -1396,14 +1402,14 @@ void CAISocket::RecvNpcDead(char* pBuf)
 		}
 
 		//pNpc->NpcInOut( NPC_OUT );
-		//TRACE("RecvNpcDead - (%d,%s)\n", pNpc->m_sNid, pNpc->m_strName);
+		//TRACE(_T("RecvNpcDead - (%d,%hs)\n"), pNpc->m_sNid, pNpc->m_strName);
 
 		C3DMap* pMap = m_pMain->m_ZoneArray[(int) pNpc->m_sZoneIndex];
 		if (pMap == nullptr)
 			return;
 
 		pMap->RegionNpcRemove(pNpc->m_sRegion_X, pNpc->m_sRegion_Z, nid);
-		//TRACE("--- RecvNpcDead : Npc를 Region에서 삭제처리.. ,, zone=%d, region_x=%d, y=%d\n", pNpc->m_sZoneIndex, pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
+		//TRACE(_T("--- RecvNpcDead : Npc를 Region에서 삭제처리.. ,, zone=%d, region_x=%d, y=%d\n"), pNpc->m_sZoneIndex, pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
 
 		SetByte(send_buff, WIZ_DEAD, send_index);
 		SetShort(send_buff, nid, send_index);
@@ -1464,18 +1470,18 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE("#### RecvBattleEvent Fail : battleopen = %d, type = %d\n", m_pMain->m_byBattleOpen, nType);
+			TRACE(_T("#### RecvBattleEvent Fail : battleopen = %d, type = %d\n"), m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 
 		if (nResult == KARUS)
 		{
-			//TRACE("--> RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n");
+			//TRACE(_T("--> RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byKarusOpenFlag = 1;		// 카루스 땅으로 넘어갈 수 있어
 		}
 		else if (nResult == ELMORAD)
 		{
-			//TRACE("--> RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n");
+			//TRACE(_T("--> RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byElmoradOpenFlag = 1;	// 엘모 땅으로 넘어갈 수 있어
 		}
 
@@ -1487,17 +1493,17 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE("#### RecvBattleEvent Fail : battleopen = %d, type=%d\n", m_pMain->m_byBattleOpen, nType);
+			TRACE(_T("#### RecvBattleEvent Fail : battleopen = %d, type=%d\n"), m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 
 		if (nResult == KARUS)
 		{
-			//TRACE("--> RecvBattleEvent : 카루스가 승리하였습니다.\n");
+			//TRACE(_T("--> RecvBattleEvent : 카루스가 승리하였습니다.\n"));
 		}
 		else if (nResult == ELMORAD)
 		{
-			//TRACE("--> RecvBattleEvent : 엘모라드가 승리하였습니다.\n");
+			//TRACE(_T("--> RecvBattleEvent : 엘모라드가 승리하였습니다.\n"));
 		}
 
 		nLen = GetByte(pBuf, index);
@@ -1519,8 +1525,8 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 				retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 				if (retvalue >= SMQ_FULL)
 				{
-					char logstr[1024] = {};
-					sprintf(logstr, "WIZ_BATTLE_EVENT Send Fail : %d, %d", retvalue, nType);
+					TCHAR logstr[1024] = {};
+					_stprintf(logstr, _T("WIZ_BATTLE_EVENT Send Fail : %d, %d"), retvalue, nType);
 					m_pMain->m_StatusList.AddString(logstr);
 				}
 				m_pMain->m_byBattleSave = 1;
@@ -1553,7 +1559,7 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 					strcpy(strKnightsName, pKnights->m_strName);
 			}
 
-			//TRACE("--> RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %s, len=%d\n", strMaxUserName, nResult);
+			//TRACE(_T("--> RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
 
 			if (nResult == 1)
 			{
@@ -1685,7 +1691,7 @@ void CAISocket::RecvGateOpen(char* pBuf)
 	pNpc = m_pMain->m_arNpcArray.GetData(nNid);
 	if (pNpc == nullptr)
 	{
-		TRACE("#### RecvGateOpen Npc Pointer null : nid=%d ####\n", nNid);
+		TRACE(_T("#### RecvGateOpen Npc Pointer null : nid=%d ####\n"), nNid);
 		return;
 	}
 
@@ -1694,11 +1700,11 @@ void CAISocket::RecvGateOpen(char* pBuf)
 	pEvent = m_pMain->m_ZoneArray[pNpc->m_sZoneIndex]->GetObjectEvent(nSid);
 	if (pEvent == nullptr)
 	{
-		TRACE("#### RecvGateOpen Npc Object fail : nid=%d, sid=%d ####\n", nNid, nSid);
+		TRACE(_T("#### RecvGateOpen Npc Object fail : nid=%d, sid=%d ####\n"), nNid, nSid);
 		return;
 	}
 
-	//TRACE("---> RecvGateOpen Npc Object fail : nid=%d, sid=%d, nGateFlag = %d ####\n", nNid, nSid, nGateFlag);
+	//TRACE(_T("---> RecvGateOpen Npc Object fail : nid=%d, sid=%d, nGateFlag = %d ####\n"), nNid, nSid, nGateFlag);
 
 	if (pNpc->m_tNpcType == NPC_GATE
 		|| pNpc->m_tNpcType == NPC_PHOENIX_GATE

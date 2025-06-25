@@ -185,7 +185,7 @@ fail_return:
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, KNIGHTS_CREATE, send_index);
 	SetByte(send_buff, ret_value, send_index);
-	//TRACE("## CreateKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+	//TRACE(_T("## CreateKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 
 	pUser->Send(send_buff, send_index);
 }
@@ -203,7 +203,7 @@ BOOL CKnightsManager::IsAvailableName(const char* strname)
 
 int CKnightsManager::GetKnightsIndex(int nation)
 {
-	//TRACE("GetKnightsIndex = nation=%d\n", nation);
+	//TRACE(_T("GetKnightsIndex = nation=%d\n"), nation);
 	int knightindex = 0;
 	// sungyong tw~
 	//if (m_pMain->m_nServerNo == ELMORAD) knightindex = 15000;
@@ -335,7 +335,7 @@ fail_return:
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, KNIGHTS_JOIN, send_index);
 	SetByte(send_buff, ret_value, send_index);
-	//TRACE("## JoinKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+	//TRACE(_T("## JoinKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 	pUser->Send(send_buff, send_index);
 }
 
@@ -358,7 +358,7 @@ void CKnightsManager::JoinKnightsReq(CUser* pUser, char* pBuf)
 		SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 		SetByte(send_buff, KNIGHTS_JOIN, send_index);
 		SetByte(send_buff, ret_value, send_index);
-		//TRACE("## JoinKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pTUser->GetSocketID(), pTUser->m_pUserData->m_id, ret_value);
+		//TRACE(_T("## JoinKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pTUser->GetSocketID(), pTUser->m_pUserData->m_id, ret_value);
 		pTUser->Send(send_buff, send_index);
 		return;
 	}
@@ -370,7 +370,7 @@ void CKnightsManager::JoinKnightsReq(CUser* pUser, char* pBuf)
 		SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 		SetByte(send_buff, KNIGHTS_JOIN, send_index);
 		SetByte(send_buff, ret_value, send_index);
-		//TRACE("## JoinKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+		//TRACE(_T("## JoinKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 		pUser->Send(send_buff, send_index);
 		return;
 	}
@@ -382,7 +382,7 @@ void CKnightsManager::JoinKnightsReq(CUser* pUser, char* pBuf)
 		SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 		SetByte(send_buff, KNIGHTS_JOIN, send_index);
 		SetByte(send_buff, ret_value, send_index);
-		//TRACE("## JoinKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pTUser->GetSocketID(), pTUser->m_pUserData->m_id, ret_value);
+		//TRACE(_T("## JoinKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pTUser->GetSocketID(), pTUser->m_pUserData->m_id, ret_value);
 		pTUser->Send(send_buff, send_index);
 		return;
 	}
@@ -413,7 +413,7 @@ fail_return:
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, KNIGHTS_JOIN, send_index);
 	SetByte(send_buff, ret_value, send_index);
-	//TRACE("## JoinKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+	//TRACE(_T("## JoinKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 	pUser->Send(send_buff, send_index);
 }
 
@@ -480,7 +480,7 @@ fail_return:
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, KNIGHTS_WITHDRAW, send_index);
 	SetByte(send_buff, ret_value, send_index);
-	//TRACE("## WithDrawKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+	//TRACE(_T("## WithDrawKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 	pUser->Send(send_buff, send_index);
 }
 
@@ -511,7 +511,7 @@ fail_return:
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, KNIGHTS_DESTROY, send_index);
 	SetByte(send_buff, ret_value, send_index);
-	//TRACE("## DestoryKnights Fail - nid=%d, name=%s, error_code=%d ##\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+	//TRACE(_T("## DestoryKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 	pUser->Send(send_buff, send_index);
 }
 
@@ -652,7 +652,7 @@ fail_return:
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, command, send_index);
 	SetByte(send_buff, ret_value, send_index);
-	//TRACE("## ModifyKnights Fail - command=%d, nid=%d, name=%s, error_code=%d ##\n", command, pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
+	//TRACE(_T("## ModifyKnights Fail - command=%d, nid=%d, name=%hs, error_code=%d ##\n"), command, pUser->GetSocketID(), pUser->m_pUserData->m_id, ret_value);
 	pUser->Send(send_buff, send_index);
 }
 
@@ -879,7 +879,7 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, char* pBuf, BYTE comma
 
 	result = GetByte(pBuf, index);
 
-	//TRACE("ReceiveKnightsProcess - command=%d, result=%d, nid=%d, name=%s, index=%d, fame=%d\n", command, result, pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
+	//TRACE(_T("ReceiveKnightsProcess - command=%d, result=%d, nid=%d, name=%hs, index=%d, fame=%d\n"), command, result, pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 
 	if (result > 0)
 	{
@@ -1004,7 +1004,7 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, char* pBuf)
 	// 클랜정보에 추가
 	AddKnightsUser(knightsindex, chiefname);
 
-	//TRACE("RecvCreateKnights - nid=%d, name=%s, index=%d, fame=%d, money=%d\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, knightsindex, pUser->m_pUserData->m_bFame, money);
+	//TRACE(_T("RecvCreateKnights - nid=%d, name=%hs, index=%d, fame=%d, money=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, knightsindex, pUser->m_pUserData->m_bFame, money);
 
 	//if( pKnights->bFlag == KNIGHTS_TYPE )	{
 /*	memset( send_buff, 0x00, 128 ); send_index = 0;
@@ -1069,7 +1069,7 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 		// 클랜정보에 추가
 		AddKnightsUser(knightsindex, pUser->m_pUserData->m_id);
 
-		//TRACE("RecvJoinKnights - 가입, nid=%d, name=%s, index=%d, fame=%d\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
+		//TRACE(_T("RecvJoinKnights - 가입, nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 	}
 	// 탈퇴..
 	else
@@ -1091,10 +1091,10 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 		}*/
 		sprintf(finalstr, "#### %s님이 탈퇴하셨습니다. ####", pUser->m_pUserData->m_id);
 
-		//TRACE("RecvJoinKnights - 탈퇴, nid=%d, name=%s, index=%d, fame=%d\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
+		//TRACE(_T("RecvJoinKnights - 탈퇴, nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 	}
 
-	//TRACE("RecvJoinKnights - command=%d, nid=%d, name=%s, index=%d, fame=%d\n", command, pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
+	//TRACE(_T("RecvJoinKnights - command=%d, nid=%d, name=%hs, index=%d, fame=%d\n"), command, pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, command - 0x10, send_index);
@@ -1224,11 +1224,11 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 	SetByte(send_buff, 0x01, send_index);
 	pUser->Send( send_buff, send_index);
 */
-	//TRACE("RecvModifyFame - command=%d, nid=%d, name=%s, index=%d, fame=%d\n", command, pTUser->GetSocketID(), pTUser->m_pUserData->m_id, knightsindex, pTUser->m_pUserData->m_bFame);
+	//TRACE(_T("RecvModifyFame - command=%d, nid=%d, name=%hs, index=%d, fame=%d\n"), command, pTUser->GetSocketID(), pTUser->m_pUserData->m_id, knightsindex, pTUser->m_pUserData->m_bFame);
 
 	if (pTUser != nullptr)
 	{
-		//TRACE("RecvModifyFame - command=%d, nid=%d, name=%s, index=%d, fame=%d\n", command, pTUser->GetSocketID(), pTUser->m_pUserData->m_id, knightsindex, pTUser->m_pUserData->m_bFame);
+		//TRACE(_T("RecvModifyFame - command=%d, nid=%d, name=%hs, index=%d, fame=%d\n"), command, pTUser->GetSocketID(), pTUser->m_pUserData->m_id, knightsindex, pTUser->m_pUserData->m_bFame);
 		memset(send_buff, 0, sizeof(send_buff));
 		send_index = 0;
 		SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
@@ -1304,7 +1304,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
 	if (pKnights == nullptr)
 	{
-		//TRACE("### RecvDestoryKnights  Fail == index = %d ###\n", knightsindex);
+		//TRACE(_T("### RecvDestoryKnights  Fail == index = %d ###\n"), knightsindex);
 		return;
 	}
 
@@ -1353,7 +1353,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 	}
 
 	m_pMain->m_KnightsArray.DeleteData(knightsindex);
-	//TRACE("RecvDestoryKnights - nid=%d, name=%s, index=%d, fame=%d\n", pUser->GetSocketID(), pUser->m_pUserData->m_id, knightsindex, pUser->m_pUserData->m_bFame);
+	//TRACE(_T("RecvDestoryKnights - nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, knightsindex, pUser->m_pUserData->m_bFame);
 
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;
@@ -1428,7 +1428,7 @@ void CKnightsManager::RecvKnightsList(char* pBuf)
 
 			if (!m_pMain->m_KnightsArray.PutData(pKnights->m_sIndex, pKnights))
 			{
-				TRACE("Recv Knights PutData Fail - %d\n", pKnights->m_sIndex);
+				TRACE(_T("Recv Knights PutData Fail - %d\n"), pKnights->m_sIndex);
 				delete pKnights;
 				pKnights = nullptr;
 			}
@@ -1441,7 +1441,7 @@ BOOL CKnightsManager::AddKnightsUser(int index, char* UserName)
 	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
 	if (pKnights == nullptr)
 	{
-		TRACE("#### AddKnightsUser knightsindex fail : username=%s, knightsindex=%d ####\n", UserName, index);
+		TRACE(_T("#### AddKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
 		return FALSE;
 	}
 
@@ -1452,11 +1452,11 @@ BOOL CKnightsManager::AddKnightsUser(int index, char* UserName)
 
 		pKnights->m_arKnightsUser[i].byUsed = 1;
 		strcpy(pKnights->m_arKnightsUser[i].strUserName, UserName);
-		//TRACE("+++ AddKnightsUser knightsindex : username=%s, knightsindex=%d, i=%d \n", UserName, index, i);
+		//TRACE(_T("+++ AddKnightsUser knightsindex : username=%hs, knightsindex=%d, i=%d \n"), UserName, index, i);
 		return TRUE;
 	}
 
-	//TRACE("#### AddKnightsUser user full : username=%s, knightsindex=%d ####\n", UserName, index);
+	//TRACE(_T("#### AddKnightsUser user full : username=%hs, knightsindex=%d ####\n"), UserName, index);
 	return FALSE;
 }
 
@@ -1465,7 +1465,7 @@ BOOL CKnightsManager::ModifyKnightsUser(int index, char* UserName)
 	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
 	if (pKnights == nullptr)
 	{
-		TRACE("#### ModifyKnightsUser knightsindex fail : username=%s, knightsindex=%d ####\n", UserName, index);
+		TRACE(_T("#### ModifyKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
 		return FALSE;
 	}
 
@@ -1482,7 +1482,7 @@ BOOL CKnightsManager::ModifyKnightsUser(int index, char* UserName)
 		}
 	}
 
-	//TRACE("#### ModifyKnightsUser user full : username=%s, knightsindex=%d ####\n", UserName, index);
+	//TRACE(_T("#### ModifyKnightsUser user full : username=%hs, knightsindex=%d ####\n"), UserName, index);
 	return FALSE;
 }
 
@@ -1491,7 +1491,7 @@ BOOL CKnightsManager::RemoveKnightsUser(int index, char* UserName)
 	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
 	if (pKnights == nullptr)
 	{
-		TRACE("#### RemoveKnightsUser knightsindex fail : username=%s, knightsindex=%d ####\n", UserName, index);
+		TRACE(_T("#### RemoveKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
 		return FALSE;
 	}
 
@@ -1504,12 +1504,12 @@ BOOL CKnightsManager::RemoveKnightsUser(int index, char* UserName)
 		{
 			pKnights->m_arKnightsUser[i].byUsed = 0;
 			strcpy(pKnights->m_arKnightsUser[i].strUserName, "");
-			//TRACE("---> RemoveKnightsUser knightsindex : username=%s, knightsindex=%d, i=%d \n", UserName, index, i);
+			//TRACE(_T("---> RemoveKnightsUser knightsindex : username=%hs, knightsindex=%d, i=%d \n"), UserName, index, i);
 			return TRUE;
 		}
 	}
 
-	//TRACE("#### RemoveKnightsUser user full : username=%s, knightsindex=%d ####\n", UserName, index);
+	//TRACE(_T("#### RemoveKnightsUser user full : username=%hs, knightsindex=%d ####\n"), UserName, index);
 	return FALSE;
 }
 
@@ -1518,11 +1518,11 @@ void CKnightsManager::SetKnightsUser(int index, char* UserName)
 	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
 	if (pKnights == nullptr)
 	{
-		TRACE("#### SetKnightsUser knightsindex fail : username=%s, knightsindex=%d ####\n", UserName, index);
+		TRACE(_T("#### SetKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
 		return;
 	}
 
-	//TRACE("--- SetKnightsUser knightsindex : username=%s, knightsindex=%d \n", UserName, index);
+	//TRACE(_T("--- SetKnightsUser knightsindex : username=%hs, knightsindex=%d \n"), UserName, index);
 
 	for (int i = 0; i < MAX_CLAN; i++)
 	{
@@ -1531,14 +1531,14 @@ void CKnightsManager::SetKnightsUser(int index, char* UserName)
 
 		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, UserName) == 0)
 		{
-			//TRACE("### SetKnightsUser knightsindex - name is same : username=%s, knightsindex=%d \n", UserName, index);
+			//TRACE(_T("### SetKnightsUser knightsindex - name is same : username=%hs, knightsindex=%d \n"), UserName, index);
 			return;
 		}
 	}
 
 	if (!AddKnightsUser(index, UserName))
 	{
-		//TRACE("#### SetKnightsUser user full : username=%s, knightsindex=%d ####\n", UserName, index);
+		//TRACE(_T("#### SetKnightsUser user full : username=%hs, knightsindex=%d ####\n"), UserName, index);
 	}
 }
 
@@ -1561,7 +1561,7 @@ void CKnightsManager::RecvKnightsAllList(char* pBuf)
 		pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
 		if (pKnights == nullptr)
 		{
-			TRACE("#### RecvKnightsAllList knightsindex fail : knightsindex=%d ####\n", knightsindex);
+			TRACE(_T("#### RecvKnightsAllList knightsindex fail : knightsindex=%d ####\n"), knightsindex);
 			continue;
 		}
 

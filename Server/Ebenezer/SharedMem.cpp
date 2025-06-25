@@ -58,8 +58,8 @@ BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lp
 
 	if (m_hMMFile == nullptr)
 	{
-		char logstr[256] = {};
-		strcpy(logstr, "Shared Memory Open Fail!!\r\n");
+		TCHAR logstr[256] = {};
+		_tcscpy(logstr, _T("Shared Memory Open Fail!!\r\n"));
 		LogFileWrite(logstr);
 		return FALSE;
 	}
@@ -68,7 +68,7 @@ BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lp
 	if (m_lpMMFile == nullptr)
 		return FALSE;
 
-	TRACE("%s Address : %x\n", lpname, m_lpMMFile);
+	TRACE(_T("%s Address : %x\n"), lpname, m_lpMMFile);
 
 	m_bMMFCreate	= bCreate;
 	m_pHeader		= (_SMQ_HEADER*) m_lpMMFile;
@@ -94,8 +94,8 @@ int CSharedMemQueue::PutData(char* pBuf, int size)
 
 	if (size > static_cast<int>(m_wOffset))
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "DataSize Over.. - %d bytes\r\n", size);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("DataSize Over.. - %d bytes\r\n"), size);
 		LogFileWrite(logstr);
 		return SMQ_PKTSIZEOVER;
 	}
@@ -185,8 +185,8 @@ int CSharedMemQueue::GetData(char* pBuf)
 			m_pHeader->Front = temp_front;
 			m_pHeader->nCount--;
 
-			char logstr[256] = {};
-			sprintf(logstr, "SMQ EMPTY Block Find - F:%d, R:%d\n", m_pHeader->Front, m_pHeader->Rear);
+			TCHAR logstr[256] = {};
+			_stprintf(logstr, _T("SMQ EMPTY Block Find - F:%d, R:%d\n"), m_pHeader->Front, m_pHeader->Rear);
 			LogFileWrite(logstr);
 			TRACE(logstr);
 		}

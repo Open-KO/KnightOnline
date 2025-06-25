@@ -46,7 +46,7 @@ CIOCPSocket2::~CIOCPSocket2()
 	delete m_pCompressMng;
 }
 
-BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTSTR lpszSocketAddress)
+BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const char* lpszSocketAddress)
 {
 	int ret;
 	linger lingerOpt;
@@ -55,7 +55,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTST
 	if (m_Socket == INVALID_SOCKET)
 	{
 		ret = WSAGetLastError();
-		TRACE("Socket Create Fail! - %d\n", ret);
+		TRACE(_T("Socket Create Fail! - %d\n"), ret);
 		return FALSE;
 	}
 
@@ -63,7 +63,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTST
 	if (m_hSockEvent == WSA_INVALID_EVENT)
 	{
 		ret = WSAGetLastError();
-		TRACE("Event Create Fail! - %d\n", ret);
+		TRACE(_T("Event Create Fail! - %d\n"), ret);
 		return FALSE;
 	}
 
@@ -85,7 +85,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, LPCTST
 	return TRUE;
 }
 
-BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostPort)
+BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort)
 {
 	sockaddr_in addr;
 
@@ -98,7 +98,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostP
 	if (result == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
-//		TRACE("CONNECT FAIL : %d\n", err);
+//		TRACE(_T("CONNECT FAIL : %d\n"), err);
 		closesocket(m_Socket);
 		return FALSE;
 	}
@@ -115,7 +115,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, LPCTSTR lpszHostAddress, UINT nHostP
 
 	if (!m_pIOCPort->Associate(this, m_pIOCPort->m_hClientIOCPort))
 	{
-		TRACE("Socket Connecting Fail - Associate\n");
+		TRACE(_T("Socket Connecting Fail - Associate\n"));
 		return FALSE;
 	}
 
@@ -192,7 +192,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		int last_err = WSAGetLastError();
 		if (last_err == WSA_IO_PENDING)
 		{
-			TRACE("SEND : IO_PENDING[SID=%d]\n", m_Sid);
+			TRACE(_T("SEND : IO_PENDING[SID=%d]\n"), m_Sid);
 			m_nPending++;
 			if (m_nPending > 3)
 				goto close_routine;
@@ -201,7 +201,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		}
 		else if (last_err == WSAEWOULDBLOCK)
 		{
-			TRACE("SEND : WOULDBLOCK[SID=%d]\n", m_Sid);
+			TRACE(_T("SEND : WOULDBLOCK[SID=%d]\n"), m_Sid);
 
 			m_nWouldblock++;
 			if (m_nWouldblock > 3)
@@ -211,7 +211,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		}
 		else
 		{
-			TRACE("SEND : ERROR [SID=%d] - %d\n", m_Sid, last_err);
+			TRACE(_T("SEND : ERROR [SID=%d] - %d\n"), m_Sid, last_err);
 //			char logstr[1024] = {};
 //			sprintf( logstr, "SEND : ERROR [SID=%d] - %d\r\n", m_Sid, last_err);
 //			LogFileWrite( logstr );
@@ -264,7 +264,7 @@ int CIOCPSocket2::Receive()
 		int last_err = WSAGetLastError();
 		if (last_err == WSA_IO_PENDING)
 		{
-//			TRACE("RECV : IO_PENDING[SID=%d]\n", m_Sid);
+//			TRACE(_T("RECV : IO_PENDING[SID=%d]\n"), m_Sid);
 
 //			m_nPending++;
 //			if (m_nPending > 3)
@@ -274,7 +274,7 @@ int CIOCPSocket2::Receive()
 		}
 		else if (last_err == WSAEWOULDBLOCK)
 		{
-			TRACE("RECV : WOULDBLOCK[SID=%d]\n", m_Sid);
+			TRACE(_T("RECV : WOULDBLOCK[SID=%d]\n"), m_Sid);
 
 			m_nWouldblock++;
 			if (m_nWouldblock > 3)
@@ -284,7 +284,7 @@ int CIOCPSocket2::Receive()
 		}
 		else
 		{
-			TRACE("RECV : ERROR [SID=%d] - %d\n", m_Sid, last_err);
+			TRACE(_T("RECV : ERROR [SID=%d] - %d\n"), m_Sid, last_err);
 
 			m_nSocketErr++;
 			if (m_nSocketErr == 2)
@@ -403,7 +403,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 					// 압축 푼 데이터 오류 일경우 버퍼에서 삭제 해버린다
 					if (pBuff[0] != 0xfc)
 					{
-						TRACE("CIOCPSocket2::PutOutCore - Decryption Error... sockid(%d)\n", m_Socket);
+						TRACE(_T("CIOCPSocket2::PutOutCore - Decryption Error... sockid(%d)\n"), m_Socket);
 						delete[] pBuff;
 						Close();
 						goto cancelRoutine;
@@ -411,7 +411,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 
 					recv_packet = (WORD) GetShort((char*) pBuff, index);
 
-					//TRACE("^^^ IOCPSocket2,, PullOutCore ,,, recv_val = %d ^^^\n", recv_packet);
+					//TRACE(_T("^^^ IOCPSocket2,, PullOutCore ,,, recv_val = %d ^^^\n"), recv_packet);
 
 					// 무시,,
 					if (m_Rec_val >= recv_packet)
@@ -422,7 +422,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 						}
 						else
 						{
-							TRACE("CIOCPSocket2::PutOutCore - recv_packet Error... sockid(%d), len=%d, recv_packet=%d \n", m_Socket, length, recv_packet);
+							TRACE(_T("CIOCPSocket2::PutOutCore - recv_packet Error... sockid(%d), len=%d, recv_packet=%d \n"), m_Socket, length, recv_packet);
 							delete[] pBuff;
 							m_pBuffer->HeadIncrease(6 + length); //6: header 2+ end 2+ length 2 + cryption 4
 							goto cancelRoutine;
@@ -436,7 +436,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 					length = length - 4;
 					if (length <= 0)
 					{
-						TRACE("CIOCPSocket2::PutOutCore - length Error... sockid(%d), len=%d\n", m_Socket, length);
+						TRACE(_T("CIOCPSocket2::PutOutCore - length Error... sockid(%d), len=%d\n"), m_Socket, length);
 						delete[] pBuff;
 						Close();
 						goto cancelRoutine;
@@ -456,10 +456,10 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 					data[length] = 0;
 					foundCore = TRUE;
 					int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
-					//TRACE("data : %s, len : %d\n", data, length);
+					//TRACE(_T("data : %hs, len : %d\n"), data, length);
 				}
-//				TRACE("data : %s, len : %d\n", data, length);
-//				TRACE("head : %d, tail : %d\n", head, tail );
+//				TRACE(_T("data : %hs, len : %d\n"), data, length);
+//				TRACE(_T("head : %d, tail : %d\n"), head, tail );
 				break;
 			}
 			else
@@ -528,7 +528,7 @@ void CIOCPSocket2::Close()
 	if (retValue == 0)
 	{
 		int errValue = GetLastError();
-		TRACE("PostQueuedCompletionStatus Error : %d\n", errValue);
+		TRACE(_T("PostQueuedCompletionStatus Error : %d\n"), errValue);
 	}
 }
 
@@ -559,9 +559,10 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 	if (m_Socket == INVALID_SOCKET)
 	{
 		int err = WSAGetLastError();
-		TRACE("Socket Accepting Fail - %d\n", err);
-		char logstr[1024] = {};
-		sprintf(logstr, "Socket Accepting Fail - %d\r\n", err);
+		TRACE(_T("Socket Accepting Fail - %d\n"), err);
+
+		TCHAR logstr[1024] = {};
+		_stprintf(logstr, _T("Socket Accepting Fail - %d\r\n"), err);
 		LogFileWrite(logstr);
 		return FALSE;
 	}
@@ -572,7 +573,7 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 //	int lensize, socklen=0;
 
 //	getsockopt( m_Socket, SOL_SOCKET, SO_RCVBUF, (char*)&socklen, &lensize);
-//	TRACE("getsockopt : %d\n", socklen);
+//	TRACE(_T("getsockopt : %d\n"), socklen);
 
 //	linger lingerOpt;
 //	lingerOpt.l_onoff = 1;
@@ -600,7 +601,7 @@ void CIOCPSocket2::SendCompressingPacket(const char* pData, int len)
 	if (len <= 0
 		|| len >= 49152)
 	{
-		TRACE("### SendCompressingPacket Error : len = %d ### \n", len);
+		TRACE(_T("### SendCompressingPacket Error : len = %d ### \n"), len);
 		return;
 	}
 
@@ -643,7 +644,7 @@ void CIOCPSocket2::SendCompressingPacket(const char* pData, int len)
 
 	if (count > 49)
 	{
-		TRACE("Compressing Fail Packet\n");
+		TRACE(_T("Compressing Fail Packet\n"));
 		Send((char*) pData, len);
 	}
 	else
@@ -684,7 +685,7 @@ void CIOCPSocket2::RegionPacketAdd(char* pBuf, int len)
 
 	if (count > 29)
 	{
-//		TRACE("Region packet Add Drop\n");
+//		TRACE(_T("Region packet Add Drop\n"));
 		Send(pBuf, len);
 	}
 }
@@ -726,7 +727,7 @@ void CIOCPSocket2::RegioinPacketClear(char* GetBuf, int& len)
 	while (count < 30);
 
 	if (count > 29)
-		TRACE("Region packet Clear Drop\n");
+		TRACE(_T("Region packet Clear Drop\n"));
 }
 
 // Cryption

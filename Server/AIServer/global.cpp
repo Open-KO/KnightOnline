@@ -248,13 +248,14 @@ void LogFileWrite(CString logstr)
 	ProgPath = GetProgPath();
 	loglength = logstr.GetLength();
 
-	LogFileName.Format(_T("%s\\AIServer.log"), ProgPath);
+	LogFileName.Format(_T("%s\\AIServer.log"), ProgPath.GetString());
 
-	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
-
-	file.SeekToEnd();
-	file.Write(logstr, loglength);
-	file.Close();
+	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+	{
+		file.SeekToEnd();
+		file.Write(logstr, loglength);
+		file.Close();
+	}
 }
 
 void TimeTrace(const TCHAR* pMsg)

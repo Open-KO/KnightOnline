@@ -338,13 +338,14 @@ inline void LogFileWrite(LPCTSTR logstr)
 	ProgPath = GetProgPath();
 	loglength = _tcslen(logstr);
 
-	LogFileName.Format(_T("%s\\Aujard.log"), ProgPath);
+	LogFileName.Format(_T("%s\\Aujard.log"), ProgPath.GetString());
 
-	file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite);
-
-	file.SeekToEnd();
-	file.Write(logstr, loglength);
-	file.Close();
+	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+	{
+		file.SeekToEnd();
+		file.Write(logstr, loglength);
+		file.Close();
+	}
 }
 
 inline int DisplayErrorMsg(SQLHANDLE hstmt)
@@ -356,7 +357,7 @@ inline int DisplayErrorMsg(SQLHANDLE hstmt)
 	TCHAR		  logstr[512] = {};
 
 	i = 1;
-	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA)
+	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
 	{
 		_stprintf(logstr, _T("*** %s, %d, %s, %d ***\r\n"), SqlState, NativeError, Msg, MsgLen);
 		LogFileWrite(logstr);

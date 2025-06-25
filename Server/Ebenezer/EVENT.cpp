@@ -112,7 +112,7 @@ BOOL EVENT::LoadEvent(int zone)
 
 				if (m_arEvent.GetData(event_num))
 				{
-					TRACE("Quest Double !!\n");
+					TRACE(_T("Quest Double !!\n"));
 					goto cancel_event_load;
 				}
 
@@ -162,7 +162,7 @@ BOOL EVENT::LoadEvent(int zone)
 
 cancel_event_load:
 	CString str;
-	str.Format("QUEST INFO READ FAIL (%d)(%d)", zone, event_num);
+	str.Format(_T("QUEST INFO READ FAIL (%d)(%d)"), zone, event_num);
 	AfxMessageBox(str);
 	in.Close();
 	pFile.Close();

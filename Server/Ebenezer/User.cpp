@@ -247,7 +247,7 @@ void CUser::CloseProcess()
 				m_pUserData->m_curz = pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ);
 			}
 		}
-		TRACE("본국으로 잘 저장되었을거야. 걱정마!!!\r\n");
+		TRACE(_T("본국으로 잘 저장되었을거야. 걱정마!!!\r\n"));
 	}
 */
 
@@ -303,7 +303,7 @@ void CUser::Parsing(int len, char* pData)
 			m_pMain->NpcInOutForMe(this);
 			SendNotice();
 			SendTimeStatus();
-			TRACE("GAMESTART: %s..%d\n", m_pUserData->m_id, m_Sid);
+			TRACE(_T("GAMESTART: %hs..%d\n"), m_pUserData->m_id, m_Sid);
 
 			// If there is a permanent chat available!!!
 			if (m_pMain->m_bPermanentChatMode)
@@ -642,8 +642,8 @@ void CUser::LoginProcess(char* pBuf)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Login Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Login Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		goto fail_return;
 	}
@@ -746,8 +746,8 @@ void CUser::NewCharToAgent(char* pBuf)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "NewChar Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("NewChar Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		goto fail_return;
 	}
@@ -809,8 +809,8 @@ void CUser::DelCharToAgent(char* pBuf)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "DelChar Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("DelChar Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		goto fail_return;
 	}
@@ -844,8 +844,8 @@ void CUser::SelNationToAgent(char* pBuf)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Nation Sel Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Nation Sel Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		goto fail_return;
 	}
@@ -911,7 +911,7 @@ void CUser::SelCharToAgent(char* pBuf)
 	// 음냥,, 여기서 존을 비교,,,
 	if (zone <= 0)
 	{
-		TRACE("### SelCharToAgent zone Fail : zone=%d\n", zone);
+		TRACE(_T("### SelCharToAgent zone Fail : zone=%d\n"), zone);
 		goto fail_return;
 	}
 
@@ -919,14 +919,14 @@ void CUser::SelCharToAgent(char* pBuf)
 	if (zoneindex < 0
 		|| zoneindex >= m_pMain->m_ZoneArray.size())
 	{
-		TRACE("### SelCharToAgent zoneindex Fail : zone=%d, zoneindex=%d\n", zone, zoneindex);
+		TRACE(_T("### SelCharToAgent zoneindex Fail : zone=%d, zoneindex=%d\n"), zone, zoneindex);
 		goto fail_return;
 	}
 
 	pMap = m_pMain->m_ZoneArray[zoneindex];
 	if (pMap == nullptr)
 	{
-		TRACE("### SelCharToAgent map load Fail : zoneindex=%d\n", zoneindex);
+		TRACE(_T("### SelCharToAgent map load Fail : zoneindex=%d\n"), zoneindex);
 		goto fail_return;
 	}
 
@@ -935,7 +935,7 @@ void CUser::SelCharToAgent(char* pBuf)
 		pInfo = m_pMain->m_ServerArray.GetData(pMap->m_nServerNo);
 		if (pInfo == nullptr)
 		{
-			TRACE("### SelCharToAgent server info Fail : server=%d\n", pMap->m_nServerNo);
+			TRACE(_T("### SelCharToAgent server info Fail : server=%d\n"), pMap->m_nServerNo);
 			goto fail_return;
 		}
 
@@ -947,7 +947,7 @@ void CUser::SelCharToAgent(char* pBuf)
 		SetByte(send_buff, zone, send_index);
 		SetByte(send_buff, m_pMain->m_byOldVictory, send_index);
 		Send(send_buff, send_index);
-		TRACE("--> SelCharToAgent server change : userid=%s, ip=%s, binit=%d\n", userid, pInfo->strServerIP, bInit);
+		TRACE(_T("--> SelCharToAgent server change : userid=%hs, ip=%hs, binit=%d\n"), userid, pInfo->strServerIP, bInit);
 		return;
 	}
 
@@ -962,7 +962,7 @@ void CUser::SelCharToAgent(char* pBuf)
 
 	{
 		char logfile[256] = {};
-		wsprintf(logfile, "[SelCharToAgent : %d:%d:%d] - acname=%s, name=%s, count=%d, TH: %lu, Rear : %d\r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), m_strAccountID, userid, m_pMain->m_iPacketCount, ::GetCurrentThreadId(), m_pMain->m_LoggerSendQueue.GetRearPointer());
+		sprintf(logfile, "[SelCharToAgent : %d:%d:%d] - acname=%s, name=%s, count=%d, TH: %lu, Rear : %d\r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), m_strAccountID, userid, m_pMain->m_iPacketCount, ::GetCurrentThreadId(), m_pMain->m_LoggerSendQueue.GetRearPointer());
 		EnterCriticalSection(&g_LogFile_critical);
 		m_pMain->m_LogFile.Write(logfile, strlen(logfile));
 		LeaveCriticalSection(&g_LogFile_critical);
@@ -973,14 +973,14 @@ void CUser::SelCharToAgent(char* pBuf)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "SelChar Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("SelChar Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		goto fail_return;
 	}
 
 	m_pMain->m_iSendPacketCount++;
-	//TRACE(" select char to agent ,, acname=%s, userid=%s\n", m_strAccountID, userid);
+	//TRACE(_T(" select char to agent ,, acname=%hs, userid=%hs\n"), m_strAccountID, userid);
 
 	return;
 
@@ -1094,7 +1094,7 @@ void CUser::SelectCharacter(char* pBuf)
 
 	SetDetailData();	// 디비에 없는 데이터 셋팅...
 
-	//TRACE("SelectCharacter 111 - id=%s, knights=%d, fame=%d\n", m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
+	//TRACE(_T("SelectCharacter 111 - id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
 
 	// sungyong ,, zone server : 카루스와 전쟁존을 합치므로 인해서,,
 	// 전쟁존일때 ... 
@@ -1108,7 +1108,7 @@ void CUser::SelectCharacter(char* pBuf)
 		{
 			m_pUserData->m_bKnights = 0;
 			m_pUserData->m_bFame = 0;
-			//TRACE("SelectCharacter - id=%s, knights=%d, fame=%d\n", m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
+			//TRACE(_T("SelectCharacter - id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
 			return;
 		}
 		
@@ -1123,7 +1123,7 @@ void CUser::SelectCharacter(char* pBuf)
 			retvalue = m_pMain->m_LoggerSendQueue.PutData( send_buff, send_index );
 			if( retvalue >= SMQ_FULL ) {
 				//goto fail_return;
-				m_pMain->m_StatusList.AddString("KNIGHTS_LIST_REQ Packet Drop!!!");
+				m_pMain->m_StatusList.AddString(_T("KNIGHTS_LIST_REQ Packet Drop!!!"));
 			}	*/
 
 			pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
@@ -1133,7 +1133,7 @@ void CUser::SelectCharacter(char* pBuf)
 			}
 			else
 			{
-				//TRACE("SelectCharacter - 기사단 리스트 요청,, id=%s, knights=%d, fame=%d\n", m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
+				//TRACE(_T("SelectCharacter - 기사단 리스트 요청,, id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
 				memset(send_buff, 0, sizeof(send_buff));
 				send_index = 0;
 				SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
@@ -1144,13 +1144,13 @@ void CUser::SelectCharacter(char* pBuf)
 				if (retvalue >= SMQ_FULL)
 				{
 					//goto fail_return;
-					m_pMain->m_StatusList.AddString("KNIGHTS_LIST_REQ Packet Drop!!!");
+					m_pMain->m_StatusList.AddString(_T("KNIGHTS_LIST_REQ Packet Drop!!!"));
 				}
 
 				pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
 				if (pKnights != nullptr)
 				{
-					//TRACE("SelectCharacter - 기사단 리스트 추가,, id=%s, knights=%d, fame=%d\n", m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
+					//TRACE(_T("SelectCharacter - 기사단 리스트 추가,, id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
 					m_pMain->m_KnightsManager.SetKnightsUser(m_pUserData->m_bKnights, m_pUserData->m_id);
 				}
 			}
@@ -1166,7 +1166,7 @@ void CUser::SelectCharacter(char* pBuf)
 		{
 			m_pUserData->m_bKnights = 0;
 			m_pUserData->m_bFame = 0;
-			//TRACE("SelectCharacter - id=%s, knights=%d, fame=%d\n", m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
+			//TRACE(_T("SelectCharacter - id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
 			return;
 		}
 		
@@ -1202,11 +1202,11 @@ void CUser::SelectCharacter(char* pBuf)
 	retvalue = m_pMain->m_ItemLoggerSendQ.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Login Logger Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Login Logger Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
-	//TRACE("SelectCharacter - id=%s, knights=%d, fame=%d\n", m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
+	//TRACE(_T("SelectCharacter - id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
 
 	return;
 
@@ -1234,8 +1234,8 @@ void CUser::AllCharInfoToAgent()
 		SetByte(send_buff, WIZ_ALLCHAR_INFO_REQ, send_index);
 		SetByte(send_buff, 0xFF, send_index);
 
-		char logstr[256] = {};
-		sprintf(logstr, "All CharInfo Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("All CharInfo Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 }
@@ -1259,8 +1259,8 @@ void CUser::UserDataSaveToAgent()
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "DataSave Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("DataSave Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 
@@ -1280,8 +1280,8 @@ void CUser::UserDataSaveToAgent()
 	retvalue = m_pMain->m_ItemLoggerSendQ.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Exp Logger Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Exp Logger Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 }
@@ -1294,7 +1294,7 @@ void CUser::LogOut()
 
 	CTime t = CTime::GetCurrentTime();
 	char logfile[256] = {};
-	wsprintf(logfile, "[%s : %s Logout : %d:%d:%d]\r\n", m_pUserData->m_Accountid, m_pUserData->m_id, t.GetHour(), t.GetMinute(), t.GetSecond());
+	sprintf(logfile, "[%s : %s Logout : %d:%d:%d]\r\n", m_pUserData->m_Accountid, m_pUserData->m_id, t.GetHour(), t.GetMinute(), t.GetSecond());
 	EnterCriticalSection(&g_LogFile_critical);
 	m_pMain->m_LogFile.Write(logfile, strlen(logfile));
 	LeaveCriticalSection(&g_LogFile_critical);
@@ -1303,7 +1303,7 @@ void CUser::LogOut()
 	if (pUser != nullptr
 		&& pUser->m_Sid != m_Sid)
 	{
-		TRACE("%s : %s Logout: Sid 가 다른 경우...\n", m_pUserData->m_Accountid, m_pUserData->m_id);
+		TRACE(_T("%hs : %hs Logout: Sid 가 다른 경우...\n"), m_pUserData->m_Accountid, m_pUserData->m_id);
 		return;
 	}
 
@@ -1329,8 +1329,8 @@ void CUser::LogOut()
 
 	if (count > 29)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Logout Send Fail : acname=%s, charid=%s ", m_pUserData->m_Accountid, m_pUserData->m_id);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Logout Send Fail : acname=%hs, charid=%hs "), m_pUserData->m_Accountid, m_pUserData->m_id);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 
@@ -1353,15 +1353,15 @@ void CUser::LogOut()
 	int retvalue = m_pMain->m_ItemLoggerSendQ.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Logout Logger Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Logout Logger Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 
 //	if (m_pUserData->m_bKnights > 0)
 //		m_pMain->m_KnightsManager.ModifyKnightsUser(m_pUserData->m_bKnights, m_pUserData->m_id, m_pUserData->m_bFame, m_pUserData->m_bLevel, m_pUserData->m_sClass, 0);
 
-//	TRACE("Send Logout Result - %s\n", m_pUserData->m_id);
+//	TRACE(_T("Send Logout Result - %hs\n"), m_pUserData->m_id);
 }
 
 void CUser::MoveProcess(char* pBuf)
@@ -1410,7 +1410,7 @@ void CUser::MoveProcess(char* pBuf)
 		|| m_pUserData->m_sHp == 0)
 	{
 		if (speed != 0)
-			TRACE("### MoveProcess Fail : name=%s(%d), m_bResHpType=%d, hp=%d, speed=%d, x=%d, z=%d ###\n", m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, speed, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
+			TRACE(_T("### MoveProcess Fail : name=%hs(%d), m_bResHpType=%d, hp=%d, speed=%d, x=%d, z=%d ###\n"), m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, speed, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
 	}
 
 	if (speed != 0)
@@ -1515,7 +1515,7 @@ void CUser::UserInOut(BYTE Type)
 		SetString(send_buff, pKnights->m_strName, iLength, send_index);
 		SetByte(send_buff, pKnights->m_byGrade, send_index);  // knights grade
 		SetByte(send_buff, pKnights->m_byRanking, send_index);  // knights grade
-		//TRACE("userinout knights index = %d, kname=%s, name=%s\n" , iLength, pKnights->strName, m_pUserData->m_id);
+		//TRACE(_T("userinout knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, m_pUserData->m_id);
 	}
 	else
 	{
@@ -1555,7 +1555,7 @@ void CUser::UserInOut(BYTE Type)
 	SetDWORD(send_buff, m_pUserData->m_sItemArray[LEFTHAND].nNum, send_index);
 	SetShort(send_buff, m_pUserData->m_sItemArray[LEFTHAND].sDuration, send_index);
 
-//	TRACE("USERINOUT - %d, %s\n", m_Sid, m_pUserData->m_id);
+//	TRACE(_T("USERINOUT - %d, %hs\n"), m_Sid, m_pUserData->m_id);
 	m_pMain->Send_Region(send_buff, send_index, (int) m_pUserData->m_bZone, m_RegionX, m_RegionZ, this);
 
 	// AI Server쪽으로 정보 전송..
@@ -1635,7 +1635,7 @@ void CUser::Attack(char* pBuf)
 	if (m_bResHpType == USER_DEAD
 		|| m_pUserData->m_sHp == 0)
 	{
-		TRACE("### Attack Fail : name=%s(%d), m_bResHpType=%d, hp=%d###\n", m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp);
+		TRACE(_T("### Attack Fail : name=%hs(%d), m_bResHpType=%d, hp=%d###\n"), m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp);
 		return;
 	}
 
@@ -1649,7 +1649,7 @@ void CUser::Attack(char* pBuf)
 	// If you're holding a weapon, do a delay check.
 	if (pTable != nullptr)
 	{
-//		TRACE("Delay time : %f  ,  Table Delay Time : %f \r\n", delaytime, pTable->m_sDelay / 100.0f);
+//		TRACE(_T("Delay time : %f  ,  Table Delay Time : %f \r\n"), delaytime, pTable->m_sDelay / 100.0f);
 //		if (delaytime + 0.01f < (pTable->m_sDelay / 100.0f)) {
 		if (delaytime < pTable->m_sDelay)
 			return;
@@ -1684,7 +1684,7 @@ void CUser::Attack(char* pBuf)
 			// Check if the user is holding a weapon!!! No null pointers allowed!!!
 			if (pTable != nullptr)
 			{
-//				TRACE("Distance : %f  , Table Distance : %f  \r\n", distance, pTable->m_sRange / 10.0f);
+//				TRACE(_T("Distance : %f  , Table Distance : %f  \r\n"), distance, pTable->m_sRange / 10.0f);
 //				if (distance > (pTable->m_sRange / 10.0f))
 				if (distance > pTable->m_sRange)
 					return;
@@ -1707,7 +1707,7 @@ void CUser::Attack(char* pBuf)
 				ItemWoreOut(DURABILITY_TYPE_ATTACK, damage);
 				pTUser->ItemWoreOut(DURABILITY_TYPE_DEFENCE, damage);
 
-				//TRACE("%s - HP:%d, (damage-%d, t_hit-%d)\n", pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_sHp, damage, m_sTotalHit);
+				//TRACE(_T("%hs - HP:%d, (damage-%d, t_hit-%d)\n"), pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_sHp, damage, m_sTotalHit);
 
 				if (pTUser->m_pUserData->m_sHp == 0)
 				{
@@ -1743,7 +1743,7 @@ void CUser::Attack(char* pBuf)
 
 						Send(send_buff, send_index);
 
-						//TRACE("---> UserAttack Dead Captain Deprive - %s\n", pTUser->m_pUserData->m_id);
+						//TRACE(_T("---> UserAttack Dead Captain Deprive - %hs\n"), pTUser->m_pUserData->m_id);
 
 						if (pTUser->m_pUserData->m_bNation == KARUS)
 							m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
@@ -1757,7 +1757,7 @@ void CUser::Attack(char* pBuf)
 						&& pTUser->m_pUserData->m_bZone < 3)
 					{
 						pTUser->ExpChange(-pTUser->m_iMaxExp / 100);
-						//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+						//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 					}
 //
 				}
@@ -1784,12 +1784,12 @@ void CUser::Attack(char* pBuf)
 			// Check if the user is holding a weapon!!! No null pointers allowed!!!
 			if (pTable != nullptr)
 			{
-//				TRACE("Distance : %f  , Table Distance : %f  \r\n", distance, pTable->m_sRange / 10.0f);
+//				TRACE(_T("Distance : %f  , Table Distance : %f  \r\n"), distance, pTable->m_sRange / 10.0f);
 //				if (distance > (pTable->m_sRange / 10.0f))
 				if (distance > pTable->m_sRange)
 					return;
 
-				// TRACE("Success!!! \r\n");
+				// TRACE(_T("Success!!! \r\n"));
 			}
 //
 			memset(send_buff, 0, sizeof(send_buff));
@@ -1833,8 +1833,12 @@ void CUser::Attack(char* pBuf)
 			{
 				pTUser->Send(send_buff, send_index);
 				memset(send_buff, 0, sizeof(send_buff));
-				wsprintf(send_buff, "*** User Attack Dead, id=%s, result=%d, type=%d, HP=%d", pTUser->m_pUserData->m_id, result, pTUser->m_bResHpType, pTUser->m_pUserData->m_sHp);
-				TimeTrace(send_buff);
+
+#if defined(_DEBUG)
+				TCHAR logstr[256] = {};
+				_stprintf(logstr, _T("*** User Attack Dead, id=%hs, result=%d, type=%d, HP=%d"), pTUser->m_pUserData->m_id, result, pTUser->m_bResHpType, pTUser->m_pUserData->m_sHp);
+				TimeTrace(logstr);
+#endif
 			}
 		}
 	}
@@ -1941,7 +1945,7 @@ void CUser::SendMyInfo()
 		SetString(send_buff, pKnights->m_strName, iLength, send_index);
 		SetByte(send_buff, pKnights->m_byGrade, send_index); // Knights grade
 		SetByte(send_buff, pKnights->m_byRanking, send_index); // Knights grade
-		//TRACE("sendmyinfo knights index = %d, kname=%s, name=%s\n" , iLength, pKnights->strName, m_pUserData->m_id);
+		//TRACE(_T("sendmyinfo knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, m_pUserData->m_id);
 	}
 	else
 	{
@@ -2149,7 +2153,7 @@ void CUser::SetMaxHp(int iFlag)
 		&& iFlag == 0)
 	{
 		m_iMaxHp = 100;
-		//TRACE("--> SetMaxHp - name=%s, max=%d, hp=%d\n", m_pUserData->m_id, m_iMaxHp, m_pUserData->m_sHp);
+		//TRACE(_T("--> SetMaxHp - name=%hs, max=%d, hp=%d\n"), m_pUserData->m_id, m_iMaxHp, m_pUserData->m_sHp);
 	}
 	else
 	{
@@ -2161,7 +2165,7 @@ void CUser::SetMaxHp(int iFlag)
 		else if (iFlag == 2)
 			m_iMaxHp = 100;
 
-		//TRACE("<-- SetMaxHp - name=%s, max=%d, hp=%d\n", m_pUserData->m_id, m_iMaxHp, m_pUserData->m_sHp);
+		//TRACE(_T("<-- SetMaxHp - name=%hs, max=%d, hp=%d\n"), m_pUserData->m_id, m_iMaxHp, m_pUserData->m_sHp);
 	}
 
 	if (m_iMaxHp < m_pUserData->m_sHp)
@@ -2415,10 +2419,13 @@ void CUser::Regene(char* pBuf, int magicid)
 //
 
 	// 이 send_index는 왜 없었을까??? --;
-	memset(send_buff, 0, sizeof(send_buff));
-	send_index = 0;
-	wsprintf(send_buff, "<------ User Regene ,, nid=%d, name=%s, type=%d ******", m_Sid, m_pUserData->m_id, m_bResHpType);
-	//TimeTrace(send_buff);
+#if defined(_DEBUG)
+	{
+		//TCHAR logstr[1024] = {};
+		//_stprintf(logstr, _T("<------ User Regene ,, nid=%d, name=%hs, type=%d ******"), m_Sid, m_pUserData->m_id, m_bResHpType);
+		//TimeTrace(logstr);
+	}
+#endif
 
 	// 이거 확인사살로 추가했어요!!!!
 	memset(send_buff, 0, sizeof(send_buff));
@@ -2516,14 +2523,14 @@ void CUser::ZoneChange(int zone, float x, float z)
 				if (m_pUserData->m_bNation == KARUS
 					&& !m_pMain->m_byElmoradOpenFlag)
 				{
-					TRACE("#### ZoneChange Fail ,,, id=%s, nation=%d, flag=%d\n", m_pUserData->m_id, m_pUserData->m_bNation, m_pMain->m_byElmoradOpenFlag);
+					TRACE(_T("#### ZoneChange Fail ,,, id=%hs, nation=%d, flag=%d\n"), m_pUserData->m_id, m_pUserData->m_bNation, m_pMain->m_byElmoradOpenFlag);
 					return;
 				}
 				
 				if (m_pUserData->m_bNation == ELMORAD
 					&& !m_pMain->m_byKarusOpenFlag)
 				{
-					TRACE("#### ZoneChange Fail ,,, id=%s, nation=%d, flag=%d\n", m_pUserData->m_id, m_pUserData->m_bNation, m_pMain->m_byKarusOpenFlag);
+					TRACE(_T("#### ZoneChange Fail ,,, id=%hs, nation=%d, flag=%d\n"), m_pUserData->m_id, m_pUserData->m_bNation, m_pMain->m_byKarusOpenFlag);
 					return;
 				}
 			}
@@ -2581,7 +2588,7 @@ void CUser::ZoneChange(int zone, float x, float z)
 
 	if (m_pUserData->m_bZone == ZONE_SNOW_BATTLE)
 	{
-		//TRACE("ZoneChange - name=%s\n", m_pUserData->m_id);
+		//TRACE(_T("ZoneChange - name=%hs\n"), m_pUserData->m_id);
 		SetMaxHp(1);
 	}
 
@@ -2592,13 +2599,13 @@ void CUser::ZoneChange(int zone, float x, float z)
 
 	if (m_pUserData->m_bZone == ZONE_SNOW_BATTLE)
 	{
-		//TRACE("ZoneChange - name=%s\n", m_pUserData->m_id);
+		//TRACE(_T("ZoneChange - name=%hs\n"), m_pUserData->m_id);
 		SetMaxHp();
 	}
 
 	PartyRemove(m_Sid);	// 파티에서 탈퇴되도록 처리
 
-	//TRACE("ZoneChange ,,, id=%s, nation=%d, zone=%d, x=%.2f, z=%.2f\n", m_pUserData->m_id, m_pUserData->m_bNation, zone, x, z);
+	//TRACE(_T("ZoneChange ,,, id=%hs, nation=%d, zone=%d, x=%.2f, z=%.2f\n"), m_pUserData->m_id, m_pUserData->m_bNation, zone, x, z);
 
 	if (m_pMain->m_nServerNo != pMap->m_nServerNo)
 	{
@@ -2610,7 +2617,7 @@ void CUser::ZoneChange(int zone, float x, float z)
 
 		CTime t = CTime::GetCurrentTime();
 		char logfile[256] = {};
-		wsprintf(logfile, "[ZoneChange : %d-%d-%d] - sid=%d, acname=%s, name=%s, zone=%d, x=%d, z=%d \r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), m_Sid, m_strAccountID, m_pUserData->m_id, zone, (int) x, (int) z);
+		sprintf(logfile, "[ZoneChange : %d-%d-%d] - sid=%d, acname=%s, name=%s, zone=%d, x=%d, z=%d \r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), m_Sid, m_strAccountID, m_pUserData->m_id, zone, (int) x, (int) z);
 		EnterCriticalSection(&g_LogFile_critical);
 		m_pMain->m_LogFile.Write(logfile, strlen(logfile));
 		LeaveCriticalSection(&g_LogFile_critical);
@@ -2711,7 +2718,7 @@ void CUser::Warp(char* pBuf)
 	m_RegionX = (int) (m_pUserData->m_curx / VIEW_DISTANCE);
 	m_RegionZ = (int) (m_pUserData->m_curz / VIEW_DISTANCE);
 
-	//TRACE(" Warp ,, name=%s, x=%.2f, z=%.2f\n", m_pUserData->m_id, m_pUserData->m_curx, m_pUserData->m_curz);
+	//TRACE(_T(" Warp ,, name=%hs, x=%.2f, z=%.2f\n"), m_pUserData->m_id, m_pUserData->m_curx, m_pUserData->m_curz);
 
 	//UserInOut( USER_IN );
 	UserInOut(USER_WARP);
@@ -2805,7 +2812,7 @@ void CUser::RegisterRegion()
 			m_pMain->RegionUserInOutForMe(this);
 		}
 
-		// TRACE("User를 Region에 등록,, region_x=%d, y=%d\n", m_RegionX, m_RegionZ);
+		// TRACE(_T("User를 Region에 등록,, region_x=%d, y=%d\n"), m_RegionX, m_RegionZ);
 	}
 }
 
@@ -2835,7 +2842,7 @@ void CUser::RemoveRegion(int del_x, int del_z)
 		m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + del_x * 2, m_RegionZ + del_z);
 		m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + del_x * 2, m_RegionZ + del_z + 1);
 
-		// TRACE("Remove : (%d %d), (%d %d), (%d %d)\n", m_RegionX+del_x*2, m_RegionZ+del_z-1, m_RegionX+del_x*2, m_RegionZ+del_z, m_RegionX+del_x*2, m_RegionZ+del_z+1 );
+		// TRACE(_T("Remove : (%d %d), (%d %d), (%d %d)\n"), m_RegionX+del_x*2, m_RegionZ+del_z-1, m_RegionX+del_x*2, m_RegionZ+del_z, m_RegionX+del_x*2, m_RegionZ+del_z+1 );
 	}
 
 	// z 축으로 이동되었을때...
@@ -2857,7 +2864,7 @@ void CUser::RemoveRegion(int del_x, int del_z)
 			m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + del_x - 1, m_RegionZ + del_z * 2);
 			m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + del_x + 1, m_RegionZ + del_z * 2);
 
-			// TRACE("Remove : (%d %d), (%d %d), (%d %d)\n", m_RegionX+del_x-1, m_RegionZ+del_z*2, m_RegionX+del_x, m_RegionZ+del_z*2, m_RegionX+del_x+1, m_RegionZ+del_z*2 );
+			// TRACE(_T("Remove : (%d %d), (%d %d), (%d %d)\n"), m_RegionX+del_x-1, m_RegionZ+del_z*2, m_RegionX+del_x, m_RegionZ+del_z*2, m_RegionX+del_x+1, m_RegionZ+del_z*2 );
 		}
 	}
 }
@@ -2898,7 +2905,7 @@ void CUser::InsertRegion(int del_x, int del_z)
 		SetString(send_buff, pKnights->m_strName, iLength, send_index);
 		SetByte(send_buff, pKnights->m_byGrade, send_index);  // knights grade
 		SetByte(send_buff, pKnights->m_byRanking, send_index);  // knights grade
-		//TRACE("insertregion knights index = %d, kname=%s, name=%s\n" , iLength, pKnights->strName, m_pUserData->m_id);
+		//TRACE(_T("insertregion knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, m_pUserData->m_id);
 	}
 	else
 	{
@@ -2947,7 +2954,7 @@ void CUser::InsertRegion(int del_x, int del_z)
 		m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + del_x, m_RegionZ);
 		m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + del_x, m_RegionZ + 1);
 
-		// TRACE("Insert : (%d %d), (%d %d), (%d %d)\n", m_RegionX+del_x, m_RegionZ-1, m_RegionX+del_x, m_RegionZ, m_RegionX+del_x, m_RegionZ+1 );
+		// TRACE(_T("Insert : (%d %d), (%d %d), (%d %d)\n"), m_RegionX+del_x, m_RegionZ-1, m_RegionX+del_x, m_RegionZ, m_RegionX+del_x, m_RegionZ+1 );
 	}
 
 	// z 축으로 이동되었을때...
@@ -2969,7 +2976,7 @@ void CUser::InsertRegion(int del_x, int del_z)
 			m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX - 1, m_RegionZ + del_z);
 			m_pMain->Send_UnitRegion(send_buff, send_index, m_iZoneIndex, m_RegionX + 1, m_RegionZ + del_z);
 
-			// TRACE("Insert : (%d %d), (%d %d), (%d %d)\n", m_RegionX-1, m_RegionZ+del_z, m_RegionX, m_RegionZ+del_z, m_RegionX+1, m_RegionZ+del_z );
+			// TRACE(_T("Insert : (%d %d), (%d %d), (%d %d)\n"), m_RegionX-1, m_RegionZ+del_z, m_RegionX, m_RegionZ+del_z, m_RegionX+1, m_RegionZ+del_z );
 		}
 	}
 }
@@ -3017,7 +3024,7 @@ void CUser::RequestUserIn(char* pBuf)
 			SetString(send_buff, pKnights->m_strName, iLength, send_index);
 			SetByte(send_buff, pKnights->m_byGrade, send_index);  // knights grade
 			SetByte(send_buff, pKnights->m_byRanking, send_index);  // knights grade
-			//TRACE("requestuserin knights index = %d, kname=%s, name=%s\n" , iLength, pKnights->strName, pUser->m_pUserData->m_id);
+			//TRACE(_T("requestuserin knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, pUser->m_pUserData->m_id);
 		}
 		else
 		{
@@ -4942,7 +4949,7 @@ void CUser::ItemTrade(char* pBuf)
 	if (m_bResHpType == USER_DEAD
 		|| m_pUserData->m_sHp == 0)
 	{
-		TRACE("### ItemTrade Fail : name=%s(%d), m_bResHpType=%d, hp=%d, x=%d, z=%d ###\n", m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
+		TRACE(_T("### ItemTrade Fail : name=%hs(%d), m_bResHpType=%d, hp=%d, x=%d, z=%d ###\n"), m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
 		result = 0x01;
 		goto fail_return;
 	}
@@ -5640,7 +5647,7 @@ void CUser::LoyaltyChange(short tid)
 		&& m_pUserData->m_bZone < 3)
 		loyalty_source = 2 * loyalty_source;
 
-	//TRACE("LoyaltyChange 222 - user1=%s, %d,, user2=%s, %d\n", m_pUserData->m_id,  m_pUserData->m_iLoyalty, pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
+	//TRACE(_T("LoyaltyChange 222 - user1=%hs, %d,, user2=%hs, %d\n"), m_pUserData->m_id,  m_pUserData->m_iLoyalty, pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
 
 	m_pUserData->m_iLoyalty += loyalty_source;			// Recalculations of Loyalty...
 	pTUser->m_pUserData->m_iLoyalty += loyalty_target;
@@ -5652,7 +5659,7 @@ void CUser::LoyaltyChange(short tid)
 	if (pTUser->m_pUserData->m_iLoyalty < 0)
 		pTUser->m_pUserData->m_iLoyalty = 0;
 
-	//TRACE("LoyaltyChange 222 - user1=%s, %d,, user2=%s, %d\n", m_pUserData->m_id,  m_pUserData->m_iLoyalty, pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
+	//TRACE(_T("LoyaltyChange 222 - user1=%hs, %d,, user2=%hs, %d\n"), m_pUserData->m_id,  m_pUserData->m_iLoyalty, pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
 
 	SetByte(send_buff, WIZ_LOYALTY_CHANGE, send_index);	// Send result to source.
 	SetDWORD(send_buff, m_pUserData->m_iLoyalty, send_index);
@@ -5675,12 +5682,12 @@ void CUser::LoyaltyChange(short tid)
 			if (pTUser->m_pUserData->m_bNation == KARUS)
 			{
 				++m_pMain->m_sKarusDead;
-				//TRACE("++ LoyaltyChange - ka=%d, el=%d\n", m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
+				//TRACE(_T("++ LoyaltyChange - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 			}
 			else if (pTUser->m_pUserData->m_bNation == ELMORAD)
 			{
 				++m_pMain->m_sElmoradDead;
-				//TRACE("++ LoyaltyChange - ka=%d, el=%d\n", m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
+				//TRACE(_T("++ LoyaltyChange - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 			}
 		}
 	}
@@ -5692,8 +5699,8 @@ void CUser::SpeedHackUser()
 	if (strlen(m_pUserData->m_id) == 0)
 		return;
 
-	char logstr[256] = {};
-	sprintf(logstr, "%s Speed Hack Used\r\n", m_pUserData->m_id);
+	TCHAR logstr[256] = {};
+	_stprintf(logstr, _T("%hs Speed Hack Used\r\n"), m_pUserData->m_id);
 	LogFileWrite(logstr);
 
 	if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
@@ -6290,7 +6297,7 @@ void CUser::ExchangeReq(char* pBuf)
 	if (m_bResHpType == USER_DEAD
 		|| m_pUserData->m_sHp == 0)
 	{
-		TRACE("### ExchangeProcess Fail : name=%s(%d), m_bResHpType=%d, hp=%d, x=%d, z=%d ###\n", m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
+		TRACE(_T("### ExchangeProcess Fail : name=%hs(%d), m_bResHpType=%d, hp=%d, x=%d, z=%d ###\n"), m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
 		goto fail_return;
 	}
 
@@ -7008,7 +7015,7 @@ void CUser::ClassChange(char* pBuf)
 			{
 				old_money = money;
 				money = static_cast<int>(money * 0.5);
-				//TRACE("^^ ClassChange -  point Discount ,, money=%d->%d\n", old_money, money);
+				//TRACE(_T("^^ ClassChange -  point Discount ,, money=%d->%d\n"), old_money, money);
 			}
 
 			if (m_pMain->m_sDiscount == 2)
@@ -7034,7 +7041,7 @@ void CUser::ClassChange(char* pBuf)
 			{
 				old_money = money;
 				money = static_cast<int>(money * 0.5);
-				//TRACE("^^ ClassChange -  skillpoint Discount ,, money=%d->%d\n", old_money, money);
+				//TRACE(_T("^^ ClassChange -  skillpoint Discount ,, money=%d->%d\n"), old_money, money);
 			}
 
 			if (m_pMain->m_sDiscount == 2)
@@ -7294,12 +7301,12 @@ void CUser::LoyaltyDivide(short tid)
 			if (pTUser->m_pUserData->m_bNation == KARUS)
 			{
 				++m_pMain->m_sKarusDead;
-				//TRACE("++ LoyaltyDivide - ka=%d, el=%d\n", m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
+				//TRACE(_T("++ LoyaltyDivide - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 			}
 			else if (pTUser->m_pUserData->m_bNation == ELMORAD)
 			{
 				++m_pMain->m_sElmoradDead;
-				//TRACE("++ LoyaltyDivide - ka=%d, el=%d\n", m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
+				//TRACE(_T("++ LoyaltyDivide - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 			}
 		}
 	}
@@ -7350,7 +7357,7 @@ void CUser::LoyaltyDivide(short tid)
 				if (pUser == nullptr)
 					continue;
 
-				//TRACE("LoyaltyDivide 111 - user1=%s, %d\n", pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
+				//TRACE(_T("LoyaltyDivide 111 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 
 				pUser->m_pUserData->m_iLoyalty += individualvalue;
 
@@ -7358,7 +7365,7 @@ void CUser::LoyaltyDivide(short tid)
 				if (pUser->m_pUserData->m_iLoyalty < 0)
 					pUser->m_pUserData->m_iLoyalty = 0;
 
-				//TRACE("LoyaltyDivide 222 - user1=%s, %d\n", pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
+				//TRACE(_T("LoyaltyDivide 222 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 
 				memset(send_buff, 0, sizeof(send_buff));
 				send_index = 0;
@@ -7385,14 +7392,14 @@ void CUser::LoyaltyDivide(short tid)
 			if (pUser == nullptr)
 				continue;
 
-			//TRACE("LoyaltyDivide 333 - user1=%s, %d\n", pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
+			//TRACE(_T("LoyaltyDivide 333 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 			individualvalue = pUser->m_pUserData->m_bLevel * loyalty_source / levelsum;
 			pUser->m_pUserData->m_iLoyalty += individualvalue;
 
 			if (pUser->m_pUserData->m_iLoyalty < 0)
 				pUser->m_pUserData->m_iLoyalty = 0;
 
-			//TRACE("LoyaltyDivide 444 - user1=%s, %d\n", pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
+			//TRACE(_T("LoyaltyDivide 444 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
@@ -7409,7 +7416,7 @@ void CUser::LoyaltyDivide(short tid)
 	if (pTUser->m_pUserData->m_iLoyalty < 0)
 		pTUser->m_pUserData->m_iLoyalty = 0;
 
-	//TRACE("LoyaltyDivide 555 - user1=%s, %d\n", pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
+	//TRACE(_T("LoyaltyDivide 555 - user1=%hs, %d\n"), pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
 
 	// Send result to target.
 	memset(send_buff, 0, sizeof(send_buff));
@@ -7438,9 +7445,13 @@ void CUser::Dead()
 	// 유저에게는 바로 데드 패킷을 날림... (한 번 더 보냄, 유령을 없애기 위해서)
 	Send(send_buff, send_index);
 
-	memset(send_buff, 0, sizeof(send_buff));
-	wsprintf(send_buff, "----> User Dead ,, nid=%d, name=%s, type=%d, x=%d, z=%d ******", m_Sid, m_pUserData->m_id, m_bResHpType, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
-	//TimeTrace(send_buff);
+#if defined(_DEBUG)
+	{
+		//TCHAR logstr[1024] = {};
+		//_stprintf(logstr, _T("----> User Dead ,, nid=%d, name=%hs, type=%d, x=%d, z=%d ******"), m_Sid, m_pUserData->m_id, m_bResHpType, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
+		//TimeTrace(logstr);
+	}
+#endif
 
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;
@@ -7462,7 +7473,7 @@ void CUser::Dead()
 		else
 			strcpy(strKnightsName, "*");
 
-		//TRACE("---> Dead Captain Deprive - %s\n", m_pUserData->m_id);
+		//TRACE(_T("---> Dead Captain Deprive - %hs\n"), m_pUserData->m_id);
 		if (m_pUserData->m_bNation == KARUS)
 		{
 			//m_pMain->Announcement( KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
@@ -7693,7 +7704,7 @@ void CUser::HPTimeChange(float currenttime)
 		return;
 
 	//char logstr[128] = {};
-	//wsprintf(logstr, "HPTimeChange ,, nid=%d, name=%s, hp=%d, type=%d ******", m_Sid, m_pUserData->m_id, m_pUserData->m_sHp, m_bResHpType);
+	//wsprintf(logstr, "HPTimeChange ,, nid=%d, name=%hs, hp=%d, type=%d ******", m_Sid, m_pUserData->m_id, m_pUserData->m_sHp, m_bResHpType);
 	//TimeTrace(logstr);
 
 	if (m_pUserData->m_bZone == ZONE_SNOW_BATTLE
@@ -7778,7 +7789,7 @@ void CUser::HPTimeChangeType3(float currenttime)
 					&& m_pUserData->m_bZone < 3)
 				{
 					ExpChange(-m_iMaxExp / 100);
-					//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+					//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 				}
 				else
 				{
@@ -7812,7 +7823,7 @@ void CUser::HPTimeChangeType3(float currenttime)
 					&& m_pUserData->m_bZone < 3)
 				{
 					ExpChange(-m_iMaxExp / 100);
-					//TRACE("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n");
+					//TRACE(_T("정말로 1%만 깍였다니까요 ㅠ.ㅠ\r\n"));
 				}
 //
 			}
@@ -8413,8 +8424,8 @@ void CUser::SpeedHackTime(char* pBuf)
 
 		if ((client_gap - server_gap) > 10.0f)
 		{
-			char logstr[256] = {};
-			sprintf(logstr, "%s SpeedHack User Checked By Server Time\r\n", m_pUserData->m_id);
+			TCHAR logstr[256] = {};
+			_stprintf(logstr, _T("%hs SpeedHack User Checked By Server Time\r\n"), m_pUserData->m_id);
 			LogFileWrite(logstr);
 
 			Close();
@@ -8537,7 +8548,7 @@ void CUser::WarehouseProcess(char* pBuf)
 	if (m_bResHpType == USER_DEAD
 		|| m_pUserData->m_sHp == 0)
 	{
-		TRACE("### WarehouseProcess Fail : name=%s(%d), m_bResHpType=%d, hp=%d, x=%d, z=%d ###\n", m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
+		TRACE(_T("### WarehouseProcess Fail : name=%hs(%d), m_bResHpType=%d, hp=%d, x=%d, z=%d ###\n"), m_pUserData->m_id, m_Sid, m_bResHpType, m_pUserData->m_sHp, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
 		return;
 	}
 
@@ -8734,7 +8745,7 @@ void CUser::WarehouseProcess(char* pBuf)
 				itemid,
 				count,
 				m_pUserData->m_sItemArray[SLOT_MAX + destpos].sDuration);
-			//TRACE("WARE OUTPUT : %s %s %d %d %d %d %d", m_pUserData->m_id, m_pUserData->m_Accountid, ITEM_WAREHOUSE_GET, 0, itemid, count, m_pUserData->m_sItemArray[SLOT_MAX+destpos].sDuration );
+			//TRACE(_T("WARE OUTPUT : %hs %hs %d %d %d %d %d"), m_pUserData->m_id, m_pUserData->m_Accountid, ITEM_WAREHOUSE_GET, 0, itemid, count, m_pUserData->m_sItemArray[SLOT_MAX+destpos].sDuration );
 			break;
 
 		case WAREHOUSE_MOVE:
@@ -8883,7 +8894,7 @@ void CUser::ReportBug(char* pBuf)
 
 	int index = 0, chatlen = 0, send_index = 0;
 	char chatstr[1024] = {};
-	char logstr[1024] = {};
+	TCHAR logstr[1024] = {};
 
 	chatlen = GetShort(pBuf, index);
 	if (chatlen > 512
@@ -8892,11 +8903,11 @@ void CUser::ReportBug(char* pBuf)
 
 	GetString(chatstr, pBuf, chatlen, index);
 
-//	TRACE( " Short : %d   String : %s  \n ", chatlen, chatstr);
+//	TRACE( " Short : %d   String : %hs  \n ", chatlen, chatstr);
 	if (strlen(m_pUserData->m_id) == 0)
 		return;
 
-	sprintf(logstr, "%s -> ERROR : %s\r\n", m_pUserData->m_id, chatstr);
+	_stprintf(logstr, _T("%hs -> ERROR : %hs\r\n"), m_pUserData->m_id, chatstr);
 	LogFileWrite(logstr);
 }
 
@@ -9171,14 +9182,14 @@ void CUser::AllSkillPointChange()
 	{
 		old_money = temp_value;
 		temp_value = static_cast<int>(temp_value * 0.5);
-		//TRACE("^^ AllSkillPointChange - Discount ,, money=%d->%d\n", old_money, temp_value);
+		//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
 	}
 
 	if (m_pMain->m_sDiscount == 2)
 	{
 		old_money = temp_value;
 		temp_value = static_cast<int>(temp_value * 0.5);
-		//TRACE("^^ AllSkillPointChange - Discount ,, money=%d->%d\n", old_money, temp_value);
+		//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
 	}
 
 	money = m_pUserData->m_iGold - temp_value;
@@ -9253,7 +9264,7 @@ void CUser::AllPointChange()
 		&& m_pMain->m_byOldVictory == m_pUserData->m_bNation)
 	{
 		temp_money = static_cast<int>(temp_money * 0.5);
-		//TRACE("^^ AllPointChange - Discount ,, money=%d->%d\n", old_money, temp_money);
+		//TRACE(_T("^^ AllPointChange - Discount ,, money=%d->%d\n"), old_money, temp_money);
 	}
 
 	if (m_pMain->m_sDiscount == 2)
@@ -11170,7 +11181,7 @@ void CUser::BlinkTimeCheck(float currenttime)
 		SetByte(send_buff, m_bAbnormalType, send_index);
 		StateChange(send_buff);
 
-		//TRACE("?? BlinkTimeCheck : name=%s(%d), type=%d ??\n", m_pUserData->m_id, m_Sid, m_bAbnormalType);
+		//TRACE(_T("?? BlinkTimeCheck : name=%hs(%d), type=%d ??\n"), m_pUserData->m_id, m_Sid, m_bAbnormalType);
 //
 		// AI_server로 regene정보 전송...	
 		memset(send_buff, 0, sizeof(send_buff));
@@ -11207,7 +11218,7 @@ void CUser::SetLogInInfoToDB(BYTE bInit)
 	if (pInfo == nullptr)
 	{
 		CString logstr;
-		logstr.Format("%d Server Info Invalid User Closed...\r\n", m_pMain->m_nServerNo);
+		logstr.Format(_T("%d Server Info Invalid User Closed...\r\n"), m_pMain->m_nServerNo);
 		LogFileWrite(logstr);
 		Close();
 		return;
@@ -11232,8 +11243,8 @@ void CUser::SetLogInInfoToDB(BYTE bInit)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "UserInfo Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("UserInfo Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 }
@@ -11623,8 +11634,8 @@ void CUser::ItemLogToAgent(const char* srcid, const char* tarid, int type, int64
 	retvalue = m_pMain->m_ItemLoggerSendQ.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "ItemLog Write Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("ItemLog Write Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 	}
 }
@@ -12152,12 +12163,12 @@ void CUser::KickOutZoneUser(BOOL home)
 		_REGENE_EVENT* pRegene = pMap->GetRegeneEvent(regene_event);
 		if (pRegene == nullptr)
 		{
-			TRACE("### KickOutZoneUser Fail - user=%s, regene_event=%d, zoneindex=%d\n", m_pUserData->m_id, regene_event, zoneindex);
+			TRACE(_T("### KickOutZoneUser Fail - user=%hs, regene_event=%d, zoneindex=%d\n"), m_pUserData->m_id, regene_event, zoneindex);
 			KickOutZoneUser();
 			return;
 		}
 
-		//TRACE("KickOutZoneUser - user=%s, regene_event=%d\n", m_pUserData->m_id, regene_event);
+		//TRACE(_T("KickOutZoneUser - user=%hs, regene_event=%d\n"), m_pUserData->m_id, regene_event);
 
 		int delta_x = myrand(0, pRegene->fRegeneAreaX);
 		int delta_z = myrand(0, pRegene->fRegeneAreaZ);
@@ -12270,8 +12281,8 @@ void CUser::OpenEditBox(int message, int event)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Coupon Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Coupon Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		//goto fail_return;
 	}
@@ -12370,8 +12381,8 @@ void CUser::LogCoupon(int itemid, int count)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		char logstr[256] = {};
-		sprintf(logstr, "Coupon Send Fail : %d", retvalue);
+		TCHAR logstr[256] = {};
+		_stprintf(logstr, _T("Coupon Send Fail : %d"), retvalue);
 		m_pMain->m_StatusList.AddString(logstr);
 		//goto fail_return;
 	}
@@ -12468,7 +12479,7 @@ void CUser::RecvDeleteChar(char* pBuf)
 		&& nKnights != 0)
 	{
 		m_pMain->m_KnightsManager.RemoveKnightsUser(nKnights, strCharID);
-		TRACE("RecvDeleteChar ==> name=%s, knights=%d\n", strCharID, nKnights);
+		TRACE(_T("RecvDeleteChar ==> name=%hs, knights=%d\n"), strCharID, nKnights);
 
 		memset(send_buff, 0, sizeof(send_buff));
 		send_index = 0;

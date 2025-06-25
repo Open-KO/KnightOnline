@@ -30,7 +30,7 @@ DWORD WINAPI RecvUDPThread(LPVOID lp)
 		{
 			int err = WSAGetLastError();
 			getpeername(pUdp->m_hUDPSocket, (SOCKADDR*) &pUdp->m_ReplyAddress, &addrlen);
-			TRACE("recvfrom() error : %d IP : %s\n", err, inet_ntoa(pUdp->m_ReplyAddress.sin_addr));
+			TRACE(_T("recvfrom() error : %d IP : %hs\n"), err, inet_ntoa(pUdp->m_ReplyAddress.sin_addr));
 
 			// 재전송 루틴...
 
@@ -76,7 +76,7 @@ bool CUdpSocket::CreateSocket()
 	m_hUDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (m_hUDPSocket == INVALID_SOCKET)
 	{
-		TRACE("udp socket create fail...\n");
+		TRACE(_T("udp socket create fail...\n"));
 		return false;
 	}
 
@@ -88,7 +88,7 @@ bool CUdpSocket::CreateSocket()
 	int r = getsockopt(m_hUDPSocket, SOL_SOCKET, SO_RCVBUF, (char*) &sock_buf_size, &optlen);
 	if (r == SOCKET_ERROR)
 	{
-		TRACE("buffer size set fail...\n");
+		TRACE(_T("buffer size set fail...\n"));
 		return false;
 	}
 
@@ -99,7 +99,7 @@ bool CUdpSocket::CreateSocket()
 
 	if (bind(m_hUDPSocket, (LPSOCKADDR) &m_SocketAddress, sizeof(m_SocketAddress)) == SOCKET_ERROR)
 	{
-		TRACE("UDP bind() Error...\n");
+		TRACE(_T("UDP bind() Error...\n"));
 		closesocket(m_hUDPSocket);
 		return false;
 	}
@@ -108,7 +108,7 @@ bool CUdpSocket::CreateSocket()
 	m_hUdpThread = ::CreateThread(nullptr, 0, RecvUDPThread, this, 0, &id);
 	::SetThreadPriority(m_hUdpThread, THREAD_PRIORITY_ABOVE_NORMAL);
 
-	TRACE("UDP Socket Create Success...\n");
+	TRACE(_T("UDP Socket Create Success...\n"));
 	return true;
 }
 
@@ -237,7 +237,10 @@ void CUdpSocket::ServerChat(char* pBuf)
 		return;
 
 	GetString(chatstr, pBuf, chatlen, index);
-	m_pMain->m_StatusList.AddString(chatstr);
+
+	CString logstr;
+	logstr.Format(_T("%hs"), chatstr);
+	m_pMain->m_StatusList.AddString(logstr);
 }
 
 void CUdpSocket::RecvBattleEvent(char* pBuf)
@@ -262,18 +265,18 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE("#### UDP RecvBattleEvent Fail : battleopen = %d, type = %d\n", m_pMain->m_byBattleOpen, nType);
+			TRACE(_T("#### UDP RecvBattleEvent Fail : battleopen = %d, type = %d\n"), m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 
 		if (nResult == KARUS)
 		{
-			//TRACE("--> UDP RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n");
+			//TRACE(_T("--> UDP RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byKarusOpenFlag = 1;		// 카루스 땅으로 넘어갈 수 있어
 		}
 		else if (nResult == ELMORAD)
 		{
-			//TRACE("--> UDP  RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n");
+			//TRACE(_T("--> UDP  RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byElmoradOpenFlag = 1;	// 엘모 땅으로 넘어갈 수 있어
 		}
 	}
@@ -281,16 +284,16 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE("####  UDP  RecvBattleEvent Fail : battleopen = %d, type=%d\n", m_pMain->m_byBattleOpen, nType);
+			TRACE(_T("####  UDP  RecvBattleEvent Fail : battleopen = %d, type=%d\n"), m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 		if (nResult == KARUS)
 		{
-			//TRACE("-->  UDP RecvBattleEvent : 카루스가 승리하였습니다.\n");
+			//TRACE(_T("-->  UDP RecvBattleEvent : 카루스가 승리하였습니다.\n"));
 		}
 		else if (nResult == ELMORAD)
 		{
-			//TRACE("-->  UDP RecvBattleEvent : 엘모라드가 승리하였습니다.\n");
+			//TRACE(_T("-->  UDP RecvBattleEvent : 엘모라드가 승리하였습니다.\n"));
 		}
 
 		m_pMain->m_bVictory = nResult;
@@ -307,7 +310,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			&& nLen < MAX_ID_SIZE + 1)
 		{
 			GetString(strMaxUserName, pBuf, nLen, index);
-			//TRACE("-->  UDP RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %s, len=%d\n", strMaxUserName, nResult);
+			//TRACE(_T("-->  UDP RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
 			if (nResult == 1)
 			{
 				::_LoadStringFromResource(IDS_KILL_CAPTAIN, buff);
@@ -368,7 +371,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			m_pMain->m_sKarusDead = m_pMain->m_sKarusDead + nKillKarus;
 			m_pMain->m_sElmoradDead = m_pMain->m_sElmoradDead + nElmoKill;
 
-			//TRACE("-->  UDP RecvBattleEvent type = 1 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n", nKillKarus, m_pMain->m_sKarusDead, nElmoKill, m_pMain->m_sElmoradDead);
+			//TRACE(_T("-->  UDP RecvBattleEvent type = 1 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n"), nKillKarus, m_pMain->m_sKarusDead, nElmoKill, m_pMain->m_sElmoradDead);
 
 			SetByte(send_buff, UDP_BATTLE_EVENT_PACKET, send_index);
 			SetByte(send_buff, BATTLE_EVENT_KILL_USER, send_index);
@@ -382,7 +385,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			nKillKarus = GetShort(pBuf, index);
 			nElmoKill = GetShort(pBuf, index);
 
-			//TRACE("-->  UDP RecvBattleEvent type = 2 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n", m_pMain->m_sKarusDead, nKillKarus, m_pMain->m_sElmoradDead, nElmoKill);
+			//TRACE(_T("-->  UDP RecvBattleEvent type = 2 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n"), m_pMain->m_sKarusDead, nKillKarus, m_pMain->m_sElmoradDead, nElmoKill);
 
 			m_pMain->m_sKarusDead = nKillKarus;
 			m_pMain->m_sElmoradDead = nElmoKill;
@@ -395,7 +398,7 @@ void CUdpSocket::ReceiveKnightsProcess(char* pBuf)
 	int index = 0, command = 0, pktsize = 0, count = 0;
 
 	command = GetByte(pBuf, index);
-	//TRACE("UDP - ReceiveKnightsProcess - command=%d\n", command);
+	//TRACE(_T("UDP - ReceiveKnightsProcess - command=%d\n"), command);
 
 	switch (command)
 	{
@@ -458,7 +461,7 @@ void CUdpSocket::RecvCreateKnights(char* pBuf)
 	// 클랜정보에 추가
 	m_pMain->m_KnightsManager.AddKnightsUser(knightsindex, chiefname);
 
-	//TRACE("UDP - RecvCreateKnights - knname=%s, name=%s, index=%d\n", knightsname, chiefname, knightsindex);
+	//TRACE(_T("UDP - RecvCreateKnights - knname=%hs, name=%hs, index=%d\n"), knightsname, chiefname, knightsindex);
 }
 
 void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
@@ -480,7 +483,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 		sprintf(finalstr, "#### %s님이 가입하셨습니다. ####", charid);
 		// 클랜정보에 추가
 		m_pMain->m_KnightsManager.AddKnightsUser(knightsindex, charid);
-		TRACE("UDP - RecvJoinKnights - 가입, name=%s, index=%d\n", charid, knightsindex);
+		TRACE(_T("UDP - RecvJoinKnights - 가입, name=%hs, index=%d\n"), charid, knightsindex);
 	}
 	// 탈퇴..
 	else
@@ -488,10 +491,10 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 		// 클랜정보에 추가
 		m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, charid);
 		sprintf(finalstr, "#### %s님이 탈퇴하셨습니다. ####", charid);
-		TRACE("UDP - RecvJoinKnights - 탈퇴, name=%s, index=%d\n", charid, knightsindex);
+		TRACE(_T("UDP - RecvJoinKnights - 탈퇴, name=%hs, index=%d\n"), charid, knightsindex);
 	}
 
-	//TRACE("UDP - RecvJoinKnights - command=%d, name=%s, index=%d\n", command, charid, knightsindex);
+	//TRACE(_T("UDP - RecvJoinKnights - command=%d, name=%hs, index=%d\n"), command, charid, knightsindex);
 
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;
@@ -581,7 +584,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 
 	if (pTUser != nullptr)
 	{
-		//TRACE("UDP - RecvModifyFame - command=%d, nid=%d, name=%s, index=%d, fame=%d\n", command, pTUser->GetSocketID(), pTUser->m_pUserData->m_id, knightsindex, pTUser->m_pUserData->m_bFame);
+		//TRACE(_T("UDP - RecvModifyFame - command=%d, nid=%d, name=%hs, index=%d, fame=%d\n"), command, pTUser->GetSocketID(), pTUser->m_pUserData->m_id, knightsindex, pTUser->m_pUserData->m_bFame);
 		send_index = 0;
 		memset(send_buff, 0, sizeof(send_buff));
 		SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
@@ -639,7 +642,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
 	if (pKnights == nullptr)
 	{
-		TRACE("UDP - ### RecvDestoryKnights  Fail == index = %d ###\n", knightsindex);
+		TRACE(_T("UDP - ### RecvDestoryKnights  Fail == index = %d ###\n"), knightsindex);
 		return;
 	}
 
@@ -687,7 +690,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	}
 
 	m_pMain->m_KnightsArray.DeleteData(knightsindex);
-	//TRACE("UDP - RecvDestoryKnights - index=%d\n", knightsindex);
+	//TRACE(_T("UDP - RecvDestoryKnights - index=%d\n"), knightsindex);
 }
 
 void CUdpSocket::RecvBattleZoneCurrentUsers(char* pBuf)
@@ -699,5 +702,5 @@ void CUdpSocket::RecvBattleZoneCurrentUsers(char* pBuf)
 
 	m_pMain->m_sKarusCount = nKarusMan;
 	m_pMain->m_sElmoradCount = nElmoradMan;
-	//TRACE("UDP - RecvBattleZoneCurrentUsers - karus=%d, elmorad=%d\n", nKarusMan, nElmoradMan);
+	//TRACE(_T("UDP - RecvBattleZoneCurrentUsers - karus=%d, elmorad=%d\n"), nKarusMan, nElmoradMan);
 }
