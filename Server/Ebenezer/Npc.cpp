@@ -127,22 +127,7 @@ void CNpc::NpcInOut(BYTE Type, float fx, float fz, float fy)
 		return;
 	}
 
-	SetShort(buff, m_sPid, send_index);
-	SetByte(buff, m_tNpcType, send_index);
-	SetDWORD(buff, m_iSellingGroup, send_index);
-	SetShort(buff, m_sSize, send_index);
-	SetDWORD(buff, m_iWeapon_1, send_index);
-	SetDWORD(buff, m_iWeapon_2, send_index);
-	SetShort(buff, strlen(m_strName), send_index);
-	SetString(buff, m_strName, strlen(m_strName), send_index);
-	SetByte(buff, m_byGroup, send_index);
-	SetByte(buff, m_byLevel, send_index);
-	SetShort(buff, (WORD) m_fCurX * 10, send_index);
-	SetShort(buff, (WORD) m_fCurZ * 10, send_index);
-	SetShort(buff, (short) m_fCurY * 10, send_index);
-	SetDWORD(buff, (int) m_byGateOpen, send_index);
-	SetByte(buff, m_byObjectType, send_index);
-
+	GetNpcInfo(buff, send_index);
 	m_pMain->Send_Region(buff, send_index, m_sCurZone, m_sRegion_X, m_sRegion_Z);
 }
 
@@ -230,21 +215,7 @@ void CNpc::InsertRegion(int del_x, int del_z)
 	SetByte(buff, WIZ_NPC_INOUT, send_index);
 	SetByte(buff, NPC_IN, send_index);
 	SetShort(buff, m_sNid, send_index);
-	SetShort(buff, m_sPid, send_index);
-	SetByte(buff, m_tNpcType, send_index);
-	SetDWORD(buff, m_iSellingGroup, send_index);
-	SetShort(buff, m_sSize, send_index);
-	SetDWORD(buff, m_iWeapon_1, send_index);
-	SetDWORD(buff, m_iWeapon_2, send_index);
-	SetShort(buff, strlen(m_strName), send_index);
-	SetString(buff, m_strName, strlen(m_strName), send_index);
-	SetByte(buff, m_byGroup, send_index);
-	SetByte(buff, m_byLevel, send_index);
-	SetShort(buff, (WORD) m_fCurX * 10, send_index);
-	SetShort(buff, (WORD) m_fCurZ * 10, send_index);
-	SetShort(buff, (short) m_fCurY * 10, send_index);
-	SetDWORD(buff, (int) m_byGateOpen, send_index);
-	SetByte(buff, m_byObjectType, send_index);
+	GetNpcInfo(buff, send_index);
 
 	// x 축으로 이동되었을때...
 	if (del_x != 0)
@@ -319,4 +290,22 @@ int CNpc::GetRegionNpcList(int region_x, int region_z, char* buff, int& t_count)
 	LeaveCriticalSection(&g_region_critical);
 
 	return buff_index;
+}
+
+void CNpc::GetNpcInfo(char* buff, int& buff_index)
+{
+	SetShort(buff, m_sPid, buff_index);
+	SetByte(buff, m_tNpcType, buff_index);
+	SetDWORD(buff, m_iSellingGroup, buff_index);
+	SetShort(buff, m_sSize, buff_index);
+	SetDWORD(buff, m_iWeapon_1, buff_index);
+	SetDWORD(buff, m_iWeapon_2, buff_index);
+	SetString2(buff, m_strName, static_cast<short>(strlen(m_strName)), buff_index);
+	SetByte(buff, m_byGroup, buff_index);
+	SetByte(buff, m_byLevel, buff_index);
+	SetShort(buff, (WORD) m_fCurX * 10, buff_index);
+	SetShort(buff, (WORD) m_fCurZ * 10, buff_index);
+	SetShort(buff, (short) m_fCurY * 10, buff_index);
+	SetDWORD(buff, (int) m_byGateOpen, buff_index);
+	SetByte(buff, m_byObjectType, buff_index);
 }

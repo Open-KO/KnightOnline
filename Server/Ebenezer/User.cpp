@@ -1409,9 +1409,8 @@ void CUser::MoveProcess(char* pBuf)
 
 void CUser::UserInOut(BYTE Type)
 {
-	int send_index = 0, iLength = 0;
+	int send_index = 0;
 	char send_buff[256] = {};
-	CKnights* pKnights = nullptr;
 
 	if (m_iZoneIndex < 0
 		|| m_iZoneIndex >= m_pMain->m_ZoneArray.size())
@@ -1450,61 +1449,7 @@ void CUser::UserInOut(BYTE Type)
 		return;
 	}
 
-	SetShort(send_buff, strlen(m_pUserData->m_id), send_index);
-	SetString(send_buff, m_pUserData->m_id, strlen(m_pUserData->m_id), send_index);
-	SetByte(send_buff, m_pUserData->m_bNation, send_index);
-	SetShort(send_buff, m_pUserData->m_bKnights, send_index);
-	SetByte(send_buff, m_pUserData->m_bFame, send_index);
-
-	if (m_pUserData->m_bKnights != 0)
-		pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
-
-	if (pKnights != nullptr)
-	{
-		iLength = strlen(pKnights->m_strName);
-		SetShort(send_buff, (short) iLength, send_index);
-		SetString(send_buff, pKnights->m_strName, iLength, send_index);
-		SetByte(send_buff, pKnights->m_byGrade, send_index);  // knights grade
-		SetByte(send_buff, pKnights->m_byRanking, send_index);  // knights grade
-		//TRACE(_T("userinout knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, m_pUserData->m_id);
-	}
-	else
-	{
-		SetShort(send_buff, 0, send_index);
-		SetByte(send_buff, 0, send_index);
-		SetByte(send_buff, 0, send_index);
-	}
-
-	SetByte(send_buff, m_pUserData->m_bLevel, send_index);
-	SetByte(send_buff, m_pUserData->m_bRace, send_index);
-	SetShort(send_buff, m_pUserData->m_sClass, send_index);
-	SetShort(send_buff, (WORD) m_pUserData->m_curx * 10, send_index);
-	SetShort(send_buff, (WORD) m_pUserData->m_curz * 10, send_index);
-	SetShort(send_buff, (short) m_pUserData->m_cury * 10, send_index);
-	SetByte(send_buff, m_pUserData->m_bFace, send_index);
-	SetByte(send_buff, m_pUserData->m_bHairColor, send_index);
-	SetByte(send_buff, m_bResHpType, send_index);
-// 비러머글 수능...
-	SetByte(send_buff, m_bAbnormalType, send_index);
-//
-	SetByte(send_buff, m_bNeedParty, send_index);
-	SetByte(send_buff, m_pUserData->m_bAuthority, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[BREAST].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[BREAST].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[LEG].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[LEG].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[HEAD].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[HEAD].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[GLOVE].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[GLOVE].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[FOOT].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[FOOT].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[SHOULDER].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[SHOULDER].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[RIGHTHAND].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[RIGHTHAND].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[LEFTHAND].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[LEFTHAND].sDuration, send_index);
+	GetUserInfo(send_buff, send_index);
 
 //	TRACE(_T("USERINOUT - %d, %hs\n"), m_Sid, m_pUserData->m_id);
 	m_pMain->Send_Region(send_buff, send_index, (int) m_pUserData->m_bZone, m_RegionX, m_RegionZ, this);
@@ -2822,81 +2767,21 @@ void CUser::RemoveRegion(int del_x, int del_z)
 
 void CUser::InsertRegion(int del_x, int del_z)
 {
-	int send_index = 0, buff_index = 0, uid_sendindex = 0, i = 0;
-	int region_x = -1, region_z = -1, user_count = 0, uid = -1, iLength = 0;
+	int send_index = 0;
 	char send_buff[256] = {};
-	C3DMap* pMap = nullptr;
-	CUser* pUser = nullptr;
-	CKnights* pKnights = nullptr;
 
 	if (m_iZoneIndex < 0
 		|| m_iZoneIndex >= m_pMain->m_ZoneArray.size())
 		return;
 
-	pMap = m_pMain->m_ZoneArray[m_iZoneIndex];
+	C3DMap* pMap = m_pMain->m_ZoneArray[m_iZoneIndex];
 	if (pMap == nullptr)
 		return;
 
 	SetByte(send_buff, WIZ_USER_INOUT, send_index);
 	SetByte(send_buff, USER_IN, send_index);
 	SetShort(send_buff, m_Sid, send_index);
-	SetShort(send_buff, strlen(m_pUserData->m_id), send_index);
-	SetString(send_buff, m_pUserData->m_id, strlen(m_pUserData->m_id), send_index);
-	SetByte(send_buff, m_pUserData->m_bNation, send_index);
-	SetShort(send_buff, m_pUserData->m_bKnights, send_index);
-	SetByte(send_buff, m_pUserData->m_bFame, send_index);
-
-	if (m_pUserData->m_bKnights != 0)
-		pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
-
-	if (pKnights != nullptr)
-	{
-		iLength = strlen(pKnights->m_strName);
-		SetShort(send_buff, iLength, send_index);
-		SetString(send_buff, pKnights->m_strName, iLength, send_index);
-		SetByte(send_buff, pKnights->m_byGrade, send_index);  // knights grade
-		SetByte(send_buff, pKnights->m_byRanking, send_index);  // knights grade
-		//TRACE(_T("insertregion knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, m_pUserData->m_id);
-	}
-	else
-	{
-		SetShort(send_buff, 0, send_index);
-		SetByte(send_buff, 0, send_index);
-		SetByte(send_buff, 0, send_index);
-	}
-
-	SetByte(send_buff, m_pUserData->m_bLevel, send_index);
-	SetByte(send_buff, m_pUserData->m_bRace, send_index);
-	SetShort(send_buff, m_pUserData->m_sClass, send_index);
-	SetShort(send_buff, (WORD) m_pUserData->m_curx * 10, send_index);
-	SetShort(send_buff, (WORD) m_pUserData->m_curz * 10, send_index);
-	SetShort(send_buff, (short) m_pUserData->m_cury * 10, send_index);
-	SetByte(send_buff, m_pUserData->m_bFace, send_index);
-	SetByte(send_buff, m_pUserData->m_bHairColor, send_index);
-	SetByte(send_buff, m_bResHpType, send_index);
-// 비러머글 수능...
-	SetByte(send_buff, m_bAbnormalType, send_index);
-//
-	SetByte(send_buff, m_bNeedParty, send_index);
-// 이것도 나중에 주석 해 --;
-	SetByte(send_buff, m_pUserData->m_bAuthority, send_index);
-//
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[BREAST].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[BREAST].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[LEG].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[LEG].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[HEAD].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[HEAD].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[GLOVE].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[GLOVE].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[FOOT].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[FOOT].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[SHOULDER].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[SHOULDER].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[RIGHTHAND].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[RIGHTHAND].sDuration, send_index);
-	SetDWORD(send_buff, m_pUserData->m_sItemArray[LEFTHAND].nNum, send_index);
-	SetShort(send_buff, m_pUserData->m_sItemArray[LEFTHAND].sDuration, send_index);
+	GetUserInfo(send_buff, send_index);
 
 	// x 축으로 이동되었을때...
 	if (del_x != 0)
@@ -2934,16 +2819,14 @@ void CUser::InsertRegion(int del_x, int del_z)
 
 void CUser::RequestUserIn(char* pBuf)
 {
-	int index = 0, uid = -1, user_count = 0, send_index = 0, t_count = 0, i = 0, j = 0, iLength = 0;
-	CUser* pUser = nullptr;
-	CKnights* pKnights = nullptr;
+	int index = 0, user_count = 0, send_index = 0, t_count = 0;
 	char send_buff[40960] = {};
 
 	send_index = 3;	// packet command 와 user_count 는 나중에 셋팅한다...
 	user_count = GetShort(pBuf, index);
-	for (i = 0; i < user_count; i++)
+	for (int i = 0; i < user_count; i++)
 	{
-		uid = GetShort(pBuf, index);
+		short uid = GetShort(pBuf, index);
 		if (uid < 0
 			|| uid >= MAX_USER)
 			continue;
@@ -2951,71 +2834,14 @@ void CUser::RequestUserIn(char* pBuf)
 		if (i > 1000)
 			break;
 
-		pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[uid];
+		CUser* pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[uid];
 		if (pUser == nullptr
 			|| pUser->GetState() != STATE_GAMESTART)
 			continue;
 
 		SetShort(send_buff, pUser->GetSocketID(), send_index);
-		SetShort(send_buff, strlen(pUser->m_pUserData->m_id), send_index);
-		SetString(send_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), send_index);
-		SetByte(send_buff, pUser->m_pUserData->m_bNation, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_bKnights, send_index);
-		SetByte(send_buff, pUser->m_pUserData->m_bFame, send_index);
+		pUser->GetUserInfo(send_buff, send_index);
 
-		if (pUser->m_pUserData->m_bKnights != 0)
-			pKnights = m_pMain->m_KnightsArray.GetData(pUser->m_pUserData->m_bKnights);
-		else
-			pKnights = nullptr;
-
-		if (pKnights != nullptr)
-		{
-			iLength = strlen(pKnights->m_strName);
-			SetShort(send_buff, iLength, send_index);
-			SetString(send_buff, pKnights->m_strName, iLength, send_index);
-			SetByte(send_buff, pKnights->m_byGrade, send_index);  // knights grade
-			SetByte(send_buff, pKnights->m_byRanking, send_index);  // knights grade
-			//TRACE(_T("requestuserin knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, pUser->m_pUserData->m_id);
-		}
-		else
-		{
-			SetShort(send_buff, 0, send_index);
-			SetByte(send_buff, 0, send_index);
-			SetByte(send_buff, 0, send_index);
-		}
-
-		SetByte(send_buff, pUser->m_pUserData->m_bLevel, send_index);
-		SetByte(send_buff, pUser->m_pUserData->m_bRace, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sClass, send_index);
-		SetShort(send_buff, (WORD) pUser->m_pUserData->m_curx * 10, send_index);
-		SetShort(send_buff, (WORD) pUser->m_pUserData->m_curz * 10, send_index);
-		SetShort(send_buff, (short) pUser->m_pUserData->m_cury * 10, send_index);
-		SetByte(send_buff, pUser->m_pUserData->m_bFace, send_index);
-		SetByte(send_buff, pUser->m_pUserData->m_bHairColor, send_index);
-		SetByte(send_buff, pUser->m_bResHpType, send_index);
-// 비러머글 수능...
-		SetByte(send_buff, pUser->m_bAbnormalType, send_index);
-//
-		SetByte(send_buff, pUser->m_bNeedParty, send_index);
-// 여기두 주석처리
-		SetByte(send_buff, pUser->m_pUserData->m_bAuthority, send_index);
-//
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[BREAST].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[BREAST].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[LEG].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[LEG].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[HEAD].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[HEAD].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[GLOVE].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[GLOVE].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[FOOT].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[FOOT].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[SHOULDER].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[SHOULDER].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[RIGHTHAND].sDuration, send_index);
-		SetDWORD(send_buff, pUser->m_pUserData->m_sItemArray[LEFTHAND].nNum, send_index);
-		SetShort(send_buff, pUser->m_pUserData->m_sItemArray[LEFTHAND].sDuration, send_index);
 		++t_count;
 	}
 
@@ -3035,15 +2861,14 @@ void CUser::RequestNpcIn(char* pBuf)
 	if (!m_pMain->m_bPointCheckFlag)
 		return;
 
-	int index = 0, nid = -1, npc_count = 0, send_index = 0, t_count = 0, i = 0, j = 0;
-	CNpc* pNpc = nullptr;
+	int index = 0, npc_count = 0, send_index = 0, t_count = 0;
 	char send_buff[20480] = {};
 
 	send_index = 3;	// packet command 와 user_count 는 나중에 셋팅한다...
 	npc_count = GetShort(pBuf, index);
-	for (i = 0; i < npc_count; i++)
+	for (int i = 0; i < npc_count; i++)
 	{
-		nid = GetShort(pBuf, index);
+		short nid = GetShort(pBuf, index);
 		if (nid < 0
 			|| nid > NPC_BAND + NPC_BAND)
 			continue;
@@ -3051,7 +2876,7 @@ void CUser::RequestNpcIn(char* pBuf)
 		if (i > 1000)
 			break;
 
-		pNpc = m_pMain->m_arNpcArray.GetData(nid);
+		CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
 		if (pNpc == nullptr)
 			continue;
 
@@ -3060,21 +2885,7 @@ void CUser::RequestNpcIn(char* pBuf)
 		//	continue;
 
 		SetShort(send_buff, pNpc->m_sNid, send_index);
-		SetShort(send_buff, pNpc->m_sPid, send_index);
-		SetByte(send_buff, pNpc->m_tNpcType, send_index);
-		SetDWORD(send_buff, pNpc->m_iSellingGroup, send_index);
-		SetShort(send_buff, pNpc->m_sSize, send_index);
-		SetDWORD(send_buff, pNpc->m_iWeapon_1, send_index);
-		SetDWORD(send_buff, pNpc->m_iWeapon_2, send_index);
-		SetShort(send_buff, strlen(pNpc->m_strName), send_index);
-		SetString(send_buff, pNpc->m_strName, strlen(pNpc->m_strName), send_index);
-		SetByte(send_buff, pNpc->m_byGroup, send_index);
-		SetByte(send_buff, pNpc->m_byLevel, send_index);
-		SetShort(send_buff, (WORD) pNpc->m_fCurX * 10, send_index);
-		SetShort(send_buff, (WORD) pNpc->m_fCurZ * 10, send_index);
-		SetShort(send_buff, (short) pNpc->m_fCurY * 10, send_index);
-		SetDWORD(send_buff, (int) pNpc->m_byGateOpen, send_index);
-		SetByte(send_buff, pNpc->m_byObjectType, send_index);
+		pNpc->GetNpcInfo(send_buff, send_index);
 
 		++t_count;
 	}
@@ -12453,4 +12264,61 @@ void CUser::RecvDeleteChar(char* pBuf)
 	SetByte(send_buff, char_index, send_index);
 
 	Send(send_buff, send_index);
+}
+
+void CUser::GetUserInfo(char* buff, int& buff_index)
+{
+	CKnights* pKnights = nullptr;
+
+	SetString2(buff, m_pUserData->m_id, static_cast<short>(strlen(m_pUserData->m_id)), buff_index);
+	SetByte(buff, m_pUserData->m_bNation, buff_index);
+	SetShort(buff, m_pUserData->m_bKnights, buff_index);
+	SetByte(buff, m_pUserData->m_bFame, buff_index);
+
+	if (m_pUserData->m_bKnights != 0)
+		pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+
+	if (pKnights != nullptr)
+	{
+		SetString2(buff, pKnights->m_strName, static_cast<short>(strlen(pKnights->m_strName)), buff_index);
+		SetByte(buff, pKnights->m_byGrade, buff_index);  // knights grade
+		SetByte(buff, pKnights->m_byRanking, buff_index);
+	}
+	else
+	{
+		SetShort(buff, 0, buff_index);
+		SetByte(buff, 0, buff_index);
+		SetByte(buff, 0, buff_index);
+	}
+
+	SetByte(buff, m_pUserData->m_bLevel, buff_index);
+	SetByte(buff, m_pUserData->m_bRace, buff_index);
+	SetShort(buff, m_pUserData->m_sClass, buff_index);
+	SetShort(buff, (WORD) m_pUserData->m_curx * 10, buff_index);
+	SetShort(buff, (WORD) m_pUserData->m_curz * 10, buff_index);
+	SetShort(buff, (short) m_pUserData->m_cury * 10, buff_index);
+	SetByte(buff, m_pUserData->m_bFace, buff_index);
+	SetByte(buff, m_pUserData->m_bHairColor, buff_index);
+	SetByte(buff, m_bResHpType, buff_index);
+// 비러머글 수능...
+	SetByte(buff, m_bAbnormalType, buff_index);
+//
+	SetByte(buff, m_bNeedParty, buff_index);
+	SetByte(buff, m_pUserData->m_bAuthority, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[BREAST].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[BREAST].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[LEG].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[LEG].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[HEAD].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[HEAD].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[GLOVE].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[GLOVE].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[FOOT].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[FOOT].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[SHOULDER].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[SHOULDER].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[RIGHTHAND].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[RIGHTHAND].sDuration, buff_index);
+	SetDWORD(buff, m_pUserData->m_sItemArray[LEFTHAND].nNum, buff_index);
+	SetShort(buff, m_pUserData->m_sItemArray[LEFTHAND].sDuration, buff_index);
 }

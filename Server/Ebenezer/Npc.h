@@ -64,11 +64,11 @@ public:
 	void RemoveRegion(int del_x, int del_z);
 	void InsertRegion(int del_x, int del_z);
 	int GetRegionNpcList(int region_x, int region_z, char* buff, int& t_count);
-	BYTE GetState()
-	{
-		return m_byState;
-	};
+	void GetNpcInfo(char* buff, int& buff_index);
 
+	inline BYTE GetState() const {
+		return m_byState;
+	}
 };
 
 #endif // !defined(AFX_NPC_H__1DE71CDD_4040_4479_828D_E8EE07BD7A67__INCLUDED_)

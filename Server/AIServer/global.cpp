@@ -110,6 +110,18 @@ void Setfloat(char* tBuf, float sFloat, int& index)
 	index += 4;
 }
 
+void SetString1(char* tBuf, const char* sBuf, BYTE len, int& index)
+{
+	SetByte(tBuf, len, index);
+	SetString(tBuf, sBuf, len, index);
+}
+
+void SetString2(char* tBuf, const char* sBuf, short len, int& index)
+{
+	SetShort(tBuf, len, index);
+	SetString(tBuf, sBuf, len, index);
+}
+
 int ParseSpace(char* tBuf, char* sBuf)
 {
 	int i = 0, index = 0;

@@ -190,8 +190,8 @@ public:
 
 	short	m_sEvent[MAX_CURRENT_EVENT];				// 이미 실행된 이밴트 리스트들 :)
 
-
 public:
+	void GetUserInfo(char* buff, int& buff_index);
 	void RecvDeleteChar(char* pBuf);
 	BOOL ExistComEvent(int eventid);
 	void SaveComEvent(int eventid);

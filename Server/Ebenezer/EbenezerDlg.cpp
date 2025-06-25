@@ -2171,73 +2171,9 @@ int CEbenezerDlg::GetRegionUserIn(C3DMap* pMap, int region_x, int region_z, char
 			continue;
 
 		SetShort(buff, pUser->GetSocketID(), buff_index);
-		SetShort(buff, strlen(pUser->m_pUserData->m_id), buff_index);
-		SetString(buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), buff_index);
-		SetByte(buff, pUser->m_pUserData->m_bNation, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_bKnights, buff_index);
-		// 666 work
-		SetByte(buff, pUser->m_pUserData->m_bFame, buff_index);
+		pUser->GetUserInfo(buff, buff_index);
 
-		CKnights* pKnights = m_KnightsArray.GetData(pUser->m_pUserData->m_bKnights);
-		if (pUser->m_pUserData->m_bKnights == 0)
-		{
-			SetShort(buff, 0, buff_index);
-			SetByte(buff, 0, buff_index);
-			SetByte(buff, 0, buff_index);
-		}
-		else
-		{
-			//pKnights = m_pMain->m_KnightsArray.GetData( m_pUserData->m_bKnights );
-			if (pKnights != nullptr)
-			{
-				int iLength = strlen(pKnights->m_strName);
-				SetShort(buff, (short) iLength, buff_index);
-				SetString(buff, pKnights->m_strName, iLength, buff_index);
-				SetByte(buff, pKnights->m_byGrade, buff_index);  // knights grade
-				SetByte(buff, pKnights->m_byRanking, buff_index);  // knights grade
-				//TRACE(_T("getregionuserin knights index = %d, kname=%s, name=%hs\n") , iLength, pKnights->strName, pUser->m_pUserData->m_id);
-			}
-			else
-			{
-				SetShort(buff, 0, buff_index);
-				SetByte(buff, 0, buff_index);
-				SetByte(buff, 0, buff_index);
-			}
-		}
-
-		SetByte(buff, pUser->m_pUserData->m_bLevel, buff_index);
-		SetByte(buff, pUser->m_pUserData->m_bRace, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sClass, buff_index);
-		SetShort(buff, (WORD) pUser->m_pUserData->m_curx * 10, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_curz * 10, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_cury * 10, buff_index);
-		SetByte(buff, pUser->m_pUserData->m_bFace, buff_index);
-		SetByte(buff, pUser->m_pUserData->m_bHairColor, buff_index);
-		SetByte(buff, pUser->m_bResHpType, buff_index);
-		// 비러머글 수능...
-		SetByte(buff, pUser->m_bAbnormalType, buff_index);
-		//
-		SetByte(buff, pUser->m_bNeedParty, buff_index);
-		// 여기두 주석처리
-		SetByte(buff, pUser->m_pUserData->m_bAuthority, buff_index);
-		//
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[BREAST].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[BREAST].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[LEG].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[LEG].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[HEAD].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[HEAD].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[GLOVE].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[GLOVE].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[FOOT].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[FOOT].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[SHOULDER].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[SHOULDER].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[RIGHTHAND].sDuration, buff_index);
-		SetDWORD(buff, pUser->m_pUserData->m_sItemArray[LEFTHAND].nNum, buff_index);
-		SetShort(buff, pUser->m_pUserData->m_sItemArray[LEFTHAND].sDuration, buff_index);
-		t_count++;
+		++t_count;
 	}
 
 	LeaveCriticalSection(&g_region_critical);
@@ -2389,21 +2325,7 @@ int CEbenezerDlg::GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char*
 			continue;
 
 		SetShort(buff, pNpc->m_sNid, buff_index);
-		SetShort(buff, pNpc->m_sPid, buff_index);
-		SetByte(buff, pNpc->m_tNpcType, buff_index);
-		SetDWORD(buff, pNpc->m_iSellingGroup, buff_index);
-		SetShort(buff, pNpc->m_sSize, buff_index);
-		SetDWORD(buff, pNpc->m_iWeapon_1, buff_index);
-		SetDWORD(buff, pNpc->m_iWeapon_2, buff_index);
-		SetShort(buff, strlen(pNpc->m_strName), buff_index);
-		SetString(buff, pNpc->m_strName, strlen(pNpc->m_strName), buff_index);
-		SetByte(buff, pNpc->m_byGroup, buff_index);
-		SetByte(buff, pNpc->m_byLevel, buff_index);
-		SetShort(buff, (WORD) pNpc->m_fCurX * 10, buff_index);
-		SetShort(buff, (WORD) pNpc->m_fCurZ * 10, buff_index);
-		SetShort(buff, (short) pNpc->m_fCurY * 10, buff_index);
-		SetDWORD(buff, (int) pNpc->m_byGateOpen, buff_index);
-		SetByte(buff, pNpc->m_byObjectType, buff_index);
+		pNpc->GetNpcInfo(buff, buff_index);
 
 		t_count++;
 

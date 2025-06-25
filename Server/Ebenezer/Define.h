@@ -310,7 +310,7 @@ inline int64_t GetInt64(char* sBuf, int& index)
 	return *(int64_t*) (sBuf + index - 8);
 }
 
-inline void SetString(char* tBuf, char* sBuf, int len, int& index)
+inline void SetString(char* tBuf, const char* sBuf, int len, int& index)
 {
 	memcpy(tBuf + index, sBuf, len);
 	index += len;
@@ -346,6 +346,18 @@ inline void SetInt64(char* tBuf, int64_t nInt64, int& index)
 {
 	CopyMemory(tBuf + index, &nInt64, 8);
 	index += 8;
+}
+
+inline void SetString1(char* tBuf, const char* sBuf, BYTE len, int& index)
+{
+	SetByte(tBuf, len, index);
+	SetString(tBuf, sBuf, len, index);
+}
+
+inline void SetString2(char* tBuf, const char* sBuf, short len, int& index)
+{
+	SetShort(tBuf, len, index);
+	SetString(tBuf, sBuf, len, index);
 }
 
 // sungyong 2001.11.06
