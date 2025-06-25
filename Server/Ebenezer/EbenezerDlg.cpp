@@ -2442,8 +2442,6 @@ void CEbenezerDlg::RegionNpcInfoForMe(CUser* pSendUser, int nType)
 
 	nid_sendindex = 3;	// packet command 와 user_count 는 나중에 셋팅한다...
 
-	char strLog[256];
-
 	// test
 	if (nType == 1)
 	{
@@ -2507,7 +2505,7 @@ void CEbenezerDlg::RegionNpcInfoForMe(CUser* pSendUser, int nType)
 	{
 		char strLog[256] = {};
 		SetByte(send_buff, WIZ_TEST_PACKET, temp_index);
-		sprintf(strLog, "**** RegionNpcInfoForMe end : name=%s, x=%d, z=%d, count **** \r\n", pSendUser->m_pUserData->m_id, pSendUser->m_RegionX, pSendUser->m_RegionZ, npc_count);
+		sprintf(strLog, "**** RegionNpcInfoForMe end : name=%s, x=%d, z=%d, count=%d **** \r\n", pSendUser->m_pUserData->m_id, pSendUser->m_RegionX, pSendUser->m_RegionZ, npc_count);
 		EnterCriticalSection(&g_LogFile_critical);
 		m_RegionLogFile.Write(strLog, strlen(strLog));
 		LeaveCriticalSection(&g_LogFile_critical);
@@ -4175,7 +4173,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 			if (pUser->m_pUserData->m_bKnights == nKnightsIndex)
 			{
 				pUser->m_pUserData->m_bFame = COMMAND_CAPTAIN;
-				sprintf(strKarusCaptain[nKaursRank], "[%s][%s]", strKnightsName.GetString(), pUser->m_pUserData->m_id);
+				sprintf(strKarusCaptain[nKaursRank], "[%ls][%s]", strKnightsName.GetString(), pUser->m_pUserData->m_id);
 				nKaursRank++;
 
 				nFindKarus = 1;
@@ -4220,7 +4218,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 			if (pUser->m_pUserData->m_bKnights == nKnightsIndex)
 			{
 				pUser->m_pUserData->m_bFame = COMMAND_CAPTAIN;
-				sprintf(strElmoCaptain[nElmoRank], "[%s][%s]", strKnightsName.GetString(), pUser->m_pUserData->m_id);
+				sprintf(strElmoCaptain[nElmoRank], "[%ls][%s]", strKnightsName.GetString(), pUser->m_pUserData->m_id);
 				nFindElmo = 1;
 				nElmoRank++;
 
