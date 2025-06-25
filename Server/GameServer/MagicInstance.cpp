@@ -380,6 +380,104 @@ SkillUseResult MagicInstance::CheckSkillPrerequisites()
 					pCaster->m_CoolDownList.erase(nSkillID);
 			}
 
+			_ITEM_TABLE* pLeftHand = TO_USER(pSkillCaster)->GetItemPrototype(LEFTHAND);
+			_ITEM_TABLE* pRightHand = TO_USER(pSkillCaster)->GetItemPrototype(RIGHTHAND);
+			
+
+			bool bNotEquipedItem = (pLeftHand == nullptr && pRightHand == nullptr);
+			bool bHasSword	= ((pLeftHand && pLeftHand->isSword()) || (pRightHand && pRightHand->isSword()));
+			bool bHas2HSword = ((pLeftHand && pLeftHand->is2HSword()) || (pRightHand && pRightHand->is2HSword()));
+			bool bHasAxe = ((pLeftHand && pLeftHand->isAxe()) || (pRightHand && pRightHand->isAxe()));
+			bool bHas2HAxe = ((pLeftHand && pLeftHand->is2HAxe()) || (pRightHand && pRightHand->is2HAxe()));
+			bool bHasMace = ((pLeftHand && pLeftHand->isMace()) || (pRightHand && pRightHand->isMace()));
+			bool bHas2HMace = ((pLeftHand && pLeftHand->is2HMace()) || (pRightHand && pRightHand->is2HMace()));
+			bool bHasSpear = ((pLeftHand && pLeftHand->isSpear()) || (pRightHand && pRightHand->isSpear()));
+			bool bHasPolearm = ((pLeftHand && pLeftHand->is2HSpear()) || (pRightHand && pRightHand->is2HSpear()));
+			bool bHasBow = ((pLeftHand && pLeftHand->isBow()) || (pRightHand && pRightHand->isBow()));
+			bool bHasStaff = ((pLeftHand && pLeftHand->isStaff()) || (pRightHand && pRightHand->isStaff()));
+			bool bHasDagger = ((pLeftHand && pLeftHand->isDagger()) || (pRightHand && pRightHand->isDagger()));
+			bool bHasPickAxe = ((pLeftHand && pLeftHand->isPickaxe()) || (pRightHand && pRightHand->isPickaxe()));
+
+			//implementation of pSkill->dwNeedItem
+			switch (pSkill->bItemGroup)
+			{
+				case 0: // all priest & warrior skills, (mage bright dew + priest sleep)
+
+					//mage master passive + priest sleep don't require any conditions
+					if (pSkill->bType[0] == 0 || pSkill->bType[0] == 7)
+					{
+						break;
+					}
+
+					if (bNotEquipedItem || bHasDagger || bHasStaff || bHasBow)
+					{
+						return SkillUseFail;
+					}
+
+					if (!bHasSword && !bHas2HSword && !bHasAxe && !bHas2HAxe &&
+						!bHasMace && !bHas2HMace &&
+						!bHasSpear && !bHasPolearm)
+					{
+						return SkillUseFail;
+					}
+
+					break;
+				case 1:	//dwNeedItem = 1 , only daggers
+					
+					if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+						bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasBow || bHasStaff)
+					{
+						return SkillUseFail;
+					}
+
+					if (!bHasDagger)
+					{
+						return SkillUseFail;
+					}
+
+					break;
+				case 7: //dwNeedItem = 7 , only Bows - archery
+					
+					if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+						bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasDagger || bHasStaff)
+					{
+						return SkillUseFail;
+					}
+
+					if (!bHasBow)
+					{
+						return SkillUseFail;
+					}
+
+					break;
+				case 9:
+					break;
+				case 11: //dwNeedItem = 11, only staves , mage 42 - 72 staff skills
+					
+					if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+						bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasDagger || bHasBow)
+					{
+						return SkillUseFail;
+					}
+
+					if (!bHasStaff)
+					{
+						return SkillUseFail;
+					}
+
+					break;
+				default:
+					//other skills that requires items in inventory
+					//like guardian items, transformation totem, catapult
+					if (!pCaster->CheckExistItem(pSkill->bItemGroup))
+						return SkillUseFail;
+					break;
+
+			}
+			
+			/* can safely be removed 
+			* 370007000 --- not indatabase
+			* all archery skills processed on top already
 			if (pCaster->isRogue() && pSkill->bType[0] == 2 && pSkill -> iUseItem != 370007000)
 			{
 				_ITEM_TABLE * pLeftHand  = TO_USER(pSkillCaster)->GetItemPrototype(LEFTHAND);
@@ -393,7 +491,7 @@ SkillUseResult MagicInstance::CheckSkillPrerequisites()
 				if (bOpcode == MAGIC_EFFECTING)
 					return SkillUseOK;						
 			}
-
+			*/
 			// Same time skill checks...
 			MagicTypeCooldownList::iterator itr;
 			if ((pSkill->bType[0] == 1 

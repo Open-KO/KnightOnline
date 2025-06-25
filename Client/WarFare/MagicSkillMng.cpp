@@ -198,49 +198,169 @@ bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
 		return false;
 
-	int LeftItem = s_pPlayer->ItemClass_LeftHand();
-	int RightItem = s_pPlayer->ItemClass_RightHand();
-
-	if(pSkill->iNeedSkill==1055 || pSkill->iNeedSkill==2055)
-	{
-		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
-			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
-		{
-			return false;
-		}
-	}
-	else if(pSkill->iNeedSkill==1056 || pSkill->iNeedSkill==2056)
-	{
-		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
-			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
-		{
-			return false;
-		}
-	}
+	
 
 	if(pInfoBase->iHP < pSkill->iExhaustHP) return false;
-
-	int LeftItem1 = LeftItem/10;
-	int RightItem1 = RightItem/10;
 	
-	// NOTE(srmeier): I'm not sure about this but "9" for the e_ItemClass is jewels and stuff...
-	// - none of these type of items would be in the hands so... ?
-	// - if dwNeedItem == 0 then some other check is needed so maybe dwNeedItem == 9 indicates that no item is needed
-	if (pSkill->dwNeedItem != 9) {
+	int LeftItem = s_pPlayer->ItemClass_LeftHand();
+	int RightItem = s_pPlayer->ItemClass_RightHand();
+	bool bHasSword = (LeftItem == ITEM_CLASS_SWORD || RightItem == ITEM_CLASS_SWORD);
+	bool bHas2HSword = (LeftItem == ITEM_CLASS_SWORD_2H || RightItem == ITEM_CLASS_SWORD_2H);
+	bool bHasAxe = (LeftItem == ITEM_CLASS_AXE || RightItem == ITEM_CLASS_AXE);
+	bool bHas2HAxe = (LeftItem == ITEM_CLASS_AXE_2H || RightItem == ITEM_CLASS_AXE_2H);
+	bool bHasMace = (LeftItem == ITEM_CLASS_MACE || RightItem == ITEM_CLASS_MACE);
+	bool bHas2HMace = (LeftItem == ITEM_CLASS_MACE_2H || RightItem == ITEM_CLASS_MACE_2H);
+	bool bHasSpear = (LeftItem == ITEM_CLASS_SPEAR || RightItem == ITEM_CLASS_SPEAR);
+	bool bHasPolearm = (LeftItem == ITEM_CLASS_POLEARM || RightItem == ITEM_CLASS_POLEARM);
+	bool bHasBow = (LeftItem == ITEM_CLASS_BOW || RightItem == ITEM_CLASS_BOW ||
+						   LeftItem == ITEM_CLASS_BOW_CROSS || RightItem == ITEM_CLASS_BOW_CROSS ||
+						   LeftItem == ITEM_CLASS_BOW_LONG || RightItem == ITEM_CLASS_BOW_LONG);
+	bool bHasStaff = (LeftItem == ITEM_CLASS_STAFF || RightItem == ITEM_CLASS_STAFF);
+	bool bHasDagger = (LeftItem == ITEM_CLASS_DAGGER || RightItem == ITEM_CLASS_DAGGER);
+	bool bNotEquipedItem = (LeftItem == ITEM_CLASS_UNKNOWN && RightItem == ITEM_CLASS_UNKNOWN);
+	
+	switch (pSkill->dwNeedItem)
+	{
 
-		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
+		case 0: //dwNeedItem = 0 , all priest & warrior skills
+		{
+			//break if Bright Dew, Sleep Carpet, Sleep Wing (mage, priest) skills
+			if (pSkill->dw1stTableType == 0 || pSkill->dw1stTableType == 7)
+			{
+				break;
+			}
+
+			if (bNotEquipedItem || bHasDagger || bHasStaff || bHasBow)
+			{
+				return false;
+			}
+
+			if (!bHasSword && !bHas2HSword && !bHasAxe && !bHas2HAxe &&
+				!bHasMace && !bHas2HMace &&
+				!bHasSpear && !bHasPolearm)
+			{
+				return false;
+			}
+
+			break;
+		}
+		case 1:	//dwNeedItem = 1 , only daggers
+		{
+
+			if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+				bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasBow || bHasStaff)
+			{
+				return false;
+			}
+
+			if (!bHasDagger)
+			{
+				return false;
+			}
+
+			break;
+		}
+		case 7: //dwNeedItem = 7 , only Bows - archery
+		{
+
+			if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+				bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasDagger || bHasStaff)
+			{
+				return false;
+			}
+
+			if (!bHasBow)
+			{
+				return false;
+			}
+
+			break;
+		}
+		case 9: //dwNeedItem = 9, no item requirement for skill (example : sprint)
+		{
+			break;
+		}
+		case 11: //dwNeedItem = 11, only staves , mage 42 - 72 staff skills
+		{
+
+			if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+				bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasDagger || bHasBow)
+			{
+				return false;
+			}
+
+			if (!bHasStaff)
+			{
+				return false;
+			}
+
+			break;
+		}
+
+		default:
+		{
+			//other skills that requires items in inventory
+			//like guardian items, transformation totem, catapult
+			int iNum = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwNeedItem);
+
+			if (iNum <= 0)
+			{
+				return false;
+			}
+
+			break;
+		}
+
+	}
+
+	/*
+	//melee (attack) & (archery) & (mage staff) skills
+	if (pSkill->dw1stTableType == 1 || pSkill->dw1stTableType == 2)
+	{
+		//no item equipped on hands, cannot cast attack skills
+		if (bNotEquipedItem)
 		{
 			return false;
 		}
-		if (pSkill->dwNeedItem == 0 && (pSkill->dw1stTableType == 1 || pSkill->dw2ndTableType == 1))
+
+		if (Class == CLASS_REPRESENT_WARRIOR || Class == CLASS_REPRESENT_PRIEST)
 		{
-			if (LeftItem != 11 && (LeftItem1 < 1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1 < 1 || RightItem1>5))
+			//warrior and priest cannot attack with staff and dagger
+			if (bHasDagger || bHasStaff)
+			{
+				return false;
+			}
+		}
+		else if (Class == CLASS_REPRESENT_ROGUE)
+		{
+			if (pSkill->dw1stTableType == 1) //assasin skills
+			{
+				if (bHasSword || bHas2HSword || bHasAxe || bHas2HAxe || bHasMace || bHas2HMace ||
+					bHasSpear || bHasPolearm || bHasBow || bHasStaff)
+				{
+					return false;
+				}
+			}
+			else //archery skills
+			{
+				if (bHasDagger || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe || bHasMace ||
+					bHas2HMace || bHasSpear || bHasPolearm || bHasStaff)
+				{
+					return false;
+				}
+			}
+		}
+		else if (Class == CLASS_REPRESENT_WIZARD) //staff skills 
+		{
+			if (bHasSword || bHas2HSword || bHasAxe || bHas2HAxe || bHasMace || bHas2HMace ||
+				bHasSpear || bHasPolearm || bHasBow || bHasDagger)
 			{
 				return false;
 			}
 		}
 
 	}
+	*/
 
 	if(pSkill->dwExhaustItem>0)
 	{
@@ -566,31 +686,6 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		return false;
 	}	
 
-	int LeftItem = s_pPlayer->ItemClass_LeftHand();
-	int RightItem = s_pPlayer->ItemClass_RightHand();
-
-	if(pSkill->iNeedSkill==1055 || pSkill->iNeedSkill==2055)
-	{
-		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
-			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
-		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
-	else if(pSkill->iNeedSkill==1056 || pSkill->iNeedSkill==2056)
-	{
-		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
-			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
-		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
 
 	if(pInfoBase->iHP < pSkill->iExhaustHP)
 	{
@@ -600,33 +695,148 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		return false;
 	}
 
-	int LeftItem1 = LeftItem/10;
-	int RightItem1 = RightItem/10;
-	
-	// NOTE(srmeier): I'm not sure about this but "9" for the e_ItemClass is jewels and stuff...
-	// - none of these type of items would be in the hands so... ?
-	// - if dwNeedItem == 0 then some other check is needed so maybe dwNeedItem == 9 indicates that no item is needed
-	if (pSkill->dwNeedItem != 9) {
+	int LeftItem = s_pPlayer->ItemClass_LeftHand();
+	int RightItem = s_pPlayer->ItemClass_RightHand();
+	bool bHasSword		= (LeftItem == ITEM_CLASS_SWORD || RightItem == ITEM_CLASS_SWORD);
+	bool bHas2HSword	= (LeftItem == ITEM_CLASS_SWORD_2H || RightItem == ITEM_CLASS_SWORD_2H);
+	bool bHasAxe		= (LeftItem == ITEM_CLASS_AXE || RightItem == ITEM_CLASS_AXE);
+	bool bHas2HAxe		= (LeftItem == ITEM_CLASS_AXE_2H || RightItem == ITEM_CLASS_AXE_2H);
+	bool bHasMace		= (LeftItem == ITEM_CLASS_MACE || RightItem == ITEM_CLASS_MACE);
+	bool bHas2HMace		= (LeftItem == ITEM_CLASS_MACE_2H || RightItem == ITEM_CLASS_MACE_2H);
+	bool bHasSpear		= (LeftItem == ITEM_CLASS_SPEAR || RightItem == ITEM_CLASS_SPEAR);
+	bool bHasPolearm	= (LeftItem == ITEM_CLASS_POLEARM || RightItem == ITEM_CLASS_POLEARM);
+	bool bHasBow		= (LeftItem == ITEM_CLASS_BOW || RightItem == ITEM_CLASS_BOW ||
+						   LeftItem == ITEM_CLASS_BOW_CROSS || RightItem == ITEM_CLASS_BOW_CROSS ||
+						   LeftItem == ITEM_CLASS_BOW_LONG || RightItem == ITEM_CLASS_BOW_LONG);
+	bool bHasStaff		= (LeftItem == ITEM_CLASS_STAFF || RightItem == ITEM_CLASS_STAFF);
+	bool bHasDagger		= (LeftItem == ITEM_CLASS_DAGGER || RightItem == ITEM_CLASS_DAGGER);
+	bool bNotEquipedItem = (LeftItem == ITEM_CLASS_UNKNOWN && RightItem == ITEM_CLASS_UNKNOWN);
 
-		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
+	
+	switch (pSkill->dwNeedItem)
+	{
+
+		case 0: //dwNeedItem = 0 , all priest & warrior attack skills
 		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-		if (pSkill->dwNeedItem == 0 && (pSkill->dw1stTableType == 1 || pSkill->dw2ndTableType == 1))
-		{
-			if (LeftItem != 11 && (LeftItem1<1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1<1 || RightItem1>5))
+
+			//break if Bright Dew, Sleep Carpet, Sleep Wing (mage, priest) skills
+			if (pSkill->dw1stTableType == 0 || pSkill->dw1stTableType == 7)
+			{
+				break;
+			}
+
+			if (bNotEquipedItem || bHasDagger || bHasStaff || bHasBow)
 			{
 				std::string buff;
 				GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 				return false;
 			}
-		}
 
+			if (!bHasSword && !bHas2HSword && !bHasAxe && !bHas2HAxe && 
+				!bHasMace && !bHas2HMace &&
+				!bHasSpear && !bHasPolearm )
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_LACK_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			break;
+		}
+		case 1:	//dwNeedItem = 1 , only daggers
+		{
+
+			if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+				bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasBow || bHasStaff)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			if (!bHasDagger)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_LACK_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			break;
+		}
+		case 7: //dwNeedItem = 7 , only Bows - archery
+		{
+
+			if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+				bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasDagger || bHasStaff)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			if (!bHasBow)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_LACK_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			break;
+		}
+		case 9: //dwNeedItem = 9, no item requirement for skill (example : sprint)
+		{
+			break;
+		}
+		case 11: //dwNeedItem = 11, only staves , mage 42 - 72 staff skills
+		{
+
+			if (bNotEquipedItem || bHasSword || bHas2HSword || bHasAxe || bHas2HAxe ||
+				bHasMace || bHas2HMace || bHasSpear || bHasPolearm || bHasDagger || bHasBow)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			if (!bHasStaff)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_LACK_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+			
+			break;
+		}
+		
+		default: 
+		{
+			//other skills that requires items in inventory
+			//like guardian items, transformation totem, catapult
+			int iNum = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwNeedItem);
+
+			if (iNum <= 0)
+			{
+				std::string buff;
+				GetText(IDS_SKILL_FAIL_LACK_ITEM, &buff);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+
+			break;
+		}
+			
 	}
+
+	
+	
 
 	if(pSkill->dwExhaustItem>0)
 	{
@@ -877,7 +1087,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 				return false;
 		}
 	}
-
+	
 	if((pSkill->dw1stTableType==3 || pSkill->dw2ndTableType==3) &&
 		pSkill->iTarget==SKILLMAGIC_TARGET_SELF)
 	{
