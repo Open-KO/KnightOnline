@@ -1647,15 +1647,16 @@ BOOL CDBAgent::SetLogInInfo(const char* accountid, const char* charid, const cha
 	return bSuccess;
 }
 
-int CDBAgent::AccountLogout(const char* accountid)
+int CDBAgent::AccountLogout(const char* accountid, int iLogoutCode)
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
 	TCHAR			szSQL[1024] = {};
 	SQLSMALLINT		sParmRet = 0;
+	SQLINTEGER		iUnk = 0;
 	SQLINTEGER		cbParmRet = SQL_NTS;
 
-	wsprintf(szSQL, TEXT("{call ACCOUNT_LOGOUT( \'%hs\', ?)}"), accountid);
+	wsprintf(szSQL, TEXT("{call ACCOUNT_LOGOUT( \'%hs\', %d, ?, ?)}"), accountid, iLogoutCode);
 
 	DBProcessNumber(19);
 
@@ -1670,6 +1671,7 @@ int CDBAgent::AccountLogout(const char* accountid)
 	if (retcode == SQL_SUCCESS)
 	{
 		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, &sParmRet, 0, &cbParmRet);
+		retcode = SQLBindParameter(hstmt, 2, SQL_PARAM_OUTPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &iUnk, 0, &cbParmRet);
 		if (retcode == SQL_SUCCESS)
 		{
 			retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);

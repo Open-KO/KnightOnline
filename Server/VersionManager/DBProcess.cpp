@@ -59,7 +59,7 @@ void CDBProcess::ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR*
 
 		try
 		{
-			m_db->OpenEx((LPCTSTR) strConnect, CDatabase::noOdbcDialog);
+			m_db->OpenEx(strConnect, CDatabase::noOdbcDialog);
 		}
 		catch (CDBException* e)
 		{
