@@ -75,9 +75,12 @@ enum e_Exec
 
 // EVENT 시작 번호들 :)
 constexpr int EVENT_POTION			= 1;
+constexpr int EVENT_FT_1			= 20;
+constexpr int EVENT_FT_3			= 36;
+constexpr int EVENT_FT_2			= 50;
 constexpr int EVENT_LOGOS_ELMORAD	= 1001;
 constexpr int EVENT_LOGOS_KARUS		= 2001;
-constexpr int EVENT_COUPON			= 3001;
+constexpr int EVENT_COUPON			= 4001;
 
 ////////////////////////////////////////////////////////////
 

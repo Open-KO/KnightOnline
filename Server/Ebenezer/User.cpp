@@ -11080,23 +11080,280 @@ void CUser::ClientEvent(char* pBuf)
 
 	switch (pNpc->m_tNpcType)
 	{
+		case NPC_SELITH:
+			eventid = 30001;
+			break;
+
+		case NPC_ANVIL:
+			eventid = 8030;
+			break;
+
+		case NPC_CLAN_MATCH_ADVISOR:
+			eventid = 31001;
+			break;
+
+		case NPC_TELEPORT_GATE:
+#if 0 // TODO:
+			eventid = m_pMain->GetEventTrigger(pNpc->m_tNpcType, pNpc->m_sTrapNumber);
+#endif
+			if (eventid == -1)
+				return;
+			break;
+
+		case NPC_OPERATOR:
+			eventid = 35201;
+			break;
+
+		case NPC_ISAAC:
+			eventid = 35001;
+			break;
+
+		case NPC_KAISHAN:
+		case NPC_NPC_5:
+			eventid = 21001;
+			break;
+
+		case NPC_CAPTAIN:
+			eventid = 15002;
+			break;
+
+		case NPC_CLAN:
+		case NPC_MONK_ELMORAD:
+			eventid = EVENT_LOGOS_ELMORAD;
+			break;
+
 		case NPC_CLERIC:
+		case NPC_SIEGE_2:
 			eventid = EVENT_POTION;
+			break;
+
+		case NPC_LADY:
+		case NPC_PRIEST_IRIS:
+			eventid = 20501;
+			break;
+
+		case NPC_ATHIAN:
+		case NPC_MANAGER_BARREL:
+			eventid = 22001;
+			break;
+
+		case NPC_ARENA:
+			eventid = 15951;
+			break;
+
+		case NPC_TRAINER_KATE:
+		case NPC_NPC_2:
+			eventid = 20701;
+			break;
+
+		case NPC_GENERIC:
+		case NPC_NPC_4:
+			eventid = 20901;
+			break;
+
+		case NPC_SENTINEL_PATRICK:
+		case NPC_NPC_3:
+			eventid = 20801;
+			break;
+
+		case NPC_TRADER_KIM:
+		case NPC_NPC_1:
+			eventid = 20601;
+			break;
+
+		case NPC_MONK_KARUS:
+			eventid = EVENT_LOGOS_KARUS;
+			break;
+
+		case NPC_MASTER_WARRIOR:
+			eventid = 11001;
+			break;
+
+		case NPC_MASTER_ROGUE:
+			eventid = 12001;
+			break;
+
+		case NPC_MASTER_MAGE:
+			eventid = 13001;
+			break;
+
+		case NPC_MASTER_PRIEST:
+			eventid = 14001;
+			break;
+
+		case NPC_BLACKSMITH:
+			eventid = 7001;
 			break;
 
 		case NPC_COUPON:
 			eventid = EVENT_COUPON;
 			break;
 
-		case NPC_MONK_ELMORAD:
-			eventid = EVENT_LOGOS_ELMORAD;
+		case NPC_HERO_STATUE_1:
+		case NPC_KARUS_HERO_STATUE:
+			eventid = 31101;
 			break;
 
-		case NPC_MONK_KARUS:
-			eventid = EVENT_LOGOS_KARUS;
+		case NPC_HERO_STATUE_2:
+			eventid = 31131;
+			break;
+
+		case NPC_HERO_STATUE_3:
+			eventid = 31161;
+			break;
+
+		case NPC_ELMORAD_HERO_STATUE:
+			eventid = 31171;
+			break;
+
+		case NPC_KEY_QUEST_1:
+			eventid = 15801;
+			break;
+
+		case NPC_KEY_QUEST_2:
+			eventid = 15821;
+			break;
+
+		case NPC_KEY_QUEST_3:
+			eventid = 15841;
+			break;
+
+		case NPC_KEY_QUEST_4:
+			eventid = 15861;
+			break;
+
+		case NPC_KEY_QUEST_5:
+			eventid = 15881;
+			break;
+
+		case NPC_KEY_QUEST_6:
+			eventid = 15901;
+			break;
+
+		case NPC_KEY_QUEST_7:
+			eventid = 15921;
+			break;
+
+		case NPC_ROBOS:
+			eventid = 35480;
+			break;
+
+		case NPC_SERVER_TRANSFER:
+			eventid = 35541;
+			break;
+
+		case NPC_RANKING:
+			eventid = 35560;
+			break;
+
+		case NPC_LYONI:
+			eventid = 35553;
+			break;
+
+		case NPC_BEGINNER_HELPER_1:
+			eventid = 35563;
+			break;
+
+		case NPC_BEGINNER_HELPER_2:
+			eventid = 35594;
+			break;
+
+		case NPC_BEGINNER_HELPER_3:
+			eventid = 35615;
+			break;
+
+		case NPC_FT_1:
+			eventid = EVENT_FT_1;
+			break;
+
+		case NPC_FT_2:
+			eventid = EVENT_FT_2;
+			break;
+
+		case NPC_FT_3:
+			eventid = EVENT_FT_3;
+			break;
+
+		case NPC_PREMIUM_PC:
+			eventid = 35550;
+			break;
+
+		case NPC_KJWAR:
+			eventid = 35624;
+			break;
+
+		case NPC_CRAFTSMAN:
+			eventid = 32000;
+			break;
+
+		case NPC_COLISEUM_ARTES:
+			eventid = 35640;
+			break;
+
+		case NPC_UNK_138:
+			eventid = 35650;
+			break;
+
+		case NPC_LOVE_AGENT:
+			eventid = 35662;
+			break;
+
+		case NPC_SPY:
+			eventid = 1100;
+			break;
+
+		case NPC_ROYAL_GUARD:
+			eventid = 17000;
+			break;
+
+		case NPC_ROYAL_CHEF:
+			eventid = 17550;
+			break;
+
+		case NPC_ESLANT_WOMAN:
+			eventid = 17590;
+			break;
+
+		case NPC_FARMER:
+			eventid = 17600;
+			break;
+
+		case NPC_NAMELESS_WARRIOR:
+			eventid = 17630;
+			break;
+
+		case NPC_UNK_147:
+			eventid = 17100;
+			break;
+
+		case NPC_GATE_GUARD:
+			eventid = 17570;
+			break;
+
+		case NPC_ROYAL_ADVISOR:
+			eventid = 17520;
+			break;
+
+		case NPC_BIFROST_GATE:
+			eventid = 17681;
+			break;
+
+		case NPC_SANGDUF:
+			eventid = 15310;
+			break;
+
+		case NPC_UNK_152:
+			eventid = 2901;
+			break;
+
+		case NPC_ADELIA:
+			eventid = 35212;
+			break;
+
+		case NPC_BIFROST_MONUMENT:
+			eventid = 0;
 			break;
 	}
-
 
 	// Make sure you change this later!!!
 	pEventData = pEvent->m_arEvent.GetData(eventid);
