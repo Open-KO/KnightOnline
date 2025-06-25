@@ -4672,12 +4672,6 @@ void CUser::NpcEvent(char* pBuf)
 			Send(send_buff, send_index);
 			break;
 
-		case NPC_CAPTAIN:
-			SetByte(send_buff, WIZ_CLASS_CHANGE, send_index);
-			SetByte(send_buff, CLASS_CHANGE_REQ, send_index);
-			Send(send_buff, send_index);
-			break;
-
 		case NPC_OFFICER:
 			SetShort(send_buff, 0, send_index);	// default 0 page
 			m_pMain->m_KnightsManager.AllKnightsList(this, send_buff);
@@ -4689,13 +4683,91 @@ void CUser::NpcEvent(char* pBuf)
 			Send(send_buff, send_index);
 			break;
 
-		case NPC_WARP:
-			break;
-
-		case NPC_CLERIC:	// 비러머글 퀘스트 관련 NPC들 >.<....
+#if 0 // not typically available
 		case NPC_COUPON:
-		case NPC_MONK_KARUS:
+			if (m_pMain->m_byNationID == 1
+				|| m_pMain->m_byNationID == 4)
+				return;
+
+			SetShort(send_buff, nid, send_index);
+			ClientEvent(send_buff);
+			break;
+#endif
+
+		// 비러머글 퀘스트 관련 NPC들 >.<....
+		case NPC_SELITH:
+		case NPC_CLAN_MATCH_ADVISOR:
+		case NPC_TELEPORT_GATE:
+		case NPC_OPERATOR:
+		case NPC_KISS:
+		case NPC_ISAAC:
+		case NPC_KAISHAN:
+		case NPC_CAPTAIN:
+		case NPC_CLERIC:
+		case NPC_LADY:
+		case NPC_ATHIAN:
+		case NPC_ARENA:
+		case NPC_TRAINER_KATE:
+		case NPC_GENERIC:
+		case NPC_SENTINEL_PATRICK:
+		case NPC_TRADER_KIM:
+		case NPC_PRIEST_IRIS:
 		case NPC_MONK_ELMORAD:
+		case NPC_MONK_KARUS:
+		case NPC_MASTER_WARRIOR:
+		case NPC_MASTER_ROGUE:
+		case NPC_MASTER_MAGE:
+		case NPC_MASTER_PRIEST:
+		case NPC_BLACKSMITH:
+		case NPC_NPC_1:
+		case NPC_NPC_2:
+		case NPC_NPC_3:
+		case NPC_NPC_4:
+		case NPC_NPC_5:
+		case NPC_HERO_STATUE_1:
+		case NPC_HERO_STATUE_2:
+		case NPC_HERO_STATUE_3:
+		case NPC_KARUS_HERO_STATUE:
+		case NPC_ELMORAD_HERO_STATUE:
+		case NPC_KEY_QUEST_1:
+		case NPC_KEY_QUEST_2:
+		case NPC_KEY_QUEST_3:
+		case NPC_KEY_QUEST_4:
+		case NPC_KEY_QUEST_5:
+		case NPC_KEY_QUEST_6:
+		case NPC_KEY_QUEST_7:
+		case NPC_ROBOS:
+		case NPC_SERVER_TRANSFER:
+		case NPC_RANKING:
+		case NPC_LYONI:
+		case NPC_BEGINNER_HELPER_1:
+		case NPC_BEGINNER_HELPER_2:
+		case NPC_BEGINNER_HELPER_3:
+		case NPC_FT_1:
+		case NPC_FT_2:
+		case NPC_FT_3:
+		case NPC_PREMIUM_PC:
+		case NPC_KJWAR:
+		case NPC_SIEGE_2:
+		case NPC_CRAFTSMAN:
+		case NPC_COLISEUM_ARTES:
+		case NPC_MANAGER_BARREL:
+		case NPC_UNK_138:
+		case NPC_LOVE_AGENT:
+		case NPC_SPY:
+		case NPC_ROYAL_GUARD:
+		case NPC_ROYAL_CHEF:
+		case NPC_ESLANT_WOMAN:
+		case NPC_FARMER:
+		case NPC_NAMELESS_WARRIOR:
+		case NPC_UNK_147:
+		case NPC_GATE_GUARD:
+		case NPC_ROYAL_ADVISOR:
+		case NPC_BIFROST_GATE:
+		case NPC_SANGDUF:
+		case NPC_UNK_152:
+		case NPC_ADELIA:
+		case NPC_BIFROST_MONUMENT:
 			SetShort(send_buff, nid, send_index);
 			ClientEvent(send_buff);
 			break;
