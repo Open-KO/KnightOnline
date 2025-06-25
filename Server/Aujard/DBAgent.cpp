@@ -906,7 +906,9 @@ BOOL CDBAgent::LoadCharInfo(char* id, char* buff, int& buff_index)
 			|| i == SHOULDER
 			|| i == LEG
 			|| i == GLOVE
-			|| i == FOOT)
+			|| i == FOOT
+			|| i == LEFTHAND
+			|| i == RIGHTHAND)
 		{
 			SetDWORD(buff, tempid, buff_index);
 			SetShort(buff, duration, buff_index);
