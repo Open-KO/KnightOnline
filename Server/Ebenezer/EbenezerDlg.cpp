@@ -2684,8 +2684,8 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 //
 			SetByte(buff, 0x01, buffindex);		// nation
 			SetShort(buff, -1, buffindex);		// sid
-			SetShort(buff, strlen(finalstr), buffindex);
-			SetString(buff, finalstr, strlen(finalstr), buffindex);
+			SetByte(buff, 0, buffindex);		// sender name length
+			SetString2(buff, finalstr, static_cast<short>(strlen(finalstr)), buffindex);
 			Send_All(buff, buffindex);
 
 			buffindex = 0;
@@ -3457,8 +3457,8 @@ void CEbenezerDlg::Announcement(BYTE type, int nation, int chat_type)
 	SetByte(send_buff, chat_type, send_index);
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
-	SetShort(send_buff, strlen(finalstr), send_index);
-	SetString(send_buff, finalstr, strlen(finalstr), send_index);
+	SetByte(send_buff, 0, send_index);			// sender name length
+	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
@@ -4181,15 +4181,15 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 	SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
-	SetShort(send_buff, strlen(strKarusCaptainName), send_index);
-	SetString(send_buff, strKarusCaptainName, strlen(strKarusCaptainName), send_index);
+	SetByte(send_buff, 0, send_index);			// sender name length
+	SetString2(send_buff, strKarusCaptainName, static_cast<short>(strlen(strKarusCaptainName)), send_index);
 
 	SetByte(temp_buff, WIZ_CHAT, temp_index);
 	SetByte(temp_buff, WAR_SYSTEM_CHAT, temp_index);
 	SetByte(temp_buff, 1, temp_index);
 	SetShort(temp_buff, -1, temp_index);
-	SetShort(temp_buff, strlen(strElmoCaptainName), temp_index);
-	SetString(temp_buff, strElmoCaptainName, strlen(strElmoCaptainName), temp_index);
+	SetByte(temp_buff, 0, send_index);			// sender name length
+	SetString2(temp_buff, strElmoCaptainName, static_cast<short>(strlen(strElmoCaptainName)), temp_index);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{

@@ -1110,8 +1110,8 @@ void CAISocket::RecvSystemMsg(char* pBuf)
 			SetByte(send_buff, bType, send_index);
 			SetByte(send_buff, 0x01, send_index);		// nation
 			SetShort(send_buff, -1, send_index);		// sid
-			SetShort(send_buff, sLength, send_index);
-			SetString(send_buff, strSysMsg, sLength, send_index);
+			SetByte(send_buff, 0, send_index);			// sender name length
+			SetString2(send_buff, strSysMsg, sLength, send_index);
 			m_pMain->Send_All(send_buff, send_index);
 			break;
 
@@ -1625,8 +1625,8 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
-			SetShort(send_buff, strlen(finalstr), send_index);
-			SetString(send_buff, finalstr, strlen(finalstr), send_index);
+			SetByte(send_buff, 0, send_index);			// sender name length
+			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 			m_pMain->Send_All(send_buff, send_index);
 
 			memset(send_buff, 0, sizeof(send_buff));
@@ -1635,8 +1635,8 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			SetByte(send_buff, PUBLIC_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
-			SetShort(send_buff, strlen(finalstr), send_index);
-			SetString(send_buff, finalstr, strlen(finalstr), send_index);
+			SetByte(send_buff, 0, send_index);			// sender name length
+			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 			m_pMain->Send_All(send_buff, send_index);
 
 			SetByte(udp_buff, UDP_BATTLE_EVENT_PACKET, udp_index);

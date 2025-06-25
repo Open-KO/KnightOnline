@@ -1120,8 +1120,8 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 	SetByte(send_buff, KNIGHTS_CHAT, send_index);
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
-	SetShort(send_buff, strlen(finalstr), send_index);
-	SetString(send_buff, finalstr, strlen(finalstr), send_index);
+	SetByte(send_buff, 0, send_index);			// sender name length
+	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
 
 	idlen = strlen(pUser->m_pUserData->m_id);
@@ -1258,8 +1258,8 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			SetByte(send_buff, KNIGHTS_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
-			SetShort(send_buff, strlen(finalstr), send_index);
-			SetString(send_buff, finalstr, strlen(finalstr), send_index);
+			SetByte(send_buff, 0, send_index);			// sender name length
+			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 			pTUser->Send(send_buff, send_index);
 		}
 	}
@@ -1270,8 +1270,8 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 	SetByte(send_buff, KNIGHTS_CHAT, send_index);
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
-	SetShort(send_buff, strlen(finalstr), send_index);
-	SetString(send_buff, finalstr, strlen(finalstr), send_index);
+	SetByte(send_buff, 0, send_index);			// sender name length
+	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
 
 	idlen = strlen(userid);
@@ -1322,8 +1322,8 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 	SetByte(send_buff, KNIGHTS_CHAT, send_index);
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
-	SetShort(send_buff, strlen(finalstr), send_index);
-	SetString(send_buff, finalstr, strlen(finalstr), send_index);
+	SetByte(send_buff, 0, send_index);			// sender name length
+	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
 
 	for (int i = 0; i < MAX_USER; i++)

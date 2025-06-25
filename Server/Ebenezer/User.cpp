@@ -1946,7 +1946,8 @@ void CUser::Chat(char* pBuf)
 
 	GetString(chatstr, pBuf, chatlen, index);
 
-	if (type == PUBLIC_CHAT)
+	if (type == PUBLIC_CHAT
+		|| type == ANNOUNCEMENT_CHAT)
 	{
 		if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 			return;
@@ -1958,15 +1959,15 @@ void CUser::Chat(char* pBuf)
 	}
 	else
 	{
-		sprintf(finalstr, "%s : %s", m_pUserData->m_id, chatstr);
+		strcpy(finalstr, chatstr);
 	}
 
 	SetByte(send_buff, WIZ_CHAT, send_index);
 	SetByte(send_buff, type, send_index);
 	SetByte(send_buff, m_pUserData->m_bNation, send_index);
 	SetShort(send_buff, m_Sid, send_index);
-	SetShort(send_buff, strlen(finalstr), send_index);
-	SetString(send_buff, finalstr, strlen(finalstr), send_index);
+	SetString1(send_buff, m_pUserData->m_id, static_cast<BYTE>(strlen(m_pUserData->m_id)), send_index);
+	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 
 	switch (type)
 	{
@@ -7260,8 +7261,8 @@ void CUser::Dead()
 		SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 		SetByte(send_buff, 1, send_index);
 		SetShort(send_buff, -1, send_index);
-		SetShort(send_buff, strlen(finalstr), send_index);
-		SetString(send_buff, finalstr, strlen(finalstr), send_index);
+		SetByte(send_buff, 0, send_index);			// sender name length
+		SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
 		m_pMain->Send_All(send_buff, send_index, nullptr, m_pUserData->m_bNation);
 	}
 }
