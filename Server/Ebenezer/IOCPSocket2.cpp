@@ -316,10 +316,6 @@ void CIOCPSocket2::ReceivedData(int length)
 		return;
 
 	int len = 0;
-
-	if (!strlen(m_pRecvBuff))		// 패킷길이는 존재하나 실 데이터가 없는 경우가 발생...
-		return;
-
 	m_pBuffer->PutData(m_pRecvBuff, length);		// 받은 Data를 버퍼에 넣는다
 
 	char* pData = nullptr;
