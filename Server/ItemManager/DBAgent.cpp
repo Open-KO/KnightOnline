@@ -37,7 +37,7 @@ BOOL CDBAgent::DatabaseInit()
 	m_GameDB.SetLoginTimeout(10);
 	if (!m_GameDB.Open(nullptr, FALSE, FALSE, strConnect))
 	{
-		AfxMessageBox("GameDB SQL Connection Fail...");
+		AfxMessageBox(_T("GameDB SQL Connection Fail..."));
 		return FALSE;
 	}
 
@@ -49,7 +49,7 @@ void CDBAgent::ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* s
 	TCHAR strlog[256] = {};
 	CTime t = CTime::GetCurrentTime();
 	wsprintf(strlog, _T("Try ReConnectODBC... %d월 %d일 %d시 %d분\r\n"), t.GetMonth(), t.GetDay(), t.GetHour(), t.GetMinute());
-	m_pMain->m_ItemLogFile.Write(strlog, strlen(strlog));
+	m_pMain->m_ItemLogFile.Write(strlog, _tcslen(strlog));
 
 	// DATABASE 연결...
 	CString strConnect;

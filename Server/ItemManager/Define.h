@@ -181,15 +181,14 @@ inline int64_t GetInt64(char* sBuf, int& index)
 
 inline CString GetProgPath()
 {
-	char Buf[256], Path[256];
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	TCHAR Buf[256], Path[256];
+	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 
 	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_splitpath(Buf, drive, dir, fname, ext);
-	strcpy(Path, drive);
-	strcat(Path, dir);
-	CString _Path = Path;
-	return _Path;
+	_tsplitpath(Buf, drive, dir, fname, ext);
+	_tcscpy(Path, drive);
+	_tcscat(Path, dir);
+	return Path;
 }
 
 inline void LogFileWrite(LPCTSTR logstr)
@@ -199,7 +198,7 @@ inline void LogFileWrite(LPCTSTR logstr)
 	int loglength;
 
 	ProgPath = GetProgPath();
-	loglength = strlen(logstr);
+	loglength = _tcslen(logstr);
 
 	LogFileName.Format(_T("%s\\ItemManager.log"), ProgPath.GetString());
 
@@ -217,7 +216,7 @@ inline int DisplayErrorMsg(SQLHANDLE hstmt)
 	SQLINTEGER    NativeError;
 	SQLSMALLINT   i, MsgLen;
 	SQLRETURN     rc2;
-	char		  logstr[512] = {};
+	TCHAR		  logstr[512] = {};
 
 	i = 1;
 	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
@@ -228,7 +227,7 @@ inline int DisplayErrorMsg(SQLHANDLE hstmt)
 		i++;
 	}
 
-	if (_tcscmp((TCHAR*) SqlState, "08S01") == 0)
+	if (_tcscmp((TCHAR*) SqlState, _T("08S01")) == 0)
 		return -1;
 	else
 		return 0;

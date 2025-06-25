@@ -19,7 +19,6 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	BYTE command;
 	char recv_buff[1024] = {};
 	CString string;
-	//char logstr[256];
 
 	while (TRUE)
 	{
@@ -98,20 +97,26 @@ BOOL CItemManagerDlg::OnInitDialog()
 	//	Logfile initialize
 	//----------------------------------------------------------------------
 	CTime time = CTime::GetCurrentTime();
-	char strLogFile[50] = {};
-	wsprintf(strLogFile, "ItemLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
+	TCHAR strLogFile[50] = {};
+	wsprintf(strLogFile, _T("ItemLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
 	m_ItemLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_ItemLogFile.SeekToEnd();
 
 	memset(strLogFile, 0, sizeof(strLogFile));
-	wsprintf(strLogFile, "ExpLog-%d-%d-%d.txt", time.GetYear(), time.GetMonth(), time.GetDay());
+	wsprintf(strLogFile, _T("ExpLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
 	m_ExpLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
 	m_ExpLogFile.SeekToEnd();
 
 	m_nItemLogFileDay = time.GetDay();
 	m_nExpLogFileDay = time.GetDay();
 
-	m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER, FALSE);	// Dispatcher 의 Send Queue
+	// Dispatcher 의 Send Queue
+	if (!m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER), FALSE))
+	{
+		AfxMessageBox(_T("Shared memory queue not yet available. Run Ebenezer first."));
+		AfxPostQuitMessage(0);
+		return FALSE;
+	}
 /*
 	CString inipath;
 	inipath.Format(_T("%s\\ItemDB.ini"), GetProgPath());
@@ -133,7 +138,7 @@ BOOL CItemManagerDlg::OnInitDialog()
 
 	CTime cur = CTime::GetCurrentTime();
 	CString starttime;
-	starttime.Format("ItemManager Start : %d-%d day %d:%d time\r\n", cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
+	starttime.Format(_T("ItemManager Start : %d-%d day %d:%d time\r\n"), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
 	m_ItemLogFile.Write(starttime, starttime.GetLength());
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -193,7 +198,7 @@ void CItemManagerDlg::ItemLogWrite(char* pBuf)
 	if (srclen <= 0
 		|| srclen > MAX_ID_SIZE)
 	{
-		TRACE("### ItemLogWrite Fail : srclen = %d ###\n", srclen);
+		TRACE(_T("### ItemLogWrite Fail : srclen = %d ###\n"), srclen);
 		return;
 	}
 
@@ -203,7 +208,7 @@ void CItemManagerDlg::ItemLogWrite(char* pBuf)
 	if (tarlen <= 0
 		|| tarlen > MAX_ID_SIZE)
 	{
-		TRACE("### ItemLogWrite Fail : tarlen = %d ###\n", tarlen);
+		TRACE(_T("### ItemLogWrite Fail : tarlen = %d ###\n"), tarlen);
 		return;
 	}
 
@@ -220,7 +225,7 @@ void CItemManagerDlg::ItemLogWrite(char* pBuf)
 //	getdure = GetShort( pBuf, index );
 
 	/// 
-	//wsprintf( strLog, "%d, %s, %d, %s, %d, %20d, %d, %d, %d, %20d, %d, %d, %d", srclen, srcid, tarlen, tarid, type, putserial, putitem, putcount, putdure, getserial, getitem, getcount, getdure);
+	//sprintf(strLog, "%d, %s, %d, %s, %d, %20d, %d, %d, %d, %20d, %d, %d, %d", srclen, srcid, tarlen, tarid, type, putserial, putitem, putcount, putdure, getserial, getitem, getcount, getdure);
 	sprintf(strLog, "%s, %s, %d, %I64d, %d, %d, %d", srcid, tarid, type, putserial, putitem, putcount, putdure);
 	WriteItemLogFile(strLog);
 }
@@ -236,17 +241,20 @@ void CItemManagerDlg::WriteItemLogFile(char* pData)
 		if (m_ItemLogFile.m_hFile != CFile::hFileNull)
 			m_ItemLogFile.Close();
 
-		wsprintf(strLog, "ItemLog-%d-%d-%d.txt", cur.GetYear(), cur.GetMonth(), cur.GetDay());
-		m_ItemLogFile.Open(strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-		m_ItemLogFile.SeekToEnd();
+		CString filename;
+		filename.Format(_T("ItemLog-%d-%d-%d.txt"), cur.GetYear(), cur.GetMonth(), cur.GetDay());
+
+		if (m_ItemLogFile.Open(filename, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone))
+			m_ItemLogFile.SeekToEnd();
+
 		m_nItemLogFileDay = nDay;
 	}
 
-	wsprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
+	sprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
 	int nLen = strlen(strLog);
 	if (nLen >= 512)
 	{
-		TRACE("### WriteLogFile Fail : length = %d ###\n", nLen);
+		TRACE(_T("### WriteLogFile Fail : length = %d ###\n"), nLen);
 		return;
 	}
 
@@ -264,17 +272,20 @@ void CItemManagerDlg::WriteExpLogFile(char* pData)
 		if (m_ExpLogFile.m_hFile != CFile::hFileNull)
 			m_ExpLogFile.Close();
 
-		wsprintf(strLog, "ExpLog-%d-%d-%d.txt", cur.GetYear(), cur.GetMonth(), cur.GetDay());
-		m_ExpLogFile.Open(strLog, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-		m_ExpLogFile.SeekToEnd();
+		CString filename;
+		filename.Format(_T("Exp-%d-%d-%d.txt"), cur.GetYear(), cur.GetMonth(), cur.GetDay());
+
+		if (m_ExpLogFile.Open(filename, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone))
+			m_ExpLogFile.SeekToEnd();
+
 		m_nExpLogFileDay = nDay;
 	}
 
-	wsprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
+	sprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
 	int nLen = strlen(strLog);
 	if (nLen >= 512)
 	{
-		TRACE("### WriteLogFile Fail : length = %d ###\n", nLen);
+		TRACE(_T("### WriteLogFile Fail : length = %d ###\n"), nLen);
 		return;
 	}
 
@@ -307,7 +318,7 @@ void CItemManagerDlg::ExpLogWrite(char* pBuf)
 	if (aclen <= 0
 		|| aclen > MAX_ID_SIZE)
 	{
-		TRACE("### ItemLogWrite Fail : tarlen = %d ###\n", aclen);
+		TRACE(_T("### ItemLogWrite Fail : tarlen = %d ###\n"), aclen);
 		return;
 	}
 
@@ -316,7 +327,7 @@ void CItemManagerDlg::ExpLogWrite(char* pBuf)
 	if (charlen <= 0
 		|| charlen > MAX_ID_SIZE)
 	{
-		TRACE("### ItemLogWrite Fail : tarlen = %d ###\n", charlen);
+		TRACE(_T("### ItemLogWrite Fail : tarlen = %d ###\n"), charlen);
 		return;
 	}
 
@@ -327,7 +338,7 @@ void CItemManagerDlg::ExpLogWrite(char* pBuf)
 	loyalty = GetDWORD(pBuf, index);
 	money = GetDWORD(pBuf, index);
 
-	wsprintf(strLog, "%s, %s, %d, %d, %d, %d, %d", acname, charid, type, level, exp, loyalty, money);
+	sprintf(strLog, "%s, %s, %d, %d, %d, %d, %d", acname, charid, type, level, exp, loyalty, money);
 	WriteExpLogFile(strLog);
 }
 
