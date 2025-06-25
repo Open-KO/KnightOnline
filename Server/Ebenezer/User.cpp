@@ -38,8 +38,7 @@ void CUser::Initialize()
 	m_pMain = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 
 	// Cryption
-	Make_public_key();
-	jct.SetPublicKey(m_Public_key);
+	jct.GenerateKey();
 
 	m_CryptionFlag = 0;
 	m_Sen_val = 0;
@@ -170,54 +169,6 @@ void CUser::Initialize()
 
 	CIOCPSocket2::Initialize();
 }
-
-// Cryption
-void CUser::Make_public_key()
-{
-	BYTE rand1, rand2, rand3, rand4, rand5, rand6, rand7, rand8;
-
-	int out_flag = 0;
-	do
-	{
-		rand1 = rand();
-		rand2 = rand();
-		rand3 = rand();
-		rand4 = rand();
-		rand5 = rand();
-		rand6 = rand();
-		rand7 = rand();
-		rand8 = rand();
-
-		m_Public_key = rand1;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand2;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand3;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand4;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand5;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand6;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand7;
-		m_Public_key <<= 8;
-
-		m_Public_key |= rand8;
-
-		if (m_Public_key != 0)
-			out_flag = 1;
-
-	}
-	while (out_flag == 0);
-}
-///~
 
 void CUser::CloseProcess()
 {
@@ -590,7 +541,7 @@ void CUser::VersionCheck()
 	SetByte(send_buff, WIZ_VERSION_CHECK, send_index);
 	SetShort(send_buff, __VERSION, send_index);
 	// Cryption
-	SetInt64(send_buff, m_Public_key, send_index);
+	SetInt64(send_buff, jct.GetPublicKey(), send_index);
 	///~
 	Send(send_buff, send_index);
 	// Cryption

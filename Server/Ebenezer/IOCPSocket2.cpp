@@ -147,14 +147,15 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 
 	if (m_CryptionFlag)
 	{
-		unsigned short len = length + sizeof(WORD) + 1 + 1;
+		unsigned short len = length + sizeof(WORD) + 2 + 1;
 
 		m_Sen_val++;
 		m_Sen_val &= 0x00ffffff;
 
 		pTIBuf[0] = 0xfc; // 암호가 정확한지
-		memcpy(pTIBuf + 1, &m_Sen_val, sizeof(WORD) + 1);
-		memcpy(pTIBuf + 4, pBuf, length);
+		pTIBuf[1] = 0x1e;
+		memcpy(pTIBuf + 2, &m_Sen_val, sizeof(WORD) + 1);
+		memcpy(pTIBuf + 5, pBuf, length);
 		jct.JvEncryptionFast(len, pTIBuf, pTOutBuf);
 
 		pTBuf[index++] = (BYTE) PACKET_START1;
@@ -341,7 +342,6 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 	BOOL		foundCore;
 	MYSHORT		slen;
 	DWORD		wSerial = 0;
-	int index = 1, recv_packet = 0;
 
 	len = m_pBuffer->GetValidCount();
 
@@ -393,19 +393,15 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 				// 암호화
 				if (m_CryptionFlag)
 				{
-					pBuff = new BYTE[length + 1];
-					jct.JvDecryptionFast(length, (unsigned char*) pTmp + sPos + 2, pBuff);
-
-					// 압축 푼 데이터 오류 일경우 버퍼에서 삭제 해버린다
-					if (pBuff[0] != 0xfc)
+					pBuff = new BYTE[length];
+					if (jct.JvDecryptionWithCRC32(length, &pTmp[sPos + 2], pBuff) < 0)
 					{
-						TRACE(_T("CIOCPSocket2::PutOutCore - Decryption Error... sockid(%d)\n"), m_Socket);
-						delete[] pBuff;
-						Close();
-						goto cancelRoutine;
+						m_pBuffer->HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
+						break;
 					}
 
-					recv_packet = (WORD) GetShort((char*) pBuff, index);
+					int index = 0;
+					int recv_packet = (DWORD) GetDWORD((char*) pBuff, index);
 
 					//TRACE(_T("^^^ IOCPSocket2,, PullOutCore ,,, recv_val = %d ^^^\n"), recv_packet);
 
@@ -429,7 +425,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 						m_Rec_val = recv_packet;
 					}
 
-					length = length - 4;
+					length -= 8;
 					if (length <= 0)
 					{
 						TRACE(_T("CIOCPSocket2::PutOutCore - length Error... sockid(%d), len=%d\n"), m_Socket, length);
@@ -438,18 +434,16 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 						goto cancelRoutine;
 					}
 
-					data = new char[length + 1];
+					data = new char[length];
 					CopyMemory(data, pBuff + 4, length);
-					data[length] = 0;
 					foundCore = TRUE;
 					int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
 					delete[] pBuff;
 				}
 				else
 				{
-					data = new char[length + 1];
+					data = new char[length];
 					CopyMemory(data, (pTmp + sPos + 2), length);
-					data[length] = 0;
 					foundCore = TRUE;
 					int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
 					//TRACE(_T("data : %hs, len : %d\n"), data, length);
@@ -725,16 +719,3 @@ void CIOCPSocket2::RegioinPacketClear(char* GetBuf, int& len)
 	if (count > 29)
 		TRACE(_T("Region packet Clear Drop\n"));
 }
-
-// Cryption
-void CIOCPSocket2::SendCryptionKey()
-{
-	char send_buff[128] = {};
-	int send_index = 0;
-	SetByte(send_buff, WIZ_CRYPTION, send_index);
-	SetInt64(send_buff, m_Public_key, send_index);
-	Send(send_buff, send_index);
-
-	m_CryptionFlag = 1;
-}
-///~

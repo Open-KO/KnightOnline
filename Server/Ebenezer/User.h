@@ -211,7 +211,6 @@ public:
 	void SelectMsg(EXEC* pExec);
 	void SendNpcSay(EXEC* pExec);
 	BOOL CheckClass(short class1, short class2, short class3, short class4, short class5, short class6);
-	void Make_public_key();
 	void RecvSelectMsg(char* pBuf);
 	BOOL GiveItem(int itemid, short count);
 	BOOL RobItem(int itemid, short count);

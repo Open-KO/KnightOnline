@@ -20,7 +20,6 @@ class CCompressMng;
 class CIOCPSocket2
 {
 public:
-	void SendCryptionKey();
 	void RegioinPacketClear(char* GetBuf, int& len);
 	void RegionPacketAdd(char* pBuf, int len);
 	void SendCompressingPacket(const char* pData, int len);
@@ -95,7 +94,6 @@ protected:
 	// Cryption
 	CJvCryption			jct;
 	int					m_CryptionFlag;
-	uint64_t			m_Public_key;
 	DWORD				m_Sen_val;
 	DWORD				m_Rec_val;
 	///~

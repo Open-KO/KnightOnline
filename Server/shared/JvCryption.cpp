@@ -20,8 +20,11 @@ uint64_t CJvCryption::GenerateKey()
 		// NOTE: Debugging
 		m_public_key = RandUInt64(); //0xDCE04F8975278163;
 	}
-	while (!m_public_key);
+	while (m_public_key == 0);
+
+	Init();
 #endif
+
 	return m_public_key;
 }
 
