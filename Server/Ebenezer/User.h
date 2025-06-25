@@ -198,6 +198,7 @@ public:
 	BYTE				m_byPersonalRank;
 
 public:
+	void RecvZoneChange(char* pBuf);
 	void GetUserInfo(char* buff, int& buff_index);
 	void RecvDeleteChar(char* pBuf);
 	BOOL ExistComEvent(int eventid);

@@ -215,13 +215,6 @@ constexpr int BBS_CHECK_TIME		= 36000;
 #define NATION_BATTLE			1
 #define SNOW_BATTLE				2
 
-// Zone IDs
-#define ZONE_KARUS				1
-#define ZONE_ELMORAD			2
-#define ZONE_BATTLE				101
-#define ZONE_SNOW_BATTLE		102
-#define	ZONE_FRONTIER			201
-
 #define MAX_BATTLE_ZONE_USERS	150
 
 //////////////////////////////////////////////////////////////////

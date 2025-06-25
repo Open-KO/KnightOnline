@@ -355,11 +355,7 @@ void CUser::Parsing(int len, char* pData)
 			break;
 
 		case WIZ_ZONE_CHANGE:
-			// UserInOut(USER_IN);
-			UserInOut(USER_REGENE);
-			m_pMain->RegionUserInOutForMe(this);
-			m_pMain->RegionNpcInfoForMe(this);
-			m_bWarp = 0x00;
+			RecvZoneChange(pData + index);
 			break;
 
 		case WIZ_POINT_CHANGE:
@@ -2497,10 +2493,17 @@ void CUser::ZoneChange(int zone, float x, float z)
 	else
 	{
 		// 상대방 국가로 못넘어 가게..
-		if (pMap->m_bType == 1
-			&& m_pUserData->m_bNation != zone
-			&& (zone < 10 || zone > 20))
-			return;
+		if (pMap->m_bType == 1)
+		{
+			if (m_pUserData->m_bNation != zone
+				&& zone > ZONE_MORADON
+				&& zone != ZONE_ARENA)
+				return;
+
+			if (m_pUserData->m_bNation != zone
+				&& zone < 3)
+				return;
+		}
 	}
 
 	m_bWarp = 0x01;
@@ -2562,7 +2565,9 @@ void CUser::ZoneChange(int zone, float x, float z)
 	m_RegionZ = (int) (m_pUserData->m_curz / VIEW_DISTANCE);
 
 	SetByte(send_buff, WIZ_ZONE_CHANGE, send_index);
+	SetByte(send_buff, ZONE_CHANGE_TELEPORT, send_index);
 	SetByte(send_buff, m_pUserData->m_bZone, send_index);
+	SetByte(send_buff, 0, send_index); // subzone
 	SetShort(send_buff, (WORD) m_pUserData->m_curx * 10, send_index);
 	SetShort(send_buff, (WORD) m_pUserData->m_curz * 10, send_index);
 	SetShort(send_buff, (short) m_pUserData->m_cury * 10, send_index);
@@ -12350,5 +12355,40 @@ void CUser::GetUserInfo(char* buff, int& buff_index)
 		SetDWORD(buff, m_pUserData->m_sItemArray[slot].nNum, buff_index);
 		SetShort(buff, m_pUserData->m_sItemArray[slot].sDuration, buff_index);
 		SetShort(buff, m_pUserData->m_sItemArray[slot].byFlag, buff_index);
+	}
+}
+
+void CUser::RecvZoneChange(char* pBuf)
+{
+	int index = 0;
+	BYTE opcode = GetByte(pBuf, index);
+	if (opcode == ZONE_CHANGE_LOADING)
+	{
+		m_pMain->UserInOutForMe(this);
+		m_pMain->NpcInOutForMe(this);
+
+		char send_buff[128];
+		int send_index = 0;
+		SetByte(send_buff, WIZ_ZONE_CHANGE, send_index);
+		SetByte(send_buff, ZONE_CHANGE_LOADED, send_index);
+		Send(send_buff, send_index);
+	}
+	else if (opcode == ZONE_CHANGE_LOADED)
+	{
+		// UserInOut(USER_IN);
+		UserInOut(USER_REGENE);
+		m_bWarp = 0;
+
+		if (!m_bZoneChangeSameZone)
+		{
+#if 0 // TODO:
+			BlinkStart();
+			ItemMallMagicRecast(FALSE);
+#endif
+		}
+		else
+		{
+			m_bZoneChangeSameZone = FALSE;
+		}
 	}
 }

@@ -214,6 +214,24 @@ enum e_ZoneFlags
 	ZF_CLAN_UPDATE			= (1 << 6)  // Joining, disbanding, creating etc.
 };
 
+enum e_ZoneID
+{
+	ZONE_KARUS				= 1,
+	ZONE_ELMORAD			= 2,
+	ZONE_ESLANT_KARUS		= 11,
+	ZONE_ESLANT_ELMORAD		= 12,
+	ZONE_MORADON			= 21,
+	ZONE_DELOS				= 30,
+	ZONE_BIFROST			= 31,
+	ZONE_ARENA				= 48,
+	ZONE_CAITHAROS_ARENA	= 55,
+	ZONE_BATTLE				= 101,
+	ZONE_BATTLE2			= 102,
+	ZONE_BATTLE3			= 103,
+	ZONE_SNOW_BATTLE		= 111,
+	ZONE_FRONTIER			= 201
+};
+
 // ITEM_SLOT DEFINE
 constexpr uint8_t RIGHTEAR			= 0;
 constexpr uint8_t HEAD				= 1;
