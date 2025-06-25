@@ -37,7 +37,7 @@ CAISocket::~CAISocket()
 
 void CAISocket::Initialize()
 {
-	m_pMain = (CEbenezerDlg*) AfxGetMainWnd();
+	m_pMain = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 	m_MagicProcess.m_pMain = m_pMain;
 }
 

@@ -32,7 +32,7 @@ CNpc::~CNpc()
 
 void CNpc::Initialize()
 {
-	m_pMain = (CEbenezerDlg*) AfxGetMainWnd();
+	m_pMain = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 
 	m_sNid = -1;				// NPC (서버상의)일련번호
 	m_sSid = 0;

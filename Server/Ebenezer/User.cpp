@@ -35,7 +35,7 @@ CUser::~CUser()
 
 void CUser::Initialize()
 {
-	m_pMain = (CEbenezerDlg*) AfxGetMainWnd();
+	m_pMain = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 
 	// Cryption
 	Make_public_key();

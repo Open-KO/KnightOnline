@@ -29,7 +29,7 @@ BOOL CDBAgent::DatabaseInit()
 {
 //	Main DB Connecting..
 /////////////////////////////////////////////////////////////////////////////////////
-	m_pMain = (CItemManagerDlg*) AfxGetMainWnd();
+	m_pMain = (CItemManagerDlg*) AfxGetApp()->GetMainWnd();
 
 	CString strConnect;
 	strConnect.Format(_T("ODBC;DSN=%s;UID=%s;PWD=%s"), m_pMain->m_strGameDSN, m_pMain->m_strGameUID, m_pMain->m_strGamePWD);
