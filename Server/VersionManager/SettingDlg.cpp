@@ -215,7 +215,10 @@ void CSettingDlg::OnCompress()
 	BeginWaitCursor();
 
 	compname.Format(_T("patch%.4d.zip"), m_nVersion);
-	compfullpath.Format(_T("%s\\%s"), m_strDefaultPath, compname);
+	compfullpath.Format(
+		_T("%s\\%s"),
+		m_strDefaultPath,
+		compname.GetString());
 
 	m_RepackingVersionList.clear();
 
@@ -231,7 +234,7 @@ void CSettingDlg::OnCompress()
 		fullpathname += filename;
 		if (!file.Open(fullpathname, CFile::modeRead))
 		{
-			errmsg.Format(_T("%s File Open Fail"), filename);
+			errmsg.Format(_T("%s File Open Fail"), filename.GetString());
 			AfxMessageBox(errmsg);
 			continue;
 		}
@@ -241,7 +244,7 @@ void CSettingDlg::OnCompress()
 
 		if (!m_ZipArchive.AddNewFile(fullpathname, m_strDefaultPath, -1, dwsize))
 		{
-			errmsg.Format(_T("%s File Compress Fail"), filename);
+			errmsg.Format(_T("%s File Compress Fail"), filename.GetString());
 			AfxMessageBox(errmsg);
 			continue;
 		}
@@ -325,7 +328,7 @@ bool CSettingDlg::Repacking(int version)
 	CFile file;
 
 	compname.Format(_T("patch%.4d.zip"), version);
-	compfullpath.Format(_T("%s\\%s"), m_strDefaultPath, compname);
+	compfullpath.Format(_T("%s\\%s"), m_strDefaultPath, compname.GetString());
 
 	m_ZipArchive.Open(compfullpath, CZipArchive::create);
 
@@ -337,7 +340,7 @@ bool CSettingDlg::Repacking(int version)
 		filename.Format(_T("%s%hs"), m_strDefaultPath, pInfo->strFileName.c_str());
 		if (!file.Open(filename, CFile::modeRead))
 		{
-			errmsg.Format(_T("%s File Open Fail"), filename);
+			errmsg.Format(_T("%s File Open Fail"), filename.GetString());
 			AfxMessageBox(errmsg);
 			continue;
 		}
@@ -347,7 +350,7 @@ bool CSettingDlg::Repacking(int version)
 
 		if (!m_ZipArchive.AddNewFile(filename, m_strDefaultPath, -1, dwsize))
 		{
-			errmsg.Format(_T("%s File Compress Fail"), filename);
+			errmsg.Format(_T("%s File Compress Fail"), filename.GetString());
 			AfxMessageBox(errmsg);
 			return false;
 		}
@@ -384,7 +387,7 @@ bool CSettingDlg::InsertProcess(const TCHAR* filename)
 
 		if (!m_pMain->m_DBProcess.DeleteVersion(addfilename.c_str()))
 		{
-			errmsg.Format(_T("%s DB Delete Fail"), addfilename.c_str());
+			errmsg.Format(_T("%hs DB Delete Fail"), addfilename.c_str());
 			AfxMessageBox(errmsg);
 			return false;
 		}

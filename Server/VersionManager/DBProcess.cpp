@@ -80,7 +80,7 @@ BOOL CDBProcess::LoadVersionList()
 	wsprintf(szSQL, TEXT("select * from %s"), m_pMain->m_TableName);
 
 	SQLSMALLINT	version = 0, historyversion = 0;
-	TCHAR strfilename[256] = {}, strcompname[256] = {};
+	char strfilename[256] = {}, strcompname[256] = {};
 	SQLINTEGER Indexind = SQL_NTS;
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, m_VersionDB.m_hdbc, &hstmt);

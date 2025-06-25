@@ -93,9 +93,9 @@ BOOL CAPISocket::Connect(HWND hWnd, const char* pszIP, DWORD port)
 		if ( (hp = (hostent far *)gethostbyname(pszIP)) == NULL)
 		{
 #ifdef _DEBUG
-			char msg[256];	
-			sprintf(msg,"Error: Connecting to %s.",pszIP);
-			MessageBox(hWnd, msg,"socket error", MB_OK | MB_ICONSTOP );
+			TCHAR msg[256] = {};
+			_stprintf(msg, _T("Error: Connecting to %hs."), pszIP);
+			MessageBox(hWnd, msg, _T("socket error"), MB_OK | MB_ICONSTOP );
 #endif
 			return FALSE;
 		}
@@ -109,9 +109,9 @@ BOOL CAPISocket::Connect(HWND hWnd, const char* pszIP, DWORD port)
 	if( (m_hSocket = socket(AF_INET, SOCK_STREAM, 0)) < 1) 
 	{
 #ifdef _DEBUG
-		char msg[256];	
-		sprintf(msg,"Error opening stream socket");
-		MessageBox(hWnd, msg,"socket error", MB_OK | MB_ICONSTOP);
+		TCHAR msg[256] = {};
+		_tcscpy(msg, _T("Error opening stream socket"));
+		MessageBox(hWnd, msg, _T("socket error"), MB_OK | MB_ICONSTOP);
 #endif
 		return FALSE;
 	}
@@ -124,9 +124,9 @@ BOOL CAPISocket::Connect(HWND hWnd, const char* pszIP, DWORD port)
 		m_hSocket = INVALID_SOCKET;
 
 #ifdef _DEBUG
-		char msg[256];
-		sprintf(msg, "Cannot connect to %s on port %u : ErrorCode : %d", pszIP, port, iErrCode);
-		MessageBox(hWnd, msg, "socket error", MB_OK | MB_ICONSTOP);
+		TCHAR msg[256] = {};
+		_stprintf(msg, _T("Cannot connect to %hs on port %u : ErrorCode : %d"), pszIP, port, iErrCode);
+		MessageBox(hWnd, msg, _T("socket error"), MB_OK | MB_ICONSTOP);
 #endif
 		return FALSE;
 	}

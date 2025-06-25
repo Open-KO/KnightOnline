@@ -42,9 +42,9 @@ public:
 	class CAPISocket*			m_pSocket;
 
 	int			m_nCurVersion;
-	char		m_strServiceName[256];
-	std::string m_szExeName;
-	std::string m_szInstalledPath;
+	TCHAR		m_strServiceName[256];
+	CString		m_szExeName;
+	CString		m_szInstalledPath;
 		
 	int			m_nServerVersion;
 	std::string m_szFtpUrl;
@@ -64,7 +64,6 @@ public:
 	void PacketReceive_Version(const BYTE* pBuf, int& iIndex);
 	void PacketProcess( BYTE* pBuf, int size );
 
-	void LoadStringFromResource(DWORD dwID, std::string& szString);
 	void FTP_Close();
 	BOOL IsFtpExistFile(const std::string& szFtpUrl, const std::string& szFileName);
 	BOOL GetDownloadFile(const std::string& szFtpUrl, const std::string& szFileName);
