@@ -7,6 +7,7 @@
 #include "Compress.h"
 #include "Define.h"
 
+#include <shared/lzf.h>
 #include <shared/CircularBuffer.h>
 #include <shared/packets.h>
 
@@ -595,52 +596,25 @@ void CIOCPSocket2::SendCompressingPacket(const char* pData, int len)
 		return;
 	}
 
-	int send_index = 0, count = 0;
-	char send_buff[49152] = {};
-	do
-	{
-		if (m_pCompressMng->m_nBufferStatus == W)
-		{
-			bb();
-			count++;
-			continue;
-		}
+	int send_index = 0;
+	char send_buff[32000] = {}, pBuff[32000] = {};
+	unsigned int out_len = 0;
 
-		m_pCompressMng->m_nBufferStatus = W;
-		m_pCompressMng->m_dwThreadID = ::GetCurrentThreadId();
-		bb();
-
-		// Dual Lock System...
-		if (m_pCompressMng->m_dwThreadID != ::GetCurrentThreadId())
-		{
-			count++;
-			continue;
-		}
-
-		m_pCompressMng->PreCompressWork(pData, len);
-		m_pCompressMng->Compress();
-
-		SetByte(send_buff, WIZ_COMPRESS_PACKET, send_index);
-		SetShort(send_buff, (short) m_pCompressMng->m_nOutputBufferCurPos, send_index);
-		SetShort(send_buff, (short) m_pCompressMng->m_nOrgDataLength, send_index);
-		SetDWORD(send_buff, m_pCompressMng->m_dwCrc, send_index);
-		SetString(send_buff, m_pCompressMng->m_pOutputBuffer, m_pCompressMng->m_nOutputBufferCurPos, send_index);
-
-		m_pCompressMng->Initialize();	// buffer clear
-		m_pCompressMng->m_nBufferStatus = E;
-		break;
-	}
-	while (count < 50);
-
-	if (count > 49)
+	out_len = lzf_compress(pData, len, pBuff, sizeof(pBuff));
+	if (out_len == 0
+		|| out_len >= sizeof(pBuff))
 	{
 		TRACE(_T("Compressing Fail Packet\n"));
 		Send((char*) pData, len);
+		return;
 	}
-	else
-	{
-		Send(send_buff, send_index);
-	}
+
+	SetByte(send_buff, WIZ_COMPRESS_PACKET, send_index);
+	SetShort(send_buff, (short) out_len, send_index);
+	SetShort(send_buff, (short) len, send_index);
+	SetDWORD(send_buff, 0, send_index); // checksum
+	SetString(send_buff, pBuff, out_len, send_index);
+	Send(send_buff, send_index);
 }
 
 void CIOCPSocket2::RegionPacketAdd(char* pBuf, int len)
