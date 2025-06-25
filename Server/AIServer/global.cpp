@@ -265,7 +265,7 @@ void LogFileWrite(CString logstr)
 	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
 	{
 		file.SeekToEnd();
-		file.Write(logstr, loglength);
+		file.Write(logstr, loglength * sizeof(TCHAR));
 		file.Close();
 	}
 }

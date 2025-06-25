@@ -198,14 +198,14 @@ inline void LogFileWrite(LPCTSTR logstr)
 	int loglength;
 
 	ProgPath = GetProgPath();
-	loglength = _tcslen(logstr);
+	loglength = static_cast<int>(_tcslen(logstr));
 
 	LogFileName.Format(_T("%s\\ItemManager.log"), ProgPath.GetString());
 
 	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
 	{
 		file.SeekToEnd();
-		file.Write(logstr, loglength);
+		file.Write(logstr, loglength * sizeof(TCHAR));
 		file.Close();
 	}
 }

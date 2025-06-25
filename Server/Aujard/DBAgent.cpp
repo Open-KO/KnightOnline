@@ -410,7 +410,7 @@ BOOL CDBAgent::LoadUserData(const char* accountid, const char* userid, int uid)
 		}
 	}
 
-	int iFinalQuestCount = 0;
+	short sQuestTotal = 0;
 	index = 0;
 	for (int i = 0; i < MAX_QUEST; i++)
 	{
@@ -426,11 +426,11 @@ BOOL CDBAgent::LoadUserData(const char* accountid, const char* userid, int uid)
 		}
 
 		if (quest.sQuestID > 0)
-			++iFinalQuestCount;
+			++sQuestTotal;
 	}
 
-	if (QuestCount != iFinalQuestCount)
-		pUser->m_sQuestCount = iFinalQuestCount;
+	if (QuestCount != sQuestTotal)
+		pUser->m_sQuestCount = sQuestTotal;
 
 	if (pUser->m_bLevel == 1
 		&& pUser->m_iExp == 0
@@ -503,8 +503,8 @@ int CDBAgent::UpdateUser(const char* userid, int uid, int type)
 {
 	SQLHSTMT		hstmt;
 	SQLRETURN		retcode;
-	TCHAR			szSQL[1024] = {};
-	SDWORD			sStrItem, sStrSkill, sStrSerial;
+	TCHAR			szSQL[4096] = {};
+	SDWORD			sStrItem, sStrSkill, sStrSerial, sStrQuest;
 
 	_USER_DATA*		pUser = nullptr;
 
@@ -525,14 +525,40 @@ int CDBAgent::UpdateUser(const char* userid, int uid, int type)
 
 	char strSkill[10] = {},
 		strItem[400] = {},
-		strSerial[400] = {};
+		strSerial[400] = {},
+		strQuest[400] = {};
+	short sQuestTotal = 0;
 	sStrSkill = sizeof(strSkill);
 	sStrItem = sizeof(strItem);
 	sStrSerial = sizeof(strSerial);
+	sStrQuest = sizeof(strQuest);
 
 	int index = 0, serial_index = 0;
 	for (int i = 0; i < 9; i++)
 		SetByte(strSkill, pUser->m_bstrSkill[i], index);
+
+	index = 0;
+	for (int i = 0; i < MAX_QUEST; i++)
+	{
+		_USER_QUEST& quest = pUser->m_quests[i];
+
+		if (quest.sQuestID > 100
+			|| quest.byQuestState > 3)
+		{
+			memset(&quest, 0, sizeof(_USER_QUEST));
+		}
+		else
+		{
+			if (quest.sQuestID > 0)
+				++sQuestTotal;
+		}
+
+		SetShort(strQuest, quest.sQuestID, index);
+		SetByte(strQuest, quest.byQuestState, index);
+	}
+
+	if (sQuestTotal != pUser->m_sQuestCount)
+		pUser->m_sQuestCount = sQuestTotal;
 
 	index = 0;
 
@@ -553,12 +579,47 @@ int CDBAgent::UpdateUser(const char* userid, int uid, int type)
 	}
 
 	// 작업 : clan정보도 업데이트
-	wsprintf(szSQL, TEXT("{call UPDATE_USER_DATA ( \'%hs\', %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,?,?,?)}"),
-		pUser->m_id, pUser->m_bNation, pUser->m_bRace, pUser->m_sClass, pUser->m_bHairColor, pUser->m_bRank,
-		pUser->m_bTitle, pUser->m_bLevel, pUser->m_iExp, pUser->m_iLoyalty, pUser->m_bFace,
-		pUser->m_bCity, pUser->m_bKnights, pUser->m_bFame, pUser->m_sHp, pUser->m_sMp, pUser->m_sSp,
-		pUser->m_bStr, pUser->m_bSta, pUser->m_bDex, pUser->m_bIntel, pUser->m_bCha, pUser->m_bAuthority, pUser->m_bPoints, pUser->m_iGold, pUser->m_bZone, pUser->m_sBind,
-		(int) (pUser->m_curx * 100), (int) (pUser->m_curz * 100), (int) (pUser->m_cury * 100), pUser->m_dwTime);
+	wsprintf(
+		szSQL,
+		TEXT("{call UPDATE_USER_DATA ( \'%hs\', %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,?,?,?,?,%d,%d)}"),
+		pUser->m_id,
+		pUser->m_bNation,
+		pUser->m_bRace,
+		pUser->m_sClass,
+		pUser->m_bHairColor,
+		pUser->m_bRank,
+		pUser->m_bTitle,
+		pUser->m_bLevel,
+		pUser->m_iExp,
+		pUser->m_iLoyalty,
+		pUser->m_bFace,
+		pUser->m_bCity,
+		pUser->m_bKnights,
+		pUser->m_bFame,
+		pUser->m_sHp,
+		pUser->m_sMp,
+		pUser->m_sSp,
+		pUser->m_bStr,
+		pUser->m_bSta,
+		pUser->m_bDex,
+		pUser->m_bIntel,
+		pUser->m_bCha,
+		pUser->m_bAuthority,
+		pUser->m_bPoints,
+		pUser->m_iGold,
+		pUser->m_bZone,
+		pUser->m_sBind,
+		static_cast<int>(pUser->m_curx * 100),
+		static_cast<int>(pUser->m_curz * 100),
+		static_cast<int>(pUser->m_cury * 100),
+		pUser->m_dwTime,
+		sQuestTotal,
+		// @strSkill
+		// @strItem
+		// @strSerial
+		// @strQuest
+		pUser->m_iMannerPoint,
+		pUser->m_iLoyaltyMonthly);
 
 	hstmt = nullptr;
 
@@ -568,6 +629,7 @@ int CDBAgent::UpdateUser(const char* userid, int uid, int type)
 		retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, sizeof(strSkill), 0, strSkill, 0, &sStrSkill);
 		retcode = SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, sizeof(strItem), 0, strItem, 0, &sStrItem);
 		retcode = SQLBindParameter(hstmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, sizeof(strSerial), 0, strSerial, 0, &sStrSerial);
+		retcode = SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, sizeof(strQuest), 0, strQuest, 0, &sStrQuest);
 		if (retcode == SQL_SUCCESS)
 		{
 			retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);

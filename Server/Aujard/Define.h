@@ -348,25 +348,25 @@ inline void LogFileWrite(LPCTSTR logstr)
 	int loglength;
 
 	ProgPath = GetProgPath();
-	loglength = _tcslen(logstr);
+	loglength = static_cast<int>(_tcslen(logstr));
 
 	LogFileName.Format(_T("%s\\Aujard.log"), ProgPath.GetString());
 
 	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
 	{
 		file.SeekToEnd();
-		file.Write(logstr, loglength);
+		file.Write(logstr, loglength * sizeof(TCHAR));
 		file.Close();
 	}
 }
 
 inline int DisplayErrorMsg(SQLHANDLE hstmt)
 {
-	SQLTCHAR      SqlState[6], Msg[1024];
+	SQLTCHAR      SqlState[6], Msg[4096];
 	SQLINTEGER    NativeError;
 	SQLSMALLINT   i, MsgLen;
 	SQLRETURN     rc2;
-	TCHAR		  logstr[512] = {};
+	TCHAR		  logstr[4096] = {};
 
 	i = 1;
 	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
