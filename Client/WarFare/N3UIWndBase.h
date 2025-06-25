@@ -52,8 +52,9 @@ enum e_UIWND_DISTRICT		{
 								UIWND_DISTRICT_UNKNOWN,				// District Unknown..
 								UIWND_DISTRICT_UPGRADE_SLOT,			// Upgrade Wnd SLot District..
 								UIWND_DISTRICT_UPGRADE_INV,			// Upgrade Wnd Inv District..
-								UIWND_DISTRICT_RING_UPGRADE_SLOT,		// Ring Upgrade Wnd SLot District..
-								UIWND_DISTRICT_RING_UPGRADE_INV,		// Ring Upgrade Wnd Inv District..
+								UIWND_DISTRICT_ACCESSORY_COMPOUND_SLOT,		// Ring Upgrade Wnd SLot District..
+								UIWND_DISTRICT_ACCESSORY_COMPOUND_SCROLL_SLOT,		// Ring Upgrade Wnd Scroll District..
+								UIWND_DISTRICT_ACCESSORY_COMPOUND_INV,		// Ring Upgrade Wnd Inv District..
 							};
 
 enum e_UIIconState			{

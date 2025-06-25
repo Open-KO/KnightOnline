@@ -403,158 +403,6 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 	switch (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict)
 	{
-		case UIWND_DISTRICT_UPGRADE_SLOT:
-			if (eUIWnd == UI_AREA_TYPE_INV)
-			{
-				if ((CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) ||
-					(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL))
-				{
-
-					bFound = false;
-
-					for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
-					{
-						if (bFound)
-						{
-							CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iDestiOrder;
-							break;
-						}
-
-						if ((m_pMyUpgradeInv[i]) && (m_pMyUpgradeInv[i]->pItemBasic->dwID == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pItemBasic->dwID) &&
-							(m_pMyUpgradeInv[i]->pItemExt->dwID == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pItemExt->dwID))
-						{
-							bFound = true;
-							iDestiOrder = i;
-						}
-					}
-
-					if (!bFound)
-					{
-						if (m_pMyUpgradeInv[iDestiOrder])
-						{
-							for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
-							{
-								if (!m_pMyUpgradeInv[i])
-								{
-									bFound = true;
-									iDestiOrder = i;
-									break;
-								}
-							}
-
-							if (!bFound)
-							{
-								CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemSource = NULL;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget = NULL;
-								FAIL_RETURN
-							}
-						}
-					}
-
-					CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iDestiOrder;
-
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
-					FAIL_RETURN
-				}
-				else
-				{
-					__InfoPlayerMySelf* pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-
-					if ((CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->iPrice) > pInfoExt->iGold)
-					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
-						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource = NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget = NULL;
-						FAIL_RETURN
-					}
-
-					if ((pInfoExt->iWeight + CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->siWeight) > pInfoExt->iWeightMax)
-					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);
-						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource = NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget = NULL;
-						FAIL_RETURN
-					}
-
-
-					if (m_pMyUpgradeInv[iDestiOrder])
-					{
-
-						bFound = false;
-						for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
-						{
-							if (!m_pMyUpgradeInv[i])
-							{
-								bFound = true;
-								iDestiOrder = i;
-								break;
-							}
-						}
-
-						if (!bFound)
-						{
-							CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource = NULL;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget = NULL;
-							FAIL_RETURN
-						}
-
-						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iDestiOrder;
-					}
-					else
-						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iDestiOrder;
-
-
-					std::string szIconFN;
-					e_PartPosition ePart;
-					e_PlugPosition ePlug;
-					CGameProcedure::MakeResrcFileNameForUPC(m_pMyUpgradeSLot[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder]->pItemBasic,
-						NULL, &szIconFN, ePart, ePlug);
-
-					__IconItemSkill* spItemNew;
-					spItemNew = new __IconItemSkill;
-					spItemNew->pItemBasic = m_pMyUpgradeSLot[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder]->pItemBasic;
-					spItemNew->pItemExt = m_pMyUpgradeSLot[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder]->pItemExt;
-					spItemNew->szIconFN = szIconFN;
-					spItemNew->iCount = 1;
-					spItemNew->iDurability = m_pMyUpgradeSLot[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder]->pItemBasic->siMaxDurability
-						+ m_pMyUpgradeSLot[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder]->pItemExt->siMaxDurability;
-
-					// 아이콘 리소스 만들기..
-					spItemNew->pUIIcon = new CN3UIIcon;
-					float fUVAspect = (float) 45.0f / (float) 64.0f;
-					spItemNew->pUIIcon->Init(this);
-					spItemNew->pUIIcon->SetTex(szIconFN);
-					spItemNew->pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
-					spItemNew->pUIIcon->SetUIType(UI_TYPE_ICON);
-					spItemNew->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
-					spItemNew->pUIIcon->SetVisible(true);
-					pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, iDestiOrder,"a_slot_");
-					if (pArea)
-					{
-						spItemNew->pUIIcon->SetRegion(pArea->GetRegion());
-						spItemNew->pUIIcon->SetMoveRect(pArea->GetRegion());
-					}
-
-					m_pMyUpgradeInv[iDestiOrder] = spItemNew;
-					FAIL_RETURN
-				}
-			}
-			else
-			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource = NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget = NULL;
-				FAIL_RETURN
-			}
-			break;
 
 		case UIWND_DISTRICT_UPGRADE_INV:
 			if (eUIWnd == UIWND_DISTRICT_UPGRADE_SLOT)
@@ -996,8 +844,19 @@ bool CUIItemUpgrade::IsUpgradeScrollorTrina(uint32_t dwID)
 // Checks if the given item is allowed to be upgraded (unique or upgrade type).
 bool CUIItemUpgrade::IsAllowedUpgradeItem(__IconItemSkill* spItem)
 {
+	if (spItem && spItem->pItemBasic)
+	{
+		
+		if (spItem->pItemBasic->byAttachPoint == ITEM_POS_FINGER // Ring
+			|| spItem->pItemBasic->byAttachPoint == ITEM_POS_NECK // Necklace
+			|| spItem->pItemBasic->byAttachPoint == ITEM_POS_BELT // Belt
+			|| spItem->pItemBasic->byAttachPoint == ITEM_POS_EAR) // Earring
+		{
+			return false;
+		}
+	}
 	e_ItemAttrib eTA = (e_ItemAttrib) (spItem->pItemExt->byMagicOrRare);
-	return (eTA == ITEM_ATTRIB_UNIQUE || eTA == ITEM_ATTRIB_UPGRADE);
+	return (eTA == ITEM_ATTRIB_UNIQUE || eTA == ITEM_ATTRIB_UPGRADE || eTA == ITEM_ATTRIB_UNIQUE_REVERSE || eTA == ITEM_ATTRIB_UPGRADE);
 }
 
 // Deletes the given icon item skill and its UI icon
@@ -1015,5 +874,19 @@ void CUIItemUpgrade::DeleteIconItemSkill(__IconItemSkill*& pItem)
 	}
 }
 
+void CUIItemUpgrade::SendToServerUpgradeMsg()
+{
+	uint8_t byBuff[8];
+	int iOffset = 0;
+	uint8_t upgradeType = 0;
+	int itemID = 0; // Example item ID, should be set based on the item being upgraded
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ITEM_UPGRADE); 
+	CAPISocket::MP_AddDword(byBuff, iOffset, itemID);          
+	CAPISocket::MP_AddByte(byBuff, iOffset, upgradeType);      
+	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
+
+	
+
+}
 
 

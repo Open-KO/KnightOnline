@@ -93,6 +93,7 @@ public:
 	bool				IsUpgradeScrollorTrina(uint32_t dwID);
 	bool IsAllowedUpgradeItem(__IconItemSkill* spItem);
 	void DeleteIconItemSkill(__IconItemSkill*& pItem);
+	void				SendToServerUpgradeMsg();
 };
 
 #endif // !defined(AFX_UIItemUpgrade_H__fd9f5093_0ed3_4c08_9e31_19c40773b24d__INCLUDED_)

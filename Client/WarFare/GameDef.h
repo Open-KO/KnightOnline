@@ -1184,8 +1184,8 @@ const int MAX_ITEM_PER_TRADE = 12;	// 개인과 거래..
 const int MAX_ITEM_BUNDLE_DROP_PIECE = 6;
 const int MAX_ITEM_EX_RE_NPC = 4; // 교환, 수리창 NPC 영역..
 const int MAX_ITEM_UPGRADE_SLOT = 9; // 아이템 업그레이드 슬롯 갯수..
-const int MAX_RING_UPGRADE_SLOT = 2; // 반지 업그레이드 슬롯 갯수..
-const int MAX_RING_UPGRADE_SCROLL_SLOT=2; // 반지 업그레이드 스크롤 슬롯 갯수..
+const int MAX_ACCESSORY_COMPOUND_SLOT = 3; // 반지 업그레이드 슬롯 갯수..
+const int MAX_ACCESSORY_COMPOUND_SCROLL_SLOT=2; // 반지 업그레이드 스크롤 슬롯 갯수..
 
 const int MAX_SKILL_FROM_SERVER = 9;		// 서버에게서 받는 정보 슬롯 갯수..			
 
