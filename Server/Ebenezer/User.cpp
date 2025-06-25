@@ -244,40 +244,8 @@ void CUser::Parsing(int len, char* pData)
 			break;
 
 		case WIZ_GAMESTART:
-			if (m_State == STATE_GAMESTART)
-				break;
-
-			m_State = STATE_GAMESTART;
-		/*	if( m_pUserData->m_bZone > 2)
-			{
-				if( m_pUserData->m_bKnights != 0 )
-					m_pMain->m_KnightsManager.LoadKnightsIndex( m_pUserData->m_bKnights );
-			}	*/
-
-			//SendAllKnightsID();
-			SendMyInfo();
-			UserInOut(USER_REGENE);
-			m_pMain->UserInOutForMe(this);
-			m_pMain->NpcInOutForMe(this);
-			SendNotice();
-			SendTimeStatus();
-			TRACE(_T("GAMESTART: %hs..%d\n"), m_pUserData->m_id, m_Sid);
-
-			// If there is a permanent chat available!!!
-			if (m_pMain->m_bPermanentChatMode)
-			{
-				int buffindex = 0;
-				char send_buff[1024] = {};
-
-				SetByte(send_buff, WIZ_CHAT, buffindex);
-				SetByte(send_buff, PERMANENT_CHAT, buffindex);
-				SetByte(send_buff, 0x01, buffindex);		// Nation
-				SetShort(send_buff, -1, buffindex);		// sid
-				SetShort(send_buff, strlen(m_pMain->m_strPermanentChat), buffindex);
-				SetString(send_buff, m_pMain->m_strPermanentChat, strlen(m_pMain->m_strPermanentChat), buffindex);
-				Send(send_buff, buffindex);
-			}
-	//
+			if (m_State != STATE_GAMESTART)
+				GameStart(pData + index);
 			break;
 
 		case WIZ_MOVE:
@@ -1742,8 +1710,12 @@ void CUser::Attack(char* pBuf)
 	}
 }
 
-void CUser::SendMyInfo()
+void CUser::SendMyInfo(int type)
 {
+	// TODO:
+	if (type != 0)
+		return;
+
 	CKnights* pKnights = nullptr;
 	C3DMap* pMap = (C3DMap*) m_pMain->m_ZoneArray[m_iZoneIndex];
 	if (pMap == nullptr)
@@ -12355,6 +12327,98 @@ void CUser::GetUserInfo(char* buff, int& buff_index)
 		SetDWORD(buff, m_pUserData->m_sItemArray[slot].nNum, buff_index);
 		SetShort(buff, m_pUserData->m_sItemArray[slot].sDuration, buff_index);
 		SetShort(buff, m_pUserData->m_sItemArray[slot].byFlag, buff_index);
+	}
+}
+
+void CUser::GameStart(
+	char* pBuf)
+{
+	int index = 0, send_index = 0;
+	char send_buff[512];
+
+	int opcode = GetByte(pBuf, index);
+
+	// Started loading
+	if (opcode == 1)
+	{
+		SendMyInfo(0);
+		m_pMain->UserInOutForMe(this);
+		m_pMain->NpcInOutForMe(this);
+		SendNotice();
+		SendTimeStatus();
+
+		TRACE("GAMESTART - loading: %s..%d\n", m_pUserData->m_id, m_Sid);
+
+		SetByte(send_buff, WIZ_GAMESTART, send_index);
+		Send(send_buff, send_index);
+	}
+	// Finished loading
+	else if (opcode == 2)
+	{
+		// NOTE: This behaviour is flipped as compared to official to give it a more meaningful name.
+		bool bRecastSavedMagic = true;
+
+		m_State = STATE_GAMESTART;
+
+		TRACE("GAMESTART - ingame: %s..%d\n", m_pUserData->m_id, m_Sid);
+
+		UserInOut(USER_REGENE);
+
+		if (m_pUserData->m_bCity == 0
+			&& m_pUserData->m_sHp <= 0)
+			m_pUserData->m_bCity = 0xff;
+
+		if (m_pUserData->m_bCity == 0
+			|| m_pUserData->m_bCity == 0xFF)
+		{
+			m_iLostExp = 0;
+		}
+		else
+		{
+			int level = m_pUserData->m_bLevel;
+			if (m_pUserData->m_bCity <= 100)
+				--level;
+
+			m_iLostExp = m_pMain->m_LevelUpArray[level]->m_iExp;
+			m_iLostExp = m_iLostExp * (m_pUserData->m_bCity % 10) / 100;
+
+			if (((m_pUserData->m_bCity % 100) / 10) == 1)
+				m_iLostExp /= 2;
+		}
+
+
+		if (m_iLostExp > 0
+			|| m_pUserData->m_bCity == 0xff)
+		{
+			HpChange(-m_iMaxHp);
+
+			// NOTE: This behaviour is flipped as compared to official to give it a more meaningful name.
+			bRecastSavedMagic = false;
+		}
+
+		SendMyInfo(2);
+
+		// TODO:
+		// BlinkStart();
+
+		SetUserAbility();
+
+		// If there is a permanent chat available!!!
+		if (m_pMain->m_bPermanentChatMode)
+		{
+			SetByte(send_buff, WIZ_CHAT, send_index);
+			SetByte(send_buff, PERMANENT_CHAT, send_index);
+			SetByte(send_buff, KARUS, send_index);
+			SetShort(send_buff, -1, send_index);		// sid
+			SetByte(send_buff, 0, send_index);			// sender name length
+			SetString2(send_buff, m_pMain->m_strPermanentChat, static_cast<short>(strlen(m_pMain->m_strPermanentChat)), send_index);
+			Send(send_buff, send_index);
+		}
+
+#if 0 // TODO
+		if (bRecastSavedMagic)
+			ItemMallMagicRecast(FALSE);
+#endif
 	}
 }
 

@@ -199,6 +199,7 @@ public:
 
 public:
 	void RecvZoneChange(char* pBuf);
+	void GameStart(char* pBuf);
 	void GetUserInfo(char* buff, int& buff_index);
 	void RecvDeleteChar(char* pBuf);
 	BOOL ExistComEvent(int eventid);
@@ -361,7 +362,7 @@ public:
 	void Chat(char* pBuf);
 	void LogOut();
 	void SelCharToAgent(char* pBuf);
-	void SendMyInfo();
+	void SendMyInfo(int type);
 	void SelectCharacter(char* pBuf);
 	void Send2AI_UserUpdateInfo();
 	void Attack(char* pBuf);
