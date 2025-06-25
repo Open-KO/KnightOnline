@@ -131,7 +131,7 @@ enum e_DurabilityType
 #define KNIGHTS_TYPE		0x02
 ////////////////////////////////////////////////////////////
 
-constexpr int MAX_CLAN			= 24;
+constexpr int MAX_CLAN			= 36;
 constexpr int MAX_KNIGHTS_BANK	= 200;
 
 constexpr int ITEM_GOLD			= 900000000;	// 돈 아이템 번호...

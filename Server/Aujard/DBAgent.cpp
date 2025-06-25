@@ -102,68 +102,12 @@ void CDBAgent::ReConnectODBC(CDatabase* m_db, const TCHAR* strdb, const TCHAR* s
 
 void CDBAgent::MUserInit(int uid)
 {
-	_USER_DATA* pUser = nullptr;
-
-	pUser = (_USER_DATA*) m_UserDataArray[uid];
-	if (!pUser)
+	_USER_DATA* pUser = m_UserDataArray[uid];
+	if (pUser == nullptr)
 		return;
 
-	memset(pUser->m_id, 0, sizeof(pUser->m_id));
-	memset(pUser->m_Accountid, 0, sizeof(pUser->m_Accountid));
-
-	pUser->m_bZone = 0;
-	pUser->m_curx = 0;
-	pUser->m_curz = 0;
-	pUser->m_cury = 0;
-
-	pUser->m_bNation = 0;
-	pUser->m_bRace = 0;
-	pUser->m_sClass = 0;
-	pUser->m_bHairColor = 0;
-	pUser->m_bRank = 0;
-	pUser->m_bTitle = 0;
-	pUser->m_bLevel = 0;
-	pUser->m_iExp = 0;
-	pUser->m_iLoyalty = 0;
-	pUser->m_bFace = 0;
-	pUser->m_bCity = 0;
-	pUser->m_bKnights = 0;
-	//pUser->m_sClan = 0;
-	pUser->m_bFame = 0;
-	pUser->m_sHp = 0;
-	pUser->m_sMp = 0;
-	pUser->m_sSp = 0;
-	pUser->m_bStr = 0;
-	pUser->m_bSta = 0;
-	pUser->m_bDex = 0;
-	pUser->m_bIntel = 0;
-	pUser->m_bCha = 0;
-	pUser->m_iGold = 0;
-	pUser->m_sBind = -1;
-	pUser->m_iBank = 0;
-
-	// 스킬 초기화
-	for (int i = 0; i < 9; i++)
-		pUser->m_bstrSkill[i] = 0;
-
-	// 착용갯수 + 소유갯수(14+28=42)
-	for (int i = 0; i < SLOT_MAX + HAVE_MAX; i++)
-	{
-		pUser->m_sItemArray[i].nNum = 0;
-		pUser->m_sItemArray[i].sDuration = 0;
-		pUser->m_sItemArray[i].sCount = 0;
-	}
-
-	for (int i = 0; i < WAREHOUSE_MAX; i++)
-	{
-		pUser->m_sWarehouseArray[i].nNum = 0;
-		pUser->m_sWarehouseArray[i].sDuration = 0;
-		pUser->m_sWarehouseArray[i].sCount = 0;
-	}
-
-	pUser->m_bLogout = 0;
-	pUser->m_bWarehouse = 0;
-	pUser->m_dwTime = 0;
+	memset(pUser, 0, sizeof(_USER_DATA));
+	pUser->m_bAuthority = AUTHORITY_USER;
 }
 
 BOOL CDBAgent::LoadUserData(char* userid, int uid)
@@ -407,11 +351,13 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 
 		pTable = m_pMain->m_ItemtableArray.GetData(itemid);
 
-		if (pTable)
+		if (pTable != nullptr)
 		{
 			pUser->m_sItemArray[i].nNum = itemid;
 			pUser->m_sItemArray[i].sDuration = duration;
 			pUser->m_sItemArray[i].nSerialNum = serial;
+			pUser->m_sItemArray[i].byFlag = 0;
+			pUser->m_sItemArray[i].sTimeRemaining = 0;
 
 			if (count > ITEMCOUNT_MAX)
 			{
@@ -443,6 +389,8 @@ BOOL CDBAgent::LoadUserData(char* userid, int uid)
 			pUser->m_sItemArray[i].sDuration = 0;
 			pUser->m_sItemArray[i].sCount = 0;
 			pUser->m_sItemArray[i].nSerialNum = 0;
+			pUser->m_sItemArray[i].byFlag = 0;
+			pUser->m_sItemArray[i].sTimeRemaining = 0;
 
 			if (itemid > 0)
 			{

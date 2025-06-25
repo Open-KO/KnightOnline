@@ -1096,6 +1096,8 @@ BOOL CServerDlg::CreateNpcThread()
 
 					pNpc->m_byMoveType = NpcPosSet.m_ActType;
 					pNpc->m_byInitMoveType = NpcPosSet.m_ActType;
+					pNpc->m_byDirection = NpcPosSet.m_Direction;
+
 					bFindNpcTable = FALSE;
 
 					if (NpcPosSet.m_ActType >= 0 && NpcPosSet.m_ActType < 100)

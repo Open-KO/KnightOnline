@@ -3580,6 +3580,9 @@ BOOL CEbenezerDlg::LoadAllKnights()
 		strcpy(pKnights->m_strViceChief_2, CT2A(strViceChief_2));
 		strcpy(pKnights->m_strViceChief_3, CT2A(strViceChief_3));
 		pKnights->m_nMoney = atoi(CT2A(KnightsSet.m_Gold));
+		pKnights->m_sAllianceKnights = KnightsSet.m_AllianceKnights;
+		pKnights->m_sMarkVersion = KnightsSet.m_MarkVersion;
+		pKnights->m_sCape = KnightsSet.m_Cape;
 		pKnights->m_sDomination = KnightsSet.m_Domination;
 		pKnights->m_nPoints = KnightsSet.m_Points;
 		pKnights->m_byGrade = GetKnightsGrade(KnightsSet.m_Points);

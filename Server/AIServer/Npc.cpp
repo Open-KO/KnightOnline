@@ -1184,21 +1184,20 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 		//TRACE(_T("Npc - SerLive : CurrentNpc = %d\n"), m_pMain->m_CurrentNPC);
 	}
 
-	// NPC의 초기 보고 있는 방향,,
-	int degree = myrand(0, 360);
-	m_fDir = D3DXToRadian(degree);
-
 	// 해야 할 일 : Npc의 초기 방향,, 결정하기..
 	// Npc인 경우 초기 방향이 중요함으로써..
 	if (m_byMoveType == 3
 		&& m_sMaxPathCount == 2)
 	{
 		__Vector3 vS, vE, vDir;
+		float fDir;
 		vS.Set((float) m_PathList.pPattenPos[0].x, 0, (float) m_PathList.pPattenPos[0].z);
 		vE.Set((float) m_PathList.pPattenPos[1].x, 0, (float) m_PathList.pPattenPos[1].z);
 		vDir = vE - vS;
 		vDir.Normalize();
-		Yaw2D(vDir.x, vDir.z, m_fDir);
+		Yaw2D(vDir.x, vDir.z, fDir);
+
+		m_byDirection = (uint8_t) fDir;
 	}
 
 	// 처음에 죽어있다가 살아나는 몬스터
@@ -5472,7 +5471,7 @@ void CNpc::FillNpcInfo(char* temp_send, int& index, BYTE flag)
 	Setfloat(temp_send, m_fCurX, index);
 	Setfloat(temp_send, m_fCurZ, index);
 	Setfloat(temp_send, m_fCurY, index);
-	Setfloat(temp_send, m_fDir, index);
+	SetByte(temp_send, m_byDirection, index);
 
 	if (m_iHP <= 0)
 		SetByte(temp_send, 0x00, index);
@@ -5510,7 +5509,7 @@ void CNpc::SendNpcInfoAll(char* temp_send, int& index, int count)
 	Setfloat(temp_send, m_fCurX, index);
 	Setfloat(temp_send, m_fCurZ, index);
 	Setfloat(temp_send, m_fCurY, index);
-	Setfloat(temp_send, m_fDir, index);
+	SetByte(temp_send, m_byDirection, index);
 	SetByte(temp_send, m_tNpcType, index);
 	SetInt(temp_send, m_iSellingGroup, index);
 	SetDWORD(temp_send, m_iMaxHP, index);

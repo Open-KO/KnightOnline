@@ -7,6 +7,16 @@ struct _ITEM_DATA
 	int		nNum;		// item 번호
 	short	sDuration;	// item 내구력
 	short	sCount;		// item 갯수 or item 축복 속성에 해당 값
+	BYTE	byFlag;
+	WORD	sTimeRemaining;
+	int64_t	nSerialNum;	// item serial code
+};
+
+struct _WAREHOUSE_ITEM_DATA
+{
+	int		nNum;		// item 번호
+	short	sDuration;	// item 내구력
+	short	sCount;		// item 갯수 or item 축복 속성에 해당 값
 	int64_t	nSerialNum;	// item serial code
 };
 
@@ -29,6 +39,7 @@ struct _USER_DATA
 	BYTE	m_bLevel;						// 레벨
 	int		m_iExp;							// 경험치
 	int		m_iLoyalty;						// 로열티
+	int		m_iLoyaltyMonthly;				// 로열티
 	BYTE	m_bFace;						// 얼굴모양
 	BYTE	m_bCity;						// 소속도시
 	short	m_bKnights;						// 소속 기사단
@@ -49,9 +60,13 @@ struct _USER_DATA
 
 	BYTE    m_bstrSkill[9];					// 직업별 스킬
 	_ITEM_DATA m_sItemArray[HAVE_MAX + SLOT_MAX];	// 42*8 bytes
-	_ITEM_DATA m_sWarehouseArray[WAREHOUSE_MAX];	// 창고 아이템	192*8 bytes
+	_WAREHOUSE_ITEM_DATA m_sWarehouseArray[WAREHOUSE_MAX];	// 창고 아이템	192*8 bytes
 
 	BYTE	m_bLogout;						// 로그아웃 플래그
 	BYTE	m_bWarehouse;					// 창고 거래 했었나?
 	DWORD	m_dwTime;						// 플레이 타임...
+
+	BYTE	m_byPremiumType;
+	short	m_sPremiumTime;
+	int		m_iMannerPoint;
 };

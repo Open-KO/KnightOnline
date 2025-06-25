@@ -34,7 +34,10 @@ CKnightsSet::CKnightsSet(CDatabase* pdb)
 	m_Domination = 0;
 	m_Points = 0;
 	m_Stash = _T("");
-	m_nFields = 16;
+	m_MarkVersion = 0;
+	m_AllianceKnights = 0;
+	m_Cape = -1;
+	m_nFields = 19;
 	//}}AFX_FIELD_INIT
 	m_nDefaultType = snapshot;
 }
@@ -69,6 +72,9 @@ void CKnightsSet::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Date(pFX, _T("[CreateTime]"), m_CreateTime);
 	RFX_LongBinary(pFX, _T("[Mark]"), m_Mark);
 	RFX_Text(pFX, _T("[Stash]"), m_Stash);
+	RFX_Int(pFX, _T("[sMarkVersion]"), m_MarkVersion);
+	RFX_Int(pFX, _T("[sAllianceKnights]"), m_AllianceKnights);
+	RFX_Int(pFX, _T("[sCape]"), m_Cape);
 	//}}AFX_FIELD_MAP
 }
 

@@ -167,6 +167,13 @@ void CUser::Initialize()
 	while (!m_arUserEvent.empty())
 		m_arUserEvent.pop_back();
 
+	m_bIsPartyLeader = false;
+	m_byInvisibilityState = 0;
+	m_sDirection = 0;
+	m_bIsChicken = false;
+	m_byKnightsRank = 0;
+	m_byPersonalRank = 0;
+
 	CIOCPSocket2::Initialize();
 }
 
@@ -1476,13 +1483,12 @@ void CUser::Rotate(char* pBuf)
 {
 	int index = 0, send_index = 0;
 	char send_buff[256] = {};
-	short dir;
 
-	dir = GetShort(pBuf, index);
+	m_sDirection = GetShort(pBuf, index);
 
 	SetByte(send_buff, WIZ_ROTATE, send_index);
 	SetShort(send_buff, m_Sid, send_index);
-	SetShort(send_buff, dir, send_index);
+	SetShort(send_buff, m_sDirection, send_index);
 
 	m_pMain->Send_Region(send_buff, send_index, (int) m_pUserData->m_bZone, m_RegionX, m_RegionZ, nullptr, false);
 }
@@ -1747,7 +1753,7 @@ void CUser::SendMyInfo()
 	if (pMap == nullptr)
 		return;
 
-	int send_index = 0, i = 0, iLength = 0;
+	int send_index = 0;
 	char send_buff[2048] = {};
 
 	int x = 0, z = 0;
@@ -1808,8 +1814,7 @@ void CUser::SendMyInfo()
 
 	SetByte(send_buff, WIZ_MYINFO, send_index);
 	SetShort(send_buff, m_Sid, send_index);
-	SetShort(send_buff, strlen(m_pUserData->m_id), send_index);
-	SetString(send_buff, m_pUserData->m_id, strlen(m_pUserData->m_id), send_index);
+	SetString1(send_buff, m_pUserData->m_id, static_cast<BYTE>(strlen(m_pUserData->m_id)), send_index);
 
 	SetShort(send_buff, (WORD) m_pUserData->m_curx * 10, send_index);
 	SetShort(send_buff, (WORD) m_pUserData->m_curz * 10, send_index);
@@ -1827,6 +1832,7 @@ void CUser::SendMyInfo()
 	SetDWORD(send_buff, m_iMaxExp, send_index);
 	SetDWORD(send_buff, m_pUserData->m_iExp, send_index);
 	SetDWORD(send_buff, m_pUserData->m_iLoyalty, send_index);
+	SetDWORD(send_buff, m_pUserData->m_iLoyaltyMonthly, send_index);
 	SetByte(send_buff, m_pUserData->m_bCity, send_index);
 	SetShort(send_buff, m_pUserData->m_bKnights, send_index);
 	SetByte(send_buff, m_pUserData->m_bFame, send_index);
@@ -1836,18 +1842,22 @@ void CUser::SendMyInfo()
 
 	if (pKnights != nullptr)
 	{
-		iLength = strlen(pKnights->m_strName);
-		SetShort(send_buff, iLength, send_index);
-		SetString(send_buff, pKnights->m_strName, iLength, send_index);
+		SetShort(send_buff, pKnights->m_sAllianceKnights, send_index);
+		SetString1(send_buff, pKnights->m_strName, static_cast<BYTE>(strlen(pKnights->m_strName)), send_index);
 		SetByte(send_buff, pKnights->m_byGrade, send_index); // Knights grade
-		SetByte(send_buff, pKnights->m_byRanking, send_index); // Knights grade
+		SetByte(send_buff, pKnights->m_byRanking, send_index);
+		SetShort(send_buff, pKnights->m_sMarkVersion, send_index);
+		SetShort(send_buff, pKnights->m_sCape, send_index);
 		//TRACE(_T("sendmyinfo knights index = %d, kname=%hs, name=%hs\n") , iLength, pKnights->strName, m_pUserData->m_id);
 	}
 	else
 	{
-		SetShort(send_buff, 0, send_index);
-		SetByte(send_buff, 0, send_index);
-		SetByte(send_buff, 0, send_index);
+		SetShort(send_buff, 0, send_index);		// m_sAllianceKnights
+		SetByte(send_buff, 0, send_index);		// m_strName
+		SetByte(send_buff, 0, send_index);		// m_byGrade
+		SetByte(send_buff, 0, send_index);		// m_byRanking
+		SetShort(send_buff, 0, send_index);		// m_sMarkVerison
+		SetShort(send_buff, -1, send_index);	// m_sCape
 	}
 
 	SetShort(send_buff, m_iMaxHp, send_index);
@@ -1857,15 +1867,15 @@ void CUser::SendMyInfo()
 	SetShort(send_buff, m_sMaxWeight, send_index);
 	SetShort(send_buff, m_sItemWeight, send_index);
 	SetByte(send_buff, m_pUserData->m_bStr, send_index);
-	SetByte(send_buff, m_sItemStr, send_index);
+	SetByte(send_buff, static_cast<BYTE>(m_sItemStr), send_index);
 	SetByte(send_buff, m_pUserData->m_bSta, send_index);
-	SetByte(send_buff, m_sItemSta, send_index);
+	SetByte(send_buff, static_cast<BYTE>(m_sItemSta), send_index);
 	SetByte(send_buff, m_pUserData->m_bDex, send_index);
-	SetByte(send_buff, m_sItemDex, send_index);
+	SetByte(send_buff, static_cast<BYTE>(m_sItemDex), send_index);
 	SetByte(send_buff, m_pUserData->m_bIntel, send_index);
-	SetByte(send_buff, m_sItemIntel, send_index);
+	SetByte(send_buff, static_cast<BYTE>(m_sItemIntel), send_index);
 	SetByte(send_buff, m_pUserData->m_bCha, send_index);
-	SetByte(send_buff, m_sItemCham, send_index);
+	SetByte(send_buff, static_cast<BYTE>(m_sItemCham), send_index);
 	SetShort(send_buff, m_sTotalHit, send_index);
 	SetShort(send_buff, m_sTotalAc, send_index);
 //	SetShort( send_buff, m_sBodyAc+m_sItemAc, send_index );		<- 누가 이렇게 해봤어? --;	
@@ -1879,22 +1889,36 @@ void CUser::SendMyInfo()
 // 이거 나중에 꼭 주석해 --;
 	SetByte(send_buff, m_pUserData->m_bAuthority, send_index);
 //
-	for (i = 0; i < 9; i++)
+
+	SetByte(send_buff, m_byKnightsRank, send_index);
+	SetByte(send_buff, m_byPersonalRank, send_index);
+
+	for (int i = 0; i < 9; i++)
 		SetByte(send_buff, m_pUserData->m_bstrSkill[i], send_index);
 
-	for (i = 0; i < SLOT_MAX; i++)
+	for (int i = 0; i < SLOT_MAX; i++)
 	{
 		SetDWORD(send_buff, m_pUserData->m_sItemArray[i].nNum, send_index);
 		SetShort(send_buff, m_pUserData->m_sItemArray[i].sDuration, send_index);
 		SetShort(send_buff, m_pUserData->m_sItemArray[i].sCount, send_index);
+		SetByte(send_buff, m_pUserData->m_sItemArray[i].byFlag, send_index);
+		SetShort(send_buff, m_pUserData->m_sItemArray[i].sTimeRemaining, send_index);
 	}
 
-	for (i = 0; i < HAVE_MAX; i++)
+	for (int i = 0; i < HAVE_MAX; i++)
 	{
 		SetDWORD(send_buff, m_pUserData->m_sItemArray[SLOT_MAX + i].nNum, send_index);
 		SetShort(send_buff, m_pUserData->m_sItemArray[SLOT_MAX + i].sDuration, send_index);
 		SetShort(send_buff, m_pUserData->m_sItemArray[SLOT_MAX + i].sCount, send_index);
+		SetByte(send_buff, m_pUserData->m_sItemArray[SLOT_MAX + i].byFlag, send_index);
+		SetShort(send_buff, m_pUserData->m_sItemArray[SLOT_MAX + i].sTimeRemaining, send_index);
 	}
+
+	SetByte(send_buff, 0, send_index); // account status (0 = none, 1 = normal prem with expiry in hours, 2 = pc room)
+	SetByte(send_buff, m_pUserData->m_byPremiumType, send_index);
+	SetShort(send_buff, m_pUserData->m_sPremiumTime, send_index);
+	SetByte(send_buff, static_cast<BYTE>(m_bIsChicken), send_index);
+	SetDWORD(send_buff, m_pUserData->m_iMannerPoint, send_index);
 
 	Send(send_buff, send_index);
 
@@ -1904,8 +1928,7 @@ void CUser::SendMyInfo()
 
 	SetByte(ai_send_buff, AG_USER_INFO, ai_send_index);
 	SetShort(ai_send_buff, m_Sid, ai_send_index);
-	SetShort(ai_send_buff, strlen(m_pUserData->m_id), ai_send_index);
-	SetString(ai_send_buff, m_pUserData->m_id, strlen(m_pUserData->m_id), ai_send_index);
+	SetString2(ai_send_buff, m_pUserData->m_id, static_cast<short>(strlen(m_pUserData->m_id)), ai_send_index);
 	SetByte(ai_send_buff, m_pUserData->m_bZone, ai_send_index);
 	SetShort(ai_send_buff, m_iZoneIndex, ai_send_index);
 	SetByte(ai_send_buff, m_pUserData->m_bNation, ai_send_index);
@@ -12270,7 +12293,7 @@ void CUser::GetUserInfo(char* buff, int& buff_index)
 {
 	CKnights* pKnights = nullptr;
 
-	SetString2(buff, m_pUserData->m_id, static_cast<short>(strlen(m_pUserData->m_id)), buff_index);
+	SetString1(buff, m_pUserData->m_id, static_cast<BYTE>(strlen(m_pUserData->m_id)), buff_index);
 	SetByte(buff, m_pUserData->m_bNation, buff_index);
 	SetShort(buff, m_pUserData->m_bKnights, buff_index);
 	SetByte(buff, m_pUserData->m_bFame, buff_index);
@@ -12280,15 +12303,21 @@ void CUser::GetUserInfo(char* buff, int& buff_index)
 
 	if (pKnights != nullptr)
 	{
-		SetString2(buff, pKnights->m_strName, static_cast<short>(strlen(pKnights->m_strName)), buff_index);
+		SetShort(buff, pKnights->m_sAllianceKnights, buff_index);
+		SetString1(buff, pKnights->m_strName, static_cast<BYTE>(strlen(pKnights->m_strName)), buff_index);
 		SetByte(buff, pKnights->m_byGrade, buff_index);  // knights grade
 		SetByte(buff, pKnights->m_byRanking, buff_index);
+		SetShort(buff, pKnights->m_sMarkVersion, buff_index);
+		SetShort(buff, pKnights->m_sCape, buff_index);
 	}
 	else
 	{
-		SetShort(buff, 0, buff_index);
-		SetByte(buff, 0, buff_index);
-		SetByte(buff, 0, buff_index);
+		SetShort(buff, 0, buff_index);		// m_sAllianceKnights
+		SetByte(buff, 0, buff_index);		// m_strName
+		SetByte(buff, 0, buff_index);		// m_byGrade
+		SetByte(buff, 0, buff_index);		// m_byRanking
+		SetShort(buff, 0, buff_index);		// m_sMarkVerison
+		SetShort(buff, -1, buff_index);		// m_sCape
 	}
 
 	SetByte(buff, m_pUserData->m_bLevel, buff_index);
@@ -12301,24 +12330,23 @@ void CUser::GetUserInfo(char* buff, int& buff_index)
 	SetByte(buff, m_pUserData->m_bHairColor, buff_index);
 	SetByte(buff, m_bResHpType, buff_index);
 // 비러머글 수능...
-	SetByte(buff, m_bAbnormalType, buff_index);
+	SetDWORD(buff, m_bAbnormalType, buff_index);
 //
 	SetByte(buff, m_bNeedParty, buff_index);
 	SetByte(buff, m_pUserData->m_bAuthority, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[BREAST].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[BREAST].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[LEG].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[LEG].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[HEAD].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[HEAD].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[GLOVE].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[GLOVE].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[FOOT].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[FOOT].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[SHOULDER].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[SHOULDER].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[RIGHTHAND].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[RIGHTHAND].sDuration, buff_index);
-	SetDWORD(buff, m_pUserData->m_sItemArray[LEFTHAND].nNum, buff_index);
-	SetShort(buff, m_pUserData->m_sItemArray[LEFTHAND].sDuration, buff_index);
+
+	SetByte(buff, static_cast<BYTE>(m_bIsPartyLeader), buff_index);
+	SetByte(buff, m_byInvisibilityState, buff_index);
+	SetShort(buff, m_sDirection, buff_index);
+	SetByte(buff, static_cast<BYTE>(m_bIsChicken), buff_index);
+	SetByte(buff, m_pUserData->m_bRank, buff_index);
+	SetByte(buff, m_byKnightsRank, buff_index);
+	SetByte(buff, m_byPersonalRank, buff_index);
+
+	for (const int slot : { BREAST, LEG, HEAD, GLOVE, FOOT, SHOULDER, RIGHTHAND, LEFTHAND })
+	{
+		SetDWORD(buff, m_pUserData->m_sItemArray[slot].nNum, buff_index);
+		SetShort(buff, m_pUserData->m_sItemArray[slot].sDuration, buff_index);
+		SetShort(buff, m_pUserData->m_sItemArray[slot].byFlag, buff_index);
+	}
 }

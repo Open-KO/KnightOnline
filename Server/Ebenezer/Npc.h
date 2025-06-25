@@ -25,7 +25,6 @@ public:
 	float	m_fCurX;			// Current X Pos;
 	float	m_fCurY;			// Current Y Pos;
 	float	m_fCurZ;			// Current Z Pos;
-	float	m_fDir;				// NPC가 보고 있는 방향
 	short	m_sPid;				// MONSTER(NPC) Picture ID
 	short	m_sSize;			// MONSTER(NPC) Size
 	int		m_iWeapon_1;
@@ -41,15 +40,16 @@ public:
 								// 1 : NPC
 								// 2 : 각 입구,출구 NPC
 								// 3 : 경비병
-	int   m_iSellingGroup;		// ItemGroup
+	int		m_iSellingGroup;		// ItemGroup
 //	DWORD	m_dwStepDelay;		
 
-	short m_sRegion_X;			// region x position
-	short m_sRegion_Z;			// region z position
+	short	m_sRegion_X;			// region x position
+	short	m_sRegion_Z;			// region z position
 	BYTE	m_NpcState;			// NPC의 상태 - 살았다, 죽었다, 서있다 등등...
 	BYTE	m_byGateOpen;		// Gate Npc Status -> 1 : open 0 : close
 	short   m_sHitRate;			// 공격 성공률
 	BYTE    m_byObjectType;     // 보통은 0, object타입(성문, 레버)은 1
+	BYTE	m_byDirection;		// NPC가 보고 있는 방향
 
 	short   m_byEvent;		    // This is for the quest. 
 

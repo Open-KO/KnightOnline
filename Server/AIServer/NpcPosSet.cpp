@@ -37,9 +37,10 @@ CNpcPosSet::CNpcPosSet(CDatabase* pdb)
 	m_LimitMaxZ = 0;
 	m_NumNPC = 0;
 	m_RegTime = 0;
+	m_Direction = 0;
 	m_DotCnt = 0;
 	m_path = _T("");
-	m_nFields = 19;
+	m_nFields = 20;
 	//}}AFX_FIELD_INIT
 	m_nDefaultType = snapshot;
 }
@@ -76,6 +77,7 @@ void CNpcPosSet::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Long(pFX, _T("[LimitMaxZ]"), m_LimitMaxZ);
 	RFX_Byte(pFX, _T("[NumNPC]"), m_NumNPC);
 	RFX_Int(pFX, _T("[RegTime]"), m_RegTime);
+	RFX_Byte(pFX, _T("[byDirection]"), m_Direction);
 	RFX_Byte(pFX, _T("[DotCnt]"), m_DotCnt);
 	RFX_Text(pFX, _T("[path]"), m_path);
 	//}}AFX_FIELD_MAP

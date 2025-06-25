@@ -34,6 +34,9 @@ public:
 	CTime	m_CreateTime;
 	CLongBinary	m_Mark;
 	CString	m_Stash;
+	int		m_MarkVersion;
+	int		m_AllianceKnights;
+	int		m_Cape;
 	//}}AFX_FIELD
 
 

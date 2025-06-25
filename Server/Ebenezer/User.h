@@ -190,6 +190,13 @@ public:
 
 	short	m_sEvent[MAX_CURRENT_EVENT];				// 이미 실행된 이밴트 리스트들 :)
 
+	bool				m_bIsPartyLeader;
+	BYTE				m_byInvisibilityState;
+	short				m_sDirection;
+	bool				m_bIsChicken;
+	BYTE				m_byKnightsRank;
+	BYTE				m_byPersonalRank;
+
 public:
 	void GetUserInfo(char* buff, int& buff_index);
 	void RecvDeleteChar(char* pBuf);

@@ -44,6 +44,9 @@ void CKnights::InitializeValue()
 	memset(m_strViceChief_3, 0, sizeof(m_strViceChief_3));	// 부단장 3 (기사단에서는 사용하지 않음)
 	memset(m_Image, 0, sizeof(m_Image));
 	m_nMoney = 0;
+	m_sAllianceKnights = 0;
+	m_sMarkVersion = 0;
+	m_sCape = -1;
 	m_sDomination = 0;
 	m_nPoints = 0;
 

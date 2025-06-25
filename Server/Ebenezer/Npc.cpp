@@ -59,13 +59,13 @@ void CNpc::Initialize()
 
 	m_sRegion_X = 0;			// region x position
 	m_sRegion_Z = 0;			// region z position
-	m_fDir = 0.0f;				// npc의 방향,,
 	m_iWeapon_1 = 0;
 	m_iWeapon_2 = 0;
 	m_NpcState = NPC_LIVE;
 	m_byGateOpen = 1;
 	m_sHitRate = 0;
 	m_byObjectType = NORMAL_OBJECT;
+	m_byDirection = 0;			// npc의 방향,,
 
 	m_byEvent = -1;				//  This is for the event.
 }
@@ -300,7 +300,7 @@ void CNpc::GetNpcInfo(char* buff, int& buff_index)
 	SetShort(buff, m_sSize, buff_index);
 	SetDWORD(buff, m_iWeapon_1, buff_index);
 	SetDWORD(buff, m_iWeapon_2, buff_index);
-	SetString2(buff, m_strName, static_cast<short>(strlen(m_strName)), buff_index);
+	SetString1(buff, m_strName, static_cast<BYTE>(strlen(m_strName)), buff_index);
 	SetByte(buff, m_byGroup, buff_index);
 	SetByte(buff, m_byLevel, buff_index);
 	SetShort(buff, (WORD) m_fCurX * 10, buff_index);
@@ -308,4 +308,7 @@ void CNpc::GetNpcInfo(char* buff, int& buff_index)
 	SetShort(buff, (short) m_fCurY * 10, buff_index);
 	SetDWORD(buff, (int) m_byGateOpen, buff_index);
 	SetByte(buff, m_byObjectType, buff_index);
+	SetShort(buff, 0, buff_index); // Client: sIDK0
+	SetShort(buff, 0, buff_index); // Client: sIDK1
+	SetByte(buff, m_byDirection, buff_index);
 }
