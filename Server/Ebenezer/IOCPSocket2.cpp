@@ -402,31 +402,24 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 					}
 
 					int index = 0;
-					int recv_packet = (DWORD) GetDWORD((char*) pBuff, index);
+					DWORD recv_packet = GetDWORD((char*) pBuff, index);
 
 					//TRACE(_T("^^^ IOCPSocket2,, PullOutCore ,,, recv_val = %d ^^^\n"), recv_packet);
 
 					// 무시,,
-					if (m_Rec_val >= recv_packet)
+					if (recv_packet != 0
+						&& m_Rec_val > recv_packet)
 					{
-						if (recv_packet == 0)
-						{
-							m_Rec_val = recv_packet;
-						}
-						else
-						{
-							TRACE(_T("CIOCPSocket2::PutOutCore - recv_packet Error... sockid(%d), len=%d, recv_packet=%d \n"), m_Socket, length, recv_packet);
-							delete[] pBuff;
-							m_pBuffer->HeadIncrease(6 + length); //6: header 2+ end 2+ length 2 + cryption 4
-							goto cancelRoutine;
-						}
-					}
-					else
-					{
-						m_Rec_val = recv_packet;
+						TRACE(_T("CIOCPSocket2::PutOutCore - recv_packet Error... sockid(%d), len=%d, recv_packet=%d, prev=%d \n"), m_Socket, length, recv_packet, m_Rec_val);
+						delete[] pBuff;
+						m_pBuffer->HeadIncrease(10 + length); // 10: header (2) + end (2) + length (2) + cryption (4)
+						goto cancelRoutine;
 					}
 
+					m_Rec_val = recv_packet;
+
 					length -= 8;
+
 					if (length <= 0)
 					{
 						TRACE(_T("CIOCPSocket2::PutOutCore - length Error... sockid(%d), len=%d\n"), m_Socket, length);
@@ -464,12 +457,12 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 	if (m_CryptionFlag)
 	{
 		if (foundCore)
-			m_pBuffer->HeadIncrease(10 + length); // 6: header 2+ end 2+ length 2 + cryption 4
+			m_pBuffer->HeadIncrease(10 + length); // 10: header (2) + end (2) + length (2) + cryption (4)
 	}
 	else
 	{
 		if (foundCore)
-			m_pBuffer->HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
+			m_pBuffer->HeadIncrease(6 + length); // 6: header (2) + end (2) + length(2)
 	}
 
 	delete[] pTmp;
