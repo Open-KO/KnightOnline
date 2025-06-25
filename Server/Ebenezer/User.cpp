@@ -1843,6 +1843,7 @@ void CUser::SendMyInfo()
 	if (pKnights != nullptr)
 	{
 		SetShort(send_buff, pKnights->m_sAllianceKnights, send_index);
+		SetByte(send_buff, pKnights->m_byFlag, send_index);
 		SetString1(send_buff, pKnights->m_strName, static_cast<BYTE>(strlen(pKnights->m_strName)), send_index);
 		SetByte(send_buff, pKnights->m_byGrade, send_index); // Knights grade
 		SetByte(send_buff, pKnights->m_byRanking, send_index);
@@ -1853,6 +1854,7 @@ void CUser::SendMyInfo()
 	else
 	{
 		SetShort(send_buff, 0, send_index);		// m_sAllianceKnights
+		SetByte(send_buff, 0, send_index);		// m_byFlag
 		SetByte(send_buff, 0, send_index);		// m_strName
 		SetByte(send_buff, 0, send_index);		// m_byGrade
 		SetByte(send_buff, 0, send_index);		// m_byRanking
