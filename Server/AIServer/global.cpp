@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "global.h"
 
+#include <shared/StringConversion.h>
+
 BOOL CheckGetVarString(int nLength, char* tBuf, char* sBuf, int nSize, int& index)
 {
 	int nRet = GetVarString(tBuf, sBuf, nSize, index);
@@ -253,21 +255,23 @@ BOOL CheckMaxValueReturn(DWORD& dest, DWORD add)
 
 void LogFileWrite(CString logstr)
 {
-	CString ProgPath, LogFileName;
+	CString LogFileName;
+	LogFileName.Format(_T("%s\\AIServer.log"), GetProgPath().GetString());
+
 	CFile file;
-	int loglength;
+	if (!file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+		return;
 
-	ProgPath = GetProgPath();
-	loglength = logstr.GetLength();
+	file.SeekToEnd();
 
-	LogFileName.Format(_T("%s\\AIServer.log"), ProgPath.GetString());
+#if defined(_UNICODE)
+	const std::string utf8 = WideToUtf8(logstr.GetString(), static_cast<size_t>(logstr.GetLength()));
+	file.Write(utf8.c_str(), static_cast<int>(utf8.size()));
+#else
+	file.Write(logstr, logstr.GetLength());
+#endif
 
-	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-	{
-		file.SeekToEnd();
-		file.Write(logstr, loglength * sizeof(TCHAR));
-		file.Close();
-	}
+	file.Close();
 }
 
 void TimeTrace(const TCHAR* pMsg)

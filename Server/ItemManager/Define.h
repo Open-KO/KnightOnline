@@ -2,9 +2,8 @@
 #define _DEFINE_H
 
 #include <shared/globals.h>
+#include <shared/StringConversion.h>
 
-#define MAX_ID_SIZE			20
-#define MAX_PW_SIZE			12
 #define MAX_ITEM			28
 
 ////////////////////////////////////////////////////////////
@@ -59,9 +58,6 @@ typedef union {
 	BYTE		b[4];
 } MYDWORD;
 
-
-// DEFINE MACRO PART...
-#define BufInc(x) (x)++;(x) %= SOCKET_BUF_SIZE;
 
 // DEFINE Shared Memory Queue Flag
 
@@ -193,21 +189,23 @@ inline CString GetProgPath()
 
 inline void LogFileWrite(LPCTSTR logstr)
 {
-	CString ProgPath, LogFileName;
+	CString LogFileName;
+	LogFileName.Format(_T("%s\\ItemManager.log"), GetProgPath().GetString());
+
 	CFile file;
-	int loglength;
+	if (!file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+		return;
 
-	ProgPath = GetProgPath();
-	loglength = static_cast<int>(_tcslen(logstr));
+	file.SeekToEnd();
 
-	LogFileName.Format(_T("%s\\ItemManager.log"), ProgPath.GetString());
+#if defined(_UNICODE)
+	const std::string utf8 = WideToUtf8(logstr, wcslen(logstr));
+	file.Write(utf8.c_str(), static_cast<int>(utf8.size()));
+#else
+	file.Write(logstr, strlen(logstr));
+#endif
 
-	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-	{
-		file.SeekToEnd();
-		file.Write(logstr, loglength * sizeof(TCHAR));
-		file.Close();
-	}
+	file.Close();
 }
 
 inline int DisplayErrorMsg(SQLHANDLE hstmt)

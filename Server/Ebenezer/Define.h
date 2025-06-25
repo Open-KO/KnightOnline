@@ -3,6 +3,7 @@
 
 #include <mmsystem.h>
 #include <shared/globals.h>
+#include <shared/StringConversion.h>
 
 constexpr int MAX_USER				= 3000;
 
@@ -428,21 +429,23 @@ inline CString GetProgPath()
 
 inline void LogFileWrite(LPCTSTR logstr)
 {
-	CString ProgPath, LogFileName;
+	CString LogFileName;
+	LogFileName.Format(_T("%s\\Ebenezer.log"), GetProgPath().GetString());
+
 	CFile file;
-	int loglength;
+	if (!file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
+		return;
 
-	ProgPath = GetProgPath();
-	loglength = static_cast<int>(_tcslen(logstr));
+	file.SeekToEnd();
 
-	LogFileName.Format(_T("%s\\Ebenezer.log"), ProgPath.GetString());
+#if defined(_UNICODE)
+	const std::string utf8 = WideToUtf8(logstr, wcslen(logstr));
+	file.Write(utf8.c_str(), static_cast<int>(utf8.size()));
+#else
+	file.Write(logstr, strlen(logstr));
+#endif
 
-	if (file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-	{
-		file.SeekToEnd();
-		file.Write(logstr, loglength * sizeof(TCHAR));
-		file.Close();
-	}
+	file.Close();
 }
 
 inline void DisplayErrorMsg(SQLHANDLE hstmt)
