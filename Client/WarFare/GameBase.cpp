@@ -604,3 +604,25 @@ CPlayerBase* CGameBase::CharacterGetByID(int iID, bool bFromAlive)
 	return s_pOPMgr->CharacterGetByID(iID, bFromAlive);
 }
 
+std::string CGameBase::FormatNumber(int iNumber)
+{
+	char szBuff[32] = "";
+	sprintf(szBuff, "%d", iNumber);
+
+	int iBuffLength = strlen(szBuff);
+	int iNumberLength = iBuffLength + (iBuffLength / 3) - (iBuffLength % 3 == 0 ? 1 : 0);
+
+	std::string szNumber(iNumberLength, '\0');
+
+	for (int i = iBuffLength - 1, k = iNumberLength - 1; i >= 0; i--, k--)
+	{
+		//change separator with respect to language tail
+		if ((iBuffLength - 1 - i) % 3 == 0 && (iBuffLength - 1 != i))
+			szNumber[k--] = ',';
+
+		szNumber[k] = szBuff[i];
+	}
+
+	return szNumber;
+}
+

@@ -193,27 +193,15 @@ void CUIInventory::Open(e_InvenState eIS)
 
 void CUIInventory::GoldUpdate()
 {
-	CN3UIString* pStatic = (CN3UIString* )GetChildByID("text_gold"); __ASSERT(pStatic, "NULL UI Component!!");
-	if(pStatic)
+	CN3UIString* pUITextGold;
+
+	N3_VERIFY_UI_COMPONENT(pUITextGold, (CN3UIString*) GetChildByID("text_gold"));
+
+	if (pUITextGold != nullptr)
 	{
-		char szBuff[32] = "";
-		sprintf(szBuff, "%d", CGameBase::s_pPlayer->m_InfoExt.iGold);
-		int buffLength = strlen(szBuff);
-		int goldLength = buffLength + (buffLength / 3) - (buffLength % 3 == 0 ? 1 : 0);
-
-		char szGold[42] = "";
-		szGold[goldLength] = '\0';
-
-		for (int i = buffLength - 1, k = goldLength - 1; i >= 0; i--, k--)
-		{
-			if ((buffLength - 1 - i) % 3 == 0 && (buffLength - 1 != i))
-				szGold[k--] = ',';
-
-			szGold[k] = szBuff[i];
-		}
-
-
-		pStatic->SetString(szGold);
+		std::string szTemp;
+		szTemp = CGameBase::FormatNumber(CGameBase::s_pPlayer->m_InfoExt.iGold);
+		pUITextGold->SetString(szTemp);
 	}
 }
 

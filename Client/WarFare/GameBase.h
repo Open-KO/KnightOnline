@@ -50,7 +50,8 @@ public:
 
 	class CPlayerBase*	CharacterGetByID(int iID, bool bFromAlive);
 	bool				IsValidCharacter(CPlayerBase* pCharacter);
-	
+	static std::string FormatNumber(int iNumber);
+
 	CGameBase();
 	virtual ~CGameBase();
 };
