@@ -22,6 +22,7 @@
 #include "UIManager.h"
 
 #include "N3Texture.h"
+#include "N3UIButton.h"
 #include "N3UIDBCLButton.h"
 #include <algorithm>
 
@@ -49,7 +50,6 @@ CUILevelGuide::CUILevelGuide()
 	m_pButtonDown = nullptr;
 	m_pButtonCancel = nullptr;
 
-	m_iUserLevel = 0;
 	m_iSearchLevel = 0;
 	m_iCurrentPage = 1;
 
@@ -87,8 +87,7 @@ void CUILevelGuide::Release()
 	m_pButtonDown = nullptr;
 	m_pButtonCancel = nullptr;
 
-	m_iUserLevel = CGameBase::s_pPlayer->m_InfoBase.iLevel;
-	m_iSearchLevel = m_iUserLevel;
+	m_iSearchLevel = 0;
 	m_iCurrentPage = 1;
 
 	for (int i = 0; i < 10; i++)
@@ -101,7 +100,8 @@ void CUILevelGuide::Release()
 
 bool CUILevelGuide::Load(HANDLE hFile)
 {
-	if (CN3UIBase::Load(hFile) == false) return false;
+	if (!CN3UIBase::Load(hFile)) 
+		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pEditLevel, (CN3UIEdit*) GetChildByID("edit_level"));
 	N3_VERIFY_UI_COMPONENT(m_pScrollGuide2, (CN3UIScrollBar*) GetChildByID("scroll_guide2"));
@@ -157,14 +157,14 @@ void CUILevelGuide::LoadContent()
 
 	int iCounter = 0;
 
-	size_t TableSize = CGameBase::s_pTbl_Quest_Content.GetSize();
+	size_t TableSize = CGameBase::s_pTbl_QuestContent.GetSize();
 
 	std::fill(std::begin(m_saQuestTitle), std::end(m_saQuestTitle), "");
 	std::fill(std::begin(m_saQuestText), std::end(m_saQuestText), "");
 
 	for (size_t i = 0; i < TableSize && iCounter < m_iContentCount; i++)
 	{
-		__TABLE_QUEST_CONTENT* pQuestContent = CGameBase::s_pTbl_Quest_Content.GetIndexedData(i);
+		__TABLE_QUEST_CONTENT* pQuestContent = CGameBase::s_pTbl_QuestContent.GetIndexedData(i);
 
 		if (pQuestContent == nullptr)
 			continue;
@@ -214,23 +214,12 @@ void CUILevelGuide::LoadContent()
 	}
 
 	if (m_pTextPage != nullptr)
-	{
-		std::string strCurrentPage = std::to_string(m_iCurrentPage);
-		m_pTextPage->SetString(strCurrentPage);
-	}
+		m_pTextPage->SetStringAsInt(m_iCurrentPage);
 
 
 
 }
 
-bool CUILevelGuide::IsNumber(const std::string& s)
-{
-	// empty string
-	if (s.empty()) return false;
-
-	// check is only digits
-	return std::all_of(s.begin(), s.end(), ::isdigit);
-}
 
 void CUILevelGuide::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pTextGuide)
 {
@@ -282,44 +271,40 @@ bool CUILevelGuide::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if (pSender == (CN3UIBase*) m_pButtonCancel)
+		if (pSender == m_pButtonCancel)
 		{
-			this->SetVisible(false);
+			SetVisible(false);
 			return true;
 		}
-		else if (pSender == (CN3UIBase*) m_pButtonUp)
+		else if (pSender == m_pButtonUp)
 		{
 			m_iCurrentPage++;
 			LoadContent();
 			return true;
 		}
-		else if (pSender == (CN3UIBase*) m_pButtonDown)
+		else if (pSender == m_pButtonDown)
 		{
 			m_iCurrentPage--;
 			LoadContent();
 			return true;
 		}
-		else if (pSender == (CN3UIBase*) m_pButtonCheck) //search button
+		else if (pSender == m_pButtonCheck) //search button
 		{
 
-			std::string strSearchLevel;
+			std::string szSearchLevel;
 
 			if (m_pEditLevel != nullptr)
 			{
-				strSearchLevel = m_pEditLevel->GetString();
+				szSearchLevel = m_pEditLevel->GetString();
 				//kill focus edit, after user press search button
 				m_pEditLevel->KillFocus();
 			}
 
-			if (IsNumber(strSearchLevel))
-			{
-				m_iSearchLevel = std::stoi(strSearchLevel);
-				m_iCurrentPage = 1;
-				LoadContent();
-				return true;
-			}
-
-			return false;
+			
+			m_iSearchLevel = std::atoi(szSearchLevel.c_str());
+			m_iCurrentPage = 1;
+			LoadContent();
+			return true;
 		}
 	}
 	else if (dwMsg == UIMSG_SCROLLBAR_POS)
@@ -328,17 +313,17 @@ bool CUILevelGuide::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		CN3UIScrollBar* pScroll = nullptr;
 		CN3UIString* pText = nullptr;
 
-		if (pSender == (CN3UIBase*) m_pScrollGuide0)
+		if (pSender == m_pScrollGuide0)
 		{
 			pScroll = m_pScrollGuide0;
 			pText = m_pTextGuide0;
 		}
-		else if (pSender == (CN3UIBase*) m_pScrollGuide1)
+		else if (pSender == m_pScrollGuide1)
 		{
 			pScroll = m_pScrollGuide1;
 			pText = m_pTextGuide1;
 		}
-		else if (pSender == (CN3UIBase*) m_pScrollGuide2)
+		else if (pSender == m_pScrollGuide2)
 		{
 			pScroll = m_pScrollGuide2;
 			pText = m_pTextGuide2;
@@ -358,7 +343,7 @@ bool CUILevelGuide::OnKeyPress(int iKey)
 	switch (iKey)
 	{
 		case DIK_ESCAPE:
-			this->SetVisible(false);
+			SetVisible(false);
 			return true;
 		case DIK_TAB:
 			if (m_pEditLevel)
@@ -376,8 +361,8 @@ bool CUILevelGuide::OnKeyPress(int iKey)
 			}
 			return true;
 		case DIK_RETURN:
-			if (m_pEditLevel && IsNumber(m_pEditLevel->GetString()))
-				m_iSearchLevel = std::stoi(m_pEditLevel->GetString());
+			if (m_pEditLevel != nullptr)
+				m_iSearchLevel = std::atoi(m_pEditLevel->GetString().c_str());
 			LoadContent();
 			return true;
 	}
