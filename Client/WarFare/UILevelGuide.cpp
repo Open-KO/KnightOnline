@@ -126,24 +126,25 @@ bool CUILevelGuide::Load(HANDLE hFile)
 void CUILevelGuide::LoadContent()
 {
 
-	int iSearchLevel;
+	int iSearchLevel, iUserLevel;
 
 	//if user entered search level use it, else use user's current level
-	if (m_iSearchLevel == 0)
+	if (m_iSearchLevel <= 0)
 		iSearchLevel = CGameBase::s_pPlayer->m_InfoBase.iLevel;
 	else
 		iSearchLevel = m_iSearchLevel;
+	
+	//officially shows searched level
+	if(m_pTextLevel != nullptr)
+	m_pTextLevel->SetStringAsInt(iSearchLevel);
 
 	//entered level cannot be bigger than max, cannot be smaller than min level
 	if (iSearchLevel < 1) iSearchLevel = 1;
 	if (iSearchLevel > m_iMaxLevel) iSearchLevel = m_iMaxLevel;
 
-	//update edit's text with searched level.
+	//set focus to edit on open
 	if (m_pEditLevel != nullptr)
-	{
-		std::string strLevel = std::to_string(iSearchLevel);
-		m_pEditLevel->SetString(strLevel.c_str());
-	}
+		m_pEditLevel->SetFocus();
 
 	//search by starting 5 levels lower and end 5 levels higher than user level.
 	int iLowerLevelLimit = iSearchLevel - m_iRangeSearch;
@@ -345,6 +346,7 @@ bool CUILevelGuide::OnKeyPress(int iKey)
 		case DIK_ESCAPE:
 			SetVisible(false);
 			return true;
+			/* Not official behavior, focusing edit with tab key
 		case DIK_TAB:
 			if (m_pEditLevel)
 			{
@@ -360,11 +362,14 @@ bool CUILevelGuide::OnKeyPress(int iKey)
 
 			}
 			return true;
+			*/
+			/* Not official behavior, searching with enter key
 		case DIK_RETURN:
 			if (m_pEditLevel != nullptr)
 				m_iSearchLevel = std::atoi(m_pEditLevel->GetString().c_str());
 			LoadContent();
 			return true;
+			*/
 	}
 	return CN3UIBase::OnKeyPress(iKey);
 }
