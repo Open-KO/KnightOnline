@@ -12,6 +12,7 @@
 #include "PlayerMySelf.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
+#include "UILevelGuide.h"
 #include "N3UIDBCLButton.h"
 
 #include <N3Base/N3UIProgress.h>
@@ -586,8 +587,13 @@ bool CUIStateBar::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		}
 		else if (pSender == (CN3UIBase*)m_pBtn_Quest)
 		{
-			//TODO: Show Leveling Guide UI (Quest Helper)
-			return false;
+			if (CGameProcedure::s_pProcMain->m_pUILevelGuide != nullptr)
+			{
+				bool bVisible = CGameProcedure::s_pProcMain->m_pUILevelGuide->IsVisible();
+				CGameProcedure::s_pProcMain->m_pUILevelGuide->SetVisible(!bVisible);
+			}
+
+			return true;
 		}
 		else if (pSender == (CN3UIBase*)m_pBtn_Power)
 		{

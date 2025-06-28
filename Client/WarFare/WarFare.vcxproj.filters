@@ -291,6 +291,9 @@
     <ClCompile Include="UILogin_1298.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UILevelGuide.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="N3UIWndBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -624,6 +627,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameProcLogIn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UILevelGuide.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
