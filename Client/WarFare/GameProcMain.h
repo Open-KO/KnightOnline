@@ -59,6 +59,7 @@ public:
 	class CUITradeBBSEditDlg*	m_pUITradeBBSEdit;				// 상거래 게시물 설명
 
 	class CUIUpgradeSelect*		m_pUIUpgradeSelect;
+	class CUILevelGuide*		m_pUILevelGuide;
 
 	class CN3Shape*				m_pTargetSymbol;				// 플레이어가 타겟으로 잡은 캐릭터의 위치위에 그리면 된다..
 
