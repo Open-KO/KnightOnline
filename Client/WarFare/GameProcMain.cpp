@@ -4172,10 +4172,10 @@ void CGameProcMain::InitUI()
 	m_pUILevelGuide->Init(s_pUIMgr);
 	m_pUILevelGuide->LoadFromFile(pTbl->szLvlGuide);
 	m_pUILevelGuide->SetVisibleWithNoSound(false);
-	m_pUILevelGuide->SetStyle(UISTYLE_ALWAYSTOP | UISTYLE_MODAL);
+	m_pUILevelGuide->SetStyle(UISTYLE_POS_RIGHT);
 	rc = m_pUILevelGuide->GetRegion();
-	iX = (iW - (rc.right - rc.left)) / 2;
-	iY = (iH - (rc.bottom - rc.top)) / 2;
+	iX = iW - (rc.right - rc.left);
+	iY = 10; //same pos with inventory
 	m_pUILevelGuide->SetPos(iX, iY);
 
 }
