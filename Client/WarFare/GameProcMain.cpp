@@ -3299,7 +3299,7 @@ bool CGameProcMain::MsgRecv_ItemMove(Packet& pkt)
 	{
 		pInfoExt->iAttack = pkt.read<int16_t>();
 		pInfoExt->iGuard =	pkt.read<int16_t>();
-		pInfoExt->iWeightMax = static_cast<int>(pkt.read<uint16_t>());
+		pInfoExt->iWeightMax = pkt.read<int16_t>();
 		
 		pInfoBase->iHPMax = pkt.read<int16_t>();
 		pInfoExt->iMSPMax = pkt.read<int16_t>();
@@ -3655,8 +3655,8 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 		pInfoExt->iMSPMax		= pkt.read<int16_t>();
 		pInfoExt->iMSP			= pkt.read<int16_t>();
 
-		pInfoExt->iWeightMax	= static_cast<int>(pkt.read<uint16_t>());
-		pInfoExt->iWeight		= static_cast<int>(pkt.read<uint16_t>());
+		pInfoExt->iWeightMax	= pkt.read<int16_t>();
+		pInfoExt->iWeight		= pkt.read<int16_t>();
 
 		m_pUIVar->UpdateAllStates(&(s_pPlayer->m_InfoBase), &(s_pPlayer->m_InfoExt)); // 모든 정보 업데이트..
 
