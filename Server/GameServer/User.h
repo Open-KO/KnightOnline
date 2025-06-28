@@ -542,6 +542,9 @@ public:
 	void SendDebugString(const char* pString);
 	int NumEmptySlots(void);
 
+	uint8_t CheckPromotionEligible();
+	bool GivePromotionQuest();
+	bool PromoteUser();
 	bool CheckClass(int16_t class1, int16_t class2 = -1, int16_t class3 = -1, int16_t class4 = -1, int16_t class5 = -1, int16_t class6 = -1);
 	bool GiveItem(uint32_t nItemID, uint16_t sCount = 1, bool send_packet = true, uint32_t Time = 0);
 	bool RobItem(uint32_t nItemID, uint32_t sCount = 1);
@@ -888,7 +891,6 @@ public:
 	bool RunZoneQuestScript(int32_t iEventID);
 
 	bool PromoteUserNovice();
-	bool PromoteUser();
 	void PromoteClan(ClanTypeFlag byFlag);
 
 	// Attack/zone checks
@@ -1300,4 +1302,17 @@ public:
 	DECLARE_LUA_FUNCTION(CheckMonsterChallengeUserCount) {
 		LUA_RETURN(LUA_GET_INSTANCE()->GetMonsterChallengeUserCount());
 	}
+
+	DECLARE_LUA_FUNCTION(CheckPromotionEligible)
+	{	
+		
+		LUA_RETURN(LUA_GET_INSTANCE()->CheckPromotionEligible());
+	}
+
+	DECLARE_LUA_FUNCTION(GivePromotionQuest)
+	{
+
+		LUA_RETURN(LUA_GET_INSTANCE()->GivePromotionQuest());
+	}
+
 };

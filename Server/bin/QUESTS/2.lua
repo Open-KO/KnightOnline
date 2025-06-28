@@ -237,26 +237,113 @@ elseif nEventID == 3002 then
 	end
 	end
 elseif nEventID == 6010 then
-	pUser:SendDebugString("Unhandled LOGIC command 'CHECK_PROMOTION_ELIGIBLE'."); -- unhandled logic command (CHECK_PROMOTION_ELIGIBLE)
-	if false then
-	pUser:SelectMsg(6000, 501, 6030, 502, 6040, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	local result = pUser:CheckPromotionEligible();
+	if result == 1 then
+	pUser:SelectMsg(9000, 501, 6030, 502, 6040, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 2 then
+	pUser:NpcSay(9001, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 3 then 
+	pUser:NpcSay(9006, -1, -1, -1, -1, -1, -1, -1);
 	end
+	do return; end
 elseif nEventID == 6011 then
-	pUser:SendDebugString("Unhandled LOGIC command 'CHECK_PROMOTION_ELIGIBLE'."); -- unhandled logic command (CHECK_PROMOTION_ELIGIBLE)
-	if false then
+	local result = pUser:CheckPromotionEligible();
+	if result == 1 then
 	pUser:SelectMsg(7000, 501, 6030, 502, 6040, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 2 then
+	pUser:NpcSay(7001, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 3 then 
+	pUser:NpcSay(7006, -1, -1, -1, -1, -1, -1, -1);
 	end
-elseif nEventID == 6013 then
-	pUser:SendDebugString("Unhandled LOGIC command 'CHECK_PROMOTION_ELIGIBLE'."); -- unhandled logic command (CHECK_PROMOTION_ELIGIBLE)
-	if false then
+	do return; end
+elseif nEventID == 6012 then --warrior master check eligible
+	local result = pUser:CheckPromotionEligible();
+	if result == 1 then
+	pUser:SelectMsg(6000, 501, 6030, 502, 6040, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 2 then
+	pUser:NpcSay(6001, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 3 then 
+	pUser:NpcSay(6006, -1, -1, -1, -1, -1, -1, -1);
+	end
+	do return; end
+elseif nEventID == 6013 then --mage master check eligible
+	local result = pUser:CheckPromotionEligible();
+	if result == 1 then
 	pUser:SelectMsg(8000, 501, 6030, 502, 6040, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 2 then
+	pUser:NpcSay(8001, -1, -1, -1, -1, -1, -1, -1);
+	elseif result == 3 then 
+	pUser:NpcSay(8006, -1, -1, -1, -1, -1, -1, -1);
 	end
+	do return; end
 elseif nEventID == 6030 then
-	pUser:SendDebugString("Unknown EXEC command 'GIVE_PROMOTION_QUEST'."); -- unknown execute command (GIVE_PROMOTION_QUEST)
+	if pUser:isNovicePriest() == true then
+	pUser:SelectMsg(9002, 1, 6031, 2, 6032, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+    elseif 	pUser:isNoviceMage() == true then
+	pUser:SelectMsg(8002, 1, 6031, 2, 6032, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceRogue() == true then
+	pUser:SelectMsg(7002, 1, 6031, 2, 6032, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceWarrior() == true then
+	pUser:SelectMsg(6002, 1, 6031, 2, 6032, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	end
+	do return; end
+elseif nEventID == 6031 then -- accept master quest
+	pUser:GivePromotionQuest();
+	if pUser:isNovicePriest() == true then
+	pUser:NpcSay(9011, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceMage() == true then
+	pUser:NpcSay(8011, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceRogue() == true then
+	pUser:NpcSay(7011, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceWarrior() == true then
+	pUser:NpcSay(6011, -1, -1, -1, -1, -1, -1, -1);
+	end
+	do return; end
+elseif nEventID == 6032 then -- dont accept priest master quest 
+	if pUser:isNovicePriest() == true then
+	pUser:NpcSay(9003, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceMage() == true then
+	pUser:NpcSay(8003, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceRogue() == true then
+	pUser:NpcSay(7003, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceWarrior() == true then
+	pUser:NpcSay(6003, -1, -1, -1, -1, -1, -1, -1);
+	end
 	do return; end
 elseif nEventID == 6040 then
-	pUser:SendDebugString("Unknown EXEC command 'PROMOTE_USER'."); -- unknown execute command (PROMOTE_USER)
+	if pUser:isNovicePriest() == true then
+	pUser:SelectMsg(9004, 1, 6041, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceMage() == true then
+	pUser:SelectMsg(8004, 1, 6041, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceRogue() == true then
+	pUser:SelectMsg(7004, 1, 6041, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	elseif 	pUser:isNoviceWarrior() == true then
+	pUser:SelectMsg(6004, 1, 6041, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	end
 	do return; end
+elseif nEventID == 6041 then
+	local result = pUser:PromoteUser();
+	if result == true then --master success
+		if pUser:isNovicePriest() == true then
+		pUser:NpcSay(9005, -1, -1, -1, -1, -1, -1, -1);
+		elseif 	pUser:isNoviceMage() == true then
+		pUser:NpcSay(8005, -1, -1, -1, -1, -1, -1, -1);
+		elseif 	pUser:isNoviceRogue() == true then
+		pUser:NpcSay(7005, -1, -1, -1, -1, -1, -1, -1);
+		elseif 	pUser:isNoviceWarrior() == true then
+		pUser:NpcSay(6005, -1, -1, -1, -1, -1, -1, -1);
+		end
+	elseif result == false then -- fail
+		if pUser:isNovicePriest() == true then
+		pUser:NpcSay(9007, -1, -1, -1, -1, -1, -1, -1);
+		elseif 	pUser:isNoviceMage() == true then
+		pUser:NpcSay(8007, -1, -1, -1, -1, -1, -1, -1);
+		elseif 	pUser:isNoviceRogue() == true then
+		pUser:NpcSay(7007, -1, -1, -1, -1, -1, -1, -1);
+		elseif 	pUser:isNoviceWarrior() == true then
+		pUser:NpcSay(6007, -1, -1, -1, -1, -1, -1, -1);
+		end
+	end 
 	do return; end
 elseif nEventID == 8001 then
 	pUser:SendDebugString("Unknown LOGIC command 'CHECK_NOEXIST_ITEM'.");
@@ -704,7 +791,7 @@ elseif nEventID == 10587 then
 	end
 elseif nEventID == 11001 then
 	if pUser:CheckClass(201, 205, 206, -1, -1, -1) then
-	pUser:SelectMsg(11008, 11001, 6010, 10000, 11050, 17010, 17027, 17070, 17070, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+	pUser:SelectMsg(11008, 11001, 6012, 10000, 11050, 17010, 17027, 17070, 17070, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
 	end
 	if not pUser:CheckClass(201, 205, 206, -1, -1, -1) then
 	pUser:SelectMsg(17073, 17070, 17070, 35664, 35664, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
