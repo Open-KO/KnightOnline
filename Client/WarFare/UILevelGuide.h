@@ -35,12 +35,10 @@ protected:
 	const int m_iMaxLevel = 80;
 	const int m_iRangeSearch = 5; //ex: searches 5 levels up and down
 	static constexpr int m_iContentCount = 20; //number of contents, equal to m_saQuestTitle,m_saQuestText size
-	int m_iUserLevel;
 	int m_iSearchLevel;
 	int m_iCurrentPage;
 	std::string m_saQuestTitle[m_iContentCount];
 	std::string m_saQuestText[m_iContentCount];
-	static bool IsNumber(const std::string& s);
 	void SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pTextGuide);
 public:
 	virtual bool	Load(HANDLE hFile);

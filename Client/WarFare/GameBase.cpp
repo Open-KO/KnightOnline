@@ -28,7 +28,7 @@ CN3TableBase<__TABLE_EXCHANGE_QUEST>	CGameBase::s_pTbl_Exchange_Quest;
 CN3TableBase<__TABLE_FX>				CGameBase::s_pTbl_FXSource;
 CN3TableBase<__TABLE_QUEST_MENU>		CGameBase::s_pTbl_QuestMenu;
 CN3TableBase<__TABLE_QUEST_TALK>		CGameBase::s_pTbl_QuestTalk;
-CN3TableBase<__TABLE_QUEST_CONTENT>		CGameBase::s_pTbl_Quest_Content;
+CN3TableBase<__TABLE_QUEST_CONTENT>		CGameBase::s_pTbl_QuestContent;
 
 
 CN3WorldManager*	CGameBase::s_pWorldMgr = NULL;		// 월드 매니져..
@@ -58,7 +58,7 @@ void CGameBase::StaticMemberInit()
 
 	szFN = "Data\\Quest_Menu" + szLangTail;	s_pTbl_QuestMenu.LoadFromFile(szFN.c_str());	// 퀘스트 관련 선택메뉴
 	szFN = "Data\\Quest_Talk" + szLangTail;	s_pTbl_QuestTalk.LoadFromFile(szFN.c_str());	// 퀘스트 관련 지문
-	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_Quest_Content.LoadFromFile(szFN.c_str());	//Quest_Content_us.tbl
+	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_QuestContent.LoadFromFile(szFN.c_str());	//Quest_Content_us.tbl
 
 	for(int i = 0; i < MAX_ITEM_EXTENSION; i++)
 	{
