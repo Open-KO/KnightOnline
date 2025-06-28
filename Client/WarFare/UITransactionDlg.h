@@ -32,6 +32,7 @@ public:
 	__IconItemSkill*		m_pMyTrade[MAX_ITEM_TRADE_PAGE][MAX_ITEM_TRADE];
 	__IconItemSkill*		m_pMyTradeInv[MAX_ITEM_INVENTORY];
 	CN3UIString*			m_pStrMyGold;
+	CN3UIString*			m_pText_Weight;
 
 	int						m_iCurPage;
 	int						m_iTradeID;
@@ -110,6 +111,7 @@ public:
 	void				ShowTitle(e_NpcTrade eNT);
 
 	void				GoldUpdate();
+	void				UpdateWeight();
 };
 
 #endif // !defined(AFX_UITRANSACTIONDLG_H__42671245_FF4F_42FC_AF7B_DACEDA8734B7__INCLUDED_)
