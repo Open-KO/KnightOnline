@@ -239,6 +239,7 @@ public:
 	bool	CommandToggleUISkillTree();
 	bool	CommandToggleUIMiniMap();
 	bool	CommandToggleCmdList();
+	bool	CommandToggleLevelGuide();
 	bool	OpenCmdEdit(std::string msg);
 
 	void	CommandMove(e_MoveDirection eMD, bool bStartOrEnd); // 움직이는 방향(전후진, 멈춤), 움직이기 시작하는가?
