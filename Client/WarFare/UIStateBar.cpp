@@ -589,8 +589,7 @@ bool CUIStateBar::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		{
 			if (CGameProcedure::s_pProcMain->m_pUILevelGuide != nullptr)
 			{
-				bool bVisible = CGameProcedure::s_pProcMain->m_pUILevelGuide->IsVisible();
-				CGameProcedure::s_pProcMain->m_pUILevelGuide->SetVisible(!bVisible);
+				CGameProcedure::s_pProcMain->CommandToggleLevelGuide();
 			}
 
 			return true;
