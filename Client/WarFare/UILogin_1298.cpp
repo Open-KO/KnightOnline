@@ -155,7 +155,7 @@ bool CUILogIn_1298::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if (m_pServer_Group[i] != nullptr
 				&& pSender == m_pList_Group[i])
 			{
-				m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(255, 255, 0)); // yellow
+				m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(0, 255, 0)); // green
 				m_iSelectedServerIndex = i;
 				return true;
 			}
