@@ -41,7 +41,7 @@ struct __InfoPlayerBase
 	int			iHPMax;
 	int			iHP;
 	int			iAuthority;		// 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
-
+	e_NpcType	iNpcType;
 	bool		bRenderID;		// 화면에 ID 를 찍는지..
 
 	void Init()
@@ -56,6 +56,7 @@ struct __InfoPlayerBase
 		iHPMax = 0;
 		iHP = 0;
 		iAuthority = 1;				// 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
+		iNpcType = NPC_UNKNOWN;		//npc type, 
 		bRenderID = true;
 	}
 };
