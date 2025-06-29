@@ -54,6 +54,7 @@
 #include "UIQuestTalk.h"
 #include "UIDead.h"
 #include "UIUpgradeSelect.h"
+#include "UILevelGuide.h"
 
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
@@ -168,6 +169,7 @@ CGameProcMain::CGameProcMain()				// r기본 생성자.. 각 변수의 역활은
 	m_pUIQuestTalk = new CUIQuestTalk();
 	m_pUIDead = new CUIDead();
 	m_pUIUpgradeSelect = new CUIUpgradeSelect();
+	m_pUILevelGuide = new CUILevelGuide();
 
 	m_pSubProcPerTrade = new CSubProcPerTrade();
 	m_pMagicSkillMng = new CMagicSkillMng(this);
@@ -220,6 +222,7 @@ CGameProcMain::~CGameProcMain()
 	delete m_pUIQuestTalk;
 	delete m_pUIDead;
 	delete m_pUIUpgradeSelect;
+	delete m_pUILevelGuide;
 
 	delete m_pSubProcPerTrade;
 	delete m_pMagicSkillMng;
@@ -275,6 +278,7 @@ void CGameProcMain::ReleaseUIs()
 	m_pUIInn->Release();
 	m_pUICreateClanName->Release();
 	m_pUIUpgradeSelect->Release();
+	m_pUILevelGuide->Release();
 
 	CN3UIBase::DestroyTooltip();
 }
@@ -4163,6 +4167,17 @@ void CGameProcMain::InitUI()
 		(iH - m_pUIUpgradeSelect->GetHeight()) / 2);
 	m_pUIUpgradeSelect->SetState(UI_STATE_COMMON_NONE);
 	m_pUIUpgradeSelect->SetStyle(m_pUIUpgradeSelect->GetStyle() | UISTYLE_USER_MOVE_HIDE | UISTYLE_SHOW_ME_ALONE);
+
+	//ui level guide
+	m_pUILevelGuide->Init(s_pUIMgr);
+	m_pUILevelGuide->LoadFromFile(pTbl->szLvlGuide);
+	m_pUILevelGuide->SetVisibleWithNoSound(false);
+	m_pUILevelGuide->SetStyle(UISTYLE_POS_RIGHT);
+	rc = m_pUILevelGuide->GetRegion();
+	iX = iW - (rc.right - rc.left);
+	iY = 10; //same pos with inventory
+	m_pUILevelGuide->SetPos(iX, iY);
+
 }
 
 void CGameProcMain::MsgSend_RequestTargetHP(int16_t siIDTarget, uint8_t byUpdateImmediately)
@@ -4729,7 +4744,7 @@ bool CGameProcMain::CommandToggleUIInventory()
 	{
 		bNeedOpen = true;
 		if(m_pUISkillTreeDlg->IsVisible()) m_pUISkillTreeDlg->Close();
-		
+
 		s_pUIMgr->SetFocusedUI(m_pUIInventory);
 		m_pUIInventory->Open();
 	}
@@ -4798,9 +4813,16 @@ bool CGameProcMain::CommandToggleCmdList()
 	return bNeedOpen;
 }
 
+bool CGameProcMain::CommandToggleLevelGuide()
+{
+	bool bNeedOpen = !m_pUILevelGuide->IsVisible();
+	m_pUILevelGuide->SetVisible(bNeedOpen);
+
+	return bNeedOpen;
+}
+
 bool CGameProcMain::OpenCmdEdit(std::string msg)
 {
-
 	bool bNeedOpen = !(m_pUICmdEditDlg->IsVisible());
 
 	if (bNeedOpen)

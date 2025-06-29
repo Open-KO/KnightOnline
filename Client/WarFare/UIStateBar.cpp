@@ -12,8 +12,10 @@
 #include "PlayerMySelf.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
+#include "UILevelGuide.h"
 #include "N3UIDBCLButton.h"
 
+#include <N3Base/N3UIButton.h>
 #include <N3Base/N3UIProgress.h>
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIImage.h>
@@ -574,22 +576,24 @@ bool CUIStateBar::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if (pSender == (CN3UIBase*)m_pBtn_ZoomIn)
+		if (pSender == m_pBtn_ZoomIn)
 		{
 			ZoomSet(m_fZoom*1.1f);
 			return true;
 		}
-		else if (pSender == (CN3UIBase*)m_pBtn_ZoomOut)
+		else if (pSender == m_pBtn_ZoomOut)
 		{
 			ZoomSet(m_fZoom*0.9f);
 			return true;
 		}
-		else if (pSender == (CN3UIBase*)m_pBtn_Quest)
+		else if (pSender == m_pBtn_Quest)
 		{
-			//TODO: Show Leveling Guide UI (Quest Helper)
-			return false;
+			if (CGameProcedure::s_pProcMain->m_pUILevelGuide != nullptr)
+				CGameProcedure::s_pProcMain->CommandToggleLevelGuide();
+
+			return true;
 		}
-		else if (pSender == (CN3UIBase*)m_pBtn_Power)
+		else if (pSender == m_pBtn_Power)
 		{
 			//TODO: Launch msgbox with warning message, on confirm -> open store (Web_Browser UI or maybe external?)
 			return false;
