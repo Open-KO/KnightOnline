@@ -365,8 +365,7 @@ void CUITransactionDlg::EnterTransactionState()
 	}
 
 	ItemMoveFromInvToThis();
-	
-	UpdateWeight();
+
 
 	if(m_pStrMyGold)
 	{
@@ -386,26 +385,20 @@ void CUITransactionDlg::EnterTransactionState()
 	}
 }
 
-void CUITransactionDlg::UpdateWeight()
+void CUITransactionDlg::UpdateWeight(int iVal, int iValMax)
 {
 	if (m_pText_Weight == nullptr)
 		return;
 
-	__InfoPlayerMySelf* pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-	
-	if (pInfoExt == nullptr)
-		return;
-
 	char szVal[64] = "0 / 0";
-
-	sprintf(szVal, "%.1f/%.1f", (pInfoExt->iWeight * 0.1f), (pInfoExt->iWeightMax * 0.1f));
+	sprintf(szVal, "%.1f/%.1f", (iVal * 0.1f), (iValMax * 0.1f));
 
 	std::string szMsg;
 	CGameBase::GetTextF(IDS_INVEN_WEIGHT, &szMsg);
 
-	std::string strWeight = szMsg + szVal;
-
-	m_pText_Weight->SetString(strWeight);
+	std::string str = szMsg + szVal;
+	
+	m_pText_Weight->SetString(str);
 
 }
 
@@ -1218,9 +1211,6 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 				__ASSERT(pStatic, "NULL UI Component!!");
 				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
 				if(m_pStrMyGold)	m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
-
-				//update weight
-				UpdateWeight();
 			}
 			
 			CN3UIWndBase::AllHighLightIconFree();
@@ -1289,8 +1279,6 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 				__ASSERT(pStatic, "NULL UI Component!!");
 				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
 				if(m_pStrMyGold) m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
-
-				UpdateWeight();
 			}
 
 			CN3UIWndBase::AllHighLightIconFree();

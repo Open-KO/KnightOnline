@@ -3357,6 +3357,8 @@ bool CGameProcMain::MsgRecv_ItemWeightChange(Packet& pkt)		// 아이템 무게 �
 	pInfoExt->iWeight = pkt.read<int16_t>();
 	m_pUIVar->m_pPageState->UpdateWeight(pInfoExt->iWeight, pInfoExt->iWeightMax);
 
+	m_pUITransactionDlg->UpdateWeight(pInfoExt->iWeight, pInfoExt->iWeightMax);
+
 	return true;
 }
 
@@ -4318,6 +4320,10 @@ void CGameProcMain::DoCommercialTransaction(int iTradeID)
 		m_pUISkillTreeDlg->Close();
 
 	m_pUITransactionDlg->EnterTransactionState();
+
+	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
+	if(pInfoExt != nullptr)
+	m_pUITransactionDlg->UpdateWeight(pInfoExt->iWeight, pInfoExt->iWeightMax);
 }
 
 bool CGameProcMain::MsgRecv_ItemTradeStart(Packet& pkt)			// 아이템 상거래..
