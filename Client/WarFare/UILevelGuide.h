@@ -32,13 +32,12 @@ protected:
 	CN3UIButton* m_pButtonDown;
 	CN3UIButton* m_pButtonCancel;
 
-	const int m_iMaxLevel = 80;
-	static constexpr int iRangeSearch = 5; //ex: searches 5 levels up and down
-	static constexpr int iContentCount = 20; //number of contents, equal to m_saQuestTitle,m_saQuestText size
+	static constexpr int SEARCH_RANGE = 5; //ex: searches 5 levels up and down
+	static constexpr int CONTENT_COUNT = 20; //number of contents, equal to m_saQuestTitle,m_saQuestText size
 	int m_iSearchLevel;
 	int m_iCurrentPage;
-	std::string m_saQuestTitle[iContentCount];
-	std::string m_saQuestText[iContentCount];
+	std::string m_saQuestTitle[CONTENT_COUNT];
+	std::string m_saQuestText[CONTENT_COUNT];
 	void SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pTextGuide);
 public:
 	bool Load(HANDLE hFile) override;
