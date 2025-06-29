@@ -4745,9 +4745,6 @@ bool CGameProcMain::CommandToggleUIInventory()
 		bNeedOpen = true;
 		if(m_pUISkillTreeDlg->IsVisible()) m_pUISkillTreeDlg->Close();
 
-		if (m_pUILevelGuide->IsVisible())
-			m_pUILevelGuide->SetVisible(false);
-		
 		s_pUIMgr->SetFocusedUI(m_pUIInventory);
 		m_pUIInventory->Open();
 	}
@@ -4771,8 +4768,6 @@ bool CGameProcMain::CommandToggleUISkillTree()
 			m_pUITransactionDlg->LeaveTransactionState();
 		if (m_pUIWareHouseDlg->IsVisible())
 			m_pUIWareHouseDlg->LeaveWareHouseState();
-		if (m_pUILevelGuide->IsVisible())
-			m_pUILevelGuide->SetVisible(false);
 
 		s_pUIMgr->SetFocusedUI(m_pUISkillTreeDlg);
 		m_pUISkillTreeDlg->Open();
@@ -4806,8 +4801,6 @@ bool CGameProcMain::CommandToggleCmdList()
 			m_pUITransactionDlg->LeaveTransactionState();
 		if (m_pUIWareHouseDlg->IsVisible())
 			m_pUIWareHouseDlg->LeaveWareHouseState();
-		if (m_pUILevelGuide->IsVisible())
-			m_pUILevelGuide->SetVisible(false);
 
 		s_pUIMgr->SetFocusedUI(m_pUICmdListDlg);
 		m_pUICmdListDlg->Open();
@@ -4822,36 +4815,14 @@ bool CGameProcMain::CommandToggleCmdList()
 
 bool CGameProcMain::CommandToggleLevelGuide()
 {
-	bool bNeedOpen = !(m_pUILevelGuide->IsVisible());
-
-	if (bNeedOpen)
-	{
-		if (m_pUIInventory->IsVisible())
-			m_pUIInventory->Close();
-
-		if (m_pUITransactionDlg->IsVisible())
-			m_pUITransactionDlg->LeaveTransactionState();
-
-		if (m_pUIWareHouseDlg->IsVisible())
-			m_pUIWareHouseDlg->LeaveWareHouseState();
-
-		if (m_pUICmdListDlg->IsVisible())
-			m_pUICmdListDlg->SetVisible(false);
-
-		s_pUIMgr->SetFocusedUI(m_pUILevelGuide);
-		m_pUILevelGuide->SetVisible(true);
-	}
-	else
-	{
-		m_pUILevelGuide->SetVisible(false);
-	}
+	bool bNeedOpen = !m_pUILevelGuide->IsVisible();
+	m_pUILevelGuide->SetVisible(bNeedOpen);
 
 	return bNeedOpen;
 }
 
 bool CGameProcMain::OpenCmdEdit(std::string msg)
 {
-
 	bool bNeedOpen = !(m_pUICmdEditDlg->IsVisible());
 
 	if (bNeedOpen)
