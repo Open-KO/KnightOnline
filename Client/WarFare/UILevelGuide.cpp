@@ -140,21 +140,21 @@ void CUILevelGuide::LoadContent()
 
 	//entered level cannot be bigger than max, cannot be smaller than min level
 	if (iSearchLevel < 1) iSearchLevel = 1;
-	if (iSearchLevel > m_iMaxLevel) iSearchLevel = m_iMaxLevel;
+	if (iSearchLevel > MAX_LEVEL) iSearchLevel = MAX_LEVEL;
 
 	//set focus to edit on open
 	if (m_pEditLevel != nullptr)
 		m_pEditLevel->SetFocus();
 
 	//search by starting 5 levels lower and end 5 levels higher than user level.
-	int iLowerLevelLimit = iSearchLevel - iRangeSearch;
-	int iUpperLevelLimit = iSearchLevel + iRangeSearch;
+	int iLowerLevelLimit = iSearchLevel - SEARCH_RANGE;
+	int iUpperLevelLimit = iSearchLevel + SEARCH_RANGE;
 
 	if (iLowerLevelLimit <= 1) iLowerLevelLimit = 1;
 	if (iUpperLevelLimit <= 1) iUpperLevelLimit = 1;
 
-	if (iLowerLevelLimit >= m_iMaxLevel) iLowerLevelLimit = m_iMaxLevel;
-	if (iUpperLevelLimit >= m_iMaxLevel) iUpperLevelLimit = m_iMaxLevel;
+	if (iLowerLevelLimit >= MAX_LEVEL) iLowerLevelLimit = MAX_LEVEL;
+	if (iUpperLevelLimit >= MAX_LEVEL) iUpperLevelLimit = MAX_LEVEL;
 
 	int iCounter = 0;
 
@@ -163,7 +163,7 @@ void CUILevelGuide::LoadContent()
 	std::fill(std::begin(m_saQuestTitle), std::end(m_saQuestTitle), "");
 	std::fill(std::begin(m_saQuestText), std::end(m_saQuestText), "");
 
-	for (size_t i = 0; i < TableSize && iCounter < iContentCount; i++)
+	for (size_t i = 0; i < TableSize && iCounter < CONTENT_COUNT; i++)
 	{
 		__TABLE_QUEST_CONTENT* pQuestContent = CGameBase::s_pTbl_QuestContent.GetIndexedData(i);
 
@@ -185,7 +185,7 @@ void CUILevelGuide::LoadContent()
 	CN3UIString* pGuides[3] = { m_pTextGuide0, m_pTextGuide1, m_pTextGuide2 };
 
 	//find max number of pages, ceil without cmath
-	int iMaxPage = iContentCount / 3 + (iContentCount % 3 != 0 ? 1 : 0);
+	int iMaxPage = CONTENT_COUNT / 3 + (CONTENT_COUNT % 3 != 0 ? 1 : 0);
 
 	if (m_iCurrentPage < 1) m_iCurrentPage = 1;
 
