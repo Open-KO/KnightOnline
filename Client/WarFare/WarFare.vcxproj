@@ -59,7 +59,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>.\;..\;..\N3Base\;..\..\Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;\;..\..\Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -154,7 +154,6 @@
     <ClCompile Include="UIItemExchange.cpp" />
     <ClCompile Include="UIKnightsOperation.cpp" />
     <ClCompile Include="UILoading.cpp" />
-    <ClCompile Include="UILoadingDlg.cpp" />
     <ClCompile Include="UILogin_1298.cpp" />
     <ClCompile Include="UILogin_1098.cpp" />
     <ClCompile Include="UIManager.cpp" />
@@ -268,7 +267,6 @@
     <ClInclude Include="UIItemExchange.h" />
     <ClInclude Include="UIKnightsOperation.h" />
     <ClInclude Include="UILoading.h" />
-    <ClInclude Include="UILoadingDlg.h" />
     <ClInclude Include="UILogin_1298.h" />
     <ClInclude Include="UILogin_1098.h" />
     <ClInclude Include="UIManager.h" />

@@ -4,14 +4,15 @@
 
 #include "stdafx.h"
 #include "PlayerBase.h"
-#include "DFont.h"
-
 #include "N3WorldManager.h"
 #include "N3FXMgr.h"
-#include "N3ShapeExtra.h"
-#include "N3SndObj.h"
 
 #include "resource.h"
+
+#include <N3Base/DFont.h>
+#include <N3Base/N3ShapeExtra.h>
+#include <N3Base/N3SndObj.h>
+
 
 #ifdef _DEBUG
 #undef THIS_FILE

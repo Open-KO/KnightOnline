@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIImage.h"
+#include <N3Base/N3UIImage.h>
 
-class CN3UIIcon  : public CN3UIImage
+class CN3UIIcon : public CN3UIImage
 {
 	D3DCOLOR	m_dc;	// Backup Color
 

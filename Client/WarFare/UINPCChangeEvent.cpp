@@ -3,21 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UINPCChangeEvent.h"
-
 #include "PacketDef.h"
-
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
-
-#include "GameProcedure.h"
 #include "APISocket.h"
-
-#include "N3UIWndBase.h"
 #include "UIInventory.h"
 #include "UIManager.h"
+#include "resource.h"
 
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

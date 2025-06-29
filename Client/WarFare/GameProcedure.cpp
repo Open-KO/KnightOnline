@@ -3,22 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-
+#include "GameProcedure.h"
 #include "GameDef.h"
 #include "GameEng.h"
-#include "packetdef.h"
+#include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
-#include "UIMessageBox.h"
-#include "UIMessageBoxManager.h"
-#include "UIManager.h"
-
 #include "N3FXMgr.h"
 #include "PlayerMyself.h"
-#include "GameProcedure.h"
+
 #include "GameProcLogIn.h"
-//#include "GameProcStart.h"
 #include "GameProcNationSelect.h"
 #include "GameProcCharacterCreate.h"
 #include "GameProcCharacterSelect.h"
@@ -26,6 +20,9 @@
 #include "GameProcOption.h"
 
 #include "UILoading.h"
+#include "UIMessageBox.h"
+#include "UIMessageBoxManager.h"
+#include "UIManager.h"
 #include "UINotice.h"
 #include "UIHelp.h"
 #include "UIHotKeyDlg.h"
@@ -34,17 +31,17 @@
 #include "UIPartyOrForce.h"
 #include "UIMessageWnd.h"
 #include "UIEndingDisplay.h"
-
-#include "N3UIEdit.h"
-#include "N3SndObjStream.h"
-#include "N3FXBundle.h"
-
-#include "BitmapFile.h"
-#include "Jpeg.h"
 #include "JpegFile.h"
-
 #include "MagicSkillMng.h"
 #include "GameCursor.h"
+#include "resource.h"
+
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3FXBundle.h>
+
+#include <N3Base/BitmapFile.h>
+#include <N3Base/Jpeg.h>
 
 #include <shared/lzf.h>
 

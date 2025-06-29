@@ -16,8 +16,8 @@
 //	변수앞에 re_가 붙은 건 미터단위..
 //
 
-#include "N3BaseFileAccess.h"
-#include "N3Texture.h"
+#include <N3Base/N3Texture.h>
+
 #include "N3TerrainDef.h"
 #include "N3TerrainPatch.h"
 

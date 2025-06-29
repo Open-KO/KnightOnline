@@ -12,16 +12,11 @@
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
-#include "N3UIButton.h"
-#include "N3UIImage.h"
-#include "N3UIString.h"
-
 const int SKILL_DEF_BASIC = 0;
 const int SKILL_DEF_SPECIAL0 = 1;
 const int SKILL_DEF_SPECIAL1 = 2;
 const int SKILL_DEF_SPECIAL2 = 3;
 const int SKILL_DEF_SPECIAL3 = 4;
-
 
 // MAX_SKILL_KIND_OF	:						 Base Skill 1개, 전문 스킬 4개..			
 // MAX_SKILL_IN_PAGE	:						 한 페이지 내의 아이콘 갯수..				
@@ -30,7 +25,7 @@ const int SKILL_DEF_SPECIAL3 = 4;
 
 //////////////////////////////////////////////////////////////////////
 
-class CUISkillTreeDlg    : public CN3UIWndBase
+class CUISkillTreeDlg : public CN3UIWndBase
 {
 protected:
 	bool		m_bOpenningNow; // 열리고 있다..

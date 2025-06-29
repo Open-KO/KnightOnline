@@ -9,7 +9,7 @@
 #include "PlayerOtherMgr.h"
 #include "PlayerMySelf.h"
 
-#include "N3ShapeMgr.h"
+#include <N3Base/N3ShapeMgr.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

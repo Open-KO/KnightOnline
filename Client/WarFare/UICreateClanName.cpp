@@ -3,16 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UICreateClanName.h"
-
-#include "GameProcMain.h"
-#include "GameProcedure.h"
-#include "PacketDef.h"
 #include "APISocket.h"
+#include "GameProcMain.h"
+#include "PacketDef.h"
+#include "resource.h"
 
-//#include "StdAfxBase.h"
-
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

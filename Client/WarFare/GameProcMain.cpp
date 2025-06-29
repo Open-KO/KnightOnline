@@ -2,10 +2,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "resource.h"
+#include "GameProcMain.h"
 
 #include "GameEng.h"
-#include "GameProcMain.h"
 #include "LocalInput.h"
 
 #include "APISocket.h"
@@ -48,7 +47,6 @@
 #include "UIWarp.h"
 #include "UIInn.h"
 #include "UICreateClanName.h"
-#include "UIPartyBBS.h"
 #include "UITradeSellBBS.h"
 #include "UITradeBBSSelector.h"
 #include "UITradeBBSEditDlg.h"
@@ -62,17 +60,16 @@
 #include "MagicSkillMng.h"
 #include "WarMessage.h"
 #include "GameCursor.h"
-
 #include "N3WorldManager.h"
-
 #include "LightMgr.h"
+#include "resource.h"
 
-#include "N3SkyMng.h"
-#include "N3ShapeExtra.h"
-#include "N3Camera.h"
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3SndMgr.h"
+#include <N3Base/N3SkyMng.h>
+#include <N3Base/N3ShapeExtra.h>
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3SndMgr.h>
 
 #include <io.h>
 

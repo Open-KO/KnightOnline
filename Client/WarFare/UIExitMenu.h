@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 class CUIExitMenu : public CN3UIBase
 {

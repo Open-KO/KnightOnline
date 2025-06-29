@@ -3,23 +3,22 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIVarious.h"
+#include "UIManager.h"
+#include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
 #include "PlayerOtherMgr.h"
 #include "PacketDef.h"
 #include "APISocket.h"
+#include "resource.h"
 
-#include "N3UIString.h"
-#include "N3UIImage.h"
-#include "N3UIButton.h"
-#include "N3UIList.h"
-#include "N3SndObj.h"
-
-#include "UIManager.h"
-#include "UIInventory.h"
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIList.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

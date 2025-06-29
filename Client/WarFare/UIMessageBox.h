@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 #include "GameDef.h"
 
 #define MB_CANCEL                 0x00000006L

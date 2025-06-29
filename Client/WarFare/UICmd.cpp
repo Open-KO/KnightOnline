@@ -3,15 +3,15 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UICmd.h"
 #include "GameProcMain.h"
 #include "PlayerOtherMgr.h"
-//#include "GameProcLogIn.h"
 #include "PlayerMyself.h"
 #include "UITransactionDlg.h"
-#include "N3UIButton.h"
 #include "UIManager.h"
+#include "resource.h"
+
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

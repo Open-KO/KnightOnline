@@ -3,31 +3,26 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-#include "LogWriter.h"
-
+#include "UITransactionDlg.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
-
-#include "UITransactionDlg.h"
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
 #include "PlayerMySelf.h"
-
 #include "CountableItemEditDlg.h"
-
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
-
-#include "N3UIString.h"
-#include "N3UIEdit.h"
-#include "N3SndObj.h"
-
-
 #include "resource.h"
+
+#include <N3Base/LogWriter.h>
+
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

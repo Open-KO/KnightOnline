@@ -3,20 +3,19 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UINPCEvent.h"
-
-#include "GameProcedure.h"
 #include "GameProcMain.h"
-
 #include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "UIItemExchange.h"
 #include "UINpcTalk.h"
-
 #include "SubProcPerTrade.h"
 #include "UISkillTreeDlg.h"
 #include "UIManager.h"
+#include "resource.h"
+
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

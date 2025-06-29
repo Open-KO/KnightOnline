@@ -9,21 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIArea.h"
-#include "N3UIImage.h"
-#include "N3UIString.h"
-#include "N3UIButton.h"
-
 #include "N3UIWndBase.h"
-#include "GameProcedure.h"
-
-#include "GameDef.h"
-
 
 //////////////////////////////////////////////////////////////////////
 
-class CCountableItemEditDlg   : public CN3UIBase  
+class CCountableItemEditDlg : public CN3UIBase
 {
 	bool				m_bLocked;
 	e_UIWND				m_eCallerWnd;
@@ -37,7 +27,6 @@ public:
 
 	CN3UIButton*		m_pBtnOk;
 	CN3UIButton*		m_pBtnCancel;
-
 
 public:
 	bool OnKeyPress(int iKey);

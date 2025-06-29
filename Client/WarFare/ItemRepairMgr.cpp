@@ -3,19 +3,17 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "UIRepairTooltipDlg.h"
 #include "ItemRepairMgr.h"
-
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "UIInventory.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
+#include "resource.h"
 
-#include "UIRepairTooltipDlg.h"
-
-#include "N3UIString.h"
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

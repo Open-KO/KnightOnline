@@ -3,14 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-
+#include "MagicSkillMng.h"
 #include "GameProcMain.h"
 #include "APISocket.h"
 #include "PacketDef.h"
 #include "PlayerMySelf.h"
 #include "PlayerOtherMgr.h"
-
 #include "N3FXMgr.h"
 #include "N3WorldManager.h"
 
@@ -19,12 +17,12 @@
 #include "UIVarious.h"
 #include "UIPartyOrForce.h"
 #include "UIHotKeyDlg.h"
-#include "MagicSkillMng.h"
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3ShapeExtra.h"
 
-//#include "StdAfxBase.h"
+#include "resource.h"
+
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3ShapeExtra.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

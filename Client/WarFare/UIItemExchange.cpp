@@ -3,20 +3,18 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIItemExchange.h"
-
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "LocalInput.h"
 #include "PlayerMySelf.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
-
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
+#include "resource.h"
 
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

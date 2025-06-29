@@ -9,10 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIButton.h"
-#include "N3UIList.h"
-#include "N3UIEdit.h"
+#include <N3Base/N3UIBase.h>
 
 class CUICmdList : public CN3UIBase
 {

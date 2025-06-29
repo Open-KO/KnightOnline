@@ -11,7 +11,7 @@
 
 #include <string>
 #include <list>
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 struct __WarpInfo
 {
@@ -26,7 +26,7 @@ struct __WarpInfo
 
 typedef std::list<__WarpInfo>::iterator it_WI;
 
-class CUIWarp : public CN3UIBase  
+class CUIWarp : public CN3UIBase
 {
 protected:
 	class CN3UIButton*		m_pBtn_Ok;

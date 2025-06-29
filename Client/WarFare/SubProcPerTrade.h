@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Base.h"
-
 enum e_PerTradeState	{												// 아이템 개인 거래 상태..
 							PER_TRADE_STATE_NONE = 0,					// 아무것도 아님..
 							PER_TRADE_STATE_WAIT_FOR_REQ,				// 상대방에게 요청하고 응답을 기다림..

@@ -1,13 +1,15 @@
 ﻿#include "stdafx.h"
 
 #if !defined(LOGIN_SCENE_VERSION) || LOGIN_SCENE_VERSION == 1298
-#include "resource.h"
 #include "UILogIn_1298.h"
 #include "GameProcLogIn_1298.h"
-#include "N3UIEdit.h"
-#include "N3UIButton.h"
-#include "N3UIString.h"
 #include "UIMessageBoxManager.h"
+#include "resource.h"
+
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+
 #include <algorithm>
 #include <shellapi.h>
 

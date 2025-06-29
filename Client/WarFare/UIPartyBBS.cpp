@@ -3,18 +3,17 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIPartyBBS.h"
 #include "GameProcMain.h"
 #include "UIVarious.h"
-#include "GameProcedure.h"
 #include "PlayerMySelf.h"
 #include "UIManager.h"
 #include "APISocket.h"
+#include "resource.h"
 
-#include "N3UIList.h"
-#include "N3UIString.h"
-#include "N3UIButton.h"
+#include <N3Base/N3UIList.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

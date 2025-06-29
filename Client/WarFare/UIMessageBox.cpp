@@ -11,19 +11,18 @@
 #include "UICreateClanName.h"
 #include "UIPartyBBS.h"
 #include "GameEng.h"
-#include "GameProcedure.h"
 #include "GameProcLogin.h"
 #include "LocalInput.h"
 #include "UIMessageBoxManager.h"
 #include "SubProcPerTrade.h"
-#include <shellapi.h>
 #include "APISocket.h"
 
-#include "N3UIButton.h"
-#include "N3UIString.h"
-#include "N3UIEdit.h"
-#include "N3Shape.h"
+#include <shellapi.h>
 
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3Shape.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

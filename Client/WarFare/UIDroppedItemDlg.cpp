@@ -2,30 +2,25 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-
 #include "UIDroppedItemDlg.h"
-
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
 #include "PlayerMyself.h"
-
 #include "N3UIWndBase.h"
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UITransactionDlg.h"
-
 #include "SubProcPerTrade.h"
 #include "PlayerOtherMgr.h"
 #include "PlayerNPC.h"
-
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
-
-#include "N3UIArea.h"
-
 #include "resource.h"
+
+#include <N3Base/N3UIArea.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

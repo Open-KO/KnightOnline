@@ -3,21 +3,18 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIClassChange.h"
-
 #include "PacketDef.h"
-
-#include "GameProcedure.h"
 #include "PlayerMySelf.h"
-
 #include "GameProcMain.h"
 #include "UISkillTreeDlg.h"
-
 #include "APISocket.h"
 #include "UIVarious.h"
-
 #include "UIHotkeyDlg.h"
+#include "resource.h"
+
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

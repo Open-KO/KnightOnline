@@ -12,9 +12,6 @@
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
-#include "N3UIString.h"
-
-
 //////////////////////////////////////////////////////////////////////
 
 class CUIHotKeyDlg      : public CN3UIWndBase  

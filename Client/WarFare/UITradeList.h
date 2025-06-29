@@ -9,15 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-
-#include "N3UIBase.h"
-#include "N3UIButton.h"
+#include <N3Base/N3UIBase.h>
 
 //////////////////////////////////////////////////////////////////////
 
-
-class CUITradeList       : public CN3UIBase  
+class CUITradeList : public CN3UIBase
 {
 	CN3UIString*		m_pStr_List[9];
 	std::string			m_sStr[40];

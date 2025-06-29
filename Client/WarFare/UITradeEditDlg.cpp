@@ -3,23 +3,19 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-
+#include "UITradeEditDlg.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
-
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
-#include "UITradeEditDlg.h"
-
 #include "SubProcPerTrade.h"
 #include "UIPerTradeDlg.h"
+#include "resource.h"
 
-#include "N3UIEdit.h"
-
-
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

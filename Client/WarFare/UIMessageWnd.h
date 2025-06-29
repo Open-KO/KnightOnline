@@ -9,8 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "GameDef.h"
+#include <N3Base/N3UIBase.h>
 #include "UIChat.h"
 
 class CUIMessageWnd : public CN3UIBase  

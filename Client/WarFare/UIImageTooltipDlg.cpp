@@ -3,10 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIImageTooltipDlg.h"
-
 #include "PlayerMySelf.h"
+#include "resource.h"
+
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

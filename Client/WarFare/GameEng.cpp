@@ -7,8 +7,8 @@
 #include "GameBase.h"
 #include "N3WorldManager.h"
 
-#include "N3Camera.h"
-#include "N3Light.h"
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3Light.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

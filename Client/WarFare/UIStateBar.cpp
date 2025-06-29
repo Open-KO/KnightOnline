@@ -3,23 +3,21 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "GameDef.h"
 #include "UIStateBar.h"
-#include "GameProcedure.h"
+#include "GameDef.h"
 #include "LocalInput.h"
-
-#include "N3UIProgress.h"
-#include "N3UIString.h"
-#include "N3UIImage.h"
 #include "GameProcMain.h"
 #include "APISocket.h"
 #include "PacketDef.h"
 #include "PlayerMySelf.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
-
-#include "N3Texture.h"
 #include "N3UIDBCLButton.h"
+
+#include <N3Base/N3UIProgress.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3Texture.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

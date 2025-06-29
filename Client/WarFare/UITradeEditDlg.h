@@ -9,18 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIArea.h"
-#include "N3UIImage.h"
-#include "GameProcedure.h"
-
-#include "GameDef.h"
-
+#include <N3Base/N3UIBase.h>
 
 //////////////////////////////////////////////////////////////////////
 
-class CGameProcMain;
-
+class CSubProcPerTrade;
 class CUITradeEditDlg : public CN3UIBase  
 {
 public:

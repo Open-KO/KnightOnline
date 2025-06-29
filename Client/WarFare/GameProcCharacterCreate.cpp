@@ -4,8 +4,6 @@
 
 #include "stdafx.h"
 #include "GameProcCharacterCreate.h"
-
-#include "resource.h"
 #include "GameEng.h"
 #include "UICharacterCreate.h"
 #include "UIMessageBox.h"
@@ -14,10 +12,10 @@
 #include "UIManager.h"
 #include "LocalInput.h"
 #include "APISocket.h"
-#include "PacketDef.h"
 #include "GameCursor.h"
+#include "resource.h"
 
-#include "N3UIString.h"
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

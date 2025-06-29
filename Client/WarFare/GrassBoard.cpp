@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "GrassBoard.h"
 #include "N3Terrain.h"
-#include "N3Texture.h"
+#include <N3Base/N3Texture.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

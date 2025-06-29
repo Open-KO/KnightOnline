@@ -2,10 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "DFont.h"
 #include "PlayerOtherMgr.h"
 
-#include "N3ShapeExtra.h"
+#include <N3Base/DFont.h>
+#include <N3Base/N3ShapeExtra.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

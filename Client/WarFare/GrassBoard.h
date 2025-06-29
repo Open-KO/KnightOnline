@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Transform.h"
+#include <N3Base/N3Transform.h>
 
 const uint32_t BOARD_X				= 0;
 const uint32_t BOARD_Y				= 1;

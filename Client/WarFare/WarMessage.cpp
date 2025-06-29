@@ -3,16 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-#include "DFont.h"
 #include "WarMessage.h"
 #include "GameBase.h"
+#include "resource.h"
+
+#define MESSAGE_FONT_SIZE		20
+#define WAR_MESSAGE_SHOW_TIME	60
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#define MESSAGE_FONT_SIZE		20
-#define WAR_MESSAGE_SHOW_TIME	60
 
 CWarMessage::CWarMessage()
 {

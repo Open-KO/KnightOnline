@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include "N3Base.h"
+#include <N3Base/N3Base.h>
+#include <N3Base/N3TableBase.h>
+
 #include "GameDef.h"
-#include "N3TableBase.h"
 
 class CGameBase : public CN3Base
 {

@@ -1,11 +1,10 @@
 ﻿#include "StdAfx.h"
 #include "UITargetBar.h"
 #include "GameBase.h"
-
-#include "N3UIProgress.h"
-#include "N3UIString.h"
-
 #include "resource.h"
+
+#include <N3Base/N3UIProgress.h>
+#include <N3Base/N3UIString.h>
 
 CUITargetBar::CUITargetBar()
 {

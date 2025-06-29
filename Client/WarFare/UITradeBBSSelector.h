@@ -9,14 +9,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIButton.h"
+#include <N3Base/N3UIBase.h>
 
 #define TRADE_BBS_SELL		1
 #define TRADE_BBS_BUY		2
 #define TRADE_BBS_CANCEL	3
 
-class CUITradeBBSSelector : public CN3UIBase 
+class CUITradeBBSSelector : public CN3UIBase
 {
 protected:
 	CN3UIButton*	m_pBtn_BBSSell;

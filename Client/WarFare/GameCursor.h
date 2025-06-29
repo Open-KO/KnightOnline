@@ -10,9 +10,9 @@
 #endif // _MSC_VER > 1000
 
 #include "GameDef.h"
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
-class CGameCursor   : public CN3UIBase  
+class CGameCursor : public CN3UIBase
 {
 private:
 	class		CN3UIImage* m_pImageCursor[CURSOR_COUNT];

@@ -3,7 +3,7 @@
 
 #include <DInput.h>
 
-#include "My_3DStruct.h"
+#include <N3Base/My_3DStruct.h>
 
 const int DK_NONE = 0;
 const int DK_RELEASE = 1;

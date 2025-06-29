@@ -16,7 +16,9 @@
 #include "UIWareHouseDlg.h"
 #include "UIManager.h"
 
-#include "N3UIEdit.h"
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

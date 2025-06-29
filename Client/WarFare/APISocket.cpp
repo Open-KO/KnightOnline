@@ -26,7 +26,7 @@ const uint16_t PACKET_HEADER = 0XAA55;
 const uint16_t PACKET_TAIL = 0X55AA;
 
 #ifdef _N3GAME
-#include "LogWriter.h"
+#include <N3Base/LogWriter.h>
 #endif
 
 CAPISocket::CAPISocket()

@@ -3,12 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "N3UIBase.h"
-#include "N3UIImage.h"
 #include "GameProcedure.h"
 #include "LocalInput.h"
 #include "GameCursor.h"
 #include "UIManager.h"
+
+#include <N3Base/N3UIImage.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

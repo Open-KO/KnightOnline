@@ -171,9 +171,6 @@
     <ClCompile Include="UILoading.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UILoadingDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -498,9 +495,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UILoading.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UILoadingDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">

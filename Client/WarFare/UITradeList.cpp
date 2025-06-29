@@ -3,14 +3,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UITradeList.h"
-
 #include "GameDef.h"
 #include "GameProcedure.h"
+#include "resource.h"
 
-#include "N3UIString.h"
-#include "N3UIScrollBar.h"
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIScrollBar.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

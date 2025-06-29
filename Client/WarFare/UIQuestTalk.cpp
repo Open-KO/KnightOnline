@@ -3,14 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "GameDef.h"
-#include "GameBase.h"
-#include "N3UIString.h"
-#include "N3UIButton.h"
-#include "GameProcedure.h"
 #include "UIQuestTalk.h"
+#include "GameDef.h"
+#include "GameProcedure.h"
 #include "UIManager.h"
 #include "APISocket.h"
+
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

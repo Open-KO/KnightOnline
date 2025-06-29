@@ -9,8 +9,8 @@
 
 #include "PvsMgr.h"
 
-#include "N3ShapeMgr.h"
-#include "N3ShapeExtra.h"
+#include <N3Base/N3ShapeMgr.h>
+#include <N3Base/N3ShapeExtra.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

@@ -9,16 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-
-#include "N3UIBase.h"
-#include "N3UIButton.h"
-#include "N3UIString.h"
+#include <N3Base/N3UIBase.h>
 
 //////////////////////////////////////////////////////////////////////
 
-
-class CUIPointInitDlg     : public CN3UIBase  
+class CUIPointInitDlg : public CN3UIBase
 {
 	CN3UIButton*		m_pBtn_Ok;
 	CN3UIButton*		m_pBtn_Cancel;

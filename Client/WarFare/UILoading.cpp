@@ -9,8 +9,8 @@
 #include "GameProcedure.h"
 #include "UIManager.h"
 
-#include "N3UIProgress.h"
-#include "N3UIString.h"
+#include <N3Base/N3UIProgress.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

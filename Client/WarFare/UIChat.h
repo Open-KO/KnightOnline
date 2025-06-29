@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 #include <deque>
 
 //enum e_ChatBuffer { CHAT_BUFFER_NORMAL = 0, CHAT_BUFFER_PRIVATE, CHAT_BUFFER_PARTY, CHAT_BUFFER_KNIGHTS, CHAT_BUFFER_COUNT };

@@ -6,12 +6,12 @@
 #include "UITradeBBSSelector.h"
 #include "PacketDef.h"
 #include "APISocket.h"
-#include "GameProcedure.h"
-
 #include "GameProcMain.h"
 #include "UITradeSellBBS.h"
 #include "LocalInput.h"
 #include "UIManager.h"
+
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

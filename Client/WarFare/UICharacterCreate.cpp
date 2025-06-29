@@ -8,13 +8,12 @@
 #include "GameProcCharacterCreate.h"
 #include "PlayerMySelf.h"
 
-#include "N3UIButton.h"
-#include "N3UIString.h"
-#include "N3UIImage.h"
-#include "N3UIArea.h"
-#include "N3UIEdit.h"
-#include "N3UITooltip.h"
-
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3UIArea.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UITooltip.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

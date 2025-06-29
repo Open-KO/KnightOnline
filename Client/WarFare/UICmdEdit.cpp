@@ -3,16 +3,15 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UICmdEdit.h"
-
-#include "GameProcMain.h"
-#include "GameProcedure.h"
-#include "PacketDef.h"
 #include "APISocket.h"
+#include "GameProcMain.h"
+#include "PacketDef.h"
+#include "resource.h"
 
-//#include "StdAfxBase.h"
-
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -47,7 +46,7 @@ bool CUICmdEdit::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if (pSender->m_szID == "btn_ok")
+		if (pSender == m_pBtn_Ok)
 		{
 			m_szArg1 = m_pEdit_Box->GetString();
 			std::string tempCmdStr = "/" + m_pText_Title->GetString() + " " + m_szArg1;
@@ -56,7 +55,7 @@ bool CUICmdEdit::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			return true;
 		}
 
-		if (pSender->m_szID == "btn_cancel")
+		if (pSender == m_pBtn_Cancel)
 		{
 			SetVisible(false);
 			return true;

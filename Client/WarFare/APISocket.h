@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "My_3DStruct.h"
-#include "N3Base.h"
+#include <N3Base/N3Base.h>
 #include "GameDef.h"
+#include "PacketDef.h"
 
 #include <queue>
 #include <string>
@@ -21,7 +21,7 @@
 
 #define _CRYPTION		// 암호화 사용
 #ifdef _CRYPTION
-#include "shared/JvCryption.h"
+#include <shared/JvCryption.h>
 #endif
 
 class BB_CircularBuffer  

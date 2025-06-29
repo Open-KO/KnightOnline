@@ -9,11 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "PacketDef.h"
+#include <N3Base/N3UIBase.h>
 
 #define MAX_STRING_MENU	10//5
 
+class Packet;
 class CUIQuestMenu   : public CN3UIBase
 {
 protected:

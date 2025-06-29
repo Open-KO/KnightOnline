@@ -3,20 +3,20 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "UIManager.h"
 #include "LocalInput.h"
 #include "N3UIWndBase.h"
-#include "UIManager.h"
 #include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "SubProcPerTrade.h"
-#include "N3UIWndBase.h"
 #include "CountableItemEditDlg.h"
 #include "UIItemExchange.h"
 #include "UIWareHouseDlg.h"
 
-#include "N3UITooltip.h"
+#include <N3Base/DFont.h>
+#include <N3Base/N3UITooltip.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

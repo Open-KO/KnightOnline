@@ -13,13 +13,10 @@
 
 #include "N3UIWndBase.h"
 
-#include "N3UIBase.h"
-#include "N3UIImage.h"
-
 //////////////////////////////////////////////////////////////////////
 
 
-class CUIItemExchange     : public CN3UIWndBase  
+class CUIItemExchange : public CN3UIWndBase
 {
 	CN3UIImage*		m_pImage_Repair;
 	CN3UIImage*		m_pImage_Exchange;

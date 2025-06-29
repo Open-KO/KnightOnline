@@ -3,26 +3,22 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
+#include "UISkillTreeDlg.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
-#include "resource.h"
-#include "UISkillTreeDlg.h"
-
-#include "GameProcedure.h"
 #include "PlayerMySelf.h"
-
-#include "N3UIIcon.h"
-
 #include "GameProcMain.h"
 #include "UIHotKeyDlg.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
+#include "N3UIIcon.h"
+#include "resource.h"
 
-#include "N3UIArea.h"
-#include "N3UIString.h"
-#include "N3SndObj.h"
+#include <N3Base/N3UIArea.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

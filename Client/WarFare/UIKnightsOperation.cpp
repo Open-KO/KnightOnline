@@ -3,17 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "UIKnightsOperation.h"
 #include "GameProcMain.h"
 #include "PacketDef.h"
 #include "APISocket.h"
-#include "UIKnightsOperation.h"
+#include "resource.h"
 
-#include "N3UIButton.h"
-#include "N3UIEdit.h"
-#include "N3UIList.h"
-#include "N3UIScrollBar.h"
-
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIList.h>
+#include <N3Base/N3UIScrollBar.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

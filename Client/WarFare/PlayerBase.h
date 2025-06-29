@@ -12,9 +12,10 @@
 #include "GameBase.h"
 #include "GameDef.h"
 #include "Bitset.h"
-#include "N3Chr.h"
 #include <deque>
 #include <string>
+
+#include <N3Base/N3Chr.h>
 
 //	By : Ecli666 ( On 2002-07-22 오전 9:59:19 )
 //

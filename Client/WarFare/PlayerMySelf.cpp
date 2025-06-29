@@ -4,22 +4,19 @@
 
 #include "stdafx.h"
 #include "PlayerMySelf.h"
-
-#include "resource.h"
 #include "PacketDef.h"
 #include "PlayerOtherMgr.h"
-
 #include "N3WorldManager.h"
 #include "GameProcMain.h"
 #include "UIInventory.h"
 #include "MagicSkillMng.h"
-
 #include "GameEng.h"
+#include "resource.h"
 
-#include "DFont.h"
-#include "N3Camera.h"
-#include "N3ShapeMgr.h"
-#include "N3SndObj.h"
+#include <N3Base/DFont.h>
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3ShapeMgr.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

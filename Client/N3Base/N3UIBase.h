@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "N3BaseFileAccess.h"
 #include "N3UIDef.h"
 #include <list>

@@ -3,16 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "UIWarp.h"
+#include "UIManager.h"
+#include "GameProcMain.h"
 #include "resource.h"
 
-#include "UIWarp.h"
-#include "GameProcMain.h"
-
-#include "N3UIButton.h"
-#include "N3UIString.h"
-#include "N3UIList.h"
-
-#include "UIManager.h"
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIList.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

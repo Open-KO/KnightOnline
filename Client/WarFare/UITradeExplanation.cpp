@@ -4,9 +4,10 @@
 
 #include "stdafx.h"
 #include "UITradeExplanation.h"
-#include "N3UIButton.h"
-#include "N3UIString.h"
 #include "UITradeSellBBS.h"
+
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
-class CUILoading : public CN3UIBase  
+class CUILoading : public CN3UIBase
 {
 protected:
 	CN3UIString*	m_pText_Version;

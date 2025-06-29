@@ -9,11 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Base.h"
+#include <N3Base/N3Base.h>
 
 class CN3Terrain;
-
-class CServerMesh   : public CN3Base  
+class CServerMesh : public CN3Base
 {
 	__Vector3		m_vSMesh[48];
 	void	AutoConcMesh(D3DCOLOR color, float left, float right, float bottom, float top, float low, float high, int iStart );

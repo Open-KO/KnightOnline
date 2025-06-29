@@ -9,13 +9,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 #include <list>
 #include <string>
 
 typedef std::list<std::string>::iterator it_String;
 
-class CUINotice : public CN3UIBase  
+class CUINotice : public CN3UIBase
 {
 public:
 	class CN3UIString*		m_pText_Notice;

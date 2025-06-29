@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3BaseFileAccess.h"
-#include "N3SkyMng.h"
+#include <N3Base/N3BaseFileAccess.h>
+#include <N3Base/N3SkyMng.h>
 
 #include "GameBase.h"
 
@@ -18,7 +18,7 @@ class CN3Shape;
 class CN3Terrain;
 class CN3SkyMng;
 
-class CN3WorldBase    : public CN3BaseFileAccess ,public CGameBase
+class CN3WorldBase : public CN3BaseFileAccess, public CGameBase
 {
 	friend class CN3WorldManager;
 

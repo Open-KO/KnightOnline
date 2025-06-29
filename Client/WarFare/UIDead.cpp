@@ -3,20 +3,21 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "N3UITooltip.h"
-#include "N3UIString.h"
-#include "resource.h"
+#include "UIDead.h"
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "UIManager.h"
 #include "PlayerMySelf.h"
-#include "UIDead.h"
 #include "UIInventory.h"
 #include "UIStateBar.h"
 #include "MagicSkillMng.h"
 #include "N3FXMgr.h"
+#include "resource.h"
+
+#include <N3Base/N3UITooltip.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

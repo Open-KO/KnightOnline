@@ -9,9 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-#include "N3UIBase.h"
 #include <list>
+
+#include "GameDef.h"
+#include <N3Base/N3UIBase.h>
 
 typedef std::list<__InfoPartyOrForce>::iterator it_PartyOrForce;
 

@@ -9,8 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Base.h"
-
+#include <N3Base/N3Base.h>
 
 typedef struct __TABLE_BIRD
 {

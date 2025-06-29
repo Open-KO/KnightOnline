@@ -1,19 +1,19 @@
 ﻿#include "stdafx.h"
 
 #if !defined(LOGIN_SCENE_VERSION) || LOGIN_SCENE_VERSION == 1298
-#include "resource.h"
-#include "GameEng.h"
 #include "GameProcLogIn_1298.h"
+#include "GameEng.h"
 #include "UILogIn_1298.h"
 #include "PlayerMySelf.h"
 #include "UIManager.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "PacketDef.h"
+#include "resource.h"
 
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3SndMgr.h"
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3SndMgr.h>
 
 #include <ctime>
 

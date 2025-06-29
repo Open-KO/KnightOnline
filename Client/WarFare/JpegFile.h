@@ -160,8 +160,6 @@
  * the second part of the example.
  */
 #include <setjmp.h>
-#include "N3Base.h"
-
 
 #define HDIB HANDLE
 #define PALVERSION   0x300

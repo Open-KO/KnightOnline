@@ -3,19 +3,19 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UITradeSellBBS.h"
-#include "N3UIList.h"
-#include "N3UIButton.h"
-#include "N3UIImage.h"
-#include "N3UIString.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "UITradeBBSEditDlg.h"
 #include "PlayerMySelf.h"
 #include "UIManager.h"
 #include "LocalInput.h"
 #include "APISocket.h"
+#include "resource.h"
+
+#include <N3Base/N3UIList.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

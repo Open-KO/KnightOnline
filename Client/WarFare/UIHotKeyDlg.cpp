@@ -3,17 +3,17 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIHotKeyDlg.h"
-
 #include "LocalInput.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
 #include "UISkillTreeDlg.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
 #include "UIInventory.h"
+#include "resource.h"
+
+#include <N3Base/N3UIString.h>
 
 #include <cmath>
 #include <algorithm>
