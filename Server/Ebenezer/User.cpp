@@ -4466,17 +4466,17 @@ void CUser::ItemMove(char* pBuf)
 	SetShort(send_buff, GetMaxWeightForClient(), send_index);
 	SetShort(send_buff, m_iMaxHp, send_index);
 	SetShort(send_buff, m_iMaxMp, send_index);
-	SetByte(send_buff, m_sItemStr + m_bStrAmount, send_index);		// 비러머글 사자의 힘 >.<
-	SetByte(send_buff, m_sItemSta + m_bStaAmount, send_index);		// 비러머글 사자의 힘 >.<
-	SetByte(send_buff, m_sItemDex + m_bDexAmount, send_index);		// 비러머글 사자의 힘 >.<
-	SetByte(send_buff, m_sItemIntel + m_bIntelAmount, send_index);	// 비러머글 사자의 힘 >.<
-	SetByte(send_buff, m_sItemCham + m_bChaAmount, send_index);		// 비러머글 사자의 힘 >.<
-	SetByte(send_buff, m_bFireR, send_index);
-	SetByte(send_buff, m_bColdR, send_index);
-	SetByte(send_buff, m_bLightningR, send_index);
-	SetByte(send_buff, m_bMagicR, send_index);
-	SetByte(send_buff, m_bDiseaseR, send_index);
-	SetByte(send_buff, m_bPoisonR, send_index);
+	SetShort(send_buff, m_sItemStr + m_bStrAmount, send_index);
+	SetShort(send_buff, m_sItemSta + m_bStaAmount, send_index);
+	SetShort(send_buff, m_sItemDex + m_bDexAmount, send_index);
+	SetShort(send_buff, m_sItemIntel + m_bIntelAmount, send_index);
+	SetShort(send_buff, m_sItemCham + m_bChaAmount, send_index);
+	SetShort(send_buff, m_bFireR, send_index);
+	SetShort(send_buff, m_bColdR, send_index);
+	SetShort(send_buff, m_bLightningR, send_index);
+	SetShort(send_buff, m_bMagicR, send_index);
+	SetShort(send_buff, m_bDiseaseR, send_index);
+	SetShort(send_buff, m_bPoisonR, send_index);
 	Send(send_buff, send_index);
 //
 	SendItemWeight();
@@ -7445,17 +7445,17 @@ void CUser::ItemDurationChange(int slot, int maxvalue, int curvalue, int amount)
 		SetShort(send_buff, GetCurrentWeightForClient(), send_index);
 		SetShort(send_buff, m_iMaxHp, send_index);
 		SetShort(send_buff, m_iMaxMp, send_index);
-		SetByte(send_buff, m_sItemStr, send_index);
-		SetByte(send_buff, m_sItemSta, send_index);
-		SetByte(send_buff, m_sItemDex, send_index);
-		SetByte(send_buff, m_sItemIntel, send_index);
-		SetByte(send_buff, m_sItemCham, send_index);
-		SetByte(send_buff, m_bFireR, send_index);
-		SetByte(send_buff, m_bColdR, send_index);
-		SetByte(send_buff, m_bLightningR, send_index);
-		SetByte(send_buff, m_bMagicR, send_index);
-		SetByte(send_buff, m_bDiseaseR, send_index);
-		SetByte(send_buff, m_bPoisonR, send_index);
+		SetShort(send_buff, m_sItemStr + m_bStrAmount, send_index);
+		SetShort(send_buff, m_sItemSta + m_bStaAmount, send_index);
+		SetShort(send_buff, m_sItemDex + m_bDexAmount, send_index);
+		SetShort(send_buff, m_sItemIntel + m_bIntelAmount, send_index);
+		SetShort(send_buff, m_sItemCham + m_bChaAmount, send_index);
+		SetShort(send_buff, m_bFireR, send_index);
+		SetShort(send_buff, m_bColdR, send_index);
+		SetShort(send_buff, m_bLightningR, send_index);
+		SetShort(send_buff, m_bMagicR, send_index);
+		SetShort(send_buff, m_bDiseaseR, send_index);
+		SetShort(send_buff, m_bPoisonR, send_index);
 		Send(send_buff, send_index);
 		return;
 	}
