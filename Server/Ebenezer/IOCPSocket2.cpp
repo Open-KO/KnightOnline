@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "IOCPSocket2.h"
-#include "Compress.h"
 #include "Define.h"
 
 #include <shared/lzf.h>
@@ -30,7 +29,6 @@ CIOCPSocket2::CIOCPSocket2()
 {
 	m_pBuffer = new CCircularBuffer(SOCKET_BUFF_SIZE);
 	m_pRegionBuffer = new _REGION_BUFFER();
-	m_pCompressMng = new CCompressMng();
 	m_Socket = INVALID_SOCKET;
 
 	m_pIOCPort = nullptr;
@@ -44,7 +42,6 @@ CIOCPSocket2::~CIOCPSocket2()
 {
 	delete m_pBuffer;
 	delete m_pRegionBuffer;
-	delete m_pCompressMng;
 }
 
 BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const char* lpszSocketAddress)
@@ -625,7 +622,7 @@ void CIOCPSocket2::SendCompressingPacket(const char* pData, int len)
 
 	out_len = lzf_compress(pData, len, pBuff, sizeof(pBuff));
 	if (out_len == 0
-		|| out_len >= sizeof(pBuff))
+		|| out_len > sizeof(pBuff))
 	{
 		TRACE(_T("Compressing Fail Packet\n"));
 		Send((char*) pData, len);

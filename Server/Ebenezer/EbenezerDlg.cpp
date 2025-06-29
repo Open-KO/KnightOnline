@@ -22,6 +22,8 @@
 #include "HomeSet.h"
 #include "BattleSet.h"
 
+#include <shared/crc32.h>
+#include <shared/lzf.h>
 #include <shared/packets.h>
 
 constexpr int GAME_TIME       	= 100;
@@ -2948,31 +2950,33 @@ void CEbenezerDlg::SendCompressedData()
 		return;
 	}
 
-	m_CompMng.PreCompressWork(m_CompBuf, m_iCompIndex);
-	m_CompMng.Compress();
-
 	int send_index = 0;
-	char send_buff[2048] = {};
-	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
-	SetShort(send_buff, (short) m_CompMng.m_nOutputBufferCurPos, send_index);
-	SetShort(send_buff, (short) m_CompMng.m_nOrgDataLength, send_index);
-	SetDWORD(send_buff, m_CompMng.m_dwCrc, send_index);
-	SetShort(send_buff, (short) m_CompCount, send_index);
-	SetString(send_buff, m_CompMng.m_pOutputBuffer, m_CompMng.m_nOutputBufferCurPos, send_index);
+	char send_buff[32000] = {};
+	uint8_t comp_buff[32000] = {};
+	unsigned int comp_data_len = 0;
+	uint32_t crc_value = 0;
 
-	if (m_CompMng.m_pOutputBuffer == nullptr)
+	comp_data_len = lzf_compress(m_CompBuf, m_iCompIndex, comp_buff, sizeof(comp_buff));
+	if (comp_data_len == 0
+		|| comp_data_len > sizeof(comp_buff))
 	{
-		m_CompCount = 0;
-		m_iCompIndex = 0;
-		m_CompMng.Initialize();
+		TRACE(_T("Failed to compress AI packet\n"));
 		return;
 	}
+
+	crc_value = crc32(comp_buff, comp_data_len);
+
+	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
+	SetShort(send_buff, (short) comp_data_len, send_index);
+	SetShort(send_buff, (short) m_iCompIndex, send_index);
+	SetDWORD(send_buff, crc_value, send_index);
+	SetShort(send_buff, (short) m_CompCount, send_index);
+	SetString(send_buff, reinterpret_cast<const char*>(comp_buff), comp_data_len, send_index);
 
 	Send_AIServer(1000, send_buff, send_index);
 
 	m_CompCount = 0;
 	m_iCompIndex = 0;
-	m_CompMng.Initialize();
 }
 
 // sungyong 2002. 05. 23

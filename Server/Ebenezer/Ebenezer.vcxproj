@@ -129,7 +129,6 @@
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="BattleSet.cpp" />
     <ClCompile Include="CoefficientSet.cpp" />
-    <ClCompile Include="Compress.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
     <ClCompile Include="EbenezerDlg.cpp" />
     <ClCompile Include="EVENT.cpp" />
@@ -175,7 +174,6 @@
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="BattleSet.h" />
     <ClInclude Include="CoefficientSet.h" />
-    <ClInclude Include="Compress.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Ebenezer.h" />
     <ClInclude Include="EbenezerDlg.h" />

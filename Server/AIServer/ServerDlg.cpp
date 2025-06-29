@@ -22,6 +22,8 @@
 #include "MakeLareItemTableSet.h"
 #include "Region.h"
 
+#include <shared/crc32.h>
+#include <shared/lzf.h>
 #include <shared/globals.h>
 #include <shared/Ini.h>
 
@@ -1972,40 +1974,33 @@ void CServerDlg::SendCompressedData(int nZone)
 		return;
 	}
 
-	m_CompMng.FlushAddData();
-	m_CompMng.AddData(m_CompBuf, m_iCompIndex);
-	m_CompMng.PreCompressWork();
-	m_CompMng.Compress();
+	int send_index = 0;
+	char send_buff[32000] = {};
+	uint8_t comp_buff[32000] = {};
+	unsigned int comp_data_len = 0;
+	uint32_t crc_value = 0;
 
-	int comp_data_len = m_CompMng.GetCompressedDataCount();
-	int org_data_len = m_CompMng.GetUnCompressDataLength();
-	DWORD crc_value = m_CompMng.GetCrcValue();
-
-	int send_index = 0, packet_size = 0;
-	char send_buff[2048] = {};
-	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
-	SetShort(send_buff, (short) comp_data_len, send_index);
-	SetShort(send_buff, (short) org_data_len, send_index);
-	SetDWORD(send_buff, crc_value, send_index);
-	SetShort(send_buff, (short) m_CompCount, send_index);
-
-	char* packet = m_CompMng.GetExtractedBufferPtr();
-	SetString(send_buff, packet, comp_data_len, send_index);
-
-	if (packet == nullptr)
+	comp_data_len = lzf_compress(m_CompBuf, m_iCompIndex, comp_buff, sizeof(comp_buff));
+	if (comp_data_len == 0
+		|| comp_data_len > sizeof(comp_buff))
 	{
-		m_CompCount = 0;
-		m_iCompIndex = 0;
-		m_CompMng.FlushAddData();
-		TRACE(_T("#### SendCompressData Fail packet==null\n"));
+		TRACE(_T("Failed to compress packet\n"));
 		return;
 	}
 
-	packet_size = Send(send_buff, send_index, nZone);
+	crc_value = crc32(comp_buff, comp_data_len);
+
+	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
+	SetShort(send_buff, (short) comp_data_len, send_index);
+	SetShort(send_buff, (short) m_iCompIndex, send_index);
+	SetDWORD(send_buff, crc_value, send_index);
+	SetShort(send_buff, (short) m_CompCount, send_index);
+	SetString(send_buff, reinterpret_cast<const char*>(comp_buff), comp_data_len, send_index);
+
+	Send(send_buff, send_index, nZone);
 
 	m_CompCount = 0;
 	m_iCompIndex = 0;
-	m_CompMng.FlushAddData();
 }
 
 BOOL CServerDlg::PreTranslateMessage(MSG* pMsg)

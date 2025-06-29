@@ -8,10 +8,13 @@
 #include "ServerDlg.h"
 #include "User.h"
 #include "Map.h"
-#include "region.h"
+#include "Region.h"
 #include "Party.h"
 
 #include "extern.h"
+
+#include <shared/crc32.h>
+#include <shared/lzf.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -876,54 +879,35 @@ void CGameSocket::RecvCompressedData(char* pBuf)
 {
 	int index = 0;
 	short sCompLen, sOrgLen, sCompCount;
-	char pTempBuf[10001] = {};
-	DWORD dwCrcValue;
+	std::vector<uint8_t> decompressedBuffer;
+	uint8_t* pCompressedBuffer = nullptr;
+
+	uint32_t dwCrcValue = 0, dwActualCrcValue = 0;
+
 	sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
 	sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
 	dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
 	sCompCount = GetShort(pBuf, index);	// 압축 데이타 수 얻기...
-	// 압축 데이타 얻기...
-	memcpy(pTempBuf, pBuf + index, sCompLen);
+
+	decompressedBuffer.resize(sOrgLen);
+
+	pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
 	index += sCompLen;
 
-	CCompressManager cmpMgrDecode;
+	uint32_t nDecompressedLength = lzf_decompress(
+		pCompressedBuffer,
+		sCompLen,
+		&decompressedBuffer[0],
+		sOrgLen);
 
-	/// 압축 해제	
-	cmpMgrDecode.FlushAddData();
-	cmpMgrDecode.PreUncompressWork(sCompLen, sOrgLen);	// 압축 풀기... 
-	char* pEncodeBuf = cmpMgrDecode.GetCompressionBufferPtr();
-	memcpy(pEncodeBuf, pTempBuf, sCompLen);
-
-	if (!cmpMgrDecode.Extract())
-	{
-		cmpMgrDecode.FlushExtractedData();
+	if (nDecompressedLength != sOrgLen)
 		return;
-	}
 
-	if (cmpMgrDecode.ErrorOccurred != 0)
-	{
-		cmpMgrDecode.FlushExtractedData();
+	dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
+	if (dwCrcValue != dwActualCrcValue)
 		return;
-	}
 
-	if (dwCrcValue != cmpMgrDecode.GetCrcValue())
-	{
-		cmpMgrDecode.FlushExtractedData();
-		return;
-	}
-
-	if (sOrgLen != cmpMgrDecode.GetExtractedDataCount())
-	{
-		cmpMgrDecode.FlushExtractedData();
-		return;
-	}
-
-	// 압축 풀린 데이타 읽기
-	char* pDecodeBuf = cmpMgrDecode.GetExtractedBufferPtr();
-	Parsing(sOrgLen, pDecodeBuf);
-
-	// 압축 풀기 끝
-	cmpMgrDecode.FlushExtractedData();
+	Parsing(sOrgLen, reinterpret_cast<char*>(&decompressedBuffer[0]));
 }
 
 void CGameSocket::RecvUserInfoAllData(char* pBuf)

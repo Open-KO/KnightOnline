@@ -10,8 +10,9 @@
 #include "Npc.h"
 #include "user.h"
 #include "Map.h"
-#include "Compress.h"
 
+#include <shared/crc32.h>
+#include <shared/lzf.h>
 #include <shared/packets.h>
 
 #ifdef _DEBUG
@@ -1256,51 +1257,35 @@ void CAISocket::RecvCompressedData(char* pBuf)
 {
 	int index = 0;
 	short sCompLen, sOrgLen, sCompCount;
-	char pTempBuf[10001] = {};
-	DWORD dwCrcValue;
+	std::vector<uint8_t> decompressedBuffer;
+	uint8_t* pCompressedBuffer = nullptr;
+
+	uint32_t dwCrcValue = 0, dwActualCrcValue = 0;
+
 	sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
 	sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
 	dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
 	sCompCount = GetShort(pBuf, index);	// 압축 데이타 수 얻기...
 
-	// 압축 데이타 얻기...
-	memcpy(pTempBuf, pBuf + index, sCompLen);
+	decompressedBuffer.resize(sOrgLen);
+
+	pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
 	index += sCompLen;
 
-	CCompressMng cmpMgrDecode;
+	uint32_t nDecompressedLength = lzf_decompress(
+		pCompressedBuffer,
+		sCompLen,
+		&decompressedBuffer[0],
+		sOrgLen);
 
-	/// 압축 해제	
-	cmpMgrDecode.PreUncompressWork(pTempBuf, sCompLen, sOrgLen);	// 압축 풀기... 
-
-	if (cmpMgrDecode.Extract() == false)
-	{
-		cmpMgrDecode.Initialize();
+	if (nDecompressedLength != sOrgLen)
 		return;
-	}
 
-	if (cmpMgrDecode.m_nErrorOccurred != 0)
-	{
-		cmpMgrDecode.Initialize();
+	dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
+	if (dwCrcValue != dwActualCrcValue)
 		return;
-	}
 
-	if (dwCrcValue != cmpMgrDecode.m_dwCrc)
-	{
-		cmpMgrDecode.Initialize();
-		return;
-	}
-
-	if (sOrgLen != cmpMgrDecode.m_nOutputBufferCurPos)
-	{
-		cmpMgrDecode.Initialize();
-		return;
-	}
-
-	// 압축 풀린 데이타 읽기
-	Parsing(sOrgLen, cmpMgrDecode.m_pOutputBuffer);
-
-	// 압축 풀기 끝
-	cmpMgrDecode.Initialize();
+	Parsing(sOrgLen, reinterpret_cast<char*>(&decompressedBuffer[0]));
 }
 
 void CAISocket::InitEventMonster(int index)

@@ -139,9 +139,6 @@
     <ClCompile Include="lzf.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="pkware\pklib.c">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -160,7 +157,6 @@
     <ClInclude Include="lzf.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="packets.h" />
-    <ClInclude Include="pkware\pklib.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="StringConversion.h" />

@@ -72,7 +72,6 @@ public:
 	_REGION_BUFFER*		m_pRegionBuffer;
 
 protected:
-	CCompressMng*		m_pCompressMng;
 	CIOCPort*			m_pIOCPort;
 	CCircularBuffer*	m_pBuffer;
 
