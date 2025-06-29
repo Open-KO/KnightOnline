@@ -13,6 +13,7 @@
 #define _WIN32_WINNT _WIN32_WINNT_MAXVER
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
+#define NOMINMAX
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions

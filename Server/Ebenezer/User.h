@@ -37,7 +37,7 @@ public:
 	short	m_RegionZ;						// 현재 영역 Z 좌표
 
 	int		m_iMaxExp;						// 다음 레벨이 되기 위해 필요한 Exp량
-	short	m_sMaxWeight;					// 들 수 있는 최대 무게
+	int		m_iMaxWeight;					// 들 수 있는 최대 무게
 	BYTE    m_sSpeed;						// 스피드
 
 	short	m_sBodyAc;						// 맨몸 방어력
@@ -49,7 +49,7 @@ public:
 
 	short   m_sItemMaxHp;                   // 아이템 총 최대 HP Bonus
 	short   m_sItemMaxMp;                   // 아이템 총 최대 MP Bonus
-	short	m_sItemWeight;					// 아이템 총무게
+	int		m_iItemWeight;					// 아이템 총무게
 	short	m_sItemHit;						// 아이템 총타격치
 	short	m_sItemAc;						// 아이템 총방어력
 	short	m_sItemStr;						// 아이템 총힘 보너스
@@ -198,6 +198,8 @@ public:
 	BYTE				m_byPersonalRank;
 
 public:
+	int16_t GetMaxWeightForClient() const;
+	int16_t GetCurrentWeightForClient() const;
 	void RecvZoneChange(char* pBuf);
 	void GameStart(char* pBuf);
 	void GetUserInfo(char* buff, int& buff_index);

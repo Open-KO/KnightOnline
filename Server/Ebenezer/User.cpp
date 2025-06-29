@@ -55,7 +55,7 @@ void CUser::Initialize()
 
 	m_sItemMaxHp = 0;
 	m_sItemMaxMp = 0;
-	m_sItemWeight = 0;
+	m_iItemWeight = 0;
 	m_sItemHit = 0;
 	m_sItemAc = 0;
 	m_sItemStr = 0;
@@ -71,7 +71,7 @@ void CUser::Initialize()
 	m_iMaxHp = 0;
 	m_iMaxMp = 1;
 	m_iMaxExp = 0;
-	m_sMaxWeight = 0;
+	m_iMaxWeight = 0;
 
 	m_bFireR = 0;
 	m_bColdR = 0;
@@ -1813,8 +1813,8 @@ void CUser::SendMyInfo(int type)
 	SetShort(send_buff, m_pUserData->m_sHp, send_index);
 	SetShort(send_buff, m_iMaxMp, send_index);
 	SetShort(send_buff, m_pUserData->m_sMp, send_index);
-	SetShort(send_buff, m_sMaxWeight, send_index);
-	SetShort(send_buff, m_sItemWeight, send_index);
+	SetShort(send_buff, GetMaxWeightForClient(), send_index);
+	SetShort(send_buff, GetCurrentWeightForClient(), send_index);
 	SetByte(send_buff, m_pUserData->m_bStr, send_index);
 	SetByte(send_buff, static_cast<BYTE>(m_sItemStr), send_index);
 	SetByte(send_buff, m_pUserData->m_bSta, send_index);
@@ -2629,7 +2629,7 @@ void CUser::SetDetailData()
 		Close();
 
 	m_iMaxExp = m_pMain->m_LevelUpArray[m_pUserData->m_bLevel - 1]->m_iExp;
-	m_sMaxWeight = (m_pUserData->m_bStr + m_sItemStr) * 50;
+	m_iMaxWeight = (m_pUserData->m_bStr + m_sItemStr) * 50;
 
 	m_iZoneIndex = m_pMain->GetZoneIndex(m_pUserData->m_bZone);
 
@@ -2988,7 +2988,7 @@ void CUser::SetSlotItemValue()
 	m_sItemMaxHp = m_sItemMaxMp = 0;
 	m_sItemHit = m_sItemAc = m_sItemStr = m_sItemSta = m_sItemDex = m_sItemIntel = m_sItemCham = 0;
 	m_sItemHitrate = m_sItemEvasionrate = 100;
-	m_sItemWeight = 0;
+	m_iItemWeight = 0;
 
 	m_bFireR = m_bColdR = m_bLightningR = m_bMagicR = m_bDiseaseR = m_bPoisonR = 0;
 	m_sDaggerR = m_sSwordR = m_sAxeR = m_sMaceR = m_sSpearR = m_sBowR = 0;
@@ -3037,7 +3037,7 @@ void CUser::SetSlotItemValue()
 		m_sItemCham += pTable->m_bChaB;
 		m_sItemHitrate += pTable->m_sHitrate;
 		m_sItemEvasionrate += pTable->m_sEvarate;
-//		m_sItemWeight += pTable->m_sWeight;
+//		m_iItemWeight += pTable->m_sWeight;
 
 		m_bFireR += pTable->m_bFireR;
 		m_bColdR += pTable->m_bColdR;
@@ -3066,10 +3066,10 @@ void CUser::SetSlotItemValue()
 
 		// Non-countable items.
 		if (pTable->m_bCountable == 0)
-			m_sItemWeight += pTable->m_sWeight;
+			m_iItemWeight += pTable->m_sWeight;
 		// Countable items.
 		else
-			m_sItemWeight += pTable->m_sWeight * m_pUserData->m_sItemArray[i].sCount;
+			m_iItemWeight += pTable->m_sWeight * m_pUserData->m_sItemArray[i].sCount;
 	}
 
 	if (m_sItemHit < 3)
@@ -3635,8 +3635,8 @@ void CUser::LevelChange(short level, BYTE type)
 	SetShort(send_buff, m_pUserData->m_sHp, send_index);
 	SetShort(send_buff, m_iMaxMp, send_index);
 	SetShort(send_buff, m_pUserData->m_sMp, send_index);
-	SetShort(send_buff, m_sMaxWeight, send_index);
-	SetShort(send_buff, m_sItemWeight, send_index);
+	SetShort(send_buff, GetMaxWeightForClient(), send_index);
+	SetShort(send_buff, GetCurrentWeightForClient(), send_index);
 	m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
 
 	if (m_sPartyIndex != -1)
@@ -3735,7 +3735,7 @@ void CUser::PointChange(char* pBuf)
 	SetShort(send_buff, m_iMaxHp, send_index);
 	SetShort(send_buff, m_iMaxMp, send_index);
 	SetShort(send_buff, m_sTotalHit, send_index);
-	SetShort(send_buff, m_sMaxWeight, send_index);
+	SetShort(send_buff, GetMaxWeightForClient(), send_index);
 	Send(send_buff, send_index);
 }
 
@@ -3931,7 +3931,7 @@ void CUser::SetUserAbility()
 //		temp_dex = 255;
 
 	m_sBodyAc = m_pUserData->m_bLevel;
-	m_sMaxWeight = (m_pUserData->m_bStr + m_sItemStr) * 50;
+	m_iMaxWeight = (m_pUserData->m_bStr + m_sItemStr) * 50;
 /*
 	궁수 공격력 = 0.005 * 활 공격력 * (Dex + 40) + 직업계수 * 활 공격력 * 화살공격력 * 레벨 * Dex
 	전사 공격력 = 0.005 * 무기 공격력 * (Str + 40) + 직업계수 * 활 공격력 * 화살공격력 * 레벨 * Dex
@@ -3985,7 +3985,7 @@ void CUser::ItemMove(char* pBuf)
 	if (pTable == nullptr)
 		goto fail_return;
 
-	// if (dir == ITEM_INVEN_SLOT && ((pTable->m_sWeight + m_sItemWeight) > m_sMaxWeight))
+	// if (dir == ITEM_INVEN_SLOT && ((pTable->m_sWeight + m_iItemWeight) > m_iMaxWeight))
 	//		goto fail_return;
 
 	if (dir > 0x04
@@ -4463,7 +4463,7 @@ void CUser::ItemMove(char* pBuf)
 	SetByte(send_buff, 0x01, send_index);
 	SetShort(send_buff, m_sTotalHit, send_index);
 	SetShort(send_buff, m_sTotalAc, send_index);
-	SetShort(send_buff, m_sMaxWeight, send_index);
+	SetShort(send_buff, GetMaxWeightForClient(), send_index);
 	SetShort(send_buff, m_iMaxHp, send_index);
 	SetShort(send_buff, m_iMaxMp, send_index);
 	SetByte(send_buff, m_sItemStr + m_bStrAmount, send_index);		// 비러머글 사자의 힘 >.<
@@ -4886,7 +4886,7 @@ void CUser::ItemTrade(char* pBuf)
 		// Check weight of countable item.
 		if (pTable->m_bCountable)
 		{
-			if (((pTable->m_sWeight * count) + m_sItemWeight) > m_sMaxWeight)
+			if (((pTable->m_sWeight * count) + m_iItemWeight) > m_iMaxWeight)
 			{
 				result = 0x04;
 				goto fail_return;
@@ -4895,7 +4895,7 @@ void CUser::ItemTrade(char* pBuf)
 		// Check weight of non-countable item.
 		else
 		{
-			if ((pTable->m_sWeight + m_sItemWeight) > m_sMaxWeight)
+			if ((pTable->m_sWeight + m_iItemWeight) > m_iMaxWeight)
 			{
 				result = 0x04;
 				goto fail_return;
@@ -5180,7 +5180,7 @@ void CUser::ItemGet(char* pBuf)
 		// Check weight of countable item.
 		if (pTable->m_bCountable)
 		{
-			if ((pTable->m_sWeight * count + pGetUser->m_sItemWeight) > pGetUser->m_sMaxWeight)
+			if ((pTable->m_sWeight * count + pGetUser->m_iItemWeight) > pGetUser->m_iMaxWeight)
 			{
 				send_index = 0;
 				memset(send_buff, 0, sizeof(send_buff));
@@ -5193,7 +5193,7 @@ void CUser::ItemGet(char* pBuf)
 		// Check weight of non-countable item.
 		else
 		{
-			if ((pTable->m_sWeight + pGetUser->m_sItemWeight) > pGetUser->m_sMaxWeight)
+			if ((pTable->m_sWeight + pGetUser->m_iItemWeight) > pGetUser->m_iMaxWeight)
 			{
 				send_index = 0;
 				memset(send_buff, 0, sizeof(send_buff));
@@ -6625,7 +6625,7 @@ BOOL CUser::ExecuteExchange()
 	}
 
 	// Too much weight! 
-	if ((weight + m_sItemWeight) > m_sMaxWeight)
+	if ((weight + m_iItemWeight) > m_iMaxWeight)
 		return FALSE;
 
 	return TRUE;
@@ -7442,7 +7442,7 @@ void CUser::ItemDurationChange(int slot, int maxvalue, int curvalue, int amount)
 		SetByte(send_buff, 0x01, send_index);
 		SetShort(send_buff, m_sTotalHit, send_index);
 		SetShort(send_buff, m_sTotalAc, send_index);
-		SetShort(send_buff, m_sItemWeight, send_index);
+		SetShort(send_buff, GetCurrentWeightForClient(), send_index);
 		SetShort(send_buff, m_iMaxHp, send_index);
 		SetShort(send_buff, m_iMaxMp, send_index);
 		SetByte(send_buff, m_sItemStr, send_index);
@@ -8466,13 +8466,13 @@ void CUser::WarehouseProcess(char* pBuf)
 			// Check weight of countable item.
 			if (pTable->m_bCountable != 0)
 			{
-				if (((pTable->m_sWeight * count) + m_sItemWeight) > m_sMaxWeight)
+				if (((pTable->m_sWeight * count) + m_iItemWeight) > m_iMaxWeight)
 					goto fail_return;
 			}
 			// Check weight of non-countable item.
 			else
 			{
-				if ((pTable->m_sWeight + m_sItemWeight) > m_sMaxWeight)
+				if ((pTable->m_sWeight + m_iItemWeight) > m_iMaxWeight)
 					goto fail_return;
 			}
 
@@ -8822,7 +8822,7 @@ CUser* CUser::GetItemRoutingUser(int itemid, short itemcount)
 				// Check weight of countable item.
 				if (pTable->m_bCountable)
 				{
-					if ((pTable->m_sWeight * count + pUser->m_sItemWeight) <= pUser->m_sMaxWeight)
+					if ((pTable->m_sWeight * count + pUser->m_iItemWeight) <= pUser->m_iMaxWeight)
 					{
 						pParty->bItemRouting++;
 						if (pParty->bItemRouting > 6)
@@ -8835,7 +8835,7 @@ CUser* CUser::GetItemRoutingUser(int itemid, short itemcount)
 				// Check weight of non-countable item.
 				else
 				{
-					if ((pTable->m_sWeight + pUser->m_sItemWeight) <= pUser->m_sMaxWeight)
+					if ((pTable->m_sWeight + pUser->m_iItemWeight) <= pUser->m_iMaxWeight)
 					{
 						pParty->bItemRouting++;
 
@@ -9221,7 +9221,7 @@ void CUser::AllPointChange()
 	SetShort(send_buff, m_iMaxHp, send_index);
 	SetShort(send_buff, m_iMaxMp, send_index);
 	SetShort(send_buff, m_sTotalHit, send_index);
-	SetShort(send_buff, m_sMaxWeight, send_index);
+	SetShort(send_buff, GetMaxWeightForClient(), send_index);
 	SetShort(send_buff, m_pUserData->m_bPoints, send_index);
 	Send(send_buff, send_index);
 
@@ -11418,12 +11418,12 @@ BOOL CUser::CheckEventLogic(EVENT_DATA* pEventData)
 		switch (pLE->m_LogicElse)
 		{
 			case LOGIC_CHECK_UNDER_WEIGHT:
-				if (pLE->m_LogicElseInt[0] + m_sItemWeight >= m_sMaxWeight)
+				if (pLE->m_LogicElseInt[0] + m_iItemWeight >= m_iMaxWeight)
 					bExact = TRUE;
 				break;
 
 			case LOGIC_CHECK_OVER_WEIGHT:
-				if (pLE->m_LogicElseInt[0] + m_sItemWeight < m_sMaxWeight)
+				if (pLE->m_LogicElseInt[0] + m_iItemWeight < m_iMaxWeight)
 					bExact = TRUE;
 				break;
 
@@ -11696,7 +11696,7 @@ void CUser::SendItemWeight()
 
 	SetSlotItemValue();
 	SetByte(send_buff, WIZ_WEIGHT_CHANGE, send_index);
-	SetShort(send_buff, m_sItemWeight, send_index);
+	SetShort(send_buff, GetCurrentWeightForClient(), send_index);
 	Send(send_buff, send_index);
 }
 
@@ -11756,7 +11756,7 @@ BOOL CUser::CheckWeight(int itemid, short count)
 	if (pTable->m_bCountable == 0)
 	{
 		// Check weight first!
-		if ((m_sItemWeight + pTable->m_sWeight) <= m_sMaxWeight)
+		if ((m_iItemWeight + pTable->m_sWeight) <= m_iMaxWeight)
 		{
 			// Now check empty slots :P
 			if (GetEmptySlot(itemid, 0) != 0xFF)
@@ -11766,7 +11766,7 @@ BOOL CUser::CheckWeight(int itemid, short count)
 	else
 	{
 		// Check weight first!
-		if (((pTable->m_sWeight * count) + m_sItemWeight) <= m_sMaxWeight)
+		if (((pTable->m_sWeight * count) + m_iItemWeight) <= m_iMaxWeight)
 		{
 			// Now check empty slots :P
 			if (GetEmptySlot(itemid, pTable->m_bCountable) != 0xFF)
@@ -11892,13 +11892,13 @@ BOOL CUser::GiveItem(int itemid, short count)
 	// Check weight of countable item.
 	if (pTable->m_bCountable != 0)
 	{
-		if (((pTable->m_sWeight * count) + m_sItemWeight) > m_sMaxWeight)
+		if (((pTable->m_sWeight * count) + m_iItemWeight) > m_iMaxWeight)
 			return FALSE;
 	}
 	// Check weight of non-countable item.
 	else
 	{
-		if ((pTable->m_sWeight + m_sItemWeight) > m_sMaxWeight)
+		if ((pTable->m_sWeight + m_iItemWeight) > m_iMaxWeight)
 			return FALSE;
 	}*/
 
@@ -12736,4 +12736,14 @@ void CUser::RecvZoneChange(char* pBuf)
 			m_bZoneChangeSameZone = FALSE;
 		}
 	}
+}
+
+int16_t CUser::GetCurrentWeightForClient() const
+{
+	return std::min(m_iItemWeight, SHRT_MAX);
+}
+
+int16_t CUser::GetMaxWeightForClient() const
+{
+	return std::min(m_iMaxWeight, SHRT_MAX);
 }
