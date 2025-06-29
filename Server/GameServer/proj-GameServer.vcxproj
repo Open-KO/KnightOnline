@@ -139,6 +139,7 @@
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="ArenaHandler.cpp" />
     <ClCompile Include="AttackHandler.cpp" />
+	<ClCompile Include="AdminCommandHandler.cpp" />
     <ClCompile Include="CharacterSelectionHandler.cpp" />
     <ClCompile Include="CharacterMovementHandler.cpp" />
     <ClCompile Include="ChatHandler.cpp" />

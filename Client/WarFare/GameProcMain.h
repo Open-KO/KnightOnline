@@ -283,7 +283,26 @@ public:
 	void	MsgSend_ObjectEvent(int iEventID, int iNPCID);		// 오브젝트에 설정되어 있는 이벤트 요청..
 	void	MsgSend_Weather(int iWeather, int iPercent);
 	void	MsgSend_Time(int iHour, int iMin);
-	void	MsgSend_Administrator(enum e_SubPacket_Administrator eSP, const std::string& szID);
+	
+	//admin packets
+	void	MsgSend_AdminGiveItem(const std::string& strUserID, const std::string& strItemID, const std::string& strShowNotice);
+	void	MsgSend_AdminGiveCountableItem(const std::string& strUserID, const std::string& strItemID, const std::string& strCount, const std::string& strShowNotice);
+	void	MsgSend_AdminGiveExp(const std::string& strUserID, const std::string& strExpCount, const std::string& strShowNotice);
+	void	MsgSend_AdminArrestUser(const std::string& strUserID);
+	void	MsgSend_AdminSummonUser(const std::string& strUserID);
+	void	MsgSend_AdminCutoffUser(const std::string& strUserID);
+	void	MsgSend_AdminBanUser(const std::string& strUserID, const std::string& strShowNotice);
+	void	MsgSend_AdminUnbanUser(const std::string& strUserID, const std::string& strShowNotice);
+	void	MsgSend_AdminMuteUser(const std::string& strUserID, const std::string& strShowNotice);
+	void	MsgSend_AdminUnMuteUser(const std::string& strUserID, const std::string& strShowNotice);
+	void	MsgSend_AdminAttackDisable(const std::string& strUserID, const std::string& strShowNotice);
+	void	MsgSend_AdminAttackEnable(const std::string& strUserID, const std::string& strShowNotice);
+	void	MsgSend_AdminZoneChange(const std::string& strUserID, const std::string& strZoneID);
+	void	MsgSend_AdminGiveCoin(const std::string& strUserID, const std::string& strCoinCount, const std::string& strShowNotice);
+	void	MsgSend_AdminGiveNationalPoint(const std::string& strUserID, const std::string& strNpAmount, const std::string& strShowNotice);
+	void	MsgSend_AdminMakeVisible(enum e_SubPacket_State eSP);
+	void	MsgSend_AdminMakeInvisible(enum e_SubPacket_State eSP);
+	void	MsgSend_AdminHelp();
 	
 	void	MsgSend_KnightsJoin(int iTargetID);
 	void	MsgSend_KnightsLeave(std::string& szName);

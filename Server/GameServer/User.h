@@ -399,6 +399,7 @@ public:
 	INLINE GameState GetState() { return m_state; }
 
 	INLINE uint16_t GetActiveQuestID() { return m_sEventDataIndex; }
+	void SendOutputMsg(const char* msg, bool Success = true);
 
 	uint8_t GetClanGrade();
 	uint8_t GetClanRank();
@@ -596,6 +597,28 @@ public:
 	void RecastSavedMagic(uint8_t buffType = 0);
 	void RecastLockableScrolls(uint8_t buffType);
 
+	//Admin Commands
+	void AdminLogCommand(const std::string& sOperatorCommandType, const std::string& sUserID);
+	void AdminLogBadAccess();
+	void AdminGiveItemHandler(Packet& pkt);
+	void AdminGiveCountableItemHandler(Packet& pkt);
+	void AdminGiveExpHandler(Packet& pkt);
+	void AdminGiveCoinHandler(Packet& pkt);
+	void AdminGiveNationalPointHandler(Packet& pkt);
+	void AdminArrestUserHandler(Packet& pkt);
+	void AdminSummonUserHandler(Packet& pkt);
+	void AdminCutoffUserHandler(Packet& pkt);
+	void AdminBanUserHandler(Packet& pkt);
+	void AdminUnbanUserHandler(Packet& pkt);
+	void AdminMuteUserHandler(Packet& pkt);
+	void AdminUnMuteUserHandler(Packet& pkt);
+	void AdminDisableAttackHandler(Packet& pkt);
+	void AdminEnableAttackHandler(Packet& pkt);
+	void AdminZoneChangeHandler(Packet& pkt);
+	void AdminMakeVisible(Packet& pkt);
+	void AdminMakeInvisible(Packet& pkt);
+	void AdminHelp(Packet& pkt);
+
 	// packet handlers start here
 	void VersionCheck(Packet & pkt);
 	void LoginProcess(Packet & pkt);
@@ -742,7 +765,6 @@ public:
 
 	void ItemRepair(Packet & pkt);
 	void ItemRemove(Packet & pkt);
-	void OperatorCommand(Packet & pkt);
 	void WarehouseProcess(Packet & pkt);
 	void Home();
 

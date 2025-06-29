@@ -123,8 +123,26 @@
 #define WIZ_SKILLDATA			0x79
 #define WIZ_PROGRAMCHECK		0x7A
 #define WIZ_BIFROST				0x7B
+#define WIZ_MESSAGE_OUT			0x7D 
 #define WIZ_SERVER_KILL			0x7F
-
+#define WIZ_ADMIN_GIVE_ITEM		0x80 //give_item 
+#define WIZ_ADMIN_GIVE_EXP		0x81 //give_exp
+#define WIZ_ADMIN_ARREST_USER	0x82 //arrest
+#define WIZ_ADMIN_SUMMON_USER	0x83 //summon
+#define WIZ_ADMIN_CUTOFF_USER	0x84 //cutoff (disconnects user)
+#define WIZ_ADMIN_BAN_USER		0x85 //forbidconnect (bans)
+#define WIZ_ADMIN_UNBAN_USER	0x86 //permitconnect (unbans)
+#define WIZ_ADMIN_MUTE_USER		0x87 //forbidchat (mute)
+#define WIZ_ADMIN_UNMUTE_USER	0x88 //permitchat (remove mute)
+#define WIZ_ADMIN_DISABLE_ATTACK	0x89 //cmd: attackdisable
+#define WIZ_ADMIN_ENABLE_ATTACK		0x8A //cmd: attakcenable 
+#define WIZ_ADMIN_ZONE_CHANGE		0x8B //cmd: zonechange
+#define WIZ_ADMIN_GIVE_COIN			0x8C //cmd: give_coin
+#define WIZ_ADMIN_GIVE_NP			0x8D //cmd: give_np
+#define WIZ_ADMIN_MAKE_VISIBLE		0x8E //cmd: visible
+#define WIZ_ADMIN_MAKE_INVISIBLE	0x8F //cmd: invisible
+#define WIZ_ADMIN_GIVE_COUNTABLE_ITEM		0x90 //cmd: give_countable_item 
+#define WIZ_ADMIN_HELP				0x91 //cmd: gm_help 
 // NOTE(srmeier): testing this debug string functionality
 #define WIZ_DEBUG_STRING_PACKET 0xFE
 

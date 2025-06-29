@@ -100,7 +100,8 @@ enum e_ChatCmd
 	CMD_VISIBLE, CMD_INVISIBLE, CMD_CLEAN, CMD_RAINING, CMD_SNOWING, CMD_TIME, CMD_CU_COUNT,
 	CMD_NOTICE, CMD_ARREST, CMD_FORBIDCONNECT, CMD_FORBIDCHAT, CMD_PERMITCHAT, CMD_NOTICEALL,
 	CMD_CUTOFF, CMD_VIEW, CMD_UNVIEW, CMD_FORBIDUSER, CMD_SUMMONUSER,
-	CMD_ATTACKDISABLE, CMD_ATTACKENABLE, CMD_PLC,
+	CMD_ATTACKDISABLE, CMD_ATTACKENABLE, CMD_PLC, CMD_GIVE_EXP, CMD_GIVE_ITEM, CMD_ZONECHANGE,
+	CMD_PERMITCONNECT, CMD_GIVE_COIN, CMD_GIVE_NP, CMD_GIVE_COUNTABLE_ITEM, CMD_GM_HELP,
 
 	CMD_COUNT,
 	CMD_UNKNOWN = 0xffffffff
@@ -306,6 +307,16 @@ void CGameProcMain::Init()
 
 	for (uint32_t resource = IDS_CMD_VISIBLE; resource <= IDS_CMD_PLC; resource++)
 		GetText(resource, &s_szCmdMsg[i++]);
+
+	//NOTE: this should be add into tbl, Texts_us.tbl - 9000+
+	s_szCmdMsg[i++] = "give_exp";		//not in tbl
+	s_szCmdMsg[i++] = "give_item";		//not in tbl
+	s_szCmdMsg[i++] = "zonechange";		//not in tbl
+	s_szCmdMsg[i++] = "permitconnect";	//not in tbl
+	s_szCmdMsg[i++] = "give_coin";		//not in tbl
+	s_szCmdMsg[i++] = "give_np";		//not in tbl
+	s_szCmdMsg[i++] = "give_countable_item";		//not in tbl
+	s_szCmdMsg[i++] = "gm_help";		//not in tbl
 
 	s_SndMgr.ReleaseStreamObj(&s_pSnd_BGM);
 
@@ -846,6 +857,38 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 			pkt.readString(szDebugString, iLen);
 
 			MsgOutput("DEBUG: "+szDebugString, D3DCOLOR_ARGB(255, 255, 255, 0));
+
+		} return true;
+		case WIZ_MESSAGE_OUT:
+		{
+
+			int iLen = pkt.read<int16_t>();
+
+			std::string szMsg;
+			pkt.readString(szMsg, iLen);
+
+			bool Success = pkt.read<int8_t>();
+
+			if (Success)
+				MsgOutput(szMsg, D3DCOLOR_ARGB(255, 255, 255, 0));
+			else
+				MsgOutput(szMsg, D3DCOLOR_ARGB(255, 255, 0, 0));
+
+		} return true;
+
+		case WIZ_ADMIN_GIVE_ITEM:
+		{
+
+			int iItemID = pkt.read<int32_t>();
+			int iItemCount = pkt.read<int16_t>();
+			int iPos = pkt.read<int8_t>();
+			CGameProcedure::s_pProcMain->m_pUIDroppedItemDlg->AddToItemTableToInventory(iItemID, iItemCount, iPos);
+
+			//char szBuff[128] = "";
+			//std::string szMsg; ::_LoadStringFromResource(IDS_ITEM_GET_BY_RULE, szMsg);
+			//CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000); // pItem al
+			//sprintf(szBuff, szMsg.c_str(), pItem->szName.c_str());
+			//CGameProcedure::s_pProcMain->MsgOutput(szBuff, 0xff9b9bff);
 
 		} return true;
 
@@ -1700,18 +1743,306 @@ void CGameProcMain::MsgSend_Time(int iHour, int iMin)
 	s_pSocket->Send(byBuff, iOffset);
 }
 
-void CGameProcMain::MsgSend_Administrator(e_SubPacket_Administrator eSP, const std::string& szID)
+void CGameProcMain::MsgSend_AdminGiveItem(const std::string& strUserID,
+	const std::string& strItemID,
+	const std::string& strShowNotice)
 {
-	if(szID.empty() || szID.size() >= 20) return;
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	//Note:strItemID can be both item name and ID, example iron_bow_9_1 or ID
+	if (strItemID.size() > 30) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[128];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_GIVE_ITEM);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strItemID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strItemID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminGiveCountableItem(const std::string& strUserID,
+	const std::string& strItemID,
+	const std::string& strCount,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strItemID.size() > 10) return;
+	if (strCount.size() > 4) return;
+	if (strShowNotice.size() > 1) return;
+	
+	uint8_t byBuff[64];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_GIVE_COUNTABLE_ITEM);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strItemID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strItemID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strCount.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strCount);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminGiveExp(
+	const std::string& strUserID,
+	const std::string& strExpCount,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strExpCount.size() > 11) return; // (-2,100,000,000)
+	if (strShowNotice.size() > 1) return;
+	
+	uint8_t byBuff[64];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_GIVE_EXP); // 관리자 전용패킷..
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strExpCount.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strExpCount);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminArrestUser(const std::string& strUserID)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_ARREST_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminSummonUser(const std::string& strUserID)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_SUMMON_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminCutoffUser(const std::string& strUserID)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_CUTOFF_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminBanUser(const std::string& strUserID,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_BAN_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminUnbanUser(const std::string& strUserID, const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_UNBAN_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminMuteUser(const std::string& strUserID,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_MUTE_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminUnMuteUser(const std::string& strUserID,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_UNMUTE_USER);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminAttackDisable(const std::string& strUserID,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_DISABLE_ATTACK);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminAttackEnable(const std::string& strUserID,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_ENABLE_ATTACK);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminZoneChange(const std::string& strUserID,
+	const std::string& strZoneID)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strZoneID.empty() || strZoneID.size() > 3) return;
+
+	uint8_t byBuff[32];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_ZONE_CHANGE);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strZoneID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strZoneID);
+
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminGiveCoin(const std::string& strUserID,
+	const std::string& strCoinCount,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strCoinCount.empty() || strCoinCount.size() > 11) return; //(-2,100,000,000)
+	if (strShowNotice.size() > 1) return;
 
 	uint8_t byBuff[64];
-	int iOffset=0;
+	int iOffset = 0;
 
-	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_OPERATOR); // 관리자 전용패킷..
-	CAPISocket::MP_AddByte(byBuff, iOffset, eSP);
-	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t)szID.size());
-	CAPISocket::MP_AddString(byBuff, iOffset, szID);	
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_GIVE_COIN);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strCoinCount.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strCoinCount);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+	s_pSocket->Send(byBuff, iOffset);
+}
 
+void CGameProcMain::MsgSend_AdminGiveNationalPoint(const std::string& strUserID,
+	const std::string& strNpAmount,
+	const std::string& strShowNotice)
+{
+	if (strUserID.empty() || strUserID.size() > 20) return;
+	if (strNpAmount.empty() || strNpAmount.size() > 11) return; //(-2,100,000,000)
+	if (strShowNotice.size() > 1) return;
+
+	uint8_t byBuff[64];
+	int iOffset = 0;
+
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_GIVE_NP);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strUserID.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strUserID);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strNpAmount.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strNpAmount);
+	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) strShowNotice.size());
+	CAPISocket::MP_AddString(byBuff, iOffset, strShowNotice);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminMakeVisible(e_SubPacket_State eSP)
+{
+	uint8_t byBuff[2];
+	int iOffset = 0;
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_MAKE_VISIBLE);
+	CAPISocket::MP_AddByte(byBuff, iOffset, (uint8_t) eSP);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminMakeInvisible(e_SubPacket_State eSP)
+{
+	uint8_t byBuff[2];
+	int iOffset = 0;
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_MAKE_INVISIBLE);
+	CAPISocket::MP_AddByte(byBuff, iOffset, (uint8_t) eSP);
+	s_pSocket->Send(byBuff, iOffset);
+}
+
+void CGameProcMain::MsgSend_AdminHelp()
+{
+	uint8_t byBuff[1];
+	int iOffset = 0;
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ADMIN_HELP);
 	s_pSocket->Send(byBuff, iOffset);
 }
 
@@ -5649,9 +5980,9 @@ void CGameProcMain::RequestExit()
 
 void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 {
-	static char szCmds[4][1024] = { "", "", "", "" };
+	static char szCmds[5][1024] = { "", "", "", "" , "" };
 	static uint8_t byBuff[1024] = "";
-	sscanf(szCmd.c_str(), "/%s %s %s %s", szCmds[0], szCmds[1], szCmds[2], szCmds[3]);
+	sscanf(szCmd.c_str(), "/%s %s %s %s %s", szCmds[0], szCmds[1], szCmds[2], szCmds[3], szCmds[4]);
 
 	if(0 == lstrcmp(szCmds[0], "goto"))
 	{
@@ -5844,13 +6175,13 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 
 		case CMD_VISIBLE:
 		{
-			this->MsgSend_StateChange(N3_SP_STATE_CHANGE_VISIBLE, 0);
+			this->MsgSend_AdminMakeVisible(N3_SP_STATE_CHANGE_VISIBLE);
 		}
 		break;
 
 		case CMD_INVISIBLE:
 		{
-			this->MsgSend_StateChange(N3_SP_STATE_CHANGE_VISIBLE, 255);
+			this->MsgSend_AdminMakeInvisible(N3_SP_STATE_CHANGE_VISIBLE);
 		}
 		break;
 
@@ -5901,27 +6232,99 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 		}
 		break;
 
+		case CMD_GIVE_EXP:
+		{
+			this->MsgSend_AdminGiveExp(szCmds[1], szCmds[2], szCmds[3]);
+		}
+		break;
+
+		case CMD_GIVE_ITEM:
+		{
+			this->MsgSend_AdminGiveItem(szCmds[1], szCmds[2], szCmds[3]);
+		}
+		break;
+
+		case CMD_GIVE_COUNTABLE_ITEM:
+		{
+			this->MsgSend_AdminGiveCountableItem(szCmds[1], szCmds[2], szCmds[3], szCmds[4]);
+		}
+		break;
+
 		case CMD_ARREST:
 		{
-			this->MsgSend_Administrator(N3_SP_ADMINISTRATOR_ARREST, szCmds[1]); //추적		
+			this->MsgSend_AdminArrestUser(szCmds[1]);
+		}
+		break;
+
+		case CMD_SUMMONUSER:
+		{
+			this->MsgSend_AdminSummonUser(szCmds[1]);
+		}
+		break;
+
+		case CMD_CUTOFF:
+		{
+			this->MsgSend_AdminCutoffUser(szCmds[1]);
 		}
 		break;
 
 		case CMD_FORBIDCONNECT:
 		{
-			this->MsgSend_Administrator(N3_SP_ADMINISTRATOR_FORBID_CONNECT, szCmds[1]); //접속금지		
+			this->MsgSend_AdminBanUser(szCmds[1], szCmds[2]);
+		}
+		break;
+
+		case CMD_PERMITCONNECT:
+		{
+			this->MsgSend_AdminUnbanUser(szCmds[1], szCmds[2]);
 		}
 		break;
 		
 		case CMD_FORBIDCHAT:
 		{
-			this->MsgSend_Administrator(N3_SP_ADMINISTRATOR_CHAT_FORBID, szCmds[1]); //채팅금지		
+			this->MsgSend_AdminMuteUser(szCmds[1], szCmds[2]);
 		}
 		break;
 		
 		case CMD_PERMITCHAT:
 		{
-			this->MsgSend_Administrator(N3_SP_ADMINISTRATOR_CHAT_PERMIT, szCmds[1]); //채팅허가		
+			this->MsgSend_AdminUnMuteUser(szCmds[1], szCmds[2]);
+		}
+		break;
+
+		case CMD_ATTACKDISABLE:
+		{
+			this->MsgSend_AdminAttackDisable(szCmds[1], szCmds[2]);
+		}
+		break;
+
+		case CMD_ATTACKENABLE:
+		{
+			this->MsgSend_AdminAttackEnable(szCmds[1], szCmds[2]);
+		}
+		break;
+
+		case CMD_ZONECHANGE:
+		{
+			this->MsgSend_AdminZoneChange(szCmds[1], szCmds[2]);
+		}
+		break;
+
+		case CMD_GIVE_COIN:
+		{
+			this->MsgSend_AdminGiveCoin(szCmds[1], szCmds[2], szCmds[3]);
+		}
+		break;
+
+		case CMD_GIVE_NP:
+		{
+			this->MsgSend_AdminGiveNationalPoint(szCmds[1], szCmds[2], szCmds[3]);
+		}
+		break;
+
+		case CMD_GM_HELP:
+		{
+			this->MsgSend_AdminHelp();
 		}
 		break;
 		

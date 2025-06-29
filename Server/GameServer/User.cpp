@@ -6,6 +6,7 @@
 #include "DBAgent.h"
 #include <algorithm>
 #include "../shared/DateTime.h"
+#include <afx.h>
 
 CUser::CUser(uint16_t socketID, SocketMgr *mgr) : KOSocket(socketID, mgr, -1, 16384, 3172), Unit(UnitPlayer)
 {
@@ -382,9 +383,6 @@ bool CUser::HandlePacket(Packet & pkt)
 	case WIZ_ITEM_REMOVE:
 		ItemRemove(pkt);
 		break;
-	case WIZ_OPERATOR:
-		OperatorCommand(pkt);
-		break;
 	case WIZ_SPEEDHACK_CHECK:
 		SpeedHackTime(pkt);
 		break;
@@ -435,7 +433,60 @@ bool CUser::HandlePacket(Packet & pkt)
 	case WIZ_SIEGE:
 		SiegeWarFareNpc(pkt);
 		break;
-
+	case WIZ_ADMIN_GIVE_ITEM:
+		AdminGiveItemHandler(pkt);
+		break;
+	case WIZ_ADMIN_GIVE_COUNTABLE_ITEM:
+		AdminGiveCountableItemHandler(pkt);
+		break;
+	case WIZ_ADMIN_GIVE_EXP:
+		AdminGiveExpHandler(pkt);
+		break;
+	case WIZ_ADMIN_ARREST_USER:
+		AdminArrestUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_SUMMON_USER:
+		AdminSummonUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_CUTOFF_USER:
+		AdminCutoffUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_BAN_USER:
+		AdminBanUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_UNBAN_USER:
+		AdminUnbanUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_MUTE_USER:
+		AdminMuteUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_UNMUTE_USER:
+		AdminUnMuteUserHandler(pkt);
+		break;
+	case WIZ_ADMIN_DISABLE_ATTACK:
+		AdminDisableAttackHandler(pkt);
+		break;
+	case WIZ_ADMIN_ENABLE_ATTACK:
+		AdminEnableAttackHandler(pkt);
+		break;
+	case WIZ_ADMIN_ZONE_CHANGE:
+		AdminZoneChangeHandler(pkt);
+		break;
+	case WIZ_ADMIN_GIVE_COIN:
+		AdminGiveCoinHandler(pkt);
+		break;
+	case WIZ_ADMIN_GIVE_NP:
+		AdminGiveNationalPointHandler(pkt);
+		break;
+	case WIZ_ADMIN_MAKE_VISIBLE:
+		AdminMakeVisible(pkt);
+		break;
+	case WIZ_ADMIN_MAKE_INVISIBLE:
+		AdminMakeInvisible(pkt);
+		break;
+	case WIZ_ADMIN_HELP:
+		AdminHelp(pkt);
+		break;
 	default:
 		TRACE("[SID=%d] Unknown packet %X\n", GetSocketID(), command);
 		return false;
@@ -3305,106 +3356,7 @@ void CUser::SendAllKnightsID()
 	SendCompressed(&result);
 }
 
-void CUser::OperatorCommand(Packet & pkt)
-{
-	if (!isGM())
-		return;
 
-	std::string strUserID;
-	uint8_t opcode;
-	bool bIsOnline = false;
-	std::string sNoticeMessage, sOperatorCommandType;
-	pkt >> opcode >> strUserID;
-
-	if (strUserID.empty() || strUserID.size() > MAX_ID_SIZE)
-		return;
-
-	CUser *pUser = g_pMain->GetUserPtr(strUserID, TYPE_CHARACTER);
-	if (pUser == nullptr)
-		bIsOnline = false;
-	else
-		bIsOnline = true;
-
-	switch (opcode)
-	{
-	case OPERATOR_ARREST:
-		if (bIsOnline)
-		{
-			ZoneChange(pUser->GetZoneID(), pUser->m_curx, pUser->m_curz);
-			sOperatorCommandType = "OPERATOR_ARREST";
-		}
-		break;
-	case OPERATOR_SUMMON:
-		if (bIsOnline)
-		{
-			pUser->ZoneChange(GetZoneID(), m_curx, m_curz);
-			sOperatorCommandType = "OPERATOR_SUMMON";
-		}
-		break;
-	case OPERATOR_CUTOFF:
-		if (bIsOnline)
-		{
-			pUser->Disconnect();
-			sOperatorCommandType = "OPERATOR_CUTOFF";
-		}
-		break;
-	case OPERATOR_BAN:
-	case OPERATOR_BAN_ACCOUNT: // ban account is meant to call a proc to do so
-		if (bIsOnline)
-		{
-			pUser->m_bAuthority = AUTHORITY_BANNED;
-			pUser->Disconnect();
-		}
-		else 
-			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_BANNED);
-
-		sOperatorCommandType = "OPERATOR_BAN_ACCOUNT";
-		sNoticeMessage = string_format("%s is currently blocked for illegal activity.", strUserID.c_str());
-		break;
-	case OPERATOR_MUTE:
-		if (bIsOnline)
-			pUser->m_bAuthority = AUTHORITY_MUTED;
-		else
-			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_MUTED);
-
-		sOperatorCommandType = "OPERATOR_MUTE";
-		sNoticeMessage = string_format("%s is currently muted.", strUserID.c_str());
-		break;
-	case OPERATOR_DISABLE_ATTACK:
-		if (bIsOnline) 
-			pUser->m_bAuthority = AUTHORITY_ATTACK_DISABLED;
-		else
-			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_ATTACK_DISABLED);
-		sOperatorCommandType = "OPERATOR_DISABLE_ATTACK";
-		sNoticeMessage = string_format("%s is currently attack disabled.", strUserID.c_str());
-		break;
-	case OPERATOR_ENABLE_ATTACK:
-		if (bIsOnline)
-			pUser->m_bAuthority = AUTHORITY_PLAYER;
-		else
-			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_PLAYER);
-		sOperatorCommandType = "OPERATOR_ENABLE_ATTACK";
-		sNoticeMessage = string_format("%s is currently attack enabled.", strUserID.c_str());
-		break;
-	case OPERATOR_UNMUTE:
-		if (bIsOnline)
-			pUser->m_bAuthority = AUTHORITY_PLAYER;
-		else
-			g_DBAgent.UpdateUserAuthority(strUserID,AUTHORITY_PLAYER);
-		sOperatorCommandType = "OPERATOR_UNMUTE";
-		sNoticeMessage = string_format("%s is currently unmuted.", strUserID.c_str());
-		break;
-	}
-
-	if (!sNoticeMessage.empty())
-		g_pMain->SendNotice(sNoticeMessage.c_str(),Nation::ALL);
-
-	if (!sOperatorCommandType.empty())
-	{
-		DateTime time;
-		g_pMain->WriteChatLogFile(string_format("[ GAME MASTER - %d:%d:%d ] %s : %s %s ( Zone=%d, X=%d, Z=%d )\n",time.GetHour(),time.GetMinute(),time.GetSecond(),GetName().c_str(),sOperatorCommandType.c_str(),strUserID.c_str(),GetZoneID(),uint16_t(GetX()),uint16_t(GetZ())));
-	}
-}
 
 void CUser::SpeedHackTime(Packet & pkt)
 {
@@ -3460,6 +3412,21 @@ void CUser::SpeedHackTime(Packet & pkt)
 		}
 	}
 #endif
+}
+
+void CUser::SendOutputMsg(const char* msg, bool Success)
+{
+	if (msg == nullptr || strlen(msg) == 0)
+		return;
+
+	int16_t len = static_cast<int16_t>(strlen(msg));
+	if (len > 1024) len = 1024; // avoid long messages
+
+	Packet result(WIZ_MESSAGE_OUT);
+	result << len;
+	result.append(msg, len);
+	result << static_cast<uint8_t>(Success);
+	Send(&result);
 }
 
 int CUser::FindSlotForItem(uint32_t nItemID, uint16_t sCount /*= 1*/)
