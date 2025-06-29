@@ -2,14 +2,14 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include "../WarFare/N3UIWndBase.h"
+#include "StdAfx.h"
+#include "N3UIWndBase.h"
 
-#include "../WarFare/GameProcMain.h"
-#include "../WarFare/UIImageTooltipDlg.h"
-#include "../WarFare/UITransactionDlg.h"
-#include "../WarFare/UIManager.h"
-#include "../WarFare/CountableItemEditDlg.h"
+#include "GameProcMain.h"
+#include "UIImageTooltipDlg.h"
+#include "UITransactionDlg.h"
+#include "UIManager.h"
+#include "CountableItemEditDlg.h"
 
 #include <N3Base/N3UITooltip.h>
 #include <N3Base/N3SndObj.h>

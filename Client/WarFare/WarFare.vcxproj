@@ -121,6 +121,7 @@
     <ClCompile Include="MachineBase.cpp" />
     <ClCompile Include="MachineMng.cpp" />
     <ClCompile Include="MagicSkillMng.cpp" />
+    <ClCompile Include="N3UIWndBase.cpp" />
     <ClCompile Include="OrderMessage.cpp" />
     <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="PlayerMySelf.cpp" />

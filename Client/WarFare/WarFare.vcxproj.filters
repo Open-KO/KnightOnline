@@ -291,6 +291,9 @@
     <ClCompile Include="UILogin_1298.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="N3UIWndBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameProcedure.h">

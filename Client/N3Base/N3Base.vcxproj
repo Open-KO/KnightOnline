@@ -234,7 +234,6 @@
     <ClCompile Include="N3UIString.cpp" />
     <ClCompile Include="N3UITooltip.cpp" />
     <ClCompile Include="N3UITrackBar.cpp" />
-    <ClCompile Include="N3UIWndBase.cpp" />
     <ClCompile Include="N3VMesh.cpp" />
     <ClCompile Include="N3WorldBase.cpp" />
     <ClCompile Include="N3WorldManager.cpp" />

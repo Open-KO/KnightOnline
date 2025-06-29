@@ -539,9 +539,6 @@
     <ClCompile Include="N3UITrackBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3UIWndBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3VMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
