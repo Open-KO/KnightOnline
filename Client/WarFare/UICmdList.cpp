@@ -304,12 +304,16 @@ bool CUICmdList::UpdateCommandList(uint8_t cmdCat ) {
 				 m_pList_Cmds->AddString(itr->second);
 				 
 				 CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(itr->second);
-				 std::string cmdTip;
-				 CGameBase::GetText(itr->first + 100, &cmdTip);
-				 if(pChild != NULL) pChild->SetTooltipText(cmdTip.c_str());
-				 //SavvyNik tooltip is being loaded in but the rectangle 
-				 //that it shows on is too small. Need to figure out where
-				 //this is being set.
+				 std::string cmdTip, cmdName;
+				 
+				 //get command name
+				 CGameBase::GetText(itr->first, &cmdName);
+
+				 //fill with command name exp: /type %s, to /type ban_user
+				 CGameBase::GetTextF(itr->first + 100, &cmdTip, cmdName.c_str());
+				 
+				 if(pChild != nullptr) pChild->SetTooltipText(cmdTip.c_str());
+				 
 		}
 	}
 

@@ -101,18 +101,13 @@ void CN3UITooltip::SetText(const std::string& szText)
 		}
 		else
 		{	// single line이므로 적당한 크기를 계산한다.
-			SIZE CharSize = {0,0};
-			if (FALSE == m_pBuffOutRef->GetTextExtent("가", 2, &CharSize)) return;
+			SIZE TextSize = { 0, 0 };
+			// Measure size of full text
+			if (FALSE == m_pBuffOutRef->GetTextExtent(szText.c_str(), szText.size(), &TextSize))
+				return;
 
-			int iDiv = 25;
-			int iLineCount = (iStrLen + iDiv-1)/iDiv;
-			while (iLineCount > (iDiv/2))
-			{
-				iDiv += 5;
-				iLineCount = (iStrLen + iDiv-1)/iDiv;
-			}
-			size.cx = ((iDiv+1)*CharSize.cx + 1)/2;
-			size.cy = iLineCount*CharSize.cy;
+			size.cx = TextSize.cx;
+			size.cy = TextSize.cy;
 		}
 
 		size.cx += 12;
