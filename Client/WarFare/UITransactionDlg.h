@@ -111,7 +111,7 @@ public:
 	void				ShowTitle(e_NpcTrade eNT);
 
 	void				GoldUpdate();
-	void				UpdateWeight(int iVal, int iValMax);
+	void				UpdateWeight(const std::string& szWeight);
 };
 
 #endif // !defined(AFX_UITRANSACTIONDLG_H__42671245_FF4F_42FC_AF7B_DACEDA8734B7__INCLUDED_)

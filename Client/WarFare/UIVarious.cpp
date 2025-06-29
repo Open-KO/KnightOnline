@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "UIVarious.h"
+#include "UITransactionDlg.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
 #include "PlayerOtherMgr.h"
@@ -277,7 +278,8 @@ void CUIState::UpdateGuardPoint(int iVal, int iDelta)
 
 void CUIState::UpdateWeight(int iVal, int iValMax)
 {
-	if(NULL == m_pText_Weight) return;
+	if (m_pText_Weight == nullptr)
+		return;
 
 	char szVal[64] = "0 / 0";
 	sprintf(szVal, "%.1f/%.1f", (iVal * 0.1f), (iValMax * 0.1f));
@@ -289,8 +291,12 @@ void CUIState::UpdateWeight(int iVal, int iValMax)
 	std::string str = szMsg + szVal;
 
 	CUIInventory* pInv = CGameProcedure::s_pProcMain->m_pUIInventory;
-	if (pInv)
+	if (pInv != nullptr)
 		pInv->UpdateWeight(str);
+
+	CUITransactionDlg* pUITransactionDlg = CGameProcedure::s_pProcMain->m_pUITransactionDlg;
+	if (pUITransactionDlg != nullptr)
+		pUITransactionDlg->UpdateWeight(str);
 }
 
 void CUIState::UpdateStrength(int iVal, int iDelta)

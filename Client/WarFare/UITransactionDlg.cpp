@@ -385,21 +385,10 @@ void CUITransactionDlg::EnterTransactionState()
 	}
 }
 
-void CUITransactionDlg::UpdateWeight(int iVal, int iValMax)
+void CUITransactionDlg::UpdateWeight(const std::string& szWeight)
 {
-	if (m_pText_Weight == nullptr)
-		return;
-
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%.1f/%.1f", (iVal * 0.1f), (iValMax * 0.1f));
-
-	std::string szMsg;
-	CGameBase::GetTextF(IDS_INVEN_WEIGHT, &szMsg);
-
-	std::string str = szMsg + szVal;
-	
-	m_pText_Weight->SetString(str);
-
+	if (m_pText_Weight != nullptr)
+		m_pText_Weight->SetString(szWeight);
 }
 
 void CUITransactionDlg::GoldUpdate()
