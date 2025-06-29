@@ -147,8 +147,8 @@ void CUILevelGuide::LoadContent()
 		m_pEditLevel->SetFocus();
 
 	//search by starting 5 levels lower and end 5 levels higher than user level.
-	int iLowerLevelLimit = iSearchLevel - m_iRangeSearch;
-	int iUpperLevelLimit = iSearchLevel + m_iRangeSearch;
+	int iLowerLevelLimit = iSearchLevel - iRangeSearch;
+	int iUpperLevelLimit = iSearchLevel + iRangeSearch;
 
 	if (iLowerLevelLimit <= 1) iLowerLevelLimit = 1;
 	if (iUpperLevelLimit <= 1) iUpperLevelLimit = 1;
@@ -163,7 +163,7 @@ void CUILevelGuide::LoadContent()
 	std::fill(std::begin(m_saQuestTitle), std::end(m_saQuestTitle), "");
 	std::fill(std::begin(m_saQuestText), std::end(m_saQuestText), "");
 
-	for (size_t i = 0; i < TableSize && iCounter < m_iContentCount; i++)
+	for (size_t i = 0; i < TableSize && iCounter < iContentCount; i++)
 	{
 		__TABLE_QUEST_CONTENT* pQuestContent = CGameBase::s_pTbl_QuestContent.GetIndexedData(i);
 
@@ -185,7 +185,7 @@ void CUILevelGuide::LoadContent()
 	CN3UIString* pGuides[3] = { m_pTextGuide0, m_pTextGuide1, m_pTextGuide2 };
 
 	//find max number of pages, ceil without cmath
-	int iMaxPage = m_iContentCount / 3 + (m_iContentCount % 3 != 0 ? 1 : 0);
+	int iMaxPage = iContentCount / 3 + (iContentCount % 3 != 0 ? 1 : 0);
 
 	if (m_iCurrentPage < 1) m_iCurrentPage = 1;
 
@@ -346,19 +346,18 @@ bool CUILevelGuide::OnKeyPress(int iKey)
 		case DIK_ESCAPE:
 			SetVisible(false);
 			return true;
-			/* Not official behavior, focusing edit with tab key
+			/*// Not official behavior, focusing edit with tab key			
 		case DIK_TAB:
-			if (m_pEditLevel)
+			if (m_pEditLevel != nullptr)
 			{
 				m_pEditLevel->SetFocus();
 
-				std::string strText = m_pEditLevel->GetString();
+				const std::string& strText = m_pEditLevel->GetString();
 
 				size_t stlastPos = strText.length();
 
-				//BUG: set position to end, but when user keypress it resets
-				if (stlastPos <= UINT_MAX) //avoid overflow
-					m_pEditLevel->SetCaretPos(static_cast<UINT>(stlastPos));
+				//BUG: it sets position to end, but when user keypress it turns back to start
+				m_pEditLevel->SetCaretPos(stlastPos);
 
 			}
 			return true;
