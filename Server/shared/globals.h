@@ -45,22 +45,22 @@ enum e_NpcType : uint8_t
 
 	NPC_GENERAL				= 1,
 	NPC_EVENT				= 2, // can only use regular attacks on them, damage output is always 20.
-	NPC_BOSS				= 3, // 대장 몬스터
+	NPC_BOSS				= 3, // boss npc
 	NPC_BOSS_MONSTER		= NPC_BOSS,
 
-	NPC_DUNGEON_MONSTER		= 4, // 던젼 몬스터
-	NPC_TRAP_MONSTER		= 5, // 함정 몬스터
+	NPC_DUNGEON_MONSTER		= 4, // Dungeon Monster
+	NPC_TRAP_MONSTER		= 5, // Trap Monster
 	NPC_UNK_6				= 6,
 	NPC_REFUGEE				= 10,
-	NPC_GUARD				= 11, // 붙박이형 경비병
-	NPC_PATROL_GUARD		= 12, // 일반 필드에서 정찰을 담당하는 정찰병
-	NPC_STORE_GUARD			= 13, // 일반 필드에서 상점주변을 보호하는 경비병
+	NPC_GUARD				= 11, // Stationary Guard
+	NPC_PATROL_GUARD		= 12, // Scout assigned to reconnaissance in the general field
+	NPC_STORE_GUARD			= 13, // Guard protecting the area around the shop in the general field
 	NPC_WAR_GUARD			= 14,
 	NPC_PET					= 15,
 	NPC_GUARD_SUMMON		= 16,
 
-	NPC_MERCHANT			= 21, // 상점주인 NPC
-	NPC_TINKER				= 22, // 대장장이
+	NPC_MERCHANT			= 21, // Merchant NPC
+	NPC_TINKER				= 22, // Blacksmith
 	NPC_SELITH				= 23, // Selith[special store]
 	NPC_ANVIL				= 24,
 	NPC_MARK				= 25,
@@ -73,10 +73,10 @@ enum e_NpcType : uint8_t
 	NPC_KISS				= 32, // pretty useless.
 	NPC_ISAAC				= 33, // need to check which quests he handles
 	NPC_KAISHAN				= 34, // need to see what he actually does to name this properly
-	NPC_CAPTAIN				= 35, // 전직 시켜주는 NPC
-	NPC_CLAN				= 36, // 기사단 관리 NPC
+	NPC_CAPTAIN				= 35, // Class Change NPC
+	NPC_CLAN				= 36, // Knight Order Manager NPC
 	NPC_OFFICER				= NPC_CLAN,
-	NPC_CLERIC				= 37, // 대사제 NPC
+	NPC_CLERIC				= 37, // Priest NPC
 	NPC_LADY				= 38, // Calamus lady event -- need to see what they're used for
 	NPC_ATHIAN				= 39, // Priest athian -- need to see what they're used for
 	NPC_HEALER				= 40, // Healer
@@ -89,15 +89,15 @@ enum e_NpcType : uint8_t
 	NPC_SENTINEL_PATRICK	= 47, // need to check which quests he handles (was it the beginner quests, or was that isaac?)
 	NPC_TRADER_KIM			= 48, // Offering Trader Kim
 	NPC_PRIEST_IRIS			= 49, // [Priest] Iris
-	NPC_GATE				= 50, // 성문 (6->50)
+	NPC_GATE				= 50, // Castle Gate (6->50)
 	NPC_DOOR				= NPC_GATE,
 
-	NPC_PHOENIX_GATE		= 51, // 깨지지 않는 문 (8->51)
-	NPC_SPECIAL_GATE		= 52, // 깨지지 않는 문이면서 2분마다 열렸다 닫혔다 하는 문
+	NPC_PHOENIX_GATE		= 51, // Indestructible Door (8->51)
+	NPC_SPECIAL_GATE		= 52, // Unbreakable Door that opens and closes every 2 minutes
 	NPC_VICTORY_GATE		= 53,
-	NPC_GATE_LEVER			= 55, // 성문 레버...	(9->55)	
-	NPC_ARTIFACT			= 60, // 결계석 (7->60)
-	NPC_DESTROYED_ARTIFACT	= 61, // 파괴되는 결계석
+	NPC_GATE_LEVER			= 55, // Castle Gate Lever	(9->55)	
+	NPC_ARTIFACT			= 60, // Barrier Stone (7->60)
+	NPC_DESTROYED_ARTIFACT	= 61, // Destructible Barrier Stone
 	NPC_DESTORY_ARTIFACT	= NPC_DESTROYED_ARTIFACT,
 
 	NPC_GUARD_TOWER_NEW		= 62,
@@ -118,7 +118,7 @@ enum e_NpcType : uint8_t
 	NPC_ELECTION			= 79, // king elections
 	NPC_TREASURY			= 80,
 	NPC_CLAN_BANK			= 85,
-	NPC_DOMESTIC_ANIMAL		= 99, // 가축 NPC
+	NPC_DOMESTIC_ANIMAL		= 99, // Pet NPC
 	NPC_COUPON				= 100,
 	NPC_NPC_1				= 101, // "NPC1"
 	NPC_NPC_2				= 102, // "NPC2"
