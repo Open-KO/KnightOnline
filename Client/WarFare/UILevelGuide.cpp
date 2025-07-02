@@ -5,18 +5,13 @@
 #include "stdafx.h"
 #include "UILevelGuide.h"
 #include "GameDef.h"
-#include "LocalInput.h"
 #include "GameProcMain.h"
-#include "APISocket.h"
-#include "PacketDef.h"
 #include "PlayerMySelf.h"
-#include "MagicSkillMng.h"
 #include "UIManager.h"
+#include "resource.h"
 
 #include <N3Base/N3UIButton.h>
 #include <N3Base/N3UIEdit.h>
-#include <N3Base/N3UIImage.h>
-#include <N3Base/N3UIProgress.h>
 #include <N3Base/N3UIScrollBar.h>
 #include <N3Base/N3UIString.h>
 
@@ -38,9 +33,9 @@ CUILevelGuide::CUILevelGuide()
 	m_pBtn_Cancel			= nullptr;
 
 	m_iSearchLevel			= 0;
-	m_iCurrentPage			= 1;
+	m_iPageNo				= 0;
 
-	for (int i = 0; i < VISIBLE_ENTRY_COUNT; i++)
+	for (int i = 0; i < MAX_QUESTS_PER_PAGE; i++)
 	{
 		m_pScroll_Guide[i]	= nullptr;
 		m_pText_Guide[i]	= nullptr;
@@ -65,19 +60,13 @@ void CUILevelGuide::Release()
 	m_pBtn_Cancel			= nullptr;
 
 	m_iSearchLevel			= 0;
-	m_iCurrentPage			= 1;
+	m_iPageNo				= 0;
 
-	for (int i = 0; i < VISIBLE_ENTRY_COUNT; i++)
+	for (int i = 0; i < MAX_QUESTS_PER_PAGE; i++)
 	{
 		m_pScroll_Guide[i]	= nullptr;
 		m_pText_Guide[i]	= nullptr;
 		m_pText_Title[i]	= nullptr;
-	}
-
-	for (int i = 0; i < MAX_LIST_SIZE; i++)
-	{
-		m_saQuestTitle[i].clear();
-		m_saQuestText[i].clear();
 	}
 }
 
@@ -96,7 +85,7 @@ bool CUILevelGuide::Load(HANDLE hFile)
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Down,				(CN3UIButton*) GetChildByID("btn_down"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,			(CN3UIButton*) GetChildByID("btn_cancel"));
 
-	for (int i = 0; i < VISIBLE_ENTRY_COUNT; i++)
+	for (int i = 0; i < MAX_QUESTS_PER_PAGE; i++)
 	{
 		szID = "scroll_guide" + std::to_string(i);
 		N3_VERIFY_UI_COMPONENT(m_pScroll_Guide[i],	(CN3UIScrollBar*) GetChildByID(szID));
@@ -111,7 +100,36 @@ bool CUILevelGuide::Load(HANDLE hFile)
 	return true;
 }
 
-void CUILevelGuide::LoadContent()
+void CUILevelGuide::SearchQuests()
+{
+	if (m_pEdit_Level == nullptr)
+		return;
+
+	const std::string& szSearchLevel = m_pEdit_Level->GetString();
+
+	int iSearchLevel = std::atoi(szSearchLevel.c_str());
+	if (iSearchLevel == 0)
+		return;
+
+	// NOTE: This officially only checks the one way.
+	if ((CGameBase::s_pPlayer->m_InfoBase.iLevel + MAX_SEARCH_LEVEL_RANGE) < iSearchLevel)
+	{
+		std::string szMsg;
+		CGameBase::GetTextF(IDS_QUEST_SEARCH_LEVEL_ERROR, &szMsg, MAX_SEARCH_LEVEL_RANGE);
+		CGameProcedure::MessageBoxPost(szMsg, "", MB_OK);
+
+		iSearchLevel = CGameBase::s_pPlayer->m_InfoBase.iLevel + MAX_SEARCH_LEVEL_RANGE;
+	}
+
+	m_iSearchLevel = iSearchLevel;
+
+	SetPageNo(0);
+
+	m_pEdit_Level->SetString("");
+	m_pEdit_Level->SetFocus();
+}
+
+void CUILevelGuide::SetPageNo(int iPageNo)
 {
 	int iSearchLevel;
 
@@ -132,63 +150,77 @@ void CUILevelGuide::LoadContent()
 	if (m_pEdit_Level != nullptr)
 		m_pEdit_Level->SetFocus();
 
-	// search by starting 5 levels lower and end 5 levels higher than user level.
-	int iLowerLevelLimit = std::clamp(iSearchLevel - SEARCH_RANGE, 1, MAX_LEVEL);
-	int iUpperLevelLimit = std::clamp(iSearchLevel + SEARCH_RANGE, 1, MAX_LEVEL);
+	e_Class_Represent eCR = CGameBase::GetRepresentClass(CGameBase::s_pPlayer->m_InfoBase.eClass);
 
-	int iCounter = 0;
+	// Build list of eligible quests
+	std::vector<const __TABLE_HELP*> eligibleQuests;
 
-	size_t TableSize = CGameBase::s_pTbl_QuestContent.GetSize();
-
-	std::fill(std::begin(m_saQuestTitle), std::end(m_saQuestTitle), "");
-	std::fill(std::begin(m_saQuestText), std::end(m_saQuestText), "");
-
-	for (size_t i = 0; i < TableSize && iCounter < MAX_LIST_SIZE; i++)
+	auto& questDataMap = CGameBase::s_pTbl_Help.GetMap();
+	for (const auto& [_, questData] : questDataMap)
 	{
-		__TABLE_QUEST_CONTENT* pQuestContent = CGameBase::s_pTbl_QuestContent.GetIndexedData(i);
-		if (pQuestContent == nullptr)
-			continue;
-
-		int iQuestLevel = pQuestContent->iLevel;
-		if (iQuestLevel < iLowerLevelLimit
-			|| iQuestLevel > iUpperLevelLimit)
-			continue;
-
-		m_saQuestTitle[iCounter]	= pQuestContent->szTitle;
-		m_saQuestText[iCounter]		= pQuestContent->szQuestText + "\n" + pQuestContent->szHintText;
-
-		++iCounter;
+		if (iSearchLevel == questData.iMinLevel
+			&& iSearchLevel == questData.iMaxLevel)
+		{
+			if (questData.iReqClass == CLASS_REPRESENT_UNKNOWN
+				|| questData.iReqClass == eCR)
+				eligibleQuests.push_back(&questData);
+		}
+		else if (iSearchLevel >= questData.iMinLevel
+			&& iSearchLevel <= questData.iMaxLevel)
+		{
+			if (questData.iReqClass == CLASS_REPRESENT_UNKNOWN
+				|| questData.iReqClass == eCR)
+				eligibleQuests.push_back(&questData);
+		}
 	}
 
-	m_iCurrentPage = std::clamp(m_iCurrentPage, 1, MAX_PAGE_COUNT);
+	int iPageCount = (static_cast<int>(eligibleQuests.size()) + MAX_QUESTS_PER_PAGE - 1) / MAX_QUESTS_PER_PAGE;
 
-	int iStartIndex = (m_iCurrentPage - 1) * VISIBLE_ENTRY_COUNT;
+	// If we're ahead, we should roll it back to the last visible page.
+	if (iPageNo >= iPageCount)
+		iPageNo = iPageCount - 1;
 
-	for (int i = 0; i < VISIBLE_ENTRY_COUNT; i++)
+	if (iPageNo < 0)
+		iPageNo = 0;
+
+	m_iPageNo = iPageNo;
+
+	int iStartIndex = iPageNo * MAX_QUESTS_PER_PAGE;
+	int iVisibleIndex = 0;
+
+	// Skip straight to the first eligible quest for this page.
+	auto itr = eligibleQuests.begin();
+	std::advance(itr, iStartIndex);
+
+	// Attempt to display all 3, assuming 3 are present.
+	while (itr != eligibleQuests.end())
 	{
-		// last page 2 empty items
-		if (iStartIndex >= iCounter)
-		{
-			if (m_pText_Title[i] != nullptr)
-				m_pText_Title[i]->SetString("");
+		const __TABLE_HELP* pQuestData = *itr;
 
-			if (m_pText_Guide[i] != nullptr)
-				m_pText_Guide[i]->SetString("");
+		if (m_pText_Title[iVisibleIndex] != nullptr)
+			m_pText_Title[iVisibleIndex]->SetString(pQuestData->szQuestName);
 
-			continue;
-		}
+		if (m_pText_Guide[iVisibleIndex] != nullptr)
+			m_pText_Guide[iVisibleIndex]->SetString(pQuestData->szQuestDesc);
 
+		if (++iVisibleIndex >= MAX_QUESTS_PER_PAGE)
+			break;
+
+		++itr;
+	}
+
+	// Reset remaining quests if there weren't enough quests.
+	for (int i = iVisibleIndex; i < MAX_QUESTS_PER_PAGE; i++)
+	{
 		if (m_pText_Title[i] != nullptr)
-			m_pText_Title[i]->SetString(m_saQuestTitle[iStartIndex]);
+			m_pText_Title[i]->SetString("");
 
 		if (m_pText_Guide[i] != nullptr)
-			m_pText_Guide[i]->SetString(m_saQuestText[iStartIndex]);
-
-		++iStartIndex;
+			m_pText_Guide[i]->SetString("");
 	}
 
 	if (m_pText_Page != nullptr)
-		m_pText_Page->SetStringAsInt(m_iCurrentPage);
+		m_pText_Page->SetStringAsInt(m_iPageNo + 1);
 }
 
 void CUILevelGuide::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pTextGuide)
@@ -222,19 +254,16 @@ void CUILevelGuide::SetVisible(bool bVisible)
 
 	if (bVisible)
 	{
-		// display initial user info with respect to user level
-		m_iCurrentPage = 1;
-
-		LoadContent();
+		SetPageNo(0);
 		CGameProcedure::s_pUIMgr->SetVisibleFocusedUI(this);
 	}
 	else
 	{
-		CGameProcedure::s_pUIMgr->ReFocusUI();
-
 		if (m_pEdit_Level != nullptr
 			&& m_pEdit_Level->HaveFocus())
 			m_pEdit_Level->KillFocus();
+
+		CGameProcedure::s_pUIMgr->ReFocusUI();
 	}
 }
 
@@ -249,37 +278,23 @@ bool CUILevelGuide::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		}
 		else if (pSender == m_pBtn_Up)
 		{
-			m_iCurrentPage++;
-			LoadContent();
+			SetPageNo(m_iPageNo + 1);
 			return true;
 		}
 		else if (pSender == m_pBtn_Down)
 		{
-			m_iCurrentPage--;
-			LoadContent();
+			SetPageNo(m_iPageNo - 1);
 			return true;
 		}
-		// Search
 		else if (pSender == m_pBtn_Check)
 		{
-			if (m_pEdit_Level != nullptr)
-			{
-				const std::string& szSearchLevel = m_pEdit_Level->GetString();
-
-				// kill focus edit, after user press search button
-				m_pEdit_Level->KillFocus();
-
-				m_iSearchLevel = std::atoi(szSearchLevel.c_str());
-				m_iCurrentPage = 1;
-				LoadContent();
-			}
-			
+			SearchQuests();
 			return true;
 		}
 	}
 	else if (dwMsg == UIMSG_SCROLLBAR_POS)
 	{
-		for (int i = 0; i < VISIBLE_ENTRY_COUNT; i++)
+		for (int i = 0; i < MAX_QUESTS_PER_PAGE; i++)
 		{
 			if (pSender != m_pScroll_Guide[i])
 				continue;

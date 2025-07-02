@@ -29,7 +29,7 @@ CN3TableBase<__TABLE_FX>				CGameBase::s_pTbl_FXSource;
 CN3TableBase<__TABLE_QUEST_MENU>		CGameBase::s_pTbl_QuestMenu;
 CN3TableBase<__TABLE_QUEST_TALK>		CGameBase::s_pTbl_QuestTalk;
 CN3TableBase<__TABLE_QUEST_CONTENT>		CGameBase::s_pTbl_QuestContent;
-
+CN3TableBase<__TABLE_HELP>				CGameBase::s_pTbl_Help;
 
 CN3WorldManager*	CGameBase::s_pWorldMgr = NULL;		// 월드 매니져..
 CPlayerOtherMgr*	CGameBase::s_pOPMgr = NULL;				// Other Player Manager - 다른 유저 관리 클래스..
@@ -50,28 +50,29 @@ void CGameBase::StaticMemberInit()
 	if(0x0404 == iLangID) szLangTail = "_TW.tbl"; // Taiwan Language
 
 	std::string szFN;
-	szFN = "Data\\Texts" + szLangTail;		s_pTbl_Texts.LoadFromFile(szFN.c_str());
-	szFN = "Data\\Zones.tbl";				s_pTbl_Zones.LoadFromFile(szFN.c_str());		// Zone 정보에 관한 Table
-	szFN = "Data\\UIs" + szLangTail;		s_pTbl_UI.LoadFromFile(szFN.c_str());			// UI Resource File Table loading
-	szFN = "Data\\UPC_DefaultLooks.tbl";	s_pTbl_UPC_Looks.LoadFromFile(szFN.c_str());	// 플레이어들의 기본 모습이 되는 NPC Resource Table loading
-	szFN = "Data\\Item_Org" + szLangTail;	s_pTbl_Items_Basic.LoadFromFile(szFN.c_str());	// Item Resource Table loading
+	szFN = "Data\\Texts" + szLangTail;		s_pTbl_Texts.LoadFromFile(szFN);
+	szFN = "Data\\Zones.tbl";				s_pTbl_Zones.LoadFromFile(szFN);		// Zone 정보에 관한 Table
+	szFN = "Data\\UIs" + szLangTail;		s_pTbl_UI.LoadFromFile(szFN);			// UI Resource File Table loading
+	szFN = "Data\\UPC_DefaultLooks.tbl";	s_pTbl_UPC_Looks.LoadFromFile(szFN);	// 플레이어들의 기본 모습이 되는 NPC Resource Table loading
+	szFN = "Data\\Item_Org" + szLangTail;	s_pTbl_Items_Basic.LoadFromFile(szFN);	// Item Resource Table loading
 
-	szFN = "Data\\Quest_Menu" + szLangTail;	s_pTbl_QuestMenu.LoadFromFile(szFN.c_str());	// 퀘스트 관련 선택메뉴
-	szFN = "Data\\Quest_Talk" + szLangTail;	s_pTbl_QuestTalk.LoadFromFile(szFN.c_str());	// 퀘스트 관련 지문
-	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_QuestContent.LoadFromFile(szFN.c_str());	//Quest_Content_us.tbl
+	szFN = "Data\\Quest_Menu" + szLangTail;	s_pTbl_QuestMenu.LoadFromFile(szFN);	// 퀘스트 관련 선택메뉴
+	szFN = "Data\\Quest_Talk" + szLangTail;	s_pTbl_QuestTalk.LoadFromFile(szFN);	// 퀘스트 관련 지문
+	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_QuestContent.LoadFromFile(szFN);
+	szFN = "Data\\Help" + szLangTail;		s_pTbl_Help.LoadFromFile(szFN);
 
 	for(int i = 0; i < MAX_ITEM_EXTENSION; i++)
 	{
 		char szFNTmp[256] = "";
 		sprintf(szFNTmp, "Data\\Item_Ext_%d", i);
 		szFN = szFNTmp + szLangTail;
-		s_pTbl_Items_Exts[i].LoadFromFile(szFN.c_str());
+		s_pTbl_Items_Exts[i].LoadFromFile(szFN);
 	}
 
-	szFN = "Data\\NPC_Looks.tbl";					s_pTbl_NPC_Looks.LoadFromFile(szFN.c_str());		// NPC Resource Table loading
-	szFN = "Data\\skill_magic_main" + szLangTail;	s_pTbl_Skill.LoadFromFile(szFN.c_str());			// Skill 정보에 관한 Table
-	szFN = "Data\\Exchange_Quest.tbl";				s_pTbl_Exchange_Quest.LoadFromFile(szFN.c_str());	// 교환 퀘스트에 관한 테이블..
-	szFN = "Data\\fx.tbl";							s_pTbl_FXSource.LoadFromFile(szFN.c_str());
+	szFN = "Data\\NPC_Looks.tbl";					s_pTbl_NPC_Looks.LoadFromFile(szFN);		// NPC Resource Table loading
+	szFN = "Data\\skill_magic_main" + szLangTail;	s_pTbl_Skill.LoadFromFile(szFN);			// Skill 정보에 관한 Table
+	szFN = "Data\\Exchange_Quest.tbl";				s_pTbl_Exchange_Quest.LoadFromFile(szFN);	// 교환 퀘스트에 관한 테이블..
+	szFN = "Data\\fx.tbl";							s_pTbl_FXSource.LoadFromFile(szFN);
 
 	s_pWorldMgr = new CN3WorldManager();
 	s_pOPMgr = new CPlayerOtherMgr();

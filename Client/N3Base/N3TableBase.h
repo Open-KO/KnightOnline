@@ -24,17 +24,22 @@ template <typename Type> class CN3TableBase
 {
 public:
 	using DATA_TYPE = TBL_DATA_TYPE;
+	using MAP_TYPE = std::map<uint32_t, Type>;
 
 	CN3TableBase();
 	virtual ~CN3TableBase();
 
 // Attributes
 protected:
-	typename std::vector<DATA_TYPE> m_DataTypes;	// 실제 사용되는 정보의 데이타 타입
-	typename std::map<uint32_t, Type> m_Datas; // 실제 사용되는 정보
+	std::vector<DATA_TYPE> m_DataTypes;	// 실제 사용되는 정보의 데이타 타입
+	MAP_TYPE m_Datas; // 실제 사용되는 정보
 
 // Operations
 public:
+	inline const MAP_TYPE& GetMap() const {
+		return m_Datas;
+	}
+
 	void	Release();
 	Type*	Find(uint32_t dwID) // ID로 data 찾기
 	{

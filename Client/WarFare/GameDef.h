@@ -99,7 +99,7 @@ enum e_Class {	CLASS_KINDOF_WARRIOR = 1, CLASS_KINDOF_ROGUE, CLASS_KINDOF_WIZARD
 				
 				CLASS_UNKNOWN = 0xffffffff };
 
-enum e_Class_Represent { CLASS_REPRESENT_WARRIOR = 0, CLASS_REPRESENT_ROGUE, CLASS_REPRESENT_WIZARD, CLASS_REPRESENT_PRIEST, CLASS_REPRESENT_UNKNOWN = 0xffffffff };
+enum e_Class_Represent { CLASS_REPRESENT_WARRIOR = 0, CLASS_REPRESENT_ROGUE, CLASS_REPRESENT_WIZARD, CLASS_REPRESENT_PRIEST, CLASS_REPRESENT_UNKNOWN = 100 };
 
 const float WEAPON_WEIGHT_STAND_SWORD = 5.0f; // 무기의 무게 기준...칼
 const float WEAPON_WEIGHT_STAND_AXE = 5.0f; // 무기의 무게 기준...도끼
@@ -1150,17 +1150,25 @@ typedef struct __TABLE_QUEST_TALK
 	std::string szTalk;		// 퀘스트 지문
 } TABLE_QUEST_TALK;
 
-//struct , Quest_content_us.tbl
 typedef struct __TABLE_QUEST_CONTENT
 {
-	uint32_t		dwID;			//01
-	int				iLevel;			//02	
-	int				iType;			//03
-	std::string		szTitle;		//04
-	std::string		szQuestText;	//05
-	std::string		szHintText;		//06
-
+	uint32_t		dwID;
+	int				iReqLevel;
+	int				iReqClass;
+	std::string		szName;
+	std::string		szDesc;
+	std::string		szReward;
 } TABLE_QUEST_CONTENT;
+
+typedef struct __TABLE_HELP
+{
+	DWORD		dwID;
+	int			iMinLevel;
+	int			iMaxLevel;
+	int			iReqClass;
+	std::string	szQuestName;
+	std::string	szQuestDesc;
+} TABLE_HELP;
 
 const int MAX_ITEM_SLOT_OPC = 8; // 착용 아이템 - 다른 플레이어(NPC 포함) 0 ~ 4 상체,하체,헬멧,팔,발 5 망토 6 오른손 7 왼손
 const int MAX_ITEM_INVENTORY = 28;		// 소유 아템 MAX (인벤토리창)

@@ -455,7 +455,55 @@
 #define IDS_WANT_PARTY_MEMBER           6123
 #define IDS_SETTING_KARUS_SCREEN        6124
 #define IDS_SETTING_ELMORAD_SCREEN      6125
+
+#define IDS_PARTY_BBS_REGISTER          6300
+#define IDS_PARTY_BBS_REGISTER_CANCEL   6301
+#define IDS_TRADE_BBS_SELL_REGISTER     6302
+#define IDS_TRADE_BBS_PER_TRADE         6303
+#define IDS_TRADE_BBS_BUY_REGISTER      6304
+#define IDS_TRADE_BBS_FAIL1             6305
+#define IDS_TRADE_BBS_FAIL2             6306
+#define IDS_TRADE_BBS_FAIL3             6307
+#define IDS_TRADE_BBS_FAIL4             6308
+#define IDS_TRADE_BBS_FAIL5             6309
+#define IDS_TRADE_BBS_FAIL6             6310
+#define IDS_OTHER_PER_TRADE_ID_NO       6311
+#define IDS_CLAN_DENY_LOWLEVEL          6500
+#define IDS_CLAN_DENY_LOWGOLD           6501
+#define IDS_CLAN_DENY_INVALIDDAY        6502
+#define IDS_CLAN_DENY_ALREADYJOINED     6503
+#define IDS_CLAN_DENY_UNKNOWN           6504
+#define IDS_CLAN_MAKE_SUCCESS           6505
+#define IDS_CLAN_WARNING_COST           6506
+#define IDS_CLAN_INPUT_NAME             6507
+#define IDS_CLAN_REINPUT_NAME           6508
+#define IDS_CLAN_WITHDRAW_SUCCESS       6509
+#define IDS_CLAN_WITHDRAW_FAIL          6510
+#define IDS_CLAN_JOIN_SUCCESS           6511
+#define IDS_CLAN_JOIN_FAIL_CLAN_FULL    6512
+#define IDS_CLAN_JOIN_FAIL_NONE_CLAN    6513
+#define IDS_CLAN_JOIN_FAIL_INVALIDRIGHT 6514
+#define IDS_CLAN_JOIN_FAIL_OTHER_CLAN_USER 6515
+#define IDS_CLAN_JOIN_FAIL_ENEMY_USER   6516
+#define IDS_CLAN_JOIN_FAIL_DEAD_USER    6517
+#define IDS_CLAN_JOIN_FAIL_NONE_USER    6518
+#define IDS_CLAN_COMMON_FAIL_ME         6519
+#define IDS_CLAN_COMMON_FAIL_NOTJOINED  6520
+#define IDS_CLAN_JOIN_REQ               6521
+#define IDS_CLAN_JOIN_REJECT            6522
+#define IDS_CLAN_COMMON_FAIL_BATTLEZONE 6523
+#define IDS_CONFIRM_EXECUTE_OPTION      6524
+#define IDS_REQUEST_GAME_SAVE           6525
+#define IDS_DELAY_GAME_SAVE             6526
+#define IDS_CLAN_DENY_INVALID_SERVER    6527
+#define IDS_DEAD_RETURN_TOWN            6600
+#define IDS_DEAD_REVIVAL                6601
+#define IDS_DEAD_LACK_LIFE_STONE        6602
+#define IDS_DEAD_REVIVAL_MESSAGE        6603
+#define IDS_DEAD_LOW_LEVEL              6604
+#define IDS_INVEN_WEIGHT                6605
 #define IDS_WARP_ARRIVED_AT             6606 // You've arrived at %s.
+#define IDS_CONNECTING_PLEASE_WAIT		6609
 #define IDS_WARP_MIN_LEVEL              6610 // You need to be at least level %d.
 #define IDS_WARP_NOT_DURING_WAR         6611 // You cannot enter during the Lunar War. 
 #define IDS_WARP_NOT_DURING_CSW         6612 // You cannot enter during the Castle Siege War. 
@@ -465,6 +513,8 @@
 
 #define IDS_EXITING_GAME_IN_X_SECONDS	7632 // Exiting game in %d seconds.
 #define IDS_EXITING_GAME_CANCELED		7633 // Exiting game canceled.
+#define IDS_CANNOT_EXIT_DURING_A_BATTLE	7634
+
 #define IDS_WARP_LEVEL_30_TO_50         7657 // Only characters with level 30~50 can enter.
 #define IDS_WARP_DO_NOT_QUALIFY         7659 // You cannot enter because you do not qualify. 
 
@@ -567,54 +617,7 @@
 #define IDS_CMD_ATTACKENABLE			9019
 #define IDS_CMD_PLC						9020
 
-#define IDS_PARTY_BBS_REGISTER          6300
-#define IDS_PARTY_BBS_REGISTER_CANCEL   6301
-#define IDS_TRADE_BBS_SELL_REGISTER     6302
-#define IDS_TRADE_BBS_PER_TRADE         6303
-#define IDS_TRADE_BBS_BUY_REGISTER      6304
-#define IDS_TRADE_BBS_FAIL1             6305
-#define IDS_TRADE_BBS_FAIL2             6306
-#define IDS_TRADE_BBS_FAIL3             6307
-#define IDS_TRADE_BBS_FAIL4             6308
-#define IDS_TRADE_BBS_FAIL5             6309
-#define IDS_TRADE_BBS_FAIL6             6310
-#define IDS_OTHER_PER_TRADE_ID_NO       6311
-#define IDS_CLAN_DENY_LOWLEVEL          6500
-#define IDS_CLAN_DENY_LOWGOLD           6501
-#define IDS_CLAN_DENY_INVALIDDAY        6502
-#define IDS_CLAN_DENY_ALREADYJOINED     6503
-#define IDS_CLAN_DENY_UNKNOWN           6504
-#define IDS_CLAN_MAKE_SUCCESS           6505
-#define IDS_CLAN_WARNING_COST           6506
-#define IDS_CLAN_INPUT_NAME             6507
-#define IDS_CLAN_REINPUT_NAME           6508
-#define IDS_CLAN_WITHDRAW_SUCCESS       6509
-#define IDS_CLAN_WITHDRAW_FAIL          6510
-#define IDS_CLAN_JOIN_SUCCESS           6511
-#define IDS_CLAN_JOIN_FAIL_CLAN_FULL    6512
-#define IDS_CLAN_JOIN_FAIL_NONE_CLAN    6513
-#define IDS_CLAN_JOIN_FAIL_INVALIDRIGHT 6514
-#define IDS_CLAN_JOIN_FAIL_OTHER_CLAN_USER 6515
-#define IDS_CLAN_JOIN_FAIL_ENEMY_USER   6516
-#define IDS_CLAN_JOIN_FAIL_DEAD_USER    6517
-#define IDS_CLAN_JOIN_FAIL_NONE_USER    6518
-#define IDS_CLAN_COMMON_FAIL_ME         6519
-#define IDS_CLAN_COMMON_FAIL_NOTJOINED  6520
-#define IDS_CLAN_JOIN_REQ               6521
-#define IDS_CLAN_JOIN_REJECT            6522
-#define IDS_CLAN_COMMON_FAIL_BATTLEZONE 6523
-#define IDS_CONFIRM_EXECUTE_OPTION      6524
-#define IDS_REQUEST_GAME_SAVE           6525
-#define IDS_DELAY_GAME_SAVE             6526
-#define IDS_CLAN_DENY_INVALID_SERVER    6527
-#define IDS_DEAD_RETURN_TOWN            6600
-#define IDS_DEAD_REVIVAL                6601
-#define IDS_DEAD_LACK_LIFE_STONE        6602
-#define IDS_DEAD_REVIVAL_MESSAGE        6603
-#define IDS_DEAD_LOW_LEVEL              6604
-#define IDS_INVEN_WEIGHT                6605
-#define IDS_CONNECTING_PLEASE_WAIT		6609
-#define IDS_CANNOT_EXIT_DURING_A_BATTLE	7634
+#define IDS_QUEST_SEARCH_LEVEL_ERROR    10100 // You can only search up to +%d levels from your current level.
 
 // Next default values for new objects
 // 
