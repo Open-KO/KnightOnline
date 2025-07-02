@@ -9,10 +9,16 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIButton.h"
-#include "N3UIList.h"
-#include "N3UIEdit.h"
+#include <N3Base/N3Base.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIList.h>
+#include <N3Base/N3UIEdit.h>
+
+#include <N3Base/N3UIProgress.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3Texture.h>
+//#include "N3UIDBCLButton.h"
 
 class CUICmdList : public CN3UIBase
 {
@@ -24,11 +30,11 @@ protected:
 	CN3UIList*		m_pList_CmdCat;
 	CN3UIList*		m_pList_Cmds;
 
-	bool		m_bOpenningNow; // 열리고 있다..
-	bool		m_bClosingNow;	// 닫히고 있다..
-	float		m_fMoveDelta; // 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
+	bool		m_bOpenningNow; // It's opening...
+	bool		m_bClosingNow;	// It's closing...
+	float		m_fMoveDelta; // To make it open and close smoothly, floating-point numbers are used for calculating the current position.
 
-	int			m_iRBtnDownOffs;
+	//int		m_iRBtnDownOffs; //unused
 
 	enum iCmd
 	{
