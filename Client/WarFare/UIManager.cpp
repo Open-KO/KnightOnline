@@ -432,19 +432,20 @@ void CUIManager::SetVisibleFocusedUI(CN3UIBase *pUI)
 			}
 
 			dwUIHideStyle = pUIHide->GetStyle();
-			if(pUIHide->IsVisible() && pUI != pUIHide && (dwUIHideStyle & UISTYLE_SHOW_ME_ALONE))
-				pUIHide->SetVisibleWithNoSound(false, true);
-/*
-			if(pUIHide->IsVisible() && pUI != pUIHide)
+
+			if (pUIHide->IsVisible()
+				&& pUI != pUIHide)
 			{
-				if(dwUIHideStyle & UISTYLE_SHOW_ME_ALONE)
+				if ((dwUIHideStyle & UISTYLE_SHOW_ME_ALONE) != 0)
 					pUIHide->SetVisibleWithNoSound(false, true);
-				else if( (dwUIStyle & UISTYLE_POS_LEFT) && (dwUIHideStyle & UISTYLE_POS_LEFT) )
+				else if ((dwUIStyle & UISTYLE_POS_LEFT) != 0
+					&& (dwUIHideStyle & UISTYLE_POS_LEFT) != 0)
 					pUIHide->SetVisibleWithNoSound(false, true);
-				else if( (dwUIStyle & UISTYLE_POS_RIGHT) && (dwUIHideStyle & UISTYLE_POS_RIGHT) )
+				else if ((dwUIStyle & UISTYLE_POS_RIGHT) != 0
+					&& (dwUIHideStyle & UISTYLE_POS_RIGHT) != 0)
 					pUIHide->SetVisibleWithNoSound(false, true);
 			}
-*/
+
 			it++;
 		}
 	}
