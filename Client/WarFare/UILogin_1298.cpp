@@ -570,13 +570,10 @@ void CUILogIn_1298::OpenServerList()
 	if (m_pStr_Premium != nullptr)
 		m_pStr_Premium->SetVisible(true);
 
-	if (m_pServer_Group[0] != nullptr && m_pList_Group[0] != nullptr)
-	{
-		// Set top server as selected
-		m_pList_Group[0]->SetColor(D3DCOLOR_XRGB(0, 255, 0)); // Green (selected)
-		m_iSelectedServerIndex = 0;
-	}
-	
+	// Select first server by default.
+	if (m_pList_Group[0] != nullptr)
+		ReceiveMessage(m_pList_Group[0], UIMSG_STRING_LCLICK);
+
 	m_bIsNewsVisible = false;
 }
 
