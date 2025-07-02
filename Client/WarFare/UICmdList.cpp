@@ -194,16 +194,10 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 bool CUICmdList::OnKeyPress(int iKey)
 {
-	switch (iKey)
+	if (iKey == DIK_ESCAPE)
 	{
-	case DIK_ESCAPE:
-	{	// When the hotkey has focus, other UIs cannot be closed, so when DIK_ESCAPE is pressed, regain the focus.
-		// Closes other open UIs.
-		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
-		CN3UIBase* pFocus = CGameProcedure::s_pUIMgr->GetFocusedUI();
-		if (pFocus && pFocus != this) pFocus->OnKeyPress(iKey);
-	}
-	return true;
+		Close(); //close with animation
+		return true;
 	}
 
 	return CN3UIBase::OnKeyPress(iKey);
