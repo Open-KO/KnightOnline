@@ -158,20 +158,13 @@ void CUILevelGuide::SetPageNo(int iPageNo)
 	auto& questDataMap = CGameBase::s_pTbl_Help.GetMap();
 	for (const auto& [_, questData] : questDataMap)
 	{
-		if (iSearchLevel == questData.iMinLevel
-			&& iSearchLevel == questData.iMaxLevel)
-		{
-			if (questData.iReqClass == CLASS_REPRESENT_UNKNOWN
-				|| questData.iReqClass == eCR)
-				eligibleQuests.push_back(&questData);
-		}
-		else if (iSearchLevel >= questData.iMinLevel
-			&& iSearchLevel <= questData.iMaxLevel)
-		{
-			if (questData.iReqClass == CLASS_REPRESENT_UNKNOWN
-				|| questData.iReqClass == eCR)
-				eligibleQuests.push_back(&questData);
-		}
+		if (iSearchLevel < questData.iMinLevel
+			|| iSearchLevel > questData.iMaxLevel)
+			continue;
+
+		if (questData.iReqClass == CLASS_REPRESENT_UNKNOWN
+			|| questData.iReqClass == eCR)
+			eligibleQuests.push_back(&questData);
 	}
 
 	int iPageCount = (static_cast<int>(eligibleQuests.size()) + MAX_QUESTS_PER_PAGE - 1) / MAX_QUESTS_PER_PAGE;
