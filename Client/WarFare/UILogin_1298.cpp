@@ -132,12 +132,12 @@ bool CUILogIn_1298::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		for (int i = 0; i < MAX_SERVERS; i++)
 		{
-			if (m_pServer_Group[i] == nullptr)
+			if (m_pList_Group[i] == nullptr)
 				continue;
 
 			if (pSender == m_pList_Group[i])
 			{
-				m_iSelectedServerIndex = i;
+				SelectServer(i);
 				CGameProcedure::s_pProcLogIn->ConnectToGameServer();
 				return true;
 			}
@@ -148,17 +148,10 @@ bool CUILogIn_1298::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		for (int i = 0; i < MAX_SERVERS; i++)
 		{
-			if (m_pServer_Group[i] != nullptr)
-				m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(255, 255, 255)); // white
-		}
-
-		for (int i = 0; i < MAX_SERVERS; i++)
-		{
-			if (m_pServer_Group[i] != nullptr
+			if (m_pList_Group[i] != nullptr
 				&& pSender == m_pList_Group[i])
 			{
-				m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(0, 255, 0)); // green
-				m_iSelectedServerIndex = i;
+				SelectServer(i);
 				return true;
 			}
 		}
@@ -263,7 +256,7 @@ bool CUILogIn_1298::Load(HANDLE hFile)
 		N3_VERIFY_UI_COMPONENT(m_pList_Group[i], (CN3UIString*) m_pServer_Group[i]->GetChildByID("List_Server"));
 	}
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Connect , (CN3UIButton* )m_pGroup_ServerList->GetChildByID("Btn_Connect"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Connect, (CN3UIButton*) m_pGroup_ServerList->GetChildByID("Btn_Connect"));
 		
 	return true;
 }
@@ -571,8 +564,7 @@ void CUILogIn_1298::OpenServerList()
 		m_pStr_Premium->SetVisible(true);
 
 	// Select first server by default.
-	if (m_pList_Group[0] != nullptr)
-		ReceiveMessage(m_pList_Group[0], UIMSG_STRING_LCLICK);
+	SelectServer(0);
 
 	m_bIsNewsVisible = false;
 }
@@ -613,7 +605,7 @@ bool CUILogIn_1298::OnKeyPress(int iKey)
 				if (m_iSelectedServerIndex < 0)
 					m_iSelectedServerIndex = iServerCount - 1;
 
-				ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LCLICK);
+				SelectServer(m_iSelectedServerIndex);
 			}
 			return true;
 
@@ -627,22 +619,15 @@ bool CUILogIn_1298::OnKeyPress(int iKey)
 				if (m_iSelectedServerIndex >= iServerCount)
 					m_iSelectedServerIndex = 0;
 
-				ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LCLICK);
+				SelectServer(m_iSelectedServerIndex);
 			}
 			return true;
 
 			case DIK_NUMPADENTER:
 			case DIK_RETURN:
-			{
-				// select the first server if user presses enter at server select screen
-				if (m_iSelectedServerIndex == -1)
-				{
-					m_iSelectedServerIndex = 0;
-					ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LCLICK);
-				}
-
-			}
-			return true;
+				// connect to the selected server if user presses enter at server select screen
+				ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LDCLICK);
+				return true;
 		}
 	}
 	else if (m_bIsNewsVisible)
@@ -656,5 +641,21 @@ bool CUILogIn_1298::OnKeyPress(int iKey)
 	}
 
 	return CN3UIBase::OnKeyPress(iKey);
+}
+
+void CUILogIn_1298::SelectServer(int iServerListIndex)
+{
+	m_iSelectedServerIndex = std::clamp(iServerListIndex, 0, MAX_SERVERS - 1);
+
+	for (int i = 0; i < MAX_SERVERS; i++)
+	{
+		if (m_pList_Group[i] == nullptr)
+			continue;
+
+		if (i == m_iSelectedServerIndex)
+			m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(0, 255, 0)); // green
+		else
+			m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(255, 255, 255)); // white
+	}
 }
 #endif
