@@ -419,8 +419,6 @@ void CUILogIn_1298::ServerInfoUpdate()
 
 void CUILogIn_1298::AddNews(const std::string& strNews)
 {
-	// TODO: needs improvement	
-
 	std::vector<std::string> titles, messages;
 
 	titles.reserve(MAX_NEWS_COUNT);
