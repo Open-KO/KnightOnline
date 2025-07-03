@@ -232,9 +232,6 @@ bool CGameProcLogIn_1298::MsgSend_NewsReq()
 
 void CGameProcLogIn_1298::MsgRecv_News(Packet& pkt)
 {
-	//consider changing server side, packet starts with string "Login Notice"
-	//see LoginSession::HandleNews
-
 	uint16_t strLen = pkt.read<uint16_t>();
 	std::string strLabel;
 	pkt.readString(strLabel, strLen);

@@ -41,7 +41,7 @@ public:
 	};
 
 protected:
-	static constexpr int MAX_SERVERS = 20; // max number of servers in UIF file.
+	static constexpr int MAX_SERVERS		= 20; // max number of servers in UIF file.
 
 	CN3UIEdit*	m_pEdit_id;
 	CN3UIEdit*	m_pEdit_pw;

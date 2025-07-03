@@ -7,17 +7,23 @@
 #define MAP_DIR				"../MAP/"
 #define QUESTS_DIR			"../QUESTS/"
 
-constexpr int MIN_ID_SIZE		= 6;
-constexpr int MAX_ID_SIZE		= 20;
-constexpr int MAX_NPC_NAME_SIZE	= 30;
-constexpr int MAX_PW_SIZE		= 12;
-constexpr int MAX_IP_SIZE		= 15;	// IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
+constexpr int MIN_ID_SIZE			= 6;
+constexpr int MAX_ID_SIZE			= 20;
+constexpr int MAX_NPC_NAME_SIZE		= 30;
+constexpr int MAX_PW_SIZE			= 12;
+constexpr int MAX_IP_SIZE			= 15;	// IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
 
-constexpr int MAX_ITEM_COUNT	= 9999;	// 한 슬롯에 가지는 최대 화살/송편 개수
-constexpr int MAX_QUEST			= 100;
-constexpr int MAX_LEVEL			= 80;	// 최고렙...
+constexpr int MAX_ITEM_COUNT		= 9999;	// 한 슬롯에 가지는 최대 화살/송편 개수
+constexpr int MAX_QUEST				= 100;
+constexpr int MAX_LEVEL				= 80;	// 최고렙...
 
-constexpr int VIEW_DISTANCE		= 48;
+constexpr int VIEW_DISTANCE			= 48;
+
+// NOTE: All of this is largely irrelevant.
+// It cares only about finding the first and last #.
+constexpr char NEWS_MESSAGE_START[]	= { '#', '\0', '\n' };
+constexpr char NEWS_MESSAGE_END[]	= { '\0', '\n', '#', '\0', '\n', '\0', '\n' };
+constexpr int MAX_NEWS_COUNT		= 3;
 
 enum e_NpcState
 {

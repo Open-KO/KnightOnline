@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <shellapi.h>
 
+#include <shared/globals.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -421,93 +423,108 @@ void CUILogIn_1298::AddNews(const std::string& strNews)
 {
 	// TODO: needs improvement	
 
-	std::string pieces[6];
-	int count = 0;
+	std::vector<std::string> titles;
+	std::vector<std::string> messages;
 
-	size_t BOX_START_LEN = 3; // '#', 0x00, '\n'
-	size_t BOX_END_LEN = 5;   // '#', 0x00, '\n', 0x00, '\n'
+	titles.reserve(MAX_NEWS_COUNT);
+	messages.reserve(MAX_NEWS_COUNT);
 
 	size_t searchPos = 0;
-	while (count < 6)
+
+	std::string_view messageStartView(NEWS_MESSAGE_START, sizeof(NEWS_MESSAGE_START));
+	std::string_view messageEndView(NEWS_MESSAGE_END, sizeof(NEWS_MESSAGE_END));
+
+	// NOTE: The official parsing for this is extremely simple.
+	// It really doesn't care about the format it uses; it basically
+	// just looks for the first and last #, and ignores anything
+	// until the next # is found for the next box, and strips out
+	// \r, \n as it goes.
+	// Since this means that it ends up including characters it shouldn't,
+	// e.g. null-terminators (which happen to not get rendered), we'll just
+	// be a touch smarter about this and follow the basic format.
+	while (titles.size() < MAX_NEWS_COUNT)
 	{
-		size_t boxStart = strNews.find("#\0\n", searchPos);
-		if (boxStart == std::string::npos)
+		const size_t titlePos = searchPos;
+
+		// Find the start of the message
+		size_t startOfMessageBlock = strNews.find(messageStartView, searchPos);
+		if (startOfMessageBlock == std::string::npos)
 			break;
 
-		// title is inbetween searchPos and boxStart
-		std::string title = strNews.substr(searchPos, boxStart - searchPos);
+		// The title precedes the message. It's not directly surrounded by anything of its own.
+		std::string title = strNews.substr(titlePos, startOfMessageBlock - titlePos);
 
-		size_t messageStart = boxStart + BOX_START_LEN;
-		size_t boxEnd = strNews.find("#\0\n\0\n", messageStart);
-		if (boxEnd == std::string::npos)
+		size_t startOfMessage = startOfMessageBlock + sizeof(NEWS_MESSAGE_START);
+
+		size_t startOfEndMessageBlock = strNews.find(messageEndView, startOfMessage);
+		if (startOfEndMessageBlock == std::string::npos)
 			break;
 
-		std::string message = strNews.substr(messageStart, boxEnd - messageStart);
+		std::string message = strNews.substr(startOfMessage, startOfEndMessageBlock - startOfMessage);
 
-		pieces[count++] = title;
-		pieces[count++] = message;
+		titles.push_back(std::move(title));
+		messages.push_back(std::move(message));
 
 		// jump to next block
-		searchPos = boxEnd + BOX_END_LEN;
+		searchPos = startOfEndMessageBlock + sizeof(NEWS_MESSAGE_END);
 	}
 
-	int iReqNoticeBox = (count + 1) / 2;
-	if (iReqNoticeBox <= 1)
+	// No news, skip to server list
+	if (titles.empty())
+	{
+		m_bIsNewsVisible = false;
+		OpenServerList();
+	}
+	else if (titles.size() == 1)
 	{
 		if (m_pText_Notice1_Name_1 != nullptr)
-			m_pText_Notice1_Name_1->SetString(pieces[0]);
+			m_pText_Notice1_Name_1->SetString(titles[0]);
 
 		if (m_pText_Notice1_Text_1 != nullptr)
-			m_pText_Notice1_Text_1->SetString(pieces[1]);
+			m_pText_Notice1_Text_1->SetString(messages[0]);
 
 		if (m_pGroup_Notice_1 != nullptr)
 			m_pGroup_Notice_1->SetVisible(true);
 	}
-	else if (iReqNoticeBox == 2)
+	else if (titles.size() == 2)
 	{
 		if (m_pText_Notice2_Name_1 != nullptr)
-			m_pText_Notice2_Name_1->SetString(pieces[0]);
+			m_pText_Notice2_Name_1->SetString(titles[0]);
 
 		if (m_pText_Notice2_Text_1 != nullptr)
-			m_pText_Notice2_Text_1->SetString(pieces[1]);
+			m_pText_Notice2_Text_1->SetString(messages[0]);
 
 		if (m_pText_Notice2_Name_2 != nullptr)
-			m_pText_Notice2_Name_2->SetString(pieces[2]);
+			m_pText_Notice2_Name_2->SetString(titles[1]);
 
 		if (m_pText_Notice2_Text_2 != nullptr)
-			m_pText_Notice2_Text_2->SetString(pieces[3]);
+			m_pText_Notice2_Text_2->SetString(messages[1]);
 
 		if (m_pGroup_Notice_2 != nullptr)
 			m_pGroup_Notice_2->SetVisible(true);
 	}
-	else if (iReqNoticeBox == 3)
+	else if (titles.size() == 3)
 	{
 		if (m_pText_Notice3_Name_1 != nullptr)
-			m_pText_Notice3_Name_1->SetString(pieces[0]);
+			m_pText_Notice3_Name_1->SetString(titles[0]);
 
 		if (m_pText_Notice3_Text_1 != nullptr)
-			m_pText_Notice3_Text_1->SetString(pieces[1]);
+			m_pText_Notice3_Text_1->SetString(messages[0]);
 
 		if (m_pText_Notice3_Name_2 != nullptr)
-			m_pText_Notice3_Name_2->SetString(pieces[2]);
+			m_pText_Notice3_Name_2->SetString(titles[1]);
 
 		if (m_pText_Notice3_Text_2 != nullptr)
-			m_pText_Notice3_Text_2->SetString(pieces[3]);
+			m_pText_Notice3_Text_2->SetString(messages[1]);
 
 		if (m_pText_Notice3_Name_3 != nullptr)
-			m_pText_Notice3_Name_3->SetString(pieces[4]);
+			m_pText_Notice3_Name_3->SetString(titles[2]);
 
 		if (m_pText_Notice3_Text_3 != nullptr)
-			m_pText_Notice3_Text_3->SetString(pieces[5]);
+			m_pText_Notice3_Text_3->SetString(messages[2]);
 
 		if (m_pGroup_Notice_3 != nullptr)
 			m_pGroup_Notice_3->SetVisible(true);
-	}
-	// No news, skip to server list
-	else
-	{
-		m_bIsNewsVisible = false;
-		OpenServerList();
 	}
 }
 

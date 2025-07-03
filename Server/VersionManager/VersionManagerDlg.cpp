@@ -172,7 +172,7 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 	std::string title, message;
 
 	m_News.Size = 0;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < MAX_NEWS_COUNT; i++)
 	{
 		snprintf(key, sizeof(key), "TITLE_%02d", i);
 		title = ini.GetString("NEWS", key, "");
@@ -184,16 +184,10 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 		if (message.empty())
 			continue;
 
-#define BOX_START			'#' << uint8_t(0) << '\n'
-#define LINE_ENDING			uint8_t(0) << '\n'
-#define BOX_END				BOX_START << LINE_ENDING
-
-		ss << title << BOX_START;
-		ss << message << LINE_ENDING << BOX_END;
-
-#undef BOX_START
-#undef LINE_ENDING
-#undef BOX_END
+		ss << title;
+		ss.write(NEWS_MESSAGE_START, sizeof(NEWS_MESSAGE_START));
+		ss << message;
+		ss.write(NEWS_MESSAGE_END, sizeof(NEWS_MESSAGE_END));
 	}
 
 	const std::string newsContent = ss.str();
