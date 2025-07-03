@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <shellapi.h>
 
-#include <shared/globals.h>
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;

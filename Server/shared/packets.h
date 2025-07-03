@@ -161,6 +161,12 @@ enum e_AuthResult : uint8_t
 	AUTH_FAILED			= 0xFF
 };
 
+// NOTE: All of this is largely irrelevant.
+// It cares only about finding the first and last #.
+constexpr char NEWS_MESSAGE_START[]	= { '#', '\0', '\n' };
+constexpr char NEWS_MESSAGE_END[]	= { '\0', '\n', '#', '\0', '\n', '\0', '\n' };
+constexpr int MAX_NEWS_COUNT		= 3;
+
 enum e_NoahChangeOpcode
 {
 	NOAH_CHANGE_GAIN	= 1,
