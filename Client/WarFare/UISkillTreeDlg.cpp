@@ -453,7 +453,7 @@ void CUISkillTreeDlg::PageLeft()
 
 void CUISkillTreeDlg::PageRight()
 {
-	if ( m_iCurSkillPage == 2 )
+	if (m_iCurSkillPage == MAX_SKILL_PAGE_NUM - 1)
 		return;
 
 	SetPageInIconRegion(m_iCurKindOf, m_iCurSkillPage+1);
