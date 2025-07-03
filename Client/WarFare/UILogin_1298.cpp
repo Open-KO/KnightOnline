@@ -423,8 +423,7 @@ void CUILogIn_1298::AddNews(const std::string& strNews)
 {
 	// TODO: needs improvement	
 
-	std::vector<std::string> titles;
-	std::vector<std::string> messages;
+	std::vector<std::string> titles, messages;
 
 	titles.reserve(MAX_NEWS_COUNT);
 	messages.reserve(MAX_NEWS_COUNT);
@@ -451,7 +450,8 @@ void CUILogIn_1298::AddNews(const std::string& strNews)
 		if (startOfMessageBlock == std::string::npos)
 			break;
 
-		// The title precedes the message. It's not directly surrounded by anything of its own.
+		// The title precedes the message.
+		// It's not directly surrounded by anything of its own.
 		std::string title = strNews.substr(titlePos, startOfMessageBlock - titlePos);
 
 		size_t startOfMessage = startOfMessageBlock + sizeof(NEWS_MESSAGE_START);
