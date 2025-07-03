@@ -1183,7 +1183,7 @@ const int MAX_SKILL_FROM_SERVER = 9;		// 서버에게서 받는 정보 슬롯 �
 
 const int MAX_SKILL_KIND_OF = 5;			// Base Skill 1개, 전문 스킬 4개..			
 const int MAX_SKILL_IN_PAGE = 6;//8;			// 한 페이지 내의 아이콘 갯수..				
-const int MAX_SKILL_PAGE_NUM = 3;			// 스킬 한개가 가지는 최대 페이지수..		
+const int MAX_SKILL_PAGE_NUM = 7;			// Maximum number of pages per skill tab		
 
 
 const int MAX_SKILL_HOTKEY_PAGE = 8;		// Hot Key의 총 페이지 수.. 				
