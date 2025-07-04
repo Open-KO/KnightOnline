@@ -362,10 +362,11 @@ void CUITransactionDlg::EnterTransactionState()
 	ItemMoveFromInvToThis();
 
 
-	if(m_pStrMyGold)
+	if(m_pStrMyGold != nullptr)
 	{
 		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
+		if(pInfoExt != nullptr)
+			m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
 	}
 
 	switch ((int)(m_iTradeID/1000))
@@ -388,10 +389,11 @@ void CUITransactionDlg::UpdateWeight(const std::string& szWeight)
 
 void CUITransactionDlg::GoldUpdate()
 {
-	if(m_pStrMyGold)
+	if(m_pStrMyGold != nullptr)
 	{
 		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
+		if(pInfoExt != nullptr)
+			m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
 	}
 }
 
@@ -1193,8 +1195,10 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 				pInfoExt->iGold = iMoney; 
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
-				if(m_pStrMyGold)	m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
+				if(pStatic != nullptr)	
+					pStatic->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
+				if(m_pStrMyGold != nullptr)	
+					m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold)); // 상거래창..
 			}
 			
 			CN3UIWndBase::AllHighLightIconFree();
@@ -1261,8 +1265,10 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 				pInfoExt->iGold = iMoney;
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
-				if(m_pStrMyGold) m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
+				if(pStatic != nullptr)	
+					pStatic->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
+				if(m_pStrMyGold != nullptr) 
+					m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold)); // 상거래창..
 			}
 
 			CN3UIWndBase::AllHighLightIconFree();
