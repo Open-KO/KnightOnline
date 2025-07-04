@@ -83,6 +83,7 @@
     <ClInclude Include="N3GERain.h" />
     <ClInclude Include="N3GESnow.h" />
     <ClInclude Include="N3GlobalEffect.h" />
+    <ClInclude Include="N3GlobalEffectMng.h" />
     <ClInclude Include="N3IME.h" />
     <ClInclude Include="N3IMesh.h" />
     <ClInclude Include="N3Joint.h" />
@@ -172,6 +173,9 @@
     <ClCompile Include="N3GERain.cpp" />
     <ClCompile Include="N3GESnow.cpp" />
     <ClCompile Include="N3GlobalEffect.cpp" />
+    <ClCompile Include="N3GlobalEffectMng.cpp">
+      <ExcludedFromBuild Condition="'$(ToolBuild)'!='true'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="N3IMesh.cpp" />
     <ClCompile Include="N3Joint.cpp" />
     <ClCompile Include="N3Light.cpp" />
