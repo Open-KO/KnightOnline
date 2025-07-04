@@ -4,7 +4,7 @@
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif
 
-#define NOMINMAX
+#define NOMINMAX 1
 
 #include "targetver.h"
 

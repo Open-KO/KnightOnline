@@ -625,7 +625,7 @@ void CPlayerBase::TickYaw()
 	{
 		float fYawDiff = m_fYawToReach - m_fYawCur; // 회전값 차이.
 		float fYawDelta = m_fRotRadianPerSec * s_fSecPerFrm; // 회전할 양
-		if(T_Abs(fYawDiff) <= fYawDelta)
+		if(std::abs(fYawDiff) <= fYawDelta)
 		{
 			m_fYawCur = m_fYawToReach; // 회전할 양이 작으면.. 바로 세팅
 		}
@@ -644,7 +644,7 @@ void CPlayerBase::TickYaw()
 
 			m_fYawCur += fYawDelta; // 회전..
 
-			if(T_Abs(m_fYawCur) > __PI)
+			if(std::abs(m_fYawCur) > __PI)
 			{
 				int iLot = (int)(m_fYawCur/__PI);
 				if(iLot) m_fYawCur -= iLot * __PI2; // 0 ~ 360 도 사이로 맞추고..

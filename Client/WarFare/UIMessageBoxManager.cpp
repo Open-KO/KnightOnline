@@ -84,7 +84,7 @@ std::string CUIMessageBoxManager::MessageBoxPost(const std::string& szMsg, const
 		pMB = it->second;
 		if( pMB && !pMB->IsVisible() )
 		{
-			T_Delete(pMB);
+			delete pMB;
 			it = m_UBMs.erase(it);
 			continue;
 		}
@@ -174,9 +174,7 @@ void CUIMessageBoxManager::Release()
 {
 	it_UBM it = m_UBMs.begin(), it_e = m_UBMs.end();
 	for(; it != it_e; it++)
-	{
-		T_Delete(it->second);
-	}
+		delete it->second;
 	m_UBMs.clear();
 
 	m_pMsgBoxLatestRef = NULL;

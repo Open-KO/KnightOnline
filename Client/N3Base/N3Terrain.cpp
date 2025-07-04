@@ -780,7 +780,7 @@ bool CN3Terrain::SetLODLevel(int level)
 	{
 		for(z=0;z<m_iNumPatch;z++)
 		{
-			dist = m_iDistanceTable[T_Abs(m_pat_Center2Side-x)][T_Abs(m_pat_Center2Side-z)];
+			dist = m_iDistanceTable[std::abs(m_pat_Center2Side-x)][std::abs(m_pat_Center2Side-z)];
 			if(dist <= m_iLodLevel) m_ppPatch[x][z].SetLevel(1);
 			else if(dist <= m_iLodLevel+3) m_ppPatch[x][z].SetLevel(2);
 			else m_ppPatch[x][z].SetLevel(3);

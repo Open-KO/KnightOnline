@@ -738,7 +738,7 @@ void CMapMng::FocusAll()
 	__Vector3 vDir = pCamera->Dir();
 	__Vector3 vAt;	vAt.Set(size.cx/2.0f, 0, size.cy/2.0f);
 	pCamera->AtPosSet(vAt);
-	pCamera->EyePosSet(vAt - vDir*((float)max(size.cx, size.cy))/tanf(pCamera->m_Data.fFOV/2.0f)/2.0f);
+	pCamera->EyePosSet(vAt - vDir*((float)std::max(size.cx, size.cy))/tanf(pCamera->m_Data.fFOV/2.0f)/2.0f);
 
 	
 	Invalidate();

@@ -3384,7 +3384,7 @@ void CLyTerrain::SetLightMap(int x, int z, int lcx, int lcz)
 	{
 		for(iz=lcz-PenSize+1; iz<lcz+PenSize; iz++)
 		{
-			dist = m_iDistanceTable[T_Abs(lcx-ix)][T_Abs(lcz-iz)] + 1;
+			dist = m_iDistanceTable[std::abs(lcx-ix)][std::abs(lcz-iz)] + 1;
 			if(dist > PenSize) continue;
 			
 			nx = x;
@@ -3473,7 +3473,7 @@ void CLyTerrain::MakeMoveTable(short** ppEvent)
 			if(fMax < m_ppMapData[x+1][z+1].fHeight) fMax = m_ppMapData[x+1][z+1].fHeight;
 			if(fMin > m_ppMapData[x+1][z+1].fHeight) fMin = m_ppMapData[x+1][z+1].fHeight;
 
-			if( NOTMOVE_HEIGHT <= T_Abs((int)(fMax-fMin)) )
+			if( NOTMOVE_HEIGHT <= std::abs((int)(fMax-fMin)) )
 			{
 				ppEvent[x][z] = 0;
 			}

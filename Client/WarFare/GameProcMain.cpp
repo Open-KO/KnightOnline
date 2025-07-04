@@ -467,7 +467,7 @@ void CGameProcMain::InitPlayerPosition(const __Vector3& vPos) // 플레이어 �
 	float fYObject = ACT_WORLD->GetHeightNearstPosWithShape(vPos, 1.0f); // 오브젝트에서 가장 가까운 높이값 얻기..
 	if (!s_pWorldMgr->IsIndoor())
 	{
-		if (T_Abs(vPos.y - fYObject) < T_Abs(vPos.y - fYTerrain)) vPosFinal.y = fYObject; // 좀더 가까운 곳에 놓는다..
+		if (std::abs(vPos.y - fYObject) < std::abs(vPos.y - fYTerrain)) vPosFinal.y = fYObject; // 좀더 가까운 곳에 놓는다..
 		else vPosFinal.y = fYTerrain;
 	}
 	else
