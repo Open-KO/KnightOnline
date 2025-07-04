@@ -854,7 +854,7 @@ void CZipArchive::DeleteFiles(CStringArray &aNames, bool bCaseSensitive)
 {
 	CWordArray indexes;
 	
-	for (WORD i = 0; i < GetNoEntries(); i++)
+	for (WORD i = 0; i < static_cast<WORD>(GetNoEntries()); i++)
 	{
 		CZipFileHeader fh;
 		GetFileInfo(fh, i);

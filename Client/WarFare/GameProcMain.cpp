@@ -4393,21 +4393,15 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		CLogWriter::Write("CGameProcMain::InitZone -> Zone Change (%d -> %d) Position(%.1f, %.1f, %.1f)", iZonePrev, iZone, vPosPlayer.x, vPosPlayer.y, vPosPlayer.z);
 
 		m_bLoadComplete = false; // 로딩 끝남..
-		CLogWriter::Write("%d->ClearDurationalMagic()",m_pMagicSkillMng); // TmpLog1122
 		m_pMagicSkillMng->ClearDurationalMagic();
-		CLogWriter::Write("%d->ClearAll()", s_pFX); // TmpLog1122
 		s_pFX->ClearAll();
 
-		if(s_pUILoading)
-		{
-			CLogWriter::Write("s_pUILoading->Render()"); // TmpLog1122
+		if (s_pUILoading != nullptr)
 			s_pUILoading->Render("", 0);
-		}
 		
 		s_pPlayer->m_InfoExt.iZoneCur = iZone;
 		iZonePrev = iZone; // 최근에 읽은 존 번호를 기억해둔다.
 
-		CLogWriter::Write("%d->Find(s_pPlayer->m_InfoExt.iZoneCur)",s_pTbl_Zones); // TmpLog1122
 		__TABLE_ZONE* pZoneData = s_pTbl_Zones.Find(s_pPlayer->m_InfoExt.iZoneCur);
 		if(NULL == pZoneData) {
 			CLogWriter::Write("can't find zone data. (zone : %d)", s_pPlayer->m_InfoExt.iZoneCur);
@@ -4416,28 +4410,19 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 			return;
 		}
 
-		CLogWriter::Write("%d->Release()",s_pOPMgr); // TmpLog1122
-
 		s_pOPMgr->Release(); // 다른 넘들 다 날린다..
-		CLogWriter::Write("%d->InitWorld()",s_pWorldMgr); // TmpLog1122
 		s_pWorldMgr->InitWorld(iZone, vPosPlayer);
 
 		// 미니맵 로딩..
-		CLogWriter::Write("%d->GetWidthByMeterWithTerrain()",ACT_WORLD); // TmpLog1122
 		float fWidth = ACT_WORLD->GetWidthByMeterWithTerrain();
-		CLogWriter::Write("%d->LoadMap()",m_pUIStateBarAndMiniMap); // TmpLog1122
-		CLogWriter::Write("%d->szMiniMapFNszMiniMapFN",pZoneData); // TmpLog1122
 		m_pUIStateBarAndMiniMap->LoadMap(pZoneData->szMiniMapFN, fWidth, fWidth);
 
-		CLogWriter::Write("GetRepresentClass()"); // TmpLog1122
 		// 줌 비율 정하기..
 		float fZoom = 6.0f;
 		e_Class_Represent eCR = CGameProcedure::GetRepresentClass(s_pPlayer->m_InfoBase.eClass);
 		if(CLASS_REPRESENT_ROGUE == eCR) fZoom = 3.0f; // 로그 계열은 맵이 좀더 널리 자세히 보인다..
-		CLogWriter::Write("%d->ZoomSet()",m_pUIStateBarAndMiniMap); // TmpLog1122
 		m_pUIStateBarAndMiniMap->ZoomSet(fZoom);
 
-		CLogWriter::Write("%d->szTerrainFN.c_str()",pZoneData); // TmpLog1122
 		//char szBuf[256];
 		char szFName[_MAX_PATH];
 		_splitpath(pZoneData->szTerrainFN.c_str(), NULL, NULL, szFName, NULL);
@@ -4459,11 +4444,8 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		pCamera->m_Data.fFOV	= D3DXToRadian(70);				// Field of View ..
 		pCamera->m_Data.fFP		= 512.0f;						// Far Plane..
 		pCamera->m_Data.fNP		= 0.5f;							// Near Plane..
-		CLogWriter::Write("pCamera->LookAt()"); // TmpLog1122
 		pCamera->LookAt(vPosPlayer + __Vector3(0,0,-1), vPosPlayer, __Vector3(0,1,0));
-		CLogWriter::Write("pCamera->Tick()"); // TmpLog1122
 		pCamera->Tick();
-		CLogWriter::Write("pCamera->Apply()"); // TmpLog1122
 		pCamera->Apply();
 	}
 	// 기본적인 캐릭터위치와 카메라 위치 잡기..
@@ -4471,7 +4453,6 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 
 	CLogWriter::Write("InitPlayerPosition() Position(%.1f, %.1f, %.1f)",vPosPlayer.x, vPosPlayer.y, vPosPlayer.z); // TmpLog1122
 	this->InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
-	CLogWriter::Write("%d->Release()",s_pOPMgr); // TmpLog1122
 	s_pOPMgr->Release(); // 다른 플레이어 삭제...
 }
 

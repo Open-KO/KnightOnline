@@ -50,30 +50,16 @@ CN3TerrainManager::~CN3TerrainManager()
 	delete m_pTerrain;  m_pTerrain = NULL;
 
 	// Shape..
-#ifdef _N3GAME
-	CLogWriter::Write("CN3TerrainManager::~CN3TerrainManager -> Pre delete m_pShape"); // TmpLog1122
-#endif
 	delete m_pShapes; m_pShapes = NULL;
 
 	// Sky..
-#ifdef _N3GAME
-	CLogWriter::Write("CN3TerrainManager::~CN3TerrainManager -> Pre delete m_pSky"); // TmpLog1122
-#endif
 	delete m_pSky;		m_pSky = NULL;
 
 	// Bird..
-#ifdef _N3GAME
-	CLogWriter::Write("CN3TerrainManager::~CN3TerrainManager -> Pre delete m_pBirdMng"); // TmpLog1122
-#endif
 	delete m_pBirdMng; m_pBirdMng = NULL;
 
 	// Grass..
-//	CLogWriter::Write("CN3TerrainManager::~CN3TerrainManager -> Pre delete m_pGrasses"); // TmpLog1122
 //	delete m_pGrasses; m_pGrasses = NULL;
-
-#ifdef _N3GAME
-	CLogWriter::Write("CN3TerrainManager::~CN3TerrainManager -> delete finished"); // TmpLog1122
-#endif
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -83,18 +69,12 @@ void CN3TerrainManager::InitWorld(int iZoneID, const __Vector3& vPosPlayer)
 	__TABLE_ZONE* pZone = s_pTbl_Zones.Find(s_pPlayer->m_InfoExt.iZoneCur);
 	if(NULL == pZone) { CLogWriter::Write("Null Zone Data : %d", iZoneID); return; }
 
-	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Load\t%d", m_pTerrain); // TmpLog_11_22
-
-
 	/*if(iZoneID == 1) m_pTerrain->LoadFromFile(pZone->szTerrainFN, N3FORMAT_VER_1068);//N3FORMAT_VER_1298);//pZone->dwVersion);
 	else*/ m_pTerrain->LoadFromFile(pZone->szTerrainFN);//, N3FORMAT_VER_1298);
 
 
-	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Load ColorMap"); // TmpLog_11_22
 	m_pTerrain->LoadColorMap(pZone->szColorMapFN);		// 컬러맵 로드..
-	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Release Shapes\t%d", m_pShapes); // TmpLog_11_22
 	m_pShapes->Release();
-	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Load Shapes"); // TmpLog_11_22
 
 
 	/*if(iZoneID == 1) m_pShapes->LoadFromFile(pZone->szObjectPostDataFN, N3FORMAT_VER_1068);
@@ -107,12 +87,9 @@ void CN3TerrainManager::InitWorld(int iZoneID, const __Vector3& vPosPlayer)
 	char szFullPathName[_MAX_PATH];
 	sprintf(szFName2,"%s_Bird",szFName);
 	_makepath(szFullPathName, NULL, "misc\\bird", szFName2, "lst");
-	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Load Birds\t%d", m_pBirdMng); // TmpLog_11_22
 	m_pBirdMng->LoadFromFile(szFullPathName);
 
-//	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Load Grasses\t%d", m_pGrasses); // TmpLog_11_22
 //	m_pGrasses->Init(vPosPlayer);
-	CLogWriter::Write("CN3TerrainManager::InitWorld Pre Load Sky\t%d", m_pSky); // TmpLog_11_22
 	m_pSky->LoadFromFile(pZone->szSkySetting); // 하늘, 구름, 태양, 날씨 변화등 정보 및 텍스처 로딩..
 	m_pSky->SunAndMoonDirectionFixByHour(pZone->iFixedSundDirection); // 해, 달 방향을 고정하든가 혹은 0 이면 고정하지 않는다.
 }

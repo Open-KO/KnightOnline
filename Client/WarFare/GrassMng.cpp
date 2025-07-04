@@ -250,18 +250,13 @@ void CGrassMng::Release()
 {
 	m_bChkZoneChange = false;
 
-	CLogWriter::Write("CGrassMng::Release -> ZeroMemory"); // TmpLog1122
-	ZeroMemory(m_fChkRange,sizeof(m_fChkRange));
+	ZeroMemory(m_fChkRange, sizeof(m_fChkRange));
 
-	for(int i=0;i<m_iFileMaxNum;i++)
-	{
-		CLogWriter::Write("CGrassMng::Release s_MngTex.Delete(%d)",m_txTexture[i]); // TmpLog1122
+	for (int i = 0;i < m_iFileMaxNum;i++)
 		CGameBase::s_MngTex.Delete(&m_txTexture[i]);
-	}
 
 	m_iFileMaxNum = 0;
-	m_usDrawIndex=0;
-
+	m_usDrawIndex = 0;
 }
 
 int CGrassMng::SetFile(int iTexIndex,uint8_t ucTexOrgIndex,__Vector3 CamPo)

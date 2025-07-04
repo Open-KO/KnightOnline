@@ -116,7 +116,7 @@ bool CN3FXGroup::DecodeScriptFile(const char* lpPathName)
 		if(lstrcmpi(szCommand, "<fxb>")==0)
 		{
 			__FXBInfo* pFXB = new __FXBInfo;
-			sprintf(pFXB->FXBName, szBuf[0]);
+			strcpy(pFXB->FXBName, szBuf[0]);
 			pFXB->joint = atoi(szBuf[1]);
 			if(lstrcmpi(szBuf[2], "TRUE")==0) pFXB->IsLooping = TRUE;
 

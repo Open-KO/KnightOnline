@@ -132,7 +132,7 @@ BOOL CDBProcess::LoadVersionList()
 
 			if (!m_pMain->m_VersionList.PutData(pInfo->strFileName, pInfo))
 			{
-				TRACE("VersionInfo PutData Fail - %d\n", pInfo->strFileName);
+				TRACE(_T("VersionInfo PutData Fail - %d(%s)\n"), pInfo->sVersion, pInfo->strFileName);
 				delete pInfo;
 				pInfo = nullptr;
 			}
