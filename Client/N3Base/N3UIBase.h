@@ -55,9 +55,11 @@ friend class CUIEView;	// 툴에서 child list를 접근하기 위해서.
 public:
 	std::string m_szID;			// UI id
 	std::string	m_szToolTip;	// tooltip text
+	D3DCOLOR m_crToolTipText;
 	void		SetID(LPCTSTR pszID) {m_szID = pszID;}
 	const std::string GetID() const {return m_szID;}
 	void		SetTooltipText(LPCTSTR pszTT) {m_szToolTip = pszTT;}
+	void		SetTooltipTextColor(D3DCOLOR crText) { m_crToolTipText = crText;}
 
 	static CN3UITooltip*	s_pTooltipCtrl;		// tool tip
 	

@@ -28,6 +28,7 @@ CN3UIList::CN3UIList()
 	m_bFontBold = FALSE;
 	m_bFontItalic = FALSE;
 	m_crFont = 0xffffffff;
+	m_crBorderColor = 0xffffffff; //border color
 }
 
 CN3UIList::~CN3UIList()
@@ -53,6 +54,7 @@ void CN3UIList::Release()
 	m_bFontBold = FALSE;
 	m_bFontItalic = FALSE;
 	m_crFont = 0xffffffff;
+	m_crBorderColor = 0xffffffff; //border color
 }
 
 void CN3UIList::SetFont(const std::string& szFontName, uint32_t dwHeight, BOOL bBold, BOOL bItalic)
@@ -68,6 +70,11 @@ void CN3UIList::SetFont(const std::string& szFontName, uint32_t dwHeight, BOOL b
 		(*it)->SetFont(m_szFontName, m_dwFontHeight, m_bFontBold, m_bFontItalic);
 	}
 	this->UpdateChildRegions();
+}
+
+void CN3UIList::SetBorderColor(D3DCOLOR color)
+{
+	m_crBorderColor = color;
 }
 
 void CN3UIList::SetFontColor(size_t iIndex, D3DCOLOR color)
@@ -447,6 +454,24 @@ void CN3UIList::Render()
 			CN3Base::s_lpD3DDev->SetFVF(FVF_TRANSFORMEDCOLOR);
 			CN3Base::s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, vLines, sizeof(__VertexTransformedColor));
 			
+			//Draw borders
+			RECT rcList = this->GetRegion();
+
+			//offsets
+			rcList.left -= 2;
+			rcList.top -= 2;
+			rcList.right += 2;
+			rcList.bottom += 2;
+
+			__VertexTransformedColor vBorder[5];
+			vBorder[0].Set((float) rcList.left, (float) rcList.top, UI_DEFAULT_Z, UI_DEFAULT_RHW, m_crBorderColor); 
+			vBorder[1].Set((float) rcList.right, (float) rcList.top, UI_DEFAULT_Z, UI_DEFAULT_RHW, m_crBorderColor);
+			vBorder[2].Set((float) rcList.right, (float) rcList.bottom, UI_DEFAULT_Z, UI_DEFAULT_RHW, m_crBorderColor);
+			vBorder[3].Set((float) rcList.left, (float) rcList.bottom, UI_DEFAULT_Z, UI_DEFAULT_RHW, m_crBorderColor);
+			vBorder[4] = vBorder[0];
+
+			CN3Base::s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, vBorder, sizeof(__VertexTransformedColor));
+
 			CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, dwZ);
 			CN3Base::s_lpD3DDev->SetRenderState(D3DRS_FOGENABLE, dwFog);
 			CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, dwAlpha);

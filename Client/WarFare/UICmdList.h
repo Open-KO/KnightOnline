@@ -18,6 +18,7 @@
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIImage.h>
 #include <N3Base/N3Texture.h>
+#include <N3Base/N3UITooltip.h>
 //#include "N3UIDBCLButton.h"
 
 class CUICmdList : public CN3UIBase
@@ -33,8 +34,9 @@ protected:
 	bool		m_bOpenningNow; // It's opening...
 	bool		m_bClosingNow;	// It's closing...
 	float		m_fMoveDelta; // To make it open and close smoothly, floating-point numbers are used for calculating the current position.
-
-	//int		m_iRBtnDownOffs; //unused
+	int			m_iSelectedCategory;
+	int			m_iSelectedTab; //0 => upper(categories), 1 => bottom(commands)
+	bool		m_bIsKing;
 
 	enum iCmd
 	{
@@ -51,24 +53,32 @@ protected:
 	std::map<uint16_t, std::string> m_mapCmds;
 	// Attributes
 public:
-	bool OnKeyPress(int iKey);
+	CUICmdList();
+	~CUICmdList() override;
+	bool Load(HANDLE hFile) override;
+	void Release() override;
+	void SetVisible(bool bVisible) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // Receive message... sender, msg
+	bool OnKeyPress(int iKey) override;
+	void SetKing(bool bState){ m_bIsKing = bState; };
+
 	void Open();
-	void OpenEdit();
+	//void OpenEdit();
 	void Close();
-	void SetVisible(bool bVisible);
 	bool CreateCategoryList();
 	bool UpdateCommandList(uint8_t cmd);
+	void UpdateBorders();
 	bool ExecuteCommand(uint8_t cmdSel);
 
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg
+	
 
-	virtual void	Tick();
-	virtual void	Render(); // 미니맵 렌더링..
-	virtual bool	Load(HANDLE hFile);
+	void Tick() override;
+	void Render() override; // Minimap rendering...
+	
 
-	virtual void	Release();
-	CUICmdList();
-	virtual ~CUICmdList();
+	
+	
+	
 
 };
 

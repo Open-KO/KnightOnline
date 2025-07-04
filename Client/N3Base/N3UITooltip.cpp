@@ -74,6 +74,7 @@ void CN3UITooltip::Render()
 			pIB, D3DFMT_INDEX16, pVB, sizeof(__VertexTransformedColor));	// 테두리 칠하기
 
 		// 글씨 그리기
+		m_pBuffOutRef->SetColor(m_crToolTipText);
 		m_pBuffOutRef->Render();
 	}
 	else CN3UIStatic::Render();
@@ -81,60 +82,101 @@ void CN3UITooltip::Render()
 
 void CN3UITooltip::SetText(const std::string& szText)
 {
-	if(!m_bVisible || m_bSetText) return;
+	if (!m_bVisible || m_bSetText) return;
 
-	// 툴팁상자 크기를 조정한다.
 	int iStrLen = szText.size();
-	if (0 == iStrLen || NULL == m_pBuffOutRef) return;
+	if (iStrLen == 0 || m_pBuffOutRef == nullptr) return;
 
-	m_pBuffOutRef->ClearOnlyStringBuffer();	//우선 기존에 있던 글씨를 지운다.(정렬하지 않고)
-	SIZE size;
-	if (m_pBuffOutRef->GetTextExtent(szText, iStrLen, &size))
+	m_pBuffOutRef->ClearOnlyStringBuffer(); //clean current text
+
+	const int iMaxLineWidth = 500;
+	std::string strWrappedText, strCurrentLine;
+
+	for (size_t i = 0; i < szText.length(); ++i)
 	{
-		if (std::string::npos != szText.find('\n'))
-		{	// '\n'문자열중에 \n이 들어가 있으므로 multi line으로 간주
-			m_pBuffOutRef->SetStyle(UISTYLE_STRING_ALIGNLEFT|UISTYLE_STRING_ALIGNTOP);
-		}
-		else if (iStrLen<25)
-		{	// 25byte 미만이면 그냥 한줄로.
-			m_pBuffOutRef->SetStyle(UISTYLE_STRING_SINGLELINE|UISTYLE_STRING_ALIGNCENTER|UISTYLE_STRING_ALIGNVCENTER);
-		}
-		else
-		{	// single line이므로 적당한 크기를 계산한다.
-			SIZE TextSize = { 0, 0 };
-			// Measure size of full text
-			if (FALSE == m_pBuffOutRef->GetTextExtent(szText.c_str(), szText.size(), &TextSize))
-				return;
+		char ch = szText[i];
+		strCurrentLine += ch;
 
-			size.cx = TextSize.cx;
-			size.cy = TextSize.cy;
-		}
+		SIZE lineSize = { 0, 0 };
+		m_pBuffOutRef->GetTextExtent(strCurrentLine.c_str(), strCurrentLine.length(), &lineSize);
 
-		size.cx += 12;
-		size.cy += 12;
-		SetSize(size.cx, size.cy);
+		if (lineSize.cx > iMaxLineWidth)
+		{
+			size_t lastSpace = strCurrentLine.find_last_of(' ');
+			if (lastSpace != std::string::npos && lastSpace != strCurrentLine.length() - 1)
+			{
+				std::string lineToAdd = strCurrentLine.substr(0, lastSpace);
+				std::string remainder = strCurrentLine.substr(lastSpace + 1);
+
+				if (!strWrappedText.empty()) strWrappedText += '\n';
+				strWrappedText += lineToAdd;
+
+				strCurrentLine = remainder + ch;
+			}
+			else
+			{
+				if (!strWrappedText.empty()) strWrappedText += '\n';
+				strWrappedText += strCurrentLine;
+				strCurrentLine.clear();
+			}
+		}
 	}
-	m_pBuffOutRef->SetString(szText);
 
-	// 위치 조정
-	POINT	ptNew = m_ptCursor;
+	if (!strCurrentLine.empty())
+	{
+		if (!strWrappedText.empty()) strWrappedText += '\n';
+		strWrappedText += strCurrentLine;
+	}
+
+	// calculate line number
+	int lineCount = 1 + std::count(strWrappedText.begin(), strWrappedText.end(), '\n');
+
+	// change stile with respect to line number
+	if (lineCount == 1)
+		m_pBuffOutRef->SetStyle(UISTYLE_STRING_SINGLELINE | UISTYLE_STRING_ALIGNCENTER | UISTYLE_STRING_ALIGNVCENTER);
+	else
+		m_pBuffOutRef->SetStyle(UISTYLE_STRING_ALIGNLEFT | UISTYLE_STRING_ALIGNTOP);
+
+	// get size
+	SIZE finalSize = { 0, 0 };
+	m_pBuffOutRef->GetTextExtent(strWrappedText.c_str(), strWrappedText.length(), &finalSize);
+
+	// Width shall not exceed iMaxlineWidth
+	if (finalSize.cx > iMaxLineWidth)
+		finalSize.cx = iMaxLineWidth;
+	
+	//Padding
+	const int paddingX = 12;
+	const int paddingY = 12;
+
+	finalSize.cx += paddingX;
+	finalSize.cy = m_pBuffOutRef->GetFontHeight() * lineCount + paddingY;
+
+	SetSize(finalSize.cx, finalSize.cy);
+
+	m_pBuffOutRef->SetString(strWrappedText);
+	m_pBuffOutRef->SetColor(m_crTextColor);
+
+	// position
+	POINT ptNew = m_ptCursor;
 	ptNew.x -= (m_rcRegion.right - m_rcRegion.left) / 2;
 	ptNew.y -= (m_rcRegion.bottom - m_rcRegion.top) + 10;
 
-	D3DVIEWPORT9 &vp = s_CameraData.vp;
+	D3DVIEWPORT9& vp = s_CameraData.vp;
 	int iRegionWidth = m_rcRegion.right - m_rcRegion.left;
 	int iRegionHeight = m_rcRegion.bottom - m_rcRegion.top;
 
-	if (ptNew.x + iRegionWidth > (int)(vp.X+vp.Width))	// 화면 오른?으로 벗어난 경우
-		ptNew.x = vp.X+vp.Width - iRegionWidth;
-	if (ptNew.x < (int)vp.X)	ptNew.x = vp.X;	// 화면 왼쪽으로 벗어난 경우
+	if (ptNew.x + iRegionWidth > (int) (vp.X + vp.Width))
+		ptNew.x = vp.X + vp.Width - iRegionWidth;
+	if (ptNew.x < (int) vp.X)
+		ptNew.x = vp.X;
 
-	if (ptNew.y + iRegionHeight >(int)(vp.Y+vp.Height))	// 화면 하단으로 벗어난 경우
-		ptNew.y = vp.Y+vp.Height - iRegionHeight;
-	if (ptNew.y < (int)vp.Y) ptNew.y = vp.Y;	// 화면 상단으로 벗어난 경우	
+	if (ptNew.y + iRegionHeight > (int) (vp.Y + vp.Height))
+		ptNew.y = vp.Y + vp.Height - iRegionHeight;
+	if (ptNew.y < (int) vp.Y)
+		ptNew.y = vp.Y;
 
 	SetPos(ptNew.x, ptNew.y);
-
 	m_bSetText = true;
 }
 

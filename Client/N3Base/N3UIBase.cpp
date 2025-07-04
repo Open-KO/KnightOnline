@@ -51,6 +51,7 @@ CN3UIBase::CN3UIBase()
 	m_bVisible = true;
 	m_pSnd_OpenUI = NULL;
 	m_pSnd_CloseUI = NULL;
+	m_crToolTipText = D3DCOLOR_XRGB(255, 255, 255);
 }
 
 CN3UIBase::~CN3UIBase()
@@ -91,6 +92,8 @@ void CN3UIBase::Release()
 		if (pChild) delete pChild;	// 자식이 delete되면서 부모의 list에서는 자동으로 제거된다.
 									// 따라서 리스트에서 따로 지우는 부분이 없어도 된다.
 	}
+
+	m_crToolTipText = D3DCOLOR_XRGB(255, 255, 255);
 
 	CN3BaseFileAccess::Release();
 }
@@ -391,7 +394,12 @@ uint32_t CN3UIBase::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl)
+		{
+			s_pTooltipCtrl->SetColor(m_crToolTipText);
+			s_pTooltipCtrl->SetText(m_szToolTip);
+		}
+
 	}
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.
 

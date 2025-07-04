@@ -4791,7 +4791,15 @@ bool CGameProcMain::CommandToggleCmdList()
 			m_pUIWareHouseDlg->LeaveWareHouseState();
 
 		s_pUIMgr->SetFocusedUI(m_pUICmdListDlg);
+
+		__InfoPlayerOther* pInfoOther = &CGameBase::s_pPlayer->m_InfoExt;
+		
+		if (pInfoOther != nullptr && pInfoOther->iRank == 1)
+			m_pUICmdListDlg->SetKing(true);
+			
+
 		m_pUICmdListDlg->Open();
+		
 	}
 	else
 	{
