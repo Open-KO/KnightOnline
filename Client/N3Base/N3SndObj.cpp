@@ -302,8 +302,8 @@ bool CN3SndObj::FillBufferWithSound(CWaveFile* pWaveFile)
 	if(dsbc.dwBufferBytes != pWaveFile->GetSize())
 		return false; // 사이즈 점검..
 
-    if( FAILED( hr = RestoreBuffer() ) ) 
-        return false;
+	if (!RestoreBuffer())
+		return false;
 
     // Lock the buffer down
 	if( FAILED( hr = m_lpDSBuff->Lock( 0, dsbc.dwBufferBytes, &pDSLockedBuffer, &dwDSLockedBufferSize, NULL, NULL, 0L ) ) )
@@ -348,20 +348,17 @@ bool CN3SndObj::RestoreBuffer()
         // DirectSound may not be giving us control yet, so 
         // the restoring the buffer may fail.  
         // If it does, sleep until DirectSound gives us control.
-        do 
+		hr = m_lpDSBuff->Restore();
+		while (FAILED(hr))
         {
-            hr = m_lpDSBuff->Restore();
-            if( hr == DSERR_BUFFERLOST )
-                Sleep( 10 );
-        }
-        while( hr = m_lpDSBuff->Restore() );
+			if (hr == DSERR_BUFFERLOST)
+				Sleep(10);
 
-        return true;
+			hr = m_lpDSBuff->Restore();
+        }
     }
-    else
-    {
-        return true;
-    }
+
+	return true;
 }
 
 //

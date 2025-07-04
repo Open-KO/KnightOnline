@@ -814,21 +814,25 @@ bool CN3Texture::GenerateMipMap(LPDIRECT3DSURFACE9 lpSurfSrc)
 	if(nMMC < nMMC2) // 적으면 새로 생성..
 	{
 		LPDIRECT3DTEXTURE9 lpTexOld = m_lpTexture;
-		m_lpTexture = NULL;
-		rval = this->CreateFromSurface(lpSurfSrc, m_Header.Format, TRUE);
-		if(bNeedReleaseSurf) { lpSurfSrc->Release(); lpSurfSrc = NULL; }
-		lpTexOld->Release(); lpTexOld = NULL;
+		m_lpTexture = nullptr;
 
-		if(D3D_OK == rval)
+		bool created = CreateFromSurface(lpSurfSrc, m_Header.Format, TRUE);
+
+		if (bNeedReleaseSurf)
 		{
+			lpSurfSrc->Release();
+			lpSurfSrc = nullptr;
+		}
+
+		lpTexOld->Release();
+		lpTexOld = nullptr;
+
+		if (created)
 			m_Header.bMipMap = TRUE;
-			return true;
-		}
 		else
-		{
 			m_Header.bMipMap = FALSE;
-			return FALSE;
-		}
+
+		return created;
 	}
 	else // MipMap 이 있으면 그냥 표면만 복사
 	{
