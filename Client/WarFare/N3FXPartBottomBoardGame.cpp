@@ -2,10 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\N3WorldManager.h"
-#include "..\WarFare\N3FXPartBottomBoardGame.h"
+#include "StdAfx.h"
+#include "GameProcedure.h"
+#include "N3WorldManager.h"
+#include "N3FXPartBottomBoardGame.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

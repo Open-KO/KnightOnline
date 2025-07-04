@@ -121,7 +121,17 @@
     <ClCompile Include="MachineBase.cpp" />
     <ClCompile Include="MachineMng.cpp" />
     <ClCompile Include="MagicSkillMng.cpp" />
+    <ClCompile Include="N3FXBundleGame.cpp" />
+    <ClCompile Include="N3FXPartBillBoardGame.cpp" />
+    <ClCompile Include="N3FXPartBottomBoardGame.cpp" />
+    <ClCompile Include="N3Pond.cpp" />
+    <ClCompile Include="N3River.cpp" />
+    <ClCompile Include="N3Terrain.cpp" />
+    <ClCompile Include="N3TerrainManager.cpp" />
+    <ClCompile Include="N3TerrainPatch.cpp" />
     <ClCompile Include="N3UIWndBase.cpp" />
+    <ClCompile Include="N3WorldBase.cpp" />
+    <ClCompile Include="N3WorldManager.cpp" />
     <ClCompile Include="OrderMessage.cpp" />
     <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="PlayerMySelf.cpp" />
@@ -216,6 +226,8 @@
     <ClInclude Include="GameProcOption.h" />
     <ClInclude Include="GrassBoard.h" />
     <ClInclude Include="GrassMng.h" />
+    <ClInclude Include="N3Pond.h" />
+    <ClInclude Include="N3River.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UICmdEdit.h" />
     <ClInclude Include="UICmdList.h" />

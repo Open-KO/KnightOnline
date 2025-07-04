@@ -2,20 +2,17 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-
-#include "N3SkyMng.h"
-#include "N3ShapeMgr.h"
-#include "LogWriter.h"
-
-#include "..\WarFare\N3TerrainManager.h"
-
-#include "..\WarFare\N3Terrain.h"
-#include "..\WarFare\BirdMng.h"
+#include "StdAfx.h"
+#include "N3TerrainManager.h"
+#include "N3Terrain.h"
+#include "BirdMng.h"
 //#include "GrassMng.h"
+#include "GameProcedure.h"
+#include "PlayerMySelf.h"
 
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\PlayerMySelf.h"
+#include <N3Base/N3SkyMng.h>
+#include <N3Base/N3ShapeMgr.h>
+#include <N3Base/LogWriter.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

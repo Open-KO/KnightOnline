@@ -24,9 +24,6 @@
     <ClInclude Include="My_3DStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3WorldTerrain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3TableBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -135,9 +132,6 @@
     <ClInclude Include="N3GlobalEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3GlobalEffectMng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3IME.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -168,22 +162,7 @@
     <ClInclude Include="N3PMeshInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3Pond.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3River.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3River2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3RiverPatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3ShapeEx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3Shape.h">
@@ -204,9 +183,6 @@
     <ClInclude Include="N3Sky.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3Snd3dObj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3SkyMng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -220,12 +196,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3SndObj.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3SndObj2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3SndObj3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3SndObjStream.h">
@@ -259,9 +229,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3UIList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3UIManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3UIProgress.h">
@@ -311,19 +278,10 @@
     <ClCompile Include="N3Base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3WorldManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3BaseFileAccess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3Terrain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3TerrainPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3Camera.cpp">
@@ -371,9 +329,6 @@
     <ClCompile Include="N3FXBundle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3FXBundleGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3FXMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -384,12 +339,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3FXPartBottomBoard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3FXPartBillBoardGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3FXPartBottomBoardGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3FXParticle.cpp">
@@ -446,15 +395,6 @@
     <ClCompile Include="N3PMeshInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3Pond.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3River.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3River2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -489,9 +429,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3Sun.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3TerrainManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3TransformCollision.cpp">
@@ -542,9 +479,6 @@
     <ClCompile Include="N3VMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3WorldBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Pick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -555,9 +489,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3FXGroup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3GlobalEffectMng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinCrypt.cpp">

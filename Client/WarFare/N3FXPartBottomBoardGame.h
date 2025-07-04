@@ -5,7 +5,7 @@
 #ifndef __N3FXPARTBOTTOMBOARDGAME_H__
 #define __N3FXPARTBOTTOMBOARDGAME_H__
 
-#include "N3FXPartBottomBoard.h"
+#include <N3Base/N3FXPartBottomBoard.h>
 
 class CN3FXPartBottomBoardGame : public CN3FXPartBottomBoard
 {

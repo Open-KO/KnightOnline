@@ -4,17 +4,18 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include <stdio.h>
-#include "..\WarFare\N3Terrain.h"
-#include "..\WarFare\N3TerrainPatch.h"
-#include "..\WarFare\PlayerMySelf.h"
-#include "..\WarFare\GameBase.h"
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\UILoading.h"
+#include "StdAfx.h"
+#include "N3Terrain.h"
+#include "N3TerrainPatch.h"
+#include "PlayerMySelf.h"
+#include "GameBase.h"
+#include "GameProcedure.h"
+#include "UILoading.h"
 
 #include "N3River.h"
 #include "N3Pond.h"
+
+#include <stdio.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

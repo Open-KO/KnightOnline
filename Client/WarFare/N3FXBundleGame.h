@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3FXBundle.h"
+#include <N3Base/N3FXBundle.h>
 
 class CN3FXBundleGame : public CN3FXBundle
 {
