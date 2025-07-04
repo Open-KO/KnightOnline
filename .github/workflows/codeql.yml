@@ -1,13 +1,11 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Build tools
+name: "CodeQL Advanced"
 
 on:
   schedule:
-    - cron: "0 0 * * 0" # once a week every Sunday at midnight
+    - cron: '0 0 * * 0'
+  pull_request:
+    types: [labeled]
+    
   workflow_dispatch:
     
 env:
@@ -15,21 +13,54 @@ env:
   BUILD_CONFIGURATION: Debug
   BUILD_PLATFORM: Win32
 
-# These should really be moved into the one solution.
 jobs:
-  build:
-    runs-on: windows-latest
+  analyze:
+    if: |
+      github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-analysis')
+    name: Analyze (cpp)
+    runs-on: 'windows-latest'
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: 'false'
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
     - name: Fetch required submodules only
       run: |
         git submodule update --init deps/dx9sdk
 
+    # Add any setup steps before running the `github/codeql-action/init` action.
+    # This includes steps like installing compilers or runtimes (`actions/setup-node`
+    # or others). This is typically only required for manual builds.
+    # - name: Setup runtime (example)
+    #   uses: actions/setup-example@v1
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: cpp
+        build-mode: manual
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
+      
+    - name: Build client
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Client.sln
+
+    - name: Build server
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Server.sln
 
     - name: Build N3CE
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -62,3 +93,8 @@ jobs:
     - name: Build UIE
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" UIE\UIE.sln
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "cpp"

@@ -22,34 +22,20 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
-		Tool_Debug|Win32 = Tool_Debug|Win32
-		Tool_Release|Win32 = Tool_Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5E45D92A-702B-4128-A1AF-504A17271D94}.Debug|Win32.ActiveCfg = Debug|Win32
 		{5E45D92A-702B-4128-A1AF-504A17271D94}.Debug|Win32.Build.0 = Debug|Win32
 		{5E45D92A-702B-4128-A1AF-504A17271D94}.Release|Win32.ActiveCfg = Release|Win32
 		{5E45D92A-702B-4128-A1AF-504A17271D94}.Release|Win32.Build.0 = Release|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Tool_Debug|Win32.ActiveCfg = Tool_Debug|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Tool_Debug|Win32.Build.0 = Tool_Debug|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Tool_Release|Win32.ActiveCfg = Tool_Release|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Tool_Release|Win32.Build.0 = Tool_Release|Win32
 		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Debug|Win32.Build.0 = Debug|Win32
 		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Release|Win32.ActiveCfg = Release|Win32
 		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Release|Win32.Build.0 = Release|Win32
-		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Tool_Debug|Win32.ActiveCfg = Debug|Win32
-		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Tool_Debug|Win32.Build.0 = Debug|Win32
-		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Tool_Release|Win32.ActiveCfg = Release|Win32
-		{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}.Tool_Release|Win32.Build.0 = Release|Win32
 		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Debug|Win32.Build.0 = Debug|Win32
 		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Release|Win32.ActiveCfg = Release|Win32
 		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Release|Win32.Build.0 = Release|Win32
-		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Tool_Debug|Win32.ActiveCfg = Debug|Win32
-		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Tool_Debug|Win32.Build.0 = Debug|Win32
-		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Tool_Release|Win32.ActiveCfg = Release|Win32
-		{C2FEB024-8E46-4533-918B-7196CAAA4E7D}.Tool_Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

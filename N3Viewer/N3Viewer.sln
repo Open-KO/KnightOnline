@@ -12,18 +12,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "N3Base", "..\Client\N3Base\
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Debug|x86.ActiveCfg = Tool_Debug|Win32
-		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Debug|x86.Build.0 = Tool_Debug|Win32
-		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Release|x86.ActiveCfg = Tool_Release|Win32
-		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Release|x86.Build.0 = Tool_Release|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Debug|x86.ActiveCfg = Tool_Debug|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Debug|x86.Build.0 = Tool_Debug|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Release|x86.ActiveCfg = Tool_Release|Win32
-		{5E45D92A-702B-4128-A1AF-504A17271D94}.Release|x86.Build.0 = Tool_Release|Win32
+		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Debug|Win32.ActiveCfg = Tool_Debug|Win32
+		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Debug|Win32.Build.0 = Tool_Debug|Win32
+		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Release|Win32.ActiveCfg = Tool_Release|Win32
+		{644F8089-9AFD-49CE-A967-2E849C4A3E37}.Release|Win32.Build.0 = Tool_Release|Win32
+		{5E45D92A-702B-4128-A1AF-504A17271D94}.Debug|Win32.ActiveCfg = Tool_Debug|Win32
+		{5E45D92A-702B-4128-A1AF-504A17271D94}.Debug|Win32.Build.0 = Tool_Debug|Win32
+		{5E45D92A-702B-4128-A1AF-504A17271D94}.Release|Win32.ActiveCfg = Tool_Release|Win32
+		{5E45D92A-702B-4128-A1AF-504A17271D94}.Release|Win32.Build.0 = Tool_Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
