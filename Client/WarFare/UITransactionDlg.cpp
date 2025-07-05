@@ -365,8 +365,8 @@ void CUITransactionDlg::EnterTransactionState()
 	if(m_pStrMyGold != nullptr)
 	{
 		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		if(pInfoExt != nullptr)
-			m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
+		std::string strGold = CGameBase::FormatNumber(pInfoExt->iGold);
+		m_pStrMyGold->SetString(strGold);
 	}
 
 	switch ((int)(m_iTradeID/1000))
@@ -392,8 +392,8 @@ void CUITransactionDlg::GoldUpdate()
 	if(m_pStrMyGold != nullptr)
 	{
 		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		if(pInfoExt != nullptr)
-			m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
+		std::string strGold = CGameBase::FormatNumber(pInfoExt->iGold);
+		m_pStrMyGold->SetString(strGold);
 	}
 }
 
@@ -1123,9 +1123,10 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, int	iMoney)
 {
 	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIString* pStatic = NULL;
+	//CN3UIString* pStatic = NULL;
 	__IconItemSkill* spItem = NULL;
 	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
+	std::string strGold = CGameBase::FormatNumber(iMoney);
 
 	// 소스 영역이 UIWND_DISTRICT_TRADE_NPC 이면 아이템 사는거..
 	switch ( CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict )
@@ -1192,13 +1193,13 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 			}
 			else
 			{
-				pInfoExt->iGold = iMoney; 
+				pInfoExt->iGold = iMoney;
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic != nullptr)	
-					pStatic->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
+				//__ASSERT(pStatic, "NULL UI Component!!");
+				//if(pStatic != nullptr)	
+					//pStatic->SetString(strGold);
 				if(m_pStrMyGold != nullptr)	
-					m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold)); // 상거래창..
+					m_pStrMyGold->SetString(strGold); // 상거래창..
 			}
 			
 			CN3UIWndBase::AllHighLightIconFree();
@@ -1264,11 +1265,11 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 				// 성공이면.. 돈 업데이트..
 				pInfoExt->iGold = iMoney;
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic != nullptr)	
-					pStatic->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
+				//__ASSERT(pStatic, "NULL UI Component!!");
+				//if(pStatic != nullptr)	
+					//pStatic->SetString(strGold);
 				if(m_pStrMyGold != nullptr) 
-					m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold)); // 상거래창..
+					m_pStrMyGold->SetString(strGold); // 상거래창..
 			}
 
 			CN3UIWndBase::AllHighLightIconFree();
