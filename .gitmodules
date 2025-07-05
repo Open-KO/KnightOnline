@@ -5,3 +5,6 @@
 	path = Client/Data
 	url = https://github.com/Open-KO/ko-client-assets
 	branch = openko-1298
+[submodule "deps/zlib"]
+	path = deps/zlib
+	url = https://github.com/madler/zlib.git
