@@ -1,4 +1,4 @@
-/*
+﻿/*
 */
 
 #include "base.h"
@@ -167,7 +167,7 @@ void N3LoadMesh(const char* szFN) {
 	fread(&m_iMinNumIndices0, sizeof(int), 1, fpMesh);
 
 	if(m_pVertices0) {
-		delete m_pVertices0;
+		delete[] m_pVertices0;
 		m_pVertices0 = NULL;
 	}
 
@@ -273,9 +273,9 @@ void N3LoadMesh(const char* szFN) {
 		}
 	}
 
-	free(m_pLODCtrlValues);
-	free(m_pAllIndexChanges);
-	free(m_pCollapses);
+	delete[] m_pLODCtrlValues;
+	delete[] m_pAllIndexChanges;
+	delete[] m_pCollapses;
 	
 	printf("\nMeshName: %s\n", m_szName0);
 	printf("m_iNumCollapses      -> %d\n", m_iNumCollapses0);
