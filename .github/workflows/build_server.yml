@@ -17,6 +17,7 @@ on:
       - 'deps/dx9sdk/**'
       - 'deps/ZipArchive/**'
       - 'deps/zlib/**'
+      - 'deps/zlib-msvc/**'
       - 'Server/AIServer/**'
       - 'Server/Aujard/**'
       - 'Server/Ebenezer/**'
@@ -28,6 +29,7 @@ on:
       - 'Client/N3Base/N3ShapeMgr.cpp'
       - 'All.sln'
       - 'Server.sln'
+      - 'ThirdParty.sln'
 
   pull_request:
     branches:
@@ -40,6 +42,7 @@ on:
       - 'deps/dx9sdk/**'
       - 'deps/ZipArchive/**'
       - 'deps/zlib/**'
+      - 'deps/zlib-msvc/**'
       - 'Server/AIServer/**'
       - 'Server/Aujard/**'
       - 'Server/Ebenezer/**'
@@ -51,6 +54,7 @@ on:
       - 'Client/N3Base/N3ShapeMgr.cpp'
       - 'All.sln'
       - 'Server.sln'
+      - 'ThirdParty.sln'
  
   merge_group:
   workflow_dispatch:
