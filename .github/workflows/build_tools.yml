@@ -6,8 +6,55 @@
 name: Build tools
 
 on:
-  schedule:
-    - cron: "0 0 * * 0" # once a week every Sunday at midnight
+  push:
+    branches:
+    - master
+
+    # This specifically builds only the tool projects.
+    # Everything else can be ignored.
+    paths:
+      - 'props/**'
+      - 'deps/dx9sdk/**'
+      - 'ItemEditor/**'
+      - 'N3CE/**'
+      - 'N3FXE/**'
+      - 'N3ME/**'
+      - 'N3TexViewer/**'
+      - 'N3Viewer/**'
+      - 'SkyViewer/**'
+      - 'TblEditor/**'
+      - 'UIE/**'
+      - 'Server/shared/**'
+      - 'Client/N3Base/**'
+      - 'All.sln'
+      - 'Tools.sln'
+      - 'ThirdParty.sln'
+
+  pull_request:
+    branches:
+    - master
+
+    # This specifically builds only the tool projects.
+    # Everything else can be ignored.
+    paths:
+      - 'props/**'
+      - 'deps/dx9sdk/**'
+      - 'ItemEditor/**'
+      - 'N3CE/**'
+      - 'N3FXE/**'
+      - 'N3ME/**'
+      - 'N3TexViewer/**'
+      - 'N3Viewer/**'
+      - 'SkyViewer/**'
+      - 'TblEditor/**'
+      - 'UIE/**'
+      - 'Server/shared/**'
+      - 'Client/N3Base/**'
+      - 'All.sln'
+      - 'Tools.sln'
+      - 'ThirdParty.sln'
+ 
+  merge_group: 
   workflow_dispatch:
     
 env:
