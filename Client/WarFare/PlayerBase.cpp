@@ -1910,61 +1910,105 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	// plug 효과 붙여라..^^	
 	if(pItemExt)
 	{
-		if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamageFire > 0) || (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE)) // 17 추가데미지 - 불
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_TAIL);
-			
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffffff00);
-		}
-		else if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamageIce > 0) || (pItemExt->byDamageIce >= LIMIT_FX_DAMAGE))// 18 추가데미지 - 얼음
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_ICE_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_ICE_TAIL);
-			
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
+		CN3CPlug* pCPlug = (CN3CPlug*) pPlug;
+		std::string szFXMain, szFXTail;
+		unsigned int fxColor = 0xffffffff; // default color
+		__TABLE_FX* pFXMain = nullptr, * pFXTail = nullptr;
 
-			pCPlug->InitFX(szFXMain, szFXTail, 0xff0000ff);
-		}
-		else if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamageThuner > 0) || (pItemExt->byDamageThuner >= LIMIT_FX_DAMAGE))// 19 추가데미지 - 전격			
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_TAIL);
-			
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
-			
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffffffff);
-		}
-		else if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamagePoison > 0) || (pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE))// 20 추가데미지 - 독			
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_POISON_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_POISON_TAIL);
+		uint8_t iGlowType = ITEM_GLOW_NORMAL; //glow type = 0 for normal, 1 for unique
+		//some normal items which behave like unique while glowing (ex: raptor)
+		std::vector<uint32_t> iaItemsGlowUniq = {
+			ITEM_ID_RAPTOR,ITEM_ID_IRON_IMPACT,ITEM_ID_TOTAMIC_SPEAR
+		};
 
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
-			
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffff00ff);
+		//some unique items which behave like normal while glowing (ex: sword of beast)
+		std::vector<uint32_t> iaItemsGlowNormal = {
+			ITEM_ID_SWORD_OF_BEAST,ITEM_ID_SWORD_OF_THE_DEAD,
+			ITEM_ID_TOOTH,ITEM_ID_LOBO_HAMMER,ITEM_ID_SCORPION_SCYTHE
+		};
+
+		if (pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE)
+		{
+			//basic items like raptor cannot be found inside pItemExt, so search by pItemBasic
+			//assuming it includes all unique items as well
+			if (/*std::find(iaItemsGlowNormal.begin(), iaItemsGlowNormal.end(), pItemExt->dwBaseID) == iaItemsGlowNormal.end() ||*/
+				pItemBasic && std::find(iaItemsGlowNormal.begin(), iaItemsGlowNormal.end(), pItemBasic->dwID) == iaItemsGlowNormal.end())
+				iGlowType = ITEM_GLOW_UNIQUE;
+
 		}
+		else
+		{
+			if (/*std::find(iaItemsGlowUniq.begin(), iaItemsGlowUniq.end(), pItemExt->dwBaseID) != iaItemsGlowUniq.end() ||*/
+				pItemBasic && std::find(iaItemsGlowUniq.begin(), iaItemsGlowUniq.end(), pItemBasic->dwID) != iaItemsGlowUniq.end())
+				iGlowType = ITEM_GLOW_UNIQUE;
+
+		}
+
+
+		//unique items
+		if (iGlowType == ITEM_GLOW_UNIQUE)
+		{
+
+			if (pItemExt->byDamageFire >= LIMIT_FX_GLOW) //glows fire
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_FIRE_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_FIRE_TAIL);
+				fxColor = 0xffffff00; //trace color on attack
+			}
+			else if (pItemExt->byDamageIce >= LIMIT_FX_GLOW) //glows ice
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_ICE_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_ICE_TAIL);
+				fxColor = 0xff0000ff;
+			}
+			else if (pItemExt->byDamageThuner >= LIMIT_FX_GLOW) //glows thunder
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_LIGHTNING_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_LIGHTNING_TAIL);
+				fxColor = 0xffffffff;
+			}
+			else if (pItemExt->byDamagePoison >= LIMIT_FX_GLOW) //glows poison
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_POISON_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_UNIQ_POISON_TAIL);
+				fxColor = 0xffff00ff;
+			}
+
+		}
+		//normal items
+		else
+		{
+			if (pItemExt->byDamageFire >= LIMIT_FX_GLOW) //fire
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_TAIL);
+				fxColor = 0xffffff00;
+			}
+			else if (pItemExt->byDamageIce >= LIMIT_FX_GLOW) //ice
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_ICE_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_ICE_TAIL);
+				fxColor = 0xff0000ff;
+			}
+			else if (pItemExt->byDamageThuner >= LIMIT_FX_GLOW) //thunder
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_TAIL);
+				fxColor = 0xffffffff;
+			}
+			else if (pItemExt->byDamagePoison >= LIMIT_FX_GLOW) //poison
+			{
+				pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_POISON_MAIN);
+				pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_POISON_TAIL);
+				fxColor = 0xffff00ff;
+			}
+
+		}
+
+
+		(pFXMain) ? szFXMain = pFXMain->szFN : szFXMain = "";
+		(pFXTail) ? szFXTail = pFXTail->szFN : szFXTail = "";
+		pCPlug->InitFX(szFXMain, szFXTail, fxColor);
 	}
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
