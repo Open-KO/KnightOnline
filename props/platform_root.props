@@ -7,6 +7,12 @@
     <DependencyDir>$(RootDir)deps\</DependencyDir>
     <ToolBuild>false</ToolBuild>
     <ToolBuild Condition="$(Configuration.StartsWith('Tool_'))">true</ToolBuild>	 
+    <IntDir>.int\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(RootDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)'=='Tool_Debug'">$(RootDir)bin\$(Platform)\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)'=='Tool_Release'">$(RootDir)bin\$(Platform)\Release\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental Condition="$(Configuration.Contains('Debug'))">true</LinkIncremental>
   </PropertyGroup>
   <ImportGroup Label="PropertySheets" />
 </Project>

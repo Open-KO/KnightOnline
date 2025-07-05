@@ -297,28 +297,13 @@
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)cp949_strings.props" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool_Release|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName)_tool</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool_Debug|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName)_tool</TargetName>
+  <PropertyGroup>
+    <IncludePath>..\include;$(IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>..\;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

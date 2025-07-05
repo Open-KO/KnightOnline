@@ -48,6 +48,7 @@ Release/
 Tool_Debug/
 Tool_Release/
 x64/
+.int/
 warfare_config.h
 *.idea
 *.txt

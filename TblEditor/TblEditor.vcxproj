@@ -38,14 +38,12 @@
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)cp949_strings.props" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool_Debug|Win32'">
-    <OutDir>Debug\</OutDir>
-    <IntDir>Debug\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)'=='Tool_Debug'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\Debug\</OutDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool_Release|Win32'">
-    <OutDir>Release\</OutDir>
-    <IntDir>Release\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)'=='Tool_Release'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\Release\</OutDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup>

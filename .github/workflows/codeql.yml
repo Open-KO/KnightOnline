@@ -53,46 +53,10 @@ jobs:
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
-      
-    - name: Build client
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Client.sln
 
-    - name: Build server
+    - name: Build all
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Server.sln
-
-    - name: Build N3CE
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3CE\N3CE.sln
-
-    - name: Build N3FXE
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3FXE\N3FXE.sln
-
-    - name: Build N3ME
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3ME\N3ME.sln
-
-    - name: Build N3TexViewer
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3TexViewer\N3TexViewer.sln
-
-    - name: Build N3Viewer
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3Viewer\N3Viewer.sln
-
-    - name: Build SkyViewer
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" SkyViewer\SkyViewer.sln
-
-    - name: Build TblEditor
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" TblEditor\TblEditor.sln
-
-    - name: Build UIE
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" UIE\UIE.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" All.sln
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
