@@ -3,6 +3,12 @@
 > Failure to do so will result in build errors or missing functionality.
 >
 > Please be sure to read the below [Prerequisites](#prerequisites) and [Getting started](#getting-started) sections below. You will find how to set this up specifically in the section on [Dependencies](#update-and-build-our-third-party-dependencies).
+>
+> Please note that the same info applies for errors like the following (which are caused by a compiler update):
+>
+> "**LINK : fatal error C1047: The object or library file 'zlib.lib' was created by a different version of the compiler than other objects like '{some file}.obj'; rebuild all objects and libraries with the same compiler**".
+>
+> If you are experiencing that error, please follow the [Dependencies](#update-and-build-our-third-party-dependencies) section of the guide again, even if you're done so already in the past.
 
 # Open Knight Online (OpenKO)
 
