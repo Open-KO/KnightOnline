@@ -57,9 +57,14 @@ jobs:
     - name: Fetch required submodules only
       run: |
         git submodule update --init deps/dx9sdk
+        git submodule update --init deps/zlib
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
+
+    - name: Build third party dependencies
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
 
     - name: Build client
       working-directory: ${{env.GITHUB_WORKSPACE}}

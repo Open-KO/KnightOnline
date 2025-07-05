@@ -11,6 +11,7 @@
     <OutDir>$(RootDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)'=='Tool_Debug'">$(RootDir)bin\$(Platform)\Debug\</OutDir>
     <OutDir Condition="'$(Configuration)'=='Tool_Release'">$(RootDir)bin\$(Platform)\Release\</OutDir>
+    <BaseOutDir>$(OutDir)</BaseOutDir>
     <LinkIncremental>false</LinkIncremental>
     <LinkIncremental Condition="$(Configuration.Contains('Debug'))">true</LinkIncremental>
   </PropertyGroup>
