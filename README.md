@@ -2,7 +2,7 @@
 > To build this project, you will need several dependencies setup correctly (e.g. **DirectX 9 SDK**, **zlib**, as well as **the 1.298 client assets**).
 >
 > **All of these are included**, you simply need to read the below [Prerequisites](#prerequisites) and [Getting started](#getting-started) sections below, then follow the quick and easy instructions provided.
-> These instructions can be found specifically in the [Dependencies](#update-and-build-our-third-party-dependencies) section.
+> Instructions for setting up the dependencies specifically can be found under the [Dependencies](#update-and-build-our-third-party-dependencies) section.
 > 
 > **Failure to do so will result in build errors or missing functionality.**
 >
@@ -10,7 +10,7 @@
 >
 > "**LINK : fatal error C1047: The object or library file 'zlib.lib' was created by a different version of the compiler than other objects like '{some file}.obj'; rebuild all objects and libraries with the same compiler**".
 >
-> So again: if you are experiencing build issues, be it the above, missing dependencies or the like, **please follow the [Dependencies](#update-and-build-our-third-party-dependencies) section of the guide**, even if you've done so previously.
+> If you are experiencing build issues, be it the above, missing dependencies or the like, **please be sure to follow the [Dependencies](#update-and-build-our-third-party-dependencies) section of the guide**, even if you've done so previously.
 
 # Open Knight Online (OpenKO)
 
