@@ -1,14 +1,16 @@
 > [!WARNING]
-> This project requires you to update your submodules so that it can use the **DirectX 9 SDK**, **zlib**, as well as **the 1.298 client assets**.
-> Failure to do so will result in build errors or missing functionality.
+> To build this project, you will need several dependencies setup correctly (e.g. **DirectX 9 SDK**, **zlib**, as well as **the 1.298 client assets**).
 >
-> Please be sure to read the below [Prerequisites](#prerequisites) and [Getting started](#getting-started) sections below. You will find how to set this up specifically in the section on [Dependencies](#update-and-build-our-third-party-dependencies).
+> **All of these are included**, you simply need to read the below [Prerequisites](#prerequisites) and [Getting started](#getting-started) sections below to find where to set this up.
+> You will find how to set this up specifically in the section on [Dependencies](#update-and-build-our-third-party-dependencies).
+> 
+> **Failure to do so will result in build errors or missing functionality.**
 >
-> Please note that the same info applies for errors like the following (which are caused by a compiler update):
+> This extends to compilers like the following (this one specifically is caused by a compiler update):
 >
 > "**LINK : fatal error C1047: The object or library file 'zlib.lib' was created by a different version of the compiler than other objects like '{some file}.obj'; rebuild all objects and libraries with the same compiler**".
 >
-> If you are experiencing that error, please follow the [Dependencies](#update-and-build-our-third-party-dependencies) section of the guide again, even if you've done so already in the past.
+> So again: if you are experiencing build issues, be it the above, missing dependencies or the like, **please follow the [Dependencies](#update-and-build-our-third-party-dependencies) section of the guide**, even if you've done so previously.
 
 # Open Knight Online (OpenKO)
 
@@ -62,17 +64,30 @@ https://github.com/Open-KO/KnightOnline.git
 ```
 
 ### Update and build our third party dependencies
- 
-You can double-click `update_dependencies.cmd` in the root directory to automatically initialise and update all of our submodules and build the relevant third party dependencies.
 
-Alternatively, you can update them manually via:
+### Just run update_dependencies.cmd - it's quick and easy
+
+In the root directory of the repository, simply double-click:
+```
+update_dependencies.cmd
+```
+
+It will automatically initialise and update all of our submodules, and then build all relevant third party dependencies for all configurations.
+
+It's that easy.
+
+Note that `update_dependencies.cmd` can simply be run at any time to update and rebuild them.
+
+### Alternatively, if you want to do things manually...
+
+If you choose to do this manually, **you will need to do 2 things.**
+
+1. You can update the submodules manually via:
 ```bash
 git submodule update --init --recursive
 ```
 
-If you update them manually, you should also load up `ThirdParty.sln` to build them (ideally you should build both `Debug` and `Release` configurations; this should only really be done once, and whenever we update them).
-
-Note that `update_dependencies.cmd` can simply be run at any time to update and rebuild them.
+2. **You must then load up `ThirdParty.sln` to build them** (ideally you should build both `Debug` and `Release` configurations).
 
 ### Run the solution
 
