@@ -709,7 +709,7 @@ BOOL CServerDlg::GetNpcItemTable()
 {
 	CNpcItemSet NpcItemSet;
 	int nRowCount = 0;
-	short i;
+	int i;
 	int nItem = 0;
 
 	try

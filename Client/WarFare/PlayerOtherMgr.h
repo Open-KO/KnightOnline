@@ -143,7 +143,7 @@ inline void CPlayerOtherMgr::UPCAdd(CPlayerOther* pUPC)
 	}
 	else // 중복되었으면..
 	{
-		T_Delete(it->second);
+		delete it->second;
 		it->second = pUPC;
 	}
 }
@@ -153,7 +153,7 @@ inline bool CPlayerOtherMgr::UPCDelete(int iID)
 	it_UPC it = m_UPCs.find(iID);
 	if(it == m_UPCs.end()) return false;
 
-	T_Delete(it->second);
+	delete it->second;
 	m_UPCs.erase(it);
 	return true;
 }
@@ -167,7 +167,7 @@ inline void CPlayerOtherMgr::NPCAdd(CPlayerNPC* pNPC)
 	}
 	else // 중복되었으면..
 	{
-		T_Delete(it->second);
+		delete it->second;
 		it->second = pNPC;
 	}
 }
@@ -177,7 +177,7 @@ inline bool CPlayerOtherMgr::NPCDelete(int iID)
 	it_NPC it = m_NPCs.find(iID);
 	if(it == m_NPCs.end()) return false;
 
-	T_Delete(it->second);
+	delete it->second;
 	m_NPCs.erase(it);
 	return true;
 }

@@ -361,12 +361,7 @@ void CUITransactionDlg::EnterTransactionState()
 
 	ItemMoveFromInvToThis();
 
-
-	if(m_pStrMyGold)
-	{
-		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
-	}
+	GoldUpdate();
 
 	switch ((int)(m_iTradeID/1000))
 	{
@@ -388,11 +383,11 @@ void CUITransactionDlg::UpdateWeight(const std::string& szWeight)
 
 void CUITransactionDlg::GoldUpdate()
 {
-	if(m_pStrMyGold)
-	{
-		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
-	}
+	if (m_pStrMyGold == nullptr)
+		return;
+
+	std::string strGold = CGameBase::FormatNumber(CGameBase::s_pPlayer->m_InfoExt.iGold);
+	m_pStrMyGold->SetString(strGold);
 }
 
 void CUITransactionDlg::ItemMoveFromInvToThis()
@@ -1121,7 +1116,6 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, int	iMoney)
 {
 	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIString* pStatic = NULL;
 	__IconItemSkill* spItem = NULL;
 	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 
@@ -1190,11 +1184,10 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 			}
 			else
 			{
-				pInfoExt->iGold = iMoney; 
+				pInfoExt->iGold = iMoney;
+
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
-				if(m_pStrMyGold)	m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
+				GoldUpdate();
 			}
 			
 			CN3UIWndBase::AllHighLightIconFree();
@@ -1259,10 +1252,9 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 
 				// 성공이면.. 돈 업데이트..
 				pInfoExt->iGold = iMoney;
+
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
-				if(m_pStrMyGold) m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
+				GoldUpdate();
 			}
 
 			CN3UIWndBase::AllHighLightIconFree();

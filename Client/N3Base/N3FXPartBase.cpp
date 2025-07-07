@@ -124,15 +124,15 @@ bool CN3FXPartBase::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 		m_iNumTex = atoi(szBuff1);
 		m_ppRefTex = new CN3Texture* [m_iNumTex];
 
-		char szPathName[_MAX_PATH];
-		char szDir[_MAX_DIR];
-		char szFileName[_MAX_PATH];
-		char szExt[_MAX_EXT];
+		char szPathName[_MAX_PATH] = {},
+			szDir[_MAX_DIR] = {},
+			szFileName[_MAX_PATH] = {},
+			szExt[_MAX_EXT] = {};
 
-		sprintf(szPathName, szBuff0);
-		_splitpath(szPathName, NULL, szDir, szFileName, szExt);
-		sprintf(m_pTexName,"%s%s", szDir, szFileName);
-		
+		strcpy(szPathName, szBuff0);
+		_splitpath(szPathName, nullptr, szDir, szFileName, szExt);
+		sprintf(m_pTexName, "%s%s", szDir, szFileName);
+
 		std::string FileName = m_pTexName;
 		char Buff[5];
 		for(int i=0;i<m_iNumTex;i++)

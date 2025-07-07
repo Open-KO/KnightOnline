@@ -1,9 +1,10 @@
 ﻿// N3River.cpp: implementation of the CN3River class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfxBase.h"
+#include "StdAfx.h"
 #include "N3River.h"
-#include "N3Texture.h"
+
+#include <N3Base/N3Texture.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

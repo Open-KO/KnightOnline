@@ -846,7 +846,7 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	if(s_pPlayer)
 	{
 		__Vector3 vPos = s_pPlayer->Position();
-		CLogWriter::Write("Socket Closed... Zone(%d) Pos(%.1f, %.1f, %.1f) Exp(%d)",
+		CLogWriter::Write("Socket Closed... Zone(%d) Pos(%.1f, %.1f, %.1f) Exp(%I64u)",
 			s_pPlayer->m_InfoExt.iZoneCur, vPos.x, vPos.y, vPos.z, s_pPlayer->m_InfoExt.iExp);
 	}
 	else

@@ -142,7 +142,7 @@ void CN3SPart::Tick(const __Matrix44& mtxParent, const __Quaternion& qRot, float
 //		else if(m_vWindFactorToReach != m_vWindFactorCur)
 		{
 //			float fFactor = s_fSecPerFrm * (m_vWindFactorToReach - m_vWindFactorCur).Magnitude();
-			float fFactor = s_fSecPerFrm * T_Abs(m_fWindFactorToReach - m_fWindFactorCur);
+			float fFactor = s_fSecPerFrm * std::abs(m_fWindFactorToReach - m_fWindFactorCur);
 
 //			if(m_vWindFactorCur.x < m_vWindFactorToReach.x) m_vWindFactorCur.x += fFactor;
 //			if(m_vWindFactorCur.x > m_vWindFactorToReach.x) m_vWindFactorCur.x -= fFactor;
@@ -153,10 +153,10 @@ void CN3SPart::Tick(const __Matrix44& mtxParent, const __Quaternion& qRot, float
 			if(m_fWindFactorCur < m_fWindFactorToReach) m_fWindFactorCur += fFactor;
 			if(m_fWindFactorCur > m_fWindFactorToReach) m_fWindFactorCur -= fFactor;
 
-//			if(T_Abs(m_vWindFactorToReach.x - m_vWindFactorCur.x) < fFactor) m_vWindFactorCur.x = m_vWindFactorToReach.x;
-//			if(T_Abs(m_vWindFactorToReach.y - m_vWindFactorCur.y) < fFactor) m_vWindFactorCur.y = m_vWindFactorToReach.y;
-//			if(T_Abs(m_vWindFactorToReach.z - m_vWindFactorCur.z) < fFactor) m_vWindFactorCur.z = m_vWindFactorToReach.z;
-			if(T_Abs(m_fWindFactorToReach - m_fWindFactorCur) < fFactor) m_fWindFactorCur = m_fWindFactorToReach;
+//			if(std::abs(m_vWindFactorToReach.x - m_vWindFactorCur.x) < fFactor) m_vWindFactorCur.x = m_vWindFactorToReach.x;
+//			if(std::abs(m_vWindFactorToReach.y - m_vWindFactorCur.y) < fFactor) m_vWindFactorCur.y = m_vWindFactorToReach.y;
+//			if(std::abs(m_vWindFactorToReach.z - m_vWindFactorCur.z) < fFactor) m_vWindFactorCur.z = m_vWindFactorToReach.z;
+			if(std::abs(m_fWindFactorToReach - m_fWindFactorCur) < fFactor) m_fWindFactorCur = m_fWindFactorToReach;
 			
 			__Vector3 vPos = m_vPivot * mtxParent;
 //			m_Matrix.Rotation(CN3Base::s_vWindFactor * m_fWindFactorCur);

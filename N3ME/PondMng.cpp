@@ -947,33 +947,42 @@ void CPondMng::ReCalcSelectedVertex()
 	int iSize = m_pSelPonds.size();
 	if(iSize==0) return;
 
-	it_PondMesh it = m_pSelPonds.begin();
+	__VertexXyzT2* pVtxSel = m_SelVtxArray.GetAt(0);
+	if (pVtxSel == nullptr)
+		return;
+
+	auto it = m_pSelPonds.begin();
 	for(int i = 0; i < iSize; i++, it++)
 	{
-		CPondMesh* pSelPond= *it;
-		__VertexXyzT2 *pVtx0 = pSelPond->GetVertex(0);
-		__VertexXyzT2 *pVtxSel = m_SelVtxArray.GetAt(0);
+		CPondMesh* pSelPond = *it;
+		__VertexXyzT2* pVtx0 = pSelPond->GetVertex(0);
+		if (pVtx0 == nullptr)
+			continue;
+
 		int nIndex = pVtxSel - pVtx0;
 		int iLastVtxNum = pSelPond->LastVertexCount();
-		
-		nIndex = (nIndex/iLastVtxNum)*iLastVtxNum;
-		pVtxSel = pSelPond->GetVertex(nIndex);
-		ASSERT(pSelPond->VertexCount()-iLastVtxNum >= nIndex);
-		ASSERT(pVtxSel);
+
+		nIndex = (nIndex / iLastVtxNum) * iLastVtxNum;
+
+		__VertexXyzT2* pVtxTmp = pSelPond->GetVertex(nIndex);
+		if (pVtxTmp == nullptr)
+			continue;
+
+		ASSERT(pSelPond->VertexCount() - iLastVtxNum >= nIndex);
 
 		__Vector3 vPos1, vPos2, vDif;
-		vPos1 = *(pVtxSel);
-		vPos2 = *(pVtxSel+iLastVtxNum-1);
+		vPos1 = pVtxTmp[0];
+		vPos2 = pVtxTmp[iLastVtxNum - 1];
 
-		vDif = vPos2-vPos1;
+		vDif = vPos2 - vPos1;
 		float Length = vDif.Magnitude();
 		vDif.Normalize();
-		vDif *= Length/(float)iLastVtxNum;
+		vDif *= Length / (float) iLastVtxNum;
 
-		for(int i=1;i<iLastVtxNum;i++)
+		for (int i = 1;i < iLastVtxNum;i++)
 		{
-			vPos2 = vPos1 + vDif*(float)i;
-			(pVtxSel+i)->Set(vPos2,0,0,0,0);
+			vPos2 = vPos1 + vDif * (float) i;
+			pVtxTmp[i].Set(vPos2, 0, 0, 0, 0);
 		}
 		pSelPond->ReCalcUV();
 	}

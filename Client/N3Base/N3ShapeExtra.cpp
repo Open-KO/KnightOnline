@@ -70,7 +70,7 @@ void CN3ShapeExtra::Tick(float fFrm)
 		
 		fRotDelta = pRot->fRadianPerSec * fDir * CN3Base::s_fSecPerFrm;
 		pRot->fRadianCur += fRotDelta;
-		if(T_Abs(pRot->fRadianToReach - pRot->fRadianCur) <= fRotDelta) /// 원하는 곳까지 다 열렸다!!
+		if(std::abs(pRot->fRadianToReach - pRot->fRadianCur) <= fRotDelta) /// 원하는 곳까지 다 열렸다!!
 		{
 			bNeedRemakeCollisionMeshes = true;
 			pRot->fRadianPerSec = 0;

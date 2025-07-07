@@ -179,7 +179,7 @@ void CDlgEditWarp::OnOK()
 
 void CDlgEditWarp::OnBtnExport() 
 {
-	CFileDialog dlg(FALSE, "wap", "Noname", OFN_EXPLORER | OFN_LONGNAMES | OFN_OVERWRITEPROMPT, "Warp InfoÆÄÀÏ(*.wap)|*.wap||");
+	CFileDialog dlg(FALSE, "wap", "Noname", OFN_EXPLORER | OFN_LONGNAMES | OFN_OVERWRITEPROMPT, "Warp Info파일(*.wap)|*.wap||");
 
 	if(dlg.DoModal()==IDOK)
 	{
@@ -191,7 +191,7 @@ void CDlgEditWarp::OnBtnExport()
 void CDlgEditWarp::OnBtnImport() 
 {
 	DWORD dwFlags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
-	CFileDialog dlg(TRUE, "wap", NULL, dwFlags, "Warp InfoÆÄÀÏ(*.wap)|*.wap||", NULL);
+	CFileDialog dlg(TRUE, "wap", NULL, dwFlags, "Warp Info파일(*.wap)|*.wap||", NULL);
 
 	if(dlg.DoModal() == IDCANCEL) return;
 

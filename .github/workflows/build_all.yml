@@ -1,0 +1,43 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build all
+
+on:
+  pull_request:
+    types: [labeled]
+    
+  workflow_dispatch:
+    
+env:
+  # We use a debug build for slightly faster build times
+  BUILD_CONFIGURATION: Debug
+  BUILD_PLATFORM: Win32
+
+jobs:
+  build:
+    if: |
+      github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'build-all')
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'false'
+
+    - name: Fetch required submodules only
+      run: |
+        git submodule update --init deps/dx9sdk
+        git submodule update --init deps/zlib
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build third party dependencies
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
+
+    - name: Build all
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" All.sln

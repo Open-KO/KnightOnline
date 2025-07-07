@@ -294,7 +294,37 @@
     <ClCompile Include="UILevelGuide.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="N3FXBundleGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXPartBillBoardGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXPartBottomBoardGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3TerrainManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3TerrainPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="N3UIWndBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3WorldManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3WorldBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3River.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3Pond.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -630,6 +660,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UILevelGuide.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="N3Pond.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="N3River.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

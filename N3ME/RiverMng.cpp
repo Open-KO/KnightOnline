@@ -901,25 +901,35 @@ void CRiverMng::MakeGameFiles(LPCTSTR lpszFName, float fSize)
 
 void CRiverMng::ReCalcSelectedVertex()
 {
-	if (!m_pSelRiver)	return;
+	if (m_pSelRiver == nullptr)
+		return;
 
-	__VertexXyzT2 *pVtx0 = m_pSelRiver->GetVertex(0);
-	__VertexXyzT2 *pVtxSel = m_SelVtxArray.GetAt(0);
+	__VertexXyzT2* pVtx0 = m_pSelRiver->GetVertex(0);
+	if (pVtx0 == nullptr)
+		return;
+
+	__VertexXyzT2* pVtxSel = m_SelVtxArray.GetAt(0);
+	if (pVtxSel == nullptr)
+		return;
+
 	int nIndex = pVtxSel - pVtx0;
-	nIndex = (nIndex/4)*4;
+	nIndex = (nIndex / 4) * 4;
 
 	pVtxSel = m_pSelRiver->GetVertex(nIndex);
-	ASSERT(m_pSelRiver->VertexCount()-4 >= nIndex);
+	if (pVtxSel == nullptr)
+		return;
+
+	ASSERT(m_pSelRiver->VertexCount() - 4 >= nIndex);
 	ASSERT(pVtxSel);
 
 	__Vector3 vPos1, vPos2, vPos3, vPos4;
-	vPos1 = *pVtxSel;
-	vPos4 = *(pVtxSel+3);
-	vPos2 = vPos1*(1.0f-0.33f)+vPos4*0.33f;
-	vPos3 = vPos1*(1.0f-0.66f)+vPos4*0.66f;
+	vPos1 = pVtxSel[0];
+	vPos4 = pVtxSel[3];
+	vPos2 = vPos1 * (1.0f - 0.33f) + vPos4 * 0.33f;
+	vPos3 = vPos1 * (1.0f - 0.66f) + vPos4 * 0.66f;
 
-	*(pVtxSel+1) = vPos2;
-	*(pVtxSel+2) = vPos3;
+	pVtxSel[1] = vPos2;
+	pVtxSel[2] = vPos3;
 	m_pMainFrm->Invalidate(FALSE);
 }
 

@@ -41,6 +41,21 @@ ECHO Found git.exe in GitHub Desktop directory (%GitDir%)
 ECHO Initialising and updating submodules...
 "%GitDir%git.exe" submodule update --init --recursive
 
+:: Find latest Visual Studio with MSBuild
+set "MSBUILD="
+for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) do (
+	set "MSBUILD=%%i"
+)
+
+if "%MSBUILD%"=="" (
+	ECHO MSBuild not found! Please ensure that Visual Studio 2022 is installed.
+	EXIT /B
+)
+
+:: Build all third party dependencies for Debug and Release configurations
+"%MSBUILD%" ThirdParty.sln /t:Rebuild /p:Configuration=Debug
+"%MSBUILD%" ThirdParty.sln /t:Rebuild /p:Configuration=Release
+
 ECHO.
 ECHO All done! You can close this window now.
 PAUSE

@@ -63,13 +63,13 @@ bool CTblEditorBase::LoadFile(
 	HANDLE hFile = ::CreateFile(path, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		TRACE("Failed to open file: '%s'\n", path);
+		TRACE(_T("Failed to open file: '%s'\n"), path);
 		errorMsg.Format(IDS_ERROR_FAILED_TO_OPEN_FILE, path);
 		return false;
 	}
 
 	CString TemporaryPath = path + _T(".tmp");
-	TRACE("Temporary Path: '%s'\n", TemporaryPath);
+	TRACE(_T("Temporary Path: '%s'\n"), TemporaryPath);
 
 	DWORD dwSizeLow = ::GetFileSize(hFile, nullptr);
 	if (dwSizeLow == 0)
@@ -355,7 +355,7 @@ bool CTblEditorBase::LoadRowData(
 
 						szValue.ReleaseBuffer();
 
-						TRACE("Row %d, Column %d: DT_STRING = %s\n", iRowNo, iColNo, szValue);
+						TRACE(_T("Row %d, Column %d: DT_STRING = %s\n"), iRowNo, iColNo, szValue);
 					}
 
 					row.push_back(szValue);

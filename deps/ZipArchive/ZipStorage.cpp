@@ -309,19 +309,21 @@ void CZipStorage::CallCallback(int iCode, CString szTemp)
 
 DWORD CZipStorage::GetFreeVolumeSpace()
 {
-	ASSERT (m_iSpanMode == pkzipSpan);
-	DWORD SectorsPerCluster, BytesPerSector, NumberOfFreeClusters, TotalNumberOfClusters;		
+	ASSERT(m_iSpanMode == pkzipSpan);
+	DWORD SectorsPerCluster, BytesPerSector, NumberOfFreeClusters, TotalNumberOfClusters;
 	if (!GetDiskFreeSpace(
 		CZipArchive::GetDrive(m_pFile->GetFilePath()),
 		&SectorsPerCluster,
 		&BytesPerSector,
 		&NumberOfFreeClusters,
 		&TotalNumberOfClusters))
-			return 0;
-	_int64 total = SectorsPerCluster * BytesPerSector * NumberOfFreeClusters;
-	return (DWORD)total;
-}
+		return 0;
 
+	int64_t total = static_cast<int64_t>(SectorsPerCluster)
+		* static_cast<int64_t>(BytesPerSector)
+		* static_cast<int64_t>(NumberOfFreeClusters);
+	return static_cast<DWORD>(total);
+}
 
 void CZipStorage::UpdateSpanMode(WORD uLastDisk)
 {

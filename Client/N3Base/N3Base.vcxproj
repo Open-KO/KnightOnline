@@ -94,26 +94,18 @@
     <ClInclude Include="N3PMesh.h" />
     <ClInclude Include="N3PMeshCreate.h" />
     <ClInclude Include="N3PMeshInstance.h" />
-    <ClInclude Include="N3Pond.h" />
-    <ClInclude Include="N3River.h" />
-    <ClInclude Include="N3River2.h" />
-    <ClInclude Include="N3RiverPatch.h" />
     <ClInclude Include="N3Scene.h" />
     <ClInclude Include="N3Shape.h" />
-    <ClInclude Include="N3ShapeEx.h" />
     <ClInclude Include="N3ShapeExtra.h" />
     <ClInclude Include="N3ShapeMgr.h" />
     <ClInclude Include="N3ShapeMod.h" />
     <ClInclude Include="N3Skin.h" />
     <ClInclude Include="N3Sky.h" />
     <ClInclude Include="N3SkyMng.h" />
-    <ClInclude Include="N3Snd3dObj.h" />
     <ClInclude Include="N3SndDef.h" />
     <ClInclude Include="N3SndEng.h" />
     <ClInclude Include="N3SndMgr.h" />
     <ClInclude Include="N3SndObj.h" />
-    <ClInclude Include="N3SndObj2D.h" />
-    <ClInclude Include="N3SndObj3D.h" />
     <ClInclude Include="N3SndObjStream.h" />
     <ClInclude Include="N3Star.h" />
     <ClInclude Include="N3Sun.h" />
@@ -129,7 +121,6 @@
     <ClInclude Include="N3UIEdit.h" />
     <ClInclude Include="N3UIImage.h" />
     <ClInclude Include="N3UIList.h" />
-    <ClInclude Include="N3UIManager.h" />
     <ClInclude Include="N3UIProgress.h" />
     <ClInclude Include="N3UIScrollBar.h" />
     <ClInclude Include="N3UIStatic.h" />
@@ -137,7 +128,6 @@
     <ClInclude Include="N3UITooltip.h" />
     <ClInclude Include="N3UITrackBar.h" />
     <ClInclude Include="N3VMesh.h" />
-    <ClInclude Include="N3WorldTerrain.h" />
     <ClInclude Include="Pick.h">
       <ExcludedFromBuild Condition="'$(ToolBuild)'!='true'">true</ExcludedFromBuild>
     </ClInclude>
@@ -166,16 +156,13 @@
       <ExcludedFromBuild Condition="'$(ToolBuild)'!='true'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="N3FXBundle.cpp" />
-    <ClCompile Include="N3FXBundleGame.cpp" />
     <ClCompile Include="N3FXGroup.cpp">
       <ExcludedFromBuild Condition="'$(ToolBuild)'!='true'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="N3FXMgr.cpp" />
     <ClCompile Include="N3FXPartBase.cpp" />
     <ClCompile Include="N3FXPartBillBoard.cpp" />
-    <ClCompile Include="N3FXPartBillBoardGame.cpp" />
     <ClCompile Include="N3FXPartBottomBoard.cpp" />
-    <ClCompile Include="N3FXPartBottomBoardGame.cpp" />
     <ClCompile Include="N3FXParticle.cpp" />
     <ClCompile Include="N3FXPartMesh.cpp" />
     <ClCompile Include="N3FXPartParticles.cpp" />
@@ -197,9 +184,6 @@
     <ClCompile Include="N3PMesh.cpp" />
     <ClCompile Include="N3PMeshCreate.cpp" />
     <ClCompile Include="N3PMeshInstance.cpp" />
-    <ClCompile Include="N3Pond.cpp" />
-    <ClCompile Include="N3River.cpp" />
-    <ClCompile Include="N3River2.cpp" />
     <ClCompile Include="N3Scene.cpp" />
     <ClCompile Include="N3Shape.cpp" />
     <ClCompile Include="N3ShapeExtra.cpp" />
@@ -214,9 +198,6 @@
     <ClCompile Include="N3SndObjStream.cpp" />
     <ClCompile Include="N3Star.cpp" />
     <ClCompile Include="N3Sun.cpp" />
-    <ClCompile Include="N3Terrain.cpp" />
-    <ClCompile Include="N3TerrainManager.cpp" />
-    <ClCompile Include="N3TerrainPatch.cpp" />
     <ClCompile Include="N3Texture.cpp" />
     <ClCompile Include="N3Transform.cpp" />
     <ClCompile Include="N3TransformCollision.cpp" />
@@ -235,8 +216,6 @@
     <ClCompile Include="N3UITooltip.cpp" />
     <ClCompile Include="N3UITrackBar.cpp" />
     <ClCompile Include="N3VMesh.cpp" />
-    <ClCompile Include="N3WorldBase.cpp" />
-    <ClCompile Include="N3WorldManager.cpp" />
     <ClCompile Include="Pick.cpp">
       <ExcludedFromBuild Condition="'$(ToolBuild)'!='true'">true</ExcludedFromBuild>
     </ClCompile>
@@ -318,28 +297,13 @@
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)cp949_strings.props" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool_Release|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName)_tool</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Tool_Debug|Win32'">
-    <IncludePath>..\include\;$(IncludePath);</IncludePath>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <TargetName>$(ProjectName)_tool</TargetName>
+  <PropertyGroup>
+    <IncludePath>..\include;$(IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>..\;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

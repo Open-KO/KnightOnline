@@ -2,25 +2,21 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
+#include "StdAfx.h"
+#include "N3WorldManager.h"
+#include "N3TerrainManager.h"
+#include "DungeonManager.h"
+#include "APISocket.h"
+#include "GameProcedure.h"
+#include "PlayerMySelf.h"
+#include "GameEng.h"
+
 //#include "resource.h"
-#include "..\WarFare\N3WorldManager.h"
-#include "LogWriter.h"
 
-#include "..\WarFare\N3TerrainManager.h"
-#include "..\WarFare\DungeonManager.h"
-
-#include "..\WarFare\APISocket.h"
-#include "..\WarFare\PacketDef.h"
-
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\PlayerMySelf.h"
-
-#include "..\WarFare\GameEng.h"
-
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3SndMgr.h"
+#include <N3Base/LogWriter.h>
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3SndMgr.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

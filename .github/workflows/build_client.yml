@@ -3,58 +3,42 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build tools
+name: Build client
 
 on:
   push:
     branches:
     - master
 
-    # This specifically builds only the tool projects.
+    # This specifically builds only the client (KnightOnline.exe) project.
     # Everything else can be ignored.
     paths:
       - 'props/**'
       - 'deps/dx9sdk/**'
-      - 'ItemEditor/**'
-      - 'N3CE/**'
-      - 'N3FXE/**'
-      - 'N3ME/**'
-      - 'N3TexViewer/**'
-      - 'N3Viewer/**'
-      - 'SkyViewer/**'
-      - 'TblEditor/**'
-      - 'UIE/**'
-      - 'Server/shared/**'
+      - 'Client/lib/**'
       - 'Client/N3Base/**'
+      - 'Client/WarFare/**'
+      - 'Server/shared/**'
       - 'All.sln'
-      - 'Tools.sln'
-      - 'ThirdParty.sln'
+      - 'Client.sln'
 
   pull_request:
     branches:
     - master
 
-    # This specifically builds only the tool projects.
+    # This specifically builds only the client (KnightOnline.exe) project.
     # Everything else can be ignored.
     paths:
       - 'props/**'
       - 'deps/dx9sdk/**'
-      - 'ItemEditor/**'
-      - 'N3CE/**'
-      - 'N3FXE/**'
-      - 'N3ME/**'
-      - 'N3TexViewer/**'
-      - 'N3Viewer/**'
-      - 'SkyViewer/**'
-      - 'TblEditor/**'
-      - 'UIE/**'
-      - 'Server/shared/**'
+      - 'Client/lib/**'
       - 'Client/N3Base/**'
+      - 'Client/WarFare/**'
+      - 'Server/shared/**'
       - 'All.sln'
-      - 'Tools.sln'
-      - 'ThirdParty.sln'
+      - 'Client.sln'
  
-  merge_group: 
+  merge_group:
   workflow_dispatch:
     
 env:
@@ -62,7 +46,6 @@ env:
   BUILD_CONFIGURATION: Debug
   BUILD_PLATFORM: Win32
 
-# These should really be moved into the one solution.
 jobs:
   build:
     runs-on: windows-latest
@@ -83,6 +66,6 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
 
-    - name: Build tools
+    - name: Build client
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Tools.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Client.sln

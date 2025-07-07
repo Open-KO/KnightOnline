@@ -12,7 +12,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 #include "ZipAutoBuffer.h"
-#include "zlib.h"
+#include <zlib/zlib.h>
 
 class CZipInternalInfo  
 {

@@ -3,58 +3,60 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build tools
+name: Build server
 
 on:
   push:
     branches:
     - master
 
-    # This specifically builds only the tool projects.
+    # This specifically builds only the server projects.
     # Everything else can be ignored.
     paths:
       - 'props/**'
       - 'deps/dx9sdk/**'
-      - 'ItemEditor/**'
-      - 'N3CE/**'
-      - 'N3FXE/**'
-      - 'N3ME/**'
-      - 'N3TexViewer/**'
-      - 'N3Viewer/**'
-      - 'SkyViewer/**'
-      - 'TblEditor/**'
-      - 'UIE/**'
+      - 'deps/ZipArchive/**'
+      - 'deps/zlib/**'
+      - 'deps/zlib-msvc/**'
+      - 'Server/AIServer/**'
+      - 'Server/Aujard/**'
+      - 'Server/Ebenezer/**'
+      - 'Server/ItemManager/**'
       - 'Server/shared/**'
-      - 'Client/N3Base/**'
+      - 'Server/VersionManager/**'
+      - 'Client/N3Base/My_3DStruct.h'
+      - 'Client/N3Base/N3ShapeMgr.h'
+      - 'Client/N3Base/N3ShapeMgr.cpp'
       - 'All.sln'
-      - 'Tools.sln'
+      - 'Server.sln'
       - 'ThirdParty.sln'
 
   pull_request:
     branches:
     - master
 
-    # This specifically builds only the tool projects.
+    # This specifically builds only the server projects.
     # Everything else can be ignored.
     paths:
       - 'props/**'
       - 'deps/dx9sdk/**'
-      - 'ItemEditor/**'
-      - 'N3CE/**'
-      - 'N3FXE/**'
-      - 'N3ME/**'
-      - 'N3TexViewer/**'
-      - 'N3Viewer/**'
-      - 'SkyViewer/**'
-      - 'TblEditor/**'
-      - 'UIE/**'
+      - 'deps/ZipArchive/**'
+      - 'deps/zlib/**'
+      - 'deps/zlib-msvc/**'
+      - 'Server/AIServer/**'
+      - 'Server/Aujard/**'
+      - 'Server/Ebenezer/**'
+      - 'Server/ItemManager/**'
       - 'Server/shared/**'
-      - 'Client/N3Base/**'
+      - 'Server/VersionManager/**'
+      - 'Client/N3Base/My_3DStruct.h'
+      - 'Client/N3Base/N3ShapeMgr.h'
+      - 'Client/N3Base/N3ShapeMgr.cpp'
       - 'All.sln'
-      - 'Tools.sln'
+      - 'Server.sln'
       - 'ThirdParty.sln'
  
-  merge_group: 
+  merge_group:
   workflow_dispatch:
     
 env:
@@ -62,7 +64,6 @@ env:
   BUILD_CONFIGURATION: Debug
   BUILD_PLATFORM: Win32
 
-# These should really be moved into the one solution.
 jobs:
   build:
     runs-on: windows-latest
@@ -83,6 +84,6 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
 
-    - name: Build tools
+    - name: Build server
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Tools.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Server.sln

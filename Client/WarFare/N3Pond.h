@@ -14,7 +14,7 @@
 #define MAX_POND_TEX	32
 
 
-#include "N3BaseFileAccess.h"
+#include <N3Base/N3BaseFileAccess.h>
 
 class CN3Pond : public CN3BaseFileAccess
 {

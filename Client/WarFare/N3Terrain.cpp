@@ -4,17 +4,18 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include <stdio.h>
-#include "..\WarFare\N3Terrain.h"
-#include "..\WarFare\N3TerrainPatch.h"
-#include "..\WarFare\PlayerMySelf.h"
-#include "..\WarFare\GameBase.h"
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\UILoading.h"
+#include "StdAfx.h"
+#include "N3Terrain.h"
+#include "N3TerrainPatch.h"
+#include "PlayerMySelf.h"
+#include "GameBase.h"
+#include "GameProcedure.h"
+#include "UILoading.h"
 
 #include "N3River.h"
 #include "N3Pond.h"
+
+#include <stdio.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -780,7 +781,7 @@ bool CN3Terrain::SetLODLevel(int level)
 	{
 		for(z=0;z<m_iNumPatch;z++)
 		{
-			dist = m_iDistanceTable[T_Abs(m_pat_Center2Side-x)][T_Abs(m_pat_Center2Side-z)];
+			dist = m_iDistanceTable[std::abs(m_pat_Center2Side-x)][std::abs(m_pat_Center2Side-z)];
 			if(dist <= m_iLodLevel) m_ppPatch[x][z].SetLevel(1);
 			else if(dist <= m_iLodLevel+3) m_ppPatch[x][z].SetLevel(2);
 			else m_ppPatch[x][z].SetLevel(3);

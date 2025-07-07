@@ -2,21 +2,21 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include "..\WarFare\N3FXBundleGame.h"
-#include "..\WarFare\GameProcMain.h"
-#include "..\WarFare\PlayerBase.h"
-#include "N3SndObj.h"
-#include "..\WarFare\N3Terrain.h"
-#include "N3FXPartMesh.h"
-#include "N3FXPartParticles.h"
-#include "N3FXPartBillBoard.h"
-#include "..\WarFare\N3FXPartBillBoardGame.h"
-#include "..\WarFare\N3FXPartBottomBoardGame.h"
-#include "N3ShapeExtra.h"
+#include "StdAfx.h"
+#include "N3FXBundleGame.h"
+#include "GameProcMain.h"
+#include "PlayerBase.h"
+#include "N3Terrain.h"
+#include "N3FXPartBillBoardGame.h"
+#include "N3FXPartBottomBoardGame.h"
+#include "GameEng.h"
 
-#include "..\WarFare\GameEng.h"
-#include "N3Camera.h"
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3FXPartMesh.h>
+#include <N3Base/N3FXPartParticles.h>
+#include <N3Base/N3FXPartBillBoard.h>
+#include <N3Base/N3ShapeExtra.h>
+#include <N3Base/N3Camera.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
