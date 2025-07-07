@@ -1,8 +1,8 @@
 > [!WARNING]
 > To build this project, you will need several dependencies setup correctly (e.g. **DirectX 9 SDK**, **zlib**, as well as **the 1.298 client assets**).
 >
-> **All of these are included**, you simply need to read the below [Prerequisites](#prerequisites) and [Getting started](#getting-started) sections below to find where to set this up.
-> You will find how to set this up specifically in the section on [Dependencies](#update-and-build-our-third-party-dependencies).
+> **All of these are included**, you simply need to read the below [Prerequisites](#prerequisites) and [Getting started](#getting-started) sections below, then follow the quick and easy instructions provided.
+> These instructions can be found specifically in the [Dependencies](#update-and-build-our-third-party-dependencies) section.
 > 
 > **Failure to do so will result in build errors or missing functionality.**
 >
