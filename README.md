@@ -6,7 +6,7 @@
 > 
 > **Failure to do so will result in build errors or missing functionality.**
 >
-> This extends to compilers like the following (this one specifically is caused by a compiler update):
+> This extends to compiler errors such as the following (this one specifically is caused by a compiler update):
 >
 > "**LINK : fatal error C1047: The object or library file 'zlib.lib' was created by a different version of the compiler than other objects like '{some file}.obj'; rebuild all objects and libraries with the same compiler**".
 >
