@@ -47,7 +47,12 @@ CUIItemUpgrade::CUIItemUpgrade()
 {
 	int i;
 	for (i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
+	{
 		m_pMyUpgradeSLot[i] = NULL;
+		m_iUpgradeSlotInvPos[i] = -1;
+	}
+	
+
 
 	for (i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
@@ -56,6 +61,7 @@ CUIItemUpgrade::CUIItemUpgrade()
 	}
 
 	m_pUpgradeItemSlot = NULL;
+	m_iUpgradeSlotInvPos[9] = -1; //UpgradeItemSlot pozition
 	m_pUpgradeResultSlot = NULL;
 	m_pUITooltipDlg = NULL;
 	m_pStrMyGold = NULL;
@@ -77,6 +83,7 @@ void CUIItemUpgrade::Release()
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
 	{
 		DeleteIconItemSkill(m_pMyUpgradeSLot[i]);
+		m_iUpgradeSlotInvPos[i] = -1;
 	}
 
 	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
@@ -84,6 +91,7 @@ void CUIItemUpgrade::Release()
 		DeleteIconItemSkill(m_pMyUpgradeInv[i]);
 	}
 	DeleteIconItemSkill(m_pUpgradeItemSlot);
+	m_iUpgradeSlotInvPos[9] = -1; //UpgradeItemSlot pozition
 	DeleteIconItemSkill(m_pUpgradeResultSlot);
 
 	m_pUITooltipDlg = NULL;
@@ -367,6 +375,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 			if (m_pMyUpgradeInv[i] == spItem)
 			{
 				m_pMyUpgradeInv[i] = nullptr;
+				m_iUpgradeSlotInvPos[9] = i; //UpgradeItem slot pozition
 				break;
 			}
 		}
@@ -497,7 +506,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 										pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
 									}
 								}
-							}
+				}
 							else
 							{
 								// if is not countable item, just move it
@@ -511,6 +520,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 									pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
 								}
 							}
+						    m_iUpgradeSlotInvPos[iDestiOrder] = iSourceOrder;
 					}
 				}
 				FAIL_RETURN
@@ -655,7 +665,8 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			RestoreInventoryFromBackup();
 		else if (pSender == m_pBtnOk)
 		{
-
+			DoAnimationGuillotine();
+			SendToServerUpgradeMsg();
 		}
 	}
 
@@ -677,6 +688,8 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			// Save Select Info..
 			CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_UPGRADE;
 			eUIWnd = GetWndDistrict(spItem);
+			if (eUIWnd == UIWND_DISTRICT_UPGRADE_SLOT)
+				FAIL_CODE
 			if (eUIWnd == UIWND_DISTRICT_UNKNOWN)	FAIL_CODE
 				CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = eUIWnd;
 			iOrder = GetItemiOrder(spItem, eUIWnd);
@@ -782,6 +795,20 @@ bool CUIItemUpgrade::OnKeyPress(int iKey)
 	return CN3UIBase::OnKeyPress(iKey);
 }
 
+void CUIItemUpgrade::UpdateBackupUpgradeInv()
+{
+	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
+	{
+		m_pBackupUpgradeInv[i] = NULL;
+
+		if (m_pMyUpgradeInv[i])
+		{
+			m_pBackupUpgradeInv[i] = new __IconItemSkill(*m_pMyUpgradeInv[i]);
+			// UI icon pointer'ı yedeğe alınmaz, sadece veri kopyalanır
+		}
+	}
+}
+
 // Restores the inventory and slots from the backup, recreating icons as needed.
 void CUIItemUpgrade::RestoreInventoryFromBackup()
 {
@@ -833,6 +860,8 @@ void CUIItemUpgrade::RestoreInventoryFromBackup()
 	}
 }
 
+
+
 // Checks if the given item ID is an upgrade scroll or Trina.
 bool CUIItemUpgrade::IsUpgradeScrollorTrina(uint32_t dwID)
 {
@@ -876,17 +905,163 @@ void CUIItemUpgrade::DeleteIconItemSkill(__IconItemSkill*& pItem)
 
 void CUIItemUpgrade::SendToServerUpgradeMsg()
 {
-	uint8_t byBuff[8];
-	int iOffset = 0;
-	uint8_t upgradeType = 0;
-	int itemID = 0; // Example item ID, should be set based on the item being upgraded
-	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ITEM_UPGRADE); 
-	CAPISocket::MP_AddDword(byBuff, iOffset, itemID);          
-	CAPISocket::MP_AddByte(byBuff, iOffset, upgradeType);      
-	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
+	if (!m_pUpgradeItemSlot) return; // Upgrade edilecek item yoksa çık
+	if (!m_pMyUpgradeSLot) return;
 
+	uint8_t byBuff[512];
+	int iOffset = 0;
+
+	// 1. Ana opcode
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ITEM_UPGRADE);
+
+	// 2. Alt opcode (upgrade işlemi için) 2=item upgrade işlemi
+	CAPISocket::MP_AddByte(byBuff, iOffset, ITEM_UPGRADE_PROCESS);
+
+	// 3. Upgrade tipi (Normal: 1)
+	CAPISocket::MP_AddByte(byBuff, iOffset,  1);
+
+	// 4. NPC ID (örnek: 0 veya aktif anvil NPC'sinin ID'si)
+	uint16_t sNpcID = 1; // Gerekirse aktif NPC'nin ID'sini buraya ekle
+	CAPISocket::MP_AddByte(byBuff, iOffset, sNpcID);
+
+	// 5. nItemID[10] ve bPos[10]
+	// İlk slot: upgrade edilecek item
+	uint32_t nItemID[10] = { 0 };
+	uint8_t bPos[10] = { NULL };
+
+	// Upgrade edilecek item
+	nItemID[0] = m_pUpgradeItemSlot->pItemBasic->dwID + m_pUpgradeItemSlot->pItemExt->dwID;
+	bPos[0] = m_iUpgradeSlotInvPos[9]; // m_pUpgradeItemSlot pozition
+
+	CAPISocket::MP_AddDword(byBuff, iOffset, nItemID[0]);
+	CAPISocket::MP_AddByte(byBuff, iOffset, bPos[0]);
+
+	// Scroll And Trina 
+	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; ++i)
+	{
+		bPos[i + 1] = NULL;
+		nItemID[i + 1] = 0;
+		if (m_pMyUpgradeSLot[i] != nullptr)
+		{
+			nItemID[i + 1] = m_pMyUpgradeSLot[i]->pItemBasic->dwID +
+				m_pMyUpgradeSLot[i]->pItemExt->dwID;
+			bPos[i + 1] = m_iUpgradeSlotInvPos[i]; // Slot pozisyonu
+			CAPISocket::MP_AddDword(byBuff, iOffset, nItemID[i + 1]);
+			CAPISocket::MP_AddByte(byBuff, iOffset, bPos[i + 1]);
+		}
 	
 
+	}
+
+	// Paketi gönder
+	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
 }
+
+
+void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
+{
+
+	int8_t result = pkt.read<uint8_t>(); // 1: başarılı, 0: başarısız gibi
+	uint32_t nItemID[10];
+	uint8_t bPos[10];
+	for (int i = 0; i < 10; i++)
+	{
+		pkt >> nItemID[i];
+		pkt >> bPos[i];
+	}
+	
+	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	std::string szMsg;
+	__TABLE_ITEM_EXT* itemExt = NULL;
+	__TABLE_ITEM_BASIC* itemBasic = NULL;
+	e_PartPosition ePart;
+	e_PlugPosition ePlug;
+	e_ItemType eType;
+	std::string szIconFN;
+	float fUVAspect = (float) 45.0f / (float) 64.0f;
+	 // Yeni item ID'si (başarılıysa)
+	// Gerekirse başka alanlar da ekleyin
+
+
+	if (result == 0)
+	{
+		DoAnimationUpgradeFail() ;
+		UpdateBackupUpgradeInv();
+	}
+	else if (result == 1)
+	{
+		DoAnimationUpgradeSuccesfull();
+		
+
+
+				//CGameBase::GetText(IDS_UPGRADE_SUCCEEDED, &szMsg);
+		//CGameProcedure::s_pProcMain->MsgOutput(szMsg, m_CYellow);
+				// Upgrade başarısız, kullanıcıya hata mesajı göster
+		itemBasic = CGameBase::s_pTbl_Items_Basic.Find(nItemID[0] / 1000 * 1000);
+		if (itemBasic && itemBasic->byExtIndex >= 0 && itemBasic->byExtIndex <= MAX_ITEM_EXTENSION)
+			itemExt = CGameBase::s_pTbl_Items_Exts[itemBasic->byExtIndex].Find(nItemID[0] % 1000);
+		else
+			itemExt = NULL;
+		eType = CGameProcedure::MakeResrcFileNameForUPC(itemBasic, NULL, &szIconFN, ePart, ePlug, CGameBase::s_pPlayer->m_InfoBase.eRace);
+		if (ITEM_TYPE_UNKNOWN == eType) return;
+		__IconItemSkill* spItemNew;
+		spItemNew = new __IconItemSkill;
+		spItemNew->pItemBasic = itemBasic;
+		spItemNew->pItemExt = itemExt;
+		spItemNew->szIconFN = szIconFN;
+		spItemNew->iCount = 1;
+		//spItemNew->iDurability = itemBasic->iDurability;
+		spItemNew->pUIIcon = new CN3UIIcon;
+		spItemNew->pUIIcon->Init(this);
+		spItemNew->pUIIcon->SetTex(szIconFN);
+		spItemNew->pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
+		spItemNew->pUIIcon->SetUIType(UI_TYPE_ICON);
+		spItemNew->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
+		//spItemNew->pUIIcon->SetVisible(false);
+
+		if (m_pAreaResult)
+		{
+			spItemNew->pUIIcon->SetRegion(m_pAreaResult->GetRegion());
+			spItemNew->pUIIcon->SetMoveRect(m_pAreaResult->GetRegion());
+			spItemNew->pUIIcon->SetParent(this);
+		}
+
+		CN3UIWndBase::AllHighLightIconFree();
+		SetState(UI_STATE_COMMON_NONE);
+
+		UpdateBackupUpgradeInv();
+
+	}
+	else
+	{
+		
+	}
+	
+	RestoreInventoryFromBackup();
+	CN3UIWndBase::AllHighLightIconFree();
+	SetState(UI_STATE_COMMON_NONE);
+
+}
+void CUIItemUpgrade::DoAnimationGuillotine()
+{
+	// Giyotin animasyonunu başlatmak için gerekli kodları buraya ekleyin.
+	// Örneğin, bir görseli görünür yapmak veya bir animasyon başlatmak gibi.
+	if (m_pImageCover1) m_pImageCover1->SetVisible(true);
+	if (m_pImageCover2) m_pImageCover2->SetVisible(true);
+
+
+	// Eğer bir animasyon sistemi varsa burada başlatılabilir.
+	// Örn: m_pImageGuillotine->PlayAnimation();
+}
+
+void CUIItemUpgrade::DoAnimationUpgradeFail()
+{
+
+}
+void CUIItemUpgrade::DoAnimationUpgradeSuccesfull()
+{
+	
+}
+
 
 

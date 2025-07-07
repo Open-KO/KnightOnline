@@ -89,7 +89,10 @@ public:
 	void                RestoreInventoryFromBackup();
 	bool				IsAccessoryCompoundScroll(uint32_t dwID);
 	bool                IsAllowedAccessoryCompoundable(__IconItemSkill* spItem);
-	void DeleteIconItemSkill(__IconItemSkill*& pItem);
+	void                DeleteIconItemSkill(__IconItemSkill*& pItem);
+	void				MsgRecv_RingUpgrade(Packet& pkt);
+	void				SendToServerUpgradeMsg();
+
 };
 
 #endif // !defined(AFX_UIRingUpgrade_H__fd9f5093_0ed3_4c08_9e31_19c40773b24d__INCLUDED_)

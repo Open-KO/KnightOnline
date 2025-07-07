@@ -808,5 +808,29 @@ void CUIRingUpgrade::DeleteIconItemSkill(__IconItemSkill*& pItem)
 	}
 }
 
+void CUIRingUpgrade::SendToServerUpgradeMsg()
+{
+	uint8_t byBuff[8];
+	int iOffset = 0;
+	uint8_t upgradeType = 0;
+	int itemID = 0; // Example item ID, should be set based on the item being upgraded
+	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ITEM_UPGRADE);
+	CAPISocket::MP_AddDword(byBuff, iOffset, itemID);
+	CAPISocket::MP_AddByte(byBuff, iOffset, upgradeType);
+	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
+
+
+
+}
+
+void CUIRingUpgrade::MsgRecv_RingUpgrade(Packet& pkt)
+{
+
+	//uint8_t upgradeType = pkt.ReadByte(); // Get upgrade type from the packet
+	//int itemID = pkt.ReadDword(); // Get item ID from the packet		
+
+
+}
+
 
 

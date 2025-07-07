@@ -34,6 +34,7 @@ public:
 	__IconItemSkill* m_pBackupUpgradeInv[MAX_ITEM_INVENTORY];
 	__IconItemSkill* m_pUpgradeResultSlot;	// Result Slot after upgrade
 	__IconItemSkill* m_pUpgradeItemSlot;	// Which item to upgrade
+	int8_t m_iUpgradeSlotInvPos[10];
 	CN3UIString* m_pStrMyGold;
 
 
@@ -65,6 +66,7 @@ public:
 
 	//this_ui_add_start
 	bool				OnKeyPress(int iKey) override;
+	void				UpdateBackupUpgradeInv();
 	bool				Load(HANDLE hFile) override;
 	void				SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
 	void				SetVisible(bool bVisible) override;
@@ -91,9 +93,13 @@ public:
 	void				GoldUpdate();
 	void				InitIconUpdate() {} ;
 	bool				IsUpgradeScrollorTrina(uint32_t dwID);
-	bool IsAllowedUpgradeItem(__IconItemSkill* spItem);
-	void DeleteIconItemSkill(__IconItemSkill*& pItem);
+	bool				IsAllowedUpgradeItem(__IconItemSkill* spItem);
+	void				DeleteIconItemSkill(__IconItemSkill*& pItem);
 	void				SendToServerUpgradeMsg();
+	void				MsgRecv_ItemUpgrade(Packet& pkt);
+	void				DoAnimationGuillotine();
+	void				DoAnimationUpgradeFail();
+	void				DoAnimationUpgradeSuccesfull();
 };
 
 #endif // !defined(AFX_UIItemUpgrade_H__fd9f5093_0ed3_4c08_9e31_19c40773b24d__INCLUDED_)

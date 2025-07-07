@@ -4,19 +4,23 @@
     "Projects": [
       {
         "Path": "Server\\AIServer\\proj-AIServer.vcxproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "Yerel Windows Hata Ayıklayıcısı"
       },
       {
         "Path": "Server\\GameServer\\proj-GameServer.vcxproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "Yerel Windows Hata Ayıklayıcısı"
       },
       {
         "Path": "Server\\LogInServer\\proj-LogInServer.vcxproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "Yerel Windows Hata Ayıklayıcısı"
       },
       {
         "Path": "Client\\WarFare\\WarFare.vcxproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "Yerel Windows Hata Ayıklayıcısı"
       }
     ]
   }

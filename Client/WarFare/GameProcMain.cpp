@@ -7912,17 +7912,17 @@ void CGameProcMain::MsgRecv_ItemUpgrade(
 			break;
 
 		case ITEM_UPGRADE_PROCESS:
-#if 0 // TODO
+
 			if (m_pUIItemUpgrade != nullptr)
 				m_pUIItemUpgrade->MsgRecv_ItemUpgrade(pkt);
-#endif
+
 			break;
 
 		case ITEM_UPGRADE_ACCESSORIES:
-#if 0 // TODO
+
 			if (m_pUIRingUpgrade != nullptr)
 				m_pUIRingUpgrade->MsgRecv_RingUpgrade(pkt);
-#endif
+
 			break;
 	}
 }
