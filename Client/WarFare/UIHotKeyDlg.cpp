@@ -933,6 +933,55 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	return false;
 }
 
+bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
+{
+	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != UIWND_INVENTORY)
+		return false;
+	
+	__IconItemSkill* spSkill, * spItem;
+
+	spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
+
+	__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
+	if (pUSkill == nullptr) return false;
+	if (pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+
+	spSkill = new __IconItemSkill();
+	spSkill->pSkill = pUSkill;
+
+	// Create the icon name
+	std::vector<char> buffer(256, NULL);
+	sprintf(&buffer[0], "UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
+	spSkill->szIconFN = &buffer[0];
+
+	// load icon
+	spSkill->pUIIcon = new CN3UIIcon;
+	spSkill->pUIIcon->Init(this);
+	spSkill->pUIIcon->SetTex(spSkill->szIconFN);
+	spSkill->pUIIcon->SetUVRect(0, 0, 1.0f, 1.0f);
+	spSkill->pUIIcon->SetUIType(UI_TYPE_ICON);
+	spSkill->pUIIcon->SetStyle(UISTYLE_ICON_SKILL);
+
+	uint32_t bitMask = UISTYLE_ICON_SKILL;
+	if (!CGameProcedure::s_pProcMain->m_pMagicSkillMng->CheckValidSkillMagic(spSkill->pSkill))
+		bitMask |= UISTYLE_DISABLE_SKILL;
+	spSkill->pUIIcon->SetStyle(bitMask);
+
+	CN3UIArea* pArea = nullptr;
+	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SKILL_HOTKEY, iIndex);
+	
+	if (pArea != nullptr)
+	{
+		spSkill->pUIIcon->SetRegion(pArea->GetRegion());
+		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
+	}
+	
+	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
+
+	CloseIconRegistry();
+	return true;
+}
+
 bool CUIHotKeyDlg::EffectTriggerByMouse()
 {
 	if(m_iSelectIndex < 0 || m_iSelectIndex >= 8) return false;

@@ -19,6 +19,7 @@
 #include "UIRepairTooltipDlg.h"
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
+#include "MagicSkillMng.h"
 
 #include "resource.h"
 
@@ -1484,16 +1485,37 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 					
 					// Get Item..
 					spItem = GetHighlightIconItem((CN3UIIcon* )pSender);
-
-					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_INVENTORY;
-					if (bSlot)
-						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_SLOT;
-					else
-						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
 					
+					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_INVENTORY;
 					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder = iRBtn;
 					CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
-					
+					if (bSlot) //player clicked on equiped items
+					{
+						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_SLOT;
+					}
+					else //player clicked on item which is not equiped
+					{
+						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
+						
+						//right click on item to hotkey (skillbar)
+						if (spItem->pItemBasic->byClass == 97) //usable items
+						{
+							CUIHotKeyDlg* pDlg = CGameProcedure::s_pProcMain->m_pUIHotKeyDlg;
+							int iIndex;
+							if (pDlg->GetEmptySlotIndex(iIndex))
+							{
+								bool bResult = false;
+								CN3UIWndBase::m_sSkillSelectInfo.UIWnd = UIWND_INVENTORY;
+								bResult = pDlg->SetReceiveSelectedItem(iIndex);
+
+								//no sound on success
+								if (bResult) 
+									return true;
+									
+							}
+						}
+					}
+
 					if (spItem) PlayItemSound(spItem->pItemBasic);
 
 					//..
