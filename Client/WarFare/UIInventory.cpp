@@ -1452,10 +1452,20 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 	if (dwMsg == UIMSG_BUTTON_CLICK)					
 	{
-		if(pSender->m_szID == "btn_close")
+		if (pSender->m_szID == "btn_close")
 		{
 			// 인벤토리만 떠 있을때..
 			Close();
+		}
+		else if (pSender->m_szID == "btn_Destroy_ok")
+		{
+			// 인벤토리만 떠 있을때..
+			ItemDestroyOK();
+		}
+		else if (pSender->m_szID == "btn_Destroy_cancel")
+		{
+			// 인벤토리만 떠 있을때..
+			ItemDestroyCancel();
 		}
 	}
 
@@ -1504,7 +1514,10 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			}
 			break;
 
-		case UIMSG_AREA_DOWN_FIRST:
+		// NOTE: These events are the same.
+		// UIMSG_AREA_DOWN_FIRST was only used for the inventory, but they're otherwise identical.
+		// case UIMSG_AREA_DOWN_FIRST:
+		case UIMSG_BUTTON_CLICK:
 			// 개인간 거래중이고.. 내 아이디가 "area_gold"이면..  
 			// SubProcPerTrade에 함수를 호출..	( 그 함수는 edit하는 중이 아니면.. 호출)
 			if ( (CGameProcedure::s_pProcMain->m_pSubProcPerTrade->m_ePerTradeState == PER_TRADE_STATE_NORMAL) &&
