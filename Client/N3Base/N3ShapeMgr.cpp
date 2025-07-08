@@ -2,13 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifdef _N3GAME
-//#include "StdAfx.h"
-#include "..\WarFare\GameProcedure.h"
-#ifndef _REPENT
-#include "..\WarFare\UILoading.h"
-#endif	// _REPENT
-#else
+#ifndef _N3GAME
 #include "StdAfxBase.h"
 #endif // end of #ifndef _N3GAME
 
@@ -121,13 +115,6 @@ bool CN3ShapeMgr::Load(HANDLE hFile)
 	if (!LoadCollisionData(hFile))
 		return false;
 
-#ifdef _N3GAME
-#ifndef _REPENT
-	//CUILoading* pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
-	char szBuff[128];
-#endif
-#endif // end of #ifndef _N3GAME
-
 	int iSC = 0;
 	if (!m_Shapes.empty())
 		ReleaseShapes();
@@ -182,8 +169,8 @@ bool CN3ShapeMgr::Load(HANDLE hFile)
 						pShape->m_bVisible = true;
 				}
 			}
-#ifdef _N3GAME
 
+#ifdef _N3GAME
 			// 강제 코딩... 각종 성문 열기..
 //			if(dwType & OBJ_SHAPE_EXTRA)
 //			{
@@ -193,15 +180,7 @@ bool CN3ShapeMgr::Load(HANDLE hFile)
 //			}
 
 			if (!(i % 64))
-			{
-#ifdef _REPENT
-				CGameProcedure::RenderLoadingBar(80 + 15 * i / iSC);
-#else
-				int iLoading = (i + 1) * 100 / iSC;
-				sprintf(szBuff, "Loading Objects... %d %%", iLoading);
-				//pUILoading->Render(szBuff, iLoading);
-#endif
-			}
+				UpdateLoadStatus(i, iSC);
 #endif // end of #ifndef _N3GAME
 		}
 	}

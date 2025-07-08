@@ -5,13 +5,13 @@
 #include "StdAfx.h"
 #include "N3TerrainManager.h"
 #include "N3Terrain.h"
+#include "N3ClientShapeMgr.h"
 #include "BirdMng.h"
 //#include "GrassMng.h"
 #include "GameProcedure.h"
 #include "PlayerMySelf.h"
 
 #include <N3Base/N3SkyMng.h>
-#include <N3Base/N3ShapeMgr.h>
 #include <N3Base/LogWriter.h>
 
 #ifdef _DEBUG
@@ -29,7 +29,7 @@ CN3TerrainManager::CN3TerrainManager()
 	m_pTerrain = new CN3Terrain;
 
 	// Shape..
-	m_pShapes = new CN3ShapeMgr();
+	m_pShapes = new CN3ClientShapeMgr();
 
 	// Sky..
 	m_pSky = new CN3SkyMng();

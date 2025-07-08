@@ -116,6 +116,7 @@
     <ClCompile Include="MachineBase.cpp" />
     <ClCompile Include="MachineMng.cpp" />
     <ClCompile Include="MagicSkillMng.cpp" />
+    <ClCompile Include="N3ClientShapeMgr.cpp" />
     <ClCompile Include="N3FXBundleGame.cpp" />
     <ClCompile Include="N3FXMgr.cpp" />
     <ClCompile Include="N3FXPartBillBoardGame.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="GameProcOption.h" />
     <ClInclude Include="GrassBoard.h" />
     <ClInclude Include="GrassMng.h" />
+    <ClInclude Include="N3ClientShapeMgr.h" />
     <ClInclude Include="N3Pond.h" />
     <ClInclude Include="N3River.h" />
     <ClInclude Include="StdAfx.h" />

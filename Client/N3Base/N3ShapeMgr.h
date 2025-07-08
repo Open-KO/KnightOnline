@@ -205,6 +205,10 @@ public:
 		return m_fMapWidth;
 	}
 
+#ifdef _N3GAME
+	virtual void UpdateLoadStatus(int iLoadedShapes, int iTotalShapes) = 0;
+#endif
+
 #ifndef _3DSERVER
 	void		ReleaseShapes();
 
