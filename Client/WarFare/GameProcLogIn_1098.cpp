@@ -126,18 +126,17 @@ void CGameProcLogIn_1098::Init()
 	lstrcat(szIniPath, "Server.Ini");
 
 	char szRegistrationSite[_MAX_PATH] = {};
-
 	GetPrivateProfileString("Join", "Registration site", "", szRegistrationSite, _MAX_PATH, szIniPath);
 	m_szRegistrationSite = szRegistrationSite;
 
-	int iServerCount = GetPrivateProfileInt("Server", "Count", 0, szIniPath);
+	int iServerCount = GetPrivateProfileInt("Server", "Count", DEFAULT_LOGIN_SERVER_COUNT, szIniPath);
 
 	char szIPs[256][32] = {};
 	for (int i = 0; i < iServerCount; i++)
 	{
 		char szKey[32] = "";
 		sprintf(szKey, "IP%d", i);
-		GetPrivateProfileString("Server", szKey, "", szIPs[i], 32, szIniPath);
+		GetPrivateProfileString("Server", szKey, DEFAULT_LOGIN_SERVER_IP, szIPs[i], 32, szIniPath);
 	}
 
 	int iServer = -1;
