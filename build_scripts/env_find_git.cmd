@@ -29,10 +29,8 @@ FOR /f "delims=" %%a IN ('dir /b /ad /oN "%GithubDir%\app-*"') DO (
 EXIT /B 1
 
 :found_git
-:: Extract directory part
-FOR %%D IN ("%GitPath%") do set "GitDir=%%~dpD"
 
-:: Export GitDir and GitPath environment variables for caller
-ENDLOCAL & SET "GitDir=%GitDir%" & SET "GitPath=%GitPath%"
+:: Export GitPath environment variable for caller
+ENDLOCAL & SET "GitPath=%GitPath%"
 
 EXIT /B 0

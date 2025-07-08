@@ -14,7 +14,7 @@ SET "BUILD_PLATFORM=%~4"
 SET "VCTOOLS_VERSION=%~5"
 SET "PROJECT_PATH=%~6"
 
-ECHO === Building Dependency: %DEP_NAME% [%DEP_PATH%] (%BUILD_CONFIG%-%BUILD_PLATFORM%) with toolset %VCTOOLS_VERSION%
+ECHO === Building dependency: %DEP_NAME% [%DEP_PATH%] (%BUILD_CONFIG%-%BUILD_PLATFORM%) with toolset %VCTOOLS_VERSION%
 
 :: Setup environment
 CALL "%~dp0env_setup.cmd"
@@ -85,14 +85,15 @@ IF NOT "%PROJECT_PATH%"=="" (
 	)
 )
 
+:: Fetch current commit hash, now that the submodule is initialized and updated
 PUSHD "%REPO_ROOT%"
 FOR /F "delims=" %%c IN ('"%GitPath%" -C %DEP_PATH% rev-parse HEAD') DO SET "CURRENT_COMMIT=%%c"
 POPD
 
-:: Update build state key now that we've updated the submodule
+:: Rebuild the build state key
 SET "CURRENT_BUILD_STATE_KEY=%CURRENT_COMMIT%;%VCTOOLS_VERSION%"
 
-:: Save new build key
+:: Save new build key to the build state file for future lookups
 ECHO %CURRENT_BUILD_STATE_KEY%>"%BUILD_STATE_FILE%"
 
 :: And we're done.
