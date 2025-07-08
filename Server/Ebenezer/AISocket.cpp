@@ -1278,10 +1278,15 @@ void CAISocket::RecvCompressedData(char* pBuf)
 		&decompressedBuffer[0],
 		sOrgLen);
 
+	_ASSERT(nDecompressedLength == sOrgLen);
+
 	if (nDecompressedLength != sOrgLen)
 		return;
 
 	dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
+
+	_ASSERT(dwCrcValue == dwActualCrcValue);
+
 	if (dwCrcValue != dwActualCrcValue)
 		return;
 

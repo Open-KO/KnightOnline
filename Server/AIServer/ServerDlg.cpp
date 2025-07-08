@@ -1981,6 +1981,9 @@ void CServerDlg::SendCompressedData(int nZone)
 	uint32_t crc_value = 0;
 
 	comp_data_len = lzf_compress(m_CompBuf, m_iCompIndex, comp_buff, sizeof(comp_buff));
+
+	_ASSERT(comp_data_len != 0 && comp_data_len <= sizeof(comp_buff));
+
 	if (comp_data_len == 0
 		|| comp_data_len > sizeof(comp_buff))
 	{
@@ -1988,7 +1991,7 @@ void CServerDlg::SendCompressedData(int nZone)
 		return;
 	}
 
-	crc_value = crc32(comp_buff, comp_data_len);
+	crc_value = crc32(reinterpret_cast<uint8_t*>(m_CompBuf), m_iCompIndex);
 
 	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
 	SetShort(send_buff, (short) comp_data_len, send_index);
