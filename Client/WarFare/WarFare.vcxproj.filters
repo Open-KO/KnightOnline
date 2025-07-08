@@ -327,6 +327,15 @@
     <ClCompile Include="N3Pond.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="N3UIIcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3UIDBCLButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameProcedure.h">

@@ -2,14 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include "..\WarFare\N3UIIcon.h"
-#include "..\WarFare\N3UIWndBase.h"
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\UIImageTooltipDlg.h"
+#include "StdAfx.h"
+#include "N3UIIcon.h"
+#include "GameProcedure.h"
+#include "UIImageTooltipDlg.h"
 
 #ifdef _N3GAME
-#include "..\WarFare\N3UIWndBase.h"
+#include "N3UIWndBase.h"
 #endif
 
 #ifdef _DEBUG
@@ -23,7 +22,6 @@ static char THIS_FILE[]=__FILE__;
 
 CN3UIIcon::CN3UIIcon()
 {
-	CN3UIImage::CN3UIImage();
 	m_eType = UI_TYPE_ICON;
 }
 

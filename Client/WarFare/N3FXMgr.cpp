@@ -1,23 +1,18 @@
-﻿// N3FXMgr.cpp
-//
-/////////////
-/////////////////////////////////////////////////////////
+﻿#include "StdAfx.h"
+#include "N3FXMgr.h"
+#include "GameBase.h"
+#include "GameProcmain.h"
+#include "GameProcedure.h"
+#include "PlayerOtherMgr.h"
+#include "PlayerNPC.h"
+#include "PlayerMySelf.h"
+#include "N3FXBundleGame.h"
+#include "N3WorldManager.h"
+#include "MagicSkillMng.h"
+#include "APISocket.h"
+#include "PacketDef.h"
 
-#include "StdAfxBase.h"
-#include "..\WarFare\N3FXMgr.h"
-#include "..\WarFare\GameBase.h"
-#include "..\WarFare\GameProcmain.h"
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\PlayerOtherMgr.h"
-#include "..\WarFare\PlayerNPC.h"
-#include "..\WarFare\PlayerMySelf.h"
-#include "..\WarFare\N3FXBundleGame.h"
-#include "..\WarFare\N3WorldManager.h"
-#include "..\WarFare\MagicSkillMng.h"
-#include "..\WarFare\APISocket.h"
-#include "..\WarFare\PacketDef.h"
-
-#include "N3ShapeExtra.h"
+#include <N3Base/N3ShapeExtra.h>
 
 CN3FXMgr::CN3FXMgr()
 {

@@ -1,11 +1,9 @@
-﻿// N3UIIcon.cpp: implementation of the CN3UIIcon class.
+﻿// N3UIDBCLButton.cpp: implementation of the CN3UIDBCLButton class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
-#include "..\WarFare\N3UIDBCLButton.h"
-#include "..\WarFare\GameProcedure.h"
-#include "..\WarFare\UIImageTooltipDlg.h"
+#include "StdAfx.h"
+#include "N3UIDBCLButton.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -18,7 +16,6 @@ static char THIS_FILE[]=__FILE__;
 
 CN3UIDBCLButton::CN3UIDBCLButton()
 {
-	CN3UIImage::CN3UIImage();
 }
 
 CN3UIDBCLButton::~CN3UIDBCLButton()

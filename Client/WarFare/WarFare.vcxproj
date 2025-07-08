@@ -117,6 +117,7 @@
     <ClCompile Include="MachineMng.cpp" />
     <ClCompile Include="MagicSkillMng.cpp" />
     <ClCompile Include="N3FXBundleGame.cpp" />
+    <ClCompile Include="N3FXMgr.cpp" />
     <ClCompile Include="N3FXPartBillBoardGame.cpp" />
     <ClCompile Include="N3FXPartBottomBoardGame.cpp" />
     <ClCompile Include="N3Pond.cpp" />
@@ -124,6 +125,8 @@
     <ClCompile Include="N3Terrain.cpp" />
     <ClCompile Include="N3TerrainManager.cpp" />
     <ClCompile Include="N3TerrainPatch.cpp" />
+    <ClCompile Include="N3UIDBCLButton.cpp" />
+    <ClCompile Include="N3UIIcon.cpp" />
     <ClCompile Include="N3UIWndBase.cpp" />
     <ClCompile Include="N3WorldBase.cpp" />
     <ClCompile Include="N3WorldManager.cpp" />

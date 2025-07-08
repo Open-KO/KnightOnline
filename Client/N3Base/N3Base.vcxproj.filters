@@ -332,9 +332,6 @@
     <ClCompile Include="N3FXBundle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3FXMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3FXPartBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -446,13 +443,7 @@
     <ClCompile Include="N3UIButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3UIDBCLButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3UIEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3UIIcon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3UIImage.cpp">
