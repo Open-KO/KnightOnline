@@ -1655,13 +1655,13 @@ void CN3Chr::TickPlugs(float fLOD)
 				}
 			}
 		}
-//		else if (pPlug->m_ePlugType == PLUGTYPE_CLOAK)
-//		{	// PLUGTYPE_CLOAK
+		else if (pPlug->m_ePlugType == PLUGTYPE_CLOAK)
+		{	// PLUGTYPE_CLOAK
 //#ifdef _N3GAME
-//			pPlugCloak = (CN3CPlug_Cloak*)pPlug;
-//			pPlugCloak->GetCloak()->Tick(m_nLOD);
+//			CN3CPlug_Cloak* pPlugCloak = (CN3CPlug_Cloak*)pPlug;
+//			pPlugCloak->GetCloak()->Tick(m_nLOD, yaw, move state);
 //#endif
-//		}		
+		}		
 	}
 }
 

@@ -1900,7 +1900,6 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 //	else if(PLUG_POS_BACK == ePos)
 //	{
 //		CN3CPlug_Cloak *pPlugCloak = (CN3CPlug_Cloak*)pPlug;
-//		pPlugCloak->GetCloak()->SetPlayerBase(this);
 //	}
 
 	if(pPlug && NULL == pItemBasic && NULL == pItemExt) pPlug->TexOverlapSet(""); // 기본 착용이면..
