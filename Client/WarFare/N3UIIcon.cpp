@@ -37,9 +37,8 @@ uint32_t CN3UIIcon::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	if ( (m_pParent->GetState() == UI_STATE_COMMON_NONE) || (m_pParent->GetState() == UI_STATE_ICON_MOVING) ) 
 		SetStyle(GetStyle() & (~UISTYLE_ICON_HIGHLIGHT));	
 
-#ifdef _N3GAME
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return dwRet;
-#endif
+	if (s_bWaitFromServer)
+		return dwRet;
 
 	RECT rect = GetRegion();
 	if ( ::PtInRect(&rect, ptCur) && (m_pParent->GetState() == UI_STATE_COMMON_NONE) )

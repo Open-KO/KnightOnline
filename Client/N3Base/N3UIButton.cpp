@@ -6,12 +6,6 @@
 #include "N3UIButton.h"
 #include "N3UIImage.h"
 
-#ifndef _REPENT
-#ifdef _N3GAME
-#include "..\WarFare\N3UIWndBase.h"
-#endif
-#endif
-
 #include "N3SndMgr.h"
 #include "N3SndObj.h"
 
@@ -119,7 +113,8 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 
 #ifndef _REPENT
 #ifdef _N3GAME
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return dwRet;
+	if (s_bWaitFromServer)
+		return dwRet;
 #endif
 #endif
 

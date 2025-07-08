@@ -586,7 +586,7 @@ void CSubProcPerTrade::ItemCountEditOK()
 	m_pUITradeEditDlg->SetQuantity(0);
 
 	// 상태를 변화시키고.. 창을 닫고..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
+	CN3UIBase::s_bWaitFromServer = true;
 	m_ePerTradeState = PER_TRADE_STATE_NORMAL;
 	m_ePerTradeItemKindBackup = PER_TRADE_ITEM_MONEY;
 	m_pUITradeEditDlg->Close();
@@ -673,7 +673,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAgree(uint8_t bResult)
 void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 {
 	// 상태를 변화시키고.. 창을 닫고..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	CN3UIBase::s_bWaitFromServer = false;
 
 	char szGold[32];
 	std::string str;

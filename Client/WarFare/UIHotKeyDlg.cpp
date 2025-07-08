@@ -106,7 +106,7 @@ uint32_t CUIHotKeyDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if ( !IsVisible() ) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 	// 실제로 쓰진 않는다..
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( GetState() == UI_STATE_ICON_MOVING ) 

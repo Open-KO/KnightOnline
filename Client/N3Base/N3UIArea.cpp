@@ -8,8 +8,8 @@
 
 #ifndef _REPENT
 #ifdef _N3GAME
-#include "..\WarFare\n3uiwndbase.h"
-#include "..\WarFare\uiinventory.h"
+#include "..\WarFare\N3UIWndBase.h"
+#include "..\WarFare\UIInventory.h"
 #endif 
 #endif
 
@@ -66,7 +66,9 @@ uint32_t CN3UIArea::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	if (!m_bVisible) return dwRet;
 #ifndef _REPENT
 #ifdef _N3GAME
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return dwRet;
+	if (s_bWaitFromServer)
+		return dwRet;
+
 	// 부모가 아이콘 매니저이로 Inventory Wnd라면..	
 	if ( (m_pParent->UIType() == UI_TYPE_ICON_MANAGER) && (((CN3UIWndBase* )m_pParent)->GetUIWnd() == UIWND_INVENTORY) )
 	{
@@ -95,7 +97,9 @@ uint32_t CN3UIArea::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 #ifdef _N3GAME
 bool CN3UIArea::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return false;
+	if (s_bWaitFromServer)
+		return false;
+
 	// 부모가 아이콘 매니저이로 Inventory Wnd라면..	
 	if ( (m_pParent->UIType() == UI_TYPE_ICON_MANAGER) && (((CN3UIWndBase* )m_pParent)->GetUIWnd() == UIWND_INVENTORY) )
 	{

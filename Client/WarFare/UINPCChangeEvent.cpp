@@ -91,9 +91,9 @@ bool CUINPCChangeEvent::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		else if(pSender == m_pBtn_Close)
 			Close();
 
-		else if(pSender == m_pBtn_Repoint0 && !CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer)
+		else if(pSender == m_pBtn_Repoint0 && !s_bWaitFromServer)
 		{
-			CUIInventory* pInv = ((CGameProcMain* )CGameProcedure::s_pProcMain)->m_pUIInventory;
+			CUIInventory* pInv = CGameProcedure::s_pProcMain->m_pUIInventory;
 			if (!pInv)
 			{
 				Close();
@@ -114,7 +114,7 @@ bool CUINPCChangeEvent::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			}
 		}
 
-		else if(pSender == m_pBtn_Repoint1 && !CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer)
+		else if(pSender == m_pBtn_Repoint1 && !s_bWaitFromServer)
 		{
 			PointChangePriceQuery(false);
 		}

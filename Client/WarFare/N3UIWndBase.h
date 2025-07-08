@@ -96,7 +96,6 @@ struct __InfoSelectedIcon	{
 
 // Recovery Job Info..
 struct __RecoveryJobInfo	{ 
-								bool				m_bWaitFromServer;
 								__IconItemSkill*	pItemSource;					
 								__UIWndIconInfo		UIWndSourceStart;
 								__UIWndIconInfo		UIWndSourceEnd;

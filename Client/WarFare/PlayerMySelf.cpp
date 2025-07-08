@@ -615,7 +615,6 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(e_PlugPosition ePos, const std::string& szF
 //	else if(PLUG_POS_BACK == ePos)
 //	{
 //		CN3CPlug_Cloak *pPlugCloak = (CN3CPlug_Cloak*)pPlug;
-//		pPlugCloak->GetCloak()->SetPlayerBase(this);
 //	}
 
 	this->SetSoundPlug(pItemBasic);

@@ -409,7 +409,7 @@ void CUIPerTradeDlg::ItemCountOK()
 	if ( iGold <= 0 ) return;
 	if ( iGold > spItem->iCount ) return;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+	s_bWaitFromServer = true;
 	m_iBackupiCount = iGold;	// 전에 옮긴 화살등의 갯수..
 	int iOffset = spItem->iCount - iGold;
 
@@ -494,11 +494,11 @@ void CUIPerTradeDlg::ItemCountCancel()
 	}
 
 	// 취소..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer				= false;
+	m_sRecoveryJobInfo.pItemSource	= nullptr;
+	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
-	CN3UIWndBase::m_pCountableItemEdit->Close();
+	m_pCountableItemEdit->Close();
 }
 
 void CUIPerTradeDlg::SendToServerItemAddMsg(byte pos, int itemID, int iCount)
@@ -552,15 +552,15 @@ bool CUIPerTradeDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 	if (!bFound)	FAIL_RETURN
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer					= true;
-	m_pSubProcPerTrade->m_ePerTradeItemKindBackup						= PER_TRADE_ITEM_OTHER;
+	s_bWaitFromServer									= true;
+	m_pSubProcPerTrade->m_ePerTradeItemKindBackup		= PER_TRADE_ITEM_OTHER;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource						= CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd				= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict		= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_PER_TRADE;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= UIWND_DISTRICT_PER_TRADE_MY;
+	m_sRecoveryJobInfo.pItemSource						= m_sSelectedIconInfo.pItemSelect;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= m_sSelectedIconInfo.UIWndSelect.UIWnd;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+	m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= m_sSelectedIconInfo.UIWndSelect.iOrder;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_PER_TRADE;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= UIWND_DISTRICT_PER_TRADE_MY;
 
 	bFound = false;
 	if( (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) || 
@@ -597,9 +597,9 @@ bool CUIPerTradeDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 			if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer  = false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				FAIL_RETURN
 			}
 		}		
@@ -645,8 +645,8 @@ bool CUIPerTradeDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 		m_iBackupiOrder[i] = CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
 
 		// 활이나 물약등 아이템인 경우..
-		CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer			= false;
-		CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_PER_TRADE, UIWND_DISTRICT_PER_TRADE_MY, false);
+		s_bWaitFromServer = false;
+		m_pCountableItemEdit->Open(UIWND_PER_TRADE, UIWND_DISTRICT_PER_TRADE_MY, false);
 		FAIL_RETURN
 	}
 	else
@@ -663,7 +663,7 @@ bool CUIPerTradeDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		if ( !bFound )	
 		{
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer			= false;
+			s_bWaitFromServer = false;
 			FAIL_RETURN	// 못 찾았으므로.. 실패..
 		}
 
@@ -730,7 +730,7 @@ uint32_t CUIPerTradeDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const P
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if ( !IsVisible() ) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( (GetState() == UI_STATE_ICON_MOVING) && 

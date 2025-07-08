@@ -574,7 +574,7 @@ void CUITransactionDlg::ItemCountOK()
 					break;
 			}
 
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+			s_bWaitFromServer = true;
 
 			if ( m_pMyTradeInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder] )	// 해당 위치에 아이콘이 있으면..
 			{
@@ -631,7 +631,7 @@ void CUITransactionDlg::ItemCountOK()
 			if ( iGold <= 0 ) return;
 			if ( iGold > spItem->iCount ) return;
 
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+			s_bWaitFromServer = true;
 
 			if ( (spItem->iCount - iGold) > 0 )
 			{	
@@ -659,11 +659,11 @@ void CUITransactionDlg::ItemCountCancel()
 	if (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic) PlayItemSound(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic);
 
 	// 취소..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer				= false;
+	m_sRecoveryJobInfo.pItemSource	= nullptr;
+	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
-	CN3UIWndBase::m_pCountableItemEdit->Close();
+	m_pCountableItemEdit->Close();
 }
 
 void CUITransactionDlg::SendToServerSellMsg(int itemID, byte pos, int iCount)
@@ -709,7 +709,7 @@ void CUITransactionDlg::SendToServerMoveMsg(int itemID, byte startpos, byte dest
 
 void CUITransactionDlg::ReceiveResultTradeMoveSuccess()
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
 	CN3UIWndBase::AllHighLightIconFree();
 	SetState(UI_STATE_COMMON_NONE);
 }
@@ -717,7 +717,7 @@ void CUITransactionDlg::ReceiveResultTradeMoveSuccess()
 void CUITransactionDlg::ReceiveResultTradeMoveFail()
 {
 	CN3UIArea* pArea;
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
 
 	__IconItemSkill *spItemSource = NULL, *spItemTarget = NULL;
 	spItemSource = CN3UIWndBase::m_sRecoveryJobInfo.pItemSource;
@@ -839,15 +839,15 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	if ( spItem != CN3UIWndBase::m_sSelectedIconInfo.pItemSelect )
 		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer					= true;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource						= CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd				= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict		= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget						= NULL;
+	s_bWaitFromServer									= true;
+	m_sRecoveryJobInfo.pItemSource						= m_sSelectedIconInfo.pItemSelect;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= m_sSelectedIconInfo.UIWndSelect.UIWnd;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+	m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= m_sSelectedIconInfo.UIWndSelect.iOrder;
+	m_sRecoveryJobInfo.pItemTarget						= nullptr;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_TRANSACTION;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= eUIWnd;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_TRANSACTION;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= eUIWnd;
 
 	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )
 	{
@@ -905,18 +905,18 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 							if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 							{
-								CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+								s_bWaitFromServer				= false;
+								m_sRecoveryJobInfo.pItemSource	= nullptr;
+								m_sRecoveryJobInfo.pItemTarget	= nullptr;
 								FAIL_RETURN
 							}
 						}
 					}
 
-					CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+					m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+					s_bWaitFromServer							= false;
 
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer				= false;
-					CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_TRANSACTION, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					m_pCountableItemEdit->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 					FAIL_RETURN
 				}
 				else
@@ -929,9 +929,10 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						std::string szMsg;
 						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+
+						s_bWaitFromServer				= false;
+						m_sRecoveryJobInfo.pItemSource	= nullptr;
+						m_sRecoveryJobInfo.pItemTarget	= nullptr;
 						FAIL_RETURN	
 					}
 
@@ -941,9 +942,10 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						std::string szMsg;
 						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+
+						s_bWaitFromServer				= false;
+						m_sRecoveryJobInfo.pItemSource	= nullptr;
+						m_sRecoveryJobInfo.pItemTarget	= nullptr;
 						FAIL_RETURN	
 					}
 
@@ -964,9 +966,9 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 						if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 						{
-							CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+							s_bWaitFromServer				= false;
+							m_sRecoveryJobInfo.pItemSource	= nullptr;
+							m_sRecoveryJobInfo.pItemTarget	= nullptr;
 							FAIL_RETURN
 						}
 
@@ -1016,9 +1018,9 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer				= false;
+				m_sRecoveryJobInfo.pItemSource	= nullptr;
+				m_sRecoveryJobInfo.pItemTarget	= nullptr;
 				FAIL_RETURN					
 			}
 			break;
@@ -1030,8 +1032,8 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL) )
 				{
 					// 활이나 물약등 아이템인 경우..
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer			= false;
-					CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_TRANSACTION, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					s_bWaitFromServer = false;
+					m_pCountableItemEdit->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 				}
 				else
 				{
@@ -1115,7 +1117,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, int	iMoney)
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
 	__IconItemSkill* spItem = NULL;
 	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 
@@ -1311,7 +1313,7 @@ uint32_t CUITransactionDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, cons
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( (GetState() == UI_STATE_ICON_MOVING) && 

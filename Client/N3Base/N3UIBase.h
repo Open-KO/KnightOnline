@@ -51,6 +51,10 @@ friend class CUIEView;	// 툴에서 child list를 접근하기 위해서.
 #endif
 
 public:
+#ifdef _N3GAME
+	static bool s_bWaitFromServer;
+#endif
+
 	std::string m_szID;			// UI id
 	std::string	m_szToolTip;	// tooltip text
 	void		SetID(LPCTSTR pszID) {m_szID = pszID;}

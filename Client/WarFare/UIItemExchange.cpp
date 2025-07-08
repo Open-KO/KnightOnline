@@ -386,7 +386,7 @@ uint32_t CUIItemExchange::MouseProc(uint32_t dwFlags, const POINT& ptCur, const 
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( (GetState() == UI_STATE_ICON_MOVING) && 
@@ -451,7 +451,7 @@ void CUIItemExchange::UserPressOK()
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);	
 
 	// 응답을 기다림..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
+	s_bWaitFromServer = true;
 }
 
 void CUIItemExchange::ReceiveResultFromServer(int iResult, int iUserGold)
@@ -475,7 +475,7 @@ void CUIItemExchange::ReceiveResultFromServer(int iResult, int iUserGold)
 	UpdateUserTotalGold(iUserGold);
 
 	// 응답 기다림 해제..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	s_bWaitFromServer = false;
 
 	// 이 윈도우의 npc 영역의 아이템을 이 윈도우의 inv 영역으로 옮긴다..
 	CN3UIArea* pArea = NULL;
