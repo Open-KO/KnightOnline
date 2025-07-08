@@ -2,8 +2,8 @@
 SETLOCAL
 
 SET "GitDir="
-WHERE /q git
-IF NOT ERRORLEVEL 1 (
+where /q git
+IF ERRORLEVEL 0 (
 	FOR /f "delims=" %%G IN ('where git') DO (
 		SET "GitPath=%%G"
 		GOTO found_git
