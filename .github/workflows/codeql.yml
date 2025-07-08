@@ -34,23 +34,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Fetch required submodules only
-      run: |
-        git submodule update --init deps/dx9sdk
-        git submodule update --init deps/zlib
-
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
-
-    - name: Build third party dependencies
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
-
-    # Add any setup steps before running the `github/codeql-action/init` action.
-    # This includes steps like installing compilers or runtimes (`actions/setup-node`
-    # or others). This is typically only required for manual builds.
-    # - name: Setup runtime (example)
-    #   uses: actions/setup-example@v1
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -61,7 +46,7 @@ jobs:
 
     - name: Build all
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" All.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.sln
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

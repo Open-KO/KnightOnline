@@ -53,3 +53,4 @@ lib/
 warfare_config.h
 *.idea
 *.txt
+last-build-states/

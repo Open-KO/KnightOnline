@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{D06D505A-F28E-343F-09F4-C3809398B508}</ProjectGuid>
+    <ProjectGuid>{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
@@ -37,15 +37,21 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <DebugConfiguration>Debug</DebugConfiguration>
-    <ReleaseConfiguration>Release</ReleaseConfiguration>
-    <ActiveConfiguration>$(DebugConfiguration)</ActiveConfiguration>
-    <ActiveConfiguration Condition="$(Configuration.Contains('Release'))">$(ReleaseConfiguration)</ActiveConfiguration>
+    <DependencyName>ko-client-assets</DependencyName>
+    <LocalDependencyDir>Client\Data</LocalDependencyDir>
+    <RealProjectPath></RealProjectPath>
   </PropertyGroup>
   <PropertyGroup>
-    <NMakeBuildCommandLine>msbuild N3Base.vcxproj /p:Configuration=$(ActiveConfiguration) /p:Platform=$(Platform) /p:TargetName=$(ProjectName)</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>msbuild N3Base.vcxproj /t:Clean /p:Configuration=$(ActiveConfiguration) /p:Platform=$(Platform) /p:TargetName=$(ProjectName)</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>msbuild N3Base.vcxproj /t:Rebuild /p:Configuration=$(ActiveConfiguration) /p:Platform=$(Platform) /p:TargetName=$(ProjectName)</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>
+IF "$(NO_CLIENT_ASSETS)"=="" (
+	CALL "$(RootDir)build_scripts\build_dependency.cmd" "$(DependencyName)" "$(LocalDependencyDir)" "$(Configuration)" "$(Platform)" "$(VCToolsVersion)" "$(RealProjectPath)"
+)
+    </NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>
+IF "$(NO_CLIENT_ASSETS)"=="" (
+	CALL "$(RootDir)build_scripts\build_dependency.cmd" "$(DependencyName)" "$(LocalDependencyDir)" "$(Configuration)" "$(Platform)" "$(VCToolsVersion)" "$(RealProjectPath)"
+)
+    </NMakeReBuildCommandLine>
   </PropertyGroup>
   <ItemGroup>
   </ItemGroup>

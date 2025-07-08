@@ -4,9 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "N3Base", "Client\N3Base\N3Base.vcxproj", "{5E45D92A-702B-4128-A1AF-504A17271D94}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274} = {50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WarFare", "Client\WarFare\WarFare.vcxproj", "{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}"
 	ProjectSection(ProjectDependencies) = postProject
+		{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5} = {0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}
 		{C2FEB024-8E46-4533-918B-7196CAAA4E7D} = {C2FEB024-8E46-4533-918B-7196CAAA4E7D}
 		{D06D505A-F28E-343F-09F4-C3809398B508} = {D06D505A-F28E-343F-09F4-C3809398B508}
 	EndProjectSection
@@ -18,6 +22,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wrappers", "wrappers", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "N3Base_client", "Client\N3Base\N3Base_client.vcxproj", "{D06D505A-F28E-343F-09F4-C3809398B508}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274} = {50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-dx9sdk", "deps\fetch-and-build-wrappers\fetch-dx9sdk.vcxproj", "{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-ko-client-assets", "deps\fetch-and-build-wrappers\fetch-ko-client-assets.vcxproj", "{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +50,14 @@ Global
 		{D06D505A-F28E-343F-09F4-C3809398B508}.Debug|Win32.Build.0 = Debug|Win32
 		{D06D505A-F28E-343F-09F4-C3809398B508}.Release|Win32.ActiveCfg = Release|Win32
 		{D06D505A-F28E-343F-09F4-C3809398B508}.Release|Win32.Build.0 = Release|Win32
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}.Debug|Win32.ActiveCfg = Debug|Win32
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}.Debug|Win32.Build.0 = Debug|Win32
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}.Release|Win32.ActiveCfg = Release|Win32
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}.Release|Win32.Build.0 = Release|Win32
+		{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}.Debug|Win32.Build.0 = Debug|Win32
+		{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}.Release|Win32.ActiveCfg = Release|Win32
+		{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +67,8 @@ Global
 		{C2FEB024-8E46-4533-918B-7196CAAA4E7D} = {7002AB72-3020-4E04-8E43-3784FFDCD539}
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {7002AB72-3020-4E04-8E43-3784FFDCD539}
 		{D06D505A-F28E-343F-09F4-C3809398B508} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0034A25-63CF-4A69-9E84-BA0E8F0B47C2}
