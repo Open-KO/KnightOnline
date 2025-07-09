@@ -951,8 +951,8 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 
 	// Create the icon name
 	char buffer[256] = {};
-	sprintf(&buffer[0], "UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
-	spSkill->szIconFN = &buffer[0];
+	sprintf(buffer, "UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
+	spSkill->szIconFN = buffer;
 
 	// load icon
 	spSkill->pUIIcon = new CN3UIIcon;
@@ -960,7 +960,6 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 	spSkill->pUIIcon->SetTex(spSkill->szIconFN);
 	spSkill->pUIIcon->SetUVRect(0, 0, 1.0f, 1.0f);
 	spSkill->pUIIcon->SetUIType(UI_TYPE_ICON);
-	spSkill->pUIIcon->SetStyle(UISTYLE_ICON_SKILL);
 
 	uint32_t bitMask = UISTYLE_ICON_SKILL;
 	if (!CGameProcedure::s_pProcMain->m_pMagicSkillMng->CheckValidSkillMagic(spSkill->pSkill))
@@ -976,7 +975,10 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
 	}
 	
-	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
+	if (m_pMyHotkey[m_iCurPage][iIndex] == nullptr)
+	{
+		m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
+	}
 
 	CloseIconRegistry();
 	return true;

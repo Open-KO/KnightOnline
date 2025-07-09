@@ -1504,13 +1504,10 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 							int iIndex;
 							if (pDlg->GetEmptySlotIndex(iIndex))
 							{
-								bool bResult = false;
 								CN3UIWndBase::m_sSkillSelectInfo.UIWnd = UIWND_INVENTORY;
-								bResult = pDlg->SetReceiveSelectedItem(iIndex);
 
 								//no sound on success
-								if (bResult) 
-									return true;
+								if (pDlg->SetReceiveSelectedItem(iIndex)) return true;
 									
 							}
 						}
