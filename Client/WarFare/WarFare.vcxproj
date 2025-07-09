@@ -53,13 +53,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>.;..;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;..\..\Server;$(DependencyDir);$(DependencyDir)libjpeg-turbo\src;$(DependencyDir)libjpeg-turbo-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>shared.lib;ws2_32.lib;jpegLib.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base_client.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);..\lib;..\..\Server\shared\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>shared.lib;ws2_32.lib;jpeg-static.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base_client.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(RootDir)lib\$(Platform)\$(Configuration);..\..\Server\shared\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -111,6 +111,7 @@
     <ClCompile Include="GrassBoard.cpp" />
     <ClCompile Include="GrassMng.cpp" />
     <ClCompile Include="ItemRepairMgr.cpp" />
+    <ClCompile Include="JpegFile.cpp" />
     <ClCompile Include="LightMgr.cpp" />
     <ClCompile Include="LocalInput.cpp" />
     <ClCompile Include="MachineBase.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="GameProcOption.h" />
     <ClInclude Include="GrassBoard.h" />
     <ClInclude Include="GrassMng.h" />
+    <ClInclude Include="JpegFile.h" />
     <ClInclude Include="N3ClientShapeMgr.h" />
     <ClInclude Include="N3Pond.h" />
     <ClInclude Include="N3River.h" />

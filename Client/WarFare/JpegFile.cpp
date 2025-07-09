@@ -1,5 +1,4 @@
-﻿
-////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////
 //	JpegFile - A C++ class to allow reading and writing of
 //	RGB and Grayscale JPEG images.
 //	It is based on the IJG V.6 code.
@@ -11,9 +10,8 @@
 //	See jpegfile.h for usage.
 //
 ////////////////////////////////////////////////////////////
-//#include "stdafx.h"
+#include "StdAfx.h"
 #include "JpegFile.h"
-#include "..\\N3BASE\\My_3DStruct.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -1505,11 +1503,12 @@ RGBQUAD CJpegFile::QuadFromWord(WORD b16)
    return rgb;
 }
 
-BOOL CJpegFile::DibToSamps(HANDLE           hDib,
-				int                         nSampsPerRow,
-				struct jpeg_compress_struct cinfo,
-				JSAMPARRAY                  jsmpPixels,
-				char*                    pcsMsg)
+BOOL CJpegFile::DibToSamps(
+	HANDLE					hDib,
+	int						nSampsPerRow,
+	jpeg_compress_struct	cinfo,
+	JSAMPARRAY				jsmpPixels,
+	const char*				pcsMsg)
 {
 	//Sanity...
 	if (hDib == NULL    ||
@@ -1705,10 +1704,11 @@ BOOL CJpegFile::DibToSamps(HANDLE           hDib,
 	return TRUE;
 }
 
-BOOL CJpegFile::JpegFromDib(HANDLE     hDib,     //Handle to DIB
-				 int        nQuality, //JPEG quality (0-100)
-				 std::string    csJpeg,   //Pathname to jpeg file
-				 char*   pcsMsg)   //Error msg to return
+BOOL CJpegFile::JpegFromDib(
+	HANDLE		hDib,     // Handle to DIB
+	int			nQuality, // JPEG quality (0-100)
+	std::string csJpeg,   // Pathname to jpeg file
+	const char* pcsMsg)   // Error msg to return
 {
 	//Basic sanity checks...
 	if (nQuality < 0 || nQuality > 100 ||
@@ -1800,10 +1800,11 @@ BOOL CJpegFile::JpegFromDib(HANDLE     hDib,     //Handle to DIB
 		return TRUE;
 }
 
-BOOL CJpegFile::EncryptJPEG(HANDLE hDib,			//Handle to DIB
-							int nQuality,			//JPEG quality (0-100)
-							std::string csJpeg,		//Pathname to jpeg file
-							char* pcsMsg)			//Error msg to return
+BOOL CJpegFile::EncryptJPEG(
+	HANDLE			hDib,	// Handle to DIB
+	int			nQuality,	// JPEG quality (0-100)
+	std::string	csJpeg,		// Pathname to jpeg file
+	const char*	pcsMsg)		// Error msg to return
 {
 	if(JpegFromDib(hDib, nQuality, csJpeg, pcsMsg) == FALSE)
 		return FALSE;
