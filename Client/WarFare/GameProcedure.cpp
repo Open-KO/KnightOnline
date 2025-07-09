@@ -41,7 +41,6 @@
 #include <N3Base/N3FXBundle.h>
 
 #include <N3Base/BitmapFile.h>
-#include <N3Base/Jpeg.h>
 
 #include <shared/lzf.h>
 

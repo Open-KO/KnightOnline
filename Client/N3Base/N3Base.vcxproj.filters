@@ -48,9 +48,6 @@
     <ClInclude Include="DFont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JPEG.H">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LogWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -297,9 +294,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DFont.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JPEG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LogWriter.cpp">
