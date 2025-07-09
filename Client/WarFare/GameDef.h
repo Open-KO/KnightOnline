@@ -21,7 +21,7 @@
 
 #include <shared/globals.h>
 
-constexpr int CURRENT_VERSION = 1298;//1068; // 현재 버전
+constexpr int CURRENT_VERSION = 1298;//1068; // Current version
 
 // Server.ini doesn't exist by default with our assets.
 // For simplicity, have the login server default to a local server in debug builds
@@ -34,7 +34,7 @@ static constexpr int DEFAULT_LOGIN_SERVER_COUNT = 0;
 static constexpr char DEFAULT_LOGIN_SERVER_IP[] = "";
 #endif
 
-constexpr float PACKET_INTERVAL_MOVE = 1.5f;				// 정기적으로 보내는 패킷 시간 간격..
+constexpr float PACKET_INTERVAL_MOVE = 1.5f;				// Time interval for regularly sent packets..
 constexpr float PACKET_INTERVAL_ROTATE = 4.0f;
 constexpr float PACKET_INTERVAL_REQUEST_TARGET_HP = 2.0f;
 
@@ -100,11 +100,11 @@ enum e_Class {	CLASS_KINDOF_WARRIOR = 1, CLASS_KINDOF_ROGUE, CLASS_KINDOF_WIZARD
 				CLASS_KINDOF_ATTACK_WARRIOR, CLASS_KINDOF_DEFEND_WARRIOR, CLASS_KINDOF_ARCHER, CLASS_KINDOF_ASSASSIN, 
 				CLASS_KINDOF_ATTACK_WIZARD, CLASS_KINDOF_PET_WIZARD, CLASS_KINDOF_HEAL_PRIEST, CLASS_KINDOF_CURSE_PRIEST,
 
-				CLASS_KA_WARRIOR = 101, CLASS_KA_ROGUE, CLASS_KA_WIZARD, CLASS_KA_PRIEST, // 여기까지 기본 직업
+				CLASS_KA_WARRIOR = 101, CLASS_KA_ROGUE, CLASS_KA_WIZARD, CLASS_KA_PRIEST, // Basic classes up to this point
 				CLASS_KA_BERSERKER = 105, CLASS_KA_GUARDIAN, CLASS_KA_HUNTER = 107, CLASS_KA_PENETRATOR, 
 				CLASS_KA_SORCERER = 109, CLASS_KA_NECROMANCER, CLASS_KA_SHAMAN = 111, CLASS_KA_DARKPRIEST, 
 				
-				CLASS_EL_WARRIOR = 201, CLASS_EL_ROGUE, CLASS_EL_WIZARD, CLASS_EL_PRIEST, // 여기까지 기본 직업 
+				CLASS_EL_WARRIOR = 201, CLASS_EL_ROGUE, CLASS_EL_WIZARD, CLASS_EL_PRIEST, // Basic classes up to this point
 				CLASS_EL_BLADE = 205, CLASS_EL_PROTECTOR, CLASS_EL_RANGER = 207, CLASS_EL_ASSASIN, 
 				CLASS_EL_MAGE = 209, CLASS_EL_ENCHANTER, CLASS_EL_CLERIC = 211, CLASS_EL_DRUID,
 				
@@ -112,9 +112,9 @@ enum e_Class {	CLASS_KINDOF_WARRIOR = 1, CLASS_KINDOF_ROGUE, CLASS_KINDOF_WIZARD
 
 enum e_Class_Represent { CLASS_REPRESENT_WARRIOR = 0, CLASS_REPRESENT_ROGUE, CLASS_REPRESENT_WIZARD, CLASS_REPRESENT_PRIEST, CLASS_REPRESENT_UNKNOWN = 100 };
 
-const float WEAPON_WEIGHT_STAND_SWORD = 5.0f; // 무기의 무게 기준...칼
-const float WEAPON_WEIGHT_STAND_AXE = 5.0f; // 무기의 무게 기준...도끼
-const float WEAPON_WEIGHT_STAND_BLUNT = 8.0f; // 무기의 무게 기준...몽둥이 종류
+const float WEAPON_WEIGHT_STAND_SWORD = 5.0f; // Weapon weight standard... sword
+const float WEAPON_WEIGHT_STAND_AXE = 5.0f; // Weapon weight standard... axe
+const float WEAPON_WEIGHT_STAND_BLUNT = 8.0f; // Weapon weight standard... blunt type
 
 enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, ANI_STRUCK1, ANI_STRUCK2, ANI_GUARD,
 				ANI_DEAD_NEATLY = 8, ANI_DEAD_KNOCKDOWN, ANI_DEAD_ROLL, ANI_SITDOWN, ANI_SITDOWN_BREATH, ANI_STANDUP,
@@ -131,40 +131,40 @@ enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, 
 				ANI_SHOOT_JAVELIN_A = 30, ANI_SHOOT_JAVELIN_B, 
 				
 				ANI_SWORD_BREATH_A = 32,	ANI_SWORD_ATTACK_A0, ANI_SWORD_ATTACK_A1,
-				ANI_SWORD_BREATH_B,			ANI_SWORD_ATTACK_B0, ANI_SWORD_ATTACK_B1,		// 한손검
+				ANI_SWORD_BREATH_B,			ANI_SWORD_ATTACK_B0, ANI_SWORD_ATTACK_B1,		// One-handed sword
 				
 				ANI_DAGGER_BREATH_A = 38,	ANI_DAGGER_ATTACK_A0, ANI_DAGGER_ATTACK_A1,
-				ANI_DAGGER_BREATH_B,		ANI_DAGGER_ATTACK_B0, ANI_DAGGER_ATTACK_B1,		// 단도
+				ANI_DAGGER_BREATH_B,		ANI_DAGGER_ATTACK_B0, ANI_DAGGER_ATTACK_B1,		// Dagger
 				
 				ANI_DUAL_BREATH_A = 44,		ANI_DUAL_ATTACK_A0, ANI_DUAL_ATTACK_A1, 
-				ANI_DUAL_BREATH_B,			ANI_DUAL_ATTACK_B0, ANI_DUAL_ATTACK_B1,			// 이도류
+				ANI_DUAL_BREATH_B,			ANI_DUAL_ATTACK_B0, ANI_DUAL_ATTACK_B1,			// Dual wield
 				
 				ANI_SWORD2H_BREATH_A = 50,	ANI_SWORD2H_ATTACK_A0, ANI_SWORD2H_ATTACK_A1, 
-				ANI_SWORD2H_BREATH_B,		ANI_SWORD2H_ATTACK_B0, ANI_SWORD2H_ATTACK_B1,	// 양손검
+				ANI_SWORD2H_BREATH_B,		ANI_SWORD2H_ATTACK_B0, ANI_SWORD2H_ATTACK_B1,	// Two-handed sword
 				
 				ANI_BLUNT_BREATH_A = 56,	ANI_BLUNT_ATTACK_A0, ANI_BLUNT_ATTACK_A1, 
-				ANI_BLUNT_BREATH_B,			ANI_BLUNT_ATTACK_B0, ANI_BLUNT_ATTACK_B1,		// 둔기 - 몽둥이 ?
+				ANI_BLUNT_BREATH_B,			ANI_BLUNT_ATTACK_B0, ANI_BLUNT_ATTACK_B1,		// Blunt weapon – club?
 				
 				ANI_BLUNT2H_BREATH_A = 62,	ANI_BLUNT2H_ATTACK_A0, ANI_BLUNT2H_ATTACK_A1, 
-				ANI_BLUNT2H_BREATH_B,		ANI_BLUNT2H_ATTACK_B0, ANI_BLUNT2H_ATTACK_B1,	// 양손으로 잡는 둔기. - 양손 도끼와 같다.
+				ANI_BLUNT2H_BREATH_B,		ANI_BLUNT2H_ATTACK_B0, ANI_BLUNT2H_ATTACK_B1,	// Two-handed blunt weapon. - Same as a two-handed axe.
 				
 				ANI_AXE_BREATH_A = 68,		ANI_AXE_ATTACK_A0, ANI_AXE_ATTACK_A1, 
-				ANI_AXE_BREATH_B,			ANI_AXE_ATTACK_B0, ANI_AXE_ATTACK_B1,			// 한손 도끼 
+				ANI_AXE_BREATH_B,			ANI_AXE_ATTACK_B0, ANI_AXE_ATTACK_B1,			// One-handed axe
 				
 				ANI_SPEAR_BREATH_A = 74,	ANI_SPEAR_ATTACK_A0, ANI_SPEAR_ATTACK_A1, 
-				ANI_SPEAR_BREATH_B,			ANI_SPEAR_ATTACK_B0, ANI_SPEAR_ATTACK_B1,		// 창 - 베는 날이 없는 그냥 창이다.
+				ANI_SPEAR_BREATH_B,			ANI_SPEAR_ATTACK_B0, ANI_SPEAR_ATTACK_B1,		// Spear – just a spear without a cutting edge.
 				
 				ANI_POLEARM_BREATH_A = 80,	ANI_POLEARM_ATTACK_A0, ANI_POLEARM_ATTACK_A1, 
-				ANI_POLEARM_BREATH_B,		ANI_POLEARM_ATTACK_B0, ANI_POLEARM_ATTACK_B1,	// 양손으로 잡는 날있는 창 - 청룡도 ??
+				ANI_POLEARM_BREATH_B,		ANI_POLEARM_ATTACK_B0, ANI_POLEARM_ATTACK_B1,	// Two-handed bladed spear – "Cheongryongdo" (Blue Dragon Sword)?
 				
 				ANI_NAKED_BREATH_A = 86,	ANI_NAKED_ATTACK_A0, ANI_NAKED_ATTACK_A1, 
-				ANI_NAKED_BREATH_B,			ANI_NAKED_ATTACK_B0, ANI_NAKED_ATTACK_B1,		// 맨몸으로 ??
+				ANI_NAKED_BREATH_B,			ANI_NAKED_ATTACK_B0, ANI_NAKED_ATTACK_B1,		// With bare hands??
 				
 				ANI_BOW_BREATH = 92,		ANI_CROSS_BOW_BREATH, ANI_LAUNCHER_BREATH, 
-				ANI_BOW_BREATH_B,			ANI_BOW_ATTACK_B0, ANI_BOW_ATTACK_B1,			// 활 공격
+				ANI_BOW_BREATH_B,			ANI_BOW_ATTACK_B0, ANI_BOW_ATTACK_B1,			// Bow attack
 				
 				ANI_SHIELD_BREATH_A = 98,	ANI_SHIELD_ATTACK_A0, ANI_SHIELD_ATTACK_A1, 
-				ANI_SHIELD_BREATH_B,		ANI_SHIELD_ATTACK_B0, ANI_SHIELD_ATTACK_B1,		// 방패 공격
+				ANI_SHIELD_BREATH_B,		ANI_SHIELD_ATTACK_B0, ANI_SHIELD_ATTACK_B1,		// Shield attack
 
 				ANI_GREETING0 = 104, ANI_GREETING1, ANI_GREETING2, 
 				ANI_WAR_CRY0 = 107, ANI_WAR_CRY1, ANI_WAR_CRY2, ANI_WAR_CRY3, ANI_WAR_CRY4, 
@@ -179,7 +179,7 @@ enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, 
 				ANI_SKILL_AXE2H0 = 132, ANI_SKILL_AXE2H1,
 				ANI_SKILL_SWORD2H0 = 134, ANI_SKILL_SWORD2H1,
 
-				// 여기부터는 NPC Animation
+				// From here on: NPC Animation
 				ANI_NPC_BREATH = 0, ANI_NPC_WALK, ANI_NPC_RUN, ANI_NPC_WALK_BACKWARD,
 				ANI_NPC_ATTACK0 = 4, ANI_NPC_ATTACK1, ANI_NPC_STRUCK0, ANI_NPC_STRUCK1, ANI_NPC_STRUCK2, ANI_NPC_GUARD, 
 				ANI_NPC_DEAD0 = 10, ANI_NPC_DEAD1, ANI_NPC_TALK0, ANI_NPC_TALK1, ANI_NPC_TALK2, ANI_NPC_TALK3, 
@@ -188,18 +188,18 @@ enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, 
 				ANI_UNKNOWN = 0xffffffff };
 
 
-//MAX_INCLINE_CLIMB = sqrt( 1 - sin(90-최대경사각)^2 )
-//const	float MAX_INCLINE_CLIMB = 0.5f;	   // 올라갈수 있는 최대 경사값 = 30 도
-const	float MAX_INCLINE_CLIMB = 0.6430f; // 올라갈수 있는 최대 경사값 = 40 도
-//const	float MAX_INCLINE_CLIMB = 0.7071f; // 올라갈수 있는 최대 경사값 = 45 도
-//const	float MAX_INCLINE_CLIMB = 0.7660f; // 올라갈수 있는 최대 경사값 = 50 도
-//const	float MAX_INCLINE_CLIMB = 0.8660f; // 올라갈수 있는 최대 경사값 = 60 도
+//MAX_INCLINE_CLIMB = sqrt( 1 - sin(90 - Maximum slope angle)^2 )
+//const	float MAX_INCLINE_CLIMB = 0.5f;	   // Maximum climbable slope value = 30 degree
+const	float MAX_INCLINE_CLIMB = 0.6430f; // Maximum climbable slope value = 40 degree
+//const	float MAX_INCLINE_CLIMB = 0.7071f; // Maximum climbable slope value = 45 degree
+//const	float MAX_INCLINE_CLIMB = 0.7660f; // Maximum climbable slope value = 50 degree
+//const	float MAX_INCLINE_CLIMB = 0.8660f; // Maximum climbable slope value = 60 degree
 
 
 enum e_MoveDirection { MD_STOP, MD_FOWARD, MD_BACKWARD, MD_UNKNOWN = 0xffffffff };
 
-const float MOVE_DELTA_WHEN_RUNNING = 3.0f; // 뛸때 곱해지는 변수..
-const float MOVE_SPEED_WHEN_WALK = 1.5f; // Player 들이 걸을때 표준속도
+const float MOVE_DELTA_WHEN_RUNNING = 3.0f; // Variable multiplied when jumping..
+const float MOVE_SPEED_WHEN_WALK = 1.5f; // Standard walking speed for players
 
 // 현재 상태...
 enum e_StateMove {	PSM_STOP = 0,
@@ -208,19 +208,19 @@ enum e_StateMove {	PSM_STOP = 0,
 					PSM_WALK_BACKWARD,
 					PSM_COUNT };
 
-enum e_StateAction {	PSA_BASIC = 0,		// 아무짓도 안하고 있음...
-						PSA_ATTACK,			// 공격 상태.. 
-						PSA_GUARD,			// 방어성공 - 막음..
-						PSA_STRUCK,			// 얻어터짐.
-						PSA_DYING,			// 죽고 있는중(쓰러지는중)
-						PSA_DEATH,			// 죽어서 뻗음..
-						PSA_SPELLMAGIC,		// 마법 주문 외우는 중..
-						PSA_SITDOWN, 		// 앉아 있는중...
+enum e_StateAction {	PSA_BASIC = 0,		// Doing nothing...
+						PSA_ATTACK,			// Attack state.. 
+						PSA_GUARD,			// Defense successful – blocked..
+						PSA_STRUCK,			// Taking heavy damage.
+						PSA_DYING,			// Dying (falling down)
+						PSA_DEATH,			// Dead and collapsed..
+						PSA_SPELLMAGIC,		// Casting a magic spell..
+						PSA_SITDOWN, 		// Sitting...
 						PSA_COUNT }; 
 
-enum e_StateDying {		PSD_DISJOINT = 0,	// 분해되어 죽는다.. 
-						PSD_KNOCK_DOWN,		// 날아가거나 뒤로 밀리면서 죽는다.
-						PSD_KEEP_POSITION,	// 제 자리에서 폼잡고 죽는다..
+enum e_StateDying {		PSD_DISJOINT = 0,	// Dies by disintegration.. 
+						PSD_KNOCK_DOWN,		// Dies while flying or being knocked back.
+						PSD_KEEP_POSITION,	// Dies posing in place..
 						PSD_COUNT,
 
 						PSD_UNKNOWN = 0xffffffff };
@@ -300,43 +300,43 @@ enum e_ItemAttrib	{
 						ITEM_ATTRIB_UPGRADE_REVERSE = 12,
 						ITEM_ATTRIB_UNKNOWN = 0xffffffff };	
 
-enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // 단검(dagger)
-						ITEM_CLASS_SWORD = 21, // 한손검(onehandsword)
-						ITEM_CLASS_SWORD_2H = 22, // 3 : 양손검(twohandsword)
-						ITEM_CLASS_AXE = 31, // 한손도끼(onehandaxe)
-						ITEM_CLASS_AXE_2H = 32, // 두손도끼(twohandaxe)
-						ITEM_CLASS_MACE = 41, // 한손타격무기(mace)
-						ITEM_CLASS_MACE_2H = 42, // 두손타격무기(twohandmace)
-						ITEM_CLASS_SPEAR = 51, // 창(spear)
-						ITEM_CLASS_POLEARM = 52, // 폴암(polearm)
+enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
+						ITEM_CLASS_SWORD = 21, // onehandsword
+						ITEM_CLASS_SWORD_2H = 22, // 3 : twohandsword
+						ITEM_CLASS_AXE = 31, // onehandaxe
+						ITEM_CLASS_AXE_2H = 32, // twohandaxe
+						ITEM_CLASS_MACE = 41, // mace
+						ITEM_CLASS_MACE_2H = 42, // twohandmace
+						ITEM_CLASS_SPEAR = 51, // spear
+						ITEM_CLASS_POLEARM = 52, // polearm
 						
-						ITEM_CLASS_SHIELD = 60, // 쉴드(shield)
+						ITEM_CLASS_SHIELD = 60, // shield
 
-						ITEM_CLASS_BOW = 70, //  쇼트보우(Shortbow)
-						ITEM_CLASS_BOW_CROSS = 71, // 크로스보우(crossbow)
-						ITEM_CLASS_BOW_LONG = 80, // 롱보우(longbow)
+						ITEM_CLASS_BOW = 70, //  Shortbow
+						ITEM_CLASS_BOW_CROSS = 71, // crossbow
+						ITEM_CLASS_BOW_LONG = 80, // longbow
 
-						ITEM_CLASS_EARRING = 91, // 귀걸이
-						ITEM_CLASS_AMULET = 92, // 목걸이
-						ITEM_CLASS_RING = 93, // 반지
-						ITEM_CLASS_BELT = 94, // 허리띠
-						ITEM_CLASS_CHARM = 95, //인벤토리에 지니고 있는 아이템
-						ITEM_CLASS_JEWEL = 96, //보석종류
-						ITEM_CLASS_POTION = 97, // 물약
-						ITEM_CLASS_SCROLL = 98, // 스크롤
+						ITEM_CLASS_EARRING = 91, // Earring
+						ITEM_CLASS_AMULET = 92, // Necklace
+						ITEM_CLASS_RING = 93, // Ring
+						ITEM_CLASS_BELT = 94, // Belt
+						ITEM_CLASS_CHARM = 95, //Items carried in inventory
+						ITEM_CLASS_JEWEL = 96, //Types of gems
+						ITEM_CLASS_POTION = 97, // Potion ( + transformation scrolls , usable items )
+						ITEM_CLASS_SCROLL = 98, // Scroll
 
-						ITEM_CLASS_LAUNCHER = 100, // 창던질때 쓰는 아이템..
+						ITEM_CLASS_LAUNCHER = 100, //  Item used for throwing spears..
 						
-						ITEM_CLASS_STAFF = 110, // 지팡이(staff)
-						ITEM_CLASS_ARROW = 120, // 화살(Arrow)
-						ITEM_CLASS_JAVELIN = 130, // 투창
+						ITEM_CLASS_STAFF = 110, // Staff
+						ITEM_CLASS_ARROW = 120, // Arrow
+						ITEM_CLASS_JAVELIN = 130, // Javelin
 						
-						ITEM_CLASS_ARMOR_WARRIOR = 210, // 전사 방어구
-						ITEM_CLASS_ARMOR_ROGUE = 220, // 로그 방어구
-						ITEM_CLASS_ARMOR_MAGE = 230, // 마법사 방어구
-						ITEM_CLASS_ARMOR_PRIEST = 240, // 사제 방어구
+						ITEM_CLASS_ARMOR_WARRIOR = 210, // Warrior armor
+						ITEM_CLASS_ARMOR_ROGUE = 220, // Rogue armor
+						ITEM_CLASS_ARMOR_MAGE = 230, // Mage armor
+						ITEM_CLASS_ARMOR_PRIEST = 240, // Priest armor
 
-						ITEM_CLASS_ETC = 251, // 기타
+						ITEM_CLASS_ETC = 251, // Miscellaneous, other items
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
@@ -348,39 +348,39 @@ struct __TABLE_PLAYER;
 
 struct __InfoPlayerOther
 {
-	int			iFace;			// 얼굴 모양..
-	int			iHair;			// 머리카락 모양..
+	int			iFace;			// Face shape
+	int			iHair;			// Hairstyle
 
-	int			iCity;			// 소속도시
-	int			iKnightsID;		// 소속 기사단(길드) ID
-	std::string szKnights;		// 소속 기사단(길드) 이름
-	int			iKnightsGrade;	// 소속 기사단(길드) 등급
-	int			iKnightsRank;	// 소속 기사단(길드) 순위
+	int			iCity;			// Affiliated city
+	int			iKnightsID;		// Affiliated knight order (clan) ID
+	std::string szKnights;		// Affiliated knight order (clan) name
+	int			iKnightsGrade;	// Affiliated knight order (clan) rank
+	int			iKnightsRank;	// Affiliated knight order (clan) ranking
 
-	int			iRank;			// 작위 - 백작, 공작 - 권한에 따른 분류
-	int			iTitle;			// 직위 - 영주, 성주 - 단순한 신분 -> 길드장...
+	int			iRank;			// Titles – count, duke – classification based on authority [king]
+	int			iTitle;			// Position – lord, castle lord – simple status -> clan leader
 
 	void Init()
 	{
-		iFace = 0;			// 얼굴 모양..
-		iHair = 0;			// 머리카락 모양..
-		iCity;				// 소속도시
-		iKnightsID = 0;		// 소속 기사단(길드)
-		szKnights = "";		// 소속 기사단(길드)
-		iKnightsGrade = 0;		// 소속 기사단(길드) 색깔
-		iKnightsRank = 0;			// 작위 - 백작, 공작 - 권한에 따른 분류
-		iTitle = 0;			// 직위 - 영주, 성주 - 단순한 신분 -> 길드장...
+		iFace = 0;			
+		iHair = 0;			
+		iCity;				
+		iKnightsID = 0;		
+		szKnights = "";		
+		iKnightsGrade = 0;		
+		iKnightsRank = 0;			
+		iTitle = 0;			
 	}
 };
 
-// 기사단 직위..
-enum e_KnightsDuty {	KNIGHTS_DUTY_UNKNOWN = 0,		// ????? 쫓겨남??
-						KNIGHTS_DUTY_CHIEF = 1,			// 단장
-						KNIGHTS_DUTY_VICECHIEF = 2,		// 부단장 
-						KNIGHTS_DUTY_PUNISH = 3,		// 징계중.
-						KNIGHTS_DUTY_TRAINEE = 4,		// 견습기사
-						KNIGHTS_DUTY_KNIGHT = 5,		// 일반기사
-						KNIGHTS_DUTY_OFFICER = 6		// 장교
+// Knight order position..
+enum e_KnightsDuty {	KNIGHTS_DUTY_UNKNOWN = 0,		// ????? kicked out??
+						KNIGHTS_DUTY_CHIEF = 1,			// Leader
+						KNIGHTS_DUTY_VICECHIEF = 2,		// Vice leader
+						KNIGHTS_DUTY_PUNISH = 3,		// Under disciplinary action.
+						KNIGHTS_DUTY_TRAINEE = 4,		// Apprentice knight
+						KNIGHTS_DUTY_KNIGHT = 5,		// Regular knight
+						KNIGHTS_DUTY_OFFICER = 6		// Officer
 					};
 
 #define VICTORY_ABSENCE		0
@@ -389,8 +389,8 @@ enum e_KnightsDuty {	KNIGHTS_DUTY_UNKNOWN = 0,		// ????? 쫓겨남??
 
 struct __InfoPlayerMySelf : public __InfoPlayerOther
 {
-	int					iBonusPointRemain; // 남는 보너스 포인트...
-	int					iLevelPrev; // 직전의 레벨...
+	int					iBonusPointRemain;	// remaining bonus points
+	int					iLevelPrev;			// previous level
 
 	int					iMSPMax; 
 	int					iMSP; 
@@ -399,50 +399,50 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 	int					iGold;
 	uint64_t			iExpNext;
 	uint64_t			iExp;
-	int					iRealmPoint;		// 국가 기여도
-	int					iRealmPointMonthly;		// @Demircivi.
-	e_KnightsDuty		eKnightsDuty;		// 기사단 권한
-	int					iWeightMax;			// 아이템의 총무게
-	int					iWeight;			// 들수 있는 아이템 무게..
-	int					iStrength;			// 힘
-	int					iStrength_Delta;		// 아이템이나 마법에 의해 가감된값.
-	int					iStamina;			// 스테미너
-	int					iStamina_Delta;		// 아이템이나 마법에 의해 가감된값.
-	int					iDexterity;			// 민첨성..
-	int					iDexterity_Delta;	// 아이템이나 마법에 의해 가감된값.
-	int					iIntelligence;		// 지능
-	int					iIntelligence_Delta; // 아이템이나 마법에 의해 가감된값.
-	int 				iMagicAttak;		// 마력
-	int 				iMagicAttak_Delta;	// 아이템이나 마법에 의해 가감된값.
+	int					iRealmPoint;		// National contribution [NP]
+	int					iRealmPointMonthly;	// Monthly NP
+	e_KnightsDuty		eKnightsDuty;		// templar authority
+	int					iWeightMax;			// max weight
+	int					iWeight;			// current weight
+	int					iStrength;			// strength
+	int					iStrength_Delta;	// excess strength
+	int					iStamina;			// stamina
+	int					iStamina_Delta;		// excess stamina
+	int					iDexterity;			// dexterity
+	int					iDexterity_Delta;	// excess dexterity
+	int					iIntelligence;		// intelligence
+	int					iIntelligence_Delta; // excess intelligence
+	int 				iMagicAttak;		// magic power, MP
+	int 				iMagicAttak_Delta;	// excess MP
 	
-	int 				iAttack;		// 공격력
-	int 				iAttack_Delta;	// 마법에 의해 가감된 값..
-	int 				iGuard;			// 방어력
-	int 				iGuard_Delta;	// 마법에 의해 가감된 값..
+	int 				iAttack;		// Attack power
+	int 				iAttack_Delta;	// Value modified by magic..
+	int 				iGuard;			// Defense
+	int 				iGuard_Delta;	// Value modified by magic..
 
-	int 				iRegistFire;			// 저항력
-	int 				iRegistFire_Delta;		// 마법에 의한 저항력 변화값..
-	int 				iRegistCold;			// 저항력
-	int 				iRegistCold_Delta;		// 마법에 의한 저항력 변화값..
-	int 				iRegistLight;			// 저항력
-	int 				iRegistLight_Delta;		// 마법에 의한 저항력 변화값..
-	int 				iRegistMagic;			// 저항력
-	int 				iRegistMagic_Delta;		// 마법에 의한 저항력 변화값..
-	int 				iRegistCurse;			// 저항력
-	int 				iRegistCurse_Delta;		// 마법에 의한 저항력 변화값..
-	int 				iRegistPoison;			// 저항력
-	int 				iRegistPoison_Delta;	// 마법에 의한 저항력 변화값..
+	int 				iRegistFire;			// Resistance
+	int 				iRegistFire_Delta;		// Resistance change value due to magic..
+	int 				iRegistCold;			// Resistance
+	int 				iRegistCold_Delta;		// Resistance change value due to magic..
+	int 				iRegistLight;			// Resistance
+	int 				iRegistLight_Delta;		// Resistance change value due to magic..
+	int 				iRegistMagic;			// Resistance
+	int 				iRegistMagic_Delta;		// Resistance change value due to magic..
+	int 				iRegistCurse;			// Resistance
+	int 				iRegistCurse_Delta;		// Magic resistance modifier..
+	int 				iRegistPoison;			// Resistance
+	int 				iRegistPoison_Delta;	// Magic resistance modifier..
 
-	int					iZoneInit;				// 서버한테 처음에 받은 존번호
-	int					iZoneCur;				// 현재 존..
-	int					iVictoryNation;			// 0: 무승부 1:엘모라드 승리 2:카루스 승리
+	int					iZoneInit;				// Initial zone number received from server
+	int					iZoneCur;				// Current zone..
+	int					iVictoryNation;			// 0: Draw 1: El Morad victory 2: Karus victory
 
 	void Init()
 	{
 		__InfoPlayerOther::Init();
 
-		iBonusPointRemain = 0; // 남는 보너스 포인트...
-		iLevelPrev = 0; // 직전의 레벨...
+		iBonusPointRemain = 0; 
+		iLevelPrev = 0; 
 
 		iMSPMax = 0; 
 		iMSP = 0; 
@@ -451,43 +451,43 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 		iGold = 0;
 		iExpNext = 0;
 		iExp = 0; 
-		iRealmPoint = 0;		// 국가 기여도
-		iRealmPointMonthly = 0; // @Demircivi
-		eKnightsDuty = KNIGHTS_DUTY_UNKNOWN;		// 기사단 권한
-		iWeightMax = 0;			// 아이템의 총무게
-		iWeight = 0;			// 들수 있는 아이템 무게..
-		iStrength = 0;			// 힘
-		iStrength_Delta = 0;	// 아이템이나 마법에 의해 가감된값.
-		iStamina = 0;			// 스테미너
-		iStamina_Delta = 0;		// 아이템이나 마법에 의해 가감된값.
-		iDexterity = 0;			// 민첨성..
-		iDexterity_Delta = 0;	// 아이템이나 마법에 의해 가감된값.
-		iIntelligence = 0;		// 지능
-		iIntelligence_Delta = 0; // 아이템이나 마법에 의해 가감된값.
-		iMagicAttak = 0;		// 마력
-		iMagicAttak_Delta = 0;	// 아이템이나 마법에 의해 가감된값.
+		iRealmPoint = 0;		
+		iRealmPointMonthly = 0; 
+		eKnightsDuty = KNIGHTS_DUTY_UNKNOWN;		
+		iWeightMax = 0;			
+		iWeight = 0;			
+		iStrength = 0;			
+		iStrength_Delta = 0;	
+		iStamina = 0;			
+		iStamina_Delta = 0;		
+		iDexterity = 0;			
+		iDexterity_Delta = 0;	
+		iIntelligence = 0;		
+		iIntelligence_Delta = 0; 
+		iMagicAttak = 0;		
+		iMagicAttak_Delta = 0;	
 		
-		iAttack = 0;		// 공격력
-		iAttack_Delta = 0;	// 마법에 의해 가감된 값..
-		iGuard = 0;			// 방어력
-		iGuard_Delta = 0;	// 마법에 의해 가감된 값..
+		iAttack = 0;		
+		iAttack_Delta = 0;	
+		iGuard = 0;			
+		iGuard_Delta = 0;	
 
-		iRegistFire = 0;			// 저항력
-		iRegistFire_Delta = 0;		// 마법에 의한 저항력 변화값..
-		iRegistCold = 0;			// 저항력
-		iRegistCold_Delta = 0;		// 마법에 의한 저항력 변화값..
-		iRegistLight = 0;			// 저항력
-		iRegistLight_Delta = 0;		// 마법에 의한 저항력 변화값..
-		iRegistMagic = 0;			// 저항력
-		iRegistMagic_Delta = 0;		// 마법에 의한 저항력 변화값..
-		iRegistCurse = 0;			// 저항력
-		iRegistCurse_Delta = 0;		// 마법에 의한 저항력 변화값..
-		iRegistPoison = 0;			// 저항력
-		iRegistPoison_Delta = 0;	// 마법에 의한 저항력 변화값..
+		iRegistFire = 0;			
+		iRegistFire_Delta = 0;		
+		iRegistCold = 0;			
+		iRegistCold_Delta = 0;		
+		iRegistLight = 0;			
+		iRegistLight_Delta = 0;		
+		iRegistMagic = 0;			
+		iRegistMagic_Delta = 0;		
+		iRegistCurse = 0;			
+		iRegistCurse_Delta = 0;		
+		iRegistPoison = 0;			
+		iRegistPoison_Delta = 0;	
 
-		iZoneInit = 0x01;			// 서버한테 처음에 받은 존번호
-		iZoneCur = 0;				// 현재 존..
-		iVictoryNation = -1;		// 전쟁에서 이긴 국가
+		iZoneInit = 0x01;			
+		iZoneCur = 0;				
+		iVictoryNation = -1;		
 	}
 };
 
@@ -495,14 +495,14 @@ const int MAX_PARTY_OR_FORCE = 8;
 
 struct __InfoPartyOrForce
 {
-	int			iID;			// 파티원 ID
+	int			iID;			// Party member ID
 	int			iLevel;			// Level
-	e_Class		eClass;			// 직업
+	e_Class		eClass;			// Class
 	int			iHP;			// Hit Point
 	int			iHPMax;			// Hit Point Max
-	bool		bSufferDown_HP;			// Status - HP 떨어짐...
-	bool		bSufferDown_Etc;		// Status - 저주계열 영향을 받을때
-	std::string szID;		// 파티 이름 문자열
+	bool		bSufferDown_HP;			// Status - HP decreased...
+	bool		bSufferDown_Etc;		// Status - When affected by curse-type effects
+	std::string szID;		// Party name string
 
 	void Init()
 	{
@@ -513,8 +513,8 @@ struct __InfoPartyOrForce
 		iHPMax = 0;
 		szID = "";
 
-		bSufferDown_HP = false;			// Status - HP 떨어짐...
-		bSufferDown_Etc = false;		// Status - 저주계열 영향을 받을때
+		bSufferDown_HP = false;			
+		bSufferDown_Etc = false;		
 	};
 
 	__InfoPartyOrForce()
@@ -525,12 +525,12 @@ struct __InfoPartyOrForce
 
 enum e_PartyStatus { PARTY_STATUS_DOWN_HP = 1, PARTY_STATUS_DOWN_ETC = 2 };
 
-struct __InfoPartyBBS // 파티 지원 게시판 구조체..
+struct __InfoPartyBBS // Party support board structure... (seeking party)
 {
-	std::string szID;			// 파티 이름 문자열
-	int			iID;			// 파티원 ID
+	std::string szID;			// Party name string
+	int			iID;			// Party member ID
 	int			iLevel;			// Level
-	e_Class		eClass;			// 직업
+	e_Class		eClass;			// Class
 	int			iMemberCount;
 
 	void Init()
@@ -556,314 +556,312 @@ typedef struct __TABLE_TEXTS
 
 typedef struct __TABLE_ZONE
 {
-	uint32_t    dwID;                 // zone ID
-	std::string	szTerrainFN;          // GTD
-
-	std::string szName;
-
-	std::string	szColorMapFN;         // TCT
-	std::string	szLightMapFN;         // TLT
-	std::string	szObjectPostDataFN;   // OPD
+	uint32_t    dwID;                 //01 zone ID
+	std::string	szTerrainFN;          //02 GTD
+	std::string szName;				  //03	
+	std::string	szColorMapFN;         //04 TCT
+	std::string	szLightMapFN;         //05 TLT
+	std::string	szObjectPostDataFN;   //06 OPD
 
 #if __VERSION > 1264
-	std::string szOpdExtFN;           // OPDEXT
+	std::string szOpdExtFN;           //07 OPDEXT
 #endif
 
-	std::string	szMiniMapFN;          // DXT
-	std::string szSkySetting;         // N3Sky
-	int         bIndicateEnemyPlayer; // Int32 (BOOL)
-	int         iFixedSundDirection;  // Int32
-	std::string szLightObjFN;         // GLO
+	std::string	szMiniMapFN;          //08 DXT
+	std::string szSkySetting;         //09 N3Sky
+	int         bIndicateEnemyPlayer; //10 Int32 (BOOL)
+	int         iFixedSundDirection;  //11 Int32
+	std::string szLightObjFN;         //12 GLO
 
-	std::string szGevFN;              // GEV
-	int         iIdk0;                // idk
-	std::string szEnsFN;              // ENS
-	float       fIdk1;                // idk
-	std::string szFlagFN;             // FLAG
-	uint32_t    iIdk2;
-	uint32_t    iIdk3;
-	uint32_t    iIdk4;
-	uint32_t    iIdk5;
-	std::string szOpdSubFN;           // OPDSUB
-	int         iIdk6;
-	std::string szEvtSub;             // EVTSUB
+	std::string szGevFN;              //13 GEV
+	int         iIdk0;                //14 idk
+	std::string szEnsFN;              //15 ENS
+	float       fIdk1;                //16 idk
+	std::string szFlagFN;             //17 FLAG
+	uint32_t    iIdk2;				  //18	
+	uint32_t    iIdk3;				  //19	
+	uint32_t    iIdk4;				  //20	
+	uint32_t    iIdk5;				  //21
+	std::string szOpdSubFN;           //22 OPDSUB
+	int         iIdk6;				  //23
+	std::string szEvtSub;             //24 EVTSUB
 } TABLE_ZONE;
 
 typedef struct __TABLE_UI_RESRC
 {
-	uint32_t dwID;						// 0 (Karus/Human)
-	std::string szLogIn;				// 1
-	std::string szCmd;					// 2
-	std::string szChat;					// 3
-	std::string szMsgOutput;			// 4
-	std::string szStateBar;				// 5
-	std::string szVarious;				// 6 
-	std::string szState;				// 7 
-	std::string szKnights;				// 8 
-	std::string szQuest;				// 9 
-	std::string szFriends;				// 10 
-	std::string szInventory;			// 11
-	std::string szTransaction;			// 12
-	std::string szDroppedItem;			// 13
-	std::string szTargetBar;			// 14
-	std::string szTargetSymbolShape;	// 15
-	std::string szSkillTree;			// 16
-	std::string szHotKey;				// 17
-	std::string szMiniMap;				// 18
-	std::string szPartyOrForce;			// 19
-	std::string szPartyBBS;				// 20
-	std::string szHelp;					// 21
-	std::string szNotice;				// 22
-	std::string szCharacterCreate;		// 23
-	std::string szCharacterSelect;		// 24
-	std::string szToolTip;				// 25
-	std::string szMessageBox;			// 26
-	std::string szLoading;				// 27
-	std::string szItemInfo;				// 28
-	std::string szPersonalTrade;		// 29
-	std::string szPersonalTradeEdit;	// 30
-	std::string szNpcEvent;				// 31
-	std::string szZoneChangeOrWarp;		// 32
-	std::string szExchangeRepair;		// 33
-	std::string szRepairTooltip;		// 34
-	std::string szNpcTalk;				// 35
-	std::string szNpcExchangeList;		// 36
-	std::string szKnightsOperation;		// 37
-	std::string szClassChange;			// 38
-	std::string szEndingDisplay;		// 39
-	std::string szWareHouse;			// 40
-	std::string szChangeClassInit;		// 41
-	std::string szChangeInitBill;		// 42
-	std::string szInn;					// 43
-	std::string szInputClanName;		// 44
-	std::string szTradeBBS;				// 45
-	std::string szTradeBBSSelector;		// 46
-	std::string szTradeExplanation;		// 47
-	std::string szTradeMemolist;		// 48
-	std::string szQuestMenu;			// 49
-	std::string szQuestTalk;			// 50
-	std::string szQuestEdit;			// 51
-	std::string szDead;					// 52
-	std::string szElLoading;			// 53
-	std::string szKaLoading;			// 54
-	std::string szNationSelect;			// 55
-	std::string szChat2;				// 56
-	std::string szMsgOutput2;			// 57
-	std::string szItemUpgrade;			// 58
-	std::string szDuelCreate;			// 59
-	std::string szDuelList;				// 60
-	std::string szDuelMsg;				// 61
-	std::string szDuelMsgEdit;			// 62
-	std::string szDuelLobby;			// 63
-	std::string szQuestContent;			// 64
-	std::string szDuelItemCnt;			// 65
-	std::string szTradeInv;				// 66
-	std::string szTradeBuyInv;			// 67
-	std::string szTradeItemDisplay;		// 68
-	std::string szTradePrice;			// 69
-	std::string szTradeCnt;				// 70
-	std::string szTradeMsgBox;			// 71
-	std::string szClanPage;				// 72
-	std::string szAllyPage;				// 73
-	std::string szAlly2Page;			// 74
-	std::string szCmdList;				// 75
-	std::string szCmdEdit;				// 76
-	std::string szClanLogo;				// 77
-	std::string szShopMall;				// 78
-	std::string szLvlGuide;				// 79
-	std::string szCSWNpc;				// 80
-	std::string szKCSWPetition;			// 81
-	std::string szCSWAlly;				// 82
-	std::string szCSWSchedule;			// 83
-	std::string szExitMenu;				// 84
-	std::string szResurrect;			// 85
-	std::string szNameChange;			// 86
-	std::string szNameEditBox;			// 87
-	std::string szNameCheck;			// 88
-	std::string szCSWAdmin;				// 89
-	std::string szCSWTax;				// 90
-	std::string szCSWCapeList;			// 91
-	std::string szKnightCapeShop;		// 92
-	std::string szCSWTaxCollection;		// 93
-	std::string szCSWTaxRate;			// 94
-	std::string szCSWTaxRateMsg;		// 95
-	std::string szCatapult;				// 96
-	std::string szDisguiseRing;			// 97
-	std::string szMsgBoxOk;				// 98
-	std::string szMsgBoxOkCancel;		// 99
-	std::string szOpenChat;				// 100
-	std::string szCloseChat;			// 101
-	std::string szChrClanLogo;			// 102
-	std::string szWarning;				// 103
-	std::string szConvo;				// 104
-	std::string szBlog;					// 105
-	std::string szInnPass;				// 106
-	std::string szNoviceTips;			// 107
-	std::string szWebpage;				// 108
-	std::string szPartyMsgBox;			// 109
-	std::string szClanLogo2;			// 110
-	std::string szRentalNpc;			// 111
-	std::string szRentalTransaction;	// 112
-	std::string szRentalEntry;			// 113
-	std::string szRentalItem;			// 114
-	std::string szRentalMsg;			// 115
-	std::string szRentalCnt;			// 116
-	std::string szNetDIO;				// 117
-	std::string szLoginIntro;			// 118
-	std::string szSubLoginIntro;		// 119
-	std::string szCharSelect;			// 120
-	std::string szCharCreate;			// 121
-	std::string szOtherState;			// 122
-	std::string szPPCardBegin;			// 123
-	std::string szPPCardList;			// 124
-	std::string szPPCardReg;			// 125
-	std::string szPPCardMsg;			// 126
-	std::string szPPCardBuyList;		// 127
-	std::string szPPCardMyInfo;			// 128
-	std::string szNationSelectNew;		// 129
-	std::string szUSALogo;				// 130
+	uint32_t dwID;						// 01 (Karus/Human)
+	std::string szLogIn;				// 02
+	std::string szCmd;					// 03
+	std::string szChat;					// 04
+	std::string szMsgOutput;			// 05
+	std::string szStateBar;				// 06
+	std::string szVarious;				// 07
+	std::string szState;				// 08
+	std::string szKnights;				// 09
+	std::string szQuest;				// 10
+	std::string szFriends;				// 11 
+	std::string szInventory;			// 12
+	std::string szTransaction;			// 13
+	std::string szDroppedItem;			// 14
+	std::string szTargetBar;			// 15
+	std::string szTargetSymbolShape;	// 16
+	std::string szSkillTree;			// 17
+	std::string szHotKey;				// 18
+	std::string szMiniMap;				// 19
+	std::string szPartyOrForce;			// 20
+	std::string szPartyBBS;				// 21
+	std::string szHelp;					// 22
+	std::string szNotice;				// 23
+	std::string szCharacterCreate;		// 24
+	std::string szCharacterSelect;		// 25
+	std::string szToolTip;				// 26
+	std::string szMessageBox;			// 27
+	std::string szLoading;				// 28
+	std::string szItemInfo;				// 29
+	std::string szPersonalTrade;		// 30
+	std::string szPersonalTradeEdit;	// 31
+	std::string szNpcEvent;				// 32
+	std::string szZoneChangeOrWarp;		// 33
+	std::string szExchangeRepair;		// 34
+	std::string szRepairTooltip;		// 35
+	std::string szNpcTalk;				// 36
+	std::string szNpcExchangeList;		// 37
+	std::string szKnightsOperation;		// 38
+	std::string szClassChange;			// 39
+	std::string szEndingDisplay;		// 40
+	std::string szWareHouse;			// 41
+	std::string szChangeClassInit;		// 42
+	std::string szChangeInitBill;		// 43
+	std::string szInn;					// 44
+	std::string szInputClanName;		// 45
+	std::string szTradeBBS;				// 46
+	std::string szTradeBBSSelector;		// 47
+	std::string szTradeExplanation;		// 48
+	std::string szTradeMemolist;		// 49
+	std::string szQuestMenu;			// 50
+	std::string szQuestTalk;			// 51
+	std::string szQuestEdit;			// 52
+	std::string szDead;					// 53
+	std::string szElLoading;			// 54
+	std::string szKaLoading;			// 55
+	std::string szNationSelect;			// 56
+	std::string szChat2;				// 57
+	std::string szMsgOutput2;			// 58
+	std::string szItemUpgrade;			// 59
+	std::string szDuelCreate;			// 60
+	std::string szDuelList;				// 61
+	std::string szDuelMsg;				// 62
+	std::string szDuelMsgEdit;			// 63
+	std::string szDuelLobby;			// 64
+	std::string szQuestContent;			// 65
+	std::string szDuelItemCnt;			// 66
+	std::string szTradeInv;				// 67
+	std::string szTradeBuyInv;			// 68
+	std::string szTradeItemDisplay;		// 69
+	std::string szTradePrice;			// 70
+	std::string szTradeCnt;				// 71
+	std::string szTradeMsgBox;			// 72
+	std::string szClanPage;				// 73
+	std::string szAllyPage;				// 74
+	std::string szAlly2Page;			// 75
+	std::string szCmdList;				// 76
+	std::string szCmdEdit;				// 77
+	std::string szClanLogo;				// 78
+	std::string szShopMall;				// 79
+	std::string szLvlGuide;				// 80
+	std::string szCSWNpc;				// 81
+	std::string szKCSWPetition;			// 82
+	std::string szCSWAlly;				// 83
+	std::string szCSWSchedule;			// 84
+	std::string szExitMenu;				// 85
+	std::string szResurrect;			// 86
+	std::string szNameChange;			// 87
+	std::string szNameEditBox;			// 88
+	std::string szNameCheck;			// 89
+	std::string szCSWAdmin;				// 90
+	std::string szCSWTax;				// 91
+	std::string szCSWCapeList;			// 92
+	std::string szKnightCapeShop;		// 93
+	std::string szCSWTaxCollection;		// 94
+	std::string szCSWTaxRate;			// 95
+	std::string szCSWTaxRateMsg;		// 96
+	std::string szCatapult;				// 97
+	std::string szDisguiseRing;			// 98
+	std::string szMsgBoxOk;				// 99
+	std::string szMsgBoxOkCancel;		// 100
+	std::string szOpenChat;				// 101
+	std::string szCloseChat;			// 102
+	std::string szChrClanLogo;			// 103
+	std::string szWarning;				// 104
+	std::string szConvo;				// 105
+	std::string szBlog;					// 106
+	std::string szInnPass;				// 107
+	std::string szNoviceTips;			// 108
+	std::string szWebpage;				// 109
+	std::string szPartyMsgBox;			// 110
+	std::string szClanLogo2;			// 111
+	std::string szRentalNpc;			// 112
+	std::string szRentalTransaction;	// 113
+	std::string szRentalEntry;			// 114
+	std::string szRentalItem;			// 115
+	std::string szRentalMsg;			// 116
+	std::string szRentalCnt;			// 117
+	std::string szNetDIO;				// 118
+	std::string szLoginIntro;			// 119
+	std::string szSubLoginIntro;		// 120
+	std::string szCharSelect;			// 121
+	std::string szCharCreate;			// 122
+	std::string szOtherState;			// 123
+	std::string szPPCardBegin;			// 124
+	std::string szPPCardList;			// 125
+	std::string szPPCardReg;			// 126
+	std::string szPPCardMsg;			// 127
+	std::string szPPCardBuyList;		// 128
+	std::string szPPCardMyInfo;			// 129
+	std::string szNationSelectNew;		// 130
+	std::string szUSALogo;				// 131
 #if __VERSION > 1264  
-	std::string szMonster;				// 131
-	std::string szNationTaxNPC;			// 132
-	std::string szNationTaxRate;		// 133
-	std::string szKingMsgBoxOk;			// 134
-	std::string szKingMsgBoxOkCancel;	// 135
-	std::string szKingElectionBoard;	// 136
-	std::string szKingElectionList;		// 137
-	std::string szKingElectionMain;		// 138
-	std::string szKingNominate;			// 139
-	std::string szKingRegister;			// 140
-	std::string szUpgradeRing;			// 141
-	std::string szUpgradeSelect;		// 142
-	std::string szTradeMsg;				// 143
-	std::string szShowIcon;				// 144
+	std::string szMonster;				// 132
+	std::string szNationTaxNPC;			// 133
+	std::string szNationTaxRate;		// 134
+	std::string szKingMsgBoxOk;			// 135
+	std::string szKingMsgBoxOkCancel;	// 136
+	std::string szKingElectionBoard;	// 137
+	std::string szKingElectionList;		// 138
+	std::string szKingElectionMain;		// 139
+	std::string szKingNominate;			// 140
+	std::string szKingRegister;			// 141
+	std::string szUpgradeRing;			// 142
+	std::string szUpgradeSelect;		// 143
+	std::string szTradeMsg;				// 144
+	std::string szShowIcon;				// 145
 #endif
 } TABLE_UI_RESRC;
 
-typedef struct __TABLE_ITEM_BASIC // 장착 아이템에 관한 리소스 레코드...
+typedef struct __TABLE_ITEM_BASIC		// Resource record related to equipped items...
 {
-	uint32_t		dwID;				// 00 코드화된 아이템번호 d - // 00 - Item 종류, 00 - Item 장착 위치(장착위치로 Plug 인지 Part 인지 판단이 가능하다.) - 0000 - ItemIndex
-	uint8_t 		byExtIndex;			// 01 확장 인덱스
-	std::string	szName;				// 02 이름	
-	std::string	szRemark;			// 03 아이템 설명	
+	uint32_t		dwID;				// 01 Encoded item number d -  // 00 - Item type, 00 - Item equip position (can determine whether it's Plug or Part based on equip position).) - 0000 - ItemIndex
+	uint8_t 		byExtIndex;			// 02 Extended index
+	std::string	szName;					// 03 Name	
+	std::string	szRemark;				// 04 Item Description
 
-	uint32_t   dwIDK0;
-	uint8_t    byIDK1;
+	uint32_t   dwIDK0;					// 05
+	uint8_t    byIDK1;					// 06
 
-	uint32_t   dwIDResrc;			// 04 코드화된 아이템 리소스	d
-	uint32_t   dwIDIcon;			// 05 코드화된 아이템 아이콘 리소스	d
-	uint32_t   dwSoundID0;			// 06 Sound ID - 0 이면 사운드 없다~..
-	uint32_t   dwSoundID1;			// 07 Sound ID - 0 이면 사운드 없다~..
+	uint32_t   dwIDResrc;				// 07 resource id
+	uint32_t   dwIDIcon;				// 08 icon id
+	uint32_t   dwSoundID0;				// 09 Sound ID - 0 There is no sound for this~
+	uint32_t   dwSoundID1;				// 10 Sound ID - 0 There is no sound for this~
 
-	uint8_t	byClass;			// 08 아이템 형태	b enum e_ItemClass 참조....
-	uint8_t	byIsRobeType;		// 09 위아래가 통째로 된 로브타입의 아이템.....
-	uint8_t	byAttachPoint;		// 10 장착 위치	b
-	uint8_t	byNeedRace;			// 11 종족	b
-	uint8_t	byNeedClass;		// 12 직업	b
+	uint8_t	byClass;					// 11 Item type — see enum e_ItemClass for reference...
+	uint8_t	byIsRobeType;				// 12 A robe-type item with the top and bottom connected as a whole.....
+	uint8_t	byAttachPoint;				// 13 Equip position
+	uint8_t	byNeedRace;					// 14 Race
+	uint8_t	byNeedClass;				// 15 Class
 
-	int16_t	siDamage;			// 13 무기타격	b
-	int16_t	siAttackInterval;	// 14 공격 시간 100 은 1 초
-	int16_t	siAttackRange;		// 15 유효 거리	.1 meter 단위
-	int16_t	siWeight;			// 16 무게 .1 중량단위
-	int16_t	siMaxDurability;	// 17 내구력
-	int		iPrice;				// 18 매수가
-	int		iPriceSale;			// 19 매도가
-	int16_t	siDefense;			// 20 방어력
-	uint8_t	byContable;			// 21 숫자가 있는 아이템인가??
+	int16_t	siDamage;					// 16 Weapon attack
+	int16_t	siAttackInterval;			// 17 Attack time 100 equals 1 second
+	int16_t	siAttackRange;				// 18 Effective range (in 0.1 meter units)
+	int16_t	siWeight;					// 19 Weight (in 0.1 weight units)
+	int16_t	siMaxDurability;			// 20 Durability
+	int		iPrice;						// 21 price
+	int		iPriceSale;					// 22 selling price
+	int16_t	siDefense;					// 23 Defense
+	uint8_t	byContable;					// 24 countable ?
 
-	uint32_t	dwEffectID1;		// 22 마법 효과 ID1
-	uint32_t	dwEffectID2;		// 23 마법 효과 ID1
+	uint32_t	dwEffectID1;			// 25 Magic effect ID1
+	uint32_t	dwEffectID2;			// 26 Magic effect ID2
 
-	char	cNeedLevel;		// 24 요구 레벨		플레이어의 iLeve.. - 음수값이 있을수도 있다..
+	char	cNeedLevel;					// 27 Required level — player’s iLevel; can also be a negative value.
 
-	char    cIDK2;
+	char    cIDK2;						// 28
 
-	uint8_t	byNeedRank;			// 25 요구 작위		플레이어의 iRank..
-	uint8_t	byNeedTitle;		// 26 요구 타이틀 	플레이어의 iTitle..
-	uint8_t	byNeedStrength;		// 27 요구 힘 		플레이어의 iStrength..
-	uint8_t	byNeedStamina;		// 28 요구 정력 	플레이어의 iStamina..
-	uint8_t	byNeedDexterity;	// 29 요구 민첩		플레이어의 iDexterity..
-	uint8_t	byNeedInteli;		// 30 요구 지능		플레이어의 iIntelligence..
-	uint8_t	byNeedMagicAttack;	// 31 요구 마력		플레이어의 iMagicAttak..
+	uint8_t	byNeedRank;					// 29 Required rank — player’s iRank.
+	uint8_t	byNeedTitle;				// 30 Required title — player’s iTitle.
+	uint8_t	byNeedStrength;				// 31 Required strength — player’s iStrength
+	uint8_t	byNeedStamina;				// 32 Required stamina — player’s iStamina
+	uint8_t	byNeedDexterity;			// 33 Required dexterity — player’s iDexterity
+	uint8_t	byNeedInteli;				// 34 Required intelligence — player’s iIntelligence.
+	uint8_t	byNeedMagicAttack;			// 35 Required magic power — player’s iMagicAttack.
 
-	uint8_t	bySellGroup;		// 32 상인이 파는데에 대한 그룹..
-
-	uint8_t    byIDK3;
+	uint8_t	bySellGroup;				// 36 Group related to where the merchant sells it.
+		
+	uint8_t    byIDK3;					// 37
 } TABLE_ITEM_BASIC;
 
 const int MAX_ITEM_EXTENSION = 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
 const int LIMIT_FX_DAMAGE = 64;
 const int ITEM_LIMITED_EXHAUST = 17;
 
-typedef struct __TABLE_ITEM_EXT // 장착 아이템에 관한 리소스 레코드...
+typedef struct __TABLE_ITEM_EXT		// Resource record related to the equipped item
 {
-	uint32_t		dwID;				// 00 코드화된 아이템번호 - // 00 - Item 종류, 00 - Item 장착 위치(장착위치로 Plug 인지 Part 인지 판단이 가능하다.) - 0000 - ItemIndex
-	std::string	szHeader;			// 01 접두사
+	uint32_t		dwID;			// 01 Coded item number - // 00 - Item type, 00 - Item equip position (used to determine whether it is a plug or part). - 0000 - ItemIndex
+	std::string	szHeader;			// 02 Prefix
 
-	uint32_t dwBaseID;
+	uint32_t dwBaseID;				// 03
 
-	std::string	szRemark;			// 02 아이템 설명	
+	std::string	szRemark;			// 04 Item description
 
-	uint32_t dwIDK0; // TODO: will need to implement this one
-	uint32_t dwIDResrc;
-	uint32_t dwIDIcon;
+	uint32_t dwIDK0;				// 05 TODO: will need to implement this one
+	uint32_t dwIDResrc;				// 06
+	uint32_t dwIDIcon;				// 07
 
-	uint8_t		byMagicOrRare;		// 03 매직 혹은 레어 아이템인지...
+	uint8_t		byMagicOrRare;		// Whether it is a magic or rare item...
 
-	int16_t	siDamage;				// 04 무기타격
-	int16_t	siAttackIntervalPercentage;		// 05 공격 시간 비율
-	int16_t	siHitRate;				// 06 타격률	- 퍼센트
-	int16_t	siEvationRate;			// 07 회피율	-   "
+	int16_t	siDamage;				// 09 Weapon damage
+	int16_t	siAttackIntervalPercentage;		// 10 Attack speed ratio
+	int16_t	siHitRate;				// 11 Hit rate — percentage
+	int16_t	siEvationRate;			// 12 Evasion rate — percentage
 
-	int16_t	siMaxDurability;		// 08 내구력
-	int16_t	siPriceMultiply;		// 09 매수가 배율
-	int16_t	siDefense;				// 10 방어력
+	int16_t	siMaxDurability;		// 13 Durability
+	int16_t	siPriceMultiply;		// 14 Quantity multiplier
+	int16_t	siDefense;				// 15 Defense
 	
-	int16_t	siDefenseRateDagger;	// 11 단검방어	- 퍼센트
-	int16_t	siDefenseRateSword;		// 12 검방어	- 퍼센트
-	int16_t	siDefenseRateBlow;		// 13 타격방어	- 퍼센트
-	int16_t	siDefenseRateAxe;		// 14 도끼방어	- 퍼센트
-	int16_t	siDefenseRateSpear;		// 15 창방어	- 퍼센트
-	int16_t	siDefenseRateArrow;		// 16 화살방어	- 퍼센트
+	int16_t	siDefenseRateDagger;	// 16 Dagger defense — percentage
+	int16_t	siDefenseRateSword;		// 17 sword defense	- percentage
+	int16_t	siDefenseRateBlow;		// 18 strike(club?) def	- percentage
+	int16_t	siDefenseRateAxe;		// 19 axe defense	- percentage
+	int16_t	siDefenseRateSpear;		// 20 spear defense	- percentage
+	int16_t	siDefenseRateArrow;		// 21 arrow defense	- percentage
 	
-	uint8_t	byDamageFire;			// 17 추가데미지 - 불
-	uint8_t	byDamageIce;			// 18 추가데미지 - 얼음
-	uint8_t	byDamageThuner;			// 19 추가데미지 - 전격
-	uint8_t	byDamagePoison;			// 20 추가데미지 - 독
+	uint8_t	byDamageFire;			// 22 Additional damage — fire
+	uint8_t	byDamageIce;			// 23 Additional damage - ice
+	uint8_t	byDamageThuner;			// 24 Additional damage - thunder
+	uint8_t	byDamagePoison;			// 25 Additional damage - poison
 
-	uint8_t	byStillHP;				// 21 HP 흡수
-	uint8_t	byDamageMP;				// 22 MP Damage
-	uint8_t	byStillMP;				// 23 MP 흡수
-	uint8_t	byReturnPhysicalDamage;	// 24 물리타격 반사
+	uint8_t	byStillHP;				// 26 HP recovery
+	uint8_t	byDamageMP;				// 27 MP Damage
+	uint8_t	byStillMP;				// 28 MP recovery
+	uint8_t	byReturnPhysicalDamage;	// 29 Physical damage reflection
 
-	uint8_t	bySoulBind;				// 25소울 바인드 - 일대일시 아이템을 떨구는 정도 - 퍼센트 - 현재는 안쓴다.
+	uint8_t	bySoulBind;				// 30 Soul bind — the percentage chance of dropping the item upon death in one-on-one combat; currently not in use.
 	
-	int16_t	siBonusStr;				// 26 힘 보너스
-	int16_t	siBonusSta;				// 27 체력 보너스
-	int16_t	siBonusDex;				// 28 민첩성 보너스
-	int16_t	siBonusInt;				// 29 지능 보너스
-	int16_t	siBonusMagicAttak;		// 30 마력 보너스
-	int16_t	siBonusHP;				// 31 HP 보너스
-	int16_t	siBonusMSP;				// 32 MSP 보너스
+	int16_t	siBonusStr;				// 31 bonus str
+	int16_t	siBonusSta;				// 32 bonus stamina
+	int16_t	siBonusDex;				// 33 bonux dex
+	int16_t	siBonusInt;				// 34 bonus int
+	int16_t	siBonusMagicAttak;		// 35 bonus mp
+	int16_t	siBonusHP;				// 36 HP bonus
+	int16_t	siBonusMSP;				// 37 MSP bonus
 
-	int16_t	siRegistFire;			// 33 불 저항
-	int16_t	siRegistIce;			// 34 냉기 저항
-	int16_t	siRegistElec;			// 35 전기 저항
-	int16_t	siRegistMagic;			// 36 마법 저항
-	int16_t	siRegistPoison;			// 37 독 저항
-	int16_t	siRegistCurse;			// 38 저주 저항
+	int16_t	siRegistFire;			// 38 fire resistence
+	int16_t	siRegistIce;			// 39 ice resistance
+	int16_t	siRegistElec;			// 40 Electric resistance
+	int16_t	siRegistMagic;			// 41 magic resistance
+	int16_t	siRegistPoison;			// 42 poison resistance
+	int16_t	siRegistCurse;			// 43 curse resistance
 	
-	uint32_t	dwEffectID1;		// 39 마법 효과 ID1
-	uint32_t	dwEffectID2;		// 40 마법 효과 ID2
+	uint32_t	dwEffectID1;		// 44 magic effect ID1
+	uint32_t	dwEffectID2;		// 45 magic effect ID2
 
-	int16_t	siNeedLevel;			// 41 요구 레벨		플레이어의 iLeve..
-	int16_t	siNeedRank;				// 42 요구 작위		플레이어의 iRank..
-	int16_t	siNeedTitle;			// 43 요구 타이틀 	플레이어의 iTitle..
-	int16_t	siNeedStrength;			// 44 요구 힘 		플레이어의 iStrength..
-	int16_t	siNeedStamina;			// 45 요구 정력 	플레이어의 iStamina..
-	int16_t	siNeedDexterity;		// 46 요구 민첩		플레이어의 iDexterity..
-	int16_t	siNeedInteli;			// 47 요구 지능		플레이어의 iIntelligence..
-	int16_t	siNeedMagicAttack;		// 48 요구 마력		플레이어의 iMagicAttak..
+	int16_t	siNeedLevel;			// 46 ilevel needed
+	int16_t	siNeedRank;				// 47 iRank needed
+	int16_t	siNeedTitle;			// 48 title needed
+	int16_t	siNeedStrength;			// 49 strength needed
+	int16_t	siNeedStamina;			// 50 stamina needed
+	int16_t	siNeedDexterity;		// 51 dexterity needed
+	int16_t	siNeedInteli;			// 52 intelligence needed
+	int16_t	siNeedMagicAttack;		// 53 mp needed
 } TABLE_ITEM_EXT;
 
 const int MAX_NPC_SHOP_ITEM = 30;
@@ -890,21 +888,21 @@ enum e_ItemSlot {	ITEM_SLOT_EAR_RIGHT = 0,	ITEM_SLOT_HEAD	= 1,	ITEM_SLOT_EAR_LEF
 					ITEM_SLOT_COUNT = 14, ITEM_SLOT_UNKNOWN = 0xffffffff };
 
 
-typedef struct __TABLE_PLAYER_LOOKS // NPC, Mob 모습 관한 리소스 레코드...
+typedef struct __TABLE_PLAYER_LOOKS // Resource record related to NPC and Mob appearance...
 {
-	uint32_t		dwID; // NPC 고유 ID
-	std::string	szName; // 캐릭터 이름
-	std::string	szJointFN; // 관절 파일 이름
-	std::string	szAniFN; // 에니메이션 파일 이름
-	//std::string	szPartFNs[7]; // 각 Character Part - 상체, 하체, 머리, 팔, 다리, 머리카락, 망토
-	std::string	szPartFNs[13]; // temp for 1264 TBLs
+	uint32_t		dwID;		// NPC unique ID
+	std::string	szName;			// npc name
+	std::string	szJointFN;		// Joint file name
+	std::string	szAniFN;		// Animation file name
+	//std::string	szPartFNs[7]; // Each character part — upper body, lower body, head, arms, legs, hair, cape
+	std::string	szPartFNs[13];	// temp for 1264 TBLs
 
 	int  iIdk1;
 
-	int			iJointRH;			// 오른손 끝 관절번호
-	int			iJointLH;			// 왼손 끝 관절번호
-	int			iJointLH2;			// 왼손 팔뚝 관절번호
-	int			iJointCloak;		// 망토 붙을 관절 번호
+	int			iJointRH;			// Right hand end joint number
+	int			iJointLH;			// Left hand end joint number
+	int			iJointLH2;			// Left forearm joint number
+	int			iJointCloak;		// Cape attachment joint number
 	
 	int			iSndID_Move;
 	int			iSndID_Attack0;
@@ -927,99 +925,100 @@ typedef struct __TABLE_PLAYER_LOOKS // NPC, Mob 모습 관한 리소스 레코�
 
 typedef struct __TABLE_EXCHANGE_QUEST
 {
-	uint32_t		dwID;					// 퀘스트 번호..	0
-	uint32_t		dwNpcNum;				// npc 번호..	1
-	std::string szDesc;					// 설명..		2
-	int			iCondition0;			// 조건 1..		3
-	int			iCondition1;			// 조건 2..		4
-	int			iCondition2;			// 조건 3..		5
-	int			iCondition3;			// 조건 4..		6
-	int			iNeedGold;				// 요구 노아..	7	
-	uint8_t		bNeedLevel;				// 요구 레벨	8
-	uint8_t		bNeedClass;				// 요구 직업	9
-	uint8_t		bNeedRank;				// 요구 작위	10	
-	uint8_t		bNeedExtra1;			// 요구 여분1	11	
-	uint8_t		bNeedExtra2;			// 요구 여분2	12
-	uint8_t		bCreatePercentage;		// 생성 확률	13
-	int			iArkTuarek;				// 아크 투아렉..	14	
-	int			iTuarek;				// 투아렉..			15
-	int			iRinkleTuarek;			// 링클 투아렉..	16
-	int			iBabarian;				// 바바리안..		17
-	int			iMan;					// 남자..			18
-	int			iWoman;					// 여자..			19
+	uint32_t		dwID;				// 01 Quest Number
+	uint32_t		dwNpcNum;			// 02 NPC Number
+	std::string szDesc;					// 03 Description
+	int			iCondition0;			// 04 Condition 1..
+	int			iCondition1;			// 05 Condition 2..
+	int			iCondition2;			// 06 Condition 3..
+	int			iCondition3;			// 07 Condition 4..
+	int			iNeedGold;				// 08 Required Noah	
+	uint8_t		bNeedLevel;				// 09 Required Level
+	uint8_t		bNeedClass;				// 10 Required Class
+	uint8_t		bNeedRank;				// 11 Required Rank	
+	uint8_t		bNeedExtra1;			// 12 Required Extra 1	
+	uint8_t		bNeedExtra2;			// 13 Required Extra 2
+	uint8_t		bCreatePercentage;		// 14 Generation Probability
+	int			iArkTuarek;				// 15 Ark Tuarek
+	int			iTuarek;				// 16 Tuarek
+	int			iRinkleTuarek;			// 17 Wrinkle Tuarek
+	int			iBabarian;				// 18 Barbarian
+	int			iMan;					// 19 Man
+	int			iWoman;					// 20 Woman
 } TABLE_EXCHANGE_QUEST;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//마법테이블...
+//Magic Table
 
 typedef struct __TABLE_UPC_SKILL
 {
-	uint32_t		dwID;				// SKILL 고유 ID
-	std::string	szEngName;			// 스킬 영어 이름
-	std::string	szName;				// 스킬 한글 이름
-	std::string	szDesc;				// 스킬 이름
-	int			iSelfAnimID1;		// 시전자 동작시작
-	int			iSelfAnimID2;		// 시전자 동작끝
+	uint32_t	dwID;				// Unique SKILL ID
+	std::string	szEngName;			// Skill English name
+	std::string	szName;				// Skill Korean name
+	std::string	szDesc;				// Skill description
+	int			iSelfAnimID1;		// Caster animation start
+	int			iSelfAnimID2;		// Caster animation end
 
-	int			idwTargetAnimID;	// 타겟 동작
-	int			iSelfFX1;			// 시전자 효과 1
-	int			iSelfPart1;			// 시전자 효과 일어나는 위치 1
-	int			iSelfFX2;			// 시전자 효과 2
-	int			iSelfPart2;			// 시전자 효과 일어나는 위치 2	
-	int			iFlyingFX;			// 비행 효과
-	int			iTargetFX;			// 타겟 효과
+	int			idwTargetAnimID;	// Target animation
+	int			iSelfFX1;			// Caster effect 1
+	int			iSelfPart1;			// Caster effect position 1
+	int			iSelfFX2;			// Caster effect 2
+	int			iSelfPart2;			// Caster effect position 2	
+	int			iFlyingFX;			// Flying effect
+	int			iTargetFX;			// Target effect
 
-	int			iTargetPart;		// 효과가 일어날 위치.
-	int			iTarget;			// 타겟	
-	int			iNeedLevel;			// 요구 레벨
-	int			iNeedSkill;			// 요구 스킬
-	int			iExhaustMSP;		// 소모 MSP
+	int			iTargetPart;		// Effect position
+	int			iTarget;			// Target	
+	int			iNeedLevel;			// Required level
+	int			iNeedSkill;			// Required skill
+	int			iExhaustMSP;		// MSP consumption
 
-	int			iExhaustHP;			// 소모 HP
-	uint32_t		dwNeedItem;			// 요구 아이템 e_ItemClass 참조.. 10을 나눈값이다..
-	uint32_t		dwExhaustItem;
-	int			iCastTime;			// 캐스팅 시간
-	int			iReCastTime;		// 다시 캐스팅할때까지 걸리는 시간.
-	
+	int			iExhaustHP;			// HP consumption
+	uint32_t	dwNeedItem;			// Required item (refer to e_ItemClass.. value divided by 10)
+	uint32_t	dwExhaustItem;		// Consumed item
+	int			iCastTime;			// Casting time
+	int			iReCastTime;		// Time until recasting
+
 	float fIDK0; // TODO: will need to implement this...?
-	float fIDK1; // 1298
+	float fIDK1; // 1298 (unknown purpose)
 
-	int			iPercentSuccess;	// 성공률
-	uint32_t		dw1stTableType;		// 첫번째 타입.
-	uint32_t		dw2ndTableType;		// 두번째 타입.
-	int			iValidDist;			// 유효거리
+	int			iPercentSuccess;	// Success rate
+	uint32_t	dw1stTableType;		// First type
+	uint32_t	dw2ndTableType;		// Second type
+	int			iValidDist;			// Valid distance
 
-	int	iIDK2; // 1298
-	
+	int			iIDK2;				// 1298 (unknown purpose)
+
 } TABLE_UPC_ATTACK_B;
+
 
 typedef struct __TABLE_UPC_SKILL_TYPE_1
 {
-	uint32_t	dwID;			// SKILL 고유 ID
-	int			iSuccessType;	// 성공타입.
-	int			iSuccessRatio;	// 성공률
-	int			iPower;			// 공격력
-	int			iDelay;			// 딜레이
-	int			iComboType;		// 콤보타입
-	int			iNumCombo;		// 콤보회수
-	int			iComboDamage;	// 콤보대미지			
-	int			iValidAngle;	// 공격반경
+	uint32_t	dwID;			// SKILL unique ID
+	int			iSuccessType;	// Success type
+	int			iSuccessRatio;	// Success ratio
+	int			iPower;			// Attack power
+	int			iDelay;			// Delay
+	int			iComboType;		// Combo type
+	int			iNumCombo;		// Number of combos
+	int			iComboDamage;	// Combo damage			
+	int			iValidAngle;	// Attack radius
 	int			iAct[3];
 } TABLE_UPC_SKILL_TYPE_1;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_2
 {
-	uint32_t	dwID;			// SKILL 고유 ID
-	int			iSuccessType;	// 성공타입.
-	int			iPower;			// 공격력
+	uint32_t	dwID;			// SKILL unique ID
+	int			iSuccessType;	// Success type
+	int			iPower;			// Attack power
 	int			iAddDamage;
-	int			iAddDist;		// 거리증가
-	int			iNumArrow;		// 화살요구수
+	int			iAddDist;		// Distance increase
+	int			iNumArrow;		// Number of arrows required
 } TABLE_UPC_SKILL_TYPE_2;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_3
 {
-	uint32_t	dwID;			// SKILL 고유 ID
+	uint32_t	dwID;			//  SKILL Unique ID
 	int			iRadius;
 	int			iDDType;
 	int			iStartDamage;
@@ -1030,135 +1029,135 @@ typedef struct __TABLE_UPC_SKILL_TYPE_3
 
 typedef struct __TABLE_UPC_SKILL_TYPE_4
 {
-	uint32_t	dwID;			// 일련번호
-	
-	int			iBuffType;		// 버프타입
+	uint32_t	dwID;			// Serial number
+
+	int			iBuffType;		// Buff type
 	int			iRadius;
 	int			iDuration;
-	int			iAttackSpeed;	// 공격속도
-	int			iMoveSpeed;		// 이동속도
-	int			iAC;			// 방어력
+	int			iAttackSpeed;	// Attack speed
+	int			iMoveSpeed;		// Movement speed
+	int			iAC;			// Defense
 	int			iACPct;
-	int			iAttack;		// 공격력
+	int			iAttack;		// Attack power
 	int			iMagicAttack;
-	int			iMaxHP;			// MAXHP
+	int			iMaxHP;			// Max HP
 	int			iMaxHPPct;
 	int			iMaxMP;
 	int			iMaxMPPct;
-	int			iStr;			// 힘
-	int			iSta;			// 체력
-	int			iDex;			// 민첩
-	int			iInt;			// 지능
-	int			iMAP;			// 마력
-	int			iFireResist;	// 불저항
-	int			iColdResist;	// 냉기저항
-	int			iLightningResist;// 전기저항
-	int			iMagicResist;	// 마법저항
-	int			iDeseaseResist;	// 저주저항
-	int			iPoisonResist;	// 독저항
+	int			iStr;			// Strength
+	int			iSta;			// Stamina
+	int			iDex;			// Dexterity
+	int			iInt;			// Intelligence
+	int			iMAP;			// Magic power
+	int			iFireResist;	// Fire resistance
+	int			iColdResist;	// Cold resistance
+	int			iLightningResist;// Lightning resistance
+	int			iMagicResist;	// Magic resistance
+	int			iDeseaseResist;	// Curse resistance
+	int			iPoisonResist;	// Poison resistance
 
 	int			iExpPct;
 } TABLE_UPC_SKILL_TYPE_4;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_5
 {
-	uint32_t		dwID;			// 일련번호
-	uint32_t		dwTarget;		// 타겟
-	int			iSuccessRatio;	// 성공률
-	int			iValidDist;		// 유효거리
-	int			iRadius;		// 반경
-	float		fCastTime;		// 캐스팅타임
-	float		fRecastTime;	// 리캐스팅타임
-	int			iDurationTime;	// 지속시간
-	uint32_t		dwExhaustItem;	// 소모아이템
-	uint32_t		dwFX;			// 마법효과
+	uint32_t		dwID;			// Serial number
+	uint32_t		dwTarget;		// Target
+	int			iSuccessRatio;		// Success ratio
+	int			iValidDist;			// Valid distance
+	int			iRadius;			// Radius
+	float		fCastTime;			// Casting time
+	float		fRecastTime;		// Recasting time
+	int			iDurationTime;		// Duration time
+	uint32_t		dwExhaustItem;	// Consumed item
+	uint32_t		dwFX;			// Magic effect
 } TABLE_UPC_SKILL_TYPE_5;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_6
 {
-	uint32_t		dwID;			// 일련번호
-	uint32_t		dwTarget;		// 타겟
-	int			iSuccessRatio;	// 성공률
-	int			iValidDist;		// 유효거리
-	int			iRadius;		// 반경
-	float		fCastTime;		// 캐스팅타임
-	float		fRecastTime;	// 리캐스팅타임
-	int			iDurationTime;	// 지속시간
-	uint32_t		dwExhaustItem;	// 소모아이템
-	uint32_t		dwFX;			// 마법효과
-	uint32_t		dwTranform;		// 변신
+	uint32_t		dwID;			// Serial number
+	uint32_t		dwTarget;		// Target
+	int			iSuccessRatio;		// Success ratio
+	int			iValidDist;			// Valid distance
+	int			iRadius;			// Radius
+	float		fCastTime;			// Casting time
+	float		fRecastTime;		// Recasting time
+	int			iDurationTime;		// Duration time
+	uint32_t		dwExhaustItem;	// Consumed item
+	uint32_t		dwFX;			// Magic effect
+	uint32_t		dwTranform;		// Transformation
 } TABLE_UPC_SKILL_TYPE_6;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_7
 {
-	uint32_t		dwID;			// 일련번호
-	uint32_t		dwTarget;		// 타겟
-	uint32_t		dwValidGroup;	// 유효그룹
-	int			iSuccessRatio;	// 성공률
-	int			iValidDist;		// 유효거리
-	int			iRadius;		// 반경
-	float		fCastTime;		// 캐스팅타임
-	float		fRecastTime;	// 리캐스팅타임
-	int			iDurationTime;	// 지속시간
-	uint32_t		dwExhaustItem;	// 소모아이템
-	uint32_t		dwFX;			// 마법효과	
+	uint32_t		dwID;			// Serial number
+	uint32_t		dwTarget;		// Target
+	uint32_t		dwValidGroup;	// Valid group
+	int			iSuccessRatio;		// Success ratio
+	int			iValidDist;			// Valid distance
+	int			iRadius;			// Radius
+	float		fCastTime;			// Casting time
+	float		fRecastTime;		// Recasting time
+	int			iDurationTime;		// Duration time
+	uint32_t		dwExhaustItem;	// Consumed item
+	uint32_t		dwFX;			// Magic effect	
 } TABLE_UPC_SKILL_TYPE_7;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_8
 {
-	uint32_t		dwID;			// 일련번호
-	uint32_t		dwTarget;		// 타겟
-	int			iRadius;		// 반경
-	uint32_t		dwWarpType;		// 순간이동타임
-	float		fRefillEXP;		// 경험치회복
-	uint32_t		dwZone1;		// 존넘버1
-	uint32_t		dwZone2;		// 존넘버2
-	uint32_t		dwZone3;		// 존넘버3
-	uint32_t		dwZone4;		// 존넘버4
-	uint32_t		dwZone5;		// 존넘버5
+	uint32_t		dwID;			// Serial number
+	uint32_t		dwTarget;		// Target
+	int			iRadius;			// Radius
+	uint32_t		dwWarpType;		// Teleport type
+	float		fRefillEXP;			// Experience recovery
+	uint32_t		dwZone1;		// Zone number 1
+	uint32_t		dwZone2;		// Zone number 2
+	uint32_t		dwZone3;		// Zone number 3
+	uint32_t		dwZone4;		// Zone number 4
+	uint32_t		dwZone5;		// Zone number 5
 } TABLE_UPC_SKILL_TYPE_8;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_9
 {
-	uint32_t		dwID;			// 일련번호
-	uint32_t		dwTarget;		// 타겟
-	int			iSuccessRatio;	// 성공률
-	int			iValidDist;		// 유효거리
-	int			iRadius;		// 반경
-	float		fCastTime;		// 캐스팅타임
-	float		fRecastTime;	// 리캐스팅타임
-	int			iDurationTime;	// 지속시간
-	uint32_t		dwExhaustItem;	// 소모아이템
-	uint32_t		dwAttr;			// 속성
-	int			iDamage;		// 대미지	
+	uint32_t		dwID;			// Serial number
+	uint32_t		dwTarget;		// Target
+	int			iSuccessRatio;		// Success ratio
+	int			iValidDist;			// Valid distance
+	int			iRadius;			// Radius
+	float		fCastTime;			// Casting time
+	float		fRecastTime;		// Recasting time
+	int			iDurationTime;		// Duration time
+	uint32_t		dwExhaustItem;	// Consumed item
+	uint32_t		dwAttr;			// Attribute
+	int			iDamage;			// Damage	
 } TABLE_UPC_SKILL_TYPE_9;
 
 typedef struct __TABLE_UPC_SKILL_TYPE_10
 {
-	uint32_t		dwID;			// 일련번호
-	uint32_t		dwTarget;		// 타겟
-	int			iSuccessRatio;	// 성공률
-	int			iValidDist;		// 유효거리
-	int			iRadius;		// 반경
-	float		fCastTime;		// 캐스팅타임
-	float		fRecastTime;	// 리캐스팅타임
-	uint32_t		dwExhaustItem;	// 소모아이템
-	uint32_t		dwRemoveAttr;	// 제거속성	
+	uint32_t		dwID;			// Serial number
+	uint32_t		dwTarget;		// Target
+	int			iSuccessRatio;		// Success ratio
+	int			iValidDist;			// Valid distance
+	int			iRadius;			// Radius
+	float		fCastTime;			// Casting time
+	float		fRecastTime;		// Recasting time
+	uint32_t		dwExhaustItem;	// Consumed item
+	uint32_t		dwRemoveAttr;	// Removed attribute	
 } TABLE_UPC_SKILL_TYPE_10;
 
-//마법테이블...
+//Magic Table
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct __TABLE_QUEST_MENU
 {
-	uint32_t		dwID;		// 일련번호
-	std::string szMenu;		// 선택 메뉴
+	uint32_t		dwID;	// id
+	std::string szMenu;		// Selection menu
 } TABLE_QUEST_MENU;
 
 typedef struct __TABLE_QUEST_TALK
 {
-	uint32_t		dwID;		// 일련번호
-	std::string szTalk;		// 퀘스트 지문
+	uint32_t		dwID;		// id
+	std::string szTalk;			// Quest talk
 } TABLE_QUEST_TALK;
 
 typedef struct __TABLE_QUEST_CONTENT
@@ -1220,52 +1219,52 @@ const float SOUND_RANGE_TO_RELEASE = 20.0f;
 const float STUN_TIME = 3.0f;
 
 enum e_Behavior {	BEHAVIOR_NOTHING = 0,
-					BEHAVIOR_EXIT,			// 프로그램 끝내기..
-					BEHAVIOR_RESTART_GAME,	// 게임 다시 시작하기(캐릭터 선택)
-					BEHAVIOR_REGENERATION,	// 부활
-					BEHAVIOR_CANCEL,		// 취소.. 현재는 아이템 거래 신청시 유저가 취소를 눌렀을때..
+					BEHAVIOR_EXIT,			// Exit program..
+					BEHAVIOR_RESTART_GAME,	// Restart game (character selection)
+					BEHAVIOR_REGENERATION,	// Resurrection
+					BEHAVIOR_CANCEL,		// Cancel... Currently when the user presses cancel during an item trade request..
 
-					BEHAVIOR_PARTY_PERMIT,	// 상대방이 파티가입 요청시 들어가는것을 허락.
-					BEHAVIOR_PARTY_DISBAND, // 파티 탈퇴..
-					BEHAVIOR_FORCE_PERMIT,	// 상대방이 부대가입 요청시 들어가는것을 허락.
-					BEHAVIOR_FORCE_DISBAND, // 부대 탈퇴..
+					BEHAVIOR_PARTY_PERMIT,	// Allow joining when the other party sends a party invitation request.
+					BEHAVIOR_PARTY_DISBAND, // Leave party
+					BEHAVIOR_FORCE_PERMIT,	// Allow joining when the other party sends a squad join request.
+					BEHAVIOR_FORCE_DISBAND, // Leave squad
 
-					BEHAVIOR_REQUEST_BINDPOINT, // 바인딩 포인트로 ... 
+					BEHAVIOR_REQUEST_BINDPOINT, // To binding point 
 
 					BEHAVIOR_DELETE_CHR,
 
 					BEHAVIOR_KNIGHTS_CREATE,
-					BEHAVIOR_KNIGHTS_DESTROY, // 기사단 해체..
-					BEHAVIOR_KNIGHTS_WITHDRAW, // 기사단 해체..
+					BEHAVIOR_KNIGHTS_DESTROY, // Disband the clan
+					BEHAVIOR_KNIGHTS_WITHDRAW, // Disband the order
 
-					BEHAVIOR_PERSONAL_TRADE_FMT_WAIT,	// 개인거래.. 내가 신청한 경우..
-					BEHAVIOR_PERSONAL_TRADE_PERMIT,		// 개인거래.. 내가 신청받은 경우..
+					BEHAVIOR_PERSONAL_TRADE_FMT_WAIT,	// Private trade... when I initiated the request..
+					BEHAVIOR_PERSONAL_TRADE_PERMIT,		//Private trade... when I received the request..
 
 					BEHAVIOR_MGAME_LOGIN,
 					
 					BEHAVIOR_CLAN_JOIN,
-					BEHAVIOR_PARTY_BBS_REGISTER,		// 파티 게시판에 등록 
-					BEHAVIOR_PARTY_BBS_REGISTER_CANCEL, // 파티 게시판에 등록 해제
+					BEHAVIOR_PARTY_BBS_REGISTER,		// Register to the party board 
+					BEHAVIOR_PARTY_BBS_REGISTER_CANCEL, // Unregister from the party board
 
-					BEHAVIOR_EXECUTE_OPTION,			// 게임 종료하고 옵션 실행..
+					BEHAVIOR_EXECUTE_OPTION,			// Exit game and open options..
 				
 					BEHAVIOR_UNKNOWN = 0xffffffff
 				};
 
-enum e_SkillMagicTaget	{	SKILLMAGIC_TARGET_SELF = 1,				// 나 자신..
-							SKILLMAGIC_TARGET_FRIEND_WITHME = 2,	// 나를 포함한 우리편(국가) 중 하나 ..
-							SKILLMAGIC_TARGET_FRIEND_ONLY = 3,		// 나를 뺀 우리편 중 하나 
-							SKILLMAGIC_TARGET_PARTY = 4,			// 나를 포함한 우리파티 중 하나..
-							SKILLMAGIC_TARGET_NPC_ONLY = 5,			// NPC중 하나.
-							SKILLMAGIC_TARGET_PARTY_ALL = 6,		// 나를 호함한 우리파티 모두..
-							SKILLMAGIC_TARGET_ENEMY_ONLY = 7,		// 울편을 제외한 모든 적중 하나(NPC포함)
-							SKILLMAGIC_TARGET_ALL = 8,				// 겜상에 존재하는 모든 것중 하나.
+enum e_SkillMagicTaget	{	SKILLMAGIC_TARGET_SELF = 1,				// Myself
+							SKILLMAGIC_TARGET_FRIEND_WITHME = 2,	// One of our allies (including myself/nation)
+							SKILLMAGIC_TARGET_FRIEND_ONLY = 3,		// One of our allies excluding myself 
+							SKILLMAGIC_TARGET_PARTY = 4,			// One of our party members, including myself
+							SKILLMAGIC_TARGET_NPC_ONLY = 5,			// One of the NPCs
+							SKILLMAGIC_TARGET_PARTY_ALL = 6,		// Our entire party, including myself
+							SKILLMAGIC_TARGET_ENEMY_ONLY = 7,		// One of all enemies excluding our side (including NPCs)
+							SKILLMAGIC_TARGET_ALL = 8,				// One of everything that exists in the game
 							
-							SKILLMAGIC_TARGET_AREA_ENEMY = 10,		// 그 지역에 있는 적들...
-							SKILLMAGIC_TARGET_AREA_FRIEND = 11,		// 그 지역에 있는 울편.
-							SKILLMAGIC_TARGET_AREA_ALL = 12,		// 그 지역에 있는 모두들.
-							SKILLMAGIC_TARGET_AREA = 13,			// 나를 중심으로 한 지역
-							SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY = 25,	//죽은 사람중 나를 뺀 우리편 중 하나.
+							SKILLMAGIC_TARGET_AREA_ENEMY = 10,		// Enemies in that area
+							SKILLMAGIC_TARGET_AREA_FRIEND = 11,		// Our allies in that area
+							SKILLMAGIC_TARGET_AREA_ALL = 12,		// Everyone in that area
+							SKILLMAGIC_TARGET_AREA = 13,			// Area centered around me
+							SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY = 25,//One of our deceased allies excluding myself.
 							
 							SKILLMAGIC_TARGET_UNKNOWN = 0xffffffff
 						};
@@ -1318,18 +1317,18 @@ constexpr int	FXID_TARGET_POINTER				= 30001;
 constexpr int	FXID_ZONE_POINTER				= 30002;
 
 //define skillmagic_type4_bufftype
-enum e_SkillMagicType4	{	BUFFTYPE_MAXHP = 1,				//MaxHP변화..
-							BUFFTYPE_AC = 2,				//AC변화..
-							BUFFTYPE_RESIZE = 3,			//캐릭터 크기 조정..
-							BUFFTYPE_ATTACK = 4,			//공격력..
-							BUFFTYPE_ATTACKSPEED = 5,		//공격스피드..
-							BUFFTYPE_SPEED = 6,				//이동속도..
-							BUFFTYPE_ABILITY = 7,			//다섯가지 능력(str, sta, cha, dex int)
-							BUFFTYPE_RESIST = 8,			//다섯가지 저항력..
+enum e_SkillMagicType4	{	BUFFTYPE_MAXHP = 1,				//Max HP change
+							BUFFTYPE_AC = 2,				//AC change
+							BUFFTYPE_RESIZE = 3,			//Character size adjustment
+							BUFFTYPE_ATTACK = 4,			//Attack power
+							BUFFTYPE_ATTACKSPEED = 5,		//Attack speed
+							BUFFTYPE_SPEED = 6,				//Movement speed
+							BUFFTYPE_ABILITY = 7,			//Five abilities(str, sta, cha, dex int)
+							BUFFTYPE_RESIST = 8,			// Five types of resistance
 							BUFFTYPE_HITRATE_AVOIDRATE = 9,	//hitrate n avoidrate
-							BUFFTYPE_TRANS = 10,			//변신, 투명..
-							BUFFTYPE_SLEEP = 11,			//잠재우기..
-							BUFFTYPE_EYE = 12				//시력관련...							
+							BUFFTYPE_TRANS = 10,			// Transformation, Invisibility
+							BUFFTYPE_SLEEP = 11,			// Putting to sleep
+							BUFFTYPE_EYE = 12				// Vision-related							
 };
 
 enum e_SkillMagicType3	{	DDTYPE_TYPE3_DUR_OUR = 100,
@@ -1350,7 +1349,7 @@ enum e_ObjectType	{	OBJECT_TYPE_BINDPOINT,
 //definitions related clan....
 const int	CLAN_LEVEL_LIMIT	= 20;
 const int	CLAN_COST			= 500000;
-const uint32_t KNIGHTS_FONT_COLOR	= 0xffff0000; // 기사단(클랜)이름 폰트 컬러..
+const uint32_t KNIGHTS_FONT_COLOR	= 0xffff0000; // Font color of the knight (clan) name...
 
 enum e_Cursor		{	CURSOR_ATTACK,
 						CURSOR_EL_NORMAL,
