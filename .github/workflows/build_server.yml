@@ -13,6 +13,7 @@ on:
     # This specifically builds only the server projects.
     # Everything else can be ignored.
     paths:
+      - '.github/workflows/build_server.yml'
       - 'props/**'
       - 'deps/dx9sdk/**'
       - 'deps/ZipArchive/**'
@@ -37,6 +38,7 @@ on:
     # This specifically builds only the server projects.
     # Everything else can be ignored.
     paths:
+      - '.github/workflows/build_server.yml'
       - 'props/**'
       - 'deps/dx9sdk/**'
       - 'deps/ZipArchive/**'
@@ -56,15 +58,18 @@ on:
  
   merge_group:
   workflow_dispatch:
-    
-env:
-  # We use a debug build for slightly faster build times
-  BUILD_CONFIGURATION: Debug
-  BUILD_PLATFORM: Win32
 
 jobs:
   build:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        BUILD_PLATFORM: [Win32]
+
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -75,4 +80,4 @@ jobs:
 
     - name: Build server
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Server.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Server.sln
