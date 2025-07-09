@@ -938,7 +938,7 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != UIWND_INVENTORY)
 		return false;
 	
-	__IconItemSkill* spSkill, * spItem;
+	__IconItemSkill* spSkill, *spItem;
 
 	spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
 
@@ -950,7 +950,7 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 	spSkill->pSkill = pUSkill;
 
 	// Create the icon name
-	std::vector<char> buffer(256, NULL);
+	char buffer[256] = {};
 	sprintf(&buffer[0], "UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
 	spSkill->szIconFN = &buffer[0];
 

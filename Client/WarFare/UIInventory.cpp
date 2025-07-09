@@ -1498,7 +1498,7 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
 						
 						//right click on item to hotkey (skillbar)
-						if (spItem->pItemBasic->byClass == 97) //usable items
+						if (spItem->pItemBasic->byClass == ITEM_CLASS_POTION) //usable items
 						{
 							CUIHotKeyDlg* pDlg = CGameProcedure::s_pProcMain->m_pUIHotKeyDlg;
 							int iIndex;
