@@ -7,6 +7,9 @@ name: Build server
 
 on:
   push:
+    branches:
+    - master
+
     paths:
       - '.github/workflows/build_server.yml'
 
