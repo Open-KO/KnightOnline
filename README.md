@@ -24,7 +24,7 @@ Use the search field to find them from there.
 
 Along with its accompanying SQL Server Management Studio.
 
-Additionally, you will need to download and restore the database over on our <a href="http://ko4life.net/topic/50-the-openko-project/" target="_blank">ko4life thread</a>, which restores fine as of Microsoft SQL Server 2022.
+Additionally, you will need to download and restore [our database](https://mega.nz/file/C8VCAbaC#roPiSnFHzHRlet8cKuzqU8ZFB8kSRVjOCKyzNHpa47U), which restores fine as of Microsoft SQL Server 2022.
 
 ### Git or Github Desktop
 
