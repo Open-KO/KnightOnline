@@ -946,6 +946,8 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 	if (pUSkill == nullptr) return false;
 	if (pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
 
+	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr) return false;
+
 	spSkill = new __IconItemSkill();
 	spSkill->pSkill = pUSkill;
 
@@ -975,10 +977,8 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
 	}
 	
-	if (m_pMyHotkey[m_iCurPage][iIndex] == nullptr)
-	{
-		m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
-	}
+	
+	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
 
 	CloseIconRegistry();
 	return true;
