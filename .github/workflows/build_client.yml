@@ -7,42 +7,16 @@ name: Build client
 
 on:
   push:
-    branches:
-    - master
-
-    # This specifically builds only the client (KnightOnline.exe) project.
-    # Everything else can be ignored.
     paths:
       - '.github/workflows/build_client.yml'
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'deps/libjpeg-turbo/**'
-      - 'deps/libjpeg-turbo-msvc/**'
-      - 'Client/JpegFile/**'
-      - 'Client/N3Base/**'
-      - 'Client/WarFare/**'
-      - 'Server/shared/**'
-      - 'Client.sln'
 
   pull_request:
     branches:
     - master
 
-    # This specifically builds only the client (KnightOnline.exe) project.
-    # Everything else can be ignored.
     paths:
       - '.github/workflows/build_client.yml'
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'deps/libjpeg-turbo/**'
-      - 'deps/libjpeg-turbo-msvc/**'
-      - 'Client/JpegFile/**'
-      - 'Client/N3Base/**'
-      - 'Client/WarFare/**'
-      - 'Server/shared/**'
-      - 'Client.sln'
- 
-  merge_group:
+
   workflow_dispatch:
 
 jobs:

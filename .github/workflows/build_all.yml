@@ -6,15 +6,47 @@
 name: Build all
 
 on:
-  pull_request:
-    types: [labeled]
-    
-  workflow_dispatch:
+  push:
+    branches:
+    - master
 
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
+    paths:
+      - '.github/workflows/build_all.yml'
+      - '**/*.props'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.ixx'
+      - '**/*.vcxproj'
+      - 'deps/**'
+      - 'All.sln'
+      - 'ThirdParty.sln'
+
+  pull_request:
+    branches:
+    - master
+
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
+    paths:
+      - '.github/workflows/build_all.yml'
+      - '**/*.props'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.ixx'
+      - '**/*.vcxproj'
+      - 'deps/**'
+      - 'All.sln'
+      - 'ThirdParty.sln'
+
+  merge_group: 
+  workflow_dispatch:
+  
 jobs:
   build:
-    if: |
-      github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'build-all')
     runs-on: windows-latest
 
     strategy:
@@ -32,6 +64,23 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Build all
+    # NOTE: We could simply run All.sln, but it makes it far more obvious in the Github output when it's broken up across its solutions.
+    - name: Build third party dependencies
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ThirdParty.sln
+
+    - name: Build client
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Client.sln
+
+    - name: Build server
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Server.sln
+
+    - name: Build tools
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tools.sln
+
+    - name: Build client tools
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ClientTools.sln

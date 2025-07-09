@@ -7,44 +7,16 @@ name: Build client tools
 
 on:
   push:
-    branches:
-    - master
-
-    # This specifically builds only the client tool projects.
-    # Everything else can be ignored.
     paths:
       - '.github/workflows/build_client_tools.yml'
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'deps/libjpeg-turbo/**'
-      - 'deps/libjpeg-turbo-msvc/**'
-      - 'Client/JpegFile/**'
-      - 'Client/KscViewer/**'
-      - 'Client/Launcher/**'
-      - 'Client/Option/**'
-      - 'ClientTools.sln'
-      - 'ThirdParty.sln'
 
   pull_request:
     branches:
     - master
 
-    # This specifically builds only the client tool projects.
-    # Everything else can be ignored.
     paths:
       - '.github/workflows/build_client_tools.yml'
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'deps/libjpeg-turbo/**'
-      - 'deps/libjpeg-turbo-msvc/**'
-      - 'Client/JpegFile/**'
-      - 'Client/KscViewer/**'
-      - 'Client/Launcher/**'
-      - 'Client/Option/**'
-      - 'ClientTools.sln'
-      - 'ThirdParty.sln'
  
-  merge_group: 
   workflow_dispatch:
 
 # These should really be moved into the one solution.

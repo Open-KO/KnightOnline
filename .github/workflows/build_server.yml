@@ -7,56 +7,16 @@ name: Build server
 
 on:
   push:
-    branches:
-    - master
-
-    # This specifically builds only the server projects.
-    # Everything else can be ignored.
     paths:
       - '.github/workflows/build_server.yml'
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'deps/ZipArchive/**'
-      - 'deps/zlib/**'
-      - 'deps/zlib-msvc/**'
-      - 'Server/AIServer/**'
-      - 'Server/Aujard/**'
-      - 'Server/Ebenezer/**'
-      - 'Server/ItemManager/**'
-      - 'Server/shared/**'
-      - 'Server/VersionManager/**'
-      - 'Client/N3Base/My_3DStruct.h'
-      - 'Client/N3Base/N3ShapeMgr.h'
-      - 'Client/N3Base/N3ShapeMgr.cpp'
-      - 'Server.sln'
-      - 'ThirdParty.sln'
 
   pull_request:
     branches:
     - master
 
-    # This specifically builds only the server projects.
-    # Everything else can be ignored.
     paths:
       - '.github/workflows/build_server.yml'
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'deps/ZipArchive/**'
-      - 'deps/zlib/**'
-      - 'deps/zlib-msvc/**'
-      - 'Server/AIServer/**'
-      - 'Server/Aujard/**'
-      - 'Server/Ebenezer/**'
-      - 'Server/ItemManager/**'
-      - 'Server/shared/**'
-      - 'Server/VersionManager/**'
-      - 'Client/N3Base/My_3DStruct.h'
-      - 'Client/N3Base/N3ShapeMgr.h'
-      - 'Client/N3Base/N3ShapeMgr.cpp'
-      - 'Server.sln'
-      - 'ThirdParty.sln'
- 
-  merge_group:
+
   workflow_dispatch:
 
 jobs:
