@@ -18,11 +18,6 @@ const int SKILL_DEF_SPECIAL1 = 2;
 const int SKILL_DEF_SPECIAL2 = 3;
 const int SKILL_DEF_SPECIAL3 = 4;
 
-// MAX_SKILL_KIND_OF	:						 Base Skill 1개, 전문 스킬 4개..			
-// MAX_SKILL_IN_PAGE	:						 한 페이지 내의 아이콘 갯수..				
-// MAX_SKILL_PAGE_NUM	:						 스킬 한개가 가지는 최대 페이지수..		
-
-
 //////////////////////////////////////////////////////////////////////
 
 class CUISkillTreeDlg : public CN3UIWndBase
@@ -34,10 +29,12 @@ protected:
 
 	int			m_iRBtnDownOffs;
 
-	CN3UIString*		m_pStr_info;
-	CN3UIString*		m_pStr_skill_mp;
-	CN3UIString*		m_pStr_skill_item0;
-	CN3UIString*		m_pStr_skill_item1;
+	CN3UIString*		m_pStr_info;			// Skill description
+	CN3UIString*		m_pStr_skill_mp;		// MP Consumed
+	CN3UIString*		m_pStr_skill_point;		// Required skill points
+	CN3UIString*		m_pStr_skill_item0;		// Required item (weapon)
+	CN3UIString*		m_pStr_skill_item1;		// Required item (eg. scrolls or arrows)
+	CN3UIString*		m_pStr_skill_item2;		// Required item (consumables eg. master stones)
 
 public:
 	int					m_iCurKindOf;
