@@ -21,7 +21,7 @@
 
 #include <shared/globals.h>
 
-constexpr int CURRENT_VERSION = 1298;//1068; // Current version
+constexpr int CURRENT_VERSION = 1298;
 
 // Server.ini doesn't exist by default with our assets.
 // For simplicity, have the login server default to a local server in debug builds
@@ -34,8 +34,8 @@ static constexpr int DEFAULT_LOGIN_SERVER_COUNT = 0;
 static constexpr char DEFAULT_LOGIN_SERVER_IP[] = "";
 #endif
 
-constexpr float PACKET_INTERVAL_MOVE = 1.5f;				// Time interval for regularly sent packets..
-constexpr float PACKET_INTERVAL_ROTATE = 4.0f;
+constexpr float PACKET_INTERVAL_MOVE = 1.5f;				// Interval between regularly sent player/NPC movement packets.
+constexpr float PACKET_INTERVAL_ROTATE = 4.0f;				// Interval between regularly sent player rotation packets.
 constexpr float PACKET_INTERVAL_REQUEST_TARGET_HP = 2.0f;
 
 #define N3_FORMAT_VER_1068 0x00000001
@@ -112,9 +112,9 @@ enum e_Class {	CLASS_KINDOF_WARRIOR = 1, CLASS_KINDOF_ROGUE, CLASS_KINDOF_WIZARD
 
 enum e_Class_Represent { CLASS_REPRESENT_WARRIOR = 0, CLASS_REPRESENT_ROGUE, CLASS_REPRESENT_WIZARD, CLASS_REPRESENT_PRIEST, CLASS_REPRESENT_UNKNOWN = 100 };
 
-const float WEAPON_WEIGHT_STAND_SWORD = 5.0f; // Weapon weight standard... sword
-const float WEAPON_WEIGHT_STAND_AXE = 5.0f; // Weapon weight standard... axe
-const float WEAPON_WEIGHT_STAND_BLUNT = 8.0f; // Weapon weight standard... blunt type
+constexpr float WEAPON_WEIGHT_STAND_SWORD = 5.0f;	// Standard weight of swords
+constexpr float WEAPON_WEIGHT_STAND_AXE = 5.0f;		// Standard weight of axes
+constexpr float WEAPON_WEIGHT_STAND_BLUNT = 8.0f;	// Standard weight of blunt type weapons
 
 enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, ANI_STRUCK1, ANI_STRUCK2, ANI_GUARD,
 				ANI_DEAD_NEATLY = 8, ANI_DEAD_KNOCKDOWN, ANI_DEAD_ROLL, ANI_SITDOWN, ANI_SITDOWN_BREATH, ANI_STANDUP,
@@ -131,40 +131,40 @@ enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, 
 				ANI_SHOOT_JAVELIN_A = 30, ANI_SHOOT_JAVELIN_B, 
 				
 				ANI_SWORD_BREATH_A = 32,	ANI_SWORD_ATTACK_A0, ANI_SWORD_ATTACK_A1,
-				ANI_SWORD_BREATH_B,			ANI_SWORD_ATTACK_B0, ANI_SWORD_ATTACK_B1,		// One-handed sword
+				ANI_SWORD_BREATH_B,			ANI_SWORD_ATTACK_B0, ANI_SWORD_ATTACK_B1,		// One-handed swords
 				
 				ANI_DAGGER_BREATH_A = 38,	ANI_DAGGER_ATTACK_A0, ANI_DAGGER_ATTACK_A1,
-				ANI_DAGGER_BREATH_B,		ANI_DAGGER_ATTACK_B0, ANI_DAGGER_ATTACK_B1,		// Dagger
+				ANI_DAGGER_BREATH_B,		ANI_DAGGER_ATTACK_B0, ANI_DAGGER_ATTACK_B1,		// Daggers
 				
 				ANI_DUAL_BREATH_A = 44,		ANI_DUAL_ATTACK_A0, ANI_DUAL_ATTACK_A1, 
-				ANI_DUAL_BREATH_B,			ANI_DUAL_ATTACK_B0, ANI_DUAL_ATTACK_B1,			// Dual wield
+				ANI_DUAL_BREATH_B,			ANI_DUAL_ATTACK_B0, ANI_DUAL_ATTACK_B1,			// Dual wielded items
 				
 				ANI_SWORD2H_BREATH_A = 50,	ANI_SWORD2H_ATTACK_A0, ANI_SWORD2H_ATTACK_A1, 
-				ANI_SWORD2H_BREATH_B,		ANI_SWORD2H_ATTACK_B0, ANI_SWORD2H_ATTACK_B1,	// Two-handed sword
+				ANI_SWORD2H_BREATH_B,		ANI_SWORD2H_ATTACK_B0, ANI_SWORD2H_ATTACK_B1,	// Two-handed swords
 				
 				ANI_BLUNT_BREATH_A = 56,	ANI_BLUNT_ATTACK_A0, ANI_BLUNT_ATTACK_A1, 
-				ANI_BLUNT_BREATH_B,			ANI_BLUNT_ATTACK_B0, ANI_BLUNT_ATTACK_B1,		// Blunt weapon – club?
+				ANI_BLUNT_BREATH_B,			ANI_BLUNT_ATTACK_B0, ANI_BLUNT_ATTACK_B1,		// Blunt weapons – maces
 				
 				ANI_BLUNT2H_BREATH_A = 62,	ANI_BLUNT2H_ATTACK_A0, ANI_BLUNT2H_ATTACK_A1, 
-				ANI_BLUNT2H_BREATH_B,		ANI_BLUNT2H_ATTACK_B0, ANI_BLUNT2H_ATTACK_B1,	// Two-handed blunt weapon. - Same as a two-handed axe.
+				ANI_BLUNT2H_BREATH_B,		ANI_BLUNT2H_ATTACK_B0, ANI_BLUNT2H_ATTACK_B1,	// Two-handed blunt weapons (maces), and axes.
 				
 				ANI_AXE_BREATH_A = 68,		ANI_AXE_ATTACK_A0, ANI_AXE_ATTACK_A1, 
-				ANI_AXE_BREATH_B,			ANI_AXE_ATTACK_B0, ANI_AXE_ATTACK_B1,			// One-handed axe
+				ANI_AXE_BREATH_B,			ANI_AXE_ATTACK_B0, ANI_AXE_ATTACK_B1,			// One-handed axes
 				
 				ANI_SPEAR_BREATH_A = 74,	ANI_SPEAR_ATTACK_A0, ANI_SPEAR_ATTACK_A1, 
-				ANI_SPEAR_BREATH_B,			ANI_SPEAR_ATTACK_B0, ANI_SPEAR_ATTACK_B1,		// Spear – just a spear without a cutting edge.
+				ANI_SPEAR_BREATH_B,			ANI_SPEAR_ATTACK_B0, ANI_SPEAR_ATTACK_B1,		// Spears – just a simple spear with no cutting edge.
 				
 				ANI_POLEARM_BREATH_A = 80,	ANI_POLEARM_ATTACK_A0, ANI_POLEARM_ATTACK_A1, 
-				ANI_POLEARM_BREATH_B,		ANI_POLEARM_ATTACK_B0, ANI_POLEARM_ATTACK_B1,	// Two-handed bladed spear – "Cheongryongdo" (Blue Dragon Sword)?
+				ANI_POLEARM_BREATH_B,		ANI_POLEARM_ATTACK_B0, ANI_POLEARM_ATTACK_B1,	// Two-handed bladed spears – something like a "Cheongryongdo" (Blue Dragon Sword)?
 				
 				ANI_NAKED_BREATH_A = 86,	ANI_NAKED_ATTACK_A0, ANI_NAKED_ATTACK_A1, 
-				ANI_NAKED_BREATH_B,			ANI_NAKED_ATTACK_B0, ANI_NAKED_ATTACK_B1,		// With bare hands??
+				ANI_NAKED_BREATH_B,			ANI_NAKED_ATTACK_B0, ANI_NAKED_ATTACK_B1,		// Bare-handed??
 				
 				ANI_BOW_BREATH = 92,		ANI_CROSS_BOW_BREATH, ANI_LAUNCHER_BREATH, 
-				ANI_BOW_BREATH_B,			ANI_BOW_ATTACK_B0, ANI_BOW_ATTACK_B1,			// Bow attack
+				ANI_BOW_BREATH_B,			ANI_BOW_ATTACK_B0, ANI_BOW_ATTACK_B1,			// Bow attacks
 				
 				ANI_SHIELD_BREATH_A = 98,	ANI_SHIELD_ATTACK_A0, ANI_SHIELD_ATTACK_A1, 
-				ANI_SHIELD_BREATH_B,		ANI_SHIELD_ATTACK_B0, ANI_SHIELD_ATTACK_B1,		// Shield attack
+				ANI_SHIELD_BREATH_B,		ANI_SHIELD_ATTACK_B0, ANI_SHIELD_ATTACK_B1,		// Shield attacks
 
 				ANI_GREETING0 = 104, ANI_GREETING1, ANI_GREETING2, 
 				ANI_WAR_CRY0 = 107, ANI_WAR_CRY1, ANI_WAR_CRY2, ANI_WAR_CRY3, ANI_WAR_CRY4, 
@@ -188,18 +188,13 @@ enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, 
 				ANI_UNKNOWN = 0xffffffff };
 
 
-//MAX_INCLINE_CLIMB = sqrt( 1 - sin(90 - Maximum slope angle)^2 )
-//const	float MAX_INCLINE_CLIMB = 0.5f;	   // Maximum climbable slope value = 30 degree
-const	float MAX_INCLINE_CLIMB = 0.6430f; // Maximum climbable slope value = 40 degree
-//const	float MAX_INCLINE_CLIMB = 0.7071f; // Maximum climbable slope value = 45 degree
-//const	float MAX_INCLINE_CLIMB = 0.7660f; // Maximum climbable slope value = 50 degree
-//const	float MAX_INCLINE_CLIMB = 0.8660f; // Maximum climbable slope value = 60 degree
-
+// MAX_INCLINE_CLIMB = sqrt(1 - sin(90 - Maximum slope angle)^2)
+constexpr float MAX_INCLINE_CLIMB = 0.6430f; // Maximum climbable slope value = 40 degrees
 
 enum e_MoveDirection { MD_STOP, MD_FOWARD, MD_BACKWARD, MD_UNKNOWN = 0xffffffff };
 
-const float MOVE_DELTA_WHEN_RUNNING = 3.0f; // Variable multiplied when jumping..
-const float MOVE_SPEED_WHEN_WALK = 1.5f; // Standard walking speed for players
+constexpr float MOVE_DELTA_WHEN_RUNNING = 3.0f;	// Movement multiplier for running.
+constexpr float MOVE_SPEED_WHEN_WALK = 1.5f;	// Standard player walking speed.
 
 // 현재 상태...
 enum e_StateMove {	PSM_STOP = 0,
@@ -208,19 +203,19 @@ enum e_StateMove {	PSM_STOP = 0,
 					PSM_WALK_BACKWARD,
 					PSM_COUNT };
 
-enum e_StateAction {	PSA_BASIC = 0,		// Doing nothing...
-						PSA_ATTACK,			// Attack state.. 
-						PSA_GUARD,			// Defense successful – blocked..
+enum e_StateAction {	PSA_BASIC = 0,		// Idle
+						PSA_ATTACK,			// Attacking.
+						PSA_GUARD,			// Successfully defended - attack blocked.
 						PSA_STRUCK,			// Taking heavy damage.
-						PSA_DYING,			// Dying (falling down)
-						PSA_DEATH,			// Dead and collapsed..
-						PSA_SPELLMAGIC,		// Casting a magic spell..
-						PSA_SITDOWN, 		// Sitting...
+						PSA_DYING,			// In the process of dying (collapsing)
+						PSA_DEATH,			// Dead and lying down/knocked out.
+						PSA_SPELLMAGIC,		// Casting a spell.
+						PSA_SITDOWN, 		// Sitting down.
 						PSA_COUNT }; 
 
-enum e_StateDying {		PSD_DISJOINT = 0,	// Dies by disintegration.. 
-						PSD_KNOCK_DOWN,		// Dies while flying or being knocked back.
-						PSD_KEEP_POSITION,	// Dies posing in place..
+enum e_StateDying {		PSD_DISJOINT = 0,	// Dies with a twisting/rolling death animation. NOTE: The original comment indicated the body physically breaking apart, but this is misleading -- the actual animations for players and NPCs simply twist and roll.
+						PSD_KNOCK_DOWN,		// Dies while being knocked back.
+						PSD_KEEP_POSITION,	// Dies posing in place.
 						PSD_COUNT,
 
 						PSD_UNKNOWN = 0xffffffff };
@@ -248,47 +243,6 @@ enum e_PlugPosition {	PLUG_POS_RIGHTHAND = 0,
 						PLUG_POS_COUNT,
 						PLUG_POS_UNKNOWN = 0xffffffff };
 
-/*
-enum e_ItemClass	{	ITEM_CLASS_DAGGER = 1, // 단검(dagger)
-						ITEM_CLASS_SWORD, // 2 : 한손검(onehandsword)
-						ITEM_CLASS_SWORD_2H, // 3 : 양손검(twohandsword)
-						ITEM_CLASS_AXE, // 4 : 한손도끼(onehandaxe)
-						ITEM_CLASS_AXE_2H, // 5 : 두손도끼(twohandaxe)
-						ITEM_CLASS_MACE, // 6 : 한손타격무기(mace)
-						ITEM_CLASS_MACE_2H, // 7 : 두손타격무기(twohandmace)
-						ITEM_CLASS_SPEAR, // 8 : 창(spear)
-						ITEM_CLASS_POLEARM, // 9 : 폴암(polearm)
-						
-						ITEM_CLASS_SHIELD_SMALL = 11, // 11 : 스몰쉴드(smallshield)
-						ITEM_CLASS_SHIELD_LARGE, // 12 : 라아지쉴드(largeshield)
-						ITEM_CLASS_SHIELD_KITE, // 13 : 카이트쉴드(kiteshield)
-						ITEM_CLASS_SHIELD_LARGETKITE, // 14 : 라아지카이트(largekite)
-						ITEM_CLASS_SHIELD_PLATE, // 15 : 플레이트쉴드(plateshield)
-						
-						ITEM_CLASS_BOW_SHORT = 21, // 21 : 쇼트보우(Shortbow)
-						ITEM_CLASS_BOW_WRAPT, // 22 : 랩트보우(wraptbow)
-						ITEM_CLASS_BOW_COMPOSITE, // 23 : 콤포지트보우(compositebow)
-						ITEM_CLASS_BOW_IRON, // 24 : 아이언보우(ironbow)
-						ITEM_CLASS_BOW_LONG, // 25 : 롱보우(longbow)
-						ITEM_CLASS_BOW_CROSS, // 28 : 크로스보우(crossbow)
-						
-						ITEM_CLASS_STAFF = 31, // 31 : 지팡이(staff)
-						ITEM_CLASS_ETC, // 32 : 기타 마법 물품
-						
-						ITEM_CLASS_ARMOR_COTTON = 41, // 41 : 천방어구(cotton)
-						ITEM_CLASS_ARMOR_FUR, // 42 : 털가죽(Fur)
-						ITEM_CLASS_ARMOR_LEATHER, // 43 : 가죽방어구(leather)
-						ITEM_CLASS_ARMOR_HADLEATHER, // 44 : 하드레더방어구(hardleather)
-						ITEM_CLASS_ARMOR_RINGMAIL, // 45 : 링방어구(ringmail)
-						ITEM_CLASS_ARMOR_SCALEMAIL, // 46 : 비늘방어구(scaledmail)
-						ITEM_CLASS_ARMOR_HALFPLATE, // 47 : 하프 플레이트 방어구
-						ITEM_CLASS_ARMOR_FULLPLATE, // 48 : 철판방어구(platemail)
-						ITEM_CLASS_ROBE, // 49 : 마법사로브(robe)
-						
-						ITEM_CLASS_ARROW = 101,
-						
-						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 101: 화살(arrow) 
-*/
 enum e_ItemAttrib	{
 						ITEM_ATTRIB_GENERAL = 0,
 						ITEM_ATTRIB_MAGIC	= 1,
@@ -320,12 +274,12 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 						ITEM_CLASS_AMULET = 92, // Necklace
 						ITEM_CLASS_RING = 93, // Ring
 						ITEM_CLASS_BELT = 94, // Belt
-						ITEM_CLASS_CHARM = 95, //Items carried in inventory
-						ITEM_CLASS_JEWEL = 96, //Types of gems
-						ITEM_CLASS_POTION = 97, // Potion ( + transformation scrolls , usable items )
+						ITEM_CLASS_CHARM = 95, // Items carried in inventory
+						ITEM_CLASS_JEWEL = 96, // Jewels/gems
+						ITEM_CLASS_POTION = 97, // Potion / consumable
 						ITEM_CLASS_SCROLL = 98, // Scroll
 
-						ITEM_CLASS_LAUNCHER = 100, //  Item used for throwing spears..
+						ITEM_CLASS_LAUNCHER = 100, // Item used when throwing a spear.
 						
 						ITEM_CLASS_STAFF = 110, // Staff
 						ITEM_CLASS_ARROW = 120, // Arrow
@@ -336,7 +290,7 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 						ITEM_CLASS_ARMOR_MAGE = 230, // Mage armor
 						ITEM_CLASS_ARMOR_PRIEST = 240, // Priest armor
 
-						ITEM_CLASS_ETC = 251, // Miscellaneous, other items
+						ITEM_CLASS_ETC = 251, // Miscellaneous
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
@@ -348,49 +302,50 @@ struct __TABLE_PLAYER;
 
 struct __InfoPlayerOther
 {
-	int			iFace;			// Face shape
-	int			iHair;			// Hairstyle
+	int			iFace;			// Face type
+	int			iHair;			// Hair type
 
 	int			iCity;			// Affiliated city
-	int			iKnightsID;		// Affiliated knight order (clan) ID
-	std::string szKnights;		// Affiliated knight order (clan) name
-	int			iKnightsGrade;	// Affiliated knight order (clan) rank
-	int			iKnightsRank;	// Affiliated knight order (clan) ranking
+	int			iKnightsID;		// Clan ID
+	std::string szKnights;		// Clan name
+	int			iKnightsGrade;	// Clan grade
+	int			iKnightsRank;	// Clan ranking
 
-	int			iRank;			// Titles – count, duke – classification based on authority [king]
-	int			iTitle;			// Position – lord, castle lord – simple status -> clan leader
+	int			iRank;			// Noble rank - used to identify high-ranking titles like King [1], Senator [2].
+	int			iTitle;			// Bitmask representing various titles/roles including:
+								// Clan Leader, Clan Assistant, Castle Lord, Feudal Lord, King, Emperor, Party leader, Solo player
 
 	void Init()
 	{
-		iFace = 0;			
-		iHair = 0;			
-		iCity;				
-		iKnightsID = 0;		
-		szKnights = "";		
-		iKnightsGrade = 0;		
-		iKnightsRank = 0;			
-		iTitle = 0;			
+		iFace = 0;
+		iHair = 0;
+		iCity;
+		iKnightsID = 0;
+		szKnights.clear();
+		iKnightsGrade = 0;
+		iKnightsRank = 0;
+		iTitle = 0;
 	}
 };
 
-// Knight order position..
-enum e_KnightsDuty {	KNIGHTS_DUTY_UNKNOWN = 0,		// ????? kicked out??
-						KNIGHTS_DUTY_CHIEF = 1,			// Leader
-						KNIGHTS_DUTY_VICECHIEF = 2,		// Vice leader
-						KNIGHTS_DUTY_PUNISH = 3,		// Under disciplinary action.
-						KNIGHTS_DUTY_TRAINEE = 4,		// Apprentice knight
-						KNIGHTS_DUTY_KNIGHT = 5,		// Regular knight
+// Clan member position/role/duty
+enum e_KnightsDuty {	KNIGHTS_DUTY_UNKNOWN = 0,		// Unknown - probably kicked out.
+						KNIGHTS_DUTY_CHIEF = 1,			// Clan Leader
+						KNIGHTS_DUTY_VICECHIEF = 2,		// Assistant
+						KNIGHTS_DUTY_PUNISH = 3,		// Under punishment.
+						KNIGHTS_DUTY_TRAINEE = 4,		// Trainee/apprentice
+						KNIGHTS_DUTY_KNIGHT = 5,		// Regular member
 						KNIGHTS_DUTY_OFFICER = 6		// Officer
 					};
 
-#define VICTORY_ABSENCE		0
-#define VICTORY_KARUS		1
-#define VICTORY_ELMORAD		2
+constexpr int VICTORY_ABSENCE	= 0;
+constexpr int VICTORY_KARUS		= 1;
+constexpr int VICTORY_ELMORAD	= 2;
 
 struct __InfoPlayerMySelf : public __InfoPlayerOther
 {
-	int					iBonusPointRemain;	// remaining bonus points
-	int					iLevelPrev;			// previous level
+	int					iBonusPointRemain;		// Bonus points remaining to assign
+	int					iLevelPrev;				// Previous level
 
 	int					iMSPMax; 
 	int					iMSP; 
@@ -399,110 +354,110 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 	int					iGold;
 	uint64_t			iExpNext;
 	uint64_t			iExp;
-	int					iRealmPoint;		// National contribution [NP]
-	int					iRealmPointMonthly;	// Monthly NP
-	e_KnightsDuty		eKnightsDuty;		// templar authority
-	int					iWeightMax;			// max weight
-	int					iWeight;			// current weight
-	int					iStrength;			// strength
-	int					iStrength_Delta;	// excess strength
-	int					iStamina;			// stamina
-	int					iStamina_Delta;		// excess stamina
-	int					iDexterity;			// dexterity
-	int					iDexterity_Delta;	// excess dexterity
-	int					iIntelligence;		// intelligence
-	int					iIntelligence_Delta; // excess intelligence
-	int 				iMagicAttak;		// magic power, MP
-	int 				iMagicAttak_Delta;	// excess MP
+	int					iRealmPoint;			// National Points
+	int					iRealmPointMonthly;		// Monthly National Points
+	e_KnightsDuty		eKnightsDuty;			// Clan member position/role/duty
+	int					iWeightMax;				// Max weight
+	int					iWeight;				// Current weight
+	int					iStrength;				// Strength
+	int					iStrength_Delta;		// Bonus strength
+	int					iStamina;				// Stamina
+	int					iStamina_Delta;			// Bonus stamina
+	int					iDexterity;				// Dexterity
+	int					iDexterity_Delta;		// Bonus dexterity
+	int					iIntelligence;			// Intelligence
+	int					iIntelligence_Delta;	// Bonus intelligence
+	int 				iMagicAttak;			// Charisma/Magic Power
+	int 				iMagicAttak_Delta;		// Bonus Charisma/Magic Power
 	
-	int 				iAttack;		// Attack power
-	int 				iAttack_Delta;	// Value modified by magic..
-	int 				iGuard;			// Defense
-	int 				iGuard_Delta;	// Value modified by magic..
+	int 				iAttack;				// Attack Power
+	int 				iAttack_Delta;			// Bonus Attack Power
+	int 				iGuard;					// Defense
+	int 				iGuard_Delta;			// Bonus Defense
 
-	int 				iRegistFire;			// Resistance
-	int 				iRegistFire_Delta;		// Resistance change value due to magic..
-	int 				iRegistCold;			// Resistance
-	int 				iRegistCold_Delta;		// Resistance change value due to magic..
-	int 				iRegistLight;			// Resistance
-	int 				iRegistLight_Delta;		// Resistance change value due to magic..
-	int 				iRegistMagic;			// Resistance
-	int 				iRegistMagic_Delta;		// Resistance change value due to magic..
-	int 				iRegistCurse;			// Resistance
-	int 				iRegistCurse_Delta;		// Magic resistance modifier..
-	int 				iRegistPoison;			// Resistance
-	int 				iRegistPoison_Delta;	// Magic resistance modifier..
+	int 				iRegistFire;			// Fire resistance
+	int 				iRegistFire_Delta;		// Bonus fire resistance
+	int 				iRegistCold;			// Cold resistance
+	int 				iRegistCold_Delta;		// Bonus cold resistance
+	int 				iRegistLight;			// Lightning resistance
+	int 				iRegistLight_Delta;		// Bonus lightning resistance
+	int 				iRegistMagic;			// Magic resistance
+	int 				iRegistMagic_Delta;		// Bonus magic resistance
+	int 				iRegistCurse;			// Curse resistance
+	int 				iRegistCurse_Delta;		// Bonus curse resistance
+	int 				iRegistPoison;			// Poison resistance
+	int 				iRegistPoison_Delta;	// Bonus poison resistance
 
-	int					iZoneInit;				// Initial zone number received from server
-	int					iZoneCur;				// Current zone..
-	int					iVictoryNation;			// 0: Draw 1: El Morad victory 2: Karus victory
+	int					iZoneInit;				// Initial Zone ID received from the server
+	int					iZoneCur;				// Current zone ID
+	int					iVictoryNation;			// Last war outcome - 0: Draw, 1: El Morad victory, 2: Karus victory
 
 	void Init()
 	{
 		__InfoPlayerOther::Init();
 
-		iBonusPointRemain = 0; 
-		iLevelPrev = 0; 
+		iBonusPointRemain = 0;
+		iLevelPrev = 0;
 
-		iMSPMax = 0; 
-		iMSP = 0; 
-		
+		iMSPMax = 0;
+		iMSP = 0;
+
 		iTargetHPPercent = 0;
 		iGold = 0;
 		iExpNext = 0;
-		iExp = 0; 
-		iRealmPoint = 0;		
-		iRealmPointMonthly = 0; 
-		eKnightsDuty = KNIGHTS_DUTY_UNKNOWN;		
-		iWeightMax = 0;			
-		iWeight = 0;			
-		iStrength = 0;			
-		iStrength_Delta = 0;	
-		iStamina = 0;			
-		iStamina_Delta = 0;		
-		iDexterity = 0;			
-		iDexterity_Delta = 0;	
-		iIntelligence = 0;		
-		iIntelligence_Delta = 0; 
-		iMagicAttak = 0;		
-		iMagicAttak_Delta = 0;	
-		
-		iAttack = 0;		
-		iAttack_Delta = 0;	
-		iGuard = 0;			
-		iGuard_Delta = 0;	
+		iExp = 0;
+		iRealmPoint = 0;
+		iRealmPointMonthly = 0;
+		eKnightsDuty = KNIGHTS_DUTY_UNKNOWN;
+		iWeightMax = 0;
+		iWeight = 0;
+		iStrength = 0;
+		iStrength_Delta = 0;
+		iStamina = 0;
+		iStamina_Delta = 0;
+		iDexterity = 0;
+		iDexterity_Delta = 0;
+		iIntelligence = 0;
+		iIntelligence_Delta = 0;
+		iMagicAttak = 0;
+		iMagicAttak_Delta = 0;
 
-		iRegistFire = 0;			
-		iRegistFire_Delta = 0;		
-		iRegistCold = 0;			
-		iRegistCold_Delta = 0;		
-		iRegistLight = 0;			
-		iRegistLight_Delta = 0;		
-		iRegistMagic = 0;			
-		iRegistMagic_Delta = 0;		
-		iRegistCurse = 0;			
-		iRegistCurse_Delta = 0;		
-		iRegistPoison = 0;			
-		iRegistPoison_Delta = 0;	
+		iAttack = 0;
+		iAttack_Delta = 0;
+		iGuard = 0;
+		iGuard_Delta = 0;
 
-		iZoneInit = 0x01;			
-		iZoneCur = 0;				
-		iVictoryNation = -1;		
+		iRegistFire = 0;
+		iRegistFire_Delta = 0;
+		iRegistCold = 0;
+		iRegistCold_Delta = 0;
+		iRegistLight = 0;
+		iRegistLight_Delta = 0;
+		iRegistMagic = 0;
+		iRegistMagic_Delta = 0;
+		iRegistCurse = 0;
+		iRegistCurse_Delta = 0;
+		iRegistPoison = 0;
+		iRegistPoison_Delta = 0;
+
+		iZoneInit = 1;
+		iZoneCur = 0;
+		iVictoryNation = -1;
 	}
 };
 
-const int MAX_PARTY_OR_FORCE = 8;
+constexpr int MAX_PARTY_OR_FORCE = 8;
 
 struct __InfoPartyOrForce
 {
-	int			iID;			// Party member ID
-	int			iLevel;			// Level
-	e_Class		eClass;			// Class
-	int			iHP;			// Hit Point
-	int			iHPMax;			// Hit Point Max
-	bool		bSufferDown_HP;			// Status - HP decreased...
-	bool		bSufferDown_Etc;		// Status - When affected by curse-type effects
-	std::string szID;		// Party name string
+	int			iID;				// Player's ID
+	int			iLevel;				// Level
+	e_Class		eClass;				// Class
+	int			iHP;				// Hit Points
+	int			iHPMax;				// Max Hit Points
+	bool		bSufferDown_HP;		// Status - HP debuffed.
+	bool		bSufferDown_Etc;	// Status - Cursed.
+	std::string szID;				// Player's name
 
 	void Init()
 	{
@@ -511,83 +466,79 @@ struct __InfoPartyOrForce
 		eClass = CLASS_UNKNOWN;
 		iHP = 0;
 		iHPMax = 0;
-		szID = "";
+		szID.clear();
 
 		bSufferDown_HP = false;			
 		bSufferDown_Etc = false;		
-	};
+	}
 
 	__InfoPartyOrForce()
 	{
-		this->Init();
+		Init();
 	}
 };
 
 enum e_PartyStatus { PARTY_STATUS_DOWN_HP = 1, PARTY_STATUS_DOWN_ETC = 2 };
 
-struct __InfoPartyBBS // Party support board structure... (seeking party)
+// Seeking party board entry
+struct __InfoPartyBBS
 {
-	std::string szID;			// Party name string
-	int			iID;			// Party member ID
+	std::string szID;			// Player's name
+	int			iID;			// Player's ID
 	int			iLevel;			// Level
 	e_Class		eClass;			// Class
 	int			iMemberCount;
 
 	void Init()
 	{
-		szID = "";
+		szID.clear();
 		iID = -1;
 		iLevel = 0;
 		eClass = CLASS_UNKNOWN;
 		iMemberCount = 0;
-	};
+	}
 
 	__InfoPartyBBS()
 	{
-		this->Init();
+		Init();
 	}
 };
 
-typedef struct __TABLE_TEXTS
+struct __TABLE_TEXTS
 {
-	uint32_t		dwID;
+	uint32_t	dwID;
 	std::string	szText;
-} TABLE_TEXTS;
+};
 
-typedef struct __TABLE_ZONE
+struct __TABLE_ZONE
 {
-	uint32_t    dwID;                 //01 zone ID
-	std::string	szTerrainFN;          //02 GTD
-	std::string szName;				  //03	
-	std::string	szColorMapFN;         //04 TCT
-	std::string	szLightMapFN;         //05 TLT
-	std::string	szObjectPostDataFN;   //06 OPD
+	uint32_t	dwID;					// 01 Zone ID
+	std::string	szTerrainFN;			// 02 GTD
+	std::string	szName;					// 03	
+	std::string	szColorMapFN;			// 04 TCT
+	std::string	szLightMapFN;			// 05 TLT
+	std::string	szObjectPostDataFN;		// 06 OPD
+	std::string	szOpdExtFN;				// 07 OPDEXT
+	std::string	szMiniMapFN;			// 08 DXT
+	std::string	szSkySetting;			// 09 N3Sky
+	int			bIndicateEnemyPlayer;	// 10 Int32 (BOOL)
+	int			iFixedSundDirection;	// 11 Int32
+	std::string	szLightObjFN;			// 12 GLO
+	std::string	szGevFN;				// 13 GEV
+	int			iIdk0;					// 14 idk
+	std::string	szEnsFN;				// 15 ENS
+	float		fIdk1;					// 16 idk
+	std::string	szFlagFN;				// 17 FLAG
+	uint32_t	iIdk2;					// 18	
+	uint32_t	iIdk3;					// 19	
+	uint32_t	iIdk4;					// 20	
+	uint32_t	iIdk5;					// 21
+	std::string	szOpdSubFN;				// 22 OPDSUB
+	int			iIdk6;					// 23
+	std::string	szEvtSub;				// 24 EVTSUB
+};
 
-#if __VERSION > 1264
-	std::string szOpdExtFN;           //07 OPDEXT
-#endif
-
-	std::string	szMiniMapFN;          //08 DXT
-	std::string szSkySetting;         //09 N3Sky
-	int         bIndicateEnemyPlayer; //10 Int32 (BOOL)
-	int         iFixedSundDirection;  //11 Int32
-	std::string szLightObjFN;         //12 GLO
-
-	std::string szGevFN;              //13 GEV
-	int         iIdk0;                //14 idk
-	std::string szEnsFN;              //15 ENS
-	float       fIdk1;                //16 idk
-	std::string szFlagFN;             //17 FLAG
-	uint32_t    iIdk2;				  //18	
-	uint32_t    iIdk3;				  //19	
-	uint32_t    iIdk4;				  //20	
-	uint32_t    iIdk5;				  //21
-	std::string szOpdSubFN;           //22 OPDSUB
-	int         iIdk6;				  //23
-	std::string szEvtSub;             //24 EVTSUB
-} TABLE_ZONE;
-
-typedef struct __TABLE_UI_RESRC
+struct __TABLE_UI_RESRC
 {
 	uint32_t dwID;						// 01 (Karus/Human)
 	std::string szLogIn;				// 02
@@ -720,7 +671,6 @@ typedef struct __TABLE_UI_RESRC
 	std::string szPPCardMyInfo;			// 129
 	std::string szNationSelectNew;		// 130
 	std::string szUSALogo;				// 131
-#if __VERSION > 1264  
 	std::string szMonster;				// 132
 	std::string szNationTaxNPC;			// 133
 	std::string szNationTaxRate;		// 134
@@ -735,142 +685,142 @@ typedef struct __TABLE_UI_RESRC
 	std::string szUpgradeSelect;		// 143
 	std::string szTradeMsg;				// 144
 	std::string szShowIcon;				// 145
-#endif
-} TABLE_UI_RESRC;
+};
 
-typedef struct __TABLE_ITEM_BASIC		// Resource record related to equipped items...
+struct __TABLE_ITEM_BASIC
 {
-	uint32_t		dwID;				// 01 Encoded item number d -  // 00 - Item type, 00 - Item equip position (can determine whether it's Plug or Part based on equip position).) - 0000 - ItemIndex
-	uint8_t 		byExtIndex;			// 02 Extended index
-	std::string	szName;					// 03 Name	
+	uint32_t	dwID;					// 01 Encoded item number: first 2 digits = item type, next 2 digits = equip position (used to determine Plugs or Parts), last 4 digits = item index
+
+	uint8_t		byExtIndex;				// 02 Extension index (i.e. Item_Ext_<extension index>.tbl)
+	std::string	szName;					// 03 Name
 	std::string	szRemark;				// 04 Item Description
 
-	uint32_t   dwIDK0;					// 05
-	uint8_t    byIDK1;					// 06
+	uint32_t	dwIDK0;					// 05
+	uint8_t		byIDK1;					// 06
 
-	uint32_t   dwIDResrc;				// 07 resource id
-	uint32_t   dwIDIcon;				// 08 icon id
-	uint32_t   dwSoundID0;				// 09 Sound ID - 0 There is no sound for this~
-	uint32_t   dwSoundID1;				// 10 Sound ID - 0 There is no sound for this~
+	uint32_t	dwIDResrc;				// 07 Encoded resource ID
+	uint32_t	dwIDIcon;				// 08 Encoded icon resource ID
+	uint32_t	dwSoundID0;				// 09 Sound ID - set to 0 for no sound
+	uint32_t	dwSoundID1;				// 10 Sound ID - set to 0 for no sound
 
-	uint8_t	byClass;					// 11 Item type — see enum e_ItemClass for reference...
-	uint8_t	byIsRobeType;				// 12 A robe-type item with the top and bottom connected as a whole.....
-	uint8_t	byAttachPoint;				// 13 Equip position
-	uint8_t	byNeedRace;					// 14 Race
-	uint8_t	byNeedClass;				// 15 Class
+	uint8_t		byClass;				// 11 Item type — see e_ItemClass enum for reference.
+	uint8_t		byIsRobeType;			// 12 Robe-type item that replaces both upper and lower equipment slots, showing only this.
+	uint8_t		byAttachPoint;			// 13 Equip position — identifies the specific slot on the character's body where this item is equipped
+	uint8_t		byNeedRace;				// 14 Required race
+	uint8_t		byNeedClass;			// 15 Required class
 
-	int16_t	siDamage;					// 16 Weapon attack
-	int16_t	siAttackInterval;			// 17 Attack time 100 equals 1 second
-	int16_t	siAttackRange;				// 18 Effective range (in 0.1 meter units)
-	int16_t	siWeight;					// 19 Weight (in 0.1 weight units)
-	int16_t	siMaxDurability;			// 20 Durability
-	int		iPrice;						// 21 price
-	int		iPriceSale;					// 22 selling price
-	int16_t	siDefense;					// 23 Defense
-	uint8_t	byContable;					// 24 countable ?
+	int16_t		siDamage;				// 16 Weapon damage
+	int16_t		siAttackInterval;		// 17 Attack speed (100 units = 1 second)
+	int16_t		siAttackRange;			// 18 Effective attack range (in 0.1 meter units)
+	int16_t		siWeight;				// 19 Weight (in 0.1 units)
+	int16_t		siMaxDurability;		// 20 Max durability
+	int			iPrice;					// 21 Purchase price
+	int			iPriceSale;				// 22 Sale price
+	int16_t		siDefense;				// 23 Defense
+	uint8_t		byContable;				// 24 Is the item countable/stackable?
 
-	uint32_t	dwEffectID1;			// 25 Magic effect ID1
-	uint32_t	dwEffectID2;			// 26 Magic effect ID2
+	uint32_t	dwEffectID1;			// 25 Magic effect ID 1
+	uint32_t	dwEffectID2;			// 26 Magic effect ID 2
 
-	char	cNeedLevel;					// 27 Required level — player’s iLevel; can also be a negative value.
+	char		cNeedLevel;				// 27 Required level — player's iLevel (can be negative)
 
-	char    cIDK2;						// 28
+	char		cIDK2;					// 28
 
-	uint8_t	byNeedRank;					// 29 Required rank — player’s iRank.
-	uint8_t	byNeedTitle;				// 30 Required title — player’s iTitle.
-	uint8_t	byNeedStrength;				// 31 Required strength — player’s iStrength
-	uint8_t	byNeedStamina;				// 32 Required stamina — player’s iStamina
-	uint8_t	byNeedDexterity;			// 33 Required dexterity — player’s iDexterity
-	uint8_t	byNeedInteli;				// 34 Required intelligence — player’s iIntelligence.
-	uint8_t	byNeedMagicAttack;			// 35 Required magic power — player’s iMagicAttack.
+	uint8_t		byNeedRank;				// 29 Required rank — player's iRank
+	uint8_t		byNeedTitle;			// 30 Required title — player's iTitle
+	uint8_t		byNeedStrength;			// 31 Required strength — player's iStrength
+	uint8_t		byNeedStamina;			// 32 Required stamina — player's iStamina
+	uint8_t		byNeedDexterity;		// 33 Required dexterity — player's iDexterity
+	uint8_t		byNeedInteli;			// 34 Required intelligence — player's iIntelligence
+	uint8_t		byNeedMagicAttack;		// 35 Required charisma/magic power — player's iMagicAttack
 
-	uint8_t	bySellGroup;				// 36 Group related to where the merchant sells it.
-		
-	uint8_t    byIDK3;					// 37
-} TABLE_ITEM_BASIC;
+	uint8_t		bySellGroup;			// 36 Selling group associated with vendor NPC
 
-const int MAX_ITEM_EXTENSION = 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
-const int LIMIT_FX_DAMAGE = 64;
-const int ITEM_LIMITED_EXHAUST = 17;
+	uint8_t		byIDK3;					// 37
+};
 
-typedef struct __TABLE_ITEM_EXT		// Resource record related to the equipped item
+constexpr int MAX_ITEM_EXTENSION	= 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
+constexpr int LIMIT_FX_DAMAGE		= 64;
+constexpr int ITEM_LIMITED_EXHAUST	= 17;
+
+struct __TABLE_ITEM_EXT
 {
-	uint32_t		dwID;			// 01 Coded item number - // 00 - Item type, 00 - Item equip position (used to determine whether it is a plug or part). - 0000 - ItemIndex
-	std::string	szHeader;			// 02 Prefix
+	uint32_t	dwID;						// 01 Encoded item number: first 2 digits = item type, next 2 digits = equip position (used to determine Plugs or Parts), last 4 digits = item index
+	std::string	szHeader;					// 02 Name prefix
 
-	uint32_t dwBaseID;				// 03
+	uint32_t	dwBaseID;					// 03
 
-	std::string	szRemark;			// 04 Item description
+	std::string	szRemark;					// 04 Item description
 
-	uint32_t dwIDK0;				// 05 TODO: will need to implement this one
-	uint32_t dwIDResrc;				// 06
-	uint32_t dwIDIcon;				// 07
+	uint32_t	dwIDK0;						// 05 TODO: will need to implement this one
+	uint32_t	dwIDResrc;					// 06
+	uint32_t	dwIDIcon;					// 07
 
-	uint8_t		byMagicOrRare;		// Whether it is a magic or rare item...
+	uint8_t		byMagicOrRare;				// 08 Item attribute (see e_ItemAttrib enum). Is it a magic, rare item, etc.
 
-	int16_t	siDamage;				// 09 Weapon damage
-	int16_t	siAttackIntervalPercentage;		// 10 Attack speed ratio
-	int16_t	siHitRate;				// 11 Hit rate — percentage
-	int16_t	siEvationRate;			// 12 Evasion rate — percentage
+	int16_t		siDamage;					// 09 Weapon damage
+	int16_t		siAttackIntervalPercentage;	// 10 Attack speed (percentage: 100% = normal speed)
+	int16_t		siHitRate;					// 11 Hit rate/accuracy (percentage modifier: 20% = 120% chance to hit)
+	int16_t		siEvationRate;				// 12 Evasion rate/dodge (percentage modifier: 20% = 120% chance to dodge)
 
-	int16_t	siMaxDurability;		// 13 Durability
-	int16_t	siPriceMultiply;		// 14 Quantity multiplier
-	int16_t	siDefense;				// 15 Defense
-	
-	int16_t	siDefenseRateDagger;	// 16 Dagger defense — percentage
-	int16_t	siDefenseRateSword;		// 17 sword defense	- percentage
-	int16_t	siDefenseRateBlow;		// 18 strike(club?) def	- percentage
-	int16_t	siDefenseRateAxe;		// 19 axe defense	- percentage
-	int16_t	siDefenseRateSpear;		// 20 spear defense	- percentage
-	int16_t	siDefenseRateArrow;		// 21 arrow defense	- percentage
-	
-	uint8_t	byDamageFire;			// 22 Additional damage — fire
-	uint8_t	byDamageIce;			// 23 Additional damage - ice
-	uint8_t	byDamageThuner;			// 24 Additional damage - thunder
-	uint8_t	byDamagePoison;			// 25 Additional damage - poison
+	int16_t		siMaxDurability;			// 13 Maximum durability
+	int16_t		siPriceMultiply;			// 14 Purchase price multiplier
+	int16_t		siDefense;					// 15 Defense
 
-	uint8_t	byStillHP;				// 26 HP recovery
-	uint8_t	byDamageMP;				// 27 MP Damage
-	uint8_t	byStillMP;				// 28 MP recovery
-	uint8_t	byReturnPhysicalDamage;	// 29 Physical damage reflection
+	int16_t		siDefenseRateDagger;		// 16 Defense against daggers (percentage modifier: 20% = 120% defense)
+	int16_t		siDefenseRateSword;			// 17 Defense against swords (percentage modifier: 20% = 120% defense)
+	int16_t		siDefenseRateBlow;			// 18 Defense against blunt weapons [maces/clubs] (percentage modifier: 20% = 120% defense)
+	int16_t		siDefenseRateAxe;			// 19 Defense against axes (percentage modifier: 20% = 120% defense)
+	int16_t		siDefenseRateSpear;			// 20 Defense against spears (percentage modifier: 20% = 120% defense)
+	int16_t		siDefenseRateArrow;			// 21 Defense against arrows (percentage modifier: 20% = 120% defense)
 
-	uint8_t	bySoulBind;				// 30 Soul bind — the percentage chance of dropping the item upon death in one-on-one combat; currently not in use.
-	
-	int16_t	siBonusStr;				// 31 bonus str
-	int16_t	siBonusSta;				// 32 bonus stamina
-	int16_t	siBonusDex;				// 33 bonux dex
-	int16_t	siBonusInt;				// 34 bonus int
-	int16_t	siBonusMagicAttak;		// 35 bonus mp
-	int16_t	siBonusHP;				// 36 HP bonus
-	int16_t	siBonusMSP;				// 37 MSP bonus
+	uint8_t		byDamageFire;				// 22 Bonus fire damage
+	uint8_t		byDamageIce;				// 23 Bonus ice damage
+	uint8_t		byDamageThuner;				// 24 Bonus thunder damage
+	uint8_t		byDamagePoison;				// 25 Bonus poison damage
 
-	int16_t	siRegistFire;			// 38 fire resistence
-	int16_t	siRegistIce;			// 39 ice resistance
-	int16_t	siRegistElec;			// 40 Electric resistance
-	int16_t	siRegistMagic;			// 41 magic resistance
-	int16_t	siRegistPoison;			// 42 poison resistance
-	int16_t	siRegistCurse;			// 43 curse resistance
-	
-	uint32_t	dwEffectID1;		// 44 magic effect ID1
-	uint32_t	dwEffectID2;		// 45 magic effect ID2
+	uint8_t		byStillHP;					// 26 HP drain ("still HP = steal HP")
+	uint8_t		byDamageMP;					// 27 MP damage
+	uint8_t		byStillMP;					// 28 MP drain
+	uint8_t		byReturnPhysicalDamage;		// 29 Physical damage reflection
 
-	int16_t	siNeedLevel;			// 46 ilevel needed
-	int16_t	siNeedRank;				// 47 iRank needed
-	int16_t	siNeedTitle;			// 48 title needed
-	int16_t	siNeedStrength;			// 49 strength needed
-	int16_t	siNeedStamina;			// 50 stamina needed
-	int16_t	siNeedDexterity;		// 51 dexterity needed
-	int16_t	siNeedInteli;			// 52 intelligence needed
-	int16_t	siNeedMagicAttack;		// 53 mp needed
-} TABLE_ITEM_EXT;
+	uint8_t		bySoulBind;					// 30 Soul bind — percentage chance of dropping this item upon death in one-on-one combat; not currently in use.
 
-const int MAX_NPC_SHOP_ITEM = 30;
-typedef struct __TABLE_NPC_SHOP
+	int16_t		siBonusStr;					// 31 Bonus strength
+	int16_t		siBonusSta;					// 32 Bonus stamina
+	int16_t		siBonusDex;					// 33 Bonus dexterity
+	int16_t		siBonusInt;					// 34 Bonus intelligence
+	int16_t		siBonusMagicAttak;			// 35 Bonus charisma/magic power
+	int16_t		siBonusHP;					// 36 Bonus HP
+	int16_t		siBonusMSP;					// 37 Bonus MSP
+
+	int16_t		siRegistFire;				// 38 Fire damage resistance
+	int16_t		siRegistIce;				// 39 Ice damage resistance
+	int16_t		siRegistElec;				// 40 Electric damage resistance
+	int16_t		siRegistMagic;				// 41 Magic damage resistance
+	int16_t		siRegistPoison;				// 42 Poison damage resistance
+	int16_t		siRegistCurse;				// 43 Curse damage resistance
+
+	uint32_t	dwEffectID1;				// 44 Magic effect ID 1
+	uint32_t	dwEffectID2;				// 45 Magic effect ID 2
+
+	int16_t		siNeedLevel;				// 46 Required level (player's iLevel)
+	int16_t		siNeedRank;					// 47 Required rank (player's iRank)
+	int16_t		siNeedTitle;				// 48 Required title (player's iTitle)
+	int16_t		siNeedStrength;				// 49 Required strength
+	int16_t		siNeedStamina;				// 50 Required Stamina
+	int16_t		siNeedDexterity;			// 51 Required Dexterity
+	int16_t		siNeedInteli;				// 52 Required Intelligence
+	int16_t		siNeedMagicAttack;			// 53 Required Charisma/Magic power
+};
+
+constexpr int MAX_NPC_SHOP_ITEM = 30;
+struct __TABLE_NPC_SHOP
 {
-	uint32_t		dwNPCID;
+	uint32_t	dwNPCID;
 	std::string	szName;
-	uint32_t		dwItems[MAX_NPC_SHOP_ITEM];
-} TABLE_NPC_SHOP;
+	uint32_t	dwItems[MAX_NPC_SHOP_ITEM];
+};
 
 enum e_ItemType { ITEM_TYPE_PLUG = 1, ITEM_TYPE_PART, ITEM_TYPE_ICONONLY, ITEM_TYPE_GOLD = 9, ITEM_TYPE_SONGPYUN = 10, ITEM_TYPE_UNKNOWN = 0xffffffff };
 
@@ -887,23 +837,23 @@ enum e_ItemSlot {	ITEM_SLOT_EAR_RIGHT = 0,	ITEM_SLOT_HEAD	= 1,	ITEM_SLOT_EAR_LEF
 					ITEM_SLOT_GLOVES = 12,		ITEM_SLOT_SHOES = 13, 
 					ITEM_SLOT_COUNT = 14, ITEM_SLOT_UNKNOWN = 0xffffffff };
 
-
-typedef struct __TABLE_PLAYER_LOOKS // Resource record related to NPC and Mob appearance...
+// Manages NPC/mob/player appearance
+struct __TABLE_PLAYER_LOOKS
 {
-	uint32_t		dwID;		// NPC unique ID
-	std::string	szName;			// npc name
-	std::string	szJointFN;		// Joint file name
-	std::string	szAniFN;		// Animation file name
-	//std::string	szPartFNs[7]; // Each character part — upper body, lower body, head, arms, legs, hair, cape
-	std::string	szPartFNs[13];	// temp for 1264 TBLs
+	uint32_t	dwID;			// NPC resource ID
+	std::string	szName;			// Model name
+	std::string	szJointFN;		// Joint filename
+	std::string	szAniFN;		// Animation filename
+	std::string	szPartFNs[10];	// Each character part — upper body, lower body, head, arms, legs, hair, cape
+	std::string	szIdk0[3];
 
-	int  iIdk1;
+	int			iIdk1;
 
-	int			iJointRH;			// Right hand end joint number
-	int			iJointLH;			// Left hand end joint number
-	int			iJointLH2;			// Left forearm joint number
-	int			iJointCloak;		// Cape attachment joint number
-	
+	int			iJointRH;		// Joint index for tip of right hand
+	int			iJointLH;		// Joint index for tip of left hand
+	int			iJointLH2;		// Joint index for left forearm
+	int			iJointCloak;	// Joint index for cape attachment
+
 	int			iSndID_Move;
 	int			iSndID_Attack0;
 	int			iSndID_Attack1;
@@ -916,251 +866,208 @@ typedef struct __TABLE_PLAYER_LOOKS // Resource record related to NPC and Mob ap
 	int			iSndID_Reserved0;
 	int			iSndID_Reserved1;
 
-	int  iIdk2;
-	int  iIdk3;
-	uint8_t bIdk4;
-	uint8_t bIdk5;
-	uint8_t bIdk6;
-} TABLE_PLAYER;
+	int			iIdk2;
+	int			iIdk3;
+	uint8_t		byIdk4;
+	uint8_t		byIdk5;
+	uint8_t		byIdk6;
+};
 
-typedef struct __TABLE_EXCHANGE_QUEST
+struct __TABLE_EXCHANGE_QUEST
 {
-	uint32_t		dwID;				// 01 Quest Number
-	uint32_t		dwNpcNum;			// 02 NPC Number
-	std::string szDesc;					// 03 Description
-	int			iCondition0;			// 04 Condition 1..
-	int			iCondition1;			// 05 Condition 2..
-	int			iCondition2;			// 06 Condition 3..
-	int			iCondition3;			// 07 Condition 4..
-	int			iNeedGold;				// 08 Required Noah	
-	uint8_t		bNeedLevel;				// 09 Required Level
-	uint8_t		bNeedClass;				// 10 Required Class
-	uint8_t		bNeedRank;				// 11 Required Rank	
-	uint8_t		bNeedExtra1;			// 12 Required Extra 1	
-	uint8_t		bNeedExtra2;			// 13 Required Extra 2
-	uint8_t		bCreatePercentage;		// 14 Generation Probability
-	int			iArkTuarek;				// 15 Ark Tuarek
-	int			iTuarek;				// 16 Tuarek
-	int			iRinkleTuarek;			// 17 Wrinkle Tuarek
-	int			iBabarian;				// 18 Barbarian
-	int			iMan;					// 19 Man
-	int			iWoman;					// 20 Woman
-} TABLE_EXCHANGE_QUEST;
+	uint32_t	dwID;				// 01 Quest ID
+	uint32_t	dwNpcNum;			// 02 NPC ID
+	std::string	szDesc;				// 03 Description
+	int			iCondition0;		// 04 Condition 1
+	int			iCondition1;		// 05 Condition 2
+	int			iCondition2;		// 06 Condition 3
+	int			iCondition3;		// 07 Condition 4
+	int			iNeedGold;			// 08 Required Gold
+	uint8_t		bNeedLevel;			// 09 Required Level
+	uint8_t		bNeedClass;			// 10 Required Class
+	uint8_t		bNeedRank;			// 11 Required Rank
+	uint8_t		bNeedExtra1;		// 12 Required Extra 1
+	uint8_t		bNeedExtra2;		// 13 Required Extra 2
+	uint8_t		bCreatePercentage;	// 14 Spawn chance (%)
+	int			iArkTuarek;			// 15 Arch Tuarek
+	int			iTuarek;			// 16 Tuarek
+	int			iRinkleTuarek;		// 17 Wrinkle Tuarek
+	int			iBabarian;			// 18 Barbarian
+	int			iMan;				// 19 Man
+	int			iWoman;				// 20 Woman
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Magic Table
+// Magic Table
 
-typedef struct __TABLE_UPC_SKILL
+struct __TABLE_UPC_SKILL
 {
-	uint32_t	dwID;				// Unique SKILL ID
-	std::string	szEngName;			// Skill English name
-	std::string	szName;				// Skill Korean name
-	std::string	szDesc;				// Skill description
-	int			iSelfAnimID1;		// Caster animation start
-	int			iSelfAnimID2;		// Caster animation end
+	uint32_t	dwID;				// 01 Skill ID
+	std::string	szEngName;			// 02 English name
+	std::string	szName;				// 03 Korean name
+	std::string	szDesc;				// 04 Description
+	int			iSelfAnimID1;		// 05 Start animation (caster)
+	int			iSelfAnimID2;		// 06 End animation (caster)
 
-	int			idwTargetAnimID;	// Target animation
-	int			iSelfFX1;			// Caster effect 1
-	int			iSelfPart1;			// Caster effect position 1
-	int			iSelfFX2;			// Caster effect 2
-	int			iSelfPart2;			// Caster effect position 2	
-	int			iFlyingFX;			// Flying effect
-	int			iTargetFX;			// Target effect
+	int			idwTargetAnimID;	// 07 Target animation
+	int			iSelfFX1;			// 08 Effect on caster (1)
+	int			iSelfPart1;			// 09 Effect position for iSelfFX1
+	int			iSelfFX2;			// 10 Effect on caster (2)
+	int			iSelfPart2;			// 11 Effect position for iSelfFX2
+	int			iFlyingFX;			// 12 Flying effect
+	int			iTargetFX;			// 13 Target effect
+	int			iTargetPart;		// 14 Effect position for iTargetFX
 
-	int			iTargetPart;		// Effect position
-	int			iTarget;			// Target	
-	int			iNeedLevel;			// Required level
-	int			iNeedSkill;			// Required skill
-	int			iExhaustMSP;		// MSP consumption
+	int			iTarget;			// 15 Target type/"moral"
+	int			iNeedLevel;			// 16 Required player level
+	int			iNeedSkill;			// 17 Required skill
 
-	int			iExhaustHP;			// HP consumption
-	uint32_t	dwNeedItem;			// Required item (refer to e_ItemClass.. value divided by 10)
-	uint32_t	dwExhaustItem;		// Consumed item
-	int			iCastTime;			// Casting time
-	int			iReCastTime;		// Time until recasting
+	int			iExhaustMSP;		// 18 MSP consumed
+	int			iExhaustHP;			// 19 HP consumed
 
-	float fIDK0; // TODO: will need to implement this...?
-	float fIDK1; // 1298 (unknown purpose)
+	uint32_t	dwNeedItem;			// 20 Required item (refer to e_ItemClass enum - divide value by 10)
+	uint32_t	dwExhaustItem;		// 21 Item consumed
+	int			iCastTime;			// 22 Cast time
+	int			iReCastTime;		// 23 Cooldown time
 
-	int			iPercentSuccess;	// Success rate
-	uint32_t	dw1stTableType;		// First type
-	uint32_t	dw2ndTableType;		// Second type
-	int			iValidDist;			// Valid distance
+	float		fIDK0;				// 24 TODO: will need to implement this...?
+	float		fIDK1;				// 25 1298 (unknown purpose)
 
-	int			iIDK2;				// 1298 (unknown purpose)
+	int			iPercentSuccess;	// 26 Success rate
+	uint32_t	dw1stTableType;		// 27 Primary skill type
+	uint32_t	dw2ndTableType;		// 28 Secondary skill type
+	int			iValidDist;			// 29 Effective skill range
 
-} TABLE_UPC_ATTACK_B;
+	int			iIDK2;				// 30 1298 (unknown purpose)
+};
 
-
-typedef struct __TABLE_UPC_SKILL_TYPE_1
+struct __TABLE_UPC_SKILL_TYPE_1
 {
-	uint32_t	dwID;			// SKILL unique ID
-	int			iSuccessType;	// Success type
-	int			iSuccessRatio;	// Success ratio
-	int			iPower;			// Attack power
-	int			iDelay;			// Delay
-	int			iComboType;		// Combo type
-	int			iNumCombo;		// Number of combos
-	int			iComboDamage;	// Combo damage			
-	int			iValidAngle;	// Attack radius
-	int			iAct[3];
-} TABLE_UPC_SKILL_TYPE_1;
+	uint32_t	dwID;				// 01 Skill ID
+	int			iSuccessType;		// 02 Success type
+	int			iSuccessRatio;		// 03 Success ratio (%)
+	int			iPower;				// 04 Attack power
+	int			iDelay;				// 05 Skill delay (time before next action)
+	int			iComboType;			// 06 Combo type
+	int			iNumCombo;			// 07 Number of hits in combo
+	int			iComboDamage;		// 08 Damage per combo hit
+	int			iValidAngle;		// 09 Attack radius
+	int			iAct[3];			// 10
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_2
+struct __TABLE_UPC_SKILL_TYPE_2
 {
-	uint32_t	dwID;			// SKILL unique ID
-	int			iSuccessType;	// Success type
-	int			iPower;			// Attack power
-	int			iAddDamage;
-	int			iAddDist;		// Distance increase
-	int			iNumArrow;		// Number of arrows required
-} TABLE_UPC_SKILL_TYPE_2;
+	uint32_t	dwID;				// 01 Skill ID
+	int			iSuccessType;		// 02 Success type
+	int			iPower;				// 03 Attack power
+	int			iAddDamage;			// 04 Bonus damage
+	int			iAddDist;			// 05 Distance increase
+	int			iNumArrow;			// 06 Number of arrows used
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_3
+struct __TABLE_UPC_SKILL_TYPE_3
 {
-	uint32_t	dwID;			//  SKILL Unique ID
-	int			iRadius;
-	int			iDDType;
-	int			iStartDamage;
-	int			iDuraDamage;
-	int			iDurationTime;	// 지속시간
-	int			iAttribute;
-} TABLE_UPC_SKILL_TYPE_3;
+	uint32_t	dwID;				// 01 Skill ID
+	int			iRadius;			// 02 Skill radius
+	int			iDDType;			// 03 Is this a DoT or a HoT
+	int			iStartDamage;		// 04 Initial damage
+	int			iDuraDamage;		// 05 Duration damage (e.g. DoT or HoT tick damage)
+	int			iDurationTime;		// 06 Effect duration (in seconds)
+	int			iAttribute;			// 07 Elemental type
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_4
+struct __TABLE_UPC_SKILL_TYPE_4
 {
-	uint32_t	dwID;			// Serial number
+	uint32_t	dwID;				// 01 Skill ID
 
-	int			iBuffType;		// Buff type
-	int			iRadius;
-	int			iDuration;
-	int			iAttackSpeed;	// Attack speed
-	int			iMoveSpeed;		// Movement speed
-	int			iAC;			// Defense
-	int			iACPct;
-	int			iAttack;		// Attack power
-	int			iMagicAttack;
-	int			iMaxHP;			// Max HP
-	int			iMaxHPPct;
-	int			iMaxMP;
-	int			iMaxMPPct;
-	int			iStr;			// Strength
-	int			iSta;			// Stamina
-	int			iDex;			// Dexterity
-	int			iInt;			// Intelligence
-	int			iMAP;			// Magic power
-	int			iFireResist;	// Fire resistance
-	int			iColdResist;	// Cold resistance
-	int			iLightningResist;// Lightning resistance
-	int			iMagicResist;	// Magic resistance
-	int			iDeseaseResist;	// Curse resistance
-	int			iPoisonResist;	// Poison resistance
+	int			iBuffType;			// 02 Buff type
+	int			iRadius;			// 03 Buff radius
+	int			iDuration;			// 04 Buff duration
+	int			iAttackSpeed;		// 05 Attack speed percentage (100% = base attack speed)
+	int			iMoveSpeed;			// 06 Movement speed percentage (100% = base movement speed)
+	int			iAC;				// 07 Flat defense modifier; mutually exclusive with iACPct.
+	int			iACPct;				// 08 Defense percentage (100% = base defense); mutually exclusive with iAC.
+	int			iAttack;			// 09 Attack power percentage (100% = base attack power)
+	int			iMagicAttack;		// 10 Magic attack power percentage (100% = base magic attack power)
+	int			iMaxHP;				// 11 Flat maximum HP modifier; mutually exclusive with iMaxHPPct.
+	int			iMaxHPPct;			// 12 Maximum HP percentage (100% = base maximum HP); mutually exclusive with iMaxHP.
+	int			iMaxMP;				// 13 Flat maximum MP modifier; mutually exclusive with iMaxMPPct.
+	int			iMaxMPPct;			// 14 Maximum MP percentage (100% = base maximum MP); mutually exclusive with iMaxMP.
+	int			iStr;				// 15 Flat strength modifier
+	int			iSta;				// 16 Flat stamina modifier
+	int			iDex;				// 17 Flat dexterity modifier
+	int			iInt;				// 18 Flat intelligence modifier
+	int			iMAP;				// 19 Flat charisma/magic power modifier
+	int			iFireResist;		// 20 Flat fire resistance modifier
+	int			iColdResist;		// 21 Flat cold resistance modifier
+	int			iLightningResist;	// 22 Flat lightning resistance modifier
+	int			iMagicResist;		// 23 Flat magic resistance modifier
+	int			iDeseaseResist;		// 24 Flat disease/curse resistance modifier
+	int			iPoisonResist;		// 25 Flat poison resistance modifier
 
-	int			iExpPct;
-} TABLE_UPC_SKILL_TYPE_4;
+	int			iExpPct;			// 26 Experience gain percentage (100% = base experience gain)
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_5
+struct __TABLE_UPC_SKILL_TYPE_6
 {
-	uint32_t		dwID;			// Serial number
-	uint32_t		dwTarget;		// Target
-	int			iSuccessRatio;		// Success ratio
-	int			iValidDist;			// Valid distance
-	int			iRadius;			// Radius
-	float		fCastTime;			// Casting time
-	float		fRecastTime;		// Recasting time
-	int			iDurationTime;		// Duration time
-	uint32_t		dwExhaustItem;	// Consumed item
-	uint32_t		dwFX;			// Magic effect
-} TABLE_UPC_SKILL_TYPE_5;
+	uint32_t		dwID;				// 01 Skill ID
+	std::string		szEngName;			// 02 Transformation name (English)
+	std::string		szName;				// 03 Transformation name (Korean)
+	int32_t			iSize;				// 04 Size (%)
+	int32_t			iTransformID;		// 05 Model ID
+	int32_t			iDuration;			// 06 Duration (in seconds)
+	int32_t			iMaxHP;				// 07 Flat max HP - 0 if unused
+	int32_t			iMaxMP;				// 08 Flat max MP - 0 if unused
+	int32_t			iSpeed;				// 09 Movement speed - 0 if unused
+	int32_t			iAttackSpeed;		// 10 Attack speed - 0 if unused
+	int32_t			iAttack;			// 11 Attack damage - 0 if unused
+	int32_t			iAC;				// 12 Defense - 0 if unused
+	int32_t			iHitRate;			// 13 Hit rate (accuracy) - 0 if unused
+	int32_t			iEvasionRate;		// 14 Evasion rate (dodge) - 0 if unused
+	int32_t			iFireResist;		// 15 Flat fire resistance modifier
+	int32_t			iColdResist;		// 16 Flat cold resistance modifier
+	int32_t			iLightningResist;	// 17 Flat lightning resistance modifier
+	int32_t			iMagicResist;		// 18 Flat magic resistance modifier
+	int32_t			iCurseResist;		// 19 Flat disease/curse resistance modifier
+	int32_t			iPoisonResist;		// 20 Flat poison resistance modifier
+	uint8_t			byNeedItem;			// 21 Item type required for transformation
+	uint32_t		dwClass;			// 22 Classes allowed for transformation
+	uint32_t		dwUserSkillUse;		// 23
+	uint32_t		dwSkillSuccessRate;	// 24 NOTE: These columns may be shuffled slightly, the naming is based on the server data
+	uint32_t		dwMonsterFriendly;	// 25
+	uint8_t			byNation;			// 26
+	uint32_t		dwRightHand;		// 27 
+	uint32_t		dwLeftHand;			// 28
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_6
+struct __TABLE_UPC_SKILL_TYPE_7
 {
-	uint32_t		dwID;			// Serial number
-	uint32_t		dwTarget;		// Target
-	int			iSuccessRatio;		// Success ratio
-	int			iValidDist;			// Valid distance
-	int			iRadius;			// Radius
-	float		fCastTime;			// Casting time
-	float		fRecastTime;		// Recasting time
-	int			iDurationTime;		// Duration time
-	uint32_t		dwExhaustItem;	// Consumed item
-	uint32_t		dwFX;			// Magic effect
-	uint32_t		dwTranform;		// Transformation
-} TABLE_UPC_SKILL_TYPE_6;
+	uint32_t	dwID;					// 01 Skill ID
+	int32_t		iRadius;				// 02 Radius
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_7
+struct __TABLE_UPC_SKILL_TYPE_9
 {
-	uint32_t		dwID;			// Serial number
-	uint32_t		dwTarget;		// Target
-	uint32_t		dwValidGroup;	// Valid group
-	int			iSuccessRatio;		// Success ratio
-	int			iValidDist;			// Valid distance
-	int			iRadius;			// Radius
-	float		fCastTime;			// Casting time
-	float		fRecastTime;		// Recasting time
-	int			iDurationTime;		// Duration time
-	uint32_t		dwExhaustItem;	// Consumed item
-	uint32_t		dwFX;			// Magic effect	
-} TABLE_UPC_SKILL_TYPE_7;
+	uint32_t		dwID;				// 01 ID
+	// TODO: Fill out this struct
+};
 
-typedef struct __TABLE_UPC_SKILL_TYPE_8
-{
-	uint32_t		dwID;			// Serial number
-	uint32_t		dwTarget;		// Target
-	int			iRadius;			// Radius
-	uint32_t		dwWarpType;		// Teleport type
-	float		fRefillEXP;			// Experience recovery
-	uint32_t		dwZone1;		// Zone number 1
-	uint32_t		dwZone2;		// Zone number 2
-	uint32_t		dwZone3;		// Zone number 3
-	uint32_t		dwZone4;		// Zone number 4
-	uint32_t		dwZone5;		// Zone number 5
-} TABLE_UPC_SKILL_TYPE_8;
-
-typedef struct __TABLE_UPC_SKILL_TYPE_9
-{
-	uint32_t		dwID;			// Serial number
-	uint32_t		dwTarget;		// Target
-	int			iSuccessRatio;		// Success ratio
-	int			iValidDist;			// Valid distance
-	int			iRadius;			// Radius
-	float		fCastTime;			// Casting time
-	float		fRecastTime;		// Recasting time
-	int			iDurationTime;		// Duration time
-	uint32_t		dwExhaustItem;	// Consumed item
-	uint32_t		dwAttr;			// Attribute
-	int			iDamage;			// Damage	
-} TABLE_UPC_SKILL_TYPE_9;
-
-typedef struct __TABLE_UPC_SKILL_TYPE_10
-{
-	uint32_t		dwID;			// Serial number
-	uint32_t		dwTarget;		// Target
-	int			iSuccessRatio;		// Success ratio
-	int			iValidDist;			// Valid distance
-	int			iRadius;			// Radius
-	float		fCastTime;			// Casting time
-	float		fRecastTime;		// Recasting time
-	uint32_t		dwExhaustItem;	// Consumed item
-	uint32_t		dwRemoveAttr;	// Removed attribute	
-} TABLE_UPC_SKILL_TYPE_10;
-
-//Magic Table
+// Magic Table
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef struct __TABLE_QUEST_MENU
+struct __TABLE_QUEST_MENU
 {
-	uint32_t		dwID;	// id
-	std::string szMenu;		// Selection menu
-} TABLE_QUEST_MENU;
+	uint32_t	dwID;		// 01 ID
+	std::string szMenu;		// 02 Menu text
+};
 
-typedef struct __TABLE_QUEST_TALK
+struct __TABLE_QUEST_TALK
 {
-	uint32_t		dwID;		// id
-	std::string szTalk;			// Quest talk
-} TABLE_QUEST_TALK;
+	uint32_t	dwID;		// 01 ID
+	std::string szTalk;		// 02 Dialogue text
+};
 
-typedef struct __TABLE_QUEST_CONTENT
+struct __TABLE_QUEST_CONTENT
 {
 	uint32_t		dwID;
 	int				iReqLevel;
@@ -1168,9 +1075,9 @@ typedef struct __TABLE_QUEST_CONTENT
 	std::string		szName;
 	std::string		szDesc;
 	std::string		szReward;
-} TABLE_QUEST_CONTENT;
+};
 
-typedef struct __TABLE_HELP
+struct __TABLE_HELP
 {
 	DWORD		dwID;
 	int			iMinLevel;
@@ -1178,109 +1085,107 @@ typedef struct __TABLE_HELP
 	int			iReqClass;
 	std::string	szQuestName;
 	std::string	szQuestDesc;
-} TABLE_HELP;
+};
 
-const int MAX_ITEM_SLOT_OPC = 8; // 착용 아이템 - 다른 플레이어(NPC 포함) 0 ~ 4 상체,하체,헬멧,팔,발 5 망토 6 오른손 7 왼손
-const int MAX_ITEM_INVENTORY = 28;		// 소유 아템 MAX (인벤토리창)
-const int MAX_ITEM_TRADE = 24;	// 상인과 거래..
-const int MAX_ITEM_TRADE_PAGE = 12;
-const int MAX_ITEM_WARE_PAGE = 8;
-const int MAX_ITEM_PER_TRADE = 12;	// 개인과 거래..	
-const int MAX_ITEM_BUNDLE_DROP_PIECE = 6;
-const int MAX_ITEM_EX_RE_NPC = 4; // 교환, 수리창 NPC 영역..
+constexpr int MAX_ITEM_SLOT_OPC				= 8;	// Max equipment slots for other players (including NPCs): 0-4 = upper body, lower body, helmet, arms, legs; 5 = cloak; 6 = right hand; 7 = left hand
 
-const int MAX_SKILL_FROM_SERVER = 9;		// 서버에게서 받는 정보 슬롯 갯수..			
+constexpr int MAX_ITEM_INVENTORY			= 28;	// Max items a player can hold in their inventory
+constexpr int MAX_ITEM_TRADE				= 24;	// Max items per page in NPC trades
+constexpr int MAX_ITEM_TRADE_PAGE			= 12;
+constexpr int MAX_ITEM_WARE_PAGE			= 8;
+constexpr int MAX_ITEM_PER_TRADE			= 12;	// Max items in a player trading window
+constexpr int MAX_ITEM_BUNDLE_DROP_PIECE	= 6;
+constexpr int MAX_ITEM_EX_RE_NPC			= 4;	// Max items in the (outdated, unused) NPC exchange/repair UI.
 
-const int MAX_SKILL_KIND_OF = 5;			// Base Skill 1개, 전문 스킬 4개..			
-const int MAX_SKILL_IN_PAGE = 6;//8;			// 한 페이지 내의 아이콘 갯수..				
-const int MAX_SKILL_PAGE_NUM = 7;			// Maximum number of pages per skill tab		
+constexpr int MAX_SKILL_FROM_SERVER			= 9;	// Max number of skill point slots received from the server.
 
+constexpr int MAX_SKILL_KIND_OF				= 5;	// Total skill types: 1 - base skills, 4 - specialized skills
+constexpr int MAX_SKILL_IN_PAGE				= 6;	// Max number of of skill icons per page
+constexpr int MAX_SKILL_PAGE_NUM			= 7;	// Max number of pages per skill category
 
-const int MAX_SKILL_HOTKEY_PAGE = 8;		// Hot Key의 총 페이지 수.. 				
-const int MAX_SKILL_IN_HOTKEY = 8;			// Hot Key의 현 페이지내의 갯수..			
-		
-const int MAX_AVAILABLE_CHARACTER = 3;		// 한 서버당 선택할수 있는 최대 캐릭터 수..	
+constexpr int MAX_SKILL_HOTKEY_PAGE			= 8;	// Max pages for a skill bar (CUIHotKeyDlg).
+constexpr int MAX_SKILL_IN_HOTKEY			= 8;	// Max number of skill icons per page for a skill bar (CUIHotKeyDlg).
 
-// 싸운도.... By ecli666
-const int ID_SOUND_ITEM_ETC_IN_INVENTORY	= 2000;
-const int ID_SOUND_ITEM_IN_REPAIR			= 2001;
-const int ID_SOUND_ITEM_WEAPON_IN_INVENTORY = 2002;
-const int ID_SOUND_ITEM_ARMOR_IN_INVENTORY	= 2003;
-const int ID_SOUND_GOLD_IN_INVENTORY		= 3000;
-const int ID_SOUND_SKILL_THROW_ARROW		= 5500;
-const int ID_SOUND_BGM_TOWN					= 20000;
-const int ID_SOUND_BGM_KA_BATTLE			= 20002;
-const int ID_SOUND_BGM_EL_BATTLE			= 20003;
-const int ID_SOUND_CHR_SELECT_ROTATE		= 2501;
+constexpr int MAX_AVAILABLE_CHARACTER		= 3;	// Max character slots available per server
 
-const float SOUND_RANGE_TO_SET = 10.0f;
-const float SOUND_RANGE_TO_RELEASE = 20.0f;
+// Sound IDs
+constexpr int ID_SOUND_ITEM_ETC_IN_INVENTORY	= 2000;
+constexpr int ID_SOUND_ITEM_IN_REPAIR			= 2001;
+constexpr int ID_SOUND_ITEM_WEAPON_IN_INVENTORY = 2002;
+constexpr int ID_SOUND_ITEM_ARMOR_IN_INVENTORY	= 2003;
+constexpr int ID_SOUND_GOLD_IN_INVENTORY		= 3000;
+constexpr int ID_SOUND_SKILL_THROW_ARROW		= 5500;
+constexpr int ID_SOUND_BGM_TOWN					= 20000;
+constexpr int ID_SOUND_BGM_KA_BATTLE			= 20002;
+constexpr int ID_SOUND_BGM_EL_BATTLE			= 20003;
+constexpr int ID_SOUND_CHR_SELECT_ROTATE		= 2501;
 
-const float STUN_TIME = 3.0f;
+constexpr float SOUND_RANGE_TO_SET				= 10.0f;
+constexpr float SOUND_RANGE_TO_RELEASE			= 20.0f;
+
+constexpr float STUN_TIME						= 3.0f;
 
 enum e_Behavior {	BEHAVIOR_NOTHING = 0,
-					BEHAVIOR_EXIT,			// Exit program..
-					BEHAVIOR_RESTART_GAME,	// Restart game (character selection)
-					BEHAVIOR_REGENERATION,	// Resurrection
-					BEHAVIOR_CANCEL,		// Cancel... Currently when the user presses cancel during an item trade request..
+					BEHAVIOR_EXIT,						// Exit the game
+					BEHAVIOR_RESTART_GAME,				// Return to character selection
+					BEHAVIOR_REGENERATION,				// Respawn/revive character
+					BEHAVIOR_PERSONAL_TRADE_CANCEL,		// Private trade: Cancel a request (outdated & unused)
 
-					BEHAVIOR_PARTY_PERMIT,	// Allow joining when the other party sends a party invitation request.
-					BEHAVIOR_PARTY_DISBAND, // Leave party
-					BEHAVIOR_FORCE_PERMIT,	// Allow joining when the other party sends a squad join request.
-					BEHAVIOR_FORCE_DISBAND, // Leave squad
+					BEHAVIOR_PARTY_PERMIT,				// Accept a party invite from another player.
+					BEHAVIOR_PARTY_DISBAND,				// Leave/disband party
+					BEHAVIOR_FORCE_PERMIT,				// Accept a force/squad invite from another player
+					BEHAVIOR_FORCE_DISBAND,				// Leave/disband force/squad
 
-					BEHAVIOR_REQUEST_BINDPOINT, // To binding point 
+					BEHAVIOR_REQUEST_BINDPOINT,			// Return to binding point
 
 					BEHAVIOR_DELETE_CHR,
 
 					BEHAVIOR_KNIGHTS_CREATE,
-					BEHAVIOR_KNIGHTS_DESTROY, // Disband the clan
-					BEHAVIOR_KNIGHTS_WITHDRAW, // Disband the order
+					BEHAVIOR_KNIGHTS_DESTROY,			// Disband clan
+					BEHAVIOR_KNIGHTS_WITHDRAW,			// Leave clan
 
-					BEHAVIOR_PERSONAL_TRADE_FMT_WAIT,	// Private trade... when I initiated the request..
-					BEHAVIOR_PERSONAL_TRADE_PERMIT,		//Private trade... when I received the request..
+					BEHAVIOR_PERSONAL_TRADE_FMT_WAIT,	// Private trade: Wait for other player to accept our trade request [does nothing].
+					BEHAVIOR_PERSONAL_TRADE_PERMIT,		// Private trade: Accept a trade request from another player.
 
 					BEHAVIOR_MGAME_LOGIN,
 					
 					BEHAVIOR_CLAN_JOIN,
-					BEHAVIOR_PARTY_BBS_REGISTER,		// Register to the party board 
-					BEHAVIOR_PARTY_BBS_REGISTER_CANCEL, // Unregister from the party board
+					BEHAVIOR_PARTY_BBS_REGISTER,		// Register on party bulletin board (i.e. seeking party board)
+					BEHAVIOR_PARTY_BBS_REGISTER_CANCEL, // Unregister from party bulletin board (i.e. seeking party board)
 
-					BEHAVIOR_EXECUTE_OPTION,			// Exit game and open options..
+					BEHAVIOR_EXECUTE_OPTION,			// Exit game and open options.
 				
 					BEHAVIOR_UNKNOWN = 0xffffffff
 				};
 
-enum e_SkillMagicTaget	{	SKILLMAGIC_TARGET_SELF = 1,				// Myself
-							SKILLMAGIC_TARGET_FRIEND_WITHME = 2,	// One of our allies (including myself/nation)
-							SKILLMAGIC_TARGET_FRIEND_ONLY = 3,		// One of our allies excluding myself 
-							SKILLMAGIC_TARGET_PARTY = 4,			// One of our party members, including myself
-							SKILLMAGIC_TARGET_NPC_ONLY = 5,			// One of the NPCs
-							SKILLMAGIC_TARGET_PARTY_ALL = 6,		// Our entire party, including myself
-							SKILLMAGIC_TARGET_ENEMY_ONLY = 7,		// One of all enemies excluding our side (including NPCs)
-							SKILLMAGIC_TARGET_ALL = 8,				// One of everything that exists in the game
+enum e_SkillMagicTaget	{	SKILLMAGIC_TARGET_SELF = 1,					// Targets myself
+							SKILLMAGIC_TARGET_FRIEND_WITHME = 2,		// Targets an ally (includes myself)
+							SKILLMAGIC_TARGET_FRIEND_ONLY = 3,			// Targets an ally (excludes myself)
+							SKILLMAGIC_TARGET_PARTY = 4,				// Targets a party member (includes myself)
+							SKILLMAGIC_TARGET_NPC_ONLY = 5,				// Targets an NPC only
+							SKILLMAGIC_TARGET_PARTY_ALL = 6,			// Targets the entire party (includes myself)
+							SKILLMAGIC_TARGET_ENEMY_ONLY = 7,			// Targets only enemies (anything hostile, including NPCs)
+							SKILLMAGIC_TARGET_ALL = 8,					// Targets anyone (includes myself)
 							
-							SKILLMAGIC_TARGET_AREA_ENEMY = 10,		// Enemies in that area
-							SKILLMAGIC_TARGET_AREA_FRIEND = 11,		// Our allies in that area
-							SKILLMAGIC_TARGET_AREA_ALL = 12,		// Everyone in that area
-							SKILLMAGIC_TARGET_AREA = 13,			// Area centered around me
-							SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY = 25,//One of our deceased allies excluding myself.
+							SKILLMAGIC_TARGET_AREA_ENEMY = 10,			// Targets enemies in an area
+							SKILLMAGIC_TARGET_AREA_FRIEND = 11,			// Targets allies in an area
+							SKILLMAGIC_TARGET_AREA_ALL = 12,			// Targets anyone in an area
+							SKILLMAGIC_TARGET_AREA = 13,				// Targets anyone in an area centered around myself
+							SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY = 25,	// Targets dead allies (excluding myself)
 							
 							SKILLMAGIC_TARGET_UNKNOWN = 0xffffffff
 						};
 
 
-//define fx...
-typedef struct __TABLE_FX	// FX Table
+// define fx...
+struct __TABLE_FX
 {
-	uint32_t		dwID;		// ID
-	std::string		szName;		// NOTE: adding the name of the FX
-	std::string		szFN;		// file name
-	uint32_t		dwSoundID;	// sound id
-#if __VERSION > 1264
-	uint8_t			byAOE;		// AOE ??
-#endif
-} TABLE_FX;
+	uint32_t		dwID;		// 01 ID
+	std::string		szName;		// 02 Effect name
+	std::string		szFN;		// 03 Effect filename
+	uint32_t		dwSoundID;	// 04 Sound ID
+	uint8_t			byAOE;		// 05 AOE ??
+};
 
 constexpr int	MAX_COMBO = 3;
 
@@ -1316,26 +1221,23 @@ constexpr int	FXID_REGION_POISON				= 10100;
 constexpr int	FXID_TARGET_POINTER				= 30001;
 constexpr int	FXID_ZONE_POINTER				= 30002;
 
-//define skillmagic_type4_bufftype
-enum e_SkillMagicType4	{	BUFFTYPE_MAXHP = 1,				//Max HP change
-							BUFFTYPE_AC = 2,				//AC change
-							BUFFTYPE_RESIZE = 3,			//Character size adjustment
-							BUFFTYPE_ATTACK = 4,			//Attack power
-							BUFFTYPE_ATTACKSPEED = 5,		//Attack speed
-							BUFFTYPE_SPEED = 6,				//Movement speed
-							BUFFTYPE_ABILITY = 7,			//Five abilities(str, sta, cha, dex int)
-							BUFFTYPE_RESIST = 8,			// Five types of resistance
-							BUFFTYPE_HITRATE_AVOIDRATE = 9,	//hitrate n avoidrate
-							BUFFTYPE_TRANS = 10,			// Transformation, Invisibility
-							BUFFTYPE_SLEEP = 11,			// Putting to sleep
+enum e_SkillMagicType4	{	BUFFTYPE_MAXHP = 1,				// Max HP
+							BUFFTYPE_AC = 2,				// Defense
+							BUFFTYPE_RESIZE = 3,			// Character size
+							BUFFTYPE_ATTACK = 4,			// Attack power
+							BUFFTYPE_ATTACKSPEED = 5,		// Attack speed
+							BUFFTYPE_SPEED = 6,				// Movement speed
+							BUFFTYPE_ABILITY = 7,			// Base stats (str, sta, dex, int, cha)
+							BUFFTYPE_RESIST = 8,			// Resistances (fire, ice, lightning, etc.)
+							BUFFTYPE_HITRATE_AVOIDRATE = 9,	// Hit rate / evasion rate
+							BUFFTYPE_TRANS = 10,			// Transformation/invisibility
+							BUFFTYPE_SLEEP = 11,			// Puts to sleep
 							BUFFTYPE_EYE = 12				// Vision-related							
 };
 
 enum e_SkillMagicType3	{	DDTYPE_TYPE3_DUR_OUR = 100,
 							DDTYPE_TYPE3_DUR_ENEMY = 200
 };
-
-
 
 enum e_ObjectType	{	OBJECT_TYPE_BINDPOINT,
 						OBJECT_TYPE_DOOR_LEFTRIGHT,
@@ -1347,9 +1249,9 @@ enum e_ObjectType	{	OBJECT_TYPE_BINDPOINT,
 					};
 
 //definitions related clan....
-const int	CLAN_LEVEL_LIMIT	= 20;
-const int	CLAN_COST			= 500000;
-const uint32_t KNIGHTS_FONT_COLOR	= 0xffff0000; // Font color of the knight (clan) name...
+constexpr int	CLAN_LEVEL_LIMIT		= 20;
+constexpr int	CLAN_COST				= 500000;
+constexpr uint32_t KNIGHTS_FONT_COLOR	= 0xffff0000; // Clan name font color
 
 enum e_Cursor		{	CURSOR_ATTACK,
 						CURSOR_EL_NORMAL,
@@ -1363,4 +1265,3 @@ enum e_Cursor		{	CURSOR_ATTACK,
 					};
 
 #endif // end of #define __GAME_DEF_H_
-

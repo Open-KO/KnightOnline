@@ -83,23 +83,14 @@ void CMagicSkillMng::Init()
 	m_pTbl_Type_4 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_4>;
 	m_pTbl_Type_4->LoadFromFile("Data\\Skill_Magic_4.tbl");
 
-//	m_pTbl_Type_5 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_5>;
-//	m_pTbl_Type_5->LoadFromFile("Data\\Skill_Magic_5.tbl");
-
 //	m_pTbl_Type_6 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_6>;
 //	m_pTbl_Type_6->LoadFromFile("Data\\Skill_Magic_6.tbl");
 
 	m_pTbl_Type_7 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_7>;
 	m_pTbl_Type_7->LoadFromFile("Data\\Skill_Magic_7.tbl");
 
-//	m_pTbl_Type_8 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_8>;
-//	m_pTbl_Type_8->LoadFromFile("Data\\Skill_Magic_8.tbl");
-
 //	m_pTbl_Type_9 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_9>;
 //	m_pTbl_Type_9->LoadFromFile("Data\\Skill_Magic_9.tbl");
-	
-//	m_pTbl_Type_10 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_10>;
-//	m_pTbl_Type_10->LoadFromFile("Data\\Skill_Magic_10.tbl");
 
 	m_MySelf.clear();
 
@@ -162,10 +153,8 @@ CMagicSkillMng::~CMagicSkillMng()
 	if(m_pTbl_Type_2) { delete m_pTbl_Type_2; m_pTbl_Type_2 = NULL; }
 	if(m_pTbl_Type_3) { delete m_pTbl_Type_3; m_pTbl_Type_3 = NULL; }
 	if(m_pTbl_Type_4) { delete m_pTbl_Type_4; m_pTbl_Type_4 = NULL; }
-//	if(m_pTbl_Type_5) { delete m_pTbl_Type_5; m_pTbl_Type_5 = NULL; }
 //	if(m_pTbl_Type_6) { delete m_pTbl_Type_6; m_pTbl_Type_6 = NULL; }
 	if(m_pTbl_Type_7) { delete m_pTbl_Type_7; m_pTbl_Type_7 = NULL; }
-//	if(m_pTbl_Type_8) { delete m_pTbl_Type_8; m_pTbl_Type_8 = NULL; }
 //	if(m_pTbl_Type_9) { delete m_pTbl_Type_9; m_pTbl_Type_9 = NULL; }
 //	if(m_pTbl_Type_10) { delete m_pTbl_Type_10; m_pTbl_Type_10 = NULL; }
 }
