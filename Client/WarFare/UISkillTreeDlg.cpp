@@ -955,10 +955,6 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_KA_NECROMANCER:
 					CGameBase::GetText(IDS_SKILL_INFO_MAGE3, &szStr);
 					break;
-
-				default:
-					szStr = "";
-					break;
 			}
 			break;
 	}
