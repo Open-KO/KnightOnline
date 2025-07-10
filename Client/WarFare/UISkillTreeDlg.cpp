@@ -984,9 +984,9 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		m_pStr_skill_mp->SetVisible(true);
 
 	if (spSkill->pSkill->iExhaustMSP == 0)
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_MANA_NO, &szStr);
+		CGameBase::GetText(IDS_SKILL_TOOLTIP_NO_MANA, &szStr);
 	else
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_MANA_USE, &szStr, spSkill->pSkill->iExhaustMSP);
+		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_MANA, &szStr, spSkill->pSkill->iExhaustMSP);
 
 	m_pStr_skill_mp->SetString(szStr);
 	szStr.clear();
@@ -1107,11 +1107,11 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		__ASSERT(pItem != nullptr, "NULL Item!!!");
 
 		if (pItem != nullptr)
-			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_CONSUME_ITEM, &szStr, pItem->szName.c_str());
+			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
 	}
 	else
 	{
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_CONSUME_NO, &szStr);
+		CGameBase::GetText(IDS_SKILL_TOOLTIP_USE_ITEM_NO, &szStr);
 	}
 
 	m_pStr_skill_item2->SetString(szStr);

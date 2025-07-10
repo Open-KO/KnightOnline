@@ -290,15 +290,15 @@
 #define IDS_SKILL_TOOLTIP_NEED_ITEM_ID7 4317	// Required Item : Shield
 #define IDS_SKILL_TOOLTIP_NEED_ITEM_ID8 4318	// Required Item : Bow
 #define IDS_SKILL_TOOLTIP_NEED_ITEM_ID9 4319	// Required Item : Longbow
-#define IDS_SKILL_TOOLTIP_MANA_NO	    	4320	// Doesn't use MP						
-#define IDS_SKILL_TOOLTIP_CONSUME_ITEM	4321	// Item consumed : %s
-#define IDS_SKILL_TOOLTIP_CONSUME_NO		4322	// No item consumed
-#define IDS_SKILL_TOOLTIP_MANA_USE      4323	// MP consumed : %d
-#define IDS_SKILL_TOOLTIP_NEED_LEVEL		4324	// Required Level : %d	
-#define IDS_SKILL_TOOLTIP_NEED_SKILL_PT	4325	// Required Skill Point : %d
-#define IDS_SKILL_TOOLTIP_NEED_ITEM_NO	4328	// No basic item
-#define IDS_SKILL_TOOLTIP_ITEM_NEED			4329	// Required item : %s
-#define IDS_SKILL_TOOLTIP_ITEM_NO				4330	// No required item
+#define IDS_SKILL_TOOLTIP_NO_MANA       4320	// Doesn't use MP
+#define IDS_SKILL_TOOLTIP_USE_ITEM_EXIST 4321	// Item consumed : %s
+#define IDS_SKILL_TOOLTIP_USE_ITEM_NO   4322	// No item consumed
+#define IDS_SKILL_TOOLTIP_USE_MANA      4323	// MP consumed : %d
+#define IDS_SKILL_TOOLTIP_NEED_LEVEL    4324	// Required Level : %d	
+#define IDS_SKILL_TOOLTIP_NEED_SKILL_PT 4325	// Required Skill Point : %d
+#define IDS_SKILL_TOOLTIP_NEED_ITEM_NO  4328	// No basic item
+#define IDS_SKILL_TOOLTIP_ITEM_NEED     4329	// Required item : %s
+#define IDS_SKILL_TOOLTIP_ITEM_NO       4330	// No required item
 #define IDS_SKILL_UP_INVALID            4401
 #define IDS_SKILL_USE                   4402
 #define IDS_TOOLTIP_ATTACK              4501
