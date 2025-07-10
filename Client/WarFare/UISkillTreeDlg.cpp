@@ -1019,14 +1019,14 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 
 	switch (spSkill->pSkill->iNeedSkill)												// Two-handed weapons
 	{
-		case SKILL_ID_DUAL_WEAPON_WARRIOR:
-		case SKILL_ID_DUAL_WEAPON_ROGUE:
+		case SKILL_REQUIRES_DUAL_WEAPON_WARRIOR:
+		case SKILL_REQUIRES_DUAL_WEAPON_ROGUE:
 			CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL, &szStr);
 			bFound = true;
 			break;
 
-		case SKILL_ID_DOUBLE_WEAPON_WARRIOR:
-		case SKILL_ID_DOUBLE_WEAPON_ROGUE:
+		case SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR:
+		case SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE:
 			CGameBase::GetText(IDS_SKILL_TOOLTIP_DOUBLE, &szStr);
 			bFound = true;
 			break;
@@ -1082,19 +1082,28 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	szStr.clear();
 
 	// Tooltip - item consumed
-	const std::unordered_map<uint32_t, uint32_t> specialRequiredtoConsumableItemsMap = {
-		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_WARRIOR,	SPECIAL_CONSUMED_ITEM_ID_STONE_OF_WARRIOR },
-		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_ROGUE,		SPECIAL_CONSUMED_ITEM_ID_STONE_OF_ROGUE },
-		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_MAGE,		SPECIAL_CONSUMED_ITEM_ID_STONE_OF_MAGE },
-		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_PRIEST,	SPECIAL_CONSUMED_ITEM_ID_STONE_OF_PRIEST }
-	};
-
 	uint32_t specialRequiredItemID = spSkill->pSkill->dwExhaustItem;
-	auto it = specialRequiredtoConsumableItemsMap.find(specialRequiredItemID);
-
-	if (it != specialRequiredtoConsumableItemsMap.end())
+	uint32_t specialConsumedItemID = 0;
+	
+	switch (specialRequiredItemID)
 	{
-		uint32_t specialConsumedItemID = it->second;
+		case SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_WARRIOR:
+			specialConsumedItemID = SPECIAL_CONSUMED_ITEM_ID_STONE_OF_WARRIOR;
+			break;
+		case SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_ROGUE:
+			specialConsumedItemID = SPECIAL_CONSUMED_ITEM_ID_STONE_OF_ROGUE;
+			break;
+		case SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_MAGE:
+			specialConsumedItemID = SPECIAL_CONSUMED_ITEM_ID_STONE_OF_MAGE;
+			break;
+		case SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_PRIEST:
+			specialConsumedItemID = SPECIAL_CONSUMED_ITEM_ID_STONE_OF_PRIEST;
+			break;
+		default:
+			break;
+	}
+	if (specialConsumedItemID != 0)
+	{
 		__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(specialConsumedItemID);
 		if (pItem != nullptr)
 		{
