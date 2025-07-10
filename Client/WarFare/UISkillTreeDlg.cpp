@@ -1082,7 +1082,7 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	szStr.clear();
 
 	// Tooltip - item consumed
-	static const std::unordered_map<uint32_t, uint32_t> specialRequiredtoConsumableItemsMap = {
+	const std::unordered_map<uint32_t, uint32_t> specialRequiredtoConsumableItemsMap = {
 		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_WARRIOR,	SPECIAL_CONSUMED_ITEM_ID_STONE_OF_WARRIOR },
 		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_ROGUE,		SPECIAL_CONSUMED_ITEM_ID_STONE_OF_ROGUE },
 		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_MAGE,		SPECIAL_CONSUMED_ITEM_ID_STONE_OF_MAGE },
@@ -1090,7 +1090,7 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	};
 
 	uint32_t specialRequiredItemID = spSkill->pSkill->dwExhaustItem;
-	auto it = specialRequiredtoConsumableItemsMap.find(specialItemID);
+	auto it = specialRequiredtoConsumableItemsMap.find(specialRequiredItemID);
 
 	if (it != specialRequiredtoConsumableItemsMap.end())
 	{
