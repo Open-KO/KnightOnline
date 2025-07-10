@@ -966,7 +966,8 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 // Render skill tooltip on skill hover
 void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 {
-	if (spSkill == nullptr || spSkill->pSkill == nullptr)
+	if (spSkill == nullptr 
+		|| spSkill->pSkill == nullptr)
 		return;
 
 	std::string szStr;
@@ -1080,31 +1081,33 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	m_pStr_skill_item1->SetString(szStr);
 	szStr.clear();
 
-	// Tooltip - item consumed (eg. master stone)
-	if (!m_pStr_skill_item2->IsVisible())
-		m_pStr_skill_item2->SetVisible(true);
+	// Tooltip - item consumed
+	static const std::unordered_map<uint32_t, uint32_t> specialRequiredtoConsumableItemsMap = {
+		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_WARRIOR,	SPECIAL_CONSUMED_ITEM_ID_STONE_OF_WARRIOR },
+		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_ROGUE,		SPECIAL_CONSUMED_ITEM_ID_STONE_OF_ROGUE },
+		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_MAGE,		SPECIAL_CONSUMED_ITEM_ID_STONE_OF_MAGE },
+		{ SPECIAL_REQUIRED_ITEM_ID_MASTER_SCROLL_PRIEST,	SPECIAL_CONSUMED_ITEM_ID_STONE_OF_PRIEST }
+	};
 
-	switch (spSkill->pSkill->dwExhaustItem)
+	uint32_t specialRequiredItemID = spSkill->pSkill->dwExhaustItem;
+	auto it = specialRequiredtoConsumableItemsMap.find(specialItemID);
+
+	if (it != specialRequiredtoConsumableItemsMap.end())
 	{
-		case ITEM_ID_MASTER_SCROLL_WARRIOR:
-		case ITEM_ID_MASTER_SCROLL_ROGUE:
-		case ITEM_ID_MASTER_SCROLL_MAGE:
-		case ITEM_ID_MASTER_SCROLL_PRIEST:
+		uint32_t specialConsumedItemID = it->second;
+		__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(specialConsumedItemID);
+		if (pItem != nullptr)
 		{
-			__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(spSkill->pSkill->dwExhaustItem - 4000);		// Master stones based on master scroll
-			if (pItem != nullptr)
-			{
-				CGameBase::GetTextF(IDS_SKILL_TOOLTIP_STONE_ITEM, &szStr, pItem->szName.c_str());
-			}
-			else
-			{
-				__ASSERT(0, "NULL Item!!!");
-			}
-			break;
+			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_CONSUME_ITEM, &szStr, pItem->szName.c_str());
 		}
-		default:
-			CGameBase::GetText(IDS_SKILL_TOOLTIP_STONE_NO, &szStr);
-			break;
+		else
+		{
+			__ASSERT(0, "NULL Item!!!");
+		}
+	}
+	else
+	{
+		CGameBase::GetText(IDS_SKILL_TOOLTIP_CONSUME_NO, &szStr);
 	}
 	m_pStr_skill_item2->SetString(szStr);
 	szStr.clear();
