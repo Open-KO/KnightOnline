@@ -18,17 +18,11 @@ const int SKILL_DEF_SPECIAL1 = 2;
 const int SKILL_DEF_SPECIAL2 = 3;
 const int SKILL_DEF_SPECIAL3 = 4;
 
-// Master Scrolls (items consumed)
-constexpr DWORD ITEM_ID_MASTER_SCROLL_WARRIOR		= 379063000;
-constexpr DWORD ITEM_ID_MASTER_SCROLL_ROGUE		= 379064000;
-constexpr DWORD ITEM_ID_MASTER_SCROLL_MAGE		= 379065000;
-constexpr DWORD ITEM_ID_MASTER_SCROLL_PRIEST		= 379066000;
-
-// Skill IDs requiring dual/double weapons
-constexpr int SKILL_ID_DUAL_WEAPON_WARRIOR		= 1055;
-constexpr int SKILL_ID_DUAL_WEAPON_ROGUE		= 2055;
-constexpr int SKILL_ID_DOUBLE_WEAPON_WARRIOR		= 1056;
-constexpr int SKILL_ID_DOUBLE_WEAPON_ROGUE		= 2056;
+// Skills that require dual/double weapons to use
+constexpr int SKILL_REQUIRES_DUAL_WEAPON_WARRIOR	= 1055;
+constexpr int SKILL_REQUIRES_DUAL_WEAPON_ROGUE		= 2055;
+constexpr int SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR	= 1056;
+constexpr int SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE	= 2056;
 
 //////////////////////////////////////////////////////////////////////
 
