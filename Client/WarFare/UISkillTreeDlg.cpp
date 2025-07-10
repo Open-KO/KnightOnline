@@ -963,71 +963,86 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 	m_pStr_info->Render();
 }
 
+// Render skill tooltip on skill hover
 void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 {
-	if (spSkill == nullptr
-		|| spSkill->pSkill == nullptr)
+	if (spSkill == nullptr || spSkill->pSkill == nullptr)
 		return;
 
 	std::string szStr;
 	bool bFound = false;
+	int basicTab;
 
+	// Tooltip - skill description
 	if (!m_pStr_info->IsVisible())
 		m_pStr_info->SetVisible(true);
+
 	m_pStr_info->SetString(spSkill->pSkill->szDesc);
 
-	if (spSkill->pSkill->dw1stTableType != 1
-		&& spSkill->pSkill->dw1stTableType != 2)
+	// Tooltip - MP consumed
+	if (!m_pStr_skill_mp->IsVisible())
+		m_pStr_skill_mp->SetVisible(true);
+
+	if (spSkill->pSkill->iExhaustMSP == 0)
 	{
-		if (!m_pStr_skill_mp->IsVisible())
-			m_pStr_skill_mp->SetVisible(true);
+		CGameBase::GetText(IDS_SKILL_TOOLTIP_MANA_NO, &szStr);
+	}
+	else
+	{
+		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_MANA_USE, &szStr, spSkill->pSkill->iExhaustMSP);
+	}
+	m_pStr_skill_mp->SetString(szStr);
+	szStr.clear();
 
-		if (spSkill->pSkill->iExhaustMSP == 0)
-		{
-			CGameBase::GetText(IDS_SKILL_TOOLTIP_NO_MANA, &szStr);
-		}
-		else
-		{
-			CGameBase::GetTextF(
-				IDS_SKILL_TOOLTIP_USE_MANA,
-				&szStr,
-				spSkill->pSkill->iExhaustMSP);
-		}
+	// Tooltip - Required level (basic job) or skill points (2nd job and master)
+	if (!m_pStr_skill_point->IsVisible())
+		m_pStr_skill_point->SetVisible(true);
 
-		m_pStr_skill_mp->SetString(szStr);
+	basicTab = spSkill->pSkill->iNeedSkill % 10;											// Basic skills
+	if (basicTab == 0)
+	{
+		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_NEED_LEVEL, &szStr, spSkill->pSkill->iNeedLevel);
+		m_pStr_skill_point->SetString(szStr);
+		szStr.clear();
+	}
+	else																// 2nd job and master skills
+	{
+		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_NEED_SKILL_PT, &szStr, spSkill->pSkill->iNeedLevel);
+		m_pStr_skill_point->SetString(szStr);
+		szStr.clear();
 	}
 
+	// Tooltip - required item (eg.weapon)
 	if (!m_pStr_skill_item0->IsVisible())
 		m_pStr_skill_item0->SetVisible(true);
 
-	switch (spSkill->pSkill->iNeedSkill)
+	switch (spSkill->pSkill->iNeedSkill)												// Two-handed weapons
 	{
-		case 1055:
-		case 2055:
+		case SKILL_ID_DUAL_WEAPON_WARRIOR:
+		case SKILL_ID_DUAL_WEAPON_ROGUE:
 			CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL, &szStr);
 			bFound = true;
 			break;
 
-		case 1056:
-		case 2056:
+		case SKILL_ID_DOUBLE_WEAPON_WARRIOR:
+		case SKILL_ID_DOUBLE_WEAPON_ROGUE:
 			CGameBase::GetText(IDS_SKILL_TOOLTIP_DOUBLE, &szStr);
 			bFound = true;
 			break;
 	}
-
-	if (!bFound)
+	if (!bFound)															// All other weapons
 	{
 		switch (spSkill->pSkill->dwNeedItem)
 		{
-			case 0:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1, &szStr); break;
-			case 1:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2, &szStr); break;
-			case 2:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3, &szStr); break;
-			case 3:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4, &szStr); break;
-			case 4:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5, &szStr); break;
-			case 5:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6, &szStr); break;
-			case 6:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7, &szStr); break;
-			case 7:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8, &szStr); break;
-			case 8:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9, &szStr); break;
+			case 0:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1,  &szStr); break;
+			case 1:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2,  &szStr); break;
+			case 2:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3,  &szStr); break;
+			case 3:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4,  &szStr); break;
+			case 4:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5,  &szStr); break;
+			case 5:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6,  &szStr); break;
+			case 6:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7,  &szStr); break;
+			case 7:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8,  &szStr); break;
+			case 8:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9,  &szStr); break;
 			case 10:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10, &szStr); break;
 			case 11:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11, &szStr); break;
 			case 12:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12, &szStr); break;
@@ -1036,27 +1051,26 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 			case 22:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15, &szStr); break;
 			case 23:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16, &szStr); break;
 			case 24:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17, &szStr); break;
-			default:	szStr.clear(); break;
+			default:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_NO,	 &szStr); break;
 		}
 	}
 	m_pStr_skill_item0->SetString(szStr);
+	szStr.clear();
 
+	// Tooltip - item required (eg. scroll or arrows)
 	if (!m_pStr_skill_item1->IsVisible())
 		m_pStr_skill_item1->SetVisible(true);
 
 	if (spSkill->pSkill->dwExhaustItem == 0)
 	{
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_USE_ITEM_NO, &szStr);
+		CGameBase::GetText(IDS_SKILL_TOOLTIP_ITEM_NO, &szStr);
 	}
 	else
 	{
 		__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(spSkill->pSkill->dwExhaustItem);
 		if (pItem != nullptr)
 		{
-			CGameBase::GetTextF(
-				IDS_SKILL_TOOLTIP_USE_ITEM_EXIST,
-				&szStr,
-				pItem->szName.c_str());
+			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_ITEM_NEED, &szStr, pItem->szName.c_str());
 		}
 		else
 		{
@@ -1064,29 +1078,65 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		}
 	}
 	m_pStr_skill_item1->SetString(szStr);
+	szStr.clear();
+
+	// Tooltip - item consumed (eg. master stone)
+	if (!m_pStr_skill_item2->IsVisible())
+		m_pStr_skill_item2->SetVisible(true);
+
+	switch (spSkill->pSkill->dwExhaustItem)
+	{
+		case ITEM_ID_MASTER_SCROLL_WARRIOR:
+		case ITEM_ID_MASTER_SCROLL_ROGUE:
+		case ITEM_ID_MASTER_SCROLL_MAGE:
+		case ITEM_ID_MASTER_SCROLL_PRIEST:
+		{
+			__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(spSkill->pSkill->dwExhaustItem - 4000);		// Master stones based on master scroll
+			if (pItem != nullptr)
+			{
+				CGameBase::GetTextF(IDS_SKILL_TOOLTIP_STONE_ITEM, &szStr, pItem->szName.c_str());
+			}
+			else
+			{
+				__ASSERT(0, "NULL Item!!!");
+			}
+			break;
+		}
+		default:
+			CGameBase::GetText(IDS_SKILL_TOOLTIP_STONE_NO, &szStr);
+			break;
+	}
+	m_pStr_skill_item2->SetString(szStr);
+	szStr.clear();
 
 	m_pStr_info->Render();
 	m_pStr_skill_mp->Render();
+	m_pStr_skill_point->Render();
 	m_pStr_skill_item0->Render();
 	m_pStr_skill_item1->Render();
+	m_pStr_skill_item2->Render();
 }
 
 void CUISkillTreeDlg::TooltipRenderDisable()
 {
 	m_pStr_info->SetVisible(false);
 	m_pStr_skill_mp->SetVisible(false);
+	m_pStr_skill_point->SetVisible(false);
 	m_pStr_skill_item0->SetVisible(false);
 	m_pStr_skill_item1->SetVisible(false);
+	m_pStr_skill_item2->SetVisible(false);
 }
 
 void CUISkillTreeDlg::InitIconWnd(e_UIWND eWnd)
 {
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	m_pStr_info			= (CN3UIString* )GetChildByID("string_info");			__ASSERT(m_pStr_info, "NULL UI Component!!");
-	m_pStr_skill_mp		= (CN3UIString* )GetChildByID("string_skill_mp");		__ASSERT(m_pStr_skill_mp, "NULL UI Component!!");
-	m_pStr_skill_item0	= (CN3UIString* )GetChildByID("string_skill_item0");	__ASSERT(m_pStr_skill_item0, "NULL UI Component!!");
-	m_pStr_skill_item1	= (CN3UIString* )GetChildByID("string_skill_item1");	__ASSERT(m_pStr_skill_item1, "NULL UI Component!!");
+	m_pStr_info		= (CN3UIString*) GetChildByID("string_info");		__ASSERT(m_pStr_info, "NULL UI Component!!");
+	m_pStr_skill_mp		= (CN3UIString*) GetChildByID("string_skill_mp");	__ASSERT(m_pStr_skill_mp, "NULL UI Component!!");
+	m_pStr_skill_point	= (CN3UIString*) GetChildByID("string_skill_point");	__ASSERT(m_pStr_skill_point, "NULL UI Component!!");
+	m_pStr_skill_item0	= (CN3UIString*) GetChildByID("string_skill_item0");	__ASSERT(m_pStr_skill_item0, "NULL UI Component!!");
+	m_pStr_skill_item1	= (CN3UIString*) GetChildByID("string_skill_item1");	__ASSERT(m_pStr_skill_item1, "NULL UI Component!!");
+	m_pStr_skill_item2	= (CN3UIString*) GetChildByID("string_skill_item2");	__ASSERT(m_pStr_skill_item2, "NULL UI Component!!");
 }
 
 void CUISkillTreeDlg::InitIconUpdate()
