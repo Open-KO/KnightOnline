@@ -247,9 +247,9 @@ public:
 	void	CommandCameraChange(); // 카메라 시점 바꾸기..
 	void	CommandSitDown(bool bLimitInterval, bool bSitDown, bool bImmediately = false);
 
-	void	CommandTargetSelect_NearstEnemy(); // 가장 가까운 적 타겟 잡기..
-	void	CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
-	void	CommandTargetSelect_NearstNPC(); // target nearest NPC
+	void	CommandTargetSelect_NearestEnemy(); // 가장 가까운 적 타겟 잡기..
+	void	CommandTargetSelect_NearestOurForce(); // 가장 가까운 파티 타겟잡기..
+	void	CommandTargetSelect_NearestNPC(); // target nearest NPC
 
 	void	CloseUIs(); // 각종 상거래, 워프등등... UI 닫기..
 

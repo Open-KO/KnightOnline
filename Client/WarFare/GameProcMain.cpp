@@ -1250,12 +1250,12 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 			CommandToggleAttackContinous();		// 자동 공격..
 		if (s_pLocalInput->IsKeyPress(KM_TOGGLE_RUN))
 			CommandToggleWalkRun();				// 걷기 / 뛰기 토글	
-		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_ENEMY))
-			CommandTargetSelect_NearstEnemy();	// 가장 가까운 적 타겟 잡기..
-		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_PARTY))
-			CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
-		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_NPC)) // target nearest NPC with 'B'
-			CommandTargetSelect_NearstNPC();
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_ENEMY))
+			CommandTargetSelect_NearestEnemy();	// 가장 가까운 적 타겟 잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_PARTY))
+			CommandTargetSelect_NearestOurForce(); // 가장 가까운 파티 타겟잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_NPC)) // target nearest NPC with 'B'
+			CommandTargetSelect_NearestNPC();
 
 		float fRotKeyDelta = D3DXToRadian(60); // 초당 60 도 돌기..
 		if(s_pLocalInput->IsKeyDown(KM_ROTATE_LEFT) || s_pLocalInput->IsKeyDown(DIK_LEFT))	
@@ -5261,15 +5261,15 @@ void CGameProcMain::CommandSitDown(bool bLimitInterval, bool bSitDown, bool bImm
 }
 
 // 가장 가까운 적 타겟 잡기..
-void CGameProcMain::CommandTargetSelect_NearstEnemy()
+void CGameProcMain::CommandTargetSelect_NearestEnemy()
 {
-	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearstEnemy(s_pPlayer->m_InfoBase.eNation, s_pPlayer->Position());
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearestEnemy(s_pPlayer->m_InfoBase.eNation, s_pPlayer->Position());
 	TargetSelect(pTarget);
 	s_pPlayer->RotateTo(pTarget);
 }
 
 // 가장 가까운 파티 타겟잡기..
-void CGameProcMain::CommandTargetSelect_NearstOurForce()
+void CGameProcMain::CommandTargetSelect_NearestOurForce()
 {
 	CPlayerOther* pTarget = m_pUIPartyOrForce->MemberGetByNearst(s_pPlayer->Position());
 	TargetSelect(pTarget);
@@ -5277,9 +5277,9 @@ void CGameProcMain::CommandTargetSelect_NearstOurForce()
 }
 
 // select closest NPC
-void CGameProcMain::CommandTargetSelect_NearstNPC()
+void CGameProcMain::CommandTargetSelect_NearestNPC()
 {
-	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearstNPC(s_pPlayer->Position());
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearestNPC(s_pPlayer->Position());
 	TargetSelect(pTarget);
 	s_pPlayer->RotateTo(pTarget);
 }

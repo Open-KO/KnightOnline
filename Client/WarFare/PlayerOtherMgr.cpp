@@ -490,7 +490,7 @@ void CPlayerOtherMgr::MoveToCorpsesForcely(CPlayerNPC* pNPC, bool bErase)
 	}
 }
 
-CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearstEnemy(e_Nation eNation, const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
+CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearestEnemy(e_Nation eNation, const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
 {
 	CPlayerNPC* pTarget = NULL;
 	float fDistMin = FLT_MAX, fDistTmp = 0;
@@ -576,7 +576,7 @@ bool CPlayerOtherMgr::CharacterDelete(int iID) // User, NPC 안 가리고 지운
 	return false;
 }
 
-CPlayerNPC* CPlayerOtherMgr::CharacterGetByNearstNPC(const __Vector3& vPosPlayer)
+CPlayerNPC* CPlayerOtherMgr::CharacterGetByNearestNPC(const __Vector3& vPosPlayer)
 {
 	CPlayerNPC* pTarget = nullptr;
 
