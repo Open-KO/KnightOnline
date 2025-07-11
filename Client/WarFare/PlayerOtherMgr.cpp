@@ -578,27 +578,16 @@ bool CPlayerOtherMgr::CharacterDelete(int iID) // User, NPC 안 가리고 지운
 
 CPlayerNPC* CPlayerOtherMgr::CharacterGetByNearstNPC(const __Vector3& vPosPlayer)
 {
-	
 	CPlayerNPC* pTarget = nullptr;
-	
+
+	const float fMaxViewDistance = static_cast<float>(s_Options.iViewDist);
 	float fDistMin = FLT_MAX;
-	
-	float fMaxViewDistance = static_cast<float>(CN3Base::s_Options.iViewDist);
 
-	for (const auto& it : m_NPCs)
+	for (const auto& [_, pNPC] : m_NPCs)
 	{
-		CPlayerNPC* pNPC = it.second;
-
-		if (pNPC == nullptr)
-			continue;
-
-		//filter base,myself,other
-		if (pNPC->m_ePlayerType != PLAYER_NPC)
-			continue;
-
 		float fDist = pNPC->Distance(vPosPlayer);
 
-		//filter npcs which are further than max view distance
+		// filter out NPCs that are further away than max view distance
 		if (fDist > fMaxViewDistance)
 			continue;
 
@@ -611,7 +600,6 @@ CPlayerNPC* CPlayerOtherMgr::CharacterGetByNearstNPC(const __Vector3& vPosPlayer
 
 	return pTarget;
 }
-
 
 int CPlayerOtherMgr::SortByCameraDistance(const void* pArg1, const void* pArg2)
 {

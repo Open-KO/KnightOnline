@@ -249,7 +249,7 @@ public:
 
 	void	CommandTargetSelect_NearstEnemy(); // 가장 가까운 적 타겟 잡기..
 	void	CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
-	void	CommandTargetSelect_NearstNPC(); // target nearest npc
+	void	CommandTargetSelect_NearstNPC(); // target nearest NPC
 
 	void	CloseUIs(); // 각종 상거래, 워프등등... UI 닫기..
 
