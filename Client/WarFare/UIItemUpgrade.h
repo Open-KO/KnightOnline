@@ -36,6 +36,16 @@ public:
 	__IconItemSkill* m_pUpgradeItemSlot;	// Which item to upgrade
 	int8_t m_iUpgradeSlotInvPos[10];
 	CN3UIString* m_pStrMyGold;
+	float m_fGuillotineTimer = 3.0f;
+	float m_fGuillotineAnimationDuration = 0.1f;
+	bool m_bGuillotineActive = false;
+	bool m_bUpgradeSuccesfull = false;
+	bool m_bReceivedResultFromServer = false;
+	bool m_bFlipFlopActive;
+	float m_fFlipFlopTimer;
+	int m_iCurrentFlipFlopFrame;
+	POINT m_ptCover1Start, m_ptCover1End;
+	POINT m_ptCover2Start, m_ptCover2End;
 
 
 	CUIImageTooltipDlg* m_pUITooltipDlg;
@@ -57,7 +67,8 @@ protected:
 	int					GetItemiOrder(__IconItemSkill* spItem, e_UIWND_DISTRICT eWndDist);
 	RECT GetSampleRect();
 	e_UIWND_DISTRICT	GetWndDistrict(__IconItemSkill* spItem);
-	void				SendToServerUpgradeMsg(int itemID, byte pos, int iCount){};
+	void				SendToServerUpgradeMsg(int itemID, byte pos, int iCount)
+	{};
 
 public:
 	CUIItemUpgrade();
@@ -91,7 +102,8 @@ public:
 	void				ItemMoveFromThisToInv();
 	void                RestoreInventoryFromBackup();
 	void				GoldUpdate();
-	void				InitIconUpdate() {} ;
+	void				InitIconUpdate()
+	{};
 	bool				IsUpgradeScrollorTrina(uint32_t dwID);
 	bool				IsAllowedUpgradeItem(__IconItemSkill* spItem);
 	void				DeleteIconItemSkill(__IconItemSkill*& pItem);
@@ -99,7 +111,8 @@ public:
 	void				MsgRecv_ItemUpgrade(Packet& pkt);
 	void				DoAnimationGuillotine();
 	void				DoAnimationUpgradeFail();
-	void				DoAnimationUpgradeSuccesfull();
+	void				FlipFlopAnim();
+	void				Tick() override;
 };
 
 #endif // !defined(AFX_UIItemUpgrade_H__fd9f5093_0ed3_4c08_9e31_19c40773b24d__INCLUDED_)

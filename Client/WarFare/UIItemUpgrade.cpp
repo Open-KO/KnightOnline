@@ -51,7 +51,7 @@ CUIItemUpgrade::CUIItemUpgrade()
 		m_pMyUpgradeSLot[i] = NULL;
 		m_iUpgradeSlotInvPos[i] = -1;
 	}
-	
+
 
 
 	for (i = 0; i < MAX_ITEM_INVENTORY; i++)
@@ -98,6 +98,70 @@ void CUIItemUpgrade::Release()
 	m_pStrMyGold = NULL;
 }
 
+void CUIItemUpgrade::Tick()
+{
+
+
+	if (m_bGuillotineActive && m_pImageCover1 && m_pImageCover2)
+	{
+		const float animDuration = 0.5f; // animasyon süresi (saniye)
+		m_fGuillotineTimer += CN3Base::s_fSecPerFrm;
+		float t = m_fGuillotineTimer / animDuration;
+		if (t > 1.0f) t = 1.0f;
+
+		 // Opaklık (alpha) hesapla: 1.0 -> 0.0
+		float fAlpha = 1.0f - t;
+		if (fAlpha < 0.0f) fAlpha = 0.0f;
+
+		// Upgrade ana item slotu için
+		if (m_pUpgradeItemSlot && m_pUpgradeItemSlot->pUIIcon)
+		{
+			D3DCOLOR color = m_pUpgradeItemSlot->pUIIcon->GetColor();
+			color = (color & 0x00FFFFFF) | (static_cast<int>(fAlpha * 255) << 24);
+			m_pUpgradeItemSlot->pUIIcon->SetColor(color);
+		}
+
+		for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; ++i)
+		{
+			if (m_pMyUpgradeSLot[i] && m_pMyUpgradeSLot[i]->pUIIcon)
+			{
+				D3DCOLOR color = m_pMyUpgradeSLot[i]->pUIIcon->GetColor();
+				color = (color & 0x00FFFFFF) | (static_cast<int>(fAlpha * 255) << 24);
+				m_pMyUpgradeSLot[i]->pUIIcon->SetColor(color);
+			}
+		}
+
+		// Lineer interpolasyon ile pozisyonu hesapla
+		int y1 = (int) (m_ptCover1Start.y + (m_ptCover1End.y - m_ptCover1Start.y) * t);
+		int y2 = (int) (m_ptCover2Start.y + (m_ptCover2End.y - m_ptCover2Start.y) * t);
+
+		RECT rc1 = m_pImageCover1->GetRegion();
+		int height1 = rc1.bottom - rc1.top;
+		rc1.top = y1;
+		rc1.bottom = y1 + height1;
+		m_pImageCover1->SetRegion(rc1);
+		m_pImageCover1->SetVisible(true);
+
+		RECT rc2 = m_pImageCover2->GetRegion();
+		int height2 = rc2.bottom - rc2.top;
+		rc2.top = y2;
+		rc2.bottom = y2 + height2;
+		m_pImageCover2->SetRegion(rc2);
+		m_pImageCover2->SetVisible(true);
+
+		if (t >= 1.0f)
+		{
+			m_bGuillotineActive = false;
+			m_pImageCover1->SetVisible(false);
+			m_pImageCover2->SetVisible(false);
+			//FlipFlopAnim();
+			// Animasyon bittiğinde isterseniz burada başka bir şey yapabilirsiniz
+		}
+	}
+
+	CN3UIBase::Tick();
+}
+
 void CUIItemUpgrade::Render()
 {
 	if (!m_bVisible) return;
@@ -113,12 +177,10 @@ void CUIItemUpgrade::Render()
 	for (UIListReverseItor itor = m_Children.rbegin(); m_Children.rend() != itor; ++itor)
 	{
 		CN3UIBase* pChild = (*itor);
-		if (pChild->GetID().find("img_cover") && pChild->GetID().find("img_s_load") && pChild->GetID().find("img_f_load"))
-		{
-			if ((GetState() == UI_STATE_ICON_MOVING) && (pChild->UIType() == UI_TYPE_ICON) && (CN3UIWndBase::m_sSelectedIconInfo.pItemSelect) &&
-				((CN3UIIcon*) pChild == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon))	continue;
-			pChild->Render();
-		}
+		if ((GetState() == UI_STATE_ICON_MOVING) && (pChild->UIType() == UI_TYPE_ICON) && (CN3UIWndBase::m_sSelectedIconInfo.pItemSelect) &&
+			((CN3UIIcon*) pChild == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon))	continue;
+		pChild->Render();
+
 		if ((GetState() == UI_STATE_COMMON_NONE) &&
 			(pChild->UIType() == UI_TYPE_ICON) && (pChild->GetStyle() & UISTYLE_ICON_HIGHLIGHT))
 		{
@@ -506,7 +568,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 										pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
 									}
 								}
-				}
+							}
 							else
 							{
 								// if is not countable item, just move it
@@ -520,7 +582,7 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 									pSrc->pUIIcon->SetMoveRect(pSlotArea->GetRegion());
 								}
 							}
-						    m_iUpgradeSlotInvPos[iDestiOrder] = iSourceOrder;
+						m_iUpgradeSlotInvPos[iDestiOrder] = iSourceOrder;
 					}
 				}
 				FAIL_RETURN
@@ -556,7 +618,7 @@ void CUIItemUpgrade::IconRestore()
 	{
 		if (m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
 		{
-			pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder,"a_slot_");
+			pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder, "a_slot_");
 			if (pArea)
 			{
 				m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
@@ -619,7 +681,7 @@ RECT CUIItemUpgrade::GetSampleRect()
 	RECT rect;
 	CN3UIArea* pArea;
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
-	pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, 0,"a_slot_");
+	pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, 0, "a_slot_");
 	rect = pArea->GetRegion();
 	float fWidth = (float) (rect.right - rect.left);
 	float fHeight = (float) (rect.bottom - rect.top);
@@ -665,8 +727,8 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			RestoreInventoryFromBackup();
 		else if (pSender == m_pBtnOk)
 		{
-			DoAnimationGuillotine();
 			SendToServerUpgradeMsg();
+
 		}
 	}
 
@@ -690,8 +752,8 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			eUIWnd = GetWndDistrict(spItem);
 			if (eUIWnd == UIWND_DISTRICT_UPGRADE_SLOT)
 				FAIL_CODE
-			if (eUIWnd == UIWND_DISTRICT_UNKNOWN)	FAIL_CODE
-				CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = eUIWnd;
+				if (eUIWnd == UIWND_DISTRICT_UNKNOWN)	FAIL_CODE
+					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = eUIWnd;
 			iOrder = GetItemiOrder(spItem, eUIWnd);
 			if (iOrder == -1)	FAIL_CODE
 				CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder = iOrder;
@@ -775,6 +837,18 @@ bool CUIItemUpgrade::Load(HANDLE hFile)
 	m_pImageCover1 = (CN3UIImage*) (this->GetChildByID("img_cover_01"));			__ASSERT(m_pImageCover1, "NULL UI Component!!");
 	m_pImageCover2 = (CN3UIImage*) (this->GetChildByID("img_cover_02"));			__ASSERT(m_pImageCover1, "NULL UI Component!!");
 
+	m_pImageCover1->SetVisible(false);
+	m_pImageCover2->SetVisible(false);
+	for (int i = 0; i < 20; ++i)
+	{
+		char szID[32];
+		sprintf(szID, "img_s_load_%d", i);
+		if (CN3UIImage* pImg = (CN3UIImage*) GetChildByID(szID))
+			pImg->SetVisible(false);
+		sprintf(szID, "img_f_load_%d", i);
+		if (CN3UIImage* pImg = (CN3UIImage*) GetChildByID(szID))
+			pImg->SetVisible(false);
+	}
 
 
 	return true;
@@ -820,6 +894,7 @@ void CUIItemUpgrade::RestoreInventoryFromBackup()
 	}
 
 	DeleteIconItemSkill(m_pUpgradeItemSlot);
+	DeleteIconItemSkill(m_pUpgradeResultSlot);
 
 
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
@@ -875,7 +950,7 @@ bool CUIItemUpgrade::IsAllowedUpgradeItem(__IconItemSkill* spItem)
 {
 	if (spItem && spItem->pItemBasic)
 	{
-		
+
 		if (spItem->pItemBasic->byAttachPoint == ITEM_POS_FINGER // Ring
 			|| spItem->pItemBasic->byAttachPoint == ITEM_POS_NECK // Necklace
 			|| spItem->pItemBasic->byAttachPoint == ITEM_POS_BELT // Belt
@@ -918,7 +993,7 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 	CAPISocket::MP_AddByte(byBuff, iOffset, ITEM_UPGRADE_PROCESS);
 
 	// 3. Upgrade tipi (Normal: 1)
-	CAPISocket::MP_AddByte(byBuff, iOffset,  1);
+	CAPISocket::MP_AddByte(byBuff, iOffset, 1);
 
 	// 4. NPC ID (örnek: 0 veya aktif anvil NPC'sinin ID'si)
 	uint16_t sNpcID = 1; // Gerekirse aktif NPC'nin ID'sini buraya ekle
@@ -949,17 +1024,19 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 			CAPISocket::MP_AddDword(byBuff, iOffset, nItemID[i + 1]);
 			CAPISocket::MP_AddByte(byBuff, iOffset, bPos[i + 1]);
 		}
-	
+
 
 	}
 
 	// Paketi gönder
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
+	DoAnimationGuillotine();
 }
 
 
 void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 {
+	m_bReceivedResultFromServer = true;
 
 	int8_t result = pkt.read<uint8_t>(); // 1: başarılı, 0: başarısız gibi
 	uint32_t nItemID[10];
@@ -969,7 +1046,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		pkt >> nItemID[i];
 		pkt >> bPos[i];
 	}
-	
+
 	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
 	std::string szMsg;
 	__TABLE_ITEM_EXT* itemExt = NULL;
@@ -985,13 +1062,16 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 	if (result == 0)
 	{
-		DoAnimationUpgradeFail() ;
+		m_bUpgradeSuccesfull = false;
 		UpdateBackupUpgradeInv();
+		CGameBase::GetText(6701, &szMsg);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_RGBA(255, 60, 60, 255));
 	}
 	else if (result == 1)
 	{
-		DoAnimationUpgradeSuccesfull();
-		
+		m_bUpgradeSuccesfull = true;
+		CGameBase::GetText(6700, &szMsg);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_RGBA(255, 255, 0, 255));
 
 
 				//CGameBase::GetText(IDS_UPGRADE_SUCCEEDED, &szMsg);
@@ -1026,42 +1106,102 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 			spItemNew->pUIIcon->SetParent(this);
 		}
 
-		CN3UIWndBase::AllHighLightIconFree();
-		SetState(UI_STATE_COMMON_NONE);
 
+
+		m_pMyUpgradeInv[bPos[0]] = spItemNew;
 		UpdateBackupUpgradeInv();
+		
 
 	}
 	else
 	{
-		
+
 	}
-	
+
 	RestoreInventoryFromBackup();
 	CN3UIWndBase::AllHighLightIconFree();
 	SetState(UI_STATE_COMMON_NONE);
 
+
 }
 void CUIItemUpgrade::DoAnimationGuillotine()
 {
-	// Giyotin animasyonunu başlatmak için gerekli kodları buraya ekleyin.
-	// Örneğin, bir görseli görünür yapmak veya bir animasyon başlatmak gibi.
-	if (m_pImageCover1) m_pImageCover1->SetVisible(true);
-	if (m_pImageCover2) m_pImageCover2->SetVisible(true);
+	m_bGuillotineActive = true;
+	m_fGuillotineTimer = 0.0f; // animasyon başı
 
+	// Başlangıç ve bitiş pozisyonlarını ayarla
+	if (m_pImageCover1 && m_pImageCover2)
+	{
+		RECT rc1 = m_pImageCover1->GetRegion();
+		RECT rc2 = m_pImageCover2->GetRegion();
 
-	// Eğer bir animasyon sistemi varsa burada başlatılabilir.
-	// Örn: m_pImageGuillotine->PlayAnimation();
+		// Üst resim yukarıda başlasın
+		m_ptCover1Start.x = rc1.left;
+		m_ptCover1Start.y = rc1.top - (rc1.bottom - rc1.top); // yukarıda başlat
+		m_ptCover1End.x = rc1.left;
+		m_ptCover1End.y = rc1.top; // orijinal pozisyon
+
+		// Alt resim aşağıda başlasın
+		m_ptCover2Start.x = rc2.left;
+		m_ptCover2Start.y = rc2.top + (rc2.bottom - rc2.top); // aşağıda başlat
+		m_ptCover2End.x = rc2.left;
+		m_ptCover2End.y = rc2.top; // orijinal pozisyon
+
+		// Başlangıç pozisyonlarına yerleştir
+		RECT rcMove1 = rc1;
+		rcMove1.top = m_ptCover1Start.y;
+		rcMove1.bottom = rcMove1.top + (rc1.bottom - rc1.top);
+		m_pImageCover1->SetRegion(rcMove1);
+		m_pImageCover1->SetVisible(true);
+
+		RECT rcMove2 = rc2;
+		rcMove2.top = m_ptCover2Start.y;
+		rcMove2.bottom = rcMove2.top + (rc2.bottom - rc2.top);
+		m_pImageCover2->SetRegion(rcMove2);
+		m_pImageCover2->SetVisible(true);
+	}
 }
+
 
 void CUIItemUpgrade::DoAnimationUpgradeFail()
 {
 
 }
-void CUIItemUpgrade::DoAnimationUpgradeSuccesfull()
+
+void CUIItemUpgrade::FlipFlopAnim()
 {
-	
+
+
+	for (int i = 0; i < 20; ++i)
+	{
+		char szID[32];
+		char szID1[32];
+		if(m_bUpgradeSuccesfull)
+		{
+			sprintf(szID, "img_s_load_%d", i);
+			sprintf(szID1, "img_s_load_%d", i-1);
+		}
+		else
+		{
+			sprintf(szID, "img_f_load_%d", i);
+			sprintf(szID1, "img_f_load_%d", i-1);
+		}
+		CN3UIImage* pImg = (CN3UIImage*) GetChildByID(szID);
+		if (!pImg) continue; // Eğer resim yoksa devam et
+		pImg->SetVisible(true);
+
+		if (i == -1) continue; 
+		CN3UIImage* pImg1 = (CN3UIImage*) GetChildByID(szID1);
+		if (pImg1)
+		{
+			pImg1->SetVisible(false);
+		}
+
+
+
+	}
 }
+
 
 
 
