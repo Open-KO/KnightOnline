@@ -55,6 +55,7 @@ public:
 	CPlayerNPC*			NPCGetByPos(const __Vector3& vPos);
 	CPlayerNPC*			CharacterGetByID(int iID, bool bFromAliveOnly); // User, NPC 안 가리고 가져온다..
 	CPlayerNPC*			CharacterGetByNearstEnemy(e_Nation eNation, const __Vector3& vPosPlayer); // 가장 가까운 적 가져오기..
+	CPlayerNPC*			CharacterGetByNearstNPC(const __Vector3& vPosPlayer);
 	bool				CharacterDelete(int iID); // User, NPC 안 가리고 지운다..
 
 	CPlayerBase*		CorpseGetByID(int iID);							// 시체들에서 Player Character 와 NPC 를 조사해서 포인터를 가져온다.

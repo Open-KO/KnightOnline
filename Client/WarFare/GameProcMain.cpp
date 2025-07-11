@@ -1254,6 +1254,8 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 			this->CommandTargetSelect_NearstEnemy();	// 가장 가까운 적 타겟 잡기..
 		if(s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_PARTY))
 			this->CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_NPC)) //target nearest NPC with button B
+			this->CommandTargetSelect_NearstNPC();
 
 		float fRotKeyDelta = D3DXToRadian(60); // 초당 60 도 돌기..
 		if(s_pLocalInput->IsKeyDown(KM_ROTATE_LEFT) || s_pLocalInput->IsKeyDown(DIK_LEFT))	
@@ -5268,6 +5270,13 @@ void CGameProcMain::CommandTargetSelect_NearstEnemy() // 가장 가까운 적 �
 void CGameProcMain::CommandTargetSelect_NearstOurForce() // 가장 가까운 파티 타겟잡기..
 {
 	CPlayerOther* pTarget = m_pUIPartyOrForce->MemberGetByNearst(s_pPlayer->Position());
+	this->TargetSelect(pTarget);
+	s_pPlayer->RotateTo(pTarget);
+}
+
+void CGameProcMain::CommandTargetSelect_NearstNPC() // select closest NPC
+{
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearstNPC(s_pPlayer->Position());
 	this->TargetSelect(pTarget);
 	s_pPlayer->RotateTo(pTarget);
 }
