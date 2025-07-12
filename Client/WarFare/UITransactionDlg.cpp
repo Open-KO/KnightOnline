@@ -782,7 +782,7 @@ void CUITransactionDlg::ReceiveItemDropByTradeSuccess()
 bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 {
 	// Temp Define 
-	auto FAIL_RETURN = [&]() -> bool
+	auto fail_return = [&]() -> bool
 		{
 			CN3UIWndBase::AllHighLightIconFree();
 			SetState(UI_STATE_COMMON_NONE);
@@ -795,11 +795,11 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 	// If it is not an icon I owned
 	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != m_eUIWnd)
-		FAIL_RETURN();
+		return fail_return();
 
 	if ( (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_TRADE_NPC) &&
 			(CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_TRADE_MY) )
-		FAIL_RETURN();
+		return fail_return();
 
 	// If it is an icon I owned, check whether it is in the NPC area
 	int iDestiOrder = -1; bool bFound = false;
@@ -828,12 +828,12 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 		}
 	}
 
-	if (!bFound) FAIL_RETURN();
+	if (!bFound) return fail_return();
 
 	//  Movement within the same window is a fail!
 	if ((eUIWnd == CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict) && 
 		(eUIWnd != UIWND_DISTRICT_TRADE_MY))	
-		FAIL_RETURN();
+		return fail_return();
 
 	// Start using Recovery Info in earnest
 	// First, set WaitFromServer to On, then copy Select Info to Recovery Info 
@@ -910,7 +910,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 								s_bWaitFromServer				= false;
 								m_sRecoveryJobInfo.pItemSource	= nullptr;
 								m_sRecoveryJobInfo.pItemTarget	= nullptr;
-								FAIL_RETURN();
+								return fail_return();
 							}
 						}
 					}
@@ -919,7 +919,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					s_bWaitFromServer							= false;
 
 					m_pCountableItemEdit->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
-					FAIL_RETURN();
+					return fail_return();
 				}
 				else
 				{
@@ -935,7 +935,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						s_bWaitFromServer				= false;
 						m_sRecoveryJobInfo.pItemSource	= nullptr;
 						m_sRecoveryJobInfo.pItemTarget	= nullptr;
-						FAIL_RETURN();
+						return fail_return();
 					}
 
 					// Weight check.
@@ -948,7 +948,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						s_bWaitFromServer				= false;
 						m_sRecoveryJobInfo.pItemSource	= nullptr;
 						m_sRecoveryJobInfo.pItemTarget	= nullptr;
-						FAIL_RETURN();
+						return fail_return();
 					}
 
 					// In case of a normal item...
@@ -971,7 +971,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 							s_bWaitFromServer				= false;
 							m_sRecoveryJobInfo.pItemSource	= nullptr;
 							m_sRecoveryJobInfo.pItemTarget	= nullptr;
-							FAIL_RETURN();
+							return fail_return();
 						}
 
 						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
@@ -1015,7 +1015,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					}
 
 					m_pMyTradeInv[iDestiOrder] = spItemNew;
-					FAIL_RETURN();
+					return fail_return();
 				}
 			}
 			else
@@ -1023,7 +1023,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 				s_bWaitFromServer				= false;
 				m_sRecoveryJobInfo.pItemSource	= nullptr;
 				m_sRecoveryJobInfo.pItemTarget	= nullptr;
-				FAIL_RETURN();
+				return fail_return();
 			}
 			break;
 
@@ -1058,7 +1058,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					// Set to invisible and delete only when the server confirms success.
 					spItem->pUIIcon->SetVisible(false);
 				}
-				FAIL_RETURN();
+				return fail_return();
 			}
 			else	
 			{
@@ -1106,7 +1106,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder, 
 						iDestiOrder );
 				//TRACE("Source %d, Target %d \n", CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder, iDestiOrder);
-				FAIL_RETURN();
+				return fail_return();
 			}				
 			break;
 		}
