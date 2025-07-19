@@ -5647,6 +5647,13 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 			this->MsgOutput(szMsg, 0xff00ff00);
 		}
 	}
+	else if (OBJECT_TYPE_WARP_POINT == iType)	// Wrong warp gate
+	{
+		std::string szMsg;
+		if (0x00 == iResult)
+			GetText(IDS_WARP_WRONG_GATE, &szMsg);
+		this->MsgOutput(szMsg, 0xff00ff00);
+	}
 	else
 	{
 		__ASSERT(0, "Unknown Object Event");

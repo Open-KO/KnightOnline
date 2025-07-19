@@ -14,6 +14,7 @@
 #define IDS_BIND_POINT_FAILED           1001
 #define IDS_BIND_POINT_REQUEST_FAIL     1002
 #define IDS_BIND_POINT_SUCCESS          1003
+#define IDS_WARP_WRONG_GATE				1004	// You've selected the wrong Warp Gate.
 #define IDS_CHAT_SELECT_TARGET_FAIL     1101
 #define IDS_CHAT_SELECT_TARGET_SUCCESS  1102
 #define IDS_CHR_SELECT_FMT_INFO         1201
