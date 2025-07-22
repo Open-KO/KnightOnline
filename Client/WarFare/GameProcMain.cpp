@@ -5551,17 +5551,17 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 	int iType = pkt.read<uint8_t>();		// Event Type
 	int iResult = pkt.read<uint8_t>();
 
-	if (OBJECT_TYPE_BINDPOINT == iType)
+	if (iType == OBJECT_TYPE_BINDPOINT)
 	{
 		std::string szMsg;
-		if (0x01 == iResult)
+		if (iResult == 1)
 			GetText(IDS_BIND_POINT_FAILED, &szMsg);
-		this->MsgOutput(szMsg, 0xff00ff00);
+		MsgOutput(szMsg, 0xff00ff00);
 	}
-	else if (OBJECT_TYPE_DOOR_LEFTRIGHT == iType
-		|| OBJECT_TYPE_DOOR_TOPDOWN == iType
-		|| OBJECT_TYPE_LEVER_TOPDOWN == iType
-		|| OBJECT_TYPE_FLAG == iType)
+	else if (iType == OBJECT_TYPE_DOOR_LEFTRIGHT
+		|| iType == OBJECT_TYPE_DOOR_TOPDOWN
+		|| iType == OBJECT_TYPE_LEVER_TOPDOWN
+		|| iType == OBJECT_TYPE_FLAG)
 	{
 		int iID = pkt.read<int16_t>();	// 열고 닫을 성문 ID
 		int iActivate = pkt.read<uint8_t>();	// 열고 닫음..
@@ -5644,15 +5644,15 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 					else pSE->m_bVisible = false;
 				}
 			}
-			this->MsgOutput(szMsg, 0xff00ff00);
+			MsgOutput(szMsg, 0xff00ff00);
 		}
 	}
-	else if (OBJECT_TYPE_WARP_POINT == iType)	// Wrong warp gate
+	else if (iType == OBJECT_TYPE_WARP_POINT)
 	{
 		std::string szMsg;
-		if (0x00 == iResult)
+		if (iResult == 0)
 			GetText(IDS_WARP_WRONG_GATE, &szMsg);
-		this->MsgOutput(szMsg, 0xff00ff00);
+		MsgOutput(szMsg, 0xff00ff00);
 	}
 	else
 	{
