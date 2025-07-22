@@ -215,7 +215,7 @@ public:
 	bool	OnMouseLDBtnPress(POINT ptCur, POINT ptPrev);
 	
 	/// \brief attempts to start the auto-attack process
-    /// \returns true if auto-attack process started, false otherwise
+	/// \returns true if auto-attack process started, false otherwise
 	bool	TryStartAttack();
 	bool	OnMouseRbtnDown(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPressd(POINT ptCur, POINT ptPrev);
