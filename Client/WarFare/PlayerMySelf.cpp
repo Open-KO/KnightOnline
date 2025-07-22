@@ -143,7 +143,7 @@ void CPlayerMySelf::Tick()
 	
 	if(IsDead()) // 죽은 상태면 돌아간다.
 	{
-		CGameProcedure::s_pProcMain->CommandEnableAttackContinous(false, NULL);
+		CGameProcedure::s_pProcMain->CommandEnableAttackContinous(false, nullptr);
 		CPlayerBase::Tick();  // 회전, 지정된 에니메이션 Tick 및 색깔 지정 처리.. 등등..
 		return;
 	}
@@ -155,7 +155,7 @@ void CPlayerMySelf::Tick()
 		PSM_RUN == m_eStateMove ) // 앞뒤로 걸어가거나 달려가면.
 	{
 		this->MoveSpeedCalculationAndCheckCollision(); // 움직이는 속도 및 충돌체크...
-		if(0 == m_fMoveSpeedPerSec) // 속도가 없으면 충돌체크 결과 못가는 거다...
+		if(m_fMoveSpeedPerSec == 0.0f) // 속도가 없으면 충돌체크 결과 못가는 거다...
 		{
 			this->ActionMove(PSM_STOP);
 			CGameProcedure::s_pProcMain->MsgSend_Move(false, false); // 정지 패킷 보내기..
@@ -172,26 +172,27 @@ void CPlayerMySelf::Tick()
 	}
 	else 
 	{
-		CPlayerBase::m_pSnd_MyMove = NULL;
+		m_pSnd_MyMove = nullptr;
 		m_fMoveSpeedPerSec = 0;
 	}
 	// 내 플레이어는 움직이는게 다른넘들과 다르기 때문에 특별하게 처리..
 	////////////////////////////////////////////////////////////////////////////////
 
-	CPlayerBase* pTarget = NULL;
+	CPlayerBase* pTarget = nullptr;
 	if (m_bAttackContinous
-		&& (PSA_ATTACK == m_eState || PSA_SPELLMAGIC == m_eState))
+		&& (PSA_ATTACK == m_eState
+			|| PSA_SPELLMAGIC == m_eState))
 	{
 		pTarget = TargetPointerCheck(false);
-		if(NULL == pTarget)
+		if(pTarget == nullptr)
 		{
-			CGameProcedure::s_pProcMain->CommandEnableAttackContinous(false, NULL);
+			CGameProcedure::s_pProcMain->CommandEnableAttackContinous(false, nullptr);
 		}
 		else
 		{
-			float fTime = CN3Base::TimeGet();
+			float fTime = TimeGet();
 			
-			// 활쏘기, 석궁 쏘기 등 스킬로 처리한다..
+			// process an archery auto-attack
 			if(	(m_pItemPlugBasics[PLUG_POS_LEFTHAND] && ITEM_CLASS_BOW == m_pItemPlugBasics[PLUG_POS_LEFTHAND]->byClass ) || 
 				(m_pItemPlugBasics[PLUG_POS_LEFTHAND] && ITEM_CLASS_BOW_LONG == m_pItemPlugBasics[PLUG_POS_LEFTHAND]->byClass ) || 
 				(m_pItemPlugBasics[PLUG_POS_RIGHTHAND] && ITEM_CLASS_BOW_CROSS == m_pItemPlugBasics[PLUG_POS_RIGHTHAND]->byClass) )
@@ -214,7 +215,9 @@ void CPlayerMySelf::Tick()
 					}
 				}
 			}
-			else if( m_pItemPlugBasics[PLUG_POS_RIGHTHAND] && ITEM_CLASS_LAUNCHER == m_pItemPlugBasics[PLUG_POS_RIGHTHAND]->byClass ) // 투창용 아이템이면..
+			// a "javelin launcher" attack
+			else if( m_pItemPlugBasics[PLUG_POS_RIGHTHAND]
+				&& ITEM_CLASS_LAUNCHER == m_pItemPlugBasics[PLUG_POS_RIGHTHAND]->byClass )
 			{
 				__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(102009); // 스킬 테이블에서 기본 활 스킬을 찾고
 				if(pSkill && fTime > m_fAttackTimeRecent + (pSkill->iCastTime / 10.f)) // 공격 간격이 넘으면.. 공격!
@@ -227,7 +230,8 @@ void CPlayerMySelf::Tick()
 					}
 				}
 			}
-			else // 걍 공격이면..
+			// melee weapon auto-attack
+			else
 			{
 				float fIntervalTable = 1.0f;
 				if(m_pItemPlugBasics[PLUG_POS_RIGHTHAND] && m_pItemPlugExts[PLUG_POS_RIGHTHAND]) // 공격 간격 정의
@@ -237,27 +241,28 @@ void CPlayerMySelf::Tick()
 				}
 				
 				float fInterval = fIntervalTable;
-				if(m_fAttackDelta > 0) fInterval /= m_fAttackDelta; // 스킬이나 마법에 의해 변하는 공격 속도.. 1.0 이 기본이고 클수록 더 빨리 공격한다.
+				// scale for attack speed modifiers
+				if(m_fAttackDelta > 0)
+					fInterval /= m_fAttackDelta; 
 
-				if(	fTime > m_fAttackTimeRecent + fInterval) // 공격 간격이 넘으면.. 공격!
+				if(	fTime > m_fAttackTimeRecent + fInterval)
 				{
+					// cannot auto-attack while casting
 					bool bCastingNow = CGameProcedure::s_pProcMain->m_pMagicSkillMng->IsCasting();
-					if(false == bCastingNow) // 캐스팅 중이면 공격 패킷을 보내지 않는다.
+					if(!bCastingNow)
 					{
-						bool bAttackable = IsAttackableTarget(pTarget);
-						if(bAttackable) // 공격 가능..
+						if(IsAttackableTarget(pTarget))
 						{
-							float fDistance = s_pPlayer->DistanceExceptRadius(pTarget); // 공격거리
-							
+							float fDistance = s_pPlayer->DistanceExceptRadius(pTarget);
 							CGameProcedure::s_pProcMain->MsgSend_Attack(pTarget->IDNumber(), fIntervalTable, fDistance);
 
-							// 스킬을 쓰는게 아닌데 공격하지 않으면..
+							// start the auto-attack animation loop if it isn't already playing
 							if (PSA_SPELLMAGIC != m_eState
 								&& PSA_ATTACK != m_eState
 								&& m_fFlickeringFactor == 1.0f)
-								this->Action(PSA_ATTACK, true, pTarget); // 공격 중이아니면 공격한다..
+								this->Action(PSA_ATTACK, true, pTarget);
 							
-							m_fAttackTimeRecent = fTime;	// 최근에 공격한 시간..
+							m_fAttackTimeRecent = fTime;
 						}
 						else 
 						{
@@ -275,39 +280,44 @@ void CPlayerMySelf::Tick()
 								}
 							}
 
-							// 스킬을 쓰는게 아닌데 앉아있는 상태가 아니면..
+							// If not casting a spell or sitting down, loop auto-attack animation
 							if (PSA_SPELLMAGIC != m_eState
 								&& PSA_SITDOWN != m_eState)
-								this->Action(PSA_BASIC, true); // 기본자세..
+								this->Action(PSA_BASIC, true);
 						}
 					}
 				}
 			}
 
-			if(fTime == m_fAttackTimeRecent) // 공격했으면..
-				CGameProcedure::s_pProcMain->CommandSitDown(false, false); // 일으켜 세운다.. 앉아있는 상태에서 버그가 있다..
+			// if an attack was triggered this tick, make the character stand
+			if(fTime == m_fAttackTimeRecent)
+				CGameProcedure::s_pProcMain->CommandSitDown(false, false);
 		}
 	}
 
 
-	if(m_bStun) // 기절해 있으면..
+	// process stun cooldown
+	if(m_bStun) 
 	{
-		m_fStunTime -= s_fSecPerFrm; // 기절 시간 처리..
-		if(m_fStunTime < 0) this->StunRelease(); // 기절 풀어주기..
+		m_fStunTime -= s_fSecPerFrm;
+		if(m_fStunTime < 0)
+			this->StunRelease();
 	}
 
-	// 공격 중이거나 스킬 사용중이면..
+	// if the character is in an attack animation state, attempt to process an auto-attack
 	if (PSA_ATTACK == m_eState
 		|| PSA_SPELLMAGIC == m_eState)
 	{
-		if(!pTarget) pTarget = TargetPointerCheck(false); // 타겟 포인터를 얻어온다..
-		CPlayerBase::ProcessAttack(pTarget); // 공격에 관한 루틴 처리.. 에니메이션 세팅과 충돌만 처리할뿐 패킷은 처리 안한다..
+		if(pTarget == nullptr)
+			pTarget = TargetPointerCheck(false);
+		CPlayerBase::ProcessAttack(pTarget); 
 	}
 
 	if(m_dwMagicID != 0xffffffff) 
 		m_fCastingTime += CN3Base::s_fSecPerFrm;
 
-	CPlayerBase::Tick(); // 회전, 지정된 에니메이션 Tick 및 색깔 지정 처리.. 등등..
+	// call super to rotate, animation tick, etc
+	CPlayerBase::Tick();
 }
 
 void CPlayerMySelf::Render(float fSunAngle)
@@ -747,11 +757,22 @@ float CPlayerMySelf::DistanceExceptRadius(CPlayerBase* pTarget)
 	return fDist - fDistRadius;
 }
 
-bool CPlayerMySelf::IsAttackableTarget(CPlayerBase* pTarget, bool bMesureAngle)
+/// \brief checks to see if an attack can be performed on the target
+/// \param pTarget
+/// \param bMeasureAngle does the target need to be in front of the attacker?
+/// \returns true if attack would be valid, false otherwise
+bool CPlayerMySelf::IsAttackableTarget(CPlayerBase* pTarget, bool bMeasureAngle)
 {
-	if(m_fFlickeringFactor != 1.0f) return false;	//부활해서 깜빡이는 경우는 공격할수 없다.
-	if(NULL == pTarget || pTarget->IsDead()) return false;  //죽은 상태의 캐릭은 공격하지 못하게 - 단 죽기 직전의 캐릭은 제외한다..
-	if(pTarget->m_InfoBase.eNation == m_InfoBase.eNation) return false; // 같은 국가이다..
+	if(pTarget == nullptr || pTarget->IsDead())
+		return false;
+
+	// cannot attack when invulnerable 
+	if(m_fFlickeringFactor != 1.0f)
+		return false;
+
+	// cannot attack same nation - this wouldn't work right with personal arenas
+	if(pTarget->m_InfoBase.eNation == m_InfoBase.eNation)
+		return false;
 
 	//-------------------------------------------------------------------------
 	/*
@@ -766,17 +787,26 @@ bool CPlayerMySelf::IsAttackableTarget(CPlayerBase* pTarget, bool bMesureAngle)
 	*/
 	//-------------------------------------------------------------------------
 
-	float fDist = (pTarget->Position() - m_Chr.Pos()).Magnitude(); // 공격 거리를 구하고..
+	// make sure the target is within range
+	float fDist = (pTarget->Position() - m_Chr.Pos()).Magnitude();
 	float fDistLimit = this->AttackableDistance(pTarget);
-	if(fDist > fDistLimit) return false; // 거리가 일정이상 떨어져 있으면 돌아간다.
+	if(fDist > fDistLimit)
+		return false;
 
-	if(bMesureAngle)// 각도를 본다..
+	// check that the target is in front of the attacker
+	if(bMeasureAngle)
 	{
-		__Vector3 vDir = this->Direction(); vDir.y = 0; vDir.Normalize();
-		__Vector3 vDirTarget = pTarget->Position() - m_Chr.Pos(); vDirTarget.y = 0; vDirTarget.Normalize();
+		__Vector3 vDir = this->Direction();
+		vDir.y = 0;
+		vDir.Normalize();
+		__Vector3 vDirTarget = pTarget->Position() - m_Chr.Pos();
+		vDirTarget.y = 0;
+		vDirTarget.Normalize();
 		float fDot = vDir.Dot(vDirTarget);
-		if(fDot > 0.7f) return true;
-		else return false;
+		if(fDot > 0.7f)
+			return true;
+		
+		return false;
 	}
 
 	return true;
@@ -1102,7 +1132,7 @@ void CPlayerMySelf::Stun(float fTime) // 일정한 시간동안 기절 시키기
 	m_bStun = true;				// 기절..
 	m_fStunTime = fTime;		// 기절한 시간..
 
-	CGameProcedure::s_pProcMain->CommandEnableAttackContinous(false, NULL); // 공격 멈추고..
+	CGameProcedure::s_pProcMain->CommandEnableAttackContinous(false, nullptr); // 공격 멈추고..
 	CGameProcedure::s_pProcMain->CommandMove(MD_STOP, true); // 움직임을 멈추게 하고..
 }
 
@@ -1114,14 +1144,15 @@ void CPlayerMySelf::StunRelease() // 기절 풀기..
 
 void CPlayerMySelf::TargetOrPosMove()
 {
-	if(!m_bTargetOrPosMove) return;
+	if (!m_bTargetOrPosMove)
+		return;
 
 	m_vTargetPos.y = m_Chr.Pos().y;
 
-	if( m_iMoveTarget >= 0 )
+	if (m_iMoveTarget >= 0)
 	{
 		CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByID(m_iMoveTarget, true);
-		if(pTarget)
+		if(pTarget != nullptr)
 		{
 			m_vTargetPos = pTarget->Position();
 		}

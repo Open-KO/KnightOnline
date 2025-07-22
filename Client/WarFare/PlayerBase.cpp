@@ -1367,224 +1367,214 @@ void CPlayerBase::ActionDying(e_StateDying eSD, const __Vector3& vDir)
 
 bool CPlayerBase::ProcessAttack(CPlayerBase* pTarget)
 {
-	if (pTarget == nullptr) 
-		return false;
+	bool bAttackSuccess = false;
+	// we assign/check our target ourselves
+	//if (pTarget == nullptr) 
+	//	return false;
 
-	// 공격상태가 아니고 스킬 쓰는 중도 아니면..돌아간다.
+	// check character animation state
 	if (PSA_ATTACK != m_eState
 		&& PSA_SPELLMAGIC != m_eState)
-		return false;
+		return bAttackSuccess;
 
-	bool bAttackSuccess = false;
-	bool bStrike = false;
-	if( m_Chr.NeedStrike0() || m_Chr.NeedStrike1() ) bStrike = true; // 맞기 시작하는 타이밍..
-
-	if(bStrike) // 맞는 타이밍이면..
+	
+	// make sure it's time to process an auto-attack
+	if(!(m_Chr.NeedStrike0() || m_Chr.NeedStrike1()))
 	{
-		__Vector3 vCol(0,0,0);
-		CPlayerBase* pTarget = TargetPointerCheck(false);
-		if(NULL == pTarget) return false;
+		return bAttackSuccess;
+	}
+	
+	//CPlayerBase*
+	pTarget = TargetPointerCheck(false);
+	if(pTarget == nullptr)
+		return bAttackSuccess;
 
-		if(false == this->CheckCollisionToTargetByPlug(pTarget, 0, &vCol)) // 플러그와 충돌체크를 먼저 해보고..
+	__Vector3 vCol(0,0,0);
+
+	// Check that our weapons can collide with the target's mesh
+	if(!this->CheckCollisionToTargetByPlug(pTarget, 0, &vCol)
+		&& !this->CheckCollisionToTargetByPlug(pTarget, 1, &vCol)) 
+	{
+		// Get the transform of this object and its target
+		const __Matrix44* pMtxMine = m_Chr.MatrixGet(0); 
+		const __Matrix44* pMtxTarget = pTarget->m_Chr.MatrixGet(0);
+
+		__Vector3 v0, v1;
+		if(pMtxMine)
 		{
-			if(false == this->CheckCollisionToTargetByPlug(pTarget, 1, &vCol)) // 플러그와 충돌체크를 먼저 해보고..
+			// Use the transform of our weapon if available, otherwise use character position
+			CN3CPlug* pPlug = m_Chr.Plug(0); 
+			if(pPlug != nullptr)
 			{
-				const __Matrix44* pMtxMine = m_Chr.MatrixGet(0); // 조인트가 있는 타겟캐릭터..
-				const __Matrix44* pMtxTarget = pTarget->m_Chr.MatrixGet(0);
-
-				__Vector3 v0, v1;
-				if(pMtxMine)
-				{
-					CN3CPlug* pPlug = m_Chr.Plug(0); // 무기의 점과...
-					if(pPlug)
-					{
-						__Matrix44 mtx = *(m_Chr.MatrixGet(pPlug->m_nJointIndex));
-						v0.Set( 0.0f, pPlug->m_fTrace1, 0.0f );
-						v0 *= pPlug->m_Matrix;
-						v0 *= mtx;
-						v0 *= m_Chr.m_Matrix;
-					}
-					else v0 = m_Chr.Pos() + pMtxMine->Pos();
-				}
-				else
-				{
-					v0 = m_Chr.Pos(); v0.y += m_Chr.Height() / 2.0f;
-				}
-
-				if(pMtxTarget)
-				{
-					v1 = pMtxTarget->Pos() + pTarget->Position();
-					if(false == pTarget->CheckCollisionByBox(v0, v1, &vCol, NULL)) // 직선 하나로 충돌 체크 해보고..
-					{
-						__Vector3 vDir = v0 - v1; vDir.Normalize();
-						vCol = v1 + vDir * (pTarget->Height() / 3.0f); // 안되면 캐릭 사이의 값으로 한다..
-					}
-				}
-				else if(pTarget->m_pShapeExtraRef && pTarget->m_pShapeExtraRef->CollisionMesh())
-				{
-					__Vector3 vDir = this->Direction(); vDir.Normalize();
-					v1 = v0 + (vDir * 256.0f);
-
-					CN3VMesh* pVMesh = pTarget->m_pShapeExtraRef->CollisionMesh();
-					if(NULL == pVMesh || false == pVMesh->CheckCollision(pTarget->m_pShapeExtraRef->m_Matrix, v0, v1, &vCol)) // 충돌 메시랑 충돌하지 않으면..
-					{
-						v1 = pTarget->m_pShapeExtraRef->Pos(); v1.y += pTarget->Height() / 2.0f;
-						vDir = v1 - v0; vDir.Normalize();
-						vCol = v0 + vDir * Radius(); // 안되면 캐릭 사이의 값으로 한다..
-					}
-				}
-				else
-				{
-					return false;
-				}
+				__Matrix44 mtx = *(m_Chr.MatrixGet(pPlug->m_nJointIndex));
+				v0.Set( 0.0f, pPlug->m_fTrace1, 0.0f );
+				v0 *= pPlug->m_Matrix;
+				v0 *= mtx;
+				v0 *= m_Chr.m_Matrix;
 			}
+			else
+				v0 = m_Chr.Pos() + pMtxMine->Pos();
+		}
+		else
+		{
+			v0 = m_Chr.Pos();
+			v0.y += m_Chr.Height() / 2.0f;
 		}
 
-		if(pTarget->m_fTimeAfterDeath > 0 && false == pTarget->IsDead())
+		if(pMtxTarget != nullptr)
 		{
-			e_ItemClass eICR = this->ItemClass_RightHand(); // 오른손에 든 무기에 따라...
-			
-			e_StateDying eSD = PSD_KEEP_POSITION;
-			if(ITEM_CLASS_SWORD_2H == eICR || ITEM_CLASS_AXE_2H == eICR || ITEM_CLASS_MACE_2H == eICR || ITEM_CLASS_POLEARM == eICR) eSD = PSD_DISJOINT; // 투핸드 무기이면 잘려 죽는다.
-			else if(ITEM_CLASS_SWORD == eICR || ITEM_CLASS_AXE == eICR || ITEM_CLASS_MACE == eICR || ITEM_CLASS_SPEAR == eICR) eSD = PSD_KNOCK_DOWN; // 원핸드 보통 무기이면
-			
-			__Vector3 vTarget = pTarget->Position();
-			if(pTarget->m_pSnd_Blow) pTarget->m_pSnd_Blow->Play(&vTarget); // 퍽하고 무기 맞는 소리..
+			v1 = pMtxTarget->Pos() + pTarget->Position();
+			// does the target's mesh collide with a line between v0---v1
+			if(!pTarget->CheckCollisionByBox(v0, v1, &vCol, nullptr)) 
+			{
+				__Vector3 vDir = v0 - v1;
+				vDir.Normalize();
+				// 안되면 캐릭 사이의 값으로 한다..
+				vCol = v1 + vDir * (pTarget->Height() / 3.0f); 
+			}
+		}
+		else if(pTarget->m_pShapeExtraRef && pTarget->m_pShapeExtraRef->CollisionMesh())
+		{
+			__Vector3 vDir = this->Direction(); vDir.Normalize();
+			v1 = v0 + (vDir * 256.0f);
 
-			//무기의 속성에 따라 다른 효과들....
+			CN3VMesh* pVMesh = pTarget->m_pShapeExtraRef->CollisionMesh();
+			
+			if(pVMesh == nullptr || !pVMesh->CheckCollision(pTarget->m_pShapeExtraRef->m_Matrix, v0, v1, &vCol))
+			{
+				v1 = pTarget->m_pShapeExtraRef->Pos(); v1.y += pTarget->Height() / 2.0f;
+				vDir = v1 - v0;
+				vDir.Normalize();
+				// 안되면 캐릭 사이의 값으로 한다..
+				vCol = v0 + vDir * Radius(); 
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	bAttackSuccess = true;
+
+	if(pTarget->m_fTimeAfterDeath > 0 && !pTarget->IsDead())
+	{
+		// set target death animation state based off of weapon type
+		e_ItemClass eICR = this->ItemClass_RightHand(); 
+		e_StateDying deathState = PSD_KEEP_POSITION;
+		if(ITEM_CLASS_SWORD_2H == eICR || ITEM_CLASS_AXE_2H == eICR || ITEM_CLASS_MACE_2H == eICR || ITEM_CLASS_POLEARM == eICR)
+			deathState = PSD_DISJOINT;
+		else if(ITEM_CLASS_SWORD == eICR || ITEM_CLASS_AXE == eICR || ITEM_CLASS_MACE == eICR || ITEM_CLASS_SPEAR == eICR)
+			deathState = PSD_KNOCK_DOWN;
+		
+		__Vector3 vTarget = pTarget->Position();
+		// 퍽하고 무기 맞는 소리..
+		if(pTarget->m_pSnd_Blow)
+			pTarget->m_pSnd_Blow->Play(&vTarget); 
+
+		// trigger weapon-based visual effects
+		bool bAffected = false;
+		if(m_pItemPlugExts[PLUG_POS_RIGHTHAND])
+		{
+			bAffected = TryWeaponElementEffect(PLUG_POS_RIGHTHAND, *pTarget, vCol);
+		}
+		if(m_pItemPlugExts[PLUG_POS_LEFTHAND] && !bAffected)
+		{
+			bAffected = TryWeaponElementEffect(PLUG_POS_LEFTHAND, *pTarget, vCol);
+		}
+		
+		// if no elemental effect played, trigger the standard effect
+		if(!bAffected)
+			CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_BLOOD, vCol);
+
+		__Vector3 vDirDeath = this->Position() - vTarget;
+		vDirDeath.Normalize();
+		pTarget->ActionDying(deathState, vDirDeath);
+	}
+	else if(pTarget->IsAlive())
+	{
+		// if the target failed to defend, process hit
+		if(!pTarget->m_bGuardSuccess)
+		{
+			__Vector3 vTarget = pTarget->Position();
+
+			// play on-hit sound effect
+			if(pTarget->m_pSnd_Blow)
+				pTarget->m_pSnd_Blow->Play(&vTarget);
+
+			// trigger weapon-based visual effects
 			bool bAffected = false;
 			if(m_pItemPlugExts[PLUG_POS_RIGHTHAND])
 			{
-				int iFXID = -1;
-				if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageFire > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageFire >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_FIRE_TARGET;			// 불
-				else if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageIce > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageIce >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_ICE_TARGET;			// 냉기
-				else if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamagePoison > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamagePoison >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_POISON_TARGET;		// 독
-				else if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageThuner > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageThuner >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_LIGHTNING_TARGET;		// 전격
-
-				if(iFXID >= 0)
-				{
-					bAffected = true;
-					CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, iFXID, vCol);	//전격무기...
-				}
+				bAffected = TryWeaponElementEffect(PLUG_POS_RIGHTHAND, *pTarget, vCol);
 			}
 			if(m_pItemPlugExts[PLUG_POS_LEFTHAND] && !bAffected)
 			{
-				int iFXID = -1;
-				if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageFire > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageFire >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_FIRE_TARGET;			// 불
-				else if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageIce > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageIce >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_ICE_TARGET;			// 냉기
-				else if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamagePoison > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamagePoison >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_POISON_TARGET;		// 독
-				else if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageThuner > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageThuner >= LIMIT_FX_DAMAGE)) iFXID = FXID_SWORD_LIGHTNING_TARGET;		// 전격
+				bAffected = TryWeaponElementEffect(PLUG_POS_LEFTHAND, *pTarget, vCol);
+			}
 
-				if(iFXID >= 0)
-				{
-					bAffected = true;
-					CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, iFXID, vCol);	// 속성 붙은 무기..
-				}
-			}			
-			if(!bAffected) CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_BLOOD, vCol);	//일반무기...
+			// if no elemental effect played, trigger the standard effect
+			if (!bAffected) {
+				CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_BLOOD, vCol);	//일반무기...
+				//CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, 13000, vCol, 0, -1, N3FORMAT_VER_2062);
+			}
 
-			__Vector3 vDirDeath = this->Position() - vTarget;
-			vDirDeath.Normalize();
-			pTarget->ActionDying(eSD, vDirDeath); // 제자리에서 죽거나
-		}
-		else if(pTarget->IsAlive())
-		{
-			if(false == pTarget->m_bGuardSuccess) // 방어에 성공했는지 플래그.. 방어에 실패했으면..
-			{
-				__Vector3 vTarget = pTarget->Position();
-
-				if(pTarget->m_pSnd_Blow) pTarget->m_pSnd_Blow->Play(&vTarget); // 임시로 맞는 소리..
-
-				//무기의 속성에 따라 다른 효과들....
-				bool bAffected = false;
-				if(m_pItemPlugExts[PLUG_POS_RIGHTHAND])
-				{
-					if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageFire > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageFire >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_FIRE_TARGET, vCol);	//불무기...
-					}
-					else if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageIce > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageIce >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_ICE_TARGET, vCol);	//냉기무기...
-					}
-					else if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamagePoison > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamagePoison >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_POISON_TARGET, vCol);	//독무기...
-					}
-					else if((m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageThuner > 0)
-					|| (m_pItemPlugExts[PLUG_POS_RIGHTHAND]->byDamageThuner >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_LIGHTNING_TARGET, vCol);	//전격무기...
-					}
-				}
-				if(m_pItemPlugExts[PLUG_POS_LEFTHAND] && !bAffected)
-				{
-					if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageFire > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageFire >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_FIRE_TARGET, vCol);	//불무기...
-					}
-					else if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageIce > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageIce >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_ICE_TARGET, vCol);	//냉기무기...
-					}
-					else if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamagePoison > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamagePoison >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_POISON_TARGET, vCol);	//독무기...
-					}
-					else if((m_pItemPlugExts[PLUG_POS_LEFTHAND]->byMagicOrRare==ITEM_ATTRIB_UNIQUE && m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageThuner > 0)
-					|| (m_pItemPlugExts[PLUG_POS_LEFTHAND]->byDamageThuner >= LIMIT_FX_DAMAGE))
-					{
-						bAffected = true;
-						CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_SWORD_LIGHTNING_TARGET, vCol);	//전격무기...
-					}
-				}			
-				if (!bAffected) {
-					CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, FXID_BLOOD, vCol);	//일반무기...
-					//CGameProcedure::s_pFX->TriggerBundle(pTarget->IDNumber(), 0, 13000, vCol, 0, -1, N3FORMAT_VER_2062);
-				}
-
-				D3DCOLORVALUE crHit = { 1.0f, 0.2f, 0.2f, 1.0f };
-				pTarget->DurationColorSet(crHit, 0.3f); // 뻘건색 0.3초동안..
+			D3DCOLORVALUE crHit = { 1.0f, 0.2f, 0.2f, 1.0f };
+			pTarget->DurationColorSet(crHit, 0.3f);
 
 //				int iRand = rand()%2; // 얻어 맞아 신음 소리..
 //				if(iRand == 0) { if(pTarget->m_pSnd_Struck_0) pTarget->m_pSnd_Struck_0->Play(&vTarget); }
 //				else if(iRand == 1) { if(pTarget->m_pSnd_Struck_1) pTarget->m_pSnd_Struck_1->Play(&vTarget); }
-				if(pTarget->m_pSnd_Struck_0) pTarget->m_pSnd_Struck_0->Play(&vTarget);
+			if(pTarget->m_pSnd_Struck_0)
+				pTarget->m_pSnd_Struck_0->Play(&vTarget);
 
-				// TODO: Update this (and all of its outer logic)
-				// 스킬을 사용중이 아니다..
-				pTarget->Action(PSA_STRUCK, false); // 죽은 넘이 아니면 얻어 맞는 동작을 한다..
-			}
-			else // 방어 성공..
-			{
-				// 스킬을 사용중이 아니다..
-				// pTarget->Action(PSA_GUARD, false);
-			}
+			// TODO: Update this (and all of its outer logic)
+			pTarget->Action(PSA_STRUCK, false);
+		}
+		// target successfully defended
+		else 
+		{
+			// pTarget->Action(PSA_GUARD, false);
 		}
 	}
 
 	return bAttackSuccess;
+}
+
+/// \brief applies any on-hit elemental effects associated with a weapon
+bool CPlayerBase::TryWeaponElementEffect(e_PlugPosition plugPosition, const CPlayerBase& target, __Vector3 collisionPosition)
+{
+	bool affected = false;
+	// only process for weapons
+	if (plugPosition != PLUG_POS_LEFTHAND
+		&& plugPosition != PLUG_POS_RIGHTHAND)
+	{
+		return affected;
+	}
+	int iFXID = -1;
+	if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
+		&& m_pItemPlugExts[plugPosition]->byDamageFire > 0)
+		|| m_pItemPlugExts[plugPosition]->byDamageFire >= LIMIT_FX_DAMAGE)
+		iFXID = FXID_SWORD_FIRE_TARGET;
+	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
+		&& m_pItemPlugExts[plugPosition]->byDamageIce > 0)
+		|| m_pItemPlugExts[plugPosition]->byDamageIce >= LIMIT_FX_DAMAGE)
+		iFXID = FXID_SWORD_ICE_TARGET;
+	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
+		&& m_pItemPlugExts[plugPosition]->byDamagePoison > 0)
+		|| m_pItemPlugExts[plugPosition]->byDamagePoison >= LIMIT_FX_DAMAGE)
+		iFXID = FXID_SWORD_POISON_TARGET;
+	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
+		&& m_pItemPlugExts[plugPosition]->byDamageThuner > 0)
+		|| m_pItemPlugExts[plugPosition]->byDamageThuner >= LIMIT_FX_DAMAGE)
+		iFXID = FXID_SWORD_LIGHTNING_TARGET;
+
+	if(iFXID >= 0)
+	{
+		affected = true;
+		CGameProcedure::s_pFX->TriggerBundle(target.IDNumber(), 0, iFXID, collisionPosition);
+	}
+
+	return affected;
 }
 
 e_Ani CPlayerBase::JudgeAnimationAttack()
@@ -1780,32 +1770,43 @@ e_Ani CPlayerBase::JudgetAnimationSpellMagic()
 bool CPlayerBase::CheckCollisionByBox(const __Vector3& v0, const __Vector3& v1, __Vector3* pVCol, __Vector3* pVNormal)
 {
 	CN3VMesh* pvMesh = m_Chr.CollisionMesh();
-	if(NULL == pvMesh) return false;
+	if(pvMesh == nullptr)
+		return false;
 	return pvMesh->CheckCollision(m_Chr.m_Matrix, v0, v1, pVCol, pVNormal);
 }
 
 bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, __Vector3* pVCol)
 {
-	if(NULL == pTarget) return false;
+	if(pTarget == nullptr)
+		return false;
+	
+	// requires an equipped weapon
 	CN3CPlug* pPlug = m_Chr.Plug(nPlug);
-	if(NULL == pPlug) return false; // 장착한 무기가 없으면 하지 않는다..
+	if(pPlug == nullptr)
+		return false;
+	
 	// berserk
-//	if(pPlug->m_ePlugType == PLUGTYPE_CLOAK)	return false;
-//	CN3CPlug *pPlugNormal = (CN3CPlug*)pPlug;
-//	if(pPlugNormal->m_fTrace0 >= pPlugNormal->m_fTrace1) return false; // 무기의 길이 정보가 없거나 이상하면 충돌체크 하지 않는다.
-	if(pPlug->m_fTrace0 >= pPlug->m_fTrace1) return false; // 무기의 길이 정보가 없거나 이상하면 충돌체크 하지 않는다.
-	if(PSA_DYING == pTarget->State() || PSA_DEATH == pTarget->State()) return false; // 쓰러져 죽고 있는 넘이나 쓰러진 넘은 충돌체크 하지 않는다..
+	//	if(pPlug->m_ePlugType == PLUGTYPE_CLOAK)	return false;
+	//	CN3CPlug *pPlugNormal = (CN3CPlug*)pPlug;
+	//	if(pPlugNormal->m_fTrace0 >= pPlugNormal->m_fTrace1) return false; // 무기의 길이 정보가 없거나 이상하면 충돌체크 하지 않는다.
+	
+	// "If there is no information about the length of the weapon or if it is strange, do not check for collisions."
+	if(pPlug->m_fTrace0 >= pPlug->m_fTrace1)
+		return false;
+	// do not check for collision against dead targets
+	if(PSA_DYING == pTarget->State() || PSA_DEATH == pTarget->State())
+		return false;
 
 	////////////////////////////////////////////////////////////////////////
 	// 칼 궤적이 남는 시점이 아니면 충돌체크를 하지 않는다.
-//	__AnimData* pAni = m_Chr.AniCur(0);
-//	if(NULL == pAni) return false;
-//	float fFrmCur = m_Chr.FrmCur(0);
-//	if(fFrmCur < pAni->fFrmPlugTraceStart || fFrmCur > pAni->fFrmPlugTraceEnd) return false; 
+	//	__AnimData* pAni = m_Chr.AniCur(0);
+	//	if(NULL == pAni) return false;
+	//	float fFrmCur = m_Chr.FrmCur(0);
+	//	if(fFrmCur < pAni->fFrmPlugTraceStart || fFrmCur > pAni->fFrmPlugTraceEnd) return false; 
 	// 칼 궤적이 남는 시점이 아니면 충돌체크를 하지 않는다.
 	////////////////////////////////////////////////////////////////////////
 
-	__Vector3 v1, v2, v3;
+	__Vector3 v1, v2;
 	__Matrix44 mtx = *(m_Chr.MatrixGet(pPlug->m_nJointIndex));
 	
 	v1.Set( 0.0f, pPlug->m_fTrace0, 0.0f );
@@ -1819,23 +1820,24 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 	v2 *= mtx;
 	v2 *= m_Chr.m_Matrix;
 
-	v2 += (v2 - v1)*1.0f; // 길이를 두배로
+	// 길이를 두배로 = "double the length", but we're multiplying by 1
+	v2 += (v2 - v1)*1.0f; 
 
 #ifdef _DEBUG
-	CN3Base::s_lpD3DDev->BeginScene();
+	s_lpD3DDev->BeginScene();
 
 	__Vector3 vLines[2] = { v1, v2 };
 	__Matrix44 mtxTmp; mtxTmp.Identity();
-	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxTmp);
-	CN3Base::RenderLines(vLines, 1, (D3DCOLOR)0xffff8080); // 선을 그려본다..
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxTmp);
+	RenderLines(vLines, 1, (D3DCOLOR)0xffff8080); // 선을 그려본다..
 
 	if(m_pShapeExtraRef && m_pShapeExtraRef->CollisionMesh())
 	{
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &(m_pShapeExtraRef->m_Matrix));
+		s_lpD3DDev->SetTransform(D3DTS_WORLD, &(m_pShapeExtraRef->m_Matrix));
 		m_pShapeExtraRef->CollisionMesh()->Render((D3DCOLOR)0xffff0000); // 충돌 박스를 그려본다.
 	}
-	CN3Base::s_lpD3DDev->EndScene();
-	CN3Base::s_lpD3DDev->Present(NULL, NULL, s_hWndBase, NULL);
+	s_lpD3DDev->EndScene();
+	s_lpD3DDev->Present(nullptr, nullptr, s_hWndBase, nullptr);
 #endif
 
 	if(m_pShapeExtraRef && m_pShapeExtraRef->CollisionMesh())
@@ -1846,8 +1848,9 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 			return pVMesh->CheckCollision(m_pShapeExtraRef->m_Matrix, v1, v2, pVCol);
 		}
 	}
-	
-	return pTarget->CheckCollisionByBox(v1, v2, pVCol, NULL);			// 캐릭터 충돌 체크 상자와 충돌 체크..
+
+	// check if the target's mesh collides with the bounds created from our plug
+	return pTarget->CheckCollisionByBox(v1, v2, pVCol, nullptr);	
 }
 
 CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)

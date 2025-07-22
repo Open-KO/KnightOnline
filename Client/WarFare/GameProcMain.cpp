@@ -1247,7 +1247,18 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 		}
 
 		if (s_pLocalInput->IsKeyPress(KM_TOGGLE_ATTACK))
-			CommandToggleAttackContinous();		// 자동 공격..
+		{
+			// if the player is already attacking, stop it
+			if (s_pPlayer->m_bAttackContinous)
+			{
+				CommandEnableAttackContinous(false, nullptr);
+			}
+			// otherwise, start the auto-attack process
+			else
+			{
+				TryStartAttack();
+			}
+		}
 		if (s_pLocalInput->IsKeyPress(KM_TOGGLE_RUN))
 			CommandToggleWalkRun();				// 걷기 / 뛰기 토글	
 		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_ENEMY))
@@ -4581,76 +4592,114 @@ void CGameProcMain::CommandMove(e_MoveDirection eMD, bool bStartOrEnd)
 	}
 }
 
+/// \brief toggles the player's autoattack
 void CGameProcMain::CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTarget)
 {
-	if(bEnable == s_pPlayer->m_bAttackContinous) return;
-	if(bEnable)
+	// no change
+	if (bEnable == s_pPlayer->m_bAttackContinous)
+		return;
+
+	// invalid target
+	if (pTarget == nullptr)
 	{
-		this->CloseUIs(); // 각종 상거래, 워프등등... UI 닫기..
-		s_pUIMgr->UserMoveHideUIs();
-
-		if(s_pPlayer->m_bStun) return; // 기절해 있음 공격 못함..
-		if(NULL == pTarget) return;
-		s_pPlayer->RotateTo(pTarget); // 방향을 돌린다.
-		if(pTarget->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation) return; // 국가가 같으면 넘어간다..
-
-		//-------------------------------------------------------------------------
-		/*
-		// TODO(srmeier): need to use ZoneAbilityType here
-		// NOTE(srmeier): using zoneability information to determine if target is attackable
-		if (!ACT_WORLD->canAttackSameNation() && (pTarget->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation))
-			return;
-		if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_ELMORAD && pTarget->m_InfoBase.eNation == NATION_KARUS))
-			return;
-		if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_KARUS && pTarget->m_InfoBase.eNation == NATION_ELMORAD))
-			return;
-		*/
-		//-------------------------------------------------------------------------
-	}
-	s_pPlayer->m_bAttackContinous = bEnable; // 상태를 기록하고..
-
-	if(bEnable)
-		SetGameCursor(s_hCursorAttack);
-	else
-	{
-		e_Nation eNation = s_pPlayer->m_InfoBase.eNation;
-		SetGameCursor(((NATION_ELMORAD == eNation) ? s_hCursorNormal1 : s_hCursorNormal));
+		StopAutoAttack(pTarget);
+		return;
 	}
 
-	if(m_pUICmd->m_pBtn_Act_Attack)
-	{
-		if(bEnable) m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_DOWN);
-		else m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_NORMAL);
-	}
-
-	// 자동 공격!
 	if (bEnable)
 	{
-		std::string szMsg;
-		GetTextF(IDS_MSG_ATTACK_START, &szMsg, pTarget->IDString().c_str());
-
-		this->PlayBGM_Battle();
-		
-		if(s_pPlayer->IsAttackableTarget(pTarget))
-			s_pPlayer->Action(PSA_BASIC, true, pTarget);
-
-		this->MsgOutput(szMsg, 0xff00ffff);
+		StartAutoAttack(pTarget);
 	}
-	else // 자동 공격 아님.
+	else
 	{
-		std::string szMsg;
-		GetText(IDS_MSG_ATTACK_STOP, &szMsg);
-		s_pPlayer->Action(PSA_BASIC, true, pTarget);
-		this->MsgOutput(szMsg, 0xff00ffff);
+		StopAutoAttack(pTarget);
 	}
+}
 
-	// 국가, 거리 및 각도 체크해서 공격 불가능하면 돌아가기..
-	if (bEnable
-		&& !s_pPlayer->IsAttackableTarget(pTarget))
+/// \brief contains the logic that should be executed whenever starting to auto-attack
+void CGameProcMain::StartAutoAttack(CPlayerBase* target)
+{
+	// already auto-attacking
+	if (s_pPlayer->m_bAttackContinous)
+		return;
+	
+	this->CloseUIs(); 
+	s_pUIMgr->UserMoveHideUIs();
+
+	if(s_pPlayer->m_bStun)
+		return;
+
+	s_pPlayer->RotateTo(target);
+	
+	// check if the target is attackable
+	// this can fail for several reasons:
+	// - invalid target
+	// - target not in front of attacker
+	// - target out of range
+	// doesn't really feel like it should be here, it's checked in so many other places
+	// and covers too many cases to be helpful
+	if (!s_pPlayer->IsAttackableTarget(target))
 	{
 		std::string szMsg;
 		GetText(IDS_MSG_ATTACK_DISABLE, &szMsg);
 		this->MsgOutput(szMsg, 0xffffff00);
+		// return;
+	}
+
+	//-------------------------------------------------------------------------
+	/*
+	// TODO(srmeier): need to use ZoneAbilityType here
+	// NOTE(srmeier): using zoneability information to determine if target is attackable
+	if (!ACT_WORLD->canAttackSameNation() && (pTarget->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation))
+		return;
+	if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_ELMORAD && pTarget->m_InfoBase.eNation == NATION_KARUS))
+		return;
+	if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_KARUS && pTarget->m_InfoBase.eNation == NATION_ELMORAD))
+		return;
+	*/
+	//-------------------------------------------------------------------------
+	
+	s_pPlayer->m_bAttackContinous = true;
+	
+	SetGameCursor(s_hCursorAttack);
+		
+	// Print an info message for attack start
+	std::string szMsg;
+	GetTextF(IDS_MSG_ATTACK_START, &szMsg, target->IDString().c_str());
+	this->MsgOutput(szMsg, 0xff00ffff);
+	
+	// play combat music
+	this->PlayBGM_Battle();
+
+	// set auto-attack animation
+	s_pPlayer->Action(PSA_BASIC, true, target);
+	
+	if (m_pUICmd->m_pBtn_Act_Attack)
+	{
+		m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_DOWN);
+	}
+}
+
+/// \brief contains the logic that should be executed whenever auto-attacking is stopped
+void CGameProcMain::StopAutoAttack(CPlayerBase* target)
+{
+	// not auto-attacking
+	if (!s_pPlayer->m_bAttackContinous)
+		return;
+	
+	s_pPlayer->m_bAttackContinous = false;
+	
+	e_Nation eNation = s_pPlayer->m_InfoBase.eNation;
+	SetGameCursor(((NATION_ELMORAD == eNation) ? s_hCursorNormal1 : s_hCursorNormal));
+
+	std::string szMsg;
+	GetText(IDS_MSG_ATTACK_STOP, &szMsg);
+	s_pPlayer->Action(PSA_BASIC, true, target);
+	this->MsgOutput(szMsg, 0xff00ffff);
+
+	if (m_pUICmd->m_pBtn_Act_Attack)
+	{
+		m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_NORMAL);
 	}
 }
 
@@ -7402,24 +7451,34 @@ bool CGameProcMain::OnMouseMove(POINT ptCur, POINT ptPrev)
 // 왼쪽 더블 클릭
 bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 {
-	if(s_pUIMgr->m_bDoneSomething) return false;
+	if(s_pUIMgr->m_bDoneSomething)
+		return false;
 
-	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
+	TryStartAttack();
+	
+	return true;
+}
 
-	if(pTarget && pTarget->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
+/// \brief attempts to start the auto-attack process
+/// \returns true if auto-attack process started, false otherwise
+bool CGameProcMain::TryStartAttack()
+{
+	CPlayerNPC* target = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
+	if(target == nullptr || target->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
 	{
 		s_pPlayer->m_iIDTarget = -1;
-		pTarget = NULL;
+		target = nullptr;
+		return false;
 	}
 
-	if(VP_THIRD_PERSON == s_pEng->ViewPoint())
+	if(s_pEng->ViewPoint() == VP_THIRD_PERSON)
 	{
-		if(s_pPlayer->IsAttackableTarget(pTarget, false))
+		if(s_pPlayer->IsAttackableTarget(target, false))
 		{
 			this->CommandMove(MD_STOP, true);
-			this->CommandEnableAttackContinous(true, pTarget); // 자동 공격
+			this->CommandEnableAttackContinous(true, target);
 		}
-		else if(pTarget && VP_THIRD_PERSON == s_pEng->ViewPoint())
+		else if(target && VP_THIRD_PERSON == s_pEng->ViewPoint())
 		{
 			this->CommandMove(MD_FOWARD, true);
 			s_pPlayer->SetMoveTargetID(s_pPlayer->m_iIDTarget);
@@ -7430,6 +7489,7 @@ bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 		s_pPlayer->m_bAttackContinous = false;
 		CommandToggleAttackContinous();
 	}
+
 	return true;
 }
 
