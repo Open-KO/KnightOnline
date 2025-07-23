@@ -63,7 +63,7 @@
 #include "GameCursor.h"
 #include "N3WorldManager.h"
 #include "LightMgr.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3SkyMng.h>
 #include <N3Base/N3ShapeExtra.h>

@@ -1,10 +1,8 @@
-﻿/*
-*/
-
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "UIChat.h"
 #include "GameEng.h"
 #include "resource.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "PlayerMySelf.h"

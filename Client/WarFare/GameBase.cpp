@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "GameBase.h"
 #include "N3WorldManager.h"
 #include "PlayerOtherMgr.h"

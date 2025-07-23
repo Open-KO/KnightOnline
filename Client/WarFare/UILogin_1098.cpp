@@ -4,7 +4,7 @@
 #include "UILogIn_1098.h"
 #include "GameProcLogIn_1098.h"
 #include "UIMessageBoxManager.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIEdit.h>
 #include <N3Base/N3UIButton.h>

@@ -12,7 +12,7 @@
 #include "SubProcPerTrade.h"
 #include "UISkillTreeDlg.h"
 #include "UIManager.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIButton.h>
 #include <N3Base/N3UIString.h>

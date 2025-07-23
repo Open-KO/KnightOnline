@@ -18,7 +18,7 @@
 #include "UIPartyOrForce.h"
 #include "UIHotKeyDlg.h"
 
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3SndObj.h>
 #include <N3Base/N3SndObjStream.h>

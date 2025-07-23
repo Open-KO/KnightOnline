@@ -15,7 +15,7 @@
 #include "CountableItemEditDlg.h"
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/LogWriter.h>
 

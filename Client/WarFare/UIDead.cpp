@@ -14,7 +14,7 @@
 #include "UIStateBar.h"
 #include "MagicSkillMng.h"
 #include "N3FXMgr.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UITooltip.h>
 #include <N3Base/N3UIString.h>

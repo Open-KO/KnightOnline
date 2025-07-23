@@ -11,7 +11,7 @@
 #include "UIInventory.h"
 #include "MagicSkillMng.h"
 #include "GameEng.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/DFont.h>
 #include <N3Base/N3Camera.h>

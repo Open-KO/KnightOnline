@@ -15,7 +15,7 @@
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
 #include "UIManager.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIButton.h>
 #include <N3Base/N3UIEdit.h>

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "UIInn.h"
 #include "UICreateClanName.h"
 

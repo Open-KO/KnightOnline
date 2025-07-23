@@ -228,6 +228,7 @@
     <ClInclude Include="N3Pond.h" />
     <ClInclude Include="N3River.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="text_resources.h" />
     <ClInclude Include="UICmdEdit.h" />
     <ClInclude Include="UICmdList.h" />
     <ClInclude Include="ItemRepairMgr.h" />

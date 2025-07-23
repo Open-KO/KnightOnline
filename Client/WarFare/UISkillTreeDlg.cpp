@@ -13,7 +13,7 @@
 #include "MagicSkillMng.h"
 #include "UIManager.h"
 #include "N3UIIcon.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIArea.h>
 #include <N3Base/N3UIButton.h>

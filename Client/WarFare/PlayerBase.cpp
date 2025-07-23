@@ -7,7 +7,7 @@
 #include "N3WorldManager.h"
 #include "N3FXMgr.h"
 
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/DFont.h>
 #include <N3Base/N3ShapeExtra.h>
