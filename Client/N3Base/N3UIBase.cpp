@@ -56,7 +56,7 @@ CN3UIBase::CN3UIBase()
 	m_pSnd_OpenUI = nullptr;
 	m_pSnd_CloseUI = nullptr;
 
-	m_crTooltip = DefaultTooltipColor;
+	m_crToolTip = DefaultTooltipColor;
 }
 
 CN3UIBase::~CN3UIBase()
@@ -84,7 +84,7 @@ void CN3UIBase::Release()
 	
 	m_szID.clear();
 	m_szToolTip.clear();
-	m_crTooltip = DefaultTooltipColor;
+	m_crToolTip = DefaultTooltipColor;
 
 	m_eState = UI_STATE_COMMON_NONE;
 	m_dwStyle = UISTYLE_NONE;
@@ -400,7 +400,7 @@ uint32_t CN3UIBase::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	{
 		// tool tip 관련
 		if (s_pTooltipCtrl != nullptr)
-			s_pTooltipCtrl->SetText(m_szToolTip, m_crTooltip);
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crToolTip);
 	}
 
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.

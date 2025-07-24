@@ -155,7 +155,7 @@ uint32_t CN3UIWndBase::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 	{
 		// tool tip 관련
 		if (s_pTooltipCtrl != nullptr)
-			s_pTooltipCtrl->SetText(m_szToolTip, m_crTooltip);
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crToolTip);
 	}
 
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.

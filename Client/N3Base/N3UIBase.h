@@ -59,7 +59,7 @@ public:
 
 	std::string m_szID;			// UI id
 	std::string	m_szToolTip;	// tooltip text
-	D3DCOLOR	m_crTooltip;
+	D3DCOLOR	m_crToolTip;
 
 	void SetID(const std::string& szID)
 	{
@@ -78,7 +78,7 @@ public:
 
 	void SetTooltipColor(D3DCOLOR crTooltip)
 	{
-		m_crTooltip = crTooltip;
+		m_crToolTip = crTooltip;
 	}
 
 	static CN3UITooltip*	s_pTooltipCtrl;		// tool tip
