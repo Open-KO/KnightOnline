@@ -169,8 +169,10 @@ uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &p
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl != nullptr)
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crTooltip);
 	}
+
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.
 
 	if(m_pChildUI && m_pChildUI->IsVisible())

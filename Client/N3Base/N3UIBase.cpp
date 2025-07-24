@@ -40,21 +40,23 @@ std::string CN3UIBase::s_szStringTmp; // 임시변수..
 CN3UIBase::CN3UIBase()
 {
 	m_eType = UI_TYPE_BASE;
-	m_pParent = NULL;
-	m_pChildUI	= NULL;
-	m_pParentUI = NULL;
+	m_pParent = nullptr;
+	m_pChildUI	= nullptr;
+	m_pParentUI = nullptr;
 
 	m_iChildID	= -1;
 
-	ZeroMemory(&m_rcRegion, sizeof(m_rcRegion));
-	ZeroMemory(&m_rcMovable, sizeof(m_rcMovable));
+	memset(&m_rcRegion, 0, sizeof(m_rcRegion));
+	memset(&m_rcMovable, 0, sizeof(m_rcMovable));
 	m_eState = UI_STATE_COMMON_NONE;
 	m_dwStyle = UISTYLE_NONE;
 
 	m_dwReserved = 0;
 	m_bVisible = true;
-	m_pSnd_OpenUI = NULL;
-	m_pSnd_CloseUI = NULL;
+	m_pSnd_OpenUI = nullptr;
+	m_pSnd_CloseUI = nullptr;
+
+	m_crTooltip = DefaultTooltipColor;
 }
 
 CN3UIBase::~CN3UIBase()
@@ -74,26 +76,28 @@ CN3UIBase::~CN3UIBase()
 
 void CN3UIBase::Release()
 {
-	if(m_pParent) m_pParent->RemoveChild(this);
+	if (m_pParent != nullptr)
+		m_pParent->RemoveChild(this);
 
-	ZeroMemory(&m_rcRegion, sizeof(m_rcRegion));
-	ZeroMemory(&m_rcMovable, sizeof(m_rcMovable));
+	memset(&m_rcRegion, 0, sizeof(m_rcRegion));
+	memset(&m_rcMovable, 0, sizeof(m_rcMovable));
 	
-	m_szID = "";
-	m_szToolTip = "";
+	m_szID.clear();
+	m_szToolTip.clear();
+	m_crTooltip = DefaultTooltipColor;
 
 	m_eState = UI_STATE_COMMON_NONE;
 	m_dwStyle = UISTYLE_NONE;
 	m_dwReserved = 0;
 	m_bVisible = true;
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_OpenUI);
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_CloseUI);
+	s_SndMgr.ReleaseObj(&m_pSnd_OpenUI);
+	s_SndMgr.ReleaseObj(&m_pSnd_CloseUI);
 
-	while(!m_Children.empty())
+	while (!m_Children.empty())
 	{
-		CN3UIBase* pChild = m_Children.front();
-		if (pChild) delete pChild;	// 자식이 delete되면서 부모의 list에서는 자동으로 제거된다.
-									// 따라서 리스트에서 따로 지우는 부분이 없어도 된다.
+		// 자식이 delete되면서 부모의 list에서는 자동으로 제거된다.
+		// 따라서 리스트에서 따로 지우는 부분이 없어도 된다.
+		delete m_Children.front();
 	}
 
 	CN3BaseFileAccess::Release();
@@ -395,8 +399,10 @@ uint32_t CN3UIBase::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl != nullptr)
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crTooltip);
 	}
+
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.
 
 

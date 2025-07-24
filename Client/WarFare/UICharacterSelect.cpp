@@ -224,7 +224,8 @@ uint32_t CUICharacterSelect::MouseProc(uint32_t dwFlags, const POINT &ptCur, con
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl != nullptr)
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crTooltip);
 	}
 
 	if(m_pChildUI && m_pChildUI->IsVisible())
