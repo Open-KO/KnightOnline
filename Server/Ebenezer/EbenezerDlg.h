@@ -51,6 +51,7 @@ typedef CSTLMap <_PARTY_GROUP>				PartyArray;
 typedef CSTLMap <CKnights>					KnightsArray;
 typedef CSTLMap <_ZONE_SERVERINFO>			ServerArray;
 typedef CSTLMap <model::Home>				HomeArray;
+typedef CSTLMap <model::StartPosition>		StartPositionMap;
 typedef	CSTLMap	<EVENT>						QuestArray;
 
 enum class NameType
@@ -89,6 +90,7 @@ public:
 	int  GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type = 0);
 	BOOL LoadAllKnightsUserData();
 	BOOL LoadAllKnights();
+	BOOL LoadStartPositionTable();
 	BOOL LoadHomeTable();
 	void Announcement(BYTE type, int nation = 0, int chat_type = 8);
 	void ResetBattleZone();
@@ -182,6 +184,7 @@ public:
 	PartyArray				m_PartyArray;
 	KnightsArray			m_KnightsArray;
 	HomeArray				m_HomeArray;
+	StartPositionMap		m_StartPositionMap;
 	QuestArray				m_Event;
 
 	CKnightsManager			m_KnightsManager;

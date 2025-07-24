@@ -493,6 +493,14 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
+	LogFileWrite(_T("before item LoadStartPositionTable table\r\n"));
+	if (!LoadStartPositionTable())
+	{
+		AfxMessageBox(_T("LoadStartPositionTable Load Fail"));
+		AfxPostQuitMessage(0);
+		return FALSE;
+	}
+
 	LogFileWrite(_T("before battle\r\n"));
 	if (!LoadBattleTable())
 	{
@@ -651,6 +659,9 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 	if (!m_HomeArray.IsEmpty())
 		m_HomeArray.DeleteAllData();
+
+	if (!m_StartPositionMap.IsEmpty())
+		m_StartPositionMap.DeleteAllData();
 
 	for (C3DMap* pMap : m_ZoneArray)
 		delete pMap;
@@ -3074,6 +3085,18 @@ void CEbenezerDlg::Announcement(BYTE type, int nation, int chat_type)
 				pUser->Send(send_buff, send_index);
 		}
 	}
+}
+
+BOOL CEbenezerDlg::LoadStartPositionTable()
+{
+	recordset_loader::STLMap loader(m_StartPositionMap);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 BOOL CEbenezerDlg::LoadHomeTable()

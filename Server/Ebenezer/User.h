@@ -276,6 +276,7 @@ public:
 	void ClassChangeReq();
 	void FriendReport(char* pBuf);
 	CUser* GetItemRoutingUser(int itemid, short itemcount);
+	bool GetStartPosition(short* x, short* z);
 	void Home();
 	void ReportBug(char* pBuf);
 	int GetEmptySlot(int itemid, int bCountable);

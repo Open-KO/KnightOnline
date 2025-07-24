@@ -8696,87 +8696,34 @@ void CUser::Home()
 	char send_buff[128] = {};
 
 	short x = 0, z = 0;		// The point where you will be warped to.
-
-	model::Home* pHomeInfo = m_pMain->m_HomeArray.GetData(m_pUserData->m_bNation);
-	if (pHomeInfo == nullptr)
+	if (!GetStartPosition(&x, &z))
 		return;
-
-	// Frontier Zone...
-	if (m_pUserData->m_bNation != m_pUserData->m_bZone
-		&& m_pUserData->m_bZone > 200)
-	{
-		x = pHomeInfo->FreeZoneX + myrand(0, pHomeInfo->FreeZoneLX);
-		z = pHomeInfo->FreeZoneZ + myrand(0, pHomeInfo->FreeZoneLZ);
-	}
-	// Battle Zone...
-	else if (m_pUserData->m_bNation != m_pUserData->m_bZone
-		&& m_pUserData->m_bZone > 100
-		&& m_pUserData->m_bZone < 200)
-	{
-		x = pHomeInfo->BattleZoneX + myrand(0, pHomeInfo->BattleZoneLX);
-		z = pHomeInfo->BattleZoneZ + myrand(0, pHomeInfo->BattleZoneLZ);
-
-// 비러머글 개척지대 바꿔치기 --;
-		if (m_pUserData->m_bZone == ZONE_SNOW_BATTLE)
-		{
-			x = pHomeInfo->FreeZoneX + myrand(0, pHomeInfo->FreeZoneLX);
-			z = pHomeInfo->FreeZoneZ + myrand(0, pHomeInfo->FreeZoneLZ);
-		}
-//
-
-/*
-		KickOutZoneUser();
-		return;
-*/
-	}
-	// Specific Lands...
-	else if (m_pUserData->m_bNation != m_pUserData->m_bZone
-		&& m_pUserData->m_bZone < 3)
-	{
-		if (m_pUserData->m_bNation == KARUS)
-		{
-			x = pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX);
-			z = pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ);
-		}
-		else if (m_pUserData->m_bNation == ELMORAD)
-		{
-			x = pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX);
-			z = pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ);
-		}
-		else
-		{
-			return;
-		}
-	}
-// 비러머글 뉴존 >.<
-	else if (m_pUserData->m_bZone > 10
-		&& m_pUserData->m_bZone < 20)
-	{
-		x = 527 + myrand(0, 10);
-		z = 543 + myrand(0, 10);
-	}
-//
-	else
-	{	// Your own nation...
-		if (m_pUserData->m_bNation == KARUS)
-		{
-			x = pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX);
-			z = pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ);
-		}
-		else if (m_pUserData->m_bNation == ELMORAD)
-		{
-			x = pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX);
-			z = pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ);
-		}
-		else
-		{
-			return;
-		}
-	}
 
 	SetShort(send_buff, (WORD) (x * 10), send_index);
 	SetShort(send_buff, (WORD) (z * 10), send_index);
 	Warp(send_buff);
+}
+
+bool CUser::GetStartPosition(short* x, short* z)
+{
+	model::StartPosition* startPosition = m_pMain->m_StartPositionMap.GetData(m_pUserData->m_bZone);
+	if (startPosition == nullptr)
+		return false;
+
+	if (m_pUserData->m_bNation == KARUS)
+	{
+		*x = startPosition->KarusX + myrand(0, startPosition->RangeX);
+		*z = startPosition->KarusZ + myrand(0, startPosition->RangeZ);
+		return true;
+	}
+	else if (m_pUserData->m_bNation == ELMORAD)
+	{
+		*x = startPosition->ElmoX + myrand(0, startPosition->RangeX);
+		*z = startPosition->ElmoZ + myrand(0, startPosition->RangeZ);
+		return true;
+	}
+
+	return false;
 }
 
 CUser* CUser::GetItemRoutingUser(int itemid, short itemcount)
