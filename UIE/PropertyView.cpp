@@ -218,7 +218,9 @@ BOOL CPropertyView::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				str += pItem->m_curValue;
 				pHView->GetTreeCtrl().SetItemText(hItem, str);
 			}
-			pUI->SetID(pItem->m_curValue);
+
+			const std::string szID(CT2A(pItem->m_curValue));
+			pUI->SetID(szID);
 		}
 		else if(pItem->m_propName == "Region left" || pItem->m_propName == "Region top" ||
 			pItem->m_propName == "Region right" || pItem->m_propName == "Region bottom")
@@ -232,7 +234,11 @@ BOOL CPropertyView::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 			// move rect 갱신하는 함수 만들어서 처리하기
 			pFrm->GetRightPane()->SelectRectType(CUIEView::RT_MOVE);
 		}
-		else if(pItem->m_propName == "Tooltip text") pUI->SetTooltipText(pItem->m_curValue);
+		else if(pItem->m_propName == "Tooltip text")
+		{
+			const std::string szToolTip(CT2A(pItem->m_curValue));
+			pUI->SetTooltipText(szToolTip);
+		}
 		else if(pItem->m_propName == "Open sound")
 		{
 			pUI->SetSndOpen((LPCTSTR)pItem->m_curValue);
