@@ -34,18 +34,21 @@ public:
 	__IconItemSkill* m_pBackupUpgradeInv[MAX_ITEM_INVENTORY];
 	__IconItemSkill* m_pUpgradeResultSlot;	// Result Slot after upgrade
 	__IconItemSkill* m_pUpgradeItemSlot;	// Which item to upgrade
-	int8_t m_iUpgradeSlotInvPos[10];
+	int8_t m_iUpgradeSlotInvPos[MAX_ITEM_UPGRADE_SLOT+1];
 	CN3UIString* m_pStrMyGold;
 	float m_fGuillotineTimer = 3.0f;
 	float m_fGuillotineAnimationDuration = 0.1f;
 	bool m_bGuillotineActive = false;
 	bool m_bUpgradeSuccesfull = false;
 	bool m_bReceivedResultFromServer = false;
-	bool m_bFlipFlopActive;
-	float m_fFlipFlopTimer;
-	int m_iCurrentFlipFlopFrame;
-	POINT m_ptCover1Start, m_ptCover1End;
-	POINT m_ptCover2Start, m_ptCover2End;
+	bool m_bFlipFlopActive =false;
+	float m_fFlipFlopTimer = 0.0f;
+	int m_iCurrentFlipFlopFrame = 0;
+	int m_iCoverShift = 0;
+	POINT m_ptCover1End;
+	POINT m_ptCover2Start;
+	POINT m_ptCover2End;
+	POINT m_ptCover1Start;
 
 
 	CUIImageTooltipDlg* m_pUITooltipDlg;
