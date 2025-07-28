@@ -115,6 +115,15 @@ public:
 	void				DoAnimationGuillotine();
 	void				DoAnimationUpgradeFail();
 	void				FlipFlopAnim();
+	void				UpdateGuillotineAnimation();
+	void				UpdateFlipFlopAnimation();
+	void				HideAllAnimationFrames();
+	void				CreateUIIconForItem(__IconItemSkill* pItem, const std::string& szIconFN = "");
+	__IconItemSkill*	CreateIconFromSource(__IconItemSkill* pSrc, int count);
+	void				SetupIconArea(__IconItemSkill* pItem, CN3UIArea* pArea);
+	bool				HandleUpgradeAreaDrop(__IconItemSkill* spItem, POINT ptCur);
+	bool				HandleSlotDrop(__IconItemSkill* spItem, int iDestiOrder);
+	bool				IsSlotCompatible(__IconItemSkill* pSrc, int iDestiOrder);
 	void				Tick() override;
 };
 
