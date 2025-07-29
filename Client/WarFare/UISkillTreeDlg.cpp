@@ -1198,7 +1198,7 @@ void CUISkillTreeDlg::InitIconUpdate()
 	{
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.GetIndexedData(i);
 		if ( pUSkill == NULL ) continue;
-		if ( pUSkill->dwID >= UIITEM_TYPE_SONGPYUN_ID_MIN) continue;
+		if ( pUSkill->dwID >= UIITEM_TYPE_USABLE_ID_MIN) continue;
 
 		// 조건이 충족 되는지 확인한다..
 		iModulo = pUSkill->iNeedSkill % 10;

@@ -416,7 +416,7 @@ void CUIHotKeyDlg::InitIconUpdate()
 			__TABLE_UPC_SKILL* pUSkill = NULL;
 
 			// Skill Tree Window가 아이디를 갖고 있지 않으면 continue.. 
-			if ( (HD.iID < UIITEM_TYPE_SONGPYUN_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
+			if ( (HD.iID < UIITEM_TYPE_USABLE_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
 				continue;
 
 			pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
@@ -896,7 +896,7 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
 		if ( pUSkill == NULL ) return false;
-		if ( pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+		if ( pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
 
 		spSkill = new __IconItemSkill();
 		spSkill->pSkill = pUSkill;
