@@ -46,10 +46,6 @@ public:
 	int m_iCurrentFlipFlopFrame = 0;
 	bool m_bGuillotineClosing = true;
 	int m_iCoverShift = 0;
-	int m_iCover1OriginalX = 0;
-	int m_iCover1OriginalY = 0;
-	int m_iCover2OriginalX = 0;
-	int m_iCover2OriginalY = 0;
 	RECT m_rcCover1Original;
 	RECT m_rcCover2Original;
 

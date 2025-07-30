@@ -759,13 +759,9 @@ bool CUIItemUpgrade::Load(HANDLE hFile)
 	m_pImageCover1->SetVisible(false);
 	m_pImageCover2->SetVisible(false);
 	
-	// Store original regions and positions for consistent animation reference
+	// Store original regions for consistent animation reference
 	m_rcCover1Original = m_pImageCover1->GetRegion();
 	m_rcCover2Original = m_pImageCover2->GetRegion();
-	m_iCover1OriginalX = m_rcCover1Original.left;
-	m_iCover1OriginalY = m_rcCover1Original.top;
-	m_iCover2OriginalX = m_rcCover2Original.left;
-	m_iCover2OriginalY = m_rcCover2Original.top;
 	
 	for (int i = 0; i < 20; ++i)
 	{
@@ -1046,10 +1042,6 @@ void CUIItemUpgrade::DoAnimationGuillotine()
 	// Capture current correct positions as the true original positions
 	m_rcCover1Original = m_pImageCover1->GetRegion();
 	m_rcCover2Original = m_pImageCover2->GetRegion();
-	m_iCover1OriginalX = m_rcCover1Original.left;
-	m_iCover1OriginalY = m_rcCover1Original.top;
-	m_iCover2OriginalX = m_rcCover2Original.left;
-	m_iCover2OriginalY = m_rcCover2Original.top;
 	
 	// Calculate the height of the covers for displacement
 	m_iCoverShift = m_rcCover1Original.bottom - m_rcCover1Original.top;
@@ -1089,10 +1081,10 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 	m_pImageCover2->SetVisible(true);
 
 	// Calculate start and end Y positions
-	int cover1StartY = m_iCover1OriginalY - m_iCoverShift;
-	int cover2StartY = m_iCover2OriginalY + m_iCoverShift;
-	int cover1EndY = m_iCover1OriginalY;
-	int cover2EndY = m_iCover2OriginalY;
+	int cover1StartY = m_rcCover1Original.top - m_iCoverShift;
+	int cover2StartY = m_rcCover2Original.top + m_iCoverShift;
+	int cover1EndY = m_rcCover1Original.top;
+	int cover2EndY = m_rcCover2Original.top;
 
 	int y1, y2;
 
