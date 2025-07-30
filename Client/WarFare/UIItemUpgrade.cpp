@@ -35,7 +35,7 @@ static const uint32_t MAX_UPGRADE_ITEM_ID = 379257000;
 static const uint32_t TRINA_ITEM_ID = 700002000;
 
 // Animation Constants
-static const float GUILLOTINE_ANIMATION_DURATION = 0.5f;
+static const float GUILLOTINE_ANIMATION_DURATION = 0.8f;
 static const float FLIPFLOP_FRAME_DELAY = 0.1f;
 static const int FLIPFLOP_MAX_FRAMES = 20;
 static const float UV_ASPECT_RATIO = 45.0f / 64.0f;
@@ -758,6 +758,15 @@ bool CUIItemUpgrade::Load(HANDLE hFile)
 
 	m_pImageCover1->SetVisible(false);
 	m_pImageCover2->SetVisible(false);
+	
+	// Store original regions and positions for consistent animation reference
+	m_rcCover1Original = m_pImageCover1->GetRegion();
+	m_rcCover2Original = m_pImageCover2->GetRegion();
+	m_iCover1OriginalX = m_rcCover1Original.left;
+	m_iCover1OriginalY = m_rcCover1Original.top;
+	m_iCover2OriginalX = m_rcCover2Original.left;
+	m_iCover2OriginalY = m_rcCover2Original.top;
+	
 	for (int i = 0; i < 20; ++i)
 	{
 		char szID[32];
@@ -1024,20 +1033,42 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 }
 void CUIItemUpgrade::DoAnimationGuillotine()
 {
-	
+	// Reset animation state completely
 	m_fGuillotineTimer = 0.0f;
+	m_bGuillotineActive = false;
+	m_bFlipFlopActive = false;
+	m_fFlipFlopTimer = 0.0f;
+	m_iCurrentFlipFlopFrame = 0;
+	m_bGuillotineClosing = true;
 
 	if (!m_pImageCover1 || !m_pImageCover2) return;
-	const RECT rc1 = m_pImageCover1->GetRegion();
-	const RECT rc2 = m_pImageCover2->GetRegion();
-
-	m_iCoverShift = rc1.bottom - rc1.top;
-	m_ptCover1Start = { rc1.left, rc1.top - m_iCoverShift };
-	m_ptCover1End = { rc1.left, rc1.top };
-	m_ptCover2Start = { rc2.left, rc2.top + m_iCoverShift };
-	m_ptCover2End = { rc2.left, rc2.top };
+	
+	// Capture current correct positions as the true original positions
+	m_rcCover1Original = m_pImageCover1->GetRegion();
+	m_rcCover2Original = m_pImageCover2->GetRegion();
+	m_iCover1OriginalX = m_rcCover1Original.left;
+	m_iCover1OriginalY = m_rcCover1Original.top;
+	m_iCover2OriginalX = m_rcCover2Original.left;
+	m_iCover2OriginalY = m_rcCover2Original.top;
+	
+	// Calculate the height of the covers for displacement
+	m_iCoverShift = m_rcCover1Original.bottom - m_rcCover1Original.top;
+	
+	// Create starting regions - move Y positions, keep X and size same
+	RECT rc1Start = m_rcCover1Original;
+	RECT rc2Start = m_rcCover2Original;
+	rc1Start.top -= m_iCoverShift;
+	rc1Start.bottom -= m_iCoverShift;
+	rc2Start.top += m_iCoverShift;
+	rc2Start.bottom += m_iCoverShift;
+	
+	// Initialize covers to starting regions
+	m_pImageCover1->SetRegion(rc1Start);
+	m_pImageCover2->SetRegion(rc2Start);
+	m_pImageCover1->SetVisible(false);
+	m_pImageCover2->SetVisible(false);
+	
 	m_bGuillotineActive = true;
-
 }
 
 
@@ -1050,29 +1081,86 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 {
 	m_fGuillotineTimer += CN3Base::s_fSecPerFrm;
 	float t = m_fGuillotineTimer / GUILLOTINE_ANIMATION_DURATION;
+	
 	if (t > 1.0f) t = 1.0f;
 
-	// Quadratic ease-out animation
-	float ease = (1.0f - t) * (1.0f - t);
-	int y1 = m_ptCover1End.y + (int)((m_iCoverShift) * ease);
-	int y2 = m_ptCover2End.y - (int)((m_iCoverShift) * ease);
-
-	m_pImageCover1->SetPos(m_ptCover1Start.x, y1);
-	m_pImageCover2->SetPos(m_ptCover2Start.x, y2);
+	// Make covers visible during animation
 	m_pImageCover1->SetVisible(true);
 	m_pImageCover2->SetVisible(true);
 
-	// Animation completed
-	if (t >= 1.0f)
+	// Calculate start and end Y positions
+	int cover1StartY = m_iCover1OriginalY - m_iCoverShift;
+	int cover2StartY = m_iCover2OriginalY + m_iCoverShift;
+	int cover1EndY = m_iCover1OriginalY;
+	int cover2EndY = m_iCover2OriginalY;
+
+	int y1, y2;
+
+	if (m_bGuillotineClosing)
 	{
-		m_bFlipFlopActive = true;
-		m_fFlipFlopTimer = 0.0f;
-		m_iCurrentFlipFlopFrame = 0;
-		m_bGuillotineActive = false;
-		m_pImageCover1->SetPos(m_ptCover1End.x, m_ptCover1End.y);
-		m_pImageCover2->SetPos(m_ptCover2End.x, m_ptCover2End.y);
-		FlipFlopAnim();
+		// Closing phase: quadratic ease-in
+		float ease = t * t;
+		
+		// Cover1 moves from start to center
+		y1 = cover1StartY + (int)((cover1EndY - cover1StartY) * ease);
+		// Cover2 moves from start to center  
+		y2 = cover2StartY + (int)((cover2EndY - cover2StartY) * ease);
+
+		// Animation completed - start flipflop
+		if (t >= 1.0f)
+		{
+			m_bFlipFlopActive = true;
+			m_fFlipFlopTimer = 0.0f;
+			m_iCurrentFlipFlopFrame = 0;
+			m_bGuillotineActive = false;
+			
+			// Ensure covers are at exactly center region before flipflop
+			m_pImageCover1->SetRegion(m_rcCover1Original);
+			m_pImageCover2->SetRegion(m_rcCover2Original);
+			
+			FlipFlopAnim();
+			return; // Exit early to prevent further position updates
+		}
 	}
+	else
+	{
+		// Opening phase: quadratic ease-out
+		float ease = 1.0f - ((1.0f - t) * (1.0f - t));
+		
+		// Cover1 moves from center back to start
+		y1 = cover1EndY + (int)((cover1StartY - cover1EndY) * ease);
+		// Cover2 moves from center back to start
+		y2 = cover2EndY + (int)((cover2StartY - cover2EndY) * ease);
+
+		// Animation completed - hide covers and reset positions
+		if (t >= 1.0f)
+		{
+			m_bGuillotineActive = false;
+			m_pImageCover1->SetVisible(false);
+			m_pImageCover2->SetVisible(false);
+			
+			// Force reset covers to their exact original regions for next animation
+			m_pImageCover1->SetRegion(m_rcCover1Original);
+			m_pImageCover2->SetRegion(m_rcCover2Original);
+			return; // Exit early to prevent further position updates
+		}
+	}
+
+	// Create regions with updated Y positions, keeping X and size identical to original
+	RECT rc1 = m_rcCover1Original;
+	RECT rc2 = m_rcCover2Original;
+	
+	// Update Y positions while maintaining original width and height
+	int height1 = rc1.bottom - rc1.top;
+	int height2 = rc2.bottom - rc2.top;
+	rc1.top = y1;
+	rc1.bottom = y1 + height1;
+	rc2.top = y2;
+	rc2.bottom = y2 + height2;
+	
+	// Apply the updated regions
+	m_pImageCover1->SetRegion(rc1);
+	m_pImageCover2->SetRegion(rc2);
 }
 
 void CUIItemUpgrade::UpdateFlipFlopAnimation()
@@ -1088,8 +1176,11 @@ void CUIItemUpgrade::UpdateFlipFlopAnimation()
 		{
 			m_bFlipFlopActive = false;
 			HideAllAnimationFrames();
-			m_pImageCover1->SetVisible(false);
-			m_pImageCover2->SetVisible(false);
+			
+			// Start guillotine opening animation
+			m_bGuillotineClosing = false;
+			m_bGuillotineActive = true;
+			m_fGuillotineTimer = 0.0f;
 		}
 		else
 		{

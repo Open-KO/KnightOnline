@@ -44,11 +44,14 @@ public:
 	bool m_bFlipFlopActive =false;
 	float m_fFlipFlopTimer = 0.0f;
 	int m_iCurrentFlipFlopFrame = 0;
+	bool m_bGuillotineClosing = true;
 	int m_iCoverShift = 0;
-	POINT m_ptCover1End;
-	POINT m_ptCover2Start;
-	POINT m_ptCover2End;
-	POINT m_ptCover1Start;
+	int m_iCover1OriginalX = 0;
+	int m_iCover1OriginalY = 0;
+	int m_iCover2OriginalX = 0;
+	int m_iCover2OriginalY = 0;
+	RECT m_rcCover1Original;
+	RECT m_rcCover2Original;
 
 
 	CUIImageTooltipDlg* m_pUITooltipDlg;
