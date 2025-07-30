@@ -35,7 +35,7 @@ static const uint32_t MAX_UPGRADE_ITEM_ID = 379257000;
 static const uint32_t TRINA_ITEM_ID = 700002000;
 
 // Animation Constants
-static const float GUILLOTINE_ANIMATION_DURATION = 0.8f;
+static const float COVER_ANIMATION_DURATION = 0.8f;
 static const float FLIPFLOP_FRAME_DELAY = 0.1f;
 static const int FLIPFLOP_MAX_FRAMES = 20;
 static const float UV_ASPECT_RATIO = 45.0f / 64.0f;
@@ -116,10 +116,10 @@ void CUIItemUpgrade::Tick()
 	{
 		switch (m_eAnimationState)
 		{
-			case ANIM_GUILLOTINE_CLOSING:
-			case ANIM_GUILLOTINE_OPENING:
+			case ANIM_COVER_CLOSING:
+			case ANIM_COVER_OPENING:
 				if (m_pImageCover1 && m_pImageCover2)
-					UpdateGuillotineAnimation();
+					UpdateCoverAnimation();
 				break;
 			case ANIM_FLIPFLOP:
 				UpdateFlipFlopAnimation();
@@ -966,7 +966,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 	if (result == 0 || result == 1)
 	{
-		DoAnimationGuillotine();
+		DoAnimationCover();
 
 		DeleteIconItemSkill(m_pUpgradeItemSlot);
 		for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT + 1; i++)
@@ -1030,12 +1030,12 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 
 }
-void CUIItemUpgrade::DoAnimationGuillotine()
+void CUIItemUpgrade::DoAnimationCover()
 {
 	// Reset animation state completely
 	m_fAnimationTimer = 0.0f;
 	m_iCurrentFrame = 0;
-	m_eAnimationState = ANIM_GUILLOTINE_CLOSING;
+	m_eAnimationState = ANIM_COVER_CLOSING;
 
 	if (!m_pImageCover1 || !m_pImageCover2) return;
 	
@@ -1067,10 +1067,10 @@ void CUIItemUpgrade::DoAnimationUpgradeFail()
 
 }
 
-void CUIItemUpgrade::UpdateGuillotineAnimation()
+void CUIItemUpgrade::UpdateCoverAnimation()
 {
 	m_fAnimationTimer += CN3Base::s_fSecPerFrm;
-	float t = m_fAnimationTimer / GUILLOTINE_ANIMATION_DURATION;
+	float t = m_fAnimationTimer / COVER_ANIMATION_DURATION;
 	
 	if (t > 1.0f) t = 1.0f;
 
@@ -1086,7 +1086,7 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 
 	int y1, y2;
 
-	if (m_eAnimationState == ANIM_GUILLOTINE_CLOSING)
+	if (m_eAnimationState == ANIM_COVER_CLOSING)
 	{
 		// Closing phase: quadratic ease-in
 		float ease = t * t;
@@ -1165,8 +1165,8 @@ void CUIItemUpgrade::UpdateFlipFlopAnimation()
 		{
 			HideAllAnimationFrames();
 			
-			// Start guillotine opening animation
-			m_eAnimationState = ANIM_GUILLOTINE_OPENING;
+			// Start cover opening animation
+			m_eAnimationState = ANIM_COVER_OPENING;
 			m_fAnimationTimer = 0.0f;
 		}
 		else

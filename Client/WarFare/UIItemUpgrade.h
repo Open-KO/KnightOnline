@@ -40,9 +40,9 @@ public:
 	// Animation state management
 	enum AnimationState {
 		ANIM_NONE = 0,
-		ANIM_GUILLOTINE_CLOSING,
+		ANIM_COVER_CLOSING,
 		ANIM_FLIPFLOP,
-		ANIM_GUILLOTINE_OPENING
+		ANIM_COVER_OPENING
 	} m_eAnimationState = ANIM_NONE;
 	
 	float m_fAnimationTimer = 0.0f;
@@ -117,10 +117,10 @@ public:
 	void				DeleteIconItemSkill(__IconItemSkill*& pItem);
 	void				SendToServerUpgradeMsg();
 	void				MsgRecv_ItemUpgrade(Packet& pkt);
-	void				DoAnimationGuillotine();
+	void				DoAnimationCover();
 	void				DoAnimationUpgradeFail();
 	void				FlipFlopAnim();
-	void				UpdateGuillotineAnimation();
+	void				UpdateCoverAnimation();
 	void				UpdateFlipFlopAnimation();
 	void				HideAllAnimationFrames();
 	void				CreateUIIconForItem(__IconItemSkill* pItem, const std::string& szIconFN = "");
