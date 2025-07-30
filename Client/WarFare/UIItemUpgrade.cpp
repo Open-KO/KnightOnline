@@ -112,16 +112,19 @@ void CUIItemUpgrade::Release()
 
 void CUIItemUpgrade::Tick()
 {
-
-	if (m_bGuillotineActive && m_pImageCover1 && m_pImageCover2)
+	if (m_eAnimationState != ANIM_NONE)
 	{
-		UpdateGuillotineAnimation();
-	}
-
-
-	if (m_bFlipFlopActive)
-	{
-		UpdateFlipFlopAnimation();
+		switch (m_eAnimationState)
+		{
+			case ANIM_GUILLOTINE_CLOSING:
+			case ANIM_GUILLOTINE_OPENING:
+				if (m_pImageCover1 && m_pImageCover2)
+					UpdateGuillotineAnimation();
+				break;
+			case ANIM_FLIPFLOP:
+				UpdateFlipFlopAnimation();
+				break;
+		}
 	}
 
 	CN3UIBase::Tick();
@@ -1030,12 +1033,9 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 void CUIItemUpgrade::DoAnimationGuillotine()
 {
 	// Reset animation state completely
-	m_fGuillotineTimer = 0.0f;
-	m_bGuillotineActive = false;
-	m_bFlipFlopActive = false;
-	m_fFlipFlopTimer = 0.0f;
-	m_iCurrentFlipFlopFrame = 0;
-	m_bGuillotineClosing = true;
+	m_fAnimationTimer = 0.0f;
+	m_iCurrentFrame = 0;
+	m_eAnimationState = ANIM_GUILLOTINE_CLOSING;
 
 	if (!m_pImageCover1 || !m_pImageCover2) return;
 	
@@ -1059,8 +1059,6 @@ void CUIItemUpgrade::DoAnimationGuillotine()
 	m_pImageCover2->SetRegion(rc2Start);
 	m_pImageCover1->SetVisible(false);
 	m_pImageCover2->SetVisible(false);
-	
-	m_bGuillotineActive = true;
 }
 
 
@@ -1071,8 +1069,8 @@ void CUIItemUpgrade::DoAnimationUpgradeFail()
 
 void CUIItemUpgrade::UpdateGuillotineAnimation()
 {
-	m_fGuillotineTimer += CN3Base::s_fSecPerFrm;
-	float t = m_fGuillotineTimer / GUILLOTINE_ANIMATION_DURATION;
+	m_fAnimationTimer += CN3Base::s_fSecPerFrm;
+	float t = m_fAnimationTimer / GUILLOTINE_ANIMATION_DURATION;
 	
 	if (t > 1.0f) t = 1.0f;
 
@@ -1088,7 +1086,7 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 
 	int y1, y2;
 
-	if (m_bGuillotineClosing)
+	if (m_eAnimationState == ANIM_GUILLOTINE_CLOSING)
 	{
 		// Closing phase: quadratic ease-in
 		float ease = t * t;
@@ -1101,10 +1099,9 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 		// Animation completed - start flipflop
 		if (t >= 1.0f)
 		{
-			m_bFlipFlopActive = true;
-			m_fFlipFlopTimer = 0.0f;
-			m_iCurrentFlipFlopFrame = 0;
-			m_bGuillotineActive = false;
+			m_eAnimationState = ANIM_FLIPFLOP;
+			m_fAnimationTimer = 0.0f;
+			m_iCurrentFrame = 0;
 			
 			// Ensure covers are at exactly center region before flipflop
 			m_pImageCover1->SetRegion(m_rcCover1Original);
@@ -1127,7 +1124,7 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 		// Animation completed - hide covers and reset positions
 		if (t >= 1.0f)
 		{
-			m_bGuillotineActive = false;
+			m_eAnimationState = ANIM_NONE;
 			m_pImageCover1->SetVisible(false);
 			m_pImageCover2->SetVisible(false);
 			
@@ -1157,22 +1154,20 @@ void CUIItemUpgrade::UpdateGuillotineAnimation()
 
 void CUIItemUpgrade::UpdateFlipFlopAnimation()
 {
-	m_fFlipFlopTimer += CN3Base::s_fSecPerFrm;
+	m_fAnimationTimer += CN3Base::s_fSecPerFrm;
 
-	if (m_fFlipFlopTimer >= FLIPFLOP_FRAME_DELAY)
+	if (m_fAnimationTimer >= FLIPFLOP_FRAME_DELAY)
 	{
-		m_fFlipFlopTimer -= FLIPFLOP_FRAME_DELAY;
-		m_iCurrentFlipFlopFrame++;
+		m_fAnimationTimer -= FLIPFLOP_FRAME_DELAY;
+		m_iCurrentFrame++;
 
-		if (m_iCurrentFlipFlopFrame >= FLIPFLOP_MAX_FRAMES)
+		if (m_iCurrentFrame >= FLIPFLOP_MAX_FRAMES)
 		{
-			m_bFlipFlopActive = false;
 			HideAllAnimationFrames();
 			
 			// Start guillotine opening animation
-			m_bGuillotineClosing = false;
-			m_bGuillotineActive = true;
-			m_fGuillotineTimer = 0.0f;
+			m_eAnimationState = ANIM_GUILLOTINE_OPENING;
+			m_fAnimationTimer = 0.0f;
 		}
 		else
 		{
@@ -1341,20 +1336,20 @@ bool CUIItemUpgrade::HandleSlotDrop(__IconItemSkill* spItem, int iDestiOrder)
 
 void CUIItemUpgrade::FlipFlopAnim()
 {
-	if (!m_bFlipFlopActive) return;
+	if (m_eAnimationState != ANIM_FLIPFLOP) return;
 
 	// Hide before frame
-	if (m_iCurrentFlipFlopFrame > 0)
+	if (m_iCurrentFrame > 0)
 	{
 		char szID[32];
-		sprintf(szID, m_bUpgradeSuccesfull ? "img_s_load_%d" : "img_f_load_%d", m_iCurrentFlipFlopFrame - 1);
+		sprintf(szID, m_bUpgradeSuccesfull ? "img_s_load_%d" : "img_f_load_%d", m_iCurrentFrame - 1);
 		if (CN3UIImage* pImg = (CN3UIImage*)GetChildByID(szID))
 			pImg->SetVisible(false);
 	}
 
 	// Show current frame
 	char szID[32];
-	sprintf(szID, m_bUpgradeSuccesfull ? "img_s_load_%d" : "img_f_load_%d", m_iCurrentFlipFlopFrame);
+	sprintf(szID, m_bUpgradeSuccesfull ? "img_s_load_%d" : "img_f_load_%d", m_iCurrentFrame);
 	if (CN3UIImage* pImg = (CN3UIImage*)GetChildByID(szID))
 		pImg->SetVisible(true);
 }

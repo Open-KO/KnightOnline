@@ -36,15 +36,21 @@ public:
 	__IconItemSkill* m_pUpgradeItemSlot;	// Which item to upgrade
 	int8_t m_iUpgradeSlotInvPos[MAX_ITEM_UPGRADE_SLOT+1];
 	CN3UIString* m_pStrMyGold;
-	float m_fGuillotineTimer = 3.0f;
-	float m_fGuillotineAnimationDuration = 0.1f;
-	bool m_bGuillotineActive = false;
+	
+	// Animation state management
+	enum AnimationState {
+		ANIM_NONE = 0,
+		ANIM_GUILLOTINE_CLOSING,
+		ANIM_FLIPFLOP,
+		ANIM_GUILLOTINE_OPENING
+	} m_eAnimationState = ANIM_NONE;
+	
+	float m_fAnimationTimer = 0.0f;
+	int m_iCurrentFrame = 0;
 	bool m_bUpgradeSuccesfull = false;
 	bool m_bReceivedResultFromServer = false;
-	bool m_bFlipFlopActive =false;
-	float m_fFlipFlopTimer = 0.0f;
-	int m_iCurrentFlipFlopFrame = 0;
-	bool m_bGuillotineClosing = true;
+	
+	// Cover animation data
 	int m_iCoverShift = 0;
 	RECT m_rcCover1Original;
 	RECT m_rcCover2Original;
