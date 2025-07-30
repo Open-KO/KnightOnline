@@ -1287,7 +1287,7 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 	SetUid(m_fCurX, m_fCurZ, m_sNid + NPC_BAND);
 	m_byDeadType = 0;
 	CTime t = CTime::GetCurrentTime();
-	TRACE(_T("NPC Init(nid=%d, sid=%d, th_num=%d, name=%hs) - %.2f %.2f, gate = %d, m_byDeadType=%d, time=%d:%d-%d\n"), m_sNid + NPC_BAND, m_sSid, m_sThreadNumber, m_strName, m_fCurX, m_fCurZ, m_byGateOpen, m_byDeadType, t.GetHour(), t.GetMinute(), t.GetSecond());
+	TRACE(_T("NPC Init(nid=%d, sid=%d, th_num=%d, name=%hs) - %.2f %.2f, gate = %d, m_byDeadType=%d, time=%d:%d-%d\n"), m_sNid + NPC_BAND, m_sSid, m_sThreadNumber, m_strName.c_str(), m_fCurX, m_fCurZ, m_byGateOpen, m_byDeadType, t.GetHour(), t.GetMinute(), t.GetSecond());
 
 	// 유저에게 NPC 정보전송...
 	int modify_index = 0;
