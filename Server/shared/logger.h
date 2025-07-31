@@ -16,6 +16,10 @@ namespace logger
 
 	class Logger
 	{
+		// setup defaults
+		static constexpr uint16_t MessageQueueSize = 8192;
+		static constexpr uint8_t ThreadPoolSize = 1;
+
 	public:
 		/// \param appName application name (VersionManager, Aujard, AIServer, Ebenezer)
 		Logger(const std::string& appName);
@@ -41,10 +45,6 @@ namespace logger
 		std::string _defaultLogPath;
 	};
 
-	// setup defaults
-	static constexpr uint16_t MessageQueueSize = 8192;
-	static constexpr uint8_t ThreadPoolSize = 1;
-	
 	// application names used by our loggers
 	static constexpr char AIServer[] = "AIServer";
 	static constexpr char AIServerItem[] = "AIServerItem";
