@@ -9,6 +9,8 @@
 #include <spdlog/async.h>
 #include <spdlog/async_logger.h>
 
+#include <filesystem>
+
 logger::Logger::Logger(const std::string& appName)
 	: _appName(appName)
 {
@@ -22,7 +24,15 @@ void logger::Logger::Setup(CIni& ini, const std::string& baseDir)
 {
 	// setup file logger
 	std::string fileName = ini.GetString(ini::LOGGER, ini::FILE, _defaultLogPath);
-	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(baseDir + fileName, 0, 0);
+
+	std::filesystem::path configuredLogPath(fileName);
+	if (configuredLogPath.is_relative())
+		configuredLogPath = std::filesystem::path(baseDir) / fileName;
+
+	std::u8string utf8String = configuredLogPath.u8string();
+	fileName.assign(utf8String.begin(), utf8String.end());
+
+	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(fileName, 0, 0);
 
 	// setup console logger
 	auto consoleLogger = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -72,7 +82,15 @@ void logger::Logger::SetupExtraLogger(CIni& ini,
 {
 	// setup file logger
 	std::string fileName = ini.GetString(ini::LOGGER, logFileConfigProp, _defaultLogPath);
-	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(baseDir + fileName, 0, 0);
+
+	std::filesystem::path configuredLogPath(fileName);
+	if (configuredLogPath.is_relative())
+		configuredLogPath = std::filesystem::path(baseDir) / fileName;
+
+	std::u8string utf8String = configuredLogPath.u8string();
+	fileName.assign(utf8String.begin(), utf8String.end());
+
+	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(fileName, 0, 0);
 
 	// setup console logger
 	auto consoleLogger = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
