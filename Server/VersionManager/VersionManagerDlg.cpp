@@ -9,7 +9,6 @@
 #include "User.h"
 
 #include <shared/Ini.h>
-#include <shared/logger.h>
 
 #include <db-library/ConnectionManager.h>
 #include <spdlog/spdlog.h>
@@ -34,7 +33,8 @@ constexpr int DB_POOL_CHECK = 100;
 
 CVersionManagerDlg::CVersionManagerDlg(CWnd* parent)
 	: CDialog(IDD, parent),
-	DbProcess(this)
+	DbProcess(this),
+	_logger(logger::VersionManager)
 {
 	//{{AFX_DATA_INIT(CVersionManagerDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -141,7 +141,7 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 	ini.GetString(ini::DOWNLOAD, ini::PATH, "/", _ftpPath, _countof(_ftpPath));
 
 	// configure logger
-	logger::SetupLogger(ini, logger::VersionManager, exePathUtf8);
+	_logger.Setup(ini, exePathUtf8);
 	
 	// TODO: KN_online should be Knight_Account
 	std::string datasourceName = ini.GetString(ini::ODBC, ini::DSN, "KN_online");
@@ -322,8 +322,6 @@ BOOL CVersionManagerDlg::DestroyWindow()
 	for (_SERVER_INFO* pInfo : ServerList)
 		delete pInfo;
 	ServerList.clear();
-
-	spdlog::shutdown();
 
 	return CDialog::DestroyWindow();
 }

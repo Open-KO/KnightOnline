@@ -21,7 +21,9 @@
 #include "UdpSocket.h"
 
 #include <shared/Ini.h>
+#include <shared/logger.h>
 #include <shared/STLMap.h>
+
 #include <vector>
 
 #include "resource.h"
@@ -30,6 +32,19 @@ namespace recordset_loader
 {
 	struct Error;
 }
+
+class EbenezerLogger : public logger::Logger
+{
+public:
+	EbenezerLogger()
+		: Logger(logger::Ebenezer)
+	{
+	}
+
+	void SetupExtraLoggers(CIni& ini,
+		std::shared_ptr<spdlog::details::thread_pool> threadPool,
+		const std::string& baseDir) override;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CEbenezerDlg dialog
@@ -294,7 +309,8 @@ protected:
 	
 private:
 	CIni	m_Ini;
-	
+	EbenezerLogger _logger;
+
 	/// \brief output message box for the application
 	CListBox _outputList;
 };

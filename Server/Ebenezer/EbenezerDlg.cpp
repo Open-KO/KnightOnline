@@ -11,7 +11,6 @@
 #include <shared/StringUtils.h>
 
 #include <db-library/ConnectionManager.h>
-#include <shared/logger.h>
 
 constexpr int GAME_TIME       	= 100;
 constexpr int SEND_TIME			= 200;
@@ -683,8 +682,6 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 	DeleteCriticalSection(&g_serial_critical);
 	DeleteCriticalSection(&g_region_critical);
-
-	spdlog::shutdown();
 
 	return CDialog::DestroyWindow();
 }
@@ -1398,7 +1395,7 @@ void CEbenezerDlg::LoadConfig()
 
 	m_Ini.Load(iniPath);
 
-	logger::SetupLogger(m_Ini, logger::Ebenezer, exePathUtf8);
+	_logger.Setup(m_Ini, exePathUtf8);
 	
 	m_nYear = m_Ini.GetInt("TIMER", "YEAR", 1);
 	m_nMonth = m_Ini.GetInt("TIMER", "MONTH", 1);
@@ -1481,6 +1478,14 @@ void CEbenezerDlg::LoadConfig()
 	SetTimer(ALIVE_TIME, 34000, nullptr);
 	SetTimer(MARKET_BBS_TIME, 300000, nullptr);
 	SetTimer(PACKET_CHECK, 360000, nullptr);
+}
+
+void EbenezerLogger::SetupExtraLoggers(CIni& ini,
+	std::shared_ptr<spdlog::details::thread_pool> threadPool,
+	const std::string& baseDir)
+{
+	SetupExtraLogger(ini, threadPool, baseDir, logger::EbenezerEvent, ini::EVENT_LOG_FILE);
+	SetupExtraLogger(ini, threadPool, baseDir, logger::EbenezerRegion, ini::REGION_LOG_FILE);
 }
 
 void CEbenezerDlg::UpdateGameTime()

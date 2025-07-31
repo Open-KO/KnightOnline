@@ -14,7 +14,6 @@
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
-#include <shared/logger.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG

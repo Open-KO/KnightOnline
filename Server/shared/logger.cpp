@@ -9,23 +9,19 @@
 #include <spdlog/async.h>
 #include <spdlog/async_logger.h>
 
-namespace logger
+logger::Logger::Logger(const std::string& appName)
+	: _appName(appName)
 {
-	void SetupExtraLogger(CIni& ini,
-		const std::string& appName, const std::string& logFileConfigProp,
-		const std::string& exePath,
-		std::shared_ptr<spdlog::details::thread_pool> threadPool);
+	_defaultLogPath = std::format("logs/{}.log", appName);
 }
 
 /// \brief Sets up spdlog from an ini file using standardized server settings
 /// \param ini server application's ini file (already loaded)
-/// \param appName application name (VersionManager, Aujard, AIServer, Ebenezer)
 /// \param baseDir base directory to store logs folder under. must end in a trailing slash.
-void logger::SetupLogger(CIni& ini, const std::string& appName, const std::string& baseDir)
+void logger::Logger::Setup(CIni& ini, const std::string& baseDir)
 {
 	// setup file logger
-	std::string defaultLogPath = std::format("logs/{}.log", appName);
-	std::string fileName = ini.GetString(ini::LOGGER, ini::FILE, defaultLogPath);
+	std::string fileName = ini.GetString(ini::LOGGER, ini::FILE, _defaultLogPath);
 	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(baseDir + fileName, 0, 0);
 
 	// setup console logger
@@ -33,23 +29,16 @@ void logger::SetupLogger(CIni& ini, const std::string& appName, const std::strin
 
 	// setup multi-sink async logger as default (combines file+console logger)
 	spdlog::init_thread_pool(MessageQueueSize, ThreadPoolSize);
+
 	std::vector<spdlog::sink_ptr> sinks{fileLogger, consoleLogger};
+
 	auto threadPool = spdlog::thread_pool();
 	auto appLogger = std::make_shared<spdlog::async_logger>(
-		appName, sinks.begin(), sinks.end(), threadPool, spdlog::async_overflow_policy::block);
+		_appName, sinks.begin(), sinks.end(), threadPool, spdlog::async_overflow_policy::block);
 	spdlog::set_default_logger(appLogger);
 
 	// add any extra loggers
-	if (appName == AIServer)
-	{
-		SetupExtraLogger(ini, AIServerItem, ini::ITEM_LOG_FILE, baseDir, threadPool);
-		SetupExtraLogger(ini, AIServerUser, ini::USER_LOG_FILE, baseDir, threadPool);
-	}
-	else if (appName == Ebenezer)
-	{
-		SetupExtraLogger(ini, EbenezerEvent, ini::EVENT_LOG_FILE, baseDir, threadPool);
-		SetupExtraLogger(ini, EbenezerRegion, ini::REGION_LOG_FILE, baseDir, threadPool);
-	}
+	SetupExtraLoggers(ini, threadPool, baseDir);
 
 	// set default logger level and pattern
 	// we default to debug level logging
@@ -63,17 +52,26 @@ void logger::SetupLogger(CIni& ini, const std::string& appName, const std::strin
 	// warning: only use if all your loggers are thread-safe ("_mt" loggers)
 	spdlog::flush_every(std::chrono::seconds(3));
 
-	spdlog::info("{} logger configured", appName);
+	spdlog::info("{} logger configured", _appName);
 }
 
-void logger::SetupExtraLogger(CIni& ini,
-	const std::string& appName, const std::string& logFileConfigProp,
+void logger::Logger::SetupExtraLoggers(CIni& ini,
+	std::shared_ptr<spdlog::details::thread_pool> threadPool,
+	const std::string& baseDir)
+{
+	/* do nothing - consumers will implement this */
+	ini;
+	threadPool;
+	baseDir;
+}
+
+void logger::Logger::SetupExtraLogger(CIni& ini,
+	std::shared_ptr<spdlog::details::thread_pool> threadPool,
 	const std::string& baseDir,
-	std::shared_ptr<spdlog::details::thread_pool> threadPool)
+	const std::string& appName, const std::string& logFileConfigProp)
 {
 	// setup file logger
-	std::string defaultLogPath = std::format("logs/{}.log", appName);
-	std::string fileName = ini.GetString(ini::LOGGER, logFileConfigProp, defaultLogPath);
+	std::string fileName = ini.GetString(ini::LOGGER, logFileConfigProp, _defaultLogPath);
 	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(baseDir + fileName, 0, 0);
 
 	// setup console logger
@@ -95,4 +93,9 @@ void logger::SetupExtraLogger(CIni& ini,
 	// register the logger
 	spdlog::register_logger(extraLogger);
 	spdlog::get(appName)->info("{} logger configured", appName);
+}
+
+logger::Logger::~Logger()
+{
+	spdlog::shutdown();
 }

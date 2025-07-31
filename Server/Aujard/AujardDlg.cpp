@@ -7,7 +7,6 @@
 
 #include <process.h>
 #include <shared/Ini.h>
-#include <shared/logger.h>
 #include <shared/StringConversion.h>
 #include <db-library/ConnectionManager.h>
 
@@ -125,7 +124,8 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 // CAujardDlg dialog
 
 CAujardDlg::CAujardDlg(CWnd* parent /*=nullptr*/)
-	: CDialog(IDD, parent)
+	: CDialog(IDD, parent),
+	_logger(logger::Aujard)
 {
 	//{{AFX_DATA_INIT(CAujardDlg)
 	//}}AFX_DATA_INIT
@@ -187,7 +187,7 @@ BOOL CAujardDlg::OnInitDialog()
 	CIni ini(iniPath);
 
 	// configure logger
-	logger::SetupLogger(ini, logger::Aujard, exePathUtf8);
+	_logger.Setup(ini, exePathUtf8);
 
 	LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), FALSE);	// Dispatcher 의 Send Queue
 	LoggerSendQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), FALSE);	// Dispatcher 의 Read Queue
@@ -303,8 +303,6 @@ BOOL CAujardDlg::DestroyWindow()
 
 	if (!ItemArray.IsEmpty())
 		ItemArray.DeleteAllData();
-
-	spdlog::shutdown();
 	
 	_instance = nullptr;
 

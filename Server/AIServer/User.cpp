@@ -10,7 +10,6 @@
 #include "Region.h"
 #include "GameSocket.h"
 #include <spdlog/spdlog.h>
-#include <shared/logger.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

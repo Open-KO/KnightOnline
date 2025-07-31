@@ -13,6 +13,7 @@
 #include "Define.h"
 #include "resource.h"
 
+#include <shared/logger.h>
 #include <shared/STLMap.h>
 
 using ItemtableArray = CSTLMap<model::Item>;
@@ -172,7 +173,6 @@ public:
 
 	ItemtableArray		ItemArray;
 
-
 	// Dialog Data
 	//{{AFX_DATA(CAujardDlg)
 	enum { IDD = IDD_AUJARD_DIALOG };
@@ -196,6 +196,8 @@ protected:
 	int					_recvPacketCount;	// packet의 수를 체크
 
 	HICON				_icon;
+
+	logger::Logger		_logger;
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAujardDlg)

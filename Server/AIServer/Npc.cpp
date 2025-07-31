@@ -6,7 +6,6 @@
 #include "Region.h"
 #include "Party.h"
 #include "extern.h"
-#include <shared/logger.h>
 #include <spdlog/spdlog.h>
 
 //BOOL g_bDebug = TRUE;

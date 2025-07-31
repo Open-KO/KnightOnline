@@ -12,7 +12,6 @@
 #include <shared/lzf.h>
 #include <shared/globals.h>
 #include <shared/Ini.h>
-#include <shared/logger.h>
 
 #include <db-library/ConnectionManager.h>
 #include <spdlog/spdlog.h>
@@ -1106,8 +1105,6 @@ BOOL CServerDlg::DestroyWindow()
 	DeleteCriticalSection(&g_User_critical);
 	DeleteCriticalSection(&g_region_critical);
 
-	spdlog::shutdown();
-
 	s_pInstance = nullptr;
 
 	return CDialog::DestroyWindow();
@@ -2137,7 +2134,7 @@ void CServerDlg::GetServerInfoIni()
 	inifile.Load(iniPath);
 
 	// logger setup
-	logger::SetupLogger(inifile, logger::AIServer, exePathUtf8);
+	_logger.Setup(inifile, exePathUtf8);
 	
 	m_byZone = inifile.GetInt(_T("SERVER"), _T("ZONE"), 1);
 
@@ -2151,6 +2148,14 @@ void CServerDlg::GetServerInfoIni()
 
 	// Trigger a save to flush defaults to file.
 	inifile.Save();
+}
+
+void AIServerLogger::SetupExtraLoggers(CIni& ini,
+	std::shared_ptr<spdlog::details::thread_pool> threadPool,
+	const std::string& baseDir)
+{
+	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerItem, ini::ITEM_LOG_FILE);
+	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerUser, ini::USER_LOG_FILE);
 }
 
 void CServerDlg::SendSystemMsg(char* pMsg, int zone, int type, int who)
