@@ -19,7 +19,7 @@ logger::Logger::Logger(const std::string& appName)
 
 /// \brief Sets up spdlog from an ini file using standardized server settings
 /// \param ini server application's ini file (already loaded)
-/// \param baseDir base directory to store logs folder under. must end in a trailing slash.
+/// \param baseDir base directory to store logs folder under
 void logger::Logger::Setup(CIni& ini, const std::string& baseDir)
 {
 	// setup file logger

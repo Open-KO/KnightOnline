@@ -26,7 +26,7 @@ namespace logger
 
 		/// \brief Sets up spdlog from an ini file using standardized server settings
 		/// \param ini server application's ini file (already loaded)
-		/// \param baseDir base directory to store logs folder under. must end in a trailing slash.
+		/// \param baseDir base directory to store logs folder under
 		void Setup(CIni& ini, const std::string& baseDir);
 
 		virtual void SetupExtraLoggers(CIni& ini,
