@@ -127,13 +127,10 @@ void CN3UITooltip::SetText(const std::string& szText, D3DCOLOR crTooltip)
 		strWrappedText += strCurrentLine;
 	}
 
-	m_pBuffOutRef->SetString(szText);
-	m_pBuffOutRef->SetColor(crTooltip);
-
 	// calculate line number
 	int lineCount = 1 + std::count(strWrappedText.begin(), strWrappedText.end(), '\n');
 
-	// change stile with respect to line number
+	// change style with respect to line number
 	if (lineCount == 1)
 		m_pBuffOutRef->SetStyle(UISTYLE_STRING_SINGLELINE | UISTYLE_STRING_ALIGNCENTER | UISTYLE_STRING_ALIGNVCENTER);
 	else
@@ -147,7 +144,7 @@ void CN3UITooltip::SetText(const std::string& szText, D3DCOLOR crTooltip)
 	if (finalSize.cx > iMaxLineWidth)
 		finalSize.cx = iMaxLineWidth;
 	
-	//Padding
+	// Padding
 	const int paddingX = 12;
 	const int paddingY = 12;
 
@@ -157,7 +154,7 @@ void CN3UITooltip::SetText(const std::string& szText, D3DCOLOR crTooltip)
 	SetSize(finalSize.cx, finalSize.cy);
 
 	m_pBuffOutRef->SetString(strWrappedText);
-	m_pBuffOutRef->SetColor(m_crTextColor);
+	m_pBuffOutRef->SetColor(crTooltip);
 
 	// position
 	POINT ptNew = m_ptCursor;
