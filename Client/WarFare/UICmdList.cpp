@@ -24,6 +24,8 @@
 #include <N3Base/N3UIProgress.h>
 #include <N3Base/N3UIString.h>
 
+#include <algorithm>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -193,84 +195,68 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 bool CUICmdList::OnKeyPress(int iKey)
 {
-	if (iKey == DIK_ESCAPE)
+	switch (iKey)
 	{
-		Close(); //close with animation
-		return true;
-	}
-	else if (iKey == DIK_RETURN)
-	{
-		if (m_pList_Cmds != nullptr)
-			ExecuteCommand(m_pList_Cmds->GetCurSel());
-		
-		return true;
-	}
-	else if (iKey == DIK_DOWN)
-	{
-		int iSelectedIndex = 0, iMaxIndex = 0;
-		if (m_iSelectedTab == 0)
-		{
-			iSelectedIndex = m_pList_CmdCat->GetCurSel();
-			iMaxIndex = m_pList_CmdCat->GetCount() - 1;
-			iSelectedIndex++;
-			
-			if (iSelectedIndex < 0) iSelectedIndex = 0;
-			else if (iSelectedIndex > iMaxIndex) iSelectedIndex = iMaxIndex;
+		case DIK_ESCAPE:
+			Close(); // close with animation
+			return true;
 
-			m_pList_CmdCat->SetCurSel(iSelectedIndex);
-			UpdateCommandList(iSelectedIndex);
-		}
-		else if (m_iSelectedTab == 1)
-		{
-			iSelectedIndex = m_pList_Cmds->GetCurSel();
-			iMaxIndex = m_pList_Cmds->GetCount() - 1;
+		case DIK_RETURN:
+			if (m_pList_Cmds != nullptr)
+				ExecuteCommand(m_pList_Cmds->GetCurSel());
 
-			iSelectedIndex++;
+			return true;
 
-			if (iSelectedIndex < 0) iSelectedIndex = 0;
-			else if (iSelectedIndex > iMaxIndex) iSelectedIndex = iMaxIndex;
+		case DIK_DOWN:
+			if (m_iSelectedTab == 0)
+			{
+				int iSelectedIndex = m_pList_CmdCat->GetCurSel();
+				int iMaxIndex = m_pList_CmdCat->GetCount() - 1;
 
-			m_pList_Cmds->SetCurSel(iSelectedIndex);
-		}
+				iSelectedIndex = std::clamp(iSelectedIndex + 1, 0, iMaxIndex);
 
-		return true;
-	}
-	else if (iKey == DIK_UP)
-	{
-		int iSelectedIndex = 0, iMaxIndex = 0;
-		if (m_iSelectedTab == 0)
-		{
-			iSelectedIndex = m_pList_CmdCat->GetCurSel();
-			iMaxIndex = m_pList_CmdCat->GetCount() - 1;
-			iSelectedIndex--;
+				m_pList_CmdCat->SetCurSel(iSelectedIndex);
+				UpdateCommandList(iSelectedIndex);
+			}
+			else if (m_iSelectedTab == 1)
+			{
+				int iSelectedIndex = m_pList_Cmds->GetCurSel();
+				int iMaxIndex = m_pList_Cmds->GetCount() - 1;
 
-			if (iSelectedIndex < 0) iSelectedIndex = 0;
-			else if (iSelectedIndex > iMaxIndex) iSelectedIndex = iMaxIndex;
+				iSelectedIndex = std::clamp(iSelectedIndex + 1, 0, iMaxIndex);
 
-			m_pList_CmdCat->SetCurSel(iSelectedIndex);
-			UpdateCommandList(iSelectedIndex);
-		}
-		else if (m_iSelectedTab == 1)
-		{
-			iSelectedIndex = m_pList_Cmds->GetCurSel();
-			iMaxIndex = m_pList_Cmds->GetCount() - 1;
+				m_pList_Cmds->SetCurSel(iSelectedIndex);
+			}
+			return true;
 
-			iSelectedIndex--;
+		case DIK_UP:
+			if (m_iSelectedTab == 0)
+			{
+				int iSelectedIndex = m_pList_CmdCat->GetCurSel();
+				int iMaxIndex = m_pList_CmdCat->GetCount() - 1;
 
-			if (iSelectedIndex < 0) iSelectedIndex = 0;
-			else if (iSelectedIndex > iMaxIndex) iSelectedIndex = iMaxIndex;
+				iSelectedIndex = std::clamp(iSelectedIndex - 1, 0, iMaxIndex);
 
-			m_pList_Cmds->SetCurSel(iSelectedIndex);
-		}
+				m_pList_CmdCat->SetCurSel(iSelectedIndex);
+				UpdateCommandList(iSelectedIndex);
+			}
+			else if (m_iSelectedTab == 1)
+			{
+				int iSelectedIndex = m_pList_Cmds->GetCurSel();
+				int iMaxIndex = m_pList_Cmds->GetCount() - 1;
 
-		return true;
-	}
-	else if (iKey == DIK_TAB)
-	{
-		if (m_iSelectedTab == 0) m_iSelectedTab = 1;
-		else if (m_iSelectedTab == 1) m_iSelectedTab = 0;
+				iSelectedIndex = std::clamp(iSelectedIndex - 1, 0, iMaxIndex);
 
-		return true;
+				m_pList_Cmds->SetCurSel(iSelectedIndex);
+			}
+			return true;
+
+		case DIK_TAB:
+			if (m_iSelectedTab == 0)
+				m_iSelectedTab = 1;
+			else if (m_iSelectedTab == 1)
+				m_iSelectedTab = 0;
+			return true;
 	}
 
 	return CN3UIBase::OnKeyPress(iKey);
