@@ -129,7 +129,9 @@ void CUIRingUpgrade::Render()
 		if (m_pMyAccessoryCompoundInv[i] && ((m_pMyAccessoryCompoundInv[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) ||
 			(m_pMyAccessoryCompoundInv[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)))
 		{
-			CN3UIString* pStr = GetChildStringByiOrderWithPrefix(i, "s_count_");
+			char szID[32];
+			sprintf(szID, "s_count_%d", i);
+			CN3UIString* pStr = (CN3UIString*)GetChildByID(szID);
 			if (pStr)
 			{
 				if ((GetState() == UI_STATE_ICON_MOVING) && (m_pMyAccessoryCompoundInv[i] == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
@@ -153,7 +155,9 @@ void CUIRingUpgrade::Render()
 		}
 		else
 		{
-			CN3UIString* pStr = GetChildStringByiOrderWithPrefix(i, "s_count_");
+			char szID[32];
+			sprintf(szID, "s_count_%d", i);
+			CN3UIString* pStr = (CN3UIString*)GetChildByID(szID);
 			if (pStr)
 				pStr->SetVisible(false);
 		}
@@ -251,7 +255,9 @@ void CUIRingUpgrade::ItemMoveFromInvToThis()
 			pInven->m_pMyInvWnd[i] = NULL;
 			CN3UIArea* pArea;
 
-			pArea = GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, i, "a_slot_");
+			char szID[32];
+			sprintf(szID, "a_slot_%d", i);
+			pArea = (CN3UIArea*)GetChildByID(szID);
 			if (pArea)
 			{
 				spItem->pUIIcon->SetRegion(pArea->GetRegion());
@@ -343,7 +349,9 @@ bool CUIRingUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	int iDestiOrder = -1; bool bFound = false;
 	for (int i = 0; i < MAX_ACCESSORY_COMPOUND_SLOT; i++)
 	{
-		pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, i, "a_upgrade_");
+		char szID[32];
+		sprintf(szID, "a_upgrade_%d", i);
+		pArea = (CN3UIArea*)GetChildByID(szID);
 		if ((pArea) && (pArea->IsIn(ptCur.x, ptCur.y)))
 		{
 			bFound = true;
@@ -355,7 +363,9 @@ bool CUIRingUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 	for (int i = 0; i < MAX_ACCESSORY_COMPOUND_SCROLL_SLOT; i++)
 	{
-		pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, i, "a_m_");
+		char szID[32];
+		sprintf(szID, "a_m_%d", i);
+		pArea = (CN3UIArea*)GetChildByID(szID);
 		if ((pArea) && (pArea->IsIn(ptCur.x, ptCur.y)))
 		{
 			bFound = true;
@@ -397,7 +407,9 @@ bool CUIRingUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						m_pAccessoryCompoundScrollSlot[iDestiOrder] = spItem;
 						m_pMyAccessoryCompoundInv[iSourceOrder] = nullptr;
 						// UI pozisyonunu güncelle
-						CN3UIArea* pScrollArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+						char szID[32];
+						sprintf(szID, "a_m_%d", iDestiOrder);
+						CN3UIArea* pScrollArea = (CN3UIArea*)GetChildByID(szID);
 						if (pScrollArea)
 						{
 							spItem->pUIIcon->SetRegion(pScrollArea->GetRegion());
@@ -426,7 +438,9 @@ bool CUIRingUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 						m_pMyAccessoryCompoundInv[iSourceOrder] = nullptr;
 
 						// UI pozisyonunu güncelle
-						CN3UIArea* pCompoundArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_upgrade_");
+						char szID[32];
+						sprintf(szID, "a_upgrade_%d", iDestiOrder);
+						CN3UIArea* pCompoundArea = (CN3UIArea*)GetChildByID(szID);
 						if (pCompoundArea)
 						{
 							spItem->pUIIcon->SetRegion(pCompoundArea->GetRegion());
@@ -472,7 +486,9 @@ void CUIRingUpgrade::IconRestore()
 	{
 		if (m_pMyAccessoryCompoundInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
 		{
-			pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder, "a_slot_");
+			char szID[32];
+			sprintf(szID, "a_slot_%d", CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
+			pArea = (CN3UIArea*)GetChildByID(szID);
 			if (pArea)
 			{
 				m_pMyAccessoryCompoundInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
@@ -541,7 +557,7 @@ RECT CUIRingUpgrade::GetSampleRect()
 	RECT rect;
 	CN3UIArea* pArea;
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
-	pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, 0, "a_slot_");
+	pArea = (CN3UIArea*)GetChildByID("a_slot_0");
 	rect = pArea->GetRegion();
 	float fWidth = (float) (rect.right - rect.left);
 	float fHeight = (float) (rect.bottom - rect.top);
@@ -754,7 +770,9 @@ void CUIRingUpgrade::RestoreInventoryFromBackup()
 
 
 				//Set the UI position based on the inventory area
-				CN3UIArea* pArea = GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, i, "a_slot_");
+				char szID[32];
+				sprintf(szID, "a_slot_%d", i);
+				CN3UIArea* pArea = (CN3UIArea*)GetChildByID(szID);
 				if (pArea)
 				{
 					m_pMyAccessoryCompoundInv[i]->pUIIcon->SetRegion(pArea->GetRegion());
