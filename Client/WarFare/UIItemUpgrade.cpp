@@ -163,7 +163,9 @@ void CUIItemUpgrade::Render()
 		if (m_pMyUpgradeInv[i] && ((m_pMyUpgradeInv[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) ||
 			(m_pMyUpgradeInv[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)))
 		{
-			CN3UIString* pStr = GetChildStringByiOrderWithPrefix(i, "s_count_");
+			char szID[32];
+			sprintf(szID, "s_count_%d", i);
+			CN3UIString* pStr = (CN3UIString*)GetChildByID(szID);
 			if (pStr)
 			{
 				if ((GetState() == UI_STATE_ICON_MOVING) && (m_pMyUpgradeInv[i] == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
@@ -187,7 +189,9 @@ void CUIItemUpgrade::Render()
 		}
 		else
 		{
-			CN3UIString* pStr = GetChildStringByiOrderWithPrefix(i, "s_count_");
+			char szID[32];
+			sprintf(szID, "s_count_%d", i);
+			CN3UIString* pStr = (CN3UIString*)GetChildByID(szID);
 			if (pStr)
 				pStr->SetVisible(false);
 		}
@@ -282,7 +286,9 @@ void CUIItemUpgrade::ItemMoveFromInvToThis()
 			pInven->m_pMyInvWnd[i] = NULL;
 			CN3UIArea* pArea;
 
-			pArea = GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, i, "a_slot_");
+			char szID[32];
+			sprintf(szID, "a_slot_%d", i);
+			pArea = (CN3UIArea*)GetChildByID(szID);
 			if (pArea)
 			{
 				spItem->pUIIcon->SetRegion(pArea->GetRegion());
@@ -374,7 +380,9 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 			int iDestiOrder = -1; bool bFound = false;
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
 	{
-		pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, i, "a_m_");
+		char szID[32];
+		sprintf(szID, "a_m_%d", i);
+		pArea = (CN3UIArea*)GetChildByID(szID);
 		if ((pArea) && (pArea->IsIn(ptCur.x, ptCur.y)))
 		{
 			bFound = true;
@@ -471,7 +479,9 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 									// Create a new icon, put it in 1 slot, reduce the number in the inventory
 									__IconItemSkill* pNew = CreateIconFromSource(pSrc, 1);
 
-									CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+									char szID[32];
+									sprintf(szID, "a_m_%d", iDestiOrder);
+									CN3UIArea* pSlotArea = (CN3UIArea*)GetChildByID(szID);
 									SetupIconArea(pNew, pSlotArea);
 
 									m_pMyUpgradeSLot[iDestiOrder] = pNew;
@@ -483,7 +493,9 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 									m_pMyUpgradeSLot[iDestiOrder] = pSrc;
 									m_pMyUpgradeInv[iSourceOrder] = nullptr;
 
-									CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+									char szID[32];
+									sprintf(szID, "a_m_%d", iDestiOrder);
+									CN3UIArea* pSlotArea = (CN3UIArea*)GetChildByID(szID);
 									if (pSlotArea)
 									{
 										pSrc->pUIIcon->SetRegion(pSlotArea->GetRegion());
@@ -497,7 +509,9 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 								m_pMyUpgradeSLot[iDestiOrder] = pSrc;
 								m_pMyUpgradeInv[iSourceOrder] = nullptr;
 
-								CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+								char szID[32];
+								sprintf(szID, "a_m_%d", iDestiOrder);
+								CN3UIArea* pSlotArea = (CN3UIArea*)GetChildByID(szID);
 								if (pSlotArea)
 								{
 									pSrc->pUIIcon->SetRegion(pSlotArea->GetRegion());
@@ -540,7 +554,9 @@ void CUIItemUpgrade::IconRestore()
 	{
 		if (m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder] != NULL)
 		{
-			pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder, "a_slot_");
+			char szID[32];
+			sprintf(szID, "a_slot_%d", CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder);
+			pArea = (CN3UIArea*)GetChildByID(szID);
 			if (pArea)
 			{
 				m_pMyUpgradeInv[CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder]->pUIIcon->SetRegion(pArea->GetRegion());
@@ -603,7 +619,7 @@ RECT CUIItemUpgrade::GetSampleRect()
 	RECT rect;
 	CN3UIArea* pArea;
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
-	pArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, 0, "a_slot_");
+	pArea = (CN3UIArea*)GetChildByID("a_slot_0");
 	rect = pArea->GetRegion();
 	float fWidth = (float) (rect.right - rect.left);
 	float fHeight = (float) (rect.bottom - rect.top);
@@ -848,7 +864,9 @@ void CUIItemUpgrade::RestoreInventoryFromBackup()
 				CreateUIIconForItem(m_pMyUpgradeInv[i]);
 
 				//Set the UI position based on the inventory area
-				CN3UIArea* pArea = GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_INV, i, "a_slot_");
+				char szID[32];
+				sprintf(szID, "a_slot_%d", i);
+				CN3UIArea* pArea = (CN3UIArea*)GetChildByID(szID);
 				SetupIconArea(m_pMyUpgradeInv[i], pArea);
 			}
 		}
@@ -1308,7 +1326,9 @@ bool CUIItemUpgrade::HandleSlotDrop(__IconItemSkill* spItem, int iDestiOrder)
 		{
 			// Create a new icon, put it in 1 slot, reduce the number in the inventory
 			__IconItemSkill* pNew = CreateIconFromSource(pSrc, 1);
-			CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+			char szID[32];
+			sprintf(szID, "a_m_%d", iDestiOrder);
+			CN3UIArea* pSlotArea = (CN3UIArea*)GetChildByID(szID);
 			SetupIconArea(pNew, pSlotArea);
 			m_pMyUpgradeSLot[iDestiOrder] = pNew;
 			pSrc->iCount -= 1;
@@ -1318,7 +1338,9 @@ bool CUIItemUpgrade::HandleSlotDrop(__IconItemSkill* spItem, int iDestiOrder)
 			// If the last one, move directly
 			m_pMyUpgradeSLot[iDestiOrder] = pSrc;
 			m_pMyUpgradeInv[iSourceOrder] = nullptr;
-			CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+			char szID[32];
+			sprintf(szID, "a_m_%d", iDestiOrder);
+			CN3UIArea* pSlotArea = (CN3UIArea*)GetChildByID(szID);
 			SetupIconArea(pSrc, pSlotArea);
 		}
 	}
@@ -1327,7 +1349,9 @@ bool CUIItemUpgrade::HandleSlotDrop(__IconItemSkill* spItem, int iDestiOrder)
 		// If is not countable item, just move it
 		m_pMyUpgradeSLot[iDestiOrder] = pSrc;
 		m_pMyUpgradeInv[iSourceOrder] = nullptr;
-		CN3UIArea* pSlotArea = CN3UIWndBase::GetChildAreaByiOrderWithPrefix(UI_AREA_TYPE_SLOT, iDestiOrder, "a_m_");
+		char szID[32];
+		sprintf(szID, "a_m_%d", iDestiOrder);
+		CN3UIArea* pSlotArea = (CN3UIArea*)GetChildByID(szID);
 		SetupIconArea(pSrc, pSlotArea);
 	}
 	m_iUpgradeSlotInvPos[iDestiOrder] = iSourceOrder;
