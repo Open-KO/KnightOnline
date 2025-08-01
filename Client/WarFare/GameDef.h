@@ -741,7 +741,8 @@ struct __TABLE_ITEM_BASIC
 };
 
 constexpr int MAX_ITEM_EXTENSION	= 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
-constexpr int LIMIT_FX_DAMAGE		= 64;
+constexpr int LIMIT_FX_DAMAGE_UPGRADE = 80;
+constexpr int LIMIT_FX_DAMAGE_RARE	= 64;
 constexpr int ITEM_LIMITED_EXHAUST	= 17;
 
 struct __TABLE_ITEM_EXT
@@ -777,7 +778,7 @@ struct __TABLE_ITEM_EXT
 
 	uint8_t		byDamageFire;				// 22 Bonus fire damage
 	uint8_t		byDamageIce;				// 23 Bonus ice damage
-	uint8_t		byDamageThuner;				// 24 Bonus thunder damage
+	uint8_t		byDamageThunder;				// 24 Bonus thunder damage
 	uint8_t		byDamagePoison;				// 25 Bonus poison damage
 
 	uint8_t		byStillHP;					// 26 HP drain ("still HP = steal HP")

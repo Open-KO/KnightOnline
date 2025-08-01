@@ -698,12 +698,12 @@ int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bo
 		}
 		ERROR_EXCEPTION
 
-		if( spItem->pItemExt->byDamageThuner != 0)	
+		if( spItem->pItemExt->byDamageThunder != 0)
 		{
 			CGameBase::GetTextF(
 				IDS_TOOLTIP_ATTRMAGIC3,
 				&m_pstdstr[iIndex],
-				spItem->pItemExt->byDamageThuner);
+				spItem->pItemExt->byDamageThunder);
 
 			m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 			m_pStr[iIndex]->SetColor(m_CGreen);

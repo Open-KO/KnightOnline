@@ -168,7 +168,9 @@ public:
 	const __Matrix44 CalcShadowMtxBasicPlane(__Vector3 vOffs);
 	void			CalcPart(CN3CPart* pPart, int nLOD, __Vector3 vLP);
 	void			CalcPlug(CN3CPlugBase* pPlug, const __Matrix44* pmtxJoint, __Matrix44& mtxMV, __Vector3 vLP);
-
+	bool			CanItemGlow(__TABLE_ITEM_EXT* pItemExt);
+	void			SetGlowID(__TABLE_ITEM_EXT* pItemExt, __TABLE_ITEM_BASIC* pItemBasic, int& iGlowIDMain,int& iGlowIDTail);
+	uint32_t		GetTraceColor(__TABLE_ITEM_EXT* pItemExt);
 protected:
 	void			RenderShadow(float fSunAngle);
 //	~(By Ecli666 On 2002-03-29 오후 1:32:12 )

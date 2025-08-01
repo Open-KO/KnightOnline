@@ -1551,21 +1551,22 @@ bool CPlayerBase::TryWeaponElementEffect(e_PlugPosition plugPosition, const CPla
 		return affected;
 	}
 	int iFXID = -1;
+	//todo: needs test ( can +6 Hell breaker affect the target ? if yes replace with CanItemGlow();
 	if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamageFire > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamageFire >= LIMIT_FX_DAMAGE)
+		|| m_pItemPlugExts[plugPosition]->byDamageFire >= LIMIT_FX_DAMAGE_RARE)
 		iFXID = FXID_SWORD_FIRE_TARGET;
 	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamageIce > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamageIce >= LIMIT_FX_DAMAGE)
+		|| m_pItemPlugExts[plugPosition]->byDamageIce >= LIMIT_FX_DAMAGE_RARE)
 		iFXID = FXID_SWORD_ICE_TARGET;
 	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamagePoison > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamagePoison >= LIMIT_FX_DAMAGE)
+		|| m_pItemPlugExts[plugPosition]->byDamagePoison >= LIMIT_FX_DAMAGE_RARE)
 		iFXID = FXID_SWORD_POISON_TARGET;
 	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
-		&& m_pItemPlugExts[plugPosition]->byDamageThuner > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamageThuner >= LIMIT_FX_DAMAGE)
+		&& m_pItemPlugExts[plugPosition]->byDamageThunder > 0)
+		|| m_pItemPlugExts[plugPosition]->byDamageThunder >= LIMIT_FX_DAMAGE_RARE)
 		iFXID = FXID_SWORD_LIGHTNING_TARGET;
 
 	if(iFXID >= 0)
@@ -1853,6 +1854,120 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 	return pTarget->CheckCollisionByBox(v1, v2, pVCol, nullptr);	
 }
 
+bool CPlayerBase::CanItemGlow(__TABLE_ITEM_EXT* pItemExt)
+{
+	
+	if (pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE) //unique items
+	{
+		if (pItemExt->dwIDK0 != 0)
+			return true;
+	}
+	else if (pItemExt->byMagicOrRare == ITEM_ATTRIB_LAIR) //rare items
+	{
+		if (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE_RARE ||
+				pItemExt->byDamageIce >= LIMIT_FX_DAMAGE_RARE ||
+				pItemExt->byDamageThunder >= LIMIT_FX_DAMAGE_RARE ||
+				pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE_RARE)
+			return true;
+	}
+	else if (pItemExt->byMagicOrRare == ITEM_ATTRIB_UPGRADE) //upgrade items
+	{
+		if (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE_UPGRADE ||
+				pItemExt->byDamageIce >= LIMIT_FX_DAMAGE_UPGRADE ||
+				pItemExt->byDamageThunder >= LIMIT_FX_DAMAGE_UPGRADE ||
+				pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE_UPGRADE)
+			return true;
+	}
+
+	return false;
+}
+
+//set main & tail glowing ID for an item
+void CPlayerBase::SetGlowID(__TABLE_ITEM_EXT* pItemExt, __TABLE_ITEM_BASIC* pItemBasic, 
+	int& iGlowIDMain, int& iGlowIDTail)
+{
+	if (pItemExt == nullptr || pItemBasic == nullptr)
+		return;
+
+	if (!CanItemGlow(pItemExt))
+		return;
+
+	//item has special glow effect, raptor, deepscar, iron impact etc.
+	if (pItemBasic->dwEffectID2 != 0) 
+	{
+		iGlowIDMain = pItemBasic->dwEffectID2 / 1000;
+		iGlowIDTail = iGlowIDMain + 1;
+		return;
+	}
+	
+	switch (pItemExt->byMagicOrRare)
+	{
+		case ITEM_ATTRIB_UNIQUE: // Unique item glow
+		{
+			iGlowIDMain = pItemExt->dwIDK0;
+			iGlowIDTail = iGlowIDMain + 1;
+			break;
+		}
+		case ITEM_ATTRIB_LAIR: // Rare and upgrade item glow
+		case ITEM_ATTRIB_UPGRADE: 
+		{
+			bool bIsRare = (pItemExt->byMagicOrRare == ITEM_ATTRIB_LAIR);
+			int limit = bIsRare ? LIMIT_FX_DAMAGE_RARE : LIMIT_FX_DAMAGE_UPGRADE;
+
+			if (pItemExt->byDamageFire >= limit)
+			{
+				iGlowIDMain = FXID_SWORD_FIRE_MAIN;
+				iGlowIDTail = FXID_SWORD_FIRE_TAIL;
+			}
+			else if (pItemExt->byDamageIce >= limit)
+			{
+				iGlowIDMain = FXID_SWORD_ICE_MAIN;
+				iGlowIDTail = FXID_SWORD_ICE_TAIL;
+			}
+			else if (pItemExt->byDamageThunder >= limit)
+			{
+				iGlowIDMain = FXID_SWORD_LIGHTNING_MAIN;
+				iGlowIDTail = FXID_SWORD_LIGHTNING_TAIL;
+			}
+			else if (pItemExt->byDamagePoison >= limit)
+			{
+				iGlowIDMain = FXID_SWORD_POISON_MAIN;
+				iGlowIDTail = FXID_SWORD_POISON_TAIL;
+			}
+
+			break;
+		}
+		
+	}
+
+}
+
+//get attacking color of an item
+uint32_t CPlayerBase::GetTraceColor(__TABLE_ITEM_EXT* pItemExt)
+{
+	constexpr uint32_t ATTACK_COLOR_FIRE = D3DCOLOR_ARGB(255, 255, 255, 0); 
+	constexpr uint32_t ATTACK_COLOR_ICE = D3DCOLOR_ARGB(255, 0, 0, 255);
+	constexpr uint32_t ATTACK_COLOR_THUNDER = D3DCOLOR_ARGB(255, 255, 255, 255);
+	constexpr uint32_t ATTACK_COLOR_POISON = D3DCOLOR_ARGB(255, 255, 0, 255);
+	uint32_t dwTraceColor = D3DCOLOR_ARGB(0, 0, 0, 0);
+	
+	//change trace color if item glows
+	if (CanItemGlow(pItemExt))
+	{
+		if (pItemExt->byDamageFire > 0) 
+			dwTraceColor = ATTACK_COLOR_FIRE;
+		if (pItemExt->byDamageIce > 0) 
+			dwTraceColor = ATTACK_COLOR_ICE;
+		if (pItemExt->byDamageThunder > 0)
+			dwTraceColor = ATTACK_COLOR_THUNDER;
+		if (pItemExt->byDamagePoison > 0) 
+			dwTraceColor = ATTACK_COLOR_POISON;
+	}
+
+	return dwTraceColor;
+}
+
+
 CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)
 {
 	if(ePos < PLUG_POS_RIGHTHAND || ePos >= PLUG_POS_COUNT)
@@ -1908,68 +2023,26 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	if(pPlug && NULL == pItemBasic && NULL == pItemExt) pPlug->TexOverlapSet(""); // 기본 착용이면..
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//
-	// plug 효과 붙여라..^^	
-	if(pItemExt)
+	// plug 효과 붙여라..^^
+	// glow effects of items 
+	if (pItemBasic != nullptr && pItemExt != nullptr)
 	{
-		if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamageFire > 0) || (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE)) // 17 추가데미지 - 불
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_TAIL);
-			
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffffff00);
-		}
-		else if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamageIce > 0) || (pItemExt->byDamageIce >= LIMIT_FX_DAMAGE))// 18 추가데미지 - 얼음
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_ICE_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_ICE_TAIL);
-			
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
+		CN3CPlug* pCPlug = (CN3CPlug*) pPlug;
+		
+		int iGlowIDMain = 0, iGlowIDTail = 0;
+		SetGlowID(pItemExt, pItemBasic, iGlowIDMain, iGlowIDTail);
+		
+		__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(iGlowIDMain);
+		__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(iGlowIDTail);
 
-			pCPlug->InitFX(szFXMain, szFXTail, 0xff0000ff);
-		}
-		else if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamageThuner > 0) || (pItemExt->byDamageThuner >= LIMIT_FX_DAMAGE))// 19 추가데미지 - 전격			
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_TAIL);
-			
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
-			
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffffffff);
-		}
-		else if((pItemExt->byMagicOrRare==ITEM_ATTRIB_UNIQUE && pItemExt->byDamagePoison > 0) || (pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE))// 20 추가데미지 - 독			
-		{
-			CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_POISON_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_POISON_TAIL);
+		std::string szFXMain, szFXTail;
+		if (pFXMain) szFXMain = pFXMain->szFN;
+		else szFXMain = "";
+		if (pFXTail) szFXTail = pFXTail->szFN;
+		else szFXTail = "";
+		pCPlug->InitFX(szFXMain, szFXTail, GetTraceColor(pItemExt));
 
-			std::string szFXMain, szFXTail;
-			if(pFXMain) szFXMain = pFXMain->szFN;
-			else szFXMain = "";
-			if(pFXTail) szFXTail = pFXTail->szFN;
-			else szFXTail = "";
-			
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffff00ff);
-		}
-	}
-	//
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}	
 
 	return pPlug;
 }
