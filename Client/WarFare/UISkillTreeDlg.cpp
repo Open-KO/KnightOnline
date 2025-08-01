@@ -1180,7 +1180,7 @@ void CUISkillTreeDlg::InitIconUpdate()
 		return;		// 첫번째 스킬이 없으면.. 안된다..
 	}
 
-	if ( CGameBase::s_pPlayer->m_InfoBase.eClass != CLASS_EL_DRUID )
+	if ( CGameBase::s_pPlayer->m_InfoBase.eClass <= CLASS_EL_DRUID )
 	{
 		for(size_t i = iSkillIndexFirst; i < CGameBase::s_pTbl_Skill.GetSize(); i++ )
 		{

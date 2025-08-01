@@ -944,7 +944,7 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 
 	__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
 	if (pUSkill == nullptr) return false;
-	if (pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+	if (pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
 
 	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr) return false;
 
