@@ -1104,6 +1104,8 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 
 		if (pItem != nullptr)
 			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
+		if (pItem == nullptr)
+			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
 	}
 	else
 	{
