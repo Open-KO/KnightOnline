@@ -57,19 +57,10 @@ public:
 	void Close();
 	bool CreateCategoryList();
 	bool UpdateCommandList(uint8_t cmd);
-	void UpdateBorders();
 	bool ExecuteCommand(uint8_t cmdSel);
-
-	
-
 	void Tick() override;
-	void Render() override; // Minimap rendering...
-	
-
-	
-	
-	
-
+	void Render() override;
+	void RenderSelectionBorder(CN3UIList* pListToRender);
 };
 
 #endif // !defined(AFX_UICmdList)

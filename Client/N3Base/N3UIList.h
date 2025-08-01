@@ -27,7 +27,6 @@ protected:
 	BOOL					m_bFontBold;
 	BOOL					m_bFontItalic;
 	D3DCOLOR				m_crFont;
-	D3DCOLOR				m_crBorderColor; //border color
 	
 public:
 	const std::string&	FontName() { return m_szFontName; }
@@ -39,7 +38,6 @@ public:
 	void	SetFont(const std::string& szFontName, uint32_t dwHeight, BOOL bBold, BOOL bItalic);
 	void	SetFontColor(D3DCOLOR color);
 	void	SetFontColor(size_t iIndex, D3DCOLOR color);
-	void	SetBorderColor(D3DCOLOR color);
 
 	void	ResetContent();
 	void	UpdateChildRegions();

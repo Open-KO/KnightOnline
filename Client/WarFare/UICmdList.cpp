@@ -76,16 +76,35 @@ void CUICmdList::Release()
 	m_iSelectedTab = 0;
 	m_bIsKing = false;
 
-	CN3UIBase::Tick();
 	CN3UIBase::Release();
-
 }
 
 void CUICmdList::Render()
 {
-	if (!m_bVisible) return;
+	if (!m_bVisible)
+		return;
 
 	CN3UIBase::Render();
+
+	if (m_iSelectedTab == 0)
+		RenderSelectionBorder(m_pList_CmdCat);
+	else if (m_iSelectedTab == 1)
+		RenderSelectionBorder(m_pList_Cmds);
+}
+
+void CUICmdList::RenderSelectionBorder(CN3UIList* pListToRender)
+{
+	if (pListToRender == nullptr)
+		return;
+
+	RECT rcList = pListToRender->GetRegion();
+
+	rcList.left -= 2;
+	rcList.top -= 2;
+	rcList.right += 2;
+	rcList.bottom += 2;
+
+	RenderLines(rcList, D3DCOLOR_XRGB(255, 255, 0)); // yellow
 }
 
 void CUICmdList::Tick()
@@ -153,14 +172,12 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if (pSender == m_pList_CmdCat) {
 			m_iSelectedCategory = m_pList_CmdCat->GetCurSel();
 			m_iSelectedTab = 0;
-			UpdateBorders();
 			UpdateCommandList(m_iSelectedCategory);
 			return true;
 		}
 		else if (pSender == m_pList_Cmds)
 		{
 			m_iSelectedTab = 1;
-			UpdateBorders();
 			return true;
 		}
 	}
@@ -255,8 +272,6 @@ bool CUICmdList::OnKeyPress(int iKey)
 		if (m_iSelectedTab == 0) m_iSelectedTab = 1;
 		else if (m_iSelectedTab == 1) m_iSelectedTab = 0;
 
-		UpdateBorders();
-
 		return true;
 	}
 
@@ -274,9 +289,6 @@ void CUICmdList::Open()
 
 	//set cursel at top for commands
 	if(m_pList_Cmds != nullptr) m_pList_Cmds->SetCurSel(0);
-
-	//update borders
-	UpdateBorders();
 }
 
 
@@ -297,25 +309,6 @@ void CUICmdList::SetVisible(bool bVisible)
 		CGameProcedure::s_pUIMgr->SetVisibleFocusedUI(this);
 	else
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
-}
-
-void CUICmdList::UpdateBorders()
-{
-
-	if (m_pList_CmdCat == nullptr || m_pList_Cmds == nullptr) return;
-
-	
-	if (m_iSelectedTab == 0)
-	{
-		m_pList_CmdCat->SetBorderColor(D3DCOLOR_XRGB(255, 255, 0)); //yellow
-		m_pList_Cmds->SetBorderColor(D3DCOLOR_XRGB(0, 0, 0));
-	}
-	else if (m_iSelectedTab == 1)
-	{
-		m_pList_Cmds->SetBorderColor(D3DCOLOR_XRGB(255, 255, 0)); //yellow
-		m_pList_CmdCat->SetBorderColor(D3DCOLOR_XRGB(0, 0, 0));
-	}
-
 }
 
 bool CUICmdList::CreateCategoryList() {
@@ -342,7 +335,7 @@ bool CUICmdList::CreateCategoryList() {
 		if (pChild)
 		{
 			pChild->SetTooltipColor(D3DCOLOR_XRGB(144, 238, 144)); //green
-			pChild->SetTooltipText(szTooltip.c_str()); // tooltip texts
+			pChild->SetTooltipText(szTooltip); // tooltip texts
 		}
 			
 
@@ -405,10 +398,8 @@ bool CUICmdList::UpdateCommandList(uint8_t cmdCat) {
 				 if (pChild != nullptr)
 				 {
 					 pChild->SetTooltipColor(D3DCOLOR_XRGB(144, 238, 144)); //green
-					 pChild->SetTooltipText(cmdTip.c_str());
+					 pChild->SetTooltipText(cmdTip);
 				 }
-					 
-				 				 
 		}
 	}
 
