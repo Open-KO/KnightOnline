@@ -16,10 +16,10 @@ class CKnightsManager
 public:
 	void RecvKnightsAllList(char* pBuf);
 	// knight packet
-	void SetKnightsUser(int index, char* UserName);
-	BOOL ModifyKnightsUser(int index, char* UserName);
-	BOOL RemoveKnightsUser(int index, char* UserName);
-	BOOL AddKnightsUser(int index, char* UserName);
+	void SetKnightsUser(int knightsId, const char* charId);
+	BOOL ModifyKnightsUser(int knightsId, const char* charId);
+	BOOL RemoveKnightsUser(int knightsId, const char* charId);
+	BOOL AddKnightsUser(int knightsId, const char* charId);
 	void RecvKnightsList(char* pBuf);
 	void RecvDestroyKnights(CUser* pUser, char* pBuf);
 	void RecvModifyFame(CUser* pUser, char* pBuf, BYTE command);

@@ -11,7 +11,7 @@
 #include "MagicSkillMng.h"
 #include "UIManager.h"
 #include "UIInventory.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIString.h>
 

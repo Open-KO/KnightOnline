@@ -12,7 +12,7 @@
 #include "UIInventory.h"
 #include "SubProcPerTrade.h"
 #include "UIPerTradeDlg.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIEdit.h>
 #include <N3Base/N3UIString.h>

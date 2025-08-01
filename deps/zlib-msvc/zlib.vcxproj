@@ -20,7 +20,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <OutDir>$(RootDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>zlib</TargetName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

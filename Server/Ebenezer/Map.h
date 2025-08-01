@@ -80,7 +80,6 @@ public:
 	C3DMap();
 	virtual ~C3DMap();
 
-	char m_MapName[256];
 	int	m_nServerNo;
 	int m_nZoneNumber;
 	float m_fInitX;

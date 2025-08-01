@@ -7,17 +7,19 @@
     <DependencyDir>$(RootDir)deps\</DependencyDir>
     <ToolBuild>false</ToolBuild>
     <ToolBuild Condition="$(Configuration.StartsWith('Tool_'))">true</ToolBuild>	 
-    <IntDir>.int\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <BaseIntDir>$(RootDir).int\$(Platform)\$(Configuration)\</BaseIntDir>
+    <IntDir>$(BaseIntDir)$(ProjectName)\</IntDir>
     <OutDir>$(RootDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)'=='Tool_Debug'">$(RootDir)bin\$(Platform)\Debug\</OutDir>
     <OutDir Condition="'$(Configuration)'=='Tool_Release'">$(RootDir)bin\$(Platform)\Release\</OutDir>
     <BaseOutDir>$(OutDir)</BaseOutDir>
+    <StaticLibDir>$(RootDir)lib\$(Platform)\$(Configuration)\</StaticLibDir>
     <LinkIncremental>false</LinkIncremental>
     <LinkIncremental Condition="$(Configuration.Contains('Debug'))">true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir);$(RootDir)lib\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(StaticLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ImportGroup Label="PropertySheets" />

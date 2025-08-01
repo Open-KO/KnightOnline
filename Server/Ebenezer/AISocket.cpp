@@ -14,6 +14,7 @@
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
+#include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -113,7 +114,7 @@ void CAISocket::Parsing(int len, char* pData)
 			break;
 
 		case AG_NPC_GATE_DESTORY:
-			RecvGateDestory(pData + index);
+			RecvGateDestroy(pData + index);
 			break;
 
 		case AG_DEAD:
@@ -140,11 +141,8 @@ void CAISocket::Parsing(int len, char* pData)
 
 void CAISocket::CloseProcess()
 {
-	CString logstr;
-	CTime time = CTime::GetCurrentTime();
-	logstr.Format(_T("*** CloseProcess - socketID=%d...  ***  %d-%d-%d, %d:%d]\r\n"), m_Sid, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
-	LogFileWrite(logstr);
-
+	spdlog::debug("AISocket::CloseProcess: closing socketID={}", m_Sid);
+	
 	Initialize();
 
 	CIOCPSocket2::CloseProcess();
@@ -155,20 +153,22 @@ void CAISocket::LoginProcess(char* pBuf)
 {
 	int index = 0;
 	float fReConnectEndTime = 0.0f;
-	BYTE ver = GetByte(pBuf, index);
-	BYTE byReConnect = GetByte(pBuf, index);	// 0 : 처음접속, 1 : 재접속
-	CString logstr;
-
+	BYTE zone = GetByte(pBuf, index);
+	// 0: first connect
+	// 1: reconnect
+	BYTE byReConnect = GetByte(pBuf, index);
+	
 	// zone 틀리면 에러 
-	if (ver == -1)
+	if (zone == 0xff)
 	{
 		AfxMessageBox(_T("AI Server Version Fail!!"));
 	}
 	// 틀리면 에러 
 	else
 	{
-		logstr.Format(_T("AI Server Connect Success!! - %d"), ver);
-		m_pMain->m_StatusList.AddString(logstr);
+		std::wstring logstr = std::format(L"AIServer zone connected: {}", zone);
+		m_pMain->AddOutputMessage(logstr);
+		spdlog::info("AISocket::LoginProcess: AIServer zone={} connected", zone);
 
 		if (byReConnect == 0)
 		{
@@ -177,7 +177,7 @@ void CAISocket::LoginProcess(char* pBuf)
 			{
 				m_pMain->m_bServerCheckFlag = TRUE;
 				m_pMain->m_sSocketCount = 0;
-				TRACE(_T("*** 유저의 정보를 보낼 준비단계 ****\n"));
+				spdlog::debug("AISocket::LoginProcess: all AI sockets connected, sending all user info...");
 				m_pMain->SendAllUserInfo();
 			}
 		}
@@ -188,12 +188,15 @@ void CAISocket::LoginProcess(char* pBuf)
 
 			m_pMain->m_sReSocketCount++;
 
-			TRACE(_T("**** ReConnect - zone=%d,  socket = %d ****\n "), ver, m_pMain->m_sReSocketCount);
+			spdlog::info("AISocket::LoginProcess: reconnect zone={} socketCount={}",
+				zone, m_pMain->m_sReSocketCount);
 
 			fReConnectEndTime = TimeGet();
 			if (fReConnectEndTime > m_pMain->m_fReConnectStart + 120)
-			{	// 2분안에 모든 소켓이 재접됐다면...
-				TRACE(_T("**** ReConnect - 단순한 접속... socket = %d ****\n "), m_pMain->m_sReSocketCount);
+			{
+				// all sockets reconnected within 2 minutes
+				spdlog::info("AISocket::LoginProcess: sockets reconnected in under 2 minutes [sockets={}]",
+					m_pMain->m_sReSocketCount);
 				m_pMain->m_sReSocketCount = 0;
 				m_pMain->m_fReConnectStart = 0.0f;
 			}
@@ -205,10 +208,11 @@ void CAISocket::LoginProcess(char* pBuf)
 				// 1분안에 모든 소켓이 재접됐다면...
 				if (fReConnectEndTime < m_pMain->m_fReConnectStart + 60)
 				{
-					TRACE(_T("**** ReConnect - 모든 소켓 초기화 완료 socket = %d ****\n "), m_pMain->m_sReSocketCount);
+					spdlog::info("AISocket::LoginProcess: sockets reconnected in under a minute [sockets={}]",
+					m_pMain->m_sReSocketCount);
 					m_pMain->m_bServerCheckFlag = TRUE;
 					m_pMain->m_sReSocketCount = 0;
-					TRACE(_T("*** 유저의 정보를 보낼 준비단계 ****\n"));
+					spdlog::debug("AISocket::LoginProcess: sending all user info...");
 					m_pMain->SendAllUserInfo();
 				}
 				// 하나의 떨어진 소켓이라면...
@@ -232,31 +236,29 @@ void CAISocket::RecvServerInfo(char* pBuf)
 
 	if (type == SERVER_INFO_START)
 	{
-		TRACE(_T("몬스터의 정보를 받기 시작합니다..%d\n"), byZone);
+		spdlog::info("AISocket::RecvServerInfo: receiving NPC information for zoneId={}", byZone);
 	}
 	else if (type == SERVER_INFO_END)
 	{
-		short sTotalMonster = 0;
-		sTotalMonster = GetShort(pBuf, index);
-		m_pMain->m_StatusList.AddString(_T("All Monster info Received!!"));
+		short sTotalMonster = GetShort(pBuf, index);
+		std::wstring logStr = std::format(L"NPC info received for zoneId {}", byZone);
+		m_pMain->AddOutputMessage(logStr);
 		//Sleep(100);
 
 		m_pMain->m_sZoneCount++;
-
-		TRACE(_T("몬스터의 정보를 다 받았음....%d, total=%d, socketcount=%d\n"), byZone, sTotalMonster, m_pMain->m_sZoneCount);
-
+		
 		if (m_pMain->m_sZoneCount == size)
 		{
+			m_pMain->AddOutputMessage(_T("NPC info received for all zones"));
 			if (!m_pMain->m_bFirstServerFlag)
 			{
 				m_pMain->UserAcceptThread();
-				TRACE(_T("+++ 몬스터의 모든 정보를 다 받았음, User AcceptThread Start ....%d, socketcount=%d\n"), byZone, m_pMain->m_sZoneCount);
+				spdlog::info("AISocket::RecvServerInfo: accepting user connections...");
 			}
 
 			m_pMain->m_sZoneCount = 0;
 			m_pMain->m_bFirstServerFlag = TRUE;
 			m_pMain->m_bPointCheckFlag = TRUE;
-			TRACE(_T("몬스터의 모든 정보를 다 받았음, User AcceptThread Start ....%d, socketcount=%d\n"), byZone, m_pMain->m_sZoneCount);
 			// 여기에서 Event Monster의 포인터를 미리 할당 하도록 하장~~
 			//InitEventMonster( sTotalMonster );
 		}
@@ -269,15 +271,15 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 	int index = 0;
 	BYTE		byCount = 0;	// 마리수
 	BYTE        byType;			// 0:처음에 등장하지 않는 몬스터, 1:등장
-	short		nid;			// NPC index
-	short		sid;			// NPC index
+	short		instanceId;			// NPC index
+	short		npcId;			// NPC index
 	short       sZone;			// Current zone number
 	short       sZoneIndex;		// Current zone index
-	short		sPid;			// NPC Picture Number
+	short		pictureId;			// NPC Picture Number
 	short		sSize = 100;	// NPC Size
 	int			iweapon_1;
 	int			iweapon_2;
-	char		szName[MAX_NPC_NAME_SIZE + 1];		// NPC Name
+	char		npcName[MAX_NPC_NAME_SIZE + 1];
 	BYTE		byGroup;		// 소속 집단
 	BYTE		byLevel;		// level
 	float		fPosX;			// X Position
@@ -298,15 +300,15 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 	for (int i = 0; i < byCount; i++)
 	{
 		byType = GetByte(pBuf, index);
-		nid = GetShort(pBuf, index);
-		sid = GetShort(pBuf, index);
-		sPid = GetShort(pBuf, index);
+		instanceId = GetShort(pBuf, index);
+		npcId = GetShort(pBuf, index);
+		pictureId = GetShort(pBuf, index);
 		sSize = GetShort(pBuf, index);
 		iweapon_1 = GetDWORD(pBuf, index);
 		iweapon_2 = GetDWORD(pBuf, index);
 		sZone = GetShort(pBuf, index);
 		sZoneIndex = GetShort(pBuf, index);
-		int nLength = GetVarString(szName, pBuf, sizeof(BYTE), index);
+		int nLength = GetVarString(npcName, pBuf, sizeof(BYTE), index);
 		byGroup = GetByte(pBuf, index);
 		byLevel = GetByte(pBuf, index);
 		fPosX = Getfloat(pBuf, index);
@@ -326,21 +328,30 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		if (nLength < 0
 			|| nLength > MAX_NPC_NAME_SIZE)
 		{
-			TRACE(_T("#### RecvNpcInfoAll Fail : szName=%hs\n"), szName);
+			spdlog::error("AISocket::RecvNpcInfoAll: npc name size out of bounds [npcId={} npcName={}]",
+				npcId, npcName);
 			continue;		// 잘못된 monster 아이디 
 		}
 
 		C3DMap* pMap = m_pMain->GetMapByIndex(sZoneIndex);
 		if (pMap == nullptr)
 		{
-			TRACE(_T("#### Recv --> NpcUserInfoAll Fail (invalid zone index): uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			spdlog::error("AISocket::RecvNpcInfoAll: map not found for zoneIndex [serial={} npcId={} pictureId={} npcName={} zoneIndex={} x={} z={}]",
+				instanceId, npcId, pictureId, npcName, sZoneIndex, fPosX, fPosZ);
 			continue;
 		}
 
-		if (nid < 0
-			|| sPid < 0)
+		if (instanceId < 0)
 		{
-			TRACE(_T("#### Recv --> NpcUserInfoAll Fail (invalid ID): uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			spdlog::error("AISocket::RecvNpcInfoAll: invalid serial [serial={} npcId={} pictureId={} npcName={} zoneIndex={} x={} z={}]",
+				instanceId, npcId, pictureId, npcName, sZoneIndex, fPosX, fPosZ);
+			continue;
+		}
+
+		if (pictureId < 0)
+		{
+			spdlog::error("AISocket::RecvNpcInfoAll: invalid pictureId [serial={} npcId={} pictureId={} npcName={} zoneIndex={} x={} z={}]",
+				instanceId, npcId, pictureId, npcName, sZoneIndex, fPosX, fPosZ);
 			continue;
 		}
 
@@ -349,19 +360,19 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		CNpc* pNpc = new CNpc();
 		if (pNpc == nullptr)
 		{
-			TRACE(_T("#### Recv --> NpcUserInfoAll POINT Fail: uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			spdlog::error("AISocket::RecvNpcInfoAll: new Npc() constructed as null.");
 			continue;
 		}
 
 		pNpc->Initialize();
 
-		pNpc->m_sNid = nid;
-		pNpc->m_sSid = sid;
-		pNpc->m_sPid = sPid;
+		pNpc->m_sNid = instanceId;
+		pNpc->m_sSid = npcId;
+		pNpc->m_sPid = pictureId;
 		pNpc->m_sSize = sSize;
 		pNpc->m_iWeapon_1 = iweapon_1;
 		pNpc->m_iWeapon_2 = iweapon_2;
-		strcpy(pNpc->m_strName, szName);
+		strcpy(pNpc->m_strName, npcName);
 		pNpc->m_byGroup = byGroup;
 		pNpc->m_byLevel = byLevel;
 		pNpc->m_sCurZone = sZone;
@@ -380,8 +391,8 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		pNpc->m_byObjectType = byObjectType;
 		pNpc->m_NpcState = NPC_LIVE;
 
-		int nRegX = (int) fPosX / VIEW_DISTANCE;
-		int nRegZ = (int) fPosZ / VIEW_DISTANCE;
+		int nRegX = static_cast<int32_t>(fPosX / VIEW_DISTANCE);
+		int nRegZ = static_cast<int32_t>(fPosZ / VIEW_DISTANCE);
 
 		pNpc->m_sRegion_X = nRegX;
 		pNpc->m_sRegion_Z = nRegZ;
@@ -397,7 +408,8 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		if (nRegX < 0
 			|| nRegZ < 0)
 		{
-			TRACE(_T("#### Recv --> NpcUserInfoAll Fail: uid=%d, sid=%d, name=%hs, zoneindex=%d, x=%f, z=%f.. \n"), nid, sPid, szName, sZoneIndex, fPosX, fPosZ);
+			spdlog::error("AISocket::RecvNpcInfoAll: region out of bounds [serial={} npcId={} npcName={} zoneId={} x={} z={}]",
+				instanceId, npcId, npcName, pMap->m_nZoneNumber, nRegX, nRegZ);
 			delete pNpc;
 			pNpc = nullptr;
 			continue;
@@ -407,7 +419,8 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 
 		if (!m_pMain->m_arNpcArray.PutData(pNpc->m_sNid, pNpc))
 		{
-			TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
+			spdlog::error("AISocket::RecvNpcInfoAll: NpcArray put failed [serial={} npcId={} npcName={} zoneId={} x={} z={}]",
+				instanceId, npcId, npcName, pMap->m_nZoneNumber, fPosX, fPosZ);
 			delete pNpc;
 			pNpc = nullptr;
 			continue;
@@ -415,8 +428,9 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 
 		if (byType == 0)
 		{
-			TRACE(_T("Recv --> NpcUserInfoAll : 등록하면 안돼여,, uid=%d, sid=%d, name=%hs\n"), nid, sPid, szName);
-			continue;		// region에 등록하지 말기...
+			spdlog::error("AISocket::RecvNpcInfoAll: invalid byType={} [serial={} npcId={} npcName={} zoneId={} x={} z={}]",
+				byType, instanceId, npcId, npcName, pMap->m_nZoneNumber, fPosX, fPosZ);
+			continue;
 		}
 
 		pMap->RegionNpcAdd(pNpc->m_sRegion_X, pNpc->m_sRegion_Z, pNpc->m_sNid);
@@ -663,18 +677,15 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 
 				pUser->m_bResHpType = USER_DEAD;
 
-#if defined(_DEBUG)
-				{
-					TCHAR buff[256] = {};
-					_stprintf(buff, _T("*** User Dead, id=%hs, result=%d, AI_HP=%d, GM_HP=%d, x=%d, z=%d"), pUser->m_pUserData->m_id, result, nHP, pUser->m_pUserData->m_sHp, (int) pUser->m_pUserData->m_curx, (int) pUser->m_pUserData->m_curz);
-					TimeTrace(buff);
-				}
-#endif
-
+				spdlog::debug("AISocket::RecvNpcAttack: user is dead [charId={} result={} AI_HP={} GM_HP={} x={} z={}]",
+					pUser->m_pUserData->m_id, result, nHP, pUser->m_pUserData->m_sHp,
+					static_cast<int32_t>(pUser->m_pUserData->m_curx), static_cast<int32_t>(pUser->m_pUserData->m_curz));
+				
 				memset(pOutBuf, 0, sizeof(pOutBuf));
 				send_index = 0;
 
 				// 지휘권한이 있는 유저가 죽는다면,, 지휘 권한 박탈
+				// If the user with command authority dies, revoke their command authority.
 				if (pUser->m_pUserData->m_bFame == COMMAND_CAPTAIN)
 				{
 					pUser->m_pUserData->m_bFame = CHIEF;
@@ -686,12 +697,11 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 					// sungyong tw
 					pUser->Send(pOutBuf, send_index);
 					// ~sungyong tw
-					TRACE(_T("---> AISocket->RecvNpcAttack() Dead Captain Deprive - %hs\n"), pUser->m_pUserData->m_id);
+					spdlog::debug("AISocket::RecvNpcAttack: Dead Captain Deprive [charId={}]", pUser->m_pUserData->m_id);
 					if (pUser->m_pUserData->m_bNation == KARUS)
 						m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
 					else if (pUser->m_pUserData->m_bNation == ELMORAD)
 						m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, ELMORAD);
-
 				}
 
 				// 경비병에게 죽는 경우라면..
@@ -857,15 +867,15 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 	BYTE		Mode;						// 01(INFO_MODIFY)	: NPC 정보 변경
 											// 02(INFO_DELETE)	: NPC 정보 삭제
-	short		nid;						// NPC index
-	short		sid;						// NPC index
-	short		sPid;						// NPC Picture Number
+	short		instanceId;						// NPC index
+	short		npcId;						// NPC index
+	short		pictureId;						// NPC Picture Number
 	short		sSize = 100;				// NPC Size
 	int			iWeapon_1;					// 오른손 무기
 	int			iWeapon_2;					// 왼손  무기
 	short       sZone;						// Current zone number
 	short       sZoneIndex;					// Current zone index
-	char		szName[MAX_NPC_NAME_SIZE + 1];	// NPC Name
+	char		npcName[MAX_NPC_NAME_SIZE + 1];	// NPC Name
 	BYTE		byGroup;					// 소속 집단
 	BYTE		byLevel;					// level
 	float		fPosX;						// X Position
@@ -885,15 +895,15 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	BYTE		byObjectType;				// 보통 : 0, 특수 : 1
 
 	Mode = GetByte(pBuf, index);
-	nid = GetShort(pBuf, index);
-	sid = GetShort(pBuf, index);
-	sPid = GetShort(pBuf, index);
+	instanceId = GetShort(pBuf, index);
+	npcId = GetShort(pBuf, index);
+	pictureId = GetShort(pBuf, index);
 	sSize = GetShort(pBuf, index);
 	iWeapon_1 = GetDWORD(pBuf, index);
 	iWeapon_2 = GetDWORD(pBuf, index);
 	sZone = GetShort(pBuf, index);
 	sZoneIndex = GetShort(pBuf, index);
-	int nLength = GetVarString(szName, pBuf, sizeof(BYTE), index);
+	int nLength = GetVarString(npcName, pBuf, sizeof(BYTE), index);
 
 	// 잘못된 monster 아이디 
 	if (nLength < 0
@@ -915,35 +925,30 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	sHitRate = GetShort(pBuf, index);
 	byObjectType = GetByte(pBuf, index);
 
-	CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+	CNpc* pNpc = m_pMain->m_arNpcArray.GetData(instanceId);
 	if (pNpc == nullptr)
 		return;
 
 	pNpc->m_NpcState = NPC_DEAD;
-
-	char strLog[256];
-
+	
 	// 살아 있는데 또 정보를 받는 경우
 	if (pNpc->m_NpcState == NPC_LIVE)
 	{
-		memset(strLog, 0, sizeof(strLog));
-		CTime t = CTime::GetCurrentTime();
-		sprintf(strLog, "## time(%d:%d-%d) npc regen check(%d) : nid=%d, name=%s, x=%d, z=%d, rx=%d, rz=%d ## \r\n", t.GetHour(), t.GetMinute(), t.GetSecond(), pNpc->m_NpcState, nid, szName, (int) pNpc->m_fCurX, (int) pNpc->m_fCurZ, pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
-		EnterCriticalSection(&g_LogFile_critical);
-		m_pMain->m_RegionLogFile.Write(strLog, strlen(strLog));
-		LeaveCriticalSection(&g_LogFile_critical);
-		TRACE(strLog);
+		spdlog::get(logger::EbenezerRegion)->info("AISocket::RecvNpcInfo: npc regen check [state={} serial={} npcId={} npcName={} x={} z={} regionX={} regionZ={}]",
+			pNpc->m_NpcState, instanceId, npcId, npcName,
+			static_cast<int32_t>(pNpc->m_fCurX), static_cast<int32_t>(pNpc->m_fCurZ),
+			pNpc->m_sRegion_X, pNpc->m_sRegion_Z);
 	}
 
 	pNpc->m_NpcState = NPC_LIVE;
 
-	pNpc->m_sNid = nid;
-	pNpc->m_sSid = sid;
-	pNpc->m_sPid = sPid;
+	pNpc->m_sNid = instanceId;
+	pNpc->m_sSid = npcId;
+	pNpc->m_sPid = pictureId;
 	pNpc->m_sSize = sSize;
 	pNpc->m_iWeapon_1 = iWeapon_1;
 	pNpc->m_iWeapon_2 = iWeapon_2;
-	strcpy(pNpc->m_strName, szName);
+	strcpy(pNpc->m_strName, npcName);
 	pNpc->m_byGroup = byGroup;
 	pNpc->m_byLevel = byLevel;
 	pNpc->m_sCurZone = sZone;
@@ -961,8 +966,8 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	pNpc->m_sHitRate = sHitRate;
 	pNpc->m_byObjectType = byObjectType;
 
-	int nRegX = (int) fPosX / VIEW_DISTANCE;
-	int nRegZ = (int) fPosZ / VIEW_DISTANCE;
+	int nRegX = static_cast<int32_t>(fPosX / VIEW_DISTANCE);
+	int nRegZ = static_cast<int32_t>(fPosZ / VIEW_DISTANCE);
 
 	pNpc->m_sRegion_X = nRegX;
 	pNpc->m_sRegion_Z = nRegZ;
@@ -971,7 +976,8 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	if (pMap == nullptr)
 	{
 		pNpc->m_NpcState = NPC_DEAD;
-		TRACE(_T("RecvNpcInfo - nid=%d, name=%hs, invalid zone index=%d\n"), pNpc->m_sNid, pNpc->m_strName, pNpc->m_sZoneIndex);
+		spdlog::error("AISocket::RecvNpcInfo: map not found for zoneIndex [serial={} npcId={} pictureId={} npcName={} zoneIndex={} x={} z={}]",
+				instanceId, npcId, pictureId, npcName, pNpc->m_sZoneIndex, fPosX, fPosZ);
 		return;
 	}
 
@@ -985,7 +991,8 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 	if (Mode == 0)
 	{
-		TRACE(_T("RecvNpcInfo - dead monster nid=%d, name=%hs\n"), pNpc->m_sNid, pNpc->m_strName);
+		spdlog::error("AISocket::RecvNpcInfo: dead monster [serial={} npcId={} npcName={} zoneId={} x={} z={}]",
+				instanceId, npcId, npcName, pMap->m_nZoneNumber, fPosX, fPosZ);
 		return;
 	}
 
@@ -994,8 +1001,8 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 	SetByte(pOutBuf, WIZ_NPC_INOUT, send_index);
 	SetByte(pOutBuf, NPC_IN, send_index);
-	SetShort(pOutBuf, nid, send_index);
-	SetShort(pOutBuf, sPid, send_index);
+	SetShort(pOutBuf, instanceId, send_index);
+	SetShort(pOutBuf, pictureId, send_index);
 	SetByte(pOutBuf, tNpcKind, send_index);
 	SetDWORD(pOutBuf, iSellingGroup, send_index);
 	SetShort(pOutBuf, sSize, send_index);
@@ -1055,22 +1062,23 @@ void CAISocket::RecvUserHP(char* pBuf)
 void CAISocket::RecvUserExp(char* pBuf)
 {
 	int index = 0;
-	int nid = 0;
-	short sExp = 0;
-	short sLoyalty = 0;
+	int userId = GetShort(pBuf, index);
+	short sExp = GetShort(pBuf, index);
+	short sLoyalty = GetShort(pBuf, index);
 
-	nid = GetShort(pBuf, index);
-	sExp = GetShort(pBuf, index);
-	sLoyalty = GetShort(pBuf, index);
-
-	CUser* pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[nid];
+	CUser* pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[userId];
 	if (pUser == nullptr)
+	{
+		spdlog::error("AISocket::RecvUserExp: attempting to grant exp or loyalty to invalid user [userId={}]",
+			userId, pUser->m_pUserData->m_id, sExp, sLoyalty);
 		return;
+	}
 
 	if (sExp < 0
 		|| sLoyalty < 0)
 	{
-		TRACE(_T("#### AISocket - RecvUserExp : exp=%d, loyalty=%d,, 잘못된 경험치가 온다,, 수정해!!\n"), sExp, sLoyalty);
+		spdlog::error("AISocket::RecvUserExp: invalid exp or loyalty amount granted [userId={} charId={} exp={} loyalty={}]",
+			userId, pUser->m_pUserData->m_id, sExp, sLoyalty);
 		return;
 	}
 
@@ -1213,14 +1221,14 @@ void CAISocket::RecvNpcGiveItem(char* pBuf)
 
 void CAISocket::RecvUserFail(char* pBuf)
 {
-	short nid = 0, sid = 0;
+	short instanceId = 0, npcId = 0;
 	int index = 0, send_index = 0;
 	char pOutBuf[1024] = {};
 
-	nid = GetShort(pBuf, index);
-	sid = GetShort(pBuf, index);
+	instanceId = GetShort(pBuf, index);
+	npcId = GetShort(pBuf, index);
 
-	CUser* pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[nid];
+	CUser* pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[instanceId];
 	if (pUser == nullptr)
 		return;
 
@@ -1244,10 +1252,11 @@ void CAISocket::RecvUserFail(char* pBuf)
 	SetByte(pOutBuf, WIZ_ATTACK, send_index);
 	SetByte(pOutBuf, type, send_index);
 	SetByte(pOutBuf, result, send_index);
-	SetShort(pOutBuf, sid, send_index);
-	SetShort(pOutBuf, nid, send_index);
+	SetShort(pOutBuf, npcId, send_index);
+	SetShort(pOutBuf, instanceId, send_index);
 
-	TRACE(_T("### AISocket - RecvUserFail : sid=%d, tid=%d, id=%hs ####\n"), sid, nid, pUser->m_pUserData->m_id);
+	spdlog::trace("AISocket::RecvUserFail: [npcId={} serial={} charId={}]",
+		npcId, instanceId, pUser->m_pUserData->m_id);
 
 	m_pMain->Send_Region(pOutBuf, send_index, pUser->m_pUserData->m_bZone, pUser->m_RegionX, pUser->m_RegionZ);
 
@@ -1293,13 +1302,13 @@ void CAISocket::RecvCompressedData(char* pBuf)
 	Parsing(sOrgLen, reinterpret_cast<char*>(&decompressedBuffer[0]));
 }
 
-void CAISocket::InitEventMonster(int index)
+void CAISocket::InitEventMonster(int instanceId)
 {
-	int count = index;
+	int count = instanceId;
 	if (count < 0
 		|| count > NPC_BAND)
 	{
-		TRACE(_T("### InitEventMonster index Fail = %d ###\n"), index);
+		spdlog::error("AISocket::InitEventMonster: serial out of bounds [serial={}]", instanceId);
 		return;
 	}
 
@@ -1317,14 +1326,13 @@ void CAISocket::InitEventMonster(int index)
 
 		if (!m_pMain->m_arNpcArray.PutData(pNpc->m_sNid, pNpc))
 		{
-			TRACE(_T("Npc PutData Fail - %d\n"), pNpc->m_sNid);
+			spdlog::error("AISocket::InitEventMonster: NpcArray Put failed for serial={}", pNpc->m_sNid);
 			delete pNpc;
 			pNpc = nullptr;
 		}
 	}
-
-	count = m_pMain->m_arNpcArray.GetSize();
-	TRACE(_T("TotalMonster = %d\n"), count);
+	
+	spdlog::debug("AISocket::InitEventMonster: TotalMonster = {}", m_pMain->m_arNpcArray.GetSize());
 }
 
 void CAISocket::RecvCheckAlive(char* pBuf)
@@ -1338,26 +1346,30 @@ void CAISocket::RecvCheckAlive(char* pBuf)
 	Send(pSendBuf, len);
 }
 
-void CAISocket::RecvGateDestory(char* pBuf)
+void CAISocket::RecvGateDestroy(char* pBuf)
 {
 	int index = 0, send_index = 0, cur_zone = 0, rx = 0, rz = 0;
-	int nid = 0, gate_status = 0;
+	int instanceId = 0, gateStatus = 0;
 	char send_buff[256] = {};
 
-	nid = GetShort(pBuf, index);
-	gate_status = GetByte(pBuf, index);
+	instanceId = GetShort(pBuf, index);
+	gateStatus = GetByte(pBuf, index);
 	cur_zone = GetShort(pBuf, index);
 	rx = GetShort(pBuf, index);
 	rz = GetShort(pBuf, index);
 
-	if (nid >= NPC_BAND)
+	if (instanceId >= NPC_BAND)
 	{
-		CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+		CNpc* pNpc = m_pMain->m_arNpcArray.GetData(instanceId);
 		if (pNpc == nullptr)
+		{
+			spdlog::error("AISocket::RecvGateDestroy: NPC not found serial={}", instanceId);
 			return;
+		}
 
-		pNpc->m_byGateOpen = gate_status;
-		TRACE(_T("RecvGateDestory - (%d,%hs), gate_status=%d\n"), pNpc->m_sNid, pNpc->m_strName, pNpc->m_byGateOpen);
+		pNpc->m_byGateOpen = gateStatus;
+		spdlog::debug("AISocket::RecvGateDestroy: [serial={} npcId={} npcName={} gateOpen={}]",
+			pNpc->m_sNid, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byGateOpen);
 /*
 		SetByte( send_buff, WIZ_OBJECT_EVENT, send_index );
 		SetByte( send_buff, 1, send_index );					// type
@@ -1459,7 +1471,8 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE(_T("#### RecvBattleEvent Fail : battleopen = %d, type = %d\n"), m_pMain->m_byBattleOpen, nType);
+			spdlog::error("AISocket::RecvBattleEvent: No active battle [battleOpen={} type={}]",
+				m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 
@@ -1482,7 +1495,8 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE(_T("#### RecvBattleEvent Fail : battleopen = %d, type=%d\n"), m_pMain->m_byBattleOpen, nType);
+			spdlog::error("AISocket::RecvBattleEvent: No active battle [battleOpen={} type={}]",
+				m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 
@@ -1514,9 +1528,11 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 				retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 				if (retvalue >= SMQ_FULL)
 				{
-					TCHAR logstr[1024] = {};
-					_stprintf(logstr, _T("WIZ_BATTLE_EVENT Send Fail : %d, %d"), retvalue, nType);
-					m_pMain->m_StatusList.AddString(logstr);
+					std::wstring logStr = std::format(L"WIZ_BATTLE_EVENT send fail [retValue={} type={}]",
+						retvalue, nType);
+					m_pMain->AddOutputMessage(logStr);
+					spdlog::error("AISocket::RecvBattleEvent: WIZ_BATTLE_EVENT send fail [retValue={} type={}]",
+						retvalue, nType);
 				}
 				m_pMain->m_byBattleSave = 1;
 			}
@@ -1667,29 +1683,31 @@ void CAISocket::RecvNpcEventItem(char* pBuf)
 
 void CAISocket::RecvGateOpen(char* pBuf)
 {
-	int index = 0, send_index = 0, nNid = 0, nSid = 0, nGateFlag = 0;
+	int index = 0, send_index = 0, instanceId = 0, npcId = 0, nGateFlag = 0;
 	char send_buff[256] = {};
 
 	CNpc* pNpc = nullptr;
 	_OBJECT_EVENT* pEvent = nullptr;
 
-	nNid = GetShort(pBuf, index);
-	nSid = GetShort(pBuf, index);
+	instanceId = GetShort(pBuf, index);
+	npcId = GetShort(pBuf, index);
 	nGateFlag = GetByte(pBuf, index);
 
-	pNpc = m_pMain->m_arNpcArray.GetData(nNid);
+	pNpc = m_pMain->m_arNpcArray.GetData(instanceId);
 	if (pNpc == nullptr)
 	{
-		TRACE(_T("#### RecvGateOpen Npc Pointer null : nid=%d ####\n"), nNid);
+		spdlog::error("AISocket::RecvGateOpen: Npc not found [serial={} npcId={}]",
+			instanceId, npcId);
 		return;
 	}
 
 	pNpc->m_byGateOpen = nGateFlag;
 
-	pEvent = m_pMain->m_ZoneArray[pNpc->m_sZoneIndex]->GetObjectEvent(nSid);
+	pEvent = m_pMain->m_ZoneArray[pNpc->m_sZoneIndex]->GetObjectEvent(npcId);
 	if (pEvent == nullptr)
 	{
-		TRACE(_T("#### RecvGateOpen Npc Object fail : nid=%d, sid=%d ####\n"), nNid, nSid);
+		spdlog::error("AISocket::RecvGateOpen: Npc ObjectEvent not found [serial={} npcId={}]",
+			instanceId, npcId);
 		return;
 	}
 
@@ -1702,7 +1720,7 @@ void CAISocket::RecvGateOpen(char* pBuf)
 		SetByte(send_buff, WIZ_OBJECT_EVENT, send_index);
 		SetByte(send_buff, pEvent->sType, send_index);
 		SetByte(send_buff, 0x01, send_index);
-		SetShort(send_buff, nNid, send_index);
+		SetShort(send_buff, instanceId, send_index);
 		SetByte(send_buff, pNpc->m_byGateOpen, send_index);
 		m_pMain->Send_Region(send_buff, send_index, pNpc->m_sCurZone, pNpc->m_sRegion_X, pNpc->m_sRegion_Z, nullptr, false);
 	}

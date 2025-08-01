@@ -8,6 +8,7 @@
 #if _MSC_VER >= 1000
 #pragma once
 #endif // _MSC_VER >= 1000
+#include <spdlog/spdlog.h>
 
 class CCircularBuffer
 {
@@ -119,7 +120,7 @@ inline void CCircularBuffer::PutData(char* pData, int len)
 {
 	if (len <= 0)
 	{
-		TRACE("CCircularBuffer::PutData len is <=0\n");
+		spdlog::error("CCircularBuffer::PutData len is <=0");
 		return;
 	}
 

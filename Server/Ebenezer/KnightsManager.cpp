@@ -11,6 +11,7 @@
 #include "EbenezerDlg.h"
 
 #include <shared/packets.h>
+#include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -1428,7 +1429,8 @@ void CKnightsManager::RecvKnightsList(char* pBuf)
 
 			if (!m_pMain->m_KnightsArray.PutData(pKnights->m_sIndex, pKnights))
 			{
-				TRACE(_T("Recv Knights PutData Fail - %d\n"), pKnights->m_sIndex);
+				spdlog::error("KnightsManager::RecvKnightsList: KnightsArray put failed [knightsId={}]",
+					pKnights->m_sIndex);
 				delete pKnights;
 				pKnights = nullptr;
 			}
@@ -1436,12 +1438,13 @@ void CKnightsManager::RecvKnightsList(char* pBuf)
 	}
 }
 
-BOOL CKnightsManager::AddKnightsUser(int index, char* UserName)
+BOOL CKnightsManager::AddKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
+	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
-		TRACE(_T("#### AddKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
+		spdlog::error("KnightsManager::AddKnightsUser: knightsId={} not found",
+			knightsId);
 		return FALSE;
 	}
 
@@ -1451,7 +1454,7 @@ BOOL CKnightsManager::AddKnightsUser(int index, char* UserName)
 			continue;
 
 		pKnights->m_arKnightsUser[i].byUsed = 1;
-		strcpy(pKnights->m_arKnightsUser[i].strUserName, UserName);
+		strcpy(pKnights->m_arKnightsUser[i].strUserName, charId);
 		//TRACE(_T("+++ AddKnightsUser knightsindex : username=%hs, knightsindex=%d, i=%d \n"), UserName, index, i);
 		return TRUE;
 	}
@@ -1460,12 +1463,13 @@ BOOL CKnightsManager::AddKnightsUser(int index, char* UserName)
 	return FALSE;
 }
 
-BOOL CKnightsManager::ModifyKnightsUser(int index, char* UserName)
+BOOL CKnightsManager::ModifyKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
+	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
-		TRACE(_T("#### ModifyKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
+		spdlog::error("KnightsManager::ModifyKnightsUser: knightsId={} not found",
+			knightsId);
 		return FALSE;
 	}
 
@@ -1474,10 +1478,10 @@ BOOL CKnightsManager::ModifyKnightsUser(int index, char* UserName)
 		if (pKnights->m_arKnightsUser[i].byUsed == 0)
 			continue;
 
-		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, UserName) == 0)
+		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, charId) == 0)
 		{
 			pKnights->m_arKnightsUser[i].byUsed = 1;
-			strcpy(pKnights->m_arKnightsUser[i].strUserName, UserName);
+			strcpy(pKnights->m_arKnightsUser[i].strUserName, charId);
 			return TRUE;
 		}
 	}
@@ -1486,12 +1490,13 @@ BOOL CKnightsManager::ModifyKnightsUser(int index, char* UserName)
 	return FALSE;
 }
 
-BOOL CKnightsManager::RemoveKnightsUser(int index, char* UserName)
+BOOL CKnightsManager::RemoveKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
+	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
-		TRACE(_T("#### RemoveKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
+		spdlog::error("KnightsManager::RemoveKnightsUser: knightsId={} not found",
+			knightsId);
 		return FALSE;
 	}
 
@@ -1500,7 +1505,7 @@ BOOL CKnightsManager::RemoveKnightsUser(int index, char* UserName)
 		if (pKnights->m_arKnightsUser[i].byUsed == 0)
 			continue;
 
-		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, UserName) == 0)
+		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, charId) == 0)
 		{
 			pKnights->m_arKnightsUser[i].byUsed = 0;
 			strcpy(pKnights->m_arKnightsUser[i].strUserName, "");
@@ -1513,12 +1518,13 @@ BOOL CKnightsManager::RemoveKnightsUser(int index, char* UserName)
 	return FALSE;
 }
 
-void CKnightsManager::SetKnightsUser(int index, char* UserName)
+void CKnightsManager::SetKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(index);
+	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
-		TRACE(_T("#### SetKnightsUser knightsindex fail : username=%hs, knightsindex=%d ####\n"), UserName, index);
+		spdlog::error("KnightsManager::SetKnightsUser: knightsId={} not found",
+			knightsId);
 		return;
 	}
 
@@ -1529,14 +1535,14 @@ void CKnightsManager::SetKnightsUser(int index, char* UserName)
 		if (pKnights->m_arKnightsUser[i].byUsed == 0)
 			continue;
 
-		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, UserName) == 0)
+		if (strcmp(pKnights->m_arKnightsUser[i].strUserName, charId) == 0)
 		{
 			//TRACE(_T("### SetKnightsUser knightsindex - name is same : username=%hs, knightsindex=%d \n"), UserName, index);
 			return;
 		}
 	}
 
-	if (!AddKnightsUser(index, UserName))
+	if (!AddKnightsUser(knightsId, charId))
 	{
 		//TRACE(_T("#### SetKnightsUser user full : username=%hs, knightsindex=%d ####\n"), UserName, index);
 	}
@@ -1544,7 +1550,7 @@ void CKnightsManager::SetKnightsUser(int index, char* UserName)
 
 void CKnightsManager::RecvKnightsAllList(char* pBuf)
 {
-	int index = 0, knightsindex = 0, points = 0, count = 0, grade = 0, ranking = 0;
+	int index = 0, knightsId = 0, points = 0, count = 0, grade = 0, ranking = 0;
 	int send_index = 0, temp_index = 0, send_count = 0;
 	CKnights* pKnights = nullptr;
 	char send_buff[512] = {};
@@ -1554,14 +1560,15 @@ void CKnightsManager::RecvKnightsAllList(char* pBuf)
 
 	for (int i = 0; i < count; i++)
 	{
-		knightsindex = GetShort(pBuf, index);
+		knightsId = GetShort(pBuf, index);
 		points = GetDWORD(pBuf, index);
 		ranking = GetByte(pBuf, index);
 
-		pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+		pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 		if (pKnights == nullptr)
 		{
-			TRACE(_T("#### RecvKnightsAllList knightsindex fail : knightsindex=%d ####\n"), knightsindex);
+			spdlog::error("KnightsManager::RecvKnightsAllList: knightsId={} not found",
+				knightsId);
 			continue;
 		}
 

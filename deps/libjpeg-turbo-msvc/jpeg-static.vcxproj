@@ -32,7 +32,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <OutDir>$(RootDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>jpeg-static</TargetName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "GameBase.h"
 #include "N3WorldManager.h"
 #include "PlayerOtherMgr.h"
@@ -31,9 +31,9 @@ CN3TableBase<__TABLE_QUEST_TALK>		CGameBase::s_pTbl_QuestTalk;
 CN3TableBase<__TABLE_QUEST_CONTENT>		CGameBase::s_pTbl_QuestContent;
 CN3TableBase<__TABLE_HELP>				CGameBase::s_pTbl_Help;
 
-CN3WorldManager*	CGameBase::s_pWorldMgr = NULL;		// 월드 매니져..
-CPlayerOtherMgr*	CGameBase::s_pOPMgr = NULL;				// Other Player Manager - 다른 유저 관리 클래스..
-CPlayerMySelf*		CGameBase::s_pPlayer = NULL;			// 유저 클래스..
+CN3WorldManager*	CGameBase::s_pWorldMgr	= nullptr;	// Manages the current loaded zone
+CPlayerOtherMgr*	CGameBase::s_pOPMgr		= nullptr;	// Manages other loaded characters and NPCs
+CPlayerMySelf*		CGameBase::s_pPlayer	= nullptr;	// The local player instance
 	
 CGameBase::CGameBase()
 {
@@ -51,13 +51,13 @@ void CGameBase::StaticMemberInit()
 
 	std::string szFN;
 	szFN = "Data\\Texts" + szLangTail;		s_pTbl_Texts.LoadFromFile(szFN);
-	szFN = "Data\\Zones.tbl";				s_pTbl_Zones.LoadFromFile(szFN);		// Zone 정보에 관한 Table
-	szFN = "Data\\UIs" + szLangTail;		s_pTbl_UI.LoadFromFile(szFN);			// UI Resource File Table loading
-	szFN = "Data\\UPC_DefaultLooks.tbl";	s_pTbl_UPC_Looks.LoadFromFile(szFN);	// 플레이어들의 기본 모습이 되는 NPC Resource Table loading
-	szFN = "Data\\Item_Org" + szLangTail;	s_pTbl_Items_Basic.LoadFromFile(szFN);	// Item Resource Table loading
+	szFN = "Data\\Zones.tbl";				s_pTbl_Zones.LoadFromFile(szFN);
+	szFN = "Data\\UIs" + szLangTail;		s_pTbl_UI.LoadFromFile(szFN);
+	szFN = "Data\\UPC_DefaultLooks.tbl";	s_pTbl_UPC_Looks.LoadFromFile(szFN);
+	szFN = "Data\\Item_Org" + szLangTail;	s_pTbl_Items_Basic.LoadFromFile(szFN);
 
-	szFN = "Data\\Quest_Menu" + szLangTail;	s_pTbl_QuestMenu.LoadFromFile(szFN);	// 퀘스트 관련 선택메뉴
-	szFN = "Data\\Quest_Talk" + szLangTail;	s_pTbl_QuestTalk.LoadFromFile(szFN);	// 퀘스트 관련 지문
+	szFN = "Data\\Quest_Menu" + szLangTail;	s_pTbl_QuestMenu.LoadFromFile(szFN);
+	szFN = "Data\\Quest_Talk" + szLangTail;	s_pTbl_QuestTalk.LoadFromFile(szFN);
 	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_QuestContent.LoadFromFile(szFN);
 	szFN = "Data\\Help" + szLangTail;		s_pTbl_Help.LoadFromFile(szFN);
 
@@ -69,21 +69,21 @@ void CGameBase::StaticMemberInit()
 		s_pTbl_Items_Exts[i].LoadFromFile(szFN);
 	}
 
-	szFN = "Data\\NPC_Looks.tbl";					s_pTbl_NPC_Looks.LoadFromFile(szFN);		// NPC Resource Table loading
-	szFN = "Data\\skill_magic_main" + szLangTail;	s_pTbl_Skill.LoadFromFile(szFN);			// Skill 정보에 관한 Table
-	szFN = "Data\\Exchange_Quest.tbl";				s_pTbl_Exchange_Quest.LoadFromFile(szFN);	// 교환 퀘스트에 관한 테이블..
+	szFN = "Data\\NPC_Looks.tbl";					s_pTbl_NPC_Looks.LoadFromFile(szFN);
+	szFN = "Data\\skill_magic_main" + szLangTail;	s_pTbl_Skill.LoadFromFile(szFN);
+	szFN = "Data\\Exchange_Quest.tbl";				s_pTbl_Exchange_Quest.LoadFromFile(szFN);
 	szFN = "Data\\fx.tbl";							s_pTbl_FXSource.LoadFromFile(szFN);
 
 	s_pWorldMgr = new CN3WorldManager();
 	s_pOPMgr = new CPlayerOtherMgr();
-	s_pPlayer = new CPlayerMySelf(); // 기본적인 내 플레이어 생성..
+	s_pPlayer = new CPlayerMySelf();
 }
 
 void CGameBase::StaticMemberRelease()
 {
-	delete s_pPlayer;	s_pPlayer = NULL;		// Player Character
-	delete s_pOPMgr;	s_pOPMgr = NULL;
-	delete s_pWorldMgr;	s_pWorldMgr = NULL;
+	delete s_pPlayer;	s_pPlayer = nullptr;
+	delete s_pOPMgr;	s_pOPMgr = nullptr;
+	delete s_pWorldMgr;	s_pWorldMgr = nullptr;
 }
 
 bool CGameBase::GetText(uint32_t dwResourceID, std::string* szText)
@@ -238,13 +238,13 @@ bool CGameBase::GetTextByKnightsDuty(e_KnightsDuty eDuty, std::string& szText)
 {
 	switch(eDuty)
 	{
-		case KNIGHTS_DUTY_UNKNOWN:		GetText(IDS_KNIGHTS_DUTY_UNKNOWN, &szText); break; // ????? 쫓겨남??
-		case KNIGHTS_DUTY_PUNISH:		GetText(IDS_KNIGHTS_DUTY_PUNISH, &szText); break; // 징계중.
-		case KNIGHTS_DUTY_TRAINEE:		GetText(IDS_KNIGHTS_DUTY_TRAINEE, &szText); break; // 견습기사
-		case KNIGHTS_DUTY_KNIGHT:		GetText(IDS_KNIGHTS_DUTY_KNIGHT, &szText); break; // 일반기사
-		case KNIGHTS_DUTY_OFFICER:		GetText(IDS_KNIGHTS_DUTY_OFFICER, &szText); break; // 장교
-		case KNIGHTS_DUTY_VICECHIEF:	GetText(IDS_KNIGHTS_DUTY_VICECHIEF, &szText); break; // 부단장.
-		case KNIGHTS_DUTY_CHIEF:		GetText(IDS_KNIGHTS_DUTY_CHIEF, &szText); break; // 기사단장 직위..
+		case KNIGHTS_DUTY_UNKNOWN:		GetText(IDS_KNIGHTS_DUTY_UNKNOWN, &szText); break;
+		case KNIGHTS_DUTY_PUNISH:		GetText(IDS_KNIGHTS_DUTY_PUNISH, &szText); break;
+		case KNIGHTS_DUTY_TRAINEE:		GetText(IDS_KNIGHTS_DUTY_TRAINEE, &szText); break;
+		case KNIGHTS_DUTY_KNIGHT:		GetText(IDS_KNIGHTS_DUTY_KNIGHT, &szText); break;
+		case KNIGHTS_DUTY_OFFICER:		GetText(IDS_KNIGHTS_DUTY_OFFICER, &szText); break;
+		case KNIGHTS_DUTY_VICECHIEF:	GetText(IDS_KNIGHTS_DUTY_VICECHIEF, &szText); break;
+		case KNIGHTS_DUTY_CHIEF:		GetText(IDS_KNIGHTS_DUTY_CHIEF, &szText); break;
 		default: __ASSERT(0, "Invalid Knights Duty"); szText = "Unknown Duty"; return false;
 	}
 
@@ -257,72 +257,70 @@ bool CGameBase::GetTextByItemClass(e_ItemClass eItemClass, std::string& szText)
 	{
 		case ITEM_CLASS_DAGGER:
 			GetText(IDS_ITEM_CLASS_DAGGER, &szText);
-			break; // 단검(dagger)
+			break;
 		case ITEM_CLASS_SWORD:
 			GetText(IDS_ITEM_CLASS_SWORD, &szText);
-			break; // 한손검(onehandsword)
+			break;
 		case ITEM_CLASS_SWORD_2H:
 			GetText(IDS_ITEM_CLASS_SWORD_2H, &szText);
-			break; // 3 : 양손검(twohandsword)
+			break;
 		case ITEM_CLASS_AXE:
 			GetText(IDS_ITEM_CLASS_AXE, &szText);
-			break; // 한손도끼(onehandaxe)
+			break;
 		case ITEM_CLASS_AXE_2H:
 			GetText(IDS_ITEM_CLASS_AXE_2H, &szText);
-			break; // 두손도끼(twohandaxe)
+			break;
 		case ITEM_CLASS_MACE:
 			GetText(IDS_ITEM_CLASS_MACE, &szText);
-			break; // 한손타격무기(mace)
+			break;
 		case ITEM_CLASS_MACE_2H:
 			GetText(IDS_ITEM_CLASS_MACE_2H, &szText);
-			break; // 두손타격무기(twohandmace)
+			break;
 		case ITEM_CLASS_SPEAR:
 			GetText(IDS_ITEM_CLASS_SPEAR, &szText);
-			break; // 창(spear)
+			break;
 		case ITEM_CLASS_POLEARM:
 			GetText(IDS_ITEM_CLASS_POLEARM, &szText);
-			break; // 폴암(polearm)
+			break;
 
 		case ITEM_CLASS_SHIELD:
 			GetText(IDS_ITEM_CLASS_SHIELD, &szText);
-			break; // 쉴드(shield)
+			break;
 
 		case ITEM_CLASS_BOW:
 			GetText(IDS_ITEM_CLASS_BOW, &szText);
-			break; //  쇼트보우(Shortbow)
+			break;
 		case ITEM_CLASS_BOW_CROSS:
 			GetText(IDS_ITEM_CLASS_BOW_CROSS, &szText);
-			break; // 크로스보우(crossbow)
+			break;
 		case ITEM_CLASS_BOW_LONG:
 			GetText(IDS_ITEM_CLASS_BOW_LONG, &szText);
-			break; // 롱보우(longbow)
+			break;
 
 		case ITEM_CLASS_EARRING:
 			GetText(IDS_ITEM_CLASS_EARRING, &szText);
-			break; // 귀걸이
+			break;
 		case ITEM_CLASS_AMULET:
 			GetText(IDS_ITEM_CLASS_AMULET, &szText);
-			break; // 목걸이
+			break;
 		case ITEM_CLASS_RING:
 			GetText(IDS_ITEM_CLASS_RING, &szText);
-			break; // 반지
+			break;
 		case ITEM_CLASS_BELT:
 			GetText(IDS_ITEM_CLASS_BELT, &szText);
-			break; // 허리띠
+			break;
 		case ITEM_CLASS_CHARM:
 			GetText(IDS_ITEM_CLASS_CHARM, &szText);
-			break; //인벤토리에 지니고 있는 아이템
+			break;
 		case ITEM_CLASS_JEWEL:
 			GetText(IDS_ITEM_CLASS_JEWEL, &szText);
-			break; //보석종류
+			break;
 		case ITEM_CLASS_POTION:
 			GetText(IDS_ITEM_CLASS_POTION, &szText);
-			break; // 물약
+			break;
 		case ITEM_CLASS_SCROLL:
 			GetText(IDS_ITEM_CLASS_SCROLL, &szText);
-			break; // 스크롤
-
-
+			break;
 
 		case ITEM_CLASS_LAUNCHER:
 			GetText(IDS_ITEM_CLASS_LAUNCHER, &szText);
@@ -330,28 +328,28 @@ bool CGameBase::GetTextByItemClass(e_ItemClass eItemClass, std::string& szText)
 						
 		case ITEM_CLASS_STAFF:
 			GetText(IDS_ITEM_CLASS_STAFF, &szText);
-			break; // 지팡이(staff)
+			break;
 		case ITEM_CLASS_ARROW:
 			GetText(IDS_ITEM_CLASS_ARROW, &szText);
-			break; // 화살(Arrow)
+			break;
 		case ITEM_CLASS_JAVELIN:
 			GetText(IDS_ITEM_CLASS_JAVELIN, &szText);
-			break; // 투창
+			break;
 		
 		case ITEM_CLASS_ARMOR_WARRIOR:
 			GetText(IDS_ITEM_CLASS_ARMOR_WARRIOR, &szText);
-			break; // 전사 방어구
+			break;
 		case ITEM_CLASS_ARMOR_ROGUE:
 			GetText(IDS_ITEM_CLASS_ARMOR_ROGUE, &szText);
-			break; // 로그 방어구
+			break;
 		case ITEM_CLASS_ARMOR_MAGE:
 			GetText(IDS_ITEM_CLASS_ARMOR_MAGE, &szText);
-			break; // 마법사 방어구
+			break;
 		case ITEM_CLASS_ARMOR_PRIEST:
 			GetText(IDS_ITEM_CLASS_ARMOR_PRIEST, &szText); 
-			break; // 사제 방어구
+			break;
 		default:
-//			__ASSERT(0, "Invalid Item Class"); szText = "Unknonw Item Class";
+//			__ASSERT(0, "Invalid Item Class"); szText = "Unknown Item Class";
 			return false;
 	}
 
@@ -362,12 +360,12 @@ bool CGameBase::GetTextByAttrib(e_ItemAttrib eAttrib, std::string& szAttrib)
 {
 	switch(eAttrib)
 	{
-		case ITEM_ATTRIB_GENERAL:		GetText(IDS_ITEM_ATTRIB_GENERAL, &szAttrib); break; // 단검(dagger)
-		case ITEM_ATTRIB_MAGIC:			GetText(IDS_ITEM_ATTRIB_MAGIC, &szAttrib); break; // 한손검(onehandsword)
-		case ITEM_ATTRIB_LAIR:			GetText(IDS_ITEM_ATTRIB_LAIR, &szAttrib); break; // 3 : 양손검(twohandsword)
-		case ITEM_ATTRIB_CRAFT:			GetText(IDS_ITEM_ATTRIB_CRAFT, &szAttrib); break; // 한손도끼(onehandaxe)
-		case ITEM_ATTRIB_UNIQUE:		GetText(IDS_ITEM_ATTRIB_UNIQUE, &szAttrib); break; // 두손도끼(twohandaxe)
-		case ITEM_ATTRIB_UPGRADE:		GetText(IDS_ITEM_ATTRIB_UPGRADE, &szAttrib); break; // 한손타격무기(mace)
+		case ITEM_ATTRIB_GENERAL:		GetText(IDS_ITEM_ATTRIB_GENERAL, &szAttrib); break;
+		case ITEM_ATTRIB_MAGIC:			GetText(IDS_ITEM_ATTRIB_MAGIC, &szAttrib); break;
+		case ITEM_ATTRIB_LAIR:			GetText(IDS_ITEM_ATTRIB_LAIR, &szAttrib); break;
+		case ITEM_ATTRIB_CRAFT:			GetText(IDS_ITEM_ATTRIB_CRAFT, &szAttrib); break;
+		case ITEM_ATTRIB_UNIQUE:		GetText(IDS_ITEM_ATTRIB_UNIQUE, &szAttrib); break;
+		case ITEM_ATTRIB_UPGRADE:		GetText(IDS_ITEM_ATTRIB_UPGRADE, &szAttrib); break;
 		default:
 			return false;
 	}
@@ -414,7 +412,6 @@ e_Class_Represent CGameBase::GetRepresentClass(e_Class eClass)
 
 	return CLASS_REPRESENT_UNKNOWN;
 }
-
 
 bool CGameBase::GetTextByNation(e_Nation eNation, std::string& szText)
 {
@@ -465,14 +462,14 @@ bool CGameBase::GetTextByRace(e_Race eRace, std::string& szText)
 
 D3DCOLOR CGameBase::GetIDColorByLevelDifference(int iLevelDiff)
 {
-	// 레벨 차이에 따른 색깔...
-	// 보라색 : 플레이어보다 +8, 
-	// 빨간색: 플레이어보다 +5, +6, +7
-	// 노란색 : 플레이어어보다 +2, +3, +4
-	// 흰색 : -1 ? 플레이어  ? 1
-	// 파란색 : 플레이어보다 2레벨 이하 -2, -3, -4   
-	// 초록색 : 플레이어보다 -5, -6, -7
-	// 하늘색 : 플레이어보다 -8, …(경험치를 얻지 못함)
+	// Returns a colour code based on level difference relative to a player:
+	// Purple   = 8+ levels above
+	// Red      = 5 to 7 levels above
+	// Yellow   = 2 to 4 levels above
+	// White    = within 1 level (+/-)
+	// Blue     = 2 to 4 levels below
+	// Green    = 5 to 7 levels below
+	// Sky blue = 8+ levels below (no EXP gained)
 	
 	D3DCOLOR crID = 0xffffffff;
 	if(iLevelDiff >= 8)			crID = D3DCOLOR_ARGB(255, 255, 0, 255);
@@ -486,12 +483,12 @@ D3DCOLOR CGameBase::GetIDColorByLevelDifference(int iLevelDiff)
 	return crID;
 }
 
-// Item Data 를 가지고 파일이름을 만든다..
-e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,		// 아이템 데이터...
-												std::string* pszResrcFN,			// Resource FileName
-												std::string* pszIconFN,			// Icon FileName
-												e_PartPosition& ePartPosition,	// Part 일경우 Index
-												e_PlugPosition& ePlugPosition,	// Plug 일경우 Index
+// Generate requested resource filenames using the given item data
+e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
+												std::string* pszResrcFN,
+												std::string* pszIconFN,
+												e_PartPosition& ePartPosition,
+												e_PlugPosition& ePlugPosition,
 												e_Race eRace /*= RACE_UNKNOWN*/)
 {	
 	ePartPosition = PART_POS_UNKNOWN;
@@ -501,12 +498,11 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,		// �
 
 	if(NULL == pItem) return ITEM_TYPE_UNKNOWN;
 	
-	// 총 8 자리이다.
 	e_ItemType eType	= ITEM_TYPE_UNKNOWN;
-	e_ItemPosition ePos	= (e_ItemPosition)pItem->byAttachPoint;	// 장착위치...
+	e_ItemPosition ePos	= (e_ItemPosition)pItem->byAttachPoint;
 
 	int iPos = 0;
-	std::string szExt; // 확장자..
+	std::string szExt; // File extension
 	
 	if(ePos >= ITEM_POS_DUAL && ePos <= ITEM_POS_TWOHANDLEFT)
 	{
@@ -518,11 +514,11 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,		// �
 	}
 	else if(ePos >= ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES)
 	{
-		if(ITEM_POS_UPPER == ePos)			ePartPosition = PART_POS_UPPER; 		// 상체
-		else if(ITEM_POS_LOWER == ePos)		ePartPosition = PART_POS_LOWER; 		// 하체
-		else if(ITEM_POS_HEAD == ePos)		ePartPosition = PART_POS_HAIR_HELMET; 	// 투구
-		else if(ITEM_POS_GLOVES == ePos)	ePartPosition = PART_POS_HANDS; 		// 팔
-		else if(ITEM_POS_SHOES == ePos)		ePartPosition = PART_POS_FEET;			// 발
+		if(ITEM_POS_UPPER == ePos)			ePartPosition = PART_POS_UPPER;
+		else if(ITEM_POS_LOWER == ePos)		ePartPosition = PART_POS_LOWER;
+		else if(ITEM_POS_HEAD == ePos)		ePartPosition = PART_POS_HAIR_HELMET;
+		else if(ITEM_POS_GLOVES == ePos)	ePartPosition = PART_POS_HANDS;
+		else if(ITEM_POS_SHOES == ePos)		ePartPosition = PART_POS_FEET;
 		else { __ASSERT(0, "lll"); }
 		
 		eType = ITEM_TYPE_PART;
@@ -549,21 +545,21 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,		// �
 		__ASSERT(0, "Invalid Item Position");
 	}
 
-	std::vector<char> buffer(256, NULL);
+	char buffer[256] = {};
 	if(pszResrcFN)
 	{
 		if(pItem->dwIDResrc) 
 		{
 			if(eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES) {
 				// NOTE: no idea but perhaps this will work for now
-				sprintf(&buffer[0], "Item\\%.1d_%.4d_%.2d_%.1d%s",
+				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
 					(pItem->dwIDResrc / 10000000),
 					((pItem->dwIDResrc / 1000) % 10000) + eRace,
 					(pItem->dwIDResrc / 10) % 100,
 					pItem->dwIDResrc % 10,
 					szExt.c_str());
 			} else {
-				sprintf(&buffer[0], "Item\\%.1d_%.4d_%.2d_%.1d%s",
+				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
 					(pItem->dwIDResrc / 10000000),
 					(pItem->dwIDResrc / 1000) % 10000,
 					(pItem->dwIDResrc / 10) % 100,
@@ -571,17 +567,17 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,		// �
 					szExt.c_str());
 			}
 
-			*pszResrcFN = &buffer[0];
+			*pszResrcFN = buffer;
 		}
-		else // 아이콘만 있는 플러그나 파트 일수도 있다...
+		// Some items don't have models -- only icons.
+		else
 		{
-			*pszResrcFN = "";
+			pszResrcFN->clear();
 		}
 	}
 	if(pszIconFN)
 	{
-//		sprintf(buffer.begin(),	"UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt", eType, iIndex, eRace, iPos);
-		sprintf(&buffer[0],	"UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt",
+		sprintf(buffer,	"UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt",
 			(pItem->dwIDIcon / 10000000), 
 			(pItem->dwIDIcon / 1000) % 10000, 
 			(pItem->dwIDIcon / 10) % 100, 
@@ -595,9 +591,17 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,		// �
 
 bool CGameBase::IsValidCharacter(CPlayerBase* pCharacter)
 {
-	if(NULL == pCharacter) return false;
-	if(pCharacter == s_pPlayer) return true; // 플레이어이다.
-	return s_pOPMgr->IsValidCharacter(pCharacter); //  일단 살아있는 넘들중에서 가져와보고.. 
+	if (pCharacter == nullptr)
+		return false;
+
+	// Requested character is the lcoal player.
+	if (pCharacter == s_pPlayer)
+		return true;
+
+	// Verify that the player exists.
+	// NOTE: The original comment claimed to check if they're alive,
+	// but it does no such thing.
+	return s_pOPMgr->IsValidCharacter(pCharacter);
 }
 
 CPlayerBase* CGameBase::CharacterGetByID(int iID, bool bFromAlive)

@@ -213,6 +213,10 @@ public:
 	bool	OnMouseLBtnPressd(POINT ptCur, POINT ptPrev);
 	bool	OnMouseLBtnPress(POINT ptCur, POINT ptPrev);
 	bool	OnMouseLDBtnPress(POINT ptCur, POINT ptPrev);
+	
+	/// \brief attempts to start the auto-attack process
+	/// \returns true if auto-attack process started, false otherwise
+	bool	TryStartAttack();
 	bool	OnMouseRbtnDown(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPressd(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPress(POINT ptCur, POINT ptPrev);
@@ -227,7 +231,7 @@ public:
 	const __InfoPartyOrForce*	PartyOrForceConditionGet(bool& bIAmLeader, bool& bIAmMember, int& iMemberIndex, class CPlayerBase*& pTarget);
 	void						TargetSelect(int iID, bool bMustAlive);
 	void						TargetSelect(class CPlayerNPC* pTarget);
-
+	
 	void	CommandToggleUIChat();
 	void	CommandToggleUIMsgWnd();
 
@@ -244,6 +248,12 @@ public:
 
 	void	CommandMove(e_MoveDirection eMD, bool bStartOrEnd); // 움직이는 방향(전후진, 멈춤), 움직이기 시작하는가?
 	void	CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTarget);
+
+	/// \brief contains the logic that should be executed whenever starting to auto-attack
+	void	StartAutoAttack(CPlayerBase* target);
+	/// \brief contains the logic that should be executed whenever auto-attacking is stopped
+	void	StopAutoAttack(CPlayerBase* target = nullptr);
+	
 	void	CommandCameraChange(); // 카메라 시점 바꾸기..
 	void	CommandSitDown(bool bLimitInterval, bool bSitDown, bool bImmediately = false);
 

@@ -21,31 +21,52 @@
 #include "UdpSocket.h"
 
 #include <shared/Ini.h>
+#include <shared/logger.h>
 #include <shared/STLMap.h>
+
 #include <vector>
 
 #include "resource.h"
+
+namespace recordset_loader
+{
+	struct Error;
+}
+
+class EbenezerLogger : public logger::Logger
+{
+public:
+	EbenezerLogger()
+		: Logger(logger::Ebenezer)
+	{
+	}
+
+	void SetupExtraLoggers(CIni& ini,
+		std::shared_ptr<spdlog::details::thread_pool> threadPool,
+		const std::string& baseDir) override;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CEbenezerDlg dialog
 
 typedef std::vector <C3DMap*>				ZoneArray;
-typedef std::vector <_LEVELUP*>				LevelUpArray;
-typedef CSTLMap <_CLASS_COEFFICIENT>		CoefficientArray;
-typedef CSTLMap <_ITEM_TABLE>				ItemtableArray;
-typedef CSTLMap <_MAGIC_TABLE>				MagictableArray;
-typedef CSTLMap <_MAGIC_TYPE1>				Magictype1Array;
-typedef CSTLMap <_MAGIC_TYPE2>				Magictype2Array;
-typedef CSTLMap <_MAGIC_TYPE3>				Magictype3Array;
-typedef CSTLMap	<_MAGIC_TYPE4>				Magictype4Array;
-typedef CSTLMap <_MAGIC_TYPE5>				Magictype5Array;
-typedef CSTLMap <_MAGIC_TYPE8>				Magictype8Array;
+typedef std::vector <model::LevelUp*>		LevelUpArray;
+typedef CSTLMap <model::Coefficient>		CoefficientArray;
+typedef CSTLMap <model::Item>				ItemtableArray;
+typedef CSTLMap <model::Magic>				MagictableArray;
+typedef CSTLMap <model::MagicType1>			Magictype1Array;
+typedef CSTLMap <model::MagicType2>			Magictype2Array;
+typedef CSTLMap <model::MagicType3>			Magictype3Array;
+typedef CSTLMap	<model::MagicType4>			Magictype4Array;
+typedef CSTLMap <model::MagicType5>			Magictype5Array;
+typedef CSTLMap <model::MagicType8>			Magictype8Array;
 typedef CSTLMap <CNpc>						NpcArray;
 typedef CSTLMap <CAISocket>					AISocketArray;
 typedef CSTLMap <_PARTY_GROUP>				PartyArray;
 typedef CSTLMap <CKnights>					KnightsArray;
 typedef CSTLMap <_ZONE_SERVERINFO>			ServerArray;
-typedef CSTLMap <_HOME_INFO>				HomeArray;
+typedef CSTLMap <model::Home>				HomeArray;
+typedef CSTLMap <model::StartPosition>		StartPositionMap;
 typedef	CSTLMap	<EVENT>						QuestArray;
 
 enum class NameType
@@ -63,10 +84,8 @@ public:
 		return s_pInstance;
 	}
 
-	CString GetGameDBConnectionString();
 	C3DMap* GetMapByID(int iZoneID) const;
 	C3DMap* GetMapByIndex(int iZoneIndex) const;
-	void WriteEventLog(char* pBuf);
 	void FlySanta();
 	void BattleZoneCurrentUsers();
 	BOOL LoadKnightsRankTable();
@@ -85,6 +104,7 @@ public:
 	int  GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type = 0);
 	BOOL LoadAllKnightsUserData();
 	BOOL LoadAllKnights();
+	BOOL LoadStartPositionTable();
 	BOOL LoadHomeTable();
 	void Announcement(BYTE type, int nation = 0, int chat_type = 8);
 	void ResetBattleZone();
@@ -116,13 +136,14 @@ public:
 	void SetGameTime();
 	void UpdateWeather();
 	void UpdateGameTime();
-	void GetTimeFromIni();
+	void LoadConfig();
 	void Send_NearRegion(char* pBuf, int len, int zone, int region_x, int region_z, float curx, float curz, CUser* pExceptUser = nullptr);
 	void Send_FilterUnitRegion(C3DMap* pMap, char* pBuf, int len, int x, int z, float ref_x, float ref_z, CUser* pExceptUser = nullptr);
 	void Send_UnitRegion(C3DMap* pMap, char* pBuf, int len, int x, int z, CUser* pExceptUser = nullptr, bool bDirect = true);
 	BOOL LoadCoefficientTable();
 	BOOL LoadMagicTable();
 	BOOL LoadItemTable();
+	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);
 	BOOL MapFileLoad();
 	void UserAcceptThread();
 	// sungyong 2001.11.06
@@ -141,7 +162,17 @@ public:
 	void Send_All(char* pBuf, int len, CUser* pExceptUser = nullptr, int nation = 0);	// pointer != NULL don`t send to that user pointer
 	void Send_AIServer(int zone, char* pBuf, int len);
 	static CUser* GetUserPtr(const char* userid, NameType type);
+
+	/// \brief adds a message to the application's output box and updates scrollbar position
+	/// \see _outputList
+	void AddOutputMessage(const std::string& msg);
+
+	/// \brief adds a message to the application's output box and updates scrollbar position
+	/// \see _outputList
+	void AddOutputMessage(const std::wstring& msg);
+
 	CEbenezerDlg(CWnd* pParent = nullptr);	// standard constructor
+	~CEbenezerDlg();
 
 	static CEbenezerDlg* s_pInstance;
 	static CIOCPort	m_Iocport;
@@ -175,6 +206,7 @@ public:
 	PartyArray				m_PartyArray;
 	KnightsArray			m_KnightsArray;
 	HomeArray				m_HomeArray;
+	StartPositionMap		m_StartPositionMap;
 	QuestArray				m_Event;
 
 	CKnightsManager			m_KnightsManager;
@@ -248,34 +280,21 @@ public:
 	ServerArray			m_ServerGroupArray;
 	CUdpSocket*			m_pUdpSocket;
 
-	CFile				m_RegionLogFile;
-	CFile				m_LogFile;
-	CFile				m_EvnetLogFile;
-
-	TCHAR				m_strGameDSN[24];
-	TCHAR				m_strGameUID[24];
-	TCHAR				m_strGamePWD[24];
-
 // Dialog Data
 	//{{AFX_DATA(CEbenezerDlg)
 	enum { IDD = IDD_EBENEZER_DIALOG };
 	CEdit	m_AnnounceEdit;
-	CListBox	m_StatusList;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CEbenezerDlg)
-public:
 	virtual BOOL DestroyWindow();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//}}AFX_VIRTUAL
-
-private:
-	CIni	m_Ini;
 // Implementation
-protected:
+
 	HICON m_hIcon;
 
 	// Generated message map functions
@@ -287,6 +306,13 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+	
+private:
+	CIni	m_Ini;
+	EbenezerLogger _logger;
+
+	/// \brief output message box for the application
+	CListBox _outputList;
 };
 
 //{{AFX_INSERT_LOCATION}}

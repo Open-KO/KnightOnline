@@ -21,12 +21,7 @@ static char THIS_FILE[] = __FILE__;
 CGameEvent::CGameEvent()
 {
 	m_bType = 0;
-
-	for (int i = 0; i < 5; i++)
-	{
-		m_iCond[i] = 0;
-		m_iExec[i] = 0;
-	}
+	memset(&m_iExec, 0, sizeof(m_iExec));
 }
 
 CGameEvent::~CGameEvent()

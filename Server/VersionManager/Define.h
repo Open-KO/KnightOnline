@@ -1,16 +1,21 @@
 ﻿#ifndef _DEFINE_H
 #define _DEFINE_H
 
+#if defined(_DEBUG)
+#include <iostream>
+#endif
 #include <string>
 #include <mmsystem.h>
 
 #include <shared/globals.h>
 #include <shared/StringConversion.h>
+#include <shared/STLMap.h>
 
-constexpr int MAX_USER			= 3000;
+constexpr int MAX_USER				= 3000;
 
-#define _LISTEN_PORT			15100
-#define CLIENT_SOCKSIZE			10
+constexpr int _LISTEN_PORT			= 15100;
+constexpr int CLIENT_SOCKSIZE		= 10;
+constexpr int DB_PROCESS_TIMEOUT	= 100;
 
 ////////////////////////////////////////////////////////////
 // Socket Define
@@ -56,18 +61,13 @@ typedef union
 	BYTE		b[4];
 } MYDWORD;
 
+import VersionManagerModel;
+namespace model = versionmanager_model; 
+
 struct _NEWS
 {
 	char Content[4096]	= {};
 	short Size			= 0;
-};
-
-struct _VERSION_INFO
-{
-	short		sVersion;
-	short		sHistoryVersion;
-	std::string	strFileName;
-	std::string	strCompName;
 };
 
 struct _SERVER_INFO
@@ -78,6 +78,8 @@ struct _SERVER_INFO
 	short	sUserLimit			= 0;
 	short	sServerID			= 1;
 };
+
+typedef CSTLMap <model::Version>	VersionInfoList;
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -198,48 +200,28 @@ inline CString GetProgPath()
 	return Path;
 }
 
-inline void LogFileWrite(const TCHAR* logstr)
+// ini config variable names
+namespace ini
 {
-	CString LogFileName;
-	LogFileName.Format(_T("%s\\Login.log"), GetProgPath().GetString());
+	// ODBC Config Section
+	static constexpr char ODBC[] = "ODBC";
+	static constexpr char DSN[] = "DSN";
+	static constexpr char UID[] = "UID";
+	static constexpr char PWD[] = "PWD";
+	static constexpr char TABLE[] = "TABLE";
 
-	CFile file;
-	if (!file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-		return;
+	// CONFIGURATION section
+	static constexpr char CONFIGURATION[] = "CONFIGURATION";
+	static constexpr char DEFAULT_PATH[] = "DEFAULT_PATH";
 
-	file.SeekToEnd();
+	// SERVER_LIST section
+	static constexpr char SERVER_LIST[] = "SERVER_LIST";
+	static constexpr char COUNT[] = "COUNT";
 
-#if defined(_UNICODE)
-	const std::string utf8 = WideToUtf8(logstr, wcslen(logstr));
-	file.Write(utf8.c_str(), static_cast<int>(utf8.size()));
-#else
-	file.Write(logstr, strlen(logstr));
-#endif
-
-	file.Close();
-}
-
-inline int DisplayErrorMsg(SQLHANDLE hstmt)
-{
-	SQLTCHAR      SqlState[6], Msg[1024];
-	SQLINTEGER    NativeError;
-	SQLSMALLINT   i, MsgLen;
-	SQLRETURN     rc2;
-	TCHAR		  logstr[512] = {};
-
-	i = 1;
-	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
-	{
-		_sntprintf(logstr, _countof(logstr) - 1, _T("*** %s, %d, %s, %d ***\r\n"), SqlState, NativeError, Msg, MsgLen);
-		LogFileWrite(logstr);
-
-		i++;
-	}
-
-	if (_tcscmp((TCHAR*) SqlState, _T("08S01")) == 0)
-		return -1;
-
-	return 0;
+	// Download section
+	static constexpr char DOWNLOAD[] = "DOWNLOAD";
+	static constexpr char URL[] = "URL";
+	static constexpr char PATH[] = "PATH";
 }
 
 #endif

@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 
-:: Try to find vswhere.exe -- this is present as such in the latest Visual Studio (2022)
+REM Try to find vswhere.exe -- this is present as such in the latest Visual Studio (2022)
 SET "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 
 IF NOT EXIST "%VSWHERE%" (
@@ -10,7 +10,7 @@ IF NOT EXIST "%VSWHERE%" (
 	EXIT /B 1
 )
 
-:: Find latest MSBuild.exe path
+REM Find latest MSBuild.exe path
 SET "MSBUILD="
 FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) DO (
 	SET "MSBUILD=%%i"
@@ -21,6 +21,6 @@ IF  "%MSBUILD%"=="" (
 	EXIT /B 1
 )
 
-:: Export MSBUILD environment variable for caller
+REM Export MSBUILD environment variable for caller
 ENDLOCAL & SET "MSBUILD=%MSBUILD%"
 EXIT /B 0

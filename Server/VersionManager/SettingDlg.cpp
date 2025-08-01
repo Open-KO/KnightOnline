@@ -9,6 +9,9 @@
 
 #include <string>
 
+import VersionManagerModel;
+namespace model = versionmanager_model;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -24,41 +27,45 @@ using PathType = std::string;
 /////////////////////////////////////////////////////////////////////////////
 // CSettingDlg dialog
 
-CSettingDlg::CSettingDlg(int version, CWnd* pParent /*=NULL*/)
-	: CDialog(CSettingDlg::IDD, pParent)
+/// \brief standard constructor called by VersionManagerDlg::OnVersionSetting().
+/// Constructs using _main->LastVersion
+CSettingDlg::CSettingDlg(int lastVersion, CWnd* parent /*=NULL*/)
+	: CDialog(IDD, parent)
 {
 	//{{AFX_DATA_INIT(CSettingDlg)
-	m_nVersion = version;
-	m_bCompressOption = FALSE;
-	m_bAllFileAdd = FALSE;
+	_lastVersion = lastVersion;
+	_isRepackage = FALSE;
+	_isAddAllFiles = FALSE;
 	//}}AFX_DATA_INIT
 
-	memset(m_strDefaultPath, 0, sizeof(m_strDefaultPath));
+	memset(_defaultPath, 0, sizeof(_defaultPath));
 
-	m_pMain = (CVersionManagerDlg*) pParent;
+	_main = (CVersionManagerDlg*) parent;
 }
 
-void CSettingDlg::DoDataExchange(CDataExchange* pDX)
+/// \brief performs MFC data exchange
+/// \see https://learn.microsoft.com/en-us/cpp/mfc/dialog-data-exchange?view=msvc-170
+void CSettingDlg::DoDataExchange(CDataExchange* data)
 {
-	CDialog::DoDataExchange(pDX);
+	CDialog::DoDataExchange(data);
 	//{{AFX_DATA_MAP(CSettingDlg)
-	DDX_Control(pDX, IDC_PATH_EDIT, m_PathEdit);
-	DDX_Control(pDX, IDC_FILE_LIST, m_FileList);
-	DDX_Control(pDX, IDC_PROGRESS, m_Progress);
-	DDX_Text(pDX, IDC_VERSION_EDIT, m_nVersion);
-	DDX_Check(pDX, IDC_CHECK, m_bCompressOption);
-	DDX_Check(pDX, IDC_CHECK2, m_bAllFileAdd);
+	DDX_Control(data, IDC_PATH_EDIT, _basePathInput);
+	DDX_Control(data, IDC_FILE_LIST, _fileListTextArea);
+	DDX_Control(data, IDC_PROGRESS, _progressBar);
+	DDX_Text(data, IDC_VERSION_EDIT, _lastVersion);
+	DDX_Check(data, IDC_CHECK, _isRepackage);
+	DDX_Check(data, IDC_CHECK2, _isAddAllFiles);
 	//}}AFX_DATA_MAP
 }
 
+/// \brief event mapping
 BEGIN_MESSAGE_MAP(CSettingDlg, CDialog)
 	//{{AFX_MSG_MAP(CSettingDlg)
-	ON_BN_CLICKED(IDC_ADDFILE, OnAddfile)
-	ON_BN_CLICKED(IDC_DELETEFILE, OnDeletefile)
+	ON_BN_CLICKED(IDC_ADDFILE, OnAddFile)
+	ON_BN_CLICKED(IDC_DELETEFILE, OnDeleteFile)
 	ON_BN_CLICKED(IDC_COMPRESS, OnCompress)
 	ON_BN_CLICKED(IDC_PATH_BROWSE, OnPathBrowse)
 	ON_BN_CLICKED(IDC_REFRESH, OnRefresh)
-	ON_EN_KILLFOCUS(IDC_VERSION_EDIT, OnKillfocusVersionEdit)
 	ON_BN_CLICKED(IDC_DBCSTEST, OnDbcstest)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -66,14 +73,15 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSettingDlg message handlers
 
+/// \brief initializes the version settings dialogue box
 BOOL CSettingDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_PathEdit.SetWindowText(m_strDefaultPath);
+	_basePathInput.SetWindowText(_defaultPath);
 
-	m_Progress.SetRange(0, 100);
-	m_Progress.SetPos(0);
+	_progressBar.SetRange(0, 100);
+	_progressBar.SetPos(0);
 
 	OnRefresh();
 
@@ -81,37 +89,39 @@ BOOL CSettingDlg::OnInitDialog()
 				  // EXCEPTION: OCX Property Pages should return FALSE
 }
 
+/// \brief closes the settings dialog window when the "OK" button is clicked
 void CSettingDlg::OnOK()
 {
 	CDialog::OnOK();
 }
 
-void CSettingDlg::OnAddfile()
+/// \brief triggered when the Add button is clicked.  Opens a file picker and processes the selection
+void CSettingDlg::OnAddFile()
 {
 	constexpr DWORD FilenameBufferSize = 512000;
 
 	CFileDialog dlg(TRUE);
-	PathType addfilename, addfullpath, defaultpath;
+	PathType fileName, filePath, defaultPath;
 	TCHAR tempstr1[_MAX_PATH] = {};
 	std::vector<TCHAR> szFileName(FilenameBufferSize);
-	int strsize = 0;
+	int strSize = 0;
 
 	UpdateData(TRUE);
 
-	if (m_bAllFileAdd)
+	if (_isAddAllFiles)
 	{
 		if (AfxMessageBox(_T("All files of Base Path will be inserted."), MB_OKCANCEL) == IDCANCEL)
 			return;
 
 		BeginWaitCursor();
-		FolderRecurse(m_strDefaultPath);
+		FolderRecurse(_defaultPath);
 		EndWaitCursor();
 		return;
 	}
 
-	::SetCurrentDirectory(m_strDefaultPath);
+	::SetCurrentDirectory(_defaultPath);
 
-	dlg.m_ofn.lpstrInitialDir = m_strDefaultPath;
+	dlg.m_ofn.lpstrInitialDir = _defaultPath;
 	dlg.m_ofn.Flags |= OFN_ALLOWMULTISELECT | OFN_EXPLORER;
 	dlg.m_ofn.lpstrFile = &szFileName[0];
 	dlg.m_ofn.nMaxFile = FilenameBufferSize;
@@ -123,26 +133,26 @@ void CSettingDlg::OnAddfile()
 	while (pos != nullptr)
 	{
 		_tcscpy(tempstr1, dlg.GetNextPathName(pos));
-		addfullpath = _tcslwr(tempstr1);
-		defaultpath = _tcslwr(m_strDefaultPath);
-		strsize = defaultpath.size();
-		addfilename = addfullpath.substr(strsize);
+		filePath = _tcslwr(tempstr1);
+		defaultPath = _tcslwr(_defaultPath);
+		strSize = defaultPath.size();
+		fileName = filePath.substr(strSize);
 
-		if (InsertProcess(&addfilename[0]))
-			m_FileList.AddString(&addfilename[0]);
+		InsertProcess(&fileName[0]);
 	}
 }
 
-void CSettingDlg::OnDeletefile()
+/// \brief triggered when the delete button is clicked. Attempts to delete the
+/// file selected in the _fileListTextArea
+void CSettingDlg::OnDeleteFile()
 {
-	int selcount = 0;
-	CString delfilename, compname, errmsg;
-	std::string			filename;
-	std::vector<int>	sellist;
-	_VERSION_INFO* pInfo = nullptr;
+	CString delFileName, compressName, errMsg;
+	std::string			fileName;
+	std::vector<int>	selList;
+	model::Version* delVersion = nullptr;
 
-	selcount = m_FileList.GetSelCount();
-	if (selcount == 0)
+	int selCount = _fileListTextArea.GetSelCount();
+	if (selCount == 0)
 	{
 		AfxMessageBox(_T("File Not Selected."));
 		return;
@@ -150,44 +160,59 @@ void CSettingDlg::OnDeletefile()
 
 	BeginWaitCursor();
 
-	sellist.reserve(selcount);
-
-	m_FileList.GetSelItems(selcount, &sellist[0]);
-
-	for (int i = 0; i < selcount; i++)
+	selList.reserve(selCount);
+	for (int i = 0; i < _fileListTextArea.GetCount(); i++)
 	{
-		m_FileList.GetText(sellist[i], delfilename);
-		filename = CT2A(delfilename);
+		if (_fileListTextArea.GetSel(i))
+		{
+			selList.push_back(i);
+		}
+	}
 
-		pInfo = m_pMain->m_VersionList.GetData(filename);
-		if (pInfo == nullptr)
+	for (int i = 0; i < selCount; i++)
+	{
+		_fileListTextArea.GetText(selList[i], delFileName);
+		fileName = CT2A(delFileName);
+
+		int delVersionId = -1;
+		for (const auto& version : _main->VersionList)
+		{
+			if (version.second->FileName == fileName)
+			{
+				delVersionId = version.second->Number;
+				break;
+			}
+		}
+
+		delVersion = _main->VersionList.GetData(delVersionId);
+		if (delVersion == nullptr)
 			continue;
 
-		if (!m_pMain->m_DBProcess.DeleteVersion(filename.c_str()))
+		if (!_main->DbProcess.DeleteVersion(delVersionId))
 		{
-			errmsg.Format(_T("%hs DB Delete Fail"), filename.c_str());
-			AfxMessageBox(errmsg);
+			errMsg.Format(_T("%hs DB Delete Fail"), fileName.c_str());
+			AfxMessageBox(errMsg);
 			return;
 		}
 
 		// Restore
-		if (pInfo->sHistoryVersion > 0)
+		if (delVersion->HistoryVersion > 0)
 		{
-			pInfo->sVersion = pInfo->sHistoryVersion;
-			pInfo->sHistoryVersion = 0;
+			delVersion->Number = delVersion->HistoryVersion;
+			delVersion->HistoryVersion = 0;
 
-			compname.Format(_T("patch%.4d.zip"), pInfo->sVersion);
-			if (!m_pMain->m_DBProcess.InsertVersion(pInfo->sVersion, filename.c_str(), CT2A(compname), 0))
+			compressName.Format(_T("patch%.4d.zip"), delVersion->Number);
+			if (!_main->DbProcess.InsertVersion(delVersion->Number, fileName.c_str(), CT2A(compressName), 0))
 			{
-				m_pMain->m_VersionList.DeleteData(filename);
-				errmsg.Format(_T("%hs DB Insert Fail"), filename.c_str());
-				AfxMessageBox(errmsg);
+				_main->VersionList.DeleteData(delVersionId);
+				errMsg.Format(_T("%hs DB Insert Fail"), fileName.c_str());
+				AfxMessageBox(errMsg);
 				return;
 			}
 		}
 		else
 		{
-			m_pMain->m_VersionList.DeleteData(filename);
+			_main->VersionList.DeleteData(delVersionId);
 		}
 
 		Sleep(10);
@@ -198,280 +223,303 @@ void CSettingDlg::OnDeletefile()
 	OnRefresh();
 }
 
+/// \brief triggered when the Compress button is clicked. Attempts to
+/// compress the selected entry, or all entries if CompressCheckbox is
+/// checked
+/// \see CompressCheckbox
 void CSettingDlg::OnCompress()
 {
-	CString			fullpathname, filename, errmsg, compname, compfullpath;
-	DWORD dwsize;
+	CString			pathName, fileName, errMsg, compressName, compressPath;
+	DWORD size;
 	CFile file;
-	std::string		addfilename;
-	_VERSION_INFO* pInfo = nullptr;
+	std::string		fileNameA;
 
 	UpdateData(TRUE);
 
-	int count = m_FileList.GetCount();
+	int count = _fileListTextArea.GetCount();
 	if (count == 0)
 		return;
 
 	BeginWaitCursor();
 
-	compname.Format(_T("patch%.4d.zip"), m_nVersion);
-	compfullpath.Format(
+	compressName.Format(_T("patch%.4d.zip"), _lastVersion);
+	compressPath.Format(
 		_T("%s\\%s"),
-		m_strDefaultPath,
-		compname.GetString());
+		_defaultPath,
+		compressName.GetString());
 
-	m_RepackingVersionList.clear();
+	_repackingVersionList.clear();
 
-	m_ZipArchive.Open(compfullpath, CZipArchive::create);
+	_zipArchive.Open(compressPath, CZipArchive::create);
 
 	SetDlgItemText(IDC_STATUS, _T("Compressing.."));
 
 	for (int i = 0; i < count; i++)
 	{
-		m_FileList.GetText(i, filename);
+		_fileListTextArea.GetText(i, fileName);
 
-		fullpathname = m_strDefaultPath;
-		fullpathname += filename;
-		if (!file.Open(fullpathname, CFile::modeRead))
+		pathName = _defaultPath;
+		pathName += fileName;
+		if (!file.Open(pathName, CFile::modeRead))
 		{
-			errmsg.Format(_T("%s File Open Fail"), filename.GetString());
-			AfxMessageBox(errmsg);
+			errMsg.Format(_T("%s File Open Fail"), fileName.GetString());
+			AfxMessageBox(errMsg);
 			continue;
 		}
 
-		dwsize = static_cast<DWORD>(file.GetLength());
+		size = static_cast<DWORD>(file.GetLength());
 		file.Close();
 
-		if (!m_ZipArchive.AddNewFile(fullpathname, m_strDefaultPath, -1, dwsize))
+		if (!_zipArchive.AddNewFile(pathName, _defaultPath, -1, size))
 		{
-			errmsg.Format(_T("%s File Compress Fail"), filename.GetString());
-			AfxMessageBox(errmsg);
+			errMsg.Format(_T("%s File Compress Fail"), fileName.GetString());
+			AfxMessageBox(errMsg);
 			continue;
 		}
 
-		m_Progress.SetPos(i * 100 / count);
+		_progressBar.SetPos(i * 100 / count);
 
-		addfilename = CT2A(filename);
+		fileNameA = CT2A(fileName);
 
-		pInfo = m_pMain->m_VersionList.GetData(addfilename);
+		int versionKey = -1;
+		for (const auto& version : _main->VersionList)
+		{
+			if (version.second->FileName == fileNameA)
+			{
+				versionKey = version.second->Number;
+				break;
+			}
+		}
+
+		model::Version* pInfo = _main->VersionList.GetData(versionKey);
 		if (pInfo != nullptr)
-			m_RepackingVersionList.insert(pInfo->sHistoryVersion);
+			_repackingVersionList.insert(pInfo->HistoryVersion);
 	}
 
 	SetDlgItemText(IDC_STATUS, _T("Compressed"));
 
-	m_ZipArchive.Close();
+	_zipArchive.Close();
 
-	// Current Version 만 압축
-	if (!m_bCompressOption)
+	// If unchecked, try repacking all items in history
+	if (!_isRepackage)
 	{
-		if (!m_RepackingVersionList.empty())
+		if (!_repackingVersionList.empty())
 			RepackingHistory();
 	}
 
-	m_Progress.SetPos(100);
+	_progressBar.SetPos(100);
 
 	EndWaitCursor();
 }
 
+/// \brief opens a folder picker dialog box
 void CSettingDlg::OnPathBrowse()
 {
 	CDlgBrowsePath pathdlg;
 	if (pathdlg.DoModal() != IDOK)
 		return;
 
-	_tcscpy(m_strDefaultPath, pathdlg.m_szPath);
-	m_PathEdit.SetWindowText(m_strDefaultPath);
+	_tcscpy_s(_defaultPath, pathdlg.m_szPath);
+	_basePathInput.SetWindowText(_defaultPath);
 }
 
+/// \brief reloads the contents of _fileListTextArea. Triggered by
+/// the Refresh button and when focus leaves VersionInput
+/// \see _fileListTextArea
+/// \see VersionInput
 void CSettingDlg::OnRefresh()
 {
+	RefreshFileListTextArea();
 	UpdateData(TRUE);
-
-	m_FileList.ResetContent();
-
-	for (const auto& [_, pInfo] : m_pMain->m_VersionList)
-	{
-		if (pInfo->sVersion == m_nVersion)
-			m_FileList.AddString(CA2T(pInfo->strFileName.c_str()));
-	}
 }
 
+/// \brief destroys class resources when the window is being closed
 BOOL CSettingDlg::DestroyWindow()
 {
-	m_RepackingVersionList.clear();
+	_repackingVersionList.clear();
 	return CDialog::DestroyWindow();
 }
 
+/// \brief repackages the versions in the RepackingVersionList
+/// \see RepackingVersionList
 void CSettingDlg::RepackingHistory()
 {
-	CString errmsg;
+	CString errMsg;
 
 	SetDlgItemText(IDC_STATUS, _T("Repacking..."));
 
-	for (const int version : m_RepackingVersionList)
+	for (const int version : _repackingVersionList)
 	{
 		if (!Repacking(version))
 		{
-			errmsg.Format(_T("%d Repacking Fail"), version);
-			AfxMessageBox(errmsg);
+			errMsg.Format(_T("%d Repacking Fail"), version);
+			AfxMessageBox(errMsg);
 		}
 	}
 
 	SetDlgItemText(IDC_STATUS, _T("Repacked"));
 }
 
+/// \brief attempts to repackage for the provided version number 
 bool CSettingDlg::Repacking(int version)
 {
 	CString			filename, errmsg, compname, compfullpath;
-	DWORD dwsize;
 	CFile file;
 
 	compname.Format(_T("patch%.4d.zip"), version);
-	compfullpath.Format(_T("%s\\%s"), m_strDefaultPath, compname.GetString());
+	compfullpath.Format(_T("%s\\%s"), _defaultPath, compname.GetString());
 
-	m_ZipArchive.Open(compfullpath, CZipArchive::create);
+	_zipArchive.Open(compfullpath, CZipArchive::create);
 
-	for (const auto& [_, pInfo] : m_pMain->m_VersionList)
+	model::Version* pInfo = _main->VersionList.GetData(version);
+	if (pInfo == nullptr)
 	{
-		if (pInfo->sVersion != version)
-			continue;
-
-		filename.Format(_T("%s%hs"), m_strDefaultPath, pInfo->strFileName.c_str());
-		if (!file.Open(filename, CFile::modeRead))
-		{
-			errmsg.Format(_T("%s File Open Fail"), filename.GetString());
-			AfxMessageBox(errmsg);
-			continue;
-		}
-
-		dwsize = static_cast<DWORD>(file.GetLength());
-		file.Close();
-
-		if (!m_ZipArchive.AddNewFile(filename, m_strDefaultPath, -1, dwsize))
-		{
-			errmsg.Format(_T("%s File Compress Fail"), filename.GetString());
-			AfxMessageBox(errmsg);
-			return false;
-		}
+		errmsg.Format(_T("%d is not a valid version number"), version);
+		AfxMessageBox(errmsg);
+		_zipArchive.Close(true);
+		return false;
 	}
 
-	m_ZipArchive.Close();
+	filename.Format(_T("%s%hs"), _defaultPath, pInfo->FileName.c_str());
+	if (!file.Open(filename, CFile::modeRead))
+	{
+		errmsg.Format(_T("%s File Open Fail"), filename.GetString());
+		AfxMessageBox(errmsg);
+		_zipArchive.Close(true);
+		return false;
+	}
+
+	DWORD dwsize = static_cast<DWORD>(file.GetLength());
+	file.Close();
+
+	if (!_zipArchive.AddNewFile(filename, _defaultPath, -1, dwsize))
+	{
+		errmsg.Format(_T("%s File Compress Fail"), filename.GetString());
+		AfxMessageBox(errmsg);
+		_zipArchive.Close(true);
+		return false;
+	}
+
+	_zipArchive.Close();
 
 	return true;
 }
 
-bool CSettingDlg::InsertProcess(const TCHAR* filename)
+/// \brief Attempts to insert a file as a patch
+/// \details Checks if file name is used in the VERSION table.  If found,
+/// attempts to overwrite that record
+bool CSettingDlg::InsertProcess(const TCHAR* fileName)
 {
-	_VERSION_INFO* pInfo1 = nullptr, *pInfo2 = nullptr;
-	CString compname, errmsg;
-	std::string		addfilename;
-	int historyversion = 0;
+	model::Version* pInfo1 = nullptr, *pInfo2 = nullptr;
+	CString compressName, errMsg;
+	std::string		_fileName;
+	int historyVersion = 0;
 
-	addfilename = CT2A(filename);
+	_fileName = CT2A(fileName);
 
-	if (IsDBCSString(addfilename.c_str()))
+	if (IsDBCSString(_fileName.c_str()))
 	{
-		errmsg.Format(_T("%s include DBCS character"), filename);
-		AfxMessageBox(errmsg);
+		errMsg.Format(_T("%s include DBCS character"), fileName);
+		AfxMessageBox(errMsg);
 		return false;
 	}
 
-	compname.Format(_T("patch%.4d.zip"), m_nVersion);
+	compressName.Format(_T("patch%.4d.zip"), _lastVersion);
 
-	pInfo1 = m_pMain->m_VersionList.GetData(addfilename);
+	pInfo1 = _main->VersionList.GetData(_lastVersion);
 	if (pInfo1 != nullptr)
 	{
-		historyversion = pInfo1->sVersion;
-		m_pMain->m_VersionList.DeleteData(addfilename);
-
-		if (!m_pMain->m_DBProcess.DeleteVersion(addfilename.c_str()))
+		historyVersion = pInfo1->HistoryVersion;
+		if (!_main->DbProcess.DeleteVersion(_lastVersion))
 		{
-			errmsg.Format(_T("%hs DB Delete Fail"), addfilename.c_str());
-			AfxMessageBox(errmsg);
+			errMsg.Format(_T("%hs DB Delete Fail"), _fileName.c_str());
+			AfxMessageBox(errMsg);
 			return false;
 		}
+		_main->VersionList.DeleteData(_lastVersion);
 	}
 
-	pInfo2 = new _VERSION_INFO;
-	pInfo2->sVersion = m_nVersion;
-	pInfo2->strFileName = addfilename;
-	pInfo2->strCompName = CT2A(compname);
-	pInfo2->sHistoryVersion = historyversion;
-	if (!m_pMain->m_VersionList.PutData(addfilename, pInfo2))
+	pInfo2 = new model::Version();
+	pInfo2->Number = _lastVersion;
+	pInfo2->FileName = _fileName;
+	pInfo2->CompressName = CT2A(compressName);
+	pInfo2->HistoryVersion = historyVersion;
+	if (!_main->VersionList.PutData(_lastVersion, pInfo2))
 	{
 		delete pInfo2;
 		return false;
 	}
 
-	if (!m_pMain->m_DBProcess.InsertVersion(
-		m_nVersion,
-		addfilename.c_str(),
-		pInfo2->strCompName.c_str(),
-		historyversion))
+	if (!_main->DbProcess.InsertVersion(
+		_lastVersion,
+		_fileName.c_str(),
+		pInfo2->CompressName.c_str(),
+		historyVersion))
 	{
-		m_pMain->m_VersionList.DeleteData(addfilename);
+		_main->VersionList.DeleteData(_lastVersion);
 
-		errmsg.Format(_T("%hs DB Insert Fail"), addfilename.c_str());
-		AfxMessageBox(errmsg);
+		errMsg.Format(_T("%hs DB Insert Fail"), _fileName.c_str());
+		AfxMessageBox(errMsg);
 		return false;
 	}
+
+	RefreshFileListTextArea();
 
 	return true;
 }
 
-void CSettingDlg::OnKillfocusVersionEdit()
-{
-	OnRefresh();
-}
-
-void CSettingDlg::FolderRecurse(const TCHAR* foldername, bool b_test)
+/// \brief attempts to find files recursively and insert them
+/// \param folderName
+/// \param isTestDBCS if true will check file names for DBCS, and will not insert files found
+/// /// \see IsDBCSString()
+void CSettingDlg::FolderRecurse(const TCHAR* folderName, bool isTestDBCS)
 {
 	CFileFind ff;
-	PathType addfilename, addfullpath, defaultpath;
-	TCHAR tempstr1[_MAX_PATH] = {};
-	int strsize = 0;
+	PathType fileName, fullPath, defaultPath;
+	TCHAR tempStr[_MAX_PATH] = {};
 
-	::SetCurrentDirectory(foldername);
+	::SetCurrentDirectory(folderName);
 
 	BOOL bFind = ff.FindFile();
 	while (bFind)
 	{
 		bFind = ff.FindNextFile();
-		_tcscpy(tempstr1, ff.GetFilePath());
+		_tcscpy_s(tempStr, ff.GetFilePath());
 
 		if (ff.IsDots())
 			continue;
 
 		if (ff.IsDirectory())
 		{
-			FolderRecurse(tempstr1, b_test);
+			FolderRecurse(tempStr, isTestDBCS);
 			continue;
 		}
 
-		// 단순 검사만 수행...
-		if (b_test)
+		// Test if the file includes a DBCS character, but don't attempt to insert
+		if (isTestDBCS)
 		{
-			if (IsDBCSString(CT2A(tempstr1)))
+			if (IsDBCSString(CT2A(tempStr)))
 			{
 				CString errmsg;
-				errmsg.Format(_T("%s include DBCS character"), tempstr1);
+				errmsg.Format(_T("%s include DBCS character"), tempStr);
 				AfxMessageBox(errmsg);
 			}
 
 			continue;
 		}
 
-		addfullpath = _tcslwr(tempstr1);
-		defaultpath = _tcslwr(m_strDefaultPath);
-		strsize = defaultpath.size();
-		addfilename = addfullpath.substr(strsize);
+		fullPath = _tcslwr(tempStr);
+		defaultPath = _tcslwr(_defaultPath);
+		fileName = fullPath.substr(defaultPath.size());
 
-		if (InsertProcess(&addfilename[0]))
-			m_FileList.AddString(&addfilename[0]);
+		InsertProcess(&fileName[0]);
 	}
 }
 
+/// \brief determines if a string contains DBCS characters.
+/// \details a DBCS character is a lead byte for the system default Windows ANSI code page (CP_ACP).
+/// A lead byte is the first byte of a two-byte character in a double-byte character set (DBCS) for the code page.
+/// \see https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-isdbcsleadbyte
 bool CSettingDlg::IsDBCSString(const char* string)
 {
 	int total_count = static_cast<int>(strlen(string));
@@ -484,8 +532,32 @@ bool CSettingDlg::IsDBCSString(const char* string)
 	return false;
 }
 
+/// \brief triggered when the DBCS Test button is clicked. Recursively checks
+/// all the file names in the Base Directory for DBCS characters
+/// \see IsDBCSString()
 void CSettingDlg::OnDbcstest()
 {
-	FolderRecurse(m_strDefaultPath, true);
+	FolderRecurse(_defaultPath, true);
 	AfxMessageBox(_T("Test Done.."));
+}
+
+/// \brief clears the contents of _fileListTextArea and reloads the default content
+void CSettingDlg::RefreshFileListTextArea()
+{
+	_fileListTextArea.ResetContent();
+	_lastVersion = 0;
+	for (const auto& [_, pInfo] : _main->VersionList)
+	{
+		if (pInfo->Number > _lastVersion)
+		{
+			_lastVersion = pInfo->Number;
+		}
+		_fileListTextArea.AddString(CA2T(pInfo->FileName.c_str()));
+	}
+
+	if (_lastVersion > _main->LastVersion())
+	{
+		_main->SetLastVersion(_lastVersion);
+	}
+	SetDlgItemInt(IDC_VERSION_EDIT, _lastVersion);
 }

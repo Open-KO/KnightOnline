@@ -9,6 +9,7 @@
 #include "define.h"
 #include "Region.h"
 #include "GameSocket.h"
+#include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -231,7 +232,8 @@ void CUser::SendAll(const char* pBuf, int nLength)
 	if (m_iUserId < 0
 		|| m_iUserId >= MAX_USER)
 	{
-		TRACE(_T("#### User SendAll Fail : point fail ,, nid=%d, name=%hs ####\n"), m_iUserId, m_strUserID);
+		spdlog::error("User::SendAll: userId out of bounds [userId={} charId={}]",
+			m_iUserId, m_strUserID);
 		return;
 	}
 
@@ -299,7 +301,8 @@ void CUser::Dead(int tid, int nDamage)
 	MAP* pMap = m_pMain->GetMapByIndex(m_sZoneIndex);
 	if (pMap == nullptr)
 	{
-		TRACE(_T("#### CUser-Dead() Fail : [nid=%d, name=%hs], zoneindex=%d, pMap == NULL #####\n"), m_iUserId, m_strUserID, m_sZoneIndex);
+		spdlog::error("User::Dead: map not found [userId={} charId={} zoneId={}]",
+			m_iUserId, m_strUserID, m_sZoneIndex);
 		return;
 	}
 
@@ -309,7 +312,8 @@ void CUser::Dead(int tid, int nDamage)
 		|| m_sRegionX > pMap->GetXRegionMax()
 		|| m_sRegionZ > pMap->GetZRegionMax())
 	{
-		TRACE(_T("#### CUser-Dead() Fail : [nid=%d, name=%hs], x1=%d, z1=%d #####\n"), m_iUserId, m_strUserID, m_sRegionX, m_sRegionZ);
+		spdlog::error("User::Dead: out of region bounds [userId={} charId={} x={} z={}]",
+			m_iUserId, m_strUserID, m_sRegionX, m_sRegionZ);
 		return;
 	}
 
@@ -324,12 +328,8 @@ void CUser::Dead(int tid, int nDamage)
 	int sid = -1, targid = -1;
 	BYTE type, result;
 	char buff[256] = {};
-
-	CString logstr;
-	logstr.Format(_T("*** User Dead = %d, %hs ***"), m_iUserId, m_strUserID);
-	TimeTrace(logstr);
-	//TRACE(_T("*** User Dead = %d, %hs ********\n"), m_iUserId, m_strUserID);
 	memset(buff, 0, sizeof(buff));
+	spdlog::debug("User::Dead: userId={} charId={}", m_iUserId, m_strUserID);
 
 	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
@@ -506,9 +506,9 @@ short CUser::GetDamage(int tid, int magicid)
 	int random = 0;
 	BYTE result = FAIL;
 
-	_MAGIC_TABLE* pTable = nullptr;
-	_MAGIC_TYPE1* pType1 = nullptr;
-	_MAGIC_TYPE2* pType2 = nullptr;
+	model::Magic* pTable = nullptr;
+	model::MagicType1* pType1 = nullptr;
+	model::MagicType2* pType2 = nullptr;
 
 	if (tid < NPC_BAND
 		|| tid > INVALID_BAND)
@@ -540,7 +540,7 @@ short CUser::GetDamage(int tid, int magicid)
 			return -1;
 
 		// SKILL HIT!
-		if (pTable->bType1 == 1)
+		if (pTable->Type1 == 1)
 		{
 			// Get magic skill table type 1.
 			pType1 = m_pMain->m_Magictype1Array.GetData(magicid);
@@ -548,10 +548,10 @@ short CUser::GetDamage(int tid, int magicid)
 				return -1;
 
 			// Non-relative hit.
-			if (pType1->bHitType)
+			if (pType1->Type)
 			{
 				random = myrand(0, 100);
-				if (pType1->sHitRate <= random)
+				if (pType1->HitRateMod <= random)
 					result = FAIL;
 				else
 					result = SUCCESS;
@@ -559,24 +559,24 @@ short CUser::GetDamage(int tid, int magicid)
 			// Relative hit.
 			else
 			{
-				result = GetHitRate((Attack / Avoid) * (pType1->sHitRate / 100.0f));
+				result = GetHitRate((Attack / Avoid) * (pType1->HitRateMod / 100.0f));
 			}
 /*
 			// Non-relative hit.
-			if (pType1->bHitType)
+			if (pType1->Type)
 			{
-				Hit = m_sHitDamage * (pType1->sHit / 100.0f);
+				Hit = m_sHitDamage * (pType1->DamageMod / 100.0f);
 			}
 			else
 			{
 //				Hit = (m_sHitDamage - pNpc->m_sDefense)
-				Hit = HitB * (pType1->sHit / 100.0f);
+				Hit = HitB * (pType1->DamageMod / 100.0f);
 			}
 */
-			Hit = HitB * (pType1->sHit / 100.0f);
+			Hit = HitB * (pType1->DamageMod / 100.0f);
 		}
 		// ARROW HIT!
-		else if (pTable->bType1 == 2)
+		else if (pTable->Type1 == 2)
 		{
 			// Get magic skill table type 2.
 			pType2 = m_pMain->m_Magictype2Array.GetData(magicid);
@@ -584,11 +584,11 @@ short CUser::GetDamage(int tid, int magicid)
 				return -1;
 
 			// Non-relative/Penetration hit.
-			if (pType2->bHitType == 1
-				|| pType2->bHitType == 2)
+			if (pType2->HitType == 1
+				|| pType2->HitType == 2)
 			{
 				random = myrand(0, 100);
-				if (pType2->sHitRate <= random)
+				if (pType2->HitRateMod <= random)
 					result = FAIL;
 				else
 					result = SUCCESS;
@@ -598,18 +598,18 @@ short CUser::GetDamage(int tid, int magicid)
 			// Relative hit/Arc hit.
 			else
 			{
-				result = GetHitRate((Attack / Avoid) * (pType2->sHitRate / 100.0f));
+				result = GetHitRate((Attack / Avoid) * (pType2->HitRateMod / 100.0f));
 			}
 
-			if (pType2->bHitType == 1
-				/*|| pType2->bHitType == 2*/)
+			if (pType2->HitType == 1
+				/*|| pType2->HitType == 2*/)
 			{
-				Hit = m_sHitDamage * (pType2->sAddDamage / 100.0f);
+				Hit = m_sHitDamage * (pType2->DamageMod / 100.0f);
 			}
 			else
 			{
-//				Hit = (m_sHitDamage - pNpc->m_sDefense) * (pType2->sAddDamage / 100.0f);
-				Hit = HitB * (pType2->sAddDamage / 100.0f);
+//				Hit = (m_sHitDamage - pNpc->m_sDefense) * (pType2->DamageMod / 100.0f);
+				Hit = HitB * (pType2->DamageMod / 100.0f);
 			}
 		}
 	}
@@ -630,7 +630,7 @@ short CUser::GetDamage(int tid, int magicid)
 				damage = (short) Hit;
 				random = myrand(0, damage);
 //				damage = (short) ((0.85f * (float) Hit) + 0.3f * (float) random);
-				if (pTable->bType1 == 1)
+				if (pTable->Type1 == 1)
 				{
 					damage = (short) ((float) Hit + 0.3f * (float) random + 0.99);
 				}
@@ -982,7 +982,8 @@ void CUser::HealMagic()
 	MAP* pMap = m_pMain->GetMapByIndex(m_sZoneIndex);
 	if (pMap == nullptr)
 	{
-		TRACE(_T("#### CUser--HealMagic ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_strUserID, m_sZoneIndex);
+		spdlog::error("User::HealMagic: map not found [userId={} charId={} zoneId={}]",
+			m_iUserId, m_strUserID, m_sZoneIndex);
 		return;
 	}
 
@@ -1020,7 +1021,8 @@ void CUser::HealAreaCheck(int rx, int rz)
 	MAP* pMap = m_pMain->GetMapByIndex(m_sZoneIndex);
 	if (pMap == nullptr)
 	{
-		TRACE(_T("#### CUser--HealAreaCheck ZoneIndex Fail : [name=%hs], zoneindex=%d #####\n"), m_strUserID, m_sZoneIndex);
+		spdlog::error("User::HealAreaCheck: map not found [userId={} charId={} zoneId={}]",
+			m_iUserId, m_strUserID, m_sZoneIndex);
 		return;
 	}
 
@@ -1030,14 +1032,16 @@ void CUser::HealAreaCheck(int rx, int rz)
 		|| rx > pMap->GetXRegionMax()
 		|| rz > pMap->GetZRegionMax())
 	{
-		TRACE(_T("#### CUser-HealAreaCheck() Fail : [nid=%d, name=%hs], nRX=%d, nRZ=%d #####\n"), m_iUserId, m_strUserID, rx, rz);
+		spdlog::error("User::HealAreaCheck: out of region bounds [userId={} charId={} x={} z={}]",
+			m_iUserId, m_strUserID, m_sRegionX, m_sRegionZ);
 		return;
 	}
-
-	float fRadius = 10.0f;				// 30m
+	
+	// 30m
+	float fRadius = 10.0f;
 
 	__Vector3 vStart, vEnd;
-	CNpc* pNpc = nullptr;      // Pointer initialization!
+	CNpc* pNpc = nullptr;
 	float fDis = 0.0f;
 	vStart.Set(m_curx, (float) 0, m_curz);
 	char send_buff[256] = {};
@@ -1090,19 +1094,17 @@ void CUser::HealAreaCheck(int rx, int rz)
 
 void CUser::WriteUserLog()
 {
-	CString string;
-
 	for (const _USERLOG* pUserLog : m_UserLogList)
 	{
 		if (pUserLog->byFlag == USER_LOGIN)
-			string.Format(_T("%d-%d-%d %d:%d, %s, %d, %hs\r\n"), pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), _T("LogIn"), pUserLog->byLevel, pUserLog->strUserID);
+			spdlog::get(logger::AIServerUser)->info("Login: level={}, charId={}",
+				pUserLog->byLevel, pUserLog->strUserID);
 		else if (pUserLog->byFlag == USER_LOGOUT)
-			string.Format(_T("%d-%d-%d %d:%d, %s, %d, %hs\r\n"), pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), _T("LogOut"), pUserLog->byLevel, pUserLog->strUserID);
+			spdlog::get(logger::AIServerUser)->info("Logout: level={}, charId={}",
+				pUserLog->byLevel, pUserLog->strUserID);
 		else if (pUserLog->byFlag == USER_LEVEL_UP)
-			string.Format(_T("%d-%d-%d %d:%d, %s, %d, %hs\r\n"), pUserLog->t.GetYear(), pUserLog->t.GetMonth(), pUserLog->t.GetDay(), pUserLog->t.GetHour(), pUserLog->t.GetMinute(), _T("LevelUp"), pUserLog->byLevel, pUserLog->strUserID);
-		EnterCriticalSection(&g_LogFileWrite);
-		m_pMain->m_UserLogFile.Write(string, string.GetLength());
-		LeaveCriticalSection(&g_LogFileWrite);
+			spdlog::get(logger::AIServerUser)->info("LevelUp: level={}, charId={}",
+				pUserLog->byLevel, pUserLog->strUserID);
 	}
 
 	InitUserLog();

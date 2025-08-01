@@ -5,7 +5,7 @@
 #include "N3FXMgr.h"
 #include "PlayerMySelf.h"
 #include "UIChat.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "APISocket.h"
 

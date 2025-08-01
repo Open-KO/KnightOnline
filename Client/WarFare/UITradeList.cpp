@@ -6,7 +6,7 @@
 #include "UITradeList.h"
 #include "GameDef.h"
 #include "GameProcedure.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIScrollBar.h>

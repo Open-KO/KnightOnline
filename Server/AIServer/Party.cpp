@@ -7,6 +7,8 @@
 #include "ServerDlg.h"
 #include "Party.h"
 
+#include <spdlog/spdlog.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -88,7 +90,8 @@ void CParty::PartyCreate(char* pBuf)
 
 	if (m_pMain->m_arParty.PutData(pParty->wIndex, pParty))
 	{
-		TRACE(_T("Party - Create() : Party 생성  number = %d, uid=%d, %d \n"), sPartyIndex, pParty->uid[0], pParty->uid[1]);
+		spdlog::debug("Party::PartyCreate: success [partyId={} uid0={} uid1={}]",
+			sPartyIndex, pParty->uid[0], pParty->uid[1]);
 	}
 	LeaveCriticalSection(&g_region_critical);
 }

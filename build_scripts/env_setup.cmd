@@ -7,7 +7,7 @@ IF NOT ERRORLEVEL 0 (
 	EXIT /B
 )
 
-:: ECHO Found git.exe at: %GitPath%
+REM ECHO Found git.exe at: %GitPath%
 
 CALL "%~dp0env_find_msbuild.cmd"
 IF NOT ERRORLEVEL 0 (
@@ -16,5 +16,5 @@ IF NOT ERRORLEVEL 0 (
 	EXIT /B
 )
 
-:: ECHO Found MSBuild.exe at: %MSBUILD%
+REM ECHO Found MSBuild.exe at: %MSBUILD%
 EXIT /B 0

@@ -1152,7 +1152,8 @@ int	CN3SkyMng::GetDayChangePos_AfterNSec(uint32_t dwCurGameTime, float fSec)
 
 	// n초후의 queue의 위치 찾기
 	while(iCheckDayChangeCurPos<m_DayChanges.size() &&
-		m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime) ++iCheckDayChangeCurPos;
+		m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime)
+		++iCheckDayChangeCurPos;
 	if (iCheckDayChangeCurPos >= m_DayChanges.size()) iCheckDayChangeCurPos = m_DayChanges.size() - 1;
 	return iCheckDayChangeCurPos;
 }

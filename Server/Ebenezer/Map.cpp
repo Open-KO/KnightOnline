@@ -8,7 +8,6 @@
 #include "Region.h"
 #include "Define.h"
 #include "User.h"
-#include "EventSet.h"
 #include "EbenezerDlg.h"
 
 #ifdef _DEBUG
@@ -16,6 +15,13 @@
 static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
+
+// NOTE: Explicitly handled under DEBUG_NEW override
+#include <db-library/RecordSetLoader.h>
+
+import EbenezerBinder;
+
+using namespace db;
 
 extern CRITICAL_SECTION g_region_critical;
 
@@ -37,7 +43,6 @@ C3DMap::C3DMap()
 	m_bType = 0;
 	m_wBundle = 1;
 	m_sMaxUser = 150;	// Max user in Battlezone!!!
-	memset(m_MapName, 0, sizeof(m_MapName));
 	m_pMain = nullptr;
 }
 
@@ -162,7 +167,8 @@ void C3DMap::LoadObjectEvent(HANDLE hFile)
 
 		if (!m_ObjectEventArray.PutData(pEvent->sIndex, pEvent))
 		{
-			TRACE(_T("Object Event PutData Fail - %d\n"), pEvent->sIndex);
+			spdlog::error("Map::LoadObjectEvent: ObjectEventArray put failed [eventId={} zoneId={}]",
+				pEvent->sIndex, m_nZoneNumber);
 			delete pEvent;
 			pEvent = nullptr;
 		}
@@ -209,7 +215,8 @@ void C3DMap::LoadRegeneEvent(HANDLE hFile)
 
 		if (!m_ObjectRegeneArray.PutData(pEvent->sRegenePoint, pEvent))
 		{
-			TRACE(_T("Regene Event PutData Fail - %d\n"), pEvent->sRegenePoint);
+			spdlog::error("Map::LoadObjectEvent: RegenPoint put failed [regenPoint={} zoneId={}]",
+				pEvent->sRegenePoint, m_nZoneNumber);
 			delete pEvent;
 			pEvent = nullptr;
 		}
@@ -240,7 +247,8 @@ void C3DMap::LoadWarpList(HANDLE hFile)
 
 		if (!m_WarpArray.PutData(pWarp->sWarpID, pWarp))
 		{
-			TRACE(_T("Warp list PutData Fail - %d\n"), pWarp->sWarpID);
+			spdlog::error("Map::LoadObjectEvent: WarpArray put failed [warpId={} zoneId={}]",
+				pWarp->sWarpID, m_nZoneNumber);
 			delete pWarp;
 			pWarp = nullptr;
 		}
@@ -541,7 +549,8 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 		{
 			if (m_pMain->m_sKarusCount > MAX_BATTLE_ZONE_USERS)
 			{
-				TRACE(_T("### BattleZone karus full users = %d, name=%hs \n"), m_pMain->m_sKarusCount, pUser->m_pUserData->m_id);
+				spdlog::error("Map::CheckEvent: BattleZone: karus full users [users={} charId={}]",
+					m_pMain->m_sKarusCount, pUser->m_pUserData->m_id);
 				return FALSE;
 			}
 		}
@@ -550,7 +559,8 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 		{
 			if (m_pMain->m_sElmoradCount > MAX_BATTLE_ZONE_USERS)
 			{
-				TRACE(_T("### BattleZone elmorad full users = %d, name=%hs \n"), m_pMain->m_sElmoradCount, pUser->m_pUserData->m_id);
+				spdlog::error("Map::CheckEvent: BattleZone: elmorad full users [users={} charId={}]",
+					m_pMain->m_sElmoradCount, pUser->m_pUserData->m_id);
 				return FALSE;
 			}
 		}
@@ -564,51 +574,44 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 
 BOOL C3DMap::LoadEvent()
 {
-	CEventSet	EventSet;
-	CGameEvent* pEvent = nullptr;
+	using ModelType = model::Event;
 
-	if (!EventSet.Open())
+	recordset_loader::Base<ModelType> loader;
+	loader.SetProcessFetchCallback([this](db::ModelRecordSet<ModelType>& recordset)
 	{
-		AfxMessageBox(_T("EventTable Open Fail!"));
-		return FALSE;
-	}
-
-	if (EventSet.IsBOF()
-		|| EventSet.IsEOF())
-	{
-		AfxMessageBox(_T("EventTable Empty!"));
-		return FALSE;
-	}
-	EventSet.MoveFirst();
-
-	while (!EventSet.IsEOF())
-	{
-		if (EventSet.m_ZoneNum == m_nZoneNumber)
+		do
 		{
-			pEvent = new CGameEvent();
+			ModelType row = {};
+			recordset.get_ref(row);
 
-			pEvent->m_sIndex = EventSet.m_EventNum;
-			pEvent->m_bType = EventSet.m_Type;
-			pEvent->m_iCond[0] = _ttoi(EventSet.m_Cond1);
-			pEvent->m_iCond[1] = _ttoi(EventSet.m_Cond2);
-			pEvent->m_iCond[2] = _ttoi(EventSet.m_Cond3);
-			pEvent->m_iCond[3] = _ttoi(EventSet.m_Cond4);
-			pEvent->m_iCond[4] = _ttoi(EventSet.m_Cond5);
+			if (row.ZoneNumber != m_nZoneNumber)
+				continue;
 
-			pEvent->m_iExec[0] = _ttoi(EventSet.m_Exec1);
-			pEvent->m_iExec[1] = _ttoi(EventSet.m_Exec2);
-			pEvent->m_iExec[2] = _ttoi(EventSet.m_Exec3);
-			pEvent->m_iExec[3] = _ttoi(EventSet.m_Exec4);
-			pEvent->m_iExec[4] = _ttoi(EventSet.m_Exec5);
+			CGameEvent* pEvent = new CGameEvent();
+
+			pEvent->m_sIndex = row.EventNumber;
+			pEvent->m_bType = row.EventType;
+
+			pEvent->m_iExec[0] = atoi(row.Execute1.c_str());
+			pEvent->m_iExec[1] = atoi(row.Execute2.c_str());
+			pEvent->m_iExec[2] = atoi(row.Execute3.c_str());
+			pEvent->m_iExec[3] = atoi(row.Execute4.c_str());
+			pEvent->m_iExec[4] = atoi(row.Execute5.c_str());
 
 			if (!m_EventArray.PutData(pEvent->m_sIndex, pEvent))
 			{
-				TRACE(_T("Event PutData Fail - %d\n"), pEvent->m_sIndex);
+				spdlog::error("Map::LoadEvent: EventArray put failed [eventId={} zoneId={}]",
+					pEvent->m_sIndex, m_nZoneNumber);
 				delete pEvent;
-				pEvent = nullptr;
 			}
 		}
-		EventSet.MoveNext();
+		while (recordset.next());
+	});
+
+	if (!loader.Load_ForbidEmpty())
+	{
+		m_pMain->ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
 	}
 
 	return TRUE;

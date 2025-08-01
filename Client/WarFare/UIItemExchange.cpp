@@ -12,7 +12,7 @@
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIString.h>
 

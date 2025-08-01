@@ -7,7 +7,7 @@
 #include "APISocket.h"
 #include "GameProcMain.h"
 #include "PacketDef.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIEdit.h>
 #include <N3Base/N3UIString.h>

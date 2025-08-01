@@ -20,7 +20,7 @@ class CCompressMng;
 class CIOCPSocket2
 {
 public:
-	void RegioinPacketClear(char* GetBuf, int& len);
+	void RegionPacketClear(char* GetBuf, int& len);
 	void RegionPacketAdd(char* pBuf, int len);
 	void SendCompressingPacket(const char* pData, int len);
 	void InitSocket(CIOCPort* pIOCPort);

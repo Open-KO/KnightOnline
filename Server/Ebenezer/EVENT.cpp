@@ -11,6 +11,7 @@
 #include "LOGIC_ELSE.h"
 
 #include <filesystem>
+#include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -112,7 +113,7 @@ BOOL EVENT::LoadEvent(int zone)
 
 				if (m_arEvent.GetData(event_num))
 				{
-					TRACE(_T("Quest Double !!\n"));
+					spdlog::error("EVENT::LoadEvent: duplicate definition [eventId={}]", event_num);
 					goto cancel_event_load;
 				}
 

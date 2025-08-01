@@ -11,7 +11,7 @@
 #include "UIInventory.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIString.h>
 

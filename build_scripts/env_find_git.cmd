@@ -30,7 +30,7 @@ EXIT /B 1
 
 :found_git
 
-:: Export GitPath environment variable for caller
+REM Export GitPath environment variable for caller
 ENDLOCAL & SET "GitPath=%GitPath%"
 
 EXIT /B 0

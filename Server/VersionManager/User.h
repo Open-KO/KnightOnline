@@ -15,7 +15,7 @@ class CVersionManagerDlg;
 class CUser : public CIOCPSocket2
 {
 public:
-	CUser(CVersionManagerDlg* pMain);
+	CUser(CVersionManagerDlg* main);
 	virtual ~CUser();
 
 	void Initialize();
@@ -23,10 +23,10 @@ public:
 
 	void NewsReq(char* pBuf);
 	void SendDownloadInfo(int version);
-	void MgameLogin(char* pBuf);
 	void LogInReq(char* pBuf);
 
-	CVersionManagerDlg* m_pMain;
+protected:
+	CVersionManagerDlg* _main;
 };
 
 #endif // !defined(AFX_USER_H__44B01102_A28D_4527_BCBC_1815DD57BCB0__INCLUDED_)

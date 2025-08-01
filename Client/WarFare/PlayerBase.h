@@ -175,6 +175,9 @@ protected:
 
 	virtual bool	ProcessAttack(CPlayerBase* pTarget); // 공격 루틴 처리.. 타겟 포인터를 구하고 충돌체크까지 하며 충돌하면 참을 리턴..
 
+	/// \brief applies any on-hit elemental effects associated with a weapon
+	bool TryWeaponElementEffect(e_PlugPosition plugPosition, const CPlayerBase& target, __Vector3 collisionPosition);
+
 public:
 	const __Matrix44*	JointMatrixGet(int nJointIndex) { return m_Chr.MatrixGet( nJointIndex); }
 	bool 				JointPosGet(int iJointIdx, __Vector3& vPos);
@@ -253,7 +256,7 @@ public:
 	void			IDSet(int iID, const std::string& szID, D3DCOLOR crID);
 	virtual void	KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank);
 	const std::string&	IDString() { return m_InfoBase.szID; } // ID 는 Character 포인터의 이름으로 대신한다.
-	int				IDNumber() { return m_InfoBase.iID; }
+	int				IDNumber() const { return m_InfoBase.iID; }
 	CPlayerBase*	TargetPointerCheck(bool bMustAlive);
 
 	////////////////////

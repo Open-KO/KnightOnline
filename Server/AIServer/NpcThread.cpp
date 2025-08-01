@@ -74,7 +74,7 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 
 				//적발견시... (2002. 04.23수정, 부하줄이기)
 				if (pNpc->m_NpcState == NPC_STANDING
-					&& pNpc->CheckFindEnermy())
+					&& pNpc->CheckFindEnemy())
 				{
 					if (pNpc->FindEnemy())
 					{

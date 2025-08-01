@@ -11,7 +11,7 @@
 #include "PlayerMySelf.h"
 #include "GameEng.h"
 
-//#include "resource.h"
+//#include "text_resources.h"
 
 #include <N3Base/LogWriter.h>
 #include <N3Base/N3SndObj.h>

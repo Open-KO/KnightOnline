@@ -11,6 +11,7 @@
 #include "User.h"
 
 #include <shared/packets.h>
+#include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -30,7 +31,8 @@ DWORD WINAPI RecvUDPThread(LPVOID lp)
 		{
 			int err = WSAGetLastError();
 			getpeername(pUdp->m_hUDPSocket, (SOCKADDR*) &pUdp->m_ReplyAddress, &addrlen);
-			TRACE(_T("recvfrom() error : %d IP : %hs\n"), err, inet_ntoa(pUdp->m_ReplyAddress.sin_addr));
+			spdlog::error("UdpSocket::RecvUDPThread: winsock error [err={} ip={}]",
+				err, inet_ntoa(pUdp->m_ReplyAddress.sin_addr));
 
 			// 재전송 루틴...
 
@@ -76,7 +78,9 @@ bool CUdpSocket::CreateSocket()
 	m_hUDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (m_hUDPSocket == INVALID_SOCKET)
 	{
-		TRACE(_T("udp socket create fail...\n"));
+		int err = WSAGetLastError();
+		spdlog::error("UdpSocket::CreateSocket: winsock error [socketErr={}]",
+			err);
 		return false;
 	}
 
@@ -88,7 +92,9 @@ bool CUdpSocket::CreateSocket()
 	int r = getsockopt(m_hUDPSocket, SOL_SOCKET, SO_RCVBUF, (char*) &sock_buf_size, &optlen);
 	if (r == SOCKET_ERROR)
 	{
-		TRACE(_T("buffer size set fail...\n"));
+		int err = WSAGetLastError();
+		spdlog::error("UdpSocket::CreateSocket: failed to set buffer size [socketErr={}]",
+			err);
 		return false;
 	}
 
@@ -99,7 +105,7 @@ bool CUdpSocket::CreateSocket()
 
 	if (bind(m_hUDPSocket, (LPSOCKADDR) &m_SocketAddress, sizeof(m_SocketAddress)) == SOCKET_ERROR)
 	{
-		TRACE(_T("UDP bind() Error...\n"));
+		spdlog::error("UdpSocket::CreateSocket: failed to bind local address");
 		closesocket(m_hUDPSocket);
 		return false;
 	}
@@ -108,7 +114,7 @@ bool CUdpSocket::CreateSocket()
 	m_hUdpThread = ::CreateThread(nullptr, 0, RecvUDPThread, this, 0, &id);
 	::SetThreadPriority(m_hUdpThread, THREAD_PRIORITY_ABOVE_NORMAL);
 
-	TRACE(_T("UDP Socket Create Success...\n"));
+	spdlog::debug("UdpSocket::CreateSocket: success");
 	return true;
 }
 
@@ -237,10 +243,8 @@ void CUdpSocket::ServerChat(char* pBuf)
 		return;
 
 	GetString(chatstr, pBuf, chatlen, index);
-
-	CString logstr;
-	logstr.Format(_T("%hs"), chatstr);
-	m_pMain->m_StatusList.AddString(logstr);
+	
+	m_pMain->AddOutputMessage(chatstr);
 }
 
 void CUdpSocket::RecvBattleEvent(char* pBuf)
@@ -265,7 +269,8 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE(_T("#### UDP RecvBattleEvent Fail : battleopen = %d, type = %d\n"), m_pMain->m_byBattleOpen, nType);
+			spdlog::error("UdpSocket::RecvBattleEvent: No active battle [battleOpen={} type={}]",
+				m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 
@@ -284,7 +289,8 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	{
 		if (m_pMain->m_byBattleOpen == NO_BATTLE)
 		{
-			TRACE(_T("####  UDP  RecvBattleEvent Fail : battleopen = %d, type=%d\n"), m_pMain->m_byBattleOpen, nType);
+			spdlog::error("UdpSocket::RecvBattleEvent: No active battle [battleOpen={} type={}]",
+				m_pMain->m_byBattleOpen, nType);
 			return;
 		}
 		if (nResult == KARUS)
@@ -313,36 +319,36 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			//TRACE(_T("-->  UDP RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
 			if (nResult == 1)
 			{
-				::_LoadStringFromResource(IDS_KILL_CAPTAIN, buff);
+				_LoadStringFromResource(IDS_KILL_CAPTAIN, buff);
 				sprintf(chatstr, buff.c_str(), strMaxUserName);
 			}
 			else if (nResult == 2)
 			{
-				::_LoadStringFromResource(IDS_KILL_GATEKEEPER, buff);
+				_LoadStringFromResource(IDS_KILL_GATEKEEPER, buff);
 				sprintf(chatstr, buff.c_str(), strMaxUserName);
 			}
 			else if (nResult == 3)
 			{
-				::_LoadStringFromResource(IDS_KILL_KARUS_GUARD1, buff);
+				_LoadStringFromResource(IDS_KILL_KARUS_GUARD1, buff);
 				sprintf(chatstr, buff.c_str(), strMaxUserName);
 			}
 			else if (nResult == 4)
 			{
-				::_LoadStringFromResource(IDS_KILL_KARUS_GUARD2, buff);
+				_LoadStringFromResource(IDS_KILL_KARUS_GUARD2, buff);
 				sprintf(chatstr, buff.c_str(), strMaxUserName);
 			}
 			else if (nResult == 5)
 			{
-				::_LoadStringFromResource(IDS_KILL_ELMO_GUARD1, buff);
+				_LoadStringFromResource(IDS_KILL_ELMO_GUARD1, buff);
 				sprintf(chatstr, buff.c_str(), strMaxUserName);
 			}
 			else if (nResult == 6)
 			{
-				::_LoadStringFromResource(IDS_KILL_ELMO_GUARD2, buff);
+				_LoadStringFromResource(IDS_KILL_ELMO_GUARD2, buff);
 				sprintf(chatstr, buff.c_str(), strMaxUserName);
 			}
 
-			sprintf(finalstr, "## 공지 : %s ##", chatstr);
+			sprintf(finalstr, "#### NOTICE : %s ####", chatstr);
 			SetByte(send_buff, WIZ_CHAT, send_index);
 			SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
@@ -466,32 +472,35 @@ void CUdpSocket::RecvCreateKnights(char* pBuf)
 
 void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 {
-	int send_index = 0, knightsindex = 0, index = 0, idlen = 0;
-	char charid[MAX_ID_SIZE + 1] = {},
+	int send_index = 0, knightsId = 0, index = 0, idlen = 0;
+	char charId[MAX_ID_SIZE + 1] = {},
 		send_buff[128] = {},
 		finalstr[128] = {};
 	CKnights* pKnights = nullptr;
 
-	knightsindex = GetShort(pBuf, index);
+	knightsId = GetShort(pBuf, index);
 	idlen = GetShort(pBuf, index);
-	GetString(charid, pBuf, idlen, index);
+	GetString(charId, pBuf, idlen, index);
 
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 
 	if (command == KNIGHTS_JOIN)
 	{
-		sprintf(finalstr, "#### %s님이 가입하셨습니다. ####", charid);
+		sprintf(finalstr, "#### %s has joined. ####", charId);
 		// 클랜정보에 추가
-		m_pMain->m_KnightsManager.AddKnightsUser(knightsindex, charid);
-		TRACE(_T("UDP - RecvJoinKnights - 가입, name=%hs, index=%d\n"), charid, knightsindex);
+		m_pMain->m_KnightsManager.AddKnightsUser(knightsId, charId);
+		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} joined knightsId={}",
+			charId, knightsId);
+		
 	}
 	// 탈퇴..
 	else
 	{
 		// 클랜정보에 추가
-		m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, charid);
-		sprintf(finalstr, "#### %s님이 탈퇴하셨습니다. ####", charid);
-		TRACE(_T("UDP - RecvJoinKnights - 탈퇴, name=%hs, index=%d\n"), charid, knightsindex);
+		m_pMain->m_KnightsManager.RemoveKnightsUser(knightsId, charId);
+		sprintf(finalstr, "#### %s has left. ####", charId);
+		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} left knightsId={}",
+			charId, knightsId);
 	}
 
 	//TRACE(_T("UDP - RecvJoinKnights - command=%d, name=%hs, index=%d\n"), command, charid, knightsindex);
@@ -504,7 +513,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
 	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
-	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
+	m_pMain->Send_KnightsMember(knightsId, send_buff, send_index);
 }
 
 void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
@@ -530,7 +539,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
-				sprintf(finalstr, "#### %s님이 추방되셨습니다. ####", pTUser->m_pUserData->m_id);
+				sprintf(finalstr, "#### %s has been banned. ####", pTUser->m_pUserData->m_id);
 				m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
 			else
@@ -558,7 +567,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
 				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				sprintf(finalstr, "#### %s님이 단장으로 임명되셨습니다. ####", pTUser->m_pUserData->m_id);
+				sprintf(finalstr, "#### %s has been appointed as a leader. ####", pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -567,7 +576,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
 				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				sprintf(finalstr, "#### %s님이 부단장으로 임명되셨습니다. ####", pTUser->m_pUserData->m_id);
+				sprintf(finalstr, "#### %s has been appointed as a co-leader. ####", pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -631,18 +640,19 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 
 void CUdpSocket::RecvDestroyKnights(char* pBuf)
 {
-	int send_index = 0, knightsindex = 0, index = 0, flag = 0;
+	int send_index = 0, knightsId = 0, index = 0, flag = 0;
 	char send_buff[128] = {},
 		finalstr[128] = {};
 	CKnights* pKnights = nullptr;
 	CUser* pTUser = nullptr;
 
-	knightsindex = GetShort(pBuf, index);
+	knightsId = GetShort(pBuf, index);
 
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
-		TRACE(_T("UDP - ### RecvDestoryKnights  Fail == index = %d ###\n"), knightsindex);
+		spdlog::error("UdpSocket::RecvDestroyKnights: knightsId={} not found",
+			knightsId);
 		return;
 	}
 
@@ -650,9 +660,9 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 
 	// 클랜이나 기사단이 파괴된 메시지를 보내고 유저 데이타를 초기화
 	if (flag == CLAN_TYPE)
-		sprintf(finalstr, "#### %s 클랜이 해체되었습니다 ####", pKnights->m_strName);
+		sprintf(finalstr, "#### the clan %s has disbanded ####", pKnights->m_strName);
 	else if (flag == KNIGHTS_TYPE)
-		sprintf(finalstr, "#### %s 기사단이 해체되었습니다 ####", pKnights->m_strName);
+		sprintf(finalstr, "#### the knights %s has disbanded ####", pKnights->m_strName);
 
 	memset(send_buff, 0x00, 128);		send_index = 0;
 	SetByte(send_buff, WIZ_CHAT, send_index);
@@ -661,7 +671,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
 	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
-	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
+	m_pMain->Send_KnightsMember(knightsId, send_buff, send_index);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
@@ -669,12 +679,12 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 		if (pTUser == nullptr)
 			continue;
 
-		if (pTUser->m_pUserData->m_bKnights == knightsindex)
+		if (pTUser->m_pUserData->m_bKnights == knightsId)
 		{
 			pTUser->m_pUserData->m_bKnights = 0;
 			pTUser->m_pUserData->m_bFame = 0;
 
-			m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
+			m_pMain->m_KnightsManager.RemoveKnightsUser(knightsId, pTUser->m_pUserData->m_id);
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
@@ -689,7 +699,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 		}
 	}
 
-	m_pMain->m_KnightsArray.DeleteData(knightsindex);
+	m_pMain->m_KnightsArray.DeleteData(knightsId);
 	//TRACE(_T("UDP - RecvDestoryKnights - index=%d\n"), knightsindex);
 }
 

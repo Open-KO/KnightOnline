@@ -9,11 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Extern.h"
+
 class CServerDlg;
 class CUser;
 class CNpc;
-struct _MAGIC_TABLE;
-struct _MAGIC_TYPE4;
 
 class CMagicProcess
 {
@@ -41,7 +41,7 @@ public:
 	short AreaAttack(int magictype, int magicid, int moral, int data1, int data2, int data3, int dexpoint, int righthand_damage);
 	void  AreaAttackDamage(int magictype, int rx, int rz, int magicid, int moral, int data1, int data2, int data3, int dexpoint, int righthand_damage);
 
-	_MAGIC_TABLE* IsAvailable(int magicid, int tid, BYTE type);
+	model::Magic* IsAvailable(int magicid, int tid, BYTE type);
 	void MagicPacket(char* pBuf);
 
 };
