@@ -1499,26 +1499,28 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_INVENTORY;
 					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder = iRBtn;
 					CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
-					if (bSlot) //player clicked on equiped items
+
+					// player right-clicked on an equipped item
+					if (bSlot)
 					{
 						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_SLOT;
 					}
-					else //player clicked on item which is not equiped
+					// player right-clicked on item which is not equipped
+					else
 					{
 						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
-						
-						//right click on item to hotkey (skillbar)
-							CUIHotKeyDlg* pDlg = CGameProcedure::s_pProcMain->m_pUIHotKeyDlg;
-							int iIndex;
-							if (pDlg->GetEmptySlotIndex(iIndex))
-							{
-								CN3UIWndBase::m_sSkillSelectInfo.UIWnd = UIWND_INVENTORY;
 
-								//no sound on success
-								if (pDlg->SetReceiveSelectedItem(iIndex)) return true;
-									
-							}
-						
+						// determine if there's an empty slot on the skillbar (CUIHotKeyDlg)
+						// if so, we should allocate an icon there
+						CUIHotKeyDlg* pDlg = CGameProcedure::s_pProcMain->m_pUIHotKeyDlg;
+						int iIndex;
+						if (pDlg->GetEmptySlotIndex(iIndex))
+						{
+							CN3UIWndBase::m_sSkillSelectInfo.UIWnd = UIWND_INVENTORY;
+
+							if (pDlg->SetReceiveSelectedItem(iIndex))
+								return true;
+						}
 					}
 
 					if (spItem) PlayItemSound(spItem->pItemBasic);

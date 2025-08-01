@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <format>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -937,27 +938,30 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 {
 	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != UIWND_INVENTORY)
 		return false;
-	
-	__IconItemSkill* spSkill, *spItem;
 
-	spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
+	__IconItemSkill* spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
 
 	__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
-	if (pUSkill == nullptr) return false;
-	if (pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
+	if (pUSkill == nullptr)
+		return false;
 
-	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr) return false;
+	if (pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN)
+		return false;
 
-	spSkill = new __IconItemSkill();
+	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr)
+		return false;
+
+	__IconItemSkill* spSkill = new __IconItemSkill();
 	spSkill->pSkill = pUSkill;
 
 	// Create the icon name
-	char buffer[256] = {};
-	sprintf(buffer, "UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
-	spSkill->szIconFN = buffer;
+	spSkill->szIconFN = std::format(
+		"UI\\skillicon_{:02}_{}.dxt",
+		spItem->pItemBasic->dwEffectID1 % 100,
+		spItem->pItemBasic->dwEffectID1 / 100);
 
 	// load icon
-	spSkill->pUIIcon = new CN3UIIcon;
+	spSkill->pUIIcon = new CN3UIIcon();
 	spSkill->pUIIcon->Init(this);
 	spSkill->pUIIcon->SetTex(spSkill->szIconFN);
 	spSkill->pUIIcon->SetUVRect(0, 0, 1.0f, 1.0f);
@@ -970,14 +974,13 @@ bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
 
 	CN3UIArea* pArea = nullptr;
 	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SKILL_HOTKEY, iIndex);
-	
+
 	if (pArea != nullptr)
 	{
 		spSkill->pUIIcon->SetRegion(pArea->GetRegion());
 		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
 	}
-	
-	
+
 	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
 
 	CloseIconRegistry();
