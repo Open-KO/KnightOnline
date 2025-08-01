@@ -90,43 +90,6 @@ CN3UIArea* CN3UIWndBase::GetChildAreaByiOrder(eUI_AREA_TYPE eUAT, int iOrder)
 	return NULL;
 }
 
-CN3UIArea* CN3UIWndBase::GetChildAreaByiOrderWithPrefix(eUI_AREA_TYPE eUAT, int iOrder, const std::string& prefix /* = "" */)
-{
-	char pszID[128];
-
-	sprintf(pszID, "%s%d", prefix.c_str(), iOrder);
-        
-
-	for (UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
-	{
-		CN3UIArea* pChild = (CN3UIArea*) (*itor);
-		if ((pChild->UIType() == UI_TYPE_AREA) && (pChild->m_eAreaType == eUAT))
-		{
-			if (pChild->m_szID == pszID) return pChild;
-		}
-	}
-
-	return NULL;
-}
-
-CN3UIString* CN3UIWndBase::GetChildStringByiOrderWithPrefix(int iOrder, const std::string& prefix /* = "" */)
-{
-	char pszID[128];
-
-	sprintf(pszID, "%s%d", prefix.c_str(), iOrder);
-
-
-	for (UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
-	{
-		CN3UIString* pChild = (CN3UIString*) (*itor);
-		if (pChild->UIType() == UI_TYPE_STRING)
-		{
-			if (pChild->m_szID == pszID) return pChild;
-		}
-	}
-	return NULL;
-}
-
 CN3UIString* CN3UIWndBase::GetChildStringByiOrder(int iOrder)
 {
 	char pszID[32];

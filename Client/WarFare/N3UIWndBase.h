@@ -171,9 +171,7 @@ public:
 	e_UIWND						GetUIWnd() { return m_eUIWnd; }
 
 	virtual CN3UIArea*			GetChildAreaByiOrder(eUI_AREA_TYPE eUAT, int iOrder);
-	virtual CN3UIArea*			GetChildAreaByiOrderWithPrefix(eUI_AREA_TYPE eUAT, int iOrder, const std::string& prefix /* = "" */);
 	virtual CN3UIString*		GetChildStringByiOrder(int iOrder);
-	virtual CN3UIString*		GetChildStringByiOrderWithPrefix(int iOrder, const std::string& prefix /* = "" */);
 
 	virtual uint32_t				MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
 	virtual void				AllHighLightIconFree();
