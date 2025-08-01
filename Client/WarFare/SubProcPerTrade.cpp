@@ -3,39 +3,31 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-
 #include "SubProcPerTrade.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
 #include "PlayerOtherMgr.h"
-
 #include "UIManager.h"
 #include "UIMessageBox.h"
-
 #include "UIInventory.h"
 #include "UIDroppedItemDlg.h"
-
 #include "PacketDef.h"
 #include "APISocket.h"
-
 #include "UIPerTradeDlg.h"
 #include "UITradeEditDlg.h"
-
-#include "N3UIIcon.h"
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
+#include "N3UIIcon.h"
+#include "text_resources.h"
 
-#include "N3UIString.h"
-#include "N3UIEdit.h"
-#include "N3UIButton.h"
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -594,7 +586,7 @@ void CSubProcPerTrade::ItemCountEditOK()
 	m_pUITradeEditDlg->SetQuantity(0);
 
 	// 상태를 변화시키고.. 창을 닫고..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
+	CN3UIBase::s_bWaitFromServer = true;
 	m_ePerTradeState = PER_TRADE_STATE_NORMAL;
 	m_ePerTradeItemKindBackup = PER_TRADE_ITEM_MONEY;
 	m_pUITradeEditDlg->Close();
@@ -681,7 +673,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAgree(uint8_t bResult)
 void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 {
 	// 상태를 변화시키고.. 창을 닫고..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	CN3UIBase::s_bWaitFromServer = false;
 
 	char szGold[32];
 	std::string str;

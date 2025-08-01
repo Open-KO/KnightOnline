@@ -9,8 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Base.h"
-#include "N3Shape.h"
+#include <N3Base/N3Shape.h>
 #include <list>
 
 #define INDOOR_FOLDER "N3Indoor\\"

@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIArea.h"
+#include <N3Base/N3UIBase.h>
+#include <N3Base/N3UIArea.h>
 #include "N3UIIcon.h"
 #include "GameProcedure.h"
 #include "GameDef.h"
@@ -96,7 +96,6 @@ struct __InfoSelectedIcon	{
 
 // Recovery Job Info..
 struct __RecoveryJobInfo	{ 
-								bool				m_bWaitFromServer;
 								__IconItemSkill*	pItemSource;					
 								__UIWndIconInfo		UIWndSourceStart;
 								__UIWndIconInfo		UIWndSourceEnd;
@@ -118,7 +117,7 @@ const int UITEIM_TYPE_GOLD = 2;
 const int UIITEM_TYPE_COUNTABLE_SMALL = 3;
 const int UIITEM_TYPE_SOMOONE = 4;
 
-const int UIITEM_TYPE_SONGPYUN_ID_MIN = 490000;
+const int UIITEM_TYPE_USABLE_ID_MIN = 450000;
 
 const int UIITEM_COUNT_MANY = 9999;
 const int UIITEM_COUNT_FEW = 500;

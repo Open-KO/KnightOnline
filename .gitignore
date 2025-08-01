@@ -28,6 +28,9 @@ Client/data/
 *.lib
 *.rej
 *.aps
+*.scc
+*.opt
+*.plg
 .vs/
 enc_temp_folder/
 ItemEditor/Item/
@@ -45,5 +48,12 @@ Release/
 Tool_Debug/
 Tool_Release/
 x64/
+.int/
+lib/
 warfare_config.h
 *.idea
+All.sln.DotSettings.user
+*.txt
+last-build-states/
+module-output/
+

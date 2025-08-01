@@ -1,13 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include <stdint.h>
 #include <inttypes.h>
-
-#ifdef _WIN32
-#define INLINE __forceinline
-#else
-#define INLINE inline //__attribute__((always_inline))
-#endif
 
 #ifdef _WIN32
 #define STRCASECMP _stricmp

@@ -76,9 +76,7 @@ inline void BB_CircularBuffer::PutData(BYTE *pData, int len)
 {
 	if (len<=0)
 	{
-#ifdef _DEBUG
-		OutputDebugString("BB_CircularBuffer::PutData len is <= 0\n");
-#endif
+		TRACE("BB_CircularBuffer::PutData len is <= 0\n");
 		return;
 	}
 	while (IsOverFlowCondition(len)) BufferResize();

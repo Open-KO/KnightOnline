@@ -3,20 +3,20 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "UIManager.h"
 #include "LocalInput.h"
 #include "N3UIWndBase.h"
-#include "UIManager.h"
 #include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "SubProcPerTrade.h"
-#include "N3UIWndBase.h"
 #include "CountableItemEditDlg.h"
 #include "UIItemExchange.h"
 #include "UIWareHouseDlg.h"
 
-#include "N3UITooltip.h"
+#include <N3Base/DFont.h>
+#include <N3Base/N3UITooltip.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -432,19 +432,20 @@ void CUIManager::SetVisibleFocusedUI(CN3UIBase *pUI)
 			}
 
 			dwUIHideStyle = pUIHide->GetStyle();
-			if(pUIHide->IsVisible() && pUI != pUIHide && (dwUIHideStyle & UISTYLE_SHOW_ME_ALONE))
-				pUIHide->SetVisibleWithNoSound(false, true);
-/*
-			if(pUIHide->IsVisible() && pUI != pUIHide)
+
+			if (pUIHide->IsVisible()
+				&& pUI != pUIHide)
 			{
-				if(dwUIHideStyle & UISTYLE_SHOW_ME_ALONE)
+				if ((dwUIHideStyle & UISTYLE_SHOW_ME_ALONE) != 0)
 					pUIHide->SetVisibleWithNoSound(false, true);
-				else if( (dwUIStyle & UISTYLE_POS_LEFT) && (dwUIHideStyle & UISTYLE_POS_LEFT) )
+				else if ((dwUIStyle & UISTYLE_POS_LEFT) != 0
+					&& (dwUIHideStyle & UISTYLE_POS_LEFT) != 0)
 					pUIHide->SetVisibleWithNoSound(false, true);
-				else if( (dwUIStyle & UISTYLE_POS_RIGHT) && (dwUIHideStyle & UISTYLE_POS_RIGHT) )
+				else if ((dwUIStyle & UISTYLE_POS_RIGHT) != 0
+					&& (dwUIHideStyle & UISTYLE_POS_RIGHT) != 0)
 					pUIHide->SetVisibleWithNoSound(false, true);
 			}
-*/
+
 			it++;
 		}
 	}

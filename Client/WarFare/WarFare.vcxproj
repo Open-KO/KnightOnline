@@ -35,23 +35,16 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+  <Import Project="$(PropsDir)client_application.props" />
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)cp949_strings.props" />
+  <Import Project="$(PropsDir)jpegfile.props" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <TargetName>KnightOnLine</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>KnightOnLine</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -59,13 +52,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>.\;..\;..\N3Base\;..\..\Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;..\..\Server;$(DependencyDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>shared.lib;ws2_32.lib;jpegLib.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\lib\;..\N3Base\$(Configuration)\;..\..\Server\shared\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>shared.lib;ws2_32.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base_client.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\Server\shared\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -92,6 +85,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -121,6 +115,21 @@
     <ClCompile Include="MachineBase.cpp" />
     <ClCompile Include="MachineMng.cpp" />
     <ClCompile Include="MagicSkillMng.cpp" />
+    <ClCompile Include="N3ClientShapeMgr.cpp" />
+    <ClCompile Include="N3FXBundleGame.cpp" />
+    <ClCompile Include="N3FXMgr.cpp" />
+    <ClCompile Include="N3FXPartBillBoardGame.cpp" />
+    <ClCompile Include="N3FXPartBottomBoardGame.cpp" />
+    <ClCompile Include="N3Pond.cpp" />
+    <ClCompile Include="N3River.cpp" />
+    <ClCompile Include="N3Terrain.cpp" />
+    <ClCompile Include="N3TerrainManager.cpp" />
+    <ClCompile Include="N3TerrainPatch.cpp" />
+    <ClCompile Include="N3UIDBCLButton.cpp" />
+    <ClCompile Include="N3UIIcon.cpp" />
+    <ClCompile Include="N3UIWndBase.cpp" />
+    <ClCompile Include="N3WorldBase.cpp" />
+    <ClCompile Include="N3WorldManager.cpp" />
     <ClCompile Include="OrderMessage.cpp" />
     <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="PlayerMySelf.cpp" />
@@ -153,8 +162,8 @@
     <ClCompile Include="UIInventory.cpp" />
     <ClCompile Include="UIItemExchange.cpp" />
     <ClCompile Include="UIKnightsOperation.cpp" />
+    <ClCompile Include="UILevelGuide.cpp" />
     <ClCompile Include="UILoading.cpp" />
-    <ClCompile Include="UILoadingDlg.cpp" />
     <ClCompile Include="UILogin_1298.cpp" />
     <ClCompile Include="UILogin_1098.cpp" />
     <ClCompile Include="UIManager.cpp" />
@@ -215,7 +224,11 @@
     <ClInclude Include="GameProcOption.h" />
     <ClInclude Include="GrassBoard.h" />
     <ClInclude Include="GrassMng.h" />
+    <ClInclude Include="N3ClientShapeMgr.h" />
+    <ClInclude Include="N3Pond.h" />
+    <ClInclude Include="N3River.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="text_resources.h" />
     <ClInclude Include="UICmdEdit.h" />
     <ClInclude Include="UICmdList.h" />
     <ClInclude Include="ItemRepairMgr.h" />
@@ -267,8 +280,8 @@
     <ClInclude Include="UIInventory.h" />
     <ClInclude Include="UIItemExchange.h" />
     <ClInclude Include="UIKnightsOperation.h" />
+    <ClInclude Include="UILevelGuide.h" />
     <ClInclude Include="UILoading.h" />
-    <ClInclude Include="UILoadingDlg.h" />
     <ClInclude Include="UILogin_1298.h" />
     <ClInclude Include="UILogin_1098.h" />
     <ClInclude Include="UIManager.h" />

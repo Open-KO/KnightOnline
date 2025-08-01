@@ -12,9 +12,6 @@
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
-#include "N3UIString.h"
-
-
 //////////////////////////////////////////////////////////////////////
 
 class CUIHotKeyDlg      : public CN3UIWndBase  
@@ -79,6 +76,7 @@ public:
 //	bool				ReceiveSelectedSkill();
 	bool				IsSelectedSkillInRealIconArea();
 	void				SetReceiveSelectedSkill(int iIndex);
+	bool				SetReceiveSelectedItem(int iIndex);
 	bool				GetEmptySlotIndex(int &iIndex);
 
 	void				AllFactorClear();

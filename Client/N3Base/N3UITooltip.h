@@ -33,7 +33,7 @@ protected:
 	D3DCOLOR		m_crTextColor;
 // Operations
 public:
-	void			SetText(const std::string& szText);
+	void			SetText(const std::string& szText, D3DCOLOR crTooltip);
 	void SetColor(D3DCOLOR color){m_crTextColor = color;}
 	virtual void	Release();
 	virtual void	Tick();

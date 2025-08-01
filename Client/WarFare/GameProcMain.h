@@ -59,6 +59,7 @@ public:
 	class CUITradeBBSEditDlg*	m_pUITradeBBSEdit;				// 상거래 게시물 설명
 
 	class CUIUpgradeSelect*		m_pUIUpgradeSelect;
+	class CUILevelGuide*		m_pUILevelGuide;
 
 	class CN3Shape*				m_pTargetSymbol;				// 플레이어가 타겟으로 잡은 캐릭터의 위치위에 그리면 된다..
 
@@ -212,6 +213,10 @@ public:
 	bool	OnMouseLBtnPressd(POINT ptCur, POINT ptPrev);
 	bool	OnMouseLBtnPress(POINT ptCur, POINT ptPrev);
 	bool	OnMouseLDBtnPress(POINT ptCur, POINT ptPrev);
+	
+	/// \brief attempts to start the auto-attack process
+	/// \returns true if auto-attack process started, false otherwise
+	bool	TryStartAttack();
 	bool	OnMouseRbtnDown(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPressd(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPress(POINT ptCur, POINT ptPrev);
@@ -226,7 +231,7 @@ public:
 	const __InfoPartyOrForce*	PartyOrForceConditionGet(bool& bIAmLeader, bool& bIAmMember, int& iMemberIndex, class CPlayerBase*& pTarget);
 	void						TargetSelect(int iID, bool bMustAlive);
 	void						TargetSelect(class CPlayerNPC* pTarget);
-
+	
 	void	CommandToggleUIChat();
 	void	CommandToggleUIMsgWnd();
 
@@ -238,15 +243,23 @@ public:
 	bool	CommandToggleUISkillTree();
 	bool	CommandToggleUIMiniMap();
 	bool	CommandToggleCmdList();
+	bool	CommandToggleLevelGuide();
 	bool	OpenCmdEdit(std::string msg);
 
 	void	CommandMove(e_MoveDirection eMD, bool bStartOrEnd); // 움직이는 방향(전후진, 멈춤), 움직이기 시작하는가?
 	void	CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTarget);
+
+	/// \brief contains the logic that should be executed whenever starting to auto-attack
+	void	StartAutoAttack(CPlayerBase* target);
+	/// \brief contains the logic that should be executed whenever auto-attacking is stopped
+	void	StopAutoAttack(CPlayerBase* target = nullptr);
+	
 	void	CommandCameraChange(); // 카메라 시점 바꾸기..
 	void	CommandSitDown(bool bLimitInterval, bool bSitDown, bool bImmediately = false);
 
-	void	CommandTargetSelect_NearstEnemy(); // 가장 가까운 적 타겟 잡기..
-	void	CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
+	void	CommandTargetSelect_NearestEnemy(); // 가장 가까운 적 타겟 잡기..
+	void	CommandTargetSelect_NearestOurForce(); // 가장 가까운 파티 타겟잡기..
+	void	CommandTargetSelect_NearestNPC(); // target nearest NPC
 
 	void	CloseUIs(); // 각종 상거래, 워프등등... UI 닫기..
 

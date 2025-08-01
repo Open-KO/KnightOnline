@@ -3,22 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-
+#include "GameProcedure.h"
 #include "GameDef.h"
 #include "GameEng.h"
-#include "packetdef.h"
+#include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
-#include "UIMessageBox.h"
-#include "UIMessageBoxManager.h"
-#include "UIManager.h"
-
 #include "N3FXMgr.h"
 #include "PlayerMyself.h"
-#include "GameProcedure.h"
+
 #include "GameProcLogIn.h"
-//#include "GameProcStart.h"
 #include "GameProcNationSelect.h"
 #include "GameProcCharacterCreate.h"
 #include "GameProcCharacterSelect.h"
@@ -26,6 +20,9 @@
 #include "GameProcOption.h"
 
 #include "UILoading.h"
+#include "UIMessageBox.h"
+#include "UIMessageBoxManager.h"
+#include "UIManager.h"
 #include "UINotice.h"
 #include "UIHelp.h"
 #include "UIHotKeyDlg.h"
@@ -34,19 +31,20 @@
 #include "UIPartyOrForce.h"
 #include "UIMessageWnd.h"
 #include "UIEndingDisplay.h"
-
-#include "N3UIEdit.h"
-#include "N3SndObjStream.h"
-#include "N3FXBundle.h"
-
-#include "BitmapFile.h"
-#include "Jpeg.h"
-#include "JpegFile.h"
-
 #include "MagicSkillMng.h"
 #include "GameCursor.h"
+#include "resource.h"
+#include "text_resources.h"
 
-#include "shared/Compression.h"
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3FXBundle.h>
+
+#include <N3Base/BitmapFile.h>
+
+#include <JpegFile/JpegFile.h>
+
+#include <shared/lzf.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -849,7 +847,7 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	if(s_pPlayer)
 	{
 		__Vector3 vPos = s_pPlayer->Position();
-		CLogWriter::Write("Socket Closed... Zone(%d) Pos(%.1f, %.1f, %.1f) Exp(%d)",
+		CLogWriter::Write("Socket Closed... Zone(%d) Pos(%.1f, %.1f, %.1f) Exp(%I64u)",
 			s_pPlayer->m_InfoExt.iZoneCur, vPos.x, vPos.y, vPos.z, s_pPlayer->m_InfoExt.iExp);
 	}
 	else
@@ -925,17 +923,38 @@ void CGameProcedure::MsgSend_CharacterSelect() // virtual
 
 void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이터 이다... 한번 더 파싱해야 한다!!!
 {
-	uint16_t compressedLength = pkt.read<uint16_t>();
-	uint16_t originalLength = pkt.read<uint16_t>();
-	uint32_t crc = pkt.read<uint32_t>();
+	uint16_t compressedLength	= pkt.read<uint16_t>();
+	uint16_t originalLength		= pkt.read<uint16_t>();
+	uint32_t originalChecksum	= pkt.read<uint32_t>();
 
-	uint8_t * decompressedBuffer = Compression::DecompressWithCRC32(pkt.contents() + pkt.rpos(), compressedLength, originalLength, crc);
-	if (decompressedBuffer == NULL)
+	std::vector<uint8_t> decompressedBuffer(originalLength);
+
+	uint32_t decompressedLength = lzf_decompress(
+		pkt.contents() + pkt.rpos(),
+		compressedLength,
+		&decompressedBuffer[0],
+		originalLength);
+
+	_ASSERT(decompressedLength == originalLength);
+
+	if (decompressedLength != originalLength)
 		return;
 
+	// Don't bother to verify checksums in release.
+	// It's just unnecessarily slow.
+#if defined(_DEBUG)
+	if (originalChecksum != 0)
+	{
+		uint32_t actualChecksum = crc32(&decompressedBuffer[0], decompressedLength);
+		_ASSERT(actualChecksum == originalChecksum);
+
+		if (actualChecksum != originalChecksum)
+			return;
+	}
+#endif
+
 	Packet decompressedPkt;
-	decompressedPkt.append(decompressedBuffer, originalLength);
-	delete[] decompressedBuffer;
+	decompressedPkt.append(&decompressedBuffer[0], originalLength);
 
 	ProcessPacket(decompressedPkt);
 }

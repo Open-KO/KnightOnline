@@ -9,11 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIString.h"
+#include <N3Base/N3UIBase.h>
 
-#include "GameProcedure.h"
-#include "N3UIWndBase.h"
+#include "N3UIWndBase.h" // __IconItemSkill
 
 #define MAX_REPAIR_TOOLTIP_COUNT 4
 
@@ -21,8 +19,8 @@
 
 class CUIRepairTooltipDlg      : public CN3UIBase  
 {
-	CN3UIString*		m_pStr[MAX_REPAIR_TOOLTIP_COUNT];				// ½ºÆ®·ø.. ^^
-	D3DCOLOR			m_pStrColor[MAX_REPAIR_TOOLTIP_COUNT];		// ½ºÆ®·ø »ö±ò.. ^^
+	CN3UIString*		m_pStr[MAX_REPAIR_TOOLTIP_COUNT];				// 스트륑.. ^^
+	D3DCOLOR			m_pStrColor[MAX_REPAIR_TOOLTIP_COUNT];		// 스트륑 색깔.. ^^
 	int					m_iPosXBack, m_iPosYBack;
 	__IconItemSkill*	m_spItemBack;
 

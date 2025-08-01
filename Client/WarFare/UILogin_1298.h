@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 class CUILogIn_1298 : public CN3UIBase  
 {
@@ -91,6 +91,7 @@ protected:
 	std::string m_strNoticeText;
 public:
 	void SetRequestedLogIn(bool bLogIn) { m_bLogIn = bLogIn; }
+	void SelectServer(int iServerListIndex);
 	bool OnKeyPress(int iKey);
 	void SetVisibleLogInUIs(bool bEnable); // 계정 LogIn 에 필요한 UI 들을 숨긴다..
 	void OpenServerList();

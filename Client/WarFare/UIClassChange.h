@@ -11,15 +11,11 @@
 
 #include "GameDef.h"
 
-#include "N3UIBase.h"
-#include "N3UIButton.h"
-#include "N3UIString.h"
-#include "N3UIArea.h"
+#include <N3Base/N3UIBase.h>
 
 enum e_ClassChangeState {	UISTATE_NORMAL = 1, UISTATE_WARNING	};
 
 //////////////////////////////////////////////////////////////////////
-
 
 class CUIClassChange : public CN3UIBase  
 {

@@ -74,13 +74,12 @@ void CN3UITooltip::Render()
 			pIB, D3DFMT_INDEX16, pVB, sizeof(__VertexTransformedColor));	// 테두리 칠하기
 
 		// 글씨 그리기
-		m_pBuffOutRef->SetColor(m_crToolTipText);
 		m_pBuffOutRef->Render();
 	}
 	else CN3UIStatic::Render();
 }
 
-void CN3UITooltip::SetText(const std::string& szText)
+void CN3UITooltip::SetText(const std::string& szText, D3DCOLOR crTooltip)
 {
 	if (!m_bVisible || m_bSetText) return;
 
@@ -127,6 +126,9 @@ void CN3UITooltip::SetText(const std::string& szText)
 		if (!strWrappedText.empty()) strWrappedText += '\n';
 		strWrappedText += strCurrentLine;
 	}
+
+	m_pBuffOutRef->SetString(szText);
+	m_pBuffOutRef->SetColor(crTooltip);
 
 	// calculate line number
 	int lineCount = 1 + std::count(strWrappedText.begin(), strWrappedText.end(), '\n');

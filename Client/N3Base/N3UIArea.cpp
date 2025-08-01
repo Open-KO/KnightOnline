@@ -6,13 +6,6 @@
 #include "N3UIArea.h"
 #include "N3UIEdit.h"
 
-#ifndef _REPENT
-#ifdef _N3GAME
-#include "..\WarFare\n3uiwndbase.h"
-#include "..\WarFare\uiinventory.h"
-#endif 
-#endif
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -64,22 +57,14 @@ uint32_t CN3UIArea::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
+
 #ifndef _REPENT
 #ifdef _N3GAME
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return dwRet;
-	// 부모가 아이콘 매니저이로 Inventory Wnd라면..	
-	if ( (m_pParent->UIType() == UI_TYPE_ICON_MANAGER) && (((CN3UIWndBase* )m_pParent)->GetUIWnd() == UIWND_INVENTORY) )
-	{
-		// 특정 이벤트에 대해 메시지 전송..
-		if(IsIn(ptCur.x, ptCur.y) && (dwFlags & UI_MOUSE_LBCLICK) )	
-		{
-			m_pParent->ReceiveMessage(this, UIMSG_AREA_DOWN_FIRST); // 부모에게 버튼 클릭 통지..
-			dwRet |= UI_MOUSEPROC_DONESOMETHING;
-			return dwRet;
-		}
-	}
+	if (s_bWaitFromServer)
+		return dwRet;
 #endif
 #endif
+
 	// 특정 이벤트에 대해 메시지 전송..
 	if(IsIn(ptCur.x, ptCur.y) && (dwFlags & UI_MOUSE_LBCLICK) )	
 	{
@@ -95,31 +80,13 @@ uint32_t CN3UIArea::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 #ifdef _N3GAME
 bool CN3UIArea::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return false;
-	// 부모가 아이콘 매니저이로 Inventory Wnd라면..	
-	if ( (m_pParent->UIType() == UI_TYPE_ICON_MANAGER) && (((CN3UIWndBase* )m_pParent)->GetUIWnd() == UIWND_INVENTORY) )
-	{
-		if (dwMsg == UIMSG_BUTTON_CLICK)					
-		{
-			if(pSender->m_szID == "btn_Destroy_ok")
-			{
-				// 인벤토리만 떠 있을때..
-				((CUIInventory* )m_pParent)->ItemDestroyOK();
-			}
+	if (s_bWaitFromServer)
+		return false;
 
-			if(pSender->m_szID == "btn_Destroy_cancel")
-			{
-				// 인벤토리만 떠 있을때..
-				((CUIInventory* )m_pParent)->ItemDestroyCancel();
-			}
-		}
-	}
-
-	return true;
+	return CN3UIBase::ReceiveMessage(pSender, dwMsg);
 }
 #endif
 #endif
-
 
 #ifdef _N3TOOL
 bool CN3UIArea::Save(HANDLE hFile)

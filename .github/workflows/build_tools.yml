@@ -6,55 +6,41 @@
 name: Build tools
 
 on:
-  schedule:
-    - cron: "0 0 * * 0" # once a week every Sunday at midnight
-  workflow_dispatch:
-    
-env:
-  # We use a debug build for slightly faster build times
-  BUILD_CONFIGURATION: Debug
-  BUILD_PLATFORM: x86
+  push:
+    branches:
+    - master
 
-# These should really be moved into the one solution.
+    paths:
+      - '.github/workflows/build_tools.yml'
+
+  pull_request:
+    branches:
+    - master
+
+    paths:
+      - '.github/workflows/build_tools.yml'
+
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        BUILD_PLATFORM: [Win32]
+
+    name: "Tools: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
+
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: recursive
+        submodules: 'false'
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
-    - name: Build N3CE
+    - name: Build tools
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3CE\N3CE.sln
-
-    - name: Build N3FXE
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3FXE\N3FXE.sln
-
-    - name: Build N3ME
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3ME\N3ME.sln
-
-    - name: Build N3TexViewer
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3TexViewer\N3TexViewer.sln
-
-    - name: Build N3Viewer
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" N3Viewer\N3Viewer.sln
-
-    - name: Build SkyViewer
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" SkyViewer\SkyViewer.sln
-
-    - name: Build TblEditor
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" TblEditor\TblEditor.sln
-
-    - name: Build UIE
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" UIE\UIE.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Tools.sln

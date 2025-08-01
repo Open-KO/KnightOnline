@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "GameProcCharacterSelect.h"
 #include "GameProcedure.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "GameEng.h"
 #include "LocalInput.h"
@@ -17,10 +17,10 @@
 #include "UIMessageBox.h"
 #include "UILoading.h"
 
-#include "N3SndObjStream.h"
-#include "N3Shape.h"
-#include "N3Camera.h"
-#include "N3Light.h"
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3Shape.h>
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3Light.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Eng.h"
+#include <N3Base/N3Eng.h>
 #include <list>
 
 typedef std::list<class CN3Light*>::iterator		it_Light;

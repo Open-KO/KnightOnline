@@ -1,25 +1,25 @@
-﻿/*
-*/
-
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "UIChat.h"
 #include "GameEng.h"
 #include "resource.h"
-#include "N3SndMgr.h"
-#include "N3UIEdit.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "PlayerMySelf.h"
 #include "GameProcMain.h"
 #include "N3WorldManager.h"
-#include "../Server/shared/Ini.h"
+
+#include <shared/Ini.h>
 
 #include <WinSock2.h>
 #include <time.h>
 
-#include "DFont.h"
 #include "UIManager.h"
 #include "UIMessageBoxManager.h"
+
+#include <N3Base/DFont.h>
+#include <N3Base/N3SndMgr.h>
+#include <N3Base/N3UIEdit.h>
 
 #include <windowsx.h>
 

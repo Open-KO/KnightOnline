@@ -1,21 +1,46 @@
-﻿#pragma once
+﻿// NpcThread.h: interface for the CNpcThread class.
+//
+//////////////////////////////////////////////////////////////////////
 
-uint32_t THREADCALL NpcThreadProc(void * lpParam /* CNpcThread ptr */);
-uint32_t THREADCALL ZoneEventThreadProc(void * lpParam /* = nullptr */);
+#if !defined(AFX_NPCTHREAD_H__EBEC0AA4_EEF9_4F28_AAF0_6FB20E2891EB__INCLUDED_)
+#define AFX_NPCTHREAD_H__EBEC0AA4_EEF9_4F28_AAF0_6FB20E2891EB__INCLUDED_
 
-typedef std::set<CNpc *> NpcSet;
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+//#include "Npc.h"
+#include "IOCPort.h"
+
+UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */);
+UINT ZoneEventThreadProc(LPVOID pParam /* = nullptr */);
+float TimeGet();
 
 class CNpc;
-class CNpcThread  
+
+typedef struct _NPC_THREAD_INFO
+{
+	CIOCPort*	pIOCP;
+	CNpc*		pNpc[NPC_NUM];
+	BYTE		m_byNpcUsed[NPC_NUM];
+	HWND		hWndMsg;
+} NPC_THREAD_INFO;
+
+class CNpcThread
 {
 public:
 	CNpcThread();
-	void AddNPC(CNpc * pNpc);
-	void RemoveNPC(CNpc * pNpc);
 	virtual ~CNpcThread();
 
 public:
-	NpcSet m_pNpcs;
-	std::recursive_mutex m_lock;
-	Thread m_thread;
+	void InitThreadInfo(HWND hwnd);
+	CIOCPort* pIOCP;
+	CNpc* m_pNpc[NPC_NUM];
+
+	NPC_THREAD_INFO		m_ThreadInfo;
+	CWinThread* m_pThread;
+	short m_sThreadNumber;					// thread number ,, test
+
 };
+
+#endif // !defined(AFX_NPCTHREAD_H__EBEC0AA4_EEF9_4F28_AAF0_6FB20E2891EB__INCLUDED_)

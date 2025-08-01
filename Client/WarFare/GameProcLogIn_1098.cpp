@@ -1,22 +1,22 @@
 ﻿#include "stdafx.h"
 
 #if defined(LOGIN_SCENE_VERSION) && LOGIN_SCENE_VERSION == 1098
-#include "resource.h"
-#include "GameEng.h"
 #include "GameProcLogIn_1098.h"
+#include "GameEng.h"
 #include "UILogIn_1098.h"
 #include "PlayerMySelf.h"
 #include "UIManager.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "PacketDef.h"
+#include "text_resources.h"
 
-#include "N3Camera.h"
-#include "N3Light.h"
-#include "N3Chr.h"
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3SndMgr.h"
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3Light.h>
+#include <N3Base/N3Chr.h>
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3SndMgr.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -126,18 +126,17 @@ void CGameProcLogIn_1098::Init()
 	lstrcat(szIniPath, "Server.Ini");
 
 	char szRegistrationSite[_MAX_PATH] = {};
-
 	GetPrivateProfileString("Join", "Registration site", "", szRegistrationSite, _MAX_PATH, szIniPath);
 	m_szRegistrationSite = szRegistrationSite;
 
-	int iServerCount = GetPrivateProfileInt("Server", "Count", 0, szIniPath);
+	int iServerCount = GetPrivateProfileInt("Server", "Count", DEFAULT_LOGIN_SERVER_COUNT, szIniPath);
 
 	char szIPs[256][32] = {};
 	for (int i = 0; i < iServerCount; i++)
 	{
 		char szKey[32] = "";
 		sprintf(szKey, "IP%d", i);
-		GetPrivateProfileString("Server", szKey, "", szIPs[i], 32, szIniPath);
+		GetPrivateProfileString("Server", szKey, DEFAULT_LOGIN_SERVER_IP, szIPs[i], 32, szIniPath);
 	}
 
 	int iServer = -1;

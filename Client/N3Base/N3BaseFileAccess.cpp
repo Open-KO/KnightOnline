@@ -99,7 +99,7 @@ bool CN3BaseFileAccess::LoadFromFile()
 		MessageBox(s_hWndBase, szErr.c_str(), "File Handle error", MB_OK);
 #endif
 #ifdef _N3GAME 
-		CLogWriter::Write(szErr.c_str());
+		CLogWriter::Write("%s", szErr.c_str());
 #endif
 		return false;
 	}

@@ -4,10 +4,11 @@
 
 #include "stdafx.h"
 #include "UIPartyBBSSelector.h"
-
 #include "GameProcedure.h"
 #include "PacketDef.h"
 #include "APISocket.h"
+
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

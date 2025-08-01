@@ -5,14 +5,11 @@
 #ifndef __N3FXMGR_H__
 #define __N3FXMGR_H__
 
-#pragma warning(disable : 4786)
-
-#include "N3BaseFileAccess.h"
-#include "N3FXDef.h"
-
 #include <list>
 #include <map>
 #include "N3UIWndBase.h"
+
+#include <N3Base/N3FXDef.h>
 
 class CN3FXBundleGame;
 

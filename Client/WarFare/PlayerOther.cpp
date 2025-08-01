@@ -3,12 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "GameProcedure.h"
 #include "PlayerOther.h"
 #include "PlayerMySelf.h"
 
-#include "DFont.h"
+#include <N3Base/DFont.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -18,7 +18,6 @@ static char THIS_FILE[]=__FILE__;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
 
 CPlayerOther::CPlayerOther()
 {

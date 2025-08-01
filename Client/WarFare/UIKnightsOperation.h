@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 #include <list>
 #include <string>
@@ -32,6 +32,7 @@ typedef std::map<int, __KnightsInfoBase>::value_type val_KIB;
 
 typedef std::list<__KnightsInfoExt>::iterator it_KIE;
 
+class Packet;
 class CUIKnightsOperation : public CN3UIBase  
 {
 protected:

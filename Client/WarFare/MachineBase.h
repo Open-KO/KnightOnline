@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3Base.h"
+#include <N3Base/N3Base.h>
 
 const uint32_t MS_STOP		= 0x00000000;
 const uint32_t MS_FORWARD	= 0x00000001;
@@ -22,7 +22,7 @@ const uint32_t MACHINE_TYPE_CATAPULT = 0x21;
 class CN3Texture;
 class CN3PMeshInstance;
 
-#include "N3Shape.h"
+#include <N3Base/N3Shape.h>
 
 class CMachineBase : public CN3Shape
 {

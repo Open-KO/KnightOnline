@@ -2,10 +2,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "resource.h"
+#include "GameProcMain.h"
 
 #include "GameEng.h"
-#include "GameProcMain.h"
 #include "LocalInput.h"
 
 #include "APISocket.h"
@@ -48,7 +47,6 @@
 #include "UIWarp.h"
 #include "UIInn.h"
 #include "UICreateClanName.h"
-#include "UIPartyBBS.h"
 #include "UITradeSellBBS.h"
 #include "UITradeBBSSelector.h"
 #include "UITradeBBSEditDlg.h"
@@ -56,23 +54,23 @@
 #include "UIQuestTalk.h"
 #include "UIDead.h"
 #include "UIUpgradeSelect.h"
+#include "UILevelGuide.h"
 
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
 #include "MagicSkillMng.h"
 #include "WarMessage.h"
 #include "GameCursor.h"
-
 #include "N3WorldManager.h"
-
 #include "LightMgr.h"
+#include "text_resources.h"
 
-#include "N3SkyMng.h"
-#include "N3ShapeExtra.h"
-#include "N3Camera.h"
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3SndMgr.h"
+#include <N3Base/N3SkyMng.h>
+#include <N3Base/N3ShapeExtra.h>
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3SndMgr.h>
 
 #include <io.h>
 
@@ -171,6 +169,7 @@ CGameProcMain::CGameProcMain()				// r기본 생성자.. 각 변수의 역활은
 	m_pUIQuestTalk = new CUIQuestTalk();
 	m_pUIDead = new CUIDead();
 	m_pUIUpgradeSelect = new CUIUpgradeSelect();
+	m_pUILevelGuide = new CUILevelGuide();
 
 	m_pSubProcPerTrade = new CSubProcPerTrade();
 	m_pMagicSkillMng = new CMagicSkillMng(this);
@@ -223,6 +222,7 @@ CGameProcMain::~CGameProcMain()
 	delete m_pUIQuestTalk;
 	delete m_pUIDead;
 	delete m_pUIUpgradeSelect;
+	delete m_pUILevelGuide;
 
 	delete m_pSubProcPerTrade;
 	delete m_pMagicSkillMng;
@@ -278,6 +278,7 @@ void CGameProcMain::ReleaseUIs()
 	m_pUIInn->Release();
 	m_pUICreateClanName->Release();
 	m_pUIUpgradeSelect->Release();
+	m_pUILevelGuide->Release();
 
 	CN3UIBase::DestroyTooltip();
 }
@@ -466,7 +467,7 @@ void CGameProcMain::InitPlayerPosition(const __Vector3& vPos) // 플레이어 �
 	float fYObject = ACT_WORLD->GetHeightNearstPosWithShape(vPos, 1.0f); // 오브젝트에서 가장 가까운 높이값 얻기..
 	if (!s_pWorldMgr->IsIndoor())
 	{
-		if (T_Abs(vPos.y - fYObject) < T_Abs(vPos.y - fYTerrain)) vPosFinal.y = fYObject; // 좀더 가까운 곳에 놓는다..
+		if (std::abs(vPos.y - fYObject) < std::abs(vPos.y - fYTerrain)) vPosFinal.y = fYObject; // 좀더 가까운 곳에 놓는다..
 		else vPosFinal.y = fYTerrain;
 	}
 	else
@@ -823,7 +824,7 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 			switch (opcode) {
 				case 0x03://0x01:
 					uint16_t zoneFlags = pkt.read<uint16_t>();
-					ZoneAbilityType zoneType = (ZoneAbilityType)pkt.read<uint8_t>();
+					e_ZoneAbilityType zoneType = (e_ZoneAbilityType)pkt.read<uint8_t>();
 					uint8_t zoneTariff = pkt.read<uint8_t>();
 					uint8_t minLevel = pkt.read<uint8_t>();
 					uint8_t maxLevel = pkt.read<uint8_t>();
@@ -1245,14 +1246,27 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 			else s_pPlayer->m_bTempMoveTurbo = false; // 엄청 빨리 움직이게 한다..  // 임시 함수.. 나중에 없애자..
 		}
 
-		if(s_pLocalInput->IsKeyPress(KM_TOGGLE_ATTACK))
-			this->CommandToggleAttackContinous();		// 자동 공격..}
-		if(s_pLocalInput->IsKeyPress(KM_TOGGLE_RUN))
-			this->CommandToggleWalkRun();				// 걷기 / 뛰기 토글	
-		if(s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_ENEMY))
-			this->CommandTargetSelect_NearstEnemy();	// 가장 가까운 적 타겟 잡기..
-		if(s_pLocalInput->IsKeyPress(KM_TARGET_NEARST_PARTY))
-			this->CommandTargetSelect_NearstOurForce(); // 가장 가까운 파티 타겟잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TOGGLE_ATTACK))
+		{
+			// if the player is already attacking, stop it
+			if (s_pPlayer->m_bAttackContinous)
+			{
+				CommandEnableAttackContinous(false, nullptr);
+			}
+			// otherwise, start the auto-attack process
+			else
+			{
+				TryStartAttack();
+			}
+		}
+		if (s_pLocalInput->IsKeyPress(KM_TOGGLE_RUN))
+			CommandToggleWalkRun();				// 걷기 / 뛰기 토글	
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_ENEMY))
+			CommandTargetSelect_NearestEnemy();	// 가장 가까운 적 타겟 잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_PARTY))
+			CommandTargetSelect_NearestOurForce(); // 가장 가까운 파티 타겟잡기..
+		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_NPC)) // target nearest NPC with 'B'
+			CommandTargetSelect_NearestNPC();
 
 		float fRotKeyDelta = D3DXToRadian(60); // 초당 60 도 돌기..
 		if(s_pLocalInput->IsKeyDown(KM_ROTATE_LEFT) || s_pLocalInput->IsKeyDown(DIK_LEFT))	
@@ -3299,7 +3313,7 @@ bool CGameProcMain::MsgRecv_ItemMove(Packet& pkt)
 	{
 		pInfoExt->iAttack = pkt.read<int16_t>();
 		pInfoExt->iGuard =	pkt.read<int16_t>();
-		pInfoExt->iWeightMax = static_cast<int>(pkt.read<uint16_t>());
+		pInfoExt->iWeightMax = pkt.read<int16_t>();
 		
 		pInfoBase->iHPMax = pkt.read<int16_t>();
 		pInfoExt->iMSPMax = pkt.read<int16_t>();
@@ -3353,7 +3367,7 @@ bool CGameProcMain::MsgRecv_ItemMove(Packet& pkt)
 
 bool CGameProcMain::MsgRecv_ItemWeightChange(Packet& pkt)		// 아이템 무게 변화..
 {
-	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
+	__InfoPlayerMySelf* pInfoExt = &s_pPlayer->m_InfoExt;
 	pInfoExt->iWeight = pkt.read<int16_t>();
 	m_pUIVar->m_pPageState->UpdateWeight(pInfoExt->iWeight, pInfoExt->iWeightMax);
 
@@ -3655,8 +3669,8 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 		pInfoExt->iMSPMax		= pkt.read<int16_t>();
 		pInfoExt->iMSP			= pkt.read<int16_t>();
 
-		pInfoExt->iWeightMax	= static_cast<int>(pkt.read<uint16_t>());
-		pInfoExt->iWeight		= static_cast<int>(pkt.read<uint16_t>());
+		pInfoExt->iWeightMax	= pkt.read<int16_t>();
+		pInfoExt->iWeight		= pkt.read<int16_t>();
 
 		m_pUIVar->UpdateAllStates(&(s_pPlayer->m_InfoBase), &(s_pPlayer->m_InfoExt)); // 모든 정보 업데이트..
 
@@ -4166,6 +4180,17 @@ void CGameProcMain::InitUI()
 		(iH - m_pUIUpgradeSelect->GetHeight()) / 2);
 	m_pUIUpgradeSelect->SetState(UI_STATE_COMMON_NONE);
 	m_pUIUpgradeSelect->SetStyle(m_pUIUpgradeSelect->GetStyle() | UISTYLE_USER_MOVE_HIDE | UISTYLE_SHOW_ME_ALONE);
+
+	//ui level guide
+	m_pUILevelGuide->Init(s_pUIMgr);
+	m_pUILevelGuide->LoadFromFile(pTbl->szLvlGuide);
+	m_pUILevelGuide->SetVisibleWithNoSound(false);
+	m_pUILevelGuide->SetStyle(UISTYLE_POS_RIGHT);
+	rc = m_pUILevelGuide->GetRegion();
+	iX = iW - (rc.right - rc.left);
+	iY = 10; //same pos with inventory
+	m_pUILevelGuide->SetPos(iX, iY);
+
 }
 
 void CGameProcMain::MsgSend_RequestTargetHP(int16_t siIDTarget, uint8_t byUpdateImmediately)
@@ -4381,21 +4406,15 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		CLogWriter::Write("CGameProcMain::InitZone -> Zone Change (%d -> %d) Position(%.1f, %.1f, %.1f)", iZonePrev, iZone, vPosPlayer.x, vPosPlayer.y, vPosPlayer.z);
 
 		m_bLoadComplete = false; // 로딩 끝남..
-		CLogWriter::Write("%d->ClearDurationalMagic()",m_pMagicSkillMng); // TmpLog1122
 		m_pMagicSkillMng->ClearDurationalMagic();
-		CLogWriter::Write("%d->ClearAll()", s_pFX); // TmpLog1122
 		s_pFX->ClearAll();
 
-		if(s_pUILoading)
-		{
-			CLogWriter::Write("s_pUILoading->Render()"); // TmpLog1122
+		if (s_pUILoading != nullptr)
 			s_pUILoading->Render("", 0);
-		}
 		
 		s_pPlayer->m_InfoExt.iZoneCur = iZone;
 		iZonePrev = iZone; // 최근에 읽은 존 번호를 기억해둔다.
 
-		CLogWriter::Write("%d->Find(s_pPlayer->m_InfoExt.iZoneCur)",s_pTbl_Zones); // TmpLog1122
 		__TABLE_ZONE* pZoneData = s_pTbl_Zones.Find(s_pPlayer->m_InfoExt.iZoneCur);
 		if(NULL == pZoneData) {
 			CLogWriter::Write("can't find zone data. (zone : %d)", s_pPlayer->m_InfoExt.iZoneCur);
@@ -4404,28 +4423,19 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 			return;
 		}
 
-		CLogWriter::Write("%d->Release()",s_pOPMgr); // TmpLog1122
-
 		s_pOPMgr->Release(); // 다른 넘들 다 날린다..
-		CLogWriter::Write("%d->InitWorld()",s_pWorldMgr); // TmpLog1122
 		s_pWorldMgr->InitWorld(iZone, vPosPlayer);
 
 		// 미니맵 로딩..
-		CLogWriter::Write("%d->GetWidthByMeterWithTerrain()",ACT_WORLD); // TmpLog1122
 		float fWidth = ACT_WORLD->GetWidthByMeterWithTerrain();
-		CLogWriter::Write("%d->LoadMap()",m_pUIStateBarAndMiniMap); // TmpLog1122
-		CLogWriter::Write("%d->szMiniMapFNszMiniMapFN",pZoneData); // TmpLog1122
 		m_pUIStateBarAndMiniMap->LoadMap(pZoneData->szMiniMapFN, fWidth, fWidth);
 
-		CLogWriter::Write("GetRepresentClass()"); // TmpLog1122
 		// 줌 비율 정하기..
 		float fZoom = 6.0f;
 		e_Class_Represent eCR = CGameProcedure::GetRepresentClass(s_pPlayer->m_InfoBase.eClass);
 		if(CLASS_REPRESENT_ROGUE == eCR) fZoom = 3.0f; // 로그 계열은 맵이 좀더 널리 자세히 보인다..
-		CLogWriter::Write("%d->ZoomSet()",m_pUIStateBarAndMiniMap); // TmpLog1122
 		m_pUIStateBarAndMiniMap->ZoomSet(fZoom);
 
-		CLogWriter::Write("%d->szTerrainFN.c_str()",pZoneData); // TmpLog1122
 		//char szBuf[256];
 		char szFName[_MAX_PATH];
 		_splitpath(pZoneData->szTerrainFN.c_str(), NULL, NULL, szFName, NULL);
@@ -4447,11 +4457,8 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		pCamera->m_Data.fFOV	= D3DXToRadian(70);				// Field of View ..
 		pCamera->m_Data.fFP		= 512.0f;						// Far Plane..
 		pCamera->m_Data.fNP		= 0.5f;							// Near Plane..
-		CLogWriter::Write("pCamera->LookAt()"); // TmpLog1122
 		pCamera->LookAt(vPosPlayer + __Vector3(0,0,-1), vPosPlayer, __Vector3(0,1,0));
-		CLogWriter::Write("pCamera->Tick()"); // TmpLog1122
 		pCamera->Tick();
-		CLogWriter::Write("pCamera->Apply()"); // TmpLog1122
 		pCamera->Apply();
 	}
 	// 기본적인 캐릭터위치와 카메라 위치 잡기..
@@ -4459,7 +4466,6 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 
 	CLogWriter::Write("InitPlayerPosition() Position(%.1f, %.1f, %.1f)",vPosPlayer.x, vPosPlayer.y, vPosPlayer.z); // TmpLog1122
 	this->InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
-	CLogWriter::Write("%d->Release()",s_pOPMgr); // TmpLog1122
 	s_pOPMgr->Release(); // 다른 플레이어 삭제...
 }
 
@@ -4586,76 +4592,114 @@ void CGameProcMain::CommandMove(e_MoveDirection eMD, bool bStartOrEnd)
 	}
 }
 
+/// \brief toggles the player's autoattack
 void CGameProcMain::CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTarget)
 {
-	if(bEnable == s_pPlayer->m_bAttackContinous) return;
-	if(bEnable)
+	// no change
+	if (bEnable == s_pPlayer->m_bAttackContinous)
+		return;
+
+	// invalid target
+	if (pTarget == nullptr)
 	{
-		this->CloseUIs(); // 각종 상거래, 워프등등... UI 닫기..
-		s_pUIMgr->UserMoveHideUIs();
-
-		if(s_pPlayer->m_bStun) return; // 기절해 있음 공격 못함..
-		if(NULL == pTarget) return;
-		s_pPlayer->RotateTo(pTarget); // 방향을 돌린다.
-		if(pTarget->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation) return; // 국가가 같으면 넘어간다..
-
-		//-------------------------------------------------------------------------
-		/*
-		// TODO(srmeier): need to use ZoneAbilityType here
-		// NOTE(srmeier): using zoneability information to determine if target is attackable
-		if (!ACT_WORLD->canAttackSameNation() && (pTarget->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation))
-			return;
-		if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_ELMORAD && pTarget->m_InfoBase.eNation == NATION_KARUS))
-			return;
-		if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_KARUS && pTarget->m_InfoBase.eNation == NATION_ELMORAD))
-			return;
-		*/
-		//-------------------------------------------------------------------------
-	}
-	s_pPlayer->m_bAttackContinous = bEnable; // 상태를 기록하고..
-
-	if(bEnable)
-		SetGameCursor(s_hCursorAttack);
-	else
-	{
-		e_Nation eNation = s_pPlayer->m_InfoBase.eNation;
-		SetGameCursor(((NATION_ELMORAD == eNation) ? s_hCursorNormal1 : s_hCursorNormal));
+		StopAutoAttack(pTarget);
+		return;
 	}
 
-	if(m_pUICmd->m_pBtn_Act_Attack)
-	{
-		if(bEnable) m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_DOWN);
-		else m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_NORMAL);
-	}
-
-	// 자동 공격!
 	if (bEnable)
 	{
-		std::string szMsg;
-		GetTextF(IDS_MSG_ATTACK_START, &szMsg, pTarget->IDString().c_str());
-
-		this->PlayBGM_Battle();
-		
-		if(s_pPlayer->IsAttackableTarget(pTarget))
-			s_pPlayer->Action(PSA_BASIC, true, pTarget);
-
-		this->MsgOutput(szMsg, 0xff00ffff);
+		StartAutoAttack(pTarget);
 	}
-	else // 자동 공격 아님.
+	else
 	{
-		std::string szMsg;
-		GetText(IDS_MSG_ATTACK_STOP, &szMsg);
-		s_pPlayer->Action(PSA_BASIC, true, pTarget);
-		this->MsgOutput(szMsg, 0xff00ffff);
+		StopAutoAttack(pTarget);
 	}
+}
 
-	// 국가, 거리 및 각도 체크해서 공격 불가능하면 돌아가기..
-	if (bEnable
-		&& !s_pPlayer->IsAttackableTarget(pTarget))
+/// \brief contains the logic that should be executed whenever starting to auto-attack
+void CGameProcMain::StartAutoAttack(CPlayerBase* target)
+{
+	// already auto-attacking
+	if (s_pPlayer->m_bAttackContinous)
+		return;
+	
+	this->CloseUIs(); 
+	s_pUIMgr->UserMoveHideUIs();
+
+	if(s_pPlayer->m_bStun)
+		return;
+
+	s_pPlayer->RotateTo(target);
+	
+	// check if the target is attackable
+	// this can fail for several reasons:
+	// - invalid target
+	// - target not in front of attacker
+	// - target out of range
+	// doesn't really feel like it should be here, it's checked in so many other places
+	// and covers too many cases to be helpful
+	if (!s_pPlayer->IsAttackableTarget(target))
 	{
 		std::string szMsg;
 		GetText(IDS_MSG_ATTACK_DISABLE, &szMsg);
 		this->MsgOutput(szMsg, 0xffffff00);
+		// return;
+	}
+
+	//-------------------------------------------------------------------------
+	/*
+	// TODO(srmeier): need to use ZoneAbilityType here
+	// NOTE(srmeier): using zoneability information to determine if target is attackable
+	if (!ACT_WORLD->canAttackSameNation() && (pTarget->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation))
+		return;
+	if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_ELMORAD && pTarget->m_InfoBase.eNation == NATION_KARUS))
+		return;
+	if (!ACT_WORLD->canAttackOtherNation() && (s_pPlayer->m_InfoBase.eNation == NATION_KARUS && pTarget->m_InfoBase.eNation == NATION_ELMORAD))
+		return;
+	*/
+	//-------------------------------------------------------------------------
+	
+	s_pPlayer->m_bAttackContinous = true;
+	
+	SetGameCursor(s_hCursorAttack);
+		
+	// Print an info message for attack start
+	std::string szMsg;
+	GetTextF(IDS_MSG_ATTACK_START, &szMsg, target->IDString().c_str());
+	this->MsgOutput(szMsg, 0xff00ffff);
+	
+	// play combat music
+	this->PlayBGM_Battle();
+
+	// set auto-attack animation
+	s_pPlayer->Action(PSA_BASIC, true, target);
+	
+	if (m_pUICmd->m_pBtn_Act_Attack)
+	{
+		m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_DOWN);
+	}
+}
+
+/// \brief contains the logic that should be executed whenever auto-attacking is stopped
+void CGameProcMain::StopAutoAttack(CPlayerBase* target)
+{
+	// not auto-attacking
+	if (!s_pPlayer->m_bAttackContinous)
+		return;
+	
+	s_pPlayer->m_bAttackContinous = false;
+	
+	e_Nation eNation = s_pPlayer->m_InfoBase.eNation;
+	SetGameCursor(((NATION_ELMORAD == eNation) ? s_hCursorNormal1 : s_hCursorNormal));
+
+	std::string szMsg;
+	GetText(IDS_MSG_ATTACK_STOP, &szMsg);
+	s_pPlayer->Action(PSA_BASIC, true, target);
+	this->MsgOutput(szMsg, 0xff00ffff);
+
+	if (m_pUICmd->m_pBtn_Act_Attack)
+	{
+		m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_NORMAL);
 	}
 }
 
@@ -4732,7 +4776,7 @@ bool CGameProcMain::CommandToggleUIInventory()
 	{
 		bNeedOpen = true;
 		if(m_pUISkillTreeDlg->IsVisible()) m_pUISkillTreeDlg->Close();
-		
+
 		s_pUIMgr->SetFocusedUI(m_pUIInventory);
 		m_pUIInventory->Open();
 	}
@@ -4809,9 +4853,16 @@ bool CGameProcMain::CommandToggleCmdList()
 	return bNeedOpen;
 }
 
+bool CGameProcMain::CommandToggleLevelGuide()
+{
+	bool bNeedOpen = !m_pUILevelGuide->IsVisible();
+	m_pUILevelGuide->SetVisible(bNeedOpen);
+
+	return bNeedOpen;
+}
+
 bool CGameProcMain::OpenCmdEdit(std::string msg)
 {
-
 	bool bNeedOpen = !(m_pUICmdEditDlg->IsVisible());
 
 	if (bNeedOpen)
@@ -5266,17 +5317,27 @@ void CGameProcMain::CommandSitDown(bool bLimitInterval, bool bSitDown, bool bImm
 	this->MsgSend_StateChange(N3_SP_STATE_CHANGE_SITDOWN, iState); // 앉았다.. 패킷..
 }
 
-void CGameProcMain::CommandTargetSelect_NearstEnemy() // 가장 가까운 적 타겟 잡기..
+// 가장 가까운 적 타겟 잡기..
+void CGameProcMain::CommandTargetSelect_NearestEnemy()
 {
-	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearstEnemy(s_pPlayer->m_InfoBase.eNation, s_pPlayer->Position());
-	this->TargetSelect(pTarget);
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearestEnemy(s_pPlayer->m_InfoBase.eNation, s_pPlayer->Position());
+	TargetSelect(pTarget);
 	s_pPlayer->RotateTo(pTarget);
 }
 
-void CGameProcMain::CommandTargetSelect_NearstOurForce() // 가장 가까운 파티 타겟잡기..
+// 가장 가까운 파티 타겟잡기..
+void CGameProcMain::CommandTargetSelect_NearestOurForce()
 {
 	CPlayerOther* pTarget = m_pUIPartyOrForce->MemberGetByNearst(s_pPlayer->Position());
-	this->TargetSelect(pTarget);
+	TargetSelect(pTarget);
+	s_pPlayer->RotateTo(pTarget);
+}
+
+// select closest NPC
+void CGameProcMain::CommandTargetSelect_NearestNPC()
+{
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByNearestNPC(s_pPlayer->Position());
+	TargetSelect(pTarget);
 	s_pPlayer->RotateTo(pTarget);
 }
 
@@ -5547,17 +5608,17 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 	int iType = pkt.read<uint8_t>();		// Event Type
 	int iResult = pkt.read<uint8_t>();
 
-	if (OBJECT_TYPE_BINDPOINT == iType)
+	if (iType == OBJECT_TYPE_BINDPOINT)
 	{
 		std::string szMsg;
-		if (0x01 == iResult)
+		if (iResult == 1)
 			GetText(IDS_BIND_POINT_FAILED, &szMsg);
-		this->MsgOutput(szMsg, 0xff00ff00);
+		MsgOutput(szMsg, 0xff00ff00);
 	}
-	else if (OBJECT_TYPE_DOOR_LEFTRIGHT == iType
-		|| OBJECT_TYPE_DOOR_TOPDOWN == iType
-		|| OBJECT_TYPE_LEVER_TOPDOWN == iType
-		|| OBJECT_TYPE_FLAG == iType)
+	else if (iType == OBJECT_TYPE_DOOR_LEFTRIGHT
+		|| iType == OBJECT_TYPE_DOOR_TOPDOWN
+		|| iType == OBJECT_TYPE_LEVER_TOPDOWN
+		|| iType == OBJECT_TYPE_FLAG)
 	{
 		int iID = pkt.read<int16_t>();	// 열고 닫을 성문 ID
 		int iActivate = pkt.read<uint8_t>();	// 열고 닫음..
@@ -5640,8 +5701,15 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 					else pSE->m_bVisible = false;
 				}
 			}
-			this->MsgOutput(szMsg, 0xff00ff00);
+			MsgOutput(szMsg, 0xff00ff00);
 		}
+	}
+	else if (iType == OBJECT_TYPE_WARP_POINT)
+	{
+		std::string szMsg;
+		if (iResult == 0)
+			GetText(IDS_WARP_WRONG_GATE, &szMsg);
+		MsgOutput(szMsg, 0xff00ff00);
 	}
 	else
 	{
@@ -7398,24 +7466,34 @@ bool CGameProcMain::OnMouseMove(POINT ptCur, POINT ptPrev)
 // 왼쪽 더블 클릭
 bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 {
-	if(s_pUIMgr->m_bDoneSomething) return false;
+	if(s_pUIMgr->m_bDoneSomething)
+		return false;
 
-	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
+	TryStartAttack();
+	
+	return true;
+}
 
-	if(pTarget && pTarget->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
+/// \brief attempts to start the auto-attack process
+/// \returns true if auto-attack process started, false otherwise
+bool CGameProcMain::TryStartAttack()
+{
+	CPlayerNPC* target = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
+	if(target == nullptr || target->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
 	{
 		s_pPlayer->m_iIDTarget = -1;
-		pTarget = NULL;
+		target = nullptr;
+		return false;
 	}
 
-	if(VP_THIRD_PERSON == s_pEng->ViewPoint())
+	if(s_pEng->ViewPoint() == VP_THIRD_PERSON)
 	{
-		if(s_pPlayer->IsAttackableTarget(pTarget, false))
+		if(s_pPlayer->IsAttackableTarget(target, false))
 		{
 			this->CommandMove(MD_STOP, true);
-			this->CommandEnableAttackContinous(true, pTarget); // 자동 공격
+			this->CommandEnableAttackContinous(true, target);
 		}
-		else if(pTarget && VP_THIRD_PERSON == s_pEng->ViewPoint())
+		else if(target && VP_THIRD_PERSON == s_pEng->ViewPoint())
 		{
 			this->CommandMove(MD_FOWARD, true);
 			s_pPlayer->SetMoveTargetID(s_pPlayer->m_iIDTarget);
@@ -7426,6 +7504,7 @@ bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 		s_pPlayer->m_bAttackContinous = false;
 		CommandToggleAttackContinous();
 	}
+
 	return true;
 }
 
@@ -7691,7 +7770,7 @@ bool CGameProcMain::OnMouseRBtnPress(POINT ptCur, POINT ptPrev)
 			// NOTE: an NPC has been clicked on
 			// TODO(srmeier): need to use ZoneAbilityType here
 			// NOTE(srmeier): using the zone type to decide if you can talk with NPC
-			if(ACT_WORLD->GetZoneType()==ZoneAbilityNeutral || (pNPC->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation)) // 같은 국가 일때만..
+			if(ACT_WORLD->GetZoneType()==ZONE_ABILITY_NEUTRAL || (pNPC->m_InfoBase.eNation == s_pPlayer->m_InfoBase.eNation)) // 같은 국가 일때만..
 			{
 				float fD = (s_pPlayer->Position() - pNPC->Position()).Magnitude();
 				float fDLimit = (s_pPlayer->Radius() + pNPC->Radius()) * 3.0f;
@@ -7821,6 +7900,7 @@ void CGameProcMain::MsgRecv_ClassPromotion(Packet& pkt)
 		m_pUIVar->UpdateAllStates(&s_pPlayer->m_InfoBase, &s_pPlayer->m_InfoExt);
 		m_pUIHotKeyDlg->ClassChangeHotkeyFlush();
 		m_pUISkillTreeDlg->SetPageInCharRegion();
+		m_pUISkillTreeDlg->ButtonVisibleStateSet();
 		m_pUISkillTreeDlg->InitIconUpdate();
 	}
 	else

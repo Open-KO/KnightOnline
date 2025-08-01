@@ -1,4 +1,4 @@
-/*
+﻿/*
 
 crc32.h
 
@@ -28,9 +28,17 @@ Functions for computing 32-bit CRC.
 #ifndef CRC32_H
 #define CRC32_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* This computes a 32 bit CRC of the data in the buffer, and returns the
 CRC.  The polynomial used is 0xedb88320. */
 
-uint32_t crc32(const uint8_t *s, uint32_t len, uint32_t startVal = 0);
+unsigned int crc32(const unsigned char* s, unsigned int len, unsigned int startVal = 0);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CRC32_H */

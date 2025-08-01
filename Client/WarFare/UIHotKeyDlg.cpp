@@ -3,20 +3,21 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIHotKeyDlg.h"
-
 #include "LocalInput.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
 #include "UISkillTreeDlg.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
 #include "UIInventory.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UIString.h>
 
 #include <cmath>
 #include <algorithm>
+#include <format>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -106,7 +107,7 @@ uint32_t CUIHotKeyDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if ( !IsVisible() ) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 	// 실제로 쓰진 않는다..
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( GetState() == UI_STATE_ICON_MOVING ) 
@@ -416,7 +417,7 @@ void CUIHotKeyDlg::InitIconUpdate()
 			__TABLE_UPC_SKILL* pUSkill = NULL;
 
 			// Skill Tree Window가 아이디를 갖고 있지 않으면 continue.. 
-			if ( (HD.iID < UIITEM_TYPE_SONGPYUN_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
+			if ( (HD.iID < UIITEM_TYPE_USABLE_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
 				continue;
 
 			pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
@@ -896,7 +897,7 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
 		if ( pUSkill == NULL ) return false;
-		if ( pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+		if ( pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
 
 		spSkill = new __IconItemSkill();
 		spSkill->pSkill = pUSkill;
@@ -931,6 +932,59 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	}
 
 	return false;
+}
+
+bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
+{
+	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != UIWND_INVENTORY)
+		return false;
+
+	__IconItemSkill* spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
+
+	__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
+	if (pUSkill == nullptr)
+		return false;
+
+	if (pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN)
+		return false;
+
+	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr)
+		return false;
+
+	__IconItemSkill* spSkill = new __IconItemSkill();
+	spSkill->pSkill = pUSkill;
+
+	// Create the icon name
+	spSkill->szIconFN = std::format(
+		"UI\\skillicon_{:02}_{}.dxt",
+		spItem->pItemBasic->dwEffectID1 % 100,
+		spItem->pItemBasic->dwEffectID1 / 100);
+
+	// load icon
+	spSkill->pUIIcon = new CN3UIIcon();
+	spSkill->pUIIcon->Init(this);
+	spSkill->pUIIcon->SetTex(spSkill->szIconFN);
+	spSkill->pUIIcon->SetUVRect(0, 0, 1.0f, 1.0f);
+	spSkill->pUIIcon->SetUIType(UI_TYPE_ICON);
+
+	uint32_t bitMask = UISTYLE_ICON_SKILL;
+	if (!CGameProcedure::s_pProcMain->m_pMagicSkillMng->CheckValidSkillMagic(spSkill->pSkill))
+		bitMask |= UISTYLE_DISABLE_SKILL;
+	spSkill->pUIIcon->SetStyle(bitMask);
+
+	CN3UIArea* pArea = nullptr;
+	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SKILL_HOTKEY, iIndex);
+
+	if (pArea != nullptr)
+	{
+		spSkill->pUIIcon->SetRegion(pArea->GetRegion());
+		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
+	}
+
+	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
+
+	CloseIconRegistry();
+	return true;
 }
 
 bool CUIHotKeyDlg::EffectTriggerByMouse()

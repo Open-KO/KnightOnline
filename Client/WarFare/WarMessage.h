@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CDFont;
+#include <N3Base/DFont.h> // D3DFONT_BOLD
 
 class CWarMessage  
 {

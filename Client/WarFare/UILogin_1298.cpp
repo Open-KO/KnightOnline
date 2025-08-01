@@ -1,13 +1,15 @@
 ﻿#include "stdafx.h"
 
 #if !defined(LOGIN_SCENE_VERSION) || LOGIN_SCENE_VERSION == 1298
-#include "resource.h"
 #include "UILogIn_1298.h"
 #include "GameProcLogIn_1298.h"
-#include "N3UIEdit.h"
-#include "N3UIButton.h"
-#include "N3UIString.h"
 #include "UIMessageBoxManager.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+
 #include <algorithm>
 #include <shellapi.h>
 
@@ -130,12 +132,12 @@ bool CUILogIn_1298::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		for (int i = 0; i < MAX_SERVERS; i++)
 		{
-			if (m_pServer_Group[i] == nullptr)
+			if (m_pList_Group[i] == nullptr)
 				continue;
 
 			if (pSender == m_pList_Group[i])
 			{
-				m_iSelectedServerIndex = i;
+				SelectServer(i);
 				CGameProcedure::s_pProcLogIn->ConnectToGameServer();
 				return true;
 			}
@@ -146,17 +148,10 @@ bool CUILogIn_1298::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		for (int i = 0; i < MAX_SERVERS; i++)
 		{
-			if (m_pServer_Group[i] != nullptr)
-				m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(255, 255, 255)); // white
-		}
-
-		for (int i = 0; i < MAX_SERVERS; i++)
-		{
-			if (m_pServer_Group[i] != nullptr
+			if (m_pList_Group[i] != nullptr
 				&& pSender == m_pList_Group[i])
 			{
-				m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(255, 255, 0)); // yellow
-				m_iSelectedServerIndex = i;
+				SelectServer(i);
 				return true;
 			}
 		}
@@ -261,7 +256,7 @@ bool CUILogIn_1298::Load(HANDLE hFile)
 		N3_VERIFY_UI_COMPONENT(m_pList_Group[i], (CN3UIString*) m_pServer_Group[i]->GetChildByID("List_Server"));
 	}
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Connect , (CN3UIButton* )m_pGroup_ServerList->GetChildByID("Btn_Connect"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Connect, (CN3UIButton*) m_pGroup_ServerList->GetChildByID("Btn_Connect"));
 		
 	return true;
 }
@@ -424,95 +419,108 @@ void CUILogIn_1298::ServerInfoUpdate()
 
 void CUILogIn_1298::AddNews(const std::string& strNews)
 {
-	// TODO: needs improvement	
+	std::vector<std::string> titles, messages;
 
-	std::string pieces[6];
-	int count = 0;
-
-	size_t BOX_START_LEN = 3; // '#', 0x00, '\n'
-	size_t BOX_END_LEN = 5;   // '#', 0x00, '\n', 0x00, '\n'
+	titles.reserve(MAX_NEWS_COUNT);
+	messages.reserve(MAX_NEWS_COUNT);
 
 	size_t searchPos = 0;
-	while (count < 6)
+
+	std::string_view messageStartView(NEWS_MESSAGE_START, sizeof(NEWS_MESSAGE_START));
+	std::string_view messageEndView(NEWS_MESSAGE_END, sizeof(NEWS_MESSAGE_END));
+
+	// NOTE: The official parsing for this is extremely simple.
+	// It really doesn't care about the format it uses; it basically
+	// just looks for the first and last #, and ignores anything
+	// until the next # is found for the next box, and strips out
+	// \r, \n as it goes.
+	// Since this means that it ends up including characters it shouldn't,
+	// e.g. null-terminators (which happen to not get rendered), we'll just
+	// be a touch smarter about this and follow the basic format.
+	while (titles.size() < MAX_NEWS_COUNT)
 	{
-		size_t boxStart = strNews.find("#\0\n", searchPos);
-		if (boxStart == std::string::npos)
+		const size_t titlePos = searchPos;
+
+		// Find the start of the message
+		size_t startOfMessageBlock = strNews.find(messageStartView, searchPos);
+		if (startOfMessageBlock == std::string::npos)
 			break;
 
-		// title is inbetween searchPos and boxStart
-		std::string title = strNews.substr(searchPos, boxStart - searchPos);
+		// The title precedes the message.
+		// It's not directly surrounded by anything of its own.
+		std::string title = strNews.substr(titlePos, startOfMessageBlock - titlePos);
 
-		size_t messageStart = boxStart + BOX_START_LEN;
-		size_t boxEnd = strNews.find("#\0\n\0\n", messageStart);
-		if (boxEnd == std::string::npos)
+		size_t startOfMessage = startOfMessageBlock + sizeof(NEWS_MESSAGE_START);
+
+		size_t startOfEndMessageBlock = strNews.find(messageEndView, startOfMessage);
+		if (startOfEndMessageBlock == std::string::npos)
 			break;
 
-		std::string message = strNews.substr(messageStart, boxEnd - messageStart);
+		std::string message = strNews.substr(startOfMessage, startOfEndMessageBlock - startOfMessage);
 
-		pieces[count++] = title;
-		pieces[count++] = message;
+		titles.push_back(std::move(title));
+		messages.push_back(std::move(message));
 
 		// jump to next block
-		searchPos = boxEnd + BOX_END_LEN;
+		searchPos = startOfEndMessageBlock + sizeof(NEWS_MESSAGE_END);
 	}
 
-	int iReqNoticeBox = (count + 1) / 2;
-	if (iReqNoticeBox <= 1)
+	// No news, skip to server list
+	if (titles.empty())
+	{
+		m_bIsNewsVisible = false;
+		OpenServerList();
+	}
+	else if (titles.size() == 1)
 	{
 		if (m_pText_Notice1_Name_1 != nullptr)
-			m_pText_Notice1_Name_1->SetString(pieces[0]);
+			m_pText_Notice1_Name_1->SetString(titles[0]);
 
 		if (m_pText_Notice1_Text_1 != nullptr)
-			m_pText_Notice1_Text_1->SetString(pieces[1]);
+			m_pText_Notice1_Text_1->SetString(messages[0]);
 
 		if (m_pGroup_Notice_1 != nullptr)
 			m_pGroup_Notice_1->SetVisible(true);
 	}
-	else if (iReqNoticeBox == 2)
+	else if (titles.size() == 2)
 	{
 		if (m_pText_Notice2_Name_1 != nullptr)
-			m_pText_Notice2_Name_1->SetString(pieces[0]);
+			m_pText_Notice2_Name_1->SetString(titles[0]);
 
 		if (m_pText_Notice2_Text_1 != nullptr)
-			m_pText_Notice2_Text_1->SetString(pieces[1]);
+			m_pText_Notice2_Text_1->SetString(messages[0]);
 
 		if (m_pText_Notice2_Name_2 != nullptr)
-			m_pText_Notice2_Name_2->SetString(pieces[2]);
+			m_pText_Notice2_Name_2->SetString(titles[1]);
 
 		if (m_pText_Notice2_Text_2 != nullptr)
-			m_pText_Notice2_Text_2->SetString(pieces[3]);
+			m_pText_Notice2_Text_2->SetString(messages[1]);
 
 		if (m_pGroup_Notice_2 != nullptr)
 			m_pGroup_Notice_2->SetVisible(true);
 	}
-	else if (iReqNoticeBox == 3)
+	else if (titles.size() == 3)
 	{
 		if (m_pText_Notice3_Name_1 != nullptr)
-			m_pText_Notice3_Name_1->SetString(pieces[0]);
+			m_pText_Notice3_Name_1->SetString(titles[0]);
 
 		if (m_pText_Notice3_Text_1 != nullptr)
-			m_pText_Notice3_Text_1->SetString(pieces[1]);
+			m_pText_Notice3_Text_1->SetString(messages[0]);
 
 		if (m_pText_Notice3_Name_2 != nullptr)
-			m_pText_Notice3_Name_2->SetString(pieces[2]);
+			m_pText_Notice3_Name_2->SetString(titles[1]);
 
 		if (m_pText_Notice3_Text_2 != nullptr)
-			m_pText_Notice3_Text_2->SetString(pieces[3]);
+			m_pText_Notice3_Text_2->SetString(messages[1]);
 
 		if (m_pText_Notice3_Name_3 != nullptr)
-			m_pText_Notice3_Name_3->SetString(pieces[4]);
+			m_pText_Notice3_Name_3->SetString(titles[2]);
 
 		if (m_pText_Notice3_Text_3 != nullptr)
-			m_pText_Notice3_Text_3->SetString(pieces[5]);
+			m_pText_Notice3_Text_3->SetString(messages[2]);
 
 		if (m_pGroup_Notice_3 != nullptr)
 			m_pGroup_Notice_3->SetVisible(true);
-	}
-	// No news, skip to server list
-	else
-	{
-		m_bIsNewsVisible = false;
-		OpenServerList();
 	}
 }
 
@@ -568,6 +576,9 @@ void CUILogIn_1298::OpenServerList()
 	if (m_pStr_Premium != nullptr)
 		m_pStr_Premium->SetVisible(true);
 
+	// Select first server by default.
+	SelectServer(0);
+
 	m_bIsNewsVisible = false;
 }
 
@@ -607,7 +618,7 @@ bool CUILogIn_1298::OnKeyPress(int iKey)
 				if (m_iSelectedServerIndex < 0)
 					m_iSelectedServerIndex = iServerCount - 1;
 
-				ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LCLICK);
+				SelectServer(m_iSelectedServerIndex);
 			}
 			return true;
 
@@ -621,22 +632,15 @@ bool CUILogIn_1298::OnKeyPress(int iKey)
 				if (m_iSelectedServerIndex >= iServerCount)
 					m_iSelectedServerIndex = 0;
 
-				ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LCLICK);
+				SelectServer(m_iSelectedServerIndex);
 			}
 			return true;
 
 			case DIK_NUMPADENTER:
 			case DIK_RETURN:
-			{
-				// select the first server if user presses enter at server select screen
-				if (m_iSelectedServerIndex == -1)
-				{
-					m_iSelectedServerIndex = 0;
-					ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LCLICK);
-				}
-
-			}
-			return true;
+				// connect to the selected server if user presses enter at server select screen
+				ReceiveMessage(m_pList_Group[m_iSelectedServerIndex], UIMSG_STRING_LDCLICK);
+				return true;
 		}
 	}
 	else if (m_bIsNewsVisible)
@@ -650,5 +654,21 @@ bool CUILogIn_1298::OnKeyPress(int iKey)
 	}
 
 	return CN3UIBase::OnKeyPress(iKey);
+}
+
+void CUILogIn_1298::SelectServer(int iServerListIndex)
+{
+	m_iSelectedServerIndex = std::clamp(iServerListIndex, 0, MAX_SERVERS - 1);
+
+	for (int i = 0; i < MAX_SERVERS; i++)
+	{
+		if (m_pList_Group[i] == nullptr)
+			continue;
+
+		if (i == m_iSelectedServerIndex)
+			m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(0, 255, 0)); // green
+		else
+			m_pList_Group[i]->SetColor(D3DCOLOR_XRGB(255, 255, 255)); // white
+	}
 }
 #endif

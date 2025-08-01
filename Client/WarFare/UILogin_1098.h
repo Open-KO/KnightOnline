@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 class CUILogIn_1098 : public CN3UIBase  
 {

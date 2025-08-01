@@ -9,14 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-#include "N3UIBase.h"
-#include "N3UIButton.h"
+#include <N3Base/N3UIBase.h>
 
 #define WANT_PARTY			0
 #define WANT_PARTY_MEMBER	1
 
-class CUIPartyBBSSelector : public CN3UIBase  
+class CUIPartyBBSSelector : public CN3UIBase
 {
 protected:
 	CN3UIButton*	m_pBtn_WantPartyMember;

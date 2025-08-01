@@ -11,7 +11,7 @@
 #endif // _MSC_VER > 1000
 
 #include "N3TerrainDef.h"
-#include "N3Base.h"
+#include <N3Base/N3Base.h>
 
 class CN3Texture;
 class CN3Terrain;

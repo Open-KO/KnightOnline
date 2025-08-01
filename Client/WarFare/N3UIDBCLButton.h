@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIImage.h"
+#include <N3Base/N3UIImage.h>
 
-class CN3UIDBCLButton  : public CN3UIImage
+class CN3UIDBCLButton : public CN3UIImage
 {
 public:
 	CN3UIDBCLButton();

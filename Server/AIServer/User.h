@@ -1,101 +1,123 @@
-﻿#pragma once
+﻿// User.h: interface for the CUser class.
+//
+//////////////////////////////////////////////////////////////////////
 
-#include "Extern.h"
+#if !defined(AFX_USER_H__1CC8CB68_CF95_4849_8E89_134826B1FAC2__INCLUDED_)
+#define AFX_USER_H__1CC8CB68_CF95_4849_8E89_134826B1FAC2__INCLUDED_
 
-#include "../shared/STLMap.h"
-#include "../GameServer/Unit.h"
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
-class MAP;
+#include "iocport.h"
+#include "MagicProcess.h"
+class CServerDlg;
 
-class CUser : public Unit
+#include "extern.h"
+#include <shared/STLMap.h>
+#include <list>
+
+typedef std::list <_USERLOG*>		UserLogList;
+
+class CUser
 {
 public:
-	INLINE bool isGM() { return m_byIsOP == AUTHORITY_GAME_MASTER; }
+	CServerDlg* m_pMain;
 
-	virtual uint16_t GetID() { return m_iUserId; }
-	virtual std::string & GetName() { return m_strUserID; }
+	CIOCPort* m_pIocport;
+	CMagicProcess m_MagicProcess;
 
-	virtual int32_t GetHealth() { return m_sHP; }
-	virtual int32_t GetMaxHealth() { return m_sMaxHP; }
-	virtual int32_t GetMana() { return m_sMP; }
-	virtual int32_t GetMaxMana() { return m_sMaxMP; }
+	UserLogList	m_UserLogList;
 
-	virtual void GetInOut(Packet &, uint8_t) {}
-	virtual void AddToRegion(int16_t sRegionX, int16_t sRegionZ) {}
+	// 필요한 정보 변수만 선언,,,
+	// 캐릭터 기본 속성
+	char			m_strUserID[MAX_ID_SIZE + 1];	// 캐릭터의 이름
+	int				m_iUserId;			// User의 번호
+	BYTE			m_bLive;			// 죽었니? 살았니?
 
-	virtual void HpChange(int amount, Unit *pAttacker = nullptr, bool bSendToAI = true) {}
-	virtual void MSpChange(int amount) {}
-
-	virtual bool isDead() { return m_bLive == AI_USER_DEAD || GetHealth() <= 0; }
-
-	INLINE bool isInParty() { return m_byNowParty != 0; }
-	INLINE uint16_t GetPartyID() { return m_sPartyNumber; }
-
-	std::string m_strUserID;
-	int16_t	m_iUserId;					// User의 번호
-	uint8_t	m_bLive;					// 죽었니? 살았니?
-
+	float			m_curx;				// 현재 X 좌표
+	float			m_cury;				// 현재 Y 좌표
+	float			m_curz;				// 현재 Z 좌표
 	float			m_fWill_x;			// 다음 X 좌표
 	float			m_fWill_y;			// 다음 Y 좌표
 	float			m_fWill_z;			// 다음 Z 좌표
-	int16_t			m_sSpeed;			// 유저의 스피드	
+	short			m_sSpeed;			// 유저의 스피드	
+	BYTE 			m_curZone;			// 현재 존
+	short			m_sZoneIndex;		// 현재 존의 index 번호..
 
-	int16_t	m_sHP;							// HP
-	int16_t	m_sMP;							// MP
-	int16_t	m_sMaxHP;						// HP
-	int16_t	m_sMaxMP;						// MP
+	BYTE	m_bNation;						// 소속국가
+	short	m_sLevel;						// 레벨
 
-	uint8_t	m_state;						// User의 상태
+	short	m_sHP;							// HP
+	short	m_sMP;							// MP
+	short	m_sSP;							// SP
+	short	m_sMaxHP;						// HP
+	short	m_sMaxMP;						// MP
+	short	m_sMaxSP;						// SP
 
-	uint8_t    m_byNowParty;
-	uint8_t	m_byPartyTotalMan;
-	int16_t   m_sPartyTotalLevel;
-	int16_t	m_sPartyNumber;
+	BYTE	m_state;						// User의 상태
 
-	uint16_t	m_sItemAc;
+	short	m_sRegionX;						// 현재 영역 X 좌표
+	short	m_sRegionZ;						// 현재 영역 Z 좌표
+	short	m_sOldRegionX;					// 이전 영역 X 좌표
+	short	m_sOldRegionZ;					// 이전 영역 Z 좌표
 
-	int16_t  m_sSurroundNpcNumber[8];		// Npc 다굴~
+	BYTE	m_bResHp;						// 회복량
+	BYTE	m_bResMp;
+	BYTE	m_bResSta;
 
-	uint8_t   m_byIsOP;
-	uint8_t	m_bInvisibilityType;
+	BYTE    m_byNowParty;				// 파티중이면 1, 부대중이면 2, 둘다 아니면 0
+	BYTE	m_byPartyTotalMan;			// 파티 맺은 총 구성 인원수 
+	short   m_sPartyTotalLevel;			// 파티 맺은 사람의 총 레벨
+	short	m_sPartyNumber;				// 파티 번호
+
+	short	m_sHitDamage;				// Hit
+	float	m_fHitrate;					// 공격 민첩률
+	float	m_fAvoidrate;				// 방어 민첩률
+	short	m_sAC;						// 방어율
+	short   m_sItemAC;                  // 아이템 방어률
+
+
+	short  m_sSurroundNpcNumber[8];		// Npc 다굴~
+
+	BYTE   m_byIsOP;					// 운영자인지를 판단..
+	long   m_lUsed;						// 포인터 사용유무.. (1:사용중.. 접근 허락치 않음. 0:사용해도 무방)
+
+	BOOL		m_bLogOut;				// Logout 중인가?
+
+	// 2002.7.10 - Yookozuna
+	BYTE    m_bMagicTypeLeftHand;			// The type of magic item in user's left hand  
+	BYTE    m_bMagicTypeRightHand;			// The type of magic item in user's right hand
+	short   m_sMagicAmountLeftHand;         // The amount of magic item in user's left hand
+	short	m_sMagicAmountRightHand;        // The amount of magic item in user's left hand
 
 public:
+	void InitUserLog();
+	void WriteUserLog();
+	short GetMagicDamage(int damage, short tid);
 	void Initialize();
 	void InitNpcAttack();
-	void OnDeath(Unit * pKiller);
+	void Attack(int sid, int tid);	// ATTACK
+	void SetDamage(int damage, int tid);				// user damage
+	void Dead(int tid, int nDamage);					// user dead
+	void SetExp(int iNpcExp, int iLoyalty, int iLevel);		// user exp
+	void SetPartyExp(int iNpcExp, int iLoyalty, int iPartyLevel, int iMan);		// user exp
+	short GetDamage(int tid, int magicid = 0);
+	BYTE GetHitRate(float rate);
 	int IsSurroundCheck(float fX, float fY, float fZ, int NpcID);
 	void HealMagic();
 	void HealAreaCheck(int rx, int rz);
 
-	bool isHostileTo(Unit * pTarget);
-	bool isInArena();
-	bool isInPVPZone();
-	bool isInSafetyArea();
-
-	int16_t GetDamage(Unit *pTarget, _MAGIC_TABLE *pSkill = nullptr, bool bPreviewOnly = false);
+	void SendAttackSuccess(int tuid, BYTE result, short sDamage, int nHP = 0, short sAttack_type = 1);  // 공격 성공
+	void SendMagicAttackResult(int tuid, BYTE result, short sDamage, short sHP = 0);  // 공격 성공
+	void SendHP();												// user의 HP
+	void SendExp(int iExp, int iLoyalty, int tType = 1);
+	void SendSystemMsg(const char* pMsg, BYTE type, int nWho);
+	void SendAll(const char* pBuf, int nLength);						// game server로 패킷 전송...
+	BOOL IsOpIDCheck(char* szName);
 
 	CUser();
 	virtual ~CUser();
-
-	// Placeholders, for the magic system.
-	// These should really be using the same base class.
-	INLINE bool isInClan() { return false; }
-	INLINE uint16_t GetClanID() { return 0; }
-	INLINE uint8_t GetStat(StatType type) { return 0; }
-	INLINE void SetStatBuff(StatType type, uint8_t val) {}
-
-	void RemoveSavedMagic(uint32_t nSkillID) {}
-	void SendUserStatusUpdate(UserStatus type, UserStatusBehaviour status) {}
-	void SetUserAbility(bool bSendPacket = true) {}
-	void Send(Packet * pkt) {}
-
-	time_t	m_tLastRegeneTime;
-	uint32_t	m_nOldAbnormalType;
-	uint16_t	m_sExpGainAmount;
-	uint8_t	m_bMaxWeightAmount, m_bNPGainAmount, m_bNoahGainAmount, 
-		m_bPlayerAttackAmount, m_bSkillNPBonus,
-		m_bAddWeaponDamage;
-	uint16_t	m_sAddArmourAc;
-	uint8_t	m_bPctArmourAc;
-	bool	m_bPremiumMerchant;
 };
+
+#endif // !defined(AFX_USER_H__1CC8CB68_CF95_4849_8E89_134826B1FAC2__INCLUDED_)

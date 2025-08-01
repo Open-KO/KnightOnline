@@ -4,15 +4,16 @@
 #include "stdafx.h"
 #include "GameDef.h"
 #include "GameBase.h"
-#include "N3UIString.h"
-#include "N3UIImage.h"
-#include "N3UIButton.h"
-#include "N3UITooltip.h"
 #include "GameProcedure.h"
 #include "UIQuestMenu.h"
 #include "UIManager.h"
 #include "PlayerOtherMgr.h"
 #include "APISocket.h"
+
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UITooltip.h>
 
 //-----------------------------------------------------------------------------
 CUIQuestMenu::CUIQuestMenu(void) {

@@ -1,14 +1,15 @@
 ﻿#include "stdafx.h"
 #include "UIExitMenu.h"
-#include "N3UIButton.h"
 #include "GameProcMain.h"
 #include "UIManager.h"
 #include "N3FXMgr.h"
 #include "PlayerMySelf.h"
 #include "UIChat.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "APISocket.h"
+
+#include <N3Base/N3UIButton.h>
 
 #include <shellapi.h>
 

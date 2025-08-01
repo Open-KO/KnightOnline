@@ -270,8 +270,8 @@ bool CN3FXPartParticles::ParseScript(char* szCommand, char* szBuff0, char* szBuf
 	}
 	if(lstrcmpi(szCommand, "<shape_name>")==0 && lstrcmpi(szBuff0, "")!=0)
 	{
-		char szPath[MAX_PATH];				
-		sprintf(szPath, szBuff0);
+		char szPath[MAX_PATH] = {};
+		strcpy(szPath, szBuff0);
 		m_pShape = new CN3FXShape;
 
 		m_pRefShape = s_MngFXShape.Get(szPath);

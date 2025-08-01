@@ -5,3 +5,27 @@
 	path = Client/Data
 	url = https://github.com/Open-KO/ko-client-assets
 	branch = openko-1298
+[submodule "deps/zlib"]
+	path = deps/zlib
+	url = https://github.com/madler/zlib.git
+	branch = master
+[submodule "deps/libjpeg-turbo"]
+	path = deps/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo
+	branch = main
+[submodule "deps/db-modules"]
+	path = deps/db-modules
+	url = https://github.com/Open-KO/OpenKO-db-modules
+	branch = main
+[submodule "deps/nanodbc"]
+	path = deps/nanodbc
+	url = https://github.com/Open-KO/nanodbc.git
+	branch = OpenKO
+[submodule "deps/db-library"]
+	path = deps/db-library
+	url = https://github.com/Open-KO/OpenKO-db-library.git
+	branch = main
+[submodule "deps/spdlog"]
+	path = deps/spdlog
+	url = https://github.com/gabime/spdlog.git
+	branch = v1.x

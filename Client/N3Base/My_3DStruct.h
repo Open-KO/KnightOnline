@@ -6,7 +6,7 @@
 #include <string>
 
 #include <shared/types.h>
-#if defined(_N3TOOL)
+#if defined(_N3TOOL) || defined(_3DSERVER)
 #include <afx.h>
 #else
 #include <shared/DebugUtils.h>
@@ -1436,16 +1436,16 @@ inline float _Yaw2D(float fDirX, float fDirZ)
 inline int16_t _IsKeyDown(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0xff00); }
 inline int16_t _IsKeyDowned(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0x00ff); }
 
+#if defined(_3DSERVER)
+inline void _LoadStringFromResource(DWORD dwID, std::string& szText, const int iOutputCodepage = 949)
+{
+	static wchar_t szBuffer[512];
+	szBuffer[0] = '\0';
+	::LoadStringW(nullptr, dwID, szBuffer, _countof(szBuffer));
 
-//macro.. -> Template 로 바꿨다..
-template <class T> const T T_Max(const T a, const T b) { return ((a > b) ? b : a); }
-template <class T> const T T_Min(const T a, const T b) { return ((a > b) ? a : b); }
-template <class T> const T T_Abs(const T a) { return ((a > 0) ? a : -a); }
-
-template <class T> void T_Delete(T*& ptr) { delete ptr; ptr = NULL; } // Template Delete Pointer
-template <class T> void T_DeleteArray(T*& ptr) { delete [] ptr; ptr = NULL; } // Template Delete Pointer
-template <class T> void T_Tick(T& obj) { obj.Tick(); } // Template Delete Pointer
-template <class T> void T_Render(T& obj) { obj.Render(); } // Template Delete Pointer
+	szText = CW2A(szBuffer, iOutputCodepage);
+}
+#endif
 
 #endif // __MY_3DSTRUCT_H_
 

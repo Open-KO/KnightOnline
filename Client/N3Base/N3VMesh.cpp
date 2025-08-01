@@ -241,7 +241,8 @@ void CN3VMesh::FindMinMax()
 
 bool CN3VMesh::CheckCollision(const __Matrix44& MtxWorld, const __Vector3& v0, const __Vector3& v1, __Vector3* pVCol, __Vector3* pVNormal)
 {
-	if(m_nVC <= 0) return false;
+	if(m_nVC <= 0)
+		return false;
 
 	static __Vector3 vPos0, vPos1, vDir, vColTmp;
 	static __Matrix44 mtxWI, mtxWIRot, mtxRot;

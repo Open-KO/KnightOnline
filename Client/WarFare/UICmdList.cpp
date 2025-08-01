@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "GameDef.h"
 #include "UICmdList.h"
 #include "GameProcedure.h"
@@ -15,7 +15,14 @@
 #include "PlayerMySelf.h"
 #include "UIManager.h"
 
+#include "N3UIDBCLButton.h"
 
+#include <N3Base/N3Texture.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIList.h>
+#include <N3Base/N3UIImage.h>
+#include <N3Base/N3UIProgress.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -334,7 +341,7 @@ bool CUICmdList::CreateCategoryList() {
 		
 		if (pChild)
 		{
-			pChild->SetTooltipTextColor(D3DCOLOR_XRGB(144, 238, 144)); //green
+			pChild->SetTooltipColor(D3DCOLOR_XRGB(144, 238, 144)); //green
 			pChild->SetTooltipText(szTooltip.c_str()); // tooltip texts
 		}
 			
@@ -397,7 +404,7 @@ bool CUICmdList::UpdateCommandList(uint8_t cmdCat) {
 				 
 				 if (pChild != nullptr)
 				 {
-					 pChild->SetTooltipTextColor(D3DCOLOR_XRGB(144, 238, 144)); //green
+					 pChild->SetTooltipColor(D3DCOLOR_XRGB(144, 238, 144)); //green
 					 pChild->SetTooltipText(cmdTip.c_str());
 				 }
 					 

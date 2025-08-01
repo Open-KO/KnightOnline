@@ -9,19 +9,15 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIString.h"
+#include <N3Base/N3UIBase.h>
 
-#include "GameDef.h"
-
-#include "GameProcedure.h"
-#include "N3UIWndBase.h"
+#include "N3UIWndBase.h" // __IconItemSkill
 
 //////////////////////////////////////////////////////////////////////
 
 #define MAX_TOOLTIP_COUNT 30
 
-class CUIImageTooltipDlg    : public CN3UIBase  
+class CUIImageTooltipDlg : public CN3UIBase
 {
 	const D3DCOLOR		m_CYellow;	// 레어...
 	const D3DCOLOR		m_CBlue;	// 매직...	

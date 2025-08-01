@@ -1,19 +1,19 @@
 ﻿#include "stdafx.h"
 
 #if !defined(LOGIN_SCENE_VERSION) || LOGIN_SCENE_VERSION == 1298
-#include "resource.h"
-#include "GameEng.h"
 #include "GameProcLogIn_1298.h"
+#include "GameEng.h"
 #include "UILogIn_1298.h"
 #include "PlayerMySelf.h"
 #include "UIManager.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "PacketDef.h"
+#include "text_resources.h"
 
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3SndMgr.h"
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3SndMgr.h>
 
 #include <ctime>
 
@@ -86,18 +86,17 @@ void CGameProcLogIn_1298::Init()
 	lstrcat(szIniPath, "Server.Ini");
 
 	char szRegistrationSite[_MAX_PATH] = {};
-
 	GetPrivateProfileString("Join", "Registration site", "", szRegistrationSite, _MAX_PATH, szIniPath);
 	m_szRegistrationSite = szRegistrationSite;
 
-	int iServerCount = GetPrivateProfileInt("Server", "Count", 0, szIniPath);
+	int iServerCount = GetPrivateProfileInt("Server", "Count", DEFAULT_LOGIN_SERVER_COUNT, szIniPath);
 
 	char szIPs[256][32] = {};
 	for (int i = 0; i < iServerCount; i++)
 	{
 		char szKey[32] = "";
 		sprintf(szKey, "IP%d", i);
-		GetPrivateProfileString("Server", szKey, "", szIPs[i], 32, szIniPath);
+		GetPrivateProfileString("Server", szKey, DEFAULT_LOGIN_SERVER_IP, szIPs[i], 32, szIniPath);
 	}
 
 	int iServer = -1;
@@ -232,9 +231,6 @@ bool CGameProcLogIn_1298::MsgSend_NewsReq()
 
 void CGameProcLogIn_1298::MsgRecv_News(Packet& pkt)
 {
-	//consider changing server side, packet starts with string "Login Notice"
-	//see LoginSession::HandleNews
-
 	uint16_t strLen = pkt.read<uint16_t>();
 	std::string strLabel;
 	pkt.readString(strLabel, strLen);

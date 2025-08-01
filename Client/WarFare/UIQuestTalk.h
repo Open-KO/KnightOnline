@@ -9,12 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "PacketDef.h"
+#include <N3Base/N3UIBase.h>
 
 #define MAX_STRING_TALK		10
 
-class CUIQuestTalk   : public CN3UIBase
+class Packet;
+class CUIQuestTalk : public CN3UIBase
 {
 protected:
 	CN3UIString*	m_pTextTalk;

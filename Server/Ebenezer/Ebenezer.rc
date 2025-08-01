@@ -1,0 +1,300 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Korean resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#ifdef _WIN32
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+#pragma code_page(949)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 18, 1\r\n"
+    "#pragma code_page(949)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\Ebenezer.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Ebenezer.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_EBENEZER_DIALOG DIALOGEX 0, 0, 183, 183
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Ebenezer"
+FONT 9, "±¼¸²", 0, 0, 0x1
+BEGIN
+    LISTBOX         IDC_LIST1,8,4,166,136,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    EDITTEXT        IDC_GONGJI_EDIT,12,156,158,14,ES_AUTOHSCROLL
+    GROUPBOX        "°øÁö",IDC_STATIC,8,145,167,32
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041204B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Ebenezer MFC ÀÀ¿ë ÇÁ·Î±×·¥\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "Ebenezer\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Ebenezer.EXE\0"
+            VALUE "ProductName", "Ebenezer ÀÀ¿ë ÇÁ·Î±×·¥\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x412, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "Ebenezer Á¤º¸(&A)..."
+    IDP_SOCKETS_INIT_FAILED "Windows ¼ÒÄÏ ÃÊ±âÈ­¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù."
+    IDP_BATTLEZONE_OPEN     "·ç³ª°ÔÀÌÆ®ÀÇ ¹®ÀÌ ¿­·È½À´Ï´Ù. ÀüÀïÀÌ ½ÃÀÛ µÇ¾ú½À´Ï´Ù."
+    IDP_KARUS_VICTORY       "Ä«·ç½º°¡ ½Â¸®Çß½À´Ï´Ù. Á×ÀÎ Àû±ºÀÇ ¼ö : %d¸í, Á×Àº ¾Æ±ºÀÇ ¼ö : %d¸í"
+    IDP_ELMORAD_VICTORY     "¿¤¸ð¶óµå°¡ ½Â¸®Çß½À´Ï´Ù. Á×ÀÎ Àû±ºÀÇ ¼ö : %d¸í, Á×Àº ¾Æ±ºÀÇ ¼ö : %d¸í"
+    IDP_KARUS_BANISH        "ÀüÀïÁ¸¿¡ ÀÖ´Â ¿¤¸ð ¿ë»çµéÀº Ãß¹æ´çÇÏ¿´½À´Ï´Ù!"
+    IDP_ELMORAD_BANISH      "ÀüÀïÁ¸¿¡ ÀÖ´Â Ä«·ç½º ¿ë»çµéÀº Ãß¹æ´çÇÏ¿´½À´Ï´Ù!"
+    IDP_KNIGHT_NAME_REPEAT  "±â»ç´ÜÀÌ¸§ÀÌ Áßº¹µÇ¾ú½À´Ï´Ù."
+    IDP_KNIGHT_ALREADY_REGISTERED "ÀÌ¹Ì ±â»ç´Ü¿¡ °¡ÀÔµÇ¾î ÀÖ½À´Ï´Ù."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDP_KNIGHT_INSUFFICIENT_LEVEL 
+                            "±â»ç´ÜÀ» Ã¢¼³ ÇÏ·Á¸é 20 Level ÀÌ»óÀÌ ÇÊ¿äÇÕ´Ï´Ù."
+    IDP_KNIGHT_INSUFFICIENT_LOYALTY 
+                            "±â»ç´ÜÀ» Ã¢¼³ ÇÏ·Á¸é ±¹°¡±â¿©µµ 800 ÀÌ»óÀÌ ÇÊ¿äÇÕ´Ï´Ù."
+    IDP_KNIGHT_INSUFFICIENT_SKILL 
+                            "±â»ç´ÜÀ» Ã¢¼³ ÇÏ·Á¸é ÁöÈÖ½ºÅ³ 10, ¿¹Àý½ºÅ³ 5 ÀÌ»óÀÌ ÇÊ¿äÇÕ´Ï´Ù."
+    IDP_KNIGHT_INSUFFICIENT_CHARISMA 
+                            "±â»ç´ÜÀ» Ã¢¼³ ÇÏ·Á¸é ¸Å·Â 120 ÀÌ»óÀÌ ÇÊ¿äÇÕ´Ï´Ù."
+    IDP_KNIGHT_INSUFFICIENT_GOLD 
+                            "±â»ç´ÜÀ» Ã¢¼³ ÇÏ·Á¸é 1000000³ë¾Æ ÀÌ»óÀÌ ÇÊ¿äÇÕ´Ï´Ù."
+    IDP_KNIGHT_CREATE_FAIL  "±â»ç´Ü Ã¢¼³¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù."
+    IDP_KNIGHT_NOT_AVAILABLE "Á¸ÀçÇÏÁö ¾Ê´Â ±â»ç´ÜÀÔ´Ï´Ù."
+    IDP_KNIGHT_LEADER_ONLY  "±â»ç´ÜÀå ¸¸ÀÌ ÇÒ ¼ö ÀÖ½À´Ï´Ù."
+    IDP_KNIGHT_MINIMUM_SUBLEADER "ºÎ±â»ç´ÜÀå ÀÌ»óÀÌ ÇÒ ¼ö ÀÖ½À´Ï´Ù."
+    IDP_KNIGHT_NOT_REGISTERED "±â»ç´Ü¿¡ °¡ÀÔµÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù."
+    IDP_KNIGHT_DB_FAIL      "±â»ç´Ü DBÃ³¸®¿¡ ½ÇÆÐÇÏ¿´½À´Ï´Ù."
+    IDP_WRONG_ID            "Àß¸øµÈ ¾ÆÀÌµð ÀÔ´Ï´Ù."
+    IDP_SOURCE_UNABLE       "ÀÚ½ÅÀº ÇÒ ¼ö ¾ø½À´Ï´Ù."
+    IDP_MINIMUM_OFFICER     "Àå±³ ÀÌ»óÀÌ ÇÒ ¼ö ÀÖ½À´Ï´Ù."
+    IDP_ANNOUNCEMENT        "#### °øÁö : %s ####"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ELMORAD_LOSER       "¿¤¸ð¶óµå°¡ ÆÐ¹èÇÏ¿´½À´Ï´Ù. Á×ÀÎ Àû±ºÀÇ ¼ö : %d¸í, Á×Àº ¾Æ±ºÀÇ ¼ö : %d¸í"
+    IDS_KARUS_LOSER         "Ä«·ç½º°¡ ÆÐ¹èÇÏ¿´½À´Ï´Ù. Á×ÀÎ Àû±ºÀÇ ¼ö : %d¸í, Á×Àº ¾Æ±ºÀÇ ¼ö : %d¸í"
+    IDS_BANISH_USER         "·ç³ª¹ë¸®¿¡ ÀÖ´Â À¯Àú¿Í Àû±¹¿¡ ÀÖ´Â À¯Àú´Â º»±¹À¸·Î °­Á¦¼ÒÈ¯ÇÕ´Ï´Ù"
+    IDS_BATTLE_CLOSE        "·ç³ª°ÔÀÌÆ®°¡ ´ÝÈü´Ï´Ù"
+    IDS_KILL_GATEKEEPER     "Àû±¹ÀÇ ¼ö¹®ÀåÀ» Á×ÀÎ À¯ÀúÀÌ¸§Àº [%s][%s] ´ÔÀÔ´Ï´Ù. ÃàÇÏÇÕ´Ï´Ù."
+    IDS_KILL_CAPTAIN        "Àû±¹ÀÇ ´ëÀåÀ» Á×ÀÎ À¯ÀúÀÌ¸§Àº [%s][%s] ´ÔÀÔ´Ï´Ù, ÃàÇÏÇÕ´Ï´Ù."
+    IDS_KILL_KARUS_GUARD1   "Ä«·ç½º Á¦ 1¿ä»õÀÇ ¼ö¹®´ëÀåÀÌ Àü»çÇß½À´Ï´Ù. ¼ö¹®´ëÀåÀ» Á×ÀÎ Àû±ºÀ¯Àú´Â [%s][%s] ÀÔ´Ï´Ù"
+    IDS_KILL_KARUS_GUARD2   "Ä«·ç½º Á¦ 2¿ä»õÀÇ ¼ö¹®´ëÀåÀÌ Àü»çÇß½À´Ï´Ù. ¼ö¹®´ëÀåÀ» Á×ÀÎ Àû±ºÀ¯Àú´Â [%s][%s] ÀÔ´Ï´Ù"
+    IDS_KILL_ELMO_GUARD1    "¿¤¸ð¶óµå Á¦ 1¿ä»õÀÇ ¼ö¹®´ëÀåÀÌ Àü»çÇß½À´Ï´Ù. ¼ö¹®´ëÀåÀ» Á×ÀÎ Àû±ºÀ¯Àú´Â [%s][%s] ÀÔ´Ï´Ù"
+    IDS_KILL_ELMO_GUARD2    "¿¤¸ð¶óµå Á¦ 2¿ä»õÀÇ ¼ö¹®´ëÀåÀÌ Àü»çÇß½À´Ï´Ù. ¼ö¹®´ëÀåÀ» Á×ÀÎ Àû±ºÀ¯Àú´Â [%s][%s] ÀÔ´Ï´Ù"
+    IDS_KARUS_CAPTAIN       "Ä«·ç½ºÀÇ ÁöÈÖ°üÀº %s, %s, %s, %s, %s ÀÔ´Ï´Ù"
+    IDS_ELMO_CAPTAIN        "¿¤¸ð¶óµåÀÇ ÃÑÁöÈÖ°üÀº  %s, %s, %s, %s, %s ÀÔ´Ï´Ù"
+    IDS_KARUS_CAPTAIN_DEPRIVE "Ä«·ç½ºÀÇ ÁöÈÖ°ü [%s][%s] ´ÔÀÌ Àü»çÇÏ¿´½À´Ï´Ù. "
+    IDS_ELMO_CAPTAIN_DEPRIVE 
+                            "¿¤¸ð¶óµåÀÇ ÁöÈÖ°ü  [%s][%s]´ÔÀÌ Àü»çÇÏ¿´½À´Ï´Ù.  "
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_COUPON_NOTEPAD_ID   "3572-8471-3720-2495"
+    IDS_COUPON_POSTIT_ID    "7352-6539-3720-2495"
+END
+
+#endif    // Korean resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Taiwan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
+#pragma code_page(950)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "Ebenezer ??(&A)..."
+    IDP_SOCKETS_INIT_FAILED "Windows ?? ???? ???????."
+    IDP_BATTLEZONE_OPEN     "³q©¹³·¾Ô³õªº¹D¸ô¤w¥i³q?¡A³·²y¤j¾Ô?¦¡©Ô?§Ç¹õ."
+    IDP_KARUS_VICTORY       "¥d?´µÀò³Ó¡AÀ»±Ñ¼Ä¤H¼Æ : %d¦W]¡A³QÀ»±Ñªº§Ú­x¼Æ : %d¦W"
+    IDP_ELMORAD_VICTORY     "¦ã²öº¸Àò³Ó¡AÀ»±Ñ¼Ä¤H¼Æ : %d¦W]¡A³QÀ»±Ñªº§Ú­x¼Æ : %d¦W"
+    IDP_KARUS_BANISH        "¾Ô³õ¤¤ªº·R¾¥º¸«i¤h³QÅX³v!"
+    IDP_ELMORAD_BANISH      "¾Ô³õ¤¤ªº¥d?´µ«i¤h³QÅX³v!"
+    IDP_KNIGHT_NAME_REPEAT  "?????? ???????."
+    IDP_KNIGHT_ALREADY_REGISTERED "?? ???? ???? ????."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDP_KNIGHT_INSUFFICIENT_LEVEL "???? ?? ??? 20 Level ??? ?????."
+    IDP_KNIGHT_INSUFFICIENT_LOYALTY "???? ?? ??? ????? 800 ??? ?????."
+    IDP_KNIGHT_INSUFFICIENT_SKILL "???? ?? ??? ???? 10, ???? 5 ??? ?????."
+    IDP_KNIGHT_INSUFFICIENT_CHARISMA "???? ?? ??? ?? 120 ??? ?????."
+    IDP_KNIGHT_INSUFFICIENT_GOLD "???? ?? ??? 1000000?? ??? ?????."
+    IDP_KNIGHT_CREATE_FAIL  "??? ??? ???????."
+    IDP_KNIGHT_NOT_AVAILABLE "???? ?? ??????."
+    IDP_KNIGHT_LEADER_ONLY  "???? ?? ? ? ????."
+    IDP_KNIGHT_MINIMUM_SUBLEADER "????? ??? ? ? ????."
+    IDP_KNIGHT_NOT_REGISTERED "???? ???? ?? ????."
+    IDP_KNIGHT_DB_FAIL      "??? DB??? ???????."
+    IDP_WRONG_ID            "??? ??? ???."
+    IDP_SOURCE_UNABLE       "??? ? ? ????."
+    IDP_MINIMUM_OFFICER     "?? ??? ? ? ????."
+    IDP_ANNOUNCEMENT        "#### GM¤½§i : %s ####"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ELMORAD_LOSER       "¦ã²öº¸±Ñ?¡AÀ»±Ñ¼Ä¤H¼Æ : %d¦W, ³QÀ»±Ñ§Ú­xªº¼Æ : %d¦W"
+    IDS_KARUS_LOSER         "¥d?´µ±Ñ?¡AÀ»±Ñ¼Ä¤H¼Æ : %d¦W, ³QÀ»±Ñ§Ú­xªº¼Æ : %d¦W"
+    IDS_BANISH_USER         "³·¾Ô³õ¤ºªºª±®a»P¦b¼Ä°êªºª±®a±j¨î¶Ç°e¦Ü¥X³·¾Ô³õ"
+    IDS_BATTLE_CLOSE        "³·¾Ô³õ¤wÃö³¬"
+    IDS_KILL_GATEKEEPER     "¼Ä¤è¦u³Æ­x¤w³Q [%s] [%s] À»±Ñ¡I¡I"
+    IDS_KILL_CAPTAIN        "¼Ä¤è¶¤?¤w³Q [%s] [%s] À»±Ñ¡I¡I"
+    IDS_KILL_KARUS_GUARD1   "¥d?´µ²Ä?°ò¦aªº¦u³Æ­x¤w³QÀ»±Ñ¡A«Ø?ªÌ¬° [%s] [%s]. "
+    IDS_KILL_KARUS_GUARD2   "¥d?´µ²Ä¤G°ò¦aªº¦u³Æ­x¤w³QÀ»±Ñ¡A«Ø?ªÌ¬° [%s] [%s]. "
+    IDS_KILL_ELMO_GUARD1    "¦ã²öº¸²Ä?°ò¦aªº¦u³Æ­x¤w³QÀ»±Ñ¡A«Ø?ªÌ¬° [%s] [%s]. "
+    IDS_KILL_ELMO_GUARD2    "¦ã²öº¸²Ä¤G°ò¦aªº¦u³Æ­x¤w³QÀ»±Ñ¡A«Ø?ªÌ¬° [%s] [%s]. "
+    IDS_KARUS_CAPTAIN       "¥d?´µ?¦bªº?´§©x¬O %s¡B%s¡B%s¡B%s¡B%s"
+    IDS_ELMO_CAPTAIN        "¦ã²öº¸?¦bªº?´§©x¬O %s¡B%s¡B%s¡B%s¡B%s"
+    IDS_KARUS_CAPTAIN_DEPRIVE "¥d?´µªº?´§©x [%s][%s] ¾Ô¦º. "
+    IDS_ELMO_CAPTAIN_DEPRIVE "¦ã²öº¸ªº?´§©x [%s][%s] ¾Ô¦º.  "
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_COUPON_NOTEPAD_ID   "3572-8471-3720-2495"
+    IDS_COUPON_POSTIT_ID    "7352-6539-3720-2495"
+END
+
+#endif    // Chinese (Taiwan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#ifdef _WIN32
+LANGUAGE 18, 1
+#pragma code_page(949)
+#endif //_WIN32
+#include "res\Ebenezer.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.kor\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
