@@ -1291,13 +1291,17 @@ void CUISkillTreeDlg::ButtonVisibleStateSet()
 	__ASSERT(pButton, "NULL UI Component!!"); if (!pButton) return;	pButton->SetVisible(true);	if ( m_iCurKindOf == 4 )	pButton->SetState(UI_STATE_BUTTON_DOWN);	\
 }
 
-	CN3UIButton* pButton;
-	pButton = (CN3UIButton*) GetChildByID("btn_public");
-	__ASSERT(pButton, "NULL UI Component!!");
-	pButton->SetState(UI_STATE_BUTTON_NORMAL);
+	CN3UIButton* pButton = nullptr;
 
-	// All Button Set Invisible..
-	// Elmorad..
+	N3_VERIFY_UI_COMPONENT(pButton, (CN3UIButton*) GetChildByID("btn_public"));
+	if (pButton != nullptr)
+		pButton->SetState(UI_STATE_BUTTON_NORMAL);
+
+	// Hide all existing buttons by default.
+	N3_VERIFY_UI_COMPONENT(pButton, (CN3UIButton*) GetChildByID("btn_master"));
+	if (pButton != nullptr)
+		pButton->SetVisible(false);
+
 	switch (CGameBase::s_pPlayer->m_InfoBase.eNation)
 	{
 		case NATION_ELMORAD:
@@ -1316,7 +1320,6 @@ void CUISkillTreeDlg::ButtonVisibleStateSet()
 			pButton = (CN3UIButton*) GetChildByID("btn_master");		ASSET_0;
 			break;
 
-		// Karus..
 		case NATION_KARUS:
 			pButton = (CN3UIButton*) GetChildByID("btn_hunter0");		ASSET_0;
 			pButton = (CN3UIButton*) GetChildByID("btn_hunter1");		ASSET_0;
@@ -1424,6 +1427,19 @@ void CUISkillTreeDlg::ButtonVisibleStateSet()
 			pButton = (CN3UIButton*) GetChildByID("btn_master");		ASSET_4;
 			break;
 
+		case CLASS_EL_MAGE:
+			pButton = (CN3UIButton*) GetChildByID("btn_mage0");			ASSET_1;
+			pButton = (CN3UIButton*) GetChildByID("btn_mage1");			ASSET_2;
+			pButton = (CN3UIButton*) GetChildByID("btn_mage2");			ASSET_3;
+			break;
+
+		case CLASS_EL_ENCHANTER:
+			pButton = (CN3UIButton*) GetChildByID("btn_mage0");			ASSET_1;
+			pButton = (CN3UIButton*) GetChildByID("btn_mage1");			ASSET_2;
+			pButton = (CN3UIButton*) GetChildByID("btn_mage2");			ASSET_3;
+			pButton = (CN3UIButton*) GetChildByID("btn_master");		ASSET_4;
+			break;
+
 		case CLASS_EL_CLERIC:
 			pButton = (CN3UIButton*) GetChildByID("btn_cleric0");		ASSET_1;
 			pButton = (CN3UIButton*) GetChildByID("btn_cleric1");		ASSET_2;
@@ -1435,19 +1451,6 @@ void CUISkillTreeDlg::ButtonVisibleStateSet()
 			pButton = (CN3UIButton*) GetChildByID("btn_cleric1");		ASSET_2;
 			pButton = (CN3UIButton*) GetChildByID("btn_cleric2");		ASSET_3;
 			pButton = (CN3UIButton*) GetChildByID("btn_master");		ASSET_4;
-			break;
-
-		case CLASS_EL_MAGE:
-			pButton = (CN3UIButton*) GetChildByID("btn_mage0");			ASSET_1;
-			pButton = (CN3UIButton*) GetChildByID("btn_mage1");			ASSET_2;
-			pButton = (CN3UIButton*) GetChildByID("btn_mage2");			ASSET_3;
-			break;
-
-		case CLASS_EL_ENCHANTER:
-			pButton = (CN3UIButton*) GetChildByID("btn_mage0");		ASSET_1;
-			pButton = (CN3UIButton*) GetChildByID("btn_mage1");		ASSET_2;
-			pButton = (CN3UIButton*) GetChildByID("btn_mage2");		ASSET_3;
-			pButton = (CN3UIButton*) GetChildByID("btn_master");	ASSET_4;
 			break;
 	}
 }
@@ -1698,65 +1701,27 @@ void CUISkillTreeDlg::SetPageInIconRegion(int iKindOf, int iPageNum)		// 아이�
 	if(pStr) pStr->SetString(cstr);
 }
 
-void CUISkillTreeDlg::AllClearImageByName(const std::string& szFN, bool bVisible)
+void CUISkillTreeDlg::AllClearImageByName(std::string_view svHeaderID, bool bVisible, std::string_view svCategoryID)
 {
-	CN3UIBase* pBase;
-	std::string str;
+	CN3UIBase* pBase = nullptr;
+	std::string str = "img_";
+	str += svHeaderID;
+	pBase = GetChildByID(str);
+	if (pBase != nullptr)
+		pBase->SetVisible(bVisible);
 
-	for (int i = 0; i < 4; i++)
+	// If a category ID is not set, assume the same as the header ID.
+	if (svCategoryID.empty())
+		svCategoryID = svHeaderID;
+
+	for (int i = 0; i < 3; i++)
 	{
-		str = "img_" + szFN + "_" + std::to_string(i);
-
+		str = "img_";
+		str += svCategoryID;
+		str += "_" + std::to_string(i);
 		pBase = GetChildByID(str);
 		if (pBase != nullptr)
 			pBase->SetVisible(bVisible);
-	}
-
-	str = "img_" + szFN;
-
-	pBase = GetChildByID(str);
-	if (pBase != nullptr)
-		pBase->SetVisible(bVisible);
-
-	for (int i = 0; i < 4; i++)
-	{
-		str = "btn_" + szFN + std::to_string(i);
-
-		CN3UIButton* pButton = GetChildButtonByName(str);
-		if (pButton != nullptr)
-			pButton->SetVisible(bVisible);
-	}
-}
-
-void CUISkillTreeDlg::AllClearImageByNameMaster(const std::string& szFNMaster, bool bVisible, const std::string& szFN)
-{
-	CN3UIBase* pBase;
-	CN3UIButton* pButton;
-	std::string str;
-
-	pBase = GetChildByID("img_master");
-	if (pBase != nullptr)
-		pBase->SetVisible(bVisible);
-
-	pButton = GetChildButtonByName("btn_master");
-	if (pButton != nullptr)
-		pButton->SetVisible(bVisible);
-
-	str = "img_" + szFNMaster;
-	pBase = GetChildByID(str);
-	if (pBase != nullptr)
-		pBase->SetVisible(bVisible);
-
-	if (!szFN.empty())
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			str = "img_" + szFN + "_" + std::to_string(i);
-
-			pBase = GetChildByID(str);
-			if (pBase != nullptr)
-				pBase->SetVisible(bVisible);
-		}
 	}
 }
 
@@ -1767,18 +1732,16 @@ void CUISkillTreeDlg::SetPageInCharRegion()
 
 	switch (CGameBase::s_pPlayer->m_InfoBase.eNation)
 	{
-		// Karus
 		case NATION_KARUS:
 			AllClearImageByName("berserker", false);
-			AllClearImageByNameMaster("Berserker Hero", false);
+			AllClearImageByName("Berserker Hero", false);
 			AllClearImageByName("hunter", false);
-			AllClearImageByNameMaster("Shadow Bane", false);
+			AllClearImageByName("Shadow Bane", false);
 			AllClearImageByName("sorcerer", false);
-			AllClearImageByNameMaster("Elemental Lord", false);
+			AllClearImageByName("Elemental Lord", false);
 			AllClearImageByName("shaman", false);
-			AllClearImageByNameMaster("Shadow Knight", false);
+			AllClearImageByName("Shadow Knight", false);
 
-			// Class
 			switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
 			{
 				case CLASS_KA_WARRIOR:
@@ -1805,35 +1768,33 @@ void CUISkillTreeDlg::SetPageInCharRegion()
 					break;
 
 				case CLASS_KA_GUARDIAN:
-					AllClearImageByNameMaster("Berserker Hero", true, "berserker");
+					AllClearImageByName("Berserker Hero", true, "berserker");
 					break;
 
 				case CLASS_KA_PENETRATOR:
-					AllClearImageByNameMaster("Shadow Bane", true, "hunter");
+					AllClearImageByName("Shadow Bane", true, "hunter");
 					break;
 
 				case CLASS_KA_NECROMANCER:
-					AllClearImageByNameMaster("Elemental Lord", true, "sorcerer");
+					AllClearImageByName("Elemental Lord", true, "sorcerer");
 					break;
 
 				case CLASS_KA_DARKPRIEST:
-					AllClearImageByNameMaster("Shadow Knight", true, "shaman");
+					AllClearImageByName("Shadow Knight", true, "shaman");
 					break;
 			}
 			break;
 
-		// El Morad
 		case NATION_ELMORAD:
 			AllClearImageByName("blade", false);
-			AllClearImageByNameMaster("Blade Master", false);
+			AllClearImageByName("Blade Master", false);
 			AllClearImageByName("ranger", false);
-			AllClearImageByNameMaster("Kasar Hood", false);
+			AllClearImageByName("Kasar Hood", false);
 			AllClearImageByName("mage", false);
-			AllClearImageByNameMaster("Arc Mage", false);
+			AllClearImageByName("Arc Mage", false);
 			AllClearImageByName("cleric", false);
-			AllClearImageByNameMaster("Paladin", false);
+			AllClearImageByName("Paladin", false);
 
-			// Class
 			switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
 			{
 				case CLASS_EL_WARRIOR:
@@ -1860,21 +1821,42 @@ void CUISkillTreeDlg::SetPageInCharRegion()
 					break;
 
 				case CLASS_EL_PROTECTOR:
-					AllClearImageByNameMaster("Blade Master", true, "blade");
+					AllClearImageByName("Blade Master", true, "blade");
 					break;
 
 				case CLASS_EL_ASSASIN:
-					AllClearImageByNameMaster("Kasar Hood", true, "ranger");
+					AllClearImageByName("Kasar Hood", true, "ranger");
 					break;
 
 				case CLASS_EL_ENCHANTER:
-					AllClearImageByNameMaster("Arc Mage", true, "mage");
+					AllClearImageByName("Arc Mage", true, "mage");
 					break;
 
 				case CLASS_EL_DRUID:
-					AllClearImageByNameMaster("Paladin", true, "cleric");
+					AllClearImageByName("Paladin", true, "cleric");
 					break;
 			}
+	}
+
+	CN3UIBase* pImgMaster = GetChildByID("img_master");
+	switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+	{
+		case CLASS_KA_GUARDIAN:
+		case CLASS_KA_PENETRATOR:
+		case CLASS_KA_NECROMANCER:
+		case CLASS_KA_DARKPRIEST:
+		case CLASS_EL_PROTECTOR:
+		case CLASS_EL_ASSASIN:
+		case CLASS_EL_ENCHANTER:
+		case CLASS_EL_DRUID:
+			if (pImgMaster != nullptr)
+				pImgMaster->SetVisible(true);
+			break;
+
+		default:
+			if (pImgMaster != nullptr)
+				pImgMaster->SetVisible(false);
+			break;
 	}
 }
 

@@ -7892,6 +7892,7 @@ void CGameProcMain::MsgRecv_ClassPromotion(Packet& pkt)
 		m_pUIVar->UpdateAllStates(&s_pPlayer->m_InfoBase, &s_pPlayer->m_InfoExt);
 		m_pUIHotKeyDlg->ClassChangeHotkeyFlush();
 		m_pUISkillTreeDlg->SetPageInCharRegion();
+		m_pUISkillTreeDlg->ButtonVisibleStateSet();
 		m_pUISkillTreeDlg->InitIconUpdate();
 	}
 	else
