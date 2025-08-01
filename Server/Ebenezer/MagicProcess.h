@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "GameDefine.h"
+
 #define NONE_R				0	
 #define	FIRE_R				1
 #define	COLD_R				2
@@ -21,7 +23,6 @@
 
 class CEbenezerDlg;
 class CUser;
-struct _MAGIC_TABLE;
 
 class CMagicProcess
 {
@@ -44,7 +45,7 @@ public:
 	BYTE ExecuteType2(int magicid, int sid, int tid, int data1, int data2, int data3);
 	BYTE ExecuteType1(int magicid, int sid, int tid, int data1, int data2, int data3);
 
-	_MAGIC_TABLE* IsAvailable(int magicid, int tid, int sid, BYTE type, int data1, int data2, int data3);
+	model::Magic* IsAvailable(int magicid, int tid, int sid, BYTE type, int data1, int data2, int data3);
 	void MagicPacket(char* pBuf, int len);
 
 	CMagicProcess();

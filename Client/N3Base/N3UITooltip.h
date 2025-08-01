@@ -33,7 +33,7 @@ protected:
 
 // Operations
 public:
-	void			SetText(const std::string& szText);
+	void			SetText(const std::string& szText, D3DCOLOR crTooltip);
 	virtual void	Release();
 	virtual void	Tick();
 	virtual void	Render();

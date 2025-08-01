@@ -11,7 +11,7 @@
 #include "MagicSkillMng.h"
 #include "UIManager.h"
 #include "UIInventory.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIString.h>
 
@@ -106,7 +106,7 @@ uint32_t CUIHotKeyDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if ( !IsVisible() ) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 	// 실제로 쓰진 않는다..
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( GetState() == UI_STATE_ICON_MOVING ) 
@@ -416,7 +416,7 @@ void CUIHotKeyDlg::InitIconUpdate()
 			__TABLE_UPC_SKILL* pUSkill = NULL;
 
 			// Skill Tree Window가 아이디를 갖고 있지 않으면 continue.. 
-			if ( (HD.iID < UIITEM_TYPE_SONGPYUN_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
+			if ( (HD.iID < UIITEM_TYPE_USABLE_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
 				continue;
 
 			pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
@@ -896,7 +896,7 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
 		if ( pUSkill == NULL ) return false;
-		if ( pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+		if ( pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
 
 		spSkill = new __IconItemSkill();
 		spSkill->pSkill = pUSkill;

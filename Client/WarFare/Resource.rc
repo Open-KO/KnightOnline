@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Korean resources
+// Korean (Korea) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
-#ifdef _WIN32
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 #pragma code_page(949)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -46,17 +44,16 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Korean resources
+#endif    // Korean (Korea) resources
+/////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Neutral resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
-#ifdef _WIN32
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-#pragma code_page(950)
-#endif //_WIN32
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -65,20 +62,16 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_MAIN                ICON    DISCARDABLE     "WarFare_1298.ico"
+IDI_MAIN                ICON                    "WarFare_1298.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
 //
 
-IDR_MAIN_ACCELATOR ACCELERATORS DISCARDABLE 
-BEGIN
-    "1",            ID_DEBUG0,              VIRTKEY, CONTROL, ALT, NOINVERT
-END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -101,18 +94,14 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "NoahSystem\0"
-            VALUE "FileDescription", "Knight Online Client\0"
-            VALUE "FileVersion", "2, 3, 11, 1718\0"
-            VALUE "InternalName", "Warfare\0"
-            VALUE "LegalCopyright", "Copyright ? 2001. NoahSystem.co.ltd\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "KnightOnline.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "Knights OnLine Client\0"
-            VALUE "ProductVersion", "2, 3, 11, 1718\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "CompanyName", "NoahSystem"
+            VALUE "FileDescription", "Knight Online Client"
+            VALUE "FileVersion", "2, 3, 11, 1718"
+            VALUE "InternalName", "Warfare"
+            VALUE "LegalCopyright", "Copyright ? 2001. NoahSystem.co.ltd"
+            VALUE "OriginalFilename", "KnightOnline.exe"
+            VALUE "ProductName", "Knights OnLine Client"
+            VALUE "ProductVersion", "2, 3, 11, 1718"
         END
     END
     BLOCK "VarFileInfo"
@@ -121,23 +110,29 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Cursor
 //
 
-IDC_CURSOR_ATTACK       CURSOR  DISCARDABLE     "Cursor_Attack.cur"
-IDC_CURSOR_CLICK        CURSOR  DISCARDABLE     "Cursor_Click.cur"
-IDC_CURSOR_NORMAL       CURSOR  DISCARDABLE     "Cursor_Normal.cur"
-IDC_CURSOR_NOW_REPAIR   CURSOR  DISCARDABLE     "repair1.cur"
-IDC_CURSOR_PRE_REPAIR   CURSOR  DISCARDABLE     "repair0.cur"
-IDC_CURSOR_CLICK1       CURSOR  DISCARDABLE     "cursor_click1.cur"
-IDC_CURSOR_NORMAL1      CURSOR  DISCARDABLE     "cursor_normal1.cur"
+IDC_CURSOR_ATTACK       CURSOR                  "Cursor_Attack.cur"
+
+IDC_CURSOR_CLICK        CURSOR                  "Cursor_Click.cur"
+
+IDC_CURSOR_NORMAL       CURSOR                  "Cursor_Normal.cur"
+
+IDC_CURSOR_NOW_REPAIR   CURSOR                  "repair1.cur"
+
+IDC_CURSOR_PRE_REPAIR   CURSOR                  "repair0.cur"
+
+IDC_CURSOR_CLICK1       CURSOR                  "cursor_click1.cur"
+
+IDC_CURSOR_NORMAL1      CURSOR                  "cursor_normal1.cur"
+
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
+
 
 
 #ifndef APSTUDIO_INVOKED

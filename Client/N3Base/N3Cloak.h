@@ -17,6 +17,14 @@
 
 enum e_Cloak_AnchorMovePattern {AMP_NONE=0, AMP_YAWCCW, AMP_YAWCW, AMP_MOVEX, AMP_MOVEY, AMP_MOVEZ, AMP_MOVEXZ, AMP_MOVEXZ2};
 
+enum e_CloakMove
+{
+	CLOAK_MOVE_STOP = 0,
+	CLOAK_MOVE_WALK,
+	CLOAK_MOVE_RUN,
+	CLOAK_MOVE_WALK_BACKWARD,
+};
+
 class CPlayerBase;
 class CN3Chr;
 class CN3CPlug_Cloak;
@@ -48,7 +56,6 @@ public:
 	};
 
 	void				Init(CN3CPlug_Cloak *pPlugCloak);	
-	void				SetPlayerBase(CPlayerBase *pBase){m_bpPlayerBase = pBase;}	
 	void				SetLOD(int nLevel);
 	void				ApplyOffset(D3DXVECTOR3	&vDif);
 protected:
@@ -61,31 +68,30 @@ protected:
 	void				MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTime);
 
 	//
-	CN3Texture			*m_pTex;
+	CN3Texture*			m_pTex;
 	__VertexT1*			m_pVertex;
-	uint16_t				*m_pIndex;
+	uint16_t*			m_pIndex;
 	int					m_nVertexCount, m_nIndexCount;
 
 	int					m_nGridW, m_nGridH;
 	int					m_nLOD;
 
-	CPlayerBase			*m_bpPlayerBase;
-	CN3PMesh			*m_pPMesh;
+	CN3PMesh*			m_pPMesh;
 	float				m_fOffsetRecoveryTime;
 	float				m_fPrevYaw;
-	
-	
-	__Particle			*m_pParticle;	
+
+
+	__Particle*			m_pParticle;
 	D3DXVECTOR3			m_GravityForce;		// 중력(.y)가 항상있어야 변형이 일어나지 않는다..
 	D3DXVECTOR3			m_Force;			// 외부에서 가해지는 힘.
-	
+
 
 	void				UpdateLocalForce();	
 	void				ApplyForce();
-	void				TickYaw();
-	void				TickByPlayerMotion();
+	void				TickYaw(float fYaw);
+	void				TickByPlayerMotion(e_CloakMove eCurMove);
 public:
-	virtual void Tick(int nLOD);
+	virtual void Tick(int nLOD, float fYaw, e_CloakMove eCurMove);
 	virtual void Render(__Matrix44 &mtx);
 	virtual void Release();
 };

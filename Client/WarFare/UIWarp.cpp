@@ -6,7 +6,7 @@
 #include "UIWarp.h"
 #include "UIManager.h"
 #include "GameProcMain.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIButton.h>
 #include <N3Base/N3UIString.h>

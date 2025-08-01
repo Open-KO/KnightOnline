@@ -48,9 +48,6 @@
     <ClInclude Include="DFont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JPEG.H">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LogWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -299,9 +296,6 @@
     <ClCompile Include="DFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JPEG.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LogWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -330,9 +324,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3FXBundle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3FXMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3FXPartBase.cpp">
@@ -446,13 +437,7 @@
     <ClCompile Include="N3UIButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N3UIDBCLButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="N3UIEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3UIIcon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3UIImage.cpp">

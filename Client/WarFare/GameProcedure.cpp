@@ -31,17 +31,18 @@
 #include "UIPartyOrForce.h"
 #include "UIMessageWnd.h"
 #include "UIEndingDisplay.h"
-#include "JpegFile.h"
 #include "MagicSkillMng.h"
 #include "GameCursor.h"
 #include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIEdit.h>
 #include <N3Base/N3SndObjStream.h>
 #include <N3Base/N3FXBundle.h>
 
 #include <N3Base/BitmapFile.h>
-#include <N3Base/Jpeg.h>
+
+#include <JpegFile/JpegFile.h>
 
 #include <shared/lzf.h>
 

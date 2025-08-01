@@ -1,7 +1,7 @@
 ﻿#include "StdAfx.h"
 #include "UITargetBar.h"
 #include "GameBase.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIProgress.h>
 #include <N3Base/N3UIString.h>

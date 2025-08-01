@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "GameProcCharacterSelect.h"
 #include "GameProcedure.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "GameEng.h"
 #include "LocalInput.h"

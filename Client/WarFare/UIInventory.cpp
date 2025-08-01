@@ -21,7 +21,7 @@
 #include "UISkillTreeDlg.h"
 #include "MagicSkillMng.h"
 
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/LogWriter.h>
 #include <N3Base/N3UIButton.h>
@@ -74,7 +74,7 @@ CUIInventory::CUIInventory()
 	for( int i = 0; i < MAX_ITEM_INVENTORY; i++ )	m_pMyInvWnd[i] = NULL;
 
 	m_pUITooltipDlg = NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	s_bWaitFromServer = false;
 
 	m_bOpenningNow = false; // 열리고 있다..
 	m_bClosingNow = false;	// 닫히고 있다..
@@ -533,7 +533,7 @@ uint32_t CUIInventory::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 수리모드이면.. 리턴;
 	if (m_eInvenState == INV_STATE_REPAIR) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
@@ -780,13 +780,13 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 
 	// 본격적으로 Recovery Info를 활용하기 시작한다.. 
 	// 먼저 WaitFromServer를 On으로 하고.. Select Info를 Recovery Info로 복사..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer				= true;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource					= CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict = CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder		= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd			= UIWND_INVENTORY;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget					= NULL;
+	s_bWaitFromServer									= true;
+	m_sRecoveryJobInfo.pItemSource						= m_sSelectedIconInfo.pItemSelect;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= m_sSelectedIconInfo.UIWndSelect.UIWnd;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+	m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= m_sSelectedIconInfo.UIWndSelect.iOrder;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_INVENTORY;
+	m_sRecoveryJobInfo.pItemTarget						= nullptr;
 	// 검사하는 도중에 Recovery Info중에 pItemTarget를 필요하다면 작성하고 false를 리턴할때는 원래대로..
 
 	// Arm -> Arm
@@ -810,9 +810,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -849,9 +849,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -903,9 +903,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer				= false;
+				m_sRecoveryJobInfo.pItemSource	= nullptr;
+				m_sRecoveryJobInfo.pItemTarget	= nullptr;
 				return false;
 			}
 		}
@@ -932,9 +932,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -967,9 +967,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -1012,9 +1012,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 		}
 	}
 	
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer					= false;
+	m_sRecoveryJobInfo.pItemSource		= nullptr;
+	m_sRecoveryJobInfo.pItemTarget		= nullptr;
 	return false;
 }
 
@@ -1350,9 +1350,9 @@ void CUIInventory::ReceiveResultFromServer(uint8_t bResult)
 	CN3UIWndBase::AllHighLightIconFree();
 	SetState(UI_STATE_COMMON_NONE);
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer				= false;
+	m_sRecoveryJobInfo.pItemSource	= nullptr;
+	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
 	if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg) CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 	if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg) CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
@@ -1453,10 +1453,20 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 	if (dwMsg == UIMSG_BUTTON_CLICK)					
 	{
-		if(pSender->m_szID == "btn_close")
+		if (pSender->m_szID == "btn_close")
 		{
 			// 인벤토리만 떠 있을때..
 			Close();
+		}
+		else if (pSender->m_szID == "btn_Destroy_ok")
+		{
+			// 인벤토리만 떠 있을때..
+			ItemDestroyOK();
+		}
+		else if (pSender->m_szID == "btn_Destroy_cancel")
+		{
+			// 인벤토리만 떠 있을때..
+			ItemDestroyCancel();
 		}
 	}
 
@@ -1523,7 +1533,10 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			}
 			break;
 
-		case UIMSG_AREA_DOWN_FIRST:
+		// NOTE: These events are the same.
+		// UIMSG_AREA_DOWN_FIRST was only used for the inventory, but they're otherwise identical.
+		// case UIMSG_AREA_DOWN_FIRST:
+		case UIMSG_BUTTON_CLICK:
 			// 개인간 거래중이고.. 내 아이디가 "area_gold"이면..  
 			// SubProcPerTrade에 함수를 호출..	( 그 함수는 edit하는 중이 아니면.. 호출)
 			if ( (CGameProcedure::s_pProcMain->m_pSubProcPerTrade->m_ePerTradeState == PER_TRADE_STATE_NORMAL) &&
@@ -2660,7 +2673,7 @@ void CUIInventory::ItemDestroyOK()
 
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);	
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+	s_bWaitFromServer = true;
 }
 
 void CUIInventory::ItemDestroyCancel()
@@ -2700,7 +2713,7 @@ void CUIInventory::ReceiveResultItemRemoveFromServer(int iResult)
 {
 	CN3UIArea* pArea = NULL;
 	__IconItemSkill* spItem = NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= false;
+	s_bWaitFromServer = false;
 
 	switch (iResult)
 	{

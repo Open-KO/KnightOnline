@@ -4,6 +4,44 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "deps\zlib-msvc\zlib.vcxproj", "{7F0E1487-09C5-400A-978A-DA496CF23C34}"
+	ProjectSection(ProjectDependencies) = postProject
+		{99B647BC-D49E-4322-C338-DC20ACC4239B} = {99B647BC-D49E-4322-C338-DC20ACC4239B}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fetch wrappers", "fetch wrappers", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-zlib", "deps\fetch-and-build-wrappers\fetch-zlib.vcxproj", "{99B647BC-D49E-4322-C338-DC20ACC4239B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-libjpeg-turbo", "deps\fetch-and-build-wrappers\fetch-libjpeg-turbo.vcxproj", "{56988836-40F9-F81D-C8B4-4DC1CE5901E2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jpeg-static", "deps\libjpeg-turbo-msvc\jpeg-static.vcxproj", "{569846A7-5A48-3B16-BB39-BE89E1C71CAA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{56988836-40F9-F81D-C8B4-4DC1CE5901E2} = {56988836-40F9-F81D-C8B4-4DC1CE5901E2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "db-modules", "deps\db-modules-msvc\db-modules.vcxproj", "{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{057C1ABC-6137-37A9-9935-8CF811D7CEDA} = {057C1ABC-6137-37A9-9935-8CF811D7CEDA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-db-modules", "deps\fetch-and-build-wrappers\fetch-db-modules.vcxproj", "{057C1ABC-6137-37A9-9935-8CF811D7CEDA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC} = {3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-nanodbc", "deps\fetch-and-build-wrappers\fetch-nanodbc.vcxproj", "{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nanodbc", "deps\nanodbc-msvc\nanodbc.vcxproj", "{ADBAE15C-F602-4531-8E80-1C3ED2F2D859}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC} = {3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-spdlog", "deps\fetch-and-build-wrappers\fetch-spdlog.vcxproj", "{10898C84-AF45-F0B0-5144-EA801DF15503}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdlog", "deps\spdlog-msvc\spdlog.vcxproj", "{0888A97F-4754-7968-1176-1349CFDD6018}"
+	ProjectSection(ProjectDependencies) = postProject
+		{10898C84-AF45-F0B0-5144-EA801DF15503} = {10898C84-AF45-F0B0-5144-EA801DF15503}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +53,52 @@ Global
 		{7F0E1487-09C5-400A-978A-DA496CF23C34}.Debug|Win32.Build.0 = Debug|Win32
 		{7F0E1487-09C5-400A-978A-DA496CF23C34}.Release|Win32.ActiveCfg = Release|Win32
 		{7F0E1487-09C5-400A-978A-DA496CF23C34}.Release|Win32.Build.0 = Release|Win32
+		{99B647BC-D49E-4322-C338-DC20ACC4239B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{99B647BC-D49E-4322-C338-DC20ACC4239B}.Debug|Win32.Build.0 = Debug|Win32
+		{99B647BC-D49E-4322-C338-DC20ACC4239B}.Release|Win32.ActiveCfg = Release|Win32
+		{99B647BC-D49E-4322-C338-DC20ACC4239B}.Release|Win32.Build.0 = Release|Win32
+		{56988836-40F9-F81D-C8B4-4DC1CE5901E2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{56988836-40F9-F81D-C8B4-4DC1CE5901E2}.Debug|Win32.Build.0 = Debug|Win32
+		{56988836-40F9-F81D-C8B4-4DC1CE5901E2}.Release|Win32.ActiveCfg = Release|Win32
+		{56988836-40F9-F81D-C8B4-4DC1CE5901E2}.Release|Win32.Build.0 = Release|Win32
+		{569846A7-5A48-3B16-BB39-BE89E1C71CAA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{569846A7-5A48-3B16-BB39-BE89E1C71CAA}.Debug|Win32.Build.0 = Debug|Win32
+		{569846A7-5A48-3B16-BB39-BE89E1C71CAA}.Release|Win32.ActiveCfg = Release|Win32
+		{569846A7-5A48-3B16-BB39-BE89E1C71CAA}.Release|Win32.Build.0 = Release|Win32
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}.Debug|Win32.Build.0 = Debug|Win32
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}.Release|Win32.ActiveCfg = Release|Win32
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}.Release|Win32.Build.0 = Release|Win32
+		{10898C84-AF45-F0B0-5144-EA801DF15503}.Debug|Win32.ActiveCfg = Debug|Win32
+		{10898C84-AF45-F0B0-5144-EA801DF15503}.Debug|Win32.Build.0 = Debug|Win32
+		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.ActiveCfg = Release|Win32
+		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.Build.0 = Release|Win32
+		{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}.Debug|Win32.Build.0 = Debug|Win32
+		{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}.Release|Win32.ActiveCfg = Release|Win32
+		{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}.Release|Win32.Build.0 = Release|Win32
+		{057C1ABC-6137-37A9-9935-8CF811D7CEDA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{057C1ABC-6137-37A9-9935-8CF811D7CEDA}.Debug|Win32.Build.0 = Debug|Win32
+		{057C1ABC-6137-37A9-9935-8CF811D7CEDA}.Release|Win32.ActiveCfg = Release|Win32
+		{057C1ABC-6137-37A9-9935-8CF811D7CEDA}.Release|Win32.Build.0 = Release|Win32
+		{ADBAE15C-F602-4531-8E80-1C3ED2F2D859}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ADBAE15C-F602-4531-8E80-1C3ED2F2D859}.Debug|Win32.Build.0 = Debug|Win32
+		{ADBAE15C-F602-4531-8E80-1C3ED2F2D859}.Release|Win32.ActiveCfg = Release|Win32
+		{ADBAE15C-F602-4531-8E80-1C3ED2F2D859}.Release|Win32.Build.0 = Release|Win32
+		{0888A97F-4754-7968-1176-1349CFDD6018}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0888A97F-4754-7968-1176-1349CFDD6018}.Debug|Win32.Build.0 = Debug|Win32
+		{0888A97F-4754-7968-1176-1349CFDD6018}.Release|Win32.ActiveCfg = Release|Win32
+		{0888A97F-4754-7968-1176-1349CFDD6018}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{99B647BC-D49E-4322-C338-DC20ACC4239B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{56988836-40F9-F81D-C8B4-4DC1CE5901E2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{057C1ABC-6137-37A9-9935-8CF811D7CEDA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{10898C84-AF45-F0B0-5144-EA801DF15503} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9937074-3E07-4102-9EF1-BE6E87CF35E4}

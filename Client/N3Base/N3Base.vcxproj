@@ -46,7 +46,6 @@
     <ClInclude Include="AVIPlayer.h" />
     <ClInclude Include="BitMapFile.h" />
     <ClInclude Include="DFont.h" />
-    <ClInclude Include="JPEG.H" />
     <ClInclude Include="LogWriter.h" />
     <ClInclude Include="My_3DStruct.h" />
     <ClInclude Include="N3AlphaPrimitiveManager.h" />
@@ -139,7 +138,6 @@
   <ItemGroup>
     <ClCompile Include="BitMapFile.cpp" />
     <ClCompile Include="DFont.cpp" />
-    <ClCompile Include="JPEG.cpp" />
     <ClCompile Include="LogWriter.cpp" />
     <ClCompile Include="N3AlphaPrimitiveManager.cpp" />
     <ClCompile Include="N3AnimControl.cpp" />
@@ -159,7 +157,6 @@
     <ClCompile Include="N3FXGroup.cpp">
       <ExcludedFromBuild Condition="'$(ToolBuild)'!='true'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="N3FXMgr.cpp" />
     <ClCompile Include="N3FXPartBase.cpp" />
     <ClCompile Include="N3FXPartBillBoard.cpp" />
     <ClCompile Include="N3FXPartBottomBoard.cpp" />
@@ -204,9 +201,7 @@
     <ClCompile Include="N3UIArea.cpp" />
     <ClCompile Include="N3UIBase.cpp" />
     <ClCompile Include="N3UIButton.cpp" />
-    <ClCompile Include="N3UIDBCLButton.cpp" />
     <ClCompile Include="N3UIEdit.cpp" />
-    <ClCompile Include="N3UIIcon.cpp" />
     <ClCompile Include="N3UIImage.cpp" />
     <ClCompile Include="N3UIList.cpp" />
     <ClCompile Include="N3UIProgress.cpp" />

@@ -143,7 +143,7 @@ enum e_LoginOpcode
 	LS_DOWNLOADINFO_REQ			= 0x02,
 	LS_CRYPTION					= 0xF2,
 	LS_LOGIN_REQ				= 0xF3,
-	LS_MGAME_LOGIN				= 0xF4,
+	LS_MGAME_LOGIN				= 0xF4, // NOTE: We don't implement this stored procedure.
 	LS_SERVERLIST				= 0xF5,
 	LS_NEWS						= 0xF6,
 

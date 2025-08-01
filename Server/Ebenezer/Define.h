@@ -268,38 +268,38 @@ struct _REGION_BUFFER
 //	Global Function Define
 //
 
-inline void GetString(char* tBuf, char* sBuf, int len, int& index)
+inline void GetString(char* tBuf, const char* sBuf, int len, int& index)
 {
 	memcpy(tBuf, sBuf + index, len);
 	index += len;
 }
 
-inline BYTE GetByte(char* sBuf, int& index)
+inline BYTE GetByte(const char* sBuf, int& index)
 {
 	int t_index = index;
 	index++;
 	return (BYTE) (*(sBuf + t_index));
 }
 
-inline int GetShort(char* sBuf, int& index)
+inline int GetShort(const char* sBuf, int& index)
 {
 	index += 2;
 	return *(short*) (sBuf + index - 2);
 }
 
-inline DWORD GetDWORD(char* sBuf, int& index)
+inline DWORD GetDWORD(const char* sBuf, int& index)
 {
 	index += 4;
 	return *(DWORD*) (sBuf + index - 4);
 }
 
-inline float Getfloat(char* sBuf, int& index)
+inline float Getfloat(const char* sBuf, int& index)
 {
 	index += 4;
 	return *(float*) (sBuf + index - 4);
 }
 
-inline int64_t GetInt64(char* sBuf, int& index)
+inline int64_t GetInt64(const char* sBuf, int& index)
 {
 	index += 8;
 	return *(int64_t*) (sBuf + index - 8);
@@ -356,7 +356,7 @@ inline void SetString2(char* tBuf, const char* sBuf, short len, int& index)
 }
 
 // sungyong 2001.11.06
-inline int GetVarString(char* tBuf, char* sBuf, int nSize, int& index)
+inline int GetVarString(char* tBuf, const char* sBuf, int nSize, int& index)
 {
 	int nLen = 0;
 	if (nSize == sizeof(BYTE))
@@ -370,7 +370,7 @@ inline int GetVarString(char* tBuf, char* sBuf, int nSize, int& index)
 	return nLen;
 }
 
-inline void SetVarString(char* tBuf, char* sBuf, int len, int& index)
+inline void SetVarString(char* tBuf, const char* sBuf, int len, int& index)
 {
 	*(tBuf + index) = (BYTE) len;
 	index ++;
@@ -419,42 +419,6 @@ inline CString GetProgPath()
 	_tcscpy(Path, drive);
 	_tcscat(Path, dir);
 	return Path;
-}
-
-inline void LogFileWrite(LPCTSTR logstr)
-{
-	CString LogFileName;
-	LogFileName.Format(_T("%s\\Ebenezer.log"), GetProgPath().GetString());
-
-	CFile file;
-	if (!file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-		return;
-
-	file.SeekToEnd();
-
-#if defined(_UNICODE)
-	const std::string utf8 = WideToUtf8(logstr, wcslen(logstr));
-	file.Write(utf8.c_str(), static_cast<int>(utf8.size()));
-#else
-	file.Write(logstr, strlen(logstr));
-#endif
-
-	file.Close();
-}
-
-inline void DisplayErrorMsg(SQLHANDLE hstmt)
-{
-	SQLTCHAR      SqlState[6], Msg[1024];
-	SQLINTEGER    NativeError;
-	SQLSMALLINT   i, MsgLen;
-	SQLRETURN     rc2;
-
-	i = 1;
-	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
-	{
-		TRACE(_T("*** %s, %d, %hs, %d ***\n"), SqlState, NativeError, Msg, MsgLen);
-		i++;
-	}
 }
 
 inline int myrand(int min, int max)
@@ -509,14 +473,6 @@ inline float TimeGet()
 	}
 
 	return (float) timeGetTime();
-}
-
-inline void	TimeTrace(TCHAR* pMsg)
-{
-	CString szMsg;
-	CTime time = CTime::GetCurrentTime();
-	szMsg.Format(_T("%s,,  time : %d-%d-%d, %d:%d]\n"), pMsg, time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
-	TRACE(szMsg);
 }
 
 #endif

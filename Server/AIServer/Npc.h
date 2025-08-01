@@ -41,8 +41,6 @@
 #define MAX_MAGIC_TYPE3			20
 #define MAX_MAGIC_TYPE4			9
 
-
-
 struct  _NpcSkillList
 {
 	short	sSid;
@@ -131,7 +129,11 @@ public:
 	short		m_ItemUserLevel;		// 죽을때 매직 이상 아이템를 떨구기위해 참조해야하는 유저의레벨
 
 	int		m_TotalDamage;	// 총 누적된 대미지양
-	_ExpUserList m_DamagedUserList[NPC_HAVE_USER_LIST]; // 나에게 타격치를 준 유저정보를 리스트로 관리한다.(경험치 분배)
+
+	/// \brief List of user information that has dealt damage to the npc.
+	/// Used for experience point distribution
+	_ExpUserList m_DamagedUserList[NPC_HAVE_USER_LIST];
+	
 	short   m_sMaxDamageUserid;		// 나에게 최고의 데미지를 준 유저의 아이디 저장..
 
 	_PathList m_PathList;			// Npc의 패스 리스트 
@@ -205,7 +207,7 @@ public:
 	//	MONSTER DB 쪽에 있는 변수들
 	//----------------------------------------------------------------
 	short	m_sSid;				// MONSTER(NPC) Serial ID
-	char	m_strName[MAX_NPC_NAME_SIZE + 1];	// MONSTER(NPC) Name
+	std::string	m_strName;		// MONSTER(NPC) Name
 	short	m_sPid;							// MONSTER(NPC) Picture ID
 	short   m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
 	int     m_iWeapon_1;			// 착용 무기
@@ -245,15 +247,11 @@ public:
 	BYTE	m_byAttackRange;	// 사정거리
 	BYTE	m_byTracingRange;	// 추격 거리
 
-	short	m_sAI;				// 인공지능 인덱스
-
 	BYTE	m_tNpcType;			// NPC Type
 								// 0 : Normal Monster
 								// 1 : NPC
 
 	short	m_byFamilyType;		// 몹들사이에서 가족관계를 결정한다.
-	BYTE	m_tItemPer;			// 아이템이 떨어질 확률
-	BYTE	m_tDnPer;			// 돈이 떨어질확률
 	BYTE    m_byMoneyType;		// Event몬스터일 경우 돈을 많이 주는 것, (0:루팅, 1:루팅을 하지 않고 바로 나눠갖는다)
 
 	int		m_iMoney;			// 떨어지는 돈
@@ -263,7 +261,8 @@ public:
 	int			m_iHP;				// 현재 HP
 	short		m_sMP;				// 현재 MP
 
-	float   m_fSecForMetor;		// 초당 갈 수 있는 거리..
+	/// \brief Distance that can be traveled per second
+	float   m_fSecForMetor;
 
 	//----------------------------------------------------------------
 	//	MONSTER AI에 관련된 변수들
@@ -289,8 +288,21 @@ public:
 									// 6:일정시간이 지난 후에 행동하는 몬스터,,
 									// 100:죽었을때 데미지를 많이 입힌 유저를 기록해 주세여
 	BYTE	m_byTrapNumber;			// 던젼에서 트랩의 번호,,
-	BYTE	m_byChangeType;			// 0:정상상태, 1:변하기 위한 준비, 2:다른몬스터로 변함, 3:몬스터의 출현, 100:몬스터의 죽음
-	BYTE	m_byRegenType;			// 0:정상적으로 리젠이 됨.. , 1:한번 죽으면 리젠이 안되는 특수 몸, 2:리젠이 안됨
+
+	/// \brief change state, one of:
+	/// 0: normal state
+	/// 1: preparing to change
+	/// 2: changed into different monster
+	/// 3: spawned
+	/// 4: dead
+	BYTE	m_byChangeType;
+
+	/// \brief Respawn type, one of:
+	/// 0: normal respawn
+	/// 1: special monster, does not respawn after death
+	/// 2: does not respawn
+	BYTE	m_byRegenType;
+	
 	BYTE    m_byDeadType;			// 0:살아 있는 경우, 100:전쟁이벤트중 죽은 경우
 	short   m_sChangeSid;			// 변하는 몬스터의 Sid번호..
 	short   m_sControlSid;			// 조정하는 몬스터의 Sid번호..
@@ -318,7 +330,9 @@ public:
 	float m_fBattlePos_x;
 	float m_fBattlePos_z;
 
-	float m_fSecForRealMoveMetor;		// 초당 갈 수 있는 거리..(실제 클라이언트에 보내주는 거리)
+	/// \brief Distance that can be traveled per second (actual distance sent to the client)
+	float m_fSecForRealMoveMetor;
+	
 	BYTE m_byDirection;					// NPC의 방향
 
 	BOOL m_bPathFlag;					// 패스 파인드 실행여부 체크 변수..
@@ -350,6 +364,7 @@ public:
 	CNpc();
 	virtual ~CNpc();
 
+	void Load(const model::Npc* pNpcTable, bool transformSpeeds);
 	void Init();	//	NPC 기본정보 초기화
 	void InitTarget(void);
 	void InitUserList();
@@ -368,10 +383,9 @@ public:
 	void  FindFriendRegion(int x, int z, MAP* pMap, _TargetHealer* pHealer, int type = 0);
 	//void  FindFriendRegion(int x, int z, MAP* pMap, int type=0);
 	BOOL IsCloseTarget(CUser* pUser, int nRange);
-	void ToTargetMove(CIOCPort* pIOCP, CUser* pUser);
 	int SendDead(CIOCPort* pIOCP, int type = 1);			// Npc Dead
 	void SendExpToUserList();								// User 경험치 분배..
-	BOOL SetDamage(int nAttackType, int nDamage, const char* id, int uid, CIOCPort* pIOCP);	// Npc의 데미지 계산..
+	BOOL SetDamage(int nAttackType, int nDamage, const char* sourceName, int uid, CIOCPort* pIOCP);	// Npc의 데미지 계산..
 	BOOL SetHMagicDamage(int nDamage, CIOCPort* pIOCP);	// Npc의 데미지 계산..
 	int GetDefense();										// Npc의 방어값..
 	void ChangeTarget(int nAttackType, CUser* pUser, CIOCPort* pIOCP);
@@ -431,12 +445,12 @@ public:
 
 	void Dead(CIOCPort* pIOCP, int iDeadType = 0);
 	BOOL FindEnemy();
-	BOOL CheckFindEnermy();
+	BOOL CheckFindEnemy();
 	int FindEnemyRegion();
 	float FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType);
 	int GetMyField();
 
-	void NpcTrace(const TCHAR* pMsg);
+	void NpcTrace(std::string_view msg);
 
 	int GetDir(float x1, float z1, float x2, float z2);
 	void NpcMoveEnd(CIOCPort* pIOCP);
@@ -464,7 +478,7 @@ public:
 	int  GetWeaponItemCodeNumber(int item_type);
 	void DurationMagic_4(CIOCPort* pIOCP, float currenttime);
 	void DurationMagic_3(CIOCPort* pIOCP, float currenttime);
-	void ChangeMonsterInfomation(int iChangeType);
+	void ChangeMonsterInfo(int iChangeType);
 	int  GetPartyExp(int party_level, int man, int nNpcExp);
 	void ChangeAbility(int iChangeType);
 	BOOL Teleport(CIOCPort* pIOCP);

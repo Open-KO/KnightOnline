@@ -10,7 +10,7 @@
 #include "APISocket.h"
 #include "N3UIWndBase.h"
 #include "UIManager.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIButton.h>
 #include <N3Base/N3UIString.h>

@@ -21,12 +21,6 @@
     <ClCompile Include="AISocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BattleSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CoefficientSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Ebenezer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,16 +33,10 @@
     <ClCompile Include="EVENT_DATA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EventSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EXEC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HomeSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IOCPort.cpp">
@@ -57,52 +45,16 @@
     <ClCompile Include="IOCPSocket2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ItemTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Knights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KnightsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KnightsRankSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KnightsSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KnightsUserSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelUpTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LOGIC_ELSE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MagicProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType1Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType2Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType3Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType4Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType5Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType8Set.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
@@ -126,21 +78,12 @@
     <ClCompile Include="User.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ZoneInfoSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
       <Filter>N3Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AISocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CoefficientSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Define.h">
@@ -158,9 +101,6 @@
     <ClInclude Include="EVENT_DATA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EventSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EXEC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -170,16 +110,10 @@
     <ClInclude Include="GameEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HomeSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IOCPort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IOCPSocket2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemTableSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Knights.h">
@@ -188,43 +122,10 @@
     <ClInclude Include="KnightsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KnightsRankSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KnightsSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KnightsUserSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelUpTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LOGIC_ELSE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MagicProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType1Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType2Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType3Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType4Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType5Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType8Set.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">
@@ -246,9 +147,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="User.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ZoneInfoSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">

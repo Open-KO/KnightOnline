@@ -5,13 +5,6 @@
 #include "StdAfxBase.h"
 #include "N3UIString.h"
 
-#ifndef _REPENT
-#ifdef _N3GAME
-#include "..\WarFare\N3UIWndBase.h"
-#include "..\WarFare\UIInventory.h"
-#endif 
-#endif
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -540,7 +533,8 @@ uint32_t CN3UIString::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POIN
 
 #ifndef _REPENT
 #ifdef _N3GAME
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return dwRet;
+	if (s_bWaitFromServer)
+		return dwRet;
 #endif
 #endif
 

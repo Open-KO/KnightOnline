@@ -6,6 +6,8 @@
 #include "IOCPSocket2.h"
 #include <shared/CircularBuffer.h>
 
+#include <spdlog/spdlog.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -38,7 +40,8 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 	if (m_Socket == INVALID_SOCKET)
 	{
 		ret = WSAGetLastError();
-		TRACE(_T("Socket Create Fail! - %d\n"), ret);
+		// see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+		spdlog::error("IOCPSocket2::Create: Winsock error {}", ret);
 		return FALSE;
 	}
 
@@ -46,7 +49,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 	if (m_hSockEvent == WSA_INVALID_EVENT)
 	{
 		ret = WSAGetLastError();
-		TRACE(_T("Event Create Fail! - %d\n"), ret);
+		spdlog::error("IOCPSocket2::Create: CreateEvent winsock error {}", ret);
 		return FALSE;
 	}
 
@@ -66,7 +69,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 	if (result == SOCKET_ERROR)
 	{
 		int err = WSAGetLastError();
-//		TRACE(_T("CONNECT FAIL : %d\n"), err);
+		spdlog::error("IOCPSocket2::Connect: Winsock error {}", err);
 		closesocket(m_Socket);
 		return FALSE;
 	}
@@ -83,7 +86,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 
 	if (!m_pIOCPort->Associate(this, m_pIOCPort->m_hClientIOCPort))
 	{
-		TRACE(_T("Socket Connecting Fail - Associate\n"));
+		spdlog::error("IOCPSocket2::Connect: failed to associate");
 		return FALSE;
 	}
 
@@ -138,7 +141,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 
 		if (last_err == WSA_IO_PENDING)
 		{
-			TRACE(_T("SEND : IO_PENDING[SID=%d]\n"), m_Sid);
+			spdlog::debug("IOCPSocket2::Send: socketId={} IO_PENDING", m_Sid);
 			m_nPending++;
 #ifdef __SAMMA
 			if (m_nPending > 3)
@@ -148,7 +151,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		}
 		else if (last_err == WSAEWOULDBLOCK)
 		{
-			TRACE(_T("SEND : WOULDBLOCK[SID=%d]\n"), m_Sid);
+			spdlog::debug("IOCPSocket2::Send: socketId={} WOULDBLOCK", m_Sid);
 
 			m_nWouldblock++;
 			if (m_nWouldblock > 3)
@@ -157,7 +160,8 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 		}
 		else
 		{
-			TRACE(_T("SEND : ERROR [SID=%d] - %d\n"), m_Sid, last_err);
+			spdlog::error("IOCPSocket2::Send: socketId={} winsock error={}",
+				m_Sid, last_err);
 			m_nSocketErr++;
 			goto close_routine;
 		}
@@ -217,7 +221,7 @@ int CIOCPSocket2::Receive()
 		}
 		else if (last_err == WSAEWOULDBLOCK)
 		{
-			TRACE(_T("RECV : WOULDBLOCK[SID=%d]\n"), m_Sid);
+			spdlog::debug("IOCPSocket2::Receive: socketId={} WOULDBLOCK", m_Sid);
 
 			m_nWouldblock++;
 			if (m_nWouldblock > 3)
@@ -226,7 +230,8 @@ int CIOCPSocket2::Receive()
 		}
 		else
 		{
-			TRACE(_T("RECV : ERROR [SID=%d] - %d\n"), m_Sid, last_err);
+			spdlog::error("IOCPSocket2::Receive: socketId={} winsock error={}",
+				m_Sid, last_err);
 
 			m_nSocketErr++;
 			if (m_nSocketErr == 2)
@@ -262,7 +267,7 @@ void CIOCPSocket2::ReceivedData(int length)
 	if (m_Type == TYPE_CONNECT
 		&& length == 7)
 	{
-		TRACE(_T("Received Data : %d\n"), m_Sid);
+		spdlog::trace("IOCPSocket2::ReceivedData on socketId={}", m_Sid);
 	}
 
 	char* pData = nullptr;
@@ -402,7 +407,8 @@ void CIOCPSocket2::Close()
 	if (retValue == 0)
 	{
 		int errValue = GetLastError();
-		TRACE(_T("PostQueuedCompletionStatus Error : %d\n"), errValue);
+		spdlog::error("IOCPSocket2::Close: socketId={} PostQueuedCompletionStatus error={}",
+			m_Sid, errValue);
 	}
 }
 
@@ -433,7 +439,8 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, sockaddr* addr, int* len)
 	if (m_Socket == INVALID_SOCKET)
 	{
 		int err = WSAGetLastError();
-		TRACE(_T("Socket Accepting Fail - %d\n"), err);
+		spdlog::error("IOCPSocket2::Accept: socketId={} winsock error={}",
+			m_Sid, err);
 		return FALSE;
 	}
 

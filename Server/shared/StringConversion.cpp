@@ -246,6 +246,14 @@ std::wstring LocalToWide(
 		input.size());
 }
 
+std::wstring LocalToWide(
+	std::string_view input)
+{
+	return LocalToWide(
+		input.data(),
+		input.size());
+}
+
 bool WideToLocal(
 	const wchar_t* input,
 	size_t input_size,
@@ -275,5 +283,13 @@ std::string WideToLocal(
 {
 	return WideToLocal(
 		input.c_str(),
+		input.size());
+}
+
+std::string WideToLocal(
+	std::wstring_view input)
+{
+	return WideToLocal(
+		input.data(),
 		input.size());
 }

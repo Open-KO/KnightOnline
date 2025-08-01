@@ -17,7 +17,9 @@ class CPlayerMySelf : public CPlayerBase
 {
 protected:
 	bool			m_bRunning; // 뛰는지..
-	float			m_fAttackTimeRecent;	// 최근에 공격한 시간..
+
+	/// \brief the last time an attack/skill message was sent to the server
+	float			m_fAttackTimeRecent;
 
 	__Vector3		m_vCollisionOffsets[3]; // 허리 부분 2개의 충돌 체크 + 머리 부분 1개의 충돌 체크..
 
@@ -60,7 +62,12 @@ public:
 
 	float			AttackableDistance(CPlayerBase* pTarget);
 	float			DistanceExceptRadius(CPlayerBase* pTarget);
-	bool			IsAttackableTarget(CPlayerBase* pTarget, bool bMesureAngle = true); // 공격 가능한 범위에 있는지..
+
+	/// \brief checks to see if an attack can be performed on the target
+	/// \param pTarget
+	/// \param bMeasureAngle does the target need to be in front of the attacker?
+	/// \returns true if attack would be valid, false otherwise
+	bool			IsAttackableTarget(CPlayerBase* pTarget, bool bMeasureAngle = true); // 공격 가능한 범위에 있는지..
 	bool			IsRunning() { return m_bRunning; }
 	bool			CheckCollision();		// 움직이는 처리와 충돌체크를 한다. 충돌되는게 있으면 움직이지 않는다.
 	//.. 

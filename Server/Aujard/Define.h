@@ -1,11 +1,20 @@
 ﻿#ifndef _DEFINE_H
 #define _DEFINE_H
 
+#if defined(_DEBUG)
+#include <iostream>
+#endif
+
 #include <shared/globals.h>
 #include <shared/StringConversion.h>
 #include <shared/_USER_DATA.h>
 
 constexpr int MAX_USER			= 3000;
+
+/// \brief AUTOSAVE_DELTA is the amount of time required since last save to trigger a UserDataSave()
+constexpr int AUTOSAVE_DELTA = 360000;
+
+constexpr long DB_PROCESS_TIMEOUT = 10;
 
 #define MAX_ITEM			28
 
@@ -138,6 +147,16 @@ typedef union {
 #define UPDATE_ALL_SAVE			0x02
 #define UPDATE_PACKET_SAVE		0x03
 
+////////////////////////////////////////////////////////////////
+// WIZ_NEW_CHAR Results
+////////////////////////////////////////////////////////////////
+#define NEW_CHAR_ERROR			-1
+#define NEW_CHAR_SUCCESS		0
+#define NEW_CHAR_NO_FREE_SLOT	1
+#define NEW_CHAR_INVALID_RACE	2
+#define NEW_CHAR_NAME_IN_USE	3
+#define NEW_CHAR_SYNC_ERROR		4
+
 
 // Reply packet define...
 
@@ -151,66 +170,8 @@ typedef union {
 // Structure Define
 /////////////////////////////////////////////////////////////////////////////////
 
-struct _ITEM_TABLE
-{
-	int   m_iNum;				// item num
-	char  m_strName[50];		// item Name
-	BYTE  m_bKind;				// item 종류
-	BYTE  m_bSlot;				// 장착위치
-	BYTE  m_bRace;				// 사용 가능한 종족
-	BYTE  m_bClass;				// 사용 가능한 Class
-	short m_sDamage;			// 최대 타격치
-	short m_sDelay;				// 공격시간
-	short m_sRange;				// 범위(유효거리)
-	short m_sWeight;			// 무게
-	short m_sDuration;			// 내구성
-	int	  m_iBuyPrice;			// 유저가 사는가격
-	int	  m_iSellPrice;			// 유저가 파는가격
-	short m_sAc;				// 방어력
-	BYTE  m_bCountable;			// 개수 개념 아이템
-	int	  m_iEffect1;			// 매직 이펙트1
-	int	  m_iEffect2;			// 매직 이펙트2
-	BYTE  m_bReqLevel;			// 요구 레벨
-	BYTE  m_bReqRank;			// 요구 작위
-	BYTE  m_bReqTitle;			// 요구 지위
-	BYTE  m_bReqStr;			// 요구 힘
-	BYTE  m_bReqSta;			// 요구 체력
-	BYTE  m_bReqDex;			// 요구 민첩
-	BYTE  m_bReqIntel;			// 요구 지능
-	BYTE  m_bReqCha;			// 요구 매력
-	BYTE  m_bSellingGroup;		// 상인 취급 물품
-	BYTE  m_ItemType;			// 매직아이템 또는 레어아이템
-	short m_sHitrate;			// 타격률
-	short m_sEvarate;			// 회피율
-	short m_sDaggerAc;			// 방어력1
-	short m_sSwordAc;			// 방어력2
-	short m_sMaceAc;			// 방어력3
-	short m_sAxeAc;				// 방어력4
-	short m_sSpearAc;			// 방어력5
-	short m_sBowAc;				// 방어력6
-	BYTE  m_bFireDamage;		// 불 속성
-	BYTE  m_bIceDamage;			// 냉기 속성
-	BYTE  m_bLightningDamage;	// 전격 속성
-	BYTE  m_bPoisonDamage;		// 독 속성
-	BYTE  m_bHPDrain;			// HP 흡수
-	BYTE  m_bMPDamage;			// MP 타격
-	BYTE  m_bMPDrain;			// MP 흡수
-	BYTE  m_bMirrorDamage;		// 반사 타격
-	BYTE  m_bDroprate;			// 드롭 비율
-	BYTE  m_bStrB;				// 힘 보너스
-	BYTE  m_bStaB;				// 체력 보너스
-	BYTE  m_bDexB;				// 민첩성 보너스
-	BYTE  m_bIntelB;			// 지능 보너스
-	BYTE  m_bChaB;				// 매력 보너스
-	short m_MaxHpB;				// MaxHP add
-	short m_MaxMpB;				// MaxMP add
-	BYTE  m_bFireR;				// 불 마법 저항력
-	BYTE  m_bColdR;				// 얼음 마법 저항력
-	BYTE  m_bLightningR;		// 전기 마법 저항력
-	BYTE  m_bMagicR;			// 기타 마법 저항력
-	BYTE  m_bPoisonR;			// 독 마법 저항력
-	BYTE  m_bCurseR;			// 저주 마법 저항력
-};
+import AujardModel;
+namespace model = aujard_model;
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -342,48 +303,20 @@ inline CString GetProgPath()
 	return Path;
 }
 
-inline void LogFileWrite(LPCTSTR logstr)
+namespace ini
 {
-	CString LogFileName;
-	LogFileName.Format(_T("%s\\Aujard.log"), GetProgPath().GetString());
+	// ODBC Config Section
+	static constexpr char ODBC[] = "ODBC";
+	static constexpr char GAME_DSN[] = "GAME_DSN";
+	static constexpr char GAME_UID[] = "GAME_UID";
+	static constexpr char GAME_PWD[] = "GAME_PWD";
+	static constexpr char ACCOUNT_DSN[] = "ACCOUNT_DSN";
+	static constexpr char ACCOUNT_UID[] = "ACCOUNT_UID";
+	static constexpr char ACCOUNT_PWD[] = "ACCOUNT_PWD";
 
-	CFile file;
-	if (!file.Open(LogFileName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-		return;
-
-	file.SeekToEnd();
-
-#if defined(_UNICODE)
-	const std::string utf8 = WideToUtf8(logstr, wcslen(logstr));
-	file.Write(utf8.c_str(), static_cast<int>(utf8.size()));
-#else
-	file.Write(logstr, strlen(logstr));
-#endif
-
-	file.Close();
-}
-
-inline int DisplayErrorMsg(SQLHANDLE hstmt)
-{
-	SQLTCHAR      SqlState[6], Msg[4096];
-	SQLINTEGER    NativeError;
-	SQLSMALLINT   i, MsgLen;
-	SQLRETURN     rc2;
-	TCHAR		  logstr[4096] = {};
-
-	i = 1;
-	while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError, Msg, _countof(Msg), &MsgLen)) != SQL_NO_DATA)
-	{
-		_stprintf(logstr, _T("*** %s, %d, %s, %d ***\r\n"), SqlState, NativeError, Msg, MsgLen);
-		LogFileWrite(logstr);
-
-		i++;
-	}
-
-	if (_tcscmp((TCHAR*) SqlState, _T("08S01")) == 0)
-		return -1;
-	else
-		return 0;
+	// ZONE_INFO section
+	static constexpr char ZONE_INFO[] = "ZONE_INFO";
+	static constexpr char GROUP_INFO[] = "GROUP_INFO";
 }
 
 #endif

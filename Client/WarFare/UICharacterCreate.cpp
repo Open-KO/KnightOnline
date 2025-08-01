@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "UICharacterCreate.h"
 #include "GameProcCharacterCreate.h"
 #include "PlayerMySelf.h"

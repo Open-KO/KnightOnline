@@ -18,8 +18,12 @@ class CNpc
 public:
 	CEbenezerDlg* m_pMain;
 
-	short	m_sNid;				// NPC (서버상의)일련번호
-	short	m_sSid;				// NPC 테이블 참조번호
+	/// \brief Serial number of NPC (server-side) || NPC (서버상의)일련번호
+	short	m_sNid;
+
+	/// \brief Reference number for the NPC table || NPC 테이블 참조번호
+	short	m_sSid;
+	
 	short	m_sCurZone;			// Current Zone;
 	short	m_sZoneIndex;		// NPC 가 존재하고 있는 존의 인덱스
 	float	m_fCurX;			// Current X Pos;

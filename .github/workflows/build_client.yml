@@ -10,62 +10,37 @@ on:
     branches:
     - master
 
-    # This specifically builds only the client (KnightOnline.exe) project.
-    # Everything else can be ignored.
     paths:
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'Client/lib/**'
-      - 'Client/N3Base/**'
-      - 'Client/WarFare/**'
-      - 'Server/shared/**'
-      - 'All.sln'
-      - 'Client.sln'
+      - '.github/workflows/build_client.yml'
 
   pull_request:
     branches:
     - master
 
-    # This specifically builds only the client (KnightOnline.exe) project.
-    # Everything else can be ignored.
     paths:
-      - 'props/**'
-      - 'deps/dx9sdk/**'
-      - 'Client/lib/**'
-      - 'Client/N3Base/**'
-      - 'Client/WarFare/**'
-      - 'Server/shared/**'
-      - 'All.sln'
-      - 'Client.sln'
- 
-  merge_group:
+      - '.github/workflows/build_client.yml'
+
   workflow_dispatch:
-    
-env:
-  # We use a debug build for slightly faster build times
-  BUILD_CONFIGURATION: Debug
-  BUILD_PLATFORM: Win32
 
 jobs:
   build:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        BUILD_PLATFORM: [Win32]
+
+    name: "Client: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
+
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'false'
 
-    - name: Fetch required submodules only
-      run: |
-        git submodule update --init deps/dx9sdk
-        git submodule update --init deps/zlib
-
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Build third party dependencies
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
-
     - name: Build client
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" Client.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Client.sln

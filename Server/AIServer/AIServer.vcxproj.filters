@@ -32,37 +32,7 @@
     <ClCompile Include="MagicProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MagicTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType1Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType2Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType3Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicType4Set.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MakeDefensiveTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MakeGradeItemTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MakeLareItemTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MakeWeaponTableSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MAP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MonTableSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Npc.cpp">
@@ -71,19 +41,7 @@
     <ClCompile Include="NpcItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NpcItemSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NpcMagicProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NpcPosSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NpcTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NpcTableSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NpcThread.cpp">
@@ -116,9 +74,6 @@
     <ClCompile Include="User.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ZoneInfoSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
       <Filter>N3Base</Filter>
     </ClCompile>
@@ -145,37 +100,7 @@
     <ClInclude Include="MagicProcess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MagicTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType1Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType2Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType3Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicType4Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MakeDefensiveTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MakeGradeItemTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MakeLareItemTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MakeWeaponTableSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MAP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonTableSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Npc.h">
@@ -184,19 +109,7 @@
     <ClInclude Include="NpcItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NpcItemSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NpcMagicProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NpcPosSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NpcTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NpcTableSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NpcThread.h">
@@ -230,9 +143,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="User.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ZoneInfoSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">

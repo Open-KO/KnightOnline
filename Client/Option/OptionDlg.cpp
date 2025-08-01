@@ -262,7 +262,7 @@ BOOL COptionDlg::OnInitDialog()
 	m_CB_ColorDepth.SetItemData(iAdd, 32);
 
 	TCHAR szBuff[_MAX_PATH] = {};
-	GetCurrentDirectory(sizeof(szBuff), szBuff);
+	GetCurrentDirectory(_countof(szBuff), szBuff);
 
 	m_szInstalledPath = szBuff;
 

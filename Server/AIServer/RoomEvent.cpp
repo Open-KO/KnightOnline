@@ -9,6 +9,8 @@
 #include "define.h"
 //#include "Npc.h"
 
+#include <spdlog/spdlog.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -93,7 +95,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 	if (m_byLogicNumber == 0
 		|| m_byLogicNumber > MAX_CHECK_EVENT)
 	{
-		TRACE(_T("### Check Event Fail :: array overflow = %d ###\n"), m_byLogicNumber);
+		spdlog::error("RoomEvent::CheckEvent: logicNumber={} out of bounds", m_byLogicNumber);
 		return FALSE;
 	}
 
@@ -110,7 +112,8 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			}
 			else
 			{
-				TRACE(_T("### CheckEvent Error : monster nid = %d, logic=%d ###\n"), nOption_1, m_byLogicNumber);
+				spdlog::error("RoomEvent::CheckEvent: missing NPC definition [npcId={} logicNumber={}]",
+					nOption_1, m_byLogicNumber);
 			}
 			//TRACE(_T("---Check Event : monster dead = %d \n"), nMonsterNid);
 			break;
@@ -120,7 +123,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			bRetValue = CheckMonsterCount(0, 0, 3);
 			if (bRetValue)
 			{
-				TRACE(_T("모든 몬스터를 죽여라 죽임\n"));
+				spdlog::debug("RoomEvent::CheckEvent: all monsters are dead [eventId={}]", event_num);
 				return TRUE;
 			}
 			break;
@@ -130,11 +133,11 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			nMinute = m_Logic[m_byLogicNumber - 1].sOption_1;
 			nMinute = nMinute * 60;								// 분을 초로 변환
 
-			// 제한시간 종료
+			// Time limit exceeded
 			if (fcurtime >= m_fDelayTime + nMinute)
 			{
-				TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), fcurtime, m_fDelayTime);
-				TRACE(_T("버티기 성공\n"));
+				spdlog::debug("RoomEvent::CheckEvent: Time limit met, survival success [currTime={} delayTime={}]",
+					fcurtime, m_fDelayTime);
 				return TRUE;
 			}
 			//TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), fcurtime, m_fDelayTime);
@@ -151,13 +154,14 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			bRetValue = CheckMonsterCount(nOption_1, nOption_2, 1);
 			if (bRetValue)
 			{
-				TRACE(_T("특정몬스터(%d)를 %d마리 죽임\n"), nOption_1, nOption_2);
+				spdlog::debug("RoomEvent::CheckEvent: killed ({}/{}) monsters.",
+					nOption_1, nOption_2);
 				return TRUE;
 			}
 			break;
 
 		default:
-			TRACE(_T("### Check Event Fail :: event number = %d ###\n"), event_num);
+			spdlog::debug("RoomEvent::CheckEvent: invalid eventId={}", event_num);
 			break;
 	}
 
@@ -183,7 +187,8 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			}
 			else
 			{
-				TRACE(_T("### RunEvent Error : 몬스터 출현 할 수 없당 = %d, logic=%d ###\n"), nOption_1, m_byLogicNumber);
+				spdlog::error("RoomEvent::RunEvent: no NPC definition [npcId={} logicNumber={} eventId={}]",
+					nOption_1, m_byLogicNumber, event_num);
 			}
 
 			// 방이 클리어
@@ -199,7 +204,8 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			pNpc = GetNpcPtr(nOption_1);
 			if (pNpc == nullptr)
 			{
-				TRACE(_T("### RunEvent Error : 문 담당 몬스터 출현 할 수 없당 = %d, logic=%d ###\n"), nOption_1, m_byLogicNumber);
+				spdlog::error("RoomEvent::RunEvent: no NPC definition [npcId={} logicNumber={} eventId={}]",
+					nOption_1, m_byLogicNumber, event_num);
 			}
 
 			//wsprintf(notify, "** 알림 : [%d] 문이 열립니다 **", m_sRoomNumber);
@@ -235,12 +241,13 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			m_byLogicNumber++;
 			break;
 
-		// 특정몬스터 옵션2의 마리수만큼 출현
+		// Spawns option2 number of npcId=option1 monsters
 		case 100:
 			nOption_1 = m_Exec[m_byLogicNumber - 1].sOption_1;
 			nOption_2 = m_Exec[m_byLogicNumber - 1].sOption_2;
 
-			TRACE(_T("RunEvent - room=%d, option1=%d, option2=%d\n"), m_sRoomNumber, nOption_1, nOption_2);
+			spdlog::debug("RoomEvent::RunEvent: spawned {} of npcId({}) in roomNumber={}",
+				nOption_2, nOption_1, m_sRoomNumber);
 			if (nOption_1 != 0)
 				EndEventSay(nOption_1, nOption_2);
 
@@ -252,7 +259,7 @@ BOOL  CRoomEvent::RunEvent(int event_num)
 			break;
 
 		default:
-			TRACE(_T("### RunEvent Fail :: event number = %d ###\n"), event_num);
+			spdlog::error("RoomEvent::RunEvent: invalid eventId={}", event_num);
 			break;
 	}
 
@@ -270,8 +277,8 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 	int nMonster = m_mapRoomNpcArray.GetSize();
 	if (nMonster == 0)
 	{
-		TRACE(_T("### RoomEvent-GetNpcPtr() : monster empty ###\n"));
 		LeaveCriticalSection(&g_region_critical);
+		spdlog::error("RoomEvent::GetNpcPtr: mapRoomNpcArray empty");
 		return nullptr;
 	}
 
@@ -311,6 +318,14 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 	return nullptr;
 }
 
+/// \brief checks if monster counts match given type
+/// \param sid npcId
+/// \param count number of monsters to check against
+/// \param type one of:
+/// 1: Count of monsters killed
+/// 2: Count of active monsters
+/// 3: All monsters dead (count unused)
+/// 4: Reset monster (?)
 BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 {
 	int nMonsterCount = 0;
@@ -324,8 +339,8 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 	int nMonster = m_mapRoomNpcArray.GetSize();
 	if (nMonster == 0)
 	{
-		TRACE(_T("### RoomEvent-GetNpcPtr() : monster empty ###\n"));
 		LeaveCriticalSection(&g_region_critical);
+		spdlog::error("RoomEvent::CheckMonsterCount: mapRoomNpcArray empty");
 		return FALSE;
 	}
 
@@ -358,7 +373,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 
 			pNpc->m_byChangeType = 0;
 		}
-		// 모든 몬스터를 죽었는지를 판단
+		// Check if all monsters are dead
 		else if (type == 3)
 		{
 			if (pNpc->m_byDeadType == 100)
@@ -369,7 +384,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 		}
 		else if (pNpc->m_sSid == sid)
 		{
-			// 특정 몬스터가 마리수 만큼 죽었는지를 판단
+			// Determine whether a certain number of specific monsters have been killed || 특정 몬스터가 마리수 만큼 죽었는지를 판단
 			if (type == 1)
 			{
 				if (pNpc->m_byChangeType == 100)
@@ -378,7 +393,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 				if (nMonsterCount == count)
 					bRetValue = TRUE;
 			}
-			// 특정 몬스터를 마리수 만큼 출현 시켜라,,
+			// Make a certain number of specific monsters appear || 특정 몬스터를 마리수 만큼 출현 시켜라,,
 			else if (type == 2)
 			{
 				pNpc->m_byChangeType = 3;

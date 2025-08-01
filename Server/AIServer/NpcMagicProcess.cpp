@@ -35,7 +35,7 @@ void CNpcMagicProcess::MagicPacket(char* pBuf, int len, CIOCPort* pIOCP)
 {
 	int index = 0, send_index = 0, magicid = 0, sid = -1, tid = -1, data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0;
 	char send_buff[128] = {};
-	_MAGIC_TABLE* pTable = nullptr;
+	model::Magic* pTable = nullptr;
 
 	// Get the magic status. 
 	BYTE command = GetByte(pBuf, index);
@@ -71,89 +71,89 @@ void CNpcMagicProcess::MagicPacket(char* pBuf, int len, CIOCPort* pIOCP)
 		// Is target another player? 
 		//if (tid < -1 || tid >= MAX_USER) return;	
 
-		switch (pTable->bType1)
+		switch (pTable->Type1)
 		{
 			case 1:
-				ExecuteType1(pTable->iNum, tid, data1, data2, data3);
+				ExecuteType1(pTable->ID, tid, data1, data2, data3);
 				break;
 
 			case 2:
-				ExecuteType2(pTable->iNum, tid, data1, data2, data3);
+				ExecuteType2(pTable->ID, tid, data1, data2, data3);
 				break;
 
 			case 3:
-				ExecuteType3(pTable->iNum, tid, data1, data2, data3, pTable->bMoral);
+				ExecuteType3(pTable->ID, tid, data1, data2, data3, pTable->Moral);
 				break;
 
 			case 4:
-				ExecuteType4(pTable->iNum, tid);
+				ExecuteType4(pTable->ID, tid);
 				break;
 
 			case 5:
-				ExecuteType5(pTable->iNum);
+				ExecuteType5(pTable->ID);
 				break;
 
 			case 6:
-				ExecuteType6(pTable->iNum);
+				ExecuteType6(pTable->ID);
 				break;
 
 			case 7:
-				ExecuteType7(pTable->iNum);
+				ExecuteType7(pTable->ID);
 				break;
 
 			case 8:
-				ExecuteType8(pTable->iNum, tid, sid, data1, data2, data3);
+				ExecuteType8(pTable->ID, tid, sid, data1, data2, data3);
 				break;
 
 			case 9:
-				ExecuteType9(pTable->iNum);
+				ExecuteType9(pTable->ID);
 				break;
 
 			case 10:
-				ExecuteType10(pTable->iNum);
+				ExecuteType10(pTable->ID);
 				break;
 		}
 
-		switch (pTable->bType2)
+		switch (pTable->Type2)
 		{
 			case 1:
-				ExecuteType1(pTable->iNum, tid, data4, data5, data6);
+				ExecuteType1(pTable->ID, tid, data4, data5, data6);
 				break;
 
 			case 2:
-				ExecuteType2(pTable->iNum, tid, data1, data2, data3);
+				ExecuteType2(pTable->ID, tid, data1, data2, data3);
 				break;
 
 			case 3:
-				ExecuteType3(pTable->iNum, tid, data1, data2, data3, pTable->bMoral);
+				ExecuteType3(pTable->ID, tid, data1, data2, data3, pTable->Moral);
 				break;
 
 			case 4:
-				ExecuteType4(pTable->iNum, tid);
+				ExecuteType4(pTable->ID, tid);
 				break;
 
 			case 5:
-				ExecuteType5(pTable->iNum);
+				ExecuteType5(pTable->ID);
 				break;
 
 			case 6:
-				ExecuteType6(pTable->iNum);
+				ExecuteType6(pTable->ID);
 				break;
 
 			case 7:
-				ExecuteType7(pTable->iNum);
+				ExecuteType7(pTable->ID);
 				break;
 
 			case 8:
-				ExecuteType8(pTable->iNum, tid, sid, data1, data2, data3);
+				ExecuteType8(pTable->ID, tid, sid, data1, data2, data3);
 				break;
 
 			case 9:
-				ExecuteType9(pTable->iNum);
+				ExecuteType9(pTable->ID);
 				break;
 
 			case 10:
-				ExecuteType10(pTable->iNum);
+				ExecuteType10(pTable->ID);
 				break;
 		}
 	}
@@ -165,11 +165,11 @@ void CNpcMagicProcess::MagicPacket(char* pBuf, int len, CIOCPort* pIOCP)
 	}
 }
 
-_MAGIC_TABLE* CNpcMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
+model::Magic* CNpcMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 {
 	CUser* pUser = nullptr;
 	CNpc* pNpc = nullptr;
-	_MAGIC_TABLE* pTable = nullptr;
+	model::Magic* pTable = nullptr;
 
 	int modulator = 0, Class = 0, send_index = 0, moral = 0;
 
@@ -206,7 +206,7 @@ _MAGIC_TABLE* CNpcMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 	// Party Moral check routine.
 	else if (tid == -1)
 	{
-		if (pTable->bMoral == MORAL_AREA_ENEMY)
+		if (pTable->Moral == MORAL_AREA_ENEMY)
 		{
 			// Switch morals. 작업할것 : 몬스터는 국가라는 개념이 없기 때문에.. 나중에 NPC가 이 마법을 사용하면 문제가 됨
 			if (m_pSrcNpc->m_byGroup == 0)
@@ -225,7 +225,7 @@ _MAGIC_TABLE* CNpcMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 	}
 
 	// tid >= 0 case only
-	switch (pTable->bMoral)
+	switch (pTable->Moral)
 	{
 		case MORAL_SELF:
 			if (tid != (m_pSrcNpc->m_sNid + NPC_BAND))
@@ -315,12 +315,12 @@ void CNpcMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, 
 void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int data3, int moral)  // Applied when a magical attack, healing, and mana restoration is done.
 {
 	int damage = 0, result = 1, send_index = 0, attack_type = 0;
-	char send_buff[256];	memset(send_buff, 0x00, 256);
-	_MAGIC_TYPE3* pType = nullptr;
+	char send_buff[256] = {};
+	model::MagicType3* pType = nullptr;
 	CNpc* pNpc = nullptr;      // Pointer initialization!
 	int dexpoint = 0;
 
-	_MAGIC_TABLE* pMagic = nullptr;
+	model::Magic* pMagic = nullptr;
 
 	// Get main magic table.
 	pMagic = m_pMain->m_MagictableArray.GetData(magicid);
@@ -345,16 +345,16 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 	if (!pType)
 		return;
 
-	damage = GetMagicDamage(tid, pType->sFirstDamage, pType->bAttribute, dexpoint);
+	damage = GetMagicDamage(tid, pType->FirstDamage, pType->Attribute, dexpoint);
 //	if(damage == 0)	damage = -1;
 
 	//TRACE(_T("magictype3 ,, magicid=%d, damage=%d\n"), magicid, damage);
 
 	// Non-Durational Spells.
-	if (pType->sDuration == 0)
+	if (pType->Duration == 0)
 	{
 		// Health Point related !
-		if (pType->bDirectType == 1)
+		if (pType->DirectType == 1)
 		{
 			if (damage > 0)
 			{
@@ -380,7 +380,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 		}
 	}
 	// Durational Spells! Remember, durational spells only involve HPs.
-	else if (pType->sDuration != 0)
+	else if (pType->Duration != 0)
 	{
 	}
 

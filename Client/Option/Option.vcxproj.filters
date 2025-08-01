@@ -50,9 +50,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="res\Option.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>

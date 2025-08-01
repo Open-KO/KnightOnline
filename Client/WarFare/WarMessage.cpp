@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "WarMessage.h"
 #include "GameBase.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #define MESSAGE_FONT_SIZE		20
 #define WAR_MESSAGE_SHOW_TIME	60

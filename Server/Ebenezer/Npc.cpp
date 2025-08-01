@@ -9,6 +9,7 @@
 #include "Map.h"
 
 #include <shared/packets.h>
+#include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -100,7 +101,8 @@ void CNpc::NpcInOut(BYTE Type, float fx, float fz, float fy)
 	C3DMap* pMap = m_pMain->GetMapByIndex(m_sZoneIndex);
 	if (pMap == nullptr)
 	{
-		TRACE(_T("NpcInOut : ,, nid=%d, zone=%d, type, region_x=%d, y=%d\n"), m_sNid, m_sZoneIndex, Type, m_sRegion_X, m_sRegion_Z);
+		spdlog::error("Npc::NpcInOut: no map found for zoneIndex={} [serial={} npcId={} npcName={} x={} z={}]",
+			m_sZoneIndex, m_sNid, m_sSid, m_strName, m_sRegion_X, m_sRegion_Z);
 		return;
 	}
 

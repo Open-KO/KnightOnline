@@ -52,7 +52,7 @@ public:
 	void RecvNpcGiveItem(char* pBuf);
 	void RecvUserFail(char* pBuf);
 	void RecvCompressedData(char* pBuf);
-	void RecvGateDestory(char* pBuf);
+	void RecvGateDestroy(char* pBuf);
 	void RecvNpcDead(char* pBuf);
 	void RecvNpcInOut(char* pBuf);
 	void RecvBattleEvent(char* pBuf);

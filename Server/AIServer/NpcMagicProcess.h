@@ -9,11 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "iocport.h"
+#include "IOCPort.h"
+#include "Extern.h"
 
 class CServerDlg;
 class CNpc;
-struct _MAGIC_TABLE;
 class CNpcMagicProcess
 {
 public:
@@ -38,7 +38,7 @@ public:
 	void ExecuteType2(int magicid, int tid, int data1, int data2, int data3);
 	void ExecuteType1(int magicid, int tid, int data1, int data2, int data3);	// sequence => type1 or type2
 
-	_MAGIC_TABLE* IsAvailable(int magicid, int tid, BYTE type);
+	model::Magic* IsAvailable(int magicid, int tid, BYTE type);
 	void MagicPacket(char* pBuf, int len, CIOCPort* pIOCP);
 
 };
