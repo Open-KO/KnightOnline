@@ -26,7 +26,6 @@ protected:
 	float		m_fMoveDelta; // To make it open and close smoothly, floating-point numbers are used for calculating the current position.
 	int			m_iSelectedCategory;
 	int			m_iSelectedTab; //0 => upper(categories), 1 => bottom(commands)
-	bool		m_bIsKing;
 
 	enum iCmd
 	{
@@ -50,7 +49,6 @@ public:
 	void SetVisible(bool bVisible) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // Receive message... sender, msg
 	bool OnKeyPress(int iKey) override;
-	void SetKing(bool bState){ m_bIsKing = bState; };
 
 	void Open();
 	//void OpenEdit();

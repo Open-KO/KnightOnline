@@ -44,7 +44,6 @@ CUICmdList::CUICmdList()
 	m_pUICmdEdit = nullptr;
 	m_iSelectedCategory = 0;
 	m_iSelectedTab = 0; 
-	m_bIsKing = false;
 }
 
 CUICmdList::~CUICmdList()
@@ -74,7 +73,6 @@ void CUICmdList::Release()
 	m_pUICmdEdit = nullptr;
 	m_iSelectedCategory = 0;
 	m_iSelectedTab = 0;
-	m_bIsKing = false;
 
 	CN3UIBase::Release();
 }
@@ -319,15 +317,11 @@ bool CUICmdList::CreateCategoryList() {
 
 	for (int i = 0; i < 8; i++)
 	{
-		//gm and normal user cannot see king category
-		if (i + IDS_PRIVATE_CMD_CAT == 7807 && !m_bIsKing) 
-			 continue;
-
-		//categorie names start with 7800
+		// category names start with 7800
 		CGameBase::GetText(i + IDS_PRIVATE_CMD_CAT, &szCategory); //load command categories
 		m_pList_CmdCat->AddString(szCategory);
 
-		//category tips start with 7900
+		// category tips start with 7900
 		CGameBase::GetText(i + IDS_PRIVATE_CMD_CAT + 100, &szTooltip);
 
 		CN3UIString* pChild = m_pList_CmdCat->GetChildStrFromList(szCategory);
