@@ -1153,7 +1153,7 @@ exceptions:;
 				CGameBase::GetTextF(
 					IDS_TOOLTIP_BUY_PRICE,
 					&m_pstdstr[iIndex],
-					std::to_string(spItem->pItemBasic->iPrice* spItem->pItemExt->siPriceMultiply).c_str());
+					CGameBase::FormatNumber(spItem->pItemBasic->iPrice* spItem->pItemExt->siPriceMultiply).c_str());
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 
@@ -1171,7 +1171,7 @@ exceptions:;
 				CGameBase::GetTextF(
 					IDS_TOOLTIP_SELL_PRICE,
 					&m_pstdstr[iIndex],
-					std::to_string(iSellPrice).c_str());
+					CGameBase::FormatNumber(iSellPrice).c_str());
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 				m_pStr[iIndex]->SetColor(m_CWhite);
