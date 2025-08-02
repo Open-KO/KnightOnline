@@ -654,16 +654,9 @@ void CGameBase::ConvertPipesToNewlines(std::string* pString){
 	if (pString == nullptr)
 		return;
 	
-	for (size_t i = 0; i < pString->length();)
+	for (size_t i = 0; i < pString->length(); ++i)
 	{
 		if ((*pString)[i] == '|')
-		{
-			pString->replace(i, 1, "\n");
-			i++;
-		}
-		else
-		{
-			i++;
-		}
+			(*pString)[i] = '\n';
 	}
 }
