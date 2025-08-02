@@ -648,3 +648,12 @@ std::string CGameBase::FormatNumber(int iNumber)
 
 	return szFormattedNum;
 }
+
+void CGameBase::UnformatNumber(std::string* pStrFormatted)
+{
+	if (pStrFormatted == nullptr)
+		return;
+
+	std::string& str = *pStrFormatted;
+	pStrFormatted->erase(std::remove(pStrFormatted->begin(), pStrFormatted->end(), ','), pStrFormatted->end());
+}
