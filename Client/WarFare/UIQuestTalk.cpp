@@ -60,6 +60,7 @@ void CUIQuestTalk::Open(Packet& pkt)
 			m_iNumTalk++;
 		}
 	}
+	CGameBase::ConvertPipesToNewlines(&m_szTalk[m_iCurTalk]);
 
 	m_pTextTalk->SetString(m_szTalk[m_iCurTalk]);
 	SetVisible(true);

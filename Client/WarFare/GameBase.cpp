@@ -648,3 +648,30 @@ std::string CGameBase::FormatNumber(int iNumber)
 
 	return szFormattedNum;
 }
+
+void CGameBase::ConvertPipesToNewlines(std::string* pString){
+	
+	if (pString == nullptr)
+		return;
+	
+	for (size_t i = 0; i < pString->length();)
+	{
+		if ((*pString)[i] == '|')
+		{
+			if (i + 1 < pString->length() && (*pString)[i + 1] == '|')
+			{
+				pString->replace(i, 2, "\n\n");
+				i += 2;
+			}
+			else
+			{
+				pString->replace(i, 1, "\n");
+				i += 1;
+			}
+		}
+		else
+		{
+			i++;
+		}
+	}
+}
