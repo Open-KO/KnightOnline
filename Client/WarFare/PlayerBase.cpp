@@ -1554,19 +1554,19 @@ bool CPlayerBase::TryWeaponElementEffect(e_PlugPosition plugPosition, const CPla
 	//todo: needs test ( can +6 Hell breaker affect the target ? if yes replace with CanItemGlow();
 	if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamageFire > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamageFire >= LIMIT_FX_DAMAGE_RARE)
+		|| m_pItemPlugExts[plugPosition]->byDamageFire >= LIMIT_FX_DAMAGE)
 		iFXID = FXID_SWORD_FIRE_TARGET;
 	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamageIce > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamageIce >= LIMIT_FX_DAMAGE_RARE)
+		|| m_pItemPlugExts[plugPosition]->byDamageIce >= LIMIT_FX_DAMAGE)
 		iFXID = FXID_SWORD_ICE_TARGET;
 	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamagePoison > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamagePoison >= LIMIT_FX_DAMAGE_RARE)
+		|| m_pItemPlugExts[plugPosition]->byDamagePoison >= LIMIT_FX_DAMAGE)
 		iFXID = FXID_SWORD_POISON_TARGET;
 	else if((m_pItemPlugExts[plugPosition]->byMagicOrRare==ITEM_ATTRIB_UNIQUE
 		&& m_pItemPlugExts[plugPosition]->byDamageThunder > 0)
-		|| m_pItemPlugExts[plugPosition]->byDamageThunder >= LIMIT_FX_DAMAGE_RARE)
+		|| m_pItemPlugExts[plugPosition]->byDamageThunder >= LIMIT_FX_DAMAGE)
 		iFXID = FXID_SWORD_LIGHTNING_TARGET;
 
 	if(iFXID >= 0)
@@ -1856,30 +1856,14 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 
 bool CPlayerBase::CanItemGlow(__TABLE_ITEM_EXT* pItemExt)
 {
-	
-	if (pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE) //unique items
-	{
-		if (pItemExt->dwIDK0 != 0)
-			return true;
-	}
-	else if (pItemExt->byMagicOrRare == ITEM_ATTRIB_LAIR) //rare items
-	{
-		if (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE_RARE ||
-				pItemExt->byDamageIce >= LIMIT_FX_DAMAGE_RARE ||
-				pItemExt->byDamageThunder >= LIMIT_FX_DAMAGE_RARE ||
-				pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE_RARE)
-			return true;
-	}
-	else if (pItemExt->byMagicOrRare == ITEM_ATTRIB_UPGRADE) //upgrade items
-	{
-		if (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE_UPGRADE ||
-				pItemExt->byDamageIce >= LIMIT_FX_DAMAGE_UPGRADE ||
-				pItemExt->byDamageThunder >= LIMIT_FX_DAMAGE_UPGRADE ||
-				pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE_UPGRADE)
-			return true;
-	}
+	if (pItemExt == nullptr) 
+		return false;
 
-	return false;
+	if (pItemExt->dwIDK0 == 0)
+		return false;
+
+	//return true if item has glow effect
+	return true;
 }
 
 //set main & tail glowing ID for an item
@@ -1899,45 +1883,12 @@ void CPlayerBase::SetGlowID(__TABLE_ITEM_EXT* pItemExt, __TABLE_ITEM_BASIC* pIte
 		iGlowIDTail = iGlowIDMain + 1;
 		return;
 	}
-	
-	switch (pItemExt->byMagicOrRare)
+	else 
 	{
-		case ITEM_ATTRIB_UNIQUE: // Unique item glow
-		{
-			iGlowIDMain = pItemExt->dwIDK0;
-			iGlowIDTail = iGlowIDMain + 1;
-			break;
-		}
-		case ITEM_ATTRIB_LAIR: // Rare and upgrade item glow
-		case ITEM_ATTRIB_UPGRADE: 
-		{
-			bool bIsRare = (pItemExt->byMagicOrRare == ITEM_ATTRIB_LAIR);
-			int limit = bIsRare ? LIMIT_FX_DAMAGE_RARE : LIMIT_FX_DAMAGE_UPGRADE;
-
-			if (pItemExt->byDamageFire >= limit)
-			{
-				iGlowIDMain = FXID_SWORD_FIRE_MAIN;
-				iGlowIDTail = FXID_SWORD_FIRE_TAIL;
-			}
-			else if (pItemExt->byDamageIce >= limit)
-			{
-				iGlowIDMain = FXID_SWORD_ICE_MAIN;
-				iGlowIDTail = FXID_SWORD_ICE_TAIL;
-			}
-			else if (pItemExt->byDamageThunder >= limit)
-			{
-				iGlowIDMain = FXID_SWORD_LIGHTNING_MAIN;
-				iGlowIDTail = FXID_SWORD_LIGHTNING_TAIL;
-			}
-			else if (pItemExt->byDamagePoison >= limit)
-			{
-				iGlowIDMain = FXID_SWORD_POISON_MAIN;
-				iGlowIDTail = FXID_SWORD_POISON_TAIL;
-			}
-
-			break;
-		}
-		
+		//normal items-> item_org_us 2nd column for extension 
+		//item_ext_n_us.tbl's 5th column for glow effect
+		iGlowIDMain = pItemExt->dwIDK0;
+		iGlowIDTail = iGlowIDMain + 1;
 	}
 
 }
