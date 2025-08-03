@@ -556,7 +556,7 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 	else
 		iIDResrc = pItem->dwIDResrc;
 
-	if (pItemExt && pItemExt->dwIDIcon != 0)
+	if (pItemExt != nullptr && pItemExt->dwIDIcon != 0)
 		iIDIcon = pItemExt->dwIDIcon;
 	else
 		iIDIcon = pItem->dwIDIcon;
