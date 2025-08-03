@@ -16,9 +16,16 @@ FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -latest -products * -requires Mi
 	SET "MSBUILD=%%i"
 )
 
-IF  "%MSBUILD%"=="" (
-	ECHO ERROR: MSBuild.exe not found! Please ensure that Visual Studio 2022 or later is installed.
-	EXIT /B 1
+REM Search for preview builds as a fallback only, for cases where only preview is installed (we don't want to use it by default)
+IF "%MSBUILD%"=="" (
+	FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) DO (
+		SET "MSBUILD=%%i"
+	)
+
+	IF "%MSBUILD%"=="" (
+		ECHO ERROR: MSBuild.exe not found! Please ensure that Visual Studio 2022 or later is installed.
+		EXIT /B 1
+	)
 )
 
 REM Export MSBUILD environment variable for caller
