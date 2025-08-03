@@ -911,7 +911,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int i
 				std::string szIconFN;
 				e_PartPosition ePart;
 				e_PlugPosition ePlug;
-				CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+				CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug, RACE_UNKNOWN, pItemExt); // 아이템에 따른 파일 이름을 만들어서
 
 				__IconItemSkill* spItem;
 
@@ -959,7 +959,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int i
 			std::string szIconFN;
 			e_PartPosition ePart;
 			e_PlugPosition ePlug;
-			CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+			CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug, RACE_UNKNOWN, pItemExt); // 아이템에 따른 파일 이름을 만들어서
 
 			__IconItemSkill* spItem;
 
@@ -1075,7 +1075,7 @@ Make_Icon:
 	std::string szIconFN;
 	e_PartPosition ePart;
 	e_PlugPosition ePlug;
-	CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+	CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug, RACE_UNKNOWN, pItemExt); // 아이템에 따른 파일 이름을 만들어서
 
 	spItem				= new __IconItemSkill;
 	spItem->pItemBasic	= pItem;

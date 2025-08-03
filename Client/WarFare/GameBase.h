@@ -57,7 +57,8 @@ public:
 												std::string* szIconFN,
 												e_PartPosition& ePartPosition,
 												e_PlugPosition& ePlugPosition,
-												e_Race eRace = RACE_UNKNOWN);
+												e_Race eRace = RACE_UNKNOWN,
+												__TABLE_ITEM_EXT* pItemExt = nullptr);
 
 	class CPlayerBase*	CharacterGetByID(int iID, bool bFromAlive);
 	bool				IsValidCharacter(CPlayerBase* pCharacter);

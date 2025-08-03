@@ -1803,7 +1803,7 @@ void CUIWareHouseDlg::AddItemInWare(int iItem, int iDurability, int iCount, int 
 
 	e_PartPosition ePart;
 	e_PlugPosition ePlug;
-	e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+	e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug, RACE_UNKNOWN, pItemExt); // 아이템에 따른 파일 이름을 만들어서
 	if(ITEM_TYPE_UNKNOWN == eType) CLogWriter::Write("MyInfo - slot - Unknown Item");
 	__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item");
 	

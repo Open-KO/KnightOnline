@@ -489,7 +489,8 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 												std::string* pszIconFN,
 												e_PartPosition& ePartPosition,
 												e_PlugPosition& ePlugPosition,
-												e_Race eRace /*= RACE_UNKNOWN*/)
+												e_Race eRace /*= RACE_UNKNOWN*/,
+												__TABLE_ITEM_EXT* pItemExt /*= nullptr*/)
 {	
 	ePartPosition = PART_POS_UNKNOWN;
 	ePlugPosition = PLUG_POS_UNKNOWN;
@@ -546,27 +547,44 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 	}
 
 	char buffer[256] = {};
+	
+	//check and replace icon and resource ids if item is special
+	int iIDResrc = 0, iIDIcon = 0;
+	
+	if (pItemExt != nullptr && pItemExt->dwIDResrc != 0)
+		iIDResrc = pItemExt->dwIDResrc;
+	else
+		iIDResrc = pItem->dwIDResrc;
+
+	if (pItemExt && pItemExt->dwIDIcon != 0)
+		iIDIcon = pItemExt->dwIDIcon;
+	else
+		iIDIcon = pItem->dwIDIcon;
+
 	if(pszResrcFN)
 	{
 		if(pItem->dwIDResrc) 
 		{
-			if(eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES) {
+			if (eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES)
+			{
 				// NOTE: no idea but perhaps this will work for now
 				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
-					(pItem->dwIDResrc / 10000000),
-					((pItem->dwIDResrc / 1000) % 10000) + eRace,
-					(pItem->dwIDResrc / 10) % 100,
-					pItem->dwIDResrc % 10,
-					szExt.c_str());
-			} else {
-				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
-					(pItem->dwIDResrc / 10000000),
-					(pItem->dwIDResrc / 1000) % 10000,
-					(pItem->dwIDResrc / 10) % 100,
-					pItem->dwIDResrc % 10,
+					(iIDResrc / 10000000),
+					((iIDResrc / 1000) % 10000) + eRace,
+					(iIDResrc / 10) % 100,
+					iIDResrc % 10,
 					szExt.c_str());
 			}
-
+			else
+			{
+				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
+					(iIDResrc / 10000000),
+					(iIDResrc / 1000) % 10000,
+					(iIDResrc / 10) % 100,
+					iIDResrc % 10,
+					szExt.c_str());
+			}
+			
 			*pszResrcFN = buffer;
 		}
 		// Some items don't have models -- only icons.
@@ -577,11 +595,11 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 	}
 	if(pszIconFN)
 	{
-		sprintf(buffer,	"UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt",
-			(pItem->dwIDIcon / 10000000), 
-			(pItem->dwIDIcon / 1000) % 10000, 
-			(pItem->dwIDIcon / 10) % 100, 
-			pItem->dwIDIcon % 10);
+		sprintf(buffer, "UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt",
+		(iIDIcon / 10000000),
+		(iIDIcon / 1000) % 10000,
+		(iIDIcon / 10) % 100,
+		iIDIcon % 10);
 		*pszIconFN = &buffer[0];
 	}
 	
