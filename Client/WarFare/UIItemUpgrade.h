@@ -118,7 +118,6 @@ public:
 	void				SendToServerUpgradeMsg();
 	void				MsgRecv_ItemUpgrade(Packet& pkt);
 	void				DoAnimationCover();
-	void				DoAnimationUpgradeFail();
 	void				FlipFlopAnim();
 	void				UpdateCoverAnimation();
 	void				UpdateFlipFlopAnimation();
