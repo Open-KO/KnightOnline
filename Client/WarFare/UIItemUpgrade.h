@@ -32,7 +32,6 @@ public:
 	__IconItemSkill* m_pMyUpgradeSLot[MAX_ITEM_UPGRADE_SLOT]; // Upgrade and Trina Scroll Slot
 	__IconItemSkill* m_pMyUpgradeInv[MAX_ITEM_INVENTORY];
 	__IconItemSkill* m_pBackupUpgradeInv[MAX_ITEM_INVENTORY];
-	__IconItemSkill* m_pUpgradeResultSlot;	// Result Slot after upgrade
 	__IconItemSkill* m_pUpgradeItemSlot;	// Which item to upgrade
 	int8_t m_iUpgradeSlotInvPos[MAX_ITEM_UPGRADE_SLOT+1];
 	CN3UIString* m_pStrMyGold;
@@ -119,6 +118,7 @@ public:
 	void				MsgRecv_ItemUpgrade(Packet& pkt);
 	void				DoAnimationCover();
 	void				FlipFlopAnim();
+	void				AnimClose();
 	void				UpdateCoverAnimation();
 	void				UpdateFlipFlopAnimation();
 	void				HideAllAnimationFrames();

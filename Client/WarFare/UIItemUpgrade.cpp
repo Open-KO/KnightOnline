@@ -68,7 +68,6 @@ CUIItemUpgrade::CUIItemUpgrade()
 
 	m_pUpgradeItemSlot = NULL;
 	m_iUpgradeSlotInvPos[0] = -1; //UpgradeItemSlot pozition
-	m_pUpgradeResultSlot = NULL;
 	m_pUITooltipDlg = NULL;
 	m_pStrMyGold = NULL;
 
@@ -97,7 +96,6 @@ void CUIItemUpgrade::Release()
 	}
 	DeleteIconItemSkill(m_pUpgradeItemSlot);
 	m_iUpgradeSlotInvPos[0] = -1; //UpgradeItemSlot pozition
-	DeleteIconItemSkill(m_pUpgradeResultSlot);
 
 	if (m_pUITooltipDlg)
 	{
@@ -240,8 +238,6 @@ __IconItemSkill* CUIItemUpgrade::GetHighlightIconItem(CN3UIIcon* pUIIcon)
 	}
 	if (m_pUpgradeItemSlot && m_pUpgradeItemSlot->pUIIcon == pUIIcon)
 		return m_pUpgradeItemSlot;
-	if (m_pUpgradeResultSlot && m_pUpgradeResultSlot->pUIIcon == pUIIcon)
-		return m_pUpgradeResultSlot;
 
 	return NULL;
 }
@@ -309,9 +305,9 @@ void CUIItemUpgrade::Close()
 {
 	if (IsVisible())
 		SetVisible(false);
-
+	UpdateBackupUpgradeInv();
 	RestoreInventoryFromBackup();
-
+	AnimClose();
 
 	if (GetState() == UI_STATE_ICON_MOVING)
 		IconRestore();
@@ -789,7 +785,6 @@ void CUIItemUpgrade::RestoreInventoryFromBackup()
 	}
 
 	DeleteIconItemSkill(m_pUpgradeItemSlot);
-	DeleteIconItemSkill(m_pUpgradeResultSlot);
 
 	for (int i = 0; i < MAX_ITEM_UPGRADE_SLOT; i++)
 	{
@@ -950,7 +945,6 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 			CGameBase::GetText(6700, &szMsg);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_RGBA(255, 255, 0, 255));
 
-
 			itemBasic = CGameBase::s_pTbl_Items_Basic.Find(nItemID[0] / 1000 * 1000);
 			if (itemBasic && itemBasic->byExtIndex >= 0 && itemBasic->byExtIndex <= MAX_ITEM_EXTENSION)
 				itemExt = CGameBase::s_pTbl_Items_Exts[itemBasic->byExtIndex].Find(nItemID[0] % 1000);
@@ -984,11 +978,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		m_bReceivedResultFromServer = false;
 	}
 
-	
-	RestoreInventoryFromBackup();
 	CN3UIWndBase::AllHighLightIconFree();
 	SetState(UI_STATE_COMMON_NONE);
-
 
 }
 void CUIItemUpgrade::DoAnimationCover()
@@ -1032,6 +1023,8 @@ void CUIItemUpgrade::UpdateCoverAnimation()
 	// Make covers visible during animation
 	m_pImageCover1->SetVisible(true);
 	m_pImageCover2->SetVisible(true);
+	m_pImageCover1->SetParent(this);
+	m_pImageCover2->SetParent(this);
 
 	// Calculate start and end Y positions
 	int cover1StartY = m_rcCover1Original.top - m_iCoverShift;
@@ -1123,6 +1116,8 @@ void CUIItemUpgrade::UpdateFlipFlopAnimation()
 			// Start cover opening animation
 			m_eAnimationState = ANIM_COVER_OPENING;
 			m_fAnimationTimer = 0.0f;
+			UpdateBackupUpgradeInv();
+			RestoreInventoryFromBackup();
 		}
 		else
 		{
@@ -1311,10 +1306,23 @@ void CUIItemUpgrade::FlipFlopAnim()
 	// Show current frame
 	char szID[32];
 	sprintf(szID, m_bUpgradeSuccesfull ? "img_s_load_%d" : "img_f_load_%d", m_iCurrentFrame);
-	if (CN3UIImage* pImg = (CN3UIImage*)GetChildByID(szID))
+	if (CN3UIImage* pImg = (CN3UIImage*) GetChildByID(szID))
+	{
 		pImg->SetVisible(true);
+		pImg->SetParent(this);
+	}
+
 }
+void CUIItemUpgrade::AnimClose()
+{
+	float m_fAnimationTimer = 0.0f;
+	int m_iCurrentFrame = 0;
+	m_eAnimationState = ANIM_NONE;
 
+	HideAllAnimationFrames();
 
-
-
+	m_pImageCover1->SetRegion(m_rcCover1Original);
+	m_pImageCover2->SetRegion(m_rcCover2Original);
+	m_pImageCover1->SetVisible(false);
+	m_pImageCover2->SetVisible(false);
+}
