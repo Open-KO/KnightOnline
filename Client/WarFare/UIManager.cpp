@@ -12,6 +12,7 @@
 #include "UITransactionDlg.h"
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
+#include "UIMsgBoxOkCancel.h"
 #include "UIItemExchange.h"
 #include "UIWareHouseDlg.h"
 
@@ -61,10 +62,19 @@ uint32_t CUIManager::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT
 		if ( CGameProcedure::s_pProcMain && CGameProcedure::s_pProcMain->m_pUITransactionDlg && 
 			(CGameProcedure::s_pProcMain->m_pUITransactionDlg->IsVisible()))// && (pChild->UIType() != UI_TYPE_ICON_MANAGER) )
 		{	
-			if ( CN3UIWndBase::m_pCountableItemEdit->IsLocked() )
+			if ( CN3UIWndBase::m_pCountableItemEdit->IsLocked())
 			{
 				if ( pChild->m_szID.compare("base_tradeedit") != 0 )
 					{	++itor; continue;	}
+			}
+
+			
+			if (CN3UIWndBase::m_pMsgBoxOkCancel->IsLocked())
+			{
+				if (pChild->m_szID.compare("base_msgboxokcancel") != 0)
+				{
+					++itor; continue;
+				}
 			}
 		}
 		// 보관함에 보관중이면 아이콘 매니저 윈도우만 작동..

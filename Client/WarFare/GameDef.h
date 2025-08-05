@@ -292,7 +292,7 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 						ITEM_CLASS_ARMOR_PRIEST = 240, // Priest armor
 
 						ITEM_CLASS_ETC = 251, // Miscellaneous
-
+						ITEM_CLASS_POWER_SCROLL = 255, //scrolls,premiums and power up potions, pets
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
 enum e_Nation { NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNKNOWN = 0xffffffff };

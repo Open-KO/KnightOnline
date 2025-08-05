@@ -55,6 +55,7 @@
 #include "UIDead.h"
 #include "UIUpgradeSelect.h"
 #include "UILevelGuide.h"
+#include "UIMsgBoxOkCancel.h"
 
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
@@ -4190,6 +4191,22 @@ void CGameProcMain::InitUI()
 	iX = iW - (rc.right - rc.left);
 	iY = 10; //same pos with inventory
 	m_pUILevelGuide->SetPos(iX, iY);
+
+	
+	CN3UIWndBase::m_pMsgBoxOkCancel = new CUIMsgBoxOkCancel;
+	CN3UIWndBase::m_pMsgBoxOkCancel->Init(s_pUIMgr);
+	CN3UIWndBase::m_pMsgBoxOkCancel->LoadFromFile(pTbl->szMsgBoxOkCancel);
+	CN3UIWndBase::m_pMsgBoxOkCancel->SetStyle(UISTYLE_ALWAYSTOP);
+	rc = CN3UIWndBase::m_pMsgBoxOkCancel->GetRegion();
+	iX = (iW - (rc.right - rc.left)) / 2;
+	iY = (iH - (rc.bottom - rc.top)) / 2;
+	CN3UIWndBase::m_pMsgBoxOkCancel->SetPos(iX, iY);
+	CN3UIWndBase::m_pMsgBoxOkCancel->SetVisibleWithNoSound(false);
+	CN3UIWndBase::m_pMsgBoxOkCancel->SetUIType(UI_TYPE_BASE);
+	CN3UIWndBase::m_pMsgBoxOkCancel->SetState(UI_STATE_COMMON_NONE);
+	//add customized ID because this UI file dont have base ID, 
+	//it is required to make it on top on UImanager.
+	CN3UIWndBase::m_pMsgBoxOkCancel->SetID("base_msgboxokcancel");
 
 }
 

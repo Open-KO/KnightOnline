@@ -31,7 +31,7 @@ public:
 	int						m_iTradeID;
 	int						m_iNpcID;
 	CUIImageTooltipDlg*		m_pUITooltipDlg;
-
+	
 	CN3UIImage*				m_pUIInn;
 	CN3UIImage*				m_pUIBlackSmith;
 	CN3UIImage*				m_pUIStore;
@@ -93,6 +93,10 @@ public:
 	void				ItemCountOK();
 	void				ItemCountCancel();
 
+	//MsgBox Ok Cancel
+	void				MsgBoxCancel();
+	void				MsgBoxOK();
+
 	void				ItemMoveFromInvToThis();
 	void				ItemMoveFromThisToInv();
 
@@ -105,6 +109,7 @@ public:
 
 	void				GoldUpdate();
 	void				UpdateWeight(const std::string& szWeight);
+	void				GenerateItemName(__IconItemSkill* pItem, std::string& strName);
 };
 
 #endif // !defined(AFX_UITRANSACTIONDLG_H__42671245_FF4F_42FC_AF7B_DACEDA8734B7__INCLUDED_)

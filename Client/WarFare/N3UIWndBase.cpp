@@ -31,6 +31,7 @@ __SkillSelectInfo		CN3UIWndBase::m_sSkillSelectInfo;
 
 CN3UIImage* CN3UIWndBase::m_pSelectionImage = NULL;
 CCountableItemEditDlg*	CN3UIWndBase::m_pCountableItemEdit = NULL;
+CUIMsgBoxOkCancel* CN3UIWndBase::m_pMsgBoxOkCancel = nullptr;
 
 CN3SndObj* CN3UIWndBase::s_pSnd_Item_Etc = NULL;
 CN3SndObj* CN3UIWndBase::s_pSnd_Item_Weapon = NULL;

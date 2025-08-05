@@ -11,6 +11,7 @@
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
+#include "UIMsgBoxOkCancel.h"
 #include "PlayerMySelf.h"
 #include "CountableItemEditDlg.h"
 #include "UIHotKeyDlg.h"
@@ -177,12 +178,12 @@ void CUITransactionDlg::InitIconWnd(e_UIWND eWnd)
 
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	m_pStrMyGold    = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(m_pStrMyGold, "NULL UI Component!!");
+	N3_VERIFY_UI_COMPONENT(m_pStrMyGold, (CN3UIString*) GetChildByID("string_item_name"));
 	if(m_pStrMyGold) m_pStrMyGold->SetString("0");
 
-	m_pUIInn		= (CN3UIImage*)GetChildByID("img_inn");			__ASSERT(m_pUIInn, "NULL UI Component!!");
-	m_pUIBlackSmith = (CN3UIImage*)GetChildByID("img_blacksmith");	__ASSERT(m_pUIBlackSmith, "NULL UI Component!!");
-	m_pUIStore		= (CN3UIImage*)GetChildByID("img_store");		__ASSERT(m_pUIStore, "NULL UI Component!!");
+	N3_VERIFY_UI_COMPONENT(m_pUIInn, (CN3UIImage*) GetChildByID("img_inn"));
+	N3_VERIFY_UI_COMPONENT(m_pUIBlackSmith, (CN3UIImage*) GetChildByID("img_blacksmith"));
+	N3_VERIFY_UI_COMPONENT(m_pUIStore, (CN3UIImage*) GetChildByID("img_store"));
 	N3_VERIFY_UI_COMPONENT(m_pText_Weight, (CN3UIString*) GetChildByID("text_weight"));
 }
 
@@ -388,6 +389,30 @@ void CUITransactionDlg::GoldUpdate()
 
 	std::string strGold = CGameBase::FormatNumber(CGameBase::s_pPlayer->m_InfoExt.iGold);
 	m_pStrMyGold->SetString(strGold);
+}
+
+//generates item name, can be moved to main scope
+void CUITransactionDlg::GenerateItemName(__IconItemSkill* pItem, std::string& strName)
+{
+	if (pItem == nullptr)
+		return;
+
+	if ((e_ItemAttrib) (pItem->pItemExt->byMagicOrRare) != ITEM_ATTRIB_UNIQUE)
+	{
+		std::string strtemp;
+		if (pItem->pItemExt->dwID % 10 != 0)
+		{
+			char szExtID[20] = {};
+			sprintf(szExtID, "(+%d)", pItem->pItemExt->dwID % 10);
+			strtemp = szExtID;
+		}
+
+		strName = pItem->pItemBasic->szName + strtemp;
+	}
+	else
+	{
+		strName = pItem->pItemExt->szHeader;
+	}
 }
 
 void CUITransactionDlg::ItemMoveFromInvToThis()
@@ -665,6 +690,46 @@ void CUITransactionDlg::ItemCountCancel()
 
 	m_pCountableItemEdit->Close();
 }
+
+void CUITransactionDlg::MsgBoxCancel()
+{
+	s_bWaitFromServer = false;
+	m_sRecoveryJobInfo.pItemSource = nullptr;
+	m_sRecoveryJobInfo.pItemTarget = nullptr;
+
+	m_pMsgBoxOkCancel->Close();
+}
+
+void CUITransactionDlg::MsgBoxOK()
+{
+	//int iGold = CGameBase::s_pPlayer->m_InfoExt.iGold; //player gold can be used while buying
+	__IconItemSkill* spItem, * spItemNew = nullptr;
+
+	//other option is not possible target is always NPC
+	//but it can be used for high price items like gold bar etc.
+	switch (CN3UIWndBase::m_pMsgBoxOkCancel->GetCallerWndDistrict())
+	{
+		case UIWND_DISTRICT_TRADE_NPC: //buy,NPC to inventory
+			spItem = m_pMyTrade[m_iCurPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
+			break;
+		case UIWND_DISTRICT_TRADE_MY: //sell,inventory to NPC
+			spItem = m_pMyTradeInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
+
+			s_bWaitFromServer = true;
+
+			spItem->pUIIcon->SetVisible(false);
+			
+			SendToServerSellMsg(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->dwID +
+				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemExt->dwID,
+				CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder, 
+				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->iCount);
+			break;
+	}
+
+	CN3UIWndBase::m_pMsgBoxOkCancel->Close();
+
+}
+
 
 void CUITransactionDlg::SendToServerSellMsg(int itemID, byte pos, int iCount)
 {
@@ -1037,11 +1102,40 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 				}
 				else
 				{
-					// Server에게 보낸다..
-					SendToServerSellMsg(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->dwID+
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemExt->dwID, 
-						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder, 
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->iCount);
+					//display MsgBoxOkCancel if item type is unique or upgrade
+					int iItemAttribID = CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemExt->byMagicOrRare;
+					int iItemClass = CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byClass;
+
+					
+					if (iItemAttribID == ITEM_ATTRIB_UPGRADE ||
+						iItemAttribID == ITEM_ATTRIB_UNIQUE || 
+						iItemClass == ITEM_CLASS_POWER_SCROLL)
+					{	
+						std::string strMessage, strItemName;
+						GenerateItemName(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource, strItemName);
+						CGameBase::GetTextF(IDS_TRANSACTION_OK_CANCEL_MESSAGE,
+											&strMessage,
+											strItemName.c_str());
+
+						//m_pUIMsgBoxOkCancel position
+						CN3UIWndBase::m_pMsgBoxOkCancel->SetText(strMessage);
+						s_bWaitFromServer = false;
+						CN3UIWndBase::m_pMsgBoxOkCancel->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict);
+						
+						//avoid icon removal
+						FAIL_RETURN
+							
+					}
+					else
+					{
+						// Server에게 보낸다..
+						SendToServerSellMsg(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->dwID +
+							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemExt->dwID,
+							CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder,
+							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->iCount);
+					}
+					
+					
 
 					// 원래 아이템을 삭제해야 하지만.. 되살릴 방법이 없기 때문에 원래 위치로 옮기고.. 
 					pArea = NULL;
@@ -1471,6 +1565,14 @@ bool CUITransactionDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 				}
 			}
 		}
+
+		/*
+		if (m_pUIMsgBox != nullptr && pSender == m_pUIMsgBox->m_pBtn_Cancel)
+		{
+			TRACE("Cancel button clickled\n");
+			m_pUIMsgBox->SetVisible(false);
+		} */
+
 	}
 
 	__IconItemSkill* spItem = NULL;
@@ -1578,6 +1680,9 @@ void CUITransactionDlg::SetVisible(bool bVisible)
 		if(CN3UIWndBase::m_pCountableItemEdit && CN3UIWndBase::m_pCountableItemEdit->IsVisible())
 			ItemCountCancel();
 
+		if (CN3UIWndBase::m_pMsgBoxOkCancel && CN3UIWndBase::m_pMsgBoxOkCancel->IsVisible())
+			MsgBoxCancel();
+
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 	}
 }
@@ -1590,6 +1695,9 @@ void CUITransactionDlg::SetVisibleWithNoSound(bool bVisible, bool bWork, bool bR
 	{
 		if(CN3UIWndBase::m_pCountableItemEdit && CN3UIWndBase::m_pCountableItemEdit->IsVisible())
 			ItemCountCancel();
+
+		if (CN3UIWndBase::m_pMsgBoxOkCancel && CN3UIWndBase::m_pMsgBoxOkCancel->IsVisible())
+			MsgBoxCancel();
 
 		if (GetState() == UI_STATE_ICON_MOVING)
 			IconRestore();
