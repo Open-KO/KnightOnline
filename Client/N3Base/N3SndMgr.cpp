@@ -521,12 +521,12 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	wavFileHeader.Data.Size = static_cast<uint32_t>(decodedBytes);
 
 	// Write out the header.
-	long previousOffset = ftell(fp);
+	long endOfFileOffset = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 	fwrite(&wavFileHeader, sizeof(WavFileHeader), 1, fp);
 
 	// Seek back to the known end, before the file is closed and flushed.
-	fseek(fp, previousOffset, SEEK_SET);
+	fseek(fp, endOfFileOffset, SEEK_SET);
 	fclose(fp);
 
 	filename = std::move(newFilename);
