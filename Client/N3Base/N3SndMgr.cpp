@@ -499,7 +499,7 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	{
 		decodedBytes += done;
 
-		fwrite(&frameBlock[0], frameSize, 1, fp);
+		fwrite(&frameBlock[0], done, 1, fp);
 		error = mpg123_read(mpgHandle, &frameBlock[0], frameSize, &done);
 	}
 
