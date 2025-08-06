@@ -529,6 +529,6 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	fseek(fp, previousOffset, SEEK_SET);
 	fclose(fp);
 
-	filename = newFilename;
+	filename = std::move(newFilename);
 	return true;
 }
