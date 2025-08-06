@@ -461,15 +461,23 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 		return false;
 	}
 
+	std::string newFilename = newPath.string();
+
+	// Open the new WAV file for writing.
+	FILE* fp = fopen(newFilename.c_str(), "wb");
+	if (fp == nullptr)
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to open decoded MP3 for writing: %s",
+			newFilename.c_str());
+#endif
+		return false;
+	}
+
 	const int sampleSizeBytes = mpg123_encsize(encoding);
-	const size_t totalDataSize = sampleCount * channels * sampleSizeBytes;
 
-	std::vector<uint8_t> decodedWavFile(sizeof(WavFileHeader) + totalDataSize);
-
-	WavFileHeader& wavFileHeader = reinterpret_cast<WavFileHeader&>(decodedWavFile[0]);
-
-	// Initialise header to defaults (since it's reusing the preallocated zero-initialised memory).
-	wavFileHeader = {};
+	// Initialise header to defaults
+	WavFileHeader wavFileHeader = {};
 
 	// Setup the file header.
 	wavFileHeader.Format.AudioFormat	= 1; // PCM
@@ -481,20 +489,27 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 
 	size_t done = 0, decodedBytes = 0;
 	const size_t frameSize = mpg123_outblock(mpgHandle);
-	uint8_t* dataBuffer = &decodedWavFile[sizeof(WavFileHeader)];
+	std::vector<uint8_t> frameBlock(frameSize);
 
-	error = mpg123_read(mpgHandle, dataBuffer, frameSize, &done);
+	// Skip the header - we'll write that at the end.
+	fseek(fp, sizeof(WavFileHeader), SEEK_SET);
+
+	error = mpg123_read(mpgHandle, &frameBlock[0], frameSize, &done);
 	while (error == MPG123_OK)
 	{
 		decodedBytes += done;
-		dataBuffer += done;
-		error = mpg123_read(mpgHandle, dataBuffer, frameSize, &done);
+
+		fwrite(&frameBlock[0], frameSize, 1, fp);
+		error = mpg123_read(mpgHandle, &frameBlock[0], frameSize, &done);
 	}
 
 	mpg123_delete(mpgHandle);
 
 	if (error != MPG123_DONE)
 	{
+		fclose(fp);
+		std::remove(newFilename.c_str());
+
 #ifdef _N3GAME
 		CLogWriter::Write("Failed to decode MP3: %s (%d - decoded %zu bytes)",
 			filename.c_str(), error, decodedBytes);
@@ -505,25 +520,15 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	wavFileHeader.FileSize += static_cast<uint32_t>(decodedBytes);
 	wavFileHeader.Data.Size = static_cast<uint32_t>(decodedBytes);
 
-	filename = newPath.string();
+	// Write out the header.
+	long previousOffset = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	fwrite(&wavFileHeader, sizeof(WavFileHeader), 1, fp);
 
-	// Output the new decoded WAV file.
-	FILE* fp = fopen(filename.c_str(), "wb");
-	if (fp == nullptr)
-	{
-#ifdef _N3GAME
-		CLogWriter::Write("Failed to write decoded MP3: %s",
-			filename.c_str());
-#endif
-		return false;
-	}
-
-	// Write out the effective file contents.
-	// The buffer size is based on full blocks; if the last block isn't full,
-	// we shouldn't write the entire block.
-	const size_t effectiveFileSize = sizeof(WavFileHeader) + decodedBytes;
-	fwrite(&decodedWavFile[0], effectiveFileSize, 1, fp);
+	// Seek back to the known end, before the file is closed and flushed.
+	fseek(fp, previousOffset, SEEK_SET);
 	fclose(fp);
 
+	filename = newFilename;
 	return true;
 }
