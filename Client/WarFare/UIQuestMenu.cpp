@@ -15,6 +15,8 @@
 #include <N3Base/N3UIButton.h>
 #include <N3Base/N3UITooltip.h>
 
+#include <algorithm>
+
 //-----------------------------------------------------------------------------
 CUIQuestMenu::CUIQuestMenu(void) {
 	m_iMenuCnt = 0;
@@ -123,6 +125,13 @@ bool CUIQuestMenu::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			return true;
 		}
 	}
+	else if (dwMsg == UIMSG_SCROLLBAR_POS)
+	{
+		if (pSender == m_pScrollBar)
+		{
+			SetTopLine(m_pScrollBar, m_pTextTitle);
+		}
+	}
 
 	return true;
 }
@@ -185,6 +194,8 @@ void CUIQuestMenu::Open(Packet& pkt)
 
 	if(m_iMenuCnt==0) return;
 
+	//set initial position of scroll bar as start
+	if (m_pScrollBar != nullptr) m_pScrollBar->SetCurrentPos(0);
 	SetVisible(true);
 
 	int iIH;
@@ -262,4 +273,35 @@ void CUIQuestMenu::SetVisible(bool bVisible)
 		CGameProcedure::s_pUIMgr->SetVisibleFocusedUI(this);
 	else
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
+}
+
+void CUIQuestMenu::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText)
+{
+	if (pText == nullptr
+		|| pScroll == nullptr)
+		return;
+
+	//scroll current position
+	const int iScrollPosition = pScroll->GetCurrentPos();
+
+	// total number of lines of text
+	const int iTotalLineCount = pText->GetLineCount();
+
+	// max number of lines visible in text area
+	const int iVisibleLineCount = 8;
+
+	const int iMaxScrollableLines = iTotalLineCount - iVisibleLineCount;
+	pScroll->SetRangeMax(iMaxScrollableLines);
+
+	// return if text is shorter than or equal to 4 lines
+	if (iTotalLineCount <= iVisibleLineCount)
+		return;
+
+	// limit check for the line which displayed first, topline
+	int iTopLine = std::clamp(
+		iScrollPosition,
+		0,
+		iTotalLineCount - iVisibleLineCount);
+
+	pText->SetStartLine(iTopLine);
 }

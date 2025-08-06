@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include <N3Base/N3UIBase.h>
+#include <N3Base/N3UIScrollBar.h>
 
 #define MAX_STRING_MENU	10//5
 
@@ -47,7 +48,8 @@ public:
 
 	CUIQuestMenu();
 	virtual ~CUIQuestMenu();
-
+protected:
+	void SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText);
 };
 
 #endif // !defined(AFX_UIQUESTMENU_H__B74550FB_798B_4DB8_91DD_EE5994976EDE__INCLUDED_)

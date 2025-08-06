@@ -12,6 +12,8 @@
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIButton.h>
 
+#include <algorithm>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -31,6 +33,7 @@ CUIQuestTalk::CUIQuestTalk()
 	m_pBtnNext			= nullptr;
 	m_pBtnOkRight		= nullptr;
 	m_pBtnPre			= nullptr;
+	m_pScrollBar		= nullptr;
 	m_iNumTalk			= 0;
 	m_iCurTalk			= 0;
 }
@@ -62,6 +65,8 @@ void CUIQuestTalk::Open(Packet& pkt)
 	}
 
 	m_pTextTalk->SetString(m_szTalk[m_iCurTalk]);
+	//set initial position of scroll bar as start
+	if (m_pScrollBar != nullptr) m_pScrollBar->SetCurrentPos(0);
 	SetVisible(true);
 }
 
@@ -87,6 +92,13 @@ bool CUIQuestTalk::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			SetVisible(false);
 		}
 	}
+	else if (dwMsg == UIMSG_SCROLLBAR_POS)
+	{
+		if (pSender == m_pScrollBar)
+		{
+			SetTopLine(m_pScrollBar, m_pTextTalk);
+		}
+	}
 
 	return true;
 }
@@ -105,7 +117,8 @@ bool CUIQuestTalk::Load(HANDLE hFile)
 	N3_VERIFY_UI_COMPONENT(m_pBtnNext,			(CN3UIButton*) GetChildByID("btn_Next"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnOkRight,		(CN3UIButton*) GetChildByID("btn_Ok_right"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnPre,			(CN3UIButton*) GetChildByID("btn_Pre"));
-
+	N3_VERIFY_UI_COMPONENT(m_pScrollBar,		(CN3UIScrollBar*) GetChildByID("scroll"));
+	
 	if (m_pBtnUpperEvent != nullptr)
 		m_pBtnUpperEvent->SetVisible(false);
 
@@ -156,6 +169,38 @@ void CUIQuestTalk::Release()
 	m_pBtnNext			= nullptr;
 	m_pBtnOkRight		= nullptr;
 	m_pBtnPre			= nullptr;
+	m_pScrollBar		= nullptr;
 	m_iNumTalk			= 0;
 	m_iCurTalk			= 0;
+}
+
+void CUIQuestTalk::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText)
+{
+	if (pText == nullptr
+		|| pScroll == nullptr)
+		return;
+
+	//scroll current position
+	const int iScrollPosition = pScroll->GetCurrentPos();
+
+	// total number of lines of text
+	const int iTotalLineCount = pText->GetLineCount();
+
+	// max number of lines visible in text area
+	const int iVisibleLineCount = 8;
+
+	const int iMaxScrollableLines = iTotalLineCount - iVisibleLineCount;
+	pScroll->SetRangeMax(iMaxScrollableLines);
+
+	// return if text is shorter than or equal to 4 lines
+	if (iTotalLineCount <= iVisibleLineCount)
+		return;
+
+	// limit check for the line which displayed first, topline
+	int iTopLine = std::clamp(
+		iScrollPosition,
+		0,
+		iTotalLineCount - iVisibleLineCount);
+
+	pText->SetStartLine(iTopLine);
 }
