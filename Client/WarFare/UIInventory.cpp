@@ -338,7 +338,8 @@ void CUIInventory::Render()
 	for( int i = 0; i < MAX_ITEM_INVENTORY; i++ )
 	{
 		if ( m_pMyInvWnd[i] && ((m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) || 
-					(m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)) )
+					(m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL) ||
+					(m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_POWER_SCROLL)) )
 		{
 			// string 얻기..
 			CN3UIString* pStr = GetChildStringByiOrder(i);
@@ -353,7 +354,12 @@ void CUIInventory::Render()
 					if ( m_pMyInvWnd[i]->pUIIcon->IsVisible() )
 					{
 						pStr->SetVisible(true);
-						pStr->SetStringAsInt(m_pMyInvWnd[i]->iCount);
+						
+						if (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_POWER_SCROLL)
+							pStr->SetStringAsInt(m_pMyInvWnd[i]->iDurability);
+						else
+							pStr->SetStringAsInt(m_pMyInvWnd[i]->iCount);
+						
 						pStr->Render();
 					}
 					else
@@ -2401,9 +2407,18 @@ int CUIInventory::GetCountInInvByID(int iID)
 	int i;
 	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )
 	{
-		if ( (m_pMyInvWnd[i] != NULL) && (m_pMyInvWnd[i]->pItemBasic->dwID == (iID/1000*1000)) &&
-				(m_pMyInvWnd[i]->pItemExt->dwID == (iID%1000)) )
-		return m_pMyInvWnd[i]->iCount;
+		if ((m_pMyInvWnd[i] != NULL) && (m_pMyInvWnd[i]->pItemBasic->dwID == (iID / 1000 * 1000)) &&
+				(m_pMyInvWnd[i]->pItemExt->dwID == (iID % 1000)))
+		{
+			if (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_POWER_SCROLL)
+			{
+				return m_pMyInvWnd[i]->iDurability;
+			}
+			else
+			{
+				return m_pMyInvWnd[i]->iCount;
+			}
+		}	
 	}
 
 	return 0;
