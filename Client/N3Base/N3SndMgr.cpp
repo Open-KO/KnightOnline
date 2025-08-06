@@ -468,7 +468,7 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	if (fp == nullptr)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to open decoded MP3 for writing: %s",
+		CLogWriter::Write("Failed to open file for writing decoded MP3 to: %s",
 			newFilename.c_str());
 #endif
 		return false;
