@@ -1055,6 +1055,7 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 	char send_buff[128] = {};
 	char finalstr[128] = {};
 	CKnights* pKnights = nullptr;
+	std::string buff;
 
 	if (pUser == nullptr)
 		return;
@@ -1066,7 +1067,8 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 	{
 		pUser->m_pUserData->m_bKnights = knightsindex;
 		pUser->m_pUserData->m_bFame = TRAINEE;
-		sprintf(finalstr, "#### %s님이 가입하셨습니다. ####", pUser->m_pUserData->m_id);
+		::_LoadStringFromResource(IDP_KNIGHT_JOIN, buff);
+		sprintf(finalstr, buff.c_str(), pUser->m_pUserData->m_id);
 		// 클랜정보에 추가
 		AddKnightsUser(knightsindex, pUser->m_pUserData->m_id);
 
@@ -1090,8 +1092,8 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 			else if (strcmp( pKnights->strViceChief_3, pUser->m_pUserData->m_id) == 0)
 				memset(pKnights->strViceChief_3, 0, sizeof(pKnights->strViceChief_3));
 		}*/
-		sprintf(finalstr, "#### %s님이 탈퇴하셨습니다. ####", pUser->m_pUserData->m_id);
-
+		::_LoadStringFromResource(IDP_KNIGHT_LEFT, buff);
+		sprintf(finalstr, buff.c_str(), pUser->m_pUserData->m_id);
 		//TRACE(_T("RecvJoinKnights - 탈퇴, nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 	}
 
@@ -1147,6 +1149,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 	char userid[MAX_ID_SIZE + 1] = {};
 	CUser* pTUser = nullptr;
 	CKnights* pKnights = nullptr;
+	std::string buff;
 
 	if (pUser == nullptr)
 		return;
@@ -1166,7 +1169,8 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
-				sprintf(finalstr, "#### %s님이 추방되셨습니다. ####", pTUser->m_pUserData->m_id);
+				::_LoadStringFromResource(IDP_KNIGHT_KICK, buff);
+				sprintf(finalstr, buff.c_str(), pTUser->m_pUserData->m_id);
 
 				RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
@@ -1196,7 +1200,8 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
 				ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				sprintf(finalstr, "#### %s님이 단장으로 임명되셨습니다. ####", pTUser->m_pUserData->m_id);
+				::_LoadStringFromResource(IDP_KNIGHT_MAKE_LEADER, buff);
+				sprintf(finalstr, buff.c_str(), pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -1205,7 +1210,8 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
 				ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				sprintf(finalstr, "#### %s님이 부단장으로 임명되셨습니다. ####", pTUser->m_pUserData->m_id);
+				::_LoadStringFromResource(IDP_KNIGHT_MAKE_ASSIST, buff);
+				sprintf(finalstr, buff.c_str(), pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -1296,6 +1302,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 	char finalstr[128] = {};
 	CKnights* pKnights = nullptr;
 	CUser* pTUser = nullptr;
+	std::string buff;
 
 	if (pUser == nullptr)
 		return;
@@ -1313,9 +1320,11 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 
 	// 클랜이나 기사단이 파괴된 메시지를 보내고 유저 데이타를 초기화
 	if (flag == CLAN_TYPE)
-		sprintf(finalstr, "#### %s 클랜이 해체되었습니다 ####", pKnights->m_strName);
+		::_LoadStringFromResource(IDP_KNIGHT_CLAN_DISBAND, buff);
 	else if (flag == KNIGHTS_TYPE)
-		sprintf(finalstr, "#### %s 기사단이 해체되었습니다 ####", pKnights->m_strName);
+		::_LoadStringFromResource(IDP_KNIGHT_ALLIANCE_DISBAND, buff);
+	
+	sprintf(finalstr, buff.c_str(), pKnights->m_strName);
 
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;

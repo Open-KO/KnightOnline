@@ -1,5 +1,5 @@
 ﻿//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by Ebenezer.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -12,19 +12,6 @@
 #define IDP_ELMORAD_VICTORY             107
 #define IDP_KARUS_BANISH                108
 #define IDP_ELMORAD_BANISH              109
-#define IDP_KNIGHT_NAME_REPEAT          110
-#define IDP_KNIGHT_ALREADY_REGISTERED   111
-#define IDP_KNIGHT_INSUFFICIENT_LEVEL   112
-#define IDP_KNIGHT_INSUFFICIENT_LOYALTY 113
-#define IDP_KNIGHT_INSUFFICIENT_SKILL   114
-#define IDP_KNIGHT_INSUFFICIENT_CHARISMA 115
-#define IDP_KNIGHT_INSUFFICIENT_GOLD    116
-#define IDP_KNIGHT_CREATE_FAIL          117
-#define IDP_KNIGHT_NOT_AVAILABLE        118
-#define IDP_KNIGHT_LEADER_ONLY          119
-#define IDP_KNIGHT_MINIMUM_SUBLEADER    120
-#define IDP_KNIGHT_NOT_REGISTERED       121
-#define IDP_KNIGHT_DB_FAIL              122
 #define IDP_WRONG_ID                    123
 #define IDP_SOURCE_UNABLE               124
 #define IDP_MINIMUM_OFFICER             125
@@ -46,6 +33,26 @@
 #define IDS_ELMO_CAPTAIN_DEPRIVE        143
 #define IDS_COUPON_NOTEPAD_ID           144
 #define IDS_COUPON_POSTIT_ID            145
+#define IDP_KNIGHT_NAME_REPEAT          200
+#define IDP_KNIGHT_ALREADY_REGISTERED   201
+#define IDP_KNIGHT_INSUFFICIENT_LEVEL   202
+#define IDP_KNIGHT_INSUFFICIENT_LOYALTY 203
+#define IDP_KNIGHT_INSUFFICIENT_SKILL   204
+#define IDP_KNIGHT_INSUFFICIENT_CHARISMA 205
+#define IDP_KNIGHT_INSUFFICIENT_GOLD    206
+#define IDP_KNIGHT_CREATE_FAIL          207
+#define IDP_KNIGHT_NOT_AVAILABLE        208
+#define IDP_KNIGHT_LEADER_ONLY          209
+#define IDP_KNIGHT_MINIMUM_SUBLEADER    210
+#define IDP_KNIGHT_NOT_REGISTERED       211
+#define IDP_KNIGHT_DB_FAIL              212
+#define IDP_KNIGHT_LEFT                 213
+#define IDP_KNIGHT_CLAN_DISBAND         214
+#define IDP_KNIGHT_ALLIANCE_DISBAND     215
+#define IDP_KNIGHT_JOIN                 216
+#define IDP_KNIGHT_KICK                 217
+#define IDP_KNIGHT_MAKE_LEADER          218
+#define IDP_KNIGHT_MAKE_ASSIST          219
 #define IDC_LIST1                       1000
 #define IDC_COUNT_EDIT                  1001
 #define IDC_GONGJI_EDIT                 1002

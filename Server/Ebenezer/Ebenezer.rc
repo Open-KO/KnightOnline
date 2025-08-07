@@ -161,12 +161,12 @@ BEGIN
     IDP_ELMORAD_VICTORY     "El Morad is victorious. They killed %d warriors and lost %d warriors"
     IDP_KARUS_BANISH        "El Morad warriors in the battle zone have been banned!"
     IDP_ELMORAD_BANISH      "Karus warriors in the battle zone have been banned!"
-    IDP_KNIGHT_NAME_REPEAT  "This Knights name already exist."
-    IDP_KNIGHT_ALREADY_REGISTERED "You are already in a Knights"
 END
 
 STRINGTABLE
 BEGIN
+    IDP_KNIGHT_NAME_REPEAT  "This Knights name already exist."
+    IDP_KNIGHT_ALREADY_REGISTERED "You are already in a Knights"
     IDP_KNIGHT_INSUFFICIENT_LEVEL 
                             "You need to be at least at Level 20 in order to create a Knights"
     IDP_KNIGHT_INSUFFICIENT_LOYALTY 
@@ -178,12 +178,28 @@ BEGIN
     IDP_KNIGHT_INSUFFICIENT_GOLD 
                             "You need to have at least 1,000,000 Coins in order to create a Knights"
     IDP_KNIGHT_CREATE_FAIL  "You have failed creating a Knights"
+END
+
+STRINGTABLE
+BEGIN
     IDP_KNIGHT_NOT_AVAILABLE "This Knights does not exist"
     IDP_KNIGHT_LEADER_ONLY  "This is authorized for Head of Knights only."
     IDP_KNIGHT_MINIMUM_SUBLEADER 
                             "This is authorized for ranks higher than Vice Head of Knights only."
     IDP_KNIGHT_NOT_REGISTERED "Not Register Knights"
     IDP_KNIGHT_DB_FAIL      "Failed Update DB with Knights"
+    IDP_KNIGHT_LEFT         "#### %s has left. ####"
+    IDP_KNIGHT_CLAN_DISBAND "#### %s has been disbanded. ####"
+    IDP_KNIGHT_ALLIANCE_DISBAND 
+                            "#### alliance with %s has been disbanded. ####"
+    IDP_KNIGHT_JOIN         "#### %s has joined. ####"
+    IDP_KNIGHT_KICK         "#### %s has been kicked. ####"
+    IDP_KNIGHT_MAKE_LEADER  "#### %s has been appointed as the leader. ####"
+    IDP_KNIGHT_MAKE_ASSIST  "#### %s has been appointed as the assistant leader. ####"
+END
+
+STRINGTABLE
+BEGIN
     IDP_WRONG_ID            "This ID does not exist"
     IDP_SOURCE_UNABLE       "Source Unable"
     IDP_MINIMUM_OFFICER     "This is authorized for ranks higher than officer"
