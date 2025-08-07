@@ -5340,17 +5340,23 @@ void CUser::StateChange(char* pBuf)
 	SetShort(send_buff, m_Sid, send_index);
 	SetByte(send_buff, type, send_index);
 
+	BYTE byResult = 0;
+
 	if (type == 1)
-		SetByte(send_buff, m_bResHpType, send_index);
+		byResult = m_bResHpType;
 	else if (type == 2)
-		SetByte(send_buff, m_bNeedParty, send_index);
+		byResult = m_bNeedParty;
 	else if (type == 3)
-		SetByte(send_buff, m_bAbnormalType, send_index);
+		byResult = m_bAbnormalType;
 	// Just plain echo :)
 	//		N3_SP_STATE_CHANGE_ACTION = 0x04,			// 1 - 인사, 11 - 도발
 	//		N3_SP_STATE_CHANGE_VISIBLE = 0x05 };		// 투명 0 ~ 255
 	else
-		SetByte(send_buff, buff, send_index);
+		byResult = buff;
+		
+	//conversion to uint32_t is required to support official client
+	SetDWORD(send_buff, static_cast<uint32_t>(byResult), send_index);
+	//SetByte(send_buff, iResult, send_index); //alternative if reading is demanded as uint8_t
 
 	m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
 }
