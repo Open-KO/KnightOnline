@@ -45,22 +45,24 @@ void CUILoading::Release()
 
 bool CUILoading::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
-	m_pText_Version = (CN3UIString*)(CN3UIBase::GetChildByID("Text_Version")); __ASSERT(m_pText_Version, "NULL UI Component!!");
-	if(m_pText_Version)
+	N3_VERIFY_UI_COMPONENT(m_pText_Version, (CN3UIString*) GetChildByID("Text_Version"));
+	if (m_pText_Version != nullptr)
 	{
-		char szVersion[128];
-		sprintf(szVersion, "Ver. %.3f", CURRENT_VERSION/1000.0f);
-		m_pText_Version->SetString(szVersion);
+		std::string version = fmt::format("Ver. {:.3f}", CURRENT_VERSION / 1000.0f);
+		m_pText_Version->SetString(version);
 	}
-	m_pText_Info = (CN3UIString*)(CN3UIBase::GetChildByID("Text_Info")); __ASSERT(m_pText_Info, "NULL UI Component!!");
-	m_pProgress_Loading = (CN3UIProgress*)(CN3UIBase::GetChildByID("Progress_Loading")); __ASSERT(m_pProgress_Loading, "NULL UI Component!!");
 
-	this->SetPosCenter(); // 가운데로 맞추기..
+	N3_VERIFY_UI_COMPONENT(m_pText_Info , (CN3UIString*) GetChildByID("Text_Info"));
+	N3_VERIFY_UI_COMPONENT(m_pProgress_Loading, (CN3UIProgress*) GetChildByID("Progress_Loading"));
+
+	SetPosCenter(); // 가운데로 맞추기..
 	m_pText_Version->SetPos(10, 10); // Version 은 맨위에 표시..
 	
-	if(m_pProgress_Loading) m_pProgress_Loading->SetRange(0, 100);
+	if (m_pProgress_Loading != nullptr)
+		m_pProgress_Loading->SetRange(0, 100);
 
 	return true;
 }

@@ -3,30 +3,30 @@
 
 bool CpToWide(
 	const char* input,
-	size_t input_size,
-	uint32_t input_codepage,
+	size_t inputSize,
+	uint32_t inputCodePage,
 	wchar_t* output,
-	size_t output_buffer_chars)
+	size_t outputBufferCharCount)
 {
 	int sizeNeeded = MultiByteToWideChar(
-		input_codepage,
+		inputCodePage,
 		0,
 		input,
-		static_cast<int>(input_size),
+		static_cast<int>(inputSize),
 		0,
 		0);
 
 	if (sizeNeeded < 0
-		|| static_cast<int>(output_buffer_chars) < (sizeNeeded + 1))
+		|| static_cast<int>(outputBufferCharCount) < (sizeNeeded + 1))
 		return false;
 
 	if (sizeNeeded > 0)
 	{
 		MultiByteToWideChar(
-			input_codepage,
+			inputCodePage,
 			0,
 			input,
-			static_cast<int>(input_size),
+			static_cast<int>(inputSize),
 			output,
 			sizeNeeded);
 	}
@@ -37,14 +37,14 @@ bool CpToWide(
 
 std::wstring CpToWide(
 	const char* input,
-	size_t input_size,
-	uint32_t input_codepage)
+	size_t inputSize,
+	uint32_t inputCodePage)
 {
 	int sizeNeeded = MultiByteToWideChar(
-		input_codepage,
+		inputCodePage,
 		0,
 		input,
-		static_cast<int>(input_size),
+		static_cast<int>(inputSize),
 		0,
 		0);
 	if (sizeNeeded <= 0)
@@ -52,53 +52,53 @@ std::wstring CpToWide(
 
 	std::wstring wideEncoded(sizeNeeded, 0);
 	MultiByteToWideChar(
-		input_codepage,
+		inputCodePage,
 		0,
 		input,
-		static_cast<int>(input_size),
+		static_cast<int>(inputSize),
 		&wideEncoded[0],
 		sizeNeeded);
 	return wideEncoded;
 }
 
 std::wstring CpToWide(
-	const std::string& input,
-	uint32_t input_codepage)
+	const std::string_view input,
+	uint32_t inputCodePage)
 {
 	return CpToWide(
-		input.c_str(),
+		input.data(),
 		input.size(),
-		input_codepage);
+		inputCodePage);
 }
 
 bool WideToCp(
 	const wchar_t* input,
-	size_t input_size,
+	size_t inputSize,
 	char* output,
-	size_t output_buffer_chars,
-	uint32_t output_codepage)
+	size_t outputBufferCharCount,
+	uint32_t outputCodePage)
 {
 	int sizeNeeded = WideCharToMultiByte(
-		output_codepage,
+		outputCodePage,
 		0,
 		input,
-		static_cast<int>(input_size),
+		static_cast<int>(inputSize),
 		nullptr,
 		0,
 		nullptr,
 		nullptr);
 
 	if (sizeNeeded < 0
-		|| static_cast<int>(output_buffer_chars) < (sizeNeeded + 1))
+		|| static_cast<int>(outputBufferCharCount) < (sizeNeeded + 1))
 		return false;
 
 	if (sizeNeeded > 0)
 	{
 		WideCharToMultiByte(
-			output_codepage,
+			outputCodePage,
 			0,
 			input,
-			static_cast<int>(input_size),
+			static_cast<int>(inputSize),
 			output,
 			sizeNeeded,
 			nullptr,
@@ -111,14 +111,14 @@ bool WideToCp(
 
 std::string WideToCp(
 	const wchar_t* input,
-	size_t input_size,
-	uint32_t output_codepage)
+	size_t inputSize,
+	uint32_t outputCodePage)
 {
 	int sizeNeeded = WideCharToMultiByte(
-		output_codepage,
+		outputCodePage,
 		0,
 		input,
-		static_cast<int>(input_size),
+		static_cast<int>(inputSize),
 		nullptr,
 		0,
 		nullptr,
@@ -128,10 +128,10 @@ std::string WideToCp(
 
 	std::string cpEncoded(sizeNeeded, 0);
 	WideCharToMultiByte(
-		output_codepage,
+		outputCodePage,
 		0,
 		input,
-		static_cast<int>(input_size),
+		static_cast<int>(inputSize),
 		&cpEncoded[0],
 		sizeNeeded,
 		nullptr,
@@ -141,113 +141,105 @@ std::string WideToCp(
 }
 
 std::string WideToCp(
-	const std::wstring& input,
-	uint32_t output_codepage)
+	const std::wstring_view input,
+	uint32_t outputCodePage)
 {
 	return WideToCp(
-		input.c_str(),
+		input.data(),
 		input.size(),
-		output_codepage);
+		outputCodePage);
 }
 
 bool Utf8ToWide(
 	const char* input,
-	size_t input_size,
+	size_t inputSize,
 	wchar_t* output,
-	size_t output_buffer_chars)
+	size_t outputBufferCharCount)
 {
 	return CpToWide(
 		input,
-		input_size,
+		inputSize,
 		CP_UTF8,
 		output,
-		output_buffer_chars);
+		outputBufferCharCount);
 }
 
 std::wstring Utf8ToWide(
 	const char* input,
-	size_t input_size)
+	size_t inputSize)
 {
 	return CpToWide(
 		input,
-		input_size,
+		inputSize,
 		CP_UTF8);
 }
 
 std::wstring Utf8ToWide(
-	const std::string& input)
+	const std::string_view input)
 {
 	return Utf8ToWide(
-		input.c_str(),
+		input.data(),
 		input.size());
 }
 
 bool WideToUtf8(
 	const wchar_t* input,
-	size_t input_size,
+	size_t inputSize,
 	char* output,
-	size_t output_buffer_chars)
+	size_t outputBufferCharCount)
 {
 	return WideToCp(
 		input,
-		input_size,
+		inputSize,
 		output,
-		output_buffer_chars,
+		outputBufferCharCount,
 		CP_UTF8);
 }
 
 std::string WideToUtf8(
 	const wchar_t* input,
-	size_t input_size)
+	size_t inputSize)
 {
 	return WideToCp(
 		input,
-		input_size,
+		inputSize,
 		CP_UTF8);
 }
 
 std::string WideToUtf8(
-	const std::wstring& input)
+	const std::wstring_view input)
 {
 	return WideToUtf8(
-		input.c_str(),
+		input.data(),
 		input.size());
 }
 
 bool LocalToWide(
 	const char* input,
-	size_t input_size,
+	size_t inputSize,
 	wchar_t* output,
-	size_t output_buffer_chars)
+	size_t outputBufferCharCount)
 {
 	return CpToWide(
 		input,
-		input_size,
+		inputSize,
 		CP_ACP,
 		output,
-		output_buffer_chars);
+		outputBufferCharCount);
 }
 
 std::wstring LocalToWide(
 	const char* input,
-	size_t input_size)
+	size_t inputSize)
 {
 	return CpToWide(
 		input,
-		input_size,
+		inputSize,
 		CP_ACP);
 }
 
 std::wstring LocalToWide(
-	const std::string& input)
-{
-	return LocalToWide(
-		input.c_str(),
-		input.size());
-}
-
-std::wstring LocalToWide(
-	std::string_view input)
+	const std::string_view input)
 {
 	return LocalToWide(
 		input.data(),
@@ -256,38 +248,30 @@ std::wstring LocalToWide(
 
 bool WideToLocal(
 	const wchar_t* input,
-	size_t input_size,
+	size_t inputSize,
 	char* output,
-	size_t output_buffer_chars)
+	size_t outputBufferCharCount)
 {
 	return WideToCp(
 		input,
-		input_size,
+		inputSize,
 		output,
-		output_buffer_chars,
+		outputBufferCharCount,
 		CP_ACP);
 }
 
 std::string WideToLocal(
 	const wchar_t* input,
-	size_t input_size)
+	size_t inputSize)
 {
 	return WideToCp(
 		input,
-		input_size,
+		inputSize,
 		CP_ACP);
 }
 
 std::string WideToLocal(
-	const std::wstring& input)
-{
-	return WideToLocal(
-		input.c_str(),
-		input.size());
-}
-
-std::string WideToLocal(
-	std::wstring_view input)
+	const std::wstring_view input)
 {
 	return WideToLocal(
 		input.data(),

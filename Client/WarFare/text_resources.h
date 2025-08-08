@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "ClientResourceFormatter.h"
+
 enum e_TextResourceID
 {
 	IDS_BIND_POINT_FAILED						= 1001,

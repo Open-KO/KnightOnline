@@ -112,16 +112,18 @@ void Setfloat(char* tBuf, float sFloat, int& index)
 	index += 4;
 }
 
-void SetString1(char* tBuf, const char* sBuf, BYTE len, int& index)
+void SetString1(char* tBuf, const std::string_view str, int& index)
 {
+	BYTE len = static_cast<BYTE>(str.length());
 	SetByte(tBuf, len, index);
-	SetString(tBuf, sBuf, len, index);
+	SetString(tBuf, str.data(), len, index);
 }
 
-void SetString2(char* tBuf, const char* sBuf, short len, int& index)
+void SetString2(char* tBuf, const std::string_view str, int& index)
 {
+	short len = static_cast<short >(str.length());
 	SetShort(tBuf, len, index);
-	SetString(tBuf, sBuf, len, index);
+	SetString(tBuf, str.data(), len, index);
 }
 
 int ParseSpace(char* tBuf, const char* sBuf)

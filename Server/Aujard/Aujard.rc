@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Korean resources
+// English (Neutral) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
-#ifdef _WIN32
-LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
-#pragma code_page(949)
-#endif //_WIN32
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
+#pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,31 +25,31 @@ LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
     "#define _AFX_NO_TRACKER_RESOURCES\r\n"
     "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
     "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
     "#ifdef _WIN32\r\n"
-    "LANGUAGE 18, 1\r\n"
-    "#pragma code_page(949)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
     "#endif //_WIN32\r\n"
     "#include ""res\\Aujard.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
+    "#include ""afxres.rc""          // Standard components\r\n"
     "#endif\r\n"
     "\0"
 END
@@ -66,7 +64,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Aujard.ico"
+IDR_MAINFRAME           ICON                    "res\\Aujard.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -74,21 +73,18 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Aujard.ico"
 //
 
 IDD_AUJARD_DIALOG DIALOGEX 0, 0, 211, 197
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Aujard"
-FONT 9, "굴림"
+CAPTION "Aujard [OpenKO v1298]"
+FONT 9, "??", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "종료",IDOK,7,168,197,18
-    LISTBOX         IDC_OUT_LIST,7,7,197,138,LBS_NOINTEGRALHEIGHT | 
-                    WS_VSCROLL | WS_TABSTOP
-    LTEXT           "디비처리부 :",IDC_STATIC,9,154,49,15
-    CTEXT           "0000",IDC_DB_PROCESS,67,154,130,13
+    DEFPUSHBUTTON   "Shutdown",IDOK,7,168,197,18
+    LISTBOX         IDC_OUT_LIST,7,7,197,138,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "DBProcessNumber:",IDC_STATIC,63,153,69,15
+    CTEXT           "0000",IDC_DB_PROCESS,130,153,21,13
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -109,26 +105,21 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "041204B0"
+        BLOCK "000904b0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Aujard MFC 응용 프로그램\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "Aujard\0"
-            VALUE "LegalCopyright", "Copyright (C) 2001\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "Aujard.EXE\0"
-            VALUE "ProductName", "Aujard 응용 프로그램\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "Aujard"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "Aujard"
+            VALUE "OriginalFilename", "Aujard.EXE"
+            VALUE "ProductName", "Aujard"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x412, 1200
+        VALUE "Translation", 0x9, 1200
     END
 END
-
-#endif    // !_MAC
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -137,7 +128,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_AUJARD_DIALOG, DIALOG
     BEGIN
@@ -149,7 +140,18 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Korean resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_AUJARD_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (Neutral) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -164,13 +166,13 @@ END
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_PROPERTY_RESOURCES
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE 18, 1
-#pragma code_page(949)
+LANGUAGE 9, 1
+#pragma code_page(1252)
 #endif //_WIN32
 #include "res\Aujard.rc2"  // non-Microsoft Visual C++ edited resources
-#include "l.kor\afxres.rc"          // Standard components
+#include "afxres.rc"          // Standard components
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

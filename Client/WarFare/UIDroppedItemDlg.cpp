@@ -236,7 +236,7 @@ void CUIDroppedItemDlg::AddToItemTable(int iItemID, int iItemCount, int iOrder)
 	if(NULL == pItem || NULL == pItemExt)
 	{
 		__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTable - Invalidate ItemID : %d", iItemID);
+		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTable - Invalidate ItemID : {}", iItemID);
 		return;
 	}
 
@@ -271,7 +271,7 @@ void CUIDroppedItemDlg::AddToItemTableToInventory(int iItemID, int iItemCount, i
 	if(NULL == pItem || NULL == pItemExt)
 	{
 		__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTableToInventory - Invalidate ItemID : %d", iItemID);
+		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTableToInventory - Invalidate ItemID : {}", iItemID);
 		return;
 	}
 
@@ -420,7 +420,7 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if ( pItem == NULL )
 			{
 				__ASSERT(0, "NULL Item!!!");
-				CLogWriter::Write("CUIDroppedItemDlg::ReceiveMessage - UIMSG_ICON_UP - NULL Icon : %d", spItem->pItemBasic->dwID);
+				CLogWriter::Write("CUIDroppedItemDlg::ReceiveMessage - UIMSG_ICON_UP - NULL Icon : {}", spItem->pItemBasic->dwID);
 				break;
 			}
 
@@ -491,8 +491,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if ( iOrderInv == -1 )
 		{
 			// 인벤토리가 꽉 차있으면.. break.. ^^
-			std::string stdMsg;
-			CGameBase::GetText(IDS_INV_ITEM_FULL, &stdMsg);
+			std::string stdMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
 			CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 		}
 
@@ -509,14 +508,11 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		pInfoExt = &CGameBase::s_pPlayer->m_InfoExt;
 
 		// 돈 업데이트..
-		CGameBase::GetTextF(
-			IDS_DROPPED_NOAH_GET,
-			&stdMsg,
+		stdMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
 			iGold - pInfoExt->iGold);
 		CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 		pInfoExt->iGold = iGold;
-		//TRACE("돈 업데이트 %d \n", iGold);
 		CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 
 		if (!IsVisible()) 
@@ -563,16 +559,12 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if(NULL == pItem || NULL == pItemExt)
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : %d", iItemID);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : {}", iItemID);
 			return;
 		}
 
-		std::string szMsg;
-		CGameBase::GetTextF(
-			IDS_PARTY_ITEM_GET,
-			&szMsg,
-			strString.c_str(),
-			pItem->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_PARTY_ITEM_GET,
+			strString, pItem->szName);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
 		if (!IsVisible()) 
@@ -641,14 +633,14 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if (iItemID == dwGold)
 		{
 			__ASSERT(0, "Invalidate Item ID From Server.. ");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - ID Pos : %d", iPos);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - ID Pos : {}", iPos);
 			return;
 		}
 
 		if ( (iPos < 0) || (iPos > (MAX_ITEM_INVENTORY-1)) )
 		{
 			__ASSERT(0, "Invalidate Item Pos From Server.. ");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : %d", iPos);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : {}", iPos);
 			return;
 		}
 
@@ -691,14 +683,12 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if(NULL == pItem)
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : %d", iItemID);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : {}", iItemID);
 			return;
 		}
 
-		CGameBase::GetTextF(
-			IDS_ITEM_GET_BY_RULE,
-			&stdMsg,
-			pItem->szName.c_str());
+		stdMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE,
+			pItem->szName);
 		CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg) CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
@@ -708,16 +698,14 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 	if (bResult == 0x06)
 	{
 		// 메시지 박스 텍스트 표시..
-		std::string szMsg;
-		CGameBase::GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
 	if (bResult == 0x07)
 	{
 		// 메시지 박스 텍스트 표시..
-		std::string szMsg;
-		CGameBase::GetText(IDS_INV_ITEM_FULL, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
@@ -729,13 +717,13 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			if (NULL == pItem)
 			{ 
 				__ASSERT(0, "Invalidate Item ID From Server.. ");
-				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Item ID : %d", iItemID);
+				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Item ID : {}", iItemID);
 				return;
 			}
 			if ( (iPos < 0) || (iPos > (MAX_ITEM_INVENTORY-1)) )
 			{
 				__ASSERT(0, "Invalidate Item Pos From Server.. ");
-				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : %d", iPos);
+				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : {}", iPos);
 				return;
 			}
 
@@ -776,11 +764,8 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 				AddToItemTableToInventory(iItemID, iItemCount, iPos);
 			}
 
-			std::string szMsg;
-			CGameBase::GetTextF(
-				IDS_ITEM_GET_BY_RULE,
-				&szMsg,
-				pItem->szName.c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE,
+				pItem->szName);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
 			spItem = m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
@@ -804,9 +789,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 
 			// 돈 업데이트..
-			CGameBase::GetTextF(
-				IDS_DROPPED_NOAH_GET,
-				&stdMsg,
+			stdMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
 				iGold - pInfoExt->iGold);
 			CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 

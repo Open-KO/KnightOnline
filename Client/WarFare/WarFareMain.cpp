@@ -356,8 +356,7 @@ LRESULT CALLBACK WndProcMain(
 				{
 					if (CGameProcedure::s_pProcMain->m_pUIChatDlg != nullptr)
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_CANNOT_EXIT_DURING_A_BATTLE, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_CANNOT_EXIT_DURING_A_BATTLE);
 						CGameProcedure::s_pProcMain->m_pUIChatDlg->AddChatMsg(N3_CHAT_NORMAL, szMsg, 0xFFFF0000);
 						CGameProcedure::s_pProcMain->m_eExitType = EXIT_TYPE_QUIT;
 					}

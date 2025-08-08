@@ -304,11 +304,11 @@ bool CUICmdList::CreateCategoryList() {
 	for (int i = 0; i < 8; i++)
 	{
 		// category names start with 7800
-		CGameBase::GetText(i + IDS_PRIVATE_CMD_CAT, &szCategory); //load command categories
+		szCategory = fmt::format_text_resource(i + 7800); // load command categories
 		m_pList_CmdCat->AddString(szCategory);
 
 		// category tips start with 7900
-		CGameBase::GetText(i + IDS_PRIVATE_CMD_CAT + 100, &szTooltip);
+		szTooltip = fmt::format_text_resource(i + IDS_PRIVATE_CMD_CAT + 100);
 
 		CN3UIString* pChild = m_pList_CmdCat->GetChildStrFromList(szCategory);
 		
@@ -336,7 +336,7 @@ bool CUICmdList::CreateCategoryList() {
 			idCur = 9200;
 		}
 		szCommand.clear();
-		CGameBase::GetText(idCur, &szCommand);
+		szCommand = fmt::format_text_resource(idCur);
 		if (!szCommand.empty() && (i/100) % 2 == 0 ) m_mapCmds[i] = szCommand;
 	}
 
@@ -358,28 +358,25 @@ bool CUICmdList::UpdateCommandList(uint8_t cmdCat) {
 
 	int iaHiddenCMDs[] = {8012,8013,8014, 8803, 8804, 9407};
 
-	for (auto itr = m_mapCmds.begin(); itr != m_mapCmds.end(); ++itr) {
-		if (itr->first >= indexStart && itr->first < indexEnd) {
+	for (const auto& [resourceId, commandName] : m_mapCmds)
+	{
+		if (resourceId < indexStart
+			|| resourceId >= indexEnd)
+			continue;
 
-			if (std::find(std::begin(iaHiddenCMDs), std::end(iaHiddenCMDs), itr->first) != std::end(iaHiddenCMDs))
-				continue;
+		if (std::find(std::begin(iaHiddenCMDs), std::end(iaHiddenCMDs), resourceId) != std::end(iaHiddenCMDs))
+			continue;
 
-				 m_pList_Cmds->AddString(itr->second);
-				 //m_pList_Cmds->SetFontColor(D3DCOLOR_XRGB(0, 128, 255)); //not correct
-				 CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(itr->second);
-				 std::string cmdTip, cmdName;
-				 
-				 //get command name
-				 CGameBase::GetText(itr->first, &cmdName);
+		m_pList_Cmds->AddString(commandName);
 
-				 //fill with command name exp: /type %s, to /type ban_user
-				 CGameBase::GetTextF(itr->first + 100, &cmdTip, cmdName.c_str());
-				 
-				 if (pChild != nullptr)
-				 {
-					 pChild->SetTooltipColor(D3DCOLOR_XRGB(144, 238, 144)); //green
-					 pChild->SetTooltipText(cmdTip);
-				 }
+		// fill with command name exp: /type %s, to /type ban_user
+		std::string cmdTip = fmt::format_text_resource(resourceId + 100, commandName);
+
+		CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(commandName);
+		if (pChild != nullptr)
+		{
+			pChild->SetTooltipColor(D3DCOLOR_XRGB(144, 238, 144)); // green
+			pChild->SetTooltipText(cmdTip);
 		}
 	}
 

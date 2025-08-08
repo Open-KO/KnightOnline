@@ -141,13 +141,8 @@ void CSubProcPerTrade::EnterWaitMsgFromServerStatePerTradeReq()
 	m_ePerTradeState = PER_TRADE_STATE_WAIT_FOR_REQ;
 
 	// 메시지 박스 텍스트 표시..
-	std::string szMsg;
-	GetTextF(
-		IDS_PERSONAL_TRADE_FMT_WAIT,
-		&szMsg,
-		s_pPlayer->IDString().c_str(),
-		pTarget->IDString().c_str());
-
+	std::string szMsg = fmt::format_text_resource(IDS_PERSONAL_TRADE_FMT_WAIT,
+		s_pPlayer->IDString(), pTarget->IDString());
 	m_szMsg = CGameProcedure::MessageBoxPost(szMsg, "", MB_CANCEL, BEHAVIOR_PERSONAL_TRADE_FMT_WAIT);
 
 	SecureCodeBegin();
@@ -158,13 +153,8 @@ void CSubProcPerTrade::EnterWaitMsgFromServerStatePerTradeReq(std::string szName
 	m_ePerTradeState = PER_TRADE_STATE_WAIT_FOR_REQ;
 
 	// 메시지 박스 텍스트 표시..
-	std::string szMsg;
-	GetTextF(
-		IDS_PERSONAL_TRADE_FMT_WAIT,
-		&szMsg,
-		s_pPlayer->IDString().c_str(),
-		szName.c_str());
-
+	std::string szMsg = fmt::format_text_resource(IDS_PERSONAL_TRADE_FMT_WAIT,
+		s_pPlayer->IDString(), szName);
 	m_szMsg = CGameProcedure::MessageBoxPost(szMsg, "", MB_CANCEL, BEHAVIOR_PERSONAL_TRADE_FMT_WAIT);
 
 	SecureCodeBegin();
@@ -180,13 +170,8 @@ void CSubProcPerTrade::EnterWaitMyDecisionToPerTrade(int iOtherID)			// 내가 �
 	m_ePerTradeState = PER_TRADE_STATE_WAIT_FOR_MY_DECISION_AGREE_OR_DISAGREE;
 
 	// 메시지 박스 텍스트 표시..
-	std::string szMsg;
-	GetTextF(
-		IDS_PERSONAL_TRADE_PERMIT,
-		&szMsg,
-		s_pPlayer->IDString().c_str(),
-		pTarget->IDString().c_str());
-
+	std::string szMsg = fmt::format_text_resource(IDS_PERSONAL_TRADE_PERMIT,
+		s_pPlayer->IDString(), pTarget->IDString());
 	m_szMsg = CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_PERSONAL_TRADE_PERMIT);
 
 	SecureCodeBegin();
@@ -455,7 +440,7 @@ void CSubProcPerTrade::LeavePerTradeState(e_PerTradeResultCode ePTRC)	// 아이�
 			//TRACE("상대방이 거래를 거절.. \n");
 			//this_ui
 			// 메시지 박스 텍스트 표시..
-			GetText(IDS_OTHER_PER_TRADE_ID_NO, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_OTHER_PER_TRADE_ID_NO);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			// 뒷 마무리..
 			FinalizePerTrade();
@@ -533,7 +518,6 @@ void CSubProcPerTrade::RequestItemCountEdit()
 
 void CSubProcPerTrade::ItemCountEditOK()
 {
-	char szGold[32];
 	std::string str;
 	int iGold,			// 거래창의 값..
 		iGoldOffset,	// 편집창의 값..
@@ -561,14 +545,12 @@ void CSubProcPerTrade::ItemCountEditOK()
 	s_pPlayer->m_InfoExt.iGold = iMyMoney;
 
 	// 돈 표시.. 인벤토리..
-	sprintf(szGold, "%d", iMyMoney);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-	if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetString(szGold);
+	if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetStringAsInt(iMyMoney);
 
 	// 돈 표시.. 개인 거래 창..
 	iGold += iGoldOffset;
-	sprintf(szGold, "%d", iGold);
-	pStrMy->SetString(szGold);
+	pStrMy->SetStringAsInt(iGold);
 
 	// 서버에게 전송한다..
 	uint8_t byBuff[16];											// 패킷 버퍼..
@@ -675,7 +657,6 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 	// 상태를 변화시키고.. 창을 닫고..
 	CN3UIBase::s_bWaitFromServer = false;
 
-	char szGold[32];
 	std::string str;
 	int iGold,			// 거래창의 값..
 		iMyMoney;		// 인벤토리의 값..
@@ -703,14 +684,12 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 						s_pPlayer->m_InfoExt.iGold = iMyMoney;
 
 						// 돈 표시.. 인벤토리..
-						sprintf(szGold, "%d", iMyMoney);
 						CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-						if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetString(szGold);
+						if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetStringAsInt(iMyMoney);
 
 						// 돈 표시.. 개인 거래 창..
 						iGold -= m_iGoldOffsetBackup;
-						sprintf(szGold, "%d", iGold);
-						pStrMy->SetString(szGold);
+						pStrMy->SetStringAsInt(iGold);
 					}
 					break;
 
@@ -837,7 +816,6 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 
 void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int iDurability)
 {
-	char szGold[32];
 	std::string str;
 	int iGold, iDestiOrder;			// 거래창의 값..
 
@@ -852,8 +830,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int i
 		iGold += iCount;
 
 		// 돈 표시.. 개인 거래 창..
-		sprintf(szGold, "%d", iGold);
-		pStrOther->SetString(szGold);
+		pStrOther->SetStringAsInt(iGold);
 	}
 	else
 	{
@@ -1003,11 +980,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherDecide()
 
 void CSubProcPerTrade::ReceiveMsgPerTradeDoneSuccessBegin(int iTotalGold)
 {
-	char szGold[32];
-	sprintf(szGold, "%d", iTotalGold);
-	
 	s_pPlayer->m_InfoExt.iGold = iTotalGold;
-
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 }
 
@@ -1121,11 +1094,10 @@ void CSubProcPerTrade::ReceiveMsgPerTradeDoneFail()
 {
 	if (s_pOPMgr->UPCGetByID(m_iOtherID, false) != nullptr)
 	{
-		std::string szMsg;
-		GetText(IDS_PER_TRADE_FAIL, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_PER_TRADE_FAIL);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffffffff);
 
-		GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
@@ -1139,11 +1111,8 @@ void CSubProcPerTrade::ReceiveMsgPerTradeCancel()
 	CPlayerOther* pUPC = s_pOPMgr->UPCGetByID(m_iOtherID, false);
 	if (pUPC != nullptr)
 	{
-		std::string szMsg; 
-		GetTextF(
-			IDS_OTHER_PER_TRADE_CANCEL,
-			&szMsg,
-			pUPC->IDString().c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_OTHER_PER_TRADE_CANCEL,
+			pUPC->IDString());
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 

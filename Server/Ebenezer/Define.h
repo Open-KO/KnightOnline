@@ -355,6 +355,20 @@ inline void SetString2(char* tBuf, const char* sBuf, short len, int& index)
 	SetString(tBuf, sBuf, len, index);
 }
 
+inline void SetString1(char* tBuf, const std::string_view str, int& index)
+{
+	BYTE length = static_cast<BYTE>(str.length());
+	SetByte(tBuf, length, index);
+	SetString(tBuf, str.data(), length, index);
+}
+
+inline void SetString2(char* tBuf, const std::string_view str, int& index)
+{
+	short length = static_cast<short>(str.length());
+	SetShort(tBuf, length, index);
+	SetString(tBuf, str.data(), length, index);
+}
+
 // sungyong 2001.11.06
 inline int GetVarString(char* tBuf, const char* sBuf, int nSize, int& index)
 {

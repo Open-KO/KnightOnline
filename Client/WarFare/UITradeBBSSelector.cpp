@@ -64,9 +64,9 @@ bool CUITradeBBSSelector::Load(HANDLE hFile)
 {
 	if(CN3UIBase::Load(hFile)==false) return false;
 
-	m_pBtn_BBSSell	= (CN3UIButton*)GetChildByID("btn_sell");		__ASSERT(m_pBtn_BBSSell,	"NULL UI Component!!");;
-	m_pBtn_BBSBuy	= (CN3UIButton*)GetChildByID("btn_buy");		__ASSERT(m_pBtn_BBSBuy,	"NULL UI Component!!");;
-	m_pBtn_BBSCancel = (CN3UIButton*)GetChildByID("btn_cancel");	__ASSERT(m_pBtn_BBSCancel,	"NULL UI Component!!");;
+	m_pBtn_BBSSell	= (CN3UIButton*)GetChildByID("btn_sell");		__ASSERT(m_pBtn_BBSSell,	"NULL UI Component!!");
+	m_pBtn_BBSBuy	= (CN3UIButton*)GetChildByID("btn_buy");		__ASSERT(m_pBtn_BBSBuy,	"NULL UI Component!!");
+	m_pBtn_BBSCancel = (CN3UIButton*)GetChildByID("btn_cancel");	__ASSERT(m_pBtn_BBSCancel,	"NULL UI Component!!");
 
 	return true;
 }

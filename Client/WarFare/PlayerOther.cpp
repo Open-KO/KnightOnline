@@ -51,7 +51,8 @@ bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs
 	__TABLE_PLAYER_LOOKS* pLooks = s_pTbl_UPC_Looks.Find(eRace);	// 테이블에서 기본 스킨 ..
 	if(NULL == pLooks) 
 	{
-		CLogWriter::Write("CPlayerOther::Init() Basic Resource Pointer is NULL Race(%d)", eRace);
+		CLogWriter::Write("CPlayerOther::Init() Basic Resource Pointer is NULL Race({})",
+			static_cast<int>(eRace));
 		return false;
 	}
 	this->InitChr(pLooks); // 관절 세팅..
@@ -132,24 +133,29 @@ bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs
 void CPlayerOther::InitFace()
 {
 	__TABLE_PLAYER_LOOKS* pItem = s_pTbl_UPC_Looks.Find(m_InfoBase.eRace);
-	if(pItem && !pItem->szPartFNs[PART_POS_FACE].empty()) // 아이템이 있고 얼굴 이름이 있으면..
+
+	// 아이템이 있고 얼굴 이름이 있으면..
+	if (pItem != nullptr
+		&& !pItem->szPartFNs[PART_POS_FACE].empty())
 	{
-		char szBuff[256] = "", szDir[128] = "", szFName[128] = "", szExt[16] = "";
-		::_splitpath(pItem->szPartFNs[PART_POS_FACE].c_str(), NULL, szDir, szFName, szExt);
-		sprintf(szBuff, "%s%s%.2d%s", szDir, szFName, m_InfoExt.iFace, szExt);
-		this->PartSet(PART_POS_FACE, szBuff, NULL, NULL);
+		char szDir[_MAX_DIR] = {}, szFName[_MAX_FNAME] = {}, szExt[_MAX_EXT] = {};
+		_splitpath(pItem->szPartFNs[PART_POS_FACE].c_str(), nullptr, szDir, szFName, szExt);
+
+		std::string szFN = fmt::format("{}{}{:02}{}", szDir, szFName, m_InfoExt.iFace, szExt);
+		PartSet(PART_POS_FACE, szFN, nullptr, nullptr);
 	}
 }
 
 void CPlayerOther::InitHair()
 {
 	__TABLE_PLAYER_LOOKS* pItem = s_pTbl_UPC_Looks.Find(m_InfoBase.eRace);
-	if(pItem && !pItem->szPartFNs[PART_POS_HAIR_HELMET].empty()) // 아이템이 있고 얼굴 이름이 있으면..
+	if (pItem && !pItem->szPartFNs[PART_POS_HAIR_HELMET].empty()) // 아이템이 있고 얼굴 이름이 있으면..
 	{
-		char szBuff[256] = "", szDir[128] = "", szFName[128] = "", szExt[16] = "";
-		::_splitpath(pItem->szPartFNs[PART_POS_HAIR_HELMET].c_str(), NULL, szDir, szFName, szExt);
-		sprintf(szBuff, "%s%s%.2d%s", szDir, szFName, m_InfoExt.iHair, szExt);
-		this->PartSet(PART_POS_HAIR_HELMET, szBuff, NULL, NULL);
+		char szDir[_MAX_DIR] = {}, szFName[_MAX_FNAME] = {}, szExt[_MAX_EXT] = {};
+		_splitpath(pItem->szPartFNs[PART_POS_HAIR_HELMET].c_str(), nullptr, szDir, szFName, szExt);
+
+		std::string szFN = fmt::format("{}{}{:02}{}", szDir, szFName, m_InfoExt.iHair, szExt);
+		PartSet(PART_POS_HAIR_HELMET, szFN, nullptr, nullptr);
 	}
 	else
 	{
@@ -177,8 +183,7 @@ void CPlayerOther::KnightsInfoSet(int iID, const std::string& szName, int iGrade
 	{
 		if (m_pClanFont == nullptr)
 		{
-			std::string szFontID;
-			GetText(IDS_FONT_ID, &szFontID);
+			std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 			m_pClanFont = new CDFont(szFontID, 12);
 			m_pClanFont->InitDeviceObjects(s_lpD3DDev);
@@ -203,8 +208,7 @@ void CPlayerOther::SetSoundAndInitFont(uint32_t dwFontFlag)
 
 	if (m_pClanFont == nullptr)
 	{
-		std::string szFontID;
-		GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 		m_pClanFont = new CDFont(szFontID, 12, D3DFONT_BOLD); // 좀 작게 만든다..
 		m_pClanFont->InitDeviceObjects(s_lpD3DDev);

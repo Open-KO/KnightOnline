@@ -131,16 +131,15 @@ bool CN3FXPartBase::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 
 		strcpy(szPathName, szBuff0);
 		_splitpath(szPathName, nullptr, szDir, szFileName, szExt);
-		sprintf(m_pTexName, "%s%s", szDir, szFileName);
+
+		memset(m_pTexName, 0, sizeof(m_pTexName));
+		strcat(m_pTexName, szDir);
+		strcat(m_pTexName, szFileName);
 
 		std::string FileName = m_pTexName;
-		char Buff[5];
-		for(int i=0;i<m_iNumTex;i++)
+		for (int i = 0; i < m_iNumTex; i++)
 		{
-			sprintf(Buff,"%04d",i);
-			FileName = m_pTexName;
-			FileName += Buff;
-			FileName += szExt;
+			FileName = fmt::format("{}{:04}{}", m_pTexName, i, szExt);
 			m_ppRefTex[i] = CN3Base::s_MngTex.Get(FileName);
 		}
 		return true;
@@ -515,16 +514,11 @@ bool CN3FXPartBase::Load(HANDLE hFile)
 	m_ppRefTex = new CN3Texture* [m_iNumTex];
 
 	std::string FileName;
-	char Buff[5];
-	for(int i=0;i<m_iNumTex;i++)
+	for (int i = 0; i < m_iNumTex; i++)
 	{
-		sprintf(Buff,"%04d",i);
-		FileName = m_pTexName;
-		FileName += Buff;
-		FileName += ".dxt";
-
+		FileName = fmt::format("{}{:04}.dxt", m_pTexName, i);
 		m_ppRefTex[i] = CN3Base::s_MngTex.Get(FileName);
-	}	
+	}
 
 	return true;
 }
@@ -610,7 +604,7 @@ void CN3FXPartBase::Duplicate(CN3FXPartBase* pSrc)
 	m_vPos = pSrc->m_vPos;
 	m_iNumTex = pSrc->m_iNumTex;
 	m_fTexFPS = pSrc->m_fTexFPS;
-	sprintf(m_pTexName, pSrc->m_pTexName);
+	memcpy(m_pTexName, pSrc->m_pTexName, sizeof(m_pTexName));
 
 	m_dwZEnable = pSrc->m_dwZEnable;
 	m_dwZWrite = pSrc->m_dwZWrite;
@@ -627,14 +621,9 @@ void CN3FXPartBase::Duplicate(CN3FXPartBase* pSrc)
 	m_ppRefTex = new CN3Texture* [m_iNumTex];
 
 	std::string FileName;
-	char Buff[5];
-	for(int i=0;i<m_iNumTex;i++)
+	for (int i = 0; i < m_iNumTex; i++)
 	{
-		sprintf(Buff,"%04d",i);
-		FileName = m_pTexName;
-		FileName += Buff;
-		FileName += ".dxt";
-
+		FileName = fmt::format("{}{:04}.dxt", m_pTexName, i);
 		m_ppRefTex[i] = CN3Base::s_MngTex.Get(FileName);
-	}	
+	}
 }

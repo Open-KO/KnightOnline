@@ -56,7 +56,7 @@ IF EXIST "%REPO_ROOT%\%DEP_PATH%\.git" (
 	FOR /F "tokens=3" %%c IN ('"%GitPath%" ls-tree HEAD %DEP_PATH%') DO SET "INTENDED_COMMIT=%%c"
 
 	REM Determine if the developer has staged a change to this submodule.
-	FOR /F %%c in ('"%GitPath%" diff --cached HEAD --name-only') DO (
+	FOR /F %%c IN ('"%GitPath%" diff --cached HEAD --name-only') DO (
 		IF /i "%%c"=="%DEP_PATH_NORMALISED%" (
 			SET "SUBMODULE_STAGED=1"
 			SET "OVERRIDE_BUILD=1"
