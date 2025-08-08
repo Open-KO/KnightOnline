@@ -1164,7 +1164,18 @@ exceptions:;
 			}
 			else
 			{	
-				int iSellPrice = (spItem->pItemBasic->iPrice*spItem->pItemExt->siPriceMultiply/6);
+				int iSellPrice = 0;
+
+				if (spItem->pItemBasic->iSaleType == 1) 
+				{   //sale type = 1, selling for the same price of buying
+					iSellPrice = spItem->pItemBasic->iPrice * spItem->pItemExt->siPriceMultiply;
+				}
+				else
+				{
+					//non premium : selling for 1/6 of purchasing price
+					iSellPrice = spItem->pItemBasic->iPrice * spItem->pItemExt->siPriceMultiply / 6;
+				}
+
 				if (iSellPrice < 1)
 					iSellPrice = 1;
 

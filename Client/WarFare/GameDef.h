@@ -706,7 +706,7 @@ struct __TABLE_ITEM_BASIC
 	int16_t		siWeight;				// 19 Weight (in 0.1 units)
 	int16_t		siMaxDurability;		// 20 Max durability
 	int			iPrice;					// 21 Purchase price
-	int			iPriceSale;				// 22 Sale price
+	int			iSaleType;				// 22 Sale type ([1 - same price], [0 - 1/6 of buy price], [2 - 1/6 & cant be repaired] ) - [1/4 premium(all)]
 	int16_t		siDefense;				// 23 Defense
 	uint8_t		byContable;				// 24 Is the item countable/stackable?
 
