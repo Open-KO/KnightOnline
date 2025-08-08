@@ -337,9 +337,10 @@ void CUIInventory::Render()
 	// 갯수 표시되야 할 아이템 갯수 표시..
 	for( int i = 0; i < MAX_ITEM_INVENTORY; i++ )
 	{
-		if ( m_pMyInvWnd[i] && ((m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) || 
-					(m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL) ||
-					(m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_POWER_SCROLL)) )
+		if (m_pMyInvWnd[i] != nullptr
+			&& ((m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE)
+				|| (m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)
+				|| (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)))
 		{
 			// string 얻기..
 			CN3UIString* pStr = GetChildStringByiOrder(i);
@@ -355,7 +356,7 @@ void CUIInventory::Render()
 					{
 						pStr->SetVisible(true);
 						
-						if (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_POWER_SCROLL)
+						if (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)
 							pStr->SetStringAsInt(m_pMyInvWnd[i]->iDurability);
 						else
 							pStr->SetStringAsInt(m_pMyInvWnd[i]->iCount);
@@ -2402,23 +2403,20 @@ void CUIInventory::ReceiveResultFromServer(int iResult, int iUserGold)
 	m_cItemRepairMgr.ReceiveResultFromServer(iResult, iUserGold);
 }
 
-int CUIInventory::GetCountInInvByID(int iID)
+int CUIInventory::GetCountInInvByID(int iID) const
 {
-	int i;
-	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )
+	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
-		if ((m_pMyInvWnd[i] != NULL) && (m_pMyInvWnd[i]->pItemBasic->dwID == (iID / 1000 * 1000)) &&
-				(m_pMyInvWnd[i]->pItemExt->dwID == (iID % 1000)))
-		{
-			if (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_POWER_SCROLL)
-			{
-				return m_pMyInvWnd[i]->iDurability;
-			}
-			else
-			{
-				return m_pMyInvWnd[i]->iCount;
-			}
-		}	
+		__IconItemSkill* spItem = m_pMyInvWnd[i];
+		if (spItem == nullptr
+			|| spItem->pItemBasic->dwID != (iID / 1000 * 1000)
+			|| spItem->pItemExt->dwID != (iID % 1000))
+			continue;
+
+		if (spItem->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)
+			return spItem->iDurability;
+
+		return spItem->iCount;
 	}
 
 	return 0;
