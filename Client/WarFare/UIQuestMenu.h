@@ -49,7 +49,7 @@ public:
 	virtual ~CUIQuestMenu();
 
 protected:
-	void SetTopLine();
+	void UpdateTextForScroll();
 };
 
 #endif // !defined(AFX_UIQUESTMENU_H__B74550FB_798B_4DB8_91DD_EE5994976EDE__INCLUDED_)

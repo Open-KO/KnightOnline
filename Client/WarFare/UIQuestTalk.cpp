@@ -100,7 +100,7 @@ bool CUIQuestTalk::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		if (pSender == m_pScrollBar)
 		{
-			SetTopLine();
+			UpdateTextForScroll();
 			return true;
 		}
 	}
@@ -179,7 +179,7 @@ void CUIQuestTalk::Release()
 	m_iCurTalk			= 0;
 }
 
-void CUIQuestTalk::SetTopLine()
+void CUIQuestTalk::UpdateTextForScroll()
 {
 	if (m_pTextTalk == nullptr
 		|| m_pScrollBar == nullptr)

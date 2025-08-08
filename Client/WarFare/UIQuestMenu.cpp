@@ -129,7 +129,7 @@ bool CUIQuestMenu::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 	{
 		if (pSender == m_pScrollBar)
 		{
-			SetTopLine();
+			UpdateTextForScroll();
 			return true;
 		}
 	}
@@ -278,7 +278,7 @@ void CUIQuestMenu::SetVisible(bool bVisible)
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 }
 
-void CUIQuestMenu::SetTopLine()
+void CUIQuestMenu::UpdateTextForScroll()
 {
 	if (m_pTextTitle == nullptr
 		|| m_pScrollBar == nullptr)

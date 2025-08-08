@@ -41,7 +41,7 @@ public:
 	~CUIQuestTalk() override;
 
 protected:
-	void SetTopLine();
+	void UpdateTextForScroll();
 };
 
 #endif // !defined(AFX_UIQUESTTALK_H__DB9A4C59_4BE8_4698_9462_CF036C8D834D__INCLUDED_)
