@@ -57,7 +57,7 @@ void CUIQuestTalk::Open(Packet& pkt)
 		if(pTbl_Quest_Talk)
 		{
 			m_szTalk[i] = pTbl_Quest_Talk->szTalk;
-			CGameBase::ConvertPipesToNewlines(&m_szTalk[i]);
+			CGameBase::ConvertPipesToNewlines(m_szTalk[i]);
 			m_iNumTalk++;
 		}
 	}
@@ -80,7 +80,7 @@ bool CUIQuestTalk::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 			else
 			{
-				CGameBase::ConvertPipesToNewlines(&m_szTalk[m_iCurTalk]);
+				CGameBase::ConvertPipesToNewlines(m_szTalk[m_iCurTalk]);
 				m_pTextTalk->SetString(m_szTalk[m_iCurTalk]);
 			}
 		}

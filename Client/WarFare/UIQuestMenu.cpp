@@ -164,7 +164,7 @@ void CUIQuestMenu::Open(Packet& pkt)
 	if(pTbl_Quest_Talk == NULL) return;
 
 	szTitle = pTbl_Quest_Talk->szTalk;
-	CGameBase::ConvertPipesToNewlines(&szTitle);
+	CGameBase::ConvertPipesToNewlines(szTitle);
 	m_pTextTitle->SetString(szTitle);
 
 	m_iMenuCnt = 0;

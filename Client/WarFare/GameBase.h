@@ -62,7 +62,7 @@ public:
 	class CPlayerBase*	CharacterGetByID(int iID, bool bFromAlive);
 	bool				IsValidCharacter(CPlayerBase* pCharacter);
 	static std::string FormatNumber(int iNumber);
-	static void ConvertPipesToNewlines(std::string* pString); //replace | with \n in quest_talk, quest_content
+	static void ConvertPipesToNewlines(std::string& input);
 
 	CGameBase();
 	virtual ~CGameBase();
