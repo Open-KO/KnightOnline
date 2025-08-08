@@ -4992,8 +4992,7 @@ void CGameProcMain::MsgRecv_UserState(Packet& pkt)
 {
 	int iID = pkt.read<int16_t>();
 	e_SubPacket_State eSP = (e_SubPacket_State)pkt.read<uint8_t>(); // 0x01
-	int iState = pkt.read<uint32_t>();// to support original exe
-	//int iState = pkt.read<uint8_t>();
+	int32_t iState = pkt.read<int32_t>();
 
 	CPlayerBase* pBPC = NULL;
 	if ( s_pPlayer->IDNumber() == iID )
