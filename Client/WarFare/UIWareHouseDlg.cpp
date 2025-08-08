@@ -1820,8 +1820,7 @@ void CUIWareHouseDlg::GoldCountToWareOK()	//돈을 넣는 경우..
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
-	CGameBase::UnformatNumber(&str);
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	if ( iGold <= 0 ) return;
@@ -1871,8 +1870,7 @@ void CUIWareHouseDlg::GoldCountFromWareOK()		// 돈을 빼는 경우..
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
-	CGameBase::UnformatNumber(&str);
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	if ( iGold <= 0 ) return;
@@ -1952,8 +1950,7 @@ void CUIWareHouseDlg::ReceiveResultGoldToWareFail()
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
-	CGameBase::UnformatNumber(&str);
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	// 돈을 감소 시킨다..
@@ -1991,8 +1988,7 @@ void CUIWareHouseDlg::ReceiveResultGoldFromWareFail()
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
-	CGameBase::UnformatNumber(&str);
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	// 돈을 감소 시킨다..
