@@ -73,7 +73,7 @@ inline BOOL CNpc::SetUid(float x, float z, int id)
 	if (pMap == nullptr)
 	{
 		spdlog::error("Npc::SetUid: map not found [zoneIndex={} npcId={} npcName={}]",
-			m_strName, m_sSid, m_ZoneIndex);
+			m_ZoneIndex, m_sSid, m_strName);
 		return FALSE;
 	}
 
@@ -1261,7 +1261,7 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 		// 몬스터 총 수와 초기화한 몬스터의 수가 같다면
 		if (m_pMain->m_TotalNPC == m_pMain->m_CurrentNPC)
 		{
-			std::string logstr = std::format("All NPCs initialized [count={}]",
+			std::string logstr = fmt::format("All NPCs initialized [count={}]",
 				m_pMain->m_CurrentNPC);
 			m_pMain->AddOutputMessage(logstr);
 			spdlog::info("Npc::SetLive: {}", logstr);
@@ -5264,8 +5264,7 @@ void CNpc::SendExpToUserList()
 					m_pMain->m_sKillElmoNpc++;
 				}
 
-				SetByte(send_buff, strlen(strMaxDamageUser), send_index);
-				SetString(send_buff, strMaxDamageUser, strlen(strMaxDamageUser), send_index);
+				SetString1(send_buff, strMaxDamageUser, send_index);
 				m_pMain->Send(send_buff, send_index, m_sCurZone);
 				spdlog::info("Npc::SendExpToUserList: maxDamageUser={} [serial={} npcId={} npcName={}]",
 					strMaxDamageUser, m_sNid + NPC_BAND, m_sSid, m_strName);
@@ -5278,8 +5277,7 @@ void CNpc::SendExpToUserList()
 					SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 					SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
 					SetByte(send_buff, ELMORAD_ZONE, send_index);
-					SetByte(send_buff, strlen(strMaxDamageUser), send_index);
-					SetString(send_buff, strMaxDamageUser, strlen(strMaxDamageUser), send_index);
+					SetString1(send_buff, strMaxDamageUser, send_index);
 					m_pMain->Send(send_buff, send_index, m_sCurZone);
 					spdlog::info("Npc::SendExpToUserList: Karus Victory [killKarusNpc={} karusRoom={}]",
 					m_pMain->m_sKillKarusNpc, pMap->m_sKarusRoom);
@@ -5289,8 +5287,7 @@ void CNpc::SendExpToUserList()
 					SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 					SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
 					SetByte(send_buff, KARUS_ZONE, send_index);
-					SetByte(send_buff, strlen(strMaxDamageUser), send_index);
-					SetString(send_buff, strMaxDamageUser, strlen(strMaxDamageUser), send_index);
+					SetString1(send_buff, strMaxDamageUser, send_index);
 					m_pMain->Send(send_buff, send_index, m_sCurZone);
 					spdlog::info("Npc::SendExpToUserList: Elmorad Victory [killElmoNpc={} elmoradRoom={}]",
 					m_pMain->m_sKillElmoNpc, pMap->m_sElmoradRoom);
@@ -6493,11 +6490,8 @@ void CNpc::GiveNpcHaveItem(CIOCPort* pIOCP)
 		SetShort(pBuf, m_GiveItemList[i].count, index);
 
 		if (m_GiveItemList[i].sSid != TYPE_MONEY_SID)
-		{
-			//sprintf( logfile, "%d\r\n", m_GiveItemList[i].sSid);
 			spdlog::get(logger::AIServerItem)->info(m_GiveItemList[i].sSid);
-			//LogFileWrite( logfile );
-		}
+
 		//TRACE(_T("Npc-GiveNpcHaveItem() : [nid - %d,%hs,  giveme=%d, count=%d, num=%d], list=%d, count=%d\n"), m_sNid+NPC_BAND, m_strName, m_sMaxDamageUserid, nCount, i, m_GiveItemList[i].sSid, m_GiveItemList[i].count);
 	}
 
@@ -6627,20 +6621,11 @@ void CNpc::HpChange(CIOCPort* pIOCP)
 	char buff[256] = {};
 	int send_index = 0;
 
-	char logstr[256] = {};
-	sprintf(logstr, "Npc-HpChange : id=%d, cur_HP=%d, damage=%d\r\n", m_sNid + NPC_BAND, m_iHP, amount);
-	//TRACE(logstr);
-
 	m_iHP += amount;
 	if (m_iHP < 0)
 		m_iHP = 0;
 	else if (m_iHP > m_iMaxHP)
 		m_iHP = m_iMaxHP;
-
-	memset(logstr, 0, sizeof(logstr));
-	sprintf(logstr, "Npc-HpChange-22 : id=%d, cur_HP=%d, damage=%d\r\n", m_sNid + NPC_BAND, m_iHP, amount);
-	//if(m_iHP != m_iMaxHP)
-	//	TRACE(logstr);
 
 	SetByte(buff, AG_USER_SET_HP, send_index);
 	SetShort(buff, m_sNid + NPC_BAND, send_index);

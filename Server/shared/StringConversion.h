@@ -1,29 +1,28 @@
 ﻿#pragma once
 
 #include <string>
+#include <string_view>
 
-bool CpToWide(const char* input, size_t input_size, uint32_t input_codepage, wchar_t* output, size_t output_buffer_chars);
-std::wstring CpToWide(const char* input, size_t input_size, uint32_t input_codepage);
-std::wstring CpToWide(const std::string& input, uint32_t input_codepage);
+bool CpToWide(const char* input, size_t inputSize, uint32_t inputCodePage, wchar_t* output, size_t outputBufferCharCount);
+std::wstring CpToWide(const char* input, size_t inputSize, uint32_t inputCodePage);
+std::wstring CpToWide(const std::string_view input, uint32_t inputCodePage);
 
-bool WideToCp(const wchar_t* input, size_t input_size, char* output, size_t output_buffer_chars, uint32_t output_codepage);
-std::string WideToCp(const wchar_t* input, size_t input_size, uint32_t output_codepage);
-std::string WideToCp(const std::wstring& input, uint32_t output_codepage);
+bool WideToCp(const wchar_t* input, size_t inputSize, char* output, size_t outputBufferCharCount, uint32_t outputCodePage);
+std::string WideToCp(const wchar_t* input, size_t inputSize, uint32_t outputCodePage);
+std::string WideToCp(const std::wstring_view input, uint32_t outputCodePage);
 
-bool Utf8ToWide(const char* input, size_t input_size, wchar_t* output, size_t output_buffer_chars);
-std::wstring Utf8ToWide(const char* input, size_t input_size);
-std::wstring Utf8ToWide(const std::string& input);
+bool Utf8ToWide(const char* input, size_t inputSize, wchar_t* output, size_t outputBufferCharCount);
+std::wstring Utf8ToWide(const char* input, size_t inputSize);
+std::wstring Utf8ToWide(const std::string_view input);
 
-bool WideToUtf8(const wchar_t* input, size_t input_size, char* output, size_t output_buffer_chars);
-std::string WideToUtf8(const wchar_t* input, size_t input_size);
-std::string WideToUtf8(const std::wstring& input);
+bool WideToUtf8(const wchar_t* input, size_t inputSize, char* output, size_t outputBufferCharCount);
+std::string WideToUtf8(const wchar_t* input, size_t inputSize);
+std::string WideToUtf8(const std::wstring_view input);
 
-bool LocalToWide(const char* input, size_t input_size, wchar_t* output, size_t output_buffer_chars);
-std::wstring LocalToWide(const char* input, size_t input_size);
-std::wstring LocalToWide(const std::string& input);
-std::wstring LocalToWide(std::string_view input);
+bool LocalToWide(const char* input, size_t inputSize, wchar_t* output, size_t outputBufferCharCount);
+std::wstring LocalToWide(const char* input, size_t inputSize);
+std::wstring LocalToWide(const std::string_view input);
 
-bool WideToLocal(const wchar_t* input, size_t input_size, char* output, size_t output_buffer_chars);
-std::string WideToLocal(const wchar_t* input, size_t input_size);
-std::string WideToLocal(const std::wstring& input);
-std::string WideToLocal(std::wstring_view input);
+bool WideToLocal(const wchar_t* input, size_t inputSize, char* output, size_t outputBufferCharCount);
+std::string WideToLocal(const wchar_t* input, size_t inputSize);
+std::string WideToLocal(const std::wstring_view input);

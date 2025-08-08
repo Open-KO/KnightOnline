@@ -1,5 +1,5 @@
 ﻿//{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by Aujard.rc
 //
 #define IDD_AUJARD_DIALOG               102

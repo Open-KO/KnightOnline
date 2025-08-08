@@ -136,8 +136,8 @@ int CIni::GetInt(
 	std::string_view szKeyNameA,
 	const int iDefault)
 {
-	std::wstring szAppNameW = LocalToWide(szAppNameA.data(), szAppNameA.length());
-	std::wstring szKeyNameW = LocalToWide(szKeyNameA.data(), szKeyNameA.length());
+	std::wstring szAppNameW = LocalToWide(szAppNameA);
+	std::wstring szKeyNameW = LocalToWide(szKeyNameA);
 
 	return GetInt(szAppNameW, szKeyNameW, iDefault);
 }
@@ -184,9 +184,9 @@ std::string CIni::GetString(
 	std::string_view szKeyNameA,
 	std::string_view szDefaultA)
 {
-	std::wstring szAppNameW = LocalToWide(szAppNameA.data(), szAppNameA.length());
-	std::wstring szKeyNameW = LocalToWide(szKeyNameA.data(), szKeyNameA.length());
-	std::wstring szDefaultW = LocalToWide(szDefaultA.data(), szDefaultA.length());
+	std::wstring szAppNameW = LocalToWide(szAppNameA);
+	std::wstring szKeyNameW = LocalToWide(szKeyNameA);
+	std::wstring szDefaultW = LocalToWide(szDefaultA);
 
 	auto sectionItr = m_configMap.find(szAppNameW);
 	if (sectionItr != m_configMap.end())
@@ -230,9 +230,9 @@ void CIni::GetString(
 	char* szOutBuffer,
 	size_t nBufferLength)
 {
-	std::wstring szAppNameW	= LocalToWide(szAppNameA.data(), szAppNameA.length());
-	std::wstring szKeyNameW	= LocalToWide(szKeyNameA.data(), szKeyNameA.length());
-	std::wstring szDefaultW	= LocalToWide(szDefaultA.data(), szDefaultA.length());
+	std::wstring szAppNameW	= LocalToWide(szAppNameA);
+	std::wstring szKeyNameW	= LocalToWide(szKeyNameA);
+	std::wstring szDefaultW	= LocalToWide(szDefaultA);
 	std::wstring szResultW	= GetString(szAppNameW, szKeyNameW, szDefaultW);
 	std::string szResultA	= WideToLocal(szResultW);
 
@@ -302,9 +302,9 @@ int CIni::SetString(
 	std::string_view szKeyNameA,
 	std::string_view szDefaultA)
 {
-	std::wstring szAppNameW	= LocalToWide(szAppNameA.data(), szAppNameA.length());
-	std::wstring szKeyNameW	= LocalToWide(szKeyNameA.data(), szKeyNameA.length());
-	std::wstring szDefaultW	= LocalToWide(szDefaultA.data(), szDefaultA.length());
+	std::wstring szAppNameW	= LocalToWide(szAppNameA);
+	std::wstring szKeyNameW	= LocalToWide(szKeyNameA);
+	std::wstring szDefaultW	= LocalToWide(szDefaultA);
 
 	return SetString(szAppNameW, szKeyNameW, szDefaultW);
 }

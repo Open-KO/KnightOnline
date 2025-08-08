@@ -39,9 +39,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)client_application.props" />
-  <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)jpegfile.props" />
+  <Import Project="$(PropsDir)n3base-project.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
@@ -59,7 +59,18 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>shared.lib;ws2_32.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base_client.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\Server\shared\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
+    <PreBuildEvent>
+      <Command>
+        if exist "$(ProjectDir)warfare_config.h.default" if not exist "$(ProjectDir)warfare_config.h" (
+          copy /Y "$(ProjectDir)warfare_config.h.default" "$(ProjectDir)warfare_config.h"
+        )
+        if exist "$(ProjectDir)..\Data\Server.ini.default" if not exist "$(ProjectDir)..\Data\Server.ini" (
+          copy /Y "$(ProjectDir)..\Data\Server.ini.default" "$(ProjectDir)..\Data\Server.ini"
+        )
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,6 +104,7 @@
     <ClCompile Include="Bird.cpp" />
     <ClCompile Include="BirdMng.cpp" />
     <ClCompile Include="Catapult.cpp" />
+    <ClCompile Include="ClientResourceFormatter.cpp" />
     <ClCompile Include="CountableItemEditDlg.cpp" />
     <ClCompile Include="DungeonManager.cpp" />
     <ClCompile Include="EventManager.cpp" />
@@ -206,6 +218,7 @@
     <ClInclude Include="BirdMng.h" />
     <ClInclude Include="Bitset.h" />
     <ClInclude Include="Catapult.h" />
+    <ClInclude Include="ClientResourceFormatter.h" />
     <ClInclude Include="CountableItemEditDlg.h" />
     <ClInclude Include="DungeonManager.h" />
     <ClInclude Include="EventManager.h" />
@@ -315,6 +328,7 @@
     <ClInclude Include="UIVarious.h" />
     <ClInclude Include="UIWareHouseDlg.h" />
     <ClInclude Include="UIWarp.h" />
+    <ClInclude Include="warfare_config.h" />
     <ClInclude Include="WarMessage.h" />
   </ItemGroup>
   <ItemGroup>
@@ -323,4 +337,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <PropertyGroup Label="Debugger defaults">
+    <LocalDebuggerWorkingDirectory>..\Data\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

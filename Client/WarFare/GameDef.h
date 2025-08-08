@@ -23,17 +23,6 @@
 
 constexpr int CURRENT_VERSION = 1298;
 
-// Server.ini doesn't exist by default with our assets.
-// For simplicity, have the login server default to a local server in debug builds
-// if it's not otherwise supplied.
-#if defined(_DEBUG)
-static constexpr int DEFAULT_LOGIN_SERVER_COUNT = 1;
-static constexpr char DEFAULT_LOGIN_SERVER_IP[] = "127.0.0.1";
-#else
-static constexpr int DEFAULT_LOGIN_SERVER_COUNT = 0;
-static constexpr char DEFAULT_LOGIN_SERVER_IP[] = "";
-#endif
-
 constexpr float PACKET_INTERVAL_MOVE = 1.5f;				// Interval between regularly sent player/NPC movement packets.
 constexpr float PACKET_INTERVAL_ROTATE = 4.0f;				// Interval between regularly sent player rotation packets.
 constexpr float PACKET_INTERVAL_REQUEST_TARGET_HP = 2.0f;
@@ -292,6 +281,7 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 						ITEM_CLASS_ARMOR_PRIEST = 240, // Priest armor
 
 						ITEM_CLASS_ETC = 251, // Miscellaneous
+						ITEM_CLASS_CONSUMABLE = 255, // Consumable items with 'charges' that use the durability/duration instead of stacks
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
@@ -353,8 +343,8 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 			
 	int					iTargetHPPercent;
 	int					iGold;
-	uint64_t			iExpNext;
-	uint64_t			iExp;
+	int64_t				iExpNext;
+	int64_t				iExp;
 	int					iRealmPoint;			// National Points
 	int					iRealmPointMonthly;		// Monthly National Points
 	e_KnightsDuty		eKnightsDuty;			// Clan member position/role/duty
