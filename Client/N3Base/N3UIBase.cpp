@@ -29,6 +29,10 @@
 static char THIS_FILE[]=__FILE__;
 #endif
 
+#ifdef _N3GAME
+bool CN3UIBase::s_bWaitFromServer = false;
+#endif
+
 CN3UIEdit* CN3UIBase::s_pFocusedEdit = NULL;
 CN3UITooltip* CN3UIBase::s_pTooltipCtrl = NULL;
 std::string CN3UIBase::s_szStringTmp; // 임시변수..
@@ -36,21 +40,23 @@ std::string CN3UIBase::s_szStringTmp; // 임시변수..
 CN3UIBase::CN3UIBase()
 {
 	m_eType = UI_TYPE_BASE;
-	m_pParent = NULL;
-	m_pChildUI	= NULL;
-	m_pParentUI = NULL;
+	m_pParent = nullptr;
+	m_pChildUI	= nullptr;
+	m_pParentUI = nullptr;
 
 	m_iChildID	= -1;
 
-	ZeroMemory(&m_rcRegion, sizeof(m_rcRegion));
-	ZeroMemory(&m_rcMovable, sizeof(m_rcMovable));
+	memset(&m_rcRegion, 0, sizeof(m_rcRegion));
+	memset(&m_rcMovable, 0, sizeof(m_rcMovable));
 	m_eState = UI_STATE_COMMON_NONE;
 	m_dwStyle = UISTYLE_NONE;
 
 	m_dwReserved = 0;
 	m_bVisible = true;
-	m_pSnd_OpenUI = NULL;
-	m_pSnd_CloseUI = NULL;
+	m_pSnd_OpenUI = nullptr;
+	m_pSnd_CloseUI = nullptr;
+
+	m_crToolTip = DefaultTooltipColor;
 }
 
 CN3UIBase::~CN3UIBase()
@@ -70,26 +76,28 @@ CN3UIBase::~CN3UIBase()
 
 void CN3UIBase::Release()
 {
-	if(m_pParent) m_pParent->RemoveChild(this);
+	if (m_pParent != nullptr)
+		m_pParent->RemoveChild(this);
 
-	ZeroMemory(&m_rcRegion, sizeof(m_rcRegion));
-	ZeroMemory(&m_rcMovable, sizeof(m_rcMovable));
+	memset(&m_rcRegion, 0, sizeof(m_rcRegion));
+	memset(&m_rcMovable, 0, sizeof(m_rcMovable));
 	
-	m_szID = "";
-	m_szToolTip = "";
+	m_szID.clear();
+	m_szToolTip.clear();
+	m_crToolTip = DefaultTooltipColor;
 
 	m_eState = UI_STATE_COMMON_NONE;
 	m_dwStyle = UISTYLE_NONE;
 	m_dwReserved = 0;
 	m_bVisible = true;
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_OpenUI);
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_CloseUI);
+	s_SndMgr.ReleaseObj(&m_pSnd_OpenUI);
+	s_SndMgr.ReleaseObj(&m_pSnd_CloseUI);
 
-	while(!m_Children.empty())
+	while (!m_Children.empty())
 	{
-		CN3UIBase* pChild = m_Children.front();
-		if (pChild) delete pChild;	// 자식이 delete되면서 부모의 list에서는 자동으로 제거된다.
-									// 따라서 리스트에서 따로 지우는 부분이 없어도 된다.
+		// 자식이 delete되면서 부모의 list에서는 자동으로 제거된다.
+		// 따라서 리스트에서 따로 지우는 부분이 없어도 된다.
+		delete m_Children.front();
 	}
 
 	CN3BaseFileAccess::Release();
@@ -136,10 +144,10 @@ POINT CN3UIBase::GetPos() const
 	return p;
 }
 
-// 위치 바꾸기
+// Reposition
 void CN3UIBase::SetPos(int x, int y)
 {
-	// 움직인 차이 구하기
+	// Find the delta
 	int dx, dy;
 	dx = x - m_rcRegion.left;
 	dy = y - m_rcRegion.top;
@@ -149,38 +157,45 @@ void CN3UIBase::SetPos(int x, int y)
 
 void CN3UIBase::SetPosCenter()
 {
-	POINT pt = this->GetPos();
-	RECT rc = this->GetRegion();
-	int iW = rc.right - rc.left;
-	int iH = rc.bottom - rc.top;
-	int iWVP = CN3Base::s_CameraData.vp.Width;
-	int iHVP = CN3Base::s_CameraData.vp.Height;
+	// Target location of our UI Element
+	const int elementCenterX = static_cast<int>((s_CameraData.vp.Width - GetWidth()) / 2);
+	const int elementCenterY = static_cast<int>((s_CameraData.vp.Height - GetHeight()) / 2);
+	
+	// Delta is the diff between our target and our current position
+	POINT currentPos = GetPos();
+	const int deltaX = elementCenterX - currentPos.x;
+	const int deltaY = elementCenterY - currentPos.y;
 
-	// 움직인 차이 구하기
-	MoveOffset(((iWVP - iW) / 2) - pt.x, ((iHVP - iH) / 2) - pt.y);
+	// Shift the UI element; We call MoveOffset as it will also shift all child elements
+	MoveOffset(deltaX, deltaY);
 }
 
-// offset만큼 이동해준다.(children도 이동)
+// MoveOffset shifts the UI element and all of its children by the given offsets
 BOOL CN3UIBase::MoveOffset(int iOffsetX, int iOffsetY)
 {
-	if (0 == iOffsetX && 0 == iOffsetY) return FALSE;
-	// ui 영역
-	m_rcRegion.left += iOffsetX;		m_rcRegion.top += iOffsetY;
-	m_rcRegion.right += iOffsetX;		m_rcRegion.bottom += iOffsetY;
+	if (iOffsetX == 0
+		&& iOffsetY == 0)
+		return FALSE;
+	
+	// Shift UI Element Bounding Box
+	m_rcRegion.left += iOffsetX;
+	m_rcRegion.top += iOffsetY;
+	m_rcRegion.right += iOffsetX;
+	m_rcRegion.bottom += iOffsetY;
 
 	// movable 영역
 	if(	m_rcMovable.right - m_rcMovable.left != 0 &&
 		m_rcMovable.bottom - m_rcMovable.top != 0 )
 	{
-		m_rcMovable.left += iOffsetX;		m_rcMovable.top += iOffsetY;
-		m_rcMovable.right += iOffsetX;		m_rcMovable.bottom += iOffsetY;
+		m_rcMovable.left += iOffsetX;
+		m_rcMovable.top += iOffsetY;
+		m_rcMovable.right += iOffsetX;
+		m_rcMovable.bottom += iOffsetY;
 	}
 
-	// children 좌표 갱신
-	CN3UIBase* pCUI = NULL; // Child UI...
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	// Shift child elements
+	for (CN3UIBase* pCUI : m_Children)
 	{
-		pCUI = (*itor);
 		__ASSERT(pCUI, "child UI pointer is NULL!");
 		pCUI->MoveOffset(iOffsetX, iOffsetY);
 	}
@@ -225,31 +240,29 @@ void CN3UIBase::ShowWindow(int iID, CN3UIBase* pParent)
 bool CN3UIBase::Load(HANDLE hFile)
 {
 	CN3BaseFileAccess::Load(hFile);
-	DWORD dwRWC = NULL;
+	DWORD dwRWC = 0;
 
 	// children 정보
 	int iCC = 0;
-	if(m_iFileFormatVersion >= N3FORMAT_VER_1264) {
-		//char temp[0xFF];
-
+	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
+	{
 		int16_t sCC, sIdk0;
-		ReadFile(hFile, &sCC, sizeof(int16_t), &dwRWC, NULL); // children count
-		ReadFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, NULL);
+		ReadFile(hFile, &sCC, sizeof(int16_t), &dwRWC, nullptr); // children count
+		ReadFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, nullptr);
 		iCC = (int) sCC;
-
-		//sprintf(temp, "sIdk0 = %d\n", sIdk0);
-		//OutputDebugString(temp);
-	} else {
-		ReadFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL); // children count
+	}
+	else
+	{
+		ReadFile(hFile, &iCC, sizeof(iCC), &dwRWC, nullptr); // children count
 	}
 
 	eUI_TYPE eChildUIType;
-	for(int i = 0; i < iCC; i++)
+	for (int i = 0; i < iCC; i++)
 	{
-		CN3UIBase* pChild = NULL;
-		ReadFile(hFile, &eChildUIType, sizeof(eChildUIType), &dwRWC, NULL); // child의 ui type
+		CN3UIBase* pChild = nullptr;
+		ReadFile(hFile, &eChildUIType, sizeof(eChildUIType), &dwRWC, nullptr); // child의 ui type
 
-		switch(eChildUIType)
+		switch (eChildUIType)
 		{
 		case UI_TYPE_BASE:			pChild = new CN3UIBase();			break;
 		case UI_TYPE_IMAGE:			pChild = new CN3UIImage();			break;
@@ -273,51 +286,51 @@ bool CN3UIBase::Load(HANDLE hFile)
 
 	// base 정보
 	int iIDLen = 0;
-	ReadFile(hFile, &iIDLen, sizeof(iIDLen), &dwRWC, NULL);				// ui id length
-	if (iIDLen>0)
+	ReadFile(hFile, &iIDLen, sizeof(iIDLen), &dwRWC, nullptr);				// ui id length
+	if (iIDLen > 0)
 	{
-		std::vector<char> buffer(iIDLen+1, NULL);
-		ReadFile(hFile, &buffer[0], iIDLen, &dwRWC, NULL);			// ui id
-		m_szID = &buffer[0];
+		m_szID.assign(iIDLen, '\0');
+		ReadFile(hFile, &m_szID[0], iIDLen, &dwRWC, nullptr);				// ui id
 	}
 	else
 	{
-		m_szID = "";
+		m_szID.clear();
 	}
-	ReadFile(hFile, &m_rcRegion, sizeof(m_rcRegion), &dwRWC, NULL);		// m_rcRegion
-	ReadFile(hFile, &m_rcMovable, sizeof(m_rcMovable), &dwRWC, NULL);	// m_rcMovable
-	ReadFile(hFile, &m_dwStyle, sizeof(m_dwStyle), &dwRWC, NULL);		// style
-	ReadFile(hFile, &m_dwReserved, sizeof(m_dwReserved), &dwRWC, NULL);	//	m_dwReserved
+
+	ReadFile(hFile, &m_rcRegion, sizeof(m_rcRegion), &dwRWC, nullptr);		// m_rcRegion
+	ReadFile(hFile, &m_rcMovable, sizeof(m_rcMovable), &dwRWC, nullptr);	// m_rcMovable
+	ReadFile(hFile, &m_dwStyle, sizeof(m_dwStyle), &dwRWC, nullptr);		// style
+	ReadFile(hFile, &m_dwReserved, sizeof(m_dwReserved), &dwRWC, nullptr);	// m_dwReserved
 
 	int iTooltipLen;
-	ReadFile(hFile, &iTooltipLen, sizeof(iTooltipLen), &dwRWC, NULL);		//	tooltip문자열 길이
-	if (iTooltipLen>0)
+	ReadFile(hFile, &iTooltipLen, sizeof(iTooltipLen), &dwRWC, nullptr);	//	tooltip문자열 길이
+	if (iTooltipLen > 0)
 	{
-		std::vector<char> buffer(iTooltipLen+1, NULL);
-		ReadFile(hFile, &buffer[0], iTooltipLen, &dwRWC, NULL);
-		m_szToolTip = &buffer[0];
+		m_szToolTip.assign(iTooltipLen, '\0');
+		ReadFile(hFile, &m_szToolTip[0], iTooltipLen, &dwRWC, nullptr);
 	}
 
+	std::string szSoundFN;
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
 	int iSndFNLen = 0;
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, NULL);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0)
+	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	if (iSndFNLen > 0)
 	{
-		std::vector<char> buffer(iSndFNLen+1, NULL);
-		ReadFile(hFile, &buffer[0], iSndFNLen, &dwRWC, NULL);
+		szSoundFN.assign(iSndFNLen, '\0');
+		ReadFile(hFile, &szSoundFN[0], iSndFNLen, &dwRWC, nullptr);
 
-		__ASSERT(NULL == m_pSnd_OpenUI, "memory leak");
-		m_pSnd_OpenUI = s_SndMgr.CreateObj(&buffer[0], SNDTYPE_2D);
+		__ASSERT(nullptr == m_pSnd_OpenUI, "memory leak");
+		m_pSnd_OpenUI = s_SndMgr.CreateObj(szSoundFN, SNDTYPE_2D);
 	}
 
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, NULL);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0)
+	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	if (iSndFNLen > 0)
 	{
-		std::vector<char> buffer(iSndFNLen+1, NULL);
-		ReadFile(hFile, &buffer[0], iSndFNLen, &dwRWC, NULL);
+		szSoundFN.assign(iSndFNLen, '\0');
+		ReadFile(hFile, &szSoundFN[0], iSndFNLen, &dwRWC, nullptr);
 
-		__ASSERT(NULL == m_pSnd_CloseUI, "memory leak");
-		m_pSnd_CloseUI = s_SndMgr.CreateObj(&buffer[0], SNDTYPE_2D);
+		__ASSERT(nullptr == m_pSnd_CloseUI, "memory leak");
+		m_pSnd_CloseUI = s_SndMgr.CreateObj(szSoundFN, SNDTYPE_2D);
 	}
 
 	return true;
@@ -384,8 +397,10 @@ uint32_t CN3UIBase::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl != nullptr)
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crToolTip);
 	}
+
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.
 
 
@@ -449,38 +464,53 @@ void CN3UIBase::PrintChildIDs(void) {
 
 CN3UIBase* CN3UIBase::GetChildByID(const std::string& szID)
 {
-	if(szID.empty()) return NULL;
+	if (szID.empty())
+		return nullptr;
 
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIBase* pChild = (*itor);
-//		if(pChild->m_szID == szID) return pChild;
-		if(lstrcmpi(pChild->m_szID.c_str(), szID.c_str()) == 0) return pChild; // 대소문자 안가리고 검색..
+		if (lstrcmpiA(szID.c_str(), pChild->m_szID.c_str()) == 0)
+			return pChild;
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 void CN3UIBase::SetVisible(bool bVisible)
 {
-	if (bVisible != m_bVisible)
-	{
-		if (bVisible) { if(m_pSnd_OpenUI) m_pSnd_OpenUI->Play(); }	// 여는 소리
-		else { if(m_pSnd_CloseUI) m_pSnd_CloseUI->Play(); }	// 닫는 소리
-	}
+	// No change
+	if (bVisible == m_bVisible)
+		return;
+
+	// update state
 	m_bVisible = bVisible;
-	if(!m_bVisible)
+
+	// UI element made visible
+	if (bVisible)
 	{
-		if(m_pChildUI)
-		{
+		// play open sound, if defined
+		if (m_pSnd_OpenUI != nullptr)
+			m_pSnd_OpenUI->Play();
+	}
+	// UI element hidden
+	else
+	{
+		// play close sound, if defined
+		if (m_pSnd_CloseUI != nullptr)
+			m_pSnd_CloseUI->Play();
+
+		// hide child UI and delink pointer
+		if (m_pChildUI != nullptr)
 			m_pChildUI->SetVisible(false);
-		}
-		m_pChildUI	= NULL;
-		if(m_pParentUI)
-		{
-			if(m_pParentUI->m_pChildUI == this)
-				m_pParentUI->m_pChildUI = NULL;
-		}
-		m_pParentUI = NULL;
+
+		m_pChildUI = nullptr;
+
+		// delink pointer to parent
+		if (m_pParentUI != nullptr
+			&& m_pParentUI->m_pChildUI == this)
+			m_pParentUI->m_pChildUI = nullptr;
+
+		m_pParentUI = nullptr;
 		m_iChildID	= -1;
 	}
 }
@@ -654,7 +684,24 @@ bool CN3UIBase::Save(HANDLE hFile)
 
 	// child 정보
 	int iCC = m_Children.size();
-	WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL); // Child 갯수 ㅆ고..고..
+
+	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
+	{
+		
+		int16_t sCC = static_cast<int16_t>(iCC);
+		int16_t sIdk0 = 1; // unknown
+
+		WriteFile(hFile, &sCC, sizeof(int16_t), &dwRWC, NULL); // children count
+		WriteFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, NULL); //unknown
+
+	}
+	else
+	{
+		WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL);
+	}
+
+	//WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, NULL); // Child 갯수 ㅆ고..고..
+
 	for(UIListReverseItor itor = m_Children.rbegin(); m_Children.rend() != itor; ++itor)
 	// childadd할때 push_front이므로 저장할 때 거꾸로 저장해야 한다.
 	{

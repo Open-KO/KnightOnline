@@ -361,10 +361,10 @@ inline int CQTNode::Distance(int sx, int sz, int tx, int tz)
 	int iX = tx - sx;
 	int iZ = tz - sz;
 
-	iX = T_Abs(iX);
-	iZ = T_Abs(iZ);
+	iX = std::abs(iX);
+	iZ = std::abs(iZ);
 
-	int iMin = T_Min(iX, iZ);
+	int iMin = std::min(iX, iZ);
 
 	return (iX+iZ-(iMin>>1) - (iMin>>2) + (iMin>>4));
 }
@@ -1170,25 +1170,25 @@ int CQTNode::GetMaxLevel(eDIR dir)
 		{
 			l1 = m_pChild[DIR_TOP]->GetMaxLevel(DIR_RIGHT);
 			l2 = m_pChild[DIR_RIGHT]->GetMaxLevel(DIR_RIGHT);
-			return T_Max(l1,l2);
+			return std::max(l1,l2);
 		}
 		if(dir==DIR_LEFT)
 		{
 			l1 = m_pChild[DIR_LEFT]->GetMaxLevel(DIR_LEFT);
 			l2 = m_pChild[DIR_BOTTOM]->GetMaxLevel(DIR_LEFT);
-			return T_Max(l1,l2);
+			return std::max(l1,l2);
 		}
 		if(dir==DIR_TOP)
 		{
 			l1 = m_pChild[DIR_LEFT]->GetMaxLevel(DIR_TOP);
 			l2 = m_pChild[DIR_TOP]->GetMaxLevel(DIR_TOP);
-			return T_Max(l1,l2);
+			return std::max(l1,l2);
 		}
 		if(dir==DIR_BOTTOM)
 		{
 			l1 = m_pChild[DIR_BOTTOM]->GetMaxLevel(DIR_BOTTOM);
 			l2 = m_pChild[DIR_RIGHT]->GetMaxLevel(DIR_BOTTOM);
-			return T_Max(l1,l2);
+			return std::max(l1,l2);
 		}
 	}
 	return 0;

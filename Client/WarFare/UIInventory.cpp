@@ -3,35 +3,31 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-#include "LogWriter.h"
-
+#include "UIInventory.h"
 #include "PlayerMySelf.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
-
-#include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "UIImageTooltipDlg.h"
 #include "UIManager.h"
-
 #include "SubProcPerTrade.h"
 #include "UITradeEditDlg.h"
 #include "UIPerTradeDlg.h"
-
 #include "CountableItemEditDlg.h"
 #include "UIRepairTooltipDlg.h"
-
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
+#include "MagicSkillMng.h"
 
-#include "N3UIString.h"
-#include "N3UIEdit.h"
-#include "N3SndObj.h"
+#include "text_resources.h"
 
-#include "resource.h"
+#include <N3Base/LogWriter.h>
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -78,7 +74,7 @@ CUIInventory::CUIInventory()
 	for( int i = 0; i < MAX_ITEM_INVENTORY; i++ )	m_pMyInvWnd[i] = NULL;
 
 	m_pUITooltipDlg = NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	s_bWaitFromServer = false;
 
 	m_bOpenningNow = false; // 열리고 있다..
 	m_bClosingNow = false;	// 닫히고 있다..
@@ -193,27 +189,15 @@ void CUIInventory::Open(e_InvenState eIS)
 
 void CUIInventory::GoldUpdate()
 {
-	CN3UIString* pStatic = (CN3UIString* )GetChildByID("text_gold"); __ASSERT(pStatic, "NULL UI Component!!");
-	if(pStatic)
+	CN3UIString* pUITextGold;
+
+	N3_VERIFY_UI_COMPONENT(pUITextGold, (CN3UIString*) GetChildByID("text_gold"));
+
+	if (pUITextGold != nullptr)
 	{
-		char szBuff[32] = "";
-		sprintf(szBuff, "%d", CGameBase::s_pPlayer->m_InfoExt.iGold);
-		int buffLength = strlen(szBuff);
-		int goldLength = buffLength + (buffLength / 3) - (buffLength % 3 == 0 ? 1 : 0);
-
-		char szGold[42] = "";
-		szGold[goldLength] = '\0';
-
-		for (int i = buffLength - 1, k = goldLength - 1; i >= 0; i--, k--)
-		{
-			if ((buffLength - 1 - i) % 3 == 0 && (buffLength - 1 != i))
-				szGold[k--] = ',';
-
-			szGold[k] = szBuff[i];
-		}
-
-
-		pStatic->SetString(szGold);
+		std::string szTemp;
+		szTemp = CGameBase::FormatNumber(CGameBase::s_pPlayer->m_InfoExt.iGold);
+		pUITextGold->SetString(szTemp);
 	}
 }
 
@@ -353,8 +337,10 @@ void CUIInventory::Render()
 	// 갯수 표시되야 할 아이템 갯수 표시..
 	for( int i = 0; i < MAX_ITEM_INVENTORY; i++ )
 	{
-		if ( m_pMyInvWnd[i] && ((m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) || 
-					(m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)) )
+		if (m_pMyInvWnd[i] != nullptr
+			&& ((m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE)
+				|| (m_pMyInvWnd[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)
+				|| (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)))
 		{
 			// string 얻기..
 			CN3UIString* pStr = GetChildStringByiOrder(i);
@@ -369,7 +355,12 @@ void CUIInventory::Render()
 					if ( m_pMyInvWnd[i]->pUIIcon->IsVisible() )
 					{
 						pStr->SetVisible(true);
-						pStr->SetStringAsInt(m_pMyInvWnd[i]->iCount);
+						
+						if (m_pMyInvWnd[i]->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)
+							pStr->SetStringAsInt(m_pMyInvWnd[i]->iDurability);
+						else
+							pStr->SetStringAsInt(m_pMyInvWnd[i]->iCount);
+						
 						pStr->Render();
 					}
 					else
@@ -549,7 +540,7 @@ uint32_t CUIInventory::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 수리모드이면.. 리턴;
 	if (m_eInvenState == INV_STATE_REPAIR) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
@@ -796,13 +787,13 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 
 	// 본격적으로 Recovery Info를 활용하기 시작한다.. 
 	// 먼저 WaitFromServer를 On으로 하고.. Select Info를 Recovery Info로 복사..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer				= true;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource					= CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict = CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder		= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd			= UIWND_INVENTORY;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget					= NULL;
+	s_bWaitFromServer									= true;
+	m_sRecoveryJobInfo.pItemSource						= m_sSelectedIconInfo.pItemSelect;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= m_sSelectedIconInfo.UIWndSelect.UIWnd;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+	m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= m_sSelectedIconInfo.UIWndSelect.iOrder;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_INVENTORY;
+	m_sRecoveryJobInfo.pItemTarget						= nullptr;
 	// 검사하는 도중에 Recovery Info중에 pItemTarget를 필요하다면 작성하고 false를 리턴할때는 원래대로..
 
 	// Arm -> Arm
@@ -826,9 +817,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -865,9 +856,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -919,9 +910,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer				= false;
+				m_sRecoveryJobInfo.pItemSource	= nullptr;
+				m_sRecoveryJobInfo.pItemTarget	= nullptr;
 				return false;
 			}
 		}
@@ -948,9 +939,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -983,9 +974,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer					= false;
+				m_sRecoveryJobInfo.pItemSource		= nullptr;
+				m_sRecoveryJobInfo.pItemTarget		= nullptr;
 				return false;
 			}
 		}
@@ -1028,9 +1019,9 @@ bool CUIInventory::CheckIconDropIfSuccessSendToServer(__IconItemSkill* spItem)
 		}
 	}
 	
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer					= false;
+	m_sRecoveryJobInfo.pItemSource		= nullptr;
+	m_sRecoveryJobInfo.pItemTarget		= nullptr;
 	return false;
 }
 
@@ -1366,9 +1357,9 @@ void CUIInventory::ReceiveResultFromServer(uint8_t bResult)
 	CN3UIWndBase::AllHighLightIconFree();
 	SetState(UI_STATE_COMMON_NONE);
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer				= false;
+	m_sRecoveryJobInfo.pItemSource	= nullptr;
+	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
 	if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg) CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 	if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg) CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
@@ -1469,10 +1460,20 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 	if (dwMsg == UIMSG_BUTTON_CLICK)					
 	{
-		if(pSender->m_szID == "btn_close")
+		if (pSender->m_szID == "btn_close")
 		{
 			// 인벤토리만 떠 있을때..
 			Close();
+		}
+		else if (pSender->m_szID == "btn_Destroy_ok")
+		{
+			// 인벤토리만 떠 있을때..
+			ItemDestroyOK();
+		}
+		else if (pSender->m_szID == "btn_Destroy_cancel")
+		{
+			// 인벤토리만 떠 있을때..
+			ItemDestroyCancel();
 		}
 	}
 
@@ -1501,16 +1502,34 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 					
 					// Get Item..
 					spItem = GetHighlightIconItem((CN3UIIcon* )pSender);
-
-					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_INVENTORY;
-					if (bSlot)
-						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_SLOT;
-					else
-						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
 					
+					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd = UIWND_INVENTORY;
 					CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder = iRBtn;
 					CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
-					
+
+					// player right-clicked on an equipped item
+					if (bSlot)
+					{
+						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_SLOT;
+					}
+					// player right-clicked on item which is not equipped
+					else
+					{
+						CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
+
+						// determine if there's an empty slot on the skillbar (CUIHotKeyDlg)
+						// if so, we should allocate an icon there
+						CUIHotKeyDlg* pDlg = CGameProcedure::s_pProcMain->m_pUIHotKeyDlg;
+						int iIndex;
+						if (pDlg->GetEmptySlotIndex(iIndex))
+						{
+							CN3UIWndBase::m_sSkillSelectInfo.UIWnd = UIWND_INVENTORY;
+
+							if (pDlg->SetReceiveSelectedItem(iIndex))
+								return true;
+						}
+					}
+
 					if (spItem) PlayItemSound(spItem->pItemBasic);
 
 					//..
@@ -1521,7 +1540,10 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			}
 			break;
 
-		case UIMSG_AREA_DOWN_FIRST:
+		// NOTE: These events are the same.
+		// UIMSG_AREA_DOWN_FIRST was only used for the inventory, but they're otherwise identical.
+		// case UIMSG_AREA_DOWN_FIRST:
+		case UIMSG_BUTTON_CLICK:
 			// 개인간 거래중이고.. 내 아이디가 "area_gold"이면..  
 			// SubProcPerTrade에 함수를 호출..	( 그 함수는 edit하는 중이 아니면.. 호출)
 			if ( (CGameProcedure::s_pProcMain->m_pSubProcPerTrade->m_ePerTradeState == PER_TRADE_STATE_NORMAL) &&
@@ -1628,7 +1650,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_PROTECTOR:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1645,7 +1667,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_ASSASIN:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1662,7 +1684,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_ENCHANTER:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1679,7 +1701,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_DRUID:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1692,7 +1714,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_BLADE:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1705,7 +1727,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_PROTECTOR:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1718,7 +1740,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_RANGER:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1731,7 +1753,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_ASSASIN:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1744,7 +1766,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_MAGE:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1757,7 +1779,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_ENCHANTER:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1770,7 +1792,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_CLERIC:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1783,7 +1805,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 						case CLASS_EL_DRUID:
 							break;
 						default:
-							CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+							szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 							return false;
 					}
@@ -1792,7 +1814,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 				default:
 					if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byClass)
 					{
-						CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS, &szMsg);
+						szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_CLASS);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 						return false;
 					}
@@ -1802,21 +1824,21 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 
 		if ( (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST) && (CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel+pItemExt->siNeedLevel) )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_LEVEL, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_LEVEL);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
 
 		if ( pInfoExt->iRank < pItem->byNeedRank+pItemExt->siNeedRank )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_RANK, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_RANK);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
 		
 		if ( pInfoExt->iTitle < pItem->byNeedTitle+pItemExt->siNeedTitle )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_TITLE, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_TITLE);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
@@ -1826,7 +1848,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 			iNeedValue += pItemExt->siNeedStrength;
 		if ( pInfoExt->iStrength < iNeedValue )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_POWER, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_POWER);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
@@ -1836,7 +1858,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 			iNeedValue += pItemExt->siNeedStamina;
 		if ( pInfoExt->iStamina < iNeedValue )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_STR, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_STR);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
@@ -1846,7 +1868,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 			iNeedValue += pItemExt->siNeedDexterity;
 		if ( pInfoExt->iDexterity < iNeedValue )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_DEX, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_DEX);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff1010);
 			return false;
 		}
@@ -1856,7 +1878,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 			iNeedValue += pItemExt->siNeedInteli;
 		if ( pInfoExt->iIntelligence < iNeedValue )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_INT, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_INT);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
@@ -1866,7 +1888,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 			iNeedValue += pItemExt->siNeedMagicAttack;
 		if ( pInfoExt->iMagicAttak < iNeedValue )
 		{
-			CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_LOW_CHA, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_CHA);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			return false;
 		}
@@ -1875,7 +1897,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 	}
 	else
 	{
-		CGameBase::GetText(IDS_MSG_VALID_CLASSNRACE_INVALID_RACE, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_INVALID_RACE);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 	return false;
@@ -2342,7 +2364,8 @@ void CUIInventory::DurabilityChange(e_ItemSlot eSlot, int iDurability)
 	if ( eSlot < ITEM_SLOT_EAR_RIGHT || eSlot >= ITEM_SLOT_COUNT )
 	{
 		__ASSERT(0, "Durability Change Item Index Weird.");
-		CLogWriter::Write("Durability Change Item Index Weird. Slot(%d) Durability(%d)", eSlot, iDurability);
+		CLogWriter::Write("Durability Change Item Index Weird. Slot({}) Durability({})",
+			static_cast<int>(eSlot), iDurability);
 		return;
 	}
 
@@ -2356,23 +2379,23 @@ void CUIInventory::DurabilityChange(e_ItemSlot eSlot, int iDurability)
 				m_pMySlot[eSlot]->pUIIcon->SetStyle(m_pMySlot[eSlot]->pUIIcon->GetStyle() | UISTYLE_DURABILITY_EXHAUST);
 
 				// 메시지 박스 출력..
-				CGameBase::GetTextF(
-					IDS_DURABILITY_EXOAST,
-					&szDur,
-					m_pMySlot[eSlot]->pItemBasic->szName.c_str());
+				szDur = fmt::format_text_resource(IDS_DURABILITY_EXOAST,
+					m_pMySlot[eSlot]->pItemBasic->szName);
 				CGameProcedure::s_pProcMain->MsgOutput(szDur, 0xffff3b3b);
 			}
 			else
 			{
 				__ASSERT(0, "Durability Change Item NULL icon or NULL item.");
-				CLogWriter::Write("Durability Change Item NULL icon or NULL item. Slot(%d) Durability(%d)", eSlot, iDurability);
+				CLogWriter::Write("Durability Change Item NULL icon or NULL item. Slot({}) Durability({})",
+					static_cast<int>(eSlot), iDurability);
 			}
 		}
 	}
 	else
 	{
 		__ASSERT(0, "Durability Change Item NULL Slot.");
-		CLogWriter::Write("Durability Change Item ... NULL Slot. Slot(%d) Durability(%d)", eSlot, iDurability);
+		CLogWriter::Write("Durability Change Item ... NULL Slot. Slot({}) Durability({})",
+			static_cast<int>(eSlot), iDurability);
 	}
 }
 
@@ -2381,14 +2404,20 @@ void CUIInventory::ReceiveResultFromServer(int iResult, int iUserGold)
 	m_cItemRepairMgr.ReceiveResultFromServer(iResult, iUserGold);
 }
 
-int CUIInventory::GetCountInInvByID(int iID)
+int CUIInventory::GetCountInInvByID(int iID) const
 {
-	int i;
-	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )
+	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
-		if ( (m_pMyInvWnd[i] != NULL) && (m_pMyInvWnd[i]->pItemBasic->dwID == (iID/1000*1000)) &&
-				(m_pMyInvWnd[i]->pItemExt->dwID == (iID%1000)) )
-		return m_pMyInvWnd[i]->iCount;
+		__IconItemSkill* spItem = m_pMyInvWnd[i];
+		if (spItem == nullptr
+			|| spItem->pItemBasic->dwID != (iID / 1000 * 1000)
+			|| spItem->pItemExt->dwID != (iID % 1000))
+			continue;
+
+		if (spItem->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)
+			return spItem->iDurability;
+
+		return spItem->iCount;
 	}
 
 	return 0;
@@ -2428,7 +2457,7 @@ void CUIInventory::ItemCountChange(int iDistrict, int iIndex, int iCount, int iI
 				if ( NULL == pItem || NULL == pItemExt )
 				{
 					__ASSERT(0, "NULL Item");
-					CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", iID);
+					CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", iID);
 					return;
 				}
 
@@ -2483,7 +2512,7 @@ void CUIInventory::ItemCountChange(int iDistrict, int iIndex, int iCount, int iI
 				if ( NULL == pItem || NULL == pItemExt )
 				{
 					__ASSERT(0, "NULL Item");
-					CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", iID);
+					CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", iID);
 					return;
 				}
 
@@ -2540,7 +2569,7 @@ void CUIInventory::ItemCountChange(int iDistrict, int iIndex, int iCount, int iI
 				if ( NULL == pItem || NULL == pItemExt )
 				{
 					__ASSERT(0, "NULL Item");
-					CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", iID);
+					CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", iID);
 					return;
 				}
 
@@ -2595,7 +2624,7 @@ void CUIInventory::ItemCountChange(int iDistrict, int iIndex, int iCount, int iI
 				if ( NULL == pItem || NULL == pItemExt )
 				{
 					__ASSERT(0, "NULL Item");
-					CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", iID);
+					CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", iID);
 					return;
 				}
 
@@ -2658,7 +2687,7 @@ void CUIInventory::ItemDestroyOK()
 
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);	
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+	s_bWaitFromServer = true;
 }
 
 void CUIInventory::ItemDestroyCancel()
@@ -2698,7 +2727,7 @@ void CUIInventory::ReceiveResultItemRemoveFromServer(int iResult)
 {
 	CN3UIArea* pArea = NULL;
 	__IconItemSkill* spItem = NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= false;
+	s_bWaitFromServer = false;
 
 	switch (iResult)
 	{
@@ -2774,7 +2803,7 @@ bool CUIInventory::CheckWeightValidate(__IconItemSkill* spItem)
 	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 	if ( (pInfoExt->iWeight + spItem->pItemBasic->siWeight) > pInfoExt->iWeightMax)
 	{	 
-		CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+		szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return false;	
 	}

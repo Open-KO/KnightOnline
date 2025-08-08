@@ -3,19 +3,17 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "UIRepairTooltipDlg.h"
 #include "ItemRepairMgr.h"
-
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "UIInventory.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
+#include "text_resources.h"
 
-#include "UIRepairTooltipDlg.h"
-
-#include "N3UIString.h"
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -42,7 +40,7 @@ void CItemRepairMgr::Tick()
 	if (!pInv) return;
 	if (!pInv->IsVisible())	return;
 	if (pInv->GetInvState() != INV_STATE_REPAIR) return;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) return;
+	if (CN3UIBase::s_bWaitFromServer) return;
 
 	CUIRepairTooltipDlg *pDlg = CGameProcedure::s_pProcMain->m_pUIRepairTooltip;
 	if (pDlg)	pDlg->m_bBRender = false;
@@ -131,8 +129,7 @@ void CItemRepairMgr::Tick()
 				if (iRepairGold > s_pPlayer->m_InfoExt.iGold)
 				{
 					// 서버에게 보내지 않고 메시지 표시.. 
-					std::string szMsg;
-					GetText(IDS_REPAIR_LACK_GOLD, &szMsg);
+					std::string szMsg = fmt::format_text_resource(IDS_REPAIR_LACK_GOLD);
 					CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff00ff);
 				}
 				else
@@ -148,7 +145,7 @@ void CItemRepairMgr::Tick()
 					CGameProcedure::s_pSocket->Send(byBuff, iOffset);	
 
 					// 응답을 기다림..
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
+					CN3UIBase::s_bWaitFromServer = true;
 
 					// Change To Cursor..
 					CGameProcedure::SetGameCursor(CGameProcedure::s_hCursorNowRepair, true);
@@ -193,7 +190,7 @@ void CItemRepairMgr::ReceiveResultFromServer(int iResult, int iUserGold)
 	UpdateUserTotalGold(iUserGold);
 
 	// 응답 기다림 해제..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	CN3UIBase::s_bWaitFromServer = false;
 
 	// Change To Cursor..
 	CGameProcedure::SetGameCursor(CGameProcedure::s_hCursorPreRepair, true);
@@ -201,13 +198,9 @@ void CItemRepairMgr::ReceiveResultFromServer(int iResult, int iUserGold)
 
 void CItemRepairMgr::UpdateUserTotalGold(int iGold)
 {
-	char szGold[32];
-
 	// 돈 업데이트..
 	s_pPlayer->m_InfoExt.iGold = iGold;
-	sprintf(szGold, "%d", iGold);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-	
 }
 
 int CItemRepairMgr::CalcRepairGold(__IconItemSkill* spItem)

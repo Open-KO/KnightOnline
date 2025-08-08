@@ -4,6 +4,9 @@
 #include "stdafx.h"
 #include "Option.h"
 #include "OptionDlg.h"
+#include <algorithm>
+#include <set>
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -94,14 +97,14 @@ END_MESSAGE_MAP()
 
 struct Resolution
 {
-	int Width;
-	int Height;
+	uint32_t Width;
+	uint32_t Height;
 };
 
-// TODO: This should ideally be a list of the user's supported display resolutions.
-static Resolution s_supportedResolutions[] =
+static std::vector<Resolution> s_supportedResolutions;
+
+static Resolution DefaultResolutions[] =
 {
-	{ 800, 600 },
 	{ 1024, 768 },
 	{ 1152, 864 },
 	{ 1280, 768 },
@@ -112,6 +115,92 @@ static Resolution s_supportedResolutions[] =
 	{ 1366, 768 },
 	{ 1600, 1200 }
 };
+
+// The game supports at minimum, a resolution of 1024x768.
+// The UIs will not fit on anything smaller than this.
+constexpr Resolution MIN_RESOLUTION = { 1024, 768 };
+
+/*
+ * LoadSupportedResolutions will load a vector of valid resolutions for the primary monitor.
+ * If no resolutions are detectable for the primary monitor, falls back to the default, hardcoded list.
+ */
+void COptionDlg::LoadSupportedResolutions()
+{
+	// Get the primary monitor
+	DISPLAY_DEVICE device = {};
+	device.cb = sizeof(DISPLAY_DEVICE);
+
+	// We point to the device name instead of copying it / using it directly
+	// that way if we don't find a primary monitor, we pass nullptr as the first param into EnumDisplaySettings.
+	TCHAR* primaryDeviceName = nullptr;
+	int deviceNumber = 0;
+	while (EnumDisplayDevices(nullptr, deviceNumber, &device, EDD_GET_DEVICE_INTERFACE_NAME))
+	{
+		if (device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
+		{
+			// Primary monitor found; get a pointer to the name and break out of the loop
+			primaryDeviceName = &device.DeviceName[0];
+			break;
+		}
+
+		deviceNumber++;
+	}
+
+	// Order such that higher resolutions appear at the top of the drop down list.
+	// With modern monitors, this list can get pretty long.
+	// If we're going to send a user scrolling for a resolution, it should be one that most
+	// users aren't looking for.
+	auto cmp = [](const Resolution& a, const Resolution& b) -> bool
+	{
+		return a.Width > b.Width
+			|| (a.Width == b.Width && a.Height > b.Height);
+	};
+
+	// The same resolution can be listed many times on a monitor depending on available refresh rates.
+	// We should limit it to unique resolutions only.
+	std::set<Resolution, decltype(cmp)> loadedResolutions(cmp);
+
+	// Discover resolution settings
+	DEVMODE devmode = {};
+	devmode.dmSize = sizeof(DEVMODE);
+	for (int iModeNum = 0; EnumDisplaySettings(primaryDeviceName, iModeNum, &devmode); iModeNum++)
+	{
+		// Only support 32-bit resolutions.
+		// Officially the game supports 16-bit, but we only care about the resolutions themselves here.
+		// We also just don't really bother to go out of our way to support that anymore anyway.
+		if (devmode.dmBitsPerPel != 32)
+			continue;
+
+		Resolution resolution = { devmode.dmPelsWidth, devmode.dmPelsHeight };
+
+		// Filter out resolutions with dimensions smaller than our minimum (1024x768)
+		if (resolution.Width < MIN_RESOLUTION.Width
+			|| resolution.Height < MIN_RESOLUTION.Height)
+			continue;
+
+		auto itr = loadedResolutions.insert(resolution);
+		if (!itr.second)
+			continue;
+
+		s_supportedResolutions.push_back(
+			std::move(resolution));
+	}
+
+	// We failed to dynamically pull available resolutions, fall back to the hardcoded list
+	if (s_supportedResolutions.empty())
+	{
+		s_supportedResolutions.insert(
+			s_supportedResolutions.begin(),
+			std::begin(DefaultResolutions),
+			std::end(DefaultResolutions));
+	}
+
+	// Sort the vector such that higher resolutions appear at the top of the drop down list.
+	std::sort(
+		s_supportedResolutions.begin(),
+		s_supportedResolutions.end(),
+		cmp);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // COptionDlg message handlers
@@ -142,11 +231,13 @@ BOOL COptionDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
+
 	// 각종 컨트롤 초기화..
 	m_SldEffectCount.SetRange(1000, 2000);
 	m_SldViewDist.SetRange(256, 512);
 	m_SldEffectSoundDist.SetRange(20, 48);
+
+	LoadSupportedResolutions();
 
 	int iAdd = 0;
 
@@ -154,7 +245,7 @@ BOOL COptionDlg::OnInitDialog()
 	for (const auto& resolution : s_supportedResolutions)
 	{
 		szResolution.Format(
-			_T("%d X %d"),
+			_T("%u X %u"),
 			resolution.Width,
 			resolution.Height);
 		iAdd = m_CB_Resolution.AddString(szResolution);
@@ -170,18 +261,18 @@ BOOL COptionDlg::OnInitDialog()
 	iAdd = m_CB_ColorDepth.AddString(_T("32 Bit"));
 	m_CB_ColorDepth.SetItemData(iAdd, 32);
 
-	char szBuff[256] = "";
-	GetCurrentDirectoryA(sizeof(szBuff), szBuff);
+	TCHAR szBuff[_MAX_PATH] = {};
+	GetCurrentDirectory(_countof(szBuff), szBuff);
 
 	m_szInstalledPath = szBuff;
 
 	// Version 표시
-	CString szServerIniPath = m_szInstalledPath + "\\Server.Ini";
+	CString szServerIniPath = m_szInstalledPath + _T("\\Server.Ini");
 	DWORD dwVersion = GetPrivateProfileInt(_T("Version"), _T("Files"), 0, szServerIniPath);
 	SetDlgItemInt(IDC_E_VERSION, dwVersion);
 
 	// 세팅을 읽어온다..
-	SettingLoad(m_szInstalledPath + "\\Option.ini");
+	SettingLoad(m_szInstalledPath + _T("\\Option.ini"));
 	SettingUpdate();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -204,7 +295,7 @@ void COptionDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void COptionDlg::OnPaint() 
+void COptionDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -236,14 +327,14 @@ HCURSOR COptionDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void COptionDlg::OnOK() 
+void COptionDlg::OnOK()
 {
-	SettingSave(m_szInstalledPath + "\\Option.ini");
+	SettingSave(m_szInstalledPath + _T("\\Option.ini"));
 
 	CDialog::OnOK();
 }
 
-void COptionDlg::OnBApplyAndExecute() 
+void COptionDlg::OnBApplyAndExecute()
 {
 	CString szExeFN = m_szInstalledPath + _T("\\"); // 실행 파일 이름 만들고..
 	szExeFN += _T("Launcher.exe");
@@ -302,7 +393,7 @@ void COptionDlg::SettingSave(CString szIniFile)
 	m_Option.iViewHeight = 768;
 
 	if (iSel >= 0
-		&& iSel < _countof(s_supportedResolutions))
+		&& iSel < (int) s_supportedResolutions.size())
 	{
 		const auto& resolution = s_supportedResolutions[iSel];
 		m_Option.iViewWidth = resolution.Width;
@@ -420,7 +511,7 @@ void COptionDlg::SettingUpdate()
 	CheckDlgButton(IDC_C_SHADOW, m_Option.iUseShadow);
 
 	int iSel = 0;
-	for (int i = 0; i < _countof(s_supportedResolutions); i++)
+	for (int i = 0; i < (int) s_supportedResolutions.size(); i++)
 	{
 		const auto& resolution = s_supportedResolutions[i];
 		if (m_Option.iViewWidth == resolution.Width
@@ -435,7 +526,7 @@ void COptionDlg::SettingUpdate()
 
 	if (16 == m_Option.iViewColorDepth)
 		iSel = 0;
-	if (32 == m_Option.iViewColorDepth)
+	else if (32 == m_Option.iViewColorDepth)
 		iSel = 1;
 	m_CB_ColorDepth.SetCurSel(iSel);
 
@@ -451,19 +542,19 @@ void COptionDlg::SettingUpdate()
 	CheckDlgButton(IDC_C_SHOW_WEAPON_EFFECT, m_Option.bEffectVisible);
 }
 
-void COptionDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void COptionDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if ((void*)pScrollBar == (void*)(&m_SldEffectCount))
+	if ((void*) pScrollBar == (void*) (&m_SldEffectCount))
 		m_Option.iEffectCount = m_SldEffectCount.GetPos();
-	else if ((void*)pScrollBar == (void*)(&m_SldViewDist))
+	else if ((void*) pScrollBar == (void*) (&m_SldViewDist))
 		m_Option.iViewDist = m_SldViewDist.GetPos();
-	else if ((void*)pScrollBar == (void*)(&m_SldEffectSoundDist))
+	else if ((void*) pScrollBar == (void*) (&m_SldEffectSoundDist))
 		m_Option.iEffectSndDist = m_SldEffectSoundDist.GetPos();
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-void COptionDlg::OnBVersion() 
+void COptionDlg::OnBVersion()
 {
 	CString szMsg;
 	szMsg.LoadString(IDS_CONFIRM_WRITE_REGISRY);
@@ -472,17 +563,10 @@ void COptionDlg::OnBVersion()
 	if (IDNO == MessageBox(szMsg, _T(""), MB_YESNO))
 		return;
 
-	// 레지스트리에서 설치된 폴더를 읽어온다..
-#if 0 // NOTE: officially this is still a thing, it's just useless:
-	CString szProduct, szKey = _T("SOFTWARE\\");
-	szProduct.LoadString(IDS_PRODUCT);
-	szKey += szProduct;
-#endif
-
 	DWORD dwVersion = GetDlgItemInt(IDC_E_VERSION);
 
 	CString szVersion, szServerIniPath;
 	szVersion.Format(_T("%d"), dwVersion);
-	szServerIniPath = m_szInstalledPath + "\\Server.ini";
+	szServerIniPath = m_szInstalledPath + _T("\\Server.ini");
 	WritePrivateProfileString(_T("Version"), _T("Files"), szVersion, szServerIniPath);
 }

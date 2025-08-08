@@ -34,12 +34,13 @@ CN3Eng::CN3Eng()
 	// 프로그램이 실행된 경로..
 	if (s_szPath.empty())
 	{
-		char szPath[256];
-		char szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
-		::GetModuleFileName(NULL, szPath, 256);
-		_splitpath(szPath, szDrive, szDir, NULL, NULL);
-		sprintf(szPath, "%s%s", szDrive, szDir);
-		this->PathSet(szPath); // 경로 설정..	
+		char szPath[_MAX_PATH] = {};
+		char szDrive[_MAX_DRIVE] = {}, szDir[_MAX_DIR] = {};
+		::GetModuleFileName(nullptr, szPath, _MAX_PATH);
+		_splitpath(szPath, szDrive, szDir, nullptr, nullptr);
+		strcat(szPath, szDrive);
+		strcat(szPath, szDir);
+		PathSet(szPath); // 경로 설정..	
 	}
 }
 
@@ -148,7 +149,7 @@ void CN3Eng::SetDefaultEnvironment()
 /*!
 Used to set the view matrix for DirectX
 */
-void CN3Eng::LookAt(__Vector3 &vEye, __Vector3 &vAt, __Vector3 &vUp)
+void CN3Eng::LookAt(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp)
 {
 	__Matrix44 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vAt, &vUp);
@@ -368,12 +369,10 @@ bool CN3Eng::Init(
 		rval = m_lpD3D->CreateDevice(0, DevType, s_hWndBase, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &s_DevParam, &s_lpD3DDev);
 		if(rval != D3D_OK)
 		{
-			char szDebug[256];
-			//D3DXGetErrorString(rval, szDebug, 256);
 			MessageBox(s_hWndBase, "Can't create D3D Device - please, check DirectX or display card driver", "initialization", MB_OK);
 #ifdef _N3GAME
 			CLogWriter::Write("Can't create D3D Device - please, check DirectX or display card driver");
-			CLogWriter::Write(szDebug);
+			CLogWriter::Write(DXGetErrorStringA(rval));
 #endif
 //			{ for(int iii = 0; iii < 3; iii++) Beep(2000, 200); Sleep(300); } // 여러번 삑~
 
@@ -480,16 +479,6 @@ BOOL CN3Eng::FindDepthStencilFormat(UINT iAdapter, D3DDEVTYPE DeviceType, D3DFOR
 #ifndef _N3TOOL
 void CN3Eng::Present(HWND hWnd, RECT* pRC)
 {
-//	HRESULT rval = s_lpD3DDev->TestCooperativeLevel();
-//	if(D3D_OK != rval)
-//	{
-//#if _DEBUG
-//		char szDebug[256];
-//		D3DXGetErrorString(rval, szDebug, 256);
-//#endif
-//		return;
-//	}
-
 	RECT rc;
 	if (s_DevParam.Windowed) // 윈도우 모드면...
 	{
@@ -498,54 +487,46 @@ void CN3Eng::Present(HWND hWnd, RECT* pRC)
 	}
 
 	HRESULT rval = s_lpD3DDev->Present(pRC, pRC, hWnd, nullptr);
-	if(D3D_OK == rval)
+	if (D3D_OK == rval)
 	{
 		s_hWndPresent = hWnd; // Present window handle 을 저장해 놓는다.
 	}
-	else if(D3DERR_DEVICELOST == rval || D3DERR_DEVICENOTRESET == rval)
+	else if (D3DERR_DEVICELOST == rval
+		|| D3DERR_DEVICENOTRESET == rval)
 	{
 		rval = s_lpD3DDev->Reset(&s_DevParam);
-		if(D3D_OK != rval)
+
+		if (D3D_OK != rval)
 		{
 #ifdef _N3GAME
-//			char szErr[256];
-//			D3DXGetErrorString(rval, szErr, 256);
-//			CLogWriter::Write("CNEng::Present - device present failed (%s)", szErr);
-//			Beep(2000, 50);
+			const char* szErr = DXGetErrorStringA(rval);
+
+			// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
+			CLogWriter::Write("Device Present ErrCode({:X}) : {}", rval, szErr);
 #endif
+
+			WaitForDeviceRestoration();
 		}
-		else
-		{
-			rval = s_lpD3DDev->Present(pRC, pRC, hWnd, nullptr);
-		}
-		return;
+
+		rval = s_lpD3DDev->Present(pRC, pRC, hWnd, nullptr);
 	}
 	else
 	{
 #ifdef _N3GAME
-//		char szErr[256];
-//		D3DXGetErrorString(rval, szErr, 256);
-//		CLogWriter::Write("CNEng::Present - device present failed (%s)", szErr);
+//		CLogWriter::Write("CNEng::Present - device present failed ({})", DXGetErrorStringA(rval));
 //		Beep(2000, 50);
 #endif
 	}
-	
 
 	////////////////////////////////////////////////////////////////////////////////
 	// 프레임 율 측정...
-//	float fTime = CN3Base::TimerProcess(TIMER_GETABSOLUTETIME);
-//	static float fTimePrev = fTime - 0.03333f;
-//	static uint32_t dwFrm = 0;
-//	dwFrm++;
-//	if(fTime - fTimePrev > 1.0f) // 1 초 이상 지나야 프레임 측정한다.. 그렇지 않으면 들쭉 날쭉 한 수치가 나온다..
-//	{
-//		s_fFrmPerSec = (float)dwFrm / (fTime - fTimePrev);
-//		dwFrm = 0;
-//		fTimePrev = fTime;
-//	}
-
 	s_fSecPerFrm = CN3Base::TimerProcess(TIMER_GETELAPSEDTIME);
-	if(s_fSecPerFrm <= 0.001f || s_fSecPerFrm >= 1.0f) s_fSecPerFrm = 0.033333f; // 너무 안나오면 기본 값인 30 프레임으로 맞춘다..
+
+	// 너무 안나오면 기본 값인 30 프레임으로 맞춘다..
+	if (s_fSecPerFrm <= 0.001f
+		|| s_fSecPerFrm >= 1.0f)
+		s_fSecPerFrm = 0.033333f;
+
 	s_fFrmPerSec = 1.0f / s_fSecPerFrm; // 초당 프레임 수 측정..
 
 //	fTimePrev = fTime;
@@ -553,7 +534,8 @@ void CN3Eng::Present(HWND hWnd, RECT* pRC)
 	////////////////////////////////////////////////////////////////////////////////
 }
 #else // _N3TOOL
-void CN3Eng::Present(HWND hWnd, RECT* pRC) {
+void CN3Eng::Present(HWND hWnd, RECT* pRC)
+{
 	RECT rc;
 	if(s_DevParam.Windowed)
 	{
@@ -566,27 +548,66 @@ void CN3Eng::Present(HWND hWnd, RECT* pRC) {
 	{
 		s_hWndPresent = hWnd; // Present window handle 을 저장해 놓는다.
 	}
-	else if (D3DERR_DEVICELOST == rval || D3DERR_DEVICENOTRESET == rval)
+	else if (D3DERR_DEVICELOST == rval
+		|| D3DERR_DEVICENOTRESET == rval)
 	{
 		rval = s_lpD3DDev->Reset(&s_DevParam);
 		if (D3D_OK != rval)
-		{
-		}
-		else
-		{
-			rval = s_lpD3DDev->Present(pRC, pRC, hWnd, NULL);
-		}
-		return;
-	}
-	else
-	{
+			WaitForDeviceRestoration();
+
+		rval = s_lpD3DDev->Present(pRC, pRC, hWnd, NULL);
 	}
 
 	s_fSecPerFrm = CN3Base::TimerProcess(TIMER_GETELAPSEDTIME);
-	if (s_fSecPerFrm <= 0.001f || s_fSecPerFrm >= 1.0f) s_fSecPerFrm = 0.033333f; // 너무 안나오면 기본 값인 30 프레임으로 맞춘다..
+
+	// 너무 안나오면 기본 값인 30 프레임으로 맞춘다..
+	if (s_fSecPerFrm <= 0.001f
+		|| s_fSecPerFrm >= 1.0f)
+		s_fSecPerFrm = 0.033333f;
+
 	s_fFrmPerSec = 1.0f / s_fSecPerFrm; // 초당 프레임 수 측정..
 }
 #endif
+
+void CN3Eng::WaitForDeviceRestoration()
+{
+	while (true)
+	{
+		HRESULT rval = s_lpD3DDev->TestCooperativeLevel();
+
+		if (D3DERR_DEVICENOTRESET == rval
+			|| D3D_OK == rval)
+		{
+			if (D3D_OK == s_lpD3DDev->Reset(&s_DevParam))
+			{
+#ifdef _N3GAME
+				const char* szErr = DXGetErrorStringA(rval);
+
+				// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
+				CLogWriter::Write("Device Reset Success ErrCode({:X}) : {}", rval, szErr);
+#endif
+				SetDefaultEnvironment();
+				break;
+			}
+
+#ifdef _N3GAME
+			const char* szErr = DXGetErrorStringA(rval);
+
+			// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
+			CLogWriter::Write("Device Reset Failed - ErrCode(:X) : {}", rval, szErr);
+#endif
+		}
+
+		MSG msg = {};
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		Sleep(2000);
+	}
+}
 
 void CN3Eng::Clear(D3DCOLOR crFill, RECT* pRC)
 {

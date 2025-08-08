@@ -6,7 +6,7 @@
 #include "N3Cloak.h"
 #include "N3Texture.h"
 #include "N3PMeshInstance.h"
-#include "..\WarFare\PlayerBase.h"
+#include "N3Chr.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -23,7 +23,6 @@ CN3Cloak::CN3Cloak()
 //	m_pPMesh = NULL;
 	m_pTex = NULL;
 	m_pParticle = NULL;
-	m_bpPlayerBase = NULL;
 	m_nLOD = -1;
 	m_pPMesh = NULL;
 	m_pIndex = NULL;
@@ -36,17 +35,21 @@ CN3Cloak::CN3Cloak()
 
 CN3Cloak::~CN3Cloak()
 {
-	CN3Cloak::Release();
+	delete[] m_pParticle;
+	delete[] m_pIndex;
+	delete[] m_pVertex;
 }
 
 void CN3Cloak::Release()
 {
-	if (m_pParticle)
-		delete[] m_pParticle, m_pParticle = NULL;
-	if (m_pIndex)
-		delete[] m_pIndex, m_pIndex = NULL;
-	if (m_pVertex)
-		delete[] m_pVertex, m_pVertex = NULL;
+	delete[] m_pParticle;
+	m_pParticle = nullptr;
+
+	delete[] m_pIndex;
+	m_pIndex = nullptr;
+
+	delete[] m_pVertex;
+	m_pVertex = nullptr;
 }
 
 void CN3Cloak::Init(CN3CPlug_Cloak *pPlugCloak)
@@ -66,7 +69,7 @@ void CN3Cloak::Init(CN3CPlug_Cloak *pPlugCloak)
 	m_Force.x = m_Force.y = m_Force.z = 0.0f;
 }
 
-void CN3Cloak::Tick(int nLOD)
+void CN3Cloak::Tick(int nLOD, float fYaw, e_CloakMove eCloakMove)
 {
 	//SetLOD(nLOD);	
 
@@ -94,8 +97,8 @@ void CN3Cloak::Tick(int nLOD)
 		}
 	}
 
-	TickByPlayerMotion();
-	TickYaw();
+	TickByPlayerMotion(eCloakMove);
+	TickYaw(fYaw);
 	
 
 	UpdateLocalForce();
@@ -434,13 +437,11 @@ void CN3Cloak::ApplyOffset(D3DXVECTOR3	&vDif)
 */	
 }
 
-void CN3Cloak::TickYaw()
+void CN3Cloak::TickYaw(float fYaw)
 {
-	if (!m_bpPlayerBase)	return;
-
-	float fYaw = m_bpPlayerBase->Yaw();	
+	// 회전이 있었다.
 	if (fYaw != m_fPrevYaw)
-	{	// 회전이 있었다.
+	{
 		if (fYaw - m_fPrevYaw > 0.0f)
 		{
 			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
@@ -455,21 +456,18 @@ void CN3Cloak::TickYaw()
 	m_fPrevYaw = fYaw;
 }
 
-void CN3Cloak::TickByPlayerMotion()
+void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 {
-	if (!m_bpPlayerBase)	return;
-
-	e_StateMove eCurMove = m_bpPlayerBase->StateMove();
 	static float	fTriggerTick = 0.0f;
 	static bool		bForceApply = false;
 	fTriggerTick += s_fSecPerFrm;
 
 	switch(eCurMove)
 	{
-	case PSM_STOP:
+	case CLOAK_MOVE_STOP:
 		m_GravityForce.y = -0.0015f;
 		break;
-	case PSM_WALK:
+	case CLOAK_MOVE_WALK:
 		m_Force.z = 0.0005f;
 		m_GravityForce.y = -0.0025f;
 		if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
@@ -477,7 +475,7 @@ void CN3Cloak::TickByPlayerMotion()
 		//m_GravityForce.y = (rand()%2+1)*-0.0015f;
 		//TRACE("Apply force %f\n", m_Force.z);
 		break;
-	case PSM_RUN:
+	case CLOAK_MOVE_RUN:
 		m_Force.z = 0.0009f;
 		m_GravityForce.y = -0.0025f;
 		if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
@@ -485,7 +483,7 @@ void CN3Cloak::TickByPlayerMotion()
 		//m_GravityForce.y = (rand()%2+1)*-0.0015f;
 		//TRACE("Apply force %f\n", m_Force.z);
 		break;
-	case PSM_WALK_BACKWARD:
+	case CLOAK_MOVE_WALK_BACKWARD:
 		break;
 	default:
 		break;

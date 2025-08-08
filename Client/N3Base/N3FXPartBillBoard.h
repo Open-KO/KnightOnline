@@ -10,6 +10,8 @@
 class CN3FXPartBillBoard : public CN3FXPartBase  
 {
 public:
+	static constexpr int SUPPORTED_PART_VERSION = 5;
+
 	int					m_iNum;				//	보드의 갯수.
 	float				m_fSizeX;			//	보드의 크기
 	float				m_fSizeY;

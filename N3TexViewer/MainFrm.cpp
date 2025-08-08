@@ -182,8 +182,8 @@ void CMainFrame::OnToolConvertFilesAutomaticaly()
 	{
 		FileName = dlg.GetNextPathName(pos);
 		
-		std::string szFN = FileName;
-		Tex.LoadFromFile(szFN);
+		CT2A FileNameA(FileName);
+		Tex.LoadFromFile(FileNameA.m_psz);
 
 		if(Tex.Get()) 
 		{
@@ -580,7 +580,8 @@ void CMainFrame::OnToolSaveRepeat()
 
 	for(int i = 0; i < nFNC; i++)
 	{
-		std::string szFN = FileNames[i];
+		CT2A FileNameA(FileNames[i]);
+		std::string szFN = FileNameA.m_psz;
 		Tex.LoadFromFile(szFN);
 		Tex.SaveToFile(szFN);
 

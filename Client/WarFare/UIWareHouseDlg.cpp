@@ -3,33 +3,27 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-#include "LogWriter.h"
-
+#include "UIWareHouseDlg.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
-#include "GameBase.h"
-
-#include "UIWareHouseDlg.h"
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
-#include "PlayerMySelf.h"
-
 #include "CountableItemEditDlg.h"
 #include "SubProcPerTrade.h"
-
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
+#include "text_resources.h"
 
-#include "N3UIString.h"
-#include "N3UIEdit.h"
-#include "N3SndObj.h"
+#include <N3Base/LogWriter.h>
 
-#include "resource.h"
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -309,7 +303,7 @@ uint32_t CUIWareHouseDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const 
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( (GetState() == UI_STATE_ICON_MOVING) && 
@@ -363,9 +357,8 @@ bool CUIWareHouseDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			pStr = (CN3UIString* )GetChildByID("string_page");
 			if (pStr)
 			{
-				char pszID[32];
-				sprintf(pszID, "%d",m_iCurPage+1);
-				pStr->SetString(pszID);
+				std::string pageNo = std::to_string(m_iCurPage + 1);
+				pStr->SetString(pageNo);
 			}
 
 			for( j = 0; j < MAX_ITEM_WARE_PAGE; j++ )
@@ -398,9 +391,8 @@ bool CUIWareHouseDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			pStr = (CN3UIString* )GetChildByID("string_page");
 			if (pStr)
 			{
-				char pszID[32];
-				sprintf(pszID, "%d",m_iCurPage+1);
-				pStr->SetString(pszID);
+				std::string pageNo = std::to_string(m_iCurPage + 1);
+				pStr->SetString(pageNo);
 			}
 
 			for( j = 0; j < MAX_ITEM_WARE_PAGE; j++ )
@@ -552,9 +544,8 @@ void CUIWareHouseDlg::EnterWareHouseStateEnd()
 	CN3UIString* pStr = (CN3UIString* )GetChildByID("string_page");
 	if (pStr)
 	{
-		char pszID[32];
-		sprintf(pszID, "%d",m_iCurPage+1);
-		pStr->SetString(pszID);
+		std::string pageNo = std::to_string(m_iCurPage + 1);
+		pStr->SetString(pageNo);
 	}
 
 	int i, j;
@@ -690,20 +681,20 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 	// 본격적으로 Recovery Info를 활용하기 시작한다..
 	// 먼저 WaitFromServer를 On으로 하고.. Select Info를 Recovery Info로 복사.. 이때 Dest는 팰요없다..
-	if ( spItem != CN3UIWndBase::m_sSelectedIconInfo.pItemSelect )
-		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
+	if ( spItem != m_sSelectedIconInfo.pItemSelect )
+		m_sSelectedIconInfo.pItemSelect = spItem;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer					= true;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource						= CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd				= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict		= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget						= NULL;
+	s_bWaitFromServer									= true;
+	m_sRecoveryJobInfo.pItemSource						= m_sSelectedIconInfo.pItemSelect;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= m_sSelectedIconInfo.UIWndSelect.UIWnd;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+	m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= m_sSelectedIconInfo.UIWndSelect.iOrder;
+	m_sRecoveryJobInfo.pItemTarget						= nullptr;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_WARE_HOUSE;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= eUIWnd;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_WARE_HOUSE;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= eUIWnd;
 
-	switch (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict)
+	switch (m_sSelectedIconInfo.UIWndSelect.UIWndDistrict)
 	{
 		case UIWND_DISTRICT_TRADE_NPC:
 			if (eUIWnd == UIWND_DISTRICT_TRADE_MY)		// 빼는 경우..
@@ -745,18 +736,18 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 							if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 							{
-								CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+								s_bWaitFromServer				= false;
+								m_sRecoveryJobInfo.pItemSource	= nullptr;
+								m_sRecoveryJobInfo.pItemTarget	= nullptr;
 								FAIL_RETURN
 							}
 						}
 					}
 
-					CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+					m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+					s_bWaitFromServer							= false;
 
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer				= false;
-					CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_WARE_HOUSE, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					m_pCountableItemEdit->Open(UIWND_WARE_HOUSE, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 					FAIL_RETURN
 				}
 				else
@@ -778,9 +769,9 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 						if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 						{
-							CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+							s_bWaitFromServer				= false;
+							m_sRecoveryJobInfo.pItemSource	= nullptr;
+							m_sRecoveryJobInfo.pItemTarget	= nullptr;
 							FAIL_RETURN
 						}
 
@@ -793,12 +784,12 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 					if ( (pInfoExt->iWeight + CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->siWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
-						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
+						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
+
+						s_bWaitFromServer				= false;
+						m_sRecoveryJobInfo.pItemSource	= nullptr;
+						m_sRecoveryJobInfo.pItemTarget	= nullptr;
 						FAIL_RETURN	
 					}
 
@@ -839,13 +830,15 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 				// 창고 내에서 이동..	(모두 일반 아이템으로 취급한다..)
 				if ( m_pMyWare[m_iCurPage][iDestiOrder] )	// 해당 위치에 아이콘이 있으면..
 				{
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-					CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-					CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+					s_bWaitFromServer				= false;
+					m_sRecoveryJobInfo.pItemSource	= nullptr;
+					m_sRecoveryJobInfo.pItemTarget	= nullptr;
 					FAIL_RETURN
 				}
 				else
-					CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget					= NULL;
+				{
+					m_sRecoveryJobInfo.pItemTarget	= nullptr;
+				}
 
 				m_pMyWare[m_iCurPage][iDestiOrder] = spItemSource;
 				m_pMyWare[m_iCurPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = spItemTarget;
@@ -920,22 +913,23 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 								if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 								{
-									CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-									CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-									CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+									s_bWaitFromServer				= false;
+									m_sRecoveryJobInfo.pItemSource	= nullptr;
+									m_sRecoveryJobInfo.pItemTarget	= nullptr;
 									FAIL_RETURN
 								}
 							}
 						}
 						else
 						{
-							CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
-							CN3UIWndBase::m_sRecoveryJobInfo.m_iPage = m_iCurPage;
+							m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+							m_sRecoveryJobInfo.m_iPage = m_iCurPage;
 						}
 					}
 
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer				= false;
-					CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_WARE_HOUSE, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					s_bWaitFromServer = false;
+
+					m_pCountableItemEdit->Open(UIWND_WARE_HOUSE, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 					FAIL_RETURN
 				}
 				else
@@ -971,16 +965,16 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 						if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 						{
-							CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+							s_bWaitFromServer				= false;
+							m_sRecoveryJobInfo.pItemSource	= nullptr;
+							m_sRecoveryJobInfo.pItemTarget	= nullptr;
 							FAIL_RETURN
 						}
 					}
 					else
 					{
-						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
-						CN3UIWndBase::m_sRecoveryJobInfo.m_iPage = m_iCurPage;
+						m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+						m_sRecoveryJobInfo.m_iPage					= m_iCurPage;
 					}
 
 					SendToServerToWareMsg(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->dwID+
@@ -1142,7 +1136,8 @@ void CUIWareHouseDlg::SendToServerInvToInvMsg(int iItemID, byte page, byte start
 
 void CUIWareHouseDlg::ReceiveResultToWareMsg(uint8_t bResult)	// 넣는 경우..
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
+
 	int iGold = CN3UIWndBase::m_pCountableItemEdit->GetQuantity();
 	__IconItemSkill* spItem;
 	CN3UIArea* pArea = NULL;
@@ -1239,7 +1234,8 @@ void CUIWareHouseDlg::ReceiveResultToWareMsg(uint8_t bResult)	// 넣는 경우..
 
 void CUIWareHouseDlg::ReceiveResultFromWareMsg(uint8_t bResult)	// 빼는 경우..
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
+
 	int iGold = CN3UIWndBase::m_pCountableItemEdit->GetQuantity();
 	__IconItemSkill* spItem;
 	CN3UIArea* pArea = NULL;
@@ -1303,8 +1299,7 @@ void CUIWareHouseDlg::ReceiveResultFromWareMsg(uint8_t bResult)	// 빼는 경우
 			m_pMyWareInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder] = NULL;
 		}
 
-		std::string szMsg;
-		CGameBase::GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
@@ -1340,7 +1335,8 @@ void CUIWareHouseDlg::ReceiveResultFromWareMsg(uint8_t bResult)	// 빼는 경우
 
 void CUIWareHouseDlg::ReceiveResultWareToWareMsg(uint8_t bResult)
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
+
 	CN3UIArea* pArea = NULL;
 
 	if (bResult != 0x01)	// 실패..
@@ -1386,7 +1382,8 @@ void CUIWareHouseDlg::ReceiveResultWareToWareMsg(uint8_t bResult)
 
 void CUIWareHouseDlg::ReceiveResultInvToInvMsg(uint8_t bResult)
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
+
 	CN3UIArea* pArea = NULL;
 
 	if (bResult != 0x01)	// 실패..
@@ -1454,8 +1451,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -1466,8 +1462,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					// int16_t 범위이상은 살수 없다..
 					if ( iGold > UIITEM_COUNT_MANY ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -1477,8 +1472,7 @@ void CUIWareHouseDlg::ItemCountOK()
 						spItem = m_pMyWareInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder];
 						if (spItem->iCount + iGold > UIITEM_COUNT_MANY)
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_GET_MANY, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_GET_MANY);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 							return;
 						}
@@ -1488,8 +1482,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					iWeight = iGold * spItem->pItemBasic->siWeight;
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -1500,8 +1493,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					// int16_t 범위이상은 살수 없다..
 					if ( iGold > UIITEM_COUNT_FEW ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -1511,8 +1503,7 @@ void CUIWareHouseDlg::ItemCountOK()
 						spItem = m_pMyWareInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder];
 						if (spItem->iCount + iGold > UIITEM_COUNT_FEW)
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_GET_MANY, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_GET_MANY);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 							return;
 						}
@@ -1522,8 +1513,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					iWeight = iGold * spItem->pItemBasic->siWeight;
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -1531,7 +1521,8 @@ void CUIWareHouseDlg::ItemCountOK()
 			}
 
 			spItem = m_pMyWare[m_iCurPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+
+			s_bWaitFromServer = true;
 
 			if ( m_pMyWareInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder] )	// 해당 위치에 아이콘이 있으면..
 			{
@@ -1598,8 +1589,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					// int16_t 범위이상은 살수 없다..
 					if ( iGold > UIITEM_COUNT_MANY ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -1609,8 +1599,7 @@ void CUIWareHouseDlg::ItemCountOK()
 						spItem = m_pMyWare[CN3UIWndBase::m_sRecoveryJobInfo.m_iPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder];
 						if (spItem->iCount + iGold > UIITEM_COUNT_MANY)
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_GET_MANY, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_GET_MANY);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 							return;
 						}
@@ -1622,8 +1611,7 @@ void CUIWareHouseDlg::ItemCountOK()
 					// int16_t 범위이상은 살수 없다..
 					if ( iGold > UIITEM_COUNT_FEW ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -1633,8 +1621,7 @@ void CUIWareHouseDlg::ItemCountOK()
 						spItem = m_pMyWare[CN3UIWndBase::m_sRecoveryJobInfo.m_iPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder];
 						if (spItem->iCount + iGold > UIITEM_COUNT_FEW)
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_GET_MANY, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_GET_MANY);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 							return;
 						}
@@ -1643,7 +1630,8 @@ void CUIWareHouseDlg::ItemCountOK()
 			}
 
 			spItem = m_pMyWareInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+
+			s_bWaitFromServer = true;
 
 			if ( m_pMyWare[CN3UIWndBase::m_sRecoveryJobInfo.m_iPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder] )	// 해당 위치에 아이콘이 있으면..
 			{
@@ -1706,14 +1694,14 @@ void CUIWareHouseDlg::ItemCountOK()
 void CUIWareHouseDlg::ItemCountCancel()
 {
 	// Sound..
-	if (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource) PlayItemSound(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic);
+	if (m_sRecoveryJobInfo.pItemSource) PlayItemSound(m_sRecoveryJobInfo.pItemSource->pItemBasic);
 
 	// 취소..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer				= false;
+	m_sRecoveryJobInfo.pItemSource	= nullptr;
+	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
-	CN3UIWndBase::m_pCountableItemEdit->Close();
+	m_pCountableItemEdit->Close();
 }
 
 void CUIWareHouseDlg::ItemMoveFromInvToThis()
@@ -1793,7 +1781,7 @@ void CUIWareHouseDlg::AddItemInWare(int iItem, int iDurability, int iCount, int 
 	if ( NULL == pItem || NULL == pItemExt )
 	{
 		__ASSERT(0, "NULL Item!!!");
-		CLogWriter::Write("WareHouse - Ware - Unknown Item %d, IDNumber", iItem);
+		CLogWriter::Write("WareHouse - Ware - Unknown Item {}, IDNumber", iItem);
 		return; // 아이템이 없으면..
 	}
 
@@ -1816,7 +1804,6 @@ void CUIWareHouseDlg::AddItemInWare(int iItem, int iDurability, int iCount, int 
 
 void CUIWareHouseDlg::GoldCountToWareOK()	//돈을 넣는 경우..
 {
-	char szGold[32];
 	int iGold, iMyMoney, iWareMoney;			// 인벤토리의 값..
 	std::string str;
 
@@ -1850,8 +1837,6 @@ void CUIWareHouseDlg::GoldCountToWareOK()	//돈을 넣는 경우..
 	// 돈 표시.. Ware..
 	pStr->SetStringAsInt(iWareMoney);
 	// 돈 표시.. 인벤토리..
-	sprintf(szGold, "%d", iMyMoney);	pStr = NULL;
-	str = szGold;
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 	// 돈 표시.. Inv..
 	pStr = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(pStr, "NULL UI Component!!");
@@ -1861,15 +1846,14 @@ void CUIWareHouseDlg::GoldCountToWareOK()	//돈을 넣는 경우..
 	SendToServerToWareMsg(dwGold, 0xff, 0xff, 0xff, iGold);
 
 	// 상태를 변화시키고.. 창을 닫고..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
-	CN3UIWndBase::m_pCountableItemEdit->Close();
+	s_bWaitFromServer = true;
+	m_pCountableItemEdit->Close();
 
 	PlayGoldSound();
 }
 
 void CUIWareHouseDlg::GoldCountFromWareOK()		// 돈을 빼는 경우..
 {
-	char szGold[32];
 	int iGold, iMyMoney, iWareMoney;			// 인벤토리의 값..
 	std::string str;
 
@@ -1903,8 +1887,6 @@ void CUIWareHouseDlg::GoldCountFromWareOK()		// 돈을 빼는 경우..
 	// 돈 표시.. Ware..
 	pStr->SetStringAsInt(iWareMoney);
 	// 돈 표시.. 인벤토리..
-	sprintf(szGold, "%d", iMyMoney);	pStr = NULL;
-	str = szGold;
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 	// 돈 표시.. Inv..
 	pStr = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(pStr, "NULL UI Component!!");
@@ -1914,8 +1896,8 @@ void CUIWareHouseDlg::GoldCountFromWareOK()		// 돈을 빼는 경우..
 	SendToServerFromWareMsg(dwGold, 0xff, 0xff, 0xff, iGold);
 
 	// 상태를 변화시키고.. 창을 닫고..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
-	CN3UIWndBase::m_pCountableItemEdit->Close();
+	s_bWaitFromServer = true;
+	m_pCountableItemEdit->Close();
 
 	PlayGoldSound();
 }
@@ -1927,9 +1909,9 @@ void CUIWareHouseDlg::GoldCountToWareCancel()
 	PlayGoldSound();
 
 	// 취소..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer					= false;
+	m_sRecoveryJobInfo.pItemSource		= nullptr;
+	m_sRecoveryJobInfo.pItemTarget		= nullptr;
 
 	CN3UIWndBase::m_pCountableItemEdit->Close();
 }
@@ -1941,9 +1923,9 @@ void CUIWareHouseDlg::GoldCountFromWareCancel()
 	PlayGoldSound();
 
 	// 취소..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer					= false;
+	m_sRecoveryJobInfo.pItemSource		= nullptr;
+	m_sRecoveryJobInfo.pItemTarget		= nullptr;
 
 	CN3UIWndBase::m_pCountableItemEdit->Close();
 }
@@ -1952,7 +1934,6 @@ void CUIWareHouseDlg::ReceiveResultGoldToWareFail()
 {
 	m_bSendedItemGold = false;			// 원래 대로..
 
-	char szGold[32];
 	int iGold, iMyMoney, iWareMoney;			// 인벤토리의 값..
 	std::string str;
 
@@ -1981,8 +1962,6 @@ void CUIWareHouseDlg::ReceiveResultGoldToWareFail()
 	// 돈 표시.. Ware..
 	pStr->SetStringAsInt(iWareMoney);
 	// 돈 표시.. 인벤토리..
-	sprintf(szGold, "%d", iMyMoney);	pStr = NULL;
-	str = szGold;
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 	// 돈 표시.. Inv..
 	pStr = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(pStr, "NULL UI Component!!");
@@ -1993,7 +1972,6 @@ void CUIWareHouseDlg::ReceiveResultGoldFromWareFail()
 {
 	m_bSendedItemGold = false;		// 원래 대로..
 
-	char szGold[32];
 	int iGold, iMyMoney, iWareMoney;			// 인벤토리의 값..
 	std::string str;
 
@@ -2022,8 +2000,6 @@ void CUIWareHouseDlg::ReceiveResultGoldFromWareFail()
 	// 돈 표시.. Ware..
 	pStr->SetStringAsInt(iWareMoney);
 	// 돈 표시.. 인벤토리..
-	sprintf(szGold, "%d", iMyMoney);	pStr = NULL;
-	str = szGold;
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 	// 돈 표시.. Inv..
 	pStr = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(pStr, "NULL UI Component!!");

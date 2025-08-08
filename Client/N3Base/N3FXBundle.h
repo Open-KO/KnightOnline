@@ -12,6 +12,8 @@
 class CN3FXBundle : public CN3BaseFileAccess  
 {
 public:
+	static constexpr int SUPPORTED_BUNDLE_VERSION = 2;
+
 	// 기본 정보들...
 	
 	int					m_iVersion;		//번들버전

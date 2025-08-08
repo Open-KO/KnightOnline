@@ -37,7 +37,7 @@ public:
 	bool	Load(HANDLE hFile);
 
 	void	Create(int nVC, int nIC);
-	void	Create_Cube(__Vector3 &vMin, __Vector3 &vMax);
+	void	Create_Cube(const __Vector3& vMin, const __Vector3& vMax);
 
 	bool	Import(CN3PMesh* pPMesh);
 

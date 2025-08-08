@@ -4,10 +4,11 @@
 
 #include "stdafx.h"
 #include "UIPartyBBSSelector.h"
-
 #include "GameProcedure.h"
 #include "PacketDef.h"
 #include "APISocket.h"
+
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -67,8 +68,8 @@ bool CUIPartyBBSSelector::Load(HANDLE hFile)
 {
 	if(CN3UIBase::Load(hFile)==false) return false;
 
-	m_pBtn_WantPartyMember	= (CN3UIButton*)GetChildByID("Btn_WantParty");			__ASSERT(m_pBtn_WantPartyMember,	"NULL UI Component!!");;
-	m_pBtn_WantParty		= (CN3UIButton*)GetChildByID("Btn_WantPartyMember");	__ASSERT(m_pBtn_WantParty,	"NULL UI Component!!");;
+	m_pBtn_WantPartyMember	= (CN3UIButton*)GetChildByID("Btn_WantParty");			__ASSERT(m_pBtn_WantPartyMember,	"NULL UI Component!!");
+	m_pBtn_WantParty		= (CN3UIButton*)GetChildByID("Btn_WantPartyMember");	__ASSERT(m_pBtn_WantParty,	"NULL UI Component!!");
 
 	return true;
 }

@@ -4,8 +4,8 @@
 
 #include "stdafx.h"
 #include "Bird.h"
-#include "N3Shape.h"
-#include "N3SndObj.h"
+#include <N3Base/N3Shape.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -112,9 +112,8 @@ int CBird::LoadBird(const std::string& szFN)
 	if(NULL == stream)
 	{
 #if _DEBUG
-		char szErr[512];
-		wsprintf(szErr, "failed to open file - %s", szFN);
-		__ASSERT(stream, szErr);
+		std::string szErr = fmt::format("failed to open file - {}", szFN);
+		__ASSERT(stream, szErr.c_str());
 #endif
 		return false;
 	}

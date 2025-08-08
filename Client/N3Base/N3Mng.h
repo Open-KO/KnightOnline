@@ -9,7 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
+#ifdef _N3GAME
+#include "LogWriter.h"
+#endif
 
 #include <string>
 #include <map>

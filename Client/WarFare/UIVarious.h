@@ -10,7 +10,9 @@
 #endif // _MSC_VER > 1000
 
 #include "GameDef.h"
-#include "N3UIBase.h"
+
+#include <N3Base/N3UIBase.h>
+
 #include <string>
 #include <list>
 
@@ -68,7 +70,7 @@ public:
 
 	void	UpdateHP(int iVal, int iValMax);
 	void	UpdateMSP(int iVal, int iValMax);
-	void	UpdateExp(uint64_t iVal, uint64_t iValMax);
+	void	UpdateExp(int64_t iVal, int64_t iValMax);
 	void	UpdateAttackPoint(int iVal, int iDelta);
 	void	UpdateGuardPoint(int iVal, int iDelta);
 	void	UpdateWeight(int iVal, int iValMax);
@@ -85,6 +87,8 @@ public:
 	void	UpdateRegistCurse(int iVal, int iDelta);
 	void	UpdateRegistPoison(int iVal, int iDelta);
 
+	static std::string FormatWithDelta(int iVal, int iDelta);
+
 	void			MsgSendAblityPointChange(uint8_t byType, int16_t siValueDelta); // 능력치 변화 패킷으로 보내기..
 
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
@@ -94,7 +98,6 @@ public:
 	CUIState();
 	virtual ~CUIState();
 };
-
 
 struct __KnightsMemberInfo // 기사 단원 정보..
 {

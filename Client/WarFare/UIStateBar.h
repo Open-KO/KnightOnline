@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 struct __PositionInfo
 {
@@ -28,7 +28,7 @@ struct __DurationMagicImg
 typedef std::list<__PositionInfo>::iterator it_PositionInfo;
 typedef std::list<__DurationMagicImg*>::iterator it_MagicImg;
 
-
+struct __TABLE_UPC_SKILL;
 class CUIStateBar : public CN3UIBase  
 {
 protected:
@@ -79,7 +79,7 @@ public:
 
 	bool	ToggleMiniMap();
 
-	void	UpdateExp(uint64_t iExp, uint64_t iExpNext, bool bUpdateImmediately);
+	void	UpdateExp(int64_t iExp, int64_t iExpNext, bool bUpdateImmediately);
 	void	UpdateMSP(int iMSP, int iMSPMax, bool bUpdateImmediately);
 	void	UpdateHP(int iHP, int iHPMax, bool bUpdateImmediately);
 

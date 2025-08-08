@@ -1,25 +1,25 @@
-﻿/*
-*/
-
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "UIChat.h"
 #include "GameEng.h"
 #include "resource.h"
-#include "N3SndMgr.h"
-#include "N3UIEdit.h"
+#include "text_resources.h"
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "PlayerMySelf.h"
 #include "GameProcMain.h"
 #include "N3WorldManager.h"
-#include "../Server/shared/Ini.h"
+
+#include <shared/Ini.h>
 
 #include <WinSock2.h>
 #include <time.h>
 
-#include "DFont.h"
 #include "UIManager.h"
 #include "UIMessageBoxManager.h"
+
+#include <N3Base/DFont.h>
+#include <N3Base/N3SndMgr.h>
+#include <N3Base/N3UIEdit.h>
 
 #include <windowsx.h>
 
@@ -356,8 +356,7 @@ LRESULT CALLBACK WndProcMain(
 				{
 					if (CGameProcedure::s_pProcMain->m_pUIChatDlg != nullptr)
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_CANNOT_EXIT_DURING_A_BATTLE, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_CANNOT_EXIT_DURING_A_BATTLE);
 						CGameProcedure::s_pProcMain->m_pUIChatDlg->AddChatMsg(N3_CHAT_NORMAL, szMsg, 0xFFFF0000);
 						CGameProcedure::s_pProcMain->m_eExitType = EXIT_TYPE_QUIT;
 					}

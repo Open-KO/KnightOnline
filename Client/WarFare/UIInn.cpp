@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "UIInn.h"
 #include "UICreateClanName.h"
 
@@ -91,7 +91,9 @@ void CUIInn::Message(int iMessageID)
 	std::string szMsg;
 
 	if (iMessageID == IDS_CLAN_DENY_LOWGOLD)
-		CGameBase::GetTextF(iMessageID, &szMsg, CLAN_COST);
+		szMsg = fmt::format_text_resource(iMessageID, CLAN_COST);
+	else
+		szMsg = fmt::format_text_resource(iMessageID);
 
 	CGameProcedure::MessageBoxPost(szMsg, "", MB_OK, BEHAVIOR_NOTHING);	
 }

@@ -22,7 +22,7 @@ typedef struct __LightObj
 	char		szName[80];
 	CN3Light*	pRefLight;
 
-	__LightObj::__LightObj()
+	__LightObj()
 	{
 		ZeroMemory(szName, 80);		
 	}	

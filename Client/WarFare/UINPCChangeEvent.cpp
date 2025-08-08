@@ -3,21 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UINPCChangeEvent.h"
-
 #include "PacketDef.h"
-
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
-
-#include "GameProcedure.h"
 #include "APISocket.h"
-
-#include "N3UIWndBase.h"
 #include "UIInventory.h"
 #include "UIManager.h"
+#include "text_resources.h"
 
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -96,9 +91,9 @@ bool CUINPCChangeEvent::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		else if(pSender == m_pBtn_Close)
 			Close();
 
-		else if(pSender == m_pBtn_Repoint0 && !CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer)
+		else if(pSender == m_pBtn_Repoint0 && !s_bWaitFromServer)
 		{
-			CUIInventory* pInv = ((CGameProcMain* )CGameProcedure::s_pProcMain)->m_pUIInventory;
+			CUIInventory* pInv = CGameProcedure::s_pProcMain->m_pUIInventory;
 			if (!pInv)
 			{
 				Close();
@@ -113,13 +108,12 @@ bool CUINPCChangeEvent::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			{
 				Close();
 
-				std::string szMsg; 
-				CGameBase::GetText(IDS_MSG_HASITEMINSLOT, &szMsg);
+				std::string szMsg = fmt::format_text_resource(IDS_MSG_HASITEMINSLOT);
 				CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			}
 		}
 
-		else if(pSender == m_pBtn_Repoint1 && !CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer)
+		else if(pSender == m_pBtn_Repoint1 && !s_bWaitFromServer)
 		{
 			PointChangePriceQuery(false);
 		}

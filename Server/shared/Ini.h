@@ -1,31 +1,55 @@
-#pragma once
+﻿#pragma once
 
-#define	INI_SECTION_START	'['
-#define	INI_SECTION_END		']'
-#define	INI_KEY_SEPARATOR	'='
-#define	INI_NEWLINE			"\n"
+#include <map>
+#include <string_view>
+#include <string>
+#include <filesystem>
 
 class CIni
 {
-private:
-	std::string m_szFileName;
+protected:
+	struct ci_less
+	{
+		inline bool operator() (const std::wstring& str1, const std::wstring& str2) const {
+			return _wcsicmp(str1.c_str(), str2.c_str()) < 0;
+		}
+	};
+
+	std::wstring m_szPath;
+
 	// Defines key/value pairs within sections
-	typedef std::map<std::string, std::string> ConfigEntryMap;
+	using ConfigEntryMap = std::map<std::wstring, std::wstring, ci_less>;
 
 	// Defines the sections containing the key/value pairs
-	typedef std::map<std::string, ConfigEntryMap> ConfigMap;
+	using ConfigMap = std::map<std::wstring, ConfigEntryMap, ci_less>;
 
 	ConfigMap m_configMap;
 
 public:
-	CIni(const char *lpFilename);
+	CIni() = default;
+	CIni(const std::filesystem::path& path);
 
-	bool Load(const char * lpFileName = nullptr);
-	void Save(const char * lpFileName = nullptr);
+	bool Load();
+	bool Load(const std::filesystem::path& path);
 
-	int GetInt(const char* lpAppName, const char* lpKeyName, const int nDefault);
-	bool GetBool(const char* lpAppName, const char* lpKeyName, const bool bDefault);
-	void GetString(const char* lpAppName, const char* lpKeyName, const char* lpDefault, std::string & lpOutString, bool bAllowEmptyStrings = true);
-	int SetInt(const char* lpAppName, const char* lpKeyName, const int nDefault);
-	int SetString(const char* lpAppName, const char* lpKeyName, const char* lpDefault);
+	void Save();
+	void Save(const std::filesystem::path& path);
+
+	int GetInt(std::string_view szAppName, std::string_view szKeyName, const int iDefault);
+	int GetInt(std::wstring_view szAppName, std::wstring_view szKeyName, const int iDefault);
+
+	bool GetBool(std::string_view szAppName, std::string_view szKeyName, const bool bDefault);
+	bool GetBool(std::wstring_view szAppName, std::wstring_view szKeyName, const bool bDefault);
+
+	std::string GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault);
+	std::wstring GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault);
+
+	void GetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault, char* szOutBuffer, size_t nBufferLength);
+	void GetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault, wchar_t* szOutBuffer, size_t nBufferLength);
+
+	int SetInt(std::string_view szAppName, std::string_view szKeyName, const int iDefault);
+	int SetInt(std::wstring_view szAppName, std::wstring_view szKeyName, const int iDefault);
+
+	int SetString(std::string_view szAppName, std::string_view szKeyName, std::string_view szDefault);
+	int SetString(std::wstring_view szAppName, std::wstring_view szKeyName, std::wstring_view szDefault);
 };

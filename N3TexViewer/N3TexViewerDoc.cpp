@@ -277,6 +277,6 @@ void CN3TexViewerDoc::OnFileSaveAsBitmap()
 	if(dlg.DoModal() == IDCANCEL) return;
 
 	CString szPath = dlg.GetPathName();
-	std::string szPath2 = szPath;
-	m_pTex->SaveToBitmapFile(szPath2);
+	CT2A szPathA(szPath);
+	m_pTex->SaveToBitmapFile(szPathA.m_psz);
 }

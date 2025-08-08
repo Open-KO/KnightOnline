@@ -3,16 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UICreateClanName.h"
-
-#include "GameProcMain.h"
-#include "GameProcedure.h"
-#include "PacketDef.h"
 #include "APISocket.h"
+#include "GameProcMain.h"
+#include "PacketDef.h"
+#include "text_resources.h"
 
-//#include "StdAfxBase.h"
-
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -68,8 +66,7 @@ bool CUICreateClanName::MakeClan()
 	if (m_szClanName.size() > 20)
 		m_szClanName.resize(20);
 
-	std::string szMsg;
-	CGameBase::GetTextF(IDS_CLAN_WARNING_COST, &szMsg, CLAN_COST);
+	std::string szMsg = fmt::format_text_resource(IDS_CLAN_WARNING_COST, CLAN_COST);
 	CGameProcedure::s_pProcMain->MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_KNIGHTS_CREATE);
 	return true;
 }
@@ -91,8 +88,7 @@ void CUICreateClanName::Open(int msg)
 {
 	if (msg != 0)
 	{
-		std::string szMsg;
-		CGameBase::GetText(msg, &szMsg);
+		std::string szMsg = fmt::format_text_resource(msg);
 		m_pText_Title->SetString(szMsg);
 	}
 	m_pEdit_ClanName->SetString("");

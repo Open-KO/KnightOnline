@@ -9,10 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIArea.h"
-#include "N3UIImage.h"
-#include "GameProcedure.h"
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 #include "ItemRepairMgr.h"
@@ -146,7 +142,7 @@ public:
 
 	void				ReceiveResultFromServer(int iResult, int iUserGold);
 
-	int					GetCountInInvByID(int iID);
+	int					GetCountInInvByID(int iID) const;
 
 	// 소모성 아이템을 소비한 경우 or Not..
 	void				ItemCountChange(int iDistrict, int iIndex, int iCount, int iID, int iDurability);

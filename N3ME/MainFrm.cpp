@@ -578,9 +578,10 @@ void CMainFrame::OnResourcePathSet()
 	CDlgBrowsePath dlg;
 	if(IDCANCEL == dlg.DoModal()) return;
 	
-	std::string szPath = dlg.GetPath();
-	CN3Base::PathSet(szPath); // 경로 설정..
-	m_wndDlgBar.SetDlgItemText(IDC_E_PATH, szPath.c_str());
+	CString szPath = dlg.GetPath();
+	CT2A szPathA(szPath);
+	CN3Base::PathSet(szPathA.m_psz); // 경로 설정..
+	m_wndDlgBar.SetDlgItemText(IDC_E_PATH, szPath);
 	
 	// 기본 리소스 읽기..
 	m_pMapMng->LoadSourceObjects();

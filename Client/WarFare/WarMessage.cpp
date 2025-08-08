@@ -3,16 +3,16 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-#include "DFont.h"
 #include "WarMessage.h"
 #include "GameBase.h"
+#include "text_resources.h"
+
+#define MESSAGE_FONT_SIZE		20
+#define WAR_MESSAGE_SHOW_TIME	60
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#define MESSAGE_FONT_SIZE		20
-#define WAR_MESSAGE_SHOW_TIME	60
 
 CWarMessage::CWarMessage()
 {
@@ -29,8 +29,7 @@ void CWarMessage::InitFont()
 {
 	Release();
 
-	std::string szFont;
-	CGameBase::GetText(IDS_FONT_ID, &szFont);
+	std::string szFont = fmt::format_text_resource(IDS_FONT_ID);
 
 	m_pMessageFont = new CDFont(szFont, MESSAGE_FONT_SIZE);
 	__ASSERT(m_pMessageFont, "Font Create Fail!!");

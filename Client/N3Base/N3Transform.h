@@ -34,9 +34,9 @@ public:
 	virtual void	Tick(float fFrm = FRAME_SELFPLAY);
 	virtual bool	TickAnimationKey(float fFrm); // Animation Key Tick... Animation Key 가 있어 움직이면 true, 아니면 false 를 return;
 
-	__Vector3		Pos() const { return m_vPos; }
-	__Quaternion	Rot() const { return m_qRot; }
-	__Vector3		Scale() const { return m_vScale; }
+	const __Vector3&	Pos() const { return m_vPos; }
+	const __Quaternion&	Rot() const { return m_qRot; }
+	const __Vector3&	Scale() const { return m_vScale; }
 
 	virtual void	PosSet(const __Vector3& v) { m_vPos = v; ReCalcMatrix(); }
 	virtual void	PosSet(float x, float y, float z) { m_vPos.Set(x, y, z); ReCalcMatrix(); }

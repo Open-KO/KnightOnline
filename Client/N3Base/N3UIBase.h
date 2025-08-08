@@ -9,17 +9,16 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "N3BaseFileAccess.h"
 #include "N3UIDef.h"
 #include <list>
 #include <set>
 #include <string>
 
-#define N3_VERIFY_UI_COMPONENT(varName, lookupResult) \
+#define N3_VERIFY_UI_COMPONENT(varName, lookupResult) { \
 	varName = lookupResult; \
-	__ASSERT(varName != nullptr, "NULL UI Component!!!")
+	__ASSERT(varName != nullptr, "NULL UI Component!!!"); \
+}
 
 class CN3UIBase;
 
@@ -52,11 +51,35 @@ friend class CUIEView;	// 툴에서 child list를 접근하기 위해서.
 #endif
 
 public:
+	static constexpr D3DCOLOR DefaultTooltipColor = D3DCOLOR_XRGB(255, 255, 255);
+
+#ifdef _N3GAME
+	static bool s_bWaitFromServer;
+#endif
+
 	std::string m_szID;			// UI id
 	std::string	m_szToolTip;	// tooltip text
-	void		SetID(LPCTSTR pszID) {m_szID = pszID;}
-	const std::string GetID() const {return m_szID;}
-	void		SetTooltipText(LPCTSTR pszTT) {m_szToolTip = pszTT;}
+	D3DCOLOR	m_crToolTip;
+
+	void SetID(const std::string& szID)
+	{
+		m_szID = szID;
+	}
+
+	const std::string& GetID() const
+	{
+		return m_szID;
+	}
+
+	void SetTooltipText(const std::string& szTooltipText)
+	{
+		m_szToolTip = szTooltipText;
+	}
+
+	void SetTooltipColor(D3DCOLOR crTooltip)
+	{
+		m_crToolTip = crTooltip;
+	}
 
 	static CN3UITooltip*	s_pTooltipCtrl;		// tool tip
 	

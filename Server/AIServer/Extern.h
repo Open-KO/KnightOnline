@@ -1,55 +1,31 @@
-﻿#pragma once
+﻿#ifndef _EXTERN_H_
+#define _EXTERN_H_
 
-extern bool	g_bNpcExit;
+// -------------------------------------------------
+// 전역 객체 변수
+// -------------------------------------------------
+extern BOOL	g_bNpcExit;
 
-struct _MAKE_WEAPON
+import AIServerModel;
+namespace model = aiserver_model;
+
+struct _PARTY_GROUP
 {
-	uint8_t	byIndex;
-	uint16_t	sClass[MAX_UPGRADE_WEAPON];
-	_MAKE_WEAPON() { memset(&sClass, 0, sizeof(sClass)); }
-};
-
-struct _MAKE_ITEM_GRADE_CODE
-{
-	uint8_t	byItemIndex;		// item grade
-	uint16_t	sGrade[9];
-};	
-
-struct _MAKE_ITEM_LARE_CODE
-{
-	uint8_t	byItemLevel;
-	uint16_t	sLareItem;
-	uint16_t	sMagicItem;
-	uint16_t	sGeneralItem;
-};
-
-struct _K_MONSTER_ITEM
-{
-	uint16_t sIndex;
-	uint32_t iItem[5];
-	uint16_t sPercent[5];
-
-	_K_MONSTER_ITEM()
+	WORD wIndex;
+	short uid[8];		// 하나의 파티에 8명까지 가입가능
+	_PARTY_GROUP()
 	{
-		memset(&iItem, 0, sizeof(iItem));
-		memset(&sPercent, 0, sizeof(sPercent));
+		for (int i = 0; i < 8; i++)
+			uid[i] = -1;
 	}
 };
 
-struct _MAKE_ITEM_GROUP
+struct _USERLOG
 {
-	uint32_t	iItemGroupNum;
-	std::vector<uint32_t> iItems;
+	CTime t;
+	BYTE  byFlag;	// 
+	BYTE  byLevel;
+	char  strUserID[MAX_ID_SIZE + 1];		// 아이디(캐릭터 이름)
 };
 
-struct _NPC_LIVE_TIME
-{
-	uint16_t nIndex;
-	int16_t SocketID;
-	uint16_t Nid;
-	uint16_t Duration;
-	int32_t SpawnedTime;
-
-};
-
-#include "../shared/database/structs.h"
+#endif

@@ -3,13 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 
 #include "GameProcCharacterSelect.h"
 #include "UICharacterSelect.h"
-#include "N3UIString.h"
-#include "N3UITooltip.h"
 #include "UIManager.h"
+
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UITooltip.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -105,16 +106,21 @@ bool CUICharacterSelect::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if ( pSender->m_szID == "bt_exit" )	// Elmorad
 		{
 //			CGameProcedure::ProcActiveSet((CGameProcedure*)CGameProcedure::s_pProcLogIn); // 로그인으로 돌아간다..
-			std::string szMsg;
-			CGameBase::GetText(IDS_CONFIRM_EXIT_GAME, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_CONFIRM_EXIT_GAME);
 			CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_EXIT);
 		}
 		else
 		if ( pSender->m_szID == "bt_delete" )	// Elmorad
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_CONFIRM_DELETE_CHR, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_CONFIRM_DELETE_CHR);
+
+			// NOTE: Character deletion is disabled and this resource is changed appropriately.
+			// As such, rather than prompt to delete, we should simply show the new message.
+#if 0
 			CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_DELETE_CHR);
+#else
+			CGameProcedure::MessageBoxPost(szMsg, "", MB_OK);
+#endif
 		}
 	}
 	
@@ -128,22 +134,18 @@ void CUICharacterSelect::DisplayChrInfo(__CharacterSelectInfo* pCSInfo)
 
 	m_pUserInfoStr = GetChildByID("text00"); __ASSERT(m_pUserInfoStr, "NULL UI Component!!");
 
-	if ( !pCSInfo->szID.empty() )
+	if (!pCSInfo->szID.empty())
 	{
 		std::string szClass;
 		CGameBase::GetTextByClass(pCSInfo->eClass, szClass);
 
 		// Level: %d\nSpecialty: %s\nID: %s
-		CGameBase::GetTextF(
-			IDS_CHR_SELECT_FMT_INFO,
-			&szTotal,
-			pCSInfo->iLevel,
-			szClass.c_str(),
-			pCSInfo->szID.c_str());
+		szTotal = fmt::format_text_resource(IDS_CHR_SELECT_FMT_INFO,
+			pCSInfo->iLevel, szClass, pCSInfo->szID);
 	}
 	else
 	{
-		CGameBase::GetText(IDS_CHR_SELECT_HINT, &szTotal);
+		szTotal = fmt::format_text_resource(IDS_CHR_SELECT_HINT);
 	}
 
 	if (m_pUserInfoStr != nullptr)
@@ -216,7 +218,8 @@ uint32_t CUICharacterSelect::MouseProc(uint32_t dwFlags, const POINT &ptCur, con
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl != nullptr)
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crToolTip);
 	}
 
 	if(m_pChildUI && m_pChildUI->IsVisible())

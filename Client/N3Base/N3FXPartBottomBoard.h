@@ -17,6 +17,8 @@
 class CN3FXPartBottomBoard : public CN3FXPartBase  
 {
 public:
+	static constexpr int SUPPORTED_PART_VERSION = 1;
+
 	float				m_fSizeX;			//	보드의 크기
 	float				m_fSizeZ;
 

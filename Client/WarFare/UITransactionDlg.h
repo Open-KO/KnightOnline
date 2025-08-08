@@ -9,13 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "N3UIArea.h"
-#include "N3UIString.h"
-#include "N3UIImage.h"
-#include "N3UIButton.h"
-#include "GameProcedure.h"
-
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
@@ -23,7 +16,7 @@ enum e_NpcTrade {	UI_BLACKSMITH = 1, UI_STORE, UI_INN	};
 
 //////////////////////////////////////////////////////////////////////
 
-class CUITransactionDlg   : public CN3UIWndBase
+class CUITransactionDlg : public CN3UIWndBase
 {
 	friend class CUIInventory;
 
@@ -32,6 +25,7 @@ public:
 	__IconItemSkill*		m_pMyTrade[MAX_ITEM_TRADE_PAGE][MAX_ITEM_TRADE];
 	__IconItemSkill*		m_pMyTradeInv[MAX_ITEM_INVENTORY];
 	CN3UIString*			m_pStrMyGold;
+	CN3UIString*			m_pText_Weight;
 
 	int						m_iCurPage;
 	int						m_iTradeID;
@@ -110,6 +104,7 @@ public:
 	void				ShowTitle(e_NpcTrade eNT);
 
 	void				GoldUpdate();
+	void				UpdateWeight(const std::string& szWeight);
 };
 
 #endif // !defined(AFX_UITRANSACTIONDLG_H__42671245_FF4F_42FC_AF7B_DACEDA8734B7__INCLUDED_)

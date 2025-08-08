@@ -1,0 +1,5 @@
+﻿#pragma once
+
+// Override the login scene
+// Supported values: 1098, 1298
+#define LOGIN_SCENE_VERSION 1298

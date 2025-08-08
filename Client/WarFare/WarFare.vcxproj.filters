@@ -60,9 +60,6 @@
     <ClCompile Include="GameProcCharacterSelect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameProcLogIn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameProcNationSelect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,12 +171,6 @@
     <ClCompile Include="UILoading.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UILoadingDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UILogin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -288,6 +279,69 @@
     <ClCompile Include="UIUpgradeSelect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameProcLogIn_1098.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UILogin_1098.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcLogIn_1298.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UILogin_1298.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UILevelGuide.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXBundleGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXPartBillBoardGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXPartBottomBoardGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3TerrainManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3TerrainPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3UIWndBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3WorldManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3WorldBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3River.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3Pond.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3UIIcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3UIDBCLButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N3ClientShapeMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientResourceFormatter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameProcedure.h">
@@ -336,9 +390,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameProcCharacterSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcLogIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameProcNationSelect.h">
@@ -497,12 +548,6 @@
     <ClInclude Include="UILoading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UILoadingDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UILogin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -612,6 +657,42 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIUpgradeSelect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcLogIn_1098.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UILogin_1098.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcLogIn_1298.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UILogin_1298.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcLogIn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UILevelGuide.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="N3Pond.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="N3River.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="N3ClientShapeMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="text_resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="warfare_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientResourceFormatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

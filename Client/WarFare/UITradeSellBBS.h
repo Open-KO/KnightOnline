@@ -9,11 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-#include "PacketDef.h"
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
+
 #include "UIMessageBox.h"
 #include "UITradeExplanation.h"
+
 #include <list>
 
 struct __InfoTradeSellBBS // 파티 지원 게시판 구조체..
@@ -42,7 +42,7 @@ struct __InfoTradeSellBBS // 파티 지원 게시판 구조체..
 
 typedef std::list<__InfoTradeSellBBS>::iterator it_TradeSellBBS;
 
-
+class Packet;
 class CUITradeSellBBS : public CN3UIBase  
 {
 protected:

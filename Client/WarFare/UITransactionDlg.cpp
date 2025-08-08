@@ -3,31 +3,26 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-#include "LogWriter.h"
-
+#include "UITransactionDlg.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
-
-#include "UITransactionDlg.h"
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
 #include "PlayerMySelf.h"
-
 #include "CountableItemEditDlg.h"
-
 #include "UIHotKeyDlg.h"
 #include "UISkillTreeDlg.h"
+#include "text_resources.h"
 
-#include "N3UIString.h"
-#include "N3UIEdit.h"
-#include "N3SndObj.h"
+#include <N3Base/LogWriter.h>
 
-
-#include "resource.h"
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3SndObj.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -53,6 +48,7 @@ CUITransactionDlg::CUITransactionDlg()
 	m_pUIInn		= NULL;
 	m_pUIBlackSmith	= NULL;
 	m_pUIStore		= NULL;
+	m_pText_Weight = nullptr;
 
 	this->SetVisible(false);
 }
@@ -187,6 +183,7 @@ void CUITransactionDlg::InitIconWnd(e_UIWND eWnd)
 	m_pUIInn		= (CN3UIImage*)GetChildByID("img_inn");			__ASSERT(m_pUIInn, "NULL UI Component!!");
 	m_pUIBlackSmith = (CN3UIImage*)GetChildByID("img_blacksmith");	__ASSERT(m_pUIBlackSmith, "NULL UI Component!!");
 	m_pUIStore		= (CN3UIImage*)GetChildByID("img_store");		__ASSERT(m_pUIStore, "NULL UI Component!!");
+	N3_VERIFY_UI_COMPONENT(m_pText_Weight, (CN3UIString*) GetChildByID("text_weight"));
 }
 
 void CUITransactionDlg::InitIconUpdate()
@@ -294,7 +291,7 @@ void CUITransactionDlg::EnterTransactionState()
 		if(NULL == pItem) // 아이템이 없으면..
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : %d, %d", iOrg, iExt);
+			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : {}, {}", iOrg, iExt);
 			continue;
 		}
 
@@ -308,7 +305,7 @@ void CUITransactionDlg::EnterTransactionState()
 		if(NULL == pItemExt) // 아이템이 없으면..
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : %d, %d", iOrg, iExt);
+			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : {}, {}", iOrg, iExt);
 			continue;
 		}
 
@@ -334,13 +331,10 @@ void CUITransactionDlg::EnterTransactionState()
 
 	InitIconUpdate();
 	m_iCurPage = 0;
-	CN3UIString* pStr = (CN3UIString* )GetChildByID("string_page");
-	if (pStr)
-	{
-		char pszID[32];
-		sprintf(pszID, "%d",m_iCurPage+1);
-		pStr->SetString(pszID);
-	}
+
+	CN3UIString* pStr = (CN3UIString*) GetChildByID("string_page");
+	if (pStr != nullptr)
+		pStr->SetStringAsInt(m_iCurPage + 1);
 
 	for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
 	{
@@ -364,11 +358,7 @@ void CUITransactionDlg::EnterTransactionState()
 
 	ItemMoveFromInvToThis();
 
-	if(m_pStrMyGold)
-	{
-		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
-	}
+	GoldUpdate();
 
 	switch ((int)(m_iTradeID/1000))
 	{
@@ -382,13 +372,19 @@ void CUITransactionDlg::EnterTransactionState()
 	}
 }
 
+void CUITransactionDlg::UpdateWeight(const std::string& szWeight)
+{
+	if (m_pText_Weight != nullptr)
+		m_pText_Weight->SetString(szWeight);
+}
+
 void CUITransactionDlg::GoldUpdate()
 {
-	if(m_pStrMyGold)
-	{
-		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
-	}
+	if (m_pStrMyGold == nullptr)
+		return;
+
+	std::string strGold = CGameBase::FormatNumber(CGameBase::s_pPlayer->m_InfoExt.iGold);
+	m_pStrMyGold->SetString(strGold);
 }
 
 void CUITransactionDlg::ItemMoveFromInvToThis()
@@ -491,8 +487,7 @@ void CUITransactionDlg::ItemCountOK()
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -502,24 +497,21 @@ void CUITransactionDlg::ItemCountOK()
 					if ( iGold <= 0 ) return;
 					if ( iGold > UIITEM_COUNT_MANY ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_BUY_FAIL, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_BUY_FAIL);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if (spItem->iCount + iGold > UIITEM_COUNT_MANY)
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if ( (iGold * spItem->pItemBasic->iPrice)	> pInfoExt->iGold )	
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -528,8 +520,7 @@ void CUITransactionDlg::ItemCountOK()
 
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -540,24 +531,21 @@ void CUITransactionDlg::ItemCountOK()
 
 					if ( iGold > UIITEM_COUNT_FEW ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_BUY_FAIL, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_BUY_FAIL);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if (spItem->iCount + iGold > UIITEM_COUNT_FEW)
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if ( (iGold * spItem->pItemBasic->iPrice)	> pInfoExt->iGold )	
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -566,16 +554,15 @@ void CUITransactionDlg::ItemCountOK()
 
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
-					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+					{
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
 					break;
 			}
 
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+			s_bWaitFromServer = true;
 
 			if ( m_pMyTradeInv[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder] )	// 해당 위치에 아이콘이 있으면..
 			{
@@ -632,7 +619,7 @@ void CUITransactionDlg::ItemCountOK()
 			if ( iGold <= 0 ) return;
 			if ( iGold > spItem->iCount ) return;
 
-			CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer	= true;
+			s_bWaitFromServer = true;
 
 			if ( (spItem->iCount - iGold) > 0 )
 			{	
@@ -660,11 +647,11 @@ void CUITransactionDlg::ItemCountCancel()
 	if (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic) PlayItemSound(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic);
 
 	// 취소..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+	s_bWaitFromServer				= false;
+	m_sRecoveryJobInfo.pItemSource	= nullptr;
+	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
-	CN3UIWndBase::m_pCountableItemEdit->Close();
+	m_pCountableItemEdit->Close();
 }
 
 void CUITransactionDlg::SendToServerSellMsg(int itemID, byte pos, int iCount)
@@ -710,7 +697,7 @@ void CUITransactionDlg::SendToServerMoveMsg(int itemID, byte startpos, byte dest
 
 void CUITransactionDlg::ReceiveResultTradeMoveSuccess()
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
 	CN3UIWndBase::AllHighLightIconFree();
 	SetState(UI_STATE_COMMON_NONE);
 }
@@ -718,7 +705,7 @@ void CUITransactionDlg::ReceiveResultTradeMoveSuccess()
 void CUITransactionDlg::ReceiveResultTradeMoveFail()
 {
 	CN3UIArea* pArea;
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
+	s_bWaitFromServer = false;
 
 	__IconItemSkill *spItemSource = NULL, *spItemTarget = NULL;
 	spItemSource = CN3UIWndBase::m_sRecoveryJobInfo.pItemSource;
@@ -840,15 +827,15 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	if ( spItem != CN3UIWndBase::m_sSelectedIconInfo.pItemSelect )
 		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect = spItem;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer					= true;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemSource						= CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd				= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict		= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.iOrder;
-	CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget						= NULL;
+	s_bWaitFromServer									= true;
+	m_sRecoveryJobInfo.pItemSource						= m_sSelectedIconInfo.pItemSelect;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= m_sSelectedIconInfo.UIWndSelect.UIWnd;
+	m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= m_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+	m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= m_sSelectedIconInfo.UIWndSelect.iOrder;
+	m_sRecoveryJobInfo.pItemTarget						= nullptr;
 
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_TRANSACTION;
-	CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= eUIWnd;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_TRANSACTION;
+	m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= eUIWnd;
 
 	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )
 	{
@@ -906,18 +893,18 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 							if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 							{
-								CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-								CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+								s_bWaitFromServer				= false;
+								m_sRecoveryJobInfo.pItemSource	= nullptr;
+								m_sRecoveryJobInfo.pItemTarget	= nullptr;
 								FAIL_RETURN
 							}
 						}
 					}
 
-					CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+					m_sRecoveryJobInfo.UIWndSourceEnd.iOrder	= iDestiOrder;
+					s_bWaitFromServer							= false;
 
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer				= false;
-					CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_TRANSACTION, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					m_pCountableItemEdit->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 					FAIL_RETURN
 				}
 				else
@@ -927,24 +914,24 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					// 매수가 X 갯수가 내가 가진 돈보다 많으면.. 그냥 리턴..
 					if ( (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->iPrice)	> pInfoExt->iGold )	
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+
+						s_bWaitFromServer				= false;
+						m_sRecoveryJobInfo.pItemSource	= nullptr;
+						m_sRecoveryJobInfo.pItemTarget	= nullptr;
 						FAIL_RETURN	
 					}
 
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->siWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
-						CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+
+						s_bWaitFromServer				= false;
+						m_sRecoveryJobInfo.pItemSource	= nullptr;
+						m_sRecoveryJobInfo.pItemTarget	= nullptr;
 						FAIL_RETURN	
 					}
 
@@ -965,9 +952,9 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 						if ( !bFound )	// 빈 슬롯을 찾지 못했으면..
 						{
-							CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-							CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+							s_bWaitFromServer				= false;
+							m_sRecoveryJobInfo.pItemSource	= nullptr;
+							m_sRecoveryJobInfo.pItemTarget	= nullptr;
 							FAIL_RETURN
 						}
 
@@ -1017,9 +1004,9 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 			}
 			else
 			{
-				CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemSource		= NULL;
-				CN3UIWndBase::m_sRecoveryJobInfo.pItemTarget		= NULL;
+				s_bWaitFromServer				= false;
+				m_sRecoveryJobInfo.pItemSource	= nullptr;
+				m_sRecoveryJobInfo.pItemTarget	= nullptr;
 				FAIL_RETURN					
 			}
 			break;
@@ -1031,8 +1018,8 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL) )
 				{
 					// 활이나 물약등 아이템인 경우..
-					CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer			= false;
-					CN3UIWndBase::m_pCountableItemEdit->Open(UIWND_TRANSACTION, CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					s_bWaitFromServer = false;
+					m_pCountableItemEdit->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 				}
 				else
 				{
@@ -1116,8 +1103,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, int	iMoney)
 {
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer  = false;
-	CN3UIString* pStatic = NULL;
+	s_bWaitFromServer = false;
 	__IconItemSkill* spItem = NULL;
 	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 
@@ -1179,18 +1165,16 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 
 				if (bType == 0x04)
 				{
-					std::string szMsg;
-					CGameBase::GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+					std::string szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 					CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 				}
 			}
 			else
 			{
-				pInfoExt->iGold = iMoney; 
+				pInfoExt->iGold = iMoney;
+
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
-				if(m_pStrMyGold)	m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
+				GoldUpdate();
 			}
 			
 			CN3UIWndBase::AllHighLightIconFree();
@@ -1255,10 +1239,9 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 
 				// 성공이면.. 돈 업데이트..
 				pInfoExt->iGold = iMoney;
+
 				CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-				__ASSERT(pStatic, "NULL UI Component!!");
-				if(pStatic)	pStatic->SetStringAsInt(pInfoExt->iGold);
-				if(m_pStrMyGold) m_pStrMyGold->SetStringAsInt(pInfoExt->iGold); // 상거래창..
+				GoldUpdate();
 			}
 
 			CN3UIWndBase::AllHighLightIconFree();
@@ -1315,7 +1298,7 @@ uint32_t CUITransactionDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, cons
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( (GetState() == UI_STATE_ICON_MOVING) && 
@@ -1410,13 +1393,10 @@ bool CUITransactionDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if(m_iCurPage<0)
 				m_iCurPage = 0;
 
-			pStr = (CN3UIString* )GetChildByID("string_page");
-			if (pStr)
-			{
-				char pszID[32];
-				sprintf(pszID, "%d",m_iCurPage+1);
-				pStr->SetString(pszID);
-			}
+			pStr = (CN3UIString*) GetChildByID("string_page");
+			if (pStr != nullptr)
+				pStr->SetStringAsInt(m_iCurPage + 1);
+
 
 			for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
 			{
@@ -1445,13 +1425,9 @@ bool CUITransactionDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if (m_iCurPage >= MAX_ITEM_TRADE_PAGE)
 				m_iCurPage = MAX_ITEM_TRADE_PAGE-1;
 
-			pStr = (CN3UIString* )GetChildByID("string_page");
-			if (pStr)
-			{
-				char pszID[32];
-				sprintf(pszID, "%d",m_iCurPage+1);
-				pStr->SetString(pszID);
-			}
+			pStr = (CN3UIString*) GetChildByID("string_page");
+			if (pStr != nullptr)
+				pStr->SetStringAsInt(m_iCurPage + 1);
 
 			for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
 			{

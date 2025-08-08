@@ -1,0 +1,62 @@
+name: "CodeQL Advanced"
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  pull_request:
+    types: [labeled]
+    
+  workflow_dispatch:
+    
+env:
+  # We use a debug build for slightly faster build times
+  BUILD_CONFIGURATION: Debug
+  BUILD_PLATFORM: Win32
+
+jobs:
+  analyze:
+    if: |
+      github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-analysis')
+    name: Analyze (cpp)
+    runs-on: 'windows-latest'
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    # Fetch and build all required third party dependencies before initializing CodeQL.
+    # We do not want CodeQL to be tracking our external dependencies which would otherwise be built
+    # as needed from within All.sln; this ensures they're built first so they won't build again during
+    # CodeQL monitoring.
+    - name: Build third party dependencies
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: c-cpp
+        build-mode: manual
+
+    - name: Build all
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.sln
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "cpp"

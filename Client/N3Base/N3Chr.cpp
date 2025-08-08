@@ -602,9 +602,11 @@ bool CN3CPlug::Load(HANDLE hFile)
 		pPMesh->m_iFileFormatVersion = m_iFileFormatVersion; // NOTE: Setting the version for further components
 
 		pPMesh->Load(hFile);
+
 		static int iSN = 0;
-		char szFNTmp[256]; sprintf(szFNTmp, "Temp_Plug_%d.N3PMesh", iSN++);
+		std::string szFNTmp = fmt::format("Temp_Plug_{}.N3PMesh", iSN++);
 		pPMesh->FileNameSet(szFNTmp);
+
 		s_MngPMesh.Add(pPMesh);
 		m_PMeshInstFX.Create(pPMesh); // FX 에 쓸 PMesh Instance
 	}
@@ -1293,8 +1295,7 @@ bool CN3Chr::Save(HANDLE hFile)
 		nL = m_Parts[i]->FileName().size();
 		if(nL <= 0)
 		{
-			char szFNTmp[256];
-			wsprintf(szFNTmp, "%s_Default%d.N3CPart", m_szName.c_str(), i);
+			std::string szFNTmp = fmt::format("{}_Default{}.N3CPart", m_szName, i);
 			m_Parts[i]->FileNameSet(szFNTmp);
 		}
 		nL = m_Parts[i]->FileName().size();
@@ -1310,8 +1311,7 @@ bool CN3Chr::Save(HANDLE hFile)
 		nL = m_Plugs[i]->FileName().size();
 		if(nL <= 0)
 		{
-			char szFNTmp[256];
-			wsprintf(szFNTmp, "%s_Default%d.N3CPlug", m_szName.c_str(), i);
+			std::string szFNTmp = fmt::format("{}_Default{}.N3CPlug", m_szName, i);
 			m_Plugs[i]->FileNameSet(szFNTmp);
 			i++;
 		}
@@ -1655,13 +1655,13 @@ void CN3Chr::TickPlugs(float fLOD)
 				}
 			}
 		}
-//		else if (pPlug->m_ePlugType == PLUGTYPE_CLOAK)
-//		{	// PLUGTYPE_CLOAK
+		else if (pPlug->m_ePlugType == PLUGTYPE_CLOAK)
+		{	// PLUGTYPE_CLOAK
 //#ifdef _N3GAME
-//			pPlugCloak = (CN3CPlug_Cloak*)pPlug;
-//			pPlugCloak->GetCloak()->Tick(m_nLOD);
+//			CN3CPlug_Cloak* pPlugCloak = (CN3CPlug_Cloak*)pPlug;
+//			pPlugCloak->GetCloak()->Tick(m_nLOD, yaw, move state);
 //#endif
-//		}		
+		}		
 	}
 }
 
@@ -2310,8 +2310,7 @@ CN3FXPlug*	CN3Chr::FXPlugCreate()
 		
 		if (m_szName.size()>0)
 		{
-			char szFN[_MAX_PATH];
-			wsprintf(szFN, "Chr\\%s.N3FXPlug", m_szName.c_str());	// 캐릭터의 이름을 붙인다.
+			std::string szFN = fmt::format("Chr\\{}.N3FXPlug", m_szName);	// 캐릭터의 이름을 붙인다.
 			m_pFXPlug->FileNameSet(szFN);
 		}
 		else m_pFXPlug->FileNameSet("Chr\\Default.N3FXPlug");	// 그냥 default이름을 붙인다.

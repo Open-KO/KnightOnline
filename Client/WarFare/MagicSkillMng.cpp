@@ -3,14 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
-
+#include "MagicSkillMng.h"
 #include "GameProcMain.h"
 #include "APISocket.h"
 #include "PacketDef.h"
 #include "PlayerMySelf.h"
 #include "PlayerOtherMgr.h"
-
 #include "N3FXMgr.h"
 #include "N3WorldManager.h"
 
@@ -18,12 +16,13 @@
 #include "UIInventory.h"
 #include "UIVarious.h"
 #include "UIPartyOrForce.h"
-#include "MagicSkillMng.h"
-#include "N3SndObj.h"
-#include "N3SndObjStream.h"
-#include "N3ShapeExtra.h"
+#include "UIHotKeyDlg.h"
 
-//#include "StdAfxBase.h"
+#include "text_resources.h"
+
+#include <N3Base/N3SndObj.h>
+#include <N3Base/N3SndObjStream.h>
+#include <N3Base/N3ShapeExtra.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -84,23 +83,14 @@ void CMagicSkillMng::Init()
 	m_pTbl_Type_4 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_4>;
 	m_pTbl_Type_4->LoadFromFile("Data\\Skill_Magic_4.tbl");
 
-//	m_pTbl_Type_5 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_5>;
-//	m_pTbl_Type_5->LoadFromFile("Data\\Skill_Magic_5.tbl");
-
 //	m_pTbl_Type_6 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_6>;
 //	m_pTbl_Type_6->LoadFromFile("Data\\Skill_Magic_6.tbl");
 
 	m_pTbl_Type_7 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_7>;
 	m_pTbl_Type_7->LoadFromFile("Data\\Skill_Magic_7.tbl");
 
-//	m_pTbl_Type_8 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_8>;
-//	m_pTbl_Type_8->LoadFromFile("Data\\Skill_Magic_8.tbl");
-
 //	m_pTbl_Type_9 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_9>;
 //	m_pTbl_Type_9->LoadFromFile("Data\\Skill_Magic_9.tbl");
-	
-//	m_pTbl_Type_10 = new CN3TableBase<struct __TABLE_UPC_SKILL_TYPE_10>;
-//	m_pTbl_Type_10->LoadFromFile("Data\\Skill_Magic_10.tbl");
 
 	m_MySelf.clear();
 
@@ -163,10 +153,8 @@ CMagicSkillMng::~CMagicSkillMng()
 	if(m_pTbl_Type_2) { delete m_pTbl_Type_2; m_pTbl_Type_2 = NULL; }
 	if(m_pTbl_Type_3) { delete m_pTbl_Type_3; m_pTbl_Type_3 = NULL; }
 	if(m_pTbl_Type_4) { delete m_pTbl_Type_4; m_pTbl_Type_4 = NULL; }
-//	if(m_pTbl_Type_5) { delete m_pTbl_Type_5; m_pTbl_Type_5 = NULL; }
 //	if(m_pTbl_Type_6) { delete m_pTbl_Type_6; m_pTbl_Type_6 = NULL; }
 	if(m_pTbl_Type_7) { delete m_pTbl_Type_7; m_pTbl_Type_7 = NULL; }
-//	if(m_pTbl_Type_8) { delete m_pTbl_Type_8; m_pTbl_Type_8 = NULL; }
 //	if(m_pTbl_Type_9) { delete m_pTbl_Type_9; m_pTbl_Type_9 = NULL; }
 //	if(m_pTbl_Type_10) { delete m_pTbl_Type_10; m_pTbl_Type_10 = NULL; }
 }
@@ -184,38 +172,18 @@ bool CMagicSkillMng::IsCasting()
 	return false;
 }
 
+//Used to inform Hotkey and skill tree UI
 bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 {
 	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
 	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
 
 	e_Class_Represent Class = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
+	
+	//mana check for all classes, no need to 
+	//separate because error message is not required
 	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
-	{
-		if(Class==CLASS_REPRESENT_PRIEST || Class==CLASS_REPRESENT_WIZARD)
-		{
-			return false;
-		}
-	}
-
-	if(pSkill->dw1stTableType==1 || pSkill->dw1stTableType==2)
-	{
-		if(Class==CLASS_REPRESENT_WARRIOR || Class==CLASS_REPRESENT_ROGUE)
-		{
-			int ExhaustSP = pInfoExt->iAttack * pSkill->iExhaustMSP / 100;
-			if(pInfoExt->iMSP < ExhaustSP)
-			{
-				return false;
-			}
-		}
-	}
-	else if(pInfoExt->iMSP < pSkill->iExhaustMSP)
-	{
-		if(Class==CLASS_REPRESENT_WARRIOR || Class==CLASS_REPRESENT_ROGUE)
-		{
-			return false;
-		}
-	}
+		return false;
 
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
@@ -288,7 +256,7 @@ bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 		if ( NULL == pItem || NULL == pItemExt )
 		{
 			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", pSkill->dwExhaustItem);
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
 			return false;	// 아이템이 없으면..
 		}
 
@@ -523,8 +491,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			if(NeedSkill != CLASS_KA_WARRIOR && NeedSkill != CLASS_KA_BERSERKER && NeedSkill != CLASS_KA_GUARDIAN &&
 				NeedSkill != CLASS_EL_WARRIOR && NeedSkill != CLASS_EL_BLADE && NeedSkill != CLASS_EL_PROTECTOR)
 			{
-				std::string buff;
-				GetText(IDS_SKILL_FAIL_DIFFURENTCLASS, &buff);
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 				return false;
 			}
@@ -535,8 +502,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			if(NeedSkill != CLASS_KA_ROGUE && NeedSkill != CLASS_KA_HUNTER && NeedSkill != CLASS_KA_PENETRATOR &&
 				NeedSkill != CLASS_EL_ROGUE && NeedSkill != CLASS_EL_RANGER && NeedSkill != CLASS_EL_ASSASIN)
 			{
-				std::string buff;
-				GetText(IDS_SKILL_FAIL_DIFFURENTCLASS, &buff);
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 				return false;
 			}
@@ -547,8 +513,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			if(NeedSkill != CLASS_KA_WIZARD && NeedSkill != CLASS_KA_SORCERER && NeedSkill != CLASS_KA_NECROMANCER &&
 				NeedSkill != CLASS_EL_WIZARD && NeedSkill != CLASS_EL_MAGE && NeedSkill != CLASS_EL_ENCHANTER)
 			{
-				std::string buff;
-				GetText(IDS_SKILL_FAIL_DIFFURENTCLASS, &buff);
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 				return false;
 			}
@@ -559,8 +524,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			if(NeedSkill != CLASS_KA_PRIEST && NeedSkill != CLASS_KA_DARKPRIEST && NeedSkill != CLASS_KA_SHAMAN &&
 				NeedSkill != CLASS_EL_PRIEST && NeedSkill != CLASS_EL_CLERIC && NeedSkill != CLASS_EL_DRUID)
 			{
-				std::string buff;
-				GetText(IDS_SKILL_FAIL_DIFFURENTCLASS, &buff);
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 				return false;
 			}
@@ -569,39 +533,21 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 
 	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
 	{
+		std::string buff;
+
 		if(Class==CLASS_REPRESENT_PRIEST || Class==CLASS_REPRESENT_WIZARD)
 		{
-			std::string buff;
-			GetText(IDS_MSG_CASTING_FAIL_LACK_MP, &buff);
+			buff = fmt::format_text_resource(IDS_MSG_CASTING_FAIL_LACK_MP);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
 		}
-	}
+		else if (Class == CLASS_REPRESENT_WARRIOR || Class == CLASS_REPRESENT_ROGUE)
+		{
+			buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_SP);
+			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		}
 
-	if(pSkill->dw1stTableType==1 || pSkill->dw1stTableType==2)
-	{
-		if(Class==CLASS_REPRESENT_WARRIOR || Class==CLASS_REPRESENT_ROGUE)
-		{
-			int ExhaustSP = pInfoExt->iAttack * pSkill->iExhaustMSP / 100;
-			if(pInfoExt->iMSP < ExhaustSP)
-			{
-				std::string buff;
-				GetText(IDS_SKILL_FAIL_LACK_SP, &buff);
-				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-				return false;
-			}
-		}
-	}
-	else if(pInfoExt->iMSP < pSkill->iExhaustMSP)
-	{
-		if(Class==CLASS_REPRESENT_WARRIOR || Class==CLASS_REPRESENT_ROGUE)
-		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_LACK_SP, &buff);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
+		return false;
+	}	
 
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
@@ -611,8 +557,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
 			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
 		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 			return false;
 		}
@@ -622,8 +567,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
 			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
 		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 			return false;
 		}
@@ -631,8 +575,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 
 	if(pInfoBase->iHP < pSkill->iExhaustHP)
 	{
-		std::string buff;
-		GetText(IDS_SKILL_FAIL_LACK_HP, &buff);
+		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_HP);
 		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		return false;
 	}
@@ -647,8 +590,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 
 		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
 		{
-			std::string buff;
-			GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 			return false;
 		}
@@ -656,8 +598,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		{
 			if (LeftItem != 11 && (LeftItem1<1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1<1 || RightItem1>5))
 			{
-				std::string buff;
-				GetText(IDS_SKILL_FAIL_INVALID_ITEM, &buff);
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 				return false;
 			}
@@ -673,8 +614,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
 			if(NumItem < pType2->iNumArrow)
 			{
-				std::string szMsg;
-				GetText(IDS_SKILL_FAIL_LACK_ITEM, &szMsg);
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
 				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 				return false;
 			}
@@ -683,8 +623,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		{
 			if(NumItem < 1)
 			{
-				std::string szMsg;
-				GetText(IDS_SKILL_FAIL_LACK_ITEM, &szMsg);
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
 				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 				return false;
 			}
@@ -699,7 +638,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		if ( NULL == pItem || NULL == pItemExt )
 		{
 			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", pSkill->dwExhaustItem);
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
 			return false;	// 아이템이 없으면..
 		}
 
@@ -997,8 +936,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 //			{
 //				if(bColShape)
 //				{
-//					std::string szMsg;
-//					GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 //					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 //					return false;
 //				}
@@ -1011,8 +949,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 //			{
 //				if(bColShape)
 //				{
-//					std::string szMsg;
-//					GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 //					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 //					return false;
 //				}
@@ -1030,8 +967,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 //			{
 //				if(bColShape)
 //				{
-//					std::string szMsg;
-//					GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 //					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 //					return false;
 //				}
@@ -1042,8 +978,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		{
 			if(bColShape)
 			{
-				std::string szMsg;
-				GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 				return false;
 			}
@@ -1059,8 +994,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			{
 				if(bColShape)
 				{
-					std::string szMsg;
-					GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 					return false;
 				}
@@ -1071,8 +1005,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		{
 			if(bColShape)
 			{
-				std::string szMsg;
-				GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 				return false;
 			}
@@ -1091,8 +1024,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 			{
 				if(bColShape)
 				{
-					std::string szMsg;
-					GetText(IDS_SKILL_FAIL_OBJECT_BLOCK, &szMsg);
+					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
 					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 					return false;
 				}
@@ -1247,7 +1179,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
-				//CLogWriter::Write("send msg : %.4f", CN3Base::TimeGet());
+				//CLogWriter::Write("send msg : {:.4f}", CN3Base::TimeGet());
 				//TRACE("send msg : %.4f\n", CN3Base::TimeGet());
 				return true;
 			}
@@ -1389,8 +1321,7 @@ bool CMagicSkillMng::CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTa
 		if(fValidDist >= fDist) return true;
 	}
 
-	std::string szMsg;
-	GetTextF(IDS_SKILL_FAIL_SOFAR, &szMsg, pSkill->szName.c_str());
+	std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_SOFAR, pSkill->szName);
 	m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 	return false;
@@ -1415,14 +1346,14 @@ void CMagicSkillMng::StartSkillMagicAtPosPacket(__TABLE_UPC_SKILL* pSkill, __Vec
 
 		CGameProcedure::s_pFX->TriggerBundle(SourceID, spart1, pSkill->iSelfFX1, SourceID, spart1, -1);
 		if(spart2!=0) CGameProcedure::s_pFX->TriggerBundle(SourceID, spart2, pSkill->iSelfFX1, SourceID, spart2, -2);
+		SetSkillCooldown(pSkill);
 		return;
 	}
 	m_pGameProcMain->CommandSitDown(false, false); // 혹시라도 앉아있음 일으켜 세운다..
 
 	if (pSkill->iCastTime == 0)
 	{
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 		uint8_t byBuff[32];
@@ -1495,7 +1426,7 @@ void CMagicSkillMng::StartSkillMagicAtPosPacket(__TABLE_UPC_SKILL* pSkill, __Vec
 	CAPISocket::MP_AddShort(byBuff, iOffset, 0);
 	
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset); // 보낸다..
-
+	SetSkillCooldown(pSkill);
 
 	if(pSkill->iTarget == SKILLMAGIC_TARGET_ENEMY_ONLY) m_pGameProcMain->PlayBGM_Battle();
 }
@@ -1518,6 +1449,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 
 		CGameProcedure::s_pFX->TriggerBundle(SourceID, spart1, pSkill->iSelfFX1, SourceID, spart1, -1);
 		if(spart2!=0) CGameProcedure::s_pFX->TriggerBundle(SourceID, spart2, pSkill->iSelfFX1, SourceID, spart2, -2);
+		SetSkillCooldown(pSkill);
 		return;
 	}
 
@@ -1550,8 +1482,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 			s_pPlayer->AnimationAdd((e_Ani)pType1->iAct[i], bImmediately);
 		}			
 		
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 		
 		uint8_t byBuff[32];
@@ -1571,13 +1502,13 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 		CAPISocket::MP_AddShort(byBuff, iOffset, 0);
 		
 		CGameProcedure::s_pSocket->Send(byBuff, iOffset); // 보낸다..	
+		SetSkillCooldown(pSkill);
 		return;
 	}
 
 	if (pSkill->iCastTime == 0)
 	{
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 		uint8_t byBuff[32];
@@ -1597,6 +1528,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 		CAPISocket::MP_AddShort(byBuff, iOffset, 0);
 		
 		CGameProcedure::s_pSocket->Send(byBuff, iOffset); // 보낸다..	
+		SetSkillCooldown(pSkill);
 		return;
 	}
 
@@ -1663,42 +1595,46 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 void CMagicSkillMng::Tick()
 {
 #ifdef _DEBUG
+	std::string debugMessage;
 	m_fMsgUpdateTimer += CN3Base::s_fSecPerFrm;
 #endif
+
 	for (auto it = m_RecastTimes.begin(); it != m_RecastTimes.end(); )
 	{
 #ifdef _DEBUG
 		if (m_fMsgUpdateTimer >= 0.2f)
 		{
-			char szMsg[100];
-			std::snprintf(szMsg, sizeof(szMsg), "SkillID: %u - %.2f seconds", it->first, it->second);
-			m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+			debugMessage = fmt::format("SkillID: {} - {:.2f} seconds", it->first, it->second);
+			m_pGameProcMain->MsgOutput(debugMessage, 0xffffff00);
 			m_fMsgUpdateTimer = 0.0f;
 		}
 #endif
 		it->second -= CN3Base::s_fSecPerFrm;
+
 		if (it->second < 0)
 			it = m_RecastTimes.erase(it);
 		else
 			++it;
 	}
+
 	for (auto it = m_NonActionRecastTimes.begin(); it != m_NonActionRecastTimes.end(); )
 	{
 #ifdef _DEBUG
 		if (m_fMsgUpdateTimer >= 0.2f)
 		{
-			char szMsg[100];
-			std::snprintf(szMsg, sizeof(szMsg), "SkillID: %u - skill %.2f seconds", it->first, it->second);
-			m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+			debugMessage = fmt::format("SkillID: {} - skill {:.2f} seconds", it->first, it->second);
+			m_pGameProcMain->MsgOutput(debugMessage, 0xffffff00);
 			m_fMsgUpdateTimer = 0.0f;
 		}
 #endif
+
 		it->second -= CN3Base::s_fSecPerFrm;
 		if (it->second < 0)
-			it = m_RecastTimes.erase(it);
+			it = m_NonActionRecastTimes.erase(it);
 		else
 			++it;
 	}
+
 	// Legacy Existing code for delay and casting
 	m_fDelay -= CN3Base::s_fSecPerFrm;
 	if (m_fDelay < 0.0f) m_fDelay = 0.0f;
@@ -1768,8 +1704,7 @@ void CMagicSkillMng::Tick()
 
 			//m_fRecastTimeNonAction = (float)(pSkill->iReCastTime) / 10.0f;
 
-			std::string szMsg;
-			GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 		}
 	}
@@ -1859,8 +1794,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 			s_pPlayer->AnimationAdd((const e_Ani)pType1->iAct[i], bImmediately);				
 		}			
 		
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 		uint8_t byBuff[32];
@@ -1884,8 +1818,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 	}
 	else
 	{
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 		//m_fRecastTime = (float) pSkill->iReCastTime / 10.0f;
 		m_fDelay = 0.3f;
@@ -2142,7 +2075,7 @@ void CMagicSkillMng::MsgRecv_Casting(Packet& pkt)
 	pPlayer->m_fCastFreezeTime = 10.0f;
 	pPlayer->Action(PSA_SPELLMAGIC, false, pTargetPlayer);
 
-	//CLogWriter::Write("send casting : %.4f", CN3Base::TimeGet());
+	//CLogWriter::Write("send casting : {:.4f}", CN3Base::TimeGet());
 	//TRACE("recv casting : %.4f\n", CN3Base::TimeGet());
 
 	if(pSkill->iTarget == SKILLMAGIC_TARGET_ENEMY_ONLY) m_pGameProcMain->PlayBGM_Battle();
@@ -2320,11 +2253,8 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 			s_pPlayer->m_dwMagicID = 0xffffffff;
 			m_pGameProcMain->CommandSitDown(false, false); 
 
-			std::string szMsg;
-			GetTextF(
-				IDS_MSG_FMT_TARGET_ATTACK_FAILED,
-				&szMsg,
-				pSkill->szName.c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_MSG_FMT_TARGET_ATTACK_FAILED,
+				pSkill->szName);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffff3b3b);			
 		}
 		return;
@@ -2343,11 +2273,7 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 			s_pPlayer->m_dwMagicID = 0xffffffff;
 			m_pGameProcMain->CommandSitDown(false, false); // 혹시라도 앉아있음 일으켜 세운다..
 
-			std::string szMsg;
-			GetTextF(
-				IDS_SKILL_FAIL_EFFECTING,
-				&szMsg,
-				pSkill->szName.c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_EFFECTING, pSkill->szName);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffff3b3b);			
 		}
 		return;
@@ -2365,9 +2291,8 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 		{
 			s_pPlayer->m_dwMagicID = 0xffffffff;
 			m_pGameProcMain->CommandSitDown(false, false); // 혹시라도 앉아있음 일으켜 세운다..
-	
-			std::string szMsg;
-			GetTextF(IDS_SKILL_FAIL_CASTING, &szMsg);
+
+			std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_CASTING);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffff3b3b);
 		}
 		return;
@@ -3083,5 +3008,25 @@ void CMagicSkillMng::StunMySelf(__TABLE_UPC_SKILL_TYPE_3* pType3)
 	{
 		m_pGameProcMain->CommandSitDown(false, false); // 일으켜 세운다.
 		s_pPlayer->Stun(STUN_TIME);
+	}
+}
+
+float CMagicSkillMng::GetCooldown(const __TABLE_UPC_SKILL* pSkill) const
+{
+	if (pSkill->iSelfAnimID1 > 0)
+	{
+		auto it = m_RecastTimes.find(pSkill->dwID);
+		if (it == m_RecastTimes.end())
+			return -1;
+
+		return it->second;
+	}
+	else
+	{
+		auto it = m_NonActionRecastTimes.find(pSkill->dwID);
+		if (it == m_NonActionRecastTimes.end())
+			return -1;
+
+		return it->second;
 	}
 }

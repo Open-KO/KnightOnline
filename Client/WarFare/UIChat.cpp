@@ -9,9 +9,9 @@
 #include "UIMessageWnd.h"
 #include "UIManager.h"
 
-#include "N3UIString.h"
-#include "N3UIScrollBar.h"
-#include "N3UIEdit.h"										//son, chat_in
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIScrollBar.h>
+#include <N3Base/N3UIEdit.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

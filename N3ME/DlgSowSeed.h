@@ -18,12 +18,12 @@ typedef struct __SeedTex
 	CN3Texture* pTex;
 	int			ID;
 
-	__SeedTex::__SeedTex()
+	__SeedTex()
 	{
 		ID = 0;
 		pTex = NULL;
 	}
-	__SeedTex::~__SeedTex()
+	~__SeedTex()
 	{
 		if(pTex) delete pTex;
 	}

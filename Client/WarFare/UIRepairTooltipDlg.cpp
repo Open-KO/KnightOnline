@@ -3,8 +3,10 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIRepairTooltipDlg.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -108,10 +110,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 		if ( (spItem->pItemBasic->byContable != UIITEM_TYPE_COUNTABLE) && (spItem->pItemBasic->byContable != UIITEM_TYPE_COUNTABLE_SMALL) && 
 				(spItem->pItemBasic->siMaxDurability+spItem->pItemExt->siMaxDurability != 1) )
 		{
-			CGameBase::GetTextF(
-				IDS_TOOLTIP_NOAH,
-				&szMsg,
-				iRequiredGold);
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_NOAH, iRequiredGold);
 
 			SetTooltipTextColor(bHaveEnough);
 			if (!m_pStr[iIndex]->IsVisible())
@@ -119,9 +118,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 			m_pStr[iIndex]->SetString(szMsg);
 			iIndex++;
 
-			CGameBase::GetTextF(
-				IDS_TOOLTIP_MAX_DURABILITY,
-				&szMsg,
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_MAX_DURABILITY,
 				spItem->pItemBasic->siMaxDurability + spItem->pItemExt->siMaxDurability);
 
 			if (!m_pStr[iIndex]->IsVisible())
@@ -129,9 +126,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 			m_pStr[iIndex]->SetString(szMsg);
 			iIndex++;
 
-			CGameBase::GetTextF(
-				IDS_TOOLTIP_CUR_DURABILITY,
-				&szMsg,
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_CUR_DURABILITY,
 				spItem->iDurability);
 
 			if (!m_pStr[iIndex]->IsVisible())
@@ -139,7 +134,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 			m_pStr[iIndex]->SetString(szMsg);
 			iIndex++;
 
-			CGameBase::GetText(IDS_TOOLTIP_REPAIR_PRICE, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_REPAIR_PRICE);
 
 			if (!m_pStr[iIndex]->IsVisible())
 				m_pStr[iIndex]->SetVisible(true);
@@ -151,7 +146,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 		}
 		else
 		{
-			CGameBase::GetText(IDS_TOOLTIP_CANNOT, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_CANNOT);
 
 			m_pStr[0]->SetVisible(false);
 			m_pStr[1]->SetVisible(false);

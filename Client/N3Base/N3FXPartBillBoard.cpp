@@ -17,7 +17,7 @@ static char THIS_FILE[]=__FILE__;
 
 CN3FXPartBillBoard::CN3FXPartBillBoard()
 {
-	m_iVersion = 5;
+	m_iVersion = SUPPORTED_PART_VERSION;
 
 	m_iNum = 1;
 	m_fSizeX = m_fSizeY = 1.0f;
@@ -209,6 +209,19 @@ bool CN3FXPartBillBoard::Load(HANDLE hFile)
 	}
 
 	if(m_iVersion>=5) ReadFile(hFile, &m_mtxRot, sizeof(m_mtxRot), &dwRWC, NULL);
+
+	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
+	// and otherwise be broken for now.
+#if defined(_DEBUG)
+	if (m_iVersion > SUPPORTED_PART_VERSION)
+	{
+		TRACE(
+			"!!! WARNING: CN3FXPartBillBoard::Load(%s) encountered version %d (base version %d). Needs support!",
+			m_pRefBundle != nullptr ? m_pRefBundle->FileName().c_str() : "<unknown>",
+			m_iVersion,
+			m_iBaseVersion);
+	}
+#endif
 
 	CreateVB();
 	Init();

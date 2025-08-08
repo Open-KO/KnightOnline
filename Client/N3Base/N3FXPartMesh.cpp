@@ -19,7 +19,7 @@ static char THIS_FILE[]=__FILE__;
 
 CN3FXPartMesh::CN3FXPartMesh()
 {
-	m_iVersion = 5;
+	m_iVersion = SUPPORTED_PART_VERSION;
 
 	m_pShape = NULL;
 	m_pRefShape = NULL;
@@ -66,8 +66,8 @@ bool CN3FXPartMesh::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 
 	if(lstrcmpi(szCommand, "<shape_name>")==0)
 	{
-		char szPath[MAX_PATH];				
-		sprintf(szPath, szBuff0);
+		char szPath[MAX_PATH] = {};
+		strcpy(szPath, szBuff0);
 		m_pShape = new CN3FXShape;
 
 		m_pRefShape = s_MngFXShape.Get(szPath);
@@ -223,7 +223,20 @@ bool CN3FXPartMesh::Load(HANDLE hFile)
 	if(m_iVersion>=3) ReadFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, NULL);
 	if(m_iVersion>=4) ReadFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, NULL);
 	if(m_iVersion>=5) ReadFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, NULL);
-		
+
+	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
+	// and otherwise be broken for now.
+#if defined(_DEBUG)
+	if (m_iVersion > SUPPORTED_PART_VERSION)
+	{
+		TRACE(
+			"!!! WARNING: CN3FXPartMesh::Load(%s) encountered version %d (base version %d). Needs support!",
+			m_pRefBundle != nullptr ? m_pRefBundle->FileName().c_str() : "<unknown>",
+			m_iVersion,
+			m_iBaseVersion);
+	}
+#endif
+
 	if(m_pShape)
 	{
 		for(size_t i=0;i<m_pShape->PartCount();i++)
@@ -244,26 +257,34 @@ bool CN3FXPartMesh::Load(HANDLE hFile)
 //
 bool CN3FXPartMesh::Save(HANDLE hFile)
 {
-	if(!CN3FXPartBase::Save(hFile)) return false;
+	if (!CN3FXPartBase::Save(hFile))
+		return false;
 
 	DWORD dwRWC = 0;
 
-	char szShapeFileName[_MAX_PATH];
-	sprintf(szShapeFileName, m_pShape->FileName().c_str());
+	char szShapeFileName[_MAX_PATH] = {};
+	strcpy(szShapeFileName, m_pShape->FileName().c_str());
 
-	WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, NULL);
+	WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, NULL);
-	WriteFile(hFile, &m_fu, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fv, sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fu, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fv, sizeof(float), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, NULL);
+	WriteFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, nullptr);
 
-	if(m_iVersion>=2) WriteFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, NULL);
-	if(m_iVersion>=3) WriteFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, NULL);
-	if(m_iVersion>=4) WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, NULL);
-	if(m_iVersion>=5) WriteFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, NULL);
-	
+	if (m_iVersion >= 2)
+		WriteFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, nullptr);
+
+	if (m_iVersion >= 3)
+		WriteFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, nullptr);
+
+	if (m_iVersion >= 4)
+		WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
+
+	if (m_iVersion >= 5)
+		WriteFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, nullptr);
+
 	return true;
 }
 

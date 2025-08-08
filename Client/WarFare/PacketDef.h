@@ -10,6 +10,7 @@ const int SOCKET_PORT_LOGIN = 15100;
 #define N3_ACCOUNT_LOGIN			0xf3
 #define N3_ACCOUNT_LOGIN_MGAME		0xf4	// !!! LOGIN_REQ !!! 와 동일
 #define N3_GAMESERVER_GROUP_LIST	0xf5	// Recv - b1(ServerCount) loop(	s1(IP길이), str1(IP문자열), s1(서버이름길이), str1(서버이름문자열), s1(서버접속인원) )
+#define N3_NEWS						0xf6	//notice messages on login screen
 
 	enum e_ChatMode {	N3_CHAT_NORMAL = 1,
 						N3_CHAT_PRIVATE,

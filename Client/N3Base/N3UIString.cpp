@@ -5,13 +5,6 @@
 #include "StdAfxBase.h"
 #include "N3UIString.h"
 
-#ifndef _REPENT
-#ifdef _N3GAME
-#include "..\WarFare\N3UIWndBase.h"
-#include "..\WarFare\UIInventory.h"
-#endif 
-#endif
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -30,6 +23,7 @@ CN3UIString::CN3UIString()
 	ZeroMemory(&m_ptDrawPos, sizeof(m_ptDrawPos));
 	m_iLineCount = 0;
 	m_iStartLine = 0;
+	m_iIdk0 = 0;
 }
 
 CN3UIString::~CN3UIString()
@@ -81,9 +75,8 @@ void CN3UIString::SetString(const std::string& szString)
 
 void CN3UIString::SetStringAsInt(int iVal)
 {
-	char szBuff[32] = "";
-	sprintf(szBuff, "%d", iVal);
-	this->SetString(szBuff);
+	std::string buff = std::to_string(iVal);
+	SetString(buff);
 }
 
 void CN3UIString::SetString_NoWordWrap(const std::string& szString)
@@ -404,20 +397,8 @@ bool CN3UIString::Load(HANDLE hFile)
 	}
 
 	// NOTE: testing UI string
-	if(m_iFileFormatVersion >= N3FORMAT_VER_1264) {
-		//char temp[0xFF];
-
-		//sprintf(temp, "\nm_dwReserved = %d\n", m_dwReserved);
-		//OutputDebugString(temp);
-		//sprintf(temp, "m_dwStyle = %d\n", m_dwStyle);
-		//OutputDebugString(temp);
-
-		int iIdk0;
-		ReadFile(hFile, &iIdk0, sizeof(int), &dwNum, NULL);
-
-		//sprintf(temp, "iIdk0 = %d\n", iIdk0);
-		//OutputDebugString(temp);
-	}
+	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
+		ReadFile(hFile, &m_iIdk0, sizeof(int), &dwNum, nullptr);
 
 	return true;
 }
@@ -471,6 +452,10 @@ bool CN3UIString::Save(HANDLE hFile)
 	{
 		WriteFile(hFile, m_szString.c_str(), iStrLen, &dwNum, NULL);				// string
 	}
+
+	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
+		WriteFile(hFile, &m_iIdk0, sizeof(int), &dwNum, nullptr);
+
 	return true;
 }
 
@@ -547,7 +532,8 @@ uint32_t CN3UIString::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POIN
 
 #ifndef _REPENT
 #ifdef _N3GAME
-	if ( CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer ) return dwRet;
+	if (s_bWaitFromServer)
+		return dwRet;
 #endif
 #endif
 

@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3BaseFileAccess.h"
-#include "N3SkyMng.h"
+#include <N3Base/N3BaseFileAccess.h>
+#include <N3Base/N3SkyMng.h>
 
 #include "GameBase.h"
 
@@ -18,7 +18,7 @@ class CN3Shape;
 class CN3Terrain;
 class CN3SkyMng;
 
-class CN3WorldBase    : public CN3BaseFileAccess ,public CGameBase
+class CN3WorldBase : public CN3BaseFileAccess, public CGameBase
 {
 	friend class CN3WorldManager;
 
@@ -31,7 +31,7 @@ public:
 	// packet and set this information.
 	uint8_t m_byTariff;
 	uint16_t m_zoneFlags;
-	ZoneAbilityType m_zoneType;
+	e_ZoneAbilityType m_zoneType;
 	uint8_t m_byMinLevel, m_byMaxLevel;
 
 	bool canTradeWithOtherNation() { return (m_zoneFlags & ZF_TRADE_OTHER_NATION) != 0; }
@@ -70,7 +70,7 @@ public:
 	// Shapes..
 	virtual bool CheckCollisionCameraWithShape(__Vector3& vEyeResult, const __Vector3& vAt, float fNP) = 0;
 	virtual float GetHeightNearstPosWithShape(const __Vector3& vPos, float fDist, __Vector3* pvNormal = NULL) = 0; 
-	virtual void RenderCollisionWithShape(__Vector3 &vPos) = 0;
+	virtual void RenderCollisionWithShape(const __Vector3& vPos) = 0;
 	virtual float GetHeightWithShape(float fX, float fZ, __Vector3* pvNormal = NULL) = 0; 
 	virtual CN3Shape* ShapeGetByIDWithShape(int iID) = 0;
 	virtual CN3Shape* PickWithShape(int iXScreen, int iYScreen, bool bMustHaveEvent, __Vector3* pvPick = NULL) = 0;

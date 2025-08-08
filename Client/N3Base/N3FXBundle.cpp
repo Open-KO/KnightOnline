@@ -25,7 +25,7 @@ float CN3FXBundle::m_fEffectSndDist = 48.0f;
 
 CN3FXBundle::CN3FXBundle()
 {
-	m_iVersion = 2;
+	m_iVersion = SUPPORTED_BUNDLE_VERSION;
 	m_strName.erase();
 	for(int i=0;i<MAX_FX_PART;i++) m_pPart[i] = NULL;
 	m_fLife0 = 0.0f;
@@ -123,13 +123,13 @@ bool CN3FXBundle::DecodeScriptFile(const char* lpPathName)
 
 		if(lstrcmpi(szCommand, "<part>")==0)
 		{
-			char szFullPath[_MAX_PATH];	//full path 만들기..	
-			sprintf(szFullPath,"%s%s",CN3Base::PathGet().c_str(), szBuf[0]);
+			//full path 만들기..	
+			std::string szFullPath = fmt::format("{}{}", CN3Base::PathGet(), szBuf[0]);
 			
 			FXPARTWITHSTARTTIME* pPart = new FXPARTWITHSTARTTIME;
 			pPart->fStartTime = atof(szBuf[1]);
 
-			pPart->pPart = SetPart(szFullPath);
+			pPart->pPart = SetPart(szFullPath.c_str());
 
 			if(!(pPart->pPart)) { delete pPart; continue; }
 
@@ -283,6 +283,18 @@ bool CN3FXBundle::Load(HANDLE hFile)
 
 	ReadFile(hFile, &m_iVersion, sizeof(int), &dwRWC, NULL);
 	
+	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
+	// and otherwise be broken for now.
+#if defined(_DEBUG)
+	if (m_iVersion > SUPPORTED_BUNDLE_VERSION)
+	{
+		TRACE(
+			"!!! WARNING: CN3FXBundle::Load(%s) encountered bundle version %d. Needs support!",
+			FileName().c_str(),
+			m_iVersion);
+	}
+#endif
+
 	ReadFile(hFile, &m_fLife0, sizeof(float), &dwRWC, NULL);
 	if(m_fLife0 > 10.0f) m_fLife0 = 10.0f; 
 	ReadFile(hFile, &m_fVelocity, sizeof(float), &dwRWC, NULL);
@@ -485,32 +497,29 @@ bool CN3FXBundle::Load(HANDLE hFile)
 bool CN3FXBundle::Save(HANDLE hFile)
 {
 	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, NULL);
-	WriteFile(hFile, &m_fLife0, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fVelocity, sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fLife0, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fVelocity, sizeof(float), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_bDependScale, sizeof(bool), &dwRWC, NULL);
+	WriteFile(hFile, &m_bDependScale, sizeof(bool), &dwRWC, nullptr);
 
-	for(int i=0;i<MAX_FX_PART;i++)
+	for (int i = 0; i < MAX_FX_PART; i++)
 	{
-		if(m_pPart[i] && m_pPart[i]->pPart)
+		if (m_pPart[i] != nullptr
+			&& m_pPart[i]->pPart != nullptr)
 		{
-			WriteFile(hFile, &(m_pPart[i]->pPart->m_iType), sizeof(int), &dwRWC, NULL);
-
-			//char FName[80];
-			//sprintf(FName, m_pPart[i]->pPart->FileName().c_str());
-			//WriteFile(hFile, FName, 80, &dwRWC, NULL);
-			WriteFile(hFile, &(m_pPart[i]->fStartTime), sizeof(float), &dwRWC, NULL);
+			WriteFile(hFile, &m_pPart[i]->pPart->m_iType, sizeof(int), &dwRWC, nullptr);
+			WriteFile(hFile, &m_pPart[i]->fStartTime, sizeof(float), &dwRWC, nullptr);
 			m_pPart[i]->pPart->Save(hFile);
 		}
 		else
 		{
 			int Type = FX_PART_TYPE_NONE;
-			WriteFile(hFile, &Type, sizeof(int), &dwRWC, NULL);
+			WriteFile(hFile, &Type, sizeof(int), &dwRWC, nullptr);
 		}
 	}
 
-	WriteFile(hFile, &m_bStatic, sizeof(bool), &dwRWC, NULL);
+	WriteFile(hFile, &m_bStatic, sizeof(bool), &dwRWC, nullptr);
 
 	return true;
 }

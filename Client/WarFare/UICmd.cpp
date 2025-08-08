@@ -3,15 +3,15 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UICmd.h"
 #include "GameProcMain.h"
 #include "PlayerOtherMgr.h"
-//#include "GameProcLogIn.h"
 #include "PlayerMyself.h"
 #include "UITransactionDlg.h"
-#include "N3UIButton.h"
 #include "UIManager.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -166,14 +166,14 @@ bool CUICmd::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			{
 				if(iMemberIndex > 0)
 				{
-					CGameBase::GetText(IDS_PARTY_CONFIRM_DISCHARGE, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_PARTY_CONFIRM_DISCHARGE);
 					szMsg = pTarget->IDString() + szMsg;
 				}
-				else CGameBase::GetText(IDS_PARTY_CONFIRM_DESTROY, &szMsg);
+				else szMsg = fmt::format_text_resource(IDS_PARTY_CONFIRM_DESTROY);
 			}
 			else if(bIAmMemberOfParty)
 			{
-				CGameBase::GetText(IDS_PARTY_CONFIRM_LEAVE, &szMsg);
+				szMsg = fmt::format_text_resource(IDS_PARTY_CONFIRM_LEAVE);
 			}
 
 			if(!szMsg.empty()) CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_PARTY_DISBAND); // 파티 해체,축출,탈퇴하기..확인

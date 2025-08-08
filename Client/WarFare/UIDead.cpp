@@ -3,20 +3,21 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "N3UITooltip.h"
-#include "N3UIString.h"
-#include "resource.h"
+#include "UIDead.h"
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "UIManager.h"
 #include "PlayerMySelf.h"
-#include "UIDead.h"
 #include "UIInventory.h"
 #include "UIStateBar.h"
 #include "MagicSkillMng.h"
 #include "N3FXMgr.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UITooltip.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -56,11 +57,10 @@ bool CUIDead::Load(HANDLE hFile)
 	m_pTextTown		= (CN3UIString*)(this->GetChildByID("Text_Town"));	__ASSERT(m_pTextTown, "NULL UI Component!!!");
 
 
-	std::string szMsg;
-	CGameBase::GetText(IDS_DEAD_REVIVAL, &szMsg);
+	std::string szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL);
 	if(m_pTextAlive) m_pTextAlive->SetString(szMsg);
 
-	CGameBase::GetText(IDS_DEAD_RETURN_TOWN, &szMsg);
+	szMsg = fmt::format_text_resource(IDS_DEAD_RETURN_TOWN);
 	if(m_pTextTown) m_pTextTown->SetString(szMsg);
 
 	__TABLE_UI_RESRC*	pTblUI	= NULL;
@@ -93,10 +93,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 
 			if (iLevel < 6)
 			{
-				CGameBase::GetTextF(
-					IDS_DEAD_LOW_LEVEL,
-					&szMsg,
-					iNeedItemCnt);
+				szMsg = fmt::format_text_resource(IDS_DEAD_LOW_LEVEL, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -106,10 +103,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 			else if (iItemCnt >= iNeedItemCnt)
 			{
-				CGameBase::GetTextF(
-					IDS_DEAD_REVIVAL_MESSAGE,
-					&szMsg,
-					iNeedItemCnt);
+				szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL_MESSAGE, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_YESNO);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -119,7 +113,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 			else
 			{
-				CGameBase::GetText(IDS_DEAD_LACK_LIFE_STONE, &szMsg);
+				szMsg = fmt::format_text_resource(IDS_DEAD_LACK_LIFE_STONE);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -168,8 +162,10 @@ uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &p
 	else
 	{
 		// tool tip 관련
-		if (s_pTooltipCtrl) s_pTooltipCtrl->SetText(m_szToolTip);
+		if (s_pTooltipCtrl != nullptr)
+			s_pTooltipCtrl->SetText(m_szToolTip, m_crToolTip);
 	}
+
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.
 
 	if(m_pChildUI && m_pChildUI->IsVisible())

@@ -2,10 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "DFont.h"
 #include "PlayerOtherMgr.h"
 
-#include "N3ShapeExtra.h"
+#include <N3Base/DFont.h>
+#include <N3Base/N3ShapeExtra.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -31,21 +31,21 @@ CPlayerOtherMgr::~CPlayerOtherMgr()
 void CPlayerOtherMgr::ReleaseUPCs()
 {
 	it_UPC it = m_UPCs.begin(), itEnd = m_UPCs.end();
-	for(; it != itEnd; it++) T_Delete(it->second);
+	for(; it != itEnd; it++) delete it->second;
 	m_UPCs.clear();
 }
 
 void CPlayerOtherMgr::ReleaseNPCs()
 {
 	it_NPC it = m_NPCs.begin(), itEnd = m_NPCs.end();
-	for(; it != itEnd; it++) T_Delete(it->second);
+	for(; it != itEnd; it++)  delete it->second;
 	m_NPCs.clear();
 }
 
 void CPlayerOtherMgr::ReleaseCorpses()
 {
 	it_NPC it = m_Corpses.begin(), itEnd = m_Corpses.end();
-	for(; it != itEnd; it++) T_Delete(it->second);
+	for(; it != itEnd; it++)  delete it->second;
 	m_Corpses.clear();
 }
 //////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ void CPlayerOtherMgr::Tick(const __Vector3& vPosPlayer)
 
 		if(pCorpse->m_fTimeAfterDeath >= TIME_CORPSE_REMAIN) // 죽은지 일정한 시간이 지나면..
 		{
-			T_Delete(pCorpse);
+			delete pCorpse;
 			it3 = m_Corpses.erase(it3); // 죽은놈 지우고..
 		}
 		else
@@ -427,7 +427,7 @@ void CPlayerOtherMgr::CorpseAdd(CPlayerNPC* pNPC)
 	std::pair<it_NPC, bool> result = m_Corpses.insert(val_NPC(pNPC->IDNumber(), pNPC));
 	if(false == result.second) // 중복되었으면..
 	{
-		T_Delete(result.first->second); // 전의걸 지워주고..
+		delete result.first->second; // 전의걸 지워주고..
 		result.first->second = pNPC; // 새로 포인터 넣는다...
 	}
 }
@@ -490,7 +490,7 @@ void CPlayerOtherMgr::MoveToCorpsesForcely(CPlayerNPC* pNPC, bool bErase)
 	}
 }
 
-CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearstEnemy(e_Nation eNation, const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
+CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearestEnemy(e_Nation eNation, const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
 {
 	CPlayerNPC* pTarget = NULL;
 	float fDistMin = FLT_MAX, fDistTmp = 0;
@@ -576,6 +576,30 @@ bool CPlayerOtherMgr::CharacterDelete(int iID) // User, NPC 안 가리고 지운
 	return false;
 }
 
+CPlayerNPC* CPlayerOtherMgr::CharacterGetByNearestNPC(const __Vector3& vPosPlayer)
+{
+	CPlayerNPC* pTarget = nullptr;
+
+	const float fMaxViewDistance = static_cast<float>(s_Options.iViewDist);
+	float fDistMin = FLT_MAX;
+
+	for (const auto& [_, pNPC] : m_NPCs)
+	{
+		float fDist = pNPC->Distance(vPosPlayer);
+
+		// filter out NPCs that are further away than max view distance
+		if (fDist > fMaxViewDistance)
+			continue;
+
+		if (fDist < fDistMin)
+		{
+			fDistMin = fDist;
+			pTarget = pNPC;
+		}
+	}
+
+	return pTarget;
+}
 
 int CPlayerOtherMgr::SortByCameraDistance(const void* pArg1, const void* pArg2)
 {

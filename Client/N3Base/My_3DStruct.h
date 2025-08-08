@@ -5,7 +5,12 @@
 #include <d3dx9math.h>
 #include <string>
 
-#include "shared/types.h"
+#include <shared/types.h>
+#if defined(_N3TOOL) || defined(_3DSERVER)
+#include <afx.h>
+#else
+#include <shared/DebugUtils.h>
+#endif
 
 const float __PI = 3.141592654f;
 const float __PI2 = 6.283185308f;
@@ -1430,17 +1435,6 @@ inline float _Yaw2D(float fDirX, float fDirZ)
 
 inline int16_t _IsKeyDown(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0xff00); }
 inline int16_t _IsKeyDowned(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0x00ff); }
-
-
-//macro.. -> Template 로 바꿨다..
-template <class T> const T T_Max(const T a, const T b) { return ((a > b) ? b : a); }
-template <class T> const T T_Min(const T a, const T b) { return ((a > b) ? a : b); }
-template <class T> const T T_Abs(const T a) { return ((a > 0) ? a : -a); }
-
-template <class T> void T_Delete(T*& ptr) { delete ptr; ptr = NULL; } // Template Delete Pointer
-template <class T> void T_DeleteArray(T*& ptr) { delete [] ptr; ptr = NULL; } // Template Delete Pointer
-template <class T> void T_Tick(T& obj) { obj.Tick(); } // Template Delete Pointer
-template <class T> void T_Render(T& obj) { obj.Render(); } // Template Delete Pointer
 
 #endif // __MY_3DSTRUCT_H_
 

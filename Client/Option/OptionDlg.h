@@ -51,6 +51,7 @@ protected:
 
 // Construction
 public:
+	static void LoadSupportedResolutions();
 	void SettingUpdate();
 	void SettingLoad(CString szIniFile);
 	void SettingSave(CString szIniFile);

@@ -1,921 +1,2240 @@
-﻿#include "stdafx.h"
-#include <time.h>
-#include <cstdarg>
+﻿// ServerDlg.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "Server.h"
+#include "ServerDlg.h"
+
 #include "GameSocket.h"
-#include "Npc.h"
-#include "User.h"
-#include "NpcThread.h"
-#include "../GameServer/MagicProcess.h"
-
-#include "../shared/database/OdbcRecordset.h"
-#include "../shared/database/MagicTableSet.h"
-#include "../shared/database/MagicType1Set.h"
-#include "../shared/database/MagicType2Set.h"
-#include "../shared/database/MagicType4Set.h"
-#include "../shared/database/NpcPosSet.h"
-#include "../shared/database/ZoneInfoSet.h"
-#include "../shared/database/NpcItemSet.h"
-#include "../shared/database/MakeItemGroupSet.h"
-#include "../shared/database/NpcTableSet.h"
-#include "../shared/database/MakeWeaponTableSet.h"
-#include "../shared/database/MakeDefensiveTableSet.h"
-#include "../shared/database/MakeGradeItemTableSet.h"
-#include "../shared/database/MakeLareItemTableSet.h"
-#include "../shared/database/ServerResourceSet.h"
 #include "Region.h"
-#include "../shared/Ini.h"
-#include "../shared/packets.h"
-#include "../shared/DateTime.h"
 
-bool g_bNpcExit	= false;
-ZoneArray			g_arZone;
+#include <shared/crc32.h>
+#include <shared/lzf.h>
+#include <shared/globals.h>
+#include <shared/Ini.h>
 
-std::vector<Thread *> g_timerThreads;
+#include <db-library/ConnectionManager.h>
+#include <spdlog/spdlog.h>
 
-CServerDlg::CServerDlg()
+#include <math.h>
+#include <shared/StringConversion.h>
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+// NOTE: Explicitly handled under DEBUG_NEW override
+#include <db-library/RecordSetLoader_STLMap.h>
+#include <db-library/RecordsetLoader_Vector.h>
+
+BOOL g_bNpcExit = FALSE;
+ZoneArray g_arZone;
+
+CRITICAL_SECTION g_User_critical;
+CRITICAL_SECTION g_region_critical;
+
+#define CHECK_ALIVE 	100		//  게임서버와 통신이 끊김여부 판단, 타이머 변수
+#define REHP_TIME		200
+
+import AIServerBinder;
+
+using namespace db;
+
+/////////////////////////////////////////////////////////////////////////////
+// CAboutDlg dialog used for App About
+
+/*
+	 ** Repent AI Server 작업시 참고 사항 **
+	1. 3개의 함수 추가
+		int GetSpeed(BYTE bySpeed);
+		int GetAttackSpeed(BYTE bySpeed);
+		int GetCatsSpeed(BYTE bySpeed);
+	2. Repent에  맞개 아래의 함수 수정
+		CreateNpcThread();
+		GetMonsterTableData();
+		GetNpcTableData();
+		GetNpcItemTable();
+*/
+
+class CAboutDlg : public CDialog
 {
-	m_iYear = 0; 
+public:
+	CAboutDlg();
+
+// Dialog Data
+	//{{AFX_DATA(CAboutDlg)
+	enum { IDD = IDD_ABOUTBOX };
+	//}}AFX_DATA
+
+// ClassWizard generated virtual function overrides
+//{{AFX_VIRTUAL(CAboutDlg)
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	//}}AFX_VIRTUAL
+
+// Implementation
+protected:
+	//{{AFX_MSG(CAboutDlg)
+	//}}AFX_MSG
+	DECLARE_MESSAGE_MAP()
+};
+
+CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
+{
+	//{{AFX_DATA_INIT(CAboutDlg)
+	//}}AFX_DATA_INIT
+}
+
+void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialog::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(CAboutDlg)
+	//}}AFX_DATA_MAP
+}
+
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
+	//{{AFX_MSG_MAP(CAboutDlg)
+		// No message handlers
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// CServerDlg dialog
+
+CServerDlg* CServerDlg::s_pInstance = nullptr;
+
+CServerDlg::CServerDlg(CWnd* pParent /*=nullptr*/)
+	: CDialog(CServerDlg::IDD, pParent)
+{
+	//{{AFX_DATA_INIT(CServerDlg)
+	m_strStatus = _T("");
+	//}}AFX_DATA_INIT
+	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	m_iYear = 0;
 	m_iMonth = 0;
 	m_iDate = 0;
 	m_iHour = 0;
 	m_iMin = 0;
 	m_iWeather = 0;
 	m_iAmount = 0;
-	m_bIsNight = false;
+	m_byNight = 1;
+	m_byZone = KARUS_ZONE;
 	m_byBattleEvent = BATTLEZONE_CLOSE;
 	m_sKillKarusNpc = 0;
 	m_sKillElmoNpc = 0;
+	m_pZoneEventThread = nullptr;
+	m_byTestMode = 0;
+	//m_ppUserActive = nullptr;
+	//m_ppUserInActive = nullptr;
+
+	ConnectionManager::Create();
 }
 
-bool CServerDlg::Startup()
+CServerDlg::~CServerDlg()
 {
-	g_timerThreads.push_back(new Thread(Timer_CheckAliveTest));
-	g_timerThreads.push_back(new Thread(Timer_CheckLiveTimes));
+	ConnectionManager::Destroy();
+}
 
+void CServerDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialog::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(CServerDlg)
+	DDX_Control(pDX, IDC_LIST1, _outputList);
+	DDX_Text(pDX, IDC_STATUS, m_strStatus);
+	//}}AFX_DATA_MAP
+}
+
+BEGIN_MESSAGE_MAP(CServerDlg, CDialog)
+	//{{AFX_MSG_MAP(CServerDlg)
+	ON_WM_SYSCOMMAND()
+	ON_WM_PAINT()
+	ON_WM_QUERYDRAGICON()
+	ON_WM_TIMER()
+	//}}AFX_MSG_MAP
+	ON_MESSAGE(WM_GAMESERVER_LOGIN, OnGameServerLogin)
+END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+// CServerDlg message handlers
+
+///////////////////////////////////////////////////////////////////////////////
+//	각종 초기화
+//
+BOOL CServerDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	s_pInstance = this;
+
+	// load config
+	GetServerInfoIni();
+
+	// Default Init ...
+	DefaultInit();
+
+	// TestCode
+	TestCode();
+
+	//----------------------------------------------------------------------
+	//	Sets a random number starting point.
+	//----------------------------------------------------------------------
+	SetTimer(CHECK_ALIVE, 10000, nullptr);
+
+	srand((unsigned int) time(nullptr));
+	for (int i = 0; i < 10; i++)
+		myrand(1, 10000);	// don't delete
+
+	// Compress Init
+	memset(m_CompBuf, 0, sizeof(m_CompBuf));	// 압축할 데이터를 모으는 버퍼
+	m_iCompIndex = 0;							// 압축할 데이터의 길이
+	m_CompCount = 0;							// 압축할 데이터의 개수
+
+	InitializeCriticalSection(&g_User_critical);
+	InitializeCriticalSection(&g_region_critical);
+
+	m_sSocketCount = 0;
+	m_sErrorSocketCount = 0;
 	m_sMapEventNpc = 0;
-	m_bFirstServerFlag = false;			
+	m_sReSocketCount = 0;
+	m_fReConnectStart = 0.0f;
+	m_bFirstServerFlag = FALSE;
+	m_byTestMode = NOW_TEST_MODE;
 
-	// Server Start
-	DateTime time;
-	printf("Server started on %04d-%02d-%02d at %02d:%02d\n\n", time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	// User Point Init
+	for (int i = 0; i < MAX_USER; i++)
+		m_pUser[i] = nullptr;
+
+	// Server Start messages
+	CTime time = CTime::GetCurrentTime();
+	std::wstring logstr = std::format(L"[AI ServerStart - {:04}-{:02}-{:02}, {:02}:{:02}]",
+		time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+	AddOutputMessage(logstr);
+	spdlog::info("ServerDlg::OnInitDialog: starting...");
 
 	//----------------------------------------------------------------------
 	//	DB part initialize
 	//----------------------------------------------------------------------
-	GetServerInfoIni();
-
-	if (!m_GameDB.Connect(m_strGameDSN, m_strGameUID, m_strGamePWD))
-	{
-		OdbcError *pError = m_GameDB.GetError();
-		printf("ERROR: Could not connect to the database server, received error:\n%s\n", 
-			pError->ErrorMessage.c_str());
-		delete pError;
-		return false;
-	}
-
+	if (m_byZone == UNIFY_ZONE)
+		m_strStatus.Format(_T("Server Zone: UNIFY"));
+	else if (m_byZone == KARUS_ZONE)
+		m_strStatus.Format(_T("Server Zone: KARUS"));
+	else if (m_byZone == ELMORAD_ZONE)
+		m_strStatus.Format(_T("Server Zone: ELMORAD"));
+	else if (m_byZone == BATTLE_ZONE)
+		m_strStatus.Format(_T("Server Zone: BATTLE"));
+	
 	//----------------------------------------------------------------------
 	//	Communication Part Initialize ...
 	//----------------------------------------------------------------------
-	if (!m_socketMgr.Listen(m_AIServerPort, MAX_SOCKET))
-		return false;
+	spdlog::info("ServerDlg::OnInitDialog: initializing sockets");
+	m_Iocport.Init(MAX_SOCKET, 1, 1);
+
+	for (int i = 0; i < MAX_SOCKET; i++)
+		m_Iocport.m_SockArrayInActive[i] = new CGameSocket;
 
 	//----------------------------------------------------------------------
-	//	Load tables
+	//	Load Magic Table
 	//----------------------------------------------------------------------
-	if (!GetMagicTableData()
-		|| !GetMagicType1Data()
-		|| !GetMagicType2Data()
-		|| !GetMagicType4Data()
-		|| !GetNpcItemTable()
-		|| !GetMakeItemGroupTable()
-		|| !GetMakeWeaponItemTableData()
-		|| !GetMakeDefensiveItemTableData()
-		|| !GetMakeGradeItemTableData()
-		|| !GetMakeLareItemTableData()
-		|| !GetServerResourceTable()
-		|| !GetObjectPostTableData()
-		|| !GetNpcTableData(false)
-		|| !GetNpcTableData(true)
-		// Load maps
-		|| !MapFileLoad()
-		// Spawn NPC threads
-		|| !CreateNpcThread())
-		return false;
+	if (!GetMagicTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAGIC, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMagicType1Data())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAGIC_TYPE1, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMagicType2Data())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAGIC_TYPE2, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMagicType3Data())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAGIC_TYPE3, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMagicType4Data())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAGIC_TYPE4, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	//----------------------------------------------------------------------
+	//	Load NPC Item Table
+	//----------------------------------------------------------------------
+	if (!GetNpcItemTable())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load K_MONSTER_ITEM, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMakeWeaponItemTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAKE_WEAPON, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMakeDefensiveItemTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAKE_DEFENSIVE, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMakeGradeItemTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAKE_ITEM_GRADECODE, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	if (!GetMakeRareItemTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load MAKE_ITEM_LARECODE, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	//----------------------------------------------------------------------
+	//	Load NPC Chat Table
+	//----------------------------------------------------------------------
+
+	//----------------------------------------------------------------------
+	//	Load NPC Data & Activate NPC
+	//----------------------------------------------------------------------
+
+	// Monster 특성치 테이블 Load
+	if (!GetMonsterTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load K_MONSTER, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	// NPC 특성치 테이블 Load
+	if (!GetNpcTableData())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load K_NPC, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	//----------------------------------------------------------------------
+	//	Load Zone & Event...
+	//----------------------------------------------------------------------
+	if (!MapFileLoad())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: failed to load maps, closing server");
+		AfxPostQuitMessage(0);
+	}
+
+	if (!CreateNpcThread())
+	{
+		spdlog::error("ServerDlg::OnInitDialog: CreateNpcThread failed, closing server");
+		EndDialog(IDCANCEL);
+		return FALSE;
+	}
+
+	//----------------------------------------------------------------------
+	//	Load NPC DN Table
+	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
 	//	Start NPC THREAD
 	//----------------------------------------------------------------------
 	ResumeAI();
-	return true; 
+
+	//----------------------------------------------------------------------
+	//	Start Accepting...
+	//----------------------------------------------------------------------
+	if (!ListenByZone())
+	{
+		AfxMessageBox(_T("FAIL TO CREATE LISTEN STATE"), MB_OK);
+		return FALSE;
+	}
+
+	//::ResumeThread( m_Iocport.m_hAcceptThread );
+	UpdateData(FALSE);
+
+	spdlog::info("AIServer successfully initialized");
+	return TRUE;
 }
 
-bool CServerDlg::GetMagicTableData()
+/// \brief attempts to listen on the port associated with m_byZone
+/// \see m_byZone
+/// \returns true when successful, otherwise false
+bool CServerDlg::ListenByZone()
 {
-	LOAD_TABLE(CMagicTableSet, &m_GameDB, &m_MagictableArray, false, false);
-}
+	int port = 0;
+	if (m_byZone == KARUS_ZONE
+		|| m_byZone == UNIFY_ZONE)
+	{
+		port = AI_KARUS_SOCKET_PORT;
+	}
+	else if (m_byZone == ELMORAD_ZONE)
+	{
+		port = AI_ELMO_SOCKET_PORT;
+	}
+	else if (m_byZone == BATTLE_ZONE)
+	{
+		port = AI_BATTLE_SOCKET_PORT;
+	}
 
-bool CServerDlg::GetMagicType1Data()
-{
-	LOAD_TABLE(CMagicType1Set, &m_GameDB, &m_Magictype1Array, false, false);
-}
-
-bool CServerDlg::GetMagicType2Data()
-{
-	LOAD_TABLE(CMagicType2Set, &m_GameDB, &m_Magictype2Array, false, false);
-}
-
-bool CServerDlg::GetMagicType4Data()
-{
-	LOAD_TABLE(CMagicType4Set, &m_GameDB, &m_Magictype4Array, false, false);
-}
-
-bool CServerDlg::GetMakeWeaponItemTableData()
-{
-	LOAD_TABLE(CMakeWeaponTableSet, &m_GameDB, &m_MakeWeaponItemArray, true, false);
-}
-
-bool CServerDlg::GetMakeDefensiveItemTableData()
-{
-	LOAD_TABLE(CMakeDefensiveTableSet, &m_GameDB, &m_MakeDefensiveItemArray, true, false);
-}
-
-bool CServerDlg::GetMakeGradeItemTableData()
-{
-	LOAD_TABLE(CMakeGradeItemTableSet, &m_GameDB, &m_MakeGradeItemArray, false, false);
-}
-
-bool CServerDlg::GetMakeLareItemTableData()
-{
-	LOAD_TABLE(CMakeLareItemTableSet, &m_GameDB, &m_MakeLareItemArray, false, false);
-}
-
-bool CServerDlg::GetServerResourceTable()
-{
-	LOAD_TABLE(CServerResourceSet, &m_GameDB, &m_ServerResourceArray, false, false);
-}
-
-bool CServerDlg::GetNpcItemTable()
-{
-	LOAD_TABLE(CNpcItemSet, &m_GameDB, &m_NpcItemArray, false, false);
-}
-
-bool CServerDlg::GetMakeItemGroupTable()
-{
-	LOAD_TABLE(CMakeItemGroupSet, &m_GameDB, &m_MakeItemGroupArray, false, false);
-}
-
-bool CServerDlg::GetObjectPostTableData()
-{
-	//LOAD_TABLE(CObjectPosSet, &m_GameDB, &m_ObjectEventArray, false, false);
+	if (!m_Iocport.Listen(port)) {
+		spdlog::error("ServerDlg::ListenByZone: failed to listen on port {}", port);
+		return false;
+	}
+	
 	return true;
 }
 
-bool CServerDlg::GetNpcTableData(bool bNpcData /*= true*/)
+void CServerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if (bNpcData)	{ LOAD_TABLE(CNpcTableSet, &m_GameDB, &m_arNpcTable, false, false); }
-	else			{ LOAD_TABLE(CMonTableSet, &m_GameDB, &m_arMonTable, false, false); }
+	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
+	{
+		CAboutDlg dlgAbout;
+		dlgAbout.DoModal();
+	}
+	else
+	{
+		CDialog::OnSysCommand(nID, lParam);
+	}
 }
 
-bool CServerDlg::CreateNpcThread()
+// If you add a minimize button to your dialog, you will need the code below
+//  to draw the icon.  For MFC applications using the document/view model,
+//  this is automatically done for you by the framework.
+
+void CServerDlg::OnPaint()
 {
-	m_TotalNPC = m_sMapEventNpc;
+	if (IsIconic())
+	{
+		CPaintDC dc(this); // device context for painting
+
+		SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+
+		// Center icon in client rectangle
+		int cxIcon = GetSystemMetrics(SM_CXICON);
+		int cyIcon = GetSystemMetrics(SM_CYICON);
+		CRect rect;
+		GetClientRect(&rect);
+		int x = (rect.Width() - cxIcon + 1) / 2;
+		int y = (rect.Height() - cyIcon + 1) / 2;
+
+		// Draw the icon
+		dc.DrawIcon(x, y, m_hIcon);
+	}
+	else
+	{
+		CDialog::OnPaint();
+	}
+}
+
+// The system calls this to obtain the cursor to display while the user drags
+//  the minimized window.
+HCURSOR CServerDlg::OnQueryDragIcon()
+{
+	return (HCURSOR) m_hIcon;
+}
+
+void CServerDlg::DefaultInit()
+{
+	// Add "About..." menu item to system menu.
+
+	// IDM_ABOUTBOX must be in the system command range.
+	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+	ASSERT(IDM_ABOUTBOX < 0xF000);
+
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	if (pSysMenu != nullptr)
+	{
+		CString strAboutMenu;
+		strAboutMenu.LoadString(IDS_ABOUTBOX);
+		if (!strAboutMenu.IsEmpty())
+		{
+			pSysMenu->AppendMenu(MF_SEPARATOR);
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+		}
+	}
+
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+}
+
+void CServerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
+{
+	std::string error = fmt::format("ServerDlg::ReportTableLoadError: {} failed: {}",
+		source, err.Message);
+	std::wstring werror = LocalToWide(error);
+	AfxMessageBox(werror.c_str());
+	spdlog::error(error);
+}
+
+//	Magic Table 을 읽는다.
+BOOL CServerDlg::GetMagicTableData()
+{
+	recordset_loader::STLMap loader(m_MagictableArray);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+	
+	spdlog::info("ServerDlg::GetMagicTableData: MAGIC loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMakeWeaponItemTableData()
+{
+	recordset_loader::STLMap loader(m_MakeWeaponItemArray);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMakeWeaponItemTableData: MAKE_WEAPON loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMakeDefensiveItemTableData()
+{
+	recordset_loader::STLMap<MakeWeaponItemTableArray, model::MakeDefensive> loader(
+		m_MakeDefensiveItemArray);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMakeDefensiveItemTableData: MAKE_DEFENSIVE loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMakeGradeItemTableData()
+{
+	recordset_loader::STLMap loader(m_MakeGradeItemArray);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMakeGradeItemTableData: MAKE_ITEM_GRADECODE loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMakeRareItemTableData()
+{
+	recordset_loader::STLMap loader(m_MakeLareItemArray);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMakeRareItemTableData: MAKE_ITEM_LARECODE loaded");
+	return TRUE;
+}
+
+/////////////////////////////////////////////////////////////////////////
+//	NPC Item Table 을 읽는다.
+//
+BOOL CServerDlg::GetNpcItemTable()
+{
+	using ModelType = model::MonsterItem;
+
+	std::vector<ModelType*> rows;
+
+	recordset_loader::Vector<ModelType> loader(rows);
+	if (!loader.Load_ForbidEmpty(true))
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	m_NpcItem.m_nField = loader.GetColumnCount();
+	m_NpcItem.m_nRow = static_cast<int>(rows.size());
+
+	if (rows.empty())
+		return FALSE;
+
+	m_NpcItem.m_ppItem = new int* [m_NpcItem.m_nRow];
+	for (int i = 0; i < m_NpcItem.m_nRow; i++)
+		m_NpcItem.m_ppItem[i] = new int[m_NpcItem.m_nField];
+
+	for (size_t i = 0; i < rows.size(); i++)
+	{
+		ModelType* row = rows[i];
+
+		m_NpcItem.m_ppItem[i][0] = row->MonsterId;
+		m_NpcItem.m_ppItem[i][1] = row->ItemId1;
+		m_NpcItem.m_ppItem[i][2] = row->DropChance1;
+		m_NpcItem.m_ppItem[i][3] = row->ItemId2;
+		m_NpcItem.m_ppItem[i][4] = row->DropChance2;
+		m_NpcItem.m_ppItem[i][5] = row->ItemId3;
+		m_NpcItem.m_ppItem[i][6] = row->DropChance3;
+		m_NpcItem.m_ppItem[i][7] = row->ItemId4;
+		m_NpcItem.m_ppItem[i][8] = row->DropChance4;
+		m_NpcItem.m_ppItem[i][9] = row->ItemId5;
+		m_NpcItem.m_ppItem[i][10] = row->DropChance5;
+
+		delete row;
+	}
+
+	rows.clear();
+
+	spdlog::info("ServerDlg::GetNpcItemTable: K_MONSTER_ITEM loaded");
+	return TRUE;
+}
+
+//	Monster Table Data 를 읽는다.
+BOOL CServerDlg::GetMonsterTableData()
+{
+	recordset_loader::STLMap<
+		NpcTableArray,
+		model::Monster> loader(m_arMonTable);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMonsterTableData: K_MONSTER loaded");
+	return TRUE;
+}
+
+//	NPC Table Data 를 읽는다. (경비병 & NPC)
+BOOL CServerDlg::GetNpcTableData()
+{
+	recordset_loader::STLMap loader(m_arNpcTable);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetNpcTableData: K_NPC loaded");
+	return TRUE;
+}
+
+//	Npc Thread 를 만든다.
+BOOL CServerDlg::CreateNpcThread()
+{
+	m_TotalNPC = 0;			// DB에 있는 수
 	m_CurrentNPC = 0;
+	m_CurrentNPCError = 0;
 
-	LOAD_TABLE_ERROR_ONLY(CNpcPosSet, &m_GameDB, nullptr, false, false);
-
-	Guard lock(m_npcThreadLock);
-	Guard lock2(m_eventThreadLock);
-	foreach_stlmap (itr, g_arZone)
+	std::vector<model::NpcPos*> rows;
+	if (!LoadNpcPosTable(rows))
 	{
-		CNpcThread * pNpcThread = new CNpcThread();
-		m_arNpcThread.insert(std::make_pair(itr->first, pNpcThread));
-		m_arEventNpcThread.insert(std::make_pair(itr->first, new CNpcThread()));
-
-		foreach_stlmap (npcItr, m_arNpc)
-		{
-			if (npcItr->second->GetZoneID() != itr->first)
-				continue;
-
-			CNpc * pNpc = npcItr->second;
-			pNpc->Init();
-			pNpcThread->m_pNpcs.insert(pNpc);
-		}
+		spdlog::error("ServerDlg::CreateNpcThread: K_NPCPOS load failed");
+		return FALSE;
 	}
 
-	printf("Monster Init - %d, threads = %lld\n", (uint16_t) m_TotalNPC, (long long) m_arNpcThread.size());
-	return true;
+	for (model::NpcPos* row : rows)
+		delete row;
+	rows.clear();
+
+	int step = 0;
+	int nThreadNumber = 0;
+	CNpcThread* pNpcThread = nullptr;
+
+	for (auto& [_, pNpc] : m_arNpc)
+	{
+		if (step == 0)
+			pNpcThread = new CNpcThread;
+
+		pNpcThread->m_pNpc[step] = pNpc;
+		pNpcThread->m_pNpc[step]->m_sThreadNumber = nThreadNumber;
+		pNpcThread->m_pNpc[step]->Init();
+
+		++step;
+
+		if (step == NPC_NUM)
+		{
+			pNpcThread->m_sThreadNumber = nThreadNumber++;
+			pNpcThread->pIOCP = &m_Iocport;
+			pNpcThread->m_pThread = AfxBeginThread(NpcThreadProc, &pNpcThread->m_ThreadInfo, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+			m_arNpcThread.push_back(pNpcThread);
+			step = 0;
+		}
+	}
+	if (step != 0)
+	{
+		pNpcThread->m_sThreadNumber = nThreadNumber++;
+		pNpcThread->pIOCP = &m_Iocport;
+		pNpcThread->m_pThread = AfxBeginThread(NpcThreadProc, &pNpcThread->m_ThreadInfo, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+		m_arNpcThread.push_back(pNpcThread);
+	}
+
+	// Event Npc Logic
+	m_pZoneEventThread = AfxBeginThread(ZoneEventThreadProc, this, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
+	
+	std::wstring logstr = std::format(L"NPCs initialized: {}",
+		m_TotalNPC);
+	AddOutputMessage(logstr);
+
+	spdlog::info("ServerDlg::CreateNpcThread: Monsters/NPCs loaded: {}", m_TotalNPC);
+	return TRUE;
 }
 
-bool CServerDlg::LoadSpawnCallback(OdbcCommand *dbCommand)
+BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 {
-	// Avoid allocating stack space for these.
-	// This method will only ever run in the same thread.
-	static int nRandom = 0;
-	static double dbSpeed = 0;
-	static CNpcTable * pNpcTable = nullptr;
-	static CRoomEvent* pRoom = nullptr;
-	static char szPath[500];
-	static float fRandom_X = 0.0f, fRandom_Z = 0.0f;
-	static uint8_t rand = myrand(1,4);
-	// Unfortunately we cannot simply read what we need directly
-	// into the CNpc instance. We have to resort to creating
-	// copies of the data to allow for the way they handle multiple spawns...
-	// Best we can do, I think, is to avoid allocating it on the stack.
-	static uint8_t	bNumNpc, bZoneID, bActType, bRegenType, bDungeonFamily, bSpecialType,
-		bTrapNumber, bDirection, bDotCnt;	
-	static uint16_t	sSid, sRegTime;
-	static uint32_t	nServerNum;
-	static int32_t	iLeftX, iTopZ, iRightX, iBottomZ,
-		iLimitMinX, iLimitMinZ, iLimitMaxX, iLimitMaxZ;
+	CRoomEvent* pRoom = nullptr;
 
-	dbCommand->FetchByte(1, bZoneID);
-	dbCommand->FetchUInt16(2, sSid);
-	dbCommand->FetchByte(3, bActType);
-	dbCommand->FetchByte(4, bRegenType);
-	dbCommand->FetchByte(5, bDungeonFamily);
-	dbCommand->FetchByte(6, bSpecialType);
-	dbCommand->FetchByte(7, bTrapNumber);
-	dbCommand->FetchInt32(8, iLeftX);
-	dbCommand->FetchInt32(9, iTopZ);
-	dbCommand->FetchInt32(10, iRightX);
-	dbCommand->FetchInt32(11, iBottomZ);
-	dbCommand->FetchInt32(12, iLimitMinX);
-	dbCommand->FetchInt32(13, iLimitMinZ);
-	dbCommand->FetchInt32(14, iLimitMaxX);
-	dbCommand->FetchInt32(15, iLimitMaxZ);
-	dbCommand->FetchByte(16, bNumNpc);
-	dbCommand->FetchUInt16(17, sRegTime);
-	dbCommand->FetchByte(18, bDirection);
-	dbCommand->FetchByte(19, bDotCnt);
-	dbCommand->FetchString(20, szPath, sizeof(szPath));
-
-
-	uint8_t bPathSerial = 1;
-	if(bTrapNumber==0 || bTrapNumber==rand 
-		|| bZoneID == ZONE_DESPERATION_ABYSS 
-		|| bZoneID == ZONE_HELL_ABYSS 
-		|| bZoneID == ZONE_DRAGON_CAVE 
-		|| bZoneID == ZONE_BATTLE4)
-	for (uint8_t j = 0; j < bNumNpc; j++)
+	recordset_loader::Vector<model::NpcPos> loader(rows);
+	if (!loader.Load_ForbidEmpty(true))
 	{
-		CNpc * pNpc = new CNpc();
-
-		pNpc->m_byMoveType = bActType;
-		pNpc->m_byInitMoveType = bActType;
-
-		bool bMonster = (bActType < 100);
-		if (bMonster)
-		{
-			pNpcTable = m_arMonTable.GetData(sSid);
-		}
-		else 
-		{
-			pNpc->m_byMoveType = bActType - 100;
-			pNpcTable = m_arNpcTable.GetData(sSid);
-		}
-
-		if (pNpcTable == nullptr)
-		{
-			printf("NPC %d not found in %s table.\n", sSid, bMonster ? "K_MONSTER" : "K_NPC");
-			delete pNpc;
-			return false;
-		}
-
-		pNpc->Load(++m_TotalNPC, pNpcTable, bMonster);
-		pNpc->m_byBattlePos = 0;
-
-		if (pNpc->m_byMoveType >= 2)
-		{
-			pNpc->m_byBattlePos = myrand(1, 3);
-			pNpc->m_byPathCount = bPathSerial++;
-		}
-
-		pNpc->InitPos();
-
-		pNpc->m_bZone = bZoneID;
-
-		nRandom = abs(iLeftX - iRightX);
-		if (nRandom <= 1)
-			fRandom_X = (float)iLeftX;
-		else
-		{
-			if (iLeftX < iRightX)
-				fRandom_X = (float)myrand(iLeftX, iRightX);
-			else
-				fRandom_X = (float)myrand(iRightX, iLeftX);
-		}
-
-		nRandom = abs(iTopZ - iBottomZ);
-		if (nRandom <= 1)
-			fRandom_Z = (float)iTopZ;
-		else
-		{
-			if (iTopZ < iBottomZ)
-				fRandom_Z = (float)myrand(iTopZ, iBottomZ);
-			else
-				fRandom_Z = (float)myrand(iBottomZ, iTopZ);
-		}
-
-		pNpc->SetPosition(fRandom_X, 0.0f, fRandom_Z);
-
-		pNpc->m_sRegenTime		= sRegTime * SECOND;
-		pNpc->m_byDirection		= bDirection;
-		pNpc->m_sMaxPathCount	= bDotCnt;
-
-		if ((pNpc->m_byMoveType == 2 || pNpc->m_byMoveType == 3) && bDotCnt == 0)
-		{
-			pNpc->m_byMoveType = 1;
-			TRACE("##### ServerDlg:CreateNpcThread - Path type Error :  nid=%d, sid=%d, name=%s, acttype=%d, path=%d #####\n", 
-				pNpc->GetID(), pNpc->GetProtoID(), pNpc->GetName().c_str(), pNpc->m_byMoveType, pNpc->m_sMaxPathCount);
-		}
-
-		if (bDotCnt > 0)
-		{
-			int index = 0;
-			for (int l = 0; l < bDotCnt; l++)
-			{
-				static char szX[5], szZ[5];
-
-				memset(szX, 0, sizeof(szX));
-				memset(szZ, 0, sizeof(szZ));
-
-				memcpy(szX, szPath + index, 4);
-				index += 4;
-
-				memcpy(szZ, szPath + index, 4);
-				index += 4;
-
-				pNpc->m_PathList.pPattenPos[l].x = atoi(szX);
-				pNpc->m_PathList.pPattenPos[l].z = atoi(szZ);
-			}
-		}
-
-		pNpc->m_nInitMinX = pNpc->m_nLimitMinX		= iLeftX;
-		pNpc->m_nInitMinY = pNpc->m_nLimitMinZ		= iTopZ;
-		pNpc->m_nInitMaxX = pNpc->m_nLimitMaxX		= iRightX;
-		pNpc->m_nInitMaxY = pNpc->m_nLimitMaxZ		= iBottomZ;
-
-		// dungeon work
-		pNpc->m_byDungeonFamily	= bDungeonFamily;
-		pNpc->m_bySpecialType	= (NpcSpecialType) bSpecialType;
-		pNpc->m_byRegenType		= bRegenType;
-		pNpc->m_byTrapNumber    = bTrapNumber;
-
-		pNpc->m_oSocketID = -1;
-		pNpc->m_bEventRoom = 0;
-
-		if (pNpc->m_byDungeonFamily > 0)
-		{
-			pNpc->m_nLimitMinX = iLimitMinX;
-			pNpc->m_nLimitMinZ = iLimitMinZ;
-			pNpc->m_nLimitMaxX = iLimitMaxX;
-			pNpc->m_nLimitMaxZ = iLimitMaxZ;
-		}	
-
-		pNpc->m_pMap = GetZoneByID(pNpc->GetZoneID());
-		if (pNpc->GetMap() == nullptr)
-		{
-			printf(_T("ERROR: NPC %d in zone %d that does not exist.\n"), sSid, bZoneID);
-			delete pNpc;
-			return false;
-		}
-
-		if (!m_arNpc.PutData(pNpc->GetID(), pNpc))
-		{
-			--m_TotalNPC;
-			TRACE("Npc PutData Fail - %d\n", pNpc->GetID());
-			delete pNpc;
-			continue;
-		}
-
-		if (pNpc->GetMap()->m_byRoomEvent > 0 && pNpc->m_byDungeonFamily > 0)
-		{
-			pRoom = pNpc->GetMap()->m_arRoomEventArray.GetData(pNpc->m_byDungeonFamily);
-			if (pRoom == nullptr)
-			{
-				printf("ERROR: Map Room Npc Fail!!\n");
-				delete pNpc;
-				return false;
-			}
-
-			// this is why their CSTLMap class sucks.
-			int *pInt = new int;
-			*pInt = pNpc->GetID();
-			if (!pRoom->m_mapRoomNpcArray.PutData(*pInt, pInt))
-			{
-				delete pInt;
-				TRACE("### Map - Room Array MonsterNid Fail : nid=%d, sid=%d ###\n", 
-					pNpc->GetID(), pNpc->GetProtoID());
-			}
-		}
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
 	}
-	return true;
+
+	int nSerial = m_sMapEventNpc;
+
+	for (model::NpcPos* row : rows)
+	{
+		bool bMoveNext = true;
+		int nPathSerial = 1;
+		int nNpcCount = 0;
+
+		do
+		{
+			int nMonsterNumber = row->NumNpc;
+			int nServerNum = GetServerNumber(row->ZoneId);
+
+			if (m_byZone == nServerNum
+				|| m_byZone == UNIFY_ZONE)
+			{
+				for (int j = 0; j < nMonsterNumber; j++)
+				{
+					CNpc* pNpc = new CNpc();
+					pNpc->m_sNid = nSerial++;						// 서버 내에서의 고유 번호
+					pNpc->m_sSid = (short) row->NpcId;				// MONSTER(NPC) Serial ID
+
+					pNpc->m_byMoveType = row->ActType;
+					pNpc->m_byInitMoveType = row->ActType;
+					pNpc->m_byDirection = row->Direction;
+
+					model::Npc* pNpcTable = nullptr;
+
+					if (row->ActType >= 0
+						&& row->ActType < 100)
+					{
+						pNpcTable = m_arMonTable.GetData(pNpc->m_sSid);
+					}
+					else if (row->ActType >= 100)
+					{
+						pNpc->m_byMoveType = row->ActType - 100;
+						//pNpc->m_byInitMoveType = row->ActType - 100;
+
+						pNpcTable = m_arNpcTable.GetData(pNpc->m_sSid);
+					}
+
+					pNpc->m_byBattlePos = 0;
+
+					if (pNpc->m_byMoveType >= 2)
+					{
+						pNpc->m_byBattlePos = myrand(1, 3);
+						pNpc->m_byPathCount = nPathSerial++;
+					}
+
+					pNpc->InitPos();
+
+					if (pNpcTable == nullptr)
+					{
+						spdlog::error("ServerDlg::LoadNpcPosTable: npc not found [serial={}, npcId={}]",
+							pNpc->m_sNid, pNpc->m_sSid);
+						break;
+					}
+
+					if (bMoveNext)
+					{
+						bMoveNext = false;
+						nNpcCount = row->NumNpc;
+					}
+
+					pNpc->Load(pNpcTable, true);
+
+					//////// MONSTER POS ////////////////////////////////////////
+					pNpc->m_sCurZone = row->ZoneId;
+
+					float fRandom_X = 0.0f, fRandom_Z = 0.0f;
+
+					// map에 몬스터의 위치를 랜덤하게 위치시킨다.. (테스트 용 : 수정-DB에서 읽어오는데로 몬 위치 결정)
+					int nRandom = abs(row->LeftX - row->RightX);
+					if (nRandom <= 1)
+					{
+						fRandom_X = (float) row->LeftX;
+					}
+					else
+					{
+						if (row->LeftX < row->RightX)
+							fRandom_X = (float) myrand(row->LeftX, row->RightX);
+						else
+							fRandom_X = (float) myrand(row->RightX, row->LeftX);
+					}
+
+					nRandom = abs(row->TopZ - row->BottomZ);
+					if (nRandom <= 1)
+					{
+						fRandom_Z = (float) row->TopZ;
+					}
+					else
+					{
+						if (row->TopZ < row->BottomZ)
+							fRandom_Z = (float) myrand(row->TopZ, row->BottomZ);
+						else
+							fRandom_Z = (float) myrand(row->BottomZ, row->TopZ);
+					}
+
+					pNpc->m_fCurX = fRandom_X;
+					pNpc->m_fCurY = 0;
+					pNpc->m_fCurZ = fRandom_Z;
+
+					if (row->RespawnTime < 15)
+					{
+						spdlog::warn("ServerDlg::LoadNpcPosTable: RegTime below minimum value of 15s [npcId={}, serial={}, npcName={}, RegTime={}]",
+							pNpc->m_sSid, pNpc->m_sNid + NPC_BAND, pNpc->m_strName, row->RespawnTime);
+						// TODO: Set this to 15 in separate ticket and comment on it deviating from official behavior
+						row->RespawnTime = 30;
+					}
+
+					pNpc->m_sRegenTime = row->RespawnTime * 1000;	// 초(DB)단위-> 밀리세컨드로
+
+					pNpc->m_sMaxPathCount = row->PathPointCount;
+
+					if (pNpc->m_byMoveType == 2
+						|| pNpc->m_byMoveType == 3)
+					{
+						if (row->PathPointCount == 0
+							|| !row->Path.has_value())
+						{
+							std::string error = fmt::format("ServerDlg::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
+								row->ZoneId,
+								pNpc->m_sNid + NPC_BAND,
+								pNpc->m_sSid,
+								pNpc->m_strName,
+								pNpc->m_byMoveType,
+								pNpc->m_sMaxPathCount);
+
+							spdlog::error(error);
+							std::wstring werror = LocalToWide(error);
+							AfxMessageBox(werror.c_str());
+							return FALSE;
+						}
+					}
+
+					int index = 0;
+
+					if (row->PathPointCount != 0
+						&& row->Path.has_value())
+					{
+						// The path is a series of points (x,z), each in the form ("%04d%04d", x, z)
+						// As such, we expect there to be at least 8 characters per point.
+						constexpr size_t CharactersPerPoint = 8;
+
+						const std::string& path = *row->Path;
+						if ((row->PathPointCount * CharactersPerPoint) > path.size())
+						{
+							std::string error = fmt::format("LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
+								row->ZoneId,
+								row->PathPointCount,
+								pNpc->m_sNid + NPC_BAND,
+								pNpc->m_sSid,
+								pNpc->m_strName.c_str(),
+								pNpc->m_byMoveType,
+								pNpc->m_sMaxPathCount);
+							spdlog::error(error);
+							std::wstring werror = LocalToWide(error);
+							AfxMessageBox(werror.c_str());
+							return FALSE;
+						}
+
+						for (int l = 0; l < row->PathPointCount; l++)
+						{
+							char szX[5] = {}, szZ[5] = {};
+							GetString(szX, path.c_str(), 4, index);
+							GetString(szZ, path.c_str(), 4, index);
+							pNpc->m_PathList.pPattenPos[l].x = atoi(szX);
+							pNpc->m_PathList.pPattenPos[l].z = atoi(szZ);
+							//	TRACE(_T(" l=%d, x=%d, z=%d\n"), l, pNpc->m_PathList.pPattenPos[l].x, pNpc->m_PathList.pPattenPos[l].z);
+						}
+					}
+
+					pNpc->m_nInitMinX = pNpc->m_nLimitMinX = row->LeftX;
+					pNpc->m_nInitMinY = pNpc->m_nLimitMinZ = row->TopZ;
+					pNpc->m_nInitMaxX = pNpc->m_nLimitMaxX = row->RightX;
+					pNpc->m_nInitMaxY = pNpc->m_nLimitMaxZ = row->BottomZ;
+					// dungeon work
+					pNpc->m_byDungeonFamily = row->DungeonFamily;
+					pNpc->m_bySpecialType = row->SpecialType;
+					pNpc->m_byRegenType = row->RegenType;
+					pNpc->m_byTrapNumber = row->TrapNumber;
+
+					if (pNpc->m_byDungeonFamily > 0)
+					{
+						pNpc->m_nLimitMinX = row->LimitMinX;
+						pNpc->m_nLimitMinZ = row->LimitMinZ;
+						pNpc->m_nLimitMaxX = row->LimitMaxX;
+						pNpc->m_nLimitMaxZ = row->LimitMaxZ;
+					}
+
+					pNpc->m_ZoneIndex = -1;
+
+					MAP* pMap = nullptr;
+					for (size_t i = 0; i < g_arZone.size(); i++)
+					{
+						if (g_arZone[i]->m_nZoneNumber == pNpc->m_sCurZone)
+						{
+							pNpc->m_ZoneIndex = static_cast<short>(i);
+							pMap = g_arZone[i];
+							break;
+						}
+					}
+
+					if (pMap == nullptr)
+					{
+						spdlog::error("ServerDlg::LoadNpcPosTable: NPC invalid zone [npcId:{}, npcZoneId:{}]", pNpc->m_sSid, pNpc->m_sCurZone);
+						AfxMessageBox(_T("NPC invalid zone index error (see log)"));
+						return FALSE;
+					}
+
+					//pNpc->Init();
+					//m_arNpc.Add(pNpc);
+					if (!m_arNpc.PutData(pNpc->m_sNid, pNpc))
+					{
+						spdlog::error("ServerDlg::LoadNpcPosTable: Npc PutData Fail [serial={}]",
+							pNpc->m_sNid);
+						delete pNpc;
+						pNpc = nullptr;
+					}
+
+					if (pNpc != nullptr
+						&& pMap->m_byRoomEvent > 0
+						&& pNpc->m_byDungeonFamily > 0)
+					{
+						pRoom = pMap->m_arRoomEventArray.GetData(pNpc->m_byDungeonFamily);
+						if (pRoom == nullptr)
+						{
+							spdlog::error("ServerDlg::LoadNpcPosTable: No RoomEvent for NPC dungeonFamily: serial={}, npcId={}, npcName={}, dungeonFamily={}, zoneId={}",
+								pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
+							AfxMessageBox(_T("No RoomEvent for NPC dungeonFamily (see log)"));
+							return FALSE;
+						}
+
+						int* pInt = new int;
+						*pInt = pNpc->m_sNid;
+						if (!pRoom->m_mapRoomNpcArray.PutData(pNpc->m_sNid, pInt))
+						{
+							delete pInt;
+							spdlog::error("ServerDlg::LoadNpcPosTable: MapRoomNpcArray.PutData failed for NPC: [serial={}, npcId={}]", pNpc->m_sNid, pNpc->m_sSid);
+						}
+					}
+
+					m_TotalNPC = nSerial;
+
+					if (--nNpcCount > 0)
+						continue;
+
+					bMoveNext = true;
+					nNpcCount = 0;
+				}
+			}
+		} 
+		while (!bMoveNext);
+	}
+
+	return TRUE;
 }
 
+//	NPC Thread 들을 작동시킨다.
 void CServerDlg::ResumeAI()
 {
-	Guard lock(m_npcThreadLock);
-	foreach (itr, m_arNpcThread)
-		itr->second->m_thread.start(NpcThreadProc, itr->second);
+	int i, j;
 
-	Guard lock2(m_eventThreadLock);
-	foreach (itr, m_arEventNpcThread)
-		itr->second->m_thread.start(NpcThreadProc, itr->second);
-
-	m_zoneEventThread.start(ZoneEventThreadProc, this);
-}
-
-bool CServerDlg::MapFileLoad()
-{
-	ZoneInfoMap zoneMap;
-
-	m_sTotalMap = 0;
-	LOAD_TABLE_ERROR_ONLY(CZoneInfoSet, &m_GameDB, &zoneMap, false, false); 
-
-	foreach (itr, zoneMap)
+	for (i = 0; i < m_arNpcThread.size(); i++)
 	{
-		_ZONE_INFO *pZone = itr->second;
+		for (j = 0; j < NPC_NUM; j++)
+			m_arNpcThread[i]->m_ThreadInfo.pNpc[j] = m_arNpcThread[i]->m_pNpc[j];
 
-		MAP *pMap = new MAP();
-		if (!pMap->Initialize(pZone))
-		{
-			printf("ERROR: Unable to load SMD - %s\n", pZone->m_MapName.c_str());
-			delete pZone;
-			delete pMap;
-			g_arZone.DeleteAllData();
-			m_sTotalMap = 0;
-			return false;
-		}
+		m_arNpcThread[i]->m_ThreadInfo.pIOCP = &m_Iocport;
 
-		delete pZone;
-		g_arZone.PutData(pMap->m_nZoneNumber, pMap);
-		m_sTotalMap++;
+		ResumeThread(m_arNpcThread[i]->m_pThread->m_hThread);
 	}
 
-	return true;
+
+	// Event Npc Logic
+/*	m_arEventNpcThread[0]->m_ThreadInfo.hWndMsg = this->GetSafeHwnd();
+	for(j = 0; j < NPC_NUM; j++)
+	{
+		m_arEventNpcThread[0]->m_ThreadInfo.pNpc[j] = nullptr;	// 초기 소환 몹이 당연히 없으므로 NULL로 작동을 안시킴
+		m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[j] = 0;
+	}
+	m_arEventNpcThread[0]->m_ThreadInfo.pIOCP = &m_Iocport;
+
+	::ResumeThread(m_arEventNpcThread[0]->m_pThread->m_hThread);
+	*/
+
+	ResumeThread(m_pZoneEventThread->m_hThread);
 }
 
-/**
-* @brief	Gets & formats a cached server resource (_SERVER_RESOURCE entry).
-*
-* @param	nResourceID	Identifier for the resource.
-* @param	result	   	The string to store the formatted result in.
-*/
-void CServerDlg::GetServerResource(
-	int nResourceID,
-	std::string* result,
-	...)
+//	메모리 정리
+BOOL CServerDlg::DestroyWindow()
 {
-	_SERVER_RESOURCE* pResource = m_ServerResourceArray.GetData(nResourceID);
-	if (pResource == nullptr)
+	// TODO: Add your specialized code here and/or call the base class
+	KillTimer(CHECK_ALIVE);
+	//KillTimer( REHP_TIME );
+
+	g_bNpcExit = TRUE;
+
+	for (size_t i = 0; i < m_arNpcThread.size(); i++)
+		WaitForSingleObject(m_arNpcThread[i]->m_pThread->m_hThread, INFINITE);
+
+	// Event Npc Logic
+/*	for(i = 0; i < m_arEventNpcThread.size(); i++)
 	{
-		*result = nResourceID;
+		WaitForSingleObject(m_arEventNpcThread[i]->m_pThread->m_hThread, INFINITE);
+	}	*/
+
+	WaitForSingleObject(m_pZoneEventThread, INFINITE);
+
+	// DB테이블 삭제 부분
+
+	// Map(Zone) Array Delete...
+	for (size_t i = 0; i < g_arZone.size(); i++)
+		delete g_arZone[i];
+	g_arZone.clear();
+
+	// NpcTable Array Delete
+	if (!m_arMonTable.IsEmpty())
+		m_arMonTable.DeleteAllData();
+
+	// NpcTable Array Delete
+	if (!m_arNpcTable.IsEmpty())
+		m_arNpcTable.DeleteAllData();
+
+	// NpcThread Array Delete
+	for (size_t i = 0; i < m_arNpcThread.size(); i++)
+		delete m_arNpcThread[i];
+	m_arNpcThread.clear();
+
+	// Event Npc Logic
+	// EventNpcThread Array Delete
+/*	for(i = 0; i < m_arEventNpcThread.size(); i++)
+		delete m_arEventNpcThread[i];
+	m_arEventNpcThread.clear();		*/
+
+	// Item Array Delete
+	if (m_NpcItem.m_ppItem)
+	{
+		for (int i = 0; i < m_NpcItem.m_nRow; i++)
+		{
+			delete[] m_NpcItem.m_ppItem[i];
+			m_NpcItem.m_ppItem[i] = nullptr;
+		}
+		delete[] m_NpcItem.m_ppItem;
+		m_NpcItem.m_ppItem = nullptr;
+	}
+
+	if (!m_MakeWeaponItemArray.IsEmpty())
+		m_MakeWeaponItemArray.DeleteAllData();
+
+	if (!m_MakeDefensiveItemArray.IsEmpty())
+		m_MakeDefensiveItemArray.DeleteAllData();
+
+	if (!m_MakeGradeItemArray.IsEmpty())
+		m_MakeGradeItemArray.DeleteAllData();
+
+	if (!m_MakeLareItemArray.IsEmpty())
+		m_MakeLareItemArray.DeleteAllData();
+
+	// MagicTable Array Delete
+	if (!m_MagictableArray.IsEmpty())
+		m_MagictableArray.DeleteAllData();
+
+	if (!m_Magictype1Array.IsEmpty())
+		m_Magictype1Array.DeleteAllData();
+
+	if (!m_Magictype2Array.IsEmpty())
+		m_Magictype2Array.DeleteAllData();
+
+	if (!m_Magictype3Array.IsEmpty())
+		m_Magictype3Array.DeleteAllData();
+
+	if (!m_Magictype4Array.IsEmpty())
+		m_Magictype4Array.DeleteAllData();
+
+	// Npc Array Delete
+	if (!m_arNpc.IsEmpty())
+		m_arNpc.DeleteAllData();
+
+	// User Array Delete
+	for (int i = 0; i < MAX_USER; i++)
+	{
+		delete m_pUser[i];
+		m_pUser[i] = nullptr;
+	}
+
+	// Party Array Delete 
+	if (!m_arParty.IsEmpty())
+		m_arParty.DeleteAllData();
+
+	while (!m_ZoneNpcList.empty())
+		m_ZoneNpcList.pop_front();
+
+	DeleteCriticalSection(&g_User_critical);
+	DeleteCriticalSection(&g_region_critical);
+
+	s_pInstance = nullptr;
+
+	return CDialog::DestroyWindow();
+}
+
+void CServerDlg::DeleteUserList(int uid)
+{
+	if (uid < 0
+		|| uid >= MAX_USER)
+	{
+		spdlog::error("ServerDlg::DeleteUserList: userId invalid: {}", uid);
 		return;
 	}
 
-	va_list args;
-	va_start(args, result);
-	_string_format(pResource->strResource, result, args);
-	va_end(args);
+	EnterCriticalSection(&g_User_critical);
+	CUser* pUser = nullptr;
+	pUser = m_pUser[uid];
+	if (!pUser)
+	{
+		LeaveCriticalSection(&g_User_critical);
+		spdlog::error("ServerDlg::DeleteUserList: userId not found: {}", uid);
+		return;
+	}
+	if (pUser->m_iUserId == uid)
+	{
+		spdlog::debug("ServerDlg::DeleteUserList: User Logout: userId={}, charId={}", uid, pUser->m_strUserID);
+		pUser->m_lUsed = 1;
+		delete m_pUser[uid];
+		m_pUser[uid] = nullptr;
+	}
+	else
+	{
+		spdlog::warn("ServerDlg::DeleteUserList: userId mismatch : userId={} pUserId={}", uid, pUser->m_iUserId);
+	}
+
+	LeaveCriticalSection(&g_User_critical);
 }
 
+BOOL CServerDlg::MapFileLoad()
+{
+	using ModelType = model::ZoneInfo;
+
+	BOOL loaded = FALSE;
+
+	m_sTotalMap = 0;
+
+	recordset_loader::Base<ModelType> loader;
+	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
+	{
+		CString szFullPath;
+
+		// Build the base MAP directory
+		std::filesystem::path mapDir(GetProgPath().GetString());
+		mapDir /= MAP_DIR;
+
+		// Resolve it to strip the relative references to be nice.
+		if (std::filesystem::exists(mapDir))
+			mapDir = std::filesystem::canonical(mapDir);
+
+		do
+		{
+			ModelType row = {};
+			recordset.get_ref(row);
+
+			std::filesystem::path mapPath
+				= mapDir / row.Name;
+
+			szFullPath.Format(
+				_T("%ls"),
+				mapPath.c_str());
+
+			CFile file;
+			if (!file.Open(szFullPath, CFile::modeRead))
+			{
+				std::wstring werror = std::format(L"ServerDlg::MapFileLoad: Failed to open file: {}",
+					mapPath.c_str());
+				std::string error = WideToUtf8(werror);
+				AfxMessageBox(werror.c_str());
+				spdlog::error(error);
+				return;
+			}
+
+			MAP* pMap = new MAP();
+			pMap->m_nServerNo = row.ServerId;
+			pMap->m_nZoneNumber = row.ZoneId;
+
+			if (!pMap->LoadMap(file.m_hFile))
+			{
+				std::wstring werror = std::format(L"ServerDlg::MapFileLoad: Failed to load map file: {}",
+					mapPath.c_str());
+				std::string error = WideToUtf8(werror);
+				AfxMessageBox(werror.c_str());
+				spdlog::error(error);
+				delete pMap;
+				return;
+			}
+
+			file.Close();
+
+			// dungeon work
+			if (row.RoomEvent > 0)
+			{
+				if (!pMap->LoadRoomEvent(row.RoomEvent))
+				{
+					std::wstring werror = std::format(L"ServerDlg::MapFileLoad: LoadRoomEvent failed: {}",
+						mapPath.c_str());
+					std::string error = WideToUtf8(werror);
+					AfxMessageBox(werror.c_str());
+					spdlog::error(error);
+					delete pMap;
+					return;
+				}
+
+				pMap->m_byRoomEvent = 1;
+			}
+
+			g_arZone.push_back(pMap);
+			++m_sTotalMap;
+		}
+		while (recordset.next());
+
+		loaded = TRUE;
+	});
+
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	return loaded;
+}
+
+// sungyong 2002.05.23
 // game server에 모든 npc정보를 전송..
 void CServerDlg::AllNpcInfo()
 {
-	Packet result;
-	result.SByte();
-	foreach_stlmap (itr, g_arZone)
+	// server alive check
+	CNpc* pNpc = nullptr;
+	int nZone = 0;
+	int size = m_arNpc.GetSize();
+
+	int send_index = 0, zone_index = 0, packet_size = 0;
+	int count = 0, send_count = 0, send_tot = 0;
+	char send_buff[2048] = {};
+
+	for (MAP* pMap : g_arZone)
 	{
-		uint32_t nZone = itr->first;
-		uint8_t bCount = 0;
+		if (pMap == nullptr)
+			continue;
 
-		result.Initialize(NPC_INFO_ALL);
-		size_t wpos = result.wpos();
-		result << bCount;
+		nZone = pMap->m_nZoneNumber;
 
-		foreach_stlmap (itr, m_arNpc)
+		memset(send_buff, 0, sizeof(send_buff));
+		send_index = 0;
+		SetByte(send_buff, AG_SERVER_INFO, send_index);
+		SetByte(send_buff, SERVER_INFO_START, send_index);
+		SetByte(send_buff, nZone, send_index);
+		packet_size = Send(send_buff, send_index, nZone);
+
+		zone_index = GetZoneIndex(nZone);
+		send_index = 2;
+		count = 0;
+		send_count = 0;
+		m_CompCount = 0;
+		m_iCompIndex = 0;
+		memset(send_buff, 0, sizeof(send_buff));
+
+		spdlog::debug("ServerDlg::AllNpcInfo: start for zoneIndex={}", nZone);
+
+		for (int i = 0; i < size; i++)
 		{
-			CNpc *pNpc = itr->second;
-			if (pNpc == nullptr
-				|| pNpc->GetZoneID() != nZone)	
+			pNpc = m_arNpc.GetData(i);
+			if (pNpc == nullptr)
+			{
+				spdlog::warn("ServerDlg::AllNpcInfo: NpcArray[{}] is null", i);
+				continue;
+			}
+
+			if (pNpc->m_sCurZone != nZone)
 				continue;
 
-			pNpc->FillNpcInfo(result);
-			if (++bCount == NPC_NUM)
+			pNpc->SendNpcInfoAll(send_buff, send_index, count);
+			count++;
+
+			if (count == NPC_NUM)
 			{
-				result.put(wpos, bCount);
-				m_socketMgr.SendAllCompressed(&result);
-
-				// Reset packet buffer
-				bCount = 0;
-				result.Initialize(NPC_INFO_ALL);
-				result << bCount;
+				SetByte(send_buff, NPC_INFO_ALL, send_count);
+				SetByte(send_buff, (BYTE) count, send_count);
+				m_CompCount++;
+				//::CopyMemory(m_CompBuf+m_iCompIndex, send_buff, send_index);
+				memset(m_CompBuf, 0, sizeof(m_CompBuf));
+				::CopyMemory(m_CompBuf, send_buff, send_index);
+				m_iCompIndex = send_index;
+				SendCompressedData(nZone);
+				send_index = 2;
+				send_count = 0;
+				count = 0;
+				send_tot++;
+				//TRACE(_T("AllNpcInfo - send_count=%d, count=%d, zone=%d\n"), send_tot, count, nZone);
+				memset(send_buff, 0, sizeof(send_buff));
+				Sleep(50);
 			}
-		}	
-
-		if (bCount != 0 && bCount < NPC_NUM)
-		{
-			result.put(wpos, bCount);
-			m_socketMgr.SendAllCompressed(&result);
 		}
 
-		Packet serverInfo(AG_SERVER_INFO);
-		serverInfo << uint8_t(nZone) << uint16_t(m_TotalNPC);
-		m_socketMgr.SendAll(&serverInfo);
+		//if( count != 0 )	TRACE(_T("--> AllNpcInfo - send_count=%d, count=%d, zone=%d\n"), send_tot, count, nZone);
+		if (count != 0
+			&& count < NPC_NUM)
+		{
+			send_count = 0;
+			SetByte(send_buff, NPC_INFO_ALL, send_count);
+			SetByte(send_buff, (BYTE) count, send_count);
+			Send(send_buff, send_index, nZone);
+			send_tot++;
+			//TRACE(_T("AllNpcInfo - send_count=%d, count=%d, zone=%d\n"), send_tot, count, nZone);
+			Sleep(50);
+		}
+
+		send_index = 0;
+		memset(send_buff, 0, sizeof(send_buff));
+		SetByte(send_buff, AG_SERVER_INFO, send_index);
+		SetByte(send_buff, SERVER_INFO_END, send_index);
+		SetByte(send_buff, nZone, send_index);
+		SetShort(send_buff, (short) m_TotalNPC, send_index);
+		packet_size = Send(send_buff, send_index, nZone);
+
+		spdlog::debug("ServerDlg::AllNpcInfo: end for zoneId={}", nZone);
 	}
+
+	Sleep(1000);
 }
+// ~sungyong 2002.05.23
 
-Unit * CServerDlg::GetUnitPtr(uint16_t id)
+CUser* CServerDlg::GetUserPtr(int nid)
 {
-	if (id < NPC_BAND)
-		return GetUserPtr(id);
+	CUser* pUser = nullptr;
 
-	return GetNpcPtr(id);
-}
+	if (nid < 0
+		|| nid >= MAX_USER)
+	{
+		if (nid != -1)
+			spdlog::error("ServerDlg::GetUserPtr: User Array Overflow [{}]", nid);
 
-CNpc * CServerDlg::GetNpcPtr(uint16_t npcId)
-{
-	return m_arNpc.GetData(npcId);
-}
+		return nullptr;
+	}
 
-CUser* CServerDlg::GetUserPtr(uint16_t sessionId)
-{
-	Guard lock(m_userLock);
-	auto itr = m_pUser.find(sessionId);
-	if (itr == m_pUser.end())
+/*	if( !m_ppUserActive[nid] )
 		return nullptr;
 
-	return itr->second;
+	if( m_ppUserActive[nid]->m_lUsed == 1 ) return nullptr;	// 포인터 사용을 허락치 않음.. (logout중)
+
+	pUser = (CUser*)m_ppUserActive[nid];
+*/
+	pUser = m_pUser[nid];
+	if (pUser == nullptr)
+		return nullptr;
+
+	// 포인터 사용을 허락치 않음.. (logout중)
+	if (pUser->m_lUsed == 1)
+		return nullptr;
+
+	if (pUser->m_iUserId < 0
+		|| pUser->m_iUserId >= MAX_USER)
+		return nullptr;
+
+	if (pUser->m_iUserId == nid)
+		return pUser;
+
+	return nullptr;
 }
 
-bool CServerDlg::SetUserPtr(uint16_t sessionId, CUser * pUser)
+void CServerDlg::OnTimer(UINT nIDEvent)
 {
-	if (sessionId >= MAX_USER)
-		return false;
-
-	Guard lock(m_userLock);
-	auto itr = m_pUser.find(sessionId);
-	if (itr != m_pUser.end())
+	switch (nIDEvent)
 	{
-		TRACE("Warning: User %u has not been removed from the session map.\n", sessionId);
-		return false; 
+		case CHECK_ALIVE:
+			CheckAliveTest();
+			break;
+
+		case REHP_TIME:
+			//RechargeHp();
+			break;
 	}
 
-	m_pUser[sessionId] = pUser;
-	return true;
+	CDialog::OnTimer(nIDEvent);
 }
 
-void CServerDlg::DeleteUserPtr(uint16_t sessionId)
-{
-	Guard lock(m_userLock);
-	auto itr = m_pUser.find(sessionId);
-	if (itr != m_pUser.end())
-	{
-		delete itr->second;
-		m_pUser.erase(itr);
-	}
-}
-
+// sungyong 2002.05.23
 void CServerDlg::CheckAliveTest()
 {
-	Packet result(AG_CHECK_ALIVE_REQ);
-	SessionMap sessMap = m_socketMgr.GetActiveSessionMap();
-	uint32_t count = 0, sessCount = sessMap.size();
-	foreach (itr, sessMap)
+	int send_index = 0;
+	char send_buff[256] = {};
+	int iErrorCode = 0;
+
+	SetByte(send_buff, AG_CHECK_ALIVE_REQ, send_index);
+
+	CGameSocket* pSocket = nullptr;
+	int size = 0, count = 0;
+
+	CString logstr;
+	CTime time = CTime::GetCurrentTime();
+
+	for (int i = 0; i < MAX_SOCKET; i++)
 	{
-		if (itr->second->Send(&result))
+		pSocket = (CGameSocket*) m_Iocport.m_SockArray[i];
+		if (pSocket == nullptr)
+			continue;
+
+		size = pSocket->Send(send_buff, send_index);
+		if (size > 0)
+		{
+			++m_sErrorSocketCount;
+			if (m_sErrorSocketCount == 10)
+			{
+				spdlog::debug("ServerDlg::CheckAliveTest: all ebenezer sockets are connected");
+			}
 			count++;
-	}
-
-	if (sessCount > 0 && count == 0)
-		DeleteAllUserList();
-}
-
-uint32_t THREADCALL CServerDlg::Timer_CheckAliveTest(void * lpParam)
-{
-	while (g_bRunning)
-	{
-		g_pMain->CheckAliveTest();
-		sleep(10 * SECOND);
-	}
-	return 0;
-}
-
-uint32_t THREADCALL CServerDlg::Timer_CheckLiveTimes(void * lpParam)
-{
-	while (g_bRunning)
-	{
-		g_pMain->CheckLiveTimes();
-		sleep(1 * SECOND);
-	}
-	return 0;
-}
-
-void CServerDlg::CheckLiveTimes()
-{
-	std::vector<uint16_t> deleted;
-
-	foreach_stlmap_nolock (itr, m_NpcLiveTimeArray)
-	{
-		if (int32_t(UNIXTIME) - itr->second->SpawnedTime > itr->second->Duration)
-		{
-			CNpc *pNpc = GetNpcPtr(itr->second->Nid);
-
-			if (pNpc)
-				pNpc->Dead();
-
-			deleted.push_back(itr->second->nIndex);
 		}
+		//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
 	}
 
-	foreach (itr, deleted)
-		m_NpcLiveTimeArray.DeleteData(*itr);
+	if (count <= 0)
+		DeleteAllUserList(9999);
+
+	RegionCheck();
 }
 
-void CServerDlg::DeleteAllUserList(CGameSocket *pSock)
+void CServerDlg::DeleteAllUserList(int zone)
 {
-	// If a server disconnected, show it...
-	if (pSock != nullptr)
+	if (zone < 0)
+		return;
+
+	// 모든 소켓이 끊어진 상태...
+	if (zone == 9999
+		&& m_bFirstServerFlag)
 	{
-		printf("Game Server disconnected - %s\n", pSock->GetRemoteIP().c_str());
+		spdlog::debug("ServerDlg::DeleteAllUserList: start");
+
+		for (MAP* pMap : g_arZone)
+		{
+			if (pMap == nullptr)
+				continue;
+
+			for (int i = 0; i < pMap->m_sizeRegion.cx; i++)
+			{
+				for (int j = 0; j < pMap->m_sizeRegion.cy; j++)
+				{
+					if (!pMap->m_ppRegion[i][j].m_RegionUserArray.IsEmpty())
+						pMap->m_ppRegion[i][j].m_RegionUserArray.DeleteAllData();
+				}
+			}
+		}
+
+		EnterCriticalSection(&g_User_critical);
+		// User Array Delete
+		for (int i = 0; i < MAX_USER; i++)
+		{
+			delete m_pUser[i];
+			m_pUser[i] = nullptr;
+		}
+		// 파티 정보 삭제..
+		LeaveCriticalSection(&g_User_critical);
+
+		// Party Array Delete 
+		if (!m_arParty.IsEmpty())
+			m_arParty.DeleteAllData();
+
+		m_bFirstServerFlag = FALSE;
+		spdlog::debug("ServerDlg::DeleteAllUserList: end");
+
+		AddOutputMessage(_T("DeleteAllUserList: done"));
+	}
+	else if (zone != 9999)
+	{
+		std::wstring logstr = std::format(L"Ebenezer disconnected from zone={}",
+			zone);
+		AddOutputMessage(logstr);
+		spdlog::info("ServerDlg::DeleteAllUserList: ebenezer zone {} disconnected", zone);
+	}
+}
+// ~sungyong 2002.05.23
+
+void CServerDlg::SendCompressedData(int nZone)
+{
+	if (m_CompCount <= 0
+		|| m_iCompIndex <= 0)
+	{
+		m_CompCount = 0;
+		m_iCompIndex = 0;
+		spdlog::error("ServerDlg::SendCompressData: count={}, index={}",
+			m_CompCount, m_iCompIndex);
 		return;
 	}
 
-	// Server didn't disconnect? 
-	if (!m_bFirstServerFlag)
+	int send_index = 0;
+	char send_buff[32000] = {};
+	uint8_t comp_buff[32000] = {};
+	unsigned int comp_data_len = 0;
+	uint32_t crc_value = 0;
+
+	comp_data_len = lzf_compress(m_CompBuf, m_iCompIndex, comp_buff, sizeof(comp_buff));
+
+	_ASSERT(comp_data_len != 0 && comp_data_len <= sizeof(comp_buff));
+
+	if (comp_data_len == 0
+		|| comp_data_len > sizeof(comp_buff))
+	{
+		spdlog::error("ServerDlg::SendCompressedData: Failed to compress packet");
 		return;
-
-	// If there's no servers even connected, cleanup.
-	TRACE("*** DeleteAllUserList - Start *** \n");
-	foreach_stlmap (itr, g_arZone)
-	{
-		MAP * pMap = itr->second;
-		if (pMap == nullptr)	
-			continue;
-		for (int i = 0; i < pMap->GetXRegionMax(); i++)
-		{
-			for (int j = 0; j < pMap->GetZRegionMax(); j++)
-				pMap->m_ppRegion[i][j].m_RegionUserArray.DeleteAllData();
-		}
 	}
 
-	Guard lock(m_userLock);
-	foreach (itr, m_pUser)
-	{
-		if (itr->second == nullptr)  
-			continue;
+	crc_value = crc32(reinterpret_cast<uint8_t*>(m_CompBuf), m_iCompIndex);
 
-		delete itr->second;
-	}
-	m_pUser.clear();
+	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
+	SetShort(send_buff, (short) comp_data_len, send_index);
+	SetShort(send_buff, (short) m_iCompIndex, send_index);
+	SetDWORD(send_buff, crc_value, send_index);
+	SetShort(send_buff, (short) m_CompCount, send_index);
+	SetString(send_buff, reinterpret_cast<const char*>(comp_buff), comp_data_len, send_index);
 
-	// Party Array Delete 
-	m_arParty.DeleteAllData();
+	Send(send_buff, send_index, nZone);
 
-	m_bFirstServerFlag = false;
-	TRACE("*** DeleteAllUserList - End *** \n");
-
-	printf("Delete All User List\n");
+	m_CompCount = 0;
+	m_iCompIndex = 0;
 }
 
-void CServerDlg::Send(Packet * pkt)
+BOOL CServerDlg::PreTranslateMessage(MSG* pMsg)
 {
-	m_socketMgr.SendAll(pkt);
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		if (pMsg->wParam == VK_RETURN)
+			return TRUE;
+
+		if (pMsg->wParam == VK_F9)
+			SyncTest();
+	}
+
+	return CDialog::PreTranslateMessage(pMsg);
+}
+
+// sungyong 2002.05.23
+int CServerDlg::Send(char* pData, int length, int nZone)
+{
+	SEND_DATA* pNewData = nullptr;
+	pNewData = new SEND_DATA;
+	if (pNewData == nullptr)
+		return 0;
+
+	pNewData->sCurZone = nZone;
+	pNewData->sLength = length;
+	::CopyMemory(pNewData->pBuf, pData, length);
+
+	EnterCriticalSection(&(m_Iocport.m_critSendData));
+	m_Iocport.m_SendDataList.push_back(pNewData);
+	LeaveCriticalSection(&(m_Iocport.m_critSendData));
+
+	PostQueuedCompletionStatus(m_Iocport.m_hSendIOCP, 0, 0, nullptr);
+
+	return 0;
+}
+// ~sungyong 2002.05.23
+
+LRESULT CServerDlg::OnGameServerLogin(WPARAM wParam, LPARAM lParam)
+{
+/*	if( m_bNpcInfoDown ) {
+		m_ZoneNpcList.push_back(wParam);
+		return;
+	}
+
+	AllNpcInfo( wParam );	*/
+	return 0;
 }
 
 void CServerDlg::GameServerAcceptThread()
 {
-	m_socketMgr.RunServer();
+	::ResumeThread(m_Iocport.m_hAcceptThread);
 }
 
-bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, MAP * pMap)
+void CServerDlg::SyncTest()
 {
-	int sSid = 0;
+	spdlog::info("ServerDlg::SyncTest: begin");
 
-	if (pEvent->sType == OBJECT_GATE 
-		|| pEvent->sType == OBJECT_GATE2
-		|| pEvent->sType == OBJECT_GATE_LEVER
-		|| pEvent->sType == OBJECT_ANVIL 
-		|| pEvent->sType == OBJECT_ARTIFACT)
-		sSid = pEvent->sIndex;
-	else 
-		sSid =pEvent->sControlNpcID;
+	int send_index = 0;
+	char send_buff[256] = {};
+	int iErrorCode = 0;
 
-	if (sSid <= 0)
-		return false;
+	SetByte(send_buff, AG_CHECK_ALIVE_REQ, send_index);
 
-	CNpcTable * pNpcTable = m_arNpcTable.GetData(sSid);
-	if(pNpcTable == nullptr)	{
-		// TRACE("#### AddObjectEventNpc Fail : [sid = %d], zone=%d #####\n", pEvent->sIndex, zone_number);
-		return false;
+	CGameSocket* pSocket = nullptr;
+	int size = 0;
+
+	for (int i = 0; i < MAX_SOCKET; i++)
+	{
+		pSocket = (CGameSocket*) m_Iocport.m_SockArray[i];
+		if (pSocket == nullptr)
+			continue;
+
+		size = pSocket->Send(send_buff, send_index);
+
+		spdlog::info("ServerDlg::SyncTest: size={}, socketId={}", size, pSocket->m_sSocketID);
 	}
 
-	CNpc *pNpc = new CNpc();
+/*
+	int size = m_arNpc.GetSize();
+	CNpc* pNpc = nullptr;
+	CUser* pUser = nullptr;
+	__Vector3 vUser;
+	__Vector3 vNpc;
+	__Vector3 vDistance;
+	float fDis = 0.0f;
+	int count = 0;
+
+	fprintf(stream, "***** NPC List : %d *****\n", size);
+	for(int i=0; i<size; i++)
+	{
+		pNpc = m_arNpc.GetData(i);
+		if(pNpc == nullptr)
+		{
+			TRACE(_T("##### allNpcInfo Fail = %d\n"), i);
+			continue;
+		}
+
+		fprintf(stream, "nid=(%d, %s), zone=%d, x=%.2f, z=%.2f, rx=%d, rz=%d\n", pNpc->m_sNid+NPC_BAND, pNpc->m_strName,pNpc->m_sCurZone, pNpc->m_fCurX, pNpc->m_fCurZ, pNpc->m_iRegion_X, pNpc->m_iRegion_Z);
+
+	/*	vNpc.Set(pNpc->m_fCurX, 0, pNpc->m_fCurZ);
+		if(pNpc->m_byAttackPos)	{
+			//EnterCriticalSection( &g_User_critical );
+			pUser = m_arUser.GetData(pNpc->m_Target.id);
+			if(pUser == nullptr) {
+				fprintf(stream, "## Fail ## nid=(%d, %s), att_pos=%d, x=%.2f, z=%.2f\n", pNpc->m_sNid+NPC_BAND, pNpc->m_strName, pNpc->m_byAttackPos, pNpc->m_fCurX, pNpc->m_fCurZ);
+				continue;
+			}
+			vUser.Set(pNpc->m_Target.x, 0, pNpc->m_Target.z);
+			fDis = pNpc->GetDistance(vNpc, vUser);
+			//fprintf(stream, "[ target : x=%.2f, z=%.2f ] [ user : x=%.2f, z=%.2f ] \n", pNpc->m_Target.x, pNpc->m_Target.z, pUser->m_curx, pUser->m_curz);
+			fprintf(stream, "nid=(%d, %s), att_pos=%d, dis=%.2f, x=%.2f, z=%.2f\n", pNpc->m_sNid+NPC_BAND, pNpc->m_strName, pNpc->m_byAttackPos, fDis, pNpc->m_fCurX, pNpc->m_fCurZ);
+			//LeaveCriticalSection( &g_User_critical );
+		}	*/
+	//}	
+/*
+	fprintf(stream, "*****   User List  *****\n");
+
+	for(i=0; i<MAX_USER; i++)	{
+		//pUser = m_ppUserActive[i];
+		pUser = m_pUser[i];
+		if(pUser == nullptr)		continue;
+		fprintf(stream, "nid=(%d, %s), zone=%d, x=%.2f, z=%.2f, rx=%d, rz=%d\n", pUser->m_iUserId, pUser->m_strUserID, pUser->m_curZone, pUser->m_curx, pUser->m_curz, pUser->m_sRegionX, pUser->m_sRegionZ);
+	}
+
+	fprintf(stream, "*****   Region List  *****\n");
+	int k=0, total_user = 0, total_mon=0;
+	MAP* pMap = nullptr;
+
+	for(k=0; k<m_sTotalMap; k++)	{
+		pMap = g_arZone[k];
+		if(pMap == nullptr)	continue;
+		for( i=0; i<pMap->m_sizeRegion.cx; i++ ) {
+			for( int j=0; j<pMap->m_sizeRegion.cy; j++ ) {
+				EnterCriticalSection( &g_User_critical );
+				total_user = pMap->m_ppRegion[i][j].m_RegionUserArray.GetSize();
+				total_mon = pMap->m_ppRegion[i][j].m_RegionNpcArray.GetSize();
+				LeaveCriticalSection( &g_User_critical );
+
+				if(total_user > 0 || total_mon > 0)	{
+					fprintf(stream, "rx=%d, rz=%d, user=%d, monster=%d\n", i, j, total_user, total_mon);
+				}
+			}
+		}
+	}	*/
+}
+
+CUser* CServerDlg::GetActiveUserPtr(int index)
+{
+	CUser* pUser = nullptr;
+
+/*	if(index < 0 || index > MAX_USER)	{
+		TRACE(_T("### Fail :: User Array Overflow[%d] ###\n"), index );
+		return nullptr;
+	}
+
+	EnterCriticalSection( &g_User_critical );
+
+	if ( m_ppUserActive[index] ) {
+		LeaveCriticalSection( &g_User_critical );
+		TRACE(_T("### Fail : ActiveUser Array Invalid[%d] ###\n"), index );
+		return nullptr;
+	}
+	else {
+		pUser = (CUser *)m_ppUserInActive[index];
+		if( !pUser ) {
+			LeaveCriticalSection( &g_User_critical );
+			TRACE(_T("### Fail : InActiveUser Array Invalid[%d] ###\n"), index );
+			return nullptr;
+		}
+	}
+
+	m_ppUserActive[index] = pUser;
+	m_ppUserInActive[index] = nullptr;
+
+	LeaveCriticalSection( &g_User_critical );	*/
+
+	return pUser;
+}
+
+CNpc* CServerDlg::GetNpcPtr(const char* pNpcName)
+{
+	for (const auto& [_, pNpc] : m_arNpc)
+	{
+		if (pNpc != nullptr
+			&& strcmp(pNpc->m_strName.c_str(), pNpcName) == 0)
+			return pNpc;
+	}
+
+	spdlog::error("ServerDlg::GetNpcPtr: failed to find npc with name: {}", pNpcName);
+	return nullptr;
+}
+
+
+//	추가할 소환몹의 메모리를 참조하기위해 플래그가 0인 상태것만 넘긴다.
+CNpc* CServerDlg::GetEventNpcPtr()
+{
+	for (auto& [_, pNpc] : m_arNpc)
+	{
+		if (pNpc == nullptr)
+			continue;
+
+		if (pNpc->m_lEventNpc != 0)
+			continue;
+
+		pNpc->m_lEventNpc = 1;
+		return pNpc;
+	}
+
+	return nullptr;
+}
+
+int CServerDlg::MonsterSummon(const char* pNpcName, int zone_id, float fx, float fz)
+{
+	MAP* pMap = GetMapByID(zone_id);
+	if (pMap == nullptr)
+	{
+		spdlog::error("ServerDlg::MonsterSummon: No map found for npcName={}, zoneId={}",
+			pNpcName, zone_id);
+		return -1;
+	}
+
+	CNpc* pNpc = GetNpcPtr(pNpcName);
+	if (pNpc == nullptr)
+	{
+		spdlog::error("ServerDlg::MonsterSummon: no NPC found for npcName={}",
+			pNpcName);
+		return  -1;
+	}
+
+	BOOL bFlag = FALSE;
+	bFlag = SetSummonNpcData(pNpc, zone_id, fx, fz);
+
+	return 1;
+}
+
+//	소환할 몹의 데이타값을 셋팅한다.
+BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
+{
+	int  iCount = 0;
+	CNpc* pEventNpc = GetEventNpcPtr();
+	if (pEventNpc == nullptr)
+	{
+		spdlog::error("ServerDlg::SetSummonNpcData: No EventNpc found");
+		return FALSE;
+	}
+
+	pEventNpc->m_sSid = pNpc->m_sSid;						// MONSTER(NPC) Serial ID
+	pEventNpc->m_byMoveType = 1;
+	pEventNpc->m_byInitMoveType = 1;
+	pEventNpc->m_byBattlePos = 0;
+	pEventNpc->m_strName = pNpc->m_strName;					// MONSTER(NPC) Name
+	pEventNpc->m_sPid = pNpc->m_sPid;						// MONSTER(NPC) Picture ID
+	pEventNpc->m_sSize = pNpc->m_sSize;						// 캐릭터의 비율(100 퍼센트 기준)
+	pEventNpc->m_iWeapon_1 = pNpc->m_iWeapon_1;				// 착용무기
+	pEventNpc->m_iWeapon_2 = pNpc->m_iWeapon_2;				// 착용무기
+	pEventNpc->m_byGroup = pNpc->m_byGroup;					// 소속집단
+	pEventNpc->m_byActType = pNpc->m_byActType;				// 행동패턴
+	pEventNpc->m_byRank = pNpc->m_byRank;					// 작위
+	pEventNpc->m_byTitle = pNpc->m_byTitle;					// 지위
+	pEventNpc->m_iSellingGroup = pNpc->m_iSellingGroup;
+	pEventNpc->m_sLevel = pNpc->m_sLevel;					// level
+	pEventNpc->m_iExp = pNpc->m_iExp;						// 경험치
+	pEventNpc->m_iLoyalty = pNpc->m_iLoyalty;				// loyalty
+	pEventNpc->m_iHP = pNpc->m_iMaxHP;						// 최대 HP
+	pEventNpc->m_iMaxHP = pNpc->m_iMaxHP;					// 현재 HP
+	pEventNpc->m_sMP = pNpc->m_sMaxMP;						// 최대 MP
+	pEventNpc->m_sMaxMP = pNpc->m_sMaxMP;					// 현재 MP
+	pEventNpc->m_sAttack = pNpc->m_sAttack;					// 공격값
+	pEventNpc->m_sDefense = pNpc->m_sDefense;				// 방어값
+	pEventNpc->m_sHitRate = pNpc->m_sHitRate;				// 타격성공률
+	pEventNpc->m_sEvadeRate = pNpc->m_sEvadeRate;			// 회피성공률
+	pEventNpc->m_sDamage = pNpc->m_sDamage;					// 기본 데미지
+	pEventNpc->m_sAttackDelay = pNpc->m_sAttackDelay;		// 공격딜레이
+	pEventNpc->m_sSpeed = pNpc->m_sSpeed;					// 이동속도
+	pEventNpc->m_fSpeed_1 = pNpc->m_fSpeed_1;				// 기본 이동 타입
+	pEventNpc->m_fSpeed_2 = pNpc->m_fSpeed_2;				// 뛰는 이동 타입..
+	pEventNpc->m_fOldSpeed_1 = pNpc->m_fOldSpeed_1;			// 기본 이동 타입
+	pEventNpc->m_fOldSpeed_2 = pNpc->m_fOldSpeed_2;			// 뛰는 이동 타입..
+	pEventNpc->m_fSecForMetor = 4.0f;						// 초당 갈 수 있는 거리..
+	pEventNpc->m_sStandTime = pNpc->m_sStandTime;			// 서있는 시간
+	pEventNpc->m_iMagic1 = pNpc->m_iMagic1;					// 사용마법 1
+	pEventNpc->m_iMagic2 = pNpc->m_iMagic2;					// 사용마법 2
+	pEventNpc->m_iMagic3 = pNpc->m_iMagic3;					// 사용마법 3
+	pEventNpc->m_sFireR = pNpc->m_sFireR;					// 화염 저항력
+	pEventNpc->m_sColdR = pNpc->m_sColdR;					// 냉기 저항력
+	pEventNpc->m_sLightningR = pNpc->m_sLightningR;			// 전기 저항력
+	pEventNpc->m_sMagicR = pNpc->m_sMagicR;					// 마법 저항력
+	pEventNpc->m_sDiseaseR = pNpc->m_sDiseaseR;				// 저주 저항력
+	pEventNpc->m_sPoisonR = pNpc->m_sPoisonR;				// 독 저항력
+	pEventNpc->m_sLightR = pNpc->m_sLightR;					// 빛 저항력
+	pEventNpc->m_fBulk = pNpc->m_fBulk;
+	pEventNpc->m_bySearchRange = pNpc->m_bySearchRange;		// 적 탐지 범위
+	pEventNpc->m_byAttackRange = pNpc->m_byAttackRange;		// 사정거리
+	pEventNpc->m_byTracingRange = pNpc->m_byTracingRange;	// 추격거리
+	pEventNpc->m_tNpcType = pNpc->m_tNpcType;				// NPC Type
+	pEventNpc->m_byFamilyType = pNpc->m_byFamilyType;		// 몹들사이에서 가족관계를 결정한다.
+	pEventNpc->m_iMoney = pNpc->m_iMoney;					// 떨어지는 돈
+	pEventNpc->m_iItem = pNpc->m_iItem;						// 떨어지는 아이템
+	pEventNpc->m_tNpcLongType = pNpc->m_tNpcLongType;
+	pEventNpc->m_byWhatAttackType = pNpc->m_byWhatAttackType;
+
+	//////// MONSTER POS ////////////////////////////////////////
+	pEventNpc->m_sCurZone = static_cast<short>(zone_id);
+	pEventNpc->m_fCurX = fx;
+	pEventNpc->m_fCurY = 0;
+	pEventNpc->m_fCurZ = fz;
+	pEventNpc->m_nInitMinX = pNpc->m_nInitMinX;
+	pEventNpc->m_nInitMinY = pNpc->m_nInitMinY;
+	pEventNpc->m_nInitMaxX = pNpc->m_nInitMaxX;
+	pEventNpc->m_nInitMaxY = pNpc->m_nInitMaxY;
+	pEventNpc->m_sRegenTime = pNpc->m_sRegenTime;			// 초(DB)단위-> 밀리세컨드로
+
+	pEventNpc->m_ZoneIndex = -1;
+
+	pEventNpc->m_NpcState = NPC_DEAD;						// 상태는 죽은것으로 해야 한다.. 
+	pEventNpc->m_bFirstLive = 1;							// 처음 살아난 경우로 해줘야 한다..
+
+	for (size_t i = 0; i < g_arZone.size(); i++)
+	{
+		if (g_arZone[i]->m_nZoneNumber == zone_id)
+		{
+			pEventNpc->m_ZoneIndex = static_cast<short>(i);
+			break;
+		}
+	}
+
+	if (pEventNpc->m_ZoneIndex == -1)
+	{
+		spdlog::error("ServerDlg::SetSummonNpcData: invalid zone index");
+		return FALSE;
+	}
+
+	pEventNpc->Init();
+
+	BOOL bSuccess = FALSE;
+
+	int test = 0;
+
+	for (int i = 0; i < NPC_NUM; i++)
+	{
+		test = m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i];
+		spdlog::debug("ServerDlg::SetSummonNpcData: setsummon == {}, used={}", i, test);
+		if (m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] == 0)
+		{
+			m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] = 1;
+			bSuccess = TRUE;
+			m_arEventNpcThread[0]->m_ThreadInfo.pNpc[i] = pEventNpc;
+			break;
+		}
+	}
+
+	if (!bSuccess)
+	{
+		pEventNpc->m_lEventNpc = 0;
+		spdlog::error("ServerDlg::SetSummonNpcData: summon failed");
+		return FALSE;
+	}
+
+	spdlog::debug("ServerDlg::SetSummonNpcData: summoned serial={} npcName={} npcState={}",
+		pEventNpc->m_sNid + NPC_BAND, pEventNpc->m_strName, pEventNpc->m_NpcState);
+
+	return TRUE;
+}
+
+void CServerDlg::TestCode()
+{
+	//InitTrigonometricFunction();
+
+	int random = 0, count_1 = 0, count_2 = 0, count_3 = 0;
+
+	// TestCoding
+	for (int i = 0; i < 100; i++)
+	{
+		random = myrand(1, 3);
+		if (random == 1)
+			count_1++;
+		else if (random == 2)
+			count_2++;
+		else if (random == 3)
+			count_3++;
+	}
+
+	//TRACE(_T("$$$ random test == 1=%d, 2=%d, 3=%d,, %d,%hs $$$\n"), count_1, count_2, count_3, __FILE__, __LINE__);
+
+}
+
+BOOL CServerDlg::GetMagicType1Data()
+{
+	recordset_loader::STLMap loader(m_Magictype1Array);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMagicType1Data: MAGIC_TYPE1 loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMagicType2Data()
+{
+	recordset_loader::STLMap loader(m_Magictype2Array);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMagicType2Data: MAGIC_TYPE2 loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMagicType3Data()
+{
+	recordset_loader::STLMap loader(m_Magictype3Array);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMagicType3Data: MAGIC_TYPE3 loaded");
+	return TRUE;
+}
+
+BOOL CServerDlg::GetMagicType4Data()
+{
+	recordset_loader::STLMap loader(m_Magictype4Array);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	spdlog::info("ServerDlg::GetMagicType4Data: MAGIC_TYPE4 loaded");
+	return TRUE;
+}
+
+void CServerDlg::RegionCheck()
+{
+	for (MAP* pMap : g_arZone)
+	{
+		if (pMap == nullptr)
+			continue;
+
+		for (int i = 0; i < pMap->m_sizeRegion.cx; i++)
+		{
+			for (int j = 0; j < pMap->m_sizeRegion.cy; j++)
+			{
+				EnterCriticalSection(&g_User_critical);
+				int total_user = pMap->m_ppRegion[i][j].m_RegionUserArray.GetSize();
+				LeaveCriticalSection(&g_User_critical);
+				if (total_user > 0)  
+					pMap->m_ppRegion[i][j].m_byMoving = 1;
+				else
+					pMap->m_ppRegion[i][j].m_byMoving = 0;
+			}
+		}
+	}
+}
+
+BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
+{
+	int i = 0, j = 0, objectid = 0;
+	model::Npc* pNpcTable = nullptr;
+	BOOL bFindNpcTable = FALSE;
+	int offset = 0;
+	int nServerNum = 0;
+	nServerNum = GetServerNumber(zone_number);
+	//if(m_byZone != zone_number)	 return FALSE;
+	//if(m_byZone != UNIFY_ZONE)	{
+	//	if(m_byZone != nServerNum)	 return FALSE;
+	//}
+
+	//if( zone_number > 201 )	return FALSE;	// test
+	pNpcTable = m_arNpcTable.GetData(pEvent->sIndex);
+	if (pNpcTable == nullptr)
+	{
+		bFindNpcTable = FALSE;
+		spdlog::error("ServerDlg::AddObjectEventNpc error: eventId={} zoneId={}",
+			pEvent->sIndex, zone_number);
+		return FALSE;
+	}
+
+	bFindNpcTable = TRUE;
+
+	CNpc* pNpc = new CNpc();
+
+	pNpc->m_sNid = m_sMapEventNpc++;				// 서버 내에서의 고유 번호
+	pNpc->m_sSid = (short) pEvent->sIndex;			// MONSTER(NPC) Serial ID
+
+	pNpc->m_byMoveType = 100;
+	pNpc->m_byInitMoveType = 100;
+	bFindNpcTable = FALSE;
 
 	pNpc->m_byMoveType = 0;
 	pNpc->m_byInitMoveType = 0;
 
 	pNpc->m_byBattlePos = 0;
 
+	pNpc->m_fSecForMetor = 4.0f;					// 초당 갈 수 있는 거리..
+
+	pNpc->Load(pNpcTable, false);
+
+	//////// MONSTER POS ////////////////////////////////////////
+
+	pNpc->m_sCurZone = zone_number;
+
+	pNpc->m_byGateOpen = pEvent->sStatus;
+	pNpc->m_fCurX = pEvent->fPosX;
+	pNpc->m_fCurY = pEvent->fPosY;
+	pNpc->m_fCurZ = pEvent->fPosZ;
+
+	pNpc->m_nInitMinX = pEvent->fPosX - 1;
+	pNpc->m_nInitMinY = pEvent->fPosZ - 1;
+	pNpc->m_nInitMaxX = pEvent->fPosX + 1;
+	pNpc->m_nInitMaxY = pEvent->fPosZ + 1;
+
+	pNpc->m_sRegenTime = 10000 * 1000;	// 초(DB)단위-> 밀리세컨드로
+	//pNpc->m_sRegenTime		= 30 * 1000;	// 초(DB)단위-> 밀리세컨드로
+	pNpc->m_sMaxPathCount = 0;
+
+	pNpc->m_ZoneIndex = -1;
 	pNpc->m_byObjectType = SPECIAL_OBJECT;
-	pNpc->m_byGateOpen	= (pEvent->sStatus == 1);
+	pNpc->m_bFirstLive = 1;		// 처음 살아난 경우로 해줘야 한다..
+	//pNpc->m_ZoneIndex = GetZoneIndex(pNpc->m_sCurZone);
+/*
+	if(pNpc->m_ZoneIndex == -1)	{
+		AfxMessageBox("Invaild zone Index!!");
+		return FALSE;
+	}	*/
 
-	pNpc->m_bZone	= pMap->m_nZoneNumber;
-	pNpc->SetPosition(pEvent->fPosX, pEvent->fPosY, pEvent->fPosZ);
-
-	pNpc->m_nInitMinX	= (int)pEvent->fPosX-1;
-	pNpc->m_nInitMinY	= (int)pEvent->fPosZ-1;
-	pNpc->m_nInitMaxX	= (int)pEvent->fPosX+1;
-	pNpc->m_nInitMaxY	= (int)pEvent->fPosZ+1;	
-	
-	pNpc->Load(m_sMapEventNpc++, pNpcTable, false);
-	pNpc->m_pMap = pMap;
-
-	if (pNpc->GetMap() == nullptr
-		|| !m_arNpc.PutData(pNpc->GetID(), pNpc))
+	//pNpc->Init();
+	if (!m_arNpc.PutData(pNpc->m_sNid, pNpc))
 	{
-		m_sMapEventNpc--;
-		TRACE("Npc PutData Fail - %d\n", pNpc->GetID());
+		spdlog::warn("ServerDlg::AddObjectEventNpc: Npc PutData Fail [serial={}]",
+			pNpc->m_sNid);
 		delete pNpc;
-		return false;
+		pNpc = nullptr;
 	}
 
 	m_TotalNPC = m_sMapEventNpc;
-	return true;
+
+	return TRUE;
 }
 
-CNpc * CServerDlg::SpawnEventNpc(uint16_t sSid, bool bIsMonster, uint8_t byZone, float fX, float fY, float fZ, uint16_t sDuration, uint8_t nation, int16_t socketID, uint16_t nEventRoom)
+int CServerDlg::GetZoneIndex(int zoneId) const
 {
-	CNpcTable * proto = nullptr;
-	MAP * pZone = GetZoneByID(byZone);
-
-	if (pZone == nullptr)
-		return nullptr;
-
-	if (bIsMonster)
-		proto = m_arMonTable.GetData(sSid);
-	else
-		proto = m_arNpcTable.GetData(sSid);
-
-	if (proto == nullptr)
-		return nullptr;
-
-	Guard lock(m_eventThreadLock);
-	auto itr = m_arEventNpcThread.find(byZone);
-	if (itr == m_arEventNpcThread.end())
-		return false;
-
-	CNpc * pNpc = new CNpc();
-
-	pNpc->m_bIsEventNpc = true;
-	pNpc->m_byMoveType = (bIsMonster ? 1 : 0);
-	pNpc->m_byInitMoveType = 1;
-	pNpc->m_byBattlePos = 0;
-
-	pNpc->m_bZone = byZone;
-	pNpc->SetPosition(fX, fY, fZ);
-	pNpc->m_pMap = pZone;
-	pNpc->m_oSocketID = socketID;
-	pNpc->m_bEventRoom = nEventRoom;
-
-	pNpc->Load(++m_TotalNPC, proto, bIsMonster, nation);
-	pNpc->InitPos();
-
-	itr->second->AddNPC(pNpc);
-	m_arNpc.PutData(pNpc->GetID(), pNpc);
-
-	if (sDuration > 0) // Duration npc or monsters
+	for (size_t i = 0; i < g_arZone.size(); i++)
 	{
-		_NPC_LIVE_TIME * pData = new _NPC_LIVE_TIME();
-		pData->nIndex = m_NpcLiveTimeArray.GetSize() + 1;
-		pData->SocketID = socketID;
-		pData->Nid = pNpc->m_sNid;
-		pData->Duration = sDuration;
-		pData->SpawnedTime = int32_t(UNIXTIME);
-		if (!m_NpcLiveTimeArray.PutData(pData->nIndex,pData))
-			delete pData;
+		MAP* pMap = g_arZone[i];
+		if (pMap != nullptr
+			&& pMap->m_nZoneNumber == zoneId)
+			return i;
 	}
 
-	return pNpc;
+	spdlog::error("ServerDlg::GetZoneIndex: zoneId={} not found", zoneId);
+	return -1;
 }
 
-void CServerDlg::RemoveEventNPC(CNpc * pNpc)
+int CServerDlg::GetServerNumber(int zoneId) const
 {
-	Guard lock(m_eventThreadLock);
-	auto itr = m_arEventNpcThread.find(pNpc->GetZoneID());
-	if (itr == m_arEventNpcThread.end())
-		return;
+	for (MAP* pMap : g_arZone)
+	{
+		if (pMap != nullptr
+			&& pMap->m_nZoneNumber == zoneId)
+			return pMap->m_nServerNo;
+	}
 
-	itr->second->RemoveNPC(pNpc);
+	spdlog::error("ServerDlg::GetServerNumber: zoneId={} not found", zoneId);
+	return -1;
 }
 
-void CServerDlg::NpcUpdate(uint16_t sSid, bool bIsMonster, uint8_t byGroup, uint16_t sPid)
+void CServerDlg::CloseSocket(int zonenumber)
 {
-	CNpcTable * proto = nullptr;
+	CGameSocket* pSocket = nullptr;
 
-	if (bIsMonster)
-		proto = m_arMonTable.GetData(sSid);
-	else
-		proto = m_arNpcTable.GetData(sSid);
+	for (int i = 0; i < MAX_SOCKET; i++)
+	{
+		pSocket = (CGameSocket*) m_Iocport.m_SockArray[i];
+		if (pSocket == nullptr)
+			continue;
 
-	if (proto == nullptr)
-		return;
-
-	if (byGroup > 0)
-		proto->m_byGroupSpecial = byGroup;
-
-	if (sPid > 0)
-		proto->m_sPid = sPid;
-}
-
-MAP * CServerDlg::GetZoneByID(int zonenumber)
-{
-	return g_arZone.GetData(zonenumber);
+		if (pSocket->m_sSocketID == zonenumber)
+		{
+			//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
+			pSocket->CloseProcess();
+			m_Iocport.RidIOCPSocket(pSocket->GetSocketID(), pSocket);
+		}
+	}
 }
 
 void CServerDlg::GetServerInfoIni()
 {
-	CIni ini("./AIServer.ini");
-	ini.GetString("ODBC", "GAME_DSN", "KN_online", m_strGameDSN, false);
-	ini.GetString("ODBC", "GAME_UID", "", m_strGameUID, false);
-	ini.GetString("ODBC", "GAME_PWD", "", m_strGamePWD, false);
+	CString exePath = GetProgPath();
+	std::string exePathUtf8(CT2A(exePath, CP_UTF8));
 
-	m_AIServerPort = ini.GetInt("SETTINGS","PORT", 10020);
+	std::filesystem::path iniPath(exePath.GetString());
+	iniPath /= L"server.ini";
+	
+	CIni inifile;
+	inifile.Load(iniPath);
+
+	// logger setup
+	_logger.Setup(inifile, exePathUtf8);
+	
+	m_byZone = inifile.GetInt(_T("SERVER"), _T("ZONE"), 1);
+
+	std::string datasourceName = inifile.GetString("ODBC", "GAME_DSN", "KN_online");
+	std::string datasourceUser = inifile.GetString("ODBC", "GAME_UID", "knight");
+	std::string datasourcePass = inifile.GetString("ODBC", "GAME_PWD", "knight");
+
+	ConnectionManager::SetDatasourceConfig(
+		modelUtil::DbType::GAME,
+		datasourceName, datasourceUser, datasourcePass);
+
+	// Trigger a save to flush defaults to file.
+	inifile.Save();
 }
 
-void CServerDlg::SendSystemMsg(std::string & pMsg, int type)
+void AIServerLogger::SetupExtraLoggers(CIni& ini,
+	std::shared_ptr<spdlog::details::thread_pool> threadPool,
+	const std::string& baseDir)
 {
-	Packet result(AG_SYSTEM_MSG);
-	result << uint8_t(type) << pMsg;
-	Send(&result);
+	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerItem, ini::ITEM_LOG_FILE);
+	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerUser, ini::USER_LOG_FILE);
+}
+
+void CServerDlg::SendSystemMsg(const std::string_view msg, int zone, int type, int who)
+{
+	int send_index = 0;
+	char buff[256] = {};
+
+	SetByte(buff, AG_SYSTEM_MSG, send_index);
+	SetByte(buff, type, send_index);				// 채팅형식
+	SetShort(buff, who, send_index);				// 누구에게
+	SetString2(buff, msg, send_index);
+
+	Send(buff, send_index, zone);
+	spdlog::info("ServerDlg::SendSystemMsg: zoneId={} type={} who={} msg={}",
+		zone, type, who, msg);
 }
 
 void CServerDlg::ResetBattleZone()
 {
-	TRACE("ServerDlg - ResetBattleZone() : start \n");
-	foreach_stlmap (itr, g_arZone)
+	spdlog::debug("ServerDlg::ResetBattleZone: start");
+
+	for (MAP* pMap : g_arZone)
 	{
-		MAP *pMap = itr->second;
-		if (pMap == nullptr || pMap->m_byRoomEvent == 0) 
+		if (pMap== nullptr)
 			continue;
-		//if( pMap->IsRoomStatusCheck() == true )	continue;	// 전체방이 클리어 되었다면
+
+		// 현재의 존이 던젼담당하는 존이 아니면 리턴..
+		if (pMap->m_byRoomEvent == 0)
+			continue;
+
+		// 전체방이 클리어 되었다면
+		// if (pMap->IsRoomStatusCheck())
+		//	continue;
+
 		pMap->InitializeRoom();
 	}
-	TRACE("ServerDlg - ResetBattleZone() : end \n");
+
+	spdlog::debug("ServerDlg::ResetBattleZone: end");
 }
 
-CServerDlg::~CServerDlg() 
+MAP* CServerDlg::GetMapByIndex(int iZoneIndex) const
 {
-	g_bNpcExit = true;
-
-	printf("Waiting for NPC threads to exit...");
-
-	Guard lock(m_npcThreadLock);
-	foreach (itr, m_arNpcThread)
+	if (iZoneIndex < 0
+		|| iZoneIndex >= static_cast<int>(g_arZone.size()))
 	{
-		CNpcThread * pThread = itr->second;
-		pThread->m_thread.waitForExit();
-		delete pThread;
+		spdlog::error("ServerDlg::GetMapByIndex: zoneIndex={} out of bounds", iZoneIndex);
+		return nullptr;
 	}
-	m_arNpcThread.clear();
 
-	Guard lock2(m_eventThreadLock);
-	foreach (itr, m_arEventNpcThread)
+	return g_arZone[iZoneIndex];
+}
+
+MAP* CServerDlg::GetMapByID(int iZoneID) const
+{
+	for (MAP* pMap : g_arZone)
 	{
-		CNpcThread * pThread = itr->second;
-		pThread->m_thread.waitForExit();
-		delete pThread;
+		if (pMap != nullptr
+			&& pMap->m_nZoneNumber == iZoneID)
+			return pMap;
 	}
-	m_arEventNpcThread.clear();
+	spdlog::error("ServerDlg::GetMapByID: no map found for zoneId={}", iZoneID);
+	return nullptr;
+}
 
-	printf(" exited.\n");
+/// \brief adds a message to the application's output box and updates scrollbar position
+/// \see _outputList
+void CServerDlg::AddOutputMessage(const std::string& msg)
+{
+	std::wstring wMsg = LocalToWide(msg);
+	AddOutputMessage(wMsg);
+}
 
-	printf("Waiting for zone event thread to exit...");
-	m_zoneEventThread.waitForExit();
-	printf(" exited.\n");
-
-	printf("Waiting for timer threads to exit...");
-	foreach (itr, g_timerThreads)
-	{
-		(*itr)->waitForExit();
-		delete (*itr);
-	}
-	printf(" exited.\n");
-
-	printf("Freeing user sessions...");
-	for (int i = 0; i < MAX_USER; i++)
-	{
-		if (m_pUser[i] != nullptr)
-		{
-			delete m_pUser[i];
-			m_pUser[i] = nullptr;
-		}
-	}
-	printf(" done.\n");
-
-	m_ZoneNpcList.clear();
-
-	printf("Shutting down socket system...");
-	m_socketMgr.Shutdown();
-	printf(" done.\n");
+/// \brief adds a message to the application's output box and updates scrollbar position
+/// \see _outputList
+void CServerDlg::AddOutputMessage(const std::wstring& msg)
+{
+	_outputList.AddString(msg.data());
+	
+	// Set the focus to the last item and ensure it is visible
+	int lastIndex = _outputList.GetCount()-1;
+	_outputList.SetTopIndex(lastIndex);
 }

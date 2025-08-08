@@ -3,14 +3,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UITradeList.h"
-
 #include "GameDef.h"
 #include "GameProcedure.h"
+#include "text_resources.h"
 
-#include "N3UIString.h"
-#include "N3UIScrollBar.h"
+#include <N3Base/N3UIString.h>
+#include <N3Base/N3UIScrollBar.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -116,7 +115,6 @@ void CUITradeList::Open(int iIDTarget)
 	if (!iIDIndexLast) iIDIndexLast = iTotalCount;
 
 	// 메시지 박스 텍스트 표시..
-	char pszID[32];
 	for( i = iIDIndexFirst; i < iIDIndexFirst + 40; i++ )
 	{
 		pQuest						= CGameBase::s_pTbl_Exchange_Quest.GetIndexedData(i);
@@ -136,8 +134,7 @@ void CUITradeList::Open(int iIDTarget)
 			if(pItem) m_sStr[i-iIDIndexFirst] += pItem->szName;
 			else m_sStr[i-iIDIndexFirst] += "NULL Item";
 			m_sStr[i-iIDIndexFirst]		+= "를 ";	
-			sprintf(pszID, "%d",i);
-			m_sStr[i-iIDIndexFirst]		+= pszID;
+			m_sStr[i-iIDIndexFirst]		+= std::to_string(i);
 			m_sStr[i-iIDIndexFirst]		+= "\n";
 		}
 		else

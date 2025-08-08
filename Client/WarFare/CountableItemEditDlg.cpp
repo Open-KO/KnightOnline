@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
+#include "text_resources.h"
 #include "CountableItemEditDlg.h"
 
 #include "GameProcedure.h"
@@ -16,7 +16,9 @@
 #include "UIWareHouseDlg.h"
 #include "UIManager.h"
 
-#include "N3UIEdit.h"
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIEdit.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -153,9 +155,9 @@ void CCountableItemEditDlg::Open(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bCountG
 {
 	std::string szMsg;
 	if (bCountGold)
-		CGameBase::GetText(IDS_EDIT_BOX_GOLD, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_EDIT_BOX_GOLD);
 	else
-		CGameBase::GetText(IDS_EDIT_BOX_COUNT, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_EDIT_BOX_COUNT);
 
 	CN3UIString* pString = NULL;
 	pString = (CN3UIString*)this->GetChildByID("String_PersonTradeEdit_Msg");
@@ -223,14 +225,14 @@ int	CCountableItemEditDlg::GetQuantity() // "edit_trade" Edit Control 에서 정
 
 void CCountableItemEditDlg::SetQuantity(int iQuantity) // "edit_trade" Edit Control 에서 정수값을 문자열로 세팅한다..
 {
-	CN3UIEdit* pEdit = (CN3UIEdit*)this->GetChildByID("edit_trade");
+	CN3UIEdit* pEdit = (CN3UIEdit*) GetChildByID("edit_trade");
 	__ASSERT(pEdit, "NULL UI Component!!");
 
-	char szBuff[64] = "";
+	std::string buff;
 	if (iQuantity != -1)
-		sprintf(szBuff, "%d", iQuantity);
+		buff = std::to_string(iQuantity);
 
-	pEdit->SetString(szBuff);
+	pEdit->SetString(buff);
 }
 
 //this_ui_add_start

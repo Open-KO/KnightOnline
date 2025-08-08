@@ -99,6 +99,6 @@ void CSkyViewerDoc::OnFileSaveAsGameFormat()
 	CFileDialog dlg(FALSE, "N3Sky", NULL, dwFlags, "Sky Binary File(*.N3Sky)|*.N3Sky||", NULL);
 	if(dlg.DoModal() == IDCANCEL) return;
 	
-	std::string szFN = dlg.GetPathName();
-	m_Sky.SaveToFile(szFN);
+	CT2A szFN(dlg.GetPathName());
+	m_Sky.SaveToFile(szFN.m_psz);
 }

@@ -420,7 +420,9 @@ BOOL CPondMng::MouseMsgFilter(LPMSG pMsg)
 
 				vPN.Set(0,1,0); vPV = vMouseStrPos;
 				m_VtxPosDummy.GetPickRay(point, vRayDir, vRayOrig);	// 이함수 잠시 빌려씀.
-				float fT = D3DXVec3Dot(&vPN,&(vPV-vRayOrig)) / D3DXVec3Dot(&vPN, &vRayDir);
+
+				__Vector3 vTmp = vPV - vRayOrig;
+				float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
 				vPos = vRayOrig + vRayDir*fT;	//	시작점과 마우스점을 구했음
 
 				ReSetDrawRect(vMouseStrPos,vPos);	//	받은 두점을 맵상의 사각형태로 변환
@@ -548,9 +550,13 @@ BOOL CPondMng::MouseMsgFilter(LPMSG pMsg)
 				__Vector3 vPN, vPV;	// 평면의 법선과 포함된 점
 				__Vector3 vPos;	// 위의 평면과 직선의 만나는 점(구할 점)
 
-				vPN.Set(0,1,0); vPV = vMouseStrPos;
+				vPN.Set(0,1,0);
+				vPV = vMouseStrPos;
+
 				m_VtxPosDummy.GetPickRay(point, vRayDir, vRayOrig);	// 이함수 잠시 빌려씀.
-				float fT = D3DXVec3Dot(&vPN,&(vPV-vRayOrig)) / D3DXVec3Dot(&vPN, &vRayDir);
+
+				__Vector3 vTmp = vPV - vRayOrig;
+				float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
 				vPos = vRayOrig + vRayDir*fT;
 
 				ReSetDrawRect(vMouseStrPos,vPos);
@@ -941,33 +947,42 @@ void CPondMng::ReCalcSelectedVertex()
 	int iSize = m_pSelPonds.size();
 	if(iSize==0) return;
 
-	it_PondMesh it = m_pSelPonds.begin();
+	__VertexXyzT2* pVtxSel = m_SelVtxArray.GetAt(0);
+	if (pVtxSel == nullptr)
+		return;
+
+	auto it = m_pSelPonds.begin();
 	for(int i = 0; i < iSize; i++, it++)
 	{
-		CPondMesh* pSelPond= *it;
-		__VertexXyzT2 *pVtx0 = pSelPond->GetVertex(0);
-		__VertexXyzT2 *pVtxSel = m_SelVtxArray.GetAt(0);
+		CPondMesh* pSelPond = *it;
+		__VertexXyzT2* pVtx0 = pSelPond->GetVertex(0);
+		if (pVtx0 == nullptr)
+			continue;
+
 		int nIndex = pVtxSel - pVtx0;
 		int iLastVtxNum = pSelPond->LastVertexCount();
-		
-		nIndex = (nIndex/iLastVtxNum)*iLastVtxNum;
-		pVtxSel = pSelPond->GetVertex(nIndex);
-		ASSERT(pSelPond->VertexCount()-iLastVtxNum >= nIndex);
-		ASSERT(pVtxSel);
+
+		nIndex = (nIndex / iLastVtxNum) * iLastVtxNum;
+
+		__VertexXyzT2* pVtxTmp = pSelPond->GetVertex(nIndex);
+		if (pVtxTmp == nullptr)
+			continue;
+
+		ASSERT(pSelPond->VertexCount() - iLastVtxNum >= nIndex);
 
 		__Vector3 vPos1, vPos2, vDif;
-		vPos1 = *(pVtxSel);
-		vPos2 = *(pVtxSel+iLastVtxNum-1);
+		vPos1 = pVtxTmp[0];
+		vPos2 = pVtxTmp[iLastVtxNum - 1];
 
-		vDif = vPos2-vPos1;
+		vDif = vPos2 - vPos1;
 		float Length = vDif.Magnitude();
 		vDif.Normalize();
-		vDif *= Length/(float)iLastVtxNum;
+		vDif *= Length / (float) iLastVtxNum;
 
-		for(int i=1;i<iLastVtxNum;i++)
+		for (int i = 1;i < iLastVtxNum;i++)
 		{
-			vPos2 = vPos1 + vDif*(float)i;
-			(pVtxSel+i)->Set(vPos2,0,0,0,0);
+			vPos2 = vPos1 + vDif * (float) i;
+			pVtxTmp[i].Set(vPos2, 0, 0, 0, 0);
 		}
 		pSelPond->ReCalcUV();
 	}

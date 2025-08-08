@@ -26,7 +26,7 @@ public:
 
 public:
 	void		Rotate(float fRadianX, float fRadianY);
-	void		LookAt(const __Vector3& vEye, __Vector3& vAt, __Vector3& vUp);
+	void		LookAt(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp);
 	__Vector3	EyePos() { return m_vPos; }
 	__Vector3	AtPos() { return m_vAt; }
 	__Vector3	UpVector() { return m_vScale; } // Rotation 은 LookAt Position 처럼, Scale 은 UpVector 처럼 쓴다..

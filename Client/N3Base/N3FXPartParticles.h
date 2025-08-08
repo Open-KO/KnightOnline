@@ -16,6 +16,8 @@ class CN3FXShape;
 class CN3FXPartParticles : public CN3FXPartBase  
 {
 public:
+	static constexpr int SUPPORTED_PART_VERSION = 5;
+
 	//related whole particle system...
 	__VertexXyzColorT1			m_vUnit[NUM_VERTEX_PARTICLE];
 	//uint16_t						m_wUnitIB[6];

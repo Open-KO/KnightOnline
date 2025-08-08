@@ -34,10 +34,10 @@ public:
 	LPDIRECTDRAW m_lpDD;
 
 public:
-	void Release(void);
+	void Release();
 	void SetViewPort(RECT& pRC);
-	void SetDefaultEnvironment(void);
-	void LookAt(__Vector3& vEye, __Vector3& vAt, __Vector3& vUp);
+	static void SetDefaultEnvironment();
+	void LookAt(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp);
 	bool Reset(bool bWindowed, uint32_t dwWidth, uint32_t dwHeight, uint32_t dwBPP);
 	void SetProjection(float fNear, float fFar, float fLens, float fAspect);
 
@@ -45,6 +45,7 @@ public:
 	static void ClearZBuffer(const RECT* pRC = NULL);
 	static void Clear(D3DCOLOR crFill, RECT* pRC = NULL);
 	static void Present(HWND hWnd, RECT* pRC = NULL);
+	static void WaitForDeviceRestoration();
 
 	bool Init(
 		BOOL bWindowed,

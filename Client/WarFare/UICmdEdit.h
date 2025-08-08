@@ -9,11 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-#include "N3UIBase.h"
-
-#include "N3UIString.h"
-#include "N3UIEdit.h"
+#include <N3Base/N3UIBase.h>
 
 //////////////////////////////////////////////////////////////////////
 
@@ -28,7 +24,7 @@ public:
 
 public:
 	void SetVisible(bool bVisible);
-	void CUICmdEdit::Open(std::string msg);
+	void Open(std::string msg);
 
 	bool Load(HANDLE hFile);
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);

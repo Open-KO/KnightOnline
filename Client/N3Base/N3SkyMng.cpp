@@ -404,9 +404,8 @@ bool CN3SkyMng::LoadFromTextFile(const char* szIniFN)
 			{
 				if(false == this->DayChangeParse(fp, &(m_DayChanges[i])))
 				{
-					char szErrLine[128];
-					sprintf(szErrLine, "From \"DayChage Count : \" -> Line : %d", i);
-					MessageBox(CN3Base::s_hWndBase, szErrLine, "하늘 환경설정 데이터 Parsing 실패", MB_OK); //CN3Base::s_hWndBase
+					std::string szErrLine = fmt::format("From \"DayChage Count : \" -> Line : {}", i);
+					MessageBoxA(CN3Base::s_hWndBase, szErrLine.c_str(), "하늘 환경설정 데이터 Parsing 실패", MB_OK); //CN3Base::s_hWndBase
 					this->Release();
 					return false;
 				}
@@ -1152,7 +1151,8 @@ int	CN3SkyMng::GetDayChangePos_AfterNSec(uint32_t dwCurGameTime, float fSec)
 
 	// n초후의 queue의 위치 찾기
 	while(iCheckDayChangeCurPos<m_DayChanges.size() &&
-		m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime) ++iCheckDayChangeCurPos;
+		m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime)
+		++iCheckDayChangeCurPos;
 	if (iCheckDayChangeCurPos >= m_DayChanges.size()) iCheckDayChangeCurPos = m_DayChanges.size() - 1;
 	return iCheckDayChangeCurPos;
 }

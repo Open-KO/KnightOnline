@@ -52,7 +52,7 @@ public:
 	void GetPickRay(POINT point, __Vector3& vDir, __Vector3& vOrig);	// 마우스 포인터가 가리키는 쪽으로 뻗어나가는 선 얻는 함수
 protected:
 	__DUMMYCUBE* Pick(int x, int y);	// 큐브 picking
-	void InitDummyCube(int iType, __DUMMYCUBE* pDummyCube, __Vector3& vOffset, D3DCOLOR color);	// 큐브 초기화
+	void InitDummyCube(int iType, __DUMMYCUBE* pDummyCube, const __Vector3& vOffset, D3DCOLOR color);	// 큐브 초기화
 	static int SortCube(const void* pArg1, const void* pArg2);	// 큐브 카메라 거리에 대한 정렬함수
 	virtual void TransDiff(__Vector3* pvDiffPos, __Quaternion* pvDiffRot, __Vector3* pvDiffScale);		// 차이만큼 선택된 오므젝트들을 변형시킨다.
 };

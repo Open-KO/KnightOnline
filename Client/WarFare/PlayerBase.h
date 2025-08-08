@@ -12,9 +12,10 @@
 #include "GameBase.h"
 #include "GameDef.h"
 #include "Bitset.h"
-#include "N3Chr.h"
 #include <deque>
 #include <string>
+
+#include <N3Base/N3Chr.h>
 
 //	By : Ecli666 ( On 2002-07-22 오전 9:59:19 )
 //
@@ -174,6 +175,9 @@ protected:
 
 	virtual bool	ProcessAttack(CPlayerBase* pTarget); // 공격 루틴 처리.. 타겟 포인터를 구하고 충돌체크까지 하며 충돌하면 참을 리턴..
 
+	/// \brief applies any on-hit elemental effects associated with a weapon
+	bool TryWeaponElementEffect(e_PlugPosition plugPosition, const CPlayerBase& target, __Vector3 collisionPosition);
+
 public:
 	const __Matrix44*	JointMatrixGet(int nJointIndex) { return m_Chr.MatrixGet( nJointIndex); }
 	bool 				JointPosGet(int iJointIdx, __Vector3& vPos);
@@ -224,14 +228,14 @@ public:
 
 	float			Yaw() { return m_fYawCur; } // 회전값..
 	float			MoveSpeed() { return m_fMoveSpeedPerSec; }
-	__Vector3		Position() const { return m_Chr.Pos(); }
+	const __Vector3&	Position() const { return m_Chr.Pos(); }
 	void			PositionSet(const __Vector3& vPos, bool bForcely) { m_Chr.PosSet(vPos); if(bForcely) m_fYNext = vPos.y; }
 	float			Distance(const __Vector3& vPos) { return (m_Chr.Pos() - vPos).Magnitude(); }
 	__Vector3		Scale() { return m_Chr.Scale(); }
 	void			ScaleSet(float fScale) { m_fScaleToSet = m_fScalePrev = fScale; m_Chr.ScaleSet(fScale, fScale, fScale); }
 	void			ScaleSetGradually(float fScale) { m_fScaleToSet = fScale; m_fScalePrev = m_Chr.Scale().y; } // 점차 스케일 변화..
 	__Vector3		Direction();
-	__Quaternion	Rotation() { return m_Chr.Rot(); }
+	const __Quaternion&	Rotation() const { return m_Chr.Rot(); }
 	void			RotateTo(float fYaw, bool bImmediately);
 	void			RotateTo(CPlayerBase* pOther); // 이넘을 바라본다.
 	float			Height();
@@ -252,7 +256,7 @@ public:
 	void			IDSet(int iID, const std::string& szID, D3DCOLOR crID);
 	virtual void	KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank);
 	const std::string&	IDString() { return m_InfoBase.szID; } // ID 는 Character 포인터의 이름으로 대신한다.
-	int				IDNumber() { return m_InfoBase.iID; }
+	int				IDNumber() const { return m_InfoBase.iID; }
 	CPlayerBase*	TargetPointerCheck(bool bMustAlive);
 
 	////////////////////

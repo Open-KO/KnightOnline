@@ -3,20 +3,19 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UINPCEvent.h"
-
-#include "GameProcedure.h"
 #include "GameProcMain.h"
-
 #include "UIInventory.h"
 #include "UITransactionDlg.h"
 #include "UIItemExchange.h"
 #include "UINpcTalk.h"
-
 #include "SubProcPerTrade.h"
 #include "UISkillTreeDlg.h"
 #include "UIManager.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UIButton.h>
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -118,7 +117,7 @@ void CUINPCEvent::Open(e_NpcEvent eNpcEvent, int iTradeId, int iIDTarget)
 	switch(eNpcEvent)
 	{
 		case NPC_EVENT_ITEM_TRADE:
-			CGameBase::GetText(IDS_NPC_EVENT_TITLE_TRADE, &szStr);
+			szStr = fmt::format_text_resource(IDS_NPC_EVENT_TITLE_TRADE);
 			m_pText_Title->SetString(szStr);
 			if (m_pBtn_Repair)
 			{
@@ -131,7 +130,7 @@ void CUINPCEvent::Open(e_NpcEvent eNpcEvent, int iTradeId, int iIDTarget)
 			break;
 
 		case NPC_EVENT_TRADE_REPAIR:
-			CGameBase::GetText(IDS_NPCEVENT_TITLE_REPAIR, &szStr);
+			szStr = fmt::format_text_resource(IDS_NPCEVENT_TITLE_REPAIR);
 			m_pText_Title->SetString(szStr);
 			if (m_pBtn_Repair)
 			{

@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
-class CUITargetBar       : public CN3UIBase  
+class CUITargetBar : public CN3UIBase
 {
 public:
 	class CN3UIProgress*	m_pProgressHP;

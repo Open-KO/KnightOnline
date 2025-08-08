@@ -9,10 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "N3UIBase.h"
-#include "GameProcCharacterSelect.h"
-
-class CGameProcedure;
+#include <N3Base/N3UIBase.h>
 
 class CUICharacterSelect : public CN3UIBase
 {

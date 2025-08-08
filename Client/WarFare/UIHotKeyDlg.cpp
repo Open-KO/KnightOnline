@@ -3,23 +3,26 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIHotKeyDlg.h"
-
 #include "LocalInput.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"
 #include "UISkillTreeDlg.h"
 #include "MagicSkillMng.h"
 #include "UIManager.h"
 #include "UIInventory.h"
+#include "text_resources.h"
+
+#include <N3Base/N3UIString.h>
+
+#include <cmath>
+#include <algorithm>
+#include <format>
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -104,7 +107,7 @@ uint32_t CUIHotKeyDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POI
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if ( !IsVisible() ) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 	// 실제로 쓰진 않는다..
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( GetState() == UI_STATE_ICON_MOVING ) 
@@ -321,10 +324,27 @@ void CUIHotKeyDlg::Render()
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
 
 	int k;
-	for(k = 0; k < MAX_SKILL_IN_HOTKEY; k++ )
+	for (k = 0; k < MAX_SKILL_IN_HOTKEY; k++)
 	{
-		if (m_pMyHotkey[m_iCurPage][k] != NULL) 
+		if (m_pMyHotkey[m_iCurPage][k] != nullptr)
+		{
+			float fCooldown = CGameProcedure::s_pProcMain->m_pMagicSkillMng->GetCooldown(
+				m_pMyHotkey[m_iCurPage][k]->pSkill);
+			
+			// not on cooldown
+			if (fCooldown < 0)
+			{
+				CN3UIIcon* pUIIcon = m_pMyHotkey[m_iCurPage][k]->pUIIcon;
+				if (pUIIcon != nullptr)
+					pUIIcon->Render();
+			}
+			else
+			{
+				RenderCooldown(m_pMyHotkey[m_iCurPage][k], fCooldown);
+			}
+
 			DisplayCountStr(m_pMyHotkey[m_iCurPage][k]);
+		}
 	}
 
 	for(k = 0; k < MAX_SKILL_IN_HOTKEY; k++ )
@@ -382,35 +402,29 @@ void CUIHotKeyDlg::InitIconUpdate()
 	if( (iHCount < 0) || (iHCount > 65) )
 		return;
 
-	char szSkill[32];
 	int iSkillCount = 0;
 	CHotkeyData HD;
 //	uint32_t bitMask;
 
-	while(iHCount--)
+	while (iHCount--)
 	{
-		std::string str = "Data";
-		sprintf(szSkill, "%d", iSkillCount);
-		str += szSkill;				
-		if( CGameProcedure::RegGetSetting(str.c_str(), &HD, sizeof(CHotkeyData)) )
+		std::string str = "Data" + std::to_string(iSkillCount);
+		if (CGameProcedure::RegGetSetting(str.c_str(), &HD, sizeof(CHotkeyData)))
 		{
-			__TABLE_UPC_SKILL* pUSkill = NULL;
-
 			// Skill Tree Window가 아이디를 갖고 있지 않으면 continue.. 
-			if ( (HD.iID < UIITEM_TYPE_SONGPYUN_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
+			if ((HD.iID < UIITEM_TYPE_USABLE_ID_MIN) && (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)))
 				continue;
 
-			pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
-			if ( !pUSkill )
+			__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
+			if (!pUSkill)
 				continue;
 
 			__IconItemSkill* spSkill = new __IconItemSkill();
 			spSkill->pSkill = pUSkill;
 
 			// 아이콘 이름 만들기.. ^^
-			std::vector<char> buffer(256, NULL);
-			sprintf(&buffer[0],	"UI\\skillicon_%.2d_%d.dxt", HD.iID%100, HD.iID/100);
-			spSkill->szIconFN = &buffer[0];
+			spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+				HD.iID % 100, HD.iID / 100);
 
 			// 아이콘 로드하기.. ^^
 			spSkill->pUIIcon = new CN3UIIcon;
@@ -476,23 +490,20 @@ void CUIHotKeyDlg::CloseIconRegistry()
 
 	CGameProcedure::RegPutSetting("Count", &iHCount, sizeof(int) );
 
-	char szSkill[32];
 	int iSkillCount = 0;
 
-	for( i = 0; i < MAX_SKILL_HOTKEY_PAGE; i++ )
+	for (i = 0; i < MAX_SKILL_HOTKEY_PAGE; i++)
 	{
-		for( j = 0; j < MAX_SKILL_IN_HOTKEY; j++ )
+		for (j = 0; j < MAX_SKILL_IN_HOTKEY; j++)
 		{
-			if ( m_pMyHotkey[i][j] != NULL )
-			{
-				std::string str = "Data";
-				sprintf(szSkill, "%d", iSkillCount);
-				str += szSkill;				
+			if (m_pMyHotkey[i][j] == nullptr)
+				continue;
 
-				CHotkeyData HD(i, j, m_pMyHotkey[i][j]->pSkill->dwID);
-				CGameProcedure::RegPutSetting(str.c_str(), &HD, sizeof(CHotkeyData) );
-				iSkillCount++;
-			}
+			std::string str = "Data" + std::to_string(iSkillCount);
+
+			CHotkeyData HD(i, j, m_pMyHotkey[i][j]->pSkill->dwID);
+			CGameProcedure::RegPutSetting(str.c_str(), &HD, sizeof(CHotkeyData));
+			iSkillCount++;
 		}
 	}
 }
@@ -700,17 +711,15 @@ void CUIHotKeyDlg::EffectTriggerByHotKey(int iIndex)
 	}
 }
 
-void CUIHotKeyDlg::DoOperate(__IconItemSkill*	pSkill)
+void CUIHotKeyDlg::DoOperate(__IconItemSkill* pSkill)
 {
-	if(!pSkill) return;
+	if (pSkill == nullptr)
+		return;
 
-	//char szBuf[512];
 	// 메시지 박스 출력..	
-	//wsprintf(szBuf, "%s 스킬이 사용되었습니다.", pSkill->pSkill->szName.c_str() );
-	//CGameProcedure::s_pProcMain->MsgOutput(szBuf, 0xffffff00);
+	// std::string buff = fmt::format("{} 스킬이 사용되었습니다.", pSkill->pSkill->szName);
+	// CGameProcedure::s_pProcMain->MsgOutput(buff, 0xffffff00);			
 
-	PlayRepairSound();					
-	
 	int iIDTarget = CGameBase::s_pPlayer->m_iIDTarget;
 	CGameProcedure::s_pProcMain->m_pMagicSkillMng->MsgSend_MagicProcess(iIDTarget, pSkill->pSkill);
 }
@@ -745,35 +754,27 @@ void CUIHotKeyDlg::ClassChangeHotkeyFlush()
 
 CN3UIString* CUIHotKeyDlg::GetTooltipStrControl(int iIndex)
 {
-	CN3UIString* pStr = NULL;
-	std::string str = "";
-	char	cstr[4];
-	sprintf(cstr, "%d", iIndex+10);	str += cstr;
-	pStr = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
+	std::string str = std::to_string(iIndex + 10);
+	CN3UIString* pStr = (CN3UIString*) GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
 	return pStr;
 }
 
 CN3UIString* CUIHotKeyDlg::GetCountStrControl(int iIndex)
 {
-	CN3UIString* pStr = NULL;
-	std::string str = "";
-	char	cstr[4];
-	sprintf(cstr, "%d", iIndex);	str += cstr;
-	pStr = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
+	std::string str = std::to_string(iIndex);
+	CN3UIString* pStr = (CN3UIString*) GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
 	return pStr;
 }
 
 void CUIHotKeyDlg::DisplayTooltipStr(__IconItemSkill* spSkill)
 {
-	char pszDesc[256];
-
 	int iIndex = GetTooltipCurPageIndex(spSkill);
 	if (iIndex != -1)
 	{
 		if (!m_pTooltipStr[iIndex]->IsVisible())	
 			m_pTooltipStr[iIndex]->SetVisible(true);
-		sprintf(pszDesc, "%s", spSkill->pSkill->szName.c_str());
-		m_pTooltipStr[iIndex]->SetString(pszDesc);
+
+		m_pTooltipStr[iIndex]->SetString(spSkill->pSkill->szName);
 		m_pTooltipStr[iIndex]->Render();
 	}
 }
@@ -789,15 +790,14 @@ void CUIHotKeyDlg::DisableTooltipDisplay()
 
 void CUIHotKeyDlg::DisplayCountStr(__IconItemSkill* spSkill)
 {
-	char pszDesc[256];
-
 	int iIndex = GetCountCurPageIndex(spSkill);
 	if (iIndex != -1)
 	{
 		if (!m_pCountStr[iIndex]->IsVisible())	
 			m_pCountStr[iIndex]->SetVisible(true);
-		sprintf(pszDesc, "%d", CGameProcedure::s_pProcMain->m_pUIInventory->GetCountInInvByID(spSkill->pSkill->dwExhaustItem));
-		m_pCountStr[iIndex]->SetString(pszDesc);
+
+		m_pCountStr[iIndex]->SetStringAsInt(
+			CGameProcedure::s_pProcMain->m_pUIInventory->GetCountInInvByID(spSkill->pSkill->dwExhaustItem));
 		m_pCountStr[iIndex]->Render();
 	}
 }
@@ -879,15 +879,14 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
 		if ( pUSkill == NULL ) return false;
-		if ( pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+		if ( pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
 
 		spSkill = new __IconItemSkill();
 		spSkill->pSkill = pUSkill;
 
 		// 아이콘 이름 만들기.. ^^
-		std::vector<char> buffer(256, NULL);
-		sprintf(&buffer[0],	"UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1%100, spItem->pItemBasic->dwEffectID1/100);
-		spSkill->szIconFN = &buffer[0];
+		spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+			spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
 
 		// 아이콘 로드하기.. ^^
 		spSkill->pUIIcon = new CN3UIIcon;
@@ -914,6 +913,57 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	}
 
 	return false;
+}
+
+bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
+{
+	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != UIWND_INVENTORY)
+		return false;
+
+	__IconItemSkill* spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
+
+	__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
+	if (pUSkill == nullptr)
+		return false;
+
+	if (pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN)
+		return false;
+
+	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr)
+		return false;
+
+	__IconItemSkill* spSkill = new __IconItemSkill();
+	spSkill->pSkill = pUSkill;
+
+	// Create the icon name
+	spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+		spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
+
+	// load icon
+	spSkill->pUIIcon = new CN3UIIcon();
+	spSkill->pUIIcon->Init(this);
+	spSkill->pUIIcon->SetTex(spSkill->szIconFN);
+	spSkill->pUIIcon->SetUVRect(0, 0, 1.0f, 1.0f);
+	spSkill->pUIIcon->SetUIType(UI_TYPE_ICON);
+
+	uint32_t bitMask = UISTYLE_ICON_SKILL;
+	if (!CGameProcedure::s_pProcMain->m_pMagicSkillMng->CheckValidSkillMagic(spSkill->pSkill))
+		bitMask |= UISTYLE_DISABLE_SKILL;
+	spSkill->pUIIcon->SetStyle(bitMask);
+
+	CN3UIArea* pArea = nullptr;
+	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SKILL_HOTKEY, iIndex);
+
+	if (pArea != nullptr)
+	{
+		spSkill->pUIIcon->SetRegion(pArea->GetRegion());
+		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
+	}
+
+	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
+
+	CloseIconRegistry();
+	return true;
 }
 
 bool CUIHotKeyDlg::EffectTriggerByMouse()
@@ -973,6 +1023,112 @@ void CUIHotKeyDlg::RenderSelectIcon(CN3UIIcon* pUIIcon)
 	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, dwAlpha);
 	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_SRCBLEND, dwSrcBlend);
 	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_DESTBLEND, dwDestBlend);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, dwCOP);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, dwCA1);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAOP, dwAOP);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAARG1, dwAA1);
+	CN3Base::s_lpD3DDev->SetFVF(dwVertexShader);
+}
+
+void CUIHotKeyDlg::RenderCooldown(const __IconItemSkill* pSkill, float fCooldown)
+{
+	if (pSkill == nullptr)
+		return;
+
+	constexpr D3DCOLOR Color = D3DCOLOR_ARGB(0x80, 0xFF, 0x00, 0x00);
+
+	const RECT rc = pSkill->pUIIcon->GetRegion();
+
+	const float centerX = static_cast<float>(rc.left + rc.right) / 2;
+	const float centerY = static_cast<float>(rc.top + rc.bottom) / 2;
+
+	const float halfWidth = static_cast<float>(centerX - rc.left);
+	const float halfHeight = static_cast<float>(centerY - rc.top);
+
+	const float radius = std::sqrtf(
+		std::pow(halfWidth, 2.0f)
+		+ std::pow(halfHeight, 2.0f));
+
+	float progress = 0.0f;
+	
+	if (pSkill->pSkill->iReCastTime > 0)
+	{
+		progress = (fCooldown / (static_cast<float>(pSkill->pSkill->iReCastTime) / 10.0f));
+		progress = std::clamp(progress, 0.0f, 1.0f);
+	}
+
+	// arbitrary number of segments. this might be too many for such a small icon.
+	const int segments = 64;
+	const int segmentCountToDraw = static_cast<int>((segments * progress));
+
+	std::vector<__VertexTransformedColor> vertices;
+	vertices.reserve(segments);
+
+	// not 100% sure on the color. Choosing arbitrary 50% opacity.
+	vertices.emplace_back(centerX, centerY, UI_DEFAULT_Z, UI_DEFAULT_RHW, Color);
+
+	const float fullCircle = D3DX_PI * 2.0f;
+	const float maxAngle = fullCircle * progress;
+	const float startAngle = -D3DX_PI / 2.0f; // 12 o'clock
+
+	std::vector<__VertexTransformedColor> arcVertices;
+	arcVertices.reserve(segmentCountToDraw);
+
+	for (int i = 0; i <= segmentCountToDraw; i++)
+	{
+		float angle = startAngle - maxAngle * (static_cast<float>(i) / segmentCountToDraw);
+		float x = centerX + cosf(angle) * radius;
+		float y = centerY + sinf(angle) * radius;
+		arcVertices.emplace_back(x, y, UI_DEFAULT_Z, UI_DEFAULT_RHW, Color);
+	}
+
+	// very crude way but i'd rather keep culling enabled.
+	vertices.insert(vertices.end(), arcVertices.rbegin(), arcVertices.rend());
+
+	// disable culling and reverse vectors.
+	//for (int i = 0; i <= segmentCountToDraw; i++)
+	//{
+	//	// Go clockwise by subtracting angle increments
+	//	float angle = startAngle - maxAngle * (static_cast<float>(i) / segmentCountToDraw);
+	//	float x = centerX + cosf(angle) * radius;
+	//	float y = centerY + sinf(angle) * radius;
+	//	vertices.emplace_back(x, y, UI_DEFAULT_Z, UI_DEFAULT_RHW, Color);
+	//}
+
+	DWORD dwZ, dwFog, dwAlpha, dwCOP, dwCA1, dwSrcBlend, dwDestBlend, dwVertexShader, dwAOP, dwAA1;
+	CN3Base::s_lpD3DDev->GetRenderState(D3DRS_ZENABLE, &dwZ);
+	CN3Base::s_lpD3DDev->GetRenderState(D3DRS_FOGENABLE, &dwFog);
+	CN3Base::s_lpD3DDev->GetRenderState(D3DRS_ALPHABLENDENABLE, &dwAlpha);
+	CN3Base::s_lpD3DDev->GetRenderState(D3DRS_SRCBLEND, &dwSrcBlend);
+	CN3Base::s_lpD3DDev->GetRenderState(D3DRS_DESTBLEND, &dwDestBlend);
+	CN3Base::s_lpD3DDev->GetTextureStageState(0, D3DTSS_COLOROP, &dwCOP);
+	CN3Base::s_lpD3DDev->GetTextureStageState(0, D3DTSS_COLORARG1, &dwCA1);
+	CN3Base::s_lpD3DDev->GetTextureStageState(0, D3DTSS_ALPHAOP, &dwAOP);
+	CN3Base::s_lpD3DDev->GetTextureStageState(0, D3DTSS_ALPHAARG1, &dwAA1);
+	CN3Base::s_lpD3DDev->GetFVF(&dwVertexShader);
+
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, FALSE);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_FOGENABLE, FALSE);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
+	CN3Base::s_lpD3DDev->SetScissorRect(&rc);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+
+	CN3Base::s_lpD3DDev->SetFVF(FVF_TRANSFORMED);
+	// CN3Base::s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	CN3Base::s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, vertices.size() - 2, &vertices[0], sizeof(__VertexTransformedColor));
+
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, dwZ);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_FOGENABLE, dwFog);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, dwAlpha);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_SRCBLEND, dwSrcBlend);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_DESTBLEND, dwDestBlend);
+	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, dwCOP);
 	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, dwCA1);
 	CN3Base::s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAOP, dwAOP);

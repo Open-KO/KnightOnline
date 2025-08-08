@@ -150,7 +150,9 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 					{
 						// XZ평면 위로 움직이게..
 						vPN.Set(0,1,0);
-						float fT = D3DXVec3Dot(&vPN,&(vPV-vRayOrig)) / D3DXVec3Dot(&vPN, &vRayDir);
+
+						__Vector3 vTmp = vPV - vRayOrig;
+						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 
 						__Vector3 vDiffPos = vPos - m_vPos;
@@ -160,8 +162,11 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 					break;
 				case DUMMY_X:
 					{
-						vPN.Set(0, vCameraDir.y, vCameraDir.z);		vPN.Normalize();
-						float fT = D3DXVec3Dot(&vPN,&(vPV-vRayOrig)) / D3DXVec3Dot(&vPN, &vRayDir);
+						vPN.Set(0, vCameraDir.y, vCameraDir.z);					
+						vPN.Normalize();
+
+						__Vector3 vTmp = vPV - vRayOrig;
+						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -172,8 +177,11 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 					break;
 				case DUMMY_Y:
 					{
-						vPN.Set(vCameraDir.x, 0, vCameraDir.z);		vPN.Normalize();
-						float fT = D3DXVec3Dot(&vPN,&(vPV-vRayOrig)) / D3DXVec3Dot(&vPN, &vRayDir);
+						vPN.Set(vCameraDir.x, 0, vCameraDir.z);
+						vPN.Normalize();
+
+						__Vector3 vTmp = vPV - vRayOrig;
+						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -184,8 +192,11 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 					break;
 				case DUMMY_Z:
 					{
-						vPN.Set(vCameraDir.x, vCameraDir.y, 0);		vPN.Normalize();
-						float fT = D3DXVec3Dot(&vPN,&(vPV-vRayOrig)) / D3DXVec3Dot(&vPN, &vRayDir);
+						vPN.Set(vCameraDir.x, vCameraDir.y, 0);
+						vPN.Normalize();
+
+						__Vector3 vTmp = vPV - vRayOrig;
+						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 

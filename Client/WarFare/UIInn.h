@@ -9,12 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-#include "N3UIBase.h"
+#include <N3Base/N3UIBase.h>
 
 //////////////////////////////////////////////////////////////////////
 
-class CUIInn : public CN3UIBase  
+class CUIInn : public CN3UIBase
 {	
 public:
 	bool OnKeyPress(int iChar);

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>Win32</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\mpg123\src\compat\compat.c" />
+    <ClCompile Include="..\mpg123\src\compat\compat_str.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\parse.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\frame.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\format.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\dct64.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\equalizer.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\id3.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\optimize.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\readers.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\tabinit.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\libmpg123.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\index.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\icy.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\icy2utf8.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\layer1.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\layer2.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\layer3.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\ntom.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth_8bit.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth_s32.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth_real.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\stringbuf.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\feature.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\lfs_wrap.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{adbae15c-f602-4531-8e80-1c3ed2f2d859}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>mpg123</ProjectName>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <OutDir>$(StaticLibDir)</OutDir>
+    <TargetName>mpg123</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release'">
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <Import Project="$(PropsDir)mpg123.props" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;OPT_GENERIC;REAL_IS_FLOAT;_CRT_SECURE_NO_WARNINGS;NOXFERMEM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(DependencyDir)mpg123-msvc\libmpg123;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <PreBuildEvent>
+      <Command>
+        mkdir "$(ProjectDir)libmpg123"
+        xcopy /Y /S /I "..\mpg123\src\include\*.h" "$(ProjectDir)libmpg123\"
+        xcopy /Y /I "$(ProjectDir)config.h" "$(ProjectDir)libmpg123\"
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

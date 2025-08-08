@@ -14,21 +14,32 @@
 
 #include "My_3DStruct.h" // _ASSERT
 
+#ifdef _N3GAME
+#include "LogWriter.h"
+#endif
+
+enum TBL_DATA_TYPE {DT_NONE, DT_CHAR, DT_BYTE, DT_SHORT, DT_WORD, DT_INT, DT_DWORD, DT_STRING, DT_FLOAT, DT_DOUBLE};
+
 template <typename Type> class CN3TableBase
 {
 public:
+	using DATA_TYPE = TBL_DATA_TYPE;
+	using MAP_TYPE = std::map<uint32_t, Type>;
+
 	CN3TableBase();
 	virtual ~CN3TableBase();
 
 // Attributes
 protected:
-	enum DATA_TYPE {DT_NONE, DT_CHAR, DT_BYTE, DT_SHORT, DT_WORD, DT_INT, DT_DWORD, DT_STRING, DT_FLOAT, DT_DOUBLE};
-
-	typename std::vector<DATA_TYPE> m_DataTypes;	// 실제 사용되는 정보의 데이타 타입
-	typename std::map<uint32_t, Type> m_Datas; // 실제 사용되는 정보
+	std::vector<DATA_TYPE> m_DataTypes;	// 실제 사용되는 정보의 데이타 타입
+	MAP_TYPE m_Datas; // 실제 사용되는 정보
 
 // Operations
 public:
+	inline const MAP_TYPE& GetMap() const {
+		return m_Datas;
+	}
+
 	void	Release();
 	Type*	Find(uint32_t dwID) // ID로 data 찾기
 	{
@@ -291,7 +302,7 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 	if(INVALID_HANDLE_VALUE == hFile)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3TableBase - Can't open file(read) File Handle error (%s)", szFN.c_str());
+		CLogWriter::Write("N3TableBase - Can't open file(read) File Handle error ({})", szFN);
 #endif
 		return FALSE;
 	}
@@ -372,10 +383,10 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 
 	CloseHandle(hFile);
 
-	if (FALSE == bResult)
+	if (!bResult)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3TableBase - incorrect table (%s)", szFN.c_str());
+		CLogWriter::Write("N3TableBase - incorrect table ({})", szFN);
 #endif
 	}
 

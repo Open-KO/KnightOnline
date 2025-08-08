@@ -582,15 +582,14 @@ BOOL CN3UIEdit::IsHangulMiddleByte( const char* lpszStr, int iPos )
     if (iPos >= nLength) return FALSE;
     if (!(lpszStr[iPos] & 0x80))
         return FALSE;
-    register BOOL bMiddle = FALSE;
-    register int i;
 
-    for (i=0; i<iPos && i <nLength; i++)
-    {
-        if (lpszStr[i] & 0x80)
-            bMiddle = !bMiddle;
-    }
-    return bMiddle;
+	BOOL bMiddle = FALSE;
+	for (int i = 0; i < iPos && i < nLength; i++)
+	{
+		if (lpszStr[i] & 0x80)
+			bMiddle = !bMiddle;
+	}
+	return bMiddle;
 }
 
 const std::string& CN3UIEdit::GetString()

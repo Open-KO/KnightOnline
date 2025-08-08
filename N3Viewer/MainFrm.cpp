@@ -207,8 +207,8 @@ void CMainFrame::OnProjectSet()
 	
 	CString szPath = dlg.GetPath();
 
-	std::string szPath2 = szPath;
-	CN3Base::PathSet(szPath2);
+	CT2A szPathA(szPath);
+	CN3Base::PathSet(szPathA.m_psz);
 }
 
 void CMainFrame::OnAddLod() 

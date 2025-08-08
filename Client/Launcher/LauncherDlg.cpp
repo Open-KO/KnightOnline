@@ -78,27 +78,27 @@ BOOL CLauncherDlg::OnInitDialog()
 	if(ERROR_SUCCESS != lStatus) { CString szErr; szErr.LoadString(IDS_ERR_REGISTRY_OPEN); MessageBox(szErr); exit(-1); }
 
 	DWORD dwType = REG_SZ; DWORD dwBytes = 0;
-	char szBuff[256] = "";
+	TCHAR szBuff[256] = {};
 
 	dwType = REG_DWORD; dwBytes = 4;
-	lStatus = RegQueryValueEx(m_hRegistryKey, "VERSION", NULL, &dwType, (BYTE*)(&m_nCurVersion), &dwBytes);
+	lStatus = RegQueryValueEx(m_hRegistryKey, _T("VERSION"), NULL, &dwType, (BYTE*)(&m_nCurVersion), &dwBytes);
 	if(ERROR_SUCCESS != lStatus) { CString szErr; szErr.LoadString(IDS_ERR_REGISTRY_READ_VERSION); MessageBox(szErr); exit(-1); }
 
 	for(int j = 0 ; j < MAX_DOWNLOAD_FILE ; j++)
 		m_nVersionNum[j] = m_nCurVersion;
 
 	dwType = REG_SZ; dwBytes = 256;
-	lStatus = RegQueryValueEx(m_hRegistryKey, "PATH", NULL, &dwType, (BYTE*)szBuff, &dwBytes); // 인스톨 경로
+	lStatus = RegQueryValueEx(m_hRegistryKey, _T("PATH"), NULL, &dwType, (BYTE*)szBuff, &dwBytes); // 인스톨 경로
 	if(ERROR_SUCCESS != lStatus) { CString szErr; szErr.LoadString(IDS_ERR_REGISTRY_READ_PATH); MessageBox(szErr); exit(-1); }
 	m_szInstalledPath = szBuff;
 
 	dwType = REG_SZ; dwBytes = 256;
-	lStatus = RegQueryValueEx(m_hRegistryKey, "EXE", NULL, &dwType, (BYTE*)szBuff, &dwBytes); // 실행파일 이름
+	lStatus = RegQueryValueEx(m_hRegistryKey, _T("EXE"), NULL, &dwType, (BYTE*)szBuff, &dwBytes); // 실행파일 이름
 	if(ERROR_SUCCESS != lStatus) { CString szErr; szErr.LoadString(IDS_ERR_REGISTRY_READ_EXE); MessageBox(szErr); exit(-1); }
 	m_szExeName = szBuff;
 
 	dwType = REG_SZ; dwBytes = 256;
-	lStatus = RegQueryValueEx(m_hRegistryKey, "SERVICE", NULL, &dwType, (BYTE*)m_strServiceName, &dwBytes); // 서비스 이름..
+	lStatus = RegQueryValueEx(m_hRegistryKey, _T("SERVICE"), NULL, &dwType, (BYTE*)m_strServiceName, &dwBytes); // 서비스 이름..
 	if(ERROR_SUCCESS != lStatus) { CString szErr; szErr.LoadString(IDS_ERR_REGISTRY_READ_SERVICE); MessageBox(szErr); exit(-1); }
 
 
@@ -112,17 +112,20 @@ BOOL CLauncherDlg::OnInitDialog()
 	
 	
 	// 소켓 접속..
-	char szIniPath[_MAX_PATH] = "";
+	TCHAR szIniPath[_MAX_PATH] = {};
 	::GetCurrentDirectory(_MAX_PATH, szIniPath);
-	lstrcat(szIniPath, "\\Server.Ini");
-	int iServerCount = GetPrivateProfileInt("Server", "Count", 0, szIniPath);
+	lstrcat(szIniPath, _T("\\Server.Ini"));
+	int iServerCount = GetPrivateProfileInt(_T("Server"), _T("Count"), 0, szIniPath);
 
-	char szIPs[256][128]; memset(szIPs, 0, sizeof(szIPs));
+	char szIPs[256][128] = {};
 	for(int i = 0; i < iServerCount; i++)
 	{
-		char szKey[32] = "";
-		sprintf(szKey, "IP%d", i);
-		GetPrivateProfileString("Server", szKey, "", szIPs[i], 32, szIniPath);
+		TCHAR szKey[32] = {}, szIP[128] = {};
+		_stprintf(szKey, _T("IP%d"), i);
+		GetPrivateProfileString(_T("Server"), szKey, _T(""), szIP, _countof(szIP), szIniPath);
+		
+		// Just a hack for now; we should be able to trust IPs and hostnames to not be too special.
+		sprintf(szIPs[i], "%ls", szIP);
 	}
 
 	if(iServerCount > 0)
@@ -133,7 +136,7 @@ BOOL CLauncherDlg::OnInitDialog()
 			int iErrCode = GetLastError();
 			CString szFmt; szFmt.LoadString(IDS_FMT_FAILED_CONNECT_LOGIN_SERVER);
 			CString szErr; szErr.Format(szFmt, iErrCode);
-			if( MessageBox(szErr, "", MB_YESNO) == IDNO )
+			if( MessageBox(szErr, _T(""), MB_YESNO) == IDNO )
 			{
 				AfxPostQuitMessage(0);
 				return FALSE;
@@ -149,9 +152,8 @@ BOOL CLauncherDlg::OnInitDialog()
 		PostQuitMessage(0);
 	}
 
-	char titlebar[256];
-	memset( titlebar, NULL, 256 );
-	sprintf( titlebar, "%s AUTO UPGRADE LAUNCHER", m_strServiceName );
+	TCHAR titlebar[256] = {};
+	_stprintf( titlebar, _T("%s AUTO UPGRADE LAUNCHER"), m_strServiceName );
 	SetWindowText( titlebar );
 
 	this->PacketSend_VersionReq();
@@ -174,22 +176,20 @@ BOOL CLauncherDlg::DestroyWindow()
 
 CString CLauncherDlg::GetProgPath()
 {
-	char Buf[256], Path[256];
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	TCHAR Buf[256], Path[256];
+	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 
 	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_splitpath(Buf,drive,dir,fname,ext);
-	strcpy(Path, drive);
-	strcat(Path, dir);		
-	CString _Path = Path;
-	return _Path;
+	_tsplitpath(Buf,drive,dir,fname,ext);
+	_tcscpy(Path, drive);
+	_tcscat(Path, dir);		
+	return Path;
 }
 
 void CLauncherDlg::PacketSend_VersionReq()
 {
 	int iOffset = 0;
-	BYTE byBuffs[128];
-	memset( byBuffs, NULL, 128 );
+	BYTE byBuffs[128] = {};
 
 	m_pSocket->MP_AddByte( byBuffs, iOffset, VERSION_REQ );
 	m_pSocket->MP_AddShort( byBuffs, iOffset , m_nCurVersion );
@@ -200,8 +200,7 @@ void CLauncherDlg::PacketSend_VersionReq()
 void CLauncherDlg::PacketSend_DownloadInfo()
 {
 	int iOffset = 0;
-	BYTE byBuffs[128];
-	memset( byBuffs, NULL, 128 );
+	BYTE byBuffs[128] = {};
 
 	m_pSocket->MP_AddByte( byBuffs, iOffset, DOWNLOAD_INFO_REQ );
 	m_pSocket->MP_AddShort( byBuffs, iOffset, (short)m_nCurVersion );
@@ -281,7 +280,7 @@ void CLauncherDlg::PacketReceive_Version(const BYTE *pBuf, int &iIndex)
 void CLauncherDlg::StartGame()
 {
 	CString szCmd = GetCommandLine(); // 커맨드 라인을 가져오고..
-	char szApp[_MAX_PATH] = "";
+	TCHAR szApp[_MAX_PATH] = {};
 	GetModuleFileName(NULL, szApp, _MAX_PATH);
 	int iML = lstrlen(szApp);
 
@@ -293,8 +292,8 @@ void CLauncherDlg::StartGame()
 			szParam = szCmd.Mid(ii + iML + 2);
 	}
 
-	std::string szExeFN = m_szInstalledPath + "\\" + m_szExeName; // 실행 파일 이름 만들고..
-	::ShellExecute(NULL, "open", szExeFN.c_str(), szParam, m_szInstalledPath.c_str(), SW_SHOWNORMAL); // 게임 실행..
+	CString szExeFN = m_szInstalledPath + _T("\\") + m_szExeName; // 실행 파일 이름 만들고..
+	::ShellExecute(NULL, _T("open"), szExeFN, szParam, m_szInstalledPath, SW_SHOWNORMAL); // 게임 실행..
 
 	PostQuitMessage(0);
 }
@@ -311,7 +310,7 @@ void CLauncherDlg::DownloadProcess()
 	m_progress.SetPos(0);
 
 	std::string		szFullPath;
-	std::string		szLocalFName;
+	CString			szLocalFName;
 
 	bool bExtractSuccess = true;
 
@@ -322,7 +321,7 @@ void CLauncherDlg::DownloadProcess()
 		while(!bDownloadSuccess)
 		{
 			CString szErr; szErr.LoadString(IDS_ERR_DOWNLOAD_PATCH_FILE_AND_RETRY); // 다시 시도할까여??
-			int iID = MessageBox(szErr, "Patch error", MB_YESNO);
+			int iID = MessageBox(szErr, _T("Patch error"), MB_YESNO);
 			if(IDYES == iID) bDownloadSuccess = GetDownloadFile( szFullPath, m_szGetFileNames[i] );
 			else 
 			{
@@ -333,24 +332,27 @@ void CLauncherDlg::DownloadProcess()
 
 		if(bDownloadSuccess)
 		{
-			szLocalFName = m_szInstalledPath + "\\" + m_szGetFileNames[i];
+			szLocalFName.Format(
+				_T("%s\\%hs"),
+				m_szInstalledPath.GetString(),
+				m_szGetFileNames[i].c_str());
 
 			CString szInfo; szInfo.LoadString(IDS_INFO_EXTRACTING);
 			m_Status.SetWindowText(szInfo);
 
 			if(false == ArchiveClose()) { bExtractSuccess = false; break; }
-			if(false == ArchiveOpen(szLocalFName.c_str())) { bExtractSuccess = false; break; }
-			if(false == ArchiveExtract(m_szInstalledPath.c_str())) { bExtractSuccess = false; break; }
+			if(false == ArchiveOpen(szLocalFName)) { bExtractSuccess = false; break; }
+			if(false == ArchiveExtract(m_szInstalledPath)) { bExtractSuccess = false; break; }
 			if(false == ArchiveClose()) { bExtractSuccess = false; break; }
 
 			CFile file;
-			if( file.Open( szLocalFName.c_str(), CFile::modeRead | CFile::shareDenyNone , NULL ) )
+			if( file.Open( szLocalFName, CFile::modeRead | CFile::shareDenyNone , NULL ) )
 			{
 				file.Close();
-				file.Remove(szLocalFName.c_str());
+				file.Remove(szLocalFName);
 				if(m_hRegistryKey) // 압축 풀기와 쓰기, 압축 파일 삭제에 성공하면 버전을 쓰고..
 				{
-					RegSetValueEx(m_hRegistryKey, "VERSION", NULL, REG_DWORD, ((BYTE*)(&m_nVersionNum[i])), 4);
+					RegSetValueEx(m_hRegistryKey, _T("VERSION"), NULL, REG_DWORD, ((BYTE*)(&m_nVersionNum[i])), 4);
 				}
 			}
 			else
@@ -362,9 +364,14 @@ void CLauncherDlg::DownloadProcess()
 		else
 		{
 			FTP_Close();
-			CString szErr; szErr.LoadString(IDS_ERR_DOWNLOAD_PATCH_FILE);
-			MessageBox(m_szGetFileNames[i].c_str(), szErr);
+
+			CString szErr, szMsg;
+			szErr.LoadString(IDS_ERR_DOWNLOAD_PATCH_FILE);
+			szMsg.Format(_T("%hs"), m_szGetFileNames[i].c_str());
+			MessageBox(szMsg, szErr);
+
 			PostQuitMessage(0);
+
 			bExtractSuccess = false;
 			break;
 		}
@@ -379,7 +386,7 @@ void CLauncherDlg::DownloadProcess()
 
 	if(true == bExtractSuccess && m_hRegistryKey) // 압축 풀기와 쓰기, 압축 파일 삭제에 성공하면 버전을 쓰고..
 	{
-		long lStatus = RegSetValueEx(m_hRegistryKey, "VERSION", NULL, REG_DWORD, ((BYTE*)(&m_nServerVersion)), 4);
+		long lStatus = RegSetValueEx(m_hRegistryKey, _T("VERSION"), NULL, REG_DWORD, ((BYTE*)(&m_nServerVersion)), 4);
 		this->StartGame(); // 게임 실행..
 	}
 	else
@@ -392,31 +399,37 @@ void CLauncherDlg::DownloadProcess()
 
 BOOL CLauncherDlg::FTP_Open()
 {
-	m_hInetSession = InternetOpen("3DOnline",
-							  INTERNET_OPEN_TYPE_PRECONFIG,
-							  NULL,
-							  NULL,
-							  0);
+	m_hInetSession = InternetOpen(
+		_T("3DOnline"),
+		INTERNET_OPEN_TYPE_PRECONFIG,
+		NULL,
+		NULL,
+		0);
 	if (!m_hInetSession)
 	{
-		CString szErr; szErr.LoadString(IDS_ERR_INIT_INTERNET);
-		MessageBox(m_szFtpUrl.c_str(), szErr);
+		CString szErr, szMsg;
+		szErr.LoadString(IDS_ERR_INIT_INTERNET);
+		szMsg.Format(_T("%hs"), m_szFtpUrl.c_str());
+		MessageBox(szMsg, szErr);
 		return FALSE;
 	}
 
-	m_hFtpConnection = InternetConnect(m_hInetSession,
-									   m_szFtpUrl.c_str(),
-									   INTERNET_DEFAULT_FTP_PORT,
-									   "anonymous",
-									   "download",
-									   INTERNET_SERVICE_FTP,
-									   INTERNET_FLAG_PASSIVE,
-									   0);
+	m_hFtpConnection = InternetConnectA(
+		m_hInetSession,
+		m_szFtpUrl.c_str(),
+		INTERNET_DEFAULT_FTP_PORT,
+		"anonymous",
+		"download",
+		INTERNET_SERVICE_FTP,
+		INTERNET_FLAG_PASSIVE,
+		0);
 
 	if (!m_hFtpConnection)
 	{
-		CString szErr; szErr.LoadString(IDS_ERR_CONNECT_FTP);
-		MessageBox(m_szFtpUrl.c_str(), szErr);
+		CString szErr, szMsg;
+		szErr.LoadString(IDS_ERR_CONNECT_FTP);
+		szMsg.Format(_T("%hs"), m_szFtpUrl.c_str());
+		MessageBox(szMsg, szErr);
 		return FALSE;
 	}
 
@@ -449,7 +462,7 @@ BOOL CLauncherDlg::GetDownloadFile(const std::string& szFtpUrl, const std::strin
 	HINTERNET hFile;
 
 	//CInternetFile *pFile;
-	hFile = FtpOpenFile(m_hFtpConnection,
+	hFile = FtpOpenFileA(m_hFtpConnection,
 						szFtpUrl.c_str(),
 						GENERIC_READ,
 						FTP_TRANSFER_TYPE_BINARY,
@@ -458,13 +471,16 @@ BOOL CLauncherDlg::GetDownloadFile(const std::string& szFtpUrl, const std::strin
 	if (!hFile) return FALSE;
 
 	// read & save the file...
-	std::string		szLocalFName;
-	szLocalFName = m_szInstalledPath + "\\" + szFileName;
+	CString szLocalFName;
+	szLocalFName.Format(
+		_T("%s\\%hs"),
+		m_szInstalledPath.GetString(),
+		szFileName.c_str());
 
-	FILE *fp = fopen(szLocalFName.c_str(), "wb");
+	FILE *fp = _tfopen(szLocalFName, _T("wb"));
 	if (fp == NULL)
 	{
-		MessageBox("Can`t open local file");
+		MessageBox(_T("Can`t open local file"));
 
 		InternetCloseHandle(hFile);
 		return TRUE;
@@ -495,8 +511,9 @@ BOOL CLauncherDlg::GetDownloadFile(const std::string& szFtpUrl, const std::strin
 		dwCurrent = ::GetTickCount ();
 		dwElaspedTime += dwCurrent - dwLastTime;
 
-		std::string szInfo; szInfo = szFileName + " Downloading...";
-		m_Status.SetWindowText(szInfo.c_str());
+		CString szInfo;
+		szInfo.Format(_T("%hs Downloading..."), szFileName.c_str());
+		m_Status.SetWindowText(szInfo);
 
 		bPeekMessage = ::PeekMessage(&pMsg, NULL, NULL, NULL, PM_REMOVE);
 		if(bPeekMessage)
@@ -531,7 +548,7 @@ BOOL CLauncherDlg::GetDownloadFile(const std::string& szFtpUrl, const std::strin
 			return FALSE;
 		};
 */
-		MessageBox("File Size Error");
+		MessageBox(_T("File Size Error"));
 
 		return FALSE;
 	}
@@ -574,14 +591,14 @@ BOOL CLauncherDlg::IsFtpExistFile(const std::string& szFtpUrl, const std::string
 	HINTERNET hFind;
 
 	hFind = FtpFindFirstFile(m_hFtpConnection,
-							 (LPCTSTR)strName,
+							 strName,
 							 &FindFileData,
 							 0,
 							 0);
 	if (!hFind)
 	{	
 		hFind = FtpFindFirstFile(m_hFtpConnection,
-							 (LPCTSTR)strNameU,
+							 strNameU,
 							 &FindFileData,
 							 0,
 							 0);
@@ -589,7 +606,7 @@ BOOL CLauncherDlg::IsFtpExistFile(const std::string& szFtpUrl, const std::string
 		if (!hFind)
 		{
 			hFind = FtpFindFirstFile(m_hFtpConnection,
-							 (LPCTSTR)strNameL,
+							 strNameL,
 							 &FindFileData,
 							 0,
 							 0);
@@ -624,7 +641,7 @@ bool CLauncherDlg::ArchiveClose()
 	}
 	if (berr)
 	{
-		MessageBox("Archive close failed", "", MB_ICONSTOP);
+		MessageBox(_T("Archive close failed"), _T(""), MB_ICONSTOP);
 		return false;
 	}
 
@@ -673,7 +690,7 @@ bool CLauncherDlg::ArchiveOpen( CString OpenFileName )
 		}
 		if (berr == -1)
 		{
-			if (MessageBox("The central directory was not found. If you're opening a multi-disk archive, make sure you have inserted the last disk. Retry?", "", MB_ICONSTOP|MB_YESNO) == IDNO)
+			if (MessageBox(_T("The central directory was not found. If you're opening a multi-disk archive, make sure you have inserted the last disk. Retry?"), _T(""), MB_ICONSTOP|MB_YESNO) == IDNO)
 				berr = 1;
 			else
 				m_zip.Close(true);
@@ -681,7 +698,7 @@ bool CLauncherDlg::ArchiveOpen( CString OpenFileName )
 
 		if (berr == 1)
 		{
-			MessageBox("Archive open failed", "", MB_ICONSTOP);
+			MessageBox(_T("Archive open failed"), _T(""), MB_ICONSTOP);
 			return false;
 		}
 
@@ -716,22 +733,12 @@ bool CLauncherDlg::ArchiveExtract( CString ExtractFolder )
 	if (bErr)
 	{
 		m_zip.CloseFile(NULL, true);
-		MessageBox("Extract failed", "", MB_ICONSTOP);
+		MessageBox(_T("Extract failed"), _T(""), MB_ICONSTOP);
 		return false;
 	}
 
 	return true;
 }
-
-void CLauncherDlg::LoadStringFromResource(DWORD dwID, std::string& szString)
-{
-	static char szBuffer[512];
-	szBuffer[0] = NULL;
-//	::LoadString(NULL, MAKEINTRESOURCE(dwID), szBuffer, 256);
-	::LoadString(NULL, dwID, szBuffer, 256);
-	szString = szBuffer;
-}
-
 
 LRESULT CLauncherDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {

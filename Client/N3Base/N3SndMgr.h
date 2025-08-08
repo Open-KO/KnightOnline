@@ -51,13 +51,17 @@ public:
 	void		Release();
 	void		Tick();	
 
-	CN3SndObj*			CreateObj(const std::string& szFN, e_SndType eType = SNDTYPE_3D);
+	CN3SndObj*			CreateObj(std::string szFN, e_SndType eType = SNDTYPE_3D);
 	CN3SndObj*			CreateObj(int iID, e_SndType eType = SNDTYPE_3D);
-	CN3SndObjStream*	CreateStreamObj(const std::string& szFN);
+	CN3SndObjStream*	CreateStreamObj(std::string szFN);
 	CN3SndObjStream*	CreateStreamObj(int iID);
 
 	CN3SndMgr();
 	virtual ~CN3SndMgr();
+
+private:
+	static bool PreprocessFilename(std::string& filename);
+	static bool DecodeMp3ToWav(std::string& filename);
 };
 
 #endif // !defined(AFX_N3SNDMGR_H__9CB531B0_4FEB_4360_8141_D0BF61347BD7__INCLUDED_)

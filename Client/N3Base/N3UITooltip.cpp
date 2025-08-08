@@ -79,7 +79,7 @@ void CN3UITooltip::Render()
 	else CN3UIStatic::Render();
 }
 
-void CN3UITooltip::SetText(const std::string& szText)
+void CN3UITooltip::SetText(const std::string& szText, D3DCOLOR crTooltip)
 {
 	if(!m_bVisible || m_bSetText) return;
 
@@ -119,7 +119,9 @@ void CN3UITooltip::SetText(const std::string& szText)
 		size.cy += 12;
 		SetSize(size.cx, size.cy);
 	}
+
 	m_pBuffOutRef->SetString(szText);
+	m_pBuffOutRef->SetColor(crTooltip);
 
 	// 위치 조정
 	POINT	ptNew = m_ptCursor;

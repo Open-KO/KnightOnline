@@ -9,10 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "GameDef.h"
-#include "PacketDef.h"
-#include "N3UIBase.h"
 #include <list>
+
+#include <N3Base/N3UIBase.h>
+#include "GameDef.h" // __InfoPartyBBS
 
 typedef std::list<__InfoPartyBBS>::iterator it_PartyBBS;
 

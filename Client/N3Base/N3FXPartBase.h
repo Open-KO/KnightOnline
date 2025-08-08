@@ -18,6 +18,8 @@ class CN3FXBundle;
 class CN3FXPartBase : public CN3BaseFileAccess  
 {
 public:
+	static constexpr int SUPPORTED_PART_BASE_VERSION = 2;
+
 //멤버 변수들..
 	int				m_iVersion;			//	자료의 버전..
 	int				m_iBaseVersion;

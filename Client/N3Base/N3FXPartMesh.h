@@ -12,6 +12,8 @@ class CN3FXShape;
 class CN3FXPartMesh : public CN3FXPartBase
 {
 public:
+	static constexpr int SUPPORTED_PART_VERSION = 5;
+
 	CN3FXShape*	m_pShape;
 	CN3FXShape*	m_pRefShape;
 

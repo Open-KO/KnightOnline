@@ -17,7 +17,7 @@ static char THIS_FILE[]=__FILE__;
 
 CN3FXPartBottomBoard::CN3FXPartBottomBoard()
 {
-	m_iVersion = 1;
+	m_iVersion = SUPPORTED_PART_VERSION;
 	m_fSizeX = m_fSizeZ = 1.0f;
 
 	m_iTexIdx = 0;
@@ -198,6 +198,19 @@ bool CN3FXPartBottomBoard::Load(HANDLE hFile)
 	{
 		ReadFile(hFile, &m_fGap, sizeof(float), &dwRWC, NULL);
 	}
+
+	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
+	// and otherwise be broken for now.
+#if defined(_DEBUG)
+	if (m_iVersion > SUPPORTED_PART_VERSION)
+	{
+		TRACE(
+			"!!! WARNING: CN3FXPartBottomBoard::Load(%s) encountered version %d (base version %d). Needs support!",
+			m_pRefBundle != nullptr ? m_pRefBundle->FileName().c_str() : "<unknown>",
+			m_iVersion,
+			m_iBaseVersion);
+	}
+#endif
 
 	CreateVB();
 	Init();

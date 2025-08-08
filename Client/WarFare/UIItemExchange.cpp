@@ -3,20 +3,18 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "resource.h"
 #include "UIItemExchange.h"
-
 #include "PacketDef.h"
 #include "APISocket.h"
 #include "LocalInput.h"
 #include "PlayerMySelf.h"
-#include "GameProcedure.h"
 #include "GameProcMain.h"
-
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
+#include "text_resources.h"
 
+#include <N3Base/N3UIString.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -281,25 +279,18 @@ bool CUIItemExchange::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 void CUIItemExchange::UpdateGoldValue()
 {
-	char szGold[32];
-	CN3UIString* pStrGold = (CN3UIString* )GetChildByID("string_gold"); 
+	CN3UIString* pStrGold = (CN3UIString*) GetChildByID("string_gold");
 	__ASSERT(pStrGold, "NULL UI Component!!");
-	
-	if ( pStrGold )
-	{
-		// 돈 업데이트..	
-		sprintf(szGold, "%d", m_pTotalPrice);
-		pStrGold->SetString(szGold);
-	}		
+
+	// 돈 업데이트..	
+	if (pStrGold != nullptr)
+		pStrGold->SetStringAsInt(m_pTotalPrice);
 }
 
 void CUIItemExchange::UpdateUserTotalGold(int iGold)
 {
-	char szGold[32];
-
 	// 돈 업데이트..
 	CGameBase::s_pPlayer->m_InfoExt.iGold = iGold;
-	sprintf(szGold, "%d", iGold);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 }
 
@@ -388,7 +379,7 @@ uint32_t CUIItemExchange::MouseProc(uint32_t dwFlags, const POINT& ptCur, const 
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible) return dwRet;
-	if (CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
+	if (s_bWaitFromServer) { dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet; }
 
 	// 드래그 되는 아이콘 갱신..
 	if ( (GetState() == UI_STATE_ICON_MOVING) && 
@@ -453,7 +444,7 @@ void CUIItemExchange::UserPressOK()
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);	
 
 	// 응답을 기다림..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = true;
+	s_bWaitFromServer = true;
 }
 
 void CUIItemExchange::ReceiveResultFromServer(int iResult, int iUserGold)
@@ -477,7 +468,7 @@ void CUIItemExchange::ReceiveResultFromServer(int iResult, int iUserGold)
 	UpdateUserTotalGold(iUserGold);
 
 	// 응답 기다림 해제..
-	CN3UIWndBase::m_sRecoveryJobInfo.m_bWaitFromServer = false;
+	s_bWaitFromServer = false;
 
 	// 이 윈도우의 npc 영역의 아이템을 이 윈도우의 inv 영역으로 옮긴다..
 	CN3UIArea* pArea = NULL;
