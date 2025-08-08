@@ -112,7 +112,7 @@ public:
 	void SendMagicAttackResult(int tuid, BYTE result, short sDamage, short sHP = 0);  // 공격 성공
 	void SendHP();												// user의 HP
 	void SendExp(int iExp, int iLoyalty, int tType = 1);
-	void SendSystemMsg(const char* pMsg, BYTE type, int nWho);
+	void SendSystemMsg(const std::string_view msg, BYTE type, int nWho);
 	void SendAll(const char* pBuf, int nLength);						// game server로 패킷 전송...
 	BOOL IsOpIDCheck(char* szName);
 

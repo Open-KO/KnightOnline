@@ -1436,16 +1436,5 @@ inline float _Yaw2D(float fDirX, float fDirZ)
 inline int16_t _IsKeyDown(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0xff00); }
 inline int16_t _IsKeyDowned(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0x00ff); }
 
-#if defined(_3DSERVER)
-inline void _LoadStringFromResource(DWORD dwID, std::string& szText, const int iOutputCodepage = 949)
-{
-	static wchar_t szBuffer[512];
-	szBuffer[0] = '\0';
-	::LoadStringW(nullptr, dwID, szBuffer, _countof(szBuffer));
-
-	szText = CW2A(szBuffer, iOutputCodepage);
-}
-#endif
-
 #endif // __MY_3DSTRUCT_H_
 

@@ -2158,21 +2158,19 @@ void AIServerLogger::SetupExtraLoggers(CIni& ini,
 	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerUser, ini::USER_LOG_FILE);
 }
 
-void CServerDlg::SendSystemMsg(char* pMsg, int zone, int type, int who)
+void CServerDlg::SendSystemMsg(const std::string_view msg, int zone, int type, int who)
 {
 	int send_index = 0;
 	char buff[256] = {};
-	short sLength = static_cast<short>(strlen(pMsg));
 
 	SetByte(buff, AG_SYSTEM_MSG, send_index);
 	SetByte(buff, type, send_index);				// 채팅형식
 	SetShort(buff, who, send_index);				// 누구에게
-	SetShort(buff, sLength, send_index);
-	SetString(buff, pMsg, sLength, send_index);
+	SetString2(buff, msg, send_index);
 
 	Send(buff, send_index, zone);
 	spdlog::info("ServerDlg::SendSystemMsg: zoneId={} type={} who={} msg={}",
-		zone, type, who, pMsg);
+		zone, type, who, msg);
 }
 
 void CServerDlg::ResetBattleZone()

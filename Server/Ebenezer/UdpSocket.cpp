@@ -11,6 +11,7 @@
 #include "User.h"
 
 #include <shared/packets.h>
+#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -252,12 +253,8 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	int index = 0, send_index = 0, udp_index = 0;
 	int nType = 0, nResult = 0, nLen = 0, nKillKarus = 0, nElmoKill = 0;
 	char strMaxUserName[MAX_ID_SIZE + 1] = {},
-		chatstr[256] = {},
-		finalstr[256] = {},
 		send_buff[256] = {},
 		udp_buff[256] = {};;
-
-	std::string buff;
 
 	nType = GetByte(pBuf, index);
 	nResult = GetByte(pBuf, index);
@@ -316,45 +313,30 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			&& nLen < MAX_ID_SIZE + 1)
 		{
 			GetString(strMaxUserName, pBuf, nLen, index);
+
+			std::string chatstr;
+
 			//TRACE(_T("-->  UDP RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
 			if (nResult == 1)
-			{
-				_LoadStringFromResource(IDS_KILL_CAPTAIN, buff);
-				sprintf(chatstr, buff.c_str(), strMaxUserName);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KILL_CAPTAIN, strMaxUserName);
 			else if (nResult == 2)
-			{
-				_LoadStringFromResource(IDS_KILL_GATEKEEPER, buff);
-				sprintf(chatstr, buff.c_str(), strMaxUserName);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KILL_GATEKEEPER, strMaxUserName);
 			else if (nResult == 3)
-			{
-				_LoadStringFromResource(IDS_KILL_KARUS_GUARD1, buff);
-				sprintf(chatstr, buff.c_str(), strMaxUserName);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD1, strMaxUserName);
 			else if (nResult == 4)
-			{
-				_LoadStringFromResource(IDS_KILL_KARUS_GUARD2, buff);
-				sprintf(chatstr, buff.c_str(), strMaxUserName);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD2, strMaxUserName);
 			else if (nResult == 5)
-			{
-				_LoadStringFromResource(IDS_KILL_ELMO_GUARD1, buff);
-				sprintf(chatstr, buff.c_str(), strMaxUserName);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD1, strMaxUserName);
 			else if (nResult == 6)
-			{
-				_LoadStringFromResource(IDS_KILL_ELMO_GUARD2, buff);
-				sprintf(chatstr, buff.c_str(), strMaxUserName);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD2, strMaxUserName);
 
-			sprintf(finalstr, "#### NOTICE : %s ####", chatstr);
+			chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
 			SetByte(send_buff, WIZ_CHAT, send_index);
 			SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
-			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+			SetString2(send_buff, chatstr, send_index);
 			m_pMain->Send_All(send_buff, send_index);
 
 			memset(send_buff, 0, sizeof(send_buff));
@@ -364,7 +346,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
-			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+			SetString2(send_buff, chatstr, send_index);
 			m_pMain->Send_All(send_buff, send_index);
 		}
 	}
@@ -474,8 +456,8 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 {
 	int send_index = 0, knightsId = 0, index = 0, idlen = 0;
 	char charId[MAX_ID_SIZE + 1] = {},
-		send_buff[128] = {},
-		finalstr[128] = {};
+		send_buff[128] = {};
+	std::string finalstr;
 	CKnights* pKnights = nullptr;
 
 	knightsId = GetShort(pBuf, index);
@@ -486,7 +468,8 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 
 	if (command == KNIGHTS_JOIN)
 	{
-		sprintf(finalstr, "#### %s has joined. ####", charId);
+		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_JOIN, charId);
+
 		// 클랜정보에 추가
 		m_pMain->m_KnightsManager.AddKnightsUser(knightsId, charId);
 		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} joined knightsId={}",
@@ -498,7 +481,8 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 	{
 		// 클랜정보에 추가
 		m_pMain->m_KnightsManager.RemoveKnightsUser(knightsId, charId);
-		sprintf(finalstr, "#### %s has left. ####", charId);
+
+		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_WITHDRAW, charId);
 		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} left knightsId={}",
 			charId, knightsId);
 	}
@@ -512,7 +496,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
-	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+	SetString2(send_buff, finalstr, send_index);
 	m_pMain->Send_KnightsMember(knightsId, send_buff, send_index);
 }
 
@@ -520,8 +504,8 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 {
 	int index = 0, send_index = 0, knightsindex = 0, idlen = 0, vicechief = 0;
 	char send_buff[128] = {},
-		finalstr[128] = {},
 		userid[MAX_ID_SIZE + 1] = {};
+	std::string finalstr;
 	CUser* pTUser = nullptr;
 	CKnights* pKnights = nullptr;
 
@@ -539,7 +523,8 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
-				sprintf(finalstr, "#### %s has been banned. ####", pTUser->m_pUserData->m_id);
+
+				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
 				m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
 			else
@@ -567,7 +552,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
 				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				sprintf(finalstr, "#### %s has been appointed as a leader. ####", pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -576,7 +561,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
 				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				sprintf(finalstr, "#### %s has been appointed as a co-leader. ####", pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -623,7 +608,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
-			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+			SetString2(send_buff, finalstr, send_index);
 			pTUser->Send(send_buff, send_index);
 		}
 	}
@@ -634,15 +619,15 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
-	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+	SetString2(send_buff, finalstr, send_index);
 	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
 }
 
 void CUdpSocket::RecvDestroyKnights(char* pBuf)
 {
 	int send_index = 0, knightsId = 0, index = 0, flag = 0;
-	char send_buff[128] = {},
-		finalstr[128] = {};
+	char send_buff[128] = {};
+	std::string finalstr;
 	CKnights* pKnights = nullptr;
 	CUser* pTUser = nullptr;
 
@@ -660,9 +645,9 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 
 	// 클랜이나 기사단이 파괴된 메시지를 보내고 유저 데이타를 초기화
 	if (flag == CLAN_TYPE)
-		sprintf(finalstr, "#### the clan %s has disbanded ####", pKnights->m_strName);
+		finalstr = fmt::format_win32_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
 	else if (flag == KNIGHTS_TYPE)
-		sprintf(finalstr, "#### the knights %s has disbanded ####", pKnights->m_strName);
+		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_DESTROY, pKnights->m_strName);
 
 	memset(send_buff, 0x00, 128);		send_index = 0;
 	SetByte(send_buff, WIZ_CHAT, send_index);
@@ -670,7 +655,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
-	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+	SetString2(send_buff, finalstr, send_index);
 	m_pMain->Send_KnightsMember(knightsId, send_buff, send_index);
 
 	for (int i = 0; i < MAX_USER; i++)
