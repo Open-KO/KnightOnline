@@ -107,17 +107,17 @@ bool CN3Texture::Create(int nWidth, int nHeight, D3DFORMAT Format, BOOL bGenerat
 #ifdef _N3GAME
 	if(rval == D3DERR_INVALIDCALL)
 	{
-		CLogWriter::Write("N3Texture: createtexture err D3DERR_INVALIDCALL(%s)", m_szFileName.c_str());
+		CLogWriter::Write("N3Texture: createtexture err D3DERR_INVALIDCALL({})", m_szFileName);
 		return false;
 	}
 	if(rval == D3DERR_OUTOFVIDEOMEMORY)
 	{
-		CLogWriter::Write("N3Texture: createtexture err D3DERR_OUTOFVIDEOMEMORY(%s)", m_szFileName.c_str());
+		CLogWriter::Write("N3Texture: createtexture err D3DERR_OUTOFVIDEOMEMORY({})", m_szFileName);
 		return false;
 	}
 	if(rval == E_OUTOFMEMORY)
 	{
-		CLogWriter::Write("N3Texture: createtexture err E_OUTOFMEMORY(%s)", m_szFileName.c_str());
+		CLogWriter::Write("N3Texture: createtexture err E_OUTOFMEMORY({})", m_szFileName);
 		return false;
 	}
 #endif
@@ -187,7 +187,7 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 		if(hFile == INVALID_HANDLE_VALUE)
 		{
 #ifdef _N3GAME
-			CLogWriter::Write("invalid file handle(%d) - Can't open texture file(%s)", (int)hFile, szFullPath.c_str());
+			CLogWriter::Write("invalid file handle({}) - Can't open texture file({})", (int)hFile, szFullPath);
 #endif
 			return false;
 		}
@@ -223,7 +223,7 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 		else
 		{
 #ifdef _N3GAME
-			CLogWriter::Write("N3Texture - Failed to load texture(%s)", szFullPath.c_str());
+			CLogWriter::Write("N3Texture - Failed to load texture({})", szFullPath);
 #endif
 		}
 
@@ -260,7 +260,7 @@ bool CN3Texture::Load(HANDLE hFile)
 		|| HeaderOrg.szID[3] < 3)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3Texture Warning - Old format DXT file (%s)", m_szFileName.c_str());
+		CLogWriter::Write("N3Texture Warning - Old format DXT file ({})", m_szFileName);
 #endif
 	}
 
@@ -316,7 +316,7 @@ bool CN3Texture::Load(HANDLE hFile)
 	if (m_lpTexture == nullptr)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3Texture error - Can't create texture (%s)", m_szFileName.c_str());
+		CLogWriter::Write("N3Texture error - Can't create texture ({})", m_szFileName);
 #endif
 		return false;
 	}
@@ -509,7 +509,7 @@ bool CN3Texture::SkipFileHandle(HANDLE hFile)
 	if(	'N' != HeaderOrg.szID[0] || 'T' != HeaderOrg.szID[1] || 'F' != HeaderOrg.szID[2] || 3 != HeaderOrg.szID[3] ) // "NTF"3 - Noah Texture File Ver. 3.0
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3Texture Warning - Old format DXT file (%s)", m_szFileName.c_str());
+		CLogWriter::Write("N3Texture Warning - Old format DXT file ({})", m_szFileName);
 #endif
 	}
 
@@ -618,7 +618,7 @@ bool CN3Texture::Save(HANDLE hFile)
 		if(nMMC < nMMC2)
 		{
 #ifdef _N3GAME
-			CLogWriter::Write("N3Texture save warning - Invalid MipMap Count (%s)", m_szFileName.c_str());
+			CLogWriter::Write("N3Texture save warning - Invalid MipMap Count ({})", m_szFileName);
 #endif
 			m_Header.bMipMap = FALSE;
 			nMMC = 1;

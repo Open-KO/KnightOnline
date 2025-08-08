@@ -339,6 +339,9 @@
     <ClCompile Include="N3ClientShapeMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClientResourceFormatter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameProcedure.h">
@@ -684,6 +687,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="text_resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="warfare_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientResourceFormatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

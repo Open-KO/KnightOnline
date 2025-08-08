@@ -34,12 +34,13 @@ CN3Eng::CN3Eng()
 	// 프로그램이 실행된 경로..
 	if (s_szPath.empty())
 	{
-		char szPath[256];
-		char szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
-		::GetModuleFileName(NULL, szPath, 256);
-		_splitpath(szPath, szDrive, szDir, NULL, NULL);
-		sprintf(szPath, "%s%s", szDrive, szDir);
-		this->PathSet(szPath); // 경로 설정..	
+		char szPath[_MAX_PATH] = {};
+		char szDrive[_MAX_DRIVE] = {}, szDir[_MAX_DIR] = {};
+		::GetModuleFileName(nullptr, szPath, _MAX_PATH);
+		_splitpath(szPath, szDrive, szDir, nullptr, nullptr);
+		strcat(szPath, szDrive);
+		strcat(szPath, szDir);
+		PathSet(szPath); // 경로 설정..	
 	}
 }
 
@@ -368,12 +369,10 @@ bool CN3Eng::Init(
 		rval = m_lpD3D->CreateDevice(0, DevType, s_hWndBase, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &s_DevParam, &s_lpD3DDev);
 		if(rval != D3D_OK)
 		{
-			char szDebug[256];
-			//D3DXGetErrorString(rval, szDebug, 256);
 			MessageBox(s_hWndBase, "Can't create D3D Device - please, check DirectX or display card driver", "initialization", MB_OK);
 #ifdef _N3GAME
 			CLogWriter::Write("Can't create D3D Device - please, check DirectX or display card driver");
-			CLogWriter::Write(szDebug);
+			CLogWriter::Write(DXGetErrorStringA(rval));
 #endif
 //			{ for(int iii = 0; iii < 3; iii++) Beep(2000, 200); Sleep(300); } // 여러번 삑~
 
@@ -503,10 +502,7 @@ void CN3Eng::Present(HWND hWnd, RECT* pRC)
 			const char* szErr = DXGetErrorStringA(rval);
 
 			// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
-			CLogWriter::Write(
-				"Device Present ErrCode(%X) : %s",
-				rval,
-				szErr);
+			CLogWriter::Write("Device Present ErrCode({:X}) : {}", rval, szErr);
 #endif
 
 			WaitForDeviceRestoration();
@@ -517,9 +513,7 @@ void CN3Eng::Present(HWND hWnd, RECT* pRC)
 	else
 	{
 #ifdef _N3GAME
-//		char szErr[256];
-//		D3DXGetErrorString(rval, szErr, 256);
-//		CLogWriter::Write("CNEng::Present - device present failed (%s)", szErr);
+//		CLogWriter::Write("CNEng::Present - device present failed ({})", DXGetErrorStringA(rval));
 //		Beep(2000, 50);
 #endif
 	}
@@ -590,10 +584,7 @@ void CN3Eng::WaitForDeviceRestoration()
 				const char* szErr = DXGetErrorStringA(rval);
 
 				// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
-				CLogWriter::Write(
-					"Device Reset Success ErrCode(%X) : %s",
-					rval,
-					szErr);
+				CLogWriter::Write("Device Reset Success ErrCode({:X}) : {}", rval, szErr);
 #endif
 				SetDefaultEnvironment();
 				break;
@@ -603,10 +594,7 @@ void CN3Eng::WaitForDeviceRestoration()
 			const char* szErr = DXGetErrorStringA(rval);
 
 			// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
-			CLogWriter::Write(
-				"Device Reset Failed - ErrCode(%X) : %s",
-				rval,
-				szErr);
+			CLogWriter::Write("Device Reset Failed - ErrCode(:X) : {}", rval, szErr);
 #endif
 		}
 

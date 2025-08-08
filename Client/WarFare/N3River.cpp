@@ -55,17 +55,18 @@ bool CN3River::Load(HANDLE hFile)
 		__ASSERT(pInfo->iIC%18==0, "River-Vertex-Index is a multiple of 18");
 
 		int iTexNameLength = 0;
-		ReadFile(hFile, &iTexNameLength,sizeof(int),&dwNum,NULL);
-		if(iTexNameLength>0)
+		ReadFile(hFile, &iTexNameLength, sizeof(int), &dwNum, nullptr);
+		if (iTexNameLength > 0)
 		{
-			char szTextueFName[_MAX_PATH],szTextue[50];
-			ReadFile(hFile, szTextue, iTexNameLength, &dwNum, NULL);			// texture name
-			szTextue[iTexNameLength] = NULL;
-			sprintf(szTextueFName,"misc\\river\\%s",szTextue);
+			char szTexture[50];
+			ReadFile(hFile, szTexture, iTexNameLength, &dwNum, nullptr);			// texture name
+			szTexture[iTexNameLength] = '\0';
 
-			pInfo->m_pTexWave = s_MngTex.Get(szTextueFName);
+			std::string szTextureFName = fmt::format("misc\\river\\{}", szTexture);
+
+			pInfo->m_pTexWave = s_MngTex.Get(szTextureFName);
 			__ASSERT(pInfo->m_pTexWave, "CN3River::texture load failed");
-		}		
+		}
 
 
 		pInfo->pwIndex = new uint16_t[pInfo->iIC];		
@@ -125,10 +126,10 @@ bool CN3River::Load(HANDLE hFile)
 
 	}	
 
-	char szFileName[30];
-	for (int i=0;i<MAX_RIVER_TEX;i++)
+	std::string szFileName;
+	for (int i = 0; i < MAX_RIVER_TEX; i++)
 	{
-		sprintf(szFileName, "misc\\river\\caust%02d.dxt", i);
+		szFileName = fmt::format("misc\\river\\caust{:02}.dxt", i);
 		m_pTexRiver[i] = s_MngTex.Get(szFileName);
 		__ASSERT(m_pTexRiver[i], "CN3River::texture load failed");
 	}

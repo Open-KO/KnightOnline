@@ -2,8 +2,8 @@
 SETLOCAL
 
 REM Validate arguments
-IF "%~4"=="" (
-	ECHO Usage: %~nx0 DEP_NAME BUILD_CONFIG BUILD_PLATFORM PROJECT_PATH
+IF "%~3"=="" (
+	ECHO Usage: %~nx0 DEP_NAME BUILD_CONFIG BUILD_PLATFORM [PROJECT_PATH]
 	ECHO Example: %~nx0 zlib Release Win32 deps\zlib-msvc\zlib.vcxproj
 	EXIT /B 1
 )
@@ -23,18 +23,20 @@ SET "REPO_ROOT=%~dp0.."
 SET "BUILD_STATE_DIR=%~dp0..\deps\fetch-and-build-wrappers\last-build-states\%BUILD_PLATFORM%\%BUILD_CONFIG%"
 SET "BUILD_STATE_FILE=%BUILD_STATE_DIR%\%DEP_NAME%.txt"
 
-REM Validate dependency project even exists
-IF NOT EXIST "%PROJECT_PATH%" (
-	ECHO ERROR: Dependency project not found: "%PROJECT_PATH%"
-	EXIT /B 1
-)
+IF NOT "%PROJECT_PATH%" == "" (
+	REM Validate dependency project even exists
+	IF NOT EXIST "%PROJECT_PATH%" (
+		ECHO ERROR: Dependency project not found: "%PROJECT_PATH%"
+		EXIT /B 1
+	)
 
-REM Build dependency
-"%MSBUILD%" "%PROJECT_PATH%" /t:Clean /p:Configuration=%BUILD_CONFIG% /p:Platform=%BUILD_PLATFORM%
+	REM Build dependency
+	"%MSBUILD%" "%PROJECT_PATH%" /t:Clean /p:Configuration="%BUILD_CONFIG%" /p:Platform="%BUILD_PLATFORM%"
 
-IF ERRORLEVEL 1 (
-	ECHO ERROR: Failed to build dependency: %DEP_NAME%
-	EXIT /B 1
+	IF ERRORLEVEL 1 (
+		ECHO ERROR: Failed to build dependency: %DEP_NAME%
+		EXIT /B 1
+	)
 )
 
 REM Delete build key so the next request will invoke a build.

@@ -482,7 +482,7 @@ void CServerDlg::DefaultInit()
 
 void CServerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("ServerDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("ServerDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());
@@ -829,7 +829,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						if (row->PathPointCount == 0
 							|| !row->Path.has_value())
 						{
-							std::string error = std::format("ServerDlg::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
+							std::string error = fmt::format("ServerDlg::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
 								row->ZoneId,
 								pNpc->m_sNid + NPC_BAND,
 								pNpc->m_sSid,
@@ -856,7 +856,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						const std::string& path = *row->Path;
 						if ((row->PathPointCount * CharactersPerPoint) > path.size())
 						{
-							std::string error = std::format("LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
+							std::string error = fmt::format("LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
 								row->ZoneId,
 								row->PathPointCount,
 								pNpc->m_sNid + NPC_BAND,
@@ -2158,21 +2158,19 @@ void AIServerLogger::SetupExtraLoggers(CIni& ini,
 	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerUser, ini::USER_LOG_FILE);
 }
 
-void CServerDlg::SendSystemMsg(char* pMsg, int zone, int type, int who)
+void CServerDlg::SendSystemMsg(const std::string_view msg, int zone, int type, int who)
 {
 	int send_index = 0;
 	char buff[256] = {};
-	short sLength = static_cast<short>(strlen(pMsg));
 
 	SetByte(buff, AG_SYSTEM_MSG, send_index);
 	SetByte(buff, type, send_index);				// 채팅형식
 	SetShort(buff, who, send_index);				// 누구에게
-	SetShort(buff, sLength, send_index);
-	SetString(buff, pMsg, sLength, send_index);
+	SetString2(buff, msg, send_index);
 
 	Send(buff, send_index, zone);
 	spdlog::info("ServerDlg::SendSystemMsg: zoneId={} type={} who={} msg={}",
-		zone, type, who, pMsg);
+		zone, type, who, msg);
 }
 
 void CServerDlg::ResetBattleZone()

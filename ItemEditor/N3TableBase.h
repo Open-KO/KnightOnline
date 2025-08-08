@@ -288,7 +288,7 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 	if(INVALID_HANDLE_VALUE == hFile)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3TableBase - Can't open file(read) File Handle error (%s)", szFN.c_str());
+		CLogWriter::Write("N3TableBase - Can't open file(read) File Handle error ({})", szFN);
 #endif
 		return FALSE;
 	}
@@ -373,7 +373,7 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 	if (FALSE == bResult)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("N3TableBase - incorrect table (%s)", szFN.c_str());
+		CLogWriter::Write("N3TableBase - incorrect table ({})", szFN);
 #endif
 	}
 

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\mpg123\src\libmpg123\parse.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\frame.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\format.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\dct64.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\equalizer.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\id3.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\optimize.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\readers.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\tabinit.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\libmpg123.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\index.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\icy.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\icy2utf8.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\layer1.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\layer2.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\layer3.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\ntom.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth_8bit.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth_s32.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\synth_real.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\stringbuf.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\feature.c" />
+    <ClCompile Include="..\mpg123\src\libmpg123\lfs_wrap.c" />
+    <ClCompile Include="..\mpg123\src\compat\compat.c" />
+    <ClCompile Include="..\mpg123\src\compat\compat_str.c" />
+  </ItemGroup>
+</Project>

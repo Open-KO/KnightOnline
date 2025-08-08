@@ -17,9 +17,9 @@ class Packet;
 class CUIQuestMenu   : public CN3UIBase
 {
 protected:
-	class CN3UIString*		m_pTextTitle;
-	class CN3UIString*		m_pTextSample;
-	class CN3UIString*		m_pTextMenu[MAX_STRING_MENU];
+	CN3UIString*		m_pTextTitle;
+	CN3UIString*		m_pTextSample;
+	CN3UIString*		m_pTextMenu[MAX_STRING_MENU];
 
 	int m_iMenuCnt;
 
@@ -48,6 +48,8 @@ public:
 	CUIQuestMenu();
 	virtual ~CUIQuestMenu();
 
+protected:
+	void UpdateTextForScroll();
 };
 
 #endif // !defined(AFX_UIQUESTMENU_H__B74550FB_798B_4DB8_91DD_EE5994976EDE__INCLUDED_)

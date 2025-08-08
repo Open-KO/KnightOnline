@@ -342,7 +342,7 @@ BOOL CAujardDlg::InitSharedMemory()
 /// \brief writes a recordset_loader::Error to an error pop-up
 void CAujardDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("AujardDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("AujardDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());
@@ -1346,7 +1346,7 @@ void CAujardDlg::ModifyKnightsMember(char* buffer, BYTE command)
 		default:
 			cmdStr = "ModifyKnightsMember";
 		}
-		std::string errMsg = std::format("Packet Drop: {}", cmdStr);
+		std::string errMsg = fmt::format("Packet Drop: {}", cmdStr);
 		AddOutputMessage(errMsg);
 		spdlog::error("AujardDlg::ModifyKnightsMember: {}", errMsg);
 	}

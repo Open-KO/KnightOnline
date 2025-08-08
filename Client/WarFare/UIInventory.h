@@ -142,7 +142,7 @@ public:
 
 	void				ReceiveResultFromServer(int iResult, int iUserGold);
 
-	int					GetCountInInvByID(int iID);
+	int					GetCountInInvByID(int iID) const;
 
 	// 소모성 아이템을 소비한 경우 or Not..
 	void				ItemCountChange(int iDistrict, int iIndex, int iCount, int iID, int iDurability);

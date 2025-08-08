@@ -329,17 +329,13 @@ void CUIPerTradeDlg::EnterPerTradeState()
 	}
 
 	ItemMoveFromInvToThis();
-
-	char szGold[32];
-	sprintf(szGold, "%d", CGameBase::s_pPlayer->m_InfoExt.iGold);
-	if(m_pStrMyGold)	m_pStrMyGold->SetString(szGold);
+	GoldUpdate();
 }
 
 void CUIPerTradeDlg::GoldUpdate()
 {
-	char szGold[32];
-	sprintf(szGold, "%d", CGameBase::s_pPlayer->m_InfoExt.iGold);
-	if(m_pStrMyGold)	m_pStrMyGold->SetString(szGold);
+	if (m_pStrMyGold != nullptr)
+		m_pStrMyGold->SetStringAsInt(CGameBase::s_pPlayer->m_InfoExt.iGold);
 }
 
 void CUIPerTradeDlg::ItemMoveFromInvToThis()
