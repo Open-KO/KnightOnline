@@ -11,7 +11,6 @@
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "PlayerMySelf.h"
-
 #include "UIManager.h"
 #include "UICharacterSelect.h"
 #include "UIMessageBox.h"
@@ -670,8 +669,7 @@ int CGameProcCharacterSelect::MsgRecv_GameServerLogIn(Packet& pDataPack)
 	int iNation = CGameProcedure::MsgRecv_GameServerLogIn(pDataPack);
 	if (0xff == iNation)
 	{
-		std::string szMsg;
-		GetTextF(IDS_FMT_GAME_SERVER_LOGIN_ERROR, &szMsg, "Current", iNation);
+		std::string szMsg = fmt::format_text_resource(IDS_FMT_GAME_SERVER_LOGIN_ERROR, "Current", iNation);
 		MessageBoxPost(szMsg, "", MB_OK, BEHAVIOR_EXIT);
 	}
 	else

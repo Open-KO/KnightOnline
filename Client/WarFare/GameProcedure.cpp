@@ -11,14 +11,12 @@
 #include "APISocket.h"
 #include "N3FXMgr.h"
 #include "PlayerMyself.h"
-
 #include "GameProcLogIn.h"
 #include "GameProcNationSelect.h"
 #include "GameProcCharacterCreate.h"
 #include "GameProcCharacterSelect.h"
 #include "GameProcMain.h"
 #include "GameProcOption.h"
-
 #include "UILoading.h"
 #include "UIMessageBox.h"
 #include "UIMessageBoxManager.h"
@@ -826,8 +824,7 @@ bool CGameProcedure::ProcessPacket(Packet& pkt)
 
 void CGameProcedure::ReportServerConnectionFailed(const std::string& szServerName, int iErrCode, bool bNeedQuitGame)
 {
-	std::string szMsg;
-	GetTextF(IDS_FMT_CONNECT_ERROR, &szMsg, szServerName.c_str(), iErrCode);
+	std::string szMsg = fmt::format_text_resource(IDS_FMT_CONNECT_ERROR, szServerName, iErrCode);
 	
 	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
@@ -977,15 +974,12 @@ int CGameProcedure::MsgRecv_VersionCheck(Packet& pkt) // virtual
 		// Taiwan Language
 		if (0x0404 == iLangID)
 		{
-			GetText(IDS_VERSION_CONFIRM_TW, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_VERSION_CONFIRM_TW);
 		}
 		else
 		{
-			GetTextF(
-				IDS_VERSION_CONFIRM,
-				&szMsg,
-				CURRENT_VERSION / 1000.0f,
-				iVersion / 1000.0f);
+			szMsg = fmt::format_text_resource(IDS_VERSION_CONFIRM,
+				CURRENT_VERSION / 1000.0f, iVersion / 1000.0f);
 		}
 
 		MessageBoxPost(szMsg, "", MB_OK, BEHAVIOR_EXIT);

@@ -102,24 +102,6 @@ bool CGameBase::GetText(uint32_t dwResourceID, std::string* szText)
 	return true;
 }
 
-bool CGameBase::GetTextF(uint32_t nResourceID, std::string* szText, ...)
-{
-	if (!GetText(nResourceID, szText))
-	{
-		szText->clear();
-		return false;
-	}
-
-	char buffer[1024] = {};
-	va_list args;
-	va_start(args, szText);
-	vsnprintf(buffer, sizeof(buffer), szText->c_str(), args);
-	*szText = buffer;
-	va_end(args);
-
-	return true;
-}
-
 bool CGameBase::GetTextByClass(e_Class eClass, std::string& szText)
 {
 	switch(eClass)

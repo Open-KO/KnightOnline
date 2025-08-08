@@ -66,8 +66,7 @@ bool CUICreateClanName::MakeClan()
 	if (m_szClanName.size() > 20)
 		m_szClanName.resize(20);
 
-	std::string szMsg;
-	CGameBase::GetTextF(IDS_CLAN_WARNING_COST, &szMsg, CLAN_COST);
+	std::string szMsg = fmt::format_text_resource(IDS_CLAN_WARNING_COST, CLAN_COST);
 	CGameProcedure::s_pProcMain->MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_KNIGHTS_CREATE);
 	return true;
 }

@@ -984,9 +984,9 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		m_pStr_skill_mp->SetVisible(true);
 
 	if (spSkill->pSkill->iExhaustMSP == 0)
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_NO_MANA, &szStr);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NO_MANA);
 	else
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_MANA, &szStr, spSkill->pSkill->iExhaustMSP);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_USE_MANA, spSkill->pSkill->iExhaustMSP);
 
 	m_pStr_skill_mp->SetString(szStr);
 	szStr.clear();
@@ -997,10 +997,10 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 
 	// Basic skills
 	if ((spSkill->pSkill->iNeedSkill % 10) == 0)
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_NEED_LEVEL, &szStr, spSkill->pSkill->iNeedLevel);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_LEVEL, spSkill->pSkill->iNeedLevel);
 	// 2nd job and master skills
 	else
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_NEED_SKILL_PT, &szStr, spSkill->pSkill->iNeedLevel);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_SKILL_PT, spSkill->pSkill->iNeedLevel);
 
 	m_pStr_skill_point->SetString(szStr);
 	szStr.clear();
@@ -1058,17 +1058,17 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	if (!m_pStr_skill_item1->IsVisible())
 		m_pStr_skill_item1->SetVisible(true);
 
-	if (spSkill->pSkill->dwExhaustItem == 0)
-	{
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_ITEM_NO, &szStr);
-	}
-	else
+	if (spSkill->pSkill->dwExhaustItem != 0)
 	{
 		__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(spSkill->pSkill->dwExhaustItem);
 		__ASSERT(pItem != nullptr, "NULL Item!!!");
 
 		if (pItem != nullptr)
-			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_ITEM_NEED, &szStr, pItem->szName.c_str());
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_ITEM_NEED, pItem->szName);
+	}
+	else
+	{
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_ITEM_NO);
 	}
 
 	m_pStr_skill_item1->SetString(szStr);
@@ -1103,11 +1103,11 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		__ASSERT(pItem != nullptr, "NULL Item!!!");
 
 		if (pItem != nullptr)
-			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, pItem->szName);
 	}
 	else
 	{
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_USE_ITEM_NO, &szStr);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_USE_ITEM_NO);
 	}
 
 	m_pStr_skill_item2->SetString(szStr);

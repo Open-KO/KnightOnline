@@ -136,22 +136,18 @@ void CUICharacterSelect::DisplayChrInfo(__CharacterSelectInfo* pCSInfo)
 
 	m_pUserInfoStr = GetChildByID("text00"); __ASSERT(m_pUserInfoStr, "NULL UI Component!!");
 
-	if ( !pCSInfo->szID.empty() )
+	if (!pCSInfo->szID.empty())
 	{
 		std::string szClass;
 		CGameBase::GetTextByClass(pCSInfo->eClass, szClass);
 
 		// Level: %d\nSpecialty: %s\nID: %s
-		CGameBase::GetTextF(
-			IDS_CHR_SELECT_FMT_INFO,
-			&szTotal,
-			pCSInfo->iLevel,
-			szClass.c_str(),
-			pCSInfo->szID.c_str());
+		szTotal = fmt::format_text_resource(IDS_CHR_SELECT_FMT_INFO,
+			pCSInfo->iLevel, szClass, pCSInfo->szID);
 	}
 	else
 	{
-		CGameBase::GetText(IDS_CHR_SELECT_HINT, &szTotal);
+		szTotal = fmt::format_text_resource(IDS_CHR_SELECT_HINT);
 	}
 
 	if (m_pUserInfoStr != nullptr)

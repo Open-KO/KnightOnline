@@ -110,10 +110,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 		if ( (spItem->pItemBasic->byContable != UIITEM_TYPE_COUNTABLE) && (spItem->pItemBasic->byContable != UIITEM_TYPE_COUNTABLE_SMALL) && 
 				(spItem->pItemBasic->siMaxDurability+spItem->pItemExt->siMaxDurability != 1) )
 		{
-			CGameBase::GetTextF(
-				IDS_TOOLTIP_NOAH,
-				&szMsg,
-				iRequiredGold);
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_NOAH, iRequiredGold);
 
 			SetTooltipTextColor(bHaveEnough);
 			if (!m_pStr[iIndex]->IsVisible())
@@ -121,9 +118,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 			m_pStr[iIndex]->SetString(szMsg);
 			iIndex++;
 
-			CGameBase::GetTextF(
-				IDS_TOOLTIP_MAX_DURABILITY,
-				&szMsg,
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_MAX_DURABILITY,
 				spItem->pItemBasic->siMaxDurability + spItem->pItemExt->siMaxDurability);
 
 			if (!m_pStr[iIndex]->IsVisible())
@@ -131,9 +126,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 			m_pStr[iIndex]->SetString(szMsg);
 			iIndex++;
 
-			CGameBase::GetTextF(
-				IDS_TOOLTIP_CUR_DURABILITY,
-				&szMsg,
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_CUR_DURABILITY,
 				spItem->iDurability);
 
 			if (!m_pStr[iIndex]->IsVisible())

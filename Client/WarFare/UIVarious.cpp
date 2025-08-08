@@ -280,13 +280,10 @@ void CUIState::UpdateWeight(int iVal, int iValMax)
 	if (m_pText_Weight == nullptr)
 		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%.1f/%.1f", (iVal * 0.1f), (iValMax * 0.1f));
+	std::string szVal = fmt::format("{:.1f}/{:.1f}", (iVal * 0.1f), (iValMax * 0.1f));
 	m_pText_Weight->SetString(szVal);
 
-	std::string szMsg;
-	CGameBase::GetTextF(IDS_INVEN_WEIGHT, &szMsg);
-
+	std::string szMsg = fmt::format_text_resource(IDS_INVEN_WEIGHT);
 	std::string str = szMsg + szVal;
 
 	CUIInventory* pInv = CGameProcedure::s_pProcMain->m_pUIInventory;

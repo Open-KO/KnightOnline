@@ -94,10 +94,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 
 			if (iLevel < 6)
 			{
-				CGameBase::GetTextF(
-					IDS_DEAD_LOW_LEVEL,
-					&szMsg,
-					iNeedItemCnt);
+				szMsg = fmt::format_text_resource(IDS_DEAD_LOW_LEVEL, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -107,10 +104,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 			else if (iItemCnt >= iNeedItemCnt)
 			{
-				CGameBase::GetTextF(
-					IDS_DEAD_REVIVAL_MESSAGE,
-					&szMsg,
-					iNeedItemCnt);
+				szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL_MESSAGE, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_YESNO);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;

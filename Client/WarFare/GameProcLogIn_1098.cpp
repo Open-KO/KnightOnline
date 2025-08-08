@@ -422,15 +422,10 @@ int CGameProcLogIn_1098::MsgRecv_GameServerLogIn(Packet & pkt) // virtual - 국�
 	if (0xff == iNation)
 	{
 		__GameServerInfo GSI;
-		std::string szMsg;
-
 		m_pUILogIn->ServerInfoGetCur(GSI);
 
-		GetTextF(
-			IDS_FMT_GAME_SERVER_LOGIN_ERROR,
-			&szMsg,
-			GSI.szName.c_str(),
-			iNation);
+		std::string szMsg = fmt::format_text_resource(IDS_FMT_GAME_SERVER_LOGIN_ERROR,
+			GSI.szName, iNation);
 		MessageBoxPost(szMsg, "", MB_OK);
 		m_pUILogIn->ConnectButtonSetEnable(true); // 실패
 	}

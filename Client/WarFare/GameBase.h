@@ -38,7 +38,6 @@ protected:
 
 public:
 	static bool GetText(uint32_t nResourceID, std::string* szText);
-	static bool GetTextF(uint32_t nResourceID, std::string* szText, ...);
 	static bool	GetTextByAttrib(e_ItemAttrib eAttrib, std::string& szAttrib);
 	static bool GetTextByClass(e_Class eClass, std::string& szText);
 	static bool GetTextByItemClass(e_ItemClass eItemClass, std::string& szText);

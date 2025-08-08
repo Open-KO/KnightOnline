@@ -1339,8 +1339,7 @@ bool CMagicSkillMng::CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTa
 		if(fValidDist >= fDist) return true;
 	}
 
-	std::string szMsg;
-	GetTextF(IDS_SKILL_FAIL_SOFAR, &szMsg, pSkill->szName.c_str());
+	std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_SOFAR, pSkill->szName);
 	m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 	return false;
@@ -1372,8 +1371,7 @@ void CMagicSkillMng::StartSkillMagicAtPosPacket(__TABLE_UPC_SKILL* pSkill, __Vec
 
 	if (pSkill->iCastTime == 0)
 	{
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 		uint8_t byBuff[32];
@@ -1502,8 +1500,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 			s_pPlayer->AnimationAdd((e_Ani)pType1->iAct[i], bImmediately);
 		}			
 		
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 		
 		uint8_t byBuff[32];
@@ -1529,8 +1526,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 
 	if (pSkill->iCastTime == 0)
 	{
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 		uint8_t byBuff[32];
@@ -1727,8 +1723,7 @@ void CMagicSkillMng::Tick()
 
 			//m_fRecastTimeNonAction = (float)(pSkill->iReCastTime) / 10.0f;
 
-			std::string szMsg;
-			GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 		}
 	}
@@ -1818,8 +1813,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 			s_pPlayer->AnimationAdd((const e_Ani)pType1->iAct[i], bImmediately);				
 		}			
 		
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 
 		uint8_t byBuff[32];
@@ -1843,8 +1837,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 	}
 	else
 	{
-		std::string szMsg;
-		GetTextF(IDS_SKILL_USE, &szMsg, pSkill->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_USE, pSkill->szName);
 		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
 		//m_fRecastTime = (float) pSkill->iReCastTime / 10.0f;
 		m_fDelay = 0.3f;
@@ -2279,11 +2272,8 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 			s_pPlayer->m_dwMagicID = 0xffffffff;
 			m_pGameProcMain->CommandSitDown(false, false); 
 
-			std::string szMsg;
-			GetTextF(
-				IDS_MSG_FMT_TARGET_ATTACK_FAILED,
-				&szMsg,
-				pSkill->szName.c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_MSG_FMT_TARGET_ATTACK_FAILED,
+				pSkill->szName);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffff3b3b);			
 		}
 		return;
@@ -2302,11 +2292,7 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 			s_pPlayer->m_dwMagicID = 0xffffffff;
 			m_pGameProcMain->CommandSitDown(false, false); // 혹시라도 앉아있음 일으켜 세운다..
 
-			std::string szMsg;
-			GetTextF(
-				IDS_SKILL_FAIL_EFFECTING,
-				&szMsg,
-				pSkill->szName.c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_EFFECTING, pSkill->szName);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffff3b3b);			
 		}
 		return;
@@ -2324,9 +2310,8 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 		{
 			s_pPlayer->m_dwMagicID = 0xffffffff;
 			m_pGameProcMain->CommandSitDown(false, false); // 혹시라도 앉아있음 일으켜 세운다..
-	
-			std::string szMsg;
-			GetTextF(IDS_SKILL_FAIL_CASTING, &szMsg);
+
+			std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_CASTING);
 			m_pGameProcMain->MsgOutput(szMsg, 0xffff3b3b);
 		}
 		return;

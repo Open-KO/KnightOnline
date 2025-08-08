@@ -141,13 +141,8 @@ void CSubProcPerTrade::EnterWaitMsgFromServerStatePerTradeReq()
 	m_ePerTradeState = PER_TRADE_STATE_WAIT_FOR_REQ;
 
 	// 메시지 박스 텍스트 표시..
-	std::string szMsg;
-	GetTextF(
-		IDS_PERSONAL_TRADE_FMT_WAIT,
-		&szMsg,
-		s_pPlayer->IDString().c_str(),
-		pTarget->IDString().c_str());
-
+	std::string szMsg = fmt::format_text_resource(IDS_PERSONAL_TRADE_FMT_WAIT,
+		s_pPlayer->IDString(), pTarget->IDString());
 	m_szMsg = CGameProcedure::MessageBoxPost(szMsg, "", MB_CANCEL, BEHAVIOR_PERSONAL_TRADE_FMT_WAIT);
 
 	SecureCodeBegin();
@@ -158,13 +153,8 @@ void CSubProcPerTrade::EnterWaitMsgFromServerStatePerTradeReq(std::string szName
 	m_ePerTradeState = PER_TRADE_STATE_WAIT_FOR_REQ;
 
 	// 메시지 박스 텍스트 표시..
-	std::string szMsg;
-	GetTextF(
-		IDS_PERSONAL_TRADE_FMT_WAIT,
-		&szMsg,
-		s_pPlayer->IDString().c_str(),
-		szName.c_str());
-
+	std::string szMsg = fmt::format_text_resource(IDS_PERSONAL_TRADE_FMT_WAIT,
+		s_pPlayer->IDString(), szName);
 	m_szMsg = CGameProcedure::MessageBoxPost(szMsg, "", MB_CANCEL, BEHAVIOR_PERSONAL_TRADE_FMT_WAIT);
 
 	SecureCodeBegin();
@@ -180,13 +170,8 @@ void CSubProcPerTrade::EnterWaitMyDecisionToPerTrade(int iOtherID)			// 내가 �
 	m_ePerTradeState = PER_TRADE_STATE_WAIT_FOR_MY_DECISION_AGREE_OR_DISAGREE;
 
 	// 메시지 박스 텍스트 표시..
-	std::string szMsg;
-	GetTextF(
-		IDS_PERSONAL_TRADE_PERMIT,
-		&szMsg,
-		s_pPlayer->IDString().c_str(),
-		pTarget->IDString().c_str());
-
+	std::string szMsg = fmt::format_text_resource(IDS_PERSONAL_TRADE_PERMIT,
+		s_pPlayer->IDString(), pTarget->IDString());
 	m_szMsg = CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_PERSONAL_TRADE_PERMIT);
 
 	SecureCodeBegin();
@@ -1139,11 +1124,8 @@ void CSubProcPerTrade::ReceiveMsgPerTradeCancel()
 	CPlayerOther* pUPC = s_pOPMgr->UPCGetByID(m_iOtherID, false);
 	if (pUPC != nullptr)
 	{
-		std::string szMsg; 
-		GetTextF(
-			IDS_OTHER_PER_TRADE_CANCEL,
-			&szMsg,
-			pUPC->IDString().c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_OTHER_PER_TRADE_CANCEL,
+			pUPC->IDString());
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 

@@ -509,14 +509,11 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		pInfoExt = &CGameBase::s_pPlayer->m_InfoExt;
 
 		// 돈 업데이트..
-		CGameBase::GetTextF(
-			IDS_DROPPED_NOAH_GET,
-			&stdMsg,
+		stdMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
 			iGold - pInfoExt->iGold);
 		CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 		pInfoExt->iGold = iGold;
-		//TRACE("돈 업데이트 %d \n", iGold);
 		CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 
 		if (!IsVisible()) 
@@ -567,12 +564,8 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			return;
 		}
 
-		std::string szMsg;
-		CGameBase::GetTextF(
-			IDS_PARTY_ITEM_GET,
-			&szMsg,
-			strString.c_str(),
-			pItem->szName.c_str());
+		std::string szMsg = fmt::format_text_resource(IDS_PARTY_ITEM_GET,
+			strString, pItem->szName);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
 		if (!IsVisible()) 
@@ -695,10 +688,8 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			return;
 		}
 
-		CGameBase::GetTextF(
-			IDS_ITEM_GET_BY_RULE,
-			&stdMsg,
-			pItem->szName.c_str());
+		stdMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE,
+			pItem->szName);
 		CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg) CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
@@ -776,11 +767,8 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 				AddToItemTableToInventory(iItemID, iItemCount, iPos);
 			}
 
-			std::string szMsg;
-			CGameBase::GetTextF(
-				IDS_ITEM_GET_BY_RULE,
-				&szMsg,
-				pItem->szName.c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE,
+				pItem->szName);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
 			spItem = m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
@@ -804,9 +792,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 
 			// 돈 업데이트..
-			CGameBase::GetTextF(
-				IDS_DROPPED_NOAH_GET,
-				&stdMsg,
+			stdMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
 				iGold - pInfoExt->iGold);
 			CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 

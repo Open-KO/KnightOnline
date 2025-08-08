@@ -475,11 +475,7 @@ void CUITradeSellBBS::OnButtonRegister()
 
 	if (m_byBBSKind == N3_SP_TRADE_BBS_BUY)
 	{
-		std::string szMsg;
-		CGameBase::GetTextF(
-			IDS_TRADE_BBS_BUY_REGISTER,
-			&szMsg,
-			500);
+		std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_BUY_REGISTER, 500);
 
 		m_MsgBox.SetBoxStyle(MB_YESNO);
 		m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -489,11 +485,7 @@ void CUITradeSellBBS::OnButtonRegister()
 	}
 	else
 	{
-		std::string szMsg;
-		CGameBase::GetTextF(
-			IDS_TRADE_BBS_SELL_REGISTER,
-			&szMsg,
-			1000);
+		std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_SELL_REGISTER, 1000);
 
 		m_MsgBox.SetBoxStyle(MB_YESNO);
 		m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -578,11 +570,7 @@ void CUITradeSellBBS::OnButtonTrade()
 
 			if (0 != lstrcmpi(ITSB.szID.c_str(), CGameProcedure::s_pPlayer->m_InfoBase.szID.c_str()))
 			{
-				std::string szMsg;
-				CGameBase::GetTextF(
-					IDS_TRADE_BBS_PER_TRADE,
-					&szMsg,
-					5000);
+				std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_PER_TRADE, 5000);
 
 				m_ITSB = ITSB;
 				m_MsgBox.SetBoxStyle(MB_YESNO);

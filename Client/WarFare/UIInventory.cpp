@@ -2378,10 +2378,8 @@ void CUIInventory::DurabilityChange(e_ItemSlot eSlot, int iDurability)
 				m_pMySlot[eSlot]->pUIIcon->SetStyle(m_pMySlot[eSlot]->pUIIcon->GetStyle() | UISTYLE_DURABILITY_EXHAUST);
 
 				// 메시지 박스 출력..
-				CGameBase::GetTextF(
-					IDS_DURABILITY_EXOAST,
-					&szDur,
-					m_pMySlot[eSlot]->pItemBasic->szName.c_str());
+				szDur = fmt::format_text_resource(IDS_DURABILITY_EXOAST,
+					m_pMySlot[eSlot]->pItemBasic->szName);
 				CGameProcedure::s_pProcMain->MsgOutput(szDur, 0xffff3b3b);
 			}
 			else

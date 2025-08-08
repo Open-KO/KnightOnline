@@ -584,14 +584,12 @@ void CGameProcMain::Tick()
 		{
 			m_iExitTimeRemaining = secondsRemaining;
 
-			std::string szMsg;
-			GetTextF(
-				IDS_EXITING_GAME_IN_X_SECONDS,
-				&szMsg,
-				m_iExitTimeRemaining);
-
 			if (m_pUIChatDlg != nullptr)
+			{
+				std::string szMsg = fmt::format_text_resource(IDS_EXITING_GAME_IN_X_SECONDS,
+					m_iExitTimeRemaining);
 				m_pUIChatDlg->AddChatMsg(N3_CHAT_NORMAL, szMsg, 0xFFFF0000);
+			}
 
 			if (secondsRemaining <= 0)
 			{
@@ -1055,9 +1053,9 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 			{
 				int iUserCount = pkt.read<int16_t>();		// ID 문자열 길이..
 
-				std::string szMsg;
-				GetTextF(IDS_FMT_CONCURRENT_USER_COUNT, &szMsg, iUserCount);
-				this->MsgOutput(szMsg, D3DCOLOR_ARGB(255,255,255,0));
+				std::string szMsg = fmt::format_text_resource(IDS_FMT_CONCURRENT_USER_COUNT,
+					iUserCount);
+				MsgOutput(szMsg, D3DCOLOR_ARGB(255,255,255,0));
 			}
 			return true;
 		case WIZ_DURATION:
@@ -2619,8 +2617,8 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 		int iLMax = iLevel + 8;
 		if(iLMax > 80) iLMax = 80;
 
-		std::string szMsg;
-		GetTextF(IDS_WANT_PARTY_MEMBER, &szMsg, iLMin, iLMax);
+		std::string szMsg = fmt::format_text_resource(IDS_WANT_PARTY_MEMBER,
+			iLMin, iLMax);
 		pUPC->InfoStringSet(szMsg, 0xff00ff00);
 	}
 
@@ -3240,8 +3238,8 @@ bool CGameProcMain::MsgRecv_Attack(Packet& pkt)
 
 		if(pAttacker == s_pPlayer) 
 		{
-			std::string szMsg;
-			GetTextF(IDS_MSG_FMT_TARGET_ATTACK_FAILED, &szMsg, pTarget->IDString().c_str());
+			std::string szMsg = fmt::format_text_resource(IDS_MSG_FMT_TARGET_ATTACK_FAILED,
+				pTarget->IDString());
 			MsgOutput(szMsg, 0xffffffff);
 		}
 	}
@@ -3530,8 +3528,8 @@ void CGameProcMain::MsgRecv_ItemCountChange(Packet& pkt)		// Item Count Change..
 			__TABLE_ITEM_BASIC* pItem = CGameProcedure::s_pTbl_Items_Basic.Find(iID / 1000 * 1000);
 			if (pItem != nullptr)
 			{
-				std::string szMsg;
-				GetTextF(IDS_ITEM_RECEIVED, &szMsg, pItem->szName.c_str());
+				std::string szMsg = fmt::format_text_resource(IDS_ITEM_RECEIVED,
+					pItem->szName);
 				MsgOutput(szMsg, 0xFFFFFF00);
 			}
 		}
@@ -3557,12 +3555,12 @@ void CGameProcMain::MsgRecv_MyInfo_HP(Packet& pkt)
 
 	if (iHPChange < 0)
 	{
-		GetTextF(IDS_MSG_FMT_HP_LOST, &szMsg, -iHPChange);
+		szMsg = fmt::format_text_resource(IDS_MSG_FMT_HP_LOST, -iHPChange);
 		MsgOutput(szMsg, 0xffff3b3b);
 	}
 	else if (iHPChange > 0)
 	{
-		GetTextF(IDS_MSG_FMT_HP_RECOVER, &szMsg, iHPChange);
+		szMsg = fmt::format_text_resource(IDS_MSG_FMT_HP_RECOVER, iHPChange);
 		MsgOutput(szMsg, 0xff6565ff);
 	}
 
@@ -3591,18 +3589,18 @@ void CGameProcMain::MsgRecv_MyInfo_MSP(Packet& pkt)
 	if (iMSPChange < 0)
 	{
 		if (bUseMP)
-			GetTextF(IDS_MSG_FMT_MP_USE, &szMsg, -iMSPChange);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_MP_USE, -iMSPChange);
 		else
-			GetTextF(IDS_MSG_FMT_SP_USE, &szMsg, -iMSPChange);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_SP_USE, -iMSPChange);
 
 		MsgOutput(szMsg, 0xffff3b3b);
 	}
 	else if (iMSPChange > 0)
 	{
 		if (bUseMP)
-			GetTextF(IDS_MSG_FMT_MP_RECOVER, &szMsg, iMSPChange);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_MP_RECOVER, iMSPChange);
 		else
-			GetTextF(IDS_MSG_FMT_SP_RECOVER, &szMsg, iMSPChange);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_SP_RECOVER, iMSPChange);
 
 		MsgOutput(szMsg, 0xff6565ff);
 	}
@@ -3631,9 +3629,9 @@ void CGameProcMain::MsgRecv_MyInfo_EXP(Packet& pkt)
 	{
 		std::string szMsg;
 		if (iExp > iOldExp)
-			GetTextF(IDS_MSG_FMT_EXP_GET, &szMsg, iExp - iOldExp);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_EXP_GET, iExp - iOldExp);
 		else if (iExp < iOldExp)
-			GetTextF(IDS_MSG_FMT_EXP_LOST, &szMsg, iOldExp - iExp);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_EXP_LOST, iOldExp - iExp);
 
 		MsgOutput(szMsg, 0xffffff00);
 	}
@@ -3723,13 +3721,13 @@ void CGameProcMain::MsgRecv_MyInfo_RealmPoint(Packet& pkt)
 		std::string szMsg;
 		if (iLoyaltyDelta > 0)
 		{
-			GetTextF(IDS_LOYALTY_CHANGE_GET, &szMsg, iLoyaltyDelta);
+			szMsg = fmt::format_text_resource(IDS_LOYALTY_CHANGE_GET, iLoyaltyDelta);
 			MsgOutput(szMsg, 0xffa2a0c8);
 		}
 		// Lost NP
 		else
 		{
-			GetTextF(IDS_LOYALTY_CHANGE_LOST, &szMsg, -iLoyaltyDelta);
+			szMsg = fmt::format_text_resource(IDS_LOYALTY_CHANGE_LOST, -iLoyaltyDelta);
 			MsgOutput(szMsg, 0xffff3b3b);
 		}
 
@@ -4239,20 +4237,14 @@ void CGameProcMain::MsgRecv_TargetHP(Packet& pkt)
 		std::string szMsg;
 		if (iTargetHPChange < 0)
 		{
-			GetTextF(
-				IDS_MSG_FMT_TARGET_HP_LOST,
-				&szMsg,
-				pTarget->IDString().c_str(),
-				-iTargetHPChange);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_TARGET_HP_LOST,
+				pTarget->IDString(), -iTargetHPChange);
 			MsgOutput(szMsg, 0xffffffff);
 		}
 		else if (iTargetHPChange > 0)
 		{
-			GetTextF(
-				IDS_MSG_FMT_TARGET_HP_RECOVER,
-				&szMsg,
-				pTarget->IDString().c_str(),
-				iTargetHPChange);
+			szMsg = fmt::format_text_resource(IDS_MSG_FMT_TARGET_HP_RECOVER,
+				pTarget->IDString(), iTargetHPChange);
 			MsgOutput(szMsg, 0xff6565ff);
 		}
 	}
@@ -4311,12 +4303,8 @@ void CGameProcMain::MsgSend_Warp() // 워프 - 존이동이 될수도 있다..
 
 	if (s_pPlayer->m_InfoExt.iGold < WI.iGold)
 	{
-		std::string szMsg;
-		GetTextF(
-			IDS_TELEPORT_TO_X_NEED_Y_COINS,
-			&szMsg,
-			WI.szName.c_str(),
-			WI.iGold);
+		std::string szMsg = fmt::format_text_resource(IDS_TELEPORT_TO_X_NEED_Y_COINS,
+			WI.szName, WI.iGold);
 		MsgOutput(szMsg, 0xFFFF3B3B);
 		return;
 	}
@@ -4642,7 +4630,7 @@ void CGameProcMain::StartAutoAttack(CPlayerBase* target)
 	{
 		std::string szMsg;
 		GetText(IDS_MSG_ATTACK_DISABLE, &szMsg);
-		this->MsgOutput(szMsg, 0xffffff00);
+		MsgOutput(szMsg, 0xffffff00);
 		// return;
 	}
 
@@ -4664,20 +4652,18 @@ void CGameProcMain::StartAutoAttack(CPlayerBase* target)
 	SetGameCursor(s_hCursorAttack);
 		
 	// Print an info message for attack start
-	std::string szMsg;
-	GetTextF(IDS_MSG_ATTACK_START, &szMsg, target->IDString().c_str());
-	this->MsgOutput(szMsg, 0xff00ffff);
+	std::string szMsg = fmt::format_text_resource(IDS_MSG_ATTACK_START,
+		target->IDString());
+	MsgOutput(szMsg, 0xff00ffff);
 	
 	// play combat music
-	this->PlayBGM_Battle();
+	PlayBGM_Battle();
 
-	// set auto-attack animation
+	// reset state to idle, pending attack on tick
 	s_pPlayer->Action(PSA_BASIC, true, target);
 	
-	if (m_pUICmd->m_pBtn_Act_Attack)
-	{
+	if (m_pUICmd->m_pBtn_Act_Attack != nullptr)
 		m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_DOWN);
-	}
 }
 
 /// \brief contains the logic that should be executed whenever auto-attacking is stopped
@@ -5028,8 +5014,8 @@ void CGameProcMain::MsgRecv_UserState(Packet& pkt)
 			int iLMax = iLevel + 8;
 			if(iLMax > 80) iLMax = 80;
 
-			std::string szMsg;
-			GetTextF(IDS_WANT_PARTY_MEMBER, &szMsg, iLMin, iLMax);
+			std::string szMsg = fmt::format_text_resource(IDS_WANT_PARTY_MEMBER,
+				iLMin, iLMax);
 			pBPC->InfoStringSet(szMsg, 0xff00ff00);
 		}
 	}
@@ -6003,14 +5989,12 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 				s_pSocket->Send(byBuff, iOffset);				// 보냄..
 				m_fRequestGameSave = 0.0f;
 
-				std::string szMsg;
-				GetText(IDS_REQUEST_GAME_SAVE, &szMsg);
+				std::string szMsg = fmt::format_text_resource(IDS_REQUEST_GAME_SAVE);
 				MsgOutput(szMsg, 0xffffff00);
 			}
 			else
 			{
-				std::string szMsg;
-				GetTextF(IDS_DELAY_GAME_SAVE, &szMsg, 5);
+				std::string szMsg = fmt::format_text_resource(IDS_DELAY_GAME_SAVE, 5);
 				MsgOutput(szMsg, 0xffffff00);
 			}
 		}
@@ -6565,7 +6549,7 @@ void CGameProcMain::MsgRecv_AllPointInit(Packet& pkt)			// All Point 초기화..
 	switch (bType)
 	{
 		case 0x00:	// 돈이 부족..
-			GetTextF(IDS_POINTINIT_NOT_ENOUGH_NOAH, &szMsg, dwGold);
+			szMsg = fmt::format_text_resource(IDS_POINTINIT_NOT_ENOUGH_NOAH, dwGold);
 			MsgOutput(szMsg, 0xffff3b3b);
 			break;
 
@@ -6629,7 +6613,7 @@ void CGameProcMain::MsgRecv_SkillPointInit(Packet& pkt)		// Skill Point 초기�
 	switch (bType)
 	{
 		case 0x00:	// 돈이 부족..
-			GetTextF(IDS_POINTINIT_NOT_ENOUGH_NOAH, &szMsg, dwGold);
+			szMsg = fmt::format_text_resource(IDS_POINTINIT_NOT_ENOUGH_NOAH, dwGold);
 			MsgOutput(szMsg, 0xffff3b3b);
 			break;
 
@@ -6676,17 +6660,17 @@ void CGameProcMain::MsgRecv_NoahChange(Packet& pkt)		// 노아 변경..
 	switch (bType)
 	{
 		case N3_SP_NOAH_GET:
-			GetTextF(IDS_NOAH_CHANGE_GET, &szMsg, dwGoldOffset);
+			szMsg = fmt::format_text_resource(IDS_NOAH_CHANGE_GET, dwGoldOffset);
 			MsgOutput(szMsg, 0xff6565ff);
 			break;
 
 		case N3_SP_NOAH_LOST:
-			GetTextF(IDS_NOAH_CHANGE_LOST, &szMsg, dwGoldOffset);
+			szMsg = fmt::format_text_resource(IDS_NOAH_CHANGE_LOST, dwGoldOffset);
 			MsgOutput(szMsg, 0xffff3b3b);
 			break;
 
 		case N3_SP_NOAH_SPEND:
-			GetTextF(IDS_NOAH_CHANGE_SPEND, &szMsg, dwGoldOffset);
+			szMsg = fmt::format_text_resource(IDS_NOAH_CHANGE_SPEND, dwGoldOffset);
 			MsgOutput(szMsg, 0xffff3b3b);
 			break;
 	}
@@ -6754,7 +6738,7 @@ void CGameProcMain::MsgRecv_WarpList_Error(Packet& pkt)
 	switch (errorCode)
 	{
 		case WARP_LIST_ERROR_SUCCESS:
-			GetTextF(IDS_WARP_ARRIVED_AT, &szMsg, m_szWarpDestination.c_str());
+			szMsg = fmt::format_text_resource(IDS_WARP_ARRIVED_AT, m_szWarpDestination);
 			MsgOutput(szMsg, 0xFFFFFF00);
 			break;
 
@@ -6762,7 +6746,7 @@ void CGameProcMain::MsgRecv_WarpList_Error(Packet& pkt)
 		{
 			int iRequiredLevel = pkt.read<uint8_t>();
 
-			GetTextF(IDS_WARP_MIN_LEVEL, &szMsg, iRequiredLevel);
+			szMsg = fmt::format_text_resource(IDS_WARP_MIN_LEVEL, iRequiredLevel);
 			MsgOutput(szMsg, 0xFFFFFF00);
 		}
 		break;
@@ -7290,9 +7274,7 @@ void CGameProcMain::MsgRecv_Knigts_Join_Req(Packet& pkt)
 //				break;
 //			}
 
-			std::string szMsg;
-			GetTextF(IDS_CLAN_JOIN_REQ, &szMsg, szKnightsName.c_str());
-		
+			std::string szMsg = fmt::format_text_resource(IDS_CLAN_JOIN_REQ, szKnightsName);
 			MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_CLAN_JOIN);			
 		}
 		break;
@@ -7913,12 +7895,12 @@ void CGameProcMain::NoahTrade(uint8_t bType, uint32_t dwGoldOffset, uint32_t dwG
 	switch (bType)
 	{
 	case N3_SP_NOAH_GET:
-		GetTextF(IDS_TRADE_COIN_RECV, &szMsg, dwGoldOffset);
+		szMsg = fmt::format_text_resource(IDS_TRADE_COIN_RECV, dwGoldOffset);
 		MsgOutput(szMsg, 0xff6565ff);
 		break;
 
 	case N3_SP_NOAH_LOST:
-		GetTextF(IDS_TRADE_COIN_PAID, &szMsg, dwGoldOffset);
+		szMsg = fmt::format_text_resource(IDS_TRADE_COIN_PAID, dwGoldOffset);
 		MsgOutput(szMsg, 0xffff3b3b);
 		break;
 	}
