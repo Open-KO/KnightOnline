@@ -836,8 +836,7 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	if (!s_bNeedReportConnectionClosed)
 		return;
 
-	std::string szMsg;
-	GetText(IDS_CONNECTION_CLOSED, &szMsg);
+	std::string szMsg = fmt::format_text_resource(IDS_CONNECTION_CLOSED);
 	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
 

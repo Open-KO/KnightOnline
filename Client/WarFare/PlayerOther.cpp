@@ -177,8 +177,7 @@ void CPlayerOther::KnightsInfoSet(int iID, const std::string& szName, int iGrade
 	{
 		if (m_pClanFont == nullptr)
 		{
-			std::string szFontID;
-			GetText(IDS_FONT_ID, &szFontID);
+			std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 			m_pClanFont = new CDFont(szFontID, 12);
 			m_pClanFont->InitDeviceObjects(s_lpD3DDev);
@@ -203,8 +202,7 @@ void CPlayerOther::SetSoundAndInitFont(uint32_t dwFontFlag)
 
 	if (m_pClanFont == nullptr)
 	{
-		std::string szFontID;
-		GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 		m_pClanFont = new CDFont(szFontID, 12, D3DFONT_BOLD); // 좀 작게 만든다..
 		m_pClanFont->InitDeviceObjects(s_lpD3DDev);

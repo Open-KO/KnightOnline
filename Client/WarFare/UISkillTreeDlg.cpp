@@ -1019,15 +1019,15 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	{
 		switch (spSkill->pSkill->dwNeedItem)
 		{
-			case 0:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1,  &szStr); break;
-			case 1:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2,  &szStr); break;
-			case 2:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3,  &szStr); break;
-			case 3:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4,  &szStr); break;
-			case 4:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5,  &szStr); break;
-			case 5:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6,  &szStr); break;
-			case 6:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7,  &szStr); break;
-			case 7:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8,  &szStr); break;
-			case 8:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9,  &szStr); break;
+			case 0:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1); break;
+			case 1:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2); break;
+			case 2:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3); break;
+			case 3:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4); break;
+			case 4:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5); break;
+			case 5:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6); break;
+			case 6:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7); break;
+			case 7:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8); break;
+			case 8:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9); break;
 			case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
 			case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
 			case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
@@ -1036,7 +1036,7 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 			case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
 			case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
 			case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
-			default:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_NO,	 &szStr); break;
+			default:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_NO); break;
 		}
 	}
 

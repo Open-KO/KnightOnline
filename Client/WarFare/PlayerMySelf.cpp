@@ -124,8 +124,7 @@ void CPlayerMySelf::Tick()
 	{
 		if (0 == m_iSendRegeneration)
 		{
-//			std::string szMsg;
-//			GetText(IDS_REGENERATION, &szMsg);
+//			std::string szMsg = fmt::format_text_resource(IDS_REGENERATION);
 //			CGameProcedure::MessageBoxPost(szMsg, "", MB_OK, BEHAVIOR_REGENERATION);
 //			CLogWriter::Write("Dead!!!");
 			m_iSendRegeneration = 1;
@@ -1050,8 +1049,7 @@ void CPlayerMySelf::KnightsInfoSet(int iID, const std::string& szName, int iGrad
 
 	if (m_pClanFont == nullptr)
 	{
-		std::string szFontID;
-		GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 		m_pClanFont = new CDFont(szFontID, 12, D3DFONT_BOLD);
 		m_pClanFont->InitDeviceObjects(s_lpD3DDev);
@@ -1075,8 +1073,7 @@ void CPlayerMySelf::SetSoundAndInitFont(uint32_t dwFontFlag)
 
 	if (m_pClanFont == nullptr)
 	{
-		std::string szFontID;
-		GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 		m_pClanFont = new CDFont(szFontID, 12, D3DFONT_BOLD);
 		m_pClanFont->InitDeviceObjects(s_lpD3DDev);

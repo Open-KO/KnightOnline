@@ -25,7 +25,14 @@ namespace fmt
 		{
 			CLogWriter::Write("format_text_resource(%u) failed - resource missing in Texts TBL.",
 				resourceId);
+
+			// In debug builds, we should still show useful text to highlight the problem.
+			// Release builds should mimic official behaviour by returning an empty string.
+#if defined(_DEBUG)
 			return std::to_string(resourceId);
+#else
+			return {};
+#endif
 		}
 
 		if constexpr (sizeof...(Args) == 0)
@@ -44,7 +51,13 @@ namespace fmt
 					resourceId);
 			}
 
+			// In debug builds, we should still show useful text to highlight the problem.
+			// Release builds should mimic official behaviour by returning an empty string.
+#if defined(_DEBUG)
 			return std::to_string(resourceId);
+#else
+			return {};
+#endif
 		}
 	}
 

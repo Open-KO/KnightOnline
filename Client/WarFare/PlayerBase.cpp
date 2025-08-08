@@ -262,8 +262,7 @@ void CPlayerBase::SetSoundAndInitFont(uint32_t dwFontFlag)
 	// Font 초기화..
 	if (m_pIDFont == nullptr) 
 	{
-		std::string szFontID;
-		GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 		m_pIDFont = new CDFont(szFontID, 12, dwFontFlag);//D3DFONT_BOLD);
 		m_pIDFont->InitDeviceObjects( s_lpD3DDev );
@@ -328,8 +327,7 @@ void CPlayerBase::InfoStringSet(const std::string& szInfo, D3DCOLOR crFont)
 
 	if (m_pInfoFont == nullptr)
 	{
-		std::string szFontInfo;
-		GetText(IDS_FONT_INFO, &szFontInfo);
+		std::string szFontInfo = fmt::format_text_resource(IDS_FONT_INFO);
 
 		m_pInfoFont = new CDFont(szFontInfo, 12);
 		m_pInfoFont->InitDeviceObjects( s_lpD3DDev );
@@ -351,8 +349,7 @@ void CPlayerBase::BalloonStringSet(const std::string& szBalloon, D3DCOLOR crFont
 
 	if (m_pBalloonFont == nullptr)
 	{
-		std::string szFontBalloon;
-		GetText(IDS_FONT_BALLOON, &szFontBalloon);
+		std::string szFontBalloon = fmt::format_text_resource(IDS_FONT_BALLOON);
 
 		m_pBalloonFont = new CDFont(szFontBalloon, 12);
 		m_pBalloonFont->InitDeviceObjects(s_lpD3DDev);

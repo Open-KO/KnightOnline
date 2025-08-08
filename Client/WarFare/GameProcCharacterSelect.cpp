@@ -1061,8 +1061,7 @@ void CGameProcCharacterSelect::CharacterSelect()
 void CGameProcCharacterSelect::CharacterSelectFailed()
 {
 	m_bReceivedCharacterSelect = false; // 캐릭터 고르기 실패..
-	std::string szErr;
-	GetText(IDS_ERR_CHARACTER_SELECT, &szErr);
+	std::string szErr = fmt::format_text_resource(IDS_ERR_CHARACTER_SELECT);
 	MessageBoxPost(szErr, "", MB_OK, BEHAVIOR_EXIT);
 	s_pUIMgr->EnableOperationSet(true);
 }

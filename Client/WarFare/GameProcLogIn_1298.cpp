@@ -287,33 +287,29 @@ void CGameProcLogIn_1298::MsgRecv_AccountLogIn(int iCmd, Packet& pkt)
 	{
 		if (N3_ACCOUNT_LOGIN == iCmd)
 		{
-			std::string szMsg, szTmp;
-			GetText(IDS_NOACCOUNT_RETRY_MGAMEID, &szMsg);
-			GetText(IDS_CONNECT_FAIL, &szTmp);
+			std::string szMsg = fmt::format_text_resource(IDS_NOACCOUNT_RETRY_MGAMEID);
+			std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
 
 			MessageBoxPost(szMsg, szTmp, MB_YESNO, BEHAVIOR_MGAME_LOGIN); // MGame ID 로 접속할거냐고 물어본다.
 		}
 		else
 		{
-			std::string szMsg, szTmp;
-			GetText(IDS_NO_MGAME_ACCOUNT, &szMsg);
-			GetText(IDS_CONNECT_FAIL, &szTmp);
+			std::string szMsg = fmt::format_text_resource(IDS_NO_MGAME_ACCOUNT);
+			std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
 
 			MessageBoxPost(szMsg, szTmp, MB_OK); // MGame ID 로 접속할거냐고 물어본다.
 		}
 	}
 	else if (3 == iResult) // PassWord 실패
 	{
-		std::string szMsg, szTmp;
-		GetText(IDS_WRONG_PASSWORD, &szMsg);
-		GetText(IDS_CONNECT_FAIL, &szTmp);
+		std::string szMsg = fmt::format_text_resource(IDS_WRONG_PASSWORD);
+		std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
 		MessageBoxPost(szMsg, szTmp, MB_OK); // MGame ID 로 접속할거냐고 물어본다.
 	}
 	else if (4 == iResult) // 서버 점검 중??
 	{
-		std::string szMsg, szTmp;
-		GetText(IDS_SERVER_CONNECT_FAIL, &szMsg);
-		GetText(IDS_CONNECT_FAIL, &szTmp);
+		std::string szMsg = fmt::format_text_resource(IDS_SERVER_CONNECT_FAIL);
+		std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
 		MessageBoxPost(szMsg, szTmp, MB_OK); // MGame ID 로 접속할거냐고 물어본다.
 	}
 	else if (5 == iResult) // 어떤 넘이 접속해 있다. 서버에게 끊어버리라고 하자..
@@ -341,17 +337,15 @@ void CGameProcLogIn_1298::MsgRecv_AccountLogIn(int iCmd, Packet& pkt)
 			}
 			s_bNeedReportConnectionClosed = true; // 서버접속이 끊어진걸 보고해야 하는지..
 
-			std::string szMsg, szTmp;
-			GetText(IDS_LOGIN_ERR_ALREADY_CONNECTED_ACCOUNT, &szMsg);
-			GetText(IDS_CONNECT_FAIL, &szTmp);
+			std::string szMsg = fmt::format_text_resource(IDS_LOGIN_ERR_ALREADY_CONNECTED_ACCOUNT);
+			std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
 			MessageBoxPost(szMsg, szTmp, MB_OK); // 다시 접속 할거냐고 물어본다.
 		}
 	}
 	else
 	{
-		std::string szMsg, szTmp;
-		GetText(IDS_CURRENT_SERVER_ERROR, &szMsg);
-		GetText(IDS_CONNECT_FAIL, &szTmp);
+		std::string szMsg = fmt::format_text_resource(IDS_CURRENT_SERVER_ERROR);
+		std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
 		MessageBoxPost(szMsg, szTmp, MB_OK); // MGame ID 로 접속할거냐고 물어본다.
 	}
 

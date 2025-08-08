@@ -621,7 +621,7 @@ bool CUIKnights::Load(HANDLE hFile)
 	for (int i = 0; i < MAX_CLAN_GRADE; i++)
 	{
 		sprintf(szBuf, "image_grade%.2d", i);
-		m_pImage_Grade[i] = (CN3UIImage*)(this->GetChildByID(szBuf));			__ASSERT(m_pImage_Grade[i], "NULL UI Component!!");;
+		m_pImage_Grade[i] = (CN3UIImage*)(this->GetChildByID(szBuf));			__ASSERT(m_pImage_Grade[i], "NULL UI Component!!");
 		if (m_pImage_Grade[i]) m_pImage_Grade[i]->SetVisible(false);
 	}
 

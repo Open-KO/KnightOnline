@@ -440,7 +440,7 @@ void CSubProcPerTrade::LeavePerTradeState(e_PerTradeResultCode ePTRC)	// 아이�
 			//TRACE("상대방이 거래를 거절.. \n");
 			//this_ui
 			// 메시지 박스 텍스트 표시..
-			GetText(IDS_OTHER_PER_TRADE_ID_NO, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_OTHER_PER_TRADE_ID_NO);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 			// 뒷 마무리..
 			FinalizePerTrade();
@@ -1106,11 +1106,10 @@ void CSubProcPerTrade::ReceiveMsgPerTradeDoneFail()
 {
 	if (s_pOPMgr->UPCGetByID(m_iOtherID, false) != nullptr)
 	{
-		std::string szMsg;
-		GetText(IDS_PER_TRADE_FAIL, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_PER_TRADE_FAIL);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffffffff);
 
-		GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
