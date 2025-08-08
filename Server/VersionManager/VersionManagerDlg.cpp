@@ -345,7 +345,7 @@ void CVersionManagerDlg::OnVersionSetting()
 
 void CVersionManagerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("VersionManagerDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("VersionManagerDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());

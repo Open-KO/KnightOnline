@@ -887,7 +887,7 @@ int CDBAgent::LoadKnightsAllMembers(int knightsId, int start, char* buffOut, int
 /// \returns true if successful, false otherwise
 bool CDBAgent::UpdateConCurrentUserCount(int serverId, int zoneId, int userCount)
 {
-	std::string updateQuery = std::format("UPDATE CONCURRENT SET [zone{}_count] = ? WHERE [serverid] = ?", zoneId);
+	std::string updateQuery = fmt::format("UPDATE CONCURRENT SET [zone{}_count] = ? WHERE [serverid] = ?", zoneId);
 	try
 	{
 		_main->DBProcessNumber(14);
@@ -1152,12 +1152,12 @@ bool CDBAgent::SetLogInInfo(const char* accountId, const char* charId, const cha
 	std::string query;
 	if (init == 0x01)
 	{
-		query = std::format("INSERT INTO [CURRENTUSER] ([strAccountID], [strCharID], [nServerNo], [strServerIP], [strClientIP]) VALUES (\'{}\',\'{}\',{},\'{}\',\'{}\')",
+		query = fmt::format("INSERT INTO [CURRENTUSER] ([strAccountID], [strCharID], [nServerNo], [strServerIP], [strClientIP]) VALUES (\'{}\',\'{}\',{},\'{}\',\'{}\')",
 			accountId, charId, serverId, serverIp, clientIp);
 	}
 	else if (init == 0x02)
 	{
-		query = std::format("UPDATE [CURRENTUSER] SET [nServerNo]={}, [strServerIP]=\'{}\' WHERE [strAccountID] = \'{}\'",
+		query = fmt::format("UPDATE [CURRENTUSER] SET [nServerNo]={}, [strServerIP]=\'{}\' WHERE [strAccountID] = \'{}\'",
 			serverId, serverIp, accountId);
 	}
 	else
@@ -1249,12 +1249,12 @@ bool CDBAgent::CheckUserData(const char* accountId, const char* charId, int chec
 	std::string query;
 	if (checkType == 1)
 	{
-		query = std::format("SELECT [dwTime], [nMoney] FROM [WAREHOUSE] WHERE [strAccountID] = \'{}\'", accountId);
+		query = fmt::format("SELECT [dwTime], [nMoney] FROM [WAREHOUSE] WHERE [strAccountID] = \'{}\'", accountId);
 		dbType = model::Warehouse::DbType();
 	}
 	else
 	{
-		query = std::format("SELECT [dwTime], [Exp] FROM [USERDATA] WHERE [strUserID] = \'{}\'", charId);
+		query = fmt::format("SELECT [dwTime], [Exp] FROM [USERDATA] WHERE [strUserID] = \'{}\'", charId);
 		dbType = model::UserData::DbType();
 	}
 	
@@ -1318,7 +1318,7 @@ void CDBAgent::LoadKnightsAllList(int nation)
 	}
 	else
 	{
-		sql.Where = std::format("[Nation] = {} AND [Points] <> 0", nation);
+		sql.Where = fmt::format("[Nation] = {} AND [Points] <> 0", nation);
 	}
 
 	try

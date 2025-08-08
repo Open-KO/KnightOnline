@@ -82,8 +82,7 @@ bool CN3TransformCollision::Save(HANDLE hFile)
 	{
 		if(m_pMeshCollision->FileName().find("object\\") < 0) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
 		{
-			char szFNTmp[256];
-			wsprintf(szFNTmp, "Object\\%s.N3VMesh", m_pMeshCollision->m_szName.c_str());
+			std::string szFNTmp = fmt::format("Object\\{}.N3VMesh", m_pMeshCollision->m_szName);
 			m_pMeshCollision->FileNameSet(szFNTmp);
 
 			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
@@ -101,8 +100,7 @@ bool CN3TransformCollision::Save(HANDLE hFile)
 	{
 		if(-1 == m_pMeshClimb->FileName().find("object\\")) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
 		{
-			char szFNTmp[256];
-			wsprintf(szFNTmp, "Object\\%s.N3VMesh", m_pMeshClimb->m_szName.c_str());
+			std::string szFNTmp = fmt::format("Object\\{}.N3VMesh", m_pMeshClimb->m_szName);
 			m_pMeshClimb->FileNameSet(szFNTmp);
 
 			SetFilePointer(hFile, -4, 0, FILE_CURRENT);

@@ -214,6 +214,165 @@ STRINGTABLE
 BEGIN
     IDS_COUPON_NOTEPAD_ID   "3572-8471-3720-2495"
     IDS_COUPON_POSTIT_ID    "7352-6539-3720-2495"
+    IDS_KNIGHTS_JOIN        "#### %s has joined. ####"
+    IDS_KNIGHTS_WITHDRAW    "#### %s has left. ####"
+    IDS_KNIGHTS_REMOVE      "#### %s has been banned. ####"
+    IDS_KNIGHTS_CHIEF       "#### %s has been appointed as a leader. ####"
+    IDS_KNIGHTS_VICECHIEF   "#### %s has been appointed as a co-leader. ####"
+    IDS_KNIGHTS_DESTROY     "#### the knights %s has disbanded ####"
+    IDS_CLAN_DESTORY        "#### the clan %s has disbanded ####"
+    IDS_CLANGAME_VICTORY    "The Clan %s has won the clan duel."
+    IDS_CLANGAME_JOIN       "*** %s(Lv %d)has entered the Arena Lobby ***"
+    IDS_CLANGAME_EXIT       "*** %s(Lv %d)has left ***"
+    IDS_SNOWBATTLE_OPEN     "The Snow Fight Zone is now open"
+    IDS_SNOWBATTLE_CLOSE    "The Snow Fight Zone is now closed"
+    IDS_SNOWBATTLE_BANISH_USER 
+                            "The users in the Snow Fight Zone will be teleported back to their native country."
+    IDS_BATTLEZONE_STATUS   "Number of killed Karus users : %d, Number of killed El Morad users : %d"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BANISH_LOSER        "The users of the defeated nation in Lunar Valley will be teleported back to their native country."
+    IDS_INFILTRATION        "The victorious nation can invade the opposite nation."
+    IDS_UNDER_ATTACK_KARUS  "Karus is being invaded."
+    IDS_UNDER_ATTACK_ELMORAD "El Morad is being invaded."
+    IDS_INSERT_KNIGHTS_ALLIANCE "The Knights %s has entered the confederacy."
+    IDS_REMOVE_KNIGHTS_ALLIANCE "The Knights %s has left the confederacy."
+    IDS_PUNISH_KNIGHTS_ALLIANCE 
+                            "The alliance with the Knights %s has been canceled"
+    IDS_PERSONAL_GAME_VICTORY "%s has won the fight"
+    IDS_DEATH_ANNOUNCEMENT  "*** %s has defeated %s ***"
+    IDS_SIEGE_WAR_READY_TIME 
+                            "Castle Siege War is about to begin. The designated Knights should enter the Castle Siege War zone."
+    IDS_SIEGE_WAR_BASE_TIME "This is a time for building your base. Please build your base."
+    IDS_SIEGE_WAR_START     "The Castle Siege War has begun!"
+    IDS_SIEGE_WAR_END       "The Castle Siege War has ended!"
+    IDS_SIEGE_WAR_READY_TIME_NOTICE 
+                            "There are %d minutes remaining until the Castle Siege War. Knights should enter the CSW now."
+    IDS_CHALLENGER_REQUEST_START_NOTICE 
+                            "We are currently accepting challengers for Castle Siege War. Location Moradon : 351,400"
+    IDS_CHALLENGER_REQUEST_END_NOTICE 
+                            "The registration period for Castle Siege War has now ended."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SIEGE_WAR_GUIDON_TIME_NOTICE 
+                            "There are %d minutes remaining for building your base. If you don't build a base by then, you'll aut"
+    IDS_SIEGE_WAR_TIME_NOTICE "There are %d minutes remaining in the war."
+    IDS_NPC_GUIDON_DESTORY  "The base of the Knights %s has been destroyed."
+    IDS_NPC_DESTORY_ARTIFACT "Center Artifact has been destroyed"
+    IDS_NPC_DESTORY_ARTIFACT_S1 "Sentry Artifact has been destroyed"
+    IDS_NPC_DESTORY_ARTIFACT_S2 "Guard Tower Artifact has been destroyed"
+    IDS_NPC_DESTORY_ARTIFACT_S3 "Defense Artifact has been destroyed"
+    IDS_NPC_DESTORY_ARTIFACT_S4 "Shield Artifact has been destroyed"
+    IDS_GUARD_TOWER_DEATH_ANNOUNCEMENT "*** %s was killed by %s ***"
+    IDS_SIEGE_WAR_VICTORY   "The clan %s is victorious!                                                                          "
+    IDS_MONEY_REPAY_EVENT   "Coin event has started. You will earn an additional %d percent of coins for killing mobs."
+    IDS_PRE_BATTLE_ANNOUNCEMENT 
+                            "There are 5 minutes remaining until the war commences."
+    IDS_INFILTRATION_CONQUER "%s has been overrun"
+    IDS_INFILTRATION_RECAPTURE "%s has been captured"
+    IDS_INFILTRATION_REWARD_KARUS "%s has blessed the Karus warriors"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_INFILTRATION_REWARD_ELMORAD "%s has blessed the El Morad warriors"
+    IDS_SERVER_AUTO_DOWN    "The server will shutdown after %d minutes."
+    IDS_NPC_DESTORY_ARTIFACT_CLAN "%s clan has destroyed the Center Artifact."
+    IDS_ASSAULT_EVENT_START "We're under attack by monsters. Please save the World from the monsters!!"
+    IDS_ASSAULT_EVENT_END   "The monsters have stopped. The World is safe now."
+    IDS_EXP_REPAY_EVENT     "Experience point event Started. You will Earn %d Percent of Experience for killing Mobs. "
+    IDS_MONSTER_CHALLENGE_ANNOUNCEMENT 
+                            "The Forgotten Temple Event will start at %d for levels %d~%d"
+    IDS_MONSTER_CHALLENGE_OPEN "The gate to the Forgotten Temple is now open."
+    IDS_MONSTER_CHALLENGE_START "The Monsters are appearing, Get ready!!!"
+    IDS_MONSTER_CHALLENGE_VICTORY 
+                            "You have eliminated all the monsters in the temple. You've received the treasure chest."
+    IDS_MONSTER_CHALLENGE_CLOSE 
+                            "Forgotten Temple is now over. Users remaining in the Forgotten Temple zone will be Teleported out."
+    IDS_MID_LEVEL_BATTLEZONE_OPEN 
+                            "Dark Lunar Gate is now open. The war has begun."
+    IDS_KING_RECOMMEND_TIME "Please nominate a King."
+    IDS_KING_RECOMMEND_FINISH_TIME "The period for nomination has ended."
+    IDS_KING_ELECTION_TIME  "Election is in progress for selecting a King."
+    IDS_KING_IMPEACHMENT_REQUEST_TIME 
+                            "A request for an impeachment of King has been made."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_KING_IMPEACHMENT_ELECTION_TIME 
+                            "election in progress for impeaching a King."
+    IDS_KING_REIGN_TIME     "A new King has been appointed."
+    IDS_KING_KARUS_PRIZE_EVENT_MESSAGE 
+                            "The Karus King has awarded %s %d coins as a reward."
+    IDS_KING_KARUS_FUGITIVE_EVENT_MESSAGE_1 
+                            "The Karus King has awarded %s %d coins as a reward."
+    IDS_KING_FUGITIVE_EVENT_MESSAGE_2 
+                            "%s killed %s and received %d coins as a reward."
+    IDS_KING_ELMO_PRIZE_EVENT_MESSAGE 
+                            "The ElMorad King has awarded %s %d coins as a reward."
+    IDS_KING_ELMO_FUGITIVE_EVENT_MESSAGE_1 
+                            "The El Morad King has awarded %s %d coins as a reward."
+    IDS_KING_KARUS_WEATHER_FINE_EVENT 
+                            "The Karus King has cleared the weather."
+    IDS_KING_KARUS_WEATHER_RAIN_EVENT 
+                            "The Karus King has summoned the rain clouds."
+    IDS_KING_KARUS_WEATHER_SNOW_EVENT 
+                            "The Karus King has summoned the snow storm."
+    IDS_KING_ELMO_WEATHER_FINE_EVENT 
+                            "The El Morad King has cleared the weather."
+    IDS_KING_ELMO_WEATHER_RAIN_EVENT 
+                            "The El Morad King has summoned the rain clouds."
+    IDS_KING_ELMO_WEATHER_SNOW_EVENT 
+                            "The El Morad King has summoned the snow storm."
+    IDS_KING_KARUS_NOAH_BONUS_EVENT 
+                            "The Karus King has initiated the %d (percent) increased item drop rate event."
+    IDS_KING_KARUS_EXP_BONUS_EVENT 
+                            "The Karus King has initiated the %d (percent) increased experience point event."
+    IDS_KING_ELMO_NOAH_BONUS_EVENT 
+                            "The El Morad King has initiated the %d (percent) increased item drop rate event."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_KING_ELMO_EXP_BONUS_EVENT 
+                            "The El Morad King has initiated the %d (percent) increased experience point event."
+    IDS_KING_RECOMMEND_REQUEST_MESSAGE 
+                            "User %s can nominate a King. Please nominate a King."
+    IDS_KING_CANDIDACY_RECOMMEND_MESSAGE "%s has nominated %s as a King"
+    IDS_KING_PERIOD_OF_RECOMMEND_MESSAGE 
+                            "This is a period for nominating a King. Users with nomination rights should nominate a King."
+    IDS_KING_PERIOD_OF_ELECTION_MESSAGE 
+                            "King election period is on. Users that have not voted yet should vote for a King."
+    IDS_KING_ELECTION_RESULT_MESSAGE 
+                            "%d(percent) of the vote was won by %s to become a King."
+    IDS_KING_EXP_BONUS_EVENT_STOP 
+                            "The increased experience point event has ended."
+    IDS_KING_ITEMDROP_BONUS_EVENT_STOP 
+                            "The increased item drop rate event has ended."
+    IDS_KING_IMPEACHMENT_REQUEST_MESSAGE "Inpeachment Request In Progress"
+    IDS_KING_IMPEACHMENT_PASS_MESSAGE "Inpeachment successfull"
+    IDS_KING_IMPEACHMENT_REJECT_MESSAGE "Inpeachment has been Rejected"
+    IDS_KING_IMPEACHMENT_ELECTION_MESSAGE "Please elect for your Inpeachment"
+    IDS_KING_IMPEACHMENT_ELECTION_YES_RESULT_MESSAGE 
+                            "Inpeachment Election has been accepted"
+    IDS_KING_IMPEACHMENT_ELECTION_NO_RESULT_MESSAGE 
+                            "Inpeachment Election has been Declined"
+    IDS_BEEF_ROAST_START    "Bifrost event has started!"
+    IDS_BEEF_ROAST_VICTORY_KARUS 
+                            "The Karus warriors have destroyed the monument and can now enter Bifrost!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BEEF_ROAST_VICTORY_ELMORAD 
+                            "The El Morad warriors have destroyed the monument and can now enter Bifrost!"
+    IDS_BEEF_ROAST_FINISH   "Bifrost event is now over!"
+    IDS_BEEF_ROAST_DRAW     "Nobody has won the Bifrost event, it's a draw!"
 END
 
 #endif    // English (Neutral) resources

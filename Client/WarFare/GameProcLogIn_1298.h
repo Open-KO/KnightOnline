@@ -15,17 +15,16 @@ public:
 public:
 	void	MsgRecv_GameServerGroupList(Packet& pkt);
 	void	MsgRecv_AccountLogIn(int iCmd, Packet& pkt);
-	int		MsgRecv_VersionCheck(Packet& pkt); // virtual
-	int		MsgRecv_GameServerLogIn(Packet& pkt); // virtual - 국가 번호를 리턴한다.
+	int		MsgRecv_VersionCheck(Packet& pkt) override; // virtual
+	int		MsgRecv_GameServerLogIn(Packet& pkt) override; // virtual - 국가 번호를 리턴한다.
 	void	MsgRecv_News(Packet& pkt);
 
 	bool	MsgSend_AccountLogIn(enum e_LogInClassification eLIC);
 	bool	MsgSend_NewsReq();
 
-	void Release();
-	void Init();
-	void Tick();
-	void Render();
+	void Release() override;
+	void Init() override;
+	void Render() override;
 
 protected:
 	bool ProcessPacket(Packet& pkt) override;

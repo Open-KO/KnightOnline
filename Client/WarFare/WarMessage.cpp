@@ -29,8 +29,7 @@ void CWarMessage::InitFont()
 {
 	Release();
 
-	std::string szFont;
-	CGameBase::GetText(IDS_FONT_ID, &szFont);
+	std::string szFont = fmt::format_text_resource(IDS_FONT_ID);
 
 	m_pMessageFont = new CDFont(szFont, MESSAGE_FONT_SIZE);
 	__ASSERT(m_pMessageFont, "Font Create Fail!!");

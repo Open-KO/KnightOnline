@@ -166,14 +166,14 @@ bool CUICmd::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			{
 				if(iMemberIndex > 0)
 				{
-					CGameBase::GetText(IDS_PARTY_CONFIRM_DISCHARGE, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_PARTY_CONFIRM_DISCHARGE);
 					szMsg = pTarget->IDString() + szMsg;
 				}
-				else CGameBase::GetText(IDS_PARTY_CONFIRM_DESTROY, &szMsg);
+				else szMsg = fmt::format_text_resource(IDS_PARTY_CONFIRM_DESTROY);
 			}
 			else if(bIAmMemberOfParty)
 			{
-				CGameBase::GetText(IDS_PARTY_CONFIRM_LEAVE, &szMsg);
+				szMsg = fmt::format_text_resource(IDS_PARTY_CONFIRM_LEAVE);
 			}
 
 			if(!szMsg.empty()) CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_PARTY_DISBAND); // 파티 해체,축출,탈퇴하기..확인

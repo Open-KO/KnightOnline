@@ -11,6 +11,9 @@
 
 #include <N3Base/N3ShapeMgr.h>
 
+#include <ranges>
+#include <algorithm>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -47,7 +50,8 @@ void CGameBase::StaticMemberInit()
 {
 	std::string szLangTail = "_us.tbl";
 	int iLangID = ::GetUserDefaultLangID();
-	if(0x0404 == iLangID) szLangTail = "_TW.tbl"; // Taiwan Language
+	if (0x0404 == iLangID)
+		szLangTail = "_TW.tbl"; // Taiwan Language
 
 	std::string szFN;
 	szFN = "Data\\Texts" + szLangTail;		s_pTbl_Texts.LoadFromFile(szFN);
@@ -61,10 +65,10 @@ void CGameBase::StaticMemberInit()
 	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_QuestContent.LoadFromFile(szFN);
 	szFN = "Data\\Help" + szLangTail;		s_pTbl_Help.LoadFromFile(szFN);
 
-	for(int i = 0; i < MAX_ITEM_EXTENSION; i++)
+	std::string szFNTmp;
+	for (int i = 0; i < MAX_ITEM_EXTENSION; i++)
 	{
-		char szFNTmp[256] = "";
-		sprintf(szFNTmp, "Data\\Item_Ext_%d", i);
+		szFNTmp = fmt::format("Data\\Item_Ext_{}", i);
 		szFN = szFNTmp + szLangTail;
 		s_pTbl_Items_Exts[i].LoadFromFile(szFN);
 	}
@@ -86,143 +90,112 @@ void CGameBase::StaticMemberRelease()
 	delete s_pWorldMgr;	s_pWorldMgr = nullptr;
 }
 
-bool CGameBase::GetText(uint32_t dwResourceID, std::string* szText)
-{
-	__TABLE_TEXTS* pText = s_pTbl_Texts.Find(dwResourceID);
-	if (pText == nullptr)
-	{
-		szText->clear();
-		return false;
-	}
-
-	*szText = pText->szText;
-	return true;
-}
-
-bool CGameBase::GetTextF(uint32_t nResourceID, std::string* szText, ...)
-{
-	if (!GetText(nResourceID, szText))
-	{
-		szText->clear();
-		return false;
-	}
-
-	char buffer[1024] = {};
-	va_list args;
-	va_start(args, szText);
-	vsnprintf(buffer, sizeof(buffer), szText->c_str(), args);
-	*szText = buffer;
-	va_end(args);
-
-	return true;
-}
-
 bool CGameBase::GetTextByClass(e_Class eClass, std::string& szText)
 {
 	switch(eClass)
 	{
 		case CLASS_KINDOF_WARRIOR:
-			GetText(IDS_CLASS_KINDOF_WARRIOR, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_WARRIOR);
 			break;
 		case CLASS_KINDOF_ROGUE:
-			GetText(IDS_CLASS_KINDOF_ROGUE, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_ROGUE);
 			break;
 		case CLASS_KINDOF_WIZARD:
-			GetText(IDS_CLASS_KINDOF_WIZARD, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_WIZARD);
 			break;
 		case CLASS_KINDOF_PRIEST:
-			GetText(IDS_CLASS_KINDOF_PRIEST, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_PRIEST);
 			break;
 		case CLASS_KINDOF_ATTACK_WARRIOR:
-			GetText(IDS_CLASS_KINDOF_ATTACK_WARRIOR, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_ATTACK_WARRIOR);
 			break;
 		case CLASS_KINDOF_DEFEND_WARRIOR:
-			GetText(IDS_CLASS_KINDOF_DEFEND_WARRIOR, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_DEFEND_WARRIOR);
 			break;
 		case CLASS_KINDOF_ARCHER:
-			GetText(IDS_CLASS_KINDOF_ARCHER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_ARCHER);
 			break;
 		case CLASS_KINDOF_ASSASSIN:
-			GetText(IDS_CLASS_KINDOF_ASSASSIN, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_ASSASSIN);
 			break;
 		case CLASS_KINDOF_ATTACK_WIZARD:
-			GetText(IDS_CLASS_KINDOF_ATTACK_WIZARD, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_ATTACK_WIZARD);
 			break;
 		case CLASS_KINDOF_PET_WIZARD:
-			GetText(IDS_CLASS_KINDOF_PET_WIZARD, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_PET_WIZARD);
 			break;
 		case CLASS_KINDOF_HEAL_PRIEST:
-			GetText(IDS_CLASS_KINDOF_HEAL_PRIEST, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_HEAL_PRIEST);
 			break;
 		case CLASS_KINDOF_CURSE_PRIEST:
-			GetText(IDS_CLASS_KINDOF_CURSE_PRIEST, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KINDOF_CURSE_PRIEST);
 			break;
 
 		case CLASS_EL_WARRIOR:
 		case CLASS_KA_WARRIOR:
-			GetText(IDS_CLASS_WARRIOR, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_WARRIOR);
 			break;
 		case CLASS_EL_ROGUE:
 		case CLASS_KA_ROGUE:
-			GetText(IDS_CLASS_ROGUE, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_ROGUE);
 			break;
 		case CLASS_EL_WIZARD:
 		case CLASS_KA_WIZARD:
-			GetText(IDS_CLASS_WIZARD, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_WIZARD);
 			break;
 		case CLASS_EL_PRIEST:
 		case CLASS_KA_PRIEST:
-			GetText(IDS_CLASS_PRIEST, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_PRIEST);
 			break;
 		
 		case CLASS_KA_BERSERKER:
-			GetText(IDS_CLASS_KA_BERSERKER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_BERSERKER);
 			break;
 		case CLASS_KA_GUARDIAN:
-			GetText(IDS_CLASS_KA_GUARDIAN, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_GUARDIAN);
 			break;
 		case CLASS_KA_HUNTER:
-			GetText(IDS_CLASS_KA_HUNTER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_HUNTER);
 			break;
 		case CLASS_KA_PENETRATOR:
-			GetText(IDS_CLASS_KA_PENETRATOR, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_PENETRATOR);
 			break;
 		case CLASS_KA_SORCERER:
-			GetText(IDS_CLASS_KA_SORCERER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_SORCERER);
 			break;
 		case CLASS_KA_NECROMANCER:
-			GetText(IDS_CLASS_KA_NECROMANCER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_NECROMANCER);
 			break;
 		case CLASS_KA_SHAMAN:
-			GetText(IDS_CLASS_KA_SHAMAN, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_SHAMAN);
 			break;
 		case CLASS_KA_DARKPRIEST:
-			GetText(IDS_CLASS_KA_DARKPRIEST, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_KA_DARKPRIEST);
 			break;
 		
 		case CLASS_EL_BLADE:
-			GetText(IDS_CLASS_EL_BLADE, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_BLADE);
 			break;
 		case CLASS_EL_PROTECTOR:
-			GetText(IDS_CLASS_EL_PROTECTOR, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_PROTECTOR);
 			break;
 		case CLASS_EL_RANGER:
-			GetText(IDS_CLASS_EL_RANGER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_RANGER);
 			break;
 		case CLASS_EL_ASSASIN:
-			GetText(IDS_CLASS_EL_ASSASIN, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_ASSASIN);
 			break;
 		case CLASS_EL_MAGE:
-			GetText(IDS_CLASS_EL_MAGE, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_MAGE);
 			break;
 		case CLASS_EL_ENCHANTER:
-			GetText(IDS_CLASS_EL_ENCHANTER, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_ENCHANTER);
 			break;
 		case CLASS_EL_CLERIC:
-			GetText(IDS_CLASS_EL_CLERIC, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_CLERIC);
 			break;
 		case CLASS_EL_DRUID:
-			GetText(IDS_CLASS_EL_DRUID, &szText);
+			szText = fmt::format_text_resource(IDS_CLASS_EL_DRUID);
 			break;
 		
 		default:
@@ -238,13 +211,13 @@ bool CGameBase::GetTextByKnightsDuty(e_KnightsDuty eDuty, std::string& szText)
 {
 	switch(eDuty)
 	{
-		case KNIGHTS_DUTY_UNKNOWN:		GetText(IDS_KNIGHTS_DUTY_UNKNOWN, &szText); break;
-		case KNIGHTS_DUTY_PUNISH:		GetText(IDS_KNIGHTS_DUTY_PUNISH, &szText); break;
-		case KNIGHTS_DUTY_TRAINEE:		GetText(IDS_KNIGHTS_DUTY_TRAINEE, &szText); break;
-		case KNIGHTS_DUTY_KNIGHT:		GetText(IDS_KNIGHTS_DUTY_KNIGHT, &szText); break;
-		case KNIGHTS_DUTY_OFFICER:		GetText(IDS_KNIGHTS_DUTY_OFFICER, &szText); break;
-		case KNIGHTS_DUTY_VICECHIEF:	GetText(IDS_KNIGHTS_DUTY_VICECHIEF, &szText); break;
-		case KNIGHTS_DUTY_CHIEF:		GetText(IDS_KNIGHTS_DUTY_CHIEF, &szText); break;
+		case KNIGHTS_DUTY_UNKNOWN:		szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_UNKNOWN); break;
+		case KNIGHTS_DUTY_PUNISH:		szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_PUNISH); break;
+		case KNIGHTS_DUTY_TRAINEE:		szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_TRAINEE); break;
+		case KNIGHTS_DUTY_KNIGHT:		szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_KNIGHT); break;
+		case KNIGHTS_DUTY_OFFICER:		szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_OFFICER); break;
+		case KNIGHTS_DUTY_VICECHIEF:	szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_VICECHIEF); break;
+		case KNIGHTS_DUTY_CHIEF:		szText = fmt::format_text_resource(IDS_KNIGHTS_DUTY_CHIEF); break;
 		default: __ASSERT(0, "Invalid Knights Duty"); szText = "Unknown Duty"; return false;
 	}
 
@@ -256,97 +229,97 @@ bool CGameBase::GetTextByItemClass(e_ItemClass eItemClass, std::string& szText)
 	switch(eItemClass)
 	{
 		case ITEM_CLASS_DAGGER:
-			GetText(IDS_ITEM_CLASS_DAGGER, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_DAGGER);
 			break;
 		case ITEM_CLASS_SWORD:
-			GetText(IDS_ITEM_CLASS_SWORD, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_SWORD);
 			break;
 		case ITEM_CLASS_SWORD_2H:
-			GetText(IDS_ITEM_CLASS_SWORD_2H, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_SWORD_2H);
 			break;
 		case ITEM_CLASS_AXE:
-			GetText(IDS_ITEM_CLASS_AXE, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_AXE);
 			break;
 		case ITEM_CLASS_AXE_2H:
-			GetText(IDS_ITEM_CLASS_AXE_2H, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_AXE_2H);
 			break;
 		case ITEM_CLASS_MACE:
-			GetText(IDS_ITEM_CLASS_MACE, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_MACE);
 			break;
 		case ITEM_CLASS_MACE_2H:
-			GetText(IDS_ITEM_CLASS_MACE_2H, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_MACE_2H);
 			break;
 		case ITEM_CLASS_SPEAR:
-			GetText(IDS_ITEM_CLASS_SPEAR, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_SPEAR);
 			break;
 		case ITEM_CLASS_POLEARM:
-			GetText(IDS_ITEM_CLASS_POLEARM, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_POLEARM);
 			break;
 
 		case ITEM_CLASS_SHIELD:
-			GetText(IDS_ITEM_CLASS_SHIELD, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_SHIELD);
 			break;
 
 		case ITEM_CLASS_BOW:
-			GetText(IDS_ITEM_CLASS_BOW, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_BOW);
 			break;
 		case ITEM_CLASS_BOW_CROSS:
-			GetText(IDS_ITEM_CLASS_BOW_CROSS, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_BOW_CROSS);
 			break;
 		case ITEM_CLASS_BOW_LONG:
-			GetText(IDS_ITEM_CLASS_BOW_LONG, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_BOW_LONG);
 			break;
 
 		case ITEM_CLASS_EARRING:
-			GetText(IDS_ITEM_CLASS_EARRING, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_EARRING);
 			break;
 		case ITEM_CLASS_AMULET:
-			GetText(IDS_ITEM_CLASS_AMULET, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_AMULET);
 			break;
 		case ITEM_CLASS_RING:
-			GetText(IDS_ITEM_CLASS_RING, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_RING);
 			break;
 		case ITEM_CLASS_BELT:
-			GetText(IDS_ITEM_CLASS_BELT, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_BELT);
 			break;
 		case ITEM_CLASS_CHARM:
-			GetText(IDS_ITEM_CLASS_CHARM, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_CHARM);
 			break;
 		case ITEM_CLASS_JEWEL:
-			GetText(IDS_ITEM_CLASS_JEWEL, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_JEWEL);
 			break;
 		case ITEM_CLASS_POTION:
-			GetText(IDS_ITEM_CLASS_POTION, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_POTION);
 			break;
 		case ITEM_CLASS_SCROLL:
-			GetText(IDS_ITEM_CLASS_SCROLL, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_SCROLL);
 			break;
 
 		case ITEM_CLASS_LAUNCHER:
-			GetText(IDS_ITEM_CLASS_LAUNCHER, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_LAUNCHER);
 			break; 
 						
 		case ITEM_CLASS_STAFF:
-			GetText(IDS_ITEM_CLASS_STAFF, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_STAFF);
 			break;
 		case ITEM_CLASS_ARROW:
-			GetText(IDS_ITEM_CLASS_ARROW, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_ARROW);
 			break;
 		case ITEM_CLASS_JAVELIN:
-			GetText(IDS_ITEM_CLASS_JAVELIN, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_JAVELIN);
 			break;
 		
 		case ITEM_CLASS_ARMOR_WARRIOR:
-			GetText(IDS_ITEM_CLASS_ARMOR_WARRIOR, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_ARMOR_WARRIOR);
 			break;
 		case ITEM_CLASS_ARMOR_ROGUE:
-			GetText(IDS_ITEM_CLASS_ARMOR_ROGUE, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_ARMOR_ROGUE);
 			break;
 		case ITEM_CLASS_ARMOR_MAGE:
-			GetText(IDS_ITEM_CLASS_ARMOR_MAGE, &szText);
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_ARMOR_MAGE);
 			break;
 		case ITEM_CLASS_ARMOR_PRIEST:
-			GetText(IDS_ITEM_CLASS_ARMOR_PRIEST, &szText); 
+			szText = fmt::format_text_resource(IDS_ITEM_CLASS_ARMOR_PRIEST); 
 			break;
 		default:
 //			__ASSERT(0, "Invalid Item Class"); szText = "Unknown Item Class";
@@ -360,12 +333,12 @@ bool CGameBase::GetTextByAttrib(e_ItemAttrib eAttrib, std::string& szAttrib)
 {
 	switch(eAttrib)
 	{
-		case ITEM_ATTRIB_GENERAL:		GetText(IDS_ITEM_ATTRIB_GENERAL, &szAttrib); break;
-		case ITEM_ATTRIB_MAGIC:			GetText(IDS_ITEM_ATTRIB_MAGIC, &szAttrib); break;
-		case ITEM_ATTRIB_LAIR:			GetText(IDS_ITEM_ATTRIB_LAIR, &szAttrib); break;
-		case ITEM_ATTRIB_CRAFT:			GetText(IDS_ITEM_ATTRIB_CRAFT, &szAttrib); break;
-		case ITEM_ATTRIB_UNIQUE:		GetText(IDS_ITEM_ATTRIB_UNIQUE, &szAttrib); break;
-		case ITEM_ATTRIB_UPGRADE:		GetText(IDS_ITEM_ATTRIB_UPGRADE, &szAttrib); break;
+		case ITEM_ATTRIB_GENERAL:		szAttrib = fmt::format_text_resource(IDS_ITEM_ATTRIB_GENERAL); break;
+		case ITEM_ATTRIB_MAGIC:			szAttrib = fmt::format_text_resource(IDS_ITEM_ATTRIB_MAGIC); break;
+		case ITEM_ATTRIB_LAIR:			szAttrib = fmt::format_text_resource(IDS_ITEM_ATTRIB_LAIR); break;
+		case ITEM_ATTRIB_CRAFT:			szAttrib = fmt::format_text_resource(IDS_ITEM_ATTRIB_CRAFT); break;
+		case ITEM_ATTRIB_UNIQUE:		szAttrib = fmt::format_text_resource(IDS_ITEM_ATTRIB_UNIQUE); break;
+		case ITEM_ATTRIB_UPGRADE:		szAttrib = fmt::format_text_resource(IDS_ITEM_ATTRIB_UPGRADE); break;
 		default:
 			return false;
 	}
@@ -417,9 +390,9 @@ bool CGameBase::GetTextByNation(e_Nation eNation, std::string& szText)
 {
 	switch(eNation)
 	{
-		case NATION_ELMORAD:	GetText(IDS_NATION_ELMORAD, &szText); break;
-		case NATION_KARUS:		GetText(IDS_NATION_KARUS, &szText); break;
-		default: GetText(IDS_NATION_UNKNOWN, &szText); return false;
+		case NATION_ELMORAD:	szText = fmt::format_text_resource(IDS_NATION_ELMORAD); break;
+		case NATION_KARUS:		szText = fmt::format_text_resource(IDS_NATION_KARUS); break;
+		default: szText = fmt::format_text_resource(IDS_NATION_UNKNOWN); return false;
 	}
 
 	return true;
@@ -430,30 +403,30 @@ bool CGameBase::GetTextByRace(e_Race eRace, std::string& szText)
 	switch(eRace)
 	{
 		case RACE_EL_BABARIAN:
-			GetText(IDS_RACE_EL_BABARIAN, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_EL_BABARIAN);
 			break;
 		case RACE_EL_MAN:
-			GetText(IDS_RACE_EL_MAN, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_EL_MAN);
 			break;
 		case RACE_EL_WOMEN:
-			GetText(IDS_RACE_EL_WOMEN, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_EL_WOMEN);
 			break;
 
 		case RACE_KA_ARKTUAREK:
-			GetText(IDS_RACE_KA_ARKTUAREK, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_KA_ARKTUAREK);
 			break;
 		case RACE_KA_TUAREK:
-			GetText(IDS_RACE_KA_TUAREK, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_KA_TUAREK);
 			break;
 		case RACE_KA_WRINKLETUAREK:
-			GetText(IDS_RACE_KA_WRINKLETUAREK, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_KA_WRINKLETUAREK);
 			break;
 		case RACE_KA_PURITUAREK:
-			GetText(IDS_RACE_KA_PURITUAREK, &szText);
+			szText = fmt::format_text_resource(IDS_RACE_KA_PURITUAREK);
 			break;
 			
 		default:
-			GetText(IDS_NATION_UNKNOWN, &szText); 
+			szText = fmt::format_text_resource(IDS_NATION_UNKNOWN); 
 			return false;
 	}
 
@@ -545,29 +518,29 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 		__ASSERT(0, "Invalid Item Position");
 	}
 
-	char buffer[256] = {};
-	if(pszResrcFN)
+	if (pszResrcFN)
 	{
-		if(pItem->dwIDResrc) 
+		if (pItem->dwIDResrc)
 		{
-			if(eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES) {
-				// NOTE: no idea but perhaps this will work for now
-				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
+			// NOTE: no idea but perhaps this will work for now
+			if (eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES)
+			{
+				*pszResrcFN = fmt::format("Item\\{:01}_{:04}_{:02}_{:01}{}",
 					(pItem->dwIDResrc / 10000000),
 					((pItem->dwIDResrc / 1000) % 10000) + eRace,
 					(pItem->dwIDResrc / 10) % 100,
 					pItem->dwIDResrc % 10,
-					szExt.c_str());
-			} else {
-				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
+					szExt);
+			}
+			else
+			{
+				*pszResrcFN = fmt::format("Item\\{:01}_{:04}_{:02}_{:01}{}",
 					(pItem->dwIDResrc / 10000000),
 					(pItem->dwIDResrc / 1000) % 10000,
 					(pItem->dwIDResrc / 10) % 100,
 					pItem->dwIDResrc % 10,
-					szExt.c_str());
+					szExt);
 			}
-
-			*pszResrcFN = buffer;
 		}
 		// Some items don't have models -- only icons.
 		else
@@ -575,19 +548,18 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 			pszResrcFN->clear();
 		}
 	}
-	if(pszIconFN)
+
+	if (pszIconFN)
 	{
-		sprintf(buffer,	"UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt",
+		*pszIconFN = fmt::format("UI\\ItemIcon_{:01}_{:04}_{:02}_{:01}.dxt",
 			(pItem->dwIDIcon / 10000000), 
 			(pItem->dwIDIcon / 1000) % 10000, 
 			(pItem->dwIDIcon / 10) % 100, 
 			pItem->dwIDIcon % 10);
-		*pszIconFN = &buffer[0];
 	}
 	
 	return eType;
 }
-
 
 bool CGameBase::IsValidCharacter(CPlayerBase* pCharacter)
 {
@@ -647,4 +619,9 @@ std::string CGameBase::FormatNumber(int iNumber)
 	}
 
 	return szFormattedNum;
+}
+
+void CGameBase::ConvertPipesToNewlines(std::string& input)
+{
+	std::ranges::replace(input, '|', '\n');
 }

@@ -70,7 +70,7 @@ public:
 
 	void	UpdateHP(int iVal, int iValMax);
 	void	UpdateMSP(int iVal, int iValMax);
-	void	UpdateExp(uint64_t iVal, uint64_t iValMax);
+	void	UpdateExp(int64_t iVal, int64_t iValMax);
 	void	UpdateAttackPoint(int iVal, int iDelta);
 	void	UpdateGuardPoint(int iVal, int iDelta);
 	void	UpdateWeight(int iVal, int iValMax);
@@ -86,6 +86,8 @@ public:
 	void	UpdateRegistMagic(int iVal, int iDelta);
 	void	UpdateRegistCurse(int iVal, int iDelta);
 	void	UpdateRegistPoison(int iVal, int iDelta);
+
+	static std::string FormatWithDelta(int iVal, int iDelta);
 
 	void			MsgSendAblityPointChange(uint8_t byType, int16_t siValueDelta); // 능력치 변화 패킷으로 보내기..
 

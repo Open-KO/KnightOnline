@@ -7,6 +7,9 @@
 #include "N3SndObjStream.h"
 #include "N3Base.h"
 
+#include <mpg123.h>
+#include <filesystem>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -45,9 +48,12 @@ CN3SndObj* CN3SndMgr::CreateObj(int iID, e_SndType eType)
 	return this->CreateObj(pTbl->szFN, eType);
 }
 
-CN3SndObj* CN3SndMgr::CreateObj(const std::string& szFN, e_SndType eType)
+CN3SndObj* CN3SndMgr::CreateObj(std::string szFN, e_SndType eType)
 {
 	if(!m_bSndEnable) return NULL;
+
+	if (!PreprocessFilename(szFN))
+		return nullptr;
 
 	CN3SndObj* pObjSrc = NULL;
 	itm_Snd it = m_SndObjSrcs.find(szFN);
@@ -78,8 +84,11 @@ CN3SndObj* CN3SndMgr::CreateObj(const std::string& szFN, e_SndType eType)
 	return pObjNew;
 }
 
-CN3SndObjStream* CN3SndMgr::CreateStreamObj(const std::string& szFN)
+CN3SndObjStream* CN3SndMgr::CreateStreamObj(std::string szFN)
 {
+	if (!PreprocessFilename(szFN))
+		return nullptr;
+
 	CN3SndObjStream* pObj = new CN3SndObjStream();
 	if(false == pObj->Create(szFN))
 	{
@@ -358,4 +367,163 @@ bool CN3SndMgr::PlayOnceAndRelease(int iSndID, const _D3DVECTOR* pPos)
 	m_SndObjs_PlayOnceAndRelease.push_back(pObj);
 	return true;
 */
+}
+
+bool CN3SndMgr::PreprocessFilename(std::string& szFN)
+{
+	// Expect an extension (.mp3, .wav)
+	if (szFN.length() < 4)
+		return false;
+
+	// Officially it has native support for MP3 decoding.
+	// We decode back to WAV (one-time) and use the new filename instead.
+	// Ideally this would just load it into memory directly, but that would require restructuring
+	// a little.
+	// This approach is fairly unintrusive and only incurs the performance hit once.
+	// There's also very few mp3 files to actually convert, so space should not be an issue.
+	// Finally, the game requires admin access, so it should have write access.
+	if (_stricmp(&szFN[szFN.length() - 4], ".mp3") == 0)
+	{
+		if (!DecodeMp3ToWav(szFN))
+			return false;
+	}
+
+	return true;
+}
+
+bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
+{
+	std::filesystem::path newPath(filename);
+
+	// Differentiate the converted files from any that already exist.
+	// We want to be able to identify them for ignoring (so they don't make the repo 'dirty'),
+	// and we generally don't want to assume any old, existing wav files match.
+	newPath.replace_extension(".mp3.wav");
+
+	// If we've already converted this file, we can just use it immediately.
+	std::error_code fsErrorCode = {};
+	if (std::filesystem::exists(newPath, fsErrorCode))
+	{
+		filename = newPath.string();
+		return true;
+	}
+
+	// We have yet to convert it, so we need to load it up and decode it.
+	int error = MPG123_ERR;
+
+	mpg123_handle* mpgHandle = mpg123_new(nullptr, &error);
+	if (mpgHandle == nullptr)
+		return false;
+
+	// Force output as 16-bit PCM - preserve sample rate and channel count.
+	mpg123_format(mpgHandle, 0, 0, MPG123_ENC_SIGNED_16);
+
+	error = mpg123_open(mpgHandle, filename.c_str());
+	if (error != MPG123_OK)
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to open MP3: {} ({})",
+			filename, error);
+#endif
+		mpg123_delete(mpgHandle);
+		return false;
+	}
+
+	long rate = 0;
+	int channels = 0, encoding = 0;
+
+	error = mpg123_getformat(mpgHandle, &rate, &channels, &encoding);
+	if (error != MPG123_OK)
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to get MP3 format: {} ({}: {})",
+			filename, error, mpg123_strerror(mpgHandle));
+#endif
+
+		mpg123_delete(mpgHandle);
+		return false;
+	}
+
+	off_t sampleCount = mpg123_length(mpgHandle);
+	if (sampleCount < 0)
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to get total MP3 samples per channel: {}",
+			filename);
+#endif
+
+		mpg123_delete(mpgHandle);
+		return false;
+	}
+
+	std::string newFilename = newPath.string();
+
+	// Open the new WAV file for writing.
+	FILE* fp = fopen(newFilename.c_str(), "wb");
+	if (fp == nullptr)
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to open file for writing decoded MP3 to: {}",
+			newFilename);
+#endif
+		return false;
+	}
+
+	const int sampleSizeBytes = mpg123_encsize(encoding);
+
+	// Initialise header to defaults
+	WavFileHeader wavFileHeader = {};
+
+	// Setup the file header.
+	wavFileHeader.Format.AudioFormat	= 1; // PCM
+	wavFileHeader.Format.NumChannels	= static_cast<uint16_t>(channels);
+	wavFileHeader.Format.SampleRate		= static_cast<uint16_t>(rate);
+	wavFileHeader.Format.BitsPerSample	= static_cast<uint16_t>(sampleSizeBytes * 8);
+	wavFileHeader.Format.BytesPerBlock	= wavFileHeader.Format.NumChannels * wavFileHeader.Format.BitsPerSample / 8;
+	wavFileHeader.Format.BytesPerSec	= wavFileHeader.Format.SampleRate * wavFileHeader.Format.BytesPerBlock;
+
+	size_t done = 0, decodedBytes = 0;
+	const size_t frameSize = mpg123_outblock(mpgHandle);
+	std::vector<uint8_t> frameBlock(frameSize);
+
+	// Skip the header - we'll write that at the end.
+	fseek(fp, sizeof(WavFileHeader), SEEK_SET);
+
+	error = mpg123_read(mpgHandle, &frameBlock[0], frameSize, &done);
+	while (error == MPG123_OK)
+	{
+		decodedBytes += done;
+
+		fwrite(&frameBlock[0], done, 1, fp);
+		error = mpg123_read(mpgHandle, &frameBlock[0], frameSize, &done);
+	}
+
+	mpg123_delete(mpgHandle);
+
+	if (error != MPG123_DONE)
+	{
+		fclose(fp);
+		std::remove(newFilename.c_str());
+
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to decode MP3: {} ({} - decoded {} bytes)",
+			filename, error, decodedBytes);
+#endif
+		return false;
+	}
+
+	wavFileHeader.FileSize += static_cast<uint32_t>(decodedBytes);
+	wavFileHeader.Data.Size = static_cast<uint32_t>(decodedBytes);
+
+	// Write out the header.
+	long endOfFileOffset = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	fwrite(&wavFileHeader, sizeof(WavFileHeader), 1, fp);
+
+	// Seek back to the known end, before the file is closed and flushed.
+	fseek(fp, endOfFileOffset, SEEK_SET);
+	fclose(fp);
+
+	filename = std::move(newFilename);
+	return true;
 }

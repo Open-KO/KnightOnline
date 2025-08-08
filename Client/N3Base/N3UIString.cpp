@@ -75,9 +75,8 @@ void CN3UIString::SetString(const std::string& szString)
 
 void CN3UIString::SetStringAsInt(int iVal)
 {
-	char szBuff[32] = "";
-	sprintf(szBuff, "%d", iVal);
-	this->SetString(szBuff);
+	std::string buff = std::to_string(iVal);
+	SetString(buff);
 }
 
 void CN3UIString::SetString_NoWordWrap(const std::string& szString)

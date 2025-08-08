@@ -262,8 +262,7 @@ void CPlayerBase::SetSoundAndInitFont(uint32_t dwFontFlag)
 	// Font 초기화..
 	if (m_pIDFont == nullptr) 
 	{
-		std::string szFontID;
-		GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 
 		m_pIDFont = new CDFont(szFontID, 12, dwFontFlag);//D3DFONT_BOLD);
 		m_pIDFont->InitDeviceObjects( s_lpD3DDev );
@@ -328,8 +327,7 @@ void CPlayerBase::InfoStringSet(const std::string& szInfo, D3DCOLOR crFont)
 
 	if (m_pInfoFont == nullptr)
 	{
-		std::string szFontInfo;
-		GetText(IDS_FONT_INFO, &szFontInfo);
+		std::string szFontInfo = fmt::format_text_resource(IDS_FONT_INFO);
 
 		m_pInfoFont = new CDFont(szFontInfo, 12);
 		m_pInfoFont->InitDeviceObjects( s_lpD3DDev );
@@ -351,8 +349,7 @@ void CPlayerBase::BalloonStringSet(const std::string& szBalloon, D3DCOLOR crFont
 
 	if (m_pBalloonFont == nullptr)
 	{
-		std::string szFontBalloon;
-		GetText(IDS_FONT_BALLOON, &szFontBalloon);
+		std::string szFontBalloon = fmt::format_text_resource(IDS_FONT_BALLOON);
 
 		m_pBalloonFont = new CDFont(szFontBalloon, 12);
 		m_pBalloonFont->InitDeviceObjects(s_lpD3DDev);
@@ -378,27 +375,27 @@ void CPlayerBase::IDSet(int iID, const std::string& szID, D3DCOLOR crID)
 
 void CPlayerBase::KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank)
 {
-	char szPlug[128] = "";
-	if(iGrade > 0 && iGrade <= 5)
+	std::string szPlug;
+	if (iGrade > 0 && iGrade <= 5)
 	{
-		sprintf(szPlug, "Item\\ClanAddOn_%.3d_%d.n3cplug", m_InfoBase.eRace, iGrade); // 종족과 등급으로 플러그 이름을 만든다..
+		// 종족과 등급으로 플러그 이름을 만든다..
+		szPlug = fmt::format("Item\\ClanAddOn_{:03}_{}.n3cplug",
+			static_cast<int>(m_InfoBase.eRace), iGrade);
 	}
 
-	CN3CPlugBase* pPlug = this->PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, NULL, NULL);
+	CN3CPlugBase* pPlug = PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, nullptr, nullptr);
+	if (pPlug == nullptr)
+		return;
 
-	if(NULL == pPlug) return;
-
-	CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
 	__TABLE_FX* pFXClanRank = s_pTbl_FXSource.Find(FXID_CLAN_RANK_1);
 
-	std::string szFXClanRank = "";
-	std::string szEmpty = "";
-	if(pFXClanRank)
-	{
-		if(iRank<=5 && iRank>=1)
-			szFXClanRank = pFXClanRank->szFN;
-	}
-	pCPlug->InitFX(szFXClanRank, szEmpty, 0xffffffff);
+	std::string szFXMain, szFXTail;
+	if (pFXClanRank != nullptr
+		&& iRank <= 5
+		&& iRank >= 1)
+		szFXMain = pFXClanRank->szFN;
+
+	static_cast<CN3CPlug*>(pPlug)->InitFX(szFXMain, szFXTail, 0xffffffff);
 }
 
 /*
