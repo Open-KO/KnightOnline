@@ -10,7 +10,6 @@
 #endif // _MSC_VER > 1000
 
 #include <N3Base/N3UIBase.h>
-#include <N3Base/N3UIScrollBar.h>
 
 #define MAX_STRING_TALK		10
 
@@ -40,8 +39,9 @@ public:
 	void Open(Packet& pkt);
 	CUIQuestTalk();
 	~CUIQuestTalk() override;
+
 protected:
-	void SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText);
+	void SetTopLine();
 };
 
 #endif // !defined(AFX_UIQUESTTALK_H__DB9A4C59_4BE8_4698_9462_CF036C8D834D__INCLUDED_)

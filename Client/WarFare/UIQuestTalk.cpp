@@ -9,6 +9,7 @@
 #include "UIManager.h"
 #include "APISocket.h"
 
+#include <N3Base/N3UIScrollBar.h>
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIButton.h>
 
@@ -65,19 +66,22 @@ void CUIQuestTalk::Open(Packet& pkt)
 	}
 
 	m_pTextTalk->SetString(m_szTalk[m_iCurTalk]);
-	//set initial position of scroll bar as start
-	if (m_pScrollBar != nullptr) m_pScrollBar->SetCurrentPos(0);
+
+	// reset scrollbar position
+	if (m_pScrollBar != nullptr)
+		m_pScrollBar->SetCurrentPos(0);
+
 	SetVisible(true);
 }
 
-bool CUIQuestTalk::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
+bool CUIQuestTalk::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
-	if( dwMsg == UIMSG_BUTTON_CLICK )
+	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if(pSender == m_pBtnOk)
+		if (pSender == m_pBtnOk)
 		{
 			m_iCurTalk++;
-			if(m_iCurTalk>=m_iNumTalk)
+			if (m_iCurTalk >= m_iNumTalk)
 			{
 				m_iCurTalk = 0;
 				SetVisible(false);
@@ -96,7 +100,8 @@ bool CUIQuestTalk::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 	{
 		if (pSender == m_pScrollBar)
 		{
-			SetTopLine(m_pScrollBar, m_pTextTalk);
+			SetTopLine();
+			return true;
 		}
 	}
 
@@ -174,25 +179,25 @@ void CUIQuestTalk::Release()
 	m_iCurTalk			= 0;
 }
 
-void CUIQuestTalk::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText)
+void CUIQuestTalk::SetTopLine()
 {
-	if (pText == nullptr
-		|| pScroll == nullptr)
+	if (m_pTextTalk == nullptr
+		|| m_pScrollBar == nullptr)
 		return;
 
-	//scroll current position
-	const int iScrollPosition = pScroll->GetCurrentPos();
+	// scrollbar's current position
+	const int iScrollPosition = m_pScrollBar->GetCurrentPos();
 
 	// total number of lines of text
-	const int iTotalLineCount = pText->GetLineCount();
+	const int iTotalLineCount = m_pTextTalk->GetLineCount();
 
 	// max number of lines visible in text area
 	const int iVisibleLineCount = 8;
 
 	const int iMaxScrollableLines = iTotalLineCount - iVisibleLineCount;
-	pScroll->SetRangeMax(iMaxScrollableLines);
+	m_pScrollBar->SetRangeMax(iMaxScrollableLines);
 
-	// return if text is shorter than or equal to 4 lines
+	// return if text is shorter than or equal to the visible line count
 	if (iTotalLineCount <= iVisibleLineCount)
 		return;
 
@@ -202,5 +207,5 @@ void CUIQuestTalk::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText)
 		0,
 		iTotalLineCount - iVisibleLineCount);
 
-	pText->SetStartLine(iTopLine);
+	m_pTextTalk->SetStartLine(iTopLine);
 }

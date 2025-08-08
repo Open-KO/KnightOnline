@@ -1,7 +1,4 @@
-﻿/*
-*/
-
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "GameDef.h"
 #include "GameBase.h"
 #include "GameProcedure.h"
@@ -10,6 +7,7 @@
 #include "PlayerOtherMgr.h"
 #include "APISocket.h"
 
+#include <N3Base/N3UIScrollBar.h>
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIImage.h>
 #include <N3Base/N3UIButton.h>
@@ -107,11 +105,11 @@ bool CUIQuestMenu::Load(HANDLE hFile)
 //-----------------------------------------------------------------------------
 bool CUIQuestMenu::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 {
-	if( dwMsg == UIMSG_STRING_LCLICK )
+	if (dwMsg == UIMSG_STRING_LCLICK)
 	{
-		for(int i=0;i<MAX_STRING_MENU;i++)
+		for (int i = 0;i < MAX_STRING_MENU; i++)
 		{
-			if(pSender == m_pTextMenu[i])
+			if (pSender == m_pTextMenu[i])
 			{
 				MsgSend_SelectMenu(i);
 				SetVisible(false);
@@ -119,8 +117,10 @@ bool CUIQuestMenu::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 		}
 	}
-	else if (dwMsg == UIMSG_BUTTON_CLICK) {
-		if (pSender == m_pBtnClose) {
+	else if (dwMsg == UIMSG_BUTTON_CLICK)
+	{
+		if (pSender == m_pBtnClose)
+		{
 			SetVisible(false);
 			return true;
 		}
@@ -129,7 +129,8 @@ bool CUIQuestMenu::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 	{
 		if (pSender == m_pScrollBar)
 		{
-			SetTopLine(m_pScrollBar, m_pTextTitle);
+			SetTopLine();
+			return true;
 		}
 	}
 
@@ -195,7 +196,9 @@ void CUIQuestMenu::Open(Packet& pkt)
 	if(m_iMenuCnt==0) return;
 
 	//set initial position of scroll bar as start
-	if (m_pScrollBar != nullptr) m_pScrollBar->SetCurrentPos(0);
+	if (m_pScrollBar != nullptr)
+		m_pScrollBar->SetCurrentPos(0);
+
 	SetVisible(true);
 
 	int iIH;
@@ -275,25 +278,25 @@ void CUIQuestMenu::SetVisible(bool bVisible)
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 }
 
-void CUIQuestMenu::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText)
+void CUIQuestMenu::SetTopLine()
 {
-	if (pText == nullptr
-		|| pScroll == nullptr)
+	if (m_pTextTitle == nullptr
+		|| m_pScrollBar == nullptr)
 		return;
 
-	//scroll current position
-	const int iScrollPosition = pScroll->GetCurrentPos();
+	// scrollbar's current position
+	const int iScrollPosition = m_pScrollBar->GetCurrentPos();
 
 	// total number of lines of text
-	const int iTotalLineCount = pText->GetLineCount();
+	const int iTotalLineCount = m_pTextTitle->GetLineCount();
 
 	// max number of lines visible in text area
 	const int iVisibleLineCount = 8;
 
 	const int iMaxScrollableLines = iTotalLineCount - iVisibleLineCount;
-	pScroll->SetRangeMax(iMaxScrollableLines);
+	m_pScrollBar->SetRangeMax(iMaxScrollableLines);
 
-	// return if text is shorter than or equal to 4 lines
+	// return if text is shorter than or equal to the visible line count
 	if (iTotalLineCount <= iVisibleLineCount)
 		return;
 
@@ -303,5 +306,5 @@ void CUIQuestMenu::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pText)
 		0,
 		iTotalLineCount - iVisibleLineCount);
 
-	pText->SetStartLine(iTopLine);
+	m_pTextTitle->SetStartLine(iTopLine);
 }
