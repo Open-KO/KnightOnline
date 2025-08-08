@@ -134,7 +134,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 			m_pStr[iIndex]->SetString(szMsg);
 			iIndex++;
 
-			CGameBase::GetText(IDS_TOOLTIP_REPAIR_PRICE, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_REPAIR_PRICE);
 
 			if (!m_pStr[iIndex]->IsVisible())
 				m_pStr[iIndex]->SetVisible(true);
@@ -146,7 +146,7 @@ void CUIRepairTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSk
 		}
 		else
 		{
-			CGameBase::GetText(IDS_TOOLTIP_CANNOT, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_TOOLTIP_CANNOT);
 
 			m_pStr[0]->SetVisible(false);
 			m_pStr[1]->SetVisible(false);

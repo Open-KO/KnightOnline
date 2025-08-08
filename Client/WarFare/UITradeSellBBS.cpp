@@ -202,8 +202,7 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 		uint8_t bySubResult = pkt.read<uint8_t>();
 		if (bySubType == N3_SP_TYPE_BBS_OPEN)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_TRADE_BBS_FAIL6, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL6);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff0000);
 		}
 		else if (bySubType == N3_SP_TYPE_REGISTER)
@@ -213,15 +212,15 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 			switch (bySubResult)
 			{
 				case 1://1: 일반적인 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL1, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL1);
 					break;
 
 				case 2://2: 돈이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL2, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL2);
 					break;
 
 				case 3://3: 항목이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL4, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL4);
 					break;
 			}
 
@@ -229,8 +228,7 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 		}
 		else if (bySubType == N3_SP_TYPE_REGISTER_CANCEL)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_TRADE_BBS_FAIL3, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL3);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff0000);
 		}
 		else if (bySubType == N3_SP_TYPE_BBS_DATA)
@@ -243,13 +241,13 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 			switch (bySubResult)
 			{
 				case 1://1: 일반적인 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL5, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL5);
 					break;
 				case 2://2: 돈이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL2, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL2);
 					break;
 				case 3://3: 항목이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL4, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL4);
 					break;
 			}
 
@@ -775,8 +773,7 @@ void CUITradeSellBBS::ResetContent()
 
 void CUITradeSellBBS::SetContentString(int iIndex, std::string szID, int iPrice, std::string szTitle)
 {
-	std::string szGold;
-	CGameBase::GetText(IDS_TOOLTIP_GOLD, &szGold);
+	std::string szGold = fmt::format_text_resource(IDS_TOOLTIP_GOLD);
 
 	if(m_pText[iIndex])
 		m_pText[iIndex]->SetString(szID);

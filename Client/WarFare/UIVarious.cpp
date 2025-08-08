@@ -944,13 +944,13 @@ void CUIKnights::UpdateKnightsDuty(e_KnightsDuty eDuty)
 	std::string szDuty;
 	switch(eDuty)
 	{
-		case KNIGHTS_DUTY_CHIEF:		CGameBase::GetText(IDS_KNIGHTS_DUTY_CHIEF, &szDuty); break;
-		case KNIGHTS_DUTY_VICECHIEF:	CGameBase::GetText(IDS_KNIGHTS_DUTY_VICECHIEF, &szDuty); break;
-		case KNIGHTS_DUTY_OFFICER:		CGameBase::GetText(IDS_KNIGHTS_DUTY_OFFICER, &szDuty); break;
-		case KNIGHTS_DUTY_KNIGHT:		CGameBase::GetText(IDS_KNIGHTS_DUTY_KNIGHT, &szDuty); break;
-		case KNIGHTS_DUTY_TRAINEE:		CGameBase::GetText(IDS_KNIGHTS_DUTY_TRAINEE, &szDuty); break;
-		case KNIGHTS_DUTY_PUNISH:		CGameBase::GetText(IDS_KNIGHTS_DUTY_PUNISH, &szDuty); break;
-		case KNIGHTS_DUTY_UNKNOWN:		CGameBase::GetText(IDS_KNIGHTS_DUTY_UNKNOWN, &szDuty); break;
+		case KNIGHTS_DUTY_CHIEF:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_CHIEF); break;
+		case KNIGHTS_DUTY_VICECHIEF:	szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_VICECHIEF); break;
+		case KNIGHTS_DUTY_OFFICER:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_OFFICER); break;
+		case KNIGHTS_DUTY_KNIGHT:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_KNIGHT); break;
+		case KNIGHTS_DUTY_TRAINEE:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_TRAINEE); break;
+		case KNIGHTS_DUTY_PUNISH:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_PUNISH); break;
+		case KNIGHTS_DUTY_UNKNOWN:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_UNKNOWN); break;
 		default: __ASSERT(0, "Invalid Knights Duty"); break;
 	}	
 	m_pText_Duty->SetString(szDuty);	
@@ -1192,9 +1192,9 @@ bool CUIFriends::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			{
 				std::string szMsg;
 				if (pProcMain->MsgSend_PartyOrForceCreate(0, szID))
-					CGameBase::GetText(IDS_PARTY_INVITE, &szMsg); // 파티
+					szMsg = fmt::format_text_resource(IDS_PARTY_INVITE); // 파티
 				else
-					CGameBase::GetText(IDS_PARTY_INVITE_FAILED, &szMsg); // 파티 초대 실패
+					szMsg = fmt::format_text_resource(IDS_PARTY_INVITE_FAILED); // 파티 초대 실패
 				pProcMain->MsgOutput(it->second.szName + szMsg, 0xffffff00);
 			}
 		}

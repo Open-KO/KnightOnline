@@ -88,8 +88,7 @@ void CUICreateClanName::Open(int msg)
 {
 	if (msg != 0)
 	{
-		std::string szMsg;
-		CGameBase::GetText(msg, &szMsg);
+		std::string szMsg = fmt::format_text_resource(msg);
 		m_pText_Title->SetString(szMsg);
 	}
 	m_pEdit_ClanName->SetString("");

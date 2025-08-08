@@ -106,15 +106,13 @@ bool CUICharacterSelect::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if ( pSender->m_szID == "bt_exit" )	// Elmorad
 		{
 //			CGameProcedure::ProcActiveSet((CGameProcedure*)CGameProcedure::s_pProcLogIn); // 로그인으로 돌아간다..
-			std::string szMsg;
-			CGameBase::GetText(IDS_CONFIRM_EXIT_GAME, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_CONFIRM_EXIT_GAME);
 			CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_EXIT);
 		}
 		else
 		if ( pSender->m_szID == "bt_delete" )	// Elmorad
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_CONFIRM_DELETE_CHR, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_CONFIRM_DELETE_CHR);
 
 			// NOTE: Character deletion is disabled and this resource is changed appropriately.
 			// As such, rather than prompt to delete, we should simply show the new message.

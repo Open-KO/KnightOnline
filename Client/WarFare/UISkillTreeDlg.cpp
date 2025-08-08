@@ -469,16 +469,14 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 
 	if ( iSkillExtra == 0 )
 	{
-		std::string szMsg;
-		CGameBase::GetText(IDS_SKILL_POINT_EXTRA_NOT_EXIST, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_EXTRA_NOT_EXIST);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return;
 	}
 
 	if ((iValue == 1) ||(iValue == 2) || (iValue == 3) ||(iValue == 4))	//.. 
 	{
-		std::string szMsg;
-		CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return;
 	}
@@ -498,8 +496,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 							case CLASS_KA_WIZARD:
 							case CLASS_KA_PRIEST:
 								{
-									std::string szMsg;
-									CGameBase::GetText(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE, &szMsg);
+									std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE);
 									CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 									return;
 								}
@@ -515,8 +512,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 							case CLASS_EL_WIZARD:
 							case CLASS_EL_PRIEST:
 								{
-									std::string szMsg;
-									CGameBase::GetText(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE, &szMsg);
+									std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE);
 									CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 									return;
 								}
@@ -540,8 +536,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 					case CLASS_KA_SHAMAN:
 					case CLASS_KA_BERSERKER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -557,8 +552,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 					case CLASS_EL_CLERIC:
 					case CLASS_EL_BLADE:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -578,8 +572,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_KA_BERSERKER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -592,8 +585,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_EL_BLADE:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -612,8 +604,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_KA_HUNTER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -626,8 +617,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_EL_RANGER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -680,8 +670,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 	// 자기 자신 레벨보다 높일수 없다..
 	if ( iSkillPoint >= CGameBase::s_pPlayer->m_InfoBase.iLevel )
 	{
-		std::string szMsg;
-		CGameBase::GetText(IDS_SKILL_UP_INVALID, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_UP_INVALID);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return;
 	}
@@ -827,7 +816,7 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 	{
 		// basic skill tab
 		case SKILL_DEF_BASIC:
-			CGameBase::GetText(IDS_SKILL_INFO_BASE, &szStr);
+			szStr = fmt::format_text_resource(IDS_SKILL_INFO_BASE);
 			break;
 
 		// first skill tab
@@ -838,28 +827,28 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_BERSERKER:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE0);
 					break;
 
 				case CLASS_EL_RANGER:
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_HUNTER:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER0);
 					break;
 
 				case CLASS_EL_CLERIC:
 				case CLASS_EL_DRUID:
 				case CLASS_KA_SHAMAN:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC0);
 					break;
 
 				case CLASS_EL_MAGE:
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_SORCERER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE0);
 					break;
 			}
 			break;
@@ -872,28 +861,28 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_BERSERKER:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE1);
 					break;
 
 				case CLASS_EL_RANGER:
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_HUNTER:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER1);
 					break;
 
 				case CLASS_EL_CLERIC:
 				case CLASS_EL_DRUID:
 				case CLASS_KA_SHAMAN:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC1);
 					break;
 
 				case CLASS_EL_MAGE:
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_SORCERER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE1);
 					break;
 			}
 			break;
@@ -906,28 +895,28 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_BERSERKER:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE2);
 					break;
 
 				case CLASS_EL_RANGER:
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_HUNTER:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER2);
 					break;
 
 				case CLASS_EL_CLERIC:
 				case CLASS_EL_DRUID:
 				case CLASS_KA_SHAMAN:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC2);
 					break;
 
 				case CLASS_EL_MAGE:
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_SORCERER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE2);
 					break;
 			}
 			break;
@@ -938,22 +927,22 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 			{
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE3);
 					break;
 
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER3);
 					break;
 
 				case CLASS_EL_DRUID:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC3);
 					break;
 
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE3);
 					break;
 			}
 			break;
@@ -1014,13 +1003,13 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	{
 		case SKILL_REQUIRES_DUAL_WEAPON_WARRIOR:
 		case SKILL_REQUIRES_DUAL_WEAPON_ROGUE:
-			CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL, &szStr);
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL);
 			bFound = true;
 			break;
 
 		case SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR:
 		case SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE:
-			CGameBase::GetText(IDS_SKILL_TOOLTIP_DOUBLE, &szStr);
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_DOUBLE);
 			bFound = true;
 			break;
 	}
@@ -1039,14 +1028,14 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 			case 6:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7,  &szStr); break;
 			case 7:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8,  &szStr); break;
 			case 8:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9,  &szStr); break;
-			case 10:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10, &szStr); break;
-			case 11:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11, &szStr); break;
-			case 12:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12, &szStr); break;
-			case 13:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13, &szStr); break;
-			case 21:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14, &szStr); break;
-			case 22:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15, &szStr); break;
-			case 23:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16, &szStr); break;
-			case 24:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17, &szStr); break;
+			case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
+			case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
+			case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
+			case 13:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13); break;
+			case 21:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14); break;
+			case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
+			case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
+			case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
 			default:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_NO,	 &szStr); break;
 		}
 	}

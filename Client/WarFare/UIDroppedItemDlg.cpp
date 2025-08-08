@@ -491,8 +491,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if ( iOrderInv == -1 )
 		{
 			// 인벤토리가 꽉 차있으면.. break.. ^^
-			std::string stdMsg;
-			CGameBase::GetText(IDS_INV_ITEM_FULL, &stdMsg);
+			std::string stdMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
 			CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 		}
 
@@ -699,16 +698,14 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 	if (bResult == 0x06)
 	{
 		// 메시지 박스 텍스트 표시..
-		std::string szMsg;
-		CGameBase::GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
 	if (bResult == 0x07)
 	{
 		// 메시지 박스 텍스트 표시..
-		std::string szMsg;
-		CGameBase::GetText(IDS_INV_ITEM_FULL, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 

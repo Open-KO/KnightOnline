@@ -280,7 +280,7 @@ bool CUICmdList::CreateCategoryList() {
 			idCur = 9200;
 		}
 		szCommand.clear();
-		CGameBase::GetText(idCur, &szCommand);
+		szCommand = fmt::format_text_resource(idCur);
 		if (!szCommand.empty() && (i/100) % 2 == 0 ) m_mapCmds[i] = szCommand;
 	}
 

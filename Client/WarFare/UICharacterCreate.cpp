@@ -92,14 +92,12 @@ bool CUICharacterCreate::Load(HANDLE hFile)
 	{
 		if(NATION_KARUS == eNation)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_SETTING_KARUS_SCREEN, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_SETTING_KARUS_SCREEN);
 			m_pStr_Desc->SetString(szMsg);
 		}
 		else if(NATION_ELMORAD == eNation)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_SETTING_ELMORAD_SCREEN, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_SETTING_ELMORAD_SCREEN);
 			m_pStr_Desc->SetString(szMsg);
 		}
 	}

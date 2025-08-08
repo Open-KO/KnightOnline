@@ -490,8 +490,7 @@ void CUITransactionDlg::ItemCountOK()
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -501,24 +500,21 @@ void CUITransactionDlg::ItemCountOK()
 					if ( iGold <= 0 ) return;
 					if ( iGold > UIITEM_COUNT_MANY ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_BUY_FAIL, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_BUY_FAIL);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if (spItem->iCount + iGold > UIITEM_COUNT_MANY)
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_MANY_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_MANY_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if ( (iGold * spItem->pItemBasic->iPrice)	> pInfoExt->iGold )	
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -527,8 +523,7 @@ void CUITransactionDlg::ItemCountOK()
 
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -539,24 +534,21 @@ void CUITransactionDlg::ItemCountOK()
 
 					if ( iGold > UIITEM_COUNT_FEW ) 
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_BUY_FAIL, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_BUY_FAIL);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if (spItem->iCount + iGold > UIITEM_COUNT_FEW)
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_SMALL_COUNTABLE_ITEM_GET_MANY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_SMALL_COUNTABLE_ITEM_GET_MANY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
 
 					if ( (iGold * spItem->pItemBasic->iPrice)	> pInfoExt->iGold )	
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);				
 						return;
 					}
@@ -565,9 +557,8 @@ void CUITransactionDlg::ItemCountOK()
 
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + iWeight) > pInfoExt->iWeightMax)
-					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+					{
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 						return;
 					}
@@ -926,8 +917,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					// 매수가 X 갯수가 내가 가진 돈보다 많으면.. 그냥 리턴..
 					if ( (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->iPrice)	> pInfoExt->iGold )	
 					{
-						std::string szMsg;
-						CGameBase::GetText(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY, &szMsg);
+						std::string szMsg = fmt::format_text_resource(IDS_COUNTABLE_ITEM_BUY_NOT_ENOUGH_MONEY);
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 
 						s_bWaitFromServer				= false;
@@ -939,8 +929,7 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					// 무게 체크..
 					if ( (pInfoExt->iWeight + CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->siWeight) > pInfoExt->iWeightMax)
 					{	 
-						std::string szMsg;
-						CGameBase::GetText(IDS_ITEM_WEIGHT_OVERFLOW, &szMsg);	
+						std::string szMsg = fmt::format_text_resource(IDS_ITEM_WEIGHT_OVERFLOW);	
 						CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 
 						s_bWaitFromServer				= false;
@@ -1179,8 +1168,7 @@ void CUITransactionDlg::ReceiveResultTradeFromServer(byte bResult, byte bType, i
 
 				if (bType == 0x04)
 				{
-					std::string szMsg;
-					CGameBase::GetText(IDS_ITEM_TOOMANY_OR_HEAVY, &szMsg);
+					std::string szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
 					CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 				}
 			}
