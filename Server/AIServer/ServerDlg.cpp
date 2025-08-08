@@ -482,7 +482,7 @@ void CServerDlg::DefaultInit()
 
 void CServerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("ServerDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("ServerDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());
@@ -829,7 +829,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						if (row->PathPointCount == 0
 							|| !row->Path.has_value())
 						{
-							std::string error = std::format("ServerDlg::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
+							std::string error = fmt::format("ServerDlg::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
 								row->ZoneId,
 								pNpc->m_sNid + NPC_BAND,
 								pNpc->m_sSid,
@@ -856,7 +856,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						const std::string& path = *row->Path;
 						if ((row->PathPointCount * CharactersPerPoint) > path.size())
 						{
-							std::string error = std::format("LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
+							std::string error = fmt::format("LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
 								row->ZoneId,
 								row->PathPointCount,
 								pNpc->m_sNid + NPC_BAND,

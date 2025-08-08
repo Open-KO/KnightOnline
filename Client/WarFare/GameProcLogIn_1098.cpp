@@ -134,9 +134,8 @@ void CGameProcLogIn_1098::Init()
 	char szIPs[256][32] = {};
 	for (int i = 0; i < iServerCount; i++)
 	{
-		char szKey[32] = "";
-		sprintf(szKey, "IP%d", i);
-		GetPrivateProfileString("Server", szKey, "", szIPs[i], 32, szIniPath);
+		std::string key = fmt::format("IP{}", i);
+		GetPrivateProfileString("Server", szKey.c_str(), "", szIPs[i], 32, szIniPath);
 	}
 
 	int iServer = -1;

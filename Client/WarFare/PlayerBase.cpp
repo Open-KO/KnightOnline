@@ -375,27 +375,27 @@ void CPlayerBase::IDSet(int iID, const std::string& szID, D3DCOLOR crID)
 
 void CPlayerBase::KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank)
 {
-	char szPlug[128] = "";
-	if(iGrade > 0 && iGrade <= 5)
+	std::string szPlug;
+	if (iGrade > 0 && iGrade <= 5)
 	{
-		sprintf(szPlug, "Item\\ClanAddOn_%.3d_%d.n3cplug", m_InfoBase.eRace, iGrade); // 종족과 등급으로 플러그 이름을 만든다..
+		// 종족과 등급으로 플러그 이름을 만든다..
+		szPlug = fmt::format("Item\\ClanAddOn_{:03}_{}.n3cplug",
+			static_cast<int>(m_InfoBase.eRace), iGrade);
 	}
 
-	CN3CPlugBase* pPlug = this->PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, NULL, NULL);
+	CN3CPlugBase* pPlug = PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, nullptr, nullptr);
+	if (pPlug == nullptr)
+		return;
 
-	if(NULL == pPlug) return;
-
-	CN3CPlug* pCPlug = (CN3CPlug*)pPlug;
 	__TABLE_FX* pFXClanRank = s_pTbl_FXSource.Find(FXID_CLAN_RANK_1);
 
-	std::string szFXClanRank = "";
-	std::string szEmpty = "";
-	if(pFXClanRank)
-	{
-		if(iRank<=5 && iRank>=1)
-			szFXClanRank = pFXClanRank->szFN;
-	}
-	pCPlug->InitFX(szFXClanRank, szEmpty, 0xffffffff);
+	std::string szFXMain, szFXTail;
+	if (pFXClanRank != nullptr
+		&& iRank <= 5
+		&& iRank >= 1)
+		szFXMain = pFXClanRank->szFN;
+
+	static_cast<CN3CPlug*>(pPlug)->InitFX(szFXMain, szFXTail, 0xffffffff);
 }
 
 /*

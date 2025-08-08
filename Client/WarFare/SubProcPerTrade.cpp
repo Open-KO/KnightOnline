@@ -518,7 +518,6 @@ void CSubProcPerTrade::RequestItemCountEdit()
 
 void CSubProcPerTrade::ItemCountEditOK()
 {
-	char szGold[32];
 	std::string str;
 	int iGold,			// 거래창의 값..
 		iGoldOffset,	// 편집창의 값..
@@ -546,14 +545,12 @@ void CSubProcPerTrade::ItemCountEditOK()
 	s_pPlayer->m_InfoExt.iGold = iMyMoney;
 
 	// 돈 표시.. 인벤토리..
-	sprintf(szGold, "%d", iMyMoney);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-	if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetString(szGold);
+	if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetStringAsInt(iMyMoney);
 
 	// 돈 표시.. 개인 거래 창..
 	iGold += iGoldOffset;
-	sprintf(szGold, "%d", iGold);
-	pStrMy->SetString(szGold);
+	pStrMy->SetStringAsInt(iGold);
 
 	// 서버에게 전송한다..
 	uint8_t byBuff[16];											// 패킷 버퍼..
@@ -660,7 +657,6 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 	// 상태를 변화시키고.. 창을 닫고..
 	CN3UIBase::s_bWaitFromServer = false;
 
-	char szGold[32];
 	std::string str;
 	int iGold,			// 거래창의 값..
 		iMyMoney;		// 인벤토리의 값..
@@ -688,14 +684,12 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 						s_pPlayer->m_InfoExt.iGold = iMyMoney;
 
 						// 돈 표시.. 인벤토리..
-						sprintf(szGold, "%d", iMyMoney);
 						CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-						if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetString(szGold);
+						if(m_pUIPerTradeDlg->m_pStrMyGold) m_pUIPerTradeDlg->m_pStrMyGold->SetStringAsInt(iMyMoney);
 
 						// 돈 표시.. 개인 거래 창..
 						iGold -= m_iGoldOffsetBackup;
-						sprintf(szGold, "%d", iGold);
-						pStrMy->SetString(szGold);
+						pStrMy->SetStringAsInt(iGold);
 					}
 					break;
 
@@ -822,7 +816,6 @@ void CSubProcPerTrade::ReceiveMsgPerTradeAdd(uint8_t bResult)
 
 void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int iDurability)
 {
-	char szGold[32];
 	std::string str;
 	int iGold, iDestiOrder;			// 거래창의 값..
 
@@ -837,8 +830,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int i
 		iGold += iCount;
 
 		// 돈 표시.. 개인 거래 창..
-		sprintf(szGold, "%d", iGold);
-		pStrOther->SetString(szGold);
+		pStrOther->SetStringAsInt(iGold);
 	}
 	else
 	{
@@ -988,11 +980,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherDecide()
 
 void CSubProcPerTrade::ReceiveMsgPerTradeDoneSuccessBegin(int iTotalGold)
 {
-	char szGold[32];
-	sprintf(szGold, "%d", iTotalGold);
-	
 	s_pPlayer->m_InfoExt.iGold = iTotalGold;
-
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 }
 

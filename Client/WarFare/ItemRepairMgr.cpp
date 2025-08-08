@@ -198,13 +198,9 @@ void CItemRepairMgr::ReceiveResultFromServer(int iResult, int iUserGold)
 
 void CItemRepairMgr::UpdateUserTotalGold(int iGold)
 {
-	char szGold[32];
-
 	// 돈 업데이트..
 	s_pPlayer->m_InfoExt.iGold = iGold;
-	sprintf(szGold, "%d", iGold);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-	
 }
 
 int CItemRepairMgr::CalcRepairGold(__IconItemSkill* spItem)

@@ -75,11 +75,11 @@ bool CUIPartyBBS::Load(HANDLE hFile)
 
 	m_pText_Page = (CN3UIString*)(this->GetChildByID("string_page"));					__ASSERT(m_pText_Page, "NULL UI Component!!!");
 
-	char szBuf[64];
-	for(int i = 0 ; i < PARTY_BBS_MAXSTRING ; i++)
+	std::string szID;
+	for (int i = 0; i < PARTY_BBS_MAXSTRING; i++)
 	{
-		sprintf(szBuf,"text_%.2d",i);
-		m_pText[i] = (CN3UIString*)(this->GetChildByID(szBuf));
+		szID = fmt::format("text_{:02}", i);
+		m_pText[i] = (CN3UIString*) GetChildByID(szID);
 	}
 
 	m_iCurPage = 0; // 현재 페이지..
@@ -345,18 +345,14 @@ void CUIPartyBBS::ResetContent()
 
 void CUIPartyBBS::SetContentString(int iIndex, std::string szID, int iLevel, std::string szClass)
 {
-	if(m_pText[iIndex])
+	if (m_pText[iIndex] != nullptr)
 		m_pText[iIndex]->SetString(szID);
 
-	if(m_pText[iIndex + PARTY_BBS_MAXLINE])
-	{
-		char szBuf[20];
-		sprintf(szBuf,"%d",iLevel);
-		m_pText[iIndex + PARTY_BBS_MAXLINE]->SetString(szBuf);
-	}
+	if (m_pText[iIndex + PARTY_BBS_MAXLINE] != nullptr)
+		m_pText[iIndex + PARTY_BBS_MAXLINE]->SetStringAsInt(iLevel);
 
-	if(m_pText[iIndex + PARTY_BBS_MAXLINE*2])
-		m_pText[iIndex + PARTY_BBS_MAXLINE*2]->SetString(szClass);
+	if (m_pText[iIndex + PARTY_BBS_MAXLINE * 2] != nullptr)
+		m_pText[iIndex + PARTY_BBS_MAXLINE * 2]->SetString(szClass);
 }
 
 void CUIPartyBBS::Render()

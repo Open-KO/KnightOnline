@@ -1261,7 +1261,7 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 		// 몬스터 총 수와 초기화한 몬스터의 수가 같다면
 		if (m_pMain->m_TotalNPC == m_pMain->m_CurrentNPC)
 		{
-			std::string logstr = std::format("All NPCs initialized [count={}]",
+			std::string logstr = fmt::format("All NPCs initialized [count={}]",
 				m_pMain->m_CurrentNPC);
 			m_pMain->AddOutputMessage(logstr);
 			spdlog::info("Npc::SetLive: {}", logstr);

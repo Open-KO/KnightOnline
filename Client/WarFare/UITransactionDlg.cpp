@@ -331,13 +331,10 @@ void CUITransactionDlg::EnterTransactionState()
 
 	InitIconUpdate();
 	m_iCurPage = 0;
-	CN3UIString* pStr = (CN3UIString* )GetChildByID("string_page");
-	if (pStr)
-	{
-		char pszID[32];
-		sprintf(pszID, "%d",m_iCurPage+1);
-		pStr->SetString(pszID);
-	}
+
+	CN3UIString* pStr = (CN3UIString*) GetChildByID("string_page");
+	if (pStr != nullptr)
+		pStr->SetStringAsInt(m_iCurPage + 1);
 
 	for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
 	{
@@ -1396,13 +1393,10 @@ bool CUITransactionDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if(m_iCurPage<0)
 				m_iCurPage = 0;
 
-			pStr = (CN3UIString* )GetChildByID("string_page");
-			if (pStr)
-			{
-				char pszID[32];
-				sprintf(pszID, "%d",m_iCurPage+1);
-				pStr->SetString(pszID);
-			}
+			pStr = (CN3UIString*) GetChildByID("string_page");
+			if (pStr != nullptr)
+				pStr->SetStringAsInt(m_iCurPage + 1);
+
 
 			for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
 			{
@@ -1431,13 +1425,9 @@ bool CUITransactionDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if (m_iCurPage >= MAX_ITEM_TRADE_PAGE)
 				m_iCurPage = MAX_ITEM_TRADE_PAGE-1;
 
-			pStr = (CN3UIString* )GetChildByID("string_page");
-			if (pStr)
-			{
-				char pszID[32];
-				sprintf(pszID, "%d",m_iCurPage+1);
-				pStr->SetString(pszID);
-			}
+			pStr = (CN3UIString*) GetChildByID("string_page");
+			if (pStr != nullptr)
+				pStr->SetStringAsInt(m_iCurPage + 1);
 
 			for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
 			{

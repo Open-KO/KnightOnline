@@ -7,6 +7,7 @@
 #include "LocalInput.h"
 #include "GameCursor.h"
 #include "UIManager.h"
+#include "ClientResourceFormatter.h"
 
 #include <N3Base/N3UIImage.h>
 
@@ -39,18 +40,19 @@ CGameCursor::~CGameCursor()
 
 bool CGameCursor::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
 	m_hCursor = ::GetCursor();
-	::SetCursor(NULL);
+	::SetCursor(nullptr);
 
-	char szBuf[128];
-	for(int i = 0 ; i < CURSOR_COUNT; i++)
+	std::string szID;
+	for (int i = 0; i < CURSOR_COUNT; i++)
 	{
-		sprintf(szBuf,"Image_Cursor%.2d",i);
-
-		m_pImageCursor[i] = (CN3UIImage*)(this->GetChildByID(szBuf));	__ASSERT(m_pImageCursor[i], "NULL UI Component!!!");
+		szID = fmt::format("Image_Cursor{:02}", i);
+		N3_VERIFY_UI_COMPONENT(m_pImageCursor[i], (CN3UIImage*) GetChildByID(szID));
 	}
+
 	return true;
 }
 

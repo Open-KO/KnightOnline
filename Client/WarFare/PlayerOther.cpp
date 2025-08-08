@@ -133,24 +133,29 @@ bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs
 void CPlayerOther::InitFace()
 {
 	__TABLE_PLAYER_LOOKS* pItem = s_pTbl_UPC_Looks.Find(m_InfoBase.eRace);
-	if(pItem && !pItem->szPartFNs[PART_POS_FACE].empty()) // 아이템이 있고 얼굴 이름이 있으면..
+
+	// 아이템이 있고 얼굴 이름이 있으면..
+	if (pItem != nullptr
+		&& !pItem->szPartFNs[PART_POS_FACE].empty())
 	{
-		char szBuff[256] = "", szDir[128] = "", szFName[128] = "", szExt[16] = "";
-		::_splitpath(pItem->szPartFNs[PART_POS_FACE].c_str(), NULL, szDir, szFName, szExt);
-		sprintf(szBuff, "%s%s%.2d%s", szDir, szFName, m_InfoExt.iFace, szExt);
-		this->PartSet(PART_POS_FACE, szBuff, NULL, NULL);
+		char szDir[_MAX_DIR] = {}, szFName[_MAX_FNAME] = {}, szExt[_MAX_EXT] = {};
+		_splitpath(pItem->szPartFNs[PART_POS_FACE].c_str(), nullptr, szDir, szFName, szExt);
+
+		std::string szFN = fmt::format("{}{}{:02}{}", szDir, szFName, m_InfoExt.iFace, szExt);
+		PartSet(PART_POS_FACE, szFN, nullptr, nullptr);
 	}
 }
 
 void CPlayerOther::InitHair()
 {
 	__TABLE_PLAYER_LOOKS* pItem = s_pTbl_UPC_Looks.Find(m_InfoBase.eRace);
-	if(pItem && !pItem->szPartFNs[PART_POS_HAIR_HELMET].empty()) // 아이템이 있고 얼굴 이름이 있으면..
+	if (pItem && !pItem->szPartFNs[PART_POS_HAIR_HELMET].empty()) // 아이템이 있고 얼굴 이름이 있으면..
 	{
-		char szBuff[256] = "", szDir[128] = "", szFName[128] = "", szExt[16] = "";
-		::_splitpath(pItem->szPartFNs[PART_POS_HAIR_HELMET].c_str(), NULL, szDir, szFName, szExt);
-		sprintf(szBuff, "%s%s%.2d%s", szDir, szFName, m_InfoExt.iHair, szExt);
-		this->PartSet(PART_POS_HAIR_HELMET, szBuff, NULL, NULL);
+		char szDir[_MAX_DIR] = {}, szFName[_MAX_FNAME] = {}, szExt[_MAX_EXT] = {};
+		_splitpath(pItem->szPartFNs[PART_POS_HAIR_HELMET].c_str(), nullptr, szDir, szFName, szExt);
+
+		std::string szFN = fmt::format("{}{}{:02}{}", szDir, szFName, m_InfoExt.iHair, szExt);
+		PartSet(PART_POS_HAIR_HELMET, szFN, nullptr, nullptr);
 	}
 	else
 	{

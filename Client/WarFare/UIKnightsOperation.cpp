@@ -190,15 +190,11 @@ void CUIKnightsOperation::KnightsListUpdate()
 
 	m_pList_Knights->ResetContent();
 
-	char szBuff[80];
-	it_KIE it = m_KnightsListExt.begin(), itEnd = m_KnightsListExt.end();
-	for(; it != itEnd; it++)
+	std::string szBuff;
+	for (const __KnightsInfoExt& KIE : m_KnightsListExt)
 	{
-		__KnightsInfoExt* pKIE = (__KnightsInfoExt*)(&(*it));
-		std::string szName = pKIE->szName;
-		std::string szChiefName = pKIE->szChiefName;
-
-		sprintf(szBuff, "%16s %12s %4d %8d", pKIE->szName.c_str(), pKIE->szChiefName.c_str(), pKIE->iMemberCount, pKIE->iPoint);
+		szBuff = fmt::format("{:16} {:12} {:4} {:8}",
+			KIE.szName, KIE.szChiefName, KIE.iMemberCount, KIE.iPoint);
 		m_pList_Knights->AddString(szBuff);
 	}
 }

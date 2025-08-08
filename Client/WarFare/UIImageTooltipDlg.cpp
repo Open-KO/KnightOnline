@@ -45,17 +45,15 @@ void CUIImageTooltipDlg::Release()
 
 void CUIImageTooltipDlg::InitPos()
 {
-	std::string str; 
-	char	cstr[4];
+	std::string str;
 
 	for (int i = 0; i < MAX_TOOLTIP_COUNT; i++)
 	{
-		str = "string_";
-		sprintf(cstr, "%d", i);	str += cstr;
-		m_pStr[i] = (CN3UIString* )GetChildByID(str);	 __ASSERT(m_pStr[i], "NULL UI Component!!");
+		str = "string_" + std::to_string(i);
+		m_pStr[i] = (CN3UIString*) GetChildByID(str);	 __ASSERT(m_pStr[i], "NULL UI Component!!");
 	}
 
-	m_pImg = (CN3UIImage* )GetChildByID("mins");	 __ASSERT(m_pImg, "NULL UI Component!!");
+	m_pImg = (CN3UIImage*) GetChildByID("mins");	 __ASSERT(m_pImg, "NULL UI Component!!");
 }
 
 void CUIImageTooltipDlg::DisplayTooltipsDisable()
@@ -239,11 +237,7 @@ int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bo
 				{
 					std::string strtemp;
 					if (spItem->pItemExt->dwID % 10 != 0)
-					{
-						char szExtID[20] = {};
-						sprintf(szExtID, "(+%d)", spItem->pItemExt->dwID % 10);
-						strtemp = szExtID;
-					}
+						strtemp = fmt::format("(+{})", spItem->pItemExt->dwID % 10);
 
 					m_pstdstr[iIndex] = spItem->pItemBasic->szName + strtemp;
 				}

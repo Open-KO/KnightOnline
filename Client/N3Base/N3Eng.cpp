@@ -34,12 +34,13 @@ CN3Eng::CN3Eng()
 	// 프로그램이 실행된 경로..
 	if (s_szPath.empty())
 	{
-		char szPath[256];
-		char szDrive[_MAX_DRIVE], szDir[_MAX_DIR];
-		::GetModuleFileName(NULL, szPath, 256);
-		_splitpath(szPath, szDrive, szDir, NULL, NULL);
-		sprintf(szPath, "%s%s", szDrive, szDir);
-		this->PathSet(szPath); // 경로 설정..	
+		char szPath[_MAX_PATH] = {};
+		char szDrive[_MAX_DRIVE] = {}, szDir[_MAX_DIR] = {};
+		::GetModuleFileName(nullptr, szPath, _MAX_PATH);
+		_splitpath(szPath, szDrive, szDir, nullptr, nullptr);
+		strcat(szPath, szDrive);
+		strcat(szPath, szDir);
+		PathSet(szPath); // 경로 설정..	
 	}
 }
 

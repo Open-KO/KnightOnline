@@ -1478,13 +1478,10 @@ stop:
 	spSkill->pSkill = pUSkill;
 
 	// 아이콘 이름 만들기.. ^^
-	std::vector<char> buffer(256, NULL);
-	if(bHasLevelToUse)
-		sprintf(&buffer[0], "UI\\skillicon_%.2d_%d.dxt", pUSkill->dwID % 100, pUSkill->dwID / 100);
+	if (bHasLevelToUse)
+		spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt", pUSkill->dwID % 100, pUSkill->dwID / 100);
 	else
-		sprintf(&buffer[0], "UI\\skillicon_enigma.dxt");
-
-	spSkill->szIconFN = &buffer[0];
+		spSkill->szIconFN = "UI\\skillicon_enigma.dxt";
 	
 	// 아이콘 로드하기.. ^^
 	spSkill->pUIIcon = new CN3UIIcon;
@@ -1661,23 +1658,20 @@ void CUISkillTreeDlg::SetPageInIconRegion(int iKindOf, int iPageNum)		// 아이�
 
 	// 아이콘 설명 문자열 업데이트.. 현재 스킬 종류와 현재 스킬 페이지중 아이콘이 보이면 String보이게.. 아니면 안보이게..
 	CN3UIString* pStrName;
-	std::string str; 
-	char	cstr[4];
+	std::string str;
 
 	for( k = 0; k < MAX_SKILL_IN_PAGE; k++ )
 	{
 		if ( m_pMySkillTree[m_iCurKindOf][m_iCurSkillPage][k] != NULL )
 		{
-			str = "string_list_";
-			sprintf(cstr, "%d", k);	str += cstr;
+			str = "string_list_" + std::to_string(k);
 			pStrName = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStrName, "NULL UI Component!!");
 			pStrName->SetString(m_pMySkillTree[m_iCurKindOf][m_iCurSkillPage][k]->pSkill->szName);
 			pStrName->SetVisible(true);
 		}
 		else
 		{
-			str = "string_list_";
-			sprintf(cstr, "%d", k);	str += cstr;
+			str = "string_list_" + std::to_string(k);
 			pStrName = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStrName, "NULL UI Component!!");
 			pStrName->SetVisible(false);
 		}
@@ -1685,9 +1679,9 @@ void CUISkillTreeDlg::SetPageInIconRegion(int iKindOf, int iPageNum)		// 아이�
 
 	ButtonVisibleStateSet();
 
-	CN3UIString* pStr = (CN3UIString*)GetChildByID("string_page");	__ASSERT(pStr, "NULL UI Component!!");
-	sprintf(cstr, "%d", iPageNum+1);
-	if(pStr) pStr->SetString(cstr);
+	CN3UIString* pStr = (CN3UIString*) GetChildByID("string_page");	__ASSERT(pStr, "NULL UI Component!!");
+	if (pStr != nullptr)
+		pStr->SetStringAsInt(iPageNum + 1);
 }
 
 void CUISkillTreeDlg::AllClearImageByName(std::string_view svHeaderID, bool bVisible, std::string_view svCategoryID)

@@ -84,10 +84,10 @@ void CN3TerrainManager::InitWorld(int iZoneID, const __Vector3& vPosPlayer)
 
 	char szFName[_MAX_PATH];
 	_splitpath(pZone->szTerrainFN.c_str(), NULL, NULL, szFName, NULL);
-	char szFName2[_MAX_PATH];
+	std::string szFName2 = fmt::format("{}_Bird",szFName);
+
 	char szFullPathName[_MAX_PATH];
-	sprintf(szFName2,"%s_Bird",szFName);
-	_makepath(szFullPathName, NULL, "misc\\bird", szFName2, "lst");
+	_makepath(szFullPathName, nullptr, "misc\\bird", szFName2.c_str(), "lst");
 	m_pBirdMng->LoadFromFile(szFullPathName);
 
 //	m_pGrasses->Init(vPosPlayer);

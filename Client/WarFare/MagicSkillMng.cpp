@@ -1595,6 +1595,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 void CMagicSkillMng::Tick()
 {
 #ifdef _DEBUG
+	std::string debugMessage;
 	m_fMsgUpdateTimer += CN3Base::s_fSecPerFrm;
 #endif
 
@@ -1603,9 +1604,8 @@ void CMagicSkillMng::Tick()
 #ifdef _DEBUG
 		if (m_fMsgUpdateTimer >= 0.2f)
 		{
-			char szMsg[100];
-			std::snprintf(szMsg, sizeof(szMsg), "SkillID: %u - %.2f seconds", it->first, it->second);
-			m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+			debugMessage = fmt::format("SkillID: {} - {:.2f} seconds", it->first, it->second);
+			m_pGameProcMain->MsgOutput(debugMessage, 0xffffff00);
 			m_fMsgUpdateTimer = 0.0f;
 		}
 #endif
@@ -1622,9 +1622,8 @@ void CMagicSkillMng::Tick()
 #ifdef _DEBUG
 		if (m_fMsgUpdateTimer >= 0.2f)
 		{
-			char szMsg[100];
-			std::snprintf(szMsg, sizeof(szMsg), "SkillID: %u - skill %.2f seconds", it->first, it->second);
-			m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+			debugMessage = fmt::format("SkillID: {} - skill {:.2f} seconds", it->first, it->second);
+			m_pGameProcMain->MsgOutput(debugMessage, 0xffffff00);
 			m_fMsgUpdateTimer = 0.0f;
 		}
 #endif

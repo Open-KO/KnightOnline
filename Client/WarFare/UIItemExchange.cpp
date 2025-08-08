@@ -279,25 +279,18 @@ bool CUIItemExchange::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 void CUIItemExchange::UpdateGoldValue()
 {
-	char szGold[32];
-	CN3UIString* pStrGold = (CN3UIString* )GetChildByID("string_gold"); 
+	CN3UIString* pStrGold = (CN3UIString*) GetChildByID("string_gold");
 	__ASSERT(pStrGold, "NULL UI Component!!");
-	
-	if ( pStrGold )
-	{
-		// 돈 업데이트..	
-		sprintf(szGold, "%d", m_pTotalPrice);
-		pStrGold->SetString(szGold);
-	}		
+
+	// 돈 업데이트..	
+	if (pStrGold != nullptr)
+		pStrGold->SetStringAsInt(m_pTotalPrice);
 }
 
 void CUIItemExchange::UpdateUserTotalGold(int iGold)
 {
-	char szGold[32];
-
 	// 돈 업데이트..
 	CGameBase::s_pPlayer->m_InfoExt.iGold = iGold;
-	sprintf(szGold, "%d", iGold);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 }
 

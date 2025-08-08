@@ -1256,7 +1256,7 @@ BOOL CEbenezerDlg::MapFileLoad()
 
 void CEbenezerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("EbenezerDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("EbenezerDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());

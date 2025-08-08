@@ -225,14 +225,14 @@ int	CCountableItemEditDlg::GetQuantity() // "edit_trade" Edit Control 에서 정
 
 void CCountableItemEditDlg::SetQuantity(int iQuantity) // "edit_trade" Edit Control 에서 정수값을 문자열로 세팅한다..
 {
-	CN3UIEdit* pEdit = (CN3UIEdit*)this->GetChildByID("edit_trade");
+	CN3UIEdit* pEdit = (CN3UIEdit*) GetChildByID("edit_trade");
 	__ASSERT(pEdit, "NULL UI Component!!");
 
-	char szBuff[64] = "";
+	std::string buff;
 	if (iQuantity != -1)
-		sprintf(szBuff, "%d", iQuantity);
+		buff = std::to_string(iQuantity);
 
-	pEdit->SetString(szBuff);
+	pEdit->SetString(buff);
 }
 
 //this_ui_add_start

@@ -50,7 +50,8 @@ void CGameBase::StaticMemberInit()
 {
 	std::string szLangTail = "_us.tbl";
 	int iLangID = ::GetUserDefaultLangID();
-	if(0x0404 == iLangID) szLangTail = "_TW.tbl"; // Taiwan Language
+	if (0x0404 == iLangID)
+		szLangTail = "_TW.tbl"; // Taiwan Language
 
 	std::string szFN;
 	szFN = "Data\\Texts" + szLangTail;		s_pTbl_Texts.LoadFromFile(szFN);
@@ -64,10 +65,10 @@ void CGameBase::StaticMemberInit()
 	szFN = "Data\\Quest_Content" + szLangTail;	s_pTbl_QuestContent.LoadFromFile(szFN);
 	szFN = "Data\\Help" + szLangTail;		s_pTbl_Help.LoadFromFile(szFN);
 
-	for(int i = 0; i < MAX_ITEM_EXTENSION; i++)
+	std::string szFNTmp;
+	for (int i = 0; i < MAX_ITEM_EXTENSION; i++)
 	{
-		char szFNTmp[256] = "";
-		sprintf(szFNTmp, "Data\\Item_Ext_%d", i);
+		szFNTmp = fmt::format("Data\\Item_Ext_{}", i);
 		szFN = szFNTmp + szLangTail;
 		s_pTbl_Items_Exts[i].LoadFromFile(szFN);
 	}
@@ -517,29 +518,29 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 		__ASSERT(0, "Invalid Item Position");
 	}
 
-	char buffer[256] = {};
-	if(pszResrcFN)
+	if (pszResrcFN)
 	{
-		if(pItem->dwIDResrc) 
+		if (pItem->dwIDResrc)
 		{
-			if(eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES) {
-				// NOTE: no idea but perhaps this will work for now
-				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
+			// NOTE: no idea but perhaps this will work for now
+			if (eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES)
+			{
+				*pszResrcFN = fmt::format("Item\\{:01}_{:04}_{:02}_{:01}{}",
 					(pItem->dwIDResrc / 10000000),
 					((pItem->dwIDResrc / 1000) % 10000) + eRace,
 					(pItem->dwIDResrc / 10) % 100,
 					pItem->dwIDResrc % 10,
-					szExt.c_str());
-			} else {
-				sprintf(buffer, "Item\\%.1d_%.4d_%.2d_%.1d%s",
+					szExt);
+			}
+			else
+			{
+				*pszResrcFN = fmt::format("Item\\{:01}_{:04}_{:02}_{:01}{}",
 					(pItem->dwIDResrc / 10000000),
 					(pItem->dwIDResrc / 1000) % 10000,
 					(pItem->dwIDResrc / 10) % 100,
 					pItem->dwIDResrc % 10,
-					szExt.c_str());
+					szExt);
 			}
-
-			*pszResrcFN = buffer;
 		}
 		// Some items don't have models -- only icons.
 		else
@@ -547,19 +548,18 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 			pszResrcFN->clear();
 		}
 	}
-	if(pszIconFN)
+
+	if (pszIconFN)
 	{
-		sprintf(buffer,	"UI\\ItemIcon_%.1d_%.4d_%.2d_%.1d.dxt",
+		*pszIconFN = fmt::format("UI\\ItemIcon_{:01}_{:04}_{:02}_{:01}.dxt",
 			(pItem->dwIDIcon / 10000000), 
 			(pItem->dwIDIcon / 1000) % 10000, 
 			(pItem->dwIDIcon / 10) % 100, 
 			pItem->dwIDIcon % 10);
-		*pszIconFN = &buffer[0];
 	}
 	
 	return eType;
 }
-
 
 bool CGameBase::IsValidCharacter(CPlayerBase* pCharacter)
 {

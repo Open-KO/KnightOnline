@@ -385,10 +385,10 @@ void CGameProcedure::Tick()
 	{
 		SYSTEMTIME st;
 		::GetLocalTime(&st);
-		char szFN[128] = "";
-//		sprintf(szFN, "%d_%d_%d_%d.%d.%d.jpg", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-		sprintf(szFN, "%d_%d_%d_%d.%d.%d.ksc", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-		this->CaptureScreenAndSaveToFile(szFN);
+
+		std::string szFN = fmt::format("{}_{}_{}_{}.{}.{}.ksc",
+			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+		CaptureScreenAndSaveToFile(szFN);
 	}
 
 	//////////////////////////////////
@@ -759,9 +759,8 @@ void CGameProcedure::RestoreGameCursor()
 
 std::string CGameProcedure::GetStrRegKeySetting()
 {
-	char szBuff[256];
-	sprintf(szBuff, "Software\\KnightOnline\\%s_%s_%d", s_szAccount.c_str(), s_szServer.c_str(), s_iChrSelectIndex);
-	return szBuff;
+	return fmt::format("Software\\KnightOnline\\{}_{}_{}",
+		s_szAccount, s_szServer, s_iChrSelectIndex);
 }
 
 bool CGameProcedure::ProcessPacket(Packet& pkt)

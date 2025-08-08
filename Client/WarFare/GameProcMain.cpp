@@ -1103,9 +1103,8 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 			uint8_t state = pkt.read<uint8_t>();
 			if (state == 1)
 			{				
-				char buff[100];
-				sprintf(buff, "You have started quest:%d", questId);
-				this->MsgOutput(buff, D3DCOLOR_ARGB(255, 255, 255, 255));
+				std::string buff = fmt::format("You have started quest: {}", questId);
+				MsgOutput(buff, D3DCOLOR_ARGB(255, 255, 255, 255));
 				return true;
 			}
 		} break;
@@ -1118,11 +1117,8 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 	if (!m_pUIChatDlg)
 		return false;
 
-	char szBuffer[128];
-	sprintf(szBuffer, "Unhandled packet. Opcode: 0x%02x", iCmd);
-
-	std::string szMessage = szBuffer;
-	m_pUIChatDlg->AddChatMsg(N3_CHAT_NORMAL, szMessage, 0xffff0000);
+	std::string szMsg = fmt::format("Unhandled packet. Opcode: 0x{:02x}", iCmd);
+	m_pUIChatDlg->AddChatMsg(N3_CHAT_NORMAL, szMsg, 0xffff0000);
 #endif
 	return false;
 }
@@ -2645,8 +2641,7 @@ bool CGameProcMain::MsgRecv_UserInAndRequest(Packet& pkt)
 	if(0 == iUPCCountReceived) return false;
 	if(iUPCCountReceived < 0 || iUPCCountReceived >= 1000)
 	{
-		char szErr[256];
-		sprintf(szErr, "영역 요청 오류 - 플레이어 갯수 %d", iUPCCountReceived);
+		std::string szErr = fmt::format("영역 요청 오류 - 플레이어 갯수 {}", iUPCCountReceived);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
 		__ASSERT(0, szErr);
 		return false;
@@ -2733,8 +2728,7 @@ bool CGameProcMain::MsgRecv_UserInRequested(Packet& pkt)
 	if(0 == iPlayerCount) return false;
 	if(iPlayerCount < 0 || iPlayerCount >= 1000)
 	{
-		char szErr[256];
-		sprintf(szErr, "영역정보 받기 오류 - 플레이어 갯수 %d", iPlayerCount);
+		std::string szErr = fmt::format("영역정보 받기 오류 - 플레이어 갯수 {}", iPlayerCount);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
 		__ASSERT(0, szErr);
 		return false;
@@ -3010,8 +3004,7 @@ bool CGameProcMain::MsgRecv_NPCInAndRequest(Packet& pkt)
 	if(0 == iNPCCountReceived) return false;
 	if(iNPCCountReceived < 0 || iNPCCountReceived >= 1000)
 	{
-		char szErr[256];
-		sprintf(szErr, "영역정보 요청 오류 - NPC 갯수 %d", iNPCCountReceived);
+		std::string szErr = fmt::format("영역정보 요청 오류 - NPC 갯수 {}", iNPCCountReceived);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
 		__ASSERT(0, szErr);
 		return false;
@@ -3096,8 +3089,7 @@ bool CGameProcMain::MsgRecv_NPCInRequested(Packet& pkt)
 	if(0 == iNPCCount) return false;
 	if(iNPCCount < 0 || iNPCCount >= 1000)
 	{
-		char szErr[256];
-		sprintf(szErr, "영역정보 받기오류 - NPC 갯수 %d", iNPCCount);
+		std::string szErr = fmt::format("영역정보 받기오류 - NPC 갯수 {}", iNPCCount);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
 		__ASSERT(0, szErr);
 		return false;
@@ -4428,10 +4420,11 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		//char szBuf[256];
 		char szFName[_MAX_PATH];
 		_splitpath(pZoneData->szTerrainFN.c_str(), NULL, NULL, szFName, NULL);
-		char szFName2[_MAX_PATH];
-		char szFullPathName[_MAX_PATH];
-		sprintf(szFName2,"%s_Bird",szFName);
-		_makepath(szFullPathName, NULL, "misc\\bird", szFName2, "lst");
+		std::string szFName2 = szFName;
+		szFName2 += "_Bird";
+
+		char szFullPathName[_MAX_PATH] = {};
+		_makepath(szFullPathName, NULL, "misc\\bird", szFName2.c_str(), "lst");
 
 		m_pLightMgr->LoadZoneLight(pZoneData->szLightObjFN.c_str());
 

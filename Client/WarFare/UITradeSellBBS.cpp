@@ -86,11 +86,11 @@ bool CUITradeSellBBS::Load(HANDLE hFile)
 
 	m_pString_Page			= (CN3UIString*)(this->GetChildByID("string_page"));	__ASSERT(m_pString_Page, "NULL UI Component!!!");
 
-	char szBuf[64];
-	for(int i = 0 ; i < TRADE_BBS_MAXSTRING ; i++)
+	std::string szID;
+	for(int i = 0; i < TRADE_BBS_MAXSTRING; i++)
 	{
-		sprintf(szBuf,"text_%.2d",i);
-		m_pText[i] = (CN3UIString*)(this->GetChildByID(szBuf));
+		szID = fmt::format("text_{:02}", i);
+		m_pText[i] = (CN3UIString*) GetChildByID(szID);
 	}
 
 	m_iCurPage = 0; // 현재 페이지..
@@ -781,10 +781,9 @@ void CUITradeSellBBS::SetContentString(int iIndex, std::string szID, int iPrice,
 	if(m_pText[iIndex + TRADE_BBS_MAX_LINE])
 		m_pText[iIndex + TRADE_BBS_MAX_LINE]->SetString(szTitle);
 
-	if(m_pText[iIndex + TRADE_BBS_MAX_LINE*2])
+	if (m_pText[iIndex + TRADE_BBS_MAX_LINE * 2] != nullptr)
 	{
-		char szBuf[64];
-		sprintf(szBuf,"%d %s",iPrice,szGold.c_str());
-		m_pText[iIndex + TRADE_BBS_MAX_LINE*2]->SetString(szBuf);
+		std::string buff = fmt::format("{} {}", iPrice, szGold);
+		m_pText[iIndex + TRADE_BBS_MAX_LINE * 2]->SetString(buff);
 	}
 }

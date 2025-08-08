@@ -257,26 +257,34 @@ bool CN3FXPartMesh::Load(HANDLE hFile)
 //
 bool CN3FXPartMesh::Save(HANDLE hFile)
 {
-	if(!CN3FXPartBase::Save(hFile)) return false;
+	if (!CN3FXPartBase::Save(hFile))
+		return false;
 
 	DWORD dwRWC = 0;
 
-	char szShapeFileName[_MAX_PATH];
-	sprintf(szShapeFileName, m_pShape->FileName().c_str());
+	char szShapeFileName[_MAX_PATH] = {};
+	strcpy(szShapeFileName, m_pShape->FileName().c_str());
 
-	WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, NULL);
+	WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, NULL);
-	WriteFile(hFile, &m_fu, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fv, sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fu, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fv, sizeof(float), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, NULL);
+	WriteFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, nullptr);
 
-	if(m_iVersion>=2) WriteFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, NULL);
-	if(m_iVersion>=3) WriteFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, NULL);
-	if(m_iVersion>=4) WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, NULL);
-	if(m_iVersion>=5) WriteFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, NULL);
-	
+	if (m_iVersion >= 2)
+		WriteFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, nullptr);
+
+	if (m_iVersion >= 3)
+		WriteFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, nullptr);
+
+	if (m_iVersion >= 4)
+		WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
+
+	if (m_iVersion >= 5)
+		WriteFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, nullptr);
+
 	return true;
 }
 

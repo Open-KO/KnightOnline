@@ -1228,7 +1228,7 @@ void CUser::LogOut()
 
 	if (count > 29)
 	{
-		std::string logstr = std::format("LogOut: send error: accountId={} charId={}",
+		std::string logstr = fmt::format("LogOut: send error: accountId={} charId={}",
 			m_pUserData->m_Accountid, m_pUserData->m_id);
 		m_pMain->AddOutputMessage(logstr);
 	}
