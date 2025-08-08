@@ -46,9 +46,8 @@ void CBirdMng::LoadFromFile(const std::string& szFN)
 	if(NULL == stream)
 	{
 #if _DEBUG
-		char szErr[512];
-		wsprintf(szErr, "failed to open file - %s", szFN.c_str());
-		__ASSERT(stream, szErr);
+		std::string szErr = fmt::format("failed to open file - {}", szFN);
+		__ASSERT(stream, szErr.c_str());
 #endif
 		return;
 	}

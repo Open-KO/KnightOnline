@@ -47,11 +47,8 @@ void CN3FXMgr::TriggerBundle(int SourceID, int SourceJoint, int FXID, int Target
 	__TABLE_FX* pFX = s_pTbl_FXSource.Find(FXID);
 	if(!pFX) return;
 
-	char buff[MAX_PATH];
-	sprintf(buff, pFX->szFN.c_str());
-	_strlwr(buff);
-	std::string strTmp = buff;
-
+	std::string strTmp = pFX->szFN;
+	_strlwr(&strTmp[0]);
 	
 	stlMAP_BUNDLEORIGIN_IT itOrigin = m_OriginBundle.find(strTmp);
 	
@@ -106,10 +103,8 @@ void CN3FXMgr::TriggerBundle(int SourceID, int SourceJoint, int FXID, __Vector3 
 	__TABLE_FX* pFX = s_pTbl_FXSource.Find(FXID);
 	if(!pFX) return; 
 
-	char buff[MAX_PATH];
-	sprintf(buff, pFX->szFN.c_str());
-	_strlwr(buff);
-	std::string strTmp = buff;
+	std::string strTmp = pFX->szFN;
+	_strlwr(&strTmp[0]);
 
 	stlMAP_BUNDLEORIGIN_IT itOrigin = m_OriginBundle.find(strTmp);
 

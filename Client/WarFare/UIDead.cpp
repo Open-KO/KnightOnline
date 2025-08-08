@@ -57,11 +57,10 @@ bool CUIDead::Load(HANDLE hFile)
 	m_pTextTown		= (CN3UIString*)(this->GetChildByID("Text_Town"));	__ASSERT(m_pTextTown, "NULL UI Component!!!");
 
 
-	std::string szMsg;
-	CGameBase::GetText(IDS_DEAD_REVIVAL, &szMsg);
+	std::string szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL);
 	if(m_pTextAlive) m_pTextAlive->SetString(szMsg);
 
-	CGameBase::GetText(IDS_DEAD_RETURN_TOWN, &szMsg);
+	szMsg = fmt::format_text_resource(IDS_DEAD_RETURN_TOWN);
 	if(m_pTextTown) m_pTextTown->SetString(szMsg);
 
 	__TABLE_UI_RESRC*	pTblUI	= NULL;
@@ -94,10 +93,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 
 			if (iLevel < 6)
 			{
-				CGameBase::GetTextF(
-					IDS_DEAD_LOW_LEVEL,
-					&szMsg,
-					iNeedItemCnt);
+				szMsg = fmt::format_text_resource(IDS_DEAD_LOW_LEVEL, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -107,10 +103,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 			else if (iItemCnt >= iNeedItemCnt)
 			{
-				CGameBase::GetTextF(
-					IDS_DEAD_REVIVAL_MESSAGE,
-					&szMsg,
-					iNeedItemCnt);
+				szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL_MESSAGE, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_YESNO);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -120,7 +113,7 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 			}
 			else
 			{
-				CGameBase::GetText(IDS_DEAD_LACK_LIFE_STONE, &szMsg);
+				szMsg = fmt::format_text_resource(IDS_DEAD_LACK_LIFE_STONE);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;

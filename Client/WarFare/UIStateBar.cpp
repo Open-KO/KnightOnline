@@ -121,13 +121,14 @@ void CUIStateBar::Release()
 
 bool CUIStateBar::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
-	CN3UIString* pText = (CN3UIString*)(this->GetChildByID("Text_Version")); __ASSERT(pText, "NULL UI Component!!");
-	if(pText) {
-		char szVersion[128];
-		sprintf(szVersion, "Ver. %.3f", CURRENT_VERSION / 1000.0f);
-		pText->SetString(szVersion);
+	CN3UIString* pText = (CN3UIString*) (this->GetChildByID("Text_Version")); __ASSERT(pText, "NULL UI Component!!");
+	if (pText != nullptr)
+	{
+		std::string version = fmt::format("Ver. {:.3f}", CURRENT_VERSION / 1000.0f);
+		pText->SetString(version);
 	}
 
 	m_pText_Position =	(CN3UIString*)(this->GetChildByID("Text_Position"));	__ASSERT(m_pText_Position, "NULL UI Component!!");
@@ -208,88 +209,104 @@ bool CUIStateBar::LoadMap(const std::string& szMiniMapFN, float fMapSizeX, float
 }
 
 
-void CUIStateBar::UpdateExp(uint64_t iExp, uint64_t iExpNext, bool bUpdateImmediately)
+void CUIStateBar::UpdateExp(int64_t iExp, int64_t iExpNext, bool bUpdateImmediately)
 {
 	__ASSERT(iExpNext, "Next Exp is 0");
-	if(iExpNext <= 0) return;
-	if(NULL == m_pProgress_ExpC || NULL == m_pProgress_ExpP) return;
+	if (iExpNext <= 0)
+		return;
 
-	int iPercentage = (int)(100.0 * ((double) iExp / (double) iExpNext));
+	if (m_pProgress_ExpC == nullptr
+		|| m_pProgress_ExpP == nullptr)
+		return;
 
-	if(iExpNext > 10)
+	int iPercentage = (int) (100.0 * ((double) iExp / (double) iExpNext));
+
+	if (iExpNext > 10)
 	{
-		uint64_t iExpNext2 = iExpNext/10;
-		uint64_t iExp2 = iExp%iExpNext2;
-		int iPercentage2 = (int)(100 * iExp2 / iExpNext2);
+		uint64_t iExpNext2 = iExpNext / 10;
+		uint64_t iExp2 = iExp % iExpNext2;
+		int iPercentage2 = (int) (100 * iExp2 / iExpNext2);
 
-		if(bUpdateImmediately) m_pProgress_ExpC->SetCurValue(iPercentage2);	 //SetCurValue --> set경우 
-		else m_pProgress_ExpC->SetCurValue(iPercentage2, 0.7f, 50.0f);
+		if (bUpdateImmediately)
+			m_pProgress_ExpC->SetCurValue(iPercentage2);	 //SetCurValue --> set경우 
+		else
+			m_pProgress_ExpC->SetCurValue(iPercentage2, 0.7f, 50.0f);
 	}
 	else
 	{
 		m_pProgress_ExpC->SetCurValue(0);	 //SetCurValue --> set경우 
 	}
 
-	if(bUpdateImmediately) m_pProgress_ExpP->SetCurValue(iPercentage);	 //SetCurValue --> set경우 
-	else m_pProgress_ExpP->SetCurValue(iPercentage, 0.3f, 100.0f);
+	if (bUpdateImmediately)
+		m_pProgress_ExpP->SetCurValue(iPercentage);	 //SetCurValue --> set경우 
+	else
+		m_pProgress_ExpP->SetCurValue(iPercentage, 0.3f, 100.0f);
 
 	// NOTE: adding the EXP text
 	__ASSERT(iExp >= 0 && iExpNext > 0, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	if (NULL == m_pText_Exp) return;
+	if (m_pText_Exp == nullptr)
+		return;
 
-	double iPercentage2 = 100.0 * ((double)iExp / (double)iExpNext);
+	double iPercentage2 = 100.0 * ((double) iExp / (double) iExpNext);
 
-	char szVal[64] = "0 %%";
-	sprintf(szVal, "%.2f %%", iPercentage2);
-	m_pText_Exp->SetString(szVal);
+	std::string buff = fmt::format("{:.2f} %", iPercentage2);
+	m_pText_Exp->SetString(buff);
 }
 
 void CUIStateBar::UpdateMSP(int iMSP, int iMSPMax, bool bUpdateImmediately)
 {
 	__ASSERT(iMSPMax, "Max MP is 0");
-	if(iMSPMax <= 0) return;
-	if(NULL == m_pProgress_MSP) return;
+	if (iMSPMax <= 0)
+		return;
+
+	if (m_pProgress_MSP == nullptr)
+		return;
 
 	int iPercentage = 100 * iMSP / iMSPMax;
 
-	if(bUpdateImmediately) m_pProgress_MSP->SetCurValue(iPercentage);	 //SetCurValue --> set경우 
-	else m_pProgress_MSP->SetCurValue(iPercentage, 0.3f, 100.0f);
+	if (bUpdateImmediately)
+		m_pProgress_MSP->SetCurValue(iPercentage);	 //SetCurValue --> set경우 
+	else
+		m_pProgress_MSP->SetCurValue(iPercentage, 0.3f, 100.0f);
 
 	// NOTE: adding the MP text
 	__ASSERT(iMSP >= 0 && iMSPMax > 0, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	if (NULL == m_pText_MP) return;
+	if (m_pText_MP == nullptr)
+		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%d / %d", iMSP, iMSPMax);
-	m_pText_MP->SetString(szVal);
+	std::string buff = fmt::format("{} / {}", iMSP, iMSPMax);
+	m_pText_MP->SetString(buff);
 }
 
 void CUIStateBar::UpdateHP(int iHP, int iHPMax, bool bUpdateImmediately)
 {
 	__ASSERT(iHPMax, "Max HP is 0");
-	if(iHPMax <= 0) return;
+	if (iHPMax <= 0)
+		return;
 
 	int iPercentage = 100 * iHP / iHPMax;
 
-	if(bUpdateImmediately) m_pProgress_HP->SetCurValue(iPercentage);	 //SetCurValue --> set경우 
-	else m_pProgress_HP->SetCurValue(iPercentage, 0.3f, 100.0f);
+	if (bUpdateImmediately)
+		m_pProgress_HP->SetCurValue(iPercentage);	 //SetCurValue --> set경우 
+	else
+		m_pProgress_HP->SetCurValue(iPercentage, 0.3f, 100.0f);
 
 	// NOTE: adding the HP text
 	__ASSERT(iHP >= 0 && iHP < 10000 && iHPMax >= 0 && iHPMax < 10000, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	if (NULL == m_pText_HP) return;
+	if (m_pText_HP == nullptr)
+		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%d / %d", iHP, iHPMax);
-	m_pText_HP->SetString(szVal);
+	std::string buff = fmt::format("{} / {}", iHP, iHPMax);
+	m_pText_HP->SetString(buff);
 }
 
-void CUIStateBar::UpdatePosition(const __Vector3 &vPos, float fYaw)
+void CUIStateBar::UpdatePosition(const __Vector3& vPos, float fYaw)
 {
-	if(NULL == m_pText_Position) return;
+	if (m_pText_Position == nullptr)
+		return;
 
-	char szPos[64];
-	sprintf(szPos, "%.1f, %.1f", vPos.x, vPos.z);
-	m_pText_Position->SetString(szPos);
+	std::string pos = fmt::format("{:.1f}, {:.1f}", vPos.x, vPos.z);
+	m_pText_Position->SetString(pos);
 
 	// 미니맵.
 	m_vPosPlayer = vPos;
@@ -464,14 +481,15 @@ void CUIStateBar::Tick()
 
 	// NOTE(srmeier): set the FPS string to be displayed
 	static int iCount = 0;
-	static char strFPS[0x10] = "";
+	static std::string strFPS;
 
-	if (iCount++ == 60) {
+	if (iCount++ == 60)
+	{
 		iCount = 0;
-		sprintf(strFPS, "%.1f", CN3Base::s_fFrmPerSec);
-		if(m_pText_FPS) m_pText_FPS->SetString(strFPS);
+		strFPS = fmt::format("{:.1f}", CN3Base::s_fFrmPerSec);
+		if (m_pText_FPS != nullptr)
+			m_pText_FPS->SetString(strFPS);
 	}
-
 
 	TickMiniMap(); // 맵 이미지...
 	TickMagicIcon(); // 아이콘 처리..
@@ -689,8 +707,8 @@ bool CUIStateBar::ToggleMiniMap()
 
 void CUIStateBar::AddMagic(__TABLE_UPC_SKILL* pSkill, float fDuration)
 {
-	std::vector<char> buffer(256, NULL);
-	sprintf(&buffer[0],	"UI\\skillicon_%.2d_%d.dxt", pSkill->dwID%100, pSkill->dwID/100);
+	std::string buffer = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+		pSkill->dwID % 100, pSkill->dwID / 100);
 
 	__DurationMagicImg* pMagicImg = new __DurationMagicImg;
 	pMagicImg->fDuration = fDuration;
@@ -699,8 +717,8 @@ void CUIStateBar::AddMagic(__TABLE_UPC_SKILL* pSkill, float fDuration)
 
 	CN3UIDBCLButton* pIcon = pMagicImg->pIcon;
 	pIcon->Init(this);
-	pIcon->SetTex(&buffer[0]);
-	pIcon->SetTooltipText(pSkill->szName.c_str());
+	pIcon->SetTex(buffer);
+	pIcon->SetTooltipText(pSkill->szName);
 	pIcon->SetUVRect(0,0,1,1);
 
 	CN3Texture* pTex = pIcon->GetTex();
@@ -724,8 +742,8 @@ void CUIStateBar::AddMagic(__TABLE_UPC_SKILL* pSkill, float fDuration)
 
 void CUIStateBar::DelMagic(__TABLE_UPC_SKILL* pSkill)
 {
-	std::vector<char> buffer(256, NULL);
-	sprintf(&buffer[0],	"UI\\skillicon_%.2d_%d.dxt", pSkill->dwID%100, pSkill->dwID/100);
+	std::string buffer = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+		pSkill->dwID % 100, pSkill->dwID / 100);
 
 	it_MagicImg it, ite, itRemove;
 	itRemove = ite = m_pMagic.end();	
@@ -734,7 +752,7 @@ void CUIStateBar::DelMagic(__TABLE_UPC_SKILL* pSkill)
 		__DurationMagicImg* pMagicImg = (*it);
 		CN3UIDBCLButton* pIcon = pMagicImg->pIcon;
 		CN3Texture* pTex = pIcon->GetTex();
-		if(pTex && lstrcmpi(pTex->FileName().c_str(), &buffer[0])==0)
+		if(pTex && lstrcmpi(pTex->FileName().c_str(), buffer.c_str())==0)
 		{
 			itRemove = it;
 		}

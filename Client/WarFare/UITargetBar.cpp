@@ -58,8 +58,7 @@ bool CUITargetBar::Load(HANDLE hFile)
 	if(m_pProgressHP) m_pProgressHP->SetRange(0, 100);
 	if(m_pStringID) // 폰트를 바꾼다.
 	{
-		std::string szFontID;
-		CGameBase::GetText(IDS_FONT_ID, &szFontID);
+		std::string szFontID = fmt::format_text_resource(IDS_FONT_ID);
 		
 		uint32_t dwH = m_pStringID->GetFontHeight();
 		m_pStringID->SetFont(szFontID, dwH, FALSE, FALSE);

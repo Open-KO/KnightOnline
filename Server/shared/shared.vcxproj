@@ -159,6 +159,7 @@
     <ClInclude Include="lzf.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="packets.h" />
+    <ClInclude Include="ServerResourceFormatter.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="StringConversion.h" />

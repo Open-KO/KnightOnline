@@ -64,7 +64,11 @@ CN3TerrainManager::~CN3TerrainManager()
 void CN3TerrainManager::InitWorld(int iZoneID, const __Vector3& vPosPlayer)
 {
 	__TABLE_ZONE* pZone = s_pTbl_Zones.Find(s_pPlayer->m_InfoExt.iZoneCur);
-	if(NULL == pZone) { CLogWriter::Write("Null Zone Data : %d", iZoneID); return; }
+	if (pZone == nullptr)
+	{
+		CLogWriter::Write("Null Zone Data : {}", iZoneID);
+		return;
+	}
 
 	/*if(iZoneID == 1) m_pTerrain->LoadFromFile(pZone->szTerrainFN, N3FORMAT_VER_1068);//N3FORMAT_VER_1298);//pZone->dwVersion);
 	else*/ m_pTerrain->LoadFromFile(pZone->szTerrainFN);//, N3FORMAT_VER_1298);
@@ -80,10 +84,10 @@ void CN3TerrainManager::InitWorld(int iZoneID, const __Vector3& vPosPlayer)
 
 	char szFName[_MAX_PATH];
 	_splitpath(pZone->szTerrainFN.c_str(), NULL, NULL, szFName, NULL);
-	char szFName2[_MAX_PATH];
+	std::string szFName2 = fmt::format("{}_Bird",szFName);
+
 	char szFullPathName[_MAX_PATH];
-	sprintf(szFName2,"%s_Bird",szFName);
-	_makepath(szFullPathName, NULL, "misc\\bird", szFName2, "lst");
+	_makepath(szFullPathName, nullptr, "misc\\bird", szFName2.c_str(), "lst");
 	m_pBirdMng->LoadFromFile(szFullPathName);
 
 //	m_pGrasses->Init(vPosPlayer);

@@ -11,14 +11,12 @@
 #include "APISocket.h"
 #include "N3FXMgr.h"
 #include "PlayerMyself.h"
-
 #include "GameProcLogIn.h"
 #include "GameProcNationSelect.h"
 #include "GameProcCharacterCreate.h"
 #include "GameProcCharacterSelect.h"
 #include "GameProcMain.h"
 #include "GameProcOption.h"
-
 #include "UILoading.h"
 #include "UIMessageBox.h"
 #include "UIMessageBoxManager.h"
@@ -387,10 +385,10 @@ void CGameProcedure::Tick()
 	{
 		SYSTEMTIME st;
 		::GetLocalTime(&st);
-		char szFN[128] = "";
-//		sprintf(szFN, "%d_%d_%d_%d.%d.%d.jpg", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-		sprintf(szFN, "%d_%d_%d_%d.%d.%d.ksc", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-		this->CaptureScreenAndSaveToFile(szFN);
+
+		std::string szFN = fmt::format("{}_{}_{}_{}.{}.{}.ksc",
+			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+		CaptureScreenAndSaveToFile(szFN);
 	}
 
 	//////////////////////////////////
@@ -399,7 +397,7 @@ void CGameProcedure::Tick()
 	{
 		auto pkt = s_pSocket->m_qRecvPkt.front();
 		if (!ProcessPacket(*pkt))
-			CLogWriter::Write("Invalid Packet... (%d)", pkt->GetOpcode());
+			CLogWriter::Write("Invalid Packet... ({})", pkt->GetOpcode());
 
 		delete pkt;
 		s_pSocket->m_qRecvPkt.pop();
@@ -761,9 +759,8 @@ void CGameProcedure::RestoreGameCursor()
 
 std::string CGameProcedure::GetStrRegKeySetting()
 {
-	char szBuff[256];
-	sprintf(szBuff, "Software\\KnightOnline\\%s_%s_%d", s_szAccount.c_str(), s_szServer.c_str(), s_iChrSelectIndex);
-	return szBuff;
+	return fmt::format("Software\\KnightOnline\\{}_{}_{}",
+		s_szAccount, s_szServer, s_iChrSelectIndex);
 }
 
 bool CGameProcedure::ProcessPacket(Packet& pkt)
@@ -826,8 +823,7 @@ bool CGameProcedure::ProcessPacket(Packet& pkt)
 
 void CGameProcedure::ReportServerConnectionFailed(const std::string& szServerName, int iErrCode, bool bNeedQuitGame)
 {
-	std::string szMsg;
-	GetTextF(IDS_FMT_CONNECT_ERROR, &szMsg, szServerName.c_str(), iErrCode);
+	std::string szMsg = fmt::format_text_resource(IDS_FMT_CONNECT_ERROR, szServerName, iErrCode);
 	
 	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
@@ -839,15 +835,14 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	if (!s_bNeedReportConnectionClosed)
 		return;
 
-	std::string szMsg;
-	GetText(IDS_CONNECTION_CLOSED, &szMsg);
+	std::string szMsg = fmt::format_text_resource(IDS_CONNECTION_CLOSED);
 	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
 
 	if(s_pPlayer)
 	{
 		__Vector3 vPos = s_pPlayer->Position();
-		CLogWriter::Write("Socket Closed... Zone(%d) Pos(%.1f, %.1f, %.1f) Exp(%I64u)",
+		CLogWriter::Write("Socket Closed... Zone({}) Pos({:.1f}, {:.1f}, {:.1f}) Exp({})",
 			s_pPlayer->m_InfoExt.iZoneCur, vPos.x, vPos.y, vPos.z, s_pPlayer->m_InfoExt.iExp);
 	}
 	else
@@ -862,7 +857,7 @@ void CGameProcedure::ReportDebugStringAndSendToServer(const std::string& szDebug
 {
 	if(szDebug.empty()) return;
 
-	CLogWriter::Write(szDebug.c_str());
+	CLogWriter::Write(szDebug);
 
 	if(s_pSocket && s_pSocket->IsConnected())
 	{
@@ -917,8 +912,8 @@ void CGameProcedure::MsgSend_CharacterSelect() // virtual
 	CAPISocket::MP_AddByte(byBuff, iOffset, s_pPlayer->m_InfoExt.iZoneCur);		// 캐릭터 선택창에서의 캐릭터 존 번호
 	s_pSocket->Send(byBuff, iOffset);	// 보낸다
 
-	CLogWriter::Write("MsgSend_CharacterSelect - name(%s) zone(%d)",
-		s_pPlayer->IDString().c_str(), s_pPlayer->m_InfoExt.iZoneCur); // 디버깅 로그..
+	CLogWriter::Write("MsgSend_CharacterSelect - name({}) zone({})",
+		s_pPlayer->IDString(), s_pPlayer->m_InfoExt.iZoneCur); // 디버깅 로그..
 }
 
 void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이터 이다... 한번 더 파싱해야 한다!!!
@@ -977,15 +972,12 @@ int CGameProcedure::MsgRecv_VersionCheck(Packet& pkt) // virtual
 		// Taiwan Language
 		if (0x0404 == iLangID)
 		{
-			GetText(IDS_VERSION_CONFIRM_TW, &szMsg);
+			szMsg = fmt::format_text_resource(IDS_VERSION_CONFIRM_TW);
 		}
 		else
 		{
-			GetTextF(
-				IDS_VERSION_CONFIRM,
-				&szMsg,
-				CURRENT_VERSION / 1000.0f,
-				iVersion / 1000.0f);
+			szMsg = fmt::format_text_resource(IDS_VERSION_CONFIRM,
+				CURRENT_VERSION / 1000.0f, iVersion / 1000.0f);
 		}
 
 		MessageBoxPost(szMsg, "", MB_OK, BEHAVIOR_EXIT);
@@ -1021,12 +1013,13 @@ bool CGameProcedure::MsgRecv_CharacterSelect(Packet& pkt) // virtual
 		}
 		s_pPlayer->PositionSet(__Vector3(fX, fY, fZ), true);
 
-		CLogWriter::Write("MsgRecv_CharacterSelect - name(%s) zone(%d -> %d)", s_pPlayer->m_InfoBase.szID.c_str(), iZonePrev, iZoneCur);
+		CLogWriter::Write("MsgRecv_CharacterSelect - name({}) zone({} -> {})",
+			s_pPlayer->m_InfoBase.szID, iZonePrev, iZoneCur);
 		return true;
 	}
 	else // 실패
 	{
-		CLogWriter::Write("MsgRecv_CharacterSelect - failed(%d)", iResult);
+		CLogWriter::Write("MsgRecv_CharacterSelect - failed({})", iResult);
 		return false;
 	}
 

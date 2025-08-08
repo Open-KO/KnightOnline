@@ -11,7 +11,6 @@
 #include "LocalInput.h"
 #include "APISocket.h"
 #include "PlayerMySelf.h"
-
 #include "UIManager.h"
 #include "UICharacterSelect.h"
 #include "UIMessageBox.h"
@@ -502,16 +501,15 @@ void CGameProcCharacterSelect::AddChr(e_ChrPos eCP, __CharacterSelectInfo* pInfo
 	// 다리
 	this->AddChrPart(iPosIndex, pLooks, PART_POS_FEET, pInfo->dwItemShoes, pInfo->iItemShoesDurability);
 
-	char szBuff[256] = "";
 	std::string szResrcFN;
 
 	// 얼굴 - 
 	if(!pLooks->szPartFNs[PART_POS_FACE].empty())
 	{
-		char szBuff[256] = "", szDir[128] = "", szFName[128] = "", szExt[16] = "";
-		::_splitpath(pLooks->szPartFNs[PART_POS_FACE].c_str(), NULL, szDir, szFName, szExt);
-		sprintf(szBuff, "%s%s%.2d%s", szDir, szFName, pInfo->iFace, szExt);
-		m_pChrs[iPosIndex]->PartSet(PART_POS_FACE, szBuff);
+		char szDir[_MAX_DIR] = {}, szFName[_MAX_FNAME] = {}, szExt[_MAX_EXT] = {};
+		_splitpath(pLooks->szPartFNs[PART_POS_FACE].c_str(), nullptr, szDir, szFName, szExt);
+		szResrcFN = fmt::format("{}{}{:02}{}", szDir, szFName, pInfo->iFace, szExt);
+		m_pChrs[iPosIndex]->PartSet(PART_POS_FACE, szResrcFN);
 	}
 
 	// 머리카락 혹은 헬멧 - 
@@ -522,10 +520,10 @@ void CGameProcCharacterSelect::AddChr(e_ChrPos eCP, __CharacterSelectInfo* pInfo
 	}
 	else if(!pLooks->szPartFNs[PART_POS_HAIR_HELMET].empty()) // 아이템이 없으면 기본 머리..
 	{
-		char szBuff[256] = "", szDir[128] = "", szFName[128] = "", szExt[16] = "";
-		::_splitpath(pLooks->szPartFNs[PART_POS_HAIR_HELMET].c_str(), NULL, szDir, szFName, szExt);
-		sprintf(szBuff, "%s%s%.2d%s", szDir, szFName, pInfo->iHair, szExt);
-		m_pChrs[iPosIndex]->PartSet(PART_POS_HAIR_HELMET, szBuff);
+		char szDir[_MAX_DIR] = {}, szFName[_MAX_FNAME] = {}, szExt[_MAX_EXT] = {};
+		_splitpath(pLooks->szPartFNs[PART_POS_HAIR_HELMET].c_str(), nullptr, szDir, szFName, szExt);
+		szResrcFN = fmt::format("{}{}{:02}{}", szDir, szFName, pInfo->iHair, szExt);
+		m_pChrs[iPosIndex]->PartSet(PART_POS_HAIR_HELMET, szResrcFN);
 	}
 	else 
 	{
@@ -670,8 +668,7 @@ int CGameProcCharacterSelect::MsgRecv_GameServerLogIn(Packet& pDataPack)
 	int iNation = CGameProcedure::MsgRecv_GameServerLogIn(pDataPack);
 	if (0xff == iNation)
 	{
-		std::string szMsg;
-		GetTextF(IDS_FMT_GAME_SERVER_LOGIN_ERROR, &szMsg, "Current", iNation);
+		std::string szMsg = fmt::format_text_resource(IDS_FMT_GAME_SERVER_LOGIN_ERROR, "Current", iNation);
 		MessageBoxPost(szMsg, "", MB_OK, BEHAVIOR_EXIT);
 	}
 	else
@@ -1063,8 +1060,7 @@ void CGameProcCharacterSelect::CharacterSelect()
 void CGameProcCharacterSelect::CharacterSelectFailed()
 {
 	m_bReceivedCharacterSelect = false; // 캐릭터 고르기 실패..
-	std::string szErr;
-	GetText(IDS_ERR_CHARACTER_SELECT, &szErr);
+	std::string szErr = fmt::format_text_resource(IDS_ERR_CHARACTER_SELECT);
 	MessageBoxPost(szErr, "", MB_OK, BEHAVIOR_EXIT);
 	s_pUIMgr->EnableOperationSet(true);
 }
