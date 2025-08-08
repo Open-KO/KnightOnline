@@ -291,7 +291,7 @@ void CUITransactionDlg::EnterTransactionState()
 		if(NULL == pItem) // 아이템이 없으면..
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : %d, %d", iOrg, iExt);
+			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : {}, {}", iOrg, iExt);
 			continue;
 		}
 
@@ -305,7 +305,7 @@ void CUITransactionDlg::EnterTransactionState()
 		if(NULL == pItemExt) // 아이템이 없으면..
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : %d, %d", iOrg, iExt);
+			CLogWriter::Write("CUITransactionDlg::EnterTransactionState - Invalid Item ID : {}, {}", iOrg, iExt);
 			continue;
 		}
 

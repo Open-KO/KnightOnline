@@ -256,7 +256,7 @@ bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 		if ( NULL == pItem || NULL == pItemExt )
 		{
 			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", pSkill->dwExhaustItem);
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
 			return false;	// 아이템이 없으면..
 		}
 
@@ -638,7 +638,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		if ( NULL == pItem || NULL == pItemExt )
 		{
 			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", pSkill->dwExhaustItem);
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
 			return false;	// 아이템이 없으면..
 		}
 
@@ -1179,7 +1179,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
-				//CLogWriter::Write("send msg : %.4f", CN3Base::TimeGet());
+				//CLogWriter::Write("send msg : {:.4f}", CN3Base::TimeGet());
 				//TRACE("send msg : %.4f\n", CN3Base::TimeGet());
 				return true;
 			}
@@ -2076,7 +2076,7 @@ void CMagicSkillMng::MsgRecv_Casting(Packet& pkt)
 	pPlayer->m_fCastFreezeTime = 10.0f;
 	pPlayer->Action(PSA_SPELLMAGIC, false, pTargetPlayer);
 
-	//CLogWriter::Write("send casting : %.4f", CN3Base::TimeGet());
+	//CLogWriter::Write("send casting : {:.4f}", CN3Base::TimeGet());
 	//TRACE("recv casting : %.4f\n", CN3Base::TimeGet());
 
 	if(pSkill->iTarget == SKILLMAGIC_TARGET_ENEMY_ONLY) m_pGameProcMain->PlayBGM_Battle();

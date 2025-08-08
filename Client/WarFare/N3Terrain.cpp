@@ -2171,7 +2171,7 @@ bool CN3Terrain::LoadColorMap(const std::string& szFN)
 	if(INVALID_HANDLE_VALUE == hColorMapFile)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to load ColorMap - %s", szFN.c_str());
+		CLogWriter::Write("Failed to load ColorMap - {}", szFN);
 #endif
 		return false;
 	}

@@ -506,21 +506,15 @@ void CGameProcMain::Tick()
 		s_pSocket->Send(byBuff, iOffset);
 
 
-		int iNPC = s_pOPMgr->m_NPCs.size();
-		char szBuff[1024];
-		sprintf(szBuff, "NPC Region Test : %d", iNPC);
-		CLogWriter::Write(szBuff);
+		CLogWriter::Write("NPC Region Test : {}", s_pOPMgr->m_NPCs.size());
 		it_NPC it = s_pOPMgr->m_NPCs.begin(), itEnd = s_pOPMgr->m_NPCs.end();
-		for(; it != itEnd; it++)
+		for (; it != itEnd; it++)
 		{
 			CPlayerNPC* pNPC = it->second;
 
-			sprintf(szBuff, "    ID(%d) Name(%s) Pos(%.1f, %.1f)",
-				pNPC->IDNumber(),
-				pNPC->IDString().c_str(), 
-				pNPC->m_vPosFromServer.x,
-				pNPC->m_vPosFromServer.z );
-			CLogWriter::Write(szBuff);
+			CLogWriter::Write("    ID({}) Name({}) Pos({:.1f}, {:.1f})",
+				pNPC->IDNumber(), pNPC->IDString(),
+				pNPC->m_vPosFromServer.x, pNPC->m_vPosFromServer.z);
 		}
 
 	}
@@ -801,16 +795,13 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 	case WIZ_TEST_PACKET:
 		{
 			int iNPC = pkt.read<int16_t>();
-			char szBuff[32];
-			sprintf(szBuff, "NPC Region Test : %d -> ", iNPC);
-			std::string szLog = szBuff;
+			std::string szLog = fmt::format("NPC Region Test : {} -> ", iNPC);
 			for(int i = 0; i < iNPC; i++)
 			{
 				int iID = pkt.read<int16_t>();
-				sprintf(szBuff, "%d, ", iID);
-				szLog += szBuff;
+				szLog += fmt::format("%d, ", iID);
 			}
-			CLogWriter::Write(szLog.c_str());
+			CLogWriter::Write(szLog);
 		}
 		return true;
 #endif
@@ -1814,7 +1805,11 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	s_pPlayer->m_InfoExt.iHair = pkt.read<uint8_t>(); // 머리카락
 
 	__TABLE_PLAYER_LOOKS* pLooks = s_pTbl_UPC_Looks.Find(s_pPlayer->m_InfoBase.eRace);	// User Player Character Skin 구조체 포인터..
-	if(NULL == pLooks) CLogWriter::Write("CGameProcMain::MsgRecv_MyInfo_All : failed find character resource data (Race : %d)", s_pPlayer->m_InfoBase.eRace);
+	if (pLooks == nullptr)
+	{
+		CLogWriter::Write("CGameProcMain::MsgRecv_MyInfo_All : failed find character resource data (Race : {})",
+			static_cast<int>(s_pPlayer->m_InfoBase.eRace));
+	}
 	__ASSERT(pLooks, "failed find character resource data");
 	s_pPlayer->InitChr(pLooks); // 관절 세팅..
 
@@ -1979,7 +1974,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 		if ( NULL == pItem || NULL == pItemExt )
 		{
 			__ASSERT(0, "NULL Item!!!");
-			CLogWriter::Write("MyInfo - slot - Unknown Item %d, IDNumber", iItemIDInSlots[i]);
+			CLogWriter::Write("MyInfo - slot - Unknown Item {}, IDNumber", iItemIDInSlots[i]);
 			continue; // 아이템이 없으면..
 		}
 
@@ -2062,7 +2057,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 		if ( NULL == pItem || NULL == pItemExt )
 		{
 			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item %d, IDNumber", iItemIDInInventorys[i]);
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", iItemIDInInventorys[i]);
 			continue; // 아이템이 없으면..
 		}
 
@@ -2537,7 +2532,8 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	CPlayerOther* pUPC = s_pOPMgr->UPCGetByID(iID, false);
 	if(pUPC) // 이미 아이디 같은 캐릭이 있으면..
 	{
-		CLogWriter::Write("User In - Duplicated ID (%d, %s) Pos(%.2f,%.2f,%.2f)", iID, szName.c_str(), fXPos, fYPos, fZPos);
+		CLogWriter::Write("User In - Duplicated ID ({}, {}) Pos({:.2f},{:.2f},{:.2f})",
+			iID, szName, fXPos, fYPos, fZPos);
 		//TRACE("User In - Duplicated ID (%d, %s) Pos(%.2f,%.2f,%.2f)\n", iID, szName.c_str(), fXPos, fYPos, fZPos);
 
 		// TEMP(srmeier): need to figure out what is going on here and how to fix it
@@ -2792,7 +2788,8 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 	else szName = "";
 
 #ifdef _DEBUG
-	CLogWriter::Write("NPC In - ID(%d) Name(%s) Time(%.1f)", iID, szName.c_str(), CN3Base::TimeGet()); // 캐릭 세팅..
+	CLogWriter::Write("NPC In - ID({}) Name({}) Time({:.1f})",
+		iID, szName, CN3Base::TimeGet()); // 캐릭 세팅..
 #endif
 
 	e_Nation eNation = (e_Nation)pkt.read<uint8_t>(); // 소속 국가. 0 이면 없다. 1
@@ -2820,7 +2817,8 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 	CPlayerNPC* pNPC = s_pOPMgr->NPCGetByID(iID, false);
 	if(pNPC) // 이미 아이디 같은 캐릭이 있으면..
 	{
-		CLogWriter::Write("NPC In - Duplicated ID (%d, %s) Pos(%.2f,%.2f,%.2f)", iID, szName.c_str(), fXPos, fYPos, fZPos);
+		CLogWriter::Write("NPC In - Duplicated ID ({}, {}) Pos({:.2f},{:.2f},{:.2f})",
+			iID, szName, fXPos, fYPos, fZPos);
 		//TRACE("NPC In - Duplicated ID (%d, %s) Pos(%.2f,%.2f,%.2f)\n", iID, szName.c_str(), fXPos, fYPos, fZPos);
 		pNPC->Action(PSA_BASIC, true, NULL, true); // 강제로 살리고..
 		pNPC->m_fTimeAfterDeath = 0;
@@ -2848,10 +2846,11 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 		if(NULL == pLooks) // 캐릭터 기본 모습 테이블이 없으면... 
 		{
 			pLooks = s_pTbl_NPC_Looks.GetIndexedData(0);
-			char szBuff[256];
-			sprintf(szBuff, "Normal NPC In : [Name(%s), ResourceID(%d)]", szName.c_str(), iIDResrc);
-			this->MsgOutput(szBuff, 0xffff00ff);
-			CLogWriter::Write(szBuff);
+
+			std::string szMsg = fmt::format("Normal NPC In : [Name({}), ResourceID({})]",
+				szName, iIDResrc);
+			MsgOutput(szMsg, 0xffff00ff);
+			CLogWriter::Write(szMsg);
 		}
 	}
 	else
@@ -2859,10 +2858,11 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 		pShape = ACT_WORLD->ShapeGetByIDWithShape(iIDResrc); // Object NPC 에서 찾아 본다...
 		if(NULL == pShape)
 		{
-			char szBuff[256];
-			sprintf(szBuff, "Object NPC In : [Name(%s), ResourceID(%d)]", szName.c_str(), iIDResrc);
-			this->MsgOutput(szBuff, 0xffff00ff);
-			CLogWriter::Write(szBuff);
+			std::string szMsg = fmt::format("Object NPC In : [Name({}), ResourceID({})]",
+				szName, iIDResrc);
+			MsgOutput(szMsg, 0xffff00ff);
+			CLogWriter::Write(szMsg);
+
 			pLooks = s_pTbl_NPC_Looks.GetIndexedData(0);
 		}
 	}
@@ -2980,9 +2980,9 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 	}
 	else
 	{
-		char szBuff[256];
-		sprintf(szBuff, "No Resource NPC In : [Name(%s), ResourceID(%d)]", szName.c_str(), iIDResrc);
-		CLogWriter::Write(szBuff);
+		std::string szMsg = fmt::format("No Resource NPC In : [Name({}), ResourceID({})]",
+			szName, iIDResrc);
+		CLogWriter::Write(szMsg);
 	}
 
 	pNPC->PositionSet(__Vector3(fXPos, fYPos, fZPos), true);	// 현재 위치 셋팅..
@@ -3417,7 +3417,8 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 			__TABLE_PLAYER_LOOKS* pLooks = s_pTbl_UPC_Looks.Find(pUPC->m_InfoBase.eRace);	// User Player Character Skin 구조체 포인터..
 			if(NULL == pLooks)
 			{
-				CLogWriter::Write("CGameProcMain::MsgRecv_UserLookChange() - failed find table : Race (%d)", pUPC->m_InfoBase.eRace);
+				CLogWriter::Write("CGameProcMain::MsgRecv_UserLookChange() - failed find table : Race ({})",
+					static_cast<int>(pUPC->m_InfoBase.eRace));
 				__ASSERT(pLooks, "failed find table");
 			}
 			else
@@ -3453,7 +3454,8 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 	}
 	else
 	{
-		CLogWriter::Write("CGameProcMain::MsgRecv_UserLookChange() - Unknown Slot(%d) Item(%d)", eSlot, dwItemID);
+		CLogWriter::Write("CGameProcMain::MsgRecv_UserLookChange() - Unknown Slot({}) Item({})",
+			static_cast<int>(eSlot), dwItemID);
 		return false;
 	}
 
@@ -3701,9 +3703,8 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 
 void CGameProcMain::MsgRecv_MyInfo_RealmPoint(Packet& pkt)
 {
-	uint8_t bType = pkt.read<uint8_t>();
-
-	if (bType == 1) // TODO: @Demircivi: LOYALTY_NATIONAL_POINTS is: 1, define it in header. 
+	uint8_t opcode = pkt.read<uint8_t>();
+	if (opcode == 1) // TODO: @Demircivi: LOYALTY_NATIONAL_POINTS is: 1, define it in header. 
 	{
 		// TODO: @Demircivi, implement missing
 
@@ -3734,15 +3735,16 @@ void CGameProcMain::MsgRecv_MyInfo_RealmPoint(Packet& pkt)
 		if (m_pUIVar->m_pPageState)
 			m_pUIVar->m_pPageState->UpdateRealmPoint(s_pPlayer->m_InfoExt.iRealmPoint, s_pPlayer->m_InfoExt.iRealmPointMonthly); // 국가 기여도는 10을 나누어서 표시
 	}
-	else if (bType == 2)
+	else if (opcode == 2)
 	{
 		// TODO: @Demircivi, after implementing Manner feature call its update method from here.
 		uint32_t iNewManner = pkt.read<uint32_t>(); // IDS_MANNER_CHANGE_GET / IDS_MANNER_CHANGE_LOST
-		CLogWriter::Write("Got manner update packet but didn't update form since there is no manner feature New Manner: %d.", iNewManner);
+		CLogWriter::Write("Got manner update packet but didn't update UI since there is no manner feature. New Manner: {}.",
+			iNewManner);
 	}
 	else
 	{
-		CLogWriter::Write("Unhandled MsgRecv_MyInfo_RealmPoint subOpcode: %02x(hex).", bType);
+		CLogWriter::Write("Unhandled MsgRecv_MyInfo_RealmPoint subOpcode: 0x{:02X}.", opcode);
 	}
 }
 
@@ -4213,7 +4215,7 @@ void CGameProcMain::MsgRecv_TargetHP(Packet& pkt)
 		std::string szBuff("Invalid HP Change - 0 ID(");
 		if(pTarget) szBuff += pTarget->IDString();
 		szBuff += ')';
-		CLogWriter::Write(szBuff.c_str());
+		CLogWriter::Write(szBuff);
 	}
 	__ASSERT(iTargetHPMax > 0, "최대 체력 수치는 0이상이어야 합니다.");
 
@@ -4388,7 +4390,8 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		s_pPlayer->m_bMoveContinous = true; // 멈춘다..
 		this->CommandToggleMoveContinous();
 
-		CLogWriter::Write("CGameProcMain::InitZone -> Zone Change (%d -> %d) Position(%.1f, %.1f, %.1f)", iZonePrev, iZone, vPosPlayer.x, vPosPlayer.y, vPosPlayer.z);
+		CLogWriter::Write("CGameProcMain::InitZone -> Zone Change ({} -> {}) Position({:.1f}, {:.1f}, {:.1f})",
+			iZonePrev, iZone, vPosPlayer.x, vPosPlayer.y, vPosPlayer.z);
 
 		m_bLoadComplete = false; // 로딩 끝남..
 		m_pMagicSkillMng->ClearDurationalMagic();
@@ -4401,8 +4404,9 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		iZonePrev = iZone; // 최근에 읽은 존 번호를 기억해둔다.
 
 		__TABLE_ZONE* pZoneData = s_pTbl_Zones.Find(s_pPlayer->m_InfoExt.iZoneCur);
-		if(NULL == pZoneData) {
-			CLogWriter::Write("can't find zone data. (zone : %d)", s_pPlayer->m_InfoExt.iZoneCur);
+		if (NULL == pZoneData)
+		{
+			CLogWriter::Write("can't find zone data. (zone : {})", s_pPlayer->m_InfoExt.iZoneCur);
 			__ASSERT(0, "Zone Data Not Found!");
 			system("pause");
 			return;
@@ -4449,8 +4453,9 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 	// 기본적인 캐릭터위치와 카메라 위치 잡기..
 	////////////////////////////////////////////////////////////////////////////////
 
-	CLogWriter::Write("InitPlayerPosition() Position(%.1f, %.1f, %.1f)",vPosPlayer.x, vPosPlayer.y, vPosPlayer.z); // TmpLog1122
-	this->InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
+	CLogWriter::Write("InitPlayerPosition() Position({:.1f}, {:.1f}, {:.1f})",
+		vPosPlayer.x, vPosPlayer.y, vPosPlayer.z); // TmpLog1122
+	InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
 	s_pOPMgr->Release(); // 다른 플레이어 삭제...
 }
 

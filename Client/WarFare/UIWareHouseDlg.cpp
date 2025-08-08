@@ -1784,7 +1784,7 @@ void CUIWareHouseDlg::AddItemInWare(int iItem, int iDurability, int iCount, int 
 	if ( NULL == pItem || NULL == pItemExt )
 	{
 		__ASSERT(0, "NULL Item!!!");
-		CLogWriter::Write("WareHouse - Ware - Unknown Item %d, IDNumber", iItem);
+		CLogWriter::Write("WareHouse - Ware - Unknown Item {}, IDNumber", iItem);
 		return; // 아이템이 없으면..
 	}
 

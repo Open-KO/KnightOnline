@@ -99,42 +99,28 @@ void CLogWriter::Close()
 	}
 }
 
-void CLogWriter::Write(const char *lpszFormat, ...)
+void CLogWriter::Write(const std::string_view message)
 {
-	if(s_szFileName.empty() || NULL == lpszFormat) return;
+	if (s_szFileName.empty()
+		|| message.empty())
+		return;
 
-	static char szFinal[1024];
-	static SYSTEMTIME time;
+	HANDLE hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (hFile == INVALID_HANDLE_VALUE)
+		hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+	if (hFile == INVALID_HANDLE_VALUE)
+		return;
+
+	SYSTEMTIME time;
 	GetLocalTime(&time);
-	szFinal[0] = NULL;
+
+	std::string outputMessage = fmt::format("    [{:02}:{:02}:{:02}] {}\r\n",
+		time.wHour, time.wMinute, time.wSecond, message);
+
+	::SetFilePointer(hFile, 0, nullptr, FILE_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
 
 	DWORD dwRWC = 0;
-	sprintf(szFinal, "    [%.2d:%.2d:%.2d] ", time.wHour, time.wMinute, time.wSecond);
-
-	static char szBuff[1024];
-	szBuff[0] = NULL;
-	va_list argList;
-	va_start(argList, lpszFormat);
-	vsprintf(szBuff, lpszFormat, argList);
-	va_end(argList);
-
-	lstrcat(szFinal, szBuff);
-	lstrcat(szFinal, "\r\n");
-	int iLength = lstrlen(szFinal);
-
-	HANDLE hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if(INVALID_HANDLE_VALUE == hFile)
-	{
-		hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(INVALID_HANDLE_VALUE == hFile) hFile = NULL;
-	}
-
-
-	if(hFile)
-	{
-		::SetFilePointer(hFile, 0, NULL, FILE_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
-
-		WriteFile(hFile, szFinal, iLength, &dwRWC, NULL);
-		CloseHandle(hFile);
-	}
+	WriteFile(hFile, outputMessage.data(), static_cast<DWORD>(outputMessage.length()), &dwRWC, nullptr);
+	CloseHandle(hFile);
 }

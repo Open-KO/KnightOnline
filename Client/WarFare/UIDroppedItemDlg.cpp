@@ -236,7 +236,7 @@ void CUIDroppedItemDlg::AddToItemTable(int iItemID, int iItemCount, int iOrder)
 	if(NULL == pItem || NULL == pItemExt)
 	{
 		__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTable - Invalidate ItemID : %d", iItemID);
+		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTable - Invalidate ItemID : {}", iItemID);
 		return;
 	}
 
@@ -271,7 +271,7 @@ void CUIDroppedItemDlg::AddToItemTableToInventory(int iItemID, int iItemCount, i
 	if(NULL == pItem || NULL == pItemExt)
 	{
 		__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTableToInventory - Invalidate ItemID : %d", iItemID);
+		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTableToInventory - Invalidate ItemID : {}", iItemID);
 		return;
 	}
 
@@ -420,7 +420,7 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if ( pItem == NULL )
 			{
 				__ASSERT(0, "NULL Item!!!");
-				CLogWriter::Write("CUIDroppedItemDlg::ReceiveMessage - UIMSG_ICON_UP - NULL Icon : %d", spItem->pItemBasic->dwID);
+				CLogWriter::Write("CUIDroppedItemDlg::ReceiveMessage - UIMSG_ICON_UP - NULL Icon : {}", spItem->pItemBasic->dwID);
 				break;
 			}
 
@@ -559,7 +559,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if(NULL == pItem || NULL == pItemExt)
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : %d", iItemID);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : {}", iItemID);
 			return;
 		}
 
@@ -633,14 +633,14 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if (iItemID == dwGold)
 		{
 			__ASSERT(0, "Invalidate Item ID From Server.. ");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - ID Pos : %d", iPos);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - ID Pos : {}", iPos);
 			return;
 		}
 
 		if ( (iPos < 0) || (iPos > (MAX_ITEM_INVENTORY-1)) )
 		{
 			__ASSERT(0, "Invalidate Item Pos From Server.. ");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : %d", iPos);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : {}", iPos);
 			return;
 		}
 
@@ -683,7 +683,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		if(NULL == pItem)
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : %d", iItemID);
+			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : {}", iItemID);
 			return;
 		}
 
@@ -717,13 +717,13 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			if (NULL == pItem)
 			{ 
 				__ASSERT(0, "Invalidate Item ID From Server.. ");
-				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Item ID : %d", iItemID);
+				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Item ID : {}", iItemID);
 				return;
 			}
 			if ( (iPos < 0) || (iPos > (MAX_ITEM_INVENTORY-1)) )
 			{
 				__ASSERT(0, "Invalidate Item Pos From Server.. ");
-				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : %d", iPos);
+				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : {}", iPos);
 				return;
 			}
 

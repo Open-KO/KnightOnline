@@ -69,8 +69,8 @@ bool CN3IMesh::Create(int nFC, int nVC, int nUVC)
 	if(m_nFC > 0) this->Release();
 
 #ifdef _N3GAME
-	if(nFC > 32768)
-		CLogWriter::Write("CN3IMesh::Create - Too many faces. (more than 32768) (%s)", m_szFileName.c_str());
+	if (nFC > 32768)
+		CLogWriter::Write("CN3IMesh::Create - Too many faces. (more than 32768) ({})", m_szFileName);
 #endif
 
 	m_nFC = nFC;
@@ -83,17 +83,6 @@ bool CN3IMesh::Create(int nFC, int nVC, int nUVC)
 		m_nUVC = nUVC; m_pfUVs = new float[nUVC*2]; memset(m_pfUVs, 0, 8 * nUVC); // 사이즈가 8 인 이유는 float 2개라 그렇다..
 		m_pwUVsIndices = new uint16_t[nFC*3]; memset(m_pwUVsIndices, 0, 2 * nFC * 3); // uint16_t
 	}
-
-//	s_lpD3DDev->CreateVertexBuffer(nFC * 3 * sizeof(__VertexT1), 0, FVF_VNT1, D3DPOOL_MANAGED, &m_lpVB);
-
-//	if(NULL == m_lpVB)
-//	{
-//#ifdef _N3GAME
-//		CLogWriter::Write("CN3IMesh::Create - Can't Create VertexBuffer (%s)", m_szFileName.c_str());
-//#endif
-//		this->Release();
-//		return false;
-//	}
 
 	return true;
 }

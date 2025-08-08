@@ -23,7 +23,7 @@ namespace fmt
 		std::string fmtStr;
 		if (!resource_helper::get_from_texts(resourceId, fmtStr))
 		{
-			CLogWriter::Write("format_text_resource(%u) failed - resource missing in Texts TBL.",
+			CLogWriter::Write("format_text_resource({}) failed - resource missing in Texts TBL.",
 				resourceId);
 
 			// In debug builds, we should still show useful text to highlight the problem.
@@ -47,7 +47,7 @@ namespace fmt
 			}
 			catch (const fmt::format_error&)
 			{
-				CLogWriter::Write("format_text(%u) failed - invalid args for format string.",
+				CLogWriter::Write("format_text({}) failed - invalid args for format string.",
 					resourceId);
 			}
 

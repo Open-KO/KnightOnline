@@ -397,7 +397,7 @@ void CGameProcedure::Tick()
 	{
 		auto pkt = s_pSocket->m_qRecvPkt.front();
 		if (!ProcessPacket(*pkt))
-			CLogWriter::Write("Invalid Packet... (%d)", pkt->GetOpcode());
+			CLogWriter::Write("Invalid Packet... ({})", pkt->GetOpcode());
 
 		delete pkt;
 		s_pSocket->m_qRecvPkt.pop();
@@ -843,7 +843,7 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	if(s_pPlayer)
 	{
 		__Vector3 vPos = s_pPlayer->Position();
-		CLogWriter::Write("Socket Closed... Zone(%d) Pos(%.1f, %.1f, %.1f) Exp(%I64u)",
+		CLogWriter::Write("Socket Closed... Zone({}) Pos({:.1f}, {:.1f}, {:.1f}) Exp({})",
 			s_pPlayer->m_InfoExt.iZoneCur, vPos.x, vPos.y, vPos.z, s_pPlayer->m_InfoExt.iExp);
 	}
 	else
@@ -858,7 +858,7 @@ void CGameProcedure::ReportDebugStringAndSendToServer(const std::string& szDebug
 {
 	if(szDebug.empty()) return;
 
-	CLogWriter::Write(szDebug.c_str());
+	CLogWriter::Write(szDebug);
 
 	if(s_pSocket && s_pSocket->IsConnected())
 	{
@@ -913,8 +913,8 @@ void CGameProcedure::MsgSend_CharacterSelect() // virtual
 	CAPISocket::MP_AddByte(byBuff, iOffset, s_pPlayer->m_InfoExt.iZoneCur);		// 캐릭터 선택창에서의 캐릭터 존 번호
 	s_pSocket->Send(byBuff, iOffset);	// 보낸다
 
-	CLogWriter::Write("MsgSend_CharacterSelect - name(%s) zone(%d)",
-		s_pPlayer->IDString().c_str(), s_pPlayer->m_InfoExt.iZoneCur); // 디버깅 로그..
+	CLogWriter::Write("MsgSend_CharacterSelect - name({}) zone({})",
+		s_pPlayer->IDString(), s_pPlayer->m_InfoExt.iZoneCur); // 디버깅 로그..
 }
 
 void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이터 이다... 한번 더 파싱해야 한다!!!
@@ -1014,12 +1014,13 @@ bool CGameProcedure::MsgRecv_CharacterSelect(Packet& pkt) // virtual
 		}
 		s_pPlayer->PositionSet(__Vector3(fX, fY, fZ), true);
 
-		CLogWriter::Write("MsgRecv_CharacterSelect - name(%s) zone(%d -> %d)", s_pPlayer->m_InfoBase.szID.c_str(), iZonePrev, iZoneCur);
+		CLogWriter::Write("MsgRecv_CharacterSelect - name({}) zone({} -> {})",
+			s_pPlayer->m_InfoBase.szID, iZonePrev, iZoneCur);
 		return true;
 	}
 	else // 실패
 	{
-		CLogWriter::Write("MsgRecv_CharacterSelect - failed(%d)", iResult);
+		CLogWriter::Write("MsgRecv_CharacterSelect - failed({})", iResult);
 		return false;
 	}
 
