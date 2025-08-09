@@ -1075,6 +1075,8 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	szStr.clear();
 
 	// Tooltip - item consumed
+	if (!m_pStr_skill_item2->IsVisible())
+		m_pStr_skill_item2->SetVisible(true);
 	uint32_t requiredItemID = spSkill->pSkill->dwExhaustItem;
 	uint32_t consumedItemID = 0;
 	
@@ -1104,8 +1106,8 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 
 		if (pItem != nullptr)
 			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
-		if (pItem == nullptr)
-			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
+		else
+			CGameBase::GetText(IDS_SKILL_TOOLTIP_USE_ITEM_NO, &szStr);
 	}
 	else
 	{
