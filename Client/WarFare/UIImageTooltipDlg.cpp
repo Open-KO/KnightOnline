@@ -1054,7 +1054,7 @@ exceptions:;
 			if (bBuy)	
 			{
 				m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_BUY_PRICE,
-					std::to_string(spItem->pItemBasic->iPrice* spItem->pItemExt->siPriceMultiply));
+					CGameBase::FormatNumber(spItem->pItemBasic->iPrice * spItem->pItemExt->siPriceMultiply));
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 
@@ -1070,7 +1070,7 @@ exceptions:;
 					iSellPrice = 1;
 
 				m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_SELL_PRICE,
-					std::to_string(iSellPrice));
+					CGameBase::FormatNumber(iSellPrice));
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 				m_pStr[iIndex]->SetColor(m_CWhite);

@@ -34,13 +34,19 @@ CUIManager::CUIManager()
 {
 	m_dwMouseFlagsCur = 0;
 	m_bEnableOperation = true;					// UI 조작이 가능한 상태인가?
-	m_pUIFocused = NULL;
+	m_pUIFocused = nullptr;
+#ifdef _DEBUG
+	m_pDFont = nullptr;
+#endif;
 
 	m_bDoneSomething = false;					// UI 에서 조작을 했다...
 }
 
 CUIManager::~CUIManager()
 {
+#ifdef _DEBUG
+	delete m_pDFont;
+#endif
 }
 
 void CUIManager::Release()
@@ -193,9 +199,12 @@ void CUIManager::Render()
 	*/
 	////////////////////////////////////////////////////////
 #ifdef _DEBUG
-	CDFont* m_pDFont = new CDFont("굴림", 10);	// default 로 굴림 16으로 설정
-	m_pDFont->InitDeviceObjects(CN3Base::s_lpD3DDev);
-	m_pDFont->RestoreDeviceObjects();
+	if (m_pDFont == nullptr)
+	{
+		m_pDFont = new CDFont("굴림", 10);
+		m_pDFont->InitDeviceObjects(CN3Base::s_lpD3DDev);
+		m_pDFont->RestoreDeviceObjects();
+	}
 
 	static std::string szDebugs[4];
 
@@ -238,11 +247,13 @@ void CUIManager::Render()
 
 	for (int i = 0; i < 4; i++)
 	{
+		if (szDebugs[i].empty())
+			continue;
+
 		m_pDFont->SetText(szDebugs[i]);
 		m_pDFont->DrawText(0.0f, 0.0f + i * 18, 0xFFFFFFFF, 0);
+		szDebugs[i].clear();
 	}
-
-	delete m_pDFont;
 #endif
 	////////////////////////////////////////////////////////
 

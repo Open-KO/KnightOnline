@@ -229,7 +229,7 @@ void CDlgEditScript::OnBtnSave()
 	fprintf(file,"<N3FXBUNDLE>\n");
 	//fprintf(file,"<NAME> %s\n", m_pFXBundle->m_strName.c_str());
 
-	for(int i=0;i<MAX_FX_PART;i++)
+	for(int i=0;i<MAX_FX_PART_TOOL;i++)
 	{
 		int SelIdx = m_pPartName[i]->GetCurSel();
 		if(SelIdx<=0) continue;
@@ -279,7 +279,7 @@ bool CDlgEditScript::LoadBundle(CString &strPathName)
 
 	///////////////////////////////////////////////////
 	// Dialog초기화..
-	for(int i=0;i<MAX_FX_PART;i++)
+	for(int i=0;i<MAX_FX_PART_TOOL;i++)
 	{
 		(*m_pPartStartTime[i]) = 0.0f;		
 		m_pPartName[i]->SetCurSel(0);
@@ -298,7 +298,7 @@ bool CDlgEditScript::LoadBundle(CString &strPathName)
 		//
 		//	set part editor 
 		//
-		for(int i=0;i<MAX_FX_PART;i++)
+		for(int i=0;i<MAX_FX_PART_TOOL;i++)
 		{
 			CN3FXPartBase* pPart = m_pFXBundle->GetPart(i);
 			if(pPart)
@@ -356,7 +356,7 @@ bool CDlgEditScript::NewBundle()
 	// Dialog초기화..
 	OnInitDialog();
 	/*
-	for(int i=0;i<MAX_FX_PART;i++)
+	for(int i=0;i<MAX_FX_PART_TOOL;i++)
 	{
 		(*m_pPartStartTime[i]) = 0.0f;		
 		m_pPartName[i]->SetCurSel(0);
@@ -383,7 +383,7 @@ BOOL CDlgEditScript::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	for(int i=0;i<MAX_FX_PART;i++)
+	for(int i=0;i<MAX_FX_PART_TOOL;i++)
 	{
 		(*m_pPartStartTime[i]) = 0.0f;
 
@@ -421,7 +421,7 @@ void CDlgEditScript::RefreshParts()
 {
 	if(!m_pFXBundle) return;
 
-	for(int i=0;i<MAX_FX_PART;i++)
+	for(int i=0;i<MAX_FX_PART_TOOL;i++)
 	{
 		if(m_pFXBundle->m_pPart[i])
 		{
@@ -457,7 +457,7 @@ void CDlgEditScript::ReloadCombo()
 {
 	CString strOldName;
 	int idx;
-	for(int i=0;i<MAX_FX_PART;i++)
+	for(int i=0;i<MAX_FX_PART_TOOL;i++)
 	{
 		idx = m_pPartName[i]->GetCurSel();
 		m_pPartName[i]->GetLBText(idx, strOldName);

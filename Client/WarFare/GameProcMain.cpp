@@ -2643,7 +2643,7 @@ bool CGameProcMain::MsgRecv_UserInAndRequest(Packet& pkt)
 	{
 		std::string szErr = fmt::format("영역 요청 오류 - 플레이어 갯수 {}", iUPCCountReceived);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
-		__ASSERT(0, szErr);
+		__ASSERT(0, szErr.c_str());
 		return false;
 	}
 
@@ -2730,7 +2730,7 @@ bool CGameProcMain::MsgRecv_UserInRequested(Packet& pkt)
 	{
 		std::string szErr = fmt::format("영역정보 받기 오류 - 플레이어 갯수 {}", iPlayerCount);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
-		__ASSERT(0, szErr);
+		__ASSERT(0, szErr.c_str());
 		return false;
 	}
 
@@ -3006,7 +3006,7 @@ bool CGameProcMain::MsgRecv_NPCInAndRequest(Packet& pkt)
 	{
 		std::string szErr = fmt::format("영역정보 요청 오류 - NPC 갯수 {}", iNPCCountReceived);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
-		__ASSERT(0, szErr);
+		__ASSERT(0, szErr.c_str());
 		return false;
 	}
 
@@ -3091,7 +3091,7 @@ bool CGameProcMain::MsgRecv_NPCInRequested(Packet& pkt)
 	{
 		std::string szErr = fmt::format("영역정보 받기오류 - NPC 갯수 {}", iNPCCount);
 		CGameProcedure::ReportDebugStringAndSendToServer(szErr);
-		__ASSERT(0, szErr);
+		__ASSERT(0, szErr.c_str());
 		return false;
 	}
 

@@ -72,6 +72,14 @@ public:
 	float		m_fScaleVelX;
 	float		m_fScaleVelY;
 
+	// N3FXParticle needs implementation of these methods
+	bool m_bDistanceNumFix;
+	bool m_bParticleYAxisFix;
+	bool m_bParticle_Not_Rotate;
+	__Vector3 m_vParticle_Not_Rotate_Axis; // 파티클이 회전하지 않도록 하는 축
+	float m_fPtRangeMin;
+	float m_fPtRangeMax;
+	// N3FXParticle needs implementation of these methods
 protected:
 	void	Rotate();
 	void	Scaling();
