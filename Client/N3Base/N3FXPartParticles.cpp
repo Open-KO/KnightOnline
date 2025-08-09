@@ -355,87 +355,114 @@ void CN3FXPartParticles::Init()
 //
 bool CN3FXPartParticles::Load(HANDLE hFile)
 {
-	if(!CN3FXPartBase::Load(hFile)) return false;
-	if(m_iVersion<3) return false;
+	if (!CN3FXPartBase::Load(hFile))
+		return false;
+
+	if (m_iVersion < 3)
+		return false;
 
 	DWORD dwRWC = 0;
-	ReadFile(hFile, &m_iNumParticle, sizeof(int), &dwRWC, NULL);
-	if(m_iNumParticle>0) InitVB();
+	ReadFile(hFile, &m_iNumParticle, sizeof(int), &dwRWC, nullptr);
+	if (m_iNumParticle > 0)
+		InitVB();
 
-	if(m_iVersion<4)
+	if (m_iVersion < 4)
 	{
 		float ParticleSize;
-		ReadFile(hFile, &ParticleSize, sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &ParticleSize, sizeof(float), &dwRWC, nullptr);
 		m_pair_fParticleSize.first = m_pair_fParticleSize.second = ParticleSize;
 	}
 	else
 	{
-		ReadFile(hFile, &(m_pair_fParticleSize.first), sizeof(float), &dwRWC, NULL);
-		ReadFile(hFile, &(m_pair_fParticleSize.second), sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_pair_fParticleSize.first, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_pair_fParticleSize.second, sizeof(float), &dwRWC, nullptr);
 	}
 
-	ReadFile(hFile, &(m_pair_fParticleLife.first), sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &(m_pair_fParticleLife.second), sizeof(float), &dwRWC, NULL);
+	ReadFile(hFile, &(m_pair_fParticleLife.first), sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &(m_pair_fParticleLife.second), sizeof(float), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_MinCreateRange, sizeof(__Vector3), &dwRWC, NULL);
-	ReadFile(hFile, &m_MaxCreateRange, sizeof(__Vector3), &dwRWC, NULL);
+	ReadFile(hFile, &m_MinCreateRange, sizeof(__Vector3), &dwRWC, nullptr);
+	ReadFile(hFile, &m_MaxCreateRange, sizeof(__Vector3), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_fCreateDelay, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_iNumCreate, sizeof(int), &dwRWC, NULL);
+	ReadFile(hFile, &m_fCreateDelay, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_iNumCreate, sizeof(int), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_dwEmitType, sizeof(uint32_t), &dwRWC, NULL);
+	ReadFile(hFile, &m_dwEmitType, sizeof(uint32_t), &dwRWC, nullptr);
 
-	if(	m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD )
+	if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD)
 	{
-		ReadFile(hFile, &(m_uEmitCon.fEmitAngle), sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_uEmitCon.fEmitAngle, sizeof(float), &dwRWC, nullptr);
 	}
-	else if( m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER )
+	else if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER)
 	{
-		ReadFile(hFile, &(m_uEmitCon.vGatherPoint.x), sizeof(float), &dwRWC, NULL);
-		ReadFile(hFile, &(m_uEmitCon.vGatherPoint.y), sizeof(float), &dwRWC, NULL);
-		ReadFile(hFile, &(m_uEmitCon.vGatherPoint.z), sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_uEmitCon.vGatherPoint.x, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_uEmitCon.vGatherPoint.y, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_uEmitCon.vGatherPoint.z, sizeof(float), &dwRWC, nullptr);
 	}
 
-	ReadFile(hFile, &m_vPtEmitDir, sizeof(__Vector3), &dwRWC, NULL);
-	ReadFile(hFile, &m_fPtVelocity, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_fPtAccel, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_fPtRotVelocity, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_fPtGravity, sizeof(float), &dwRWC, NULL);
+	ReadFile(hFile, &m_vPtEmitDir, sizeof(__Vector3), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fPtVelocity, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fPtAccel, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fPtRotVelocity, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fPtGravity, sizeof(float), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_bChangeColor, sizeof(bool), &dwRWC, NULL);
-	if(m_bChangeColor)
+	ReadFile(hFile, &m_bChangeColor, sizeof(bool), &dwRWC, nullptr);
+	if (m_bChangeColor)
 	{
 		int iNumKeyColor = 0;
-		ReadFile(hFile, &iNumKeyColor, sizeof(int), &dwRWC, NULL);
-		ReadFile(hFile, &m_dwChangeColor, sizeof(uint32_t)*iNumKeyColor, &dwRWC, NULL);
+		ReadFile(hFile, &iNumKeyColor, sizeof(int), &dwRWC, nullptr);
+		ReadFile(hFile, &m_dwChangeColor, sizeof(uint32_t) * iNumKeyColor, &dwRWC, nullptr);
 	}
 
-	ReadFile(hFile, &m_bAnimKey, sizeof(bool), &dwRWC, NULL);
-	if(m_bAnimKey)
+	ReadFile(hFile, &m_bAnimKey, sizeof(bool), &dwRWC, nullptr);
+	if (m_bAnimKey)
 	{
-		ReadFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
 
-		char szShapeFileName[_MAX_PATH];
-		ReadFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, NULL);
+		char szShapeFileName[_MAX_PATH] = {};
+		ReadFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
 
-		if(m_pShape)
-		{
-			delete m_pShape;
-			m_pShape = NULL;
-		}
-
-		m_pShape = new CN3FXShape;
+		delete m_pShape;
+		m_pShape = new CN3FXShape();
 
 		m_pRefShape = s_MngFXShape.Get(szShapeFileName);
 		m_pShape->Duplicate(m_pRefShape);
 	}
 
-	if(m_iVersion>=5)
+	if (m_iVersion >= 5)
 	{
-		ReadFile(hFile, &m_fTexRotateVelocity, sizeof(float), &dwRWC, NULL);
-		ReadFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, NULL);
-		ReadFile(hFile, &m_fScaleVelY, sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_fTexRotateVelocity, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_fScaleVelY, sizeof(float), &dwRWC, nullptr);
 	}
+
+	// TODO: implement m_bDistanceNumFix
+	if (m_iVersion >= 6)
+		ReadFile(hFile, &m_bDistanceNumFix, sizeof(bool), &dwRWC, nullptr);
+
+	// TODO: implement m_bParticleYAxisFix
+	if (m_iVersion >= 7)
+		ReadFile(hFile, &m_bParticleYAxisFix, sizeof(bool), &dwRWC, nullptr);
+
+	// TODO: implement m_bParticle_Not_Rot, m_vParticle_Not_Rotate_Axis
+	if (m_iVersion >= 8)
+	{
+		ReadFile(hFile, &m_bParticle_Not_Rotate, sizeof(bool), &dwRWC, nullptr);
+		ReadFile(hFile, &m_vParticle_Not_Rotate_Axis, sizeof(__Vector3), &dwRWC, nullptr);
+	}
+
+	// TODO: implement m_fPtRangeMin, m_fPtRangeMax
+	if (m_iVersion >= 9)
+	{
+		ReadFile(hFile, &m_fPtRangeMin, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_fPtRangeMax, sizeof(float), &dwRWC, nullptr);
+	}
+
+	if (m_iVersion >= 10)
+		SetFilePointer(hFile, 5, nullptr, FILE_CURRENT);
+
+	if (m_iVersion >= 11)
+		SetFilePointer(hFile, 12, nullptr, FILE_CURRENT);
 
 	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
 	// and otherwise be broken for now.
@@ -461,63 +488,64 @@ bool CN3FXPartParticles::Load(HANDLE hFile)
 //
 bool CN3FXPartParticles::Save(HANDLE hFile)
 {
-	if(!CN3FXPartBase::Save(hFile)) return false;
+	if (!CN3FXPartBase::Save(hFile))
+		return false;
 
 	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_iNumParticle, sizeof(int), &dwRWC, NULL);
+	WriteFile(hFile, &m_iNumParticle, sizeof(int), &dwRWC, nullptr);
 
-	WriteFile(hFile, &(m_pair_fParticleSize.first), sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &(m_pair_fParticleSize.second), sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &(m_pair_fParticleSize.first), sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &(m_pair_fParticleSize.second), sizeof(float), &dwRWC, nullptr);
 
-	WriteFile(hFile, &(m_pair_fParticleLife.first), sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &(m_pair_fParticleLife.second), sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &(m_pair_fParticleLife.first), sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &(m_pair_fParticleLife.second), sizeof(float), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_MinCreateRange, sizeof(__Vector3), &dwRWC, NULL);
-	WriteFile(hFile, &m_MaxCreateRange, sizeof(__Vector3), &dwRWC, NULL);
+	WriteFile(hFile, &m_MinCreateRange, sizeof(__Vector3), &dwRWC, nullptr);
+	WriteFile(hFile, &m_MaxCreateRange, sizeof(__Vector3), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_fCreateDelay, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_iNumCreate, sizeof(int), &dwRWC, NULL);
+	WriteFile(hFile, &m_fCreateDelay, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_iNumCreate, sizeof(int), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_dwEmitType, sizeof(uint32_t), &dwRWC, NULL);
+	WriteFile(hFile, &m_dwEmitType, sizeof(uint32_t), &dwRWC, nullptr);
 
-	if(	m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD )
+	if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD)
 	{
-		WriteFile(hFile, &(m_uEmitCon.fEmitAngle), sizeof(float), &dwRWC, NULL);
+		WriteFile(hFile, &(m_uEmitCon.fEmitAngle), sizeof(float), &dwRWC, nullptr);
 	}
-	else if( m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER )
+	else if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER)
 	{
-		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.x), sizeof(float), &dwRWC, NULL);
-		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.y), sizeof(float), &dwRWC, NULL);
-		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.z), sizeof(float), &dwRWC, NULL);
+		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.x), sizeof(float), &dwRWC, nullptr);
+		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.y), sizeof(float), &dwRWC, nullptr);
+		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.z), sizeof(float), &dwRWC, nullptr);
 	}
 
-	WriteFile(hFile, &m_vPtEmitDir, sizeof(__Vector3), &dwRWC, NULL);
-	WriteFile(hFile, &m_fPtVelocity, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fPtAccel, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fPtRotVelocity, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fPtGravity, sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &m_vPtEmitDir, sizeof(__Vector3), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fPtVelocity, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fPtAccel, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fPtRotVelocity, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fPtGravity, sizeof(float), &dwRWC, nullptr);
 
-	WriteFile(hFile, &m_bChangeColor, sizeof(bool), &dwRWC, NULL);
-	if(m_bChangeColor)
+	WriteFile(hFile, &m_bChangeColor, sizeof(bool), &dwRWC, nullptr);
+	if (m_bChangeColor)
 	{
 		int iNumKeyColor = NUM_KEY_COLOR;
-		WriteFile(hFile, &iNumKeyColor, sizeof(int), &dwRWC, NULL);
-		WriteFile(hFile, &m_dwChangeColor, sizeof(uint32_t)*NUM_KEY_COLOR, &dwRWC, NULL);
+		WriteFile(hFile, &iNumKeyColor, sizeof(int), &dwRWC, nullptr);
+		WriteFile(hFile, &m_dwChangeColor, sizeof(uint32_t) * NUM_KEY_COLOR, &dwRWC, nullptr);
 	}
 
-	WriteFile(hFile, &m_bAnimKey, sizeof(bool), &dwRWC, NULL);
-	if(m_bAnimKey)
+	WriteFile(hFile, &m_bAnimKey, sizeof(bool), &dwRWC, nullptr);
+	if (m_bAnimKey)
 	{
-		WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, NULL);
+		WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
 
 		char szShapeFileName[_MAX_PATH];
-		sprintf(szShapeFileName, m_pRefShape->FileName().c_str());
-		WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, NULL);
+		strcpy(szShapeFileName, m_pRefShape->FileName().c_str());
+		WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
 	}
 
-	WriteFile(hFile, &m_fTexRotateVelocity, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, NULL);
-	WriteFile(hFile, &m_fScaleVelY, sizeof(float), &dwRWC, NULL);
+	WriteFile(hFile, &m_fTexRotateVelocity, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, nullptr);
+	WriteFile(hFile, &m_fScaleVelY, sizeof(float), &dwRWC, nullptr);
 
 	return true;
 }

@@ -277,30 +277,29 @@ void CGameProcCharacterCreate::ReportErrorCharacterCreate(e_ErrorCharacterCreate
 	std::string szErr;
 
 	if (ERROR_CHARACTER_CREATE_NO_MORE_CHARACTER == eErrCode)
-		GetText(IDS_ERR_NO_MORE_CHARACTER, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_NO_MORE_CHARACTER);
 	else if(ERROR_CHARACTER_CREATE_INVALID_NATION_AND_INVALID_RACE == eErrCode)
-		GetText(IDS_ERR_INVALID_NATION_RACE, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_INVALID_NATION_RACE);
 	else if(ERROR_CHARACTER_CREATE_OVERLAPPED_ID == eErrCode)
-		GetText(IDS_ERR_OVERLAPPED_ID, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_OVERLAPPED_ID);
 	else if(ERROR_CHARACTER_CREATE_DB_CREATE == eErrCode)
-		GetText(IDS_ERR_DB_CREATE, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_DB_CREATE);
 	else if(ERROR_CHARACTER_CREATE_INVALID_NAME == eErrCode)
-		GetText(IDS_ERR_INVALID_NAME, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_INVALID_NAME);
 	else if(ERROR_CHARACTER_CREATE_INVALID_NAME_HAS_SPECIAL_LETTER == eErrCode)
-		GetText(IDS_ERR_INVALID_NAME_HAS_SPECIAL_LETTER, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_INVALID_NAME_HAS_SPECIAL_LETTER);
 	else if(ERROR_CHARACTER_CREATE_INVALID_RACE == eErrCode)
-		GetText(IDS_ERR_INVALID_RACE, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_INVALID_RACE);
 	else if(ERROR_CHARACTER_CREATE_NOT_SUPPORTED_RACE == eErrCode)
-		GetText(IDS_ERR_NOT_SUPPORTED_RACE, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_NOT_SUPPORTED_RACE);
 	else if(ERROR_CHARACTER_CREATE_INVALID_CLASS == eErrCode)
-		GetText(IDS_ERR_INVALID_CLASS, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_INVALID_CLASS);
 	else if(ERROR_CHARACTER_CREATE_REMAIN_BONUS_POINT == eErrCode)
-		GetText(IDS_ERR_REMAIN_BONUS_POINT, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_REMAIN_BONUS_POINT);
 	else // if (ERROR_CHARACTER_CREATE_INVALID_STAT_POINT == eErrCode)
-		GetText(IDS_ERR_UNKNOWN, &szErr);
+		szErr = fmt::format_text_resource(IDS_ERR_UNKNOWN);
 	
-	std::string szTitle;
-	GetText(IDS_ERR_CHARACTER_CREATE, &szTitle);
+	std::string szTitle = fmt::format_text_resource(IDS_ERR_CHARACTER_CREATE);
 	MessageBoxPost(szErr, szTitle, MB_OK);
 }
 

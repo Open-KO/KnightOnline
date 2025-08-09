@@ -343,8 +343,8 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 			
 	int					iTargetHPPercent;
 	int					iGold;
-	uint64_t			iExpNext;
-	uint64_t			iExp;
+	int64_t				iExpNext;
+	int64_t				iExp;
 	int					iRealmPoint;			// National Points
 	int					iRealmPointMonthly;		// Monthly National Points
 	e_KnightsDuty		eKnightsDuty;			// Clan member position/role/duty

@@ -199,7 +199,8 @@ bool CN3SndObj::Create(const std::string& szFN, e_SndType eType)
 	if(FAILED(hr))
 	{
 #ifdef _N3GAME
-		if(!szFN.empty()) CLogWriter::Write("CN3SndEng::LoadSource - WaveFile Open Failed.. (%s)", szFN.c_str());
+		if (!szFN.empty())
+			CLogWriter::Write("CN3SndObj::Create - WaveFile Open Failed.. ({})", szFN);
 #endif
 		return false;
 	}
@@ -224,7 +225,7 @@ bool CN3SndObj::Create(const std::string& szFN, e_SndType eType)
 	if(FAILED(hr))
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("CN3SndObj::Create - CreateSoundBuffer Failed.. (%)", szFN.c_str());
+		CLogWriter::Write("CN3SndObj::Create - CreateSoundBuffer Failed.. ({})", szFN);
 #endif
 		return false;
 	}
@@ -232,7 +233,7 @@ bool CN3SndObj::Create(const std::string& szFN, e_SndType eType)
     if(!FillBufferWithSound(&WaveFile))
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("CN3SndObj::Create - FillBufferWithSound Failed.. (%)", szFN.c_str());
+		CLogWriter::Write("CN3SndObj::Create - FillBufferWithSound Failed.. ({})", szFN);
 #endif
 		return false;
 	}

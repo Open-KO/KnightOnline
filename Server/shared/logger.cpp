@@ -14,7 +14,7 @@
 logger::Logger::Logger(const std::string& appName)
 	: _appName(appName)
 {
-	_defaultLogPath = std::format("logs/{}.log", appName);
+	_defaultLogPath = fmt::format("logs/{}.log", appName);
 }
 
 /// \brief Sets up spdlog from an ini file using standardized server settings

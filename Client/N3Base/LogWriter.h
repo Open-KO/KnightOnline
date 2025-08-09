@@ -10,6 +10,9 @@
 #endif // _MSC_VER > 1000
 
 #include <string>
+#include <string_view>
+
+#include <spdlog/fmt/bundled/format.h>
 
 class CLogWriter  
 {
@@ -20,7 +23,14 @@ protected:
 public:
 	static void Open(const std::string& szFN);
 	static void Close();
-	static void Write(const char* lpszFormat, ...);
+	static void Write(const std::string_view message);
+
+	template <typename... Args>
+	static inline void Write(fmt::format_string<Args...> fmt, Args &&...args)
+	{
+		std::string message = fmt::format(fmt, std::forward<Args>(args)...);
+		Write(message);
+	}
 	
 	CLogWriter();
 	virtual ~CLogWriter();

@@ -96,17 +96,18 @@ bool CN3Pond::Load(HANDLE hFile)
 		ptmpPondMesh->m_iHeightVtx = iVC/iWidthVertex;	///
 
 		int iTexNameLength = 0;
-		ReadFile(hFile, &iTexNameLength,sizeof(int),&dwNum,NULL);
-		if(iTexNameLength>0)
+		ReadFile(hFile, &iTexNameLength, sizeof(int), &dwNum, nullptr);
+		if (iTexNameLength > 0)
 		{
-			char szTextueFName[_MAX_PATH],szTextue[50];
-			ReadFile(hFile, szTextue, iTexNameLength, &dwNum, NULL);			// texture name
-			szTextue[iTexNameLength] = NULL;
-			sprintf(szTextueFName,"misc\\river\\%s",szTextue);
+			char szTexture[50];
+			ReadFile(hFile, szTexture, iTexNameLength, &dwNum, nullptr);			// texture name
+			szTexture[iTexNameLength] = '\0';
 
-			ptmpPondMesh->m_pTexWave = s_MngTex.Get(szTextueFName);
+			std::string szTextureFName = fmt::format("misc\\river\\{}", szTexture);
+
+			ptmpPondMesh->m_pTexWave = s_MngTex.Get(szTextureFName);
 			__ASSERT(ptmpPondMesh->m_pTexWave, "CN3Pond::texture load failed");
-		}		
+		}
 
 
 		// XyxT2 -> XyzColorT2 Converting.
@@ -208,15 +209,17 @@ bool CN3Pond::Load(HANDLE hFile)
 	m_iMaxVtxNum *= sizeof(float);
 
 #ifdef _DEBUG
-	for(int x=0;x<2000;x++) UpdateWaterPositions();
+	for (int x = 0; x < 2000; x++)
+		UpdateWaterPositions();
 #endif
 
-	if(m_iPondMeshNum<=0) return false;
+	if (m_iPondMeshNum <= 0)
+		return false;
 
-	char szFileName[30];
-	for (int i=0;i<MAX_POND_TEX;i++)
+	std::string szFileName;
+	for (int i = 0; i < MAX_POND_TEX; i++)
 	{
-		sprintf(szFileName, "misc\\river\\caust%02d.dxt", i);
+		szFileName = fmt::format("misc\\river\\caust{:02}.dxt", i);
 		m_pTexPond[i] = CN3Base::s_MngTex.Get(szFileName);
 		__ASSERT(m_pTexPond[i], "CN3Pond::texture load failed");
 	}

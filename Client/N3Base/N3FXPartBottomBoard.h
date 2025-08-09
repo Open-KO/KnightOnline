@@ -41,7 +41,10 @@ public:
 	float				m_fCurrSizeZ;
 
 	float				m_fGap;
-	
+	// N3FXPartBottomBoard needs implementation of these methods
+	bool				m_bNew_Uv;
+	bool				m_bHdr_uv;
+	// N3FXPartBottomBoard needs implementation of these methods
 protected:
 	__Vector3*			m_vUnit;
 

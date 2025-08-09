@@ -469,16 +469,14 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 
 	if ( iSkillExtra == 0 )
 	{
-		std::string szMsg;
-		CGameBase::GetText(IDS_SKILL_POINT_EXTRA_NOT_EXIST, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_EXTRA_NOT_EXIST);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return;
 	}
 
 	if ((iValue == 1) ||(iValue == 2) || (iValue == 3) ||(iValue == 4))	//.. 
 	{
-		std::string szMsg;
-		CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return;
 	}
@@ -498,8 +496,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 							case CLASS_KA_WIZARD:
 							case CLASS_KA_PRIEST:
 								{
-									std::string szMsg;
-									CGameBase::GetText(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE, &szMsg);
+									std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE);
 									CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 									return;
 								}
@@ -515,8 +512,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 							case CLASS_EL_WIZARD:
 							case CLASS_EL_PRIEST:
 								{
-									std::string szMsg;
-									CGameBase::GetText(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE, &szMsg);
+									std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_BEFORE_CLASS_CHANGE);
 									CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 									return;
 								}
@@ -540,8 +536,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 					case CLASS_KA_SHAMAN:
 					case CLASS_KA_BERSERKER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -557,8 +552,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 					case CLASS_EL_CLERIC:
 					case CLASS_EL_BLADE:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -578,8 +572,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_KA_BERSERKER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -592,8 +585,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_EL_BLADE:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -612,8 +604,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_KA_HUNTER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -626,8 +617,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 				{
 					case CLASS_EL_RANGER:
 						{
-							std::string szMsg;
-							CGameBase::GetText(IDS_SKILL_POINT_NOT_YET, &szMsg);
+							std::string szMsg = fmt::format_text_resource(IDS_SKILL_POINT_NOT_YET);
 							CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 							return;
 						}
@@ -680,8 +670,7 @@ void CUISkillTreeDlg::PointPushUpButton(int iValue)
 	// 자기 자신 레벨보다 높일수 없다..
 	if ( iSkillPoint >= CGameBase::s_pPlayer->m_InfoBase.iLevel )
 	{
-		std::string szMsg;
-		CGameBase::GetText(IDS_SKILL_UP_INVALID, &szMsg);
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_UP_INVALID);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);	
 		return;
 	}
@@ -827,7 +816,7 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 	{
 		// basic skill tab
 		case SKILL_DEF_BASIC:
-			CGameBase::GetText(IDS_SKILL_INFO_BASE, &szStr);
+			szStr = fmt::format_text_resource(IDS_SKILL_INFO_BASE);
 			break;
 
 		// first skill tab
@@ -838,28 +827,28 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_BERSERKER:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE0);
 					break;
 
 				case CLASS_EL_RANGER:
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_HUNTER:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER0);
 					break;
 
 				case CLASS_EL_CLERIC:
 				case CLASS_EL_DRUID:
 				case CLASS_KA_SHAMAN:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC0);
 					break;
 
 				case CLASS_EL_MAGE:
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_SORCERER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE0, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE0);
 					break;
 			}
 			break;
@@ -872,28 +861,28 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_BERSERKER:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE1);
 					break;
 
 				case CLASS_EL_RANGER:
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_HUNTER:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER1);
 					break;
 
 				case CLASS_EL_CLERIC:
 				case CLASS_EL_DRUID:
 				case CLASS_KA_SHAMAN:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC1);
 					break;
 
 				case CLASS_EL_MAGE:
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_SORCERER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE1, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE1);
 					break;
 			}
 			break;
@@ -906,28 +895,28 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_BERSERKER:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE2);
 					break;
 
 				case CLASS_EL_RANGER:
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_HUNTER:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER2);
 					break;
 
 				case CLASS_EL_CLERIC:
 				case CLASS_EL_DRUID:
 				case CLASS_KA_SHAMAN:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC2);
 					break;
 
 				case CLASS_EL_MAGE:
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_SORCERER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE2, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE2);
 					break;
 			}
 			break;
@@ -938,22 +927,22 @@ void CUISkillTreeDlg::ButtonTooltipRender(int iIndex)
 			{
 				case CLASS_EL_PROTECTOR:
 				case CLASS_KA_GUARDIAN:
-					CGameBase::GetText(IDS_SKILL_INFO_BLADE3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_BLADE3);
 					break;
 
 				case CLASS_EL_ASSASIN:
 				case CLASS_KA_PENETRATOR:
-					CGameBase::GetText(IDS_SKILL_INFO_RANGER3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_RANGER3);
 					break;
 
 				case CLASS_EL_DRUID:
 				case CLASS_KA_DARKPRIEST:
-					CGameBase::GetText(IDS_SKILL_INFO_CLERIC3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_CLERIC3);
 					break;
 
 				case CLASS_EL_ENCHANTER:
 				case CLASS_KA_NECROMANCER:
-					CGameBase::GetText(IDS_SKILL_INFO_MAGE3, &szStr);
+					szStr = fmt::format_text_resource(IDS_SKILL_INFO_MAGE3);
 					break;
 			}
 			break;
@@ -984,9 +973,9 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		m_pStr_skill_mp->SetVisible(true);
 
 	if (spSkill->pSkill->iExhaustMSP == 0)
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_NO_MANA, &szStr);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NO_MANA);
 	else
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_MANA, &szStr, spSkill->pSkill->iExhaustMSP);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_USE_MANA, spSkill->pSkill->iExhaustMSP);
 
 	m_pStr_skill_mp->SetString(szStr);
 	szStr.clear();
@@ -997,10 +986,10 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 
 	// Basic skills
 	if ((spSkill->pSkill->iNeedSkill % 10) == 0)
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_NEED_LEVEL, &szStr, spSkill->pSkill->iNeedLevel);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_LEVEL, spSkill->pSkill->iNeedLevel);
 	// 2nd job and master skills
 	else
-		CGameBase::GetTextF(IDS_SKILL_TOOLTIP_NEED_SKILL_PT, &szStr, spSkill->pSkill->iNeedLevel);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_SKILL_PT, spSkill->pSkill->iNeedLevel);
 
 	m_pStr_skill_point->SetString(szStr);
 	szStr.clear();
@@ -1014,13 +1003,13 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	{
 		case SKILL_REQUIRES_DUAL_WEAPON_WARRIOR:
 		case SKILL_REQUIRES_DUAL_WEAPON_ROGUE:
-			CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL, &szStr);
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL);
 			bFound = true;
 			break;
 
 		case SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR:
 		case SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE:
-			CGameBase::GetText(IDS_SKILL_TOOLTIP_DOUBLE, &szStr);
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_DOUBLE);
 			bFound = true;
 			break;
 	}
@@ -1030,24 +1019,24 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	{
 		switch (spSkill->pSkill->dwNeedItem)
 		{
-			case 0:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1,  &szStr); break;
-			case 1:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2,  &szStr); break;
-			case 2:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3,  &szStr); break;
-			case 3:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4,  &szStr); break;
-			case 4:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5,  &szStr); break;
-			case 5:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6,  &szStr); break;
-			case 6:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7,  &szStr); break;
-			case 7:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8,  &szStr); break;
-			case 8:		CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9,  &szStr); break;
-			case 10:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10, &szStr); break;
-			case 11:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11, &szStr); break;
-			case 12:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12, &szStr); break;
-			case 13:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13, &szStr); break;
-			case 21:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14, &szStr); break;
-			case 22:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15, &szStr); break;
-			case 23:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16, &szStr); break;
-			case 24:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17, &szStr); break;
-			default:	CGameBase::GetText(IDS_SKILL_TOOLTIP_NEED_ITEM_NO,	 &szStr); break;
+			case 0:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1); break;
+			case 1:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2); break;
+			case 2:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3); break;
+			case 3:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4); break;
+			case 4:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5); break;
+			case 5:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6); break;
+			case 6:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7); break;
+			case 7:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8); break;
+			case 8:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9); break;
+			case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
+			case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
+			case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
+			case 13:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13); break;
+			case 21:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14); break;
+			case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
+			case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
+			case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
+			default:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_NO); break;
 		}
 	}
 
@@ -1058,17 +1047,17 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	if (!m_pStr_skill_item1->IsVisible())
 		m_pStr_skill_item1->SetVisible(true);
 
-	if (spSkill->pSkill->dwExhaustItem == 0)
-	{
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_ITEM_NO, &szStr);
-	}
-	else
+	if (spSkill->pSkill->dwExhaustItem != 0)
 	{
 		__TABLE_ITEM_BASIC* pItem = CGameBase::s_pTbl_Items_Basic.Find(spSkill->pSkill->dwExhaustItem);
 		__ASSERT(pItem != nullptr, "NULL Item!!!");
 
 		if (pItem != nullptr)
-			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_ITEM_NEED, &szStr, pItem->szName.c_str());
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_ITEM_NEED, pItem->szName);
+	}
+	else
+	{
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_ITEM_NO);
 	}
 
 	m_pStr_skill_item1->SetString(szStr);
@@ -1103,11 +1092,11 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		__ASSERT(pItem != nullptr, "NULL Item!!!");
 
 		if (pItem != nullptr)
-			CGameBase::GetTextF(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, &szStr, pItem->szName.c_str());
+			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_USE_ITEM_EXIST, pItem->szName);
 	}
 	else
 	{
-		CGameBase::GetText(IDS_SKILL_TOOLTIP_USE_ITEM_NO, &szStr);
+		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_USE_ITEM_NO);
 	}
 
 	m_pStr_skill_item2->SetString(szStr);
@@ -1489,13 +1478,10 @@ stop:
 	spSkill->pSkill = pUSkill;
 
 	// 아이콘 이름 만들기.. ^^
-	std::vector<char> buffer(256, NULL);
-	if(bHasLevelToUse)
-		sprintf(&buffer[0], "UI\\skillicon_%.2d_%d.dxt", pUSkill->dwID % 100, pUSkill->dwID / 100);
+	if (bHasLevelToUse)
+		spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt", pUSkill->dwID % 100, pUSkill->dwID / 100);
 	else
-		sprintf(&buffer[0], "UI\\skillicon_enigma.dxt");
-
-	spSkill->szIconFN = &buffer[0];
+		spSkill->szIconFN = "UI\\skillicon_enigma.dxt";
 	
 	// 아이콘 로드하기.. ^^
 	spSkill->pUIIcon = new CN3UIIcon;
@@ -1672,23 +1658,20 @@ void CUISkillTreeDlg::SetPageInIconRegion(int iKindOf, int iPageNum)		// 아이�
 
 	// 아이콘 설명 문자열 업데이트.. 현재 스킬 종류와 현재 스킬 페이지중 아이콘이 보이면 String보이게.. 아니면 안보이게..
 	CN3UIString* pStrName;
-	std::string str; 
-	char	cstr[4];
+	std::string str;
 
 	for( k = 0; k < MAX_SKILL_IN_PAGE; k++ )
 	{
 		if ( m_pMySkillTree[m_iCurKindOf][m_iCurSkillPage][k] != NULL )
 		{
-			str = "string_list_";
-			sprintf(cstr, "%d", k);	str += cstr;
+			str = "string_list_" + std::to_string(k);
 			pStrName = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStrName, "NULL UI Component!!");
 			pStrName->SetString(m_pMySkillTree[m_iCurKindOf][m_iCurSkillPage][k]->pSkill->szName);
 			pStrName->SetVisible(true);
 		}
 		else
 		{
-			str = "string_list_";
-			sprintf(cstr, "%d", k);	str += cstr;
+			str = "string_list_" + std::to_string(k);
 			pStrName = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStrName, "NULL UI Component!!");
 			pStrName->SetVisible(false);
 		}
@@ -1696,9 +1679,9 @@ void CUISkillTreeDlg::SetPageInIconRegion(int iKindOf, int iPageNum)		// 아이�
 
 	ButtonVisibleStateSet();
 
-	CN3UIString* pStr = (CN3UIString*)GetChildByID("string_page");	__ASSERT(pStr, "NULL UI Component!!");
-	sprintf(cstr, "%d", iPageNum+1);
-	if(pStr) pStr->SetString(cstr);
+	CN3UIString* pStr = (CN3UIString*) GetChildByID("string_page");	__ASSERT(pStr, "NULL UI Component!!");
+	if (pStr != nullptr)
+		pStr->SetStringAsInt(iPageNum + 1);
 }
 
 void CUISkillTreeDlg::AllClearImageByName(std::string_view svHeaderID, bool bVisible, std::string_view svCategoryID)

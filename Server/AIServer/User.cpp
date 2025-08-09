@@ -879,18 +879,16 @@ BYTE CUser::GetHitRate(float rate)
 }
 
 
-void CUser::SendSystemMsg(const char* pMsg, BYTE type, int nWho)
+void CUser::SendSystemMsg(const std::string_view msg, BYTE type, int nWho)
 {
 	int send_index = 0;
 	char buff[1024] = {};
-	short sLength = static_cast<short>(strlen(pMsg));
 
 	SetByte(buff, AG_SYSTEM_MSG, send_index);
 	SetByte(buff, type, send_index);				// 채팅형식
 	SetShort(buff, nWho, send_index);				// 누구에게
 	SetShort(buff, m_iUserId, send_index);
-	SetShort(buff, sLength, send_index);
-	SetString(buff, pMsg, sLength, send_index);
+	SetString2(buff, msg, send_index);
 
 	SendAll(buff, send_index);
 }

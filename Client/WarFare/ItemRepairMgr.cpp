@@ -129,8 +129,7 @@ void CItemRepairMgr::Tick()
 				if (iRepairGold > s_pPlayer->m_InfoExt.iGold)
 				{
 					// 서버에게 보내지 않고 메시지 표시.. 
-					std::string szMsg;
-					GetText(IDS_REPAIR_LACK_GOLD, &szMsg);
+					std::string szMsg = fmt::format_text_resource(IDS_REPAIR_LACK_GOLD);
 					CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff00ff);
 				}
 				else
@@ -199,13 +198,9 @@ void CItemRepairMgr::ReceiveResultFromServer(int iResult, int iUserGold)
 
 void CItemRepairMgr::UpdateUserTotalGold(int iGold)
 {
-	char szGold[32];
-
 	// 돈 업데이트..
 	s_pPlayer->m_InfoExt.iGold = iGold;
-	sprintf(szGold, "%d", iGold);
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
-	
 }
 
 int CItemRepairMgr::CalcRepairGold(__IconItemSkill* spItem)

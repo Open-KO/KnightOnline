@@ -29,7 +29,7 @@ public:
 	bool	Tick();
 	
 	void	Duplicate(CN3FXBundleGame* pDestBundle);
-	bool	Load(HANDLE hFile);
+	CN3FXPartBase* AllocatePart(int iPartType) const override;
 
 	CN3FXBundleGame();
 	virtual ~CN3FXBundleGame();

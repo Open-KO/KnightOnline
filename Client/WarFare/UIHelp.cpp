@@ -31,16 +31,18 @@ CUIHelp::~CUIHelp()
 
 bool CUIHelp::Load(HANDLE hFile)
 {
-	if(false == CN3UIBase::Load(hFile)) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
 	int iPageCount = 0;
-	for(int i = 0; i < MAX_HELP_PAGE; i++)
+	std::string szID;
+	for (int i = 0; i < MAX_HELP_PAGE; i++)
 	{
-		char szID[32]; sprintf(szID, "Page%d", i);
-		m_pPages[i] = this->GetChildByID(szID);
-		if(m_pPages[i])
+		szID = fmt::format("Page{}", i);
+		m_pPages[i] = GetChildByID(szID);
+		if (m_pPages[i] != nullptr)
 		{
-			m_pPages[i]->SetVisible((0 == iPageCount ? true : false));
+			m_pPages[i]->SetVisible(0 == iPageCount);
 			iPageCount++;
 		}
 	}

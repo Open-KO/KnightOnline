@@ -9,6 +9,7 @@
 #include "Map.h"
 
 #include <shared/packets.h>
+#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -1227,7 +1228,7 @@ void CUser::LogOut()
 
 	if (count > 29)
 	{
-		std::string logstr = std::format("LogOut: send error: accountId={} charId={}",
+		std::string logstr = fmt::format("LogOut: send error: accountId={} charId={}",
 			m_pUserData->m_Accountid, m_pUserData->m_id);
 		m_pMain->AddOutputMessage(logstr);
 	}
@@ -1902,8 +1903,8 @@ void CUser::Chat(char* pBuf)
 	BYTE type;
 	CUser* pUser = nullptr;
 	char chatstr[1024] = {},
-		finalstr[1024] = {},
 		send_buff[1024] = {};
+	std::string finalstr;
 
 	// this user refused chatting
 	if (m_pUserData->m_bAuthority == AUTHORITY_NOCHAT)
@@ -1923,14 +1924,11 @@ void CUser::Chat(char* pBuf)
 		if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 			return;
 
-		//sprintf( finalstr, "#### 공지 : %s ####", chatstr );
-		std::string buff;
-		::_LoadStringFromResource(IDP_ANNOUNCEMENT, buff);
-		sprintf(finalstr, buff.c_str(), chatstr);
+		finalstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
 	}
 	else
 	{
-		strcpy(finalstr, chatstr);
+		finalstr.assign(chatstr, chatlen);
 	}
 
 	SetByte(send_buff, WIZ_CHAT, send_index);
@@ -1938,7 +1936,7 @@ void CUser::Chat(char* pBuf)
 	SetByte(send_buff, m_pUserData->m_bNation, send_index);
 	SetShort(send_buff, m_Sid, send_index);
 	SetString1(send_buff, m_pUserData->m_id, static_cast<BYTE>(strlen(m_pUserData->m_id)), send_index);
-	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+	SetString2(send_buff, finalstr, send_index);
 
 	switch (type)
 	{
@@ -7204,12 +7202,9 @@ void CUser::LoyaltyDivide(short tid)
 void CUser::Dead()
 {
 	int send_index = 0;
-	char chatstr[1024] = {},
-		finalstr[1024] = {},
-		send_buff[1024] = {},
+	char send_buff[1024] = {},
 		strKnightsName[MAX_ID_SIZE + 1] = {};
 	CKnights* pKnights = nullptr;
-	std::string buff, buff2;
 
 	SetByte(send_buff, WIZ_DEAD, send_index);
 	SetShort(send_buff, m_Sid, send_index);
@@ -7219,14 +7214,6 @@ void CUser::Dead()
 
 	// 유저에게는 바로 데드 패킷을 날림... (한 번 더 보냄, 유령을 없애기 위해서)
 	Send(send_buff, send_index);
-
-#if defined(_DEBUG)
-	{
-		//TCHAR logstr[1024] = {};
-		//_stprintf(logstr, _T("----> User Dead ,, nid=%d, name=%hs, type=%d, x=%d, z=%d ******"), m_Sid, m_pUserData->m_id, m_bResHpType, (int) m_pUserData->m_curx, (int) m_pUserData->m_curz);
-		//TimeTrace(logstr);
-	}
-#endif
 
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;
@@ -7248,31 +7235,24 @@ void CUser::Dead()
 		else
 			strcpy(strKnightsName, "*");
 
+		std::string chatstr;
+
 		//TRACE(_T("---> Dead Captain Deprive - %hs\n"), m_pUserData->m_id);
 		if (m_pUserData->m_bNation == KARUS)
-		{
-			//m_pMain->Announcement( KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
-			::_LoadStringFromResource(IDS_KARUS_CAPTAIN_DEPRIVE, buff);
-			sprintf(chatstr, buff.c_str(), strKnightsName, m_pUserData->m_id);
-		}
+			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 		else if (m_pUserData->m_bNation == ELMORAD)
-		{
-			//m_pMain->Announcement( ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, ELMORAD );
-			::_LoadStringFromResource(IDS_ELMO_CAPTAIN_DEPRIVE, buff);
-			sprintf(chatstr, buff.c_str(), strKnightsName, m_pUserData->m_id);
-		}
+			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 
 		memset(send_buff, 0, sizeof(send_buff));
 		send_index = 0;
-		::_LoadStringFromResource(IDP_ANNOUNCEMENT, buff2);
-		sprintf(finalstr, buff2.c_str(), chatstr);
-		//sprintf( finalstr, "## 공지 : %s ##", chatstr );
+
+		chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
 		SetByte(send_buff, WIZ_CHAT, send_index);
 		SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 		SetByte(send_buff, 1, send_index);
 		SetShort(send_buff, -1, send_index);
 		SetByte(send_buff, 0, send_index);			// sender name length
-		SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+		SetString2(send_buff, chatstr, send_index);
 		m_pMain->Send_All(send_buff, send_index, nullptr, m_pUserData->m_bNation);
 	}
 }
@@ -12211,23 +12191,12 @@ void CUser::NativeZoneReturn()
 
 BOOL CUser::CheckEditBox()
 {
-	char notepadid[MAX_COUPON_ID_LENGTH] = {},
-		postitid[MAX_COUPON_ID_LENGTH] = {};
-
-	std::string buff;
-	::_LoadStringFromResource(IDS_COUPON_NOTEPAD_ID, buff);
-	sprintf(notepadid, buff.c_str());
-
-//	if (_strnicmp(notepadid, m_strCouponId, MAX_COUPON_ID_LENGTH) == 0)
-	if (strcmp(notepadid, m_strCouponId) == 0)
+	std::string id = fmt::format_win32_resource(IDS_COUPON_NOTEPAD_ID);
+	if (id == m_strCouponId)
 		return TRUE;
 
-	std::string buff1;
-	::_LoadStringFromResource(IDS_COUPON_POSTIT_ID, buff1);
-	sprintf(postitid, buff1.c_str());
-
-//	if (_strnicmp(postitid, m_strCouponId, MAX_COUPON_ID_LENGTH) == 0)
-	if (strcmp(postitid, m_strCouponId) == 0)
+	id = fmt::format_win32_resource(IDS_COUPON_POSTIT_ID);
+	if (id == m_strCouponId)
 		return TRUE;
 
 	return FALSE;

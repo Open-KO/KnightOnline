@@ -14,6 +14,8 @@
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
+#include <shared/ServerResourceFormatter.h>
+
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -1450,8 +1452,6 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 	int nType = 0, nResult = 0, nLen = 0;
 	char strMaxUserName[MAX_ID_SIZE + 1] = {},
 		strKnightsName[MAX_ID_SIZE + 1] = {},
-		chatstr[1024] = {},
-		finalstr[1024] = {},
 		send_buff[1024] = {},
 		udp_buff[1024] = {};
 
@@ -1566,10 +1566,10 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 
 			//TRACE(_T("--> RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
 
+			std::string chatstr;
 			if (nResult == 1)
 			{
-				::_LoadStringFromResource(IDS_KILL_CAPTAIN, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_CAPTAIN, strKnightsName, strMaxUserName);
 
 		/*		if (m_pMain->m_byBattleSave == 0)
 				{
@@ -1582,7 +1582,7 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 					SetByte(send_buff, nLen, send_index);
 					SetString(send_buff, strMaxUserName, nLen, send_index);
 					retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
-					if  retvalue >= SMQ_FULL)
+					if (retvalue >= SMQ_FULL)
 					{
 						char logstr[256] = {};
 						sprintf(logstr, "WIZ_BATTLE_EVENT Send Fail : %d, %d", retvalue, nType);
@@ -1593,47 +1593,39 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			}
 			else if (nResult == 2)
 			{
-				::_LoadStringFromResource(IDS_KILL_GATEKEEPER, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_GATEKEEPER, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 3)
 			{
-				::_LoadStringFromResource(IDS_KILL_KARUS_GUARD1, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD1, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 4)
 			{
-				::_LoadStringFromResource(IDS_KILL_KARUS_GUARD2, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD2, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 5)
 			{
-				::_LoadStringFromResource(IDS_KILL_ELMO_GUARD1, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD1, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 6)
 			{
-				::_LoadStringFromResource(IDS_KILL_ELMO_GUARD2, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD2, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 7
 				|| nResult == 8)
 			{
-				::_LoadStringFromResource(IDS_KILL_GATEKEEPER, buff);
-				sprintf(chatstr, buff.c_str(), strKnightsName, strMaxUserName);
+				chatstr = fmt::format_win32_resource(IDS_KILL_GATEKEEPER, strKnightsName, strMaxUserName);
 			}
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
-			//sprintf( finalstr, "## 공지 : %s ##", chatstr );
-			::_LoadStringFromResource(IDP_ANNOUNCEMENT, buff2);
-			sprintf(finalstr, buff2.c_str(), chatstr);
+			chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
 			SetByte(send_buff, WIZ_CHAT, send_index);
 			SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
-			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+			SetString2(send_buff, chatstr, send_index);
 			m_pMain->Send_All(send_buff, send_index);
 
 			memset(send_buff, 0, sizeof(send_buff));
@@ -1643,7 +1635,7 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			SetByte(send_buff, 1, send_index);
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
-			SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+			SetString2(send_buff, chatstr, send_index);
 			m_pMain->Send_All(send_buff, send_index);
 
 			SetByte(udp_buff, UDP_BATTLE_EVENT_PACKET, udp_index);

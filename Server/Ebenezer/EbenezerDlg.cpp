@@ -8,6 +8,7 @@
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
+#include <shared/ServerResourceFormatter.h>
 #include <shared/StringUtils.h>
 
 #include <db-library/ConnectionManager.h>
@@ -1255,7 +1256,7 @@ BOOL CEbenezerDlg::MapFileLoad()
 
 void CEbenezerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("EbenezerDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("EbenezerDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());
@@ -1385,7 +1386,7 @@ BOOL CEbenezerDlg::LoadLevelUpTable()
 void CEbenezerDlg::LoadConfig()
 {
 	int year = 0, month = 0, date = 0, hour = 0, serverCount = 0, sgroup_count = 0;
-	char ipkey[20] = {};
+	std::string key;
 
 	CString exePath(GetProgPath());
 	std::string exePathUtf8(CT2A(exePath, CP_UTF8));
@@ -1433,11 +1434,11 @@ void CEbenezerDlg::LoadConfig()
 	{
 		_ZONE_SERVERINFO* pInfo = new _ZONE_SERVERINFO;
 
-		sprintf(ipkey, "SERVER_%02d", i);
-		pInfo->sServerNo = m_Ini.GetInt("ZONE_INFO", ipkey, 1);
+		key = fmt::format("SERVER_{:02}", i);
+		pInfo->sServerNo = m_Ini.GetInt("ZONE_INFO", key, 1);
 
-		sprintf(ipkey, "SERVER_IP_%02d", i);
-		m_Ini.GetString("ZONE_INFO", ipkey, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
+		key = fmt::format("SERVER_IP_{:02}", i);
+		m_Ini.GetString("ZONE_INFO", key, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
 
 		pInfo->sPort = _LISTEN_PORT + pInfo->sServerNo;
 
@@ -1458,11 +1459,11 @@ void CEbenezerDlg::LoadConfig()
 		{
 			_ZONE_SERVERINFO* pInfo = new _ZONE_SERVERINFO;
 
-			sprintf(ipkey, "GSERVER_%02d", i);
-			pInfo->sServerNo = m_Ini.GetInt("SG_INFO", ipkey, 1);
+			key = fmt::format("GSERVER_{:02}", i);
+			pInfo->sServerNo = m_Ini.GetInt("SG_INFO", key, 1);
 
-			sprintf(ipkey, "GSERVER_IP_%02d", i);
-			m_Ini.GetString("SG_INFO", ipkey, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
+			key = fmt::format("GSERVER_IP_{:02}", i);
+			m_Ini.GetString("SG_INFO", key, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
 
 			pInfo->sPort = _LISTEN_PORT + pInfo->sServerNo;
 
@@ -2265,22 +2266,14 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 				m_bSanta = FALSE;			// SHOOT DOWN Motherfucking Santa Claus!!!
 				return TRUE;
 			}
-//
 
-			char finalstr[256] = {};
-//			sprintf( finalstr, "#### 공지 : %s ####", chatstr );
+			std::string finalstr;
 
 			// 비러머글 남는 공지		
 			if (m_bPermanentChatFlag)
-			{
-				sprintf(finalstr, "- %s -", chatstr);
-			}
+				finalstr = fmt::format("- {} -", chatstr);
 			else
-			{
-				//sprintf( finalstr, "#### 공지 : %s ####", chatstr );
-				_LoadStringFromResource(IDP_ANNOUNCEMENT, buff2);
-				sprintf(finalstr, buff2.c_str(), chatstr);
-			}
+				finalstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
 
 			//
 			SetByte(buff, WIZ_CHAT, buffindex);
@@ -2298,21 +2291,20 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			else
 			{
 				SetByte(buff, PERMANENT_CHAT, buffindex);
-				strcpy(m_strPermanentChat, finalstr);
+				strcpy(m_strPermanentChat, finalstr.c_str());
 				m_bPermanentChatFlag = FALSE;
 			}
 //
 			SetByte(buff, 0x01, buffindex);		// nation
 			SetShort(buff, -1, buffindex);		// sid
 			SetByte(buff, 0, buffindex);		// sender name length
-			SetString2(buff, finalstr, static_cast<short>(strlen(finalstr)), buffindex);
+			SetString2(buff, finalstr, buffindex);
 			Send_All(buff, buffindex);
 
 			buffindex = 0;
 			memset(buff, 0x00, 1024);
 			SetByte(buff, STS_CHAT, buffindex);
-			SetShort(buff, strlen(finalstr), buffindex);
-			SetString(buff, finalstr, strlen(finalstr), buffindex);
+			SetString2(buff, finalstr, buffindex);
 
 			for (const auto& [_, pInfo] : m_ServerArray)
 			{
@@ -2974,100 +2966,70 @@ void CEbenezerDlg::ResetBattleZone()
 void CEbenezerDlg::Announcement(BYTE type, int nation, int chat_type)
 {
 	int send_index = 0;
+	char send_buff[1024] = {};
 
-	char chatstr[1024] = {},
-		finalstr[1024] = {},
-		send_buff[1024] = {};
-
-	std::string buff;
-	std::string buff2;
+	std::string chatstr;
 
 	switch (type)
 	{
 		case BATTLEZONE_OPEN:
-			_LoadStringFromResource(IDP_BATTLEZONE_OPEN, buff);
-			sprintf(chatstr, buff.c_str());
+			chatstr = fmt::format_win32_resource(IDP_BATTLEZONE_OPEN);
 			break;
 
 		case SNOW_BATTLEZONE_OPEN:
-			_LoadStringFromResource(IDP_BATTLEZONE_OPEN, buff);
-			sprintf(chatstr, buff.c_str());
+			chatstr = fmt::format_win32_resource(IDP_BATTLEZONE_OPEN);
 			break;
 
 		case DECLARE_WINNER:
 			if (m_bVictory == KARUS)
-			{
-				_LoadStringFromResource(IDP_KARUS_VICTORY, buff);
-				sprintf(chatstr, buff.c_str(), m_sElmoradDead, m_sKarusDead);
-			}
+				chatstr = fmt::format_win32_resource(IDP_KARUS_VICTORY, m_sElmoradDead, m_sKarusDead);
 			else if (m_bVictory == ELMORAD)
-			{
-				_LoadStringFromResource(IDP_ELMORAD_VICTORY, buff);
-				sprintf(chatstr, buff.c_str(), m_sKarusDead, m_sElmoradDead);
-			}
+				chatstr = fmt::format_win32_resource(IDP_ELMORAD_VICTORY, m_sKarusDead, m_sElmoradDead);
 			else
-			{
 				return;
-			}
 			break;
 
 		case DECLARE_LOSER:
 			if (m_bVictory == KARUS)
-			{
-				_LoadStringFromResource(IDS_ELMORAD_LOSER, buff);
-				sprintf(chatstr, buff.c_str(), m_sKarusDead, m_sElmoradDead);
-			}
+				chatstr = fmt::format_win32_resource(IDS_ELMORAD_LOSER, m_sKarusDead, m_sElmoradDead);
 			else if (m_bVictory == ELMORAD)
-			{
-				_LoadStringFromResource(IDS_KARUS_LOSER, buff);
-				sprintf(chatstr, buff.c_str(), m_sElmoradDead, m_sKarusDead);
-			}
+				chatstr = fmt::format_win32_resource(IDS_KARUS_LOSER, m_sElmoradDead, m_sKarusDead);
 			else
-			{
 				return;
-			}
 			break;
 
 		case DECLARE_BAN:
-			_LoadStringFromResource(IDS_BANISH_USER, buff);
-			sprintf(chatstr, buff.c_str());
+			chatstr = fmt::format_win32_resource(IDS_BANISH_USER);
 			break;
 
 		case BATTLEZONE_CLOSE:
-			_LoadStringFromResource(IDS_BATTLE_CLOSE, buff);
-			sprintf(chatstr, buff.c_str());
+			chatstr = fmt::format_win32_resource(IDS_BATTLE_CLOSE);
 			break;
 
 		case KARUS_CAPTAIN_NOTIFY:
-			_LoadStringFromResource(IDS_KARUS_CAPTAIN, buff);
-			sprintf(chatstr, buff.c_str(), m_strKarusCaptain);
+			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN, m_strKarusCaptain);
 			break;
 
 		case ELMORAD_CAPTAIN_NOTIFY:
-			_LoadStringFromResource(IDS_ELMO_CAPTAIN, buff);
-			sprintf(chatstr, buff.c_str(), m_strElmoradCaptain);
+			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN, m_strElmoradCaptain);
 			break;
 
 		case KARUS_CAPTAIN_DEPRIVE_NOTIFY:
-			_LoadStringFromResource(IDS_KARUS_CAPTAIN_DEPRIVE, buff);
-			sprintf(chatstr, buff.c_str(), m_strKarusCaptain);
+			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN_DEPRIVE, m_strKarusCaptain);
 			break;
 
 		case ELMORAD_CAPTAIN_DEPRIVE_NOTIFY:
-			_LoadStringFromResource(IDS_ELMO_CAPTAIN_DEPRIVE, buff);
-			sprintf(chatstr, buff.c_str(), m_strElmoradCaptain);
+			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN_DEPRIVE, m_strElmoradCaptain);
 			break;
 	}
 
-	_LoadStringFromResource(IDP_ANNOUNCEMENT, buff2);
-	sprintf(finalstr, buff2.c_str(), chatstr);
-	//sprintf( finalstr, "## 공지 : %s ##", chatstr );
+	chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
 	SetByte(send_buff, WIZ_CHAT, send_index);
 	SetByte(send_buff, chat_type, send_index);
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
-	SetString2(send_buff, finalstr, static_cast<short>(strlen(finalstr)), send_index);
+	SetString2(send_buff, chatstr, send_index);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
@@ -3567,10 +3529,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 {
 	using ModelType = model::KnightsRating;
 
-	char strKarusCaptainName[1024] = {},
-		strElmoCaptainName[1024] = {},
-		strKarusCaptain[5][50] = {},
-		strElmoCaptain[5][50] = {};
+	std::string strKarusCaptain[5], strElmoCaptain[5];
 
 	recordset_loader::Base<ModelType> loader;
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
@@ -3608,7 +3567,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 				if (pUser->m_pUserData->m_bKnights == row.Index)
 				{
 					pUser->m_pUserData->m_bFame = COMMAND_CAPTAIN;
-					sprintf(strKarusCaptain[nKarusRank], "[%s][%s]", row.Name.c_str(), pUser->m_pUserData->m_id);
+					strKarusCaptain[nKarusRank] = fmt::format("[{}][{}]", row.Name, pUser->m_pUserData->m_id);
 					nKarusRank++;
 
 					nFindKarus = 1;
@@ -3644,7 +3603,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 				if (pUser->m_pUserData->m_bKnights == row.Index)
 				{
 					pUser->m_pUserData->m_bFame = COMMAND_CAPTAIN;
-					sprintf(strElmoCaptain[nElmoRank], "[%s][%s]", row.Name.c_str(), pUser->m_pUserData->m_id);
+					strElmoCaptain[nElmoRank] = fmt::format("[{}][{}]", row.Name, pUser->m_pUserData->m_id);
 					nFindElmo = 1;
 					nElmoRank++;
 
@@ -3672,15 +3631,12 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 		return FALSE;
 	}
 
-	std::string buff;
-	_LoadStringFromResource(IDS_KARUS_CAPTAIN, buff);
-	sprintf(strKarusCaptainName, buff.c_str(), strKarusCaptain[0], strKarusCaptain[1], strKarusCaptain[2], strKarusCaptain[3], strKarusCaptain[4]);
+	std::string strKarusCaptainName = fmt::format_win32_resource(IDS_KARUS_CAPTAIN,
+		strKarusCaptain[0], strKarusCaptain[1], strKarusCaptain[2], strKarusCaptain[3], strKarusCaptain[4]);
 
-	_LoadStringFromResource(IDS_ELMO_CAPTAIN, buff);
-	sprintf(strElmoCaptainName, buff.c_str(), strElmoCaptain[0], strElmoCaptain[1], strElmoCaptain[2], strElmoCaptain[3], strElmoCaptain[4]);
+	std::string strElmoCaptainName = fmt::format_win32_resource(IDS_ELMO_CAPTAIN,
+		strElmoCaptain[0], strElmoCaptain[1], strElmoCaptain[2], strElmoCaptain[3], strElmoCaptain[4]);
 
-	//sprintf( strKarusCaptainName, "카루스의 지휘관은 %s, %s, %s, %s, %s 입니다", strKarusCaptain[0], strKarusCaptain[1], strKarusCaptain[2], strKarusCaptain[3], strKarusCaptain[4]);
-	//sprintf( strElmoCaptainName, "엘모라드의 지휘관은 %s, %s, %s, %s, %s 입니다", strKarusCaptain[0], strKarusCaptain[1], strKarusCaptain[2], strKarusCaptain[3], strKarusCaptain[4]);
 	spdlog::trace("EbenezerDlg::LoadKnightsRankTable: success");
 
 	char send_buff[1024] = {},
@@ -3692,14 +3648,14 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 	SetByte(send_buff, 1, send_index);
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
-	SetString2(send_buff, strKarusCaptainName, static_cast<short>(strlen(strKarusCaptainName)), send_index);
+	SetString2(send_buff, strKarusCaptainName, send_index);
 
 	SetByte(temp_buff, WIZ_CHAT, temp_index);
 	SetByte(temp_buff, WAR_SYSTEM_CHAT, temp_index);
 	SetByte(temp_buff, 1, temp_index);
 	SetShort(temp_buff, -1, temp_index);
 	SetByte(temp_buff, 0, send_index);			// sender name length
-	SetString2(temp_buff, strElmoCaptainName, static_cast<short>(strlen(strElmoCaptainName)), temp_index);
+	SetString2(temp_buff, strElmoCaptainName, temp_index);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{

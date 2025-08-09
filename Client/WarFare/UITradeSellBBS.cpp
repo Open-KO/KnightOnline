@@ -86,11 +86,11 @@ bool CUITradeSellBBS::Load(HANDLE hFile)
 
 	m_pString_Page			= (CN3UIString*)(this->GetChildByID("string_page"));	__ASSERT(m_pString_Page, "NULL UI Component!!!");
 
-	char szBuf[64];
-	for(int i = 0 ; i < TRADE_BBS_MAXSTRING ; i++)
+	std::string szID;
+	for(int i = 0; i < TRADE_BBS_MAXSTRING; i++)
 	{
-		sprintf(szBuf,"text_%.2d",i);
-		m_pText[i] = (CN3UIString*)(this->GetChildByID(szBuf));
+		szID = fmt::format("text_{:02}", i);
+		m_pText[i] = (CN3UIString*) GetChildByID(szID);
 	}
 
 	m_iCurPage = 0; // 현재 페이지..
@@ -202,8 +202,7 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 		uint8_t bySubResult = pkt.read<uint8_t>();
 		if (bySubType == N3_SP_TYPE_BBS_OPEN)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_TRADE_BBS_FAIL6, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL6);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff0000);
 		}
 		else if (bySubType == N3_SP_TYPE_REGISTER)
@@ -213,15 +212,15 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 			switch (bySubResult)
 			{
 				case 1://1: 일반적인 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL1, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL1);
 					break;
 
 				case 2://2: 돈이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL2, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL2);
 					break;
 
 				case 3://3: 항목이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL4, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL4);
 					break;
 			}
 
@@ -229,8 +228,7 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 		}
 		else if (bySubType == N3_SP_TYPE_REGISTER_CANCEL)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_TRADE_BBS_FAIL3, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL3);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff0000);
 		}
 		else if (bySubType == N3_SP_TYPE_BBS_DATA)
@@ -243,13 +241,13 @@ void CUITradeSellBBS::MsgRecv_TradeBBS(Packet& pkt)
 			switch (bySubResult)
 			{
 				case 1://1: 일반적인 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL5, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL5);
 					break;
 				case 2://2: 돈이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL2, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL2);
 					break;
 				case 3://3: 항목이 없어서 실패
-					CGameBase::GetText(IDS_TRADE_BBS_FAIL4, &szMsg);
+					szMsg = fmt::format_text_resource(IDS_TRADE_BBS_FAIL4);
 					break;
 			}
 
@@ -475,11 +473,7 @@ void CUITradeSellBBS::OnButtonRegister()
 
 	if (m_byBBSKind == N3_SP_TRADE_BBS_BUY)
 	{
-		std::string szMsg;
-		CGameBase::GetTextF(
-			IDS_TRADE_BBS_BUY_REGISTER,
-			&szMsg,
-			500);
+		std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_BUY_REGISTER, 500);
 
 		m_MsgBox.SetBoxStyle(MB_YESNO);
 		m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -489,11 +483,7 @@ void CUITradeSellBBS::OnButtonRegister()
 	}
 	else
 	{
-		std::string szMsg;
-		CGameBase::GetTextF(
-			IDS_TRADE_BBS_SELL_REGISTER,
-			&szMsg,
-			1000);
+		std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_SELL_REGISTER, 1000);
 
 		m_MsgBox.SetBoxStyle(MB_YESNO);
 		m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
@@ -578,11 +568,7 @@ void CUITradeSellBBS::OnButtonTrade()
 
 			if (0 != lstrcmpi(ITSB.szID.c_str(), CGameProcedure::s_pPlayer->m_InfoBase.szID.c_str()))
 			{
-				std::string szMsg;
-				CGameBase::GetTextF(
-					IDS_TRADE_BBS_PER_TRADE,
-					&szMsg,
-					5000);
+				std::string szMsg = fmt::format_text_resource(IDS_TRADE_BBS_PER_TRADE, 5000);
 
 				m_ITSB = ITSB;
 				m_MsgBox.SetBoxStyle(MB_YESNO);
@@ -787,8 +773,7 @@ void CUITradeSellBBS::ResetContent()
 
 void CUITradeSellBBS::SetContentString(int iIndex, std::string szID, int iPrice, std::string szTitle)
 {
-	std::string szGold;
-	CGameBase::GetText(IDS_TOOLTIP_GOLD, &szGold);
+	std::string szGold = fmt::format_text_resource(IDS_TOOLTIP_GOLD);
 
 	if(m_pText[iIndex])
 		m_pText[iIndex]->SetString(szID);
@@ -796,10 +781,9 @@ void CUITradeSellBBS::SetContentString(int iIndex, std::string szID, int iPrice,
 	if(m_pText[iIndex + TRADE_BBS_MAX_LINE])
 		m_pText[iIndex + TRADE_BBS_MAX_LINE]->SetString(szTitle);
 
-	if(m_pText[iIndex + TRADE_BBS_MAX_LINE*2])
+	if (m_pText[iIndex + TRADE_BBS_MAX_LINE * 2] != nullptr)
 	{
-		char szBuf[64];
-		sprintf(szBuf,"%d %s",iPrice,szGold.c_str());
-		m_pText[iIndex + TRADE_BBS_MAX_LINE*2]->SetString(szBuf);
+		std::string buff = fmt::format("{} {}", iPrice, szGold);
+		m_pText[iIndex + TRADE_BBS_MAX_LINE * 2]->SetString(buff);
 	}
 }

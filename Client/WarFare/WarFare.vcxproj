@@ -39,9 +39,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)client_application.props" />
-  <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)jpegfile.props" />
+  <Import Project="$(PropsDir)n3base-project.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
@@ -104,6 +104,7 @@
     <ClCompile Include="Bird.cpp" />
     <ClCompile Include="BirdMng.cpp" />
     <ClCompile Include="Catapult.cpp" />
+    <ClCompile Include="ClientResourceFormatter.cpp" />
     <ClCompile Include="CountableItemEditDlg.cpp" />
     <ClCompile Include="DungeonManager.cpp" />
     <ClCompile Include="EventManager.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="BirdMng.h" />
     <ClInclude Include="Bitset.h" />
     <ClInclude Include="Catapult.h" />
+    <ClInclude Include="ClientResourceFormatter.h" />
     <ClInclude Include="CountableItemEditDlg.h" />
     <ClInclude Include="DungeonManager.h" />
     <ClInclude Include="EventManager.h" />
