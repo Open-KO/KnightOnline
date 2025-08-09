@@ -195,34 +195,59 @@ void CN3FXPartMesh::Init()
 //
 bool CN3FXPartMesh::Load(HANDLE hFile)
 {
-	if(!CN3FXPartBase::Load(hFile)) return false;
+	if (!CN3FXPartBase::Load(hFile))
+		return false;
 
 	DWORD dwRWC = 0;
 
-	char szShapeFileName[_MAX_PATH];
-	ReadFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, NULL);
+	char szShapeFileName[_MAX_PATH] = {};
+	ReadFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
 
-	if(m_pShape) delete m_pShape;
-	m_pShape = new CN3FXShape;
+	delete m_pShape;
+	m_pShape = new CN3FXShape();
 
 	m_pRefShape = s_MngFXShape.Get(szShapeFileName);
 	m_pShape->Duplicate(m_pRefShape);
 	m_pShape->SetPartsMtl(m_bAlpha, m_dwSrcBlend, m_dwDestBlend, m_dwZEnable, m_dwZWrite, m_dwLight, m_dwDoubleSide);
 	//m_pShape->LoadFromFile(szShapeFileName);
 	__Vector3 vScale;
-	if(m_pShape->m_KeyScale.DataGet(0, vScale)) m_vUnitScale = vScale;
-	else m_vUnitScale = m_pShape->Scale();
+	if (m_pShape->m_KeyScale.DataGet(0, vScale))
+		m_vUnitScale = vScale;
+	else
+		m_vUnitScale = m_pShape->Scale();
 
-	ReadFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, NULL);
-	ReadFile(hFile, &m_fu, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_fv, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, NULL);
+	ReadFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fu, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fv, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, nullptr);
 	m_vCurrScaleVel = m_vScaleVel;
 
-	if(m_iVersion>=2) ReadFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, NULL);
-	if(m_iVersion>=3) ReadFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, NULL);
-	if(m_iVersion>=4) ReadFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, NULL);
-	if(m_iVersion>=5) ReadFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, NULL);
+	if (m_iVersion >= 2)
+		ReadFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, nullptr);
+
+	if (m_iVersion >= 3)
+		ReadFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, nullptr);
+
+	if (m_iVersion >= 4)
+		ReadFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
+
+	if (m_iVersion >= 5)
+		ReadFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, nullptr);
+
+	// TODO: implement m_bShapeLoop
+	if (m_iVersion >= 6)
+		ReadFile(hFile, &m_bShapeLoop, sizeof(bool), &dwRWC, nullptr);
+
+	// TODO: implement m_bViewFix
+	if (m_iVersion >= 7)
+		ReadFile(hFile, &m_bViewFix, sizeof(bool), &dwRWC, nullptr);
+
+	// TODO: implement m_bUseFadeShowLife
+	if (m_iVersion >= 8)
+		ReadFile(hFile, &m_bUseFadeShowLife, sizeof(bool), &dwRWC, nullptr);
+
+	if (m_iVersion >= 9)
+		SetFilePointer(hFile, MAX_PATH, nullptr, FILE_CURRENT);
 
 	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
 	// and otherwise be broken for now.
@@ -237,17 +262,21 @@ bool CN3FXPartMesh::Load(HANDLE hFile)
 	}
 #endif
 
-	if(m_pShape)
+	if (m_pShape != nullptr)
 	{
-		for(size_t i=0;i<m_pShape->PartCount();i++)
+		for (size_t i = 0; i < m_pShape->PartCount(); i++)
 		{
-			m_pShape->Part(i)->m_fTexFPS = m_fTexFPS;
-			m_pShape->Part(i)->m_bTexLoop = m_bTexLoop;
+			CN3FXSPart* part = m_pShape->Part(i);
+			if (part == nullptr)
+				continue;
+
+			part->m_fTexFPS = m_fTexFPS;
+			part->m_bTexLoop = m_bTexLoop;
 		}
 	}
-	
+
 	Init();
-	
+
 	return true;
 }
 

@@ -42,6 +42,10 @@ public:
 	float				m_fRotBillBoardY;
 	float				m_fRotBillBoardZ;
 
+	// N3FXPartBillBoard needs implementation of these methods
+	bool				m_bRotationRate;	//	회전 속도 적용 여부
+	bool				m_bOnScreen;		//	화면에 보이는지 여부, true면 화면에 보이는 것, false면 화면에 보이지 않는 것
+	// N3FXPartBillBoard needs implementation of these methods
 protected:
 	__Vector3			m_vUnit[4];
 

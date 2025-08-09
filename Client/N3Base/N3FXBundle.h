@@ -54,6 +54,11 @@ protected:
 	bool	CheckAllPartsDead();		//모든 파트들이 죽었는지 검사..
 
 public:
+	inline uint32_t GetState() const
+	{
+		return m_dwState;
+	}
+
 //기본적으로 필요한 함수들...
 	virtual void	Trigger(int iSourceID=0, int iTargetID = 0, int iTargetJoint = 0, int iSndID = -1);
 	virtual bool	Tick();
@@ -63,10 +68,13 @@ public:
 	void	Stop(bool immediately=false);
 	
 	void	Render();
-	uint32_t	GetState() { return m_dwState; }
 
-	virtual bool	Load(HANDLE hFile); // 핸들에서 읽어오기..
-	bool	Save(HANDLE hFile);	// 저장하기..
+	int		GetPartCountForVersion() const;
+
+	bool	Load(HANDLE hFile) override; // 핸들에서 읽어오기..
+	virtual CN3FXPartBase* AllocatePart(int iPartType) const;
+
+	bool	Save(HANDLE hFile) override;	// 저장하기..
 
 //	int				GetPartCount() { return m_pPartList.size(); }
 	CN3FXPartBase*	GetPart(int i);
