@@ -533,7 +533,7 @@ void CUIWareHouseDlg::EnterWareHouseStateStart(int iWareGold)
 	}
 
 	if(m_pStrWareGold)
-		m_pStrWareGold->SetStringAsInt(iWareGold);
+		m_pStrWareGold->SetString(CGameBase::FormatNumber(iWareGold));
 }
 
 void CUIWareHouseDlg::EnterWareHouseStateEnd()
@@ -574,7 +574,7 @@ void CUIWareHouseDlg::EnterWareHouseStateEnd()
 	if(m_pStrMyGold)
 	{
 		__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-		m_pStrMyGold->SetStringAsInt(pInfoExt->iGold);
+		m_pStrMyGold->SetString(CGameBase::FormatNumber(pInfoExt->iGold));
 	}
 }
 
@@ -1820,7 +1820,7 @@ void CUIWareHouseDlg::GoldCountToWareOK()	//돈을 넣는 경우..
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	if ( iGold <= 0 ) return;
@@ -1835,12 +1835,12 @@ void CUIWareHouseDlg::GoldCountToWareOK()	//돈을 넣는 경우..
 	iWareMoney += iGold;
 
 	// 돈 표시.. Ware..
-	pStr->SetStringAsInt(iWareMoney);
+	pStr->SetString(CGameBase::FormatNumber(iWareMoney));
 	// 돈 표시.. 인벤토리..
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 	// 돈 표시.. Inv..
 	pStr = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(pStr, "NULL UI Component!!");
-	if(pStr) pStr->SetStringAsInt(iMyMoney);
+	if (pStr) pStr->SetString(CGameBase::FormatNumber(iMyMoney));
 
 	// 서버에게 패킷 만들어서 날림..
 	SendToServerToWareMsg(dwGold, 0xff, 0xff, 0xff, iGold);
@@ -1870,7 +1870,7 @@ void CUIWareHouseDlg::GoldCountFromWareOK()		// 돈을 빼는 경우..
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	if ( iGold <= 0 ) return;
@@ -1885,12 +1885,12 @@ void CUIWareHouseDlg::GoldCountFromWareOK()		// 돈을 빼는 경우..
 	iWareMoney -= iGold;
 
 	// 돈 표시.. Ware..
-	pStr->SetStringAsInt(iWareMoney);
+	pStr->SetString(CGameBase::FormatNumber(iWareMoney));
 	// 돈 표시.. 인벤토리..
 	CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 	// 돈 표시.. Inv..
 	pStr = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(pStr, "NULL UI Component!!");
-	if(pStr) pStr->SetStringAsInt(iMyMoney);
+	if (pStr) pStr->SetString(CGameBase::FormatNumber(iMyMoney));
 
 	// 서버에게 패킷 만들어서 날림..
 	SendToServerFromWareMsg(dwGold, 0xff, 0xff, 0xff, iGold);
@@ -1950,7 +1950,7 @@ void CUIWareHouseDlg::ReceiveResultGoldToWareFail()
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	// 돈을 감소 시킨다..
@@ -1988,7 +1988,7 @@ void CUIWareHouseDlg::ReceiveResultGoldFromWareFail()
 	CN3UIString* pStr = NULL;
 	pStr = (CN3UIString* )GetChildByID("string_wareitem_name");	 
 	__ASSERT(pStr, "NULL UI Component!!");
-	str = pStr->GetString();
+	str = CGameBase::UnformatNumber(pStr->GetString());
 	iWareMoney = atoi(str.c_str());
 
 	// 돈을 감소 시킨다..
