@@ -84,6 +84,47 @@ struct	__IconItemSkill		{
 
 									__TABLE_UPC_SKILL*		pSkill;			// Skill.. ^^
 								};
+
+								int GetBuyPrice() const
+								{
+									if (pItemBasic == nullptr || pItemExt == nullptr)
+										return 0;
+
+									return pItemBasic->iPrice * pItemExt->siPriceMultiply;
+								};
+
+								int GetSellPrice (bool bHasPremium = false) const 
+								{
+									if (pItemBasic == nullptr || pItemExt == nullptr)
+										return 0;
+
+									int iSellPrice = 0;
+									constexpr int PREMIUM_RATIO = 4;
+									constexpr int NORMAL_RATIO = 6;
+
+									switch (pItemBasic->iSaleType)
+									{
+										case SALE_TYPE_FULL:
+											iSellPrice = pItemBasic->iPrice * pItemExt->siPriceMultiply;
+										break;
+										case SALE_TYPE_LOW:
+										case SALE_TYPE_LOW_NO_REPAIR:
+											if (bHasPremium)
+												iSellPrice = pItemBasic->iPrice * pItemExt->siPriceMultiply / PREMIUM_RATIO;
+											else
+												iSellPrice = pItemBasic->iPrice * pItemExt->siPriceMultiply / NORMAL_RATIO;
+										break;
+										default:
+											iSellPrice = pItemBasic->iPrice * pItemExt->siPriceMultiply / NORMAL_RATIO;
+											break;
+									}
+
+									if (iSellPrice < 1)
+										iSellPrice = 1;
+
+									return iSellPrice;
+								};
+
 							};
 
 // Select Icon Info..

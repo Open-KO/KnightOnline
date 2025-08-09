@@ -285,6 +285,12 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
+enum e_ItemSaleType	  {
+						SALE_TYPE_LOW = 0,			 // sells lower than purchase price
+						SALE_TYPE_FULL = 1,			 // sells equal to purchase price
+						SALE_TYPE_LOW_NO_REPAIR = 2, // non repairable items, sell for lower price than purchase
+};
+
 enum e_Nation { NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNKNOWN = 0xffffffff };
 
 struct __TABLE_ITEM_BASIC;

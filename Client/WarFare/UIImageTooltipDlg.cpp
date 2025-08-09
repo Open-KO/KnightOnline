@@ -1153,7 +1153,7 @@ exceptions:;
 				CGameBase::GetTextF(
 					IDS_TOOLTIP_BUY_PRICE,
 					&m_pstdstr[iIndex],
-					std::to_string(spItem->pItemBasic->iPrice* spItem->pItemExt->siPriceMultiply).c_str());
+					std::to_string(spItem->GetBuyPrice()).c_str());
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 
@@ -1164,25 +1164,11 @@ exceptions:;
 			}
 			else
 			{	
-				int iSellPrice = 0;
-
-				if (spItem->pItemBasic->iSaleType == 1) 
-				{   //sale type = 1, selling for the same price of buying
-					iSellPrice = spItem->pItemBasic->iPrice * spItem->pItemExt->siPriceMultiply;
-				}
-				else
-				{
-					//non premium : selling for 1/6 of purchasing price
-					iSellPrice = spItem->pItemBasic->iPrice * spItem->pItemExt->siPriceMultiply / 6;
-				}
-
-				if (iSellPrice < 1)
-					iSellPrice = 1;
 
 				CGameBase::GetTextF(
 					IDS_TOOLTIP_SELL_PRICE,
 					&m_pstdstr[iIndex],
-					std::to_string(iSellPrice).c_str());
+					std::to_string(spItem->GetSellPrice()).c_str());
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 				m_pStr[iIndex]->SetColor(m_CWhite);
