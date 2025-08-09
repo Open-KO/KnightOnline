@@ -32,6 +32,11 @@ public:
 	bool		m_bTexLoop;
 	float		m_fMeshFPS;
 
+	// N3FXPartMesh needs implementation of these methods
+	bool m_bShapeLoop;
+	bool m_bViewFix;
+	bool m_bUseFadeShowLife;
+	// N3FXPartMesh needs implementation of these methods
 protected:
 	bool	IsDead();
 

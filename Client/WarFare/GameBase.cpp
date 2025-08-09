@@ -621,7 +621,15 @@ std::string CGameBase::FormatNumber(int iNumber)
 	return szFormattedNum;
 }
 
+std::string CGameBase::UnformatNumber(const std::string& input)
+{
+	std::string result = input;
+	result.erase(std::remove(result.begin(), result.end(), ','), result.end());
+	return result;
+}
+
 void CGameBase::ConvertPipesToNewlines(std::string& input)
 {
 	std::ranges::replace(input, '|', '\n');
 }
+
