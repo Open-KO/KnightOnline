@@ -161,8 +161,8 @@ void CN3Mesh::Create(int nVC, int nIC)
 	if(nVC > 0) // 점이 있으면...
 	{
 #ifdef _N3GAME
-		if(nVC > 32768)
-			CLogWriter::Write("CN3IMesh::Create - Too many vertices. (more than 32768) (%s)", m_szFileName.c_str());
+		if (nVC > 32768)
+			CLogWriter::Write("CN3Mesh::Create - Too many vertices. (more than 32768) ({})", m_szFileName);
 #endif
 		if(m_pVertices) this->ReleaseVertices();
 		m_pVertices = new __VertexT1[nVC]; memset(m_pVertices, 0, nVC * sizeof(__VertexT1)); // Vertex Buffer 생성
@@ -172,8 +172,8 @@ void CN3Mesh::Create(int nVC, int nIC)
 	if(nIC > 0) // Mesh 로딩에 성공하고, 인덱스가 있으면..
 	{
 #ifdef _N3GAME
-		if(nIC > 32768)
-			CLogWriter::Write("CN3IMesh::Create - Too many indices. (more than 32768) (%s)", m_szFileName.c_str());
+		if (nIC > 32768)
+			CLogWriter::Write("CN3Mesh::Create - Too many indices. (more than 32768) ({})", m_szFileName);
 #endif
 		if(m_psnIndices) this->ReleaseIndices();
 		m_psnIndices = new uint16_t[nIC]; memset(m_psnIndices, 0, nIC * 2); // Index Buffer 생성

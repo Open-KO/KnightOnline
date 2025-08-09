@@ -126,11 +126,11 @@ void CMachineMng::AddMachine(ReplyMsg& RPMsg)
 	char szFileName[_MAX_PATH] = "misc\\machines\\catapult.mcn";
 	FILE* stream = fopen(szFileName, "r"); //text파일로 만든다 
 #if _DEBUG
-	char szErr[512];
+	std::string szErr;
 	if(NULL == stream)
 	{
-		wsprintf(szErr, "failed to open file - %s", szFileName);
-		__ASSERT(stream, szErr);
+		szErr = fmt::format("failed to open file - {}", szFileName);
+		__ASSERT(stream, szErr.c_str());
 	}
 #endif
 

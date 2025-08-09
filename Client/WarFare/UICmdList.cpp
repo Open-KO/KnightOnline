@@ -260,7 +260,7 @@ bool CUICmdList::CreateCategoryList() {
 
 	for (int i = 0; i < 8; i++)
 	{
-		CGameBase::GetText(i + 7800, &szCategory); //load command categories
+		szCategory = fmt::format_text_resource(i + 7800); // load command categories
 		m_pList_CmdCat->AddString(szCategory);
 		idStart ++;
 	}
@@ -280,7 +280,7 @@ bool CUICmdList::CreateCategoryList() {
 			idCur = 9200;
 		}
 		szCommand.clear();
-		CGameBase::GetText(idCur, &szCommand);
+		szCommand = fmt::format_text_resource(idCur);
 		if (!szCommand.empty() && (i/100) % 2 == 0 ) m_mapCmds[i] = szCommand;
 	}
 
@@ -299,18 +299,21 @@ bool CUICmdList::UpdateCommandList(uint8_t cmdCat ) {
 	int indexEnd = indexStart + 100;	  //where to stop iterating
 	int i = 0;
 
-	for (auto itr = m_mapCmds.begin(); itr != m_mapCmds.end(); ++itr) {
-		if (itr->first >= indexStart && itr->first < indexEnd) {
-				 m_pList_Cmds->AddString(itr->second);
-				 
-				 CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(itr->second);
-				 std::string cmdTip;
-				 CGameBase::GetText(itr->first + 100, &cmdTip);
-				 if(pChild != NULL) pChild->SetTooltipText(cmdTip.c_str());
-				 //SavvyNik tooltip is being loaded in but the rectangle 
-				 //that it shows on is too small. Need to figure out where
-				 //this is being set.
-		}
+	for (const auto& [resourceId, commandName] : m_mapCmds)
+	{
+		if (resourceId < indexStart
+			|| resourceId >= indexEnd)
+			continue;
+
+		m_pList_Cmds->AddString(commandName);
+
+		CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(commandName);
+		std::string cmdTip = fmt::format_text_resource(resourceId + 100);
+		if (pChild != nullptr)
+			pChild->SetTooltipText(cmdTip);
+		//SavvyNik tooltip is being loaded in but the rectangle 
+		//that it shows on is too small. Need to figure out where
+		//this is being set.
 	}
 
 	return true;

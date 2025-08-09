@@ -20,8 +20,8 @@ class CDlgEditScript : public CDialog
 public:
 	CMainFrame*					m_pRefFrm;
 	CN3FXBundle*				m_pFXBundle;
-	CComboBox*					m_pPartName[MAX_FX_PART];
-	float*						m_pPartStartTime[MAX_FX_PART];
+	CComboBox*					m_pPartName[MAX_FX_PART_TOOL];
+	float*						m_pPartStartTime[MAX_FX_PART_TOOL];
 				
 // Construction
 public:

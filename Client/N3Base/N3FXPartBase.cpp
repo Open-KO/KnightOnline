@@ -131,16 +131,15 @@ bool CN3FXPartBase::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 
 		strcpy(szPathName, szBuff0);
 		_splitpath(szPathName, nullptr, szDir, szFileName, szExt);
-		sprintf(m_pTexName, "%s%s", szDir, szFileName);
+
+		memset(m_pTexName, 0, sizeof(m_pTexName));
+		strcat(m_pTexName, szDir);
+		strcat(m_pTexName, szFileName);
 
 		std::string FileName = m_pTexName;
-		char Buff[5];
-		for(int i=0;i<m_iNumTex;i++)
+		for (int i = 0; i < m_iNumTex; i++)
 		{
-			sprintf(Buff,"%04d",i);
-			FileName = m_pTexName;
-			FileName += Buff;
-			FileName += szExt;
+			FileName = fmt::format("{}{:04}{}", m_pTexName, i, szExt);
 			m_ppRefTex[i] = CN3Base::s_MngTex.Get(FileName);
 		}
 		return true;
@@ -434,68 +433,73 @@ bool CN3FXPartBase::Load(HANDLE hFile)
 
 	uint8_t	cTmp;
 	DWORD			dwRWC = 0;
-	
-	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, NULL);
-	m_iVersion = (int)cTmp;
 
-	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, NULL);
-	m_iBaseVersion = (int)cTmp;
+	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, nullptr);
+	m_iVersion = (int) cTmp;
 
-	ReadFile(hFile, &m_fLife, sizeof(float), &dwRWC, NULL);
-	if(m_fLife > 10.0f) m_fLife = 10.0f;
+	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, nullptr);
+	m_iBaseVersion = (int) cTmp;
+
+	ReadFile(hFile, &m_fLife, sizeof(float), &dwRWC, nullptr);
+	if (m_fLife > 10.0f)
+		m_fLife = 10.0f;
 
 	if (m_iBaseVersion >= 3)
 	{
 		int iIDK0, iIDK1;
-		ReadFile(hFile, &iIDK0, sizeof(int), &dwRWC, NULL);
-		ReadFile(hFile, &iIDK1, sizeof(int), &dwRWC, NULL);
+		ReadFile(hFile, &iIDK0, sizeof(int), &dwRWC, nullptr);
+		ReadFile(hFile, &iIDK1, sizeof(int), &dwRWC, nullptr);
 	}
 
-	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, NULL);
-	m_iType = (int)cTmp;
+	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, nullptr);
+	m_iType = (int) cTmp;
 
-	ReadFile(hFile, &m_vVelocity, sizeof(__Vector3), &dwRWC, NULL);
-	ReadFile(hFile, &m_vAcceleration, sizeof(__Vector3), &dwRWC, NULL);
-	ReadFile(hFile, &m_vRotVelocity, sizeof(__Vector3), &dwRWC, NULL);
+	ReadFile(hFile, &m_vVelocity, sizeof(__Vector3), &dwRWC, nullptr);
+	ReadFile(hFile, &m_vAcceleration, sizeof(__Vector3), &dwRWC, nullptr);
+	ReadFile(hFile, &m_vRotVelocity, sizeof(__Vector3), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_bOnGround, sizeof(bool), &dwRWC, NULL);
+	ReadFile(hFile, &m_bOnGround, sizeof(bool), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_vPos, sizeof(__Vector3), &dwRWC, NULL);
+	ReadFile(hFile, &m_vPos, sizeof(__Vector3), &dwRWC, nullptr);
 
-	ReadFile(hFile, &m_iNumTex, sizeof(int), &dwRWC, NULL);
-	ReadFile(hFile, &m_fTexFPS, sizeof(float), &dwRWC, NULL);
-	ReadFile(hFile, &m_pTexName, MAX_PATH, &dwRWC, NULL);
+	ReadFile(hFile, &m_iNumTex, sizeof(int), &dwRWC, nullptr);
+	ReadFile(hFile, &m_fTexFPS, sizeof(float), &dwRWC, nullptr);
+	ReadFile(hFile, &m_pTexName, MAX_PATH, &dwRWC, nullptr);
 
-	if(m_iBaseVersion<2)
+	if (m_iBaseVersion < 2)
 	{
-		ReadFile(hFile, &m_bAlpha, sizeof(BOOL), &dwRWC, NULL);
-		ReadFile(hFile, &m_dwSrcBlend, sizeof(uint32_t), &dwRWC, NULL);
-		ReadFile(hFile, &m_dwDestBlend, sizeof(uint32_t), &dwRWC, NULL);
+		ReadFile(hFile, &m_bAlpha, sizeof(BOOL), &dwRWC, nullptr);
+		ReadFile(hFile, &m_dwSrcBlend, sizeof(uint32_t), &dwRWC, nullptr);
+		ReadFile(hFile, &m_dwDestBlend, sizeof(uint32_t), &dwRWC, nullptr);
 
-		ReadFile(hFile, &m_fFadeOut, sizeof(float), &dwRWC, NULL);	
-		ReadFile(hFile, &m_fFadeIn, sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_fFadeOut, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_fFadeIn, sizeof(float), &dwRWC, nullptr);
 	}
-	if(m_iBaseVersion>=2)
+	else // if (m_iBaseVersion >= 2)
 	{
-		ReadFile(hFile, &m_dwSrcBlend, sizeof(uint32_t), &dwRWC, NULL);
-		ReadFile(hFile, &m_dwDestBlend, sizeof(uint32_t), &dwRWC, NULL);
+		ReadFile(hFile, &m_dwSrcBlend, sizeof(uint32_t), &dwRWC, nullptr);
+		ReadFile(hFile, &m_dwDestBlend, sizeof(uint32_t), &dwRWC, nullptr);
 
-		ReadFile(hFile, &m_fFadeOut, sizeof(float), &dwRWC, NULL);	
-		ReadFile(hFile, &m_fFadeIn, sizeof(float), &dwRWC, NULL);
+		ReadFile(hFile, &m_fFadeOut, sizeof(float), &dwRWC, nullptr);
+		ReadFile(hFile, &m_fFadeIn, sizeof(float), &dwRWC, nullptr);
 
-		ReadFile(hFile, &m_dwRenderFlag, sizeof(uint32_t), &dwRWC, NULL);
-		
-		if(m_dwRenderFlag & RF_NOTZBUFFER) m_dwZEnable = D3DZB_FALSE;
+		ReadFile(hFile, &m_dwRenderFlag, sizeof(uint32_t), &dwRWC, nullptr);
+
+		if (m_dwRenderFlag & RF_NOTZBUFFER) m_dwZEnable = D3DZB_FALSE;
 		else m_dwZEnable = D3DZB_TRUE;
-		if(m_dwRenderFlag & RF_NOTZWRITE) m_dwZWrite = FALSE;
+		if (m_dwRenderFlag & RF_NOTZWRITE) m_dwZWrite = FALSE;
 		else m_dwZWrite = TRUE;
-		if(m_dwRenderFlag & RF_DOUBLESIDED) m_dwDoubleSide = D3DCULL_NONE;
+		if (m_dwRenderFlag & RF_DOUBLESIDED) m_dwDoubleSide = D3DCULL_NONE;
 		else m_dwDoubleSide = D3DCULL_CCW;
-		if(m_dwRenderFlag & RF_NOTUSELIGHT) m_dwLight = FALSE;
+		if (m_dwRenderFlag & RF_NOTUSELIGHT) m_dwLight = FALSE;
 		else m_dwLight = TRUE;
-		if(m_dwRenderFlag & RF_ALPHABLENDING) m_bAlpha = TRUE;
-		else m_bAlpha = FALSE;		
+		if (m_dwRenderFlag & RF_ALPHABLENDING) m_bAlpha = TRUE;
+		else m_bAlpha = FALSE;
 	}
+
+	// TODO: implement shape_hdrname
+	if (m_iBaseVersion >= 4)
+		SetFilePointer(hFile, MAX_PATH, nullptr, FILE_CURRENT);
 
 	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
 	// and otherwise be broken for now.
@@ -515,16 +519,11 @@ bool CN3FXPartBase::Load(HANDLE hFile)
 	m_ppRefTex = new CN3Texture* [m_iNumTex];
 
 	std::string FileName;
-	char Buff[5];
-	for(int i=0;i<m_iNumTex;i++)
+	for (int i = 0; i < m_iNumTex; i++)
 	{
-		sprintf(Buff,"%04d",i);
-		FileName = m_pTexName;
-		FileName += Buff;
-		FileName += ".dxt";
-
+		FileName = fmt::format("{}{:04}.dxt", m_pTexName, i);
 		m_ppRefTex[i] = CN3Base::s_MngTex.Get(FileName);
-	}	
+	}
 
 	return true;
 }
@@ -610,7 +609,7 @@ void CN3FXPartBase::Duplicate(CN3FXPartBase* pSrc)
 	m_vPos = pSrc->m_vPos;
 	m_iNumTex = pSrc->m_iNumTex;
 	m_fTexFPS = pSrc->m_fTexFPS;
-	sprintf(m_pTexName, pSrc->m_pTexName);
+	memcpy(m_pTexName, pSrc->m_pTexName, sizeof(m_pTexName));
 
 	m_dwZEnable = pSrc->m_dwZEnable;
 	m_dwZWrite = pSrc->m_dwZWrite;
@@ -627,14 +626,9 @@ void CN3FXPartBase::Duplicate(CN3FXPartBase* pSrc)
 	m_ppRefTex = new CN3Texture* [m_iNumTex];
 
 	std::string FileName;
-	char Buff[5];
-	for(int i=0;i<m_iNumTex;i++)
+	for (int i = 0; i < m_iNumTex; i++)
 	{
-		sprintf(Buff,"%04d",i);
-		FileName = m_pTexName;
-		FileName += Buff;
-		FileName += ".dxt";
-
+		FileName = fmt::format("{}{:04}.dxt", m_pTexName, i);
 		m_ppRefTex[i] = CN3Base::s_MngTex.Get(FileName);
-	}	
+	}
 }

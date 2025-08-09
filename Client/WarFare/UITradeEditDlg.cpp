@@ -56,12 +56,11 @@ int	CUITradeEditDlg::GetQuantity() // "edit_trade" Edit Control 에서 정수값
 
 void CUITradeEditDlg::SetQuantity(int iQuantity) // "edit_trade" Edit Control 에서 정수값을 문자열로 세팅한다..
 {
-	CN3UIEdit* pEdit = (CN3UIEdit*)this->GetChildByID("edit_trade");
+	CN3UIEdit* pEdit = (CN3UIEdit*) GetChildByID("edit_trade");
 	__ASSERT(pEdit, "NULL UI Component!!");
 
-	char szBuff[64] = "";
-	sprintf(szBuff, "%d", iQuantity);
-	pEdit->SetString(szBuff);
+	std::string buff = std::to_string(iQuantity);
+	pEdit->SetString(buff);
 }
 
 bool CUITradeEditDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
@@ -84,9 +83,9 @@ void CUITradeEditDlg::Open(bool bCountGold)
 {
 	std::string szMsg;
 	if (bCountGold)
-		CGameBase::GetText(IDS_EDIT_BOX_GOLD, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_EDIT_BOX_GOLD);
 	else
-		CGameBase::GetText(IDS_EDIT_BOX_COUNT, &szMsg);
+		szMsg = fmt::format_text_resource(IDS_EDIT_BOX_COUNT);
 
 	CN3UIString* pString = NULL;
 	pString = (CN3UIString*)this->GetChildByID("String_PersonTradeEdit_Msg");

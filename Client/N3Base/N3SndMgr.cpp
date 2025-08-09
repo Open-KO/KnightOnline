@@ -15,11 +15,6 @@
 static char THIS_FILE[]=__FILE__;
 #endif
 
-#ifdef _WIN32
-#pragma comment(lib, "mpg123.lib")
-#pragma comment(lib, "shlwapi.lib")
-#endif
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -427,8 +422,8 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	if (error != MPG123_OK)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to open MP3: %s (%d)",
-			filename.c_str(), error);
+		CLogWriter::Write("Failed to open MP3: {} ({})",
+			filename, error);
 #endif
 		mpg123_delete(mpgHandle);
 		return false;
@@ -441,8 +436,8 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	if (error != MPG123_OK)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to get MP3 format: %s (%d: %s)",
-			filename.c_str(), error, mpg123_strerror(mpgHandle));
+		CLogWriter::Write("Failed to get MP3 format: {} ({}: {})",
+			filename, error, mpg123_strerror(mpgHandle));
 #endif
 
 		mpg123_delete(mpgHandle);
@@ -453,8 +448,8 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	if (sampleCount < 0)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to get total MP3 samples per channel: %s",
-			filename.c_str());
+		CLogWriter::Write("Failed to get total MP3 samples per channel: {}",
+			filename);
 #endif
 
 		mpg123_delete(mpgHandle);
@@ -468,8 +463,8 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	if (fp == nullptr)
 	{
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to open file for writing decoded MP3 to: %s",
-			newFilename.c_str());
+		CLogWriter::Write("Failed to open file for writing decoded MP3 to: {}",
+			newFilename);
 #endif
 		return false;
 	}
@@ -511,8 +506,8 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 		std::remove(newFilename.c_str());
 
 #ifdef _N3GAME
-		CLogWriter::Write("Failed to decode MP3: %s (%d - decoded %zu bytes)",
-			filename.c_str(), error, decodedBytes);
+		CLogWriter::Write("Failed to decode MP3: {} ({} - decoded {} bytes)",
+			filename, error, decodedBytes);
 #endif
 		return false;
 	}

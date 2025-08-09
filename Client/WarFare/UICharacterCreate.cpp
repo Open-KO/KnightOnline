@@ -92,14 +92,12 @@ bool CUICharacterCreate::Load(HANDLE hFile)
 	{
 		if(NATION_KARUS == eNation)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_SETTING_KARUS_SCREEN, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_SETTING_KARUS_SCREEN);
 			m_pStr_Desc->SetString(szMsg);
 		}
 		else if(NATION_ELMORAD == eNation)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_SETTING_ELMORAD_SCREEN, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_SETTING_ELMORAD_SCREEN);
 			m_pStr_Desc->SetString(szMsg);
 		}
 	}
@@ -115,7 +113,9 @@ bool CUICharacterCreate::Load(HANDLE hFile)
 		m_pStr_Stats[i] = (CN3UIString*)(this->GetChildByID(szTexts[i])); __ASSERT(m_pStr_Stats[i], "NULL UI Component!!");
 		m_pArea_Stats[i] = (CN3UIArea*)(this->GetChildByID(szAreas[i])); __ASSERT(m_pArea_Stats[i], "NULL UI Component!!");
 		m_pImg_Stats[i] = (CN3UIImage*)(this->GetChildByID(szImgs[i]));	__ASSERT(m_pImg_Stats[i], "NULL UI Component!!");
-		if(m_pArea_Stats[i]) CGameBase::GetText(dwResrcIDs[i], &m_pArea_Stats[i]->m_szToolTip);
+
+		if (m_pArea_Stats[i] != nullptr)
+			m_pArea_Stats[i]->SetTooltipText(fmt::format_text_resource(dwResrcIDs[i]));
 	}
 
 	m_pStr_Bonus = (CN3UIString*)(this->GetChildByID("text_bonus")); __ASSERT(m_pStr_Bonus, "NULL UI Component!!");
@@ -156,7 +156,9 @@ bool CUICharacterCreate::Load(HANDLE hFile)
 	{
 		if(szBtnIDs[i].empty()) continue;
 		m_pBtn_Races[i] = (CN3UIButton*)(this->GetChildByID(szBtnIDs[i])); __ASSERT(m_pBtn_Races[i], "NULL UI Component!!");
-		if(m_pBtn_Races[i]) CGameBase::GetText(dwResrcID_Races[i], &m_pBtn_Races[i]->m_szToolTip);
+
+		if (m_pBtn_Races[i] != nullptr)
+			m_pBtn_Races[i]->SetTooltipText(fmt::format_text_resource(dwResrcID_Races[i]));
 	}
 
 	std::string szBtns[MAX_CLASS_SELECT] = { "btn_class_warrior", "btn_class_rogue", "btn_class_mage", "btn_class_priest" };
@@ -181,7 +183,9 @@ bool CUICharacterCreate::Load(HANDLE hFile)
 	{
 		m_pBtn_Classes[i] =	(CN3UIButton*)(this->GetChildByID(szBtns[i]));	__ASSERT(m_pBtn_Classes[i], "NULL UI Component!!");
 		m_pImg_Disable_Classes[i] = (CN3UIImage*)(this->GetChildByID(szImgs2[i]));	__ASSERT(m_pImg_Disable_Classes[i], "NULL UI Component!!");
-		CGameBase::GetText(dwResrcID_Classes[i], &m_pBtn_Classes[i]->m_szToolTip);
+
+		if (m_pBtn_Classes[i] != nullptr)
+			m_pBtn_Classes[i]->SetTooltipText(fmt::format_text_resource(dwResrcID_Classes[i]));
 	}
 
 	RECT rc = this->GetRegion();

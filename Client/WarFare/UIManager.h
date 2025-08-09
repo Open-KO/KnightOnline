@@ -13,7 +13,8 @@
 
 struct __IconItemSkill;
 
-class CUIManager : public CN3UIBase  
+class CDFont;
+class CUIManager : public CN3UIBase
 {
 protected:
 	struct __RenderStateForUI
@@ -29,6 +30,9 @@ protected:
 	uint32_t		m_dwMouseFlagsCur;
 	bool		m_bEnableOperation;		// UI 조작이 가능한 상태인가?
 	CN3UIBase*	m_pUIFocused;
+#ifdef _DEBUG
+	CDFont*		m_pDFont;
+#endif
 
 public:
 	bool		m_bDoneSomething;		// UI 에서 조작을 했다...

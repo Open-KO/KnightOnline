@@ -521,10 +521,10 @@ void CFormViewProperty::UpdateAllInfo()
 		int nFXPPC = pFXP->m_FXPParts.size();
 		for (int i=0; i<nFXPPC; ++i)
 		{
-			char szName[_MAX_PATH];
-			wsprintf(szName, "FXPlugPart_%03d", i);
+			TCHAR szName[_MAX_PATH] = {};
+			_stprintf(szName, _T("FXPlugPart_%03d"), i);
 			hInsert = m_TreeChr.InsertItem(szName, 11, 11, m_hTI_FXPlug);
-			m_TreeChr.SetItemData(hInsert, (DWORD)pFXP->m_FXPParts[i]);
+			m_TreeChr.SetItemData(hInsert, (DWORD_PTR) pFXP->m_FXPParts[i]);
 		}
 	}
 //	End Of Code (By Dino On 2002-10-10 오후 4:44:49 )
