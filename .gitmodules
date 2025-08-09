@@ -29,3 +29,7 @@
 	path = deps/spdlog
 	url = https://github.com/gabime/spdlog.git
 	branch = v1.x
+[submodule "deps/mpg123"]
+	path = deps/mpg123
+	url = https://github.com/madebr/mpg123.git
+	branch = master-with-github-ci

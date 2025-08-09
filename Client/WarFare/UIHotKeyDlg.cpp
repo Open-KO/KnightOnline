@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <format>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -401,35 +402,29 @@ void CUIHotKeyDlg::InitIconUpdate()
 	if( (iHCount < 0) || (iHCount > 65) )
 		return;
 
-	char szSkill[32];
 	int iSkillCount = 0;
 	CHotkeyData HD;
 //	uint32_t bitMask;
 
-	while(iHCount--)
+	while (iHCount--)
 	{
-		std::string str = "Data";
-		sprintf(szSkill, "%d", iSkillCount);
-		str += szSkill;				
-		if( CGameProcedure::RegGetSetting(str.c_str(), &HD, sizeof(CHotkeyData)) )
+		std::string str = "Data" + std::to_string(iSkillCount);
+		if (CGameProcedure::RegGetSetting(str.c_str(), &HD, sizeof(CHotkeyData)))
 		{
-			__TABLE_UPC_SKILL* pUSkill = NULL;
-
 			// Skill Tree Window가 아이디를 갖고 있지 않으면 continue.. 
-			if ( (HD.iID < UIITEM_TYPE_SONGPYUN_ID_MIN) &&  (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)) )
+			if ((HD.iID < UIITEM_TYPE_USABLE_ID_MIN) && (!CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->HasIDSkill(HD.iID)))
 				continue;
 
-			pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
-			if ( !pUSkill )
+			__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(HD.iID);
+			if (!pUSkill)
 				continue;
 
 			__IconItemSkill* spSkill = new __IconItemSkill();
 			spSkill->pSkill = pUSkill;
 
 			// 아이콘 이름 만들기.. ^^
-			std::vector<char> buffer(256, NULL);
-			sprintf(&buffer[0],	"UI\\skillicon_%.2d_%d.dxt", HD.iID%100, HD.iID/100);
-			spSkill->szIconFN = &buffer[0];
+			spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+				HD.iID % 100, HD.iID / 100);
 
 			// 아이콘 로드하기.. ^^
 			spSkill->pUIIcon = new CN3UIIcon;
@@ -495,23 +490,20 @@ void CUIHotKeyDlg::CloseIconRegistry()
 
 	CGameProcedure::RegPutSetting("Count", &iHCount, sizeof(int) );
 
-	char szSkill[32];
 	int iSkillCount = 0;
 
-	for( i = 0; i < MAX_SKILL_HOTKEY_PAGE; i++ )
+	for (i = 0; i < MAX_SKILL_HOTKEY_PAGE; i++)
 	{
-		for( j = 0; j < MAX_SKILL_IN_HOTKEY; j++ )
+		for (j = 0; j < MAX_SKILL_IN_HOTKEY; j++)
 		{
-			if ( m_pMyHotkey[i][j] != NULL )
-			{
-				std::string str = "Data";
-				sprintf(szSkill, "%d", iSkillCount);
-				str += szSkill;				
+			if (m_pMyHotkey[i][j] == nullptr)
+				continue;
 
-				CHotkeyData HD(i, j, m_pMyHotkey[i][j]->pSkill->dwID);
-				CGameProcedure::RegPutSetting(str.c_str(), &HD, sizeof(CHotkeyData) );
-				iSkillCount++;
-			}
+			std::string str = "Data" + std::to_string(iSkillCount);
+
+			CHotkeyData HD(i, j, m_pMyHotkey[i][j]->pSkill->dwID);
+			CGameProcedure::RegPutSetting(str.c_str(), &HD, sizeof(CHotkeyData));
+			iSkillCount++;
 		}
 	}
 }
@@ -719,15 +711,15 @@ void CUIHotKeyDlg::EffectTriggerByHotKey(int iIndex)
 	}
 }
 
-void CUIHotKeyDlg::DoOperate(__IconItemSkill*	pSkill)
+void CUIHotKeyDlg::DoOperate(__IconItemSkill* pSkill)
 {
-	if(!pSkill) return;
+	if (pSkill == nullptr)
+		return;
 
-	//char szBuf[512];
 	// 메시지 박스 출력..	
-	//wsprintf(szBuf, "%s 스킬이 사용되었습니다.", pSkill->pSkill->szName.c_str() );
-	//CGameProcedure::s_pProcMain->MsgOutput(szBuf, 0xffffff00);			
-	
+	// std::string buff = fmt::format("{} 스킬이 사용되었습니다.", pSkill->pSkill->szName);
+	// CGameProcedure::s_pProcMain->MsgOutput(buff, 0xffffff00);			
+
 	int iIDTarget = CGameBase::s_pPlayer->m_iIDTarget;
 	CGameProcedure::s_pProcMain->m_pMagicSkillMng->MsgSend_MagicProcess(iIDTarget, pSkill->pSkill);
 }
@@ -762,35 +754,27 @@ void CUIHotKeyDlg::ClassChangeHotkeyFlush()
 
 CN3UIString* CUIHotKeyDlg::GetTooltipStrControl(int iIndex)
 {
-	CN3UIString* pStr = NULL;
-	std::string str = "";
-	char	cstr[4];
-	sprintf(cstr, "%d", iIndex+10);	str += cstr;
-	pStr = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
+	std::string str = std::to_string(iIndex + 10);
+	CN3UIString* pStr = (CN3UIString*) GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
 	return pStr;
 }
 
 CN3UIString* CUIHotKeyDlg::GetCountStrControl(int iIndex)
 {
-	CN3UIString* pStr = NULL;
-	std::string str = "";
-	char	cstr[4];
-	sprintf(cstr, "%d", iIndex);	str += cstr;
-	pStr = (CN3UIString* )GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
+	std::string str = std::to_string(iIndex);
+	CN3UIString* pStr = (CN3UIString*) GetChildByID(str);	 __ASSERT(pStr, "NULL UI Component!!");
 	return pStr;
 }
 
 void CUIHotKeyDlg::DisplayTooltipStr(__IconItemSkill* spSkill)
 {
-	char pszDesc[256];
-
 	int iIndex = GetTooltipCurPageIndex(spSkill);
 	if (iIndex != -1)
 	{
 		if (!m_pTooltipStr[iIndex]->IsVisible())	
 			m_pTooltipStr[iIndex]->SetVisible(true);
-		sprintf(pszDesc, "%s", spSkill->pSkill->szName.c_str());
-		m_pTooltipStr[iIndex]->SetString(pszDesc);
+
+		m_pTooltipStr[iIndex]->SetString(spSkill->pSkill->szName);
 		m_pTooltipStr[iIndex]->Render();
 	}
 }
@@ -806,15 +790,14 @@ void CUIHotKeyDlg::DisableTooltipDisplay()
 
 void CUIHotKeyDlg::DisplayCountStr(__IconItemSkill* spSkill)
 {
-	char pszDesc[256];
-
 	int iIndex = GetCountCurPageIndex(spSkill);
 	if (iIndex != -1)
 	{
 		if (!m_pCountStr[iIndex]->IsVisible())	
 			m_pCountStr[iIndex]->SetVisible(true);
-		sprintf(pszDesc, "%d", CGameProcedure::s_pProcMain->m_pUIInventory->GetCountInInvByID(spSkill->pSkill->dwExhaustItem));
-		m_pCountStr[iIndex]->SetString(pszDesc);
+
+		m_pCountStr[iIndex]->SetStringAsInt(
+			CGameProcedure::s_pProcMain->m_pUIInventory->GetCountInInvByID(spSkill->pSkill->dwExhaustItem));
 		m_pCountStr[iIndex]->Render();
 	}
 }
@@ -896,15 +879,14 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
 		if ( pUSkill == NULL ) return false;
-		if ( pUSkill->dwID < UIITEM_TYPE_SONGPYUN_ID_MIN) return false;
+		if ( pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN) return false;
 
 		spSkill = new __IconItemSkill();
 		spSkill->pSkill = pUSkill;
 
 		// 아이콘 이름 만들기.. ^^
-		std::vector<char> buffer(256, NULL);
-		sprintf(&buffer[0],	"UI\\skillicon_%.2d_%d.dxt", spItem->pItemBasic->dwEffectID1%100, spItem->pItemBasic->dwEffectID1/100);
-		spSkill->szIconFN = &buffer[0];
+		spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+			spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
 
 		// 아이콘 로드하기.. ^^
 		spSkill->pUIIcon = new CN3UIIcon;
@@ -931,6 +913,57 @@ bool CUIHotKeyDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 	}
 
 	return false;
+}
+
+bool CUIHotKeyDlg::SetReceiveSelectedItem(int iIndex)
+{
+	if (CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd != UIWND_INVENTORY)
+		return false;
+
+	__IconItemSkill* spItem = CN3UIWndBase::m_sSelectedIconInfo.pItemSelect;
+
+	__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.Find(spItem->pItemBasic->dwEffectID1);
+	if (pUSkill == nullptr)
+		return false;
+
+	if (pUSkill->dwID < UIITEM_TYPE_USABLE_ID_MIN)
+		return false;
+
+	if (m_pMyHotkey[m_iCurPage][iIndex] != nullptr)
+		return false;
+
+	__IconItemSkill* spSkill = new __IconItemSkill();
+	spSkill->pSkill = pUSkill;
+
+	// Create the icon name
+	spSkill->szIconFN = fmt::format("UI\\skillicon_{:02}_{}.dxt",
+		spItem->pItemBasic->dwEffectID1 % 100, spItem->pItemBasic->dwEffectID1 / 100);
+
+	// load icon
+	spSkill->pUIIcon = new CN3UIIcon();
+	spSkill->pUIIcon->Init(this);
+	spSkill->pUIIcon->SetTex(spSkill->szIconFN);
+	spSkill->pUIIcon->SetUVRect(0, 0, 1.0f, 1.0f);
+	spSkill->pUIIcon->SetUIType(UI_TYPE_ICON);
+
+	uint32_t bitMask = UISTYLE_ICON_SKILL;
+	if (!CGameProcedure::s_pProcMain->m_pMagicSkillMng->CheckValidSkillMagic(spSkill->pSkill))
+		bitMask |= UISTYLE_DISABLE_SKILL;
+	spSkill->pUIIcon->SetStyle(bitMask);
+
+	CN3UIArea* pArea = nullptr;
+	pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_SKILL_HOTKEY, iIndex);
+
+	if (pArea != nullptr)
+	{
+		spSkill->pUIIcon->SetRegion(pArea->GetRegion());
+		spSkill->pUIIcon->SetMoveRect(pArea->GetRegion());
+	}
+
+	m_pMyHotkey[m_iCurPage][iIndex] = spSkill;
+
+	CloseIconRegistry();
+	return true;
 }
 
 bool CUIHotKeyDlg::EffectTriggerByMouse()

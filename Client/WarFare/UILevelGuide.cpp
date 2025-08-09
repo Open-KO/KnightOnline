@@ -114,8 +114,8 @@ void CUILevelGuide::SearchQuests()
 	// NOTE: This officially only checks the one way.
 	if ((CGameBase::s_pPlayer->m_InfoBase.iLevel + MAX_SEARCH_LEVEL_RANGE) < iSearchLevel)
 	{
-		std::string szMsg;
-		CGameBase::GetTextF(IDS_QUEST_SEARCH_LEVEL_ERROR, &szMsg, MAX_SEARCH_LEVEL_RANGE);
+		std::string szMsg = fmt::format_text_resource(IDS_QUEST_SEARCH_LEVEL_ERROR,
+			MAX_SEARCH_LEVEL_RANGE);
 		CGameProcedure::MessageBoxPost(szMsg, "", MB_OK);
 
 		iSearchLevel = CGameBase::s_pPlayer->m_InfoBase.iLevel + MAX_SEARCH_LEVEL_RANGE;

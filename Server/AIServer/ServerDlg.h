@@ -24,7 +24,9 @@
 
 #include "resource.h"
 
+#include <shared/logger.h>
 #include <shared/STLMap.h>
+
 #include <vector>
 #include <list>
 
@@ -32,6 +34,19 @@ namespace recordset_loader
 {
 	struct Error;
 }
+
+class AIServerLogger : public logger::Logger
+{
+public:
+	AIServerLogger()
+		: Logger(logger::AIServer)
+	{
+	}
+
+	void SetupExtraLoggers(CIni& ini,
+		std::shared_ptr<spdlog::details::thread_pool> threadPool,
+		const std::string& baseDir) override;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CServerDlg dialog
@@ -81,7 +96,7 @@ public:
 	void DeleteAllUserList(int zone);
 	void SendCompressedData(int nZone);			// 패킷을 압축해서 보낸다..
 	int Send(char* pData, int length, int nZone = 0);
-	void SendSystemMsg(char* pMsg, int zone, int type = 0, int who = 0);
+	void SendSystemMsg(const std::string_view msg, int zone, int type = 0, int who = 0);
 	void ResetBattleZone();
 	MAP* GetMapByIndex(int iZoneIndex) const;
 	MAP* GetMapByID(int iZoneID) const;
@@ -168,13 +183,9 @@ public:
 
 	static CServerDlg* s_pInstance;
 
-
 // Implementation
 protected:
 	void DefaultInit();
-
-
-//	CGameSocket m_GameSocket;
 
 	HICON m_hIcon;
 
@@ -203,6 +214,8 @@ private:
 	// ~패킷 압축에 필요 변수   -------------
 
 	BYTE				m_byZone;
+
+	AIServerLogger		_logger;
 	
 	/// \brief output message box for the application
 	CListBox _outputList;

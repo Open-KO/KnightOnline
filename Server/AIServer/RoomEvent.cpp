@@ -3,12 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "server.h"
 #include "RoomEvent.h"
 #include "ServerDlg.h"
-#include "define.h"
-//#include "Npc.h"
+#include "Define.h"
 
+#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -168,7 +167,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 	return FALSE;
 }
 
-BOOL  CRoomEvent::RunEvent(int event_num)
+BOOL CRoomEvent::RunEvent(int event_num)
 {
 	char notify[50] = {};
 	CNpc* pNpc = nullptr;
@@ -422,7 +421,6 @@ void CRoomEvent::InitializeRoom()
 
 void CRoomEvent::EndEventSay(int option1, int option2)
 {
-	char notify[256] = {};
 	char send_buff[128] = {};
 	int send_index = 0;
 
@@ -435,35 +433,30 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 			switch (option2)
 			{
 				case 1:
-					::_LoadStringFromResource(IDS_KARUS_CATCH_1, buff);
-					sprintf(notify, buff.c_str());
+					buff = fmt::format_win32_resource(IDS_KARUS_CATCH_1);
 					break;
 
 				case 2:
-					::_LoadStringFromResource(IDS_KARUS_CATCH_2, buff);
-					sprintf(notify, buff.c_str());
+					buff = fmt::format_win32_resource(IDS_KARUS_CATCH_2);
 					break;
 
 				case 11:
-					::_LoadStringFromResource(IDS_ELMORAD_CATCH_1, buff);
-					sprintf(notify, buff.c_str());
+					buff = fmt::format_win32_resource(IDS_ELMORAD_CATCH_1);
 					break;
 
 				case 12:
-					::_LoadStringFromResource(IDS_ELMORAD_CATCH_2, buff);
-					sprintf(notify, buff.c_str());
+					buff = fmt::format_win32_resource(IDS_ELMORAD_CATCH_2);
 					break;
 			}
 
-			m_pMain->SendSystemMsg(notify, m_iZoneNumber, WAR_SYSTEM_CHAT, SEND_ALL);
+			m_pMain->SendSystemMsg(buff, m_iZoneNumber, WAR_SYSTEM_CHAT, SEND_ALL);
 			break;
 
 		// 클리어 상태에서 클라이언트에 내려줄 내용와 적국으로 갈 수 있는 이벤트 존 열어주기
 		case 2:
 			if (option2 == KARUS_ZONE)
 			{
-				::_LoadStringFromResource(IDS_KARUS_PATHWAY, buff);
-				sprintf(notify, buff.c_str());
+				buff = fmt::format_win32_resource(IDS_KARUS_PATHWAY);
 
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_MAP_EVENT_RESULT, send_index);
@@ -472,8 +465,7 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 			}
 			else if (option2 == ELMORAD_ZONE)
 			{
-				::_LoadStringFromResource(IDS_ELMORAD_PATHWAY, buff);
-				sprintf(notify, buff.c_str());
+				buff = fmt::format_win32_resource(IDS_ELMORAD_PATHWAY);
 
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_MAP_EVENT_RESULT, send_index);
@@ -481,7 +473,7 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 				m_pMain->Send(send_buff, send_index, m_iZoneNumber);
 			}
 
-			m_pMain->SendSystemMsg(notify, m_iZoneNumber, WAR_SYSTEM_CHAT, SEND_ALL);
+			m_pMain->SendSystemMsg(buff, m_iZoneNumber, WAR_SYSTEM_CHAT, SEND_ALL);
 			break;
 
 		// 클리어 상태에서 클라이언트에 내려줄 내용와 승리팀을 알려준다.

@@ -76,6 +76,7 @@ public:
 //	bool				ReceiveSelectedSkill();
 	bool				IsSelectedSkillInRealIconArea();
 	void				SetReceiveSelectedSkill(int iIndex);
+	bool				SetReceiveSelectedItem(int iIndex);
 	bool				GetEmptySlotIndex(int &iIndex);
 
 	void				AllFactorClear();

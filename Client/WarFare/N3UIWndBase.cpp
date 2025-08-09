@@ -77,37 +77,29 @@ void CN3UIWndBase::InitIconWnd(e_UIWND eWnd)
 
 CN3UIArea* CN3UIWndBase::GetChildAreaByiOrder(eUI_AREA_TYPE eUAT, int iOrder)
 {
-	char pszID[32];
-	sprintf(pszID, "%d",iOrder);
-
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	std::string szID = std::to_string(iOrder);
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIArea* pChild = (CN3UIArea* )(*itor);
-		if ( (pChild->UIType() == UI_TYPE_AREA) && (pChild->m_eAreaType == eUAT) )
-		{
-			if (pChild->m_szID == pszID) return pChild;
-		}
+		if (pChild->UIType() == UI_TYPE_AREA
+			&& static_cast<CN3UIArea*>(pChild)->m_eAreaType == eUAT
+			&& pChild->GetID() == szID)
+			return static_cast<CN3UIArea*>(pChild);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CN3UIString* CN3UIWndBase::GetChildStringByiOrder(int iOrder)
 {
-	char pszID[32];
-	sprintf(pszID, "%d",iOrder);
-
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	std::string szID = std::to_string(iOrder);
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIString* pChild = (CN3UIString* )(*itor);
-		if ( pChild->UIType() == UI_TYPE_STRING )
-		{
-			if (pChild->m_szID == pszID) return pChild;
-		}
+		if (pChild->UIType() == UI_TYPE_STRING
+			&& pChild->GetID() == szID)
+			return static_cast<CN3UIString*>(pChild);
 	}
 
-	return NULL;
-
+	return nullptr;
 }
 
 void CN3UIWndBase::AllHighLightIconFree()

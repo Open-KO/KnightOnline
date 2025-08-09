@@ -75,11 +75,11 @@ bool CUIPartyBBS::Load(HANDLE hFile)
 
 	m_pText_Page = (CN3UIString*)(this->GetChildByID("string_page"));					__ASSERT(m_pText_Page, "NULL UI Component!!!");
 
-	char szBuf[64];
-	for(int i = 0 ; i < PARTY_BBS_MAXSTRING ; i++)
+	std::string szID;
+	for (int i = 0; i < PARTY_BBS_MAXSTRING; i++)
 	{
-		sprintf(szBuf,"text_%.2d",i);
-		m_pText[i] = (CN3UIString*)(this->GetChildByID(szBuf));
+		szID = fmt::format("text_{:02}", i);
+		m_pText[i] = (CN3UIString*) GetChildByID(szID);
 	}
 
 	m_iCurPage = 0; // 현재 페이지..
@@ -142,14 +142,12 @@ bool CUIPartyBBS::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		}
 		else if(pSender == m_pBtn_Register)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_PARTY_BBS_REGISTER, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_PARTY_BBS_REGISTER);
 			CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_PARTY_BBS_REGISTER); // 기사단 해체 물어보기..
 		}
 		else if(pSender == m_pBtn_RegisterCancel)
 		{
-			std::string szMsg;
-			CGameBase::GetText(IDS_PARTY_BBS_REGISTER_CANCEL, &szMsg);
+			std::string szMsg = fmt::format_text_resource(IDS_PARTY_BBS_REGISTER_CANCEL);
 			CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_PARTY_BBS_REGISTER_CANCEL); // 기사단 해체 물어보기..
 		}
 		else if(pSender == m_pBtn_Whisper)
@@ -317,11 +315,8 @@ void CUIPartyBBS::PartyStringSet(uint8_t byType)
 		int iLMax = iLevel + 8;
 		if(iLMax > 80) iLMax = 80;
 
-		char szBuff[128];
-		std::string szMsg;
-		CGameBase::GetText(IDS_WANT_PARTY_MEMBER, &szMsg);
-		sprintf(szBuff, szMsg.c_str(), iLMin, iLMax);
-		CGameProcedure::s_pPlayer->InfoStringSet(szBuff, 0xff00ff00);
+		std::string szMsg = fmt::format_text_resource(IDS_WANT_PARTY_MEMBER, iLMin, iLMax);
+		CGameProcedure::s_pPlayer->InfoStringSet(szMsg, 0xff00ff00);
 		CGameProcedure::s_pProcMain->MsgSend_StateChange(N3_SP_STATE_CHANGE_RECRUIT_PARTY, 0x02); // 파티 요청.. 취소
 	}
 	else
@@ -350,18 +345,14 @@ void CUIPartyBBS::ResetContent()
 
 void CUIPartyBBS::SetContentString(int iIndex, std::string szID, int iLevel, std::string szClass)
 {
-	if(m_pText[iIndex])
+	if (m_pText[iIndex] != nullptr)
 		m_pText[iIndex]->SetString(szID);
 
-	if(m_pText[iIndex + PARTY_BBS_MAXLINE])
-	{
-		char szBuf[20];
-		sprintf(szBuf,"%d",iLevel);
-		m_pText[iIndex + PARTY_BBS_MAXLINE]->SetString(szBuf);
-	}
+	if (m_pText[iIndex + PARTY_BBS_MAXLINE] != nullptr)
+		m_pText[iIndex + PARTY_BBS_MAXLINE]->SetStringAsInt(iLevel);
 
-	if(m_pText[iIndex + PARTY_BBS_MAXLINE*2])
-		m_pText[iIndex + PARTY_BBS_MAXLINE*2]->SetString(szClass);
+	if (m_pText[iIndex + PARTY_BBS_MAXLINE * 2] != nullptr)
+		m_pText[iIndex + PARTY_BBS_MAXLINE * 2]->SetString(szClass);
 }
 
 void CUIPartyBBS::Render()
@@ -488,9 +479,9 @@ void CUIPartyBBS::RequestParty()
 			{
 				std::string szMsg;
 				if (CGameProcedure::s_pProcMain->MsgSend_PartyOrForceCreate(0, IPB.szID))
-					CGameBase::GetText(IDS_PARTY_INVITE, &szMsg); // 파티
+					szMsg = fmt::format_text_resource(IDS_PARTY_INVITE); // 파티
 				else
-					CGameBase::GetText(IDS_PARTY_INVITE_FAILED, &szMsg); // 파티 초대 실패
+					szMsg = fmt::format_text_resource(IDS_PARTY_INVITE_FAILED); // 파티 초대 실패
 				CGameProcedure::s_pProcMain->MsgOutput(IPB.szID + szMsg, 0xffffff00);
 				break;
 			}

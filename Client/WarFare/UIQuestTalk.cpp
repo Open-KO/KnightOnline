@@ -9,8 +9,11 @@
 #include "UIManager.h"
 #include "APISocket.h"
 
+#include <N3Base/N3UIScrollBar.h>
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UIButton.h>
+
+#include <algorithm>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -31,6 +34,7 @@ CUIQuestTalk::CUIQuestTalk()
 	m_pBtnNext			= nullptr;
 	m_pBtnOkRight		= nullptr;
 	m_pBtnPre			= nullptr;
+	m_pScrollBar		= nullptr;
 	m_iNumTalk			= 0;
 	m_iCurTalk			= 0;
 }
@@ -57,34 +61,49 @@ void CUIQuestTalk::Open(Packet& pkt)
 		if(pTbl_Quest_Talk)
 		{
 			m_szTalk[i] = pTbl_Quest_Talk->szTalk;
+			CGameBase::ConvertPipesToNewlines(m_szTalk[i]);
 			m_iNumTalk++;
 		}
 	}
 
 	m_pTextTalk->SetString(m_szTalk[m_iCurTalk]);
+
+	// reset scrollbar position
+	if (m_pScrollBar != nullptr)
+		m_pScrollBar->SetCurrentPos(0);
+
 	SetVisible(true);
 }
 
-bool CUIQuestTalk::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
+bool CUIQuestTalk::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
-	if( dwMsg == UIMSG_BUTTON_CLICK )
+	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if(pSender == m_pBtnOk)
+		if (pSender == m_pBtnOk)
 		{
 			m_iCurTalk++;
-			if(m_iCurTalk>=m_iNumTalk)
+			if (m_iCurTalk >= m_iNumTalk)
 			{
 				m_iCurTalk = 0;
 				SetVisible(false);
 			}
 			else
 			{
+				CGameBase::ConvertPipesToNewlines(m_szTalk[m_iCurTalk]);
 				m_pTextTalk->SetString(m_szTalk[m_iCurTalk]);
 			}
 		}
 		else if (pSender == m_pBtnClose)
 		{
 			SetVisible(false);
+		}
+	}
+	else if (dwMsg == UIMSG_SCROLLBAR_POS)
+	{
+		if (pSender == m_pScrollBar)
+		{
+			UpdateTextForScroll();
+			return true;
 		}
 	}
 
@@ -105,7 +124,8 @@ bool CUIQuestTalk::Load(HANDLE hFile)
 	N3_VERIFY_UI_COMPONENT(m_pBtnNext,			(CN3UIButton*) GetChildByID("btn_Next"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnOkRight,		(CN3UIButton*) GetChildByID("btn_Ok_right"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnPre,			(CN3UIButton*) GetChildByID("btn_Pre"));
-
+	N3_VERIFY_UI_COMPONENT(m_pScrollBar,		(CN3UIScrollBar*) GetChildByID("scroll"));
+	
 	if (m_pBtnUpperEvent != nullptr)
 		m_pBtnUpperEvent->SetVisible(false);
 
@@ -156,6 +176,38 @@ void CUIQuestTalk::Release()
 	m_pBtnNext			= nullptr;
 	m_pBtnOkRight		= nullptr;
 	m_pBtnPre			= nullptr;
+	m_pScrollBar		= nullptr;
 	m_iNumTalk			= 0;
 	m_iCurTalk			= 0;
+}
+
+void CUIQuestTalk::UpdateTextForScroll()
+{
+	if (m_pTextTalk == nullptr
+		|| m_pScrollBar == nullptr)
+		return;
+
+	// scrollbar's current position
+	const int iScrollPosition = m_pScrollBar->GetCurrentPos();
+
+	// total number of lines of text
+	const int iTotalLineCount = m_pTextTalk->GetLineCount();
+
+	// max number of lines visible in text area
+	const int iVisibleLineCount = 8;
+
+	const int iMaxScrollableLines = iTotalLineCount - iVisibleLineCount;
+	m_pScrollBar->SetRangeMax(iMaxScrollableLines);
+
+	// return if text is shorter than or equal to the visible line count
+	if (iTotalLineCount <= iVisibleLineCount)
+		return;
+
+	// limit check for the line which displayed first, topline
+	int iTopLine = std::clamp(
+		iScrollPosition,
+		0,
+		iTotalLineCount - iVisibleLineCount);
+
+	m_pTextTalk->SetStartLine(iTopLine);
 }

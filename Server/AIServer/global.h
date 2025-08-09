@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-//#include "stdafx.h"
+#include <string_view>
 
 BOOL	CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index);
 int		GetVarString(char* tBuf, const char* sBuf, int nSize, int& index);
@@ -17,8 +17,8 @@ void	SetShort(char* tBuf, int sShort, int& index);
 void	SetInt(char* tBuf, int sInt, int& index);
 void	SetDWORD(char* tBuf, DWORD sDword, int& index);
 void	Setfloat(char* tBuf, float sFloat, int& index);
-void	SetString1(char* tBuf, const char* sBuf, BYTE len, int& index);
-void	SetString2(char* tBuf, const char* sBuf, short len, int& index);
+void	SetString1(char* tBuf, const std::string_view str, int& index);
+void	SetString2(char* tBuf, const std::string_view str, int& index);
 int		ParseSpace(char* tBuf, const char* sBuf);
 CString	GetProgPath();
 int		myrand(int min, int max, BOOL bSame = FALSE);

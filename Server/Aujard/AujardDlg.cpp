@@ -7,7 +7,6 @@
 
 #include <process.h>
 #include <shared/Ini.h>
-#include <shared/logger.h>
 #include <shared/StringConversion.h>
 #include <db-library/ConnectionManager.h>
 
@@ -125,7 +124,8 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 // CAujardDlg dialog
 
 CAujardDlg::CAujardDlg(CWnd* parent /*=nullptr*/)
-	: CDialog(IDD, parent)
+	: CDialog(IDD, parent),
+	_logger(logger::Aujard)
 {
 	//{{AFX_DATA_INIT(CAujardDlg)
 	//}}AFX_DATA_INIT
@@ -178,13 +178,16 @@ BOOL CAujardDlg::OnInitDialog()
 	SetIcon(_icon, TRUE);			// Set big icon
 	SetIcon(_icon, FALSE);		// Set small icon
 
-	std::filesystem::path iniPath(GetProgPath().GetString());
+	CString exePath(GetProgPath());
+	std::string exePathUtf8(CT2A(exePath, CP_UTF8));
+
+	std::filesystem::path iniPath(exePath.GetString());
 	iniPath /= L"Aujard.ini";
 
 	CIni ini(iniPath);
 
 	// configure logger
-	logger::SetupLogger(ini, logger::Aujard);
+	_logger.Setup(ini, exePathUtf8);
 
 	LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), FALSE);	// Dispatcher 의 Send Queue
 	LoggerSendQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), FALSE);	// Dispatcher 의 Read Queue
@@ -300,8 +303,6 @@ BOOL CAujardDlg::DestroyWindow()
 
 	if (!ItemArray.IsEmpty())
 		ItemArray.DeleteAllData();
-
-	spdlog::shutdown();
 	
 	_instance = nullptr;
 
@@ -341,7 +342,7 @@ BOOL CAujardDlg::InitSharedMemory()
 /// \brief writes a recordset_loader::Error to an error pop-up
 void CAujardDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	std::string error = std::format("AujardDlg::ReportTableLoadError: {} failed: {}",
+	std::string error = fmt::format("AujardDlg::ReportTableLoadError: {} failed: {}",
 		source, err.Message);
 	std::wstring werror = LocalToWide(error);
 	AfxMessageBox(werror.c_str());
@@ -1345,7 +1346,7 @@ void CAujardDlg::ModifyKnightsMember(char* buffer, BYTE command)
 		default:
 			cmdStr = "ModifyKnightsMember";
 		}
-		std::string errMsg = std::format("Packet Drop: {}", cmdStr);
+		std::string errMsg = fmt::format("Packet Drop: {}", cmdStr);
 		AddOutputMessage(errMsg);
 		spdlog::error("AujardDlg::ModifyKnightsMember: {}", errMsg);
 	}

@@ -131,7 +131,6 @@ BYTE * CJpegFile::JpegFileToRGB(std::string fileName,
 
 	JSAMPARRAY buffer;		/* Output row buffer */
 	int row_stride;		/* physical row width in output buffer */
-	char buf[250];
 
 	/* In this example we want to open the input file before doing anything else,
 	* so that the setjmp() error recovery below can assume the file is open.
@@ -140,8 +139,6 @@ BYTE * CJpegFile::JpegFileToRGB(std::string fileName,
 	*/
 
 	if ((infile = fopen(fileName.c_str(), "rb")) == NULL) {
-		sprintf(buf, "JPEG :\nCan't open %s\n", fileName.c_str());
-//		AfxMessageBox(buf);
 		return NULL;
 	}
 
@@ -310,7 +307,6 @@ BOOL CJpegFile::GetJPGDimensions(std::string fileName,
 	struct my_error_mgr jerr;
 	/* More stuff */
 	FILE * infile=NULL;		/* source file */
-	char buf[250];
 
 	/* In this example we want to open the input file before doing anything else,
 	* so that the setjmp() error recovery below can assume the file is open.
@@ -319,8 +315,6 @@ BOOL CJpegFile::GetJPGDimensions(std::string fileName,
 	*/
 
 	if ((infile = fopen(fileName.c_str(), "rb")) == NULL) {
-		sprintf(buf, "JPEG :\nCan't open %s\n", fileName.c_str());
-//		AfxMessageBox(buf);
 		return FALSE;
 	}
 
@@ -491,9 +485,6 @@ BOOL CJpegFile::RGBToJpegFile(std::string fileName,
 	/* Note: steps 2 and 3 can be done in either order. */
 
 	if ((outfile = fopen(fileName.c_str(), "wb")) == NULL) {
-		char buf[250];
-		sprintf(buf, "JpegFile :\nCan't open %s\n", fileName.c_str());
-//		AfxMessageBox(buf);
 		return FALSE;
 	}
 

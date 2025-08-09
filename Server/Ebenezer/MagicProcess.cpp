@@ -11,7 +11,6 @@
 #include "GameDefine.h"
 
 #include <shared/packets.h>
-#include <shared/logger.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG

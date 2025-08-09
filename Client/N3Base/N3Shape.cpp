@@ -362,8 +362,7 @@ bool CN3SPart::Save(HANDLE hFile)
 		
 //		if(-1 == pPMesh->FileName().find("object\\")) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
 //		{
-//			char szFNTmp[256];
-//			wsprintf(szFNTmp, "Object\\%s.N3PMesh", pPMesh->Name());
+//			std::string szFNTmp = fmt::format("Object\\{}.N3PMesh", pPMesh->Name());
 //			pPMesh->FileNameSet(szFNTmp);
 //
 //			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
@@ -397,8 +396,7 @@ bool CN3SPart::Save(HANDLE hFile)
 //				char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 //				_splitpath(m_TexRefs[j]->FileName(), szDrive, szDir, szFName, szExt);
 //
-//				char szFNTmp[256];
-//				wsprintf(szFNTmp, "Object\\%s.DXT", szFName);
+//				std::string szFNTmp = fmt::format("Object\\{}.DXT", szFName);
 //				m_TexRefs[j]->FileNameSet(szFNTmp);
 //
 //				SetFilePointer(hFile, -4, 0, FILE_CURRENT);
@@ -907,15 +905,14 @@ bool CN3Shape::MakeCollisionMeshByParts()  // 충돌 메시를 박스로 만든�
 	}
 
 	int iCount = CN3Base::s_MngVMesh.Count();
-	char szBuff[256];
-	sprintf(szBuff, "%s_collision_%d.n3vmesh", m_szFileName.c_str(), iCount); // 임시로 이름일 짓고..
+	std::string buff = fmt::format("{}_collision_{}.n3vmesh", m_szFileName.c_str(), iCount); // 임시로 이름일 짓고..
 
-	pVMesh->FileNameSet(szBuff);
+	pVMesh->FileNameSet(buff);
 	CN3Base::s_MngVMesh.Delete(&m_pMeshCollision); // 전의 거 지우고..
 	CN3Base::s_MngVMesh.Add(pVMesh);
 	m_pMeshCollision = s_MngVMesh.Get(pVMesh->FileName());
 
-	this->FindMinMax();
+	FindMinMax();
 
 	return true;
 }
@@ -984,15 +981,14 @@ bool CN3Shape::MakeCollisionMeshByPartsDetail()  // 현재 모습 그대로... �
 	}
 
 	int iCount = CN3Base::s_MngVMesh.Count();
-	char szBuff[256];
-	sprintf(szBuff, "%s_collision_%d.n3vmesh", m_szFileName.c_str(), iCount); // 임시로 이름일 짓고..
+	std::string buff = fmt::format("{}_collision_{}.n3vmesh", m_szFileName.c_str(), iCount); // 임시로 이름일 짓고..
 
-	pVMesh->FileNameSet(szBuff);
+	pVMesh->FileNameSet(buff);
 	CN3Base::s_MngVMesh.Delete(&m_pMeshCollision); // 전의 거 지우고..
 	CN3Base::s_MngVMesh.Add(pVMesh);
 	m_pMeshCollision = s_MngVMesh.Get(pVMesh->FileName());
 
-	this->FindMinMax();
+	FindMinMax();
 
 	return true;
 }

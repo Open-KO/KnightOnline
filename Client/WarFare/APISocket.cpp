@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "APISocket.h"
+#include "ClientResourceFormatter.h"
 #include <winsock.h>
 
 //////////////////////////////////////////////////////////////////////
@@ -117,9 +118,8 @@ int CAPISocket::Connect(HWND hWnd, const char* pszIP, uint32_t dwPort)
 		if ( (hp = (hostent far *)gethostbyname(pszIP)) == NULL)
 		{
 #ifdef _DEBUG
-			char msg[256];
-			sprintf(msg, "Error: Connecting to %s.",pszIP);
-			MessageBox(hWnd, msg,"socket error", MB_OK | MB_ICONSTOP );
+			std::string msg = fmt::format("Error: Connecting to {}.", pszIP);
+			MessageBoxA(hWnd, msg.c_str(), "socket error", MB_OK | MB_ICONSTOP);
 #endif
 			return INVALID_SOCKET;
 		}
@@ -135,9 +135,8 @@ int CAPISocket::Connect(HWND hWnd, const char* pszIP, uint32_t dwPort)
 	{
 		int iErrCode = ::WSAGetLastError();
 #ifdef _DEBUG
-		char msg[256];
-		sprintf(msg,"Error opening stream socket");
-		MessageBox(hWnd, msg,"socket error", MB_OK | MB_ICONSTOP);
+		char msg[] = "Error opening stream socket";
+		MessageBoxA(hWnd, msg, "socket error", MB_OK | MB_ICONSTOP);
 #endif
 		return iErrCode;
 	}
@@ -155,11 +154,6 @@ int CAPISocket::Connect(HWND hWnd, const char* pszIP, uint32_t dwPort)
 		closesocket(sock);
 		m_hSocket = (void *)INVALID_SOCKET;
 
-#ifdef _DEBUG
-//		char msg[256];
-//		sprintf(msg,"Cannot connect to %s on Port %u : ErrorCode : %d", pszIP, dwPort, iErrCode);
-//		MessageBox(hWnd, msg,"socket error", MB_OK | MB_ICONSTOP);
-#endif
 		return iErrCode;
 	}
 
@@ -201,7 +195,7 @@ void CAPISocket::Receive()
 			__ASSERT(0,"socket receive error!");
 #ifdef _N3GAME
 			int iErr = ::GetLastError();
-			CLogWriter::Write("socket receive error! : %d", iErr);
+			CLogWriter::Write("socket receive error! : {}", iErr);
 			//TRACE("socket receive error! : %d\n", iErr);
 #endif
 			break;
@@ -332,7 +326,7 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 			__ASSERT(0,"socket send error!");
 #ifdef _N3GAME
 			int iErr = ::GetLastError();
-			CLogWriter::Write("socket send error! : %d", iErr);
+			CLogWriter::Write("socket send error! : {}", iErr);
 			//TRACE("socket send error! : %d\n", iErr);
 			PostQuitMessage(-1);
 #endif

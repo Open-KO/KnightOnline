@@ -11,6 +11,9 @@
 #include "Define.h"
 #include "Iocport.h"
 #include "DBProcess.h"
+
+#include <shared/logger.h>
+
 #include <vector>
 #include <string>
 
@@ -97,6 +100,8 @@ protected:
 	/// \brief DefaultPath loaded from CONFIGURATION.DEFAULT_PATH
 	std::string		_defaultPath;
 	int				_lastVersion;
+
+	logger::Logger	_logger;
 
 	// Generated message map functions
 	//{{AFX_MSG(CVersionManagerDlg)

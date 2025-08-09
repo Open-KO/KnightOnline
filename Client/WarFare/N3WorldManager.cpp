@@ -50,14 +50,14 @@ void CN3WorldManager::InitWorld(int iZoneID, const __Vector3& vPosPlayer)
 	// Zone 선택..
 	if (iZoneID != 51)	// N3Terrain..
 	{
-		CLogWriter::Write("CN3WorldManager::InitWorld Pre new Terrain ZoneID(%d)", iZoneID); // TmpLog_11_22
+		CLogWriter::Write("CN3WorldManager::InitWorld Pre new Terrain ZoneID({})", iZoneID); // TmpLog_11_22
 
 		m_pActiveWorld = new CN3TerrainManager();	
 		m_bIndoor = false;
 	}
 	else
 	{
-		CLogWriter::Write("CN3WorldManager::InitWorld Pre new Dungeon ZoneID(%d)", iZoneID); // TmpLog_11_22
+		CLogWriter::Write("CN3WorldManager::InitWorld Pre new Dungeon ZoneID({})", iZoneID); // TmpLog_11_22
 
 		m_pActiveWorld = new CDungeonManager();
 		m_bIndoor = true;

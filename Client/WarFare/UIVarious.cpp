@@ -193,65 +193,64 @@ void CUIState::UpdateBonusPointAndButtons(int iBonusPointRemain) // 보너스 �
 
 void CUIState::UpdateID(const std::string& szID)
 {
-	if(NULL == m_pText_ID) return;
-	m_pText_ID->SetString(szID);
+	if (m_pText_ID != nullptr)
+		m_pText_ID->SetString(szID);
 }
 
 void CUIState::UpdateLevel(int iVal)
 {
-	if(NULL == m_pText_Level) return;
-	m_pText_Level->SetStringAsInt(iVal);
+	if (m_pText_Level != nullptr)
+		m_pText_Level->SetStringAsInt(iVal);
 }
 
 void CUIState::UpdateRealmPoint(int iLoyalty, int iLoyaltyMonthly) // 국가 기여도는 10을 나누어서 표시
 {
-	if(NULL == m_pText_RealmPoint) return;
+	if (m_pText_RealmPoint == nullptr)
+		return;
 
-	// Edited by @Demircivi while integrating monthly np system.
-	char szBuf[32];
-	sprintf(szBuf, "%d / %d", iLoyalty, iLoyaltyMonthly);
-	m_pText_RealmPoint->SetString(szBuf); // 국가 기여도는 10을 나누어서 표시
+	std::string buff = fmt::format("{} / {}", iLoyalty, iLoyaltyMonthly);
+	m_pText_RealmPoint->SetString(buff); // 국가 기여도는 10을 나누어서 표시
 }
 
 void CUIState::UpdateHP(int iVal, int iValMax)
 {
 	__ASSERT(iVal >= 0 && iVal < 10000 && iValMax >= 0 && iValMax < 10000, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	if(NULL == m_pText_HP) return;
+	if (m_pText_HP == nullptr)
+		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%d / %d", iVal, iValMax);
-	m_pText_HP->SetString(szVal);
+	std::string buff = fmt::format("{} / {}", iVal, iValMax);
+	m_pText_HP->SetString(buff);
 }
 
 void CUIState::UpdateMSP(int iVal, int iValMax)
 {
 	__ASSERT(iVal >= 0 && iValMax > 0, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	if(NULL == m_pText_MP) return;
+	if (m_pText_MP == nullptr)
+		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%d / %d", iVal, iValMax);
-	m_pText_MP->SetString(szVal);
+	std::string buff = fmt::format("{} / {}", iVal, iValMax);
+	m_pText_MP->SetString(buff);
 }
 
-void CUIState::UpdateExp(uint64_t iVal, uint64_t iValMax)
+void CUIState::UpdateExp(int64_t iVal, int64_t iValMax)
 {
 	__ASSERT(iVal >= 0 && iValMax > 0, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-	if(NULL == m_pText_Exp) return;
+	if (m_pText_Exp == nullptr)
+		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, I64FMTD " / " I64FMTD, iVal, iValMax);
-	m_pText_Exp->SetString(szVal);
+	std::string buff = fmt::format("{} / {}", iVal, iValMax);
+	m_pText_Exp->SetString(buff);
 }
 
 void CUIState::UpdateAttackPoint(int iVal, int iDelta)
 {
-	if(NULL == m_pText_AP) return;
-	if(iDelta)
+	if (m_pText_AP == nullptr)
+		return;
+
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_AP->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_AP->SetString(buff);
 	}
 	else
 	{
@@ -261,13 +260,13 @@ void CUIState::UpdateAttackPoint(int iVal, int iDelta)
 
 void CUIState::UpdateGuardPoint(int iVal, int iDelta)
 {
-	if(NULL == m_pText_GP) return;
-	if(iDelta)
+	if (m_pText_GP == nullptr)
+		return;
+
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_GP->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_GP->SetString(buff);
 	}
 	else
 	{
@@ -280,13 +279,10 @@ void CUIState::UpdateWeight(int iVal, int iValMax)
 	if (m_pText_Weight == nullptr)
 		return;
 
-	char szVal[64] = "0 / 0";
-	sprintf(szVal, "%.1f/%.1f", (iVal * 0.1f), (iValMax * 0.1f));
+	std::string szVal = fmt::format("{:.1f}/{:.1f}", (iVal * 0.1f), (iValMax * 0.1f));
 	m_pText_Weight->SetString(szVal);
 
-	std::string szMsg;
-	CGameBase::GetTextF(IDS_INVEN_WEIGHT, &szMsg);
-
+	std::string szMsg = fmt::format_text_resource(IDS_INVEN_WEIGHT);
 	std::string str = szMsg + szVal;
 
 	CUIInventory* pInv = CGameProcedure::s_pProcMain->m_pUIInventory;
@@ -300,14 +296,13 @@ void CUIState::UpdateWeight(int iVal, int iValMax)
 
 void CUIState::UpdateStrength(int iVal, int iDelta)
 {
-	if(NULL == m_pText_Strength) return;
+	if (m_pText_Strength == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_Strength->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_Strength->SetString(buff);
 	}
 	else
 	{
@@ -317,14 +312,13 @@ void CUIState::UpdateStrength(int iVal, int iDelta)
 
 void CUIState::UpdateStamina(int iVal, int iDelta)
 {
-	if(NULL == m_pText_Stamina) return;
+	if (m_pText_Stamina == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_Stamina->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_Stamina->SetString(buff);
 	}
 	else
 	{
@@ -334,14 +328,13 @@ void CUIState::UpdateStamina(int iVal, int iDelta)
 
 void CUIState::UpdateDexterity(int iVal, int iDelta)
 {
-	if(NULL == m_pText_Dexterity) return;
+	if (m_pText_Dexterity == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_Dexterity->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_Dexterity->SetString(buff);
 	}
 	else
 	{
@@ -351,14 +344,13 @@ void CUIState::UpdateDexterity(int iVal, int iDelta)
 
 void CUIState::UpdateIntelligence(int iVal, int iDelta)
 {
-	if(NULL == m_pText_Intelligence) return;
+	if (m_pText_Intelligence == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_Intelligence->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_Intelligence->SetString(buff);
 	}
 	else
 	{
@@ -368,14 +360,13 @@ void CUIState::UpdateIntelligence(int iVal, int iDelta)
 
 void CUIState::UpdateMagicAttak(int iVal, int iDelta)
 {
-	if(NULL == m_pText_MagicAttak) return;
+	if (m_pText_MagicAttak == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_MagicAttak->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_MagicAttak->SetString(buff);
 	}
 	else
 	{
@@ -385,14 +376,13 @@ void CUIState::UpdateMagicAttak(int iVal, int iDelta)
 
 void CUIState::UpdateRegistFire(int iVal, int iDelta)
 {
-	if(NULL == m_pText_RegistFire) return;
+	if (m_pText_RegistFire == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_RegistFire->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_RegistFire->SetString(buff);
 	}
 	else
 	{
@@ -402,14 +392,13 @@ void CUIState::UpdateRegistFire(int iVal, int iDelta)
 
 void CUIState::UpdateRegistCold(int iVal, int iDelta)
 {
-	if(NULL == m_pText_RegistIce) return;
+	if (m_pText_RegistIce == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_RegistIce->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_RegistIce->SetString(buff);
 	}
 	else
 	{
@@ -419,14 +408,13 @@ void CUIState::UpdateRegistCold(int iVal, int iDelta)
 
 void CUIState::UpdateRegistLight(int iVal, int iDelta)
 {
-	if(NULL == m_pText_RegistLight) return;
+	if (m_pText_RegistLight == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_RegistLight->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_RegistLight->SetString(buff);
 	}
 	else
 	{
@@ -436,14 +424,13 @@ void CUIState::UpdateRegistLight(int iVal, int iDelta)
 
 void CUIState::UpdateRegistMagic(int iVal, int iDelta)
 {
-	if(NULL == m_pText_RegistMagic) return;
+	if (m_pText_RegistMagic == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_RegistMagic->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_RegistMagic->SetString(buff);
 	}
 	else
 	{
@@ -453,14 +440,13 @@ void CUIState::UpdateRegistMagic(int iVal, int iDelta)
 
 void CUIState::UpdateRegistCurse(int iVal, int iDelta)
 {
-	if(NULL == m_pText_RegistCurse) return;
+	if (m_pText_RegistCurse == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_RegistCurse->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_RegistCurse->SetString(buff);
 	}
 	else
 	{
@@ -470,14 +456,13 @@ void CUIState::UpdateRegistCurse(int iVal, int iDelta)
 
 void CUIState::UpdateRegistPoison(int iVal, int iDelta)
 {
-	if(NULL == m_pText_RegistPoison) return;
+	if (m_pText_RegistPoison == nullptr)
+		return;
 
-	if(iDelta)
+	if (iDelta != 0)
 	{
-		char szBuff[64] = "";
-		if(iDelta > 0) sprintf(szBuff, "%d(+%d)", iVal, iDelta);
-		else sprintf(szBuff, "%d(%d)", iVal, iDelta);
-		m_pText_RegistPoison->SetString(szBuff);
+		std::string buff = FormatWithDelta(iVal, iDelta);
+		m_pText_RegistPoison->SetString(buff);
 	}
 	else
 	{
@@ -485,6 +470,13 @@ void CUIState::UpdateRegistPoison(int iVal, int iDelta)
 	}
 }
 
+std::string CUIState::FormatWithDelta(int iVal, int iDelta)
+{
+	if (iDelta > 0)
+		return fmt::format("{}(+{})", iVal, iDelta);
+
+	return fmt::format("{}({})", iVal, iDelta);
+}
 
 bool CUIState::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
@@ -516,9 +508,6 @@ void CUIState::MsgSendAblityPointChange(uint8_t byType, int16_t siValueDelta)
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
 }
 
-#pragma region CUIKnights
-// @Demircivi: Rewrote most parts of class, 02.04.2017 04:36. It is now compatible with 1299 UIs.
-#pragma region Constructor & Destructor & Base
 CUIKnights::CUIKnights()
 {
 	m_iPageCur = 1;
@@ -620,45 +609,38 @@ bool CUIKnights::Load(HANDLE hFile)
 	m_pBtn_Remove = (CN3UIButton*)(this->GetChildByID("btn_clan_Remove"));		__ASSERT(m_pBtn_Remove, "NULL UI Component!!");
 	m_pBtn_Refresh = (CN3UIButton*)(this->GetChildByID("btn_clan_refresh"));		__ASSERT(m_pBtn_Refresh, "NULL UI Component!!");
 
-	char szBuf[128];
+	std::string szID;
 	for (int i = 0; i < MAX_CLAN_GRADE; i++)
 	{
-		sprintf(szBuf, "image_grade%.2d", i);
-		m_pImage_Grade[i] = (CN3UIImage*)(this->GetChildByID(szBuf));			__ASSERT(m_pImage_Grade[i], "NULL UI Component!!");;
-		if (m_pImage_Grade[i]) m_pImage_Grade[i]->SetVisible(false);
+		szID = fmt::format("image_grade{:02}", i);
+		N3_VERIFY_UI_COMPONENT(m_pImage_Grade[i], (CN3UIImage*) GetChildByID(szID));
+
+		if (m_pImage_Grade[i] != nullptr)
+			m_pImage_Grade[i]->SetVisible(false);
 	}
 
-#pragma region Configuration
 	UpdatePageNumber(1);
 
 	m_pList_CharGrades->SetState(UI_STATE_LIST_DISABLE);
 	m_pList_CharLevels->SetState(UI_STATE_LIST_DISABLE);
 	m_pList_CharJobs->SetState(UI_STATE_LIST_DISABLE);
-#pragma endregion
 	return true;
 }
-#pragma endregion
 
-#pragma region Misc.
 void CUIKnights::UpdatePageNumber(int nNewPageNr) // @Demircivi: default value for nNewPageNr is -1.
 {
 	if (nNewPageNr != -1)
 		m_iPageCur = nNewPageNr;
 
-	char tmp[4];
-	sprintf(tmp, "%d", m_iPageCur);
-	m_pText_Page->SetString(tmp);
+	m_pText_Page->SetStringAsInt(m_iPageCur);
 }
 
 void CUIKnights::UpdateMemberCount(int nMemberCount)
 {
-	char tmp[4];
-	sprintf(tmp, "%d", nMemberCount); // TODO: @Demircivi: it should be %d/%d, second %d is clan max member count.
-	m_pText_MemberCount->SetString(tmp);
+	std::string memberCount = std::to_string(nMemberCount); // TODO: @Demircivi: it should be %d/%d, second %d is clan max member count.
+	m_pText_MemberCount->SetString(memberCount);
 }
-#pragma endregion
 
-#pragma region Button Handlers
 bool CUIKnights::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (dwMsg != UIMSG_BUTTON_CLICK)
@@ -771,9 +753,7 @@ void CUIKnights::AppointButtonHandler()
 	m_pList_CharIDs->GetString(index, szName);
 	CGameProcedure::s_pProcMain->MsgSend_KnightsAppointViceChief(szName);
 }
-#pragma endregion
 
-#pragma region List Actions
 void CUIKnights::ClearLists()
 {
 	m_pList_CharGrades->ResetContent();
@@ -809,13 +789,12 @@ void CUIKnights::RefreshList()
 			CGameProcedure::GetTextByKnightsDuty(KMI.eDuty, szDuty);
 			CGameProcedure::GetTextByClass(KMI.eClass, szClass);
 
-			char lvl[4];
-			sprintf(lvl, "%d", KMI.iLevel);
+			std::string level = std::to_string(KMI.iLevel);
 
-			int index = m_pList_CharGrades->AddString(szDuty.c_str()); // TODO: @Demircivi, Char Grade is not loading from language files.
-			m_pList_CharIDs->AddString(KMI.szName.c_str());
-			m_pList_CharLevels->AddString(lvl);
-			m_pList_CharJobs->AddString(szClass.c_str());
+			int index = m_pList_CharGrades->AddString(szDuty); // TODO: @Demircivi, Char Grade is not loading from language files.
+			m_pList_CharIDs->AddString(KMI.szName);
+			m_pList_CharLevels->AddString(level);
+			m_pList_CharJobs->AddString(szClass);
 
 			m_pList_CharGrades->SetFontColor(index, 0xff00ff00);
 			m_pList_CharIDs->SetFontColor(index, 0xff00ff00);
@@ -825,7 +804,7 @@ void CUIKnights::RefreshList()
 		else
 		{
 			int index = m_pList_CharGrades->AddString("....");
-			m_pList_CharIDs->AddString(KMI.szName.c_str());
+			m_pList_CharIDs->AddString(KMI.szName);
 			m_pList_CharLevels->AddString("....");
 			m_pList_CharJobs->AddString("....");
 
@@ -841,9 +820,7 @@ void CUIKnights::RefreshList()
 	m_pList_CharLevels->SetCurSel(-1);
 	m_pList_CharJobs->SetCurSel(-1);
 }
-#pragma endregion
 
-#pragma region Member List Actions
 void CUIKnights::MemberListSort()
 {
 	it_KMI it = m_MemberList.begin(), itEnd = m_MemberList.end();
@@ -932,9 +909,7 @@ bool CUIKnights::MsgRecv_MemberInfo(Packet& pkt)
 	
 	return true;
 }
-#pragma endregion
 
-#pragma region Update Text Boxes & Button States
 void CUIKnights::UpdateKnightsName(const std::string& szName)
 {
 	if(NULL == m_pText_Name) return;
@@ -947,13 +922,13 @@ void CUIKnights::UpdateKnightsDuty(e_KnightsDuty eDuty)
 	std::string szDuty;
 	switch(eDuty)
 	{
-		case KNIGHTS_DUTY_CHIEF:		CGameBase::GetText(IDS_KNIGHTS_DUTY_CHIEF, &szDuty); break;
-		case KNIGHTS_DUTY_VICECHIEF:	CGameBase::GetText(IDS_KNIGHTS_DUTY_VICECHIEF, &szDuty); break;
-		case KNIGHTS_DUTY_OFFICER:		CGameBase::GetText(IDS_KNIGHTS_DUTY_OFFICER, &szDuty); break;
-		case KNIGHTS_DUTY_KNIGHT:		CGameBase::GetText(IDS_KNIGHTS_DUTY_KNIGHT, &szDuty); break;
-		case KNIGHTS_DUTY_TRAINEE:		CGameBase::GetText(IDS_KNIGHTS_DUTY_TRAINEE, &szDuty); break;
-		case KNIGHTS_DUTY_PUNISH:		CGameBase::GetText(IDS_KNIGHTS_DUTY_PUNISH, &szDuty); break;
-		case KNIGHTS_DUTY_UNKNOWN:		CGameBase::GetText(IDS_KNIGHTS_DUTY_UNKNOWN, &szDuty); break;
+		case KNIGHTS_DUTY_CHIEF:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_CHIEF); break;
+		case KNIGHTS_DUTY_VICECHIEF:	szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_VICECHIEF); break;
+		case KNIGHTS_DUTY_OFFICER:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_OFFICER); break;
+		case KNIGHTS_DUTY_KNIGHT:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_KNIGHT); break;
+		case KNIGHTS_DUTY_TRAINEE:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_TRAINEE); break;
+		case KNIGHTS_DUTY_PUNISH:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_PUNISH); break;
+		case KNIGHTS_DUTY_UNKNOWN:		szDuty = fmt::format_text_resource(IDS_KNIGHTS_DUTY_UNKNOWN); break;
 		default: __ASSERT(0, "Invalid Knights Duty"); break;
 	}	
 	m_pText_Duty->SetString(szDuty);	
@@ -1005,8 +980,6 @@ void CUIKnights::UpdateExceptList()
 	UpdateKnightsRank(CGameProcedure::s_pPlayer->m_InfoExt.iKnightsRank);
 	ChangeUIByDuty(CGameProcedure::s_pPlayer->m_InfoExt.eKnightsDuty);
 }
-#pragma endregion
-#pragma endregion
 
 
 
@@ -1195,9 +1168,9 @@ bool CUIFriends::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			{
 				std::string szMsg;
 				if (pProcMain->MsgSend_PartyOrForceCreate(0, szID))
-					CGameBase::GetText(IDS_PARTY_INVITE, &szMsg); // 파티
+					szMsg = fmt::format_text_resource(IDS_PARTY_INVITE); // 파티
 				else
-					CGameBase::GetText(IDS_PARTY_INVITE_FAILED, &szMsg); // 파티 초대 실패
+					szMsg = fmt::format_text_resource(IDS_PARTY_INVITE_FAILED); // 파티 초대 실패
 				pProcMain->MsgOutput(it->second.szName + szMsg, 0xffffff00);
 			}
 		}
@@ -1607,8 +1580,6 @@ void CUIVarious::UpdateAllStates(const __InfoPlayerBase* pInfoBase, const __Info
 		CGameProcedure::GetTextByNation(pInfoBase->eNation, szVal);
 		m_pPageState->m_pText_Nation->SetString(szVal);
 	}
-
-//	sprintf(szVal, "%d", pInfoExt->iRank);			m_pText_Rank->SetString(szVal);
 
 	m_pPageState->UpdateLevel(pInfoBase->iLevel);
 	m_pPageState->UpdateExp(pInfoExt->iExp, pInfoExt->iExpNext);
