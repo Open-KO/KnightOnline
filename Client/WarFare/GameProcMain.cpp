@@ -1976,7 +1976,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 
 		e_PartPosition ePart;
 		e_PlugPosition ePlug;
-		e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, &szResrcFN, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
+		e_ItemType eType = MakeResrcFileNameForUPC(pItem, pItemExt, &szResrcFN, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
 		if(ITEM_TYPE_UNKNOWN == eType) CLogWriter::Write("MyInfo - slot - Unknown Item");
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item Type");
 		e_ItemSlot eSlot = (e_ItemSlot)i;
@@ -2059,7 +2059,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 
 		e_PartPosition ePart;
 		e_PlugPosition ePlug;
-		e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
+		e_ItemType eType = MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
 		if(ITEM_TYPE_UNKNOWN == eType) CLogWriter::Write("MyInfo - slot - Unknown Item");
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item");
 		
@@ -2884,7 +2884,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 				e_PartPosition ePart;
 				e_PlugPosition ePlug;
 				std::string szItemFN;
-				CGameProcedure::MakeResrcFileNameForUPC(pItem0, &szItemFN, NULL, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
+				MakeResrcFileNameForUPC(pItem0, pItemExt0, &szItemFN, nullptr, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
 				pNPC->PlugSet(PLUG_POS_RIGHTHAND, szItemFN, pItem0, pItemExt0);
 			}
 			else
@@ -2904,7 +2904,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 				e_PartPosition ePart;
 				e_PlugPosition ePlug;
 				std::string szItemFN;
-				CGameProcedure::MakeResrcFileNameForUPC(pItem1, &szItemFN, NULL, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
+				MakeResrcFileNameForUPC(pItem1, pItemExt1, &szItemFN, nullptr, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
 				pNPC->PlugSet(PLUG_POS_LEFTHAND, szItemFN, pItem1, pItemExt1);
 			}
 			else
@@ -3400,7 +3400,7 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 		if(dwItemID) // 아이템이 있는 경우
 		{
 			std::string szItemFN;
-			CGameProcedure::MakeResrcFileNameForUPC(pItem, &szItemFN, NULL, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
+			MakeResrcFileNameForUPC(pItem, pItemExt, &szItemFN, nullptr, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
 			pUPC->PartSet(ePartPos, szItemFN, pItem, pItemExt); // 아이템 붙이기..
 			pUPC->DurabilitySet(eSlot, iDurability);
 		}
@@ -3427,7 +3427,7 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 		if(dwItemID)
 		{
 			std::string szItemFN;
-			CGameProcedure::MakeResrcFileNameForUPC(pItem, &szItemFN, NULL, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
+			MakeResrcFileNameForUPC(pItem, pItemExt, &szItemFN, nullptr, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
 			pUPC->PlugSet(ePlugPos, szItemFN, pItem, pItemExt);
 			pUPC->DurabilitySet(eSlot, iDurability);
 		}

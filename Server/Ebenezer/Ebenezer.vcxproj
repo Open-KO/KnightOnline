@@ -145,6 +145,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="Region.cpp" />
+    <ClCompile Include="EbenezerResourceFormatter.cpp" />
     <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -158,9 +159,11 @@
     <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
     <ClInclude Include="..\shared\_USER_DATA.h" />
     <ClInclude Include="AISocket.h" />
+    <ClInclude Include="db_resources.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Ebenezer.h" />
     <ClInclude Include="EbenezerDlg.h" />
+    <ClInclude Include="EbenezerResourceFormatter.h" />
     <ClInclude Include="EVENT.h" />
     <ClInclude Include="EVENT_DATA.h" />
     <ClInclude Include="EXEC.h" />

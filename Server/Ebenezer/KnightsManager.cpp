@@ -7,9 +7,9 @@
 #include "User.h"
 #include "GameDefine.h"
 #include "EbenezerDlg.h"
+#include "db_resources.h"
 
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -192,7 +192,7 @@ fail_return:
 
 BOOL CKnightsManager::IsAvailableName(const char* strname)
 {
-	for (const auto& [_, pKnights] : m_pMain->m_KnightsArray)
+	for (const auto& [_, pKnights] : m_pMain->m_KnightsMap)
 	{
 		if (_strnicmp(pKnights->m_strName, strname, MAX_ID_SIZE) == 0)
 			return FALSE;
@@ -211,7 +211,7 @@ int CKnightsManager::GetKnightsIndex(int nation)
 		knightindex = 15000;
 	// ~sungyong tw
 
-	for (const auto& [_, pKnights] : m_pMain->m_KnightsArray)
+	for (const auto& [_, pKnights] : m_pMain->m_KnightsMap)
 	{
 		if (knightindex < pKnights->m_sIndex)
 		{
@@ -241,7 +241,7 @@ int CKnightsManager::GetKnightsIndex(int nation)
 	}
 
 	// 확인 사살..
-	if (m_pMain->m_KnightsArray.GetData(knightindex))
+	if (m_pMain->m_KnightsMap.GetData(knightindex))
 		return -1;
 
 	return knightindex;
@@ -272,7 +272,7 @@ void CKnightsManager::JoinKnights(CUser* pUser, char* pBuf)
 	}
 
 	knightsindex = pUser->m_pUserData->m_bKnights;
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
 	if (pKnights == nullptr)
 	{
 		ret_value = 7;
@@ -388,7 +388,7 @@ void CKnightsManager::JoinKnightsReq(CUser* pUser, char* pBuf)
 	}
 
 	knightsindex = GetShort(pBuf, index);
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
 	if (pKnights == nullptr)
 	{
 		ret_value = 7;
@@ -611,7 +611,7 @@ void CKnightsManager::ModifyKnightsMember(CUser* pUser, char* pBuf, BYTE command
 			goto fail_return;
 		}
 
-		CKnights* pKnights = m_pMain->m_KnightsArray.GetData(pUser->m_pUserData->m_bKnights);
+		CKnights* pKnights = m_pMain->m_KnightsMap.GetData(pUser->m_pUserData->m_bKnights);
 		if (pKnights == nullptr)
 		{
 			ret_value = 7;
@@ -658,7 +658,7 @@ void CKnightsManager::AllKnightsList(CUser* pUser, char* pBuf)
 	page = GetShort(pBuf, index);
 	start = page * 10;			// page : 0 ~
 
-	for (const auto& [_, pKnights] : m_pMain->m_KnightsArray)
+	for (const auto& [_, pKnights] : m_pMain->m_KnightsMap)
 	{
 		if (pKnights == nullptr)
 			continue;
@@ -715,7 +715,7 @@ void CKnightsManager::AllKnightsMember(CUser* pUser, char* pBuf)
 		goto fail_return;
 	}
 
-	pKnights = m_pMain->m_KnightsArray.GetData(pUser->m_pUserData->m_bKnights);
+	pKnights = m_pMain->m_KnightsMap.GetData(pUser->m_pUserData->m_bKnights);
 	if (pKnights == nullptr)
 	{
 		ret_value = 7;
@@ -778,7 +778,7 @@ void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 	char temp_buff[4096] = {};
 	CUser* pTUser = nullptr;
 	CKnights* pKnights = nullptr;
-	std::string errormsg = fmt::format_win32_resource(IDP_KNIGHT_NOT_REGISTERED);
+	std::string errormsg = fmt::format_db_resource(IDP_KNIGHT_NOT_REGISTERED);
 
 	if (pUser == nullptr)
 		return;
@@ -786,7 +786,7 @@ void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 	if (pUser->m_pUserData->m_bKnights <= 0)
 		goto fail_return;
 
-	pKnights = m_pMain->m_KnightsArray.GetData(pUser->m_pUserData->m_bKnights);
+	pKnights = m_pMain->m_KnightsMap.GetData(pUser->m_pUserData->m_bKnights);
 	if (pKnights == nullptr)
 		goto fail_return;
 
@@ -844,7 +844,7 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, char* pBuf, BYTE comma
 	BYTE result;
 	char send_buff[2048] = {};
 	CUser* pTUser = nullptr;
-	std::string errormsg = fmt::format_win32_resource(IDP_KNIGHT_DB_FAIL);
+	std::string errormsg = fmt::format_db_resource(IDP_KNIGHT_DB_FAIL);
 
 	result = GetByte(pBuf, index);
 
@@ -888,7 +888,7 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, char* pBuf, BYTE comma
 
 		case KNIGHTS_MEMBER_REQ + 0x10:
 		{
-			CKnights* pKnights = m_pMain->m_KnightsArray.GetData(pUser->m_pUserData->m_bKnights);
+			CKnights* pKnights = m_pMain->m_KnightsMap.GetData(pUser->m_pUserData->m_bKnights);
 			if (pKnights == nullptr)
 				break;
 
@@ -967,7 +967,7 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, char* pBuf)
 		strcpy(pKnights->m_arKnightsUser[i].strUserName, "");
 	}
 
-	m_pMain->m_KnightsArray.PutData(pKnights->m_sIndex, pKnights);
+	m_pMain->m_KnightsMap.PutData(pKnights->m_sIndex, pKnights);
 
 	// 클랜정보에 추가
 	AddKnightsUser(knightsindex, chiefname);
@@ -1027,13 +1027,13 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 		return;
 
 	knightsindex = GetShort(pBuf, index);
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
 
 	if (command == KNIGHTS_JOIN + 0x10)
 	{
 		pUser->m_pUserData->m_bKnights = knightsindex;
 		pUser->m_pUserData->m_bFame = TRAINEE;
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_JOIN, pUser->m_pUserData->m_id);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_JOIN, pUser->m_pUserData->m_id);
 
 		// 클랜정보에 추가
 		AddKnightsUser(knightsindex, pUser->m_pUserData->m_id);
@@ -1059,7 +1059,7 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 				memset(pKnights->strViceChief_3, 0, sizeof(pKnights->strViceChief_3));
 		}*/
 
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_WITHDRAW, pUser->m_pUserData->m_id);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_WITHDRAW, pUser->m_pUserData->m_id);
 		//TRACE(_T("RecvJoinKnights - 탈퇴, nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 	}
 
@@ -1124,7 +1124,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 	vicechief = GetByte(pBuf, index);
 
 	pTUser = m_pMain->GetUserPtr(userid, NameType::Character);
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
 
 	switch (command)
 	{
@@ -1133,7 +1133,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
 
 				RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
@@ -1163,7 +1163,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
 				ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -1172,7 +1172,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
 				ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -1269,7 +1269,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 
 	knightsindex = GetShort(pBuf, index);
 
-	pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+	pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
 	if (pKnights == nullptr)
 	{
 		//TRACE(_T("### RecvDestoryKnights  Fail == index = %d ###\n"), knightsindex);
@@ -1280,9 +1280,9 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 
 	// 클랜이나 기사단이 파괴된 메시지를 보내고 유저 데이타를 초기화
 	if (flag == CLAN_TYPE)
-		finalstr = fmt::format_win32_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
+		finalstr = fmt::format_db_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
 	else if (flag == KNIGHTS_TYPE)
-		finalstr = fmt::format_win32_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
+		finalstr = fmt::format_db_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
 	
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;
@@ -1320,7 +1320,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 		}
 	}
 
-	m_pMain->m_KnightsArray.DeleteData(knightsindex);
+	m_pMain->m_KnightsMap.DeleteData(knightsindex);
 	//TRACE(_T("RecvDestoryKnights - nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, knightsindex, pUser->m_pUserData->m_bFame);
 
 	memset(send_buff, 0, sizeof(send_buff));
@@ -1366,7 +1366,7 @@ void CKnightsManager::RecvKnightsList(char* pBuf)
 
 	if (m_pMain->m_nServerNo == BATTLE)
 	{
-		pKnights = m_pMain->m_KnightsArray.GetData(knightsindex);
+		pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
 		if (pKnights != nullptr)
 		{
 			pKnights->m_sIndex = knightsindex;
@@ -1394,9 +1394,9 @@ void CKnightsManager::RecvKnightsList(char* pBuf)
 			pKnights->m_byGrade = m_pMain->GetKnightsGrade(points);
 			pKnights->m_byRanking = ranking;
 
-			if (!m_pMain->m_KnightsArray.PutData(pKnights->m_sIndex, pKnights))
+			if (!m_pMain->m_KnightsMap.PutData(pKnights->m_sIndex, pKnights))
 			{
-				spdlog::error("KnightsManager::RecvKnightsList: KnightsArray put failed [knightsId={}]",
+				spdlog::error("KnightsManager::RecvKnightsList: KnightsMap put failed [knightsId={}]",
 					pKnights->m_sIndex);
 				delete pKnights;
 				pKnights = nullptr;
@@ -1407,7 +1407,7 @@ void CKnightsManager::RecvKnightsList(char* pBuf)
 
 BOOL CKnightsManager::AddKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
+	CKnights* pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
 		spdlog::error("KnightsManager::AddKnightsUser: knightsId={} not found",
@@ -1432,7 +1432,7 @@ BOOL CKnightsManager::AddKnightsUser(int knightsId, const char* charId)
 
 BOOL CKnightsManager::ModifyKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
+	CKnights* pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
 		spdlog::error("KnightsManager::ModifyKnightsUser: knightsId={} not found",
@@ -1459,7 +1459,7 @@ BOOL CKnightsManager::ModifyKnightsUser(int knightsId, const char* charId)
 
 BOOL CKnightsManager::RemoveKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
+	CKnights* pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
 		spdlog::error("KnightsManager::RemoveKnightsUser: knightsId={} not found",
@@ -1487,7 +1487,7 @@ BOOL CKnightsManager::RemoveKnightsUser(int knightsId, const char* charId)
 
 void CKnightsManager::SetKnightsUser(int knightsId, const char* charId)
 {
-	CKnights* pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
+	CKnights* pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
 		spdlog::error("KnightsManager::SetKnightsUser: knightsId={} not found",
@@ -1531,7 +1531,7 @@ void CKnightsManager::RecvKnightsAllList(char* pBuf)
 		points = GetDWORD(pBuf, index);
 		ranking = GetByte(pBuf, index);
 
-		pKnights = m_pMain->m_KnightsArray.GetData(knightsId);
+		pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
 		if (pKnights == nullptr)
 		{
 			spdlog::error("KnightsManager::RecvKnightsAllList: knightsId={} not found",

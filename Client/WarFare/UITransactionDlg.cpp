@@ -314,7 +314,7 @@ void CUITransactionDlg::EnterTransactionState()
 
 		e_PartPosition ePart;
 		e_PlugPosition ePlug;
-		e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+		e_ItemType eType = CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item");
 
 		spItem = new __IconItemSkill;
@@ -970,8 +970,9 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					std::string szIconFN;
 					e_PartPosition ePart;
 					e_PlugPosition ePlug;
-					CGameProcedure::MakeResrcFileNameForUPC(m_pMyTrade[m_iCurPage][CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder]->pItemBasic, 
-						NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+					
+					__IconItemSkill* spItemTrade = m_pMyTrade[m_iCurPage][m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
+					CGameBase::MakeResrcFileNameForUPC(spItemTrade->pItemBasic, spItemTrade->pItemExt, nullptr, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
 
 					__IconItemSkill* spItemNew;
 					spItemNew				= new __IconItemSkill;

@@ -7,9 +7,9 @@
 #include "EbenezerDlg.h"
 #include "User.h"
 #include "Map.h"
+#include "db_resources.h"
 
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -189,7 +189,7 @@ void CUser::CloseProcess()
 	if (!m_bZoneChangeFlag) {
 		if (m_pUserData->m_bZone == ZONE_BATTLE || (m_pUserData->m_bZone != m_pUserData->m_bNation && m_pUserData->m_bZone < 3) ) {
 			model::Home* pHomeInfo = nullptr;	// Send user back home in case it was the battlezone.
-			pHomeInfo = m_pMain->m_HomeArray.GetData(m_pUserData->m_bNation);
+			pHomeInfo = m_pMain->m_HomeTableMap.GetData(m_pUserData->m_bNation);
 			if (!pHomeInfo) return;
 
 			m_pUserData->m_bZone = m_pUserData->m_bNation;
@@ -625,7 +625,7 @@ void CUser::NewCharToAgent(char* pBuf)
 		goto fail_return;
 	}
 
-	p_TableCoefficient = m_pMain->m_CoefficientArray.GetData(Class);
+	p_TableCoefficient = m_pMain->m_CoefficientTableMap.GetData(Class);
 	if (p_TableCoefficient == nullptr)
 	{
 		result = 0x02;
@@ -1032,7 +1032,7 @@ void CUser::SelectCharacter(char* pBuf)
 				m_pMain->m_StatusList.AddString(_T("KNIGHTS_LIST_REQ Packet Drop!!!"));
 			}	*/
 
-			pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+			pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 			if (pKnights != nullptr)
 			{
 				m_pMain->m_KnightsManager.SetKnightsUser(m_pUserData->m_bKnights, m_pUserData->m_id);
@@ -1053,7 +1053,7 @@ void CUser::SelectCharacter(char* pBuf)
 					m_pMain->AddOutputMessage(_T("KNIGHTS_LIST_REQ Packet Drop!!!"));
 				}
 
-				pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+				pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 				if (pKnights != nullptr)
 				{
 					//TRACE(_T("SelectCharacter - 기사단 리스트 추가,, id=%hs, knights=%d, fame=%d\n"), m_pUserData->m_id, m_pUserData->m_bKnights, m_pUserData->m_bFame);
@@ -1078,7 +1078,7 @@ void CUser::SelectCharacter(char* pBuf)
 		
 		if (m_pUserData->m_bKnights != 0)
 		{
-			pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+			pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 			if (pKnights != nullptr)
 			{
 				m_pMain->m_KnightsManager.SetKnightsUser(m_pUserData->m_bKnights, m_pUserData->m_id);
@@ -1480,7 +1480,7 @@ void CUser::Attack(char* pBuf)
 
 // 비러머글 해킹툴 유저 --;
 	// This checks if such an item exists.
-	pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+	pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 	if (pTable == nullptr
 		&& m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0)
 		return;
@@ -1612,7 +1612,7 @@ void CUser::Attack(char* pBuf)
 		if (!m_pMain->m_bPointCheckFlag)
 			return;
 
-		pNpc = m_pMain->m_arNpcArray.GetData(tid);
+		pNpc = m_pMain->m_NpcMap.GetData(tid);
 
 		// Npc 상태 체크..
 		if (pNpc != nullptr
@@ -1702,7 +1702,7 @@ void CUser::SendMyInfo(int type)
 
 	if (!pMap->IsValidPosition(m_pUserData->m_curx, m_pUserData->m_curz, 0.0f))
 	{
-		model::Home* pHomeInfo = m_pMain->m_HomeArray.GetData(m_pUserData->m_bNation);
+		model::Home* pHomeInfo = m_pMain->m_HomeTableMap.GetData(m_pUserData->m_bNation);
 		if (pHomeInfo == nullptr)
 			return;
 
@@ -1778,7 +1778,7 @@ void CUser::SendMyInfo(int type)
 	SetByte(send_buff, m_pUserData->m_bFame, send_index);
 
 	if (m_pUserData->m_bKnights != 0)
-		pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+		pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 
 	if (pKnights != nullptr)
 	{
@@ -1924,7 +1924,7 @@ void CUser::Chat(char* pBuf)
 		if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 			return;
 
-		finalstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+		finalstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 	}
 	else
 	{
@@ -1999,7 +1999,7 @@ void CUser::Chat(char* pBuf)
 void CUser::SetMaxHp(int iFlag)
 {
 	model::Coefficient* p_TableCoefficient
-		= m_pMain->m_CoefficientArray.GetData(m_pUserData->m_sClass);
+		= m_pMain->m_CoefficientTableMap.GetData(m_pUserData->m_sClass);
 	if (p_TableCoefficient == nullptr)
 		return;
 
@@ -2040,7 +2040,7 @@ void CUser::SetMaxHp(int iFlag)
 void CUser::SetMaxMp()
 {
 	model::Coefficient* p_TableCoefficient
-		= m_pMain->m_CoefficientArray.GetData(m_pUserData->m_sClass);
+		= m_pMain->m_CoefficientTableMap.GetData(m_pUserData->m_sClass);
 	if (p_TableCoefficient == nullptr)
 		return;
 
@@ -2110,7 +2110,7 @@ void CUser::Regene(char* pBuf, int magicid)
 			return;
 	}
 
-	pHomeInfo = m_pMain->m_HomeArray.GetData(m_pUserData->m_bNation);
+	pHomeInfo = m_pMain->m_HomeTableMap.GetData(m_pUserData->m_bNation);
 	if (pHomeInfo == nullptr)
 		return;
 
@@ -2234,7 +2234,7 @@ void CUser::Regene(char* pBuf, int magicid)
 // Clerical Resurrection.
 	if (magicid > 0)
 	{
-		pType = m_pMain->m_Magictype5Array.GetData(magicid);
+		pType = m_pMain->m_MagicType5TableMap.GetData(magicid);
 		if (pType == nullptr)
 			return;
 
@@ -2617,7 +2617,7 @@ void CUser::SetDetailData()
 	if (m_pUserData->m_bLevel >= MAX_LEVEL)
 		Close();
 
-	m_iMaxExp = m_pMain->m_LevelUpArray[m_pUserData->m_bLevel - 1]->RequiredExp;
+	m_iMaxExp = m_pMain->m_LevelUpTableArray[m_pUserData->m_bLevel - 1]->RequiredExp;
 	m_iMaxWeight = (m_pUserData->m_bStr + m_sItemStr) * 50;
 
 	m_iZoneIndex = m_pMain->GetZoneIndex(m_pUserData->m_bZone);
@@ -2827,7 +2827,7 @@ void CUser::RequestNpcIn(char* pBuf)
 		if (i > 1000)
 			break;
 
-		CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+		CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
 		if (pNpc == nullptr)
 			continue;
 
@@ -2990,7 +2990,7 @@ void CUser::SetSlotItemValue()
 		if (m_pUserData->m_sItemArray[i].nNum <= 0)
 			continue;
 
-		pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[i].nNum);
+		pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[i].nNum);
 		if (pTable == nullptr)
 			continue;
 
@@ -3049,7 +3049,7 @@ void CUser::SetSlotItemValue()
 		if (m_pUserData->m_sItemArray[i].nNum <= 0)
 			continue;
 
-		pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[i].nNum);
+		pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[i].nNum);
 		if (pTable == nullptr)
 			continue;
 
@@ -3068,7 +3068,7 @@ void CUser::SetSlotItemValue()
 
 	// Get item info for left hand.
 	model::Item* pLeftHand
-		= m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
+		= m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
 	if (pLeftHand != nullptr)
 	{
 		if (pLeftHand->FireDamage != 0)
@@ -3122,7 +3122,7 @@ void CUser::SetSlotItemValue()
 
 	// Get item info for right hand.
 	model::Item* pRightHand
-		= m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+		= m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 	if (pRightHand != nullptr)
 	{
 		if (pRightHand->FireDamage != 0)
@@ -3202,14 +3202,14 @@ short CUser::GetDamage(short tid, int magicid)
 	// Skill/Arrow hit.    
 	if (magicid > 0)
 	{
-		pTable = m_pMain->m_MagictableArray.GetData(magicid);		// Get main magic table.
+		pTable = m_pMain->m_MagicTableMap.GetData(magicid);		// Get main magic table.
 		if (pTable == nullptr)
 			return -1;
 
 		// SKILL HIT!
 		if (pTable->Type1 == 1)
 		{
-			pType1 = m_pMain->m_Magictype1Array.GetData(magicid);	// Get magic skill table type 1.
+			pType1 = m_pMain->m_MagicType1TableMap.GetData(magicid);	// Get magic skill table type 1.
 			if (pType1 == nullptr)
 				return -1;
 
@@ -3233,7 +3233,7 @@ short CUser::GetDamage(short tid, int magicid)
 		// ARROW HIT!
 		else if (pTable->Type1 == 2)
 		{
-			pType2 = m_pMain->m_Magictype2Array.GetData(magicid);	// Get magic skill table type 1.
+			pType2 = m_pMain->m_MagicType2TableMap.GetData(magicid);	// Get magic skill table type 1.
 			if (pType2 == nullptr)
 				return -1;
 
@@ -3453,7 +3453,7 @@ short CUser::GetACDamage(int damage, short tid)
 
 	if (m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0)
 	{
-		pRightHand = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+		pRightHand = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 		if (pRightHand != nullptr)
 		{
 			// Weapon Type Right Hand....
@@ -3488,7 +3488,7 @@ short CUser::GetACDamage(int damage, short tid)
 
 	if (m_pUserData->m_sItemArray[LEFTHAND].nNum != 0)
 	{
-		pLeftHand = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
+		pLeftHand = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
 		if (pLeftHand != nullptr)
 		{
 			// Weapon Type Right Hand....
@@ -3551,7 +3551,7 @@ void CUser::ExpChange(int iExp)
 		if (m_pUserData->m_bLevel > 5)
 		{
 			--m_pUserData->m_bLevel;
-			m_pUserData->m_iExp += m_pMain->m_LevelUpArray[m_pUserData->m_bLevel - 1]->RequiredExp;
+			m_pUserData->m_iExp += m_pMain->m_LevelUpTableArray[m_pUserData->m_bLevel - 1]->RequiredExp;
 			LevelChange(m_pUserData->m_bLevel, FALSE);
 			return;
 		}
@@ -3599,7 +3599,7 @@ void CUser::LevelChange(short level, BYTE type)
 			m_pUserData->m_bstrSkill[0] += 2;	// Skill Points up
 	}
 
-	m_iMaxExp = m_pMain->m_LevelUpArray[level - 1]->RequiredExp;
+	m_iMaxExp = m_pMain->m_LevelUpTableArray[level - 1]->RequiredExp;
 
 	SetSlotItemValue();
 	SetUserAbility();
@@ -3840,14 +3840,14 @@ void CUser::SetUserAbility()
 	model::Item* pItem = nullptr;
 	BOOL bHaveBow = FALSE;
 
-	p_TableCoefficient = m_pMain->m_CoefficientArray.GetData(m_pUserData->m_sClass);
+	p_TableCoefficient = m_pMain->m_CoefficientTableMap.GetData(m_pUserData->m_sClass);
 	if (p_TableCoefficient == nullptr)
 		return;
 
 	float hitcoefficient = 0.0f;
 	if (m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0)
 	{
-		pItem = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+		pItem = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 		if (pItem != nullptr)
 		{
 			// 무기 타입....
@@ -3891,7 +3891,7 @@ void CUser::SetUserAbility()
 		&& hitcoefficient == 0.0f)
 	{
 		// 왼손 무기 : 활 적용을 위해
-		pItem = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
+		pItem = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
 		if (pItem != nullptr)
 		{
 			// 무기 타입....
@@ -3958,7 +3958,7 @@ void CUser::ItemMove(char* pBuf)
 	if (m_sExchangeUser != -1)
 		goto fail_return;
 
-	pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		goto fail_return;
 
@@ -4017,7 +4017,7 @@ void CUser::ItemMove(char* pBuf)
 			{
 				if (m_pUserData->m_sItemArray[LEFTHAND].nNum != 0)
 				{
-					model::Item* pTable2 = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
+					model::Item* pTable2 = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
 					if (pTable2 != nullptr)
 					{
 						if (pTable2->Slot == 0x04)
@@ -4101,7 +4101,7 @@ void CUser::ItemMove(char* pBuf)
 			{
 				if (m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0)
 				{
-					model::Item* pTable2 = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+					model::Item* pTable2 = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 					if (pTable2 != nullptr)
 					{
 						if (pTable2->Slot == 0x03)
@@ -4347,7 +4347,7 @@ void CUser::ItemMove(char* pBuf)
 
 			if (m_pUserData->m_sItemArray[SLOT_MAX + srcpos].nSerialNum == 0)
 			{
-				pTable2 = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[SLOT_MAX + srcpos].nNum);
+				pTable2 = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[SLOT_MAX + srcpos].nNum);
 				if (pTable2 != nullptr
 					&& pTable2->Countable == 0)
 					m_pUserData->m_sItemArray[SLOT_MAX + srcpos].nSerialNum = m_pMain->GenerateItemSerial();
@@ -4360,7 +4360,7 @@ void CUser::ItemMove(char* pBuf)
 
 			if (m_pUserData->m_sItemArray[SLOT_MAX + destpos].nSerialNum == 0)
 			{
-				pTable2 = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[SLOT_MAX + destpos].nNum);
+				pTable2 = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[SLOT_MAX + destpos].nNum);
 				if (pTable2 != nullptr
 					&& pTable2->Countable == 0)
 					m_pUserData->m_sItemArray[SLOT_MAX + destpos].nSerialNum = m_pMain->GenerateItemSerial();
@@ -4377,7 +4377,7 @@ void CUser::ItemMove(char* pBuf)
 			if (m_pUserData->m_sItemArray[destpos].nNum != 0)
 			{
 				// dest slot exist some item
-				model::Item* pTable2 = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[destpos].nNum);
+				model::Item* pTable2 = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[destpos].nNum);
 				if (pTable2 != nullptr)
 				{
 					if (pTable2->Slot != 0x00)
@@ -4590,7 +4590,7 @@ void CUser::NpcEvent(char* pBuf)
 
 	nid = GetShort(pBuf, index);
 
-	pNpc = m_pMain->m_arNpcArray.GetData(nid);
+	pNpc = m_pMain->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
 		return;
 
@@ -4790,7 +4790,7 @@ void CUser::ItemTrade(char* pBuf)
 	if (m_sExchangeUser != -1)
 		goto fail_return;
 
-	pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 	{
 		result = 0x01;
@@ -4819,7 +4819,7 @@ void CUser::ItemTrade(char* pBuf)
 			goto fail_return;
 		}
 
-		pNpc = m_pMain->m_arNpcArray.GetData(npcid);
+		pNpc = m_pMain->m_NpcMap.GetData(npcid);
 		if (pNpc == nullptr)
 		{
 			result = 0x01;
@@ -4972,7 +4972,7 @@ void CUser::SendTargetHP(BYTE echo, int tid, int damage)
 		if (!m_pMain->m_bPointCheckFlag)
 			return;
 
-		pNpc = m_pMain->m_arNpcArray.GetData(tid);
+		pNpc = m_pMain->m_NpcMap.GetData(tid);
 		if (pNpc == nullptr)
 			return;
 
@@ -5126,7 +5126,7 @@ void CUser::ItemGet(char* pBuf)
 	if (!pMap->RegionItemRemove(m_RegionX, m_RegionZ, bundle_index, pItem->itemid[i], pItem->count[i]))
 		goto fail_return;
 
-	pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		goto fail_return;
 
@@ -5226,7 +5226,7 @@ void CUser::ItemGet(char* pBuf)
 			}
 			else
 			{
-				pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+				pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 				if (pParty == nullptr)
 					goto fail_return;
 
@@ -5590,7 +5590,7 @@ void CUser::PartyCancel()
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -5663,7 +5663,7 @@ void CUser::PartyRequest(int memberid, BOOL bCreate)
 	// 기존의 파티에 추가하는 경우
 	if (!bCreate)
 	{
-		pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+		pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 		if (pParty == nullptr)
 			goto fail_return;
 
@@ -5698,7 +5698,7 @@ void CUser::PartyRequest(int memberid, BOOL bCreate)
 		pParty->bLevel[0] = m_pUserData->m_bLevel;
 		pParty->sClass[0] = m_pUserData->m_sClass;
 
-		if (!m_pMain->m_PartyArray.PutData(pParty->wIndex, pParty))
+		if (!m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
 		{
 			delete pParty;
 			m_sPartyIndex = -1;
@@ -5769,7 +5769,7 @@ void CUser::PartyInsert()	// 본인이 추가 된다.  리더에게 패킷이 �
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -5905,7 +5905,7 @@ void CUser::PartyRemove(int memberid)
 	if (pUser == nullptr)
 		return;
 
-	pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -5985,7 +5985,7 @@ void CUser::PartyDelete()
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 	{
 		m_sPartyIndex = -1;
@@ -6019,7 +6019,7 @@ void CUser::PartyDelete()
 
 	EnterCriticalSection(&g_region_critical);
 
-	m_pMain->m_PartyArray.DeleteData(pParty->wIndex);
+	m_pMain->m_PartyMap.DeleteData(pParty->wIndex);
 
 	LeaveCriticalSection(&g_region_critical);
 }
@@ -6168,7 +6168,7 @@ void CUser::ExchangeAdd(char* pBuf)
 	itemid = GetDWORD(pBuf, index);
 	count = GetDWORD(pBuf, index);
 
-	pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		goto add_fail;
 
@@ -6545,7 +6545,7 @@ BOOL CUser::ExecuteExchange()
 		}
 		else
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData((*Iter)->itemid);
+			pTable = m_pMain->m_ItemTableMap.GetData((*Iter)->itemid);
 			if (pTable == nullptr)
 				continue;
 
@@ -6654,7 +6654,7 @@ int CUser::ExchangeDone()
 		m_pUserData->m_sItemArray[SLOT_MAX + i].sCount = m_MirrorItem[i].sCount;
 		m_pUserData->m_sItemArray[SLOT_MAX + i].nSerialNum = m_MirrorItem[i].nSerialNum;
 
-		pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[SLOT_MAX + i].nNum);
+		pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[SLOT_MAX + i].nNum);
 		if (pTable == nullptr)
 			continue;
 
@@ -7036,7 +7036,7 @@ void CUser::LoyaltyDivide(short tid)
 	if (m_sPartyIndex < 0)
 		return;
 
-	_PARTY_GROUP* pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 		return;
 
@@ -7229,7 +7229,7 @@ void CUser::Dead()
 		m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
 		Send(send_buff, send_index);
 
-		pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+		pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 		if (pKnights != nullptr)
 			strcpy(strKnightsName, pKnights->m_strName);
 		else
@@ -7239,14 +7239,14 @@ void CUser::Dead()
 
 		//TRACE(_T("---> Dead Captain Deprive - %hs\n"), m_pUserData->m_id);
 		if (m_pUserData->m_bNation == KARUS)
-			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
+			chatstr = fmt::format_db_resource(IDS_KARUS_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 		else if (m_pUserData->m_bNation == ELMORAD)
-			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
+			chatstr = fmt::format_db_resource(IDS_ELMO_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 
 		memset(send_buff, 0, sizeof(send_buff));
 		send_index = 0;
 
-		chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+		chatstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 		SetByte(send_buff, WIZ_CHAT, send_index);
 		SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 		SetByte(send_buff, 1, send_index);
@@ -7269,7 +7269,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0
 			&& m_pUserData->m_sItemArray[RIGHTHAND].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 			if (pTable != nullptr
 				// 2 == DEFENCE ITEM
 				&& pTable->Slot != 2)
@@ -7282,7 +7282,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[LEFTHAND].nNum != 0
 			&& m_pUserData->m_sItemArray[LEFTHAND].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
 			if (pTable != nullptr
 				// 2 == DEFENCE ITEM
 				&& pTable->Slot != 2)
@@ -7297,7 +7297,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[HEAD].nNum != 0
 			&& m_pUserData->m_sItemArray[HEAD].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[HEAD].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[HEAD].nNum);
 			if (pTable != nullptr)
 			{
 				m_pUserData->m_sItemArray[HEAD].sDuration -= worerate;
@@ -7308,7 +7308,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[BREAST].nNum != 0
 			&& m_pUserData->m_sItemArray[BREAST].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[BREAST].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[BREAST].nNum);
 			if (pTable != nullptr)
 			{
 				m_pUserData->m_sItemArray[BREAST].sDuration -= worerate;
@@ -7319,7 +7319,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[LEG].nNum != 0
 			&& m_pUserData->m_sItemArray[LEG].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEG].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEG].nNum);
 			if (pTable != nullptr)
 			{
 				m_pUserData->m_sItemArray[LEG].sDuration -= worerate;
@@ -7330,7 +7330,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[GLOVE].nNum != 0
 			&& m_pUserData->m_sItemArray[GLOVE].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[GLOVE].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[GLOVE].nNum);
 			if (pTable != nullptr)
 			{
 				m_pUserData->m_sItemArray[GLOVE].sDuration -= worerate;
@@ -7341,7 +7341,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[FOOT].nNum != 0
 			&& m_pUserData->m_sItemArray[FOOT].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[FOOT].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[FOOT].nNum);
 			if (pTable != nullptr)
 			{
 				m_pUserData->m_sItemArray[FOOT].sDuration -= worerate;
@@ -7352,7 +7352,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0
 			&& m_pUserData->m_sItemArray[RIGHTHAND].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 			if (pTable != nullptr
 				// 방패?
 				&& pTable->Slot == 2)
@@ -7365,7 +7365,7 @@ void CUser::ItemWoreOut(int type, int damage)
 		if (m_pUserData->m_sItemArray[LEFTHAND].nNum != 0
 			&& m_pUserData->m_sItemArray[LEFTHAND].sDuration != 0)
 		{
-			pTable = m_pMain->m_ItemtableArray.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
+			pTable = m_pMain->m_ItemTableMap.GetData(m_pUserData->m_sItemArray[LEFTHAND].nNum);
 			if (pTable
 				// 방패?
 				&& pTable->Slot == 2)
@@ -7695,7 +7695,7 @@ void CUser::ItemRepair(char* pBuf)
 			goto fail_return;
 	}
 
-	pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		goto fail_return;
 
@@ -7938,7 +7938,7 @@ BYTE CUser::ItemCountChange(int itemid, int type, int amount)
 	char send_buff[128] = {};
 
 	// This checks if such an item exists.
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 	{
 		result = 0;
@@ -8023,7 +8023,7 @@ void CUser::SendAllKnightsID()
 	char send_buff[4096] = {},
 		temp_buff[4096] = {};
 
-	for (const auto& [_, pKnights] : m_pMain->m_KnightsArray)
+	for (const auto& [_, pKnights] : m_pMain->m_KnightsMap)
 	{
 		if (pKnights == nullptr)
 			continue;
@@ -8229,7 +8229,7 @@ void CUser::Type3AreaDuration(float currenttime)
 
 	CMagicProcess magic_process;
 
-	model::MagicType3* pType = m_pMain->m_Magictype3Array.GetData(m_iAreaMagicID);      // Get magic skill table type 3.
+	model::MagicType3* pType = m_pMain->m_MagicType3TableMap.GetData(m_iAreaMagicID);      // Get magic skill table type 3.
 	if (pType == nullptr)
 		return;
 
@@ -8331,7 +8331,7 @@ void CUser::WarehouseProcess(char* pBuf)
 	page = GetByte(pBuf, index);
 	srcpos = GetByte(pBuf, index);
 	destpos = GetByte(pBuf, index);
-	pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 
 	if (pTable == nullptr)
 		goto fail_return;
@@ -8609,7 +8609,7 @@ int CUser::GetEmptySlot(int itemid, int bCountable)
 
 	if (bCountable == -1)
 	{
-		pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+		pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 		if (pTable == nullptr)
 			return pos;
 
@@ -8680,7 +8680,7 @@ void CUser::Home()
 
 bool CUser::GetStartPosition(short* x, short* z)
 {
-	model::StartPosition* startPosition = m_pMain->m_StartPositionMap.GetData(m_pUserData->m_bZone);
+	model::StartPosition* startPosition = m_pMain->m_StartPositionTableMap.GetData(m_pUserData->m_bZone);
 	if (startPosition == nullptr)
 		return false;
 
@@ -8709,14 +8709,14 @@ CUser* CUser::GetItemRoutingUser(int itemid, short itemcount)
 	_PARTY_GROUP* pParty = nullptr;
 	int select_user = -1, count = 0;
 
-	pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 		return nullptr;
 
 	if (pParty->bItemRouting > 7)
 		return nullptr;
 
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		return nullptr;
 
@@ -9190,7 +9190,7 @@ void CUser::GoldChange(short tid, int gold)
 		// When the source is in a party.
 		else
 		{
-			_PARTY_GROUP* pParty = m_pMain->m_PartyArray.GetData(m_sPartyIndex);
+			_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 			if (pParty == nullptr)
 				return;
 
@@ -9537,7 +9537,7 @@ BOOL CUser::GateObjectEvent(short objectindex, short nid)
 	if (pEvent == nullptr)
 		return FALSE;
 
-	CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
 		return FALSE;
 
@@ -9589,7 +9589,7 @@ BOOL CUser::GateLeverObjectEvent(short objectindex, short nid)
 	if (pEvent == nullptr)
 		return FALSE;
 
-	CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
 		return FALSE;
 
@@ -9677,7 +9677,7 @@ BOOL CUser::FlagObjectEvent(short objectindex, short nid)
 	if (pEvent == nullptr)
 		return FALSE;
 
-	CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
 		return FALSE;
 
@@ -10996,7 +10996,7 @@ void CUser::ClientEvent(char* pBuf)
 	int eventid = -1;
 
 	nid = GetShort(pBuf, index);
-	pNpc = m_pMain->m_arNpcArray.GetData(nid);
+	pNpc = m_pMain->m_NpcMap.GetData(nid);
 
 	// Better to check than not to check ;)
 	if (pNpc == nullptr)
@@ -11008,7 +11008,7 @@ void CUser::ClientEvent(char* pBuf)
 	// if (pNpc->m_byEvent < 0)
 	//	return;
 
-	pEvent = m_pMain->m_Event.GetData(m_pUserData->m_bZone);
+	pEvent = m_pMain->m_EventMap.GetData(m_pUserData->m_bZone);
 	if (pEvent == nullptr)
 		return;
 
@@ -11434,7 +11434,7 @@ BOOL CUser::RunNpcEvent(CNpc* pNpc, EXEC* pExec)
 			EVENT* pEvent = nullptr;
 			EVENT_DATA* pEventData = nullptr;
 
-			pEvent = m_pMain->m_Event.GetData(m_pUserData->m_bZone);
+			pEvent = m_pMain->m_EventMap.GetData(m_pUserData->m_bZone);
 			if (pEvent == nullptr)
 				break;
 
@@ -11510,7 +11510,7 @@ BOOL CUser::RunEvent(EVENT_DATA* pEventData)
 				EVENT* pEvent = nullptr;
 				EVENT_DATA* pEventData = nullptr;
 
-				pEvent = m_pMain->m_Event.GetData(m_pUserData->m_bZone);
+				pEvent = m_pMain->m_EventMap.GetData(m_pUserData->m_bZone);
 				if (pEvent == nullptr)
 					break;
 
@@ -11657,7 +11657,7 @@ BOOL CUser::CheckSkillPoint(BYTE skillnum, BYTE min, BYTE max)
 
 BOOL CUser::CheckWeight(int itemid, short count)
 {
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		return FALSE;
 
@@ -11688,7 +11688,7 @@ BOOL CUser::CheckWeight(int itemid, short count)
 BOOL CUser::CheckExistItem(int itemid, short count)
 {
 	// This checks if such an item exists.
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		return FALSE;
 
@@ -11719,7 +11719,7 @@ BOOL CUser::RobItem(int itemid, short count)
 	BYTE type = 1;
 
 	// This checks if such an item exists.
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		return FALSE;
 
@@ -11773,7 +11773,7 @@ BOOL CUser::GiveItem(int itemid, short count)
 	char send_buff[128] = {};
 
 	// This checks if such an item exists.
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		return FALSE;
 
@@ -11880,7 +11880,7 @@ void CUser::RecvSelectMsg(char* pBuf)
 	// Get the event number that needs to be processed next.
 	selevent = m_iSelMsgEvent[selnum];
 
-	pEvent = m_pMain->m_Event.GetData(m_pUserData->m_bZone);
+	pEvent = m_pMain->m_EventMap.GetData(m_pUserData->m_bZone);
 	if (pEvent == nullptr)
 		goto fail_return;
 
@@ -12171,7 +12171,7 @@ void CUser::EventMoneyItemGet(int itemid, int count)
 void CUser::NativeZoneReturn()
 {
 	// Send user back home in case it was the battlezone.
-	model::Home* pHomeInfo = m_pMain->m_HomeArray.GetData(m_pUserData->m_bNation);
+	model::Home* pHomeInfo = m_pMain->m_HomeTableMap.GetData(m_pUserData->m_bNation);
 	if (pHomeInfo == nullptr)
 		return;
 
@@ -12191,11 +12191,11 @@ void CUser::NativeZoneReturn()
 
 BOOL CUser::CheckEditBox()
 {
-	std::string id = fmt::format_win32_resource(IDS_COUPON_NOTEPAD_ID);
+	std::string id = fmt::format_db_resource(IDS_COUPON_NOTEPAD_ID);
 	if (id == m_strCouponId)
 		return TRUE;
 
-	id = fmt::format_win32_resource(IDS_COUPON_POSTIT_ID);
+	id = fmt::format_db_resource(IDS_COUPON_POSTIT_ID);
 	if (id == m_strCouponId)
 		return TRUE;
 
@@ -12274,7 +12274,7 @@ void CUser::RecvEditBox(char* pBuf)
 
 	selevent = m_iEditBoxEvent;
 
-	pEvent = m_pMain->m_Event.GetData(m_pUserData->m_bZone);	// 여기서 부터 중요함 --;
+	pEvent = m_pMain->m_EventMap.GetData(m_pUserData->m_bZone);	// 여기서 부터 중요함 --;
 	if (pEvent == nullptr)
 		goto fail_return;
 
@@ -12355,7 +12355,7 @@ void CUser::CouponEvent(char* pBuf)
 BOOL CUser::CheckItemCount(int itemid, short min, short max)
 {
 	// This checks if such an item exists.
-	model::Item* pTable = m_pMain->m_ItemtableArray.GetData(itemid);
+	model::Item* pTable = m_pMain->m_ItemTableMap.GetData(itemid);
 	if (pTable == nullptr)
 		return FALSE;
 
@@ -12456,7 +12456,7 @@ void CUser::GetUserInfo(char* buff, int& buff_index)
 	SetByte(buff, m_pUserData->m_bFame, buff_index);
 
 	if (m_pUserData->m_bKnights != 0)
-		pKnights = m_pMain->m_KnightsArray.GetData(m_pUserData->m_bKnights);
+		pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 
 	if (pKnights != nullptr)
 	{
@@ -12559,7 +12559,7 @@ void CUser::GameStart(
 			if (m_pUserData->m_bCity <= 100)
 				--level;
 
-			m_iLostExp = m_pMain->m_LevelUpArray[level]->RequiredExp;
+			m_iLostExp = m_pMain->m_LevelUpTableArray[level]->RequiredExp;
 			m_iLostExp = m_iLostExp * (m_pUserData->m_bCity % 10) / 100;
 
 			if (((m_pUserData->m_bCity % 100) / 10) == 1)

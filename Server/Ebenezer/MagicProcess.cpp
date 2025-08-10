@@ -108,13 +108,13 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 		return;
 	}
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return;
 
 	if (sid >= NPC_BAND)
 	{
-		pMon = m_pMain->m_arNpcArray.GetData(sid);
+		pMon = m_pMain->m_NpcMap.GetData(sid);
 		if (pMon == nullptr
 			|| pMon->m_NpcState == NPC_DEAD)
 			return;
@@ -148,7 +148,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 				if (pTUser == nullptr)
 					return;
 
-				model::MagicType4* pType4 = m_pMain->m_Magictype4Array.GetData(magicid);     // Get magic skill table type 4.
+				model::MagicType4* pType4 = m_pMain->m_MagicType4TableMap.GetData(magicid);     // Get magic skill table type 4.
 				if (pType4 == nullptr)
 					return;
 
@@ -194,7 +194,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 				if (pTUser == nullptr)
 					return;
 
-				model::MagicType3* pType3 = m_pMain->m_Magictype3Array.GetData(magicid);     // Get magic skill table type 4.
+				model::MagicType3* pType3 = m_pMain->m_MagicType3TableMap.GetData(magicid);     // Get magic skill table type 4.
 				if (pType3 == nullptr)
 					return;
 
@@ -299,7 +299,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 	{
 		if (pMagic->Type1 == 2)
 		{
-			model::MagicType2* pType = m_pMain->m_Magictype2Array.GetData(magicid);     // Get magic skill table type 2.
+			model::MagicType2* pType = m_pMain->m_MagicType2TableMap.GetData(magicid);     // Get magic skill table type 2.
 			if (pType == nullptr)
 				return;
 
@@ -369,7 +369,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 				// Does the magic user have a staff?
 				if (m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0)
 				{
-					model::Item* pRightHand = m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+					model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 
 					if (pRightHand != nullptr
 						&& m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum == 0
@@ -384,7 +384,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 							total_magic_damage += ((pRightHand->Damage * 0.8f) + (pRightHand->Damage * m_pSrcUser->m_pUserData->m_bLevel) / 60);
 //
 
-							model::MagicType3* pType3 = m_pMain->m_Magictype3Array.GetData(magicid);     // Get magic skill table type 4.
+							model::MagicType3* pType3 = m_pMain->m_MagicType3TableMap.GetData(magicid);     // Get magic skill table type 4.
 							if (pType3 == nullptr)
 								return;
 
@@ -556,7 +556,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 	char send_buff[128] = {};
 	int skill_mod = 0;
 
-	model::Magic* pTable = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pTable = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pTable == nullptr)
 		goto fail_return;
 
@@ -574,7 +574,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 	else if (sid >= NPC_BAND)
 	{
 		bFlag = TRUE;
-		pMon = m_pMain->m_arNpcArray.GetData(sid);
+		pMon = m_pMain->m_NpcMap.GetData(sid);
 		if (pMon == nullptr
 			|| pMon->m_NpcState == NPC_DEAD)
 			goto fail_return;
@@ -600,7 +600,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 		}
 		else if (pTable->Type1 == 5)
 		{
-			pType = m_pMain->m_Magictype5Array.GetData(magicid);
+			pType = m_pMain->m_MagicType5TableMap.GetData(magicid);
 			if (pType == nullptr)
 				goto fail_return;
 
@@ -625,7 +625,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 		if (!m_pMain->m_bPointCheckFlag)
 			goto fail_return;
 
-		pNpc = m_pMain->m_arNpcArray.GetData(tid);
+		pNpc = m_pMain->m_NpcMap.GetData(tid);
 		if (pNpc == nullptr
 			//... Assuming NPCs can't be resurrected.
 			|| pNpc->m_NpcState == NPC_DEAD)
@@ -853,12 +853,12 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 				|| pTable->Skill == 2055)
 			{
 				// Get item info for left hand.
-				model::Item* pLeftHand = m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum);
+				model::Item* pLeftHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum);
 				if (pLeftHand == nullptr)
 					return nullptr;
 
 				// Get item info for right hand.
-				model::Item* pRightHand = m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+				model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 				if (pRightHand == nullptr)
 					return nullptr;
 
@@ -874,7 +874,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 				|| pTable->Skill == 2056)
 			{
 				// Get item info for right hand.
-				model::Item* pRightHand = m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+				model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 				if (pRightHand == nullptr)
 					return nullptr;
 
@@ -954,7 +954,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 					{
 						// 이것두 성래씨 요청에 의해 하는 짓입니다 --;
 						// This checks if such an item exists.
-						model::Item* pItem = m_pMain->m_ItemtableArray.GetData(pTable->UseItem);
+						model::Item* pItem = m_pMain->m_ItemTableMap.GetData(pTable->UseItem);
 						if (pItem == nullptr)
 							return FALSE;
 
@@ -1001,7 +1001,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 				{
 					if (pTable->UseItem != 0)
 					{
-						pType = m_pMain->m_Magictype5Array.GetData(magicid);
+						pType = m_pMain->m_MagicType5TableMap.GetData(magicid);
 						if (pType == nullptr)
 							goto fail_return;
 
@@ -1106,11 +1106,11 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int sid, int tid, int data1, int d
 	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return 0;
 
-	model::MagicType1* pType = m_pMain->m_Magictype1Array.GetData(magicid);     // Get magic skill table type 1.
+	model::MagicType1* pType = m_pMain->m_MagicType1TableMap.GetData(magicid);     // Get magic skill table type 1.
 	if (pType == nullptr)
 	{
 		result = 0;
@@ -1198,20 +1198,20 @@ BYTE CMagicProcess::ExecuteType2(int magicid, int sid, int tid, int data1, int d
 	int total_range = 0;	// These variables are used for range verification!
 	int sx, sz, tx, tz;
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return 0;
 
 	model::Item* pTable = nullptr;		// Get item info.
 	if (m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum)
-		pTable = m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum);
+		pTable = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum);
 	else
-		pTable = m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+		pTable = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 
 	if (pTable == nullptr)
 		return 0;
 
-	model::MagicType2* pType = m_pMain->m_Magictype2Array.GetData(magicid);     // Get magic skill table type 2.
+	model::MagicType2* pType = m_pMain->m_MagicType2TableMap.GetData(magicid);     // Get magic skill table type 2.
 	if (pType == nullptr)
 		return 0;
 
@@ -1322,11 +1322,11 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 	for (int h = 0; h < MAX_USER; h++)
 		casted_member[h] = -1;
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return;
 
-	model::MagicType3* pType = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
+	model::MagicType3* pType = m_pMain->m_MagicType3TableMap.GetData(magicid);      // Get magic skill table type 3.
 	if (pType == nullptr)
 		return;
 
@@ -1334,7 +1334,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 	{
 		bFlag = TRUE;
 	
-		pMon = m_pMain->m_arNpcArray.GetData(sid);
+		pMon = m_pMain->m_NpcMap.GetData(sid);
 		if (pMon == nullptr
 			|| pMon->m_NpcState == NPC_DEAD)
 			return;
@@ -1703,11 +1703,11 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 	for (int h = 0; h < MAX_USER; h++)
 		casted_member[h] = -1;
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return;
 
-	model::MagicType4* pType = m_pMain->m_Magictype4Array.GetData(magicid);     // Get magic skill table type 4.
+	model::MagicType4* pType = m_pMain->m_MagicType4TableMap.GetData(magicid);     // Get magic skill table type 4.
 	if (pType == nullptr)
 		return;
 
@@ -2002,11 +2002,11 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 	int i = 0, j = 0, k = 0, buff_test = 0;
 	BOOL bType3Test = TRUE, bType4Test = TRUE;
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return;
 
-	model::MagicType5* pType = m_pMain->m_Magictype5Array.GetData(magicid);     // Get magic skill table type 4.
+	model::MagicType5* pType = m_pMain->m_MagicType5TableMap.GetData(magicid);     // Get magic skill table type 4.
 	if (pType == nullptr)
 		return;
 
@@ -2362,7 +2362,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int d
 	for (int h = 0; h < MAX_USER; h++)
 		casted_member[h] = -1;
 
-	model::MagicType8* pType = m_pMain->m_Magictype8Array.GetData(magicid);      // Get magic skill table type 8.
+	model::MagicType8* pType = m_pMain->m_MagicType8TableMap.GetData(magicid);      // Get magic skill table type 8.
 	if (pType == nullptr)
 		return;
 
@@ -2428,7 +2428,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int d
 			continue;
 
 		// 비러머글 대만 써비스 >.<
-		model::Home* pHomeInfo = m_pMain->m_HomeArray.GetData(pTUser->m_pUserData->m_bNation);
+		model::Home* pHomeInfo = m_pMain->m_HomeTableMap.GetData(pTUser->m_pUserData->m_bNation);
 		if (pHomeInfo == nullptr)
 			return;
 
@@ -2760,7 +2760,7 @@ short CMagicProcess::GetMagicDamage(int sid, int tid, int total_hit, int attribu
 	// If the source is a monster.
 	if (sid >= NPC_BAND)
 	{
-		pMon = m_pMain->m_arNpcArray.GetData(sid);
+		pMon = m_pMain->m_NpcMap.GetData(sid);
 		if (pMon == nullptr
 			|| pMon->m_NpcState == NPC_DEAD)
 			return 0;
@@ -2823,7 +2823,7 @@ short CMagicProcess::GetMagicDamage(int sid, int tid, int total_hit, int attribu
 			if (m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum != 0)
 			{
 				model::Item* pRightHand
-					= m_pMain->m_ItemtableArray.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
+					= m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
 
 				if (pRightHand != nullptr
 					&& m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum == 0
@@ -2880,7 +2880,7 @@ BOOL CMagicProcess::UserRegionCheck(int sid, int tid, int magicid, int radius, s
 
 	if (sid >= NPC_BAND)
 	{
-		pMon = m_pMain->m_arNpcArray.GetData(sid);
+		pMon = m_pMain->m_NpcMap.GetData(sid);
 		if (pMon == nullptr
 			|| pMon->m_NpcState == NPC_DEAD)
 			return FALSE;
@@ -2888,7 +2888,7 @@ BOOL CMagicProcess::UserRegionCheck(int sid, int tid, int magicid, int radius, s
 		bFlag = TRUE;
 	}
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return FALSE;
 
@@ -3038,7 +3038,7 @@ void CMagicProcess::Type4Cancel(int magicid, short tid)
 	if (pTUser == nullptr)
 		return;
 
-	model::MagicType4* pType = m_pMain->m_Magictype4Array.GetData(magicid);     // Get magic skill table type 4.
+	model::MagicType4* pType = m_pMain->m_MagicType4TableMap.GetData(magicid);     // Get magic skill table type 4.
 	if (pType == nullptr)
 		return;
 
@@ -3228,7 +3228,7 @@ void CMagicProcess::Type3Cancel(int magicid, short tid)
 	if (pTUser == nullptr)
 		return;
 
-	model::MagicType3* pType = m_pMain->m_Magictype3Array.GetData(magicid);     // Get magic skill table type 3.
+	model::MagicType3* pType = m_pMain->m_MagicType3TableMap.GetData(magicid);     // Get magic skill table type 3.
 	if (pType == nullptr)
 		return;
 

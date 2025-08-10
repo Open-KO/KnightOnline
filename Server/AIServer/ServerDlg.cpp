@@ -30,7 +30,7 @@ static char THIS_FILE[] = __FILE__;
 #include <db-library/RecordsetLoader_Vector.h>
 
 BOOL g_bNpcExit = FALSE;
-ZoneArray g_arZone;
+ZoneArray m_ZoneArray;
 
 CRITICAL_SECTION g_User_critical;
 CRITICAL_SECTION g_region_critical;
@@ -492,7 +492,7 @@ void CServerDlg::ReportTableLoadError(const recordset_loader::Error& err, const 
 //	Magic Table 을 읽는다.
 BOOL CServerDlg::GetMagicTableData()
 {
-	recordset_loader::STLMap loader(m_MagictableArray);
+	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -505,7 +505,7 @@ BOOL CServerDlg::GetMagicTableData()
 
 BOOL CServerDlg::GetMakeWeaponItemTableData()
 {
-	recordset_loader::STLMap loader(m_MakeWeaponItemArray);
+	recordset_loader::STLMap loader(m_MakeWeaponTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -518,8 +518,8 @@ BOOL CServerDlg::GetMakeWeaponItemTableData()
 
 BOOL CServerDlg::GetMakeDefensiveItemTableData()
 {
-	recordset_loader::STLMap<MakeWeaponItemTableArray, model::MakeDefensive> loader(
-		m_MakeDefensiveItemArray);
+	recordset_loader::STLMap<MakeWeaponTableMap, model::MakeDefensive> loader(
+		m_MakeDefensiveTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -545,7 +545,7 @@ BOOL CServerDlg::GetMakeGradeItemTableData()
 
 BOOL CServerDlg::GetMakeRareItemTableData()
 {
-	recordset_loader::STLMap loader(m_MakeLareItemArray);
+	recordset_loader::STLMap loader(m_MakeItemRareCodeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -611,8 +611,8 @@ BOOL CServerDlg::GetNpcItemTable()
 BOOL CServerDlg::GetMonsterTableData()
 {
 	recordset_loader::STLMap<
-		NpcTableArray,
-		model::Monster> loader(m_arMonTable);
+		NpcTableMap,
+		model::Monster> loader(m_MonTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -626,7 +626,7 @@ BOOL CServerDlg::GetMonsterTableData()
 //	NPC Table Data 를 읽는다. (경비병 & NPC)
 BOOL CServerDlg::GetNpcTableData()
 {
-	recordset_loader::STLMap loader(m_arNpcTable);
+	recordset_loader::STLMap loader(m_NpcTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -659,7 +659,7 @@ BOOL CServerDlg::CreateNpcThread()
 	int nThreadNumber = 0;
 	CNpcThread* pNpcThread = nullptr;
 
-	for (auto& [_, pNpc] : m_arNpc)
+	for (auto& [_, pNpc] : m_NpcMap)
 	{
 		if (step == 0)
 			pNpcThread = new CNpcThread;
@@ -675,7 +675,7 @@ BOOL CServerDlg::CreateNpcThread()
 			pNpcThread->m_sThreadNumber = nThreadNumber++;
 			pNpcThread->pIOCP = &m_Iocport;
 			pNpcThread->m_pThread = AfxBeginThread(NpcThreadProc, &pNpcThread->m_ThreadInfo, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
-			m_arNpcThread.push_back(pNpcThread);
+			m_NpcThreadArray.push_back(pNpcThread);
 			step = 0;
 		}
 	}
@@ -684,7 +684,7 @@ BOOL CServerDlg::CreateNpcThread()
 		pNpcThread->m_sThreadNumber = nThreadNumber++;
 		pNpcThread->pIOCP = &m_Iocport;
 		pNpcThread->m_pThread = AfxBeginThread(NpcThreadProc, &pNpcThread->m_ThreadInfo, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
-		m_arNpcThread.push_back(pNpcThread);
+		m_NpcThreadArray.push_back(pNpcThread);
 	}
 
 	// Event Npc Logic
@@ -740,14 +740,14 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					if (row->ActType >= 0
 						&& row->ActType < 100)
 					{
-						pNpcTable = m_arMonTable.GetData(pNpc->m_sSid);
+						pNpcTable = m_MonTableMap.GetData(pNpc->m_sSid);
 					}
 					else if (row->ActType >= 100)
 					{
 						pNpc->m_byMoveType = row->ActType - 100;
 						//pNpc->m_byInitMoveType = row->ActType - 100;
 
-						pNpcTable = m_arNpcTable.GetData(pNpc->m_sSid);
+						pNpcTable = m_NpcTableMap.GetData(pNpc->m_sSid);
 					}
 
 					pNpc->m_byBattlePos = 0;
@@ -902,12 +902,12 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					pNpc->m_ZoneIndex = -1;
 
 					MAP* pMap = nullptr;
-					for (size_t i = 0; i < g_arZone.size(); i++)
+					for (size_t i = 0; i < m_ZoneArray.size(); i++)
 					{
-						if (g_arZone[i]->m_nZoneNumber == pNpc->m_sCurZone)
+						if (m_ZoneArray[i]->m_nZoneNumber == pNpc->m_sCurZone)
 						{
 							pNpc->m_ZoneIndex = static_cast<short>(i);
-							pMap = g_arZone[i];
+							pMap = m_ZoneArray[i];
 							break;
 						}
 					}
@@ -920,8 +920,8 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					}
 
 					//pNpc->Init();
-					//m_arNpc.Add(pNpc);
-					if (!m_arNpc.PutData(pNpc->m_sNid, pNpc))
+					//m_NpcMap.Add(pNpc);
+					if (!m_NpcMap.PutData(pNpc->m_sNid, pNpc))
 					{
 						spdlog::error("ServerDlg::LoadNpcPosTable: Npc PutData Fail [serial={}]",
 							pNpc->m_sNid);
@@ -972,27 +972,27 @@ void CServerDlg::ResumeAI()
 {
 	int i, j;
 
-	for (i = 0; i < m_arNpcThread.size(); i++)
+	for (i = 0; i < m_NpcThreadArray.size(); i++)
 	{
 		for (j = 0; j < NPC_NUM; j++)
-			m_arNpcThread[i]->m_ThreadInfo.pNpc[j] = m_arNpcThread[i]->m_pNpc[j];
+			m_NpcThreadArray[i]->m_ThreadInfo.pNpc[j] = m_NpcThreadArray[i]->m_pNpc[j];
 
-		m_arNpcThread[i]->m_ThreadInfo.pIOCP = &m_Iocport;
+		m_NpcThreadArray[i]->m_ThreadInfo.pIOCP = &m_Iocport;
 
-		ResumeThread(m_arNpcThread[i]->m_pThread->m_hThread);
+		ResumeThread(m_NpcThreadArray[i]->m_pThread->m_hThread);
 	}
 
 
 	// Event Npc Logic
-/*	m_arEventNpcThread[0]->m_ThreadInfo.hWndMsg = this->GetSafeHwnd();
+/*	m_EventNpcThreadArray[0]->m_ThreadInfo.hWndMsg = this->GetSafeHwnd();
 	for(j = 0; j < NPC_NUM; j++)
 	{
-		m_arEventNpcThread[0]->m_ThreadInfo.pNpc[j] = nullptr;	// 초기 소환 몹이 당연히 없으므로 NULL로 작동을 안시킴
-		m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[j] = 0;
+		m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[j] = nullptr;	// 초기 소환 몹이 당연히 없으므로 NULL로 작동을 안시킴
+		m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[j] = 0;
 	}
-	m_arEventNpcThread[0]->m_ThreadInfo.pIOCP = &m_Iocport;
+	m_EventNpcThreadArray[0]->m_ThreadInfo.pIOCP = &m_Iocport;
 
-	::ResumeThread(m_arEventNpcThread[0]->m_pThread->m_hThread);
+	::ResumeThread(m_EventNpcThreadArray[0]->m_pThread->m_hThread);
 	*/
 
 	ResumeThread(m_pZoneEventThread->m_hThread);
@@ -1007,13 +1007,13 @@ BOOL CServerDlg::DestroyWindow()
 
 	g_bNpcExit = TRUE;
 
-	for (size_t i = 0; i < m_arNpcThread.size(); i++)
-		WaitForSingleObject(m_arNpcThread[i]->m_pThread->m_hThread, INFINITE);
+	for (size_t i = 0; i < m_NpcThreadArray.size(); i++)
+		WaitForSingleObject(m_NpcThreadArray[i]->m_pThread->m_hThread, INFINITE);
 
 	// Event Npc Logic
-/*	for(i = 0; i < m_arEventNpcThread.size(); i++)
+/*	for(i = 0; i < m_EventNpcThreadArray.size(); i++)
 	{
-		WaitForSingleObject(m_arEventNpcThread[i]->m_pThread->m_hThread, INFINITE);
+		WaitForSingleObject(m_EventNpcThreadArray[i]->m_pThread->m_hThread, INFINITE);
 	}	*/
 
 	WaitForSingleObject(m_pZoneEventThread, INFINITE);
@@ -1021,28 +1021,28 @@ BOOL CServerDlg::DestroyWindow()
 	// DB테이블 삭제 부분
 
 	// Map(Zone) Array Delete...
-	for (size_t i = 0; i < g_arZone.size(); i++)
-		delete g_arZone[i];
-	g_arZone.clear();
+	for (size_t i = 0; i < m_ZoneArray.size(); i++)
+		delete m_ZoneArray[i];
+	m_ZoneArray.clear();
 
 	// NpcTable Array Delete
-	if (!m_arMonTable.IsEmpty())
-		m_arMonTable.DeleteAllData();
+	if (!m_MonTableMap.IsEmpty())
+		m_MonTableMap.DeleteAllData();
 
 	// NpcTable Array Delete
-	if (!m_arNpcTable.IsEmpty())
-		m_arNpcTable.DeleteAllData();
+	if (!m_NpcTableMap.IsEmpty())
+		m_NpcTableMap.DeleteAllData();
 
 	// NpcThread Array Delete
-	for (size_t i = 0; i < m_arNpcThread.size(); i++)
-		delete m_arNpcThread[i];
-	m_arNpcThread.clear();
+	for (size_t i = 0; i < m_NpcThreadArray.size(); i++)
+		delete m_NpcThreadArray[i];
+	m_NpcThreadArray.clear();
 
 	// Event Npc Logic
 	// EventNpcThread Array Delete
-/*	for(i = 0; i < m_arEventNpcThread.size(); i++)
-		delete m_arEventNpcThread[i];
-	m_arEventNpcThread.clear();		*/
+/*	for(i = 0; i < m_EventNpcThreadArray.size(); i++)
+		delete m_EventNpcThreadArray[i];
+	m_EventNpcThreadArray.clear();		*/
 
 	// Item Array Delete
 	if (m_NpcItem.m_ppItem)
@@ -1056,37 +1056,37 @@ BOOL CServerDlg::DestroyWindow()
 		m_NpcItem.m_ppItem = nullptr;
 	}
 
-	if (!m_MakeWeaponItemArray.IsEmpty())
-		m_MakeWeaponItemArray.DeleteAllData();
+	if (!m_MakeWeaponTableMap.IsEmpty())
+		m_MakeWeaponTableMap.DeleteAllData();
 
-	if (!m_MakeDefensiveItemArray.IsEmpty())
-		m_MakeDefensiveItemArray.DeleteAllData();
+	if (!m_MakeDefensiveTableMap.IsEmpty())
+		m_MakeDefensiveTableMap.DeleteAllData();
 
 	if (!m_MakeGradeItemArray.IsEmpty())
 		m_MakeGradeItemArray.DeleteAllData();
 
-	if (!m_MakeLareItemArray.IsEmpty())
-		m_MakeLareItemArray.DeleteAllData();
+	if (!m_MakeItemRareCodeTableMap.IsEmpty())
+		m_MakeItemRareCodeTableMap.DeleteAllData();
 
 	// MagicTable Array Delete
-	if (!m_MagictableArray.IsEmpty())
-		m_MagictableArray.DeleteAllData();
+	if (!m_MagicTableMap.IsEmpty())
+		m_MagicTableMap.DeleteAllData();
 
-	if (!m_Magictype1Array.IsEmpty())
-		m_Magictype1Array.DeleteAllData();
+	if (!m_MagicType1TableMap.IsEmpty())
+		m_MagicType1TableMap.DeleteAllData();
 
-	if (!m_Magictype2Array.IsEmpty())
-		m_Magictype2Array.DeleteAllData();
+	if (!m_MagicType2TableMap.IsEmpty())
+		m_MagicType2TableMap.DeleteAllData();
 
-	if (!m_Magictype3Array.IsEmpty())
-		m_Magictype3Array.DeleteAllData();
+	if (!m_MagicType3TableMap.IsEmpty())
+		m_MagicType3TableMap.DeleteAllData();
 
-	if (!m_Magictype4Array.IsEmpty())
-		m_Magictype4Array.DeleteAllData();
+	if (!m_MagicType4TableMap.IsEmpty())
+		m_MagicType4TableMap.DeleteAllData();
 
 	// Npc Array Delete
-	if (!m_arNpc.IsEmpty())
-		m_arNpc.DeleteAllData();
+	if (!m_NpcMap.IsEmpty())
+		m_NpcMap.DeleteAllData();
 
 	// User Array Delete
 	for (int i = 0; i < MAX_USER; i++)
@@ -1096,8 +1096,8 @@ BOOL CServerDlg::DestroyWindow()
 	}
 
 	// Party Array Delete 
-	if (!m_arParty.IsEmpty())
-		m_arParty.DeleteAllData();
+	if (!m_PartyMap.IsEmpty())
+		m_PartyMap.DeleteAllData();
 
 	while (!m_ZoneNpcList.empty())
 		m_ZoneNpcList.pop_front();
@@ -1221,7 +1221,7 @@ BOOL CServerDlg::MapFileLoad()
 				pMap->m_byRoomEvent = 1;
 			}
 
-			g_arZone.push_back(pMap);
+			m_ZoneArray.push_back(pMap);
 			++m_sTotalMap;
 		}
 		while (recordset.next());
@@ -1245,13 +1245,13 @@ void CServerDlg::AllNpcInfo()
 	// server alive check
 	CNpc* pNpc = nullptr;
 	int nZone = 0;
-	int size = m_arNpc.GetSize();
+	int size = m_NpcMap.GetSize();
 
 	int send_index = 0, zone_index = 0, packet_size = 0;
 	int count = 0, send_count = 0, send_tot = 0;
 	char send_buff[2048] = {};
 
-	for (MAP* pMap : g_arZone)
+	for (MAP* pMap : m_ZoneArray)
 	{
 		if (pMap == nullptr)
 			continue;
@@ -1277,10 +1277,10 @@ void CServerDlg::AllNpcInfo()
 
 		for (int i = 0; i < size; i++)
 		{
-			pNpc = m_arNpc.GetData(i);
+			pNpc = m_NpcMap.GetData(i);
 			if (pNpc == nullptr)
 			{
-				spdlog::warn("ServerDlg::AllNpcInfo: NpcArray[{}] is null", i);
+				spdlog::warn("ServerDlg::AllNpcInfo: NpcMap[{}] is null", i);
 				continue;
 			}
 
@@ -1443,7 +1443,7 @@ void CServerDlg::DeleteAllUserList(int zone)
 	{
 		spdlog::debug("ServerDlg::DeleteAllUserList: start");
 
-		for (MAP* pMap : g_arZone)
+		for (MAP* pMap : m_ZoneArray)
 		{
 			if (pMap == nullptr)
 				continue;
@@ -1469,8 +1469,8 @@ void CServerDlg::DeleteAllUserList(int zone)
 		LeaveCriticalSection(&g_User_critical);
 
 		// Party Array Delete 
-		if (!m_arParty.IsEmpty())
-			m_arParty.DeleteAllData();
+		if (!m_PartyMap.IsEmpty())
+			m_PartyMap.DeleteAllData();
 
 		m_bFirstServerFlag = FALSE;
 		spdlog::debug("ServerDlg::DeleteAllUserList: end");
@@ -1608,7 +1608,7 @@ void CServerDlg::SyncTest()
 	}
 
 /*
-	int size = m_arNpc.GetSize();
+	int size = m_NpcMap.GetSize();
 	CNpc* pNpc = nullptr;
 	CUser* pUser = nullptr;
 	__Vector3 vUser;
@@ -1620,7 +1620,7 @@ void CServerDlg::SyncTest()
 	fprintf(stream, "***** NPC List : %d *****\n", size);
 	for(int i=0; i<size; i++)
 	{
-		pNpc = m_arNpc.GetData(i);
+		pNpc = m_NpcMap.GetData(i);
 		if(pNpc == nullptr)
 		{
 			TRACE(_T("##### allNpcInfo Fail = %d\n"), i);
@@ -1659,7 +1659,7 @@ void CServerDlg::SyncTest()
 	MAP* pMap = nullptr;
 
 	for(k=0; k<m_sTotalMap; k++)	{
-		pMap = g_arZone[k];
+		pMap = m_ZoneArray[k];
 		if(pMap == nullptr)	continue;
 		for( i=0; i<pMap->m_sizeRegion.cx; i++ ) {
 			for( int j=0; j<pMap->m_sizeRegion.cy; j++ ) {
@@ -1711,7 +1711,7 @@ CUser* CServerDlg::GetActiveUserPtr(int index)
 
 CNpc* CServerDlg::GetNpcPtr(const char* pNpcName)
 {
-	for (const auto& [_, pNpc] : m_arNpc)
+	for (const auto& [_, pNpc] : m_NpcMap)
 	{
 		if (pNpc != nullptr
 			&& strcmp(pNpc->m_strName.c_str(), pNpcName) == 0)
@@ -1726,7 +1726,7 @@ CNpc* CServerDlg::GetNpcPtr(const char* pNpcName)
 //	추가할 소환몹의 메모리를 참조하기위해 플래그가 0인 상태것만 넘긴다.
 CNpc* CServerDlg::GetEventNpcPtr()
 {
-	for (auto& [_, pNpc] : m_arNpc)
+	for (auto& [_, pNpc] : m_NpcMap)
 	{
 		if (pNpc == nullptr)
 			continue;
@@ -1847,9 +1847,9 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
 	pEventNpc->m_NpcState = NPC_DEAD;						// 상태는 죽은것으로 해야 한다.. 
 	pEventNpc->m_bFirstLive = 1;							// 처음 살아난 경우로 해줘야 한다..
 
-	for (size_t i = 0; i < g_arZone.size(); i++)
+	for (size_t i = 0; i < m_ZoneArray.size(); i++)
 	{
-		if (g_arZone[i]->m_nZoneNumber == zone_id)
+		if (m_ZoneArray[i]->m_nZoneNumber == zone_id)
 		{
 			pEventNpc->m_ZoneIndex = static_cast<short>(i);
 			break;
@@ -1870,13 +1870,13 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
 
 	for (int i = 0; i < NPC_NUM; i++)
 	{
-		test = m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i];
+		test = m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i];
 		spdlog::debug("ServerDlg::SetSummonNpcData: setsummon == {}, used={}", i, test);
-		if (m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] == 0)
+		if (m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i] == 0)
 		{
-			m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] = 1;
+			m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i] = 1;
 			bSuccess = TRUE;
-			m_arEventNpcThread[0]->m_ThreadInfo.pNpc[i] = pEventNpc;
+			m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i] = pEventNpc;
 			break;
 		}
 	}
@@ -1918,7 +1918,7 @@ void CServerDlg::TestCode()
 
 BOOL CServerDlg::GetMagicType1Data()
 {
-	recordset_loader::STLMap loader(m_Magictype1Array);
+	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1931,7 +1931,7 @@ BOOL CServerDlg::GetMagicType1Data()
 
 BOOL CServerDlg::GetMagicType2Data()
 {
-	recordset_loader::STLMap loader(m_Magictype2Array);
+	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1944,7 +1944,7 @@ BOOL CServerDlg::GetMagicType2Data()
 
 BOOL CServerDlg::GetMagicType3Data()
 {
-	recordset_loader::STLMap loader(m_Magictype3Array);
+	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1957,7 +1957,7 @@ BOOL CServerDlg::GetMagicType3Data()
 
 BOOL CServerDlg::GetMagicType4Data()
 {
-	recordset_loader::STLMap loader(m_Magictype4Array);
+	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1970,7 +1970,7 @@ BOOL CServerDlg::GetMagicType4Data()
 
 void CServerDlg::RegionCheck()
 {
-	for (MAP* pMap : g_arZone)
+	for (MAP* pMap : m_ZoneArray)
 	{
 		if (pMap == nullptr)
 			continue;
@@ -2005,7 +2005,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	//}
 
 	//if( zone_number > 201 )	return FALSE;	// test
-	pNpcTable = m_arNpcTable.GetData(pEvent->sIndex);
+	pNpcTable = m_NpcTableMap.GetData(pEvent->sIndex);
 	if (pNpcTable == nullptr)
 	{
 		bFindNpcTable = FALSE;
@@ -2063,7 +2063,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	}	*/
 
 	//pNpc->Init();
-	if (!m_arNpc.PutData(pNpc->m_sNid, pNpc))
+	if (!m_NpcMap.PutData(pNpc->m_sNid, pNpc))
 	{
 		spdlog::warn("ServerDlg::AddObjectEventNpc: Npc PutData Fail [serial={}]",
 			pNpc->m_sNid);
@@ -2078,9 +2078,9 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 int CServerDlg::GetZoneIndex(int zoneId) const
 {
-	for (size_t i = 0; i < g_arZone.size(); i++)
+	for (size_t i = 0; i < m_ZoneArray.size(); i++)
 	{
-		MAP* pMap = g_arZone[i];
+		MAP* pMap = m_ZoneArray[i];
 		if (pMap != nullptr
 			&& pMap->m_nZoneNumber == zoneId)
 			return i;
@@ -2092,7 +2092,7 @@ int CServerDlg::GetZoneIndex(int zoneId) const
 
 int CServerDlg::GetServerNumber(int zoneId) const
 {
-	for (MAP* pMap : g_arZone)
+	for (MAP* pMap : m_ZoneArray)
 	{
 		if (pMap != nullptr
 			&& pMap->m_nZoneNumber == zoneId)
@@ -2177,7 +2177,7 @@ void CServerDlg::ResetBattleZone()
 {
 	spdlog::debug("ServerDlg::ResetBattleZone: start");
 
-	for (MAP* pMap : g_arZone)
+	for (MAP* pMap : m_ZoneArray)
 	{
 		if (pMap== nullptr)
 			continue;
@@ -2199,18 +2199,18 @@ void CServerDlg::ResetBattleZone()
 MAP* CServerDlg::GetMapByIndex(int iZoneIndex) const
 {
 	if (iZoneIndex < 0
-		|| iZoneIndex >= static_cast<int>(g_arZone.size()))
+		|| iZoneIndex >= static_cast<int>(m_ZoneArray.size()))
 	{
 		spdlog::error("ServerDlg::GetMapByIndex: zoneIndex={} out of bounds", iZoneIndex);
 		return nullptr;
 	}
 
-	return g_arZone[iZoneIndex];
+	return m_ZoneArray[iZoneIndex];
 }
 
 MAP* CServerDlg::GetMapByID(int iZoneID) const
 {
-	for (MAP* pMap : g_arZone)
+	for (MAP* pMap : m_ZoneArray)
 	{
 		if (pMap != nullptr
 			&& pMap->m_nZoneNumber == iZoneID)

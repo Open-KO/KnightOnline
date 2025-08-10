@@ -52,17 +52,17 @@ public:
 // CServerDlg dialog
 
 typedef std::vector <CNpcThread*>			NpcThreadArray;
-typedef CSTLMap <model::Npc>				NpcTableArray;
-typedef CSTLMap <CNpc>						NpcArray;
-typedef CSTLMap <model::Magic>				MagictableArray;
-typedef CSTLMap <model::MagicType1>			Magictype1Array;
-typedef CSTLMap <model::MagicType2>			Magictype2Array;
-typedef CSTLMap <model::MagicType3>			Magictype3Array;
-typedef CSTLMap	<model::MagicType4>			Magictype4Array;
-typedef CSTLMap <_PARTY_GROUP>				PartyArray;
-typedef CSTLMap <model::MakeWeapon>			MakeWeaponItemTableArray;
-typedef CSTLMap <model::MakeItemGradeCode>	MakeGradeItemTableArray;
-typedef CSTLMap <model::MakeItemRareCode>	MakeLareItemTableArray;
+typedef CSTLMap <model::Npc>				NpcTableMap;
+typedef CSTLMap <CNpc>						NpcMap;
+typedef CSTLMap <model::Magic>				MagicTableMap;
+typedef CSTLMap <model::MagicType1>			MagicType1TableMap;
+typedef CSTLMap <model::MagicType2>			MagicType2TableMap;
+typedef CSTLMap <model::MagicType3>			MagicType3TableMap;
+typedef CSTLMap	<model::MagicType4>			MagicType4TableMap;
+typedef CSTLMap <_PARTY_GROUP>				PartyMap;
+typedef CSTLMap <model::MakeWeapon>			MakeWeaponTableMap;
+typedef CSTLMap <model::MakeItemGradeCode>	MakeGradeItemCodeTableMap;
+typedef CSTLMap <model::MakeItemRareCode>	MakeItemRareCodeTableMap;
 typedef std::list <int>						ZoneNpcInfoList;
 typedef std::vector <MAP*>					ZoneArray;
 
@@ -131,24 +131,23 @@ protected:
 	//}}AFX_VIRTUAL
 
 public:
-//	ZoneArray			m_arZone;
-	NpcArray			m_arNpc;
-	NpcTableArray		m_arMonTable;
-	NpcTableArray		m_arNpcTable;
-	NpcThreadArray		m_arNpcThread;
-	NpcThreadArray		m_arEventNpcThread;	// Event Npc Logic
-	PartyArray			m_arParty;
-	ZoneNpcInfoList		m_ZoneNpcList;
-	MagictableArray		m_MagictableArray;
-	Magictype1Array		m_Magictype1Array;
-	Magictype2Array		m_Magictype2Array;
-	Magictype3Array		m_Magictype3Array;
-	Magictype4Array		m_Magictype4Array;
-	MakeWeaponItemTableArray	m_MakeWeaponItemArray;
-	MakeWeaponItemTableArray	m_MakeDefensiveItemArray;
-	MakeGradeItemTableArray  m_MakeGradeItemArray;
-	MakeLareItemTableArray  m_MakeLareItemArray;
-	ZoneArray g_arZone;
+	NpcMap						m_NpcMap;
+	NpcTableMap					m_MonTableMap;
+	NpcTableMap					m_NpcTableMap;
+	NpcThreadArray				m_NpcThreadArray;
+	NpcThreadArray				m_EventNpcThreadArray;	// Event Npc Logic
+	PartyMap					m_PartyMap;
+	ZoneNpcInfoList				m_ZoneNpcList;
+	MagicTableMap				m_MagicTableMap;
+	MagicType1TableMap			m_MagicType1TableMap;
+	MagicType2TableMap			m_MagicType2TableMap;
+	MagicType3TableMap			m_MagicType3TableMap;
+	MagicType4TableMap			m_MagicType4TableMap;
+	MakeWeaponTableMap			m_MakeWeaponTableMap;
+	MakeWeaponTableMap			m_MakeDefensiveTableMap;
+	MakeGradeItemCodeTableMap	m_MakeGradeItemArray;
+	MakeItemRareCodeTableMap	m_MakeItemRareCodeTableMap;
+	ZoneArray					m_ZoneArray;
 
 	CWinThread* m_pZoneEventThread;		// zone
 

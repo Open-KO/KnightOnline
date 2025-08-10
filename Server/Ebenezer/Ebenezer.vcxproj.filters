@@ -81,6 +81,9 @@
     <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
       <Filter>N3Base</Filter>
     </ClCompile>
+    <ClCompile Include="EbenezerResourceFormatter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AISocket.h">
@@ -162,6 +165,12 @@
       <Filter>N3Base</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\_USER_DATA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="db_resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EbenezerResourceFormatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
