@@ -1534,11 +1534,7 @@ bool CUIInventory::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 					//..
 					m_bRBtnProcessing = true;
-					
-					// rewrite tooltip data if item change successfull
-					if (InvOpsSomething(spItem))
-						m_pUITooltipDlg->SetTooltipRewrite(true);
-
+					InvOpsSomething(spItem);
 					m_bRBtnProcessing = false;
 				}
 			}

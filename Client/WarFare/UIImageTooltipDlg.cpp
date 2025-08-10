@@ -29,7 +29,6 @@ CUIImageTooltipDlg::CUIImageTooltipDlg() : m_CYellow(D3DCOLOR_RGBA(255, 255, 0, 
 {
 	m_iPosXBack = 0;
 	m_iPosYBack = 0;
-	m_bTooltipRewrite = false;
 	m_spItemBack = NULL;
 	m_pImg = NULL;
 }
@@ -171,10 +170,6 @@ void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
 	m_iPosYBack = ypos;
 }
 
-void CUIImageTooltipDlg::SetTooltipRewrite(bool bState)
-{
-	m_bTooltipRewrite = bState;
-}
 
 int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bool bPrice, bool bBuy)
 {
@@ -182,10 +177,7 @@ int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bo
 
 	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
 
-	if ( (!m_spItemBack) || (m_spItemBack->pItemBasic->dwID != spItem->pItemBasic->dwID) || 
-		(m_spItemBack->pItemExt->dwID != spItem->pItemExt->dwID) ||
-		(m_spItemBack->iDurability != spItem->iDurability) )
-	{
+	
 
 #define ERROR_EXCEPTION									\
 {		\
@@ -1087,22 +1079,36 @@ exceptions:;
 
 		for (int i = iIndex; i < MAX_TOOLTIP_COUNT; i++)
 			m_pstdstr[iIndex].clear();
-	}
+	
 
 	return iIndex;	// 임시..	반드시 1보다 크다..
 }
 
 void CUIImageTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSkill* spItem, bool bPrice, bool bBuy)
 {
-	if ( !spItem ) return;
+	if (spItem == nullptr) return;
 
 	if ( !IsVisible() ) SetVisible(true);
+
+	bool bItemChanged = false;
+	if ((m_spItemBack == nullptr) || 
+		(m_spItemBack->pItemBasic->dwID != spItem->pItemBasic->dwID) ||
+		(m_spItemBack->pItemExt->dwID != spItem->pItemExt->dwID) || 
+		(m_spItemBack->iDurability != spItem->iDurability))
+	{
+		bItemChanged = true;
+	}
 	
-	if ( (m_iPosXBack != xpos) || (m_iPosYBack != ypos) || m_bTooltipRewrite == true)
+	bool bCursorPosChanged = false;
+	if ((m_iPosXBack != xpos) || (m_iPosYBack != ypos))
+	{
+		bCursorPosChanged = true;
+	}
+	
+	if (bCursorPosChanged || bItemChanged )
 	{
 		int iNum = CalcTooltipStringNumAndWrite(spItem, bPrice, bBuy);
 		SetPosSomething(xpos, ypos, iNum);
-		m_bTooltipRewrite = false;
 	}
 
 	Render();
