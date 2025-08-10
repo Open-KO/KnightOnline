@@ -458,12 +458,12 @@ D3DCOLOR CGameBase::GetIDColorByLevelDifference(int iLevelDiff)
 
 // Generate requested resource filenames using the given item data
 e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
+												__TABLE_ITEM_EXT* pItemExt,
 												std::string* pszResrcFN,
 												std::string* pszIconFN,
 												e_PartPosition& ePartPosition,
 												e_PlugPosition& ePlugPosition,
-												e_Race eRace /*= RACE_UNKNOWN*/,
-												__TABLE_ITEM_EXT* pItemExt /*= nullptr*/)
+												e_Race eRace /*= RACE_UNKNOWN*/)
 {	
 	ePartPosition = PART_POS_UNKNOWN;
 	ePlugPosition = PLUG_POS_UNKNOWN;
@@ -519,7 +519,7 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 		__ASSERT(0, "Invalid Item Position");
 	}
 
-	//check and replace icon and resource ids if item is special
+	// replace icon/resource IDs if they're overridden by the item
 	int iIDResrc = 0, iIDIcon = 0;
 	
 	if (pItemExt != nullptr && pItemExt->dwIDResrc != 0)

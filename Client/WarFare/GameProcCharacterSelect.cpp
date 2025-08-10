@@ -620,7 +620,7 @@ void CGameProcCharacterSelect::AddChrPart(	int iPosIndex,
 	if(pItem != nullptr)
 		pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(dwItemID % 1000);
 
-	CGameProcedure::MakeResrcFileNameForUPC(pItem, &szResrcFN, NULL, ePartPosTmp, ePlugPosTmp, m_InfoChrs[iPosIndex].eRace, pItemExt);
+	MakeResrcFileNameForUPC(pItem, pItemExt, &szResrcFN, nullptr, ePartPosTmp, ePlugPosTmp, m_InfoChrs[iPosIndex].eRace);
 	if(szResrcFN.empty()) pPart = m_pChrs[iPosIndex]->PartSet(ePartPos, pLooks->szPartFNs[ePartPos]);	// 기본 파트
 	else pPart = m_pChrs[iPosIndex]->PartSet(ePartPos, szResrcFN);
 	if(pPart && pItem && pItem->siMaxDurability > 0)
