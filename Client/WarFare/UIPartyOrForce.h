@@ -47,7 +47,7 @@ public:
 	const __InfoPartyOrForce*	MemberInfoGetByID(int iID, int& iIndexResult);
 	const __InfoPartyOrForce*	MemberInfoGetByIndex(size_t iIndex);
 	const __InfoPartyOrForce*	MemberInfoGetSelected(); // 현재 선택된 멤버인덱스..
-	const __InfoPartyOrForce*	MemberAdd(int iID, const std::string szID, int iLevel, e_Class eClass, int iHP, int iHPMax, int iMP, int iMPMax);
+	const __InfoPartyOrForce*	MemberAdd(int iID, const std::string& szID, int iLevel, e_Class eClass, int iHP, int iHPMax, int iMP, int iMPMax);
 	class CPlayerOther*			MemberGetByNearst(const __Vector3& vPosPlayer);
 	bool						MemberRemove(int iID);
 	void						MemberDestroy();

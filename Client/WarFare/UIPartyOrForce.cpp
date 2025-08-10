@@ -246,7 +246,7 @@ CPlayerOther* CUIPartyOrForce::MemberGetByNearst(const __Vector3& vPosPlayer)
 	return pTarget;
 }
 
-const __InfoPartyOrForce* CUIPartyOrForce::MemberAdd(int iID, const std::string szID, int iLevel, e_Class eClass, int iHP, int iHPMax, int iMP, int iMPMax)
+const __InfoPartyOrForce* CUIPartyOrForce::MemberAdd(int iID, const std::string& szID, int iLevel, e_Class eClass, int iHP, int iHPMax, int iMP, int iMPMax)
 {
 	__InfoPartyOrForce InfoTmp;
 	InfoTmp.iID = iID;
@@ -258,12 +258,12 @@ const __InfoPartyOrForce* CUIPartyOrForce::MemberAdd(int iID, const std::string 
 	InfoTmp.iMPMax = iMPMax;
 	InfoTmp.eClass = eClass;
 
-	m_Members.push_back(InfoTmp);
+	m_Members.push_back(std::move(InfoTmp));
 
-	it_PartyOrForce it = m_Members.end();
+	auto it = m_Members.end();
 	it--;
 	
-	this->MemberInfoReInit();
+	MemberInfoReInit();
 
 	return &(*it);
 }
