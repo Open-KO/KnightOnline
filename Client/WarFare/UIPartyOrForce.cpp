@@ -25,18 +25,18 @@ static char THIS_FILE[]=__FILE__;
 
 CUIPartyOrForce::CUIPartyOrForce()
 {
-	for(int i = 0; i < MAX_PARTY_OR_FORCE; i++)
+	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++)
 	{
-		m_pProgress_HPs[i]			= NULL;	// 부대원갯수 만큼... HP Gauge
-		m_pProgress_HPReduce[i]		= NULL;	// 부대원갯수 만큼... HP Reduce
-		m_pProgress_HPSlow[i]		= NULL;	// HP Slow
-		m_pProgress_HPLasting[i]	= NULL;	// HP Lasting
-		m_pProgress_MP[i]			= NULL;	// MP Bar
-		m_pStatic_IDs[i]			= NULL;	// Names for each party member
-		m_pAreas[i]					= NULL;
+		m_pProgress_HPs[i]			= nullptr;	// 부대원갯수 만큼... HP Gauge
+		m_pProgress_HPReduce[i]		= nullptr;	// 부대원갯수 만큼... HP Reduce
+		m_pProgress_HPSlow[i]		= nullptr;	// HP Slow
+		m_pProgress_HPLasting[i]	= nullptr;	// HP Lasting
+		m_pProgress_MP[i]			= nullptr;	// MP Bar
+		m_pStatic_IDs[i]			= nullptr;	// Names for each party member
+		m_pAreas[i]					= nullptr;
 	}
 
-	m_iIndexSelected = ((size_t)~0); // 현재 선택된 멤버인덱스..
+	m_iIndexSelected = ((size_t) ~0); // 현재 선택된 멤버인덱스..
 }
 
 CUIPartyOrForce::~CUIPartyOrForce()
@@ -49,15 +49,16 @@ void CUIPartyOrForce::Release()
 
 	m_Members.clear();
 	m_iIndexSelected = -1; // 현재 선택된 멤버인덱스..
-	for(int i = 0; i < MAX_PARTY_OR_FORCE; i++)
+
+	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++)
 	{
-		m_pProgress_HPs[i]			= NULL;	// 부대원갯수 만큼... HP Gauge
-		m_pProgress_HPReduce[i]		= NULL;	// 부대원갯수 만큼... HP Reduce
-		m_pProgress_HPSlow[i]		= NULL;	// HP Slow
-		m_pProgress_HPLasting[i]	= NULL;	// HP Lasting
-		m_pProgress_MP[i]			= NULL;	// MP Bar
-		m_pStatic_IDs[i]			= NULL;	// Names for each party member
-		m_pAreas[i]					= NULL;
+		m_pProgress_HPs[i]			= nullptr;	// 부대원갯수 만큼... HP Gauge
+		m_pProgress_HPReduce[i]		= nullptr;	// 부대원갯수 만큼... HP Reduce
+		m_pProgress_HPSlow[i]		= nullptr;	// HP Slow
+		m_pProgress_HPLasting[i]	= nullptr;	// HP Lasting
+		m_pProgress_MP[i]			= nullptr;	// MP Bar
+		m_pStatic_IDs[i]			= nullptr;	// Names for each party member
+		m_pAreas[i]					= nullptr;
 	}
 
 }
@@ -288,53 +289,72 @@ bool CUIPartyOrForce::MemberRemove(int iID)
 void CUIPartyOrForce::MemberDestroy()
 {
 	m_Members.clear();
-	for(int i = 0; i < MAX_PARTY_OR_FORCE; i++) // 빈곳을 찾자..
+
+	// 빈곳을 찾자..
+	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++)
 	{
-		if(m_pProgress_HPs[i])			m_pProgress_HPs[i]->SetVisible(false);
-		if(m_pProgress_HPReduce[i])		m_pProgress_HPReduce[i]->SetVisible(false);
-		if(m_pProgress_MP[i])			m_pProgress_MP[i]->SetVisible(false);
-		if(m_pProgress_HPSlow[i])		m_pProgress_HPSlow[i]->SetVisible(false);
-		if(m_pProgress_HPLasting[i])	m_pProgress_HPLasting[i]->SetVisible(false);
-		if(m_pStatic_IDs[i])			m_pStatic_IDs[i]->SetVisible(false);
+		if (m_pProgress_HPs[i] != nullptr)
+			m_pProgress_HPs[i]->SetVisible(false);
+
+		if (m_pProgress_HPReduce[i] != nullptr)
+			m_pProgress_HPReduce[i]->SetVisible(false);
+
+		if (m_pProgress_MP[i] != nullptr)
+			m_pProgress_MP[i]->SetVisible(false);
+
+		if (m_pProgress_HPSlow[i] != nullptr)
+			m_pProgress_HPSlow[i]->SetVisible(false);
+
+		if (m_pProgress_HPLasting[i] != nullptr)
+			m_pProgress_HPLasting[i]->SetVisible(false);
+
+		if (m_pStatic_IDs[i] != nullptr)
+			m_pStatic_IDs[i]->SetVisible(false);
 	}
 
-	this->MemberInfoReInit();
+	MemberInfoReInit();
 }
 
 void CUIPartyOrForce::MemberInfoReInit() // 파티원 구성이 변경될때.. 순서 및 각종 정보 업데이트..
 {
-	it_PartyOrForce it = m_Members.begin(), itEnd = m_Members.end();
-	__InfoPartyOrForce* pIP = NULL;
-	for(int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	auto it = m_Members.begin(), itEnd = m_Members.end();
+	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
 	{
-		pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
-		if(pIP->iHPMax <= 0)
+		__InfoPartyOrForce* pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
+		if (pIP->iHPMax <= 0)
 		{
 			__ASSERT(0, "Invalid Party memeber HP");
 			continue;
 		}
 
-		if(m_pProgress_HPs[i])
-		{
-			m_pProgress_HPs[i]->SetCurValue(pIP->iHP * 100 / pIP->iHPMax);
-		}
-		if(m_pProgress_HPReduce[i])
-		{
-			m_pProgress_HPReduce[i]->SetCurValue(pIP->iHP * 100 / pIP->iHPMax);
-		}
-		if(m_pProgress_MP[i])
-		{
+		const int iHPPercent = pIP->iHP * 100 / pIP->iHPMax;
+
+		if (m_pProgress_HPs[i] != nullptr)
+			m_pProgress_HPs[i]->SetCurValue(iHPPercent);
+
+		if (m_pProgress_HPReduce[i] != nullptr)
+			m_pProgress_HPReduce[i]->SetCurValue(iHPPercent);
+
+		if (m_pProgress_HPSlow[i] != nullptr)
+			m_pProgress_HPSlow[i]->SetCurValue(iHPPercent);
+
+		if (m_pProgress_HPLasting[i] != nullptr)
+			m_pProgress_HPLasting[i]->SetCurValue(iHPPercent);
+
+		if (m_pProgress_MP[i] != nullptr)
 			m_pProgress_MP[i]->SetCurValue(pIP->iMP * 100 / pIP->iMPMax);
-		}
-		if(m_pStatic_IDs[i])
+
+		if (m_pStatic_IDs[i] != nullptr)
 		{
 			m_pStatic_IDs[i]->SetString(pIP->szID);
 			m_pStatic_IDs[i]->SetVisible(true);
 		}
 	}
 
-	if(m_Members.empty()) this->SetVisible(false); // 멤버가 없으면 숨긴다.
-	else this->SetVisible(true); // 멤버가 있으면 보인다.
+	if (m_Members.empty())
+		SetVisible(false); // 멤버가 없으면 숨긴다.
+	else
+		SetVisible(true); // 멤버가 있으면 보인다.
 }
 
 const __InfoPartyOrForce* CUIPartyOrForce::MemberInfoGetSelected()
@@ -351,21 +371,33 @@ const __InfoPartyOrForce* CUIPartyOrForce::MemberInfoGetSelected()
 
 void CUIPartyOrForce::MemberHPChange(int iID, int iHP, int iHPMax, int iMP, int iMPMax)
 {
-	it_PartyOrForce it = m_Members.begin(), itEnd = m_Members.end();
-	__InfoPartyOrForce* pIP = NULL;
-	for(int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	auto it = m_Members.begin(), itEnd = m_Members.end();
+	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
 	{
-		pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
-		if(pIP->iID == iID)
+		__InfoPartyOrForce* pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
+		if (pIP->iID == iID)
 		{
 			pIP->iHP = iHP;
 			pIP->iHPMax = iHPMax;
 			pIP->iMP = iMP;
 			pIP->iMPMax = iMPMax;
 
-			if(m_pProgress_HPs[i])		m_pProgress_HPs[i]->SetCurValue(pIP->iHP * 100 / pIP->iHPMax, 0.7f, 50.0f);
-			if(m_pProgress_HPReduce[i]) m_pProgress_HPReduce[i]->SetCurValue(pIP->iHP * 100 / pIP->iHPMax, 0.7f, 50.0f);
-			if(m_pProgress_MP[i])		m_pProgress_MP[i]->SetCurValue(pIP->iMP * 100 / pIP->iMPMax, 0.7f, 50.0f);
+			const int iHPPercent = pIP->iHP * 100 / pIP->iHPMax;
+
+			if (m_pProgress_HPs[i] != nullptr)
+				m_pProgress_HPs[i]->SetCurValue(iHPPercent, 0.7f, 50.0f);
+
+			if (m_pProgress_HPReduce[i] != nullptr)
+				m_pProgress_HPReduce[i]->SetCurValue(iHPPercent, 0.7f, 50.0f);
+
+			if (m_pProgress_HPSlow[i] != nullptr)
+				m_pProgress_HPSlow[i]->SetCurValue(iHPPercent, 0.7f, 50.0f);
+
+			if (m_pProgress_HPLasting[i] != nullptr)
+				m_pProgress_HPLasting[i]->SetCurValue(iHPPercent, 0.7f, 50.0f);
+
+			if (m_pProgress_MP[i] != nullptr)
+				m_pProgress_MP[i]->SetCurValue(pIP->iMP * 100 / pIP->iMPMax, 0.7f, 50.0f);
 			break;
 		}
 	}
@@ -424,58 +456,64 @@ void CUIPartyOrForce::Tick()
 	bool bBlink = false;
 	uint32_t dwTime = GetTickCount();
 
-	dwTime = dwTime/1000;
+	dwTime = dwTime / 1000;
 	dwTime %= 2;
 
-	if(dwTime == 1)	bBlink = true;
+	if (dwTime == 1)
+		bBlink = true;
 
-	it_PartyOrForce it = m_Members.begin(), itEnd = m_Members.end();
-	__InfoPartyOrForce* pIP = NULL;
-	for(int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	auto it = m_Members.begin(), itEnd = m_Members.end();
+	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
 	{
-		pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
-		if(m_pProgress_HPs[i])
+		__InfoPartyOrForce* pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
+		if (m_pProgress_HPs[i] != nullptr)
 		{
-			if( pIP->bSufferDown_HP || pIP->bSufferDown_Etc )
+			if (pIP->bSufferDown_HP || pIP->bSufferDown_Etc)
 				m_pProgress_HPs[i]->SetVisible(false);
 			else
 				m_pProgress_HPs[i]->SetVisible(true);
 		}
 
-		if( pIP->bSufferDown_HP && pIP->bSufferDown_Etc )
+		if (pIP->bSufferDown_HP && pIP->bSufferDown_Etc)
 		{
-			if(bBlink)
+			if (bBlink)
 			{
-				if(m_pProgress_HPReduce[i])	m_pProgress_HPReduce[i]->SetVisible(true);
-				if(m_pProgress_MP[i])		m_pProgress_MP[i]->SetVisible(false);
+				if (m_pProgress_HPReduce[i] != nullptr)
+					m_pProgress_HPReduce[i]->SetVisible(true);
+
+				if (m_pProgress_MP[i] != nullptr)
+					m_pProgress_MP[i]->SetVisible(false);
 			}
 			else
 			{
-				if(m_pProgress_HPReduce[i])	m_pProgress_HPReduce[i]->SetVisible(false);
-				if(m_pProgress_MP[i])		m_pProgress_MP[i]->SetVisible(true);
+				if (m_pProgress_HPReduce[i] != nullptr)
+					m_pProgress_HPReduce[i]->SetVisible(false);
+
+				if (m_pProgress_MP[i] != nullptr)
+					m_pProgress_MP[i]->SetVisible(true);
 			}
 		}
 		else
 		{
-			if(m_pProgress_HPReduce[i])
+			if (m_pProgress_HPReduce[i] != nullptr)
 			{
-				if( pIP->bSufferDown_HP )
+				if (pIP->bSufferDown_HP)
 					m_pProgress_HPReduce[i]->SetVisible(true);
 				else
 					m_pProgress_HPReduce[i]->SetVisible(false);
 			}
-			if(m_pProgress_MP[i])
+
+			if (m_pProgress_MP[i] != nullptr)
 			{
-				if( pIP->bSufferDown_Etc )
+				if (pIP->bSufferDown_Etc)
 					m_pProgress_MP[i]->SetVisible(true);
 				else
 					m_pProgress_MP[i]->SetVisible(false);
 			}
 		}
-		if (m_pProgress_MP[i])
-		{
+
+		if (m_pProgress_MP[i] != nullptr)
 			m_pProgress_MP[i]->SetVisible(true);
-		}
 	}
 }
 
