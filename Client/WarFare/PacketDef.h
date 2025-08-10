@@ -38,14 +38,14 @@ const int SOCKET_PORT_LOGIN = 15100;
 
 	// Sub Packet
 	enum e_SubPacket_Party {	N3_SP_PARTY_OR_FORCE_CREATE			= 0x01,	// Send - s1(ID)	| Recv b1(YesNoErr)
-							N3_SP_PARTY_OR_FORCE_PERMIT			= 0x02,	// Send - b1(YesNo) | Recv - s1(ID)
-							N3_SP_PARTY_OR_FORCE_INSERT			= 0x03,	// Send - s1(ID) | Recv - s3(ID, HPMax, HP) b2(Level, Class) - 문자열은 ID 로 알아낸다.. ID 가 -1 이면.. 파티에 들어오는것을 상대방이 거절한거다..
-							N3_SP_PARTY_OR_FORCE_REMOVE			= 0x04,	// Send - s1(ID) | Recv - s1(ID) - 자기 자신이면 파티를 깨야 한다..
-							N3_SP_PARTY_OR_FORCE_DESTROY			= 0x05,	// Send
-							N3_SP_PARTY_OR_FORCE_HP_CHANGE		= 0x06,	// Recv - s3(ID, HPMax, HP)
-							N3_SP_PARTY_OR_FORCE_LEVEL_CHANGE	= 0x07,	// Recv - s1(ID), b1(Level)
-							N3_SP_PARTY_OR_FORCE_CLASS_CHANGE	= 0x08,	// Recv - s1(ID), b1(Class)드물지만 전직할때...
-							N3_SP_PARTY_OR_FORCE_STATUS_CHANGE	= 0x09 };	// Recv - s1(ID), b1(Status)독, 저주, 지속성마법, 축복
+								N3_SP_PARTY_OR_FORCE_PERMIT			= 0x02,	// Send - b1(YesNo) | Recv - s1(ID)
+								N3_SP_PARTY_OR_FORCE_INSERT			= 0x03,	// Send - s1(ID) | Recv - s3(ID, HPMax, HP) b2(Level, Class) - 문자열은 ID 로 알아낸다.. ID 가 -1 이면.. 파티에 들어오는것을 상대방이 거절한거다..
+								N3_SP_PARTY_OR_FORCE_REMOVE			= 0x04,	// Send - s1(ID) | Recv - s1(ID) - 자기 자신이면 파티를 깨야 한다..
+								N3_SP_PARTY_OR_FORCE_DESTROY		= 0x05,	// Send
+								N3_SP_PARTY_OR_FORCE_HP_CHANGE		= 0x06,	// Recv - s3(ID, HPMax, HP, iMPMax, MP)
+								N3_SP_PARTY_OR_FORCE_LEVEL_CHANGE	= 0x07,	// Recv - s1(ID), b1(Level)
+								N3_SP_PARTY_OR_FORCE_CLASS_CHANGE	= 0x08,	// Recv - s1(ID), b1(Class)드물지만 전직할때...
+								N3_SP_PARTY_OR_FORCE_STATUS_CHANGE	= 0x09 };	// Recv - s1(ID), b1(Status)독, 저주, 지속성마법, 축복
 
 	// Sub Packet
 	enum e_SubPacket_PerTrade {	N3_SP_PER_TRADE_REQ =			0x01, 
