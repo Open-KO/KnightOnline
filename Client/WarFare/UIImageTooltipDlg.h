@@ -26,7 +26,7 @@ class CUIImageTooltipDlg : public CN3UIBase
 	const D3DCOLOR		m_CGreen;	// 옵션...	저항력, 능력치 상승, 마법속성..
 	const D3DCOLOR		m_CWhite;	// 일반...
 	const D3DCOLOR		m_CRed;		// 뭔가 제한에 걸릴때..
-
+	bool				m_bTooltipRewrite; // rewrite tooltip data when needed
 public:
 	CN3UIString*		m_pStr[MAX_TOOLTIP_COUNT];			// 스트륑.. ^^
 	std::string			m_pstdstr[MAX_TOOLTIP_COUNT];
@@ -34,7 +34,7 @@ public:
 
 	int					m_iPosXBack, m_iPosYBack;
 	__IconItemSkill*	m_spItemBack;
-
+	
 protected:
 	bool				SetTooltipTextColor(int iMyValue, int iTooltipValue);
 	bool				SetTooltipTextColor(e_Race eMyValue, e_Race eTooltipValue);
@@ -50,6 +50,7 @@ public:
 
 	void	DisplayTooltipsEnable(int xpos, int ypos, __IconItemSkill* spItem, bool bPrice = false, bool bBuy = true);
 	void	DisplayTooltipsDisable();
+	void	SetTooltipRewrite(bool bState = true);
 };
 
 #endif // !defined(AFX_UIIMAGETOOLTIPDLG_H__CC12484D_5DC0_4F7A_ABF7_0506B2F36292__INCLUDED_)

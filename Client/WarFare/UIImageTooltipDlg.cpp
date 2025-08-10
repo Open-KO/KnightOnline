@@ -29,6 +29,7 @@ CUIImageTooltipDlg::CUIImageTooltipDlg() : m_CYellow(D3DCOLOR_RGBA(255, 255, 0, 
 {
 	m_iPosXBack = 0;
 	m_iPosYBack = 0;
+	m_bTooltipRewrite = false;
 	m_spItemBack = NULL;
 	m_pImg = NULL;
 }
@@ -168,6 +169,11 @@ void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
 
 	m_iPosXBack = xpos;
 	m_iPosYBack = ypos;
+}
+
+void CUIImageTooltipDlg::SetTooltipRewrite(bool bState)
+{
+	m_bTooltipRewrite = bState;
 }
 
 int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bool bPrice, bool bBuy)
@@ -1091,11 +1097,12 @@ void CUIImageTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSki
 	if ( !spItem ) return;
 
 	if ( !IsVisible() ) SetVisible(true);
-
-	if ( (m_iPosXBack != xpos) || (m_iPosYBack != ypos) )
+	
+	if ( (m_iPosXBack != xpos) || (m_iPosYBack != ypos) || m_bTooltipRewrite == true)
 	{
 		int iNum = CalcTooltipStringNumAndWrite(spItem, bPrice, bBuy);
 		SetPosSomething(xpos, ypos, iNum);
+		m_bTooltipRewrite = false;
 	}
 
 	Render();
