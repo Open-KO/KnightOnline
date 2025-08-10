@@ -285,10 +285,11 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
-enum e_ItemSaleType	  {
-						SALE_TYPE_LOW = 0,			 // sells lower than purchase price
-						SALE_TYPE_FULL = 1,			 // sells equal to purchase price
-						SALE_TYPE_LOW_NO_REPAIR = 2, // non repairable items, sell for lower price than purchase
+enum e_ItemSaleType
+{
+	SALE_TYPE_LOW = 0,			 // sells lower than purchase price
+	SALE_TYPE_FULL = 1,			 // sells equal to purchase price
+	SALE_TYPE_LOW_NO_REPAIR = 2, // irreparable items sell for lower price than purchase
 };
 
 enum e_Nation { NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNKNOWN = 0xffffffff };
@@ -712,7 +713,7 @@ struct __TABLE_ITEM_BASIC
 	int16_t		siWeight;				// 19 Weight (in 0.1 units)
 	int16_t		siMaxDurability;		// 20 Max durability
 	int			iPrice;					// 21 Purchase price
-	int			iSaleType;				// 22 Sale type ([1 - same price], [0 - 1/6 of buy price], [2 - 1/6 & cant be repaired] ) - [1/4 premium(all)]
+	int			iSaleType;				// 22 Sale type (see e_ItemSaleType)
 	int16_t		siDefense;				// 23 Defense
 	uint8_t		byContable;				// 24 Is the item countable/stackable?
 
