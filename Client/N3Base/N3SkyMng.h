@@ -129,10 +129,10 @@ protected:
 	class CN3ColorChange*	m_pLightColorAmbients[MAX_GAME_LIGHT];
 
 	std::vector<__SKY_DAYCHANGE> m_DayChanges;		// 정보입력후에 qsort하자
-	size_t					m_iDayChangeCurPos;
+	int						m_iDayChangeCurPos;
 
 	std::vector<__SKY_DAYCHANGE> m_WeatherChanges;		// 정보입력후에 qsort하자
-	size_t					m_iWeatherChangeCurPos;
+	int						m_iWeatherChangeCurPos;
 
 	uint32_t		m_dwCheckTick;	// 서버에서 시간을 받을때의 윈도우TickCount(실시간) (게임시간으로 24시에 다시 설정하기도 한다.)
 	uint32_t		m_dwCheckGameTime;	// 서버에서 내려받은 시간(게임 시간 초단위) 0 ~ (24*60*60)

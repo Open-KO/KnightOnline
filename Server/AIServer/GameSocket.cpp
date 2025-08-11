@@ -1016,7 +1016,7 @@ void CGameSocket::RecvGateOpen(char* pBuf)
 		return;
 	}
 
-	CNpc* pNpc = m_pMain->m_arNpc.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
 		return;
 
@@ -1076,7 +1076,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 		//TRACE(_T("party info ,, index = %d, i=%d, uid=%d, %d, %d, %d \n"), sPartyIndex, i, uid, sHp, byLevel, sClass);
 	}
 
-	if (m_pMain->m_arParty.PutData(pParty->wIndex, pParty))
+	if (m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
 	{
 		spdlog::debug("GameSocket::RecvPartyInfoAllData: created partyIndex={}", sPartyIndex);
 	}
@@ -1190,7 +1190,7 @@ void CGameSocket::RecvBattleEvent(char* pBuf)
 		m_pMain->ResetBattleZone();
 	}
 
-	for (const auto& [_, pNpc] : m_pMain->m_arNpc)
+	for (const auto& [_, pNpc] : m_pMain->m_NpcMap)
 	{
 		if (pNpc == nullptr)
 			continue;

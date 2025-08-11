@@ -73,23 +73,31 @@ void CN3FXSPart::TexAlloc(int nCount)
 	m_TexRefs.assign(nCount, NULL);
 }
 
-CN3Texture* CN3FXSPart::Tex(size_t iIndex)
+CN3Texture* CN3FXSPart::Tex(int iIndex)
 {
-	if (iIndex >= m_TexRefs.size()) return NULL;
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_TexRefs.size()))
+		return nullptr;
+
 	return m_TexRefs[iIndex];
 }
 
-CN3Texture* CN3FXSPart::TexSet(size_t iIndex, const std::string& szFN)
+CN3Texture* CN3FXSPart::TexSet(int iIndex, const std::string& szFN)
 {
-	if (iIndex >= m_TexRefs.size()) return NULL;
+	if (iIndex >= static_cast<int>(m_TexRefs.size()))
+		return nullptr;
+
 	s_MngTex.Delete(&m_TexRefs[iIndex]);
 	m_TexRefs[iIndex] = s_MngTex.Get(szFN);
 	return m_TexRefs[iIndex];
 }
 
-void CN3FXSPart::TexSet(size_t iIndex, CN3Texture* pTex)
+void CN3FXSPart::TexSet(int iIndex, CN3Texture* pTex)
 {
-	if (iIndex >= m_TexRefs.size()) return;
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_TexRefs.size()))
+		return;
+
 	s_MngTex.Delete(&m_TexRefs[iIndex]);
 }
 
@@ -419,9 +427,10 @@ bool CN3FXShape::Save(HANDLE hFile)
 	return true;
 }
 
-void CN3FXShape::PartDelete(size_t iIndex)
+void CN3FXShape::PartDelete(int iIndex)
 {
-	if (iIndex >= m_Parts.size())
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_Parts.size()))
 		return;
 
 	auto it = m_Parts.begin();

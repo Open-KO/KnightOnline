@@ -46,21 +46,33 @@ public:
 	void ReCalcMatrixBlended(float fFrm0, float fFrm1, float fWeight0);
 	void ParentSet(CN3Joint* pParent);
 	void ChildAdd(CN3Joint* pChild);
-	CN3Joint* Parent() { return m_pParent; }
-	int ChildCount() { return m_Children.size(); }
-	CN3Joint* Child(size_t index)
+
+	CN3Joint* Parent()
 	{
-		if (index > m_Children.size()) return NULL;
+		return m_pParent;
+	}
+
+	int ChildCount() const
+	{
+		return static_cast<int>(m_Children.size());
+	}
+
+	CN3Joint* Child(int index)
+	{
+		if (index < 0
+			|| index >= static_cast<int>(m_Children.size()))
+			return nullptr;
+
 		auto it = m_Children.begin();
 		std::advance(it, index);
 		return *it;
 	}
 
-	void NodeCount(int &nCount);
+	void NodeCount(int& nCount);
 	BOOL FindPointerByID(int nID, CN3Joint *&pJoint);
 #ifdef _N3TOOL
-	BOOL FindIndex(const std::string& szName, int &nIndex);
-	BOOL FindPointerByName(const std::string& szName, CN3Joint *&pJoint); // 이름을 넣으면 해당 노드의 포인터를 돌려준다..
+	BOOL FindIndex(const std::string& szName, int& nIndex);
+	BOOL FindPointerByName(const std::string& szName, CN3Joint*& pJoint); // 이름을 넣으면 해당 노드의 포인터를 돌려준다..
 	void RotSet(const __Quaternion& qtRot) { m_qRot = qtRot; this->ReCalcMatrix(); }
 	void RotSet(float x, float y, float z, float w) { m_qRot.x = x; m_qRot.y = y; m_qRot.z = z; m_qRot.w = w; this->ReCalcMatrix(); }
 	void Render(const __Matrix44* pMtxParent = NULL, float fUnitSize = 0.1f);

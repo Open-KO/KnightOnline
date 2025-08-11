@@ -57,7 +57,9 @@ void CNPCPath::DelPrevPos()
 
 bool CNPCPath::GetPath(int idx, __Vector3* pPos)
 {
-	if(idx<0 || idx>=m_Path.size()) return false;
+	if (idx < 0
+		|| idx >= static_cast<int>(m_Path.size()))
+		return false;
 
 	std::list<__Vector3>::iterator it;
 	it = m_Path.begin();

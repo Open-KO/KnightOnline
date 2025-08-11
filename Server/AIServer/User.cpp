@@ -116,7 +116,7 @@ void CUser::Initialize()
 
 void CUser::Attack(int sid, int tid)
 {
-	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
 		return;
 
@@ -514,7 +514,7 @@ short CUser::GetDamage(int tid, int magicid)
 		|| tid > INVALID_BAND)
 		return damage;
 
-	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
 		return damage;
 
@@ -535,7 +535,7 @@ short CUser::GetDamage(int tid, int magicid)
 	if (magicid > 0)
 	{
 		// Get main magic table.
-		pTable = m_pMain->m_MagictableArray.GetData(magicid);
+		pTable = m_pMain->m_MagicTableMap.GetData(magicid);
 		if (pTable == nullptr)
 			return -1;
 
@@ -543,7 +543,7 @@ short CUser::GetDamage(int tid, int magicid)
 		if (pTable->Type1 == 1)
 		{
 			// Get magic skill table type 1.
-			pType1 = m_pMain->m_Magictype1Array.GetData(magicid);
+			pType1 = m_pMain->m_MagicType1TableMap.GetData(magicid);
 			if (!pType1)
 				return -1;
 
@@ -579,7 +579,7 @@ short CUser::GetDamage(int tid, int magicid)
 		else if (pTable->Type1 == 2)
 		{
 			// Get magic skill table type 2.
-			pType2 = m_pMain->m_Magictype2Array.GetData(magicid);
+			pType2 = m_pMain->m_MagicType2TableMap.GetData(magicid);
 			if (pType2 == nullptr)
 				return -1;
 
@@ -663,7 +663,7 @@ short CUser::GetMagicDamage(int damage, short tid)
 {
 	short total_r = 0, temp_damage = 0;
 
-	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
 		return damage;
 
@@ -1024,7 +1024,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 		return;
 	}
 
-	// 자신의 region에 있는 NpcArray을 먼저 검색하여,, 가까운 거리에 Monster가 있는지를 판단..
+	// 자신의 region에 있는 NpcMap을 먼저 검색하여,, 가까운 거리에 Monster가 있는지를 판단..
 	if (rx < 0
 		|| rz < 0
 		|| rx > pMap->GetXRegionMax()
@@ -1067,7 +1067,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = m_pMain->m_arNpc.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD)

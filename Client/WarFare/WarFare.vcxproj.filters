@@ -342,6 +342,9 @@
     <ClCompile Include="ClientResourceFormatter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IconItemSkill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="UIMsgBoxOkCancel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -696,6 +699,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClientResourceFormatter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconItemSkill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIMsgBoxOkCancel.h">

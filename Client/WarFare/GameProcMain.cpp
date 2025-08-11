@@ -1615,7 +1615,9 @@ bool CGameProcMain::MsgSend_PartyOrForceCreate(int iPartyOrForce, const std::str
 			s_pPlayer->m_InfoBase.iLevel, 
 			s_pPlayer->m_InfoBase.eClass, 
 			s_pPlayer->m_InfoBase.iHP, 
-			s_pPlayer->m_InfoBase.iHPMax);  // 내건 미리 넣어 놓는다..
+			s_pPlayer->m_InfoBase.iHPMax,
+			s_pPlayer->m_InfoBase.iMP,
+			s_pPlayer->m_InfoBase.iMPMax);  // 내건 미리 넣어 놓는다..
 	}
 
 	//TRACE ("Party or Force 생성 신청 - Target ID(%s)\n", szID.c_str());
@@ -1977,7 +1979,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 
 		e_PartPosition ePart;
 		e_PlugPosition ePlug;
-		e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, &szResrcFN, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
+		e_ItemType eType = MakeResrcFileNameForUPC(pItem, pItemExt, &szResrcFN, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
 		if(ITEM_TYPE_UNKNOWN == eType) CLogWriter::Write("MyInfo - slot - Unknown Item");
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item Type");
 		e_ItemSlot eSlot = (e_ItemSlot)i;
@@ -2060,7 +2062,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 
 		e_PartPosition ePart;
 		e_PlugPosition ePlug;
-		e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
+		e_ItemType eType = MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
 		if(ITEM_TYPE_UNKNOWN == eType) CLogWriter::Write("MyInfo - slot - Unknown Item");
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item");
 		
@@ -2885,7 +2887,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 				e_PartPosition ePart;
 				e_PlugPosition ePlug;
 				std::string szItemFN;
-				CGameProcedure::MakeResrcFileNameForUPC(pItem0, &szItemFN, NULL, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
+				MakeResrcFileNameForUPC(pItem0, pItemExt0, &szItemFN, nullptr, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
 				pNPC->PlugSet(PLUG_POS_RIGHTHAND, szItemFN, pItem0, pItemExt0);
 			}
 			else
@@ -2905,7 +2907,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 				e_PartPosition ePart;
 				e_PlugPosition ePlug;
 				std::string szItemFN;
-				CGameProcedure::MakeResrcFileNameForUPC(pItem1, &szItemFN, NULL, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
+				MakeResrcFileNameForUPC(pItem1, pItemExt1, &szItemFN, nullptr, ePart, ePlug, s_pPlayer->m_InfoBase.eRace);
 				pNPC->PlugSet(PLUG_POS_LEFTHAND, szItemFN, pItem1, pItemExt1);
 			}
 			else
@@ -3401,7 +3403,7 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 		if(dwItemID) // 아이템이 있는 경우
 		{
 			std::string szItemFN;
-			CGameProcedure::MakeResrcFileNameForUPC(pItem, &szItemFN, NULL, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
+			MakeResrcFileNameForUPC(pItem, pItemExt, &szItemFN, nullptr, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
 			pUPC->PartSet(ePartPos, szItemFN, pItem, pItemExt); // 아이템 붙이기..
 			pUPC->DurabilitySet(eSlot, iDurability);
 		}
@@ -3428,7 +3430,7 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 		if(dwItemID)
 		{
 			std::string szItemFN;
-			CGameProcedure::MakeResrcFileNameForUPC(pItem, &szItemFN, NULL, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
+			MakeResrcFileNameForUPC(pItem, pItemExt, &szItemFN, nullptr, ePartPos2, ePlugPos2, s_pPlayer->m_InfoBase.eRace);
 			pUPC->PlugSet(ePlugPos, szItemFN, pItem, pItemExt);
 			pUPC->DurabilitySet(eSlot, iDurability);
 		}
@@ -3646,12 +3648,9 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 
 		uint8_t	bExtraSkillPoint		= pkt.read<uint8_t>();	// 토탈 포인트
 		//TRACE("Skill change Extra value %d\n", bExtraSkillPoint);
-
-		uint64_t iExpNext		= pkt.read<uint32_t>(); 
-		uint64_t iExp			= pkt.read<uint32_t>();
 			
-		pInfoExt->iExpNext		= iExpNext; 
-		pInfoExt->iExp			= iExp; 
+		pInfoExt->iExpNext		= pkt.read<int32_t>();
+		pInfoExt->iExp			= pkt.read<int32_t>(); 
 
 		pInfoBase->iHPMax		= pkt.read<int16_t>();	
 		pInfoBase->iHP			= pkt.read<int16_t>();
@@ -5110,7 +5109,7 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 		}
 		break;
 
-		case N3_SP_PARTY_OR_FORCE_INSERT:			// 0x02	// Send - s1(ID) | Recv - s3(ID, HPMax, HP) b2(Level, Class) - 문자열은 ID 로 알아낸다..
+		case N3_SP_PARTY_OR_FORCE_INSERT:			// 0x03	// Send - s1(ID) | Recv - s3(ID, HPMax, HP, MPMax, MP) b2(Level, Class) - 문자열은 ID 로 알아낸다..
 		{
 			int iID = pkt.read<int16_t>();
 			int iErrorCode = pkt.read<uint8_t>();
@@ -5123,14 +5122,11 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 				int iHP				= pkt.read<int16_t>();
 				int iLevel			= pkt.read<uint8_t>();
 				e_Class eClass		= (e_Class) pkt.read<int16_t>();
-
-				// NOTE: these parts were added to this packet at some later point and will need to be
-				// implemented...
 				int iMPMax			= pkt.read<int16_t>();
 				int iMP				= pkt.read<int16_t>();
 				e_Nation eNation	= (e_Nation) pkt.read<uint8_t>();
 
-				m_pUIPartyOrForce->MemberAdd(iID, szID, iLevel, eClass, iHP, iHPMax); // 다른넘 파티에추가..
+				m_pUIPartyOrForce->MemberAdd(iID, szID, iLevel, eClass, iHP, iHPMax, iMP, iMPMax); // 다른넘 파티에추가..
 				if (iID != s_pPlayer->IDNumber()) // 자기 자신이 아닌 경우 메시지 출력.
 				{
 					std::string szMsg = fmt::format_text_resource(IDS_PARTY_INSERT);
@@ -5163,7 +5159,7 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 		}
 		break;
 	
-		case N3_SP_PARTY_OR_FORCE_REMOVE:			// 0x03	// Send - s1(ID) | Recv - s1(ID) - 
+		case N3_SP_PARTY_OR_FORCE_REMOVE:			// 0x04	// Send - s1(ID) | Recv - s1(ID) - 
 		{
 			int iID			= pkt.read<int16_t>();
 
@@ -5189,7 +5185,7 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 		}
 		break;
 		
-		case N3_SP_PARTY_OR_FORCE_DESTROY:			// 0x04	// Send
+		case N3_SP_PARTY_OR_FORCE_DESTROY:			// 0x05	// Send
 		{
 			m_pUIPartyOrForce->MemberDestroy(); // 파티 뽀갠다..
 
@@ -5200,17 +5196,19 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 		}
 		break;
 
-		case N3_SP_PARTY_OR_FORCE_HP_CHANGE:		// 0x05	// Recv - s3(ID, HPMax, HP) - 자기 자신이면 파티를 깨야 한다..
+		case N3_SP_PARTY_OR_FORCE_HP_CHANGE:		// 0x06	// Recv - s3(ID, HPMax, HP, iMPMax, MP) - 자기 자신이면 파티를 깨야 한다..
 		{
 			int iID			= pkt.read<int16_t>();
 			int iHPMax		= pkt.read<int16_t>();
 			int iHP			= pkt.read<int16_t>();
+			int iMPMax		= pkt.read<int16_t>();
+			int iMP			= pkt.read<int16_t>();
 
-			m_pUIPartyOrForce->MemberHPChange(iID, iHP, iHPMax);
+			m_pUIPartyOrForce->MemberHPChange(iID, iHP, iHPMax, iMP, iMPMax);
 		}
 		break;
 		
-		case N3_SP_PARTY_OR_FORCE_LEVEL_CHANGE:		// 0x06	// Recv - s1(ID), b1(Level)
+		case N3_SP_PARTY_OR_FORCE_LEVEL_CHANGE:		// 0x07	// Recv - s1(ID), b1(Level)
 		{
 			int iID			= pkt.read<int16_t>();
 			int iLevel		= pkt.read<uint8_t>();
@@ -5219,7 +5217,7 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 		}
 		break;
 		
-		case N3_SP_PARTY_OR_FORCE_CLASS_CHANGE:		// 0x07	// Recv - s1(ID), b1(Class)드물지만 전직할때...
+		case N3_SP_PARTY_OR_FORCE_CLASS_CHANGE:		// 0x08	// Recv - s1(ID), b1(Class)드물지만 전직할때...
 		{
 			int iID			= pkt.read<int16_t>();
 			e_Class eClass	= (e_Class)(pkt.read<int16_t>());
@@ -5228,7 +5226,7 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 		}
 		break;
 		
-		case N3_SP_PARTY_OR_FORCE_STATUS_CHANGE:	// 0x08	// Recv - s1(ID), b1(Status)...독, 저주, 지속성마법, 축복
+		case N3_SP_PARTY_OR_FORCE_STATUS_CHANGE:	// 0x09	// Recv - s1(ID), b1(Status)...독, 저주, 지속성마법, 축복
 		{
 			int iID	=			pkt.read<int16_t>();
 			e_PartyStatus ePS =	(e_PartyStatus)pkt.read<uint8_t>();

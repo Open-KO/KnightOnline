@@ -285,6 +285,13 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
+enum e_ItemSaleType
+{
+	SALE_TYPE_LOW = 0,			 // sells lower than purchase price
+	SALE_TYPE_FULL = 1,			 // sells equal to purchase price
+	SALE_TYPE_LOW_NO_REPAIR = 2, // irreparable items sell for lower price than purchase
+};
+
 enum e_Nation { NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNKNOWN = 0xffffffff };
 
 struct __TABLE_ITEM_BASIC;
@@ -446,6 +453,8 @@ struct __InfoPartyOrForce
 	e_Class		eClass;				// Class
 	int			iHP;				// Hit Points
 	int			iHPMax;				// Max Hit Points
+	int			iMP;				// Mana Points
+	int			iMPMax;				// Max Mana Points
 	bool		bSufferDown_HP;		// Status - HP debuffed.
 	bool		bSufferDown_Etc;	// Status - Cursed.
 	std::string szID;				// Player's name
@@ -457,6 +466,8 @@ struct __InfoPartyOrForce
 		eClass = CLASS_UNKNOWN;
 		iHP = 0;
 		iHPMax = 0;
+		iMP = 0;
+		iMPMax = 0;
 		szID.clear();
 
 		bSufferDown_HP = false;			
@@ -706,7 +717,7 @@ struct __TABLE_ITEM_BASIC
 	int16_t		siWeight;				// 19 Weight (in 0.1 units)
 	int16_t		siMaxDurability;		// 20 Max durability
 	int			iPrice;					// 21 Purchase price
-	int			iPriceSale;				// 22 Sale price
+	int			iSaleType;				// 22 Sale type (see e_ItemSaleType)
 	int16_t		siDefense;				// 23 Defense
 	uint8_t		byContable;				// 24 Is the item countable/stackable?
 

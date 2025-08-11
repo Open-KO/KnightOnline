@@ -115,13 +115,12 @@ void CSubProcPerTrade::InitPerTradeDlg(CUIManager* pUIManager)
 	m_pUITradeEditDlg->m_pImageOfIcon = new CN3UIImage;
 	m_pUITradeEditDlg->m_pImageOfIcon->Init(m_pUITradeEditDlg);
 	// 돈 아이콘 문자열 찾기.. 아이디로 찾는 기능밖에 없다.. ㅠ.ㅠ
-	__TABLE_ITEM_BASIC*	pItem = NULL;										// 아이템 테이블 구조체 포인터..
-	pItem = s_pTbl_Items_Basic.Find(dwGold);	// 열 데이터 얻기..
+	__TABLE_ITEM_BASIC*	pItem = s_pTbl_Items_Basic.Find(dwGold);	// 열 데이터 얻기..
 
 	std::string szIconFN;
 	e_PartPosition ePart;
 	e_PlugPosition ePlug;
-	CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+	CGameBase::MakeResrcFileNameForUPC(pItem, nullptr, nullptr, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
 	m_pUITradeEditDlg->m_pImageOfIcon->SetTex(szIconFN);
 	float fUVAspect = (float)45.0f/(float)64.0f;
 	m_pUITradeEditDlg->m_pImageOfIcon->SetUVRect(0,0, fUVAspect, fUVAspect);
@@ -888,7 +887,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int i
 				std::string szIconFN;
 				e_PartPosition ePart;
 				e_PlugPosition ePlug;
-				CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+				CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, RACE_UNKNOWN); // 아이템에 따른 파일 이름을 만들어서
 
 				__IconItemSkill* spItem;
 
@@ -936,7 +935,7 @@ void CSubProcPerTrade::ReceiveMsgPerTradeOtherAdd(int iItemID, int iCount, int i
 			std::string szIconFN;
 			e_PartPosition ePart;
 			e_PlugPosition ePlug;
-			CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+			CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, RACE_UNKNOWN); // 아이템에 따른 파일 이름을 만들어서
 
 			__IconItemSkill* spItem;
 
@@ -1048,7 +1047,7 @@ Make_Icon:
 	std::string szIconFN;
 	e_PartPosition ePart;
 	e_PlugPosition ePlug;
-	CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+	CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, RACE_UNKNOWN); // 아이템에 따른 파일 이름을 만들어서
 
 	spItem				= new __IconItemSkill;
 	spItem->pItemBasic	= pItem;

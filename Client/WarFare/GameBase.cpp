@@ -458,6 +458,7 @@ D3DCOLOR CGameBase::GetIDColorByLevelDifference(int iLevelDiff)
 
 // Generate requested resource filenames using the given item data
 e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
+												__TABLE_ITEM_EXT* pItemExt,
 												std::string* pszResrcFN,
 												std::string* pszIconFN,
 												e_PartPosition& ePartPosition,
@@ -518,6 +519,19 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 		__ASSERT(0, "Invalid Item Position");
 	}
 
+	// replace icon/resource IDs if they're overridden by the item
+	int iIDResrc = 0, iIDIcon = 0;
+	
+	if (pItemExt != nullptr && pItemExt->dwIDResrc != 0)
+		iIDResrc = pItemExt->dwIDResrc;
+	else
+		iIDResrc = pItem->dwIDResrc;
+
+	if (pItemExt != nullptr && pItemExt->dwIDIcon != 0)
+		iIDIcon = pItemExt->dwIDIcon;
+	else
+		iIDIcon = pItem->dwIDIcon;
+
 	if (pszResrcFN)
 	{
 		if (pItem->dwIDResrc)
@@ -526,19 +540,19 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 			if (eRace != RACE_UNKNOWN && ePos >= /*ITEM_POS_DUAL*/ITEM_POS_UPPER && ePos <= ITEM_POS_SHOES)
 			{
 				*pszResrcFN = fmt::format("Item\\{:01}_{:04}_{:02}_{:01}{}",
-					(pItem->dwIDResrc / 10000000),
-					((pItem->dwIDResrc / 1000) % 10000) + eRace,
-					(pItem->dwIDResrc / 10) % 100,
-					pItem->dwIDResrc % 10,
+					(iIDResrc / 10000000),
+					((iIDResrc / 1000) % 10000) + eRace,
+					(iIDResrc / 10) % 100,
+					iIDResrc % 10,
 					szExt);
 			}
 			else
 			{
 				*pszResrcFN = fmt::format("Item\\{:01}_{:04}_{:02}_{:01}{}",
-					(pItem->dwIDResrc / 10000000),
-					(pItem->dwIDResrc / 1000) % 10000,
-					(pItem->dwIDResrc / 10) % 100,
-					pItem->dwIDResrc % 10,
+					(iIDResrc / 10000000),
+					(iIDResrc / 1000) % 10000,
+					(iIDResrc / 10) % 100,
+					iIDResrc % 10,
 					szExt);
 			}
 		}
@@ -552,10 +566,10 @@ e_ItemType CGameBase::MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
 	if (pszIconFN)
 	{
 		*pszIconFN = fmt::format("UI\\ItemIcon_{:01}_{:04}_{:02}_{:01}.dxt",
-			(pItem->dwIDIcon / 10000000), 
-			(pItem->dwIDIcon / 1000) % 10000, 
-			(pItem->dwIDIcon / 10) % 100, 
-			pItem->dwIDIcon % 10);
+			(iIDIcon / 10000000),
+			(iIDIcon / 1000) % 10000,
+			(iIDIcon / 10) % 100,
+			iIDIcon % 10);
 	}
 	
 	return eType;

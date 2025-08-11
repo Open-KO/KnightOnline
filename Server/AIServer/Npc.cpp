@@ -115,7 +115,7 @@ inline BOOL CNpc::SetUid(float x, float z, int id)
 
 		//TRACE(_T("++ Npc-SetUid RegionAdd : [nid=%d, name=%hs], x=%.2f, z=%.2f, nRX=%d, nRZ=%d \n"), m_sNid+NPC_BAND, m_strName,x,z, nRX, nRY);
 		// 새로운 region으로 npc이동 - npc의 정보 추가..
-		CNpc* pNpc = m_pMain->m_arNpc.GetData(id - NPC_BAND);
+		CNpc* pNpc = m_pMain->m_NpcMap.GetData(id - NPC_BAND);
 		if (pNpc == nullptr)
 			return FALSE;
 
@@ -957,7 +957,7 @@ void CNpc::NpcBack(CIOCPort* pIOCP)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		if (m_pMain->m_arNpc.GetData(m_Target.id - NPC_BAND) == nullptr)
+		if (m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND) == nullptr)
 		{
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sSpeed;
@@ -1106,14 +1106,14 @@ BOOL CNpc::SetLive(CIOCPort* pIOCP)
 	{
 		for (int i = 0; i < NPC_NUM; i++)
 		{
-			pNpc = m_pMain->m_arEventNpcThread[0]->m_ThreadInfo.pNpc[i];
-			if (m_pMain->m_arEventNpcThread[0]->m_ThreadInfo.pNpc[i] != nullptr)
+			pNpc = m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i];
+			if (m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i] != nullptr)
 			{
-				if (m_pMain->m_arEventNpcThread[0]->m_ThreadInfo.pNpc[i]->m_sNid == m_sNid)
+				if (m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i]->m_sNid == m_sNid)
 				{
-					m_pMain->m_arEventNpcThread[0]->m_ThreadInfo.m_byNpcUsed[i] = 0;
+					m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i] = 0;
 					m_lEventNpc = 0;
-					m_pMain->m_arEventNpcThread[0]->m_ThreadInfo.pNpc[i] = nullptr;
+					m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i] = nullptr;
 					spdlog::debug("Npc::SetLive: returning summoned monster pointer [threadIndex={} serial={} npcId={} npcName={}]",
 						i, m_sNid + NPC_BAND, m_sSid, m_strName);
 					return TRUE;
@@ -2646,7 +2646,7 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 			if (nNpcid < NPC_BAND)
 				continue;
 
-			pNpc = m_pMain->m_arNpc.GetData(nNpcid - NPC_BAND);
+			pNpc = m_pMain->m_NpcMap.GetData(nNpcid - NPC_BAND);
 
 			if (m_sNid == pNpc->m_sNid)
 				continue;
@@ -3024,7 +3024,7 @@ int CNpc::IsCloseTarget(int nRange, int Flag)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(m_Target.id - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
 		if (pNpc == nullptr)
 		{
 			InitTarget();
@@ -3223,7 +3223,7 @@ int CNpc::GetTargetPath(int option)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		npcTarget = m_pMain->m_arNpc.GetData(m_Target.id - NPC_BAND);
+		npcTarget = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
 		if (npcTarget == nullptr)
 		{
 			InitTarget();
@@ -3628,7 +3628,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 	else if (nID >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(nID - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr)
@@ -3802,8 +3802,8 @@ int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
 	else if (nID >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(nID - NPC_BAND);
-		//pNpc = m_pMain->m_arNpc[nID - NPC_BAND];
+		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
+		//pNpc = m_pMain->m_NpcMap[nID - NPC_BAND];
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr)
@@ -3904,7 +3904,7 @@ int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
 	else if (nID >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(nID - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr)
@@ -3998,8 +3998,8 @@ void CNpc::MoveAttack(CIOCPort* pIOCP)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(m_Target.id - NPC_BAND);
-		//pNpc = m_pMain->m_arNpc[m_Target.id - NPC_BAND];
+		pNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
+		//pNpc = m_pMain->m_NpcMap[m_Target.id - NPC_BAND];
 		if (pNpc == nullptr)
 		{
 			InitTarget();
@@ -4218,8 +4218,8 @@ BOOL CNpc::GetTargetPos(float& x, float& z)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		CNpc* pNpc = m_pMain->m_arNpc.GetData(m_Target.id - NPC_BAND);
-		//CNpc* pNpc = m_pMain->m_arNpc[m_Target.id - NPC_BAND];
+		CNpc* pNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
+		//CNpc* pNpc = m_pMain->m_NpcMap[m_Target.id - NPC_BAND];
 		if (pNpc == nullptr)
 			return FALSE;
 
@@ -4635,7 +4635,7 @@ void CNpc::ChangeNTarget(CNpc* pNpc, CIOCPort* pIOCP)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		preNpc = m_pMain->m_arNpc.GetData(m_Target.id - NPC_BAND);
+		preNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
 	}
 
 	if (pNpc == preNpc)
@@ -4765,7 +4765,7 @@ BOOL CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int u
 	else if (uid >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(uid - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(uid - NPC_BAND);
 		if (pNpc == nullptr)
 			return TRUE;
 
@@ -5044,7 +5044,7 @@ void CNpc::SendExpToUserList()
 				if (bFlag)
 				{
 					int uid = 0;
-					pParty = m_pMain->m_arParty.GetData(pUser->m_sPartyNumber);
+					pParty = m_pMain->m_PartyMap.GetData(pUser->m_sPartyNumber);
 					if (pParty != nullptr)
 					{
 						int nTotalMan = 0, nTotalLevel = 0;
@@ -5102,7 +5102,7 @@ void CNpc::SendExpToUserList()
 			else if (i == 0)
 			{
 				int uid = 0;
-				pParty = m_pMain->m_arParty.GetData(pUser->m_sPartyNumber);
+				pParty = m_pMain->m_PartyMap.GetData(pUser->m_sPartyNumber);
 				if (pParty != nullptr)
 				{
 					int nTotalMan = 0, nTotalLevel = 0;
@@ -5474,7 +5474,7 @@ void CNpc::FindFriendRegion(int x, int z, MAP* pMap, _TargetHealer* pHealer, int
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = m_pMain->m_arNpc.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD
@@ -6318,7 +6318,7 @@ void CNpc::IsNoPathFind(float fDistance)
 		return;
 	}
 
-	MAP* pMap = m_pMain->g_arZone[m_ZoneIndex];
+	MAP* pMap = m_pMain->m_ZoneArray[m_ZoneIndex];
 	if (pMap == nullptr)
 	{
 		ClearPathFindData();
@@ -6981,13 +6981,13 @@ int CNpc::GetWeaponItemCodeNumber(int item_type)
 	if (item_type == 1)
 	{
 		iItem_level = m_sLevel / 10;
-		pItemData = m_pMain->m_MakeWeaponItemArray.GetData(iItem_level);
+		pItemData = m_pMain->m_MakeWeaponTableMap.GetData(iItem_level);
 	}
 	// 방어구
 	else if (item_type == 2)
 	{
 		iItem_level = m_sLevel / 10;
-		pItemData = m_pMain->m_MakeDefensiveItemArray.GetData(iItem_level);
+		pItemData = m_pMain->m_MakeDefensiveTableMap.GetData(iItem_level);
 	}
 
 	if (pItemData == nullptr)
@@ -7015,7 +7015,7 @@ int CNpc::GetItemCodeNumber(int level, int item_type)
 	int iItemPercent[3];
 
 	int iRandom = myrand(0, 1000);
-	model::MakeItemRareCode* pItemData = m_pMain->m_MakeLareItemArray.GetData(level);
+	model::MakeItemRareCode* pItemData = m_pMain->m_MakeItemRareCodeTableMap.GetData(level);
 	if (pItemData == nullptr)
 		return -1;
 
@@ -7190,10 +7190,10 @@ void CNpc::ChangeMonsterInfo(int iChangeType)
 	{
 		// 다른 몬스터로 변환..
 		if (iChangeType == 1)
-			pNpcTable = m_pMain->m_arMonTable.GetData(m_sChangeSid);
+			pNpcTable = m_pMain->m_MonTableMap.GetData(m_sChangeSid);
 		// 원래의 몬스터로 변환..
 		else if (iChangeType == 2)
-			pNpcTable = m_pMain->m_arMonTable.GetData(m_sSid);
+			pNpcTable = m_pMain->m_MonTableMap.GetData(m_sSid);
 
 		if (pNpcTable == nullptr)
 		{
@@ -7205,10 +7205,10 @@ void CNpc::ChangeMonsterInfo(int iChangeType)
 	{
 		// 다른 몬스터로 변환..
 		if (iChangeType == 1)
-			pNpcTable = m_pMain->m_arNpcTable.GetData(m_sChangeSid);
+			pNpcTable = m_pMain->m_NpcTableMap.GetData(m_sChangeSid);
 		// 원래의 몬스터로 변환..
 		else if (iChangeType == 2)
-			pNpcTable = m_pMain->m_arNpcTable.GetData(m_sSid);
+			pNpcTable = m_pMain->m_NpcTableMap.GetData(m_sSid);
 
 		if (pNpcTable == nullptr)
 		{
@@ -7430,7 +7430,7 @@ void CNpc::NpcHealing(CIOCPort* pIOCP)
 	if (nID >= NPC_BAND
 		&& nID < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_arNpc.GetData(nID - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr
@@ -7561,7 +7561,7 @@ void CNpc::ChangeAbility(int iChangeType)
 	}
 	else if (m_byInitMoveType >= 100)
 	{
-		pNpcTable = m_pMain->m_arNpcTable.GetData(m_sSid);
+		pNpcTable = m_pMain->m_NpcTableMap.GetData(m_sSid);
 		if (pNpcTable == nullptr)
 		{
 			spdlog::error("Npc::ChangeAbility: invalid npcId [serial={} npcId={} npcName={}]",

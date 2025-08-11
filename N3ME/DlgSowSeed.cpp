@@ -166,7 +166,7 @@ void CDlgSowSeed::OnBtnDelSeed()
 		{
 			LPGRASS_GROUP group_list = *it;
 			it_Grass it_grass = group_list->grass.begin();
-			for( int jj = 0 ; jj < group_list->grass.size(); jj++, it_grass++)
+			for (int jj = 0; jj < static_cast<int>(group_list->grass.size()); jj++, it_grass++)
 			{
 				LPGRASS grass_list = *it_grass;
 //				group_list->grass.remove(grass_list);
@@ -200,7 +200,7 @@ void CDlgSowSeed::RePaint()
 	{
 		LPGRASS_GROUP group_list = *it;
 		it_Grass it_grass = group_list->grass.begin();
-		for( int jj = 0 ; jj < group_list->grass.size(); jj++, it_grass++)
+		for (int jj = 0; jj < static_cast<int>(group_list->grass.size()); jj++, it_grass++)
 		{
 			LPGRASS grass_list = *it_grass;
 
@@ -384,7 +384,7 @@ void CDlgSowSeed::OnSelchangeCbTilegroup()
 		{
 			LPGRASS_GROUP group_list = *it;
 			it_Grass it_grass = group_list->grass.begin();
-			for( int jj = 0 ; jj < group_list->grass.size(); jj++, it_grass++)
+			for (int jj = 0; jj < static_cast<int>(group_list->grass.size()); jj++, it_grass++)
 			{
 				LPGRASS grass_list = *it_grass;
 

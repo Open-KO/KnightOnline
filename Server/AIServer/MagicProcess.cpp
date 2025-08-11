@@ -168,7 +168,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 	if (m_pSrcUser == nullptr)
 		return FALSE;
 
-	pTable = m_pMain->m_MagictableArray.GetData(magicid);     // Get main magic table.
+	pTable = m_pMain->m_MagicTableMap.GetData(magicid);     // Get main magic table.
 	if (pTable == nullptr)
 		goto fail_return;
 
@@ -192,7 +192,7 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int
 	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 	model::Magic* pMagic = nullptr;
-	pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return 0;
 
@@ -201,7 +201,7 @@ BYTE CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int
 	//TRACE(_T("magictype1 ,, magicid=%d, damage=%d\n"), magicid, damage);
 
 //	if (damage > 0) {
-	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -265,7 +265,7 @@ BYTE CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, int
 
 	if (damage > 0)
 	{
-		CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+		CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 		if (pNpc == nullptr
 			|| pNpc->m_NpcState == NPC_DEAD
 			|| pNpc->m_iHP == 0)
@@ -342,7 +342,7 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 	model::MagicType3* pType = nullptr;
 	CNpc* pNpc = nullptr;      // Pointer initialization!
 
-	model::Magic* pMagic = m_pMain->m_MagictableArray.GetData(magicid);   // Get main magic table.
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pMagic == nullptr)
 		return;
 
@@ -355,7 +355,7 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 		return;
 	}
 
-	pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -364,7 +364,7 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 		goto packet_send;
 	}
 
-	pType = m_pMain->m_Magictype3Array.GetData(magicid);      // Get magic skill table type 3.
+	pType = m_pMain->m_MagicType3TableMap.GetData(magicid);      // Get magic skill table type 3.
 	if (pType == nullptr)
 		return;
 
@@ -505,7 +505,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 		return;
 	}
 
-	pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -514,7 +514,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 		goto fail_return;
 	}
 
-	pType = m_pMain->m_Magictype4Array.GetData(magicid);     // Get magic skill table type 4.
+	pType = m_pMain->m_MagicType4TableMap.GetData(magicid);     // Get magic skill table type 4.
 	if (pType == nullptr)
 		return;
 
@@ -629,7 +629,7 @@ short CMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int d
 		|| tid > INVALID_BAND)
 		return 0;
 
-	CNpc* pNpc = m_pMain->m_arNpc.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -721,7 +721,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 
 	if (magictype == 3)
 	{
-		pType3 = m_pMain->m_Magictype3Array.GetData(magicid);
+		pType3 = m_pMain->m_MagicType3TableMap.GetData(magicid);
 		if (pType3 == nullptr)
 		{
 			spdlog::error("MagicProcess::AreaAttack: No MAGIC_TYPE3 definition [magicId={}]", magicid);
@@ -732,7 +732,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 	}
 	else if (magictype == 4)
 	{
-		pType4 = m_pMain->m_Magictype4Array.GetData(magicid);      // Get magic skill table type 3.
+		pType4 = m_pMain->m_MagicType4TableMap.GetData(magicid);      // Get magic skill table type 3.
 		if (pType4 == nullptr)
 		{
 			spdlog::error("MagicProcess::AreaAttack: No MAGIC_TYPE4 definition [magicId={}]", magicid);
@@ -821,7 +821,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	int damage = 0, tid = 0, target_damage = 0, attribute = 0;
 	float fRadius = 0;
 
-	pMagic = m_pMain->m_MagictableArray.GetData(magicid);
+	pMagic = m_pMain->m_MagicTableMap.GetData(magicid);
 	if (pMagic == nullptr)
 	{
 		spdlog::error("MagicProcess::AreaAttackDamage: No MAGIC definition [magicId={}]", magicid);
@@ -830,7 +830,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 
 	if (magictype == 3)
 	{
-		pType3 = m_pMain->m_Magictype3Array.GetData(magicid);
+		pType3 = m_pMain->m_MagicType3TableMap.GetData(magicid);
 		if (pType3 == nullptr)
 		{
 			spdlog::error("MagicProcess::AreaAttackDamage: No MAGIC_TYPE3 definition [magicId={}]", magicid);
@@ -843,7 +843,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	}
 	else if (magictype == 4)
 	{
-		pType4 = m_pMain->m_Magictype4Array.GetData(magicid);
+		pType4 = m_pMain->m_MagicType4TableMap.GetData(magicid);
 		if (pType4 == nullptr)
 		{
 			spdlog::error("MagicProcess::AreaAttackDamage: No MAGIC_TYPE4 definition [magicId={}]", magicid);
@@ -889,7 +889,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = m_pMain->m_arNpc.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->m_NpcMap.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD)

@@ -21,11 +21,10 @@ namespace fmt
 	inline std::string format_text_resource(uint32_t resourceId, Args&&... args)
 	{
 		std::string fmtStr;
+
+		// NOTE: Let the implementation error accordingly
 		if (!resource_helper::get_from_texts(resourceId, fmtStr))
 		{
-			CLogWriter::Write("format_text_resource({}) failed - resource missing in Texts TBL.",
-				resourceId);
-
 			// In debug builds, we should still show useful text to highlight the problem.
 			// Release builds should mimic official behaviour by returning an empty string.
 #if defined(_DEBUG)
@@ -47,8 +46,10 @@ namespace fmt
 			}
 			catch (const fmt::format_error&)
 			{
+#if defined(_N3GAME)
 				CLogWriter::Write("format_text({}) failed - invalid args for format string.",
 					resourceId);
+#endif
 			}
 
 			// In debug builds, we should still show useful text to highlight the problem.

@@ -88,7 +88,7 @@ void CParty::PartyCreate(char* pBuf)
 	pParty->wIndex = sPartyIndex;
 	pParty->uid[0] = sUid;
 
-	if (m_pMain->m_arParty.PutData(pParty->wIndex, pParty))
+	if (m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
 	{
 		spdlog::debug("Party::PartyCreate: success [partyId={} uid0={} uid1={}]",
 			sPartyIndex, pParty->uid[0], pParty->uid[1]);
@@ -113,7 +113,7 @@ void CParty::PartyInsert(char* pBuf)
 	//byLevel = GetByte(pBuf, index);
 	//sClass = GetShort(pBuf, index);
 
-	pParty = m_pMain->m_arParty.GetData(sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(sPartyIndex);
 
 	// 이상한 경우
 	if (!pParty)
@@ -151,7 +151,7 @@ void CParty::PartyRemove(char* pBuf)
 	if (sPartyIndex <= -1)
 		return;
 
-	pParty = m_pMain->m_arParty.GetData(sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(sPartyIndex);
 
 	// 이상한 경우
 	if (!pParty)
@@ -188,7 +188,7 @@ void CParty::PartyDelete(char* pBuf)
 	if (sPartyIndex <= -1)
 		return;
 
-	pParty = m_pMain->m_arParty.GetData(sPartyIndex);
+	pParty = m_pMain->m_PartyMap.GetData(sPartyIndex);
 
 	// 이상한 경우
 	if (!pParty)
@@ -209,7 +209,7 @@ void CParty::PartyDelete(char* pBuf)
 
 	EnterCriticalSection(&g_region_critical);
 
-	m_pMain->m_arParty.DeleteData(pParty->wIndex);
+	m_pMain->m_PartyMap.DeleteData(pParty->wIndex);
 
 	LeaveCriticalSection(&g_region_critical);
 }

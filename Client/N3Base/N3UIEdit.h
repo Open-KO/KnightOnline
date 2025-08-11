@@ -63,9 +63,9 @@ public:
 
 protected:
 	static CN3Caret		s_Caret;
-	UINT				m_nCaretPos;		// 글자 단위위치(byte단위)
+	uint32_t			m_nCaretPos;		// 글자 단위위치(byte단위)
 	int					m_iCompLength;		// 현재 조합중인 글자의 byte수 0이면 조합중이 아니다.
-	size_t				m_iMaxStrLen;		// 쓸수 있는 글씨의 최대 숫자
+	uint32_t			m_iMaxStrLen;		// 쓸수 있는 글씨의 최대 숫자
 	std::string			m_szPassword;		// password buffer
 
 	CN3SndObj*			m_pSnd_Typing;		// 타이핑 할 때 나는 소리
@@ -83,8 +83,8 @@ public:
 	void				KillFocus();			// 포커스를 없앤다.
 	bool				SetFocus();				// 포커스를 준다.
 	bool				HaveFocus() const {return (this == s_pFocusedEdit);}
-	void				SetCaretPos(UINT nPos);	//몇번째 바이트에 있는지 설정한다.
-	void				SetMaxString(size_t iMax);		// 최대 글씨 수를 정해준다.
+	void				SetCaretPos(uint32_t nPos);	//몇번째 바이트에 있는지 설정한다.
+	void				SetMaxString(uint32_t nMax);		// 최대 글씨 수를 정해준다.
 protected:
 	BOOL				IsHangulMiddleByte( const char* lpszStr, int iPos );	// 한글의 2번째 바이트 글자인가?
 

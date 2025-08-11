@@ -299,8 +299,9 @@ void CUIKnightsOperation::MsgSend_KnightsDestroy()
 void CUIKnightsOperation::MsgSend_KnightsJoin()
 {
 	if(NULL == m_pList_Knights) return;
-	size_t iCurSel = m_pList_Knights->GetCurSel();
-	if (iCurSel >= m_KnightsListExt.size())
+	int iCurSel = m_pList_Knights->GetCurSel();
+	if (iCurSel < 0
+		|| iCurSel >= static_cast<int>(m_KnightsListExt.size()))
 		return;
 
 	auto it = m_KnightsListExt.begin();

@@ -89,7 +89,7 @@ bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs
 			}
 
 
-			e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, &szFN, NULL, ePart, ePlug, m_InfoBase.eRace); // 리소스 파일 이름을 만들고..
+			e_ItemType eType = CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, &szFN, nullptr, ePart, ePlug, m_InfoBase.eRace); // 리소스 파일 이름을 만들고..
 
 			if(0 == i) { ePart = PART_POS_UPPER;			eSlot = ITEM_SLOT_UPPER; }
 			else if(1 == i) { ePart = PART_POS_LOWER;		eSlot = ITEM_SLOT_LOWER; }

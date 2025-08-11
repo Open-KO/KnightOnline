@@ -355,7 +355,9 @@ void CWallMgr::SetCurrWall(CWall* pWall)
 
 CWall* CWallMgr::GetpWall(int idx)
 {
-	if(idx<0 || idx>=m_pWalls.size()) return NULL;
+	if (idx < 0
+		|| idx >= static_cast<int>(m_pWalls.size()))
+		return nullptr;
 
 	std::list<CWall*>::iterator itWall;
 	itWall = m_pWalls.begin();

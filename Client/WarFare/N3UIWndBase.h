@@ -14,6 +14,7 @@
 #include "N3UIIcon.h"
 #include "GameProcedure.h"
 #include "GameDef.h"
+#include "IconItemSkill.h"
 
 #include <string>
 
@@ -66,24 +67,6 @@ struct __UIWndIconInfo		{
 enum e_UIIconType			{						
 								UIICON_TYPE_ITEM = 0,				// Icon type item..
 								UIICON_TYPE_SKILL,					// Icon type skill..
-							};
-
-// Item Info..
-struct	__IconItemSkill		{
-//								e_UIIconType			eIconType;
-								CN3UIIcon*				pUIIcon;
-								std::string				szIconFN;
-
-								union {
-									struct {
-										__TABLE_ITEM_BASIC*	pItemBasic;		// Item.. ^^
-										__TABLE_ITEM_EXT*	pItemExt;
-										int					iCount;
-										int					iDurability;	// 내구력
-										};
-
-									__TABLE_UPC_SKILL*		pSkill;			// Skill.. ^^
-								};
 							};
 
 // Select Icon Info..

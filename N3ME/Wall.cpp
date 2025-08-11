@@ -39,7 +39,9 @@ void CWall::DelPrevVertex()
 
 bool CWall::GetVertex(int idx, __Vector3* pPos)
 {
-	if(idx<0 || idx>=m_Wall.size()) return false;
+	if (idx < 0
+		|| idx >= static_cast<int>(m_Wall.size()))
+		return false;
 
 	std::list<__Vector3>::iterator it;
 	it = m_Wall.begin();
