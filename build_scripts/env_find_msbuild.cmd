@@ -10,15 +10,18 @@ IF NOT EXIST "%VSWHERE%" (
 	EXIT /B 1
 )
 
+REM Required minimum VS version (17.0 = VS2022)
+SET "VS_VERSION=17.0"
+
 REM Find latest MSBuild.exe path
 SET "MSBUILD="
 SET "MSBUILD_PREVIEW="
 
-FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) DO (
+FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -version %VS_VERSION% -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) DO (
 	SET "MSBUILD=%%i"
 )
 
-FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) DO (
+FOR /f "usebackq tokens=*" %%i IN (`"%VSWHERE%" -version %VS_VERSION% -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) DO (
 	SET "MSBUILD_PREVIEW=%%i"
 )
 
