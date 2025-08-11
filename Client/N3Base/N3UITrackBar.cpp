@@ -162,7 +162,7 @@ uint32_t CN3UITrackBar::MouseProc(uint32_t dwFlags, const POINT& ptCur, const PO
 //	if (m_pThumbImageRef) m_pThumbImageRef->Render();
 //}
 
-void CN3UITrackBar::SetRange(size_t iMin, size_t iMax)
+void CN3UITrackBar::SetRange(int iMin, int iMax)
 {
 	if (m_iMaxPos == iMax && m_iMinPos == iMin) return;
 	m_iMaxPos = iMax;		m_iMinPos = iMin;
@@ -171,12 +171,12 @@ void CN3UITrackBar::SetRange(size_t iMin, size_t iMax)
 	UpdateThumbPos();
 }
 
-void CN3UITrackBar::SetCurrentPos(size_t iPos)
+void CN3UITrackBar::SetCurrentPos(int iPos)
 {
 	if (iPos == m_iCurPos) return;
 	m_iCurPos = iPos;
-	if (m_iCurPos>m_iMaxPos)	m_iCurPos = m_iMaxPos;
-	if (m_iCurPos<m_iMinPos)	m_iCurPos = m_iMinPos;
+	if (m_iCurPos > m_iMaxPos)	m_iCurPos = m_iMaxPos;
+	if (m_iCurPos < m_iMinPos)	m_iCurPos = m_iMinPos;
 	UpdateThumbPos();
 }
 
