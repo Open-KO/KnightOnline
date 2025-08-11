@@ -21,9 +21,9 @@ protected:
 	CN3UIList*		m_pList_CmdCat;
 	CN3UIList*		m_pList_Cmds;
 
-	bool		m_bOpenningNow; // It's opening...
-	bool		m_bClosingNow;	// It's closing...
-	float		m_fMoveDelta; // To make it open and close smoothly, floating-point numbers are used for calculating the current position.
+	bool		m_bOpenningNow; // 열리고 있다..
+	bool		m_bClosingNow;	// 닫히고 있다..
+	float		m_fMoveDelta; // 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
 	int			m_iSelectedCategory;
 	int			m_iSelectedTab; //0 => upper(categories), 1 => bottom(commands)
 
@@ -47,15 +47,13 @@ public:
 	bool Load(HANDLE hFile) override;
 	void Release() override;
 	void SetVisible(bool bVisible) override;
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // Receive message... sender, msg
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
 	bool OnKeyPress(int iKey) override;
-
 	void Open();
-	//void OpenEdit();
 	void Close();
 	bool CreateCategoryList();
-	bool UpdateCommandList(uint8_t cmd);
-	bool ExecuteCommand(uint8_t cmdSel);
+	bool UpdateCommandList(int iCatIndex);
+	bool ExecuteCommand(int iCmdIndex);
 	void Tick() override;
 	void Render() override;
 	void RenderSelectionBorder(CN3UIList* pListToRender);
