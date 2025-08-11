@@ -39,14 +39,22 @@ std::wstring s2ws(const std::string& s) {
 //-----------------------------------------------------------------------------
 void N3LoadTexture(const char* szFN) {
 
-	int last_slash = 0;
-	int last_point = 0;
+	size_t last_slash = 0;
+	size_t last_point = 0;
 
 	memset(pTexName, 0x00, 0xFF);
-	while(szFN[last_slash++]!='\\' && last_slash<strlen(szFN));
-	while(szFN[last_point++]!='.' && last_point<strlen(szFN));
-	for(int i=last_slash; i<last_point-1; ++i) {
-		pTexName[i-last_slash] = szFN[i];
+
+	size_t len = strlen(szFN);
+
+	while (szFN[last_slash++] != '\\' && last_slash < len)
+		;
+
+	while (szFN[last_point++] != '.' && last_point < len)
+		;
+
+	for (size_t i = last_slash; i < last_point - 1; ++i)
+	{
+		pTexName[i - last_slash] = szFN[i];
 	}
 
 	strcat(pTexName, ".bmp");
@@ -665,7 +673,8 @@ void GenerateScene(void) {
 		pMesh->mTextureCoords[0] = new aiVector3D[iVC];
 		pMesh->mNumUVComponents[0] = iVC;
 
-		for(uint32_t i=0; i<iVC; ++i) {
+		for (int i = 0; i < iVC; ++i)
+		{
 			Vertex v;
 			v.x = vertices[5*i+0];
 			v.y = vertices[5*i+1];
@@ -680,7 +689,8 @@ void GenerateScene(void) {
 		pMesh->mFaces = new aiFace[iFC];
 		pMesh->mNumFaces = iFC;
 
-		for(uint32_t i=0; i<iFC; ++i) {
+		for (int i = 0; i < iFC; ++i)
+		{
 			aiFace& face = pMesh->mFaces[i];
 
 			face.mIndices = new uint32_t[3];

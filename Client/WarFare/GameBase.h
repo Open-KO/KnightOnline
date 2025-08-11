@@ -51,6 +51,7 @@ public:
 	static e_Class_Represent	GetRepresentClass(e_Class eClass);
 
 	static e_ItemType MakeResrcFileNameForUPC(	__TABLE_ITEM_BASIC* pItem,
+												__TABLE_ITEM_EXT* pItemExt,
 												std::string* szResrcFN,
 												std::string* szIconFN,
 												e_PartPosition& ePartPosition,

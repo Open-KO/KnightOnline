@@ -76,7 +76,7 @@ bool CUINotice::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if(pSender == m_pScrollBar)
 		{
 			// 스크롤바에 맞는 채팅 Line 설정
-			int iCurLinePos = m_pScrollBar->GetCurrentPos();
+			// int iCurLinePos = m_pScrollBar->GetCurrentPos();
 		}
 	}
 

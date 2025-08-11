@@ -457,7 +457,9 @@ void CNPCPathMgr::UpdatePath()
 
 CNPCPath* CNPCPathMgr::GetpPath(int idx)
 {
-	if(idx<0 || idx>=m_pPaths.size()) return NULL;
+	if (idx < 0
+		|| idx >= static_cast<int>(m_pPaths.size()))
+		return nullptr;
 
 	std::list<CNPCPath*>::iterator itPath;
 	itPath = m_pPaths.begin();

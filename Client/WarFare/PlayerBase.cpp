@@ -1998,7 +1998,7 @@ CN3CPart* CPlayerBase::PartSet(e_PartPosition ePos, const std::string& szFN, __T
 					e_PartPosition ePartPos2 = PART_POS_UNKNOWN;
 					e_PlugPosition ePlugPos2 = PLUG_POS_UNKNOWN;
 
-					CGameProcedure::MakeResrcFileNameForUPC(m_pItemPartBasics[PART_POS_LOWER], &szFN2, NULL, ePartPos2, ePlugPos2, m_InfoBase.eRace);
+					MakeResrcFileNameForUPC(m_pItemPartBasics[PART_POS_LOWER], m_pItemPartExts[PART_POS_LOWER], &szFN2, nullptr, ePartPos2, ePlugPos2, m_InfoBase.eRace);
 					this->PartSet(PART_POS_LOWER, szFN2, m_pItemPartBasics[PART_POS_LOWER], m_pItemPartExts[PART_POS_LOWER]); // 하체에 전의 옷을 입힌다..
 				}
 				else // 하체에 입고 있었던 아이템이 없다면..

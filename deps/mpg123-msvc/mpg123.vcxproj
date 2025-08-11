@@ -50,7 +50,7 @@
     <ClCompile Include="..\mpg123\src\libmpg123\lfs_wrap.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{adbae15c-f602-4531-8e80-1c3ed2f2d859}</ProjectGuid>
+    <ProjectGuid>{C93D6595-CD66-4E98-B99D-31DA0E2EC408}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>mpg123</ProjectName>

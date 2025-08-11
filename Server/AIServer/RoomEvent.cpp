@@ -6,8 +6,8 @@
 #include "RoomEvent.h"
 #include "ServerDlg.h"
 #include "Define.h"
+#include "AIResourceFormatter.h"
 
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -299,7 +299,7 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 		if (nMonsterid < 0)
 			continue;
 
-		pNpc = m_pMain->m_arNpc.GetData(nMonsterid);
+		pNpc = m_pMain->m_NpcMap.GetData(nMonsterid);
 		if (pNpc == nullptr)
 			continue;
 
@@ -361,7 +361,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 		if (nMonsterid < 0)
 			continue;
 
-		pNpc = m_pMain->m_arNpc.GetData(nMonsterid);
+		pNpc = m_pMain->m_NpcMap.GetData(nMonsterid);
 		if (pNpc == nullptr)
 			continue;
 

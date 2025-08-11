@@ -247,7 +247,7 @@ bool CUILogIn_1098::ServerInfoGet(int iIndex, __GameServerInfo& GSI)
 {
 	if (m_pList_Server == nullptr
 		|| iIndex < 0
-		|| iIndex >= (int) m_ListServerInfos.size())
+		|| iIndex >= static_cast<int>(m_ListServerInfos.size()))
 		return false;
 
 	GSI = m_ListServerInfos[iIndex];

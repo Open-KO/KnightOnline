@@ -282,7 +282,7 @@ int CNpc::GetRegionNpcList(int region_x, int region_z, char* buff, int& t_count)
 		if (nid < 0)
 			continue;
 
-		CNpc* pNpc = m_pMain->m_arNpcArray.GetData(nid);
+		CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
 		if (pNpc != nullptr)
 		{
 			SetShort(buff, pNpc->m_sNid, buff_index);

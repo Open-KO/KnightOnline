@@ -162,7 +162,7 @@ uint32_t CN3UITrackBar::MouseProc(uint32_t dwFlags, const POINT& ptCur, const PO
 //	if (m_pThumbImageRef) m_pThumbImageRef->Render();
 //}
 
-void CN3UITrackBar::SetRange(size_t iMin, size_t iMax)
+void CN3UITrackBar::SetRange(int iMin, int iMax)
 {
 	if (m_iMaxPos == iMax && m_iMinPos == iMin) return;
 	m_iMaxPos = iMax;		m_iMinPos = iMin;
@@ -171,7 +171,7 @@ void CN3UITrackBar::SetRange(size_t iMin, size_t iMax)
 	UpdateThumbPos();
 }
 
-void CN3UITrackBar::SetCurrentPos(size_t iPos)
+void CN3UITrackBar::SetCurrentPos(int iPos)
 {
 	if (iPos == m_iCurPos) return;
 	m_iCurPos = iPos;
@@ -229,7 +229,7 @@ void CN3UITrackBar::UpDownThumbPos(int iDiff)
 		else
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left, rcThumb.top+iDiff);
-			m_iCurPos = (size_t)(m_iMinPos + (m_iMaxPos-m_iMinPos)*fPercentage);// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = static_cast<int>(m_iMinPos + (m_iMaxPos - m_iMinPos) * fPercentage);// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
 		}
 	}
 	else											// 좌우로 움직일 때
@@ -254,7 +254,7 @@ void CN3UITrackBar::UpDownThumbPos(int iDiff)
 		else
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left+iDiff, rcThumb.top);
-			m_iCurPos = (size_t)(m_iMinPos + (m_iMaxPos-m_iMinPos)*fPercentage);// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = static_cast<int>(m_iMinPos + (m_iMaxPos - m_iMinPos) * fPercentage);// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
 		}
 	}
 }

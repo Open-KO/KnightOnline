@@ -229,12 +229,18 @@ void CDlgTexture::Resize()
 		pWnd->GetWindowRect(&rc);
 
 		// texture window 배치
-		int iTexViewerWidth = rcClient.Width()-rc.Width()-iOffset;
+		int iTexViewerWidth = rcClient.Width() - rc.Width() - iOffset;
 		int iTexViewerHeight = rcClient.Height();
-		if (iTexViewerWidth<0) iTexViewerWidth = 0;
-		else if (iTexViewerWidth > pFrm->m_Eng.s_DevParam.BackBufferWidth) iTexViewerWidth = pFrm->m_Eng.s_DevParam.BackBufferWidth;
-		if (iTexViewerHeight<0) iTexViewerHeight = 0;
-		else if (iTexViewerHeight > pFrm->m_Eng.s_DevParam.BackBufferHeight) iTexViewerHeight = pFrm->m_Eng.s_DevParam.BackBufferHeight;
+		if (iTexViewerWidth < 0)
+			iTexViewerWidth = 0;
+		else if (iTexViewerWidth > static_cast<int>(pFrm->m_Eng.s_DevParam.BackBufferWidth))
+			iTexViewerWidth = static_cast<int>(pFrm->m_Eng.s_DevParam.BackBufferWidth);
+
+		if (iTexViewerHeight < 0)
+			iTexViewerHeight = 0;
+		else if (iTexViewerHeight > static_cast<int>(pFrm->m_Eng.s_DevParam.BackBufferHeight))
+			iTexViewerHeight = static_cast<int>(pFrm->m_Eng.s_DevParam.BackBufferHeight);
+
 		m_pTexViewer->MoveWindow(0, 0, iTexViewerWidth, iTexViewerHeight);
 
 		// 버튼들 배치

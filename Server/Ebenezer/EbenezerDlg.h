@@ -50,24 +50,25 @@ public:
 // CEbenezerDlg dialog
 
 typedef std::vector <C3DMap*>				ZoneArray;
-typedef std::vector <model::LevelUp*>		LevelUpArray;
-typedef CSTLMap <model::Coefficient>		CoefficientArray;
-typedef CSTLMap <model::Item>				ItemtableArray;
-typedef CSTLMap <model::Magic>				MagictableArray;
-typedef CSTLMap <model::MagicType1>			Magictype1Array;
-typedef CSTLMap <model::MagicType2>			Magictype2Array;
-typedef CSTLMap <model::MagicType3>			Magictype3Array;
-typedef CSTLMap	<model::MagicType4>			Magictype4Array;
-typedef CSTLMap <model::MagicType5>			Magictype5Array;
-typedef CSTLMap <model::MagicType8>			Magictype8Array;
-typedef CSTLMap <CNpc>						NpcArray;
-typedef CSTLMap <CAISocket>					AISocketArray;
-typedef CSTLMap <_PARTY_GROUP>				PartyArray;
-typedef CSTLMap <CKnights>					KnightsArray;
-typedef CSTLMap <_ZONE_SERVERINFO>			ServerArray;
-typedef CSTLMap <model::Home>				HomeArray;
-typedef CSTLMap <model::StartPosition>		StartPositionMap;
-typedef	CSTLMap	<EVENT>						QuestArray;
+typedef std::vector <model::LevelUp*>		LevelUpTableArray;
+typedef CSTLMap <model::Coefficient>		CoefficientTableMap;
+typedef CSTLMap <model::Item>				ItemTableMap;
+typedef CSTLMap <model::Magic>				MagicTableMap;
+typedef CSTLMap <model::MagicType1>			MagicType1TableMap;
+typedef CSTLMap <model::MagicType2>			MagicType2TableMap;
+typedef CSTLMap <model::MagicType3>			MagicType3TableMap;
+typedef CSTLMap	<model::MagicType4>			MagicType4TableMap;
+typedef CSTLMap <model::MagicType5>			MagicType5TableMap;
+typedef CSTLMap <model::MagicType8>			MagicType8TableMap;
+typedef CSTLMap <CNpc>						NpcMap;
+typedef CSTLMap <CAISocket>					AISocketMap;
+typedef CSTLMap <_PARTY_GROUP>				PartyMap;
+typedef CSTLMap <CKnights>					KnightsMap;
+typedef CSTLMap <_ZONE_SERVERINFO>			ServerMap;
+typedef CSTLMap <model::Home>				HomeTableMap;
+typedef CSTLMap <model::ServerResource>		ServerResourceTableMap;
+typedef CSTLMap <model::StartPosition>		StartPositionTableMap;
+typedef	CSTLMap	<EVENT>						EventMap;
 
 enum class NameType
 {
@@ -105,6 +106,7 @@ public:
 	BOOL LoadAllKnightsUserData();
 	BOOL LoadAllKnights();
 	BOOL LoadStartPositionTable();
+	BOOL LoadServerResourceTable();
 	BOOL LoadHomeTable();
 	void Announcement(BYTE type, int nation = 0, int chat_type = 8);
 	void ResetBattleZone();
@@ -190,24 +192,25 @@ public:
 	char	m_ppNotice[20][128];
 	char	m_AIServerIP[20];
 
-	AISocketArray			m_AISocketArray;
-	NpcArray				m_arNpcArray;
+	AISocketMap				m_AISocketMap;
+	NpcMap					m_NpcMap;
 	ZoneArray				m_ZoneArray;
-	ItemtableArray			m_ItemtableArray;
-	MagictableArray			m_MagictableArray;
-	Magictype1Array			m_Magictype1Array;
-	Magictype2Array         m_Magictype2Array;
-	Magictype3Array			m_Magictype3Array;
-	Magictype4Array			m_Magictype4Array;
-	Magictype5Array         m_Magictype5Array;
-	Magictype8Array         m_Magictype8Array;
-	CoefficientArray		m_CoefficientArray;		// 공식 계산 계수데이타 테이블
-	LevelUpArray			m_LevelUpArray;
-	PartyArray				m_PartyArray;
-	KnightsArray			m_KnightsArray;
-	HomeArray				m_HomeArray;
-	StartPositionMap		m_StartPositionMap;
-	QuestArray				m_Event;
+	ItemTableMap			m_ItemTableMap;
+	MagicTableMap			m_MagicTableMap;
+	MagicType1TableMap		m_MagicType1TableMap;
+	MagicType2TableMap		m_MagicType2TableMap;
+	MagicType3TableMap		m_MagicType3TableMap;
+	MagicType4TableMap		m_MagicType4TableMap;
+	MagicType5TableMap		m_MagicType5TableMap;
+	MagicType8TableMap		m_MagicType8TableMap;
+	CoefficientTableMap		m_CoefficientTableMap;		// 공식 계산 계수데이타 테이블
+	LevelUpTableArray		m_LevelUpTableArray;
+	PartyMap				m_PartyMap;
+	KnightsMap				m_KnightsMap;
+	HomeTableMap			m_HomeTableMap;
+	ServerResourceTableMap	m_ServerResourceTableMap;
+	StartPositionTableMap	m_StartPositionTableMap;
+	EventMap				m_EventMap;
 
 	CKnightsManager			m_KnightsManager;
 
@@ -234,7 +237,6 @@ public:
 	// ~Yookozuna 2002.06.12
 	BYTE    m_byBattleOpen, m_byOldBattleOpen;					// 0:전쟁중이 아님, 1:전쟁중(국가간전쟁), 2:눈싸움전쟁
 	BYTE	m_bVictory, m_byOldVictory;
-	BYTE	m_bBanishDelayStart;
 	BYTE	m_bKarusFlag, m_bElmoradFlag;
 	BYTE    m_byKarusOpenFlag, m_byElmoradOpenFlag, m_byBanishFlag, m_byBattleSave;
 	short   m_sDiscount;	// 능력치와 포인트 초기화 할인 (0:할인없음, 1:할인(50%) )
@@ -276,8 +278,8 @@ public:
 	// zone server info
 	int					m_nServerNo, m_nServerGroupNo;
 	int					m_nServerGroup;	// server의 번호(0:서버군이 없다, 1:서버1군, 2:서버2군)
-	ServerArray			m_ServerArray;
-	ServerArray			m_ServerGroupArray;
+	ServerMap			m_ServerArray;
+	ServerMap			m_ServerGroupArray;
 	CUdpSocket*			m_pUdpSocket;
 
 // Dialog Data

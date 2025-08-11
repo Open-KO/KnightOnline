@@ -165,7 +165,7 @@ UINT ZoneEventThreadProc(LPVOID pParam/* = nullptr */)
 	while (!g_bNpcExit)
 	{
 		float fCurrentTime = TimeGet();
-		for (MAP* pMap : m_pMain->g_arZone)
+		for (MAP* pMap : m_pMain->m_ZoneArray)
 		{
 			if (pMap == nullptr)
 				continue;

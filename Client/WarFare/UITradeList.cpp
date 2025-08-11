@@ -86,8 +86,8 @@ void CUITradeList::Open(int iIDTarget)
 	__TABLE_ITEM_BASIC* pItem = NULL;
 
 	// 아이디 = 직업 코드*1000 + 001부터.. (직업 코드+1)*100 + 001까지..
-	size_t i, iIDFirst, iIDIndexFirst, iIDIndexLast, iDivide, iTotalCount;
-	iIDFirst = iIDTarget*1000+1;
+	int i, iIDFirst, iIDIndexFirst, iIDIndexLast, iDivide, iTotalCount;
+	iIDFirst = iIDTarget * 1000 + 1;
 
 	if (!CGameBase::s_pTbl_Exchange_Quest.IDToIndex(iIDFirst, &iIDIndexFirst))
 		return;		// 아무런 리스트도 가지고 있지 않다..

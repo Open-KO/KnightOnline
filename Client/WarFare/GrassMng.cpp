@@ -252,7 +252,7 @@ void CGrassMng::Release()
 
 	ZeroMemory(m_fChkRange, sizeof(m_fChkRange));
 
-	for (int i = 0;i < m_iFileMaxNum;i++)
+	for (int i = 0; i < m_iFileMaxNum; i++)
 		CGameBase::s_MngTex.Delete(&m_txTexture[i]);
 
 	m_iFileMaxNum = 0;

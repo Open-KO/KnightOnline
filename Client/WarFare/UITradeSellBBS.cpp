@@ -730,12 +730,12 @@ void CUITradeSellBBS::RenderSelectContent()
 bool CUITradeSellBBS::SelectedString(CN3UIBase* pSender, int& iID)
 {
 	int iIndex = -1;
-	for(size_t  i = 0; i < TRADE_BBS_MAXSTRING ; i++)
+	for (int i = 0; i < TRADE_BBS_MAXSTRING; i++)
 	{
-		if(pSender == m_pText[i])
+		if (pSender == m_pText[i])
 		{
 			iIndex = i % TRADE_BBS_MAX_LINE;
-			if ((size_t)iIndex >= m_Datas.size())
+			if (iIndex >= static_cast<int>(m_Datas.size()))
 				return false;
 
 			iID = iIndex;

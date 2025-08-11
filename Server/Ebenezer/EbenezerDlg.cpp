@@ -4,11 +4,11 @@
 #include "stdafx.h"
 #include "EbenezerDlg.h"
 #include "User.h"
+#include "db_resources.h"
 
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 #include <shared/StringUtils.h>
 
 #include <db-library/ConnectionManager.h>
@@ -219,7 +219,6 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bVictory = 0;
 	m_byOldVictory = 0;
-	m_bBanishDelayStart = 0;
 	m_byBattleSave = 0;
 	m_sKarusCount = 0;
 	m_sElmoradCount = 0;
@@ -308,7 +307,7 @@ BOOL CEbenezerDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	srand(time(nullptr));
+	srand(static_cast<uint32_t>(time(nullptr)));
 
 	// Compress Init
 	memset(m_CompBuf, 0, sizeof(m_CompBuf));	// 압축할 데이터를 모으는 버퍼
@@ -511,6 +510,15 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
+	spdlog::info("EbenezerDlg::OnInitDialog: loading SERVER_RESOURCE table");
+	if (!LoadServerResourceTable())
+	{
+		spdlog::error("EbenezerDlg::OnInitDialog: failed to cache BATTLE SERVER_RESOURCE, closing");
+		AfxMessageBox(_T("LoadServerResourceTable Load Fail"));
+		AfxPostQuitMessage(0);
+		return FALSE;
+	}
+
 	spdlog::info("EbenezerDlg::OnInitDialog: loading maps");
 	if (!MapFileLoad())
 	{
@@ -614,44 +622,44 @@ BOOL CEbenezerDlg::DestroyWindow()
 		CloseHandle(m_hMMFile);
 	}
 
-	if (!m_ItemtableArray.IsEmpty())
-		m_ItemtableArray.DeleteAllData();
+	if (!m_ItemTableMap.IsEmpty())
+		m_ItemTableMap.DeleteAllData();
 
-	if (!m_MagictableArray.IsEmpty())
-		m_MagictableArray.DeleteAllData();
+	if (!m_MagicTableMap.IsEmpty())
+		m_MagicTableMap.DeleteAllData();
 
-	if (!m_Magictype1Array.IsEmpty())
-		m_Magictype1Array.DeleteAllData();
+	if (!m_MagicType1TableMap.IsEmpty())
+		m_MagicType1TableMap.DeleteAllData();
 
-	if (!m_Magictype2Array.IsEmpty())
-		m_Magictype2Array.DeleteAllData();
+	if (!m_MagicType2TableMap.IsEmpty())
+		m_MagicType2TableMap.DeleteAllData();
 
-	if (!m_Magictype3Array.IsEmpty())
-		m_Magictype3Array.DeleteAllData();
+	if (!m_MagicType3TableMap.IsEmpty())
+		m_MagicType3TableMap.DeleteAllData();
 
-	if (!m_Magictype4Array.IsEmpty())
-		m_Magictype4Array.DeleteAllData();
+	if (!m_MagicType4TableMap.IsEmpty())
+		m_MagicType4TableMap.DeleteAllData();
 
-	if (!m_Magictype5Array.IsEmpty())
-		m_Magictype5Array.DeleteAllData();
+	if (!m_MagicType5TableMap.IsEmpty())
+		m_MagicType5TableMap.DeleteAllData();
 
-	if (!m_Magictype8Array.IsEmpty())
-		m_Magictype8Array.DeleteAllData();
+	if (!m_MagicType8TableMap.IsEmpty())
+		m_MagicType8TableMap.DeleteAllData();
 
-	if (!m_arNpcArray.IsEmpty())
-		m_arNpcArray.DeleteAllData();
+	if (!m_NpcMap.IsEmpty())
+		m_NpcMap.DeleteAllData();
 
-	if (!m_AISocketArray.IsEmpty())
-		m_AISocketArray.DeleteAllData();
+	if (!m_AISocketMap.IsEmpty())
+		m_AISocketMap.DeleteAllData();
 
-	if (!m_PartyArray.IsEmpty())
-		m_PartyArray.DeleteAllData();
+	if (!m_PartyMap.IsEmpty())
+		m_PartyMap.DeleteAllData();
 
-	if (!m_CoefficientArray.IsEmpty())
-		m_CoefficientArray.DeleteAllData();
+	if (!m_CoefficientTableMap.IsEmpty())
+		m_CoefficientTableMap.DeleteAllData();
 
-	if (!m_KnightsArray.IsEmpty())
-		m_KnightsArray.DeleteAllData();
+	if (!m_KnightsMap.IsEmpty())
+		m_KnightsMap.DeleteAllData();
 
 	if (!m_ServerArray.IsEmpty())
 		m_ServerArray.DeleteAllData();
@@ -659,22 +667,22 @@ BOOL CEbenezerDlg::DestroyWindow()
 	if (!m_ServerGroupArray.IsEmpty())
 		m_ServerGroupArray.DeleteAllData();
 
-	if (!m_HomeArray.IsEmpty())
-		m_HomeArray.DeleteAllData();
+	if (!m_HomeTableMap.IsEmpty())
+		m_HomeTableMap.DeleteAllData();
 
-	if (!m_StartPositionMap.IsEmpty())
-		m_StartPositionMap.DeleteAllData();
+	if (!m_StartPositionTableMap.IsEmpty())
+		m_StartPositionTableMap.DeleteAllData();
 
 	for (C3DMap* pMap : m_ZoneArray)
 		delete pMap;
 	m_ZoneArray.clear();
 
-	for (model::LevelUp* pLevelUp : m_LevelUpArray)
+	for (model::LevelUp* pLevelUp : m_LevelUpTableArray)
 		delete pLevelUp;
-	m_LevelUpArray.clear();
+	m_LevelUpTableArray.clear();
 
-	if (!m_Event.IsEmpty())
-		m_Event.DeleteAllData();
+	if (!m_EventMap.IsEmpty())
+		m_EventMap.DeleteAllData();
 
 	delete m_pUdpSocket;
 	m_pUdpSocket = nullptr;
@@ -757,7 +765,7 @@ void CEbenezerDlg::OnTimer(UINT nIDEvent)
 				int count = 0;
 				for (int i = 0; i < MAX_AI_SOCKET; i++)
 				{
-					CAISocket* pAISock = m_AISocketArray.GetData(i);
+					CAISocket* pAISock = m_AISocketMap.GetData(i);
 					if (pAISock != nullptr
 						&& pAISock->GetState() == STATE_DISCONNECTED)
 						AISocketConnect(i, 1);
@@ -824,13 +832,13 @@ BOOL CEbenezerDlg::AISocketConnect(int zone, int flag)
 
 	//if( m_nServerNo == 3 ) return FALSE;
 
-	pAISock = m_AISocketArray.GetData(zone);
+	pAISock = m_AISocketMap.GetData(zone);
 	if (pAISock != nullptr)
 	{
 		if (pAISock->GetState() != STATE_DISCONNECTED)
 			return TRUE;
 
-		m_AISocketArray.DeleteData(zone);
+		m_AISocketMap.DeleteData(zone);
 	}
 
 	pAISock = new CAISocket(zone);
@@ -881,7 +889,7 @@ BOOL CEbenezerDlg::AISocketConnect(int zone, int flag)
 	// 해야할일 :이 부분 처리.....
 	//SendAllUserInfo();
 	//m_sSocketCount = zone;
-	m_AISocketArray.PutData(zone, pAISock);
+	m_AISocketMap.PutData(zone, pAISock);
 
 	spdlog::debug("EbenezerDlg::AISocketConnect: connected to zone {}", zone);
 	return TRUE;
@@ -1055,7 +1063,7 @@ void CEbenezerDlg::Send_PartyMember(int party, char* pBuf, int len)
 	if (party < 0)
 		return;
 
-	_PARTY_GROUP* pParty = m_PartyArray.GetData(party);
+	_PARTY_GROUP* pParty = m_PartyMap.GetData(party);
 	if (pParty == nullptr)
 		return;
 
@@ -1076,7 +1084,7 @@ void CEbenezerDlg::Send_KnightsMember(int index, char* pBuf, int len, int zone)
 	if (index <= 0)
 		return;
 
-	CKnights* pKnights = m_KnightsArray.GetData(index);
+	CKnights* pKnights = m_KnightsMap.GetData(index);
 	if (pKnights == nullptr)
 		return;
 
@@ -1102,7 +1110,7 @@ void CEbenezerDlg::Send_AIServer(int zone, char* pBuf, int len)
 {
 	for (int i = 0; i < MAX_AI_SOCKET; i++)
 	{
-		CAISocket* pSocket = m_AISocketArray.GetData(i);
+		CAISocket* pSocket = m_AISocketMap.GetData(i);
 		if (pSocket == nullptr)
 		{
 			m_sSendSocket++;
@@ -1237,7 +1245,7 @@ BOOL CEbenezerDlg::MapFileLoad()
 				continue;
 			}
 
-			if (!m_Event.PutData(pEvent->m_Zone, pEvent))
+			if (!m_EventMap.PutData(pEvent->m_Zone, pEvent))
 				delete pEvent;
 		}
 		while (recordset.next());
@@ -1265,7 +1273,7 @@ void CEbenezerDlg::ReportTableLoadError(const recordset_loader::Error& err, cons
 
 BOOL CEbenezerDlg::LoadItemTable()
 {
-	recordset_loader::STLMap loader(m_ItemtableArray);
+	recordset_loader::STLMap loader(m_ItemTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1277,7 +1285,7 @@ BOOL CEbenezerDlg::LoadItemTable()
 
 BOOL CEbenezerDlg::LoadMagicTable()
 {
-	recordset_loader::STLMap loader(m_MagictableArray);
+	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1289,7 +1297,7 @@ BOOL CEbenezerDlg::LoadMagicTable()
 
 BOOL CEbenezerDlg::LoadMagicType1()
 {
-	recordset_loader::STLMap loader(m_Magictype1Array);
+	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1301,7 +1309,7 @@ BOOL CEbenezerDlg::LoadMagicType1()
 
 BOOL CEbenezerDlg::LoadMagicType2()
 {
-	recordset_loader::STLMap loader(m_Magictype2Array);
+	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1313,7 +1321,7 @@ BOOL CEbenezerDlg::LoadMagicType2()
 
 BOOL CEbenezerDlg::LoadMagicType3()
 {
-	recordset_loader::STLMap loader(m_Magictype3Array);
+	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1325,7 +1333,7 @@ BOOL CEbenezerDlg::LoadMagicType3()
 
 BOOL CEbenezerDlg::LoadMagicType4()
 {
-	recordset_loader::STLMap loader(m_Magictype4Array);
+	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1337,7 +1345,7 @@ BOOL CEbenezerDlg::LoadMagicType4()
 
 BOOL CEbenezerDlg::LoadMagicType5()
 {
-	recordset_loader::STLMap loader(m_Magictype5Array);
+	recordset_loader::STLMap loader(m_MagicType5TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1349,7 +1357,7 @@ BOOL CEbenezerDlg::LoadMagicType5()
 
 BOOL CEbenezerDlg::LoadMagicType8()
 {
-	recordset_loader::STLMap loader(m_Magictype8Array);
+	recordset_loader::STLMap loader(m_MagicType8TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1361,7 +1369,7 @@ BOOL CEbenezerDlg::LoadMagicType8()
 
 BOOL CEbenezerDlg::LoadCoefficientTable()
 {
-	recordset_loader::STLMap loader(m_CoefficientArray);
+	recordset_loader::STLMap loader(m_CoefficientTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1373,7 +1381,7 @@ BOOL CEbenezerDlg::LoadCoefficientTable()
 
 BOOL CEbenezerDlg::LoadLevelUpTable()
 {
-	recordset_loader::Vector<model::LevelUp> loader(m_LevelUpArray);
+	recordset_loader::Vector<model::LevelUp> loader(m_LevelUpTableArray);
 	if (!loader.Load_ForbidEmpty(true))
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -1970,7 +1978,7 @@ int CEbenezerDlg::GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char*
 		if (nid < 0)
 			continue;
 
-		CNpc* pNpc = m_arNpcArray.GetData(nid);
+		CNpc* pNpc = m_NpcMap.GetData(nid);
 		if (pNpc == nullptr)
 			continue;
 
@@ -2118,7 +2126,7 @@ int CEbenezerDlg::GetRegionNpcList(C3DMap* pMap, int region_x, int region_z, cha
 		if (npcId < 0)
 			continue;
 
-		CNpc* pNpc = m_arNpcArray.GetData(npcId);
+		CNpc* pNpc = m_NpcMap.GetData(npcId);
 		//if( pNpc && (pNpc->m_NpcState == NPC_LIVE ) ) {  // 수정할 것,,
 		if (pNpc != nullptr)
 		{
@@ -2273,7 +2281,7 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			if (m_bPermanentChatFlag)
 				finalstr = fmt::format("- {} -", chatstr);
 			else
-				finalstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+				finalstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 
 			//
 			SetByte(buff, WIZ_CHAT, buffindex);
@@ -2384,7 +2392,7 @@ void CEbenezerDlg::SyncTest(int nType)
 		if (pMap == nullptr)
 			continue;
 
-		CAISocket* pSocket = m_AISocketArray.GetData(pMap->m_nZoneNumber);
+		CAISocket* pSocket = m_AISocketMap.GetData(pMap->m_nZoneNumber);
 		if (pSocket == nullptr)
 			continue;
 
@@ -2461,7 +2469,7 @@ void CEbenezerDlg::SyncRegionTest(C3DMap* pMap, int rx, int rz, FILE* pfile, int
 		}
 		else if (nType == 2)
 		{
-			CNpc* pNpc = m_arNpcArray.GetData(nid);
+			CNpc* pNpc = m_NpcMap.GetData(nid);
 			if (pNpc == nullptr)
 			{
 				spdlog::error("EbenezerDlg::SyncRegionTest: npcId={} not found", nid);
@@ -2536,9 +2544,9 @@ void CEbenezerDlg::SendAllUserInfo()
 	// 파티에 대한 정보도 보내도록 한다....
 	EnterCriticalSection(&g_region_critical);
 
-	for (int i = 0; i < m_PartyArray.GetSize(); i++)
+	for (int i = 0; i < m_PartyMap.GetSize(); i++)
 	{
-		_PARTY_GROUP* pParty = m_PartyArray.GetData(i);
+		_PARTY_GROUP* pParty = m_PartyMap.GetData(i);
 		if (pParty == nullptr)
 			continue;
 
@@ -2645,8 +2653,8 @@ void CEbenezerDlg::DeleteAllNpcList(int flag)
 	}
 
 	// Npc Array Delete
-	if (!m_arNpcArray.IsEmpty())
-		m_arNpcArray.DeleteAllData();
+	if (!m_NpcMap.IsEmpty())
+		m_NpcMap.DeleteAllData();
 
 	m_bServerCheckFlag = FALSE;
 
@@ -2672,7 +2680,7 @@ CNpc* CEbenezerDlg::GetNpcPtr(int sid, int cur_zone)
 	if (!m_bPointCheckFlag)
 		return nullptr;
 
-	for (const auto& [_, pNpc] : m_arNpcArray)
+	for (const auto& [_, pNpc] : m_NpcMap)
 	{
 		if (pNpc == nullptr)
 			continue;
@@ -2900,8 +2908,6 @@ void CEbenezerDlg::BattleZoneVictoryCheck()
 	else
 		return;
 
-	m_bBanishDelayStart = TimeGet();
-
 	Announcement(DECLARE_WINNER);
 
 	// GOLD DISTRIBUTION PROCEDURE FOR WINNERS !!!
@@ -2948,7 +2954,6 @@ void CEbenezerDlg::BanishLosers()
 void CEbenezerDlg::ResetBattleZone()
 {
 	m_bVictory = 0;
-	m_bBanishDelayStart = 0;
 	m_byBanishFlag = 0;
 	m_sBanishDelay = 0;
 	m_bKarusFlag = 0;
@@ -2973,57 +2978,57 @@ void CEbenezerDlg::Announcement(BYTE type, int nation, int chat_type)
 	switch (type)
 	{
 		case BATTLEZONE_OPEN:
-			chatstr = fmt::format_win32_resource(IDP_BATTLEZONE_OPEN);
+			chatstr = fmt::format_db_resource(IDP_BATTLEZONE_OPEN);
 			break;
 
 		case SNOW_BATTLEZONE_OPEN:
-			chatstr = fmt::format_win32_resource(IDP_BATTLEZONE_OPEN);
+			chatstr = fmt::format_db_resource(IDP_BATTLEZONE_OPEN);
 			break;
 
 		case DECLARE_WINNER:
 			if (m_bVictory == KARUS)
-				chatstr = fmt::format_win32_resource(IDP_KARUS_VICTORY, m_sElmoradDead, m_sKarusDead);
+				chatstr = fmt::format_db_resource(IDP_KARUS_VICTORY, m_sElmoradDead, m_sKarusDead);
 			else if (m_bVictory == ELMORAD)
-				chatstr = fmt::format_win32_resource(IDP_ELMORAD_VICTORY, m_sKarusDead, m_sElmoradDead);
+				chatstr = fmt::format_db_resource(IDP_ELMORAD_VICTORY, m_sKarusDead, m_sElmoradDead);
 			else
 				return;
 			break;
 
 		case DECLARE_LOSER:
 			if (m_bVictory == KARUS)
-				chatstr = fmt::format_win32_resource(IDS_ELMORAD_LOSER, m_sKarusDead, m_sElmoradDead);
+				chatstr = fmt::format_db_resource(IDS_ELMORAD_LOSER, m_sKarusDead, m_sElmoradDead);
 			else if (m_bVictory == ELMORAD)
-				chatstr = fmt::format_win32_resource(IDS_KARUS_LOSER, m_sElmoradDead, m_sKarusDead);
+				chatstr = fmt::format_db_resource(IDS_KARUS_LOSER, m_sElmoradDead, m_sKarusDead);
 			else
 				return;
 			break;
 
 		case DECLARE_BAN:
-			chatstr = fmt::format_win32_resource(IDS_BANISH_USER);
+			chatstr = fmt::format_db_resource(IDS_BANISH_USER);
 			break;
 
 		case BATTLEZONE_CLOSE:
-			chatstr = fmt::format_win32_resource(IDS_BATTLE_CLOSE);
+			chatstr = fmt::format_db_resource(IDS_BATTLE_CLOSE);
 			break;
 
 		case KARUS_CAPTAIN_NOTIFY:
-			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN, m_strKarusCaptain);
+			chatstr = fmt::format_db_resource(IDS_KARUS_CAPTAIN, m_strKarusCaptain);
 			break;
 
 		case ELMORAD_CAPTAIN_NOTIFY:
-			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN, m_strElmoradCaptain);
+			chatstr = fmt::format_db_resource(IDS_ELMO_CAPTAIN, m_strElmoradCaptain);
 			break;
 
 		case KARUS_CAPTAIN_DEPRIVE_NOTIFY:
-			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN_DEPRIVE, m_strKarusCaptain);
+			chatstr = fmt::format_db_resource(IDS_KARUS_CAPTAIN_DEPRIVE, m_strKarusCaptain);
 			break;
 
 		case ELMORAD_CAPTAIN_DEPRIVE_NOTIFY:
-			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN_DEPRIVE, m_strElmoradCaptain);
+			chatstr = fmt::format_db_resource(IDS_ELMO_CAPTAIN_DEPRIVE, m_strElmoradCaptain);
 			break;
 	}
 
-	chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+	chatstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 	SetByte(send_buff, WIZ_CHAT, send_index);
 	SetByte(send_buff, chat_type, send_index);
 	SetByte(send_buff, 1, send_index);
@@ -3049,7 +3054,7 @@ void CEbenezerDlg::Announcement(BYTE type, int nation, int chat_type)
 
 BOOL CEbenezerDlg::LoadStartPositionTable()
 {
-	recordset_loader::STLMap loader(m_StartPositionMap);
+	recordset_loader::STLMap loader(m_StartPositionTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -3059,9 +3064,27 @@ BOOL CEbenezerDlg::LoadStartPositionTable()
 	return TRUE;
 }
 
+BOOL CEbenezerDlg::LoadServerResourceTable()
+{
+	ServerResourceTableMap tableMap;
+
+	recordset_loader::STLMap loader(tableMap);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	for (auto& [_, serverResource] : tableMap)
+		rtrim(serverResource->Resource);
+
+	m_ServerResourceTableMap.Swap(tableMap);
+	return TRUE;
+}
+
 BOOL CEbenezerDlg::LoadHomeTable()
 {
-	recordset_loader::STLMap loader(m_HomeArray);
+	recordset_loader::STLMap loader(m_HomeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
@@ -3130,9 +3153,9 @@ BOOL CEbenezerDlg::LoadAllKnights()
 				strcpy(pKnights->m_arKnightsUser[i].strUserName, "");
 			}
 
-			if (!m_KnightsArray.PutData(pKnights->m_sIndex, pKnights))
+			if (!m_KnightsMap.PutData(pKnights->m_sIndex, pKnights))
 			{
-				spdlog::error("EbenezerDlg::LoadAllKnights: failed to put into KnightsArray [knightsId={}]",
+				spdlog::error("EbenezerDlg::LoadAllKnights: failed to put into KnightsMap [knightsId={}]",
 					pKnights->m_sIndex);
 				delete pKnights;
 			}
@@ -3205,7 +3228,7 @@ int CEbenezerDlg::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& b
 	}
 	else if (type == 1)
 	{
-		CKnights* pKnights = m_KnightsArray.GetData(knightsindex);
+		CKnights* pKnights = m_KnightsMap.GetData(knightsindex);
 		if (pKnights == nullptr)
 			return 0;
 
@@ -3508,6 +3531,9 @@ BOOL CEbenezerDlg::LoadBattleTable()
 	return TRUE;
 }
 
+
+
+
 void CEbenezerDlg::Send_CommandChat(char* pBuf, int len, int nation, CUser* pExceptUser)
 {
 	for (int i = 0; i < MAX_USER; i++)
@@ -3542,7 +3568,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 			ModelType row = {};
 			recordset.get_ref(row);
 		
-			CKnights* pKnights = m_KnightsArray.GetData(row.Index);
+			CKnights* pKnights = m_KnightsMap.GetData(row.Index);
 
 			rtrim(row.Name);
 
@@ -3631,10 +3657,10 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 		return FALSE;
 	}
 
-	std::string strKarusCaptainName = fmt::format_win32_resource(IDS_KARUS_CAPTAIN,
+	std::string strKarusCaptainName = fmt::format_db_resource(IDS_KARUS_CAPTAIN,
 		strKarusCaptain[0], strKarusCaptain[1], strKarusCaptain[2], strKarusCaptain[3], strKarusCaptain[4]);
 
-	std::string strElmoCaptainName = fmt::format_win32_resource(IDS_ELMO_CAPTAIN,
+	std::string strElmoCaptainName = fmt::format_db_resource(IDS_ELMO_CAPTAIN,
 		strElmoCaptain[0], strElmoCaptain[1], strElmoCaptain[2], strElmoCaptain[3], strElmoCaptain[4]);
 
 	spdlog::trace("EbenezerDlg::LoadKnightsRankTable: success");

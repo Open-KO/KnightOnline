@@ -243,7 +243,7 @@ void CUIDroppedItemDlg::AddToItemTable(int iItemID, int iItemCount, int iOrder)
 	//TRACE("Dropped item from server to ItemDlg %d \n", iItemID);
 	e_PartPosition ePart;
 	e_PlugPosition ePlug;
-	e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+	e_ItemType eType = CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, RACE_UNKNOWN); // 아이템에 따른 파일 이름을 만들어서
 	if ( ITEM_TYPE_UNKNOWN == eType ) return;
 	
 	spItem = new __IconItemSkill;
@@ -278,7 +278,7 @@ void CUIDroppedItemDlg::AddToItemTableToInventory(int iItemID, int iItemCount, i
 	//TRACE("Dropped item from server to ItemDlg %d \n", iItemID);
 	e_PartPosition ePart;
 	e_PlugPosition ePlug;
-	e_ItemType eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+	e_ItemType eType = CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
 	if ( ITEM_TYPE_UNKNOWN == eType ) return;
 	
 	spItem = new __IconItemSkill;
@@ -424,7 +424,7 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 				break;
 			}
 
-			eType = CGameProcedure::MakeResrcFileNameForUPC(pItem, NULL, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
+			eType = CGameBase::MakeResrcFileNameForUPC(pItem, spItem->pItemExt, nullptr, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
 
 			// 보낸 아이콘 배열이랑 비교.. 
 			iOrder = GetItemiOrder( spItem );
