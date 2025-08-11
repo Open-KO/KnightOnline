@@ -11,12 +11,12 @@
 
 #include <N3Base/N3UIBase.h>
 
-#define MAX_STRING_MENU	10//5
 
 class Packet;
 class CUIQuestMenu   : public CN3UIBase
 {
 protected:
+	static constexpr int MAX_STRING_MENU = 10;
 	CN3UIString*		m_pTextTitle;
 	CN3UIString*		m_pTextSample;
 	CN3UIString*		m_pTextMenu[MAX_STRING_MENU];
@@ -37,16 +37,15 @@ protected:
 	CN3UIImage*     m_pImageMenu;
 
 public:
-	void SetVisible(bool bVisible);
-	bool OnKeyPress(int iKey);
-	void	MsgSend_SelectMenu(uint8_t index);
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	void	InitBase();
-	bool	Load(HANDLE hFile);
-	void	Open(Packet& pkt);
-
 	CUIQuestMenu();
-	virtual ~CUIQuestMenu();
+	~CUIQuestMenu() override;
+	bool Load(HANDLE hFile) override;
+	void SetVisible(bool bVisible) override;
+	bool OnKeyPress(int iKey) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void MsgSend_SelectMenu(uint8_t index);
+	void InitBase();
+	void Open(Packet& pkt);
 
 protected:
 	void UpdateTextForScroll();
