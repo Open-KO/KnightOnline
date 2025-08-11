@@ -45,7 +45,7 @@ CUICmdList::CUICmdList()
 	m_pList_Cmds = nullptr;
 	m_pUICmdEdit = nullptr;
 	m_iSelectedCategory = 0;
-	m_iSelectedTab = 0; 
+	m_eSelectedList = CMD_LIST_SEL_CATEGORY;
 }
 
 CUICmdList::~CUICmdList()
@@ -75,7 +75,7 @@ void CUICmdList::Release()
 	m_pList_Cmds = nullptr;
 	m_pUICmdEdit = nullptr;
 	m_iSelectedCategory = 0;
-	m_iSelectedTab = 0;
+	m_eSelectedList = CMD_LIST_SEL_CATEGORY;
 
 	CN3UIBase::Release();
 }
@@ -87,9 +87,9 @@ void CUICmdList::Render()
 
 	CN3UIBase::Render();
 
-	if (m_iSelectedTab == 0)
+	if (m_eSelectedList == CMD_LIST_SEL_CATEGORY)
 		RenderSelectionBorder(m_pList_CmdCat);
-	else if (m_iSelectedTab == 1)
+	else if (m_eSelectedList == CMD_LIST_SEL_COMMAND)
 		RenderSelectionBorder(m_pList_Cmds);
 }
 
@@ -176,13 +176,13 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if (pSender == m_pList_CmdCat)
 		{
 			m_iSelectedCategory = m_pList_CmdCat->GetCurSel();
-			m_iSelectedTab = 0;
+			m_eSelectedList = CMD_LIST_SEL_CATEGORY;
 			UpdateCommandList(m_iSelectedCategory);
 			return true;
 		}
 		else if (pSender == m_pList_Cmds)
 		{
-			m_iSelectedTab = 1;
+			m_eSelectedList = CMD_LIST_SEL_COMMAND;
 			return true;
 		}
 	}
@@ -215,7 +215,7 @@ bool CUICmdList::OnKeyPress(int iKey)
 			return true;
 
 		case DIK_DOWN:
-			if (m_iSelectedTab == 0)
+			if (m_eSelectedList == CMD_LIST_SEL_CATEGORY)
 			{
 				int iSelectedIndex = m_pList_CmdCat->GetCurSel();
 				int iMaxIndex = m_pList_CmdCat->GetCount() - 1;
@@ -225,7 +225,7 @@ bool CUICmdList::OnKeyPress(int iKey)
 				m_pList_CmdCat->SetCurSel(iSelectedIndex);
 				UpdateCommandList(iSelectedIndex);
 			}
-			else if (m_iSelectedTab == 1)
+			else if (m_eSelectedList == CMD_LIST_SEL_COMMAND)
 			{
 				int iSelectedIndex = m_pList_Cmds->GetCurSel();
 				int iMaxIndex = m_pList_Cmds->GetCount() - 1;
@@ -237,7 +237,7 @@ bool CUICmdList::OnKeyPress(int iKey)
 			return true;
 
 		case DIK_UP:
-			if (m_iSelectedTab == 0)
+			if (m_eSelectedList == CMD_LIST_SEL_CATEGORY)
 			{
 				int iSelectedIndex = m_pList_CmdCat->GetCurSel();
 				int iMaxIndex = m_pList_CmdCat->GetCount() - 1;
@@ -247,7 +247,7 @@ bool CUICmdList::OnKeyPress(int iKey)
 				m_pList_CmdCat->SetCurSel(iSelectedIndex);
 				UpdateCommandList(iSelectedIndex);
 			}
-			else if (m_iSelectedTab == 1)
+			else if (m_eSelectedList == CMD_LIST_SEL_COMMAND)
 			{
 				int iSelectedIndex = m_pList_Cmds->GetCurSel();
 				int iMaxIndex = m_pList_Cmds->GetCount() - 1;
@@ -259,10 +259,10 @@ bool CUICmdList::OnKeyPress(int iKey)
 			return true;
 
 		case DIK_TAB:
-			if (m_iSelectedTab == 0)
-				m_iSelectedTab = 1;
-			else if (m_iSelectedTab == 1)
-				m_iSelectedTab = 0;
+			if (m_eSelectedList == CMD_LIST_SEL_CATEGORY)
+				m_eSelectedList = CMD_LIST_SEL_COMMAND;
+			else
+				m_eSelectedList = CMD_LIST_SEL_CATEGORY;
 			return true;
 	}
 
@@ -273,7 +273,7 @@ void CUICmdList::Open()
 {
 	// 스르륵 열린다!!
 	SetVisible(true);
-	this->SetPos(CN3Base::s_CameraData.vp.Width, 10);
+	SetPos(CN3Base::s_CameraData.vp.Width, 10);
 	m_fMoveDelta = 0;
 	m_bOpenningNow = true;
 	m_bClosingNow = false;
@@ -301,9 +301,11 @@ void CUICmdList::SetVisible(bool bVisible)
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 }
 
-bool CUICmdList::CreateCategoryList() {
-
-	if (m_pList_CmdCat == nullptr || m_pList_Cmds == nullptr) return false;
+bool CUICmdList::CreateCategoryList()
+{
+	if (m_pList_CmdCat == nullptr
+		|| m_pList_Cmds == nullptr)
+		return false;
 
 	std::string szCategory, szTooltip;	
 

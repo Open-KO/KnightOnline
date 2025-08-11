@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_UICmdList_H)
-#define AFX_UICurtail_H
+#define AFX_UICmdList_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -11,23 +11,17 @@
 
 #include <N3Base/N3UIBase.h>
 
+class CUICmdEdit;
 class CUICmdList : public CN3UIBase
 {
 protected:
+	enum e_CmdListSelection : uint8_t
+	{
+		CMD_LIST_SEL_CATEGORY = 0,	// Category list
+		CMD_LIST_SEL_COMMAND		// Command list
+	};
 
-	class CUICmdEdit*	m_pUICmdEdit;
-
-	CN3UIButton*	m_pBtn_cancel;
-	CN3UIList*		m_pList_CmdCat;
-	CN3UIList*		m_pList_Cmds;
-
-	bool		m_bOpenningNow; // 열리고 있다..
-	bool		m_bClosingNow;	// 닫히고 있다..
-	float		m_fMoveDelta; // 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
-	int			m_iSelectedCategory;
-	int			m_iSelectedTab; //0 => upper(categories), 1 => bottom(commands)
-
-	enum iCmd
+	enum e_CmdListCategory
 	{
 		CMD_LIST_PRIVATE,	
 		CMD_LIST_TRADE,	
@@ -39,8 +33,20 @@ protected:
 		CMD_LIST_GM
 	};
 
+	CUICmdEdit*			m_pUICmdEdit;
+
+	CN3UIButton*		m_pBtn_cancel;
+	CN3UIList*			m_pList_CmdCat;
+	CN3UIList*			m_pList_Cmds;
+
+	bool				m_bOpenningNow;		// 열리고 있다..
+	bool				m_bClosingNow;		// 닫히고 있다..
+	float				m_fMoveDelta;		// 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
+	int					m_iSelectedCategory;
+	e_CmdListSelection	m_eSelectedList;
+
 	std::map<uint16_t, std::string> m_mapCmds;
-	// Attributes
+
 public:
 	CUICmdList();
 	~CUICmdList() override;
