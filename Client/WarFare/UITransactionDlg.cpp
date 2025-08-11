@@ -728,8 +728,6 @@ void CUITransactionDlg::OnConfirm()
 				m_sRecoveryJobInfo.pItemSource->iCount);
 			break;
 	}
-
-	m_pUIMsgBoxOkCancel->SetVisible(false);
 }
 
 void CUITransactionDlg::OnCancel()
