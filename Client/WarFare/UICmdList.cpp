@@ -196,7 +196,6 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		}
 	}
 
-
 	return false;
 }
 
@@ -211,7 +210,6 @@ bool CUICmdList::OnKeyPress(int iKey)
 		case DIK_RETURN:
 			if (m_pList_Cmds != nullptr)
 				ExecuteCommand(m_pList_Cmds->GetCurSel());
-
 			return true;
 
 		case DIK_DOWN:
@@ -309,7 +307,7 @@ bool CUICmdList::CreateCategoryList()
 
 	std::string szCategory, szTooltip;	
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < CMD_LIST_CAT_COUNT; i++)
 	{
 		// category names start with 7800
 		szCategory = fmt::format_text_resource(i + 7800); // load command categories
@@ -350,7 +348,7 @@ bool CUICmdList::CreateCategoryList()
 			m_mapCmds[i] = szCommand;
 	}
 
-	UpdateCommandList(m_iSelectedCategory); //initialize a cmd list for viewing when opening cmd window
+	UpdateCommandList(m_iSelectedCategory); // initialize a cmd list for viewing when opening cmd window
 
 	return true;
 }
@@ -358,7 +356,7 @@ bool CUICmdList::CreateCategoryList()
 bool CUICmdList::UpdateCommandList(int iCatIndex)
 {
 	if (m_iSelectedCategory < 0
-		|| m_iSelectedCategory > 8)
+		|| m_iSelectedCategory >= CMD_LIST_CAT_COUNT)
 		return false;
 
 	if (m_pList_Cmds == nullptr)
