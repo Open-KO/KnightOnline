@@ -106,7 +106,7 @@ bool CUIQuestMenu::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (dwMsg == UIMSG_STRING_LCLICK)
 	{
-		for (int i = 0;i < MAX_STRING_MENU; i++)
+		for (int i = 0; i < MAX_STRING_MENU; i++)
 		{
 			if (pSender == m_pTextMenu[i])
 			{

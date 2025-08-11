@@ -58,7 +58,8 @@ CN3Terrain::CN3Terrain()
 
 	ZeroMemory(m_pGrassFileName, MAX_PATH);
 
-	for (int i = 0;i < MAX_GRASS;i++) ZeroMemory(m_pGrassTextureName[i], MAX_PATH);
+	for (int i = 0; i < MAX_GRASS; i++)
+		ZeroMemory(m_pGrassTextureName[i], MAX_PATH);
 	m_iNumGrass = 0;
 
 	m_NumTileTex = 0;
@@ -102,9 +103,6 @@ CN3Terrain::CN3Terrain()
 	m_pNormal = NULL;
 
 	m_bAvailableTile = true;
-
-	for (int i = 0;i < 3;i++)
-		for (int j = 0;j < 3;j++) m_LightMapPatch[i][j].clear();
 }
 
 CN3Terrain::~CN3Terrain()
@@ -329,7 +327,8 @@ void CN3Terrain::Init()
 	m_ti_PrevCenterPos = m_ti_CenterPos;
 
 	ZeroMemory(m_pGrassFileName, MAX_PATH);
-	for (int i = 0;i < MAX_GRASS;i++) ZeroMemory(m_pGrassTextureName[i], MAX_PATH);
+	for (int i = 0; i < MAX_GRASS; i++)
+		ZeroMemory(m_pGrassTextureName[i], MAX_PATH);
 	m_iNumGrass = 0;
 
 	m_NumTileTex = 0;
@@ -760,10 +759,11 @@ void CN3Terrain::LoadTileInfo(HANDLE hFile)
 
 	int NumTileTexSrc;
 	ReadFile(hFile, &NumTileTexSrc, sizeof(int), &dwRWC, NULL);
-	if (NumTileTexSrc == 0) return;
+	if (NumTileTexSrc == 0)
+		return;
 
 	char** SrcName = new char* [NumTileTexSrc];
-	for (int i = 0;i < NumTileTexSrc;i++)
+	for (int i = 0; i < NumTileTexSrc; i++)
 	{
 		SrcName[i] = new char[MAX_PATH];
 		ReadFile(hFile, SrcName[i], MAX_PATH, &dwRWC, NULL);
@@ -772,7 +772,7 @@ void CN3Terrain::LoadTileInfo(HANDLE hFile)
 	int16_t SrcIdx, TileIdx;
 	HANDLE hTTGFile;
 	std::string szLoadingBuff;
-	for (uint32_t i = 0;i < m_NumTileTex;i++)
+	for (uint32_t i = 0; i < m_NumTileTex; i++)
 	{
 		ReadFile(hFile, &SrcIdx, sizeof(int16_t), &dwRWC, nullptr);
 		ReadFile(hFile, &TileIdx, sizeof(int16_t), &dwRWC, nullptr);
@@ -1239,7 +1239,7 @@ void CN3Terrain::SetLightMapPatch(int x, int z, HANDLE hFile, int* pAddr)
 
 	int tx, tz;
 	int rtx, rtz;
-	for (int i = 0;i < TexCount;i++)
+	for (int i = 0; i < TexCount; i++)
 	{
 		ReadFile(hFile, &tx, sizeof(int), &dwRWC, NULL);
 		ReadFile(hFile, &tz, sizeof(int), &dwRWC, NULL);
@@ -1309,7 +1309,7 @@ bool CN3Terrain::CheckBound()
 		vFPs[i] = vFPs[i] * CN3Base::s_CameraData.mtxViewInverse;
 
 
-	for (int i = 0;i < 4;i++)
+	for (int i = 0; i < 4; i++)
 	{
 		POINT FarPoint;
 		FarPoint.x = Real2Patch(vFPs[i].x);
