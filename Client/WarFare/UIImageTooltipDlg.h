@@ -34,19 +34,23 @@ public:
 	int					m_iPosXBack;
 	int					m_iPosYBack;
 	int					m_iTooltipNum;
-	__IconItemSkill*	m_spItemBack;
-	
+
+	uint32_t			m_dwID_Basic;
+	uint32_t			m_dwID_Ext;
+	int					m_iCount;
+	int					m_iDurability;
+
 protected:
 	bool				SetTooltipTextColor(int iMyValue, int iTooltipValue);
 	bool				SetTooltipTextColor(e_Race eMyValue, e_Race eTooltipValue);
 	bool				SetTooltipTextColor(e_Class eMyValue, e_Class eTooltipValue);
 	int					CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bool bPrice, bool bBuy);
-	void				SetPosSomething(int xpos, int ypos, int iNum);
+	void				SetPosSomething(int xpos, int ypos);
 
 public:
 	CUIImageTooltipDlg();
-	virtual ~CUIImageTooltipDlg();
-	void	Release();
+	~CUIImageTooltipDlg() override;
+	void	Release() override;
 	void	InitPos();
 
 	void	DisplayTooltipsEnable(int xpos, int ypos, __IconItemSkill* spItem, bool bPrice = false, bool bBuy = true);
@@ -54,6 +58,8 @@ public:
 
 protected:
 	bool	IsItemChanged(const __IconItemSkill* spItem) const;
+	void	UpdateItem(const __IconItemSkill* spItem);
+	void	ResetItem();
 };
 
 #endif // !defined(AFX_UIIMAGETOOLTIPDLG_H__CC12484D_5DC0_4F7A_ABF7_0506B2F36292__INCLUDED_)

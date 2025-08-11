@@ -30,9 +30,10 @@ CUIImageTooltipDlg::CUIImageTooltipDlg()
 {
 	m_iPosXBack = 0;
 	m_iPosYBack = 0;
-	m_spItemBack = nullptr;
 	m_pImg = nullptr;
 	m_iTooltipNum = 0;
+
+	ResetItem();
 }
 
 CUIImageTooltipDlg::~CUIImageTooltipDlg()
@@ -45,9 +46,10 @@ void CUIImageTooltipDlg::Release()
 
 	m_iPosXBack = 0;
 	m_iPosYBack = 0;
-	m_spItemBack = nullptr;
 	m_pImg = nullptr;
 	m_iTooltipNum = 0;
+
+	ResetItem();
 }
 
 void CUIImageTooltipDlg::InitPos()
@@ -65,7 +67,6 @@ void CUIImageTooltipDlg::InitPos()
 
 void CUIImageTooltipDlg::DisplayTooltipsDisable()
 {
-	m_spItemBack = nullptr;
 	if (IsVisible())
 		SetVisible(false);
 }
@@ -85,24 +86,28 @@ bool CUIImageTooltipDlg::SetTooltipTextColor(e_Class eMyValue, e_Class eTooltipV
 	return eMyValue == eTooltipValue;
 }
 
-void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
+void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos)
 {
-	int iWidth = 0;
+	if (m_iTooltipNum <= 0)
+		return;
 
+	int iWidth = 0;
 	int iPadding = 8;
 
-	for (int i = 0; i < iNum; i++)
+	for (int i = 0; i < m_iTooltipNum; i++)
 	{
-		if (m_pstdstr[i].empty())	continue;
+		if (m_pstdstr[i].empty())
+			continue;
+
 		int currentWidth = m_pStr[0]->GetStringRealWidth(m_pstdstr[i]);
 		if (currentWidth > iWidth)
 			iWidth = currentWidth;
 	}
 
-	int iHeight = m_pStr[iNum - 1]->GetRegion().bottom - m_pStr[0]->GetRegion().top;
+	int iHeight = m_pStr[m_iTooltipNum - 1]->GetRegion().bottom - m_pStr[0]->GetRegion().top;
 
 	iWidth += iPadding * 2;
-	iHeight += iPadding * 1.5;
+	iHeight += static_cast<int>(iPadding * 1.5);
 
 	RECT rect, rect2;
 
@@ -112,7 +117,7 @@ void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
 	iTop = 0;
 	iBottom = CN3Base::s_CameraData.vp.Height;
 
-	if ((xpos + 26 + iWidth)<iRight)
+	if ((xpos + 26 + iWidth) < iRight)
 	{
 		rect.left = xpos + 26;
 		rect.right = rect.left + iWidth;
@@ -125,21 +130,24 @@ void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
 		iX = xpos - iWidth;
 	}
 
-	if ((ypos - iHeight)>iTop)
+	if ((ypos - iHeight) > iTop)
 	{
-		rect.top = ypos - iHeight; rect.bottom = ypos;
+		rect.top = ypos - iHeight;
+		rect.bottom = ypos;
 		iY = ypos - iHeight;
 	}
 	else
 	{
-		if ((ypos + iHeight)<iBottom)
+		if ((ypos + iHeight) < iBottom)
 		{
-			rect.top = ypos; rect.bottom = ypos + iHeight;
+			rect.top = ypos;
+			rect.bottom = ypos + iHeight;
 			iY = ypos;
 		}
 		else
 		{
-			rect.top = iBottom - iHeight; rect.bottom = iBottom;
+			rect.top = iBottom - iHeight;
+			rect.bottom = iBottom;
 			iY = rect.top;
 		}
 	}
@@ -147,9 +155,10 @@ void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
 	SetPos(iX, iY);
 	SetSize(iWidth, iHeight);
 
-	for (int i = 0; i < iNum; i++)
+	for (int i = 0; i < m_iTooltipNum; i++)
 	{
-		if (!m_pStr[i])	continue;
+		if (m_pStr[i] == nullptr)
+			continue;
 
 		// add padding to rects
 		rect2 = m_pStr[i]->GetRegion();
@@ -157,13 +166,13 @@ void CUIImageTooltipDlg::SetPosSomething(int xpos, int ypos, int iNum)
 		rect2.right = rect.right - iPadding;
 		m_pStr[i]->SetRegion(rect2);
 
-		if(m_pStr[i]->GetStyle() & UISTYLE_STRING_ALIGNCENTER)
+		if (m_pStr[i]->GetStyle() & UISTYLE_STRING_ALIGNCENTER)
 			m_pStr[i]->SetString(m_pstdstr[i]);
 		else
 			m_pStr[i]->SetString("  " + m_pstdstr[i]);
 	}
 
-	for (int i = iNum; i < MAX_TOOLTIP_COUNT; i++)
+	for (int i = m_iTooltipNum; i < MAX_TOOLTIP_COUNT; i++)
 		m_pStr[i]->SetString("");
 
 	m_pImg->SetRegion(rect);
@@ -1080,23 +1089,25 @@ exceptions:;
 void CUIImageTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSkill* spItem, bool bPrice, bool bBuy)
 {
 	if (spItem == nullptr)
+	{
+		ResetItem();
 		return;
+	}
 
 	if (!IsVisible())
 		SetVisible(true);
 	
 	if (IsItemChanged(spItem))
 	{
-		m_spItemBack = spItem;
+		UpdateItem(spItem);
 
-		int iNum = CalcTooltipStringNumAndWrite(spItem, bPrice, bBuy);
-		SetPosSomething(xpos, ypos, iNum);
-		m_iTooltipNum = iNum;
+		m_iTooltipNum = CalcTooltipStringNumAndWrite(spItem, bPrice, bBuy);
+		SetPosSomething(xpos, ypos);
 	}
 	else if (m_iPosXBack != xpos
 		|| m_iPosYBack != ypos)
 	{
-		SetPosSomething(xpos, ypos, m_iTooltipNum);
+		SetPosSomething(xpos, ypos);
 	}
 
 	Render();
@@ -1104,13 +1115,39 @@ void CUIImageTooltipDlg::DisplayTooltipsEnable(int xpos, int ypos, __IconItemSki
 
 bool CUIImageTooltipDlg::IsItemChanged(const __IconItemSkill* spItem) const
 {
-	if (m_spItemBack == nullptr)
-		return spItem != nullptr;
-
-	if (m_spItemBack->pItemBasic->dwID == spItem->pItemBasic->dwID
-		&& m_spItemBack->pItemExt->dwID == spItem->pItemExt->dwID
-		&& m_spItemBack->iDurability == spItem->iDurability)
+	if (m_dwID_Basic == spItem->pItemBasic->dwID
+		&& m_dwID_Ext == spItem->pItemExt->dwID
+		&& m_iDurability == spItem->iDurability
+		&& m_iCount == spItem->iCount)
 		return false;
 
 	return true;
+}
+
+void CUIImageTooltipDlg::UpdateItem(const __IconItemSkill* spItem)
+{
+	if (spItem == nullptr
+		|| spItem->pItemBasic == nullptr)
+	{
+		ResetItem();
+		return;
+	}
+
+	m_dwID_Basic = spItem->pItemBasic->dwID;
+
+	if (spItem->pItemExt != nullptr)
+		m_dwID_Ext = spItem->pItemExt->dwID;
+	else
+		m_dwID_Ext = 0;
+
+	m_iCount = spItem->iCount;
+	m_iDurability = spItem->iDurability;
+}
+
+void CUIImageTooltipDlg::ResetItem()
+{
+	m_dwID_Basic = 0;
+	m_dwID_Ext = 0;
+	m_iCount = 0;
+	m_iDurability = 0;
 }
