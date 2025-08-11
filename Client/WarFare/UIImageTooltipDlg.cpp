@@ -210,7 +210,7 @@ int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bo
 
 			return iIndex;	
 		}
-		else if ( spItem->pItemBasic->szName != m_pStr[iIndex]->GetString() )
+		else
 		{
 			e_ItemAttrib eTA = (e_ItemAttrib)(spItem->pItemExt->byMagicOrRare);
 			switch (eTA)
