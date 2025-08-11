@@ -16,6 +16,7 @@ enum e_NpcTrade {	UI_BLACKSMITH = 1, UI_STORE, UI_INN	};
 
 //////////////////////////////////////////////////////////////////////
 
+class CUIMsgBoxOkCancel;
 class CUITransactionDlg : public CN3UIWndBase
 {
 	friend class CUIInventory;
