@@ -449,7 +449,7 @@ void CN3UIList::Render()
 
 			CN3Base::s_lpD3DDev->SetFVF(FVF_TRANSFORMEDCOLOR);
 			CN3Base::s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, vLines, sizeof(__VertexTransformedColor));
-
+			
 			CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, dwZ);
 			CN3Base::s_lpD3DDev->SetRenderState(D3DRS_FOGENABLE, dwFog);
 			CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, dwAlpha);
