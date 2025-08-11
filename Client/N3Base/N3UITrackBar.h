@@ -33,13 +33,13 @@ protected:
 	int				m_iPageSize;								// page단위 이동할때 이동값
 // Operations
 public:
-	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
-	virtual void	SetRegion(const RECT& Rect);
-	virtual uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-//	virtual void	Render();
+	void		Release() override;
+	bool		Load(HANDLE hFile) override;
+	void		SetRegion(const RECT& Rect) override;
+	uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 
-	void			SetRange(int iMin, int iMax);
+	void		SetRange(int iMin, int iMax);
+	void		SetCurrentPos(int iPos);
 
 	void SetRangeMax(int iMax)
 	{
@@ -50,8 +50,6 @@ public:
 	{
 		SetRange(iMin, m_iMaxPos);
 	}
-
-	void SetCurrentPos(int iPos);
 
 	int GetPos() const
 	{
