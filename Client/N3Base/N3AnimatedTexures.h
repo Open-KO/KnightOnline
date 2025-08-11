@@ -22,8 +22,21 @@ protected:
 
 public:
 	void Tick();
-	CN3Texture* Tex(int iIndex) { if(iIndex < 0 || iIndex >= m_TexRefs.size()) return NULL; return m_TexRefs[iIndex]; }
-	CN3Texture* TexCur() { return this->Tex((int)m_fTexIndex); }
+
+	CN3Texture* Tex(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_TexRefs.size()))
+			return nullptr;
+
+		return m_TexRefs[iIndex];
+	}
+
+	CN3Texture* TexCur()
+	{
+		return Tex((int) m_fTexIndex);
+	}
+
 	void Release();
 	bool Load(HANDLE hFile);
 #ifdef _N3TOOL

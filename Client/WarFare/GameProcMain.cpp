@@ -3647,12 +3647,9 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 
 		uint8_t	bExtraSkillPoint		= pkt.read<uint8_t>();	// 토탈 포인트
 		//TRACE("Skill change Extra value %d\n", bExtraSkillPoint);
-
-		uint64_t iExpNext		= pkt.read<uint32_t>(); 
-		uint64_t iExp			= pkt.read<uint32_t>();
 			
-		pInfoExt->iExpNext		= iExpNext; 
-		pInfoExt->iExp			= iExp; 
+		pInfoExt->iExpNext		= pkt.read<int32_t>();
+		pInfoExt->iExp			= pkt.read<int32_t>(); 
 
 		pInfoBase->iHPMax		= pkt.read<int16_t>();	
 		pInfoBase->iHP			= pkt.read<int16_t>();

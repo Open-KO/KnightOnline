@@ -132,7 +132,9 @@ bool CN3FXGroup::DecodeScriptFile(const char* lpPathName)
 
 __FXBInfo* CN3FXGroup::GetFXBInfo(int idx)
 {
-	if(idx<0 || idx>=FXBList.size()) return NULL;
+	if (idx < 0
+		|| idx >= static_cast<int>(FXBList.size()))
+		return nullptr;
 
 	std::list<__FXBInfo*>::iterator it;
 	it = FXBList.begin();

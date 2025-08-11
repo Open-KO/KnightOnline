@@ -61,8 +61,8 @@ public:
 //	By : Ecli666 ( On 2002-08-06 오후 4:33:04 )
 //
 	void			PartialRender(int iCount, uint16_t* pIndices);
-	int				 GetIndexByiOrder(int iOrder);
-__Vector3		GetVertexByIndex(size_t iIndex);
+	int				GetIndexByiOrder(int iOrder);
+	__Vector3		GetVertexByIndex(int iIndex);
 //	~(By Ecli666 On 2002-08-06 오후 4:33:04 )
 };
 

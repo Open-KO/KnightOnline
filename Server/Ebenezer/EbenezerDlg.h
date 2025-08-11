@@ -237,7 +237,6 @@ public:
 	// ~Yookozuna 2002.06.12
 	BYTE    m_byBattleOpen, m_byOldBattleOpen;					// 0:전쟁중이 아님, 1:전쟁중(국가간전쟁), 2:눈싸움전쟁
 	BYTE	m_bVictory, m_byOldVictory;
-	BYTE	m_bBanishDelayStart;
 	BYTE	m_bKarusFlag, m_bElmoradFlag;
 	BYTE    m_byKarusOpenFlag, m_byElmoradOpenFlag, m_byBanishFlag, m_byBattleSave;
 	short   m_sDiscount;	// 능력치와 포인트 초기화 할인 (0:할인없음, 1:할인(50%) )

@@ -87,8 +87,9 @@ bool CUIWarp::InfoGetCur(__WarpInfo& WI)
 	if (NULL == m_pList_Infos)
 		return false;
 	
-	size_t iSel = m_pList_Infos->GetCurSel();
-	if (iSel >= m_ListInfos.size())
+	int iSel = m_pList_Infos->GetCurSel();
+	if (iSel < 0
+		|| iSel >= static_cast<int>(m_ListInfos.size()))
 		return false;
 	
 	auto it = m_ListInfos.begin();
@@ -116,8 +117,9 @@ void CUIWarp::UpdateList()
 void CUIWarp::UpdateAgreement()
 {
 	if(NULL == m_pList_Infos || NULL == m_pText_Agreement) return;
-	size_t iSel = m_pList_Infos->GetCurSel();
-	if (iSel >= m_ListInfos.size())
+	int iSel = m_pList_Infos->GetCurSel();
+	if (iSel < 0
+		|| iSel >= static_cast<int>(m_ListInfos.size()))
 		return;
 
 	auto it = m_ListInfos.begin();

@@ -69,11 +69,29 @@ public:
 	//CN3Light*		Light(int index);
 
 	// Camera 함수들
-	void			CameraAdd(CN3Camera *pCamera) { m_Cameras.push_back(pCamera); }
-	int				CameraCount() { return m_Cameras.size(); }
-	CN3Camera*		Camera(size_t index);
-	void			CameraSetActiveByIndex(size_t index) { CN3Camera* pCam = this->Camera(index); if(pCam) m_pActiveCam = pCam; }
-	CN3Camera*		CameraGetActive() { return m_pActiveCam; }
+	int	CameraCount() const
+	{
+		return static_cast<int>(m_Cameras.size());
+	}
+
+	void CameraSetActiveByIndex(int index)
+	{
+		CN3Camera* pCam = Camera(index);
+		if (pCam != nullptr)
+			m_pActiveCam = pCam;
+	}
+
+	CN3Camera* CameraGetActive()
+	{
+		return m_pActiveCam;
+	}
+
+	void CameraAdd(CN3Camera* pCamera)
+	{
+		m_Cameras.push_back(pCamera);
+	}
+
+	CN3Camera*		Camera(int index);
 
 	// 추가한것..
 	void			ViewPointChange(e_ViewPoint eVP = VP_UNKNOWN);
@@ -108,9 +126,12 @@ inline CN3Light* CGameEng::Light(int index)
 }
 */
 
-inline CN3Camera* CGameEng::Camera(size_t index)
+inline CN3Camera* CGameEng::Camera(int index)
 {
-	if (index >= m_Cameras.size()) return NULL;
+	if (index < 0
+		|| index >= static_cast<int>(m_Cameras.size()))
+		return nullptr;
+
 	auto it = m_Cameras.begin();
 	std::advance(it, index);
 	return *it;

@@ -29,7 +29,10 @@ public:
 	int			GetSelectedUICount() { return m_SelectedUIs.size(); }
 	CN3UIBase*	GetSelectedUI(int iIndex = 0)
 	{
-		if(iIndex < 0 || iIndex >= m_SelectedUIs.size()) return NULL;
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_SelectedUIs.size()))
+			return nullptr;
+
 		it_UI it = m_SelectedUIs.begin();
 		for(int i = 0; i < iIndex; i++, it++);
 		return *it;

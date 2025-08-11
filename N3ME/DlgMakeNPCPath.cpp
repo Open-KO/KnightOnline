@@ -459,7 +459,7 @@ void CDlgMakeNPCPath::OnChangeEdtNpcpathname()
 void CDlgMakeNPCPath::SetNumPoint(int NumPoint)
 {
 	char NumP[5];
-	itoa((MAX_NPCPATH-NumPoint), NumP, 10);
+	_itoa((MAX_NPCPATH - NumPoint), NumP, 10);
 	SetDlgItemText(IDC_NUM_POINT, NumP);
 }
 

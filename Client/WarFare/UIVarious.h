@@ -224,7 +224,7 @@ typedef std::map<std::string, __FriendsInfo>::value_type val_FI;
 class CUIFriends : public CN3UIBase  
 {
 protected:
-	size_t m_iPageCur;
+	int m_iPageCur;
 	std::map<std::string, __FriendsInfo> m_MapFriends;
 
 	CN3UIList* m_pList_Friends;

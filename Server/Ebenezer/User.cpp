@@ -5506,8 +5506,7 @@ void CUser::SendNotice()
 		if (strlen(m_pMain->m_ppNotice[i]) == 0)
 			continue;
 
-		SetByte(send_buff, strlen(m_pMain->m_ppNotice[i]), send_index);
-		SetString(send_buff, m_pMain->m_ppNotice[i], strlen(m_pMain->m_ppNotice[i]), send_index);
+		SetString1(send_buff, m_pMain->m_ppNotice[i], send_index);
 		count++;
 	}
 
@@ -6249,7 +6248,7 @@ void CUser::ExchangeAdd(char* pBuf)
 		}
 	}
 
-	if (m_ExchangeItemList.size() > ((bGold) ? 13 : 12))
+	if (static_cast<int>(m_ExchangeItemList.size()) > ((bGold) ? 13 : 12))
 		goto add_fail;
 
 	// Gold 가 중복되면 추가하지 않는댜..
@@ -10433,21 +10432,19 @@ void CUser::MarketBBSReport(char* pBuf, BYTE type)
 			SetShort(send_buff, strlen(pUser->m_pUserData->m_id), send_index);
 			SetString(send_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), send_index);
 
-			title_length = strlen(m_pMain->m_strBuyTitle[i]);
+			title_length = static_cast<short>(strlen(m_pMain->m_strBuyTitle[i]));
 			if (title_length > MAX_BBS_TITLE)
 				title_length = MAX_BBS_TITLE;
 
-			SetShort(send_buff, title_length, send_index);
-			SetString(send_buff, m_pMain->m_strBuyTitle[i], title_length, send_index);
+			SetString2(send_buff, m_pMain->m_strBuyTitle[i], title_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strBuyTitle[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strBuyTitle[i], strlen(m_pMain->m_strBuyTitle[i]), send_index);
 
-			message_length = strlen(m_pMain->m_strBuyMessage[i]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strBuyMessage[i]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strBuyMessage[i], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strBuyMessage[i], message_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strBuyMessage[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strBuyMessage[i], strlen(m_pMain->m_strBuyMessage[i]), send_index);
 
@@ -10479,25 +10476,21 @@ void CUser::MarketBBSReport(char* pBuf, BYTE type)
 				continue;
 
 			SetShort(send_buff, m_pMain->m_sSellID[i], send_index);
+			SetString2(send_buff, pUser->m_pUserData->m_id, send_index);
 
-			SetShort(send_buff, strlen(pUser->m_pUserData->m_id), send_index);
-			SetString(send_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), send_index);
-
-			title_length = strlen(m_pMain->m_strSellTitle[i]);
+			title_length = static_cast<short>(strlen(m_pMain->m_strSellTitle[i]));
 			if (title_length > MAX_BBS_TITLE)
 				title_length = MAX_BBS_TITLE;
 
-			SetShort(send_buff, title_length, send_index);
-			SetString(send_buff, m_pMain->m_strSellTitle[i], title_length, send_index);
+			SetString2(send_buff, m_pMain->m_strSellTitle[i], title_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strSellTitle[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strSellTitle[i], strlen(m_pMain->m_strSellTitle[i]), send_index);
 
-			message_length = strlen(m_pMain->m_strSellMessage[i]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strSellMessage[i]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strSellMessage[i], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strSellMessage[i], message_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strSellMessage[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strSellMessage[i], strlen(m_pMain->m_strSellMessage[i]), send_index);
 
@@ -10770,24 +10763,22 @@ void CUser::MarketBBSMessage(char* pBuf)
 			if (m_pMain->m_sBuyID[message_index] == -1)
 				goto fail_return;
 
-			message_length = strlen(m_pMain->m_strBuyMessage[message_index]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strBuyMessage[message_index]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strBuyMessage[message_index], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strBuyMessage[message_index], message_length, send_index);
 			break;
 
 		case MARKET_BBS_SELL:
 			if (m_pMain->m_sSellID[message_index] == -1)
 				goto fail_return;
 
-			message_length = strlen(m_pMain->m_strSellMessage[message_index]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strSellMessage[message_index]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strSellMessage[message_index], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strSellMessage[message_index], message_length, send_index);
 			break;
 	}
 

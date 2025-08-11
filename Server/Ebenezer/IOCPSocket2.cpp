@@ -146,7 +146,7 @@ int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
 
 	if (m_CryptionFlag)
 	{
-		unsigned short len = length + sizeof(WORD) + 2 + 1;
+		uint16_t len = static_cast<uint16_t>(length + sizeof(WORD) + 2 + 1);
 
 		m_Sen_val++;
 		m_Sen_val &= 0x00ffffff;

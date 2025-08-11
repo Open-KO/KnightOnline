@@ -163,14 +163,26 @@ protected:
 	std::vector<__AnimData>		m_Datas; // animation Data List
 
 public:
-	__AnimData* DataGet(size_t index) { if (index >= m_Datas.size()) return NULL; return &(m_Datas[index]); }
+	__AnimData* DataGet(int index)
+	{
+		if (index < 0
+			|| index >= static_cast<int>(m_Datas.size()))
+			return nullptr;
+
+		return &m_Datas[index];
+	}
+
 	bool Load(HANDLE hFile);
-	int Count() { return m_Datas.size(); }
+
+	int Count() const
+	{
+		return static_cast<int>(m_Datas.size());
+	}
 
 #ifdef _N3TOOL
 	__AnimData*		DataGet(const std::string& szName)
 	{
-		int iADC = m_Datas.size();
+		int iADC = static_cast<int>(m_Datas.size());
 		for(int i = 0; i < iADC; i++)
 		{
 			if(szName == m_Datas[i].szName) return &(m_Datas[i]);

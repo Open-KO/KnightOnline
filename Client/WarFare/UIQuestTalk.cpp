@@ -204,10 +204,6 @@ void CUIQuestTalk::UpdateTextForScroll()
 		return;
 
 	// limit check for the line which displayed first, topline
-	int iTopLine = std::clamp(
-		iScrollPosition,
-		0,
-		iTotalLineCount - iVisibleLineCount);
-
+	int iTopLine = std::clamp(iScrollPosition, 0, iTotalLineCount - iVisibleLineCount);
 	m_pTextTalk->SetStartLine(iTopLine);
 }
