@@ -369,15 +369,10 @@ bool CUICmdList::UpdateCommandList(int iCatIndex)
 	int indexStart = iCatIndex * 200 + 8000;	// start index for correct loc in map
 	int indexEnd = indexStart + 100;			// where to stop iterating
 
-	int iaHiddenCMDs[] = { 8012, 8013, 8014, 8803, 8804, 9407 };
-
 	for (const auto& [resourceId, commandName] : m_mapCmds)
 	{
 		if (resourceId < indexStart
 			|| resourceId >= indexEnd)
-			continue;
-
-		if (std::find(std::begin(iaHiddenCMDs), std::end(iaHiddenCMDs), resourceId) != std::end(iaHiddenCMDs))
 			continue;
 
 		m_pList_Cmds->AddString(commandName);
