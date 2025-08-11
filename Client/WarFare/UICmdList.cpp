@@ -110,7 +110,7 @@ void CUICmdList::RenderSelectionBorder(CN3UIList* pListToRender)
 
 void CUICmdList::Tick()
 {
-	if (m_bOpenningNow) // If it should smoothly slide open from right to left...
+	if (m_bOpenningNow) // 오른쪽에서 왼쪽으로 스르륵...열려야 한다면..
 	{
 		POINT ptCur = this->GetPos();
 		RECT rc = this->GetRegion();
@@ -123,7 +123,7 @@ void CUICmdList::Tick()
 
 		int iXLimit = CN3Base::s_CameraData.vp.Width - (int)fWidth;
 		ptCur.x = CN3Base::s_CameraData.vp.Width - (int)m_fMoveDelta;
-		if (ptCur.x <= iXLimit) // Fully opened!!
+		if (ptCur.x <= iXLimit) // 다열렸다!!
 		{
 			ptCur.x = iXLimit;
 			m_bOpenningNow = false;
@@ -131,7 +131,7 @@ void CUICmdList::Tick()
 
 		this->SetPos(ptCur.x, ptCur.y);
 	}
-	else if (m_bClosingNow) // If it needs to smoothly open from right to left...
+	else if (m_bClosingNow) // 오른쪽에서 왼쪽으로 스르륵...열려야 한다면..
 	{
 		POINT ptCur = this->GetPos();
 		RECT rc = this->GetRegion();
@@ -144,12 +144,12 @@ void CUICmdList::Tick()
 
 		int iXLimit = CN3Base::s_CameraData.vp.Width;
 		ptCur.x = CN3Base::s_CameraData.vp.Width - (int)(fWidth - m_fMoveDelta);
-		if (ptCur.x >= iXLimit) // Fully closed..!!
+		if (ptCur.x >= iXLimit) // 다 닫혔다..!!
 		{
 			ptCur.x = iXLimit;
 			m_bClosingNow = false;
 
-			this->SetVisibleWithNoSound(false, false, true); // Since it's fully closed, make it invisible to the eye.
+			this->SetVisibleWithNoSound(false, false, true); // 다 닫혔으니 눈에서 안보이게 한다.
 		}
 
 		this->SetPos(ptCur.x, ptCur.y);
@@ -269,7 +269,7 @@ bool CUICmdList::OnKeyPress(int iKey)
 
 void CUICmdList::Open()
 {
-	// Open with animation
+	// 스르륵 열린다!!
 	SetVisible(true);
 	SetPos(CN3Base::s_CameraData.vp.Width, 10);
 	m_fMoveDelta = 0;
@@ -367,15 +367,10 @@ bool CUICmdList::UpdateCommandList(int iCatIndex)
 	int indexStart = iCatIndex * 200 + 8000;	// start index for correct loc in map
 	int indexEnd = indexStart + 100;			// where to stop iterating
 
-	int iaHiddenCMDs[] = {8012,8013,8014, 8803, 8804, 9407};
-
 	for (const auto& [resourceId, commandName] : m_mapCmds)
 	{
 		if (resourceId < indexStart
 			|| resourceId >= indexEnd)
-			continue;
-
-		if (std::find(std::begin(iaHiddenCMDs), std::end(iaHiddenCMDs), resourceId) != std::end(iaHiddenCMDs))
 			continue;
 
 		m_pList_Cmds->AddString(commandName);
