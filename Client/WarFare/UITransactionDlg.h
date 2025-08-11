@@ -42,6 +42,7 @@ public:
 	CN3UIButton*			m_pBtnPageDown;
 	//this_ui_add_end
 
+	CUIMsgBoxOkCancel*		m_pUIMsgBoxOkCancel;
 
 protected:
 	int					GetItemiOrder(__IconItemSkill* spItem, e_UIWND_DISTRICT eWndDist);
@@ -93,9 +94,10 @@ public:
 	void				ItemCountOK();
 	void				ItemCountCancel();
 
-	//MsgBox Ok Cancel
-	void				MsgBoxCancel();
-	void				MsgBoxOK();
+	// MsgBox Ok Cancel
+	void				CallBackProc(int iID, uint32_t dwFlag) override;
+	void				OnConfirm();
+	void				OnCancel();
 
 	void				ItemMoveFromInvToThis();
 	void				ItemMoveFromThisToInv();
@@ -109,7 +111,7 @@ public:
 
 	void				GoldUpdate();
 	void				UpdateWeight(const std::string& szWeight);
-	void				GenerateItemName(__IconItemSkill* pItem, std::string& strName);
+	static std::string	GetItemName(const __IconItemSkill* spItem);
 };
 
 #endif // !defined(AFX_UITRANSACTIONDLG_H__42671245_FF4F_42FC_AF7B_DACEDA8734B7__INCLUDED_)

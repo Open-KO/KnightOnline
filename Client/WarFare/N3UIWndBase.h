@@ -125,7 +125,6 @@ public:
 	static __SkillSelectInfo		m_sSkillSelectInfo;
 	static CN3UIImage*				m_pSelectionImage;
 	static CCountableItemEditDlg*	m_pCountableItemEdit;
-	static CUIMsgBoxOkCancel*		m_pMsgBoxOkCancel;
 
 protected:
 	e_UIWND						m_eUIWnd;
