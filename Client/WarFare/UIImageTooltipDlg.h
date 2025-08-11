@@ -31,7 +31,9 @@ public:
 	std::string			m_pstdstr[MAX_TOOLTIP_COUNT];
 	CN3UIImage*			m_pImg;
 
-	int					m_iPosXBack, m_iPosYBack;
+	int					m_iPosXBack;
+	int					m_iPosYBack;
+	int					m_iTooltipNum;
 	__IconItemSkill*	m_spItemBack;
 	
 protected:
@@ -49,6 +51,9 @@ public:
 
 	void	DisplayTooltipsEnable(int xpos, int ypos, __IconItemSkill* spItem, bool bPrice = false, bool bBuy = true);
 	void	DisplayTooltipsDisable();
+
+protected:
+	bool	IsItemChanged(const __IconItemSkill* spItem) const;
 };
 
 #endif // !defined(AFX_UIIMAGETOOLTIPDLG_H__CC12484D_5DC0_4F7A_ABF7_0506B2F36292__INCLUDED_)
