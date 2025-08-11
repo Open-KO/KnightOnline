@@ -6,8 +6,8 @@
 #include "RoomEvent.h"
 #include "ServerDlg.h"
 #include "Define.h"
+#include "AIResourceFormatter.h"
 
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG

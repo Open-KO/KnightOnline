@@ -73,7 +73,9 @@ public:
 
 	T* 	Get(int index, bool bIncreaseRefCount = TRUE)
 	{
-		if(index < 0 || index >= m_Datas.size()) return NULL;
+		if (index < 0
+			|| index >= static_cast<int>(m_Datas.size()))
+			return nullptr;
 
 		if(bIncreaseRefCount)
 		{

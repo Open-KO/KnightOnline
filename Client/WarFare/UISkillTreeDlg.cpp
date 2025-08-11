@@ -1064,6 +1064,8 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	szStr.clear();
 
 	// Tooltip - item consumed
+	if (!m_pStr_skill_item2->IsVisible())
+		m_pStr_skill_item2->SetVisible(true);
 	uint32_t requiredItemID = spSkill->pSkill->dwExhaustItem;
 	uint32_t consumedItemID = 0;
 	
@@ -1159,8 +1161,8 @@ void CUISkillTreeDlg::InitIconUpdate()
 
 
 	// 아이디 = 직업 코드*1000 + 001부터.. (직업 코드+1)*100 + 001까지..
-	size_t iSkillIDFirst, iSkillIndexFirst, iSkillIndexLast, iModulo;
-	iSkillIDFirst = CGameBase::s_pPlayer->m_InfoBase.eClass*1000+1;
+	int iSkillIDFirst, iSkillIndexFirst, iSkillIndexLast, iModulo;
+	iSkillIDFirst = CGameBase::s_pPlayer->m_InfoBase.eClass * 1000 + 1;
 	iSkillIndexLast = CGameBase::s_pTbl_Skill.GetSize();
 
 	if (!CGameBase::s_pTbl_Skill.IDToIndex(iSkillIDFirst, &iSkillIndexFirst))
@@ -1171,7 +1173,7 @@ void CUISkillTreeDlg::InitIconUpdate()
 
 	if ( CGameBase::s_pPlayer->m_InfoBase.eClass <= CLASS_EL_DRUID )
 	{
-		for(size_t i = iSkillIndexFirst; i < CGameBase::s_pTbl_Skill.GetSize(); i++ )
+		for (int i = iSkillIndexFirst; i < CGameBase::s_pTbl_Skill.GetSize(); i++)
 		{
 			pUSkill = CGameBase::s_pTbl_Skill.GetIndexedData(i);
 			iDivide = pUSkill->dwID / 1000;
@@ -1183,7 +1185,7 @@ void CUISkillTreeDlg::InitIconUpdate()
 		}
 	}
 
-	for(size_t i = iSkillIndexFirst; i < iSkillIndexLast; i++ )
+	for (int i = iSkillIndexFirst; i < iSkillIndexLast; i++)
 	{
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.GetIndexedData(i);
 		if ( pUSkill == NULL ) continue;
@@ -1505,7 +1507,7 @@ stop:
 
 bool CUISkillTreeDlg::CheckSkillCanBeUse(__TABLE_UPC_SKILL* pUSkill)
 {
-	size_t iModulo = pUSkill->iNeedSkill % 10;
+	int iModulo = pUSkill->iNeedSkill % 10;
 	switch (iModulo)
 	{
 		case 0:																				// Basic Skills..

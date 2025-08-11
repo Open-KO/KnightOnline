@@ -970,11 +970,9 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 //	NPC Thread 들을 작동시킨다.
 void CServerDlg::ResumeAI()
 {
-	int i, j;
-
-	for (i = 0; i < m_NpcThreadArray.size(); i++)
+	for (size_t i = 0; i < m_NpcThreadArray.size(); i++)
 	{
-		for (j = 0; j < NPC_NUM; j++)
+		for (int j = 0; j < NPC_NUM; j++)
 			m_NpcThreadArray[i]->m_ThreadInfo.pNpc[j] = m_NpcThreadArray[i]->m_pNpc[j];
 
 		m_NpcThreadArray[i]->m_ThreadInfo.pIOCP = &m_Iocport;

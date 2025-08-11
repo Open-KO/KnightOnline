@@ -165,14 +165,22 @@ public:
 	static	bool	EnableTooltip(const std::string& szFN);	// tooltip UI를 초기화 해준다.
 	static	void	DestroyTooltip();	// tooltip ui에 관련된 것을 해제해준다.
 
-	int				GetChildrenCount() { return m_Children.size(); }
-	CN3UIBase*		GetChildByIndex(size_t iIndex)
+	int GetChildrenCount() const
 	{
-		if (iIndex >= m_Children.size()) return NULL;
+		return static_cast<int>(m_Children.size());
+	}
+
+	CN3UIBase* GetChildByIndex(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_Children.size()))
+			return nullptr;
+
 		auto it = m_Children.begin();
 		std::advance(it, iIndex);
 		return *it;
 	}
+
 	virtual void	operator = (const CN3UIBase& other);
 
 protected:

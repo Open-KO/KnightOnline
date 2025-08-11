@@ -7,9 +7,9 @@
 #include "EbenezerDlg.h"
 #include "User.h"
 #include "Map.h"
+#include "db_resources.h"
 
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -1924,7 +1924,7 @@ void CUser::Chat(char* pBuf)
 		if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 			return;
 
-		finalstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+		finalstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 	}
 	else
 	{
@@ -5506,8 +5506,7 @@ void CUser::SendNotice()
 		if (strlen(m_pMain->m_ppNotice[i]) == 0)
 			continue;
 
-		SetByte(send_buff, strlen(m_pMain->m_ppNotice[i]), send_index);
-		SetString(send_buff, m_pMain->m_ppNotice[i], strlen(m_pMain->m_ppNotice[i]), send_index);
+		SetString1(send_buff, m_pMain->m_ppNotice[i], send_index);
 		count++;
 	}
 
@@ -6249,7 +6248,7 @@ void CUser::ExchangeAdd(char* pBuf)
 		}
 	}
 
-	if (m_ExchangeItemList.size() > ((bGold) ? 13 : 12))
+	if (static_cast<int>(m_ExchangeItemList.size()) > ((bGold) ? 13 : 12))
 		goto add_fail;
 
 	// Gold 가 중복되면 추가하지 않는댜..
@@ -7239,14 +7238,14 @@ void CUser::Dead()
 
 		//TRACE(_T("---> Dead Captain Deprive - %hs\n"), m_pUserData->m_id);
 		if (m_pUserData->m_bNation == KARUS)
-			chatstr = fmt::format_win32_resource(IDS_KARUS_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
+			chatstr = fmt::format_db_resource(IDS_KARUS_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 		else if (m_pUserData->m_bNation == ELMORAD)
-			chatstr = fmt::format_win32_resource(IDS_ELMO_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
+			chatstr = fmt::format_db_resource(IDS_ELMO_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 
 		memset(send_buff, 0, sizeof(send_buff));
 		send_index = 0;
 
-		chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+		chatstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 		SetByte(send_buff, WIZ_CHAT, send_index);
 		SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 		SetByte(send_buff, 1, send_index);
@@ -10433,21 +10432,19 @@ void CUser::MarketBBSReport(char* pBuf, BYTE type)
 			SetShort(send_buff, strlen(pUser->m_pUserData->m_id), send_index);
 			SetString(send_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), send_index);
 
-			title_length = strlen(m_pMain->m_strBuyTitle[i]);
+			title_length = static_cast<short>(strlen(m_pMain->m_strBuyTitle[i]));
 			if (title_length > MAX_BBS_TITLE)
 				title_length = MAX_BBS_TITLE;
 
-			SetShort(send_buff, title_length, send_index);
-			SetString(send_buff, m_pMain->m_strBuyTitle[i], title_length, send_index);
+			SetString2(send_buff, m_pMain->m_strBuyTitle[i], title_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strBuyTitle[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strBuyTitle[i], strlen(m_pMain->m_strBuyTitle[i]), send_index);
 
-			message_length = strlen(m_pMain->m_strBuyMessage[i]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strBuyMessage[i]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strBuyMessage[i], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strBuyMessage[i], message_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strBuyMessage[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strBuyMessage[i], strlen(m_pMain->m_strBuyMessage[i]), send_index);
 
@@ -10479,25 +10476,21 @@ void CUser::MarketBBSReport(char* pBuf, BYTE type)
 				continue;
 
 			SetShort(send_buff, m_pMain->m_sSellID[i], send_index);
+			SetString2(send_buff, pUser->m_pUserData->m_id, send_index);
 
-			SetShort(send_buff, strlen(pUser->m_pUserData->m_id), send_index);
-			SetString(send_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), send_index);
-
-			title_length = strlen(m_pMain->m_strSellTitle[i]);
+			title_length = static_cast<short>(strlen(m_pMain->m_strSellTitle[i]));
 			if (title_length > MAX_BBS_TITLE)
 				title_length = MAX_BBS_TITLE;
 
-			SetShort(send_buff, title_length, send_index);
-			SetString(send_buff, m_pMain->m_strSellTitle[i], title_length, send_index);
+			SetString2(send_buff, m_pMain->m_strSellTitle[i], title_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strSellTitle[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strSellTitle[i], strlen(m_pMain->m_strSellTitle[i]), send_index);
 
-			message_length = strlen(m_pMain->m_strSellMessage[i]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strSellMessage[i]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strSellMessage[i], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strSellMessage[i], message_length, send_index);
 //			SetShort(send_buff, strlen(m_pMain->m_strSellMessage[i]), send_index);
 //			SetString(send_buff, m_pMain->m_strSellMessage[i], strlen(m_pMain->m_strSellMessage[i]), send_index);
 
@@ -10770,24 +10763,22 @@ void CUser::MarketBBSMessage(char* pBuf)
 			if (m_pMain->m_sBuyID[message_index] == -1)
 				goto fail_return;
 
-			message_length = strlen(m_pMain->m_strBuyMessage[message_index]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strBuyMessage[message_index]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strBuyMessage[message_index], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strBuyMessage[message_index], message_length, send_index);
 			break;
 
 		case MARKET_BBS_SELL:
 			if (m_pMain->m_sSellID[message_index] == -1)
 				goto fail_return;
 
-			message_length = strlen(m_pMain->m_strSellMessage[message_index]);
+			message_length = static_cast<short>(strlen(m_pMain->m_strSellMessage[message_index]));
 			if (message_length > MAX_BBS_MESSAGE)
 				message_length = MAX_BBS_MESSAGE;
 
-			SetShort(send_buff, message_length, send_index);
-			SetString(send_buff, m_pMain->m_strSellMessage[message_index], message_length, send_index);
+			SetString2(send_buff, m_pMain->m_strSellMessage[message_index], message_length, send_index);
 			break;
 	}
 
@@ -12191,11 +12182,11 @@ void CUser::NativeZoneReturn()
 
 BOOL CUser::CheckEditBox()
 {
-	std::string id = fmt::format_win32_resource(IDS_COUPON_NOTEPAD_ID);
+	std::string id = fmt::format_db_resource(IDS_COUPON_NOTEPAD_ID);
 	if (id == m_strCouponId)
 		return TRUE;
 
-	id = fmt::format_win32_resource(IDS_COUPON_POSTIT_ID);
+	id = fmt::format_db_resource(IDS_COUPON_POSTIT_ID);
 	if (id == m_strCouponId)
 		return TRUE;
 

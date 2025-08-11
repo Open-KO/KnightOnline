@@ -3,18 +3,17 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "Ebenezer.h"
 #include "AISocket.h"
 #include "EbenezerDlg.h"
-#include "define.h"
+#include "Define.h"
 #include "Npc.h"
-#include "user.h"
+#include "User.h"
 #include "Map.h"
+#include "db_resources.h"
 
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 
 #include <spdlog/spdlog.h>
 
@@ -1569,7 +1568,7 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			std::string chatstr;
 			if (nResult == 1)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_CAPTAIN, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_CAPTAIN, strKnightsName, strMaxUserName);
 
 		/*		if (m_pMain->m_byBattleSave == 0)
 				{
@@ -1593,33 +1592,33 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			}
 			else if (nResult == 2)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_GATEKEEPER, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_GATEKEEPER, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 3)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD1, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_KARUS_GUARD1, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 4)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD2, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_KARUS_GUARD2, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 5)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD1, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_ELMO_GUARD1, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 6)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD2, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_ELMO_GUARD2, strKnightsName, strMaxUserName);
 			}
 			else if (nResult == 7
 				|| nResult == 8)
 			{
-				chatstr = fmt::format_win32_resource(IDS_KILL_GATEKEEPER, strKnightsName, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_GATEKEEPER, strKnightsName, strMaxUserName);
 			}
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
-			chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+			chatstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 			SetByte(send_buff, WIZ_CHAT, send_index);
 			SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);

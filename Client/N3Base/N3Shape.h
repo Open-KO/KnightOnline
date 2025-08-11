@@ -48,27 +48,41 @@ public:
 	virtual bool Save(HANDLE hFile);
 #endif // end of _N3TOOL
 	
-	size_t			TexCount() { return m_TexRefs.size(); }
-	CN3Texture* Tex(size_t iIndex)
+	int TexCount() const
 	{
-		if (iIndex >= m_TexRefs.size()) return NULL;
+		return static_cast<int>(m_TexRefs.size());
+	}
+
+	CN3Texture* Tex(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_TexRefs.size()))
+			return nullptr;
+
 		return m_TexRefs[iIndex];
 	}
+
 	void		TexAlloc(int nCount);
-	CN3Texture*	TexSet(size_t iIndex, const std::string& szFN)
+	CN3Texture* TexSet(int iIndex, const std::string& szFN)
 	{
-		if (iIndex >= m_TexRefs.size()) return NULL;
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_TexRefs.size()))
+			return nullptr;
+
 		s_MngTex.Delete(&m_TexRefs[iIndex]);
 		m_TexRefs[iIndex] = s_MngTex.Get(szFN, true, s_Options.iTexLOD_Shape);
 		return m_TexRefs[iIndex];
 	}
-	void	TexSet(size_t iIndex, CN3Texture* pTex)
+
+	void TexSet(int iIndex, CN3Texture* pTex)
 	{
-		if (iIndex >= m_TexRefs.size()) return;
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_TexRefs.size()))
+			return;
+
 		s_MngTex.Delete(&m_TexRefs[iIndex]);
 		m_TexRefs[iIndex] = pTex;
 	}
-
 
 	CN3PMeshInstance*	MeshInstance() { return &m_PMInst; } 
 	CN3PMesh*			Mesh() { return m_PMInst.GetMesh(); }
@@ -129,10 +143,22 @@ public:
 	virtual void	Tick(float fFrm = FRAME_SELFPLAY);
 	virtual void	Render();
 
-	CN3SPart*		Part(size_t iIndex) { if (iIndex >= m_Parts.size()) return NULL; return m_Parts[iIndex]; }
+	int PartCount() const
+	{
+		return static_cast<int>(m_Parts.size());
+	}
+
+	CN3SPart* Part(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_Parts.size()))
+			return nullptr;
+
+		return m_Parts[iIndex];
+	}
+
 	CN3SPart*		PartAdd() { CN3SPart* pPart = new CN3SPart(); m_Parts.push_back(pPart); return pPart; }
-	size_t			PartCount() { return m_Parts.size(); }
-	void			PartDelete(size_t iIndex);
+	void			PartDelete(int iIndex);
 	
 	bool			Load(HANDLE hFile);
 #ifdef _N3TOOL
@@ -149,14 +175,14 @@ public:
 //	By : Ecli666 ( On 2002-08-06 오후 4:33:04 )
 //
 	void			SetMaxLOD();
-	__Matrix44	GetPartMatrix(size_t iPartIndex);
-	void			PartialRender(size_t iPartIndex, int iCount, uint16_t* pIndices);
-	int				GetIndexbufferCount(size_t iPartIndex);
-	int				GetIndexByiOrder(size_t iPartIndex, int iOrder);
-__Vector3		GetVertexByIndex(size_t iPartIndex, int iIndex);
+	__Matrix44		GetPartMatrix(int iPartIndex) const;
+	void			PartialRender(int iPartIndex, int iCount, uint16_t* pIndices);
+	int				GetIndexbufferCount(int iPartIndex);
+	int				GetIndexByiOrder(int iPartIndex, int iOrder);
+__Vector3			GetVertexByIndex(int iPartIndex, int iIndex);
 	int				GetColIndexbufferCount();
 	int				GetColIndexByiOrder(int iOrder);
-__Vector3	  GetColVertexByIndex(int iIndex); 
+__Vector3			GetColVertexByIndex(int iIndex); 
 	void			PartialColRender(int iCount, int* piIndices);
 	void			PartialGetCollision(int iIndex, __Vector3& vec);
 	bool			LoadTransformOnly(HANDLE hFile);

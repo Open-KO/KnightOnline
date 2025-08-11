@@ -41,6 +41,8 @@ struct __InfoPlayerBase
 	int			iLevel;			// 레벨
 	int			iHPMax;
 	int			iHP;
+	int			iMP;
+	int			iMPMax;
 	int			iAuthority;		// 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
 
 	bool		bRenderID;		// 화면에 ID 를 찍는지..
@@ -56,6 +58,8 @@ struct __InfoPlayerBase
 		iLevel = 0;					// 레벨
 		iHPMax = 0;
 		iHP = 0;
+		iMP = 0;
+		iMPMax = 0;
 		iAuthority = 1;				// 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
 		bRenderID = true;
 	}

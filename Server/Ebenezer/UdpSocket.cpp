@@ -3,15 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "ebenezer.h"
 #include "UdpSocket.h"
-#include "define.h"
+#include "Define.h"
 #include "EbenezerDlg.h"
 #include "Knights.h"
 #include "User.h"
+#include "db_resources.h"
 
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -318,19 +317,19 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 
 			//TRACE(_T("-->  UDP RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
 			if (nResult == 1)
-				chatstr = fmt::format_win32_resource(IDS_KILL_CAPTAIN, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_CAPTAIN, strMaxUserName);
 			else if (nResult == 2)
-				chatstr = fmt::format_win32_resource(IDS_KILL_GATEKEEPER, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_GATEKEEPER, strMaxUserName);
 			else if (nResult == 3)
-				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD1, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_KARUS_GUARD1, strMaxUserName);
 			else if (nResult == 4)
-				chatstr = fmt::format_win32_resource(IDS_KILL_KARUS_GUARD2, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_KARUS_GUARD2, strMaxUserName);
 			else if (nResult == 5)
-				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD1, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_ELMO_GUARD1, strMaxUserName);
 			else if (nResult == 6)
-				chatstr = fmt::format_win32_resource(IDS_KILL_ELMO_GUARD2, strMaxUserName);
+				chatstr = fmt::format_db_resource(IDS_KILL_ELMO_GUARD2, strMaxUserName);
 
-			chatstr = fmt::format_win32_resource(IDP_ANNOUNCEMENT, chatstr);
+			chatstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
 			SetByte(send_buff, WIZ_CHAT, send_index);
 			SetByte(send_buff, WAR_SYSTEM_CHAT, send_index);
 			SetByte(send_buff, 1, send_index);
@@ -468,7 +467,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 
 	if (command == KNIGHTS_JOIN)
 	{
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_JOIN, charId);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_JOIN, charId);
 
 		// 클랜정보에 추가
 		m_pMain->m_KnightsManager.AddKnightsUser(knightsId, charId);
@@ -482,7 +481,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, BYTE command)
 		// 클랜정보에 추가
 		m_pMain->m_KnightsManager.RemoveKnightsUser(knightsId, charId);
 
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_WITHDRAW, charId);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_WITHDRAW, charId);
 		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} left knightsId={}",
 			charId, knightsId);
 	}
@@ -524,7 +523,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
 
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
 				m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
 			else
@@ -552,7 +551,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
 				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -561,7 +560,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
 				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -645,9 +644,9 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 
 	// 클랜이나 기사단이 파괴된 메시지를 보내고 유저 데이타를 초기화
 	if (flag == CLAN_TYPE)
-		finalstr = fmt::format_win32_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
+		finalstr = fmt::format_db_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
 	else if (flag == KNIGHTS_TYPE)
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_DESTROY, pKnights->m_strName);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_DESTROY, pKnights->m_strName);
 
 	memset(send_buff, 0x00, 128);		send_index = 0;
 	SetByte(send_buff, WIZ_CHAT, send_index);

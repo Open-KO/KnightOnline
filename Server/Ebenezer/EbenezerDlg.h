@@ -66,6 +66,7 @@ typedef CSTLMap <_PARTY_GROUP>				PartyMap;
 typedef CSTLMap <CKnights>					KnightsMap;
 typedef CSTLMap <_ZONE_SERVERINFO>			ServerMap;
 typedef CSTLMap <model::Home>				HomeTableMap;
+typedef CSTLMap <model::ServerResource>		ServerResourceTableMap;
 typedef CSTLMap <model::StartPosition>		StartPositionTableMap;
 typedef	CSTLMap	<EVENT>						EventMap;
 
@@ -105,6 +106,7 @@ public:
 	BOOL LoadAllKnightsUserData();
 	BOOL LoadAllKnights();
 	BOOL LoadStartPositionTable();
+	BOOL LoadServerResourceTable();
 	BOOL LoadHomeTable();
 	void Announcement(BYTE type, int nation = 0, int chat_type = 8);
 	void ResetBattleZone();
@@ -206,6 +208,7 @@ public:
 	PartyMap				m_PartyMap;
 	KnightsMap				m_KnightsMap;
 	HomeTableMap			m_HomeTableMap;
+	ServerResourceTableMap	m_ServerResourceTableMap;
 	StartPositionTableMap	m_StartPositionTableMap;
 	EventMap				m_EventMap;
 
@@ -234,7 +237,6 @@ public:
 	// ~Yookozuna 2002.06.12
 	BYTE    m_byBattleOpen, m_byOldBattleOpen;					// 0:전쟁중이 아님, 1:전쟁중(국가간전쟁), 2:눈싸움전쟁
 	BYTE	m_bVictory, m_byOldVictory;
-	BYTE	m_bBanishDelayStart;
 	BYTE	m_bKarusFlag, m_bElmoradFlag;
 	BYTE    m_byKarusOpenFlag, m_byElmoradOpenFlag, m_byBanishFlag, m_byBattleSave;
 	short   m_sDiscount;	// 능력치와 포인트 초기화 할인 (0:할인없음, 1:할인(50%) )

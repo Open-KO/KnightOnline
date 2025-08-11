@@ -766,10 +766,10 @@ void CUIKnights::RefreshList()
 {
 	ClearLists();
 
-	it_KMI it = m_MemberList.begin();
+	auto it = m_MemberList.begin();
 
-	size_t i = 10;
-	size_t e = m_iPageCur * 10;
+	int i = 10;
+	int e = m_iPageCur * 10;
 
 	for (; i < e; i++)
 	{
@@ -1089,18 +1089,24 @@ bool CUIFriends::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 	if (dwMsg == UIMSG_BUTTON_CLICK)					
 	{
-		if(pSender == m_pBtn_PrevPage || pSender == m_pBtn_NextPage)
+		if (pSender == m_pBtn_PrevPage
+			|| pSender == m_pBtn_NextPage)
 		{
-			size_t iPagePrev = m_iPageCur;
+			int iPagePrev = m_iPageCur;
 
-			if(pSender == m_pBtn_PrevPage) m_iPageCur--;
-			else m_iPageCur++;
+			if (pSender == m_pBtn_PrevPage)
+				m_iPageCur--;
+			else
+				m_iPageCur++;
 
-			if(m_iPageCur < 0) m_iPageCur = 0;
+			if (m_iPageCur < 0)
+			{
+				m_iPageCur = 0;
+			}
 			else
 			{
-				size_t iLinePerPage = 0;
-				if(m_pList_Friends)
+				int iLinePerPage = 0;
+				if (m_pList_Friends != nullptr)
 				{
 //					RECT rc = m_pList_Friends->GetRegion();
 //					uint32_t dwH = m_pList_Friends->FontHeight();
@@ -1108,10 +1114,12 @@ bool CUIFriends::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 					iLinePerPage = 10;
 				}
 
-				size_t iPageMax = 0;
-				if(iLinePerPage > 0) iPageMax = (m_MapFriends.size() / iLinePerPage) + 1;
+				int iPageMax = 0;
+				if (iLinePerPage > 0)
+					iPageMax = (static_cast<int>(m_MapFriends.size()) / iLinePerPage) + 1;
 				
-				if(m_iPageCur >= iPageMax) m_iPageCur = iPageMax - 1;
+				if (m_iPageCur >= iPageMax)
+					m_iPageCur = iPageMax - 1;
 			}
 			
 			if(iPagePrev != m_iPageCur) // 페이지가 변경될때 
@@ -1215,21 +1223,24 @@ void CUIFriends::UpdateList()
 //	RECT rc = m_pList_Friends->GetRegion();
 //	uint32_t dwH = m_pList_Friends->FontHeight();
 //	int iLinePerPage = (rc.bottom - rc.top) / dwH;
-	size_t iLinePerPage = 10;
+	int iLinePerPage = 10;
 //	if(iLinePerPage <= 0) return;
 
-	size_t iPageMax = m_MapFriends.size() / iLinePerPage;
-	if(m_iPageCur > iPageMax) return;
+	int iPageMax = static_cast<int>(m_MapFriends.size()) / iLinePerPage;
+	if (m_iPageCur < 0
+		|| m_iPageCur > iPageMax)
+		return;
 
-	size_t iSkip = m_iPageCur * iLinePerPage;
-	if(iSkip >= m_MapFriends.size()) return;
+	size_t iSkip = static_cast<size_t>(m_iPageCur * iLinePerPage);
+	if (iSkip >= m_MapFriends.size())
+		return;
 
 	if(m_pText_Page) m_pText_Page->SetStringAsInt(m_iPageCur+1); // 페이지 표시..
 
 	auto it = m_MapFriends.begin();
 	std::advance(it, iSkip);
 
-	for (size_t i = 0; i < iLinePerPage && it != m_MapFriends.end(); i++, it++)
+	for (int i = 0; i < iLinePerPage && it != m_MapFriends.end(); i++, it++)
 	{
 		__FriendsInfo& FI = it->second;
 		int iIndex = m_pList_Friends->AddString(FI.szName);

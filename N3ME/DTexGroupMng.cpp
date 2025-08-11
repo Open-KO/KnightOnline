@@ -275,10 +275,12 @@ int CDTexGroupMng::GetID2Index(int id)
 //
 int CDTexGroupMng::GetIndex2ID(int idx)
 {
-	if(idx < 0 || idx >= m_Groups.size()) return 0;
+	if (idx < 0
+		|| idx >= static_cast<int>(m_Groups.size()))
+		return 0;
 
 	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
+	int iSize = static_cast<int>(m_Groups.size());
 	for(int i = 0; i < idx; i++, it++);
 
 	CDTexGroup* pDTG = *it;

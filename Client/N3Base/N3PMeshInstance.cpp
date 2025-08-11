@@ -352,11 +352,15 @@ int CN3PMeshInstance::GetIndexByiOrder(int iOrder)
 	return m_pIndices[iOrder];
 }
 
-__Vector3 CN3PMeshInstance::GetVertexByIndex(size_t iIndex)
+__Vector3 CN3PMeshInstance::GetVertexByIndex(int iIndex)
 {
-	__Vector3 vec; vec.Zero();
-	if (iIndex > (size_t)GetNumVertices())
+	if (iIndex < 0
+		|| iIndex >= GetNumVertices())
+	{
+		__Vector3 vec;
+		vec.Zero();
 		return vec;
+	}
 
 	return GetMesh()->m_pVertices[iIndex];
 }

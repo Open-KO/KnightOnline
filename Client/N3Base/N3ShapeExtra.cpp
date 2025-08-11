@@ -87,9 +87,10 @@ void CN3ShapeExtra::Tick(float fFrm)
 		this->MakeCollisionMeshByParts(); // 충돌메시를 다시 만든다..
 }
 
-void CN3ShapeExtra::RotateTo(size_t iPart, const __Vector3& vAxis, float fRadianToReach, float fRadianPerSec, bool bImmediately)
+void CN3ShapeExtra::RotateTo(int iPart, const __Vector3& vAxis, float fRadianToReach, float fRadianPerSec, bool bImmediately)
 {
-	if (iPart >= m_Rotations.size())
+	if (iPart < 0
+		|| iPart >= static_cast<int>(m_Rotations.size()))
 		return;
 
 	__Rotation* pRot = &(m_Rotations[iPart]);

@@ -233,11 +233,7 @@ void CUILevelGuide::SetTopLine(CN3UIScrollBar* pScroll, CN3UIString* pTextGuide)
 		return;
 
 	// limit check for the line which displayed first, topline
-	int iTopLine = std::clamp(
-		static_cast<int>(pScroll->GetCurrentPos()),
-		0,
-		iTotalLineCount - iVisibleLineCount);
-
+	int iTopLine = std::clamp(pScroll->GetCurrentPos(), 0, iTotalLineCount - iVisibleLineCount);
 	pTextGuide->SetStartLine(iTopLine);
 }
 

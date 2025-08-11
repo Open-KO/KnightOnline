@@ -121,6 +121,7 @@
     <ClCompile Include="GameProcOption.cpp" />
     <ClCompile Include="GrassBoard.cpp" />
     <ClCompile Include="GrassMng.cpp" />
+    <ClCompile Include="IconItemSkill.cpp" />
     <ClCompile Include="ItemRepairMgr.cpp" />
     <ClCompile Include="LightMgr.cpp" />
     <ClCompile Include="LocalInput.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="GameProcOption.h" />
     <ClInclude Include="GrassBoard.h" />
     <ClInclude Include="GrassMng.h" />
+    <ClInclude Include="IconItemSkill.h" />
     <ClInclude Include="N3ClientShapeMgr.h" />
     <ClInclude Include="N3Pond.h" />
     <ClInclude Include="N3River.h" />

@@ -534,9 +534,10 @@ uint32_t CN3UIEdit::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	return dwRet;
 }
 
-void CN3UIEdit::SetCaretPos(UINT nPos)
+void CN3UIEdit::SetCaretPos(uint32_t nPos)
 {
-	if (nPos > m_iMaxStrLen) nPos = m_iMaxStrLen;	// 최대 길이보다 길경우 작게 세팅
+	if (nPos > m_iMaxStrLen)
+		nPos = m_iMaxStrLen;	// 최대 길이보다 길경우 작게 세팅
 	m_nCaretPos = nPos;
 
 	const std::string& szBuff = m_pBuffOutRef->GetString();
@@ -549,15 +550,22 @@ void CN3UIEdit::SetCaretPos(UINT nPos)
 	s_Caret.SetPos(m_pBuffOutRef->m_ptDrawPos.x + size.cx, m_pBuffOutRef->m_ptDrawPos.y);
 }
 
-void CN3UIEdit::SetMaxString(size_t iMax)		// 최대 글씨 수를 정해준다
+void CN3UIEdit::SetMaxString(uint32_t nMax)		// 최대 글씨 수를 정해준다
 {
-	if (iMax <= 0) {__ASSERT(0, "최대 글씨 수를 0보다 크게 정해주세요"); return;}
-	m_iMaxStrLen = iMax;
+	if (nMax == 0)
+	{
+		__ASSERT(0, "최대 글씨 수를 0보다 크게 정해주세요");
+		return;
+	}
 
-	if (NULL == m_pBuffOutRef) return;
+	m_iMaxStrLen = nMax;
+
+	if (m_pBuffOutRef == nullptr)
+		return;
 
 	const std::string szBuff = GetString();
-	if ( m_iMaxStrLen >= szBuff.size()) return;
+	if (m_iMaxStrLen >= szBuff.size())
+		return;
 
 	// 여기까지 오는 경우는 현재 글씨길이가 iMax보다 큰 경우이므로 제한글자에 맞춰 잘라주게 다시 설정한다.
 	SetString(szBuff);
@@ -651,8 +659,9 @@ void CN3UIEdit::SetString(const std::string& szString)
 	}
 
 	const std::string& szTempStr = m_pBuffOutRef->GetString();
-	size_t iStrLen = szTempStr.size();
-	if (m_nCaretPos > iStrLen) SetCaretPos(iStrLen);
+	uint32_t nStrLen = static_cast<uint32_t>(szTempStr.size());
+	if (m_nCaretPos > nStrLen)
+		SetCaretPos(nStrLen);
 }
 
 BOOL CN3UIEdit::MoveOffset(int iOffsetX, int iOffsetY)		// 위치 지정(chilren의 위치도 같이 바꾸어준다. caret위치도 같이 바꾸어줌.)

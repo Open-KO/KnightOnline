@@ -7,9 +7,9 @@
 #include "User.h"
 #include "GameDefine.h"
 #include "EbenezerDlg.h"
+#include "db_resources.h"
 
 #include <shared/packets.h>
-#include <shared/ServerResourceFormatter.h>
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -778,7 +778,7 @@ void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 	char temp_buff[4096] = {};
 	CUser* pTUser = nullptr;
 	CKnights* pKnights = nullptr;
-	std::string errormsg = fmt::format_win32_resource(IDP_KNIGHT_NOT_REGISTERED);
+	std::string errormsg = fmt::format_db_resource(IDP_KNIGHT_NOT_REGISTERED);
 
 	if (pUser == nullptr)
 		return;
@@ -844,7 +844,7 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, char* pBuf, BYTE comma
 	BYTE result;
 	char send_buff[2048] = {};
 	CUser* pTUser = nullptr;
-	std::string errormsg = fmt::format_win32_resource(IDP_KNIGHT_DB_FAIL);
+	std::string errormsg = fmt::format_db_resource(IDP_KNIGHT_DB_FAIL);
 
 	result = GetByte(pBuf, index);
 
@@ -1033,7 +1033,7 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 	{
 		pUser->m_pUserData->m_bKnights = knightsindex;
 		pUser->m_pUserData->m_bFame = TRAINEE;
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_JOIN, pUser->m_pUserData->m_id);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_JOIN, pUser->m_pUserData->m_id);
 
 		// 클랜정보에 추가
 		AddKnightsUser(knightsindex, pUser->m_pUserData->m_id);
@@ -1059,7 +1059,7 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, BYTE command)
 				memset(pKnights->strViceChief_3, 0, sizeof(pKnights->strViceChief_3));
 		}*/
 
-		finalstr = fmt::format_win32_resource(IDS_KNIGHTS_WITHDRAW, pUser->m_pUserData->m_id);
+		finalstr = fmt::format_db_resource(IDS_KNIGHTS_WITHDRAW, pUser->m_pUserData->m_id);
 		//TRACE(_T("RecvJoinKnights - 탈퇴, nid=%d, name=%hs, index=%d, fame=%d\n"), pUser->GetSocketID(), pUser->m_pUserData->m_id, pUser->m_pUserData->m_bKnights, pUser->m_pUserData->m_bFame);
 	}
 
@@ -1133,7 +1133,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
 
 				RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
@@ -1163,7 +1163,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
 				ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -1172,7 +1172,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, BYTE command)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
 				ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
-				finalstr = fmt::format_win32_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
+				finalstr = fmt::format_db_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -1280,9 +1280,9 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 
 	// 클랜이나 기사단이 파괴된 메시지를 보내고 유저 데이타를 초기화
 	if (flag == CLAN_TYPE)
-		finalstr = fmt::format_win32_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
+		finalstr = fmt::format_db_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
 	else if (flag == KNIGHTS_TYPE)
-		finalstr = fmt::format_win32_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
+		finalstr = fmt::format_db_resource(IDS_CLAN_DESTORY, pKnights->m_strName);
 	
 	memset(send_buff, 0, sizeof(send_buff));
 	send_index = 0;

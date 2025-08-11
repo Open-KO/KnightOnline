@@ -29,30 +29,41 @@ protected:
 // Operations
 public:
 	void	Release();
-	Type*	Find(uint32_t dwID) // ID로 data 찾기
+
+	Type* Find(uint32_t dwID) // ID로 data 찾기
 	{
-		it_Table it = m_Datas.find(dwID);
-		if(it == m_Datas.end()) return NULL; // 찾기에 실패 했다!~!!
-		else return &(it->second);
+		auto it = m_Datas.find(dwID);
+		if (it == m_Datas.end())
+			return nullptr; // 찾기에 실패 했다!~!!
+		
+		return &it->second;
 	}
-	size_t	GetSize() { return m_Datas.size(); }
-	Type*	GetIndexedData(size_t index)	//index로 찾기..
+
+	int GetSize() const
 	{
-		if (index >= m_Datas.size()) return NULL;
+		return static_cast<int>(m_Datas.size());
+	}
+
+	Type* GetIndexedData(int index)	//index로 찾기..
+	{
+		if (index < 0
+			|| index >= static_cast<int>(m_Datas.size()))
+			return nullptr;
 		
 		auto it = m_Datas.begin();
 		std::advance(it, index);
-		return &(it->second);
+		return &it->second;
 	}
-	bool IDToIndex(uint32_t dwID, size_t * index) // 해당 ID의 Index 리턴..	Skill에서 쓴다..
+
+	bool IDToIndex(uint32_t dwID, int* index) // 해당 ID의 Index 리턴..	Skill에서 쓴다..
 	{
 		auto it = m_Datas.find(dwID);
 		if (it == m_Datas.end())
 			return false; // 찾기에 실패 했다!~!!
 
 		auto itSkill = m_Datas.begin();
-		size_t iSize = m_Datas.size();
-		for (size_t i = 0; i < iSize; i++, itSkill++)
+		int iSize = static_cast<int>(m_Datas.size());
+		for (int i = 0; i < iSize; i++, itSkill++)
 		{
 			if (itSkill == it)
 			{
@@ -62,7 +73,9 @@ public:
 		}
 		return false;
 	}
+
 	BOOL	LoadFromFile(const std::string& szFN);
+
 protected:
 	BOOL	Load(HANDLE hFile);
 	BOOL	WriteData(HANDLE hFile, DATA_TYPE DataType, const char* lpszData);
@@ -341,7 +354,7 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 //}
 
 	// 암호화 풀고..
-	for(int i = 0; i < dwSizeLow; i++)
+	for (uint32_t i = 0; i < dwSizeLow; i++)
 	{
 		uint8_t byData = (pDatas[i] ^ (key_r>>8));
 		key_r = (pDatas[i] + key_r) * key_c1 + key_c2;

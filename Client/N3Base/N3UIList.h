@@ -18,7 +18,7 @@ typedef std::list<CN3UIString*>::iterator it_pString;
 class CN3UIList : public CN3UIBase  
 {
 protected:
-	size_t					m_iCurSel;		// ÇöÀç ¼±ÅÃ..
+	int						m_iCurSel;		// 현재 선택..
 	std::list<CN3UIString*>	m_ListString;	// String List
 	class CN3UIScrollBar*	m_pScrollBarRef;
 
@@ -29,30 +29,67 @@ protected:
 	D3DCOLOR				m_crFont;
 	
 public:
-	const std::string&	FontName() { return m_szFontName; }
-	uint32_t				FontHeight() { return m_dwFontHeight; }
-	D3DCOLOR			FontColor() { return m_crFont; }
-	BOOL				FontIsBold() { return m_bFontBold; }
-	BOOL				FontIsItalic() { return m_bFontItalic; }
+	const std::string& FontName() const
+	{
+		return m_szFontName;
+	}
+
+	uint32_t FontHeight() const
+	{
+		return m_dwFontHeight;
+	}
+
+	D3DCOLOR FontColor() const
+	{
+		return m_crFont;
+	}
+
+	BOOL FontIsBold() const
+	{
+		return m_bFontBold;
+	}
+
+	BOOL FontIsItalic() const
+	{
+		return m_bFontItalic;
+	}
 
 	void	SetFont(const std::string& szFontName, uint32_t dwHeight, BOOL bBold, BOOL bItalic);
 	void	SetFontColor(D3DCOLOR color);
-	void	SetFontColor(size_t iIndex, D3DCOLOR color);
+	void	SetFontColor(int iIndex, D3DCOLOR color);
 
 	void	ResetContent();
 	void	UpdateChildRegions();
 	int		AddStrings(const std::string* pszStrings, int iStringCount);
 	int		AddString(const std::string& szString);
-	bool	InsertString(size_t iIndex, const std::string& szString);
-	bool	DeleteString(size_t iIndex);
-	bool	GetString(size_t iIndex, std::string& szString);
-	bool	SetString(size_t iIndex, const std::string& szString);
-	size_t	GetCurSel() { return m_iCurSel; }
-	bool	SetCurSel(size_t iIndex) { if (iIndex >= m_ListString.size()) m_iCurSel = ~((size_t)0); else m_iCurSel = iIndex; return true; }
-	CN3UIString*	GetChildStrFromList(std::string str);
-	int		GetCount() { return m_ListString.size(); }
+	bool	InsertString(int iIndex, const std::string& szString);
+	bool	DeleteString(int iIndex);
+	bool	GetString(int iIndex, std::string& szString);
+	bool	SetString(int iIndex, const std::string& szString);
 
-	int		GetScrollPos();
+	int	GetCurSel() const
+	{
+		return m_iCurSel;
+	}
+
+	bool SetCurSel(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_ListString.size()))
+			m_iCurSel = -1;
+		else
+			m_iCurSel = iIndex;
+		return true;
+	}
+
+	CN3UIString* GetChildStrFromList(const std::string& str);
+
+	int GetCount() const
+	{
+		return static_cast<int>(m_ListString.size());
+	}
+
+	int		GetScrollPos() const;
 	bool	SetScrollPos(int iScrollPos);
 	
 	virtual void	Render();

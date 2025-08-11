@@ -1052,7 +1052,7 @@ exceptions:;
 			if (bBuy)	
 			{
 				m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_BUY_PRICE,
-					CGameBase::FormatNumber(spItem->pItemBasic->iPrice * spItem->pItemExt->siPriceMultiply));
+					CGameBase::FormatNumber(spItem->GetBuyPrice()));
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 
@@ -1063,12 +1063,8 @@ exceptions:;
 			}
 			else
 			{	
-				int iSellPrice = (spItem->pItemBasic->iPrice*spItem->pItemExt->siPriceMultiply/6);
-				if (iSellPrice < 1)
-					iSellPrice = 1;
-
 				m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_SELL_PRICE,
-					CGameBase::FormatNumber(iSellPrice));
+					CGameBase::FormatNumber(spItem->GetSellPrice()));
 
 				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 				m_pStr[iIndex]->SetColor(m_CWhite);
