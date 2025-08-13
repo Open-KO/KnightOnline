@@ -845,8 +845,6 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 			goto fail_return;
 		}
 
-		
-
 		// MP/SP SUBTRACTION ROUTINE!!! ITEM AND HP TOO!!!
 		if (type == MAGIC_EFFECTING)
 		{

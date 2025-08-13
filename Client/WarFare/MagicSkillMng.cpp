@@ -552,7 +552,6 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
 
-
 	if(pInfoBase->iHP < pSkill->iExhaustHP)
 	{
 		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_HP);
