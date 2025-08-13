@@ -644,18 +644,6 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 
 		if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
 		{
-			// 종족 체크..
-			switch ( pItem->byNeedRace )
-			{
-				case 0:
-					break;
-
-				default:
-					if ( pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace )
-						return false;
-					break;
-			}
-
 			// 직업 체크..
 			if (pItem->byNeedClass != 0)
 			{
