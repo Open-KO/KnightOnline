@@ -552,26 +552,6 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
 
-	if(pSkill->iNeedSkill==1055 || pSkill->iNeedSkill==2055)
-	{
-		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
-			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
-		{
-			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
-	else if(pSkill->iNeedSkill==1056 || pSkill->iNeedSkill==2056)
-	{
-		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
-			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
-		{
-			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
 
 	if(pInfoBase->iHP < pSkill->iExhaustHP)
 	{

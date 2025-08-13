@@ -845,47 +845,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 			goto fail_return;
 		}
 
-		// Weapons verification in case of COMBO attack (another hacking prevention).
-		if (pTable->Type1 == 1)
-		{
-			// Weapons verification in case of DUAL ATTACK (type 1)!
-			if (pTable->Skill == 1055
-				|| pTable->Skill == 2055)
-			{
-				// Get item info for left hand.
-				model::Item* pLeftHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum);
-				if (pLeftHand == nullptr)
-					return nullptr;
-
-				// Get item info for right hand.
-				model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
-				if (pRightHand == nullptr)
-					return nullptr;
-
-				int left_index = pLeftHand->Kind / 10;
-				int right_index = pRightHand->Kind / 10;
-
-				if ((left_index != WEAPON_SWORD && left_index != WEAPON_AXE && left_index != WEAPON_MACE)
-					&& (right_index != WEAPON_SWORD && right_index != WEAPON_AXE && right_index != WEAPON_MACE))
-					return nullptr;
-			}
-			// Weapons verification in case of DOUBLE ATTACK !
-			else if (pTable->Skill == 1056
-				|| pTable->Skill == 2056)
-			{
-				// Get item info for right hand.
-				model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
-				if (pRightHand == nullptr)
-					return nullptr;
-
-				int right_index = pRightHand->Kind / 10;
-
-				if ((right_index != WEAPON_SWORD && right_index != WEAPON_AXE && right_index != WEAPON_MACE
-					&& right_index != WEAPON_SPEAR)
-					|| m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum != 0)
-					return nullptr;
-			}
-		}
+		
 
 		// MP/SP SUBTRACTION ROUTINE!!! ITEM AND HP TOO!!!
 		if (type == MAGIC_EFFECTING)
