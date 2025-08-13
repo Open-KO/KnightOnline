@@ -2609,13 +2609,17 @@ void CUser::SendTimeStatus()
 
 void CUser::SetDetailData()
 {
-	C3DMap* pMap = nullptr;
-
 	SetSlotItemValue();
 	SetUserAbility();
 
 	if (m_pUserData->m_bLevel > MAX_LEVEL)
+	{
+		spdlog::error("User::SetDetailData: user exceeds max level [accountId={} charId={} level={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, m_pUserData->m_bLevel);
+
 		Close();
+		return;
+	}
 
 	m_iMaxExp = m_pMain->m_LevelUpTableArray[m_pUserData->m_bLevel - 1]->RequiredExp;
 	m_iMaxWeight = (m_pUserData->m_bStr + m_sItemStr) * 50;
