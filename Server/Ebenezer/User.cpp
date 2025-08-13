@@ -2614,7 +2614,7 @@ void CUser::SetDetailData()
 	SetSlotItemValue();
 	SetUserAbility();
 
-	if (m_pUserData->m_bLevel >= MAX_LEVEL)
+	if (m_pUserData->m_bLevel > MAX_LEVEL)
 		Close();
 
 	m_iMaxExp = m_pMain->m_LevelUpTableArray[m_pUserData->m_bLevel - 1]->RequiredExp;
