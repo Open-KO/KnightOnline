@@ -854,37 +854,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		}
 	}
 
-	if( (pSkill->dw1stTableType==4 || pSkill->dw2ndTableType==4) && 
-		( (pSkill->iTarget==SKILLMAGIC_TARGET_SELF) || (iTargetID==s_pPlayer->IDNumber()) ) )
-	{
-		__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(pSkill->dwID);
-		if(!pType4) return false;
-		
-		switch(pType4->iBuffType)
-		{
-		case BUFFTYPE_MAXHP:
-			if(m_iMaxHP != 0) return false;
-			break;
-		case BUFFTYPE_AC:
-			if(m_iAC != 0) return false;
-			break;
-		case BUFFTYPE_ATTACK:
-			if(m_iAttack != 0) return false;
-			break;
-		case BUFFTYPE_ATTACKSPEED:
-			if(m_fAttackSpeed != 1.0f) return false;
-			break;
-		case BUFFTYPE_SPEED:
-			if(m_fSpeed != 1.0f) return false;
-			break;
-		case BUFFTYPE_ABILITY:
-			if(	m_iStr != 0 || m_iSta != 0 || m_iDex != 0 || m_iInt != 0 || m_iMAP != 0) return false;
-			break;
-		case BUFFTYPE_RESIST:
-			if(	m_iFireR != 0 || m_iColdR != 0 || m_iLightningR != 0 || m_iMagicR != 0 || m_iDeseaseR != 0 || m_iPoisonR != 0) return false;
-			break;
-		}
-	}
+	
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 스킬 사용시 오브젝트 체크
