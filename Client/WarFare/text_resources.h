@@ -513,6 +513,7 @@ enum e_TextResourceID
 	IDS_CANNOT_EXIT_DURING_A_BATTLE				= 7634,
 
 	IDS_WARP_LEVEL_30_TO_50						= 7657, // Only characters with level 30~50 can enter.
+	IDS_SKILL_FAIL_PLEASE_EQUIP_YOUR_WEAPON		= 7658, // Please equip your weapon. 
 	IDS_WARP_DO_NOT_QUALIFY						= 7659, // You cannot enter because you do not qualify. 
 
 	IDS_PRIVATE_CMD_CAT							= 7800,

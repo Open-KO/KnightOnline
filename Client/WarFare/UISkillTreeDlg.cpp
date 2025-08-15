@@ -960,7 +960,6 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		return;
 
 	std::string szStr;
-	bool bFound = false;
 
 	// Tooltip - skill description
 	if (!m_pStr_info->IsVisible())
@@ -998,46 +997,26 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	if (!m_pStr_skill_item0->IsVisible())
 		m_pStr_skill_item0->SetVisible(true);
 
-	// Two-handed weapons
-	switch (spSkill->pSkill->iNeedSkill)
+	switch (spSkill->pSkill->dwNeedItem)
 	{
-		case SKILL_REQUIRES_DUAL_WEAPON_WARRIOR:
-		case SKILL_REQUIRES_DUAL_WEAPON_ROGUE:
-			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL);
-			bFound = true;
-			break;
-
-		case SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR:
-		case SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE:
-			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_DOUBLE);
-			bFound = true;
-			break;
-	}
-
-	// All other weapons
-	if (!bFound)
-	{
-		switch (spSkill->pSkill->dwNeedItem)
-		{
-			case 0:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1); break;
-			case 1:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2); break;
-			case 2:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3); break;
-			case 3:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4); break;
-			case 4:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5); break;
-			case 5:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6); break;
-			case 6:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7); break;
-			case 7:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8); break;
-			case 8:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9); break;
-			case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
-			case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
-			case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
-			case 13:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13); break;
-			case 21:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14); break;
-			case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
-			case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
-			case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
-			default:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_NO); break;
-		}
+		case 0:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1); break;
+		case 1:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2); break;
+		case 2:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3); break;
+		case 3:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4); break;
+		case 4:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5); break;
+		case 5:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6); break;
+		case 6:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7); break;
+		case 7:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8); break;
+		case 8:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9); break;
+		case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
+		case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
+		case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
+		case 13:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13); break;
+		case 21:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14); break;
+		case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
+		case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
+		case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
+		default:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_NO); break;
 	}
 
 	m_pStr_skill_item0->SetString(szStr);

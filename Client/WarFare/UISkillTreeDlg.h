@@ -18,12 +18,6 @@ const int SKILL_DEF_SPECIAL1 = 2;
 const int SKILL_DEF_SPECIAL2 = 3;
 const int SKILL_DEF_SPECIAL3 = 4;
 
-// Skills that require dual/double weapons to use
-constexpr int SKILL_REQUIRES_DUAL_WEAPON_WARRIOR	= 1055;
-constexpr int SKILL_REQUIRES_DUAL_WEAPON_ROGUE		= 2055;
-constexpr int SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR	= 1056;
-constexpr int SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE	= 2056;
-
 //////////////////////////////////////////////////////////////////////
 
 class CUISkillTreeDlg : public CN3UIWndBase

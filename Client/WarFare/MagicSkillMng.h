@@ -2,7 +2,6 @@
 
 #include "GameDef.h"
 #include "GameBase.h"
-#include "PlayerBase.h"
 #include <map>
 
 typedef std::map<int, uint32_t>::value_type stlmapVAL_INT_DWORD;
@@ -59,13 +58,13 @@ public:
 	float					m_fDelay;
 		
 	//related region magic...
-	uint32_t					m_dwRegionMagicState;	//0:마침..1:지역선택중..2:지역선택했음.
+	uint32_t				m_dwRegionMagicState;	//0:마침..1:지역선택중..2:지역선택했음.
 	__TABLE_UPC_SKILL		m_dwRegionSkill;		//선택된 지역스킬..
 
 	//related non-casting action magic...
-	uint32_t					m_dwCastingStateNonAction;	//0:아무것도 없는 평온한 상태 1: 캐스팅중
+	uint32_t				m_dwCastingStateNonAction;	//0:아무것도 없는 평온한 상태 1: 캐스팅중
 	float					m_fCastTimeNonAction;
-	uint32_t					m_dwNonActionMagicID;
+	uint32_t				m_dwNonActionMagicID;
 	int						m_iNonActionMagicTarget;
 	//float					m_fRecastTimeNonAction;
 
@@ -106,15 +105,6 @@ protected:
 
 	void	SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget);
 	void	FailCast(__TABLE_UPC_SKILL* pSkill);
-	bool	HaveRequiredItem(__TABLE_UPC_SKILL* pSkill);   // returns if the equiped item valid or not
-	bool	HaveRestrictedItem(__TABLE_UPC_SKILL* pSkill, e_Class_Represent Class); // returns if the equiped item is restricted or not
-	bool	HaveEnoughMana(__TABLE_UPC_SKILL* pSkill, __InfoPlayerMySelf* pInfoExt);
-	bool	HaveEnoughHealth(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase);
-	bool	HaveEnoughExhaustItem(__TABLE_UPC_SKILL* pSkill);
-	bool	HaveCorrectClass(__TABLE_UPC_SKILL* pSkill, e_Class_Represent Class);
-	bool	IsValidObjectCheck(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase, int iTargetID);
-	bool	IsValidType3(__TABLE_UPC_SKILL* pSkill);
-	bool	IsValidType4(__TABLE_UPC_SKILL* pSkill, int iTargetID);
 	
 public:
 	bool	CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill);

@@ -64,6 +64,8 @@ public:
 	static std::string	UnformatNumber(const std::string& input);
 	static void			ConvertPipesToNewlines(std::string& input);
 
+	static bool			IsItemClassWeapon(e_ItemClass itemClass);
+
 	CGameBase();
 	virtual ~CGameBase();
 };

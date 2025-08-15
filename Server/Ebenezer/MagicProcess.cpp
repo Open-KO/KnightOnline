@@ -310,17 +310,14 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 				// Only if Flying Effect is greater than 0.
 				if (pMagic->FlyingEffect > 0)
 				{
-					int total_hit = m_pSrcUser->m_sTotalHit + m_pSrcUser->m_sItemHit;
-					int skill_mana = total_hit * pMagic->ManaCost / 100;
-
 					// Reduce Magic Point!
-					if (skill_mana > m_pSrcUser->m_pUserData->m_sMp)
+					if (pMagic->ManaCost > m_pSrcUser->m_pUserData->m_sMp)
 					{
 						command = MAGIC_FAIL;
 						goto return_echo;
 					}
 
-					m_pSrcUser->MSpChange(-(skill_mana));
+					m_pSrcUser->MSpChange(-(pMagic->ManaCost));
 				}
 
 				// Subtract Arrow!
@@ -848,9 +845,6 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 		// MP/SP SUBTRACTION ROUTINE!!! ITEM AND HP TOO!!!
 		if (type == MAGIC_EFFECTING)
 		{
-			int total_hit = m_pSrcUser->m_sTotalHit;
-			int skill_mana = (pTable->ManaCost * total_hit) / 100;
-
 			// Type 2 related...
 			if (pTable->Type1 == 2
 				&& pTable->FlyingEffect != 0)
@@ -866,17 +860,9 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 				return pTable;		// Do not reduce MP/SP when combo number is higher than 0.
 			}
 
-			if (pTable->Type1 == 1
-				|| pTable->Type1 == 2)
-			{
-				if (skill_mana > m_pSrcUser->m_pUserData->m_sMp)
-					goto fail_return;
-			}
-			else
-			{
-				if (pTable->ManaCost > m_pSrcUser->m_pUserData->m_sMp)
-					goto fail_return;
-			}
+			if (pTable->ManaCost > m_pSrcUser->m_pUserData->m_sMp)
+				goto fail_return;
+			
 
 /*
 			 // Actual deduction of Skill or Magic point.
@@ -997,12 +983,10 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 			}
 
 			// Actual deduction of Skill or Magic point.
-			if (pTable->Type1 == 1
-				|| pTable->Type1 == 2)
-				m_pSrcUser->MSpChange(-skill_mana);
-			else if (pTable->Type1 != 4
-				|| (pTable->Type1 == 4 && tid == -1))
+			if (pTable->Type1 != 4 || (pTable->Type1 == 4 && tid == -1))
+			{
 				m_pSrcUser->MSpChange(-pTable->ManaCost);
+			}
 
 			// DEDUCTION OF HPs in Magic/Skill using HPs.
 			if (pTable->HpCost > 0

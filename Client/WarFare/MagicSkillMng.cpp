@@ -35,7 +35,7 @@ static char THIS_FILE[]=__FILE__;
 
 CMagicSkillMng::CMagicSkillMng()
 {
-	m_pGameProcMain = NULL;
+	m_pGameProcMain = nullptr;
 	m_dwRegionMagicState = 0;
 	m_dwCastingStateNonAction = 0;
 	m_fCastTimeNonAction = 0.0f;
@@ -104,20 +104,9 @@ void CMagicSkillMng::Init()
 
 	InitType4();
 
-	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
-
-	/*
-	CLASS_KA_WARRIOR = 101, CLASS_KA_ROGUE, CLASS_KA_WIZARD, CLASS_KA_PRIEST, // 여기까지 기본 직업
-	CLASS_KA_BERSERKER = 105, CLASS_KA_GUARDIAN, CLASS_KA_HUNTER = 107, CLASS_KA_PENETRATOR, 
-	CLASS_KA_SORCERER = 109, CLASS_KA_NECROMANCER, CLASS_KA_SHAMAN = 111, CLASS_KA_DARKPRIEST, 
-	
-	CLASS_EL_WARRIOR = 201, CLASS_EL_ROGUE, CLASS_EL_WIZARD, CLASS_EL_PRIEST, // 여기까지 기본 직업 
-	CLASS_EL_BLADE = 205, CLASS_EL_PROTECTOR, CLASS_EL_RANGER = 207, CLASS_EL_ASSASIN, 
-	CLASS_EL_MAGE = 209, CLASS_EL_ENCHANTER, CLASS_EL_CLERIC = 211, CLASS_EL_DRUID,
-	*/
-
 	m_iMyRegionTargetFXID = 0;
 	/*
+	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
 	if( pInfoBase->eClass==CLASS_KA_ROGUE || pInfoBase->eClass==CLASS_KA_HUNTER || pInfoBase->eClass==CLASS_KA_PENETRATOR )
 	{
 		m_iMyRegionTargetFXID = FXID_REGION_TARGET_KA_ROGUE;
@@ -147,16 +136,16 @@ void CMagicSkillMng::Init()
 
 CMagicSkillMng::~CMagicSkillMng()
 {
-	m_pGameProcMain = NULL;
+	m_pGameProcMain = nullptr;
 
-	if(m_pTbl_Type_1) { delete m_pTbl_Type_1; m_pTbl_Type_1 = NULL; }
-	if(m_pTbl_Type_2) { delete m_pTbl_Type_2; m_pTbl_Type_2 = NULL; }
-	if(m_pTbl_Type_3) { delete m_pTbl_Type_3; m_pTbl_Type_3 = NULL; }
-	if(m_pTbl_Type_4) { delete m_pTbl_Type_4; m_pTbl_Type_4 = NULL; }
-//	if(m_pTbl_Type_6) { delete m_pTbl_Type_6; m_pTbl_Type_6 = NULL; }
-	if(m_pTbl_Type_7) { delete m_pTbl_Type_7; m_pTbl_Type_7 = NULL; }
-//	if(m_pTbl_Type_9) { delete m_pTbl_Type_9; m_pTbl_Type_9 = NULL; }
-//	if(m_pTbl_Type_10) { delete m_pTbl_Type_10; m_pTbl_Type_10 = NULL; }
+	if(m_pTbl_Type_1 != nullptr) { delete m_pTbl_Type_1; m_pTbl_Type_1 = nullptr; }
+	if(m_pTbl_Type_2 != nullptr) { delete m_pTbl_Type_2; m_pTbl_Type_2 = nullptr; }
+	if(m_pTbl_Type_3 != nullptr) { delete m_pTbl_Type_3; m_pTbl_Type_3 = nullptr; }
+	if(m_pTbl_Type_4 != nullptr) { delete m_pTbl_Type_4; m_pTbl_Type_4 = nullptr; }
+//	if(m_pTbl_Type_6 != nullptr) { delete m_pTbl_Type_6; m_pTbl_Type_6 = nullptr; }
+	if(m_pTbl_Type_7 != nullptr) { delete m_pTbl_Type_7; m_pTbl_Type_7 = nullptr; }
+//	if(m_pTbl_Type_9 != nullptr) { delete m_pTbl_Type_9; m_pTbl_Type_9 = nullptr; }
+//	if(m_pTbl_Type_10 != nullptr) { delete m_pTbl_Type_10; m_pTbl_Type_10 = nullptr; }
 }
 
 
@@ -172,710 +161,282 @@ bool CMagicSkillMng::IsCasting()
 	return false;
 }
 
-bool CMagicSkillMng::HaveRequiredItem(__TABLE_UPC_SKILL* pSkill)
-{
-	if (pSkill == nullptr)
-		return false;
-
-	int iItemClassLeft = s_pPlayer->ItemClass_LeftHand();
-	int iItemClassRight = s_pPlayer->ItemClass_RightHand();
-
-
-	if (pSkill->dwNeedItem == SKILL_NEEDS_EQUIPPED_WEAPON) //weapon only
-	{
-		if ((iItemClassLeft != ITEM_CLASS_UNKNOWN &&
-			iItemClassLeft != ITEM_CLASS_SHIELD) ||
-			(iItemClassRight != ITEM_CLASS_UNKNOWN &&
-			iItemClassRight != ITEM_CLASS_SHIELD))
-			return true;
-	}
-
-	if (pSkill->dwNeedItem == SKILL_NEEDS_DAGGER)
-	{
-		if (iItemClassLeft == ITEM_CLASS_DAGGER || iItemClassRight == ITEM_CLASS_DAGGER)
-			return true;
-	}
-
-	if (pSkill->dwNeedItem == SKILL_NEEDS_BOW)
-	{
-		if (iItemClassLeft == ITEM_CLASS_BOW || iItemClassRight == ITEM_CLASS_BOW)
-			return true;
-		if (iItemClassLeft == ITEM_CLASS_BOW_CROSS || iItemClassRight == ITEM_CLASS_BOW_CROSS)
-			return true;
-		if (iItemClassLeft == ITEM_CLASS_BOW_LONG || iItemClassRight == ITEM_CLASS_BOW_LONG)
-			return true;
-	}
-
-	if (pSkill->dwNeedItem == SKILL_NEEDS_NO_ITEM)
-	{
-		return true;
-	}
-
-	if (pSkill->dwNeedItem == SKILL_NEEDS_STAFF)
-	{
-		if (iItemClassLeft == ITEM_CLASS_STAFF || iItemClassRight == ITEM_CLASS_STAFF)
-			return true;
-	}
-
-	return false;
-}
-
-bool CMagicSkillMng::HaveRestrictedItem(__TABLE_UPC_SKILL* pSkill, e_Class_Represent eClass)
-{
-	if (pSkill == nullptr)
-		return true;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_PASSIVE)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_MAGIC)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_STAT_MODIFIER)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_RECOVERY)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_TRANSFORMATION)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_CHANGE_MOB_STATE)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_WARP)
-		return false;
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_VISIBILITY)
-		return false;
-
-	int iItemClassLeft = s_pPlayer->ItemClass_LeftHand();
-	int iItemClassRight = s_pPlayer->ItemClass_RightHand();
-
-	// both hands are empty
-	if (iItemClassRight == ITEM_CLASS_UNKNOWN && iItemClassLeft == ITEM_CLASS_UNKNOWN)
-	{
-		return true;
-	}
-
-	// one hand is empty and other has shield
-	if ((iItemClassRight == ITEM_CLASS_UNKNOWN && iItemClassLeft == ITEM_CLASS_SHIELD) ||
-		(iItemClassRight == ITEM_CLASS_SHIELD && iItemClassLeft == ITEM_CLASS_UNKNOWN))
-	{
-		return true;
-	}
-
-	if (eClass == CLASS_REPRESENT_WARRIOR)
-	{
-		if (iItemClassRight == ITEM_CLASS_BOW || iItemClassLeft == ITEM_CLASS_BOW)
-			return true;
-		if (iItemClassRight == ITEM_CLASS_BOW_CROSS || iItemClassLeft == ITEM_CLASS_BOW_CROSS)
-			return true;
-		if (iItemClassRight == ITEM_CLASS_BOW_LONG || iItemClassLeft == ITEM_CLASS_BOW_LONG)
-			return true;
-	}
-
-	if (eClass == CLASS_REPRESENT_PRIEST)
-	{
-		if (iItemClassRight == ITEM_CLASS_STAFF || iItemClassLeft == ITEM_CLASS_STAFF)
-			return true;
-		if (iItemClassRight == ITEM_CLASS_BOW || iItemClassLeft == ITEM_CLASS_BOW)
-			return true;
-		if (iItemClassRight == ITEM_CLASS_BOW_CROSS || iItemClassLeft == ITEM_CLASS_BOW_CROSS)
-			return true;
-		if (iItemClassRight == ITEM_CLASS_BOW_LONG || iItemClassLeft == ITEM_CLASS_BOW_LONG)
-			return true;
-	}
-
-
-	if (eClass == CLASS_REPRESENT_ROGUE)
-	{
-		if (pSkill->dw1stTableType == SKILL_TYPE_ARCHERY)
-		{
-			if ((iItemClassRight == ITEM_CLASS_BOW ||
-				iItemClassRight == ITEM_CLASS_BOW_CROSS ||
-				iItemClassRight == ITEM_CLASS_BOW_LONG) &&
-				iItemClassLeft == ITEM_CLASS_UNKNOWN)
-				return false;
-			else if ((iItemClassLeft == ITEM_CLASS_BOW ||
-				iItemClassLeft == ITEM_CLASS_BOW_CROSS ||
-				iItemClassLeft == ITEM_CLASS_BOW_LONG) &&
-				iItemClassRight == ITEM_CLASS_UNKNOWN)
-				return false;
-			else
-				return true;
-		}
-		else if (pSkill->dw1stTableType == SKILL_TYPE_MELEE)
-		{
-			if (iItemClassRight != ITEM_CLASS_DAGGER && iItemClassLeft != ITEM_CLASS_DAGGER)
-				return true;
-			else
-				return false;
-		}
-
-	}
-
-	if (eClass == CLASS_REPRESENT_WIZARD)
-	{
-		if (iItemClassRight == ITEM_CLASS_STAFF && iItemClassLeft == ITEM_CLASS_UNKNOWN)
-			return false;
-		else if (iItemClassRight == ITEM_CLASS_UNKNOWN && iItemClassLeft == ITEM_CLASS_STAFF)
-			return false;
-		else
-			return true;
-	}
-
-	return false;
-
-}
-
-bool CMagicSkillMng::HaveEnoughHealth(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase)
-{
-
-	if (pSkill == nullptr || pInfoBase == nullptr)
-		return false;
-
-	if (pSkill->iExhaustHP == 0)
-		return true;
-
-	// max_hp, sacrifice requires 10001
-	if (pSkill->iExhaustHP > 10000)
-		return true;
-
-	if (pInfoBase->iHP < pSkill->iExhaustHP)
-		return false;
-
-	return true;
-}
-
-bool CMagicSkillMng::HaveEnoughMana(__TABLE_UPC_SKILL* pSkill, __InfoPlayerMySelf* pInfoExt)
-{
-	if (pSkill == nullptr || pInfoExt == nullptr)
-		return false;
-
-	if (pInfoExt->iMSP < pSkill->iExhaustMSP)
-		return false;
-
-	return true;
-}
-
-bool CMagicSkillMng::HaveEnoughExhaustItem(__TABLE_UPC_SKILL* pSkill)
-{
-	if (pSkill == nullptr)
-		return false;
-
-	if (pSkill->dwExhaustItem == 0)
-		return true;
-
-	int iCount = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwExhaustItem);
-
-
-	if (pSkill->dw1stTableType == SKILL_TYPE_ARCHERY)
-	{
-		__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-
-		if (pType2 == nullptr)
-			return false;
-
-		if (iCount < pType2->iNumArrow)
-			return false;
-	}
-	else
-	{
-		if (iCount < 1)
-			return false;
-	}
-
-	__TABLE_ITEM_BASIC* pItem = nullptr;
-	__TABLE_ITEM_EXT* pItemExt = nullptr;
-
-	pItem = s_pTbl_Items_Basic.Find(pSkill->dwExhaustItem / 1000 * 1000);
-
-	if (pItem != nullptr && pItem->byExtIndex >= 0 && pItem->byExtIndex < MAX_ITEM_EXTENSION)
-		pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(pSkill->dwExhaustItem % 1000);
-
-	if (pItem == nullptr || pItemExt == nullptr)
-	{
-		__ASSERT(0, "NULL Item");
-#ifdef _DEBUG
-		CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
-#endif
-		return false;	// 아이템이 없으면..
-	}
-
-	if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
-	{
-		// 종족 체크..
-		switch (pItem->byNeedRace)
-		{
-			case 0:
-				break;
-
-			default:
-				if (pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace)
-					return false;
-				break;
-		}
-
-		// test for class specific items, ex: priest book should not be used by warrior.
-		if (pItem->byNeedClass != 0)
-		{
-			switch (pItem->byNeedClass)
-			{
-				case CLASS_KINDOF_WARRIOR:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_WARRIOR:
-						case CLASS_KA_BERSERKER:
-						case CLASS_KA_GUARDIAN:
-						case CLASS_EL_WARRIOR:
-						case CLASS_EL_BLADE:
-						case CLASS_EL_PROTECTOR:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_ROGUE:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_ROGUE:
-						case CLASS_KA_HUNTER:
-						case CLASS_KA_PENETRATOR:
-						case CLASS_EL_ROGUE:
-						case CLASS_EL_RANGER:
-						case CLASS_EL_ASSASIN:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_WIZARD:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_WIZARD:
-						case CLASS_KA_SORCERER:
-						case CLASS_KA_NECROMANCER:
-						case CLASS_EL_WIZARD:
-						case CLASS_EL_MAGE:
-						case CLASS_EL_ENCHANTER:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_PRIEST:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_PRIEST:
-						case CLASS_KA_SHAMAN:
-						case CLASS_KA_DARKPRIEST:
-						case CLASS_EL_PRIEST:
-						case CLASS_EL_CLERIC:
-						case CLASS_EL_DRUID:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_ATTACK_WARRIOR:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_BERSERKER:
-						case CLASS_EL_BLADE:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_DEFEND_WARRIOR:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_GUARDIAN:
-						case CLASS_EL_PROTECTOR:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_ARCHER:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_HUNTER:
-						case CLASS_EL_RANGER:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_ASSASSIN:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_PENETRATOR:
-						case CLASS_EL_ASSASIN:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_ATTACK_WIZARD:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_SORCERER:
-						case CLASS_EL_MAGE:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_PET_WIZARD:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_NECROMANCER:
-						case CLASS_EL_ENCHANTER:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_HEAL_PRIEST:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_SHAMAN:
-						case CLASS_EL_CLERIC:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				case CLASS_KINDOF_CURSE_PRIEST:
-					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-					{
-						case CLASS_KA_DARKPRIEST:
-						case CLASS_EL_DRUID:
-							break;
-						default:
-							return false;
-					}
-					break;
-
-				default:
-					if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byNeedClass)
-						return false;
-					break;
-			}
-		}
-
-		// test for item level
-		if (CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel + pItemExt->siNeedLevel)
-			return false;
-
-		// test for stats
-		int iNeedValue;
-		iNeedValue = pItem->byNeedStrength;
-		if (iNeedValue != 0)
-			iNeedValue += pItemExt->siNeedStrength;
-		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStrength < iNeedValue)
-			return false;
-
-		iNeedValue = pItem->byNeedStamina;
-		if (iNeedValue != 0)
-			iNeedValue += pItemExt->siNeedStamina;
-		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStamina < iNeedValue)
-			return false;
-
-		iNeedValue = pItem->byNeedDexterity;
-		if (iNeedValue != 0)
-			iNeedValue += pItemExt->siNeedDexterity;
-		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iDexterity < iNeedValue)
-			return false;
-
-		iNeedValue = pItem->byNeedInteli;
-		if (iNeedValue != 0)
-			iNeedValue += pItemExt->siNeedInteli;
-		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iIntelligence < iNeedValue)
-			return false;
-
-		iNeedValue = pItem->byNeedMagicAttack;
-		if (iNeedValue != 0)
-			iNeedValue += pItemExt->siNeedMagicAttack;
-		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iAttack < iNeedValue)
-			return false;
-	}
-}
-
-bool CMagicSkillMng::HaveCorrectClass(__TABLE_UPC_SKILL* pSkill, e_Class_Represent Class)
-{
-
-	if (pSkill == nullptr)
-		return false;
-
-	if (pSkill->iNeedSkill == 0)
-		return true;
-
-	int iClassID = pSkill->iNeedSkill / 10;
-
-	if (Class == CLASS_REPRESENT_WARRIOR)
-	{
-		if (iClassID != CLASS_KA_WARRIOR && iClassID != CLASS_KA_BERSERKER && iClassID != CLASS_KA_GUARDIAN &&
-			iClassID != CLASS_EL_WARRIOR && iClassID != CLASS_EL_BLADE && iClassID != CLASS_EL_PROTECTOR)
-		{
-			return false;
-		}
-	}
-
-	if (Class == CLASS_REPRESENT_ROGUE)
-	{
-		if (iClassID != CLASS_KA_ROGUE && iClassID != CLASS_KA_HUNTER && iClassID != CLASS_KA_PENETRATOR &&
-			iClassID != CLASS_EL_ROGUE && iClassID != CLASS_EL_RANGER && iClassID != CLASS_EL_ASSASIN)
-		{
-			return false;
-		}
-	}
-
-	if (Class == CLASS_REPRESENT_WIZARD)
-	{
-		if (iClassID != CLASS_KA_WIZARD && iClassID != CLASS_KA_SORCERER && iClassID != CLASS_KA_NECROMANCER &&
-			iClassID != CLASS_EL_WIZARD && iClassID != CLASS_EL_MAGE && iClassID != CLASS_EL_ENCHANTER)
-		{
-			return false;
-		}
-	}
-
-	if (Class == CLASS_REPRESENT_PRIEST)
-	{
-		if (iClassID != CLASS_KA_PRIEST && iClassID != CLASS_KA_DARKPRIEST && iClassID != CLASS_KA_SHAMAN &&
-			iClassID != CLASS_EL_PRIEST && iClassID != CLASS_EL_CLERIC && iClassID != CLASS_EL_DRUID)
-		{
-			return false;
-		}
-	}
-
-	if (Class == CLASS_REPRESENT_UNKNOWN)
-	{
-		return false;
-	}
-
-	return true;
-
-}
-
-bool CMagicSkillMng::IsValidObjectCheck(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase, int iTargetID)
-{
-
-	CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(iTargetID, false);
-
-	if (pTarget == nullptr)
-		return true;
-
-	__Vector3 vNormal, vMyPos, vGap, vDir, vSkillPos;
-
-	vMyPos = s_pPlayer->Position();
-	vMyPos.y += s_pPlayer->Height() / 2;
-
-	vDir = (pTarget->Position() + pTarget->Height() / 2) - vMyPos;
-	vGap = vDir;
-	vDir.Normalize();
-
-	bool bColShape = ACT_WORLD->CheckCollisionWithShape(vMyPos, vDir, vGap.Magnitude(), &vSkillPos, &vNormal);
-
-	switch (pSkill->iTarget)
-	{
-		case SKILLMAGIC_TARGET_SELF:
-		{
-			return true;
-		}
-		case SKILLMAGIC_TARGET_FRIEND_WITHME:
-		{
-//			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
-//			{
-//				if(bColShape) return false;
-//			}
-			return true;
-		}
-		case SKILLMAGIC_TARGET_FRIEND_ONLY:
-		{
-//			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
-//			{
-//				if(bColShape) return false;
-//			}
-			return true;
-		}
-		case SKILLMAGIC_TARGET_PARTY:
-		{
-//			__InfoPartyOrForce* pInfo = (__InfoPartyOrForce*)m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetSelected();
-//			if(!pInfo && iTargetID==-1)
-//				return true;
-
-//			int iMemberIndex  = -1;
-//			if( m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetByID(pTarget->IDNumber(), iMemberIndex) )
-//			{
-//				if(bColShape) return false;
-//			}
-			return true;
-		}
-		case SKILLMAGIC_TARGET_NPC_ONLY:
-		{
-			if (bColShape) return false;
-			return true;
-		}
-		case SKILLMAGIC_TARGET_PARTY_ALL:
-		{
-			return true;
-		}
-		case SKILLMAGIC_TARGET_ENEMY_ONLY:
-		{
-			if (pTarget->m_InfoBase.eNation != pInfoBase->eNation)
-			{
-				if (bColShape) return false;
-			}
-			return true;
-		}
-		case SKILLMAGIC_TARGET_ALL:
-		{
-			if (bColShape) return false;
-			return true;
-		}
-		case SKILLMAGIC_TARGET_AREA:
-		case SKILLMAGIC_TARGET_AREA_ENEMY:
-		case SKILLMAGIC_TARGET_AREA_FRIEND:
-		case SKILLMAGIC_TARGET_AREA_ALL:
-		{
-			return true;
-		}
-		case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
-		{
-			if (pTarget->m_InfoBase.eNation == pInfoBase->eNation && pTarget->IsDead())
-			{
-				if (bColShape) return false;
-			}
-			return true;
-		}
-	}
-
-	return true;
-}
-
-bool CMagicSkillMng::IsValidType3(__TABLE_UPC_SKILL* pSkill)
-{
-
-	if (pSkill == nullptr)
-		return false;
-
-	// type 3 check, ex: restoration skills of warrior
-	if ((pSkill->dw1stTableType == SKILL_TYPE_MAGIC || pSkill->dw2ndTableType == 3) &&
-		pSkill->iTarget == SKILLMAGIC_TARGET_SELF)
-	{
-		__TABLE_UPC_SKILL_TYPE_3* pType3 = m_pTbl_Type_3->Find(pSkill->dwID);
-
-		if (pType3 == nullptr)
-			return false;
-
-		int key = 0;
-
-		if (pType3->iStartDamage > 0 || (pType3->iStartDamage == 0 && pType3->iDuraDamage > 0))
-			key = DDTYPE_TYPE3_DUR_OUR;
-		else
-			key = DDTYPE_TYPE3_DUR_ENEMY;
-
-		key += pType3->iDDType;
-
-		if (key == DDTYPE_TYPE3_DUR_OUR)
-		{
-			std::multimap<int, uint32_t>::iterator it, itend;
-			itend = m_ListBuffTypeID.end();
-			it = m_ListBuffTypeID.find(key);
-			if (it != itend) return false;
-		}
-	}
-
-	return true;
-}
-
-bool CMagicSkillMng::IsValidType4(__TABLE_UPC_SKILL* pSkill, int iTargetID)
-{
-	if (pSkill == nullptr)
-		return false;
-
-	if ((pSkill->dw1stTableType == SKILL_TYPE_STAT_MODIFIER || pSkill->dw2ndTableType == 4) &&
-		((pSkill->iTarget == SKILLMAGIC_TARGET_SELF) || (iTargetID == s_pPlayer->IDNumber())) &&
-		 (pSkill->dw1stTableType != SKILL_TYPE_TRANSFORMATION || pSkill->dw2ndTableType != 4))
-	{
-		__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(pSkill->dwID);
-
-		if (pType4 == nullptr)
-			return false;
-
-		switch (pType4->iBuffType)
-		{
-			case BUFFTYPE_MAXHP:
-				if (m_iMaxHP != 0)
-					return false;
-				break;
-			case BUFFTYPE_AC:
-				if (m_iAC != 0)
-					return false;
-				break;
-			case BUFFTYPE_ATTACK:
-				if (m_iAttack != 0)
-					return false;
-				break;
-			case BUFFTYPE_ATTACKSPEED:
-				if (m_fAttackSpeed != 1.0f)
-					return false;
-				break;
-			case BUFFTYPE_SPEED:
-				if (m_fSpeed != 1.0f)
-					return false;
-				break;
-			case BUFFTYPE_ABILITY:
-				if (m_iStr != 0 || m_iSta != 0 || m_iDex != 0 || m_iInt != 0 || m_iMAP != 0)
-					return false;
-				break;
-			case BUFFTYPE_RESIST:
-				if (m_iFireR != 0 || m_iColdR != 0 || m_iLightningR != 0 ||
-					m_iMagicR != 0 || m_iDeseaseR != 0 || m_iPoisonR != 0)
-					return false;
-				break;
-		}
-	}
-
-	return true;
-}
-
-// Used to inform Hotkey and skill tree UI
+//Used to inform Hotkey and skill tree UI
 bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 {
 	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
 	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
+
 	e_Class_Represent Class = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
-
-	if (!HaveEnoughMana(pSkill, pInfoExt))
+	
+	//mana check for all classes, no need to 
+	//separate because error message is not required
+	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
 		return false;
 
-	if (HaveRestrictedItem(pSkill, Class))
+	int LeftItem = s_pPlayer->ItemClass_LeftHand();
+	int RightItem = s_pPlayer->ItemClass_RightHand();
+
+	if (pInfoBase->iHP < pSkill->iExhaustHP)
 		return false;
 
-	if (!HaveEnoughHealth(pSkill, pInfoBase))
+	int LeftItemGroup = LeftItem / 10;
+	int RightItemGroup = RightItem / 10;
+
+	if (pSkill->dwNeedItem != 9
+		&& pSkill->dwNeedItem != 0
+		&& pSkill->dwNeedItem != static_cast<uint32_t>(LeftItemGroup)
+		&& pSkill->dwNeedItem != static_cast<uint32_t>(RightItemGroup))
+		return false;
+	
+	// NOTE: Officially this is explicitly == 0, but only for CheckValidSkillMagic().
+	// We'll just keep it consistent with the logic enforced on cast, as that's the real enforcer here.
+	if (pSkill->dwNeedItem != 9
+		&& !s_pPlayer->HasWeaponEquipped())
 		return false;
 
-	if (!HaveRequiredItem(pSkill))
-		return false;
+	if(pSkill->dwExhaustItem>0)
+	{
+		int NumItem = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwExhaustItem);
+		
+		if(pSkill->dw1stTableType==2 || pSkill->dw2ndTableType==2)
+		{
+			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
+			if (pType2 == nullptr) return false;
+			if(NumItem < pType2->iNumArrow)
+			{
+				return false;
+			}
+		}
+		else 
+		{
+			if(NumItem < 1) return false;
+		}
 
-	if (!HaveEnoughExhaustItem(pSkill))
-		return false;
+		__TABLE_ITEM_BASIC* pItem = nullptr;														// 아이템 테이블 구조체 포인터..	
+		__TABLE_ITEM_EXT* pItemExt = nullptr;														// 아이템 테이블 구조체 포인터..	
 
+		pItem = s_pTbl_Items_Basic.Find(pSkill->dwExhaustItem/1000*1000);	// 열 데이터 얻기..
+		if(pItem != nullptr && pItem->byExtIndex >= 0 && pItem->byExtIndex < MAX_ITEM_EXTENSION)
+			pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(pSkill->dwExhaustItem%1000);	// 열 데이터 얻기..
+		if ( pItem == nullptr || pItemExt == nullptr )
+		{
+			__ASSERT(0, "NULL Item");
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
+			return false;	// 아이템이 없으면..
+		}
+
+		if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
+		{
+			// 종족 체크..
+			switch ( pItem->byNeedRace )
+			{
+				case 0:
+					break;
+
+				default:
+					if ( pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace )
+						return false;
+					break;
+			}
+
+			// 직업 체크..
+			if (pItem->byNeedClass != 0)
+			{
+				switch (pItem->byNeedClass)
+				{
+					case CLASS_KINDOF_WARRIOR:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_WARRIOR:
+							case CLASS_KA_BERSERKER:
+							case CLASS_KA_GUARDIAN:
+							case CLASS_EL_WARRIOR:
+							case CLASS_EL_BLADE:
+							case CLASS_EL_PROTECTOR:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ROGUE:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_ROGUE:
+							case CLASS_KA_HUNTER:
+							case CLASS_KA_PENETRATOR:
+							case CLASS_EL_ROGUE:
+							case CLASS_EL_RANGER:
+							case CLASS_EL_ASSASIN:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_WIZARD:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_WIZARD:
+							case CLASS_KA_SORCERER:
+							case CLASS_KA_NECROMANCER:
+							case CLASS_EL_WIZARD:
+							case CLASS_EL_MAGE:
+							case CLASS_EL_ENCHANTER:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_PRIEST:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_PRIEST:
+							case CLASS_KA_SHAMAN:
+							case CLASS_KA_DARKPRIEST:
+							case CLASS_EL_PRIEST:
+							case CLASS_EL_CLERIC:
+							case CLASS_EL_DRUID:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ATTACK_WARRIOR:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_BERSERKER:
+							case CLASS_EL_BLADE:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_DEFEND_WARRIOR:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_GUARDIAN:
+							case CLASS_EL_PROTECTOR:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ARCHER:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_HUNTER:
+							case CLASS_EL_RANGER:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ASSASSIN:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_PENETRATOR:
+							case CLASS_EL_ASSASIN:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ATTACK_WIZARD:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_SORCERER:
+							case CLASS_EL_MAGE:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_PET_WIZARD:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_NECROMANCER:
+							case CLASS_EL_ENCHANTER:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_HEAL_PRIEST:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_SHAMAN:
+							case CLASS_EL_CLERIC:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_CURSE_PRIEST:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_DARKPRIEST:
+							case CLASS_EL_DRUID:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					default:
+						if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byNeedClass)
+							return false;
+						break;
+				}						
+			}
+
+			// 요구레벨 체크..
+			if ( CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel+pItemExt->siNeedLevel )
+				return false;
+
+			// 요구 능력치 체크..
+			int iNeedValue;
+			iNeedValue = pItem->byNeedStrength;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedStrength;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStrength < iNeedValue )		
+				return false;
+
+			iNeedValue = pItem->byNeedStamina;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedStamina;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStamina < iNeedValue )		
+				return false;
+
+			iNeedValue = pItem->byNeedDexterity;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedDexterity;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iDexterity < iNeedValue )		
+				return false;
+
+			iNeedValue = pItem->byNeedInteli;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedInteli;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iIntelligence < iNeedValue )	
+				return false;
+
+			iNeedValue = pItem->byNeedMagicAttack;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedMagicAttack;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iAttack < iNeedValue )				
+				return false;
+		}
+	}
 
 	return true;
 }
@@ -884,76 +445,538 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 {
 	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
 	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
-	e_Class_Represent eClass = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
 
-	if (!HaveCorrectClass(pSkill, eClass))
+	//직업에 맞는 스킬인지 알아봐라...
+	e_Class_Represent Class = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
+	
+	if(pSkill->iNeedSkill!=0)
 	{
-		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
-		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-		return false;
+		if(Class == CLASS_REPRESENT_WARRIOR)
+		{
+			int NeedSkill = pSkill->iNeedSkill / 10;
+			if(NeedSkill != CLASS_KA_WARRIOR && NeedSkill != CLASS_KA_BERSERKER && NeedSkill != CLASS_KA_GUARDIAN &&
+				NeedSkill != CLASS_EL_WARRIOR && NeedSkill != CLASS_EL_BLADE && NeedSkill != CLASS_EL_PROTECTOR)
+			{
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+		}
+		else if(Class == CLASS_REPRESENT_ROGUE)
+		{
+			int NeedSkill = pSkill->iNeedSkill / 10;
+			if(NeedSkill != CLASS_KA_ROGUE && NeedSkill != CLASS_KA_HUNTER && NeedSkill != CLASS_KA_PENETRATOR &&
+				NeedSkill != CLASS_EL_ROGUE && NeedSkill != CLASS_EL_RANGER && NeedSkill != CLASS_EL_ASSASIN)
+			{
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+		}
+		else if(Class == CLASS_REPRESENT_WIZARD)
+		{
+			int NeedSkill = pSkill->iNeedSkill / 10;
+			if(NeedSkill != CLASS_KA_WIZARD && NeedSkill != CLASS_KA_SORCERER && NeedSkill != CLASS_KA_NECROMANCER &&
+				NeedSkill != CLASS_EL_WIZARD && NeedSkill != CLASS_EL_MAGE && NeedSkill != CLASS_EL_ENCHANTER)
+			{
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+		}
+		else if(Class == CLASS_REPRESENT_PRIEST)
+		{
+			int NeedSkill = pSkill->iNeedSkill / 10;
+			if(NeedSkill != CLASS_KA_PRIEST && NeedSkill != CLASS_KA_DARKPRIEST && NeedSkill != CLASS_KA_SHAMAN &&
+				NeedSkill != CLASS_EL_PRIEST && NeedSkill != CLASS_EL_CLERIC && NeedSkill != CLASS_EL_DRUID)
+			{
+				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
+				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+				return false;
+			}
+		}
 	}
 
-	if (!HaveEnoughMana(pSkill, pInfoExt))
+	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
 	{
 		std::string buff;
 
-		if (eClass == CLASS_REPRESENT_PRIEST || eClass == CLASS_REPRESENT_WIZARD)
+		if(Class==CLASS_REPRESENT_PRIEST || Class==CLASS_REPRESENT_WIZARD)
 		{
 			buff = fmt::format_text_resource(IDS_MSG_CASTING_FAIL_LACK_MP);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		}
-		else if (eClass == CLASS_REPRESENT_WARRIOR || eClass == CLASS_REPRESENT_ROGUE)
+		else if (Class == CLASS_REPRESENT_WARRIOR || Class == CLASS_REPRESENT_ROGUE)
 		{
 			buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_SP);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		}
 
 		return false;
-	}
+	}	
 
-	if (HaveRestrictedItem(pSkill, eClass))
-	{
-		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-		return false;
-	}
+	int LeftItem = s_pPlayer->ItemClass_LeftHand();
+	int RightItem = s_pPlayer->ItemClass_RightHand();
 
-	if (!HaveEnoughHealth(pSkill, pInfoBase))
+	if(pInfoBase->iHP < pSkill->iExhaustHP)
 	{
 		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_HP);
 		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		return false;
 	}
 
-	if (!HaveRequiredItem(pSkill))
+	int LeftItemGroup = LeftItem / 10;
+	int RightItemGroup = RightItem / 10;
+
+	if (pSkill->dwNeedItem != 9
+		&& pSkill->dwNeedItem != 0
+		&& pSkill->dwNeedItem != static_cast<uint32_t>(LeftItemGroup)
+		&& pSkill->dwNeedItem != static_cast<uint32_t>(RightItemGroup))
 	{
 		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		return false;
 	}
 
-	if (!HaveEnoughExhaustItem(pSkill))
+	if (pSkill->dwNeedItem != 9
+		&& !s_pPlayer->HasWeaponEquipped())
 	{
-		std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
-		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-	}
-
-	if (!IsValidObjectCheck(pSkill, pInfoBase, iTargetID))
-	{
-		std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_PLEASE_EQUIP_YOUR_WEAPON);
+		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		return false;
 	}
 
-	if (!IsValidType3(pSkill))
+	if(pSkill->dwExhaustItem>0)
 	{
-		return false;
+		int NumItem = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwExhaustItem);
+		if(pSkill->dw1stTableType==2 || pSkill->dw2ndTableType==2)
+		{
+			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
+			if(NumItem < pType2->iNumArrow)
+			{
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
+				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+				return false;
+			}
+		}
+		else 
+		{
+			if(NumItem < 1)
+			{
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
+				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+				return false;
+			}
+		}
+
+		__TABLE_ITEM_BASIC* pItem = nullptr;														// 아이템 테이블 구조체 포인터..	
+		__TABLE_ITEM_EXT* pItemExt = nullptr;														// 아이템 테이블 구조체 포인터..	
+
+		pItem = s_pTbl_Items_Basic.Find(pSkill->dwExhaustItem/1000*1000);	// 열 데이터 얻기..
+		if(pItem != nullptr && pItem->byExtIndex >= 0 && pItem->byExtIndex < MAX_ITEM_EXTENSION)
+			pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(pSkill->dwExhaustItem%1000);	// 열 데이터 얻기..
+		if ( pItem == nullptr || pItemExt == nullptr )
+		{
+			__ASSERT(0, "NULL Item");
+			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
+			return false;	// 아이템이 없으면..
+		}
+
+		if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
+		{
+			// 종족 체크..
+			switch ( pItem->byNeedRace )
+			{
+				case 0:
+					break;
+
+				default:
+					if ( pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace )
+						return false;
+					break;
+			}
+
+			// 직업 체크..
+			if (pItem->byNeedClass != 0)
+			{
+				switch (pItem->byNeedClass)
+				{
+					case CLASS_KINDOF_WARRIOR:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_WARRIOR:
+							case CLASS_KA_BERSERKER:
+							case CLASS_KA_GUARDIAN:
+							case CLASS_EL_WARRIOR:
+							case CLASS_EL_BLADE:
+							case CLASS_EL_PROTECTOR:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ROGUE:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_ROGUE:
+							case CLASS_KA_HUNTER:
+							case CLASS_KA_PENETRATOR:
+							case CLASS_EL_ROGUE:
+							case CLASS_EL_RANGER:
+							case CLASS_EL_ASSASIN:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_WIZARD:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_WIZARD:
+							case CLASS_KA_SORCERER:
+							case CLASS_KA_NECROMANCER:
+							case CLASS_EL_WIZARD:
+							case CLASS_EL_MAGE:
+							case CLASS_EL_ENCHANTER:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_PRIEST:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_PRIEST:
+							case CLASS_KA_SHAMAN:
+							case CLASS_KA_DARKPRIEST:
+							case CLASS_EL_PRIEST:
+							case CLASS_EL_CLERIC:
+							case CLASS_EL_DRUID:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ATTACK_WARRIOR:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_BERSERKER:
+							case CLASS_EL_BLADE:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_DEFEND_WARRIOR:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_GUARDIAN:
+							case CLASS_EL_PROTECTOR:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ARCHER:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_HUNTER:
+							case CLASS_EL_RANGER:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ASSASSIN:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_PENETRATOR:
+							case CLASS_EL_ASSASIN:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_ATTACK_WIZARD:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_SORCERER:
+							case CLASS_EL_MAGE:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_PET_WIZARD:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_NECROMANCER:
+							case CLASS_EL_ENCHANTER:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_HEAL_PRIEST:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_SHAMAN:
+							case CLASS_EL_CLERIC:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					case CLASS_KINDOF_CURSE_PRIEST:
+						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+						{
+							case CLASS_KA_DARKPRIEST:
+							case CLASS_EL_DRUID:
+								break;
+							default:
+								return false;
+						}
+						break;
+
+					default:
+						if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byNeedClass)
+							return false;
+						break;
+				}						
+			}
+
+			// 요구레벨 체크..
+			if ( CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel+pItemExt->siNeedLevel )
+				return false;
+
+			// 요구 능력치 체크..
+			int iNeedValue;
+			iNeedValue = pItem->byNeedStrength;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedStrength;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStrength < iNeedValue )		
+				return false;
+
+			iNeedValue = pItem->byNeedStamina;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedStamina;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStamina < iNeedValue )		
+				return false;
+
+			iNeedValue = pItem->byNeedDexterity;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedDexterity;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iDexterity < iNeedValue )		
+				return false;
+
+			iNeedValue = pItem->byNeedInteli;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedInteli;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iIntelligence < iNeedValue )	
+				return false;
+
+			iNeedValue = pItem->byNeedMagicAttack;
+			if (iNeedValue != 0)
+				iNeedValue += pItemExt->siNeedMagicAttack;
+			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iAttack < iNeedValue )				
+				return false;
+		}
 	}
 
-	if (!IsValidType4(pSkill, iTargetID))
+	if((pSkill->dw1stTableType==3 || pSkill->dw2ndTableType==3) &&
+		pSkill->iTarget==SKILLMAGIC_TARGET_SELF)
 	{
-		return false;
+		__TABLE_UPC_SKILL_TYPE_3* pType3 = m_pTbl_Type_3->Find(pSkill->dwID);
+		if(pType3 == nullptr) return false;
+
+		int key = 0;
+		if(pType3->iStartDamage>0 || (pType3->iStartDamage==0 && pType3->iDuraDamage>0) ) key = DDTYPE_TYPE3_DUR_OUR;
+		else key = DDTYPE_TYPE3_DUR_ENEMY;
+
+		key += pType3->iDDType;
+
+		if(key==DDTYPE_TYPE3_DUR_OUR)
+		{
+			std::multimap<int, uint32_t>::iterator it, itend;
+			itend = m_ListBuffTypeID.end();
+			it = m_ListBuffTypeID.find(key);
+			if(it!=itend) return false;
+		}
 	}
+
+	if( (pSkill->dw1stTableType==4 || pSkill->dw2ndTableType==4) && 
+		( (pSkill->iTarget==SKILLMAGIC_TARGET_SELF) || (iTargetID==s_pPlayer->IDNumber()) ) )
+	{
+		__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(pSkill->dwID);
+		if(pType4 == nullptr) return false;
+		
+		switch(pType4->iBuffType)
+		{
+		case BUFFTYPE_MAXHP:
+			if(m_iMaxHP != 0) return false;
+			break;
+		case BUFFTYPE_AC:
+			if(m_iAC != 0) return false;
+			break;
+		case BUFFTYPE_ATTACK:
+			if(m_iAttack != 0) return false;
+			break;
+		case BUFFTYPE_ATTACKSPEED:
+			if(m_fAttackSpeed != 1.0f) return false;
+			break;
+		case BUFFTYPE_SPEED:
+			if(m_fSpeed != 1.0f) return false;
+			break;
+		case BUFFTYPE_ABILITY:
+			if(	m_iStr != 0 || m_iSta != 0 || m_iDex != 0 || m_iInt != 0 || m_iMAP != 0) return false;
+			break;
+		case BUFFTYPE_RESIST:
+			if(	m_iFireR != 0 || m_iColdR != 0 || m_iLightningR != 0 || m_iMagicR != 0 || m_iDeseaseR != 0 || m_iPoisonR != 0) return false;
+			break;
+		}
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 스킬 사용시 오브젝트 체크
+	CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(iTargetID, false);
+	if(pTarget == nullptr) return true;
+
+	__Vector3 vNormal, vMyPos, vGap, vDir, vSkillPos;
+
+	vMyPos = s_pPlayer->Position();
+	vMyPos.y += s_pPlayer->Height() / 2;
+
+	vDir = (pTarget->Position() + pTarget->Height()/2) - vMyPos;
+	vGap = vDir;
+	vDir.Normalize();
+
+
+	bool bColShape = ACT_WORLD->CheckCollisionWithShape(vMyPos, vDir, vGap.Magnitude(), &vSkillPos, &vNormal);
+
+	switch(pSkill->iTarget)
+	{
+	case SKILLMAGIC_TARGET_SELF:
+		{
+			break;
+		}
+	case SKILLMAGIC_TARGET_FRIEND_WITHME:
+		{
+//			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
+//			{
+//				if(bColShape)
+//				{
+//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+//					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+//					return false;
+//				}
+//			}
+			break;
+		}
+	case SKILLMAGIC_TARGET_FRIEND_ONLY:
+		{
+//			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
+//			{
+//				if(bColShape)
+//				{
+//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+//					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+//					return false;
+//				}
+//			}
+			break;
+		}
+	case SKILLMAGIC_TARGET_PARTY:
+		{
+//			__InfoPartyOrForce* pInfo = (__InfoPartyOrForce*)m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetSelected();
+//			if(pInfo == nullptr && iTargetID==-1)
+//				return true;
+
+//			int iMemberIndex  = -1;
+//			if( m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetByID(pTarget->IDNumber(), iMemberIndex) )
+//			{
+//				if(bColShape)
+//				{
+//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+//					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+//					return false;
+//				}
+//			}
+			break;
+		}
+	case SKILLMAGIC_TARGET_NPC_ONLY:
+		{
+			if(bColShape)
+			{
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+				return false;
+			}
+			break;
+		}
+	case SKILLMAGIC_TARGET_PARTY_ALL:
+		{
+			break;
+		}
+	case SKILLMAGIC_TARGET_ENEMY_ONLY:
+		{
+			if(pTarget->m_InfoBase.eNation!=pInfoBase->eNation)
+			{
+				if(bColShape)
+				{
+					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+					return false;
+				}
+			}
+			break;
+		}
+	case SKILLMAGIC_TARGET_ALL:
+		{
+			if(bColShape)
+			{
+				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+				return false;
+			}
+			break;
+		}
+	case SKILLMAGIC_TARGET_AREA:
+	case SKILLMAGIC_TARGET_AREA_ENEMY:
+	case SKILLMAGIC_TARGET_AREA_FRIEND:
+	case SKILLMAGIC_TARGET_AREA_ALL:
+		{
+			break;
+		}
+	case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
+		{
+			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation && pTarget->IsDead())
+			{
+				if(bColShape)
+				{
+					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+					return false;
+				}
+			}
+			break;
+		}
+	default:
+		break;
+	}
+
+// 스킬 사용시 오브젝트 체크
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	return true;
 }
@@ -970,7 +993,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 	///////////////////////////////////////////////////////////////////////////////////
 	// 스킬 쓸 조건이 되는지 검사...
 	// Existing validity checks
-	if (!pSkill) return false;
+	if (pSkill == nullptr) return false;
 	// Check cooldowns first
 	auto itRecast = m_RecastTimes.find(pSkill->dwID);
 	auto itNonAction = m_NonActionRecastTimes.find(pSkill->dwID);
@@ -989,9 +1012,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		m_dwNonActionMagicID = 0;
 		m_iNonActionMagicTarget = -1;
 	}
-	
-	if(!CheckValidCondition(iTargetID, pSkill)) 
-		return false;
+	if(!CheckValidCondition(iTargetID, pSkill)) return false;
 
 	//TRACE("마법성공 state : %d time %.2f\n", s_pPlayer->State(), CN3Base::TimeGet());
 	// 스킬 쓸 조건이 되는지 검사 끝...
@@ -1022,7 +1043,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 //	if(!pTarget) return false;//임시 일단 죽어 있다면 리턴을 한다.
 
 	float fDist = s_pPlayer->Radius() + 1.0f; // 공격 거리제한..
-	if(pTarget) fDist += pTarget->Radius();
+	if(pTarget != nullptr) fDist += pTarget->Radius();
 
 	switch(pSkill->iTarget)
 	{
@@ -1033,7 +1054,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_FRIEND_WITHME:
 		{
-			if(!pTarget)
+			if(pTarget == nullptr)
 			{
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)s_pPlayer->IDNumber());
 				return true;
@@ -1048,7 +1069,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_FRIEND_ONLY:
 		{
-			if(pTarget && pTarget->m_InfoBase.eNation==pInfoBase->eNation)
+			if(pTarget != nullptr && pTarget->m_InfoBase.eNation==pInfoBase->eNation)
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -1062,7 +1083,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 			if(!pInfo && iTargetID==-1) pTarget = (CPlayerBase*)s_pPlayer;
 
 			int iMemberIndex  = -1;
-			if(pTarget && 
+			if(pTarget != nullptr &&
 				( m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetByID(pTarget->IDNumber(), iMemberIndex) ||
 				pTarget->IDNumber() == s_pPlayer->IDNumber() ) )
 			{
@@ -1070,7 +1091,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
 				return true;
 			}
-			else if(pInfo)	//거리에 상관없이 파티원들에게 쓸때...
+			else if(pInfo != nullptr)	//거리에 상관없이 파티원들에게 쓸때...
 			{
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pInfo->iID);
 				return true;
@@ -1079,7 +1100,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_NPC_ONLY:
 		{
-			if(pTarget && s_pOPMgr->NPCGetByID(pTarget->IDNumber(), true))
+			if(pTarget != nullptr && s_pOPMgr->NPCGetByID(pTarget->IDNumber(), true))
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -1094,7 +1115,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_ENEMY_ONLY:
 		{
-			if(pTarget && pTarget->m_InfoBase.eNation!=pInfoBase->eNation)
+			if(pTarget != nullptr && pTarget->m_InfoBase.eNation!=pInfoBase->eNation)
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -1106,7 +1127,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_ALL:
 		{
-			if(pTarget)
+			if(pTarget != nullptr)
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -1175,7 +1196,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
 		{
-			if(pTarget && pTarget->m_InfoBase.eNation==pInfoBase->eNation && pTarget->IsDead())
+			if(pTarget != nullptr && pTarget->m_InfoBase.eNation==pInfoBase->eNation && pTarget->IsDead())
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -1215,7 +1236,7 @@ bool CMagicSkillMng::CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTa
 	if(pSkill->dw1stTableType==1 || pSkill->dw2ndTableType==1)
 	{
 		__IconItemSkill* pItemIcon = m_pGameProcMain->m_pUIInventory->m_pMySlot[ITEM_SLOT_HAND_RIGHT];
-		if(pItemIcon)
+		if(pItemIcon != nullptr)
 		{
 			float fValidDist = (pItemIcon->pItemBasic->siAttackRange/10.0f) + fTargetRadius + 1.0f;
 			if(fValidDist >= fDist) return true;
@@ -1229,8 +1250,8 @@ bool CMagicSkillMng::CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTa
 		__IconItemSkill* pItemIcon2 = m_pGameProcMain->m_pUIInventory->m_pMySlot[ITEM_SLOT_HAND_RIGHT];
 		float ItemDistance = 0.0f;
 
-		if(pItemIcon2) ItemDistance = pItemIcon2->pItemBasic->siAttackRange/10.0f;
-		if(pItemIcon1) ItemDistance = pItemIcon1->pItemBasic->siAttackRange/10.0f;
+		if(pItemIcon2 != nullptr) ItemDistance = pItemIcon2->pItemBasic->siAttackRange/10.0f;
+		if(pItemIcon1 != nullptr) ItemDistance = pItemIcon1->pItemBasic->siAttackRange/10.0f;
 
 		float fValidDist = ItemDistance + fTargetRadius + 1.0f;
 		__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
@@ -1248,7 +1269,7 @@ bool CMagicSkillMng::CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTa
 
 void CMagicSkillMng::StartSkillMagicAtPosPacket(__TABLE_UPC_SKILL* pSkill, __Vector3 vPos)
 {
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 	int SourceID = s_pPlayer->IDNumber();
 
 	if(pSkill->iSelfAnimID1<0)
@@ -1324,7 +1345,7 @@ void CMagicSkillMng::StartSkillMagicAtPosPacket(__TABLE_UPC_SKILL* pSkill, __Vec
 		}
 	}
 	s_pPlayer->m_fCastFreezeTime = 10.0f;
-	s_pPlayer->Action(PSA_SPELLMAGIC, false, NULL);
+	s_pPlayer->Action(PSA_SPELLMAGIC, false, nullptr);
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1352,7 +1373,7 @@ void CMagicSkillMng::StartSkillMagicAtPosPacket(__TABLE_UPC_SKILL* pSkill, __Vec
 
 void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, int16_t TargetID)
 {
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 	int SourceID = s_pPlayer->IDNumber();
 	if(pSkill->iSelfAnimID1<0)
 	{
@@ -1377,7 +1398,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 	if((pSkill->dw1stTableType==1 || pSkill->dw2ndTableType==1) && pSkill->iCastTime==0)
 	{
 		CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(TargetID, true);
-		if(!pTarget) return;
+		if(pTarget == nullptr) return;
 
 		//바로 skill로 들어가..^^
 		//casting packet은 보내지 않고..바로 effect packet을 보낸다..
@@ -1385,7 +1406,7 @@ void CMagicSkillMng::StartSkillMagicAtTargetPacket(__TABLE_UPC_SKILL* pSkill, in
 		//기술 애니메이션 드가...=^^=
 		//효과있으면 같이 드가..
 		__TABLE_UPC_SKILL_TYPE_1* pType1 = m_pTbl_Type_1->Find(pSkill->dwID);
-		if(!pType1) return;
+		if(pType1 == nullptr) return;
 
 		// 검기 색을 바꾸어 준다..
 //		D3DCOLOR crTrace = TraceColorGet(pSkill); // 스킬의 종류에 따라 검기의 색을 정한다..
@@ -1688,7 +1709,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 		{
 			int iNumArrow = 1;
 			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-			if(pType2) iNumArrow = pType2->iNumArrow;
+			if(pType2 != nullptr) iNumArrow = pType2->iNumArrow;
 
 			idx = AddIdx(pSkill->dwID, iNumArrow);
 		}
@@ -1703,7 +1724,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 		//기술 애니메이션 드가...=^^=
 		//효과있으면 같이 드가..
 		__TABLE_UPC_SKILL_TYPE_1* pType1 = m_pTbl_Type_1->Find(pSkill->dwID);
-		if(!pType1) return;
+		if(pType1 == nullptr) return;
 
 		s_pPlayer->RotateTo(pTarget);
 
@@ -1790,7 +1811,7 @@ void CMagicSkillMng::SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget
 
 			CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(m_iTarget, false);
 			int spart1 = pSkill->iSelfPart1 % 1000;
-			if(!pTarget)
+			if(pTarget == nullptr)
 			{
 				__Vector3 vTargetPos = s_pPlayer->Position() + s_pPlayer->Direction();
 				CGameProcedure::s_pFX->TriggerBundle(SourceID, spart1, pSkill->iFlyingFX, m_vTargetPos,
@@ -1852,12 +1873,12 @@ void CMagicSkillMng::ProcessCasting()
 		__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(s_pPlayer->m_dwMagicID);
 
 		CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(m_iTarget, true);
-		if(pTarget) s_pPlayer->RotateTo(pTarget); // 일단 타겟을 향해 방향을 돌린다..
+		if(pTarget != nullptr) s_pPlayer->RotateTo(pTarget); // 일단 타겟을 향해 방향을 돌린다..
 
 		//캐스팅 성공적으로 완료...
 		float fCastingTime = ((float)pSkill->iCastTime) / 10.0f * s_pPlayer->m_fAttackDelta;
 
-		if(pSkill)
+		if(pSkill != nullptr)
 		{
 			bool bSuccess = false;
 			if( s_pPlayer->m_fCastingTime >= fCastingTime && s_pPlayer->State()==PSA_SPELLMAGIC && s_pPlayer->StateMove()==PSM_STOP)
@@ -1876,7 +1897,7 @@ void CMagicSkillMng::ProcessCasting()
 
 void CMagicSkillMng::MobCasting(__TABLE_UPC_SKILL* pSkill, int iSourceID)
 {
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 
 	//캐스팅 성공적으로 완료...
 	uint8_t byBuff[32];
@@ -1893,7 +1914,7 @@ void CMagicSkillMng::MobCasting(__TABLE_UPC_SKILL* pSkill, int iSourceID)
 		{
 			int iNumArrow = 1;
 			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-			if(pType2) iNumArrow = pType2->iNumArrow;
+			if(pType2 != nullptr) iNumArrow = pType2->iNumArrow;
 
 			idx = AddIdx(pSkill->dwID, iNumArrow);
 		}
@@ -1939,10 +1960,10 @@ void CMagicSkillMng::MsgRecv_Casting(Packet& pkt)
 	if(iTargetID == -1) vTargetPos.Set((float)Data[0], (float)Data[1], (float)Data[2]);
 	
 	CPlayerBase* pPlayer = m_pGameProcMain->CharacterGetByID(iSourceID, true);
-	if(!pPlayer) return;
+	if(pPlayer == nullptr) return;
 
 	__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(dwMagicID);
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 
 	//내가 쓸때...
 	if(iSourceID==s_pPlayer->IDNumber())
@@ -2018,16 +2039,16 @@ void CMagicSkillMng::MsgRecv_Flying(Packet& pkt)
 	if(iSourceID<0 || iSourceID==s_pPlayer->IDNumber()) return;
 
 	CPlayerBase* pPlayer = m_pGameProcMain->CharacterGetByID(iSourceID, true);
-	if(!pPlayer) return;
+	if(pPlayer == nullptr) return;
 
 	__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(dwMagicID);
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 	//
 	////common.....//////////////////////////////////////////////////////////////
 
 	//TRACE("recv flying : %.4f\n", CN3Base::TimeGet());
 
-	if(pPlayer && pPlayer->State()==PSA_SPELLMAGIC)
+	if(pPlayer != nullptr && pPlayer->State()==PSA_SPELLMAGIC)
 	{
 		pPlayer->m_iMagicAni = pSkill->iSelfAnimID2;
 		if(pSkill->dw1stTableType==2 || pSkill->dw2ndTableType==2)
@@ -2056,9 +2077,9 @@ void CMagicSkillMng::MsgRecv_Flying(Packet& pkt)
 
 	int spart1 = pSkill->iSelfPart1 % 1000;
 	
-	if(!pTarget)
+	if(pTarget == nullptr)
 	{
-		if(pPlayer)
+		if(pPlayer != nullptr)
 		{
 			__Vector3 vTargetPos = pPlayer->Position() + pPlayer->Direction();
 			CGameProcedure::s_pFX->TriggerBundle(iSourceID, spart1, pSkill->iFlyingFX, vTargetPos,
@@ -2087,14 +2108,14 @@ void CMagicSkillMng::MsgRecv_Effecting(Packet& pkt)
 	}
 
 	CPlayerBase* pPlayer = m_pGameProcMain->CharacterGetByID(iSourceID, false);
-	if(!pPlayer) return;
+	if(pPlayer == nullptr) return;
 
 	__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(dwMagicID);
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 	//
 	////common.....//////////////////////////////////////////////////////////////
 		
-	if(pPlayer && iSourceID!=s_pPlayer->IDNumber() && pPlayer->State()==PSA_SPELLMAGIC)
+	if(pPlayer != nullptr && iSourceID!=s_pPlayer->IDNumber() && pPlayer->State()==PSA_SPELLMAGIC)
 	{
 		pPlayer->m_iMagicAni = pSkill->iSelfAnimID2;	//화살놓는 동작...
 		pPlayer->m_fCastFreezeTime = 0.0f;
@@ -2145,14 +2166,14 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 		Data[i] = pkt.read<int16_t>();
 	}
 	CPlayerBase* pPlayer = m_pGameProcMain->CharacterGetByID(iSourceID, false);
-	if(!pPlayer) return;
+	if(pPlayer == nullptr) return;
 
 	__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(dwMagicID);
-	if(!pSkill) return;
+	if(pSkill == nullptr) return;
 	//
 	////common.....//////////////////////////////////////////////////////////////
 		
-	if(pPlayer && iSourceID != s_pPlayer->IDNumber() && pPlayer->State()==PSA_SPELLMAGIC) 
+	if(pPlayer != nullptr && iSourceID != s_pPlayer->IDNumber() && pPlayer->State()==PSA_SPELLMAGIC)
 	{
 		pPlayer->m_iMagicAni = pSkill->iSelfAnimID2;
 		pPlayer->m_fCastFreezeTime = 0.0f;
@@ -2220,7 +2241,7 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 	if(Data[3]==SKILLMAGIC_FAIL_KILLFLYING)//flying효과 죽이고..그자리에 타겟효과 해라..	
 	{
 		if(iSourceID == s_pPlayer->IDNumber() ||
-			((iTargetID==s_pPlayer->IDNumber() && s_pOPMgr->NPCGetByID(iSourceID, false)!=NULL)))
+			((iTargetID==s_pPlayer->IDNumber() && s_pOPMgr->NPCGetByID(iSourceID, false)!= nullptr)))
 		{
 			RemoveIdx(Data[4]);
 		}
@@ -2245,7 +2266,7 @@ void CMagicSkillMng::MsgRecv_Fail(Packet& pkt)
 		}
 
 		CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(iTargetID, false);
-		if(pTarget)
+		if(pTarget != nullptr)
 		{
 			CGameProcedure::s_pFX->TriggerBundle(iSourceID, pSkill->iTargetPart, pSkill->iTargetFX, iTargetID, pSkill->iTargetPart);
 			
@@ -2359,9 +2380,9 @@ void CMagicSkillMng::MsgRecv_BuffType(Packet& pkt)
 void CMagicSkillMng::FlyingType2(__TABLE_UPC_SKILL* pSkill, int iSourceID, int iTargetID, int16_t* pData)
 {
 	CPlayerBase* pPlayer = m_pGameProcMain->CharacterGetByID(iSourceID, true);
-	if(!pPlayer) return;
+	if(pPlayer == nullptr) return;
 	__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-	if(!pType2) return;
+	if(pType2 == nullptr) return;
 
 	int LeftItem = pPlayer->ItemClass_LeftHand()/10;
 	int RightItem = pPlayer->ItemClass_RightHand()/10;
@@ -2379,7 +2400,7 @@ void CMagicSkillMng::FlyingType2(__TABLE_UPC_SKILL* pSkill, int iSourceID, int i
 	__Vector3 vTargetPos(0,0,0);
 
 	CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(iTargetID, false);
-	if(!pTarget)
+	if(pTarget == nullptr)
 	{
 		vTargetPos = pPlayer->Position() + pPlayer->Direction();
 		CGameProcedure::s_pFX->TriggerBundle(iSourceID, spart1, pSkill->iFlyingFX, vTargetPos+pPlayer->Position(), pData[3], pType2->iSuccessType);
@@ -2466,7 +2487,7 @@ void CMagicSkillMng::FlyingType2(__TABLE_UPC_SKILL* pSkill, int iSourceID, int i
 	}
 
 	//__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-	//if(pType2)	CGameProcedure::s_pFX->Trigger(iSourceID, spart1, pSkill->iFlyingFX, iTargetID, 	pSkill->iTargetPart, pData[3], pType2->iSuccessType);
+	//if(pType2 != nullptr)	CGameProcedure::s_pFX->Trigger(iSourceID, spart1, pSkill->iFlyingFX, iTargetID, 	pSkill->iTargetPart, pData[3], pType2->iSuccessType);
 }
 
 
@@ -2477,16 +2498,16 @@ void CMagicSkillMng::FlyingType2(__TABLE_UPC_SKILL* pSkill, int iSourceID, int i
 bool CMagicSkillMng::EffectingType1(uint32_t dwMagicID, int iSourceID, int iTargetID, int16_t* pData)
 {
 	CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(iTargetID, false);
-	if(pTarget)
+	if(pTarget != nullptr)
 	{
 		if(iSourceID != s_pPlayer->IDNumber()) // 내가 스킬을 쓸때..
 		{
 			__TABLE_UPC_SKILL_TYPE_1* pType1 = m_pTbl_Type_1->Find(dwMagicID);
-			if(pType1)
+			if(pType1 != nullptr)
 			{
 				CPlayerBase* pPlayer = m_pGameProcMain->CharacterGetByID(iSourceID, true);
 				__ASSERT(pPlayer, "NULL Player Pointer!!");
-				if(pPlayer)
+				if(pPlayer != nullptr)
 				{
 					// 검기 색을 바꾸어 준다..
 //					__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(dwMagicID);
@@ -2511,7 +2532,7 @@ void CMagicSkillMng::EffectingType3(uint32_t dwMagicID)
 {
 	__TABLE_UPC_SKILL_TYPE_3* pType3 = m_pTbl_Type_3->Find(dwMagicID);
 	__ASSERT(pType3, "NULL type3 Pointer!!");
-	if(!pType3) return;
+	if(pType3 == nullptr) return;
 
 	StunMySelf(pType3);
 
@@ -2535,7 +2556,7 @@ void CMagicSkillMng::EffectingType4(uint32_t dwMagicID)
 {
 	__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(dwMagicID);
 	__ASSERT(pType4, "NULL type4 Pointer!!");
-	if(!pType4) return;
+	if(pType4 == nullptr) return;
 
 	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
 	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
@@ -2553,7 +2574,7 @@ void CMagicSkillMng::EffectingType4(uint32_t dwMagicID)
 	m_ListBuffTypeID.insert(stlmultimapVAL_INT_DWORD(pType4->iBuffType,dwMagicID));
 
 	//같은 버프타입의 마법은 중복사용할 수 없다...먼저 사용된 것만 유효..
-	if(pType4)
+	if(pType4 != nullptr)
 	{
 		switch(pType4->iBuffType)
 		{
@@ -2754,7 +2775,7 @@ uint32_t CMagicSkillMng::GetMagicID(int idx)
 
 D3DCOLOR CMagicSkillMng::TraceColorGet(__TABLE_UPC_SKILL* pSkill) // 스킬의 종류에 따라 검기의 색을 정한다..
 {
-	if(NULL == pSkill) return 0xff404040;
+	if(pSkill == nullptr) return 0xff404040;
 	
 	D3DCOLOR crTrace = 0xffff4040;
 	switch(pSkill->dwNeedItem) // 요구 아이템에 따라서...
@@ -2777,12 +2798,12 @@ D3DCOLOR CMagicSkillMng::TraceColorGet(__TABLE_UPC_SKILL* pSkill) // 스킬의 �
 bool CMagicSkillMng::IsPositiveMagic(uint32_t dwMagicID)
 {
 	__TABLE_UPC_SKILL* pSkill = CGameBase::s_pTbl_Skill.Find(dwMagicID);
-	if(!pSkill) return true;
+	if(pSkill == nullptr) return true;
 
 	if(pSkill->dw1stTableType==3 || pSkill->dw2ndTableType==3)
 	{
 		__TABLE_UPC_SKILL_TYPE_3* pType3 = m_pTbl_Type_3->Find(dwMagicID);
-		if(!pType3) return true;
+		if(pType3 == nullptr) return true;
 
 		int key = 0;
 		if(pType3->iStartDamage>0 || (pType3->iStartDamage==0 && pType3->iDuraDamage>0) ) key = DDTYPE_TYPE3_DUR_OUR;
@@ -2795,7 +2816,7 @@ bool CMagicSkillMng::IsPositiveMagic(uint32_t dwMagicID)
 	if(pSkill->dw1stTableType==4 || pSkill->dw2ndTableType==4)
 	{
 		__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(dwMagicID);
-		if(!pType4) return true;
+		if(pType4 == nullptr) return true;
 
 		switch(pType4->iBuffType)
 		{
@@ -2898,13 +2919,13 @@ void CMagicSkillMng::StopCastingByRatio()
 	if(IsCasting())
 	{
 		__TABLE_UPC_SKILL* pSkill = s_pTbl_Skill.Find(s_pPlayer->m_dwMagicID);
-		if(pSkill)
+		if(pSkill != nullptr)
 		{
 			int SuccessValue = rand()%100;
 			if(SuccessValue >= pSkill->iPercentSuccess) // 스킬 테이블에 있는 확률대로 실패한다..
 			{
 				FailCast(pSkill);
-				//if(	s_pPlayer->Action(PSA_BASIC, false, NULL, true); // 캐스팅 취소, 기본동작으로 강제 세팅..
+				//if(	s_pPlayer->Action(PSA_BASIC, false, nullptr, true); // 캐스팅 취소, 기본동작으로 강제 세팅..
 			}				
 		}
 	}
