@@ -462,7 +462,7 @@ bool CMagicSkillMng::HasRequiredExhaustItem(const __TABLE_UPC_SKILL* pSkill, boo
 }
 
 // Visually disables skills on the skillbar (CUIHotKeyDlg) and skill tree (CUISkillTreeDlg)
-bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
+bool CMagicSkillMng::CheckValidSkillMagic(const __TABLE_UPC_SKILL* pSkill) const
 {
 	if (!HasRequiredMana(pSkill))
 		return false;
@@ -482,7 +482,7 @@ bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 	return true;
 }
 
-bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkill)
+bool CMagicSkillMng::CheckValidCondition(int iTargetID, const __TABLE_UPC_SKILL* pSkill) const
 {
 	e_Class_Represent Class = GetRepresentClass(s_pPlayer->m_InfoBase.eClass);
 
@@ -971,7 +971,7 @@ void CMagicSkillMng::SetSkillCooldown(__TABLE_UPC_SKILL* pSkill)
 	}
 }
 
-bool CMagicSkillMng::CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTargetPos, float fTargetRadius)
+bool CMagicSkillMng::CheckValidDistance(const __TABLE_UPC_SKILL* pSkill, __Vector3 vTargetPos, float fTargetRadius) const
 {
 	float fDist = (vTargetPos - s_pPlayer->Position()).Magnitude(); // 공격 거리를 구하고..
 

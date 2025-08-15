@@ -82,8 +82,8 @@ private:
 	float m_fZonePointerRadiusEffective;
 
 protected:
-	bool	CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkill);
-	bool	CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTargetPos, float fTargetRadius);
+	bool	CheckValidCondition(int iTargetID, const __TABLE_UPC_SKILL* pSkill) const;
+	bool	CheckValidDistance(const __TABLE_UPC_SKILL* pSkill, __Vector3 vTargetPos, float fTargetRadius) const;
 	
 	void	InitType4();
 
@@ -117,7 +117,7 @@ protected:
 	bool	HasRequiredExhaustItem(const __TABLE_UPC_SKILL* pSkill, bool* reportError = nullptr) const;
 	
 public:
-	bool	CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill);
+	bool	CheckValidSkillMagic(const __TABLE_UPC_SKILL* pSkill) const;
 	void	StunMySelf(__TABLE_UPC_SKILL_TYPE_3* pType3);
 	void	StopCastingByRatio();
 	void	ClearDurationalMagic();
