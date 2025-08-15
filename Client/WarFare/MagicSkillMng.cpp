@@ -172,770 +172,547 @@ bool CMagicSkillMng::IsCasting()
 	return false;
 }
 
-//Used to inform Hotkey and skill tree UI
-bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
+bool CMagicSkillMng::HaveRequiredItem(__TABLE_UPC_SKILL* pSkill)
 {
-	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
-	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
-
-	e_Class_Represent Class = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
-	
-	//mana check for all classes, no need to 
-	//separate because error message is not required
-	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
+	if (pSkill == nullptr)
 		return false;
 
-	int LeftItem = s_pPlayer->ItemClass_LeftHand();
-	int RightItem = s_pPlayer->ItemClass_RightHand();
+	int iItemClassLeft = s_pPlayer->ItemClass_LeftHand();
+	int iItemClassRight = s_pPlayer->ItemClass_RightHand();
 
-	if(pSkill->iNeedSkill==1055 || pSkill->iNeedSkill==2055)
+
+	if (pSkill->dwNeedItem == SKILL_NEEDS_EQUIPPED_WEAPON) //weapon only
 	{
-		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
-			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
-		{
-			return false;
-		}
+		if ((iItemClassLeft != ITEM_CLASS_UNKNOWN &&
+			iItemClassLeft != ITEM_CLASS_SHIELD) ||
+			(iItemClassRight != ITEM_CLASS_UNKNOWN &&
+			iItemClassRight != ITEM_CLASS_SHIELD))
+			return true;
 	}
-	else if(pSkill->iNeedSkill==1056 || pSkill->iNeedSkill==2056)
+
+	if (pSkill->dwNeedItem == SKILL_NEEDS_DAGGER)
 	{
-		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
-			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
-		{
-			return false;
-		}
+		if (iItemClassLeft == ITEM_CLASS_DAGGER || iItemClassRight == ITEM_CLASS_DAGGER)
+			return true;
 	}
 
-	if(pInfoBase->iHP < pSkill->iExhaustHP) return false;
-
-	int LeftItem1 = LeftItem/10;
-	int RightItem1 = RightItem/10;
-	
-	// NOTE(srmeier): I'm not sure about this but "9" for the e_ItemClass is jewels and stuff...
-	// - none of these type of items would be in the hands so... ?
-	// - if dwNeedItem == 0 then some other check is needed so maybe dwNeedItem == 9 indicates that no item is needed
-	if (pSkill->dwNeedItem != 9) {
-
-		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
-		{
-			return false;
-		}
-		if (pSkill->dwNeedItem == 0 && (pSkill->dw1stTableType == 1 || pSkill->dw2ndTableType == 1))
-		{
-			if (LeftItem != 11 && (LeftItem1 < 1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1 < 1 || RightItem1>5))
-			{
-				return false;
-			}
-		}
-
-	}
-
-	if(pSkill->dwExhaustItem>0)
+	if (pSkill->dwNeedItem == SKILL_NEEDS_BOW)
 	{
-		int NumItem = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwExhaustItem);
-		
-		if(pSkill->dw1stTableType==2 || pSkill->dw2ndTableType==2)
-		{
-			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-			if (!pType2) return false;
-			if(NumItem < pType2->iNumArrow)
-			{
-				return false;
-			}
-		}
-		else 
-		{
-			if(NumItem < 1) return false;
-		}
-
-		__TABLE_ITEM_BASIC* pItem = NULL;														// 아이템 테이블 구조체 포인터..	
-		__TABLE_ITEM_EXT* pItemExt = NULL;														// 아이템 테이블 구조체 포인터..	
-
-		pItem = s_pTbl_Items_Basic.Find(pSkill->dwExhaustItem/1000*1000);	// 열 데이터 얻기..
-		if(pItem && pItem->byExtIndex >= 0 && pItem->byExtIndex < MAX_ITEM_EXTENSION)
-			pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(pSkill->dwExhaustItem%1000);	// 열 데이터 얻기..
-		if ( NULL == pItem || NULL == pItemExt )
-		{
-			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
-			return false;	// 아이템이 없으면..
-		}
-
-		if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
-		{
-			// 종족 체크..
-			switch ( pItem->byNeedRace )
-			{
-				case 0:
-					break;
-
-				default:
-					if ( pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace )
-						return false;
-					break;
-			}
-
-			// 직업 체크..
-			if (pItem->byNeedClass != 0)
-			{
-				switch (pItem->byNeedClass)
-				{
-					case CLASS_KINDOF_WARRIOR:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_WARRIOR:
-							case CLASS_KA_BERSERKER:
-							case CLASS_KA_GUARDIAN:
-							case CLASS_EL_WARRIOR:
-							case CLASS_EL_BLADE:
-							case CLASS_EL_PROTECTOR:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ROGUE:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_ROGUE:
-							case CLASS_KA_HUNTER:
-							case CLASS_KA_PENETRATOR:
-							case CLASS_EL_ROGUE:
-							case CLASS_EL_RANGER:
-							case CLASS_EL_ASSASIN:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_WIZARD:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_WIZARD:
-							case CLASS_KA_SORCERER:
-							case CLASS_KA_NECROMANCER:
-							case CLASS_EL_WIZARD:
-							case CLASS_EL_MAGE:
-							case CLASS_EL_ENCHANTER:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_PRIEST:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_PRIEST:
-							case CLASS_KA_SHAMAN:
-							case CLASS_KA_DARKPRIEST:
-							case CLASS_EL_PRIEST:
-							case CLASS_EL_CLERIC:
-							case CLASS_EL_DRUID:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ATTACK_WARRIOR:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_BERSERKER:
-							case CLASS_EL_BLADE:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_DEFEND_WARRIOR:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_GUARDIAN:
-							case CLASS_EL_PROTECTOR:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ARCHER:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_HUNTER:
-							case CLASS_EL_RANGER:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ASSASSIN:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_PENETRATOR:
-							case CLASS_EL_ASSASIN:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ATTACK_WIZARD:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_SORCERER:
-							case CLASS_EL_MAGE:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_PET_WIZARD:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_NECROMANCER:
-							case CLASS_EL_ENCHANTER:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_HEAL_PRIEST:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_SHAMAN:
-							case CLASS_EL_CLERIC:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_CURSE_PRIEST:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_DARKPRIEST:
-							case CLASS_EL_DRUID:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					default:
-						if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byNeedClass)
-							return false;
-						break;
-				}						
-			}
-
-			// 요구레벨 체크..
-			if ( CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel+pItemExt->siNeedLevel )
-				return false;
-
-			// 요구 능력치 체크..
-			int iNeedValue;
-			iNeedValue = pItem->byNeedStrength;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedStrength;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStrength < iNeedValue )		
-				return false;
-
-			iNeedValue = pItem->byNeedStamina;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedStamina;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStamina < iNeedValue )		
-				return false;
-
-			iNeedValue = pItem->byNeedDexterity;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedDexterity;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iDexterity < iNeedValue )		
-				return false;
-
-			iNeedValue = pItem->byNeedInteli;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedInteli;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iIntelligence < iNeedValue )	
-				return false;
-
-			iNeedValue = pItem->byNeedMagicAttack;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedMagicAttack;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iAttack < iNeedValue )				
-				return false;
-		}
+		if (iItemClassLeft == ITEM_CLASS_BOW || iItemClassRight == ITEM_CLASS_BOW)
+			return true;
+		if (iItemClassLeft == ITEM_CLASS_BOW_CROSS || iItemClassRight == ITEM_CLASS_BOW_CROSS)
+			return true;
+		if (iItemClassLeft == ITEM_CLASS_BOW_LONG || iItemClassRight == ITEM_CLASS_BOW_LONG)
+			return true;
 	}
+
+	if (pSkill->dwNeedItem == SKILL_NEEDS_NO_ITEM)
+	{
+		return true;
+	}
+
+	if (pSkill->dwNeedItem == SKILL_NEEDS_STAFF)
+	{
+		if (iItemClassLeft == ITEM_CLASS_STAFF || iItemClassRight == ITEM_CLASS_STAFF)
+			return true;
+	}
+
+	return false;
+}
+
+bool CMagicSkillMng::HaveRestrictedItem(__TABLE_UPC_SKILL* pSkill, e_Class_Represent eClass)
+{
+	if (pSkill == nullptr)
+		return true;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_PASSIVE)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_MAGIC)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_BUFF)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_CURE)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_TRANSFORMATION)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_CHANGE_MOB_STATE)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_TELEPORT)
+		return false;
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_VISIBILITY)
+		return false;
+
+	int iItemClassLeft = s_pPlayer->ItemClass_LeftHand();
+	int iItemClassRight = s_pPlayer->ItemClass_RightHand();
+
+	// both hands are empty
+	if (iItemClassRight == ITEM_CLASS_UNKNOWN && iItemClassLeft == ITEM_CLASS_UNKNOWN)
+	{
+		return true;
+	}
+
+	// one hand is empty and other has shield
+	if ((iItemClassRight == ITEM_CLASS_UNKNOWN && iItemClassLeft == ITEM_CLASS_SHIELD) ||
+		(iItemClassRight == ITEM_CLASS_SHIELD && iItemClassLeft == ITEM_CLASS_UNKNOWN))
+	{
+		return true;
+	}
+
+	if (eClass == CLASS_REPRESENT_WARRIOR)
+	{
+		if (iItemClassRight == ITEM_CLASS_BOW || iItemClassLeft == ITEM_CLASS_BOW)
+			return true;
+		if (iItemClassRight == ITEM_CLASS_BOW_CROSS || iItemClassLeft == ITEM_CLASS_BOW_CROSS)
+			return true;
+		if (iItemClassRight == ITEM_CLASS_BOW_LONG || iItemClassLeft == ITEM_CLASS_BOW_LONG)
+			return true;
+	}
+
+	if (eClass == CLASS_REPRESENT_PRIEST)
+	{
+		if (iItemClassRight == ITEM_CLASS_STAFF || iItemClassLeft == ITEM_CLASS_STAFF)
+			return true;
+		if (iItemClassRight == ITEM_CLASS_BOW || iItemClassLeft == ITEM_CLASS_BOW)
+			return true;
+		if (iItemClassRight == ITEM_CLASS_BOW_CROSS || iItemClassLeft == ITEM_CLASS_BOW_CROSS)
+			return true;
+		if (iItemClassRight == ITEM_CLASS_BOW_LONG || iItemClassLeft == ITEM_CLASS_BOW_LONG)
+			return true;
+	}
+
+
+	if (eClass == CLASS_REPRESENT_ROGUE)
+	{
+		if (pSkill->dw1stTableType == SKILL_TYPE_ARCHERY)
+		{
+			if ((iItemClassRight == ITEM_CLASS_BOW ||
+				iItemClassRight == ITEM_CLASS_BOW_CROSS ||
+				iItemClassRight == ITEM_CLASS_BOW_LONG) &&
+				iItemClassLeft == ITEM_CLASS_UNKNOWN)
+				return false;
+			else if ((iItemClassLeft == ITEM_CLASS_BOW ||
+				iItemClassLeft == ITEM_CLASS_BOW_CROSS ||
+				iItemClassLeft == ITEM_CLASS_BOW_LONG) &&
+				iItemClassRight == ITEM_CLASS_UNKNOWN)
+				return false;
+			else
+				return true;
+		}
+		else if (pSkill->dw1stTableType == SKILL_TYPE_MELEE)
+		{
+			if (iItemClassRight != ITEM_CLASS_DAGGER && iItemClassLeft != ITEM_CLASS_DAGGER)
+				return true;
+			else
+				return false;
+		}
+
+	}
+
+	if (eClass == CLASS_REPRESENT_WIZARD)
+	{
+		if (iItemClassRight == ITEM_CLASS_STAFF && iItemClassLeft == ITEM_CLASS_UNKNOWN)
+			return false;
+		else if (iItemClassRight == ITEM_CLASS_UNKNOWN && iItemClassLeft == ITEM_CLASS_STAFF)
+			return false;
+		else
+			return true;
+	}
+
+	return false;
+
+}
+
+bool CMagicSkillMng::HaveEnoughHealth(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase)
+{
+
+	if (pSkill == nullptr || pInfoBase == nullptr)
+		return false;
+
+	if (pSkill->iExhaustHP == 0)
+		return true;
+
+	// max_hp, sacrifice requires 10001
+	if (pSkill->iExhaustHP > 10000)
+		return true;
+
+	if (pInfoBase->iHP < pSkill->iExhaustHP)
+		return false;
 
 	return true;
 }
 
-bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkill)
+bool CMagicSkillMng::HaveEnoughMana(__TABLE_UPC_SKILL* pSkill, __InfoPlayerMySelf* pInfoExt)
 {
-	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
-	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
-
-	//직업에 맞는 스킬인지 알아봐라...
-	e_Class_Represent Class = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
-	
-	if(pSkill->iNeedSkill!=0)
-	{
-		if(Class == CLASS_REPRESENT_WARRIOR)
-		{
-			int NeedSkill = pSkill->iNeedSkill / 10;
-			if(NeedSkill != CLASS_KA_WARRIOR && NeedSkill != CLASS_KA_BERSERKER && NeedSkill != CLASS_KA_GUARDIAN &&
-				NeedSkill != CLASS_EL_WARRIOR && NeedSkill != CLASS_EL_BLADE && NeedSkill != CLASS_EL_PROTECTOR)
-			{
-				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
-				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-				return false;
-			}
-		}
-		else if(Class == CLASS_REPRESENT_ROGUE)
-		{
-			int NeedSkill = pSkill->iNeedSkill / 10;
-			if(NeedSkill != CLASS_KA_ROGUE && NeedSkill != CLASS_KA_HUNTER && NeedSkill != CLASS_KA_PENETRATOR &&
-				NeedSkill != CLASS_EL_ROGUE && NeedSkill != CLASS_EL_RANGER && NeedSkill != CLASS_EL_ASSASIN)
-			{
-				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
-				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-				return false;
-			}
-		}
-		else if(Class == CLASS_REPRESENT_WIZARD)
-		{
-			int NeedSkill = pSkill->iNeedSkill / 10;
-			if(NeedSkill != CLASS_KA_WIZARD && NeedSkill != CLASS_KA_SORCERER && NeedSkill != CLASS_KA_NECROMANCER &&
-				NeedSkill != CLASS_EL_WIZARD && NeedSkill != CLASS_EL_MAGE && NeedSkill != CLASS_EL_ENCHANTER)
-			{
-				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
-				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-				return false;
-			}
-		}
-		else if(Class == CLASS_REPRESENT_PRIEST)
-		{
-			int NeedSkill = pSkill->iNeedSkill / 10;
-			if(NeedSkill != CLASS_KA_PRIEST && NeedSkill != CLASS_KA_DARKPRIEST && NeedSkill != CLASS_KA_SHAMAN &&
-				NeedSkill != CLASS_EL_PRIEST && NeedSkill != CLASS_EL_CLERIC && NeedSkill != CLASS_EL_DRUID)
-			{
-				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
-				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-				return false;
-			}
-		}
-	}
-
-	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
-	{
-		std::string buff;
-
-		if(Class==CLASS_REPRESENT_PRIEST || Class==CLASS_REPRESENT_WIZARD)
-		{
-			buff = fmt::format_text_resource(IDS_MSG_CASTING_FAIL_LACK_MP);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-		}
-		else if (Class == CLASS_REPRESENT_WARRIOR || Class == CLASS_REPRESENT_ROGUE)
-		{
-			buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_SP);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-		}
-
+	if (pSkill == nullptr || pInfoExt == nullptr)
 		return false;
-	}	
 
-	int LeftItem = s_pPlayer->ItemClass_LeftHand();
-	int RightItem = s_pPlayer->ItemClass_RightHand();
-
-	if(pInfoBase->iHP < pSkill->iExhaustHP)
-	{
-		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_HP);
-		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+	if (pInfoExt->iMSP < pSkill->iExhaustMSP)
 		return false;
-	}
 
-	int LeftItem1 = LeftItem/10;
-	int RightItem1 = RightItem/10;
-	
-	// NOTE(srmeier): I'm not sure about this but "9" for the e_ItemClass is jewels and stuff...
-	// - none of these type of items would be in the hands so... ?
-	// - if dwNeedItem == 0 then some other check is needed so maybe dwNeedItem == 9 indicates that no item is needed
-	if (pSkill->dwNeedItem != 9) {
+	return true;
+}
 
-		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
-		{
-			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+bool CMagicSkillMng::HaveEnoughExhaustItem(__TABLE_UPC_SKILL* pSkill)
+{
+	if (pSkill == nullptr)
+		return false;
+
+	if (pSkill->dwExhaustItem == 0)
+		return true;
+
+	int iCount = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwExhaustItem);
+
+
+	if (pSkill->dw1stTableType == SKILL_TYPE_ARCHERY)
+	{
+		__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
+
+		if (pType2 == nullptr)
 			return false;
-		}
-		if (pSkill->dwNeedItem == 0 && (pSkill->dw1stTableType == 1 || pSkill->dw2ndTableType == 1))
-		{
-			if (LeftItem != 11 && (LeftItem1<1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1<1 || RightItem1>5))
-			{
-				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-				return false;
-			}
-		}
 
+		if (iCount < pType2->iNumArrow)
+			return false;
+	}
+	else
+	{
+		if (iCount < 1)
+			return false;
 	}
 
-	if(pSkill->dwExhaustItem>0)
+	__TABLE_ITEM_BASIC* pItem = nullptr;
+	__TABLE_ITEM_EXT* pItemExt = nullptr;
+
+	pItem = s_pTbl_Items_Basic.Find(pSkill->dwExhaustItem / 1000 * 1000);
+
+	if (pItem != nullptr && pItem->byExtIndex >= 0 && pItem->byExtIndex < MAX_ITEM_EXTENSION)
+		pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(pSkill->dwExhaustItem % 1000);
+
+	if (pItem == nullptr || pItemExt == nullptr)
 	{
-		int NumItem = m_pGameProcMain->m_pUIInventory->GetCountInInvByID(pSkill->dwExhaustItem);
-		if(pSkill->dw1stTableType==2 || pSkill->dw2ndTableType==2)
-		{
-			__TABLE_UPC_SKILL_TYPE_2* pType2 = m_pTbl_Type_2->Find(pSkill->dwID);
-			if(NumItem < pType2->iNumArrow)
-			{
-				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
-				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-				return false;
-			}
-		}
-		else 
-		{
-			if(NumItem < 1)
-			{
-				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
-				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-				return false;
-			}
-		}
+		__ASSERT(0, "NULL Item");
+#ifdef _DEBUG
+		CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
+#endif
+		return false;	// 아이템이 없으면..
+	}
 
-		__TABLE_ITEM_BASIC* pItem = NULL;														// 아이템 테이블 구조체 포인터..	
-		__TABLE_ITEM_EXT* pItemExt = NULL;														// 아이템 테이블 구조체 포인터..	
-
-		pItem = s_pTbl_Items_Basic.Find(pSkill->dwExhaustItem/1000*1000);	// 열 데이터 얻기..
-		if(pItem && pItem->byExtIndex >= 0 && pItem->byExtIndex < MAX_ITEM_EXTENSION)
-			pItemExt = s_pTbl_Items_Exts[pItem->byExtIndex].Find(pSkill->dwExhaustItem%1000);	// 열 데이터 얻기..
-		if ( NULL == pItem || NULL == pItemExt )
+	if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
+	{
+		// 종족 체크..
+		switch (pItem->byNeedRace)
 		{
-			__ASSERT(0, "NULL Item");
-			CLogWriter::Write("MyInfo - Inv - Unknown Item {}, IDNumber", pSkill->dwExhaustItem);
-			return false;	// 아이템이 없으면..
+			case 0:
+				break;
+
+			default:
+				if (pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace)
+					return false;
+				break;
 		}
 
-		if (pItem->byAttachPoint == ITEM_LIMITED_EXHAUST)
+		// test for class specific items, ex: priest book should not be used by warrior.
+		if (pItem->byNeedClass != 0)
 		{
-			// 종족 체크..
-			switch ( pItem->byNeedRace )
+			switch (pItem->byNeedClass)
 			{
-				case 0:
+				case CLASS_KINDOF_WARRIOR:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_WARRIOR:
+						case CLASS_KA_BERSERKER:
+						case CLASS_KA_GUARDIAN:
+						case CLASS_EL_WARRIOR:
+						case CLASS_EL_BLADE:
+						case CLASS_EL_PROTECTOR:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_ROGUE:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_ROGUE:
+						case CLASS_KA_HUNTER:
+						case CLASS_KA_PENETRATOR:
+						case CLASS_EL_ROGUE:
+						case CLASS_EL_RANGER:
+						case CLASS_EL_ASSASIN:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_WIZARD:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_WIZARD:
+						case CLASS_KA_SORCERER:
+						case CLASS_KA_NECROMANCER:
+						case CLASS_EL_WIZARD:
+						case CLASS_EL_MAGE:
+						case CLASS_EL_ENCHANTER:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_PRIEST:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_PRIEST:
+						case CLASS_KA_SHAMAN:
+						case CLASS_KA_DARKPRIEST:
+						case CLASS_EL_PRIEST:
+						case CLASS_EL_CLERIC:
+						case CLASS_EL_DRUID:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_ATTACK_WARRIOR:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_BERSERKER:
+						case CLASS_EL_BLADE:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_DEFEND_WARRIOR:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_GUARDIAN:
+						case CLASS_EL_PROTECTOR:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_ARCHER:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_HUNTER:
+						case CLASS_EL_RANGER:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_ASSASSIN:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_PENETRATOR:
+						case CLASS_EL_ASSASIN:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_ATTACK_WIZARD:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_SORCERER:
+						case CLASS_EL_MAGE:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_PET_WIZARD:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_NECROMANCER:
+						case CLASS_EL_ENCHANTER:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_HEAL_PRIEST:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_SHAMAN:
+						case CLASS_EL_CLERIC:
+							break;
+						default:
+							return false;
+					}
+					break;
+
+				case CLASS_KINDOF_CURSE_PRIEST:
+					switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
+					{
+						case CLASS_KA_DARKPRIEST:
+						case CLASS_EL_DRUID:
+							break;
+						default:
+							return false;
+					}
 					break;
 
 				default:
-					if ( pItem->byNeedRace != CGameBase::s_pPlayer->m_InfoBase.eRace )
+					if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byNeedClass)
 						return false;
 					break;
 			}
-
-			// 직업 체크..
-			if (pItem->byNeedClass != 0)
-			{
-				switch (pItem->byNeedClass)
-				{
-					case CLASS_KINDOF_WARRIOR:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_WARRIOR:
-							case CLASS_KA_BERSERKER:
-							case CLASS_KA_GUARDIAN:
-							case CLASS_EL_WARRIOR:
-							case CLASS_EL_BLADE:
-							case CLASS_EL_PROTECTOR:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ROGUE:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_ROGUE:
-							case CLASS_KA_HUNTER:
-							case CLASS_KA_PENETRATOR:
-							case CLASS_EL_ROGUE:
-							case CLASS_EL_RANGER:
-							case CLASS_EL_ASSASIN:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_WIZARD:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_WIZARD:
-							case CLASS_KA_SORCERER:
-							case CLASS_KA_NECROMANCER:
-							case CLASS_EL_WIZARD:
-							case CLASS_EL_MAGE:
-							case CLASS_EL_ENCHANTER:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_PRIEST:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_PRIEST:
-							case CLASS_KA_SHAMAN:
-							case CLASS_KA_DARKPRIEST:
-							case CLASS_EL_PRIEST:
-							case CLASS_EL_CLERIC:
-							case CLASS_EL_DRUID:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ATTACK_WARRIOR:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_BERSERKER:
-							case CLASS_EL_BLADE:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_DEFEND_WARRIOR:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_GUARDIAN:
-							case CLASS_EL_PROTECTOR:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ARCHER:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_HUNTER:
-							case CLASS_EL_RANGER:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ASSASSIN:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_PENETRATOR:
-							case CLASS_EL_ASSASIN:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_ATTACK_WIZARD:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_SORCERER:
-							case CLASS_EL_MAGE:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_PET_WIZARD:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_NECROMANCER:
-							case CLASS_EL_ENCHANTER:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_HEAL_PRIEST:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_SHAMAN:
-							case CLASS_EL_CLERIC:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					case CLASS_KINDOF_CURSE_PRIEST:
-						switch (CGameBase::s_pPlayer->m_InfoBase.eClass)
-						{
-							case CLASS_KA_DARKPRIEST:
-							case CLASS_EL_DRUID:
-								break;
-							default:
-								return false;
-						}
-						break;
-
-					default:
-						if (CGameBase::s_pPlayer->m_InfoBase.eClass != pItem->byNeedClass)
-							return false;
-						break;
-				}						
-			}
-
-			// 요구레벨 체크..
-			if ( CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel+pItemExt->siNeedLevel )
-				return false;
-
-			// 요구 능력치 체크..
-			int iNeedValue;
-			iNeedValue = pItem->byNeedStrength;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedStrength;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStrength < iNeedValue )		
-				return false;
-
-			iNeedValue = pItem->byNeedStamina;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedStamina;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStamina < iNeedValue )		
-				return false;
-
-			iNeedValue = pItem->byNeedDexterity;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedDexterity;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iDexterity < iNeedValue )		
-				return false;
-
-			iNeedValue = pItem->byNeedInteli;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedInteli;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iIntelligence < iNeedValue )	
-				return false;
-
-			iNeedValue = pItem->byNeedMagicAttack;
-			if (iNeedValue != 0)
-				iNeedValue += pItemExt->siNeedMagicAttack;
-			if( iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iAttack < iNeedValue )				
-				return false;
 		}
-	}
 
-	if((pSkill->dw1stTableType==3 || pSkill->dw2ndTableType==3) &&
-		pSkill->iTarget==SKILLMAGIC_TARGET_SELF)
+		// test for item level
+		if (CGameBase::s_pPlayer->m_InfoBase.iLevel < pItem->cNeedLevel + pItemExt->siNeedLevel)
+			return false;
+
+		// test for stats
+		int iNeedValue;
+		iNeedValue = pItem->byNeedStrength;
+		if (iNeedValue != 0)
+			iNeedValue += pItemExt->siNeedStrength;
+		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStrength < iNeedValue)
+			return false;
+
+		iNeedValue = pItem->byNeedStamina;
+		if (iNeedValue != 0)
+			iNeedValue += pItemExt->siNeedStamina;
+		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iStamina < iNeedValue)
+			return false;
+
+		iNeedValue = pItem->byNeedDexterity;
+		if (iNeedValue != 0)
+			iNeedValue += pItemExt->siNeedDexterity;
+		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iDexterity < iNeedValue)
+			return false;
+
+		iNeedValue = pItem->byNeedInteli;
+		if (iNeedValue != 0)
+			iNeedValue += pItemExt->siNeedInteli;
+		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iIntelligence < iNeedValue)
+			return false;
+
+		iNeedValue = pItem->byNeedMagicAttack;
+		if (iNeedValue != 0)
+			iNeedValue += pItemExt->siNeedMagicAttack;
+		if (iNeedValue > 0 && CGameBase::s_pPlayer->m_InfoExt.iAttack < iNeedValue)
+			return false;
+	}
+}
+
+bool CMagicSkillMng::HaveCorrectClass(__TABLE_UPC_SKILL* pSkill, e_Class_Represent Class)
+{
+
+	if (pSkill == nullptr)
+		return false;
+
+	if (pSkill->iNeedSkill == 0)
+		return true;
+
+	int iClassID = pSkill->iNeedSkill / 10;
+
+	if (Class == CLASS_REPRESENT_WARRIOR)
 	{
-		__TABLE_UPC_SKILL_TYPE_3* pType3 = m_pTbl_Type_3->Find(pSkill->dwID);
-		if(!pType3) return false;
-
-		int key = 0;
-		if(pType3->iStartDamage>0 || (pType3->iStartDamage==0 && pType3->iDuraDamage>0) ) key = DDTYPE_TYPE3_DUR_OUR;
-		else key = DDTYPE_TYPE3_DUR_ENEMY;
-
-		key += pType3->iDDType;
-
-		if(key==DDTYPE_TYPE3_DUR_OUR)
+		if (iClassID != CLASS_KA_WARRIOR && iClassID != CLASS_KA_BERSERKER && iClassID != CLASS_KA_GUARDIAN &&
+			iClassID != CLASS_EL_WARRIOR && iClassID != CLASS_EL_BLADE && iClassID != CLASS_EL_PROTECTOR)
 		{
-			std::multimap<int, uint32_t>::iterator it, itend;
-			itend = m_ListBuffTypeID.end();
-			it = m_ListBuffTypeID.find(key);
-			if(it!=itend) return false;
+			return false;
 		}
 	}
 
-	if( (pSkill->dw1stTableType==4 || pSkill->dw2ndTableType==4) && 
-		( (pSkill->iTarget==SKILLMAGIC_TARGET_SELF) || (iTargetID==s_pPlayer->IDNumber()) ) )
+	if (Class == CLASS_REPRESENT_ROGUE)
 	{
-		__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(pSkill->dwID);
-		if(!pType4) return false;
-		
-		switch(pType4->iBuffType)
+		if (iClassID != CLASS_KA_ROGUE && iClassID != CLASS_KA_HUNTER && iClassID != CLASS_KA_PENETRATOR &&
+			iClassID != CLASS_EL_ROGUE && iClassID != CLASS_EL_RANGER && iClassID != CLASS_EL_ASSASIN)
 		{
-		case BUFFTYPE_MAXHP:
-			if(m_iMaxHP != 0) return false;
-			break;
-		case BUFFTYPE_AC:
-			if(m_iAC != 0) return false;
-			break;
-		case BUFFTYPE_ATTACK:
-			if(m_iAttack != 0) return false;
-			break;
-		case BUFFTYPE_ATTACKSPEED:
-			if(m_fAttackSpeed != 1.0f) return false;
-			break;
-		case BUFFTYPE_SPEED:
-			if(m_fSpeed != 1.0f) return false;
-			break;
-		case BUFFTYPE_ABILITY:
-			if(	m_iStr != 0 || m_iSta != 0 || m_iDex != 0 || m_iInt != 0 || m_iMAP != 0) return false;
-			break;
-		case BUFFTYPE_RESIST:
-			if(	m_iFireR != 0 || m_iColdR != 0 || m_iLightningR != 0 || m_iMagicR != 0 || m_iDeseaseR != 0 || m_iPoisonR != 0) return false;
-			break;
+			return false;
 		}
 	}
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-// 스킬 사용시 오브젝트 체크
+	if (Class == CLASS_REPRESENT_WIZARD)
+	{
+		if (iClassID != CLASS_KA_WIZARD && iClassID != CLASS_KA_SORCERER && iClassID != CLASS_KA_NECROMANCER &&
+			iClassID != CLASS_EL_WIZARD && iClassID != CLASS_EL_MAGE && iClassID != CLASS_EL_ENCHANTER)
+		{
+			return false;
+		}
+	}
+
+	if (Class == CLASS_REPRESENT_PRIEST)
+	{
+		if (iClassID != CLASS_KA_PRIEST && iClassID != CLASS_KA_DARKPRIEST && iClassID != CLASS_KA_SHAMAN &&
+			iClassID != CLASS_EL_PRIEST && iClassID != CLASS_EL_CLERIC && iClassID != CLASS_EL_DRUID)
+		{
+			return false;
+		}
+	}
+
+	if (Class == CLASS_REPRESENT_UNKNOWN)
+	{
+		return false;
+	}
+
+	return true;
+
+}
+
+bool CMagicSkillMng::IsValidObjectCheck(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase, int iTargetID)
+{
+
 	CPlayerBase* pTarget = m_pGameProcMain->CharacterGetByID(iTargetID, false);
-	if(pTarget == NULL) return true;
+
+	if (pTarget == nullptr)
+		return true;
 
 	__Vector3 vNormal, vMyPos, vGap, vDir, vSkillPos;
 
 	vMyPos = s_pPlayer->Position();
 	vMyPos.y += s_pPlayer->Height() / 2;
 
-	vDir = (pTarget->Position() + pTarget->Height()/2) - vMyPos;
+	vDir = (pTarget->Position() + pTarget->Height() / 2) - vMyPos;
 	vGap = vDir;
 	vDir.Normalize();
 
-
 	bool bColShape = ACT_WORLD->CheckCollisionWithShape(vMyPos, vDir, vGap.Magnitude(), &vSkillPos, &vNormal);
 
-	switch(pSkill->iTarget)
+	switch (pSkill->iTarget)
 	{
-	case SKILLMAGIC_TARGET_SELF:
+		case SKILLMAGIC_TARGET_SELF:
 		{
-			break;
+			return true;
 		}
-	case SKILLMAGIC_TARGET_FRIEND_WITHME:
-		{
-//			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
-//			{
-//				if(bColShape)
-//				{
-//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-//					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-//					return false;
-//				}
-//			}
-			break;
-		}
-	case SKILLMAGIC_TARGET_FRIEND_ONLY:
+		case SKILLMAGIC_TARGET_FRIEND_WITHME:
 		{
 //			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
 //			{
-//				if(bColShape)
-//				{
-//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-//					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-//					return false;
-//				}
+//				if(bColShape) return false;
 //			}
-			break;
+			return true;
 		}
-	case SKILLMAGIC_TARGET_PARTY:
+		case SKILLMAGIC_TARGET_FRIEND_ONLY:
+		{
+//			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
+//			{
+//				if(bColShape) return false;
+//			}
+			return true;
+		}
+		case SKILLMAGIC_TARGET_PARTY:
 		{
 //			__InfoPartyOrForce* pInfo = (__InfoPartyOrForce*)m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetSelected();
 //			if(!pInfo && iTargetID==-1)
@@ -944,78 +721,239 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 //			int iMemberIndex  = -1;
 //			if( m_pGameProcMain->m_pUIPartyOrForce->MemberInfoGetByID(pTarget->IDNumber(), iMemberIndex) )
 //			{
-//				if(bColShape)
-//				{
-//					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-//					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-//					return false;
-//				}
+//				if(bColShape) return false;
 //			}
-			break;
+			return true;
 		}
-	case SKILLMAGIC_TARGET_NPC_ONLY:
+		case SKILLMAGIC_TARGET_NPC_ONLY:
 		{
-			if(bColShape)
+			if (bColShape) return false;
+			return true;
+		}
+		case SKILLMAGIC_TARGET_PARTY_ALL:
+		{
+			return true;
+		}
+		case SKILLMAGIC_TARGET_ENEMY_ONLY:
+		{
+			if (pTarget->m_InfoBase.eNation != pInfoBase->eNation)
 			{
-				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-				return false;
+				if (bColShape) return false;
 			}
-			break;
+			return true;
 		}
-	case SKILLMAGIC_TARGET_PARTY_ALL:
+		case SKILLMAGIC_TARGET_ALL:
 		{
-			break;
+			if (bColShape) return false;
+			return true;
 		}
-	case SKILLMAGIC_TARGET_ENEMY_ONLY:
+		case SKILLMAGIC_TARGET_AREA:
+		case SKILLMAGIC_TARGET_AREA_ENEMY:
+		case SKILLMAGIC_TARGET_AREA_FRIEND:
+		case SKILLMAGIC_TARGET_AREA_ALL:
 		{
-			if(pTarget->m_InfoBase.eNation!=pInfoBase->eNation)
+			return true;
+		}
+		case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
+		{
+			if (pTarget->m_InfoBase.eNation == pInfoBase->eNation && pTarget->IsDead())
 			{
-				if(bColShape)
-				{
-					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-					return false;
-				}
+				if (bColShape) return false;
 			}
-			break;
+			return true;
 		}
-	case SKILLMAGIC_TARGET_ALL:
-		{
-			if(bColShape)
-			{
-				std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-				m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-				return false;
-			}
-			break;
-		}
-	case SKILLMAGIC_TARGET_AREA:
-	case SKILLMAGIC_TARGET_AREA_ENEMY:
-	case SKILLMAGIC_TARGET_AREA_FRIEND:
-	case SKILLMAGIC_TARGET_AREA_ALL:
-		{
-			break;
-		}
-	case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
-		{
-			if(pTarget->m_InfoBase.eNation==pInfoBase->eNation && pTarget->IsDead())
-			{
-				if(bColShape)
-				{
-					std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
-					m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
-					return false;
-				}
-			}
-			break;
-		}
-	default:
-		break;
 	}
 
-// 스킬 사용시 오브젝트 체크
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+	return true;
+}
+
+bool CMagicSkillMng::IsValidType3(__TABLE_UPC_SKILL* pSkill)
+{
+
+	if (pSkill == nullptr)
+		return false;
+
+	// type 3 check, ex: restoration skills of warrior
+	if ((pSkill->dw1stTableType == SKILL_TYPE_MAGIC || pSkill->dw2ndTableType == 3) &&
+		pSkill->iTarget == SKILLMAGIC_TARGET_SELF)
+	{
+		__TABLE_UPC_SKILL_TYPE_3* pType3 = m_pTbl_Type_3->Find(pSkill->dwID);
+
+		if (pType3 == nullptr)
+			return false;
+
+		int key = 0;
+
+		if (pType3->iStartDamage > 0 || (pType3->iStartDamage == 0 && pType3->iDuraDamage > 0))
+			key = DDTYPE_TYPE3_DUR_OUR;
+		else
+			key = DDTYPE_TYPE3_DUR_ENEMY;
+
+		key += pType3->iDDType;
+
+		if (key == DDTYPE_TYPE3_DUR_OUR)
+		{
+			std::multimap<int, uint32_t>::iterator it, itend;
+			itend = m_ListBuffTypeID.end();
+			it = m_ListBuffTypeID.find(key);
+			if (it != itend) return false;
+		}
+	}
+
+	return true;
+}
+
+bool CMagicSkillMng::IsValidType4(__TABLE_UPC_SKILL* pSkill, int iTargetID)
+{
+	if (pSkill == nullptr)
+		return false;
+
+	if ((pSkill->dw1stTableType == SKILL_TYPE_BUFF || pSkill->dw2ndTableType == 4) &&
+		((pSkill->iTarget == SKILLMAGIC_TARGET_SELF) || (iTargetID == s_pPlayer->IDNumber())) &&
+		 (pSkill->dw1stTableType != SKILL_TYPE_TRANSFORMATION || pSkill->dw2ndTableType != 4))
+	{
+		__TABLE_UPC_SKILL_TYPE_4* pType4 = m_pTbl_Type_4->Find(pSkill->dwID);
+
+		if (pType4 == nullptr)
+			return false;
+
+		switch (pType4->iBuffType)
+		{
+			case BUFFTYPE_MAXHP:
+				if (m_iMaxHP != 0)
+					return false;
+				break;
+			case BUFFTYPE_AC:
+				if (m_iAC != 0)
+					return false;
+				break;
+			case BUFFTYPE_ATTACK:
+				if (m_iAttack != 0)
+					return false;
+				break;
+			case BUFFTYPE_ATTACKSPEED:
+				if (m_fAttackSpeed != 1.0f)
+					return false;
+				break;
+			case BUFFTYPE_SPEED:
+				if (m_fSpeed != 1.0f)
+					return false;
+				break;
+			case BUFFTYPE_ABILITY:
+				if (m_iStr != 0 || m_iSta != 0 || m_iDex != 0 || m_iInt != 0 || m_iMAP != 0)
+					return false;
+				break;
+			case BUFFTYPE_RESIST:
+				if (m_iFireR != 0 || m_iColdR != 0 || m_iLightningR != 0 ||
+					m_iMagicR != 0 || m_iDeseaseR != 0 || m_iPoisonR != 0)
+					return false;
+				break;
+		}
+	}
+
+	return true;
+}
+
+// Used to inform Hotkey and skill tree UI
+bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
+{
+	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
+	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
+	e_Class_Represent Class = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
+
+	if (!HaveEnoughMana(pSkill, pInfoExt))
+		return false;
+
+	if (HaveRestrictedItem(pSkill, Class))
+		return false;
+
+	if (!HaveEnoughHealth(pSkill, pInfoBase))
+		return false;
+
+	if (!HaveRequiredItem(pSkill))
+		return false;
+
+	if (!HaveEnoughExhaustItem(pSkill))
+		return false;
+
+
+	return true;
+}
+
+bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkill)
+{
+	__InfoPlayerBase* pInfoBase = &(s_pPlayer->m_InfoBase);
+	__InfoPlayerMySelf* pInfoExt = &(s_pPlayer->m_InfoExt);
+	e_Class_Represent eClass = CGameProcedure::GetRepresentClass(pInfoBase->eClass);
+
+	if (!HaveCorrectClass(pSkill, eClass))
+	{
+		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_DIFFURENTCLASS);
+		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		return false;
+	}
+
+	if (!HaveEnoughMana(pSkill, pInfoExt))
+	{
+		std::string buff;
+
+		if (eClass == CLASS_REPRESENT_PRIEST || eClass == CLASS_REPRESENT_WIZARD)
+		{
+			buff = fmt::format_text_resource(IDS_MSG_CASTING_FAIL_LACK_MP);
+			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		}
+		else if (eClass == CLASS_REPRESENT_WARRIOR || eClass == CLASS_REPRESENT_ROGUE)
+		{
+			buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_SP);
+			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		}
+
+		return false;
+	}
+
+	if (HaveRestrictedItem(pSkill, eClass))
+	{
+		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
+		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		return false;
+	}
+
+	if (!HaveEnoughHealth(pSkill, pInfoBase))
+	{
+		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_HP);
+		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		return false;
+	}
+
+	if (!HaveRequiredItem(pSkill))
+	{
+		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
+		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
+		return false;
+	}
+
+	if (!HaveEnoughExhaustItem(pSkill))
+	{
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_ITEM);
+		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+	}
+
+	if (!IsValidObjectCheck(pSkill, pInfoBase, iTargetID))
+	{
+		std::string szMsg = fmt::format_text_resource(IDS_SKILL_FAIL_OBJECT_BLOCK);
+		m_pGameProcMain->MsgOutput(szMsg, 0xffffff00);
+		return false;
+	}
+
+	if (!IsValidType3(pSkill))
+	{
+		return false;
+	}
+
+	if (!IsValidType4(pSkill, iTargetID))
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -1051,7 +989,9 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		m_dwNonActionMagicID = 0;
 		m_iNonActionMagicTarget = -1;
 	}
-	if(!CheckValidCondition(iTargetID, pSkill)) return false;
+	
+	if(!CheckValidCondition(iTargetID, pSkill)) 
+		return false;
 
 	//TRACE("마법성공 state : %d time %.2f\n", s_pPlayer->State(), CN3Base::TimeGet());
 	// 스킬 쓸 조건이 되는지 검사 끝...

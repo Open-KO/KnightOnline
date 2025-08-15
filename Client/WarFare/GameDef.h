@@ -1178,6 +1178,26 @@ enum e_SkillMagicTaget	{	SKILLMAGIC_TARGET_SELF = 1,					// Targets myself
 							SKILLMAGIC_TARGET_UNKNOWN = 0xffffffff
 						};
 
+enum e_SkillNeedItem {
+							SKILL_NEEDS_EQUIPPED_WEAPON = 0,	// anything equiped is enough to cast
+							SKILL_NEEDS_DAGGER = 1,		// skill needs dagger
+							SKILL_NEEDS_BOW = 7,		// skill needs bow
+							SKILL_NEEDS_NO_ITEM = 9,	// skill needs no item
+							SKILL_NEEDS_STAFF = 11,		// skill needs staff
+};
+
+enum e_SkillPrimaryType {
+							SKILL_TYPE_PASSIVE = 0,			 // passive skills
+							SKILL_TYPE_MELEE = 1,			 // melee skills
+							SKILL_TYPE_ARCHERY = 2,			 // archery skills
+							SKILL_TYPE_MAGIC = 3,			 // magic attacking skills
+							SKILL_TYPE_BUFF = 4,			 // buffing skills
+							SKILL_TYPE_CURE = 5,			 // cure skills, resurrection skills ( state changing )
+							SKILL_TYPE_TRANSFORMATION = 6,	 // transformation
+							SKILL_TYPE_CHANGE_MOB_STATE = 7, // sleep, provoke
+							SKILL_TYPE_TELEPORT = 8,		 // descent, teleport
+							SKILL_TYPE_VISIBILITY = 9		 // visibility related stealth, lupine
+};
 
 // define fx...
 struct __TABLE_FX

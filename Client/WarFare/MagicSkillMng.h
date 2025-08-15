@@ -2,6 +2,7 @@
 
 #include "GameDef.h"
 #include "GameBase.h"
+#include "PlayerBase.h"
 #include <map>
 
 typedef std::map<int, uint32_t>::value_type stlmapVAL_INT_DWORD;
@@ -105,6 +106,15 @@ protected:
 
 	void	SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget);
 	void	FailCast(__TABLE_UPC_SKILL* pSkill);
+	bool	HaveRequiredItem(__TABLE_UPC_SKILL* pSkill);   // returns if the equiped item valid or not
+	bool	HaveRestrictedItem(__TABLE_UPC_SKILL* pSkill, e_Class_Represent Class); // returns if the equiped item is restricted or not
+	bool	HaveEnoughMana(__TABLE_UPC_SKILL* pSkill, __InfoPlayerMySelf* pInfoExt);
+	bool	HaveEnoughHealth(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase);
+	bool	HaveEnoughExhaustItem(__TABLE_UPC_SKILL* pSkill);
+	bool	HaveCorrectClass(__TABLE_UPC_SKILL* pSkill, e_Class_Represent Class);
+	bool	IsValidObjectCheck(__TABLE_UPC_SKILL* pSkill, __InfoPlayerBase* pInfoBase, int iTargetID);
+	bool	IsValidType3(__TABLE_UPC_SKILL* pSkill);
+	bool	IsValidType4(__TABLE_UPC_SKILL* pSkill, int iTargetID);
 	
 public:
 	bool	CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill);
