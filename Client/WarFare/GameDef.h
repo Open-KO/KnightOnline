@@ -1191,11 +1191,11 @@ enum e_SkillPrimaryType {
 							SKILL_TYPE_MELEE = 1,			 // melee skills
 							SKILL_TYPE_ARCHERY = 2,			 // archery skills
 							SKILL_TYPE_MAGIC = 3,			 // magic attacking skills
-							SKILL_TYPE_BUFF = 4,			 // buffing skills
-							SKILL_TYPE_CURE = 5,			 // cure skills, resurrection skills ( state changing )
+							SKILL_TYPE_STAT_MODIFIER = 4,	 // buff, debuff skills
+							SKILL_TYPE_RECOVERY = 5,		 // cure skills, resurrection skills ( state changing )
 							SKILL_TYPE_TRANSFORMATION = 6,	 // transformation
 							SKILL_TYPE_CHANGE_MOB_STATE = 7, // sleep, provoke
-							SKILL_TYPE_TELEPORT = 8,		 // descent, teleport
+							SKILL_TYPE_WARP = 8,			 // descent, teleport
 							SKILL_TYPE_VISIBILITY = 9		 // visibility related stealth, lupine
 };
 

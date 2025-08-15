@@ -231,10 +231,10 @@ bool CMagicSkillMng::HaveRestrictedItem(__TABLE_UPC_SKILL* pSkill, e_Class_Repre
 	if (pSkill->dw1stTableType == SKILL_TYPE_MAGIC)
 		return false;
 
-	if (pSkill->dw1stTableType == SKILL_TYPE_BUFF)
+	if (pSkill->dw1stTableType == SKILL_TYPE_STAT_MODIFIER)
 		return false;
 
-	if (pSkill->dw1stTableType == SKILL_TYPE_CURE)
+	if (pSkill->dw1stTableType == SKILL_TYPE_RECOVERY)
 		return false;
 
 	if (pSkill->dw1stTableType == SKILL_TYPE_TRANSFORMATION)
@@ -243,7 +243,7 @@ bool CMagicSkillMng::HaveRestrictedItem(__TABLE_UPC_SKILL* pSkill, e_Class_Repre
 	if (pSkill->dw1stTableType == SKILL_TYPE_CHANGE_MOB_STATE)
 		return false;
 
-	if (pSkill->dw1stTableType == SKILL_TYPE_TELEPORT)
+	if (pSkill->dw1stTableType == SKILL_TYPE_WARP)
 		return false;
 
 	if (pSkill->dw1stTableType == SKILL_TYPE_VISIBILITY)
@@ -808,7 +808,7 @@ bool CMagicSkillMng::IsValidType4(__TABLE_UPC_SKILL* pSkill, int iTargetID)
 	if (pSkill == nullptr)
 		return false;
 
-	if ((pSkill->dw1stTableType == SKILL_TYPE_BUFF || pSkill->dw2ndTableType == 4) &&
+	if ((pSkill->dw1stTableType == SKILL_TYPE_STAT_MODIFIER || pSkill->dw2ndTableType == 4) &&
 		((pSkill->iTarget == SKILLMAGIC_TARGET_SELF) || (iTargetID == s_pPlayer->IDNumber())) &&
 		 (pSkill->dw1stTableType != SKILL_TYPE_TRANSFORMATION || pSkill->dw2ndTableType != 4))
 	{
