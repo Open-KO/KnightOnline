@@ -185,43 +185,27 @@ bool CMagicSkillMng::CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill)
 	if(pInfoExt->iMSP < pSkill->iExhaustMSP)
 		return false;
 
+	if (pInfoBase->iHP < pSkill->iExhaustHP)
+		return false;
+
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
 
-	if(pSkill->iNeedSkill==1055 || pSkill->iNeedSkill==2055)
-	{
-		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
-			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
-		{
-			return false;
-		}
-	}
-	else if(pSkill->iNeedSkill==1056 || pSkill->iNeedSkill==2056)
-	{
-		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
-			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
-		{
-			return false;
-		}
-	}
-
-	if(pInfoBase->iHP < pSkill->iExhaustHP) return false;
-
-	int LeftItem1 = LeftItem/10;
-	int RightItem1 = RightItem/10;
+	int LeftItemGroup = LeftItem / 10;
+	int RightItemGroup = RightItem / 10;
 	
 	// NOTE(srmeier): I'm not sure about this but "9" for the e_ItemClass is jewels and stuff...
 	// - none of these type of items would be in the hands so... ?
 	// - if dwNeedItem == 0 then some other check is needed so maybe dwNeedItem == 9 indicates that no item is needed
 	if (pSkill->dwNeedItem != 9) {
 
-		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
+		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItemGroup && pSkill->dwNeedItem != RightItemGroup)
 		{
 			return false;
 		}
 		if (pSkill->dwNeedItem == 0 && (pSkill->dw1stTableType == 1 || pSkill->dw2ndTableType == 1))
 		{
-			if (LeftItem != 11 && (LeftItem1 < 1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1 < 1 || RightItem1>5))
+			if (LeftItem != 11 && (LeftItemGroup < 1 || LeftItemGroup>5) && RightItemGroup != 11 && (RightItemGroup < 1 || RightItemGroup>5))
 			{
 				return false;
 			}
@@ -552,43 +536,22 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
 
-	if(pSkill->iNeedSkill==1055 || pSkill->iNeedSkill==2055)
-	{
-		if((LeftItem != ITEM_CLASS_SWORD && LeftItem != ITEM_CLASS_AXE && LeftItem != ITEM_CLASS_MACE ) ||
-			(RightItem != ITEM_CLASS_SWORD && RightItem != ITEM_CLASS_AXE && RightItem != ITEM_CLASS_MACE) )
-		{
-			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
-	else if(pSkill->iNeedSkill==1056 || pSkill->iNeedSkill==2056)
-	{
-		if(	RightItem != ITEM_CLASS_SWORD_2H && RightItem != ITEM_CLASS_AXE_2H &&
-			RightItem != ITEM_CLASS_MACE_2H && RightItem != ITEM_CLASS_POLEARM )
-		{
-			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
-			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
-			return false;
-		}
-	}
-
-	if(pInfoBase->iHP < pSkill->iExhaustHP)
+	if (pInfoBase->iHP < pSkill->iExhaustHP)
 	{
 		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_LACK_HP);
 		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		return false;
 	}
 
-	int LeftItem1 = LeftItem/10;
-	int RightItem1 = RightItem/10;
+	int LeftItemGroup = LeftItem / 10;
+	int RightItemGroup = RightItem / 10;
 	
 	// NOTE(srmeier): I'm not sure about this but "9" for the e_ItemClass is jewels and stuff...
 	// - none of these type of items would be in the hands so... ?
 	// - if dwNeedItem == 0 then some other check is needed so maybe dwNeedItem == 9 indicates that no item is needed
 	if (pSkill->dwNeedItem != 9) {
 
-		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItem1 && pSkill->dwNeedItem != RightItem1)
+		if (pSkill->dwNeedItem != 0 && pSkill->dwNeedItem != LeftItemGroup && pSkill->dwNeedItem != RightItemGroup)
 		{
 			std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 			m_pGameProcMain->MsgOutput(buff, 0xffffff00);
@@ -596,7 +559,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkil
 		}
 		if (pSkill->dwNeedItem == 0 && (pSkill->dw1stTableType == 1 || pSkill->dw2ndTableType == 1))
 		{
-			if (LeftItem != 11 && (LeftItem1<1 || LeftItem1>5) && RightItem1 != 11 && (RightItem1<1 || RightItem1>5))
+			if (LeftItem != 11 && (LeftItemGroup<1 || LeftItemGroup>5) && RightItemGroup != 11 && (RightItemGroup<1 || RightItemGroup>5))
 			{
 				std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 				m_pGameProcMain->MsgOutput(buff, 0xffffff00);
