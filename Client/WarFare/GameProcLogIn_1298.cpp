@@ -455,6 +455,9 @@ bool CGameProcLogIn_1298::ProcessPacket(Packet & pkt)
 
 void CGameProcLogIn_1298::ConnectToGameServer() // 고른 게임 서버에 접속
 {
+	if (s_fTimeUntilNextGameConnectionAttempt > 0.0f)
+		return;
+
 	__GameServerInfo GSI;
 	if (!m_pUILogIn->ServerInfoGetCur(GSI))
 		return; // 서버를 고른다음..
@@ -471,6 +474,8 @@ void CGameProcLogIn_1298::ConnectToGameServer() // 고른 게임 서버에 접�
 	else
 	{
 		s_szServer = GSI.szName;
+		s_fTimeUntilNextGameConnectionAttempt = TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT;
+
 		MsgSend_VersionCheck();
 	}
 }
