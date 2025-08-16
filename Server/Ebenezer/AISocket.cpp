@@ -822,6 +822,7 @@ void CAISocket::RecvMagicAttackResult(char* pBuf)
 		if (sid >= USER_BAND
 			&& sid < NPC_BAND)
 		{
+			TRACE("HERE\n");
 			pUser = (CUser*) m_pMain->m_Iocport.m_SockArray[sid];
 			if (pUser == nullptr
 				|| pUser->m_bResHpType == USER_DEAD)

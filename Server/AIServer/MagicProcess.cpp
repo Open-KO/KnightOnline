@@ -94,7 +94,7 @@ void CMagicProcess::MagicPacket(char* pBuf)
 				break;
 
 			case 7:
-				ExecuteType7(pTable->ID);
+				ExecuteType7(pTable->ID, tid, data1, data2, data3, pTable->Moral);
 				break;
 
 			case 8:
@@ -139,7 +139,7 @@ void CMagicProcess::MagicPacket(char* pBuf)
 					break;
 
 				case 7:
-					ExecuteType7(pTable->ID);
+					ExecuteType7(pTable->ID, tid, data1, data2, data3, pTable->Moral);
 					break;
 
 				case 8:
@@ -601,8 +601,76 @@ void CMagicProcess::ExecuteType6(int magicid)
 {
 }
 
-void CMagicProcess::ExecuteType7(int magicid)
+void CMagicProcess::ExecuteType7(int magicid, int tid, int data1, int data2, int data3, int moral)
 {
+	int damage = 0, result = 1, send_index = 0, attack_type = 0;
+	char send_buff[256] = {};
+	model::MagicType7* pType = nullptr;
+	CNpc* pNpc = nullptr;
+
+	model::Magic* pMagic = m_pMain->m_MagicTableMap.GetData(magicid);
+	if (pMagic == nullptr)
+		return;
+
+	// AoE skills, AoE sleep needs to be implemented
+	if (tid == -1)
+	{
+		AreaAttack(7, magicid, moral, data1, data2, data3, 0, 0);
+		return;
+	}
+
+	pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	if (pNpc == nullptr
+		|| pNpc->m_NpcState == NPC_DEAD
+		|| pNpc->m_iHP == 0)
+	{
+		result = 0;
+		goto packet_send;
+	}
+
+	pType = m_pMain->m_MagicType7TableMap.GetData(magicid);      // Get magic skill table type 3.
+	if (pType == nullptr)
+		return;
+
+	damage = pType->Damage;
+	// attacking ex: binding
+	if (damage > 0)
+	{
+		attack_type = magicid;
+		if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+		{
+			pNpc->SendExpToUserList(); 
+			pNpc->SendDead(m_pSrcUser->m_pIocport);
+			m_pSrcUser->SendAttackSuccess(tid, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
+		}
+		else
+		{
+			m_pSrcUser->SendAttackSuccess(tid, ATTACK_SUCCESS, damage, pNpc->m_iHP);
+		}
+	}
+	else // sleeping
+	{
+		// note: sleep works, but duration does not (infinite).
+		pNpc->m_NpcState = NPC_SLEEPING;
+		pNpc->m_Delay = pType->Duration;	
+	}
+
+	
+
+packet_send:
+		SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
+		SetByte(send_buff, MAGIC_EFFECTING, send_index);
+		SetDWORD(send_buff, magicid, send_index);
+		SetShort(send_buff, m_pSrcUser->m_iUserId, send_index);
+		SetShort(send_buff, tid, send_index);
+		SetShort(send_buff, data1, send_index);
+		SetShort(send_buff, result, send_index);
+		SetShort(send_buff, data3, send_index);
+		SetShort(send_buff, moral, send_index);
+		SetShort(send_buff, 0, send_index);
+		SetShort(send_buff, 0, send_index);
+		m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
+
 }
 
 void CMagicProcess::ExecuteType8(int magicid)
@@ -717,6 +785,7 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 {
 	model::MagicType3* pType3 = nullptr;
 	model::MagicType4* pType4 = nullptr;
+	model::MagicType7* pType7 = nullptr;
 	int radius = 0;
 
 	if (magictype == 3)
@@ -740,6 +809,17 @@ short CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1
 		}
 
 		radius = pType4->Radius;
+	}
+	else if (magictype == 7)
+	{
+		pType7 = m_pMain->m_MagicType7TableMap.GetData(magicid);
+		if (pType7 == nullptr)
+		{
+			spdlog::error("MagicProcess::AreaAttack: No MAGIC_TYPE7 definition [magicId={}]", magicid);
+			return 0;
+		}
+
+		radius = pType7->Radius;
 	}
 
 	if (radius <= 0)
@@ -816,6 +896,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 
 	model::MagicType3* pType3 = nullptr;
 	model::MagicType4* pType4 = nullptr;
+	model::MagicType7* pType7 = nullptr;
 	model::Magic* pMagic = nullptr;
 
 	int damage = 0, tid = 0, target_damage = 0, attribute = 0;
@@ -851,6 +932,17 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		}
 
 		fRadius = (float) pType4->Radius;
+	}
+	else if (magictype == 7)
+	{
+		pType7 = m_pMain->m_MagicType7TableMap.GetData(magicid);
+		if (pType7 == nullptr)
+		{
+			spdlog::error("MagicProcess::AreaAttackDamage: No MAGIC_TYPE7 definition [magicId={}]", magicid);
+			return;
+		}
+		target_damage = pType7->Damage;
+		fRadius = (float) pType7->Radius;
 	}
 
 	if (fRadius <= 0)
@@ -1017,6 +1109,39 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 				SetShort(send_buff, 0, send_index);
 				SetShort(send_buff, 0, send_index);
 				m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
+			}
+			else if (magictype == 7)
+			{
+				damage = target_damage;
+				attack_type = magicid;
+				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+				{
+					pNpc->SendExpToUserList();
+					pNpc->SendDead(m_pSrcUser->m_pIocport);
+					m_pSrcUser->SendAttackSuccess(pNpc->m_sNid + NPC_BAND, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
+				}
+				else
+				{
+					m_pSrcUser->SendAttackSuccess(pNpc->m_sNid + NPC_BAND, ATTACK_SUCCESS, damage, pNpc->m_iHP);
+				}
+				
+				memset(send_buff, 0, sizeof(send_buff));
+				send_index = 0;
+
+				SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
+				SetByte(send_buff, MAGIC_EFFECTING, send_index);
+				SetDWORD(send_buff, magicid, send_index);
+				SetShort(send_buff, m_pSrcUser->m_iUserId, send_index);
+				SetShort(send_buff, pNpc->m_sNid + NPC_BAND, send_index);
+				SetShort(send_buff, data1, send_index);
+				SetShort(send_buff, result, send_index);
+				SetShort(send_buff, data3, send_index);
+				SetShort(send_buff, moral, send_index);
+				SetShort(send_buff, 0, send_index);
+				SetShort(send_buff, 0, send_index);
+
+				m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
+				
 			}
 		}
 	}

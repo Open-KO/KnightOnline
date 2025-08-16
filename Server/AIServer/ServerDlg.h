@@ -59,6 +59,7 @@ typedef CSTLMap <model::MagicType1>			MagicType1TableMap;
 typedef CSTLMap <model::MagicType2>			MagicType2TableMap;
 typedef CSTLMap <model::MagicType3>			MagicType3TableMap;
 typedef CSTLMap	<model::MagicType4>			MagicType4TableMap;
+typedef CSTLMap	<model::MagicType7>			MagicType7TableMap;
 typedef CSTLMap <_PARTY_GROUP>				PartyMap;
 typedef CSTLMap <model::MakeWeapon>			MakeWeaponTableMap;
 typedef CSTLMap <model::MakeItemGradeCode>	MakeGradeItemCodeTableMap;
@@ -143,6 +144,7 @@ public:
 	MagicType2TableMap			m_MagicType2TableMap;
 	MagicType3TableMap			m_MagicType3TableMap;
 	MagicType4TableMap			m_MagicType4TableMap;
+	MagicType7TableMap			m_MagicType7TableMap;
 	MakeWeaponTableMap			m_MakeWeaponTableMap;
 	MakeWeaponTableMap			m_MakeDefensiveTableMap;
 	MakeGradeItemCodeTableMap	m_MakeGradeItemArray;
@@ -228,6 +230,7 @@ private:
 	BOOL GetMagicType2Data();
 	BOOL GetMagicType3Data();
 	BOOL GetMagicType4Data();
+	BOOL GetMagicType7Data();
 	BOOL GetMonsterTableData();
 	BOOL GetNpcTableData();
 	BOOL GetNpcItemTable();

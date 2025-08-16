@@ -438,6 +438,15 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
+	spdlog::info("EbenezerDlg::OnInitDialog: loading MAGIC_TYPE7 table");
+	if (!LoadMagicType7())
+	{
+		spdlog::error("EbenezerDlg::OnInitDialog: failed to cache MAGIC_TYPE7 table, closing");
+		AfxMessageBox(_T("MagicType7 Load Fail"));
+		AfxPostQuitMessage(0);
+		return FALSE;
+	}
+
 	spdlog::info("EbenezerDlg::OnInitDialog: loading MAGIC_TYPE8 table");
 	if (!LoadMagicType8())
 	{
@@ -642,6 +651,9 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 	if (!m_MagicType5TableMap.IsEmpty())
 		m_MagicType5TableMap.DeleteAllData();
+
+	if (!m_MagicType7TableMap.IsEmpty())
+		m_MagicType7TableMap.DeleteAllData();
 
 	if (!m_MagicType8TableMap.IsEmpty())
 		m_MagicType8TableMap.DeleteAllData();
@@ -1346,6 +1358,18 @@ BOOL CEbenezerDlg::LoadMagicType4()
 BOOL CEbenezerDlg::LoadMagicType5()
 {
 	recordset_loader::STLMap loader(m_MagicType5TableMap);
+	if (!loader.Load_ForbidEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CEbenezerDlg::LoadMagicType7()
+{
+	recordset_loader::STLMap loader(m_MagicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);

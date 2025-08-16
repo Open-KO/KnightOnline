@@ -59,6 +59,7 @@ typedef CSTLMap <model::MagicType2>			MagicType2TableMap;
 typedef CSTLMap <model::MagicType3>			MagicType3TableMap;
 typedef CSTLMap	<model::MagicType4>			MagicType4TableMap;
 typedef CSTLMap <model::MagicType5>			MagicType5TableMap;
+typedef CSTLMap <model::MagicType7>			MagicType7TableMap;
 typedef CSTLMap <model::MagicType8>			MagicType8TableMap;
 typedef CSTLMap <CNpc>						NpcMap;
 typedef CSTLMap <CAISocket>					AISocketMap;
@@ -119,6 +120,7 @@ public:
 	BOOL LoadMagicType8();
 	BOOL LoadMagicType4();
 	BOOL LoadMagicType5();
+	BOOL LoadMagicType7();
 	BOOL LoadMagicType3();
 	BOOL LoadMagicType2();
 	BOOL LoadMagicType1();
@@ -202,6 +204,7 @@ public:
 	MagicType3TableMap		m_MagicType3TableMap;
 	MagicType4TableMap		m_MagicType4TableMap;
 	MagicType5TableMap		m_MagicType5TableMap;
+	MagicType7TableMap		m_MagicType7TableMap;
 	MagicType8TableMap		m_MagicType8TableMap;
 	CoefficientTableMap		m_CoefficientTableMap;		// 공식 계산 계수데이타 테이블
 	LevelUpTableArray		m_LevelUpTableArray;
