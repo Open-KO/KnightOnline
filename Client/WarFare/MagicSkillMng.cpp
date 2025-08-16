@@ -193,12 +193,12 @@ bool CMagicSkillMng::HasRequiredWeaponEquipped(const __TABLE_UPC_SKILL* pSkill) 
 
 bool CMagicSkillMng::HasRequiredMana(const __TABLE_UPC_SKILL* pSkill) const
 {
-	return s_pPlayer->m_InfoExt.iMSP <= pSkill->iExhaustMSP;
+	return s_pPlayer->m_InfoExt.iMSP >= pSkill->iExhaustMSP;
 }
 
 bool CMagicSkillMng::HasRequiredHealth(const __TABLE_UPC_SKILL* pSkill) const
 {
-	return s_pPlayer->m_InfoBase.iHP <= pSkill->iExhaustHP;
+	return s_pPlayer->m_InfoBase.iHP >= pSkill->iExhaustHP;
 }
 
 bool CMagicSkillMng::HasRequiredExhaustItem(const __TABLE_UPC_SKILL* pSkill, bool* reportError /*= nullptr*/) const
