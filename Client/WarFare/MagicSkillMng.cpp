@@ -162,7 +162,7 @@ bool CMagicSkillMng::IsCasting()
 }
 
 // returns true if the player is currently equipping the required item group
-bool CMagicSkillMng::HasRequiredEquippedItemGroup(const __TABLE_UPC_SKILL* pSkill) const
+bool CMagicSkillMng::HasEquippedRequiredItemGroup(const __TABLE_UPC_SKILL* pSkill) const
 {
 	int LeftItem = s_pPlayer->ItemClass_LeftHand();
 	int RightItem = s_pPlayer->ItemClass_RightHand();
@@ -180,7 +180,7 @@ bool CMagicSkillMng::HasRequiredEquippedItemGroup(const __TABLE_UPC_SKILL* pSkil
 }
 
 // returns true if the player is currently equipping a weapon, if applicable
-bool CMagicSkillMng::HasRequiredEquippedWeapon(const __TABLE_UPC_SKILL* pSkill) const
+bool CMagicSkillMng::HasRequiredWeaponEquipped(const __TABLE_UPC_SKILL* pSkill) const
 {
 	// NOTE: Officially this is explicitly == 0, but only for CheckValidSkillMagic().
 	// We'll just keep it consistent with the logic enforced on cast, as that's the real enforcer here.
@@ -470,10 +470,10 @@ bool CMagicSkillMng::CheckValidSkillMagic(const __TABLE_UPC_SKILL* pSkill) const
 	if (!HasRequiredHealth(pSkill))
 		return false;
 
-	if (!HasRequiredEquippedItemGroup(pSkill))
+	if (!HasEquippedRequiredItemGroup(pSkill))
 		return false;
 	
-	if (!HasRequiredEquippedWeapon(pSkill))
+	if (!HasRequiredWeaponEquipped(pSkill))
 		return false;
 
 	if (!HasRequiredExhaustItem(pSkill))
@@ -559,14 +559,14 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, const __TABLE_UPC_SKILL*
 		return false;
 	}
 
-	if (!HasRequiredEquippedItemGroup(pSkill))
+	if (!HasEquippedRequiredItemGroup(pSkill))
 	{
 		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_INVALID_ITEM);
 		m_pGameProcMain->MsgOutput(buff, 0xffffff00);
 		return false;
 	}
 
-	if (!HasRequiredEquippedWeapon(pSkill))
+	if (!HasRequiredWeaponEquipped(pSkill))
 	{
 		std::string buff = fmt::format_text_resource(IDS_SKILL_FAIL_PLEASE_EQUIP_YOUR_WEAPON);
 		m_pGameProcMain->MsgOutput(buff, 0xffffff00);

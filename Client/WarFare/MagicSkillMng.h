@@ -107,10 +107,10 @@ protected:
 	void	FailCast(__TABLE_UPC_SKILL* pSkill);
 
 	// returns true if the player is currently equipping the required item group
-	bool	HasRequiredEquippedItemGroup(const __TABLE_UPC_SKILL* pSkill) const;
+	bool	HasEquippedRequiredItemGroup(const __TABLE_UPC_SKILL* pSkill) const;
 
 	// returns true if the player is currently equipping a weapon, if applicable
-	bool	HasRequiredEquippedWeapon(const __TABLE_UPC_SKILL* pSkill) const;
+	bool	HasRequiredWeaponEquipped(const __TABLE_UPC_SKILL* pSkill) const;
 
 	bool	HasRequiredMana(const __TABLE_UPC_SKILL* pSkill) const;
 	bool	HasRequiredHealth(const __TABLE_UPC_SKILL* pSkill) const;
