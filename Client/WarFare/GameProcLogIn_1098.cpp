@@ -40,6 +40,7 @@ CGameProcLogIn_1098::CGameProcLogIn_1098()
 		m_pLights[i] = nullptr;
 
 	m_bLogIn = false; // 로그인 중복 방지..
+	m_fTimeUntilNextGameConnectionAttempt = 0.0f;
 }
 
 CGameProcLogIn_1098::~CGameProcLogIn_1098()
@@ -172,11 +173,26 @@ void CGameProcLogIn_1098::Init()
 	{
 		MsgSend_AccountLogIn(s_eLogInClassification); // 로그인..
 	}
+
+	// Re-entered the scene; we can reset any existing timer.
+	// The point of this delay is to prevent the user from intentionally or otherwise spamming connections
+	// to the game server, in the small window where we're still on the login scene and are waiting for the
+	// game server to respond.
+	// Once we've changed scenes, this timer doesn't matter anymore; we can't continue to spam it.
+	// Returning back to this scene, then, means we're fine to have it reset.
+	ResetGameConnectionAttemptTimer();
 }
 
 void CGameProcLogIn_1098::Tick() // 프로시져 인덱스를 리턴한다. 0 이면 그대로 진행
 {
 	CGameProcedure::Tick();	// 키, 마우스 입력 등등..
+
+	if (m_fTimeUntilNextGameConnectionAttempt > 0.0f)
+	{
+		m_fTimeUntilNextGameConnectionAttempt -= s_fSecPerFrm;
+		if (m_fTimeUntilNextGameConnectionAttempt < 0.0f)
+			m_fTimeUntilNextGameConnectionAttempt = 0.0f;
+	}
 
 	for (int i = 0; i < 3; i++)
 		m_pLights[i]->Tick();
@@ -491,7 +507,7 @@ bool CGameProcLogIn_1098::ProcessPacket(Packet & pkt)
 
 void CGameProcLogIn_1098::ConnectToGameServer() // 고른 게임 서버에 접속
 {
-	if (s_fTimeUntilNextGameConnectionAttempt > 0.0f)
+	if (m_fTimeUntilNextGameConnectionAttempt > 0.0f)
 		return;
 
 	__GameServerInfo GSI;
@@ -510,7 +526,7 @@ void CGameProcLogIn_1098::ConnectToGameServer() // 고른 게임 서버에 접�
 	else
 	{
 		s_szServer = GSI.szName;
-		s_fTimeUntilNextGameConnectionAttempt = TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT;
+		m_fTimeUntilNextGameConnectionAttempt = TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT;
 
 		MsgSend_VersionCheck();
 	}

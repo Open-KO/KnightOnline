@@ -101,8 +101,6 @@ bool CGameProcedure::s_bIsRestarting = false;
 // NOTE: adding boolean to check if window has focus or not
 bool CGameProcedure::s_bIsWindowInFocus = true;
 
-float CGameProcedure::s_fTimeUntilNextGameConnectionAttempt = 0.0f;
-
 CGameProcedure::CGameProcedure()
 {
 	m_bCursorLocked = false;
@@ -348,13 +346,6 @@ void CGameProcedure::Tick()
 
 	if (s_pGameCursor != nullptr)
 		s_pGameCursor->Tick();
-
-	if (s_fTimeUntilNextGameConnectionAttempt > 0.0f)
-	{
-		s_fTimeUntilNextGameConnectionAttempt -= s_fSecPerFrm;
-		if (s_fTimeUntilNextGameConnectionAttempt < 0.0f)
-			s_fTimeUntilNextGameConnectionAttempt = 0.0f;
-	}
 
 	ProcessUIKeyInput();
 
@@ -843,7 +834,8 @@ void CGameProcedure::ReportServerConnectionFailed(const std::string& szServerNam
 void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 {
 	// Reset timer to allow immediate reconnections.
-	s_fTimeUntilNextGameConnectionAttempt = 0.0f;
+	if (s_pProcLogIn != nullptr)
+		s_pProcLogIn->ResetGameConnectionAttemptTimer();
 
 	if (!s_bNeedReportConnectionClosed)
 		return;
