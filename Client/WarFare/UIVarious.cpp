@@ -613,7 +613,7 @@ bool CUIKnights::Load(HANDLE hFile)
 	for (int i = 0; i < MAX_CLAN_GRADE; i++)
 	{
 		szID = fmt::format("image_grade{:02}", i);
-		N3_VERIFY_UI_COMPONENT(m_pImage_Grade[i], (CN3UIImage*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pImage_Grade[i], GetChildByID<CN3UIImage>(szID));
 
 		if (m_pImage_Grade[i] != nullptr)
 			m_pImage_Grade[i]->SetVisible(false);
