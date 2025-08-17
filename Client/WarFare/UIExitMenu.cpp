@@ -192,11 +192,11 @@ bool CUIExitMenu::Load(HANDLE hFile)
 {
 	if (!CN3UIBase::Load(hFile))
 		return false;
-	
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Chr, (CN3UIButton*) GetChildByID("btn_chr"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Option, (CN3UIButton*) GetChildByID("btn_option"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit, (CN3UIButton*) GetChildByID("btn_exit"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel, (CN3UIButton*) GetChildByID("btn_cancel"));
+
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Chr,		GetChildByID<CN3UIButton>("btn_chr"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Option,	GetChildByID<CN3UIButton>("btn_option"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit,		GetChildByID<CN3UIButton>("btn_exit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
 
 	return true;
 }
