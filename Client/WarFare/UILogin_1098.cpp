@@ -124,17 +124,17 @@ bool CUILogIn_1098::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pGroup_LogIn, GetChildByID("Group_LogIn"));
+	N3_VERIFY_UI_COMPONENT(m_pGroup_LogIn,		GetChildByID("Group_LogIn"));
 
 	if (m_pGroup_LogIn != nullptr)
 	{
-		N3_VERIFY_UI_COMPONENT(m_pBtn_LogIn,	(CN3UIButton*) m_pGroup_LogIn->GetChildByID("Btn_Login"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	(CN3UIButton*) m_pGroup_LogIn->GetChildByID("Btn_Cancel"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Option,	(CN3UIButton*) m_pGroup_LogIn->GetChildByID("Btn_Option"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Join,		(CN3UIButton*) m_pGroup_LogIn->GetChildByID("Btn_Join"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_LogIn,	m_pGroup_LogIn->GetChildByID<CN3UIButton>("Btn_Login"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	m_pGroup_LogIn->GetChildByID<CN3UIButton>("Btn_Cancel"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Option,	m_pGroup_LogIn->GetChildByID<CN3UIButton>("Btn_Option"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Join,		m_pGroup_LogIn->GetChildByID<CN3UIButton>("Btn_Join"));
 
-		N3_VERIFY_UI_COMPONENT(m_pEdit_id,		(CN3UIEdit*) m_pGroup_LogIn->GetChildByID("Edit_ID"));
-		N3_VERIFY_UI_COMPONENT(m_pEdit_pw,		(CN3UIEdit*) m_pGroup_LogIn->GetChildByID("Edit_PW"));
+		N3_VERIFY_UI_COMPONENT(m_pEdit_id,		m_pGroup_LogIn->GetChildByID<CN3UIEdit>("Edit_ID"));
+		N3_VERIFY_UI_COMPONENT(m_pEdit_pw,		m_pGroup_LogIn->GetChildByID<CN3UIEdit>("Edit_PW"));
 
 		// N3_VERIFY_UI_COMPONENT(m_pImg_GradeLogo,	m_pGroup_LogIn->GetChildByID("Img_Grade"));
 	}
@@ -170,8 +170,8 @@ bool CUILogIn_1098::Load(HANDLE hFile)
 	N3_VERIFY_UI_COMPONENT(m_pGroup_ServerList, GetChildByID("Group_ServerList"));
 	if (m_pGroup_ServerList != nullptr)
 	{
-		N3_VERIFY_UI_COMPONENT(m_pList_Server,	(CN3UIList*) m_pGroup_ServerList->GetChildByID("List_Server"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Connect,	(CN3UIButton*) m_pGroup_ServerList->GetChildByID("Btn_Connect"));
+		N3_VERIFY_UI_COMPONENT(m_pList_Server,	m_pGroup_ServerList->GetChildByID<CN3UIList>("List_Server"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Connect,	m_pGroup_ServerList->GetChildByID<CN3UIButton>("Btn_Connect"));
 
 		m_pGroup_ServerList->SetVisible(false);
 	}

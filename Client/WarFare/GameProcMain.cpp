@@ -6373,13 +6373,11 @@ void CGameProcMain::MsgRecv_KnightsListBasic(Packet& pkt) // 기사단 기본 �
 
 void CGameProcMain::MsgRecv_ContinousPacket(Packet& pkt) // 압축된 데이터 이다... 한번 더 파싱해야 한다!!!
 {
-	uint16_t iWholeSize;
-	pkt >> iWholeSize;
+	uint16_t iWholeSize = pkt.read<uint16_t>();
 
 	while (pkt.rpos() < iWholeSize)
 	{
-		uint16_t iSizeThisPacket;
-		pkt >> iSizeThisPacket;
+		uint16_t iSizeThisPacket = pkt.read<uint16_t>();
 
 		if (iSizeThisPacket <= 0 || iSizeThisPacket >= iWholeSize)
 		{
@@ -7836,8 +7834,8 @@ void CGameProcMain::MsgSend_SpeedCheck(bool bInit)
 
 void CGameProcMain::MsgRecv_ClassPromotion(Packet& pkt)
 {
-	uint16_t sClass, socketID;
-	pkt >> sClass >> socketID;
+	uint16_t sClass = pkt.read<uint16_t>();
+	uint16_t socketID = pkt.read<uint16_t>();
 
 	// TODO: Clean this up when CPlayerMySelf is derived properly so we can share this logic in a much nicer fashion.
 	if (socketID == s_pPlayer->IDNumber())

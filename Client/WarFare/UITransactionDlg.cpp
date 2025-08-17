@@ -202,13 +202,13 @@ void CUITransactionDlg::InitIconWnd(e_UIWND eWnd)
 
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	N3_VERIFY_UI_COMPONENT(m_pStrMyGold, (CN3UIString*) GetChildByID("string_item_name"));
+	N3_VERIFY_UI_COMPONENT(m_pStrMyGold,	GetChildByID<CN3UIString>("string_item_name"));
 	if(m_pStrMyGold) m_pStrMyGold->SetString("0");
 
-	N3_VERIFY_UI_COMPONENT(m_pUIInn, (CN3UIImage*) GetChildByID("img_inn"));
-	N3_VERIFY_UI_COMPONENT(m_pUIBlackSmith, (CN3UIImage*) GetChildByID("img_blacksmith"));
-	N3_VERIFY_UI_COMPONENT(m_pUIStore, (CN3UIImage*) GetChildByID("img_store"));
-	N3_VERIFY_UI_COMPONENT(m_pText_Weight, (CN3UIString*) GetChildByID("text_weight"));
+	N3_VERIFY_UI_COMPONENT(m_pUIInn,		GetChildByID<CN3UIImage>("img_inn"));
+	N3_VERIFY_UI_COMPONENT(m_pUIBlackSmith,	GetChildByID<CN3UIImage>("img_blacksmith"));
+	N3_VERIFY_UI_COMPONENT(m_pUIStore,		GetChildByID<CN3UIImage>("img_store"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Weight,	GetChildByID<CN3UIString>("text_weight"));
 }
 
 void CUITransactionDlg::InitIconUpdate()

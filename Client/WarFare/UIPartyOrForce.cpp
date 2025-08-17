@@ -72,7 +72,7 @@ bool CUIPartyOrForce::Load(HANDLE hFile)
 	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++) // 빈곳을 찾자..
 	{
 		szID = fmt::format("progress_hp_{}", i);
-		N3_VERIFY_UI_COMPONENT(m_pProgress_HPs[i], (CN3UIProgress*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pProgress_HPs[i],			GetChildByID<CN3UIProgress>(szID));
 		if (m_pProgress_HPs[i] != nullptr)
 		{
 			m_pProgress_HPs[i]->SetVisible(false);
@@ -80,7 +80,7 @@ bool CUIPartyOrForce::Load(HANDLE hFile)
 		}
 
 		szID = fmt::format("progress_hp_{}_slow", i);
-		N3_VERIFY_UI_COMPONENT(m_pProgress_HPSlow[i], (CN3UIProgress*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pProgress_HPSlow[i],		GetChildByID<CN3UIProgress>(szID));
 		if (m_pProgress_HPSlow[i] != nullptr)
 		{
 			m_pProgress_HPSlow[i]->SetVisible(false);
@@ -88,7 +88,7 @@ bool CUIPartyOrForce::Load(HANDLE hFile)
 		}
 
 		szID = fmt::format("progress_hp_{}_drop", i);
-		N3_VERIFY_UI_COMPONENT(m_pProgress_HPReduce[i], (CN3UIProgress*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pProgress_HPReduce[i],		GetChildByID<CN3UIProgress>(szID));
 		if (m_pProgress_HPReduce[i] != nullptr)
 		{
 			m_pProgress_HPReduce[i]->SetVisible(false);
@@ -96,7 +96,7 @@ bool CUIPartyOrForce::Load(HANDLE hFile)
 		}
 
 		szID = fmt::format("progress_hp_{}_lasting", i);
-		N3_VERIFY_UI_COMPONENT(m_pProgress_HPLasting[i], (CN3UIProgress*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pProgress_HPLasting[i],	GetChildByID<CN3UIProgress>(szID));
 		if (m_pProgress_HPLasting[i] != nullptr)
 		{
 			m_pProgress_HPLasting[i]->SetVisible(false);
@@ -104,7 +104,7 @@ bool CUIPartyOrForce::Load(HANDLE hFile)
 		}
 
 		szID = fmt::format("progress_mp_{}_curse", i); 
-		N3_VERIFY_UI_COMPONENT(m_pProgress_MP[i], (CN3UIProgress*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pProgress_MP[i],			GetChildByID<CN3UIProgress>(szID));
 		if (m_pProgress_MP[i] != nullptr)
 		{
 			m_pProgress_MP[i]->SetVisible(false);
@@ -112,12 +112,12 @@ bool CUIPartyOrForce::Load(HANDLE hFile)
 		}
 
 		szID = fmt::format("static_name_{}", i);
-		N3_VERIFY_UI_COMPONENT(m_pStatic_IDs[i], (CN3UIStatic*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pStatic_IDs[i],			GetChildByID<CN3UIStatic>(szID));
 		if (m_pStatic_IDs[i] != nullptr)
 			m_pStatic_IDs[i]->SetVisible(false);
 
 		szID = fmt::format("Area_{}", i);
-		N3_VERIFY_UI_COMPONENT(m_pAreas[i], (CN3UIArea*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pAreas[i],					GetChildByID<CN3UIArea>(szID));
 	}
 
 	MemberInfoReInit();

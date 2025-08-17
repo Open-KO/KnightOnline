@@ -50,7 +50,7 @@ bool CGameCursor::Load(HANDLE hFile)
 	for (int i = 0; i < CURSOR_COUNT; i++)
 	{
 		szID = fmt::format("Image_Cursor{:02}", i);
-		N3_VERIFY_UI_COMPONENT(m_pImageCursor[i], (CN3UIImage*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pImageCursor[i], GetChildByID<CN3UIImage>(szID));
 	}
 
 	return true;
