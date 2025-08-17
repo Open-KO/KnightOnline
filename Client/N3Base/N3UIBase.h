@@ -94,8 +94,8 @@ protected:
 	UIList		m_Children;		// children pointer list
 	eUI_TYPE	m_eType;		// UI Type - button, image .....
 	eUI_STATE	m_eState;		// UI state
-	uint32_t		m_dwStyle;		// style
-	uint32_t		m_dwReserved;	// 기타 임시로 넣고 싶은 정보를 넣으면 된다.
+	uint32_t	m_dwStyle;		// style
+	uint32_t	m_dwReserved;	// 기타 임시로 넣고 싶은 정보를 넣으면 된다.
 
 	RECT		m_rcRegion;		// UI - screen coordinates (screen : main window client area) 중의 : 부모에 대한 상대좌표가 아니다.
 	RECT		m_rcMovable;	// UI를 드래그 하여 움직이게 할 수 있는 영역 - (screen : main window client area)           ~~~~~~~
@@ -120,11 +120,11 @@ public:
 	void			SetMoveRect(const RECT& Rect) { m_rcMovable = Rect; }
 	RECT			GetMoveRect() { return m_rcMovable; }
 	void			SetReserved(uint32_t dwReserved) {m_dwReserved = dwReserved;}
-	uint32_t			GetReserved() const {return m_dwReserved;}
+	uint32_t		GetReserved() const {return m_dwReserved;}
 	CN3UIBase*		GetParent() const {return m_pParent;}
 	static CN3UIEdit*	GetFocusedEdit() {return s_pFocusedEdit;}
 	static CN3UITooltip*	GetTooltipCtrl() {return s_pTooltipCtrl;}
-	uint32_t			GetStyle()	{return m_dwStyle;}
+	uint32_t		GetStyle()	{return m_dwStyle;}
 
 	void			SetUIType(eUI_TYPE eUIType) { m_eType = eUIType; }	// by ecli666 툴에 기능 넣기 귀찮아서.. ^^
 // Operations
@@ -138,7 +138,15 @@ public:
 	POINT			GetPos() const;
 	virtual void	SetPos(int x, int y);	// 위치 지정(chilren의 위치도 같이 바꾸어준다.) 내부적으로 MoveOffset함수를 부른다.
 	void			SetPosCenter();	// 화면 정가운데로 맞추어준다..(chilren의 위치도 같이 바꾸어준다.) 내부적으로 MoveOffset함수를 부른다.
-	CN3UIBase*		GetChildByID(const std::string& szID);
+
+	// Find first control matching the specified ID.
+	CN3UIBase*		GetChildByID(const std::string_view szID) const;
+
+	// Find first control matching both the specified ID and UI type.
+	CN3UIBase*		GetChildByID(const std::string_view szID, eUI_TYPE eUIType) const;
+
+	template <typename T>
+	T* GetChildByID(const std::string_view szID) const;
 
 	virtual void	SetRegion(const RECT& pRect) { m_rcRegion = pRect; }	// 영역 지정
 	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);	// offset만큼 이동해준다.(region, children, move rect 이동)

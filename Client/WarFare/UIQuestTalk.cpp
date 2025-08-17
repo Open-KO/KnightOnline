@@ -115,16 +115,16 @@ bool CUIQuestTalk::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pTextTalk,			(CN3UIString*) GetChildByID("Text_Talk"));
-	N3_VERIFY_UI_COMPONENT(m_pBtnOk,			(CN3UIButton*) GetChildByID("btn_Ok_center"));
+	N3_VERIFY_UI_COMPONENT(m_pTextTalk,			GetChildByID<CN3UIString>("Text_Talk"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnOk,			GetChildByID<CN3UIButton>("btn_Ok_center"));
 
 	// NOTE(srmeier): new stuff:
-	N3_VERIFY_UI_COMPONENT(m_pBtnClose,			(CN3UIButton*) GetChildByID("btn_close"));
-	N3_VERIFY_UI_COMPONENT(m_pBtnUpperEvent,	(CN3UIButton*) GetChildByID("btn_UpperEvent"));
-	N3_VERIFY_UI_COMPONENT(m_pBtnNext,			(CN3UIButton*) GetChildByID("btn_Next"));
-	N3_VERIFY_UI_COMPONENT(m_pBtnOkRight,		(CN3UIButton*) GetChildByID("btn_Ok_right"));
-	N3_VERIFY_UI_COMPONENT(m_pBtnPre,			(CN3UIButton*) GetChildByID("btn_Pre"));
-	N3_VERIFY_UI_COMPONENT(m_pScrollBar,		(CN3UIScrollBar*) GetChildByID("scroll"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnClose,			GetChildByID<CN3UIButton>("btn_close"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnUpperEvent,	GetChildByID<CN3UIButton>("btn_UpperEvent"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnNext,			GetChildByID<CN3UIButton>("btn_Next"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnOkRight,		GetChildByID<CN3UIButton>("btn_Ok_right"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnPre,			GetChildByID<CN3UIButton>("btn_Pre"));
+	N3_VERIFY_UI_COMPONENT(m_pScrollBar,		GetChildByID<CN3UIScrollBar>("scroll"));
 	
 	if (m_pBtnUpperEvent != nullptr)
 		m_pBtnUpperEvent->SetVisible(false);

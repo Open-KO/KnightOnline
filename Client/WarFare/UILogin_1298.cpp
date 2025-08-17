@@ -184,13 +184,13 @@ bool CUILogIn_1298::Load(HANDLE hFile)
 
 	if (m_pGroup_LogIn != nullptr)
 	{
-		N3_VERIFY_UI_COMPONENT(m_pBtn_LogIn,		(CN3UIButton*) m_pGroup_LogIn->GetChildByID("btn_ok"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,		(CN3UIButton*) m_pGroup_LogIn->GetChildByID("btn_cancel"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Option,		(CN3UIButton*) m_pGroup_LogIn->GetChildByID("btn_option"));
-		N3_VERIFY_UI_COMPONENT(m_pBtn_Join,			(CN3UIButton*) m_pGroup_LogIn->GetChildByID("btn_homepage"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_LogIn,	m_pGroup_LogIn->GetChildByID<CN3UIButton>("btn_ok"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	m_pGroup_LogIn->GetChildByID<CN3UIButton>("btn_cancel"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Option,	m_pGroup_LogIn->GetChildByID<CN3UIButton>("btn_option"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_Join,		m_pGroup_LogIn->GetChildByID<CN3UIButton>("btn_homepage"));
 
-		N3_VERIFY_UI_COMPONENT(m_pEdit_id,			(CN3UIEdit*) m_pGroup_LogIn->GetChildByID("Edit_ID"));
-		N3_VERIFY_UI_COMPONENT(m_pEdit_pw,			(CN3UIEdit*) m_pGroup_LogIn->GetChildByID("Edit_PW"));
+		N3_VERIFY_UI_COMPONENT(m_pEdit_id,		m_pGroup_LogIn->GetChildByID<CN3UIEdit>("Edit_ID"));
+		N3_VERIFY_UI_COMPONENT(m_pEdit_pw,		m_pGroup_LogIn->GetChildByID<CN3UIEdit>("Edit_PW"));
 
 		m_pGroup_LogIn->SetVisible(true);
 	}
@@ -202,38 +202,38 @@ bool CUILogIn_1298::Load(HANDLE hFile)
 	
 	if (m_pGroup_Notice_1 != nullptr)
 	{
-		N3_VERIFY_UI_COMPONENT(m_pBtn_NoticeOK_1,		(CN3UIButton*) m_pGroup_Notice_1->GetChildByID("btn_ok"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice1_Name_1,	(CN3UIString*) m_pGroup_Notice_1->GetChildByID("text_notice_name_01"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice1_Text_1,	(CN3UIString*) m_pGroup_Notice_1->GetChildByID("text_notice_01"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_NoticeOK_1,		m_pGroup_Notice_1->GetChildByID<CN3UIButton>("btn_ok"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice1_Name_1,	m_pGroup_Notice_1->GetChildByID<CN3UIString>("text_notice_name_01"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice1_Text_1,	m_pGroup_Notice_1->GetChildByID<CN3UIString>("text_notice_01"));
 
 		m_pGroup_Notice_1->SetVisible(false);
 	}
 
 	if (m_pGroup_Notice_2 != nullptr)
 	{
-		N3_VERIFY_UI_COMPONENT(m_pBtn_NoticeOK_2,		(CN3UIButton*) m_pGroup_Notice_2->GetChildByID("btn_ok"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Name_1,	(CN3UIString*) m_pGroup_Notice_2->GetChildByID("text_notice_name_01"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Text_1,	(CN3UIString*) m_pGroup_Notice_2->GetChildByID("text_notice_01"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Name_2,	(CN3UIString*) m_pGroup_Notice_2->GetChildByID("text_notice_name_02"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Text_2,	(CN3UIString*) m_pGroup_Notice_2->GetChildByID("text_notice_02"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_NoticeOK_2,		m_pGroup_Notice_2->GetChildByID<CN3UIButton>("btn_ok"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Name_1,	m_pGroup_Notice_2->GetChildByID<CN3UIString>("text_notice_name_01"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Text_1,	m_pGroup_Notice_2->GetChildByID<CN3UIString>("text_notice_01"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Name_2,	m_pGroup_Notice_2->GetChildByID<CN3UIString>("text_notice_name_02"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice2_Text_2,	m_pGroup_Notice_2->GetChildByID<CN3UIString>("text_notice_02"));
 
 		m_pGroup_Notice_2->SetVisible(false);
 	}
 
 	if (m_pGroup_Notice_3 != nullptr)
 	{
-		N3_VERIFY_UI_COMPONENT(m_pBtn_NoticeOK_3,		(CN3UIButton*) m_pGroup_Notice_3->GetChildByID("btn_ok"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Name_1,	(CN3UIString*) m_pGroup_Notice_3->GetChildByID("text_notice_name_01"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Text_1,	(CN3UIString*) m_pGroup_Notice_3->GetChildByID("text_notice_01"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Name_2,	(CN3UIString*) m_pGroup_Notice_3->GetChildByID("text_notice_name_02"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Text_2,	(CN3UIString*) m_pGroup_Notice_3->GetChildByID("text_notice_02"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Name_3,	(CN3UIString*) m_pGroup_Notice_3->GetChildByID("text_notice_name_03"));
-		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Text_3,	(CN3UIString*) m_pGroup_Notice_3->GetChildByID("text_notice_03"));
+		N3_VERIFY_UI_COMPONENT(m_pBtn_NoticeOK_3,		m_pGroup_Notice_3->GetChildByID<CN3UIButton>("btn_ok"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Name_1,	m_pGroup_Notice_3->GetChildByID<CN3UIString>("text_notice_name_01"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Text_1,	m_pGroup_Notice_3->GetChildByID<CN3UIString>("text_notice_01"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Name_2,	m_pGroup_Notice_3->GetChildByID<CN3UIString>("text_notice_name_02"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Text_2,	m_pGroup_Notice_3->GetChildByID<CN3UIString>("text_notice_02"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Name_3,	m_pGroup_Notice_3->GetChildByID<CN3UIString>("text_notice_name_03"));
+		N3_VERIFY_UI_COMPONENT(m_pText_Notice3_Text_3,	m_pGroup_Notice_3->GetChildByID<CN3UIString>("text_notice_03"));
 
 		m_pGroup_Notice_3->SetVisible(false);
 	}
 
-	N3_VERIFY_UI_COMPONENT(m_pStr_Premium,	(CN3UIString*) GetChildByID("premium"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_Premium,		GetChildByID<CN3UIString>("premium"));
 
 	if (m_pStr_Premium != nullptr)
 		m_pStr_Premium->SetVisible(false);
@@ -247,15 +247,15 @@ bool CUILogIn_1298::Load(HANDLE hFile)
 	for (int i = 0; i < MAX_SERVERS; i++)
 	{
 		std::string szID = "server_" + std::to_string(i + 1);
-		N3_VERIFY_UI_COMPONENT(m_pServer_Group[i], m_pGroup_ServerList->GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pServer_Group[i],	m_pGroup_ServerList->GetChildByID(szID));
 
 		szID = "img_arrow" + std::to_string(i + 1);
-		N3_VERIFY_UI_COMPONENT(m_pArrow_Group[i], m_pGroup_ServerList->GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pArrow_Group[i],	m_pGroup_ServerList->GetChildByID(szID));
 		
-		N3_VERIFY_UI_COMPONENT(m_pList_Group[i], (CN3UIString*) m_pServer_Group[i]->GetChildByID("List_Server"));
+		N3_VERIFY_UI_COMPONENT(m_pList_Group[i],	m_pServer_Group[i]->GetChildByID<CN3UIString>("List_Server"));
 	}
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Connect, (CN3UIButton*) m_pGroup_ServerList->GetChildByID("Btn_Connect"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Connect,			m_pGroup_ServerList->GetChildByID<CN3UIButton>("Btn_Connect"));
 		
 	return true;
 }

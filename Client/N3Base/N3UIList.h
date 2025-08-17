@@ -23,7 +23,7 @@ protected:
 	class CN3UIScrollBar*	m_pScrollBarRef;
 
 	std::string				m_szFontName;
-	uint32_t					m_dwFontHeight;
+	uint32_t				m_dwFontHeight;
 	BOOL					m_bFontBold;
 	BOOL					m_bFontItalic;
 	D3DCOLOR				m_crFont;

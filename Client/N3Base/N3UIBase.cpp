@@ -462,19 +462,62 @@ void CN3UIBase::PrintChildIDs(void) {
 	}
 }
 
-CN3UIBase* CN3UIBase::GetChildByID(const std::string& szID)
+CN3UIBase* CN3UIBase::GetChildByID(const std::string_view szID) const
 {
 	if (szID.empty())
 		return nullptr;
 
 	for (CN3UIBase* pChild : m_Children)
 	{
-		if (lstrcmpiA(szID.c_str(), pChild->m_szID.c_str()) == 0)
+		const std::string& childID = pChild->GetID();
+		if (szID.length() == childID.length()
+			&& _strnicmp(szID.data(), childID.data(), szID.length()) == 0)
 			return pChild;
 	}
 
 	return nullptr;
 }
+
+CN3UIBase* CN3UIBase::GetChildByID(const std::string_view szID, eUI_TYPE eUIType) const
+{
+	if (szID.empty())
+		return nullptr;
+
+	for (CN3UIBase* pChild : m_Children)
+	{
+		if (eUIType != pChild->UIType())
+			continue;
+
+		const std::string& childID = pChild->GetID();
+		if (szID.length() == childID.length()
+			&& _strnicmp(szID.data(), childID.data(), szID.length()) == 0)
+			return pChild;
+	}
+
+	return nullptr;
+}
+
+#define IMPL_GETCHILDBYID(Class, UIType)							\
+template <>															\
+Class* CN3UIBase::GetChildByID<Class>(std::string_view szID) const	\
+{																	\
+    return static_cast<Class*>(GetChildByID(szID, UIType));			\
+}
+
+IMPL_GETCHILDBYID(CN3UIArea,		UI_TYPE_AREA);
+IMPL_GETCHILDBYID(CN3UIBase,		UI_TYPE_BASE);
+IMPL_GETCHILDBYID(CN3UIButton,		UI_TYPE_BUTTON);
+IMPL_GETCHILDBYID(CN3UIEdit,		UI_TYPE_EDIT);
+IMPL_GETCHILDBYID(CN3UIImage,		UI_TYPE_IMAGE);
+IMPL_GETCHILDBYID(CN3UIList,		UI_TYPE_LIST);
+IMPL_GETCHILDBYID(CN3UIProgress,	UI_TYPE_PROGRESS);
+IMPL_GETCHILDBYID(CN3UIScrollBar,	UI_TYPE_SCROLLBAR);
+IMPL_GETCHILDBYID(CN3UIStatic,		UI_TYPE_STATIC);
+IMPL_GETCHILDBYID(CN3UIString,		UI_TYPE_STRING);
+IMPL_GETCHILDBYID(CN3UITooltip,		UI_TYPE_TOOLTIP);
+IMPL_GETCHILDBYID(CN3UITrackBar,	UI_TYPE_TRACKBAR);
+
+#undef IMPL_GETCHILDBYID
 
 void CN3UIBase::SetVisible(bool bVisible)
 {

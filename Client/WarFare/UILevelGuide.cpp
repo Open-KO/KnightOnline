@@ -77,24 +77,24 @@ bool CUILevelGuide::Load(HANDLE hFile)
 
 	std::string szID;
 
-	N3_VERIFY_UI_COMPONENT(m_pEdit_Level,			(CN3UIEdit*)   GetChildByID("edit_level"));
-	N3_VERIFY_UI_COMPONENT(m_pText_Page,			(CN3UIString*) GetChildByID("text_page"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Check,			(CN3UIButton*) GetChildByID("btn_check"));
-	N3_VERIFY_UI_COMPONENT(m_pText_Level,			(CN3UIString*) GetChildByID("text_level"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Up,				(CN3UIButton*) GetChildByID("btn_up"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Down,				(CN3UIButton*) GetChildByID("btn_down"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,			(CN3UIButton*) GetChildByID("btn_cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pEdit_Level,			GetChildByID<CN3UIEdit>("edit_level"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Page,			GetChildByID<CN3UIString>("text_page"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Check,			GetChildByID<CN3UIButton>("btn_check"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Level,			GetChildByID<CN3UIString>("text_level"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Up,				GetChildByID<CN3UIButton>("btn_up"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Down,				GetChildByID<CN3UIButton>("btn_down"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,			GetChildByID<CN3UIButton>("btn_cancel"));
 
 	for (int i = 0; i < MAX_QUESTS_PER_PAGE; i++)
 	{
 		szID = "scroll_guide" + std::to_string(i);
-		N3_VERIFY_UI_COMPONENT(m_pScroll_Guide[i],	(CN3UIScrollBar*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pScroll_Guide[i],	GetChildByID<CN3UIScrollBar>(szID));
 
 		szID = "text_guide" + std::to_string(i);
-		N3_VERIFY_UI_COMPONENT(m_pText_Guide[i],	(CN3UIString*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pText_Guide[i],	GetChildByID<CN3UIString>(szID));
 
 		szID = "text_title" + std::to_string(i);
-		N3_VERIFY_UI_COMPONENT(m_pText_Title[i],	(CN3UIString*) GetChildByID(szID));
+		N3_VERIFY_UI_COMPONENT(m_pText_Title[i],	GetChildByID<CN3UIString>(szID));
 	}
 
 	return true;
