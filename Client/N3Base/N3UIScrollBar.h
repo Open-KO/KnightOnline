@@ -37,8 +37,8 @@ public:
 	void			SetRange(int iMin, int iMax) {if(m_pTrackBarRef) m_pTrackBarRef->SetRange(iMin,iMax);}
 	void			SetRangeMax(int iMax) {if(m_pTrackBarRef) m_pTrackBarRef->SetRangeMax(iMax);}
 	void			SetRangeMin(int iMin) {if(m_pTrackBarRef) m_pTrackBarRef->SetRangeMin(iMin);}
-	size_t			GetCurrentPos() const {if(m_pTrackBarRef) return m_pTrackBarRef->GetPos(); return 0;}
-	void			SetCurrentPos(size_t iPos) {if(m_pTrackBarRef) m_pTrackBarRef->SetCurrentPos(iPos);}
+	int				GetCurrentPos() const {if(m_pTrackBarRef) return m_pTrackBarRef->GetPos(); return 0;}
+	void			SetCurrentPos(int iPos) {if(m_pTrackBarRef) m_pTrackBarRef->SetCurrentPos(iPos);}
 	void			SetPageSize(int iSize) {if(m_pTrackBarRef) m_pTrackBarRef->SetPageSize(iSize);}
 	int				GetPageSize() const {if(m_pTrackBarRef) return m_pTrackBarRef->GetPageSize(); return 0;}
 	void			SetLineSize(int iSize) {m_iLineSize = iSize;}

@@ -24,9 +24,9 @@ bool CUIUpgradeSelect::Load(
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Upgrade_1,	(CN3UIButton*) GetChildByID("upgrade_1"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Upgrade_2,	(CN3UIButton*) GetChildByID("upgrade_2"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Close,		(CN3UIButton*) GetChildByID("btn_close"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Upgrade_1,	GetChildByID<CN3UIButton>("upgrade_1"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Upgrade_2,	GetChildByID<CN3UIButton>("upgrade_2"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Close,		GetChildByID<CN3UIButton>("btn_close"));
 
 	return true;
 }

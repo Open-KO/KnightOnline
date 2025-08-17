@@ -58,13 +58,13 @@ public:
 	float					m_fDelay;
 		
 	//related region magic...
-	uint32_t					m_dwRegionMagicState;	//0:마침..1:지역선택중..2:지역선택했음.
+	uint32_t				m_dwRegionMagicState;	//0:마침..1:지역선택중..2:지역선택했음.
 	__TABLE_UPC_SKILL		m_dwRegionSkill;		//선택된 지역스킬..
 
 	//related non-casting action magic...
-	uint32_t					m_dwCastingStateNonAction;	//0:아무것도 없는 평온한 상태 1: 캐스팅중
+	uint32_t				m_dwCastingStateNonAction;	//0:아무것도 없는 평온한 상태 1: 캐스팅중
 	float					m_fCastTimeNonAction;
-	uint32_t					m_dwNonActionMagicID;
+	uint32_t				m_dwNonActionMagicID;
 	int						m_iNonActionMagicTarget;
 	//float					m_fRecastTimeNonAction;
 
@@ -82,8 +82,8 @@ private:
 	float m_fZonePointerRadiusEffective;
 
 protected:
-	bool	CheckValidCondition(int iTargetID, __TABLE_UPC_SKILL* pSkill);
-	bool	CheckValidDistance(__TABLE_UPC_SKILL* pSkill, __Vector3 vTargetPos, float fTargetRadius);
+	bool	CheckValidCondition(int iTargetID, const __TABLE_UPC_SKILL* pSkill) const;
+	bool	CheckValidDistance(const __TABLE_UPC_SKILL* pSkill, __Vector3 vTargetPos, float fTargetRadius) const;
 	
 	void	InitType4();
 
@@ -105,9 +105,19 @@ protected:
 
 	void	SuccessCast(__TABLE_UPC_SKILL* pSkill, CPlayerBase* pTarget);
 	void	FailCast(__TABLE_UPC_SKILL* pSkill);
+
+	// returns true if the player is currently equipping the required item group
+	bool	HasEquippedRequiredItemGroup(const __TABLE_UPC_SKILL* pSkill) const;
+
+	// returns true if the player is currently equipping a weapon, if applicable
+	bool	HasRequiredWeaponEquipped(const __TABLE_UPC_SKILL* pSkill) const;
+
+	bool	HasRequiredMana(const __TABLE_UPC_SKILL* pSkill) const;
+	bool	HasRequiredHealth(const __TABLE_UPC_SKILL* pSkill) const;
+	bool	HasRequiredExhaustItem(const __TABLE_UPC_SKILL* pSkill, bool* reportError = nullptr) const;
 	
 public:
-	bool	CheckValidSkillMagic(__TABLE_UPC_SKILL* pSkill);
+	bool	CheckValidSkillMagic(const __TABLE_UPC_SKILL* pSkill) const;
 	void	StunMySelf(__TABLE_UPC_SKILL_TYPE_3* pType3);
 	void	StopCastingByRatio();
 	void	ClearDurationalMagic();

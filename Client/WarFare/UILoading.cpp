@@ -48,15 +48,15 @@ bool CUILoading::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pText_Version, (CN3UIString*) GetChildByID("Text_Version"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Version,		GetChildByID<CN3UIString>("Text_Version"));
 	if (m_pText_Version != nullptr)
 	{
 		std::string version = fmt::format("Ver. {:.3f}", CURRENT_VERSION / 1000.0f);
 		m_pText_Version->SetString(version);
 	}
 
-	N3_VERIFY_UI_COMPONENT(m_pText_Info , (CN3UIString*) GetChildByID("Text_Info"));
-	N3_VERIFY_UI_COMPONENT(m_pProgress_Loading, (CN3UIProgress*) GetChildByID("Progress_Loading"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Info,		GetChildByID<CN3UIString>("Text_Info"));
+	N3_VERIFY_UI_COMPONENT(m_pProgress_Loading,	GetChildByID<CN3UIProgress>("Progress_Loading"));
 
 	SetPosCenter(); // 가운데로 맞추기..
 	m_pText_Version->SetPos(10, 10); // Version 은 맨위에 표시..

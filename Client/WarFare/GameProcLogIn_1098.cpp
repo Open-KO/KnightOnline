@@ -40,6 +40,7 @@ CGameProcLogIn_1098::CGameProcLogIn_1098()
 		m_pLights[i] = nullptr;
 
 	m_bLogIn = false; // 로그인 중복 방지..
+	m_fTimeUntilNextGameConnectionAttempt = 0.0f;
 }
 
 CGameProcLogIn_1098::~CGameProcLogIn_1098()
@@ -135,7 +136,7 @@ void CGameProcLogIn_1098::Init()
 	for (int i = 0; i < iServerCount; i++)
 	{
 		std::string key = fmt::format("IP{}", i);
-		GetPrivateProfileString("Server", szKey.c_str(), "", szIPs[i], 32, szIniPath);
+		GetPrivateProfileString("Server", key.c_str(), "", szIPs[i], 32, szIniPath);
 	}
 
 	int iServer = -1;
@@ -158,7 +159,7 @@ void CGameProcLogIn_1098::Init()
 			// 게임 서버 리스트 요청..
 			int iOffset = 0;
 			uint8_t byBuffs[4];
-			CAPISocket::MP_AddByte(byBuffs, iOffset, N3_GAMESERVER_GROUP_LIST);					// 커멘드.
+			CAPISocket::MP_AddByte(byBuffs, iOffset, LS_SERVERLIST);					// 커멘드.
 			s_pSocket->Send(byBuffs, iOffset);											// 보낸다
 		}
 	}
@@ -172,11 +173,26 @@ void CGameProcLogIn_1098::Init()
 	{
 		MsgSend_AccountLogIn(s_eLogInClassification); // 로그인..
 	}
+
+	// Re-entered the scene; we can reset any existing timer.
+	// The point of this delay is to prevent the user from intentionally or otherwise spamming connections
+	// to the game server, in the small window where we're still on the login scene and are waiting for the
+	// game server to respond.
+	// Once we've changed scenes, this timer doesn't matter anymore; we can't continue to spam it.
+	// Returning back to this scene, then, means we're fine to have it reset.
+	ResetGameConnectionAttemptTimer();
 }
 
 void CGameProcLogIn_1098::Tick() // 프로시져 인덱스를 리턴한다. 0 이면 그대로 진행
 {
 	CGameProcedure::Tick();	// 키, 마우스 입력 등등..
+
+	if (m_fTimeUntilNextGameConnectionAttempt > 0.0f)
+	{
+		m_fTimeUntilNextGameConnectionAttempt -= s_fSecPerFrm;
+		if (m_fTimeUntilNextGameConnectionAttempt < 0.0f)
+			m_fTimeUntilNextGameConnectionAttempt = 0.0f;
+	}
 
 	for (int i = 0; i < 3; i++)
 		m_pLights[i]->Tick();
@@ -275,13 +291,9 @@ bool CGameProcLogIn_1098::MsgSend_AccountLogIn(e_LogInClassification eLIC)
 	uint8_t byBuff[256];										// 패킷 버퍼..
 	int iOffset = 0;										// 버퍼의 오프셋..
 
-	uint8_t byCmd = N3_ACCOUNT_LOGIN;
-	if (LIC_KNIGHTONLINE == eLIC)
-		byCmd = N3_ACCOUNT_LOGIN;
-	else if (LIC_MGAME == eLIC)
-		byCmd = N3_ACCOUNT_LOGIN_MGAME;
-//	else if (LIC_DAUM == eLIC)
-//		byCmd = N3_ACCOUNT_LOGIN_DAUM;
+	uint8_t byCmd = LS_LOGIN_REQ;
+	if (eLIC == LIC_MGAME)
+		byCmd = LS_MGAME_LOGIN;
 
 	CAPISocket::MP_AddByte(byBuff, iOffset, byCmd);				// 커멘드.
 	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) s_szAccount.size());	// 아이디 길이..
@@ -324,7 +336,7 @@ void CGameProcLogIn_1098::MsgRecv_AccountLogIn(int iCmd, Packet& pkt)
 	}
 	else if (2 == iResult) // ID 가 없어서 실패한거면..
 	{
-		if (N3_ACCOUNT_LOGIN == iCmd)
+		if (iCmd == LS_LOGIN_REQ)
 		{
 			std::string szMsg = fmt::format_text_resource(IDS_NOACCOUNT_RETRY_MGAMEID);
 			std::string szTmp = fmt::format_text_resource(IDS_CONNECT_FAIL);
@@ -476,13 +488,17 @@ bool CGameProcLogIn_1098::ProcessPacket(Packet & pkt)
 	s_pPlayer->m_InfoBase.eNation = NATION_UNKNOWN;
 	switch (iCmd)										// 커멘드에 다라서 분기..
 	{
-		case N3_GAMESERVER_GROUP_LIST: // 접속하면 바로 보내준다..
+		case LS_SERVERLIST: // 접속하면 바로 보내준다..
 			MsgRecv_GameServerGroupList(pkt);
 			return true;
 
-		case N3_ACCOUNT_LOGIN: // 계정 접속 성공..
-		case N3_ACCOUNT_LOGIN_MGAME: // MGame 계정 접속 성공..
+		case LS_LOGIN_REQ: // 계정 접속 성공..
+		case LS_MGAME_LOGIN: // MGame 계정 접속 성공..
 			MsgRecv_AccountLogIn(iCmd, pkt);
+			return true;
+
+		case LS_NEWS:
+			// act as if it's handled
 			return true;
 	}
 
@@ -491,6 +507,9 @@ bool CGameProcLogIn_1098::ProcessPacket(Packet & pkt)
 
 void CGameProcLogIn_1098::ConnectToGameServer() // 고른 게임 서버에 접속
 {
+	if (m_fTimeUntilNextGameConnectionAttempt > 0.0f)
+		return;
+
 	__GameServerInfo GSI;
 	if (!m_pUILogIn->ServerInfoGetCur(GSI))
 		return; // 서버를 고른다음..
@@ -507,32 +526,9 @@ void CGameProcLogIn_1098::ConnectToGameServer() // 고른 게임 서버에 접�
 	else
 	{
 		s_szServer = GSI.szName;
+		m_fTimeUntilNextGameConnectionAttempt = TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT;
+
 		MsgSend_VersionCheck();
 	}
 }
-//	By : Ecli666 ( On 2002-07-15 오후 7:35:16 )
-//
-/*
-void CGameProcLogIn_1098::PacketSend_MGameLogin()
-{
-	if(m_szID.size() >= 20 || m_szPW.size() >= 12)
-	{
-//		MessageBox("ID는 20 자 PassWord 는 12 자 미만이어야 합니다.", "LogIn Error");
-		return;
-	}
-
-	int send_index = 0;
-	uint8_t send_buff[128];
-
-	CAPISocket::MP_AddByte( send_buff, send_index, N3_ACCOUNT_LOGIN_MGAME); // Send - s1(ID길이) str1(ID문자열:20바이트이하) s1(PW길이) str1(PW문자열:12바이트이하) | Recv - b1(0:실패 1:성공 2:ID없음 3:PW틀림 4:서버점검중)
-	CAPISocket::MP_AddShort( send_buff, send_index, (int16_t)(m_szID.size()));
-	CAPISocket::MP_AddString( send_buff, send_index, m_szID);
-	CAPISocket::MP_AddShort( send_buff, send_index, (int16_t)(m_szPW.size()));
-	CAPISocket::MP_AddString( send_buff, send_index, m_szPW);
-
-	s_pSocket->Send( send_buff, send_index );
-}*/
-
-//	~(By Ecli666 On 2002-07-15 오후 7:35:16 )
-
 #endif

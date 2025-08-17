@@ -55,6 +55,7 @@
 #include "UIDead.h"
 #include "UIUpgradeSelect.h"
 #include "UILevelGuide.h"
+#include "UIMsgBoxOkCancel.h"
 
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
@@ -72,8 +73,9 @@
 #include <N3Base/N3SndObjStream.h>
 #include <N3Base/N3SndMgr.h>
 
-#include <io.h>
+#include <N3Base/N3UIButton.h>
 
+#include <io.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -3647,12 +3649,9 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 
 		uint8_t	bExtraSkillPoint		= pkt.read<uint8_t>();	// 토탈 포인트
 		//TRACE("Skill change Extra value %d\n", bExtraSkillPoint);
-
-		uint64_t iExpNext		= pkt.read<uint32_t>(); 
-		uint64_t iExp			= pkt.read<uint32_t>();
 			
-		pInfoExt->iExpNext		= iExpNext; 
-		pInfoExt->iExp			= iExp; 
+		pInfoExt->iExpNext		= pkt.read<int32_t>();
+		pInfoExt->iExp			= pkt.read<int32_t>(); 
 
 		pInfoBase->iHPMax		= pkt.read<int16_t>();	
 		pInfoBase->iHP			= pkt.read<int16_t>();
@@ -4181,7 +4180,6 @@ void CGameProcMain::InitUI()
 	iX = iW - (rc.right - rc.left);
 	iY = 10; //same pos with inventory
 	m_pUILevelGuide->SetPos(iX, iY);
-
 }
 
 void CGameProcMain::MsgSend_RequestTargetHP(int16_t siIDTarget, uint8_t byUpdateImmediately)
@@ -4800,7 +4798,6 @@ bool CGameProcMain::CommandToggleUIMiniMap()
 
 bool CGameProcMain::CommandToggleCmdList()
 {
-	
 	bool bNeedOpen = !(m_pUICmdListDlg->IsVisible());
 
 	if (m_pSubProcPerTrade->m_ePerTradeState != PER_TRADE_STATE_NONE)
@@ -4808,13 +4805,6 @@ bool CGameProcMain::CommandToggleCmdList()
 
 	if (bNeedOpen)
 	{
-		if (m_pUIInventory->IsVisible())
-			m_pUIInventory->Close();
-		if (m_pUITransactionDlg->IsVisible())
-			m_pUITransactionDlg->LeaveTransactionState();
-		if (m_pUIWareHouseDlg->IsVisible())
-			m_pUIWareHouseDlg->LeaveWareHouseState();
-
 		s_pUIMgr->SetFocusedUI(m_pUICmdListDlg);
 		m_pUICmdListDlg->Open();
 	}
@@ -6384,13 +6374,11 @@ void CGameProcMain::MsgRecv_KnightsListBasic(Packet& pkt) // 기사단 기본 �
 
 void CGameProcMain::MsgRecv_ContinousPacket(Packet& pkt) // 압축된 데이터 이다... 한번 더 파싱해야 한다!!!
 {
-	uint16_t iWholeSize;
-	pkt >> iWholeSize;
+	uint16_t iWholeSize = pkt.read<uint16_t>();
 
 	while (pkt.rpos() < iWholeSize)
 	{
-		uint16_t iSizeThisPacket;
-		pkt >> iSizeThisPacket;
+		uint16_t iSizeThisPacket = pkt.read<uint16_t>();
 
 		if (iSizeThisPacket <= 0 || iSizeThisPacket >= iWholeSize)
 		{
@@ -7847,8 +7835,8 @@ void CGameProcMain::MsgSend_SpeedCheck(bool bInit)
 
 void CGameProcMain::MsgRecv_ClassPromotion(Packet& pkt)
 {
-	uint16_t sClass, socketID;
-	pkt >> sClass >> socketID;
+	uint16_t sClass = pkt.read<uint16_t>();
+	uint16_t socketID = pkt.read<uint16_t>();
 
 	// TODO: Clean this up when CPlayerMySelf is derived properly so we can share this logic in a much nicer fashion.
 	if (socketID == s_pPlayer->IDNumber())

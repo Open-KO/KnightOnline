@@ -145,10 +145,11 @@ void CDlgSetSound::OnBtnDeleteSoundgroup()
 		m_iIdx_Min = m_iIdx_Max;
 
 		int cnt = m_ListSoundGroup.GetCount();
-		for(int i=0;i<cnt;i++)
+		for (int i = 0; i < cnt; i++)
 		{
-			pSoundInfo = (LPSOUNDINFO)m_ListSoundGroup.GetItemDataPtr(i);
-			if(m_iIdx_Min > pSoundInfo->dwID) m_iIdx_Min = pSoundInfo->dwID;
+			pSoundInfo = (LPSOUNDINFO) m_ListSoundGroup.GetItemDataPtr(i);
+			if (m_iIdx_Min > static_cast<int>(pSoundInfo->dwID))
+				m_iIdx_Min = static_cast<int>(pSoundInfo->dwID);
 		}
 	}
 
@@ -157,10 +158,11 @@ void CDlgSetSound::OnBtnDeleteSoundgroup()
 		m_iIdx_Max = m_iIdx_Min;
 
 		int cnt = m_ListSoundGroup.GetCount();
-		for(int i=0;i<cnt;i++)
+		for (int i = 0; i < cnt; i++)
 		{
-			pSoundInfo = (LPSOUNDINFO)m_ListSoundGroup.GetItemDataPtr(i);
-			if(m_iIdx_Max < pSoundInfo->dwID) m_iIdx_Max = pSoundInfo->dwID;
+			pSoundInfo = (LPSOUNDINFO) m_ListSoundGroup.GetItemDataPtr(i);
+			if (m_iIdx_Max < static_cast<int>(pSoundInfo->dwID))
+				m_iIdx_Max = static_cast<int>(pSoundInfo->dwID);
 		}
 	}	
 	OnSelchangeListSoundgroup();
@@ -171,8 +173,13 @@ void CDlgSetSound::AddSoundGroup(char* szTitle, LPSOUNDINFO pSoundInfo)
 	int idx = m_ListSoundGroup.AddString(szTitle);
 	m_ListSoundGroup.SetItemDataPtr(idx, pSoundInfo);
 
-	if(pSoundInfo->dwID < m_iIdx_Min) m_iIdx_Min = pSoundInfo->dwID;
-	if(pSoundInfo->dwID > m_iIdx_Max) m_iIdx_Max = pSoundInfo->dwID;
+	int iSndID = static_cast<int>(pSoundInfo->dwID);
+
+	if (iSndID < m_iIdx_Min)
+		m_iIdx_Min = iSndID;
+
+	if (iSndID > m_iIdx_Max)
+		m_iIdx_Max = iSndID;
 }
 
 void CDlgSetSound::OnBtnInputInfo() 

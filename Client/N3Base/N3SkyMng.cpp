@@ -225,8 +225,9 @@ void CN3SkyMng::Tick()
 		if(m_pSun) m_pSun->SetCurAngle(fAngleTime + 270.0f);
 		if(m_pMoon) m_pMoon->SetCurAngle(fAngleTime + 90.0f);
 
-		while(m_iDayChangeCurPos < m_DayChanges.size() &&
-			m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCurGameTime)
+		while (m_iDayChangeCurPos >= 0
+			&& m_iDayChangeCurPos < static_cast<int>(m_DayChanges.size())
+			&& m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCurGameTime)
 		{
 			__SKY_DAYCHANGE* pSDC = &(m_DayChanges[m_iDayChangeCurPos]);
 			// 실행할 명령의 시간과 현재 시간 차이
@@ -255,10 +256,11 @@ void CN3SkyMng::Tick()
 		// 날씨 변화에 따른 하늘 변화명령 실행하기
 		if (!m_WeatherChanges.empty())
 		{
-			while(m_iWeatherChangeCurPos < m_WeatherChanges.size() &&
-				m_WeatherChanges[m_iWeatherChangeCurPos].dwWhen < dwCurGameTime )
+			while (m_iWeatherChangeCurPos >= 0
+				&& m_iWeatherChangeCurPos < static_cast<int>(m_WeatherChanges.size())
+				&& m_WeatherChanges[m_iWeatherChangeCurPos].dwWhen < dwCurGameTime)
 			{
-				__SKY_DAYCHANGE* pSDC = &(m_WeatherChanges[m_iWeatherChangeCurPos]);
+				__SKY_DAYCHANGE* pSDC = &m_WeatherChanges[m_iWeatherChangeCurPos];
 				// 실행할 명령의 시간과 현재 시간 차이
 				uint32_t dwDiffTime = dwCurGameTime - pSDC->dwWhen;
 
@@ -268,8 +270,9 @@ void CN3SkyMng::Tick()
 				ChangeSky(pSDC, fTakeTime);	// 변화시키기
 				m_iWeatherChangeCurPos++;
 			}
+
 			// 날씨 변화 queue 삭제하기
-			if (m_iWeatherChangeCurPos>=m_WeatherChanges.size())
+			if (m_iWeatherChangeCurPos >= static_cast<int>(m_WeatherChanges.size()))
 			{
 				m_WeatherChanges.clear();
 				m_iWeatherChangeCurPos = 0;
@@ -686,14 +689,19 @@ void CN3SkyMng::SetCheckGameTime(uint32_t dwCheckGameTime)
 	m_pSun->SetCurAngle(dwCheckGameTime/86400.0f*360.0f  + 270.0f);
 	m_pMoon->SetCurAngle(dwCheckGameTime/86400.0f*360.0f  + 90.0f);
 
-	if (m_DayChanges.empty()) return;
+	if (m_DayChanges.empty())
+		return;
 
 	// 큐에서 현재 게임시간에 맞는 순서를 찾는다.
 	m_iDayChangeCurPos = 0;
-	size_t iDCC = m_DayChanges.size();
-	while(m_iDayChangeCurPos<iDCC &&
-		m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime) ++m_iDayChangeCurPos;
-	if (m_iDayChangeCurPos >= iDCC) m_iDayChangeCurPos = iDCC - 1;
+	int iDCC = static_cast<int>(m_DayChanges.size());
+	while (m_iDayChangeCurPos >= 0
+		&& m_iDayChangeCurPos < iDCC
+		&& m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime)
+		++m_iDayChangeCurPos;
+
+	if (m_iDayChangeCurPos >= iDCC)
+		m_iDayChangeCurPos = iDCC - 1;
 
 	// 현재 게임시간에서 각 sky상태별로 가장 최근에 변경된 값을 찾아서 값을 지정해준다.
 	int i;
@@ -731,22 +739,34 @@ void CN3SkyMng::SetCheckGameTime(uint32_t dwCheckGameTime)
 // m_DayChanges에서 지정된 위치(iPos) 이전의 가장 최근에 변화하는 위치 얻어오기
 int CN3SkyMng::GetLatestChange(eSKY_DAYCHANGE eSDC, int iPos)
 {
-	int iFind = iPos-1;
-	if (iFind<0 || iFind >= (int)m_DayChanges.size()) iFind = m_DayChanges.size()-1;
-	while(iFind>=0)
+	int iFind = iPos - 1;
+	if (iFind < 0 || iFind >= static_cast<int>(m_DayChanges.size()))
+		iFind = static_cast<int>(m_DayChanges.size()) - 1;
+
+	while (iFind >= 0)
 	{
-		if (m_DayChanges[iFind].eSkyDayChange == eSDC) break;	// 가장 최근의 변화를 찾았다.
+		if (m_DayChanges[iFind].eSkyDayChange == eSDC)
+			break;	// 가장 최근의 변화를 찾았다.
+
 		--iFind;
 	}
 
-	if (iFind<0)
+	if (iFind < 0)
 	{
 		// 맨 뒤에서부터 다시 검색
-		iFind = m_DayChanges.size()-1;
-		while(iFind>=0)
+		iFind = static_cast<int>(m_DayChanges.size()) - 1;
+		while (iFind >= 0)
 		{
-			if (m_DayChanges[iFind].eSkyDayChange == eSDC) break;	// 가장 최근의 변화를 찾았다.
-			if (iPos > iFind) {iFind = -1; break;}	// 한바퀴를 다 돌았는데도 변화값을 찾을 수 없다.
+			if (m_DayChanges[iFind].eSkyDayChange == eSDC)
+				break;	// 가장 최근의 변화를 찾았다.
+
+			// 한바퀴를 다 돌았는데도 변화값을 찾을 수 없다.
+			if (iPos > iFind)
+			{
+				iFind = -1;
+				break;
+			}
+
 			--iFind;
 		}
 	}
@@ -1142,7 +1162,7 @@ int	CN3SkyMng::GetDayChangePos_AfterNSec(uint32_t dwCurGameTime, float fSec)
 {
 	// n초 후의 체크할 게임 시간을 계산
 	uint32_t dwCheckGameTime = dwCurGameTime + (uint32_t)(fSec*TIME_REAL_PER_GAME);	// 150초 후 게임시간
-	size_t iCheckDayChangeCurPos = m_iDayChangeCurPos;
+	int iCheckDayChangeCurPos = m_iDayChangeCurPos;
 	if (dwCheckGameTime>86400)	// 체크 시간이 게임시간의 24시를 넘으면
 	{
 		iCheckDayChangeCurPos = 0;
@@ -1150,10 +1170,14 @@ int	CN3SkyMng::GetDayChangePos_AfterNSec(uint32_t dwCurGameTime, float fSec)
 	}
 
 	// n초후의 queue의 위치 찾기
-	while(iCheckDayChangeCurPos<m_DayChanges.size() &&
-		m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime)
+	while (iCheckDayChangeCurPos >= 0
+		&& iCheckDayChangeCurPos < static_cast<int>(m_DayChanges.size())
+		&& m_DayChanges[m_iDayChangeCurPos].dwWhen < dwCheckGameTime)
 		++iCheckDayChangeCurPos;
-	if (iCheckDayChangeCurPos >= m_DayChanges.size()) iCheckDayChangeCurPos = m_DayChanges.size() - 1;
+
+	if (iCheckDayChangeCurPos >= static_cast<int>(m_DayChanges.size()))
+		iCheckDayChangeCurPos = static_cast<int>(m_DayChanges.size()) - 1;
+
 	return iCheckDayChangeCurPos;
 }
 
@@ -1361,8 +1385,11 @@ bool CN3SkyMng::Save(HANDLE hFile)
 #ifdef _N3TOOL
 __SKY_DAYCHANGE* CN3SkyMng::DayChangeGet(int iIndex)
 {
-	if(iIndex < 0 || iIndex >= m_DayChanges.size()) return NULL;
-	return &(m_DayChanges[iIndex]);
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_DayChanges.size()))
+		return nullptr;
+
+	return &m_DayChanges[iIndex];
 }
 
 __SKY_DAYCHANGE* CN3SkyMng::DayChangeAdd()
@@ -1374,20 +1401,24 @@ __SKY_DAYCHANGE* CN3SkyMng::DayChangeAdd()
 
 __SKY_DAYCHANGE* CN3SkyMng::DayChangeInsert(int iIndex)
 {
-	if(iIndex < 0 || iIndex >= m_DayChanges.size()) return NULL;
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_DayChanges.size()))
+		return nullptr;
 	
 	it_SDC it = m_DayChanges.begin();
 	for(int i = 0; i < iIndex; i++, it++);
 	
 	// TODO(srmeier): need to figure this out
-	return NULL; //it = m_DayChanges.insert(it);
+	return nullptr; //it = m_DayChanges.insert(it);
 	
 	return &(*it);
 }
 
 bool CN3SkyMng::DayChangeDelete(int iIndex)
 {
-	if(iIndex < 0 || iIndex >= m_DayChanges.size()) return false;
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_DayChanges.size()))
+		return false;
 	
 	it_SDC it = m_DayChanges.begin();
 	for(int i = 0; i < iIndex; i++, it++);

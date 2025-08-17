@@ -80,7 +80,9 @@ __AnimData* CN3AnimControl::Add()
 #ifdef _N3TOOL
 __AnimData* CN3AnimControl::Insert(int nIndex)
 {
-	if(nIndex < 0 || nIndex >= m_Datas.size()) return NULL;
+	if (nIndex < 0
+		|| nIndex >= static_cast<int>(m_Datas.size()))
+		return nullptr;
 	
 	it_Ani it = m_Datas.begin();
 	for(int i = 0; i < nIndex; i++, it++);
@@ -96,9 +98,16 @@ __AnimData* CN3AnimControl::Insert(int nIndex)
 #ifdef _N3TOOL
 void CN3AnimControl::Swap(int nAni1, int nAni2)
 {
-	if(nAni1 == nAni2) return;
-	if(nAni1 < 0 || nAni1 >= m_Datas.size()) return;
-	if(nAni2 < 0 || nAni2 >= m_Datas.size()) return;
+	if (nAni1 == nAni2)
+		return;
+
+	if (nAni1 < 0
+		|| nAni1 >= static_cast<int>(m_Datas.size()))
+		return;
+
+	if (nAni2 < 0
+		|| nAni2 >= static_cast<int>(m_Datas.size()))
+		return;
 
 	__AnimData Tmp = m_Datas[nAni2];
 	m_Datas[nAni2] = m_Datas[nAni1];
@@ -109,7 +118,9 @@ void CN3AnimControl::Swap(int nAni1, int nAni2)
 #ifdef _N3TOOL
 void CN3AnimControl::Delete(int nIndex)
 {
-	if(nIndex < 0 || nIndex >= m_Datas.size()) return;
+	if (nIndex < 0
+		|| nIndex >= static_cast<int>(m_Datas.size()))
+		return;
 
 	it_Ani it = m_Datas.begin();
 	for(int i = 0; i < nIndex; i++, it++);

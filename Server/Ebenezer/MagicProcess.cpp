@@ -310,17 +310,14 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 				// Only if Flying Effect is greater than 0.
 				if (pMagic->FlyingEffect > 0)
 				{
-					int total_hit = m_pSrcUser->m_sTotalHit + m_pSrcUser->m_sItemHit;
-					int skill_mana = total_hit * pMagic->ManaCost / 100;
-
 					// Reduce Magic Point!
-					if (skill_mana > m_pSrcUser->m_pUserData->m_sMp)
+					if (pMagic->ManaCost > m_pSrcUser->m_pUserData->m_sMp)
 					{
 						command = MAGIC_FAIL;
 						goto return_echo;
 					}
 
-					m_pSrcUser->MSpChange(-(skill_mana));
+					m_pSrcUser->MSpChange(-(pMagic->ManaCost));
 				}
 
 				// Subtract Arrow!
@@ -845,54 +842,9 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 			goto fail_return;
 		}
 
-		// Weapons verification in case of COMBO attack (another hacking prevention).
-		if (pTable->Type1 == 1)
-		{
-			// Weapons verification in case of DUAL ATTACK (type 1)!
-			if (pTable->Skill == 1055
-				|| pTable->Skill == 2055)
-			{
-				// Get item info for left hand.
-				model::Item* pLeftHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum);
-				if (pLeftHand == nullptr)
-					return nullptr;
-
-				// Get item info for right hand.
-				model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
-				if (pRightHand == nullptr)
-					return nullptr;
-
-				int left_index = pLeftHand->Kind / 10;
-				int right_index = pRightHand->Kind / 10;
-
-				if ((left_index != WEAPON_SWORD && left_index != WEAPON_AXE && left_index != WEAPON_MACE)
-					&& (right_index != WEAPON_SWORD && right_index != WEAPON_AXE && right_index != WEAPON_MACE))
-					return nullptr;
-			}
-			// Weapons verification in case of DOUBLE ATTACK !
-			else if (pTable->Skill == 1056
-				|| pTable->Skill == 2056)
-			{
-				// Get item info for right hand.
-				model::Item* pRightHand = m_pMain->m_ItemTableMap.GetData(m_pSrcUser->m_pUserData->m_sItemArray[RIGHTHAND].nNum);
-				if (pRightHand == nullptr)
-					return nullptr;
-
-				int right_index = pRightHand->Kind / 10;
-
-				if ((right_index != WEAPON_SWORD && right_index != WEAPON_AXE && right_index != WEAPON_MACE
-					&& right_index != WEAPON_SPEAR)
-					|| m_pSrcUser->m_pUserData->m_sItemArray[LEFTHAND].nNum != 0)
-					return nullptr;
-			}
-		}
-
 		// MP/SP SUBTRACTION ROUTINE!!! ITEM AND HP TOO!!!
 		if (type == MAGIC_EFFECTING)
 		{
-			int total_hit = m_pSrcUser->m_sTotalHit;
-			int skill_mana = (pTable->ManaCost * total_hit) / 100;
-
 			// Type 2 related...
 			if (pTable->Type1 == 2
 				&& pTable->FlyingEffect != 0)
@@ -908,17 +860,9 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 				return pTable;		// Do not reduce MP/SP when combo number is higher than 0.
 			}
 
-			if (pTable->Type1 == 1
-				|| pTable->Type1 == 2)
-			{
-				if (skill_mana > m_pSrcUser->m_pUserData->m_sMp)
-					goto fail_return;
-			}
-			else
-			{
-				if (pTable->ManaCost > m_pSrcUser->m_pUserData->m_sMp)
-					goto fail_return;
-			}
+			if (pTable->ManaCost > m_pSrcUser->m_pUserData->m_sMp)
+				goto fail_return;
+			
 
 /*
 			 // Actual deduction of Skill or Magic point.
@@ -1039,12 +983,10 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 			}
 
 			// Actual deduction of Skill or Magic point.
-			if (pTable->Type1 == 1
-				|| pTable->Type1 == 2)
-				m_pSrcUser->MSpChange(-skill_mana);
-			else if (pTable->Type1 != 4
-				|| (pTable->Type1 == 4 && tid == -1))
+			if (pTable->Type1 != 4 || (pTable->Type1 == 4 && tid == -1))
+			{
 				m_pSrcUser->MSpChange(-pTable->ManaCost);
+			}
 
 			// DEDUCTION OF HPs in Magic/Skill using HPs.
 			if (pTable->HpCost > 0

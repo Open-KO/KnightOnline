@@ -683,9 +683,10 @@ bool CN3Shape::Save(HANDLE hFile)
 }
 #endif // end of _N3TOOL
 
-void CN3Shape::PartDelete(size_t iIndex)
+void CN3Shape::PartDelete(int iIndex)
 {
-	if (iIndex >= m_Parts.size())
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_Parts.size()))
 		return;
 
 	auto it = m_Parts.begin();
@@ -697,7 +698,10 @@ void CN3Shape::PartDelete(size_t iIndex)
 #ifdef _N3TOOL
 void CN3Shape::RenderSelected(int iPart, bool bWireFrame)
 {
-	if(iPart < 0 || iPart >= m_Parts.size()) return;
+	if (iPart < 0
+		|| iPart >= static_cast<int>(m_Parts.size()))
+		return;
+
 	m_Parts[iPart]->RenderSelected(bWireFrame);
 }
 #endif // end of _N3TOOL
@@ -1180,33 +1184,35 @@ void CN3Shape::SetMaxLOD()
 	}
 }
 
-__Matrix44	CN3Shape::GetPartMatrix(size_t iPartIndex)
+__Matrix44 CN3Shape::GetPartMatrix(int iPartIndex) const
 {
 	return m_Parts[iPartIndex]->m_Matrix;
 }
 
-void CN3Shape::PartialRender(size_t iPartIndex, int iCount, uint16_t* pIndices)
+void CN3Shape::PartialRender(int iPartIndex, int iCount, uint16_t* pIndices)
 {
-	if (iPartIndex >= m_Parts.size())
+	if (iPartIndex < 0
+		|| iPartIndex >= static_cast<int>(m_Parts.size()))
 		return;
 
 	m_Parts[iPartIndex]->PartialRender(iCount, pIndices);
 }
 
-int	CN3Shape::GetIndexbufferCount(size_t iPartIndex)
+int	CN3Shape::GetIndexbufferCount(int iPartIndex)
 {
-	if (iPartIndex >= m_Parts.size())
+	if (iPartIndex < 0
+		|| iPartIndex >= static_cast<int>(m_Parts.size()))
 		return 0;
 	
 	return m_Parts[iPartIndex]->MeshInstance()->GetNumIndices();
 }
 
-int CN3Shape::GetIndexByiOrder(size_t iPartIndex, int iOrder)
+int CN3Shape::GetIndexByiOrder(int iPartIndex, int iOrder)
 {
 	return m_Parts[iPartIndex]->MeshInstance()->GetIndexByiOrder(iOrder);
 }
 
-__Vector3	CN3Shape::GetVertexByIndex(size_t iPartIndex, int iIndex)
+__Vector3 CN3Shape::GetVertexByIndex(int iPartIndex, int iIndex)
 {
 	return m_Parts[iPartIndex]->MeshInstance()->GetVertexByIndex(iIndex);
 }

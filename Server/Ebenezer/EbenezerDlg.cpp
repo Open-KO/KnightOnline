@@ -219,7 +219,6 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bVictory = 0;
 	m_byOldVictory = 0;
-	m_bBanishDelayStart = 0;
 	m_byBattleSave = 0;
 	m_sKarusCount = 0;
 	m_sElmoradCount = 0;
@@ -308,7 +307,7 @@ BOOL CEbenezerDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	srand(time(nullptr));
+	srand(static_cast<uint32_t>(time(nullptr)));
 
 	// Compress Init
 	memset(m_CompBuf, 0, sizeof(m_CompBuf));	// 압축할 데이터를 모으는 버퍼
@@ -2909,8 +2908,6 @@ void CEbenezerDlg::BattleZoneVictoryCheck()
 	else
 		return;
 
-	m_bBanishDelayStart = TimeGet();
-
 	Announcement(DECLARE_WINNER);
 
 	// GOLD DISTRIBUTION PROCEDURE FOR WINNERS !!!
@@ -2957,7 +2954,6 @@ void CEbenezerDlg::BanishLosers()
 void CEbenezerDlg::ResetBattleZone()
 {
 	m_bVictory = 0;
-	m_bBanishDelayStart = 0;
 	m_byBanishFlag = 0;
 	m_sBanishDelay = 0;
 	m_bKarusFlag = 0;

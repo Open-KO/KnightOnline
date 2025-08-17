@@ -17,28 +17,33 @@ public:
 	bool					m_bLogIn; // 로그인 중복 방지..
 	std::string				m_szRegistrationSite;
 
+	float					m_fTimeUntilNextGameConnectionAttempt;
+
 public:
-	void	MsgRecv_GameServerGroupList(Packet& pkt);
-	void	MsgRecv_AccountLogIn(int iCmd, Packet& pkt);
-	int		MsgRecv_VersionCheck(Packet& pkt); // virtual
-	int		MsgRecv_GameServerLogIn(Packet& pkt); // virtual - 국가 번호를 리턴한다.
+	inline void ResetGameConnectionAttemptTimer()
+	{
+		m_fTimeUntilNextGameConnectionAttempt = 0.0f;
+	}
 
-	bool	MsgSend_AccountLogIn(enum e_LogInClassification eLIC);
+	void MsgRecv_GameServerGroupList(Packet& pkt);
+	void MsgRecv_AccountLogIn(int iCmd, Packet& pkt);
+	int	 MsgRecv_VersionCheck(Packet& pkt) override;
+	int	 MsgRecv_GameServerLogIn(Packet& pkt) override; // 국가 번호를 리턴한다.
 
-	void Release();
-	void Init();
-	void Tick();
-	void Render();
+	bool MsgSend_AccountLogIn(enum e_LogInClassification eLIC);
+
+	void Release() override;
+	void Init() override;
+	void Tick() override;
+	void Render() override;
 
 protected:
 	bool ProcessPacket(Packet& pkt) override;
 
 public:
-
 	void ConnectToGameServer(); // 고른 게임 서버에 접속
 	CGameProcLogIn_1098();
 	~CGameProcLogIn_1098() override;
-//	void PacketSend_MGameLogin();
 };
 
 class CGameProcLogIn : public CGameProcLogIn_1098 {};

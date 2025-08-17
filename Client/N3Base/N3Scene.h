@@ -59,52 +59,74 @@ public:
 	void TickChrs(float fFrm = FRAME_SELFPLAY);
 	void Render();
 	
+	int	CameraCount() const
+	{
+		return m_nCameraCount;
+	}
+
 	int	 CameraAdd(CN3Camera *pCamera);
 	void CameraDelete(CN3Camera* pCamera);
 	void CameraDelete(int iIndex);
-	int	 CameraCount() { return m_nCameraCount; }
 	CN3Camera* CameraGet(int iIndex) { if(iIndex < 0 || iIndex >= m_nCameraCount) return NULL; return m_pCameras[iIndex]; }
 	
 	void CameraSetActive(int iIndex);
 	int	 CameraGetActiveNumber() { return m_nCameraActive; };
 	CN3Camera* CameraGetActive() { if(m_nCameraActive < 0 || m_nCameraActive >= m_nCameraCount) return NULL; return m_pCameras[m_nCameraActive]; }
 
+	int	 LightCount() const
+	{
+		return m_nLightCount;
+	}
+
 	int	 LightAdd(CN3Light* pLight);
 	void LightDelete(CN3Light* pLight);
 	void LightDelete(int iIndex);
-	int	 LightCount() { return m_nLightCount; }
 	CN3Light* LightGet(int iIndex) { if(iIndex < 0 || iIndex >= m_nLightCount) return NULL; return m_pLights[iIndex]; }
+
+	int ShapeCount() const
+	{
+		return static_cast<int>(m_Shapes.size());
+	}
 
 	int	 ShapeAdd(CN3Shape* pShape);
 	void ShapeDelete(CN3Shape* pShape);
-	void ShapeDelete(size_t iIndex);
-	size_t	 ShapeCount() { return m_Shapes.size(); }
-	CN3Shape* ShapeGet(size_t iIndex)
+	void ShapeDelete(int iIndex);
+	CN3Shape* ShapeGet(int iIndex)
 	{
-		if (iIndex >= m_Shapes.size()) return NULL;
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_Shapes.size()))
+			return nullptr;
+
 		return m_Shapes[iIndex];
 	}
-	CN3Shape* ShapeGetByFileName(std::string& str)
+
+	CN3Shape* ShapeGetByFileName(const std::string& str)
 	{
-		for (auto itr = m_Shapes.begin(); itr != m_Shapes.end(); ++itr)
+		for (CN3Shape* shape : m_Shapes)
 		{
-			auto shape = *itr;
 			if (str == shape->FileName())
 				return shape;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	void ShapeRelease();
 
-	int	 ChrAdd(CN3Chr* pChr);
-	void ChrDelete(size_t iIndex);
-	void ChrDelete(CN3Chr* pChr);
-	size_t	 ChrCount() { return m_Chrs.size(); }
-	CN3Chr* ChrGet(size_t iIndex)
+	int ChrCount() const
 	{
-		if (iIndex >= m_Chrs.size()) return NULL;
+		return static_cast<int>(m_Chrs.size());
+	}
+
+	int	 ChrAdd(CN3Chr* pChr);
+	void ChrDelete(int iIndex);
+	void ChrDelete(CN3Chr* pChr);
+	CN3Chr* ChrGet(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_Chrs.size()))
+			return nullptr;
+
 		return m_Chrs[iIndex];
 	}
 
@@ -117,7 +139,6 @@ public:
 
 	CN3Scene();
 	virtual ~CN3Scene();
-
 };
 
 #endif // !defined(AFX_N3Scene_h__INCLUDED_)

@@ -262,7 +262,9 @@ CN3FXPlugPart* CN3FXPlug::FXPPartAdd()
 
 void CN3FXPlug::FXPPartDelete(int nIndex)
 {
-	if (nIndex<0 || nIndex>m_FXPParts.size()) return;
+	if (nIndex < 0
+		|| nIndex >= static_cast<int>(m_FXPParts.size()))
+		return;
 
 	std::vector<CN3FXPlugPart*>::iterator itor = m_FXPParts.begin();
 	for (int i=0; i<nIndex; ++i) ++itor;

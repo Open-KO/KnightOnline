@@ -91,6 +91,7 @@ public:
 	void			InventoryChrTick();
 	void			InventoryChrAnimationInitialize();
 
+	bool			HasWeaponEquipped() const;
 
 	void			Release();
 	CPlayerMySelf();

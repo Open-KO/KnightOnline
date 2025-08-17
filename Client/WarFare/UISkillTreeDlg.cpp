@@ -960,7 +960,6 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 		return;
 
 	std::string szStr;
-	bool bFound = false;
 
 	// Tooltip - skill description
 	if (!m_pStr_info->IsVisible())
@@ -998,46 +997,26 @@ void CUISkillTreeDlg::TooltipRenderEnable(__IconItemSkill* spSkill)
 	if (!m_pStr_skill_item0->IsVisible())
 		m_pStr_skill_item0->SetVisible(true);
 
-	// Two-handed weapons
-	switch (spSkill->pSkill->iNeedSkill)
+	switch (spSkill->pSkill->dwNeedItem)
 	{
-		case SKILL_REQUIRES_DUAL_WEAPON_WARRIOR:
-		case SKILL_REQUIRES_DUAL_WEAPON_ROGUE:
-			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_DUAL);
-			bFound = true;
-			break;
-
-		case SKILL_REQUIRES_DOUBLE_WEAPON_WARRIOR:
-		case SKILL_REQUIRES_DOUBLE_WEAPON_ROGUE:
-			szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_DOUBLE);
-			bFound = true;
-			break;
-	}
-
-	// All other weapons
-	if (!bFound)
-	{
-		switch (spSkill->pSkill->dwNeedItem)
-		{
-			case 0:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1); break;
-			case 1:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2); break;
-			case 2:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3); break;
-			case 3:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4); break;
-			case 4:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5); break;
-			case 5:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6); break;
-			case 6:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7); break;
-			case 7:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8); break;
-			case 8:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9); break;
-			case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
-			case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
-			case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
-			case 13:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13); break;
-			case 21:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14); break;
-			case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
-			case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
-			case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
-			default:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_NO); break;
-		}
+		case 0:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID1); break;
+		case 1:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID2); break;
+		case 2:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID3); break;
+		case 3:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID4); break;
+		case 4:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID5); break;
+		case 5:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID6); break;
+		case 6:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID7); break;
+		case 7:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID8); break;
+		case 8:		szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID9); break;
+		case 10:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID10); break;
+		case 11:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID11); break;
+		case 12:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID12); break;
+		case 13:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID13); break;
+		case 21:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID14); break;
+		case 22:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID15); break;
+		case 23:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID16); break;
+		case 24:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_ID17); break;
+		default:	szStr = fmt::format_text_resource(IDS_SKILL_TOOLTIP_NEED_ITEM_NO); break;
 	}
 
 	m_pStr_skill_item0->SetString(szStr);
@@ -1126,12 +1105,12 @@ void CUISkillTreeDlg::InitIconWnd(e_UIWND eWnd)
 {
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	N3_VERIFY_UI_COMPONENT(m_pStr_info,			(CN3UIString*) GetChildByID("string_info"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_mp,		(CN3UIString*) GetChildByID("string_skill_mp"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_point,	(CN3UIString*) GetChildByID("string_skill_point"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item0,	(CN3UIString*) GetChildByID("string_skill_item0"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item1,	(CN3UIString*) GetChildByID("string_skill_item1"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item2,	(CN3UIString*) GetChildByID("string_skill_item2"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_info,			GetChildByID<CN3UIString>("string_info"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_mp,		GetChildByID<CN3UIString>("string_skill_mp"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_point,	GetChildByID<CN3UIString>("string_skill_point"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item0,	GetChildByID<CN3UIString>("string_skill_item0"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item1,	GetChildByID<CN3UIString>("string_skill_item1"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item2,	GetChildByID<CN3UIString>("string_skill_item2"));
 }
 
 void CUISkillTreeDlg::InitIconUpdate()
@@ -1161,8 +1140,8 @@ void CUISkillTreeDlg::InitIconUpdate()
 
 
 	// 아이디 = 직업 코드*1000 + 001부터.. (직업 코드+1)*100 + 001까지..
-	size_t iSkillIDFirst, iSkillIndexFirst, iSkillIndexLast, iModulo;
-	iSkillIDFirst = CGameBase::s_pPlayer->m_InfoBase.eClass*1000+1;
+	int iSkillIDFirst, iSkillIndexFirst, iSkillIndexLast, iModulo;
+	iSkillIDFirst = CGameBase::s_pPlayer->m_InfoBase.eClass * 1000 + 1;
 	iSkillIndexLast = CGameBase::s_pTbl_Skill.GetSize();
 
 	if (!CGameBase::s_pTbl_Skill.IDToIndex(iSkillIDFirst, &iSkillIndexFirst))
@@ -1173,7 +1152,7 @@ void CUISkillTreeDlg::InitIconUpdate()
 
 	if ( CGameBase::s_pPlayer->m_InfoBase.eClass <= CLASS_EL_DRUID )
 	{
-		for(size_t i = iSkillIndexFirst; i < CGameBase::s_pTbl_Skill.GetSize(); i++ )
+		for (int i = iSkillIndexFirst; i < CGameBase::s_pTbl_Skill.GetSize(); i++)
 		{
 			pUSkill = CGameBase::s_pTbl_Skill.GetIndexedData(i);
 			iDivide = pUSkill->dwID / 1000;
@@ -1185,7 +1164,7 @@ void CUISkillTreeDlg::InitIconUpdate()
 		}
 	}
 
-	for(size_t i = iSkillIndexFirst; i < iSkillIndexLast; i++ )
+	for (int i = iSkillIndexFirst; i < iSkillIndexLast; i++)
 	{
 		__TABLE_UPC_SKILL* pUSkill = CGameBase::s_pTbl_Skill.GetIndexedData(i);
 		if ( pUSkill == NULL ) continue;
@@ -1284,12 +1263,12 @@ void CUISkillTreeDlg::ButtonVisibleStateSet()
 
 	CN3UIButton* pButton = nullptr;
 
-	N3_VERIFY_UI_COMPONENT(pButton, (CN3UIButton*) GetChildByID("btn_public"));
+	N3_VERIFY_UI_COMPONENT(pButton, GetChildByID<CN3UIButton>("btn_public"));
 	if (pButton != nullptr)
 		pButton->SetState(UI_STATE_BUTTON_NORMAL);
 
 	// Hide all existing buttons by default.
-	N3_VERIFY_UI_COMPONENT(pButton, (CN3UIButton*) GetChildByID("btn_master"));
+	N3_VERIFY_UI_COMPONENT(pButton, GetChildByID<CN3UIButton>("btn_master"));
 	if (pButton != nullptr)
 		pButton->SetVisible(false);
 
@@ -1507,7 +1486,7 @@ stop:
 
 bool CUISkillTreeDlg::CheckSkillCanBeUse(__TABLE_UPC_SKILL* pUSkill)
 {
-	size_t iModulo = pUSkill->iNeedSkill % 10;
+	int iModulo = pUSkill->iNeedSkill % 10;
 	switch (iModulo)
 	{
 		case 0:																				// Basic Skills..

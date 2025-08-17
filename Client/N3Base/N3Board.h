@@ -26,14 +26,18 @@ protected:
 	std::vector<CN3Texture*> m_TexRefs; // 텍스처 포인터 리스트..
 
 public:
-	uint32_t		m_dwBoardType; // Board Type
+	uint32_t	m_dwBoardType; // Board Type
 	float		m_fTexFPS; // Frame Per Second
 	__Material	m_Mtl; // 재질..
 
 public:
+	int TexCount() const
+	{
+		return static_cast<int>(m_TexRefs.size());
+	}
+
 	void		TexSet(int index, const std::string& szFN);
 	void		TexAlloc(int nCount);
-	int			TexCount() { m_TexRefs.size(); }
 	CN3Texture* Tex(int index) { if(m_TexRefs.empty() || index < 0 || index >= m_TexRefs.size()) return NULL; return m_TexRefs[index]; }
 
 	void		Init(__Vector3 vPos, uint32_t dwBoardType, float fW, float fH);

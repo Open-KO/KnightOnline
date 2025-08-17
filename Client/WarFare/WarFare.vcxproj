@@ -183,6 +183,7 @@
     <ClCompile Include="UIMessageBox.cpp" />
     <ClCompile Include="UIMessageBoxManager.cpp" />
     <ClCompile Include="UIMessageWnd.cpp" />
+    <ClCompile Include="UIMsgBoxOkCancel.cpp" />
     <ClCompile Include="UINationSelectDlg.cpp" />
     <ClCompile Include="UINotice.cpp" />
     <ClCompile Include="UINPCChangeEvent.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="UIMessageBox.h" />
     <ClInclude Include="UIMessageBoxManager.h" />
     <ClInclude Include="UIMessageWnd.h" />
+    <ClInclude Include="UIMsgBoxOkCancel.h" />
     <ClInclude Include="UINationSelectDlg.h" />
     <ClInclude Include="UINotice.h" />
     <ClInclude Include="UINPCChangeEvent.h" />

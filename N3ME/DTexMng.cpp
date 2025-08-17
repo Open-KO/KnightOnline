@@ -299,7 +299,7 @@ void CDTexMng::SaveToFile(CString RealFileName)
 	FILE* stream = fopen(szDTexInfoFileName, "w");
 	if(!stream)	return;
 
-	int NumDTex = -m_pDTex.size();
+	int NumDTex = -static_cast<int>(m_pDTex.size());
 	fprintf(stream, "NumDTex = %d\n", NumDTex);
 	int version = N3ME_DTEX_DATA_VERSION;
 	fprintf(stream, "Version = %d\n", version);

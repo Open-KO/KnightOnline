@@ -1197,3 +1197,13 @@ void CPlayerMySelf::TargetOrPosMove()
 		}
 	}
 }
+
+bool CPlayerMySelf::HasWeaponEquipped() const
+{
+	// TODO: Handle transformations (should use the inventory in that case)
+	if (IsItemClassWeapon(ItemClass_RightHand())
+		|| IsItemClassWeapon(ItemClass_LeftHand()))
+		return true;
+
+	return false;
+}

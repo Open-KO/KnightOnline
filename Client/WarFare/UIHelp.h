@@ -11,26 +11,26 @@
 
 #include <N3Base/N3UIBase.h>
 
-const int MAX_HELP_PAGE = 4;
-
 class CUIHelp : public CN3UIBase  
 {
 public:
+	static constexpr int MAX_HELP_PAGE = 4;
+
 	CN3UIBase* m_pPages[MAX_HELP_PAGE];
 
-	CN3UIBase* m_pBtn_Prev;
-	CN3UIBase* m_pBtn_Next;
-	CN3UIBase* m_pBtn_Close;
+	CN3UIButton* m_pBtn_Prev;
+	CN3UIButton* m_pBtn_Next;
+	CN3UIButton* m_pBtn_Close;
 
 public:
-	void SetVisible(bool bVisible);
-	bool	OnKeyPress(int iKey);
-	void	Release();
-	bool	Load(HANDLE hFile);
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-
 	CUIHelp();
-	virtual ~CUIHelp();
+	~CUIHelp() override;
+
+	void SetVisible(bool bVisible) override;
+	bool OnKeyPress(int iKey) override;
+	void Release() override;
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 };
 
 #endif // !defined(AFX_UIHELP_H__EFE9F4A4_295F_4A67_B97A_1DF248F1101A__INCLUDED_)

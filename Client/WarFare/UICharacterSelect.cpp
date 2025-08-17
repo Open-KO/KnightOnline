@@ -3,11 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "text_resources.h"
-
-#include "GameProcCharacterSelect.h"
 #include "UICharacterSelect.h"
+#include "APISocket.h"
+#include "GameProcCharacterSelect.h"
 #include "UIManager.h"
+#include "text_resources.h"
 
 #include <N3Base/N3UIString.h>
 #include <N3Base/N3UITooltip.h>
@@ -27,10 +27,12 @@ CUICharacterSelect::CUICharacterSelect()
 	m_eType = UI_TYPE_BASE;
 	CUICharacterSelect::Release();
 
-	m_pBtnLeft		= NULL;
-	m_pBtnRight		= NULL;
-	m_pBtnExit		= NULL;
-	m_pBtnDelete	= NULL;
+	m_pBtnLeft		= nullptr;
+	m_pBtnRight		= nullptr;
+	m_pBtnExit		= nullptr;
+	m_pBtnDelete	= nullptr;
+	m_pBtnBack		= nullptr;
+	m_pUserInfoStr	= nullptr;
 }
 
 CUICharacterSelect::~CUICharacterSelect()
@@ -39,42 +41,78 @@ CUICharacterSelect::~CUICharacterSelect()
 
 void CUICharacterSelect::Release()
 {
-	m_pBtnLeft		= NULL;
-	m_pBtnRight		= NULL;
-	m_pBtnExit		= NULL;
-	m_pBtnDelete	= NULL;
+	m_pBtnLeft		= nullptr;
+	m_pBtnRight		= nullptr;
+	m_pBtnExit		= nullptr;
+	m_pBtnDelete	= nullptr;
+	m_pBtnBack		= nullptr;
+	m_pUserInfoStr	= nullptr;
 
 	CN3UIBase::Release();
 }
 
 bool CUICharacterSelect::Load(HANDLE hFile)
 {
-	CN3UIBase::Load(hFile);
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
-	//PrintChildIDs();
-
-	m_pBtnLeft = this->GetChildByID("bt_left");		__ASSERT(m_pBtnLeft, "NULL UI Component!!");
-	m_pBtnRight = this->GetChildByID("bt_right");	__ASSERT(m_pBtnRight, "NULL UI Component!!");
-	m_pBtnExit = this->GetChildByID("bt_exit");		__ASSERT(m_pBtnExit, "NULL UI Component!!");
-	m_pBtnDelete = this->GetChildByID("bt_delete");	__ASSERT(m_pBtnDelete, "NULL UI Component!!");
-
-	GetChildByID("bt_back")->SetVisible(false); // will want to add this
+	N3_VERIFY_UI_COMPONENT(m_pBtnLeft, GetChildByID("bt_left"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnRight, GetChildByID("bt_right"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnExit, GetChildByID("bt_exit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnDelete, GetChildByID("bt_delete"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnBack, GetChildByID("bt_back"));
+	N3_VERIFY_UI_COMPONENT(m_pUserInfoStr, GetChildByID<CN3UIString>("text00"));
 
 	// 위치를 화면 해상도에 맞게 바꾸기...
 	POINT pt;
-	RECT rc = this->GetRegion();
-	float fRatio = (float)s_CameraData.vp.Width / (rc.right - rc.left);
-//	if(pBtnLeft) { pt = pBtnLeft->GetPos(); pt.x *= fRatio; pt.y *= fRatio; pBtnLeft->SetPos(pt.x, pt.y); }
-//	if(pBtnRight) { pt = pBtnRight->GetPos(); pt.x *= fRatio; pt.y *= fRatio; pBtnRight->SetPos(pt.x, pt.y); }
-//	if(pBtnExit) { pt = pBtnExit->GetPos(); pt.x *= fRatio; pt.y *= fRatio; pBtnExit->SetPos(pt.x, pt.y); }
-//	if(pBtnDelete) { pt = pBtnDelete->GetPos(); pt.x *= fRatio; pt.y *= fRatio; pBtnDelete->SetPos(pt.x, pt.y); }
-	if(m_pBtnLeft) { pt = m_pBtnLeft->GetPos(); pt.x = (int)(pt.x * fRatio); pt.y = s_CameraData.vp.Height - 10 - m_pBtnLeft->GetHeight(); m_pBtnLeft->SetPos(pt.x, pt.y); }
-	if(m_pBtnRight) { pt = m_pBtnRight->GetPos(); pt.x = (int)(pt.x * fRatio); pt.y = s_CameraData.vp.Height - 10 - m_pBtnRight->GetHeight(); m_pBtnRight->SetPos(pt.x, pt.y); }
-	if(m_pBtnExit) { pt = m_pBtnExit->GetPos(); pt.x = (int)(pt.x * fRatio); pt.y = s_CameraData.vp.Height - 10 - m_pBtnExit->GetHeight(); m_pBtnExit->SetPos(pt.x, pt.y); }
-	if(m_pBtnDelete) { pt = m_pBtnDelete->GetPos(); pt.x = (int)(pt.x * fRatio); pt.y = 20; m_pBtnDelete->SetPos(pt.x, pt.y); }
+	RECT rc = GetRegion();
+	float fRatio = (float) s_CameraData.vp.Width / (rc.right - rc.left);
+
+	if (m_pBtnLeft != nullptr)
+	{
+		pt = m_pBtnLeft->GetPos();
+		pt.x = (int) (pt.x * fRatio);
+		pt.y = s_CameraData.vp.Height - 10 - m_pBtnLeft->GetHeight();
+		m_pBtnLeft->SetPos(pt.x, pt.y);
+	}
+
+	if (m_pBtnRight != nullptr)
+	{
+		pt = m_pBtnRight->GetPos();
+		pt.x = (int) (pt.x * fRatio);
+		pt.y = s_CameraData.vp.Height - 10 - m_pBtnRight->GetHeight();
+		m_pBtnRight->SetPos(pt.x, pt.y);
+	}
+
+	if (m_pBtnExit != nullptr)
+	{
+		pt = m_pBtnExit->GetPos();
+		pt.x = (int) (pt.x * fRatio);
+		pt.y = s_CameraData.vp.Height - 10 - m_pBtnExit->GetHeight();
+		m_pBtnExit->SetPos(pt.x, pt.y);
+	}
+
+	if (m_pBtnBack != nullptr)
+	{
+		// Previous point in sane cases should be be the exit button.
+		// There's a 15 pixel gap between them in the UIF's layout.
+		POINT ptPrev = pt;
+		pt = m_pBtnBack->GetPos();
+		pt.x = (int) (pt.x * fRatio);
+		pt.y = ptPrev.y - 15 - m_pBtnBack->GetHeight();
+		m_pBtnBack->SetPos(pt.x, pt.y);
+	}
+
+	if (m_pBtnDelete != nullptr)
+	{
+		pt = m_pBtnDelete->GetPos();
+		pt.x = (int) (pt.x * fRatio);
+		pt.y = 20;
+		m_pBtnDelete->SetPos(pt.x, pt.y);
+	}
 
 	SetRect(&rc, 0, 0, s_CameraData.vp.Width, s_CameraData.vp.Height);
-	this->SetRegion(rc);
+	SetRegion(rc);
 
 	return true;
 }
@@ -86,31 +124,39 @@ void CUICharacterSelect::Tick()
 
 bool CUICharacterSelect::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
-	if(NULL == pSender) return false;
-	if(!CGameProcedure::s_pUIMgr->EnableOperation()) return false;
+	if (pSender == nullptr)
+		return false;
 
-	if( dwMsg == UIMSG_BUTTON_CLICK )
+	if (!CGameProcedure::s_pUIMgr->EnableOperation())
+		return false;
+
+	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if ( pSender->m_szID == "bt_left" )	// Karus
+		// Rotate Left..
+		if (pSender == m_pBtnLeft)
 		{
-			// Rotate Left..
 			CGameProcedure::s_pProcCharacterSelect->DoJobLeft();
 		}
-		else
-		if ( pSender->m_szID == "bt_right" )	// Elmorad
+		// Rotate Right..
+		else if (pSender == m_pBtnRight)
 		{
-			// Rotate Right..
 			CGameProcedure::s_pProcCharacterSelect->DojobRight();
 		}
-		else
-		if ( pSender->m_szID == "bt_exit" )	// Elmorad
+		else if (pSender == m_pBtnExit)
 		{
 //			CGameProcedure::ProcActiveSet((CGameProcedure*)CGameProcedure::s_pProcLogIn); // 로그인으로 돌아간다..
 			std::string szMsg = fmt::format_text_resource(IDS_CONFIRM_EXIT_GAME);
 			CGameProcedure::MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_EXIT);
 		}
-		else
-		if ( pSender->m_szID == "bt_delete" )	// Elmorad
+		else if (pSender == m_pBtnBack)
+		{
+			CGameProcedure::s_bNeedReportConnectionClosed = false;
+			CGameProcedure::s_pSocket->Disconnect();
+			CGameProcedure::s_bNeedReportConnectionClosed = true;
+
+			CGameProcedure::ProcActiveSet((CGameProcedure*) CGameProcedure::s_pProcLogIn); // 로그인으로 돌아간다..
+		}
+		else if (pSender == m_pBtnDelete)
 		{
 			std::string szMsg = fmt::format_text_resource(IDS_CONFIRM_DELETE_CHR);
 
@@ -123,16 +169,13 @@ bool CUICharacterSelect::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 #endif
 		}
 	}
-	
+
 	return true;
 }
 
 void CUICharacterSelect::DisplayChrInfo(__CharacterSelectInfo* pCSInfo)
 {
-	CN3UIBase*	m_pUserInfoStr;
 	std::string szTotal;
-
-	m_pUserInfoStr = GetChildByID("text00"); __ASSERT(m_pUserInfoStr, "NULL UI Component!!");
 
 	if (!pCSInfo->szID.empty())
 	{

@@ -12,6 +12,7 @@
 #include "UITransactionDlg.h"
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
+#include "UIMsgBoxOkCancel.h"
 #include "UIItemExchange.h"
 #include "UIWareHouseDlg.h"
 

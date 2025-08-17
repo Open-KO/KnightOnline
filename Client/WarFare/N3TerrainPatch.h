@@ -35,7 +35,7 @@ protected:
 	FanInfoList					m_FanInfoList;
 	
 	//for level1
-	uint32_t*						m_pTileTexIndx[2];
+	uint32_t*					m_pTileTexIndx[2];
 	bool*						m_pIsTileFull;
 
 	//lightmap...

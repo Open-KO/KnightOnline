@@ -336,13 +336,15 @@ bool CN3Texture::Load(HANDLE hFile)
 		{
 			if(iMMC > 1)
 			{
-				if(m_iLOD > 0) // LOD 만큼 건너뛰기...
+				if (m_iLOD > 0) // LOD 만큼 건너뛰기...
 				{
-					size_t iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
-					for(int i = 0; i < m_iLOD; i++, iWTmp /= 2, iHTmp /= 2)
+					int iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
+					for (int i = 0; i < m_iLOD; i++, iWTmp /= 2, iHTmp /= 2)
 					{
-						if(D3DFMT_DXT1 == HeaderOrg.Format) iSkipSize += iWTmp * iHTmp / 2; // DXT1 형식은 16비트 포맷에 비해 1/4 로 압축..
-						else iSkipSize += iWTmp * iHTmp; // DXT2 ~ DXT5 형식은 16비트 포맷에 비해 1/2 로 압축..
+						if (D3DFMT_DXT1 == HeaderOrg.Format)
+							iSkipSize += iWTmp * iHTmp / 2; // DXT1 형식은 16비트 포맷에 비해 1/4 로 압축..
+						else
+							iSkipSize += iWTmp * iHTmp; // DXT2 ~ DXT5 형식은 16비트 포맷에 비해 1/2 로 압축..
 					}
 					::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
 				}
@@ -362,7 +364,7 @@ bool CN3Texture::Load(HANDLE hFile)
 				}
 
 				// 텍스처 압축안되는 비디오 카드를 위한 여분의 데이터 건너뛰기.. 
-				size_t iWTmp = HeaderOrg.nWidth / 2, iHTmp = HeaderOrg.nHeight / 2;
+				int iWTmp = HeaderOrg.nWidth / 2, iHTmp = HeaderOrg.nHeight / 2;
 				for(; iWTmp >= 4 && iHTmp >= 4; iWTmp /= 2, iHTmp /= 2) // 한픽셀에 두바이트가 들어가는 A1R5G5B5 혹은 A4R4G4B4 포맷으로 되어 있다..
 					::SetFilePointer(hFile, iWTmp * iHTmp * 2, 0, FILE_CURRENT); // 건너뛰고.
 			}
@@ -389,11 +391,13 @@ bool CN3Texture::Load(HANDLE hFile)
 			if(iMMC > 1) // LOD 만큼 건너뛰기...
 			{
 				// 압축 데이터 건너뛰기..
-				size_t iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
-				for(; iWTmp >= 4 && iHTmp >= 4; iWTmp /= 2, iHTmp /= 2)
+				int iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
+				for (; iWTmp >= 4 && iHTmp >= 4; iWTmp /= 2, iHTmp /= 2)
 				{
-					if(D3DFMT_DXT1 == HeaderOrg.Format) iSkipSize += iWTmp * iHTmp / 2; // DXT1 형식은 16비트 포맷에 비해 1/4 로 압축..
-					else iSkipSize += iWTmp * iHTmp; // DXT2 ~ DXT5 형식은 16비트 포맷에 비해 1/2 로 압축..
+					if (D3DFMT_DXT1 == HeaderOrg.Format)
+						iSkipSize += iWTmp * iHTmp / 2; // DXT1 형식은 16비트 포맷에 비해 1/4 로 압축..
+					else
+						iSkipSize += iWTmp * iHTmp; // DXT2 ~ DXT5 형식은 16비트 포맷에 비해 1/2 로 압축..
 				}
 				::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
 
@@ -406,7 +410,8 @@ bool CN3Texture::Load(HANDLE hFile)
 				}
 
 				// 비디오 카드 지원 텍스처 크기가 작을경우 건너뛰기..
-				for(; iWTmp > s_DevCaps.MaxTextureWidth || iHTmp > s_DevCaps.MaxTextureHeight; iWTmp /= 2, iHTmp /= 2)
+				for (; iWTmp > static_cast<int>(s_DevCaps.MaxTextureWidth) || iHTmp > static_cast<int>(s_DevCaps.MaxTextureHeight);
+					iWTmp /= 2, iHTmp /= 2)
 					iSkipSize += iWTmp * iHTmp * 2;
 				if(iSkipSize) ::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
 
@@ -454,10 +459,12 @@ bool CN3Texture::Load(HANDLE hFile)
 			}
 
 			// 비디오 카드 지원 텍스처 크기가 작을경우 건너뛰기..
-			size_t iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
-			for(; iWTmp > s_DevCaps.MaxTextureWidth || iHTmp > s_DevCaps.MaxTextureHeight; iWTmp /= 2, iHTmp /= 2)
+			int iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
+			for (; iWTmp > static_cast<int>(s_DevCaps.MaxTextureWidth) || iHTmp > static_cast<int>(s_DevCaps.MaxTextureHeight);
+				iWTmp /= 2, iHTmp /= 2)
 				iSkipSize += iWTmp * iHTmp * iPixelSize;
-			if(iSkipSize) ::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+			if (iSkipSize != 0)
+				::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
 
 			// 데이터 읽기..
 			for (int i = 0; i < iMMC; i++)

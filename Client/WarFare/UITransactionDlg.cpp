@@ -11,6 +11,7 @@
 #include "UIImageTooltipDlg.h"
 #include "UIInventory.h"
 #include "UIManager.h"
+#include "UIMsgBoxOkCancel.h"
 #include "PlayerMySelf.h"
 #include "CountableItemEditDlg.h"
 #include "UIHotKeyDlg.h"
@@ -29,28 +30,36 @@
 static char THIS_FILE[]=__FILE__;
 #endif
 
+static constexpr int CHILD_UI_MSGBOX_OKCANCEL = 1;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CUITransactionDlg::CUITransactionDlg()
 {
-	int i, j;
 	m_iCurPage = 0;
-	for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
-		for( i = 0; i < MAX_ITEM_TRADE; i++ )		
-			m_pMyTrade[j][i] = NULL;
-	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )	m_pMyTradeInv[i] = NULL;
 
-	m_pUITooltipDlg = NULL;
-	m_pStrMyGold    = NULL;
+	for (int j = 0; j < MAX_ITEM_TRADE_PAGE; j++)
+	{
+		for (int i = 0; i < MAX_ITEM_TRADE; i++)
+			m_pMyTrade[j][i] = nullptr;
+	}
 
-	m_pUIInn		= NULL;
-	m_pUIBlackSmith	= NULL;
-	m_pUIStore		= NULL;
-	m_pText_Weight = nullptr;
+	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
+		m_pMyTradeInv[i] = nullptr;
 
-	this->SetVisible(false);
+	m_pUITooltipDlg = nullptr;
+	m_pStrMyGold    = nullptr;
+
+	m_pUIInn		= nullptr;
+	m_pUIBlackSmith	= nullptr;
+	m_pUIStore		= nullptr;
+	m_pText_Weight	= nullptr;
+
+	m_pUIMsgBoxOkCancel = nullptr;
+
+	m_bVisible		= false;
 }
 
 CUITransactionDlg::~CUITransactionDlg()
@@ -60,27 +69,32 @@ CUITransactionDlg::~CUITransactionDlg()
 
 void CUITransactionDlg::Release()
 {
-	CN3UIBase::Release();
-
-	int i, j;
-	for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
-		for( i = 0; i < MAX_ITEM_TRADE; i++ )
-		{
-			if ( m_pMyTrade[j][i] != NULL )
-			{
-				delete m_pMyTrade[j][i];
-				m_pMyTrade[j][i] = NULL;
-			}
-		}
-
-	for( i = 0; i < MAX_ITEM_INVENTORY; i++ )
+	for (int j = 0; j < MAX_ITEM_TRADE_PAGE; j++)
 	{
-		if ( m_pMyTradeInv[i] != NULL )
+		for (int i = 0; i < MAX_ITEM_TRADE; i++)
 		{
-			delete m_pMyTradeInv[i];
-			m_pMyTradeInv[i] = NULL;
+			delete m_pMyTrade[j][i];
+			m_pMyTrade[j][i] = nullptr;
 		}
 	}
+
+	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
+	{
+		delete m_pMyTradeInv[i];
+		m_pMyTradeInv[i] = nullptr;
+	}
+
+	m_pUITooltipDlg = nullptr;
+	m_pStrMyGold    = nullptr;
+
+	m_pUIInn		= nullptr;
+	m_pUIBlackSmith	= nullptr;
+	m_pUIStore		= nullptr;
+	m_pText_Weight	= nullptr;
+
+	m_pUIMsgBoxOkCancel = nullptr;
+
+	CN3UIBase::Release();
 }
 
 void CUITransactionDlg::Render()
@@ -173,17 +187,28 @@ void CUITransactionDlg::InitIconWnd(e_UIWND eWnd)
 	m_pUITooltipDlg->Init(this);
 	m_pUITooltipDlg->LoadFromFile(pTbl->szItemInfo);
 	m_pUITooltipDlg->InitPos();
-	m_pUITooltipDlg->SetVisible(FALSE);	
+	m_pUITooltipDlg->SetVisible(false);
+
+	m_pUIMsgBoxOkCancel = new CUIMsgBoxOkCancel();
+	m_pUIMsgBoxOkCancel->Init(this);
+	m_pUIMsgBoxOkCancel->LoadFromFile(pTbl->szMsgBoxOkCancel);
+
+	int iX = (m_rcRegion.right + m_rcRegion.left) / 2;
+	int iY = (m_rcRegion.bottom + m_rcRegion.top) / 2;
+	m_pUIMsgBoxOkCancel->SetPos(
+		iX - (m_pUIMsgBoxOkCancel->GetWidth() / 2),
+		iY - (m_pUIMsgBoxOkCancel->GetHeight() / 2) - 80);
+	m_pUIMsgBoxOkCancel->SetVisible(false);
 
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	m_pStrMyGold    = (CN3UIString* )GetChildByID("string_item_name"); __ASSERT(m_pStrMyGold, "NULL UI Component!!");
+	N3_VERIFY_UI_COMPONENT(m_pStrMyGold,	GetChildByID<CN3UIString>("string_item_name"));
 	if(m_pStrMyGold) m_pStrMyGold->SetString("0");
 
-	m_pUIInn		= (CN3UIImage*)GetChildByID("img_inn");			__ASSERT(m_pUIInn, "NULL UI Component!!");
-	m_pUIBlackSmith = (CN3UIImage*)GetChildByID("img_blacksmith");	__ASSERT(m_pUIBlackSmith, "NULL UI Component!!");
-	m_pUIStore		= (CN3UIImage*)GetChildByID("img_store");		__ASSERT(m_pUIStore, "NULL UI Component!!");
-	N3_VERIFY_UI_COMPONENT(m_pText_Weight, (CN3UIString*) GetChildByID("text_weight"));
+	N3_VERIFY_UI_COMPONENT(m_pUIInn,		GetChildByID<CN3UIImage>("img_inn"));
+	N3_VERIFY_UI_COMPONENT(m_pUIBlackSmith,	GetChildByID<CN3UIImage>("img_blacksmith"));
+	N3_VERIFY_UI_COMPONENT(m_pUIStore,		GetChildByID<CN3UIImage>("img_store"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Weight,	GetChildByID<CN3UIString>("text_weight"));
 }
 
 void CUITransactionDlg::InitIconUpdate()
@@ -385,6 +410,25 @@ void CUITransactionDlg::GoldUpdate()
 
 	std::string strGold = CGameBase::FormatNumber(CGameBase::s_pPlayer->m_InfoExt.iGold);
 	m_pStrMyGold->SetString(strGold);
+}
+
+std::string CUITransactionDlg::GetItemName(const __IconItemSkill* spItem)
+{
+	std::string name;
+
+	if ((e_ItemAttrib) (spItem->pItemExt->byMagicOrRare) != ITEM_ATTRIB_UNIQUE)
+	{
+		name = spItem->pItemBasic->szName;
+
+		if ((spItem->pItemExt->dwID % 10) != 0)
+			name += fmt::format("(+{})", spItem->pItemExt->dwID % 10);
+	}
+	else
+	{
+		name = spItem->pItemExt->szHeader;
+	}
+
+	return name;
 }
 
 void CUITransactionDlg::ItemMoveFromInvToThis()
@@ -652,6 +696,44 @@ void CUITransactionDlg::ItemCountCancel()
 	m_sRecoveryJobInfo.pItemTarget	= nullptr;
 
 	m_pCountableItemEdit->Close();
+}
+
+void CUITransactionDlg::CallBackProc(int iID, uint32_t dwFlag)
+{
+	if (iID == CHILD_UI_MSGBOX_OKCANCEL)
+	{
+		if (dwFlag == CUIMsgBoxOkCancel::CALLBACK_OK)
+			OnConfirm();
+		else if (dwFlag == CUIMsgBoxOkCancel::CALLBACK_CANCEL)
+			OnCancel();
+	}
+}
+
+void CUITransactionDlg::OnConfirm()
+{
+	__IconItemSkill* spItem = nullptr;
+
+	switch (m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict)
+	{
+		case UIWND_DISTRICT_TRADE_MY: // sell, inventory to NPC
+			spItem = m_pMyTradeInv[m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
+
+			s_bWaitFromServer = true;
+
+			spItem->pUIIcon->SetVisible(false);
+			
+			SendToServerSellMsg(m_sRecoveryJobInfo.pItemSource->pItemBasic->dwID +
+				m_sRecoveryJobInfo.pItemSource->pItemExt->dwID,
+				m_sRecoveryJobInfo.UIWndSourceStart.iOrder, 
+				m_sRecoveryJobInfo.pItemSource->iCount);
+			break;
+	}
+}
+
+void CUITransactionDlg::OnCancel()
+{
+	m_sRecoveryJobInfo.pItemSource = nullptr;
+	m_sRecoveryJobInfo.pItemTarget = nullptr;
 }
 
 void CUITransactionDlg::SendToServerSellMsg(int itemID, byte pos, int iCount)
@@ -1015,33 +1097,23 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 		case UIWND_DISTRICT_TRADE_MY:
 			if (eUIWnd == UIWND_DISTRICT_TRADE_NPC)		// 파는 경우..
 			{
-				if( (CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) ||
-					(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL) )
+				s_bWaitFromServer = false;
+
+				if (m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE
+					|| m_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)
 				{
 					// 활이나 물약등 아이템인 경우..
-					s_bWaitFromServer = false;
 					m_pCountableItemEdit->Open(UIWND_TRANSACTION, m_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
 				}
 				else
 				{
-					// Server에게 보낸다..
-					SendToServerSellMsg(CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemBasic->dwID+
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->pItemExt->dwID, 
-						CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder, 
-						CN3UIWndBase::m_sRecoveryJobInfo.pItemSource->iCount);
+					std::string strMessage = fmt::format_text_resource(IDS_TRANSACTION_OK_CANCEL_MESSAGE,
+						GetItemName(m_sRecoveryJobInfo.pItemSource));
 
-					// 원래 아이템을 삭제해야 하지만.. 되살릴 방법이 없기 때문에 원래 위치로 옮기고.. 
-					pArea = NULL;
-					pArea = GetChildAreaByiOrder(UI_AREA_TYPE_TRADE_MY, CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder);
-					if ( pArea )
-					{
-						spItem->pUIIcon->SetRegion(pArea->GetRegion());
-						spItem->pUIIcon->SetMoveRect(pArea->GetRegion());
-					}
-
-					// Invisible로 하고 삭제는 서버가 성공을 줄때 한다..
-					spItem->pUIIcon->SetVisible(false);
+					m_pUIMsgBoxOkCancel->ShowWindow(CHILD_UI_MSGBOX_OKCANCEL, this);
+					m_pUIMsgBoxOkCancel->SetText(strMessage);
 				}
+
 				FAIL_RETURN
 			}
 			else	
@@ -1309,6 +1381,10 @@ uint32_t CUITransactionDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, cons
 		CN3UIWndBase::m_sSelectedIconInfo.pItemSelect->pUIIcon->SetMoveRect(GetSampleRect());
 	}
 
+	if (m_pChildUI != nullptr
+		&& m_pChildUI->IsVisible())
+		return m_pChildUI->MouseProc(dwFlags, ptCur, ptOld);
+
 	return CN3UIWndBase::MouseProc(dwFlags, ptCur, ptOld);
 }
 
@@ -1557,6 +1633,13 @@ void CUITransactionDlg::SetVisible(bool bVisible)
 		if(CN3UIWndBase::m_pCountableItemEdit && CN3UIWndBase::m_pCountableItemEdit->IsVisible())
 			ItemCountCancel();
 
+		if (m_pUIMsgBoxOkCancel != nullptr
+			&& m_pUIMsgBoxOkCancel->IsVisible())
+		{
+			OnCancel();
+			m_pUIMsgBoxOkCancel->SetVisible(false);
+		}
+
 		CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 	}
 }
@@ -1569,6 +1652,13 @@ void CUITransactionDlg::SetVisibleWithNoSound(bool bVisible, bool bWork, bool bR
 	{
 		if(CN3UIWndBase::m_pCountableItemEdit && CN3UIWndBase::m_pCountableItemEdit->IsVisible())
 			ItemCountCancel();
+
+		if (m_pUIMsgBoxOkCancel != nullptr
+			&& m_pUIMsgBoxOkCancel->IsVisible())
+		{
+			OnCancel();
+			m_pUIMsgBoxOkCancel->SetVisible(false);
+		}
 
 		if (GetState() == UI_STATE_ICON_MOVING)
 			IconRestore();

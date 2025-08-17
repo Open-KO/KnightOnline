@@ -25,62 +25,55 @@ static char THIS_FILE[]=__FILE__;
 
 CUICmd::CUICmd()
 {
-	m_pBtn_Exit = NULL;			//나가기
+	m_pBtn_Exit = nullptr;			// 나가기
 
-	m_pBtn_Act = NULL;			//행동
-	m_pBtn_Act_Walk = NULL;	//걷기
-	m_pBtn_Act_Run = NULL;		//달리기
-	m_pBtn_Act_Stop = NULL;	//서기
-	m_pBtn_Act_Attack = NULL;	//공격
+	m_pBtn_Act = nullptr;			// 행동
+	m_pBtn_Act_Walk = nullptr;		// 걷기
+	m_pBtn_Act_Run = nullptr;		// 달리기
+	m_pBtn_Act_Attack = nullptr;	// 공격
 	
-	m_pBtn_Act_StandUp = NULL; // 일어서기.
-	m_pBtn_Act_SitDown = NULL;	// 앉기
+	m_pBtn_Act_StandUp = nullptr;	// 일어서기.
+	m_pBtn_Act_SitDown = nullptr;	// 앉기
 
-	m_pBtn_Camera = NULL;			//카메라
-	m_pBtn_Inventory = NULL;		//아이템 창 
-	m_pBtn_Party_Invite = NULL;	//파티 초대
-	m_pBtn_Party_Disband = NULL;	//파티 탈퇴
-	m_pBtn_CmdList = NULL;			//옵션
-	m_pBtn_Quest = NULL;			//퀘스트
-	m_pBtn_Character = NULL;		//자기 정보창   
-	m_pBtn_Skill = NULL;			//스킬트리 또는 마법창 
-	m_pBtn_Belong = NULL;			//소속 기사단 
-	m_pBtn_Map = NULL;				// 미니맵
+	m_pBtn_Camera = nullptr;		// 카메라
+	m_pBtn_Inventory = nullptr;		// 아이템 창 
+	m_pBtn_Party_Invite = nullptr;	// 파티 초대
+	m_pBtn_Party_Disband = nullptr;	// 파티 탈퇴
+	m_pBtn_CmdList = nullptr;		// 옵션
+	m_pBtn_Character = nullptr;		// 자기 정보창   
+	m_pBtn_Skill = nullptr;			// 스킬트리 또는 마법창 
+	m_pBtn_Map = nullptr;			// 미니맵
 }
 
 CUICmd::~CUICmd()
 {
-	DestroyTooltip();
 }
 
 bool CUICmd::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
-
-	m_pBtn_Act =			GetChildByID("btn_control");	//__ASSERT(m_pBtn_Act, "NULL UI Component!!");
-	m_pBtn_Act_Walk =		GetChildByID("btn_walk");		//__ASSERT(m_pBtn_Act_Walk, "NULL UI Component!!");
-	m_pBtn_Act_Run =		GetChildByID("btn_run");		//__ASSERT(m_pBtn_Act_Run, "NULL UI Component!!");
-	m_pBtn_Act_Stop =		GetChildByID("btn_stop");		//__ASSERT(m_pBtn_Act_Stop, "NULL UI Component!!");
-	m_pBtn_Act_Attack =		GetChildByID("btn_attack");		//__ASSERT(m_pBtn_Act_Attack, "NULL UI Component!!");
-	m_pBtn_Act_StandUp =	GetChildByID("btn_stand");		//__ASSERT(m_pBtn_Act_StandUp, "NULL UI Component!!");
-	m_pBtn_Act_SitDown =	GetChildByID("btn_sit");		//__ASSERT(m_pBtn_Act_SitDown, "NULL UI Component!!");
-
-	if(m_pBtn_Act_StandUp) m_pBtn_Act_StandUp->SetVisible(false); // 일어서기 버튼은 미리 죽여놓는다..
+	if (!CN3UIBase::Load(hFile))
+		return false;
 	
-	m_pBtn_Character =		GetChildByID("btn_character");	//__ASSERT(m_pBtn_Character, "NULL UI Component!!");
-	m_pBtn_Inventory =		GetChildByID("btn_inventory");	//__ASSERT(m_pBtn_Inventory, "NULL UI Component!!");
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act,				GetChildByID<CN3UIButton>("btn_control"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Walk,			GetChildByID<CN3UIButton>("btn_walk"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Run,			GetChildByID<CN3UIButton>("btn_run"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Attack,		GetChildByID<CN3UIButton>("btn_attack"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_StandUp,		GetChildByID<CN3UIButton>("btn_stand"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_SitDown,		GetChildByID<CN3UIButton>("btn_sit"));
 
-	m_pBtn_CmdList =			GetChildByID("btn_option");		//__ASSERT(m_pBtn_Option, "NULL UI Component!!");
-	m_pBtn_Camera =			GetChildByID("btn_camera");		//__ASSERT(m_pBtn_Camera, "NULL UI Component!!");
-	m_pBtn_Party_Invite =	GetChildByID("btn_invite");		//__ASSERT(m_pBtn_Party_Invite, "NULL UI Component!!");
-	m_pBtn_Party_Disband =	GetChildByID("btn_disband");	//__ASSERT(m_pBtn_Party_Disband, "NULL UI Component!!");
-	m_pBtn_Skill =			GetChildByID("btn_skill");		//__ASSERT(m_pBtn_Skill, "NULL UI Component!!");
-	m_pBtn_Exit	=			GetChildByID("btn_Exit");		//__ASSERT(m_pBtn_Exit, "NULL UI Component!!");
-
-	m_pBtn_Quest =		GetChildByID("btn_quest");			//__ASSERT(m_pBtn_Quest, "NULL UI Component!!");
-	m_pBtn_Belong =		GetChildByID("btn_knight");			//__ASSERT(m_pBtn_Belong, "NULL UI Component!!");
-
-	m_pBtn_Map =		GetChildByID("btn_map");			//__ASSERT(m_pBtn_Map, "NULL UI Component!!");
+	// 일어서기 버튼은 미리 죽여놓는다..
+	if (m_pBtn_Act_StandUp != nullptr)
+		m_pBtn_Act_StandUp->SetVisible(false); 
+	
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Character,		GetChildByID<CN3UIButton>("btn_character"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Inventory,		GetChildByID<CN3UIButton>("btn_inventory"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_CmdList,			GetChildByID<CN3UIButton>("btn_option"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Camera,			GetChildByID<CN3UIButton>("btn_camera"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Invite,		GetChildByID<CN3UIButton>("btn_invite"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Disband,	GetChildByID<CN3UIButton>("btn_disband"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Skill,			GetChildByID<CN3UIButton>("btn_skill"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit,				GetChildByID<CN3UIButton>("btn_exit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Map,				GetChildByID<CN3UIButton>("btn_map"));
 
 //	this->SetVisibleActButtons(true);
 //	this->SetVisibleOptButtons(false);
@@ -158,7 +151,7 @@ bool CUICmd::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 			bool bIAmLeader = false, bIAmMemberOfParty = false;
 			int iMemberIndex = -1;
-			CPlayerBase* pTarget = NULL;
+			CPlayerBase* pTarget = nullptr;
 			pMain->PartyOrForceConditionGet(bIAmLeader, bIAmMemberOfParty, iMemberIndex, pTarget); // 파티의 상황을 보고..
 			
 			std::string szMsg;
@@ -262,7 +255,8 @@ bool CUICmd::OnKeyPress(int iKey)
 			//열려있는 다른 유아이를 닫아준다.
 			CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 			CN3UIBase* pFocus = CGameProcedure::s_pUIMgr->GetFocusedUI();
-			if(pFocus && pFocus != this) pFocus->OnKeyPress(iKey);
+			if (pFocus != nullptr && pFocus != this)
+				pFocus->OnKeyPress(iKey);
 		}
 		return true;
 	}

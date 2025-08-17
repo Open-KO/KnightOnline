@@ -1,4 +1,4 @@
-/*
+﻿/*
 */
 
 #include "base.h"
@@ -168,19 +168,24 @@ void ItemInfo::setMeshFileForRace(e_Race race, bool check_type) {
 	}
 
 	int filename_ind = -1;
-	for(int i=0; i<_mesh_files_in_dir.size(); ++i) {
+	for (size_t i = 0; i < _mesh_files_in_dir.size(); ++i)
+	{
 		char tmp1[0xFFFF] = {};
 		char tmp2[0xFFFF] = {};
 
 		strcpy(tmp1, _mesh_files_in_dir[i].c_str());
 		strcpy(tmp2, filename.c_str());
 
-		for(int j=0; j<strlen(tmp1); ++j)
+		size_t len = strlen(tmp1);
+		for (size_t j = 0; j < len; ++j)
 			tmp1[j] = toupper(tmp1[j]);
-		for(int j=0; j<strlen(tmp2); ++j)
+
+		len = strlen(tmp2);
+		for (size_t j = 0; j < len; ++j)
 			tmp2[j] = toupper(tmp2[j]);
 
-		if(!strcmp(tmp1, tmp2)) {
+		if (!strcmp(tmp1, tmp2))
+		{
 			filename_ind = i;
 			break;
 		}
@@ -190,8 +195,12 @@ void ItemInfo::setMeshFileForRace(e_Race race, bool check_type) {
 }
 
 //-----------------------------------------------------------------------------
-ItemInfo* ItemInfo::GetItem(int i) {
-	if(i>_items.size() || i<0) return NULL;
+ItemInfo* ItemInfo::GetItem(int i)
+{
+	if (i < 0
+		|| i >= static_cast<int>(_items.size()))
+		return nullptr;
+
 	return &_items[i];
 }
 
@@ -223,7 +232,8 @@ string ItemInfo::getItemMeshFileForRace(e_Race race) {
 //-----------------------------------------------------------------------------
 void ItemInfo::setItemMeshFileForRace(e_Race race, string& filename) {
 	int filename_ind = -1;
-	for(int i=0; i<_mesh_files_in_dir.size(); ++i) {
+	for (size_t i = 0; i < _mesh_files_in_dir.size(); ++i)
+	{
 		char tmp1[0xFFFF] = {};
 		char tmp2[0xFFFF] = {};
 
@@ -235,12 +245,16 @@ void ItemInfo::setItemMeshFileForRace(e_Race race, string& filename) {
 		// TODO: if the mesh is something like .obj then we should probably
 		// convert it here
 
-		for(int j=0; j<strlen(tmp1); ++j)
+		size_t len = strlen(tmp1);
+		for (size_t j = 0; j < len; ++j)
 			tmp1[j] = toupper(tmp1[j]);
-		for(int j=0; j<strlen(tmp2); ++j)
+
+		len = strlen(tmp2);
+		for (size_t j = 0; j < len; ++j)
 			tmp2[j] = toupper(tmp2[j]);
 
-		if(!strcmp(tmp1, tmp2)) {
+		if (!strcmp(tmp1, tmp2))
+		{
 			filename_ind = i;
 			break;
 		}

@@ -647,3 +647,26 @@ void CGameBase::ConvertPipesToNewlines(std::string& input)
 	std::ranges::replace(input, '|', '\n');
 }
 
+bool CGameBase::IsItemClassWeapon(e_ItemClass itemClass)
+{
+	switch (itemClass)
+	{
+		case ITEM_CLASS_DAGGER:
+		case ITEM_CLASS_SWORD:
+		case ITEM_CLASS_SWORD_2H:
+		case ITEM_CLASS_AXE:
+		case ITEM_CLASS_AXE_2H:
+		case ITEM_CLASS_MACE:
+		case ITEM_CLASS_MACE_2H:
+		case ITEM_CLASS_SPEAR:
+		case ITEM_CLASS_POLEARM:
+		case ITEM_CLASS_BOW:
+		case ITEM_CLASS_BOW_CROSS:
+		case ITEM_CLASS_BOW_LONG:
+		case ITEM_CLASS_STAFF:
+		case ITEM_CLASS_JAVELIN:
+			return true;
+	}
+
+	return false;
+}

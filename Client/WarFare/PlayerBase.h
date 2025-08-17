@@ -196,12 +196,12 @@ public:
 	e_StateAction	State() { return m_eState; } // 행동 상태...
 	e_StateMove		StateMove() { return m_eStateMove; } // 움직이는 상태
 
-	e_ItemClass		ItemClass_RightHand()
+	e_ItemClass		ItemClass_RightHand() const
 	{
 		if(m_pItemPlugBasics[PLUG_POS_RIGHTHAND]) return (e_ItemClass)(m_pItemPlugBasics[PLUG_POS_RIGHTHAND]->byClass); // 아이템 타입 - 오른손
 		else return ITEM_CLASS_UNKNOWN;
 	}
-	e_ItemClass		ItemClass_LeftHand()
+	e_ItemClass		ItemClass_LeftHand() const
 	{
 		if(m_pItemPlugBasics[PLUG_POS_LEFTHAND]) return (e_ItemClass)(m_pItemPlugBasics[PLUG_POS_LEFTHAND]->byClass); // 아이템 타입 - 오른손
 		else return ITEM_CLASS_UNKNOWN;

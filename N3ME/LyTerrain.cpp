@@ -1545,13 +1545,13 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 	{
 		LPGRASS_GROUP group = (LPGRASS_GROUP)*it;
 		it_Grass it_grass = group->grass.begin();
-		for( int j = 0 ; j < group->grass.size(); j++, it_grass++)
+		for (int j = 0; j < static_cast<int>(group->grass.size()); j++, it_grass++)
 		{
 			LPGRASS grass = *it_grass;
 
 			it_Obj_Name it_Obj = pFrm->GetMapMng()->m_SowSeedMng.Obj_Name.begin();
 			temp_Id =0;
-			for( int jj = 0; jj < pFrm->GetMapMng()->m_SowSeedMng.Obj_Name.size() ; jj++,it_Obj++)
+			for (int jj = 0; jj < static_cast<int>(pFrm->GetMapMng()->m_SowSeedMng.Obj_Name.size()); jj++, it_Obj++)
 			{
 				LPOBJ_NAME Obj = *it_Obj;
 				if( strcmp( group->FileName,Obj->FileName) == 0 )

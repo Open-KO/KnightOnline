@@ -164,64 +164,63 @@ bool CN3Scene::Load(HANDLE hFile)
 
 bool CN3Scene::Save(HANDLE hFile)
 {
-	::CreateDirectory("Data", NULL);
-	::CreateDirectory("Chr", NULL);
-	::CreateDirectory("Object", NULL);
-	::CreateDirectory("Item", NULL);
+	::CreateDirectory("Data", nullptr);
+	::CreateDirectory("Chr", nullptr);
+	::CreateDirectory("Object", nullptr);
+	::CreateDirectory("Item", nullptr);
 
 	DWORD dwRWC = 0;
 	
-	WriteFile(hFile, &m_nCameraActive, 4, &dwRWC, NULL);
-	WriteFile(hFile, &m_fFrmCur, 4, &dwRWC, NULL); // Animation Frame;
-	WriteFile(hFile, &m_fFrmStart, 4, &dwRWC, NULL); // 전체 프레임.
-	WriteFile(hFile, &m_fFrmEnd, 4, &dwRWC, NULL); // 전체 프레임.
-
-	int i = 0, nL = 0;
+	WriteFile(hFile, &m_nCameraActive, 4, &dwRWC, nullptr);
+	WriteFile(hFile, &m_fFrmCur, 4, &dwRWC, nullptr); // Animation Frame;
+	WriteFile(hFile, &m_fFrmStart, 4, &dwRWC, nullptr); // 전체 프레임.
+	WriteFile(hFile, &m_fFrmEnd, 4, &dwRWC, nullptr); // 전체 프레임.
 	
-	WriteFile(hFile, &m_nCameraCount, 4, &dwRWC, NULL); // 카메라..
-	for(i = 0; i < m_nCameraCount; i++)
+	WriteFile(hFile, &m_nCameraCount, 4, &dwRWC, nullptr); // 카메라..
+	for (CN3Camera* camera : m_pCameras)
 	{
-		nL = m_pCameras[i]->FileName().size();
-		WriteFile(hFile, &nL, 4, &dwRWC, NULL);
-		WriteFile(hFile, m_pCameras[i]->FileName().c_str(), nL, &dwRWC, NULL);
-		m_pCameras[i]->SaveToFile();
+		int nL = static_cast<int>(camera->FileName().size());
+		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		WriteFile(hFile, camera->FileName().c_str(), nL, &dwRWC, nullptr);
+		camera->SaveToFile();
 	}
 
-	WriteFile(hFile, &m_nLightCount, 4, &dwRWC, NULL); // 카메라..
-	for(i = 0; i < m_nLightCount; i++) 
+	WriteFile(hFile, &m_nLightCount, 4, &dwRWC, nullptr); // 카메라..
+	for (CN3Light* light : m_pLights)
 	{
-		nL = m_pLights[i]->FileName().size();
-		WriteFile(hFile, &nL, 4, &dwRWC, NULL);
-		WriteFile(hFile, m_pLights[i]->FileName().c_str(), nL, &dwRWC, NULL);
-		m_pLights[i]->SaveToFile();
+		int nL = static_cast<int>(light->FileName().size());
+		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		WriteFile(hFile, light->FileName().c_str(), nL, &dwRWC, nullptr);
+		light->SaveToFile();
 	}
 
-	int iSC = m_Shapes.size();
-	WriteFile(hFile, &iSC, 4, &dwRWC, NULL); // Shapes..
-	for(i = 0; i < iSC; i++)
+	int iSC = static_cast<int>(m_Shapes.size());
+	WriteFile(hFile, &iSC, 4, &dwRWC, nullptr); // Shapes..
+	for (CN3Shape* shape : m_Shapes)
 	{
-		nL = m_Shapes[i]->FileName().size();
-		WriteFile(hFile, &nL, 4, &dwRWC, NULL);
-		if(nL <= 0) continue;
+		int nL = static_cast<int>(shape->FileName().size());
+		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		if (nL <= 0)
+			continue;
 
-		WriteFile(hFile, m_Shapes[i]->FileName().c_str(), nL, &dwRWC, NULL);
-		m_Shapes[i]->SaveToFile();
+		WriteFile(hFile, shape->FileName().c_str(), nL, &dwRWC, nullptr);
+		shape->SaveToFile();
 	}
 
-	int iCC = m_Chrs.size();
-	WriteFile(hFile, &iCC, 4, &dwRWC, NULL); // 캐릭터
-	for(i = 0; i < iCC; i++)
+	int iCC = static_cast<int>(m_Chrs.size());
+	WriteFile(hFile, &iCC, 4, &dwRWC, nullptr); // 캐릭터
+	for (CN3Chr* chr : m_Chrs)
 	{
-		nL = m_Chrs[i]->FileName().size();
-		WriteFile(hFile, &nL, 4, &dwRWC, NULL);
-		if(nL <= 0) continue;
+		int nL = chr->FileName().size();
+		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		if (nL <= 0)
+			continue;
 
-		WriteFile(hFile, m_Chrs[i]->FileName().c_str(), nL, &dwRWC, NULL);
-		m_Chrs[i]->SaveToFile();
+		WriteFile(hFile, chr->FileName().c_str(), nL, &dwRWC, nullptr);
+		chr->SaveToFile();
 	}
 
 	CN3Base::SaveResrc(); // Resource 를 파일로 저장한다..
-
 	return true;
 }
 
@@ -241,61 +240,61 @@ void CN3Scene::Render()
 //	}
 	s_lpD3DDev->SetRenderState(D3DRS_AMBIENT, m_AmbientLightColor);
 
-	int iSC = m_Shapes.size();
-	for(i = 0; i < iSC; i++)
-	{
-		m_Shapes[i]->Render();
-	}
+	for (CN3Shape* shape : m_Shapes)
+		shape->Render();
 
-	int iCC = m_Chrs.size();
-	for(i = 0; i < iCC; i++)
-	{
-		m_Chrs[i]->Render();
-	}
+	for (CN3Chr* chr : m_Chrs)
+		chr->Render();
 }
 
 void CN3Scene::Tick(float fFrm)
 {
-	if(FRAME_SELFPLAY == fFrm || fFrm <  m_fFrmStart || fFrm > m_fFrmEnd)
+	if (FRAME_SELFPLAY == fFrm
+		|| fFrm < m_fFrmStart
+		|| fFrm > m_fFrmEnd)
 	{
 		m_fFrmCur += 30.0f / CN3Base::s_fFrmPerSec; // 일정하게 움직이도록 시간에 따라 움직이는 양을 조절..
-		if(m_fFrmCur > m_fFrmEnd) m_fFrmCur = m_fFrmStart;
+		if (m_fFrmCur > m_fFrmEnd)
+			m_fFrmCur = m_fFrmStart;
 	}
 	else
 	{
 		m_fFrmCur = fFrm;
 	}
 
-	this->TickCameras(m_fFrmCur);
-	this->TickLights(m_fFrmCur);
-	this->TickShapes(m_fFrmCur);
-	this->TickChrs(m_fFrmCur);
+	TickCameras(m_fFrmCur);
+	TickLights(m_fFrmCur);
+	TickShapes(m_fFrmCur);
+	TickChrs(m_fFrmCur);
 }
 
 void CN3Scene::TickCameras(float fFrm)
 {
-	for(int i = 0; i < m_nCameraCount; i++)
+	for (int i = 0; i < m_nCameraCount; i++)
 	{
 		m_pCameras[i]->Tick(m_fFrmCur);
-		if(m_nCameraActive == i) m_pCameras[i]->Apply(); // 카메라 데이터 값을 적용한다..
+		if (m_nCameraActive == i)
+			m_pCameras[i]->Apply(); // 카메라 데이터 값을 적용한다..
 	}
 }
 
 void CN3Scene::TickLights(float fFrm)
 {
-	for(int i = 0; i < 8; i++) s_lpD3DDev->LightEnable(i, FALSE); // 일단 라이트 다 끄고..
-	
-	for(int i = 0; i < m_nLightCount; i++)
+	for (int i = 0; i < 8; i++)
+		s_lpD3DDev->LightEnable(i, FALSE); // 일단 라이트 다 끄고..
+
+	for (int i = 0; i < m_nLightCount; i++)
 	{
 		m_pLights[i]->Tick(m_fFrmCur);
 		m_pLights[i]->Apply(); // 라이트 적용
 	}
 
 	// 라이트가 항상 카메라를 따라오게 만든다..
-	if(false == m_bDisableDefaultLight)
+	if (!m_bDisableDefaultLight)
 	{
 		__Vector3 vDir = s_CameraData.vAt - s_CameraData.vEye;
 		vDir.Normalize();
+
 		D3DCOLORVALUE crLgt = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 		CN3Light::__Light lgt;
@@ -315,28 +314,26 @@ void CN3Scene::TickLights(float fFrm)
 
 void CN3Scene::TickShapes(float fFrm)
 {
-	int iSC = m_Shapes.size();
-	for(int i = 0; i < iSC; i++)
-	{
-		m_Shapes[i]->Tick(m_fFrmCur);
-	}
+	for (CN3Shape* shape : m_Shapes)
+		shape->Tick(m_fFrmCur);
 }
 
 void CN3Scene::TickChrs(float fFrm)
 {
-	int iCC = m_Chrs.size();
-	for(int i = 0; i < iCC; i++)
-	{
-		m_Chrs[i]->Tick(m_fFrmCur);
-	}
+	for (CN3Chr* chr : m_Chrs)
+		chr->Tick(m_fFrmCur);
 }
 
-int CN3Scene::CameraAdd(CN3Camera *pCamera)
+int CN3Scene::CameraAdd(CN3Camera* pCamera)
 {
-	if(m_nCameraCount >= MAX_SCENE_CAMERA) return -1;
-	if(NULL == pCamera) return -1;
+	if (m_nCameraCount < 0
+		|| m_nCameraCount >= MAX_SCENE_CAMERA)
+		return -1;
 
-	if(m_pCameras[m_nCameraCount]) delete m_pCameras[m_nCameraCount];
+	if (pCamera == nullptr)
+		return -1;
+
+	delete m_pCameras[m_nCameraCount];
 	m_pCameras[m_nCameraCount] = pCamera;
 
 	m_nCameraCount++;
@@ -355,13 +352,13 @@ void CN3Scene::CameraDelete(int iIndex)
 	m_pCameras[m_nCameraCount] = NULL;
 }
 
-void CN3Scene::CameraDelete(CN3Camera *pCamera)
+void CN3Scene::CameraDelete(CN3Camera* pCamera)
 {
-	for(int i = 0; i < m_nCameraCount; i++) 
+	for (int i = 0; i < m_nCameraCount; i++)
 	{
-		if(m_pCameras[i] == pCamera) 
+		if (m_pCameras[i] == pCamera)
 		{
-			this->CameraDelete(i);
+			CameraDelete(i);
 			break;
 		}
 	}
@@ -369,16 +366,19 @@ void CN3Scene::CameraDelete(CN3Camera *pCamera)
 
 void CN3Scene::CameraSetActive(int iIndex)
 {
-	if(iIndex < 0 || iIndex >= m_nCameraCount) return;
-	
+	if (iIndex < 0
+		|| iIndex >= m_nCameraCount)
+		return;
+
 	m_nCameraActive = iIndex;
 }
 
-int CN3Scene::LightAdd(CN3Light *pLight)
+int CN3Scene::LightAdd(CN3Light* pLight)
 {
-	if(NULL == pLight) return -1;
+	if (pLight == nullptr)
+		return -1;
 
-	if(m_pLights[m_nLightCount]) delete m_pLights[m_nLightCount];
+	delete m_pLights[m_nLightCount];
 	m_pLights[m_nLightCount] = pLight;
 
 	m_nLightCount++;
@@ -387,39 +387,45 @@ int CN3Scene::LightAdd(CN3Light *pLight)
 
 void CN3Scene::LightDelete(int iIndex)
 {
-	if(iIndex < 0 || iIndex >= m_nLightCount) return;
+	if (iIndex < 0
+		|| iIndex >= m_nLightCount)
+		return;
 
 	delete m_pLights[iIndex];
-	m_pLights[iIndex] = NULL;
-	
+	m_pLights[iIndex] = nullptr;
+
 	m_nLightCount--;
-	for(int i = iIndex; i < m_nLightCount; i++) m_pLights[i] = m_pLights[i+1];
-	m_pLights[m_nLightCount] = NULL;
+	for (int i = iIndex; i < m_nLightCount; i++)
+		m_pLights[i] = m_pLights[i + 1];
+
+	m_pLights[m_nLightCount] = nullptr;
 }
 
-void CN3Scene::LightDelete(CN3Light *pLight)
+void CN3Scene::LightDelete(CN3Light* pLight)
 {
-	for(int i = 0; i < m_nLightCount; i++) 
+	for (int i = 0; i < m_nLightCount; i++)
 	{
-		if(m_pLights[i] == pLight) 
+		if (m_pLights[i] == pLight)
 		{
-			this->LightDelete(i);
+			LightDelete(i);
 			break;
 		}
 	}
 }
 
-int CN3Scene::ShapeAdd(CN3Shape *pShape)
+int CN3Scene::ShapeAdd(CN3Shape* pShape)
 {
-	if(NULL == pShape) return -1;
-	m_Shapes.push_back(pShape);
+	if (pShape == nullptr)
+		return -1;
 
-	return m_Shapes.size();
+	m_Shapes.push_back(pShape);
+	return static_cast<int>(m_Shapes.size());
 }
 
-void CN3Scene::ShapeDelete(size_t iIndex)
+void CN3Scene::ShapeDelete(int iIndex)
 {
-	if (iIndex >= m_Shapes.size())
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_Shapes.size()))
 		return;
 
 	auto it = m_Shapes.begin();
@@ -431,11 +437,11 @@ void CN3Scene::ShapeDelete(size_t iIndex)
 
 void CN3Scene::ShapeDelete(CN3Shape* pShape)
 {
-	it_Shape it = m_Shapes.begin(), itEnd = m_Shapes.end();
-	for(; it != itEnd; it++)
+	auto it = m_Shapes.begin(), itEnd = m_Shapes.end();
+	for (; it != itEnd; it++)
 	{
 		CN3Shape* pShapeSrc = *it;
-		if(pShapeSrc == pShape)
+		if (pShapeSrc == pShape)
 		{
 			delete pShapeSrc;
 			it = m_Shapes.erase(it);
@@ -446,23 +452,25 @@ void CN3Scene::ShapeDelete(CN3Shape* pShape)
 
 void CN3Scene::ShapeRelease()
 {
-	for (auto itr = m_Shapes.begin(); itr != m_Shapes.end(); ++itr)
-		delete *itr;
+	for (CN3Shape* shape : m_Shapes)
+		delete shape;
 
 	m_Shapes.clear();
 }
 
-int CN3Scene::ChrAdd(CN3Chr *pChr)
+int CN3Scene::ChrAdd(CN3Chr* pChr)
 {
-	if(NULL == pChr) return -1;
-	m_Chrs.push_back(pChr);
+	if (pChr == nullptr)
+		return -1;
 
-	return m_Chrs.size();
+	m_Chrs.push_back(pChr);
+	return static_cast<int>(m_Chrs.size());
 }
 
-void CN3Scene::ChrDelete(size_t iIndex)
+void CN3Scene::ChrDelete(int iIndex)
 {
-	if (iIndex >= m_Chrs.size())
+	if (iIndex < 0
+		|| iIndex >= static_cast<int>(m_Chrs.size()))
 		return;
 
 	auto it = m_Chrs.begin();

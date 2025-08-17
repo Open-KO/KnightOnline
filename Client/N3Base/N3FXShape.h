@@ -40,11 +40,15 @@ public:
 	bool Save(HANDLE hFile);
 	void Duplicate(CN3FXSPart* pSrc);
 		
-	size_t			TexCount() { return m_TexRefs.size(); }
-	CN3Texture* Tex(size_t iIndex);	
+	int TexCount() const
+	{
+		return static_cast<int>(m_TexRefs.size());
+	}
+
+	CN3Texture* Tex(int iIndex);
 	void		TexAlloc(int nCount);
-	CN3Texture*	TexSet(size_t iIndex, const std::string& szFN);
-	void		TexSet(size_t iIndex, CN3Texture* pTex);
+	CN3Texture* TexSet(int iIndex, const std::string& szFN);
+	void		TexSet(int iIndex, CN3Texture* pTex);
 
 	__Vector3 Min() { if(m_FXPMInst.GetMesh()) return m_FXPMInst.GetMesh()->Min() * m_WorldMtx; else return __Vector3(0,0,0); } // 월드 상의 최소값
 	__Vector3 Max() { if(m_FXPMInst.GetMesh()) return m_FXPMInst.GetMesh()->Max() * m_WorldMtx; else return __Vector3(0,0,0); } // 월드 상의 최대값
@@ -76,14 +80,14 @@ public:
 	__Matrix44		m_mtxParent;
 	__Matrix44		m_mtxFinalTransform;
 
-	uint32_t			m_dwSrcBlend;
-	uint32_t			m_dwDestBlend;
+	uint32_t		m_dwSrcBlend;
+	uint32_t		m_dwDestBlend;
 	BOOL			m_bAlpha;
 
-	uint32_t			m_dwZEnable;
-	uint32_t			m_dwZWrite;
-	uint32_t			m_dwLight;
-	uint32_t			m_dwDoubleSide;
+	uint32_t		m_dwZEnable;
+	uint32_t		m_dwZWrite;
+	uint32_t		m_dwLight;
+	uint32_t		m_dwDoubleSide;
 	
 public:
 	void			SetPartsMtl(BOOL bAlpha, uint32_t dwSrcBlend, uint32_t dwDestBlend, uint32_t dwZEnable, uint32_t dwZWrite, uint32_t dwLight, uint32_t dwDoubleSide);
@@ -95,10 +99,28 @@ public:
 
 	void			FindMinMax();
 
-	CN3FXSPart*		Part(size_t iIndex) { if (iIndex >= m_Parts.size()) return NULL; return m_Parts[iIndex]; }
-	CN3FXSPart*		PartAdd() { CN3FXSPart* pPart = new CN3FXSPart(); m_Parts.push_back(pPart); return pPart; }
-	size_t			PartCount() { return m_Parts.size(); }
-	void			PartDelete(size_t iIndex);
+	int PartCount() const
+	{
+		return static_cast<int>(m_Parts.size());
+	}
+
+	CN3FXSPart* Part(int iIndex)
+	{
+		if (iIndex < 0
+			|| iIndex >= static_cast<int>(m_Parts.size()))
+			return nullptr;
+
+		return m_Parts[iIndex];
+	}
+
+	CN3FXSPart* PartAdd()
+	{
+		CN3FXSPart* pPart = new CN3FXSPart();
+		m_Parts.push_back(pPart);
+		return pPart;
+	}
+
+	void	PartDelete(int iIndex);
 	
 	bool	Load(HANDLE hFile);
 	bool	Save(HANDLE hFile);
