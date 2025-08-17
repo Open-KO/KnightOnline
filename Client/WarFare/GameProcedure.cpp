@@ -345,6 +345,7 @@ void CGameProcedure::StaticMemberRelease()
 void CGameProcedure::Tick()
 {
 	s_pLocalInput->Tick(); // 키보드와 마우스로부터 입력을 받는다.
+
 	if (s_pGameCursor != nullptr)
 		s_pGameCursor->Tick();
 
@@ -851,7 +852,7 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
 
-	if (s_pPlayer)
+	if (s_pPlayer != nullptr)
 	{
 		__Vector3 vPos = s_pPlayer->Position();
 		CLogWriter::Write("Socket Closed... Zone({}) Pos({:.1f}, {:.1f}, {:.1f}) Exp({})",
