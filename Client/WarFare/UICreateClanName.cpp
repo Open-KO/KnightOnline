@@ -33,9 +33,10 @@ CUICreateClanName::~CUICreateClanName()
 bool CUICreateClanName::Load(HANDLE hFile)
 {
 	if(CN3UIBase::Load(hFile)==false) return false;
+	
+	N3_VERIFY_UI_COMPONENT(m_pText_Title,	 (CN3UIString*) GetChildByID("Text_Message"));
+	N3_VERIFY_UI_COMPONENT(m_pEdit_ClanName, (CN3UIEdit*)	GetChildByID("Edit_Clan"));
 
-	m_pText_Title		= (CN3UIString*)GetChildByID("Text_Message");	__ASSERT(m_pText_Title,	"NULL UI Component!!");
-	m_pEdit_ClanName	= (CN3UIEdit*)GetChildByID("Edit_Clan");		__ASSERT(m_pEdit_ClanName,	"NULL UI Component!!");
 	return true;
 }
 
@@ -45,8 +46,9 @@ bool CUICreateClanName::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		if(pSender->m_szID == "btn_yes")	
 		{
-			m_szClanName = m_pEdit_ClanName->GetString();
-			if(!MakeClan()) return true;
+			m_strClanName = m_pEdit_ClanName->GetString();
+			if(!MakeClan()) 
+				return true;
 			SetVisible(false);
 			return true;
 		}
@@ -62,24 +64,26 @@ bool CUICreateClanName::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 bool CUICreateClanName::MakeClan()
 {
-	if (m_szClanName.empty()) return false;
-	if (m_szClanName.size() > 20)
-		m_szClanName.resize(20);
+	if (m_strClanName.empty())
+		return false;
 
-	std::string szMsg = fmt::format_text_resource(IDS_CLAN_WARNING_COST, CLAN_COST);
-	CGameProcedure::s_pProcMain->MessageBoxPost(szMsg, "", MB_YESNO, BEHAVIOR_KNIGHTS_CREATE);
+	if (m_strClanName.size() > 20)
+		m_strClanName.resize(20);
+
+	std::string strMsg = fmt::format_text_resource(IDS_CLAN_WARNING_COST, CLAN_COST);
+	CGameProcedure::s_pProcMain->MessageBoxPost(strMsg, "", MB_YESNO, BEHAVIOR_KNIGHTS_CREATE);
 	return true;
 }
 
-void CUICreateClanName::MsgSend_MakeClan()
+void CUICreateClanName::MsgSend_MakeClan() const
 {
-	int iLn = (int) m_szClanName.size();
-	uint8_t byBuff[40];									// 패킷 버퍼..
-	int iOffset = 0;									// 패킷 오프셋..
+	int iLn = static_cast<int>(m_strClanName.size());
+	uint8_t byBuff[40]; // 패킷 버퍼..									
+	int iOffset = 0; // 패킷 오프셋..									
 	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_KNIGHTS_PROCESS);
 	CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_KNIGHTS_CREATE);
 	CAPISocket::MP_AddShort(byBuff, iOffset, (uint8_t) iLn);
-	CAPISocket::MP_AddString(byBuff, iOffset, m_szClanName);
+	CAPISocket::MP_AddString(byBuff, iOffset, m_strClanName);
 
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
 }
@@ -88,8 +92,8 @@ void CUICreateClanName::Open(int msg)
 {
 	if (msg != 0)
 	{
-		std::string szMsg = fmt::format_text_resource(msg);
-		m_pText_Title->SetString(szMsg);
+		std::string strMsg = fmt::format_text_resource(msg);
+		m_pText_Title->SetString(strMsg);
 	}
 	m_pEdit_ClanName->SetString("");
 	m_pEdit_ClanName->SetFocus();

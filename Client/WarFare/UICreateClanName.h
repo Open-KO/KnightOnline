@@ -19,19 +19,17 @@ class CUICreateClanName : public CN3UIBase
 public:
 	CN3UIString*	m_pText_Title;
 	CN3UIEdit*		m_pEdit_ClanName;
-	std::string		m_szClanName;
+	std::string		m_strClanName;
 
 public:
-	void SetVisible(bool bVisible);
+	CUICreateClanName();
+	~CUICreateClanName() override;
+	bool Load(HANDLE hFile) override;
+	void SetVisible(bool bVisible) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void Open(int msg = 0);
 	bool MakeClan();
-	void MsgSend_MakeClan();
-
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-
-	CUICreateClanName();
-	virtual ~CUICreateClanName();	
+	void MsgSend_MakeClan() const;
 };
 
 #endif //#if !defined(__UICREATECLANNAME_H__)
