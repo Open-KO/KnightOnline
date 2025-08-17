@@ -19,10 +19,10 @@ static char THIS_FILE[]=__FILE__;
 
 CUIHelp::CUIHelp()
 {
-	m_pBtn_Close = NULL;
-	m_pBtn_Prev = NULL;
-	m_pBtn_Next = NULL;
-	for(int i = 0; i < MAX_HELP_PAGE; i++) m_pPages[i] = NULL;
+	m_pBtn_Close = nullptr;
+	m_pBtn_Prev = nullptr;
+	m_pBtn_Next = nullptr;
+	for(int i = 0; i < MAX_HELP_PAGE; i++) m_pPages[i] = nullptr;
 }
 
 CUIHelp::~CUIHelp()
@@ -47,9 +47,9 @@ bool CUIHelp::Load(HANDLE hFile)
 		}
 	}
 
-	m_pBtn_Close = GetChildByID("Btn_Close");
-	m_pBtn_Prev = GetChildByID("Btn_Left");
-	m_pBtn_Next = GetChildByID("Btn_Right");
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Close, (CN3UIButton*) GetChildByID("Btn_Close"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Prev, (CN3UIButton*) GetChildByID("Btn_Left"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Next, (CN3UIButton*) GetChildByID("Btn_Right"));
 
 	return true;
 }
@@ -86,7 +86,7 @@ bool CUIHelp::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		{
 			for(int i = 0; i < MAX_HELP_PAGE; i++)
 			{
-				if(NULL == m_pPages[i]) continue;
+				if(m_pPages[i] == nullptr) continue;
 
 				m_pPages[i]->SetVisible(false);
 				if(i == iPage) m_pPages[i]->SetVisible(true);
@@ -101,10 +101,10 @@ void CUIHelp::Release()
 {
 	CN3UIBase::Release();
 
-	m_pBtn_Close = NULL;
-	m_pBtn_Prev = NULL;
-	m_pBtn_Next = NULL;
-	for(int i = 0; i < MAX_HELP_PAGE; i++) m_pPages[i] = NULL;
+	m_pBtn_Close = nullptr;
+	m_pBtn_Prev = nullptr;
+	m_pBtn_Next = nullptr;
+	for(int i = 0; i < MAX_HELP_PAGE; i++) m_pPages[i] = nullptr;
 }
 
 bool CUIHelp::OnKeyPress(int iKey)

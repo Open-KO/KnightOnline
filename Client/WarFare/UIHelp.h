@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include <N3Base/N3UIBase.h>
+#include <N3Base/N3UIButton.h>
 
 const int MAX_HELP_PAGE = 4;
 
@@ -18,9 +19,9 @@ class CUIHelp : public CN3UIBase
 public:
 	CN3UIBase* m_pPages[MAX_HELP_PAGE];
 
-	CN3UIBase* m_pBtn_Prev;
-	CN3UIBase* m_pBtn_Next;
-	CN3UIBase* m_pBtn_Close;
+	CN3UIButton* m_pBtn_Prev;
+	CN3UIButton* m_pBtn_Next;
+	CN3UIButton* m_pBtn_Close;
 
 public:
 	void SetVisible(bool bVisible);
