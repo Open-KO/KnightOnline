@@ -34,7 +34,6 @@ public:
 	void ConnectToGameServer(); // 고른 게임 서버에 접속
 	CGameProcLogIn_1298();
 	~CGameProcLogIn_1298() override;
-//	void PacketSend_MGameLogin();
 };
 
 class CGameProcLogIn : public CGameProcLogIn_1298 {};
