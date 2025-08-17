@@ -497,7 +497,7 @@ CN3UIBase* CN3UIBase::GetChildByID(const std::string_view szID, eUI_TYPE eUIType
 	return nullptr;
 }
 
-template <eUI_TYPE... Types>
+template <eUI_TYPE... UITypes>
 static CN3UIBase* GetChildByIDImpl(const CN3UIBase* parent, const std::string_view szID)
 {
 	if (szID.empty())
@@ -506,7 +506,7 @@ static CN3UIBase* GetChildByIDImpl(const CN3UIBase* parent, const std::string_vi
 	for (CN3UIBase* pChild : parent->GetChildren())
 	{
 		// Use a fold expression here to include all of the supported types.
-		if (((pChild->UIType() != Types) && ...))
+		if (((pChild->UIType() != UITypes) && ...))
 			continue;
 
 		const std::string& childID = pChild->GetID();
