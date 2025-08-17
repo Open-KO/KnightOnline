@@ -6,6 +6,7 @@
 #include "UIHelp.h"
 #include "GameProcedure.h"
 #include "UIManager.h"
+#include <N3Base/N3UIButton.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -48,8 +49,8 @@ bool CUIHelp::Load(HANDLE hFile)
 	}
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Close, (CN3UIButton*) GetChildByID("Btn_Close"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Prev, (CN3UIButton*) GetChildByID("Btn_Left"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Next, (CN3UIButton*) GetChildByID("Btn_Right"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Prev,  (CN3UIButton*) GetChildByID("Btn_Left"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Next,  (CN3UIButton*) GetChildByID("Btn_Right"));
 
 	return true;
 }
@@ -86,7 +87,8 @@ bool CUIHelp::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		{
 			for(int i = 0; i < MAX_HELP_PAGE; i++)
 			{
-				if(m_pPages[i] == nullptr) continue;
+				if(m_pPages[i] == nullptr) 
+					continue;
 
 				m_pPages[i]->SetVisible(false);
 				if(i == iPage) m_pPages[i]->SetVisible(true);
@@ -104,7 +106,8 @@ void CUIHelp::Release()
 	m_pBtn_Close = nullptr;
 	m_pBtn_Prev = nullptr;
 	m_pBtn_Next = nullptr;
-	for(int i = 0; i < MAX_HELP_PAGE; i++) m_pPages[i] = nullptr;
+	for(int i = 0; i < MAX_HELP_PAGE; i++) 
+		m_pPages[i] = nullptr;
 }
 
 bool CUIHelp::OnKeyPress(int iKey)
