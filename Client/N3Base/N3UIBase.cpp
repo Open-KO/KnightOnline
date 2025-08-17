@@ -504,8 +504,13 @@ Class* CN3UIBase::GetChildByID<Class>(std::string_view szID) const	\
     return static_cast<Class*>(GetChildByID(szID, UIType));			\
 }
 
+// Preferred behaviour for this specialization would be to just use the base class, and not require UI_TYPE_BASE.
+// This is achievable with the method it already resolves to.
+// If we truly require verifying it is in fact UI_TYPE_BASE (which is pointless), the caller can pass it to the
+// base call themselves.
+// IMPL_GETCHILDBYID(CN3UIBase,		UI_TYPE_BASE);
+
 IMPL_GETCHILDBYID(CN3UIArea,		UI_TYPE_AREA);
-IMPL_GETCHILDBYID(CN3UIBase,		UI_TYPE_BASE);
 IMPL_GETCHILDBYID(CN3UIButton,		UI_TYPE_BUTTON);
 IMPL_GETCHILDBYID(CN3UIEdit,		UI_TYPE_EDIT);
 IMPL_GETCHILDBYID(CN3UIImage,		UI_TYPE_IMAGE);
