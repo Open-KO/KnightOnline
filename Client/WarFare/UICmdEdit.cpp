@@ -33,12 +33,14 @@ CUICmdEdit::~CUICmdEdit()
 
 bool CUICmdEdit::Load(HANDLE hFile)
 {
-	if (CN3UIBase::Load(hFile) == false) return false;
+	if (CN3UIBase::Load(hFile) == false) 
+		return false;
+	
+	N3_VERIFY_UI_COMPONENT(m_pText_Title, (CN3UIString*) GetChildByID("Text_cmd"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,	  (CN3UIButton*) GetChildByID("btn_ok"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel, (CN3UIButton*) GetChildByID("btn_cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pEdit_Box,	  (CN3UIEdit*)	 GetChildByID("edit_cmd"));
 
-	m_pText_Title = (CN3UIString*)GetChildByID("Text_cmd");			__ASSERT(m_pText_Title, "NULL UI Component!!");
-	m_pBtn_Ok = (CN3UIButton*)GetChildByID("btn_ok");				__ASSERT(m_pBtn_Ok, "NULL UI Component!!");
-	m_pBtn_Cancel = (CN3UIButton*)GetChildByID("btn_cancel");		__ASSERT(m_pBtn_Cancel, "NULL UI Component!!");
-	m_pEdit_Box = (CN3UIEdit*)GetChildByID("edit_cmd");				__ASSERT(m_pEdit_Box, "NULL UI Component!!");
 	return true;
 }
 
@@ -49,8 +51,8 @@ bool CUICmdEdit::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		if (pSender == m_pBtn_Ok)
 		{
 			m_szArg1 = m_pEdit_Box->GetString();
-			std::string tempCmdStr = "/" + m_pText_Title->GetString() + " " + m_szArg1;
-			CGameProcedure::s_pProcMain->ParseChattingCommand(tempCmdStr);
+			std::string strTempCmd = "/" + m_pText_Title->GetString() + " " + m_szArg1;
+			CGameProcedure::s_pProcMain->ParseChattingCommand(strTempCmd);
 			SetVisible(false);
 			return true;
 		}
@@ -77,7 +79,8 @@ void CUICmdEdit::Open(std::string msg)
 
 void CUICmdEdit::SetVisible(bool bVisible)
 {
-	if (bVisible == this->IsVisible()) return;
+	if (bVisible == this->IsVisible()) 
+		return;
 
 	if (!bVisible)
 	{
