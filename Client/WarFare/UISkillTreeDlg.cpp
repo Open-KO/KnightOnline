@@ -1105,12 +1105,12 @@ void CUISkillTreeDlg::InitIconWnd(e_UIWND eWnd)
 {
 	CN3UIWndBase::InitIconWnd(eWnd);
 
-	N3_VERIFY_UI_COMPONENT(m_pStr_info,			(CN3UIString*) GetChildByID("string_info"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_mp,		(CN3UIString*) GetChildByID("string_skill_mp"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_point,	(CN3UIString*) GetChildByID("string_skill_point"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item0,	(CN3UIString*) GetChildByID("string_skill_item0"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item1,	(CN3UIString*) GetChildByID("string_skill_item1"));
-	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item2,	(CN3UIString*) GetChildByID("string_skill_item2"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_info,			GetChildByID<CN3UIString>("string_info"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_mp,		GetChildByID<CN3UIString>("string_skill_mp"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_point,	GetChildByID<CN3UIString>("string_skill_point"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item0,	GetChildByID<CN3UIString>("string_skill_item0"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item1,	GetChildByID<CN3UIString>("string_skill_item1"));
+	N3_VERIFY_UI_COMPONENT(m_pStr_skill_item2,	GetChildByID<CN3UIString>("string_skill_item2"));
 }
 
 void CUISkillTreeDlg::InitIconUpdate()
@@ -1263,12 +1263,12 @@ void CUISkillTreeDlg::ButtonVisibleStateSet()
 
 	CN3UIButton* pButton = nullptr;
 
-	N3_VERIFY_UI_COMPONENT(pButton, (CN3UIButton*) GetChildByID("btn_public"));
+	N3_VERIFY_UI_COMPONENT(pButton, GetChildByID<CN3UIButton>("btn_public"));
 	if (pButton != nullptr)
 		pButton->SetState(UI_STATE_BUTTON_NORMAL);
 
 	// Hide all existing buttons by default.
-	N3_VERIFY_UI_COMPONENT(pButton, (CN3UIButton*) GetChildByID("btn_master"));
+	N3_VERIFY_UI_COMPONENT(pButton, GetChildByID<CN3UIButton>("btn_master"));
 	if (pButton != nullptr)
 		pButton->SetVisible(false);
 
