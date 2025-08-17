@@ -37,13 +37,13 @@ CUIWarp::~CUIWarp()
 
 bool CUIWarp::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) 
+	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok, (CN3UIButton*) GetChildByID("Btn_Ok"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel, (CN3UIButton*) GetChildByID("Btn_Cancel"));
-	N3_VERIFY_UI_COMPONENT(m_pList_Infos, (CN3UIList*) GetChildByID("List_Infos"));
-	N3_VERIFY_UI_COMPONENT(m_pText_Agreement, (CN3UIString*) GetChildByID("Text_Agreement"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,			GetChildByID<CN3UIButton>("Btn_Ok"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,		GetChildByID<CN3UIButton>("Btn_Cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pList_Infos,		GetChildByID<CN3UIList>("List_Infos"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Agreement,	GetChildByID<CN3UIString>("Text_Agreement"));
 
 	return true;
 }
@@ -101,7 +101,8 @@ bool CUIWarp::InfoGetCur(__WarpInfo& WI)
 
 void CUIWarp::UpdateList()
 {
-	if(m_pList_Infos == nullptr) return;
+	if (m_pList_Infos == nullptr)
+		return;
 
 	m_pList_Infos->ResetContent();
 	it_WI it = m_ListInfos.begin(), itEnd = m_ListInfos.end();
@@ -116,7 +117,9 @@ void CUIWarp::UpdateList()
 
 void CUIWarp::UpdateAgreement()
 {
-	if(m_pList_Infos == nullptr || m_pText_Agreement == nullptr) return;
+	if (m_pList_Infos == nullptr || m_pText_Agreement == nullptr)
+		return;
+
 	int iSel = m_pList_Infos->GetCurSel();
 	if (iSel < 0
 		|| iSel >= static_cast<int>(m_ListInfos.size()))
