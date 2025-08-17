@@ -126,6 +126,11 @@ public:
 	static CN3UITooltip*	GetTooltipCtrl() {return s_pTooltipCtrl;}
 	uint32_t		GetStyle()	{return m_dwStyle;}
 
+	const UIList& GetChildren() const
+	{
+		return m_Children;
+	}
+
 	void			SetUIType(eUI_TYPE eUIType) { m_eType = eUIType; }	// by ecli666 툴에 기능 넣기 귀찮아서.. ^^
 // Operations
 public:	
