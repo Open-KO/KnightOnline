@@ -54,27 +54,26 @@ bool CUICmd::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 	
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act,				GetChildByID("btn_control"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Walk,			GetChildByID("btn_walk"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Run,			GetChildByID("btn_run"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Attack,		GetChildByID("btn_attack"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_StandUp,		GetChildByID("btn_stand"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_SitDown,		GetChildByID("btn_sit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act,				GetChildByID<CN3UIButton>("btn_control"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Walk,			GetChildByID<CN3UIButton>("btn_walk"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Run,			GetChildByID<CN3UIButton>("btn_run"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Attack,		GetChildByID<CN3UIButton>("btn_attack"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_StandUp,		GetChildByID<CN3UIButton>("btn_stand"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_SitDown,		GetChildByID<CN3UIButton>("btn_sit"));
 
 	// 일어서기 버튼은 미리 죽여놓는다..
 	if (m_pBtn_Act_StandUp != nullptr)
 		m_pBtn_Act_StandUp->SetVisible(false); 
 	
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Character,		GetChildByID("btn_character"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Inventory,		GetChildByID("btn_inventory"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_CmdList,			GetChildByID("btn_option"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Camera,			GetChildByID("btn_camera"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Invite,		GetChildByID("btn_invite"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Disband,	GetChildByID("btn_disband"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Skill,			GetChildByID("btn_skill"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit,				GetChildByID("btn_exit"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Map,				GetChildByID("btn_map"));
-
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Character,		GetChildByID<CN3UIButton>("btn_character"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Inventory,		GetChildByID<CN3UIButton>("btn_inventory"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_CmdList,			GetChildByID<CN3UIButton>("btn_option"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Camera,			GetChildByID<CN3UIButton>("btn_camera"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Invite,		GetChildByID<CN3UIButton>("btn_invite"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Disband,	GetChildByID<CN3UIButton>("btn_disband"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Skill,			GetChildByID<CN3UIButton>("btn_skill"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit,				GetChildByID<CN3UIButton>("btn_exit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Map,				GetChildByID<CN3UIButton>("btn_map"));
 
 //	this->SetVisibleActButtons(true);
 //	this->SetVisibleOptButtons(false);

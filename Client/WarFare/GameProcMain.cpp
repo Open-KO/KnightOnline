@@ -73,8 +73,9 @@
 #include <N3Base/N3SndObjStream.h>
 #include <N3Base/N3SndMgr.h>
 
-#include <io.h>
+#include <N3Base/N3UIButton.h>
 
+#include <io.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
