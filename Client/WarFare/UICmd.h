@@ -16,22 +16,22 @@ class CUICmd : public CN3UIBase
 public:
 	CN3UIButton* m_pBtn_Exit;			// 나가기
 
-	CN3UIButton* m_pBtn_Act;				// 행동
+	CN3UIButton* m_pBtn_Act;			// 행동
 	CN3UIButton* m_pBtn_Act_Walk;		// 걷기
-	CN3UIButton* m_pBtn_Act_Run;			// 달리기
+	CN3UIButton* m_pBtn_Act_Run;		// 달리기
 	CN3UIButton* m_pBtn_Act_Attack;		// 공격
 	
-	CN3UIButton* m_pBtn_Act_StandUp;		// 일어서기.
-	CN3UIButton* m_pBtn_Act_SitDown;		// 앉기
+	CN3UIButton* m_pBtn_Act_StandUp;	// 일어서기.
+	CN3UIButton* m_pBtn_Act_SitDown;	// 앉기
 
 	CN3UIButton* m_pBtn_Camera;			// 카메라
 	CN3UIButton* m_pBtn_Inventory;		// 아이템 창 
 	CN3UIButton* m_pBtn_Party_Invite;	// 파티 초대
 	CN3UIButton* m_pBtn_Party_Disband;	// 파티 탈퇴
-	CN3UIButton* m_pBtn_CmdList;			// 옵션
+	CN3UIButton* m_pBtn_CmdList;		// 옵션
 	CN3UIButton* m_pBtn_Character;		// 자기 정보창   
 	CN3UIButton* m_pBtn_Skill;			// 스킬트리 또는 마법창 
-	CN3UIButton* m_pBtn_Map;				// 미니맵
+	CN3UIButton* m_pBtn_Map;			// 미니맵
 
 public:
 	CUICmd();
