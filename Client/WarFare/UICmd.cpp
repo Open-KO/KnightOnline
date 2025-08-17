@@ -25,61 +25,55 @@ static char THIS_FILE[]=__FILE__;
 
 CUICmd::CUICmd()
 {
-	m_pBtn_Exit = nullptr;			//나가기
+	m_pBtn_Exit = nullptr;			// 나가기
 
-	m_pBtn_Act = nullptr;			//행동
-	m_pBtn_Act_Walk = nullptr;	//걷기
-	m_pBtn_Act_Run = nullptr;		//달리기
-	m_pBtn_Act_Stop = nullptr;	//서기
-	m_pBtn_Act_Attack = nullptr;	//공격
+	m_pBtn_Act = nullptr;			// 행동
+	m_pBtn_Act_Walk = nullptr;		// 걷기
+	m_pBtn_Act_Run = nullptr;		// 달리기
+	m_pBtn_Act_Attack = nullptr;	// 공격
 	
-	m_pBtn_Act_StandUp = nullptr; // 일어서기.
+	m_pBtn_Act_StandUp = nullptr;	// 일어서기.
 	m_pBtn_Act_SitDown = nullptr;	// 앉기
 
-	m_pBtn_Camera = nullptr;			//카메라
-	m_pBtn_Inventory = nullptr;		//아이템 창 
-	m_pBtn_Party_Invite = nullptr;	//파티 초대
-	m_pBtn_Party_Disband = nullptr;	//파티 탈퇴
-	m_pBtn_CmdList = nullptr;			//옵션
-	m_pBtn_Quest = nullptr;			//퀘스트
-	m_pBtn_Character = nullptr;		//자기 정보창   
-	m_pBtn_Skill = nullptr;			//스킬트리 또는 마법창 
-	m_pBtn_Belong = nullptr;			//소속 기사단 
-	m_pBtn_Map = nullptr;				// 미니맵
+	m_pBtn_Camera = nullptr;		// 카메라
+	m_pBtn_Inventory = nullptr;		// 아이템 창 
+	m_pBtn_Party_Invite = nullptr;	// 파티 초대
+	m_pBtn_Party_Disband = nullptr;	// 파티 탈퇴
+	m_pBtn_CmdList = nullptr;		// 옵션
+	m_pBtn_Character = nullptr;		// 자기 정보창   
+	m_pBtn_Skill = nullptr;			// 스킬트리 또는 마법창 
+	m_pBtn_Map = nullptr;			// 미니맵
 }
 
 CUICmd::~CUICmd()
 {
-	DestroyTooltip();
 }
 
 bool CUICmd::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 	
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act, GetChildByID("btn_control"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Walk, GetChildByID("btn_walk"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Run, GetChildByID("btn_run"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Stop, GetChildByID("btn_stop"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Attack, GetChildByID("btn_attack"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_StandUp, GetChildByID("btn_stand"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_SitDown, GetChildByID("btn_sit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act,				GetChildByID("btn_control"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Walk,			GetChildByID("btn_walk"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Run,			GetChildByID("btn_run"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_Attack,		GetChildByID("btn_attack"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_StandUp,		GetChildByID("btn_stand"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Act_SitDown,		GetChildByID("btn_sit"));
 
 	// 일어서기 버튼은 미리 죽여놓는다..
-	if(m_pBtn_Act_StandUp) 
+	if (m_pBtn_Act_StandUp != nullptr)
 		m_pBtn_Act_StandUp->SetVisible(false); 
 	
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Character, GetChildByID("btn_character"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Inventory, GetChildByID("btn_inventory"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_CmdList, GetChildByID("btn_option"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Camera, GetChildByID("btn_camera"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Invite, GetChildByID("btn_invite"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Disband, GetChildByID("btn_disband"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Skill, GetChildByID("btn_skill"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit, GetChildByID("btn_Exit"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Quest, GetChildByID("btn_quest"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Belong, GetChildByID("btn_knight"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Map, GetChildByID("btn_map"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Character,		GetChildByID("btn_character"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Inventory,		GetChildByID("btn_inventory"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_CmdList,			GetChildByID("btn_option"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Camera,			GetChildByID("btn_camera"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Invite,		GetChildByID("btn_invite"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Party_Disband,	GetChildByID("btn_disband"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Skill,			GetChildByID("btn_skill"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Exit,				GetChildByID("btn_exit"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Map,				GetChildByID("btn_map"));
 
 
 //	this->SetVisibleActButtons(true);
@@ -262,7 +256,8 @@ bool CUICmd::OnKeyPress(int iKey)
 			//열려있는 다른 유아이를 닫아준다.
 			CGameProcedure::s_pUIMgr->ReFocusUI();//this_ui
 			CN3UIBase* pFocus = CGameProcedure::s_pUIMgr->GetFocusedUI();
-			if(pFocus != nullptr && pFocus != this) pFocus->OnKeyPress(iKey);
+			if (pFocus != nullptr && pFocus != this)
+				pFocus->OnKeyPress(iKey);
 		}
 		return true;
 	}
