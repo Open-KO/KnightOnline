@@ -529,6 +529,7 @@ CUIKnights::CUIKnights()
 	m_pBtn_Appoint = NULL;
 	m_pBtn_Remove = NULL;
 	m_pBtn_Refresh = NULL;
+	m_pBtn_ClanParty = NULL;
 
 	m_fTimeLimit_Refresh = 0.0f;
 	m_fTimeLimit_Appoint = 0.0f;
@@ -563,6 +564,7 @@ void CUIKnights::Release() // TODO: check memory leaks
 	m_pBtn_Appoint = NULL;
 	m_pBtn_Remove = NULL;
 	m_pBtn_Refresh = NULL;
+	m_pBtn_ClanParty = NULL;
 }
 
 void CUIKnights::Clear()
@@ -594,20 +596,21 @@ bool CUIKnights::Load(HANDLE hFile)
 {
 	if (false == CN3UIBase::Load(hFile)) return false;
 
-	m_pText_Name = (CN3UIString*)this->GetChildByID("Text_ClansName");			__ASSERT(m_pText_Name, "NULL UI Component!!");
-	m_pText_Duty = (CN3UIString*)this->GetChildByID("Text_clan_Duty");			__ASSERT(m_pText_Duty, "NULL UI Component!!");
-	m_pText_Page = (CN3UIString*)this->GetChildByID("Text_clan_Page");			__ASSERT(m_pText_Page, "NULL UI Component!!");
+	m_pText_Name		= (CN3UIString*)this->GetChildByID("Text_ClansName");			__ASSERT(m_pText_Name, "NULL UI Component!!");
+	m_pText_Duty		= (CN3UIString*)this->GetChildByID("Text_clan_Duty");			__ASSERT(m_pText_Duty, "NULL UI Component!!");
+	m_pText_Page		= (CN3UIString*)this->GetChildByID("Text_clan_Page");			__ASSERT(m_pText_Page, "NULL UI Component!!");
 	m_pText_MemberCount = (CN3UIString*)this->GetChildByID("Text_clan_MemberCount");	__ASSERT(m_pText_MemberCount, "NULL UI Component!!");
 
-	m_pList_CharGrades = (CN3UIList*)this->GetChildByID("List_clan_Grade");		__ASSERT(m_pList_CharGrades, "NULL UI Component!!");
-	m_pList_CharIDs = (CN3UIList*)this->GetChildByID("List_clan_ChrID");		__ASSERT(m_pList_CharIDs, "NULL UI Component!!");
-	m_pList_CharLevels = (CN3UIList*)this->GetChildByID("List_clan_Level");		__ASSERT(m_pList_CharLevels, "NULL UI Component!!");
-	m_pList_CharJobs = (CN3UIList*)this->GetChildByID("List_clan_Job");		__ASSERT(m_pList_CharJobs, "NULL UI Component!!");
+	m_pList_CharGrades	= (CN3UIList*)this->GetChildByID("List_clan_Grade");			__ASSERT(m_pList_CharGrades, "NULL UI Component!!");
+	m_pList_CharIDs		= (CN3UIList*)this->GetChildByID("List_clan_ChrID");			__ASSERT(m_pList_CharIDs, "NULL UI Component!!");
+	m_pList_CharLevels	= (CN3UIList*)this->GetChildByID("List_clan_Level");			__ASSERT(m_pList_CharLevels, "NULL UI Component!!");
+	m_pList_CharJobs	= (CN3UIList*)this->GetChildByID("List_clan_Job");				__ASSERT(m_pList_CharJobs, "NULL UI Component!!");
 
-	m_pBtn_Admit = (CN3UIButton*)(this->GetChildByID("btn_clan_admit"));		__ASSERT(m_pBtn_Admit, "NULL UI Component!!");
-	m_pBtn_Appoint = (CN3UIButton*)(this->GetChildByID("btn_clan_Appoint"));		__ASSERT(m_pBtn_Appoint, "NULL UI Component!!");
-	m_pBtn_Remove = (CN3UIButton*)(this->GetChildByID("btn_clan_Remove"));		__ASSERT(m_pBtn_Remove, "NULL UI Component!!");
-	m_pBtn_Refresh = (CN3UIButton*)(this->GetChildByID("btn_clan_refresh"));		__ASSERT(m_pBtn_Refresh, "NULL UI Component!!");
+	m_pBtn_Admit		= (CN3UIButton*)(this->GetChildByID("btn_clan_admit"));			__ASSERT(m_pBtn_Admit, "NULL UI Component!!");
+	m_pBtn_Appoint		= (CN3UIButton*)(this->GetChildByID("btn_clan_Appoint"));		__ASSERT(m_pBtn_Appoint, "NULL UI Component!!");
+	m_pBtn_Remove		= (CN3UIButton*)(this->GetChildByID("btn_clan_Remove"));		__ASSERT(m_pBtn_Remove, "NULL UI Component!!");
+	m_pBtn_Refresh		= (CN3UIButton*)(this->GetChildByID("btn_clan_refresh"));		__ASSERT(m_pBtn_Refresh, "NULL UI Component!!");
+	m_pBtn_ClanParty	= (CN3UIButton*)(this->GetChildByID("btn_Clan_party"));			__ASSERT(m_pBtn_ClanParty, "NULL UI Component!!");
 
 	std::string szID;
 	for (int i = 0; i < MAX_CLAN_GRADE; i++)
@@ -652,6 +655,8 @@ bool CUIKnights::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		NextPageButtonHandler();
 	else if (pSender->m_szID == "btn_clan_refresh")
 		RefreshButtonHandler();
+	else if (pSender->m_szID == "btn_Clan_party")
+		ClanPartyButtonHandler();
 	else if (pSender->m_szID == "btn_clan_whisper")
 		WhisperButtonHandler();
 	else if (pSender->m_szID == "btn_clan_admit")
@@ -697,6 +702,34 @@ void CUIKnights::RefreshButtonHandler(bool blBypassTime)
 	UpdateExceptList();
 
 	MsgSend_MemberInfoAll();
+}
+
+void CUIKnights::ClanPartyButtonHandler()
+{
+	int iSel = m_pList_CharIDs->GetCurSel();
+	if (iSel == -1)
+		return;
+
+	std::string szID;
+	m_pList_CharIDs->GetString(iSel, szID);
+
+	std::string myID = CGameProcedure::s_pPlayer->IDString();
+	std::string szMsg;
+
+	// Prevent inviting yourself
+	if (szID == myID)
+	{
+		szMsg = fmt::format_text_resource(IDS_PARTY_INVITE_FAILED);
+		CGameProcedure::s_pProcMain->MsgOutput(szID + szMsg, 0xffffff00);
+		return;
+	}
+
+	// Try to send party invite
+	if (CGameProcedure::s_pProcMain->MsgSend_PartyOrForceCreate(0, szID))
+		szMsg = fmt::format_text_resource(IDS_PARTY_INVITE);
+	else
+		szMsg = fmt::format_text_resource(IDS_PARTY_INVITE_FAILED);
+	CGameProcedure::s_pProcMain->MsgOutput(szID + szMsg, 0xffffff00);
 }
 
 void CUIKnights::WhisperButtonHandler()
