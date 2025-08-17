@@ -343,7 +343,9 @@ void CGameProcedure::StaticMemberRelease()
 void CGameProcedure::Tick()
 {
 	s_pLocalInput->Tick(); // 키보드와 마우스로부터 입력을 받는다.
-	if(s_pGameCursor) s_pGameCursor->Tick();
+
+	if (s_pGameCursor != nullptr)
+		s_pGameCursor->Tick();
 
 	ProcessUIKeyInput();
 
@@ -825,13 +827,16 @@ void CGameProcedure::ReportServerConnectionFailed(const std::string& szServerNam
 {
 	std::string szMsg = fmt::format_text_resource(IDS_FMT_CONNECT_ERROR, szServerName, iErrCode);
 	
-	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
+	e_Behavior eBehavior = (bNeedQuitGame ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
-	return;
 }
 
 void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 {
+	// Reset timer to allow immediate reconnections.
+	if (s_pProcLogIn != nullptr)
+		s_pProcLogIn->ResetGameConnectionAttemptTimer();
+
 	if (!s_bNeedReportConnectionClosed)
 		return;
 
@@ -839,7 +844,7 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 	e_Behavior eBehavior = ((bNeedQuitGame) ? BEHAVIOR_EXIT : BEHAVIOR_NOTHING);
 	MessageBoxPost(szMsg, "", MB_OK, eBehavior);
 
-	if(s_pPlayer)
+	if (s_pPlayer != nullptr)
 	{
 		__Vector3 vPos = s_pPlayer->Position();
 		CLogWriter::Write("Socket Closed... Zone({}) Pos({:.1f}, {:.1f}, {:.1f}) Exp({})",
@@ -850,7 +855,8 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 		CLogWriter::Write("Socket Closed...");
 	}
 
-	if(s_pSocket) s_pSocket->Release();
+	if (s_pSocket!= nullptr)
+		s_pSocket->Release();
 }
 
 void CGameProcedure::ReportDebugStringAndSendToServer(const std::string& szDebug)

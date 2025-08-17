@@ -191,7 +191,7 @@ void CUIInventory::GoldUpdate()
 {
 	CN3UIString* pUITextGold;
 
-	N3_VERIFY_UI_COMPONENT(pUITextGold, (CN3UIString*) GetChildByID("text_gold"));
+	N3_VERIFY_UI_COMPONENT(pUITextGold, GetChildByID<CN3UIString>("text_gold"));
 
 	if (pUITextGold != nullptr)
 	{

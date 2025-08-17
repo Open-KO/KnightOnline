@@ -76,22 +76,22 @@ bool CUIQuestMenu::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pTextSample,	(CN3UIString*) GetChildByID("Text_Menu"));
-	N3_VERIFY_UI_COMPONENT(m_pTextTitle,	(CN3UIString*) GetChildByID("Text_Title"));
+	N3_VERIFY_UI_COMPONENT(m_pTextSample,	GetChildByID<CN3UIString>("Text_Menu"));
+	N3_VERIFY_UI_COMPONENT(m_pTextTitle,	GetChildByID<CN3UIString>("Text_Title"));
 
-	N3_VERIFY_UI_COMPONENT(m_pBtnClose,		(CN3UIButton*) GetChildByID("btn_close"));
-	N3_VERIFY_UI_COMPONENT(m_pStrNpcName,	(CN3UIString*) GetChildByID("Text_Npcname"));
-	N3_VERIFY_UI_COMPONENT(m_pScrollBar,	(CN3UIScrollBar*) GetChildByID("scroll"));
-	N3_VERIFY_UI_COMPONENT(m_pBtnMenu,		(CN3UIButton*) GetChildByID("btn_menu"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnClose,		GetChildByID<CN3UIButton>("btn_close"));
+	N3_VERIFY_UI_COMPONENT(m_pStrNpcName,	GetChildByID<CN3UIString>("Text_Npcname"));
+	N3_VERIFY_UI_COMPONENT(m_pScrollBar,	GetChildByID<CN3UIScrollBar>("scroll"));
+	N3_VERIFY_UI_COMPONENT(m_pBtnMenu,		GetChildByID<CN3UIButton>("btn_menu"));
 
 	// the background image for the button
-	N3_VERIFY_UI_COMPONENT(m_pImageBtn,		(CN3UIImage*) GetChildByID("img_button_menu"));
+	N3_VERIFY_UI_COMPONENT(m_pImageBtn,		GetChildByID<CN3UIImage>("img_button_menu"));
 
 	// this is the bottom of the quest menu UI
-	N3_VERIFY_UI_COMPONENT(m_pImageBottom,	(CN3UIImage*) GetChildByID("img_Bottom"));
+	N3_VERIFY_UI_COMPONENT(m_pImageBottom,	GetChildByID<CN3UIImage>("img_Bottom"));
 
 	// this is the background image for the background image for the button
-	N3_VERIFY_UI_COMPONENT(m_pImageMenu,	(CN3UIImage*) GetChildByID("img_menu"));
+	N3_VERIFY_UI_COMPONENT(m_pImageMenu,	GetChildByID<CN3UIImage>("img_menu"));
 
 	// NOTE: some of these components are meant only to be copied
 	RemoveChild(m_pTextSample);

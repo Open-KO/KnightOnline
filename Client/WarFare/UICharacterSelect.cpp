@@ -61,7 +61,7 @@ bool CUICharacterSelect::Load(HANDLE hFile)
 	N3_VERIFY_UI_COMPONENT(m_pBtnExit, GetChildByID("bt_exit"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnDelete, GetChildByID("bt_delete"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnBack, GetChildByID("bt_back"));
-	N3_VERIFY_UI_COMPONENT(m_pUserInfoStr, (CN3UIString*) GetChildByID("text00"));
+	N3_VERIFY_UI_COMPONENT(m_pUserInfoStr, GetChildByID<CN3UIString>("text00"));
 
 	// 위치를 화면 해상도에 맞게 바꾸기...
 	POINT pt;

@@ -57,9 +57,9 @@ bool CUICmdList::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_cancel,	(CN3UIButton*) GetChildByID("btn_cancel"));
-	N3_VERIFY_UI_COMPONENT(m_pList_CmdCat,	(CN3UIList*) GetChildByID("list_curtailment"));
-	N3_VERIFY_UI_COMPONENT(m_pList_Cmds,	(CN3UIList*) GetChildByID("list_content"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pList_CmdCat,	GetChildByID<CN3UIList>("list_curtailment"));
+	N3_VERIFY_UI_COMPONENT(m_pList_Cmds,	GetChildByID<CN3UIList>("list_content"));
 
 	CreateCategoryList();
 	return true;

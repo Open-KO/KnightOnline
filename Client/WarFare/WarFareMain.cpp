@@ -288,8 +288,7 @@ LRESULT CALLBACK WndProcMain(
 				} break;
 				case FD_CLOSE:
 				{
-					if (CGameProcedure::s_bNeedReportConnectionClosed)
-						CGameProcedure::ReportServerConnectionClosed(true);
+					CGameProcedure::ReportServerConnectionClosed(true);
 					//TRACE("Socket closed..\n");
 				}  break;
 				case FD_READ:

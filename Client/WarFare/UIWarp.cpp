@@ -24,11 +24,10 @@ static char THIS_FILE[]=__FILE__;
 
 CUIWarp::CUIWarp()
 {
-	m_pBtn_Ok = NULL;
-	m_pBtn_Cancel = NULL;
-	
-	m_pList_Infos = NULL;
-	m_pText_Agreement = NULL; // 동의 사항..
+	m_pBtn_Ok = nullptr;
+	m_pBtn_Cancel = nullptr;
+	m_pList_Infos = nullptr;
+	m_pText_Agreement = nullptr; // 동의 사항..
 }
 
 CUIWarp::~CUIWarp()
@@ -38,12 +37,13 @@ CUIWarp::~CUIWarp()
 
 bool CUIWarp::Load(HANDLE hFile)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
-	m_pBtn_Ok = (CN3UIButton*)GetChildByID("Btn_Ok");							__ASSERT(m_pBtn_Ok, "NULL UI Component!!");
-	m_pBtn_Cancel = (CN3UIButton*)GetChildByID("Btn_Cancel");					__ASSERT(m_pBtn_Cancel, "NULL UI Component!!");
-	m_pList_Infos = (CN3UIList*)GetChildByID("List_Infos");						__ASSERT(m_pList_Infos, "NULL UI Component!!");
-	m_pText_Agreement = (CN3UIString*)(this->GetChildByID("Text_Agreement"));	__ASSERT(m_pText_Agreement, "NULL UI Component!!!");
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,			GetChildByID<CN3UIButton>("Btn_Ok"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,		GetChildByID<CN3UIButton>("Btn_Cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pList_Infos,		GetChildByID<CN3UIList>("List_Infos"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Agreement,	GetChildByID<CN3UIString>("Text_Agreement"));
 
 	return true;
 }
@@ -84,7 +84,7 @@ void CUIWarp::InfoAdd(const __WarpInfo& WI)
 
 bool CUIWarp::InfoGetCur(__WarpInfo& WI)
 {
-	if (NULL == m_pList_Infos)
+	if (m_pList_Infos == nullptr)
 		return false;
 	
 	int iSel = m_pList_Infos->GetCurSel();
@@ -101,7 +101,8 @@ bool CUIWarp::InfoGetCur(__WarpInfo& WI)
 
 void CUIWarp::UpdateList()
 {
-	if(NULL == m_pList_Infos) return;
+	if (m_pList_Infos == nullptr)
+		return;
 
 	m_pList_Infos->ResetContent();
 	it_WI it = m_ListInfos.begin(), itEnd = m_ListInfos.end();
@@ -116,7 +117,9 @@ void CUIWarp::UpdateList()
 
 void CUIWarp::UpdateAgreement()
 {
-	if(NULL == m_pList_Infos || NULL == m_pText_Agreement) return;
+	if (m_pList_Infos == nullptr || m_pText_Agreement == nullptr)
+		return;
+
 	int iSel = m_pList_Infos->GetCurSel();
 	if (iSel < 0
 		|| iSel >= static_cast<int>(m_ListInfos.size()))

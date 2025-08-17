@@ -23,6 +23,15 @@
 
 constexpr int CURRENT_VERSION = 1298;
 
+// This is the maximum time we must wait after sending the WIZ_VERSION_CHECK packet on the login scene, before we're allowed
+// to attempt to re-establish a connection to the game server.
+// We'll use 5 seconds here as it's a more than reasonable enough time for it to receive a packet, even with lag, while not being
+// too excessive.
+// If the client disconnects in this time, this timer will be reset, so there's no need to account for this.
+// Officially it Sleep()s for 1 second prior to even sending WIZ_VERSION_CHECK packet we need to wait for, so there's not really
+// a comparable official limit. All this accomplishes is reducing the number of connection attempts, not preventing overlaps.
+constexpr float TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT = 5.0f;
+
 constexpr float PACKET_INTERVAL_MOVE = 1.5f;				// Interval between regularly sent player/NPC movement packets.
 constexpr float PACKET_INTERVAL_ROTATE = 4.0f;				// Interval between regularly sent player rotation packets.
 constexpr float PACKET_INTERVAL_REQUEST_TARGET_HP = 2.0f;

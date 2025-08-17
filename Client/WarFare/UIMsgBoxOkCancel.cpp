@@ -44,9 +44,9 @@ bool CUIMsgBoxOkCancel::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_OK,		(CN3UIButton*) GetChildByID("btn_ok"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	(CN3UIButton*) GetChildByID("btn_cancel"));
-	N3_VERIFY_UI_COMPONENT(m_pText_Msg,		(CN3UIString*) GetChildByID("text_msg"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_OK,		GetChildByID<CN3UIButton>("btn_ok"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Msg,		GetChildByID<CN3UIString>("text_msg"));
 
 	return true;
 }
