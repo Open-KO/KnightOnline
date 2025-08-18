@@ -289,10 +289,11 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 			}
 		}
 	}
+
 	// Client indicates that magic failed. Just send back packet.
 	if (command == MAGIC_FAIL)
 		goto return_echo;
-	
+
 	// When the arrow starts flying....
 	if (command == MAGIC_FLYING)
 	{
@@ -329,12 +330,12 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 		}
 		goto return_echo;
 	}
-	
+
 	// If magic was successful...
 	pTable = IsAvailable(magicid, tid, sid, command, data1, data2, data3);
 	if (pTable == nullptr)
 		return;
-	
+
 	if (command == MAGIC_EFFECTING)
 	{
 		int initial_result = 1;
@@ -408,7 +409,7 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 				{
 					SetShort(send_buff, 0, send_index);
 				}
-				
+
 				m_pMain->Send_AIServer(m_pSrcUser->m_pUserData->m_bZone, send_buff, send_index);
 			}
 		}
@@ -556,7 +557,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 	model::Magic* pTable = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pTable == nullptr)
 		goto fail_return;
-	
+
 	// Check source validity when the source is a player.
 	if (sid >= 0
 		&& sid < MAX_USER)
@@ -580,7 +581,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 	{
 		goto fail_return;
 	}
-	
+
 	// Target existence check routine for player.
 	if (tid >= 0
 		&& tid < MAX_USER)
@@ -654,14 +655,13 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 				moral = m_pSrcUser->m_pUserData->m_bNation;
 			else
 				moral = 1;
-
 		}
 	}
 	else
 	{
 		moral = m_pSrcUser->m_pUserData->m_bNation;
 	}
-	
+
 	// Compare morals between source and target character.
 	switch (pTable->Moral)
 	{
@@ -813,7 +813,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 			break;
 //
 	}
-	
+
 	// If the user cast the spell (and not the NPC).....
 	if (!bFlag)
 	{
@@ -841,7 +841,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 		{
 			goto fail_return;
 		}
-		
+
 		// MP/SP SUBTRACTION ROUTINE!!! ITEM AND HP TOO!!!
 		if (type == MAGIC_EFFECTING)
 		{

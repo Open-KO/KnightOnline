@@ -656,8 +656,6 @@ void CMagicProcess::ExecuteType7(int magicid, int tid, int data1, int data2, int
 		pNpc->m_Delay = pType->Duration;	
 	}
 
-	
-
 packet_send:
 		SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
 		SetByte(send_buff, MAGIC_EFFECTING, send_index);
@@ -671,7 +669,6 @@ packet_send:
 		SetShort(send_buff, 0, send_index);
 		SetShort(send_buff, 0, send_index);
 		m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
-
 }
 
 void CMagicProcess::ExecuteType8(int magicid)
@@ -942,6 +939,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 			spdlog::error("MagicProcess::AreaAttackDamage: No MAGIC_TYPE7 definition [magicId={}]", magicid);
 			return;
 		}
+
 		target_damage = pType7->Damage;
 		fRadius = static_cast<float>(pType7->Radius);
 	}
@@ -1140,9 +1138,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 				SetShort(send_buff, moral, send_index);
 				SetShort(send_buff, 0, send_index);
 				SetShort(send_buff, 0, send_index);
-
 				m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
-				
 			}
 		}
 	}
