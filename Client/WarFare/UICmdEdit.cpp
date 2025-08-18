@@ -33,13 +33,13 @@ CUICmdEdit::~CUICmdEdit()
 
 bool CUICmdEdit::Load(HANDLE hFile)
 {
-	if (CN3UIBase::Load(hFile) == false) 
+	if (!CN3UIBase::Load(hFile)) 
 		return false;
 	
-	N3_VERIFY_UI_COMPONENT(m_pText_Title, (CN3UIString*) GetChildByID("Text_cmd"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,	  (CN3UIButton*) GetChildByID("btn_ok"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel, (CN3UIButton*) GetChildByID("btn_cancel"));
-	N3_VERIFY_UI_COMPONENT(m_pEdit_Box,	  (CN3UIEdit*)	 GetChildByID("edit_cmd"));
+	N3_VERIFY_UI_COMPONENT(m_pText_Title,	GetChildByID<CN3UIString>("Text_cmd"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,		GetChildByID<CN3UIButton>("btn_ok"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pEdit_Box,		GetChildByID<CN3UIEdit>("edit_cmd"));
 
 	return true;
 }
@@ -79,7 +79,7 @@ void CUICmdEdit::Open(std::string msg)
 
 void CUICmdEdit::SetVisible(bool bVisible)
 {
-	if (bVisible == this->IsVisible()) 
+	if (bVisible == IsVisible()) 
 		return;
 
 	if (!bVisible)
