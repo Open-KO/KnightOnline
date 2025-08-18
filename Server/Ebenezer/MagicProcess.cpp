@@ -548,7 +548,6 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 	CNpc* pMon = nullptr;		// When the monster is the source....
 	BOOL bFlag = FALSE;		// Identifies source : TRUE means source is NPC.
 	model::MagicType5* pType = nullptr;		// Only for type 5 magic!
-	model::MagicType7* pType7 = nullptr;
 
 	int modulator = 0, Class = 0, send_index = 0, moral = 0;	// Variable Initialization.
 	char send_buff[128] = {};
