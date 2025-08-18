@@ -648,7 +648,8 @@ void CMagicProcess::ExecuteType7(int magicid, int tid, int data1, int data2, int
 			m_pSrcUser->SendAttackSuccess(tid, ATTACK_SUCCESS, damage, pNpc->m_iHP);
 		}
 	}
-	else // sleeping
+	// sleeping
+	else 
 	{
 		// note: sleep works, but duration does not (infinite).
 		pNpc->m_NpcState = NPC_SLEEPING;
@@ -942,7 +943,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 			return;
 		}
 		target_damage = pType7->Damage;
-		fRadius = (float) pType7->Radius;
+		fRadius = static_cast<float>(pType7->Radius);
 	}
 
 	if (fRadius <= 0)

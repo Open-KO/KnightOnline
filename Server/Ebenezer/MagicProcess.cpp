@@ -289,7 +289,6 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 			}
 		}
 	}
-	
 	// Client indicates that magic failed. Just send back packet.
 	if (command == MAGIC_FAIL)
 		goto return_echo;
@@ -979,25 +978,6 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, BYTE typ
 								goto fail_return;
 							}
 						}
-					}
-				}
-			}
-
-			if (pTable->Type1 == 7) // provoke, binding, sleep
-			{
-				if (tid > NPC_BAND)
-				{
-					pType7 = m_pMain->m_MagicType7TableMap.GetData(magicid);
-					
-					if (pType7 == nullptr) 
-						goto fail_return;
-					
-					if (pType7->TargetChange == 1) // damaging
-					{
-						return pTable;
-					}
-					else if (pType7->TargetChange == 2) // sleeping
-					{
 					}
 				}
 			}
