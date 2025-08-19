@@ -7,7 +7,7 @@
 #include <spdlog/fmt/bundled/format.h>
 #include <spdlog/fmt/bundled/printf.h>
 
-#include <assert.h>
+#include <cassert>
 #include <string>
 #include <string_view>
 
