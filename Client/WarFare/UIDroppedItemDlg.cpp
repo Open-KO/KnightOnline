@@ -417,7 +417,6 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	switch (dwMsg & dwBitMask)
 	{
 		case UIMSG_ICON_DOWN_FIRST:
-			spItem = nullptr;
 			spItem = GetHighlightIconItem((CN3UIIcon*) pSender);
 			if (spItem == nullptr)
 				break;
@@ -856,7 +855,6 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 			CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 
 			spItem = m_sRecoveryJobInfo.pItemSource;
-
 			if (spItem == nullptr)
 				return;
 
