@@ -310,7 +310,7 @@ enum e_AttackResult
 	MAGIC_ATTACK_TARGET_DEAD	= 4
 };
 
-enum e_NoahChangeType
+enum e_GoldChangeType
 {
 	GOLD_GAIN = 1,
 	GOLD_LOSE = 2,
