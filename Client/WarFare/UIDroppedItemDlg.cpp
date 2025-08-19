@@ -430,7 +430,6 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 			// 아이템이 돈인지 검사..
 			pItem = nullptr;								// 아이템 테이블 구조체 포인터..
-			spItem = nullptr;
 			spItem = GetHighlightIconItem((CN3UIIcon*) pSender);
 			if (spItem == nullptr)
 				break;
@@ -501,7 +500,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 	int i;
 	CN3UIString* pStatic = nullptr;
 	__InfoPlayerMySelf* pInfoExt = nullptr;
-	std::string szMsg;
+	std::string stdMsg;
 
 	// 실패..
 	if (bResult == 0)
@@ -510,8 +509,8 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 		if (iOrderInv == -1)
 		{
 			// 인벤토리가 꽉 차있으면.. break.. ^^
-			std::string szMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
-			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
+			stdMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
+			CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 		}
 
 		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
@@ -531,8 +530,8 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 		pInfoExt = &CGameBase::s_pPlayer->m_InfoExt;
 
 		// 돈 업데이트..
-		szMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET, iGold - pInfoExt->iGold);
-		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
+		stdMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET, iGold - pInfoExt->iGold);
+		CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 		pInfoExt->iGold = iGold;
 		CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
@@ -675,7 +674,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 	}
 
 	// 파티 상태에서 일반적인 아이템 습득..
-	if (bResult == 6)
+	if (bResult == 5)
 	{
 		if (iItemID == dwGold)
 		{
@@ -739,15 +738,14 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 			return;
 		}
 
-		szMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE, pItem->szName);
-		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
+		stdMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE, pItem->szName);
+		CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 
 		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
-
 	}
 
 	if (bResult == 6)
@@ -849,9 +847,9 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 			pInfoExt = &CGameBase::s_pPlayer->m_InfoExt;
 
 			// 돈 업데이트..
-			szMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
+			stdMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
 				iGold - pInfoExt->iGold);
-			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
+			CGameProcedure::s_pProcMain->MsgOutput(stdMsg, 0xff9b9bff);
 
 			pInfoExt->iGold = iGold;
 			//TRACE("돈 업데이트 %d \n", iGold);
