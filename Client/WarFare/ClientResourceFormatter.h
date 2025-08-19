@@ -7,6 +7,7 @@
 #include <spdlog/fmt/bundled/format.h>
 #include <spdlog/fmt/bundled/printf.h>
 
+#include <assert.h>
 #include <string>
 #include <string_view>
 
@@ -24,15 +25,7 @@ namespace fmt
 
 		// NOTE: Let the implementation error accordingly
 		if (!resource_helper::get_from_texts(resourceId, fmtStr))
-		{
-			// In debug builds, we should still show useful text to highlight the problem.
-			// Release builds should mimic official behaviour by returning an empty string.
-#if defined(_DEBUG)
-			return std::to_string(resourceId);
-#else
 			return {};
-#endif
-		}
 
 		if constexpr (sizeof...(Args) == 0)
 		{
@@ -46,19 +39,15 @@ namespace fmt
 			}
 			catch (const fmt::format_error&)
 			{
+				assert(!"format_text_resource(): Invalid format string");
+
 #if defined(_N3GAME)
 				CLogWriter::Write("format_text({}) failed - invalid args for format string.",
 					resourceId);
 #endif
 			}
 
-			// In debug builds, we should still show useful text to highlight the problem.
-			// Release builds should mimic official behaviour by returning an empty string.
-#if defined(_DEBUG)
-			return std::to_string(resourceId);
-#else
 			return {};
-#endif
 		}
 	}
 
