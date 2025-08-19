@@ -12,10 +12,9 @@
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
-
 //////////////////////////////////////////////////////////////////////
 
-class CUIDroppedItemDlg  : public CN3UIWndBase  
+class CUIDroppedItemDlg  : public CN3UIWndBase
 {
 public:
 	__IconItemSkill*	m_pMyDroppedItem[MAX_ITEM_BUNDLE_DROP_PIECE];
@@ -27,31 +26,30 @@ public:
 	int					m_iBackupiOrder;
 
 protected:
-	int			GetInventoryEmptyInviOrder(__IconItemSkill* spItem = NULL);
+	int			GetInventoryEmptyInviOrder(__IconItemSkill* spItem = nullptr);
 	int			GetItemiOrder(__IconItemSkill* spItem);
 
 public:
 	CUIDroppedItemDlg();
-	virtual		~CUIDroppedItemDlg();
-	void		Release();
+	~CUIDroppedItemDlg() override;
+	void		Release() override;
 
-	void		SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false);
-	virtual		uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	virtual		bool  ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	void		Init(CN3UIBase* pParent);
-	void		Render();
+	void		SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
+	uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
+	bool		ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void		Render() override;
 	void		EnterDroppedState(int xpos, int ypos);
 	void		LeaveDroppedState();
-	void		GetItemByIDToInventory(uint8_t bResult, int iItemId, int iGold, int iPos, int iItemCount, int iStrLen, std::string strString);
+	void		GetItemByIDToInventory(uint8_t bResult, int iItemId, int iGold, int iPos, int iItemCount, int iStrLen, const std::string& characterName);
 	void		AddToItemTable(int iItemId, int iItemCount, int iOrder);
 	void		AddToItemTableToInventory(int iItemId, int iItemCount, int iOrder);
 
-	bool		ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur);
+	bool		ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur) override;
 
-	void		InitIconWnd(e_UIWND eWnd);	
-	void		InitIconUpdate();
+	void		InitIconWnd(e_UIWND eWnd) override;
+	void		InitIconUpdate() override;
 
-	__IconItemSkill*	GetHighlightIconItem(CN3UIIcon* pUIIcon);
+	__IconItemSkill*	GetHighlightIconItem(CN3UIIcon* pUIIcon) override;
 };
 
 #endif // !defined(AFX_UIDROPPEDITEMDLG_H__1E9B7E7F_FB6F_4D07_8386_6E84E22D73BB__INCLUDED_)

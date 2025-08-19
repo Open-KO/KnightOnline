@@ -24,7 +24,7 @@
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -33,10 +33,11 @@ static char THIS_FILE[]=__FILE__;
 
 CUIDroppedItemDlg::CUIDroppedItemDlg()
 {
-	for( int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++ )
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	{
 		m_pMyDroppedItem[i] = nullptr;
-	for( int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++ )
 		m_bSendedIconArray[i] = false;
+	}
 
 	m_iItemBundleID = 0;
 	m_pUITooltipDlg = nullptr;
@@ -50,21 +51,13 @@ CUIDroppedItemDlg::~CUIDroppedItemDlg()
 
 void CUIDroppedItemDlg::Release()
 {
-	CN3UIBase::Release();
+	CN3UIWndBase::Release();
 
-	for( int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++ )
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if ( m_pMyDroppedItem[i] != nullptr )
-		{
-			delete m_pMyDroppedItem[i];
-			m_pMyDroppedItem[i] = nullptr;
-		}
+		delete m_pMyDroppedItem[i];
+		m_pMyDroppedItem[i] = nullptr;
 	}
-}
-void CUIDroppedItemDlg::Init(CN3UIBase* pParent)
-{
-	CN3UIBase::Init(pParent);
-
 }
 
 void CUIDroppedItemDlg::Render()
@@ -79,11 +72,12 @@ void CUIDroppedItemDlg::Render()
 	bool bTooltipRender = false;
 	__IconItemSkill* spItem = nullptr;
 
-	for(UIListReverseItor itor = m_Children.rbegin(); m_Children.rend() != itor; ++itor)
+	for (UIListReverseItor itor = m_Children.rbegin(); m_Children.rend() != itor; ++itor)
 	{
 		CN3UIBase* pChild = (*itor);
 		pChild->Render();
-		if ((pChild->UIType() == UI_TYPE_ICON) 
+
+		if (pChild->UIType() == UI_TYPE_ICON
 			&& (pChild->GetStyle() & UISTYLE_ICON_HIGHLIGHT))
 		{
 			bTooltipRender = true;
@@ -92,37 +86,34 @@ void CUIDroppedItemDlg::Render()
 	}
 
 	if (bTooltipRender)
-		m_pUITooltipDlg->DisplayTooltipsEnable(ptCur.x, ptCur.y, spItem );
+		m_pUITooltipDlg->DisplayTooltipsEnable(ptCur.x, ptCur.y, spItem);
 
 	// 갯수 표시되야 할 아이템 갯수 표시..
 	CN3UIString* pStr = nullptr;
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if (m_pMyDroppedItem[i] != nullptr 
-			&& ((m_pMyDroppedItem[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE) 
-				|| (m_pMyDroppedItem[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)))
+		if (m_pMyDroppedItem[i] != nullptr
+			&& ((m_pMyDroppedItem[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE)
+			|| (m_pMyDroppedItem[i]->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)))
 		{
 			// string 얻기..
 			pStr = GetChildStringByiOrder(i);
-			if(pStr != nullptr) 
+			if (pStr != nullptr)
 			{
-				if ((GetState() == UI_STATE_ICON_MOVING) 
-					&& (m_pMyDroppedItem[i] == CN3UIWndBase::m_sSelectedIconInfo.pItemSelect))
+				if (GetState() == UI_STATE_ICON_MOVING
+					&& m_pMyDroppedItem[i] == m_sSelectedIconInfo.pItemSelect)
 				{
 					pStr->SetVisible(false);
 				}
+				else if (m_pMyDroppedItem[i]->pUIIcon->IsVisible())
+				{
+					pStr->SetVisible(true);
+					pStr->SetStringAsInt(m_pMyDroppedItem[i]->iCount);
+					pStr->Render();
+				}
 				else
 				{
-					if (m_pMyDroppedItem[i]->pUIIcon->IsVisible())
-					{
-						pStr->SetVisible(true);
-						pStr->SetStringAsInt(m_pMyDroppedItem[i]->iCount);
-						pStr->Render();
-					}
-					else
-					{
-						pStr->SetVisible(false);
-					}
+					pStr->SetVisible(false);
 				}
 			}
 		}
@@ -130,7 +121,7 @@ void CUIDroppedItemDlg::Render()
 		{
 			// string 얻기..
 			pStr = GetChildStringByiOrder(i);
-			if(pStr != nullptr) 
+			if (pStr != nullptr)
 				pStr->SetVisible(false);
 		}
 	}
@@ -144,27 +135,27 @@ void CUIDroppedItemDlg::InitIconWnd(e_UIWND eWnd)
 	m_pUITooltipDlg->Init(this);
 	m_pUITooltipDlg->LoadFromFile(pTblUI->szItemInfo);
 	m_pUITooltipDlg->InitPos();
-	m_pUITooltipDlg->SetVisible(false);	
+	m_pUITooltipDlg->SetVisible(false);
 
 	CN3UIWndBase::InitIconWnd(eWnd);
 }
 
 void CUIDroppedItemDlg::InitIconUpdate()
 {
-	CN3UIArea* pArea;
 	float fUVAspect = 45.0f / 64.0f;
 
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++ )
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if ( m_pMyDroppedItem[i] )
+		if (m_pMyDroppedItem[i])
 		{
-			m_pMyDroppedItem[i]->pUIIcon = new CN3UIIcon;
+			m_pMyDroppedItem[i]->pUIIcon = new CN3UIIcon();
 			m_pMyDroppedItem[i]->pUIIcon->Init(this);
 			m_pMyDroppedItem[i]->pUIIcon->SetTex(m_pMyDroppedItem[i]->szIconFN);
-			m_pMyDroppedItem[i]->pUIIcon->SetUVRect(0,0, fUVAspect, fUVAspect);
+			m_pMyDroppedItem[i]->pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
 			m_pMyDroppedItem[i]->pUIIcon->SetUIType(UI_TYPE_ICON);
-			m_pMyDroppedItem[i]->pUIIcon->SetStyle(UISTYLE_ICON_ITEM|UISTYLE_ICON_CERTIFICATION_NEED);
-			pArea = CN3UIWndBase::GetChildAreaByiOrder(UI_AREA_TYPE_DROP_ITEM, i);
+			m_pMyDroppedItem[i]->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
+
+			CN3UIArea* pArea = GetChildAreaByiOrder(UI_AREA_TYPE_DROP_ITEM, i);
 			if (pArea != nullptr)
 			{
 				m_pMyDroppedItem[i]->pUIIcon->SetRegion(pArea->GetRegion());
@@ -176,11 +167,13 @@ void CUIDroppedItemDlg::InitIconUpdate()
 
 __IconItemSkill* CUIDroppedItemDlg::GetHighlightIconItem(CN3UIIcon* pUIIcon)
 {
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if ((m_pMyDroppedItem[i] != nullptr) && (m_pMyDroppedItem[i]->pUIIcon == pUIIcon))
+		if (m_pMyDroppedItem[i] != nullptr
+			&& m_pMyDroppedItem[i]->pUIIcon == pUIIcon)
 			return m_pMyDroppedItem[i];
 	}
+
 	return nullptr;
 }
 
@@ -189,9 +182,9 @@ void CUIDroppedItemDlg::EnterDroppedState(int xpos, int ypos)
 	if (!IsVisible())
 		SetVisible(true);
 
-	SetPos(xpos, ypos-150);
-	
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++ )
+	SetPos(xpos, ypos - 150);
+
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
 		m_bSendedIconArray[i] = false;
 
@@ -204,30 +197,29 @@ void CUIDroppedItemDlg::EnterDroppedState(int xpos, int ypos)
 				delete m_pMyDroppedItem[i]->pUIIcon;
 				m_pMyDroppedItem[i]->pUIIcon = nullptr;
 			}
-			delete m_pMyDroppedItem[i];	
+
+			delete m_pMyDroppedItem[i];
 			m_pMyDroppedItem[i] = nullptr;
 		}
 	}
 
-	CN3UIWndBase::AllHighLightIconFree();
+	AllHighLightIconFree();
 }
-
 
 void CUIDroppedItemDlg::LeaveDroppedState()
 {
 	if (IsVisible())
 		SetVisible(false);
 
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 		m_bSendedIconArray[i] = false;
 }
 
 uint32_t CUIDroppedItemDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld)
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
-	if (!IsVisible()) {
-		dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);  return dwRet;
-	}
+	if (!IsVisible())
+		return dwRet;
 
 	dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);
 	return dwRet;
@@ -236,21 +228,19 @@ uint32_t CUIDroppedItemDlg::MouseProc(uint32_t dwFlags, const POINT& ptCur, cons
 void CUIDroppedItemDlg::AddToItemTable(int iItemID, int iItemCount, int iOrder)
 {
 	__IconItemSkill* spItem = nullptr;
-	__TABLE_ITEM_BASIC*	pItem = nullptr;								// 아이템 테이블 구조체 포인터..
-	__TABLE_ITEM_EXT* pItemExt = nullptr;							// 아이템 테이블 구조체 포인터..
+	__TABLE_ITEM_BASIC* pItem = nullptr;								// 아이템 테이블 구조체 포인터..
+	__TABLE_ITEM_EXT* pItemExt = nullptr;								// 아이템 테이블 구조체 포인터..
 	std::string szIconFN;
 
 	pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000);	// 열 데이터 얻기..
-	if(pItem != nullptr 
-		&& pItem->byExtIndex >= 0 
+	if (pItem != nullptr
+		&& pItem->byExtIndex >= 0
 		&& pItem->byExtIndex < MAX_ITEM_EXTENSION)
 		pItemExt = CGameBase::s_pTbl_Items_Exts[pItem->byExtIndex].Find(iItemID % 1000);
-	if(pItem == nullptr || pItemExt == nullptr)
+	if (pItem == nullptr || pItemExt == nullptr)
 	{
 		__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-#ifdef _DEBUG
 		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTable - Invalidate ItemID : {}", iItemID);
-#endif // _DEBUG
 		return;
 	}
 
@@ -259,42 +249,39 @@ void CUIDroppedItemDlg::AddToItemTable(int iItemID, int iItemCount, int iOrder)
 	e_PlugPosition ePlug;
 	// 아이템에 따른 파일 이름을 만들어서
 	e_ItemType eType = CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug, RACE_UNKNOWN);
-	if ( ITEM_TYPE_UNKNOWN == eType )
+	if (ITEM_TYPE_UNKNOWN == eType)
 		return;
-	
-	spItem = new __IconItemSkill;
-	spItem->pItemBasic = pItem;
-	spItem->pItemExt = pItemExt;
-	spItem->szIconFN = szIconFN; // 아이콘 파일 이름 복사..
-	spItem->iCount	= iItemCount;
-	spItem->iDurability = pItem->siMaxDurability + pItemExt->siMaxDurability;
+
+	spItem = new __IconItemSkill();
+	spItem->pItemBasic	= pItem;
+	spItem->pItemExt	= pItemExt;
+	spItem->szIconFN	= szIconFN; // 아이콘 파일 이름 복사..
+	spItem->iCount		= iItemCount;
+	spItem->iDurability	= pItem->siMaxDurability + pItemExt->siMaxDurability;
 
 	m_pMyDroppedItem[iOrder] = spItem;
 }
 
 void CUIDroppedItemDlg::AddToItemTableToInventory(int iItemID, int iItemCount, int iOrder)
 {
-	CN3UIArea* pArea = nullptr;
 	__IconItemSkill* spItem = nullptr;
 	// 아이템 테이블 구조체 포인터..
-	__TABLE_ITEM_BASIC*	pItem = nullptr;
+	__TABLE_ITEM_BASIC* pItem = nullptr;
 	// 아이템 테이블 구조체 포인터..
-	__TABLE_ITEM_EXT*	pItemExt = nullptr;
+	__TABLE_ITEM_EXT* pItemExt = nullptr;
 	std::string szIconFN;
 	float fUVAspect = 45.0f / 64.0f;
 
 	pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000);	// 열 데이터 얻기..
-	if(pItem != nullptr 
-		&& pItem->byExtIndex >= 0 
+	if (pItem != nullptr
+		&& pItem->byExtIndex >= 0
 		&& pItem->byExtIndex < MAX_ITEM_EXTENSION)
 		pItemExt = CGameBase::s_pTbl_Items_Exts[pItem->byExtIndex].Find(iItemID % 1000);
-	
-	if(pItem == nullptr || pItemExt == nullptr)
+
+	if (pItem == nullptr || pItemExt == nullptr)
 	{
 		__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-#ifdef _DEBUG
 		CLogWriter::Write("CUIDroppedItemDlg::AddToItemTableToInventory - Invalidate ItemID : {}", iItemID);
-#endif // _DEBUG
 		return;
 	}
 
@@ -305,24 +292,23 @@ void CUIDroppedItemDlg::AddToItemTableToInventory(int iItemID, int iItemCount, i
 	e_ItemType eType = CGameBase::MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug);
 	if (ITEM_TYPE_UNKNOWN == eType)
 		return;
-	
-	spItem = new __IconItemSkill;
-	spItem->pItemBasic = pItem;
-	spItem->pItemExt = pItemExt;
-	// 아이콘 파일 이름 복사..
-	spItem->szIconFN = szIconFN; 
-	spItem->iCount	= iItemCount;
-	spItem->iDurability = pItem->siMaxDurability+pItemExt->siMaxDurability;
 
-	spItem->pUIIcon = new CN3UIIcon;
+	spItem = new __IconItemSkill();
+	spItem->pItemBasic	= pItem;
+	spItem->pItemExt	= pItemExt;
+	spItem->szIconFN	= szIconFN; // 아이콘 파일 이름 복사..
+	spItem->iCount		= iItemCount;
+	spItem->iDurability	= pItem->siMaxDurability + pItemExt->siMaxDurability;
+	spItem->pUIIcon		= new CN3UIIcon();
+
 	spItem->pUIIcon->Init(CGameProcedure::s_pProcMain->m_pUIInventory);
 	spItem->pUIIcon->SetTex(spItem->szIconFN);
-	spItem->pUIIcon->SetUVRect(0,0, fUVAspect, fUVAspect);
+	spItem->pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
 	spItem->pUIIcon->SetUIType(UI_TYPE_ICON);
 	spItem->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
 	spItem->pUIIcon->SetVisible(true);
-	pArea = nullptr;
-	pArea = CGameProcedure::s_pProcMain->m_pUIInventory->GetChildAreaByiOrder(UI_AREA_TYPE_INV, iOrder);
+
+	CN3UIArea* pArea = CGameProcedure::s_pProcMain->m_pUIInventory->GetChildAreaByiOrder(UI_AREA_TYPE_INV, iOrder);
 	if (pArea != nullptr)
 	{
 		spItem->pUIIcon->SetRegion(pArea->GetRegion());
@@ -341,7 +327,7 @@ bool CUIDroppedItemDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 		return false;
 
 	// 검사해서 선택된 아이콘을 가진 윈도우에게 결과를 알려줘야 한다..
-	switch ( CN3UIWndBase::m_sSelectedIconInfo.UIWndSelect.UIWnd )
+	switch (m_sSelectedIconInfo.UIWndSelect.UIWnd)
 	{
 		// 인벤토리 윈도우로부터 온 것이라면..
 		case UIWND_INVENTORY:
@@ -363,7 +349,8 @@ int CUIDroppedItemDlg::GetInventoryEmptyInviOrder(__IconItemSkill* spItem)
 	{
 		for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 		{
-			if (!CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i])
+			__IconItemSkill* spItemInv = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i];
+			if (spItemInv == nullptr)
 				return i;
 		}
 	}
@@ -371,14 +358,16 @@ int CUIDroppedItemDlg::GetInventoryEmptyInviOrder(__IconItemSkill* spItem)
 	{
 		for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 		{
-			if ( CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i] 
-				&& (CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i]->pItemBasic->dwID == spItem->pItemBasic->dwID))
+			__IconItemSkill* spItemInv = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i];
+			if (spItemInv != nullptr
+				&& spItemInv->pItemBasic->dwID == spItem->pItemBasic->dwID)
 				return i;
 		}
 
 		for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 		{
-			if (!CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i])
+			__IconItemSkill* spItemInv = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[i];
+			if (spItemInv == nullptr)
 				return i;
 		}
 	}
@@ -388,10 +377,10 @@ int CUIDroppedItemDlg::GetInventoryEmptyInviOrder(__IconItemSkill* spItem)
 
 int	CUIDroppedItemDlg::GetItemiOrder(__IconItemSkill* spItem)
 {
-
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if ((m_pMyDroppedItem[i] != nullptr) && (m_pMyDroppedItem[i] == spItem))
+		if (m_pMyDroppedItem[i] != nullptr
+			&& m_pMyDroppedItem[i] == spItem)
 			return i;
 	}
 
@@ -402,19 +391,19 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 // Temp Define
 #define FAIL_CODE {		\
-				CN3UIWndBase::m_sSelectedIconInfo.eIconSelectState = UIICON_SELECT_NONE;	\
+				m_sSelectedIconInfo.eIconSelectState = UIICON_SELECT_NONE;	\
 				return false;	\
 			}
 
 // Code Begin
-	if(pSender == nullptr) 
+	if (pSender == nullptr)
 		return false;
 
 	int iOrder, iOrderInv = -1;
 
 	uint32_t dwBitMask = 0x000f0000;
 
-	__TABLE_ITEM_BASIC*	pItem = nullptr;
+	__TABLE_ITEM_BASIC* pItem = nullptr;
 	__IconItemSkill* spItem = nullptr;
 	std::string szIconFN;
 	e_PartPosition ePart;
@@ -429,10 +418,11 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		case UIMSG_ICON_DOWN_FIRST:
 			spItem = nullptr;
-			spItem = GetHighlightIconItem((CN3UIIcon* )pSender);
+			spItem = GetHighlightIconItem((CN3UIIcon*) pSender);
 			if (spItem == nullptr)
 				break;
-			m_iBackupiOrder = GetItemiOrder( spItem );
+
+			m_iBackupiOrder = GetItemiOrder(spItem);
 			break;
 
 		case UIMSG_ICON_UP:
@@ -444,13 +434,12 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			spItem = GetHighlightIconItem((CN3UIIcon*) pSender);
 			if (spItem == nullptr)
 				break;
+
 			pItem = CGameBase::s_pTbl_Items_Basic.Find(spItem->pItemBasic->dwID);	// 열 데이터 얻기..
 			if (pItem == nullptr)
 			{
 				__ASSERT(0, "NULL Item!!!");
-#ifdef _DEBUG
 				CLogWriter::Write("CUIDroppedItemDlg::ReceiveMessage - UIMSG_ICON_UP - NULL Icon : {}", spItem->pItemBasic->dwID);
-#endif // _DEBUG
 				break;
 			}
 
@@ -458,40 +447,35 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			eType = CGameBase::MakeResrcFileNameForUPC(pItem, spItem->pItemExt, nullptr, &szIconFN, ePart, ePlug);
 
 			// 보낸 아이콘 배열이랑 비교.. 
-			iOrder = GetItemiOrder( spItem );
+			iOrder = GetItemiOrder(spItem);
 			if (m_iBackupiOrder != iOrder)
 				break;
 
 			// 한번 보냈던 패킷이면 break.. 
-			if (m_bSendedIconArray[iOrder] == true)	
+			if (m_bSendedIconArray[iOrder])
 				break;
-			else
-				m_bSendedIconArray[iOrder] = true;
+
+			m_bSendedIconArray[iOrder] = true;
 
 			CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_ITEM_GET);
 			CAPISocket::MP_AddDword(byBuff, iOffset, m_iItemBundleID);
 
 			// 돈이 아니면 인벤토리 리스트에 추가.... 
-			if (ITEM_TYPE_GOLD != eType) 
-			{
-				CAPISocket::MP_AddDword(byBuff, iOffset, spItem->pItemBasic->dwID+spItem->pItemExt->dwID);
-			  //CAPISocket::MP_AddDword(byBuff, iOffset, (uint8_t)iOrderInv);
-			}
+			if (ITEM_TYPE_GOLD != eType)
+				CAPISocket::MP_AddDword(byBuff, iOffset, spItem->pItemBasic->dwID + spItem->pItemExt->dwID);
 			else
-			{
 				CAPISocket::MP_AddDword(byBuff, iOffset, spItem->pItemBasic->dwID);
-			  //CAPISocket::MP_AddDword(byBuff, iOffset, 0xff);
-			}
+
 			CGameProcedure::s_pSocket->Send(byBuff, iOffset);
 
 			// 보낸 아이콘 정보 셋팅..	
-			CN3UIWndBase::m_sRecoveryJobInfo.pItemSource = spItem;
-			CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWnd = UIWND_DROPITEM;
-			CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict = UIWND_DISTRICT_DROPITEM;
-			CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder = iOrder;
-			CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd = UIWND_INVENTORY;
-			CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict = UIWND_DISTRICT_INVENTORY_INV;
-			CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iOrderInv;
+			m_sRecoveryJobInfo.pItemSource						= spItem;
+			m_sRecoveryJobInfo.UIWndSourceStart.UIWnd			= UIWND_DROPITEM;
+			m_sRecoveryJobInfo.UIWndSourceStart.UIWndDistrict	= UIWND_DISTRICT_DROPITEM;
+			m_sRecoveryJobInfo.UIWndSourceStart.iOrder			= iOrder;
+			m_sRecoveryJobInfo.UIWndSourceEnd.UIWnd				= UIWND_INVENTORY;
+			m_sRecoveryJobInfo.UIWndSourceEnd.UIWndDistrict		= UIWND_DISTRICT_INVENTORY_INV;
+			m_sRecoveryJobInfo.UIWndSourceEnd.iOrder			= iOrderInv;
 			break;
 
 		case UIMSG_ICON_DOWN:
@@ -505,71 +489,74 @@ bool CUIDroppedItemDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	return true;
 }
 
-void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int iGold, int iPos, int iItemCount, int iStrLen, 
-											   std::string strString)
+void CUIDroppedItemDlg::GetItemByIDToInventory(
+	uint8_t bResult, int iItemID, int iGold, int iPos, int iItemCount, int iStrLen, const std::string& characterName)
 {
 	// 아이템 리스트에서 아이템을 찾고..
 	bool bFound = false;
 	// 아이템 테이블 구조체 포인터..
-	__TABLE_ITEM_BASIC*	pItem = nullptr;
+	__TABLE_ITEM_BASIC* pItem = nullptr;
 	__TABLE_ITEM_EXT* pItemExt = nullptr;
-	__IconItemSkill*	spItem = nullptr;
+	__IconItemSkill* spItem = nullptr;
 	int i;
 	CN3UIString* pStatic = nullptr;
-	__InfoPlayerMySelf*	pInfoExt = nullptr;
-	std::string strMsg;
+	__InfoPlayerMySelf* pInfoExt = nullptr;
+	std::string szMsg;
 
 	// 실패..
-	if (bResult == 0x00)
+	if (bResult == 0)
 	{
 		int iOrderInv = GetInventoryEmptyInviOrder();
 		if (iOrderInv == -1)
 		{
 			// 인벤토리가 꽉 차있으면.. break.. ^^
-			std::string strMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
-			CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xff9b9bff);
+			std::string szMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
+			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 		}
 
-		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg)
+		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
-		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg)
+
+		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
 
 		return;
 	}
-	
-	if (bResult == 0x02)		// 파티 상태에서 노아를 얻는다..
+
+	// 파티 상태에서 노아를 얻는다..
+	if (bResult == 2)
 	{
 		// 돈 갱신..
 		pStatic = nullptr;
 		pInfoExt = &CGameBase::s_pPlayer->m_InfoExt;
 
 		// 돈 업데이트..
-		strMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET, iGold - pInfoExt->iGold);
-		CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xff9b9bff);
+		szMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET, iGold - pInfoExt->iGold);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
 		pInfoExt->iGold = iGold;
 		CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 
-		if (!IsVisible()) 
+		if (!IsVisible())
 			return;
 
 		// 돈 아이콘이 있으면 없앤다..
 		bFound = false;
-		for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+		for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 		{
-			if(m_pMyDroppedItem[i] && m_pMyDroppedItem[i]->pItemBasic->dwID == dwGold)
+			if (m_pMyDroppedItem[i] != nullptr
+				&& m_pMyDroppedItem[i]->pItemBasic->dwID == dwGold)
 			{
 				bFound = true;
 				break;
 			}
 		}
-		
+
 		if (!bFound)
 			return;
 
 		spItem = m_pMyDroppedItem[i];
-		
+
 		if (spItem == nullptr)
 			return;
 
@@ -586,60 +573,57 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 
 		PlayGoldSound();
 
-		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg)
+		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
-		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg)
+
+		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
 	}
 
 	// 파티상태에서 내가 아이템을 습득..
-	if (bResult == 0x03)
+	if (bResult == 3)
 	{
-		pItem = nullptr;
+		pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000);	// 열 데이터 얻기..
 		pItemExt = nullptr;
-		pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID/1000*1000);	// 열 데이터 얻기..
-		
-		if(pItem != nullptr 
-			&& pItem->byExtIndex >= 0 
+
+		if (pItem != nullptr
+			&& pItem->byExtIndex >= 0
 			&& pItem->byExtIndex < MAX_ITEM_EXTENSION)
 			pItemExt = CGameBase::s_pTbl_Items_Exts[pItem->byExtIndex].Find(iItemID % 1000);
-		
-		if(pItem == nullptr || pItemExt == nullptr)
+
+		if (pItem == nullptr || pItemExt == nullptr)
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-
-#ifdef _DEBUG
 			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : {}", iItemID);
-#endif // _DEBUG
-
 			return;
 		}
 
-		std::string strMsg = fmt::format_text_resource(IDS_PARTY_ITEM_GET,
-			strString, pItem->szName);
-		CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xff9b9bff);
+		std::string szMsg = fmt::format_text_resource(IDS_PARTY_ITEM_GET,
+			characterName, pItem->szName);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
-		if (!IsVisible()) 
+		if (!IsVisible())
 			return;
 
 		// 아이템 아이콘이 있으면 없앤다..
 		bFound = false;
-		for( i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++ )
+		for (i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 		{
-			if( (m_pMyDroppedItem[i]) && (m_pMyDroppedItem[i]->pItemBasic->dwID+m_pMyDroppedItem[i]->pItemExt->dwID == iItemID) )
+			if (m_pMyDroppedItem[i] != nullptr
+				&& (m_pMyDroppedItem[i]->pItemBasic->dwID + m_pMyDroppedItem[i]->pItemExt->dwID == iItemID))
 			{
 				bFound = true;
 				break;
 			}
 		}
+
 		if (!bFound)
 			return;
 
-		if (m_pMyDroppedItem[i])
+		if (m_pMyDroppedItem[i] != nullptr)
 			PlayItemSound(m_pMyDroppedItem[i]->pItemBasic);
 
 		spItem = m_pMyDroppedItem[i];
-		
 		if (spItem == nullptr)
 			return;
 
@@ -654,19 +638,19 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		spItem = nullptr;
 		m_pMyDroppedItem[i] = nullptr;
 
-		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg) 
+		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 
-		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg)
+		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
 
 		return;
 	}
 
 	// 파티 상태에서 다른 멤버가 아이템을 습득..
-	if (bResult == 0x04)		
+	if (bResult == 4)
 	{
-		spItem = m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
+		spItem = m_pMyDroppedItem[m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
 		if (spItem != nullptr)
 		{
 			// 매니저에서 제거..
@@ -680,42 +664,41 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			spItem = nullptr;
 		}
 
-		m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = nullptr;
+		m_pMyDroppedItem[m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = nullptr;
 
-		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg)
+		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 
 		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
 
-		return;	
+		return;
 	}
 
-	if (bResult == 0x05)		// 파티 상태에서 일반적인 아이템 습득..
+	// 파티 상태에서 일반적인 아이템 습득..
+	if (bResult == 6)
 	{
 		if (iItemID == dwGold)
 		{
 			__ASSERT(0, "Invalidate Item ID From Server.. ");
-#ifdef _DEBUG
 			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - ID Pos : {}", iPos);
-#endif // _DEBUG
 			return;
 		}
 
-		if ((iPos < 0) || (iPos > (MAX_ITEM_INVENTORY-1)))
+		if (iPos < 0
+			|| iPos >= MAX_ITEM_INVENTORY)
 		{
 			__ASSERT(0, "Invalidate Item Pos From Server.. ");
-#ifdef DEBUG
 			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : {}", iPos);
-#endif // DEBUG
 			return;
 		}
 
-		__IconItemSkill	*spItemDest = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[iPos];
+		__IconItemSkill* spItemDest = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[iPos];
+
 		// 아이템이 있다..
-		if (spItemDest != nullptr)		
+		if (spItemDest != nullptr)
 		{
-			if (iItemID != (spItemDest->pItemBasic->dwID+spItemDest->pItemExt->dwID))
+			if (iItemID != (spItemDest->pItemBasic->dwID + spItemDest->pItemExt->dwID))
 			{
 				// 기존 이이템을 클리어..
 				if (spItemDest == nullptr)
@@ -748,76 +731,71 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			AddToItemTableToInventory(iItemID, iItemCount, iPos);
 		}
 
-		pItem = nullptr;
 		// 열 데이터 얻기..
-		pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000);	
-		if(pItem == nullptr)
+		pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000);
+		if (pItem == nullptr)
 		{
 			__ASSERT(0, "아이템 포인터 테이블에 없음!!");
-#ifdef DEBUG
 			CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - NULL Icon : {}", iItemID);
-#endif // DEBUG
 			return;
 		}
 
-		strMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE, pItem->szName);
-		CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xff9b9bff);
+		szMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE, pItem->szName);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
-		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg)
+		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 
-		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg)
+		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
 
 	}
 
-	if (bResult == 0x06)
+	if (bResult == 6)
 	{
 		// 메시지 박스 텍스트 표시..
-		std::string strMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
-		CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xffff3b3b);
+		std::string szMsg = fmt::format_text_resource(IDS_ITEM_TOOMANY_OR_HEAVY);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
-	if (bResult == 0x07)
+	if (bResult == 7)
 	{
 		// 메시지 박스 텍스트 표시..
-		std::string strMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
-		CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xffff3b3b);
+		std::string szMsg = fmt::format_text_resource(IDS_INV_ITEM_FULL);
+		CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);
 	}
 
-	if (bResult == 0x01)
+	if (bResult == 1)
 	{
 		if (iItemID != dwGold)
 		{
 			pItem = CGameBase::s_pTbl_Items_Basic.Find(iItemID / 1000 * 1000);
 			if (pItem == nullptr)
-			{ 
+			{
 				__ASSERT(0, "Invalidate Item ID From Server.. ");
-#ifdef DEBUG
 				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Item ID : {}", iItemID);
-#endif // DEBUG
 				return;
 			}
-			if ((iPos < 0) || (iPos > (MAX_ITEM_INVENTORY-1)))
+
+			if (iPos < 0
+				|| iPos >= MAX_ITEM_INVENTORY)
 			{
 				__ASSERT(0, "Invalidate Item Pos From Server.. ");
-#ifdef DEBUG
 				CLogWriter::Write("CUIDroppedItemDlg::GetItemByIDToInventory - Invalidate Pos : {}", iPos);
-#endif // DEBUG
 				return;
 			}
 
 			spItem = nullptr;
-			__IconItemSkill	*spItemDest = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[iPos];
+			__IconItemSkill* spItemDest = CGameProcedure::s_pProcMain->m_pUIInventory->m_pMyInvWnd[iPos];
 			// 아이템이 있다..
-			if (spItemDest != nullptr)		
+			if (spItemDest != nullptr)
 			{
-				if (iItemID != (spItemDest->pItemBasic->dwID+spItemDest->pItemExt->dwID))
+				if (iItemID != (spItemDest->pItemBasic->dwID + spItemDest->pItemExt->dwID))
 				{
 					// 기존 이이템을 클리어..
-					if (!spItemDest) 
+					if (spItemDest == nullptr)
 						return;
-					
+
 					RemoveChild(spItemDest->pUIIcon);
 
 					// 아이콘 리소스 삭제...
@@ -847,10 +825,10 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 				AddToItemTableToInventory(iItemID, iItemCount, iPos);
 			}
 
-			std::string strMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE, pItem->szName);
-			CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xff9b9bff);
+			std::string szMsg = fmt::format_text_resource(IDS_ITEM_GET_BY_RULE, pItem->szName);
+			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
-			spItem = m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
+			spItem = m_pMyDroppedItem[m_sRecoveryJobInfo.UIWndSourceStart.iOrder];
 			if (spItem != nullptr)
 			{
 				// 매니저에서 제거..
@@ -863,24 +841,25 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 				delete spItem;
 				spItem = nullptr;
 			}
-			m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = nullptr;
+
+			m_pMyDroppedItem[m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = nullptr;
 		}
 		else
 		{
 			pStatic = nullptr;
-			pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
+			pInfoExt = &CGameBase::s_pPlayer->m_InfoExt;
 
 			// 돈 업데이트..
-			strMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
+			szMsg = fmt::format_text_resource(IDS_DROPPED_NOAH_GET,
 				iGold - pInfoExt->iGold);
-			CGameProcedure::s_pProcMain->MsgOutput(strMsg, 0xff9b9bff);
+			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xff9b9bff);
 
 			pInfoExt->iGold = iGold;
 			//TRACE("돈 업데이트 %d \n", iGold);
 			CGameProcedure::s_pProcMain->m_pUIInventory->GoldUpdate();
 
-			spItem = CN3UIWndBase::m_sRecoveryJobInfo.pItemSource;
-			
+			spItem = m_sRecoveryJobInfo.pItemSource;
+
 			if (spItem == nullptr)
 				return;
 
@@ -893,22 +872,22 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 			spItem->pUIIcon = nullptr;
 			delete spItem;
 			spItem = nullptr;
-			m_pMyDroppedItem[CN3UIWndBase::m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = nullptr;
+			m_pMyDroppedItem[m_sRecoveryJobInfo.UIWndSourceStart.iOrder] = nullptr;
 
 			PlayGoldSound();
 		}
 
-		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg)
+		if (CGameProcedure::s_pProcMain->m_pUISkillTreeDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUISkillTreeDlg->UpdateDisableCheck();
 
-		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg)
+		if (CGameProcedure::s_pProcMain->m_pUIHotKeyDlg != nullptr)
 			CGameProcedure::s_pProcMain->m_pUIHotKeyDlg->UpdateDisableCheck();
 	}
 
 	bFound = false;
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if(m_pMyDroppedItem[i] != nullptr)
+		if (m_pMyDroppedItem[i] != nullptr)
 			bFound = true;
 	}
 
@@ -916,12 +895,10 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(uint8_t bResult, int iItemID, int
 		LeaveDroppedState();
 }
 
-//this_ui_add_start
 void CUIDroppedItemDlg::SetVisibleWithNoSound(bool bVisible, bool bWork, bool bReFocus)
 {
-	CN3UIBase::SetVisibleWithNoSound(bVisible, bWork, bReFocus);
+	CN3UIWndBase::SetVisibleWithNoSound(bVisible, bWork, bReFocus);
 
-	for(int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 		m_bSendedIconArray[i] = false;
 }
-//this_ui_add_end
