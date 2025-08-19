@@ -146,7 +146,7 @@ void CUIDroppedItemDlg::InitIconUpdate()
 
 	for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 	{
-		if (m_pMyDroppedItem[i])
+		if (m_pMyDroppedItem[i] != nullptr)
 		{
 			m_pMyDroppedItem[i]->pUIIcon = new CN3UIIcon();
 			m_pMyDroppedItem[i]->pUIIcon->Init(this);
@@ -188,7 +188,7 @@ void CUIDroppedItemDlg::EnterDroppedState(int xpos, int ypos)
 	{
 		m_bSendedIconArray[i] = false;
 
-		if (m_pMyDroppedItem[i])
+		if (m_pMyDroppedItem[i] != nullptr)
 		{
 			if (m_pMyDroppedItem[i]->pUIIcon)
 			{
@@ -542,7 +542,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 
 		// 돈 아이콘이 있으면 없앤다..
 		bFound = false;
-		for (int i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
+		for (i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 		{
 			if (m_pMyDroppedItem[i] != nullptr
 				&& m_pMyDroppedItem[i]->pItemBasic->dwID == dwGold)
@@ -556,7 +556,6 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 			return;
 
 		spItem = m_pMyDroppedItem[i];
-
 		if (spItem == nullptr)
 			return;
 
