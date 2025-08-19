@@ -39,9 +39,9 @@ static char THIS_FILE[]=__FILE__;
 
 CUIDead::CUIDead()
 {
-	m_pTextAlive	= NULL;
-	m_pTextTown		= NULL;
-	m_bProcessing	= false;
+	m_pTextAlive = nullptr;
+	m_pTextTown = nullptr;
+	m_bProcessing = false;
 }
 
 CUIDead::~CUIDead()
@@ -51,19 +51,23 @@ CUIDead::~CUIDead()
 
 bool CUIDead::Load(HANDLE hFile)
 {
-	if(false == CN3UIBase::Load(hFile)) return false;
+	if(!CN3UIBase::Load(hFile))
+		return false;
 
-	m_pTextAlive	= (CN3UIString*)(this->GetChildByID("Text_Alive"));	__ASSERT(m_pTextAlive, "NULL UI Component!!!");
-	m_pTextTown		= (CN3UIString*)(this->GetChildByID("Text_Town"));	__ASSERT(m_pTextTown, "NULL UI Component!!!");
+	N3_VERIFY_UI_COMPONENT(m_pTextAlive, GetChildByID<CN3UIString>("Text_Alive"));
+	N3_VERIFY_UI_COMPONENT(m_pTextTown, GetChildByID<CN3UIString>("Text_Town"));
 
+	std::string strMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL);
+	
+	if(m_pTextAlive)
+		m_pTextAlive->SetString(strMsg);
 
-	std::string szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL);
-	if(m_pTextAlive) m_pTextAlive->SetString(szMsg);
+	strMsg = fmt::format_text_resource(IDS_DEAD_RETURN_TOWN);
+	
+	if(m_pTextTown)
+		m_pTextTown->SetString(strMsg);
 
-	szMsg = fmt::format_text_resource(IDS_DEAD_RETURN_TOWN);
-	if(m_pTextTown) m_pTextTown->SetString(szMsg);
-
-	__TABLE_UI_RESRC*	pTblUI	= NULL;
+	__TABLE_UI_RESRC* pTblUI = nullptr;
 	pTblUI = CGameBase::s_pTbl_UI.Find(NATION_ELMORAD);
 
 	m_MsgBox.LoadFromFile(pTblUI->szMessageBox);
@@ -77,9 +81,9 @@ bool CUIDead::Load(HANDLE hFile)
 	return true;
 }
 
-bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
+bool CUIDead::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
-	if( dwMsg == UIMSG_STRING_LCLICK )
+	if(dwMsg == UIMSG_STRING_LCLICK)
 	{
 		if(pSender == m_pTextAlive)
 		{
@@ -89,36 +93,36 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 
 			iLevel = CGameBase::s_pPlayer->m_InfoBase.iLevel;
 			iNeedItemCnt = iLevel * TIMES_LIFE_STONE;
-			std::string szMsg;
+			std::string strMsg;
 
 			if (iLevel < 6)
 			{
-				szMsg = fmt::format_text_resource(IDS_DEAD_LOW_LEVEL, iNeedItemCnt);
+				strMsg = fmt::format_text_resource(IDS_DEAD_LOW_LEVEL, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
 				m_MsgBox.SetTitle("");
-				m_MsgBox.SetText(szMsg);
+				m_MsgBox.SetText(strMsg);
 				m_MsgBox.ShowWindow(CHILD_UI_LOW_LEVEL, this);
 			}
 			else if (iItemCnt >= iNeedItemCnt)
 			{
-				szMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL_MESSAGE, iNeedItemCnt);
+				strMsg = fmt::format_text_resource(IDS_DEAD_REVIVAL_MESSAGE, iNeedItemCnt);
 
 				m_MsgBox.SetBoxStyle(MB_YESNO);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
 				m_MsgBox.SetTitle("");
-				m_MsgBox.SetText(szMsg);
+				m_MsgBox.SetText(strMsg);
 				m_MsgBox.ShowWindow(CHILD_UI_REVIVE_MSG, this);
 			}
 			else
 			{
-				szMsg = fmt::format_text_resource(IDS_DEAD_LACK_LIFE_STONE);
+				strMsg = fmt::format_text_resource(IDS_DEAD_LACK_LIFE_STONE);
 
 				m_MsgBox.SetBoxStyle(MB_OK);
 				m_MsgBox.m_eBehavior = BEHAVIOR_NOTHING;
 				m_MsgBox.SetTitle("");
-				m_MsgBox.SetText(szMsg);
+				m_MsgBox.SetText(strMsg);
 				m_MsgBox.ShowWindow(CHILD_UI_LACK_LIVE_STONE_MSG, this);
 			}
 		}
@@ -134,7 +138,8 @@ bool CUIDead::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &ptOld)
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
-	if (!m_bVisible) return dwRet;
+	if (!m_bVisible)
+		return dwRet;
 
 	// UI 움직이는 코드
 	if (UI_STATE_COMMON_MOVE == m_eState)
@@ -151,9 +156,9 @@ uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &p
 		return dwRet;
 	}
 
-	if(false == IsIn(ptCur.x, ptCur.y))	// 영역 밖이면
+	if(!IsIn(ptCur.x, ptCur.y))	// 영역 밖이면
 	{
-		if(false == IsIn(ptOld.x, ptOld.y))
+		if(!IsIn(ptOld.x, ptOld.y))
 		{
 			return dwRet;// 이전 좌표도 영역 밖이면 
 		}
@@ -168,7 +173,7 @@ uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &p
 
 	dwRet |= UI_MOUSEPROC_INREGION;	// 이번 좌표는 영역 안이다.
 
-	if(m_pChildUI && m_pChildUI->IsVisible())
+	if(m_pChildUI != nullptr && m_pChildUI->IsVisible())
 		return dwRet;
 
 	// child에게 메세지 전달
@@ -180,12 +185,12 @@ uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &p
 		dwChildRet = pChild->MouseProc(dwFlags, ptCur, ptOld);
 		if( pChild->IsVisible() && UI_TYPE_STRING == pChild->UIType() )
 		{
-			if(pChild->IsIn(ptCur.x, ptCur.y) && (dwFlags & UI_MOUSE_LBCLICKED) )	
+			if(pChild->IsIn(ptCur.x, ptCur.y) && (dwFlags & UI_MOUSE_LBCLICKED))	
 			{
 				dwChildRet |= UI_MOUSEPROC_DONESOMETHING;
 			}
 
-			if(pChild->IsIn(ptCur.x, ptCur.y) && (dwFlags & UI_MOUSE_LBDBLCLK) )	
+			if(pChild->IsIn(ptCur.x, ptCur.y) && (dwFlags & UI_MOUSE_LBDBLCLK))	
 			{
 				dwChildRet |= UI_MOUSEPROC_DONESOMETHING;
 			}
@@ -203,8 +208,9 @@ uint32_t CUIDead::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &p
 	}
 
 	// UI 움직이는 코드
-	if (UI_STATE_COMMON_MOVE != m_eState && 
-			PtInRect(&m_rcMovable, ptCur) && (dwFlags&UI_MOUSE_LBCLICK) )
+	if (UI_STATE_COMMON_MOVE != m_eState 
+		&& PtInRect(&m_rcMovable, ptCur) 
+		&& (dwFlags&UI_MOUSE_LBCLICK))
 	{
 		SetState(UI_STATE_COMMON_MOVE);
 		dwRet |= UI_MOUSEPROC_DONESOMETHING;
@@ -220,10 +226,9 @@ void CUIDead::CallBackProc(int iID, uint32_t dwFlag)
 
 	if(iID == CHILD_UI_REVIVE_MSG)
 	{
-		if(dwFlag == 1)//OK
-		{
+		// OK
+		if(dwFlag == 1)
 			MsgSend_Revival(REVIVAL_TYPE_LIFE_STONE);
-		}
 	}
 	else if(iID == CHILD_UI_LACK_LIVE_STONE_MSG)
 	{
@@ -235,7 +240,8 @@ void CUIDead::CallBackProc(int iID, uint32_t dwFlag)
 
 void CUIDead::MsgSend_Revival(uint8_t byType)
 {
-	if(m_bProcessing) return;
+	if(m_bProcessing)
+		return;
 
 	// 한번 보내면 다시 죽을때까지 안보내는 플래그
 	if (CGameBase::s_pPlayer->m_iSendRegeneration >= 2)
@@ -247,8 +253,9 @@ void CUIDead::MsgSend_Revival(uint8_t byType)
 	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_REGENE);
 	CAPISocket::MP_AddByte(byBuff, iOffset, byType);
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset); // 보낸다..
-
+#ifdef _DEBUG
 	CLogWriter::Write("Send Regeneration");
+#endif // _DEBUG
 	CGameBase::s_pPlayer->m_iSendRegeneration = 2; // 한번 보내면 다시 죽을때까지 안보내는 플래그
 	//TRACE("보냄 - 다시 살아나기\n");
 
@@ -260,19 +267,20 @@ void CUIDead::MsgRecv_Revival(Packet& pkt)
 	m_bProcessing = false;
 
 	__Vector3 vPosPlayer;
-	vPosPlayer.x = (pkt.read<uint16_t>())/10.0f;
-	vPosPlayer.z = (pkt.read<uint16_t>())/10.0f;
-	vPosPlayer.y = (pkt.read<int16_t>())/10.0f;
+	vPosPlayer.x = static_cast<float>(pkt.read<uint16_t>()) / 10.0f;
+	vPosPlayer.z = static_cast<float>(pkt.read<uint16_t>()) / 10.0f;
+	vPosPlayer.y = static_cast<float>(pkt.read<int16_t>()) / 10.0f;
 	
-	CGameProcedure::s_pProcMain->InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
-	CGameBase::s_pPlayer->RegenerateCollisionMesh(); // 충돌 메시를 다시 만든다..
-
-	CGameBase::s_pPlayer->m_iSendRegeneration = 0; // 한번 보내면 다시 죽을때까지 안보내는 플래그
-	CGameBase::s_pPlayer->m_fTimeAfterDeath = 0; // 한번 보내면 다시 죽을때까지 안보내는 플래그
-	//TRACE("받음 - 다시 살아나기(%.1f, %.1f)\n", vPosPlayer.x, vPosPlayer.z);
-
-	//
-	//마법 & 효과 초기화..
+	// 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
+	CGameProcedure::s_pProcMain->InitPlayerPosition(vPosPlayer);
+	// 충돌 메시를 다시 만든다..
+	CGameBase::s_pPlayer->RegenerateCollisionMesh(); 
+	// 한번 보내면 다시 죽을때까지 안보내는 플래그
+	CGameBase::s_pPlayer->m_iSendRegeneration = 0;
+	// 한번 보내면 다시 죽을때까지 안보내는 플래그
+	CGameBase::s_pPlayer->m_fTimeAfterDeath = 0;
+	// TRACE("받음 - 다시 살아나기(%.1f, %.1f)\n", vPosPlayer.x, vPosPlayer.z);
+	// 마법 & 효과 초기화..
 	if(CGameProcedure::s_pProcMain->m_pUIStateBarAndMiniMap) 
 		CGameProcedure::s_pProcMain->m_pUIStateBarAndMiniMap->ClearMagic();
 	if(CGameProcedure::s_pProcMain->m_pMagicSkillMng) 
@@ -280,7 +288,9 @@ void CUIDead::MsgRecv_Revival(Packet& pkt)
 	if(CGameProcedure::s_pProcMain->CGameProcedure::s_pFX) 
 		CGameProcedure::s_pFX->StopMine();
 
+#ifdef _DEBUG
 	CLogWriter::Write("Receive Regeneration");
+#endif // _DEBUG
 
 	int iID = CGameBase::s_pPlayer->IDNumber();
 	if(CGameBase::s_pPlayer->Nation()==NATION_KARUS) 
