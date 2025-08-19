@@ -9291,7 +9291,6 @@ void CUser::GoldChange(short tid, int gold)
 		}
 	}
 
-	// First the source...
 	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
 	SetByte(send_buff, s_type, send_index);
 	SetDWORD(send_buff, s_temp_gold, send_index);
@@ -11632,7 +11631,6 @@ void CUser::GoldGain(int gold)
 	// set user gold as iTotalGold
 	m_pUserData->m_iGold = static_cast<int>(iTotalGold);
 
-	// First the source...
 	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
 	SetByte(send_buff, GOLD_CHANGE_GAIN, send_index);
 	SetDWORD(send_buff, gold, send_index);
