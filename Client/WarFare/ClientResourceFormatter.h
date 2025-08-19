@@ -42,7 +42,7 @@ namespace fmt
 				assert(!"format_text_resource(): Invalid format string");
 
 #if defined(_N3GAME)
-				CLogWriter::Write("format_text({}) failed - invalid args for format string.",
+				CLogWriter::Write("format_text_resource({}) failed - invalid args for format string.",
 					resourceId);
 #endif
 			}
