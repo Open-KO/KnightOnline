@@ -137,11 +137,6 @@ const int SOCKET_PORT_LOGIN = 15100;
 									N3_SP_WARE_INN =				0x10,	// 맨처음..여관주인임을 받음..
 									N3_SP_WARE_UNKNOWN };
 
-	enum e_SubPacket_NoahChange {	N3_SP_NOAH_GET = 0x01,	// 노아 습득,
-									N3_SP_NOAH_LOST	= 0x02,	// 노아 분실..
-									N3_SP_NOAH_SPEND = 0x03	// 노아 소비..
-								};		
-
 	enum e_Party_BBS {	N3_SP_PARTY_REGISTER						= 0x01,		// 파티 게시판에 등록
 						N3_SP_PARTY_REGISTER_CANCEL					= 0x02,		// 파티 게시판에서 등록 취소
 						N3_SP_PARTY_BBS_DATA						= 0x03};	// 파티 게시 정보 요구

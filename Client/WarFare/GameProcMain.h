@@ -263,8 +263,6 @@ public:
 
 	void	CloseUIs(); // 각종 상거래, 워프등등... UI 닫기..
 
-	void	NoahTrade(uint8_t bType, uint32_t dwGoldOffset, uint32_t dwGold);
-
 	void	MsgOutput(const std::string& szMsg, D3DCOLOR crMsg);
 
 	void	InitZone(int iZone, const __Vector3& vPosPlayer);

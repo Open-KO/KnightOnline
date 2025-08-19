@@ -6634,17 +6634,17 @@ void CGameProcMain::MsgRecv_NoahChange(Packet& pkt)		// 노아 변경..
 
 	switch (bType)
 	{
-		case N3_SP_NOAH_GET:
+		case GOLD_CHANGE_GAIN:
 			szMsg = fmt::format_text_resource(IDS_NOAH_CHANGE_GET, dwGoldOffset);
 			MsgOutput(szMsg, 0xff6565ff);
 			break;
 
-		case N3_SP_NOAH_LOST:
+		case GOLD_CHANGE_LOSE:
 			szMsg = fmt::format_text_resource(IDS_NOAH_CHANGE_LOST, dwGoldOffset);
 			MsgOutput(szMsg, 0xffff3b3b);
 			break;
 
-		case N3_SP_NOAH_SPEND:
+		case GOLD_CHANGE_SPEND:
 			szMsg = fmt::format_text_resource(IDS_NOAH_CHANGE_SPEND, dwGoldOffset);
 			MsgOutput(szMsg, 0xffff3b3b);
 			break;
@@ -7856,33 +7856,6 @@ void CGameProcMain::MsgRecv_ClassPromotion(Packet& pkt)
 	}
 
 	s_pFX->TriggerBundle(socketID, -1, FXID_CLASS_CHANGE, socketID, -1);
-}
-
-
-void CGameProcMain::NoahTrade(uint8_t bType, uint32_t dwGoldOffset, uint32_t dwGold)
-{
-	std::string szMsg;
-
-	switch (bType)
-	{
-	case N3_SP_NOAH_GET:
-		szMsg = fmt::format_text_resource(IDS_TRADE_COIN_RECV, dwGoldOffset);
-		MsgOutput(szMsg, 0xff6565ff);
-		break;
-
-	case N3_SP_NOAH_LOST:
-		szMsg = fmt::format_text_resource(IDS_TRADE_COIN_PAID, dwGoldOffset);
-		MsgOutput(szMsg, 0xffff3b3b);
-		break;
-	}
-
-	//s_pPlayer->m_InfoExt.iGold = dwGold;
-	if (m_pUIInventory->IsVisible())
-		m_pUIInventory->GoldUpdate();
-	if (m_pUITransactionDlg->IsVisible())
-		m_pUITransactionDlg->GoldUpdate();
-	if (m_pSubProcPerTrade && m_pSubProcPerTrade->m_pUIPerTradeDlg->IsVisible())
-		m_pSubProcPerTrade->m_pUIPerTradeDlg->GoldUpdate();
 }
 
 void CGameProcMain::MsgRecv_ItemUpgrade(

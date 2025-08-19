@@ -9190,8 +9190,8 @@ void CUser::GoldChange(short tid, int gold)
 		// Source is NOT in a party.
 		if (m_sPartyIndex == -1)
 		{
-			s_type = 1;
-			t_type = 2;
+			s_type = GOLD_CHANGE_GAIN;
+			t_type = GOLD_CHANGE_LOSE;
 
 			s_temp_gold = (pTUser->m_pUserData->m_iGold * 4) / 10;
 			t_temp_gold = pTUser->m_pUserData->m_iGold / 2;
@@ -9206,8 +9206,8 @@ void CUser::GoldChange(short tid, int gold)
 			if (pParty == nullptr)
 				return;
 
-			s_type = 1;
-			t_type = 2;
+			s_type = GOLD_CHANGE_GAIN;
+			t_type = GOLD_CHANGE_LOSE;
 
 			s_temp_gold = (pTUser->m_pUserData->m_iGold * 4) / 10;
 			t_temp_gold = pTUser->m_pUserData->m_iGold / 2;
@@ -9252,7 +9252,7 @@ void CUser::GoldChange(short tid, int gold)
 					send_index = 0;
 					memset(send_buff, 0, sizeof(send_buff));
 					SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
-					SetByte(send_buff, 1, send_index);
+					SetByte(send_buff, GOLD_CHANGE_GAIN, send_index);
 					SetDWORD(send_buff, money, send_index);
 					SetDWORD(send_buff, pUser->m_pUserData->m_iGold, send_index);
 					pUser->Send(send_buff, send_index);
@@ -9268,8 +9268,8 @@ void CUser::GoldChange(short tid, int gold)
 		// Source gains money.
 		if (gold > 0)
 		{
-			s_type = 1;
-			t_type = 2;
+			s_type = GOLD_CHANGE_GAIN;
+			t_type = GOLD_CHANGE_LOSE;
 
 			s_temp_gold = gold;
 			t_temp_gold = gold;
@@ -9280,8 +9280,8 @@ void CUser::GoldChange(short tid, int gold)
 		// Source loses money.
 		else
 		{
-			s_type = 2;
-			t_type = 1;
+			s_type = GOLD_CHANGE_LOSE;
+			t_type = GOLD_CHANGE_GAIN;
 
 			s_temp_gold = gold;
 			t_temp_gold = gold;
@@ -10290,8 +10290,8 @@ void CUser::MarketBBSRegister(char* pBuf)
 	if (result == 0)
 		goto fail_return;
 
-	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);		// Money removal packet...
-	SetByte(send_buff, 2, send_index);
+	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
+	SetByte(send_buff, GOLD_CHANGE_LOSE, send_index);
 
 	if (buysell_index == MARKET_BBS_BUY)
 	{
@@ -10615,7 +10615,7 @@ void CUser::MarketBBSRemotePurchase(char* pBuf)
 		m_pUserData->m_iGold -= REMOTE_PURCHASE_PRICE;
 
 		SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
-		SetByte(send_buff, 0x02, send_index);
+		SetByte(send_buff, GOLD_CHANGE_LOSE, send_index);
 		SetDWORD(send_buff, REMOTE_PURCHASE_PRICE, send_index);
 		SetDWORD(send_buff, m_pUserData->m_iGold, send_index);
 		Send(send_buff, send_index);
@@ -10673,7 +10673,7 @@ void CUser::MarketBBSTimeCheck()
 					memset(send_buff, 0, sizeof(send_buff));
 					send_index = 0;
 					SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
-					SetByte(send_buff, 0x02, send_index);
+					SetByte(send_buff, GOLD_CHANGE_LOSE, send_index);
 					SetDWORD(send_buff, BUY_POST_PRICE, send_index);
 					SetDWORD(send_buff, pUser->m_pUserData->m_iGold, send_index);
 					pUser->Send(send_buff, send_index);
@@ -10706,7 +10706,7 @@ void CUser::MarketBBSTimeCheck()
 					memset(send_buff, 0, sizeof(send_buff));
 					send_index = 0;
 					SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
-					SetByte(send_buff, 0x02, send_index);
+					SetByte(send_buff, GOLD_CHANGE_LOSE, send_index);
 					SetDWORD(send_buff, SELL_POST_PRICE, send_index);
 					SetDWORD(send_buff, pUser->m_pUserData->m_iGold, send_index);
 					pUser->Send(send_buff, send_index);
@@ -11634,7 +11634,7 @@ void CUser::GoldGain(int gold)
 
 	// First the source...
 	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
-	SetByte(send_buff, GOLD_GAIN, send_index);
+	SetByte(send_buff, GOLD_CHANGE_GAIN, send_index);
 	SetDWORD(send_buff, gold, send_index);
 	SetDWORD(send_buff, m_pUserData->m_iGold, send_index);
 	Send(send_buff, send_index);
@@ -11651,8 +11651,8 @@ BOOL CUser::GoldLose(int gold)
 
 	m_pUserData->m_iGold -= gold;	// Subtract gold.
 
-	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);	// First the source...
-	SetByte(send_buff, 2, send_index);	// 1 -> Get gold    2 -> Lose gold
+	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
+	SetByte(send_buff, GOLD_CHANGE_LOSE, send_index);
 	SetDWORD(send_buff, gold, send_index);
 	SetDWORD(send_buff, m_pUserData->m_iGold, send_index);
 	Send(send_buff, send_index);

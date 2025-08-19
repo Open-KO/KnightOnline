@@ -310,11 +310,5 @@ enum e_AttackResult
 	MAGIC_ATTACK_TARGET_DEAD	= 4
 };
 
-enum e_GoldChangeType
-{
-	GOLD_GAIN = 1,
-	GOLD_LOSE = 2,
-};
-
 uint64_t RandUInt64();
 time_t getMSTime();

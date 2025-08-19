@@ -167,13 +167,6 @@ constexpr char NEWS_MESSAGE_START[]	= { '#', '\0', '\n' };
 constexpr char NEWS_MESSAGE_END[]	= { '\0', '\n', '#', '\0', '\n', '\0', '\n' };
 constexpr int MAX_NEWS_COUNT		= 3;
 
-enum e_NoahChangeOpcode
-{
-	NOAH_CHANGE_GAIN	= 1,
-	NOAH_CHANGE_LOSS	= 2,
-	NOAH_CHANGE_EVENT	= 5
-};
-
 ////////////////////////////////////////////////////////////////
 // chat define
 ////////////////////////////////////////////////////////////////
@@ -196,6 +189,13 @@ enum e_ChatType
 	ALLIANCE_CHAT				= 15,
 	ANNOUNCEMENT_CHAT			= 17,
 	SEEKING_PARTY_CHAT			= 19,
+};
+
+enum e_GoldChangeType
+{
+	GOLD_CHANGE_GAIN	= 1,
+	GOLD_CHANGE_LOSE	= 2,
+	GOLD_CHANGE_SPEND	= 3
 };
 
 enum e_ZoneChangeOpcode
