@@ -191,7 +191,7 @@ enum e_ChatType
 	SEEKING_PARTY_CHAT			= 19,
 };
 
-enum e_GoldChangeType
+enum e_GoldChangeOpcode
 {
 	GOLD_CHANGE_GAIN	= 1,
 	GOLD_CHANGE_LOSE	= 2,
