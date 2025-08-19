@@ -76,10 +76,10 @@ public:
 	void				CancelIconDrop(__IconItemSkill* spItem) override;
 	void				AcceptIconDrop(__IconItemSkill* spItem) override;
 
-	void				SendToServerToWareMsg(int iItemID, byte page, byte startpos, byte pos, int iCount);
-	void				SendToServerFromWareMsg(int iItemID, byte page, byte startpos, byte pos, int iCount);
-	void				SendToServerWareToWareMsg(int iItemID, byte page, byte startpos, byte destpos);
-	void				SendToServerInvToInvMsg(int iItemID, byte page, byte startpos, byte destpos);
+	void				SendToServerToWareMsg(int iItemID, uint8_t page, uint8_t startpos, uint8_t pos, int iCount);
+	void				SendToServerFromWareMsg(int iItemID, uint8_t page, uint8_t startpos, uint8_t pos, int iCount);
+	void				SendToServerWareToWareMsg(int iItemID, uint8_t page, uint8_t startpos, uint8_t destpos);
+	void				SendToServerInvToInvMsg(int iItemID, uint8_t page, uint8_t startpos, uint8_t destpos);
 	void				ReceiveResultToWareMsg(uint8_t bResult);
 	void				ReceiveResultFromWareMsg(uint8_t bResult);
 	void				ReceiveResultWareToWareMsg(uint8_t bResult);
