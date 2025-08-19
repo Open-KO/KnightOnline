@@ -16,7 +16,7 @@ constexpr int MAX_IP_SIZE		= 15;	// IPv4 addresses are max ###.###.###.### (3*4 
 constexpr int MAX_ITEM_COUNT	= 9999;	// 한 슬롯에 가지는 최대 화살/송편 개수
 constexpr int MAX_QUEST			= 100;
 constexpr int MAX_LEVEL			= 80;	// 최고렙...
-
+constexpr int MAX_GOLD			= 2'100'000'000;
 constexpr int VIEW_DISTANCE		= 48;
 
 enum e_NpcState
@@ -308,6 +308,12 @@ enum e_AttackResult
 	ATTACK_TARGET_DEAD			= 2,
 	ATTACK_TARGET_DEAD_OK		= 3,
 	MAGIC_ATTACK_TARGET_DEAD	= 4
+};
+
+enum e_NoahChangeType
+{
+	GOLD_GAIN = 1,
+	GOLD_LOSE = 2,
 };
 
 uint64_t RandUInt64();

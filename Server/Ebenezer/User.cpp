@@ -11626,16 +11626,15 @@ void CUser::GoldGain(int gold)
 	
 	iTotalGold = static_cast<int64_t>(m_pUserData->m_iGold) + static_cast<int64_t>(gold);
 
-	if (iTotalGold > INT_MAX)
-		iTotalGold = INT_MAX;
+	if (iTotalGold > MAX_GOLD)
+		iTotalGold = MAX_GOLD;
 
 	// set user gold as iTotalGold
 	m_pUserData->m_iGold = static_cast<int>(iTotalGold);
 
 	// First the source...
-	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);	
-	// 1 -> Get gold    2 -> Lose gold
-	SetByte(send_buff, 1, send_index);	
+	SetByte(send_buff, WIZ_GOLD_CHANGE, send_index);
+	SetByte(send_buff, GOLD_GAIN, send_index);
 	SetDWORD(send_buff, gold, send_index);
 	SetDWORD(send_buff, m_pUserData->m_iGold, send_index);
 	Send(send_buff, send_index);
