@@ -2563,7 +2563,7 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 				continue;
 
 			// 운영자 무시
-			if (pUser->m_byIsOP == MANAGER_USER)
+			if (pUser->m_byIsGM == USER_TYPE_GM)
 				continue;
 
 			vUser.Set(pUser->m_curx, pUser->m_cury, pUser->m_curz);
@@ -3518,7 +3518,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 		}
 
 		// 운영자는 공격을 안하게..
-		if (pUser->m_byIsOP == MANAGER_USER)
+		if (pUser->m_byIsGM == USER_TYPE_GM)
 		{
 			InitTarget();
 			m_NpcState = NPC_MOVING;
@@ -3766,7 +3766,7 @@ int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
 		}
 
 		// 운영자는 공격을 안하게..
-		if (pUser->m_byIsOP == MANAGER_USER)
+		if (pUser->m_byIsGM == USER_TYPE_GM)
 		{
 			InitTarget();
 			m_NpcState = NPC_MOVING;
@@ -3874,7 +3874,7 @@ int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
 			return 0;
 
 		// 운영자는 공격을 안하게..
-		if (pUser->m_byIsOP == MANAGER_USER)
+		if (pUser->m_byIsGM == USER_TYPE_GM)
 			return 0;
 
 		// 명중이면 //Damage 처리 ----------------------------------------------------------------//
@@ -4447,7 +4447,7 @@ void CNpc::ChangeTarget(int nAttackType, CUser* pUser, CIOCPort* pIOCP)
 		return;
 
 	// 운영자는 무시...^^
-	if (pUser->m_byIsOP == MANAGER_USER)
+	if (pUser->m_byIsGM == USER_TYPE_GM)
 		return;
 	
 	// 성문 NPC는 공격처리 안하게

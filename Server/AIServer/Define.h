@@ -50,9 +50,10 @@
 //
 //	User Authority
 //
-#define MANAGER_USER	0	// 운영자, 관리자
-#define GENERAL_USER	1	// 일반유저
-
+constexpr int USER_TYPE_GM = 0;				// game master
+constexpr int USER_TYPE_NORMAL = 1;			// normal user
+constexpr int GM_R_DAMAGE = 30000;			// basic attack damage of GM
+constexpr bool BOOST_GM_R_DAMAGE = true;	// activate or deactivate GM R Damage
 // Npc InOut
 #define NPC_IN					0X01
 #define NPC_OUT					0X02

@@ -104,7 +104,7 @@ void CUser::Initialize()
 	m_sPartyTotalLevel = 0;
 	m_byPartyTotalMan = 0;
 	m_sPartyNumber = -1;
-	m_byIsOP = 0;
+	m_byIsGM = 0;
 	m_lUsed = 0;
 	InitNpcAttack();
 
@@ -117,6 +117,7 @@ void CUser::Initialize()
 void CUser::Attack(int sid, int tid)
 {
 	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	CUser* pUser = m_pMain->GetUserPtr(sid - USER_BAND);
 	if (pNpc == nullptr)
 		return;
 
@@ -146,6 +147,12 @@ void CUser::Attack(int sid, int tid)
 
 	if (m_pMain->m_byTestMode)
 		nFinalDamage = 3000;	// sungyong test
+
+	// game master
+	if (IsGM() && BOOST_GM_R_DAMAGE)
+	{
+		nFinalDamage = GM_R_DAMAGE;
+	}
 
 	// Calculate Target HP	 -------------------------------------------------------//
 	short sOldNpcHP = pNpc->m_iHP;

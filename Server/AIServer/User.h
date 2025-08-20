@@ -80,7 +80,7 @@ public:
 
 	short  m_sSurroundNpcNumber[8];		// Npc 다굴~
 
-	BYTE   m_byIsOP;					// 운영자인지를 판단..
+	BYTE   m_byIsGM;					// 운영자인지를 판단..
 	long   m_lUsed;						// 포인터 사용유무.. (1:사용중.. 접근 허락치 않음. 0:사용해도 무방)
 
 	BOOL		m_bLogOut;				// Logout 중인가?
@@ -115,7 +115,7 @@ public:
 	void SendSystemMsg(const std::string_view msg, BYTE type, int nWho);
 	void SendAll(const char* pBuf, int nLength);						// game server로 패킷 전송...
 	BOOL IsOpIDCheck(char* szName);
-
+	inline bool IsGM() const{ return m_byIsGM == USER_TYPE_GM; };
 	CUser();
 	virtual ~CUser();
 };

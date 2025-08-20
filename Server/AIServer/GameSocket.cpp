@@ -322,7 +322,7 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 	pUser->m_bMagicTypeRightHand = bTypeRight;
 	pUser->m_sMagicAmountLeftHand = sAmountLeft;
 	pUser->m_sMagicAmountRightHand = sAmountRight;
-	pUser->m_byIsOP = bAuthority;
+	pUser->m_byIsGM = bAuthority;
 //
 
 	spdlog::debug("GameSocket::RecvUserInfo: userId={} charId={}", uid, strName);
@@ -426,7 +426,7 @@ void CGameSocket::RecvUserInOut(char* pBuf)
 		pUser->m_curz = pUser->m_fWill_z = fZ;
 
 		//bFlag = pUser->IsOpIDCheck(strName);
-		//if(bFlag)	pUser->m_byIsOP = 1;
+		//if(bFlag)	pUser->m_byIsGM = 1;
 
 		// region out
 		if (bType == 2)
@@ -981,7 +981,7 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 		pUser->m_fHitrate = fHitAgi;
 		pUser->m_fAvoidrate = fAvoidAgi;
 		pUser->m_sAC = sAC;
-		pUser->m_byIsOP = bAuthority;
+		pUser->m_byIsGM = bAuthority;
 		pUser->m_bLive = USER_LIVE;
 
 		if (sPartyIndex != -1)
