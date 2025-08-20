@@ -199,6 +199,16 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	return false;
 }
 
+bool CUICmdList::OnMouseWheelEvent(short delta)
+{
+	if (delta > 0)
+		OnKeyPress(DIK_UP);
+	else
+		OnKeyPress(DIK_DOWN);
+
+	return true;
+}
+
 bool CUICmdList::OnKeyPress(int iKey)
 {
 	switch (iKey)

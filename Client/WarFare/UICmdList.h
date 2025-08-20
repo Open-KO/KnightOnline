@@ -64,6 +64,7 @@ public:
 	void Tick() override;
 	void Render() override;
 	void RenderSelectionBorder(CN3UIList* pListToRender);
+	bool OnMouseWheelEvent(short delta) override;
 };
 
 #endif // !defined(AFX_UICmdList)
