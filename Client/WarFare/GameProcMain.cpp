@@ -5097,10 +5097,10 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 
 		case N3_SP_PARTY_OR_FORCE_INSERT:			// 0x03	// Send - s1(ID) | Recv - s3(ID, HPMax, HP, MPMax, MP) b2(Level, Class) - 문자열은 ID 로 알아낸다..
 		{
-			int iErrorCode	= pkt.read<int8_t>();
-			int iID			= pkt.read<int16_t>();
+			int iIDorErrorCode		= pkt.read<uint16_t>();		// IDs and positive numbers, error codes are negative numbers
+			int iPartyPosition		= pkt.read<int8_t>();		// order of user in the party
 
-			if (iErrorCode >= 0)
+			if (iIDorErrorCode >= 0)
 			{
 				int iIDLength		= pkt.read<int16_t>();
 				std::string szID;	pkt.readString(szID, iIDLength);
@@ -5112,8 +5112,8 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 				int iMP				= pkt.read<int16_t>();
 				e_Nation eNation	= (e_Nation) pkt.read<uint8_t>();
 
-				m_pUIPartyOrForce->MemberAdd(iID, szID, iLevel, eClass, iHP, iHPMax, iMP, iMPMax); // 다른넘 파티에추가..
-				if (iID != s_pPlayer->IDNumber()) // 자기 자신이 아닌 경우 메시지 출력.
+				m_pUIPartyOrForce->MemberAdd(iIDorErrorCode, szID, iLevel, eClass, iHP, iHPMax, iMP, iMPMax); // 다른넘 파티에추가..
+				if (iIDorErrorCode != s_pPlayer->IDNumber()) // 자기 자신이 아닌 경우 메시지 출력.
 				{
 					std::string szMsg = fmt::format_text_resource(IDS_PARTY_INSERT);
 					MsgOutput(szID + szMsg, D3DCOLOR_ARGB(255, 255, 255, 255));
@@ -5125,13 +5125,13 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 				std::string szMsg;
 
 				// 상대방이 파티에 들어오기를 거절 하였다..
-				if (-1 == iErrorCode)
+				if (-1 == iIDorErrorCode)
 					szMsg = fmt::format_text_resource(IDS_PARTY_INSERT_ERR_REJECTED);
 				// 레벨 차이가 너무 난다...
-				else if (-2 == iErrorCode)
+				else if (-2 == iIDorErrorCode)
 					szMsg = fmt::format_text_resource(IDS_PARTY_INSERT_ERR_LEVEL_DIFFERENCE);
 				// 파티를 맺을 수 없는 국가이다.
-				else if (-3 == iErrorCode)
+				else if (-3 == iIDorErrorCode)
 					szMsg = fmt::format_text_resource(IDS_PARTY_INSERT_ERR_INVALID_NATION);
 				// 상대방이 파티에 들어오기를 거절 하였다..
 				else
