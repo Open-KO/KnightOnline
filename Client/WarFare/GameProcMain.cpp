@@ -1281,7 +1281,7 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 				else
 					bStart = true;// 누르는 순간이면
 			}
-			this->CommandMove(MD_FOWARD, bStart); // 앞으로 이동..
+			this->CommandMove(MD_FORWARD, bStart); // 앞으로 이동..
 		}
 		else if(s_pLocalInput->IsKeyDown(KM_MOVE_BACKWARD) || s_pLocalInput->IsKeyDown(DIK_DOWN))
 		{
@@ -4505,7 +4505,7 @@ bool CGameProcMain::CommandToggleMoveContinous()
 	s_pPlayer->ToggleMoveMode();				// 자동 전진 토글.. 
 	if(s_pPlayer->m_bMoveContinous)
 	{
-		this->CommandMove(MD_FOWARD, true);
+		this->CommandMove(MD_FORWARD, true);
 		if(m_pUICmd->m_pBtn_Act_Run) m_pUICmd->m_pBtn_Act_Run->SetState(UI_STATE_BUTTON_DOWN);
 		if(m_pUICmd->m_pBtn_Act_Walk) m_pUICmd->m_pBtn_Act_Walk->SetState(UI_STATE_BUTTON_DOWN);
 	}
@@ -4525,12 +4525,12 @@ void CGameProcMain::CommandMove(e_MoveDirection eMD, bool bStartOrEnd)
 
 	if(s_pPlayer->IsDead()) return; // 죽은 넘이 어딜 감히!!
 
-	if(MD_FOWARD == eMD || MD_BACKWARD == eMD)
+	if(MD_FORWARD == eMD || MD_BACKWARD == eMD)
 	{
 		s_pUIMgr->UserMoveHideUIs();
 		this->CommandSitDown(false, false, true); // 일으켜 세우고..
 		if(s_pPlayer->m_bStun) return; // 기절해 있음 움직이지 못함..
-		if(MD_FOWARD == eMD)
+		if(MD_FORWARD == eMD)
 		{
 			if(s_pPlayer->IsRunning()) s_pPlayer->ActionMove(PSM_RUN); // 뛰어가기..
 			else s_pPlayer->ActionMove(PSM_WALK); // 걸어가기..
@@ -7426,24 +7426,23 @@ bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 /// \returns true if auto-attack process started, false otherwise
 bool CGameProcMain::TryStartAttack()
 {
-	CPlayerNPC* target = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
-	if(target == nullptr || target->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
+	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
+	if(pTarget == nullptr || pTarget->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
 	{
-		s_pPlayer->m_iIDTarget = -1;
-		target = nullptr;
+		s_pPlayer->m_iIDTarget = SKILLMAGIC_TARGET_UNKNOWN;
 		return false;
 	}
 
 	if(s_pEng->ViewPoint() == VP_THIRD_PERSON)
 	{
-		if(s_pPlayer->IsAttackableTarget(target, false))
+		if(s_pPlayer->IsAttackableTarget(pTarget, false))
 		{
-			this->CommandMove(MD_STOP, true);
-			this->CommandEnableAttackContinous(true, target);
+			CommandMove(MD_STOP, true);
+			CommandEnableAttackContinous(true, pTarget);
 		}
-		else if(target && VP_THIRD_PERSON == s_pEng->ViewPoint())
+		else
 		{
-			this->CommandMove(MD_FOWARD, true);
+			CommandMove(MD_FORWARD, true);
 			s_pPlayer->SetMoveTargetID(s_pPlayer->m_iIDTarget);
 		}
 	}
@@ -7523,7 +7522,7 @@ bool CGameProcMain::OnMouseLBtnPress(POINT ptCur, POINT ptPrev)
 				}
 				else
 				{
-					this->CommandMove(MD_FOWARD, true);
+					this->CommandMove(MD_FORWARD, true);
 					s_pPlayer->SetMoveTargetID(s_pPlayer->m_iIDTarget);
 				}
 			}
@@ -7542,7 +7541,7 @@ bool CGameProcMain::OnMouseLBtnPress(POINT ptCur, POINT ptPrev)
 			float fDist = (vMovePoint - s_pPlayer->Position()).Magnitude();
 
 			if(!s_pPlayer->m_bTargetOrPosMove && fDist > 1.5f)
-				this->CommandMove(MD_FOWARD, true);
+				this->CommandMove(MD_FORWARD, true);
 
 			if(fDist > 1.5f)
 			{
@@ -7618,7 +7617,7 @@ bool CGameProcMain::OnMouseLbtnDown(POINT ptCur, POINT ptPrev)
 
 			this->CommandSitDown(false, false); // 일단 일으켜 세운다..
 			s_pPlayer->RotateTo(fYaw, true);
-			this->CommandMove(MD_FOWARD, false);
+			this->CommandMove(MD_FORWARD, false);
 
 			ACT_WORLD->PickWideWithTerrain(ptCur.x, ptCur.y, vMovePoint); // 지형을 찍어본다..
 			fDist = (vMovePoint - s_pPlayer->Position()).Magnitude();
@@ -7637,7 +7636,7 @@ bool CGameProcMain::OnMouseLbtnDown(POINT ptCur, POINT ptPrev)
 
 			if(fDist > 1.5f)
 			{
-				this->CommandMove(MD_FOWARD, true);
+				this->CommandMove(MD_FORWARD, true);
 				s_pPlayer->SetMoveTargetPos(vMovePoint);
 			}
 		}

@@ -190,7 +190,7 @@ enum e_Ani {	ANI_BREATH = 0, ANI_WALK, ANI_RUN, ANI_WALK_BACKWARD, ANI_STRUCK0, 
 // MAX_INCLINE_CLIMB = sqrt(1 - sin(90 - Maximum slope angle)^2)
 constexpr float MAX_INCLINE_CLIMB = 0.6430f; // Maximum climbable slope value = 40 degrees
 
-enum e_MoveDirection { MD_STOP, MD_FOWARD, MD_BACKWARD, MD_UNKNOWN = 0xffffffff };
+enum e_MoveDirection { MD_STOP, MD_FORWARD, MD_BACKWARD, MD_UNKNOWN = 0xffffffff };
 
 constexpr float MOVE_DELTA_WHEN_RUNNING = 3.0f;	// Movement multiplier for running.
 constexpr float MOVE_SPEED_WHEN_WALK = 1.5f;	// Standard player walking speed.

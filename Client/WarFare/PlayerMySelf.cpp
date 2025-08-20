@@ -272,7 +272,7 @@ void CPlayerMySelf::Tick()
 
 								if(fDist > fDistLimit && !m_bTargetOrPosMove)
 								{
-									CGameProcedure::s_pProcMain->CommandMove(MD_FOWARD, true);
+									CGameProcedure::s_pProcMain->CommandMove(MD_FORWARD, true);
 									s_pPlayer->SetMoveTargetID(pTarget->IDNumber());
 								}
 							}
