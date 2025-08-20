@@ -412,29 +412,11 @@ int CGameProcLogIn_1298::MsgRecv_GameServerLogIn(Packet & pkt) // virtual - êµ­ê
 
 	if (NATION_NOTSELECTED == s_pPlayer->m_InfoBase.eNation)
 	{
-		s_SndMgr.ReleaseStreamObj(&s_pSnd_BGM);
-
-		s_pSnd_BGM = s_pEng->s_SndMgr.CreateStreamObj(ID_SOUND_BGM_EL_BATTLE);
-		if (s_pSnd_BGM != nullptr)
-		{
-			s_pSnd_BGM->Looping(true);
-			s_pSnd_BGM->Play();
-		}
-
 		ProcActiveSet((CGameProcedure*) s_pProcNationSelect);
 	}
 	else if (NATION_KARUS == s_pPlayer->m_InfoBase.eNation
 		|| NATION_ELMORAD == s_pPlayer->m_InfoBase.eNation)
 	{
-		s_SndMgr.ReleaseStreamObj(&s_pSnd_BGM);
-
-		s_pSnd_BGM = s_SndMgr.CreateStreamObj(ID_SOUND_BGM_EL_BATTLE);
-		if (s_pSnd_BGM != nullptr)
-		{
-			s_pSnd_BGM->Looping(true);
-			s_pSnd_BGM->Play();
-		}
-
 		ProcActiveSet((CGameProcedure*) s_pProcCharacterSelect);
 	}
 
