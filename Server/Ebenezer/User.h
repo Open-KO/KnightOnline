@@ -228,7 +228,7 @@ public:
 	BOOL CheckExistItem(int itemid, short count);
 	BOOL CheckWeight(int itemid, short count);
 	BOOL CheckSkillPoint(BYTE skillnum, BYTE min, BYTE max);
-	BOOL GoldLose(int gold);
+	bool GoldLose(int gold);
 	void GoldGain(int gold);
 	void SendItemWeight();
 	void ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial, int itemid, int count, int durability);
