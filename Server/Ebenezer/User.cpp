@@ -11618,7 +11618,7 @@ void CUser::GoldGain(int gold)
 	int64_t iTotalGold = 0;
 
 	if (m_pUserData->m_iGold < 0)
-		m_pUserData->m_iGold = 0;
+		spdlog::error("CUser::GoldGain: [charId={}]", m_pUserData->m_id);
 
 	if (gold < 0)
 		gold = 0;
@@ -11644,7 +11644,7 @@ bool CUser::GoldLose(int gold)
 	char send_buff[256] = {};
 
 	if (m_pUserData->m_iGold < 0)
-		m_pUserData->m_iGold = 0;
+		spdlog::error("CUser::GoldLose: [charId={}]",m_pUserData->m_id);
 
 	if (gold < 0)
 		gold = 0;
