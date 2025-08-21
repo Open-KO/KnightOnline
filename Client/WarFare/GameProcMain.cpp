@@ -5097,11 +5097,11 @@ void CGameProcMain::MsgRecv_PartyOrForce(Packet& pkt)
 
 		case N3_SP_PARTY_OR_FORCE_INSERT:			// 0x03	// Send - s1(ID) | Recv - s3(ID, HPMax, HP, MPMax, MP) b2(Level, Class) - 문자열은 ID 로 알아낸다..
 		{
-			int iIDorErrorCode		= pkt.read<uint16_t>();		// IDs and positive numbers, error codes are negative numbers
-			int iPartyPosition		= pkt.read<int8_t>();		// order of user in the party
+			int iIDorErrorCode		= pkt.read<int16_t>();		// IDs and positive numbers, error codes are negative numbers
 
 			if (iIDorErrorCode >= 0)
 			{
+				int iPartyPosition	= pkt.read<uint8_t>();		// order of user in the party
 				int iIDLength		= pkt.read<int16_t>();
 				std::string szID;	pkt.readString(szID, iIDLength);
 				int iHPMax			= pkt.read<int16_t>();
