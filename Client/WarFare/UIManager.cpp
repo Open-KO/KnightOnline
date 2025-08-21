@@ -36,12 +36,11 @@ CUIManager::CUIManager()
 	m_dwMouseFlagsCur = 0;
 	m_bEnableOperation = true;					// UI 조작이 가능한 상태인가?
 	m_pUIFocused = nullptr;
+	m_bDoneSomething = false;					// UI 에서 조작을 했다...
 #ifdef _DEBUG
 	m_pDFont = nullptr;
-#endif;
-
-	m_bDoneSomething = false;					// UI 에서 조작을 했다...
 	m_bDisplayDebugText = true;
+#endif;
 }
 
 CUIManager::~CUIManager()
