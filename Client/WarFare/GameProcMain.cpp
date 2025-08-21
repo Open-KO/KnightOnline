@@ -720,9 +720,13 @@ void CGameProcMain::Render()
 	ACT_WORLD->RenderSkyWeather();							// 하늘 렌더링..
 	
 	CGameProcedure::Render(); // UI 나 그밖의 기본적인 것들 렌더링..
+#ifdef DEBUG
+	s_pUIMgr->RenderDebugText();
+#endif // DEBUG
+
 	if(m_pWarMessage) m_pWarMessage->RenderMessage();
 	if(s_pGameCursor) s_pGameCursor->Render();
-
+	
 	s_pEng->s_lpD3DDev->EndScene();
 	s_pEng->Present(CN3Base::s_hWndBase);
 }
@@ -1357,7 +1361,16 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 #if _DEBUG
 	if(s_pLocalInput->IsKeyPress(DIK_F12)) // 디버깅 테스트..
 		s_pEng->Lightning(); // 번개 치기..
+	
+	if (s_pLocalInput->IsKeyPress(KM_TOGGLE_DEBUG_TEXT))
+	{
+		if (s_pUIMgr->m_bDisplayDebugText)
+			s_pUIMgr->SetVisibleDebugText(false);
+		else
+			s_pUIMgr->SetVisibleDebugText(true);
+	}
 #endif
+
 }
 
 void CGameProcMain::ProcessPlayerInclination()											// 경사에 서 있을때..
@@ -3849,11 +3862,7 @@ void CGameProcMain::InitUI()
 	m_pUIStateBarAndMiniMap->Init(s_pUIMgr);
 	m_pUIStateBarAndMiniMap->LoadFromFile(pTbl->szStateBar);
 	m_pUIStateBarAndMiniMap->SetStyle(UISTYLE_FOCUS_UNABLE | UISTYLE_HIDE_UNABLE);
-#ifdef _DEBUG
-	m_pUIStateBarAndMiniMap->SetPos(0, 70); // 디버그 정보 표시때문에 조금 내린다....
-#else
 	m_pUIStateBarAndMiniMap->SetPos(0, 0);
-#endif
 
 	// 다용도 UI - 상태, 기사단관리, 퀘스트, 친구 관리등...
 	m_pUIVar->Init(s_pUIMgr);

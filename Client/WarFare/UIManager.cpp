@@ -41,6 +41,7 @@ CUIManager::CUIManager()
 #endif;
 
 	m_bDoneSomething = false;					// UI 에서 조작을 했다...
+	m_bDisplayDebugText = true;
 }
 
 CUIManager::~CUIManager()
@@ -192,6 +193,17 @@ void CUIManager::Render()
 	CN3UIBase::Render();	// 자식들 render
 	if (s_pTooltipCtrl) s_pTooltipCtrl->Render();	// tooltip render
 
+#ifdef _DEBUG
+	RenderDebugText();
+#endif // _DEBUG
+
+
+	this->RenderStateRestore();
+}
+
+#ifdef _DEBUG
+void CUIManager::RenderDebugText()
+{
 	/*
 	NOTE: there is a very weird issue with setting the render state and displaying text.
 	- when the debug info is being displayed and you change window focus weird shit happens
@@ -199,7 +211,13 @@ void CUIManager::Render()
 	every game procedure which is somewhat unwanted right now...
 	*/
 	////////////////////////////////////////////////////////
-#ifdef _DEBUG
+
+	if (!m_bDisplayDebugText)
+		return;
+
+	if (NULL == s_lpD3DDev) 
+		return;
+
 	if (m_pDFont == nullptr)
 	{
 		m_pDFont = new CDFont("굴림", 10);
@@ -246,20 +264,38 @@ void CUIManager::Render()
 		szDebugs[3].clear();
 	}
 
+	// positions for top right side of the screen
+
+	int maxWidth = 0;
 	for (int i = 0; i < 4; i++)
 	{
 		if (szDebugs[i].empty())
 			continue;
 
+		SIZE size;
+		if (m_pDFont->GetTextExtent(szDebugs[i], szDebugs[i].size(), &size))
+		{
+			if (size.cx > maxWidth)
+				maxWidth = size.cx;
+		}
+	}
+
+	float baseX = CGameBase::s_Options.iViewWidth - maxWidth - 10.0f;
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (szDebugs[i].empty())
+			continue;
+
+		float y = 10.0f + i * 18;
 		m_pDFont->SetText(szDebugs[i]);
-		m_pDFont->DrawText(0.0f, 0.0f + i * 18, 0xFFFFFFFF, 0);
+		m_pDFont->DrawText(baseX, y, 0xFFFFFFFF, 0);
 		szDebugs[i].clear();
 	}
-#endif
-	////////////////////////////////////////////////////////
 
-	this->RenderStateRestore();
+	////////////////////////////////////////////////////////
 }
+#endif
 
 void CUIManager::RenderStateSet()
 {

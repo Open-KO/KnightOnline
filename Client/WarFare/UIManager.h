@@ -36,6 +36,9 @@ protected:
 
 public:
 	bool		m_bDoneSomething;		// UI 에서 조작을 했다...
+#ifdef _DEBUG
+	bool		m_bDisplayDebugText;
+#endif // _DEBUG
 
 public:
 	void UserMoveHideUIs();
@@ -59,7 +62,10 @@ public:
 	void		ReorderChildList();
 
 	bool		BroadcastIconDropMsg(__IconItemSkill* spItem);
-
+#ifdef _DEBUG
+	void RenderDebugText();
+	inline void SetVisibleDebugText(bool bState){m_bDisplayDebugText = bState;};
+#endif //_DEBUG
 	CUIManager();
 	virtual ~CUIManager();
 };

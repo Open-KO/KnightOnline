@@ -84,7 +84,11 @@ enum eKeyMap {	KM_HOTKEY1 = DIK_1,
 				KM_SKILL_PAGE_5 = DIK_F5,
 				KM_SKILL_PAGE_6 = DIK_F6,
 				KM_SKILL_PAGE_7 = DIK_F7,
-				KM_SKILL_PAGE_8 = DIK_F8 };
+				KM_SKILL_PAGE_8 = DIK_F8,
+#ifdef _DEBUG
+				KM_TOGGLE_DEBUG_TEXT = DIK_ADD, // numpad +
+#endif // _DEBUG		
+}; 
 
 enum e_PlayerType { PLAYER_BASE = 0, PLAYER_NPC = 1, PLAYER_OTHER = 2, PLAYER_MYSELF = 3 };
 
