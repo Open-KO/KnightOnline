@@ -7427,15 +7427,15 @@ bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 bool CGameProcMain::TryStartAttack()
 {
 	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);
-	if(pTarget == nullptr || pTarget->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
+	if (pTarget == nullptr || pTarget->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
 	{
 		s_pPlayer->m_iIDTarget = SKILLMAGIC_TARGET_UNKNOWN;
 		return false;
 	}
 
-	if(s_pEng->ViewPoint() == VP_THIRD_PERSON)
+	if (s_pEng->ViewPoint() == VP_THIRD_PERSON)
 	{
-		if(s_pPlayer->IsAttackableTarget(pTarget, false))
+		if (s_pPlayer->IsAttackableTarget(pTarget, false))
 		{
 			CommandMove(MD_STOP, true);
 			CommandEnableAttackContinous(true, pTarget);
