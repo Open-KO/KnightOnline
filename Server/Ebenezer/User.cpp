@@ -11619,10 +11619,10 @@ void CUser::GoldGain(int gold)
 
 	if (m_pUserData->m_iGold < 0)
 	{
-		spdlog::error("CUser::GoldGain: [charId={}]", m_pUserData->m_id);
+		spdlog::error("User::GoldGain: user has negative gold [charId={} existingGold={}]",
+			m_pUserData->m_id, m_pUserData->m_iGold);
 		return;
-	}
-		
+	}	
 
 	if (gold < 0)
 		gold = 0;
@@ -11649,10 +11649,10 @@ bool CUser::GoldLose(int gold)
 
 	if (m_pUserData->m_iGold < 0)
 	{
-		spdlog::error("CUser::GoldLose: [charId={}]", m_pUserData->m_id);
+		spdlog::error("User::GoldLose: user has negative gold [charId={} existingGold={}]",
+			m_pUserData->m_id, m_pUserData->m_iGold);
 		return false;
 	}
-		
 
 	if (gold < 0)
 		gold = 0;
