@@ -9790,10 +9790,14 @@ BOOL CUser::WarpListObjectEvent(short objectindex, short nid)
 	if (pEvent == nullptr)
 		return FALSE;
 
-	// If the warp gate belongs to a nation, which isn't us...
-	// or we're in the opposing nation's zone...
-	if ((pEvent->sBelong != 0 && pEvent->sBelong != GetNation())
-		|| (pMap->m_nZoneNumber != GetNation() && pMap->m_nZoneNumber <= ELMORAD))
+	// We cannot use warp gates belonging to another nation.
+	if (pEvent->sBelong != 0
+		&& pEvent->sBelong != m_pUserData->m_bNation)
+		return FALSE;
+
+	// We cannot use warp gates when invading.
+	if (m_pUserData->m_bNation != m_pUserData->m_bZone
+		&& m_pUserData->m_bZone <= ZONE_ELMORAD)
 		return FALSE;
 
 	if (!GetWarpList(pEvent->sControlNpcID))
@@ -9806,6 +9810,7 @@ void CUser::ObjectEvent(char* pBuf)
 {
 	int index = 0, objectindex = 0, send_index = 0, result = 0, nid = 0;
 	char send_buff[128] = {};
+	uint8_t objectType = 0;
 
 	C3DMap* pMap = nullptr;
 	_OBJECT_EVENT* pEvent = nullptr;
@@ -9820,6 +9825,8 @@ void CUser::ObjectEvent(char* pBuf)
 	pEvent = pMap->GetObjectEvent(objectindex);
 	if (pEvent == nullptr)
 		goto fail_return;
+
+	objectType = static_cast<uint8_t>(pEvent->sType);
 
 	switch (pEvent->sType)
 	{
@@ -9861,7 +9868,7 @@ void CUser::ObjectEvent(char* pBuf)
 
 fail_return:
 	SetByte(send_buff, WIZ_OBJECT_EVENT, send_index);
-	SetByte(send_buff, pEvent == nullptr ? 0 : pEvent->sType, send_index);
+	SetByte(send_buff, objectType, send_index);
 	SetByte(send_buff, 0, send_index);
 	Send(send_buff, send_index);
 }
