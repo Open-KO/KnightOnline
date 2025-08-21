@@ -9790,6 +9790,12 @@ BOOL CUser::WarpListObjectEvent(short objectindex, short nid)
 	if (pEvent == nullptr)
 		return FALSE;
 
+	// If the warp gate belongs to a nation, which isn't us...
+	// or we're in the opposing nation's zone...
+	if ((pEvent->sBelong != 0 && pEvent->sBelong != GetNation())
+		|| (pMap->m_nZoneNumber != GetNation() && pMap->m_nZoneNumber <= ELMORAD))
+		return FALSE;
+
 	if (!GetWarpList(pEvent->sControlNpcID))
 		return FALSE;
 
@@ -9855,6 +9861,7 @@ void CUser::ObjectEvent(char* pBuf)
 
 fail_return:
 	SetByte(send_buff, WIZ_OBJECT_EVENT, send_index);
+	SetByte(send_buff, pEvent == nullptr ? 0 : pEvent->sType, send_index);
 	SetByte(send_buff, 0, send_index);
 	Send(send_buff, send_index);
 }

@@ -376,6 +376,7 @@ public:
 	void LoginProcess(char* pBuf);
 	void Parsing(int len, char* pData);
 	void CloseProcess();
+	inline BYTE GetNation() const { return (m_pUserData != nullptr) ? m_pUserData->m_bNation : 0; };
 	CUser();
 	virtual ~CUser();
 };
