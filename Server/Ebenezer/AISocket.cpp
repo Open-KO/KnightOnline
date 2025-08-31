@@ -1002,22 +1002,8 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 	SetByte(pOutBuf, WIZ_NPC_INOUT, send_index);
 	SetByte(pOutBuf, NPC_IN, send_index);
-	SetShort(pOutBuf, instanceId, send_index);
-	SetShort(pOutBuf, pictureId, send_index);
-	SetByte(pOutBuf, tNpcKind, send_index);
-	SetDWORD(pOutBuf, iSellingGroup, send_index);
-	SetShort(pOutBuf, sSize, send_index);
-	SetDWORD(pOutBuf, iWeapon_1, send_index);
-	SetDWORD(pOutBuf, iWeapon_2, send_index);
-	SetShort(pOutBuf, strlen(pNpc->m_strName), send_index);
-	SetString(pOutBuf, pNpc->m_strName, strlen(pNpc->m_strName), send_index);
-	SetByte(pOutBuf, byGroup, send_index);
-	SetByte(pOutBuf, byLevel, send_index);
-	SetShort(pOutBuf, (WORD) fPosX * 10, send_index);
-	SetShort(pOutBuf, (WORD) fPosZ * 10, send_index);
-	SetShort(pOutBuf, (short) fPosY * 10, send_index);
-	SetDWORD(pOutBuf, (int) byGateOpen, send_index);
-	SetByte(pOutBuf, byObjectType, send_index);
+	SetShort(pOutBuf, pNpc->m_sNid, send_index);
+	pNpc->GetNpcInfo(pOutBuf, send_index);
 
 	m_pMain->Send_Region(pOutBuf, send_index, pNpc->m_sCurZone, nRegX, nRegZ);
 
