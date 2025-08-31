@@ -54,6 +54,9 @@
 #include "UIUpgradeSelect.h"
 #include "UILevelGuide.h"
 #include "UIMsgBoxOkCancel.h"
+#include "UICapeVendorList.h"
+#include "UICapeVendorShop.h"
+#include "UICapeVendorSymbol.h"
 
 #include "SubProcPerTrade.h"
 #include "CountableItemEditDlg.h"
@@ -168,6 +171,10 @@ CGameProcMain::CGameProcMain()				// r기본 생성자.. 각 변수의 역활은
 	m_pUIDead = new CUIDead();
 	m_pUIUpgradeSelect = new CUIUpgradeSelect();
 	m_pUILevelGuide = new CUILevelGuide();
+	m_pUICapeVendorList = new CUICapeVendorList();
+	m_pUICapeVendorShop = new CUICapeVendorShop();
+	m_pUICapeVendorSymbol = new CUICapeVendorSymbol();
+	m_pUICapeVendorPreview = new CUICapeVendorPreview();
 
 	m_pSubProcPerTrade = new CSubProcPerTrade();
 	m_pMagicSkillMng = new CMagicSkillMng(this);
@@ -218,6 +225,10 @@ CGameProcMain::~CGameProcMain()
 	delete m_pUIDead;
 	delete m_pUIUpgradeSelect;
 	delete m_pUILevelGuide;
+	delete m_pUICapeVendorList;
+	delete m_pUICapeVendorShop;
+	delete m_pUICapeVendorSymbol;
+	delete m_pUICapeVendorPreview;
 
 	delete m_pSubProcPerTrade;
 	delete m_pMagicSkillMng;
@@ -271,6 +282,10 @@ void CGameProcMain::ReleaseUIs()
 	m_pUICreateClanName->Release();
 	m_pUIUpgradeSelect->Release();
 	m_pUILevelGuide->Release();
+	m_pUICapeVendorList->Release();
+	m_pUICapeVendorShop->Release();
+	m_pUICapeVendorSymbol->Release();
+	m_pUICapeVendorPreview->Release();
 
 	CN3UIBase::DestroyTooltip();
 }
@@ -4134,6 +4149,46 @@ void CGameProcMain::InitUI()
 	m_pUIUpgradeSelect->SetState(UI_STATE_COMMON_NONE);
 	m_pUIUpgradeSelect->SetStyle(m_pUIUpgradeSelect->GetStyle() | UISTYLE_USER_MOVE_HIDE | UISTYLE_SHOW_ME_ALONE);
 
+	// Cape Vendor - List
+	m_pUICapeVendorList->Init(s_pUIMgr);
+	m_pUICapeVendorList->LoadFromFile(pTbl->szKnightCapeVendorList);
+	m_pUICapeVendorList->SetVisibleWithNoSound(false);
+	m_pUICapeVendorList->SetStyle(UISTYLE_USER_MOVE_HIDE);
+	rc = m_pUICapeVendorList->GetRegion();
+	iX = (iW - (rc.right - rc.left)) / 2;
+	iY = (iH - (rc.bottom - rc.top)) / 2;
+	m_pUICapeVendorList->SetPos(iX, iY);
+
+	// Cape Vendor - Shop
+	m_pUICapeVendorShop->Init(s_pUIMgr);
+	m_pUICapeVendorShop->LoadFromFile(pTbl->szKnightCapeVendorShop);
+	m_pUICapeVendorShop->SetVisibleWithNoSound(false);
+	m_pUICapeVendorShop->SetStyle(UISTYLE_USER_MOVE_HIDE);
+	rc = m_pUICapeVendorShop->GetRegion();
+	iX = (iW - (rc.right - rc.left)) / 2;
+	iY = (iH - (rc.bottom - rc.top)) / 2;
+	m_pUICapeVendorShop->SetPos(iX, iY);
+
+	// Cape Vendor - Symbol
+	m_pUICapeVendorSymbol->Init(s_pUIMgr);
+	m_pUICapeVendorSymbol->LoadFromFile(pTbl->szClanLogo);
+	m_pUICapeVendorSymbol->SetVisibleWithNoSound(false);
+	m_pUICapeVendorSymbol->SetStyle(UISTYLE_USER_MOVE_HIDE);
+	rc = m_pUICapeVendorSymbol->GetRegion();
+	iX = (iW - (rc.right - rc.left)) / 2;
+	iY = (iH - (rc.bottom - rc.top)) / 2;
+	m_pUICapeVendorSymbol->SetPos(iX, iY);
+
+	// Cape Vendor - Symbol Preview
+	m_pUICapeVendorPreview->Init(s_pUIMgr);
+	m_pUICapeVendorPreview->LoadFromFile(pTbl->szChrClanLogo);
+	m_pUICapeVendorPreview->SetVisibleWithNoSound(false);
+	m_pUICapeVendorPreview->SetStyle(UISTYLE_USER_MOVE_HIDE);
+	rc = m_pUICapeVendorPreview->GetRegion();
+	iX = (iW - (rc.right - rc.left)) / 2;
+	iY = (iH - (rc.bottom - rc.top)) / 2;
+	m_pUICapeVendorPreview->SetPos(iX, iY);
+
 	//ui level guide
 	m_pUILevelGuide->Init(s_pUIMgr);
 	m_pUILevelGuide->LoadFromFile(pTbl->szLvlGuide);
@@ -6204,6 +6259,9 @@ void CGameProcMain::MsgRecv_Knights(Packet& pkt)
 	case N3_SP_KNIGHTS_JOIN_REQ:
 		MsgRecv_Knigts_Join_Req(pkt);
 		break;
+	case N3_SP_KNIGHTS_CAPE_VENDOR: 
+		MsgRecv_Knights_Cape_Vendor(pkt);
+		break;
 
 /*	case N3_SP_KNIGHTS_APPOINT_CHIEF: //단장 임명 - 가입허가와 같음
 		{
@@ -7217,6 +7275,15 @@ void CGameProcMain::MsgRecv_Knigts_Join_Req(Packet& pkt)
 		}
 		break;
 	}
+}
+
+
+void CGameProcMain::MsgRecv_Knights_Cape_Vendor(Packet& pkt)
+{
+	uint16_t iDK1 = pkt.read<uint16_t>();
+	uint16_t iDK2 = pkt.read<uint16_t>();
+
+	m_pUICapeVendorList->SetVisible(true);
 }
 
 int CGameProcMain::MsgRecv_VersionCheck(Packet& pkt) // virtual

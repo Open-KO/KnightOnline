@@ -330,6 +330,15 @@
     <ClCompile Include="UIMsgBoxOkCancel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UICapeVendorList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UICapeVendorShop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UICapeVendorSymbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameProcedure.h">
@@ -669,6 +678,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIMsgBoxOkCancel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UICapeVendorList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UICapeVendorShop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UICapeVendorSymbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

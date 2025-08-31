@@ -93,6 +93,7 @@ const int SOCKET_PORT_LOGIN = 15100;
 								N3_SP_KNIGHTS_STASH =				0x0F, // 기사단 창고
 								N3_SP_KNIGHTS_DUTY_CHANGE =			0x10, // 멤버의 직위 변경.. 해당 멤버에게 간다.. Recv - s1(Knights ID) b1(직위);
 								N3_SP_KNIGHTS_JOIN_REQ =			0x11, // 기사단 인덱스
+								N3_SP_KNIGHTS_CAPE_VENDOR =			0x1B, // UI for Cape Vendor
 								N3_SP_KNIGHTS_UNKNOWN };
 
 	enum e_SubPacket_KNights_Create {	N3_SP_KNIGHTS_CREATE_FAIL_DBFAIL =			0x00,

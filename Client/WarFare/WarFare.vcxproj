@@ -153,6 +153,9 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SubProcPerTrade.cpp" />
+    <ClCompile Include="UICapeVendorSymbol.cpp" />
+    <ClCompile Include="UICapeVendorList.cpp" />
+    <ClCompile Include="UICapeVendorShop.cpp" />
     <ClCompile Include="UICharacterCreate.cpp" />
     <ClCompile Include="UICharacterSelect.cpp" />
     <ClCompile Include="UIChat.cpp" />
@@ -238,6 +241,9 @@
     <ClInclude Include="N3River.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="text_resources.h" />
+    <ClInclude Include="UICapeVendorSymbol.h" />
+    <ClInclude Include="UICapeVendorList.h" />
+    <ClInclude Include="UICapeVendorShop.h" />
     <ClInclude Include="UICmdEdit.h" />
     <ClInclude Include="UICmdList.h" />
     <ClInclude Include="ItemRepairMgr.h" />

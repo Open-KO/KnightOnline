@@ -635,8 +635,8 @@ struct __TABLE_UI_RESRC
 	std::string szNameCheck;			// 89
 	std::string szCSWAdmin;				// 90
 	std::string szCSWTax;				// 91
-	std::string szCSWCapeList;			// 92
-	std::string szKnightCapeShop;		// 93
+	std::string szKnightCapeVendorList;	// 92
+	std::string szKnightCapeVendorShop;	// 93
 	std::string szCSWTaxCollection;		// 94
 	std::string szCSWTaxRate;			// 95
 	std::string szCSWTaxRateMsg;		// 96
