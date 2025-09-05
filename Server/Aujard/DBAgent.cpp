@@ -724,6 +724,8 @@ bool CDBAgent::GetAllCharID(const char* accountId, char* charId1_, char* charId2
 		return false;
 	}
 
+	if(charId1.length() > MAX_ID_SIZE)
+		charId1.resize(MAX_ID_SIZE);
 	if (strcpy_s(charId1_, MAX_ID_SIZE + 1, charId1.c_str()))
 	{
 		spdlog::error("DBAgent::GetAllCharID: failed to write charId1(len: {}, val: {}) to charId1_",
@@ -731,6 +733,8 @@ bool CDBAgent::GetAllCharID(const char* accountId, char* charId1_, char* charId2
 		return false;
 	}
 
+	if (charId2.length() > MAX_ID_SIZE)
+		charId2.resize(MAX_ID_SIZE);
 	if (strcpy_s(charId2_, MAX_ID_SIZE + 1, charId2.c_str()))
 	{
 		spdlog::error("DBAgent::GetAllCharID: failed to write charId2(len: {}, val: {}) to charId2_",
@@ -738,6 +742,8 @@ bool CDBAgent::GetAllCharID(const char* accountId, char* charId1_, char* charId2
 		return false;
 	}
 
+	if (charId3.length() > MAX_ID_SIZE)
+		charId3.resize(MAX_ID_SIZE);
 	if (strcpy_s(charId3_, MAX_ID_SIZE + 1, charId3.c_str()))
 	{
 		spdlog::error("DBAgent::GetAllCharID: failed to write charId3(len: {}, val: {}) to charId3_",
