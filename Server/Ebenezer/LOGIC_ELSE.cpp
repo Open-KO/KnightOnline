@@ -128,15 +128,15 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);		// Chances of you hitting the jackpot		
 	}
-	else if(0 == strcmp(temp, "CHECK_NOAH"))
+	else if (0 == strcmp(temp, "CHECK_NOAH"))
 	{
 		m_LogicElse = LOGIC_CHECK_NOAH;
 
 		index += ParseSpace(temp, pBuf + index);
-		m_LogicElseInt[i++] = atoi(temp); 		
+		m_LogicElseInt[i++] = atoi(temp);		// Minimum
 
 		index += ParseSpace(temp, pBuf + index);
-		m_LogicElseInt[i++] = atoi(temp);	
+		m_LogicElseInt[i++] = atoi(temp);		// Maximum
 	}
 ////////////////////////////////////////////////////////////////////////////
 
