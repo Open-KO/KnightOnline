@@ -11425,6 +11425,11 @@ BOOL CUser::CheckEventLogic(EVENT_DATA* pEventData)
 					bExact = TRUE;
 				break;
 
+			case LOGIC_NOEXIST_ITEM:
+				if (!CheckExistItem(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = TRUE;
+				break;
+
 			case LOGIC_CHECK_CLASS:
 				if (CheckClass(
 					pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1], pLE->m_LogicElseInt[2],

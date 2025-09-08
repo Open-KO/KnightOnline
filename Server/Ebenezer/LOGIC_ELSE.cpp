@@ -81,6 +81,16 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);		// Item count
 	}
+	else if (0 == strcmp(temp, "CHECK_NOEXIST_ITEM"))
+	{
+		m_LogicElse = LOGIC_NOEXIST_ITEM;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// Item no.
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// Item count
+	}
 	else if (0 == strcmp(temp, "CHECK_CLASS"))
 	{
 		m_LogicElse = LOGIC_CHECK_CLASS;
