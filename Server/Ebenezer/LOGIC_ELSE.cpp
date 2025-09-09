@@ -189,6 +189,87 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
+	else if (0 == strcmp(temp, "CHECK_PROMOTION_ELIGIBLE"))
+	{
+		m_LogicElse = LOGIC_CHECK_PROMOTION_ELIGIBLE;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_MONSTER_CHALLENGE_TIME"))
+	{
+		m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_PPCARD_SERIAL"))
+	{
+		m_LogicElse = LOGIC_CHECK_PPCARD_SERIAL;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_NOEXIST_ITEM"))
+	{
+		m_LogicElse = LOGIC_CHECK_NOEXIST_ITEM;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// Item
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// ???
+	}
+	else if (0 == strcmp(temp, "CHECK_EXIST_EVENT"))
+	{
+		m_LogicElse = LOGIC_CHECK_EXIST_EVENT;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// Event
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// 0 = not started, 1 = started but not finished, 2 = finished
+	}
+	else if (0 == strcmp(temp, "CHECK_ITEMCHANGE_NUM"))
+	{
+		m_LogicElse = LOGIC_CHECK_ITEMCHANGE_NUM;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_NOCLASS"))
+	{
+		m_LogicElse = LOGIC_CHECK_NOCLASS;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_LOYALTY"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+
 ////////////////////////////////////////////////////////////////////////////
 
 	m_bAnd = TRUE;
