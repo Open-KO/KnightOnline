@@ -132,7 +132,6 @@
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
     <ClCompile Include="EbenezerDlg.cpp" />
-    <ClCompile Include="EbenezerDlg_CommandHandler.cpp" />
     <ClCompile Include="EVENT.cpp" />
     <ClCompile Include="EVENT_DATA.cpp" />
     <ClCompile Include="EXEC.cpp" />
@@ -145,6 +144,7 @@
     <ClCompile Include="MagicProcess.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Npc.cpp" />
+    <ClCompile Include="OperationMessage.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="EbenezerResourceFormatter.cpp" />
     <ClCompile Include="SharedMem.cpp" />
@@ -178,6 +178,7 @@
     <ClInclude Include="MagicProcess.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Npc.h" />
+    <ClInclude Include="OperationMessage.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SharedMem.h" />

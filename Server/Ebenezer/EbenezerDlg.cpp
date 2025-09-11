@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "EbenezerDlg.h"
+#include "OperationMessage.h"
 #include "User.h"
 #include "db_resources.h"
 
@@ -2253,7 +2254,8 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 
 			if (chatstr[0] == '+')
 			{
-				OperationMessage(chatstr, nullptr);
+				OperationMessage opMessage(this, nullptr);
+				opMessage.ParseGM(chatstr);
 				return TRUE;
 			}
 

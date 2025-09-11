@@ -86,8 +86,6 @@ public:
 		return s_pInstance;
 	}
 
-	void OperationMessage_ZoneChange(const char* command, CUser* pSrcUser, const std::vector<std::string>& parts);
-	void OperationMessage(const char* command, CUser* pSrcUser);
 	C3DMap* GetMapByID(int iZoneID) const;
 	C3DMap* GetMapByIndex(int iZoneIndex) const;
 	void FlySanta();

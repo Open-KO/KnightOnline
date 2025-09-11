@@ -5,8 +5,9 @@
 #include "stdafx.h"
 #include "Ebenezer.h"
 #include "EbenezerDlg.h"
-#include "User.h"
 #include "Map.h"
+#include "OperationMessage.h"
+#include "User.h"
 #include "db_resources.h"
 
 #include <shared/packets.h>
@@ -17,7 +18,6 @@
 static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
-
 
 extern CRITICAL_SECTION g_region_critical;
 extern CRITICAL_SECTION g_LogFile_critical;
@@ -1923,7 +1923,8 @@ void CUser::Chat(char* pBuf)
 	if (m_pUserData->m_bAuthority == AUTHORITY_MANAGER
 		&& chatstr[0] == '+')
 	{
-		m_pMain->OperationMessage(chatstr, this);
+		OperationMessage opMessage(m_pMain, this);
+		opMessage.ParseGM(chatstr);
 		return;
 	}
 
