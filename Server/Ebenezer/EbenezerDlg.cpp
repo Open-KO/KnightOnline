@@ -2251,6 +2251,12 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			m_AnnounceEdit.SetWindowText(_T(""));
 			UpdateData(FALSE);
 
+			if (chatstr[0] == '+')
+			{
+				OperationMessage(chatstr, nullptr);
+				return TRUE;
+			}
+
 			if (_strnicmp("/kill", chatstr, 5) == 0)
 			{
 				strcpy(killstr, chatstr + 6);

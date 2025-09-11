@@ -254,10 +254,11 @@ constexpr int BBS_CHECK_TIME		= 36000;
 // DEFINE Shared Memory Queue
 //////////////////////////////////////////////////////////////////
 
-#define E	0x00
-#define R	0x01
-#define W	0x02
-#define WR	0x03
+// TODO: Throw these away. They're too vague and contaminate things.
+constexpr uint8_t E		= 0x00;
+constexpr uint8_t R		= 0x01;
+constexpr uint8_t W		= 0x02;
+constexpr uint8_t WR	= 0x03;
 
 // DEFINE Shared Memory Queue Return VALUE
 
@@ -480,7 +481,7 @@ inline void SetVarString(char* tBuf, const char* sBuf, int len, int& index)
 }
 
 // ~sungyong 2001.11.06
-inline int ParseSpace(char* tBuf, char* sBuf)
+inline int ParseSpace(char* tBuf, const char* sBuf)
 {
 	int i = 0, index = 0;
 	BOOL flag = FALSE;

@@ -33,3 +33,6 @@
 	path = deps/mpg123
 	url = https://github.com/madebr/mpg123.git
 	branch = master-with-github-ci
+[submodule "deps/djb2"]
+	path = deps/djb2
+	url = https://github.com/ymmfty0/djb2

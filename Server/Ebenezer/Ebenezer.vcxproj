@@ -132,6 +132,7 @@
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
     <ClCompile Include="EbenezerDlg.cpp" />
+    <ClCompile Include="EbenezerDlg_CommandHandler.cpp" />
     <ClCompile Include="EVENT.cpp" />
     <ClCompile Include="EVENT_DATA.cpp" />
     <ClCompile Include="EXEC.cpp" />

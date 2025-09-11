@@ -1920,6 +1920,13 @@ void CUser::Chat(char* pBuf)
 
 	GetString(chatstr, pBuf, chatlen, index);
 
+	if (m_pUserData->m_bAuthority == AUTHORITY_MANAGER
+		&& chatstr[0] == '+')
+	{
+		m_pMain->OperationMessage(chatstr, this);
+		return;
+	}
+
 	if (type == PUBLIC_CHAT
 		|| type == ANNOUNCEMENT_CHAT)
 	{
