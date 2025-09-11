@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{9E410F3D-EF94-41FA-A373-B2136D5F3D1E}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="UserMacros">
+    <DependencyName>djb2</DependencyName>
+    <LocalDependencyDir>deps\djb2</LocalDependencyDir>
+    <RealProjectPath></RealProjectPath>
+  </PropertyGroup>
+  <Import Project="$(PropsDir)fetch_wrapper.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
