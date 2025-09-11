@@ -21,7 +21,7 @@ static std::vector<std::string> SplitCommandIntoParts(const std::string& command
 	std::istringstream ss(command);
 	std::string part;
 	while (ss >> part)
-		parts.push_back(std::move(part));
+		parts.push_back(part);
 
 	return parts;
 }
@@ -104,7 +104,7 @@ float OperationMessage::ParseFloat(size_t partIndex) const
 	if (partIndex >= _parts.size())
 		throw std::invalid_argument(fmt::format("argument {} not supplied", partIndex));
 
-	return static_cast<float>(std::stof(_parts[partIndex]));
+	return std::stof(_parts[partIndex]);
 }
 
 void OperationMessage::LogInvalidArgumentException(const std::string_view source, const std::invalid_argument& ex) const
@@ -112,13 +112,13 @@ void OperationMessage::LogInvalidArgumentException(const std::string_view source
 	if (_srcUser != nullptr)
 	{
 		spdlog::warn(
-			"{}: argument could not be parsed from GM [charId={} command={}, exception={}]",
+			"{}: argument could not be parsed from GM [charId={} command='{}' exception='{}']",
 			source, _srcUser->m_pUserData->m_id, _command, ex.what());
 	}
 	else
 	{
 		spdlog::warn(
-			"{}: argument could not be parsed from server [command={}, exception={}]",
+			"{}: argument could not be parsed from server [command='{}' exception='{}']",
 			source, _command, ex.what());
 	}
 }
@@ -128,13 +128,13 @@ void OperationMessage::LogOutOfRangeException(const std::string_view source, con
 	if (_srcUser != nullptr)
 	{
 		spdlog::warn(
-			"{}: parsed argument out of range from GM [charId={} command={}, exception={}]",
+			"{}: parsed argument out of range from GM [charId={} command='{}' exception='{}']",
 			source, _srcUser->m_pUserData->m_id, _command, ex.what());
 	}
 	else
 	{
 		spdlog::warn(
-			"{}: parsed argument out of range from server [command={}, exception={}]",
+			"{}: parsed argument out of range from server [command='{}' exception='{}']",
 			source, _command, ex.what());
 	}
 }
