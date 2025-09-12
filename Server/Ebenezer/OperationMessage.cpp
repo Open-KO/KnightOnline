@@ -525,7 +525,6 @@ void OperationMessage::Close()
 void OperationMessage::Captain()
 {
 	_main->LoadKnightsRankTable();
-	// TODO
 }
 
 void OperationMessage::TieBreak()
