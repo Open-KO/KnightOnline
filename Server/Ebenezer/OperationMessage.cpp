@@ -75,14 +75,17 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 
 #if 0 // TODO
+			case "/open2"_djb2:
 			case "+open2"_djb2:
 				Open2();
 				break;
 
+			case "/open3"_djb2:
 			case "+open3"_djb2:
 				Open3();
 				break;
 
+			case "/mopen"_djb2:
 			case "+mopen"_djb2:
 				MOpen();
 				break;
@@ -112,14 +115,17 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 
 #if 0 // TODO
+			case "/tiebreak"_djb2:
 			case "+tiebreak"_djb2:
 				TieBreak();
 				break;
 
+			case "/auto"_djb2:
 			case "+auto"_djb2:
 				Auto();
 				break;
 
+			case "/auto_off"_djb2:
 			case "+auto_off"_djb2:
 				AutoOff();
 				break;
@@ -136,6 +142,7 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 
 #if 0 // TODO
+			case "/freediscount"_djb2:
 			case "+freediscount"_djb2:
 				FreeDiscount();
 				break;
@@ -157,6 +164,7 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 
 #if 0 // TODO
+			case "/angel"_djb2:
 			case "+angel"_djb2:
 				Angel();
 				break;
@@ -168,14 +176,17 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 
 #if 0 // TODO
+			case "/limitbattle"_djb2:
 			case "+limitbattle"_djb2:
 				LimitBattle();
 				break;
 
+			case "/onsummonblock"_djb2:
 			case "+onsummonblock"_djb2:
 				OnSummonBlock();
 				break;
 
+			case "/offsummonblock"_djb2:
 			case "+offsummonblock"_djb2:
 				OffSummonBlock();
 				break;
@@ -216,10 +227,12 @@ bool OperationMessage::Process(const std::string_view command)
 				SiegeWarCheckBase();
 				break;
 
+			case "/server_testmode"_djb2:
 			case "+server_testmode"_djb2:
 				ServerTestMode();
 				break;
 
+			case "/server_normalmode"_djb2:
 			case "+server_normalmode"_djb2:
 				ServerNormalMode();
 				break;
@@ -236,10 +249,12 @@ bool OperationMessage::Process(const std::string_view command)
 				SiegeWarLoadTable();
 				break;
 
+			case "/money_add"_djb2:
 			case "+money_add"_djb2:
 				MoneyAdd();
 				break;
 
+			case "/exp_add"_djb2:
 			case "+exp_add"_djb2:
 				ExpAdd();
 				break;
@@ -248,26 +263,32 @@ bool OperationMessage::Process(const std::string_view command)
 				UserBonus();
 				break;
 
+			case "/discount1"_djb2:
 			case "+discount1"_djb2:
 				Discount1();
 				break;
 
+			case "/discount2"_djb2:
 			case "+discount2"_djb2:
 				Discount2();
 				break;
 
+			case "/battle1"_djb2:
 			case "+battle1"_djb2:
 				Battle1();
 				break;
 
+			case "/battle2"_djb2:
 			case "+battle2"_djb2:
 				Battle2();
 				break;
 
+			case "/battle3"_djb2:
 			case "+battle3"_djb2:
 				Battle3();
 				break;
 
+			case "/battle_auto"_djb2:
 			case "+battle_auto"_djb2:
 				BattleAuto();
 				break;
@@ -276,42 +297,52 @@ bool OperationMessage::Process(const std::string_view command)
 				BattleReport();
 				break;
 
+			case "/challenge_on"_djb2:
 			case "+challenge_on"_djb2:
 				ChallengeOn();
 				break;
 
+			case "/challenge_off"_djb2:
 			case "+challenge_off"_djb2:
 				ChallengeOff();
 				break;
 
+			case "/challenge_kill"_djb2:
 			case "+challenge_kill"_djb2:
 				ChallengeKill();
 				break;
 
+			case "/challenge_level"_djb2:
 			case "+challenge_level"_djb2:
 				ChallengeLevel();
 				break;
 
+			case "/rental_report"_djb2:
 			case "+rental_report"_djb2:
 				RentalReport();
 				break;
 
+			case "/rental_stop"_djb2:
 			case "+rental_stop"_djb2:
 				RentalStop();
 				break;
 
+			case "/rental_start"_djb2:
 			case "+rental_start"_djb2:
 				RentalStart();
 				break;
 
+			case "/king_report1"_djb2:
 			case "+king_report1"_djb2:
 				KingReport1();
 				break;
 
+			case "/king_report2"_djb2:
 			case "+king_report2"_djb2:
 				KingReport2();
 				break;
 
+			case "/reload_king"_djb2:
 			case "+reload_king"_djb2:
 				ReloadKing();
 				break;
@@ -320,6 +351,44 @@ bool OperationMessage::Process(const std::string_view command)
 			case "/kill"_djb2:
 				Kill();
 				break;
+
+#if 0
+			case "/reload_notice"_djb2:
+				ReloadNotice();
+				break;
+
+			case "/reload_hacktool"_djb2:
+				ReloadHacktool();
+				break;
+
+			case "/serverdown"_djb2:
+				ServerDown();
+				break;
+
+			case "/writelog"_djb2:
+				WriteLog();
+				break;
+
+			case "/eventlog"_djb2:
+				EventLog();
+				break;
+
+			case "/eventlog_off"_djb2:
+				EventLogOff();
+				break;
+
+			case "/itemdown"_djb2:
+				ItemDown();
+				break;
+
+			case "/itemdownreset"_djb2:
+				ItemDownReset();
+				break;
+
+			case "/challengestop"_djb2:
+				ChallengeStop();
+				break;
+#endif
 
 			// Unhandled command.
 			default:
@@ -720,6 +789,51 @@ void OperationMessage::Kill()
 
 	const std::string& charId = ParseString(0);
 	_main->KillUser(charId.c_str());
+}
+
+void OperationMessage::ReloadNotice()
+{
+	// TODO
+}
+
+void OperationMessage::ReloadHacktool()
+{
+	// TODO
+}
+
+void OperationMessage::ServerDown()
+{
+	// TODO
+}
+
+void OperationMessage::WriteLog()
+{
+	// TODO
+}
+
+void OperationMessage::EventLog()
+{
+	// TODO
+}
+
+void OperationMessage::EventLogOff()
+{
+	// TODO
+}
+
+void OperationMessage::ItemDown()
+{
+	// TODO
+}
+
+void OperationMessage::ItemDownReset()
+{
+	// TODO
+}
+
+void OperationMessage::ChallengeStop()
+{
+	// TODO
 }
 
 bool OperationMessage::ParseCommand(const std::string_view command, size_t& key)

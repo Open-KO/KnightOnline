@@ -80,6 +80,15 @@ protected:
 	void KingReport2();
 	void ReloadKing();
 	void Kill();
+	void ReloadNotice();
+	void ReloadHacktool();
+	void ServerDown();
+	void WriteLog();
+	void EventLog();
+	void EventLogOff();
+	void ItemDown();
+	void ItemDownReset();
+	void ChallengeStop();
 
 	bool ParseCommand(const std::string_view command, size_t& key);
 
