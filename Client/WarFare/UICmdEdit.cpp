@@ -53,6 +53,7 @@ bool CUICmdEdit::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			m_szArg1 = m_pEdit_Box->GetString();
 			std::string strTempCmd = "/" + m_pText_Title->GetString() + " " + m_szArg1;
 			CGameProcedure::s_pProcMain->ParseChattingCommand(strTempCmd);
+
 			SetVisible(false);
 			return true;
 		}
@@ -66,13 +67,9 @@ bool CUICmdEdit::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	return true;
 }
 
-void CUICmdEdit::Open(std::string msg)
+void CUICmdEdit::Open(const std::string& msg)
 {
-	if (!msg.empty())
-	{
-		m_pText_Title->SetString(msg);
-	}
-	//m_pEdit_Box->SetString("");
+	m_pText_Title->SetString(msg);
 	m_pEdit_Box->SetFocus();
 	SetVisible(true);
 }
@@ -83,9 +80,7 @@ void CUICmdEdit::SetVisible(bool bVisible)
 		return;
 
 	if (!bVisible)
-	{
 		m_pEdit_Box->KillFocus();
-	}
 
 	CN3UIBase::SetVisible(bVisible);
 }

@@ -80,32 +80,7 @@
 static char THIS_FILE[]=__FILE__;
 #endif
 
-enum e_ChatCmd
-{
-	CMD_WHISPER, CMD_TOWN, CMD_EXIT, CMD_GREETING, CMD_GREETING2, CMD_GREETING3,
-	CMD_PROVOKE, CMD_PROVOKE2, CMD_PROVOKE3, CMD_GAME_SAVE, CMD_RECOMMEND, CMD_INDIVIDUAL_BATTLE,
-	CMDSIT_STAND, CMD_WALK_RUN, CMD_LOCATION,
-	
-	CMD_TRADE, CMD_FORBIDTRADE, CMD_PERMITTRADE, CMD_MERCHANT,
-
-	CMD_PARTY, CMD_LEAVEPARTY, CMD_RECRUITPARTY, CMD_FORBIDPARTY, CMD_PERMITPARTY,
-
-	CMD_JOINCLAN, CMD_WITHDRAWCLAN, CMD_FIRECLAN, CMD_COMMAND, CMD_CLAN_WAR,
-	CMD_SURRENDER, CMD_APPOINTVICECHIEF, CMD_CLAN_CHAT, CMD_CLAN_BATTLE,
-
-	CMD_CONFEDERACY, CMD_BAN_KNIGHTS, CMD_QUIT_KNIGHTS, CMD_BASE, CMD_DECLARATION,
-
-	CMD_VISIBLE, CMD_INVISIBLE, CMD_CLEAN, CMD_RAINING, CMD_SNOWING, CMD_TIME, CMD_CU_COUNT,
-	CMD_NOTICE, CMD_ARREST, CMD_FORBIDCONNECT, CMD_FORBIDCHAT, CMD_PERMITCHAT, CMD_NOTICEALL,
-	CMD_CUTOFF, CMD_VIEW, CMD_UNVIEW, CMD_FORBIDUSER, CMD_SUMMONUSER,
-	CMD_ATTACKDISABLE, CMD_ATTACKENABLE, CMD_PLC,
-
-	CMD_COUNT,
-	CMD_UNKNOWN = 0xffffffff
-};
-static std::string s_szCmdMsg[CMD_COUNT]; // 게임상 명령어
-
-
+std::string g_szCmdMsg[CMD_COUNT]; // 게임상 명령어
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -150,8 +125,8 @@ CGameProcMain::CGameProcMain()				// r기본 생성자.. 각 변수의 역활은
 	m_pUIInventory = new CUIInventory();
 	m_pUIPartyOrForce = new CUIPartyOrForce();
 	m_pUISkillTreeDlg = new CUISkillTreeDlg();
-	m_pUICmdListDlg = new CUICmdList();
-	m_pUICmdEditDlg = new CUICmdEdit();
+	m_pUICmdList = new CUICmdList();
+	m_pUICmdEdit = new CUICmdEdit();
 	m_pUIHotKeyDlg = new CUIHotKeyDlg();
 	m_pUIKnightsOp = new CUIKnightsOperation();			// 기사단 리스트 보기, 가입, 등...
 	m_pUIPartyBBS = new CUIPartyBBS(); // 파티 지원 시스템 게시판??..
@@ -200,8 +175,8 @@ CGameProcMain::~CGameProcMain()
 	delete m_pUIInventory;
 	delete m_pUIPartyOrForce;
 	delete m_pUISkillTreeDlg;
-	delete m_pUICmdListDlg;
-	delete m_pUICmdEditDlg;
+	delete m_pUICmdList;
+	delete m_pUICmdEdit;
 	delete m_pUIHotKeyDlg;
 	delete m_pUIKnightsOp;
 	delete m_pUIPartyBBS;
@@ -259,8 +234,8 @@ void CGameProcMain::ReleaseUIs()
 	m_pUIRepairTooltip->Release();
 	m_pUIPartyOrForce->Release();
 	m_pUISkillTreeDlg->Release();
-	m_pUICmdListDlg->Release();
-	m_pUICmdEditDlg->Release();
+	m_pUICmdList->Release();
+	m_pUICmdEdit->Release();
 	m_pUIHotKeyDlg->Release();
 	m_pUIKnightsOp->Release();			// 기사단 리스트 보기, 가입, 등...
 	m_pUIPartyBBS->Release();
@@ -287,23 +262,29 @@ void CGameProcMain::Init()
 		s_lpD3DDev->LightEnable(i, FALSE);
 
 	int i = 0;
-	for (uint32_t resource = IDS_CMD_WHISPER; resource <= IDS_CMD_LOCATION; resource++)
-		s_szCmdMsg[i++] = fmt::format_text_resource(resource);
+	for (uint32_t resource = IDS_CMD_WHISPER; resource <= IDS_CMD_INDIVIDUAL_BATTLE; resource++)
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
 
 	for (uint32_t resource = IDS_CMD_TRADE; resource <= IDS_CMD_MERCHANT; resource++)
-		s_szCmdMsg[i++] = fmt::format_text_resource(resource);
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
 
 	for (uint32_t resource = IDS_CMD_PARTY; resource <= IDS_CMD_PERMITPARTY; resource++)
-		s_szCmdMsg[i++] = fmt::format_text_resource(resource);
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
 
 	for (uint32_t resource = IDS_CMD_JOINCLAN; resource <= IDS_CMD_CLAN_BATTLE; resource++)
-		s_szCmdMsg[i++] = fmt::format_text_resource(resource);
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
 
 	for (uint32_t resource = IDS_CMD_CONFEDERACY; resource <= IDS_CMD_DECLARATION; resource++)
-		s_szCmdMsg[i++] = fmt::format_text_resource(resource);
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
 
 	for (uint32_t resource = IDS_CMD_VISIBLE; resource <= IDS_CMD_PLC; resource++)
-		s_szCmdMsg[i++] = fmt::format_text_resource(resource);
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
+
+	for (uint32_t resource = IDS_CMD_HIDE; resource <= IDS_CMD_DESTROY; resource++)
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
+
+	for (uint32_t resource = IDS_CMD_ROYALORDER; resource <= IDS_CMD_REWARD; resource++)
+		g_szCmdMsg[i++] = fmt::format_text_resource(resource);
 
 	s_SndMgr.ReleaseStreamObj(&s_pSnd_BGM);
 
@@ -2110,6 +2091,9 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	//..
 	s_pOPMgr->Release();							// 다른 유저 관리 클래스 초기화..
 	
+	if (m_pUICmdList != nullptr)
+		m_pUICmdList->CreateCategoryList();
+
 	m_bLoadComplete = TRUE;						// 로딩 끝..
 
 	return true;
@@ -3992,24 +3976,21 @@ void CGameProcMain::InitUI()
 	m_pUISkillTreeDlg->SetState(UI_STATE_COMMON_NONE);
 	m_pUISkillTreeDlg->SetStyle(m_pUISkillTreeDlg->GetStyle() | UISTYLE_POS_RIGHT);
 
+	m_pUICmdList->Init(s_pUIMgr);
+	m_pUICmdList->LoadFromFile(pTbl->szCmdList);
+	m_pUICmdList->SetVisibleWithNoSound(false);
+	rc = m_pUICmdList->GetRegion();
+	m_pUICmdList->SetPos(iW - (rc.right - rc.left), 10);
+	m_pUICmdList->SetStyle(m_pUISkillTreeDlg->GetStyle() | UISTYLE_POS_RIGHT);
 
-	m_pUICmdListDlg->Init(s_pUIMgr);
-	m_pUICmdListDlg->LoadFromFile(pTbl->szCmdList);
-	m_pUICmdListDlg->SetVisibleWithNoSound(false);
-	rc = m_pUICmdListDlg->GetRegion();
-	m_pUICmdListDlg->SetPos(iW - (rc.right - rc.left), 10);
-	m_pUICmdListDlg->SetUIType(UI_TYPE_BASE);
-	m_pUICmdListDlg->SetState(UI_STATE_COMMON_NONE);
-	m_pUICmdListDlg->SetStyle(m_pUISkillTreeDlg->GetStyle() | UISTYLE_POS_RIGHT);
-
-	m_pUICmdEditDlg->Init(s_pUIMgr);
-	m_pUICmdEditDlg->LoadFromFile(pTbl->szCmdEdit);
-	m_pUICmdEditDlg->SetVisibleWithNoSound(false);
-	rc = m_pUICmdEditDlg->GetRegion();
+	m_pUICmdEdit->Init(s_pUIMgr);
+	m_pUICmdEdit->LoadFromFile(pTbl->szCmdEdit);
+	m_pUICmdEdit->SetVisibleWithNoSound(false);
+	rc = m_pUICmdEdit->GetRegion();
 	iX = (iW - (rc.right - rc.left)) / 2;
 	iY = (iH - (rc.bottom - rc.top)) / 2;
-	m_pUICmdEditDlg->SetPos(iX, iY);
-	m_pUICmdEditDlg->SetStyle(UISTYLE_USER_MOVE_HIDE);
+	m_pUICmdEdit->SetPos(iX, iY);
+	m_pUICmdEdit->SetStyle(UISTYLE_USER_MOVE_HIDE);
 	
 	// default ui pos ..	해상도가 변경되면.. 상대 위치를 구해야 한다.. by ecli666
 	rc = m_pUIStateBarAndMiniMap->GetRegion();
@@ -4746,19 +4727,19 @@ bool CGameProcMain::CommandToggleUIMiniMap()
 
 bool CGameProcMain::CommandToggleCmdList()
 {
-	bool bNeedOpen = !(m_pUICmdListDlg->IsVisible());
+	bool bNeedOpen = !(m_pUICmdList->IsVisible());
 
 	if (m_pSubProcPerTrade->m_ePerTradeState != PER_TRADE_STATE_NONE)
 		return bNeedOpen;
 
 	if (bNeedOpen)
 	{
-		s_pUIMgr->SetFocusedUI(m_pUICmdListDlg);
-		m_pUICmdListDlg->Open();
+		s_pUIMgr->SetFocusedUI(m_pUICmdList);
+		m_pUICmdList->Open();
 	}
 	else
 	{
-		m_pUICmdListDlg->Close();
+		m_pUICmdList->Close();
 	}
 
 	return bNeedOpen;
@@ -4774,12 +4755,12 @@ bool CGameProcMain::CommandToggleLevelGuide()
 
 bool CGameProcMain::OpenCmdEdit(std::string msg)
 {
-	bool bNeedOpen = !(m_pUICmdEditDlg->IsVisible());
+	bool bNeedOpen = !m_pUICmdEdit->IsVisible();
 
 	if (bNeedOpen)
 	{
-		s_pUIMgr->SetFocusedUI(m_pUICmdEditDlg);
-		m_pUICmdEditDlg->Open(msg);
+		s_pUIMgr->SetFocusedUI(m_pUICmdEdit);
+		m_pUICmdEdit->Open(msg);
 	}
 
 	return bNeedOpen;
@@ -5650,7 +5631,7 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 	e_ChatCmd eCmd = CMD_UNKNOWN;
 	for(int i = 0; i < CMD_COUNT; i++)
 	{
-		if(0 == lstrcmpi(szCmds[0], s_szCmdMsg[i].c_str()))
+		if(0 == lstrcmpi(szCmds[0], g_szCmdMsg[i].c_str()))
 		{
 			eCmd = (e_ChatCmd)i;
 			break;
@@ -5876,9 +5857,9 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 
 		case CMD_NOTICE:
 		{
-			if(szCmd.size() >= (s_szCmdMsg[CMD_NOTICE].size()+2))//7)
+			if(szCmd.size() >= (g_szCmdMsg[CMD_NOTICE].size()+2))//7)
 			{
-				std::string szChat = szCmd.substr(s_szCmdMsg[CMD_NOTICE].size()+2); // "/공지 "를 제외한 나머지 문자열
+				std::string szChat = szCmd.substr(g_szCmdMsg[CMD_NOTICE].size()+2); // "/공지 "를 제외한 나머지 문자열
 				this->MsgSend_Chat(N3_CHAT_PUBLIC, szChat);
 			}
 		}
