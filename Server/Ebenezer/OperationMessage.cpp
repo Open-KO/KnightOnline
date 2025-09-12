@@ -24,11 +24,275 @@ void OperationMessage::ParseGM(const std::string_view command)
 	{
 		switch (key)
 		{
+#if 0 // TODO
+			case "+pursue"_djb2:
+				Pursue();
+				break;
+
+			case "+actpursue"_djb2:
+				ActPursue();
+				break;
+
+			case "+monpursue"_djb2:
+				MonPursue();
+				break;
+
+			case "+moncatch"_djb2:
+				MonCatch();
+				break;
+
+			case "+assault"_djb2:
+				Assault();
+				break;
+
+			case "+monsummon"_djb2:
+				MonSummon();
+				break;
+
+			case "+monsummonall"_djb2:
+				MonSummonAll();
+				break;
+
+			case "+unikmonster"_djb2:
+				UnikMonster();
+				break;
+
+			case "+user_seek_report"_djb2:
+				UserSeekReport();
+				break;
+
+			case "+monkill"_djb2:
+				MonKill();
+				break;
+
+			case "+open"_djb2:
+				Open();
+				break;
+
+			case "+open2"_djb2:
+				Open2();
+				break;
+
+			case "+open3"_djb2:
+				Open3();
+				break;
+
+			case "+mopen"_djb2:
+				MOpen();
+				break;
+
+			case "+forbiduser"_djb2:
+				ForbidUser();
+				break;
+
+			case "+forbidconnect"_djb2:
+				ForbidConnect();
+				break;
+
+			case "+snowopen"_djb2:
+				SnowOpen();
+				break;
+
+			case "+close"_djb2:
+				Close();
+				break;
+
+			case "+captain"_djb2:
+				Captain();
+				break;
+
+			case "+tiebreak"_djb2:
+				TieBreak();
+				break;
+
+			case "+auto"_djb2:
+				Auto();
+				break;
+
+			case "+auto_off"_djb2:
+				AutoOff();
+				break;
+
+			case "+down"_djb2:
+				Down();
+				break;
+
+			case "+discount"_djb2:
+				Discount();
+				break;
+
+			case "+freediscount"_djb2:
+				FreeDiscount();
+				break;
+
+			case "+alldiscount"_djb2:
+				AllDiscount();
+				break;
+
+			case "+undiscount"_djb2:
+				UnDiscount();
+				break;
+
+			case "+santa"_djb2:
+				Santa();
+				break;
+
+			case "+angel"_djb2:
+				Angel();
+				break;
+
+			case "+offsanta"_djb2:
+				OffSanta();
+				break;
+
+			case "+limitbattle"_djb2:
+				LimitBattle();
+				break;
+
+			case "+onsummonblock"_djb2:
+				OnSummonBlock();
+				break;
+
+			case "+offsummonblock"_djb2:
+				OffSummonBlock();
+				break;
+#endif
+
 			// +zonechange: {int: zoneId} [float: x] [float: z]
 			// NOTE: Coordinates are unofficial.
 			case "+zonechange"_djb2:
 				ZoneChange();
 				break;
+
+#if 0 // TODO
+			case "+siegewarfare"_djb2:
+				SiegeWarfare();
+				break;
+
+			case "+resetsiegewar"_djb2:
+				ResetSiegeWar();
+				break;
+
+			case "+siegewarschedule-start"_djb2:
+				SiegeWarScheduleStart();
+				break;
+
+			case "+siegewarschedule-end"_djb2:
+				SiegeWarScheduleEnd();
+				break;
+
+			case "+siegewar_base_report"_djb2:
+				SiegeWarBaseReport();
+				break;
+
+			case "+siegewar_status_report"_djb2:
+				SiegeWarStatusReport();
+				break;
+
+			case "+siegewar_check_base"_djb2:
+				SiegeWarCheckBase();
+				break;
+
+			case "+server_testmode"_djb2:
+				ServerTestMode();
+				break;
+
+			case "+server_normalmode"_djb2:
+				ServerNormalMode();
+				break;
+
+			case "+merchant_money"_djb2:
+				MerchantMoney();
+				break;
+
+			case "+siegewar_punish_knights"_djb2:
+				SiegeWarPunishKnights();
+				break;
+
+			case "+siegewar_load_table"_djb2:
+				SiegeWarLoadTable();
+				break;
+
+			case "+money_add"_djb2:
+				MoneyAdd();
+				break;
+
+			case "+exp_add"_djb2:
+				ExpAdd();
+				break;
+
+			case "+user_bonus"_djb2:
+				UserBonus();
+				break;
+
+			case "+discount1"_djb2:
+				Discount1();
+				break;
+
+			case "+discount2"_djb2:
+				Discount2();
+				break;
+
+			case "+battle1"_djb2:
+				Battle1();
+				break;
+
+			case "+battle2"_djb2:
+				Battle2();
+				break;
+
+			case "+battle3"_djb2:
+				Battle3();
+				break;
+
+			case "+battle_auto"_djb2:
+				BattleAuto();
+				break;
+
+			case "+battle_report"_djb2:
+				BattleReport();
+				break;
+
+			case "+challenge_on"_djb2:
+				ChallengeOn();
+				break;
+
+			case "+challenge_off"_djb2:
+				ChallengeOff();
+				break;
+
+			case "+challenge_kill"_djb2:
+				ChallengeKill();
+				break;
+
+			case "+challenge_level"_djb2:
+				ChallengeLevel();
+				break;
+
+			case "+rental_report"_djb2:
+				RentalReport();
+				break;
+
+			case "+rental_stop"_djb2:
+				RentalStop();
+				break;
+
+			case "+rental_start"_djb2:
+				RentalStart();
+				break;
+
+			case "+king_report1"_djb2:
+				KingReport1();
+				break;
+
+			case "+king_report2"_djb2:
+				KingReport2();
+				break;
+
+			case "+reload_king"_djb2:
+				ReloadKing();
+				break;
+#endif
 		}
 	}
 	catch (const std::invalid_argument& ex)
@@ -39,6 +303,171 @@ void OperationMessage::ParseGM(const std::string_view command)
 	{
 		LogOutOfRangeException("OperationMessage::ParseGM", ex);
 	}
+}
+
+void OperationMessage::Pursue()
+{
+	// TODO
+}
+
+void OperationMessage::ActPursue()
+{
+	// TODO
+}
+
+void OperationMessage::MonPursue()
+{
+	// TODO
+}
+
+void OperationMessage::MonCatch()
+{
+	// TODO
+}
+
+void OperationMessage::Assault()
+{
+	// TODO
+}
+
+void OperationMessage::MonSummon()
+{
+	// TODO
+}
+
+void OperationMessage::MonSummonAll()
+{
+	// TODO
+}
+
+void OperationMessage::UnikMonster()
+{
+	// TODO
+}
+
+void OperationMessage::UserSeekReport()
+{
+	// TODO
+}
+
+void OperationMessage::MonKill()
+{
+	// TODO
+}
+
+void OperationMessage::Open()
+{
+	// TODO
+}
+
+void OperationMessage::Open2()
+{
+	// TODO
+}
+
+void OperationMessage::Open3()
+{
+	// TODO
+}
+
+void OperationMessage::MOpen()
+{
+	// TODO
+}
+
+void OperationMessage::ForbidUser()
+{
+	// TODO
+}
+
+void OperationMessage::ForbidConnect()
+{
+	// TODO
+}
+
+void OperationMessage::SnowOpen()
+{
+	// TODO
+}
+
+void OperationMessage::Close()
+{
+	// TODO
+}
+
+void OperationMessage::Captain()
+{
+	// TODO
+}
+
+void OperationMessage::TieBreak()
+{
+	// TODO
+}
+
+void OperationMessage::Auto()
+{
+	// TODO
+}
+
+void OperationMessage::AutoOff()
+{
+	// TODO
+}
+
+void OperationMessage::Down()
+{
+	// TODO
+}
+
+void OperationMessage::Discount()
+{
+	// TODO
+}
+
+void OperationMessage::FreeDiscount()
+{
+	// TODO
+}
+
+void OperationMessage::AllDiscount()
+{
+	// TODO
+}
+
+void OperationMessage::UnDiscount()
+{
+	// TODO
+}
+
+void OperationMessage::Santa()
+{
+	// TODO
+}
+
+void OperationMessage::Angel()
+{
+	// TODO
+}
+
+void OperationMessage::OffSanta()
+{
+	// TODO
+}
+
+void OperationMessage::LimitBattle()
+{
+	// TODO
+}
+
+void OperationMessage::OnSummonBlock()
+{
+	// TODO
+}
+
+void OperationMessage::OffSummonBlock()
+{
+	// TODO
 }
 
 // +zonechange: {int: zoneId} [float: x] [float: z]
@@ -61,6 +490,166 @@ void OperationMessage::ZoneChange()
 	}
 
 	_srcUser->ZoneChange(zoneId, x, z);
+}
+
+void OperationMessage::SiegeWarfare()
+{
+	// TODO
+}
+
+void OperationMessage::ResetSiegeWar()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarScheduleStart()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarScheduleEnd()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarBaseReport()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarStatusReport()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarCheckBase()
+{
+	// TODO
+}
+
+void OperationMessage::ServerTestMode()
+{
+	// TODO
+}
+
+void OperationMessage::ServerNormalMode()
+{
+	// TODO
+}
+
+void OperationMessage::MerchantMoney()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarPunishKnights()
+{
+	// TODO
+}
+
+void OperationMessage::SiegeWarLoadTable()
+{
+	// TODO
+}
+
+void OperationMessage::MoneyAdd()
+{
+	// TODO
+}
+
+void OperationMessage::ExpAdd()
+{
+	// TODO
+}
+
+void OperationMessage::UserBonus()
+{
+	// TODO
+}
+
+void OperationMessage::Discount1()
+{
+	// TODO
+}
+
+void OperationMessage::Discount2()
+{
+	// TODO
+}
+
+void OperationMessage::Battle1()
+{
+	// TODO
+}
+
+void OperationMessage::Battle2()
+{
+	// TODO
+}
+
+void OperationMessage::Battle3()
+{
+	// TODO
+}
+
+void OperationMessage::BattleAuto()
+{
+	// TODO
+}
+
+void OperationMessage::BattleReport()
+{
+	// TODO
+}
+
+void OperationMessage::ChallengeOn()
+{
+	// TODO
+}
+
+void OperationMessage::ChallengeOff()
+{
+	// TODO
+}
+
+void OperationMessage::ChallengeKill()
+{
+	// TODO
+}
+
+void OperationMessage::ChallengeLevel()
+{
+	// TODO
+}
+
+void OperationMessage::RentalReport()
+{
+	// TODO
+}
+
+void OperationMessage::RentalStop()
+{
+	// TODO
+}
+
+void OperationMessage::RentalStart()
+{
+	// TODO
+}
+
+void OperationMessage::KingReport1()
+{
+	// TODO
+}
+
+void OperationMessage::KingReport2()
+{
+	// TODO
+}
+
+void OperationMessage::ReloadKing()
+{
+	// TODO
 }
 
 bool OperationMessage::ParseCommand(const std::string_view command, size_t& key)

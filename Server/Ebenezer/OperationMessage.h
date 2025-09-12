@@ -14,13 +14,77 @@ public:
 	void ParseGM(const std::string_view command);
 
 protected:
+	void Pursue();
+	void ActPursue();
+	void MonPursue();
+	void MonCatch();
+	void Assault();
+	void MonSummon();
+	void MonSummonAll();
+	void UnikMonster();
+	void UserSeekReport();
+	void MonKill();
+	void Open();
+	void Open2();
+	void Open3();
+	void MOpen();
+	void ForbidUser();
+	void ForbidConnect();
+	void SnowOpen();
+	void Close();
+	void Captain();
+	void TieBreak();
+	void Auto();
+	void AutoOff();
+	void Down();
+	void Discount();
+	void FreeDiscount();
+	void AllDiscount();
+	void UnDiscount();
+	void Santa();
+	void Angel();
+	void OffSanta();
+	void LimitBattle();
+	void OnSummonBlock();
+	void OffSummonBlock();
 	void ZoneChange();
+	void SiegeWarfare();
+	void ResetSiegeWar();
+	void SiegeWarScheduleStart();
+	void SiegeWarScheduleEnd();
+	void SiegeWarBaseReport();
+	void SiegeWarStatusReport();
+	void SiegeWarCheckBase();
+	void ServerTestMode();
+	void ServerNormalMode();
+	void MerchantMoney();
+	void SiegeWarPunishKnights();
+	void SiegeWarLoadTable();
+	void MoneyAdd();
+	void ExpAdd();
+	void UserBonus();
+	void Discount1();
+	void Discount2();
+	void Battle1();
+	void Battle2();
+	void Battle3();
+	void BattleAuto();
+	void BattleReport();
+	void ChallengeOn();
+	void ChallengeOff();
+	void ChallengeKill();
+	void ChallengeLevel();
+	void RentalReport();
+	void RentalStop();
+	void RentalStart();
+	void KingReport1();
+	void KingReport2();
+	void ReloadKing();
 
 	bool ParseCommand(const std::string_view command, size_t& key);
 
 	// Returns the number of arguments, excluding the command name.
 	size_t GetArgCount() const;
-
 	int ParseInt(size_t argIndex) const;
 	float ParseFloat(size_t argIndex) const;
 
