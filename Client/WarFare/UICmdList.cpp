@@ -389,13 +389,13 @@ bool CUICmdList::UpdateCommandList(int iCatIndex)
 	e_CmdListCategory eCategory = static_cast<e_CmdListCategory>(iCatIndex);
 
 	const auto range = m_categoryToCommandInfoMap.equal_range(eCategory);
-	for (const auto& [resourceId, commandInfo] : std::ranges::subrange(range.first, range.second))
+	for (const auto& [_, commandInfo] : std::ranges::subrange(range.first, range.second))
 	{
 		const std::string& commandName = g_szCmdMsg[commandInfo.Command];
 		m_pList_Cmds->AddString(commandName);
 
 		// fill with command name exp: /type %s, to /type ban_user
-		std::string cmdTip = fmt::format_text_resource(resourceId + 100, commandName);
+		std::string cmdTip = fmt::format_text_resource(commandInfo.ResourceID  + 100, commandName);
 
 		CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(commandName);
 		if (pChild != nullptr)
