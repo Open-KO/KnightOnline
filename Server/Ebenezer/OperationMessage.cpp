@@ -9,23 +9,6 @@
 
 #include <sstream>
 
-// Split string into parts. Delimit by whitespace. Empty spaces are ignored.
-// This:
-// +cmd arg1    arg2     arg3
-// Will become:
-// [0] = +cmd, [1] = arg1, [2] = arg3
-static std::vector<std::string> SplitCommandIntoParts(const std::string& command)
-{
-	std::vector<std::string> parts;
-
-	std::istringstream ss(command);
-	std::string part;
-	while (ss >> part)
-		parts.push_back(part);
-
-	return parts;
-}
-
 OperationMessage::OperationMessage(CEbenezerDlg* main, CUser* srcUser)
 	: _main(main), _srcUser(srcUser)
 {
@@ -33,15 +16,10 @@ OperationMessage::OperationMessage(CEbenezerDlg* main, CUser* srcUser)
 
 void OperationMessage::ParseGM(const std::string_view command)
 {
-	_command.assign(command.data(), command.length());
-	_parts = SplitCommandIntoParts(_command);
-
-	if (_parts.empty())
+	size_t key = 0;
+	if (!ParseCommand(command, key))
 		return;
 
-	strtolower(_parts[0]);
-
-	auto key = hashing::djb2::hash(_parts[0]);
 	try
 	{
 		switch (key)
@@ -72,39 +50,73 @@ void OperationMessage::ZoneChange()
 		|| GetArgCount() < 1)
 		return;
 
-	int zoneId = ParseInt(1);
+	int zoneId = ParseInt(0);
 	float x = _srcUser->m_pUserData->m_curx;
 	float z = _srcUser->m_pUserData->m_curz;
 
 	if (GetArgCount() >= 3)
 	{
-		x = ParseFloat(2);
-		z = ParseFloat(3);
+		x = ParseFloat(1);
+		z = ParseFloat(2);
 	}
 
 	_srcUser->ZoneChange(zoneId, x, z);
 }
 
+bool OperationMessage::ParseCommand(const std::string_view command, size_t& key)
+{
+	_command.assign(command.data(), command.length());
+	_args.clear();
+
+	// Split string into parts.
+	// Delimit by whitespace.
+	// Empty spaces are ignored.
+	// This:
+	// +cmd arg1    arg2     arg3
+	// Will become:
+	// [0] = +cmd, [1] = arg1, [2] = arg3
+	std::istringstream ss(_command);
+	std::string part;
+	while (ss >> part)
+		_args.push_back(part);
+
+	// Expect at least one "argument" (the command name).
+	if (_args.empty())
+		return false;
+
+	// Extract and transform the command name to lowercase.
+	std::string& commandNameLowercase = _args.front();
+	strtolower(commandNameLowercase);
+
+	// Hash the lowercase key name for returning.
+	key = hashing::djb2::hash(commandNameLowercase);
+
+	// Strip it from the args list for consistency; we don't need it anymore.
+	_args.erase(_args.begin());
+
+	return true;
+}
+
 // Returns the number of arguments, excluding the command name.
 size_t OperationMessage::GetArgCount() const
 {
-	return _parts.size() - 1;
+	return _args.size();
 }
 
-int OperationMessage::ParseInt(size_t partIndex) const
+int OperationMessage::ParseInt(size_t argIndex) const
 {
-	if (partIndex >= _parts.size())
-		throw std::invalid_argument(fmt::format("argument {} not supplied", partIndex));
+	if (argIndex >= _args.size())
+		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
-	return std::stoi(_parts[partIndex]);
+	return std::stoi(_args[argIndex]);
 }
 
-float OperationMessage::ParseFloat(size_t partIndex) const
+float OperationMessage::ParseFloat(size_t argIndex) const
 {
-	if (partIndex >= _parts.size())
-		throw std::invalid_argument(fmt::format("argument {} not supplied", partIndex));
+	if (argIndex >= _args.size())
+		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
-	return std::stof(_parts[partIndex]);
+	return std::stof(_args[argIndex]);
 }
 
 void OperationMessage::LogInvalidArgumentException(const std::string_view source, const std::invalid_argument& ex) const

@@ -16,11 +16,13 @@ public:
 protected:
 	void ZoneChange();
 
+	bool ParseCommand(const std::string_view command, size_t& key);
+
 	// Returns the number of arguments, excluding the command name.
 	size_t GetArgCount() const;
 
-	int ParseInt(size_t partIndex) const;
-	float ParseFloat(size_t partIndex) const;
+	int ParseInt(size_t argIndex) const;
+	float ParseFloat(size_t argIndex) const;
 
 	void LogInvalidArgumentException(const std::string_view source, const std::invalid_argument& ex) const;
 	void LogOutOfRangeException(const std::string_view source, const std::out_of_range& ex) const;
@@ -29,5 +31,5 @@ protected:
 	CEbenezerDlg* _main;
 	CUser* _srcUser;
 	std::string _command;
-	std::vector<std::string> _parts;
+	std::vector<std::string> _args;
 };
