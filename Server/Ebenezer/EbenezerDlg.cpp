@@ -2255,7 +2255,7 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			if (chatstr[0] == '+')
 			{
 				OperationMessage opMessage(this, nullptr);
-				opMessage.ParseGM(chatstr);
+				opMessage.Process(chatstr);
 				return TRUE;
 			}
 

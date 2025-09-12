@@ -8,13 +8,14 @@
 #include <spdlog/spdlog.h>
 
 #include <sstream>
+#include <stdexcept>
 
 OperationMessage::OperationMessage(CEbenezerDlg* main, CUser* srcUser)
 	: _main(main), _srcUser(srcUser)
 {
 }
 
-void OperationMessage::ParseGM(const std::string_view command)
+void OperationMessage::Process(const std::string_view command)
 {
 	size_t key = 0;
 	if (!ParseCommand(command, key))
@@ -297,11 +298,33 @@ void OperationMessage::ParseGM(const std::string_view command)
 	}
 	catch (const std::invalid_argument& ex)
 	{
-		LogInvalidArgumentException("OperationMessage::ParseGM", ex);
+		if (_srcUser != nullptr)
+		{
+			spdlog::warn(
+				"OperationMessage::Process: argument could not be parsed from GM [charId={} command='{}' exception='{}']",
+				_srcUser->m_pUserData->m_id, _command, ex.what());
+		}
+		else
+		{
+			spdlog::warn(
+				"OperationMessage::Process: argument could not be parsed from server [command='{}' exception='{}']",
+				_command, ex.what());
+		}
 	}
 	catch (const std::out_of_range& ex)
 	{
-		LogOutOfRangeException("OperationMessage::ParseGM", ex);
+		if (_srcUser != nullptr)
+		{
+			spdlog::warn(
+				"OperationMessage::Process: parsed argument out of range from GM [charId={} command='{}' exception='{}']",
+				_srcUser->m_pUserData->m_id, _command, ex.what());
+		}
+		else
+		{
+			spdlog::warn(
+				"OperationMessage::Process: parsed argument out of range from server [command='{}' exception='{}']",
+				_command, ex.what());
+		}
 	}
 }
 
@@ -706,36 +729,4 @@ float OperationMessage::ParseFloat(size_t argIndex) const
 		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
 	return std::stof(_args[argIndex]);
-}
-
-void OperationMessage::LogInvalidArgumentException(const std::string_view source, const std::invalid_argument& ex) const
-{
-	if (_srcUser != nullptr)
-	{
-		spdlog::warn(
-			"{}: argument could not be parsed from GM [charId={} command='{}' exception='{}']",
-			source, _srcUser->m_pUserData->m_id, _command, ex.what());
-	}
-	else
-	{
-		spdlog::warn(
-			"{}: argument could not be parsed from server [command='{}' exception='{}']",
-			source, _command, ex.what());
-	}
-}
-
-void OperationMessage::LogOutOfRangeException(const std::string_view source, const std::out_of_range& ex) const
-{
-	if (_srcUser != nullptr)
-	{
-		spdlog::warn(
-			"{}: parsed argument out of range from GM [charId={} command='{}' exception='{}']",
-			source, _srcUser->m_pUserData->m_id, _command, ex.what());
-	}
-	else
-	{
-		spdlog::warn(
-			"{}: parsed argument out of range from server [command='{}' exception='{}']",
-			source, _command, ex.what());
-	}
 }

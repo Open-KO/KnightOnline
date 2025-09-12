@@ -1924,7 +1924,7 @@ void CUser::Chat(char* pBuf)
 		&& chatstr[0] == '+')
 	{
 		OperationMessage opMessage(m_pMain, this);
-		opMessage.ParseGM(chatstr);
+		opMessage.Process(chatstr);
 		return;
 	}
 
