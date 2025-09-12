@@ -10,16 +10,18 @@
 #include <sstream>
 #include <stdexcept>
 
+extern BYTE g_serverdown_flag;
+
 OperationMessage::OperationMessage(CEbenezerDlg* main, CUser* srcUser)
 	: _main(main), _srcUser(srcUser)
 {
 }
 
-void OperationMessage::Process(const std::string_view command)
+bool OperationMessage::Process(const std::string_view command)
 {
 	size_t key = 0;
 	if (!ParseCommand(command, key))
-		return;
+		return false;
 
 	try
 	{
@@ -65,11 +67,14 @@ void OperationMessage::Process(const std::string_view command)
 			case "+monkill"_djb2:
 				MonKill();
 				break;
+#endif
 
+			case "/open"_djb2:
 			case "+open"_djb2:
 				Open();
 				break;
 
+#if 0 // TODO
 			case "+open2"_djb2:
 				Open2();
 				break;
@@ -89,19 +94,24 @@ void OperationMessage::Process(const std::string_view command)
 			case "+forbidconnect"_djb2:
 				ForbidConnect();
 				break;
+#endif
 
+			case "/snowopen"_djb2:
 			case "+snowopen"_djb2:
 				SnowOpen();
 				break;
 
+			case "/close"_djb2:
 			case "+close"_djb2:
 				Close();
 				break;
 
+			case "/captain"_djb2:
 			case "+captain"_djb2:
 				Captain();
 				break;
 
+#if 0 // TODO
 			case "+tiebreak"_djb2:
 				TieBreak();
 				break;
@@ -113,39 +123,51 @@ void OperationMessage::Process(const std::string_view command)
 			case "+auto_off"_djb2:
 				AutoOff();
 				break;
+#endif
 
+			case "/down"_djb2:
 			case "+down"_djb2:
 				Down();
 				break;
 
+			case "/discount"_djb2:
 			case "+discount"_djb2:
 				Discount();
 				break;
 
+#if 0 // TODO
 			case "+freediscount"_djb2:
 				FreeDiscount();
 				break;
+#endif
 
+			case "/alldiscount"_djb2:
 			case "+alldiscount"_djb2:
 				AllDiscount();
 				break;
 
+			case "/undiscount"_djb2:
 			case "+undiscount"_djb2:
 				UnDiscount();
 				break;
 
+			case "/santa"_djb2:
 			case "+santa"_djb2:
 				Santa();
 				break;
 
+#if 0 // TODO
 			case "+angel"_djb2:
 				Angel();
 				break;
+#endif
 
+			case "/offsanta"_djb2:
 			case "+offsanta"_djb2:
 				OffSanta();
 				break;
 
+#if 0 // TODO
 			case "+limitbattle"_djb2:
 				LimitBattle();
 				break;
@@ -294,6 +316,15 @@ void OperationMessage::Process(const std::string_view command)
 				ReloadKing();
 				break;
 #endif
+
+			case "/kill"_djb2:
+				Kill();
+				break;
+
+			// Unhandled command.
+			default:
+				return false;
+
 		}
 	}
 	catch (const std::invalid_argument& ex)
@@ -326,6 +357,9 @@ void OperationMessage::Process(const std::string_view command)
 				_command, ex.what());
 		}
 	}
+
+	// Command was handled, even if it errored.
+	return true;
 }
 
 void OperationMessage::Pursue()
@@ -380,7 +414,7 @@ void OperationMessage::MonKill()
 
 void OperationMessage::Open()
 {
-	// TODO
+	_main->BattleZoneOpen(BATTLEZONE_OPEN);
 }
 
 void OperationMessage::Open2()
@@ -410,16 +444,18 @@ void OperationMessage::ForbidConnect()
 
 void OperationMessage::SnowOpen()
 {
-	// TODO
+	_main->BattleZoneOpen(SNOW_BATTLEZONE_OPEN);
 }
 
 void OperationMessage::Close()
 {
-	// TODO
+	_main->m_byBanishFlag = 1;
+	// _main->WithdrawUserOut();
 }
 
 void OperationMessage::Captain()
 {
+	_main->LoadKnightsRankTable();
 	// TODO
 }
 
@@ -440,12 +476,14 @@ void OperationMessage::AutoOff()
 
 void OperationMessage::Down()
 {
-	// TODO
+	g_serverdown_flag = TRUE;
+	SuspendThread(_main->m_Iocport.m_hAcceptThread);
+	_main->KickOutAllUsers();
 }
 
 void OperationMessage::Discount()
 {
-	// TODO
+	_main->m_sDiscount = 1;
 }
 
 void OperationMessage::FreeDiscount()
@@ -455,17 +493,17 @@ void OperationMessage::FreeDiscount()
 
 void OperationMessage::AllDiscount()
 {
-	// TODO
+	_main->m_sDiscount = 2;
 }
 
 void OperationMessage::UnDiscount()
 {
-	// TODO
+	_main->m_sDiscount = 0;
 }
 
 void OperationMessage::Santa()
 {
-	// TODO
+	_main->m_bSanta = TRUE;			// Make Motherfucking Santa Claus FLY!!!
 }
 
 void OperationMessage::Angel()
@@ -475,7 +513,7 @@ void OperationMessage::Angel()
 
 void OperationMessage::OffSanta()
 {
-	// TODO
+	_main->m_bSanta = FALSE;		// SHOOT DOWN Motherfucking Santa Claus!!!
 }
 
 void OperationMessage::LimitBattle()
@@ -675,6 +713,15 @@ void OperationMessage::ReloadKing()
 	// TODO
 }
 
+void OperationMessage::Kill()
+{
+	if (GetArgCount() < 1)
+		return;
+
+	const std::string& charId = ParseString(0);
+	_main->KillUser(charId.c_str());
+}
+
 bool OperationMessage::ParseCommand(const std::string_view command, size_t& key)
 {
 	_command.assign(command.data(), command.length());
@@ -729,4 +776,12 @@ float OperationMessage::ParseFloat(size_t argIndex) const
 		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
 	return std::stof(_args[argIndex]);
+}
+
+const std::string& OperationMessage::ParseString(size_t argIndex) const
+{
+	if (argIndex >= _args.size())
+		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
+
+	return _args[argIndex];
 }

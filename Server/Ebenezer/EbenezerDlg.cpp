@@ -2252,76 +2252,15 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			m_AnnounceEdit.SetWindowText(_T(""));
 			UpdateData(FALSE);
 
-			if (chatstr[0] == '+')
-			{
-				OperationMessage opMessage(this, nullptr);
-				opMessage.Process(chatstr);
+			OperationMessage opMessage(this, nullptr);
+			if (opMessage.Process(chatstr))
 				return TRUE;
-			}
-
-			if (_strnicmp("/kill", chatstr, 5) == 0)
-			{
-				strcpy(killstr, chatstr + 6);
-				KillUser(killstr);
-				return TRUE;
-			}
-
-			if (_strnicmp("/Open", chatstr, 5) == 0)
-			{
-				BattleZoneOpen(BATTLEZONE_OPEN);
-				return TRUE;
-			}
-
-			if (_strnicmp("/snowopen", chatstr, 9) == 0)
-			{
-				BattleZoneOpen(SNOW_BATTLEZONE_OPEN);
-				return TRUE;
-			}
-
-			if (_strnicmp("/Close", chatstr, 6) == 0)
-			{
-				m_byBanishFlag = 1;
-				//WithdrawUserOut();
-				return TRUE;
-			}
-
-			if (_strnicmp("/down", chatstr, 5) == 0)
-			{
-				g_serverdown_flag = TRUE;
-				SuspendThread(m_Iocport.m_hAcceptThread);
-				KickOutAllUsers();
-				return TRUE;
-			}
-
-			if (_strnicmp("/discount", chatstr, 9) == 0)
-			{
-				m_sDiscount = 1;
-				return TRUE;
-			}
-
-			if (_strnicmp("/alldiscount", chatstr, 12) == 0)
-			{
-				m_sDiscount = 2;
-				return TRUE;
-			}
-
-			if (_strnicmp("/undiscount", chatstr, 11) == 0)
-			{
-				m_sDiscount = 0;
-				return TRUE;
-			}
 
 			// 비러머글 남는 공지 --;
 			if (_strnicmp("/permanent", chatstr, 10) == 0)
 			{
 				m_bPermanentChatMode = TRUE;
 				m_bPermanentChatFlag = TRUE;
-				return TRUE;
-			}
-
-			if (_strnicmp("/captain", chatstr, 8) == 0)
-			{
-				LoadKnightsRankTable();				// captain 
 				return TRUE;
 			}
 
@@ -2333,19 +2272,6 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 //				return TRUE;	//이것은 고의적으로 TRUE를 뺐었음
 			}
 //
-
-			// 갓댐 산타!!! >.<
-			if (_strnicmp("/santa", chatstr, 6) == 0)
-			{
-				m_bSanta = TRUE;			// Make Motherfucking Santa Claus FLY!!!
-				return TRUE;
-			}
-
-			if (_strnicmp("/offsanta", chatstr, 9) == 0)
-			{
-				m_bSanta = FALSE;			// SHOOT DOWN Motherfucking Santa Claus!!!
-				return TRUE;
-			}
 
 			std::string finalstr;
 

@@ -10,7 +10,7 @@ class OperationMessage
 {
 public:
 	OperationMessage(CEbenezerDlg* main, CUser* srcUser);
-	void Process(const std::string_view command);
+	bool Process(const std::string_view command);
 
 protected:
 	void Pursue();
@@ -79,6 +79,7 @@ protected:
 	void KingReport1();
 	void KingReport2();
 	void ReloadKing();
+	void Kill();
 
 	bool ParseCommand(const std::string_view command, size_t& key);
 
@@ -86,6 +87,7 @@ protected:
 	size_t GetArgCount() const;
 	int ParseInt(size_t argIndex) const;
 	float ParseFloat(size_t argIndex) const;
+	const std::string& ParseString(size_t argIndex) const;
 
 protected:
 	CEbenezerDlg* _main;
