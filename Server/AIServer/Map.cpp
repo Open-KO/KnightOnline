@@ -485,13 +485,14 @@ void MAP::LoadObjectEvent(HANDLE hFile)
 		//TRACE(_T("Object - belong=%d, index=%d, type=%d, con=%d, sta=%d\n"), pEvent->sBelong, pEvent->sIndex, pEvent->sType, pEvent->sControlNpcID, pEvent->sStatus);
 
 		// 작업할것 : 맵데이터가 바뀌면 Param1이 2이면 성문인것을 판단..  3이면 레버..
-		if (pEvent->sType == 1
-			|| pEvent->sType == 2
-			|| pEvent->sType == 3)
-		{
-			// sungyong test
+		if (pEvent->sType == OBJECT_TYPE_GATE
+			|| pEvent->sType == OBJECT_TYPE_DOOR_TOPDOWN
+			|| pEvent->sType == OBJECT_TYPE_GATE_LEVER
+			|| pEvent->sType == OBJECT_TYPE_BARRICADE
+			|| pEvent->sType == OBJECT_TYPE_REMOVE_BIND
+			|| pEvent->sType == OBJECT_TYPE_ANVIL
+			|| pEvent->sType == OBJECT_TYPE_ARTIFACT)
 			m_pMain->AddObjectEventNpc(pEvent, m_nZoneNumber);
-		}
 
 		if (pEvent->sIndex <= 0)
 			continue;

@@ -12,6 +12,8 @@
 #include "N3ShapeExtra.h"
 #endif // end of #ifndef _3DSERVER
 
+#include <shared/globals.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -159,9 +161,8 @@ bool CN3ShapeMgr::Load(HANDLE hFile)
 
 				switch (pShape->m_iEventType)
 				{
-					case 1: // 좌우열림성문,
-					case 2: // 상하열림성문
-					case 3: // 상하 레버
+					case OBJECT_TYPE_BIND: // 좌우열림성문,
+					case OBJECT_TYPE_WARP_GATE:
 						pShape->m_bVisible = true;
 						break;
 

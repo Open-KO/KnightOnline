@@ -193,6 +193,25 @@ enum e_NpcType : uint8_t
 	NPC_BATTLE_MONUMENT		= 211
 };
 
+enum e_ObjectType
+{
+	OBJECT_TYPE_BIND				= 0,
+	OBJECT_TYPE_BINDPOINT			= OBJECT_TYPE_BIND,
+	OBJECT_TYPE_GATE				= 1,
+	OBJECT_TYPE_DOOR_LEFTRIGHT		= OBJECT_TYPE_GATE,
+	OBJECT_TYPE_DOOR_TOPDOWN		= 2,
+	OBJECT_TYPE_GATE_LEVER			= 3,
+	OBJECT_TYPE_LEVER_TOPDOWN		= OBJECT_TYPE_GATE_LEVER,
+	OBJECT_TYPE_FLAG				= 4,
+	OBJECT_TYPE_WARP_GATE			= 5,
+	OBJECT_TYPE_WARP_POINT			= OBJECT_TYPE_WARP_GATE,
+	OBJECT_TYPE_BARRICADE			= 6,
+	OBJECT_TYPE_REMOVE_BIND			= 7, // this seems to behave identically to OBJECT_TYPE_BIND
+	OBJECT_TYPE_ANVIL				= 8,
+	OBJECT_TYPE_ARTIFACT			= 9,
+	OBJECT_TYPE_UNKNOWN				= 0xffffffff
+};
+
 // These control neutrality-related settings client-side, 
 // including whether collision is enabled for other players.
 enum e_ZoneAbilityType

@@ -1251,15 +1251,6 @@ enum e_SkillMagicType3	{	DDTYPE_TYPE3_DUR_OUR = 100,
 							DDTYPE_TYPE3_DUR_ENEMY = 200
 };
 
-enum e_ObjectType	{	OBJECT_TYPE_BINDPOINT,
-						OBJECT_TYPE_DOOR_LEFTRIGHT,
-						OBJECT_TYPE_DOOR_TOPDOWN,
-						OBJECT_TYPE_LEVER_TOPDOWN,
-						OBJECT_TYPE_FLAG,
-						OBJECT_TYPE_WARP_POINT,
-						OBJECT_TYPE_UNKNOWN = 0xffffffff
-					};
-
 // Special items associated with skill usage
 constexpr uint32_t ITEM_ID_MASTER_SCROLL_WARRIOR	= 379063000;
 constexpr uint32_t ITEM_ID_MASTER_SCROLL_ROGUE		= 379064000;
