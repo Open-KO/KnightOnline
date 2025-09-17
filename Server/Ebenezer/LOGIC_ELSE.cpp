@@ -269,6 +269,99 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
+	else if (0 == strcmp(temp, "CHECK_CHIEF"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_NO_CHIEF"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_CLAN_GRADE"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_KNIGHT"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_MIDDLE_STATUE_NOCAPTURE"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_MIDDLE_STATUE_CAPTURE"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_EMPTY_SLOT"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_NO_CASTLE"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_CASTLE"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_MONSTER_CHALLENGE_USERCOUNT"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_STAT_TOTAL"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
+	else if (0 == strcmp(temp, "CHECK_SKILL_TOTAL"))
+	{
+		m_LogicElse = LOGIC_CHECK_LOYALTY;
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+
+		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);
+	}
 
 ////////////////////////////////////////////////////////////////////////////
 
