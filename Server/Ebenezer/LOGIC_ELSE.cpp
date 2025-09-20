@@ -271,21 +271,21 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 	}
 	else if (0 == strcmp(temp, "CHECK_CHIEF"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_CHIEF;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_NO_CHIEF"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_NO_CHIEF;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_CLAN_GRADE"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_CLAN_GRADE;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
@@ -295,56 +295,56 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 	}
 	else if (0 == strcmp(temp, "CHECK_KNIGHT"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_KNIGHT;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_MIDDLE_STATUE_NOCAPTURE"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_MIDDLE_STATUE_CAPTURE"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_CAPTURE;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_EMPTY_SLOT"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_NO_CASTLE"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_NO_CASTLE;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_CASTLE"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_CASTLE;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_MONSTER_CHALLENGE_USERCOUNT"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 	else if (0 == strcmp(temp, "CHECK_STAT_TOTAL"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_STAT_TOTAL;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
@@ -354,7 +354,7 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 	}
 	else if (0 == strcmp(temp, "CHECK_SKILL_TOTAL"))
 	{
-		m_LogicElse = LOGIC_CHECK_LOYALTY;
+		m_LogicElse = LOGIC_CHECK_SKILL_TOTAL;
 
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
