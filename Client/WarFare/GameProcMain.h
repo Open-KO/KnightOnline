@@ -29,8 +29,8 @@ public:
 	class CUIStateBar*			m_pUIStateBarAndMiniMap;	// mp,hp,exp, minimap....
 	class CUICmd*				m_pUICmd;				// 왼쪽 하단의 명령버튼 창..
 	class CUITargetBar*			m_pUITargetBar;			// 타겟 상태창..
-	class CUICmdList*			m_pUICmdListDlg;	    
-	class CUICmdEdit*			m_pUICmdEditDlg;
+	class CUICmdList*			m_pUICmdList;	    
+	class CUICmdEdit*			m_pUICmdEdit;
 	class CUITransactionDlg*	m_pUITransactionDlg;
 	class CUIDroppedItemDlg*	m_pUIDroppedItemDlg;
 	class CSubProcPerTrade*		m_pSubProcPerTrade;
@@ -203,6 +203,8 @@ protected:
 	void	MsgRecv_Knights_Duty_Change(Packet& pkt);
 	void	MsgRecv_Knigts_Join_Req(Packet& pkt);
 	void	MsgRecv_ItemUpgrade(Packet& pkt);
+
+	void	MsgRecv_ZoneAbility(Packet& pkt);
 
 public:
 	void	ProcessUIKeyInput(bool bEnable = true);

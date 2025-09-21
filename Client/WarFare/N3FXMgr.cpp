@@ -380,7 +380,9 @@ void CN3FXMgr::Tick()
 				for(; it != itEnd; it++)
 				{
 					pUPC = it->second;
-					if(dwToMe == 1 && pUPC->m_InfoBase.eNation==s_pPlayer->m_InfoBase.eNation) continue;
+					if (dwToMe == 1
+						&& !s_pPlayer->IsHostileTarget(pUPC))
+						continue;
 					
 					if((pBundle->m_vPos - pUPC->Position()).Magnitude() > 16.0f) continue; // 16 미터 이상 떨어져 있음 지나간다..
 
@@ -444,8 +446,14 @@ void CN3FXMgr::Tick()
 					{
 						pNPC = (*it2).second;
 
-						if(dwToMe == 1 && pNPC->m_InfoBase.eNation==s_pPlayer->m_InfoBase.eNation) continue;
-						else if(pSNPC && dwToMe == 2 && pSNPC->m_InfoBase.eNation == pNPC->m_InfoBase.eNation) continue;
+						if (dwToMe == 1
+							&& !s_pPlayer->IsHostileTarget(pNPC))
+							continue;
+
+						if (pSNPC != nullptr
+							&& dwToMe == 2
+							&& !pSNPC->IsHostileTarget(pNPC))
+							continue;
 
 						if((pBundle->m_vPos - pNPC->Position()).Magnitude() > 16.0f) continue; // 16 미터 이상 떨어져 있음 지나간다..
 

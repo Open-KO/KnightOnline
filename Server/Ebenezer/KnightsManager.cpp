@@ -700,7 +700,7 @@ void CKnightsManager::AllKnightsList(CUser* pUser, char* pBuf)
 
 void CKnightsManager::AllKnightsMember(CUser* pUser, char* pBuf)
 {
-	int index = 0, send_index = 0, page = 0, ret_value = 0, temp_index = 0, count = 0, pktsize = 0;
+	int index = 0, send_index = 0, page = 0, ret_value = 0, temp_index = 0, count = 0, onlineCount = 0, pktsize = 0;
 	char send_buff[4096] = {};
 	char temp_buff[4096] = {};
 	CKnights* pKnights = nullptr;
@@ -734,24 +734,24 @@ void CKnightsManager::AllKnightsMember(CUser* pUser, char* pBuf)
 		return;
 	}*/
 
+	onlineCount = m_pMain->GetKnightsAllMembers(pUser->m_pUserData->m_bKnights, temp_buff, temp_index, 0);
+
 	// 직접.. 게임서버에서 유저정보를 참조해서 불러오는 방식 (단장이 아닌 모든 사람)
 	if (pUser->m_pUserData->m_bFame == CHIEF)
-	{
 		count = m_pMain->GetKnightsAllMembers(pUser->m_pUserData->m_bKnights, temp_buff, temp_index, 1);
-	}
 	else
-	{
-		count = m_pMain->GetKnightsAllMembers(pUser->m_pUserData->m_bKnights, temp_buff, temp_index, 0);
-	}
+		count = onlineCount;
 
 	pktsize = temp_index + 4;
-	if (count > 24)
+	if (count > MAX_CLAN)
 		return;
 
 	SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
 	SetByte(send_buff, KNIGHTS_MEMBER_REQ, send_index);
 	SetByte(send_buff, 0x01, send_index);
 	SetShort(send_buff, pktsize, send_index);
+	SetShort(send_buff, onlineCount, send_index);
+	SetShort(send_buff, pKnights->m_sMembers, send_index);
 	SetShort(send_buff, count, send_index);
 	SetString(send_buff, temp_buff, temp_index, send_index);
 	pUser->Send(send_buff, send_index);

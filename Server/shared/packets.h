@@ -595,18 +595,9 @@ enum e_SkillBarOpcode
 	SKILL_DATA_LOAD = 2
 };
 
-enum ObjectType
+enum e_ZoneAbilityOpcode
 {
-	OBJECT_BIND			= 0,
-	OBJECT_GATE			= 1,
-	OBJECT_GATE2		= 2,
-	OBJECT_GATE_LEVER	= 3,
-	OBJECT_FLAG_LEVER	= 4,
-	OBJECT_WARP_GATE	= 5,
-	OBJECT_REMOVE_BIND	= 7,
-	OBJECT_ANVIL		= 8,
-	OBJECT_ARTIFACT		= 9,
-	OBJECT_NPC			= 11
+	ZONE_ABILITY_UPDATE	= 1
 };
 
 // ---------------------------------------------------------------------

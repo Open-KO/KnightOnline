@@ -66,6 +66,8 @@ public:
 
 	static bool			IsItemClassWeapon(e_ItemClass itemClass);
 
+	static e_ZoneAbilityType GetCurrentZoneAbilityType();
+
 	CGameBase();
 	virtual ~CGameBase();
 };

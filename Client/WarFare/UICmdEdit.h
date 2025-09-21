@@ -24,7 +24,7 @@ public:
 
 public:
 	void SetVisible(bool bVisible);
-	void Open(std::string msg);
+	void Open(const std::string& msg);
 
 	bool Load(HANDLE hFile);
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);

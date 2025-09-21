@@ -144,6 +144,7 @@
     <ClCompile Include="MagicProcess.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Npc.cpp" />
+    <ClCompile Include="OperationMessage.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="EbenezerResourceFormatter.cpp" />
     <ClCompile Include="SharedMem.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="MagicProcess.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Npc.h" />
+    <ClInclude Include="OperationMessage.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SharedMem.h" />

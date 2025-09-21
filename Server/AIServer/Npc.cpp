@@ -5596,6 +5596,7 @@ void CNpc::FillNpcInfo(char* temp_send, int& index, BYTE flag)
 	SetByte(temp_send, m_byGateOpen, index);
 	SetShort(temp_send, m_sHitRate, index);
 	SetByte(temp_send, m_byObjectType, index);
+	SetByte(temp_send, m_byTrapNumber, index);
 }
 
 // game server에 npc정보를 전부 전송...
@@ -5628,6 +5629,7 @@ void CNpc::SendNpcInfoAll(char* temp_send, int& index, int count)
 	SetByte(temp_send, m_byGateOpen, index);
 	SetShort(temp_send, m_sHitRate, index);
 	SetByte(temp_send, m_byObjectType, index);
+	SetByte(temp_send, m_byTrapNumber, index);
 
 	//TRACE(_T("monster info all = %d, name=%hs, count=%d \n"), m_sNid+NPC_BAND, m_strName, count);
 }

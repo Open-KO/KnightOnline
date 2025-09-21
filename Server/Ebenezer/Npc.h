@@ -36,10 +36,10 @@ public:
 	char	m_strName[MAX_NPC_NAME_SIZE + 1];		// MONSTER(NPC) Name
 	int		m_iMaxHP;			// 최대 HP
 	int		m_iHP;				// 현재 HP
-	BYTE	m_byState;			// 몬스터 (NPC) 상태
-	BYTE	m_byGroup;			// 소속 집단
-	BYTE	m_byLevel;			// 레벨
-	BYTE	m_tNpcType;			// NPC Type
+	uint8_t	m_byState;			// 몬스터 (NPC) 상태
+	uint8_t	m_byGroup;			// 소속 집단
+	uint8_t	m_byLevel;			// 레벨
+	uint8_t	m_tNpcType;			// NPC Type
 								// 0 : Normal Monster
 								// 1 : NPC
 								// 2 : 각 입구,출구 NPC
@@ -49,13 +49,14 @@ public:
 
 	short	m_sRegion_X;			// region x position
 	short	m_sRegion_Z;			// region z position
-	BYTE	m_NpcState;			// NPC의 상태 - 살았다, 죽었다, 서있다 등등...
-	BYTE	m_byGateOpen;		// Gate Npc Status -> 1 : open 0 : close
+	uint8_t	m_NpcState;			// NPC의 상태 - 살았다, 죽었다, 서있다 등등...
+	uint8_t	m_byGateOpen;		// Gate Npc Status -> 1 : open 0 : close
 	short   m_sHitRate;			// 공격 성공률
-	BYTE    m_byObjectType;     // 보통은 0, object타입(성문, 레버)은 1
-	BYTE	m_byDirection;		// NPC가 보고 있는 방향
+	uint8_t   m_byObjectType;     // 보통은 0, object타입(성문, 레버)은 1
+	uint8_t	m_byDirection;		// NPC가 보고 있는 방향
 
 	short   m_byEvent;		    // This is for the quest. 
+	uint8_t	m_byTrapNumber;
 
 public:
 	CNpc();
@@ -63,7 +64,7 @@ public:
 
 	void Initialize();
 	void MoveResult(float xpos, float ypos, float zpos, float speed);
-	void NpcInOut(BYTE Type, float fx, float fz, float fy);
+	void NpcInOut(uint8_t Type, float fx, float fz, float fy);
 	void RegisterRegion();
 	void RemoveRegion(int del_x, int del_z);
 	void InsertRegion(int del_x, int del_z);

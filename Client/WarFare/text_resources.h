@@ -595,7 +595,6 @@ enum e_TextResourceID
 	IDS_CMD_DECLARATION							= 8804, // Declaration
 
 	IDS_CMD_VISIBLE								= 9000, // VISIBLE
-
 	IDS_CMD_INVISIBLE							= 9001, // INVISIBLE
 	IDS_CMD_CLEAN								= 9002, // CLEAN
 	IDS_CMD_RAINING								= 9003, // RAINING
@@ -616,6 +615,23 @@ enum e_TextResourceID
 	IDS_CMD_ATTACKDISABLE						= 9018, // ATTACKDISABLE
 	IDS_CMD_ATTACKENABLE						= 9019, // ATTAKCENABLE
 	IDS_CMD_PLC									= 9020, // PROGRAMLISTCHECK
+
+	IDS_CMD_HIDE								= 9200, // Hide
+	IDS_CMD_GUARD								= 9201, // Guard
+	IDS_CMD_DEFEND								= 9202, // Defend
+	IDS_CMD_LOOK_OUT							= 9203, // Look Out
+	IDS_CMD_STRATEGIC_FORMATION					= 9204, // Strategic Formation
+	IDS_CMD_REST								= 9205, // Rest
+	IDS_CMD_DESTROY								= 9206, // Destroy
+
+	IDS_CMD_ROYALORDER							= 9400, // RoyalOrder
+	IDS_CMD_PRIZE								= 9401, // Prize
+	IDS_CMD_EXPERIENCEPOINT						= 9402, // ExperiencePoint
+	IDS_CMD_DROPRATE							= 9403, // DropRate
+	IDS_CMD_RAIN								= 9404, // Rain
+	IDS_CMD_SNOW								= 9405, // Snow
+	IDS_CMD_CLEAR								= 9406, // Clear
+	IDS_CMD_REWARD								= 9407, // Reward
 
 	IDS_QUEST_SEARCH_LEVEL_ERROR				= 10100, // You can only search up to +%d levels from your current level.
 	IDS_TRANSACTION_OK_CANCEL_MESSAGE			= 11500, // Will you sell %s? 

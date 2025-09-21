@@ -69,6 +69,7 @@ void CNpc::Initialize()
 	m_byDirection = 0;			// npc의 방향,,
 
 	m_byEvent = -1;				//  This is for the event.
+	m_byTrapNumber = 0;
 }
 
 void CNpc::MoveResult(float xpos, float ypos, float zpos, float speed)
@@ -93,7 +94,7 @@ void CNpc::MoveResult(float xpos, float ypos, float zpos, float speed)
 	//TRACE(_T("RecvNpcMove ==> nid = %d, zone=%d, x = %f, z = %f\n"), m_sNid, m_sCurZone, m_fCurX, m_fCurZ);
 }
 
-void CNpc::NpcInOut(BYTE Type, float fx, float fz, float fy)
+void CNpc::NpcInOut(uint8_t Type, float fx, float fz, float fy)
 {
 	int send_index = 0;
 	char buff[1024] = {};

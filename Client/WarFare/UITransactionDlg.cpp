@@ -1465,65 +1465,81 @@ bool CUITransactionDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 		CN3UIString* pStr;
 
-		if(pSender == m_pBtnPageUp)
+		if (pSender == m_pBtnPageUp)
 		{
+			if (GetState() == UI_STATE_ICON_MOVING)
+			{
+				IconRestore();
+				SetState(UI_STATE_COMMON_NONE);
+			}
+
+			SetState(UI_STATE_COMMON_NONE);
+			AllHighLightIconFree();
+
 			m_iCurPage--;
-			if(m_iCurPage<0)
+			if (m_iCurPage < 0)
 				m_iCurPage = 0;
 
 			N3_VERIFY_UI_COMPONENT(pStr, GetChildByID<CN3UIString>("string_page"));
 			if (pStr != nullptr)
 				pStr->SetStringAsInt(m_iCurPage + 1);
 
-
-			for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
+			for (j = 0; j < MAX_ITEM_TRADE_PAGE; j++)
 			{
 				if (j == m_iCurPage)
 				{
-					for( i = 0; i < MAX_ITEM_TRADE; i++ )
+					for (i = 0; i < MAX_ITEM_TRADE; i++)
 					{
-						if ( m_pMyTrade[j][i] != nullptr )
+						if (m_pMyTrade[j][i] != nullptr)
 							m_pMyTrade[j][i]->pUIIcon->SetVisible(true);
-					}	
+					}
 				}
 				else
 				{
-					for( i = 0; i < MAX_ITEM_TRADE; i++ )
+					for (i = 0; i < MAX_ITEM_TRADE; i++)
 					{
-						if ( m_pMyTrade[j][i] != nullptr )
+						if (m_pMyTrade[j][i] != nullptr)
 							m_pMyTrade[j][i]->pUIIcon->SetVisible(false);
-					}	
+					}
 				}
 			}
 		}
-
-		if(pSender == m_pBtnPageDown)
+		else if (pSender == m_pBtnPageDown)
 		{
+			if (GetState() == UI_STATE_ICON_MOVING)
+			{
+				IconRestore();
+				SetState(UI_STATE_COMMON_NONE);
+			}
+
+			SetState(UI_STATE_COMMON_NONE);
+			AllHighLightIconFree();
+
 			m_iCurPage++;
 			if (m_iCurPage >= MAX_ITEM_TRADE_PAGE)
-				m_iCurPage = MAX_ITEM_TRADE_PAGE-1;
+				m_iCurPage = MAX_ITEM_TRADE_PAGE - 1;
 
 			N3_VERIFY_UI_COMPONENT(pStr, GetChildByID<CN3UIString>("string_page"));
 			if (pStr != nullptr)
 				pStr->SetStringAsInt(m_iCurPage + 1);
 
-			for( j = 0; j < MAX_ITEM_TRADE_PAGE; j++ )
+			for (j = 0; j < MAX_ITEM_TRADE_PAGE; j++)
 			{
 				if (j == m_iCurPage)
 				{
-					for( i = 0; i < MAX_ITEM_TRADE; i++ )
+					for (i = 0; i < MAX_ITEM_TRADE; i++)
 					{
-						if ( m_pMyTrade[j][i] != nullptr )
+						if (m_pMyTrade[j][i] != nullptr)
 							m_pMyTrade[j][i]->pUIIcon->SetVisible(true);
-					}	
+					}
 				}
 				else
 				{
-					for( i = 0; i < MAX_ITEM_TRADE; i++ )
+					for (i = 0; i < MAX_ITEM_TRADE; i++)
 					{
-						if ( m_pMyTrade[j][i] != nullptr )
+						if (m_pMyTrade[j][i] != nullptr)
 							m_pMyTrade[j][i]->pUIIcon->SetVisible(false);
-					}	
+					}
 				}
 			}
 		}

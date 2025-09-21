@@ -690,7 +690,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, const __TABLE_UPC_SKILL*
 			break;
 
 		case SKILLMAGIC_TARGET_ENEMY_ONLY:
-			if (pTarget->Nation() != s_pPlayer->Nation())
+			if (s_pPlayer->IsHostileTarget(pTarget))
 			{
 				if (bColShape)
 				{
@@ -711,7 +711,7 @@ bool CMagicSkillMng::CheckValidCondition(int iTargetID, const __TABLE_UPC_SKILL*
 			break;
 
 		case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
-			if (pTarget->Nation() == s_pPlayer->Nation()
+			if (!s_pPlayer->IsHostileTarget(pTarget)
 				&& pTarget->IsDead())
 			{
 				if (bColShape)
@@ -808,7 +808,7 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)s_pPlayer->IDNumber());
 				return true;
 			}
-			else if(pTarget->m_InfoBase.eNation==pInfoBase->eNation)
+			else if (!s_pPlayer->IsHostileTarget(pTarget))
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -818,7 +818,8 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_FRIEND_ONLY:
 		{
-			if(pTarget != nullptr && pTarget->m_InfoBase.eNation==pInfoBase->eNation)
+			if (pTarget != nullptr
+				&& !s_pPlayer->IsHostileTarget(pTarget))
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -864,7 +865,8 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_ENEMY_ONLY:
 		{
-			if(pTarget != nullptr && pTarget->m_InfoBase.eNation!=pInfoBase->eNation)
+			if (pTarget != nullptr
+				&& s_pPlayer->IsHostileTarget(pTarget))
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());
@@ -945,7 +947,9 @@ bool CMagicSkillMng::MsgSend_MagicProcess(int iTargetID, __TABLE_UPC_SKILL* pSki
 		}
 	case SKILLMAGIC_TARGET_DEAD_FRIEND_ONLY:
 		{
-			if(pTarget != nullptr && pTarget->m_InfoBase.eNation==pInfoBase->eNation && pTarget->IsDead())
+			if (pTarget != nullptr
+				&& !s_pPlayer->IsHostileTarget(pTarget)
+				&& pTarget->IsDead())
 			{
 				if( !CheckValidDistance(pSkill, pTarget->Position(), fDist) ) return false;
 				StartSkillMagicAtTargetPacket(pSkill, (int16_t)pTarget->IDNumber());

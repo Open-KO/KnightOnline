@@ -66,7 +66,7 @@ bool CUIInn::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 				return true;
 			}
 
-			if (pInfoExt->iKnightsID != 0)
+			if (pInfo->iKnightsID != 0)
 			{
 				Message(IDS_CLAN_DENY_ALREADYJOINED);
 				SetVisible(false);

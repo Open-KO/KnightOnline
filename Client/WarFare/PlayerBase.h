@@ -44,6 +44,9 @@ struct __InfoPlayerBase
 	int			iMP;
 	int			iMPMax;
 	int			iAuthority;		// 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
+	int			iKnightsID;		// Clan ID
+	int			iAllianceID;
+	int			iKnightsWarEnemyID;
 
 	bool		bRenderID;		// 화면에 ID 를 찍는지..
 
@@ -61,6 +64,9 @@ struct __InfoPlayerBase
 		iMP = 0;
 		iMPMax = 0;
 		iAuthority = 1;				// 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
+		iKnightsID = 0;
+		iAllianceID = 0;
+		iKnightsWarEnemyID = 0;
 		bRenderID = true;
 	}
 };
@@ -163,12 +169,14 @@ public:
 //	
 	CBitset				m_bitset[SHADOW_SIZE];			// Used in Quake3.. ^^
 	__VertexT1			m_pvVertex[4];
-	uint16_t		m_pIndex[6];
+	uint16_t			m_pIndex[6];
 	__VertexT1			m_vTVertex[4];
 	float				m_fShaScale;
 	CN3Texture			m_N3Tex; 
 	static CN3SndObj*	m_pSnd_MyMove;
-		
+
+	bool			IsHostileTarget(const CPlayerBase* rhs) const;
+
 	const __Matrix44 CalcShadowMtxBasicPlane(__Vector3 vOffs);
 	void			CalcPart(CN3CPart* pPart, int nLOD, __Vector3 vLP);
 	void			CalcPlug(CN3CPlugBase* pPlug, const __Matrix44* pmtxJoint, __Matrix44& mtxMV, __Vector3 vLP);
@@ -186,9 +194,21 @@ public:
 	const __Matrix44*	JointMatrixGet(int nJointIndex) { return m_Chr.MatrixGet( nJointIndex); }
 	bool 				JointPosGet(int iJointIdx, __Vector3& vPos);
 	
-	e_PlayerType	PlayerType() { return m_ePlayerType; }
-	e_Race			Race() { return m_InfoBase.eRace; }
-	e_Nation		Nation() { return m_InfoBase.eNation; }
+	e_PlayerType PlayerType() const
+	{
+		return m_ePlayerType;
+	}
+
+	e_Race Race() const
+	{
+		return m_InfoBase.eRace;
+	}
+
+	e_Nation Nation() const
+	{
+		return m_InfoBase.eNation;
+	}
+
 	virtual void	SetSoundAndInitFont(uint32_t dwFontFlag = 0UL);
 	void			SetSoundPlug(__TABLE_ITEM_BASIC* pItemBasic);
 	void			ReleaseSoundAndFont();
@@ -294,7 +314,13 @@ public:
 	CPlayerBase();
 	virtual				~CPlayerBase();
 
-	int					GetNPCOriginID() {	if (m_pLooksRef) return m_pLooksRef->dwID; else return -1;	}
+	int GetNPCOriginID() const
+	{
+		if (m_pLooksRef != nullptr)
+			return m_pLooksRef->dwID;
+
+		return -1;
+	}
 };
 
 #endif // !defined(AFX_PlayerBase_H__B8B8986B_3635_462D_8C38_A052CA75B331__INCLUDED_)

@@ -24,6 +24,7 @@
 #include <shared/logger.h>
 #include <shared/STLMap.h>
 
+#include <unordered_map>
 #include <vector>
 
 #include "resource.h"
@@ -71,6 +72,8 @@ typedef CSTLMap <model::ServerResource>		ServerResourceTableMap;
 typedef CSTLMap <model::StartPosition>		StartPositionTableMap;
 typedef	CSTLMap	<EVENT>						EventMap;
 
+using EventTriggerMap = std::unordered_map<uint32_t, int32_t>;
+
 enum class NameType
 {
 	Account		= 1,
@@ -86,6 +89,9 @@ public:
 		return s_pInstance;
 	}
 
+	uint32_t GetEventTriggerKey(uint8_t byNpcType, uint16_t sTrapNumber) const;
+	int32_t GetEventTrigger(uint8_t byNpcType, uint16_t sTrapNumber) const;
+	BOOL LoadEventTriggerTable();
 	C3DMap* GetMapByID(int iZoneID) const;
 	C3DMap* GetMapByIndex(int iZoneIndex) const;
 	void FlySanta();
@@ -215,6 +221,7 @@ public:
 	ServerResourceTableMap	m_ServerResourceTableMap;
 	StartPositionTableMap	m_StartPositionTableMap;
 	EventMap				m_EventMap;
+	EventTriggerMap			m_EventTriggerMap;
 
 	CKnightsManager			m_KnightsManager;
 
@@ -271,7 +278,7 @@ public:
 	char	m_strPermanentChat[1024];
 
 	// ~Yookozuna 2002.12.11 - 갓댐 산타 클로스 --;
-	BOOL	m_bSanta;
+	uint8_t	m_bySanta;
 
 	// 패킷 압축에 필요 변수   -------------only from ai server
 	int					m_CompCount;
@@ -280,6 +287,7 @@ public:
 	// ~패킷 압축에 필요 변수   -------------
 
 	// zone server info
+	int					m_nServerIndex;
 	int					m_nServerNo, m_nServerGroupNo;
 	int					m_nServerGroup;	// server의 번호(0:서버군이 없다, 1:서버1군, 2:서버2군)
 	ServerMap			m_ServerArray;

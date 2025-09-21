@@ -31,6 +31,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+extern std::string g_szCmdMsg[CMD_COUNT];
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -40,7 +42,7 @@ CUICmdList::CUICmdList()
 	m_bOpenningNow = false; // 열리고 있다..
 	m_bClosingNow = false;	// 닫히고 있다..
 	m_fMoveDelta = 0.0f; // 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
-	m_pBtn_cancel = nullptr;
+	m_pBtn_Cancel = nullptr;
 	m_pList_CmdCat = nullptr;
 	m_pList_Cmds = nullptr;
 	m_pUICmdEdit = nullptr;
@@ -57,11 +59,10 @@ bool CUICmdList::Load(HANDLE hFile)
 	if (!CN3UIBase::Load(hFile))
 		return false;
 
-	N3_VERIFY_UI_COMPONENT(m_pBtn_cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
+	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
 	N3_VERIFY_UI_COMPONENT(m_pList_CmdCat,	GetChildByID<CN3UIList>("list_curtailment"));
 	N3_VERIFY_UI_COMPONENT(m_pList_Cmds,	GetChildByID<CN3UIList>("list_content"));
 
-	CreateCategoryList();
 	return true;
 }
 
@@ -70,7 +71,7 @@ void CUICmdList::Release()
 	m_bOpenningNow = false; 
 	m_bClosingNow = false;	
 	m_fMoveDelta = 0.0f;
-	m_pBtn_cancel = nullptr;
+	m_pBtn_Cancel = nullptr;
 	m_pList_CmdCat = nullptr;
 	m_pList_Cmds = nullptr;
 	m_pUICmdEdit = nullptr;
@@ -165,7 +166,7 @@ bool CUICmdList::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 	if (dwMsg == UIMSG_BUTTON_CLICK)
 	{
-		if (pSender == m_pBtn_cancel)
+		if (pSender == m_pBtn_Cancel)
 		{
 			Close();
 			return true;
@@ -320,11 +321,12 @@ bool CUICmdList::CreateCategoryList()
 	for (int i = 0; i < CMD_LIST_CAT_COUNT; i++)
 	{
 		// category names start with 7800
-		szCategory = fmt::format_text_resource(i + 7800); // load command categories
+		int iCategoryResourceID = IDS_PRIVATE_CMD_CAT + i;
+		szCategory = fmt::format_text_resource(iCategoryResourceID);
 		m_pList_CmdCat->AddString(szCategory);
 
 		// category tips start with 7900
-		szTooltip = fmt::format_text_resource(i + IDS_PRIVATE_CMD_CAT + 100);
+		szTooltip = fmt::format_text_resource(iCategoryResourceID + 100);
 
 		CN3UIString* pChild = m_pList_CmdCat->GetChildStrFromList(szCategory);
 		if (pChild != nullptr)
@@ -336,27 +338,37 @@ bool CUICmdList::CreateCategoryList()
 
 	m_pList_CmdCat->SetFontColor(D3DCOLOR_XRGB(255, 255, 0)); // yellow
 
-	int idCur = 8000;   // Command list strings start at this index
-	int idEnd = 9600;   // Command list strings end at this index
-
-	std::string szCommand;
-	// create map of commands
-	for (int i = idCur; idCur < idEnd; idCur++, i++)
+	struct CommandCategory
 	{
-		if (idCur == 9000)
-		{
-			i += 400; // offset and put gm cmds at end of map
-		}
-		else if (idCur == 9100)
-		{
-			i -= 500;
-			idCur = 9200;
-		}
+		e_CmdListCategory eCategory;
+		e_ChatCmd eBaseCmd;
+		int iFirstResourceID;
+		int iLastResourceID;
+	};
 
-		szCommand = fmt::format_text_resource(idCur);
-		if (!szCommand.empty() && (i / 100) % 2 == 0)
-			m_mapCmds[i] = szCommand;
-	}
+	// Temporarily just map everything together so they can be used as-is.
+	// The command index needs to be reworked to behave more like official, where it's handled within CUICmdList and categorised,
+	// so that entire translation can be thrown away.
+	constexpr CommandCategory commandCategories[] =
+	{
+		// Category					Base command index	First resource ID		Last resource ID
+		{ CMD_LIST_CAT_PRIVATE,		CMD_WHISPER,		IDS_CMD_WHISPER,		IDS_CMD_INDIVIDUAL_BATTLE },
+		{ CMD_LIST_CAT_TRADE,		CMD_TRADE,			IDS_CMD_TRADE,			IDS_CMD_MERCHANT },
+		{ CMD_LIST_CAT_PARTY,		CMD_PARTY,			IDS_CMD_PARTY,			IDS_CMD_PERMITPARTY },
+		{ CMD_LIST_CAT_CLAN,		CMD_JOINCLAN,		IDS_CMD_JOINCLAN,		IDS_CMD_CLAN_BATTLE },
+		{ CMD_LIST_CAT_KNIGHTS,		CMD_CONFEDERACY,	IDS_CMD_CONFEDERACY,	IDS_CMD_DECLARATION },
+		{ CMD_LIST_CAT_GUARDIAN,	CMD_HIDE,			IDS_CMD_HIDE,			IDS_CMD_DESTROY },
+		{ CMD_LIST_CAT_KING,		CMD_ROYALORDER,		IDS_CMD_ROYALORDER,		IDS_CMD_REWARD },
+	};
+
+	m_categoryToCommandInfoMap.clear();
+
+	for (const CommandCategory& commandCategory : commandCategories)
+		AppendToCommandMap(commandCategory.eCategory, commandCategory.eBaseCmd, commandCategory.iFirstResourceID, commandCategory.iLastResourceID);
+
+	// Unofficial. This isn't displayed officially.
+	if (CGameBase::s_pPlayer->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
+		AppendToCommandMap(CMD_LIST_CAT_GM, CMD_VISIBLE, IDS_CMD_VISIBLE, IDS_CMD_PLC);
 
 	UpdateCommandList(m_iSelectedCategory); // initialize a cmd list for viewing when opening cmd window
 
@@ -365,8 +377,8 @@ bool CUICmdList::CreateCategoryList()
 
 bool CUICmdList::UpdateCommandList(int iCatIndex)
 {
-	if (m_iSelectedCategory < 0
-		|| m_iSelectedCategory >= CMD_LIST_CAT_COUNT)
+	if (iCatIndex < 0
+		|| iCatIndex >= CMD_LIST_CAT_COUNT)
 		return false;
 
 	if (m_pList_Cmds == nullptr)
@@ -374,19 +386,16 @@ bool CUICmdList::UpdateCommandList(int iCatIndex)
 	
 	m_pList_Cmds->ResetContent();
 
-	int indexStart = iCatIndex * 200 + 8000;	// start index for correct loc in map
-	int indexEnd = indexStart + 100;			// where to stop iterating
+	e_CmdListCategory eCategory = static_cast<e_CmdListCategory>(iCatIndex);
 
-	for (const auto& [resourceId, commandName] : m_mapCmds)
+	const auto range = m_categoryToCommandInfoMap.equal_range(eCategory);
+	for (const auto& [_, commandInfo] : std::ranges::subrange(range.first, range.second))
 	{
-		if (resourceId < indexStart
-			|| resourceId >= indexEnd)
-			continue;
-
+		const std::string& commandName = g_szCmdMsg[commandInfo.Command];
 		m_pList_Cmds->AddString(commandName);
 
 		// fill with command name exp: /type %s, to /type ban_user
-		std::string cmdTip = fmt::format_text_resource(resourceId + 100, commandName);
+		std::string cmdTip = fmt::format_text_resource(commandInfo.ResourceID  + 100, commandName);
 
 		CN3UIString* pChild = m_pList_Cmds->GetChildStrFromList(commandName);
 		if (pChild != nullptr)
@@ -399,17 +408,45 @@ bool CUICmdList::UpdateCommandList(int iCatIndex)
 	return true;
 }
 
+void CUICmdList::AppendToCommandMap(e_CmdListCategory eCategory, e_ChatCmd eBaseCmd, int iFirstResourceID, int iLastResourceID)
+{
+	for (int iResourceID = iFirstResourceID, iRealCmdIndex = eBaseCmd;
+		iResourceID <= iLastResourceID;
+		++iResourceID, ++iRealCmdIndex)
+	{
+		CommandInfo commandInfo;
+		commandInfo.ResourceID	= iResourceID;
+		commandInfo.Command		= static_cast<e_ChatCmd>(iRealCmdIndex);
+		m_categoryToCommandInfoMap.insert(std::make_pair(eCategory, std::move(commandInfo)));
+	}
+}
+
 bool CUICmdList::ExecuteCommand(int iCmdIndex)
 {
+	// Fetch base command index for this category.
+	// TODO: This should all ultimately be thrown away; it's based on outdated logic where all
+	// commands were thrown into the same array and assigned a relative ID.
+	// Officially this got moved into CUICmdList and categorised, so this should be refactored
+	// and thrown away.
+	e_CmdListCategory eCategory = static_cast<e_CmdListCategory>(m_iSelectedCategory);
+
+	// NOTE: The first command in the category is the base. It is guaranteed to be in insert order.
+	auto itr = m_categoryToCommandInfoMap.find(eCategory);
+	if (itr == m_categoryToCommandInfoMap.end())
+		return false;
+
 	std::string command;
 	m_pList_Cmds->GetString(iCmdIndex, command);
 
-	if (command == "PM")
+	int iRealCmdIndex = itr->second.Command + iCmdIndex;
+	if (iRealCmdIndex == CMD_WHISPER)
+	{
 		CGameProcedure::s_pProcMain->OpenCmdEdit(command);
+		return true;
+	}
 
 	command = '/' + command;
 	CGameProcedure::s_pProcMain->ParseChattingCommand(command);
 
 	return true;
-
 }

@@ -670,3 +670,8 @@ bool CGameBase::IsItemClassWeapon(e_ItemClass itemClass)
 
 	return false;
 }
+
+e_ZoneAbilityType CGameBase::GetCurrentZoneAbilityType()
+{
+	return s_pPlayer->m_InfoExt.eZoneAbilityType;
+}

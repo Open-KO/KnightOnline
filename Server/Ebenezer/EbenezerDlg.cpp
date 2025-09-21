@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "EbenezerDlg.h"
+#include "OperationMessage.h"
 #include "User.h"
 #include "db_resources.h"
 
@@ -230,6 +231,7 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	m_bFirstServerFlag = FALSE;
 	m_bPointCheckFlag = FALSE;
 
+	m_nServerIndex = 0;
 	m_nServerNo = 0;
 	m_nServerGroupNo = 0;
 	m_nServerGroup = 0;
@@ -265,7 +267,7 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	memset(m_strKarusCaptain, 0, sizeof(m_strKarusCaptain));
 	memset(m_strElmoradCaptain, 0, sizeof(m_strElmoradCaptain));
 
-	m_bSanta = FALSE;		// 갓댐 산타!!! >.<
+	m_bySanta = 0;		// 갓댐 산타!!! >.<
 
 	ConnectionManager::Create();
 }
@@ -529,8 +531,17 @@ BOOL CEbenezerDlg::OnInitDialog()
 	spdlog::info("EbenezerDlg::OnInitDialog: loading SERVER_RESOURCE table");
 	if (!LoadServerResourceTable())
 	{
-		spdlog::error("EbenezerDlg::OnInitDialog: failed to cache BATTLE SERVER_RESOURCE, closing");
+		spdlog::error("EbenezerDlg::OnInitDialog: failed to cache SERVER_RESOURCE, closing");
 		AfxMessageBox(_T("LoadServerResourceTable Load Fail"));
+		AfxPostQuitMessage(0);
+		return FALSE;
+	}
+
+	spdlog::info("EbenezerDlg::OnInitDialog: loading EVENT_TRIGGER table");
+	if (!LoadEventTriggerTable())
+	{
+		spdlog::error("EbenezerDlg::OnInitDialog: failed to cache EVENT_TRIGGER, closing");
+		AfxMessageBox(_T("LoadEventTriggerTable Load Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
@@ -1487,6 +1498,9 @@ void CEbenezerDlg::LoadConfig()
 
 	m_Ini.GetString("AI_SERVER", "IP", "127.0.0.1", m_AIServerIP, _countof(m_AIServerIP));
 
+	// NOTE: officially this is required to be explicitly set, so it defaults to 0 and fails.
+	m_nServerIndex = m_Ini.GetInt("SG_INFO", "SERVER_INDEX", 1);
+
 	m_nCastleCapture = m_Ini.GetInt("CASTLE", "NATION", 1);
 	m_nServerNo = m_Ini.GetInt("ZONE_INFO", "MY_INFO", 1);
 	m_nServerGroup = m_Ini.GetInt("ZONE_INFO", "SERVER_NUM", 0);
@@ -1575,7 +1589,7 @@ void CEbenezerDlg::UpdateGameTime()
 		SetGameTime();
 
 		//  갓댐 산타!! >.<
-		if (m_bSanta)
+		if (m_bySanta != 0)
 			FlySanta();
 		//
 	}
@@ -2247,69 +2261,15 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			m_AnnounceEdit.SetWindowText(_T(""));
 			UpdateData(FALSE);
 
-			if (_strnicmp("/kill", chatstr, 5) == 0)
-			{
-				strcpy(killstr, chatstr + 6);
-				KillUser(killstr);
+			OperationMessage opMessage(this, nullptr);
+			if (opMessage.Process(chatstr))
 				return TRUE;
-			}
-
-			if (_strnicmp("/Open", chatstr, 5) == 0)
-			{
-				BattleZoneOpen(BATTLEZONE_OPEN);
-				return TRUE;
-			}
-
-			if (_strnicmp("/snowopen", chatstr, 9) == 0)
-			{
-				BattleZoneOpen(SNOW_BATTLEZONE_OPEN);
-				return TRUE;
-			}
-
-			if (_strnicmp("/Close", chatstr, 6) == 0)
-			{
-				m_byBanishFlag = 1;
-				//WithdrawUserOut();
-				return TRUE;
-			}
-
-			if (_strnicmp("/down", chatstr, 5) == 0)
-			{
-				g_serverdown_flag = TRUE;
-				SuspendThread(m_Iocport.m_hAcceptThread);
-				KickOutAllUsers();
-				return TRUE;
-			}
-
-			if (_strnicmp("/discount", chatstr, 9) == 0)
-			{
-				m_sDiscount = 1;
-				return TRUE;
-			}
-
-			if (_strnicmp("/alldiscount", chatstr, 12) == 0)
-			{
-				m_sDiscount = 2;
-				return TRUE;
-			}
-
-			if (_strnicmp("/undiscount", chatstr, 11) == 0)
-			{
-				m_sDiscount = 0;
-				return TRUE;
-			}
 
 			// 비러머글 남는 공지 --;
 			if (_strnicmp("/permanent", chatstr, 10) == 0)
 			{
 				m_bPermanentChatMode = TRUE;
 				m_bPermanentChatFlag = TRUE;
-				return TRUE;
-			}
-
-			if (_strnicmp("/captain", chatstr, 8) == 0)
-			{
-				LoadKnightsRankTable();				// captain 
 				return TRUE;
 			}
 
@@ -2321,19 +2281,6 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 //				return TRUE;	//이것은 고의적으로 TRUE를 뺐었음
 			}
 //
-
-			// 갓댐 산타!!! >.<
-			if (_strnicmp("/santa", chatstr, 6) == 0)
-			{
-				m_bSanta = TRUE;			// Make Motherfucking Santa Claus FLY!!!
-				return TRUE;
-			}
-
-			if (_strnicmp("/offsanta", chatstr, 9) == 0)
-			{
-				m_bSanta = FALSE;			// SHOOT DOWN Motherfucking Santa Claus!!!
-				return TRUE;
-			}
 
 			std::string finalstr;
 
@@ -3822,6 +3769,7 @@ void CEbenezerDlg::FlySanta()
 	char send_buff[128] = {};
 
 	SetByte(send_buff, WIZ_SANTA, send_index);
+	SetByte(send_buff, m_bySanta, send_index);
 	Send_All(send_buff, send_index);
 }
 
@@ -3844,4 +3792,56 @@ C3DMap* CEbenezerDlg::GetMapByID(int iZoneID) const
 	}
 
 	return nullptr;
+}
+
+BOOL CEbenezerDlg::LoadEventTriggerTable()
+{
+	using ModelType = model::EventTrigger;
+
+	EventTriggerMap localMap;
+
+	recordset_loader::Base<ModelType> loader;
+	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
+	{
+		do
+		{
+			ModelType row = {};
+			recordset.get_ref(row);
+
+			uint32_t key = GetEventTriggerKey(row.NpcType, row.NpcId);
+
+			bool inserted = localMap.insert(std::make_pair(key, row.TriggerNumber)).second;
+			if (!inserted)
+			{
+				spdlog::error("EbenezerDlg::LoadEventTriggerTable: failed to insert into EventTriggerMap [NpcType={} NpcId={}]",
+					row.NpcType, row.NpcId);
+			}
+		}
+		while (recordset.next());
+	});
+
+	if (!loader.Load_AllowEmpty())
+	{
+		ReportTableLoadError(loader.GetError(), __func__);
+		return FALSE;
+	}
+
+	m_EventTriggerMap.swap(localMap);
+	return TRUE;
+}
+
+uint32_t CEbenezerDlg::GetEventTriggerKey(uint8_t byNpcType, uint16_t sTrapNumber) const
+{
+	return (static_cast<uint32_t>(byNpcType) << 16) | sTrapNumber;
+}
+
+int32_t CEbenezerDlg::GetEventTrigger(uint8_t byNpcType, uint16_t sTrapNumber) const
+{
+	uint32_t key = GetEventTriggerKey(byNpcType, sTrapNumber);
+
+	auto itr = m_EventTriggerMap.find(key);
+	if (itr == m_EventTriggerMap.end())
+		return -1;
+
+	return itr->second;
 }

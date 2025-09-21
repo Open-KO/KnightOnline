@@ -23,32 +23,6 @@ class CN3WorldBase : public CN3BaseFileAccess, public CGameBase
 	friend class CN3WorldManager;
 
 public:
-	// NOTE(srmeier): current setup carries no WIZ_ZONEABILITY information
-	// I am adding this information here. Anything which inherits from CGameBase
-	// should be able to get/set this information using the ACT_WORLD macro.
-	// therefore CPlayerMySelf::IsAttackableTarget() should be able to check
-	// against this information and GameProcMain should be able to process the WIZ_ZONEABILITY
-	// packet and set this information.
-	uint8_t m_byTariff;
-	uint16_t m_zoneFlags;
-	e_ZoneAbilityType m_zoneType;
-	uint8_t m_byMinLevel, m_byMaxLevel;
-
-	bool canTradeWithOtherNation() { return (m_zoneFlags & ZF_TRADE_OTHER_NATION) != 0; }
-	bool canTalkToOtherNation() { return (m_zoneFlags & ZF_TALK_OTHER_NATION) != 0; }
-	bool canAttackOtherNation() { return (m_zoneFlags & ZF_ATTACK_OTHER_NATION) != 0; }
-	bool canAttackSameNation() { return (m_zoneFlags & ZF_ATTACK_SAME_NATION) != 0; }
-	bool isWarZone() { return (m_zoneFlags & ZF_WAR_ZONE) != 0; }
-	bool isNationPVPZone() { return canAttackOtherNation() && !canAttackSameNation(); }
-	bool areNPCsFriendly() { return (m_zoneFlags & ZF_FRIENDLY_NPCS) != 0; }
-	bool canUpdateClan() { return (m_zoneFlags & ZF_CLAN_UPDATE) != 0; }
-	uint16_t GetZoneFlags(void) { return m_zoneFlags; }
-	uint8_t GetZoneType() { return m_zoneType; }
-	uint8_t GetTariff() { return m_byTariff; }
-	void SetTariff(uint8_t tariff) { m_byTariff = tariff; }
-	uint8_t GetMinLevelReq() { return m_byMinLevel; }
-	uint8_t GetMaxLevelReq() { return m_byMaxLevel; }
-
 	//..
 	virtual CN3Terrain* GetTerrainRef() = 0;
 	virtual CN3SkyMng* GetSkyRef() = 0;

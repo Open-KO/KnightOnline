@@ -898,6 +898,8 @@ int CDBAgent::LoadKnightsAllMembers(int knightsId, int start, char* buffOut, int
 		spdlog::error("DBAgent::LoadKnightsAllMembers: No rows selected for knightsId={}", knightsId);
 	}
 
+	buffIndex = tempIndex;
+
 	// clamp result so that start doesn't send rowCount negative
 	return std::max(rowCount - start, 0);
 }

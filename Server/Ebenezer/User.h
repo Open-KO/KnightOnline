@@ -198,6 +198,7 @@ public:
 	BYTE				m_byPersonalRank;
 
 public:
+	void SetZoneAbilityChange(int zone);
 	int16_t GetMaxWeightForClient() const;
 	int16_t GetCurrentWeightForClient() const;
 	void RecvZoneChange(char* pBuf);

@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "PlayerOtherMgr.h"
+#include "PlayerMySelf.h"
 
 #include <N3Base/DFont.h>
 #include <N3Base/N3ShapeExtra.h>
@@ -490,7 +491,7 @@ void CPlayerOtherMgr::MoveToCorpsesForcely(CPlayerNPC* pNPC, bool bErase)
 	}
 }
 
-CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearestEnemy(e_Nation eNation, const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
+CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearestEnemy(const __Vector3& vPosPlayer) // 가장 가까운 적 가져오기..
 {
 	CPlayerNPC* pTarget = nullptr;
 	float fDistMin = FLT_MAX, fDistTmp = 0;
@@ -500,21 +501,9 @@ CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearestEnemy(e_Nation eNation, const 
 	for(; it != itEnd; it++)
 	{
 		pNPC = it->second;
-		if(eNation == pNPC->m_InfoBase.eNation) continue;
+		if (!s_pPlayer->IsHostileTarget(pNPC))
+			continue;
 
-		//-------------------------------------------------------------------------
-		/*
-		// TODO(srmeier): need to use ZoneAbilityType here
-		// NOTE(srmeier): using zoneability information to determine if target is attackable
-		if (!ACT_WORLD->canAttackSameNation() && (pNPC->m_InfoBase.eNation == eNation))
-			return false;
-		if (!ACT_WORLD->canAttackOtherNation() && (eNation == NATION_ELMORAD && pNPC->m_InfoBase.eNation == NATION_KARUS))
-			return false;
-		if (!ACT_WORLD->canAttackOtherNation() && (eNation == NATION_KARUS && pNPC->m_InfoBase.eNation == NATION_ELMORAD))
-			return false;
-		*/
-		//-------------------------------------------------------------------------
-		
 		fDistTmp = pNPC->Distance(vPosPlayer);
 		if(fDistTmp < fDistMin)
 		{
@@ -527,21 +516,9 @@ CPlayerNPC*	CPlayerOtherMgr::CharacterGetByNearestEnemy(e_Nation eNation, const 
 	for(; it2 != itEnd2; it2++)
 	{
 		pNPC = it2->second;
-		if(eNation == pNPC->m_InfoBase.eNation) continue;
-
-		//-------------------------------------------------------------------------
-		/*
-		// TODO(srmeier): need to use ZoneAbilityType here
-		// NOTE(srmeier): using zoneability information to determine if target is attackable
-		if (!ACT_WORLD->canAttackSameNation() && (pNPC->m_InfoBase.eNation == eNation))
-			return false;
-		if (!ACT_WORLD->canAttackOtherNation() && (eNation == NATION_ELMORAD && pNPC->m_InfoBase.eNation == NATION_KARUS))
-			return false;
-		if (!ACT_WORLD->canAttackOtherNation() && (eNation == NATION_KARUS && pNPC->m_InfoBase.eNation == NATION_ELMORAD))
-			return false;
-		*/
-		//-------------------------------------------------------------------------
-		
+		if (!s_pPlayer->IsHostileTarget(pNPC))
+			continue;
+	
 		fDistTmp = pNPC->Distance(vPosPlayer);
 		if(fDistTmp < fDistMin)
 		{

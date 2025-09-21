@@ -1516,7 +1516,7 @@ void CUIVarious::Open()
 
 	// 기사단 리스트가 없으면 요청해서 받는다.
 //	__InfoPlayerMySelf*	pInfoExt = &(CGameBase::s_pPlayer->m_InfoExt);
-//	if(m_pPageKnights->NeedMemberListRequest() && pInfoExt->iKnightsID > 0)
+//	if(m_pPageKnights->NeedMemberListRequest() && CGameBase::s_pPlayer->m_InfoBase.iKnightsID > 0)
 //	{
 //		m_pPageKnights->MsgSend_MemberInfoOnline(0);
 //	}

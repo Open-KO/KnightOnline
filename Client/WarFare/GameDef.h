@@ -306,7 +306,6 @@ struct __InfoPlayerOther
 	int			iHair;			// Hair type
 
 	int			iCity;			// Affiliated city
-	int			iKnightsID;		// Clan ID
 	std::string szKnights;		// Clan name
 	int			iKnightsGrade;	// Clan grade
 	int			iKnightsRank;	// Clan ranking
@@ -320,7 +319,6 @@ struct __InfoPlayerOther
 		iFace = 0;
 		iHair = 0;
 		iCity;
-		iKnightsID = 0;
 		szKnights.clear();
 		iKnightsGrade = 0;
 		iKnightsRank = 0;
@@ -392,6 +390,11 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 	int					iZoneCur;				// Current zone ID
 	int					iVictoryNation;			// Last war outcome - 0: Draw, 1: El Morad victory, 2: Karus victory
 
+	e_ZoneAbilityType	eZoneAbilityType;
+	bool				bCanTradeWithOtherNation;
+	bool				bCanTalkToOtherNation;
+	int16_t				sZoneTariff;
+
 	void Init()
 	{
 		__InfoPlayerOther::Init();
@@ -443,6 +446,10 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 		iZoneInit = 1;
 		iZoneCur = 0;
 		iVictoryNation = -1;
+
+		eZoneAbilityType = ZONE_ABILITY_PVP;
+		bCanTradeWithOtherNation = false;
+		bCanTalkToOtherNation = false;
 	}
 };
 
@@ -849,7 +856,9 @@ struct __TABLE_PLAYER_LOOKS
 	std::string	szJointFN;		// Joint filename
 	std::string	szAniFN;		// Animation filename
 	std::string	szPartFNs[10];	// Each character part — upper body, lower body, head, arms, legs, hair, cape
-	std::string	szIdk0[3];
+	std::string	szSkinFN;
+	std::string	szChrFN;
+	std::string	szFXPlugFN;
 
 	int			iIdk1;
 
@@ -1241,15 +1250,6 @@ enum e_SkillMagicType4	{	BUFFTYPE_MAXHP = 1,				// Max HP
 enum e_SkillMagicType3	{	DDTYPE_TYPE3_DUR_OUR = 100,
 							DDTYPE_TYPE3_DUR_ENEMY = 200
 };
-
-enum e_ObjectType	{	OBJECT_TYPE_BINDPOINT,
-						OBJECT_TYPE_DOOR_LEFTRIGHT,
-						OBJECT_TYPE_DOOR_TOPDOWN,
-						OBJECT_TYPE_LEVER_TOPDOWN,
-						OBJECT_TYPE_FLAG,
-						OBJECT_TYPE_WARP_POINT,
-						OBJECT_TYPE_UNKNOWN = 0xffffffff
-					};
 
 // Special items associated with skill usage
 constexpr uint32_t ITEM_ID_MASTER_SCROLL_WARRIOR	= 379063000;

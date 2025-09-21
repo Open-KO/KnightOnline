@@ -760,29 +760,15 @@ float CPlayerMySelf::DistanceExceptRadius(CPlayerBase* pTarget)
 /// \returns true if attack would be valid, false otherwise
 bool CPlayerMySelf::IsAttackableTarget(CPlayerBase* pTarget, bool bMeasureAngle)
 {
-	if(pTarget == nullptr || pTarget->IsDead())
+	if (pTarget == nullptr || pTarget->IsDead())
 		return false;
 
 	// cannot attack when invulnerable 
-	if(m_fFlickeringFactor != 1.0f)
+	if (m_fFlickeringFactor != 1.0f)
 		return false;
 
-	// cannot attack same nation - this wouldn't work right with personal arenas
-	if(pTarget->m_InfoBase.eNation == m_InfoBase.eNation)
+	if (!IsHostileTarget(pTarget))
 		return false;
-
-	//-------------------------------------------------------------------------
-	/*
-	// TODO(srmeier): need to use ZoneAbilityType here
-	// NOTE(srmeier): using zoneability information to determine if target is attackable
-	if (!ACT_WORLD->canAttackSameNation() && (pTarget->m_InfoBase.eNation==m_InfoBase.eNation))
-		return false;
-	if (!ACT_WORLD->canAttackOtherNation() && (m_InfoBase.eNation == NATION_ELMORAD && pTarget->m_InfoBase.eNation == NATION_KARUS))
-		return false;
-	if (!ACT_WORLD->canAttackOtherNation() && (m_InfoBase.eNation == NATION_KARUS && pTarget->m_InfoBase.eNation == NATION_ELMORAD))
-		return false;
-	*/
-	//-------------------------------------------------------------------------
 
 	// make sure the target is within range
 	float fDist = (pTarget->Position() - m_Chr.Pos()).Magnitude();
@@ -845,21 +831,13 @@ bool CPlayerMySelf::CheckCollision()
 	{
 		pUPC = it->second;
 
-		if(pUPC->IsDead()) continue; //죽어 있는 상태의 캐릭터는 충돌체크를 하지 않는다.
-		if(m_InfoBase.eNation == pUPC->m_InfoBase.eNation) continue; // 같은 국가...
+		//죽어 있는 상태의 캐릭터는 충돌체크를 하지 않는다.
+		if (pUPC->IsDead())
+			continue;
 
-		//-------------------------------------------------------------------------
-		/*
-		// TODO(srmeier): need to use ZoneAbilityType here
-		// NOTE(srmeier): using zoneability information to determine if target is colliable
-		if (!ACT_WORLD->canAttackSameNation() && (pUPC->m_InfoBase.eNation == m_InfoBase.eNation))
+		// 같은 국가...
+		if (!IsHostileTarget(pUPC))
 			continue;
-		if (!ACT_WORLD->canAttackOtherNation() && (m_InfoBase.eNation == NATION_ELMORAD && pUPC->m_InfoBase.eNation == NATION_KARUS))
-			continue;
-		if (!ACT_WORLD->canAttackOtherNation() && (m_InfoBase.eNation == NATION_KARUS && pUPC->m_InfoBase.eNation == NATION_ELMORAD))
-			continue;
-		*/
-		//-------------------------------------------------------------------------
 		
 		fMag = (pUPC->Position() - vPos).Magnitude();
 		if(fMag < 32.0f)
@@ -888,23 +866,9 @@ bool CPlayerMySelf::CheckCollision()
 
 		if(pNPC->m_pShapeExtraRef) continue; // 성문등의 형태이면 충돌체크를 하지 않는다..
 
-		if(m_InfoBase.eNation == pNPC->m_InfoBase.eNation) continue; // 같은 국가...
-		// NOTE(srmeier): I believe these are for passing through monsters and such
-		if(m_InfoBase.eNation == NATION_KARUS && pNPC->m_InfoBase.eNation != NATION_ELMORAD) continue; // 적국 엔피씨는 충돌 체크를 한다.
-		if(m_InfoBase.eNation == NATION_ELMORAD && pNPC->m_InfoBase.eNation != NATION_KARUS) continue; // 
-
-		//-------------------------------------------------------------------------
-		/*
-		// TODO(srmeier): need to use ZoneAbilityType here
-		// NOTE(srmeier): using zoneability information to determine if target is colliable
-		if (!ACT_WORLD->canAttackSameNation() && (pNPC->m_InfoBase.eNation == m_InfoBase.eNation))
+		// 같은 국가...
+		if (!IsHostileTarget(pNPC))
 			continue;
-		if (!ACT_WORLD->canAttackOtherNation() && (m_InfoBase.eNation == NATION_ELMORAD && pNPC->m_InfoBase.eNation == NATION_KARUS))
-			continue;
-		if (!ACT_WORLD->canAttackOtherNation() && (m_InfoBase.eNation == NATION_KARUS && pNPC->m_InfoBase.eNation == NATION_ELMORAD))
-			continue;
-		*/
-		//-------------------------------------------------------------------------
 
 		fMag = (pNPC->Position() - vPos).Magnitude();
 		if(fMag < 32.0f)
@@ -1043,7 +1007,6 @@ void CPlayerMySelf::KnightsInfoSet(int iID, const std::string& szName, int iGrad
 {
 	CPlayerBase::KnightsInfoSet(iID, szName, iGrade, iRank);
 
-	m_InfoExt.iKnightsID = iID;
 	m_InfoExt.szKnights = szName;
 	m_InfoExt.iKnightsGrade = iGrade;
 	m_InfoExt.iKnightsRank = iRank;

@@ -163,6 +163,9 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		m_LogicElse = LOGIC_HOWMUCH_ITEM;
 
 		index += ParseSpace(temp, pBuf + index);
+		m_LogicElseInt[i++] = atoi(temp);		// Item no.
+
+		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);		// Minimum
 
 		index += ParseSpace(temp, pBuf + index);

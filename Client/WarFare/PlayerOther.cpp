@@ -167,7 +167,6 @@ void CPlayerOther::KnightsInfoSet(int iID, const std::string& szName, int iGrade
 {
 	CPlayerBase::KnightsInfoSet(iID, szName, iGrade, iRank);
 
-	m_InfoExt.iKnightsID = iID;
 	m_InfoExt.szKnights = szName;
 	m_InfoExt.iKnightsGrade = iGrade;
 	m_InfoExt.iKnightsRank = iRank;

@@ -932,11 +932,14 @@ void CAujardDlg::AllSaveRoutine()
 	for (int userId = 0; userId < static_cast<int>(_dbAgent.UserData.size()); userId++)
 	{
 		_USER_DATA* pUser = _dbAgent.UserData[userId];
-		if (pUser == nullptr || strlen(pUser->m_id) == 0)
+		if (pUser == nullptr)
 		{
 			spdlog::debug("AujardDlg::AllSaveRoutine: userId skipped for invalid data: {}", userId);
 			continue;
 		}
+
+		if (strlen(pUser->m_id) == 0)
+			continue;
 
 		if (HandleUserLogout(userId, UPDATE_ALL_SAVE, true))
 		{

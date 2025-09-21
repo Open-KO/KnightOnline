@@ -270,8 +270,8 @@ void CAISocket::RecvServerInfo(char* pBuf)
 void CAISocket::RecvNpcInfoAll(char* pBuf)
 {
 	int index = 0;
-	BYTE		byCount = 0;	// 마리수
-	BYTE        byType;			// 0:처음에 등장하지 않는 몬스터, 1:등장
+	uint8_t		byCount = 0;	// 마리수
+	uint8_t        byType;			// 0:처음에 등장하지 않는 몬스터, 1:등장
 	short		instanceId;			// NPC index
 	short		npcId;			// NPC index
 	short       sZone;			// Current zone number
@@ -281,20 +281,21 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 	int			iweapon_1;
 	int			iweapon_2;
 	char		npcName[MAX_NPC_NAME_SIZE + 1];
-	BYTE		byGroup;		// 소속 집단
-	BYTE		byLevel;		// level
+	uint8_t		byGroup;		// 소속 집단
+	uint8_t		byLevel;		// level
 	float		fPosX;			// X Position
 	float		fPosZ;			// Z Position
 	float		fPosY;			// Y Position
-	BYTE		byDirection;	// 
-	BYTE		tNpcType;		// 00	: Monster
+	uint8_t		byDirection;	// 
+	uint8_t		tNpcType;		// 00	: Monster
 								// 01	: NPC
 	int			iSellingGroup;
 	int			nMaxHP;			// 최대 HP
 	int			nHP;			// 현재 HP
-	BYTE		byGateOpen;		// 성문일경우 열림과 닫힘 정보
+	uint8_t		byGateOpen;		// 성문일경우 열림과 닫힘 정보
 	short		sHitRate;
-	BYTE		byObjectType;	// 보통 : 0, 특수 : 1
+	uint8_t		byObjectType;	// 보통 : 0, 특수 : 1
+	uint8_t		byTrapNumber;
 
 	byCount = GetByte(pBuf, index);
 
@@ -323,6 +324,7 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		byGateOpen = GetByte(pBuf, index);
 		sHitRate = GetShort(pBuf, index);
 		byObjectType = GetByte(pBuf, index);
+		byTrapNumber = GetByte(pBuf, index);
 
 		//TRACE(_T("RecvNpcInfoAll  : nid=%d, szName=%hs, count=%d\n"), nid, szName, byCount);
 
@@ -391,6 +393,7 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		pNpc->m_sHitRate = sHitRate;
 		pNpc->m_byObjectType = byObjectType;
 		pNpc->m_NpcState = NPC_LIVE;
+		pNpc->m_byTrapNumber = byTrapNumber;
 
 		int nRegX = static_cast<int32_t>(fPosX / VIEW_DISTANCE);
 		int nRegZ = static_cast<int32_t>(fPosZ / VIEW_DISTANCE);
@@ -866,7 +869,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 {
 	int index = 0;
 
-	BYTE		Mode;						// 01(INFO_MODIFY)	: NPC 정보 변경
+	uint8_t		Mode;						// 01(INFO_MODIFY)	: NPC 정보 변경
 											// 02(INFO_DELETE)	: NPC 정보 삭제
 	short		instanceId;						// NPC index
 	short		npcId;						// NPC index
@@ -877,23 +880,24 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	short       sZone;						// Current zone number
 	short       sZoneIndex;					// Current zone index
 	char		npcName[MAX_NPC_NAME_SIZE + 1];	// NPC Name
-	BYTE		byGroup;					// 소속 집단
-	BYTE		byLevel;					// level
+	uint8_t		byGroup;					// 소속 집단
+	uint8_t		byLevel;					// level
 	float		fPosX;						// X Position
 	float		fPosZ;						// Z Position
 	float		fPosY;						// Y Position
-	BYTE		byDirection;				// 방향
-	BYTE		tState;						// NPC 상태
+	uint8_t		byDirection;				// 방향
+	uint8_t		tState;						// NPC 상태
 											// 00	: NPC Dead
 											// 01	: NPC Live
-	BYTE		tNpcKind;					// 00	: Monster
+	uint8_t		tNpcKind;					// 00	: Monster
 											// 01	: NPC
 	int			iSellingGroup;
 	int			nMaxHP;						// 최대 HP
 	int			nHP;						// 현재 HP
-	BYTE		byGateOpen;
+	uint8_t		byGateOpen;
 	short		sHitRate;					// 공격 성공률
-	BYTE		byObjectType;				// 보통 : 0, 특수 : 1
+	uint8_t		byObjectType;				// 보통 : 0, 특수 : 1
+	uint8_t		byTrapNumber;
 
 	Mode = GetByte(pBuf, index);
 	instanceId = GetShort(pBuf, index);
@@ -925,6 +929,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	byGateOpen = GetByte(pBuf, index);
 	sHitRate = GetShort(pBuf, index);
 	byObjectType = GetByte(pBuf, index);
+	byTrapNumber = GetByte(pBuf, index);
 
 	CNpc* pNpc = m_pMain->m_NpcMap.GetData(instanceId);
 	if (pNpc == nullptr)
@@ -966,6 +971,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	pNpc->m_byGateOpen = byGateOpen;
 	pNpc->m_sHitRate = sHitRate;
 	pNpc->m_byObjectType = byObjectType;
+	pNpc->m_byTrapNumber = byTrapNumber;
 
 	int nRegX = static_cast<int32_t>(fPosX / VIEW_DISTANCE);
 	int nRegZ = static_cast<int32_t>(fPosZ / VIEW_DISTANCE);
