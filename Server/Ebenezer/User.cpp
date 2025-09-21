@@ -11495,6 +11495,21 @@ BOOL CUser::CheckEventLogic(EVENT_DATA* pEventData)
 					bExact = TRUE;
 				break;
 
+			case LOGIC_CHECK_LOYALTY:
+				if (m_pUserData->m_iLoyalty >= pLE->m_LogicElseInt[0] && m_pUserData->m_iLoyalty <= pLE->m_LogicElseInt[1])
+					bExact = TRUE;
+				break;
+
+			case LOGIC_CHECK_CHIEF:
+				if (m_pUserData->m_bFame == CHIEF)
+					bExact = TRUE;
+				break;
+
+			case LOGIC_CHECK_NO_CHIEF:
+				if (m_pUserData->m_bFame != CHIEF)
+					bExact = TRUE;
+				break;
+
 			default:
 				return FALSE;
 		}

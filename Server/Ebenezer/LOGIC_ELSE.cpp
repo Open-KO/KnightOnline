@@ -193,8 +193,6 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		m_LogicElseInt[i++] = atoi(temp);
 	}
 #if 0 // TODO
-
-
 	else if (0 == strcmp(temp, "CHECK_PROMOTION_ELIGIBLE"))
 	{
 		m_LogicElse = LOGIC_CHECK_PROMOTION_ELIGIBLE;
@@ -231,7 +229,7 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		m_LogicElse = LOGIC_CHECK_ITEMCHANGE_NUM;
 
 		index += ParseSpace(temp, pBuf + index);
-		m_LogicElseInt[i++] = atoi(temp) // This is the number (1~5) indicating which slot was last given in the last exchange (e.g. nExchangeItemNum1..5).
+		m_LogicElseInt[i++] = atoi(temp); // This is the number (1~5) indicating which slot was last given in the last exchange (e.g. nExchangeItemNum1..5).
 	}
 	else if (0 == strcmp(temp, "CHECK_NOCLASS"))
 	{
@@ -255,6 +253,7 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp); // Class 6
 	}
+#endif
 	else if (0 == strcmp(temp, "CHECK_LOYALTY"))
 	{
 		m_LogicElse = LOGIC_CHECK_LOYALTY;
@@ -279,6 +278,7 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
+#if 0 // TODO
 	else if (0 == strcmp(temp, "CHECK_CLAN_GRADE"))
 	{
 		m_LogicElse = LOGIC_CHECK_CLAN_GRADE;
@@ -336,7 +336,7 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT;
 
 		index += ParseSpace(temp, pBuf + index);
-		m_LogicElseInt[i++] = atoi(temp); // Current Forgotten Temple(Monster Challenge) user / player count
+		m_LogicElseInt[i++] = atoi(temp); // Current Forgotten Temple (Monster Challenge) user count
 	}
 	else if (0 == strcmp(temp, "CHECK_STAT_TOTAL"))
 	{
@@ -358,7 +358,6 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp); // Maximum total skill points
 	}
-
 #endif // 0
 ////////////////////////////////////////////////////////////////////////////
 
