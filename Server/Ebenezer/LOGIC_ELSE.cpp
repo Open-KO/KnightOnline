@@ -213,7 +213,7 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
-#ifdef 0
+#if 0 // TODO
 
 
 	else if (0 == strcmp(temp, "CHECK_EXIST_EVENT"))
