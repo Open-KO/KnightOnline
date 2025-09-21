@@ -192,6 +192,9 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
+#if 0 // TODO
+
+
 	else if (0 == strcmp(temp, "CHECK_PROMOTION_ELIGIBLE"))
 	{
 		m_LogicElse = LOGIC_CHECK_PROMOTION_ELIGIBLE;
@@ -213,9 +216,6 @@ void LOGIC_ELSE::Parse_and(char* pBuf)
 		index += ParseSpace(temp, pBuf + index);
 		m_LogicElseInt[i++] = atoi(temp);
 	}
-#if 0 // TODO
-
-
 	else if (0 == strcmp(temp, "CHECK_EXIST_EVENT"))
 	{
 		m_LogicElse = LOGIC_CHECK_EXIST_EVENT;
