@@ -208,6 +208,7 @@ public:
 	BOOL ExistComEvent(int eventid);
 	void SaveComEvent(int eventid);
 	BOOL CheckItemCount(int itemid, short min, short max);
+	BOOL CheckClanGrade(short min, short max);
 	void CouponEvent(char* pBuf);
 	void LogCoupon(int itemid, int count);
 	void RecvEditBox(char* pBuf);

@@ -196,13 +196,13 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
 
-#if 0 // TODO
 		// A CHECK_CLAN_GRADE {minimum} {maximum}
 		case "CHECK_CLAN_GRADE"_djb2:
 			m_LogicElse = LOGIC_CHECK_CLAN_GRADE;
 			argsToParse = 2;
 			break;
 
+#if 0 // TODO
 		// A CHECK_KNIGHT
 		case "CHECK_KNIGHT"_djb2:
 			m_LogicElse = LOGIC_CHECK_KNIGHT;

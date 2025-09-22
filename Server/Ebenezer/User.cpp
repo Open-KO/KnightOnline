@@ -11510,6 +11510,11 @@ BOOL CUser::CheckEventLogic(EVENT_DATA* pEventData)
 					bExact = TRUE;
 				break;
 
+			case LOGIC_CHECK_CLAN_GRADE:
+				if (CheckClanGrade(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = TRUE;
+				break;
+
 			default:
 				return FALSE;
 		}
@@ -12552,6 +12557,21 @@ BOOL CUser::CheckItemCount(int itemid, short min, short max)
 
 	// Player doesn't have any; caller expected some quantity.
 	return FALSE;
+}
+
+BOOL CUser::CheckClanGrade(short min, short max)
+{
+	if (m_pUserData->m_bKnights == 0)
+		return FALSE;
+
+	CKnights* pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
+	if (pKnights == nullptr)
+		return FALSE;
+
+	if (pKnights->m_byGrade < min || pKnights->m_byGrade > max)
+		return FALSE;
+
+	return TRUE;
 }
 
 void CUser::SaveComEvent(int eventid)
