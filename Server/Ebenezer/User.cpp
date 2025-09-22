@@ -12559,19 +12559,19 @@ BOOL CUser::CheckItemCount(int itemid, short min, short max)
 	return FALSE;
 }
 
-BOOL CUser::CheckClanGrade(short min, short max)
+bool CUser::CheckClanGrade(int min, int max)
 {
 	if (m_pUserData->m_bKnights == 0)
-		return FALSE;
+		return false;
 
 	CKnights* pKnights = m_pMain->m_KnightsMap.GetData(m_pUserData->m_bKnights);
 	if (pKnights == nullptr)
-		return FALSE;
+		return false;
 
 	if (pKnights->m_byGrade < min || pKnights->m_byGrade > max)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 void CUser::SaveComEvent(int eventid)
