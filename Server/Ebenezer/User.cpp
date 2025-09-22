@@ -8676,13 +8676,13 @@ void CUser::InitType4()
 	m_bType4Flag = false;
 }
 
-int CUser::GetNumberOfEmptySlots()
+int CUser::GetNumberOfEmptySlots() const
 {
 	int emptySlotsCount = 0;
 
-	for(int i = SLOT_MAX; i < SLOT_MAX + HAVE_MAX; i++)
+	for (int i = SLOT_MAX; i < SLOT_MAX + HAVE_MAX; i++)
 	{
-		_ITEM_DATA pItem = m_pUserData->m_sItemArray[i];
+		const _ITEM_DATA& pItem = m_pUserData->m_sItemArray[i];
 
 		if (pItem.nNum == 0)
 			emptySlotsCount++;
@@ -11531,7 +11531,7 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				break;
 
 			case LOGIC_CHECK_EMPTY_SLOT:
-				if(GetNumberOfEmptySlots() >= pLE->m_LogicElseInt[0])
+				if (GetNumberOfEmptySlots() >= pLE->m_LogicElseInt[0])
 					bExact = TRUE;
 				break;
 
