@@ -8690,6 +8690,16 @@ int CUser::GetNumberOfEmptySlots() const
 	return emptySlotCount;
 }
 
+bool CUser::CheckExistEvent(int questId, int questState) const
+{
+	for (const auto& quest : m_pUserData->m_quests)
+	{
+		if (quest.sQuestID == questId && quest.byQuestState == questState)
+			return true;
+	}
+	return false;
+}
+
 // item 먹을때 비어잇는 슬롯을 찾아야되...
 int CUser::GetEmptySlot(int itemid, int bCountable) const
 {
@@ -11532,6 +11542,11 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 
 			case LOGIC_CHECK_EMPTY_SLOT:
 				if (GetNumberOfEmptySlots() >= pLE->m_LogicElseInt[0])
+					bExact = TRUE;
+				break;
+
+			case LOGIC_CHECK_EXIST_EVENT:
+				if(CheckExistEvent(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
 					bExact = TRUE;
 				break;
 

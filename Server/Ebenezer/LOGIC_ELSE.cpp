@@ -159,12 +159,6 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
 
-		// A CHECK_EXIST_EVENT {quest ID} {quest state}
-		case "CHECK_EXIST_EVENT"_djb2:
-			m_LogicElse = LOGIC_CHECK_EXIST_EVENT;
-			argsToParse = 2;
-			break;
-
 		// A CHECK_ITEMCHANGE_NUM {last slot rewarded by exchange - 1..5 [nExchangeItemNum1..5]}
 		case "CHECK_ITEMCHANGE_NUM"_djb2:
 			m_LogicElse = LOGIC_CHECK_ITEMCHANGE_NUM;
@@ -177,6 +171,12 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			argsToParse = 6;
 			break;
 #endif
+
+		// A CHECK_EXIST_EVENT {quest ID} {quest state}
+		case "CHECK_EXIST_EVENT"_djb2:
+			m_LogicElse = LOGIC_CHECK_EXIST_EVENT;
+			argsToParse = 2;
+			break;
 
 		// A CHECK_LOYALTY {minimum} {maximum}
 		case "CHECK_LOYALTY"_djb2:
@@ -202,6 +202,12 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			argsToParse = 2;
 			break;
 
+		// A CHECK_EMPTY_SLOT {required number of empty slots}
+		case "CHECK_EMPTY_SLOT"_djb2:
+			m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
+			argsToParse = 1;
+			break;
+
 #if 0 // TODO
 		// A CHECK_KNIGHT
 		case "CHECK_KNIGHT"_djb2:
@@ -219,12 +225,6 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 		case "CHECK_MIDDLE_STATUE_CAPTURE"_djb2:
 			m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_CAPTURE;
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
-			break;
-
-		// A CHECK_EMPTY_SLOT {required number of empty slots}
-		case "CHECK_EMPTY_SLOT"_djb2:
-			m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
-			argsToParse = 1;
 			break;
 
 		// A CHECK_NO_CASTLE
