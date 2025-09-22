@@ -10,6 +10,7 @@
 #include "User.h"
 #include "db_resources.h"
 
+#include <shared/globals.h>
 #include <shared/packets.h>
 #include <spdlog/spdlog.h>
 
@@ -8694,10 +8695,14 @@ bool CUser::CheckExistEvent(int questId, int questState) const
 {
 	for (const auto& quest : m_pUserData->m_quests)
 	{
-		if (quest.sQuestID == questId && quest.byQuestState == questState)
+		if (quest.sQuestID != questId)
+			continue;
+
+		if (quest.byQuestState == questState)
 			return true;
+		break;
 	}
-	return false;
+	return questState == QUEST_STATE_NOT_STARTED ? true : false;
 }
 
 // item 먹을때 비어잇는 슬롯을 찾아야되...
@@ -11546,7 +11551,7 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				break;
 
 			case LOGIC_CHECK_EXIST_EVENT:
-				if(CheckExistEvent(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+				if (CheckExistEvent(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
 					bExact = TRUE;
 				break;
 
