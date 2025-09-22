@@ -230,7 +230,7 @@ public:
 	bool CheckExistItem(int itemid, short count) const;
 	bool CheckWeight(int itemid, short count) const;
 	bool CheckSkillPoint(BYTE skillnum, BYTE min, BYTE max) const;
-	bool CheckExistEvent(int questId, int questState) const;
+	bool CheckExistEvent(int16_t questId, uint8_t questState) const;
 	bool GoldLose(int gold);
 	void GoldGain(int gold);
 	void SendItemWeight();

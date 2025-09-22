@@ -8691,18 +8691,19 @@ int CUser::GetNumberOfEmptySlots() const
 	return emptySlotCount;
 }
 
-bool CUser::CheckExistEvent(int questId, int questState) const
+bool CUser::CheckExistEvent(int16_t questId, uint8_t questState) const
 {
-	for (const auto& quest : m_pUserData->m_quests)
+	for (const _USER_QUEST& quest : m_pUserData->m_quests)
 	{
 		if (quest.sQuestID != questId)
 			continue;
 
-		if (quest.byQuestState == questState)
-			return true;
-		break;
+		// Quest found - state must match
+		return (quest.byQuestState == questState);
 	}
-	return questState == QUEST_STATE_NOT_STARTED ? true : false;
+
+	// Quest not found - only return true if we're checking if it doesn't exist
+	return (questState == QUEST_STATE_NOT_STARTED);
 }
 
 // item 먹을때 비어잇는 슬롯을 찾아야되...
