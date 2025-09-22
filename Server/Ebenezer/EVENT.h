@@ -20,7 +20,7 @@ public:
 	void DeleteAll();
 	void Parsing(char* pBuf);
 	void Init();
-	BOOL LoadEvent(int zone);
+	bool LoadEvent(int zone);
 	int m_Zone;
 
 	EventDataArray m_arEvent;

@@ -99,7 +99,7 @@ void CUser::Initialize()
 	m_sItemAC = 0;
 	m_fHitrate = 0.0f;							// 타격 성공률
 	m_fAvoidrate = 0;							// 회피 성공률
-	m_bLogOut = FALSE;							// Logout 중인가?
+	m_bLogOut = false;							// Logout 중인가?
 	m_byNowParty = 0;
 	m_sPartyTotalLevel = 0;
 	m_byPartyTotalMan = 0;
@@ -910,13 +910,13 @@ int CUser::IsSurroundCheck(float fX, float fY, float fZ, int NpcID)
 	vNpc.Set(fX, fY, fZ);
 	float fDX, fDZ;
 	float fDis = 0.0f, fCurDis = 1000.0f;
-	BOOL bFlag = FALSE;
+	bool bFlag = false;
 	for (int i = 0; i < 8; i++)
 	{
 		//if(m_sSurroundNpcNumber[i] != -1) continue;
 		if (m_sSurroundNpcNumber[i] == NpcID)
 		{
-			if (bFlag == TRUE)
+			if (bFlag)
 			{
 				m_sSurroundNpcNumber[i] = -1;
 			}
@@ -924,7 +924,7 @@ int CUser::IsSurroundCheck(float fX, float fY, float fZ, int NpcID)
 			{
 				m_sSurroundNpcNumber[i] = NpcID;
 				nDir = i + 1;
-				bFlag = TRUE;
+				bFlag = true;
 			}
 			//return nDir;
 		}
@@ -957,7 +957,7 @@ int CUser::IsSurroundCheck(float fX, float fY, float fZ, int NpcID)
 	return nDir;
 }
 
-BOOL CUser::IsOpIDCheck(char* szName)
+bool CUser::IsOpIDCheck(const char* szName)
 {
 /*	int nSize = sizeof(g_pszOPID)/sizeof(char*);
 	CString szCheck = szName;
@@ -970,10 +970,10 @@ BOOL CUser::IsOpIDCheck(char* szName)
 		szCheck2 = g_pszOPID[i];
 		szCheck2.MakeLower();
 
-		if(szCheck.Find(szCheck2) != -1) return TRUE;
+		if(szCheck.Find(szCheck2) != -1) return true;
 	}	*/
 
-	return FALSE;
+	return false;
 }
 
 void CUser::HealMagic()

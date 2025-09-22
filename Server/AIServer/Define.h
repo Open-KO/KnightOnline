@@ -121,8 +121,8 @@ struct _NpcPosition
 
 struct _NpcMovePosition
 {
-	BOOL bX;				// x (true +, flase -)
-	BOOL bZ;				// z (true +, flase -)
+	bool bX;				// x (true +, flase -)
+	bool bZ;				// z (true +, flase -)
 	float fMovePos;
 	float fAddPos;
 	float fAdd_ZPos;

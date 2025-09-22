@@ -376,17 +376,17 @@ _PathNode* CPathFind::Pop()
 	return t_node;
 }
 
-BOOL CPathFind::IsBlankMap(int x, int y)
+bool CPathFind::IsBlankMap(int x, int y)
 {
 	if (x < 0
 		|| y < 0
 		|| x >= m_vMapSize.cx
 		|| y >= m_vMapSize.cy)
-		return FALSE;
+		return false;
 
-	BOOL bRet = TRUE;
-	//if(m_pMain->m_pMap->m_pMap[x][y].m_bMove > 0) bRet = FALSE;
+	bool bRet = true;
+	//if(m_pMain->m_pMap->m_pMap[x][y].m_bMove > 0) bRet = false;
 	//if
-	return (BOOL) !m_pMap[x * m_vMapSize.cy + y];
+	return m_pMap[x * m_vMapSize.cy + y] == 0;
 	//return bRet;
 }

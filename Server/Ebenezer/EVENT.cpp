@@ -32,7 +32,7 @@ EVENT::~EVENT()
 	DeleteAll();
 }
 
-BOOL EVENT::LoadEvent(int zone)
+bool EVENT::LoadEvent(int zone)
 {
 	DWORD		length, count;
 	CString		filename;
@@ -53,8 +53,9 @@ BOOL EVENT::LoadEvent(int zone)
 	evtPath /= QUESTS_DIR;
 	evtPath /= std::to_wstring(zone) + L".evt";
 
+	// Doesn't exist but this isn't a problem; we don't expect it to exist.
 	if (!std::filesystem::exists(evtPath))
-		return TRUE;
+		return true;
 
 	// Resolve it to strip the relative references to be nice.
 	// NOTE: Requires the file to exist.
@@ -65,7 +66,7 @@ BOOL EVENT::LoadEvent(int zone)
 	m_Zone = zone;
 
 	if (!pFile.Open(filename, CFile::modeRead))
-		return FALSE;
+		return false;
 
 	std::wstring filenameWide = evtPath.wstring();
 
@@ -171,7 +172,7 @@ BOOL EVENT::LoadEvent(int zone)
 	in.Close();
 	pFile.Close();
 
-	return TRUE;
+	return true;
 
 cancel_event_load:
 	CString str;
@@ -180,7 +181,7 @@ cancel_event_load:
 	in.Close();
 	pFile.Close();
 	DeleteAll();
-	return FALSE;
+	return false;
 }
 
 void EVENT::Init()

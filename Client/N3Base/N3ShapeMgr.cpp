@@ -223,7 +223,7 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 #endif
 
 	// Cell Data 쓰기.
-	BOOL bExist = FALSE;
+	int iExist = 0;
 	int z = 0;
 	for (float fZ = 0.0f; fZ < m_fMapLength; fZ += CELL_MAIN_SIZE, z++)
 	{
@@ -232,9 +232,9 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 		{
 			delete m_pCells[x][z]; m_pCells[x][z] = nullptr;
 
-			ReadFile(hFile, &bExist, 4, &dwRWC, nullptr); // 데이터가 있는 셀인지 쓰고..
+			ReadFile(hFile, &iExist, 4, &dwRWC, nullptr); // 데이터가 있는 셀인지 쓰고..
 
-			if (!bExist)
+			if (iExist == 0)
 				continue;
 
 			m_pCells[x][z] = new __CellMain;
@@ -295,12 +295,12 @@ bool CN3ShapeMgr::SaveCollisionData(HANDLE hFile)
 		int x = 0;
 		for (float fX = 0.0f; fX < m_fMapWidth; fX += CELL_MAIN_SIZE, x++)
 		{
-			BOOL bExist = FALSE;
+			int iExist = 0;
 			if (m_pCells[x][z] != nullptr)
-				bExist = TRUE;
+				iExist = 1;
 
 			// 데이터가 있는 셀인지 쓰고..
-			WriteFile(hFile, &bExist, 4, &dwRWC, nullptr);
+			WriteFile(hFile, &iExist, 4, &dwRWC, nullptr);
 
 			if (m_pCells[x][z] != nullptr)
 				m_pCells[x][z]->Save(hFile);

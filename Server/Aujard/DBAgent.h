@@ -139,9 +139,9 @@ public:
 	bool LoadUserData(const char* accountId, const char* charId, int userId);
 
 	// stored procs not implemented:
-	//BOOL UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count);
-	//BOOL CheckCouponEvent(const char* accountId);
-	//BOOL DeleteChar(int index, char* id, char* charId, char* socno);
+	//bool UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count);
+	//bool CheckCouponEvent(const char* accountId);
+	//bool DeleteChar(int index, char* id, char* charId, char* socno);
 	
 	/// \brief attempts connections with db::ConnectionManager to needed dbTypes
 	/// \returns true is successful, false otherwise

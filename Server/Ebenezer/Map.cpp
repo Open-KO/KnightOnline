@@ -96,7 +96,7 @@ C3DMap::~C3DMap()
 		m_WarpArray.DeleteAllData();
 }
 
-BOOL C3DMap::LoadMap(HANDLE hFile)
+bool C3DMap::LoadMap(HANDLE hFile)
 {
 	m_pMain = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 
@@ -105,14 +105,14 @@ BOOL C3DMap::LoadMap(HANDLE hFile)
 	if (!m_N3ShapeMgr.Create(
 		(m_nMapSize - 1) * m_fUnitDist,
 		(m_nMapSize - 1) * m_fUnitDist))
-		return FALSE;
+		return false;
 
 	if (!m_N3ShapeMgr.LoadCollisionData(hFile))
-		return FALSE;
+		return false;
 
 	if ((m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Width()
 		|| (m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Height())
-		return FALSE;
+		return false;
 
 	int mapwidth = (int) m_N3ShapeMgr.Width();
 
@@ -131,10 +131,10 @@ BOOL C3DMap::LoadMap(HANDLE hFile)
 	if (!LoadEvent())
 	{
 		AfxMessageBox(_T("Event Load Fail!!"));
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 void C3DMap::LoadObjectEvent(HANDLE hFile)
@@ -358,7 +358,7 @@ float C3DMap::GetHeight(float x, float y, float z)
 	return fYTerrain;
 }
 
-BOOL C3DMap::ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2)
+bool C3DMap::ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2)
 {
 	__Vector3 vec1(x1, y1, z1), vec2(x2, y2, z2);
 	__Vector3 vDir = vec2 - vec1;
@@ -369,16 +369,16 @@ BOOL C3DMap::ObjectCollision(float x1, float z1, float y1, float x2, float z2, f
 	return m_N3ShapeMgr.CheckCollision(vec1, vDir, fSpeed);
 }
 
-BOOL C3DMap::RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem)
+bool C3DMap::RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem)
 {
 	if (rx < 0
 		|| rz < 0
 		|| rx >= m_nXRegion
 		|| rz >= m_nZRegion)
-		return FALSE;
+		return false;
 
 	if (pItem == nullptr)
-		return FALSE;
+		return false;
 
 	EnterCriticalSection(&g_region_critical);
 
@@ -390,20 +390,20 @@ BOOL C3DMap::RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem)
 
 	LeaveCriticalSection(&g_region_critical);
 
-	return TRUE;
+	return true;
 }
 
-BOOL C3DMap::RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int count)
+bool C3DMap::RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int count)
 {
 	if (rx < 0
 		|| rz < 0
 		|| rx >= m_nXRegion
 		|| rz >= m_nZRegion)
-		return FALSE;
+		return false;
 
 	_ZONE_ITEM* pItem = nullptr;
 	CRegion* region = &m_ppRegion[rx][rz];
-	BOOL bFind = FALSE;
+	bool bFind = false;
 	short t_count = 0;
 
 	EnterCriticalSection(&g_region_critical);
@@ -417,7 +417,7 @@ BOOL C3DMap::RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int 
 				&& pItem->count[j] == count)
 			{
 				pItem->itemid[j] = 0; pItem->count[j] = 0;
-				bFind = TRUE;
+				bFind = true;
 				break;
 			}
 		}
@@ -514,7 +514,7 @@ void C3DMap::RegionNpcRemove(int rx, int rz, int nid)
 	LeaveCriticalSection(&g_region_critical);
 }
 
-BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
+bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 {
 	CGameEvent* pEvent = nullptr;
 	int iX, iZ, event_index = 0;
@@ -525,11 +525,11 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 		|| iX >= m_nMapSize
 		|| iZ < 0
 		|| iZ >= m_nMapSize)
-		return FALSE;
+		return false;
 
 	event_index = m_ppnEvent[iX][iZ];
 	if (event_index < 2)
-		return FALSE;
+		return false;
 
 	pEvent = m_EventArray.GetData(event_index);
 	if (pEvent != nullptr)
@@ -537,12 +537,12 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 		if (pEvent->m_bType == 1
 			&& pEvent->m_iExec[0] == ZONE_BATTLE
 			&& m_pMain->m_byBattleOpen != NATION_BATTLE)
-			return FALSE;
+			return false;
 
 		if (pEvent->m_bType == 1
 			&& pEvent->m_iExec[0] == ZONE_SNOW_BATTLE
 			&& m_pMain->m_byBattleOpen != SNOW_BATTLE)
-			return FALSE;
+			return false;
 
 		if (pUser->m_pUserData->m_bNation == KARUS
 			&& pEvent->m_iExec[0] == ZONE_BATTLE)
@@ -551,7 +551,7 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 			{
 				spdlog::error("Map::CheckEvent: BattleZone: karus full users [users={} charId={}]",
 					m_pMain->m_sKarusCount, pUser->m_pUserData->m_id);
-				return FALSE;
+				return false;
 			}
 		}
 		else if (pUser->m_pUserData->m_bNation == ELMORAD
@@ -561,18 +561,18 @@ BOOL C3DMap::CheckEvent(float x, float z, CUser* pUser)
 			{
 				spdlog::error("Map::CheckEvent: BattleZone: elmorad full users [users={} charId={}]",
 					m_pMain->m_sElmoradCount, pUser->m_pUserData->m_id);
-				return FALSE;
+				return false;
 			}
 		}
 
 		pEvent->RunEvent(pUser);
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
-BOOL C3DMap::LoadEvent()
+bool C3DMap::LoadEvent()
 {
 	using ModelType = model::Event;
 
@@ -611,19 +611,19 @@ BOOL C3DMap::LoadEvent()
 	if (!loader.Load_ForbidEmpty())
 	{
 		m_pMain->ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL C3DMap::IsValidPosition(float x, float z, float y)
+bool C3DMap::IsValidPosition(float x, float z, float y) const
 {
 	if (x >= m_N3ShapeMgr.Width())
-		return FALSE;
+		return false;
 
 	if (z >= m_N3ShapeMgr.Width())
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }

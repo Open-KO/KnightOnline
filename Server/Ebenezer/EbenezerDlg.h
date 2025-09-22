@@ -91,14 +91,14 @@ public:
 
 	uint32_t GetEventTriggerKey(uint8_t byNpcType, uint16_t sTrapNumber) const;
 	int32_t GetEventTrigger(uint8_t byNpcType, uint16_t sTrapNumber) const;
-	BOOL LoadEventTriggerTable();
+	bool LoadEventTriggerTable();
 	C3DMap* GetMapByID(int iZoneID) const;
 	C3DMap* GetMapByIndex(int iZoneIndex) const;
 	void FlySanta();
 	void BattleZoneCurrentUsers();
-	BOOL LoadKnightsRankTable();
+	bool LoadKnightsRankTable();
 	void Send_CommandChat(char* pBuf, int len, int nation, CUser* pExceptUser = nullptr);
-	BOOL LoadBattleTable();
+	bool LoadBattleTable();
 	void Send_UDP_All(char* pBuf, int len, int group_type = 0);
 	void KickOutZoneUsers(short zone);
 	int64_t GenerateItemSerial();
@@ -110,11 +110,11 @@ public:
 	void MarketBBSBuyDelete(short index);
 	void MarketBBSTimeCheck();
 	int  GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type = 0);
-	BOOL LoadAllKnightsUserData();
-	BOOL LoadAllKnights();
-	BOOL LoadStartPositionTable();
-	BOOL LoadServerResourceTable();
-	BOOL LoadHomeTable();
+	bool LoadAllKnightsUserData();
+	bool LoadAllKnights();
+	bool LoadStartPositionTable();
+	bool LoadServerResourceTable();
+	bool LoadHomeTable();
 	void Announcement(BYTE type, int nation = 0, int chat_type = 8);
 	void ResetBattleZone();
 	void BanishLosers();
@@ -123,27 +123,27 @@ public:
 	void BattleZoneOpen(int nType);	// 0:open 1:close
 	void AliveUserCheck();
 	void WithdrawUserOut();
-	BOOL LoadMagicType8();
-	BOOL LoadMagicType4();
-	BOOL LoadMagicType5();
-	BOOL LoadMagicType7();
-	BOOL LoadMagicType3();
-	BOOL LoadMagicType2();
-	BOOL LoadMagicType1();
+	bool LoadMagicType8();
+	bool LoadMagicType4();
+	bool LoadMagicType5();
+	bool LoadMagicType7();
+	bool LoadMagicType3();
+	bool LoadMagicType2();
+	bool LoadMagicType1();
 	void KillUser(const char* strbuff);
 	void Send_PartyMember(int party, char* pBuf, int len);
 	void Send_KnightsMember(int index, char* pBuf, int len, int zone = 100);
-	BOOL AISocketConnect(int zone, bool flag, std::string* errorReason = nullptr);
+	bool AISocketConnect(int zone, bool flag, std::string* errorReason = nullptr);
 	int GetAIServerPort() const;
 	int GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char* buff, int& t_count);
-	BOOL LoadNoticeData();
+	bool LoadNoticeData();
 	int GetZoneIndex(int zonenumber);
 	int GetRegionNpcList(C3DMap* pMap, int region_x, int region_z, char* nid_buff, int& t_count, int nType = 0); // Region All Npcs nid Packaging Function
 	void RegionNpcInfoForMe(CUser* pSendUser, int nType = 0);	// 9 Regions All Npcs nid Packaging Function
 	int GetRegionUserList(C3DMap* pMap, int region_x, int region_z, char* buff, int& t_count); // Region All Users uid Packaging Function
 	int GetRegionUserIn(C3DMap* pMap, int region_x, int region_z, char* buff, int& t_count);	// Region All Users USERINOUT Packet Packaging Function
 	void RegionUserInOutForMe(CUser* pSendUser);	// 9 Regions All Users uid Packaging Function
-	BOOL LoadLevelUpTable();
+	bool LoadLevelUpTable();
 	void SetGameTime();
 	void UpdateWeather();
 	void UpdateGameTime();
@@ -151,14 +151,14 @@ public:
 	void Send_NearRegion(char* pBuf, int len, int zone, int region_x, int region_z, float curx, float curz, CUser* pExceptUser = nullptr);
 	void Send_FilterUnitRegion(C3DMap* pMap, char* pBuf, int len, int x, int z, float ref_x, float ref_z, CUser* pExceptUser = nullptr);
 	void Send_UnitRegion(C3DMap* pMap, char* pBuf, int len, int x, int z, CUser* pExceptUser = nullptr, bool bDirect = true);
-	BOOL LoadCoefficientTable();
-	BOOL LoadMagicTable();
-	BOOL LoadItemTable();
+	bool LoadCoefficientTable();
+	bool LoadMagicTable();
+	bool LoadItemTable();
 	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);
-	BOOL MapFileLoad();
+	bool MapFileLoad();
 	void UserAcceptThread();
 	// sungyong 2001.11.06
-	BOOL AIServerConnect();
+	bool AIServerConnect();
 	void SyncTest(int nType);
 	void SyncRegionTest(C3DMap* pMap, int rx, int rz, FILE* pfile, int nType);
 	void SendAllUserInfo();
@@ -166,7 +166,7 @@ public:
 	void DeleteAllNpcList(int flag = 0);
 	CNpc* GetNpcPtr(int sid, int cur_zone);
 	// ~sungyong 2001.11.06
-	BOOL InitializeMMF();
+	bool InitializeMMF();
 	void UserInOutForMe(CUser* pSendUser);	// 9 Regions All Users USERINOUT Packet Packaging Function
 	void NpcInOutForMe(CUser* pSendUser);	// 9 Regions All Npcs NPCINOUT Packet Packaging Function
 	void Send_Region(char* pBuf, int len, int zone, int x, int z, CUser* pExceptUser = nullptr, bool bDirect = true);	// zone == real zone number
@@ -195,7 +195,7 @@ public:
 	HANDLE	m_hReadQueueThread;
 	HANDLE	m_hMMFile;
 	char*	m_lpMMFile;
-	BOOL	m_bMMFCreate;
+	bool	m_bMMFCreate;
 	DWORD	m_ServerOffset;
 
 	char	m_ppNotice[20][128];
@@ -230,9 +230,9 @@ public:
 	short	m_sSocketCount;							// AI Server 재접속시 사용
 	// sungyong 2002.05.23
 	short   m_sSendSocket;
-	BOOL	m_bFirstServerFlag;		// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
-	BOOL	m_bServerCheckFlag;
-	BOOL	m_bPointCheckFlag;		// AI서버와 재접전에 NPC포인터 참조막기 (TRUE:포인터 참조, FALSE:포인터 참조 못함)
+	bool 	m_bFirstServerFlag;		// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
+	bool 	m_bServerCheckFlag;
+	bool 	m_bPointCheckFlag;		// AI서버와 재접전에 NPC포인터 참조막기 (true:포인터 참조, false:포인터 참조 못함)
 	short   m_sReSocketCount;		// GameServer와 재접시 필요
 	float   m_fReConnectStart;	// 처음 소켓이 도착한 시간
 	short   m_sErrorSocketCount;  // 이상소켓 감시용
@@ -273,8 +273,8 @@ public:
 	float	m_fSellStartTime[MAX_BBS_POST];
 
 	// ~Yookozuna 2002.11.26 - 비러머글 남는 공지 --;
-	BOOL	m_bPermanentChatMode;
-	BOOL	m_bPermanentChatFlag;
+	bool 	m_bPermanentChatMode;
+	bool 	m_bPermanentChatFlag;
 	char	m_strPermanentChat[1024];
 
 	// ~Yookozuna 2002.12.11 - 갓댐 산타 클로스 --;

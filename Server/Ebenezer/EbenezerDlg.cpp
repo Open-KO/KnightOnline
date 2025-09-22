@@ -44,7 +44,7 @@ CEbenezerDlg* CEbenezerDlg::s_pInstance = nullptr;
 CIOCPort CEbenezerDlg::m_Iocport;
 
 WORD g_increase_serial = 1;
-BYTE g_serverdown_flag = FALSE;
+bool g_serverdown_flag = false;
 
 DWORD WINAPI ReadQueueThread(LPVOID lp)
 {
@@ -55,7 +55,7 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	CUser* pUser = nullptr;
 	int currenttime = 0;
 
-	while (TRUE)
+	while (true)
 	{
 		if (pMain->m_LoggerRecvQueue.GetFrontMode() == R)
 			continue;
@@ -194,7 +194,7 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	m_bMMFCreate = FALSE;
+	m_bMMFCreate = false;
 	m_hReadQueueThread = nullptr;
 
 	m_nYear = 0;
@@ -228,8 +228,8 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 
 	m_byBattleOpen = NO_BATTLE;
 	m_byOldBattleOpen = NO_BATTLE;
-	m_bFirstServerFlag = FALSE;
-	m_bPointCheckFlag = FALSE;
+	m_bFirstServerFlag = false;
+	m_bPointCheckFlag = false;
 
 	m_nServerIndex = 0;
 	m_nServerNo = 0;
@@ -260,8 +260,8 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	memset(m_ppNotice, 0, sizeof(m_ppNotice));
 	memset(m_AIServerIP, 0, sizeof(m_AIServerIP));
 
-	m_bPermanentChatMode = FALSE;			// 비러머글 남는 공지 --;
-	m_bPermanentChatFlag = FALSE;
+	m_bPermanentChatMode = false;			// 비러머글 남는 공지 --;
+	m_bPermanentChatFlag = false;
 	memset(m_strPermanentChat, 0, sizeof(m_strPermanentChat));
 
 	memset(m_strKarusCaptain, 0, sizeof(m_strKarusCaptain));
@@ -322,8 +322,8 @@ BOOL CEbenezerDlg::OnInitDialog()
 	m_KnightsManager.m_pMain = this;
 	// sungyong 2002.05.23
 	m_sSendSocket = 0;
-	m_bFirstServerFlag = FALSE;
-	m_bServerCheckFlag = FALSE;
+	m_bFirstServerFlag = false;
+	m_bServerCheckFlag = false;
 	m_sReSocketCount = 0;
 	m_fReConnectStart = 0.0f;
 	// sungyong~ 2002.05.23
@@ -363,21 +363,21 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	if (!m_LoggerSendQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND)))
+	if (!m_LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND)))
 	{
 		AfxMessageBox(_T("SMQ Send Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV)))
+	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV)))
 	{
 		AfxMessageBox(_T("SMQ Recv Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_ItemLoggerSendQ.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER)))
+	if (!m_ItemLoggerSendQ.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER)))
 	{
 		AfxMessageBox(_T("SMQ ItemLog Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
@@ -838,7 +838,7 @@ void CEbenezerDlg::OnTimer(UINT nIDEvent)
 }
 
 // sungyong 2002.05.22
-BOOL CEbenezerDlg::AIServerConnect()
+bool CEbenezerDlg::AIServerConnect()
 {
 	std::string errorReason;
 	for (int i = 0; i < MAX_AI_SOCKET; i++)
@@ -847,27 +847,27 @@ BOOL CEbenezerDlg::AIServerConnect()
 		{
 			std::wstring msg = Utf8ToWide(errorReason);
 			AfxMessageBox(msg.c_str());
-			return FALSE;
+			return false;
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason_ /*= nullptr*/)
+bool CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason_ /*= nullptr*/)
 {
 	CAISocket* pAISock = nullptr;
 	int send_index = 0;
 	char pBuf[128] = {};
 	std::string errorReason;
 
-	//if( m_nServerNo == 3 ) return FALSE;
+	//if( m_nServerNo == 3 ) return false;
 
 	pAISock = m_AISocketMap.GetData(zone);
 	if (pAISock != nullptr)
 	{
 		if (pAISock->GetState() != STATE_DISCONNECTED)
-			return TRUE;
+			return true;
 
 		m_AISocketMap.DeleteData(zone);
 	}
@@ -884,7 +884,7 @@ BOOL CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason
 		if (errorReason_ != nullptr)
 			*errorReason_ = errorReason;
 
-		return FALSE;
+		return false;
 	}
 
 	int port = GetAIServerPort();
@@ -898,7 +898,7 @@ BOOL CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason
 		if (errorReason_ != nullptr)
 			*errorReason_ = errorReason;
 
-		return FALSE;
+		return false;
 	}
 
 	if (!pAISock->Connect(&m_Iocport, m_AIServerIP, port))
@@ -912,7 +912,7 @@ BOOL CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason
 		if (errorReason_ != nullptr)
 			*errorReason_ = errorReason;
 
-		return FALSE;
+		return false;
 	}
 
 	SetByte(pBuf, AI_SERVER_CONNECT, send_index);
@@ -933,7 +933,7 @@ BOOL CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason
 	m_AISocketMap.PutData(zone, pAISock);
 
 	spdlog::debug("EbenezerDlg::AISocketConnect: connected to zone {}", zone);
-	return TRUE;
+	return true;
 }
 // ~sungyong 2002.05.22
 
@@ -1196,9 +1196,9 @@ void CEbenezerDlg::Send_AIServer(int zone, char* pBuf, int len)
 }
 // ~sungyong 2002.05.22
 
-BOOL CEbenezerDlg::InitializeMMF()
+bool CEbenezerDlg::InitializeMMF()
 {
-	BOOL bCreate = TRUE;
+	bool bCreate = true;
 
 	DWORD filesize = MAX_USER * ALLOCATED_USER_DATA_BLOCK;
 	m_hMMFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, filesize, _T("KNIGHT_DB"));
@@ -1210,17 +1210,17 @@ BOOL CEbenezerDlg::InitializeMMF()
 		if (m_hMMFile == nullptr)
 		{
 			m_hMMFile = INVALID_HANDLE_VALUE;
-			return FALSE;
+			return false;
 		}
 
-		bCreate = FALSE;
+		bCreate = false;
 	}
 
 	AddOutputMessage(_T("Shared memory created successfully"));
 
 	m_lpMMFile = (char*) MapViewOfFile(m_hMMFile, FILE_MAP_WRITE, 0, 0, 0);
 	if (m_lpMMFile == nullptr)
-		return FALSE;
+		return false;
 
 	memset(m_lpMMFile, 0, filesize);
 
@@ -1233,14 +1233,14 @@ BOOL CEbenezerDlg::InitializeMMF()
 			pUser->m_pUserData = (_USER_DATA*) (m_lpMMFile + i * ALLOCATED_USER_DATA_BLOCK);
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::MapFileLoad()
+bool CEbenezerDlg::MapFileLoad()
 {
 	using ModelType = model::ZoneInfo;
 
-	BOOL loaded = FALSE;
+	bool loaded = false;
 
 	recordset_loader::Base<ModelType> loader;
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
@@ -1309,13 +1309,13 @@ BOOL CEbenezerDlg::MapFileLoad()
 		}
 		while (recordset.next());
 
-		loaded = TRUE;
+		loaded = true;
 	});
 
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	return loaded;
@@ -1330,136 +1330,136 @@ void CEbenezerDlg::ReportTableLoadError(const recordset_loader::Error& err, cons
 	spdlog::error(error);
 }
 
-BOOL CEbenezerDlg::LoadItemTable()
+bool CEbenezerDlg::LoadItemTable()
 {
 	recordset_loader::STLMap loader(m_ItemTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicTable()
+bool CEbenezerDlg::LoadMagicTable()
 {
 	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType1()
+bool CEbenezerDlg::LoadMagicType1()
 {
 	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType2()
+bool CEbenezerDlg::LoadMagicType2()
 {
 	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType3()
+bool CEbenezerDlg::LoadMagicType3()
 {
 	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType4()
+bool CEbenezerDlg::LoadMagicType4()
 {
 	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType5()
+bool CEbenezerDlg::LoadMagicType5()
 {
 	recordset_loader::STLMap loader(m_MagicType5TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType7()
+bool CEbenezerDlg::LoadMagicType7()
 {
 	recordset_loader::STLMap loader(m_MagicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadMagicType8()
+bool CEbenezerDlg::LoadMagicType8()
 {
 	recordset_loader::STLMap loader(m_MagicType8TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadCoefficientTable()
+bool CEbenezerDlg::LoadCoefficientTable()
 {
 	recordset_loader::STLMap loader(m_CoefficientTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadLevelUpTable()
+bool CEbenezerDlg::LoadLevelUpTable()
 {
 	recordset_loader::Vector<model::LevelUp> loader(m_LevelUpTableArray);
 	if (!loader.Load_ForbidEmpty(true))
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CEbenezerDlg::LoadConfig()
@@ -1574,7 +1574,7 @@ void EbenezerLogger::SetupExtraLoggers(CIni& ini,
 void CEbenezerDlg::UpdateGameTime()
 {
 	CUser* pUser = nullptr;
-	BOOL bKnights = FALSE;
+	bool bKnights = false;
 
 	m_nMin++;
 
@@ -1598,7 +1598,7 @@ void CEbenezerDlg::UpdateGameTime()
 	{
 		m_nDate++;
 		m_nHour = 0;
-		bKnights = TRUE;
+		bKnights = true;
 	}
 
 	if (m_nDate == 31)
@@ -2245,7 +2245,7 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 
 	std::string buff2;
 //
-	BOOL permanent_off = FALSE;
+	bool permanent_off = false;
 //
 	if (pMsg->message == WM_KEYDOWN)
 	{
@@ -2268,16 +2268,16 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			// 비러머글 남는 공지 --;
 			if (_strnicmp("/permanent", chatstr, 10) == 0)
 			{
-				m_bPermanentChatMode = TRUE;
-				m_bPermanentChatFlag = TRUE;
+				m_bPermanentChatMode = true;
+				m_bPermanentChatFlag = true;
 				return TRUE;
 			}
 
 			if (_strnicmp("/offpermanent", chatstr, 13) == 0)
 			{
-				m_bPermanentChatMode = FALSE;
-				m_bPermanentChatFlag = FALSE;
-				permanent_off = TRUE;
+				m_bPermanentChatMode = false;
+				m_bPermanentChatFlag = false;
+				permanent_off = true;
 //				return TRUE;	//이것은 고의적으로 TRUE를 뺐었음
 			}
 //
@@ -2307,7 +2307,7 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 			{
 				SetByte(buff, PERMANENT_CHAT, buffindex);
 				strcpy(m_strPermanentChat, finalstr.c_str());
-				m_bPermanentChatFlag = FALSE;
+				m_bPermanentChatFlag = false;
 			}
 //
 			SetByte(buff, 0x01, buffindex);		// nation
@@ -2343,7 +2343,7 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 	return CDialog::PreTranslateMessage(pMsg);
 }
 
-BOOL CEbenezerDlg::LoadNoticeData()
+bool CEbenezerDlg::LoadNoticeData()
 {
 	CString ProgPath = GetProgPath();
 	CString NoticePath = ProgPath + "Notice.txt";
@@ -2357,7 +2357,7 @@ BOOL CEbenezerDlg::LoadNoticeData()
 		AfxMessageBox(_T("cannot open Notice.txt!!"));
 #endif
 		spdlog::warn("EbenezerDlg::LoadNoticeData: failed to open Notice.txt");
-		return FALSE;
+		return false;
 	}
 
 	while (txt_file.ReadString(buff))
@@ -2374,7 +2374,7 @@ BOOL CEbenezerDlg::LoadNoticeData()
 
 	txt_file.Close();
 
-	return TRUE;
+	return true;
 }
 
 void CEbenezerDlg::SyncTest(int nType)
@@ -2634,7 +2634,7 @@ void CEbenezerDlg::DeleteAllNpcList(int flag)
 
 	if (m_bPointCheckFlag)
 	{
-		m_bPointCheckFlag = FALSE;
+		m_bPointCheckFlag = false;
 		spdlog::error("EbenezerDlg::DeleteAllNpcList: pointCheckFlag set");
 		return;
 	}
@@ -2663,7 +2663,7 @@ void CEbenezerDlg::DeleteAllNpcList(int flag)
 	if (!m_NpcMap.IsEmpty())
 		m_NpcMap.DeleteAllData();
 
-	m_bServerCheckFlag = FALSE;
+	m_bServerCheckFlag = false;
 
 	AddOutputMessage(_T("DeleteAllNpcList complete"));
 	spdlog::debug("EbenezerDlg::DeleteAllNpcList: end");
@@ -2954,7 +2954,7 @@ void CEbenezerDlg::BanishLosers()
 		}
 
 		if (pTUser->m_pUserData->m_bZone != pTUser->m_pUserData->m_bNation)
-			pTUser->KickOutZoneUser(TRUE);
+			pTUser->KickOutZoneUser(true);
 	}
 }
 
@@ -3059,19 +3059,19 @@ void CEbenezerDlg::Announcement(BYTE type, int nation, int chat_type)
 	}
 }
 
-BOOL CEbenezerDlg::LoadStartPositionTable()
+bool CEbenezerDlg::LoadStartPositionTable()
 {
 	recordset_loader::STLMap loader(m_StartPositionTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadServerResourceTable()
+bool CEbenezerDlg::LoadServerResourceTable()
 {
 	ServerResourceTableMap tableMap;
 
@@ -3079,7 +3079,7 @@ BOOL CEbenezerDlg::LoadServerResourceTable()
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	// NOTE: Not a name, but still falls under the same umbrella - this won't be an issue with DBs not padding these.
@@ -3089,22 +3089,22 @@ BOOL CEbenezerDlg::LoadServerResourceTable()
 #endif
 
 	m_ServerResourceTableMap.Swap(tableMap);
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadHomeTable()
+bool CEbenezerDlg::LoadHomeTable()
 {
 	recordset_loader::STLMap loader(m_HomeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadAllKnights()
+bool CEbenezerDlg::LoadAllKnights()
 {
 	using ModelType = model::Knights;
 
@@ -3186,13 +3186,13 @@ BOOL CEbenezerDlg::LoadAllKnights()
 	if (!loader.Load_AllowEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL CEbenezerDlg::LoadAllKnightsUserData()
+bool CEbenezerDlg::LoadAllKnightsUserData()
 {
 	using ModelType = model::KnightsUser;
 
@@ -3215,10 +3215,10 @@ BOOL CEbenezerDlg::LoadAllKnightsUserData()
 	if (!loader.Load_AllowEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 int CEbenezerDlg::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type)
@@ -3527,7 +3527,7 @@ void CEbenezerDlg::Send_UDP_All(char* pBuf, int len, int group_type)
 	}
 }
 
-BOOL CEbenezerDlg::LoadBattleTable()
+bool CEbenezerDlg::LoadBattleTable()
 {
 	using ModelType = model::Battle;
 
@@ -3547,14 +3547,11 @@ BOOL CEbenezerDlg::LoadBattleTable()
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
-
-
-
 
 void CEbenezerDlg::Send_CommandChat(char* pBuf, int len, int nation, CUser* pExceptUser)
 {
@@ -3573,7 +3570,7 @@ void CEbenezerDlg::Send_CommandChat(char* pBuf, int len, int nation, CUser* pExc
 	}
 }
 
-BOOL CEbenezerDlg::LoadKnightsRankTable()
+bool CEbenezerDlg::LoadKnightsRankTable()
 {
 	using ModelType = model::KnightsRating;
 
@@ -3677,7 +3674,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 	if (!loader.Load_AllowEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	std::string strKarusCaptainName = fmt::format_db_resource(IDS_KARUS_CAPTAIN,
@@ -3721,7 +3718,7 @@ BOOL CEbenezerDlg::LoadKnightsRankTable()
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CEbenezerDlg::BattleZoneCurrentUsers()
@@ -3794,7 +3791,7 @@ C3DMap* CEbenezerDlg::GetMapByID(int iZoneID) const
 	return nullptr;
 }
 
-BOOL CEbenezerDlg::LoadEventTriggerTable()
+bool CEbenezerDlg::LoadEventTriggerTable()
 {
 	using ModelType = model::EventTrigger;
 
@@ -3823,15 +3820,17 @@ BOOL CEbenezerDlg::LoadEventTriggerTable()
 	if (!loader.Load_AllowEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	m_EventTriggerMap.swap(localMap);
-	return TRUE;
+	return true;
 }
 
 uint32_t CEbenezerDlg::GetEventTriggerKey(uint8_t byNpcType, uint16_t sTrapNumber) const
 {
+	// This is just a more efficient way of packing both components into a single key
+	// instead of using and comparing std::pair<> in our map.
 	return (static_cast<uint32_t>(byNpcType) << 16) | sTrapNumber;
 }
 

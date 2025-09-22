@@ -42,7 +42,7 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	BYTE command;
 	char recvBuff[1024] = {};
 
-	while (TRUE)
+	while (true)
 	{
 		if (main->LoggerRecvQueue.GetFrontMode() != R)
 		{
@@ -189,8 +189,8 @@ BOOL CAujardDlg::OnInitDialog()
 	// configure logger
 	_logger.Setup(ini, exePathUtf8);
 
-	LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), FALSE);	// Dispatcher 의 Send Queue
-	LoggerSendQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), FALSE);	// Dispatcher 의 Read Queue
+	LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), false);	// Dispatcher 의 Send Queue
+	LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), false);	// Dispatcher 의 Read Queue
 
 	if (!InitSharedMemory())
 	{
@@ -310,7 +310,7 @@ BOOL CAujardDlg::DestroyWindow()
 }
 
 /// \brief initializes shared memory with other server applications
-BOOL CAujardDlg::InitSharedMemory()
+bool CAujardDlg::InitSharedMemory()
 {
 	DWORD filesize = MAX_USER * ALLOCATED_USER_DATA_BLOCK;
 
@@ -318,7 +318,7 @@ BOOL CAujardDlg::InitSharedMemory()
 	if (_sharedMemoryHandle == nullptr)
 	{
 		_sharedMemoryHandle = INVALID_HANDLE_VALUE;
-		return FALSE;
+		return false;
 	}
 
 	AddOutputMessage(_T("Shared memory loaded successfully"));
@@ -326,7 +326,7 @@ BOOL CAujardDlg::InitSharedMemory()
 
 	_sharedMemoryFile = (char*) MapViewOfFile(_sharedMemoryHandle, FILE_MAP_WRITE, 0, 0, 0);
 	if (_sharedMemoryFile == nullptr)
-		return FALSE;
+		return false;
 
 	_dbAgent.UserData.reserve(MAX_USER);
 
@@ -336,7 +336,7 @@ BOOL CAujardDlg::InitSharedMemory()
 		_dbAgent.UserData.push_back(pUser);
 	}
 
-	return TRUE;
+	return true;
 }
 
 /// \brief writes a recordset_loader::Error to an error pop-up
@@ -350,16 +350,16 @@ void CAujardDlg::ReportTableLoadError(const recordset_loader::Error& err, const 
 }
 
 /// \brief loads information needed from the ITEM table to a cache map
-BOOL CAujardDlg::LoadItemTable()
+bool CAujardDlg::LoadItemTable()
 {
 	recordset_loader::STLMap loader(ItemArray);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 /// \brief loads and sends data after a character is selected

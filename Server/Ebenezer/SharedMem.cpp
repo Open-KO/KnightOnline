@@ -28,7 +28,7 @@ CSharedMemQueue::CSharedMemQueue()
 {
 	m_hMMFile = nullptr;
 	m_lpMMFile = nullptr;
-	m_bMMFCreate = FALSE;
+	m_bMMFCreate = false;
 	m_nMaxCount = 0;
 	m_wOffset = 0;
 	m_pHeader = nullptr;
@@ -44,10 +44,10 @@ CSharedMemQueue::~CSharedMemQueue()
 		CloseHandle(m_hMMFile);
 }
 
-BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lpname, BOOL bCreate)
+bool CSharedMemQueue::InitializeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lpname, bool bCreate)
 {
 	if (maxcount < 1)
-		return FALSE;
+		return false;
 
 	DWORD dwfullsize = dwOffsetsize * maxcount + sizeof(_SMQ_HEADER);
 
@@ -55,19 +55,19 @@ BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lp
 	m_wOffset = dwOffsetsize;
 
 	if (bCreate)
-		m_hMMFile = CreateFileMapping((HANDLE) 0xFFFFFFFF, nullptr, PAGE_READWRITE, 0, dwfullsize, lpname);
+		m_hMMFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, dwfullsize, lpname);
 	else
 		m_hMMFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, lpname);
 
 	if (m_hMMFile == nullptr)
 	{
 		spdlog::error("SharedMem::InitializeMMF: failed to open shared memory");
-		return FALSE;
+		return false;
 	}
 
 	m_lpMMFile = (char*) MapViewOfFile(m_hMMFile, FILE_MAP_WRITE, 0, 0, 0);
 	if (m_lpMMFile == nullptr)
-		return FALSE;
+		return false;
 
 	if (lpname != nullptr)
 	{
@@ -89,7 +89,7 @@ BOOL CSharedMemQueue::InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lp
 		m_pHeader->CreatePid = _getpid();
 	}
 
-	return TRUE;
+	return true;
 }
 
 int CSharedMemQueue::PutData(char* pBuf, int size)

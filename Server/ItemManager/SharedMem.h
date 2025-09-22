@@ -32,7 +32,7 @@ private:
 	HANDLE			m_hMMFile;
 	char*			m_lpMMFile;
 
-	BOOL			m_bMMFCreate;
+	bool			m_bMMFCreate;
 	short			m_nMaxCount;
 	DWORD			m_wOffset;
 	LONG			m_lReference;
@@ -65,7 +65,7 @@ public:
 
 	int GetData(char* pBuf);
 	int PutData(char* pBuf, int size);
-	BOOL InitailizeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lpname, BOOL bCreate = TRUE);
+	bool InitializeMMF(DWORD dwOffsetsize, int maxcount, LPCTSTR lpname, bool bCreate = true);
 	CSharedMemQueue();
 	virtual ~CSharedMemQueue();
 };

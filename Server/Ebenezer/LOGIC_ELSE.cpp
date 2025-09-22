@@ -22,8 +22,8 @@ static char THIS_FILE[] = __FILE__;
 
 LOGIC_ELSE::LOGIC_ELSE()
 {
-	m_LogicElse = FALSE;
-	m_bAnd = TRUE;
+	m_LogicElse = LOGIC_CHECK_NONE;
+	m_bAnd = true;
 	for (int i = 0; i < MAX_LOGIC_ELSE_INT; i++)
 		m_LogicElseInt[i] = -1;
 }
@@ -37,7 +37,7 @@ void LOGIC_ELSE::Init()
 	for (int i = 0; i < MAX_LOGIC_ELSE_INT; i++)
 		m_LogicElseInt[i] = -1;
 
-	m_bAnd = TRUE;
+	m_bAnd = true;
 }
 
 void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int lineNumber)
@@ -270,5 +270,5 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 		m_LogicElseInt[i] = atoi(temp);
 	}
 
-	m_bAnd = TRUE;
+	m_bAnd = true;
 }

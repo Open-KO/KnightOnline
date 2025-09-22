@@ -222,7 +222,7 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 			{
 				spdlog::info("GameSocket::RecvServerConnect: Ebenezer sockets reconnected within a minute [sockets={}]",
 					m_pMain->m_sReSocketCount);
-				m_pMain->m_bFirstServerFlag = TRUE;
+				m_pMain->m_bFirstServerFlag = true;
 				m_pMain->m_sReSocketCount = 0;
 				m_pMain->AllNpcInfo();
 			}
@@ -244,7 +244,7 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 		{
 			spdlog::info("GameSocket::RecvServerConnect: Ebenezer sockets all connected [sockets={}]",
 				m_pMain->m_sSocketCount);
-			m_pMain->m_bFirstServerFlag = TRUE;
+			m_pMain->m_bFirstServerFlag = true;
 			m_pMain->m_sSocketCount = 0;
 			m_pMain->AllNpcInfo();
 		}
@@ -380,14 +380,14 @@ void CGameSocket::RecvUserInOut(char* pBuf)
 	if (pUser != nullptr)
 	{
 	//	TRACE(_T("##### Fail : ^^& RecvUserInOut() [name = %hs]. state=%d, hp=%d\n"), pUser->m_strUserID, pUser->m_bLive, pUser->m_sHP);
-		BOOL bFlag = FALSE;
+		bool bFlag = false;
 
 		if (pUser->m_bLive == USER_DEAD
 			|| pUser->m_sHP <= 0)
 		{
 			if (pUser->m_sHP > 0)
 			{
-				pUser->m_bLive = TRUE;
+				pUser->m_bLive = 1;
 			}
 			
 			spdlog::warn("GameSocket::RecvUserInOut: UserHeal error[charId={} isAlive={} hp={} fX={} fZ={}]",
@@ -483,7 +483,7 @@ void CGameSocket::RecvUserMoveEdge(char* pBuf)
 //	TRACE(_T("RecvUserMoveEdge()---> uid = %d, x=%f, z=%f \n"), uid, fX, fZ);
 }
 
-BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
+bool CGameSocket::SetUid(float x, float z, int id, int speed)
 {
 	int x1 = (int) x / TILE_SIZE;
 	int z1 = (int) z / TILE_SIZE;
@@ -494,7 +494,7 @@ BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
 	if (pUser == nullptr)
 	{
 		spdlog::error("GameSocket::SetUid: userId={} is null", id);
-		return FALSE;
+		return false;
 	}
 
 	// Zone번호도 받아야 함,,,
@@ -503,7 +503,7 @@ BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
 	{
 		spdlog::error("GameSocket::SetUid: map not found [charId=%hs zoneIndex={}]",
 			pUser->m_strUserID, pUser->m_sZoneIndex);
-		return FALSE;
+		return false;
 	}
 
 	if (x1 < 0
@@ -513,7 +513,7 @@ BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
 	{
 		spdlog::error("GameSocket::SetUid: character position out of bounds [userId=%d, charId=%hs x1=%d z1=%d]",
 			id, pUser->m_strUserID, x1, z1);
-		return FALSE;
+		return false;
 	}
 
 	if (nRX > pMap->GetXRegionMax()
@@ -521,10 +521,10 @@ BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
 	{
 		spdlog::error("GameSocket::SetUid: region bounds exceeded [userId={} charId={} nRX={} nRZ={}]",
 			id, pUser->m_strUserID, nRX, nRZ);
-		return FALSE;
+		return false;
 	}
 	// map 이동이 불가능이면 User등록 실패..
-	// if(pMap->m_pMap[x1][z1].m_sEvent == 0) return FALSE;
+	// if(pMap->m_pMap[x1][z1].m_sEvent == 0) return false;
 
 	if (pUser != nullptr)
 	{
@@ -542,7 +542,7 @@ BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
 				spdlog::error("GameSocket::SetUid: user is dead [charId={} isAive={} hp={}]",
 					pUser->m_strUserID, pUser->m_bLive, pUser->m_sHP);
 				//Send_UserError(id);
-				return FALSE;
+				return false;
 			}
 		}
 
@@ -578,7 +578,7 @@ BOOL CGameSocket::SetUid(float x, float z, int id, int speed)
 	// if( pUser->m_curZone == 던젼 ) 
 	int room = pMap->IsRoomCheck(x, z);
 
-	return TRUE;
+	return true;
 }
 
 void CGameSocket::RecvAttackReq(char* pBuf)

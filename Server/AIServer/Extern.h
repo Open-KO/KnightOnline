@@ -4,7 +4,7 @@
 // -------------------------------------------------
 // 전역 객체 변수
 // -------------------------------------------------
-extern BOOL	g_bNpcExit;
+extern bool	g_bNpcExit;
 
 import AIServerModel;
 namespace model = aiserver_model;

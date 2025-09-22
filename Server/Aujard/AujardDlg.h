@@ -131,7 +131,7 @@ public:
 	void SelectNation(char* buffer);
 
 	/// \brief loads information needed from the ITEM table to a cache map
-	BOOL LoadItemTable();
+	bool LoadItemTable();
 	
 	/// \brief writes a recordset_loader::Error to an error pop-up
 	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);
@@ -163,7 +163,7 @@ public:
 	~CAujardDlg();
 
 	/// \brief initializes shared memory with other server applications
-	BOOL InitSharedMemory();
+	bool InitSharedMemory();
 
 	/// \brief loads and sends data after a character is selected
 	void SelectCharacter(char* buffer);

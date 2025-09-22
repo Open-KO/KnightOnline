@@ -113,7 +113,7 @@ public:
 	BYTE	m_bHPDuration[MAX_TYPE3_REPEAT];
 	BYTE	m_bHPInterval[MAX_TYPE3_REPEAT];
 	short	m_sSourceID[MAX_TYPE3_REPEAT];
-	BOOL	m_bType3Flag;
+	bool	m_bType3Flag;
 
 	float	m_fAreaLastTime;			// For Area Damage spells Type 3.
 	float   m_fAreaStartTime;
@@ -150,7 +150,7 @@ public:
 	short   m_sDuration9;  float   m_fStartTime9;
 
 	BYTE	m_bType4Buff[MAX_TYPE4_BUFF];
-	BOOL	m_bType4Flag;
+	bool	m_bType4Flag;
 
 	CEbenezerDlg* m_pMain;
 	CMagicProcess m_MagicProcess;
@@ -171,13 +171,13 @@ public:
 
 	float	m_fLastTrapAreaTime;		// The last moment you were in the trap area.
 
-	BOOL	m_bZoneChangeFlag;			// 성용씨 미워!!
+	bool	m_bZoneChangeFlag;			// 성용씨 미워!!
 
 	BYTE	m_bRegeneType;				// Did you die and go home or did you type '/town'?
 
 	float	m_fLastRegeneTime;			// The last moment you got resurrected.
 
-	BOOL	m_bZoneChangeSameZone;		// Did the server change when you warped?
+	bool	m_bZoneChangeSameZone;		// Did the server change when you warped?
 
 	// 이밴트용 관련.... 정애씨 이거 보면 코카스 쏠께요 ^^;
 //	int					m_iSelMsgEvent[5];	// 실행중인 선택 메세지박스 이벤트
@@ -205,39 +205,39 @@ public:
 	void GameStart(char* pBuf);
 	void GetUserInfo(char* buff, int& buff_index);
 	void RecvDeleteChar(char* pBuf);
-	BOOL ExistComEvent(int eventid);
+	bool ExistComEvent(int eventid) const;
 	void SaveComEvent(int eventid);
-	BOOL CheckItemCount(int itemid, short min, short max);
-	bool CheckClanGrade(int min, int max);
+	bool CheckItemCount(int itemid, short min, short max) const;
+	bool CheckClanGrade(int min, int max) const;
 	void CouponEvent(char* pBuf);
 	void LogCoupon(int itemid, int count);
 	void RecvEditBox(char* pBuf);
-	BOOL CheckCouponUsed();
-	BOOL CheckRandom(short percent);
+	bool CheckCouponUsed() const;
+	bool CheckRandom(short percent) const;
 	void OpenEditBox(int message, int event);
-	BOOL CheckEditBox();
+	bool CheckEditBox() const;
 	void NativeZoneReturn();
 	void EventMoneyItemGet(int itemid, int count);
-	void KickOutZoneUser(BOOL home = FALSE);
+	void KickOutZoneUser(bool home = false);
 	void TrapProcess();
-	BOOL JobGroupCheck(short jobgroupid);
-	void SelectMsg(EXEC* pExec);
-	void SendNpcSay(EXEC* pExec);
-	BOOL CheckClass(short class1, short class2, short class3, short class4, short class5, short class6);
+	bool JobGroupCheck(short jobgroupid) const;
+	void SelectMsg(const EXEC* pExec);
+	void SendNpcSay(const EXEC* pExec);
+	bool CheckClass(short class1, short class2, short class3, short class4, short class5, short class6) const;
 	void RecvSelectMsg(char* pBuf);
-	BOOL GiveItem(int itemid, short count);
-	BOOL RobItem(int itemid, short count);
-	BOOL CheckExistItem(int itemid, short count);
-	BOOL CheckWeight(int itemid, short count);
-	BOOL CheckSkillPoint(BYTE skillnum, BYTE min, BYTE max);
+	bool GiveItem(int itemid, short count);
+	bool RobItem(int itemid, short count);
+	bool CheckExistItem(int itemid, short count) const;
+	bool CheckWeight(int itemid, short count) const;
+	bool CheckSkillPoint(BYTE skillnum, BYTE min, BYTE max) const;
 	bool GoldLose(int gold);
 	void GoldGain(int gold);
 	void SendItemWeight();
 	void ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial, int itemid, int count, int durability);
 	void TestPacket(char* pBuf);
-	BOOL RunEvent(EVENT_DATA* pEventData);
-	BOOL RunNpcEvent(CNpc* pNpc, EXEC* pExec);
-	BOOL CheckEventLogic(EVENT_DATA* pEventData);
+	bool RunEvent(const EVENT_DATA* pEventData);
+	bool RunNpcEvent(CNpc* pNpc, const EXEC* pExec);
+	bool CheckEventLogic(const EVENT_DATA* pEventData);
 	void ClientEvent(char* pBuf);
 	void KickOut(char* pBuf);
 	void SetLogInInfoToDB(BYTE bInit);
@@ -262,13 +262,13 @@ public:
 	void FriendAccept(char* pBuf);
 	void FriendRequest(char* pBuf);
 	void Friend(char* pBuf);
-	BOOL WarpListObjectEvent(short objectindex, short nid);
-	BOOL FlagObjectEvent(short objectindex, short nid);
-	BOOL GateLeverObjectEvent(short objectindex, short nid);
-	BOOL GateObjectEvent(short objectindex, short nid);
-	BOOL BindObjectEvent(short objectindex, short nid);
+	bool WarpListObjectEvent(short objectindex, short nid);
+	bool FlagObjectEvent(short objectindex, short nid);
+	bool GateLeverObjectEvent(short objectindex, short nid);
+	bool GateObjectEvent(short objectindex, short nid);
+	bool BindObjectEvent(short objectindex, short nid);
 	void InitType3();
-	BOOL GetWarpList(int warp_group);
+	bool GetWarpList(int warp_group);
 	void ServerChangeOk(char* pBuf);
 	void ZoneConCurrentUsers(char* pBuf);
 	void SelectWarpList(char* pBuf);
@@ -281,8 +281,8 @@ public:
 	bool GetStartPosition(short* x, short* z);
 	void Home();
 	void ReportBug(char* pBuf);
-	int GetEmptySlot(int itemid, int bCountable);
-	int GetNumberOfEmptySlots();
+	int GetEmptySlot(int itemid, int bCountable) const;
+	int GetNumberOfEmptySlots() const;
 	void InitType4();
 	void WarehouseProcess(char* pBuf);
 	short GetACDamage(int damage, short tid);
@@ -307,14 +307,14 @@ public:
 	void CountConcurrentUser();
 	void SendUserInfo(char* temp_send, int& index);
 	void ChatTargetSelect(char* pBuf);
-	BOOL ItemEquipAvailable(model::Item* pTable);
+	bool ItemEquipAvailable(const model::Item* pTable) const;
 	void ClassChange(char* pBuf);
 	void MSpChange(int amount);
 	void UpdateGameWeather(char* pBuf, BYTE type);
 	void ObjectEvent(char* pBuf);
 	void SkillPointChange(char* pBuf);
-	BOOL ExecuteExchange();
-	void InitExchange(BOOL bStart);
+	bool ExecuteExchange();
+	void InitExchange(bool bStart);
 	void ExchangeCancel();
 	void ExchangeDecide();
 	void ExchangeAdd(char* pBuf);
@@ -325,7 +325,7 @@ public:
 	void PartyRemove(int memberid);
 	void PartyInsert();
 	void PartyCancel();
-	void PartyRequest(int memberid, BOOL bCreate);
+	void PartyRequest(int memberid, bool bCreate);
 	void PartyProcess(char* pBuf);
 	void SendNotice();
 	void UserLookChange(int pos, int itemid, int durability);
@@ -336,7 +336,7 @@ public:
 	void PointChange(char* pBuf);
 	void ZoneChange(int zone, float x, float z);
 	void ItemGet(char* pBuf);
-	BOOL IsValidName(char* name);
+	static bool IsValidName(const char* name);
 	void AllCharInfoToAgent();
 	void SelNationToAgent(char* pBuf);
 	void DelCharToAgent(char* pBuf);
@@ -345,12 +345,12 @@ public:
 	void SendTargetHP(BYTE echo, int tid, int damage = 0);
 	void ItemTrade(char* pBuf);
 	void NpcEvent(char* pBuf);
-	BOOL IsValidSlotPos(model::Item* pTable, int destpos);
+	bool IsValidSlotPos(model::Item* pTable, int destpos) const;
 	void ItemMove(char* pBuf);
 	void Warp(char* pBuf);
 	void RequestNpcIn(char* pBuf);
 	void SetUserAbility();
-	void LevelChange(short level, BYTE type = TRUE);	// type : TRUE => level up, FALSE => level down
+	void LevelChange(short level, bool bLevelUp = true);
 	void HpChange(int amount, int type = 0, bool attack = false);
 	short GetDamage(short tid, int magicid);
 	void SetSlotItemValue();

@@ -48,8 +48,8 @@ public:
 
 	CVersionManagerDlg(CWnd* parent = nullptr);	// standard constructor
 	~CVersionManagerDlg();
-	BOOL GetInfoFromIni();
-	BOOL LoadVersionList();
+	bool GetInfoFromIni();
+	bool LoadVersionList();
 
 	/// \brief adds a message to the application's output box and updates scrollbar position
 	/// \see _outputList

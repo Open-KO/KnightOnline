@@ -17,9 +17,9 @@ public:
 	void RecvKnightsAllList(char* pBuf);
 	// knight packet
 	void SetKnightsUser(int knightsId, const char* charId);
-	BOOL ModifyKnightsUser(int knightsId, const char* charId);
-	BOOL RemoveKnightsUser(int knightsId, const char* charId);
-	BOOL AddKnightsUser(int knightsId, const char* charId);
+	bool ModifyKnightsUser(int knightsId, const char* charId);
+	bool RemoveKnightsUser(int knightsId, const char* charId);
+	bool AddKnightsUser(int knightsId, const char* charId);
 	void RecvKnightsList(char* pBuf);
 	void RecvDestroyKnights(CUser* pUser, char* pBuf);
 	void RecvModifyFame(CUser* pUser, char* pBuf, BYTE command);
@@ -35,7 +35,7 @@ public:
 	void JoinKnights(CUser* pUser, char* pBuf);
 	void JoinKnightsReq(CUser* pUser, char* pBuf);
 	int GetKnightsIndex(int nation);
-	BOOL IsAvailableName(const char* strname);
+	bool IsAvailableName(const char* strname) const;
 	void CreateKnights(CUser* pUser, char* pBuf);
 	void PacketProcess(CUser* pUser, char* pBuf);
 

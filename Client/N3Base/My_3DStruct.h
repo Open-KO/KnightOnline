@@ -761,7 +761,7 @@ struct __Material : public _D3DMATERIAL9
 {
 public:
 	uint32_t	dwColorOp, dwColorArg1, dwColorArg2;
-	BOOL	nRenderFlags; // 1-AlphaBlending | 2-안개랑 관계없음 | 4-Double Side | 8- ??
+	uint32_t	nRenderFlags; // 1-AlphaBlending | 2-안개랑 관계없음 | 4-Double Side | 8- ??
 	uint32_t	dwSrcBlend; // 소스 블렌딩 방법
 	uint32_t	dwDestBlend; // 데스트 블렌딩 방법
 
@@ -1242,54 +1242,55 @@ inline bool _IntersectTriangle(const __Vector3& vOrig, const __Vector3& vDir,
 							  const __Vector3& v0, const __Vector3& v1, const __Vector3& v2,
 							  float& fT, float& fU, float& fV, __Vector3* pVCol)
 {
-    // Find vectors for two edges sharing vert0
-    static __Vector3 vEdge1, vEdge2;
-	
-	vEdge1 = v1 - v0;
-    vEdge2 = v2 - v0;
+	// Find vectors for two edges sharing vert0
+	static __Vector3 vEdge1, vEdge2;
 
-    // Begin calculating determinant - also used to calculate U parameter
-    __Vector3 pVec;	float fDet;
-	
+	vEdge1 = v1 - v0;
+	vEdge2 = v2 - v0;
+
+	// Begin calculating determinant - also used to calculate U parameter
+	__Vector3 pVec;	float fDet;
+
 //	By : Ecli666 ( On 2001-09-12 오전 10:39:01 )
 
 	pVec.Cross(vEdge1, vEdge2);
 	fDet = pVec.Dot(vDir);
-	if ( fDet > -0.0001f )
-		return FALSE;
+	if (fDet > -0.0001f)
+		return false;
 
 //	~(By Ecli666 On 2001-09-12 오전 10:39:01 )
 
-    pVec.Cross(vDir, vEdge2);
+	pVec.Cross(vDir, vEdge2);
 
-    // If determinant is near zero, ray lies in plane of triangle
-    fDet = vEdge1.Dot(pVec);
-    if( fDet < 0.0001f )		// 거의 0에 가까우면 삼각형 평면과 지나가는 선이 평행하다.
-        return FALSE;
+	// If determinant is near zero, ray lies in plane of triangle
+	fDet = vEdge1.Dot(pVec);
+	if (fDet < 0.0001f)		// 거의 0에 가까우면 삼각형 평면과 지나가는 선이 평행하다.
+		return false;
 
-    // Calculate distance from vert0 to ray origin
-    __Vector3 tVec = vOrig - v0;
+	// Calculate distance from vert0 to ray origin
+	__Vector3 tVec = vOrig - v0;
 
-    // Calculate U parameter and test bounds
-    fU = tVec.Dot(pVec);
-    if( fU < 0.0f || fU > fDet )
-        return FALSE;
+	// Calculate U parameter and test bounds
+	fU = tVec.Dot(pVec);
+	if (fU < 0.0f || fU > fDet)
+		return false;
 
-    // Prepare to test V parameter
-    __Vector3 qVec;
-    qVec.Cross(tVec, vEdge1);
+	// Prepare to test V parameter
+	__Vector3 qVec;
+	qVec.Cross(tVec, vEdge1);
 
-    // Calculate V parameter and test bounds
-    fV = D3DXVec3Dot( &vDir, &qVec );
-    if( fV < 0.0f || fU + fV > fDet )
-        return FALSE;
+	// Calculate V parameter and test bounds
+	fV = D3DXVec3Dot(&vDir, &qVec);
+	if (fV < 0.0f || fU + fV > fDet)
+		return false;
 
-    // Calculate t, scale parameters, ray intersects triangle
-    fT = D3DXVec3Dot( &vEdge2, &qVec );
-    float fInvDet = 1.0f / fDet;
-    fT *= fInvDet;
-    fU *= fInvDet;
-    fV *= fInvDet;
+	// Calculate t, scale parameters, ray intersects triangle
+	fT = D3DXVec3Dot(&vEdge2, &qVec);
+
+	float fInvDet = 1.0f / fDet;
+	fT *= fInvDet;
+	fU *= fInvDet;
+	fV *= fInvDet;
 
 	// t가 클수록 멀리 직선과 평면과 만나는 점이 멀다.
 	// t*dir + orig 를 구하면 만나는 점을 구할 수 있다.
@@ -1297,86 +1298,87 @@ inline bool _IntersectTriangle(const __Vector3& vOrig, const __Vector3& vDir,
 	// 추측 : v0 (0,0), v1(1,0), v2(0,1) <괄호안은 (U, V)좌표> 이런식으로 어느 점에 가깝나 나타낸 것 같음
 	//
 
-	if(pVCol) (*pVCol) = vOrig + (vDir * fT);	// 접점을 계산..
+	if (pVCol != nullptr)
+		(*pVCol) = vOrig + (vDir * fT);	// 접점을 계산..
 
 	// *t < 0 이면 뒤쪽...
-	if ( fT < 0.0f )
-		return FALSE;
+	if (fT < 0.0f)
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 inline bool _IntersectTriangle(const __Vector3& vOrig, const __Vector3& vDir, const __Vector3& v0, const __Vector3& v1, const __Vector3& v2)
 {
-    // Find vectors for two edges sharing vert0
-    // Begin calculating determinant - also used to calculate U parameter
-    static float fDet, fT, fU, fV;
-    static __Vector3 vEdge1, vEdge2, tVec, pVec, qVec;
-	
-	vEdge1 = v1 - v0;
-    vEdge2 = v2 - v0;
+	// Find vectors for two edges sharing vert0
+	// Begin calculating determinant - also used to calculate U parameter
+	static float fDet, fT, fU, fV;
+	static __Vector3 vEdge1, vEdge2, tVec, pVec, qVec;
 
-	
+	vEdge1 = v1 - v0;
+	vEdge2 = v2 - v0;
+
+
 //	By : Ecli666 ( On 2001-09-12 오전 10:39:01 )
 
 	pVec.Cross(vEdge1, vEdge2);
 	fDet = pVec.Dot(vDir);
-	if ( fDet > -0.0001f )
-		return FALSE;
+	if (fDet > -0.0001f)
+		return false;
 
 //	~(By Ecli666 On 2001-09-12 오전 10:39:01 )
 
-    pVec.Cross(vDir, vEdge2);
+	pVec.Cross(vDir, vEdge2);
 
-    // If determinant is near zero, ray lies in plane of triangle
-    fDet = vEdge1.Dot(pVec);
-    if( fDet < 0.0001f )		// 거의 0에 가까우면 삼각형 평면과 지나가는 선이 평행하다.
-        return FALSE;
+	// If determinant is near zero, ray lies in plane of triangle
+	fDet = vEdge1.Dot(pVec);
+	if (fDet < 0.0001f)		// 거의 0에 가까우면 삼각형 평면과 지나가는 선이 평행하다.
+		return false;
 
-    // Calculate distance from vert0 to ray origin
-    tVec = vOrig - v0;
+	// Calculate distance from vert0 to ray origin
+	tVec = vOrig - v0;
 
-    // Calculate U parameter and test bounds
-    fU = tVec.Dot(pVec);
-    if( fU < 0.0f || fU > fDet )
-        return FALSE;
+	// Calculate U parameter and test bounds
+	fU = tVec.Dot(pVec);
+	if (fU < 0.0f || fU > fDet)
+		return false;
 
-    // Prepare to test V parameter
-    qVec.Cross(tVec, vEdge1);
+	// Prepare to test V parameter
+	qVec.Cross(tVec, vEdge1);
 
-    // Calculate V parameter and test bounds
-    fV = D3DXVec3Dot( &vDir, &qVec );
-    if( fV < 0.0f || fU + fV > fDet )
-        return FALSE;
+	// Calculate V parameter and test bounds
+	fV = D3DXVec3Dot(&vDir, &qVec);
+	if (fV < 0.0f || fU + fV > fDet)
+		return false;
 
-    // Calculate t, scale parameters, ray intersects triangle
-    fT = D3DXVec3Dot( &vEdge2, &qVec ) / fDet;
+	// Calculate t, scale parameters, ray intersects triangle
+	fT = D3DXVec3Dot(&vEdge2, &qVec) / fDet;
 
 	// *t < 0 이면 뒤쪽...
-	if ( fT < 0.0f )
-		return FALSE;
+	if (fT < 0.0f)
+		return false;
 
-	return TRUE;
+	return true;
 }
 
-inline POINT _Convert3D_To_2DCoordinate(const __Vector3 &vPos, const __Matrix44& mtxView, const __Matrix44& mtxProjection, int nVPW, int nVPH)
+inline POINT _Convert3D_To_2DCoordinate(const __Vector3& vPos, const __Matrix44& mtxView, const __Matrix44& mtxProjection, int nVPW, int nVPH)
 {
 	__Matrix44 matVP;
 	D3DXMatrixMultiply(&matVP, &mtxView, &mtxProjection);
 	D3DXVECTOR4 v;
-	D3DXVec3Transform(&v, (D3DXVECTOR3*)(&vPos), &matVP);
+	D3DXVec3Transform(&v, (D3DXVECTOR3*) (&vPos), &matVP);
 
 	POINT pt;
-	float fScreenZ = (v.z/v.w);
-	if (fScreenZ>1.0 || fScreenZ<0.0)
+	float fScreenZ = (v.z / v.w);
+	if (fScreenZ > 1.0 || fScreenZ < 0.0)
 	{
 		pt.x = -1;
 		pt.y = -1;
 		return pt;
 	}
 
-	pt.x = int(((v.x/v.w)+1.0f)*(nVPW)/2.0f);
-	pt.y = int((1.0f-(v.y/v.w))*(nVPH)/2.0f);
+	pt.x = int(((v.x / v.w) + 1.0f) * (nVPW) / 2.0f);
+	pt.y = int((1.0f - (v.y / v.w)) * (nVPH) / 2.0f);
 
 	return pt;
 }
@@ -1388,39 +1390,46 @@ inline void _Convert2D_To_3DCoordinate(	int ixScreen, int iyScreen,
 	// Compute the vector of the pick ray in screen space
 	static __Vector3 vTmp;
 
-	vTmp.x =  ( ( ( 2.0f * ixScreen ) / (vp.Width) ) - 1 ) / mtxPrj._11;
-	vTmp.y = -( ( ( 2.0f * iyScreen ) / (vp.Height) ) - 1 ) / mtxPrj._22;
-	vTmp.z =  1.0f;
+	vTmp.x = (((2.0f * ixScreen) / (vp.Width)) - 1) / mtxPrj._11;
+	vTmp.y = -(((2.0f * iyScreen) / (vp.Height)) - 1) / mtxPrj._22;
+	vTmp.z = 1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44 mtxVI;
 	::D3DXMatrixInverse(&mtxVI, nullptr, &mtxView);
-	vDirResult.x  = vTmp.x * mtxVI._11 + vTmp.y * mtxVI._21 + vTmp.z * mtxVI._31;
-	vDirResult.y  = vTmp.x * mtxVI._12 + vTmp.y * mtxVI._22 + vTmp.z * mtxVI._32;
-	vDirResult.z  = vTmp.x * mtxVI._13 + vTmp.y * mtxVI._23 + vTmp.z * mtxVI._33;
-	vPosResult	= mtxVI.Pos();
+	vDirResult.x = vTmp.x * mtxVI._11 + vTmp.y * mtxVI._21 + vTmp.z * mtxVI._31;
+	vDirResult.y = vTmp.x * mtxVI._12 + vTmp.y * mtxVI._22 + vTmp.z * mtxVI._32;
+	vDirResult.z = vTmp.x * mtxVI._13 + vTmp.y * mtxVI._23 + vTmp.z * mtxVI._33;
+	vPosResult = mtxVI.Pos();
 }
 
 inline float _Yaw2D(float fDirX, float fDirZ)
 {
 	////////////////////////////////
 	// 방향을 구하고.. -> 회전할 값을 구하는 루틴이다..
-	if ( fDirX >= 0.0f )						// ^^
+	if (fDirX >= 0.0f)						// ^^
 	{
-		if ( fDirZ >= 0.0f ) return (float)(asin(fDirX));
-		else return (D3DXToRadian(90.0f) + (float)(acos(fDirX)));
+		if (fDirZ >= 0.0f) return (float) (asin(fDirX));
+		else return (D3DXToRadian(90.0f) + (float) (acos(fDirX)));
 	}
 	else
 	{
-		if ( fDirZ >= 0.0f ) return (D3DXToRadian(270.0f) + (float)(acos(-fDirX)));
-		else return(D3DXToRadian(180.0f) + (float)(asin(-fDirX)));
+		if (fDirZ >= 0.0f) return (D3DXToRadian(270.0f) + (float) (acos(-fDirX)));
+		else return(D3DXToRadian(180.0f) + (float) (asin(-fDirX)));
 	}
 	// 방향을 구하고..
 	////////////////////////////////
 }
 
-inline int16_t _IsKeyDown(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0xff00); }
-inline int16_t _IsKeyDowned(int iVirtualKey) { return (GetAsyncKeyState(iVirtualKey) & 0x00ff); }
+inline int16_t _IsKeyDown(int iVirtualKey)
+{
+	return (GetAsyncKeyState(iVirtualKey) & 0xff00);
+}
+
+inline int16_t _IsKeyDowned(int iVirtualKey)
+{
+	return (GetAsyncKeyState(iVirtualKey) & 0x00ff);
+}
 
 #endif // __MY_3DSTRUCT_H_
 

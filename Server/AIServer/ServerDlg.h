@@ -80,13 +80,13 @@ class CServerDlg : public CDialog
 // Construction
 public:
 	void GameServerAcceptThread();
-	BOOL AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number);
+	bool AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number);
 	void AllNpcInfo();			// ~sungyong 2002.05.23
 	CUser* GetUserPtr(int nid);
 	CUser* GetActiveUserPtr(int index);
 	CNpc* GetNpcPtr(const char* pNpcName);
 	CNpc* GetEventNpcPtr();
-	BOOL   SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz);
+	bool   SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz);
 	int    MonsterSummon(const char* pNpcName, int zone_id, float fx, float fz);
 	int GetZoneIndex(int zoneId) const;
 	int GetServerNumber(int zoneId) const;
@@ -159,7 +159,7 @@ public:
 	CNpcItem				m_NpcItem;
 
 	// 전역 객체 변수
-	//BOOL			m_bNpcExit;
+	//bool			m_bNpcExit;
 	long			m_TotalNPC;			// DB에있는 총 수
 	long			m_CurrentNPCError;	// 세팅에서 실패한 수
 	long			m_CurrentNPC;		// 현재 게임상에서 실제로 셋팅된 수
@@ -167,7 +167,7 @@ public:
 	short			m_sMapEventNpc;		// Map에서 읽어들이는 event npc 수
 
 	// sungyong 2002.05.23
-	BOOL			m_bFirstServerFlag;		// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
+	bool			m_bFirstServerFlag;		// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
 	short m_sSocketCount;		// GameServer와 처음접시 필요
 	short m_sReSocketCount;		// GameServer와 재접시 필요
 	float m_fReConnectStart;	// 처음 소켓이 도착한 시간
@@ -227,23 +227,23 @@ private:
 	CListBox _outputList;
 
 	void ResumeAI();
-	BOOL LoadNpcPosTable(std::vector<model::NpcPos*>& rows);
-	BOOL CreateNpcThread();
+	bool LoadNpcPosTable(std::vector<model::NpcPos*>& rows);
+	bool CreateNpcThread();
 	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);
-	BOOL GetMagicTableData();
-	BOOL GetMagicType1Data();
-	BOOL GetMagicType2Data();
-	BOOL GetMagicType3Data();
-	BOOL GetMagicType4Data();
-	BOOL GetMagicType7Data();
-	BOOL GetMonsterTableData();
-	BOOL GetNpcTableData();
-	BOOL GetNpcItemTable();
-	BOOL GetMakeWeaponItemTableData();
-	BOOL GetMakeDefensiveItemTableData();
-	BOOL GetMakeGradeItemTableData();
-	BOOL GetMakeRareItemTableData();
-	BOOL MapFileLoad();
+	bool GetMagicTableData();
+	bool GetMagicType1Data();
+	bool GetMagicType2Data();
+	bool GetMagicType3Data();
+	bool GetMagicType4Data();
+	bool GetMagicType7Data();
+	bool GetMonsterTableData();
+	bool GetNpcTableData();
+	bool GetNpcItemTable();
+	bool GetMakeWeaponItemTableData();
+	bool GetMakeDefensiveItemTableData();
+	bool GetMakeGradeItemTableData();
+	bool GetMakeRareItemTableData();
+	bool MapFileLoad();
 	void GetServerInfoIni();
 
 	void SyncTest();

@@ -31,8 +31,7 @@ public:
 	void SendType4BuffRemove(short tid, BYTE buff);
 	void Type3Cancel(int magicid, short tid);
 	void Type4Cancel(int magicid, short  tid);
-//	BOOL UserRegionCheck(int sid, int tid, int magicid, int radius);
-	BOOL UserRegionCheck(int sid, int tid, int magicid, int radius, short mousex = 0, short mousez = 0);
+	bool UserRegionCheck(int sid, int tid, int magicid, int radius, short mousex = 0, short mousez = 0) const;
 	short GetMagicDamage(int sid, int tid, int total_hit, int attribute);
 	void ExecuteType10(int magicid);
 	void ExecuteType9(int magicid);

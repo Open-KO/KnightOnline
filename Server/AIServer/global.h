@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-BOOL	CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index);
+bool	CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index);
 int		GetVarString(char* tBuf, const char* sBuf, int nSize, int& index);
 void	GetString(char* tBuf, const char* sBuf, int len, int& index);
 BYTE	GetByte(const char* sBuf, int& index);
@@ -21,10 +21,10 @@ void	SetString1(char* tBuf, const std::string_view str, int& index);
 void	SetString2(char* tBuf, const std::string_view str, int& index);
 int		ParseSpace(char* tBuf, const char* sBuf);
 CString	GetProgPath();
-int		myrand(int min, int max, BOOL bSame = FALSE);
+int		myrand(int min, int max, bool bSame = false);
 int		XdY(int x, int y);
 
 void	CheckMaxValue(DWORD& dest, DWORD add);
 void	CheckMaxValue(int& dest, int add);
 void	CheckMaxValue(short& dest, short add);
-BOOL	CheckMaxValueReturn(DWORD& dest, DWORD add);
+bool	CheckMaxValueReturn(DWORD& dest, DWORD add);

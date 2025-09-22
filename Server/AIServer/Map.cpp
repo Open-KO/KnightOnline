@@ -107,33 +107,27 @@ void MAP::RemoveMapData()
 		m_arRoomEventArray.DeleteAllData();
 }
 
-BOOL MAP::IsMovable(int dest_x, int dest_y)
+bool MAP::IsMovable(int dest_x, int dest_y) const
 {
 	if (dest_x < 0
 		|| dest_y < 0)
-		return FALSE;
+		return false;
 
 	if (m_pMap == nullptr)
-		return FALSE;
+		return false;
 
 	if (dest_x >= m_sizeMap.cx
 		|| dest_y >= m_sizeMap.cy)
-		return FALSE;
+		return false;
 
-	BOOL bRet = FALSE;
-	if (m_pMap[dest_x][dest_y].m_sEvent == 0)
-		bRet = TRUE;
-	else
-		bRet = FALSE;
-
-	return bRet;
-	//return (BOOL)m_pMap[dest_x][dest_y].m_bMove;
+	return m_pMap[dest_x][dest_y].m_sEvent == 0;
+	//return m_pMap[dest_x][dest_y].m_bMove;
 }
 
 ///////////////////////////////////////////////////////////////////////
 //	각 서버가 담당하고 있는 zone의 Map을 로드한다.
 //
-BOOL MAP::LoadMap(HANDLE hFile)
+bool MAP::LoadMap(HANDLE hFile)
 {
 	LoadTerrain(hFile);
 
@@ -142,11 +136,11 @@ BOOL MAP::LoadMap(HANDLE hFile)
 		(m_nMapSize - 1) * m_fUnitDist);
 
 	if (!m_N3ShapeMgr.LoadCollisionData(hFile))
-		return FALSE;
+		return false;
 
 	if ((m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Width()
 		|| (m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Height())
-		return FALSE;
+		return false;
 
 	int mapwidth = (int) m_N3ShapeMgr.Width();
 
@@ -166,7 +160,7 @@ BOOL MAP::LoadMap(HANDLE hFile)
 	LoadObjectEvent(hFile);
 	LoadMapTile(hFile);
 
-	return TRUE;
+	return true;
 }
 
 void MAP::LoadTerrain(HANDLE hFile)
@@ -266,7 +260,7 @@ float MAP::GetHeight(float x, float z)
 	return y;
 }
 
-BOOL MAP::ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2)
+bool MAP::ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2)
 {
 	__Vector3 vec1(x1, y1, z1), vec2(x2, y2, z2);
 	__Vector3 vDir = vec2 - vec1;
@@ -508,7 +502,7 @@ void MAP::LoadObjectEvent(HANDLE hFile)
 	}
 }
 
-BOOL MAP::LoadRoomEvent(int zone_number)
+bool MAP::LoadRoomEvent(int zone_number)
 {
 	DWORD		length, count;
 	CString		filename;
@@ -529,7 +523,7 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 	evtPath /= std::to_wstring(zone_number) + L".evt";
 
 	if (!std::filesystem::exists(evtPath))
-		return TRUE;
+		return true;
 
 	// Resolve it to strip the relative references to be nice.
 	// NOTE: Requires the file to exist.
@@ -538,7 +532,7 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 	filename.Format(_T("%ls"), evtPath.c_str());
 
 	if (!pFile.Open(filename, CFile::modeRead))
-		return FALSE;
+		return false;
 
 	std::wstring filenameWide = evtPath.wstring();
 
@@ -709,7 +703,7 @@ BOOL MAP::LoadRoomEvent(int zone_number)
 	in.Close();
 	pFile.Close();
 
-	return TRUE;
+	return true;
 
 cancel_event_load:
 	CString str;
@@ -718,8 +712,8 @@ cancel_event_load:
 	in.Close();
 	pFile.Close();
 //	DeleteAll();
-	return FALSE;
-	//return TRUE;
+	return false;
+	//return true;
 }
 
 int MAP::IsRoomCheck(float fx, float fz)
@@ -746,8 +740,8 @@ int MAP::IsRoomCheck(float fx, float fz)
 		if (pRoom->m_byStatus == 3)
 			continue;
 
-		BOOL bFlag_1 = FALSE;
-		BOOL bFlag_2 = FALSE;
+		bool bFlag_1 = false;
+		bool bFlag_2 = false;
 
 		// 방이 초기화 상태
 		if (pRoom->m_byStatus == 1)
@@ -773,23 +767,23 @@ int MAP::IsRoomCheck(float fx, float fz)
 		if (minX < maxX)
 		{
 			if (COMPARE(nX, minX, maxX))
-				bFlag_1 = TRUE;
+				bFlag_1 = true;
 		}
 		else
 		{
 			if (COMPARE(nX, maxX, minX))
-				bFlag_1 = TRUE;
+				bFlag_1 = true;
 		}
 
 		if (minZ < maxZ)
 		{
 			if (COMPARE(nZ, minZ, maxZ))
-				bFlag_2 = TRUE;
+				bFlag_2 = true;
 		}
 		else
 		{
 			if (COMPARE(nZ, maxZ, minZ))
-				bFlag_2 = TRUE;
+				bFlag_2 = true;
 		}
 
 		if (bFlag_1
@@ -844,7 +838,7 @@ CRoomEvent* MAP::SetRoomEvent(int number)
 	return pEvent;
 }
 
-BOOL MAP::IsRoomStatusCheck()
+bool MAP::IsRoomStatusCheck()
 {
 	CRoomEvent* pRoom = nullptr;
 	int nTotalRoom = m_arRoomEventArray.GetSize() + 1;
@@ -879,7 +873,7 @@ BOOL MAP::IsRoomStatusCheck()
 					m_byRoomStatus = 2;
 					spdlog::trace("Map::IsRoomStatusCheck: all rooms cleared [zoneId={} roomType={} roomStatus={}]",
 						m_nZoneNumber, m_byRoomType, m_byRoomStatus);
-					return TRUE;
+					return true;
 				}
 			}
 		}
@@ -897,7 +891,7 @@ BOOL MAP::IsRoomStatusCheck()
 					m_byRoomStatus = 3;
 					spdlog::trace("Map::IsRoomStatusCheck: room initialized [zoneId={} roomType={} roomStatus={}]",
 						m_nZoneNumber, m_byRoomType, m_byRoomStatus);
-					return TRUE;
+					return true;
 				}
 			}
 		}
@@ -908,11 +902,11 @@ BOOL MAP::IsRoomStatusCheck()
 			m_byInitRoomCount = 0;
 			spdlog::trace("Map::IsRoomStatusCheck: room restarted [zoneId={} roomType={} roomStatus={}]",
 						m_nZoneNumber, m_byRoomType, m_byRoomStatus);
-			return TRUE;
+			return true;
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void MAP::InitializeRoom()

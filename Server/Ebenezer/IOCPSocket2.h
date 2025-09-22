@@ -25,19 +25,19 @@ public:
 	void SendCompressingPacket(const char* pData, int len);
 	void InitSocket(CIOCPort* pIOCPort);
 	void Close();
-	BOOL AsyncSelect(long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
-	BOOL SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
-	BOOL ShutDown(int nHow = SD_SEND);
-	BOOL PullOutCore(char*& data, int& length);
+	bool AsyncSelect(long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
+	bool SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
+	bool ShutDown(int nHow = SD_SEND);
+	bool PullOutCore(char*& data, int& length);
 	void ReceivedData(int length);
 	int  Receive();
 	int  Send(char* pBuf, long length, int dwFlag = 0);
-	BOOL Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort);
-	BOOL Create(UINT nSocketPort = 0,
+	bool Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort);
+	bool Create(UINT nSocketPort = 0,
 				 int nSocketType = SOCK_STREAM,
 				 long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE,
 				 const char* lpszSocketAddress = nullptr);
-	BOOL Accept(SOCKET listensocket, struct sockaddr* addr, int* len);
+	bool Accept(SOCKET listensocket, struct sockaddr* addr, int* len);
 
 	int GetSocketID() const {
 		return m_Sid;

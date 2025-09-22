@@ -65,11 +65,11 @@ public:
 
 private:
 	void Initialize();
-	BOOL  CheckEvent(int event_num, float fcurtime);
-	BOOL  RunEvent(int event_num);
-	BOOL  CheckMonsterCount(int sid, int count, int type);
+	bool CheckEvent(int event_num, float fcurtime);
+	bool RunEvent(int event_num);
+	bool CheckMonsterCount(int sid, int count, int type);
 	CNpc* GetNpcPtr(int sid);
-	void  EndEventSay(int option1, int option2);
+	void EndEventSay(int option1, int option2);
 
 };
 

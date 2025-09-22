@@ -44,7 +44,7 @@ CIOCPSocket2::~CIOCPSocket2()
 	delete m_pRegionBuffer;
 }
 
-BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const char* lpszSocketAddress)
+bool CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const char* lpszSocketAddress)
 {
 	int ret;
 	linger lingerOpt;
@@ -55,7 +55,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 		ret = WSAGetLastError();
 		// see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
 		spdlog::error("IOCPSocket2::Create: Winsock error {}", ret);
-		return FALSE;
+		return false;
 	}
 
 	m_hSockEvent = WSACreateEvent();
@@ -63,7 +63,7 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 	{
 		ret = WSAGetLastError();
 		spdlog::error("IOCPSocket2::Create: CreateEvent winsock error {}", ret);
-		return FALSE;
+		return false;
 	}
 
 	// Linger off -> close socket immediately regardless of existance of data 
@@ -81,10 +81,10 @@ BOOL CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 	socklen = SOCKET_BUFF_SIZE * 4;
 	setsockopt(m_Socket, SOL_SOCKET, SO_SNDBUF, (char*) &socklen, sizeof(socklen));
 
-	return TRUE;
+	return true;
 }
 
-BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort)
+bool CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort)
 {
 	sockaddr_in addr;
 
@@ -99,7 +99,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 		int err = WSAGetLastError();
 		spdlog::error("IOCPSocket2::Connect: Winsock error {}", err);
 		closesocket(m_Socket);
-		return FALSE;
+		return false;
 	}
 
 	ASSERT(pIocp);
@@ -108,14 +108,14 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 
 	m_Sid = m_pIOCPort->GetClientSid();
 	if (m_Sid < 0)
-		return FALSE;
+		return false;
 
 	m_pIOCPort->m_ClientSockArray[m_Sid] = this;
 
 	if (!m_pIOCPort->Associate(this, m_pIOCPort->m_hClientIOCPort))
 	{
 		spdlog::error("IOCPSocket2::Connect: failed to associate");
-		return FALSE;
+		return false;
 	}
 
 	m_ConnectAddress = lpszHostAddress;
@@ -124,7 +124,7 @@ BOOL CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nH
 
 	Receive();
 
-	return TRUE;
+	return true;
 }
 
 int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
@@ -332,13 +332,13 @@ void CIOCPSocket2::ReceivedData(int length)
 	}
 }
 
-BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
+bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 {
 	int buffer_len = m_pBuffer->GetValidCount();
 
 	// We expect at least 7 bytes (header, length, data [at least 1 byte], tail)
 	if (buffer_len < 7)
-		return FALSE; // wait for more data
+		return false; // wait for more data
 
 	std::vector<uint8_t> tmp_buffer(buffer_len);
 	m_pBuffer->GetData((char*) &tmp_buffer[0], buffer_len);
@@ -350,7 +350,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 			m_Sid, tmp_buffer[0], tmp_buffer[1]);
 			
 		Close();
-		return FALSE;
+		return false;
 	}
 
 	// Find the packet's start position - this is in front of the 2 byte header.
@@ -371,14 +371,14 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 			m_Sid, length);
 
 		Close();
-		return FALSE;
+		return false;
 	}
 
 	if (length > buffer_len)
 	{
 		spdlog::debug("IOCPSocket2::PullOutCore: {}: reported length ({}) is not in buffer ({}) - waiting for now",
 			m_Sid, length, buffer_len);
-		return FALSE; // wait for more data
+		return false; // wait for more data
 	}
 
 	// Find the end position of the packet data.
@@ -391,7 +391,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 	{
 		spdlog::debug("IOCPSocket2::PullOutCore: {}: tail not in buffer - waiting for now",
 			m_Sid);
-		return FALSE; // wait for more data
+		return false; // wait for more data
 	}
 
 	if (tmp_buffer[ePos] != PACKET_END1
@@ -401,7 +401,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 			m_Sid, tmp_buffer[ePos], tmp_buffer[ePos+1]);
 
 		Close();
-		return FALSE;
+		return false;
 	}
 
 	// We've found the entire packet.
@@ -415,7 +415,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 			spdlog::error("IOCPSocket2::PullOutCore: {}: Insufficient packet length [{}] for a decrypted packet",
 				m_Sid, length);
 			Close();
-			return FALSE;
+			return false;
 		}
 
 		std::vector<BYTE> decryption_buffer(length);
@@ -426,7 +426,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 			spdlog::error("IOCPSocket2::PullOutCore: {}: Failed decryption",
 				m_Sid);
 			Close();
-			return FALSE;
+			return false;
 		}
 
 		int index = 0;
@@ -444,7 +444,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 				m_Rec_val);
 
 			Close();
-			return FALSE;
+			return false;
 		}
 
 		m_Rec_val = recv_packet;
@@ -459,7 +459,7 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 				length);
 
 			Close();
-			return FALSE;
+			return false;
 		}
 
 		data = new char[length];
@@ -475,10 +475,10 @@ BOOL CIOCPSocket2::PullOutCore(char*& data, int& length)
 	m_pBuffer->HeadIncrease(6 + original_length); // 6: header (2) + end (2) + length (2)
 
 	// Found a packet in this attempt.
-	return TRUE;
+	return true;
 }
 
-BOOL CIOCPSocket2::AsyncSelect(long lEvent)
+bool CIOCPSocket2::AsyncSelect(long lEvent)
 {
 	int retEventResult = WSAEventSelect(m_Socket, m_hSockEvent, lEvent);
 	int err = WSAGetLastError();
@@ -486,13 +486,13 @@ BOOL CIOCPSocket2::AsyncSelect(long lEvent)
 	return retEventResult == 0;
 }
 
-BOOL CIOCPSocket2::SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel)
+bool CIOCPSocket2::SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel)
 {
 	int retValue = setsockopt(m_Socket, nLevel, nOptionName, (char*) lpOptionValue, nOptionLen);
 	return retValue == 0;
 }
 
-BOOL CIOCPSocket2::ShutDown(int nHow)
+bool CIOCPSocket2::ShutDown(int nHow)
 {
 	int retValue = shutdown(m_Socket, nHow);
 	return retValue == 0;
@@ -547,7 +547,7 @@ void CIOCPSocket2::InitSocket(CIOCPort* pIOCPort)
 	Initialize();
 }
 
-BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
+bool CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 {
 	m_Socket = accept(listensocket, addr, len);
 	if (m_Socket == INVALID_SOCKET)
@@ -555,7 +555,7 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 		int err = WSAGetLastError();
 		spdlog::error("IOCPSocket2::Accept: socketId={} winsock error={}",
 			m_Sid, err);
-		return FALSE;
+		return false;
 	}
 
 //	int flag = 1;
@@ -572,7 +572,7 @@ BOOL CIOCPSocket2::Accept(SOCKET listensocket, struct sockaddr* addr, int* len)
 
 //	setsockopt(m_Socket, SOL_SOCKET, SO_LINGER, (char *)&lingerOpt, sizeof(lingerOpt));
 
-	return TRUE;
+	return true;
 }
 
 void CIOCPSocket2::Parsing(int length, char* pData)

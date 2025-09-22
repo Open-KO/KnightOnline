@@ -25,8 +25,8 @@ public:
 	void CreateReceiveWorkerThread(int workernum);
 	void PutOldSid(int sid);
 	int GetNewSid();
-	BOOL Associate(CIOCPSocket2* pIocpSock, HANDLE hPort);
-	BOOL Listen(int port);
+	bool Associate(CIOCPSocket2* pIocpSock, HANDLE hPort);
+	bool Listen(int port);
 	void Init(int serversocksize, int clientsocksize, int workernum = 0);
 	void DeleteAllArray();
 	CIOCPort();

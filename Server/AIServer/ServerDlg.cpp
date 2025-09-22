@@ -31,7 +31,7 @@ static char THIS_FILE[] = __FILE__;
 #include <db-library/RecordSetLoader_STLMap.h>
 #include <db-library/RecordsetLoader_Vector.h>
 
-BOOL g_bNpcExit = FALSE;
+bool g_bNpcExit = false;
 ZoneArray m_ZoneArray;
 
 CRITICAL_SECTION g_User_critical;
@@ -203,7 +203,7 @@ BOOL CServerDlg::OnInitDialog()
 	m_sMapEventNpc = 0;
 	m_sReSocketCount = 0;
 	m_fReConnectStart = 0.0f;
-	m_bFirstServerFlag = FALSE;
+	m_bFirstServerFlag = false;
 	m_byTestMode = NOW_TEST_MODE;
 
 	// User Point Init
@@ -515,76 +515,76 @@ void CServerDlg::ReportTableLoadError(const recordset_loader::Error& err, const 
 }
 
 //	Magic Table 을 읽는다.
-BOOL CServerDlg::GetMagicTableData()
+bool CServerDlg::GetMagicTableData()
 {
 	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 	
 	spdlog::info("ServerDlg::GetMagicTableData: MAGIC loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMakeWeaponItemTableData()
+bool CServerDlg::GetMakeWeaponItemTableData()
 {
 	recordset_loader::STLMap loader(m_MakeWeaponTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMakeWeaponItemTableData: MAKE_WEAPON loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMakeDefensiveItemTableData()
+bool CServerDlg::GetMakeDefensiveItemTableData()
 {
 	recordset_loader::STLMap<MakeWeaponTableMap, model::MakeDefensive> loader(
 		m_MakeDefensiveTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMakeDefensiveItemTableData: MAKE_DEFENSIVE loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMakeGradeItemTableData()
+bool CServerDlg::GetMakeGradeItemTableData()
 {
 	recordset_loader::STLMap loader(m_MakeGradeItemArray);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMakeGradeItemTableData: MAKE_ITEM_GRADECODE loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMakeRareItemTableData()
+bool CServerDlg::GetMakeRareItemTableData()
 {
 	recordset_loader::STLMap loader(m_MakeItemRareCodeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMakeRareItemTableData: MAKE_ITEM_LARECODE loaded");
-	return TRUE;
+	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////
 //	NPC Item Table 을 읽는다.
 //
-BOOL CServerDlg::GetNpcItemTable()
+bool CServerDlg::GetNpcItemTable()
 {
 	using ModelType = model::MonsterItem;
 
@@ -594,14 +594,14 @@ BOOL CServerDlg::GetNpcItemTable()
 	if (!loader.Load_ForbidEmpty(true))
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	m_NpcItem.m_nField = loader.GetColumnCount();
 	m_NpcItem.m_nRow = static_cast<int>(rows.size());
 
 	if (rows.empty())
-		return FALSE;
+		return false;
 
 	m_NpcItem.m_ppItem = new int* [m_NpcItem.m_nRow];
 	for (int i = 0; i < m_NpcItem.m_nRow; i++)
@@ -629,11 +629,11 @@ BOOL CServerDlg::GetNpcItemTable()
 	rows.clear();
 
 	spdlog::info("ServerDlg::GetNpcItemTable: K_MONSTER_ITEM loaded");
-	return TRUE;
+	return true;
 }
 
 //	Monster Table Data 를 읽는다.
-BOOL CServerDlg::GetMonsterTableData()
+bool CServerDlg::GetMonsterTableData()
 {
 	NpcTableMap tableMap;
 	recordset_loader::STLMap<
@@ -642,7 +642,7 @@ BOOL CServerDlg::GetMonsterTableData()
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 #if defined(DB_COMPAT_PADDED_NAMES)
@@ -656,18 +656,18 @@ BOOL CServerDlg::GetMonsterTableData()
 	m_MonTableMap.Swap(tableMap);
 
 	spdlog::info("ServerDlg::GetMonsterTableData: K_MONSTER loaded");
-	return TRUE;
+	return true;
 }
 
 //	NPC Table Data 를 읽는다. (경비병 & NPC)
-BOOL CServerDlg::GetNpcTableData()
+bool CServerDlg::GetNpcTableData()
 {
 	NpcTableMap tableMap;
 	recordset_loader::STLMap loader(tableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 #if defined(DB_COMPAT_PADDED_NAMES)
@@ -681,11 +681,11 @@ BOOL CServerDlg::GetNpcTableData()
 	m_NpcTableMap.Swap(tableMap);
 
 	spdlog::info("ServerDlg::GetNpcTableData: K_NPC loaded");
-	return TRUE;
+	return true;
 }
 
 //	Npc Thread 를 만든다.
-BOOL CServerDlg::CreateNpcThread()
+bool CServerDlg::CreateNpcThread()
 {
 	m_TotalNPC = 0;			// DB에 있는 수
 	m_CurrentNPC = 0;
@@ -695,7 +695,7 @@ BOOL CServerDlg::CreateNpcThread()
 	if (!LoadNpcPosTable(rows))
 	{
 		spdlog::error("ServerDlg::CreateNpcThread: K_NPCPOS load failed");
-		return FALSE;
+		return false;
 	}
 
 	for (model::NpcPos* row : rows)
@@ -742,10 +742,10 @@ BOOL CServerDlg::CreateNpcThread()
 	AddOutputMessage(logstr);
 
 	spdlog::info("ServerDlg::CreateNpcThread: Monsters/NPCs loaded: {}", m_TotalNPC);
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
+bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 {
 	CRoomEvent* pRoom = nullptr;
 
@@ -753,7 +753,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 	if (!loader.Load_ForbidEmpty(true))
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	int nSerial = m_sMapEventNpc;
@@ -885,9 +885,8 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 								pNpc->m_sMaxPathCount);
 
 							spdlog::error(error);
-							std::wstring werror = LocalToWide(error);
-							AfxMessageBox(werror.c_str());
-							return FALSE;
+							AfxMessageBox(Utf8ToWide(error).c_str());
+							return false;
 						}
 					}
 
@@ -911,10 +910,10 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 								pNpc->m_strName.c_str(),
 								pNpc->m_byMoveType,
 								pNpc->m_sMaxPathCount);
+
 							spdlog::error(error);
-							std::wstring werror = LocalToWide(error);
-							AfxMessageBox(werror.c_str());
-							return FALSE;
+							AfxMessageBox(Utf8ToWide(error).c_str());
+							return false;
 						}
 
 						for (int l = 0; l < row->PathPointCount; l++)
@@ -963,7 +962,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					{
 						spdlog::error("ServerDlg::LoadNpcPosTable: NPC invalid zone [npcId:{}, npcZoneId:{}]", pNpc->m_sSid, pNpc->m_sCurZone);
 						AfxMessageBox(_T("NPC invalid zone index error (see log)"));
-						return FALSE;
+						return false;
 					}
 
 					//pNpc->Init();
@@ -986,7 +985,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 							spdlog::error("ServerDlg::LoadNpcPosTable: No RoomEvent for NPC dungeonFamily: serial={}, npcId={}, npcName={}, dungeonFamily={}, zoneId={}",
 								pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
 							AfxMessageBox(_T("No RoomEvent for NPC dungeonFamily (see log)"));
-							return FALSE;
+							return false;
 						}
 
 						int* pInt = new int;
@@ -1011,7 +1010,7 @@ BOOL CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 		while (!bMoveNext);
 	}
 
-	return TRUE;
+	return true;
 }
 
 //	NPC Thread 들을 작동시킨다.
@@ -1050,7 +1049,7 @@ BOOL CServerDlg::DestroyWindow()
 	KillTimer(CHECK_ALIVE);
 	//KillTimer( REHP_TIME );
 
-	g_bNpcExit = TRUE;
+	g_bNpcExit = true;
 
 	for (size_t i = 0; i < m_NpcThreadArray.size(); i++)
 		WaitForSingleObject(m_NpcThreadArray[i]->m_pThread->m_hThread, INFINITE);
@@ -1191,11 +1190,11 @@ void CServerDlg::DeleteUserList(int uid)
 	LeaveCriticalSection(&g_User_critical);
 }
 
-BOOL CServerDlg::MapFileLoad()
+bool CServerDlg::MapFileLoad()
 {
 	using ModelType = model::ZoneInfo;
 
-	BOOL loaded = FALSE;
+	bool loaded = false;
 
 	m_sTotalMap = 0;
 
@@ -1274,13 +1273,13 @@ BOOL CServerDlg::MapFileLoad()
 		}
 		while (recordset.next());
 
-		loaded = TRUE;
+		loaded = true;
 	});
 
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	return loaded;
@@ -1520,7 +1519,7 @@ void CServerDlg::DeleteAllUserList(int zone)
 		if (!m_PartyMap.IsEmpty())
 			m_PartyMap.DeleteAllData();
 
-		m_bFirstServerFlag = FALSE;
+		m_bFirstServerFlag = false;
 		spdlog::debug("ServerDlg::DeleteAllUserList: end");
 
 		AddOutputMessage(_T("DeleteAllUserList: done"));
@@ -1807,21 +1806,20 @@ int CServerDlg::MonsterSummon(const char* pNpcName, int zone_id, float fx, float
 		return  -1;
 	}
 
-	BOOL bFlag = FALSE;
-	bFlag = SetSummonNpcData(pNpc, zone_id, fx, fz);
+	bool bFlag = SetSummonNpcData(pNpc, zone_id, fx, fz);
 
 	return 1;
 }
 
 //	소환할 몹의 데이타값을 셋팅한다.
-BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
+bool CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
 {
 	int  iCount = 0;
 	CNpc* pEventNpc = GetEventNpcPtr();
 	if (pEventNpc == nullptr)
 	{
 		spdlog::error("ServerDlg::SetSummonNpcData: No EventNpc found");
-		return FALSE;
+		return false;
 	}
 
 	pEventNpc->m_sSid = pNpc->m_sSid;						// MONSTER(NPC) Serial ID
@@ -1907,12 +1905,12 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
 	if (pEventNpc->m_ZoneIndex == -1)
 	{
 		spdlog::error("ServerDlg::SetSummonNpcData: invalid zone index");
-		return FALSE;
+		return false;
 	}
 
 	pEventNpc->Init();
 
-	BOOL bSuccess = FALSE;
+	bool bSuccess = false;
 
 	int test = 0;
 
@@ -1923,7 +1921,7 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
 		if (m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i] == 0)
 		{
 			m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i] = 1;
-			bSuccess = TRUE;
+			bSuccess = true;
 			m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i] = pEventNpc;
 			break;
 		}
@@ -1933,13 +1931,13 @@ BOOL CServerDlg::SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz)
 	{
 		pEventNpc->m_lEventNpc = 0;
 		spdlog::error("ServerDlg::SetSummonNpcData: summon failed");
-		return FALSE;
+		return false;
 	}
 
 	spdlog::debug("ServerDlg::SetSummonNpcData: summoned serial={} npcName={} npcState={}",
 		pEventNpc->m_sNid + NPC_BAND, pEventNpc->m_strName, pEventNpc->m_NpcState);
 
-	return TRUE;
+	return true;
 }
 
 void CServerDlg::TestCode()
@@ -1964,69 +1962,69 @@ void CServerDlg::TestCode()
 
 }
 
-BOOL CServerDlg::GetMagicType1Data()
+bool CServerDlg::GetMagicType1Data()
 {
 	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMagicType1Data: MAGIC_TYPE1 loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMagicType2Data()
+bool CServerDlg::GetMagicType2Data()
 {
 	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMagicType2Data: MAGIC_TYPE2 loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMagicType3Data()
+bool CServerDlg::GetMagicType3Data()
 {
 	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMagicType3Data: MAGIC_TYPE3 loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMagicType4Data()
+bool CServerDlg::GetMagicType4Data()
 {
 	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMagicType4Data: MAGIC_TYPE4 loaded");
-	return TRUE;
+	return true;
 }
 
-BOOL CServerDlg::GetMagicType7Data()
+bool CServerDlg::GetMagicType7Data()
 {
 	recordset_loader::STLMap loader(m_MagicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		ReportTableLoadError(loader.GetError(), __func__);
-		return FALSE;
+		return false;
 	}
 
 	spdlog::info("ServerDlg::GetMagicType7Data: MAGIC_TYPE7 loaded");
-	return TRUE;
+	return true;
 }
 
 void CServerDlg::RegionCheck()
@@ -2052,30 +2050,30 @@ void CServerDlg::RegionCheck()
 	}
 }
 
-BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
+bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 {
 	int i = 0, j = 0, objectid = 0;
 	model::Npc* pNpcTable = nullptr;
-	BOOL bFindNpcTable = FALSE;
+	bool bFindNpcTable = false;
 	int offset = 0;
 	int nServerNum = 0;
 	nServerNum = GetServerNumber(zone_number);
-	//if(m_byZone != zone_number)	 return FALSE;
+	//if(m_byZone != zone_number)	 return false;
 	//if(m_byZone != UNIFY_ZONE)	{
-	//	if(m_byZone != nServerNum)	 return FALSE;
+	//	if(m_byZone != nServerNum)	 return false;
 	//}
 
-	//if( zone_number > 201 )	return FALSE;	// test
+	//if( zone_number > 201 )	return false;	// test
 	pNpcTable = m_NpcTableMap.GetData(pEvent->sIndex);
 	if (pNpcTable == nullptr)
 	{
-		bFindNpcTable = FALSE;
+		bFindNpcTable = false;
 		spdlog::error("ServerDlg::AddObjectEventNpc error: eventId={} zoneId={}",
 			pEvent->sIndex, zone_number);
-		return FALSE;
+		return false;
 	}
 
-	bFindNpcTable = TRUE;
+	bFindNpcTable = true;
 
 	CNpc* pNpc = new CNpc();
 
@@ -2084,7 +2082,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 	pNpc->m_byMoveType = 100;
 	pNpc->m_byInitMoveType = 100;
-	bFindNpcTable = FALSE;
+	bFindNpcTable = false;
 
 	pNpc->m_byMoveType = 0;
 	pNpc->m_byInitMoveType = 0;
@@ -2120,7 +2118,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 /*
 	if(pNpc->m_ZoneIndex == -1)	{
 		AfxMessageBox("Invaild zone Index!!");
-		return FALSE;
+		return false;
 	}	*/
 
 	//pNpc->Init();
@@ -2134,7 +2132,7 @@ BOOL CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 	m_TotalNPC = m_sMapEventNpc;
 
-	return TRUE;
+	return true;
 }
 
 int CServerDlg::GetZoneIndex(int zoneId) const

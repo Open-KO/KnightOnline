@@ -387,7 +387,7 @@ void CIOCPort::Init(int serversocksize, int clientsocksize, int workernum)
 	CreateClientWorkerThread();
 }
 
-BOOL CIOCPort::Listen(int port)
+bool CIOCPort::Listen(int port)
 {
 	int opt;
 	sockaddr_in addr;
@@ -399,7 +399,7 @@ BOOL CIOCPort::Listen(int port)
 	if (m_ListenSocket < 0)
 	{
 		spdlog::error("IOCPort::Listen: failed to open socket");
-		return FALSE;
+		return false;
 	}
 
 	// Bind our local address so that the client can send to us. 
@@ -424,7 +424,7 @@ BOOL CIOCPort::Listen(int port)
 	if (bind(m_ListenSocket, (struct sockaddr*) &addr, sizeof(addr)) < 0)
 	{
 		spdlog::error("IOCPort::Listen: failed to bind local address");
-		return FALSE;
+		return false;
 	}
 
 	int socklen, len, err;
@@ -439,7 +439,7 @@ BOOL CIOCPort::Listen(int port)
 		int socketErr = WSAGetLastError();
 		spdlog::error("IOCPort::Listen: recvBuffer getsockopt failed on port={} winsock error={} socketLen={}",
 			port, socketErr, socklen);
-		return FALSE;
+		return false;
 	}
 
 	socklen = SOCKET_BUFF_SIZE * 4;
@@ -452,7 +452,7 @@ BOOL CIOCPort::Listen(int port)
 		int socketErr = WSAGetLastError();
 		spdlog::error("IOCPort::Listen: sendBuffer getsockopt failed on port={} winsock error={} socketLen={}",
 			port, socketErr, socklen);
-		return FALSE;
+		return false;
 	}
 
 	listen(m_ListenSocket, 5);
@@ -462,7 +462,7 @@ BOOL CIOCPort::Listen(int port)
 	{
 		int socketErr = WSAGetLastError();
 		spdlog::error("IOCPort::Listen: CreateEvent winsock error={}", socketErr);
-		return FALSE;
+		return false;
 	}
 	WSAEventSelect(m_ListenSocket, m_hListenEvent, FD_ACCEPT);
 
@@ -470,20 +470,18 @@ BOOL CIOCPort::Listen(int port)
 
 	CreateAcceptThread();
 
-	return TRUE;
+	return true;
 }
 
-BOOL CIOCPort::Associate(CIOCPSocket2* pIocpSock, HANDLE hPort)
+bool CIOCPort::Associate(CIOCPSocket2* pIocpSock, HANDLE hPort)
 {
-	if (!hPort)
+	if (hPort == nullptr)
 	{
 		spdlog::error("IOCPort::Associate: received null completion port");
-		return FALSE;
+		return false;
 	}
 
-	HANDLE hTemp;
-	hTemp = CreateIoCompletionPort(pIocpSock->GetSocketHandle(), hPort, (DWORD) pIocpSock->GetSocketID(), m_dwConcurrency);
-
+	HANDLE hTemp = CreateIoCompletionPort(pIocpSock->GetSocketHandle(), hPort, (DWORD) pIocpSock->GetSocketID(), m_dwConcurrency);
 	return (hTemp == hPort);
 }
 

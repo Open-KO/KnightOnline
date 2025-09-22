@@ -3,14 +3,14 @@
 
 #include <shared/StringConversion.h>
 
-BOOL CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index)
+bool CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index)
 {
 	int nRet = GetVarString(tBuf, sBuf, nSize, index);
 	if (nRet <= 0
 		|| nRet > nLength)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 int GetVarString(char* tBuf, const char* sBuf, int nSize, int& index)
@@ -129,7 +129,7 @@ void SetString2(char* tBuf, const std::string_view str, int& index)
 int ParseSpace(char* tBuf, const char* sBuf)
 {
 	int i = 0, index = 0;
-	BOOL flag = FALSE;
+	bool flag = false;
 
 	while (sBuf[index] == ' '
 		|| sBuf[index] == '\t')
@@ -140,7 +140,7 @@ int ParseSpace(char* tBuf, const char* sBuf)
 		&& sBuf[index] != (BYTE) 0)
 	{
 		tBuf[i++] = sBuf[index++];
-		flag = TRUE;
+		flag = true;
 	}
 	tBuf[i] = 0;
 
@@ -166,7 +166,7 @@ CString GetProgPath()
 	return Path;
 }
 
-int myrand(int min, int max, BOOL bSame)
+int myrand(int min, int max, bool bSame)
 {
 	static int nOld = 0;
 	int nRet = 0;
@@ -198,10 +198,10 @@ int XdY(int x, int y)
 {
 	int temp = 0;
 	if (x <= 0)
-		return myrand(x, y, TRUE);
+		return myrand(x, y, true);
 
 	for (int i = 0; i < x; i++)
-		temp += myrand(1, y, TRUE);
+		temp += myrand(1, y, true);
 
 	return temp;
 }
@@ -245,12 +245,12 @@ void CheckMaxValue(short& dest, short add)
 		dest = _MAX_SHORT;
 }
 
-BOOL CheckMaxValueReturn(DWORD& dest, DWORD add)
+bool CheckMaxValueReturn(DWORD& dest, DWORD add)
 {
 	DWORD Diff = _MAX_DWORD - dest;
 
 	if (add <= Diff)
-		return TRUE;//dest += add;
+		return true;//dest += add;
 	else
-		return FALSE;//dest = _MAX_DWORD;
+		return false;//dest = _MAX_DWORD;
 }

@@ -176,7 +176,7 @@ void CAISocket::LoginProcess(char* pBuf)
 			m_pMain->m_sSocketCount++;
 			if (m_pMain->m_sSocketCount == MAX_AI_SOCKET)
 			{
-				m_pMain->m_bServerCheckFlag = TRUE;
+				m_pMain->m_bServerCheckFlag = true;
 				m_pMain->m_sSocketCount = 0;
 				spdlog::debug("AISocket::LoginProcess: all AI sockets connected, sending all user info...");
 				m_pMain->SendAllUserInfo();
@@ -211,7 +211,7 @@ void CAISocket::LoginProcess(char* pBuf)
 				{
 					spdlog::info("AISocket::LoginProcess: sockets reconnected in under a minute [sockets={}]",
 					m_pMain->m_sReSocketCount);
-					m_pMain->m_bServerCheckFlag = TRUE;
+					m_pMain->m_bServerCheckFlag = true;
 					m_pMain->m_sReSocketCount = 0;
 					spdlog::debug("AISocket::LoginProcess: sending all user info...");
 					m_pMain->SendAllUserInfo();
@@ -258,8 +258,8 @@ void CAISocket::RecvServerInfo(char* pBuf)
 			}
 
 			m_pMain->m_sZoneCount = 0;
-			m_pMain->m_bFirstServerFlag = TRUE;
-			m_pMain->m_bPointCheckFlag = TRUE;
+			m_pMain->m_bFirstServerFlag = true;
+			m_pMain->m_bPointCheckFlag = true;
 			// 여기에서 Event Monster의 포인터를 미리 할당 하도록 하장~~
 			//InitEventMonster( sTotalMonster );
 		}

@@ -66,7 +66,7 @@ void CRoomEvent::Initialize()
 void CRoomEvent::MainRoom(float fcurtime)
 {
 	// 조건 검색먼저 해야 겠지..
-	BOOL bCheck = FALSE, bRunCheck = FALSE;
+	bool bCheck = false, bRunCheck = false;
 	char notify[50] = {};
 
 	int event_num = m_Logic[m_byLogicNumber - 1].sNumber;
@@ -85,17 +85,17 @@ void CRoomEvent::MainRoom(float fcurtime)
 	}
 }
 
-BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
+bool CRoomEvent::CheckEvent(int event_num, float fcurtime)
 {
 	int nMinute = 0, nOption_1 = 0, nOption_2 = 0;
 	CNpc* pNpc = nullptr;
-	BOOL bRetValue = FALSE;
+	bool bRetValue = false;
 
 	if (m_byLogicNumber == 0
 		|| m_byLogicNumber > MAX_CHECK_EVENT)
 	{
 		spdlog::error("RoomEvent::CheckEvent: logicNumber={} out of bounds", m_byLogicNumber);
-		return FALSE;
+		return false;
 	}
 
 	switch (event_num)
@@ -107,7 +107,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			if (pNpc != nullptr)
 			{
 				if (pNpc->m_byChangeType == 100)
-					return TRUE;
+					return true;
 			}
 			else
 			{
@@ -123,7 +123,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			if (bRetValue)
 			{
 				spdlog::debug("RoomEvent::CheckEvent: all monsters are dead [eventId={}]", event_num);
-				return TRUE;
+				return true;
 			}
 			break;
 
@@ -137,7 +137,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			{
 				spdlog::debug("RoomEvent::CheckEvent: Time limit met, survival success [currTime={} delayTime={}]",
 					fcurtime, m_fDelayTime);
-				return TRUE;
+				return true;
 			}
 			//TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), fcurtime, m_fDelayTime);
 			break;
@@ -155,7 +155,7 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			{
 				spdlog::debug("RoomEvent::CheckEvent: killed ({}/{}) monsters.",
 					nOption_1, nOption_2);
-				return TRUE;
+				return true;
 			}
 			break;
 
@@ -164,15 +164,15 @@ BOOL CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			break;
 	}
 
-	return FALSE;
+	return false;
 }
 
-BOOL CRoomEvent::RunEvent(int event_num)
+bool CRoomEvent::RunEvent(int event_num)
 {
 	char notify[50] = {};
 	CNpc* pNpc = nullptr;
 	int nOption_1 = 0, nOption_2 = 0;
-	BOOL bRetValue = FALSE;
+	bool bRetValue = false;
 	switch (event_num)
 	{
 		// 다른 몬스터의 출현
@@ -192,7 +192,7 @@ BOOL CRoomEvent::RunEvent(int event_num)
 
 			// 방이 클리어
 			if (m_byCheck == m_byLogicNumber)
-				return TRUE;
+				return true;
 			
 			m_byLogicNumber++;
 			break;
@@ -212,7 +212,7 @@ BOOL CRoomEvent::RunEvent(int event_num)
 
 			// 방이 클리어
 			if (m_byCheck == m_byLogicNumber)
-				return TRUE;
+				return true;
 			
 			m_byLogicNumber++;
 			break;
@@ -221,7 +221,7 @@ BOOL CRoomEvent::RunEvent(int event_num)
 		case 3:
 			// 방이 클리어
 			if (m_byCheck == m_byLogicNumber)
-				return TRUE;
+				return true;
 			break;
 
 		// 특정몬스터 옵션2의 마리수만큼 출현
@@ -235,7 +235,7 @@ BOOL CRoomEvent::RunEvent(int event_num)
 
 			// 방이 클리어
 			if (m_byCheck == m_byLogicNumber)
-				return TRUE;
+				return true;
 			
 			m_byLogicNumber++;
 			break;
@@ -252,7 +252,7 @@ BOOL CRoomEvent::RunEvent(int event_num)
 
 			// 방이 클리어
 			if (m_byCheck == m_byLogicNumber)
-				return TRUE;
+				return true;
 			
 			m_byLogicNumber++;
 			break;
@@ -262,7 +262,7 @@ BOOL CRoomEvent::RunEvent(int event_num)
 			break;
 	}
 
-	return FALSE;
+	return false;
 }
 
 CNpc* CRoomEvent::GetNpcPtr(int sid)
@@ -325,13 +325,13 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 /// 2: Count of active monsters
 /// 3: All monsters dead (count unused)
 /// 4: Reset monster (?)
-BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
+bool CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 {
 	int nMonsterCount = 0;
 	CNpc* pNpc = nullptr;
 	int* pIDList = nullptr;
 	int nMonsterid = 0, nTotalMonster = 0;
-	BOOL bRetValue = FALSE;
+	bool bRetValue = false;
 
 	EnterCriticalSection(&g_region_critical);
 
@@ -340,7 +340,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 	{
 		LeaveCriticalSection(&g_region_critical);
 		spdlog::error("RoomEvent::CheckMonsterCount: mapRoomNpcArray empty");
-		return FALSE;
+		return false;
 	}
 
 	auto Iter1 = m_mapRoomNpcArray.begin();
@@ -379,7 +379,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 				nMonsterCount++;
 
 			if (nMonsterCount == nMonster)
-				bRetValue = TRUE;
+				bRetValue = true;
 		}
 		else if (pNpc->m_sSid == sid)
 		{
@@ -390,7 +390,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 					nMonsterCount++;
 
 				if (nMonsterCount == count)
-					bRetValue = TRUE;
+					bRetValue = true;
 			}
 			// Make a certain number of specific monsters appear || 특정 몬스터를 마리수 만큼 출현 시켜라,,
 			else if (type == 2)
@@ -399,7 +399,7 @@ BOOL CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 				nMonsterCount++;
 
 				if (nMonsterCount == count)
-					bRetValue = TRUE;
+					bRetValue = true;
 			}
 		}
 	}

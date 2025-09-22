@@ -158,7 +158,7 @@ bool CUdpSocket::PacketProcess(int len)
 
 	memcpy(pTmp, m_pRecvBuf, len);
 
-	foundCore = FALSE;
+	foundCore = false;
 
 	int	sPos = 0, ePos = 0;
 
@@ -192,7 +192,7 @@ bool CUdpSocket::PacketProcess(int len)
 				goto cancelRoutine;
 
 			Parsing((char*) (pTmp + sPos + 2), length);
-			foundCore = TRUE;
+			foundCore = true;
 			break;
 		}
 	}

@@ -83,7 +83,7 @@ public:
 	BYTE   m_byIsOP;					// 운영자인지를 판단..
 	long   m_lUsed;						// 포인터 사용유무.. (1:사용중.. 접근 허락치 않음. 0:사용해도 무방)
 
-	BOOL		m_bLogOut;				// Logout 중인가?
+	bool	m_bLogOut;				// Logout 중인가?
 
 	// 2002.7.10 - Yookozuna
 	BYTE    m_bMagicTypeLeftHand;			// The type of magic item in user's left hand  
@@ -114,7 +114,7 @@ public:
 	void SendExp(int iExp, int iLoyalty, int tType = 1);
 	void SendSystemMsg(const std::string_view msg, BYTE type, int nWho);
 	void SendAll(const char* pBuf, int nLength);						// game server로 패킷 전송...
-	BOOL IsOpIDCheck(char* szName);
+	bool IsOpIDCheck(const char* szName);
 
 	CUser();
 	virtual ~CUser();

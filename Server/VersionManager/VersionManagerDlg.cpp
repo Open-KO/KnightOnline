@@ -132,7 +132,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
-BOOL CVersionManagerDlg::GetInfoFromIni()
+bool CVersionManagerDlg::GetInfoFromIni()
 {
 	CString exePath = GetProgPath();
 	std::string exePathUtf8(CT2A(exePath, CP_UTF8));
@@ -168,16 +168,16 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 
 	if (strlen(_ftpUrl) == 0
 		|| strlen(_ftpPath) == 0)
-		return FALSE;
+		return false;
 
 	if (datasourceName.length() == 0
 		// TODO: Should we not validate UID/Pass length?  Would that allow Windows Auth?
 		|| datasourceUser.length() == 0
 		|| datasourcePass.length() == 0)
-		return FALSE;
+		return false;
 
 	if (serverCount <= 0)
-		return FALSE;
+		return false;
 
 	char key[20] = {};
 	ServerList.reserve(serverCount);
@@ -230,7 +230,7 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 		if (newsContent.size() > sizeof(News.Content))
 		{
 			AfxMessageBox(_T("News too long"));
-			return FALSE;
+			return false;
 		}
 
 		memcpy(&News.Content, newsContent.c_str(), newsContent.size());
@@ -242,14 +242,14 @@ BOOL CVersionManagerDlg::GetInfoFromIni()
 
 	spdlog::info("Version Manager initialized");
 
-	return TRUE;
+	return true;
 }
 
-BOOL CVersionManagerDlg::LoadVersionList()
+bool CVersionManagerDlg::LoadVersionList()
 {
 	VersionInfoList versionList;
 	if (!DbProcess.LoadVersionList(&versionList))
-		return FALSE;
+		return false;
 
 	int lastVersion = 0;
 
@@ -262,7 +262,7 @@ BOOL CVersionManagerDlg::LoadVersionList()
 	SetLastVersion(lastVersion);
 
 	VersionList.Swap(versionList);
-	return TRUE;
+	return true;
 }
 
 void CVersionManagerDlg::OnTimer(UINT EventId)

@@ -203,7 +203,7 @@ UINT ZoneEventThreadProc(LPVOID pParam/* = nullptr */)
 float TimeGet()
 {
 	static bool bInit = false;
-	static bool bUseHWTimer = FALSE;
+	static bool bUseHWTimer = false;
 	static LARGE_INTEGER nTime, nFrequency;
 
 	if (!bInit)
@@ -211,11 +211,11 @@ float TimeGet()
 		if (::QueryPerformanceCounter(&nTime))
 		{
 			::QueryPerformanceFrequency(&nFrequency);
-			bUseHWTimer = TRUE;
+			bUseHWTimer = true;
 		}
 		else
 		{
-			bUseHWTimer = FALSE;
+			bUseHWTimer = false;
 		}
 
 		bInit = true;

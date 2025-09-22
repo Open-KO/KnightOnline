@@ -32,7 +32,7 @@ class CServerDlg;
 class CPathFind
 {
 public:
-	BOOL IsBlankMap(int x, int y);
+	bool IsBlankMap(int x, int y);
 	void SetMap(int x, int y, int* pMap);
 	void PropagateDown(_PathNode* old);
 	void Insert(_PathNode* node);

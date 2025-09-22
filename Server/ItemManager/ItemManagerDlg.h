@@ -9,8 +9,7 @@
 #endif // _MSC_VER > 1000
 
 #include "SharedMem.h"
-#include "DBAgent.h"
-#include "define.h"
+#include "Define.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CItemManagerDlg dialog
@@ -25,8 +24,6 @@ public:
 	HANDLE	m_hMMFile;
 	char* m_lpMMFile;
 
-	CDBAgent	m_DBAgent;
-
 	//ItemtableArray		m_ItemtableArray;
 
 	int	m_nServerNo, m_nZoneNo;
@@ -40,7 +37,6 @@ public:
 	int	m_nExpLogFileDay;		// 
 
 private:
-	BOOL InitializeMMF();
 	void AllSaveRoutine();
 	void WriteItemLogFile(char* pData);
 	void WriteExpLogFile(char* pData);

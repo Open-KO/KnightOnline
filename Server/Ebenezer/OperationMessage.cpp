@@ -10,7 +10,7 @@
 #include <sstream>
 #include <stdexcept>
 
-extern BYTE g_serverdown_flag;
+extern bool g_serverdown_flag;
 
 OperationMessage::OperationMessage(CEbenezerDlg* main, CUser* srcUser)
 	: _main(main), _srcUser(srcUser)
@@ -542,7 +542,7 @@ void OperationMessage::AutoOff()
 
 void OperationMessage::Down()
 {
-	g_serverdown_flag = TRUE;
+	g_serverdown_flag = true;
 	SuspendThread(_main->m_Iocport.m_hAcceptThread);
 	_main->KickOutAllUsers();
 }

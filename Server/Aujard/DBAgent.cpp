@@ -1464,11 +1464,11 @@ bool CDBAgent::UpdateBattleEvent(const char* charId, int nation)
 }
 
 /* TODO: Proc does not exist
-BOOL CDBAgent::CheckCouponEvent(const char* accountId)
+bool CDBAgent::CheckCouponEvent(const char* accountId)
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	BOOL			bData = TRUE, retval = FALSE;
+	bool			retval = false;
 	TCHAR			szSQL[1024] = {};
 	SQLINTEGER		Indexind = SQL_NTS;
 	SQLSMALLINT		sRet = 0;
@@ -1479,13 +1479,13 @@ BOOL CDBAgent::CheckCouponEvent(const char* accountId)
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, accountConn1.m_hdbc, &hstmt);
 	if (retcode != SQL_SUCCESS)
-		return FALSE;
+		return false;
 
 	retcode = SQLBindParameter(hstmt, 1, SQL_PARAM_OUTPUT, SQL_C_SSHORT, SQL_SMALLINT, 0, 0, &sRet, 0, &Indexind);
 	if (retcode != SQL_SUCCESS)
 	{
 		SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
-		return FALSE;
+		return false;
 	}
 
 	retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
@@ -1493,9 +1493,9 @@ BOOL CDBAgent::CheckCouponEvent(const char* accountId)
 		|| retcode == SQL_SUCCESS_WITH_INFO)
 	{
 		if (sRet == 0)
-			retval = TRUE;
+			retval = true;
 		else
-			retval = FALSE;
+			retval = false;
 	}
 	else
 	{
@@ -1505,11 +1505,11 @@ BOOL CDBAgent::CheckCouponEvent(const char* accountId)
 			if (!accountConn1.IsOpen())
 			{
 				ReconnectIfDisconnected(&accountConn1, _main->m_strAccountDSN, _main->m_strAccountUID, _main->m_strAccountPWD);
-				return FALSE;
+				return false;
 			}
 		}
 
-		retval = FALSE;
+		retval = false;
 	}
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
@@ -1518,11 +1518,11 @@ BOOL CDBAgent::CheckCouponEvent(const char* accountId)
 }*/
 
 /*  TODO:  Proc does not exist
-BOOL CDBAgent::UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count)
+bool CDBAgent::UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count)
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
-	BOOL			bData = TRUE, retval = FALSE;
+	bool			retval = false;
 	TCHAR			szSQL[1024] = {};
 	SQLINTEGER		Indexind = SQL_NTS;
 	SQLSMALLINT		sRet = 0;
@@ -1533,15 +1533,15 @@ BOOL CDBAgent::UpdateCouponEvent(const char* accountId, char* charId, char* cpid
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, accountConn1.m_hdbc, &hstmt);
 	if (retcode != SQL_SUCCESS)
-		return FALSE;
+		return false;
 
 	retcode = SQLExecDirect(hstmt, (SQLTCHAR*) szSQL, SQL_NTS);
 	if (retcode == SQL_SUCCESS
 		|| retcode == SQL_SUCCESS_WITH_INFO)
 	{
-		retval = TRUE;
-		//if( sRet == 1 )	retval = TRUE;
-		//else retval = FALSE;
+		retval = true;
+		//if( sRet == 1 )	retval = true;
+		//else retval = false;
 	}
 	else
 	{
@@ -1551,11 +1551,11 @@ BOOL CDBAgent::UpdateCouponEvent(const char* accountId, char* charId, char* cpid
 			if (!accountConn1.IsOpen())
 			{
 				ReconnectIfDisconnected(&accountConn1, _main->m_strAccountDSN, _main->m_strAccountUID, _main->m_strAccountPWD);
-				return FALSE;
+				return false;
 			}
 		}
 
-		retval = FALSE;
+		retval = false;
 	}
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
@@ -1564,7 +1564,7 @@ BOOL CDBAgent::UpdateCouponEvent(const char* accountId, char* charId, char* cpid
 */
 
 /* TODO: Proc doesn't exist
-BOOL CDBAgent::DeleteChar(int index, char* id, char* charId, char* socno)
+bool CDBAgent::DeleteChar(int index, char* id, char* charId, char* socno)
 {
 	SQLHSTMT		hstmt = nullptr;
 	SQLRETURN		retcode;
@@ -1592,12 +1592,12 @@ BOOL CDBAgent::DeleteChar(int index, char* id, char* charId, char* socno)
 					if (!gameConn1.IsOpen())
 					{
 						ReconnectIfDisconnected(&gameConn1, _main->m_strGameDSN, _main->m_strGameUID, _main->m_strGamePWD);
-						return FALSE;
+						return false;
 					}
 				}
 
 				SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
-				return FALSE;
+				return false;
 			}
 
 			SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
@@ -1605,5 +1605,5 @@ BOOL CDBAgent::DeleteChar(int index, char* id, char* charId, char* socno)
 		}
 	}
 
-	return FALSE;
+	return false;
 }*/

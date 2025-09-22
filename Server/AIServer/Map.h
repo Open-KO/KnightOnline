@@ -59,19 +59,19 @@ public:
 	MAP();
 	virtual ~MAP();
 
-	BOOL LoadMap(HANDLE hFile);
+	bool LoadMap(HANDLE hFile);
 	void LoadTerrain(HANDLE hFile);
 	void LoadMapTile(HANDLE hFile);
 	void LoadObjectEvent(HANDLE hFile);
-	BOOL LoadRoomEvent(int zone_number);
-	BOOL ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2);
+	bool LoadRoomEvent(int zone_number);
+	bool ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float z);
 
 	void RegionNpcRemove(int rx, int rz, int nid);
 	void RegionNpcAdd(int rx, int rz, int nid);
 	void RegionUserRemove(int rx, int rz, int uid);
 	void RegionUserAdd(int rx, int rz, int uid);
-	BOOL RegionItemRemove(int rx, int rz, int itemid, int count, int index);
+	bool RegionItemRemove(int rx, int rz, int itemid, int count, int index);
 	void RegionItemAdd(int rx, int rz, int itemid, int count, int index);
 	int  GetRegionUserSize(int rx, int rz);
 	int  GetRegionNpcSize(int rx, int rz);
@@ -85,9 +85,9 @@ public:
 	}
 
 	int IsRoomCheck(float fx, float fz);	// 던젼에서 사용, 유저의 현재위치가 던젼의 어느 위치에 있는지를 판단
-	BOOL IsRoomStatusCheck();
+	bool IsRoomStatusCheck();
 
-	BOOL IsMovable(int dest_x, int dest_y);
+	bool IsMovable(int dest_x, int dest_y) const;
 	void InitializeRoom();
 
 	CRoomEvent* SetRoomEvent(int number);

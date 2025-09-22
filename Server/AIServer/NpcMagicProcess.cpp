@@ -174,8 +174,8 @@ model::Magic* CNpcMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 	int modulator = 0, Class = 0, send_index = 0, moral = 0;
 
 	char send_buff[128] = {};
-	if (!m_pSrcNpc)
-		return FALSE;
+	if (m_pSrcNpc == nullptr)
+		return nullptr;
 
 	// Get main magic table.
 	pTable = m_pMain->m_MagicTableMap.GetData(magicid);
@@ -366,7 +366,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 /*				if(pType->bAttribute == 3)   attack_type = 3; // 기절시키는 마법이라면.....
 				else attack_type = magicid;
 
-				if(pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport) == FALSE)	{
+				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))	{
 					// Npc가 죽은 경우,,
 					pNpc->SendExpToUserList(); // 경험치 분배!!
 					pNpc->SendDead(m_pSrcUser->m_pIocport);
@@ -451,7 +451,7 @@ short CNpcMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, in
 	short damage = 0, temp_hit = 0;
 	int random = 0, total_r = 0;
 	BYTE result;
-	BOOL bSign = TRUE;			// FALSE이면 -, TRUE이면 +
+	bool bSign = true;			// false이면 -, true이면 +
 
 	// Check if target id is valid.
 	if (tid < NPC_BAND
@@ -521,7 +521,7 @@ short CNpcMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, in
 		if (total_hit < 0)
 		{
 			total_hit = abs(total_hit);
-			bSign = FALSE;
+			bSign = false;
 		}
 
 		damage = (short) (total_hit - (0.7f * total_hit * total_r / 200));

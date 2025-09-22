@@ -45,37 +45,42 @@ public:
 //
 	void LoadWarpList(HANDLE hFile);
 	void LoadRegeneEvent(HANDLE hFile);
-	BOOL IsValidPosition(float x, float z, float y);
+	bool IsValidPosition(float x, float z, float y) const;
+
 	_OBJECT_EVENT* GetObjectEvent(int objectindex)
 	{
 		return m_ObjectEventArray.GetData(objectindex);
-	};
+	}
+
 	_REGENE_EVENT* GetRegeneEvent(int objectindex)
 	{
 		return m_ObjectRegeneArray.GetData(objectindex);
-	};
+	}
+
 	void LoadObjectEvent(HANDLE hFile);
-	BOOL LoadEvent();
-	BOOL CheckEvent(float x, float z, CUser* pUser = nullptr);
+	bool LoadEvent();
+	bool CheckEvent(float x, float z, CUser* pUser = nullptr);
 	void RegionNpcRemove(int rx, int rz, int nid);
 	void RegionNpcAdd(int rx, int rz, int nid);
 	void RegionUserRemove(int rx, int rz, int uid);
 	void RegionUserAdd(int rx, int rz, int uid);
-	BOOL RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int count);
-	BOOL RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem);
-	BOOL ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2);
+	bool RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int count);
+	bool RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem);
+	bool ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float y, float z);
 	void LoadMapTile(HANDLE hFile);
-	BOOL LoadMap(HANDLE hFile);
+	bool LoadMap(HANDLE hFile);
 	void LoadTerrain(HANDLE hFile);
-	int GetXRegionMax()
+
+	int GetXRegionMax() const
 	{
 		return m_nXRegion - 1;
-	};
-	int GetZRegionMax()
+	}
+
+	int GetZRegionMax() const
 	{
 		return m_nZRegion - 1;
-	};
+	}
 
 	C3DMap();
 	virtual ~C3DMap();

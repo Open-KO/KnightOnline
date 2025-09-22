@@ -166,7 +166,7 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, BYTE type)
 
 	char send_buff[128] = {};
 	if (m_pSrcUser == nullptr)
-		return FALSE;
+		return nullptr;
 
 	pTable = m_pMain->m_MagicTableMap.GetData(magicid);     // Get main magic table.
 	if (pTable == nullptr)
@@ -688,7 +688,7 @@ short CMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int d
 	short damage = 0, temp_hit = 0;
 	int random = 0, total_r = 0;
 	BYTE result;
-	BOOL bSign = TRUE;			// FALSE이면 -, TRUE이면 +
+	bool bSign = true;			// false이면 -, true이면 +
 
 	// Check if target id is valid.
 	if (tid < NPC_BAND
@@ -757,7 +757,7 @@ short CMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int d
 		if (total_hit < 0)
 		{
 			total_hit = abs(total_hit);
-			bSign = FALSE;
+			bSign = false;
 		}
 
 		damage = (short) (total_hit - (0.7f * total_hit * total_r / 200));
@@ -1158,23 +1158,23 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 
 short CMagicProcess::GetWeatherDamage(short damage, short attribute)
 {
-	BOOL weather_buff = FALSE;
+	bool weather_buff = false;
 
 	switch (m_pMain->m_iWeather)
 	{
 		case WEATHER_FINE:
 			if (attribute == ATTRIBUTE_FIRE)
-				weather_buff = TRUE;
+				weather_buff = true;
 			break;
 
 		case WEATHER_RAIN:
 			if (attribute == ATTRIBUTE_LIGHTNING)
-				weather_buff = TRUE;
+				weather_buff = true;
 			break;
 
 		case WEATHER_SNOW:
 			if (attribute == ATTRIBUTE_ICE)
-				weather_buff = TRUE;
+				weather_buff = true;
 			break;
 	}
 

@@ -17,8 +17,6 @@ class CAISocket : public CIOCPSocket2
 {
 private:
 	CEbenezerDlg* m_pMain;
-
-	BOOL m_bAllNpcInfoRecv;
 	CMagicProcess m_MagicProcess;
 
 public:

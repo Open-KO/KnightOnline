@@ -20,7 +20,7 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	char recv_buff[1024] = {};
 	CString string;
 
-	while (TRUE)
+	while (true)
 	{
 		if (pMain->m_LoggerRecvQueue.GetFrontMode() != R)
 		{
@@ -111,7 +111,7 @@ BOOL CItemManagerDlg::OnInitDialog()
 	m_nExpLogFileDay = time.GetDay();
 
 	// Dispatcher 의 Send Queue
-	if (!m_LoggerRecvQueue.InitailizeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER), FALSE))
+	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER), false))
 	{
 		AfxMessageBox(_T("Shared memory queue not yet available. Run Ebenezer first."));
 		AfxPostQuitMessage(0);

@@ -40,6 +40,7 @@ constexpr int MAX_CURRENT_EVENT		= 20;
 // logic관련 define
 enum e_LogicCheck
 {
+	LOGIC_CHECK_NONE						= 0x00,
 	LOGIC_CHECK_UNDER_WEIGHT				= 0x01,
 	LOGIC_CHECK_OVER_WEIGHT					= 0x02,
 	LOGIC_CHECK_SKILL_POINT					= 0x03,
@@ -100,6 +101,7 @@ enum e_LogicCheck
 // 실행관련 define
 enum e_Exec
 {
+	EXEC_NONE								= 0x00,
 	EXEC_SAY								= 0x01,
 	EXEC_SELECT_MSG							= 0x02,
 	EXEC_RUN_EVENT							= 0x03,
@@ -484,7 +486,7 @@ inline void SetVarString(char* tBuf, const char* sBuf, int len, int& index)
 inline int ParseSpace(char* tBuf, const char* sBuf)
 {
 	int i = 0, index = 0;
-	BOOL flag = FALSE;
+	bool flag = false;
 
 	while (sBuf[index] == ' '
 		|| sBuf[index] == '\t')
@@ -495,7 +497,7 @@ inline int ParseSpace(char* tBuf, const char* sBuf)
 		&& sBuf[index] != (BYTE) 0)
 	{
 		tBuf[i++] = sBuf[index++];
-		flag = TRUE;
+		flag = true;
 	}
 
 	tBuf[i] = 0;
@@ -549,7 +551,7 @@ inline int myrand(int min, int max)
 inline float TimeGet()
 {
 	static bool bInit = false;
-	static bool bUseHWTimer = FALSE;
+	static bool bUseHWTimer = false;
 	static LARGE_INTEGER nTime, nFrequency;
 
 	if (!bInit)
@@ -557,11 +559,11 @@ inline float TimeGet()
 		if (::QueryPerformanceCounter(&nTime))
 		{
 			::QueryPerformanceFrequency(&nFrequency);
-			bUseHWTimer = TRUE;
+			bUseHWTimer = true;
 		}
 		else
 		{
-			bUseHWTimer = FALSE;
+			bUseHWTimer = false;
 		}
 
 		bInit = true;
