@@ -8678,16 +8678,16 @@ void CUser::InitType4()
 
 int CUser::GetNumberOfEmptySlots() const
 {
-	int emptySlotsCount = 0;
+	int emptySlotCount = 0;
 
 	for (int i = SLOT_MAX; i < SLOT_MAX + HAVE_MAX; i++)
 	{
-		const _ITEM_DATA& pItem = m_pUserData->m_sItemArray[i];
-
-		if (pItem.nNum == 0)
-			emptySlotsCount++;
+		const _ITEM_DATA& item = m_pUserData->m_sItemArray[i];
+		if (item.nNum == 0)
+			++emptySlotCount;
 	}
-	return emptySlotsCount;
+
+	return emptySlotCount;
 }
 
 // item 먹을때 비어잇는 슬롯을 찾아야되...
