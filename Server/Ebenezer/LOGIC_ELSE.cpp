@@ -166,6 +166,12 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			argsToParse = 2;
 			break;
 
+		// A CHECK_NOEXIST_EVENT {quest ID} {quest state}
+		case "CHECK_NOEXIST_EVENT"_djb2:
+			m_LogicElse = LOGIC_CHECK_NOEXIST_EVENT;
+			argsToParse = 2;
+			break;
+
 #if 0 // TODO
 		// A CHECK_ITEMCHANGE_NUM {last slot rewarded by exchange - 1..5 [nExchangeItemNum1..5]}
 		case "CHECK_ITEMCHANGE_NUM"_djb2:

@@ -11556,6 +11556,11 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = TRUE;
 				break;
 
+			case LOGIC_CHECK_NOEXIST_EVENT:
+				if (!CheckExistEvent(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = TRUE;
+				break;
+
 			default:
 				return false;
 		}
