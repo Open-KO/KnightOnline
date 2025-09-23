@@ -178,13 +178,13 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			m_LogicElse = LOGIC_CHECK_ITEMCHANGE_NUM;
 			argsToParse = 1;
 			break;
+#endif
 
 		// A CHECK_NOCLASS {class 1} {class 2} {class 3} {class 4} {class 5} {class 6}
 		case "CHECK_NOCLASS"_djb2:
 			m_LogicElse = LOGIC_CHECK_NOCLASS;
 			argsToParse = 6;
 			break;
-#endif
 
 		// A CHECK_LOYALTY {minimum} {maximum}
 		case "CHECK_LOYALTY"_djb2:
