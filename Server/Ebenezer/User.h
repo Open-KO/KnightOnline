@@ -209,6 +209,7 @@ public:
 	void SaveComEvent(int eventid);
 	bool CheckItemCount(int itemid, short min, short max) const;
 	bool CheckClanGrade(int min, int max) const;
+	bool CheckKnight() const;
 	void CouponEvent(char* pBuf);
 	void LogCoupon(int itemid, int count);
 	void RecvEditBox(char* pBuf);
