@@ -11555,17 +11555,17 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 
 			case LOGIC_CHECK_EMPTY_SLOT:
 				if (GetNumberOfEmptySlots() >= pLE->m_LogicElseInt[0])
-					bExact = TRUE;
+					bExact = true;
 				break;
 
 			case LOGIC_CHECK_EXIST_EVENT:
 				if (CheckExistEvent(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
-					bExact = TRUE;
+					bExact = true;
 				break;
 
 			case LOGIC_CHECK_NOEXIST_EVENT:
 				if (!CheckExistEvent(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
-					bExact = TRUE;
+					bExact = true;
 				break;
 
 			default:
