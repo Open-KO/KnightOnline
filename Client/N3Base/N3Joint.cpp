@@ -237,14 +237,17 @@ void CN3Joint::ChildDelete(CN3Joint *pChild)
 	}
 }
 
-void CN3Joint::ParentSet(CN3Joint *pParent)
+void CN3Joint::ParentSet(CN3Joint* pParent)
 {
-	if(pParent == m_pParent) return;
+	if (pParent == m_pParent)
+		return;
 
 	m_pParent = pParent;
-	if(pParent) pParent->ChildAdd(this);
-
-	m_iFileFormatVersion = pParent->m_iFileFormatVersion;
+	if (pParent != nullptr)
+	{
+		pParent->ChildAdd(this);
+		m_iFileFormatVersion = pParent->m_iFileFormatVersion;
+	}
 }
 
 void CN3Joint::NodeCount(int &nCount)
@@ -447,12 +450,12 @@ void CN3Joint::ReCalcMatrixBlended(float fFrm0, float fFrm1, float fWeight0)
 		m_qRot.Slerp(qt1, qt2, fWeight1);
 
 	bHaveKey1 = m_KeyScale.DataGet(fFrm0, v1);
-	bHaveKey1 = m_KeyScale.DataGet(fFrm1, v2);
+	bHaveKey2 = m_KeyScale.DataGet(fFrm1, v2);
 	if(bHaveKey1 && bHaveKey2) 
 		m_vScale = (v1 * fWeight0) + (v2 * fWeight1);
 
 	bHaveKey1 = m_KeyOrient.DataGet(fFrm0, qt1);
-	bHaveKey1 = m_KeyOrient.DataGet(fFrm1, qt2);
+	bHaveKey2 = m_KeyOrient.DataGet(fFrm1, qt2);
 	if(bHaveKey1 && bHaveKey2) 
 		m_qOrient.Slerp(qt1, qt2, fWeight1);
 

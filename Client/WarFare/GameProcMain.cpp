@@ -2079,7 +2079,8 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	// 기본값 읽기..
 	////////////////////////////////////////////////////////////
 
-	this->InitPlayerPosition(__Vector3(fX, fY, fZ)); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
+	InitPlayerPosition(__Vector3(fX, fY, fZ)); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
+	s_pPlayer->RegenerateCollisionMesh();
 
 	// berserk temp
 	//s_pPlayer->PlugSet(PLUG_POS_BACK, "item/babacloak.n3cplug_cloak", nullptr);	// 파트를 셋팅..
@@ -4388,6 +4389,7 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 	CLogWriter::Write("InitPlayerPosition() Position({:.1f}, {:.1f}, {:.1f})",
 		vPosPlayer.x, vPosPlayer.y, vPosPlayer.z); // TmpLog1122
 	InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
+	s_pPlayer->RegenerateCollisionMesh(); // 충돌 메시를 다시 만든다..
 	s_pOPMgr->Release(); // 다른 플레이어 삭제...
 }
 
@@ -4837,13 +4839,7 @@ void CGameProcMain::MsgRecv_ZoneChange(
 
 			LoadingUIChange(iVictoryNation);
 
-			__Vector3 vPosPlayer;
-			vPosPlayer.x = fX;
-			vPosPlayer.y = fY;
-			vPosPlayer.z = fZ;
-			InitPlayerPosition(vPosPlayer); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
 
-			s_pPlayer->RegenerateCollisionMesh(); // 충돌 메시를 다시 만든다..
 			s_pPlayer->m_iSendRegeneration = 0; // 한번 보내면 다시 죽을때까지 안보내는 플래그
 			s_pPlayer->m_fTimeAfterDeath = 0; // 한번 보내면 다시 죽을때까지 안보내는 플래그
 

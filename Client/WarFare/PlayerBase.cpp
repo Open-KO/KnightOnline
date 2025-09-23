@@ -2169,10 +2169,7 @@ bool CPlayerBase::InitChr(__TABLE_PLAYER_LOOKS* pTbl)
 
 void CPlayerBase::RegenerateCollisionMesh() // 최대 최소값을 다시 찾고 충돌메시를 다시 만든다..
 {
-	m_Chr.FindMinMax();
-	__Matrix44 mtxInverse;
-	D3DXMatrixInverse(&mtxInverse, 0, &(m_Chr.m_Matrix));
-	if(m_Chr.CollisionMesh()) m_Chr.CollisionMesh()->CreateCube(m_Chr.Min() * mtxInverse, m_Chr.Max() * mtxInverse);
+	m_Chr.RegenerateCollisionMesh();
 }
 
 CPlayerBase* CPlayerBase::TargetPointerCheck(bool bMustAlive)

@@ -401,6 +401,7 @@ public:
 //////////////////////////////////////////////////
 
 	void		Init();
+	void		RegenerateCollisionMesh();
 	void		BuildMesh();
 	void		BuildMesh(int nLOD);
 	void		Render();
