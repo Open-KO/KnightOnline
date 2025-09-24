@@ -2702,6 +2702,14 @@ CNpc* CEbenezerDlg::GetNpcPtr(int sid, int cur_zone)
 	return nullptr;
 }
 
+CKnights* CEbenezerDlg::GetKnightsPtr(int16_t clanId)
+{
+	if (clanId <= 0)
+		return nullptr;
+
+	return m_KnightsMap.GetData(clanId);
+}
+
 void CEbenezerDlg::WithdrawUserOut()
 {
 	for (int i = 0; i < MAX_USER; i++)

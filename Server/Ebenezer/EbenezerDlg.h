@@ -165,6 +165,7 @@ public:
 	void SendCompressedData();
 	void DeleteAllNpcList(int flag = 0);
 	CNpc* GetNpcPtr(int sid, int cur_zone);
+	CKnights* GetKnightsPtr(int16_t clanId);
 	// ~sungyong 2001.11.06
 	bool InitializeMMF();
 	void UserInOutForMe(CUser* pSendUser);	// 9 Regions All Users USERINOUT Packet Packaging Function
