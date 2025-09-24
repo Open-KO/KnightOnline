@@ -270,12 +270,12 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			return;
 		}
 
-		if (nResult == KARUS)
+		if (nResult == NATION_KARUS)
 		{
 			//TRACE(_T("--> UDP RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byKarusOpenFlag = 1;		// 카루스 땅으로 넘어갈 수 있어
 		}
-		else if (nResult == ELMORAD)
+		else if (nResult == NATION_ELMORAD)
 		{
 			//TRACE(_T("--> UDP  RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byElmoradOpenFlag = 1;	// 엘모 땅으로 넘어갈 수 있어
@@ -289,11 +289,11 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 				m_pMain->m_byBattleOpen, nType);
 			return;
 		}
-		if (nResult == KARUS)
+		if (nResult == NATION_KARUS)
 		{
 			//TRACE(_T("-->  UDP RecvBattleEvent : 카루스가 승리하였습니다.\n"));
 		}
-		else if (nResult == ELMORAD)
+		else if (nResult == NATION_ELMORAD)
 		{
 			//TRACE(_T("-->  UDP RecvBattleEvent : 엘모라드가 승리하였습니다.\n"));
 		}

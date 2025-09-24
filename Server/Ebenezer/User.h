@@ -229,7 +229,9 @@ public:
 	bool JobGroupCheck(int16_t jobgroupid) const;
 	void SelectMsg(const EXEC* pExec);
 	void SendNpcSay(const EXEC* pExec);
+	void SendSay(int16_t m1, int16_t m2, int16_t m3, int16_t m4, int16_t m5, int16_t m6, int16_t m7, int16_t m8, int16_t m9, int16_t m10);
 	bool CheckClass(int16_t class1, int16_t class2, int16_t class3, int16_t class4, int16_t class5, int16_t class6) const;
+	bool CheckPromotionEligible();
 	void RecvSelectMsg(char* pBuf);
 	bool GiveItem(int itemid, int16_t count);
 	bool RobItem(int itemid, int16_t count);

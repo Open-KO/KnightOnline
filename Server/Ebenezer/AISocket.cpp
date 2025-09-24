@@ -702,10 +702,10 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 					pUser->Send(pOutBuf, send_index);
 					// ~sungyong tw
 					spdlog::debug("AISocket::RecvNpcAttack: Dead Captain Deprive [charId={}]", pUser->m_pUserData->m_id);
-					if (pUser->m_pUserData->m_bNation == KARUS)
-						m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, KARUS);
-					else if (pUser->m_pUserData->m_bNation == ELMORAD)
-						m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, ELMORAD);
+					if (pUser->m_pUserData->m_bNation == NATION_KARUS)
+						m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, NATION_KARUS);
+					else if (pUser->m_pUserData->m_bNation == NATION_ELMORAD)
+						m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, NATION_ELMORAD);
 				}
 
 				// 경비병에게 죽는 경우라면..
@@ -1467,12 +1467,12 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			return;
 		}
 
-		if (nResult == KARUS)
+		if (nResult == NATION_KARUS)
 		{
 			//TRACE(_T("--> RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byKarusOpenFlag = 1;		// 카루스 땅으로 넘어갈 수 있어
 		}
-		else if (nResult == ELMORAD)
+		else if (nResult == NATION_ELMORAD)
 		{
 			//TRACE(_T("--> RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n"));
 			m_pMain->m_byElmoradOpenFlag = 1;	// 엘모 땅으로 넘어갈 수 있어
@@ -1491,11 +1491,11 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			return;
 		}
 
-		if (nResult == KARUS)
+		if (nResult == NATION_KARUS)
 		{
 			//TRACE(_T("--> RecvBattleEvent : 카루스가 승리하였습니다.\n"));
 		}
-		else if (nResult == ELMORAD)
+		else if (nResult == NATION_ELMORAD)
 		{
 			//TRACE(_T("--> RecvBattleEvent : 엘모라드가 승리하였습니다.\n"));
 		}

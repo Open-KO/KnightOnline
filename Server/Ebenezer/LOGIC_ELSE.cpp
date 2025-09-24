@@ -140,13 +140,11 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::wstring& filename, int l
 			argsToParse = 1;
 			break;
 
-#if 0 // TODO
 		// A CHECK_PROMOTION_ELIGIBLE
 		case "CHECK_PROMOTION_ELIGIBLE"_djb2:
 			m_LogicElse = LOGIC_CHECK_PROMOTION_ELIGIBLE;
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
-#endif
 
 		// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}
 		case "CHECK_MONSTER_CHALLENGE_TIME"_djb2:
