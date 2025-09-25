@@ -644,9 +644,9 @@ bool MAP::LoadRoomEvent(int zone_number)
 				t_index += ParseSpace(temp, buf + t_index);
 				nation = atoi(temp);
 
-				if (nation == SERVER_ZONE_KARUS)
+				if (nation == KARUS_ZONE)
 					++m_sKarusRoom;
-				else if (nation == SERVER_ZONE_ELMORAD)
+				else if (nation == ELMORAD_ZONE)
 					++m_sElmoradRoom;
 			}
 			else if (0 == strcmp(first, "POS"))

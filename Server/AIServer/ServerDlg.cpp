@@ -124,7 +124,7 @@ CServerDlg::CServerDlg(CWnd* pParent /*=nullptr*/)
 	m_iWeather = 0;
 	m_iAmount = 0;
 	m_byNight = 1;
-	m_byZone = SERVER_ZONE_KARUS;
+	m_byZone = KARUS_ZONE;
 	m_byBattleEvent = BATTLEZONE_CLOSE;
 	m_sKillKarusNpc = 0;
 	m_sKillElmoNpc = 0;
@@ -220,13 +220,13 @@ BOOL CServerDlg::OnInitDialog()
 	//----------------------------------------------------------------------
 	//	DB part initialize
 	//----------------------------------------------------------------------
-	if (m_byZone == SERVER_ZONE_UNIFY)
+	if (m_byZone == UNIFY_ZONE)
 		m_strStatus.Format(_T("Server Zone: UNIFY"));
-	else if (m_byZone == SERVER_ZONE_KARUS)
+	else if (m_byZone == KARUS_ZONE)
 		m_strStatus.Format(_T("Server Zone: KARUS"));
-	else if (m_byZone == SERVER_ZONE_ELMORAD)
+	else if (m_byZone == ELMORAD_ZONE)
 		m_strStatus.Format(_T("Server Zone: ELMORAD"));
-	else if (m_byZone == SERVER_ZONE_BATTLE)
+	else if (m_byZone == BATTLE_ZONE)
 		m_strStatus.Format(_T("Server Zone: BATTLE"));
 	
 	//----------------------------------------------------------------------
@@ -422,14 +422,14 @@ int CServerDlg::GetListenPortByZone() const
 {
 	switch (m_byZone)
 	{
-		case SERVER_ZONE_KARUS:
-		case SERVER_ZONE_UNIFY:
+		case KARUS_ZONE:
+		case UNIFY_ZONE:
 			return AI_KARUS_SOCKET_PORT;
 
-		case SERVER_ZONE_ELMORAD:
+		case ELMORAD_ZONE:
 			return AI_ELMO_SOCKET_PORT;
 
-		case SERVER_ZONE_BATTLE:
+		case BATTLE_ZONE:
 			return AI_BATTLE_SOCKET_PORT;
 
 		default:
@@ -790,7 +790,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 			int nServerNum = GetServerNumber(row->ZoneId);
 
 			if (m_byZone == nServerNum
-				|| m_byZone == SERVER_ZONE_UNIFY)
+				|| m_byZone == UNIFY_ZONE)
 			{
 				for (int j = 0; j < nMonsterNumber; j++)
 				{

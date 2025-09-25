@@ -183,6 +183,9 @@ constexpr int REMOTE_PURCHASE_PRICE	= 5000;
 constexpr int BBS_CHECK_TIME		= 36000;
 
 ///////////////// NATION ///////////////////////////////////
+#define UNIFY_NATION		0
+#define KARUS               1
+#define ELMORAD             2
 #define BATTLE				3
 
 #define BATTLE_ZONE			101

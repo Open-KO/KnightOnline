@@ -454,22 +454,22 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 
 		// 클리어 상태에서 클라이언트에 내려줄 내용와 적국으로 갈 수 있는 이벤트 존 열어주기
 		case 2:
-			if (option2 == SERVER_ZONE_KARUS)
+			if (option2 == KARUS_ZONE)
 			{
 				buff = fmt::format_win32_resource(IDS_KARUS_PATHWAY);
 
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_MAP_EVENT_RESULT, send_index);
-				SetByte(send_buff, SERVER_ZONE_KARUS, send_index);
+				SetByte(send_buff, KARUS_ZONE, send_index);
 				m_pMain->Send(send_buff, send_index, m_iZoneNumber);
 			}
-			else if (option2 == SERVER_ZONE_ELMORAD)
+			else if (option2 == ELMORAD_ZONE)
 			{
 				buff = fmt::format_win32_resource(IDS_ELMORAD_PATHWAY);
 
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_MAP_EVENT_RESULT, send_index);
-				SetByte(send_buff, SERVER_ZONE_ELMORAD, send_index);
+				SetByte(send_buff, ELMORAD_ZONE, send_index);
 				m_pMain->Send(send_buff, send_index, m_iZoneNumber);
 			}
 
@@ -478,18 +478,18 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 
 		// 클리어 상태에서 클라이언트에 내려줄 내용와 승리팀을 알려준다.
 		case 3:
-			if (option2 == SERVER_ZONE_KARUS)
+			if (option2 == KARUS_ZONE)
 			{
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
-				SetByte(send_buff, SERVER_ZONE_KARUS, send_index);
+				SetByte(send_buff, KARUS_ZONE, send_index);
 				m_pMain->Send(send_buff, send_index, m_iZoneNumber);
 			}
-			else if (option2 == SERVER_ZONE_ELMORAD)
+			else if (option2 == ELMORAD_ZONE)
 			{
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
-				SetByte(send_buff, SERVER_ZONE_ELMORAD, send_index);
+				SetByte(send_buff, ELMORAD_ZONE, send_index);
 				m_pMain->Send(send_buff, send_index, m_iZoneNumber);
 			}
 			break;

@@ -962,10 +962,10 @@ int CEbenezerDlg::GetAIServerPort() const
 {
 	switch (m_nServerNo)
 	{
-		case SERVER_ZONE_KARUS:
+		case KARUS:
 			return AI_KARUS_SOCKET_PORT;
 
-		case SERVER_ZONE_ELMORAD:
+		case ELMORAD:
 			return AI_ELMO_SOCKET_PORT;
 
 		case BATTLE:
@@ -2818,7 +2818,7 @@ void CEbenezerDlg::BattleZoneOpenTimer()
 			// original: 전쟁 종료 0단계
 			spdlog::debug("EbenezerDlg::BattleZoneOpenTimer: war ended, stage 0");
 
-			if (m_nServerNo == SERVER_ZONE_KARUS)
+			if (m_nServerNo == KARUS)
 			{
 				memset(send_buff, 0, sizeof(send_buff));
 				send_index = 0;
@@ -2840,13 +2840,13 @@ void CEbenezerDlg::BattleZoneOpenTimer()
 			{
 				if (m_sKarusDead > m_sElmoradDead)
 				{
-					m_bVictory = SERVER_ZONE_ELMORAD;
-					loser_nation = SERVER_ZONE_KARUS;
+					m_bVictory = ELMORAD;
+					loser_nation = KARUS;
 				}
 				else if (m_sKarusDead < m_sElmoradDead)
 				{
-					m_bVictory = SERVER_ZONE_KARUS;
-					loser_nation = SERVER_ZONE_ELMORAD;
+					m_bVictory = KARUS;
+					loser_nation = ELMORAD;
 				}
 				else if (m_sKarusDead == m_sElmoradDead)
 				{
@@ -2860,10 +2860,10 @@ void CEbenezerDlg::BattleZoneOpenTimer()
 			}
 			else if (m_bVictory)
 			{
-				if (m_bVictory == SERVER_ZONE_KARUS)
-					loser_nation = SERVER_ZONE_ELMORAD;
-				else if (m_bVictory == SERVER_ZONE_ELMORAD)
-					loser_nation = SERVER_ZONE_KARUS;
+				if (m_bVictory == KARUS)
+					loser_nation = ELMORAD;
+				else if (m_bVictory == ELMORAD)
+					loser_nation = KARUS;
 
 				Announcement(DECLARE_WINNER, m_bVictory);
 				Announcement(DECLARE_LOSER, loser_nation);
@@ -2938,9 +2938,9 @@ void CEbenezerDlg::BattleZoneVictoryCheck()
 {
 	// WINNER DECLARATION PROCEDURE !!!
 	if (m_bKarusFlag >= NUM_FLAG_VICTORY)
-		m_bVictory = SERVER_ZONE_KARUS;
+		m_bVictory = KARUS;
 	else if (m_bElmoradFlag >= NUM_FLAG_VICTORY)
-		m_bVictory = SERVER_ZONE_ELMORAD;
+		m_bVictory = ELMORAD;
 	else
 		return;
 
@@ -3022,18 +3022,18 @@ void CEbenezerDlg::Announcement(uint8_t type, int nation, int chat_type)
 			break;
 
 		case DECLARE_WINNER:
-			if (m_bVictory == SERVER_ZONE_KARUS)
+			if (m_bVictory == KARUS)
 				chatstr = fmt::format_db_resource(IDP_KARUS_VICTORY, m_sElmoradDead, m_sKarusDead);
-			else if (m_bVictory == SERVER_ZONE_ELMORAD)
+			else if (m_bVictory == ELMORAD)
 				chatstr = fmt::format_db_resource(IDP_ELMORAD_VICTORY, m_sKarusDead, m_sElmoradDead);
 			else
 				return;
 			break;
 
 		case DECLARE_LOSER:
-			if (m_bVictory == SERVER_ZONE_KARUS)
+			if (m_bVictory == KARUS)
 				chatstr = fmt::format_db_resource(IDS_ELMORAD_LOSER, m_sKarusDead, m_sElmoradDead);
-			else if (m_bVictory == SERVER_ZONE_ELMORAD)
+			else if (m_bVictory == ELMORAD)
 				chatstr = fmt::format_db_resource(IDS_KARUS_LOSER, m_sElmoradDead, m_sKarusDead);
 			else
 				return;
@@ -3650,7 +3650,7 @@ bool CEbenezerDlg::LoadKnightsRankTable()
 			rtrim(row.Name);
 #endif
 
-			if (pKnights->m_byNation == SERVER_ZONE_KARUS)
+			if (pKnights->m_byNation == KARUS)
 			{
 				//if (nKarusRank == 5 || nFindKarus == 1)
 				if (nKarusRank == 5)
@@ -3686,7 +3686,7 @@ bool CEbenezerDlg::LoadKnightsRankTable()
 					//TRACE(_T("Karus Captain - %hs, rank=%d, index=%d\n"), pUser->m_pUserData->m_id, row.Rank, row.Index);
 				}
 			}
-			else if (pKnights->m_byNation == SERVER_ZONE_ELMORAD)
+			else if (pKnights->m_byNation == ELMORAD)
 			{
 				//if (nElmoRank == 5 || nFindElmo == 1)
 				if (nElmoRank == 5)
@@ -3766,9 +3766,9 @@ bool CEbenezerDlg::LoadKnightsRankTable()
 
 		if (pUser->GetState() == STATE_GAMESTART)
 		{
-			if (pUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS)
+			if (pUser->m_pUserData->m_bNation == KARUS)
 				pUser->Send(send_buff, send_index);
-			else if (pUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
+			else if (pUser->m_pUserData->m_bNation == ELMORAD)
 				pUser->Send(temp_buff, temp_index);
 		}
 	}
@@ -3797,9 +3797,9 @@ void CEbenezerDlg::BattleZoneCurrentUsers()
 
 		if (pUser->m_pUserData->m_bZone == ZONE_BATTLE)
 		{
-			if (pUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS)
+			if (pUser->m_pUserData->m_bNation == KARUS)
 				nKarusMan++;
-			else if (pUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
+			else if (pUser->m_pUserData->m_bNation == ELMORAD)
 				nElmoradMan++;
 		}
 	}

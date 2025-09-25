@@ -348,23 +348,5 @@ enum e_Class
 	CLASS_UNKNOWN = 0xffffffff
 };
 
-enum e_Race
-{
-	RACE_ALL = 0,
-	RACE_KA_ARKTUAREK = 1, RACE_KA_TUAREK = 2, RACE_KA_WRINKLETUAREK = 3, RACE_KA_PURITUAREK = 4,
-	RACE_EL_BABARIAN = 11, RACE_EL_MAN = 12, RACE_EL_WOMEN = 13,
-	//RACE_KA_NORMAL = 11, RACE_KA_WARRIOR = 12, RACE_KA_ROGUE = 13, RACE_KA_MAGE = 14,
-	RACE_NPC = 100,
-	RACE_UNKNOWN = 0xffffffff
-};
-
-enum e_ServerZone
-{
-	SERVER_ZONE_UNIFY = 0, // All zones
-	SERVER_ZONE_KARUS = 1, // Karus-related zones
-	SERVER_ZONE_ELMORAD = 2, // El Morad-related zones
-	SERVER_ZONE_BATTLE = 3, // War zones (maybe even CZ?)
-};
-
 uint64_t RandUInt64();
 time_t getMSTime();

@@ -5277,7 +5277,7 @@ void CNpc::SendExpToUserList()
 				{
 					SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 					SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
-					SetByte(send_buff, SERVER_ZONE_ELMORAD, send_index);
+					SetByte(send_buff, ELMORAD_ZONE, send_index);
 					SetString1(send_buff, strMaxDamageUser, send_index);
 					m_pMain->Send(send_buff, send_index, m_sCurZone);
 					spdlog::info("Npc::SendExpToUserList: Karus Victory [killKarusNpc={} karusRoom={}]",
@@ -5287,7 +5287,7 @@ void CNpc::SendExpToUserList()
 				{
 					SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 					SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
-					SetByte(send_buff, SERVER_ZONE_KARUS, send_index);
+					SetByte(send_buff, KARUS_ZONE, send_index);
 					SetString1(send_buff, strMaxDamageUser, send_index);
 					m_pMain->Send(send_buff, send_index, m_sCurZone);
 					spdlog::info("Npc::SendExpToUserList: Elmorad Victory [killElmoNpc={} elmoradRoom={}]",

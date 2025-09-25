@@ -1425,12 +1425,12 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 							if (m_pSrcUser->m_pUserData->m_bZone == ZONE_SNOW_BATTLE
 								&& m_pMain->m_byBattleOpen == SNOW_BATTLE)
 							{
-								if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS)
+								if (pTUser->m_pUserData->m_bNation == KARUS)
 								{
 									++m_pMain->m_sKarusDead;
 									//TRACE(_T("++ ExecuteType3 - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 								}
-								else if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
+								else if (pTUser->m_pUserData->m_bNation == ELMORAD)
 								{
 									++m_pMain->m_sElmoradDead;
 									//TRACE(_T("++ ExecuteType3 - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
