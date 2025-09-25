@@ -38,13 +38,6 @@ constexpr int USER_DAMAGE_OVERRIDE_TEST_MODE	= 10'000;
 #define MAX_ITEM			28
 #define VIEW_DIST			48		// 가시거리
 
-///////////////// NATION ///////////////////////////////////
-//
-#define UNIFY_ZONE			0
-#define KARUS_ZONE			1
-#define ELMORAD_ZONE		2
-#define BATTLE_ZONE			3
-
 //enum MOVE_SPEED {SPEED_SLOW=0, SPEED_NORMAL, SPEED_FAST};
 //enum USER_TYPE {TYPE_USER=0, TYPE_MONSTER, TYPE_NPC, TYPE_DOOR, TYPE_GUARD};
 

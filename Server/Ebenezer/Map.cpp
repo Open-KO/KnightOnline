@@ -535,7 +535,7 @@ bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 	if (pEvent != nullptr)
 	{
 		if (pEvent->m_bType == 1
-			&& pEvent->m_iExec[0] == ZONE_BATTLE
+			&& pEvent->m_iExec[0] == SERVER_ZONE_BATTLE
 			&& m_pMain->m_byBattleOpen != NATION_BATTLE)
 			return false;
 
@@ -544,7 +544,7 @@ bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 			&& m_pMain->m_byBattleOpen != SNOW_BATTLE)
 			return false;
 
-		if (pUser->m_pUserData->m_bNation == NATION_KARUS
+		if (pUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS
 			&& pEvent->m_iExec[0] == ZONE_BATTLE)
 		{
 			if (m_pMain->m_sKarusCount > MAX_BATTLE_ZONE_USERS)
@@ -554,7 +554,7 @@ bool C3DMap::CheckEvent(float x, float z, CUser* pUser)
 				return false;
 			}
 		}
-		else if (pUser->m_pUserData->m_bNation == NATION_ELMORAD
+		else if (pUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD
 			&& pEvent->m_iExec[0] == ZONE_BATTLE)
 		{
 			if (m_pMain->m_sElmoradCount > MAX_BATTLE_ZONE_USERS)

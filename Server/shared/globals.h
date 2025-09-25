@@ -358,9 +358,12 @@ enum e_Race
 	RACE_UNKNOWN = 0xffffffff
 };
 
-enum e_Nation
+enum e_ServerZone
 {
-	NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNKNOWN = 0xffffffff
+	SERVER_ZONE_UNIFY = 0, // All zones
+	SERVER_ZONE_KARUS = 1, // Karus-related zones
+	SERVER_ZONE_ELMORAD = 2, // El Morad-related zones
+	SERVER_ZONE_BATTLE = 3, // War zones (maybe even CZ?)
 };
 
 uint64_t RandUInt64();

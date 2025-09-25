@@ -1188,7 +1188,7 @@ void CGameSocket::RecvBattleEvent(char* pBuf)
 
 		// npc에만 적용되고, 국가에 소속된 npc
 		if (pNpc->m_tNpcType > 10
-			&& (pNpc->m_byGroup == KARUS_ZONE || pNpc->m_byGroup == ELMORAD_ZONE))
+			&& (pNpc->m_byGroup == SERVER_ZONE_KARUS || pNpc->m_byGroup == SERVER_ZONE_ELMORAD))
 		{
 			// 전쟁 이벤트 시작 (npc의 능력치 다운)
 			if (nEvent == BATTLEZONE_OPEN)

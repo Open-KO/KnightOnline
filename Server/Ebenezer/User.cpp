@@ -1587,10 +1587,10 @@ void CUser::Attack(char* pBuf)
 
 						//TRACE(_T("---> UserAttack Dead Captain Deprive - %hs\n"), pTUser->m_pUserData->m_id);
 
-						if (pTUser->m_pUserData->m_bNation == NATION_KARUS)
-							m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, NATION_KARUS);
-						else if (pTUser->m_pUserData->m_bNation == NATION_ELMORAD)
-							m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, NATION_ELMORAD);
+						if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS)
+							m_pMain->Announcement(KARUS_CAPTAIN_DEPRIVE_NOTIFY, SERVER_ZONE_KARUS);
+						else if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
+							m_pMain->Announcement(ELMORAD_CAPTAIN_DEPRIVE_NOTIFY, SERVER_ZONE_ELMORAD);
 					}
 
 					pTUser->m_sWhoKilledMe = m_Sid;		// You killed me, you.....
@@ -1718,12 +1718,12 @@ void CUser::SendMyInfo(int type)
 		}
 		else if (m_pUserData->m_bNation != m_pUserData->m_bZone && m_pUserData->m_bZone < 3)
 		{	// Specific Lands...
-			if (m_pUserData->m_bNation == NATION_KARUS)
+			if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			{
 				x = pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX);
 				z = pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ);
 			}
-			else if (m_pUserData->m_bNation == NATION_ELMORAD)
+			else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 			{
 				x = pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX);
 				z = pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ);
@@ -1735,12 +1735,12 @@ void CUser::SendMyInfo(int type)
 		}
 		else
 		{	// Your own nation...
-			if (m_pUserData->m_bNation == NATION_KARUS)
+			if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			{
 				x = pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX);
 				z = pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ);
 			}
-			else if (m_pUserData->m_bNation == NATION_ELMORAD)
+			else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 			{
 				x = pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX);
 				z = pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ);
@@ -2197,12 +2197,12 @@ void CUser::Regene(char* pBuf, int magicid)
 			// Specific Lands...
 			else if (m_pUserData->m_bZone < 3)
 			{
-				if (m_pUserData->m_bNation == NATION_KARUS)
+				if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 				{
 					x = static_cast<float>(pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX));
 					z = static_cast<float>(pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ));
 				}
-				else if (m_pUserData->m_bNation == NATION_ELMORAD)
+				else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 				{
 					x = static_cast<float>(pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX));
 					z = static_cast<float>(pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ));
@@ -2216,12 +2216,12 @@ void CUser::Regene(char* pBuf, int magicid)
 		//  추후에 Warp 랑 합쳐야 할것 같음...
 		else
 		{
-			if (m_pUserData->m_bNation == NATION_KARUS)
+			if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			{
 				x = static_cast<float>(pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX));
 				z = static_cast<float>(pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ));
 			}
-			else if (m_pUserData->m_bNation == NATION_ELMORAD)
+			else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 			{
 				x = static_cast<float>(pHomeInfo->ElmoZoneX + myrand(0, pHomeInfo->ElmoZoneLX));
 				z = static_cast<float>(pHomeInfo->ElmoZoneZ + myrand(0, pHomeInfo->ElmoZoneLZ));
@@ -2389,7 +2389,7 @@ void CUser::ZoneChange(int zone, float x, float z)
 			if (pMap->m_bType == 1
 				&& m_pUserData->m_bNation != zone)
 			{
-				if (m_pUserData->m_bNation == NATION_KARUS
+				if (m_pUserData->m_bNation == SERVER_ZONE_KARUS
 					&& !m_pMain->m_byElmoradOpenFlag)
 				{
 					spdlog::error("User::ZoneChange: zone not open for invasion [charId={} nation={} enemyNationOpen={}]",
@@ -2397,7 +2397,7 @@ void CUser::ZoneChange(int zone, float x, float z)
 					return;
 				}
 				
-				if (m_pUserData->m_bNation == NATION_ELMORAD
+				if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD
 					&& !m_pMain->m_byKarusOpenFlag)
 				{
 					spdlog::error("User::ZoneChange: zone not open for invasion [charId={} nation={} enemyNationOpen={}]",
@@ -5530,12 +5530,12 @@ void CUser::LoyaltyChange(int16_t tid)
 			// || m_pUserData->m_bZone == ZONE_SNOW_BATTLE
 			)
 		{ 
-			if (pTUser->m_pUserData->m_bNation == NATION_KARUS)
+			if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			{
 				++m_pMain->m_sKarusDead;
 				//TRACE(_T("++ LoyaltyChange - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 			}
-			else if (pTUser->m_pUserData->m_bNation == NATION_ELMORAD)
+			else if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 			{
 				++m_pMain->m_sElmoradDead;
 				//TRACE(_T("++ LoyaltyChange - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
@@ -7151,12 +7151,12 @@ void CUser::LoyaltyDivide(int16_t tid)
 	{
 		if (m_pUserData->m_bZone == ZONE_BATTLE)
 		{
-			if (pTUser->m_pUserData->m_bNation == NATION_KARUS)
+			if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			{
 				++m_pMain->m_sKarusDead;
 				//TRACE(_T("++ LoyaltyDivide - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
 			}
-			else if (pTUser->m_pUserData->m_bNation == NATION_ELMORAD)
+			else if (pTUser->m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 			{
 				++m_pMain->m_sElmoradDead;
 				//TRACE(_T("++ LoyaltyDivide - ka=%d, el=%d\n"), m_pMain->m_sKarusDead, m_pMain->m_sElmoradDead);
@@ -7318,9 +7318,9 @@ void CUser::Dead()
 		std::string chatstr;
 
 		//TRACE(_T("---> Dead Captain Deprive - %hs\n"), m_pUserData->m_id);
-		if (m_pUserData->m_bNation == NATION_KARUS)
+		if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			chatstr = fmt::format_db_resource(IDS_KARUS_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
-		else if (m_pUserData->m_bNation == NATION_ELMORAD)
+		else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 			chatstr = fmt::format_db_resource(IDS_ELMO_CAPTAIN_DEPRIVE, strKnightsName, m_pUserData->m_id);
 
 		memset(send_buff, 0, sizeof(send_buff));
@@ -8793,13 +8793,13 @@ bool CUser::GetStartPosition(int16_t* x, int16_t* z)
 	if (startPosition == nullptr)
 		return false;
 
-	if (m_pUserData->m_bNation == NATION_KARUS)
+	if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 	{
 		*x = startPosition->KarusX + myrand(0, startPosition->RangeX);
 		*z = startPosition->KarusZ + myrand(0, startPosition->RangeZ);
 		return true;
 	}
-	else if (m_pUserData->m_bNation == NATION_ELMORAD)
+	else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 	{
 		*x = startPosition->ElmoX + myrand(0, startPosition->RangeX);
 		*z = startPosition->ElmoZ + myrand(0, startPosition->RangeZ);
@@ -9860,9 +9860,9 @@ bool CUser::FlagObjectEvent(int16_t objectindex, int16_t nid)
 			m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ, nullptr, false);
 
 			// ADD FLAG SCORE !!!
-			if (m_pUserData->m_bNation == NATION_KARUS)
+			if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 				++m_pMain->m_bKarusFlag;
-			else if (m_pUserData->m_bNation == NATION_ELMORAD)
+			else if (m_pUserData->m_bNation == SERVER_ZONE_ELMORAD)
 				++m_pMain->m_bElmoradFlag;
 
 			// Did one of the teams win?
@@ -12141,38 +12141,30 @@ bool CUser::CheckPromotionEligible()
 	short tempClass = -1;
 
 
-	if (CheckClass(106, 108, 110, 112, -1, -1) || CheckClass(206, 208, 210, 212, -1, -1))
+	if (CheckClass(CLASS_KA_GUARDIAN, CLASS_KA_PENETRATOR, CLASS_KA_NECROMANCER, CLASS_KA_DARKPRIEST) 
+		|| CheckClass(CLASS_EL_PROTECTOR, CLASS_EL_ASSASIN, CLASS_EL_ENCHANTER, CLASS_EL_DRUID))
 	{
-		if (m_pUserData->m_sClass > 206)
+		if (m_pUserData->m_sClass == CLASS_EL_PROTECTOR || m_pUserData->m_sClass == CLASS_KA_GUARDIAN)
 		{
-			tempClass = m_pUserData->m_sClass - 208;
+			SendSay(-1, -1, 6006, -1, -1, -1, -1, -1, -1, -1);
+			return false;
 		}
-		else
-		{
-			if (m_pUserData->m_sClass == 206 || m_pUserData->m_sClass == 106)
-			{
-				SendSay(-1, -1, 6006, -1, -1, -1, -1, -1, -1, -1);
-				return false;
-			}
-			tempClass = m_pUserData->m_sClass - 108;
-		}
-
-		if (tempClass == 0)
+		else if (m_pUserData->m_sClass == CLASS_EL_ASSASIN || m_pUserData->m_sClass == CLASS_KA_PENETRATOR)
 		{
 			SendSay(-1, -1, 7006, -1, -1, -1, -1, -1, -1, -1);
 		}
+		else if (m_pUserData->m_sClass == CLASS_EL_ENCHANTER || m_pUserData->m_sClass == CLASS_KA_NECROMANCER)
+		{
+			SendSay(-1, -1, 8006, -1, -1, -1, -1, -1, -1, -1);
+		}
+		else if (m_pUserData->m_sClass == CLASS_EL_DRUID || m_pUserData->m_sClass == CLASS_KA_DARKPRIEST)
+		{
+			SendSay(-1, -1, 9006, -1, -1, -1, -1, -1, -1, -1);
+		}
 		else
 		{
-			if (tempClass - 2 == 2)
-			{
-				SendSay(-1, -1, 9006, -1, -1, -1, -1, -1, -1, -1);
-			}
-			else
-			{
-				SendSay(-1, -1, 8006, -1, -1, -1, -1, -1, -1, -1);
-			}
+			return false;
 		}
-		return false;
 	}
 	switch (npc->m_tNpcType)
 	{
@@ -12334,90 +12326,90 @@ bool CUser::JobGroupCheck(int16_t jobgroupid) const
 		switch (jobgroupid)
 		{
 			case JOB_GROUP_WARRIOR:
-				if (m_pUserData->m_sClass == 101
-					|| m_pUserData->m_sClass == 105
-					|| m_pUserData->m_sClass == 106
-					|| m_pUserData->m_sClass == 201
-					|| m_pUserData->m_sClass == 205
-					|| m_pUserData->m_sClass == 206)
+				if (m_pUserData->m_sClass == CLASS_KA_WARRIOR
+					|| m_pUserData->m_sClass == CLASS_KA_BERSERKER
+					|| m_pUserData->m_sClass == CLASS_KA_GUARDIAN
+					|| m_pUserData->m_sClass == CLASS_EL_WARRIOR
+					|| m_pUserData->m_sClass == CLASS_EL_BLADE
+					|| m_pUserData->m_sClass == CLASS_EL_PROTECTOR)
 					return true;
 				break;
 
 			case JOB_GROUP_ROGUE:
-				if (m_pUserData->m_sClass == 102
-					|| m_pUserData->m_sClass == 107
-					|| m_pUserData->m_sClass == 108
-					|| m_pUserData->m_sClass == 202
-					|| m_pUserData->m_sClass == 207
-					|| m_pUserData->m_sClass == 208)
+				if (m_pUserData->m_sClass == CLASS_KA_ROGUE
+					|| m_pUserData->m_sClass == CLASS_KA_HUNTER
+					|| m_pUserData->m_sClass == CLASS_KA_PENETRATOR
+					|| m_pUserData->m_sClass == CLASS_EL_ROGUE
+					|| m_pUserData->m_sClass == CLASS_EL_RANGER
+					|| m_pUserData->m_sClass == CLASS_EL_ASSASIN)
 					return true;
 				break;
 
 			case JOB_GROUP_MAGE:
-				if (m_pUserData->m_sClass == 103
-					|| m_pUserData->m_sClass == 109
-					|| m_pUserData->m_sClass == 110 
-					|| m_pUserData->m_sClass == 203
-					|| m_pUserData->m_sClass == 209
-					|| m_pUserData->m_sClass == 210)
+				if (m_pUserData->m_sClass == CLASS_KA_WIZARD
+					|| m_pUserData->m_sClass == CLASS_KA_SORCERER
+					|| m_pUserData->m_sClass == CLASS_KA_NECROMANCER
+					|| m_pUserData->m_sClass == CLASS_EL_WIZARD
+					|| m_pUserData->m_sClass == CLASS_EL_MAGE
+					|| m_pUserData->m_sClass == CLASS_EL_ENCHANTER)
 					return true;
 				break;
 
 			case JOB_GROUP_CLERIC:
-				if (m_pUserData->m_sClass == 104
-					|| m_pUserData->m_sClass == 111
-					|| m_pUserData->m_sClass == 112
-					|| m_pUserData->m_sClass == 204
-					|| m_pUserData->m_sClass == 211
-					|| m_pUserData->m_sClass == 212)
+				if (m_pUserData->m_sClass == CLASS_KA_PRIEST
+					|| m_pUserData->m_sClass == CLASS_KA_SHAMAN
+					|| m_pUserData->m_sClass == CLASS_KA_DARKPRIEST
+					|| m_pUserData->m_sClass == CLASS_EL_PRIEST
+					|| m_pUserData->m_sClass == CLASS_EL_CLERIC
+					|| m_pUserData->m_sClass == CLASS_EL_DRUID)
 					return true;
 				break;
 
 			case JOB_GROUP_ATTACK_WARRIOR:
-				if (m_pUserData->m_sClass == 105
-					|| m_pUserData->m_sClass == 205)
+				if (m_pUserData->m_sClass == CLASS_KA_BERSERKER
+					|| m_pUserData->m_sClass == CLASS_EL_BLADE)
 					return true;
 				break;
 
 			case JOB_GROUP_DEFENSE_WARRIOR:
-				if (m_pUserData->m_sClass == 106
-					|| m_pUserData->m_sClass == 206)
+				if (m_pUserData->m_sClass == CLASS_KA_GUARDIAN
+					|| m_pUserData->m_sClass == CLASS_EL_PROTECTOR)
 					return true;
 				break;
 
 			case JOB_GROUP_ARCHERER:
-				if (m_pUserData->m_sClass == 107
-					|| m_pUserData->m_sClass == 207)
+				if (m_pUserData->m_sClass == CLASS_KA_HUNTER
+					|| m_pUserData->m_sClass == CLASS_EL_RANGER)
 					return true;
 				break;
 
 			case JOB_GROUP_ASSASSIN:
-				if (m_pUserData->m_sClass == 108
-					|| m_pUserData->m_sClass == 208)
+				if (m_pUserData->m_sClass == CLASS_KA_PENETRATOR
+					|| m_pUserData->m_sClass == CLASS_EL_ASSASIN)
 					return true;
 				break;
 
 			case JOB_GROUP_ATTACK_MAGE:
-				if (m_pUserData->m_sClass == 109
-					|| m_pUserData->m_sClass == 209)
+				if (m_pUserData->m_sClass == CLASS_KA_SORCERER
+					|| m_pUserData->m_sClass == CLASS_EL_MAGE)
 					return true;
 				break;
 
 			case JOB_GROUP_PET_MAGE:
-				if (m_pUserData->m_sClass == 110
-					|| m_pUserData->m_sClass == 210)
+				if (m_pUserData->m_sClass == CLASS_KA_NECROMANCER
+					|| m_pUserData->m_sClass == CLASS_EL_ENCHANTER)
 					return true;
 				break;
 
 			case JOB_GROUP_HEAL_CLERIC:
-				if (m_pUserData->m_sClass == 111
-					|| m_pUserData->m_sClass == 211)
+				if (m_pUserData->m_sClass == CLASS_KA_SHAMAN
+					|| m_pUserData->m_sClass == CLASS_EL_CLERIC)
 					return true;
 				break;
 
 			case JOB_GROUP_CURSE_CLERIC:
-				if (m_pUserData->m_sClass == 112
-					|| m_pUserData->m_sClass == 212)
+				if (m_pUserData->m_sClass == CLASS_KA_DARKPRIEST
+					|| m_pUserData->m_sClass == CLASS_EL_DRUID)
 					return true;
 				break;
 		}
@@ -12507,7 +12499,7 @@ void CUser::KickOutZoneUser(bool home)
 	else
 	{
 		// Move user to native zone.
-		if (m_pUserData->m_bNation == NATION_KARUS)
+		if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 			ZoneChange(pMap->m_nZoneNumber, 1335, 83);
 		else
 			ZoneChange(pMap->m_nZoneNumber, 445, 1950);
@@ -12545,7 +12537,7 @@ void CUser::NativeZoneReturn()
 
 	m_pUserData->m_bZone = m_pUserData->m_bNation;
 
-	if (m_pUserData->m_bNation == NATION_KARUS)
+	if (m_pUserData->m_bNation == SERVER_ZONE_KARUS)
 	{
 		m_pUserData->m_curx = static_cast<float>(pHomeInfo->KarusZoneX + myrand(0, pHomeInfo->KarusZoneLX));
 		m_pUserData->m_curz = static_cast<float>(pHomeInfo->KarusZoneZ + myrand(0, pHomeInfo->KarusZoneLZ));
@@ -13008,7 +13000,7 @@ void CUser::GameStart(
 		{
 			SetByte(send_buff, WIZ_CHAT, send_index);
 			SetByte(send_buff, PERMANENT_CHAT, send_index);
-			SetByte(send_buff, NATION_KARUS, send_index);
+			SetByte(send_buff, SERVER_ZONE_KARUS, send_index);
 			SetShort(send_buff, -1, send_index);		// sid
 			SetByte(send_buff, 0, send_index);			// sender name length
 			SetString2(send_buff, m_pMain->m_strPermanentChat, static_cast<int16_t>(strlen(m_pMain->m_strPermanentChat)), send_index);

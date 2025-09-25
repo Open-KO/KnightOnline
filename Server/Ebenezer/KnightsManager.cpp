@@ -207,7 +207,7 @@ int CKnightsManager::GetKnightsIndex(int nation)
 	int knightindex = 0;
 	// sungyong tw~
 	//if (m_pMain->m_nServerNo == ELMORAD) knightindex = 15000;
-	if (nation == NATION_ELMORAD)
+	if (nation == SERVER_ZONE_ELMORAD)
 		knightindex = 15000;
 	// ~sungyong tw
 
@@ -215,7 +215,7 @@ int CKnightsManager::GetKnightsIndex(int nation)
 	{
 		if (knightindex < pKnights->m_sIndex)
 		{
-			if (nation == NATION_KARUS)
+			if (nation == SERVER_ZONE_KARUS)
 			{
 				// sungyong,, 카루스와 전쟁존의 합침으로 인해서,,,
 				if (pKnights->m_sIndex >= 15000)
@@ -227,13 +227,13 @@ int CKnightsManager::GetKnightsIndex(int nation)
 	}
 
 	knightindex++;
-	if (nation == NATION_KARUS)
+	if (nation == SERVER_ZONE_KARUS)
 	{
 		if (knightindex >= 15000
 			|| knightindex < 0)
 			return -1;
 	}
-	else if (nation == NATION_ELMORAD)
+	else if (nation == SERVER_ZONE_ELMORAD)
 	{
 		if (knightindex < 15000
 			|| knightindex > 30000)

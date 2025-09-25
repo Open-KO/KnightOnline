@@ -273,6 +273,11 @@ enum e_ItemClass	{	ITEM_CLASS_DAGGER = 11, // dagger
 
 						ITEM_CLASS_UNKNOWN = 0xffffffff }; // 
 
+enum e_Nation
+{
+	NATION_NOTSELECTED = 0, NATION_KARUS, NATION_ELMORAD, NATION_UNKNOWN = 0xffffffff
+};
+
 struct __TABLE_ITEM_BASIC;
 struct __TABLE_ITEM_EXT;
 struct __TABLE_PLAYER;
