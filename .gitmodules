@@ -36,3 +36,7 @@
 [submodule "deps/djb2"]
 	path = deps/djb2
 	url = https://github.com/ymmfty0/djb2
+[submodule "deps/asio"]
+	path = deps/asio
+	url = https://github.com/chriskohlhoff/asio
+	branch = asio-1-36-0

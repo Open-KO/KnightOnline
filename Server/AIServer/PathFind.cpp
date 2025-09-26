@@ -229,7 +229,7 @@ void CPathFind::FindChildPathSub(_PathNode* node, int x, int y, int dx, int dy, 
 		t_node->Parent = node;
 		t_node->g = g;
 //		t_node->h = (int)sqrt((x-dx)*(x-dx) + (y-dy)*(y-dy));
-		t_node->h = (int) max(x - dx, y - dy);
+		t_node->h = (int) std::max(x - dx, y - dy);
 		t_node->f = g + t_node->h;
 		t_node->x = x;
 		t_node->y = y;
