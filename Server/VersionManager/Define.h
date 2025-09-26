@@ -14,7 +14,6 @@
 constexpr int MAX_USER				= 3000;
 
 constexpr int _LISTEN_PORT			= 15100;
-constexpr int CLIENT_SOCKSIZE		= 10;
 constexpr int DB_PROCESS_TIMEOUT	= 100;
 
 ////////////////////////////////////////////////////////////
@@ -32,10 +31,6 @@ constexpr int DB_PROCESS_TIMEOUT	= 100;
 #define STATE_CONNECTED			0X01
 #define STATE_DISCONNECTED		0X02
 #define STATE_GAMESTART			0x03
-
-// Socket type
-#define TYPE_ACCEPT				0x01
-#define TYPE_CONNECT			0x02
 
 // Overlapped flag
 #define OVL_RECEIVE				0X01

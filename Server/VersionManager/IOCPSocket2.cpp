@@ -22,7 +22,6 @@ CIOCPSocket2::CIOCPSocket2()
 	m_Socket = INVALID_SOCKET;
 
 	m_pIOCPort = nullptr;
-	m_Type = TYPE_ACCEPT;
 }
 
 CIOCPSocket2::~CIOCPSocket2()
@@ -50,49 +49,6 @@ bool CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const 
 		spdlog::error("IOCPSocket2::Create: CreateEvent winsock error {}", ret);
 		return false;
 	}
-
-	return true;
-}
-
-bool CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort)
-{
-	sockaddr_in addr;
-
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(lpszHostAddress);
-	addr.sin_port = htons(nHostPort);
-
-	int result = connect(m_Socket, (sockaddr*) &addr, sizeof(addr));
-	if (result == SOCKET_ERROR)
-	{
-		int err = WSAGetLastError();
-//		TRACE("CONNECT FAIL : %d\n", err);
-		closesocket(m_Socket);
-		return false;
-	}
-
-	ASSERT(pIocp);
-
-	InitSocket(pIocp);
-
-	m_Sid = m_pIOCPort->GetClientSid();
-	if (m_Sid < 0)
-		return false;
-
-	m_pIOCPort->m_ClientSockArray[m_Sid] = this;
-
-	if (!m_pIOCPort->Associate(this, m_pIOCPort->m_hClientIOCPort))
-	{
-		spdlog::error("IOCPSocket2::Connect: failed to associate");
-		return false;
-	}
-
-	m_ConnectAddress = lpszHostAddress;
-	m_State = STATE_CONNECTED;
-	m_Type = TYPE_CONNECT;
-
-	Receive();
 
 	return true;
 }
@@ -172,11 +128,7 @@ close_routine:
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
 
-	if (m_Type == TYPE_ACCEPT)
-		hComport = m_pIOCPort->m_hServerIOCPort;
-	else
-		hComport = m_pIOCPort->m_hClientIOCPort;
-
+	hComport = m_pIOCPort->m_hServerIOCPort;
 	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
@@ -237,11 +189,7 @@ close_routine:
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
 
-	if (m_Type == TYPE_ACCEPT)
-		hComport = m_pIOCPort->m_hServerIOCPort;
-	else
-		hComport = m_pIOCPort->m_hClientIOCPort;
-
+	hComport = m_pIOCPort->m_hServerIOCPort;
 	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
@@ -351,27 +299,6 @@ cancelRoutine:
 	return foundCore;
 }
 
-bool CIOCPSocket2::AsyncSelect(long lEvent)
-{
-	int retEventResult, err;
-
-	retEventResult = WSAEventSelect(m_Socket, m_hSockEvent, lEvent);
-	err = WSAGetLastError();
-	return (retEventResult == 0);
-}
-
-bool CIOCPSocket2::SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel)
-{
-	int retValue = setsockopt(m_Socket, nLevel, nOptionName, (char*) lpOptionValue, nOptionLen);
-	return (retValue == 0);
-}
-
-bool CIOCPSocket2::ShutDown(int nHow)
-{
-	int retValue = shutdown(m_Socket, nHow);
-	return (retValue == 0);
-}
-
 void CIOCPSocket2::Close()
 {
 	if (m_pIOCPort == nullptr)
@@ -382,10 +309,7 @@ void CIOCPSocket2::Close()
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
 
-	if (m_Type == TYPE_ACCEPT)
-		hComport = m_pIOCPort->m_hServerIOCPort;
-	else
-		hComport = m_pIOCPort->m_hClientIOCPort;
+	hComport = m_pIOCPort->m_hServerIOCPort;
 
 	int retValue = PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 	if (retValue == 0)

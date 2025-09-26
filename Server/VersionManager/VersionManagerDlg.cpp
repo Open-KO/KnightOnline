@@ -84,7 +84,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	SetIcon(_icon, TRUE);			// Set big icon
 	SetIcon(_icon, FALSE);		// Set small icon
 	
-	IocPort.Init(MAX_USER, CLIENT_SOCKSIZE, 1);
+	IocPort.Init(MAX_USER, 1);
 
 	for (int i = 0; i < MAX_USER; i++)
 		IocPort.m_SockArrayInActive[i] = new CUser(this);
