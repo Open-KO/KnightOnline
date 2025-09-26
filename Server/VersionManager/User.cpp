@@ -21,8 +21,8 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CUser::CUser(CVersionManagerDlg* main)
-	: _main(main)
+CUser::CUser(CVersionManagerDlg* main, CIOCPort* iocPort)
+	: CIOCPSocket2(iocPort), _main(main)
 {
 }
 

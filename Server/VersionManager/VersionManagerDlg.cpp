@@ -87,7 +87,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	IocPort.Init(MAX_USER, 1);
 
 	for (int i = 0; i < MAX_USER; i++)
-		IocPort.m_SockArrayInActive[i] = new CUser(this);
+		IocPort.m_SockArrayInActive[i] = new CUser(this, &IocPort);
 
 	if (!GetInfoFromIni())
 	{
@@ -122,7 +122,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	::ResumeThread(IocPort.m_hAcceptThread);
+	IocPort.StartAccept();
 
 	AddOutputMessage(fmt::format("Listening on 0.0.0.0:{}",
 		_LISTEN_PORT));

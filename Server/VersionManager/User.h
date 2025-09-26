@@ -15,7 +15,7 @@ class CVersionManagerDlg;
 class CUser : public CIOCPSocket2
 {
 public:
-	CUser(CVersionManagerDlg* main);
+	CUser(CVersionManagerDlg* main, CIOCPort* iocPort);
 	virtual ~CUser();
 
 	void Initialize();

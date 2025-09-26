@@ -6,6 +6,7 @@
 #include "IOCPort.h"
 #include "IOCPSocket2.h"
 #include "Define.h"
+
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
@@ -17,204 +18,17 @@ static char THIS_FILE[] = __FILE__;
 
 CRITICAL_SECTION g_critical;
 
-DWORD WINAPI AcceptThread(LPVOID lp);
-DWORD WINAPI ReceiveWorkerThread(LPVOID lp);
-
-DWORD WINAPI AcceptThread(LPVOID lp)
-{
-	CIOCPort* pIocport = (CIOCPort*) lp;
-
-	WSANETWORKEVENTS	network_event;
-	DWORD				wait_return;
-	int					sid;
-	CIOCPSocket2*		pSocket = nullptr;
-	TCHAR				logstr[1024] = {};
-
-	sockaddr_in			addr;
-	int					len;
-
-	while (1)
-	{
-		wait_return = WaitForSingleObject(pIocport->m_hListenEvent, INFINITE);
-		if (wait_return == WAIT_FAILED)
-		{
-			spdlog::error("IOCPort::AcceptThread: wait failed: {}", GetLastError());
-			return 1;
-		}
-
-		WSAEnumNetworkEvents(pIocport->m_ListenSocket, pIocport->m_hListenEvent, &network_event);
-
-		if (network_event.lNetworkEvents & FD_ACCEPT)
-		{
-			if (network_event.iErrorCode[FD_ACCEPT_BIT] == 0)
-			{
-				EnterCriticalSection(&g_critical);
-				sid = pIocport->GetNewSid();
-				LeaveCriticalSection(&g_critical);
-				if (sid == -1)
-				{
-					spdlog::error("IOCPort::AcceptThread: invalid socketId={}", sid);
-					continue;
-				}
-
-				pSocket = pIocport->GetIOCPSocket(sid);
-				if (pSocket == nullptr)
-				{
-					spdlog::error("IOCPort::AcceptThread: null socket [socketId:{}]", sid);
-//					pIocport->PutOldSid( sid );				// Invalid sid must forbidden to use
-					continue;
-				}
-
-				len = sizeof(addr);
-				if (!pSocket->Accept(pIocport->m_ListenSocket, (sockaddr*) &addr, &len))
-				{
-					spdlog::error("IOCPort::AcceptThread: accept failed for socketId={}", sid);
-					EnterCriticalSection(&g_critical);
-					pIocport->RidIOCPSocket(sid, pSocket);
-					pIocport->PutOldSid(sid);
-					LeaveCriticalSection(&g_critical);
-					continue;
-				}
-
-				pSocket->InitSocket(pIocport);
-
-				if (!pIocport->Associate(pSocket, pIocport->m_hServerIOCPort))
-				{
-					spdlog::error("IOCPort::AcceptThread: associate failed for socketId={}", sid);
-					EnterCriticalSection(&g_critical);
-					pSocket->CloseProcess();
-					pIocport->RidIOCPSocket(sid, pSocket);
-					pIocport->PutOldSid(sid);
-					LeaveCriticalSection(&g_critical);
-					continue;
-				}
-
-				pSocket->Receive();
-
-				spdlog::debug("IOCPort::AcceptThread: successfully accepted socketId={}", sid);
-			}
-		}
-	}
-
-	return 1;
-}
-
-DWORD WINAPI ReceiveWorkerThread(LPVOID lp)
-{
-	CIOCPort* pIocport = (CIOCPort*) lp;
-
-	DWORD			WorkIndex;
-	BOOL			b;
-	LPOVERLAPPED	pOvl;
-	DWORD			nbytes;
-	DWORD			dwFlag = 0;
-	CIOCPSocket2*	pSocket = nullptr;
-
-	while (1)
-	{
-		b = GetQueuedCompletionStatus(
-			pIocport->m_hServerIOCPort,
-			&nbytes,
-			&WorkIndex,
-			&pOvl,
-			INFINITE);
-		if (b
-			|| pOvl != nullptr)
-		{
-			if (b)
-			{
-				if (WorkIndex >= (DWORD) pIocport->m_SocketArraySize)
-					continue;
-
-				pSocket = pIocport->m_SockArray[WorkIndex];
-				if (pSocket == nullptr)
-					continue;
-
-				switch (pOvl->Offset)
-				{
-					case OVL_RECEIVE:
-						if (nbytes == 0)
-						{
-							spdlog::debug("IOCPort::ReceiveWorkerThread: closed by 0 byte notify");
-							EnterCriticalSection(&g_critical);
-							pSocket->CloseProcess();
-							pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
-							pIocport->PutOldSid(pSocket->GetSocketID());
-							LeaveCriticalSection(&g_critical);
-							break;
-						}
-
-						pSocket->m_nPending = 0;
-						pSocket->m_nWouldblock = 0;
-
-						pSocket->ReceivedData((int) nbytes);
-						pSocket->Receive();
-						break;
-
-					case OVL_SEND:
-						pSocket->m_nPending = 0;
-						pSocket->m_nWouldblock = 0;
-						break;
-
-					case OVL_CLOSE:
-						spdlog::debug("IOCPort::ReceiveWorkerThread: closed by Close()");
-						EnterCriticalSection(&g_critical);
-
-						pSocket->CloseProcess();
-						pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
-						pIocport->PutOldSid(pSocket->GetSocketID());
-
-						LeaveCriticalSection(&g_critical);
-						break;
-				}
-			}
-			else if (pOvl != nullptr)
-			{
-				if (WorkIndex >= (DWORD) pIocport->m_SocketArraySize)
-					continue;
-
-				pSocket = pIocport->m_SockArray[WorkIndex];
-				if (pSocket == nullptr)
-					continue;
-
-				spdlog::debug("IOCPort::ReceiveWorkerThread: abnormal termination");
-				
-				EnterCriticalSection(&g_critical);
-
-				pSocket->CloseProcess();
-				pIocport->RidIOCPSocket(pSocket->GetSocketID(), pSocket);
-				pIocport->PutOldSid(pSocket->GetSocketID());
-
-				LeaveCriticalSection(&g_critical);
-			}
-		}
-	}
-
-	return 1;
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CIOCPort::CIOCPort()
 {
-	m_ListenSocket = INVALID_SOCKET;
-	m_hListenEvent = nullptr;
-	m_hServerIOCPort = nullptr;
-	m_hAcceptThread = nullptr;
-
 	m_SockArray = nullptr;
 	m_SockArrayInActive = nullptr;
-
 	m_SocketArraySize = 0;
-
-	m_dwNumberOfWorkers = 0;
-	m_dwConcurrency = 1;
-
-	WSADATA wsaData;
-	uint16_t wVersionRequested = MAKEWORD(2, 2);
-	(void) WSAStartup(wVersionRequested, &wsaData);
+	_numberOfWorkers = 0;
+	_acceptingConnections = false;
 
 	InitializeCriticalSection(&g_critical);
 }
@@ -223,8 +37,6 @@ CIOCPort::~CIOCPort()
 {
 	DeleteCriticalSection(&g_critical);
 	DeleteAllArray();
-
-	WSACleanup();
 }
 
 void CIOCPort::DeleteAllArray()
@@ -273,100 +85,224 @@ void CIOCPort::Init(int serversocksize, int workernum)
 
 bool CIOCPort::Listen(int port)
 {
-	int opt;
-	sockaddr_in addr;
-	linger lingerOpt;
-
-	// Open a TCP socket (an Internet stream socket).
-	//
-	m_ListenSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (m_ListenSocket < 0)
+	try
 	{
-		spdlog::error("IOCPort::Listen: failed to open socket");
+		asio::error_code ec;
+
+		// Attempt to setup the acceptor.
+		_acceptor = std::make_unique<asio::ip::tcp::acceptor>(_workerPool->get_executor());
+
+		// Setup the endpoint for TCPv4 0.0.0.0:port
+		asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
+
+		// Attempt to open the socket.
+		_acceptor->open(endpoint.protocol(), ec);
+		if (ec)
+		{
+			spdlog::error("IOCPort::Listen: open() failed: {}", ec.message());
+			return false;
+		}
+
+		// Attempt to bind the socket.
+		_acceptor->bind(endpoint, ec);
+		if (ec)
+		{
+			spdlog::error("IOCPort::Listen: bind() failed on 0.0.0.0:{}: {}",
+				port, ec.message());
+			return false;
+		}
+
+		// Allow address reuse (i.e. rebinding to the same port)
+		_acceptor->set_option(asio::socket_base::reuse_address(true), ec);
+		if (ec)
+		{
+			spdlog::error("IOCPort::Listen: set_option(reuse_address) failed: {}", ec.message());
+			return false;
+		}
+
+		// Configure receive buffer size
+		_acceptor->set_option(asio::socket_base::receive_buffer_size(SOCKET_BUFF_SIZE * 4), ec);
+		if (ec)
+		{
+			spdlog::error("IOCPort::Listen: set_option(receive_buffer_size) failed: {}", ec.message());
+			return false;
+		}
+
+		// Configure send buffer size
+		_acceptor->set_option(asio::socket_base::send_buffer_size(SOCKET_BUFF_SIZE * 4), ec);
+		if (ec)
+		{
+			spdlog::error("IOCPort::Listen: set_option(send_buffer_size) failed: {}", ec.message());
+			return false;
+		}
+
+		// Start listening with a backlog of 5
+		_acceptor->listen(5, ec);
+		if (ec)
+		{
+			spdlog::error("IOCPort::Listen: listen() failed: {}", ec.message());
+			return false;
+		}
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("IOCPort::Listen: failed to bind on 0.0.0.0:{}: {}",
+			port, ex.what());
 		return false;
 	}
-
-	// Bind our local address so that the client can send to us. 
-	//
-	memset((void*) &addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	addr.sin_port = htons(port);
-
-	// added in an attempt to allow rebinding to the port 
-	//
-	opt = 1;
-	setsockopt(m_ListenSocket, SOL_SOCKET, SO_REUSEADDR, (char*) &opt, sizeof(opt));
-
-	// Linger off -> close socket immediately regardless of existance of data 
-	//
-	lingerOpt.l_onoff = 0;
-	lingerOpt.l_linger = 0;
-
-	setsockopt(m_ListenSocket, SOL_SOCKET, SO_LINGER, (char*) &lingerOpt, sizeof(lingerOpt));
-
-	if (bind(m_ListenSocket, (struct sockaddr*) &addr, sizeof(addr)) < 0)
-	{
-		spdlog::error("IOCPort::Listen: failed to bind local address");
-		return false;
-	}
-
-	int socklen, len, err;
-
-	socklen = SOCKET_BUFF_SIZE * 4;
-	setsockopt(m_ListenSocket, SOL_SOCKET, SO_RCVBUF, (char*) &socklen, sizeof(socklen));
-
-	len = sizeof(socklen);
-	err = getsockopt(m_ListenSocket, SOL_SOCKET, SO_RCVBUF, (char*) &socklen, &len);
-	if (err == SOCKET_ERROR)
-	{
-		int socketErr = WSAGetLastError();
-		spdlog::error("IOCPort::Listen: recvBuffer getsockopt failed on port={} winsock error={} socketLen={}",
-			port, socketErr, socklen);
-		return false;
-	}
-
-	socklen = SOCKET_BUFF_SIZE * 4;
-	setsockopt(m_ListenSocket, SOL_SOCKET, SO_SNDBUF, (char*) &socklen, sizeof(socklen));
-	len = sizeof(socklen);
-	err = getsockopt(m_ListenSocket, SOL_SOCKET, SO_SNDBUF, (char*) &socklen, &len);
-
-	if (err == SOCKET_ERROR)
-	{
-		int socketErr = WSAGetLastError();
-		spdlog::error("IOCPort::Listen: sendBuffer getsockopt failed on port={} winsock error={} socketLen={}",
-			port, socketErr, socklen);
-		return false;
-	}
-
-	listen(m_ListenSocket, 5);
-
-	m_hListenEvent = WSACreateEvent();
-	if (m_hListenEvent == WSA_INVALID_EVENT)
-	{
-		int socketErr = WSAGetLastError();
-		spdlog::error("IOCPort::Listen: CreateEvent winsock error={}", socketErr);
-		return false;
-	}
-	WSAEventSelect(m_ListenSocket, m_hListenEvent, FD_ACCEPT);
 
 	spdlog::info("IOCPort::Listen: initialized port={:05}", port);
-
-	CreateAcceptThread();
-
 	return true;
 }
 
-bool CIOCPort::Associate(CIOCPSocket2* pIocpSock, HANDLE hPort)
+void CIOCPort::StartAccept()
 {
-	if (hPort == nullptr)
+	_acceptingConnections = true;
+	AsyncAccept();
+}
+
+void CIOCPort::StopAccept()
+{
+	_acceptingConnections = false;
+
+	if (_acceptor != nullptr
+		&& _acceptor->is_open())
 	{
-		spdlog::error("IOCPort::Associate: received null completion port");
-		return false;
+		asio::error_code ec;
+		_acceptor->cancel(ec);
+
+		if (ec)
+			spdlog::error("IOCPort::StopAccept: cancel() failed: {}", ec.message());
+	}
+}
+
+void CIOCPort::AsyncAccept()
+{
+	if (!_acceptingConnections)
+		return;
+
+	try
+	{
+		// Allocate a socket for each new connection
+		auto socket = std::make_unique<asio::ip::tcp::socket>(_workerPool->get_executor());
+
+		// Copy a reference to the raw socket; we'll be moving socket so we can keep it alive
+		// cheaper than using a shared pointer, so this won't be accessible after this point.
+		auto& rawSocket = *socket;
+
+		_acceptor->async_accept(rawSocket,
+			[this, socket = std::move(socket)](const asio::error_code& ec) mutable
+		{
+			if (!ec)
+			{
+				OnAccept(socket);
+			}
+			else
+			{
+				if (ec == asio::error::operation_aborted)
+					spdlog::debug("IOCPort::AsyncAccept: accept operation cancelled");
+				else
+					spdlog::error("IOCPort::AsyncAccept: accept failed: {}", ec.message());
+			}
+
+			AsyncAccept();
+		});
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("IOCPort::AsyncAccept: async_accept() failed: {}", ex.what());
+	}
+}
+
+void CIOCPort::OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket)
+{
+	EnterCriticalSection(&g_critical);
+	int sid = GetNewSid();
+	LeaveCriticalSection(&g_critical);
+	if (sid == -1)
+	{
+		spdlog::error("IOCPort::OnAccept: invalid socketId={}", sid);
+		return;
 	}
 
-	HANDLE hTemp = CreateIoCompletionPort(pIocpSock->GetSocketHandle(), hPort, (ULONG_PTR) pIocpSock->GetSocketID(), m_dwConcurrency);
-	return (hTemp == hPort);
+	CIOCPSocket2* iocpSocket = GetIOCPSocket(sid);
+	if (iocpSocket == nullptr)
+	{
+		spdlog::error("IOCPort::OnAccept: null socket [socketId:{}]", sid);
+		// PutOldSid(sid); // Invalid sid must forbidden to use
+		return;
+	}
+
+	iocpSocket->InitSocket(std::move(*socket));
+	iocpSocket->Receive();
+
+	spdlog::debug("IOCPort::AcceptThread: successfully accepted socketId={}", sid);
+}
+
+void CIOCPort::OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket)
+{
+	if (ec)
+	{
+		if (ec == asio::error::eof)
+		{
+			spdlog::debug("IOCPort::OnPostReceive: peer closed connection socketId={}",
+				iocpSocket->GetSocketID());
+		}
+		else
+		{
+			spdlog::debug("IOCPort::OnPostReceive: socketId={} error={}",
+				iocpSocket->GetSocketID(), ec.message());
+
+			if (++iocpSocket->m_nSocketErr < 2)
+				return;
+		}
+
+		ProcessClose(iocpSocket);
+		return;
+	}
+
+	if (bytesTransferred == 0)
+	{
+		spdlog::debug("IOCPort::OnPostReceive: closed by 0 byte notify");
+		ProcessClose(iocpSocket);
+		return;
+	}
+
+	iocpSocket->ReceivedData(static_cast<int>(bytesTransferred));
+	iocpSocket->Receive();
+}
+
+void CIOCPort::OnPostSend(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket)
+{
+	if (ec)
+	{
+		spdlog::error("IOCPort::OnPostSend: socketId={} failed: {}",
+			iocpSocket->GetSocketID(), ec.message());
+
+		iocpSocket->Close();
+		return;
+	}
+
+	iocpSocket->m_nSocketErr = 0;
+}
+
+void CIOCPort::OnPostClose(CIOCPSocket2* iocpSocket)
+{
+	spdlog::debug("IOCPort::OnPostClose: closed by Close() socketId={}",
+		iocpSocket->GetSocketID());
+
+	ProcessClose(iocpSocket);
+}
+
+void CIOCPort::ProcessClose(CIOCPSocket2* iocpSocket)
+{
+	EnterCriticalSection(&g_critical);
+
+	iocpSocket->CloseProcess();
+	RidIOCPSocket(iocpSocket->GetSocketID(), iocpSocket);
+	PutOldSid(iocpSocket->GetSocketID());
+
+	LeaveCriticalSection(&g_critical);
 }
 
 int CIOCPort::GetNewSid()
@@ -399,55 +335,14 @@ void CIOCPort::PutOldSid(int sid)
 	m_SidList.push_back(sid);
 }
 
-void CIOCPort::CreateAcceptThread()
-{
-	DWORD id;
-
-	m_hAcceptThread = ::CreateThread(nullptr, 0, AcceptThread, this, CREATE_SUSPENDED, &id);
-
-	::SetThreadPriority(m_hAcceptThread, THREAD_PRIORITY_ABOVE_NORMAL);
-}
-
 void CIOCPort::CreateReceiveWorkerThread(int workernum)
 {
-	SYSTEM_INFO SystemInfo;
-
-	//
-	// try to get timing more accurate... Avoid context
-	// switch that could occur when threads are released
-	//
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-
-	//
-	// Figure out how many processors we have to size the minimum
-	// number of worker threads and concurrency
-	//
-	GetSystemInfo(&SystemInfo);
-
-	if (!workernum)
-		m_dwNumberOfWorkers = 2 * SystemInfo.dwNumberOfProcessors;
+	if (workernum == 0)
+		_numberOfWorkers = std::thread::hardware_concurrency() * 2;
 	else
-		m_dwNumberOfWorkers = workernum;
-	m_dwConcurrency = SystemInfo.dwNumberOfProcessors;
+		_numberOfWorkers = workernum;
 
-	m_hServerIOCPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 10);
-
-	for (int i = 0; i < (int) m_dwNumberOfWorkers; i++)
-	{
-		HANDLE hWorkerThread;
-		DWORD WorkerId;
-
-		hWorkerThread = ::CreateThread(
-			nullptr,
-			0,
-			ReceiveWorkerThread,
-			this,
-			0,
-			&WorkerId);
-
-		if (hWorkerThread != nullptr)
-			CloseHandle(hWorkerThread);
-	}
+	_workerPool = std::make_shared<asio::thread_pool>(_numberOfWorkers);
 }
 
 CIOCPSocket2* CIOCPort::GetIOCPSocket(int index)
@@ -458,7 +353,7 @@ CIOCPSocket2* CIOCPort::GetIOCPSocket(int index)
 		return nullptr;
 	}
 
-	if (!m_SockArrayInActive[index])
+	if (m_SockArrayInActive[index] == nullptr)
 	{
 		spdlog::error("IOCPort::GetIOCPSocket: null socket index={}", index);
 		return nullptr;

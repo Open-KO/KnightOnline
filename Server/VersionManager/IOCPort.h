@@ -10,31 +10,50 @@
 #endif // _MSC_VER > 1000
 
 #include <list>
+#include <memory>
 
 typedef std::list<int>  SidList;
 
 class CIOCPSocket2;
 class CIOCPort
 {
+	friend class CIOCPSocket2;
+
 public:
-	void CreateAcceptThread();
-	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
-	CIOCPSocket2* GetIOCPSocket(int index);
-	void CreateReceiveWorkerThread(int workernum);
-	void PutOldSid(int sid);
-	int GetNewSid();
-	bool Associate(CIOCPSocket2* pIocpSock, HANDLE hPort);
-	bool Listen(int port);
-	void Init(int serversocksize, int workernum = 0);
-	void DeleteAllArray();
+	asio::io_context& GetIoContext()
+	{
+		return _io;
+	}
+
+	std::shared_ptr<asio::thread_pool> GetWorkerPool()
+	{
+		return _workerPool;
+	}
+
 	CIOCPort();
 	virtual ~CIOCPort();
+	void Init(int serversocksize, int workernum = 0);
+	bool Listen(int port);
+	void StartAccept();
+	void StopAccept();
+	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
+	CIOCPSocket2* GetIOCPSocket(int index);
+	void PutOldSid(int sid);
+	int GetNewSid();
+	void DeleteAllArray();
 
-	SOCKET m_ListenSocket;
-	HANDLE m_hListenEvent;
-	HANDLE m_hServerIOCPort;
-	HANDLE m_hAcceptThread;
+private:
+	void CreateReceiveWorkerThread(int workernum);
+	void AsyncAccept();
+	void OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket);
 
+protected:
+	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
+	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
+	void OnPostClose(CIOCPSocket2* iocpSocket);
+	void ProcessClose(CIOCPSocket2* iocpSocket);
+
+public:
 	int m_SocketArraySize;
 
 	SidList m_SidList;
@@ -42,8 +61,13 @@ public:
 	CIOCPSocket2** m_SockArrayInActive;
 
 protected:
-	uint32_t m_dwNumberOfWorkers;
-	uint32_t m_dwConcurrency;
+	uint32_t _numberOfWorkers;
+
+	asio::io_context _io;
+	std::unique_ptr<asio::ip::tcp::acceptor> _acceptor;
+	std::shared_ptr<asio::thread_pool> _workerPool;
+
+	std::atomic<bool> _acceptingConnections;
 };
 
 #endif // !defined(AFX_IOCPORT_H__1555441D_142E_4C26_B889_D9DCFC5E54E8__INCLUDED_)

@@ -31,11 +31,6 @@ constexpr int DB_PROCESS_TIMEOUT	= 100;
 #define STATE_CONNECTED			0X01
 #define STATE_DISCONNECTED		0X02
 #define STATE_GAMESTART			0x03
-
-// Overlapped flag
-#define OVL_RECEIVE				0X01
-#define OVL_SEND				0X02
-#define OVL_CLOSE				0X03
 ////////////////////////////////////////////////////////////
 
 typedef union
