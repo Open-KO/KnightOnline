@@ -16,8 +16,6 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-CRITICAL_SECTION g_critical;
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -29,13 +27,10 @@ CIOCPort::CIOCPort()
 	m_SocketArraySize = 0;
 	_numberOfWorkers = 0;
 	_acceptingConnections = false;
-
-	InitializeCriticalSection(&g_critical);
 }
 
 CIOCPort::~CIOCPort()
 {
-	DeleteCriticalSection(&g_critical);
 	DeleteAllArray();
 }
 
@@ -43,21 +38,15 @@ void CIOCPort::DeleteAllArray()
 {
 	for (int i = 0; i < m_SocketArraySize; i++)
 	{
-		if (m_SockArray[i] != nullptr)
-		{
-			delete m_SockArray[i];
-			m_SockArray[i] = nullptr;
-		}
+		delete m_SockArray[i];
+		m_SockArray[i] = nullptr;
 	}
 	delete[] m_SockArray;
 
 	for (int i = 0; i < m_SocketArraySize; i++)
 	{
-		if (m_SockArrayInActive[i] != nullptr)
-		{
-			delete m_SockArrayInActive[i];
-			m_SockArrayInActive[i] = nullptr;
-		}
+		delete m_SockArrayInActive[i];
+		m_SockArrayInActive[i] = nullptr;
 	}
 	delete[] m_SockArrayInActive;
 
@@ -216,27 +205,35 @@ void CIOCPort::AsyncAccept()
 
 void CIOCPort::OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket)
 {
-	EnterCriticalSection(&g_critical);
-	int sid = GetNewSid();
-	LeaveCriticalSection(&g_critical);
-	if (sid == -1)
+	int socketId;
+
+	// NOTE: Handle the guarding externally so it's clear what's guarded and what's not,
+	// which is critical when dealing with code needing to be fairly high performance here.
 	{
-		spdlog::error("IOCPort::OnAccept: invalid socketId={}", sid);
+		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
+		socketId = PopSocketId();
+	}
+
+	if (socketId == -1)
+	{
+		spdlog::error("IOCPort::OnAccept: socketId list is empty");
 		return;
 	}
 
-	CIOCPSocket2* iocpSocket = GetIOCPSocket(sid);
+	CIOCPSocket2* iocpSocket = GetIOCPSocket(socketId);
 	if (iocpSocket == nullptr)
 	{
-		spdlog::error("IOCPort::OnAccept: null socket [socketId:{}]", sid);
-		// PutOldSid(sid); // Invalid sid must forbidden to use
+		spdlog::error("IOCPort::OnAccept: null socket [socketId:{}]", socketId);
+
+		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
+		PushSocketId(socketId);
 		return;
 	}
 
 	iocpSocket->InitSocket(std::move(*socket));
 	iocpSocket->Receive();
 
-	spdlog::debug("IOCPort::AcceptThread: successfully accepted socketId={}", sid);
+	spdlog::debug("IOCPort::AcceptThread: successfully accepted socketId={}", socketId);
 }
 
 void CIOCPort::OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket)
@@ -296,43 +293,35 @@ void CIOCPort::OnPostClose(CIOCPSocket2* iocpSocket)
 
 void CIOCPort::ProcessClose(CIOCPSocket2* iocpSocket)
 {
-	EnterCriticalSection(&g_critical);
+	std::lock_guard<std::recursive_mutex> lock(_socketMutex);
 
 	iocpSocket->CloseProcess();
-	RidIOCPSocket(iocpSocket->GetSocketID(), iocpSocket);
-	PutOldSid(iocpSocket->GetSocketID());
 
-	LeaveCriticalSection(&g_critical);
+	RidIOCPSocket(iocpSocket->GetSocketID(), iocpSocket);
+	PushSocketId(iocpSocket->GetSocketID());
 }
 
-int CIOCPort::GetNewSid()
+int CIOCPort::PopSocketId()
 {
 	if (m_SidList.empty())
-	{
-		spdlog::error("IOCPort::GetNewSid: socketId list is empty");
 		return -1;
-	}
 
-	int ret = m_SidList.front();
+	int socketId = m_SidList.front();
 	m_SidList.pop_front();
 
-	return ret;
+	return socketId;
 }
 
-void CIOCPort::PutOldSid(int sid)
+void CIOCPort::PushSocketId(int socketId)
 {
-	if (sid < 0
-		|| sid >= m_SocketArraySize)
+	if (socketId < 0
+		|| socketId >= m_SocketArraySize)
 	{
-		spdlog::error("IOCPort::PutOldSid: out of range socketId={}", sid);
+		spdlog::error("IOCPort::PushSocketId: out of range socketId={}", socketId);
 		return;
 	}
 
-	auto Iter = std::find(m_SidList.begin(), m_SidList.end(), sid);
-	if (Iter != m_SidList.end())
-		return;
-
-	m_SidList.push_back(sid);
+	m_SidList.push_back(socketId);
 }
 
 void CIOCPort::CreateReceiveWorkerThread(int workernum)

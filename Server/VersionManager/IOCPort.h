@@ -11,6 +11,7 @@
 
 #include <list>
 #include <memory>
+#include <mutex>
 
 typedef std::list<int>  SidList;
 
@@ -38,8 +39,8 @@ public:
 	void StopAccept();
 	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
 	CIOCPSocket2* GetIOCPSocket(int index);
-	void PutOldSid(int sid);
-	int GetNewSid();
+	void PushSocketId(int socketId);
+	int PopSocketId();
 	void DeleteAllArray();
 
 private:
@@ -68,6 +69,8 @@ protected:
 	std::shared_ptr<asio::thread_pool> _workerPool;
 
 	std::atomic<bool> _acceptingConnections;
+
+	std::recursive_mutex _socketMutex;
 };
 
 #endif // !defined(AFX_IOCPORT_H__1555441D_142E_4C26_B889_D9DCFC5E54E8__INCLUDED_)
