@@ -234,7 +234,7 @@ void CIOCPort::OnPostReceive(const asio::error_code& ec, size_t bytesTransferred
 	{
 		if (ec == asio::error::eof)
 		{
-			spdlog::debug("IOCPort::OnPostReceive: peer closed connection socketId={}",
+			spdlog::debug("IOCPort::OnPostReceive: peer closed connection. socketId={}",
 				iocpSocket->GetSocketID());
 		}
 		else
@@ -252,7 +252,8 @@ void CIOCPort::OnPostReceive(const asio::error_code& ec, size_t bytesTransferred
 
 	if (bytesTransferred == 0)
 	{
-		spdlog::debug("IOCPort::OnPostReceive: closed by 0 byte notify");
+		spdlog::debug("IOCPort::OnPostReceive: closed by 0 byte notify. socketId={}",
+			iocpSocket->GetSocketID());
 		ProcessClose(iocpSocket);
 		return;
 	}

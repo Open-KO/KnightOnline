@@ -86,17 +86,20 @@ bool CIOCPSocket2::DoSend(bool fromAsyncChain)
 {
 	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
 
-	// Send currently in progress.
-	// Don't attempt to write; it's in the queue, it'll be processed once the send is completed.
-	if (_sendInProgress)
-		return false;
-
 	// When we finish a send, we should pop the last entry before queueing up another send.
 	if (fromAsyncChain)
 	{
+		_ASSERT(_sendInProgress);
 		_ASSERT(!_sendQueue.empty());
 		_sendQueue.pop();
 		_sendInProgress = false;
+	}
+	else
+	{
+		// Send currently in progress.
+		// Don't attempt to write; it's in the queue, it'll be processed once the send is completed.
+		if (_sendInProgress)
+			return false;
 	}
 
 	// Send queue is empty, nothing more to queue up.
