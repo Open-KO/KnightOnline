@@ -12138,61 +12138,63 @@ bool CUser::CheckPromotionEligible()
 	if (npc == nullptr)
 		return false;
 
-	short tempClass = -1;
-
-
-	if (CheckClass(CLASS_KA_GUARDIAN, CLASS_KA_PENETRATOR, CLASS_KA_NECROMANCER, CLASS_KA_DARKPRIEST) 
+	if (CheckClass(CLASS_KA_GUARDIAN, CLASS_KA_PENETRATOR, CLASS_KA_NECROMANCER, CLASS_KA_DARKPRIEST)
 		|| CheckClass(CLASS_EL_PROTECTOR, CLASS_EL_ASSASIN, CLASS_EL_ENCHANTER, CLASS_EL_DRUID))
 	{
+		// Here we return that the user is already mastered
 		if (m_pUserData->m_sClass == CLASS_EL_PROTECTOR || m_pUserData->m_sClass == CLASS_KA_GUARDIAN)
 		{
-			SendSay(-1, -1, 6006, -1, -1, -1, -1, -1, -1, -1);
-			return false;
+			SendSay(6006);
 		}
-		else if (m_pUserData->m_sClass == CLASS_EL_ASSASIN || m_pUserData->m_sClass == CLASS_KA_PENETRATOR)
+		if (m_pUserData->m_sClass == CLASS_EL_ASSASIN || m_pUserData->m_sClass == CLASS_KA_PENETRATOR)
 		{
-			SendSay(-1, -1, 7006, -1, -1, -1, -1, -1, -1, -1);
+			SendSay(7006);
 		}
-		else if (m_pUserData->m_sClass == CLASS_EL_ENCHANTER || m_pUserData->m_sClass == CLASS_KA_NECROMANCER)
+		if (m_pUserData->m_sClass == CLASS_EL_ENCHANTER || m_pUserData->m_sClass == CLASS_KA_NECROMANCER)
 		{
-			SendSay(-1, -1, 8006, -1, -1, -1, -1, -1, -1, -1);
+			SendSay(8006);
 		}
-		else if (m_pUserData->m_sClass == CLASS_EL_DRUID || m_pUserData->m_sClass == CLASS_KA_DARKPRIEST)
+		if (m_pUserData->m_sClass == CLASS_EL_DRUID || m_pUserData->m_sClass == CLASS_KA_DARKPRIEST)
 		{
-			SendSay(-1, -1, 9006, -1, -1, -1, -1, -1, -1, -1);
+			SendSay(9006);
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
+
+	const int MASTER_LVL = 60;
+
 	switch (npc->m_tNpcType)
 	{
+		// The method SendSay in this switch tells the user that he is at the wrong npc or he has not reached lvl 60
 		case NPC_MASTER_WARRIOR:
-			if (m_pUserData->m_sClass != CLASS_KA_BERSERKER && m_pUserData->m_sClass != CLASS_EL_BLADE || m_pUserData->m_bLevel < 60)
+			if ((m_pUserData->m_sClass != CLASS_KA_BERSERKER && m_pUserData->m_sClass != CLASS_EL_BLADE)
+				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 6001, -1, -1, -1, -1, -1, -1, -1);
+				SendSay(6001);
 				return false;
 			}
 			return true;
 		case NPC_MASTER_ROGUE:
-			if (m_pUserData->m_sClass != CLASS_KA_HUNTER && m_pUserData->m_sClass != CLASS_EL_RANGER || m_pUserData->m_bLevel < 60)
+			if ((m_pUserData->m_sClass != CLASS_KA_HUNTER && m_pUserData->m_sClass != CLASS_EL_RANGER)
+				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 7001, -1, -1, -1, -1, -1, -1, -1);
+				SendSay(7001);
 				return false;
 			}
 			return true;
 		case NPC_MASTER_MAGE:
-			if (m_pUserData->m_sClass != CLASS_KA_SORCERER && m_pUserData->m_sClass != CLASS_EL_MAGE || m_pUserData->m_bLevel < 60)
+			if ((m_pUserData->m_sClass != CLASS_KA_SORCERER && m_pUserData->m_sClass != CLASS_EL_MAGE)
+				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 8001, -1, -1, -1, -1, -1, -1, -1);
+				SendSay(8001);
 				return false;
 			}
 			return true;
 		case NPC_MASTER_PRIEST:
-			if (m_pUserData->m_sClass != CLASS_KA_SHAMAN && m_pUserData->m_sClass != CLASS_EL_CLERIC || m_pUserData->m_bLevel < 60)
+			if ((m_pUserData->m_sClass != CLASS_KA_SHAMAN && m_pUserData->m_sClass != CLASS_EL_CLERIC)
+				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 9001, -1, -1, -1, -1, -1, -1, -1);
+				SendSay(9001);
 				return false;
 			}
 			return true;
@@ -12260,22 +12262,22 @@ void CUser::SendNpcSay(const EXEC* pExec)
 	Send(send_buff, send_index);
 }
 
-void CUser::SendSay(short m1, short m2, short m3, short m4, short m5, short m6, short m7, short m8, short m9, short m10)
+void CUser::SendSay(int16_t message1, int16_t message2 = -1, int16_t message3 = -1, int16_t message4 = -1, int16_t message5 = -1, int16_t message6 = -1, int16_t message7 = -1, int16_t message8 = -1, int16_t eventId1 = -1, int16_t eventId2 = -1)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
 
 	SetByte(send_buff, WIZ_NPC_SAY, send_index);
-	SetDWORD(send_buff, m1, send_index);
-	SetDWORD(send_buff, m2, send_index);
-	SetDWORD(send_buff, m3, send_index);
-	SetDWORD(send_buff, m4, send_index);
-	SetDWORD(send_buff, m5, send_index);
-	SetDWORD(send_buff, m6, send_index);
-	SetDWORD(send_buff, m7, send_index);
-	SetDWORD(send_buff, m8, send_index);
-	SetDWORD(send_buff, m9, send_index);
-	SetDWORD(send_buff, m10, send_index);
+	SetDWORD(send_buff, eventId1, send_index);
+	SetDWORD(send_buff, eventId2, send_index);
+	SetDWORD(send_buff, message1, send_index);
+	SetDWORD(send_buff, message2, send_index);
+	SetDWORD(send_buff, message3, send_index);
+	SetDWORD(send_buff, message4, send_index);
+	SetDWORD(send_buff, message5, send_index);
+	SetDWORD(send_buff, message6, send_index);
+	SetDWORD(send_buff, message7, send_index);
+	SetDWORD(send_buff, message8, send_index);
 
 	Send(send_buff, send_index);
 }
