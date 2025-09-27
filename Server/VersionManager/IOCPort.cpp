@@ -69,7 +69,12 @@ void CIOCPort::Init(int serversocksize, int workernum)
 	for (int i = 0; i < serversocksize; i++)
 		m_SidList.push_back(i);
 
-	CreateReceiveWorkerThread(workernum);
+	if (workernum == 0)
+		_numberOfWorkers = std::thread::hardware_concurrency() * 2;
+	else
+		_numberOfWorkers = workernum;
+
+	_workerPool = std::make_shared<asio::thread_pool>(_numberOfWorkers);
 }
 
 bool CIOCPort::Listen(int port)
@@ -205,13 +210,14 @@ void CIOCPort::AsyncAccept()
 
 void CIOCPort::OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket)
 {
-	int socketId;
+	int socketId = -1;
+	CIOCPSocket2* iocpSocket = nullptr;
 
 	// NOTE: Handle the guarding externally so it's clear what's guarded and what's not,
 	// which is critical when dealing with code needing to be fairly high performance here.
 	{
 		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
-		socketId = PopSocketId();
+		iocpSocket = PopSocket(socketId);
 	}
 
 	if (socketId == -1)
@@ -220,13 +226,11 @@ void CIOCPort::OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket)
 		return;
 	}
 
-	CIOCPSocket2* iocpSocket = GetIOCPSocket(socketId);
+	// This should never happen.
+	// If it does, the associated socket ID was never removed from the list so we don't have to restore it.
 	if (iocpSocket == nullptr)
 	{
 		spdlog::error("IOCPort::OnAccept: null socket [socketId:{}]", socketId);
-
-		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
-		PushSocketId(socketId);
 		return;
 	}
 
@@ -297,76 +301,46 @@ void CIOCPort::ProcessClose(CIOCPSocket2* iocpSocket)
 
 	iocpSocket->CloseProcess();
 
-	RidIOCPSocket(iocpSocket->GetSocketID(), iocpSocket);
-	PushSocketId(iocpSocket->GetSocketID());
+	PushSocket(iocpSocket, iocpSocket->GetSocketID());
 }
 
-int CIOCPort::PopSocketId()
+CIOCPSocket2* CIOCPort::PopSocket(int& socketId)
 {
 	if (m_SidList.empty())
-		return -1;
+		return nullptr;
 
-	int socketId = m_SidList.front();
+	socketId = m_SidList.front();
+
+	// This is all self-contained so it should never be out of range.
+	_ASSERT(socketId >= 0 && socketId < m_SocketArraySize);
+
+	CIOCPSocket2* iocpSocket = m_SockArrayInActive[socketId];
+	if (iocpSocket == nullptr)
+		return nullptr;
+
 	m_SidList.pop_front();
 
-	return socketId;
+	m_SockArray[socketId] = iocpSocket;
+	m_SockArrayInActive[socketId] = nullptr;
+
+	iocpSocket->SetSocketID(socketId);
+	return iocpSocket;
 }
 
-void CIOCPort::PushSocketId(int socketId)
+void CIOCPort::PushSocket(CIOCPSocket2* iocpSocket, int socketId)
 {
 	if (socketId < 0
 		|| socketId >= m_SocketArraySize)
 	{
-		spdlog::error("IOCPort::PushSocketId: out of range socketId={}", socketId);
+		spdlog::error("IOCPort::PushSocket: out of range socketId={}", socketId);
 		return;
 	}
 
 	m_SidList.push_back(socketId);
-}
 
-void CIOCPort::CreateReceiveWorkerThread(int workernum)
-{
-	if (workernum == 0)
-		_numberOfWorkers = std::thread::hardware_concurrency() * 2;
-	else
-		_numberOfWorkers = workernum;
-
-	_workerPool = std::make_shared<asio::thread_pool>(_numberOfWorkers);
-}
-
-CIOCPSocket2* CIOCPort::GetIOCPSocket(int index)
-{
-	if (index >= m_SocketArraySize)
+	if (iocpSocket != nullptr)
 	{
-		spdlog::error("IOCPort::GetIOCPSocket: socketArray overflow index={}", index);
-		return nullptr;
+		m_SockArray[socketId] = nullptr;
+		m_SockArrayInActive[socketId] = iocpSocket;
 	}
-
-	if (m_SockArrayInActive[index] == nullptr)
-	{
-		spdlog::error("IOCPort::GetIOCPSocket: null socket index={}", index);
-		return nullptr;
-	}
-
-	CIOCPSocket2* pIOCPSock = m_SockArrayInActive[index];
-
-	m_SockArray[index] = pIOCPSock;
-	m_SockArrayInActive[index] = nullptr;
-
-	pIOCPSock->SetSocketID(index);
-
-	return pIOCPSock;
-}
-
-void CIOCPort::RidIOCPSocket(int index, CIOCPSocket2* pSock)
-{
-	if (index < 0
-		|| index >= m_SocketArraySize)
-	{
-		spdlog::error("IOCPort::RidIOCPSocket: invalid index={}", index);
-		return;
-	}
-
-	m_SockArray[index] = nullptr;
-	m_SockArrayInActive[index] = pSock;
 }

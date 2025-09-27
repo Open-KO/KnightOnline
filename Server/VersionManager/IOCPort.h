@@ -37,14 +37,11 @@ public:
 	bool Listen(int port);
 	void StartAccept();
 	void StopAccept();
-	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
-	CIOCPSocket2* GetIOCPSocket(int index);
-	void PushSocketId(int socketId);
-	int PopSocketId();
+	void PushSocket(CIOCPSocket2* iocpSocket, int socketId);
+	CIOCPSocket2* PopSocket(int& socketId);
 	void DeleteAllArray();
 
 private:
-	void CreateReceiveWorkerThread(int workernum);
 	void AsyncAccept();
 	void OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket);
 
