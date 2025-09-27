@@ -331,6 +331,8 @@ BOOL CVersionManagerDlg::DestroyWindow()
 		delete pInfo;
 	ServerList.clear();
 
+	IocPort.Shutdown();
+
 	return CDialog::DestroyWindow();
 }
 

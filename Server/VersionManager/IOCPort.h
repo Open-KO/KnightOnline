@@ -38,7 +38,7 @@ public:
 	void StopAccept();
 	void PushSocket(CIOCPSocket2* iocpSocket, int socketId);
 	CIOCPSocket2* PopSocket(int& socketId);
-	void DeleteAllArray();
+	void Shutdown();
 
 private:
 	void AsyncAccept();

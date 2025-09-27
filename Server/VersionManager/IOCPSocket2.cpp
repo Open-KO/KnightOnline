@@ -285,8 +285,14 @@ void CIOCPSocket2::CloseProcess()
 	if (_socket.is_open())
 	{
 		asio::error_code ec;
-		_socket.close(ec);
+		_socket.shutdown(asio::socket_base::shutdown_both, ec);
+		if (ec)
+		{
+			spdlog::error("IOCPSocket2::CloseProcess: shutdown() failed for socketId={}: {}",
+				_socketId, ec.message());
+		}
 
+		_socket.close(ec);
 		if (ec)
 		{
 			spdlog::error("IOCPSocket2::CloseProcess: close() failed for socketId={}: {}",

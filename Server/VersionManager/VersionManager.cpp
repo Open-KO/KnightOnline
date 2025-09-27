@@ -41,12 +41,6 @@ CVersionManagerApp theApp;
 
 BOOL CVersionManagerApp::InitInstance()
 {
-	if (!AfxSocketInit())
-	{
-		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
-		return FALSE;
-	}
-
 	AfxEnableControlContainer();
 
 	// Standard initialization
