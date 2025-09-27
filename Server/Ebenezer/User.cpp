@@ -12262,7 +12262,7 @@ void CUser::SendNpcSay(const EXEC* pExec)
 	Send(send_buff, send_index);
 }
 
-void CUser::SendSay(int16_t message1, int16_t message2 = -1, int16_t message3 = -1, int16_t message4 = -1, int16_t message5 = -1, int16_t message6 = -1, int16_t message7 = -1, int16_t message8 = -1, int16_t eventId1 = -1, int16_t eventId2 = -1)
+void CUser::SendSay(int16_t message1, int16_t message2, int16_t message3, int16_t message4, int16_t message5, int16_t message6, int16_t message7, int16_t message8, int16_t eventId1, int16_t eventId2)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
