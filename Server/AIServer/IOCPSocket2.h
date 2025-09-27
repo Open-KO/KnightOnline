@@ -12,29 +12,16 @@
 #include "IOCPort.h"
 #include "Define.h"
 
-#define receives				0
-#define sends					1
-#define both					2 
-
 class CCircularBuffer;
-
 class CIOCPSocket2
 {
 public:
 	void InitSocket(CIOCPort* pIOCPort);
 	void Close();
-	bool AsyncSelect(long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
-	bool SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
-	bool ShutDown(int nHow = sends);
 	bool PullOutCore(char*& data, int& length);
 	void ReceivedData(int length);
-	int  Receive();
-	int  Send(char* pBuf, long length, int dwFlag = 0);
-	bool Connect(CIOCPort* pIocp, const char*  lpszHostAddress, UINT nHostPort);
-	bool Create(UINT nSocketPort = 0,
-				 int nSocketType = SOCK_STREAM,
-				 long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE,
-				 const char* lpszSocketAddress = nullptr);
+	int Receive();
+	int Send(char* pBuf, long length, int dwFlag = 0);
 	bool Accept(SOCKET listensocket, struct sockaddr* addr, int* len);
 
 	int GetSocketID() const {
@@ -51,10 +38,6 @@ public:
 
 	uint8_t GetState() const {
 		return m_State;
-	}
-
-	uint8_t GetSockType() const {
-		return m_Type;
 	}
 
 	virtual void CloseProcess();
@@ -77,17 +60,11 @@ protected:
 	char				m_pRecvBuff[MAX_PACKET_SIZE];
 	char				m_pSendBuff[MAX_PACKET_SIZE];
 
-	HANDLE				m_hSockEvent;
-
 	OVERLAPPED			m_RecvOverlapped;
 	OVERLAPPED			m_SendOverlapped;
 
-	uint8_t				m_Type;
 	uint8_t				m_State;
 	int					m_Sid;
-	std::string			m_ConnectAddress;
-
-	uint32_t			m_wPacketSerial;
 
 };
 

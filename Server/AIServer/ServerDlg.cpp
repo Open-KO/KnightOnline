@@ -233,10 +233,10 @@ BOOL CServerDlg::OnInitDialog()
 	//	Communication Part Initialize ...
 	//----------------------------------------------------------------------
 	spdlog::info("ServerDlg::OnInitDialog: initializing sockets");
-	m_Iocport.Init(MAX_SOCKET, 1, 1);
+	m_Iocport.Init(MAX_SOCKET, 1);
 
 	for (int i = 0; i < MAX_SOCKET; i++)
-		m_Iocport.m_SockArrayInActive[i] = new CGameSocket;
+		m_Iocport.m_SockArrayInActive[i] = new CGameSocket();
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table

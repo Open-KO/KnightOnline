@@ -85,10 +85,6 @@ constexpr int USER_DAMAGE_OVERRIDE_TEST_MODE	= 10'000;
 #define PACKET_END2					0XAA
 //#define PROTOCOL_VER				0X01
 
-// Socket type
-#define TYPE_ACCEPT				0x01
-#define TYPE_CONNECT			0x02
-
 // Overlapped flag
 #define OVL_RECEIVE				0X01
 #define OVL_SEND				0X02

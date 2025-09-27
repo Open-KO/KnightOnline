@@ -40,14 +40,12 @@ void CIOCPort::DeleteAllArray()
 	{
 		delete m_SockArray[i];
 		m_SockArray[i] = nullptr;
-	}
-	delete[] m_SockArray;
 
-	for (int i = 0; i < m_SocketArraySize; i++)
-	{
 		delete m_SockArrayInActive[i];
 		m_SockArrayInActive[i] = nullptr;
 	}
+
+	delete[] m_SockArray;
 	delete[] m_SockArrayInActive;
 
 	while (!_socketIdQueue.empty())

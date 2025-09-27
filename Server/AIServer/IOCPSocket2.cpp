@@ -24,79 +24,11 @@ CIOCPSocket2::CIOCPSocket2()
 	m_Socket = INVALID_SOCKET;
 
 	m_pIOCPort = nullptr;
-	m_Type = TYPE_ACCEPT;
 }
 
 CIOCPSocket2::~CIOCPSocket2()
 {
 	delete m_pBuffer;
-}
-
-bool CIOCPSocket2::Create(UINT nSocketPort, int nSocketType, long lEvent, const char* lpszSocketAddress)
-{
-	int ret;
-
-	m_Socket = socket(AF_INET, nSocketType/*SOCK_STREAM*/, 0);
-	if (m_Socket == INVALID_SOCKET)
-	{
-		ret = WSAGetLastError();
-		// see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
-		spdlog::error("IOCPSocket2::Create: Winsock error {}", ret);
-		return false;
-	}
-
-	m_hSockEvent = WSACreateEvent();
-	if (m_hSockEvent == WSA_INVALID_EVENT)
-	{
-		ret = WSAGetLastError();
-		spdlog::error("IOCPSocket2::Create: CreateEvent winsock error {}", ret);
-		return false;
-	}
-
-	return true;
-}
-
-bool CIOCPSocket2::Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort)
-{
-	sockaddr_in addr;
-
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(lpszHostAddress);
-	addr.sin_port = htons(nHostPort);
-
-	int result = connect(m_Socket, (sockaddr*) &addr, sizeof(addr));
-	if (result == SOCKET_ERROR)
-	{
-		int err = WSAGetLastError();
-		spdlog::error("IOCPSocket2::Connect: Winsock error {}", err);
-		closesocket(m_Socket);
-		return false;
-	}
-
-	ASSERT(pIocp);
-
-	InitSocket(pIocp);
-
-	m_Sid = m_pIOCPort->GetClientSid();
-	if (m_Sid < 0)
-		return false;
-
-	m_pIOCPort->m_ClientSockArray[m_Sid] = this;
-
-	if (!m_pIOCPort->Associate(this, m_pIOCPort->m_hClientIOCPort))
-	{
-		spdlog::error("IOCPSocket2::Connect: failed to associate");
-		return false;
-	}
-
-	m_ConnectAddress = lpszHostAddress;
-	m_State = STATE_CONNECTED;
-	m_Type = TYPE_CONNECT;
-
-	Receive();
-
-	return true;
 }
 
 int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
@@ -179,11 +111,7 @@ close_routine:
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
 
-	if (m_Type == TYPE_ACCEPT)
-		hComport = m_pIOCPort->m_hServerIOCPort;
-	else
-		hComport = m_pIOCPort->m_hClientIOCPort;
-
+	hComport = m_pIOCPort->m_hServerIOCPort;
 	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
@@ -246,11 +174,7 @@ close_routine:
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
 
-	if (m_Type == TYPE_ACCEPT)
-		hComport = m_pIOCPort->m_hServerIOCPort;
-	else
-		hComport = m_pIOCPort->m_hClientIOCPort;
-
+	hComport = m_pIOCPort->m_hServerIOCPort;
 	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 
 	return -1;
@@ -263,12 +187,6 @@ void CIOCPSocket2::ReceivedData(int length)
 
 	int len = 0;
 	m_pBuffer->PutData(m_pRecvBuff, length);		// 받은 Data를 버퍼에 넣는다
-
-	if (m_Type == TYPE_CONNECT
-		&& length == 7)
-	{
-		spdlog::trace("IOCPSocket2::ReceivedData on socketId={}", m_Sid);
-	}
 
 	char* pData = nullptr;
 	char* pDecData = nullptr;
@@ -360,32 +278,9 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 	if (foundCore)
 		m_pBuffer->HeadIncrease(6 + length); //6: header 2+ end 2+ length 2
 
-	delete[] pTmp;
-
-	return foundCore;
-
 cancelRoutine:
 	delete[] pTmp;
 	return foundCore;
-}
-
-bool CIOCPSocket2::AsyncSelect(long lEvent)
-{
-	int retEventResult = WSAEventSelect(m_Socket, m_hSockEvent, lEvent);
-	int err = WSAGetLastError();
-	return (retEventResult == 0);
-}
-
-bool CIOCPSocket2::SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel)
-{
-	int retValue = setsockopt(m_Socket, nLevel, nOptionName, (char*) lpOptionValue, nOptionLen);
-	return (retValue == 0);
-}
-
-bool CIOCPSocket2::ShutDown(int nHow)
-{
-	int retValue = shutdown(m_Socket, nHow);
-	return (retValue == 0);
 }
 
 void CIOCPSocket2::Close()
@@ -398,10 +293,7 @@ void CIOCPSocket2::Close()
 	pOvl = &m_RecvOverlapped;
 	pOvl->Offset = OVL_CLOSE;
 
-	if (m_Type == TYPE_ACCEPT)
-		hComport = m_pIOCPort->m_hServerIOCPort;
-	else
-		hComport = m_pIOCPort->m_hClientIOCPort;
+	hComport = m_pIOCPort->m_hServerIOCPort;
 
 	int retValue = PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
 	if (retValue == 0)
@@ -468,5 +360,4 @@ void CIOCPSocket2::Parsing(int length, char* pData)
 
 void CIOCPSocket2::Initialize()
 {
-	m_wPacketSerial = 0;
 }

@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 // sungyong 2002.05.22
 typedef struct _SEND_DATA
 {
@@ -26,14 +24,11 @@ typedef  std::list<int>  SidList;
 typedef  std::list<_SEND_DATA*>  SendDataList;	// sungyong~ 2002.05.22
 
 class CIOCPSocket2;
-
 class CIOCPort
 {
 public:
 	void CreateSendThread();	// sungyong~ 2002.05.22
-	int GetClientSid();
 	void CreateAcceptThread();
-	void CreateClientWorkerThread();
 	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
 	CIOCPSocket2* GetIOCPSocket(int index);
 	void CreateReceiveWorkerThread(int workernum);
@@ -41,7 +36,7 @@ public:
 	int GetNewSid();
 	bool Associate(CIOCPSocket2* pIocpSock, HANDLE hPort);
 	bool Listen(int port);
-	void Init(int serversocksize, int clientsocksize, int workernum = 0);
+	void Init(int serversocksize, int workernum = 0);
 	void DeleteAllArray();
 	CIOCPort();
 	virtual ~CIOCPort();
@@ -49,20 +44,16 @@ public:
 	SOCKET m_ListenSocket;
 	HANDLE m_hListenEvent;
 	HANDLE m_hServerIOCPort;
-	HANDLE m_hClientIOCPort;
 	HANDLE m_hAcceptThread;
 	HANDLE m_hSendIOCP;					// sungyong~ 2002.05.22
 
 	int m_SocketArraySize;
-	int m_ClientSockSize;
 	int m_AiSocketCount;				// sungyong~ 2002.05.22
 
 	SidList m_SidList;
 	SendDataList m_SendDataList;		// sungyong~ 2002.05.22
 	CIOCPSocket2** m_SockArray;
 	CIOCPSocket2** m_SockArrayInActive;
-
-	CIOCPSocket2** m_ClientSockArray;		// Connect용 소켓
 
 	CRITICAL_SECTION	m_critSendData;	// sungyong~ 2002.05.22
 
