@@ -19,7 +19,7 @@ class CIOCPSocket2
 {
 	friend class CIOCPort;
 
-	using RawSocket_t = std::unique_ptr<asio::ip::tcp::socket>;
+	using RawSocket_t = asio::ip::tcp::socket;
 
 public:
 	int GetSocketID() const

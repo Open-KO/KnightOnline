@@ -68,35 +68,18 @@ void CIOCPort::Init(int serversocksize, int workernum)
 	_workerPool = std::make_shared<asio::thread_pool>(_numberOfWorkers);
 
 	std::queue<int> socketIdQueue;
-	std::queue<std::unique_ptr<asio::ip::tcp::socket>> rawSocketQueue;
-
 	for (int i = 0; i < serversocksize; i++)
 	{
 		m_SockArray[i] = nullptr;
 		m_SockArrayInActive[i] = nullptr;
-
 		socketIdQueue.push(i);
-
-		auto rawSocket = std::make_unique<asio::ip::tcp::socket>(_workerPool->get_executor());
-		rawSocketQueue.push(std::move(rawSocket));
 	}
-
-	// Add one additional raw socket so that one is always going to be available, even when
-	// all existing sessions are filled.
-	// As we only chain accepts once, we're never goingto need more than this.
-	auto rawSocket = std::make_unique<asio::ip::tcp::socket>(_workerPool->get_executor());
-	rawSocketQueue.push(std::move(rawSocket));
 
 	// NOTE: These don't strictly need to be guarded as the server's not yet operational,
 	// but we do it for consistency.
 	{
 		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
 		_socketIdQueue.swap(socketIdQueue);
-	}
-
-	{
-		std::lock_guard<std::mutex> lock(_rawSocketMutex);
-		_rawSocketQueue.swap(rawSocketQueue);
 	}
 }
 
@@ -175,12 +158,7 @@ bool CIOCPort::Listen(int port)
 void CIOCPort::StartAccept()
 {
 	_acceptingConnections = true;
-
-	// Initial empty socket for chain.
-	// To avoid redundant lookups, we'll continue to just pass the same socket
-	// through until it's actually associated; we'll start it as empty so it considers it needing to fetch one.
-	std::unique_ptr<asio::ip::tcp::socket> rawSocket;
-	AsyncAccept(rawSocket);
+	AsyncAccept();
 }
 
 void CIOCPort::StopAccept()
@@ -198,51 +176,14 @@ void CIOCPort::StopAccept()
 	}
 }
 
-std::unique_ptr<asio::ip::tcp::socket> CIOCPort::PopRawSocket()
-{
-	if (_rawSocketQueue.empty())
-		return nullptr;
-
-	auto rawSocket = std::move(_rawSocketQueue.front());
-	_rawSocketQueue.pop();
-	return rawSocket;
-}
-
-void CIOCPort::AsyncAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket)
+void CIOCPort::AsyncAccept()
 {
 	if (!_acceptingConnections)
 		return;
 
 	try
 	{
-		// Need a new socket; we should fetch one from the pool.
-		if (rawSocket == nullptr)
-		{
-			{
-				std::lock_guard<std::mutex> lock(_rawSocketMutex);
-				rawSocket = PopRawSocket();
-			}
-
-			// No raw socket; the raw socket queue is empty.
-			// This should never happen, but we'll allocate a new one.
-			if (rawSocket == nullptr)
-			{
-				spdlog::warn("IOCPort::AsyncAccept: no available raw sockets left in queue; this shouldn't happen, creating one on-demand");
-
-				rawSocket = std::make_unique<asio::ip::tcp::socket>(_workerPool->get_executor());
-
-				// Out of memory.
-				if (rawSocket == nullptr)
-					return;
-			}
-		}
-
-		// Copy a reference to the raw socket; we'll be moving rawSocket so we can keep it alive
-		// cheaper than using a shared pointer, so this won't be accessible after this point.
-		auto& rawSocket_ = *rawSocket;
-
-		_acceptor->async_accept(rawSocket_,
-			[this, rawSocket = std::move(rawSocket)](const asio::error_code& ec) mutable
+		_acceptor->async_accept([this](const asio::error_code& ec, asio::ip::tcp::socket rawSocket) mutable
 		{
 			if (!ec)
 			{
@@ -256,15 +197,7 @@ void CIOCPort::AsyncAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket)
 					spdlog::error("IOCPort::AsyncAccept: accept failed: {}", ec.message());
 			}
 
-			if (rawSocket != nullptr)
-			{
-				asio::error_code ec;
-				rawSocket->close(ec);
-				if (ec)
-					spdlog::error("IOCPort::AsyncAccept: close on previous socket failed: {}", ec.message());
-			}
-
-			AsyncAccept(rawSocket);
+			AsyncAccept();
 		});
 	}
 	catch (const asio::system_error& ex)
@@ -273,7 +206,7 @@ void CIOCPort::AsyncAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket)
 	}
 }
 
-void CIOCPort::OnAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket)
+void CIOCPort::OnAccept(asio::ip::tcp::socket& rawSocket)
 {
 	int socketId = -1;
 	CIOCPSocket2* iocpSocket = nullptr;
@@ -368,25 +301,13 @@ void CIOCPort::OnPostClose(CIOCPSocket2* iocpSocket)
 
 bool CIOCPort::ProcessClose(CIOCPSocket2* iocpSocket)
 {
-	{
-		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
-		if (iocpSocket->GetState() == STATE_DISCONNECTED)
-			return false;
+	std::lock_guard<std::recursive_mutex> lock(_socketMutex);
+	if (iocpSocket->GetState() == STATE_DISCONNECTED)
+		return false;
 
-		iocpSocket->CloseProcess();
+	iocpSocket->CloseProcess();
 
-		PushSocket(iocpSocket, iocpSocket->GetSocketID());
-	}
-
-	_ASSERT(iocpSocket->_socket);
-
-	if (iocpSocket->_socket != nullptr)
-	{
-		std::lock_guard<std::mutex> lock(_rawSocketMutex);
-		_rawSocketQueue.push(
-			std::move(iocpSocket->_socket));
-	}
-
+	PushSocket(iocpSocket, iocpSocket->GetSocketID());
 	return true;
 }
 

@@ -17,7 +17,10 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CIOCPSocket2::CIOCPSocket2(CIOCPort* iocPort)
-	: _iocPort(iocPort), _recvCircularBuffer(SOCKET_BUFF_SIZE), _sendCircularBuffer(SOCKET_BUFF_SIZE)
+	: _iocPort(iocPort),
+	_recvCircularBuffer(SOCKET_BUFF_SIZE),
+	_sendCircularBuffer(SOCKET_BUFF_SIZE),
+	_socket(*iocPort->GetWorkerPool())
 {
 	_state = STATE_DISCONNECTED;
 	_sendInProgress = false;
@@ -118,7 +121,7 @@ bool CIOCPSocket2::DoSend(bool fromAsyncChain)
 			++bufferCount;
 		}
 
-		_socket->async_write_some(buffers,
+		_socket.async_write_some(buffers,
 			std::bind(&CIOCPort::OnPostSend, _iocPort, std::placeholders::_1, std::placeholders::_2, this));
 
 		_sendInProgress = true;
@@ -143,7 +146,7 @@ void CIOCPSocket2::Receive()
 
 	try
 	{
-		_socket->async_read_some(asio::buffer(_recvBuffer),
+		_socket.async_read_some(asio::buffer(_recvBuffer),
 			std::bind(&CIOCPort::OnPostReceive, _iocPort, std::placeholders::_1, std::placeholders::_2, this));
 	}
 	catch (const asio::system_error& ex)
@@ -279,11 +282,10 @@ void CIOCPSocket2::CloseProcess()
 {
 	_state = STATE_DISCONNECTED;
 
-	if (_socket != nullptr
-		&& _socket->is_open())
+	if (_socket.is_open())
 	{
 		asio::error_code ec;
-		_socket->close(ec);
+		_socket.close(ec);
 
 		if (ec)
 		{

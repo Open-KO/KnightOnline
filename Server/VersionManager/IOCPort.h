@@ -41,9 +41,8 @@ public:
 	void DeleteAllArray();
 
 private:
-	std::unique_ptr<asio::ip::tcp::socket> PopRawSocket();
-	void AsyncAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket);
-	void OnAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket);
+	void AsyncAccept();
+	void OnAccept(asio::ip::tcp::socket& rawSocket);
 
 protected:
 	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
@@ -67,10 +66,7 @@ protected:
 	std::atomic<bool> _acceptingConnections;
 
 	std::queue<int> _socketIdQueue;
-	std::queue<std::unique_ptr<asio::ip::tcp::socket>> _rawSocketQueue;
-
 	std::recursive_mutex _socketMutex;
-	std::mutex _rawSocketMutex;
 };
 
 #endif // !defined(AFX_IOCPORT_H__1555441D_142E_4C26_B889_D9DCFC5E54E8__INCLUDED_)
