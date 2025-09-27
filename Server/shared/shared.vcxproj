@@ -153,6 +153,7 @@
     </ClCompile>
     <ClCompile Include="StringConversion.cpp" />
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="Thread.cpp" />
     <ClCompile Include="TimeThread.cpp" />
     <ClCompile Include="logger.cpp" />
   </ItemGroup>
@@ -172,6 +173,7 @@
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="StringConversion.h" />
     <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="Thread.h" />
     <ClInclude Include="TimeThread.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="version.h" />

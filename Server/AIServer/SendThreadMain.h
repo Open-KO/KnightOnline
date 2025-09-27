@@ -1,31 +1,26 @@
 ﻿#pragma once
 
-#include <condition_variable>
-#include <mutex>
+#include <shared/Thread.h>
+
 #include <queue>
-#include <thread>
 
 class CIOCPort;
 struct _SEND_DATA;
-class SendThreadMain
+class SendThreadMain : public Thread
 {
 public:
 	SendThreadMain(CIOCPort* iocPort);
-	void start();
-	void shutdown();
+	bool shutdown() override;
 	void queue(_SEND_DATA* sendData);
-	~SendThreadMain();
+	~SendThreadMain() override;
 
 protected:
-	void run();
+	void thread_loop() override;
+	void tick() override;
 	void clear();
 
 protected:
 	CIOCPort* _iocPort;
 	std::queue<_SEND_DATA*>	_sendDataQueue;
-	std::mutex _queueMutex;
-	std::condition_variable _cv;
-	std::thread _workerThread;
-	bool _running;
 	int _aiSocketCount;
 };
