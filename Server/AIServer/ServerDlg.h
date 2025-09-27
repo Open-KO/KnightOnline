@@ -91,7 +91,6 @@ public:
 	int    MonsterSummon(const char* pNpcName, int zone_id, float fx, float fz);
 	int GetZoneIndex(int zoneId) const;
 	int GetServerNumber(int zoneId) const;
-	void CloseSocket(int zonenumber);
 
 	void CheckAliveTest();
 	void DeleteUserList(int uid);

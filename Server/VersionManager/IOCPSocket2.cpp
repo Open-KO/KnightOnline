@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "IOCPSocket2.h"
-#include <shared/CircularBuffer.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

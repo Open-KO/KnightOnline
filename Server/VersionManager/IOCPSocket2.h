@@ -14,7 +14,6 @@
 
 #include <shared/CircularBuffer.h>
 
-class CCircularBuffer;
 class CIOCPSocket2
 {
 	friend class CIOCPort;

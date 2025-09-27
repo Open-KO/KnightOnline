@@ -11,7 +11,8 @@
 #endif // _MSC_VER > 1000
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+#include <asio.hpp>
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
@@ -21,18 +22,12 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
-#include <winsock2.h>		// Winsock 2
 #include <afxtempl.h>
 #include <afxdb.h>
-
-//#include "Mmsystem.h"
-//#include "Imm.h"
-//#include "./N3Base/My_3DStruct.h"
 
 #include "packet.h"			// packet 정의
 #include "global.h"			// 전역 funtion
 #include "define.h"			// define
-//#include "extern.h"			// 전역 객체
 
 #include <shared/server_config.h>
 

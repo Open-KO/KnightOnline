@@ -9,57 +9,78 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// sungyong 2002.05.22
-typedef struct _SEND_DATA
-{
-	int16_t	sCurZone;		// 현재의 존
-	int16_t	sLength;		// 패킷의 길이
-	char	pBuf[2048];		// 패킷의 내용..
-} SEND_DATA;
-// ~sungyong 2002.05.22
-
 #include <list>
+#include <memory>
+#include <mutex>
+#include <queue>
 
-typedef  std::list<int>  SidList;
-typedef  std::list<_SEND_DATA*>  SendDataList;	// sungyong~ 2002.05.22
+#include "SendThreadMain.h"
+
+// sungyong 2002.05.22
+struct _SEND_DATA
+{
+	int16_t	sCurZone;				// 현재의 존
+	int16_t	sLength;				// 패킷의 길이
+	char	pBuf[MAX_PACKET_SIZE];	// 패킷의 내용..
+};
+// ~sungyong 2002.05.22
 
 class CIOCPSocket2;
 class CIOCPort
 {
+	friend class CIOCPSocket2;
+
 public:
-	void CreateSendThread();	// sungyong~ 2002.05.22
-	void CreateAcceptThread();
-	void RidIOCPSocket(int index, CIOCPSocket2* pSock);
-	CIOCPSocket2* GetIOCPSocket(int index);
-	void CreateReceiveWorkerThread(int workernum);
-	void PutOldSid(int sid);
-	int GetNewSid();
-	bool Associate(CIOCPSocket2* pIocpSock, HANDLE hPort);
-	bool Listen(int port);
-	void Init(int serversocksize, int workernum = 0);
-	void DeleteAllArray();
+	asio::io_context& GetIoContext()
+	{
+		return _io;
+	}
+
+	std::shared_ptr<asio::thread_pool> GetWorkerPool()
+	{
+		return _workerPool;
+	}
+
 	CIOCPort();
 	virtual ~CIOCPort();
+	void Init(int serversocksize, int workernum = 0);
+	bool Listen(int port);
+	void StartAccept();
+	void StopAccept();
+	void PushSocket(CIOCPSocket2* iocpSocket, int socketId);
+	CIOCPSocket2* PopSocket(int& socketId);
+	void QueueSendData(_SEND_DATA* sendData);
+	void Shutdown();
 
-	SOCKET m_ListenSocket;
-	HANDLE m_hListenEvent;
-	HANDLE m_hServerIOCPort;
-	HANDLE m_hAcceptThread;
-	HANDLE m_hSendIOCP;					// sungyong~ 2002.05.22
+private:
+	void AsyncAccept();
+	void OnAccept(asio::ip::tcp::socket& rawSocket);
 
+protected:
+	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
+	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
+	void OnPostClose(CIOCPSocket2* iocpSocket);
+	bool ProcessClose(CIOCPSocket2* iocpSocket);
+
+public:
 	int m_SocketArraySize;
-	int m_AiSocketCount;				// sungyong~ 2002.05.22
 
-	SidList m_SidList;
-	SendDataList m_SendDataList;		// sungyong~ 2002.05.22
 	CIOCPSocket2** m_SockArray;
 	CIOCPSocket2** m_SockArrayInActive;
 
-	CRITICAL_SECTION	m_critSendData;	// sungyong~ 2002.05.22
-
 protected:
-	uint32_t m_dwNumberOfWorkers;
-	uint32_t m_dwConcurrency;
+	uint32_t _numberOfWorkers;
+
+	asio::io_context _io;
+	std::unique_ptr<asio::ip::tcp::acceptor> _acceptor;
+	std::shared_ptr<asio::thread_pool> _workerPool;
+
+	std::atomic<bool> _acceptingConnections;
+
+	std::queue<int> _socketIdQueue;
+	std::recursive_mutex _socketMutex;
+
+	SendThreadMain _sendThreadMain;
 };
 
 #endif // !defined(AFX_IOCPORT_H__1555441D_142E_4C26_B889_D9DCFC5E54E8__INCLUDED_)

@@ -236,7 +236,7 @@ BOOL CServerDlg::OnInitDialog()
 	m_Iocport.Init(MAX_SOCKET, 1);
 
 	for (int i = 0; i < MAX_SOCKET; i++)
-		m_Iocport.m_SockArrayInActive[i] = new CGameSocket();
+		m_Iocport.m_SockArrayInActive[i] = new CGameSocket(&m_Iocport);
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table
@@ -1082,6 +1082,8 @@ BOOL CServerDlg::DestroyWindow()
 
 	WaitForSingleObject(m_pZoneEventThread, INFINITE);
 
+	m_Iocport.Shutdown();
+
 	// DB테이블 삭제 부분
 
 	// Map(Zone) Array Delete...
@@ -1615,8 +1617,7 @@ BOOL CServerDlg::PreTranslateMessage(MSG* pMsg)
 // sungyong 2002.05.23
 int CServerDlg::Send(char* pData, int length, int nZone)
 {
-	SEND_DATA* pNewData = nullptr;
-	pNewData = new SEND_DATA;
+	_SEND_DATA* pNewData = new _SEND_DATA;
 	if (pNewData == nullptr)
 		return 0;
 
@@ -1624,11 +1625,7 @@ int CServerDlg::Send(char* pData, int length, int nZone)
 	pNewData->sLength = length;
 	::CopyMemory(pNewData->pBuf, pData, length);
 
-	EnterCriticalSection(&(m_Iocport.m_critSendData));
-	m_Iocport.m_SendDataList.push_back(pNewData);
-	LeaveCriticalSection(&(m_Iocport.m_critSendData));
-
-	PostQueuedCompletionStatus(m_Iocport.m_hSendIOCP, 0, 0, nullptr);
+	m_Iocport.QueueSendData(pNewData);
 
 	return 0;
 }
@@ -1647,7 +1644,7 @@ LRESULT CServerDlg::OnGameServerLogin(WPARAM wParam, LPARAM lParam)
 
 void CServerDlg::GameServerAcceptThread()
 {
-	::ResumeThread(m_Iocport.m_hAcceptThread);
+	m_Iocport.StartAccept();
 }
 
 void CServerDlg::SyncTest()
@@ -1671,7 +1668,7 @@ void CServerDlg::SyncTest()
 
 		size = pSocket->Send(send_buff, send_index);
 
-		spdlog::info("ServerDlg::SyncTest: size={}, socketId={}", size, pSocket->m_sSocketID);
+		spdlog::info("ServerDlg::SyncTest: size={}, zoneNo={}", size, pSocket->_zoneNo);
 	}
 
 /*
@@ -2180,25 +2177,6 @@ int CServerDlg::GetServerNumber(int zoneId) const
 
 	spdlog::error("ServerDlg::GetServerNumber: zoneId={} not found", zoneId);
 	return -1;
-}
-
-void CServerDlg::CloseSocket(int zonenumber)
-{
-	CGameSocket* pSocket = nullptr;
-
-	for (int i = 0; i < MAX_SOCKET; i++)
-	{
-		pSocket = (CGameSocket*) m_Iocport.m_SockArray[i];
-		if (pSocket == nullptr)
-			continue;
-
-		if (pSocket->m_sSocketID == zonenumber)
-		{
-			//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
-			pSocket->CloseProcess();
-			m_Iocport.RidIOCPSocket(pSocket->GetSocketID(), pSocket);
-		}
-	}
 }
 
 void CServerDlg::GetServerInfoIni()

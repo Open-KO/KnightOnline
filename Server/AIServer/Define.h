@@ -83,12 +83,6 @@ constexpr int USER_DAMAGE_OVERRIDE_TEST_MODE	= 10'000;
 #define PACKET_START2				0X55
 #define PACKET_END1					0X55
 #define PACKET_END2					0XAA
-//#define PROTOCOL_VER				0X01
-
-// Overlapped flag
-#define OVL_RECEIVE				0X01
-#define OVL_SEND				0X02
-#define OVL_CLOSE				0X03
 ////////////////////////////////////////////////////////////
 
 typedef union {

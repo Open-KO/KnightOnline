@@ -77,6 +77,9 @@
     <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
       <Filter>N3Base</Filter>
     </ClCompile>
+    <ClCompile Include="SendThreadMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Define.h">
@@ -158,6 +161,9 @@
       <Filter>N3Base</Filter>
     </ClInclude>
     <ClInclude Include="AIResourceFormatter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SendThreadMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

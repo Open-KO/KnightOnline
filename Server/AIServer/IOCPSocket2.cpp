@@ -4,7 +4,6 @@
 
 #include "stdafx.h"
 #include "IOCPSocket2.h"
-#include <shared/CircularBuffer.h>
 
 #include <spdlog/spdlog.h>
 
@@ -18,166 +17,145 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CIOCPSocket2::CIOCPSocket2()
+CIOCPSocket2::CIOCPSocket2(CIOCPort* iocPort)
+	: _iocPort(iocPort),
+	_recvCircularBuffer(SOCKET_BUFF_SIZE),
+	_sendCircularBuffer(SOCKET_BUFF_SIZE),
+	_socket(*iocPort->GetWorkerPool())
 {
-	m_pBuffer = new CCircularBuffer(SOCKET_BUFF_SIZE);
-	m_Socket = INVALID_SOCKET;
-
-	m_pIOCPort = nullptr;
+	_state = STATE_DISCONNECTED;
+	_sendInProgress = false;
 }
 
 CIOCPSocket2::~CIOCPSocket2()
 {
-	delete m_pBuffer;
 }
 
-int CIOCPSocket2::Send(char* pBuf, long length, int dwFlag)
+int CIOCPSocket2::Send(char* pBuf, int length)
 {
-	int ret_value = 0;
-	WSABUF out;
-	DWORD sent = 0;
-	OVERLAPPED* pOvl;
-	HANDLE hComport = nullptr;
+	constexpr int PacketHeaderSize = 6;
 
-	if (length > MAX_PACKET_SIZE)
-		return 0;
+	_ASSERT(length >= 0);
+	_ASSERT(length + PacketHeaderSize <= MAX_PACKET_SIZE);
 
-	char pTBuf[MAX_PACKET_SIZE];
-	memset(pTBuf, 0x00, MAX_PACKET_SIZE);
+	if (length < 0
+		|| length + PacketHeaderSize > MAX_PACKET_SIZE)
+		return -1;
+
+	char sendBuffer[MAX_PACKET_SIZE];
 	int index = 0;
+	SetByte(sendBuffer, PACKET_START1, index);
+	SetByte(sendBuffer, PACKET_START2, index);
+	SetShort(sendBuffer, length, index);
+	SetString(sendBuffer, pBuf, length, index);
+	SetByte(sendBuffer, PACKET_END1, index);
+	SetByte(sendBuffer, PACKET_END2, index);
 
-	pTBuf[index++] = (uint8_t) PACKET_START1;
-	pTBuf[index++] = (uint8_t) PACKET_START2;
-	memcpy(pTBuf + index, &length, 2);
-	index += 2;
-	memcpy(pTBuf + index, pBuf, length);
-	index += length;
-	pTBuf[index++] = (uint8_t) PACKET_END1;
-	pTBuf[index++] = (uint8_t) PACKET_END2;
+	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
 
-	out.buf = pTBuf;
-	out.len = index;
-
-	pOvl = &m_SendOverlapped;
-	pOvl->Offset = OVL_SEND;
-	pOvl->OffsetHigh = out.len;
-
-	ret_value = WSASend(m_Socket, &out, 1, &sent, dwFlag, pOvl, nullptr);
-	//if( sent > 100 )
-	//	TRACE(_T("Send %d BYtes\n"), sent);
-
-	if (ret_value == SOCKET_ERROR)
+	// Add this packet to the circular buffer.
+	// Ensure we do not allow resizing; we do not want these pointers invalidated.
+	auto span = _sendCircularBuffer.PutData(sendBuffer, index, false);
+	if (span.Buffer1 != nullptr
+		&& span.Length1 > 0)
 	{
-		int last_err;
-		last_err = WSAGetLastError();
-
-		if (last_err == WSA_IO_PENDING)
-		{
-			spdlog::debug("IOCPSocket2::Send: socketId={} IO_PENDING", m_Sid);
-			m_nPending++;
-#ifdef __SAMMA
-			if (m_nPending > 3)
-				goto close_routine;
-#endif
-			sent = length;
-		}
-		else if (last_err == WSAEWOULDBLOCK)
-		{
-			spdlog::debug("IOCPSocket2::Send: socketId={} WOULDBLOCK", m_Sid);
-
-			m_nWouldblock++;
-			if (m_nWouldblock > 3)
-				goto close_routine;
-			return 0;
-		}
-		else
-		{
-			spdlog::error("IOCPSocket2::Send: socketId={} winsock error={}",
-				m_Sid, last_err);
-			m_nSocketErr++;
-			goto close_routine;
-		}
+		auto queuedSend = std::make_unique<QueuedSend>();
+		queuedSend->IsOwned = false;
+		queuedSend->BufferSpan = span;
+		_sendQueue.push(std::move(queuedSend));
 	}
-	else if (ret_value == 0)
+	// Failed to add to the buffer, it has no room.
+	// Allocate and queue.
+	else
 	{
-		m_nPending = 0;
-		m_nWouldblock = 0;
-		m_nSocketErr = 0;
+		auto queuedSend = std::make_unique<QueuedSend>();
+		queuedSend->IsOwned = true;
+		queuedSend->BufferSpan.Buffer1 = new char[index];
+		queuedSend->BufferSpan.Length1 = index;
+		memcpy(queuedSend->BufferSpan.Buffer1, sendBuffer, index);
+		_sendQueue.push(std::move(queuedSend));
 	}
 
-	return sent;
+	if (!DoSend(false))
+		return -1;
 
-close_routine:
-	pOvl = &m_RecvOverlapped;
-	pOvl->Offset = OVL_CLOSE;
-
-	hComport = m_pIOCPort->m_hServerIOCPort;
-	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
-
-	return -1;
+	return index;
 }
 
-int CIOCPSocket2::Receive()
+bool CIOCPSocket2::DoSend(bool fromAsyncChain)
 {
-	int RetValue;
-	WSABUF in;
-	DWORD insize, dwFlag = 0;
-	OVERLAPPED* pOvl;
-	HANDLE	hComport = nullptr;
+	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
 
-	memset(m_pRecvBuff, 0, sizeof(m_pRecvBuff));
-	in.len = MAX_PACKET_SIZE;
-	in.buf = m_pRecvBuff;
+	// Send currently in progress.
+	// Don't attempt to write; it's in the queue, it'll be processed once the send is completed.
+	if (_sendInProgress)
+		return false;
 
-	pOvl = &m_RecvOverlapped;
-	pOvl->Offset = OVL_RECEIVE;
-
-	RetValue = WSARecv(m_Socket, &in, 1, &insize, &dwFlag, pOvl, nullptr);
-
-	if (RetValue == SOCKET_ERROR)
+	// When we finish a send, we should pop the last entry before queueing up another send.
+	if (fromAsyncChain)
 	{
-		int last_err;
-		last_err = WSAGetLastError();
-
-		if (last_err == WSA_IO_PENDING)
-		{
-//			TRACE(_T("RECV : IO_PENDING[SID=%d]\n"), m_Sid);
-//			m_nPending++;
-//			if( m_nPending > 3 )
-//				goto close_routine;
-			return 0;
-		}
-		else if (last_err == WSAEWOULDBLOCK)
-		{
-			spdlog::debug("IOCPSocket2::Receive: socketId={} WOULDBLOCK", m_Sid);
-
-			m_nWouldblock++;
-			if (m_nWouldblock > 3)
-				goto close_routine;
-			return 0;
-		}
-		else
-		{
-			spdlog::error("IOCPSocket2::Receive: socketId={} winsock error={}",
-				m_Sid, last_err);
-
-			m_nSocketErr++;
-			if (m_nSocketErr == 2)
-				goto close_routine;
-			return -1;
-		}
+		_ASSERT(!_sendQueue.empty());
+		_sendQueue.pop();
+		_sendInProgress = false;
 	}
 
-	return (int) insize;
+	// Send queue is empty, nothing more to queue up.
+	// Consider this successful.
+	if (_sendQueue.empty())
+		return true;
 
-close_routine:
-	pOvl = &m_RecvOverlapped;
-	pOvl->Offset = OVL_CLOSE;
+	// Fetch the next entry to send.
+	// Note that we keep this in the queue until the send completes.
+	const auto& queuedSend = _sendQueue.front();
+	const auto& span = queuedSend->BufferSpan;
 
-	hComport = m_pIOCPort->m_hServerIOCPort;
-	PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
+	try
+	{
+		std::array<asio::const_buffer, 2> buffers;
+		size_t bufferCount = 1;
+		buffers[0] = asio::buffer(span.Buffer1, span.Length1);
 
-	return -1;
+		if (span.Buffer2 != nullptr
+			&& span.Length2 > 0)
+		{
+			buffers[1] = asio::buffer(span.Buffer2, span.Length2);
+			++bufferCount;
+		}
+
+		_socket.async_write_some(buffers,
+			std::bind(&CIOCPort::OnPostSend, _iocPort, std::placeholders::_1, std::placeholders::_2, this));
+
+		_sendInProgress = true;
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("IOCPSocket2::Send: failed to post send for socketId={}: {}",
+			_socketId, ex.what());
+		Close();
+		return false;
+	}
+
+	return true;
+}
+
+void CIOCPSocket2::Receive()
+{
+	if (_iocPort == nullptr)
+		return;
+
+	memset(_recvBuffer, 0, sizeof(_recvBuffer));
+
+	try
+	{
+		_socket.async_read_some(asio::buffer(_recvBuffer),
+			std::bind(&CIOCPort::OnPostReceive, _iocPort, std::placeholders::_1, std::placeholders::_2, this));
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("IOCPSocket2::Receive: failed to post receive for socketId={}: {}",
+			_socketId, ex.what());
+		Close();
+	}
 }
 
 void CIOCPSocket2::ReceivedData(int length)
@@ -186,7 +164,7 @@ void CIOCPSocket2::ReceivedData(int length)
 		return;
 
 	int len = 0;
-	m_pBuffer->PutData(m_pRecvBuff, length);		// 받은 Data를 버퍼에 넣는다
+	_recvCircularBuffer.PutData(_recvBuffer, length);		// 받은 Data를 버퍼에 넣는다
 
 	char* pData = nullptr;
 	char* pDecData = nullptr;
@@ -209,16 +187,16 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 	int			len;
 	bool		foundCore;
 	MYSHORT		slen;
-	uint32_t		wSerial = 0;
 
-	len = m_pBuffer->GetValidCount();
+	len = _recvCircularBuffer.GetValidCount();
 
-	if (len <= 0)
+	if (len == 0
+		|| len < 0)
 		return false;
 
 	pTmp = new uint8_t[len];
 
-	m_pBuffer->GetData((char*) pTmp, len);
+	_recvCircularBuffer.GetData((char*) pTmp, len);
 
 	foundCore = false;
 
@@ -232,9 +210,6 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 		if (pTmp[i] == PACKET_START1
 			&& pTmp[i + 1] == PACKET_START2)
 		{
-//			if (m_wPacketSerial >= wSerial)
-//				goto cancelRoutine;
-
 			sPos = i + 2;
 
 			slen.b[0] = pTmp[sPos];
@@ -252,31 +227,30 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 
 			if ((ePos + 2) > len)
 				goto cancelRoutine;
-
 //			ASSERT(ePos+2 <= len);
 
 			if (pTmp[ePos] == PACKET_END1
 				&& pTmp[ePos + 1] == PACKET_END2)
 			{
 				data = new char[length + 1];
-				CopyMemory(data, (pTmp + sPos + 2), length);
+				CopyMemory((void*) data, (const void*) (pTmp + sPos + 2), length);
 				data[length] = 0;
 				foundCore = true;
-				int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
-//				TRACE(_T("data : %hs, len : %d\n"), data, length);
-//				TRACE(_T("head : %d, tail : %d\n"), head, tail );
+//				int head = _recvCircularBuffer.GetHeadPos(), tail = _recvCircularBuffer.GetTailPos();
+//				TRACE("data : %s, len : %d\n", data, length);
+//				TRACE("head : %d, tail : %d\n", head, tail );
 				break;
 			}
 			else
 			{
-				m_pBuffer->HeadIncrease(3);
+				_recvCircularBuffer.HeadIncrease(3);
 				break;
 			}
 		}
 	}
 
 	if (foundCore)
-		m_pBuffer->HeadIncrease(6 + length); //6: header 2+ end 2+ length 2
+		_recvCircularBuffer.HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
 
 cancelRoutine:
 	delete[] pTmp;
@@ -285,73 +259,64 @@ cancelRoutine:
 
 void CIOCPSocket2::Close()
 {
-	if (m_pIOCPort == nullptr)
+	if (_iocPort == nullptr
+		|| GetState() == STATE_DISCONNECTED)
 		return;
 
-	HANDLE hComport = nullptr;
-	OVERLAPPED* pOvl;
-	pOvl = &m_RecvOverlapped;
-	pOvl->Offset = OVL_CLOSE;
-
-	hComport = m_pIOCPort->m_hServerIOCPort;
-
-	int retValue = PostQueuedCompletionStatus(hComport, 0, m_Sid, pOvl);
-	if (retValue == 0)
+	asio::error_code ec;
+	try
 	{
-		int errValue = GetLastError();
-		spdlog::error("IOCPSocket2::Close: socketId={} PostQueuedCompletionStatus error={}",
-			m_Sid, errValue);
+		auto threadPool = _iocPort->GetWorkerPool();
+		if (threadPool == nullptr)
+			return;
+
+		asio::post(*threadPool, std::bind(&CIOCPort::OnPostClose, _iocPort, this));
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("IOCPSocket2::Close: failed to post close for socketId={}: {}",
+			_socketId, ex.what());
 	}
 }
 
 void CIOCPSocket2::CloseProcess()
 {
-	m_State = STATE_DISCONNECTED;
+	_state = STATE_DISCONNECTED;
 
-	if (m_Socket != INVALID_SOCKET)
-		closesocket(m_Socket);
-}
-
-void CIOCPSocket2::InitSocket(CIOCPort* pIOCPort)
-{
-	m_pIOCPort = pIOCPort;
-	m_RecvOverlapped.hEvent = nullptr;
-	m_SendOverlapped.hEvent = nullptr;
-	m_pBuffer->SetEmpty();
-	m_nSocketErr = 0;
-	m_nPending = 0;
-	m_nWouldblock = 0;
-
-	Initialize();
-}
-
-bool CIOCPSocket2::Accept(SOCKET listensocket, sockaddr* addr, int* len)
-{
-	m_Socket = accept(listensocket, addr, len);
-	if (m_Socket == INVALID_SOCKET)
+	if (_socket.is_open())
 	{
-		int err = WSAGetLastError();
-		spdlog::error("IOCPSocket2::Accept: socketId={} winsock error={}",
-			m_Sid, err);
-		return false;
+		asio::error_code ec;
+		_socket.shutdown(asio::socket_base::shutdown_both, ec);
+		if (ec)
+		{
+			spdlog::error("IOCPSocket2::CloseProcess: shutdown() failed for socketId={}: {}",
+				_socketId, ec.message());
+		}
+
+		_socket.close(ec);
+		if (ec)
+		{
+			spdlog::error("IOCPSocket2::CloseProcess: close() failed for socketId={}: {}",
+				_socketId, ec.message());
+		}
 	}
 
-//	int flag = 1;
-//	setsockopt(m_Socket, SOL_SOCKET, SO_DONTLINGER, (char *)&flag, sizeof(flag));
+	{
+		std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+		while (!_sendQueue.empty())
+			_sendQueue.pop();
+	}
+}
 
-//	int lensize, socklen=0;
+void CIOCPSocket2::InitSocket()
+{
+	_state = STATE_CONNECTED;
 
-//	getsockopt( m_Socket, SOL_SOCKET, SO_RCVBUF, (char*)&socklen, &lensize);
-//	TRACE(_T("getsockopt : %d\n"), socklen);
+	_sendCircularBuffer.SetEmpty();
+	_recvCircularBuffer.SetEmpty();
+	_socketErrorCount = 0;
 
-//	struct linger lingerOpt;
-
-//	lingerOpt.l_onoff = 1;
-//	lingerOpt.l_linger = 0;
-
-//	setsockopt(m_Socket, SOL_SOCKET, SO_LINGER, (char *)&lingerOpt, sizeof(lingerOpt));
-
-	return true;
+	Initialize();
 }
 
 void CIOCPSocket2::Parsing(int length, char* pData)

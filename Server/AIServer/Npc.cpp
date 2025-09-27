@@ -5788,11 +5788,10 @@ __Vector3 CNpc::GetDirection(__Vector3 vStart, __Vector3 vEnd)
 void CNpc::SendAll(CIOCPort* pIOCP, const char* pBuf, int nLength)
 {
 	if (nLength <= 0
-		|| nLength > sizeof(SEND_DATA::pBuf))
+		|| nLength > sizeof(_SEND_DATA::pBuf))
 		return;
 
-	SEND_DATA* pNewData = nullptr;
-	pNewData = new SEND_DATA;
+	_SEND_DATA* pNewData = new _SEND_DATA;
 	if (pNewData == nullptr)
 		return;
 
@@ -5800,11 +5799,7 @@ void CNpc::SendAll(CIOCPort* pIOCP, const char* pBuf, int nLength)
 	pNewData->sLength = nLength;
 	::CopyMemory(pNewData->pBuf, pBuf, nLength);
 
-	EnterCriticalSection(&(pIOCP->m_critSendData));
-	pIOCP->m_SendDataList.push_back(pNewData);
-	LeaveCriticalSection(&(pIOCP->m_critSendData));
-
-	PostQueuedCompletionStatus(pIOCP->m_hSendIOCP, 0, 0, nullptr);
+	pIOCP->QueueSendData(pNewData);
 }
 // ~sungyong 2002.05.22
 

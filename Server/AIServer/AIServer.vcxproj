@@ -156,6 +156,7 @@
     <ClCompile Include="PathFind.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="RoomEvent.cpp" />
+    <ClCompile Include="SendThreadMain.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -187,6 +188,7 @@
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RoomEvent.h" />
+    <ClInclude Include="SendThreadMain.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerDlg.h" />
     <ClInclude Include="StdAfx.h" />

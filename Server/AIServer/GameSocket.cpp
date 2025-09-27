@@ -35,7 +35,8 @@ extern CRITICAL_SECTION g_region_critical;
 	1. RecvUserInfo(), RecvAttackReq(), RecvUserUpdate() 수정
 */
 
-CGameSocket::CGameSocket()
+CGameSocket::CGameSocket(CIOCPort* iocPort)
+	: CIOCPSocket2(iocPort)
 {
 	//m_pParty = nullptr;
 }
@@ -50,7 +51,7 @@ CGameSocket::~CGameSocket()
 
 void CGameSocket::Initialize()
 {
-	m_sSocketID = -1;
+	_zoneNo = -1;
 	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	//m_pParty = new CParty;
 	//m_pParty->Initialize();
@@ -59,8 +60,8 @@ void CGameSocket::Initialize()
 
 void CGameSocket::CloseProcess()
 {
-	spdlog::info("GameSocket::CloseProcess: socketId={} sSid={}", m_sSocketID, m_Sid);
-	m_pMain->DeleteAllUserList(m_sSocketID);
+	spdlog::info("GameSocket::CloseProcess: zoneNo={} socketId={}", _zoneNo, _socketId);
+	m_pMain->DeleteAllUserList(_zoneNo);
 	Initialize();
 	CIOCPSocket2::CloseProcess();
 }
@@ -184,7 +185,7 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 		Send(pData, outindex);
 	}
 
-	m_sSocketID = byZoneNumber;
+	_zoneNo = byZoneNumber;
 
 	SetByte(pData, AI_SERVER_CONNECT, outindex);
 	SetByte(pData, byZoneNumber, outindex);
@@ -609,7 +610,7 @@ void CGameSocket::RecvAttackReq(char* pBuf)
 	sAmountRight = GetShort(pBuf, index);
 //
 
-	//TRACE(_T("RecvAttackReq : [sid=%d, tid=%d, zone_num=%d] \n"), sid, tid, m_sSocketID);
+	//TRACE(_T("RecvAttackReq : [sid=%d, tid=%d, zone_num=%d] \n"), sid, tid, _zoneNo);
 
 	CUser* pUser = m_pMain->GetUserPtr(sid);
 	if (pUser == nullptr)

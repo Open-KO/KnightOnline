@@ -12,59 +12,90 @@
 #include "IOCPort.h"
 #include "Define.h"
 
-class CCircularBuffer;
+#include <shared/CircularBuffer.h>
+
 class CIOCPSocket2
 {
+	friend class CIOCPort;
+
+	using RawSocket_t = asio::ip::tcp::socket;
+
 public:
-	void InitSocket(CIOCPort* pIOCPort);
+	int GetSocketID() const
+	{
+		return _socketId;
+	}
+
+	void SetSocketID(int sid)
+	{
+		_socketId = sid;
+	}
+
+	uint8_t GetState() const
+	{
+		return _state;
+	}
+
+	CIOCPSocket2(CIOCPort* iocport);
+	virtual ~CIOCPSocket2();
+
+	void InitSocket();
 	void Close();
 	bool PullOutCore(char*& data, int& length);
 	void ReceivedData(int length);
-	int Receive();
-	int Send(char* pBuf, long length, int dwFlag = 0);
-	bool Accept(SOCKET listensocket, struct sockaddr* addr, int* len);
+	void Receive();
+	int Send(char* pBuf, int length);
 
-	int GetSocketID() const {
-		return m_Sid;
-	}
+private:
+	bool DoSend(bool fromAsyncChain);
 
-	void SetSocketID(int sid) {
-		m_Sid = sid;
-	}
-
-	HANDLE GetSocketHandle() const {
-		return (HANDLE) m_Socket;
-	}
-
-	uint8_t GetState() const {
-		return m_State;
-	}
-
+public:
 	virtual void CloseProcess();
 	virtual void Parsing(int length, char* pData);
 	virtual void Initialize();
 
-	CIOCPSocket2();
-	virtual ~CIOCPSocket2();
-
-	int16_t				m_nSocketErr;
-	int16_t				m_nPending;
-	int16_t				m_nWouldblock;
-
 protected:
-	CIOCPort*			m_pIOCPort;
-	CCircularBuffer*	m_pBuffer;
+	CIOCPort* _iocPort;
 
-	SOCKET				m_Socket;
+	// Data is written here directly from the socket. It shouldn't be used directly.
+	char					_recvBuffer[SOCKET_BUFF_SIZE];
 
-	char				m_pRecvBuff[MAX_PACKET_SIZE];
-	char				m_pSendBuff[MAX_PACKET_SIZE];
+	// Received data is output to the circular buffer from _recvBuffer.
+	// This should be parsed to handle packets.
+	CCircularBuffer			_recvCircularBuffer;
 
-	OVERLAPPED			m_RecvOverlapped;
-	OVERLAPPED			m_SendOverlapped;
+	// Sends are queued for consistency.
+	// These are typically submitted as spans of the circular buffer, so we usually just send {portion 1},{len 1}.
+	// Upon wraparound, this splits the write into 2, so we submit {portion 1},{len 1} (end of the circular buffer)
+	// and {portion 2},{len 2} (start of the buffer).
+	// These are not considered owned.
+	// In the event there's too much data in the circular buffer to send, we allocate our own contiguous buffer here for it,
+	// and submit that instead.
+	// This buffer is considered owned (by the send queue), so the buffer will be freed once the send is complete.
+	struct QueuedSend
+	{
+		CircularBufferSpan	BufferSpan = {};
+		bool				IsOwned = false;
 
-	uint8_t				m_State;
-	int					m_Sid;
+		~QueuedSend()
+		{
+			if (IsOwned)
+				delete[] BufferSpan.Buffer1;
+		}
+	};
+
+	std::queue<std::unique_ptr<QueuedSend>>	_sendQueue;
+	std::recursive_mutex	_sendMutex;
+
+	CCircularBuffer			_sendCircularBuffer;
+	bool					_sendInProgress;
+
+	RawSocket_t				_socket;
+
+	uint8_t					_state;
+	int16_t					_socketErrorCount;
+
+	int						_socketId;
 
 };
 

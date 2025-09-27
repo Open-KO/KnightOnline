@@ -165,10 +165,16 @@ void CIOCPort::AsyncAccept()
 
 	try
 	{
-		_acceptor->async_accept([this](const asio::error_code& ec, asio::ip::tcp::socket rawSocket) mutable
+		_acceptor->async_accept([this](const asio::error_code& ec, asio::ip::tcp::socket rawSocket)
 		{
 			if (!ec)
 			{
+				if (!_acceptingConnections)
+				{
+					rawSocket.close();
+					return;
+				}
+
 				OnAccept(rawSocket);
 			}
 			else

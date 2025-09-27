@@ -18,15 +18,16 @@ class CServerDlg;
 class CUser;
 class MAP;
 //class CParty;
-
+class CIOCPort;
 class CGameSocket : public CIOCPSocket2
 {
 public:
 	CServerDlg* m_pMain;
 	CParty		m_Party;
-	int16_t m_sSocketID;
+	int16_t		_zoneNo;
+
 public:
-	CGameSocket();
+	CGameSocket(CIOCPort* iocPort);
 	virtual ~CGameSocket();
 
 	void Initialize();

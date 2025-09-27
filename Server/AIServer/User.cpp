@@ -230,7 +230,7 @@ void CUser::SendMagicAttackResult(int tuid, uint8_t result, int16_t sDamage, int
 void CUser::SendAll(const char* pBuf, int nLength)
 {
 	if (nLength <= 0
-		|| nLength > sizeof(SEND_DATA::pBuf))
+		|| nLength > sizeof(_SEND_DATA::pBuf))
 		return;
 
 	if (m_iUserId < 0
@@ -248,8 +248,7 @@ void CUser::SendAll(const char* pBuf, int nLength)
 	if (pMap == nullptr)
 		return;
 
-	SEND_DATA* pNewData = nullptr;
-	pNewData = new SEND_DATA;
+	_SEND_DATA* pNewData = new _SEND_DATA;
 	if (pNewData == nullptr)
 		return;
 
@@ -257,11 +256,7 @@ void CUser::SendAll(const char* pBuf, int nLength)
 	pNewData->sLength = nLength;
 	::CopyMemory(pNewData->pBuf, pBuf, nLength);
 
-	EnterCriticalSection(&m_pIocport->m_critSendData);
-	m_pIocport->m_SendDataList.push_back(pNewData);
-	LeaveCriticalSection(&m_pIocport->m_critSendData);
-
-	PostQueuedCompletionStatus(m_pIocport->m_hSendIOCP, 0, 0, nullptr);
+	m_pIocport->QueueSendData(pNewData);
 }
 // ~sungyong 2002.05.22
 
