@@ -15,6 +15,10 @@
 class CCircularBuffer;
 class CIOCPSocket2
 {
+	friend class CIOCPort;
+
+	using RawSocket_t = std::unique_ptr<asio::ip::tcp::socket>;
+
 public:
 	int GetSocketID() const
 	{
@@ -34,7 +38,7 @@ public:
 	CIOCPSocket2(CIOCPort* iocport);
 	virtual ~CIOCPSocket2();
 
-	void InitSocket(asio::ip::tcp::socket&& socket);
+	void InitSocket();
 	void Close();
 	bool PullOutCore(char*& data, int& length);
 	void ReceivedData(int length);
@@ -45,18 +49,18 @@ public:
 	virtual void Parsing(int length, char* pData);
 	virtual void Initialize();
 
-	int16_t					m_nSocketErr;
+	int16_t				m_nSocketErr;
 
 protected:
-	CIOCPort*				m_pIOCPort;
-	CCircularBuffer*		m_pBuffer;
+	CIOCPort*			m_pIOCPort;
+	CCircularBuffer*	m_pBuffer;
 
-	asio::ip::tcp::socket	m_Socket;
+	RawSocket_t			m_Socket;
 
-	char					m_pRecvBuff[SOCKET_BUFF_SIZE];
+	char				m_pRecvBuff[SOCKET_BUFF_SIZE];
 
-	uint8_t					m_State;
-	int						m_Sid;
+	uint8_t				m_State;
+	int					m_Sid;
 };
 
 #endif // !defined(AFX_IOCPSOCKET2_H__36499609_63DD_459C_B4D0_1686FEEC67C2__INCLUDED_)

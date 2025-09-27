@@ -12,8 +12,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
-
-typedef std::list<int>  SidList;
+#include <queue>
 
 class CIOCPSocket2;
 class CIOCPort
@@ -42,8 +41,9 @@ public:
 	void DeleteAllArray();
 
 private:
-	void AsyncAccept();
-	void OnAccept(std::unique_ptr<asio::ip::tcp::socket>& socket);
+	std::unique_ptr<asio::ip::tcp::socket> PopRawSocket();
+	void AsyncAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket);
+	void OnAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket);
 
 protected:
 	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
@@ -54,7 +54,6 @@ protected:
 public:
 	int m_SocketArraySize;
 
-	SidList m_SidList;
 	CIOCPSocket2** m_SockArray;
 	CIOCPSocket2** m_SockArrayInActive;
 
@@ -67,7 +66,11 @@ protected:
 
 	std::atomic<bool> _acceptingConnections;
 
+	std::queue<int> _socketIdQueue;
+	std::queue<std::unique_ptr<asio::ip::tcp::socket>> _rawSocketQueue;
+
 	std::recursive_mutex _socketMutex;
+	std::mutex _rawSocketMutex;
 };
 
 #endif // !defined(AFX_IOCPORT_H__1555441D_142E_4C26_B889_D9DCFC5E54E8__INCLUDED_)

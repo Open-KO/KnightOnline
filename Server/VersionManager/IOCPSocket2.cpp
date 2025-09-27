@@ -17,7 +17,7 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CIOCPSocket2::CIOCPSocket2(CIOCPort* iocPort)
-	: m_pIOCPort(iocPort), m_Socket(iocPort->GetIoContext())
+	: m_pIOCPort(iocPort)
 {
 	m_pBuffer = new CCircularBuffer(SOCKET_BUFF_SIZE);
 }
@@ -51,7 +51,7 @@ int CIOCPSocket2::Send(char* pBuf, long length)
 
 	try
 	{
-		m_Socket.async_write_some(asio::buffer(sendBuffer, index),
+		m_Socket->async_write_some(asio::buffer(sendBuffer, index),
 			[this, sendBuffer_ = std::move(sendBuffer_)]
 			(const asio::error_code& ec, size_t bytesTransferred) mutable
 			{
@@ -78,7 +78,7 @@ void CIOCPSocket2::Receive()
 
 	try
 	{
-		m_Socket.async_read_some(asio::buffer(m_pRecvBuff),
+		m_Socket->async_read_some(asio::buffer(m_pRecvBuff),
 			std::bind(&CIOCPort::OnPostReceive, m_pIOCPort, std::placeholders::_1, std::placeholders::_2, this));
 	}
 	catch (const asio::system_error& ex)
@@ -183,10 +183,6 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 	if (foundCore)
 		m_pBuffer->HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
 
-	delete[] pTmp;
-
-	return foundCore;
-
 cancelRoutine:
 	delete[] pTmp;
 	return foundCore;
@@ -217,10 +213,11 @@ void CIOCPSocket2::CloseProcess()
 {
 	m_State = STATE_DISCONNECTED;
 
-	if (m_Socket.is_open())
+	if (m_Socket != nullptr
+		&& m_Socket->is_open())
 	{
 		asio::error_code ec;
-		m_Socket.close(ec);
+		m_Socket->close(ec);
 
 		if (ec)
 		{
@@ -230,9 +227,8 @@ void CIOCPSocket2::CloseProcess()
 	}
 }
 
-void CIOCPSocket2::InitSocket(asio::ip::tcp::socket&& socket)
+void CIOCPSocket2::InitSocket()
 {
-	m_Socket = std::move(socket);
 	m_pBuffer->SetEmpty();
 	m_nSocketErr = 0;
 
