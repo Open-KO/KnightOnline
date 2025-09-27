@@ -17,74 +17,139 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CIOCPSocket2::CIOCPSocket2(CIOCPort* iocPort)
-	: m_pIOCPort(iocPort)
+	: _iocPort(iocPort), _recvCircularBuffer(SOCKET_BUFF_SIZE), _sendCircularBuffer(SOCKET_BUFF_SIZE)
 {
-	m_pBuffer = new CCircularBuffer(SOCKET_BUFF_SIZE);
+	_state = STATE_DISCONNECTED;
+	_sendInProgress = false;
 }
 
 CIOCPSocket2::~CIOCPSocket2()
 {
-	delete m_pBuffer;
 }
 
-int CIOCPSocket2::Send(char* pBuf, long length)
+int CIOCPSocket2::Send(char* pBuf, int length)
 {
-	if (length > MAX_PACKET_SIZE)
-		return 0;
-
 	constexpr int PacketHeaderSize = 6;
 
-	// TODO: A circular buffer would be better for this.
-	auto sendBuffer_ = std::make_unique<uint8_t[]>(length + PacketHeaderSize);
-	uint8_t* sendBuffer = sendBuffer_.get();
+	_ASSERT(length >= 0);
+	_ASSERT(length + PacketHeaderSize <= MAX_PACKET_SIZE);
 
-	int index = 0;
-
-	sendBuffer[index++] = PACKET_START1;
-	sendBuffer[index++] = PACKET_START2;
-	memcpy(&sendBuffer[index], &length, 2);
-	index += 2;
-	memcpy(&sendBuffer[index], pBuf, length);
-	index += length;
-	sendBuffer[index++] = (uint8_t) PACKET_END1;
-	sendBuffer[index++] = (uint8_t) PACKET_END2;
-
-	try
-	{
-		m_Socket->async_write_some(asio::buffer(sendBuffer, index),
-			[this, sendBuffer_ = std::move(sendBuffer_)]
-			(const asio::error_code& ec, size_t bytesTransferred) mutable
-			{
-				m_pIOCPort->OnPostSend(ec, bytesTransferred, this);
-			});
-	}
-	catch (const asio::system_error& ex)
-	{
-		spdlog::error("IOCPSocket2::Send: failed to post send for socketId={}: {}",
-			m_Sid, ex.what());
-		Close();
+	if (length < 0
+		|| length + PacketHeaderSize > MAX_PACKET_SIZE)
 		return -1;
+
+	char sendBuffer[MAX_PACKET_SIZE];
+	int index = 0;
+	SetByte(sendBuffer, PACKET_START1, index);
+	SetByte(sendBuffer, PACKET_START2, index);
+	SetShort(sendBuffer, length, index);
+	SetString(sendBuffer, pBuf, length, index);
+	SetByte(sendBuffer, PACKET_END1, index);
+	SetByte(sendBuffer, PACKET_END2, index);
+
+	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+
+	// Add this packet to the circular buffer.
+	// Ensure we do not allow resizing; we do not want these pointers invalidated.
+	auto span = _sendCircularBuffer.PutData(sendBuffer, index, false);
+	if (span.Buffer1 != nullptr
+		&& span.Length1 > 0)
+	{
+		auto queuedSend = std::make_unique<QueuedSend>();
+		queuedSend->IsOwned = false;
+		queuedSend->BufferSpan = span;
+		_sendQueue.push(std::move(queuedSend));
 	}
+	// Failed to add to the buffer, it has no room.
+	// Allocate and queue.
+	else
+	{
+		auto queuedSend = std::make_unique<QueuedSend>();
+		queuedSend->IsOwned = true;
+		queuedSend->BufferSpan.Buffer1 = new char[index];
+		queuedSend->BufferSpan.Length1 = index;
+		memcpy(queuedSend->BufferSpan.Buffer1, sendBuffer, index);
+		_sendQueue.push(std::move(queuedSend));
+	}
+
+	if (!DoSend(false))
+		return -1;
 
 	return index;
 }
 
-void CIOCPSocket2::Receive()
+bool CIOCPSocket2::DoSend(bool fromAsyncChain)
 {
-	if (m_pIOCPort == nullptr)
-		return;
+	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
 
-	memset(m_pRecvBuff, 0, sizeof(m_pRecvBuff));
+	// Send currently in progress.
+	// Don't attempt to write; it's in the queue, it'll be processed once the send is completed.
+	if (_sendInProgress)
+		return false;
+
+	// When we finish a send, we should pop the last entry before queueing up another send.
+	if (fromAsyncChain)
+	{
+		_ASSERT(!_sendQueue.empty());
+		_sendQueue.pop();
+		_sendInProgress = false;
+	}
+
+	// Send queue is empty, nothing more to queue up.
+	// Consider this successful.
+	if (_sendQueue.empty())
+		return true;
+
+	// Fetch the next entry to send.
+	// Note that we keep this in the queue until the send completes.
+	const auto& queuedSend = _sendQueue.front();
+	const auto& span = queuedSend->BufferSpan;
 
 	try
 	{
-		m_Socket->async_read_some(asio::buffer(m_pRecvBuff),
-			std::bind(&CIOCPort::OnPostReceive, m_pIOCPort, std::placeholders::_1, std::placeholders::_2, this));
+		std::array<asio::const_buffer, 2> buffers;
+		size_t bufferCount = 1;
+		buffers[0] = asio::buffer(span.Buffer1, span.Length1);
+
+		if (span.Buffer2 != nullptr
+			&& span.Length2 > 0)
+		{
+			buffers[1] = asio::buffer(span.Buffer2, span.Length2);
+			++bufferCount;
+		}
+
+		_socket->async_write_some(buffers,
+			std::bind(&CIOCPort::OnPostSend, _iocPort, std::placeholders::_1, std::placeholders::_2, this));
+
+		_sendInProgress = true;
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("IOCPSocket2::Send: failed to post send for socketId={}: {}",
+			_socketId, ex.what());
+		Close();
+		return false;
+	}
+
+	return true;
+}
+
+void CIOCPSocket2::Receive()
+{
+	if (_iocPort == nullptr)
+		return;
+
+	memset(_recvBuffer, 0, sizeof(_recvBuffer));
+
+	try
+	{
+		_socket->async_read_some(asio::buffer(_recvBuffer),
+			std::bind(&CIOCPort::OnPostReceive, _iocPort, std::placeholders::_1, std::placeholders::_2, this));
 	}
 	catch (const asio::system_error& ex)
 	{
 		spdlog::error("IOCPSocket2::Receive: failed to post receive for socketId={}: {}",
-			m_Sid, ex.what());
+			_socketId, ex.what());
 		Close();
 	}
 }
@@ -95,7 +160,7 @@ void CIOCPSocket2::ReceivedData(int length)
 		return;
 
 	int len = 0;
-	m_pBuffer->PutData(m_pRecvBuff, length);		// 받은 Data를 버퍼에 넣는다
+	_recvCircularBuffer.PutData(_recvBuffer, length);		// 받은 Data를 버퍼에 넣는다
 
 	char* pData = nullptr;
 	char* pDecData = nullptr;
@@ -119,7 +184,7 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 	bool		foundCore;
 	MYSHORT		slen;
 
-	len = m_pBuffer->GetValidCount();
+	len = _recvCircularBuffer.GetValidCount();
 
 	if (len == 0
 		|| len < 0)
@@ -127,7 +192,7 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 
 	pTmp = new uint8_t[len];
 
-	m_pBuffer->GetData((char*) pTmp, len);
+	_recvCircularBuffer.GetData((char*) pTmp, len);
 
 	foundCore = false;
 
@@ -167,21 +232,21 @@ bool CIOCPSocket2::PullOutCore(char*& data, int& length)
 				CopyMemory((void*) data, (const void*) (pTmp + sPos + 2), length);
 				data[length] = 0;
 				foundCore = true;
-				int head = m_pBuffer->GetHeadPos(), tail = m_pBuffer->GetTailPos();
+//				int head = _recvCircularBuffer.GetHeadPos(), tail = _recvCircularBuffer.GetTailPos();
 //				TRACE("data : %s, len : %d\n", data, length);
 //				TRACE("head : %d, tail : %d\n", head, tail );
 				break;
 			}
 			else
 			{
-				m_pBuffer->HeadIncrease(3);
+				_recvCircularBuffer.HeadIncrease(3);
 				break;
 			}
 		}
 	}
 
 	if (foundCore)
-		m_pBuffer->HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
+		_recvCircularBuffer.HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
 
 cancelRoutine:
 	delete[] pTmp;
@@ -190,47 +255,57 @@ cancelRoutine:
 
 void CIOCPSocket2::Close()
 {
-	if (m_pIOCPort == nullptr)
+	if (_iocPort == nullptr
+		|| GetState() == STATE_DISCONNECTED)
 		return;
 
 	asio::error_code ec;
 	try
 	{
-		auto threadPool = m_pIOCPort->GetWorkerPool();
+		auto threadPool = _iocPort->GetWorkerPool();
 		if (threadPool == nullptr)
 			return;
 
-		asio::post(*threadPool, std::bind(&CIOCPort::OnPostClose, m_pIOCPort, this));
+		asio::post(*threadPool, std::bind(&CIOCPort::OnPostClose, _iocPort, this));
 	}
 	catch (const asio::system_error& ex)
 	{
 		spdlog::error("IOCPSocket2::Close: failed to post close for socketId={}: {}",
-			m_Sid, ex.what());
+			_socketId, ex.what());
 	}
 }
 
 void CIOCPSocket2::CloseProcess()
 {
-	m_State = STATE_DISCONNECTED;
+	_state = STATE_DISCONNECTED;
 
-	if (m_Socket != nullptr
-		&& m_Socket->is_open())
+	if (_socket != nullptr
+		&& _socket->is_open())
 	{
 		asio::error_code ec;
-		m_Socket->close(ec);
+		_socket->close(ec);
 
 		if (ec)
 		{
 			spdlog::error("IOCPSocket2::CloseProcess: close() failed for socketId={}: {}",
-				m_Sid, ec.message());
+				_socketId, ec.message());
 		}
+	}
+
+	{
+		std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+		while (!_sendQueue.empty())
+			_sendQueue.pop();
 	}
 }
 
 void CIOCPSocket2::InitSocket()
 {
-	m_pBuffer->SetEmpty();
-	m_nSocketErr = 0;
+	_state = STATE_CONNECTED;
+
+	_sendCircularBuffer.SetEmpty();
+	_recvCircularBuffer.SetEmpty();
+	_socketErrorCount = 0;
 
 	Initialize();
 }

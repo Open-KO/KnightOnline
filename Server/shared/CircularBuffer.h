@@ -8,7 +8,16 @@
 #if _MSC_VER >= 1000
 #pragma once
 #endif // _MSC_VER >= 1000
+
 #include <spdlog/spdlog.h>
+
+struct CircularBufferSpan
+{
+	char*	Buffer1 = nullptr;
+	int		Length1 = 0;
+	char*	Buffer2 = nullptr;
+	int		Length2 = 0;
+};
 
 class CCircularBuffer
 {
@@ -30,17 +39,17 @@ public:
 		m_pBuffer = nullptr;
 	}
 
-	void	PutData(char* pData, int len);
+	CircularBufferSpan PutData(char* pData, int len, bool resize = true);
 	void	GetData(char* pData, int len);
 	int		GetOutData(char* pData); //HeadPos, 변화
-	void	PutData(char& data);
+
 	char& GetHeadData() {
 		return m_pBuffer[m_iHeadPos];
 	}
 
 	// 1 Byte Operation;
 	// false : 모든데이터 다빠짐, TRUE: 정상적으로 진행중
-	BOOL	HeadIncrease(int increasement = 1);
+	bool	HeadIncrease(int increasement = 1);
 
 	void SetEmpty() {
 		m_iHeadPos = m_iTailPos = 0;
@@ -58,16 +67,16 @@ public:
 		return m_iTailPos;
 	}
 
-	int		GetValidCount();
+	int GetValidCount() const;
 
 protected:
 	// over flow 먼저 점검한 후 IndexOverFlow 점검
-	inline BOOL IsOverFlowCondition(int& len) {
-		return (len >= m_iBufSize - GetValidCount()) ? TRUE : FALSE;
+	inline bool IsOverFlowCondition(int len) const {
+		return (len >= m_iBufSize - GetValidCount());
 	}
 
-	inline BOOL IsIndexOverFlow(int& len) {
-		return (len + m_iTailPos >= m_iBufSize) ? TRUE : FALSE;
+	inline bool IsIndexOverFlow(int len) const {
+		return (len + m_iTailPos >= m_iBufSize);
 	}
 
 	void	BufferResize(); //overflow condition 일때 size를 현재의 두배로 늘림
@@ -80,7 +89,7 @@ protected:
 	int		m_iTailPos;
 };
 
-inline int CCircularBuffer::GetValidCount()
+inline int CCircularBuffer::GetValidCount() const
 {
 	int count = m_iTailPos - m_iHeadPos;
 	if (count < 0)
@@ -105,38 +114,44 @@ inline void CCircularBuffer::BufferResize()
 	m_pBuffer = pNewData;
 }
 
-inline void CCircularBuffer::PutData(char& data)
+inline CircularBufferSpan CCircularBuffer::PutData(char* pData, int len, bool resize /*= true*/)
 {
-	int len = 1;
-	while (IsOverFlowCondition(len))
-		BufferResize();
+	CircularBufferSpan span = {};
 
-	m_pBuffer[m_iTailPos++] = data;
-	if (m_iTailPos == m_iBufSize)
-		m_iTailPos = 0;
-}
-
-inline void CCircularBuffer::PutData(char* pData, int len)
-{
 	if (len <= 0)
 	{
-		spdlog::error("CCircularBuffer::PutData len is <=0");
-		return;
+		spdlog::error("CCircularBuffer::PutData len is <= 0");
+		return span;
 	}
 
-	while (IsOverFlowCondition(len))
-		BufferResize();
+	if (resize)
+	{
+		while (IsOverFlowCondition(len))
+			BufferResize();
+	}
+	else
+	{
+		if (IsOverFlowCondition(len))
+			return span;
+	}
 
 	if (IsIndexOverFlow(len))
 	{
 		int FirstCopyLen = m_iBufSize - m_iTailPos;
 		int SecondCopyLen = len - FirstCopyLen;
 		ASSERT(FirstCopyLen);
-		memcpy(m_pBuffer + m_iTailPos, pData, FirstCopyLen);
+
+		span.Buffer1 = &m_pBuffer[m_iTailPos];
+		span.Length1 = FirstCopyLen;
+
+		memcpy(span.Buffer1, pData, FirstCopyLen);
 
 		if (SecondCopyLen > 0)
 		{
-			memcpy(m_pBuffer, pData + FirstCopyLen, SecondCopyLen);
+			span.Buffer2 = m_pBuffer;
+			span.Length2 = SecondCopyLen;
+
+			memcpy(span.Buffer2, pData + FirstCopyLen, SecondCopyLen);
 			m_iTailPos = SecondCopyLen;
 		}
 		else
@@ -146,9 +161,14 @@ inline void CCircularBuffer::PutData(char* pData, int len)
 	}
 	else
 	{
-		memcpy(m_pBuffer + m_iTailPos, pData, len);
+		span.Buffer1 = &m_pBuffer[m_iTailPos];
+		span.Length1 = len;
+
+		memcpy(span.Buffer1, pData, len);
 		m_iTailPos += len;
 	}
+
+	return span;
 }
 
 inline int CCircularBuffer::GetOutData(char* pData)
@@ -190,7 +210,7 @@ inline void CCircularBuffer::GetData(char* pData, int len)
 	}
 }
 
-inline BOOL CCircularBuffer::HeadIncrease(int increasement)
+inline bool CCircularBuffer::HeadIncrease(int increasement)
 {
 	ASSERT(increasement <= GetValidCount());
 	m_iHeadPos += increasement;

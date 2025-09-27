@@ -49,7 +49,7 @@ protected:
 	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
 	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, CIOCPSocket2* iocpSocket);
 	void OnPostClose(CIOCPSocket2* iocpSocket);
-	void ProcessClose(CIOCPSocket2* iocpSocket);
+	bool ProcessClose(CIOCPSocket2* iocpSocket);
 
 public:
 	int m_SocketArraySize;

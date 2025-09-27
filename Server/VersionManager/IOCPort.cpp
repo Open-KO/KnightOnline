@@ -301,7 +301,7 @@ void CIOCPort::OnAccept(std::unique_ptr<asio::ip::tcp::socket>& rawSocket)
 		return;
 	}
 
-	iocpSocket->m_Socket = std::move(rawSocket);
+	iocpSocket->_socket = std::move(rawSocket);
 
 	iocpSocket->InitSocket();
 	iocpSocket->Receive();
@@ -323,7 +323,7 @@ void CIOCPort::OnPostReceive(const asio::error_code& ec, size_t bytesTransferred
 			spdlog::debug("IOCPort::OnPostReceive: socketId={} error={}",
 				iocpSocket->GetSocketID(), ec.message());
 
-			if (++iocpSocket->m_nSocketErr < 2)
+			if (++iocpSocket->_socketErrorCount < 2)
 				return;
 		}
 
@@ -353,35 +353,43 @@ void CIOCPort::OnPostSend(const asio::error_code& ec, size_t bytesTransferred, C
 		return;
 	}
 
-	iocpSocket->m_nSocketErr = 0;
+	iocpSocket->_socketErrorCount = 0;
+
+	// Pop this queued entry & dispatch next queued send if applicable.
+	iocpSocket->DoSend(true);
 }
 
 void CIOCPort::OnPostClose(CIOCPSocket2* iocpSocket)
 {
+	if (!ProcessClose(iocpSocket))
+		return;
+
 	spdlog::debug("IOCPort::OnPostClose: closed by Close() socketId={}",
 		iocpSocket->GetSocketID());
-
-	ProcessClose(iocpSocket);
 }
 
-void CIOCPort::ProcessClose(CIOCPSocket2* iocpSocket)
+bool CIOCPort::ProcessClose(CIOCPSocket2* iocpSocket)
 {
 	{
 		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
+		if (iocpSocket->GetState() == STATE_DISCONNECTED)
+			return false;
 
 		iocpSocket->CloseProcess();
 
 		PushSocket(iocpSocket, iocpSocket->GetSocketID());
 	}
 
-	_ASSERT(iocpSocket->m_Socket);
+	_ASSERT(iocpSocket->_socket);
 
-	if (iocpSocket->m_Socket != nullptr)
+	if (iocpSocket->_socket != nullptr)
 	{
 		std::lock_guard<std::mutex> lock(_rawSocketMutex);
 		_rawSocketQueue.push(
-			std::move(iocpSocket->m_Socket));
+			std::move(iocpSocket->_socket));
 	}
+
+	return true;
 }
 
 CIOCPSocket2* CIOCPort::PopSocket(int& socketId)
