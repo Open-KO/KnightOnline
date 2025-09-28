@@ -12144,19 +12144,19 @@ bool CUser::CheckPromotionEligible()
 		// Here we return that the user is already mastered
 		if (m_pUserData->m_sClass == CLASS_EL_PROTECTOR || m_pUserData->m_sClass == CLASS_KA_GUARDIAN)
 		{
-			SendSay(6006);
+			SendSay(-1, -1, 6006);
 		}
 		if (m_pUserData->m_sClass == CLASS_EL_ASSASIN || m_pUserData->m_sClass == CLASS_KA_PENETRATOR)
 		{
-			SendSay(7006);
+			SendSay(-1, -1, 7006);
 		}
 		if (m_pUserData->m_sClass == CLASS_EL_ENCHANTER || m_pUserData->m_sClass == CLASS_KA_NECROMANCER)
 		{
-			SendSay(8006);
+			SendSay(-1, -1, 8006);
 		}
 		if (m_pUserData->m_sClass == CLASS_EL_DRUID || m_pUserData->m_sClass == CLASS_KA_DARKPRIEST)
 		{
-			SendSay(9006);
+			SendSay(-1, -1, 9006);
 		}
 		return false;
 	}
@@ -12170,7 +12170,7 @@ bool CUser::CheckPromotionEligible()
 			if ((m_pUserData->m_sClass != CLASS_KA_BERSERKER && m_pUserData->m_sClass != CLASS_EL_BLADE)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(6001);
+				SendSay(-1, -1, 6001);
 				return false;
 			}
 			return true;
@@ -12178,7 +12178,7 @@ bool CUser::CheckPromotionEligible()
 			if ((m_pUserData->m_sClass != CLASS_KA_HUNTER && m_pUserData->m_sClass != CLASS_EL_RANGER)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(7001);
+				SendSay(-1, -1, 7001);
 				return false;
 			}
 			return true;
@@ -12186,7 +12186,7 @@ bool CUser::CheckPromotionEligible()
 			if ((m_pUserData->m_sClass != CLASS_KA_SORCERER && m_pUserData->m_sClass != CLASS_EL_MAGE)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(8001);
+				SendSay(-1, -1, 8001);
 				return false;
 			}
 			return true;
@@ -12194,7 +12194,7 @@ bool CUser::CheckPromotionEligible()
 			if ((m_pUserData->m_sClass != CLASS_KA_SHAMAN && m_pUserData->m_sClass != CLASS_EL_CLERIC)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(9001);
+				SendSay(-1, -1, 9001);
 				return false;
 			}
 			return true;
@@ -12262,7 +12262,7 @@ void CUser::SendNpcSay(const EXEC* pExec)
 	Send(send_buff, send_index);
 }
 
-void CUser::SendSay(int16_t message1, int16_t message2, int16_t message3, int16_t message4, int16_t message5, int16_t message6, int16_t message7, int16_t message8, int16_t eventId1, int16_t eventId2)
+void CUser::SendSay(int16_t eventId1, int16_t eventId2, int16_t message1, int16_t message2, int16_t message3, int16_t message4, int16_t message5, int16_t message6, int16_t message7, int16_t message8)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
