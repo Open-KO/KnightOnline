@@ -16,19 +16,19 @@ class CEbenezerDlg;
 class CAISocket : public CIOCPSocket2
 {
 private:
-	CEbenezerDlg* m_pMain;
-	CMagicProcess m_MagicProcess;
+	CEbenezerDlg* _main;
+	CMagicProcess _magicProcess;
 
 public:
-	int m_iZoneNum;
+	int _zoneNum;
 
-	CAISocket(int zonenum);
+	CAISocket(int zoneNum, CIOCPort* iocPort);
 	virtual ~CAISocket();
 
 	void Initialize();
 
 	int GetZoneNumber() const {
-		return m_iZoneNum;
+		return _zoneNum;
 	}
 
 	void Parsing(int len, char* pData);

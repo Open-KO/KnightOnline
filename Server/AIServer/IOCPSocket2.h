@@ -55,7 +55,7 @@ public:
 	virtual void Initialize();
 
 protected:
-	CIOCPort* _iocPort;
+	CIOCPort*				_iocPort;
 
 	// Data is written here directly from the socket. It shouldn't be used directly.
 	char					_recvBuffer[SOCKET_BUFF_SIZE];

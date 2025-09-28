@@ -15,7 +15,6 @@
 #include <db-library/ConnectionManager.h>
 
 constexpr int GAME_TIME       	= 100;
-constexpr int SEND_TIME			= 200;
 constexpr int PACKET_CHECK		= 300;
 constexpr int ALIVE_TIME		= 400;
 constexpr int MARKET_BBS_TIME	= 1000;
@@ -348,7 +347,7 @@ BOOL CEbenezerDlg::OnInitDialog()
 	m_Iocport.Init(MAX_USER, CLIENT_SOCKSIZE, 4);
 
 	for (int i = 0; i < MAX_USER; i++)
-		m_Iocport.m_SockArrayInActive[i] = new CUser();
+		m_Iocport.m_SockArrayInActive[i] = new CUser(&m_Iocport);
 
 	_ZONE_SERVERINFO* pInfo = m_ServerArray.GetData(m_nServerNo);
 	if (pInfo == nullptr)
@@ -656,10 +655,11 @@ HCURSOR CEbenezerDlg::OnQueryDragIcon()
 BOOL CEbenezerDlg::DestroyWindow()
 {
 	KillTimer(GAME_TIME);
-	KillTimer(SEND_TIME);
 	KillTimer(ALIVE_TIME);
 	KillTimer(MARKET_BBS_TIME);
 	KillTimer(PACKET_CHECK);
+
+	m_Iocport.Shutdown();
 
 	if (m_hReadQueueThread != nullptr)
 		TerminateThread(m_hReadQueueThread, 0);
@@ -748,8 +748,7 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 void CEbenezerDlg::UserAcceptThread()
 {
-	// User Socket Accept
-	ResumeThread(m_Iocport.m_hAcceptThread);
+	m_Iocport.StartAccept();
 	AddOutputMessage(_T("Accepting user connections"));
 }
 
@@ -794,9 +793,9 @@ void CEbenezerDlg::AddOutputMessage(const std::string& msg)
 void CEbenezerDlg::AddOutputMessage(const std::wstring& msg)
 {
 	_outputList.AddString(msg.data());
-	
+
 	// Set the focus to the last item and ensure it is visible
-	int lastIndex = _outputList.GetCount()-1;
+	int lastIndex = _outputList.GetCount() - 1;
 	_outputList.SetTopIndex(lastIndex);
 }
 
@@ -830,16 +829,6 @@ void CEbenezerDlg::OnTimer(UINT nIDEvent)
 					DeleteAllNpcList();
 			}
 			// sungyong~ 2002.05.23
-			break;
-
-		case SEND_TIME:
-			m_Iocport.m_PostOverlapped.Offset = OVL_SEND;
-			retval = PostQueuedCompletionStatus(m_Iocport.m_hSendIOCPort, 0, 0, &m_Iocport.m_PostOverlapped);		
-			if (!retval)
-			{
-				int errValue = GetLastError();
-				spdlog::error("EbenezerDlg::OnTimer: PostQueuedCompletionStatus error code {}", errValue);
-			}
 			break;
 
 		case ALIVE_TIME:
@@ -893,7 +882,7 @@ bool CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason
 		m_AISocketMap.DeleteData(zone);
 	}
 
-	pAISock = new CAISocket(zone);
+	pAISock = new CAISocket(zone, &m_Iocport);
 
 	if (!pAISock->Create())
 	{
@@ -922,7 +911,7 @@ bool CEbenezerDlg::AISocketConnect(int zone, bool flag, std::string* errorReason
 		return false;
 	}
 
-	if (!pAISock->Connect(&m_Iocport, m_AIServerIP, port))
+	if (!pAISock->Connect(m_AIServerIP, port))
 	{
 		delete pAISock;
 
@@ -1578,7 +1567,6 @@ void CEbenezerDlg::LoadConfig()
 	m_Ini.Save();
 
 	SetTimer(GAME_TIME, 6000, nullptr);
-	SetTimer(SEND_TIME, 200, nullptr);
 	SetTimer(ALIVE_TIME, 34000, nullptr);
 	SetTimer(MARKET_BBS_TIME, 300000, nullptr);
 	SetTimer(PACKET_CHECK, 360000, nullptr);
@@ -2425,7 +2413,7 @@ void CEbenezerDlg::SyncTest(int nType)
 			continue;
 
 		int size = pSocket->Send(pBuf, len);
-		fprintf(stream, "size=%d, zone=%d, number=%d\n", size, pSocket->m_iZoneNum, pMap->m_nZoneNumber);
+		fprintf(stream, "size=%d, zone=%d, number=%d\n", size, pSocket->_zoneNum, pMap->m_nZoneNumber);
 
 		//return;
 	}

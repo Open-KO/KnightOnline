@@ -232,11 +232,6 @@ constexpr int BBS_CHECK_TIME		= 36000;
 // Socket type
 #define TYPE_ACCEPT				0x01
 #define TYPE_CONNECT			0x02
-
-// Overlapped flag
-#define OVL_RECEIVE				0X01
-#define OVL_SEND				0X02
-#define OVL_CLOSE				0X03
 ////////////////////////////////////////////////////////////
 
 // ==================================================================

@@ -28,9 +28,9 @@ void SendThreadMain::queue(_SEND_DATA* sendData)
 
 void SendThreadMain::thread_loop()
 {
+	std::unique_lock<std::mutex> lock(_mutex);
 	while (_running)
 	{
-		std::unique_lock<std::mutex> lock(_mutex);
 		_cv.wait(lock);
 
 		if (!_running)

@@ -114,11 +114,18 @@ int CUdpSocket::SendUDPPacket(char* strAddress, char* pBuf, int len)
 	pTBuf[index++] = (uint8_t) PACKET_END1;
 	pTBuf[index++] = (uint8_t) PACKET_END2;
 
-	asio::ip::udp::endpoint endpoint(
-		asio::ip::make_address(strAddress),
-		_UDP_PORT);
-
 	asio::error_code ec;
+
+	asio::ip::address ip = asio::ip::make_address(strAddress, ec);
+	if (ec)
+	{
+		spdlog::error("UdpSocket::SendUDPPacket: invalid ip [err={} ip={}]",
+			ec.message(), ip.to_string());
+		return 0;
+	}
+
+	asio::ip::udp::endpoint endpoint(ip, _UDP_PORT);
+
 	s_size = static_cast<int>(_socket.send_to(
 		asio::buffer(pBuf, index),
 		endpoint,
@@ -128,7 +135,7 @@ int CUdpSocket::SendUDPPacket(char* strAddress, char* pBuf, int len)
 	if (ec)
 	{
 		spdlog::error("UdpSocket::SendUDPPacket: send_to() failed [err={} ip={}]",
-			ec.message(), endpoint.address().to_string());
+			ec.message(), ip.to_string());
 		return 0;
 	}
 

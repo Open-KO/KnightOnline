@@ -202,6 +202,9 @@ public:
 	uint8_t				m_byLastExchangeNum;
 
 public:
+	CUser(CIOCPort* iocPort);
+	virtual ~CUser();
+
 	bool CheckMiddleStatueCapture() const;
 	void SetZoneAbilityChange(int zone);
 	int16_t GetMaxWeightForClient() const;
@@ -386,8 +389,6 @@ public:
 	void LoginProcess(char* pBuf);
 	void Parsing(int len, char* pData);
 	void CloseProcess();
-	CUser();
-	virtual ~CUser();
 };
 
 #endif // !defined(AFX_USER_H__5FEC1968_ED75_4AAF_A4DB_CB48F6940B2E__INCLUDED_)

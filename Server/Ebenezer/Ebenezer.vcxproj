@@ -151,6 +151,7 @@
     <ClCompile Include="RecvUDPThread.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="EbenezerResourceFormatter.cpp" />
+    <ClCompile Include="SendWorkerThread.cpp" />
     <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -187,6 +188,7 @@
     <ClInclude Include="RecvUDPThread.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SendWorkerThread.h" />
     <ClInclude Include="SharedMem.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UdpSocket.h" />

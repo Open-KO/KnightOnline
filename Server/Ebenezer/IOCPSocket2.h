@@ -11,93 +11,118 @@
 
 #include "IOCPort.h"
 #include "Define.h"
-// Cryption
-#include <shared/JvCryption.h>
-///~
 
-class CCircularBuffer;
+#include <shared/CircularBuffer.h>
+#include <shared/JvCryption.h>
+
 class CCompressMng;
 class CIOCPSocket2
 {
+	friend class CIOCPort;
+
+	using RawSocket_t = asio::ip::tcp::socket;
+
 public:
-	void RegionPacketClear(char* GetBuf, int& len);
-	void RegionPacketAdd(char* pBuf, int len);
-	void SendCompressingPacket(const char* pData, int len);
-	void InitSocket(CIOCPort* pIOCPort);
-	void Close();
-	bool AsyncSelect(long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
-	bool SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
-	bool ShutDown(int nHow = SD_SEND);
-	bool PullOutCore(char*& data, int& length);
-	void ReceivedData(int length);
-	int  Receive();
-	int  Send(char* pBuf, long length, int dwFlag = 0);
-	bool Connect(CIOCPort* pIocp, const char* lpszHostAddress, UINT nHostPort);
-	bool Create(UINT nSocketPort = 0,
-				 int nSocketType = SOCK_STREAM,
-				 long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE,
-				 const char* lpszSocketAddress = nullptr);
-	bool Accept(SOCKET listensocket, struct sockaddr* addr, int* len);
-
-	int GetSocketID() const {
-		return m_Sid;
+	int GetSocketID() const
+	{
+		return _socketId;
 	}
 
-	void SetSocketID(int sid) {
-		m_Sid = sid;
+	void SetSocketID(int sid)
+	{
+		_socketId = sid;
 	}
 
-	HANDLE GetSocketHandle() const {
-		return (HANDLE) m_Socket;
+	uint8_t GetState() const
+	{
+		return _state;
 	}
 
-	uint8_t GetState() const {
-		return m_State;
+	uint8_t GetSockType() const
+	{
+		return _type;
 	}
 
-	uint8_t GetSockType() const {
-		return m_Type;
-	}
-
-	virtual void CloseProcess();
-	virtual void Parsing(int length, char* pData);
-	virtual void Initialize();
-
-	CIOCPSocket2();
+	CIOCPSocket2(CIOCPort* iocPort);
 	virtual ~CIOCPSocket2();
 
-	int16_t				m_nSocketErr;
-	int16_t				m_nPending;
-	int16_t				m_nWouldblock;
-	_REGION_BUFFER*		m_pRegionBuffer;
+	bool Create();
+	bool Connect(const char* hostAddress, uint16_t hostPort);
+	int  Send(char* pBuf, int length);
+
+private:
+	bool DoSend(bool fromAsyncChain);
+
+public:
+	void Receive();
+	void ReceivedData(int length);
+	bool PullOutCore(char*& data, int& length);
+	void Close();
+	virtual void CloseProcess();
+	void InitSocket();
+	virtual void Parsing(int length, char* pData);
+	virtual void Initialize();
+	void SendCompressingPacket(const char* pData, int len);
+	void RegionPacketAdd(char* pBuf, int len);
+	void RegionPacketClear(char* GetBuf, int& len);
+	const std::string& GetRemoteIP();
+
+public:
+	_REGION_BUFFER*			_regionBuffer;
 
 protected:
-	CIOCPort*			m_pIOCPort;
-	CCircularBuffer*	m_pBuffer;
+	CIOCPort*				_iocPort;
+	RawSocket_t				_socket;
 
-	SOCKET				m_Socket;
+	// Data is written here directly from the socket. It shouldn't be used directly.
+	char					_recvBuffer[MAX_PACKET_SIZE];
 
-	char				m_pRecvBuff[MAX_PACKET_SIZE];
-	char				m_pSendBuff[MAX_PACKET_SIZE];
+	// Received data is output to the circular buffer from _recvBuffer.
+	// This should be parsed to handle packets.
+	CCircularBuffer			_recvCircularBuffer;
 
-	HANDLE				m_hSockEvent;
+	// Sends are queued for consistency.
+	// These are typically submitted as spans of the circular buffer, so we usually just send {portion 1},{len 1}.
+	// Upon wraparound, this splits the write into 2, so we submit {portion 1},{len 1} (end of the circular buffer)
+	// and {portion 2},{len 2} (start of the buffer).
+	// These are not considered owned.
+	// In the event there's too much data in the circular buffer to send, we allocate our own contiguous buffer here for it,
+	// and submit that instead.
+	// This buffer is considered owned (by the send queue), so the buffer will be freed once the send is complete.
+	struct QueuedSend
+	{
+		CircularBufferSpan	BufferSpan = {};
+		bool				IsOwned = false;
 
-	OVERLAPPED			m_RecvOverlapped;
-	OVERLAPPED			m_SendOverlapped;
+		~QueuedSend()
+		{
+			if (IsOwned)
+				delete[] BufferSpan.Buffer1;
+		}
+	};
 
-	uint8_t				m_Type;
-	uint8_t				m_State;
-	int					m_Sid;
-	std::string			m_ConnectAddress;
+	std::queue<std::unique_ptr<QueuedSend>>	_sendQueue;
+	std::recursive_mutex	_sendMutex;
+
+	CCircularBuffer			_sendCircularBuffer;
+	bool					_sendInProgress;
+
+	bool					_remoteIpCached;
+	std::string				_remoteIp;
+
+	uint8_t					_type;
+	uint8_t					_state;
+	int16_t					_socketErrorCount;
+
+	int						_socketId;
 
 	// Cryption
-	CJvCryption			jct;
-	int					m_CryptionFlag;
-	uint32_t			m_Sen_val;
-	uint32_t			m_Rec_val;
-	///~
+	CJvCryption				_jvCryption;
+	bool					_jvCryptionEnabled;
 
-	uint32_t			m_wPacketSerial;
+	uint32_t				_sendValue;
+	uint32_t				_recvValue;
+	///~
 };
 
 #endif // !defined(AFX_IOCPSOCKET2_H__36499609_63DD_459C_B4D0_1686FEEC67C2__INCLUDED_)
