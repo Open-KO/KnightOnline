@@ -19,7 +19,6 @@ public:
 
 protected:
 	virtual void thread_loop() = 0;
-	virtual void tick() = 0;
 
 protected:
 	std::mutex				_mutex;

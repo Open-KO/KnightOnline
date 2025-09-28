@@ -19,54 +19,15 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-DWORD WINAPI RecvUDPThread(LPVOID lp)
-{
-	CUdpSocket* pUdp = (CUdpSocket*) lp;
-	int ret = 0, addrlen = sizeof(pUdp->m_ReplyAddress);
-
-	while (1)
-	{
-		ret = recvfrom(pUdp->m_hUDPSocket, pUdp->m_pRecvBuf, 1024, 0, (SOCKADDR*) &pUdp->m_ReplyAddress, &addrlen);
-		if (ret == SOCKET_ERROR)
-		{
-			int err = WSAGetLastError();
-			getpeername(pUdp->m_hUDPSocket, (SOCKADDR*) &pUdp->m_ReplyAddress, &addrlen);
-			spdlog::error("UdpSocket::RecvUDPThread: winsock error [err={} ip={}]",
-				err, inet_ntoa(pUdp->m_ReplyAddress.sin_addr));
-
-			// 재전송 루틴...
-
-			Sleep(10);
-			continue;
-		}
-
-		if (ret)
-		{
-			if (!pUdp->PacketProcess(ret))
-			{
-				// broken packet...
-			}
-		}
-
-		Sleep(10);
-	}
-
-	return 1;
-}
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CUdpSocket::CUdpSocket(CEbenezerDlg* pMain)
+CUdpSocket::CUdpSocket(CEbenezerDlg* main)
+	: _recvUdpThread(this),
+	_socket(_io)	
 {
-	m_hUDPSocket = INVALID_SOCKET;
-	memset(m_pRecvBuf, 0, sizeof(m_pRecvBuf));
-	m_pMain = pMain;
-
-	memset(&m_SocketAddress, 0, sizeof(m_SocketAddress));
-	memset(&m_ReplyAddress, 0, sizeof(m_ReplyAddress));
-
-	m_hUdpThread = nullptr;
+	_main = main;
 }
 
 CUdpSocket::~CUdpSocket()
@@ -75,53 +36,69 @@ CUdpSocket::~CUdpSocket()
 
 bool CUdpSocket::CreateSocket()
 {
-	m_hUDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
-	if (m_hUDPSocket == INVALID_SOCKET)
+	asio::ip::udp::endpoint endpoint(asio::ip::udp::v4(), _UDP_PORT);
+	asio::error_code ec;
+
+	_socket.open(endpoint.protocol(), ec);
+	if (ec)
 	{
-		int err = WSAGetLastError();
-		spdlog::error("UdpSocket::CreateSocket: winsock error [socketErr={}]",
-			err);
+		spdlog::error("UdpSocket::CreateSocket: open() failed: {}", ec.message());
 		return false;
 	}
 
-	int sock_buf_size = 32768;
-	setsockopt(m_hUDPSocket, SOL_SOCKET, SO_RCVBUF, (char*) &sock_buf_size, sizeof(sock_buf_size));
-	setsockopt(m_hUDPSocket, SOL_SOCKET, SO_SNDBUF, (char*) &sock_buf_size, sizeof(sock_buf_size));
-
-	int optlen = sizeof(sock_buf_size);
-	int r = getsockopt(m_hUDPSocket, SOL_SOCKET, SO_RCVBUF, (char*) &sock_buf_size, &optlen);
-	if (r == SOCKET_ERROR)
+	// Set the buffer sizes
+	_socket.set_option(asio::socket_base::receive_buffer_size(UDP_SOCKET_BUFFER_SIZE), ec);
+	if (ec)
 	{
-		int err = WSAGetLastError();
-		spdlog::error("UdpSocket::CreateSocket: failed to set buffer size [socketErr={}]",
-			err);
+		spdlog::error("UdpSocket::CreateSocket: failed to set receive buffer size: {}", ec.message());
 		return false;
 	}
 
-	memset(&m_SocketAddress, 0, sizeof(m_SocketAddress));
-	m_SocketAddress.sin_family = AF_INET;
-	m_SocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	m_SocketAddress.sin_port = htons(_UDP_PORT);
-
-	if (bind(m_hUDPSocket, (LPSOCKADDR) &m_SocketAddress, sizeof(m_SocketAddress)) == SOCKET_ERROR)
+	_socket.set_option(asio::socket_base::send_buffer_size(UDP_SOCKET_BUFFER_SIZE), ec);
+	if (ec)
 	{
-		spdlog::error("UdpSocket::CreateSocket: failed to bind local address");
-		closesocket(m_hUDPSocket);
+		spdlog::error("UdpSocket::CreateSocket: failed to set send buffer size: {}", ec.message());
 		return false;
 	}
 
-	DWORD id;
-	m_hUdpThread = ::CreateThread(nullptr, 0, RecvUDPThread, this, 0, &id);
-	::SetThreadPriority(m_hUdpThread, THREAD_PRIORITY_ABOVE_NORMAL);
+	_socket.bind(endpoint, ec);
+	if (ec)
+	{
+		spdlog::error("UdpSocket::CreateSocket: failed to bind local address: {}", ec.message());
+		_socket.close();
+		return false;
+	}
+
+	_recvUdpThread.start();
 
 	spdlog::debug("UdpSocket::CreateSocket: success");
 	return true;
 }
 
+void CUdpSocket::AsyncReceive()
+{
+	_socket.async_receive_from(
+		asio::buffer(_recvBuff),
+		_sender,
+		[this](asio::error_code ec, size_t transferredBytes)
+		{
+			if (!ec)
+			{
+				PacketProcess(static_cast<int>(transferredBytes));
+			}
+			else
+			{
+				spdlog::error("UdpSocket::AsyncReceive: error [err={} ip={}]",
+					ec.message(), _sender.address().to_string());
+			}
+
+			AsyncReceive();
+		});
+}
+
 int CUdpSocket::SendUDPPacket(char* strAddress, char* pBuf, int len)
 {
 	int s_size = 0, index = 0;
-
 	uint8_t pTBuf[2048] = {};
 
 	if (len > sizeof(pTBuf)
@@ -137,9 +114,23 @@ int CUdpSocket::SendUDPPacket(char* strAddress, char* pBuf, int len)
 	pTBuf[index++] = (uint8_t) PACKET_END1;
 	pTBuf[index++] = (uint8_t) PACKET_END2;
 
-	m_SocketAddress.sin_addr.s_addr = inet_addr(strAddress);
+	asio::ip::udp::endpoint endpoint(
+		asio::ip::make_address(strAddress),
+		_UDP_PORT);
 
-	s_size = sendto(m_hUDPSocket, (char*) pTBuf, index, 0, (SOCKADDR*) &m_SocketAddress, sizeof(m_SocketAddress));
+	asio::error_code ec;
+	s_size = static_cast<int>(_socket.send_to(
+		asio::buffer(pBuf, index),
+		endpoint,
+		0, // message flags
+		ec));
+
+	if (ec)
+	{
+		spdlog::error("UdpSocket::SendUDPPacket: send_to() failed [err={} ip={}]",
+			ec.message(), endpoint.address().to_string());
+		return 0;
+	}
 
 	return s_size;
 }
@@ -156,7 +147,7 @@ bool CUdpSocket::PacketProcess(int len)
 
 	pTmp = new uint8_t[len + 1];
 
-	memcpy(pTmp, m_pRecvBuf, len);
+	memcpy(pTmp, _recvBuff, len);
 
 	foundCore = false;
 
@@ -196,10 +187,6 @@ bool CUdpSocket::PacketProcess(int len)
 			break;
 		}
 	}
-
-	delete[] pTmp;
-
-	return foundCore;
 
 cancelRoutine:
 	delete[] pTmp;
@@ -244,7 +231,7 @@ void CUdpSocket::ServerChat(char* pBuf)
 
 	GetString(chatstr, pBuf, chatlen, index);
 	
-	m_pMain->AddOutputMessage(chatstr);
+	_main->AddOutputMessage(chatstr);
 }
 
 void CUdpSocket::RecvBattleEvent(char* pBuf)
@@ -253,7 +240,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	int nType = 0, nResult = 0, nLen = 0, nKillKarus = 0, nElmoKill = 0;
 	char strMaxUserName[MAX_ID_SIZE + 1] = {},
 		send_buff[256] = {},
-		udp_buff[256] = {};;
+		udp_buff[256] = {};
 
 	nType = GetByte(pBuf, index);
 	nResult = GetByte(pBuf, index);
@@ -263,30 +250,30 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 	}
 	else if (nType == BATTLE_MAP_EVENT_RESULT)
 	{
-		if (m_pMain->m_byBattleOpen == NO_BATTLE)
+		if (_main->m_byBattleOpen == NO_BATTLE)
 		{
 			spdlog::error("UdpSocket::RecvBattleEvent: No active battle [battleOpen={} type={}]",
-				m_pMain->m_byBattleOpen, nType);
+				_main->m_byBattleOpen, nType);
 			return;
 		}
 
 		if (nResult == KARUS)
 		{
 			//TRACE(_T("--> UDP RecvBattleEvent : 카루스 땅으로 넘어갈 수 있어\n"));
-			m_pMain->m_byKarusOpenFlag = 1;		// 카루스 땅으로 넘어갈 수 있어
+			_main->m_byKarusOpenFlag = 1;		// 카루스 땅으로 넘어갈 수 있어
 		}
 		else if (nResult == ELMORAD)
 		{
 			//TRACE(_T("--> UDP  RecvBattleEvent : 엘모 땅으로 넘어갈 수 있어\n"));
-			m_pMain->m_byElmoradOpenFlag = 1;	// 엘모 땅으로 넘어갈 수 있어
+			_main->m_byElmoradOpenFlag = 1;	// 엘모 땅으로 넘어갈 수 있어
 		}
 	}
 	else if (nType == BATTLE_EVENT_RESULT)
 	{
-		if (m_pMain->m_byBattleOpen == NO_BATTLE)
+		if (_main->m_byBattleOpen == NO_BATTLE)
 		{
 			spdlog::error("UdpSocket::RecvBattleEvent: No active battle [battleOpen={} type={}]",
-				m_pMain->m_byBattleOpen, nType);
+				_main->m_byBattleOpen, nType);
 			return;
 		}
 		if (nResult == KARUS)
@@ -298,11 +285,11 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			//TRACE(_T("-->  UDP RecvBattleEvent : 엘모라드가 승리하였습니다.\n"));
 		}
 
-		m_pMain->m_bVictory = nResult;
-		m_pMain->m_byOldVictory = nResult;
-		m_pMain->m_byKarusOpenFlag = 0;		// 카루스 땅으로 넘어갈 수 없도록
-		m_pMain->m_byElmoradOpenFlag = 0;	// 엘모 땅으로 넘어갈 수 없도록
-		m_pMain->m_byBanishFlag = 1;
+		_main->m_bVictory = nResult;
+		_main->m_byOldVictory = nResult;
+		_main->m_byKarusOpenFlag = 0;		// 카루스 땅으로 넘어갈 수 없도록
+		_main->m_byElmoradOpenFlag = 0;	// 엘모 땅으로 넘어갈 수 없도록
+		_main->m_byBanishFlag = 1;
 	}
 	else if (nType == BATTLE_EVENT_MAX_USER)
 	{
@@ -336,7 +323,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
 			SetString2(send_buff, chatstr, send_index);
-			m_pMain->Send_All(send_buff, send_index);
+			_main->Send_All(send_buff, send_index);
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
@@ -346,7 +333,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 			SetShort(send_buff, -1, send_index);
 			SetByte(send_buff, 0, send_index);			// sender name length
 			SetString2(send_buff, chatstr, send_index);
-			m_pMain->Send_All(send_buff, send_index);
+			_main->Send_All(send_buff, send_index);
 		}
 	}
 	else if (nType == BATTLE_EVENT_KILL_USER)
@@ -355,27 +342,27 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 		{
 			nKillKarus = GetShort(pBuf, index);
 			nElmoKill = GetShort(pBuf, index);
-			m_pMain->m_sKarusDead = m_pMain->m_sKarusDead + nKillKarus;
-			m_pMain->m_sElmoradDead = m_pMain->m_sElmoradDead + nElmoKill;
+			_main->m_sKarusDead = _main->m_sKarusDead + nKillKarus;
+			_main->m_sElmoradDead = _main->m_sElmoradDead + nElmoKill;
 
-			//TRACE(_T("-->  UDP RecvBattleEvent type = 1 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n"), nKillKarus, m_pMain->m_sKarusDead, nElmoKill, m_pMain->m_sElmoradDead);
+			//TRACE(_T("-->  UDP RecvBattleEvent type = 1 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n"), nKillKarus, _main->m_sKarusDead, nElmoKill, _main->m_sElmoradDead);
 
 			SetByte(send_buff, UDP_BATTLE_EVENT_PACKET, send_index);
 			SetByte(send_buff, BATTLE_EVENT_KILL_USER, send_index);
 			SetByte(send_buff, 2, send_index);						// karus의 정보 전송
-			SetShort(send_buff, m_pMain->m_sKarusDead, send_index);
-			SetShort(send_buff, m_pMain->m_sElmoradDead, send_index);
-			m_pMain->Send_UDP_All(send_buff, send_index);
+			SetShort(send_buff, _main->m_sKarusDead, send_index);
+			SetShort(send_buff, _main->m_sElmoradDead, send_index);
+			_main->Send_UDP_All(send_buff, send_index);
 		}
 		else if (nResult == 2)
 		{
 			nKillKarus = GetShort(pBuf, index);
 			nElmoKill = GetShort(pBuf, index);
 
-			//TRACE(_T("-->  UDP RecvBattleEvent type = 2 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n"), m_pMain->m_sKarusDead, nKillKarus, m_pMain->m_sElmoradDead, nElmoKill);
+			//TRACE(_T("-->  UDP RecvBattleEvent type = 2 : 적국 유저 죽인수 : karus=%d->%d, elmo=%d->%d\n"), _main->m_sKarusDead, nKillKarus, _main->m_sElmoradDead, nElmoKill);
 
-			m_pMain->m_sKarusDead = nKillKarus;
-			m_pMain->m_sElmoradDead = nElmoKill;
+			_main->m_sKarusDead = nKillKarus;
+			_main->m_sElmoradDead = nElmoKill;
 		}
 	}
 }
@@ -443,10 +430,10 @@ void CUdpSocket::RecvCreateKnights(char* pBuf)
 	pKnights->m_byGrade = 5;
 	pKnights->m_byRanking = 0;
 
-	m_pMain->m_KnightsMap.PutData(pKnights->m_sIndex, pKnights);
+	_main->m_KnightsMap.PutData(pKnights->m_sIndex, pKnights);
 
 	// 클랜정보에 추가
-	m_pMain->m_KnightsManager.AddKnightsUser(knightsindex, chiefname);
+	_main->m_KnightsManager.AddKnightsUser(knightsindex, chiefname);
 
 	//TRACE(_T("UDP - RecvCreateKnights - knname=%hs, name=%hs, index=%d\n"), knightsname, chiefname, knightsindex);
 }
@@ -463,14 +450,14 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, uint8_t command)
 	idlen = GetShort(pBuf, index);
 	GetString(charId, pBuf, idlen, index);
 
-	pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
+	pKnights = _main->m_KnightsMap.GetData(knightsId);
 
 	if (command == KNIGHTS_JOIN)
 	{
 		finalstr = fmt::format_db_resource(IDS_KNIGHTS_JOIN, charId);
 
 		// 클랜정보에 추가
-		m_pMain->m_KnightsManager.AddKnightsUser(knightsId, charId);
+		_main->m_KnightsManager.AddKnightsUser(knightsId, charId);
 		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} joined knightsId={}",
 			charId, knightsId);
 		
@@ -479,7 +466,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, uint8_t command)
 	else
 	{
 		// 클랜정보에 추가
-		m_pMain->m_KnightsManager.RemoveKnightsUser(knightsId, charId);
+		_main->m_KnightsManager.RemoveKnightsUser(knightsId, charId);
 
 		finalstr = fmt::format_db_resource(IDS_KNIGHTS_WITHDRAW, charId);
 		spdlog::debug("UdpSocket::RecvJoinKnights: charId={} left knightsId={}",
@@ -496,7 +483,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, uint8_t command)
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
 	SetString2(send_buff, finalstr, send_index);
-	m_pMain->Send_KnightsMember(knightsId, send_buff, send_index);
+	_main->Send_KnightsMember(knightsId, send_buff, send_index);
 }
 
 void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
@@ -512,8 +499,8 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 	idlen = GetShort(pBuf, index);
 	GetString(userid, pBuf, idlen, index);
 
-	pTUser = m_pMain->GetUserPtr(userid, NameType::Character);
-	pKnights = m_pMain->m_KnightsMap.GetData(knightsindex);
+	pTUser = _main->GetUserPtr(userid, NameType::Character);
+	pKnights = _main->m_KnightsMap.GetData(knightsindex);
 
 	switch (command)
 	{
@@ -524,11 +511,11 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 				pTUser->m_pUserData->m_bFame = 0;
 
 				finalstr = fmt::format_db_resource(IDS_KNIGHTS_REMOVE, pTUser->m_pUserData->m_id);
-				m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
+				_main->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
 			else
 			{
-				m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, userid);
+				_main->m_KnightsManager.RemoveKnightsUser(knightsindex, userid);
 			}
 			break;
 
@@ -542,7 +529,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 			{
 				pTUser->m_pUserData->m_bKnights = 0;
 				pTUser->m_pUserData->m_bFame = 0;
-				m_pMain->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
+				_main->m_KnightsManager.RemoveKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 			}
 			break;
 
@@ -550,7 +537,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 			if (pTUser != nullptr)
 			{
 				pTUser->m_pUserData->m_bFame = CHIEF;
-				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
+				_main->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 				finalstr = fmt::format_db_resource(IDS_KNIGHTS_CHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
@@ -559,7 +546,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 			if (pTUser != nullptr)
 			{
 				pTUser->m_pUserData->m_bFame = VICECHIEF;
-				m_pMain->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
+				_main->m_KnightsManager.ModifyKnightsUser(knightsindex, pTUser->m_pUserData->m_id);
 				finalstr = fmt::format_db_resource(IDS_KNIGHTS_VICECHIEF, pTUser->m_pUserData->m_id);
 			}
 			break;
@@ -588,7 +575,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 			SetShort(send_buff, pTUser->GetSocketID(), send_index);
 			SetShort(send_buff, pTUser->m_pUserData->m_bKnights, send_index);
 			SetByte(send_buff, pTUser->m_pUserData->m_bFame, send_index);
-			m_pMain->Send_Region(send_buff, send_index, pTUser->m_pUserData->m_bZone, pTUser->m_RegionX, pTUser->m_RegionZ, nullptr, false);
+			_main->Send_Region(send_buff, send_index, pTUser->m_pUserData->m_bZone, pTUser->m_RegionX, pTUser->m_RegionZ, nullptr, false);
 		}
 		else
 		{
@@ -619,7 +606,7 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
 	SetString2(send_buff, finalstr, send_index);
-	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
+	_main->Send_KnightsMember(knightsindex, send_buff, send_index);
 }
 
 void CUdpSocket::RecvDestroyKnights(char* pBuf)
@@ -632,7 +619,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 
 	knightsId = GetShort(pBuf, index);
 
-	pKnights = m_pMain->m_KnightsMap.GetData(knightsId);
+	pKnights = _main->m_KnightsMap.GetData(knightsId);
 	if (pKnights == nullptr)
 	{
 		spdlog::error("UdpSocket::RecvDestroyKnights: knightsId={} not found",
@@ -655,11 +642,11 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	SetShort(send_buff, -1, send_index);
 	SetByte(send_buff, 0, send_index);			// sender name length
 	SetString2(send_buff, finalstr, send_index);
-	m_pMain->Send_KnightsMember(knightsId, send_buff, send_index);
+	_main->Send_KnightsMember(knightsId, send_buff, send_index);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
-		pTUser = (CUser*) m_pMain->m_Iocport.m_SockArray[i];
+		pTUser = (CUser*) _main->m_Iocport.m_SockArray[i];
 		if (pTUser == nullptr)
 			continue;
 
@@ -668,7 +655,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 			pTUser->m_pUserData->m_bKnights = 0;
 			pTUser->m_pUserData->m_bFame = 0;
 
-			m_pMain->m_KnightsManager.RemoveKnightsUser(knightsId, pTUser->m_pUserData->m_id);
+			_main->m_KnightsManager.RemoveKnightsUser(knightsId, pTUser->m_pUserData->m_id);
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
@@ -678,12 +665,12 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 			SetShort(send_buff, pTUser->GetSocketID(), send_index);
 			SetShort(send_buff, pTUser->m_pUserData->m_bKnights, send_index);
 			SetByte(send_buff, pTUser->m_pUserData->m_bFame, send_index);
-			m_pMain->Send_Region(send_buff, send_index, pTUser->m_pUserData->m_bZone, pTUser->m_RegionX, pTUser->m_RegionZ, nullptr, false);
+			_main->Send_Region(send_buff, send_index, pTUser->m_pUserData->m_bZone, pTUser->m_RegionX, pTUser->m_RegionZ, nullptr, false);
 			//pTUser->Send( send_buff, send_index );
 		}
 	}
 
-	m_pMain->m_KnightsMap.DeleteData(knightsId);
+	_main->m_KnightsMap.DeleteData(knightsId);
 	//TRACE(_T("UDP - RecvDestoryKnights - index=%d\n"), knightsindex);
 }
 
@@ -694,7 +681,7 @@ void CUdpSocket::RecvBattleZoneCurrentUsers(char* pBuf)
 	nKarusMan = GetShort(pBuf, index);
 	nElmoradMan = GetShort(pBuf, index);
 
-	m_pMain->m_sKarusCount = nKarusMan;
-	m_pMain->m_sElmoradCount = nElmoradMan;
+	_main->m_sKarusCount = nKarusMan;
+	_main->m_sElmoradCount = nElmoradMan;
 	//TRACE(_T("UDP - RecvBattleZoneCurrentUsers - karus=%d, elmorad=%d\n"), nKarusMan, nElmoradMan);
 }

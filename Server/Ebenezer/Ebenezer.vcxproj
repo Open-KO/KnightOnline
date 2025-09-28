@@ -148,6 +148,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="OperationMessage.cpp" />
+    <ClCompile Include="RecvUDPThread.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="EbenezerResourceFormatter.cpp" />
     <ClCompile Include="SharedMem.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Npc.h" />
     <ClInclude Include="OperationMessage.h" />
+    <ClInclude Include="RecvUDPThread.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SharedMem.h" />

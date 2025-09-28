@@ -90,6 +90,9 @@
     <ClCompile Include="KnightsSiegeWar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RecvUDPThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AISocket.h">
@@ -183,6 +186,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KnightsSiegeWar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RecvUDPThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

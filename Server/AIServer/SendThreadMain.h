@@ -16,7 +16,7 @@ public:
 
 protected:
 	void thread_loop() override;
-	void tick() override;
+	void tick();
 	void clear();
 
 protected:
