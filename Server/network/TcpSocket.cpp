@@ -138,7 +138,7 @@ void TcpSocket::AsyncReceive()
 	if (_pendingDisconnect)
 		return;
 
-	memset(&_recvBuffer[0], 0, _recvBuffer.size());
+	memset(_recvBuffer.data(), 0, _recvBuffer.size());
 
 	try
 	{
