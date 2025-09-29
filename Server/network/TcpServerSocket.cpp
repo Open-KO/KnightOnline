@@ -9,9 +9,23 @@ TcpServerSocket::TcpServerSocket(SocketManager* socketManager)
 
 void TcpServerSocket::Close()
 {
-	if (_socketManager == nullptr
-		|| GetState() == CONNECTION_STATE_DISCONNECTED)
+	if (GetState() == CONNECTION_STATE_DISCONNECTED)
 		return;
+
+	{
+		std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+
+		// From this point onward we're effectively disconnected.
+		// We should stop handling or sending new packets, and just ensure any existing queued packets are sent.
+		// Once all existing packets are sent, we can fully disconnect the player.
+		_pendingDisconnect = true;
+
+		// Wait until the send chain is complete.
+		// The send chain will trigger this again.
+		if (_sendInProgress
+			|| !_sendQueue.empty())
+			return;
+	}
 
 	asio::error_code ec;
 	try

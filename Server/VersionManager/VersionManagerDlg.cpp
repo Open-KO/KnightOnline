@@ -82,7 +82,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
-	SetIcon(_icon, TRUE);			// Set big icon
+	SetIcon(_icon, TRUE);		// Set big icon
 	SetIcon(_icon, FALSE);		// Set small icon
 	
 	_socketManager.Init(MAX_USER, 0, 1);

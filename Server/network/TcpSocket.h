@@ -103,6 +103,7 @@ protected:
 	std::string				_remoteIp;
 
 	e_ConnectionState		_state;
+	bool					_pendingDisconnect;
 	int16_t					_socketErrorCount;
 
 	int						_socketId;
