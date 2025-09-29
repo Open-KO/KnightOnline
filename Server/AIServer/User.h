@@ -9,22 +9,20 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "iocport.h"
 #include "MagicProcess.h"
-class CServerDlg;
 
-#include "extern.h"
+#include "Extern.h"
+
 #include <shared/STLMap.h>
 #include <list>
 
 typedef std::list <_USERLOG*>		UserLogList;
 
+class CServerDlg;
 class CUser
 {
 public:
 	CServerDlg* m_pMain;
-
-	CIOCPort* m_pIocport;
 	CMagicProcess m_MagicProcess;
 
 	UserLogList	m_UserLogList;

@@ -1,22 +1,28 @@
-﻿// IOCPSocket2.h: interface for the CIOCPSocket2 class.
-//
-//////////////////////////////////////////////////////////////////////
+﻿#pragma once
 
-#if !defined(AFX_IOCPSOCKET2_H__36499609_63DD_459C_B4D0_1686FEEC67C2__INCLUDED_)
-#define AFX_IOCPSOCKET2_H__36499609_63DD_459C_B4D0_1686FEEC67C2__INCLUDED_
+#include "CircularBuffer.h"
+#include <asio.hpp>
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <mutex>
+#include <queue>
 
-#include "IOCPort.h"
-#include "Define.h"
-
-#include <shared/CircularBuffer.h>
-
-class CIOCPSocket2
+enum e_ConnectionState : uint8_t
 {
-	friend class CIOCPort;
+	CONNECTION_STATE_CONNECTED = 1,
+	CONNECTION_STATE_DISCONNECTED,
+	CONNECTION_STATE_GAMESTART
+};
+
+enum e_SocketType : uint8_t
+{
+	SOCKET_TYPE_SERVER = 1,	// Server socket, remote client is connected to us
+	SOCKET_TYPE_CLIENT		// Client socket, we are connected to a remote host
+};
+
+class SocketManager;
+class TcpSocket
+{
+	friend class SocketManager;
 
 	using RawSocket_t = asio::ip::tcp::socket;
 
@@ -31,34 +37,47 @@ public:
 		_socketId = sid;
 	}
 
-	uint8_t GetState() const
+	e_ConnectionState GetState() const
 	{
 		return _state;
 	}
 
-	CIOCPSocket2(CIOCPort* iocport);
-	virtual ~CIOCPSocket2();
+	e_SocketType GetSockType() const
+	{
+		return _type;
+	}
 
-	void InitSocket();
-	void Close();
-	bool PullOutCore(char*& data, int& length);
-	void ReceivedData(int length);
-	void Receive();
-	int Send(char* pBuf, int length);
+	TcpSocket(SocketManager* socketManager);
+	virtual ~TcpSocket();
 
-private:
-	bool DoSend(bool fromAsyncChain);
-
-public:
-	virtual void CloseProcess();
-	virtual void Parsing(int length, char* pData);
-	virtual void Initialize();
+	virtual int Send(char* pBuf, int length) = 0;
 
 protected:
-	CIOCPort*				_iocPort;
+	int QueueAndSend(char* buffer, int length);
+	virtual bool PullOutCore(char*& data, int& length) = 0;
+
+private:
+	bool AsyncSend(bool fromAsyncChain);
+
+public:
+	void AsyncReceive();
+	void ReceivedData(int length);
+	void Close();
+	virtual void CloseProcess();
+	void InitSocket();
+	virtual void Parsing(int length, char* pData);
+	virtual void Initialize();
+	const std::string& GetRemoteIP();
+
+protected:
+	SocketManager*			_socketManager;
+	RawSocket_t				_socket;
+
+	int						_recvBufferSize;
+	int						_sendBufferSize;
 
 	// Data is written here directly from the socket. It shouldn't be used directly.
-	char					_recvBuffer[SOCKET_BUFF_SIZE];
+	std::vector<char>		_recvBuffer;
 
 	// Received data is output to the circular buffer from _recvBuffer.
 	// This should be parsed to handle packets.
@@ -90,12 +109,12 @@ protected:
 	CCircularBuffer			_sendCircularBuffer;
 	bool					_sendInProgress;
 
-	RawSocket_t				_socket;
+	bool					_remoteIpCached;
+	std::string				_remoteIp;
 
-	uint8_t					_state;
+	e_SocketType			_type;
+	e_ConnectionState		_state;
 	int16_t					_socketErrorCount;
 
 	int						_socketId;
 };
-
-#endif // !defined(AFX_IOCPSOCKET2_H__36499609_63DD_459C_B4D0_1686FEEC67C2__INCLUDED_)

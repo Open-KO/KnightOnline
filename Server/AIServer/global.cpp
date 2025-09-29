@@ -67,7 +67,7 @@ float Getfloat(const char* sBuf, int& index)
 
 void SetString(char* tBuf, const char* sBuf, int len, int& index)
 {
-	CopyMemory(tBuf + index, sBuf, len);
+	memcpy(tBuf + index, sBuf, len);
 	index += len;
 }
 
@@ -76,7 +76,7 @@ void SetVarString(char* tBuf, const char* sBuf, int len, int& index)
 	*(tBuf + index) = (uint8_t) len;
 	index ++;
 
-	CopyMemory(tBuf + index, sBuf, len);
+	memcpy(tBuf + index, sBuf, len);
 	index += len;
 }
 
@@ -90,25 +90,25 @@ void SetShort(char* tBuf, int sShort, int& index)
 {
 	int16_t temp = (int16_t) sShort;
 
-	CopyMemory(tBuf + index, &temp, 2);
+	memcpy(tBuf + index, &temp, 2);
 	index += 2;
 }
 
 void SetInt(char* tBuf, int sInt, int& index)
 {
-	CopyMemory(tBuf + index, &sInt, 4);
+	memcpy(tBuf + index, &sInt, 4);
 	index += 4;
 }
 
 void SetDWORD(char* tBuf, uint32_t sDword, int& index)
 {
-	CopyMemory(tBuf + index, &sDword, 4);
+	memcpy(tBuf + index, &sDword, 4);
 	index += 4;
 }
 
 void Setfloat(char* tBuf, float sFloat, int& index)
 {
-	CopyMemory(tBuf + index, &sFloat, 4);
+	memcpy(tBuf + index, &sFloat, 4);
 	index += 4;
 }
 

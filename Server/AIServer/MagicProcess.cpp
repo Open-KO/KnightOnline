@@ -210,11 +210,11 @@ uint8_t CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, 
 		goto packet_send;
 	}
 
-	if (!pNpc->SetDamage(magicid, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+	if (!pNpc->SetDamage(magicid, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 	{
 		// Npc가 죽은 경우,,
 		pNpc->SendExpToUserList(); // 경험치 분배!!
-		pNpc->SendDead(m_pSrcUser->m_pIocport);
+		pNpc->SendDead();
 		//m_pSrcUser->SendAttackSuccess(tid, MAGIC_ATTACK_TARGET_DEAD, 0, pNpc->m_iHP);
 		m_pSrcUser->SendAttackSuccess(tid, ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 	}
@@ -274,7 +274,7 @@ uint8_t CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, 
 			goto packet_send;
 		}
 
-		if (!pNpc->SetDamage(magicid, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+		if (!pNpc->SetDamage(magicid, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 		{
 			SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
 			SetByte(send_buff, MAGIC_EFFECTING, send_index);
@@ -296,7 +296,7 @@ uint8_t CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, 
 			m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
 			// Npc가 죽은 경우,,
 			pNpc->SendExpToUserList(); // 경험치 분배!!
-			pNpc->SendDead(m_pSrcUser->m_pIocport);
+			pNpc->SendDead();
 			m_pSrcUser->SendAttackSuccess(tid, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 			//m_pSrcUser->SendAttackSuccess(tid, ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 
@@ -387,7 +387,7 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 //			if(damage >= 0)	{
 			if (damage > 0)
 			{
-				result = pNpc->SetHMagicDamage(damage, m_pSrcUser->m_pIocport);
+				result = pNpc->SetHMagicDamage(damage);
 			}
 			else
 			{
@@ -399,11 +399,11 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 				else
 					attack_type = magicid;
 
-				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 				{
 					// Npc가 죽은 경우,,
 					pNpc->SendExpToUserList(); // 경험치 분배!!
-					pNpc->SendDead(m_pSrcUser->m_pIocport);
+					pNpc->SendDead();
 					m_pSrcUser->SendAttackSuccess(tid, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP, MAGIC_ATTACK);
 				}
 				else
@@ -437,11 +437,11 @@ void CMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int
 			else
 				attack_type = magicid;
 
-			if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+			if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 			{
 				// Npc가 죽은 경우,,
 				pNpc->SendExpToUserList(); // 경험치 분배!!
-				pNpc->SendDead(m_pSrcUser->m_pIocport);
+				pNpc->SendDead();
 				m_pSrcUser->SendAttackSuccess(tid, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 			}
 			else
@@ -637,10 +637,10 @@ void CMagicProcess::ExecuteType7(int magicid, int tid, int data1, int data2, int
 	if (damage > 0)
 	{
 		attack_type = magicid;
-		if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+		if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 		{
 			pNpc->SendExpToUserList(); 
-			pNpc->SendDead(m_pSrcUser->m_pIocport);
+			pNpc->SendDead();
 			m_pSrcUser->SendAttackSuccess(tid, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 		}
 		else
@@ -1003,7 +1003,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 					magicid, damage);
 				if (damage >= 0)
 				{
-					result = pNpc->SetHMagicDamage(damage, m_pSrcUser->m_pIocport);
+					result = pNpc->SetHMagicDamage(damage);
 				}
 				else
 				{
@@ -1011,11 +1011,11 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 					if (pType3->Attribute == 3)   attack_type = 3; // 기절시키는 마법이라면.....
 					else attack_type = magicid;
 
-					if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+					if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 					{
 						// Npc가 죽은 경우,,
 						pNpc->SendExpToUserList(); // 경험치 분배!!
-						pNpc->SendDead(m_pSrcUser->m_pIocport);
+						pNpc->SendDead();
 						m_pSrcUser->SendAttackSuccess(pNpc->m_sNid + NPC_BAND, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 					}
 					else
@@ -1113,10 +1113,10 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 			{
 				damage = target_damage;
 				attack_type = magicid;
-				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND, m_pSrcUser->m_pIocport))
+				if (!pNpc->SetDamage(attack_type, damage, m_pSrcUser->m_strUserID, m_pSrcUser->m_iUserId + USER_BAND))
 				{
 					pNpc->SendExpToUserList();
-					pNpc->SendDead(m_pSrcUser->m_pIocport);
+					pNpc->SendDead();
 					m_pSrcUser->SendAttackSuccess(pNpc->m_sNid + NPC_BAND, MAGIC_ATTACK_TARGET_DEAD, damage, pNpc->m_iHP);
 				}
 				else

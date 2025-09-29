@@ -1,12 +1,12 @@
 ﻿#include "stdafx.h"
 #include "SendThreadMain.h"
 #include "GameSocket.h"
-#include "IOCPort.h"
+#include "AISocketManager.h"
 
 #include <spdlog/spdlog.h>
 
-SendThreadMain::SendThreadMain(CIOCPort* iocPort)
-	: _iocPort(iocPort), _aiSocketCount(0)
+SendThreadMain::SendThreadMain(AISocketManager* socketManager)
+	: _socketManager(socketManager), _aiSocketCount(0)
 {
 }
 
@@ -68,14 +68,15 @@ void SendThreadMain::thread_loop()
 
 void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 {
+	int socketCount = _socketManager->GetServerSocketCount();
 	while (!processingQueue.empty())
 	{
 		_SEND_DATA* sendData = processingQueue.front();
 
 		int count = -1;
-		for (int i = 0; i < MAX_SOCKET; i++)
+		for (int i = 0; i < socketCount; i++)
 		{
-			CGameSocket* gameSocket = (CGameSocket*) _iocPort->m_SockArray[i];
+			CGameSocket* gameSocket = _socketManager->GetServerSocketUnchecked(i);
 			if (gameSocket == nullptr)
 				continue;
 

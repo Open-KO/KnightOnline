@@ -128,8 +128,6 @@
   <ItemGroup>
     <ClCompile Include="DBProcess.cpp" />
     <ClCompile Include="DlgBrowsePath.cpp" />
-    <ClCompile Include="IOCPort.cpp" />
-    <ClCompile Include="IOCPSocket2.cpp" />
     <ClCompile Include="SettingDlg.cpp" />
     <ClCompile Include="ShellTree.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -146,8 +144,6 @@
     <ClInclude Include="DBProcess.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="DlgBrowsePath.h" />
-    <ClInclude Include="IOCPort.h" />
-    <ClInclude Include="IOCPSocket2.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingDlg.h" />
     <ClInclude Include="ShellTree.h" />

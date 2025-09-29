@@ -141,10 +141,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="AISocketManager.cpp" />
     <ClCompile Include="GameSocket.cpp" />
     <ClCompile Include="global.cpp" />
-    <ClCompile Include="IOCPort.cpp" />
-    <ClCompile Include="IOCPSocket2.cpp" />
     <ClCompile Include="MagicProcess.cpp" />
     <ClCompile Include="MAP.cpp" />
     <ClCompile Include="Npc.cpp" />
@@ -169,12 +168,11 @@
     <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h" />
     <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
     <ClInclude Include="AIResourceFormatter.h" />
+    <ClInclude Include="AISocketManager.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Extern.h" />
     <ClInclude Include="GameSocket.h" />
     <ClInclude Include="global.h" />
-    <ClInclude Include="IOCPort.h" />
-    <ClInclude Include="IOCPSocket2.h" />
     <ClInclude Include="MagicProcess.h" />
     <ClInclude Include="MAP.h" />
     <ClInclude Include="Npc.h" />

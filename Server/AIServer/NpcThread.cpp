@@ -23,13 +23,13 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 {
 	NPC_THREAD_INFO*	pInfo		= (NPC_THREAD_INFO*) pParam;
 	CNpc*				pNpc		= nullptr;
-	CIOCPort*			pIOCP		= nullptr;
 	CPoint				pt;
 
 	int					i			= 0;
 	uint32_t			dwDiffTime	= 0;
 	uint32_t			dwSleep		= 250;
 	uint32_t			dwTickTime	= 0;
+
 	srand((unsigned int) time(nullptr));
 	myrand(1, 10000);
 	myrand(1, 10000);
@@ -48,7 +48,6 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 		for (i = 0; i < NPC_NUM; i++)
 		{
 			pNpc = pInfo->pNpc[i];
-			pIOCP = pInfo->pIOCP;
 			if (pNpc == nullptr)
 				continue;
 
@@ -91,15 +90,15 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 
 			// 10초마다 HP를 회복 시켜준다
 			if (10000 < dwTickTime)
-				pNpc->HpChange(pIOCP);
+				pNpc->HpChange();
 
-			pNpc->DurationMagic_4(pIOCP, fTime2);		// 마법 처리...
-			pNpc->DurationMagic_3(pIOCP, fTime2);		// 지속마법..
+			pNpc->DurationMagic_4(fTime2);		// 마법 처리...
+			pNpc->DurationMagic_3(fTime2);		// 지속마법..
 
 			switch (pNpc->m_NpcState)
 			{
 				case NPC_LIVE:					// 방금 살아난 경우
-					pNpc->NpcLive(pIOCP);
+					pNpc->NpcLive();
 					break;
 
 				case NPC_STANDING:						// 하는 일 없이 서있는 경우
@@ -107,23 +106,23 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 					break;
 
 				case NPC_MOVING:
-					pNpc->NpcMoving(pIOCP);
+					pNpc->NpcMoving();
 					break;
 
 				case NPC_ATTACKING:
-					pNpc->NpcAttacking(pIOCP);
+					pNpc->NpcAttacking();
 					break;
 
 				case NPC_TRACING:
-					pNpc->NpcTracing(pIOCP);
+					pNpc->NpcTracing();
 					break;
 
 				case NPC_FIGHTING:
-					pNpc->NpcFighting(pIOCP);
+					pNpc->NpcFighting();
 					break;
 
 				case NPC_BACK:
-					pNpc->NpcBack(pIOCP);
+					pNpc->NpcBack();
 					break;
 
 				case NPC_STRATEGY:
@@ -135,15 +134,15 @@ UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */)
 					break;
 
 				case NPC_SLEEPING:
-					pNpc->NpcSleeping(pIOCP);
+					pNpc->NpcSleeping();
 					break;
 
 				case NPC_FAINTING:
-					pNpc->NpcFainting(pIOCP, fTime2);
+					pNpc->NpcFainting(fTime2);
 					break;
 
 				case NPC_HEALING:
-					pNpc->NpcHealing(pIOCP);
+					pNpc->NpcHealing();
 					break;
 			}
 		}
@@ -232,8 +231,7 @@ float TimeGet()
 
 CNpcThread::CNpcThread()
 {
-	pIOCP = nullptr;
-//	m_pNpc =	nullptr;
+	// m_pNpc = nullptr;
 	m_pThread = nullptr;
 	m_sThreadNumber = -1;
 
@@ -256,5 +254,4 @@ CNpcThread::~CNpcThread()
 void CNpcThread::InitThreadInfo(HWND hwnd)
 {
 	m_ThreadInfo.hWndMsg = hwnd;
-	m_ThreadInfo.pIOCP = pIOCP;
 }

@@ -4,12 +4,12 @@
 
 #include <queue>
 
-class CIOCPort;
+class AISocketManager;
 struct _SEND_DATA;
 class SendThreadMain : public Thread
 {
 public:
-	SendThreadMain(CIOCPort* iocPort);
+	SendThreadMain(AISocketManager* socketManager);
 	bool shutdown() override;
 	void queue(_SEND_DATA* sendData);
 	~SendThreadMain() override;
@@ -20,7 +20,7 @@ protected:
 	void clear();
 
 protected:
-	CIOCPort* _iocPort;
+	AISocketManager*		_socketManager;
 	std::queue<_SEND_DATA*>	_insertionQueue;
-	int _aiSocketCount;
+	int						_aiSocketCount;
 };

@@ -16,6 +16,9 @@
     <Filter Include="LZF">
       <UniqueIdentifier>{109828ab-3858-4170-985f-86eb2ebb0efb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{0b855f24-eed5-49a9-9199-7748fdbb3861}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugUtils.cpp">
@@ -53,6 +56,15 @@
     </ClCompile>
     <ClCompile Include="Thread.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSocket.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpClientSocket.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketManager.cpp">
+      <Filter>Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +127,15 @@
     </ClInclude>
     <ClInclude Include="Thread.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpSocket.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpClientSocket.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketManager.h">
+      <Filter>Networking</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -543,7 +543,7 @@ void OperationMessage::AutoOff()
 void OperationMessage::Down()
 {
 	g_serverdown_flag = true;
-	_main->m_Iocport.StopAccept();
+	_main->_socketManager.StopAccept();
 	_main->KickOutAllUsers();
 }
 

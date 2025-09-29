@@ -23,12 +23,6 @@
     <ClCompile Include="global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IOCPort.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IOCPSocket2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MagicProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,6 +74,9 @@
     <ClCompile Include="SendThreadMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AISocketManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Define.h">
@@ -92,12 +89,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPort.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPSocket2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MagicProcess.h">
@@ -164,6 +155,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SendThreadMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AISocketManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

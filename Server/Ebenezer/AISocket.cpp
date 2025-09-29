@@ -29,8 +29,8 @@ static char THIS_FILE[] = __FILE__;
 
 extern CRITICAL_SECTION g_LogFile_critical;
 
-CAISocket::CAISocket(int zoneNum, CIOCPort* iocPort)
-	: CIOCPSocket2(iocPort)
+CAISocket::CAISocket(SocketManager* socketManager, int zoneNum)
+	: TcpClientSocket(socketManager)
 {
 	_zoneNum = zoneNum;
 }
@@ -43,6 +43,104 @@ void CAISocket::Initialize()
 {
 	_main = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 	_magicProcess.m_pMain = _main;
+}
+
+bool CAISocket::PullOutCore(char*& data, int& length)
+{
+	uint8_t*	pTmp;
+	int			len;
+	bool		foundCore;
+	MYSHORT		slen;
+
+	len = _recvCircularBuffer.GetValidCount();
+
+	if (len == 0
+		|| len < 0)
+		return false;
+
+	pTmp = new uint8_t[len];
+
+	_recvCircularBuffer.GetData((char*) pTmp, len);
+
+	foundCore = false;
+
+	int	sPos = 0, ePos = 0;
+
+	for (int i = 0; i < len && !foundCore; i++)
+	{
+		if (i + 2 >= len)
+			break;
+
+		if (pTmp[i] == PACKET_START1
+			&& pTmp[i + 1] == PACKET_START2)
+		{
+			sPos = i + 2;
+
+			slen.b[0] = pTmp[sPos];
+			slen.b[1] = pTmp[sPos + 1];
+
+			length = slen.w;
+
+			if (length < 0)
+				goto cancelRoutine;
+
+			if (length > len)
+				goto cancelRoutine;
+
+			ePos = sPos + length + 2;
+
+			if ((ePos + 2) > len)
+				goto cancelRoutine;
+//			ASSERT(ePos+2 <= len);
+
+			if (pTmp[ePos] == PACKET_END1
+				&& pTmp[ePos + 1] == PACKET_END2)
+			{
+				data = new char[length + 1];
+				memcpy(data, (pTmp + sPos + 2), length);
+				data[length] = 0;
+				foundCore = true;
+//				int head = _recvCircularBuffer.GetHeadPos(), tail = _recvCircularBuffer.GetTailPos();
+//				TRACE("data : %s, len : %d\n", data, length);
+//				TRACE("head : %d, tail : %d\n", head, tail );
+				break;
+			}
+			else
+			{
+				_recvCircularBuffer.HeadIncrease(3);
+				break;
+			}
+		}
+	}
+
+	if (foundCore)
+		_recvCircularBuffer.HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
+
+cancelRoutine:
+	delete[] pTmp;
+	return foundCore;
+}
+
+int CAISocket::Send(char* pBuf, int length)
+{
+	constexpr int PacketHeaderSize = 6;
+
+	_ASSERT(length >= 0);
+	_ASSERT((length + PacketHeaderSize) <= MAX_PACKET_SIZE);
+
+	if (length < 0
+		|| (length + PacketHeaderSize) > MAX_PACKET_SIZE)
+		return -1;
+
+	char sendBuffer[MAX_PACKET_SIZE];
+	int index = 0;
+	SetByte(sendBuffer, PACKET_START1, index);
+	SetByte(sendBuffer, PACKET_START2, index);
+	SetShort(sendBuffer, length, index);
+	SetString(sendBuffer, pBuf, length, index);
+	SetByte(sendBuffer, PACKET_END1, index);
+	SetByte(sendBuffer, PACKET_END2, index);
+	return QueueAndSend(sendBuffer, index);
 }
 
 void CAISocket::Parsing(int len, char* pData)
@@ -147,7 +245,7 @@ void CAISocket::CloseProcess()
 	
 	Initialize();
 
-	CIOCPSocket2::CloseProcess();
+	TcpClientSocket::CloseProcess();
 }
 
 // sungyong 2002.05.23
@@ -536,53 +634,51 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 			SetShort(pOutBuf, tid, send_index);
 
 			_main->Send_Region(pOutBuf, send_index, pNpc->m_sCurZone, pNpc->m_sRegion_X, pNpc->m_sRegion_Z, nullptr, false);
-
 		}
 
-		if (sid >= 0
-			&& sid < MAX_USER
-			&& _main->m_Iocport.m_SockArray[sid] != nullptr)
+		CUser* pSrcUser = _main->GetUserPtr(sid);
+		if (pSrcUser != nullptr)
 		{
-			((CUser*) (_main->m_Iocport.m_SockArray[sid]))->SendTargetHP(0, tid, -damage);
+			pSrcUser->SendTargetHP(0, tid, -damage);
 			if (byAttackType != MAGIC_ATTACK && byAttackType != DURATION_ATTACK)
 			{
-				((CUser*) (_main->m_Iocport.m_SockArray[sid]))->ItemWoreOut(DURABILITY_TYPE_ATTACK, damage);
+				pSrcUser->ItemWoreOut(DURABILITY_TYPE_ATTACK, damage);
 
 				// LEFT HAND!!! by Yookozuna
-				temp_damage = damage * ((CUser*) (_main->m_Iocport.m_SockArray[sid]))->m_bMagicTypeLeftHand / 100;
+				temp_damage = damage * pSrcUser->m_bMagicTypeLeftHand / 100;
 
 				// LEFT HAND!!!
-				switch (((CUser*) (_main->m_Iocport.m_SockArray[sid]))->m_bMagicTypeLeftHand)
+				switch (pSrcUser->m_bMagicTypeLeftHand)
 				{
 					// HP Drain
 					case ITEM_TYPE_HP_DRAIN:
-						((CUser*) (_main->m_Iocport.m_SockArray[sid]))->HpChange(temp_damage, 0);
-						// TRACE(_T("%d : 흡수 HP : %d  ,  현재 HP : %d"), sid, temp_damage, ((CUser*)(_main->m_Iocport.m_SockArray[sid]))->m_pUserData->m_sHp);
+						pSrcUser->HpChange(temp_damage, 0);
+						// TRACE(_T("%d : 흡수 HP : %d  ,  현재 HP : %d"), sid, temp_damage, pSrcUser->m_pUserData->m_sHp);
 						break;
 
 					// MP Drain
 					case ITEM_TYPE_MP_DRAIN:
-						((CUser*) (_main->m_Iocport.m_SockArray[sid]))->MSpChange(temp_damage);
+						pSrcUser->MSpChange(temp_damage);
 						break;
 				}
 
 				temp_damage = 0;	// reset data;
 
 				// RIGHT HAND!!! by Yookozuna
-				temp_damage = damage * ((CUser*) (_main->m_Iocport.m_SockArray[sid]))->m_bMagicTypeRightHand / 100;
+				temp_damage = damage * pSrcUser->m_bMagicTypeRightHand / 100;
 
 				// LEFT HAND!!!
-				switch (((CUser*) (_main->m_Iocport.m_SockArray[sid]))->m_bMagicTypeRightHand)
+				switch (pSrcUser->m_bMagicTypeRightHand)
 				{
 					// HP Drain
 					case ITEM_TYPE_HP_DRAIN:
-						((CUser*) (_main->m_Iocport.m_SockArray[sid]))->HpChange(temp_damage, 0);
-						// TRACE(_T("%d : 흡수 HP : %d  ,  현재 HP : %d"), sid, temp_damage, ((CUser*)(_main->m_Iocport.m_SockArray[sid]))->m_pUserData->m_sHp);
+						pSrcUser->HpChange(temp_damage, 0);
+						// TRACE(_T("%d : 흡수 HP : %d  ,  현재 HP : %d"), sid, temp_damage, pSrcUser->m_pUserData->m_sHp);
 						break;
 
 					// MP Drain
 					case ITEM_TYPE_MP_DRAIN:
-						((CUser*) (_main->m_Iocport.m_SockArray[sid]))->MSpChange(temp_damage);
+						pSrcUser->MSpChange(temp_damage);
 						break;
 				}
 			}
@@ -612,12 +708,8 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 
 			//	성용씨! 대만 재미있어요? --;
 			if (pNpc->m_tNpcType == 2
-				&& sid >= 0
-				&& sid < MAX_USER)
-			{
-				if (_main->m_Iocport.m_SockArray[sid] != nullptr)
-					((CUser*) (_main->m_Iocport.m_SockArray[sid]))->GiveItem(900001000, 1);
-			}
+				&& pSrcUser != nullptr)
+				pSrcUser->GiveItem(900001000, 1);
 		}
 	}
 	// npc attack -> user
@@ -632,11 +724,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 		if (tid >= USER_BAND
 			&& tid < NPC_BAND)
 		{
-			if (tid >= 0
-				&& tid < MAX_USER
-				&& _main->m_Iocport.m_SockArray[tid] != nullptr)
-				pUser = (CUser*) _main->m_Iocport.m_SockArray[tid];
-
+			pUser = _main->GetUserPtr(tid);
 			if (pUser == nullptr)
 				return;
 
@@ -826,7 +914,7 @@ void CAISocket::RecvMagicAttackResult(char* pBuf)
 		if (sid >= USER_BAND
 			&& sid < NPC_BAND)
 		{
-			pUser = (CUser*) _main->m_Iocport.m_SockArray[sid];
+			pUser = _main->GetUserPtr(sid);
 			if (pUser == nullptr
 				|| pUser->m_bResHpType == USER_DEAD)
 				return;
@@ -878,8 +966,8 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	int16_t		sSize = 100;				// NPC Size
 	int			iWeapon_1;					// 오른손 무기
 	int			iWeapon_2;					// 왼손  무기
-	int16_t       sZone;						// Current zone number
-	int16_t       sZoneIndex;					// Current zone index
+	int16_t		sZone;						// Current zone number
+	int16_t		sZoneIndex;					// Current zone index
 	char		npcName[MAX_NPC_NAME_SIZE + 1];	// NPC Name
 	uint8_t		byGroup;					// 소속 집단
 	uint8_t		byLevel;					// level
@@ -1034,7 +1122,7 @@ void CAISocket::RecvUserHP(char* pBuf)
 	if (nid >= USER_BAND
 		&& nid < NPC_BAND)
 	{
-		CUser* pUser = (CUser*) _main->m_Iocport.m_SockArray[nid];
+		CUser* pUser = _main->GetUserPtr(nid);
 		if (pUser == nullptr)
 			return;
 
@@ -1060,7 +1148,7 @@ void CAISocket::RecvUserExp(char* pBuf)
 	int16_t sExp = GetShort(pBuf, index);
 	int16_t sLoyalty = GetShort(pBuf, index);
 
-	CUser* pUser = (CUser*) _main->m_Iocport.m_SockArray[userId];
+	CUser* pUser = _main->GetUserPtr(userId);
 	if (pUser == nullptr)
 	{
 		spdlog::error("AISocket::RecvUserExp: attempting to grant exp or loyalty to invalid user [userId={}]",
@@ -1158,8 +1246,8 @@ void CAISocket::RecvNpcGiveItem(char* pBuf)
 		sCount[i] = GetShort(pBuf, index);
 	}
 
-	if (sUid < 0
-		|| sUid >= MAX_USER)
+	pUser = _main->GetUserPtr(sUid);
+	if (pUser == nullptr)
 		return;
 
 	pMap = _main->GetMapByID(sZone);
@@ -1197,10 +1285,6 @@ void CAISocket::RecvNpcGiveItem(char* pBuf)
 		return;
 	}
 
-	pUser = (CUser*) _main->m_Iocport.m_SockArray[sUid];
-	if (pUser == nullptr)
-		return;
-
 	send_index = 0;
 	memset(send_buff, 0, sizeof(send_buff));
 
@@ -1222,7 +1306,7 @@ void CAISocket::RecvUserFail(char* pBuf)
 	instanceId = GetShort(pBuf, index);
 	npcId = GetShort(pBuf, index);
 
-	CUser* pUser = (CUser*) _main->m_Iocport.m_SockArray[instanceId];
+	CUser* pUser = _main->GetUserPtr(instanceId);
 	if (pUser == nullptr)
 		return;
 
@@ -1253,7 +1337,6 @@ void CAISocket::RecvUserFail(char* pBuf)
 		npcId, instanceId, pUser->m_pUserData->m_id);
 
 	_main->Send_Region(pOutBuf, send_index, pUser->m_pUserData->m_bZone, pUser->m_RegionX, pUser->m_RegionZ);
-
 }
 
 void CAISocket::RecvCompressedData(char* pBuf)
@@ -1654,11 +1737,7 @@ void CAISocket::RecvNpcEventItem(char* pBuf)
 	nItemNumber = GetDWORD(pBuf, index);
 	nCount = GetDWORD(pBuf, index);
 
-	if (sUid < 0
-		|| sUid >= MAX_USER)
-		return;
-
-	pUser = (CUser*) _main->m_Iocport.m_SockArray[sUid];
+	pUser = _main->GetUserPtr(sUid);
 	if (pUser == nullptr)
 		return;
 

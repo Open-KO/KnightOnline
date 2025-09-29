@@ -8,8 +8,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "IOCPort.h"
-#include "GameSocket.h"
+#include "AISocketManager.h"
 
 #include "MAP.h"
 #include "NpcItem.h"
@@ -152,12 +151,12 @@ public:
 	MakeItemRareCodeTableMap	m_MakeItemRareCodeTableMap;
 	ZoneArray					m_ZoneArray;
 
-	CWinThread* m_pZoneEventThread;		// zone
+	CWinThread*		m_pZoneEventThread;		// zone
 
-	CUser* m_pUser[MAX_USER];
+	CUser*			m_pUser[MAX_USER];
 
 	// class 객체
-	CNpcItem				m_NpcItem;
+	CNpcItem		m_NpcItem;
 
 	// 전역 객체 변수
 	//bool			m_bNpcExit;
@@ -181,7 +180,7 @@ public:
 	uint8_t			m_byNight;			// 밤인지,, 낮인지를 판단... 1:낮, 2:밤
 	uint8_t			m_byTestMode;
 
-	CIOCPort		m_Iocport;
+	AISocketManager	_socketManager;
 
 	static CServerDlg* s_pInstance;
 
@@ -209,8 +208,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnTimer(UINT nIDEvent);
-	//}}AFX_MSG
-	afx_msg LRESULT OnGameServerLogin(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnProcessListBoxQueue(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 private:
@@ -226,6 +224,9 @@ private:
 	
 	/// \brief output message box for the application
 	CListBox _outputList;
+
+	std::queue<std::wstring>	_listBoxQueue;
+	std::mutex					_listBoxQueueMutex;
 
 	void ResumeAI();
 	bool LoadNpcPosTable(std::vector<model::NpcPos*>& rows);

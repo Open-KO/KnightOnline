@@ -59,6 +59,7 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <Import Project="$(PropsDir)asio.props" />
   <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -148,11 +149,14 @@
     <ClCompile Include="lzf.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StringConversion.cpp" />
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="TcpClientSocket.cpp" />
+    <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="TimeThread.cpp" />
     <ClCompile Include="logger.cpp" />
@@ -169,10 +173,13 @@
     <ClInclude Include="Packet.h" />
     <ClInclude Include="packets.h" />
     <ClInclude Include="server_config.h" />
+    <ClInclude Include="SocketManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="StringConversion.h" />
     <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="TcpClientSocket.h" />
+    <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="TimeThread.h" />
     <ClInclude Include="types.h" />

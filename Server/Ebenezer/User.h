@@ -1,16 +1,6 @@
-﻿// User.h: interface for the CUser class.
-// 
-//////////////////////////////////////////////////////////////////////
+﻿#pragma once
 
-#if !defined(AFX_USER_H__5FEC1968_ED75_4AAF_A4DB_CB48F6940B2E__INCLUDED_)
-#define AFX_USER_H__5FEC1968_ED75_4AAF_A4DB_CB48F6940B2E__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "IOCPSocket2.h"
-#include "define.h"
+#include "Define.h"
 #include "GameDefine.h"
 #include "MagicProcess.h"
 #include "Npc.h"
@@ -19,14 +9,18 @@
 #include "LOGIC_ELSE.h"
 #include "EXEC.h"     
 
+#include <shared/JvCryption.h>
+#include <shared/TcpSocket.h>
+
 #include <list>
+
 typedef	 std::list<_EXCHANGE_ITEM*>		ItemList;
-typedef  std::list<int>				UserEventList;	// 이밴트를 위하여 ^^;
+typedef  std::list<int>					UserEventList;	// 이밴트를 위하여 ^^;
 
 #define BANISH_DELAY_TIME    30
 
 class CEbenezerDlg;
-class CUser : public CIOCPSocket2
+class CUser : public TcpSocket
 {
 public:
 	_USER_DATA* m_pUserData;
@@ -47,8 +41,8 @@ public:
 	float	m_fTotalHitRate;				// 총 공격성공 민첩성
 	float	m_fTotalEvasionRate;			// 총 방어 민첩성
 
-	int16_t   m_sItemMaxHp;                   // 아이템 총 최대 HP Bonus
-	int16_t   m_sItemMaxMp;                   // 아이템 총 최대 MP Bonus
+	int16_t	m_sItemMaxHp;                   // 아이템 총 최대 HP Bonus
+	int16_t	m_sItemMaxMp;                   // 아이템 총 최대 MP Bonus
 	int		m_iItemWeight;					// 아이템 총무게
 	int16_t	m_sItemHit;						// 아이템 총타격치
 	int16_t	m_sItemAc;						// 아이템 총방어력
@@ -201,9 +195,28 @@ public:
 	// Applicable only to exchange type 101.
 	uint8_t				m_byLastExchangeNum;
 
+	// Game socket specific:
+	_REGION_BUFFER*		_regionBuffer;
+
+	CJvCryption			_jvCryption;
+	bool				_jvCryptionEnabled;
+
+	uint32_t			_sendValue;
+	uint32_t			_recvValue;
+	//
+
 public:
-	CUser(CIOCPort* iocPort);
-	virtual ~CUser();
+	CUser(SocketManager* socketManager);
+	~CUser() override;
+
+	void Initialize() override;
+	bool PullOutCore(char*& data, int& length) override;
+	int Send(char* pBuf, int length) override;
+	void SendCompressingPacket(const char* pData, int len);
+	void RegionPacketAdd(char* pBuf, int len);
+	void RegionPacketClear(char* GetBuf, int& len);
+	void CloseProcess() override;
+	void Parsing(int len, char* pData) override;
 
 	bool CheckMiddleStatueCapture() const;
 	void SetZoneAbilityChange(int zone);
@@ -282,7 +295,7 @@ public:
 	void ServerChangeOk(char* pBuf);
 	void ZoneConCurrentUsers(char* pBuf);
 	void SelectWarpList(char* pBuf);
-	void GoldChange(int16_t tid, int gold);
+	void GoldChange(int tid, int gold);
 	void AllSkillPointChange();
 	void AllPointChange();
 	void ClassChangeReq();
@@ -295,8 +308,8 @@ public:
 	int GetNumberOfEmptySlots() const;
 	void InitType4();
 	void WarehouseProcess(char* pBuf);
-	int16_t GetACDamage(int damage, int16_t tid);
-	int16_t GetMagicDamage(int damage, int16_t tid);
+	int16_t GetACDamage(int damage, int tid);
+	int16_t GetMagicDamage(int damage, int tid);
 	void Type3AreaDuration(float currenttime);
 	void ServerStatusCheck();
 	void SpeedHackTime(char* pBuf);
@@ -312,7 +325,7 @@ public:
 	void ItemDurationChange(int slot, int maxvalue, int curvalue, int amount);
 	void ItemWoreOut(int type, int damage);
 	void Dead();
-	void LoyaltyDivide(int16_t tid);
+	void LoyaltyDivide(int tid);
 	void UserDataSaveToAgent();
 	void CountConcurrentUser();
 	void SendUserInfo(char* temp_send, int& index);
@@ -341,7 +354,7 @@ public:
 	void UserLookChange(int pos, int itemid, int durability);
 	void SpeedHackUser();
 	void VersionCheck();
-	void LoyaltyChange(int16_t tid);
+	void LoyaltyChange(int tid);
 	void StateChange(char* pBuf);
 	void PointChange(char* pBuf);
 	void ZoneChange(int zone, float x, float z);
@@ -362,7 +375,7 @@ public:
 	void SetUserAbility();
 	void LevelChange(int16_t level, bool bLevelUp = true);
 	void HpChange(int amount, int type = 0, bool attack = false);
-	int16_t GetDamage(int16_t tid, int magicid);
+	int16_t GetDamage(int tid, int magicid);
 	void SetSlotItemValue();
 	uint8_t GetHitRate(float rate);
 	void RequestUserIn(char* pBuf);
@@ -383,12 +396,7 @@ public:
 	void Send2AI_UserUpdateInfo();
 	void Attack(char* pBuf);
 	void UserInOut(uint8_t Type);
-	void Initialize();
 	void MoveProcess(char* pBuf);
 	void Rotate(char* pBuf);
 	void LoginProcess(char* pBuf);
-	void Parsing(int len, char* pData);
-	void CloseProcess();
 };
-
-#endif // !defined(AFX_USER_H__5FEC1968_ED75_4AAF_A4DB_CB48F6940B2E__INCLUDED_)

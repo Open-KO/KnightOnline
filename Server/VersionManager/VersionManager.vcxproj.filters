@@ -21,12 +21,6 @@
     <ClCompile Include="DlgBrowsePath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IOCPort.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IOCPSocket2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SettingDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,12 +53,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DlgBrowsePath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPort.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPSocket2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">

@@ -9,9 +9,9 @@
 #endif // _MSC_VER > 1000
 
 #include "Define.h"
-#include "Iocport.h"
 #include "DBProcess.h"
 
+#include <shared/SocketManager.h>
 #include <shared/logger.h>
 
 #include <vector>
@@ -59,7 +59,7 @@ public:
 	/// \see _outputList
 	void AddOutputMessage(const std::wstring& msg);
 
-	static CIOCPort	 IocPort;
+	SocketManager	_socketManager;
 
 	VersionInfoList	VersionList;
 	ServerInfoList	ServerList;

@@ -1,14 +1,6 @@
-﻿// EbenezerDlg.h : header file
-//
+﻿#pragma once
 
-#if !defined(AFX_EBENEZERDLG_H__655A21EF_E029_42C0_890A_68DA7F542428__INCLUDED_)
-#define AFX_EBENEZERDLG_H__655A21EF_E029_42C0_890A_68DA7F542428__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "Iocport.h"
+#include "EbenezerSocketManager.h"
 #include "Map.h"
 #include "Define.h"
 #include "GameDefine.h"
@@ -27,6 +19,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <queue>
 
 #include "resource.h"
 
@@ -175,7 +168,28 @@ public:
 	void Send_Region(char* pBuf, int len, int zone, int x, int z, CUser* pExceptUser = nullptr, bool bDirect = true);	// zone == real zone number
 	void Send_All(char* pBuf, int len, CUser* pExceptUser = nullptr, int nation = 0);	// pointer != nullptr don`t send to that user pointer
 	void Send_AIServer(int zone, char* pBuf, int len);
-	static CUser* GetUserPtr(const char* userid, NameType type);
+
+	CUser* GetUserPtr(const char* userid, NameType type);
+
+	inline CUser* GetUserPtr(int socketId) const
+	{
+		return _socketManager.GetUser(socketId);
+	}
+
+	inline CUser* GetUserPtrUnchecked(int socketId) const
+	{
+		return _socketManager.GetUserUnchecked(socketId);
+	}
+
+	inline int GetUserSocketCount() const
+	{
+		return _socketManager.GetServerSocketCount();
+	}
+
+	inline bool IsValidUserId(int socketId) const
+	{
+		return _socketManager.IsValidServerSocketId(socketId);
+	}
 
 	/// \brief adds a message to the application's output box and updates scrollbar position
 	/// \see _outputList
@@ -189,7 +203,7 @@ public:
 	~CEbenezerDlg();
 
 	static CEbenezerDlg* s_pInstance;
-	static CIOCPort	m_Iocport;
+	EbenezerSocketManager _socketManager;
 
 	CSharedMemQueue	m_LoggerSendQueue;
 	CSharedMemQueue	m_LoggerRecvQueue;
@@ -308,6 +322,9 @@ public:
 	ServerMap			m_ServerGroupArray;
 	CUdpSocket*			m_pUdpSocket;
 
+	std::queue<std::wstring>	_listBoxQueue;
+	std::mutex					_listBoxQueueMutex;
+
 // Dialog Data
 	//{{AFX_DATA(CEbenezerDlg)
 	enum { IDD = IDD_EBENEZER_DIALOG };
@@ -332,6 +349,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg LRESULT OnProcessListBoxQueue(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	
@@ -345,5 +363,3 @@ private:
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_EBENEZERDLG_H__655A21EF_E029_42C0_890A_68DA7F542428__INCLUDED_)

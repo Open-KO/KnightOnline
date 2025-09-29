@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "IOCPort.h"
 #include "Extern.h"
 
 class CServerDlg;
@@ -39,7 +38,7 @@ public:
 	void ExecuteType1(int magicid, int tid, int data1, int data2, int data3);	// sequence => type1 or type2
 
 	model::Magic* IsAvailable(int magicid, int tid, uint8_t type);
-	void MagicPacket(char* pBuf, int len, CIOCPort* pIOCP);
+	void MagicPacket(char* pBuf, int len);
 
 };
 

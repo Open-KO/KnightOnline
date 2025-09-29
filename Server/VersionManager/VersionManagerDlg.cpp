@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "VersionManager.h"
 #include "VersionManagerDlg.h"
-#include "IOCPSocket2.h"
 #include "SettingDlg.h"
 #include "User.h"
 
@@ -24,8 +23,6 @@ static char THIS_FILE[] = __FILE__;
 
 import VersionManagerBinder;
 
-CIOCPort CVersionManagerDlg::IocPort;
-
 constexpr int DB_POOL_CHECK = 100;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -33,6 +30,7 @@ constexpr int DB_POOL_CHECK = 100;
 
 CVersionManagerDlg::CVersionManagerDlg(CWnd* parent)
 	: CDialog(IDD, parent),
+	_socketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE),
 	DbProcess(this),
 	_logger(logger::VersionManager)
 {
@@ -84,10 +82,8 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	SetIcon(_icon, TRUE);			// Set big icon
 	SetIcon(_icon, FALSE);		// Set small icon
 	
-	IocPort.Init(MAX_USER, 1);
-
-	for (int i = 0; i < MAX_USER; i++)
-		IocPort.m_SockArrayInActive[i] = new CUser(this, &IocPort);
+	_socketManager.Init(MAX_USER, 0, 1);
+	_socketManager.AllocateServerSockets<CUser>(this);
 
 	if (!GetInfoFromIni())
 	{
@@ -115,14 +111,14 @@ BOOL CVersionManagerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	if (!IocPort.Listen(_LISTEN_PORT))
+	if (!_socketManager.Listen(_LISTEN_PORT))
 	{
 		AfxMessageBox(_T("FAIL TO CREATE LISTEN STATE"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	IocPort.StartAccept();
+	_socketManager.StartAccept();
 
 	AddOutputMessage(fmt::format("Listening on 0.0.0.0:{}",
 		_LISTEN_PORT));
@@ -331,7 +327,7 @@ BOOL CVersionManagerDlg::DestroyWindow()
 		delete pInfo;
 	ServerList.clear();
 
-	IocPort.Shutdown();
+	_socketManager.Shutdown();
 
 	return CDialog::DestroyWindow();
 }

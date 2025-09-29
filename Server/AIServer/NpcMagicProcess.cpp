@@ -31,7 +31,7 @@ CNpcMagicProcess::~CNpcMagicProcess()
 
 }
 
-void CNpcMagicProcess::MagicPacket(char* pBuf, int len, CIOCPort* pIOCP)
+void CNpcMagicProcess::MagicPacket(char* pBuf, int len)
 {
 	int index = 0, send_index = 0, magicid = 0, sid = -1, tid = -1, data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0;
 	char send_buff[128] = {};
@@ -161,7 +161,7 @@ void CNpcMagicProcess::MagicPacket(char* pBuf, int len, CIOCPort* pIOCP)
 	{
 		SetByte(send_buff, AG_MAGIC_ATTACK_RESULT, send_index);
 		SetString(send_buff, pBuf, len - 1, send_index);	// len ==> include WIZ_MAGIC_PROCESS command byte. 
-		m_pSrcNpc->SendAll(pIOCP, send_buff, send_index);
+		m_pSrcNpc->SendAll(send_buff, send_index);
 	}
 }
 
@@ -296,7 +296,7 @@ fail_return:    // In case the magic failed.
 		m_pMain->Send_Region( send_buff, send_index, m_pSrcUser->m_pUserData->m_bZone, m_pSrcUser->m_RegionX, m_pSrcUser->m_RegionZ );
 	else m_pSrcUser->Send( send_buff, send_index );	*/
 
-	m_pSrcNpc->SendAll(&m_pMain->m_Iocport, send_buff, send_index);
+	m_pSrcNpc->SendAll(send_buff, send_index);
 
 	m_bMagicState = NONE;
 
@@ -358,7 +358,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 		{
 			if (damage > 0)
 			{
-				result = pNpc->SetHMagicDamage(damage, &m_pMain->m_Iocport);
+				result = pNpc->SetHMagicDamage(damage);
 			}
 			else
 			{
@@ -398,7 +398,7 @@ packet_send:
 		SetShort(send_buff, moral, send_index);
 		SetShort(send_buff, 0, send_index);
 		SetShort(send_buff, 0, send_index);
-		m_pSrcNpc->SendAll(&m_pMain->m_Iocport, send_buff, send_index);
+		m_pSrcNpc->SendAll(send_buff, send_index);
 	}
 
 /*	int send_index = 0, result = 1;
@@ -414,7 +414,7 @@ packet_send:
 	SetShort( send_buff, moral, send_index );
 	SetShort( send_buff, 0, send_index );
 	SetShort( send_buff, 0, send_index );
-	m_pSrcNpc->SendAll(&m_pMain->m_Iocport, send_buff, send_index);	*/
+	m_pSrcNpc->SendAll(&m_pMain->_socketManager, send_buff, send_index);	*/
 }
 
 void CNpcMagicProcess::ExecuteType4(int magicid, int tid)

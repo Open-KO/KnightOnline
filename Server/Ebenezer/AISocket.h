@@ -1,38 +1,32 @@
-﻿// AISocket.h: interface for the CAISocket class.
-//
-//////////////////////////////////////////////////////////////////////
+﻿#pragma once
 
-#if !defined(AFX_AISOCKET_H__DA918EB3_F688_48B4_A48B_87B773A83CA6__INCLUDED_)
-#define AFX_AISOCKET_H__DA918EB3_F688_48B4_A48B_87B773A83CA6__INCLUDED_
+#include <shared/TcpClientSocket.h>
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "IOCPSocket2.h"
 #include "MagicProcess.h"
 
 class CEbenezerDlg;
-class CAISocket : public CIOCPSocket2
+class CAISocket : public TcpClientSocket
 {
 private:
-	CEbenezerDlg* _main;
-	CMagicProcess _magicProcess;
+	CEbenezerDlg*	_main;
+	CMagicProcess	_magicProcess;
+	int				_zoneNum;
 
 public:
-	int _zoneNum;
-
-	CAISocket(int zoneNum, CIOCPort* iocPort);
-	virtual ~CAISocket();
-
-	void Initialize();
-
-	int GetZoneNumber() const {
+	int GetZoneNumber() const
+	{
 		return _zoneNum;
 	}
 
-	void Parsing(int len, char* pData);
-	void CloseProcess();
+	CAISocket(SocketManager* socketManager, int zoneNum);
+	~CAISocket() override;
+
+	void Initialize() override;
+	bool PullOutCore(char*& data, int& length) override;
+	int Send(char* pBuf, int length) override;
+
+	void Parsing(int len, char* pData) override;
+	void CloseProcess() override;
 
 	void InitEventMonster(int index);
 	// Packet recv
@@ -57,5 +51,3 @@ public:
 	void RecvNpcEventItem(char* pBuf);
 	void RecvGateOpen(char* pBuf);
 };
-
-#endif // !defined(AFX_AISOCKET_H__DA918EB3_F688_48B4_A48B_87B773A83CA6__INCLUDED_)

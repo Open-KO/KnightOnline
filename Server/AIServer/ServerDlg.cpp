@@ -31,6 +31,8 @@ static char THIS_FILE[] = __FILE__;
 #include <db-library/RecordSetLoader_STLMap.h>
 #include <db-library/RecordsetLoader_Vector.h>
 
+constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
+
 bool g_bNpcExit = false;
 ZoneArray m_ZoneArray;
 
@@ -156,8 +158,8 @@ BEGIN_MESSAGE_MAP(CServerDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
+	ON_MESSAGE(WM_PROCESS_LISTBOX_QUEUE, &CServerDlg::OnProcessListBoxQueue)
 	//}}AFX_MSG_MAP
-	ON_MESSAGE(WM_GAMESERVER_LOGIN, OnGameServerLogin)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -233,10 +235,8 @@ BOOL CServerDlg::OnInitDialog()
 	//	Communication Part Initialize ...
 	//----------------------------------------------------------------------
 	spdlog::info("ServerDlg::OnInitDialog: initializing sockets");
-	m_Iocport.Init(MAX_SOCKET, 1);
-
-	for (int i = 0; i < MAX_SOCKET; i++)
-		m_Iocport.m_SockArrayInActive[i] = new CGameSocket(&m_Iocport);
+	_socketManager.Init(MAX_SOCKET, 0, 1);
+	_socketManager.AllocateServerSockets<CGameSocket>();
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table
@@ -386,7 +386,7 @@ BOOL CServerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	//::ResumeThread( m_Iocport.m_hAcceptThread );
+	//::ResumeThread( _socketManager.m_hAcceptThread );
 	UpdateData(FALSE);
 
 	spdlog::info("AIServer successfully initialized");
@@ -405,7 +405,7 @@ bool CServerDlg::ListenByZone()
 		return false;
 	}
 
-	if (!m_Iocport.Listen(port))
+	if (!_socketManager.Listen(port))
 	{
 		spdlog::error("ServerDlg::ListenByZone: failed to listen on port {}", port);
 		return false;
@@ -740,16 +740,15 @@ bool CServerDlg::CreateNpcThread()
 		if (step == NPC_NUM)
 		{
 			pNpcThread->m_sThreadNumber = nThreadNumber++;
-			pNpcThread->pIOCP = &m_Iocport;
 			pNpcThread->m_pThread = AfxBeginThread(NpcThreadProc, &pNpcThread->m_ThreadInfo, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
 			m_NpcThreadArray.push_back(pNpcThread);
 			step = 0;
 		}
 	}
+
 	if (step != 0)
 	{
 		pNpcThread->m_sThreadNumber = nThreadNumber++;
-		pNpcThread->pIOCP = &m_Iocport;
 		pNpcThread->m_pThread = AfxBeginThread(NpcThreadProc, &pNpcThread->m_ThreadInfo, THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
 		m_NpcThreadArray.push_back(pNpcThread);
 	}
@@ -1041,8 +1040,6 @@ void CServerDlg::ResumeAI()
 		for (int j = 0; j < NPC_NUM; j++)
 			m_NpcThreadArray[i]->m_ThreadInfo.pNpc[j] = m_NpcThreadArray[i]->m_pNpc[j];
 
-		m_NpcThreadArray[i]->m_ThreadInfo.pIOCP = &m_Iocport;
-
 		ResumeThread(m_NpcThreadArray[i]->m_pThread->m_hThread);
 	}
 
@@ -1054,7 +1051,7 @@ void CServerDlg::ResumeAI()
 		m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[j] = nullptr;	// 초기 소환 몹이 당연히 없으므로 nullptr로 작동을 안시킴
 		m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[j] = 0;
 	}
-	m_EventNpcThreadArray[0]->m_ThreadInfo.pIOCP = &m_Iocport;
+	m_EventNpcThreadArray[0]->m_ThreadInfo.pIOCP = &_socketManager;
 
 	::ResumeThread(m_EventNpcThreadArray[0]->m_pThread->m_hThread);
 	*/
@@ -1082,7 +1079,7 @@ BOOL CServerDlg::DestroyWindow()
 
 	WaitForSingleObject(m_pZoneEventThread, INFINITE);
 
-	m_Iocport.Shutdown();
+	_socketManager.Shutdown();
 
 	// DB테이블 삭제 부분
 
@@ -1364,9 +1361,9 @@ void CServerDlg::AllNpcInfo()
 				SetByte(send_buff, NPC_INFO_ALL, send_count);
 				SetByte(send_buff, (uint8_t) count, send_count);
 				m_CompCount++;
-				//::CopyMemory(m_CompBuf+m_iCompIndex, send_buff, send_index);
+				//memcpy(m_CompBuf+m_iCompIndex, send_buff, send_index);
 				memset(m_CompBuf, 0, sizeof(m_CompBuf));
-				::CopyMemory(m_CompBuf, send_buff, send_index);
+				memcpy(m_CompBuf, send_buff, send_index);
 				m_iCompIndex = send_index;
 				SendCompressedData(nZone);
 				send_index = 2;
@@ -1461,6 +1458,25 @@ void CServerDlg::OnTimer(UINT nIDEvent)
 	CDialog::OnTimer(nIDEvent);
 }
 
+LRESULT CServerDlg::OnProcessListBoxQueue(WPARAM, LPARAM)
+{
+	std::queue<std::wstring> localQueue;
+
+	{
+		std::lock_guard<std::mutex> lock(_listBoxQueueMutex);
+		localQueue.swap(_listBoxQueue);
+	}
+
+	while (!localQueue.empty())
+	{
+		const std::wstring& message = localQueue.front();
+		AddOutputMessage(message);
+		localQueue.pop();
+	}
+
+	return 0;
+}
+
 // sungyong 2002.05.23
 void CServerDlg::CheckAliveTest()
 {
@@ -1475,10 +1491,11 @@ void CServerDlg::CheckAliveTest()
 
 	CString logstr;
 	CTime time = CTime::GetCurrentTime();
+	int socketCount = _socketManager.GetServerSocketCount();
 
-	for (int i = 0; i < MAX_SOCKET; i++)
+	for (int i = 0; i < socketCount; i++)
 	{
-		pSocket = (CGameSocket*) m_Iocport.m_SockArray[i];
+		pSocket = _socketManager.GetServerSocketUnchecked(i);
 		if (pSocket == nullptr)
 			continue;
 
@@ -1623,28 +1640,17 @@ int CServerDlg::Send(char* pData, int length, int nZone)
 
 	pNewData->sCurZone = nZone;
 	pNewData->sLength = length;
-	::CopyMemory(pNewData->pBuf, pData, length);
+	memcpy(pNewData->pBuf, pData, length);
 
-	m_Iocport.QueueSendData(pNewData);
+	_socketManager.QueueSendData(pNewData);
 
 	return 0;
 }
 // ~sungyong 2002.05.23
 
-LRESULT CServerDlg::OnGameServerLogin(WPARAM wParam, LPARAM lParam)
-{
-/*	if( m_bNpcInfoDown ) {
-		m_ZoneNpcList.push_back(wParam);
-		return;
-	}
-
-	AllNpcInfo( wParam );	*/
-	return 0;
-}
-
 void CServerDlg::GameServerAcceptThread()
 {
-	m_Iocport.StartAccept();
+	_socketManager.StartAccept();
 }
 
 void CServerDlg::SyncTest()
@@ -1658,11 +1664,11 @@ void CServerDlg::SyncTest()
 	SetByte(send_buff, AG_CHECK_ALIVE_REQ, send_index);
 
 	CGameSocket* pSocket = nullptr;
-	int size = 0;
+	int size = 0, socketCount = _socketManager.GetServerSocketCount();
 
-	for (int i = 0; i < MAX_SOCKET; i++)
+	for (int i = 0; i < socketCount; i++)
 	{
-		pSocket = (CGameSocket*) m_Iocport.m_SockArray[i];
+		pSocket = _socketManager.GetServerSocketUnchecked(i);
 		if (pSocket == nullptr)
 			continue;
 
@@ -2289,9 +2295,21 @@ void CServerDlg::AddOutputMessage(const std::string& msg)
 /// \see _outputList
 void CServerDlg::AddOutputMessage(const std::wstring& msg)
 {
+	// Be sure to exclusively handle UI updates in the UI's thread
+	if (AfxGetThread() != AfxGetApp())
+	{
+		{
+			std::lock_guard<std::mutex> lock(_listBoxQueueMutex);
+			_listBoxQueue.push(msg);
+		}
+
+		PostMessage(WM_PROCESS_LISTBOX_QUEUE);
+		return;
+	}
+
 	_outputList.AddString(msg.data());
-	
+
 	// Set the focus to the last item and ensure it is visible
-	int lastIndex = _outputList.GetCount()-1;
+	int lastIndex = _outputList.GetCount() - 1;
 	_outputList.SetTopIndex(lastIndex);
 }

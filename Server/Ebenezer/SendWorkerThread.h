@@ -2,11 +2,11 @@
 
 #include <shared/Thread.h>
 
-class CIOCPort;
+class EbenezerSocketManager;
 class SendWorkerThread : public Thread
 {
 public:
-	SendWorkerThread(CIOCPort* iocPort);
+	SendWorkerThread(EbenezerSocketManager* socketManager);
 	~SendWorkerThread() override;
 
 protected:
@@ -14,5 +14,5 @@ protected:
 	void tick();
 
 protected:
-	CIOCPort* _iocPort;
+	EbenezerSocketManager* _socketManager;
 };

@@ -28,9 +28,9 @@ class CMagicProcess
 {
 public:
 	int16_t GetWeatherDamage(int16_t damage, int16_t attribute);
-	void SendType4BuffRemove(int16_t tid, uint8_t buff);
-	void Type3Cancel(int magicid, int16_t tid);
-	void Type4Cancel(int magicid, int16_t  tid);
+	void SendType4BuffRemove(int tid, uint8_t buff);
+	void Type3Cancel(int magicid, int tid);
+	void Type4Cancel(int magicid, int tid);
 	bool UserRegionCheck(int sid, int tid, int magicid, int radius, int16_t mousex = 0, int16_t mousez = 0) const;
 	int16_t GetMagicDamage(int sid, int tid, int total_hit, int attribute);
 	void ExecuteType10(int magicid);

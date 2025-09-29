@@ -1,12 +1,13 @@
 ﻿#include "stdafx.h"
 #include "SendWorkerThread.h"
-#include "IOCPSocket2.h"
-#include "IOCPort.h"
+#include "EbenezerSocketManager.h"
+#include "User.h"
+#include "Define.h"
 
 #include <spdlog/spdlog.h>
 
-SendWorkerThread::SendWorkerThread(CIOCPort* iocPort)
-	: _iocPort(iocPort)
+SendWorkerThread::SendWorkerThread(EbenezerSocketManager* socketManager)
+	: _socketManager(socketManager)
 {
 }
 
@@ -36,30 +37,31 @@ void SendWorkerThread::tick()
 {
 	char regionBuffer[REGION_BUFF_SIZE];
 
-	for (int i = 0; i < MAX_USER; i++)
+	int socketCount = _socketManager->GetServerSocketCount();
+	for (int i = 0; i < socketCount; i++)
 	{
-		CIOCPSocket2* pSocket = _iocPort->m_SockArray[i];
-		if (pSocket == nullptr)
+		CUser* userSocket = _socketManager->GetUserUnchecked(i);
+		if (userSocket == nullptr)
 			continue;
 
-		if (pSocket->_regionBuffer->iLength == 0)
+		if (userSocket->_regionBuffer->iLength == 0)
 			continue;
 
 		int len = 0;
 		memset(regionBuffer, 0, REGION_BUFF_SIZE);
 
 		{
-			std::lock_guard<std::recursive_mutex> lock(_iocPort->GetMutex());
-			pSocket->RegionPacketClear(regionBuffer, len);
+			std::lock_guard<std::recursive_mutex> lock(_socketManager->GetMutex());
+			userSocket->RegionPacketClear(regionBuffer, len);
 		}
 
 		if (len < 500)
 		{
-			pSocket->Send(regionBuffer, len);
+			userSocket->Send(regionBuffer, len);
 		}
 		else
 		{
-			pSocket->SendCompressingPacket(regionBuffer, len);
+			userSocket->SendCompressingPacket(regionBuffer, len);
 			// TRACE(_T("Region Packet %d Bytes\n"), len);
 		}
 	}

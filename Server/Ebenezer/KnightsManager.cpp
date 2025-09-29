@@ -288,14 +288,8 @@ void CKnightsManager::JoinKnights(CUser* pUser, char* pBuf)
 
 	//community = GetByte(pBuf, index);
 	member_id = GetShort(pBuf, index);
-	if (member_id < 0
-		|| member_id >= MAX_USER)
-	{
-		ret_value = 2;
-		goto fail_return;
-	}
 
-	pTUser = (CUser*) m_pMain->m_Iocport.m_SockArray[member_id];
+	pTUser = m_pMain->GetUserPtr(member_id);
 	if (pTUser == nullptr)
 	{
 		ret_value = 2;
@@ -351,19 +345,8 @@ void CKnightsManager::JoinKnightsReq(CUser* pUser, char* pBuf)
 
 	flag = GetByte(pBuf, index);
 	sid = GetShort(pBuf, index);
-	if (sid < 0
-		|| sid >= MAX_USER)
-	{
-		ret_value = 2;
-		SetByte(send_buff, WIZ_KNIGHTS_PROCESS, send_index);
-		SetByte(send_buff, KNIGHTS_JOIN, send_index);
-		SetByte(send_buff, ret_value, send_index);
-		//TRACE(_T("## JoinKnights Fail - nid=%d, name=%hs, error_code=%d ##\n"), pTUser->GetSocketID(), pTUser->m_pUserData->m_id, ret_value);
-		pTUser->Send(send_buff, send_index);
-		return;
-	}
 
-	pTUser = (CUser*) m_pMain->m_Iocport.m_SockArray[sid];
+	pTUser = m_pMain->GetUserPtr(sid);
 	if (pTUser == nullptr)
 	{
 		ret_value = 2;
@@ -773,7 +756,7 @@ fail_return:
 
 void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 {
-	int index = 0, send_index = 0, buff_index = 0, count = 0, i = 0, page = 0, start = 0;
+	int index = 0, send_index = 0, buff_index = 0, count = 0, i = 0, page = 0, start = 0, socketCount;
 	char send_buff[128] = {};
 	char temp_buff[4096] = {};
 	CUser* pTUser = nullptr;
@@ -792,10 +775,11 @@ void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 
 	page = GetShort(pBuf, index);
 	start = page * 10;			// page : 0 ~
+	socketCount = m_pMain->GetUserSocketCount();
 
-	for (i = 0; i < MAX_USER; i++)
+	for (i = 0; i < socketCount; i++)
 	{
-		pTUser = (CUser*) m_pMain->m_Iocport.m_SockArray[i];
+		pTUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 
@@ -1294,9 +1278,10 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 	SetString2(send_buff, finalstr, send_index);
 	m_pMain->Send_KnightsMember(knightsindex, send_buff, send_index);
 
-	for (int i = 0; i < MAX_USER; i++)
+	int socketCount = m_pMain->GetUserSocketCount();
+	for (int i = 0; i < socketCount; i++)
 	{
-		pTUser = (CUser*) m_pMain->m_Iocport.m_SockArray[i];
+		pTUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 

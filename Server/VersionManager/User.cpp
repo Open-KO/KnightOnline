@@ -21,8 +21,8 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CUser::CUser(CVersionManagerDlg* main, CIOCPort* iocPort)
-	: CIOCPSocket2(iocPort), _main(main)
+CUser::CUser(CVersionManagerDlg* main, SocketManager* socketManager)
+	: TcpSocket(socketManager), _main(main)
 {
 }
 
@@ -32,7 +32,105 @@ CUser::~CUser()
 
 void CUser::Initialize()
 {
-	CIOCPSocket2::Initialize();
+	TcpSocket::Initialize();
+}
+
+bool CUser::PullOutCore(char*& data, int& length)
+{
+	uint8_t*	pTmp;
+	int			len;
+	bool		foundCore;
+	MYSHORT		slen;
+
+	len = _recvCircularBuffer.GetValidCount();
+
+	if (len == 0
+		|| len < 0)
+		return false;
+
+	pTmp = new uint8_t[len];
+
+	_recvCircularBuffer.GetData((char*) pTmp, len);
+
+	foundCore = false;
+
+	int	sPos = 0, ePos = 0;
+
+	for (int i = 0; i < len && !foundCore; i++)
+	{
+		if (i + 2 >= len)
+			break;
+
+		if (pTmp[i] == PACKET_START1
+			&& pTmp[i + 1] == PACKET_START2)
+		{
+			sPos = i + 2;
+
+			slen.b[0] = pTmp[sPos];
+			slen.b[1] = pTmp[sPos + 1];
+
+			length = slen.i;
+
+			if (length < 0)
+				goto cancelRoutine;
+
+			if (length > len)
+				goto cancelRoutine;
+
+			ePos = sPos + length + 2;
+
+			if ((ePos + 2) > len)
+				goto cancelRoutine;
+//			ASSERT(ePos+2 <= len);
+
+			if (pTmp[ePos] == PACKET_END1
+				&& pTmp[ePos + 1] == PACKET_END2)
+			{
+				data = new char[length + 1];
+				memcpy(data, (pTmp + sPos + 2), length);
+				data[length] = 0;
+				foundCore = true;
+//				int head = _recvCircularBuffer.GetHeadPos(), tail = _recvCircularBuffer.GetTailPos();
+//				TRACE("data : %s, len : %d\n", data, length);
+//				TRACE("head : %d, tail : %d\n", head, tail );
+				break;
+			}
+			else
+			{
+				_recvCircularBuffer.HeadIncrease(3);
+				break;
+			}
+		}
+	}
+
+	if (foundCore)
+		_recvCircularBuffer.HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
+
+cancelRoutine:
+	delete[] pTmp;
+	return foundCore;
+}
+
+int CUser::Send(char* pBuf, int length)
+{
+	constexpr int PacketHeaderSize = 6;
+
+	_ASSERT(length >= 0);
+	_ASSERT((length + PacketHeaderSize) <= MAX_PACKET_SIZE);
+
+	if (length < 0
+		|| (length + PacketHeaderSize) > MAX_PACKET_SIZE)
+		return -1;
+
+	char sendBuffer[MAX_PACKET_SIZE];
+	int index = 0;
+	SetByte(sendBuffer, PACKET_START1, index);
+	SetByte(sendBuffer, PACKET_START2, index);
+	SetShort(sendBuffer, length, index);
+	SetString(sendBuffer, pBuf, length, index);
+	SetByte(sendBuffer, PACKET_END1, index);
+	SetByte(sendBuffer, PACKET_END2, index);
+	return QueueAndSend(sendBuffer, index);
 }
 
 void CUser::Parsing(int len, char* pData)

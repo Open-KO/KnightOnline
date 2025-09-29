@@ -416,7 +416,7 @@ void CNpc::InitMagicValuable()
 }
 
 // NPC 상태별로 분화한다.
-void CNpc::NpcLive(CIOCPort* pIOCP)
+void CNpc::NpcLive()
 {
 	// Dungeon Work : 변하는 몬스터의 경우 변하게 처리..
 	if (m_byRegenType == 2
@@ -436,7 +436,7 @@ void CNpc::NpcLive(CIOCPort* pIOCP)
 		ChangeMonsterInfo(1);
 	}
 
-	if (SetLive(pIOCP))
+	if (SetLive())
 	{
 		m_NpcState = NPC_STANDING;
 		m_Delay = m_sStandTime;
@@ -453,24 +453,24 @@ void CNpc::NpcLive(CIOCPort* pIOCP)
 /////////////////////////////////////////////////////////////////////////////
 //	NPC가 공격하는 경우.
 //
-void CNpc::NpcFighting(CIOCPort* pIOCP)
+void CNpc::NpcFighting()
 {
 	NpcTrace("NpcFighting()");
 
 	if (m_iHP <= 0)
 	{
-		Dead(pIOCP);
+		Dead();
 		return;
 	}
 
-	m_Delay = Attack(pIOCP);
+	m_Delay = Attack();
 	m_fDelayTime = TimeGet();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //	NPC가 유저를 추적하는 경우.
 //
-void CNpc::NpcTracing(CIOCPort* pIOCP)
+void CNpc::NpcTracing()
 {
 	char pBuf[1024] = {};
 	int index = 0;
@@ -518,7 +518,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 	if (nFlag == 1)
 	{
 		//TRACE(_T("Npc-NpcTracing : trace->attack으로 바뀜 : nid=(%d, %hs), x=%.2f, z=%.2f\n"), m_sNid+NPC_BAND, m_strName, m_fCurX, m_fCurZ);
-		NpcMoveEnd(pIOCP);	// 이동 끝..
+		NpcMoveEnd();	// 이동 끝..
 		m_NpcState = NPC_FIGHTING;
 		m_Delay = 0;
 		m_fDelayTime = TimeGet();
@@ -527,7 +527,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 	else if (nFlag == -1)		// 타겟이 없어짐...
 	{
 		InitTarget();
-		NpcMoveEnd(pIOCP);	// 이동 끝..
+		NpcMoveEnd();	// 이동 끝..
 		m_NpcState = NPC_STANDING;
 		m_Delay = m_sStandTime;
 		m_fDelayTime = TimeGet();
@@ -537,7 +537,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 	else if (nFlag == 2
 		&& m_tNpcLongType == 2)
 	{
-		NpcMoveEnd(pIOCP);	// 이동 끝..
+		NpcMoveEnd();	// 이동 끝..
 		m_NpcState = NPC_FIGHTING;
 		m_Delay = 0;
 		m_fDelayTime = TimeGet();
@@ -557,7 +557,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 			spdlog::error("Npc::NpcTracing: pathfinding failed, set state to NPC_STANDING [serial={} npcId={} npcName={}]",
 				m_sNid + NPC_BAND, m_sSid, m_strName);
 			InitTarget();
-			NpcMoveEnd(pIOCP);	// 이동 끝..
+			NpcMoveEnd();	// 이동 끝..
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sStandTime;
 			m_fDelayTime = TimeGet();
@@ -570,7 +570,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 //		TRACE(_T("StepMove : x=%.2f, z=%.2f\n"), m_fCurX, m_fCurZ);
 
 		// 한칸 움직임(걷는동작, 달릴때는 2칸)
-		if (!StepMove(1, pIOCP))
+		if (!StepMove(1))
 		{
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sStandTime;
@@ -607,7 +607,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 		Setfloat(pBuf, m_fCurY, index);
 		Setfloat(pBuf, 0, index);
 		//TRACE(_T("Npc TRACE end --> nid = %d, cur=[x=%.2f, y=%.2f, metor=%d], prev=[x=%.2f, z=%.2f], frame=%d, speed = %d \n"), m_sNid, m_fCurX, m_fCurZ, 0, m_fPrevX, m_fPrevZ, m_sStepCount, 0);
-		SendAll(pIOCP, pBuf, index);   // thread 에서 send
+		SendAll(pBuf, index);   // thread 에서 send
 	}
 	else
 	{
@@ -621,7 +621,7 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 		Setfloat(pBuf, fMoveSpeed, index);
 		//Setfloat(pBuf, m_fSecForRealMoveMetor, index);
 		//TRACE(_T("Npc Tracing --> nid = %d, cur=[x=%.2f, z=%.2f], prev=[x=%.2f, z=%.2f, metor = %.2f], frame=%d, speed = %d \n"), m_sNid, m_fCurX, m_fCurZ, m_fPrevX, m_fPrevZ, m_fSecForRealMoveMetor, m_sStepCount, m_sSpeed);
-		SendAll(pIOCP, pBuf, index);   // thread 에서 send
+		SendAll(pBuf, index);   // thread 에서 send
 	}
 
 	if (nFlag == 2
@@ -629,12 +629,12 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 		&& m_tNpcType != NPC_HEALER)
 	{
 		// Trace Attack
-		int nRet = TracingAttack(pIOCP);
+		int nRet = TracingAttack();
 		//TRACE(_T("--> Npc-NpcTracing : TracingAttack : nid=(%d, %hs), x=%.2f, z=%.2f\n"), m_sNid+NPC_BAND, m_strName, m_fCurX, m_fCurZ);
 		if (nRet == 0)
 		{
 			InitTarget();
-			NpcMoveEnd(pIOCP);	// 이동 끝..
+			NpcMoveEnd();	// 이동 끝..
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sStandTime;
 			m_fDelayTime = TimeGet();
@@ -646,13 +646,13 @@ void CNpc::NpcTracing(CIOCPort* pIOCP)
 	m_fDelayTime = TimeGet();
 }
 
-void CNpc::NpcAttacking(CIOCPort* pIOCP)
+void CNpc::NpcAttacking()
 {
 	NpcTrace("NpcAttacking()");
 
 	if (m_iHP <= 0)
 	{
-		Dead(pIOCP);		 // 바로 몬스터를 죽인다.. (경험치 배분 안함)
+		Dead();		 // 바로 몬스터를 죽인다.. (경험치 배분 안함)
 		return;
 	}
 
@@ -720,7 +720,7 @@ void CNpc::NpcAttacking(CIOCPort* pIOCP)
 /////////////////////////////////////////////////////////////////////////////
 //	NPC가 이동하는 경우.
 //
-void CNpc::NpcMoving(CIOCPort* pIOCP)
+void CNpc::NpcMoving()
 {
 	NpcTrace("NpcMoving()");
 
@@ -730,7 +730,7 @@ void CNpc::NpcMoving(CIOCPort* pIOCP)
 
 	if (m_iHP <= 0)
 	{
-		Dead(pIOCP);
+		Dead();
 		return;
 	}
 
@@ -754,14 +754,14 @@ void CNpc::NpcMoving(CIOCPort* pIOCP)
 	{
 		/*if (m_tNpcType == NPCTYPE_GUARD)
 		{
-			NpcMoveEnd(pIOCP);	// 이동 끝..
+			NpcMoveEnd();	// 이동 끝..
 			m_NpcState = NPC_FIGHTING;
 			m_Delay = 0;
 			m_fDelayTime = TimeGet();
 		}
 		else*/
 		{
-			NpcMoveEnd(pIOCP);	// 이동 끝..
+			NpcMoveEnd();	// 이동 끝..
 			m_NpcState = NPC_ATTACKING;
 			m_Delay = m_sSpeed;
 			m_fDelayTime = TimeGet();
@@ -801,7 +801,7 @@ void CNpc::NpcMoving(CIOCPort* pIOCP)
 	if (!m_bPathFlag)
 	{
 		// 한칸 움직임(걷는동작, 달릴때는 2칸)
-		if (!StepMove(1, pIOCP))
+		if (!StepMove(1))
 		{
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sStandTime;
@@ -834,7 +834,7 @@ void CNpc::NpcMoving(CIOCPort* pIOCP)
 		Setfloat(pBuf, m_fPrevY, index);
 		Setfloat(pBuf, 0, index);
 		//TRACE(_T("Npc Move end --> nid = %d, cur=[x=%.2f, y=%.2f, metor=%d], prev=[x=%.2f, z=%.2f], frame=%d, speed = %d \n"), m_sNid+NPC_BAND, m_fCurX, m_fCurZ, 0, m_fPrevX, m_fPrevZ, m_sStepCount, 0);
-		SendAll(pIOCP, pBuf, index);   // thread 에서 send
+		SendAll(pBuf, index);   // thread 에서 send
 	}
 	else
 	{
@@ -848,7 +848,7 @@ void CNpc::NpcMoving(CIOCPort* pIOCP)
 		Setfloat(pBuf, fMoveSpeed, index);
 		//Setfloat(pBuf, m_fSecForRealMoveMetor, index);
 		//TRACE(_T("Npc Move --> nid = %d, cur=[x=%.2f, z=%.2f], prev=[x=%.2f, z=%.2f, metor = %.2f], frame=%d, speed = %d \n"), m_sNid+NPC_BAND, m_fCurX, m_fCurZ, m_fPrevX, m_fPrevZ, m_fSecForRealMoveMetor, m_sStepCount, m_sSpeed);
-		SendAll(pIOCP, pBuf, index);   // thread 에서 send
+		SendAll(pBuf, index);   // thread 에서 send
 	}
 
 	m_Delay = m_sSpeed;
@@ -935,14 +935,14 @@ void CNpc::NpcStanding()
 		SetByte(send_buff, AG_NPC_GATE_OPEN, send_index);
 		SetShort(send_buff, m_sNid + NPC_BAND, send_index);
 		SetByte(send_buff, m_byGateOpen, send_index);
-		SendAll(&m_pMain->m_Iocport, send_buff, send_index);
+		SendAll(send_buff, send_index);
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //	타겟과의 거리를 사정거리 범위로 유지한다.(셀단위)
 //
-void CNpc::NpcBack(CIOCPort* pIOCP)
+void CNpc::NpcBack()
 {
 	if (m_Target.id >= 0
 		&& m_Target.id < NPC_BAND)
@@ -972,7 +972,7 @@ void CNpc::NpcBack(CIOCPort* pIOCP)
 
 	if (m_iHP <= 0)
 	{
-		Dead(pIOCP);
+		Dead();
 		return;
 	}
 
@@ -1014,7 +1014,7 @@ void CNpc::NpcBack(CIOCPort* pIOCP)
 		Setfloat(pBuf, m_fCurY, index);
 		Setfloat(pBuf, 0, index);
 //		TRACE(_T("NpcBack end --> nid = %d, cur=[x=%.2f, y=%.2f, metor=%d], prev=[x=%.2f, z=%.2f], frame=%d, speed = %d \n"), m_sNid, m_fCurX, m_fCurZ, 0, m_fPrevX, m_fPrevZ, m_sStepCount, 0);
-		SendAll(pIOCP, pBuf, index);   // thread 에서 send
+		SendAll(pBuf, index);   // thread 에서 send
 
 //		TRACE(_T("** NpcBack 이동이 끝남,, stand로\n"));
 		m_NpcState = NPC_STANDING;
@@ -1034,7 +1034,7 @@ void CNpc::NpcBack(CIOCPort* pIOCP)
 
 	if (!m_bPathFlag)
 	{
-		if (!StepMove(1, pIOCP))
+		if (!StepMove(1))
 		{
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sStandTime;
@@ -1066,7 +1066,7 @@ void CNpc::NpcBack(CIOCPort* pIOCP)
 	//Setfloat(pBuf, m_fSecForRealMoveMetor, index);
 
 //	TRACE(_T("NpcBack --> nid = %d, cur=[x=%.2f, z=%.2f], prev=[x=%.2f, z=%.2f, metor = %.2f], frame=%d, speed = %d \n"), m_sNid, m_fCurX, m_fCurZ, m_fPrevX, m_fPrevZ, m_fSecForRealMoveMetor, m_sStepCount, m_sSpeed);
-	SendAll(pIOCP, pBuf, index);   // thread 에서 send
+	SendAll(pBuf, index);   // thread 에서 send
 
 	m_Delay = m_sSpeed;//STEP_DELAY;	*/
 	m_fDelayTime = TimeGet();
@@ -1075,7 +1075,7 @@ void CNpc::NpcBack(CIOCPort* pIOCP)
 ///////////////////////////////////////////////////////////////////////
 // NPC 가 처음 생기거나 죽었다가 살아날 때의 처리
 //
-bool CNpc::SetLive(CIOCPort* pIOCP)
+bool CNpc::SetLive()
 {
 	//TRACE(_T("**** Npc SetLive ***********\n"));
 	// NPC의 HP, PP 초기화 ----------------------//	
@@ -1310,7 +1310,7 @@ bool CNpc::SetLive(CIOCPort* pIOCP)
 	char modify_send[2048] = {};
 
 	FillNpcInfo(modify_send, modify_index, INFO_MODIFY);
-	SendAll(pIOCP, modify_send, modify_index);   // thread 에서 send
+	SendAll(modify_send, modify_index);   // thread 에서 send
 
 	return true;
 }
@@ -2046,7 +2046,7 @@ int CNpc::PathFind(CPoint start, CPoint end, float fDistance)
 
 
 //	NPC 사망처리
-void CNpc::Dead(CIOCPort* pIOCP, int iDeadType)
+void CNpc::Dead(int iDeadType)
 {
 	MAP* pMap = m_pMain->GetMapByIndex(m_ZoneIndex);
 	if (pMap == nullptr)
@@ -2086,7 +2086,7 @@ void CNpc::Dead(CIOCPort* pIOCP, int iDeadType)
 		int send_index = 0;
 		SetByte(buff, AG_DEAD, send_index);
 		SetShort(buff, m_sNid + NPC_BAND, send_index);
-		SendAll(pIOCP, buff, send_index);
+		SendAll(buff, send_index);
 	}
 
 	// Dungeon Work : 변하는 몬스터의 경우 변하게 처리..
@@ -2802,7 +2802,7 @@ bool CNpc::IsMovingEnd()
 }
 
 //	Step 수 만큼 타켓을 향해 이동한다.
-bool CNpc::StepMove(int nStep, CIOCPort* pIOCP)
+bool CNpc::StepMove(int nStep)
 {
 	if (m_NpcState != NPC_MOVING
 		&& m_NpcState != NPC_TRACING
@@ -3389,11 +3389,8 @@ int CNpc::GetTargetPath(int option)
 	return PathFind(start, end, m_fSecForMetor);
 }
 
-int CNpc::Attack(CIOCPort* pIOCP)
+int CNpc::Attack()
 {
-	if (pIOCP == nullptr)
-		return 10000;
-
 	// 텔레포트 가능하게,, (렌덤으로,, )
 	int nRandom = 0, nPercent = 1000;
 	int send_index = 0;
@@ -3403,7 +3400,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 /*	nRandom = myrand(1, 10000);
 	if (COMPARE(nRandom, 8000, 10000))
 	{
-		bTeleport = Teleport(pIOCP);
+		bTeleport = Teleport();
 		if (bTeleport)
 			return m_Delay;
 	}	*/
@@ -3412,7 +3409,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 	// 장거리 공격이 가능한것은 공격거리로 판단..
 	if (m_tNpcLongType == 1)
 	{
-		m_Delay = LongAndMagicAttack(pIOCP);
+		m_Delay = LongAndMagicAttack();
 		return m_Delay;
 	}
 
@@ -3449,7 +3446,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 		// 직접, 간접(롱)공격이 가능한 몬스터 이므로 장거리 공격을 할 수 있다.
 		if (m_tNpcLongType == 2)
 		{
-			m_Delay = LongAndMagicAttack(pIOCP);
+			m_Delay = LongAndMagicAttack();
 			return m_Delay;
 		}
 		else
@@ -3504,8 +3501,8 @@ int CNpc::Attack(CIOCPort* pIOCP)
 		// User 가 이미 죽은경우
 		if (pUser->m_bLive == USER_DEAD)
 		{
-			//SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, pUser->m_iHP);
-			SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, 0);
+			//SendAttackSuccess(ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, pUser->m_iHP);
+			SendAttackSuccess(ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, 0);
 			InitTarget();
 			m_NpcState = NPC_STANDING;
 			return nStandingTime;
@@ -3560,7 +3557,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 				SetShort(buff, 0, send_index);
 				SetShort(buff, 0, send_index);
 
-				m_MagicProcess.MagicPacket(buff, send_index, pIOCP);
+				m_MagicProcess.MagicPacket(buff, send_index);
 				//TRACE(_T("++++ AreaMagicAttack --- sid=%d, magicid=%d\n"), m_sNid+NPC_BAND, m_iMagic2);
 				return m_sAttackDelay + 1000;	// 지역마법은 조금 시간이 걸리도록.....
 			}
@@ -3592,8 +3589,8 @@ int CNpc::Attack(CIOCPort* pIOCP)
 					SetShort(buff, 0, send_index);
 					SetShort(buff, 0, send_index);
 
-					//m_MagicProcess.MagicPacket(buff, send_index, pIOCP);
-					SendAll(pIOCP, buff, send_index);
+					//m_MagicProcess.MagicPacket(buff, send_index);
+					SendAll(buff, send_index);
 
 					//TRACE(_T("LongAndMagicAttack --- sid=%d, tid=%d\n"), m_sNid+NPC_BAND, pUser->m_iUserId);
 					return m_sAttackDelay;
@@ -3616,12 +3613,12 @@ int CNpc::Attack(CIOCPort* pIOCP)
 			if (pUser->m_bLive != USER_DEAD)
 			{
 				//	TRACE(_T("Npc-Attack Success : [npc=%d, %hs]->[user=%d, %hs]\n"), m_sNid+NPC_BAND, m_strName, pUser->m_iUserId, pUser->m_strUserID);
-				SendAttackSuccess(pIOCP, ATTACK_SUCCESS, pUser->m_iUserId, nDamage, pUser->m_sHP);
+				SendAttackSuccess(ATTACK_SUCCESS, pUser->m_iUserId, nDamage, pUser->m_sHP);
 			}
 		}
 		else
 		{
-			SendAttackSuccess(pIOCP, ATTACK_FAIL, pUser->m_iUserId, nDamage, pUser->m_sHP);
+			SendAttackSuccess(ATTACK_FAIL, pUser->m_iUserId, nDamage, pUser->m_sHP);
 		}
 
 		// 방어측 내구도 감소
@@ -3650,7 +3647,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 		if (pNpc->m_iHP <= 0
 			|| pNpc->m_NpcState == NPC_DEAD)
 		{
-			SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, 0, 0);
+			SendAttackSuccess(ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, 0, 0);
 			InitTarget();
 			m_NpcState = NPC_STANDING;
 			return nStandingTime;
@@ -3664,7 +3661,7 @@ int CNpc::Attack(CIOCPort* pIOCP)
 		}*/
 
 		// MoveAttack
-		//MoveAttack(pIOCP);
+		//MoveAttack();
 
 		// 명중이면 //Damage 처리 ----------------------------------------------------------------//
 		nDamage = GetNFinalDamage(pNpc);	// 최종 대미지
@@ -3676,24 +3673,21 @@ int CNpc::Attack(CIOCPort* pIOCP)
 
 		if (nDamage > 0)
 		{
-			pNpc->SetDamage(0, nDamage, m_strName.c_str(), m_sNid + NPC_BAND, pIOCP);
+			pNpc->SetDamage(0, nDamage, m_strName.c_str(), m_sNid + NPC_BAND);
 			//if(pNpc->m_iHP > 0)
-			SendAttackSuccess(pIOCP, ATTACK_SUCCESS, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
+			SendAttackSuccess(ATTACK_SUCCESS, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
 		}
 		else
 		{
-			SendAttackSuccess(pIOCP, ATTACK_FAIL, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
+			SendAttackSuccess(ATTACK_FAIL, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
 		}
 	}
 
 	return m_sAttackDelay;
 }
 
-int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
+int CNpc::LongAndMagicAttack()
 {
-	if (pIOCP == nullptr)
-		return 10000;
-
 	int ret = 0;
 	int nStandingTime = m_sStandTime;
 	int send_index = 0;
@@ -3753,7 +3747,7 @@ int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
 		// User 가 이미 죽은경우
 		if (pUser->m_bLive == USER_DEAD)
 		{
-			SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, 0);
+			SendAttackSuccess(ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, 0);
 			InitTarget();
 			m_NpcState = NPC_STANDING;
 			return nStandingTime;
@@ -3796,7 +3790,7 @@ int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
 		SetShort(buff, 0, send_index);
 		SetShort(buff, 0, send_index);
 
-		m_MagicProcess.MagicPacket(buff, send_index, pIOCP);
+		m_MagicProcess.MagicPacket(buff, send_index);
 
 		//TRACE(_T("**** LongAndMagicAttack --- sid=%d, tid=%d\n"), m_sNid+NPC_BAND, pUser->m_iUserId);
 	}
@@ -3817,7 +3811,7 @@ int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
 		if (pNpc->m_iHP <= 0
 			|| pNpc->m_NpcState == NPC_DEAD)
 		{
-			SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, 0, 0);
+			SendAttackSuccess(ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, 0, 0);
 			InitTarget();
 			m_NpcState = NPC_STANDING;
 			return nStandingTime;
@@ -3841,11 +3835,8 @@ int CNpc::LongAndMagicAttack(CIOCPort* pIOCP)
 	return m_sAttackDelay;
 }
 
-int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
+int CNpc::TracingAttack()		// 0:attack fail, 1:attack success
 {
-	if (!pIOCP)
-		return 0;
-
 	CNpc* pNpc = nullptr;
 	CUser* pUser = nullptr;
 
@@ -3867,7 +3858,7 @@ int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
 		// User 가 이미 죽은경우
 		if (pUser->m_bLive == USER_DEAD)
 		{
-			SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, 0);
+			SendAttackSuccess(ATTACK_TARGET_DEAD_OK, pUser->m_iUserId, 0, 0);
 			return 0;
 		}
 
@@ -3892,12 +3883,12 @@ int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
 			if (pUser->m_bLive != USER_DEAD)
 			{
 				// TRACE(_T("Npc-Attack Success : [npc=%d, %hs]->[user=%d, %hs]\n"), m_sNid+NPC_BAND, m_strName, pUser->m_iUserId, pUser->m_strUserID);
-				SendAttackSuccess(pIOCP, ATTACK_SUCCESS, pUser->m_iUserId, nDamage, pUser->m_sHP);
+				SendAttackSuccess(ATTACK_SUCCESS, pUser->m_iUserId, nDamage, pUser->m_sHP);
 			}
 		}
 		else
 		{
-			SendAttackSuccess(pIOCP, ATTACK_FAIL, pUser->m_iUserId, nDamage, pUser->m_sHP);
+			SendAttackSuccess(ATTACK_FAIL, pUser->m_iUserId, nDamage, pUser->m_sHP);
 		}
 
 		// 방어측 내구도 감소
@@ -3914,7 +3905,7 @@ int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
 		if (pNpc->m_iHP <= 0
 			|| pNpc->m_NpcState == NPC_DEAD)
 		{
-			SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, 0, 0);
+			SendAttackSuccess(ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, 0, 0);
 			return 0;
 		}
 
@@ -3924,27 +3915,27 @@ int CNpc::TracingAttack(CIOCPort* pIOCP)		// 0:attack fail, 1:attack success
 
 		if (nDamage > 0)
 		{
-			if (pNpc->SetDamage(0, nDamage, m_strName.c_str(), m_sNid + NPC_BAND, pIOCP))
+			if (pNpc->SetDamage(0, nDamage, m_strName.c_str(), m_sNid + NPC_BAND))
 			{
-				SendAttackSuccess(pIOCP, ATTACK_SUCCESS, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
+				SendAttackSuccess(ATTACK_SUCCESS, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
 			}
 			else
 			{
-				SendAttackSuccess(pIOCP, ATTACK_SUCCESS, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
-				SendAttackSuccess(pIOCP, ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
+				SendAttackSuccess(ATTACK_SUCCESS, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
+				SendAttackSuccess(ATTACK_TARGET_DEAD, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
 				return 0;
 			}
 		}
 		else
 		{
-			SendAttackSuccess(pIOCP, ATTACK_FAIL, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
+			SendAttackSuccess(ATTACK_FAIL, pNpc->m_sNid + NPC_BAND, nDamage, pNpc->m_iHP);
 		}
 	}
 
 	return 1;
 }
 
-void CNpc::MoveAttack(CIOCPort* pIOCP)
+void CNpc::MoveAttack()
 {
 	char pBuf[1024] = {};
 	int index = 0;
@@ -4058,7 +4049,7 @@ void CNpc::MoveAttack(CIOCPort* pIOCP)
 	Setfloat(pBuf, m_fCurY, index);
 	Setfloat(pBuf, fDis, index);
 	//TRACE(_T("Npc moveattack --> nid = %d, cur=[x=%.2f, y=%.2f, metor=%.2f]\n"), m_sNid+NPC_BAND, m_fCurX, m_fCurZ, fDis);
-	SendAll(pIOCP, pBuf, index);   // thread 에서 send
+	SendAll(pBuf, index);   // thread 에서 send
 
 	// 이동 끝
 	memset(pBuf, 0, sizeof(pBuf));
@@ -4071,7 +4062,7 @@ void CNpc::MoveAttack(CIOCPort* pIOCP)
 	Setfloat(pBuf, m_fCurY, index);
 	Setfloat(pBuf, 0, index);
 	//TRACE(_T("Npc moveattack end --> nid = %d, cur=[x=%.2f, y=%.2f, metor=%d]\n"), m_sNid+NPC_BAND, m_fCurX, m_fCurZ, 0);
-	SendAll(pIOCP, pBuf, index);   // thread 에서 send
+	SendAll(pBuf, index);   // thread 에서 send
 
 	SetUid(m_fCurX, m_fCurZ, m_sNid + NPC_BAND);
 
@@ -4430,7 +4421,7 @@ int CNpc::GetFinalDamage(CUser* pUser, int type)
 }
 
 //	나를 공격한 유저를 타겟으로 삼는다.(기준 : 렙과 HP를 기준으로 선정)
-void CNpc::ChangeTarget(int nAttackType, CUser* pUser, CIOCPort* pIOCP)
+void CNpc::ChangeTarget(int nAttackType, CUser* pUser)
 {
 	int preDamage, lastDamage;
 	__Vector3 vUser, vNpc;
@@ -4491,6 +4482,7 @@ void CNpc::ChangeTarget(int nAttackType, CUser* pUser, CIOCPort* pIOCP)
 		}
 		return;
 	}
+
 	if (preUser != nullptr
 		/* && preUser->m_state == STATE_GAMESTARTED */)
 	{
@@ -4616,7 +4608,7 @@ void CNpc::ChangeTarget(int nAttackType, CUser* pUser, CIOCPort* pIOCP)
 }
 
 //	나를 공격한 Npc를 타겟으로 삼는다.(기준 : 렙과 HP를 기준으로 선정)
-void CNpc::ChangeNTarget(CNpc* pNpc, CIOCPort* pIOCP)
+void CNpc::ChangeNTarget(CNpc* pNpc)
 {
 	int preDamage, lastDamage;
 	__Vector3 vMonster, vNpc;
@@ -4725,7 +4717,7 @@ int CNpc::GetDefense()
 }
 
 //	Damage 계산, 만약 m_iHP 가 0 이하이면 사망처리
-bool CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int uid, CIOCPort* pIOCP)
+bool CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int uid)
 {
 	int i = 0, len = 0;
 	int userDamage = 0;
@@ -4844,7 +4836,7 @@ go_result:
 	{
 	//	m_ItemUserLevel = pUser->m_byLevel;
 		m_iHP = 0;
-		Dead(pIOCP);
+		Dead();
 		return false;
 	}
 
@@ -4870,25 +4862,25 @@ go_result:
 			}
 			else
 			{
-				ChangeTarget(nAttackType, pUser, pIOCP);
+				ChangeTarget(nAttackType, pUser);
 			}
 		}
 		else
 		{
-			ChangeTarget(nAttackType, pUser, pIOCP);
+			ChangeTarget(nAttackType, pUser);
 		}
 	}
 
 	// Target 이 mon 인 경우
 	if (uid >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
-		ChangeNTarget(pNpc, pIOCP);
+		ChangeNTarget(pNpc);
 
 	return true;
 }
 
 // Heal계열 마법공격
-bool CNpc::SetHMagicDamage(int nDamage, CIOCPort* pIOCP)
+bool CNpc::SetHMagicDamage(int nDamage)
 {
 	if (m_NpcState == NPC_DEAD)
 		return false;
@@ -4901,9 +4893,6 @@ bool CNpc::SetHMagicDamage(int nDamage, CIOCPort* pIOCP)
 
 	// 죽기직전일때는 회복 안됨...
 	if (m_iHP < 1)
-		return false;
-
-	if (pIOCP == nullptr)
 		return false;
 
 	char buff[256] = {};
@@ -4921,7 +4910,7 @@ bool CNpc::SetHMagicDamage(int nDamage, CIOCPort* pIOCP)
 	SetByte(buff, AG_USER_SET_HP, send_index);
 	SetShort(buff, m_sNid + NPC_BAND, send_index);
 	SetDWORD(buff, m_iHP, send_index);
-	SendAll(pIOCP, buff, send_index);
+	SendAll(buff, send_index);
 
 	return true;
 }
@@ -5298,18 +5287,15 @@ void CNpc::SendExpToUserList()
 	}
 }
 
-int CNpc::SendDead(CIOCPort* pIOCP, int type)
+int CNpc::SendDead(int type)
 {
-	if (pIOCP == nullptr)
-		return 0;
-
 	if (m_NpcState != NPC_DEAD
 		|| m_iHP > 0)
 		return 0;
 
 	// 아이템 떨구기(경비면이면 안떨어트림)
 	if (type != 0)
-		GiveNpcHaveItem(pIOCP);
+		GiveNpcHaveItem();
 
 	return m_sRegenTime;
 }
@@ -5785,7 +5771,7 @@ __Vector3 CNpc::GetDirection(__Vector3 vStart, __Vector3 vEnd)
 }
 
 // sungyong 2002.05.22
-void CNpc::SendAll(CIOCPort* pIOCP, const char* pBuf, int nLength)
+void CNpc::SendAll(const char* pBuf, int nLength)
 {
 	if (nLength <= 0
 		|| nLength > sizeof(_SEND_DATA::pBuf))
@@ -5797,9 +5783,9 @@ void CNpc::SendAll(CIOCPort* pIOCP, const char* pBuf, int nLength)
 
 	pNewData->sCurZone = m_sCurZone;
 	pNewData->sLength = nLength;
-	::CopyMemory(pNewData->pBuf, pBuf, nLength);
+	memcpy(pNewData->pBuf, pBuf, nLength);
 
-	pIOCP->QueueSendData(pNewData);
+	m_pMain->_socketManager.QueueSendData(pNewData);
 }
 // ~sungyong 2002.05.22
 
@@ -5812,7 +5798,7 @@ void CNpc::NpcTrace(std::string_view msg)
 	}
 }
 
-void CNpc::NpcMoveEnd(CIOCPort* pIOCP)
+void CNpc::NpcMoveEnd()
 {
 	SetUid(m_fCurX, m_fCurZ, m_sNid + NPC_BAND);
 
@@ -5829,7 +5815,7 @@ void CNpc::NpcMoveEnd(CIOCPort* pIOCP)
 	// TRACE(_T("NpcMoveEnd() --> nid = %d, x=%f, y=%f, rx=%d,rz=%d, frame=%d, speed = %d \n"),
 	// m_sNid, m_fCurX, m_fCurZ, static_cast<int>(m_fCurX / VIEW_DIST), static_cast<int>(m_fCurZ / VIEW_DIST),
 	// m_iAniFrameCount, m_sSpeed);
-	SendAll(pIOCP, pBuf, index);   // thread 에서 send
+	SendAll(pBuf, index);   // thread 에서 send
 }
 
 __Vector3 CNpc::GetVectorPosition(__Vector3 vOrig, __Vector3 vDest, float fDis)
@@ -5951,7 +5937,7 @@ bool CNpc::GetUserInViewRange(int x, int z)
 	return false;
 }
 
-void CNpc::SendAttackSuccess(CIOCPort* pIOCP, uint8_t byResult, int tuid, int16_t sDamage, int nHP, uint8_t byFlag, uint8_t byAttackType)
+void CNpc::SendAttackSuccess(uint8_t byResult, int tuid, int16_t sDamage, int nHP, uint8_t byFlag, uint8_t byAttackType)
 {
 	int send_index = 0;
 	int sid = -1, tid = -1;
@@ -5993,7 +5979,7 @@ void CNpc::SendAttackSuccess(CIOCPort* pIOCP, uint8_t byResult, int tuid, int16_
 	//TRACE(_T("Npc - SendAttackSuccess() : [sid=%d, tid=%d, result=%d], damage=%d, hp = %d\n"), sid, tid, byResult, sDamage, sHP);
 	//SetShort( buff, sMaxHP, send_index );
 
-	SendAll(pIOCP, buff, send_index);   // thread 에서 send
+	SendAll(buff, send_index);   // thread 에서 send
 }
 
 __Vector3 CNpc::CalcAdaptivePosition(__Vector3 vPosOrig, __Vector3 vPosDest, float fAttackDistance)
@@ -6382,7 +6368,7 @@ void CNpc::IsNoPathFind(float fDistance)
 }
 
 //	NPC 가 가진 아이템을 떨군다.
-void CNpc::GiveNpcHaveItem(CIOCPort* pIOCP)
+void CNpc::GiveNpcHaveItem()
 {
 	char pBuf[1024] = {};
 	char logfile[256] = {};
@@ -6404,22 +6390,22 @@ void CNpc::GiveNpcHaveItem(CIOCPort* pIOCP)
 	iRandom = myrand(70, 100);
 	iMoney = m_iMoney * iRandom / 100;
 	//m_iMoney, m_iItem;
-	_NpcGiveItem m_GiveItemList[NPC_HAVE_ITEM_LIST];			// Npc의 ItemList
+	_NpcGiveItem GiveItemList[NPC_HAVE_ITEM_LIST];			// Npc의 ItemList
 	if (iMoney <= 0)
 	{
 		nCount = 0;
 	}
 	else
 	{
-		m_GiveItemList[0].sSid = TYPE_MONEY_SID;
+		GiveItemList[0].sSid = TYPE_MONEY_SID;
 		if (iMoney > 32767)
 		{
 			iMoney = 32000;						// sungyong : int16_t형이기 때문에,,
-			m_GiveItemList[0].count = iMoney;
+			GiveItemList[0].count = iMoney;
 		}
 		else
 		{
-			m_GiveItemList[0].count = iMoney;
+			GiveItemList[0].count = iMoney;
 		}
 	}
 
@@ -6454,8 +6440,8 @@ void CNpc::GiveNpcHaveItem(CIOCPort* pIOCP)
 					if (iMakeItemCode == 0)
 						continue;
 
-					m_GiveItemList[nCount].sSid = iMakeItemCode;
-					m_GiveItemList[nCount].count = 1;
+					GiveItemList[nCount].sSid = iMakeItemCode;
+					GiveItemList[nCount].count = 1;
 				}
 				else if (j == 3)
 				{
@@ -6463,18 +6449,18 @@ void CNpc::GiveNpcHaveItem(CIOCPort* pIOCP)
 					if (iMakeItemCode == 0)
 						continue;
 
-					m_GiveItemList[nCount].sSid = iMakeItemCode;
-					m_GiveItemList[nCount].count = 1;
+					GiveItemList[nCount].sSid = iMakeItemCode;
+					GiveItemList[nCount].count = 1;
 				}
 				else
 				{
-					m_GiveItemList[nCount].sSid = iItemID;
+					GiveItemList[nCount].sSid = iItemID;
 
 					// 화살이라면
-					if (COMPARE(m_GiveItemList[nCount].sSid, ARROW_MIN, ARROW_MAX))
-						m_GiveItemList[nCount].count = 20;
+					if (COMPARE(GiveItemList[nCount].sSid, ARROW_MIN, ARROW_MAX))
+						GiveItemList[nCount].count = 20;
 					else
-						m_GiveItemList[nCount].count = 1;
+						GiveItemList[nCount].count = 1;
 				}
 
 				if (++nCount >= NPC_HAVE_ITEM_LIST)
@@ -6502,16 +6488,16 @@ void CNpc::GiveNpcHaveItem(CIOCPort* pIOCP)
 	SetByte(pBuf, nCount, index);
 	for (i = 0; i < nCount; i++)
 	{
-		SetInt(pBuf, m_GiveItemList[i].sSid, index);
-		SetShort(pBuf, m_GiveItemList[i].count, index);
+		SetInt(pBuf, GiveItemList[i].sSid, index);
+		SetShort(pBuf, GiveItemList[i].count, index);
 
-		if (m_GiveItemList[i].sSid != TYPE_MONEY_SID)
-			spdlog::get(logger::AIServerItem)->info(m_GiveItemList[i].sSid);
+		if (GiveItemList[i].sSid != TYPE_MONEY_SID)
+			spdlog::get(logger::AIServerItem)->info(GiveItemList[i].sSid);
 
-		//TRACE(_T("Npc-GiveNpcHaveItem() : [nid - %d,%hs,  giveme=%d, count=%d, num=%d], list=%d, count=%d\n"), m_sNid+NPC_BAND, m_strName, m_sMaxDamageUserid, nCount, i, m_GiveItemList[i].sSid, m_GiveItemList[i].count);
+		//TRACE(_T("Npc-GiveNpcHaveItem() : [nid - %d,%hs,  giveme=%d, count=%d, num=%d], list=%d, count=%d\n"), m_sNid+NPC_BAND, m_strName, m_sMaxDamageUserid, nCount, i, GiveItemList[i].sSid, GiveItemList[i].count);
 	}
 
-	SendAll(pIOCP, pBuf, index);   // thread 에서 send
+	SendAll(pBuf, index);   // thread 에서 send
 }
 
 
@@ -6612,7 +6598,7 @@ void CNpc::NpcTypeParser()
 	}
 }
 
-void CNpc::HpChange(CIOCPort* pIOCP)
+void CNpc::HpChange()
 {
 	m_fHPChangeTime = TimeGet();
 
@@ -6628,10 +6614,7 @@ void CNpc::HpChange(CIOCPort* pIOCP)
 	if (m_iHP == m_iMaxHP) 
 		return;
 
-	if (pIOCP == nullptr)
-		return;
-
-	//int amount =  (int)(m_sLevel*(1+m_sLevel/60.0) + 1) ;
+	//int amount =  (int)(m_sLevel*(1+m_sLevel/60.0) + 1);
 	int amount = (int) (m_iMaxHP / 20);
 
 	char buff[256] = {};
@@ -6648,7 +6631,7 @@ void CNpc::HpChange(CIOCPort* pIOCP)
 	SetDWORD(buff, m_iHP, send_index);
 	SetDWORD(buff, m_iMaxHP, send_index);
 
-	SendAll(pIOCP, buff, send_index);   // thread 에서 send
+	SendAll(buff, send_index);   // thread 에서 send
 }
 
 bool CNpc::IsInExpRange(CUser* pUser)
@@ -7114,7 +7097,7 @@ int CNpc::GetItemGroupNumber(int groupId) const
 	return makeItemGroup->Item[randomSlot];
 }
 
-void CNpc::DurationMagic_4(CIOCPort* pIOCP, float currenttime)
+void CNpc::DurationMagic_4(float currenttime)
 {
 	int send_index = 0, buff_type = 0;
 	char send_buff[128] = {};
@@ -7159,7 +7142,7 @@ void CNpc::DurationMagic_4(CIOCPort* pIOCP, float currenttime)
 						if (m_byRegenType == 0)
 						{
 							m_byRegenType = 2;      // 리젠이 되지 않도록,,
-							Dead(pIOCP, 1);
+							Dead(1);
 							return;
 						}
 					}
@@ -7195,7 +7178,7 @@ void CNpc::DurationMagic_4(CIOCPort* pIOCP, float currenttime)
 		SetByte( send_buff, AG_MAGIC_ATTACK_RESULT, send_index );
 		SetByte( send_buff, MAGIC_TYPE4_END, send_index );
 		SetByte( send_buff, buff_type, send_index );
-		SendAll(pIOCP, send_buff, send_index );
+		SendAll(send_buff, send_index );
 	}	*/
 }
 
@@ -7251,7 +7234,7 @@ void CNpc::ChangeMonsterInfo(int iChangeType)
 	Load(pNpcTable, false);
 }
 
-void CNpc::DurationMagic_3(CIOCPort* pIOCP, float currenttime)
+void CNpc::DurationMagic_3(float currenttime)
 {
 	int duration_damage = 0;
 
@@ -7278,11 +7261,11 @@ void CNpc::DurationMagic_3(CIOCPort* pIOCP, float currenttime)
 			duration_damage = abs(duration_damage);
 
 			// Npc가 죽은 경우,,
-			if (!SetDamage(0, duration_damage, "**duration**", m_MagicType3[i].sHPAttackUserID, pIOCP))
+			if (!SetDamage(0, duration_damage, "**duration**", m_MagicType3[i].sHPAttackUserID))
 			{
 				SendExpToUserList(); // 경험치 분배!!
-				SendDead(pIOCP);
-				SendAttackSuccess(pIOCP, MAGIC_ATTACK_TARGET_DEAD, m_MagicType3[i].sHPAttackUserID, duration_damage, m_iHP, 1, DURATION_ATTACK);
+				SendDead();
+				SendAttackSuccess(MAGIC_ATTACK_TARGET_DEAD, m_MagicType3[i].sHPAttackUserID, duration_damage, m_iHP, 1, DURATION_ATTACK);
 				//TRACE(_T("&&&& Duration Magic attack .. pNpc->m_byHPInterval[%d] = %d &&&& \n"), i, m_MagicType3[i].byHPInterval);
 				m_MagicType3[i].fStartTime = 0.0f;
 				m_MagicType3[i].byHPDuration = 0;
@@ -7293,7 +7276,7 @@ void CNpc::DurationMagic_3(CIOCPort* pIOCP, float currenttime)
 			}
 			else
 			{
-				SendAttackSuccess(pIOCP, ATTACK_SUCCESS, m_MagicType3[i].sHPAttackUserID, duration_damage, m_iHP, 1, DURATION_ATTACK);
+				SendAttackSuccess(ATTACK_SUCCESS, m_MagicType3[i].sHPAttackUserID, duration_damage, m_iHP, 1, DURATION_ATTACK);
 				//TRACE(_T("&&&& Duration Magic attack .. pNpc->m_byHPInterval[%d] = %d &&&& \n"), i, m_MagicType3[i].byHPInterval);
 			}
 		}
@@ -7313,14 +7296,14 @@ void CNpc::DurationMagic_3(CIOCPort* pIOCP, float currenttime)
 /////////////////////////////////////////////////////////////////////////////
 //	NPC가 잠자는경우.
 //
-void CNpc::NpcSleeping(CIOCPort* pIOCP)
+void CNpc::NpcSleeping()
 {
 	NpcTrace("NpcSleeping()");
 
 	// sungyong test~
 	/*
 	if(m_byChangeType == 1)	{
-		Dead(pIOCP, 1);
+		Dead(1);
 		ChangeMonsterInfomation(1);
 		return;
 	}	*/
@@ -7345,7 +7328,7 @@ void CNpc::NpcSleeping(CIOCPort* pIOCP)
 
 /////////////////////////////////////////////////////////////////////////////
 // 몬스터가 기절상태로..........
-void CNpc::NpcFainting(CIOCPort* pIOCP, float currenttime)
+void CNpc::NpcFainting(float currenttime)
 {
 	NpcTrace("NpcFainting()");
 
@@ -7361,7 +7344,7 @@ void CNpc::NpcFainting(CIOCPort* pIOCP, float currenttime)
 
 /////////////////////////////////////////////////////////////////////////////
 // 몬스터가 치료상태로..........
-void CNpc::NpcHealing(CIOCPort* pIOCP)
+void CNpc::NpcHealing()
 {
 	NpcTrace("NpcHealing()");
 
@@ -7418,7 +7401,7 @@ void CNpc::NpcHealing(CIOCPort* pIOCP)
 		// 직접, 간접(롱)공격이 가능한 몬스터 이므로 장거리 공격을 할 수 있다.
 		if (m_tNpcLongType == 2)
 		{
-			m_Delay = LongAndMagicAttack(pIOCP);
+			m_Delay = LongAndMagicAttack();
 			m_fDelayTime = TimeGet();
 			return;
 		}
@@ -7498,12 +7481,12 @@ void CNpc::NpcHealing(CIOCPort* pIOCP)
 			SetShort(buff, 0, send_index);
 			SetShort(buff, 0, send_index);
 			SetShort(buff, 0, send_index);
-			m_MagicProcess.MagicPacket(buff, send_index, pIOCP);
+			m_MagicProcess.MagicPacket(buff, send_index);
 
 			m_Delay = m_sAttackDelay;
 			m_fDelayTime = TimeGet();
 			return;
-			//SendAll(pIOCP, buff, send_index);
+			//SendAll(buff, send_index);
 		}
 	}
 
@@ -7532,8 +7515,8 @@ void CNpc::NpcHealing(CIOCPort* pIOCP)
 	SetShort(buff, 0, send_index);
 	SetShort(buff, 0, send_index);
 
-	m_MagicProcess.MagicPacket(buff, send_index, pIOCP);
-	//SendAll(pIOCP, buff, send_index);
+	m_MagicProcess.MagicPacket(buff, send_index);
+	//SendAll(buff, send_index);
 
 	m_Delay = m_sAttackDelay;
 	m_fDelayTime = TimeGet();
@@ -7619,7 +7602,7 @@ void CNpc::ChangeAbility(int iChangeType)
 
 		// HP도 바꿔야 겠군,,
 		if (m_iHP > nHP)
-			HpChange(&m_pMain->m_Iocport);
+			HpChange();
 
 		m_sDefense = nAC;
 		m_sDamage = nDamage;
@@ -7642,7 +7625,7 @@ void CNpc::ChangeAbility(int iChangeType)
 		if (m_iMaxHP > m_iHP)
 		{
 			m_iHP = m_iMaxHP - 50;
-			HpChange(&m_pMain->m_Iocport);
+			HpChange();
 		}
 
 		m_sDamage = pNpcTable->Damage;				// 기본 데미지
@@ -7657,7 +7640,7 @@ void CNpc::ChangeAbility(int iChangeType)
 	}
 }
 
-bool CNpc::Teleport(CIOCPort* pIOCP)
+bool CNpc::Teleport()
 {
 	int send_index = 0, retryCount = 0, maxRetry = 500;
 	char buff[256] = {};
@@ -7711,7 +7694,7 @@ bool CNpc::Teleport(CIOCPort* pIOCP)
 	Setfloat(buff, m_fCurX, send_index);
 	Setfloat(buff, m_fCurZ, send_index);
 	Setfloat(buff, m_fCurY, send_index);
-	SendAll(pIOCP, buff, send_index);   // thread 에서 send
+	SendAll(buff, send_index);   // thread 에서 send
 
 	m_fCurX = static_cast<float>(nX);
 	m_fCurZ = static_cast<float>(nZ);
@@ -7724,7 +7707,7 @@ bool CNpc::Teleport(CIOCPort* pIOCP)
 	Setfloat(buff, m_fCurX, send_index);
 	Setfloat(buff, m_fCurZ, send_index);
 	Setfloat(buff, 0, send_index);
-	SendAll(pIOCP, buff, send_index);   // thread 에서 send
+	SendAll(buff, send_index);   // thread 에서 send
 
 	SetUid(m_fCurX, m_fCurZ, m_sNid + NPC_BAND);
 

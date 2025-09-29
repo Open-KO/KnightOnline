@@ -182,7 +182,7 @@ bool CRoomEvent::RunEvent(int event_num)
 			if (pNpc != nullptr)
 			{
 				pNpc->m_byChangeType = 3;	// 몬스터 출현해주세여...
-				pNpc->SetLive(&m_pMain->m_Iocport);
+				pNpc->SetLive();
 			}
 			else
 			{

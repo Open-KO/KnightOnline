@@ -232,25 +232,25 @@ inline void SetShort(char* tBuf, int sShort, int& index)
 {
 	int16_t temp = (int16_t) sShort;
 
-	CopyMemory(tBuf + index, &temp, 2);
+	memcpy(tBuf + index, &temp, 2);
 	index += 2;
 }
 
 inline void SetDWORD(char* tBuf, uint32_t sDWORD, int& index)
 {
-	CopyMemory(tBuf + index, &sDWORD, 4);
+	memcpy(tBuf + index, &sDWORD, 4);
 	index += 4;
 }
 
 inline void Setfloat(char* tBuf, float sFloat, int& index)
 {
-	CopyMemory(tBuf + index, &sFloat, 4);
+	memcpy(tBuf + index, &sFloat, 4);
 	index += 4;
 }
 
 inline void SetInt64(char* tBuf, int64_t nInt64, int& index)
 {
-	CopyMemory(tBuf + index, &nInt64, 8);
+	memcpy(tBuf + index, &nInt64, 8);
 	index += 8;
 }
 
@@ -287,7 +287,7 @@ inline void SetVarString(char* tBuf, TCHAR* sBuf, int len, int& index)
 	*(tBuf + index) = (uint8_t) len;
 	index ++;
 
-	CopyMemory(tBuf + index, sBuf, len);
+	memcpy(tBuf + index, sBuf, len);
 	index += len;
 }
 

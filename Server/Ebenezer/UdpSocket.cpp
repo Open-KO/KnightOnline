@@ -652,9 +652,10 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	SetString2(send_buff, finalstr, send_index);
 	_main->Send_KnightsMember(knightsId, send_buff, send_index);
 
-	for (int i = 0; i < MAX_USER; i++)
+	int socketCount = _main->GetUserSocketCount();
+	for (int i = 0; i < socketCount; i++)
 	{
-		pTUser = (CUser*) _main->m_Iocport.m_SockArray[i];
+		pTUser = _main->GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 
