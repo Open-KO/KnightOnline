@@ -11596,6 +11596,7 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				if (CheckKnight())
 					bExact = true;
 				break;
+
 			case LOGIC_CHECK_PROMOTION_ELIGIBLE:
 				if (CheckPromotionEligible())
 					bExact = true;
@@ -12142,30 +12143,37 @@ bool CUser::CheckPromotionEligible()
 		|| CheckClass(CLASS_EL_PROTECTOR, CLASS_EL_ASSASIN, CLASS_EL_ENCHANTER, CLASS_EL_DRUID))
 	{
 		// Here we return that the user is already mastered
-		if (m_pUserData->m_sClass == CLASS_EL_PROTECTOR || m_pUserData->m_sClass == CLASS_KA_GUARDIAN)
+		switch (m_pUserData->m_sClass)
 		{
-			SendSay(-1, -1, 6006);
+			case CLASS_EL_PROTECTOR:
+			case CLASS_KA_GUARDIAN:
+				SendSay(-1, -1, 6006);
+				break;
+
+			case CLASS_EL_ASSASIN:
+			case CLASS_KA_PENETRATOR:
+				SendSay(-1, -1, 7006);
+				break;
+
+			case CLASS_EL_ENCHANTER:
+			case CLASS_KA_NECROMANCER:
+				SendSay(-1, -1, 8006);
+				break;
+
+			case CLASS_EL_DRUID:
+			case CLASS_KA_DARKPRIEST:
+				SendSay(-1, -1, 9006);
+				break;
 		}
-		if (m_pUserData->m_sClass == CLASS_EL_ASSASIN || m_pUserData->m_sClass == CLASS_KA_PENETRATOR)
-		{
-			SendSay(-1, -1, 7006);
-		}
-		if (m_pUserData->m_sClass == CLASS_EL_ENCHANTER || m_pUserData->m_sClass == CLASS_KA_NECROMANCER)
-		{
-			SendSay(-1, -1, 8006);
-		}
-		if (m_pUserData->m_sClass == CLASS_EL_DRUID || m_pUserData->m_sClass == CLASS_KA_DARKPRIEST)
-		{
-			SendSay(-1, -1, 9006);
-		}
+
 		return false;
 	}
 
-	const int MASTER_LVL = 60;
+	constexpr int MASTER_LVL = 60;
 
+	// The following SendSay() calls tell the user that they're at the wrong NPC or they've not reached level 60.
 	switch (npc->m_tNpcType)
 	{
-		// The method SendSay in this switch tells the user that he is at the wrong npc or he has not reached lvl 60
 		case NPC_MASTER_WARRIOR:
 			if ((m_pUserData->m_sClass != CLASS_KA_BERSERKER && m_pUserData->m_sClass != CLASS_EL_BLADE)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
@@ -12174,6 +12182,7 @@ bool CUser::CheckPromotionEligible()
 				return false;
 			}
 			return true;
+
 		case NPC_MASTER_ROGUE:
 			if ((m_pUserData->m_sClass != CLASS_KA_HUNTER && m_pUserData->m_sClass != CLASS_EL_RANGER)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
@@ -12182,6 +12191,7 @@ bool CUser::CheckPromotionEligible()
 				return false;
 			}
 			return true;
+
 		case NPC_MASTER_MAGE:
 			if ((m_pUserData->m_sClass != CLASS_KA_SORCERER && m_pUserData->m_sClass != CLASS_EL_MAGE)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
@@ -12190,6 +12200,7 @@ bool CUser::CheckPromotionEligible()
 				return false;
 			}
 			return true;
+
 		case NPC_MASTER_PRIEST:
 			if ((m_pUserData->m_sClass != CLASS_KA_SHAMAN && m_pUserData->m_sClass != CLASS_EL_CLERIC)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
@@ -12198,8 +12209,6 @@ bool CUser::CheckPromotionEligible()
 				return false;
 			}
 			return true;
-		default:
-			return false;
 	}
 
 	return false;
@@ -12262,14 +12271,17 @@ void CUser::SendNpcSay(const EXEC* pExec)
 	Send(send_buff, send_index);
 }
 
-void CUser::SendSay(int16_t eventId1, int16_t eventId2, int16_t message1, int16_t message2, int16_t message3, int16_t message4, int16_t message5, int16_t message6, int16_t message7, int16_t message8)
+void CUser::SendSay(
+	int16_t eventIdUp, int16_t eventIdOk,
+	int16_t message1, int16_t message2, int16_t message3, int16_t message4,
+	int16_t message5, int16_t message6, int16_t message7, int16_t message8)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
 
 	SetByte(send_buff, WIZ_NPC_SAY, send_index);
-	SetDWORD(send_buff, eventId1, send_index);
-	SetDWORD(send_buff, eventId2, send_index);
+	SetDWORD(send_buff, eventIdUp, send_index);
+	SetDWORD(send_buff, eventIdOk, send_index);
 	SetDWORD(send_buff, message1, send_index);
 	SetDWORD(send_buff, message2, send_index);
 	SetDWORD(send_buff, message3, send_index);
