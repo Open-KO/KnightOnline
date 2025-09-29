@@ -70,8 +70,6 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 		if (!_sendQueue.empty())
 			_sendQueue.pop();
 
-		// Send queue is empty, nothing more to queue up.
-		// Consider this successful.
 		if (_sendQueue.empty())
 		{
 			// Re-queue a disconnect now that all sends are complete
@@ -81,6 +79,8 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 				Close();
 			}
 
+			// Send queue is empty, nothing more to queue up.
+			// Consider this successful.
 			return true;
 		}
 	}
