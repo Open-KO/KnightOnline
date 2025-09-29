@@ -983,7 +983,7 @@ void CAujardDlg::AddOutputMessage(const std::wstring& msg)
 	_outputList.AddString(msg.data());
 	
 	// Set the focus to the last item and ensure it is visible
-	int lastIndex = _outputList.GetCount()-1;
+	int lastIndex = _outputList.GetCount() - 1;
 	_outputList.SetTopIndex(lastIndex);
 }
 

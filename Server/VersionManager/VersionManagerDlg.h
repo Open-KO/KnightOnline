@@ -99,6 +99,9 @@ protected:
 
 	logger::Logger	_logger;
 
+	std::queue<std::wstring>	_listBoxQueue;
+	std::mutex					_listBoxQueueMutex;
+
 	// Generated message map functions
 	//{{AFX_MSG(CVersionManagerDlg)
 	BOOL OnInitDialog() override;
@@ -106,6 +109,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnVersionSetting();
+	afx_msg LRESULT OnProcessListBoxQueue(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

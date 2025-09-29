@@ -23,6 +23,8 @@ static char THIS_FILE[] = __FILE__;
 
 import VersionManagerBinder;
 
+constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
+
 constexpr int DB_POOL_CHECK = 100;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -67,6 +69,7 @@ BEGIN_MESSAGE_MAP(CVersionManagerDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_SETTING, OnVersionSetting)
+	ON_MESSAGE(WM_PROCESS_LISTBOX_QUEUE, &CVersionManagerDlg::OnProcessListBoxQueue)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -268,10 +271,29 @@ void CVersionManagerDlg::OnTimer(UINT EventId)
 
 	CDialog::OnTimer(EventId);
 }
+
+LRESULT CVersionManagerDlg::OnProcessListBoxQueue(WPARAM, LPARAM)
+{
+	std::queue<std::wstring> localQueue;
+
+	{
+		std::lock_guard<std::mutex> lock(_listBoxQueueMutex);
+		localQueue.swap(_listBoxQueue);
+	}
+
+	while (!localQueue.empty())
+	{
+		const std::wstring& message = localQueue.front();
+		AddOutputMessage(message);
+		localQueue.pop();
+	}
+
+	return 0;
+}
+
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
-
 void CVersionManagerDlg::OnPaint()
 {
 	if (IsIconic())
@@ -382,9 +404,21 @@ void CVersionManagerDlg::AddOutputMessage(const std::string& msg)
 /// \see _outputList
 void CVersionManagerDlg::AddOutputMessage(const std::wstring& msg)
 {
+	// Be sure to exclusively handle UI updates in the UI's thread
+	if (AfxGetThread() != AfxGetApp())
+	{
+		{
+			std::lock_guard<std::mutex> lock(_listBoxQueueMutex);
+			_listBoxQueue.push(msg);
+		}
+
+		PostMessage(WM_PROCESS_LISTBOX_QUEUE);
+		return;
+	}
+
 	_outputList.AddString(msg.data());
-	
+
 	// Set the focus to the last item and ensure it is visible
-	int lastIndex = _outputList.GetCount()-1;
+	int lastIndex = _outputList.GetCount() - 1;
 	_outputList.SetTopIndex(lastIndex);
 }
