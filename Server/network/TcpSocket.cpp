@@ -125,7 +125,7 @@ void TcpSocket::AsyncReceive()
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error("IOCPSocket2::Receive: failed to post receive for socketId={}: {}",
+		spdlog::error("TcpSocket::Receive: failed to post receive for socketId={}: {}",
 			_socketId, ex.what());
 		Close();
 	}
@@ -169,7 +169,7 @@ void TcpSocket::CloseProcess()
 		_socket.close(ec);
 		if (ec)
 		{
-			spdlog::error("IOCPSocket2::CloseProcess: close() failed for socketId={}: {}",
+			spdlog::error("TcpSocket::CloseProcess: close() failed for socketId={}: {}",
 				_socketId, ec.message());
 		}
 	}
@@ -206,7 +206,7 @@ const std::string& TcpSocket::GetRemoteIP()
 		}
 		else
 		{
-			spdlog::warn("IOCPSocket2::GetRemoteIP: failed lookup. socketId={}",
+			spdlog::warn("TcpSocket::GetRemoteIP: failed lookup. socketId={}",
 				_socketId);
 		}
 	}
