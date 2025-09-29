@@ -19,7 +19,6 @@ public:
 	}
 
 	CAISocket(SocketManager* socketManager, int zoneNum);
-	~CAISocket() override;
 
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;

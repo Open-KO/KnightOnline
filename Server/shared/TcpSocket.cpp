@@ -192,14 +192,6 @@ void TcpSocket::InitSocket()
 	Initialize();
 }
 
-void TcpSocket::Parsing(int length, char* pData)
-{
-}
-
-void TcpSocket::Initialize()
-{
-}
-
 const std::string& TcpSocket::GetRemoteIP()
 {
 	if (!_remoteIpCached)

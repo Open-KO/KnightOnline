@@ -35,14 +35,12 @@ CAISocket::CAISocket(SocketManager* socketManager, int zoneNum)
 	_zoneNum = zoneNum;
 }
 
-CAISocket::~CAISocket()
-{
-}
-
 void CAISocket::Initialize()
 {
 	_main = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 	_magicProcess.m_pMain = _main;
+
+	TcpClientSocket::Initialize();
 }
 
 bool CAISocket::PullOutCore(char*& data, int& length)

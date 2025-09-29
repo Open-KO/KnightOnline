@@ -191,7 +191,7 @@ void CUser::Initialize()
 
 	m_byLastExchangeNum = 0;
 
-	TcpSocket::Initialize();
+	TcpServerSocket::Initialize();
 }
 
 int CUser::Send(char* pBuf, int length)
@@ -543,7 +543,7 @@ void CUser::CloseProcess()
 	MarketBBSUserDelete();
 	LogOut();
 	Initialize();
-	TcpSocket::CloseProcess();
+	TcpServerSocket::CloseProcess();
 }
 
 void CUser::Parsing(int len, char* pData)

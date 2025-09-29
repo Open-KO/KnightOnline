@@ -55,8 +55,8 @@ public:
 	virtual void Close() = 0;
 	virtual void CloseProcess();
 	void InitSocket();
-	virtual void Parsing(int length, char* pData);
-	virtual void Initialize();
+	virtual void Parsing(int length, char* pData) = 0;
+	virtual void Initialize() {}
 	const std::string& GetRemoteIP();
 
 protected:

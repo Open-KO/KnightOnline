@@ -26,15 +26,6 @@ CUser::CUser(CVersionManagerDlg* main, SocketManager* socketManager)
 {
 }
 
-CUser::~CUser()
-{
-}
-
-void CUser::Initialize()
-{
-	TcpSocket::Initialize();
-}
-
 bool CUser::PullOutCore(char*& data, int& length)
 {
 	uint8_t*	pTmp;

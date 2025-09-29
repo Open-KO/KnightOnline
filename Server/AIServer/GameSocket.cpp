@@ -56,6 +56,8 @@ void CGameSocket::Initialize()
 	//m_pParty = new CParty;
 	//m_pParty->Initialize();
 	m_Party.Initialize();
+
+	TcpServerSocket::Initialize();
 }
 
 bool CGameSocket::PullOutCore(char*& data, int& length)
@@ -161,7 +163,7 @@ void CGameSocket::CloseProcess()
 	spdlog::info("GameSocket::CloseProcess: zoneNo={} socketId={}", _zoneNo, _socketId);
 	m_pMain->DeleteAllUserList(_zoneNo);
 	Initialize();
-	TcpSocket::CloseProcess();
+	TcpServerSocket::CloseProcess();
 }
 
 void CGameSocket::Parsing(int length, char* pData)
