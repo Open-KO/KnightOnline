@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "CircularBuffer.h"
+#include <shared/CircularBuffer.h>
 #include <asio.hpp>
 
 #include <mutex>

@@ -11,7 +11,7 @@
 #include "Define.h"
 #include "DBProcess.h"
 
-#include <shared/SocketManager.h>
+#include <network/SocketManager.h>
 #include <shared/logger.h>
 
 #include <vector>

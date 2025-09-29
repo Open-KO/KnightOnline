@@ -2,7 +2,7 @@
 
 #include "Party.h"
 
-#include <shared/TcpServerSocket.h>
+#include <network/TcpServerSocket.h>
 
 class CServerDlg;
 class CUser;

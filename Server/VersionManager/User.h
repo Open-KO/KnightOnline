@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <shared/TcpServerSocket.h>
+#include <network/TcpServerSocket.h>
 
 class CVersionManagerDlg;
 class CUser : public TcpServerSocket

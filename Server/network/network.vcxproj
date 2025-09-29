@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,14 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C2FEB024-8E46-4533-918B-7196CAAA4E7D}</ProjectGuid>
+    <ProjectGuid>{66CDA900-206D-4A09-A6EC-ABBCBF5AAF44}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>shared</RootNamespace>
+    <RootNamespace>network</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>network</ProjectName>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup>
-    <OutDir>$(BaseOutDir)</OutDir>
+    <OutDir>$(ProjectDir)..\bin\$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
@@ -51,8 +52,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  </PropertyGroup>  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -60,6 +60,8 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <Import Project="$(PropsDir)asio.props" />
+  <Import Project="$(PropsDir)server.props" />
   <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
@@ -69,16 +71,14 @@
       <MinimalRebuild>false</MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
-    <PreBuildEvent>
-      <Command>
-        if exist "$(ProjectDir)server_config.h.default" if not exist "$(ProjectDir)server_config.h" (
-          copy /Y "$(ProjectDir)server_config.h.default" "$(ProjectDir)server_config.h"
-        )
-      </Command>
-    </PreBuildEvent>
+    <Link>
+      <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -136,46 +136,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="crc32.c">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="DebugUtils.cpp" />
-    <ClCompile Include="globals.cpp" />
-    <ClCompile Include="Ini.cpp" />
-    <ClCompile Include="JvCryption.cpp" />
-    <ClCompile Include="lzf.c">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="StringConversion.cpp" />
-    <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="TimeThread.cpp" />
-    <ClCompile Include="logger.cpp" />
+    <ClCompile Include="TcpClientSocket.cpp" />
+    <ClCompile Include="TcpServerSocket.cpp" />
+    <ClCompile Include="TcpSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ByteBuffer.h" />
-    <ClInclude Include="CircularBuffer.h" />
-    <ClInclude Include="crc32.h" />
-    <ClInclude Include="DebugUtils.h" />
-    <ClInclude Include="globals.h" />
-    <ClInclude Include="Ini.h" />
-    <ClInclude Include="JvCryption.h" />
-    <ClInclude Include="lzf.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="packets.h" />
-    <ClInclude Include="server_config.h" />
+    <ClInclude Include="SocketManager.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="STLMap.h" />
-    <ClInclude Include="StringConversion.h" />
-    <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="Thread.h" />
-    <ClInclude Include="TimeThread.h" />
-    <ClInclude Include="types.h" />
-    <ClInclude Include="version.h" />
-    <ClInclude Include="logger.h" />
+    <ClInclude Include="TcpClientSocket.h" />
+    <ClInclude Include="TcpServerSocket.h" />
+    <ClInclude Include="TcpSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

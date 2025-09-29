@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <shared/SocketManager.h>
+#include <network/SocketManager.h>
 
 class CUser;
 class SendWorkerThread;
