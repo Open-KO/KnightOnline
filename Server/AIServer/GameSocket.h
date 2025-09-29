@@ -2,13 +2,13 @@
 
 #include "Party.h"
 
-#include <shared/TcpSocket.h>
+#include <shared/TcpServerSocket.h>
 
 class CServerDlg;
 class CUser;
 class MAP;
 class CIOCPort;
-class CGameSocket : public TcpSocket
+class CGameSocket : public TcpServerSocket
 {
 public:
 	CServerDlg* m_pMain;

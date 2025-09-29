@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CUser::CUser(CVersionManagerDlg* main, SocketManager* socketManager)
-	: TcpSocket(socketManager), _main(main)
+	: TcpServerSocket(socketManager), _main(main)
 {
 }
 

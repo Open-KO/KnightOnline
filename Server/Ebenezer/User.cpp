@@ -31,7 +31,7 @@ void bb()
 }
 
 CUser::CUser(SocketManager* socketManager)
-	: TcpSocket(socketManager)
+	: TcpServerSocket(socketManager)
 {
 	_regionBuffer = new _REGION_BUFFER();
 

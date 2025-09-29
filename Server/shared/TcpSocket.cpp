@@ -8,7 +8,6 @@ TcpSocket::TcpSocket(SocketManager* socketManager)
 	_sendCircularBuffer(socketManager->GetSendBufferSize()),
 	_socket(*socketManager->GetWorkerPool())
 {
-	_type = SOCKET_TYPE_SERVER;
 	_state = CONNECTION_STATE_DISCONNECTED;
 	_socketId = -1;
 	_sendInProgress = false;
@@ -17,10 +16,6 @@ TcpSocket::TcpSocket(SocketManager* socketManager)
 	_remoteIpCached = false;
 
 	_recvBuffer.resize(socketManager->GetRecvBufferSize());
-}
-
-TcpSocket::~TcpSocket()
-{
 }
 
 int TcpSocket::QueueAndSend(char* buffer, int length)
@@ -154,28 +149,6 @@ void TcpSocket::ReceivedData(int length)
 
 		delete[] extractedPacket;
 		extractedPacket = nullptr;
-	}
-}
-
-void TcpSocket::Close()
-{
-	if (_socketManager == nullptr
-		|| GetState() == CONNECTION_STATE_DISCONNECTED)
-		return;
-
-	asio::error_code ec;
-	try
-	{
-		auto threadPool = _socketManager->GetWorkerPool();
-		if (threadPool == nullptr)
-			return;
-
-		asio::post(*threadPool, std::bind(&SocketManager::OnPostClose, _socketManager, this));
-	}
-	catch (const asio::system_error& ex)
-	{
-		spdlog::error("TcpSocket::Close: failed to post close for socketId={}: {}",
-			_socketId, ex.what());
 	}
 }
 

@@ -20,6 +20,7 @@ class SocketManager
 {
 	friend class TcpSocket;
 	friend class TcpClientSocket;
+	friend class TcpServerSocket;
 
 public:
 	inline asio::io_context& GetIoContext()
@@ -119,7 +120,8 @@ protected:
 	int GetAvailableClientSocketId() const;
 	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
 	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
-	void OnPostClose(TcpSocket* tcpSocket);
+	void OnPostServerSocketClose(TcpSocket* tcpSocket);
+	void OnPostClientSocketClose(TcpClientSocket* tcpSocket);
 	bool ProcessClose(TcpSocket* tcpSocket);
 
 	virtual void StartUserThreads() {}

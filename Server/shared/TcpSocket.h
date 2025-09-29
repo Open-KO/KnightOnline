@@ -13,12 +13,6 @@ enum e_ConnectionState : uint8_t
 	CONNECTION_STATE_GAMESTART
 };
 
-enum e_SocketType : uint8_t
-{
-	SOCKET_TYPE_SERVER = 1,	// Server socket, remote client is connected to us
-	SOCKET_TYPE_CLIENT		// Client socket, we are connected to a remote host
-};
-
 class SocketManager;
 class TcpSocket
 {
@@ -42,19 +36,15 @@ public:
 		return _state;
 	}
 
-	e_SocketType GetSockType() const
-	{
-		return _type;
-	}
-
 	TcpSocket(SocketManager* socketManager);
-	virtual ~TcpSocket();
+	virtual ~TcpSocket() {}
 
 	virtual int Send(char* pBuf, int length) = 0;
 
 protected:
 	int QueueAndSend(char* buffer, int length);
 	virtual bool PullOutCore(char*& data, int& length) = 0;
+	virtual void ReleaseToManager() = 0;
 
 private:
 	bool AsyncSend(bool fromAsyncChain);
@@ -62,7 +52,7 @@ private:
 public:
 	void AsyncReceive();
 	void ReceivedData(int length);
-	void Close();
+	virtual void Close() = 0;
 	virtual void CloseProcess();
 	void InitSocket();
 	virtual void Parsing(int length, char* pData);
@@ -112,7 +102,6 @@ protected:
 	bool					_remoteIpCached;
 	std::string				_remoteIp;
 
-	e_SocketType			_type;
 	e_ConnectionState		_state;
 	int16_t					_socketErrorCount;
 

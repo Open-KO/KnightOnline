@@ -156,6 +156,7 @@
     <ClCompile Include="StringConversion.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="TcpClientSocket.cpp" />
+    <ClCompile Include="TcpServerSocket.cpp" />
     <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="TimeThread.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="StringConversion.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="TcpClientSocket.h" />
+    <ClInclude Include="TcpServerSocket.h" />
     <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="TimeThread.h" />

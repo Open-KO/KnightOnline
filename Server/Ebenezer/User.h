@@ -10,7 +10,7 @@
 #include "EXEC.h"     
 
 #include <shared/JvCryption.h>
-#include <shared/TcpSocket.h>
+#include <shared/TcpServerSocket.h>
 
 #include <list>
 
@@ -20,7 +20,7 @@ typedef  std::list<int>					UserEventList;	// 이밴트를 위하여 ^^;
 #define BANISH_DELAY_TIME    30
 
 class CEbenezerDlg;
-class CUser : public TcpSocket
+class CUser : public TcpServerSocket
 {
 public:
 	_USER_DATA* m_pUserData;

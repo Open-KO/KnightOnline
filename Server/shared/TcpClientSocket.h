@@ -6,8 +6,10 @@ class TcpClientSocket : public TcpSocket
 {
 public:
 	TcpClientSocket(SocketManager* socketManager);
-	~TcpClientSocket() override;
-
 	bool Create();
 	bool Connect(const char* remoteAddress, uint16_t remotePort);
+	void Close() override;
+
+protected:
+	void ReleaseToManager() override;
 };

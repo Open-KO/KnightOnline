@@ -78,8 +78,6 @@ bool TcpClientSocket::Connect(const char* remoteAddress, uint16_t remotePort)
 	InitSocket();
 
 	_state			= CONNECTION_STATE_CONNECTED;
-	_type			= SOCKET_TYPE_CLIENT;
-
 	_remoteIp		= ip.to_string();
 	_remoteIpCached	= true;
 
@@ -88,6 +86,29 @@ bool TcpClientSocket::Connect(const char* remoteAddress, uint16_t remotePort)
 	return true;
 }
 
-TcpClientSocket::~TcpClientSocket()
+void TcpClientSocket::Close()
 {
+	if (_socketManager == nullptr
+		|| GetState() == CONNECTION_STATE_DISCONNECTED)
+		return;
+
+	asio::error_code ec;
+	try
+	{
+		auto threadPool = _socketManager->GetWorkerPool();
+		if (threadPool == nullptr)
+			return;
+
+		asio::post(*threadPool, std::bind(&SocketManager::OnPostClientSocketClose, _socketManager, this));
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("TcpClientSocket::Close: failed to post close for socketId={}: {}",
+			_socketId, ex.what());
+	}
+}
+
+void TcpClientSocket::ReleaseToManager()
+{
+	_socketManager->ReleaseClientSocket(GetSocketID());
 }

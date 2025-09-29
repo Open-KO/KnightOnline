@@ -36,7 +36,7 @@ extern CRITICAL_SECTION g_region_critical;
 */
 
 CGameSocket::CGameSocket(SocketManager* socketManager)
-	: TcpSocket(socketManager)
+	: TcpServerSocket(socketManager)
 {
 	//m_pParty = nullptr;
 }

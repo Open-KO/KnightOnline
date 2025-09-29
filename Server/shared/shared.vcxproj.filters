@@ -66,6 +66,9 @@
     <ClCompile Include="SocketManager.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
+    <ClCompile Include="TcpServerSocket.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ByteBuffer.h">
@@ -135,6 +138,9 @@
       <Filter>Networking</Filter>
     </ClInclude>
     <ClInclude Include="SocketManager.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServerSocket.h">
       <Filter>Networking</Filter>
     </ClInclude>
   </ItemGroup>

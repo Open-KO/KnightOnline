@@ -364,21 +364,22 @@ void SocketManager::OnPostSend(const asio::error_code& ec, size_t bytesTransferr
 	tcpSocket->AsyncSend(true);
 }
 
-void SocketManager::OnPostClose(TcpSocket* tcpSocket)
+void SocketManager::OnPostServerSocketClose(TcpSocket* tcpSocket)
 {
 	if (!ProcessClose(tcpSocket))
 		return;
 
-	if (tcpSocket->GetSockType() == SOCKET_TYPE_SERVER)
-	{
-		spdlog::debug("SocketManager::OnPostClose: server socket closed by Close() socketId={}",
-			tcpSocket->GetSocketID());
-	}
-	else if (tcpSocket->GetSockType() == SOCKET_TYPE_CLIENT)
-	{
-		spdlog::debug("SocketManager::OnPostClose: client socket closed by Close() socketId={}",
-			tcpSocket->GetSocketID());
-	}
+	spdlog::debug("SocketManager::OnPostServerSocketClose: socket closed by Close() socketId={}",
+		tcpSocket->GetSocketID());
+}
+
+void SocketManager::OnPostClientSocketClose(TcpClientSocket* tcpSocket)
+{
+	if (!ProcessClose(tcpSocket))
+		return;
+
+	spdlog::debug("SocketManager::OnPostClientSocketClose: socket closed by Close() socketId={}",
+		tcpSocket->GetSocketID());
 }
 
 bool SocketManager::ProcessClose(TcpSocket* tcpSocket)
@@ -388,11 +389,7 @@ bool SocketManager::ProcessClose(TcpSocket* tcpSocket)
 		return false;
 
 	tcpSocket->CloseProcess();
-
-	if (tcpSocket->GetSockType() == SOCKET_TYPE_SERVER)
-		ReleaseServerSocket(tcpSocket, tcpSocket->GetSocketID());
-	else if (tcpSocket->GetSockType() == SOCKET_TYPE_CLIENT)
-		ReleaseClientSocket(tcpSocket->GetSocketID());
+	tcpSocket->ReleaseToManager();
 
 	return true;
 }
