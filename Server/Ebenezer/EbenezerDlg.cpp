@@ -659,6 +659,9 @@ BOOL CEbenezerDlg::DestroyWindow()
 	KillTimer(MARKET_BBS_TIME);
 	KillTimer(PACKET_CHECK);
 
+	delete m_pUdpSocket;
+	m_pUdpSocket = nullptr;
+
 	m_Iocport.Shutdown();
 
 	if (m_hReadQueueThread != nullptr)
@@ -734,9 +737,6 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 	if (!m_EventMap.IsEmpty())
 		m_EventMap.DeleteAllData();
-
-	delete m_pUdpSocket;
-	m_pUdpSocket = nullptr;
 
 	s_pInstance = nullptr;
 

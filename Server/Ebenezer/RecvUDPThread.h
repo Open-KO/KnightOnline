@@ -7,8 +7,11 @@ class RecvUDPThread : public Thread
 {
 public:
 	RecvUDPThread(CUdpSocket* udpSocket);
-	void thread_loop() override;
 	~RecvUDPThread() override;
+
+protected:
+	void thread_loop() override;
+	void before_shutdown() override;
 
 protected:
 	CUdpSocket* _udpSocket;

@@ -16,11 +16,11 @@ public:
 
 protected:
 	void thread_loop() override;
-	void tick();
+	void tick(std::queue<_SEND_DATA*>& processingQueue);
 	void clear();
 
 protected:
 	CIOCPort* _iocPort;
-	std::queue<_SEND_DATA*>	_sendDataQueue;
+	std::queue<_SEND_DATA*>	_insertionQueue;
 	int _aiSocketCount;
 };

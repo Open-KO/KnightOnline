@@ -32,6 +32,7 @@ CUdpSocket::CUdpSocket(CEbenezerDlg* main)
 
 CUdpSocket::~CUdpSocket()
 {
+	_recvUdpThread.shutdown();
 }
 
 bool CUdpSocket::CreateSocket()

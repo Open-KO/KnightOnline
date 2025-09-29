@@ -12,32 +12,28 @@ SendWorkerThread::SendWorkerThread(CIOCPort* iocPort)
 
 void SendWorkerThread::thread_loop()
 {
-	std::unique_lock<std::mutex> lock(_mutex);
 	while (_running)
 	{
-		std::cv_status status = _cv.wait_for(lock, std::chrono::milliseconds(200));
+		{
+			std::unique_lock<std::mutex> lock(_mutex);
+			std::cv_status status = _cv.wait_for(lock, std::chrono::milliseconds(200));
 
-		if (!_running)
-			break;
+			if (!_running)
+				break;
 
-		// only tick every 200ms as per official, ignore spurious wakeups
-		if (status != std::cv_status::timeout)
-			continue;
+			// Only tick every 200ms as per official, ignore spurious wakeups
+			if (status != std::cv_status::timeout)
+				continue;
+		}
 
-		// don't really need this locked here
-		lock.unlock();
-
+		// Our thread mutex doesn't need to be locked while processing external sockets.
+		// For that we should use its own mutex.
 		tick();
-
-		// restore the lock state for the next tick
-		lock.lock();
 	}
 }
 
 void SendWorkerThread::tick()
 {
-	std::lock_guard<std::recursive_mutex> lock(_iocPort->GetMutex());
-
 	char regionBuffer[REGION_BUFF_SIZE];
 
 	for (int i = 0; i < MAX_USER; i++)
@@ -51,7 +47,12 @@ void SendWorkerThread::tick()
 
 		int len = 0;
 		memset(regionBuffer, 0, REGION_BUFF_SIZE);
-		pSocket->RegionPacketClear(regionBuffer, len);
+
+		{
+			std::lock_guard<std::recursive_mutex> lock(_iocPort->GetMutex());
+			pSocket->RegionPacketClear(regionBuffer, len);
+		}
+
 		if (len < 500)
 		{
 			pSocket->Send(regionBuffer, len);

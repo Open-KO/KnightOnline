@@ -16,7 +16,12 @@ void RecvUDPThread::thread_loop()
 	_udpSocket->_io.run();
 }
 
-RecvUDPThread::~RecvUDPThread()
+void RecvUDPThread::before_shutdown()
 {
 	_udpSocket->_io.stop();
+}
+
+RecvUDPThread::~RecvUDPThread()
+{
+	shutdown();
 }

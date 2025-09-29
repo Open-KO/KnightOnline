@@ -17,12 +17,14 @@ void Thread::start()
 
 bool Thread::shutdown()
 {
-	if (!_running)
-		return false;
-
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
+		if (!_running)
+			return false;
+
 		_running = false;
+		before_shutdown();
+
 		_cv.notify_one();
 	}
 

@@ -19,6 +19,7 @@ public:
 
 protected:
 	virtual void thread_loop() = 0;
+	virtual void before_shutdown() {}
 
 protected:
 	std::mutex				_mutex;

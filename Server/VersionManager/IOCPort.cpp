@@ -354,10 +354,18 @@ void CIOCPort::Shutdown()
 	{
 		std::lock_guard<std::recursive_mutex> lock(_socketMutex);
 
-		for (int i = 0; i < m_SocketArraySize; i++)
+		if (m_SockArray != nullptr)
 		{
-			if (m_SockArray[i] != nullptr)
-				m_SockArray[i]->CloseProcess();
+			for (int i = 0; i < m_SocketArraySize; i++)
+			{
+				CIOCPSocket2* iocpSocket = m_SockArray[i];
+				if (iocpSocket == nullptr)
+					continue;
+
+				// Invoke immediate save and disconnect from within this thread
+				iocpSocket->CloseProcess();
+				PushSocket(iocpSocket, i);
+			}
 		}
 	}
 
@@ -366,7 +374,10 @@ void CIOCPort::Shutdown()
 
 	// Wait for the worker threads to finish.
 	if (_workerPool != nullptr)
+	{
+		_workerPool->stop();
 		_workerPool->join();
+	}
 
 	// Free our sessions.
 	{
@@ -374,12 +385,24 @@ void CIOCPort::Shutdown()
 
 		for (int i = 0; i < m_SocketArraySize; i++)
 		{
-			delete m_SockArray[i];
-			m_SockArray[i] = nullptr;
+			if (m_SockArray != nullptr)
+			{
+				delete m_SockArray[i];
+				m_SockArray[i] = nullptr;
+			}
 
-			delete m_SockArrayInActive[i];
-			m_SockArrayInActive[i] = nullptr;
+			if (m_SockArrayInActive != nullptr)
+			{
+				delete m_SockArrayInActive[i];
+				m_SockArrayInActive[i] = nullptr;
+			}
 		}
+
+		delete[] m_SockArray;
+		delete[] m_SockArrayInActive;
+
+		m_SockArray = nullptr;
+		m_SockArrayInActive = nullptr;
 	}
 
 	// Finally free the worker pool; it needs to exist while otherwise tied to sessions.

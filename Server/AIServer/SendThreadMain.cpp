@@ -21,43 +21,69 @@ bool SendThreadMain::shutdown()
 
 void SendThreadMain::queue(_SEND_DATA* sendData)
 {
-	std::lock_guard<std::mutex> lock(_mutex);
-	_sendDataQueue.push(sendData);
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+		if (!_running)
+			return;
+
+		_insertionQueue.push(sendData);
+	}
+
+	// Ensure mutex is unlocked before notification to avoid unnecessary
+	// contention on thread wakeup
 	_cv.notify_one();
 }
 
 void SendThreadMain::thread_loop()
 {
-	std::unique_lock<std::mutex> lock(_mutex);
+	std::queue<_SEND_DATA*> processingQueue;
+
+	// Use a predicate here to avoid spurious wakeups
+	auto waitUntilPredicate = [this] -> bool
+	{
+		// Wait until we're shutting down
+		return !_running
+			// Or there's something in the queue
+			|| !_insertionQueue.empty();
+	};
+
 	while (_running)
 	{
-		_cv.wait(lock);
+		{
+			std::unique_lock<std::mutex> lock(_mutex);
+			_cv.wait(lock, waitUntilPredicate);
 
-		if (!_running)
-			break;
+			if (!_running)
+				break;
 
-		tick();
+			// As tick() processes the entire queue, we don't need to worry
+			// about memory management or entries being lost
+			processingQueue.swap(_insertionQueue);
+		}
+
+		// tick() will process the entire queue
+		tick(processingQueue);
 	}
 }
 
-void SendThreadMain::tick()
+void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 {
-	while (!_sendDataQueue.empty())
+	while (!processingQueue.empty())
 	{
-		_SEND_DATA* pSendData = _sendDataQueue.front();
+		_SEND_DATA* sendData = processingQueue.front();
 
 		int count = -1;
 		for (int i = 0; i < MAX_SOCKET; i++)
 		{
-			CGameSocket* pSocket = (CGameSocket*) _iocPort->m_SockArray[i];
-			if (pSocket == nullptr)
+			CGameSocket* gameSocket = (CGameSocket*) _iocPort->m_SockArray[i];
+			if (gameSocket == nullptr)
 				continue;
 
 			count++;
 
 			if (_aiSocketCount == count)
 			{
-				int size = pSocket->Send(pSendData->pBuf, pSendData->sLength);
+				int size = gameSocket->Send(sendData->pBuf, sendData->sLength);
 				if (size <= 0)
 				{
 					spdlog::error("SendThreadMain::tick: send failed: size={} socket_num={}",
@@ -74,18 +100,18 @@ void SendThreadMain::tick()
 			}
 		}
 
-		delete pSendData;
-		_sendDataQueue.pop();
+		delete sendData;
+		processingQueue.pop();
 	}
 }
 
 void SendThreadMain::clear()
 {
 	std::lock_guard<std::mutex> lock(_mutex);
-	while (!_sendDataQueue.empty());
+	while (!_insertionQueue.empty())
 	{
-		delete _sendDataQueue.front();
-		_sendDataQueue.pop();
+		delete _insertionQueue.front();
+		_insertionQueue.pop();
 	}
 }
 
