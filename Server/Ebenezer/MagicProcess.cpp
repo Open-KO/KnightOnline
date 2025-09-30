@@ -393,7 +393,8 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 		}
 
 		// Make sure the target is another player and it exists.
-		if (pTUser == nullptr)
+		if (tid != -1
+			&& pTUser == nullptr)
 			return;
 
 		switch (pTable->Type1)
