@@ -95,7 +95,7 @@ void TcpClientSocket::Close()
 
 		// From this point onward we're effectively disconnected.
 		// We should stop handling or sending new packets, and just ensure any existing queued packets are sent.
-		// Once all existing packets are sent, we can fully disconnect the player.
+		// Once all existing packets are sent, we can fully disconnect the socket.
 		_pendingDisconnect = true;
 
 		// Wait until the send chain is complete.
