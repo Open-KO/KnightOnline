@@ -13,7 +13,7 @@
 #include "resource.h"
 
 #include <shared/logger.h>
-#include <shared/SharedMem.h>
+#include <shared/SharedMemoryQueue.h>
 #include <shared/STLMap.h>
 
 using ItemtableArray = CSTLMap<model::Item>;
@@ -172,8 +172,8 @@ public:
 	/// \brief loads and sends data after a character is selected
 	void SelectCharacter(char* buffer);
 
-	CSharedMemQueue		LoggerSendQueue;
-	CSharedMemQueue		LoggerRecvQueue;
+	SharedMemoryQueue	LoggerSendQueue;
+	SharedMemoryQueue	LoggerRecvQueue;
 
 	ItemtableArray		ItemArray;
 

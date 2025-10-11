@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "SharedMem.h"
+#include "SharedMemoryQueue.h"
 
 #include <process.h>
 #include <spdlog/spdlog.h>
@@ -13,16 +13,16 @@ struct message_queue_impl : public message_queue
 	using message_queue::message_queue;
 };
 
-CSharedMemQueue::CSharedMemQueue(int sendRetryCount /*= 0*/)
+SharedMemoryQueue::SharedMemoryQueue(int sendRetryCount /*= 0*/)
 {
 	_sendRetryCount = std::max(0, sendRetryCount);
 }
 
-bool CSharedMemQueue::InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, const char* name, bool openOrCreate /*= true*/)
+bool SharedMemoryQueue::InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, const char* name, bool openOrCreate /*= true*/)
 {
 	if (maxNumMsg < MinNumMsg)
 	{
-		spdlog::error("SharedMem::InitializeMMF: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
+		spdlog::error("SharedMemoryQueue::InitializeMMF: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
 		return false;
 	}
 
@@ -36,9 +36,9 @@ bool CSharedMemQueue::InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, con
 	catch (const interprocess_exception& ex)
 	{
 		if (openOrCreate)
-			spdlog::error("SharedMem::InitializeMMF: failed to open or create shared memory. name='{}' ex='{}'", name, ex.what());
+			spdlog::error("SharedMemoryQueue::InitializeMMF: failed to open or create shared memory. name='{}' ex='{}'", name, ex.what());
 		else
-			spdlog::error("SharedMem::InitializeMMF: failed to open existing shared memory. name='{}', ex='{}'", name, ex.what());
+			spdlog::error("SharedMemoryQueue::InitializeMMF: failed to open existing shared memory. name='{}', ex='{}'", name, ex.what());
 
 		return false;
 	}
@@ -67,11 +67,11 @@ bool CSharedMemQueue::InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, con
 	return true;
 }
 
-int CSharedMemQueue::PutData(const char* pBuf, int size)
+int SharedMemoryQueue::PutData(const char* pBuf, int size)
 {
 	if (size > static_cast<int>(_queue->get_max_msg_size()))
 	{
-		spdlog::error("SharedMem::PutData: data size overflow: {} bytes", size);
+		spdlog::error("SharedMemoryQueue::PutData: data size overflow: {} bytes", size);
 		return SMQ_PKTSIZEOVER;
 	}
 	
@@ -87,7 +87,7 @@ int CSharedMemQueue::PutData(const char* pBuf, int size)
 		}
 		catch (interprocess_exception& ex)
 		{
-			spdlog::error("SharedMem::PutData: fatal exception: {}", ex.what());
+			spdlog::error("SharedMemoryQueue::PutData: fatal exception: {}", ex.what());
 			return SMQ_GENERIC_ERROR;
 		}
 
@@ -97,7 +97,7 @@ int CSharedMemQueue::PutData(const char* pBuf, int size)
 	return SMQ_FULL;
 }
 
-int CSharedMemQueue::GetData(char* pBuf)
+int SharedMemoryQueue::GetData(char* pBuf)
 {
 	uint32_t receivedSize = 0;
 	uint32_t priority = 0;
@@ -109,7 +109,7 @@ int CSharedMemQueue::GetData(char* pBuf)
 	}
 	catch (interprocess_exception& ex)
 	{
-		spdlog::error("SharedMem::GetData: fatal exception: {}", ex.what());
+		spdlog::error("SharedMemoryQueue::GetData: fatal exception: {}", ex.what());
 		return SMQ_GENERIC_ERROR;
 	}
 
@@ -117,6 +117,6 @@ int CSharedMemQueue::GetData(char* pBuf)
 	return static_cast<int>(receivedSize);
 }
 
-CSharedMemQueue::~CSharedMemQueue()
+SharedMemoryQueue::~SharedMemoryQueue()
 {
 }

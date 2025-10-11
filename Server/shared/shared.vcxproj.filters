@@ -54,7 +54,7 @@
     <ClCompile Include="Thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SharedMem.cpp">
+    <ClCompile Include="SharedMemoryQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,7 +119,7 @@
     <ClInclude Include="Thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SharedMem.h">
+    <ClInclude Include="SharedMemoryQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

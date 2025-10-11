@@ -14,7 +14,7 @@
 
 #include <shared/Ini.h>
 #include <shared/logger.h>
-#include <shared/SharedMem.h>
+#include <shared/SharedMemoryQueue.h>
 #include <shared/STLMap.h>
 
 #include <unordered_map>
@@ -205,9 +205,9 @@ public:
 	static CEbenezerDlg* s_pInstance;
 	EbenezerSocketManager _socketManager;
 
-	CSharedMemQueue	m_LoggerSendQueue;
-	CSharedMemQueue	m_LoggerRecvQueue;
-	CSharedMemQueue m_ItemLoggerSendQ;
+	SharedMemoryQueue m_LoggerSendQueue;
+	SharedMemoryQueue m_LoggerRecvQueue;
+	SharedMemoryQueue m_ItemLoggerSendQ;
 
 	HANDLE	m_hReadQueueThread;
 	HANDLE	m_hMMFile;

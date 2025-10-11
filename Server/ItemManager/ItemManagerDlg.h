@@ -2,7 +2,7 @@
 
 #include "Define.h"
 
-#include <shared/SharedMem.h>
+#include <shared/SharedMemoryQueue.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // CItemManagerDlg dialog
@@ -11,7 +11,7 @@ class CItemManagerDlg : public CDialog
 {
 // Construction
 public:
-	CSharedMemQueue	m_LoggerRecvQueue;
+	SharedMemoryQueue m_LoggerRecvQueue;
 
 	HANDLE	m_hReadQueueThread;
 

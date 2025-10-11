@@ -14,16 +14,16 @@ enum e_SharedMemQueueError
 };
 
 struct message_queue_impl;
-class CSharedMemQueue
+class SharedMemoryQueue
 {
 	static constexpr uint32_t MinNumMsg = 100;
 
 public:
-	CSharedMemQueue(int sendRetryCount = 0);
+	SharedMemoryQueue(int sendRetryCount = 0);
 	bool InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, const char* name, bool openOrCreate = true);
 	int GetData(char* pBuf);
 	int PutData(const char* pBuf, int size);
-	~CSharedMemQueue();
+	~SharedMemoryQueue();
 
 private:
 	std::unique_ptr<message_queue_impl> _queue;
