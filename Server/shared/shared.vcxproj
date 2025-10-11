@@ -148,6 +148,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SharedMemoryQueue.cpp" />
+    <ClCompile Include="SharedMemoryBlock.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -170,6 +171,7 @@
     <ClInclude Include="packets.h" />
     <ClInclude Include="server_config.h" />
     <ClInclude Include="SharedMemoryQueue.h" />
+    <ClInclude Include="SharedMemoryBlock.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="StringConversion.h" />

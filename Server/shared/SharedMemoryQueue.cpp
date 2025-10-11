@@ -1,10 +1,8 @@
 ﻿#include "stdafx.h"
 #include "SharedMemoryQueue.h"
 
-#include <process.h>
-#include <spdlog/spdlog.h>
-
 #include <boost/interprocess/ipc/message_queue.hpp>
+#include <spdlog/spdlog.h>
 
 using namespace boost::interprocess;
 
@@ -18,57 +16,74 @@ SharedMemoryQueue::SharedMemoryQueue(int sendRetryCount /*= 0*/)
 	_sendRetryCount = std::max(0, sendRetryCount);
 }
 
-bool SharedMemoryQueue::InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, const char* name, bool openOrCreate /*= true*/)
+bool SharedMemoryQueue::Create(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg)
 {
 	if (maxNumMsg < MinNumMsg)
 	{
-		spdlog::error("SharedMemoryQueue::InitializeMMF: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
+		spdlog::error("SharedMemoryQueue::Create: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
 		return false;
 	}
 
 	try
 	{
-		if (openOrCreate)
-			_queue = std::make_unique<message_queue_impl>(open_or_create, name, maxNumMsg, maxMsgSize);
-		else
-			_queue = std::make_unique<message_queue_impl>(open_only, name);
+		_queue = std::make_unique<message_queue_impl>(create_only, name, maxNumMsg, maxMsgSize);
+
+		// As with previous behaviour, as the expected 'creator' of the queue, flush it.
+		FlushQueue();
+		return true;
 	}
 	catch (const interprocess_exception& ex)
 	{
-		if (openOrCreate)
-			spdlog::error("SharedMemoryQueue::InitializeMMF: failed to open or create shared memory. name='{}' ex='{}'", name, ex.what());
-		else
-			spdlog::error("SharedMemoryQueue::InitializeMMF: failed to open existing shared memory. name='{}', ex='{}'", name, ex.what());
+		spdlog::error("SharedMemoryQueue::Create: failed to create shared memory. name='{}' ex='{}'", name, ex.what());
+	}
 
+	return false;
+}
+
+bool SharedMemoryQueue::OpenOrCreate(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg)
+{
+	if (maxNumMsg < MinNumMsg)
+	{
+		spdlog::error("SharedMemoryQueue::OpenOrCreate: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
 		return false;
 	}
 
-	// As with previous behaviour, as the expected 'creator' of the queue, flush it, even if we just reopened it.
-	if (openOrCreate)
+	try
 	{
-		std::vector<char> buffer(maxMsgSize);
-		size_t received;
-		uint32_t priority;
+		_queue = std::make_unique<message_queue_impl>(open_or_create, name, maxNumMsg, maxMsgSize);
 
-		while (true)
-		{
-			try
-			{
-				if (!_queue->try_receive(buffer.data(), buffer.size(), received, priority))
-					break; // queue is now empty
-			}
-			catch (interprocess_exception&)
-			{
-				break;
-			}
-		}
+		// As with previous behaviour, as the expected 'creator' of the queue, flush it, even if we just reopened it.
+		FlushQueue();
+		return true;
+	}
+	catch (const interprocess_exception& ex)
+	{
+		spdlog::error("SharedMemoryQueue::OpenOrCreate: failed to open or create shared memory. name='{}' ex='{}'", name, ex.what());
 	}
 
-	return true;
+	return false;
+}
+
+bool SharedMemoryQueue::Open(const char* name)
+{
+	try
+	{
+		_queue = std::make_unique<message_queue_impl>(open_only, name);
+		return true;
+	}
+	catch (const interprocess_exception& ex)
+	{
+		spdlog::error("SharedMemoryQueue::Open: failed to open existing shared memory. name='{}' ex='{}'", name, ex.what());
+	}
+
+	return false;
 }
 
 int SharedMemoryQueue::PutData(const char* pBuf, int size)
 {
+	if (_queue == nullptr)
+		return SMQ_GENERIC_ERROR;
+
 	if (size > static_cast<int>(_queue->get_max_msg_size()))
 	{
 		spdlog::error("SharedMemoryQueue::PutData: data size overflow: {} bytes", size);
@@ -115,6 +130,26 @@ int SharedMemoryQueue::GetData(char* pBuf)
 
 	// On success, return the number of bytes received
 	return static_cast<int>(receivedSize);
+}
+
+void SharedMemoryQueue::FlushQueue()
+{
+	std::vector<char> buffer(_queue->get_max_msg_size());
+	size_t received;
+	uint32_t priority;
+
+	while (true)
+	{
+		try
+		{
+			if (!_queue->try_receive(buffer.data(), buffer.size(), received, priority))
+				break; // queue is now empty
+		}
+		catch (interprocess_exception&)
+		{
+			break;
+		}
+	}
 }
 
 SharedMemoryQueue::~SharedMemoryQueue()

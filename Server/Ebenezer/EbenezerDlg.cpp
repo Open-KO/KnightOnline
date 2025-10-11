@@ -190,7 +190,6 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	m_bMMFCreate = false;
 	m_hReadQueueThread = nullptr;
 
 	m_nYear = 0;
@@ -370,21 +369,21 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	if (!m_LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERSEND))
+	if (!m_LoggerSendQueue.OpenOrCreate(SMQ_LOGGERSEND, MAX_PKTSIZE, MAX_COUNT))
 	{
 		AfxMessageBox(_T("SMQ Send Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERRECV))
+	if (!m_LoggerRecvQueue.OpenOrCreate(SMQ_LOGGERRECV, MAX_PKTSIZE, MAX_COUNT))
 	{
 		AfxMessageBox(_T("SMQ Recv Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_ItemLoggerSendQ.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER))
+	if (!m_ItemLoggerSendQ.OpenOrCreate(SMQ_ITEMLOGGER, MAX_PKTSIZE, MAX_COUNT))
 	{
 		AfxMessageBox(_T("SMQ ItemLog Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
@@ -662,12 +661,6 @@ BOOL CEbenezerDlg::DestroyWindow()
 
 	if (m_hReadQueueThread != nullptr)
 		TerminateThread(m_hReadQueueThread, 0);
-
-	if (m_bMMFCreate)
-	{
-		UnmapViewOfFile(m_lpMMFile);
-		CloseHandle(m_hMMFile);
-	}
 
 	if (!m_ItemTableMap.IsEmpty())
 		m_ItemTableMap.DeleteAllData();
@@ -1238,40 +1231,23 @@ void CEbenezerDlg::Send_AIServer(int zone, char* pBuf, int len)
 
 bool CEbenezerDlg::InitializeMMF()
 {
-	bool bCreate = true;
 	int socketCount = GetUserSocketCount();
-
 	uint32_t filesize = socketCount * ALLOCATED_USER_DATA_BLOCK;
-	m_hMMFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, filesize, _T("KNIGHT_DB"));
 
-	if (m_hMMFile != nullptr
-		&& GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		m_hMMFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, _T("KNIGHT_DB"));
-		if (m_hMMFile == nullptr)
-		{
-			m_hMMFile = INVALID_HANDLE_VALUE;
-			return false;
-		}
-
-		bCreate = false;
-	}
-
-	AddOutputMessage(_T("Shared memory created successfully"));
-
-	m_lpMMFile = (char*) MapViewOfFile(m_hMMFile, FILE_MAP_WRITE, 0, 0, 0);
-	if (m_lpMMFile == nullptr)
+	char* memory = m_UserDataBlock.OpenOrCreate("KNIGHT_DB", filesize);
+	if (memory == nullptr)
 		return false;
 
-	memset(m_lpMMFile, 0, filesize);
+	AddOutputMessage(_T("Shared memory created successfully"));
+	spdlog::info("EbenezerDlg::InitializeMMF: shared memory created successfully");
 
-	m_bMMFCreate = bCreate;
+	memset(memory, 0, filesize);
 
 	for (int i = 0; i < socketCount; i++)
 	{
 		CUser* pUser = _socketManager.GetInactiveUserUnchecked(i);
 		if (pUser != nullptr)
-			pUser->m_pUserData = (_USER_DATA*) (m_lpMMFile + i * ALLOCATED_USER_DATA_BLOCK);
+			pUser->m_pUserData = reinterpret_cast<_USER_DATA*>(memory + i * ALLOCATED_USER_DATA_BLOCK);
 	}
 
 	return true;

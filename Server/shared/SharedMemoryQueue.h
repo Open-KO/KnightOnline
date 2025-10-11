@@ -20,10 +20,15 @@ class SharedMemoryQueue
 
 public:
 	SharedMemoryQueue(int sendRetryCount = 0);
-	bool InitializeMMF(uint32_t maxMsgSize, uint32_t maxNumMsg, const char* name, bool openOrCreate = true);
+	bool Create(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg);
+	bool OpenOrCreate(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg);
+	bool Open(const char* name);
 	int GetData(char* pBuf);
 	int PutData(const char* pBuf, int size);
 	~SharedMemoryQueue();
+
+private:
+	void FlushQueue();
 
 private:
 	std::unique_ptr<message_queue_impl> _queue;

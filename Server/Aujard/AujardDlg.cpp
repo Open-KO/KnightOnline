@@ -196,8 +196,8 @@ BOOL CAujardDlg::OnInitDialog()
 	// configure logger
 	_logger.Setup(ini, exePathUtf8);
 
-	LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERSEND, false);	// Dispatcher 의 Send Queue
-	LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERRECV, false);	// Dispatcher 의 Read Queue
+	LoggerRecvQueue.Open(SMQ_LOGGERSEND);	// Dispatcher 의 Send Queue
+	LoggerSendQueue.Open(SMQ_LOGGERRECV);	// Dispatcher 의 Read Queue
 
 	if (!InitSharedMemory())
 	{
@@ -319,27 +319,18 @@ BOOL CAujardDlg::DestroyWindow()
 /// \brief initializes shared memory with other server applications
 bool CAujardDlg::InitSharedMemory()
 {
-	uint32_t filesize = MAX_USER * ALLOCATED_USER_DATA_BLOCK;
-
-	_sharedMemoryHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, _T("KNIGHT_DB"));
-	if (_sharedMemoryHandle == nullptr)
-	{
-		_sharedMemoryHandle = INVALID_HANDLE_VALUE;
+	char* memory = _userDataBlock.Open("KNIGHT_DB");
+	if (memory == nullptr)
 		return false;
-	}
 
 	AddOutputMessage(_T("Shared memory loaded successfully"));
 	spdlog::info("AujardDlg::InitSharedMemory: shared memory loaded successfully");
-
-	_sharedMemoryFile = (char*) MapViewOfFile(_sharedMemoryHandle, FILE_MAP_WRITE, 0, 0, 0);
-	if (_sharedMemoryFile == nullptr)
-		return false;
 
 	_dbAgent.UserData.reserve(MAX_USER);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
-		_USER_DATA* pUser = (_USER_DATA*) (_sharedMemoryFile + i * ALLOCATED_USER_DATA_BLOCK);
+		_USER_DATA* pUser = reinterpret_cast<_USER_DATA*>(memory + i * ALLOCATED_USER_DATA_BLOCK);
 		_dbAgent.UserData.push_back(pUser);
 	}
 

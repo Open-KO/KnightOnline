@@ -14,6 +14,7 @@
 
 #include <shared/Ini.h>
 #include <shared/logger.h>
+#include <shared/SharedMemoryBlock.h>
 #include <shared/SharedMemoryQueue.h>
 #include <shared/STLMap.h>
 
@@ -210,9 +211,9 @@ public:
 	SharedMemoryQueue m_ItemLoggerSendQ;
 
 	HANDLE	m_hReadQueueThread;
-	HANDLE	m_hMMFile;
-	char*	m_lpMMFile;
-	bool	m_bMMFCreate;
+
+	SharedMemoryBlock m_UserDataBlock;
+
 	uint32_t	m_ServerOffset;
 
 	char	m_ppNotice[20][128];

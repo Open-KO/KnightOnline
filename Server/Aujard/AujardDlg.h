@@ -1,18 +1,11 @@
-﻿// AujardDlg.h : header file
-//
-
-#if !defined(AFX_AUJARDDLG_H__B5274041_22AE_464F_86F6_53F992C2BF54__INCLUDED_)
-#define AFX_AUJARDDLG_H__B5274041_22AE_464F_86F6_53F992C2BF54__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+﻿#pragma once
 
 #include "DBAgent.h"
 #include "Define.h"
 #include "resource.h"
 
 #include <shared/logger.h>
+#include <shared/SharedMemoryBlock.h>
 #include <shared/SharedMemoryQueue.h>
 #include <shared/STLMap.h>
 
@@ -189,8 +182,7 @@ protected:
 	CDBAgent			_dbAgent;
 
 	HANDLE				_readQueueThread;
-	HANDLE				_sharedMemoryHandle;
-	char*				_sharedMemoryFile;
+	SharedMemoryBlock	_userDataBlock;
 
 	int					_serverId;
 	int					_zoneId;
@@ -256,5 +248,3 @@ private:
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_AUJARDDLG_H__B5274041_22AE_464F_86F6_53F992C2BF54__INCLUDED_)

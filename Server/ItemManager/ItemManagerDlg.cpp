@@ -103,8 +103,7 @@ BOOL CItemManagerDlg::OnInitDialog()
 	m_nItemLogFileDay = time.GetDay();
 	m_nExpLogFileDay = time.GetDay();
 
-	// Dispatcher 의 Send Queue
-	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER, false))
+	if (!m_LoggerRecvQueue.Open(SMQ_ITEMLOGGER))
 	{
 		AfxMessageBox(_T("Shared memory queue not yet available. Run Ebenezer first."));
 		AfxPostQuitMessage(0);
