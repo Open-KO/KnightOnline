@@ -15,7 +15,7 @@
 #include <db-library/ConnectionManager.h>
 
 constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
-constexpr int MAX_SEND_QUEUE_RETRY_COUNT = 50;
+constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
 constexpr int GAME_TIME       	= 100;
 constexpr int HEARTBEAT_SMQ		= 200;
@@ -183,7 +183,7 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 
 CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialog(CEbenezerDlg::IDD, pParent),
-	m_LoggerSendQueue(MAX_SEND_QUEUE_RETRY_COUNT), m_ItemLoggerSendQ(MAX_SEND_QUEUE_RETRY_COUNT)
+	m_LoggerSendQueue(MAX_SMQ_SEND_QUEUE_RETRY_COUNT), m_ItemLoggerSendQ(MAX_SMQ_SEND_QUEUE_RETRY_COUNT)
 {
 	//{{AFX_DATA_INIT(CEbenezerDlg)
 	//}}AFX_DATA_INIT
