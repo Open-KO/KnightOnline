@@ -19,6 +19,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WarFare", "Client\WarFare\W
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared", "Server\shared\shared.vcxproj", "{C2FEB024-8E46-4533-918B-7196CAAA4E7D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{10898C84-AF45-F0B0-5144-EA801DF15503} = {10898C84-AF45-F0B0-5144-EA801DF15503}
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF} = {1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_deps", "_deps", "{7002AB72-3020-4E04-8E43-3784FFDCD539}"
 EndProject
@@ -38,6 +42,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-mpg123", "deps\fetch-and-build-wrappers\fetch-mpg123.vcxproj", "{B24123A5-2FE3-4AD6-9B8D-C3090E87408D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-spdlog", "deps\fetch-and-build-wrappers\fetch-spdlog.vcxproj", "{10898C84-AF45-F0B0-5144-EA801DF15503}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-boost", "deps\fetch-and-build-wrappers\fetch-boost.vcxproj", "{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +87,10 @@ Global
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Debug|Win32.Build.0 = Debug|Win32
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.ActiveCfg = Release|Win32
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.Build.0 = Release|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Debug|Win32.Build.0 = Debug|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Release|Win32.ActiveCfg = Release|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +105,7 @@ Global
 		{E3CE5B4F-97BC-46B1-B36D-25AB39D4A3F9} = {7002AB72-3020-4E04-8E43-3784FFDCD539}
 		{B24123A5-2FE3-4AD6-9B8D-C3090E87408D} = {FCEEB93A-A502-48BF-83AA-715C2E88D883}
 		{10898C84-AF45-F0B0-5144-EA801DF15503} = {FCEEB93A-A502-48BF-83AA-715C2E88D883}
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF} = {FCEEB93A-A502-48BF-83AA-715C2E88D883}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0034A25-63CF-4A69-9E84-BA0E8F0B47C2}
