@@ -215,7 +215,7 @@ public:
 	int Send(char* pBuf, int length) override;
 	void SendCompressingPacket(const char* pData, int len);
 	void RegionPacketAdd(char* pBuf, int len);
-	void RegionPacketClear(char* GetBuf, int& len);
+	int RegionPacketClear(char* GetBuf);
 	void CloseProcess() override;
 	void Parsing(int len, char* pData) override;
 

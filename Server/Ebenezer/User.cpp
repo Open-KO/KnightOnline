@@ -289,13 +289,16 @@ void CUser::RegionPacketAdd(char* pBuf, int len)
 	SetString(_regionBuffer->pDataBuff, pBuf, len, _regionBuffer->iLength);
 }
 
-void CUser::RegionPacketClear(char* GetBuf, int& len)
+int CUser::RegionPacketClear(char* GetBuf)
 {
 	int index = 0;
 	SetByte(GetBuf, WIZ_CONTINOUS_PACKET, index);
 
 	{
 		std::lock_guard<std::mutex> lock(_regionBufferMutex);
+
+		if (_regionBuffer->iLength <= 0)
+			return 0;
 
 		SetShort(GetBuf, _regionBuffer->iLength, index);
 		SetString(GetBuf, _regionBuffer->pDataBuff, _regionBuffer->iLength, index);
@@ -304,7 +307,7 @@ void CUser::RegionPacketClear(char* GetBuf, int& len)
 		_regionBuffer->iLength = 0;
 	}
 
-	len = index;
+	return index;
 }
 
 bool CUser::PullOutCore(char*& data, int& length)

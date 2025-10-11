@@ -35,8 +35,6 @@ void SendWorkerThread::thread_loop()
 
 void SendWorkerThread::tick()
 {
-	char regionBuffer[REGION_BUFF_SIZE];
-
 	int socketCount = _socketManager->GetServerSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
@@ -44,16 +42,10 @@ void SendWorkerThread::tick()
 		if (userSocket == nullptr)
 			continue;
 
-		if (userSocket->_regionBuffer->iLength == 0)
+		char regionBuffer[REGION_BUFF_SIZE] = {};
+		int len = userSocket->RegionPacketClear(regionBuffer);
+		if (len <= 0)
 			continue;
-
-		int len = 0;
-		memset(regionBuffer, 0, REGION_BUFF_SIZE);
-
-		{
-			std::lock_guard<std::recursive_mutex> lock(_socketManager->GetMutex());
-			userSocket->RegionPacketClear(regionBuffer, len);
-		}
 
 		if (len < 500)
 		{
