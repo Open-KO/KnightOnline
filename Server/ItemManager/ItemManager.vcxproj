@@ -36,8 +36,8 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)cp949_strings.props" />
-  <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)server.props" />
+  <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>..\bin\$(Configuration)\</OutDir>
@@ -132,7 +132,6 @@
   <ItemGroup>
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="ItemManagerDlg.cpp" />
-    <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
@@ -148,7 +147,6 @@
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="ItemManagerDlg.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SharedMem.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>

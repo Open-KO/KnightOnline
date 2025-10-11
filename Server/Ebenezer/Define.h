@@ -242,22 +242,6 @@ constexpr int BBS_CHECK_TIME		= 36000;
 // DEFINE Shared Memory Queue
 //////////////////////////////////////////////////////////////////
 
-// TODO: Throw these away. They're too vague and contaminate things.
-constexpr uint8_t E		= 0x00;
-constexpr uint8_t R		= 0x01;
-constexpr uint8_t W		= 0x02;
-constexpr uint8_t WR	= 0x03;
-
-// DEFINE Shared Memory Queue Return VALUE
-
-#define SMQ_BROKEN		10000
-#define SMQ_FULL		10001
-#define SMQ_EMPTY		10002
-#define SMQ_PKTSIZEOVER	10003
-#define SMQ_WRITING		10004
-#define SMQ_READING		10005
-#define SMQ_INVALID		10006
-
 // DEFINE Shared Memory Costumizing
 
 #define MAX_PKTSIZE		512
@@ -323,16 +307,11 @@ typedef union
 struct _REGION_BUFFER
 {
 	int			iLength;
-	uint8_t		bFlag;
-	uint32_t	dwThreadID;
-
 	char		pDataBuff[REGION_BUFF_SIZE];
 
 	_REGION_BUFFER()
 	{
 		iLength = 0;
-		bFlag = E;
-		dwThreadID = 0;
 		memset(pDataBuff, 0, sizeof(pDataBuff));
 	}
 };

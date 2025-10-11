@@ -60,6 +60,7 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <Import Project="$(PropsDir)boost.props" />
   <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
@@ -146,6 +147,7 @@
     <ClCompile Include="lzf.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -167,6 +169,7 @@
     <ClInclude Include="Packet.h" />
     <ClInclude Include="packets.h" />
     <ClInclude Include="server_config.h" />
+    <ClInclude Include="SharedMem.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="StringConversion.h" />

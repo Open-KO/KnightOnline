@@ -197,6 +197,7 @@ public:
 
 	// Game socket specific:
 	_REGION_BUFFER*		_regionBuffer;
+	std::mutex			_regionBufferMutex;
 
 	CJvCryption			_jvCryption;
 	bool				_jvCryptionEnabled;

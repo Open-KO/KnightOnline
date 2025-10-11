@@ -15,8 +15,10 @@
 #include <db-library/ConnectionManager.h>
 
 constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
+constexpr int MAX_SEND_QUEUE_RETRY_COUNT = 50;
 
 constexpr int GAME_TIME       	= 100;
+constexpr int HEARTBEAT_SMQ		= 200;
 constexpr int PACKET_CHECK		= 300;
 constexpr int ALIVE_TIME		= 400;
 constexpr int MARKET_BBS_TIME	= 1000;
@@ -51,15 +53,12 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	CEbenezerDlg* pMain = (CEbenezerDlg*) lp;
 	int recvlen = 0, index = 0, uid = -1, send_index = 0, buff_length = 0;
 	uint8_t command, result;
-	char pBuf[1024] = {}, send_buff[1024] = {};
+	char pBuf[MAX_PKTSIZE] = {}, send_buff[1024] = {};
 	CUser* pUser = nullptr;
 	int currenttime = 0;
 
 	while (true)
 	{
-		if (pMain->m_LoggerRecvQueue.GetFrontMode() == R)
-			continue;
-
 		index = 0;
 		recvlen = pMain->m_LoggerRecvQueue.GetData(pBuf);
 
@@ -159,7 +158,7 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 				pMain->m_KnightsManager.ReceiveKnightsProcess(pUser, pBuf + index, command);
 				break;
 
-			case WIZ_LOGIN_INFO:
+			case DB_LOGIN_INFO:
 				result = GetByte(pBuf, index);
 				if (result == 0x00)
 					pUser->Close();
@@ -183,7 +182,8 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 // CEbenezerDlg dialog
 
 CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(CEbenezerDlg::IDD, pParent)
+	: CDialog(CEbenezerDlg::IDD, pParent),
+	m_LoggerSendQueue(MAX_SEND_QUEUE_RETRY_COUNT), m_ItemLoggerSendQ(MAX_SEND_QUEUE_RETRY_COUNT)
 {
 	//{{AFX_DATA_INIT(CEbenezerDlg)
 	//}}AFX_DATA_INIT
@@ -370,21 +370,21 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	if (!m_LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND)))
+	if (!m_LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERSEND))
 	{
 		AfxMessageBox(_T("SMQ Send Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV)))
+	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERRECV))
 	{
 		AfxMessageBox(_T("SMQ Recv Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_ItemLoggerSendQ.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER)))
+	if (!m_ItemLoggerSendQ.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_ITEMLOGGER))
 	{
 		AfxMessageBox(_T("SMQ ItemLog Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
@@ -838,6 +838,15 @@ void CEbenezerDlg::OnTimer(UINT nIDEvent)
 			}
 			// sungyong~ 2002.05.23
 			break;
+
+		case HEARTBEAT_SMQ:
+		{
+			char sendBuffer[4];
+			int sendIndex = 0;
+			SetByte(sendBuffer, DB_HEARTBEAT, sendIndex);
+			m_LoggerSendQueue.PutData(sendBuffer, sendIndex);
+		}
+		break;
 
 		case ALIVE_TIME:
 			CheckAliveUser();
@@ -1589,6 +1598,7 @@ void CEbenezerDlg::LoadConfig()
 	m_Ini.Save();
 
 	SetTimer(GAME_TIME, 6000, nullptr);
+	SetTimer(HEARTBEAT_SMQ, 10000, nullptr);
 	SetTimer(ALIVE_TIME, 34000, nullptr);
 	SetTimer(MARKET_BBS_TIME, 300000, nullptr);
 	SetTimer(PACKET_CHECK, 360000, nullptr);

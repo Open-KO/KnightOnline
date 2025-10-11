@@ -6,7 +6,6 @@
 #include "GameDefine.h"
 #include "AISocket.h"
 #include "Npc.h"
-#include "SharedMem.h"
 #include "Knights.h"
 #include "KnightsManager.h"
 #include "KnightsSiegeWar.h"
@@ -15,6 +14,7 @@
 
 #include <shared/Ini.h>
 #include <shared/logger.h>
+#include <shared/SharedMem.h>
 #include <shared/STLMap.h>
 
 #include <unordered_map>

@@ -8,12 +8,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "SharedMem.h"
 #include "DBAgent.h"
 #include "Define.h"
 #include "resource.h"
 
 #include <shared/logger.h>
+#include <shared/SharedMem.h>
 #include <shared/STLMap.h>
 
 using ItemtableArray = CSTLMap<model::Item>;
@@ -37,6 +37,10 @@ public:
 	/// \brief Updates the IDC_DB_PROCESS text with the DB Process Number
 	/// \note I'm not sure how practical this is under load
 	void DBProcessNumber(int number);
+
+	/// \brief handles DB_HEARTBEAT requests
+	/// \see DB_HEARTBEAT
+	void HeartbeatReceived();
 
 	/// \brief handles DB_COUPON_EVENT requests
 	/// \todo related stored procedures are not implemented
@@ -247,6 +251,7 @@ protected:
 private:
 	/// \brief output message box for the application
 	CListBox _outputList;
+	time_t _heartbeatReceivedTime;
 };
 
 //{{AFX_INSERT_LOCATION}}

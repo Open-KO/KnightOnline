@@ -21,6 +21,12 @@ static char THIS_FILE[] = __FILE__;
 // NOTE: Explicitly handled under DEBUG_NEW override
 #include <db-library/RecordSetLoader_STLMap.h>
 
+using namespace std::chrono_literals;
+
+// Minimum time without a heartbeat to consider saving player data.
+// This will only save periodically.
+static constexpr auto SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE = 30s;
+
 constexpr int PROCESS_CHECK		= 100;
 constexpr int CONCURRENT_CHECK	= 200;
 constexpr int SERIAL_TIME		= 300;
@@ -40,83 +46,84 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	CAujardDlg* main = (CAujardDlg*) lp;
 	int recvLen = 0, index = 0;
 	uint8_t command;
-	char recvBuff[1024] = {};
+	char recvBuff[MAX_PKTSIZE] = {};
 
 	while (true)
 	{
-		if (main->LoggerRecvQueue.GetFrontMode() != R)
+		index = 0;
+		recvLen = main->LoggerRecvQueue.GetData(recvBuff);
+		if (recvLen >= SMQ_ERROR_RANGE)
 		{
-			index = 0;
-			recvLen = main->LoggerRecvQueue.GetData(recvBuff);
-			if (recvLen > MAX_PKTSIZE)
-			{
-				Sleep(1);
-				continue;
-			}
-
-			command = GetByte(recvBuff, index);
-			switch (command)
-			{
-				case WIZ_LOGIN:
-					main->AccountLogIn(recvBuff + index);
-					break;
-
-				case WIZ_NEW_CHAR:
-					main->CreateNewChar(recvBuff + index);
-					break;
-
-				case WIZ_DEL_CHAR:
-					main->DeleteChar(recvBuff + index);
-					break;
-
-				case WIZ_SEL_CHAR:
-					main->SelectCharacter(recvBuff + index);
-					break;
-
-				case WIZ_SEL_NATION:
-					main->SelectNation(recvBuff + index);
-					break;
-
-				case WIZ_ALLCHAR_INFO_REQ:
-					main->AllCharInfoReq(recvBuff + index);
-					break;
-
-				case WIZ_LOGOUT:
-					main->UserLogOut(recvBuff + index);
-					break;
-
-				case WIZ_DATASAVE:
-					main->UserDataSave(recvBuff + index);
-					break;
-
-				case WIZ_KNIGHTS_PROCESS:
-					main->KnightsPacket(recvBuff + index);
-					break;
-
-				case WIZ_CLAN_PROCESS:
-					main->KnightsPacket(recvBuff + index);
-					break;
-
-				case WIZ_LOGIN_INFO:
-					main->SetLogInInfo(recvBuff + index);
-					break;
-
-				case WIZ_KICKOUT:
-					main->UserKickOut(recvBuff + index);
-					break;
-
-				case WIZ_BATTLE_EVENT:
-					main->BattleEventResult(recvBuff + index);
-					break;
-
-				case DB_COUPON_EVENT:
-					main->CouponEvent(recvBuff + index);
-					break;
-			}
-
-			recvLen = 0;
-			memset(recvBuff, 0, sizeof(recvBuff));
+			Sleep(1);
+			continue;
 		}
+
+		command = GetByte(recvBuff, index);
+		switch (command)
+		{
+			case WIZ_LOGIN:
+				main->AccountLogIn(recvBuff + index);
+				break;
+
+			case WIZ_NEW_CHAR:
+				main->CreateNewChar(recvBuff + index);
+				break;
+
+			case WIZ_DEL_CHAR:
+				main->DeleteChar(recvBuff + index);
+				break;
+
+			case WIZ_SEL_CHAR:
+				main->SelectCharacter(recvBuff + index);
+				break;
+
+			case WIZ_SEL_NATION:
+				main->SelectNation(recvBuff + index);
+				break;
+
+			case WIZ_ALLCHAR_INFO_REQ:
+				main->AllCharInfoReq(recvBuff + index);
+				break;
+
+			case WIZ_LOGOUT:
+				main->UserLogOut(recvBuff + index);
+				break;
+
+			case WIZ_DATASAVE:
+				main->UserDataSave(recvBuff + index);
+				break;
+
+			case WIZ_KNIGHTS_PROCESS:
+				main->KnightsPacket(recvBuff + index);
+				break;
+
+			case WIZ_CLAN_PROCESS:
+				main->KnightsPacket(recvBuff + index);
+				break;
+
+			case WIZ_LOGIN_INFO:
+				main->SetLogInInfo(recvBuff + index);
+				break;
+
+			case WIZ_KICKOUT:
+				main->UserKickOut(recvBuff + index);
+				break;
+
+			case WIZ_BATTLE_EVENT:
+				main->BattleEventResult(recvBuff + index);
+				break;
+
+			case DB_COUPON_EVENT:
+				main->CouponEvent(recvBuff + index);
+				break;
+
+			case DB_HEARTBEAT:
+				main->HeartbeatReceived();
+				break;
+		}
+
+		recvLen = 0;
+		memset(recvBuff, 0, sizeof(recvBuff));
 	}
 }
 
@@ -189,8 +196,8 @@ BOOL CAujardDlg::OnInitDialog()
 	// configure logger
 	_logger.Setup(ini, exePathUtf8);
 
-	LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), false);	// Dispatcher 의 Send Queue
-	LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), false);	// Dispatcher 의 Read Queue
+	LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERSEND, false);	// Dispatcher 의 Send Queue
+	LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, SMQ_LOGGERRECV, false);	// Dispatcher 의 Read Queue
 
 	if (!InitSharedMemory())
 	{
@@ -382,8 +389,8 @@ void CAujardDlg::SelectCharacter(char* buffer)
 	init = GetByte(buffer, index);
 	packetIndex = GetDWORD(buffer, index);
 
-	spdlog::debug("AujardDlg::SelectCharacter: acctId={}, charId={}, index={}, pid={}, front={}",
-		accountId, charId, packetIndex, _getpid(), LoggerRecvQueue.GetFrontPointer());
+	spdlog::debug("AujardDlg::SelectCharacter: acctId={}, charId={}, index={}",
+		accountId, charId, packetIndex);
 	
 	_recvPacketCount++;		// packet count
 
@@ -885,8 +892,8 @@ void CAujardDlg::OnTimer(UINT EventId)
 	switch (EventId)
 	{
 		case PROCESS_CHECK:
-			hProcess = OpenProcess(PROCESS_ALL_ACCESS | PROCESS_VM_READ, FALSE, LoggerSendQueue.GetProcessId());
-			if (hProcess == nullptr)
+			if (_heartbeatReceivedTime != 0
+				&& (time(nullptr) - _heartbeatReceivedTime) > SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE.count())
 				AllSaveRoutine();
 			break;
 
@@ -921,7 +928,7 @@ void CAujardDlg::AllSaveRoutine()
 	// TODO:  100ms seems excessive
 	uint32_t sleepTime = 100;
 	bool allUsersSaved = true;
-	
+
 	// log the disconnect
 	CTime cur = CTime::GetCurrentTime();
 	std::wstring msgStr = std::format(L"Ebenezer disconnected: {:04}/{:02}/{:02} {:02}:{:02}",
@@ -950,8 +957,10 @@ void CAujardDlg::AllSaveRoutine()
 			allUsersSaved = false;
 			spdlog::error("AujardDlg::AllSaveRoutine: failed to save character: {}", pUser->m_id);
 		}
+
 		Sleep(sleepTime);
 	}
+
 	if (allUsersSaved)
 	{
 		msgStr = std::format(L"All UserData saved: {:04}/{:02}/{:02} {:02}:{:02}",
@@ -1667,6 +1676,11 @@ void CAujardDlg::CouponEvent(char* data)
 		// TODO: not implemented.  Allow nResult to default to 0
 		// nResult = _dbAgent.UpdateCouponEvent(strAccountName, strCharName, strCouponID, nItemID, nItemCount);
 	}
+}
+
+void CAujardDlg::HeartbeatReceived()
+{
+	_heartbeatReceivedTime = time(nullptr);
 }
 
 /// \brief Updates the IDC_DB_PROCESS text with the DB Process Number
