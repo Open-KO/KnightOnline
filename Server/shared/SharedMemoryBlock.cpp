@@ -31,10 +31,14 @@ char* SharedMemoryBlock::OpenOrCreate(const std::string& name, uint32_t totalSiz
 		
 	try
 	{
-		_sharedMemoryObject = std::make_unique<shared_memory_object_impl>(create_only, _name.c_str(), read_write);
-		_sharedMemoryObject->truncate(totalSize);
+		auto sharedMemoryObject = std::make_unique<shared_memory_object_impl>(create_only, name.c_str(), read_write);
+		sharedMemoryObject->truncate(totalSize);
 
-		_mappedRegion = std::make_unique<mapped_region_impl>(*_sharedMemoryObject, read_write);
+		auto mappedRegion = std::make_unique<mapped_region_impl>(*sharedMemoryObject, read_write);
+
+		_sharedMemoryObject = std::move(sharedMemoryObject);
+		_mappedRegion = std::move(mappedRegion);
+
 		_name = name;
 		_created = true;
 
@@ -54,8 +58,12 @@ char* SharedMemoryBlock::Open(const std::string& name)
 
 	try
 	{
-		_sharedMemoryObject = std::make_unique<shared_memory_object_impl>(open_only, name.c_str(), read_write);
-		_mappedRegion = std::make_unique<mapped_region_impl>(*_sharedMemoryObject, read_write);
+		auto sharedMemoryObject = std::make_unique<shared_memory_object_impl>(open_only, name.c_str(), read_write);
+		auto mappedRegion = std::make_unique<mapped_region_impl>(*sharedMemoryObject, read_write);
+
+		_sharedMemoryObject = std::move(sharedMemoryObject);
+		_mappedRegion = std::move(mappedRegion);
+
 		_name = name;
 
 		return static_cast<char*>(_mappedRegion->get_address());
