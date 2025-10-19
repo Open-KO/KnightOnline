@@ -54,7 +54,7 @@ void CGameSocket::Initialize()
 	_zoneNo = -1;
 	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	//m_pParty = new CParty;
-	//m_pParty->Initialize();
+	//m_pParty->Init();
 	m_Party.Initialize();
 
 	TcpServerSocket::Initialize();

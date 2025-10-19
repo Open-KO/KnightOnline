@@ -25,7 +25,7 @@ static char THIS_FILE[] = __FILE__;
 
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
-	1. Initialize() 수정
+	1. Init() 수정
 	2. SendAttackSuccess() 수정
 	3. GetDamage() 수정
 */

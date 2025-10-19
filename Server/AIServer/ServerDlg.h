@@ -1,12 +1,6 @@
 ﻿// ServerDlg.h : header file
 //
-
-#if !defined(AFX_SERVERDLG_H__7E2A41F8_68A3_4C94_8A6E_7C80636869D3__INCLUDED_)
-#define AFX_SERVERDLG_H__7E2A41F8_68A3_4C94_8A6E_7C80636869D3__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "AISocketManager.h"
 
@@ -75,7 +69,7 @@ typedef std::vector <MAP*>					ZoneArray;
 		int GetCatsSpeed(uint8_t bySpeed);
 */
 
-class CServerDlg : public CDialog
+class CServerDlg
 {
 // Construction
 public:
@@ -101,36 +95,13 @@ public:
 	MAP* GetMapByIndex(int iZoneIndex) const;
 	MAP* GetMapByID(int iZoneID) const;
 
-	/// \brief adds a message to the application's output box and updates scrollbar position
-	/// \see _outputList
-	void AddOutputMessage(const std::string& msg);
-
-	/// \brief adds a message to the application's output box and updates scrollbar position
-	/// \see _outputList
-	void AddOutputMessage(const std::wstring& msg);
-
-	CServerDlg(CWnd* pParent = nullptr);	// standard constructor
+	CServerDlg();	// standard constructor
 	~CServerDlg();
 
 	static inline CServerDlg* GetInstance() {
 		return s_pInstance;
 	}
 
-// Dialog Data
-	//{{AFX_DATA(CServerDlg)
-	enum { IDD = IDD_SERVER_DIALOG };
-	CString	m_strStatus;
-	//}}AFX_DATA
-
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CServerDlg)
-	virtual BOOL DestroyWindow();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
-	//}}AFX_VIRTUAL
-
-public:
 	NpcMap						m_NpcMap;
 	NpcTableMap					m_MonTableMap;
 	NpcTableMap					m_NpcTableMap;
@@ -186,13 +157,9 @@ public:
 
 // Implementation
 protected:
-	void DefaultInit();
-
-	HICON m_hIcon;
-
 	// Generated message map functions
 	//{{AFX_MSG(CServerDlg)
-	virtual BOOL OnInitDialog();
+	bool Init();
 
 	/// \brief attempts to listen on the port associated with m_byZone
 	/// \see m_byZone
@@ -204,12 +171,7 @@ protected:
 	/// \returns the associated listen port or -1 if invalid
 	int GetListenPortByZone() const;
 	
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-	afx_msg void OnPaint();
-	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg LRESULT OnProcessListBoxQueue(WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
+	void OnTimer(UINT nIDEvent);
 
 private:
 	// 패킷 압축에 필요 변수   -------------
@@ -221,9 +183,6 @@ private:
 	uint8_t				m_byZone;
 
 	AIServerLogger		_logger;
-	
-	/// \brief output message box for the application
-	CListBox _outputList;
 
 	std::queue<std::wstring>	_listBoxQueue;
 	std::mutex					_listBoxQueueMutex;
@@ -253,8 +212,3 @@ private:
 	void RegionCheck();		// region안에 들어오는 유저 체크 (스레드에서 FindEnermy()함수의 부하를 줄이기 위한 꽁수)
 	void TestCode();
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_SERVERDLG_H__7E2A41F8_68A3_4C94_8A6E_7C80636869D3__INCLUDED_)
