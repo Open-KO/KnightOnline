@@ -2,7 +2,7 @@
 #define _GAMEDEFINE_H
 
 #include <shared/globals.h>
-#include <shared/_USER_DATA.h>
+#include <shared-server/_USER_DATA.h>
 
 //////////////////// 직업별 Define ////////////////////
 constexpr int KARUWARRRIOR		= 101;		// 카루전사

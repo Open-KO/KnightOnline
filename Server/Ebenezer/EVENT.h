@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "EVENT_DATA.h"
-#include <shared/STLMap.h>
+#include <shared-server/STLMap.h>
 
 typedef CSTLMap <EVENT_DATA>				EventDataArray;
 

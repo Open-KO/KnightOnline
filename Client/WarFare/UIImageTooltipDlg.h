@@ -15,10 +15,11 @@
 
 //////////////////////////////////////////////////////////////////////
 
-#define MAX_TOOLTIP_COUNT 30
-
 class CUIImageTooltipDlg : public CN3UIBase
 {
+	static constexpr int MAX_TOOLTIP_COUNT			= 30;
+	static constexpr int MIN_WORDS_TO_SPLIT_DESC	= 5;
+
 	const D3DCOLOR		m_CYellow;	// 레어...
 	const D3DCOLOR		m_CBlue;	// 매직...	
 	const D3DCOLOR		m_CGold;	// 유니크...

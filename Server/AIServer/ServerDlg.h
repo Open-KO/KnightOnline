@@ -17,8 +17,8 @@
 
 #include "resource.h"
 
-#include <shared/logger.h>
-#include <shared/STLMap.h>
+#include <shared-server/logger.h>
+#include <shared-server/STLMap.h>
 
 #include <vector>
 #include <list>

@@ -9,9 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "define.h"
+#include "Define.h"
 #include "GameDefine.h"
-#include <shared/STLMap.h>
+#include <shared-server/STLMap.h>
 
 typedef CSTLMap <_ZONE_ITEM>	ZoneItemArray;
 typedef CSTLMap <int>			ZoneUserArray;

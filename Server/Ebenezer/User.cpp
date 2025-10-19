@@ -25,11 +25,6 @@ extern CRITICAL_SECTION g_region_critical;
 extern CRITICAL_SECTION g_LogFile_critical;
 extern bool g_serverdown_flag;
 
-// TODO: Remove this
-void bb()
-{
-}
-
 CUser::CUser(SocketManager* socketManager)
 	: TcpServerSocket(socketManager)
 {
@@ -288,82 +283,31 @@ void CUser::SendCompressingPacket(const char* pData, int len)
 
 void CUser::RegionPacketAdd(char* pBuf, int len)
 {
-	int count = 0;
-	do
-	{
-		if (_regionBuffer->bFlag == W)
-		{
-			bb();
-			count++;
-			continue;
-		}
+	std::lock_guard<std::mutex> lock(_regionBufferMutex);
 
-		_regionBuffer->bFlag = W;
-		_regionBuffer->dwThreadID = ::GetCurrentThreadId();
-		bb();
-
-		// Dual Lock System...
-		if (_regionBuffer->dwThreadID != ::GetCurrentThreadId())
-		{
-			count++;
-			continue;
-		}
-
-		SetShort(_regionBuffer->pDataBuff, len, _regionBuffer->iLength);
-		SetString(_regionBuffer->pDataBuff, pBuf, len, _regionBuffer->iLength);
-		_regionBuffer->bFlag = WR;
-		break;
-	}
-	while (count < 30);
-
-	if (count > 29)
-	{
-//		TRACE(_T("Region packet Add Drop\n"));
-		Send(pBuf, len);
-	}
+	SetShort(_regionBuffer->pDataBuff, len, _regionBuffer->iLength);
+	SetString(_regionBuffer->pDataBuff, pBuf, len, _regionBuffer->iLength);
 }
 
-void CUser::RegionPacketClear(char* GetBuf, int& len)
+int CUser::RegionPacketClear(char* GetBuf)
 {
-	int count = 0;
-	do
+	int index = 0;
+	SetByte(GetBuf, WIZ_CONTINOUS_PACKET, index);
+
 	{
-		if (_regionBuffer->bFlag == W)
-		{
-			bb();
-			count++;
-			continue;
-		}
+		std::lock_guard<std::mutex> lock(_regionBufferMutex);
 
-		_regionBuffer->bFlag = W;
-		_regionBuffer->dwThreadID = ::GetCurrentThreadId();
-		bb();
+		if (_regionBuffer->iLength <= 0)
+			return 0;
 
-		// Dual Lock System...
-		if (_regionBuffer->dwThreadID != ::GetCurrentThreadId())
-		{
-			count++;
-			continue;
-		}
-
-		int index = 0;
-		SetByte(GetBuf, WIZ_CONTINOUS_PACKET, index);
 		SetShort(GetBuf, _regionBuffer->iLength, index);
 		SetString(GetBuf, _regionBuffer->pDataBuff, _regionBuffer->iLength, index);
-		len = index;
 
-		memset(_regionBuffer->pDataBuff, 0x00, REGION_BUFF_SIZE);
+		memset(_regionBuffer->pDataBuff, 0, REGION_BUFF_SIZE);
 		_regionBuffer->iLength = 0;
-		_regionBuffer->bFlag = E;
-		break;
 	}
-	while (count < 30);
 
-	if (count > 29)
-	{
-		spdlog::error("CUser::RegionPacketClear: count exceeds 29 [count{}]",
-			count);
-	}
+	return index;
 }
 
 bool CUser::PullOutCore(char*& data, int& length)
@@ -1208,9 +1152,8 @@ void CUser::SelCharToAgent(char* pBuf)
 	SetDWORD(send_buff, m_pMain->m_iPacketCount, send_index);
 
 	{
-		spdlog::debug("User::SelCharToAgent: accountId={} charId={} packetCount={} threadId={} rearPtr={}",
-			m_strAccountID, charId, m_pMain->m_iPacketCount, GetCurrentThreadId(),
-			m_pMain->m_LoggerSendQueue.GetRearPointer());
+		spdlog::debug("User::SelCharToAgent: accountId={} charId={} packetCount={}",
+			m_strAccountID, charId, m_pMain->m_iPacketCount);
 	}
 
 	m_pMain->m_iPacketCount++;
@@ -11256,14 +11199,11 @@ void CUser::SetLogInInfoToDB(uint8_t bInit)
 		return;
 	}
 
-	SetByte(send_buff, WIZ_LOGIN_INFO, send_index);
+	SetByte(send_buff, DB_LOGIN_INFO, send_index);
 	SetShort(send_buff, _socketId, send_index);
-	SetShort(send_buff, strlen(m_strAccountID), send_index);
-	SetString(send_buff, m_strAccountID, strlen(m_strAccountID), send_index);
-	SetShort(send_buff, strlen(m_pUserData->m_id), send_index);
-	SetString(send_buff, m_pUserData->m_id, strlen(m_pUserData->m_id), send_index);
-	SetShort(send_buff, strlen(pInfo->strServerIP), send_index);
-	SetString(send_buff, pInfo->strServerIP, strlen(pInfo->strServerIP), send_index);
+	SetString2(send_buff, m_strAccountID, send_index);
+	SetString2(send_buff, m_pUserData->m_id, send_index);
+	SetString2(send_buff, pInfo->strServerIP, send_index);
 	SetShort(send_buff, pInfo->sPort, send_index);
 	SetString2(send_buff, GetRemoteIP(), send_index);
 	SetByte(send_buff, bInit, send_index);
@@ -11271,8 +11211,8 @@ void CUser::SetLogInInfoToDB(uint8_t bInit)
 	retvalue = m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	if (retvalue >= SMQ_FULL)
 	{
-		std::wstring logstr = std::format(L"SetLogInInfoToDb: send error: {}", retvalue);
-		m_pMain->AddOutputMessage(logstr);
+		m_pMain->AddOutputMessage(
+			fmt::format("SetLogInInfoToDb: send error: {}", retvalue));
 	}
 }
 
@@ -11299,8 +11239,7 @@ void CUser::KickOut(char* pBuf)
 	else
 	{
 		SetByte(send_buff, WIZ_KICKOUT, send_index);
-		SetShort(send_buff, idlen, send_index);
-		SetString(send_buff, accountid, idlen, send_index);
+		SetString2(send_buff, accountid, idlen, send_index);
 		m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	}
 }

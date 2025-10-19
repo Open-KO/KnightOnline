@@ -11,13 +11,13 @@
 #include "Define.h"
 #include "DBProcess.h"
 
-#include <network/SocketManager.h>
-#include <shared/logger.h>
+#include <shared-server/logger.h>
+#include <shared-server/SocketManager.h>
 
 #include <vector>
 #include <string>
 
-#include "resource.h"
+#include "Resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CVersionManagerDlg dialog

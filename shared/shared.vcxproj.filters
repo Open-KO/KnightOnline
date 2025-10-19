@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="LZF">
       <UniqueIdentifier>{109828ab-3858-4170-985f-86eb2ebb0efb}</UniqueIdentifier>
     </Filter>
@@ -36,9 +32,6 @@
     <ClCompile Include="TimeThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="crc32.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lzf.c">
       <Filter>LZF</Filter>
     </ClCompile>
@@ -48,10 +41,10 @@
     <ClCompile Include="StringConversion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="logger.cpp">
+    <ClCompile Include="Thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Thread.cpp">
+    <ClCompile Include="crc32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,13 +76,7 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="STLMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TimeThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="version.h">
@@ -105,12 +92,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CircularBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="server_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Thread.h">

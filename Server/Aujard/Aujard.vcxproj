@@ -52,7 +52,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <LanguageStandard>stdcpp23</LanguageStandard>
-      <AdditionalIncludeDirectories>$(DependencyDir);.;..;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DependencyDir);$(RootDir);$(RootDir)Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>__SAMMA;_3DSERVER;_REPENT;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -60,7 +60,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(OutDir);$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shared-server.lib;shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +138,6 @@
     <ClCompile Include="Aujard.cpp" />
     <ClCompile Include="AujardDlg.cpp" />
     <ClCompile Include="DBAgent.cpp" />
-    <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -147,13 +146,12 @@
     <ResourceCompile Include="Aujard.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\_USER_DATA.h" />
+    <ClInclude Include="..\shared-server\_USER_DATA.h" />
     <ClInclude Include="Aujard.h" />
     <ClInclude Include="AujardDlg.h" />
     <ClInclude Include="DBAgent.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SharedMem.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>

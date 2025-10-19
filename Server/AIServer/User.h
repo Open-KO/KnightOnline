@@ -13,7 +13,7 @@
 
 #include "Extern.h"
 
-#include <shared/STLMap.h>
+#include <shared-server/STLMap.h>
 #include <list>
 
 typedef std::list <_USERLOG*>		UserLogList;

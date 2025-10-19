@@ -4,8 +4,9 @@
 #include <d3dx9.h>
 #include <d3dx9math.h>
 #include <string>
+#include <stdint.h>
+#include <inttypes.h>
 
-#include <shared/types.h>
 #if defined(_N3TOOL) || defined(_3DSERVER)
 #include <afx.h>
 #else

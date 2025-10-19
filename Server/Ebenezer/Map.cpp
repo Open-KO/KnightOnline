@@ -140,7 +140,6 @@ bool C3DMap::LoadMap(HANDLE hFile)
 void C3DMap::LoadObjectEvent(HANDLE hFile)
 {
 	int iEventObjectCount = 0;
-	__Vector3 vPos(0, 0, 0);
 	DWORD dwNum;
 	_OBJECT_EVENT* pEvent = nullptr;
 
@@ -193,7 +192,6 @@ void C3DMap::LoadRegeneEvent(HANDLE hFile)
 {
 	int iEventObjectCount = 0;
 
-	__Vector3 vPos(0, 0, 0);
 	DWORD dwNum;
 	_REGENE_EVENT* pEvent = nullptr;
 

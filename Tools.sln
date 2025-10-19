@@ -13,7 +13,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "N3Base", "Client\N3Base\N3B
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ItemEditor", "ItemEditor\ItemEditor.vcxproj", "{734350E8-5586-46D9-8197-EEEEA3034D86}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared", "Server\shared\shared.vcxproj", "{C2FEB024-8E46-4533-918B-7196CAAA4E7D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared", "shared\shared.vcxproj", "{C2FEB024-8E46-4533-918B-7196CAAA4E7D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{10898C84-AF45-F0B0-5144-EA801DF15503} = {10898C84-AF45-F0B0-5144-EA801DF15503}
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF} = {1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_deps", "_deps", "{657121FA-968C-4276-9AA6-EC6692DC6465}"
 EndProject
@@ -65,6 +69,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-mpg123", "deps\fetch-and-build-wrappers\fetch-mpg123.vcxproj", "{B24123A5-2FE3-4AD6-9B8D-C3090E87408D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-spdlog", "deps\fetch-and-build-wrappers\fetch-spdlog.vcxproj", "{10898C84-AF45-F0B0-5144-EA801DF15503}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-boost", "deps\fetch-and-build-wrappers\fetch-boost.vcxproj", "{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,6 +134,10 @@ Global
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Debug|Win32.Build.0 = Debug|Win32
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.ActiveCfg = Release|Win32
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.Build.0 = Release|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Debug|Win32.Build.0 = Debug|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Release|Win32.ActiveCfg = Release|Win32
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +149,7 @@ Global
 		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B24123A5-2FE3-4AD6-9B8D-C3090E87408D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{10898C84-AF45-F0B0-5144-EA801DF15503} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9937074-3E07-4102-9EF1-BE6E87CF35E4}

@@ -4,8 +4,7 @@
 const int SOCKET_PORT_GAME = 15001;
 const int SOCKET_PORT_LOGIN = 15100;
 
-#include "shared/types.h"
-#include "shared/packets.h"
+#include <shared/packets.h>
 
 	enum e_ChatMode {	N3_CHAT_NORMAL = 1,
 						N3_CHAT_PRIVATE,

@@ -135,7 +135,13 @@ enum e_GameOpcode
 
 // TODO: DB opcodes.
 // Currently they're somewhat shared with game opcodes but they should be defined separately.
-#define WIZ_LOGIN_INFO			0x50	// define for DBAgent Communication
+
+enum e_DBOpcode : uint8_t
+{
+	DB_COUPON_EVENT				= 0x10,
+	DB_LOGIN_INFO				= 0x50,
+	DB_HEARTBEAT				= 0x7F
+};
 
 enum e_LoginOpcode
 {
@@ -550,7 +556,6 @@ enum e_MarketBBSType
 ////////////////////////////////////////////////////////////////
 // Server to DB Agnent Communication
 ////////////////////////////////////////////////////////////////
-#define DB_COUPON_EVENT			0x10	// coupon event
 #define CHECK_COUPON_EVENT		0x01
 #define UPDATE_COUPON_EVENT		0x02
 ////////////////////////////////////////////////////////////////

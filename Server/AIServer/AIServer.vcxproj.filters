@@ -9,9 +9,6 @@
       <UniqueIdentifier>{be5b9c02-8632-440a-8297-01b8d6d7f6d7}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
-    <Filter Include="N3Base">
-      <UniqueIdentifier>{9e0eeafa-becf-46e4-9b90-79586dd6d55f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{7c266682-32f6-4f21-9907-d7c52dc4ed9d}</UniqueIdentifier>
     </Filter>
@@ -67,9 +64,6 @@
     </ClCompile>
     <ClCompile Include="User.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
-      <Filter>N3Base</Filter>
     </ClCompile>
     <ClCompile Include="SendThreadMain.cpp">
       <Filter>Source Files</Filter>
@@ -141,15 +135,6 @@
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h">
-      <Filter>N3Base</Filter>
     </ClInclude>
     <ClInclude Include="AIResourceFormatter.h">
       <Filter>Header Files</Filter>

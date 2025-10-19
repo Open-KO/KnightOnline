@@ -13,9 +13,6 @@
       <UniqueIdentifier>{a49c0661-66e4-46c3-a540-3c8680d69f51}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="N3Base">
-      <UniqueIdentifier>{7a110537-e669-4abb-81e1-c5cf86d86512}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AISocket.cpp">
@@ -60,9 +57,6 @@
     <ClCompile Include="Region.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SharedMem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,9 +65,6 @@
     </ClCompile>
     <ClCompile Include="User.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
-      <Filter>N3Base</Filter>
     </ClCompile>
     <ClCompile Include="EbenezerResourceFormatter.cpp">
       <Filter>Source Files</Filter>
@@ -143,9 +134,6 @@
     <ClInclude Include="Region.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SharedMem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -157,18 +145,6 @@
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h">
-      <Filter>N3Base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\_USER_DATA.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="db_resources.h">
       <Filter>Header Files</Filter>
@@ -189,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EbenezerSocketManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\_USER_DATA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

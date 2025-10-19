@@ -39,7 +39,6 @@
   <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)db-library.props" />
-  <Import Project="$(PropsDir)network_server.props" />
   <Import Project="$(PropsDir)server.props" />
   <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
@@ -58,14 +57,14 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;_WINDOWS;LOGIN_SERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(DependencyDir);.;..;..\..\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DependencyDir);$(RootDir);$(RootDir)Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(BaseOutDir);..\..\deps\ZipArchive\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared.lib;ZipArchive.lib;zlib.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BaseOutDir);$(DependencyDir)ZipArchive\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>shared-server.lib;shared.lib;ZipArchive.lib;zlib.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

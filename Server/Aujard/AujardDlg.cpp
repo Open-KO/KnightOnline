@@ -21,11 +21,19 @@ static char THIS_FILE[] = __FILE__;
 // NOTE: Explicitly handled under DEBUG_NEW override
 #include <db-library/RecordSetLoader_STLMap.h>
 
+using namespace std::chrono_literals;
+
+// Minimum time without a heartbeat to consider saving player data.
+// This will only save periodically.
+static constexpr auto SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE = 30s;
+
 constexpr int PROCESS_CHECK		= 100;
 constexpr int CONCURRENT_CHECK	= 200;
 constexpr int SERIAL_TIME		= 300;
 constexpr int PACKET_CHECK		= 400;
 constexpr int DB_POOL_CHECK		= 500;
+
+constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
 import AujardBinder;
 import AujardModel;
@@ -40,83 +48,84 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	CAujardDlg* main = (CAujardDlg*) lp;
 	int recvLen = 0, index = 0;
 	uint8_t command;
-	char recvBuff[1024] = {};
+	char recvBuff[MAX_PKTSIZE] = {};
 
 	while (true)
 	{
-		if (main->LoggerRecvQueue.GetFrontMode() != R)
+		index = 0;
+		recvLen = main->LoggerRecvQueue.GetData(recvBuff);
+		if (recvLen >= SMQ_ERROR_RANGE)
 		{
-			index = 0;
-			recvLen = main->LoggerRecvQueue.GetData(recvBuff);
-			if (recvLen > MAX_PKTSIZE)
-			{
-				Sleep(1);
-				continue;
-			}
-
-			command = GetByte(recvBuff, index);
-			switch (command)
-			{
-				case WIZ_LOGIN:
-					main->AccountLogIn(recvBuff + index);
-					break;
-
-				case WIZ_NEW_CHAR:
-					main->CreateNewChar(recvBuff + index);
-					break;
-
-				case WIZ_DEL_CHAR:
-					main->DeleteChar(recvBuff + index);
-					break;
-
-				case WIZ_SEL_CHAR:
-					main->SelectCharacter(recvBuff + index);
-					break;
-
-				case WIZ_SEL_NATION:
-					main->SelectNation(recvBuff + index);
-					break;
-
-				case WIZ_ALLCHAR_INFO_REQ:
-					main->AllCharInfoReq(recvBuff + index);
-					break;
-
-				case WIZ_LOGOUT:
-					main->UserLogOut(recvBuff + index);
-					break;
-
-				case WIZ_DATASAVE:
-					main->UserDataSave(recvBuff + index);
-					break;
-
-				case WIZ_KNIGHTS_PROCESS:
-					main->KnightsPacket(recvBuff + index);
-					break;
-
-				case WIZ_CLAN_PROCESS:
-					main->KnightsPacket(recvBuff + index);
-					break;
-
-				case WIZ_LOGIN_INFO:
-					main->SetLogInInfo(recvBuff + index);
-					break;
-
-				case WIZ_KICKOUT:
-					main->UserKickOut(recvBuff + index);
-					break;
-
-				case WIZ_BATTLE_EVENT:
-					main->BattleEventResult(recvBuff + index);
-					break;
-
-				case DB_COUPON_EVENT:
-					main->CouponEvent(recvBuff + index);
-					break;
-			}
-
-			recvLen = 0;
-			memset(recvBuff, 0, sizeof(recvBuff));
+			Sleep(1);
+			continue;
 		}
+
+		command = GetByte(recvBuff, index);
+		switch (command)
+		{
+			case WIZ_LOGIN:
+				main->AccountLogIn(recvBuff + index);
+				break;
+
+			case WIZ_NEW_CHAR:
+				main->CreateNewChar(recvBuff + index);
+				break;
+
+			case WIZ_DEL_CHAR:
+				main->DeleteChar(recvBuff + index);
+				break;
+
+			case WIZ_SEL_CHAR:
+				main->SelectCharacter(recvBuff + index);
+				break;
+
+			case WIZ_SEL_NATION:
+				main->SelectNation(recvBuff + index);
+				break;
+
+			case WIZ_ALLCHAR_INFO_REQ:
+				main->AllCharInfoReq(recvBuff + index);
+				break;
+
+			case WIZ_LOGOUT:
+				main->UserLogOut(recvBuff + index);
+				break;
+
+			case WIZ_DATASAVE:
+				main->UserDataSave(recvBuff + index);
+				break;
+
+			case WIZ_KNIGHTS_PROCESS:
+				main->KnightsPacket(recvBuff + index);
+				break;
+
+			case WIZ_CLAN_PROCESS:
+				main->KnightsPacket(recvBuff + index);
+				break;
+
+			case WIZ_LOGIN_INFO:
+				main->SetLogInInfo(recvBuff + index);
+				break;
+
+			case WIZ_KICKOUT:
+				main->UserKickOut(recvBuff + index);
+				break;
+
+			case WIZ_BATTLE_EVENT:
+				main->BattleEventResult(recvBuff + index);
+				break;
+
+			case DB_COUPON_EVENT:
+				main->CouponEvent(recvBuff + index);
+				break;
+
+			case DB_HEARTBEAT:
+				main->HeartbeatReceived();
+				break;
+		}
+
+		recvLen = 0;
+		memset(recvBuff, 0, sizeof(recvBuff));
 	}
 }
 
@@ -125,6 +134,7 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 
 CAujardDlg::CAujardDlg(CWnd* parent /*=nullptr*/)
 	: CDialog(IDD, parent),
+	LoggerSendQueue(MAX_SMQ_SEND_QUEUE_RETRY_COUNT),
 	_logger(logger::Aujard)
 {
 	//{{AFX_DATA_INIT(CAujardDlg)
@@ -189,8 +199,8 @@ BOOL CAujardDlg::OnInitDialog()
 	// configure logger
 	_logger.Setup(ini, exePathUtf8);
 
-	LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERSEND), false);	// Dispatcher 의 Send Queue
-	LoggerSendQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_LOGGERRECV), false);	// Dispatcher 의 Read Queue
+	LoggerRecvQueue.Open(SMQ_LOGGERSEND);	// Dispatcher 의 Send Queue
+	LoggerSendQueue.Open(SMQ_LOGGERRECV);	// Dispatcher 의 Read Queue
 
 	if (!InitSharedMemory())
 	{
@@ -312,27 +322,18 @@ BOOL CAujardDlg::DestroyWindow()
 /// \brief initializes shared memory with other server applications
 bool CAujardDlg::InitSharedMemory()
 {
-	uint32_t filesize = MAX_USER * ALLOCATED_USER_DATA_BLOCK;
-
-	_sharedMemoryHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, TRUE, _T("KNIGHT_DB"));
-	if (_sharedMemoryHandle == nullptr)
-	{
-		_sharedMemoryHandle = INVALID_HANDLE_VALUE;
+	char* memory = _userDataBlock.Open("KNIGHT_DB");
+	if (memory == nullptr)
 		return false;
-	}
 
 	AddOutputMessage(_T("Shared memory loaded successfully"));
 	spdlog::info("AujardDlg::InitSharedMemory: shared memory loaded successfully");
-
-	_sharedMemoryFile = (char*) MapViewOfFile(_sharedMemoryHandle, FILE_MAP_WRITE, 0, 0, 0);
-	if (_sharedMemoryFile == nullptr)
-		return false;
 
 	_dbAgent.UserData.reserve(MAX_USER);
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
-		_USER_DATA* pUser = (_USER_DATA*) (_sharedMemoryFile + i * ALLOCATED_USER_DATA_BLOCK);
+		_USER_DATA* pUser = reinterpret_cast<_USER_DATA*>(memory + i * ALLOCATED_USER_DATA_BLOCK);
 		_dbAgent.UserData.push_back(pUser);
 	}
 
@@ -366,7 +367,7 @@ bool CAujardDlg::LoadItemTable()
 void CAujardDlg::SelectCharacter(char* buffer)
 {
 	int index = 0, userId = -1, sendIndex = 0, idLen1 = 0, idLen2 = 0, tempUserId = -1,
-		retryCount = 0, packetIndex = 0, maxRetry = 50;
+		packetIndex = 0;
 	uint8_t init = 0x01;
 	char sendBuff[256] = {},
 		accountId[MAX_ID_SIZE + 1] = {},
@@ -382,8 +383,8 @@ void CAujardDlg::SelectCharacter(char* buffer)
 	init = GetByte(buffer, index);
 	packetIndex = GetDWORD(buffer, index);
 
-	spdlog::debug("AujardDlg::SelectCharacter: acctId={}, charId={}, index={}, pid={}, front={}",
-		accountId, charId, packetIndex, _getpid(), LoggerRecvQueue.GetFrontPointer());
+	spdlog::debug("AujardDlg::SelectCharacter: acctId={}, charId={}, index={}",
+		accountId, charId, packetIndex);
 	
 	_recvPacketCount++;		// packet count
 
@@ -433,19 +434,11 @@ void CAujardDlg::SelectCharacter(char* buffer)
 
 	_packetCount++;	
 
-	do
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) == SMQ_OK)
 	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-		{
-			_sendPacketCount++;
-			break;
-		}
-
-		retryCount++;
+		_sendPacketCount++;
 	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	else
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_SEL_CHAR"));
 		spdlog::error("AujardDlg::SelectCharacter: Packet Drop: WIZ_SEL_CHAR");
@@ -468,8 +461,7 @@ fail_return:
 void CAujardDlg::UserLogOut(char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0,
-		charIdLen = 0, sendIndex = 0, retryCount = 0,
-		maxRetry = 50;
+		charIdLen = 0, sendIndex = 0;
 	char charId[MAX_ID_SIZE + 1] = {},
 		accountId[MAX_ID_SIZE + 1] = {},
 		sendBuff[256] = {};
@@ -492,16 +484,7 @@ void CAujardDlg::UserLogOut(char* buffer)
 	SetByte(sendBuff, WIZ_LOGOUT, sendIndex);
 	SetShort(sendBuff, userId, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_LOGOUT"));
 		spdlog::error("AujardDlg::UserLogOut: Packet Drop: WIZ_LOGOUT");
@@ -632,8 +615,7 @@ bool CAujardDlg::HandleUserUpdate(int userId, const _USER_DATA& user, uint8_t sa
 void CAujardDlg::AccountLogIn(char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0,
-		passwordLen = 0, sendIndex = 0, retryCount = 0,
-		maxRetry = 50;
+		passwordLen = 0, sendIndex = 0;
 	int nation = -1;
 
 	char accountId[MAX_ID_SIZE + 1] = {},
@@ -652,16 +634,7 @@ void CAujardDlg::AccountLogIn(char* buffer)
 	SetShort(sendBuff, userId, sendIndex);
 	SetByte(sendBuff, nation, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_LOGIN"));
 		spdlog::error("AujardDlg::AccountLogIn: Packet Drop: WIZ_LOGIN");
@@ -672,8 +645,7 @@ void CAujardDlg::AccountLogIn(char* buffer)
 /// \see WIZ_SEL_NATION
 void CAujardDlg::SelectNation(char* buffer)
 {
-	int index = 0, userId = -1, accountIdLen = 0, sendIndex = 0,
-		retryCount = 0, maxRetry = 50;
+	int index = 0, userId = -1, accountIdLen = 0, sendIndex = 0;
 	int nation = -1;
 	char accountId[MAX_ID_SIZE + 1] = {},
 		password[MAX_PW_SIZE + 1] = {},
@@ -694,16 +666,7 @@ void CAujardDlg::SelectNation(char* buffer)
 	else
 		SetByte(sendBuff, 0x00, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_SEL_NATION"));
 		spdlog::error("AujardDlg::SelectNation: Packet Drop: WIZ_SEL_NATION");
@@ -715,8 +678,8 @@ void CAujardDlg::SelectNation(char* buffer)
 void CAujardDlg::CreateNewChar(char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0, charIdLen = 0, sendIndex = 0,
-		result = 0, retryCount = 0, charIndex = 0, race = 0, Class = 0, hair = 0,
-		face = 0, str = 0, sta = 0, dex = 0, intel = 0, cha = 0, maxRetry = 50;
+		result = 0, charIndex = 0, race = 0, Class = 0, hair = 0,
+		face = 0, str = 0, sta = 0, dex = 0, intel = 0, cha = 0;
 	char accountId[MAX_ID_SIZE + 1] = {},
 		charId[MAX_ID_SIZE + 1] = {},
 		sendBuff[256] = {};
@@ -743,16 +706,7 @@ void CAujardDlg::CreateNewChar(char* buffer)
 	SetShort(sendBuff, userId, sendIndex);
 	SetByte(sendBuff, result, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_NEW_CHAR"));
 		spdlog::error("AujardDlg::CreateNewChar: Packet Drop: WIZ_NEW_CHAR");
@@ -765,8 +719,7 @@ void CAujardDlg::CreateNewChar(char* buffer)
 void CAujardDlg::DeleteChar(char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0, charIdLen = 0,
-		sendIndex = 0, result = 0, retryCount = 0, maxRetry = 50;
-	int charIndex = 0, socNoLen = 0;
+		sendIndex = 0, result = 0, charIndex = 0, socNoLen = 0;
 	char accountId[MAX_ID_SIZE + 1] = {},
 		charId[MAX_ID_SIZE + 1] = {},
 		socNo[15] = {},
@@ -794,16 +747,7 @@ void CAujardDlg::DeleteChar(char* buffer)
 	else
 		SetByte(sendBuff, 0xFF, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_DEL_CHAR"));
 		spdlog::error("AujardDlg::DeleteChar: Packet Drop: WIZ_DEL_CHAR");
@@ -816,7 +760,7 @@ void CAujardDlg::DeleteChar(char* buffer)
 void CAujardDlg::AllCharInfoReq(char* buffer)
 {
 	int index = 0, userId = 0, accountIdLen = 0, sendIndex = 0,
-		charBuffIndex = 0, retryCount = 0, maxRetry = 50;
+		charBuffIndex = 0;
 	char accountId[MAX_ID_SIZE + 1] = {},
 		sendBuff[1024] = {},
 		charBuff[1024] = {},
@@ -840,16 +784,7 @@ void CAujardDlg::AllCharInfoReq(char* buffer)
 	SetShort(sendBuff, charBuffIndex, sendIndex);
 	SetString(sendBuff, charBuff, charBuffIndex, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: WIZ_ALLCHAR_INFO_REQ"));
 		spdlog::error("AujardDlg::AllCharInfoReq: Packet Drop: WIZ_ALLCHAR_INFO_REQ");
@@ -885,8 +820,8 @@ void CAujardDlg::OnTimer(UINT EventId)
 	switch (EventId)
 	{
 		case PROCESS_CHECK:
-			hProcess = OpenProcess(PROCESS_ALL_ACCESS | PROCESS_VM_READ, FALSE, LoggerSendQueue.GetProcessId());
-			if (hProcess == nullptr)
+			if (_heartbeatReceivedTime != 0
+				&& (time(nullptr) - _heartbeatReceivedTime) > SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE.count())
 				AllSaveRoutine();
 			break;
 
@@ -921,7 +856,7 @@ void CAujardDlg::AllSaveRoutine()
 	// TODO:  100ms seems excessive
 	uint32_t sleepTime = 100;
 	bool allUsersSaved = true;
-	
+
 	// log the disconnect
 	CTime cur = CTime::GetCurrentTime();
 	std::wstring msgStr = std::format(L"Ebenezer disconnected: {:04}/{:02}/{:02} {:02}:{:02}",
@@ -950,8 +885,10 @@ void CAujardDlg::AllSaveRoutine()
 			allUsersSaved = false;
 			spdlog::error("AujardDlg::AllSaveRoutine: failed to save character: {}", pUser->m_id);
 		}
+
 		Sleep(sleepTime);
 	}
+
 	if (allUsersSaved)
 	{
 		msgStr = std::format(L"All UserData saved: {:04}/{:02}/{:02} {:02}:{:02}",
@@ -1129,8 +1066,7 @@ void CAujardDlg::KnightsPacket(char* buffer)
 void CAujardDlg::CreateKnights(char* buffer)
 {
 	int index = 0, sendIndex = 0, nameLen = 0, chiefNameLen = 0, knightsId = 0,
-		userId = -1, nation = 0, result = 0, community = 0,
-		retryCount = 0, maxRetry = 50;
+		userId = -1, nation = 0, result = 0, community = 0;
 	char knightsName[MAX_ID_SIZE + 1] = {},
 		chiefName[MAX_ID_SIZE + 1] = {},
 		sendBuff[256] = {};
@@ -1164,16 +1100,7 @@ void CAujardDlg::CreateKnights(char* buffer)
 	SetShort(sendBuff, chiefNameLen, sendIndex);
 	SetString(sendBuff, chiefName, chiefNameLen, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: KNIGHTS_CREATE"));
 		spdlog::error("AujardDlg::CreateKnights: Packet Drop: KNIGHTS_CREATE");
@@ -1184,8 +1111,7 @@ void CAujardDlg::CreateKnights(char* buffer)
 /// \see KnightsPacket(), KNIGHTS_JOIN
 void CAujardDlg::JoinKnights(char* buffer)
 {
-	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
-		retryCount = 0, maxRetry = 50;
+	int index = 0, sendIndex = 0, knightsId = 0, userId = -1;
 	uint8_t result = 0;
 	char sendBuff[256] = {};
 
@@ -1210,16 +1136,7 @@ void CAujardDlg::JoinKnights(char* buffer)
 	SetByte(sendBuff, result, sendIndex);
 	SetShort(sendBuff, knightsId, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: KNIGHTS_JOIN"));
 		spdlog::error("AujardDlg::JoinKnights: Packet Drop: KNIGHTS_JOIN");
@@ -1230,8 +1147,7 @@ void CAujardDlg::JoinKnights(char* buffer)
 /// \see KnightsPacket(), KNIGHTS_WITHDRAW
 void CAujardDlg::WithdrawKnights(char* buffer)
 {
-	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
-		retryCount = 0, maxRetry = 50;
+	int index = 0, sendIndex = 0, knightsId = 0, userId = -1;
 	uint8_t result = 0;
 	char sendBuff[256] = {};
 
@@ -1255,16 +1171,7 @@ void CAujardDlg::WithdrawKnights(char* buffer)
 	SetByte(sendBuff, result, sendIndex);
 	SetShort(sendBuff, knightsId, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: KNIGHTS_WITHDRAW"));
 		spdlog::error("AujardDlg::WithdrawKnights: Packet Drop: KNIGHTS_WITHDRAW");
@@ -1277,9 +1184,9 @@ void CAujardDlg::WithdrawKnights(char* buffer)
 void CAujardDlg::ModifyKnightsMember(char* buffer, uint8_t command)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1, charIdLen = 0,
-		removeFlag = 0, retryCount = 0, maxRetry = 50;
+		removeFlag = 0;
 	uint8_t result = 0;
-	char send_buff[256] = {},
+	char sendBuff[256] = {},
 		charId[MAX_ID_SIZE + 1] = {};
 
 	userId = GetShort(buffer, index);
@@ -1302,25 +1209,16 @@ void CAujardDlg::ModifyKnightsMember(char* buffer, uint8_t command)
 	spdlog::trace("AujardDlg::ModifyKnights: command={}, userId={}, knightsId={}, result={}",
 		command, userId, knightsId, result);
 
-	//SetByte( send_buff, WIZ_KNIGHTS_PROCESS, send_index );
-	SetByte(send_buff, command, sendIndex);
-	SetShort(send_buff, userId, sendIndex);
-	SetByte(send_buff, result, sendIndex);
-	SetShort(send_buff, knightsId, sendIndex);
-	SetShort(send_buff, charIdLen, sendIndex);
-	SetString(send_buff, charId, charIdLen, sendIndex);
-	SetByte(send_buff, removeFlag, sendIndex);
+	//SetByte(sendBuff, WIZ_KNIGHTS_PROCESS, sendBuff);
+	SetByte(sendBuff, command, sendIndex);
+	SetShort(sendBuff, userId, sendIndex);
+	SetByte(sendBuff, result, sendIndex);
+	SetShort(sendBuff, knightsId, sendIndex);
+	SetShort(sendBuff, charIdLen, sendIndex);
+	SetString(sendBuff, charId, charIdLen, sendIndex);
+	SetByte(sendBuff, removeFlag, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(send_buff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		std::string cmdStr;
 		switch (command)
@@ -1349,6 +1247,7 @@ void CAujardDlg::ModifyKnightsMember(char* buffer, uint8_t command)
 		default:
 			cmdStr = "ModifyKnightsMember";
 		}
+
 		std::string errMsg = fmt::format("Packet Drop: {}", cmdStr);
 		AddOutputMessage(errMsg);
 		spdlog::error("AujardDlg::ModifyKnightsMember: {}", errMsg);
@@ -1359,8 +1258,7 @@ void CAujardDlg::ModifyKnightsMember(char* buffer, uint8_t command)
 /// \see KnightsPacket(), KNIGHTS_DESTROY
 void CAujardDlg::DestroyKnights(char* buffer)
 {
-	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
-		retryCount = 0, maxRetry = 50;
+	int index = 0, sendIndex = 0, knightsId = 0, userId = -1;
 	uint8_t result = 0;
 	char sendBuff[256] = {};
 
@@ -1379,16 +1277,7 @@ void CAujardDlg::DestroyKnights(char* buffer)
 	SetByte(sendBuff, result, sendIndex);
 	SetShort(sendBuff, knightsId, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-		
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: KNIGHTS_DESTROY"));
 		spdlog::error("AujardDlg::DestroyKnights: Packet Drop: KNIGHTS_DESTROY");
@@ -1400,7 +1289,7 @@ void CAujardDlg::DestroyKnights(char* buffer)
 void CAujardDlg::AllKnightsMember(char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
-		dbIndex = 0, count = 0, retryCount = 0, maxRetry = 50;
+		dbIndex = 0, count = 0;
 	uint8_t result = 0;
 	char sendBuff[2048] = {},
 		dbBuff[2048] = {};
@@ -1426,16 +1315,7 @@ void CAujardDlg::AllKnightsMember(char* buffer)
 	SetShort(sendBuff, count, sendIndex);
 	SetString(sendBuff, dbBuff, dbIndex, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retryCount++;
-	}
-	while (retryCount < maxRetry);
-
-	if (retryCount >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: KNIGHTS_MEMBER_REQ"));
 		spdlog::error("AujardDlg::AllKnightsMember: Packet Drop: KNIGHTS_MEMBER_REQ");
@@ -1447,7 +1327,7 @@ void CAujardDlg::AllKnightsMember(char* buffer)
 void CAujardDlg::KnightsList(char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
-		dbIndex = 0, retry = 0, maxRetry = 50;
+		dbIndex = 0;
 	char sendBuff[256] = {},
 		dbBuff[256] = {};
 
@@ -1464,16 +1344,7 @@ void CAujardDlg::KnightsList(char* buffer)
 	SetByte(sendBuff, 0x00, sendIndex);
 	SetString(sendBuff, dbBuff, dbIndex, sendIndex);
 
-	do
-	{
-		if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-			break;
-
-		retry++;
-	}
-	while (retry < maxRetry);
-
-	if (retry >= maxRetry)
+	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
 		AddOutputMessage(_T("Packet Drop: KNIGHTS_LIST_REQ"));
 		spdlog::error("AujardDlg::KnightsList: Packet Drop: KNIGHTS_LIST_REQ");
@@ -1485,7 +1356,7 @@ void CAujardDlg::KnightsList(char* buffer)
 void CAujardDlg::SetLogInInfo(char* buffer)
 {
 	int index = 0, accountIdLen = 0, charIdLen = 0, serverId = 0, serverIpLen = 0,
-	clientIpLen = 0, userId = -1, sendIndex = 0, retryCount = 0, maxRetry = 50;
+	clientIpLen = 0, userId = -1, sendIndex = 0;
 	char accountId[MAX_ID_SIZE + 1] = {},
 		serverIp[20] = {},
 		clientIp[20] = {},
@@ -1511,20 +1382,11 @@ void CAujardDlg::SetLogInInfo(char* buffer)
 		SetByte(sendBuff, WIZ_LOGIN_INFO, sendIndex);
 		SetShort(sendBuff, userId, sendIndex);
 		SetByte(sendBuff, 0x00, sendIndex);							// FAIL
-		do
-		{
-			if (LoggerSendQueue.PutData(sendBuff, sendIndex) == 1)
-				break;
 
-			retryCount++;
-		}
-		while (retryCount < maxRetry);
-
-		if (retryCount >= maxRetry)
+		if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 		{
 			AddOutputMessage(_T("Packet Drop: WIZ_LOGIN_INFO"));
-			spdlog::error("AujardDlg::SetLoginInfo: Packet Drop: WIZ_LOGIN_INFO");
-			spdlog::error("AujardDlg::SetLoginInfo: exceeded max retries [accountId={}, charId={}, init={}]",
+			spdlog::error("AujardDlg::SetLoginInfo: Packet Drop: WIZ_LOGIN_INFO [accountId={}, charId={}, init={}]",
 				accountId, charId, init);
 		}
 	}
@@ -1610,12 +1472,12 @@ void CAujardDlg::BattleEventResult(char* data)
 /// \see DB_COUPON_EVENT
 void CAujardDlg::CouponEvent(char* data)
 {
-	int nSid = 0, nEventNum = 0, nLen = 0, nCharLen = 0, nCouponLen = 0, index = 0, nType = 0, nResult = 0, send_index = 0, count = 0;
+	int nSid = 0, nEventNum = 0, nLen = 0, nCharLen = 0, nCouponLen = 0, index = 0, nType = 0, nResult = 0, sendIndex = 0;
 	int nItemID = 0, nItemCount = 0, nMessageNum = 0;
 	char strAccountName[MAX_ID_SIZE + 1] = {},
 		strCharName[MAX_ID_SIZE + 1] = {},
 		strCouponID[MAX_ID_SIZE + 1] = {},
-		send_buff[256] = {};
+		sendBuff[256] = {};
 
 	nType = GetByte(data, index);
 	if (nType == CHECK_COUPON_EVENT)
@@ -1629,24 +1491,15 @@ void CAujardDlg::CouponEvent(char* data)
 		// TODO: Not implemented. Allow nResult to default to 0
 		// nResult = _dbAgent.CheckCouponEvent(strAccountName);
 
-		SetByte(send_buff, DB_COUPON_EVENT, send_index);
-		SetShort(send_buff, nSid, send_index);
-		SetByte(send_buff, nResult, send_index);
-		SetDWORD(send_buff, nEventNum, send_index);
+		SetByte(sendBuff, DB_COUPON_EVENT, sendIndex);
+		SetShort(sendBuff, nSid, sendIndex);
+		SetByte(sendBuff, nResult, sendIndex);
+		SetDWORD(sendBuff, nEventNum, sendIndex);
 		// 비러머글 대사문 >.<
-		SetDWORD(send_buff, nMessageNum, send_index);
+		SetDWORD(sendBuff, nMessageNum, sendIndex);
 		//
 
-		do
-		{
-			if (LoggerSendQueue.PutData(send_buff, send_index) == 1)
-				break;
-
-			count++;
-		}
-		while (count < 50);
-
-		if (count >= 50)
+		if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 		{
 			AddOutputMessage(_T("Packet Drop: DB_COUPON_EVENT"));
 			spdlog::error("AujardDlg::CouponEvent: Packet Drop: DB_COUPON_EVENT");
@@ -1667,6 +1520,11 @@ void CAujardDlg::CouponEvent(char* data)
 		// TODO: not implemented.  Allow nResult to default to 0
 		// nResult = _dbAgent.UpdateCouponEvent(strAccountName, strCharName, strCouponID, nItemID, nItemCount);
 	}
+}
+
+void CAujardDlg::HeartbeatReceived()
+{
+	_heartbeatReceivedTime = time(nullptr);
 }
 
 /// \brief Updates the IDC_DB_PROCESS text with the DB Process Number

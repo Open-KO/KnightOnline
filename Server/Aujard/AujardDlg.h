@@ -1,20 +1,13 @@
-﻿// AujardDlg.h : header file
-//
+﻿#pragma once
 
-#if !defined(AFX_AUJARDDLG_H__B5274041_22AE_464F_86F6_53F992C2BF54__INCLUDED_)
-#define AFX_AUJARDDLG_H__B5274041_22AE_464F_86F6_53F992C2BF54__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "SharedMem.h"
 #include "DBAgent.h"
 #include "Define.h"
-#include "resource.h"
+#include "Resource.h"
 
-#include <shared/logger.h>
-#include <shared/STLMap.h>
+#include <shared-server/logger.h>
+#include <shared-server/SharedMemoryBlock.h>
+#include <shared-server/SharedMemoryQueue.h>
+#include <shared-server/STLMap.h>
 
 using ItemtableArray = CSTLMap<model::Item>;
 
@@ -37,6 +30,10 @@ public:
 	/// \brief Updates the IDC_DB_PROCESS text with the DB Process Number
 	/// \note I'm not sure how practical this is under load
 	void DBProcessNumber(int number);
+
+	/// \brief handles DB_HEARTBEAT requests
+	/// \see DB_HEARTBEAT
+	void HeartbeatReceived();
 
 	/// \brief handles DB_COUPON_EVENT requests
 	/// \todo related stored procedures are not implemented
@@ -168,8 +165,8 @@ public:
 	/// \brief loads and sends data after a character is selected
 	void SelectCharacter(char* buffer);
 
-	CSharedMemQueue		LoggerSendQueue;
-	CSharedMemQueue		LoggerRecvQueue;
+	SharedMemoryQueue	LoggerSendQueue;
+	SharedMemoryQueue	LoggerRecvQueue;
 
 	ItemtableArray		ItemArray;
 
@@ -185,8 +182,7 @@ protected:
 	CDBAgent			_dbAgent;
 
 	HANDLE				_readQueueThread;
-	HANDLE				_sharedMemoryHandle;
-	char*				_sharedMemoryFile;
+	SharedMemoryBlock	_userDataBlock;
 
 	int					_serverId;
 	int					_zoneId;
@@ -247,9 +243,8 @@ protected:
 private:
 	/// \brief output message box for the application
 	CListBox _outputList;
+	time_t _heartbeatReceivedTime;
 };
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_AUJARDDLG_H__B5274041_22AE_464F_86F6_53F992C2BF54__INCLUDED_)

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "globals.h"
+#include <shared/globals.h>
 
 struct _ITEM_DATA
 {

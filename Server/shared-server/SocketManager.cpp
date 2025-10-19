@@ -277,6 +277,7 @@ bool SocketManager::AcquireClientSocket(TcpClientSocket* tcpClientSocket)
 		return false;
 
 	_clientSocketArray[socketId] = tcpClientSocket;
+	tcpClientSocket->SetSocketID(socketId);
 	return true;
 }
 

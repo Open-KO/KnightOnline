@@ -2191,7 +2191,7 @@ bool CNpc::FindEnemy()
 	CNpc* pNpc = nullptr;
 
 	int target_uid = 0;
-	__Vector3 vUser, vNpc;
+	__Vector3 vNpc;
 	float fDis = 0.0f;
 	float fCompareDis = 0.0f;
 	vNpc.Set(m_fCurX, m_fCurY, m_fCurZ);
@@ -2255,7 +2255,6 @@ bool CNpc::FindEnemy()
 
 			fCompareDis = FindEnemyExpand(x, y, fCompareDis, 1);
 		}
-
 
 		if (m_Target.id >= 0
 			&& fCompareDis <= fSearchRange)
@@ -5752,8 +5751,8 @@ __Vector3 CNpc::MyFunc(__Vector3 vCur, __Vector3 vDir, float fYDegree, float fDi
 	mtx.Identity();
 	__Quaternion qt;
 
-	qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(fYRandom));
-	D3DXMatrixRotationQuaternion(&mtx, &qt);
+	qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(fYRandom));
+	mtx = qt;
 
 	vDir *= mtx;
 	vDir *= fDistance;
@@ -6508,14 +6507,14 @@ void CNpc::Yaw2D(float fDirX, float fDirZ, float& fYawResult)
 		if (fDirZ >= 0.0f)
 			fYawResult = (float) (asin(fDirX));
 		else
-			fYawResult = D3DXToRadian(90.0f) + (float) (acos(fDirX));
+			fYawResult = DegreesToRadians(90.0f) + (float) (acos(fDirX));
 	}
 	else
 	{
 		if (fDirZ >= 0.0f)
-			fYawResult = D3DXToRadian(270.0f) + (float) (acos(-fDirX));
+			fYawResult = DegreesToRadians(270.0f) + (float) (acos(-fDirX));
 		else
-			fYawResult = D3DXToRadian(180.0f) + (float) (asin(-fDirX));
+			fYawResult = DegreesToRadians(180.0f) + (float) (asin(-fDirX));
 	}
 }
 
@@ -6524,7 +6523,7 @@ __Vector3 CNpc::ComputeDestPos(__Vector3 vCur, float fDegree, float fDegreeOffse
 	__Vector3 vReturn, vDir;
 	vDir.Set(0.0f, 0.0f, 1.0f);
 	__Matrix44 mtxRot;
-	mtxRot.RotationY(D3DXToRadian(fDegree + fDegreeOffset));
+	mtxRot.RotationY(DegreesToRadians(fDegree + fDegreeOffset));
 	vDir *= mtxRot;
 	vDir *= fDistance;
 	vReturn = (vCur + vDir);

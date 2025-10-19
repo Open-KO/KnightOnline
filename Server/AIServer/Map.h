@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <N3Base/N3ShapeMgr.h>
-#include <shared/STLMap.h>
+#include <shared-server/N3ShapeMgr.h>
+#include <shared-server/STLMap.h>
 #include "RoomEvent.h"
 
 typedef CSTLMap <_OBJECT_EVENT>		ObjectEventArray;

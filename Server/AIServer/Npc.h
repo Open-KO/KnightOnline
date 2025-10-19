@@ -14,7 +14,7 @@
 #include "User.h"
 #include "NpcMagicProcess.h"
 
-#include <N3Base/My_3DStruct.h>
+#include <shared-server/My_3DStruct.h>
 
 #define MAX_MAP_SIZE		10000
 #define MAX_PATH_SIZE		100

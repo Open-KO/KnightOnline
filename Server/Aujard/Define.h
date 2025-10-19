@@ -7,7 +7,7 @@
 
 #include <shared/globals.h>
 #include <shared/StringConversion.h>
-#include <shared/_USER_DATA.h>
+#include <shared-server/_USER_DATA.h>
 
 constexpr int MAX_USER			= 3000;
 
@@ -70,22 +70,6 @@ typedef union {
 	uint8_t		b[4];
 } MYDWORD;
 
-// DEFINE Shared Memory Queue Flag
-
-#define E	0x00
-#define R	0x01
-#define W	0x02
-#define WR	0x03
-
-// DEFINE Shared Memory Queue Return VALUE
-
-#define SMQ_BROKEN		10000
-#define SMQ_FULL		10001
-#define SMQ_EMPTY		10002
-#define SMQ_PKTSIZEOVER	10003
-#define SMQ_WRITING		10004
-#define SMQ_READING		10005
-
 // DEFINE Shared Memory Costumizing
 
 #define MAX_PKTSIZE		512
@@ -107,10 +91,6 @@ typedef union {
 #define WIZ_LOGIN_INFO			0x50	// define for DBAgent Communication
 #define WIZ_KICKOUT				0x51	// Account ID forbid duplicate connection
 #define WIZ_BATTLE_EVENT		0x57	// Battle Event Result
-
-#define DB_COUPON_EVENT			0x10	// coupon event
-		#define CHECK_COUPON_EVENT		0x01
-		#define UPDATE_COUPON_EVENT		0x02
 
 ////////////////////////////////////////////////////////////////
 // Knights Packet sub define 

@@ -870,6 +870,7 @@ int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bo
 			m_pStr[iIndex]->SetColor(m_CWhite);
 		else
 			m_pStr[iIndex]->SetColor(m_CRed);
+		m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 		iIndex++;
 	}
 	ERROR_EXCEPTION
@@ -1049,6 +1050,99 @@ int	CUIImageTooltipDlg::CalcTooltipStringNumAndWrite(__IconItemSkill* spItem, bo
 			m_pStr[iIndex]->SetColor(m_CRed);
 
 		iIndex++;
+	}
+	ERROR_EXCEPTION
+
+	if (spItem->pItemBasic != nullptr)
+	{
+		const std::string& szRemark = spItem->pItemBasic->szRemark;
+	
+		if (!szRemark.empty())
+		{
+			size_t totalWords = 1;
+			for (char c : szRemark)
+			{
+				if (c == ' ')
+					++totalWords;
+			}
+
+			if (totalWords >= MIN_WORDS_TO_SPLIT_DESC)
+			{
+				size_t wordsInFirstHalf = (totalWords + 1) / 2;
+				size_t wordsSeen = 1, splitPos = std::string::npos;
+				for (size_t i = 0; i < szRemark.size(); i++)
+				{
+					if (szRemark[i] != ' ')
+						continue;
+
+					if (++wordsSeen > wordsInFirstHalf)
+					{
+						splitPos = i;
+						break;
+					}
+				}
+
+				_ASSERT(splitPos != std::string::npos);
+
+				m_pStr[iIndex]->SetColor(m_CWhite);
+				m_pstdstr[iIndex] = fmt::format("*{}", std::string_view(szRemark.data(), splitPos));
+				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNCENTER);
+
+				iIndex++;
+				ERROR_EXCEPTION
+
+				// NOTE: This doesn't perfectly match official's behaviour; they rebuild the lines, always appending a space.
+				// This means that there's a guaranteed space after the word here, before the '*'
+				// To replicate this behaviour, we can manually add a space in the format string, but it's not really necessary.
+				m_pStr[iIndex]->SetColor(m_CWhite);
+				m_pstdstr[iIndex] = fmt::format("{}*", std::string_view(szRemark.data() + splitPos, szRemark.size() - splitPos));
+				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNCENTER);
+
+				iIndex++;
+			}
+			else
+			{
+				m_pStr[iIndex]->SetColor(m_CWhite);
+				m_pstdstr[iIndex] = fmt::format("*{}*", szRemark);
+				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNCENTER);
+
+				iIndex++;
+			}
+		}
+	}
+	ERROR_EXCEPTION
+
+	if (spItem->pItemExt != nullptr)
+	{
+		e_ItemAttrib eTA = (e_ItemAttrib) (spItem->pItemExt->byMagicOrRare);
+		switch (eTA)
+		{
+			case ITEM_ATTRIB_UNIQUE:
+				m_pStr[iIndex]->SetColor(m_CGreen);
+				m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_UNIQUE);
+				m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNCENTER);
+				iIndex++;
+				break;
+
+			case ITEM_ATTRIB_UPGRADE:
+				if (spItem->pItemBasic != nullptr && spItem->pItemExt != nullptr)
+				{
+					const int iItemGrade = (std::min)(3, spItem->pItemBasic->byGrade + spItem->pItemExt->bySoulBind);
+					if (iItemGrade == ITEM_GRADE_LOW_CLASS)
+						m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_LOW_CLASS);
+					else if (iItemGrade == ITEM_GRADE_MIDDLE_CLASS)
+						m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_MIDDLE_CLASS);
+					else if (iItemGrade == ITEM_GRADE_HIGH_CLASS)
+						m_pstdstr[iIndex] = fmt::format_text_resource(IDS_TOOLTIP_HIGH_CLASS);
+					else
+						break;
+
+					m_pStr[iIndex]->SetColor(m_CGreen);
+					m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
+					iIndex++;
+				}
+				break;
+		}
 	}
 	ERROR_EXCEPTION
 

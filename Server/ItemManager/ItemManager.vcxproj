@@ -36,8 +36,8 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)cp949_strings.props" />
-  <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)server.props" />
+  <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>..\bin\$(Configuration)\</OutDir>
@@ -54,14 +54,14 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;_WINDOWS;_3DSERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>.\;..\;..\..\Server\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(RootDir);$(RootDir)Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shared-server.lib;shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,7 +132,6 @@
   <ItemGroup>
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="ItemManagerDlg.cpp" />
-    <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
@@ -148,7 +147,6 @@
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="ItemManagerDlg.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SharedMem.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>

@@ -17,36 +17,33 @@ DWORD WINAPI ReadQueueThread(LPVOID lp)
 	CItemManagerDlg* pMain = (CItemManagerDlg*) lp;
 	int recvlen = 0, index = 0;
 	uint8_t command;
-	char recv_buff[1024] = {};
+	char recv_buff[MAX_PKTSIZE] = {};
 	CString string;
 
 	while (true)
 	{
-		if (pMain->m_LoggerRecvQueue.GetFrontMode() != R)
+		index = 0;
+		recvlen = pMain->m_LoggerRecvQueue.GetData(recv_buff);
+		if (recvlen >= SMQ_ERROR_RANGE)
 		{
-			index = 0;
-			recvlen = pMain->m_LoggerRecvQueue.GetData(recv_buff);
-			if (recvlen > MAX_PKTSIZE)
-			{
-				Sleep(1);
-				continue;
-			}
-
-			command = GetByte(recv_buff, index);
-			switch (command)
-			{
-				case WIZ_ITEM_LOG:
-					pMain->ItemLogWrite(recv_buff + index);
-					break;
-
-				case WIZ_DATASAVE:
-					pMain->ExpLogWrite(recv_buff + index);
-					break;
-			}
-
-			recvlen = 0;
-			memset(recv_buff, 0, sizeof(recv_buff));
+			Sleep(1);
+			continue;
 		}
+
+		command = GetByte(recv_buff, index);
+		switch (command)
+		{
+			case WIZ_ITEM_LOG:
+				pMain->ItemLogWrite(recv_buff + index);
+				break;
+
+			case WIZ_DATASAVE:
+				pMain->ExpLogWrite(recv_buff + index);
+				break;
+		}
+
+		recvlen = 0;
+		memset(recv_buff, 0, sizeof(recv_buff));
 	}
 }
 
@@ -61,11 +58,7 @@ CItemManagerDlg::CItemManagerDlg(CWnd* pParent /*=nullptr*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	memset(m_strGameDSN, 0, sizeof(m_strGameDSN));
-	memset(m_strGameUID, 0, sizeof(m_strGameUID));
-	memset(m_strGamePWD, 0, sizeof(m_strGamePWD));
 	m_nItemLogFileDay = 0;
-	m_nServerNo = 0; m_nZoneNo = 0;
 }
 
 void CItemManagerDlg::DoDataExchange(CDataExchange* pDX)
@@ -110,28 +103,12 @@ BOOL CItemManagerDlg::OnInitDialog()
 	m_nItemLogFileDay = time.GetDay();
 	m_nExpLogFileDay = time.GetDay();
 
-	// Dispatcher 의 Send Queue
-	if (!m_LoggerRecvQueue.InitializeMMF(MAX_PKTSIZE, MAX_COUNT, _T(SMQ_ITEMLOGGER), false))
+	if (!m_LoggerRecvQueue.Open(SMQ_ITEMLOGGER))
 	{
 		AfxMessageBox(_T("Shared memory queue not yet available. Run Ebenezer first."));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
-/*
-	CString inipath;
-	inipath.Format(_T("%s\\ItemDB.ini"), GetProgPath());
-
-	GetPrivateProfileString( "ODBC", "GAME_DSN", "", m_strGameDSN, 24, inipath );
-	GetPrivateProfileString( "ODBC", "GAME_UID", "", m_strGameUID, 24, inipath );
-	GetPrivateProfileString( "ODBC", "GAME_PWD", "", m_strGamePWD, 24, inipath );
-
-	m_nServerNo = GetPrivateProfileInt("ZONE_INFO", "GROUP_INFO", 1, inipath);
-	m_nZoneNo = GetPrivateProfileInt("ZONE_INFO", "ZONE_INFO", 1, inipath);
-
-	if( !m_DBAgent.DatabaseInit() ) {
-		AfxPostQuitMessage(0);
-		return FALSE;
-	}	*/
 
 	DWORD id;
 	m_hReadQueueThread = ::CreateThread(nullptr, 0, ReadQueueThread, this, 0, &id);

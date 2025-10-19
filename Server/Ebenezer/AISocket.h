@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <network/TcpClientSocket.h>
+#include <shared-server/TcpClientSocket.h>
 
 #include "MagicProcess.h"
 

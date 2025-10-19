@@ -39,7 +39,6 @@
   <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)db-library.props" />
-  <Import Project="$(PropsDir)network_server.props" />
   <Import Project="$(PropsDir)server.props" />
   <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
@@ -58,13 +57,13 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;AI_SERVER;_WINDOWS;_3DSERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(DependencyDir);.;..;..\..;..\..\Client;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DependencyDir);$(RootDir);$(RootDir)Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shared-server.lib;shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,10 +137,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="AISocketManager.cpp" />
     <ClCompile Include="GameSocket.cpp" />
     <ClCompile Include="global.cpp" />
@@ -165,9 +160,6 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h" />
-    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h" />
-    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
     <ClInclude Include="AIResourceFormatter.h" />
     <ClInclude Include="AISocketManager.h" />
     <ClInclude Include="Define.h" />

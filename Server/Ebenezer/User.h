@@ -10,7 +10,7 @@
 #include "EXEC.h"     
 
 #include <shared/JvCryption.h>
-#include <network/TcpServerSocket.h>
+#include <shared-server/TcpServerSocket.h>
 
 #include <list>
 
@@ -197,6 +197,7 @@ public:
 
 	// Game socket specific:
 	_REGION_BUFFER*		_regionBuffer;
+	std::mutex			_regionBufferMutex;
 
 	CJvCryption			_jvCryption;
 	bool				_jvCryptionEnabled;
@@ -214,7 +215,7 @@ public:
 	int Send(char* pBuf, int length) override;
 	void SendCompressingPacket(const char* pData, int len);
 	void RegionPacketAdd(char* pBuf, int len);
-	void RegionPacketClear(char* GetBuf, int& len);
+	int RegionPacketClear(char* GetBuf);
 	void CloseProcess() override;
 	void Parsing(int len, char* pData) override;
 

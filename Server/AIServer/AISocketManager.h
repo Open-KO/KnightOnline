@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <network/SocketManager.h>
+#include <shared-server/SocketManager.h>
 #include "Define.h"
 
 struct _SEND_DATA

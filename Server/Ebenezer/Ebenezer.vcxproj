@@ -39,7 +39,6 @@
   <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)directx9.props" />
   <Import Project="$(PropsDir)db-library.props" />
-  <Import Project="$(PropsDir)network_server.props" />
   <Import Project="$(PropsDir)server.props" />
   <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
@@ -58,14 +57,14 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;_WINDOWS;_3DSERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(DependencyDir);.;..;..\..;..\..\Client;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DependencyDir);$(RootDir);$(RootDir)Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shared-server.lib;shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,9 +128,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Client\N3Base\N3ShapeMgr.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
     <ClCompile Include="EbenezerDlg.cpp" />
@@ -152,7 +148,6 @@
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="EbenezerResourceFormatter.cpp" />
     <ClCompile Include="SendWorkerThread.cpp" />
-    <ClCompile Include="SharedMem.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -160,10 +155,7 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Client\N3Base\My_3DStruct.h" />
-    <ClInclude Include="..\..\Client\N3Base\N3ShapeMgr.h" />
-    <ClInclude Include="..\..\Client\N3Base\StdAfxBase.h" />
-    <ClInclude Include="..\shared\_USER_DATA.h" />
+    <ClInclude Include="..\..\shared\_USER_DATA.h" />
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="db_resources.h" />
     <ClInclude Include="Define.h" />
@@ -188,7 +180,6 @@
     <ClInclude Include="Region.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SendWorkerThread.h" />
-    <ClInclude Include="SharedMem.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="UdpSocket.h" />
     <ClInclude Include="User.h" />

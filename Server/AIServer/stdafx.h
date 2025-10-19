@@ -29,4 +29,4 @@
 #include "global.h"			// 전역 funtion
 #include "define.h"			// define
 
-#include <shared/server_config.h>
+#include <shared-server/server_config.h>

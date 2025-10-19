@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "logger.h"
-#include "Ini.h"
+
+#include <shared/Ini.h>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/daily_file_sink.h>

@@ -2,15 +2,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef _N3GAME
 #include "StdAfxBase.h"
-#endif // end of #ifndef _N3GAME
-
 #include "N3ShapeMgr.h"
-
-#ifndef _3DSERVER
 #include "N3ShapeExtra.h"
-#endif // end of #ifndef _3DSERVER
 
 #include <shared/globals.h>
 
@@ -1080,7 +1074,8 @@ int CN3ShapeMgr::SortByCameraDistance(const void* pArg1, const void* pArg2)
 }
 #endif // end of #ifndef _3DSERVER
 
-int CN3ShapeMgr::SubCellPathThru(const __Vector3& vFrom, const __Vector3& vAt, int iMaxSubCell, __CellSub** ppSubCells) // 벡터 사이에 걸친 셀포인터 돌려준다..
+// 벡터 사이에 걸친 셀포인터 돌려준다..
+int CN3ShapeMgr::SubCellPathThru(const __Vector3& vFrom, const __Vector3& vAt, int iMaxSubCell, __CellSub** ppSubCells)
 {
 	if (ppSubCells == nullptr)
 		return 0;
@@ -1212,7 +1207,8 @@ int CN3ShapeMgr::SubCellPathThru(const __Vector3& vFrom, const __Vector3& vAt, i
 	return iSubCellCount; // 걸친 셀 포인터 돌려주기..
 }
 
-float CN3ShapeMgr::GetHeightNearstPos(const __Vector3& vPos, float fDist, __Vector3* pvNormal) // 가장 가까운 높이값을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.
+// 가장 가까운 높이값을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.
+float CN3ShapeMgr::GetHeightNearstPos(const __Vector3& vPos, float fDist, __Vector3* pvNormal)
 {
 	__CellSub* pCell = SubCell(vPos.x, vPos.z); // 서브셀을 가져온다..
 
@@ -1315,7 +1311,8 @@ float CN3ShapeMgr::GetHeightNearstPos(const __Vector3& vPos, __Vector3* pvNormal
 	return fHeight;
 }
 
-float CN3ShapeMgr::GetHeight(float fX, float fZ, __Vector3* pvNormal) // 가장 높은 곳을 돌려준다.. 없으면 -FLT_MAX값을 돌려준다.
+// 가장 높은 곳을 돌려준다.. 없으면 -FLT_MAX값을 돌려준다.
+float CN3ShapeMgr::GetHeight(float fX, float fZ, __Vector3* pvNormal)
 {
 	__CellSub* pCell = SubCell(fX, fZ); // 서브셀을 가져온다..
 
