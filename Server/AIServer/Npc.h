@@ -95,14 +95,14 @@ struct _MagicType3
 	int16_t		sHPAmount;			// 지속 damage ( 지속총양 / (지속시간 / 2) )
 	uint8_t		byHPDuration;		// 지속 시간
 	uint8_t		byHPInterval;		// 지속 간격
-	float		fStartTime;			// 지속이 시작되는 시간..
+	double		fStartTime;			// 지속이 시작되는 시간..
 };
 
 struct _MagicType4
 {
 	uint8_t	byAmount;			// 양
 	int16_t	sDurationTime;		// 지속 시간
-	float   fStartTime;			// 지속이 시작되는 시간..
+	double	fStartTime;			// 지속이 시작되는 시간..
 };
 
 struct _TargetHealer
@@ -196,8 +196,8 @@ public:
 	//uint8_t			m_tWeaponClass;			// NPC 의 무기 클래스 
 
 	// 지속 마법 관련..
-	float		m_fHPChangeTime;			// Hp 회복율
-	float       m_fFaintingTime;			// 기절해 있는 시간..
+	double		m_fHPChangeTime;			// Hp 회복율
+	double		m_fFaintingTime;			// 기절해 있는 시간..
 	_MagicType3  m_MagicType3[MAX_MAGIC_TYPE3];			// HP 관련된 마법..
 	_MagicType4  m_MagicType4[MAX_MAGIC_TYPE4];			// 능력치 관련된 마법..
 
@@ -310,7 +310,7 @@ public:
 	//	MONSTER_POS DB 쪽에 있는 변수들
 	//----------------------------------------------------------------
 	int		m_Delay;			// 다음 상태로 전이되기 까지의 시간
-	float	m_fDelayTime;		// Npc Thread체크 타임...
+	double	m_fDelayTime;		// Npc Thread체크 타임...
 
 	uint8_t	m_byType;
 	int		m_sRegenTime;		// NPC 재생시간
@@ -319,8 +319,6 @@ public:
 	int		m_nLimitMinZ;
 	int		m_nLimitMaxX;
 	int		m_nLimitMaxZ;
-
-	long	m_lEventNpc;
 
 	float	m_fAdd_x;
 	float	m_fAdd_z;
@@ -419,7 +417,7 @@ public:
 	void NpcAttacking();
 	void NpcMoving();
 	void NpcSleeping();
-	void NpcFainting(float currenttime);
+	void NpcFainting(double currentTime);
 	void NpcHealing();
 	void NpcStanding();
 	void NpcBack();
@@ -473,8 +471,8 @@ public:
 	int  GetItemCodeNumber(int level, int item_type) const;
 	int  GetWeaponItemCodeNumber(int item_type) const;
 	int  GetItemGroupNumber(int groupId) const;
-	void DurationMagic_4(float currenttime);
-	void DurationMagic_3(float currenttime);
+	void DurationMagic_4(double currentTime);
+	void DurationMagic_3(double currentTime);
 	void ChangeMonsterInfo(int iChangeType);
 	int  GetPartyExp(int party_level, int man, int nNpcExp);
 	void ChangeAbility(int iChangeType);

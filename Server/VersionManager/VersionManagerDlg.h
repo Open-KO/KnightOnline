@@ -28,6 +28,7 @@ namespace recordset_loader
 	struct Error;
 }
 
+class TimerThread;
 class CVersionManagerDlg : public CDialog
 {
 public:
@@ -102,10 +103,11 @@ protected:
 	std::queue<std::wstring>	_listBoxQueue;
 	std::mutex					_listBoxQueueMutex;
 
+	std::unique_ptr<TimerThread>	_dbPoolCheckThread;
+
 	// Generated message map functions
 	//{{AFX_MSG(CVersionManagerDlg)
 	BOOL OnInitDialog() override;
-	afx_msg void OnTimer(UINT EventId);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnVersionSetting();

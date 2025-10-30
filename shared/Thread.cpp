@@ -15,7 +15,7 @@ void Thread::start()
 	_thread = std::thread(&Thread::thread_loop, this);
 }
 
-bool Thread::shutdown()
+bool Thread::shutdown(bool join /*= true*/)
 {
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
@@ -28,7 +28,7 @@ bool Thread::shutdown()
 		_cv.notify_one();
 	}
 
-	if (_thread.joinable())
+	if (join && _thread.joinable())
 		_thread.join();
 
 	return true;

@@ -131,6 +131,7 @@
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
     <ClCompile Include="EbenezerDlg.cpp" />
+    <ClCompile Include="EbenezerReadQueueThread.cpp" />
     <ClCompile Include="EbenezerSocketManager.cpp" />
     <ClCompile Include="EVENT.cpp" />
     <ClCompile Include="EVENT_DATA.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Define.h" />
     <ClInclude Include="Ebenezer.h" />
     <ClInclude Include="EbenezerDlg.h" />
+    <ClInclude Include="EbenezerReadQueueThread.h" />
     <ClInclude Include="EbenezerResourceFormatter.h" />
     <ClInclude Include="EbenezerSocketManager.h" />
     <ClInclude Include="EVENT.h" />

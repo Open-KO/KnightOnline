@@ -1,26 +1,24 @@
-﻿// Map.cpp: implementation of the CMap class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "stdafx.h"
-#include "Map.h"
-#include "Serverdlg.h"
-#include "Region.h"
+﻿#include "stdafx.h"
+#include "MAP.h"
 #include "Npc.h"
-#include "User.h"
+#include "NpcThread.h"
+#include "Region.h"
 #include "RoomEvent.h"
+#include "ServerDlg.h"
+#include "User.h"
 
 #include <shared/globals.h>
 #include <shared/StringConversion.h>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
+#include <fstream>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-extern CRITICAL_SECTION g_region_critical;
+extern std::mutex g_region_mutex;
 
 CMapInfo::CMapInfo()
 {
@@ -127,15 +125,15 @@ bool MAP::IsMovable(int dest_x, int dest_y) const
 ///////////////////////////////////////////////////////////////////////
 //	각 서버가 담당하고 있는 zone의 Map을 로드한다.
 //
-bool MAP::LoadMap(HANDLE hFile)
+bool MAP::LoadMap(std::istream& fs)
 {
-	LoadTerrain(hFile);
+	LoadTerrain(fs);
 
 	m_N3ShapeMgr.Create(
 		(m_nMapSize - 1) * m_fUnitDist,
 		(m_nMapSize - 1) * m_fUnitDist);
 
-	if (!m_N3ShapeMgr.LoadCollisionData(hFile))
+	if (!m_N3ShapeMgr.LoadCollisionData(fs))
 		return false;
 
 	if ((m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Width()
@@ -157,17 +155,16 @@ bool MAP::LoadMap(HANDLE hFile)
 		m_ppRegion[i]->m_byMoving = 0;
 	}
 
-	LoadObjectEvent(hFile);
-	LoadMapTile(hFile);
+	LoadObjectEvent(fs);
+	LoadMapTile(fs);
 
 	return true;
 }
 
-void MAP::LoadTerrain(HANDLE hFile)
+void MAP::LoadTerrain(std::istream& fs)
 {
-	DWORD dwRWC;
-	ReadFile(hFile, &m_nMapSize, sizeof(int), &dwRWC, nullptr);	// 가로세로 정보가 몇개씩인가?
-	ReadFile(hFile, &m_fUnitDist, sizeof(float), &dwRWC, nullptr);
+	fs.read(reinterpret_cast<char*>(&m_nMapSize), sizeof(int));	// 가로세로 정보가 몇개씩인가?
+	fs.read(reinterpret_cast<char*>(&m_fUnitDist), sizeof(float));
 
 	m_fHeight = new float* [m_nMapSize];
 	for (int i = 0; i < m_nMapSize; i++)
@@ -176,7 +173,7 @@ void MAP::LoadTerrain(HANDLE hFile)
 	for (int z = 0; z < m_nMapSize; z++)
 	{
 		for (int x = 0; x < m_nMapSize; x++)
-			ReadFile(hFile, &m_fHeight[x][z], sizeof(float), &dwRWC, nullptr);	// 높이값 읽어오기
+			fs.read(reinterpret_cast<char*>(&m_fHeight[x][z]), sizeof(float));	// 높이값 읽어오기
 	}
 }
 
@@ -283,12 +280,10 @@ void MAP::RegionUserAdd(int rx, int rz, int uid)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
-	
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+
 	if (!region->m_RegionUserArray.PutData(uid, pInt))
 		delete pInt;
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void MAP::RegionUserRemove(int rx, int rz, int uid)
@@ -301,11 +296,8 @@ void MAP::RegionUserRemove(int rx, int rz, int uid)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
-
+	std::lock_guard<std::mutex> lock(g_region_mutex);
 	region->m_RegionUserArray.DeleteData(uid);
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void MAP::RegionNpcAdd(int rx, int rz, int nid)
@@ -321,7 +313,7 @@ void MAP::RegionNpcAdd(int rx, int rz, int nid)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::mutex> lock(g_region_mutex);
 
 	if (!region->m_RegionNpcArray.PutData(nid, pInt))
 	{
@@ -331,8 +323,6 @@ void MAP::RegionNpcAdd(int rx, int rz, int nid)
 
 	int nSize = m_ppRegion[rx][rz].m_RegionNpcArray.GetSize();
 	//TRACE(_T("+++ Map - RegionNpcAdd : x=%d,z=%d, nid=%d, total=%d \n"), rx,rz,nid, nSize);
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void MAP::RegionNpcRemove(int rx, int rz, int nid)
@@ -345,14 +335,11 @@ void MAP::RegionNpcRemove(int rx, int rz, int nid)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
-
+	std::lock_guard<std::mutex> lock(g_region_mutex);
 	region->m_RegionNpcArray.DeleteData(nid);
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
-void MAP::LoadMapTile(HANDLE hFile)
+void MAP::LoadMapTile(std::istream& fs)
 {
 	//MapTile속성 읽기..
 	//	속성이 0이면 못 가는 곳.
@@ -361,14 +348,13 @@ void MAP::LoadMapTile(HANDLE hFile)
 	//
 	int x1 = m_sizeMap.cx;
 	int z1 = m_sizeMap.cy;
-	DWORD dwNum;
 	int16_t** pEvent = new int16_t* [m_sizeMap.cx];
 
 	// 잠시 막아놓고..
 	for (int x = 0; x < m_sizeMap.cx; x++)
 	{
 		pEvent[x] = new int16_t[m_sizeMap.cx];
-		ReadFile(hFile, pEvent[x], sizeof(int16_t) * m_sizeMap.cy, &dwNum, nullptr);
+		fs.read(reinterpret_cast<char*>(pEvent[x]), sizeof(int16_t) * m_sizeMap.cy);
 	}
 
 	m_pMap = new CMapInfo* [m_sizeMap.cx];
@@ -433,11 +419,8 @@ int MAP::GetRegionUserSize(int rx, int rz)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
-	int nRet = region->m_RegionUserArray.GetSize();
-	LeaveCriticalSection(&g_region_critical);
-
-	return nRet;
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+	return region->m_RegionUserArray.GetSize();
 }
 
 int  MAP::GetRegionNpcSize(int rx, int rz)
@@ -450,32 +433,28 @@ int  MAP::GetRegionNpcSize(int rx, int rz)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
-	int nRet = region->m_RegionNpcArray.GetSize();
-	LeaveCriticalSection(&g_region_critical);
-
-	return nRet;
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+	return region->m_RegionNpcArray.GetSize();
 }
 
-void MAP::LoadObjectEvent(HANDLE hFile)
+void MAP::LoadObjectEvent(std::istream& fs)
 {
 	int iEventObjectCount = 0, zonenum = 0;
 	__Vector3 vPos(0, 0, 0);
-	DWORD	dwNum;
 	_OBJECT_EVENT* pEvent = nullptr;
 
-	ReadFile(hFile, &iEventObjectCount, 4, &dwNum, nullptr);
+	fs.read(reinterpret_cast<char*>(&iEventObjectCount), 4);
 	for (int i = 0; i < iEventObjectCount; i++)
 	{
 		pEvent = new _OBJECT_EVENT;
-		ReadFile(hFile, &pEvent->sBelong, 4, &dwNum, nullptr);					// 소속 
-		ReadFile(hFile, &pEvent->sIndex, 2, &dwNum, nullptr);				// Event Index
-		ReadFile(hFile, &pEvent->sType, 2, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->sControlNpcID, 2, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->sStatus, 2, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->fPosX, 4, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->fPosY, 4, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->fPosZ, 4, &dwNum, nullptr);
+		fs.read(reinterpret_cast<char*>(&pEvent->sBelong), 4);				// 소속 
+		fs.read(reinterpret_cast<char*>(&pEvent->sIndex), 2);				// Event Index
+		fs.read(reinterpret_cast<char*>(&pEvent->sType), 2);
+		fs.read(reinterpret_cast<char*>(&pEvent->sControlNpcID), 2);
+		fs.read(reinterpret_cast<char*>(&pEvent->sStatus), 2);
+		fs.read(reinterpret_cast<char*>(&pEvent->fPosX), 4);
+		fs.read(reinterpret_cast<char*>(&pEvent->fPosY), 4);
+		fs.read(reinterpret_cast<char*>(&pEvent->fPosZ), 4);
 
 		//TRACE(_T("Object - belong=%d, index=%d, type=%d, con=%d, sta=%d\n"), pEvent->sBelong, pEvent->sIndex, pEvent->sType, pEvent->sControlNpcID, pEvent->sStatus);
 
@@ -504,8 +483,6 @@ void MAP::LoadObjectEvent(HANDLE hFile)
 
 bool MAP::LoadRoomEvent(int zone_number)
 {
-	CString		filename;
-	CFile		pFile;
 	uint8_t		byte;
 	char		buf[4096];
 	char		first[1024];
@@ -519,7 +496,7 @@ bool MAP::LoadRoomEvent(int zone_number)
 	// Build the base MAP directory
 	std::filesystem::path evtPath(GetProgPath().GetString());
 	evtPath /= MAP_DIR;
-	evtPath /= std::to_wstring(zone_number) + L".evt";
+	evtPath /= std::to_string(zone_number) + ".evt";
 
 	if (!std::filesystem::exists(evtPath))
 		return true;
@@ -528,22 +505,23 @@ bool MAP::LoadRoomEvent(int zone_number)
 	// NOTE: Requires the file to exist.
 	evtPath = std::filesystem::canonical(evtPath);
 
-	filename.Format(_T("%ls"), evtPath.c_str());
+	std::error_code ec;
+	uintmax_t length = std::filesystem::file_size(evtPath, ec);
+	if (ec)
+		return false;
 
-	if (!pFile.Open(filename, CFile::modeRead))
+	std::ifstream file(evtPath, std::ios::in | std::ios::binary);
+	if (!file)
 		return false;
 
 	std::wstring filenameWide = evtPath.wstring();
 
-	uint64_t length = pFile.GetLength();
-
-	CArchive in(&pFile, CArchive::load);
 	int lineNumber = 0;
-	uint64_t count = 0;
+	uintmax_t count = 0;
 
 	while (count < length)
 	{
-		in >> byte;
+		file.read(reinterpret_cast<char*>(&byte), 1);
 		++count;
 
 		if ((char) byte != '\r'
@@ -690,29 +668,26 @@ bool MAP::LoadRoomEvent(int zone_number)
 			}
 			else if (isalnum(first[0]))
 			{
-				spdlog::warn(
-					"MAP::LoadRoomEvent({}): unhandled opcode '{}' ({}:{})",
-					zone_number, first, WideToUtf8(filenameWide), lineNumber);
+				spdlog::warn("MAP::LoadRoomEvent({}): unhandled opcode '{}' ({}:{})",
+					zone_number, first,
+					// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
+					// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
+					reinterpret_cast<const char*>(evtPath.u8string().c_str()), lineNumber);
 			}
 
 			index = 0;
 		}
 	}
 
-	in.Close();
-	pFile.Close();
-
+	file.close();
 	return true;
 
 cancel_event_load:
 	CString str;
 	str.Format(_T("LoadRoomEvent Failed [zoneId=%d eventId=%d]"), zone_number, event_num);
 	AfxMessageBox(str);
-	in.Close();
-	pFile.Close();
 //	DeleteAll();
 	return false;
-	//return true;
 }
 
 int MAP::IsRoomCheck(float fx, float fz)

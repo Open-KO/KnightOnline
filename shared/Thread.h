@@ -14,7 +14,7 @@ public:
 
 	Thread();
 	virtual void start();
-	virtual bool shutdown();
+	virtual bool shutdown(bool join = true);
 	virtual ~Thread();
 
 protected:

@@ -3,13 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "server.h"
 #include "MagicProcess.h"
-
+#include "Npc.h"
+#include "NpcThread.h"
+#include "Region.h"
 #include "ServerDlg.h"
 #include "User.h"
-#include "Npc.h"
-#include "Region.h"
 
 #include <spdlog/spdlog.h>
 
@@ -19,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-extern CRITICAL_SECTION g_region_critical;
+extern std::mutex g_region_mutex;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -959,20 +958,21 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	int nid = 0, send_index = 0, result = 1, count = 0, total_mon = 0, attack_type = 0;
 	int* pNpcIDList = nullptr;
 
-	EnterCriticalSection(&g_region_critical);
-
-	auto Iter1 = pMap->m_ppRegion[rx][rz].m_RegionNpcArray.begin();
-	auto Iter2 = pMap->m_ppRegion[rx][rz].m_RegionNpcArray.end();
-
-	total_mon = pMap->m_ppRegion[rx][rz].m_RegionNpcArray.GetSize();
-	pNpcIDList = new int[total_mon];
-	for (; Iter1 != Iter2; Iter1++)
 	{
-		nid = *((*Iter1).second);
-		pNpcIDList[count] = nid;
-		count++;
+		std::lock_guard<std::mutex> lock(g_region_mutex);
+
+		auto Iter1 = pMap->m_ppRegion[rx][rz].m_RegionNpcArray.begin();
+		auto Iter2 = pMap->m_ppRegion[rx][rz].m_RegionNpcArray.end();
+
+		total_mon = pMap->m_ppRegion[rx][rz].m_RegionNpcArray.GetSize();
+		pNpcIDList = new int[total_mon];
+		for (; Iter1 != Iter2; Iter1++)
+		{
+			nid = *((*Iter1).second);
+			pNpcIDList[count] = nid;
+			count++;
+		}
 	}
-	LeaveCriticalSection(&g_region_critical);
 
 	for (int i = 0; i < total_mon; i++)
 	{

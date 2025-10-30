@@ -16,12 +16,13 @@ enum e_SharedMemQueueError
 struct message_queue_impl;
 class SharedMemoryQueue
 {
-	static constexpr uint32_t MinNumMsg = 100;
-
 public:
+	static constexpr uint32_t MAX_MSG_SIZE	= 512;
+	static constexpr uint32_t MAX_NUM_MSG	= 4096;
+
 	SharedMemoryQueue(int sendRetryCount = 0);
-	bool Create(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg);
-	bool OpenOrCreate(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg);
+	bool Create(const char* name);
+	bool OpenOrCreate(const char* name);
 	bool Open(const char* name);
 	int GetData(char* pBuf);
 	int PutData(const char* pBuf, int size);

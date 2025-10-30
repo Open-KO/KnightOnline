@@ -11,6 +11,8 @@
 #include "LOGIC_ELSE.h"
 
 #include <filesystem>
+#include <fstream>
+
 #include <spdlog/spdlog.h>
 
 #ifdef _DEBUG
@@ -34,9 +36,7 @@ EVENT::~EVENT()
 
 bool EVENT::LoadEvent(int zone)
 {
-	uint32_t		length, count;
-	CString		filename;
-	CFile		pFile;
+	uintmax_t	length, count;
 	uint8_t		byte;
 	char		buf[4096];
 	char		first[1024];
@@ -47,11 +47,12 @@ bool EVENT::LoadEvent(int zone)
 
 	EVENT_DATA* newData = nullptr;
 	EVENT_DATA* eventData = nullptr;
+	std::error_code ec;
 
 	// Build the base MAP directory
 	std::filesystem::path evtPath(GetProgPath().GetString());
 	evtPath /= QUESTS_DIR;
-	evtPath /= std::to_wstring(zone) + L".evt";
+	evtPath /= std::to_string(zone) + ".evt";
 
 	// Doesn't exist but this isn't a problem; we don't expect it to exist.
 	if (!std::filesystem::exists(evtPath))
@@ -61,24 +62,24 @@ bool EVENT::LoadEvent(int zone)
 	// NOTE: Requires the file to exist.
 	evtPath = std::filesystem::canonical(evtPath);
 
-	filename.Format(_T("%ls"), evtPath.c_str());
+	length = std::filesystem::file_size(evtPath, ec);
+	if (ec)
+		return false;
 
 	m_Zone = zone;
 
-	if (!pFile.Open(filename, CFile::modeRead))
+	std::ifstream file(evtPath, std::ios::in | std::ios::binary);
+	if (!file)
 		return false;
 
 	std::wstring filenameWide = evtPath.wstring();
 
-	length = static_cast<uint32_t>(pFile.GetLength());
-
-	CArchive in(&pFile, CArchive::load);
 	int lineNumber = 0;
 	count = 0;
 
 	while (count < length)
 	{
-		in >> byte;
+		file.read(reinterpret_cast<char*>(&byte), 1);
 		++count;
 
 		if ((char) byte != '\r'
@@ -161,16 +162,17 @@ bool EVENT::LoadEvent(int zone)
 			}
 			else if (isalnum(first[0]))
 			{
-				spdlog::warn(
-					"EVENT::LoadEvent({}): unhandled opcode '{}' ({}:{})",
-					zone, first, WideToUtf8(filenameWide), lineNumber);
+				spdlog::warn("EVENT::LoadEvent({}): unhandled opcode '{}' ({}:{})",
+					zone, first,
+					// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
+					// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
+					reinterpret_cast<const char*>(evtPath.u8string().c_str()), lineNumber);
 			}
 			index = 0;
 		}
 	}
 
-	in.Close();
-	pFile.Close();
+	file.close();
 
 	return true;
 
@@ -178,8 +180,7 @@ cancel_event_load:
 	CString str;
 	str.Format(_T("QUEST INFO READ FAIL (%d)(%d)"), zone, event_num);
 	AfxMessageBox(str);
-	in.Close();
-	pFile.Close();
+	file.close();
 	DeleteAll();
 	return false;
 }

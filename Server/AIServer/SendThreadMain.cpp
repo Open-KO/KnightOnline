@@ -10,9 +10,9 @@ SendThreadMain::SendThreadMain(AISocketManager* socketManager)
 {
 }
 
-bool SendThreadMain::shutdown()
+bool SendThreadMain::shutdown(bool join /*= true*/)
 {
-	if (!Thread::shutdown())
+	if (!Thread::shutdown(join))
 		return false;
 
 	clear();

@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-extern CRITICAL_SECTION g_region_critical;
+extern std::mutex g_region_mutex;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -76,24 +76,30 @@ void CParty::PartyCreate(char* pBuf)
 	//sClass = GetShort(pBuf, index);
 
 	pUser = m_pMain->GetUserPtr(sUid);
-	if (pUser)
+	if (pUser != nullptr)
 	{
 		pUser->m_byNowParty = 1;
 		pUser->m_sPartyNumber = sPartyIndex;
 	}
 
-	EnterCriticalSection(&g_region_critical);
+	std::unique_lock<std::mutex> lock(g_region_mutex);
 
 	pParty = new _PARTY_GROUP;
 	pParty->wIndex = sPartyIndex;
 	pParty->uid[0] = sUid;
 
-	if (m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
+	if (!m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
 	{
-		spdlog::debug("Party::PartyCreate: success [partyId={} uid0={} uid1={}]",
+		lock.unlock();
+
+		spdlog::error("Party::PartyCreate: failed [partyId={} uid0={} uid1={}]",
 			sPartyIndex, pParty->uid[0], pParty->uid[1]);
+		delete pParty;
+		return;
 	}
-	LeaveCriticalSection(&g_region_critical);
+
+	spdlog::debug("Party::PartyCreate: success [partyId={} uid0={} uid1={}]",
+		sPartyIndex, pParty->uid[0], pParty->uid[1]);
 }
 
 void CParty::PartyInsert(char* pBuf)
@@ -207,9 +213,6 @@ void CParty::PartyDelete(char* pBuf)
 		}
 	}
 
-	EnterCriticalSection(&g_region_critical);
-
+	std::lock_guard<std::mutex> lock(g_region_mutex);
 	m_pMain->m_PartyMap.DeleteData(pParty->wIndex);
-
-	LeaveCriticalSection(&g_region_critical);
 }

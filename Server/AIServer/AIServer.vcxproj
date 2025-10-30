@@ -158,6 +158,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="User.cpp" />
+    <ClCompile Include="ZoneEventThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIResourceFormatter.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="ServerDlg.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="ZoneEventThread.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Server.ico" />

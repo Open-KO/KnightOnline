@@ -8,6 +8,8 @@ constexpr int CELL_MAIN_SIZE = CELL_MAIN_DIVIDE * CELL_SUB_SIZE; // 메인셀 �
 constexpr int MAX_CELL_MAIN = 4096 / CELL_MAIN_SIZE; // 메인셀의 최대 갯수는 지형크기 / 메인셀크기 이다.
 constexpr int MAX_CELL_SUB = MAX_CELL_MAIN * CELL_MAIN_DIVIDE; // 서브셀 최대 갯수는 메인셀 * 메인셀나눔수 이다.
 
+#include <iosfwd>
+
 class CN3ShapeMgr
 {
 public:
@@ -17,33 +19,9 @@ public:
 		int 		nCCPolyCount;		// Collision Check Polygon Count
 		uint32_t*	pdwCCVertIndices;	// Collision Check Polygon Vertex Indices - wCCPolyCount * 3 만큼 생성된다.
 
-		void Load(HANDLE hFile)
-		{
-			DWORD dwRWC = 0;
-
-			ReadFile(hFile, &nCCPolyCount, 4, &dwRWC, nullptr);
-
-			if (nCCPolyCount > 0)
-			{
-				delete[] pdwCCVertIndices;
-				pdwCCVertIndices = new uint32_t[nCCPolyCount * 3];
-				__ASSERT(pdwCCVertIndices, "New memory failed");
-
-				ReadFile(hFile, pdwCCVertIndices, nCCPolyCount * 3 * 4, &dwRWC, nullptr);
-
-				// TRACE(_T("CollisionCheckPolygon : %d\n"), nCCPolyCount);
-			}
-		}
-
-		__CellSub()
-		{
-			memset(this, 0, sizeof(__CellSub));
-		}
-
-		~__CellSub()
-		{
-			delete[] pdwCCVertIndices;
-		}
+		__CellSub();
+		void Load(std::istream& fs);
+		~__CellSub();
 	};
 
 	// 기본 셀 데이터
@@ -53,36 +31,9 @@ public:
 		uint16_t*	pwShapeIndices;	// Shape Indices
 		__CellSub	SubCells[CELL_MAIN_DIVIDE][CELL_MAIN_DIVIDE];
 
-		void Load(HANDLE hFile)
-		{
-			DWORD dwRWC = 0;
-
-			ReadFile(hFile, &nShapeCount, 4, &dwRWC, nullptr);
-
-			if (nShapeCount > 0)
-			{
-				delete[] pwShapeIndices;
-				pwShapeIndices = new uint16_t[nShapeCount];
-				ReadFile(hFile, pwShapeIndices, nShapeCount * 2, &dwRWC, nullptr);
-			}
-
-			for (int z = 0; z < CELL_MAIN_DIVIDE; z++)
-			{
-				for (int x = 0; x < CELL_MAIN_DIVIDE; x++)
-					SubCells[x][z].Load(hFile);
-			}
-		}
-
-		__CellMain()
-		{
-			nShapeCount = 0;
-			pwShapeIndices = nullptr;
-		}
-
-		~__CellMain()
-		{
-			delete[] pwShapeIndices;
-		}
+		__CellMain();
+		void Load(std::istream& fs);
+		~__CellMain();
 	};
 
 	__Vector3* m_pvCollisions;
@@ -151,7 +102,7 @@ public:
 		__Vector3* pVec = nullptr);		// 충돌한 면 의 폴리곤 __Vector3[3]
 
 	bool		Create(float fMapWidth, float fMapLength); // 맵의 너비와 높이를 미터 단위로 넣는다..
-	bool		LoadCollisionData(HANDLE hFile);
+	bool		LoadCollisionData(std::istream& fs);
 
 	void Release();
 	CN3ShapeMgr();

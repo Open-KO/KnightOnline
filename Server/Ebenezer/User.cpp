@@ -21,8 +21,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-extern CRITICAL_SECTION g_region_critical;
-extern CRITICAL_SECTION g_LogFile_critical;
+extern std::recursive_mutex g_region_mutex;
 extern bool g_serverdown_flag;
 
 CUser::CUser(SocketManager* socketManager)
@@ -116,14 +115,13 @@ void CUser::Initialize()
 	m_sPrivateChatUser = -1;
 	m_bNeedParty = 0x01;
 
-	m_fHPLastTimeNormal = 0.0f;		// For Automatic HP recovery. 
-	m_fHPStartTimeNormal = 0.0f;
+	m_fHPLastTimeNormal = 0.0;		// For Automatic HP recovery. 
 	m_bHPAmountNormal = 0;
 	m_bHPDurationNormal = 0;
 	m_bHPIntervalNormal = 5;
 
-	m_fAreaLastTime = 0.0f;		// For Area Damage spells Type 3.
-	m_fAreaStartTime = 0.0f;
+	m_fAreaLastTime = 0.0;		// For Area Damage spells Type 3.
+	m_fAreaStartTime = 0.0;
 	m_bAreaInterval = 5;
 	m_iAreaMagicID = 0;
 
@@ -132,11 +130,11 @@ void CUser::Initialize()
 	InitType3();	 // Initialize durational type 3 stuff :)
 	InitType4();	 // Initialize durational type 4 stuff :)
 
-	m_fSpeedHackClientTime = 0.0f;
-	m_fSpeedHackServerTime = 0.0f;
+	m_fSpeedHackClientTime = 0.0;
+	m_fSpeedHackServerTime = 0.0;
 	m_bSpeedHackCheck = 0;
 
-	m_fBlinkStartTime = 0.0f;
+	m_fBlinkStartTime = 0.0;
 
 	m_sAliveCount = 0;
 
@@ -145,7 +143,7 @@ void CUser::Initialize()
 	m_sWhoKilledMe = -1;
 	m_iLostExp = 0;
 
-	m_fLastTrapAreaTime = 0.0f;
+	m_fLastTrapAreaTime = 0.0;
 
 	memset(m_strAccountID, 0, sizeof(m_strAccountID));
 /*
@@ -164,7 +162,7 @@ void CUser::Initialize()
 
 	m_bRegeneType = 0;
 
-	m_fLastRegeneTime = 0.0f;
+	m_fLastRegeneTime = 0.0;
 
 	m_bZoneChangeSameZone = false;
 
@@ -283,7 +281,7 @@ void CUser::SendCompressingPacket(const char* pData, int len)
 
 void CUser::RegionPacketAdd(char* pBuf, int len)
 {
-	std::lock_guard<std::mutex> lock(_regionBufferMutex);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	SetShort(_regionBuffer->pDataBuff, len, _regionBuffer->iLength);
 	SetString(_regionBuffer->pDataBuff, pBuf, len, _regionBuffer->iLength);
@@ -295,7 +293,7 @@ int CUser::RegionPacketClear(char* GetBuf)
 	SetByte(GetBuf, WIZ_CONTINOUS_PACKET, index);
 
 	{
-		std::lock_guard<std::mutex> lock(_regionBufferMutex);
+		std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 		if (_regionBuffer->iLength <= 0)
 			return 0;
@@ -493,7 +491,7 @@ void CUser::CloseProcess()
 void CUser::Parsing(int len, char* pData)
 {
 	int index = 0;
-	float currenttime;
+	double currentTime;
 
 	uint8_t command = GetByte(pData, index);
 
@@ -744,31 +742,31 @@ void CUser::Parsing(int len, char* pData)
 			break;
 	}
 
-	currenttime = TimeGet();
+	currentTime = TimeGet();
 
 	if (command == WIZ_GAMESTART)
 	{
-		m_fHPLastTimeNormal = currenttime;
+		m_fHPLastTimeNormal = currentTime;
 
 		for (int h = 0; h < MAX_TYPE3_REPEAT; h++)
-			m_fHPLastTime[h] = currenttime;
+			m_fHPLastTime[h] = currentTime;
 	}
 
 	// For Sitdown/Standup HP restoration.
-	if (m_fHPLastTimeNormal != 0.0f
-		&& (currenttime - m_fHPLastTimeNormal) > m_bHPIntervalNormal
+	if (m_fHPLastTimeNormal != 0.0
+		&& (currentTime - m_fHPLastTimeNormal) > m_bHPIntervalNormal
 		&& m_bAbnormalType != ABNORMAL_BLINKING)
-		HPTimeChange(currenttime);
+		HPTimeChange(currentTime);
 
 	// For Type 3 HP Duration.
 	if (m_bType3Flag)
 	{
 		for (int i = 0; i < MAX_TYPE3_REPEAT; i++)
 		{
-			if (m_fHPLastTime[i] != 0.0f
-				&& (currenttime - m_fHPLastTime[i]) > m_bHPInterval[i])
+			if (m_fHPLastTime[i] != 0.0
+				&& (currentTime - m_fHPLastTime[i]) > m_bHPInterval[i])
 			{
-				HPTimeChangeType3(currenttime);
+				HPTimeChangeType3(currentTime);
 				break;
 			}
 		}
@@ -776,11 +774,11 @@ void CUser::Parsing(int len, char* pData)
 
 	// For Type 4 Stat Duration.
 	if (m_bType4Flag)
-		Type4Duration(currenttime);
+		Type4Duration(currentTime);
 
 	// Should you stop blinking?
 	if (m_bAbnormalType == ABNORMAL_BLINKING)
-		BlinkTimeCheck(currenttime);
+		BlinkTimeCheck(currentTime);
 }
 
 void CUser::VersionCheck()
@@ -1178,7 +1176,7 @@ fail_return:
 	Send(send_buff, send_index);
 }
 
-void CUser::SelectCharacter(char* pBuf)
+void CUser::SelectCharacter(const char* pBuf)
 {
 	int index = 0, send_index = 0, retvalue = 0;
 	char send_buff[256] = {};
@@ -2788,7 +2786,7 @@ void CUser::ZoneChange(int zone, float x, float z)
 		m_sWhoKilledMe = -1;
 		m_iLostExp = 0;
 		m_bRegeneType = 0;
-		m_fLastRegeneTime = 0.0f;
+		m_fLastRegeneTime = 0.0;
 		m_pUserData->m_sBind = -1;
 		InitType3();
 		InitType4();
@@ -5948,6 +5946,7 @@ void CUser::PartyRequest(int memberid, bool bCreate)
 	CUser* pUser = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
 	char send_buff[256] = {};
+	bool inserted = false;
 
 	pUser = m_pMain->GetUserPtr(memberid);
 	if (pUser == nullptr)
@@ -5994,29 +5993,30 @@ void CUser::PartyRequest(int memberid, bool bCreate)
 		if (m_sPartyIndex != -1)
 			goto fail_return;
 
-		m_sPartyIndex = m_pMain->m_sPartyIndex++;
-		if (m_pMain->m_sPartyIndex == 32767)
-			m_pMain->m_sPartyIndex = 0;
-
-		EnterCriticalSection(&g_region_critical);
-
 		pParty = new _PARTY_GROUP;
-		pParty->wIndex = m_sPartyIndex;
 		pParty->uid[0] = _socketId;
 		pParty->sMaxHp[0] = m_iMaxHp;
 		pParty->sHp[0] = m_pUserData->m_sHp;
 		pParty->bLevel[0] = m_pUserData->m_bLevel;
 		pParty->sClass[0] = m_pUserData->m_sClass;
 
-		if (!m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
+		{
+			std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
+
+			m_sPartyIndex = m_pMain->m_sPartyIndex++;
+			if (m_pMain->m_sPartyIndex == 32767)
+				m_pMain->m_sPartyIndex = 0;
+
+			pParty->wIndex = m_sPartyIndex;
+			inserted = m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty);
+		}
+
+		if (!inserted)
 		{
 			delete pParty;
 			m_sPartyIndex = -1;
-			LeaveCriticalSection(&g_region_critical);
 			goto fail_return;
 		}
-
-		LeaveCriticalSection(&g_region_critical);
 
 		// AI Server
 		send_index = 0;
@@ -6315,11 +6315,8 @@ void CUser::PartyDelete()
 	SetShort(send_buff, pParty->wIndex, send_index);
 	m_pMain->Send_AIServer(m_pUserData->m_bZone, send_buff, send_index);
 
-	EnterCriticalSection(&g_region_critical);
-
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 	m_pMain->m_PartyMap.DeleteData(pParty->wIndex);
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void CUser::ExchangeProcess(char* pBuf)
@@ -7706,11 +7703,11 @@ void CUser::ItemDurationChange(int slot, int maxvalue, int curvalue, int amount)
 	}
 }
 
-void CUser::HPTimeChange(float currenttime)
+void CUser::HPTimeChange(double currentTime)
 {
 	bool bFlag = false;
 
-	m_fHPLastTimeNormal = currenttime;
+	m_fHPLastTimeNormal = currentTime;
 
 	if (m_bResHpType == USER_DEAD)
 		return;
@@ -7761,14 +7758,14 @@ void CUser::HPTimeChange(float currenttime)
 	*/
 }
 
-void CUser::HPTimeChangeType3(float currenttime)
+void CUser::HPTimeChangeType3(double currentTime)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
 
 	// Get the current time for all the last times...
 	for (int g = 0; g < MAX_TYPE3_REPEAT; g++)
-		m_fHPLastTime[g] = currenttime;
+		m_fHPLastTime[g] = currentTime;
 
 	// Make sure the user is not dead first!!!
 	if (m_bResHpType == USER_DEAD)
@@ -7843,7 +7840,7 @@ void CUser::HPTimeChangeType3(float currenttime)
 	{
 		if (m_bHPDuration[i] > 0)
 		{
-			if (((currenttime - m_fHPStartTime[i]) >= m_bHPDuration[i])
+			if (((currentTime - m_fHPStartTime[i]) >= m_bHPDuration[i])
 				|| m_bResHpType == USER_DEAD)
 			{
 				/*	Send Party Packet.....
@@ -7872,8 +7869,8 @@ void CUser::HPTimeChangeType3(float currenttime)
 				memset(send_buff, 0, sizeof(send_buff));
 				send_index = 0;
 
-				m_fHPStartTime[i] = 0.0f;
-				m_fHPLastTime[i] = 0.0f;
+				m_fHPStartTime[i] = 0.0;
+				m_fHPLastTime[i] = 0.0;
 				m_bHPAmount[i] = 0;
 				m_bHPDuration[i] = 0;
 				m_bHPInterval[i] = 5;
@@ -7983,7 +7980,7 @@ fail_return:
 	Send(send_buff, send_index);
 }
 
-void CUser::Type4Duration(float currenttime)
+void CUser::Type4Duration(double currentTime)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
@@ -7992,10 +7989,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration1 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime1 + m_sDuration1))
+		if (currentTime > (m_fStartTime1 + m_sDuration1))
 		{
 			m_sDuration1 = 0;
-			m_fStartTime1 = 0.0f;
+			m_fStartTime1 = 0.0;
 			m_sMaxHPAmount = 0;
 			buff_type = 1;
 		}
@@ -8004,10 +8001,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration2 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime2 + m_sDuration2))
+		if (currentTime > (m_fStartTime2 + m_sDuration2))
 		{
 			m_sDuration2 = 0;
-			m_fStartTime2 = 0.0f;
+			m_fStartTime2 = 0.0;
 			m_sACAmount = 0;
 			buff_type = 2;
 		}
@@ -8016,10 +8013,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration3 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime3 + m_sDuration3))
+		if (currentTime > (m_fStartTime3 + m_sDuration3))
 		{
 			m_sDuration3 = 0;
-			m_fStartTime3 = 0.0f;
+			m_fStartTime3 = 0.0;
 			buff_type = 3;
 
 			memset(send_buff, 0, sizeof(send_buff));
@@ -8035,10 +8032,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration4 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime4 + m_sDuration4))
+		if (currentTime > (m_fStartTime4 + m_sDuration4))
 		{
 			m_sDuration4 = 0;
-			m_fStartTime4 = 0.0f;
+			m_fStartTime4 = 0.0;
 			m_bAttackAmount = 100;
 			buff_type = 4;
 		}
@@ -8047,10 +8044,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration5 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime5 + m_sDuration5))
+		if (currentTime > (m_fStartTime5 + m_sDuration5))
 		{
 			m_sDuration5 = 0;
-			m_fStartTime5 = 0.0f;
+			m_fStartTime5 = 0.0;
 			m_bAttackSpeedAmount = 100;
 			buff_type = 5;
 		}
@@ -8059,10 +8056,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration6 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime6 + m_sDuration6))
+		if (currentTime > (m_fStartTime6 + m_sDuration6))
 		{
 			m_sDuration6 = 0;
-			m_fStartTime6 = 0.0f;
+			m_fStartTime6 = 0.0;
 			m_bSpeedAmount = 100;
 			buff_type = 6;
 		}
@@ -8071,10 +8068,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration7 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime7 + m_sDuration7))
+		if (currentTime > (m_fStartTime7 + m_sDuration7))
 		{
 			m_sDuration7 = 0;
-			m_fStartTime7 = 0.0f;
+			m_fStartTime7 = 0.0;
 			m_sStrAmount = 0;
 			m_sStaAmount = 0;
 			m_sDexAmount = 0;
@@ -8087,10 +8084,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration8 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime8 + m_sDuration8))
+		if (currentTime > (m_fStartTime8 + m_sDuration8))
 		{
 			m_sDuration8 = 0;
-			m_fStartTime8 = 0.0f;
+			m_fStartTime8 = 0.0;
 			m_bFireRAmount = 0;
 			m_bColdRAmount = 0;
 			m_bLightningRAmount = 0;
@@ -8104,10 +8101,10 @@ void CUser::Type4Duration(float currenttime)
 	if (m_sDuration9 != 0
 		&& buff_type == 0)
 	{
-		if (currenttime > (m_fStartTime9 + m_sDuration9))
+		if (currentTime > (m_fStartTime9 + m_sDuration9))
 		{
 			m_sDuration9 = 0;
-			m_fStartTime9 = 0.0f;
+			m_fStartTime9 = 0.0;
 			m_bHitRateAmount = 100;
 			m_sAvoidRateAmount = 100;
 			buff_type = 9;
@@ -8411,56 +8408,34 @@ void CUser::SpeedHackTime(char* pBuf)
 {
 	uint8_t b_first = 0x00;
 	int index = 0;
-	float servertime = 0.0f, clienttime = 0.0f, client_gap = 0.0f, server_gap = 0.0f;
+	double serverTime = 0.0, clientTime = 0.0, clientGap = 0.0, serverGap = 0.0;
 
 	b_first = GetByte(pBuf, index);
-	clienttime = Getfloat(pBuf, index);
+	clientTime = Getfloat(pBuf, index);
 
 	if (b_first)
 	{
-		m_fSpeedHackClientTime = clienttime;
+		m_fSpeedHackClientTime = clientTime;
 		m_fSpeedHackServerTime = TimeGet();
 	}
 	else
 	{
-		servertime = TimeGet();
+		serverTime = TimeGet();
 
-		server_gap = servertime - m_fSpeedHackServerTime;
-		client_gap = clienttime - m_fSpeedHackClientTime;
+		serverGap = serverTime - m_fSpeedHackServerTime;
+		clientGap = clientTime - m_fSpeedHackClientTime;
 
-		if ((client_gap - server_gap) > 10.0f)
+		if ((clientGap - serverGap) > 10.0)
 		{
 			spdlog::debug("User::SpeedHackTime: speed hack check performed on charId={}", m_pUserData->m_id);
 			Close();
 		}
-		else if (client_gap - server_gap < 0.0f)
+		else if ((clientGap - serverGap) < 0.0)
 		{
-			m_fSpeedHackClientTime = clienttime;
+			m_fSpeedHackClientTime = clientTime;
 			m_fSpeedHackServerTime = TimeGet();
 		}
 	}
-
-/*	float currenttime;
-	if (m_fSpeedHackTime == 0.0f)
-		m_fSpeedHackTime = TimeGet();
-	else
-	{
-		currenttime = TimeGet();
-		if ((currenttime - m_fSpeedHackTime) < 48.0f)
-		{
-			char logstr[256] = {};
-			sprintf(logstr, "%s SpeedHack User Checked By Server Time\r\n", m_pUserData->m_id);
-			LogFileWrite( logstr );
-
-//			if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
-//				m_pUserData->m_bAuthority = AUTHORITY_BLOCK_USER;
-
-			Close();
-		}
-	}
-
-	m_fSpeedHackTime = TimeGet();
-*/
 }
 
 // server의 상태를 체크..
@@ -8473,7 +8448,7 @@ void CUser::ServerStatusCheck()
 	Send(send_buff, send_index);
 }
 
-void CUser::Type3AreaDuration(float currenttime)
+void CUser::Type3AreaDuration(double currentTime)
 {
 	int send_index = 0;
 	char send_buff[128] = {};
@@ -8485,10 +8460,10 @@ void CUser::Type3AreaDuration(float currenttime)
 		return;
 
 	// Did one second pass?
-	if (m_fAreaLastTime != 0.0f
-		&& (currenttime - m_fAreaLastTime) > m_bAreaInterval)
+	if (m_fAreaLastTime != 0.0
+		&& (currentTime - m_fAreaLastTime) > m_bAreaInterval)
 	{
-		m_fAreaLastTime = currenttime;
+		m_fAreaLastTime = currentTime;
 		if (m_bResHpType == USER_DEAD)
 			return;
 
@@ -8516,16 +8491,15 @@ void CUser::Type3AreaDuration(float currenttime)
 		}
 
 		// Did area duration end?
-		if (((currenttime - m_fAreaStartTime) >= pType->Duration)
+		if (((currentTime - m_fAreaStartTime) >= pType->Duration)
 			|| m_bResHpType == USER_DEAD)
 		{
 			m_bAreaInterval = 5;
-			m_fAreaStartTime = 0.0f;
-			m_fAreaLastTime = 0.0f;
+			m_fAreaStartTime = 0.0;
+			m_fAreaLastTime = 0.0;
 			m_iAreaMagicID = 0;
 		}
 	}
-
 
 	SetByte(send_buff, WIZ_MAGIC_PROCESS, send_index);	// Set packet.
 	SetByte(send_buff, MAGIC_EFFECTING, send_index);
@@ -8836,15 +8810,15 @@ void CUser::InitType4()
 // 비러머글 수능
 	m_bAbnormalType = 1;
 //
-	m_sDuration1 = 0;  m_fStartTime1 = 0.0f;		// Used for Type 4 Durational Spells.
-	m_sDuration2 = 0;  m_fStartTime2 = 0.0f;
-	m_sDuration3 = 0;  m_fStartTime3 = 0.0f;
-	m_sDuration4 = 0;  m_fStartTime4 = 0.0f;
-	m_sDuration5 = 0;  m_fStartTime5 = 0.0f;
-	m_sDuration6 = 0;  m_fStartTime6 = 0.0f;
-	m_sDuration7 = 0;  m_fStartTime7 = 0.0f;
-	m_sDuration8 = 0;  m_fStartTime8 = 0.0f;
-	m_sDuration9 = 0;  m_fStartTime9 = 0.0f;
+	m_sDuration1 = 0;  m_fStartTime1 = 0.0;		// Used for Type 4 Durational Spells.
+	m_sDuration2 = 0;  m_fStartTime2 = 0.0;
+	m_sDuration3 = 0;  m_fStartTime3 = 0.0;
+	m_sDuration4 = 0;  m_fStartTime4 = 0.0;
+	m_sDuration5 = 0;  m_fStartTime5 = 0.0;
+	m_sDuration6 = 0;  m_fStartTime6 = 0.0;
+	m_sDuration7 = 0;  m_fStartTime7 = 0.0;
+	m_sDuration8 = 0;  m_fStartTime8 = 0.0;
+	m_sDuration9 = 0;  m_fStartTime9 = 0.0;
 
 	for (int h = 0; h < MAX_TYPE4_BUFF; h++)
 		m_bType4Buff[h] = 0;
@@ -9754,8 +9728,8 @@ void CUser::InitType3()
 	// This is for the duration spells Type 3.
 	for (int i = 0; i < MAX_TYPE3_REPEAT; i++)
 	{
-		m_fHPStartTime[i] = 0.0f;
-		m_fHPLastTime[i] = 0.0f;
+		m_fHPStartTime[i] = 0.0;
+		m_fHPLastTime[i] = 0.0;
 		m_bHPAmount[i] = 0;
 		m_bHPDuration[i] = 0;
 		m_bHPInterval[i] = 5;
@@ -10618,7 +10592,7 @@ void CUser::MarketBBSDelete(char* pBuf)
 			&& m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 			goto fail_return;
 
-		MarketBBSBuyDelete(delete_id);
+		m_pMain->MarketBBSBuyDelete(delete_id);
 		result = 1;
 	}
 	// Sell
@@ -10628,7 +10602,7 @@ void CUser::MarketBBSDelete(char* pBuf)
 			&& m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 			goto fail_return;
 
-		MarketBBSSellDelete(delete_id);
+		m_pMain->MarketBBSSellDelete(delete_id);
 		result = 1;	
 	}
 	// Error
@@ -10696,7 +10670,7 @@ void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 			// Delete info!!!
 			if (pUser == nullptr)
 			{
-				MarketBBSBuyDelete(i);
+				m_pMain->MarketBBSBuyDelete(i);
 				continue;
 			}
 
@@ -10745,7 +10719,7 @@ void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 			pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
 			if (pUser == nullptr)
 			{
-				MarketBBSSellDelete(i);
+				m_pMain->MarketBBSSellDelete(i);
 				continue;
 			}
 
@@ -10918,7 +10892,7 @@ void CUser::MarketBBSTimeCheck()
 	CUser* pUser = nullptr;	// Basic Initializations. 	
 	int send_index = 0, price = 0;
 	char send_buff[256] = {};
-	float currenttime = TimeGet();
+	double currentTime = TimeGet();
 
 	for (int i = 0; i < MAX_BBS_POST; i++)
 	{
@@ -10928,11 +10902,11 @@ void CUser::MarketBBSTimeCheck()
 			pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
 			if (pUser == nullptr)
 			{
-				MarketBBSBuyDelete(i);
+				m_pMain->MarketBBSBuyDelete(i);
 				continue;
 			}
 
-			if (m_pMain->m_fBuyStartTime[i] + BBS_CHECK_TIME < currenttime)
+			if (m_pMain->m_fBuyStartTime[i] + BBS_CHECK_TIME < currentTime)
 			{
 				if (pUser->m_pUserData->m_iGold >= BUY_POST_PRICE)
 				{
@@ -10950,7 +10924,7 @@ void CUser::MarketBBSTimeCheck()
 				}
 				else
 				{
-					MarketBBSBuyDelete(i);
+					m_pMain->MarketBBSBuyDelete(i);
 				}
 			}
 		}
@@ -10961,11 +10935,11 @@ void CUser::MarketBBSTimeCheck()
 			pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
 			if (pUser == nullptr)
 			{
-				MarketBBSSellDelete(i);
+				m_pMain->MarketBBSSellDelete(i);
 				continue;
 			}
 
-			if (m_pMain->m_fSellStartTime[i] + BBS_CHECK_TIME < currenttime)
+			if (m_pMain->m_fSellStartTime[i] + BBS_CHECK_TIME < currentTime)
 			{
 				if (pUser->m_pUserData->m_iGold >= SELL_POST_PRICE)
 				{
@@ -10983,7 +10957,7 @@ void CUser::MarketBBSTimeCheck()
 				}
 				else
 				{
-					MarketBBSSellDelete(i);
+					m_pMain->MarketBBSSellDelete(i);
 				}
 			}
 		}
@@ -10996,31 +10970,14 @@ void CUser::MarketBBSUserDelete()
 	{
 		// BUY!!!
 		if (m_pMain->m_sBuyID[i] == _socketId)
-			MarketBBSBuyDelete(i);
+			m_pMain->MarketBBSBuyDelete(i);
 
 		// SELL!!
 		if (m_pMain->m_sSellID[i] == _socketId)
-			MarketBBSSellDelete(i);
+			m_pMain->MarketBBSSellDelete(i);
 	}
 }
 
-void CUser::MarketBBSBuyDelete(int16_t index)
-{
-	m_pMain->m_sBuyID[index] = -1;
-	memset(m_pMain->m_strBuyTitle[index], 0, sizeof(m_pMain->m_strBuyTitle[index]));
-	memset(m_pMain->m_strBuyMessage[index], 0, sizeof(m_pMain->m_strBuyMessage[index]));
-	m_pMain->m_iBuyPrice[index] = 0;
-	m_pMain->m_fBuyStartTime[index] = 0.0f;
-}
-
-void CUser::MarketBBSSellDelete(int16_t index)
-{
-	m_pMain->m_sSellID[index] = -1;
-	memset(m_pMain->m_strSellTitle[index], 0, sizeof(m_pMain->m_strSellTitle[index]));
-	memset(m_pMain->m_strSellMessage[index], 0, sizeof(m_pMain->m_strSellMessage[index]));
-	m_pMain->m_iSellPrice[index] = 0;
-	m_pMain->m_fSellStartTime[index] = 0.0f;
-}
 
 void CUser::MarketBBSMessage(char* pBuf)
 {
@@ -11101,7 +11058,7 @@ void CUser::MarketBBSBuyPostFilter()
 				m_pMain->m_iBuyPrice[i - empty_counter] = m_pMain->m_iBuyPrice[i];
 				m_pMain->m_fBuyStartTime[i - empty_counter] = m_pMain->m_fBuyStartTime[i];
 
-				MarketBBSBuyDelete(i);
+				m_pMain->MarketBBSBuyDelete(i);
 			}
 		}
 	}
@@ -11130,20 +11087,20 @@ void CUser::MarketBBSSellPostFilter()
 				m_pMain->m_iSellPrice[i - empty_counter] = m_pMain->m_iSellPrice[i];
 				m_pMain->m_fSellStartTime[i - empty_counter] = m_pMain->m_fSellStartTime[i];
 
-				MarketBBSSellDelete(i);
+				m_pMain->MarketBBSSellDelete(i);
 			}
 		}
 	}
 }
 
-void CUser::BlinkTimeCheck(float currenttime)
+void CUser::BlinkTimeCheck(double currentTime)
 {
 	int send_index = 0;
 	char send_buff[256] = {};
 
-	if (BLINK_TIME < (currenttime - m_fBlinkStartTime))
+	if (BLINK_TIME < (currentTime - m_fBlinkStartTime))
 	{
-		m_fBlinkStartTime = 0.0f;
+		m_fBlinkStartTime = 0.0;
 
 		m_bAbnormalType = ABNORMAL_NORMAL;
 
@@ -11243,6 +11200,7 @@ void CUser::KickOut(char* pBuf)
 		m_pMain->m_LoggerSendQueue.PutData(send_buff, send_index);
 	}
 }
+
 // 여기서 부터 정애씨가 고생하면서 해주신 퀘스트 부분....
 // The main function for the quest procedures!!!
 // (actually, this only takes care of the first event :(  )
@@ -12580,10 +12538,10 @@ bool CUser::JobGroupCheck(int16_t jobgroupid) const
 // 잉...성용씨 미워!!! 흑흑흑 ㅠ.ㅠ
 void CUser::TrapProcess()
 {
-	float currenttime = TimeGet();
+	double currentTime = TimeGet();
 
 	// Time interval has passed :)
-	if (ZONE_TRAP_INTERVAL < (currenttime - m_fLastTrapAreaTime))
+	if (ZONE_TRAP_INTERVAL < (currentTime - m_fLastTrapAreaTime))
 	{
 		// Reduce target health point.
 		HpChange(-ZONE_TRAP_DAMAGE);
@@ -12602,7 +12560,7 @@ void CUser::TrapProcess()
 	}
 
 	// Update Last Trap Area time :)
-	m_fLastTrapAreaTime = currenttime;
+	m_fLastTrapAreaTime = currentTime;
 }
 
 void CUser::KickOutZoneUser(bool home)
@@ -12839,7 +12797,7 @@ void CUser::LogCoupon(int itemid, int count)
 	}
 }
 
-void CUser::CouponEvent(char* pBuf)
+void CUser::CouponEvent(const char* pBuf)
 {
 	int index = 0, nEventNum = 0, nItemCount = 0, nResult = 0, nMessageNum = 0;
 	nResult = GetByte(pBuf, index);
@@ -12969,7 +12927,7 @@ bool CUser::ExistComEvent(int eventid) const
 	return false;
 }
 
-void CUser::RecvDeleteChar(char* pBuf)
+void CUser::RecvDeleteChar(const char* pBuf)
 {
 	int nResult = 0, nLen = 0, index = 0, send_index = 0, char_index = 0, knightsId = 0;
 	char charId[MAX_ID_SIZE + 1] = {};

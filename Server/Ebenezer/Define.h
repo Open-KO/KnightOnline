@@ -244,8 +244,6 @@ constexpr int BBS_CHECK_TIME		= 36000;
 
 // DEFINE Shared Memory Costumizing
 
-#define MAX_PKTSIZE		512
-#define MAX_COUNT		4096
 #define SMQ_LOGGERSEND	"KNIGHT_SEND"
 #define SMQ_LOGGERRECV	"KNIGHT_RECV"
 
@@ -511,36 +509,6 @@ inline int myrand(int min, int max)
 		return max;
 
 	return (int) (min + (int) rand_result);
-}
-
-inline float TimeGet()
-{
-	static bool bInit = false;
-	static bool bUseHWTimer = false;
-	static LARGE_INTEGER nTime, nFrequency;
-
-	if (!bInit)
-	{
-		if (::QueryPerformanceCounter(&nTime))
-		{
-			::QueryPerformanceFrequency(&nFrequency);
-			bUseHWTimer = true;
-		}
-		else
-		{
-			bUseHWTimer = false;
-		}
-
-		bInit = true;
-	}
-
-	if (bUseHWTimer)
-	{
-		::QueryPerformanceCounter(&nTime);
-		return (float) ((double) (nTime.QuadPart) / (double) nFrequency.QuadPart);
-	}
-
-	return (float) timeGetTime();
 }
 
 #endif

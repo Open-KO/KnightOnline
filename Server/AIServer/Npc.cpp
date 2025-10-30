@@ -1,11 +1,14 @@
 ﻿#include "stdafx.h"
-#include "math.h"
 #include "Npc.h"
-#include "Serverdlg.h"
-#include "Gamesocket.h"
+#include "NpcThread.h"
+#include "GameSocket.h"
+#include "ServerDlg.h"
 #include "Region.h"
 #include "Party.h"
-#include "extern.h"
+#include "Extern.h"
+
+#include <math.h>
+
 #include <spdlog/spdlog.h>
 
 //bool g_bDebug = true;
@@ -45,8 +48,7 @@ constexpr int MAX_MAKE_ITEM_GROUP_ITEM	= sizeof(model::MakeItemGroup::Item) / si
 #define ATTACK_LIMIT_LEVEL		10
 #define FAINTING_TIME			2
 
-extern CRITICAL_SECTION g_region_critical;
-extern CRITICAL_SECTION g_LogFileWrite;
+extern std::mutex g_region_mutex;
 
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
@@ -171,7 +173,7 @@ CNpc::CNpc()
 	m_bFirstLive = true;
 
 	m_fHPChangeTime = TimeGet();
-	m_fFaintingTime = 0.0f;
+	m_fFaintingTime = 0.0;
 
 	::ZeroMemory(m_pMap, sizeof(m_pMap));// 일차원 맵으로 초기화한다.
 
@@ -179,7 +181,6 @@ CNpc::CNpc()
 	m_iRegion_Z = 0;
 	m_nLimitMinX = m_nLimitMinZ = 0;
 	m_nLimitMaxX = m_nLimitMaxZ = 0;
-	m_lEventNpc = 0;
 	m_fSecForRealMoveMetor = 0.0f;
 	InitUserList();
 	InitMagicValuable();
@@ -402,7 +403,7 @@ void CNpc::InitMagicValuable()
 	{
 		m_MagicType4[i].byAmount = 100;
 		m_MagicType4[i].sDurationTime = 0;
-		m_MagicType4[i].fStartTime = 0.0f;
+		m_MagicType4[i].fStartTime = 0.0;
 	}
 
 	for (int i = 0; i < MAX_MAGIC_TYPE3; i++)
@@ -411,7 +412,7 @@ void CNpc::InitMagicValuable()
 		m_MagicType3[i].sHPAmount = 0;
 		m_MagicType3[i].byHPDuration = 0;
 		m_MagicType3[i].byHPInterval = 2;
-		m_MagicType3[i].fStartTime = 0.0f;
+		m_MagicType3[i].fStartTime = 0.0;
 	}
 }
 
@@ -1099,31 +1100,6 @@ bool CNpc::SetLive()
 	InitUserList();					// 타겟을위한 리스트를 초기화.
 	//InitPos();
 
-	CNpc* pNpc = nullptr;
-
-	/* If the Event Monster respawns, kill it and null the pointer in the event thread. */
-	if (m_lEventNpc == 1
-		&& !m_bFirstLive)
-	{
-		for (int i = 0; i < NPC_NUM; i++)
-		{
-			pNpc = m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i];
-			if (m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i] != nullptr)
-			{
-				if (m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i]->m_sNid == m_sNid)
-				{
-					m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.m_byNpcUsed[i] = 0;
-					m_lEventNpc = 0;
-					m_pMain->m_EventNpcThreadArray[0]->m_ThreadInfo.pNpc[i] = nullptr;
-					spdlog::debug("Npc::SetLive: returning summoned monster pointer [threadIndex={} serial={} npcId={} npcName={}]",
-						i, m_sNid + NPC_BAND, m_sSid, m_strName);
-					return true;
-				}
-			}
-		}
-		return true;
-	}
-
 	// NPC 초기위치 결정 ------------------------//
 	MAP* pMap = m_pMain->GetMapByIndex(m_ZoneIndex);
 	if (pMap == nullptr)
@@ -1153,8 +1129,7 @@ bool CNpc::SetLive()
 
 	bool bMove = pMap->IsMovable(dest_x, dest_z);
 
-	if (m_tNpcType != NPCTYPE_MONSTER
-		|| m_lEventNpc == 1)
+	if (m_tNpcType != NPCTYPE_MONSTER)
 	{
 		m_fCurX = m_fPrevX = m_nInitX;
 		m_fCurY = m_fPrevY = m_nInitY;
@@ -1246,7 +1221,7 @@ bool CNpc::SetLive()
 
 	// 상태이상 정보 초기화
 	m_fHPChangeTime = TimeGet();
-	m_fFaintingTime = 0.0f;
+	m_fFaintingTime = 0.0;
 	InitMagicValuable();
 
 	// NPC 가 처음 살아나는 경우
@@ -2522,30 +2497,28 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 	// user을 타겟으로 잡는 경우
 	if (nType == 1)
 	{
-		int nUserid = 0, count = 0;
+		int nUserid = 0, count = 0, nUser = 0;
 		CUser* pUser = nullptr;
 
-		EnterCriticalSection(&g_region_critical);
-
-		auto Iter1 = pMap->m_ppRegion[nRX][nRZ].m_RegionUserArray.begin();
-		auto Iter2 = pMap->m_ppRegion[nRX][nRZ].m_RegionUserArray.end();
-
-		int nUser = pMap->m_ppRegion[nRX][nRZ].m_RegionUserArray.GetSize();
-		//TRACE(_T("FindEnemyExpand type1,, region_x=%d, region_z=%d, user=%d, mon=%d\n"), nRX, nRZ, nUser, nMonster);
-		if (nUser == 0)
 		{
-			LeaveCriticalSection(&g_region_critical);
-			return 0.0f;
-		}
+			std::lock_guard<std::mutex> lock(g_region_mutex);
 
-		pIDList = new int[nUser];
-		for (; Iter1 != Iter2; Iter1++)
-		{
-			nUserid = *((*Iter1).second);
-			pIDList[count] = nUserid;
-			count++;
+			auto Iter1 = pMap->m_ppRegion[nRX][nRZ].m_RegionUserArray.begin();
+			auto Iter2 = pMap->m_ppRegion[nRX][nRZ].m_RegionUserArray.end();
+
+			nUser = pMap->m_ppRegion[nRX][nRZ].m_RegionUserArray.GetSize();
+			//TRACE(_T("FindEnemyExpand type1,, region_x=%d, region_z=%d, user=%d, mon=%d\n"), nRX, nRZ, nUser, nMonster);
+			if (nUser == 0)
+				return 0.0f;
+
+			pIDList = new int[nUser];
+			for (; Iter1 != Iter2; Iter1++)
+			{
+				nUserid = *((*Iter1).second);
+				pIDList[count] = nUserid;
+				count++;
+			}
 		}
-		LeaveCriticalSection(&g_region_critical);
 
 		for (int i = 0; i < nUser; i++)
 		{
@@ -2613,30 +2586,28 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 	// 경비병이 몬스터를 타겟으로 잡는 경우
 	else if (nType == 2)
 	{
-		int nNpcid = 0, count = 0;
+		int nNpcid = 0, count = 0, nMonster = 0;
 		CNpc* pNpc = nullptr;
 
-		EnterCriticalSection(&g_region_critical);
-
-		auto Iter1 = pMap->m_ppRegion[nRX][nRZ].m_RegionNpcArray.begin();
-		auto Iter2 = pMap->m_ppRegion[nRX][nRZ].m_RegionNpcArray.end();
-
-		int nMonster = pMap->m_ppRegion[nRX][nRZ].m_RegionNpcArray.GetSize();
-		//TRACE(_T("FindEnemyExpand type1,, region_x=%d, region_z=%d, user=%d, mon=%d\n"), nRX, nRZ, nUser, nMonster);
-		if (nMonster == 0)
 		{
-			LeaveCriticalSection(&g_region_critical);
-			return 0.0f;
-		}
+			std::lock_guard<std::mutex> lock(g_region_mutex);
 
-		pIDList = new int[nMonster];
-		for (; Iter1 != Iter2; Iter1++)
-		{
-			nNpcid = *((*Iter1).second);
-			pIDList[count] = nNpcid;
-			count++;
+			auto Iter1 = pMap->m_ppRegion[nRX][nRZ].m_RegionNpcArray.begin();
+			auto Iter2 = pMap->m_ppRegion[nRX][nRZ].m_RegionNpcArray.end();
+
+			int nMonster = pMap->m_ppRegion[nRX][nRZ].m_RegionNpcArray.GetSize();
+			//TRACE(_T("FindEnemyExpand type1,, region_x=%d, region_z=%d, user=%d, mon=%d\n"), nRX, nRZ, nUser, nMonster);
+			if (nMonster == 0)
+				return 0.0f;
+
+			pIDList = new int[nMonster];
+			for (; Iter1 != Iter2; Iter1++)
+			{
+				nNpcid = *((*Iter1).second);
+				pIDList[count] = nNpcid;
+				count++;
+			}
 		}
-		LeaveCriticalSection(&g_region_critical);
 
 		//TRACE(_T("FindEnemyExpand type2,, region_x=%d, region_z=%d, user=%d, mon=%d\n"), nRX, nRZ, nUser, nMonster);
 
@@ -5427,20 +5398,22 @@ void CNpc::FindFriendRegion(int x, int z, MAP* pMap, _TargetHealer* pHealer, int
 	int* pNpcIDList = nullptr;
 	int total_mon = 0, count = 0, nid = 0;
 
-	EnterCriticalSection(&g_region_critical);
-
-	auto Iter1 = pMap->m_ppRegion[x][z].m_RegionNpcArray.begin();
-	auto Iter2 = pMap->m_ppRegion[x][z].m_RegionNpcArray.end();
-
-	total_mon = pMap->m_ppRegion[x][z].m_RegionNpcArray.GetSize();
-	pNpcIDList = new int[total_mon];
-	for (; Iter1 != Iter2; Iter1++)
 	{
-		nid = *((*Iter1).second);
-		pNpcIDList[count] = nid;
-		count++;
+		std::lock_guard<std::mutex> lock(g_region_mutex);
+
+		auto Iter1 = pMap->m_ppRegion[x][z].m_RegionNpcArray.begin();
+		auto Iter2 = pMap->m_ppRegion[x][z].m_RegionNpcArray.end();
+
+		total_mon = pMap->m_ppRegion[x][z].m_RegionNpcArray.GetSize();
+
+		pNpcIDList = new int[total_mon];
+		for (; Iter1 != Iter2; Iter1++)
+		{
+			nid = *((*Iter1).second);
+			pNpcIDList[count] = nid;
+			count++;
+		}
 	}
-	LeaveCriticalSection(&g_region_critical);
 
 	CNpc* pNpc = nullptr;
 	__Vector3 vStart, vEnd;
@@ -5901,7 +5874,8 @@ bool CNpc::GetUserInViewRange(int x, int z)
 		return false;
 	}
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+
 	CUser* pUser = nullptr;
 	__Vector3 vStart, vEnd;
 	vStart.Set(m_fCurX, 0, m_fCurZ);
@@ -5926,13 +5900,9 @@ bool CNpc::GetUserInViewRange(int x, int z)
 		vEnd.Set(pUser->m_curx, 0, pUser->m_curz);
 		fDis = GetDistance(vStart, vEnd);
 		if (fDis <= NPC_VIEW_RANGE)
-		{
-			LeaveCriticalSection(&g_region_critical);
 			return true;
-		}
 	}
 
-	LeaveCriticalSection(&g_region_critical);
 	return false;
 }
 
@@ -7096,7 +7066,7 @@ int CNpc::GetItemGroupNumber(int groupId) const
 	return makeItemGroup->Item[randomSlot];
 }
 
-void CNpc::DurationMagic_4(float currenttime)
+void CNpc::DurationMagic_4(double currentTime)
 {
 	int send_index = 0, buff_type = 0;
 	char send_buff[128] = {};
@@ -7155,10 +7125,10 @@ void CNpc::DurationMagic_4(float currenttime)
 	{
 		if (m_MagicType4[i].sDurationTime)
 		{
-			if (currenttime > (m_MagicType4[i].fStartTime + m_MagicType4[i].sDurationTime))
+			if (currentTime > (m_MagicType4[i].fStartTime + m_MagicType4[i].sDurationTime))
 			{
 				m_MagicType4[i].sDurationTime = 0;
-				m_MagicType4[i].fStartTime = 0.0f;
+				m_MagicType4[i].fStartTime = 0.0;
 				m_MagicType4[i].byAmount = 0;
 				buff_type = i + 1;
 
@@ -7233,7 +7203,7 @@ void CNpc::ChangeMonsterInfo(int iChangeType)
 	Load(pNpcTable, false);
 }
 
-void CNpc::DurationMagic_3(float currenttime)
+void CNpc::DurationMagic_3(double currentTime)
 {
 	int duration_damage = 0;
 
@@ -7243,11 +7213,11 @@ void CNpc::DurationMagic_3(float currenttime)
 			continue;
 
 		// 2초간격으로
-		if (currenttime < (m_MagicType3[i].fStartTime + m_MagicType3[i].byHPInterval))
+		if (currentTime < (m_MagicType3[i].fStartTime + m_MagicType3[i].byHPInterval))
 			continue;
 
 		m_MagicType3[i].byHPInterval += 2;
-		//TRACE(_T("DurationMagic_3,, [%d] curtime = %.2f, dur=%.2f, nid=%d, damage=%d\n"), i, currenttime, m_MagicType3[i].fStartTime, m_sNid+NPC_BAND, m_MagicType3[i].sHPAmount);
+		//TRACE(_T("DurationMagic_3,, [%d] curtime = %.2f, dur=%.2f, nid=%d, damage=%d\n"), i, currentTime, m_MagicType3[i].fStartTime, m_sNid+NPC_BAND, m_MagicType3[i].sHPAmount);
 
 		// healing
 		if (m_MagicType3[i].sHPAmount >= 0)
@@ -7266,7 +7236,7 @@ void CNpc::DurationMagic_3(float currenttime)
 				SendDead();
 				SendAttackSuccess(MAGIC_ATTACK_TARGET_DEAD, m_MagicType3[i].sHPAttackUserID, duration_damage, m_iHP, 1, DURATION_ATTACK);
 				//TRACE(_T("&&&& Duration Magic attack .. pNpc->m_byHPInterval[%d] = %d &&&& \n"), i, m_MagicType3[i].byHPInterval);
-				m_MagicType3[i].fStartTime = 0.0f;
+				m_MagicType3[i].fStartTime = 0.0;
 				m_MagicType3[i].byHPDuration = 0;
 				m_MagicType3[i].byHPInterval = 2;
 				m_MagicType3[i].sHPAmount = 0;
@@ -7280,9 +7250,9 @@ void CNpc::DurationMagic_3(float currenttime)
 			}
 		}
 
-		if (currenttime >= (m_MagicType3[i].fStartTime + m_MagicType3[i].byHPDuration))
+		if (currentTime >= (m_MagicType3[i].fStartTime + m_MagicType3[i].byHPDuration))
 		{	// 총 공격시간..
-			m_MagicType3[i].fStartTime = 0.0f;
+			m_MagicType3[i].fStartTime = 0.0;
 			m_MagicType3[i].byHPDuration = 0;
 			m_MagicType3[i].byHPInterval = 2;
 			m_MagicType3[i].sHPAmount = 0;
@@ -7327,17 +7297,17 @@ void CNpc::NpcSleeping()
 
 /////////////////////////////////////////////////////////////////////////////
 // 몬스터가 기절상태로..........
-void CNpc::NpcFainting(float currenttime)
+void CNpc::NpcFainting(double currentTime)
 {
 	NpcTrace("NpcFainting()");
 
 	// 2초동안 기절해 있다가,,  standing상태로....
-	if (currenttime > (m_fFaintingTime + FAINTING_TIME))
+	if (currentTime > (m_fFaintingTime + FAINTING_TIME))
 	{
 		m_NpcState = NPC_STANDING;
 		m_Delay = 0;
 		m_fDelayTime = TimeGet();
-		m_fFaintingTime = 0.0f;
+		m_fFaintingTime = 0.0;
 	}
 }
 

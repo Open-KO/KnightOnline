@@ -2,9 +2,13 @@
 //
 
 #include "stdafx.h"
-#include "ItemManager.h"
 #include "ItemManagerDlg.h"
-#include <process.h>
+#include "ItemManager.h"
+
+#include <shared/Ini.h>
+#include <spdlog/spdlog.h>
+
+#include <filesystem>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,53 +16,26 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-DWORD WINAPI ReadQueueThread(LPVOID lp)
-{
-	CItemManagerDlg* pMain = (CItemManagerDlg*) lp;
-	int recvlen = 0, index = 0;
-	uint8_t command;
-	char recv_buff[MAX_PKTSIZE] = {};
-	CString string;
-
-	while (true)
-	{
-		index = 0;
-		recvlen = pMain->m_LoggerRecvQueue.GetData(recv_buff);
-		if (recvlen >= SMQ_ERROR_RANGE)
-		{
-			Sleep(1);
-			continue;
-		}
-
-		command = GetByte(recv_buff, index);
-		switch (command)
-		{
-			case WIZ_ITEM_LOG:
-				pMain->ItemLogWrite(recv_buff + index);
-				break;
-
-			case WIZ_DATASAVE:
-				pMain->ExpLogWrite(recv_buff + index);
-				break;
-		}
-
-		recvlen = 0;
-		memset(recv_buff, 0, sizeof(recv_buff));
-	}
-}
+// NOTE: Explicitly handled under DEBUG_NEW override
+#include "ItemManagerReadQueueThread.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CItemManagerDlg dialog
 
 CItemManagerDlg::CItemManagerDlg(CWnd* pParent /*=nullptr*/)
-	: CDialog(CItemManagerDlg::IDD, pParent)
+	: CDialog(CItemManagerDlg::IDD, pParent),
+	_logger()
 {
 	//{{AFX_DATA_INIT(CItemManagerDlg)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	m_nItemLogFileDay = 0;
+	_readQueueThread = std::make_unique<ItemManagerReadQueueThread>(this);
+}
+
+CItemManagerDlg::~CItemManagerDlg()
+{
 }
 
 void CItemManagerDlg::DoDataExchange(CDataExchange* pDX)
@@ -83,25 +60,24 @@ END_MESSAGE_MAP()
 
 BOOL CItemManagerDlg::OnInitDialog()
 {
+	CDialog::OnInitDialog();
+
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	//----------------------------------------------------------------------
 	//	Logfile initialize
 	//----------------------------------------------------------------------
-	CTime time = CTime::GetCurrentTime();
-	TCHAR strLogFile[50] = {};
-	wsprintf(strLogFile, _T("ItemLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
-	m_ItemLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-	m_ItemLogFile.SeekToEnd();
+	CString exePath(GetProgPath());
+	std::string exePathUtf8(CT2A(exePath, CP_UTF8));
 
-	memset(strLogFile, 0, sizeof(strLogFile));
-	wsprintf(strLogFile, _T("ExpLog-%d-%d-%d.txt"), time.GetYear(), time.GetMonth(), time.GetDay());
-	m_ExpLogFile.Open(strLogFile, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone);
-	m_ExpLogFile.SeekToEnd();
+	std::filesystem::path iniPath(exePath.GetString());
+	iniPath /= L"ItemManager.ini";
 
-	m_nItemLogFileDay = time.GetDay();
-	m_nExpLogFileDay = time.GetDay();
+	CIni ini(iniPath);
+
+	// configure logger
+	_logger.Setup(ini, exePathUtf8);
 
 	if (!m_LoggerRecvQueue.Open(SMQ_ITEMLOGGER))
 	{
@@ -110,15 +86,26 @@ BOOL CItemManagerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	DWORD id;
-	m_hReadQueueThread = ::CreateThread(nullptr, 0, ReadQueueThread, this, 0, &id);
+	_readQueueThread->start();
 
 	CTime cur = CTime::GetCurrentTime();
-	CString starttime;
-	starttime.Format(_T("ItemManager Start : %d-%d day %d:%d time\r\n"), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute());
-	m_ItemLogFile.Write(starttime, starttime.GetLength());
+	CString strLog;
+	strLog.Format(_T("%04d/%02d/%02d %02d:%02d ItemManager started"),
+		cur.GetYear(), cur.GetMonth(), cur.GetDay(),
+		cur.GetHour(), cur.GetMinute());
+	m_strOutList.AddString(strLog);
+
+	spdlog::info("ItemManager started");
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+void ItemManagerLogger::SetupExtraLoggers(CIni& ini,
+	std::shared_ptr<spdlog::details::thread_pool> threadPool,
+	const std::string& baseDir)
+{
+	SetupExtraLogger(ini, threadPool, baseDir, logger::ItemManagerItem, ini::ITEM_LOG_FILE);
+	SetupExtraLogger(ini, threadPool, baseDir, logger::ItemManagerExp, ini::EXP_LOG_FILE);
 }
 
 void CItemManagerDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -162,14 +149,12 @@ HCURSOR CItemManagerDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void CItemManagerDlg::ItemLogWrite(char* pBuf)
+void CItemManagerDlg::ItemLogWrite(const char* pBuf)
 {
 	int index = 0, srclen = 0, tarlen = 0, type = 0, putitem = 0, putcount = 0, putdure = 0;
-	int getitem = 0, getcount = 0, getdure = 0;
-	int64_t putserial = 0, getserial = 0;
+	int64_t putserial = 0;
 	char srcid[MAX_ID_SIZE + 1] = {},
-		tarid[MAX_ID_SIZE + 1] = {},
-		strLog[100] = {};
+		tarid[MAX_ID_SIZE + 1] = {};
 
 	srclen = GetShort(pBuf, index);
 	if (srclen <= 0
@@ -196,106 +181,22 @@ void CItemManagerDlg::ItemLogWrite(char* pBuf)
 	putitem = GetDWORD(pBuf, index);
 	putcount = GetShort(pBuf, index);
 	putdure = GetShort(pBuf, index);
-//	getserial = GetInt64( pBuf, index );
-//	getitem = GetDWORD( pBuf, index );
-//	getcount = GetShort( pBuf, index );
-//	getdure = GetShort( pBuf, index );
 
-	/// 
-	//sprintf(strLog, "%d, %s, %d, %s, %d, %20d, %d, %d, %d, %20d, %d, %d, %d", srclen, srcid, tarlen, tarid, type, putserial, putitem, putcount, putdure, getserial, getitem, getcount, getdure);
-	sprintf(strLog, "%s, %s, %d, %I64d, %d, %d, %d", srcid, tarid, type, putserial, putitem, putcount, putdure);
-	WriteItemLogFile(strLog);
+	spdlog::get(logger::ItemManagerItem)->info("{}, {}, {}, {}, {}, {}, {}",
+		srcid, tarid, type, putserial, putitem, putcount, putdure);
 }
 
-void CItemManagerDlg::WriteItemLogFile(char* pData)
-{
-	CTime cur = CTime::GetCurrentTime();
-	char strLog[512] = {};
-	int nDay = cur.GetDay();
-
-	if (m_nItemLogFileDay != nDay)
-	{
-		if (m_ItemLogFile.m_hFile != CFile::hFileNull)
-			m_ItemLogFile.Close();
-
-		CString filename;
-		filename.Format(_T("ItemLog-%d-%d-%d.txt"), cur.GetYear(), cur.GetMonth(), cur.GetDay());
-
-		if (m_ItemLogFile.Open(filename, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone))
-			m_ItemLogFile.SeekToEnd();
-
-		m_nItemLogFileDay = nDay;
-	}
-
-	sprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
-	int nLen = strlen(strLog);
-	if (nLen >= 512)
-	{
-		TRACE(_T("### WriteLogFile Fail : length = %d ###\n"), nLen);
-		return;
-	}
-
-	m_ItemLogFile.Write(strLog, nLen);
-}
-
-void CItemManagerDlg::WriteExpLogFile(char* pData)
-{
-	CTime cur = CTime::GetCurrentTime();
-	char strLog[512] = {};
-	int nDay = cur.GetDay();
-
-	if (m_nExpLogFileDay != nDay)
-	{
-		if (m_ExpLogFile.m_hFile != CFile::hFileNull)
-			m_ExpLogFile.Close();
-
-		CString filename;
-		filename.Format(_T("Exp-%d-%d-%d.txt"), cur.GetYear(), cur.GetMonth(), cur.GetDay());
-
-		if (m_ExpLogFile.Open(filename, CFile::modeWrite | CFile::modeCreate | CFile::modeNoTruncate | CFile::shareDenyNone))
-			m_ExpLogFile.SeekToEnd();
-
-		m_nExpLogFileDay = nDay;
-	}
-
-	sprintf(strLog, "%d-%d-%d %d:%d, %s\r\n", cur.GetYear(), cur.GetMonth(), cur.GetDay(), cur.GetHour(), cur.GetMinute(), pData);
-	int nLen = strlen(strLog);
-	if (nLen >= 512)
-	{
-		TRACE(_T("### WriteLogFile Fail : length = %d ###\n"), nLen);
-		return;
-	}
-
-	m_ExpLogFile.Write(strLog, nLen);
-}
-
-BOOL CItemManagerDlg::DestroyWindow()
-{
-	// TODO: Add your specialized code here and/or call the base class
-	if (m_hReadQueueThread != nullptr)
-		::TerminateThread(m_hReadQueueThread, 0);
-
-	if (m_ItemLogFile.m_hFile != CFile::hFileNull)
-		m_ItemLogFile.Close();
-
-	if (m_ExpLogFile.m_hFile != CFile::hFileNull)
-		m_ExpLogFile.Close();
-
-	return CDialog::DestroyWindow();
-}
-
-void CItemManagerDlg::ExpLogWrite(char* pBuf)
+void CItemManagerDlg::ExpLogWrite(const char* pBuf)
 {
 	int index = 0, aclen = 0, charlen = 0, type = 0, level = 0, exp = 0, loyalty = 0, money = 0;
 	char acname[MAX_ID_SIZE + 1] = {},
-		charid[MAX_ID_SIZE + 1] = {},
-		strLog[100] = {};
+		charid[MAX_ID_SIZE + 1] = {};
 
 	aclen = GetShort(pBuf, index);
 	if (aclen <= 0
 		|| aclen > MAX_ID_SIZE)
 	{
-		TRACE(_T("### ItemLogWrite Fail : tarlen = %d ###\n"), aclen);
+		TRACE(_T("### ExpLogWrite Fail : tarlen = %d ###\n"), aclen);
 		return;
 	}
 
@@ -304,7 +205,7 @@ void CItemManagerDlg::ExpLogWrite(char* pBuf)
 	if (charlen <= 0
 		|| charlen > MAX_ID_SIZE)
 	{
-		TRACE(_T("### ItemLogWrite Fail : tarlen = %d ###\n"), charlen);
+		TRACE(_T("### ExpLogWrite Fail : tarlen = %d ###\n"), charlen);
 		return;
 	}
 
@@ -315,13 +216,22 @@ void CItemManagerDlg::ExpLogWrite(char* pBuf)
 	loyalty = GetDWORD(pBuf, index);
 	money = GetDWORD(pBuf, index);
 
-	sprintf(strLog, "%s, %s, %d, %d, %d, %d, %d", acname, charid, type, level, exp, loyalty, money);
-	WriteExpLogFile(strLog);
+	spdlog::get(logger::ItemManagerExp)->info("{}, {}, {}, {}, {}, {}, {}",
+		acname, charid, type, level, exp, loyalty, money);
+}
+
+BOOL CItemManagerDlg::DestroyWindow()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (_readQueueThread != nullptr)
+		_readQueueThread->shutdown();
+
+	return CDialog::DestroyWindow();
 }
 
 void CItemManagerDlg::OnExitBtn()
 {
 	// TODO: Add your control notification handler code here
-	if (AfxMessageBox(_T("진짜 끝낼까요?"), MB_YESNO) == IDYES)
-		CDialog::OnOK();
+	if (AfxMessageBox(_T("Are you sure you wish to exit?"), MB_YESNO) == IDYES)
+		PostQuitMessage(0);
 }

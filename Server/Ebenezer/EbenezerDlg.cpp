@@ -14,14 +14,10 @@
 
 #include <db-library/ConnectionManager.h>
 
+#include <fstream>
+
 constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
 constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
-
-constexpr int GAME_TIME       	= 100;
-constexpr int HEARTBEAT_SMQ		= 200;
-constexpr int PACKET_CHECK		= 300;
-constexpr int ALIVE_TIME		= 400;
-constexpr int MARKET_BBS_TIME	= 1000;
 
 constexpr int NUM_FLAG_VICTORY    = 4;
 constexpr int AWARD_GOLD          = 5000;
@@ -33,150 +29,22 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 // NOTE: Explicitly handled under DEBUG_NEW override
+#include "EbenezerReadQueueThread.h"
 #include <db-library/RecordSetLoader_STLMap.h>
 #include <db-library/RecordSetLoader_Vector.h>
+#include <shared/TimerThread.h>
 
 import EbenezerBinder;
 
 using namespace db;
+using namespace std::chrono_literals;
 
-CRITICAL_SECTION g_serial_critical;
-CRITICAL_SECTION g_region_critical;
+std::recursive_mutex g_region_mutex;
 
 CEbenezerDlg* CEbenezerDlg::s_pInstance = nullptr;
 
 uint16_t g_increase_serial = 1;
 bool g_serverdown_flag = false;
-
-DWORD WINAPI ReadQueueThread(LPVOID lp)
-{
-	CEbenezerDlg* pMain = (CEbenezerDlg*) lp;
-	int recvlen = 0, index = 0, uid = -1, send_index = 0, buff_length = 0;
-	uint8_t command, result;
-	char pBuf[MAX_PKTSIZE] = {}, send_buff[1024] = {};
-	CUser* pUser = nullptr;
-	int currenttime = 0;
-
-	while (true)
-	{
-		index = 0;
-		recvlen = pMain->m_LoggerRecvQueue.GetData(pBuf);
-
-		if (recvlen > MAX_PKTSIZE
-			|| recvlen == 0)
-		{
-			Sleep(1);
-			continue;
-		}
-
-		command = GetByte(pBuf, index);
-		uid = GetShort(pBuf, index);
-
-		if (command == (KNIGHTS_ALLLIST_REQ + 0x10)
-			&& uid == -1)
-		{
-			pMain->m_KnightsManager.RecvKnightsAllList(pBuf + index);
-			continue;
-		}
-
-		pUser = pMain->GetUserPtr(uid);
-		if (pUser == nullptr)
-			goto loop_pass;
-
-		switch (command)
-		{
-			case WIZ_LOGIN:
-				result = GetByte(pBuf, index);
-				if (result == 0xFF)
-					memset(pUser->m_strAccountID, 0, sizeof(pUser->m_strAccountID));
-				SetByte(send_buff, WIZ_LOGIN, send_index);
-				SetByte(send_buff, result, send_index);					// 성공시 국가 정보
-				pUser->Send(send_buff, send_index);
-				break;
-
-			case WIZ_SEL_NATION:
-				SetByte(send_buff, WIZ_SEL_NATION, send_index);
-				SetByte(send_buff, GetByte(pBuf, index), send_index);	// 국가 정보
-				pUser->Send(send_buff, send_index);
-				break;
-
-			case WIZ_NEW_CHAR:
-				result = GetByte(pBuf, index);
-				SetByte(send_buff, WIZ_NEW_CHAR, send_index);
-				SetByte(send_buff, result, send_index);					// 성공시 국가 정보
-				pUser->Send(send_buff, send_index);
-				break;
-
-			case WIZ_DEL_CHAR:
-				pUser->RecvDeleteChar(pBuf + index);
-			/*	result = GetByte( pBuf, index );
-				SetByte( send_buff, WIZ_DEL_CHAR, send_index );
-				SetByte( send_buff, result, send_index );					// 성공시 국가 정보
-				SetByte( send_buff, GetByte( pBuf, index ), send_index );
-				pUser->Send( send_buff, send_index );	*/
-				break;
-
-			case WIZ_SEL_CHAR:
-				pUser->SelectCharacter(pBuf + index);
-				break;
-
-			case WIZ_ALLCHAR_INFO_REQ:
-				buff_length = GetShort(pBuf, index);
-				if (buff_length > recvlen)
-					break;
-
-				SetByte(send_buff, WIZ_ALLCHAR_INFO_REQ, send_index);
-				SetString(send_buff, pBuf + index, buff_length, send_index);
-				pUser->Send(send_buff, send_index);
-				break;
-
-			case WIZ_LOGOUT:
-				if (pUser != nullptr
-					&& strlen(pUser->m_pUserData->m_id) != 0)
-				{
-					spdlog::debug("EbenezerDlg::ReadQueueThread: WIZ_LOGOUT [charId={}]",
-						pUser->m_pUserData->m_id);
-					pUser->Close();
-				}
-				break;
-
-			case KNIGHTS_CREATE + 0x10:
-			case KNIGHTS_JOIN + 0x10:
-			case KNIGHTS_WITHDRAW + 0x10:
-			case KNIGHTS_REMOVE + 0x10:
-			case KNIGHTS_ADMIT + 0x10:
-			case KNIGHTS_REJECT + 0x10:
-			case KNIGHTS_CHIEF + 0x10:
-			case KNIGHTS_VICECHIEF + 0x10:
-			case KNIGHTS_OFFICER + 0x10:
-			case KNIGHTS_PUNISH + 0x10:
-			case KNIGHTS_DESTROY + 0x10:
-			case KNIGHTS_MEMBER_REQ + 0x10:
-			case KNIGHTS_STASH + 0x10:
-			case KNIGHTS_LIST_REQ + 0x10:
-			case KNIGHTS_ALLLIST_REQ + 0x10:
-				pMain->m_KnightsManager.ReceiveKnightsProcess(pUser, pBuf + index, command);
-				break;
-
-			case DB_LOGIN_INFO:
-				result = GetByte(pBuf, index);
-				if (result == 0x00)
-					pUser->Close();
-				break;
-
-			case DB_COUPON_EVENT:
-				if (pUser != nullptr)
-					pUser->CouponEvent(pBuf + index);
-				break;
-		}
-
-	loop_pass:
-		recvlen = 0;
-		memset(pBuf, 0, sizeof(pBuf));
-		send_index = 0;
-		memset(send_buff, 0, sizeof(send_buff));
-	}
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // CEbenezerDlg dialog
@@ -189,8 +57,6 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
-	m_hReadQueueThread = nullptr;
 
 	m_nYear = 0;
 	m_nMonth = 0;
@@ -249,13 +115,13 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 		memset(m_strBuyTitle[h], 0, sizeof(m_strBuyTitle[h]));
 		memset(m_strBuyMessage[h], 0, sizeof(m_strBuyMessage[h]));
 		m_iBuyPrice[h] = 0;
-		m_fBuyStartTime[h] = 0.0f;
+		m_fBuyStartTime[h] = 0.0;
 
 		m_sSellID[h] = -1;
 		memset(m_strSellTitle[h], 0, sizeof(m_strSellTitle[h]));
 		memset(m_strSellMessage[h], 0, sizeof(m_strSellMessage[h]));
 		m_iSellPrice[h] = 0;
-		m_fSellStartTime[h] = 0.0f;
+		m_fSellStartTime[h] = 0.0;
 	}
 
 	memset(m_ppNotice, 0, sizeof(m_ppNotice));
@@ -277,6 +143,28 @@ CEbenezerDlg::CEbenezerDlg(CWnd* pParent /*=nullptr*/)
 	_monsterChallengePlayerCount = 0;
 
 	ConnectionManager::Create();
+
+	_gameTimeThread = std::make_unique<TimerThread>(
+		6s,
+		std::bind(&CEbenezerDlg::GameTimeTick, this));
+
+	_smqHeartbeatThread = std::make_unique<TimerThread>(
+		10s,
+		std::bind(&CEbenezerDlg::SendSMQHeartbeat, this));
+
+	_aliveTimeThread = std::make_unique<TimerThread>(
+		34s, // NOTE: oddly specific time which they preserved in newer builds
+		std::bind(&CEbenezerDlg::CheckAliveUser, this));
+
+	_marketBBSTimeThread = std::make_unique<TimerThread>(
+		5min,
+		std::bind(&CEbenezerDlg::MarketBBSTimeCheck, this));
+
+	_packetCheckThread = std::make_unique<TimerThread>(
+		6min,
+		std::bind(&CEbenezerDlg::WritePacketLog, this));
+
+	_readQueueThread = std::make_unique<EbenezerReadQueueThread>(this);
 }
 
 CEbenezerDlg::~CEbenezerDlg()
@@ -298,7 +186,6 @@ BEGIN_MESSAGE_MAP(CEbenezerDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_WM_TIMER()
 	ON_MESSAGE(WM_PROCESS_LISTBOX_QUEUE, &CEbenezerDlg::OnProcessListBoxQueue)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -333,11 +220,8 @@ BOOL CEbenezerDlg::OnInitDialog()
 	m_bFirstServerFlag = false;
 	m_bServerCheckFlag = false;
 	m_sReSocketCount = 0;
-	m_fReConnectStart = 0.0f;
+	m_fReConnectStart = 0.0;
 	// sungyong~ 2002.05.23
-	
-	InitializeCriticalSection(&g_serial_critical);
-	InitializeCriticalSection(&g_region_critical);
 
 	LoadConfig();
 
@@ -369,21 +253,21 @@ BOOL CEbenezerDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	if (!m_LoggerSendQueue.OpenOrCreate(SMQ_LOGGERSEND, MAX_PKTSIZE, MAX_COUNT))
+	if (!m_LoggerSendQueue.OpenOrCreate(SMQ_LOGGERSEND))
 	{
 		AfxMessageBox(_T("SMQ Send Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_LoggerRecvQueue.OpenOrCreate(SMQ_LOGGERRECV, MAX_PKTSIZE, MAX_COUNT))
+	if (!m_LoggerRecvQueue.OpenOrCreate(SMQ_LOGGERRECV))
 	{
 		AfxMessageBox(_T("SMQ Recv Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
 		return FALSE;
 	}
 
-	if (!m_ItemLoggerSendQ.OpenOrCreate(SMQ_ITEMLOGGER, MAX_PKTSIZE, MAX_COUNT))
+	if (!m_ItemLoggerSendQ.OpenOrCreate(SMQ_ITEMLOGGER))
 	{
 		AfxMessageBox(_T("SMQ ItemLog Shared Memory Initialize Fail"));
 		AfxPostQuitMessage(0);
@@ -570,9 +454,6 @@ BOOL CEbenezerDlg::OnInitDialog()
 
 	LoadNoticeData();
 
-	DWORD id;
-	m_hReadQueueThread = CreateThread(nullptr, 0, ReadQueueThread, this, 0, &id);
-
 	m_pUdpSocket = new CUdpSocket(this);
 	if (!m_pUdpSocket->CreateSocket())
 	{
@@ -596,6 +477,14 @@ BOOL CEbenezerDlg::OnInitDialog()
 	// for a full server load to log in
 	UserAcceptThread();
 #endif
+
+	_gameTimeThread->start();
+	_smqHeartbeatThread->start();
+	_aliveTimeThread->start();
+	_marketBBSTimeThread->start();
+	_packetCheckThread->start();
+
+	_readQueueThread->start();
 
 	CTime cur = CTime::GetCurrentTime();
 	std::wstring starttime = std::format(L"Ebenezer started: {:02}/{:02} {:02}:{:02}",
@@ -649,72 +538,47 @@ HCURSOR CEbenezerDlg::OnQueryDragIcon()
 
 BOOL CEbenezerDlg::DestroyWindow()
 {
-	KillTimer(GAME_TIME);
-	KillTimer(ALIVE_TIME);
-	KillTimer(MARKET_BBS_TIME);
-	KillTimer(PACKET_CHECK);
+	if (_gameTimeThread != nullptr)
+		_gameTimeThread->shutdown();
+
+	if (_smqHeartbeatThread != nullptr)
+		_smqHeartbeatThread->shutdown();
+
+	if (_aliveTimeThread != nullptr)
+		_aliveTimeThread->shutdown();
+
+	if (_marketBBSTimeThread != nullptr)
+		_marketBBSTimeThread->shutdown();
+
+	if (_packetCheckThread != nullptr)
+		_packetCheckThread->shutdown();
 
 	delete m_pUdpSocket;
 	m_pUdpSocket = nullptr;
 
 	_socketManager.Shutdown();
 
-	if (m_hReadQueueThread != nullptr)
-		TerminateThread(m_hReadQueueThread, 0);
+	if (_readQueueThread != nullptr)
+		_readQueueThread->shutdown();
 
-	if (!m_ItemTableMap.IsEmpty())
-		m_ItemTableMap.DeleteAllData();
-
-	if (!m_MagicTableMap.IsEmpty())
-		m_MagicTableMap.DeleteAllData();
-
-	if (!m_MagicType1TableMap.IsEmpty())
-		m_MagicType1TableMap.DeleteAllData();
-
-	if (!m_MagicType2TableMap.IsEmpty())
-		m_MagicType2TableMap.DeleteAllData();
-
-	if (!m_MagicType3TableMap.IsEmpty())
-		m_MagicType3TableMap.DeleteAllData();
-
-	if (!m_MagicType4TableMap.IsEmpty())
-		m_MagicType4TableMap.DeleteAllData();
-
-	if (!m_MagicType5TableMap.IsEmpty())
-		m_MagicType5TableMap.DeleteAllData();
-
-	if (!m_MagicType7TableMap.IsEmpty())
-		m_MagicType7TableMap.DeleteAllData();
-
-	if (!m_MagicType8TableMap.IsEmpty())
-		m_MagicType8TableMap.DeleteAllData();
-
-	if (!m_NpcMap.IsEmpty())
-		m_NpcMap.DeleteAllData();
-
-	if (!m_AISocketMap.IsEmpty())
-		m_AISocketMap.DeleteAllData();
-
-	if (!m_PartyMap.IsEmpty())
-		m_PartyMap.DeleteAllData();
-
-	if (!m_CoefficientTableMap.IsEmpty())
-		m_CoefficientTableMap.DeleteAllData();
-
-	if (!m_KnightsMap.IsEmpty())
-		m_KnightsMap.DeleteAllData();
-
-	if (!m_ServerArray.IsEmpty())
-		m_ServerArray.DeleteAllData();
-
-	if (!m_ServerGroupArray.IsEmpty())
-		m_ServerGroupArray.DeleteAllData();
-
-	if (!m_HomeTableMap.IsEmpty())
-		m_HomeTableMap.DeleteAllData();
-
-	if (!m_StartPositionTableMap.IsEmpty())
-		m_StartPositionTableMap.DeleteAllData();
+	m_ItemTableMap.DeleteAllData();
+	m_MagicTableMap.DeleteAllData();
+	m_MagicType1TableMap.DeleteAllData();
+	m_MagicType2TableMap.DeleteAllData();
+	m_MagicType3TableMap.DeleteAllData();
+	m_MagicType4TableMap.DeleteAllData();
+	m_MagicType5TableMap.DeleteAllData();
+	m_MagicType7TableMap.DeleteAllData();
+	m_MagicType8TableMap.DeleteAllData();
+	m_NpcMap.DeleteAllData();
+	m_AISocketMap.DeleteAllData();
+	m_PartyMap.DeleteAllData();
+	m_CoefficientTableMap.DeleteAllData();
+	m_KnightsMap.DeleteAllData();
+	m_ServerArray.DeleteAllData();
+	m_ServerGroupArray.DeleteAllData();
+	m_HomeTableMap.DeleteAllData();
+	m_StartPositionTableMap.DeleteAllData();
 
 	for (C3DMap* pMap : m_ZoneArray)
 		delete pMap;
@@ -724,13 +588,9 @@ BOOL CEbenezerDlg::DestroyWindow()
 		delete pLevelUp;
 	m_LevelUpTableArray.clear();
 
-	if (!m_EventMap.IsEmpty())
-		m_EventMap.DeleteAllData();
+	m_EventMap.DeleteAllData();
 
 	s_pInstance = nullptr;
-
-	DeleteCriticalSection(&g_serial_critical);
-	DeleteCriticalSection(&g_region_critical);
 
 	return CDialog::DestroyWindow();
 }
@@ -798,63 +658,6 @@ void CEbenezerDlg::AddOutputMessage(const std::wstring& msg)
 	// Set the focus to the last item and ensure it is visible
 	int lastIndex = _outputList.GetCount() - 1;
 	_outputList.SetTopIndex(lastIndex);
-}
-
-void CEbenezerDlg::OnTimer(UINT nIDEvent)
-{
-	// sungyong 2002.05.23
-	int retval = 0;
-
-	switch (nIDEvent)
-	{
-		case GAME_TIME:
-			UpdateGameTime();
-
-			// AIServer Socket Alive Check Routine
-			if (m_bFirstServerFlag)
-			{
-				int count = 0;
-				for (int i = 0; i < MAX_AI_SOCKET; i++)
-				{
-					CAISocket* pAISock = m_AISocketMap.GetData(i);
-					if (pAISock != nullptr
-						&& pAISock->GetState() == CONNECTION_STATE_DISCONNECTED)
-						AISocketConnect(i, true);
-					else if (pAISock == nullptr)
-						AISocketConnect(i, true);
-					else
-						count++;
-				}
-
-				if (count <= 0)
-					DeleteAllNpcList();
-			}
-			// sungyong~ 2002.05.23
-			break;
-
-		case HEARTBEAT_SMQ:
-		{
-			char sendBuffer[4];
-			int sendIndex = 0;
-			SetByte(sendBuffer, DB_HEARTBEAT, sendIndex);
-			m_LoggerSendQueue.PutData(sendBuffer, sendIndex);
-		}
-		break;
-
-		case ALIVE_TIME:
-			CheckAliveUser();
-			break;
-
-		case MARKET_BBS_TIME:
-			MarketBBSTimeCheck();
-			break;
-
-		case PACKET_CHECK:
-			WritePacketLog();
-			break;
-	}
-
-	CDialog::OnTimer(nIDEvent);
 }
 
 LRESULT CEbenezerDlg::OnProcessListBoxQueue(WPARAM, LPARAM)
@@ -1044,7 +847,7 @@ void CEbenezerDlg::Send_UnitRegion(C3DMap* pMap, char* pBuf, int len, int x, int
 		|| z > pMap->GetZRegionMax())
 		return;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[x][z].m_RegionUserArray)
 	{
@@ -1063,8 +866,6 @@ void CEbenezerDlg::Send_UnitRegion(C3DMap* pMap, char* pBuf, int len, int x, int
 				pUser->RegionPacketAdd(pBuf, len);
 		}
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void CEbenezerDlg::Send_NearRegion(char* pBuf, int len, int zone, int region_x, int region_z, float curx, float curz, CUser* pExceptUser)
@@ -1126,7 +927,7 @@ void CEbenezerDlg::Send_FilterUnitRegion(C3DMap* pMap, char* pBuf, int len, int 
 		|| z > pMap->GetZRegionMax())
 		return;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	auto Iter1 = pMap->m_ppRegion[x][z].m_RegionUserArray.begin();
 	auto Iter2 = pMap->m_ppRegion[x][z].m_RegionUserArray.end();
@@ -1149,8 +950,6 @@ void CEbenezerDlg::Send_FilterUnitRegion(C3DMap* pMap, char* pBuf, int len, int 
 				pUser->RegionPacketAdd(pBuf, len);
 		}
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void CEbenezerDlg::Send_PartyMember(int party, char* pBuf, int len)
@@ -1262,9 +1061,9 @@ bool CEbenezerDlg::MapFileLoad()
 	recordset_loader::Base<ModelType> loader;
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
 	{
-		CString szFullPath, errormsg;
+		CString errormsg;
 
-		m_ZoneArray.reserve(10);
+		m_ZoneArray.reserve(20);
 
 		// Build the base MAP directory
 		std::filesystem::path mapDir(GetProgPath().GetString());
@@ -1282,12 +1081,10 @@ bool CEbenezerDlg::MapFileLoad()
 			std::filesystem::path mapPath
 				= mapDir / row.Name;
 
-			szFullPath.Format(_T("%ls"), mapPath.c_str());
-
-			CFile file;
-			if (!file.Open(szFullPath, CFile::modeRead))
+			std::ifstream file(mapPath, std::ios::in | std::ios::binary);
+			if (!file)
 			{
-				errormsg.Format(_T("File Open Fail - %s\n"), szFullPath);
+				errormsg.Format(_T("File Open Fail - %s\n"), mapPath.wstring().c_str());
 				AfxMessageBox(errormsg);
 				return;
 			}
@@ -1301,15 +1098,15 @@ bool CEbenezerDlg::MapFileLoad()
 			pMap->m_fInitY = (float) (row.InitY / 100.0);
 			pMap->m_bType = row.Type;
 
-			if (!pMap->LoadMap(file.m_hFile))
+			if (!pMap->LoadMap(file))
 			{
-				errormsg.Format(_T("Map Load Fail - %s\n"), szFullPath);
+				errormsg.Format(_T("Map Load Fail - %s\n"), mapPath.wstring().c_str());
 				AfxMessageBox(errormsg);
 				delete pMap;
 				return;
 			}
 
-			file.Close();
+			file.close();
 
 			m_ZoneArray.push_back(pMap);
 
@@ -1572,12 +1369,6 @@ void CEbenezerDlg::LoadConfig()
 
 	// Trigger a save to flush defaults to file.
 	m_Ini.Save();
-
-	SetTimer(GAME_TIME, 6000, nullptr);
-	SetTimer(HEARTBEAT_SMQ, 10000, nullptr);
-	SetTimer(ALIVE_TIME, 34000, nullptr);
-	SetTimer(MARKET_BBS_TIME, 300000, nullptr);
-	SetTimer(PACKET_CHECK, 360000, nullptr);
 }
 
 void EbenezerLogger::SetupExtraLoggers(CIni& ini,
@@ -1908,7 +1699,7 @@ int CEbenezerDlg::GetRegionUserIn(C3DMap* pMap, int region_x, int region_z, char
 
 	int buff_index = 0;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[region_x][region_z].m_RegionUserArray)
 	{
@@ -1931,8 +1722,6 @@ int CEbenezerDlg::GetRegionUserIn(C3DMap* pMap, int region_x, int region_z, char
 		++t_count;
 	}
 
-	LeaveCriticalSection(&g_region_critical);
-
 	return buff_index;
 }
 
@@ -1949,7 +1738,7 @@ int CEbenezerDlg::GetRegionUserList(C3DMap* pMap, int region_x, int region_z, ch
 
 	int buff_index = 0;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[region_x][region_z].m_RegionUserArray)
 	{
@@ -1963,8 +1752,6 @@ int CEbenezerDlg::GetRegionUserList(C3DMap* pMap, int region_x, int region_z, ch
 			t_count++;
 		}
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 
 	return buff_index;
 }
@@ -2052,12 +1839,7 @@ int CEbenezerDlg::GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char*
 
 	int buff_index = 0;
 
-	EnterCriticalSection(&g_region_critical);
-
-	//string.Format("---- GetRegionNpcIn , x=%d, z=%d ----\r\n", region_x, region_z);
-	//EnterCriticalSection( &g_LogFile_critical );
-	//m_RegionLogFile.Write( string, string.GetLength() );
-	//LeaveCriticalSection( &g_LogFile_critical );
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	for (const auto& [_, pNid] : pMap->m_ppRegion[region_x][region_z].m_RegionNpcArray)
 	{
@@ -2077,17 +1859,7 @@ int CEbenezerDlg::GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char*
 		pNpc->GetNpcInfo(buff, buff_index);
 
 		t_count++;
-
-		//string.Format("nid=%d, name=%s, count=%d \r\n", pNpc->m_sNid, pNpc->m_strName, t_count);
-		//EnterCriticalSection( &g_LogFile_critical );
-		//m_RegionLogFile.Write( string, string.GetLength() );
-		//LeaveCriticalSection( &g_LogFile_critical );
-
-		//if( pNpc->m_sCurZone > 100 ) 
-		//	TRACE(_T("GetRegionNpcIn rx=%d, rz=%d, nid=%d, name=%hs, count=%d\n"), region_x, region_z, pNpc->m_sNid, pNpc->m_strName, t_count);
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 
 	return buff_index;
 }
@@ -2098,7 +1870,6 @@ void CEbenezerDlg::RegionNpcInfoForMe(CUser* pSendUser, int nType)
 	C3DMap* pMap = nullptr;
 	int region_x = -1, region_z = -1, npcCount = 0, nid_sendindex = 0;
 	char nid_buff[1024] = {}, send_buff[8192] = {};
-	CString string;
 
 	if (pSendUser == nullptr)
 		return;
@@ -2199,13 +1970,13 @@ int CEbenezerDlg::GetRegionNpcList(C3DMap* pMap, int region_x, int region_z, cha
 
 	int buff_index = 0;
 
-	EnterCriticalSection(&g_region_critical);
-
 	if (nType == 1)
 	{
 		spdlog::get(logger::EbenezerRegion)->info("GetRegionNpcList: x={} z={}",
 			region_x, region_z);
 	}
+
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	for (const auto& [_, pNid] : pMap->m_ppRegion[region_x][region_z].m_RegionNpcArray)
 	{
@@ -2231,8 +2002,6 @@ int CEbenezerDlg::GetRegionNpcList(C3DMap* pMap, int region_x, int region_z, cha
 				npcId);
 		}
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 
 	return buff_index;
 }
@@ -2358,13 +2127,12 @@ BOOL CEbenezerDlg::PreTranslateMessage(MSG* pMsg)
 
 bool CEbenezerDlg::LoadNoticeData()
 {
-	CString ProgPath = GetProgPath();
-	CString NoticePath = ProgPath + "Notice.txt";
-	CString buff;
-	CStdioFile txt_file;
+	CString NoticePath = GetProgPath() + "Notice.txt";
+	std::string line;
 	int count = 0;
 
-	if (!txt_file.Open(NoticePath, CFile::modeRead))
+	std::ifstream file(NoticePath, std::ios::in);
+	if (!file)
 	{
 #if !defined(_DEBUG)
 		AfxMessageBox(_T("cannot open Notice.txt!!"));
@@ -2373,19 +2141,20 @@ bool CEbenezerDlg::LoadNoticeData()
 		return false;
 	}
 
-	while (txt_file.ReadString(buff))
+	while (std::getline(file, line))
 	{
 		if (count > 19)
 		{
 			AfxMessageBox(_T("Notice Count Overflow!!"));
 			spdlog::error("EbenezerDlg::LoadNoticeData: notice count overflow [count={}]", count);
+			break;
 		}
 
-		strcpy(m_ppNotice[count], CT2A(buff));
+		strcpy(m_ppNotice[count], line.c_str());
 		count++;
 	}
 
-	txt_file.Close();
+	file.close();
 
 	return true;
 }
@@ -2434,10 +2203,14 @@ void CEbenezerDlg::SyncTest(int nType)
 		{
 			for (int j = 0; j < pMap->GetZRegionMax(); j++)
 			{
-				EnterCriticalSection(&g_region_critical);
-				int total_user = pMap->m_ppRegion[i][j].m_RegionUserArray.GetSize();
-				int total_mon = pMap->m_ppRegion[i][j].m_RegionNpcArray.GetSize();
-				LeaveCriticalSection(&g_region_critical);
+				int total_user, total_mon;
+
+				{
+					std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
+
+					total_user = pMap->m_ppRegion[i][j].m_RegionUserArray.GetSize();
+					total_mon = pMap->m_ppRegion[i][j].m_RegionNpcArray.GetSize();
+				}
 
 				if (total_user > 0
 					|| total_mon > 0)
@@ -2459,7 +2232,7 @@ void CEbenezerDlg::SyncRegionTest(C3DMap* pMap, int rx, int rz, FILE* pfile, int
 	std::map<int, int*>::iterator		Iter1;
 	std::map<int, int*>::iterator		Iter2;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	if (nType == 2)
 	{
@@ -2502,8 +2275,6 @@ void CEbenezerDlg::SyncRegionTest(C3DMap* pMap, int rx, int rz, FILE* pfile, int
 	}
 
 	fprintf(pfile, "\n");
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void CEbenezerDlg::SendAllUserInfo()
@@ -2563,7 +2334,7 @@ void CEbenezerDlg::SendAllUserInfo()
 	}
 
 	// 파티에 대한 정보도 보내도록 한다....
-	EnterCriticalSection(&g_region_critical);
+	std::unique_lock<std::recursive_mutex> lock(g_region_mutex);
 
 	for (int i = 0; i < m_PartyMap.GetSize(); i++)
 	{
@@ -2586,8 +2357,7 @@ void CEbenezerDlg::SendAllUserInfo()
 
 		Send_AIServer(1000, send_buff, send_index);
 	}
-
-	LeaveCriticalSection(&g_region_critical);
+	lock.unlock();
 
 	send_index = 0;
 	ZeroMemory(send_buff, sizeof(send_buff));
@@ -2742,7 +2512,7 @@ void CEbenezerDlg::WithdrawUserOut()
 
 void CEbenezerDlg::AliveUserCheck()
 {
-	float currenttime = TimeGet();
+	double currentTime = TimeGet();
 
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
@@ -2755,12 +2525,12 @@ void CEbenezerDlg::AliveUserCheck()
 			continue;
 
 /*
-		if ((currenttime - pUser->m_fHPLastTime) > 300)
+		if ((currentTime - pUser->m_fHPLastTime) > 300)
 			pUser->Close();
 */
 		for (int k = 0; k < MAX_TYPE3_REPEAT; k++)
 		{
-			if ((currenttime - pUser->m_fHPLastTime[k]) > 300)
+			if ((currentTime - pUser->m_fHPLastTime[k]) > 300)
 			{
 				pUser->Close();
 				break;
@@ -3355,9 +3125,7 @@ void CEbenezerDlg::MarketBBSTimeCheck()
 {
 	int send_index = 0;
 	char send_buff[256] = {};
-	float currenttime = 0.0f;
-
-	currenttime = TimeGet();
+	double currentTime = TimeGet();
 
 	for (int i = 0; i < MAX_BBS_POST; i++)
 	{
@@ -3371,7 +3139,7 @@ void CEbenezerDlg::MarketBBSTimeCheck()
 				continue;
 			}
 
-			if (m_fBuyStartTime[i] + BBS_CHECK_TIME < currenttime)
+			if (m_fBuyStartTime[i] + BBS_CHECK_TIME < currentTime)
 			{
 //				if (pUser->m_pUserData->m_iGold >= BUY_POST_PRICE) {
 //					pUser->m_pUserData->m_iGold -= BUY_POST_PRICE ;
@@ -3401,7 +3169,7 @@ void CEbenezerDlg::MarketBBSTimeCheck()
 				continue;
 			}
 
-			if (m_fSellStartTime[i] + BBS_CHECK_TIME < currenttime)
+			if (m_fSellStartTime[i] + BBS_CHECK_TIME < currentTime)
 			{
 //				if (pUser->m_pUserData->m_iGold >= SELL_POST_PRICE) {
 //					pUser->m_pUserData->m_iGold -= SELL_POST_PRICE ;
@@ -3429,7 +3197,7 @@ void CEbenezerDlg::MarketBBSBuyDelete(int16_t index)
 	memset(m_strBuyTitle[index], 0, sizeof(m_strBuyTitle[index]));
 	memset(m_strBuyMessage[index], 0, sizeof(m_strBuyMessage[index]));
 	m_iBuyPrice[index] = 0;
-	m_fBuyStartTime[index] = 0.0f;
+	m_fBuyStartTime[index] = 0.0;
 }
 
 void CEbenezerDlg::MarketBBSSellDelete(int16_t index)
@@ -3438,7 +3206,7 @@ void CEbenezerDlg::MarketBBSSellDelete(int16_t index)
 	memset(m_strSellTitle[index], 0, sizeof(m_strSellTitle[index]));
 	memset(m_strSellMessage[index], 0, sizeof(m_strSellMessage[index]));
 	m_iSellPrice[index] = 0;
-	m_fSellStartTime[index] = 0.0f;
+	m_fSellStartTime[index] = 0.0;
 }
 
 void CEbenezerDlg::WritePacketLog()
@@ -3517,7 +3285,7 @@ int64_t CEbenezerDlg::GenerateItemSerial()
 
 	CTime t = CTime::GetCurrentTime();
 
-	EnterCriticalSection(&g_serial_critical);
+	std::lock_guard<std::mutex> lock(_serialMutex);
 
 	increase.w = g_increase_serial++;
 
@@ -3529,8 +3297,6 @@ int64_t CEbenezerDlg::GenerateItemSerial()
 	serial.b[2] = (uint8_t) t.GetMinute();
 	serial.b[1] = increase.b[1];
 	serial.b[0] = increase.b[0];
-
-	LeaveCriticalSection(&g_serial_critical);
 
 //	TRACE(_T("Generate Item Serial : %I64d\n"), serial.i);
 	return serial.i;
@@ -3903,4 +3669,38 @@ int32_t CEbenezerDlg::GetEventTrigger(uint8_t byNpcType, uint16_t sTrapNumber) c
 		return -1;
 
 	return itr->second;
+}
+
+void CEbenezerDlg::SendSMQHeartbeat()
+{
+	char sendBuffer[4];
+	int sendIndex = 0;
+	SetByte(sendBuffer, DB_HEARTBEAT, sendIndex);
+	m_LoggerSendQueue.PutData(sendBuffer, sendIndex);
+}
+
+void CEbenezerDlg::GameTimeTick()
+{
+	UpdateGameTime();
+
+	// AIServer Socket Alive Check Routine
+	if (m_bFirstServerFlag)
+	{
+		int count = 0;
+		for (int i = 0; i < MAX_AI_SOCKET; i++)
+		{
+			CAISocket* pAISock = m_AISocketMap.GetData(i);
+			if (pAISock != nullptr
+				&& pAISock->GetState() == CONNECTION_STATE_DISCONNECTED)
+				AISocketConnect(i, true);
+			else if (pAISock == nullptr)
+				AISocketConnect(i, true);
+			else
+				count++;
+		}
+
+		if (count <= 0)
+			DeleteAllNpcList();
+	}
+	// sungyong~ 2002.05.23
 }

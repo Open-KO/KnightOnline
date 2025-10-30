@@ -237,8 +237,8 @@ void CMagicProcess::MagicPacket(char* pBuf, int len)
 					if (pMagic->Moral < 5
 						|| pMagic->Moral == MORAL_CLAN)
 					{
-						float currenttime = TimeGet();
-						if ((currenttime - pTUser->m_fLastRegeneTime) < CLAN_SUMMON_TIME)
+						double currentTime = TimeGet();
+						if ((currentTime - pTUser->m_fLastRegeneTime) < CLAN_SUMMON_TIME)
 						{
 							SetByte(send_buff, WIZ_MAGIC_PROCESS, send_index);
 							SetByte(send_buff, MAGIC_FAIL, send_index);
@@ -1939,8 +1939,8 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			{
 				if (pTUser->m_bHPAmount[i] < 0)
 				{
-					pTUser->m_fHPStartTime[i] = 0.0f;
-					pTUser->m_fHPLastTime[i] = 0.0f;
+					pTUser->m_fHPStartTime[i] = 0.0;
+					pTUser->m_fHPLastTime[i] = 0.0;
 					pTUser->m_bHPAmount[i] = 0;
 					pTUser->m_bHPDuration[i] = 0;
 					pTUser->m_bHPInterval[i] = 5;
@@ -1994,7 +1994,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[0] == 1)
 			{
 				pTUser->m_sDuration1 = 0;
-				pTUser->m_fStartTime1 = 0.0f;
+				pTUser->m_fStartTime1 = 0.0;
 				pTUser->m_sMaxHPAmount = 0;
 				pTUser->m_bType4Buff[0] = 0;
 
@@ -2004,7 +2004,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[1] == 1)
 			{
 				pTUser->m_sDuration2 = 0;
-				pTUser->m_fStartTime2 = 0.0f;
+				pTUser->m_fStartTime2 = 0.0;
 				pTUser->m_sACAmount = 0;
 				pTUser->m_bType4Buff[1] = 0;
 
@@ -2014,7 +2014,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[3] == 1)
 			{
 				pTUser->m_sDuration4 = 0;
-				pTUser->m_fStartTime4 = 0.0f;
+				pTUser->m_fStartTime4 = 0.0;
 				pTUser->m_bAttackAmount = 100;
 				pTUser->m_bType4Buff[3] = 0;
 
@@ -2024,7 +2024,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[4] == 1)
 			{
 				pTUser->m_sDuration5 = 0;
-				pTUser->m_fStartTime5 = 0.0f;
+				pTUser->m_fStartTime5 = 0.0;
 				pTUser->m_bAttackSpeedAmount = 100;
 				pTUser->m_bType4Buff[4] = 0;
 
@@ -2034,7 +2034,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[5] == 1)
 			{
 				pTUser->m_sDuration6 = 0;
-				pTUser->m_fStartTime6 = 0.0f;
+				pTUser->m_fStartTime6 = 0.0;
 				pTUser->m_bSpeedAmount = 100;
 				pTUser->m_bType4Buff[5] = 0;
 
@@ -2044,7 +2044,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[6] == 1)
 			{
 				pTUser->m_sDuration7 = 0;
-				pTUser->m_fStartTime7 = 0.0f;
+				pTUser->m_fStartTime7 = 0.0;
 				pTUser->m_sStrAmount = 0;
 				pTUser->m_sStaAmount = 0;
 				pTUser->m_sDexAmount = 0;
@@ -2058,7 +2058,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[7] == 1)
 			{
 				pTUser->m_sDuration8 = 0;
-				pTUser->m_fStartTime8 = 0.0f;
+				pTUser->m_fStartTime8 = 0.0;
 				pTUser->m_bFireRAmount = 0;
 				pTUser->m_bColdRAmount = 0;
 				pTUser->m_bLightningRAmount = 0;
@@ -2073,7 +2073,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[8] == 1)
 			{
 				pTUser->m_sDuration9 = 0;
-				pTUser->m_fStartTime9 = 0.0f;
+				pTUser->m_fStartTime9 = 0.0;
 				pTUser->m_bHitRateAmount = 100;
 				pTUser->m_sAvoidRateAmount = 100;
 				pTUser->m_bType4Buff[8] = 0;
@@ -2154,7 +2154,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 			if (pTUser->m_bType4Buff[0] == 2)
 			{
 				pTUser->m_sDuration1 = 0;
-				pTUser->m_fStartTime1 = 0.0f;
+				pTUser->m_fStartTime1 = 0.0;
 				pTUser->m_sMaxHPAmount = 0;
 				pTUser->m_bType4Buff[0] = 0;
 
@@ -2747,7 +2747,7 @@ bool CMagicProcess::UserRegionCheck(int sid, int tid, int magicid, int radius, i
 {
 	CNpc* pMon = nullptr;
 
-	float currenttime = 0.0f;
+	double currentTime = 0.0;
 	bool bFlag = false;
 
 	CUser* pTUser = m_pMain->GetUserPtr(tid);
@@ -2783,9 +2783,9 @@ bool CMagicProcess::UserRegionCheck(int sid, int tid, int magicid, int radius, i
 				if (pMagic->Type1 != 8)
 					goto final_test;
 
-				currenttime = TimeGet();
+				currentTime = TimeGet();
 				if (pTUser->m_pUserData->m_bZone == ZONE_BATTLE
-					&& (currenttime - pTUser->m_fLastRegeneTime < CLAN_SUMMON_TIME))
+					&& (currentTime - pTUser->m_fLastRegeneTime < CLAN_SUMMON_TIME))
 					return false;
 
 				goto final_test;
@@ -2826,9 +2826,9 @@ bool CMagicProcess::UserRegionCheck(int sid, int tid, int magicid, int radius, i
 				if (pMagic->Type1 != 8)
 					goto final_test;
 
-				currenttime = TimeGet();
+				currentTime = TimeGet();
 				if (pTUser->m_pUserData->m_bZone == ZONE_BATTLE
-					&& (currenttime - pTUser->m_fLastRegeneTime < CLAN_SUMMON_TIME))
+					&& (currentTime - pTUser->m_fLastRegeneTime < CLAN_SUMMON_TIME))
 					return false;
 
 				goto final_test;
@@ -2919,7 +2919,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 			if (pTUser->m_sMaxHPAmount > 0)
 			{
 				pTUser->m_sDuration1 = 0;
-				pTUser->m_fStartTime1 = 0.0f;
+				pTUser->m_fStartTime1 = 0.0;
 				pTUser->m_sMaxHPAmount = 0;
 				buff = true;
 			}
@@ -2929,7 +2929,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 			if (pTUser->m_sACAmount > 0)
 			{
 				pTUser->m_sDuration2 = 0;
-				pTUser->m_fStartTime2 = 0.0f;
+				pTUser->m_fStartTime2 = 0.0;
 				pTUser->m_sACAmount = 0;
 				buff = true;
 			}
@@ -2937,7 +2937,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 // 
 		case 3:
 			pTUser->m_sDuration3 = 0;
-			pTUser->m_fStartTime3 = 0.0f;
+			pTUser->m_fStartTime3 = 0.0;
 
 			memset(send_buff, 0, sizeof(send_buff));
 			send_index = 0;
@@ -2954,7 +2954,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 			if (pTUser->m_bAttackAmount > 100)
 			{
 				pTUser->m_sDuration4 = 0;
-				pTUser->m_fStartTime4 = 0.0f;
+				pTUser->m_fStartTime4 = 0.0;
 				pTUser->m_bAttackAmount = 100;
 				buff = true;
 			}
@@ -2964,7 +2964,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 			if (pTUser->m_bAttackSpeedAmount > 100)
 			{
 				pTUser->m_sDuration5 = 0;
-				pTUser->m_fStartTime5 = 0.0f;
+				pTUser->m_fStartTime5 = 0.0;
 				pTUser->m_bAttackSpeedAmount = 100;
 				buff = true;
 			}
@@ -2974,7 +2974,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 			if (pTUser->m_bSpeedAmount > 100)
 			{
 				pTUser->m_sDuration6 = 0;
-				pTUser->m_fStartTime6 = 0.0f;
+				pTUser->m_fStartTime6 = 0.0;
 				pTUser->m_bSpeedAmount = 100;
 				buff = true;
 			}
@@ -2988,7 +2988,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 				+ pTUser->m_sChaAmount) > 0)
 			{
 				pTUser->m_sDuration7 = 0;
-				pTUser->m_fStartTime7 = 0.0f;
+				pTUser->m_fStartTime7 = 0.0;
 				pTUser->m_sStrAmount = 0;
 				pTUser->m_sStaAmount = 0;
 				pTUser->m_sDexAmount = 0;
@@ -3007,7 +3007,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 				+ pTUser->m_bPoisonRAmount) > 0)
 			{
 				pTUser->m_sDuration8 = 0;
-				pTUser->m_fStartTime8 = 0.0f;
+				pTUser->m_fStartTime8 = 0.0;
 				pTUser->m_bFireRAmount = 0;
 				pTUser->m_bColdRAmount = 0;
 				pTUser->m_bLightningRAmount = 0;
@@ -3022,7 +3022,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 			if ((pTUser->m_bHitRateAmount + pTUser->m_sAvoidRateAmount) > 200)
 			{
 				pTUser->m_sDuration9 = 0;
-				pTUser->m_fStartTime9 = 0.0f;
+				pTUser->m_fStartTime9 = 0.0;
 				pTUser->m_bHitRateAmount = 100;
 				pTUser->m_sAvoidRateAmount = 100;
 				buff = true;
@@ -3104,8 +3104,8 @@ void CMagicProcess::Type3Cancel(int magicid, int tid)
 	{
 		if (pTUser->m_bHPAmount[i] > 0)
 		{
-			pTUser->m_fHPStartTime[i] = 0.0f;
-			pTUser->m_fHPLastTime[i] = 0.0f;
+			pTUser->m_fHPStartTime[i] = 0.0;
+			pTUser->m_fHPLastTime[i] = 0.0;
 			pTUser->m_bHPAmount[i] = 0;
 			pTUser->m_bHPDuration[i] = 0;
 			pTUser->m_bHPInterval[i] = 5;

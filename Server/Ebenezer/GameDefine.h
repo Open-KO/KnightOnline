@@ -278,7 +278,7 @@ struct _ZONE_ITEM
 	float x;
 	float z;
 	float y;
-	float time;
+	double time;
 };
 
 struct _EXCHANGE_ITEM

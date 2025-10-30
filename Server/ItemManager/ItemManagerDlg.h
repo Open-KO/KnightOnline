@@ -1,34 +1,40 @@
 ﻿#pragma once
 
 #include "Define.h"
+#include "resource.h"
 
+#include <shared-server/logger.h>
 #include <shared-server/SharedMemoryQueue.h>
+
+class ItemManagerLogger : public logger::Logger
+{
+public:
+	ItemManagerLogger()
+		: Logger(logger::ItemManager)
+	{
+	}
+
+	void SetupExtraLoggers(CIni& ini,
+		std::shared_ptr<spdlog::details::thread_pool> threadPool,
+		const std::string& baseDir) override;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CItemManagerDlg dialog
 
+class ReadQueueThread;
 class CItemManagerDlg : public CDialog
 {
-// Construction
 public:
 	SharedMemoryQueue m_LoggerRecvQueue;
-
-	HANDLE	m_hReadQueueThread;
-
-	CFile m_ItemLogFile;		// log file
-	CFile m_ExpLogFile;			// log file
-	int	m_nItemLogFileDay;		// 
-	int	m_nExpLogFileDay;		// 
-
-private:
-	void WriteItemLogFile(char* pData);
-	void WriteExpLogFile(char* pData);
+	std::unique_ptr<ReadQueueThread> _readQueueThread;
 
 public:
 	CItemManagerDlg(CWnd* pParent = nullptr);	// standard constructor
+	~CItemManagerDlg() override;
 
-	void ItemLogWrite(char* pBuf);
-	void ExpLogWrite(char* pBuf);
+	void ItemLogWrite(const char* pBuf);
+	void ExpLogWrite(const char* pBuf);
 
 // Dialog Data
 	//{{AFX_DATA(CItemManagerDlg)
@@ -47,6 +53,7 @@ protected:
 // Implementation
 protected:
 	HICON m_hIcon;
+	ItemManagerLogger _logger;
 
 	// Generated message map functions
 	//{{AFX_MSG(CItemManagerDlg)

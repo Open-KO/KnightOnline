@@ -822,7 +822,7 @@ fail_return:
 	pUser->Send(send_buff, send_index);
 }
 
-void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, char* pBuf, uint8_t command)
+void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, const char* pBuf, uint8_t command)
 {
 	int index = 0, send_index = 0, pktsize = 0, count = 0;
 	uint8_t result;
@@ -904,7 +904,7 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, char* pBuf, uint8_t co
 	}
 }
 
-void CKnightsManager::RecvCreateKnights(CUser* pUser, char* pBuf)
+void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 {
 	int index = 0, send_index = 0, namelen = 0, idlen = 0, knightsindex = 0, nation = 0, community = 0, money = 0;
 	char send_buff[128] = {};
@@ -1000,7 +1000,7 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, char* pBuf)
 		m_pMain->Send_UDP_All(send_buff, send_index, 1);
 }
 
-void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, uint8_t command)
+void CKnightsManager::RecvJoinKnights(CUser* pUser, const char* pBuf, uint8_t command)
 {
 	int send_index = 0, knightsindex = 0, index = 0, idlen = 0;
 	char send_buff[128] = {};
@@ -1090,7 +1090,7 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, char* pBuf, uint8_t command)
 		m_pMain->Send_UDP_All(send_buff, send_index, 1);
 }
 
-void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, uint8_t command)
+void CKnightsManager::RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t command)
 {
 	int index = 0, send_index = 0, knightsindex = 0, idlen = 0, vicechief = 0;
 	char send_buff[128] = {};
@@ -1240,7 +1240,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, char* pBuf, uint8_t command)
 		m_pMain->Send_UDP_All(send_buff, send_index, 1);
 }
 
-void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
+void CKnightsManager::RecvDestroyKnights(CUser* pUser, const char* pBuf)
 {
 	int send_index = 0, knightsindex = 0, index = 0, flag = 0;
 	char send_buff[128] = {};
@@ -1334,7 +1334,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, char* pBuf)
 	//}
 }
 
-void CKnightsManager::RecvKnightsList(char* pBuf)
+void CKnightsManager::RecvKnightsList(const char* pBuf)
 {
 	CKnights* pKnights = nullptr;
 
@@ -1500,7 +1500,7 @@ void CKnightsManager::SetKnightsUser(int knightsId, const char* charId)
 	}
 }
 
-void CKnightsManager::RecvKnightsAllList(char* pBuf)
+void CKnightsManager::RecvKnightsAllList(const char* pBuf)
 {
 	int index = 0, knightsId = 0, points = 0, count = 0, grade = 0, ranking = 0;
 	int send_index = 0, temp_index = 0, send_count = 0;

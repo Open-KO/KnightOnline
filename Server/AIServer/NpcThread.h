@@ -1,42 +1,19 @@
-﻿// NpcThread.h: interface for the CNpcThread class.
-//
-//////////////////////////////////////////////////////////////////////
+﻿#pragma once
 
-#if !defined(AFX_NPCTHREAD_H__EBEC0AA4_EEF9_4F28_AAF0_6FB20E2891EB__INCLUDED_)
-#define AFX_NPCTHREAD_H__EBEC0AA4_EEF9_4F28_AAF0_6FB20E2891EB__INCLUDED_
+#include <shared/Thread.h>
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-UINT NpcThreadProc(LPVOID pParam /* NPC_THREAD_INFO ptr */);
-UINT ZoneEventThreadProc(LPVOID pParam /* = nullptr */);
-float TimeGet();
+#include "Define.h" // NPC_NUM
 
 class CNpc;
-
-typedef struct _NPC_THREAD_INFO
-{
-	CNpc*				pNpc[NPC_NUM];
-	uint8_t				m_byNpcUsed[NPC_NUM];
-	HWND				hWndMsg;
-} NPC_THREAD_INFO;
-
-class CNpcThread
+class CNpcThread : public Thread
 {
 public:
 	CNpcThread();
-	virtual ~CNpcThread();
+	void thread_loop() override;
 
 public:
-	void InitThreadInfo(HWND hwnd);
+	CNpc*	m_pNpc[NPC_NUM];
+	uint8_t	m_byNpcUsed[NPC_NUM];
 
-	CNpc*				m_pNpc[NPC_NUM];
-
-	NPC_THREAD_INFO		m_ThreadInfo;
-	CWinThread*			m_pThread;
-	int16_t				m_sThreadNumber;	// thread number ,, test
-
+	int16_t	m_sThreadNumber;	// thread number ,, test
 };
-
-#endif // !defined(AFX_NPCTHREAD_H__EBEC0AA4_EEF9_4F28_AAF0_6FB20E2891EB__INCLUDED_)

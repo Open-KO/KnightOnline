@@ -349,4 +349,4 @@ constexpr int CLAN_SYMBOL_COST		= 5000000;
 #define NEWCHAR_STAT_TOO_LOW				uint8_t(11)
 
 uint64_t RandUInt64();
-time_t getMSTime();
+double TimeGet();

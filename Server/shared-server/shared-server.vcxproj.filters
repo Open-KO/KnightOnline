@@ -1,39 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="SharedMemoryQueue.cpp" />
-    <ClCompile Include="SharedMemoryBlock.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="logger.cpp" />
-    <ClCompile Include="SocketManager.cpp" />
-    <ClCompile Include="TcpClientSocket.cpp" />
-    <ClCompile Include="TcpServerSocket.cpp" />
-    <ClCompile Include="TcpSocket.cpp" />
     <ClCompile Include="N3ShapeMgr.cpp">
       <Filter>N3Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemoryBlock.cpp">
+      <Filter>Shared memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemoryQueue.cpp">
+      <Filter>Shared memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketManager.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpClientSocket.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpServerSocket.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSocket.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadQueueThread.cpp">
+      <Filter>Threads</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server_config.h" />
-    <ClInclude Include="SharedMemoryQueue.h" />
-    <ClInclude Include="SharedMemoryBlock.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="logger.h" />
-    <ClInclude Include="SocketManager.h" />
-    <ClInclude Include="TcpClientSocket.h" />
-    <ClInclude Include="TcpServerSocket.h" />
-    <ClInclude Include="TcpSocket.h" />
     <ClInclude Include="My_3DStruct.h">
       <Filter>N3Base</Filter>
     </ClInclude>
     <ClInclude Include="N3ShapeMgr.h">
       <Filter>N3Base</Filter>
     </ClInclude>
+    <ClInclude Include="SharedMemoryBlock.h">
+      <Filter>Shared memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemoryQueue.h">
+      <Filter>Shared memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketManager.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpClientSocket.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServerSocket.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpSocket.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadQueueThread.h">
+      <Filter>Threads</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="N3Base">
       <UniqueIdentifier>{92bc4d82-1075-4d7b-a01b-c0f04fba29cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared memory">
+      <UniqueIdentifier>{2c5049bc-dd8a-4de6-bb97-024d7d90b3a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{9ec98fad-18e4-433d-921a-0762113c6820}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Threads">
+      <UniqueIdentifier>{1c435bbd-960d-4b60-be04-47ebe4d8a995}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

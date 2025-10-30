@@ -17,7 +17,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-extern CRITICAL_SECTION g_region_critical;
+extern std::recursive_mutex g_region_mutex;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -275,7 +275,7 @@ int CNpc::GetRegionNpcList(int region_x, int region_z, char* buff, int& t_count)
 
 	CRegion* region = &pMap->m_ppRegion[region_x][region_z];
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	for (const auto& [_, pNid] : region->m_RegionNpcArray)
 	{
@@ -290,8 +290,6 @@ int CNpc::GetRegionNpcList(int region_x, int region_z, char* buff, int& t_count)
 			++t_count;
 		}
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 
 	return buff_index;
 }

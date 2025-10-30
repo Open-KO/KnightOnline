@@ -11,9 +11,6 @@
 
 constexpr int MAX_USER			= 3000;
 
-/// \brief AUTOSAVE_DELTA is the amount of time required since last save to trigger a UserDataSave()
-constexpr int AUTOSAVE_DELTA = 360000;
-
 constexpr long DB_PROCESS_TIMEOUT = 10;
 
 #define MAX_ITEM			28
@@ -72,8 +69,6 @@ typedef union {
 
 // DEFINE Shared Memory Costumizing
 
-#define MAX_PKTSIZE		512
-#define MAX_COUNT		4096
 #define SMQ_LOGGERSEND	"KNIGHT_SEND"
 #define SMQ_LOGGERRECV	"KNIGHT_RECV"
 
@@ -159,38 +154,38 @@ namespace model = aujard_model;
 //	Global Function Define
 //
 
-inline void GetString(char* tBuf, char* sBuf, int len, int& index)
+inline void GetString(char* tBuf, const char* sBuf, int len, int& index)
 {
 	memcpy(tBuf, sBuf + index, len);
 	index += len;
 }
 
-inline uint8_t GetByte(char* sBuf, int& index)
+inline uint8_t GetByte(const char* sBuf, int& index)
 {
 	int t_index = index;
 	index++;
 	return (uint8_t) (*(sBuf + t_index));
 }
 
-inline int GetShort(char* sBuf, int& index)
+inline int GetShort(const char* sBuf, int& index)
 {
 	index += 2;
 	return *(int16_t*) (sBuf + index - 2);
 }
 
-inline uint32_t GetDWORD(char* sBuf, int& index)
+inline uint32_t GetDWORD(const char* sBuf, int& index)
 {
 	index += 4;
 	return *(uint32_t*) (sBuf + index - 4);
 }
 
-inline float Getfloat(char* sBuf, int& index)
+inline float Getfloat(const char* sBuf, int& index)
 {
 	index += 4;
 	return *(float*) (sBuf + index - 4);
 }
 
-inline int64_t GetInt64(char* sBuf, int& index)
+inline int64_t GetInt64(const char* sBuf, int& index)
 {
 	index += 8;
 	return *(int64_t*) (sBuf + index - 8);
@@ -247,7 +242,7 @@ inline void SetString2(char* tBuf, const char* sBuf, int16_t len, int& index)
 }
 
 // sungyong 2001.11.06
-inline int GetVarString(char* tBuf, char* sBuf, int nSize, int& index)
+inline int GetVarString(char* tBuf, const char* sBuf, int nSize, int& index)
 {
 	int nLen = 0;
 
@@ -262,7 +257,7 @@ inline int GetVarString(char* tBuf, char* sBuf, int nSize, int& index)
 	return nLen;
 }
 
-inline void SetVarString(char* tBuf, TCHAR* sBuf, int len, int& index)
+inline void SetVarString(char* tBuf, const char* sBuf, int len, int& index)
 {
 	*(tBuf + index) = (uint8_t) len;
 	index ++;

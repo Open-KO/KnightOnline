@@ -1,10 +1,4 @@
-﻿#ifndef _EXTERN_H_
-#define _EXTERN_H_
-
-// -------------------------------------------------
-// 전역 객체 변수
-// -------------------------------------------------
-extern bool	g_bNpcExit;
+﻿#pragma once
 
 import AIServerModel;
 namespace model = aiserver_model;
@@ -27,5 +21,3 @@ struct _USERLOG
 	uint8_t  byLevel;
 	char  strUserID[MAX_ID_SIZE + 1];		// 아이디(캐릭터 이름)
 };
-
-#endif

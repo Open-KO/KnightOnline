@@ -7,6 +7,63 @@
 
 #include <spdlog/fmt/bundled/format.h>
 
+#include <istream>
+
+CN3ShapeMgr::__CellSub::__CellSub()
+{
+	memset(this, 0, sizeof(__CellSub));
+}
+
+void CN3ShapeMgr::__CellSub::Load(std::istream& fs)
+{
+	fs.read(reinterpret_cast<char*>(&nCCPolyCount), 4);
+
+	if (nCCPolyCount > 0)
+	{
+		delete[] pdwCCVertIndices;
+		pdwCCVertIndices = new uint32_t[nCCPolyCount * 3];
+		__ASSERT(pdwCCVertIndices, "New memory failed");
+
+		fs.read(reinterpret_cast<char*>(pdwCCVertIndices), nCCPolyCount * 3 * 4);
+
+		// TRACE(_T("CollisionCheckPolygon : %d\n"), nCCPolyCount);
+	}
+}
+
+CN3ShapeMgr::__CellSub::~__CellSub()
+{
+	delete[] pdwCCVertIndices;
+}
+
+CN3ShapeMgr::__CellMain::__CellMain()
+{
+	nShapeCount = 0;
+	pwShapeIndices = nullptr;
+}
+
+void CN3ShapeMgr::__CellMain::Load(std::istream& fs)
+{
+	fs.read(reinterpret_cast<char*>(&nShapeCount), 4);
+
+	if (nShapeCount > 0)
+	{
+		delete[] pwShapeIndices;
+		pwShapeIndices = new uint16_t[nShapeCount];
+		fs.read(reinterpret_cast<char*>(pwShapeIndices), nShapeCount * 2);
+	}
+
+	for (int z = 0; z < CELL_MAIN_DIVIDE; z++)
+	{
+		for (int x = 0; x < CELL_MAIN_DIVIDE; x++)
+			SubCells[x][z].Load(fs);
+	}
+}
+
+CN3ShapeMgr::__CellMain::~__CellMain()
+{
+	delete[] pwShapeIndices;
+}
+
 CN3ShapeMgr::CN3ShapeMgr()
 {
 	m_fMapWidth = 0.0f;
@@ -49,18 +106,16 @@ void CN3ShapeMgr::Release()
 	memset(m_pCells, 0, sizeof(MAX_CELL_MAIN));
 }
 
-bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
+bool CN3ShapeMgr::LoadCollisionData(std::istream& fs)
 {
-	DWORD dwRWC;
-
-	ReadFile(hFile, &m_fMapWidth, 4, &dwRWC, nullptr);
-	ReadFile(hFile, &m_fMapLength, 4, &dwRWC, nullptr);
+	fs.read(reinterpret_cast<char*>(&m_fMapWidth), 4);
+	fs.read(reinterpret_cast<char*>(&m_fMapLength), 4);
 
 	if (!Create(m_fMapWidth, m_fMapLength))
 		return false;
 
 	// 충돌 체크 폴리곤 데이터 읽기..
-	ReadFile(hFile, &m_nCollisionFaceCount, 4, &dwRWC, nullptr);
+	fs.read(reinterpret_cast<char*>(&m_nCollisionFaceCount), 4);
 
 	delete[] m_pvCollisions;
 	m_pvCollisions = nullptr;
@@ -68,7 +123,7 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 	if (m_nCollisionFaceCount > 0)
 	{
 		m_pvCollisions = new __Vector3[m_nCollisionFaceCount * 3];
-		ReadFile(hFile, m_pvCollisions, sizeof(__Vector3) * m_nCollisionFaceCount * 3, &dwRWC, nullptr);
+		fs.read(reinterpret_cast<char*>(m_pvCollisions), sizeof(__Vector3) * m_nCollisionFaceCount * 3);
 	}
 
 	// Cell Data 쓰기.
@@ -81,13 +136,13 @@ bool CN3ShapeMgr::LoadCollisionData(HANDLE hFile)
 		{
 			delete m_pCells[x][z]; m_pCells[x][z] = nullptr;
 
-			ReadFile(hFile, &iExist, 4, &dwRWC, nullptr); // 데이터가 있는 셀인지 쓰고..
+			fs.read(reinterpret_cast<char*>(&iExist), 4); // 데이터가 있는 셀인지 쓰고..
 
 			if (iExist == 0)
 				continue;
 
-			m_pCells[x][z] = new __CellMain;
-			m_pCells[x][z]->Load(hFile);
+			m_pCells[x][z] = new __CellMain();
+			m_pCells[x][z]->Load(fs);
 		}
 	}
 

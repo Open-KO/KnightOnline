@@ -19,7 +19,9 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 // NOTE: Explicitly handled under DEBUG_NEW override
+#include "AujardReadQueueThread.h"
 #include <db-library/RecordSetLoader_STLMap.h>
+#include <shared/TimerThread.h>
 
 using namespace std::chrono_literals;
 
@@ -27,107 +29,13 @@ using namespace std::chrono_literals;
 // This will only save periodically.
 static constexpr auto SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE = 30s;
 
-constexpr int PROCESS_CHECK		= 100;
-constexpr int CONCURRENT_CHECK	= 200;
-constexpr int SERIAL_TIME		= 300;
-constexpr int PACKET_CHECK		= 400;
-constexpr int DB_POOL_CHECK		= 500;
-
 constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
 import AujardBinder;
 import AujardModel;
 namespace model = aujard_model;
 
-uint16_t g_increase_serial = 50001;
-
 CAujardDlg* CAujardDlg::_instance = nullptr;
-
-DWORD WINAPI ReadQueueThread(LPVOID lp)
-{
-	CAujardDlg* main = (CAujardDlg*) lp;
-	int recvLen = 0, index = 0;
-	uint8_t command;
-	char recvBuff[MAX_PKTSIZE] = {};
-
-	while (true)
-	{
-		index = 0;
-		recvLen = main->LoggerRecvQueue.GetData(recvBuff);
-		if (recvLen >= SMQ_ERROR_RANGE)
-		{
-			Sleep(1);
-			continue;
-		}
-
-		command = GetByte(recvBuff, index);
-		switch (command)
-		{
-			case WIZ_LOGIN:
-				main->AccountLogIn(recvBuff + index);
-				break;
-
-			case WIZ_NEW_CHAR:
-				main->CreateNewChar(recvBuff + index);
-				break;
-
-			case WIZ_DEL_CHAR:
-				main->DeleteChar(recvBuff + index);
-				break;
-
-			case WIZ_SEL_CHAR:
-				main->SelectCharacter(recvBuff + index);
-				break;
-
-			case WIZ_SEL_NATION:
-				main->SelectNation(recvBuff + index);
-				break;
-
-			case WIZ_ALLCHAR_INFO_REQ:
-				main->AllCharInfoReq(recvBuff + index);
-				break;
-
-			case WIZ_LOGOUT:
-				main->UserLogOut(recvBuff + index);
-				break;
-
-			case WIZ_DATASAVE:
-				main->UserDataSave(recvBuff + index);
-				break;
-
-			case WIZ_KNIGHTS_PROCESS:
-				main->KnightsPacket(recvBuff + index);
-				break;
-
-			case WIZ_CLAN_PROCESS:
-				main->KnightsPacket(recvBuff + index);
-				break;
-
-			case WIZ_LOGIN_INFO:
-				main->SetLogInInfo(recvBuff + index);
-				break;
-
-			case WIZ_KICKOUT:
-				main->UserKickOut(recvBuff + index);
-				break;
-
-			case WIZ_BATTLE_EVENT:
-				main->BattleEventResult(recvBuff + index);
-				break;
-
-			case DB_COUPON_EVENT:
-				main->CouponEvent(recvBuff + index);
-				break;
-
-			case DB_HEARTBEAT:
-				main->HeartbeatReceived();
-				break;
-		}
-
-		recvLen = 0;
-		memset(recvBuff, 0, sizeof(recvBuff));
-	}
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // CAujardDlg dialog
@@ -148,6 +56,24 @@ CAujardDlg::CAujardDlg(CWnd* parent /*=nullptr*/)
 
 	db::ConnectionManager::DefaultConnectionTimeout = DB_PROCESS_TIMEOUT;
 	db::ConnectionManager::Create();
+
+	_dbPoolCheckThread = std::make_unique<TimerThread>(
+		1min,
+		std::bind(&db::ConnectionManager::ExpireUnusedPoolConnections));
+
+	_heartbeatCheckThread = std::make_unique<TimerThread>(
+		40s,
+		std::bind(&CAujardDlg::CheckHeartbeat, this));
+
+	_concurrentCheckThread = std::make_unique<TimerThread>(
+		5min,
+		std::bind(&CAujardDlg::ConCurrentUserCount, this));
+
+	_packetCheckThread = std::make_unique<TimerThread>(
+		2min,
+		std::bind(&CAujardDlg::WritePacketLog, this));
+
+	_readQueueThread = std::make_unique<AujardReadQueueThread>(this);
 }
 
 CAujardDlg::~CAujardDlg()
@@ -170,7 +96,6 @@ BEGIN_MESSAGE_MAP(CAujardDlg, CDialog)
 	//{{AFX_MSG_MAP(CAujardDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -250,14 +175,12 @@ BOOL CAujardDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	SetTimer(PROCESS_CHECK, 40000, nullptr);
-	SetTimer(CONCURRENT_CHECK, 300000, nullptr);
-//	SetTimer( SERIAL_TIME, 60000, nullptr );
-	SetTimer(PACKET_CHECK, 120000, nullptr);
-	SetTimer(DB_POOL_CHECK, 60000, nullptr);
+	_dbPoolCheckThread->start();
+	_heartbeatCheckThread->start();
+	_concurrentCheckThread->start();
+	_packetCheckThread->start();
 
-	DWORD id;
-	_readQueueThread = ::CreateThread(nullptr, 0, ReadQueueThread, this, 0, &id);
+	_readQueueThread->start();
 
 	spdlog::info("AujardDlg::OnInitDialog: initialized");
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -302,18 +225,24 @@ HCURSOR CAujardDlg::OnQueryDragIcon()
 /// \brief destroys all resources associated with the dialog window
 BOOL CAujardDlg::DestroyWindow()
 {
-	KillTimer(PROCESS_CHECK);
-	KillTimer(CONCURRENT_CHECK);
-//	KillTimer(SERIAL_TIME);
-	KillTimer(PACKET_CHECK);
-	KillTimer(DB_POOL_CHECK);
-
 	if (_readQueueThread != nullptr)
-		::TerminateThread(_readQueueThread, 0);
+		_readQueueThread->shutdown();
 
 	if (!ItemArray.IsEmpty())
 		ItemArray.DeleteAllData();
-	
+
+	if (_dbPoolCheckThread != nullptr)
+		_dbPoolCheckThread->shutdown();
+
+	if (_heartbeatCheckThread != nullptr)
+		_heartbeatCheckThread->shutdown();
+
+	if (_concurrentCheckThread != nullptr)
+		_concurrentCheckThread->shutdown();
+
+	if (_packetCheckThread != nullptr)
+		_packetCheckThread->shutdown();
+
 	_instance = nullptr;
 
 	return CDialog::DestroyWindow();
@@ -364,7 +293,7 @@ bool CAujardDlg::LoadItemTable()
 }
 
 /// \brief loads and sends data after a character is selected
-void CAujardDlg::SelectCharacter(char* buffer)
+void CAujardDlg::SelectCharacter(const char* buffer)
 {
 	int index = 0, userId = -1, sendIndex = 0, idLen1 = 0, idLen2 = 0, tempUserId = -1,
 		packetIndex = 0;
@@ -458,7 +387,7 @@ fail_return:
 /// \brief Handles a WIZ_LOGOUT request when logging out of the game
 /// \details Updates USERDATA and WAREHOUSE as part of logging out, then resets the UserData entry for re-use
 /// \see WIZ_LOGOUT
-void CAujardDlg::UserLogOut(char* buffer)
+void CAujardDlg::UserLogOut(const char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0,
 		charIdLen = 0, sendIndex = 0;
@@ -612,7 +541,7 @@ bool CAujardDlg::HandleUserUpdate(int userId, const _USER_DATA& user, uint8_t sa
 
 /// \brief handles a WIZ_LOGIN request to a selected game server
 /// \see WIZ_LOGIN
-void CAujardDlg::AccountLogIn(char* buffer)
+void CAujardDlg::AccountLogIn(const char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0,
 		passwordLen = 0, sendIndex = 0;
@@ -643,7 +572,7 @@ void CAujardDlg::AccountLogIn(char* buffer)
 
 /// \brief handles a WIZ_SEL_NATION request to a selected game server
 /// \see WIZ_SEL_NATION
-void CAujardDlg::SelectNation(char* buffer)
+void CAujardDlg::SelectNation(const char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0, sendIndex = 0;
 	int nation = -1;
@@ -675,7 +604,7 @@ void CAujardDlg::SelectNation(char* buffer)
 
 /// \brief handles a WIZ_NEW_CHAR request
 /// \see WIZ_NEW_CHAR
-void CAujardDlg::CreateNewChar(char* buffer)
+void CAujardDlg::CreateNewChar(const char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0, charIdLen = 0, sendIndex = 0,
 		result = 0, charIndex = 0, race = 0, Class = 0, hair = 0,
@@ -716,7 +645,7 @@ void CAujardDlg::CreateNewChar(char* buffer)
 /// \brief handles a WIZ_DEL_CHAR request
 /// \todo not implemented, always returns an error to the client
 /// \see WIZ_DEL_CHAR
-void CAujardDlg::DeleteChar(char* buffer)
+void CAujardDlg::DeleteChar(const char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0, charIdLen = 0,
 		sendIndex = 0, result = 0, charIndex = 0, socNoLen = 0;
@@ -757,7 +686,7 @@ void CAujardDlg::DeleteChar(char* buffer)
 /// \brief handles a WIZ_ALLCHAR_INFO_REQ request
 /// \details Loads all character information and sends it to the client
 /// \see WIZ_ALLCHAR_INFO_REQ
-void CAujardDlg::AllCharInfoReq(char* buffer)
+void CAujardDlg::AllCharInfoReq(const char* buffer)
 {
 	int index = 0, userId = 0, accountIdLen = 0, sendIndex = 0,
 		charBuffIndex = 0;
@@ -813,44 +742,9 @@ void CAujardDlg::OnOK()
 	}
 }
 
-void CAujardDlg::OnTimer(UINT EventId)
-{
-	HANDLE	hProcess = nullptr;
-
-	switch (EventId)
-	{
-		case PROCESS_CHECK:
-			if (_heartbeatReceivedTime != 0
-				&& (time(nullptr) - _heartbeatReceivedTime) > SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE.count())
-				AllSaveRoutine();
-			break;
-
-		case CONCURRENT_CHECK:
-#ifdef __SAMMA
-			ConCurrentUserCount();
-#endif
-			break;
-
-		case SERIAL_TIME:
-			g_increase_serial = 50001;
-			break;
-
-		case PACKET_CHECK:
-			WritePacketLog();
-	//		SaveUserData();
-			break;
-
-		case DB_POOL_CHECK:
-			db::ConnectionManager::ExpireUnusedPoolConnections();
-			break;
-	}
-
-	CDialog::OnTimer(EventId);
-}
-
-/// \brief handling for when OnTimer fails a PROCESS_CHECK with ebenezer
+/// \brief handling for when CheckHeartbeat detects no heatbeat from Ebenezer for a time
 /// \details Logs ebenezer outage, attempts to save all UserData, and resets all UserData[userId] objects
-/// \see OnTimer()
+/// \see CheckHeartbeat()
 void CAujardDlg::AllSaveRoutine()
 {
 	// TODO:  100ms seems excessive
@@ -924,7 +818,8 @@ void CAujardDlg::AddOutputMessage(const std::wstring& msg)
 	_outputList.SetTopIndex(lastIndex);
 }
 
-/// \brief Called by OnTimer if __SAMMA is defined
+/// \brief Called every 5min by _concurrentCheckThread
+/// \see _concurrentCheckThread
 void CAujardDlg::ConCurrentUserCount()
 {
 	int usercount = 0;
@@ -950,7 +845,7 @@ void CAujardDlg::ConCurrentUserCount()
 /// \brief handles a WIZ_DATASAVE request
 /// \see WIZ_DATASAVE
 /// \see HandleUserUpdate()
-void CAujardDlg::UserDataSave(char* buffer)
+void CAujardDlg::UserDataSave(const char* buffer)
 {
 	int index = 0, userId = -1, accountIdLen = 0, charIdLen = 0;
 	char accountId[MAX_ID_SIZE + 1] = {},
@@ -1006,11 +901,10 @@ _USER_DATA* CAujardDlg::GetUserPtr(const char* charId, int& userId)
 /// \detail calls the appropriate method for the subprocess op-code
 /// \see WIZ_KNIGHTS_PROCESS WIZ_CLAN_PROCESS
 /// \see "Knights Packet sub define" section in Define.h
-void CAujardDlg::KnightsPacket(char* buffer)
+void CAujardDlg::KnightsPacket(const char* buffer)
 {
 	int index = 0, nation = 0;
 	uint8_t command = GetByte(buffer, index);
-
 	switch (command)
 	{
 		case KNIGHTS_CREATE:
@@ -1063,7 +957,7 @@ void CAujardDlg::KnightsPacket(char* buffer)
 
 /// \brief attempts to create a knights clan
 /// \see KnightsPacket(), KNIGHTS_CREATE
-void CAujardDlg::CreateKnights(char* buffer)
+void CAujardDlg::CreateKnights(const char* buffer)
 {
 	int index = 0, sendIndex = 0, nameLen = 0, chiefNameLen = 0, knightsId = 0,
 		userId = -1, nation = 0, result = 0, community = 0;
@@ -1109,7 +1003,7 @@ void CAujardDlg::CreateKnights(char* buffer)
 
 /// \brief attempts to add a character to a knights clan
 /// \see KnightsPacket(), KNIGHTS_JOIN
-void CAujardDlg::JoinKnights(char* buffer)
+void CAujardDlg::JoinKnights(const char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1;
 	uint8_t result = 0;
@@ -1145,7 +1039,7 @@ void CAujardDlg::JoinKnights(char* buffer)
 
 /// \brief attempt to remove a character from a knights clan
 /// \see KnightsPacket(), KNIGHTS_WITHDRAW
-void CAujardDlg::WithdrawKnights(char* buffer)
+void CAujardDlg::WithdrawKnights(const char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1;
 	uint8_t result = 0;
@@ -1181,7 +1075,7 @@ void CAujardDlg::WithdrawKnights(char* buffer)
 /// \brief attempts to modify a knights character
 /// \see KnightsPacket(), KNIGHTS_REMOVE, KNIGHTS_ADMIT, KNIGHTS_REJECT, KNIGHTS_CHIEF,
 /// KNIGHTS_VICECHIEF, KNIGHTS_OFFICER, KNIGHTS_PUNISH
-void CAujardDlg::ModifyKnightsMember(char* buffer, uint8_t command)
+void CAujardDlg::ModifyKnightsMember(const char* buffer, uint8_t command)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1, charIdLen = 0,
 		removeFlag = 0;
@@ -1256,7 +1150,7 @@ void CAujardDlg::ModifyKnightsMember(char* buffer, uint8_t command)
 
 /// \brief attempts to disband a knights clan
 /// \see KnightsPacket(), KNIGHTS_DESTROY
-void CAujardDlg::DestroyKnights(char* buffer)
+void CAujardDlg::DestroyKnights(const char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1;
 	uint8_t result = 0;
@@ -1286,7 +1180,7 @@ void CAujardDlg::DestroyKnights(char* buffer)
 
 /// \brief attempts to return a list of all knights members
 /// \see KnightsPacket(), KNIGHTS_MEMBER_REQ
-void CAujardDlg::AllKnightsMember(char* buffer)
+void CAujardDlg::AllKnightsMember(const char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
 		dbIndex = 0, count = 0;
@@ -1324,7 +1218,7 @@ void CAujardDlg::AllKnightsMember(char* buffer)
 
 /// \brief attempts to retrieve metadata for a knights clan
 /// \see KnightsPacket(), KNIGHTS_LIST_REQ
-void CAujardDlg::KnightsList(char* buffer)
+void CAujardDlg::KnightsList(const char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
 		dbIndex = 0;
@@ -1353,7 +1247,7 @@ void CAujardDlg::KnightsList(char* buffer)
 
 /// \brief handles WIZ_LOGIN_INFO requests, updating CURRENTUSER for a user
 /// \see WIZ_LOGIN_INFO
-void CAujardDlg::SetLogInInfo(char* buffer)
+void CAujardDlg::SetLogInInfo(const char* buffer)
 {
 	int index = 0, accountIdLen = 0, charIdLen = 0, serverId = 0, serverIpLen = 0,
 	clientIpLen = 0, userId = -1, sendIndex = 0;
@@ -1394,7 +1288,7 @@ void CAujardDlg::SetLogInInfo(char* buffer)
 
 /// \brief handles WIZ_KICKOUT requests
 /// \see WIZ_KICKOUT
-void CAujardDlg::UserKickOut(char* buffer)
+void CAujardDlg::UserKickOut(const char* buffer)
 {
 	int index = 0, accountIdLen = 0;
 	char accountId[MAX_ID_SIZE + 1] = {};
@@ -1412,44 +1306,10 @@ void CAujardDlg::WritePacketLog()
 		_recvPacketCount, _packetCount, _sendPacketCount);
 }
 
-/// \brief checks for users who have not saved their data in AUTOSAVE_DELTA milliseconds
-/// and performs a UserDataSave() for them.
-/// \note this is currently disabled in OnTimer()
-/// \see UserDataSave(), OnTimer(), PACKET_CHECK
-void CAujardDlg::SaveUserData()
-{
-	uint32_t sleepTime = 100;
-	char sendBuff[256] = {};
-	int sendIndex = 0;
-
-	for (int userId = 0; userId < MAX_USER; userId++)
-	{
-		_USER_DATA* user = _dbAgent.UserData[userId];
-		// skip user slots that aren't in use
-		if (user == nullptr || strlen(user->m_id) == 0)
-			continue;
-
-		// GetTickCount(): Retrieves the number of milliseconds that have elapsed since the system was started, up to 49.7 days.
-		// (at which point it overflows. neat.)
-		if (GetTickCount() - user->m_dwTime > AUTOSAVE_DELTA)
-		{
-			memset(sendBuff, 0, sizeof(sendBuff));
-			sendIndex = 0;
-			SetShort(sendBuff, userId, sendIndex);
-			SetShort(sendBuff, strlen(user->m_Accountid), sendIndex);
-			SetString(sendBuff, user->m_Accountid, strlen(user->m_Accountid), sendIndex);
-			SetShort(sendBuff, strlen(user->m_id), sendIndex);
-			SetString(sendBuff, user->m_id, strlen(user->m_id), sendIndex);
-			UserDataSave(sendBuff);
-			Sleep(sleepTime);
-		}
-	}
-}
-
 /// \brief handles WIZ_BATTLE_EVENT requests
 /// \details contains which nation won the war and which charId killed the commander
 /// \see WIZ_BATTLE_EVENT
-void CAujardDlg::BattleEventResult(char* data)
+void CAujardDlg::BattleEventResult(const char* data)
 {
 	int _type = 0, result = 0, charIdLen = 0, index = 0;
 	char charId[MAX_ID_SIZE + 1] = {};
@@ -1470,7 +1330,7 @@ void CAujardDlg::BattleEventResult(char* data)
 /// \brief handles DB_COUPON_EVENT requests
 /// \todo related stored procedures are not implemented
 /// \see DB_COUPON_EVENT
-void CAujardDlg::CouponEvent(char* data)
+void CAujardDlg::CouponEvent(const char* data)
 {
 	int nSid = 0, nEventNum = 0, nLen = 0, nCharLen = 0, nCouponLen = 0, index = 0, nType = 0, nResult = 0, sendIndex = 0;
 	int nItemID = 0, nItemCount = 0, nMessageNum = 0;
@@ -1520,6 +1380,18 @@ void CAujardDlg::CouponEvent(char* data)
 		// TODO: not implemented.  Allow nResult to default to 0
 		// nResult = _dbAgent.UpdateCouponEvent(strAccountName, strCharName, strCouponID, nItemID, nItemCount);
 	}
+}
+
+void CAujardDlg::CheckHeartbeat()
+{
+	if (_heartbeatReceivedTime == 0)
+		return;
+
+	time_t currentTime = time(nullptr);
+	time_t secondsSinceLastHeartbeat = currentTime - _heartbeatReceivedTime;
+
+	if (secondsSinceLastHeartbeat > SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE.count())
+		AllSaveRoutine();
 }
 
 void CAujardDlg::HeartbeatReceived()

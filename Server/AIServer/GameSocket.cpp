@@ -3,15 +3,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "Server.h"
 #include "GameSocket.h"
+#include "Extern.h"
+#include "MAP.h"
+#include "NpcThread.h"
+#include "Party.h"
+#include "Region.h"
 #include "ServerDlg.h"
 #include "User.h"
-#include "Map.h"
-#include "Region.h"
-#include "Party.h"
-
-#include "extern.h"
 
 #include <shared/crc32.h>
 #include <shared/lzf.h>
@@ -24,7 +23,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-extern CRITICAL_SECTION g_region_critical;
+extern std::mutex g_region_mutex;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -269,7 +268,7 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 {
 	int index = 1;
 	int outindex = 0, zone_index = 0;
-	float fReConnectEndTime = 0.0f;
+	double fReConnectEndTime = 0.0;
 	char pData[1024] = {};
 	uint8_t byZoneNumber = GetByte(pBuf, index);
 	uint8_t byReConnect = GetByte(pBuf, index);	// 0 : 처음접속, 1 : 재접속
@@ -311,7 +310,7 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 			spdlog::info("GameSocket::RecvServerConnect: Ebenezer sockets reconnected in under 2 minutes [sockets={}]",
 				m_pMain->m_sReSocketCount);
 			m_pMain->m_sReSocketCount = 0;
-			m_pMain->m_fReConnectStart = 0.0f;
+			m_pMain->m_fReConnectStart = 0.0;
 		}
 
 		if (m_pMain->m_sReSocketCount == MAX_AI_SOCKET)
@@ -331,7 +330,7 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 			else
 			{
 				m_pMain->m_sReSocketCount = 0;
-				m_pMain->m_fReConnectStart = 0.0f;
+				m_pMain->m_fReConnectStart = 0.0;
 			}
 		}
 	}
@@ -1147,7 +1146,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 		return;
 	}
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::mutex> lock(g_region_mutex);
 
 	pParty = new _PARTY_GROUP;
 	pParty->wIndex = sPartyIndex;
@@ -1171,8 +1170,6 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 	{
 		spdlog::debug("GameSocket::RecvPartyInfoAllData: created partyIndex={}", sPartyIndex);
 	}
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void CGameSocket::RecvCheckAlive(char* pBuf)

@@ -47,7 +47,7 @@ public:
 	_RoomEvent  m_Logic[MAX_CHECK_EVENT];		// 조건들
 	_RoomEvent  m_Exec[MAX_CHECK_EVENT];		// 실행문
 
-	float   m_fDelayTime;						// time
+	double	m_fDelayTime;						// time
 
 	mapNpcArray	m_mapRoomNpcArray;				// room npc uid array
 	CServerDlg* m_pMain;
@@ -60,12 +60,12 @@ public:
 	CRoomEvent();
 	virtual ~CRoomEvent();
 
-	void MainRoom(float fcurtime);
+	void MainRoom(double currentTime);
 	void InitializeRoom();
 
 private:
 	void Initialize();
-	bool CheckEvent(int event_num, float fcurtime);
+	bool CheckEvent(int event_num, double currentTime);
 	bool RunEvent(int event_num);
 	bool CheckMonsterCount(int sid, int count, int type);
 	CNpc* GetNpcPtr(int sid);

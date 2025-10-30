@@ -145,7 +145,7 @@
     <ClCompile Include="StringConversion.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="TimeThread.cpp" />
+    <ClCompile Include="TimerThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ByteBuffer.h" />
@@ -162,7 +162,7 @@
     <ClInclude Include="StringConversion.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Thread.h" />
-    <ClInclude Include="TimeThread.h" />
+    <ClInclude Include="TimerThread.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

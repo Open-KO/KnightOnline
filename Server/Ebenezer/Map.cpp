@@ -3,12 +3,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "Ebenezer.h"
 #include "Map.h"
 #include "Region.h"
 #include "Define.h"
 #include "User.h"
 #include "EbenezerDlg.h"
+
+#include <istream>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -23,7 +24,7 @@ import EbenezerBinder;
 
 using namespace db;
 
-extern CRITICAL_SECTION g_region_critical;
+extern std::recursive_mutex g_region_mutex;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -96,18 +97,18 @@ C3DMap::~C3DMap()
 		m_WarpArray.DeleteAllData();
 }
 
-bool C3DMap::LoadMap(HANDLE hFile)
+bool C3DMap::LoadMap(std::istream& fs)
 {
 	m_pMain = (CEbenezerDlg*) AfxGetApp()->GetMainWnd();
 
-	LoadTerrain(hFile);
+	LoadTerrain(fs);
 
 	if (!m_N3ShapeMgr.Create(
 		(m_nMapSize - 1) * m_fUnitDist,
 		(m_nMapSize - 1) * m_fUnitDist))
 		return false;
 
-	if (!m_N3ShapeMgr.LoadCollisionData(hFile))
+	if (!m_N3ShapeMgr.LoadCollisionData(fs))
 		return false;
 
 	if ((m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Width()
@@ -123,10 +124,10 @@ bool C3DMap::LoadMap(HANDLE hFile)
 	for (int i = 0; i < m_nXRegion; i++)
 		m_ppRegion[i] = new CRegion[m_nZRegion];
 
-	LoadObjectEvent(hFile);
-	LoadMapTile(hFile);
-	LoadRegeneEvent(hFile);		// 이건 내가 추가했슴
-	LoadWarpList(hFile);
+	LoadObjectEvent(fs);
+	LoadMapTile(fs);
+	LoadRegeneEvent(fs);		// 이건 내가 추가했슴
+	LoadWarpList(fs);
 
 	if (!LoadEvent())
 	{
@@ -137,28 +138,24 @@ bool C3DMap::LoadMap(HANDLE hFile)
 	return true;
 }
 
-void C3DMap::LoadObjectEvent(HANDLE hFile)
+void C3DMap::LoadObjectEvent(std::istream& fs)
 {
 	int iEventObjectCount = 0;
-	DWORD dwNum;
-	_OBJECT_EVENT* pEvent = nullptr;
-
-	uint8_t regene_point_counter_karus = 0;
-	uint8_t regene_point_counter_elmo = 0;
-
-	ReadFile(hFile, &iEventObjectCount, 4, &dwNum, nullptr);
+	fs.read(reinterpret_cast<char*>(&iEventObjectCount), 4);
 
 	for (int i = 0; i < iEventObjectCount; i++)
 	{
-		pEvent = new _OBJECT_EVENT;
-		ReadFile(hFile, &pEvent->sBelong, 4, &dwNum, nullptr);				// 소속 : 0 -> 무소속
-		ReadFile(hFile, &pEvent->sIndex, 2, &dwNum, nullptr);				// Event Index
-		ReadFile(hFile, &pEvent->sType, 2, &dwNum, nullptr);				// 0 : bind point, 1,2 : gate, 3 : lever, 4 : flag lever, 5 : Warp point
-		ReadFile(hFile, &pEvent->sControlNpcID, 2, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->sStatus, 2, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->fPosX, 4, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->fPosY, 4, &dwNum, nullptr);
-		ReadFile(hFile, &pEvent->fPosZ, 4, &dwNum, nullptr);
+		_OBJECT_EVENT* pEvent = new _OBJECT_EVENT;
+
+		fs.read(reinterpret_cast<char*>(&pEvent->sBelong), 4);			// 소속 : 0 -> 무소속
+		fs.read(reinterpret_cast<char*>(&pEvent->sIndex), 2);			// Event Index
+		fs.read(reinterpret_cast<char*>(&pEvent->sType), 2);			// 0 : bind point, 1,2 : gate, 3 : lever, 4 : flag lever, 5 : Warp point
+		fs.read(reinterpret_cast<char*>(&pEvent->sControlNpcID), 2);
+		fs.read(reinterpret_cast<char*>(&pEvent->sStatus), 2);
+		fs.read(reinterpret_cast<char*>(&pEvent->fPosX), 4);
+		fs.read(reinterpret_cast<char*>(&pEvent->fPosY), 4);
+		fs.read(reinterpret_cast<char*>(&pEvent->fPosZ), 4);
+
 		pEvent->byLife = 1;
 
 		if (pEvent->sIndex <= 0)
@@ -176,37 +173,32 @@ void C3DMap::LoadObjectEvent(HANDLE hFile)
 	}
 }
 
-void C3DMap::LoadMapTile(HANDLE hFile)
+void C3DMap::LoadMapTile(std::istream& fs)
 {
-	DWORD dwNum;
-
 	m_ppnEvent = new int16_t* [m_nMapSize];
 	for (int x = 0; x < m_nMapSize;x++)
 	{
 		m_ppnEvent[x] = new int16_t[m_nMapSize];
-		ReadFile(hFile, m_ppnEvent[x], sizeof(int16_t) * m_nMapSize, &dwNum, nullptr);
+		fs.read(reinterpret_cast<char*>(m_ppnEvent[x]), sizeof(int16_t) * m_nMapSize);
 	}
 }
 
-void C3DMap::LoadRegeneEvent(HANDLE hFile)
+void C3DMap::LoadRegeneEvent(std::istream& fs)
 {
 	int iEventObjectCount = 0;
-
-	DWORD dwNum;
-	_REGENE_EVENT* pEvent = nullptr;
-
-	ReadFile(hFile, &iEventObjectCount, 4, &dwNum, nullptr);
+	fs.read(reinterpret_cast<char*>(&iEventObjectCount), 4);
 
 	for (int i = 0; i < iEventObjectCount; i++)
 	{
-		pEvent = new _REGENE_EVENT;
+		_REGENE_EVENT* pEvent = new _REGENE_EVENT;
 
 		pEvent->sRegenePoint = i;
-		ReadFile(hFile, &pEvent->fRegenePosX, 4, &dwNum, nullptr);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 X
-		ReadFile(hFile, &pEvent->fRegenePosY, 4, &dwNum, nullptr);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Y
-		ReadFile(hFile, &pEvent->fRegenePosZ, 4, &dwNum, nullptr);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Z
-		ReadFile(hFile, &pEvent->fRegeneAreaZ, 4, &dwNum, nullptr);	// 캐릭터 나타나는 지역의 Z 축 길이 
-		ReadFile(hFile, &pEvent->fRegeneAreaX, 4, &dwNum, nullptr);	// 캐릭터 나타나는 지역의 X 축 길이
+
+		fs.read(reinterpret_cast<char*>(&pEvent->fRegenePosX), 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 X
+		fs.read(reinterpret_cast<char*>(&pEvent->fRegenePosY), 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Y
+		fs.read(reinterpret_cast<char*>(&pEvent->fRegenePosZ), 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Z
+		fs.read(reinterpret_cast<char*>(&pEvent->fRegeneAreaZ), 4);	// 캐릭터 나타나는 지역의 Z 축 길이 
+		fs.read(reinterpret_cast<char*>(&pEvent->fRegeneAreaX), 4);	// 캐릭터 나타나는 지역의 X 축 길이
 
 		if (pEvent->sRegenePoint < 0)
 			continue;
@@ -229,19 +221,16 @@ void C3DMap::LoadRegeneEvent(HANDLE hFile)
 //	m_pMain->m_bMaxRegenePoint = iEventObjectCount;
 }
 
-void C3DMap::LoadWarpList(HANDLE hFile)
+void C3DMap::LoadWarpList(std::istream& fs)
 {
 	int WarpCount = 0;
-	DWORD dwNum;
-	_WARP_INFO* pWarp = nullptr;
-
-	ReadFile(hFile, &WarpCount, 4, &dwNum, nullptr);
+	fs.read(reinterpret_cast<char*>(&WarpCount), 4);
 
 	for (int i = 0; i < WarpCount; i++)
 	{
-		pWarp = new _WARP_INFO;
+		_WARP_INFO* pWarp = new _WARP_INFO;
 
-		ReadFile(hFile, pWarp, sizeof(_WARP_INFO), &dwNum, nullptr);
+		fs.read(reinterpret_cast<char*>(pWarp), sizeof(_WARP_INFO));
 
 		if (!m_WarpArray.PutData(pWarp->sWarpID, pWarp))
 		{
@@ -253,11 +242,10 @@ void C3DMap::LoadWarpList(HANDLE hFile)
 	}
 }
 
-void C3DMap::LoadTerrain(HANDLE hFile)
+void C3DMap::LoadTerrain(std::istream& fs)
 {
-	DWORD dwRWC;
-	ReadFile(hFile, &m_nMapSize, sizeof(int), &dwRWC, nullptr);	// 가로세로 정보가 몇개씩인가?
-	ReadFile(hFile, &m_fUnitDist, sizeof(float), &dwRWC, nullptr);
+	fs.read(reinterpret_cast<char*>(&m_nMapSize), sizeof(int));	// 가로세로 정보가 몇개씩인가?
+	fs.read(reinterpret_cast<char*>(&m_fUnitDist), sizeof(float));
 
 	m_fHeight = new float* [m_nMapSize];
 	for (int z = 0; z < m_nMapSize; z++)
@@ -266,7 +254,7 @@ void C3DMap::LoadTerrain(HANDLE hFile)
 	for (int z = 0; z < m_nMapSize; z++)
 	{
 		for (int x = 0; x < m_nMapSize; x++)
-			ReadFile(hFile, &m_fHeight[x][z], sizeof(float), &dwRWC, nullptr);	// 높이값 읽어오기
+			fs.read(reinterpret_cast<char*>(&m_fHeight[x][z]), sizeof(float));	// 높이값 읽어오기
 	}
 }
 
@@ -378,15 +366,13 @@ bool C3DMap::RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem)
 	if (pItem == nullptr)
 		return false;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	m_ppRegion[rx][rz].m_RegionItemArray.PutData(pItem->bundle_index, pItem);
 
 	m_wBundle++;
 	if (m_wBundle > ZONEITEM_MAX)
 		m_wBundle = 1;
-
-	LeaveCriticalSection(&g_region_critical);
 
 	return true;
 }
@@ -404,7 +390,7 @@ bool C3DMap::RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int 
 	bool bFind = false;
 	int16_t t_count = 0;
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	pItem = region->m_RegionItemArray.GetData(bundle_index);
 	if (pItem != nullptr)
@@ -433,8 +419,6 @@ bool C3DMap::RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int 
 		}
 	}
 
-	LeaveCriticalSection(&g_region_critical);
-
 	return bFind;
 }
 
@@ -449,12 +433,12 @@ void C3DMap::RegionUserAdd(int rx, int rz, int uid)
 	int* pInt = new int;
 	*pInt = uid;
 
-	EnterCriticalSection(&g_region_critical);
+	{
+		std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
-	if (!m_ppRegion[rx][rz].m_RegionUserArray.PutData(uid, pInt))
-		delete pInt;
-
-	LeaveCriticalSection(&g_region_critical);
+		if (!m_ppRegion[rx][rz].m_RegionUserArray.PutData(uid, pInt))
+			delete pInt;
+	}
 
 	//TRACE(_T("++++ Region Add(%d) : x=%d, z=%d, uid=%d ++++\n"), m_nZoneNumber, rx, rz, uid);
 }
@@ -469,9 +453,10 @@ void C3DMap::RegionUserRemove(int rx, int rz, int uid)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
-	region->m_RegionUserArray.DeleteData(uid);
-	LeaveCriticalSection(&g_region_critical);
+	{
+		std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
+		region->m_RegionUserArray.DeleteData(uid);
+	}
 
 	//TRACE(_T("---- Region Remove(%d) : x=%d, z=%d, uid=%d ----\n"), m_nZoneNumber, rx, rz, uid);
 }
@@ -489,12 +474,9 @@ void C3DMap::RegionNpcAdd(int rx, int rz, int nid)
 	int* pInt = new int;
 	*pInt = nid;
 
-	EnterCriticalSection(&g_region_critical);
-
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 	if (!region->m_RegionNpcArray.PutData(nid, pInt))
 		delete pInt;
-
-	LeaveCriticalSection(&g_region_critical);
 }
 
 void C3DMap::RegionNpcRemove(int rx, int rz, int nid)
@@ -507,9 +489,8 @@ void C3DMap::RegionNpcRemove(int rx, int rz, int nid)
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
-	EnterCriticalSection(&g_region_critical);
+	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 	region->m_RegionNpcArray.DeleteData(nid);
-	LeaveCriticalSection(&g_region_critical);
 }
 
 bool C3DMap::CheckEvent(float x, float z, CUser* pUser)

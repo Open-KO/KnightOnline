@@ -14,18 +14,18 @@ class CEbenezerDlg;
 class CKnightsManager
 {
 public:
-	void RecvKnightsAllList(char* pBuf);
+	void RecvKnightsAllList(const char* pBuf);
 	// knight packet
 	void SetKnightsUser(int knightsId, const char* charId);
 	bool ModifyKnightsUser(int knightsId, const char* charId);
 	bool RemoveKnightsUser(int knightsId, const char* charId);
 	bool AddKnightsUser(int knightsId, const char* charId);
-	void RecvKnightsList(char* pBuf);
-	void RecvDestroyKnights(CUser* pUser, char* pBuf);
-	void RecvModifyFame(CUser* pUser, char* pBuf, uint8_t command);
-	void RecvJoinKnights(CUser* pUser, char* pBuf, uint8_t command);
-	void RecvCreateKnights(CUser* pUser, char* pBuf);
-	void ReceiveKnightsProcess(CUser* pUser, char* pBuf, uint8_t command);
+	void RecvKnightsList(const char* pBuf);
+	void RecvDestroyKnights(CUser* pUser, const char* pBuf);
+	void RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t command);
+	void RecvJoinKnights(CUser* pUser, const char* pBuf, uint8_t command);
+	void RecvCreateKnights(CUser* pUser, const char* pBuf);
+	void ReceiveKnightsProcess(CUser* pUser, const char* pBuf, uint8_t command);
 	void CurrentKnightsMember(CUser* pUser, char* pBuf);
 	void AllKnightsMember(CUser* pUser, char* pBuf);
 	void AllKnightsList(CUser* pUser, char* pBuf);

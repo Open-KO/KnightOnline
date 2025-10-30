@@ -20,12 +20,13 @@ static char THIS_FILE[] = __FILE__;
 
 // NOTE: Explicitly handled under DEBUG_NEW override
 #include <db-library/RecordSetLoader.h>
+#include <shared/TimerThread.h>
 
 import VersionManagerBinder;
 
 constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
 
-constexpr int DB_POOL_CHECK = 100;
+using namespace std::chrono_literals;
 
 /////////////////////////////////////////////////////////////////////////////
 // CVersionManagerDlg dialog
@@ -48,6 +49,10 @@ CVersionManagerDlg::CVersionManagerDlg(CWnd* parent)
 
 	db::ConnectionManager::DefaultConnectionTimeout = DB_PROCESS_TIMEOUT;
 	db::ConnectionManager::Create();
+
+	_dbPoolCheckThread = std::make_unique<TimerThread>(
+		1min,
+		std::bind(&db::ConnectionManager::ExpireUnusedPoolConnections));
 }
 
 CVersionManagerDlg::~CVersionManagerDlg()
@@ -65,7 +70,6 @@ void CVersionManagerDlg::DoDataExchange(CDataExchange* data)
 
 BEGIN_MESSAGE_MAP(CVersionManagerDlg, CDialog)
 	//{{AFX_MSG_MAP(CVersionManagerDlg)
-	ON_WM_TIMER()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_SETTING, OnVersionSetting)
@@ -84,7 +88,7 @@ BOOL CVersionManagerDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(_icon, TRUE);		// Set big icon
 	SetIcon(_icon, FALSE);		// Set small icon
-	
+
 	_socketManager.Init(MAX_USER, 0, 1);
 	_socketManager.AllocateServerSockets<CUser>(this);
 
@@ -123,10 +127,9 @@ BOOL CVersionManagerDlg::OnInitDialog()
 
 	_socketManager.StartAccept();
 
-	AddOutputMessage(fmt::format("Listening on 0.0.0.0:{}",
-		_LISTEN_PORT));
+	AddOutputMessage(fmt::format("Listening on 0.0.0.0:{}", _LISTEN_PORT));
 
-	SetTimer(DB_POOL_CHECK, 60000, nullptr);
+	_dbPoolCheckThread->start();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -264,14 +267,6 @@ bool CVersionManagerDlg::LoadVersionList()
 	return true;
 }
 
-void CVersionManagerDlg::OnTimer(UINT EventId)
-{
-	if (EventId == DB_POOL_CHECK)
-		db::ConnectionManager::ExpireUnusedPoolConnections();
-
-	CDialog::OnTimer(EventId);
-}
-
 LRESULT CVersionManagerDlg::OnProcessListBoxQueue(WPARAM, LPARAM)
 {
 	std::queue<std::wstring> localQueue;
@@ -340,7 +335,7 @@ BOOL CVersionManagerDlg::PreTranslateMessage(MSG* msg)
 
 BOOL CVersionManagerDlg::DestroyWindow()
 {
-	KillTimer(DB_POOL_CHECK);
+	_socketManager.Shutdown();
 
 	if (!VersionList.IsEmpty())
 		VersionList.DeleteAllData();
@@ -349,7 +344,8 @@ BOOL CVersionManagerDlg::DestroyWindow()
 		delete pInfo;
 	ServerList.clear();
 
-	_socketManager.Shutdown();
+	if (_dbPoolCheckThread != nullptr)
+		_dbPoolCheckThread->shutdown();
 
 	return CDialog::DestroyWindow();
 }

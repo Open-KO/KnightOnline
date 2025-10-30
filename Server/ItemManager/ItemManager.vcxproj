@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="ItemManagerDlg.cpp" />
+    <ClCompile Include="ItemManagerReadQueueThread.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
@@ -146,6 +147,7 @@
     <ClInclude Include="Define.h" />
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="ItemManagerDlg.h" />
+    <ClInclude Include="ItemManagerReadQueueThread.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>

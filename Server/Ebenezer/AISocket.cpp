@@ -27,8 +27,6 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-extern CRITICAL_SECTION g_LogFile_critical;
-
 CAISocket::CAISocket(SocketManager* socketManager, int zoneNum)
 	: TcpClientSocket(socketManager)
 {
@@ -250,7 +248,7 @@ void CAISocket::CloseProcess()
 void CAISocket::LoginProcess(char* pBuf)
 {
 	int index = 0;
-	float fReConnectEndTime = 0.0f;
+	double fReConnectEndTime = 0.0;
 	uint8_t zone = GetByte(pBuf, index);
 	// 0: first connect
 	// 1: reconnect
@@ -296,7 +294,7 @@ void CAISocket::LoginProcess(char* pBuf)
 				spdlog::info("AISocket::LoginProcess: sockets reconnected in under 2 minutes [sockets={}]",
 					_main->m_sReSocketCount);
 				_main->m_sReSocketCount = 0;
-				_main->m_fReConnectStart = 0.0f;
+				_main->m_fReConnectStart = 0.0;
 			}
 
 			if (_main->m_sReSocketCount == MAX_AI_SOCKET)
@@ -317,7 +315,7 @@ void CAISocket::LoginProcess(char* pBuf)
 				else
 				{
 					_main->m_sReSocketCount = 0;
-					_main->m_fReConnectStart = 0.0f;
+					_main->m_fReConnectStart = 0.0;
 				}
 			}
 		}
@@ -329,7 +327,6 @@ void CAISocket::RecvServerInfo(char* pBuf)
 	int index = 0;
 	uint8_t type = GetByte(pBuf, index);
 	uint8_t byZone = GetByte(pBuf, index);
-	CString logstr;
 	int size = static_cast<int>(_main->m_ZoneArray.size());
 
 	if (type == SERVER_INFO_START)

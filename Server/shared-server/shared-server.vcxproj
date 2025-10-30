@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="N3ShapeMgr.cpp" />
+    <ClCompile Include="ReadQueueThread.cpp" />
     <ClCompile Include="SharedMemoryQueue.cpp" />
     <ClCompile Include="SharedMemoryBlock.cpp" />
     <ClCompile Include="SocketManager.cpp" />
@@ -155,6 +156,7 @@
   <ItemGroup>
     <ClInclude Include="My_3DStruct.h" />
     <ClInclude Include="N3ShapeMgr.h" />
+    <ClInclude Include="ReadQueueThread.h" />
     <ClInclude Include="server_config.h" />
     <ClInclude Include="SharedMemoryQueue.h" />
     <ClInclude Include="SharedMemoryBlock.h" />

@@ -76,6 +76,8 @@ enum class NameType
 };
 
 class CUser;
+class ReadQueueThread;
+class TimerThread;
 class CEbenezerDlg : public CDialog
 {
 // Construction
@@ -84,6 +86,8 @@ public:
 		return s_pInstance;
 	}
 
+	void GameTimeTick();
+	void SendSMQHeartbeat();
 	uint32_t GetEventTriggerKey(uint8_t byNpcType, uint16_t sTrapNumber) const;
 	int32_t GetEventTrigger(uint8_t byNpcType, uint16_t sTrapNumber) const;
 	bool LoadEventTriggerTable();
@@ -210,8 +214,6 @@ public:
 	SharedMemoryQueue m_LoggerRecvQueue;
 	SharedMemoryQueue m_ItemLoggerSendQ;
 
-	HANDLE	m_hReadQueueThread;
-
 	SharedMemoryBlock m_UserDataBlock;
 
 	uint32_t	m_ServerOffset;
@@ -245,21 +247,21 @@ public:
 	CKnightsSiegeWar		m_KnightsSiegeWar;
 
 	int16_t	m_sPartyIndex;
-	int16_t	m_sZoneCount;							// AI Server 재접속시 사용
-	int16_t	m_sSocketCount;							// AI Server 재접속시 사용
+	int16_t	m_sZoneCount;			// AI Server 재접속시 사용
+	int16_t	m_sSocketCount;			// AI Server 재접속시 사용
 	// sungyong 2002.05.23
 	int16_t	m_sSendSocket;
 	bool 	m_bFirstServerFlag;		// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
 	bool 	m_bServerCheckFlag;
-	bool 	m_bPointCheckFlag;		// AI서버와 재접전에 NPC포인터 참조막기 (true:포인터 참조, false:포인터 참조 못함)
+	bool	m_bPointCheckFlag;		// AI서버와 재접전에 NPC포인터 참조막기 (true:포인터 참조, false:포인터 참조 못함)
 	int16_t	m_sReSocketCount;		// GameServer와 재접시 필요
-	float   m_fReConnectStart;	// 처음 소켓이 도착한 시간
-	int16_t	m_sErrorSocketCount;  // 이상소켓 감시용
+	double	m_fReConnectStart;		// 처음 소켓이 도착한 시간
+	int16_t	m_sErrorSocketCount;	// 이상소켓 감시용
 	// ~sungyong 2002.05.23
 
-	int m_iPacketCount;		// packet check
-	int m_iSendPacketCount;		// packet check
-	int m_iRecvPacketCount;		// packet check
+	int m_iPacketCount;				// packet check
+	int m_iSendPacketCount;			// packet check
+	int m_iRecvPacketCount;			// packet check
 
 	int m_nYear, m_nMonth, m_nDate, m_nHour, m_nMin, m_nWeather, m_nAmount;
 	int m_nCastleCapture;
@@ -287,13 +289,13 @@ public:
 	char	m_strBuyTitle[MAX_BBS_POST][MAX_BBS_TITLE];
 	char	m_strBuyMessage[MAX_BBS_POST][MAX_BBS_MESSAGE];
 	int		m_iBuyPrice[MAX_BBS_POST];
-	float	m_fBuyStartTime[MAX_BBS_POST];
+	double	m_fBuyStartTime[MAX_BBS_POST];
 
 	int16_t	m_sSellID[MAX_BBS_POST];
 	char	m_strSellTitle[MAX_BBS_POST][MAX_BBS_TITLE];
 	char	m_strSellMessage[MAX_BBS_POST][MAX_BBS_MESSAGE];
 	int		m_iSellPrice[MAX_BBS_POST];
-	float	m_fSellStartTime[MAX_BBS_POST];
+	double	m_fSellStartTime[MAX_BBS_POST];
 
 	// ~Yookozuna 2002.11.26 - 비러머글 남는 공지 --;
 	bool 	m_bPermanentChatMode;
@@ -349,17 +351,26 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg LRESULT OnProcessListBoxQueue(WPARAM wParam, LPARAM lParam);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	
 private:
-	CIni	m_Ini;
-	EbenezerLogger _logger;
+	CIni								m_Ini;
+	EbenezerLogger						_logger;
 
 	/// \brief output message box for the application
-	CListBox _outputList;
+	CListBox							_outputList;
+
+	std::unique_ptr<TimerThread>		_gameTimeThread;
+	std::unique_ptr<TimerThread>		_smqHeartbeatThread;
+	std::unique_ptr<TimerThread>		_aliveTimeThread;
+	std::unique_ptr<TimerThread>		_marketBBSTimeThread;
+	std::unique_ptr<TimerThread>		_packetCheckThread;
+
+	std::unique_ptr<ReadQueueThread>	_readQueueThread;
+
+	std::mutex							_serialMutex;
 };
 
 //{{AFX_INSERT_LOCATION}}

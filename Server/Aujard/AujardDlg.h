@@ -19,6 +19,8 @@ namespace recordset_loader
 /////////////////////////////////////////////////////////////////////////////
 // CAujardDlg dialog
 
+class ReadQueueThread;
+class TimerThread;
 class CAujardDlg : public CDialog
 {
 // Construction
@@ -35,69 +37,68 @@ public:
 	/// \see DB_HEARTBEAT
 	void HeartbeatReceived();
 
+	/// \brief checks the time since the last received heartbeat and saves if
+	//  enough time has passed.
+	void CheckHeartbeat();
+
 	/// \brief handles DB_COUPON_EVENT requests
 	/// \todo related stored procedures are not implemented
 	/// \see DB_COUPON_EVENT
-	void CouponEvent(char* data);
+	void CouponEvent(const char* data);
 	
 	/// \brief handles WIZ_BATTLE_EVENT requests
     /// \details contains which nation won the war and which charId killed the commander
     /// \see WIZ_BATTLE_EVENT
-	void BattleEventResult(char* data);
-
-	/// \brief checks for users who have not saved their data in AUTOSAVE_DELTA milliseconds
-	/// and performs a UserDataSave() for them.
-	/// \note this is currently disabled in OnTimer()
-	/// \see UserDataSave(), OnTimer(), PACKET_CHECK
-	void SaveUserData();
+	void BattleEventResult(const char* data);
 
 	/// \brief writes a packet summary line to the log file
 	void WritePacketLog();
 
 	/// \brief handles WIZ_KICKOUT requests
 	/// \see WIZ_KICKOUT
-	void UserKickOut(char* buffer);
+	void UserKickOut(const char* buffer);
 
 	/// \brief handles WIZ_LOGIN_INFO requests, updating CURRENTUSER for a user
 	/// \see WIZ_LOGIN_INFO
-	void SetLogInInfo(char* buffer);
+	void SetLogInInfo(const char* buffer);
 
 	/// \brief attempts to retrieve metadata for a knights clan
 	/// \see KnightsPacket(), KNIGHTS_LIST_REQ
-	void KnightsList(char* buffer);
+	void KnightsList(const char* buffer);
 
-	/// \brief Called by OnTimer if __SAMMA is defined
+	/// \brief Called every 5min by _concurrentCheckThread
+	/// \see _concurrentCheckThread
 	void ConCurrentUserCount();
 
 	/// \brief attempts to return a list of all knights members
 	/// \see KnightsPacket(), KNIGHTS_MEMBER_REQ
-	void AllKnightsMember(char* buffer);
+	void AllKnightsMember(const char* buffer);
 
 	/// \brief attempts to disband a knights clan
 	/// \see KnightsPacket(), KNIGHTS_DESTROY
-	void DestroyKnights(char* buffer);
+	void DestroyKnights(const char* buffer);
 
 	/// \brief attempts to modify a knights character
 	/// \see KnightsPacket(), KNIGHTS_REMOVE, KNIGHTS_ADMIT, KNIGHTS_REJECT, KNIGHTS_CHIEF,
 	/// KNIGHTS_VICECHIEF, KNIGHTS_OFFICER, KNIGHTS_PUNISH
-	void ModifyKnightsMember(char* buffer, uint8_t command);
+	void ModifyKnightsMember(const char* buffer, uint8_t command);
 
 	/// \brief attempt to remove a character from a knights clan
 	/// \see KnightsPacket(), KNIGHTS_WITHDRAW
-	void WithdrawKnights(char* buffer);
+	void WithdrawKnights(const char* buffer);
 
 	/// \brief attempts to add a character to a knights clan
 	/// \see KnightsPacket(), KNIGHTS_JOIN
-	void JoinKnights(char* buffer);
+	void JoinKnights(const char* buffer);
 
 	/// \brief attempts to create a knights clan
 	/// \see KnightsPacket(), KNIGHTS_CREATE
-	void CreateKnights(char* buffer);
+	void CreateKnights(const char* buffer);
 
 	/// \brief handles WIZ_KNIGHTS_PROCESS and WIZ_CLAN_PROCESS requests
 	/// \detail calls the appropriate method for the subprocess op-code
 	/// \see "Knights Packet sub define" section in Define.h
-	void KnightsPacket(char* buffer);
+	void KnightsPacket(const char* buffer);
 
 	/// \brief attempts to find a UserData record for charId
 	/// \param charId
@@ -108,24 +109,24 @@ public:
 	/// \brief handles a WIZ_ALLCHAR_INFO_REQ request
 	/// \details Loads all character information and sends it to the client
 	/// \see WIZ_ALLCHAR_INFO_REQ
-	void AllCharInfoReq(char* buffer);
+	void AllCharInfoReq(const char* buffer);
 
 	/// \brief handles a WIZ_LOGIN request to a selected game server
 	/// \see WIZ_LOGIN
-	void AccountLogIn(char* buffer);
+	void AccountLogIn(const char* buffer);
 
 	/// \brief handles a WIZ_DEL_CHAR request
 	/// \todo not implemented, always returns an error to the client
 	/// \see WIZ_DEL_CHAR
-	void DeleteChar(char* buffer);
+	void DeleteChar(const char* buffer);
 
 	/// \brief handles a WIZ_NEW_CHAR request
 	/// \see WIZ_NEW_CHAR
-	void CreateNewChar(char* buffer);
+	void CreateNewChar(const char* buffer);
 
 	/// \brief handles a WIZ_SEL_NATION request to a selected game server
 	/// \see WIZ_SEL_NATION
-	void SelectNation(char* buffer);
+	void SelectNation(const char* buffer);
 
 	/// \brief loads information needed from the ITEM table to a cache map
 	bool LoadItemTable();
@@ -136,12 +137,12 @@ public:
 	/// \brief handles a WIZ_DATASAVE request
 	/// \see WIZ_DATASAVE
 	/// \see HandleUserUpdate()
-	void UserDataSave(char* buffer);
+	void UserDataSave(const char* buffer);
 	
 	/// \brief Handles a WIZ_LOGOUT request when logging out of the game
 	/// \details Updates USERDATA and WAREHOUSE as part of logging out, then resets the UserData entry for re-use
 	/// \see WIZ_LOGOUT, HandleUserLogout()
-	void UserLogOut(char* buffer);
+	void UserLogOut(const char* buffer);
 	
 	/// \brief handling for when OnTimer fails a PROCESS_CHECK with ebenezer
 	/// \details Logs ebenezer outage, attempts to save all UserData, and resets all UserData[userId] objects
@@ -163,7 +164,7 @@ public:
 	bool InitSharedMemory();
 
 	/// \brief loads and sends data after a character is selected
-	void SelectCharacter(char* buffer);
+	void SelectCharacter(const char* buffer);
 
 	SharedMemoryQueue	LoggerSendQueue;
 	SharedMemoryQueue	LoggerRecvQueue;
@@ -180,8 +181,6 @@ protected:
 	static CAujardDlg*	_instance;
 
 	CDBAgent			_dbAgent;
-
-	HANDLE				_readQueueThread;
 	SharedMemoryBlock	_userDataBlock;
 
 	int					_serverId;
@@ -236,14 +235,20 @@ protected:
 	/// \brief triggered when the Exit button is clicked. Will ask user to confirm intent to close the program.
 	void OnOK() override;
 	
-	afx_msg void OnTimer(UINT EventId);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 private:
 	/// \brief output message box for the application
-	CListBox _outputList;
-	time_t _heartbeatReceivedTime;
+	CListBox							_outputList;
+										
+	time_t								_heartbeatReceivedTime;
+	std::unique_ptr<TimerThread>		_dbPoolCheckThread;
+	std::unique_ptr<TimerThread>		_heartbeatCheckThread;
+	std::unique_ptr<TimerThread>		_concurrentCheckThread;
+	std::unique_ptr<TimerThread>		_packetCheckThread;
+										
+	std::unique_ptr<ReadQueueThread>	_readQueueThread;
 };
 
 //{{AFX_INSERT_LOCATION}}

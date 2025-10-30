@@ -19,7 +19,7 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-extern CRITICAL_SECTION g_region_critical;
+extern std::mutex g_region_mutex;
 
 CRoomEvent::CRoomEvent()
 {
@@ -49,7 +49,7 @@ CRoomEvent::~CRoomEvent()
 
 void CRoomEvent::Initialize()
 {
-	m_fDelayTime = 0.0f;
+	m_fDelayTime = 0.0;
 	m_byLogicNumber = 1;
 
 	for (int i = 0; i < MAX_CHECK_EVENT; i++)
@@ -63,7 +63,7 @@ void CRoomEvent::Initialize()
 	}
 }
 
-void CRoomEvent::MainRoom(float fcurtime)
+void CRoomEvent::MainRoom(double currentTime)
 {
 	// 조건 검색먼저 해야 겠지..
 	bool bCheck = false, bRunCheck = false;
@@ -71,7 +71,7 @@ void CRoomEvent::MainRoom(float fcurtime)
 
 	int event_num = m_Logic[m_byLogicNumber - 1].sNumber;
 
-	bCheck = CheckEvent(event_num, fcurtime);
+	bCheck = CheckEvent(event_num, currentTime);
 	if (bCheck)
 	{
 		event_num = m_Exec[m_byLogicNumber - 1].sNumber;
@@ -85,7 +85,7 @@ void CRoomEvent::MainRoom(float fcurtime)
 	}
 }
 
-bool CRoomEvent::CheckEvent(int event_num, float fcurtime)
+bool CRoomEvent::CheckEvent(int event_num, double currentTime)
 {
 	int nMinute = 0, nOption_1 = 0, nOption_2 = 0;
 	CNpc* pNpc = nullptr;
@@ -133,13 +133,13 @@ bool CRoomEvent::CheckEvent(int event_num, float fcurtime)
 			nMinute = nMinute * 60;								// 분을 초로 변환
 
 			// Time limit exceeded
-			if (fcurtime >= m_fDelayTime + nMinute)
+			if (currentTime >= m_fDelayTime + nMinute)
 			{
 				spdlog::debug("RoomEvent::CheckEvent: Time limit met, survival success [currTime={} delayTime={}]",
-					fcurtime, m_fDelayTime);
+					currentTime, m_fDelayTime);
 				return true;
 			}
-			//TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), fcurtime, m_fDelayTime);
+			//TRACE(_T("---Check Event : curtime=%.2f, starttime=%.2f \n"), currentTime, m_fDelayTime);
 			break;
 
 		// 목표지점까지 이동
@@ -269,29 +269,30 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 {
 	CNpc* pNpc = nullptr;
 	int* pIDList = nullptr;
-	int nMonsterid = 0, count = 0;
+	int nMonsterid = 0, count = 0, nMonster = 0;
 
-	EnterCriticalSection(&g_region_critical);
-
-	int nMonster = m_mapRoomNpcArray.GetSize();
-	if (nMonster == 0)
 	{
-		LeaveCriticalSection(&g_region_critical);
-		spdlog::error("RoomEvent::GetNpcPtr: mapRoomNpcArray empty");
-		return nullptr;
-	}
+		std::unique_lock<std::mutex> lock(g_region_mutex);
 
-	auto Iter1 = m_mapRoomNpcArray.begin();
-	auto Iter2 = m_mapRoomNpcArray.end();
+		nMonster = m_mapRoomNpcArray.GetSize();
+		if (nMonster == 0)
+		{
+			lock.unlock();
+			spdlog::error("RoomEvent::GetNpcPtr: mapRoomNpcArray empty");
+			return nullptr;
+		}
 
-	pIDList = new int[nMonster];
-	for (; Iter1 != Iter2; Iter1++)
-	{
-		nMonsterid = *((*Iter1).second);
-		pIDList[count] = nMonsterid;
-		count++;
+		auto Iter1 = m_mapRoomNpcArray.begin();
+		auto Iter2 = m_mapRoomNpcArray.end();
+
+		pIDList = new int[nMonster];
+		for (; Iter1 != Iter2; Iter1++)
+		{
+			nMonsterid = *((*Iter1).second);
+			pIDList[count] = nMonsterid;
+			count++;
+		}
 	}
-	LeaveCriticalSection(&g_region_critical);
 
 	for (int i = 0; i < nMonster; i++)
 	{
@@ -330,30 +331,31 @@ bool CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 	int nMonsterCount = 0;
 	CNpc* pNpc = nullptr;
 	int* pIDList = nullptr;
-	int nMonsterid = 0, nTotalMonster = 0;
+	int nMonsterid = 0, nTotalMonster = 0, nMonster = 0;
 	bool bRetValue = false;
 
-	EnterCriticalSection(&g_region_critical);
-
-	int nMonster = m_mapRoomNpcArray.GetSize();
-	if (nMonster == 0)
 	{
-		LeaveCriticalSection(&g_region_critical);
-		spdlog::error("RoomEvent::CheckMonsterCount: mapRoomNpcArray empty");
-		return false;
-	}
+		std::unique_lock<std::mutex> lock(g_region_mutex);
 
-	auto Iter1 = m_mapRoomNpcArray.begin();
-	auto Iter2 = m_mapRoomNpcArray.end();
+		int nMonster = m_mapRoomNpcArray.GetSize();
+		if (nMonster == 0)
+		{
+			lock.unlock();
+			spdlog::error("RoomEvent::CheckMonsterCount: mapRoomNpcArray empty");
+			return false;
+		}
 
-	pIDList = new int[nMonster];
-	for (; Iter1 != Iter2; Iter1++)
-	{
-		nMonsterid = *((*Iter1).second);
-		pIDList[nTotalMonster] = nMonsterid;
-		nTotalMonster++;
+		auto Iter1 = m_mapRoomNpcArray.begin();
+		auto Iter2 = m_mapRoomNpcArray.end();
+
+		pIDList = new int[nMonster];
+		for (; Iter1 != Iter2; Iter1++)
+		{
+			nMonsterid = *((*Iter1).second);
+			pIDList[nTotalMonster] = nMonsterid;
+			nTotalMonster++;
+		}
 	}
-	LeaveCriticalSection(&g_region_critical);
 
 	for (int i = 0; i < nMonster; i++)
 	{
@@ -413,7 +415,7 @@ bool CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 void CRoomEvent::InitializeRoom()
 {
 	m_byStatus = 1;
-	m_fDelayTime = 0.0f;
+	m_fDelayTime = 0.0;
 	m_byLogicNumber = 1;
 
 	CheckMonsterCount(0, 0, 4);	// 몬스터의 m_byChangeType=0으로 초기화 

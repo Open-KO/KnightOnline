@@ -9,7 +9,6 @@
 #include "Pathfind.h"
 #include "User.h"
 #include "Npc.h"
-#include "NpcThread.h"
 #include "Server.h"
 #include "Party.h"
 
@@ -44,6 +43,9 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CServerDlg dialog
 
+class CNpcThread;
+class ZoneEventThread;
+
 typedef std::vector <CNpcThread*>			NpcThreadArray;
 typedef CSTLMap <model::Npc>				NpcTableMap;
 typedef CSTLMap <CNpc>						NpcMap;
@@ -61,14 +63,7 @@ typedef CSTLMap <model::MakeItemRareCode>	MakeItemRareCodeTableMap;
 typedef std::list <int>						ZoneNpcInfoList;
 typedef std::vector <MAP*>					ZoneArray;
 
-/*
-	 ** Repent AI Server 작업시 참고 사항 **
-	1. 3개의 함수 추가
-		int GetSpeed(uint8_t bySpeed);
-		int GetAttackSpeed(uint8_t bySpeed);
-		int GetCatsSpeed(uint8_t bySpeed);
-*/
-
+class TimerThread;
 class CServerDlg
 {
 // Construction
@@ -77,11 +72,7 @@ public:
 	bool AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number);
 	void AllNpcInfo();			// ~sungyong 2002.05.23
 	CUser* GetUserPtr(int nid);
-	CUser* GetActiveUserPtr(int index);
 	CNpc* GetNpcPtr(const char* pNpcName);
-	CNpc* GetEventNpcPtr();
-	bool   SetSummonNpcData(CNpc* pNpc, int zone_id, float fx, float fz);
-	int    MonsterSummon(const char* pNpcName, int zone_id, float fx, float fz);
 	int GetZoneIndex(int zoneId) const;
 	int GetServerNumber(int zoneId) const;
 
@@ -106,7 +97,6 @@ public:
 	NpcTableMap					m_MonTableMap;
 	NpcTableMap					m_NpcTableMap;
 	NpcThreadArray				m_NpcThreadArray;
-	NpcThreadArray				m_EventNpcThreadArray;	// Event Npc Logic
 	PartyMap					m_PartyMap;
 	ZoneNpcInfoList				m_ZoneNpcList;
 	MagicTableMap				m_MagicTableMap;
@@ -122,7 +112,7 @@ public:
 	MakeItemRareCodeTableMap	m_MakeItemRareCodeTableMap;
 	ZoneArray					m_ZoneArray;
 
-	CWinThread*		m_pZoneEventThread;		// zone
+	ZoneEventThread*			m_pZoneEventThread;		// zone
 
 	CUser*			m_pUser[MAX_USER];
 
@@ -130,7 +120,6 @@ public:
 	CNpcItem		m_NpcItem;
 
 	// 전역 객체 변수
-	//bool			m_bNpcExit;
 	long			m_TotalNPC;			// DB에있는 총 수
 	long			m_CurrentNPCError;	// 세팅에서 실패한 수
 	long			m_CurrentNPC;		// 현재 게임상에서 실제로 셋팅된 수
@@ -141,7 +130,7 @@ public:
 	bool			m_bFirstServerFlag;	// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
 	int16_t			m_sSocketCount;		// GameServer와 처음접시 필요
 	int16_t			m_sReSocketCount;	// GameServer와 재접시 필요
-	float			m_fReConnectStart;	// 처음 소켓이 도착한 시간
+	double			m_fReConnectStart;	// 처음 소켓이 도착한 시간
 	int16_t			m_sErrorSocketCount;  // 이상소켓 감시용
 	// ~sungyong 2002.05.23
 	uint8_t			m_byBattleEvent;	// 전쟁 이벤트 관련 플래그( 1:전쟁중이 아님, 0:전쟁중)
@@ -170,8 +159,6 @@ protected:
 	/// \see m_byZone
 	/// \returns the associated listen port or -1 if invalid
 	int GetListenPortByZone() const;
-	
-	void OnTimer(UINT nIDEvent);
 
 private:
 	// 패킷 압축에 필요 변수   -------------
@@ -184,10 +171,12 @@ private:
 
 	AIServerLogger		_logger;
 
-	std::queue<std::wstring>	_listBoxQueue;
-	std::mutex					_listBoxQueueMutex;
+	std::queue<std::wstring>		_listBoxQueue;
+	std::mutex						_listBoxQueueMutex;
 
-	void ResumeAI();
+	std::unique_ptr<TimerThread>	_checkAliveThread;
+
+	void StartNpcThreads();
 	bool LoadNpcPosTable(std::vector<model::NpcPos*>& rows);
 	bool CreateNpcThread();
 	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);

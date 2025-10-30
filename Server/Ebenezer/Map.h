@@ -15,6 +15,8 @@
 #include <shared-server/N3ShapeMgr.h>
 #include <shared-server/STLMap.h>
 
+#include <iosfwd>
+
 typedef CSTLMap <CGameEvent>		EventArray;
 typedef CSTLMap <_OBJECT_EVENT>		ObjectEventArray;
 typedef CSTLMap <_REGENE_EVENT>		ObjectRegeneArray;
@@ -31,21 +33,18 @@ private:
 
 	EventArray	m_EventArray;
 	CN3ShapeMgr m_N3ShapeMgr;
-//	int			m_nMapSize;		// Grid Unit ex) 4m
-//	float		m_fUnitDist;	// i Grid Distance
 
-	float** m_fHeight;
+	float**		m_fHeight;
 
 	int			m_nXRegion;
 	int			m_nZRegion;
 
 public:
-//
 	int			m_nMapSize;		// Grid Unit ex) 4m
 	float		m_fUnitDist;	// i Grid Distance
-//
-	void LoadWarpList(HANDLE hFile);
-	void LoadRegeneEvent(HANDLE hFile);
+
+	void LoadWarpList(std::istream& fs);
+	void LoadRegeneEvent(std::istream& fs);
 	bool IsValidPosition(float x, float z, float y) const;
 
 	_OBJECT_EVENT* GetObjectEvent(int objectindex)
@@ -58,7 +57,7 @@ public:
 		return m_ObjectRegeneArray.GetData(objectindex);
 	}
 
-	void LoadObjectEvent(HANDLE hFile);
+	void LoadObjectEvent(std::istream& fs);
 	bool LoadEvent();
 	bool CheckEvent(float x, float z, CUser* pUser = nullptr);
 	void RegionNpcRemove(int rx, int rz, int nid);
@@ -69,9 +68,9 @@ public:
 	bool RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem);
 	bool ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float y, float z);
-	void LoadMapTile(HANDLE hFile);
-	bool LoadMap(HANDLE hFile);
-	void LoadTerrain(HANDLE hFile);
+	void LoadMapTile(std::istream& fs);
+	bool LoadMap(std::istream& fs);
+	void LoadTerrain(std::istream& fs);
 
 	int GetXRegionMax() const
 	{

@@ -13,6 +13,8 @@
 #include <shared-server/STLMap.h>
 #include "RoomEvent.h"
 
+#include <iosfwd>
+
 typedef CSTLMap <_OBJECT_EVENT>		ObjectEventArray;
 typedef CSTLMap <CRoomEvent>		RoomEventArray;
 
@@ -59,10 +61,10 @@ public:
 	MAP();
 	virtual ~MAP();
 
-	bool LoadMap(HANDLE hFile);
-	void LoadTerrain(HANDLE hFile);
-	void LoadMapTile(HANDLE hFile);
-	void LoadObjectEvent(HANDLE hFile);
+	bool LoadMap(std::istream& fs);
+	void LoadTerrain(std::istream& fs);
+	void LoadMapTile(std::istream& fs);
+	void LoadObjectEvent(std::istream& fs);
 	bool LoadRoomEvent(int zone_number);
 	bool ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float z);

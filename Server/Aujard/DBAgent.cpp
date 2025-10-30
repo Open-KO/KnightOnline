@@ -34,8 +34,6 @@ import StoredProc;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-extern CRITICAL_SECTION g_LogFileWrite;
-
 CDBAgent::CDBAgent()
 {
 }

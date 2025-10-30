@@ -27,6 +27,6 @@
 
 #include "packet.h"			// packet 정의
 #include "global.h"			// 전역 funtion
-#include "define.h"			// define
+#include "Define.h"			// define
 
 #include <shared-server/server_config.h>

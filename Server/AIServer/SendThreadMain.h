@@ -10,7 +10,7 @@ class SendThreadMain : public Thread
 {
 public:
 	SendThreadMain(AISocketManager* socketManager);
-	bool shutdown() override;
+	bool shutdown(bool join = true) override;
 	void queue(_SEND_DATA* sendData);
 	~SendThreadMain() override;
 

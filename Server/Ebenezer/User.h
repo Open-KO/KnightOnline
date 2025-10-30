@@ -95,22 +95,21 @@ public:
 
 	int16_t	m_sPrivateChatUser;
 
-	float	m_fHPLastTimeNormal;					// For Automatic HP recovery. 
-	float	m_fHPStartTimeNormal;
+	double	m_fHPLastTimeNormal;					// For Automatic HP recovery. 
 	int16_t	m_bHPAmountNormal;
 	uint8_t	m_bHPDurationNormal;
 	uint8_t	m_bHPIntervalNormal;
 
-	float	m_fHPLastTime[MAX_TYPE3_REPEAT];		// For Automatic HP recovery and Type 3 durational HP recovery.
-	float	m_fHPStartTime[MAX_TYPE3_REPEAT];
+	double	m_fHPLastTime[MAX_TYPE3_REPEAT];		// For Automatic HP recovery and Type 3 durational HP recovery.
+	double	m_fHPStartTime[MAX_TYPE3_REPEAT];
 	int16_t	m_bHPAmount[MAX_TYPE3_REPEAT];
 	uint8_t	m_bHPDuration[MAX_TYPE3_REPEAT];
 	uint8_t	m_bHPInterval[MAX_TYPE3_REPEAT];
 	int16_t	m_sSourceID[MAX_TYPE3_REPEAT];
 	bool	m_bType3Flag;
 
-	float	m_fAreaLastTime;			// For Area Damage spells Type 3.
-	float	m_fAreaStartTime;
+	double	m_fAreaLastTime;			// For Area Damage spells Type 3.
+	double	m_fAreaStartTime;
 	uint8_t	m_bAreaInterval;
 	int		m_iAreaMagicID;
 
@@ -133,15 +132,15 @@ public:
 	uint8_t	m_bDiseaseRAmount;
 	uint8_t	m_bPoisonRAmount;
 
-	int16_t	m_sDuration1;  float   m_fStartTime1;
-	int16_t	m_sDuration2;  float   m_fStartTime2;
-	int16_t	m_sDuration3;  float   m_fStartTime3;
-	int16_t	m_sDuration4;  float   m_fStartTime4;
-	int16_t	m_sDuration5;  float   m_fStartTime5;
-	int16_t	m_sDuration6;  float   m_fStartTime6;
-	int16_t	m_sDuration7;  float   m_fStartTime7;
-	int16_t	m_sDuration8;  float   m_fStartTime8;
-	int16_t	m_sDuration9;  float   m_fStartTime9;
+	int16_t	m_sDuration1;  double m_fStartTime1;
+	int16_t	m_sDuration2;  double m_fStartTime2;
+	int16_t	m_sDuration3;  double m_fStartTime3;
+	int16_t	m_sDuration4;  double m_fStartTime4;
+	int16_t	m_sDuration5;  double m_fStartTime5;
+	int16_t	m_sDuration6;  double m_fStartTime6;
+	int16_t	m_sDuration7;  double m_fStartTime7;
+	int16_t	m_sDuration8;  double m_fStartTime8;
+	int16_t	m_sDuration9;  double m_fStartTime9;
 
 	uint8_t	m_bType4Buff[MAX_TYPE4_BUFF];
 	bool	m_bType4Flag;
@@ -149,12 +148,12 @@ public:
 	CEbenezerDlg* m_pMain;
 	CMagicProcess m_MagicProcess;
 
-	float	m_fSpeedHackClientTime, m_fSpeedHackServerTime;
+	double	m_fSpeedHackClientTime, m_fSpeedHackServerTime;
 	uint8_t	m_bSpeedHackCheck;
 
 	int16_t	m_sFriendUser;				// who are you trying to make friends with?
 
-	float	m_fBlinkStartTime;			// When did you start to blink?
+	double	m_fBlinkStartTime;			// When did you start to blink?
 
 	int16_t	m_sAliveCount;
 
@@ -163,13 +162,13 @@ public:
 	int16_t	m_sWhoKilledMe;				// Who killed me???
 	int		m_iLostExp;					// Experience point that was lost when you died.
 
-	float	m_fLastTrapAreaTime;		// The last moment you were in the trap area.
+	double	m_fLastTrapAreaTime;		// The last moment you were in the trap area.
 
 	bool	m_bZoneChangeFlag;			// 성용씨 미워!!
 
 	uint8_t	m_bRegeneType;				// Did you die and go home or did you type '/town'?
 
-	float	m_fLastRegeneTime;			// The last moment you got resurrected.
+	double	m_fLastRegeneTime;			// The last moment you got resurrected.
 
 	bool	m_bZoneChangeSameZone;		// Did the server change when you warped?
 
@@ -197,7 +196,6 @@ public:
 
 	// Game socket specific:
 	_REGION_BUFFER*		_regionBuffer;
-	std::mutex			_regionBufferMutex;
 
 	CJvCryption			_jvCryption;
 	bool				_jvCryptionEnabled;
@@ -226,13 +224,13 @@ public:
 	void RecvZoneChange(char* pBuf);
 	void GameStart(char* pBuf);
 	void GetUserInfo(char* buff, int& buff_index);
-	void RecvDeleteChar(char* pBuf);
+	void RecvDeleteChar(const char* pBuf);
 	bool ExistComEvent(int eventid) const;
 	void SaveComEvent(int eventid);
 	bool CheckItemCount(int itemid, int16_t min, int16_t max) const;
 	bool CheckClanGrade(int min, int max) const;
 	bool CheckKnight() const;
-	void CouponEvent(char* pBuf);
+	void CouponEvent(const char* pBuf);
 	void LogCoupon(int itemid, int count);
 	void RecvEditBox(char* pBuf);
 	bool CheckCouponUsed() const;
@@ -267,12 +265,10 @@ public:
 	void ClientEvent(char* pBuf);
 	void KickOut(char* pBuf);
 	void SetLogInInfoToDB(uint8_t bInit);
-	void BlinkTimeCheck(float currenttime);
+	void BlinkTimeCheck(double currentTime);
 	void MarketBBSSellPostFilter();
 	void MarketBBSBuyPostFilter();
 	void MarketBBSMessage(char* pBuf);
-	void MarketBBSSellDelete(int16_t index);
-	void MarketBBSBuyDelete(int16_t index);
 	void MarketBBSUserDelete();
 	void MarketBBSTimeCheck();
 	void MarketBBSRemotePurchase(char* pBuf);
@@ -313,18 +309,18 @@ public:
 	void WarehouseProcess(char* pBuf);
 	int16_t GetACDamage(int damage, int tid);
 	int16_t GetMagicDamage(int damage, int tid);
-	void Type3AreaDuration(float currenttime);
+	void Type3AreaDuration(double currentTime);
 	void ServerStatusCheck();
 	void SpeedHackTime(char* pBuf);
 	void OperatorCommand(char* pBuf);
 	void ItemRemove(char* pBuf);
 	void SendAllKnightsID();
 	uint8_t ItemCountChange(int itemid, int type, int amount);
-	void Type4Duration(float currenttime);
+	void Type4Duration(double currentTime);
 	void ItemRepair(char* pBuf);
 	int ExchangeDone();
-	void HPTimeChange(float currenttime);
-	void HPTimeChangeType3(float currenttime);
+	void HPTimeChange(double currentTime);
+	void HPTimeChangeType3(double currentTime);
 	void ItemDurationChange(int slot, int maxvalue, int curvalue, int amount);
 	void ItemWoreOut(int type, int damage);
 	void Dead();
@@ -395,7 +391,7 @@ public:
 	void LogOut();
 	void SelCharToAgent(char* pBuf);
 	void SendMyInfo(int type);
-	void SelectCharacter(char* pBuf);
+	void SelectCharacter(const char* pBuf);
 	void Send2AI_UserUpdateInfo();
 	void Attack(char* pBuf);
 	void UserInOut(uint8_t Type);

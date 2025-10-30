@@ -16,17 +16,11 @@ SharedMemoryQueue::SharedMemoryQueue(int sendRetryCount /*= 0*/)
 	_sendRetryCount = std::max(0, sendRetryCount);
 }
 
-bool SharedMemoryQueue::Create(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg)
+bool SharedMemoryQueue::Create(const char* name)
 {
-	if (maxNumMsg < MinNumMsg)
-	{
-		spdlog::error("SharedMemoryQueue::Create: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
-		return false;
-	}
-
 	try
 	{
-		_queue = std::make_unique<message_queue_impl>(create_only, name, maxNumMsg, maxMsgSize);
+		_queue = std::make_unique<message_queue_impl>(create_only, name, MAX_NUM_MSG, MAX_MSG_SIZE);
 
 		// As with previous behaviour, as the expected 'creator' of the queue, flush it.
 		FlushQueue();
@@ -40,17 +34,11 @@ bool SharedMemoryQueue::Create(const char* name, uint32_t maxMsgSize, uint32_t m
 	return false;
 }
 
-bool SharedMemoryQueue::OpenOrCreate(const char* name, uint32_t maxMsgSize, uint32_t maxNumMsg)
+bool SharedMemoryQueue::OpenOrCreate(const char* name)
 {
-	if (maxNumMsg < MinNumMsg)
-	{
-		spdlog::error("SharedMemoryQueue::OpenOrCreate: maxNumMsg too small. maxNumMsg={} name='{}'", maxNumMsg, name);
-		return false;
-	}
-
 	try
 	{
-		_queue = std::make_unique<message_queue_impl>(open_or_create, name, maxNumMsg, maxMsgSize);
+		_queue = std::make_unique<message_queue_impl>(open_or_create, name, MAX_NUM_MSG, MAX_MSG_SIZE);
 
 		// As with previous behaviour, as the expected 'creator' of the queue, flush it, even if we just reopened it.
 		FlushQueue();

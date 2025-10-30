@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="Aujard.cpp" />
     <ClCompile Include="AujardDlg.cpp" />
+    <ClCompile Include="AujardReadQueueThread.cpp" />
     <ClCompile Include="DBAgent.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -149,6 +150,7 @@
     <ClInclude Include="..\shared-server\_USER_DATA.h" />
     <ClInclude Include="Aujard.h" />
     <ClInclude Include="AujardDlg.h" />
+    <ClInclude Include="AujardReadQueueThread.h" />
     <ClInclude Include="DBAgent.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Resource.h" />
