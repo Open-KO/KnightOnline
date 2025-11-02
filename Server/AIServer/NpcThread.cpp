@@ -2,11 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "NpcThread.h"
 #include "Npc.h"
 #include "Extern.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 
 #include <chrono>
 #include <mmsystem.h>

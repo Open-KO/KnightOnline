@@ -2,20 +2,15 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "MagicProcess.h"
 #include "Npc.h"
 #include "NpcThread.h"
 #include "Region.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "User.h"
 
 #include <spdlog/spdlog.h>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 extern std::mutex g_region_mutex;
 

@@ -1,4 +1,4 @@
-﻿// ServerDlg.h : header file
+﻿// AiServerInstance.h : header file
 //
 #pragma once
 
@@ -6,10 +6,7 @@
 
 #include "MAP.h"
 #include "NpcItem.h"
-#include "Pathfind.h"
-#include "User.h"
 #include "Npc.h"
-#include "Party.h"
 
 #include "Extern.h"			// 전역 객체
 
@@ -18,6 +15,7 @@
 
 #include <vector>
 #include <list>
+#include <shared/Thread.h>
 
 namespace recordset_loader
 {
@@ -38,7 +36,7 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CServerDlg dialog
+// AiServerInstance dialog
 
 class CNpcThread;
 class ZoneEventThread;
@@ -61,13 +59,13 @@ typedef std::list <int>						ZoneNpcInfoList;
 typedef std::vector <MAP*>					ZoneArray;
 
 class TimerThread;
-class CServerDlg
+class AiServerInstance : public Thread
 {
 // Construction
 public:
 	void GameServerAcceptThread();
 	bool AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number);
-	void AllNpcInfo();			// ~sungyong 2002.05.23
+	void AllNpcInfo();
 	CUser* GetUserPtr(int nid);
 	CNpc* GetNpcPtr(const char* pNpcName);
 	int GetZoneIndex(int zoneId) const;
@@ -83,12 +81,8 @@ public:
 	MAP* GetMapByIndex(int iZoneIndex) const;
 	MAP* GetMapByID(int iZoneID) const;
 
-	CServerDlg();	// standard constructor
-	~CServerDlg();
-
-	static inline CServerDlg* GetInstance() {
-		return s_pInstance;
-	}
+	AiServerInstance(AIServerLogger logger);	// standard constructor
+	~AiServerInstance();
 
 	NpcMap						m_NpcMap;
 	NpcTableMap					m_MonTableMap;
@@ -139,13 +133,19 @@ public:
 
 	AISocketManager	_socketManager;
 
-	static CServerDlg* s_pInstance;
-
-// Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CServerDlg)
-	bool Init();
+	/// \brief Loads config, database caches, then starts sockets and thread pools.
+	/// \returns true when successful, false otherwise
+	bool Start();
+
+	/// \brief Releases resources and closes connections
+	void Shutdown();
+
+	/// \brief The main thread loop for the server instance
+	void thread_loop() override;
+
+	/// \brief Called when the thread is being shut down, used to gracefully shut down connections/resources
+	void before_shutdown() override;
 
 	/// \brief attempts to listen on the port associated with m_byZone
 	/// \see m_byZone

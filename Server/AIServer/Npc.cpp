@@ -1,8 +1,8 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "Npc.h"
 #include "NpcThread.h"
 #include "GameSocket.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "Region.h"
 #include "Party.h"
 #include "Extern.h"
@@ -133,7 +133,7 @@ inline bool CNpc::SetUid(float x, float z, int id)
 	return true;
 }
 
-CNpc::CNpc(CServerDlg* instance) :
+CNpc::CNpc(AiServerInstance* instance) :
 	m_vPathFind(instance)
 {
 	m_NpcState = NPC_LIVE;

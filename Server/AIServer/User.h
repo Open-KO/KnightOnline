@@ -18,11 +18,11 @@
 
 typedef std::list <_USERLOG*>		UserLogList;
 
-class CServerDlg;
+class AiServerInstance;
 class CUser
 {
 public:
-	CServerDlg* m_pMain;
+	AiServerInstance* m_pMain;
 	CMagicProcess m_MagicProcess;
 
 	UserLogList	m_UserLogList;
@@ -93,7 +93,7 @@ public:
 	void InitUserLog();
 	void WriteUserLog();
 	int16_t GetMagicDamage(int damage, int16_t tid);
-	void Initialize(CServerDlg* instance);
+	void Initialize(AiServerInstance* instance);
 	void InitNpcAttack();
 	void Attack(int sid, int tid);	// ATTACK
 	void SetDamage(int damage, int tid);				// user damage

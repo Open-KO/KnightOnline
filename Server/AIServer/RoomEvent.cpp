@@ -2,25 +2,20 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "RoomEvent.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "Define.h"
 #include "AIResourceFormatter.h"
 
 #include <spdlog/spdlog.h>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 extern std::mutex g_region_mutex;
 
-CRoomEvent::CRoomEvent(CServerDlg* instance)
+CRoomEvent::CRoomEvent(AiServerInstance* instance)
 {
 	m_iZoneNumber = 0;
 	m_sRoomNumber = 0;

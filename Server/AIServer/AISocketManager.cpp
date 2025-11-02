@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "AISocketManager.h"
 #include "SendThreadMain.h"
 #include "GameSocket.h"

@@ -56,7 +56,7 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;AI_SERVER;_WINDOWS;_3DSERVER;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(DependencyDir);$(RootDir);$(RootDir)Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
@@ -155,8 +155,8 @@
     <ClCompile Include="RoomEvent.cpp" />
     <ClCompile Include="SendThreadMain.cpp" />
     <ClCompile Include="AiServer.cpp" />
-    <ClCompile Include="ServerDlg.cpp" />
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="AiServerInstance.cpp" />
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="User.cpp" />
@@ -182,8 +182,8 @@
     <ClInclude Include="Region.h" />
     <ClInclude Include="RoomEvent.h" />
     <ClInclude Include="SendThreadMain.h" />
-    <ClInclude Include="ServerDlg.h" />
-    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="AiServerInstance.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="ZoneEventThread.h" />
   </ItemGroup>

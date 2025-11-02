@@ -2,15 +2,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Region.h"
 #include "Npc.h"
-#include "User.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

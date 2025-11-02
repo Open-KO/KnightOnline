@@ -2,27 +2,19 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "GameSocket.h"
 #include "Extern.h"
 #include "MAP.h"
 #include "NpcThread.h"
 #include "Party.h"
 #include "Region.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "User.h"
-
-#include <ctime>
 
 #include <shared/crc32.h>
 #include <shared/lzf.h>
-
 #include <spdlog/spdlog.h>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 extern std::mutex g_region_mutex;
 
@@ -35,7 +27,7 @@ extern std::mutex g_region_mutex;
 	1. RecvUserInfo(), RecvAttackReq(), RecvUserUpdate() 수정
 */
 
-CGameSocket::CGameSocket(CServerDlg* instance, SocketManager* socketManager)
+CGameSocket::CGameSocket(AiServerInstance* instance, SocketManager* socketManager)
 	: TcpServerSocket(socketManager)
 {
 	//m_pParty = nullptr;
@@ -428,7 +420,6 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 		m_pMain->m_pUser[uid] = pUser;
 
 	_USERLOG* pUserLog = new _USERLOG;
-	pUserLog->t = std::time(0);
 	pUserLog->byFlag = USER_LOGIN;
 	pUserLog->byLevel = pUser->m_byLevel;
 	strcpy(pUserLog->strUserID, pUser->m_strUserID);
@@ -774,7 +765,6 @@ void CGameSocket::RecvUserLogOut(char* pBuf)
 		return;
 
 	_USERLOG* pUserLog = new _USERLOG;
-	pUserLog->t = std::time(0);
 	pUserLog->byFlag = USER_LOGOUT;
 	pUserLog->byLevel = pUser->m_byLevel;
 	strcpy(pUserLog->strUserID, pUser->m_strUserID);
@@ -871,7 +861,6 @@ void CGameSocket::RecvUserUpdate(char* pBuf)
 		pUser->m_sMP = sMP;
 		//pUser->m_sSP = sSP;
 		_USERLOG* pUserLog = new _USERLOG;
-		pUserLog->t = std::time(0);
 		pUserLog->byFlag = USER_LEVEL_UP;
 		pUserLog->byLevel = byLevel;
 		strcpy(pUserLog->strUserID, pUser->m_strUserID);

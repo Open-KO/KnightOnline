@@ -11,12 +11,12 @@
 
 #include "Extern.h"
 
-class CServerDlg;
+class AiServerInstance;
 class CNpc;
 class CNpcMagicProcess
 {
 public:
-	CServerDlg*	m_pMain;
+	AiServerInstance*	m_pMain;
 	CNpc*		m_pSrcNpc;
 
 	uint8_t		m_bMagicState;

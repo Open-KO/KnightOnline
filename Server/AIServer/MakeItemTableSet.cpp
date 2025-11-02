@@ -1,13 +1,8 @@
 ﻿// MakeItemTableSet.cpp : implementation file
 //
 
-#include "stdafx.h"
+#include "pch.h"
 #include "MakeItemTableSet.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CMakeItemTableSet

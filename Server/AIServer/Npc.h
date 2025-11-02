@@ -112,7 +112,7 @@ struct _TargetHealer
 	int16_t	sValue;				// 점수
 };
 
-class CServerDlg;
+class AiServerInstance;
 
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
@@ -121,7 +121,7 @@ class CServerDlg;
 class CNpc
 {
 public:
-	CServerDlg* m_pMain;
+	AiServerInstance* m_pMain;
 	CNpcMagicProcess m_MagicProcess;
 
 	_Target		m_Target;			// 공격할 유저 저장,,
@@ -357,7 +357,7 @@ public:
 	int16_t m_sThreadNumber;			// 자신이 속한 스레드의 번호
 
 public:
-	CNpc(CServerDlg* instance);
+	CNpc(AiServerInstance* instance);
 	virtual ~CNpc();
 
 	void Load(const model::Npc* pNpcTable, bool transformSpeeds);

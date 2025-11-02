@@ -13,7 +13,7 @@
 //#include "STLMap.h"
 
 //typedef CSTLMap <CPartyUser>			PartyUserArray;
-class CServerDlg;
+class AiServerInstance;
 
 class CParty
 {
@@ -21,14 +21,14 @@ public:
 	//int		m_iSid;				// Party Number
 	//int16_t	m_sCurUser;			// 파티 인원 수 
 	//int16_t	m_sCurLevel;		// 파티원의 총 레벨 합
-	CServerDlg* m_pMain;
+	AiServerInstance* m_pMain;
 	//PartyUserArray	m_arPartyUser;
 
 public:
 	CParty();
 	virtual ~CParty();
 
-	void Initialize(CServerDlg* instance);
+	void Initialize(AiServerInstance* instance);
 
 	void PartyDelete(char* pBuf);
 	void PartyRemove(char* pBuf);

@@ -1,31 +1,53 @@
 ﻿// AiServer.cpp : contains the main() function to start the server
 //
 
-#include "stdafx.h"
-#include "ServerDlg.h"
+#include "pch.h"
+#include "AiServerInstance.h"
 
-#include <iostream>
+#include <signal.h>
+#include <spdlog/spdlog.h>
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+AIServerLogger _logger;
+AiServerInstance* appThread;
+
+void signalHandler(int signalNumber)
+{
+	spdlog::info("AiServer::signalHandler: Caught {}", signalNumber);
+	switch (signalNumber)
+	{
+	case SIGINT:
+	case SIGABRT:
+	case SIGTERM:
+		// Shutdown the application thread
+		if (appThread != nullptr && appThread->IsRunning())
+		{
+			appThread->shutdown();
+		}
+		spdlog::shutdown();
+		delete appThread;
+		break;
+	}
+}
 
 int main()
 {
-	CServerDlg serverInstance = CServerDlg();
+	// catch interrupt signals for graceful shutdowns.
+	signal(SIGINT, signalHandler);
+	signal(SIGABRT, signalHandler);
+	signal(SIGTERM, signalHandler);
+	
+	// Logger config/setup is handled by the server instance.
+	// We just instantiate it early for signal handling.
+	appThread = new AiServerInstance(_logger);
+	appThread->start();
 
-	// TODO:
-	// 1. Need some sort of polling/wait mechanism on the serverInstance.
-	// Server currently closes when SocketManager::AsyncAccept times out.
-	// Polling func should catch this somehow and reset the socket instead of
-	// crashing to desktop.
-	// 2. Need a way to gracefully close the server.  Have to look at catching
-	// kill/close signals.
-	// while (serverInstance.isRunning())
-	// {
-	// 	
-	// }
+	// We keep the main() thread alive to catch interrupt signals and call shutdown
+	while (appThread->IsRunning())
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+
+	delete appThread;
 
 	return 0;
 }

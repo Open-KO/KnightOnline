@@ -29,7 +29,7 @@ public:
 	STACK* NextStackPtr;
 };
 
-class CServerDlg;
+class AiServerInstance;
 
 class CPathFind
 {
@@ -45,7 +45,7 @@ public:
 	void ClearData();
 	_PathNode* ReturnBestNode();
 	_PathNode* FindPath(int start_x, int start_y, int dest_x, int dest_y);
-	CPathFind(CServerDlg* instance);
+	CPathFind(AiServerInstance* instance);
 	virtual ~CPathFind();
 
 	void Push(_PathNode* node);
@@ -58,7 +58,7 @@ protected:
 	int*		m_pMap;
 	_SIZE		m_vMapSize;
 
-	CServerDlg*	m_pMain;
+	AiServerInstance*	m_pMain;
 };
 
 #endif // !defined(AFX_PATHFIND_H__395FDD6E_C35A_43A2_BBB2_FCDCD17E8CE8__INCLUDED_)

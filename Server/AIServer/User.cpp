@@ -2,18 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "User.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "Region.h"
 #include "GameSocket.h"
 
 #include <spdlog/spdlog.h>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 #include "Extern.h"
 
@@ -23,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
-	1. Init() 수정
+	1. Initialize() 수정
 	2. SendAttackSuccess() 수정
 	3. GetDamage() 수정
 */
@@ -56,7 +51,7 @@ CUser::~CUser()
 {
 }
 
-void CUser::Initialize(CServerDlg* instance)
+void CUser::Initialize(AiServerInstance* instance)
 {
 	m_pMain = instance;
 

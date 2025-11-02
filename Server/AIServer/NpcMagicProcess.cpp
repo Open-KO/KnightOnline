@@ -2,16 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "NpcMagicProcess.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "User.h"
 #include "Npc.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

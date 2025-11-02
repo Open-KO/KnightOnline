@@ -1,10 +1,10 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "MAP.h"
 #include "Npc.h"
 #include "NpcThread.h"
 #include "Region.h"
 #include "RoomEvent.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 #include "User.h"
 
 #include <shared/globals.h>
@@ -29,7 +29,7 @@ CMapInfo::~CMapInfo()
 {
 }
 
-MAP::MAP(CServerDlg* instance)
+MAP::MAP(AiServerInstance* instance)
 {
 	m_pMain = instance;
 	m_nMapSize = 0;

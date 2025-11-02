@@ -2,17 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "PathFind.h"
 #include "math.h"
-#include "Serverdlg.h"
+#include "AiServerInstance.h"
 
 //#include "Extern.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 #define LEVEL_ONE_FIND_CROSS			2
 #define LEVEL_ONE_FIND_DIAGONAL			3
@@ -23,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPathFind::CPathFind(CServerDlg* instance)
+CPathFind::CPathFind(AiServerInstance* instance)
 {
 	m_pStack = (STACK*) calloc(1, sizeof(STACK));
 	m_pOpen = nullptr;

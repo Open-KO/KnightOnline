@@ -2,16 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-#include "ServerDlg.h"
+#include "pch.h"
+#include "AiServerInstance.h"
 #include "Party.h"
 
 #include <spdlog/spdlog.h>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 extern std::mutex g_region_mutex;
 //////////////////////////////////////////////////////////////////////
@@ -28,7 +23,7 @@ CParty::~CParty()
 	m_pMain = nullptr;
 }
 
-void CParty::Initialize(CServerDlg* instance)
+void CParty::Initialize(AiServerInstance* instance)
 {
 	m_pMain = instance;
 }

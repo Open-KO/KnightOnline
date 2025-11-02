@@ -22,7 +22,7 @@ typedef CSTLMap <CRoomEvent>		RoomEventArray;
 class CRegion;
 class CNpc;
 class CUser;
-class CServerDlg;
+class AiServerInstance;
 //class CRoomEvent;
 
 class CMapInfo					// 각 좌표의 정보
@@ -37,7 +37,7 @@ public:
 class MAP
 {
 public:
-	CServerDlg*			m_pMain;
+	AiServerInstance*			m_pMain;
 	CN3ShapeMgr			m_N3ShapeMgr;
 	CMapInfo**			m_pMap;				// 타일의 정보(1셀 : 4미터)
 	CRegion**			m_ppRegion;			// 64미터의 타일정보..
@@ -59,7 +59,7 @@ public:
 	int16_t				m_sKarusRoom;		// karus의 성갯수
 	int16_t				m_sElmoradRoom;		// elmorad의 성갯수
 	
-	MAP(CServerDlg* instance);
+	MAP(AiServerInstance* instance);
 	virtual ~MAP();
 
 	bool LoadMap(std::istream& fs);

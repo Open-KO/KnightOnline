@@ -4,19 +4,19 @@
 
 #include <shared-server/TcpServerSocket.h>
 
-class CServerDlg;
+class AiServerInstance;
 class CUser;
 class MAP;
 class CIOCPort;
 class CGameSocket : public TcpServerSocket
 {
 public:
-	CServerDlg* m_pMain;
+	AiServerInstance* m_pMain;
 	CParty		m_Party;
 	int16_t		_zoneNo;
 
 public:
-	CGameSocket(CServerDlg* instance, SocketManager* socketManager);
+	CGameSocket(AiServerInstance* instance, SocketManager* socketManager);
 	~CGameSocket() override;
 
 	void Initialize() override;

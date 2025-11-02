@@ -1,8 +1,8 @@
-﻿// ServerDlg.cpp : implementation file
+﻿// AiServerInstance.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "ServerDlg.h"
+#include "pch.h"
+#include "AiServerInstance.h"
 #include "GameSocket.h"
 #include "NpcThread.h"
 #include "Region.h"
@@ -21,18 +21,9 @@
 
 #include <math.h>
 #include <fstream>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-// NOTE: Explicitly handled under DEBUG_NEW override
 #include <db-library/RecordSetLoader_STLMap.h>
 #include <db-library/RecordsetLoader_Vector.h>
 #include <shared/TimerThread.h>
-
-constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
 
 using namespace std::chrono_literals;
 
@@ -47,10 +38,9 @@ import AIServerBinder;
 using namespace db;
 
 /////////////////////////////////////////////////////////////////////////////
-// CServerDlg dialog
-CServerDlg* CServerDlg::s_pInstance = nullptr;
-
-CServerDlg::CServerDlg()
+// AiServerInstance dialog
+AiServerInstance::AiServerInstance(AIServerLogger logger) :
+	_logger(logger)
 {
 	m_iYear = 0;
 	m_iMonth = 0;
@@ -73,57 +63,16 @@ CServerDlg::CServerDlg()
 
 	_checkAliveThread = std::make_unique<TimerThread>(
 		10s,
-		std::bind(&CServerDlg::CheckAliveTest, this));
-	Init();
+		std::bind(&AiServerInstance::CheckAliveTest, this));
 }
 
-CServerDlg::~CServerDlg()
+AiServerInstance::~AiServerInstance()
 {
-	if (_checkAliveThread != nullptr)
-		_checkAliveThread->shutdown();
-
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-		npcThread->shutdown();
-
-	//g_bNpcExit = true;
-	
-	m_pZoneEventThread->shutdown();
-
-	_socketManager.Shutdown();
-
-	// DB테이블 삭제 부분
-
-	// Map(Zone) Array Delete...
-	for (MAP* map : m_ZoneArray)
-		delete map;
-	m_ZoneArray.clear();
-
-	delete m_pZoneEventThread;
-	m_pZoneEventThread = nullptr;
-
-	// NpcTable Array Delete
-	m_MonTableMap.DeleteAllData();
-	m_NpcTableMap.DeleteAllData();
-
-	// NpcThread Array Delete
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-		delete npcThread;
-	m_NpcThreadArray.clear();
-
-	while (!m_ZoneNpcList.empty())
-		m_ZoneNpcList.pop_front();
-	
 	ConnectionManager::Destroy();
-	s_pInstance = nullptr;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//	각종 초기화
-//
-bool CServerDlg::Init()
+bool AiServerInstance::Start()
 {
-	s_pInstance = this;
-
 	// load config
 	GetServerInfoIni();
 
@@ -155,24 +104,24 @@ bool CServerDlg::Init()
 		m_pUser[i] = nullptr;
 
 	// Server Start message
-	spdlog::info("ServerDlg::Init: starting...");
+	spdlog::info("AiServerInstance::Start: starting...");
 
 	//----------------------------------------------------------------------
 	//	DB part initialize
 	//----------------------------------------------------------------------
 	if (m_byZone == UNIFY_ZONE)
-		spdlog::info("ServerDlg::Init: Server Zone: UNIFY");
+		spdlog::info("AiServerInstance::Start: Server Zone: UNIFY");
 	else if (m_byZone == KARUS_ZONE)
-		spdlog::info("ServerDlg::Init: Server Zone: KARUS");
+		spdlog::info("AiServerInstance::Start: Server Zone: KARUS");
 	else if (m_byZone == ELMORAD_ZONE)
-		spdlog::info("ServerDlg::Init: Server Zone: ELMORAD");
+		spdlog::info("AiServerInstance::Start: Server Zone: ELMORAD");
 	else if (m_byZone == BATTLE_ZONE)
-		spdlog::info("ServerDlg::Init: Server Zone: BATTLE");
+		spdlog::info("AiServerInstance::Start: Server Zone: BATTLE");
 	
 	//----------------------------------------------------------------------
 	//	Communication Part Init ...
 	//----------------------------------------------------------------------
-	spdlog::info("ServerDlg::Init: initializing sockets");
+	spdlog::info("AiServerInstance::Start: initializing sockets");
 	_socketManager.Init(MAX_SOCKET, 0, 1);
 	_socketManager.AllocateServerSockets<CGameSocket>(this);
 
@@ -181,38 +130,38 @@ bool CServerDlg::Init()
 	//----------------------------------------------------------------------
 	if (!GetMagicTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAGIC, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAGIC, closing server");
+		return false;
 	}
 
 	if (!GetMagicType1Data())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAGIC_TYPE1, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE1, closing server");
+		return false;
 	}
 
 	if (!GetMagicType2Data())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAGIC_TYPE2, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE2, closing server");
+		return false;
 	}
 
 	if (!GetMagicType3Data())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAGIC_TYPE3, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE3, closing server");
+		return false;
 	}
 
 	if (!GetMagicType4Data())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAGIC_TYPE4, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE4, closing server");
+		return false;
 	}
 
 	if (!GetMagicType7Data())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAGIC_TYPE7, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE7, closing server");
+		return false;
 	}
 
 	//----------------------------------------------------------------------
@@ -220,38 +169,38 @@ bool CServerDlg::Init()
 	//----------------------------------------------------------------------
 	if (!GetNpcItemTable())
 	{
-		spdlog::error("ServerDlg::Init: failed to load K_MONSTER_ITEM, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load K_MONSTER_ITEM, closing server");
+		return false;
 	}
 
 	if (!GetMakeWeaponItemTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAKE_WEAPON, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAKE_WEAPON, closing server");
+		return false;
 	}
 
 	if (!GetMakeDefensiveItemTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAKE_DEFENSIVE, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAKE_DEFENSIVE, closing server");
+		return false;
 	}
 
 	if (!GetMakeGradeItemTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAKE_ITEM_GRADECODE, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAKE_ITEM_GRADECODE, closing server");
+		return false;
 	}
 
 	if (!GetMakeRareItemTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAKE_ITEM_LARECODE, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAKE_ITEM_LARECODE, closing server");
+		return false;
 	}
 
 	if (!GetMakeItemGroupTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load MAKE_ITEM_GROUP, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load MAKE_ITEM_GROUP, closing server");
+		return false;
 	}
 
 	//----------------------------------------------------------------------
@@ -265,15 +214,15 @@ bool CServerDlg::Init()
 	// Monster 특성치 테이블 Load
 	if (!GetMonsterTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load K_MONSTER, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load K_MONSTER, closing server");
+		return false;
 	}
 
 	// NPC 특성치 테이블 Load
 	if (!GetNpcTableData())
 	{
-		spdlog::error("ServerDlg::Init: failed to load K_NPC, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: failed to load K_NPC, closing server");
+		return false;
 	}
 
 	//----------------------------------------------------------------------
@@ -281,14 +230,14 @@ bool CServerDlg::Init()
 	//----------------------------------------------------------------------
 	if (!MapFileLoad())
 	{
-		spdlog::error("ServerDlg::Init: failed to load maps, closing server");
+		spdlog::error("AiServerInstance::Start: failed to load maps, closing server");
 		return false;
 	}
 
 	if (!CreateNpcThread())
 	{
-		spdlog::error("ServerDlg::Init: CreateNpcThread failed, closing server");
-		return FALSE;
+		spdlog::error("AiServerInstance::Start: CreateNpcThread failed, closing server");
+		return false;
 	}
 
 	//----------------------------------------------------------------------
@@ -305,44 +254,142 @@ bool CServerDlg::Init()
 	//----------------------------------------------------------------------
 	if (!ListenByZone())
 	{
-		return FALSE;
+		return false;
 	}
 
 	_checkAliveThread->start();
 
 	//::ResumeThread( _socketManager.m_hAcceptThread );
 
-	spdlog::info("AIServer successfully initialized");
+	spdlog::info("AiServerInstance::Start: AIServer successfully initialized");
 
-	return TRUE;
+	return true;
+}
+
+void AiServerInstance::Shutdown()
+{
+	spdlog::info("AiServerInstance::Shutdown: Graceful shutdown triggered, releasing resources.");
+	if (_checkAliveThread != nullptr)
+		_checkAliveThread->shutdown();
+
+	for (CNpcThread* npcThread : m_NpcThreadArray)
+		npcThread->shutdown();
+
+	m_pZoneEventThread->shutdown();
+	
+	_socketManager.Shutdown();
+
+	// DB테이블 삭제 부분
+
+	// Map(Zone) Array Delete...
+	for (MAP* map : m_ZoneArray)
+		delete map;
+	m_ZoneArray.clear();
+
+	delete m_pZoneEventThread;
+	m_pZoneEventThread = nullptr;
+
+	// NpcTable Array Delete
+	m_MonTableMap.DeleteAllData();
+	m_NpcTableMap.DeleteAllData();
+
+	// NpcThread Array Delete
+	for (CNpcThread* npcThread : m_NpcThreadArray)
+		delete npcThread;
+	m_NpcThreadArray.clear();
+
+	// Item Array Delete
+	if (m_NpcItem.m_ppItem != nullptr)
+	{
+		for (int i = 0; i < m_NpcItem.m_nRow; i++)
+		{
+			delete[] m_NpcItem.m_ppItem[i];
+			m_NpcItem.m_ppItem[i] = nullptr;
+		}
+		delete[] m_NpcItem.m_ppItem;
+		m_NpcItem.m_ppItem = nullptr;
+	}
+
+	m_MakeWeaponTableMap.DeleteAllData();
+	m_MakeDefensiveTableMap.DeleteAllData();
+	m_MakeGradeItemArray.DeleteAllData();
+	m_MakeItemRareCodeTableMap.DeleteAllData();
+
+	// MagicTable Array Delete
+	m_MagicTableMap.DeleteAllData();
+	m_MagicType1TableMap.DeleteAllData();
+	m_MagicType2TableMap.DeleteAllData();
+	m_MagicType3TableMap.DeleteAllData();
+	m_MagicType4TableMap.DeleteAllData();
+	m_MagicType7TableMap.DeleteAllData();
+	
+	// Npc Array Delete
+	m_NpcMap.DeleteAllData();
+
+	// User Array Delete
+	for (int i = 0; i < MAX_USER; i++)
+	{
+		delete m_pUser[i];
+		m_pUser[i] = nullptr;
+	}
+
+	// Party Array Delete 
+	m_PartyMap.DeleteAllData();
+
+	while (!m_ZoneNpcList.empty())
+		m_ZoneNpcList.pop_front();
+
+	spdlog::info("AiServerInstance::Shutdown: Resources released.");
+}
+
+void AiServerInstance::thread_loop()
+{
+	if (!Start())
+	{
+		// server startup failed
+		shutdown();
+		return;
+	}
+		
+	while (_running)
+	{
+		// check for threads that may need to be restarted
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+
+void AiServerInstance::before_shutdown() 
+{
+	Shutdown();
 }
 
 /// \brief attempts to listen on the port associated with m_byZone
 /// \see m_byZone
 /// \returns true when successful, otherwise false
-bool CServerDlg::ListenByZone()
+bool AiServerInstance::ListenByZone()
 {
 	int port = GetListenPortByZone();
 	if (port < 0)
 	{
-		spdlog::error("ServerDlg::ListenByZone: failed to associate listen port for zone {}", m_byZone);
+		spdlog::error("AiServerInstance::ListenByZone: failed to associate listen port for zone {}", m_byZone);
 		return false;
 	}
 
 	if (!_socketManager.Listen(port))
 	{
-		spdlog::error("ServerDlg::ListenByZone: failed to listen on port {}", port);
+		spdlog::error("AiServerInstance::ListenByZone: failed to listen on port {}", port);
 		return false;
 	}
 
-	spdlog::info(fmt::format("ServerDlg::ListenByZone: Listening on 0.0.0.0:{}", port));
+	spdlog::info(fmt::format("AiServerInstance::ListenByZone: Listening on 0.0.0.0:{}", port));
 	return true;
 }
 
 /// \brief fetches the listen port associated with m_byZone
 /// \see m_byZone
 /// \returns the associated listen port or -1 if invalid
-int CServerDlg::GetListenPortByZone() const
+int AiServerInstance::GetListenPortByZone() const
 {
 	switch (m_byZone)
 	{
@@ -361,14 +408,14 @@ int CServerDlg::GetListenPortByZone() const
 	}
 }
 
-void CServerDlg::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
+void AiServerInstance::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
 {
-	spdlog::error(fmt::format("ServerDlg::ReportTableLoadError: {} failed: {}",
+	spdlog::error(fmt::format("AiServerInstance::ReportTableLoadError: {} failed: {}",
 		source, err.Message));
 }
 
 //	Magic Table 을 읽는다.
-bool CServerDlg::GetMagicTableData()
+bool AiServerInstance::GetMagicTableData()
 {
 	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -377,11 +424,11 @@ bool CServerDlg::GetMagicTableData()
 		return false;
 	}
 	
-	spdlog::info("ServerDlg::GetMagicTableData: MAGIC loaded");
+	spdlog::info("AiServerInstance::GetMagicTableData: MAGIC loaded");
 	return true;
 }
 
-bool CServerDlg::GetMakeWeaponItemTableData()
+bool AiServerInstance::GetMakeWeaponItemTableData()
 {
 	recordset_loader::STLMap loader(m_MakeWeaponTableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -390,11 +437,11 @@ bool CServerDlg::GetMakeWeaponItemTableData()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMakeWeaponItemTableData: MAKE_WEAPON loaded");
+	spdlog::info("AiServerInstance::GetMakeWeaponItemTableData: MAKE_WEAPON loaded");
 	return true;
 }
 
-bool CServerDlg::GetMakeDefensiveItemTableData()
+bool AiServerInstance::GetMakeDefensiveItemTableData()
 {
 	recordset_loader::STLMap<MakeWeaponTableMap, model::MakeDefensive> loader(
 		m_MakeDefensiveTableMap);
@@ -404,11 +451,11 @@ bool CServerDlg::GetMakeDefensiveItemTableData()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMakeDefensiveItemTableData: MAKE_DEFENSIVE loaded");
+	spdlog::info("AiServerInstance::GetMakeDefensiveItemTableData: MAKE_DEFENSIVE loaded");
 	return true;
 }
 
-bool CServerDlg::GetMakeGradeItemTableData()
+bool AiServerInstance::GetMakeGradeItemTableData()
 {
 	recordset_loader::STLMap loader(m_MakeGradeItemArray);
 	if (!loader.Load_ForbidEmpty())
@@ -417,11 +464,11 @@ bool CServerDlg::GetMakeGradeItemTableData()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMakeGradeItemTableData: MAKE_ITEM_GRADECODE loaded");
+	spdlog::info("AiServerInstance::GetMakeGradeItemTableData: MAKE_ITEM_GRADECODE loaded");
 	return true;
 }
 
-bool CServerDlg::GetMakeRareItemTableData()
+bool AiServerInstance::GetMakeRareItemTableData()
 {
 	recordset_loader::STLMap loader(m_MakeItemRareCodeTableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -430,11 +477,11 @@ bool CServerDlg::GetMakeRareItemTableData()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMakeRareItemTableData: MAKE_ITEM_LARECODE loaded");
+	spdlog::info("AiServerInstance::GetMakeRareItemTableData: MAKE_ITEM_LARECODE loaded");
 	return true;
 }
 
-bool CServerDlg::GetMakeItemGroupTableData()
+bool AiServerInstance::GetMakeItemGroupTableData()
 {
 	recordset_loader::STLMap loader(m_MakeItemGroupTableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -443,14 +490,14 @@ bool CServerDlg::GetMakeItemGroupTableData()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMakeItemGroupTableData: MAKE_ITEM_GROUP loaded");
+	spdlog::info("AiServerInstance::GetMakeItemGroupTableData: MAKE_ITEM_GROUP loaded");
 	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////
 //	NPC Item Table 을 읽는다.
 //
-bool CServerDlg::GetNpcItemTable()
+bool AiServerInstance::GetNpcItemTable()
 {
 	using ModelType = model::MonsterItem;
 
@@ -494,12 +541,12 @@ bool CServerDlg::GetNpcItemTable()
 
 	rows.clear();
 
-	spdlog::info("ServerDlg::GetNpcItemTable: K_MONSTER_ITEM loaded");
+	spdlog::info("AiServerInstance::GetNpcItemTable: K_MONSTER_ITEM loaded");
 	return true;
 }
 
 //	Monster Table Data 를 읽는다.
-bool CServerDlg::GetMonsterTableData()
+bool AiServerInstance::GetMonsterTableData()
 {
 	NpcTableMap tableMap;
 	recordset_loader::STLMap<
@@ -521,12 +568,12 @@ bool CServerDlg::GetMonsterTableData()
 
 	m_MonTableMap.Swap(tableMap);
 
-	spdlog::info("ServerDlg::GetMonsterTableData: K_MONSTER loaded");
+	spdlog::info("AiServerInstance::GetMonsterTableData: K_MONSTER loaded");
 	return true;
 }
 
 //	NPC Table Data 를 읽는다. (경비병 & NPC)
-bool CServerDlg::GetNpcTableData()
+bool AiServerInstance::GetNpcTableData()
 {
 	NpcTableMap tableMap;
 	recordset_loader::STLMap loader(tableMap);
@@ -546,12 +593,12 @@ bool CServerDlg::GetNpcTableData()
 
 	m_NpcTableMap.Swap(tableMap);
 
-	spdlog::info("ServerDlg::GetNpcTableData: K_NPC loaded");
+	spdlog::info("AiServerInstance::GetNpcTableData: K_NPC loaded");
 	return true;
 }
 
 //	Npc Thread 를 만든다.
-bool CServerDlg::CreateNpcThread()
+bool AiServerInstance::CreateNpcThread()
 {
 	m_TotalNPC = 0;			// DB에 있는 수
 	m_CurrentNPC = 0;
@@ -560,7 +607,7 @@ bool CServerDlg::CreateNpcThread()
 	std::vector<model::NpcPos*> rows;
 	if (!LoadNpcPosTable(rows))
 	{
-		spdlog::error("ServerDlg::CreateNpcThread: K_NPCPOS load failed");
+		spdlog::error("AiServerInstance::CreateNpcThread: K_NPCPOS load failed");
 		return false;
 	}
 
@@ -600,11 +647,11 @@ bool CServerDlg::CreateNpcThread()
 	if (m_pZoneEventThread == nullptr)
 		m_pZoneEventThread = new ZoneEventThread(this);
 	
-	spdlog::info("ServerDlg::CreateNpcThread: Monsters/NPCs loaded: {}", m_TotalNPC);
+	spdlog::info("AiServerInstance::CreateNpcThread: Monsters/NPCs loaded: {}", m_TotalNPC);
 	return true;
 }
 
-bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
+bool AiServerInstance::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 {
 	CRoomEvent* pRoom = nullptr;
 
@@ -668,7 +715,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 
 					if (pNpcTable == nullptr)
 					{
-						spdlog::error("ServerDlg::LoadNpcPosTable: npc not found [serial={}, npcId={}]",
+						spdlog::error("AiServerInstance::LoadNpcPosTable: npc not found [serial={}, npcId={}]",
 							pNpc->m_sNid, pNpc->m_sSid);
 						break;
 					}
@@ -719,7 +766,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 
 					if (row->RespawnTime < 15)
 					{
-						spdlog::warn("ServerDlg::LoadNpcPosTable: RegTime below minimum value of 15s [npcId={}, serial={}, npcName={}, RegTime={}]",
+						spdlog::warn("AiServerInstance::LoadNpcPosTable: RegTime below minimum value of 15s [npcId={}, serial={}, npcName={}, RegTime={}]",
 							pNpc->m_sSid, pNpc->m_sNid + NPC_BAND, pNpc->m_strName, row->RespawnTime);
 						// TODO: Set this to 15 in separate ticket and comment on it deviating from official behavior
 						row->RespawnTime = 30;
@@ -735,7 +782,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						if (row->PathPointCount == 0
 							|| !row->Path.has_value())
 						{
-							std::string error = fmt::format("ServerDlg::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
+							std::string error = fmt::format("AiServerInstance::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
 								row->ZoneId,
 								pNpc->m_sNid + NPC_BAND,
 								pNpc->m_sSid,
@@ -817,7 +864,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 
 					if (pMap == nullptr)
 					{
-						spdlog::error("ServerDlg::LoadNpcPosTable: NPC invalid zone [npcId:{}, npcZoneId:{}]", pNpc->m_sSid, pNpc->m_sCurZone);
+						spdlog::error("AiServerInstance::LoadNpcPosTable: NPC invalid zone [npcId:{}, npcZoneId:{}]", pNpc->m_sSid, pNpc->m_sCurZone);
 						return false;
 					}
 
@@ -825,7 +872,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					//m_NpcMap.Add(pNpc);
 					if (!m_NpcMap.PutData(pNpc->m_sNid, pNpc))
 					{
-						spdlog::error("ServerDlg::LoadNpcPosTable: Npc PutData Fail [serial={}]",
+						spdlog::error("AiServerInstance::LoadNpcPosTable: Npc PutData Fail [serial={}]",
 							pNpc->m_sNid);
 						delete pNpc;
 						pNpc = nullptr;
@@ -838,7 +885,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						pRoom = pMap->m_arRoomEventArray.GetData(pNpc->m_byDungeonFamily);
 						if (pRoom == nullptr)
 						{
-							spdlog::error("ServerDlg::LoadNpcPosTable: No RoomEvent for NPC dungeonFamily: serial={}, npcId={}, npcName={}, dungeonFamily={}, zoneId={}",
+							spdlog::error("AiServerInstance::LoadNpcPosTable: No RoomEvent for NPC dungeonFamily: serial={}, npcId={}, npcName={}, dungeonFamily={}, zoneId={}",
 								pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byDungeonFamily, pNpc->m_ZoneIndex);
 							return false;
 						}
@@ -848,7 +895,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						if (!pRoom->m_mapRoomNpcArray.PutData(pNpc->m_sNid, pInt))
 						{
 							delete pInt;
-							spdlog::error("ServerDlg::LoadNpcPosTable: MapRoomNpcArray.PutData failed for NPC: [serial={}, npcId={}]", pNpc->m_sNid, pNpc->m_sSid);
+							spdlog::error("AiServerInstance::LoadNpcPosTable: MapRoomNpcArray.PutData failed for NPC: [serial={}, npcId={}]", pNpc->m_sNid, pNpc->m_sSid);
 						}
 					}
 
@@ -869,7 +916,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 }
 
 //	NPC Thread 들을 작동시킨다.
-void CServerDlg::StartNpcThreads()
+void AiServerInstance::StartNpcThreads()
 {
 	for (CNpcThread* npcThread : m_NpcThreadArray)
 		npcThread->start();
@@ -877,12 +924,12 @@ void CServerDlg::StartNpcThreads()
 	m_pZoneEventThread->start();
 }
 
-void CServerDlg::DeleteUserList(int uid)
+void AiServerInstance::DeleteUserList(int uid)
 {
 	if (uid < 0
 		|| uid >= MAX_USER)
 	{
-		spdlog::error("ServerDlg::DeleteUserList: userId invalid: {}", uid);
+		spdlog::error("AiServerInstance::DeleteUserList: userId invalid: {}", uid);
 		return;
 	}
 
@@ -894,14 +941,14 @@ void CServerDlg::DeleteUserList(int uid)
 	if (pUser == nullptr)
 	{
 		lock.unlock();
-		spdlog::error("ServerDlg::DeleteUserList: userId not found: {}", uid);
+		spdlog::error("AiServerInstance::DeleteUserList: userId not found: {}", uid);
 		return;
 	}
 
 	if (pUser->m_iUserId != uid)
 	{
 		lock.unlock();
-		spdlog::warn("ServerDlg::DeleteUserList: userId mismatch : userId={} pUserId={}", uid, pUser->m_iUserId);
+		spdlog::warn("AiServerInstance::DeleteUserList: userId mismatch : userId={} pUserId={}", uid, pUser->m_iUserId);
 		return;
 	}
 
@@ -912,10 +959,10 @@ void CServerDlg::DeleteUserList(int uid)
 	m_pUser[uid] = nullptr;
 
 	lock.unlock();
-	spdlog::debug("ServerDlg::DeleteUserList: User Logout: userId={}, charId={}", uid, characterName);
+	spdlog::debug("AiServerInstance::DeleteUserList: User Logout: userId={}, charId={}", uid, characterName);
 }
 
-bool CServerDlg::MapFileLoad()
+bool AiServerInstance::MapFileLoad()
 {
 	using ModelType = model::ZoneInfo;
 
@@ -945,7 +992,7 @@ bool CServerDlg::MapFileLoad()
 			std::ifstream file(mapPath, std::ios::in | std::ios::binary);
 			if (!file)
 			{
-				spdlog::error(fmt::format("ServerDlg::MapFileLoad: Failed to open file: {}",
+				spdlog::error(fmt::format("AiServerInstance::MapFileLoad: Failed to open file: {}",
 					mapPath.string()));
 				return;
 			}
@@ -956,7 +1003,7 @@ bool CServerDlg::MapFileLoad()
 
 			if (!pMap->LoadMap(file))
 			{
-				spdlog::error(fmt::format("ServerDlg::MapFileLoad: Failed to load map file: {}",
+				spdlog::error(fmt::format("AiServerInstance::MapFileLoad: Failed to load map file: {}",
 					mapPath.string()));
 				delete pMap;
 				return;
@@ -969,7 +1016,7 @@ bool CServerDlg::MapFileLoad()
 			{
 				if (!pMap->LoadRoomEvent(row.RoomEvent))
 				{
-					spdlog::error(fmt::format("ServerDlg::MapFileLoad: LoadRoomEvent failed: {}",
+					spdlog::error(fmt::format("AiServerInstance::MapFileLoad: LoadRoomEvent failed: {}",
 						mapPath.string()));
 					delete pMap;
 					return;
@@ -997,7 +1044,7 @@ bool CServerDlg::MapFileLoad()
 
 // sungyong 2002.05.23
 // game server에 모든 npc정보를 전송..
-void CServerDlg::AllNpcInfo()
+void AiServerInstance::AllNpcInfo()
 {
 	// server alive check
 	CNpc* pNpc = nullptr;
@@ -1030,14 +1077,14 @@ void CServerDlg::AllNpcInfo()
 		m_iCompIndex = 0;
 		memset(send_buff, 0, sizeof(send_buff));
 
-		spdlog::debug("ServerDlg::AllNpcInfo: start for zoneIndex={}", nZone);
+		spdlog::debug("AiServerInstance::AllNpcInfo: start for zoneIndex={}", nZone);
 
 		for (int i = 0; i < size; i++)
 		{
 			pNpc = m_NpcMap.GetData(i);
 			if (pNpc == nullptr)
 			{
-				spdlog::warn("ServerDlg::AllNpcInfo: NpcMap[{}] is null", i);
+				spdlog::warn("AiServerInstance::AllNpcInfo: NpcMap[{}] is null", i);
 				continue;
 			}
 
@@ -1088,14 +1135,14 @@ void CServerDlg::AllNpcInfo()
 		SetShort(send_buff, (int16_t) m_TotalNPC, send_index);
 		packet_size = Send(send_buff, send_index, nZone);
 
-		spdlog::debug("ServerDlg::AllNpcInfo: end for zoneId={}", nZone);
+		spdlog::debug("AiServerInstance::AllNpcInfo: end for zoneId={}", nZone);
 	}
 
 	Sleep(1000);
 }
 // ~sungyong 2002.05.23
 
-CUser* CServerDlg::GetUserPtr(int nid)
+CUser* AiServerInstance::GetUserPtr(int nid)
 {
 	CUser* pUser = nullptr;
 
@@ -1103,7 +1150,7 @@ CUser* CServerDlg::GetUserPtr(int nid)
 		|| nid >= MAX_USER)
 	{
 		if (nid != -1)
-			spdlog::error("ServerDlg::GetUserPtr: User Array Overflow [{}]", nid);
+			spdlog::error("AiServerInstance::GetUserPtr: User Array Overflow [{}]", nid);
 
 		return nullptr;
 	}
@@ -1134,7 +1181,7 @@ CUser* CServerDlg::GetUserPtr(int nid)
 }
 
 // sungyong 2002.05.23
-void CServerDlg::CheckAliveTest()
+void AiServerInstance::CheckAliveTest()
 {
 	int send_index = 0;
 	char send_buff[256] = {};
@@ -1157,7 +1204,7 @@ void CServerDlg::CheckAliveTest()
 			++m_sErrorSocketCount;
 			if (m_sErrorSocketCount == 10)
 			{
-				spdlog::debug("ServerDlg::CheckAliveTest: all ebenezer sockets are connected");
+				spdlog::debug("AiServerInstance::CheckAliveTest: all ebenezer sockets are connected");
 			}
 			count++;
 		}
@@ -1170,7 +1217,7 @@ void CServerDlg::CheckAliveTest()
 	RegionCheck();
 }
 
-void CServerDlg::DeleteAllUserList(int zone)
+void AiServerInstance::DeleteAllUserList(int zone)
 {
 	if (zone < 0)
 		return;
@@ -1179,7 +1226,7 @@ void CServerDlg::DeleteAllUserList(int zone)
 	if (zone == 9999
 		&& m_bFirstServerFlag)
 	{
-		spdlog::debug("ServerDlg::DeleteAllUserList: start");
+		spdlog::debug("AiServerInstance::DeleteAllUserList: start");
 
 		{
 			std::lock_guard<std::mutex> lock(g_region_mutex);
@@ -1215,23 +1262,23 @@ void CServerDlg::DeleteAllUserList(int zone)
 		}
 
 		m_bFirstServerFlag = false;
-		spdlog::debug("ServerDlg::DeleteAllUserList: end");
+		spdlog::debug("AiServerInstance::DeleteAllUserList: end");
 	}
 	else if (zone != 9999)
 	{
-		spdlog::info("ServerDlg::DeleteAllUserList: ebenezer zone {} disconnected", zone);
+		spdlog::info("AiServerInstance::DeleteAllUserList: ebenezer zone {} disconnected", zone);
 	}
 }
 // ~sungyong 2002.05.23
 
-void CServerDlg::SendCompressedData(int nZone)
+void AiServerInstance::SendCompressedData(int nZone)
 {
 	if (m_CompCount <= 0
 		|| m_iCompIndex <= 0)
 	{
 		m_CompCount = 0;
 		m_iCompIndex = 0;
-		spdlog::error("ServerDlg::SendCompressData: count={}, index={}",
+		spdlog::error("AiServerInstance::SendCompressData: count={}, index={}",
 			m_CompCount, m_iCompIndex);
 		return;
 	}
@@ -1249,7 +1296,7 @@ void CServerDlg::SendCompressedData(int nZone)
 	if (comp_data_len == 0
 		|| comp_data_len > sizeof(comp_buff))
 	{
-		spdlog::error("ServerDlg::SendCompressedData: Failed to compress packet");
+		spdlog::error("AiServerInstance::SendCompressedData: Failed to compress packet");
 		return;
 	}
 
@@ -1269,7 +1316,7 @@ void CServerDlg::SendCompressedData(int nZone)
 }
 
 // sungyong 2002.05.23
-int CServerDlg::Send(char* pData, int length, int nZone)
+int AiServerInstance::Send(char* pData, int length, int nZone)
 {
 	_SEND_DATA* pNewData = new _SEND_DATA;
 	if (pNewData == nullptr)
@@ -1285,14 +1332,14 @@ int CServerDlg::Send(char* pData, int length, int nZone)
 }
 // ~sungyong 2002.05.23
 
-void CServerDlg::GameServerAcceptThread()
+void AiServerInstance::GameServerAcceptThread()
 {
 	_socketManager.StartAccept();
 }
 
-void CServerDlg::SyncTest()
+void AiServerInstance::SyncTest()
 {
-	spdlog::info("ServerDlg::SyncTest: begin");
+	spdlog::info("AiServerInstance::SyncTest: begin");
 
 	int send_index = 0;
 	char send_buff[256] = {};
@@ -1311,11 +1358,11 @@ void CServerDlg::SyncTest()
 
 		size = pSocket->Send(send_buff, send_index);
 
-		spdlog::info("ServerDlg::SyncTest: size={}, zoneNo={}", size, pSocket->_zoneNo);
+		spdlog::info("AiServerInstance::SyncTest: size={}, zoneNo={}", size, pSocket->_zoneNo);
 	}
 }
 
-CNpc* CServerDlg::GetNpcPtr(const char* pNpcName)
+CNpc* AiServerInstance::GetNpcPtr(const char* pNpcName)
 {
 	for (const auto& [_, pNpc] : m_NpcMap)
 	{
@@ -1324,11 +1371,11 @@ CNpc* CServerDlg::GetNpcPtr(const char* pNpcName)
 			return pNpc;
 	}
 
-	spdlog::error("ServerDlg::GetNpcPtr: failed to find npc with name: {}", pNpcName);
+	spdlog::error("AiServerInstance::GetNpcPtr: failed to find npc with name: {}", pNpcName);
 	return nullptr;
 }
 
-void CServerDlg::TestCode()
+void AiServerInstance::TestCode()
 {
 	//InitTrigonometricFunction();
 
@@ -1349,7 +1396,7 @@ void CServerDlg::TestCode()
 	//TRACE(_T("$$$ random test == 1=%d, 2=%d, 3=%d,, %d,%hs $$$\n"), count_1, count_2, count_3, __FILE__, __LINE__);
 }
 
-bool CServerDlg::GetMagicType1Data()
+bool AiServerInstance::GetMagicType1Data()
 {
 	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -1358,11 +1405,11 @@ bool CServerDlg::GetMagicType1Data()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMagicType1Data: MAGIC_TYPE1 loaded");
+	spdlog::info("AiServerInstance::GetMagicType1Data: MAGIC_TYPE1 loaded");
 	return true;
 }
 
-bool CServerDlg::GetMagicType2Data()
+bool AiServerInstance::GetMagicType2Data()
 {
 	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -1371,11 +1418,11 @@ bool CServerDlg::GetMagicType2Data()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMagicType2Data: MAGIC_TYPE2 loaded");
+	spdlog::info("AiServerInstance::GetMagicType2Data: MAGIC_TYPE2 loaded");
 	return true;
 }
 
-bool CServerDlg::GetMagicType3Data()
+bool AiServerInstance::GetMagicType3Data()
 {
 	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -1384,11 +1431,11 @@ bool CServerDlg::GetMagicType3Data()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMagicType3Data: MAGIC_TYPE3 loaded");
+	spdlog::info("AiServerInstance::GetMagicType3Data: MAGIC_TYPE3 loaded");
 	return true;
 }
 
-bool CServerDlg::GetMagicType4Data()
+bool AiServerInstance::GetMagicType4Data()
 {
 	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -1397,11 +1444,11 @@ bool CServerDlg::GetMagicType4Data()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMagicType4Data: MAGIC_TYPE4 loaded");
+	spdlog::info("AiServerInstance::GetMagicType4Data: MAGIC_TYPE4 loaded");
 	return true;
 }
 
-bool CServerDlg::GetMagicType7Data()
+bool AiServerInstance::GetMagicType7Data()
 {
 	recordset_loader::STLMap loader(m_MagicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
@@ -1410,11 +1457,11 @@ bool CServerDlg::GetMagicType7Data()
 		return false;
 	}
 
-	spdlog::info("ServerDlg::GetMagicType7Data: MAGIC_TYPE7 loaded");
+	spdlog::info("AiServerInstance::GetMagicType7Data: MAGIC_TYPE7 loaded");
 	return true;
 }
 
-void CServerDlg::RegionCheck()
+void AiServerInstance::RegionCheck()
 {
 	for (MAP* pMap : m_ZoneArray)
 	{
@@ -1440,7 +1487,7 @@ void CServerDlg::RegionCheck()
 	}
 }
 
-bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
+bool AiServerInstance::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 {
 	int i = 0, j = 0, objectid = 0;
 	model::Npc* pNpcTable = nullptr;
@@ -1458,7 +1505,7 @@ bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	if (pNpcTable == nullptr)
 	{
 		bFindNpcTable = false;
-		spdlog::error("ServerDlg::AddObjectEventNpc error: eventId={} zoneId={}",
+		spdlog::error("AiServerInstance::AddObjectEventNpc error: eventId={} zoneId={}",
 			pEvent->sIndex, zone_number);
 		return false;
 	}
@@ -1514,7 +1561,7 @@ bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	//pNpc->Init();
 	if (!m_NpcMap.PutData(pNpc->m_sNid, pNpc))
 	{
-		spdlog::warn("ServerDlg::AddObjectEventNpc: Npc PutData Fail [serial={}]",
+		spdlog::warn("AiServerInstance::AddObjectEventNpc: Npc PutData Fail [serial={}]",
 			pNpc->m_sNid);
 		delete pNpc;
 		pNpc = nullptr;
@@ -1525,7 +1572,7 @@ bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	return true;
 }
 
-int CServerDlg::GetZoneIndex(int zoneId) const
+int AiServerInstance::GetZoneIndex(int zoneId) const
 {
 	for (size_t i = 0; i < m_ZoneArray.size(); i++)
 	{
@@ -1535,11 +1582,11 @@ int CServerDlg::GetZoneIndex(int zoneId) const
 			return i;
 	}
 
-	spdlog::error("ServerDlg::GetZoneIndex: zoneId={} not found", zoneId);
+	spdlog::error("AiServerInstance::GetZoneIndex: zoneId={} not found", zoneId);
 	return -1;
 }
 
-int CServerDlg::GetServerNumber(int zoneId) const
+int AiServerInstance::GetServerNumber(int zoneId) const
 {
 	for (MAP* pMap : m_ZoneArray)
 	{
@@ -1548,11 +1595,11 @@ int CServerDlg::GetServerNumber(int zoneId) const
 			return pMap->m_nServerNo;
 	}
 
-	spdlog::error("ServerDlg::GetServerNumber: zoneId={} not found", zoneId);
+	spdlog::error("AiServerInstance::GetServerNumber: zoneId={} not found", zoneId);
 	return -1;
 }
 
-void CServerDlg::GetServerInfoIni()
+void AiServerInstance::GetServerInfoIni()
 {
 	std::string exePath = GetProgPath();
 	std::filesystem::path iniPath(exePath);
@@ -1586,7 +1633,7 @@ void AIServerLogger::SetupExtraLoggers(CIni& ini,
 	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerUser, ini::USER_LOG_FILE);
 }
 
-void CServerDlg::SendSystemMsg(const std::string_view msg, int zone, int type, int who)
+void AiServerInstance::SendSystemMsg(const std::string_view msg, int zone, int type, int who)
 {
 	int send_index = 0;
 	char buff[256] = {};
@@ -1597,13 +1644,13 @@ void CServerDlg::SendSystemMsg(const std::string_view msg, int zone, int type, i
 	SetString2(buff, msg, send_index);
 
 	Send(buff, send_index, zone);
-	spdlog::info("ServerDlg::SendSystemMsg: zoneId={} type={} who={} msg={}",
+	spdlog::info("AiServerInstance::SendSystemMsg: zoneId={} type={} who={} msg={}",
 		zone, type, who, msg);
 }
 
-void CServerDlg::ResetBattleZone()
+void AiServerInstance::ResetBattleZone()
 {
-	spdlog::debug("ServerDlg::ResetBattleZone: start");
+	spdlog::debug("AiServerInstance::ResetBattleZone: start");
 
 	for (MAP* pMap : m_ZoneArray)
 	{
@@ -1621,22 +1668,22 @@ void CServerDlg::ResetBattleZone()
 		pMap->InitializeRoom();
 	}
 
-	spdlog::debug("ServerDlg::ResetBattleZone: end");
+	spdlog::debug("AiServerInstance::ResetBattleZone: end");
 }
 
-MAP* CServerDlg::GetMapByIndex(int iZoneIndex) const
+MAP* AiServerInstance::GetMapByIndex(int iZoneIndex) const
 {
 	if (iZoneIndex < 0
 		|| iZoneIndex >= static_cast<int>(m_ZoneArray.size()))
 	{
-		spdlog::error("ServerDlg::GetMapByIndex: zoneIndex={} out of bounds", iZoneIndex);
+		spdlog::error("AiServerInstance::GetMapByIndex: zoneIndex={} out of bounds", iZoneIndex);
 		return nullptr;
 	}
 
 	return m_ZoneArray[iZoneIndex];
 }
 
-MAP* CServerDlg::GetMapByID(int iZoneID) const
+MAP* AiServerInstance::GetMapByID(int iZoneID) const
 {
 	for (MAP* pMap : m_ZoneArray)
 	{
@@ -1644,6 +1691,6 @@ MAP* CServerDlg::GetMapByID(int iZoneID) const
 			&& pMap->m_nZoneNumber == iZoneID)
 			return pMap;
 	}
-	spdlog::error("ServerDlg::GetMapByID: no map found for zoneId={}", iZoneID);
+	spdlog::error("AiServerInstance::GetMapByID: no map found for zoneId={}", iZoneID);
 	return nullptr;
 }

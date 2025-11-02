@@ -1,10 +1,10 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "ZoneEventThread.h"
 #include "Map.h"
 #include "NpcThread.h"
-#include "ServerDlg.h"
+#include "AiServerInstance.h"
 
-ZoneEventThread::ZoneEventThread(CServerDlg* main)
+ZoneEventThread::ZoneEventThread(AiServerInstance* main)
 	: Thread(), _main(main)
 {
 }

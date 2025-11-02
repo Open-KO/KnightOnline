@@ -53,10 +53,10 @@
     <ClCompile Include="AiServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ServerDlg.cpp">
+    <ClCompile Include="AiServerInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="User.cpp">
@@ -121,10 +121,10 @@
     <ClInclude Include="RoomEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ServerDlg.h">
+    <ClInclude Include="AiServerInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
+    <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="User.h">

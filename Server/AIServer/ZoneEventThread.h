@@ -2,13 +2,13 @@
 
 #include <shared/Thread.h>
 
-class CServerDlg;
+class AiServerInstance;
 class ZoneEventThread : public Thread
 {
 public:
-	ZoneEventThread(CServerDlg* main);
+	ZoneEventThread(AiServerInstance* main);
 	void thread_loop() override;
 
 protected:
-	CServerDlg* _main;
+	AiServerInstance* _main;
 };
