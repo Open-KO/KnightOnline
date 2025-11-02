@@ -6,7 +6,6 @@
 #include "RoomEvent.h"
 #include "AiServerInstance.h"
 #include "Define.h"
-#include "AIResourceFormatter.h"
 
 #include <spdlog/spdlog.h>
 
@@ -431,19 +430,19 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 			switch (option2)
 			{
 				case 1:
-					buff = fmt::format_win32_resource(IDS_KARUS_CATCH_1);
+					buff = "Karus' first fort was captured.";
 					break;
 
 				case 2:
-					buff = fmt::format_win32_resource(IDS_KARUS_CATCH_2);
+					buff = "Karus' second fort was captured.";
 					break;
 
 				case 11:
-					buff = fmt::format_win32_resource(IDS_ELMORAD_CATCH_1);
+					buff = "Elmorad's first fort was captured.";
 					break;
 
 				case 12:
-					buff = fmt::format_win32_resource(IDS_ELMORAD_CATCH_2);
+					buff = "Elmorad's second fort was captured.";
 					break;
 			}
 
@@ -454,7 +453,7 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 		case 2:
 			if (option2 == KARUS_ZONE)
 			{
-				buff = fmt::format_win32_resource(IDS_KARUS_PATHWAY);
+				buff = "*** The path to Karus has been opened. ***";
 
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_MAP_EVENT_RESULT, send_index);
@@ -463,7 +462,7 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 			}
 			else if (option2 == ELMORAD_ZONE)
 			{
-				buff = fmt::format_win32_resource(IDS_ELMORAD_PATHWAY);
+				buff = "*** The path to Elmorad has been opened. ***";
 
 				SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 				SetByte(send_buff, BATTLE_MAP_EVENT_RESULT, send_index);

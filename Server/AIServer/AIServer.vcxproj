@@ -163,7 +163,6 @@
     <ClCompile Include="ZoneEventThread.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIResourceFormatter.h" />
     <ClInclude Include="AISocketManager.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Extern.h" />
@@ -186,6 +185,9 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="ZoneEventThread.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Server.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

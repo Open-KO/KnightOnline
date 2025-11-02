@@ -130,9 +130,6 @@
     <ClInclude Include="User.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIResourceFormatter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SendThreadMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -143,4 +140,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+      <Image Include="res\Server.ico">
+        <Filter>Resource Files</Filter>
+      </Image>
+    </ItemGroup>
 </Project>
