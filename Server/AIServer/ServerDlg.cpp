@@ -23,7 +23,6 @@
 #include <fstream>
 
 #ifdef _DEBUG
-#define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
@@ -80,113 +79,39 @@ CServerDlg::CServerDlg()
 
 CServerDlg::~CServerDlg()
 {
-	KillTimer(CHECK_ALIVE);
-	//KillTimer( REHP_TIME );
+	if (_checkAliveThread != nullptr)
+		_checkAliveThread->shutdown();
 
-	g_bNpcExit = true;
+	for (CNpcThread* npcThread : m_NpcThreadArray)
+		npcThread->shutdown();
 
-	for (size_t i = 0; i < m_NpcThreadArray.size(); i++)
-		WaitForSingleObject(m_NpcThreadArray[i]->m_pThread->m_hThread, INFINITE);
-
-	// Event Npc Logic
-/*	for(i = 0; i < m_EventNpcThreadArray.size(); i++)
-	{
-		WaitForSingleObject(m_EventNpcThreadArray[i]->m_pThread->m_hThread, INFINITE);
-	}	*/
-
-	WaitForSingleObject(m_pZoneEventThread, INFINITE);
+	//g_bNpcExit = true;
+	
+	m_pZoneEventThread->shutdown();
 
 	_socketManager.Shutdown();
 
 	// DB테이블 삭제 부분
 
 	// Map(Zone) Array Delete...
-	for (size_t i = 0; i < m_ZoneArray.size(); i++)
-		delete m_ZoneArray[i];
+	for (MAP* map : m_ZoneArray)
+		delete map;
 	m_ZoneArray.clear();
 
-	// NpcTable Array Delete
-	if (!m_MonTableMap.IsEmpty())
-		m_MonTableMap.DeleteAllData();
+	delete m_pZoneEventThread;
+	m_pZoneEventThread = nullptr;
 
 	// NpcTable Array Delete
-	if (!m_NpcTableMap.IsEmpty())
-		m_NpcTableMap.DeleteAllData();
+	m_MonTableMap.DeleteAllData();
+	m_NpcTableMap.DeleteAllData();
 
 	// NpcThread Array Delete
-	for (size_t i = 0; i < m_NpcThreadArray.size(); i++)
-		delete m_NpcThreadArray[i];
+	for (CNpcThread* npcThread : m_NpcThreadArray)
+		delete npcThread;
 	m_NpcThreadArray.clear();
-
-	// Event Npc Logic
-	// EventNpcThread Array Delete
-/*	for(i = 0; i < m_EventNpcThreadArray.size(); i++)
-		delete m_EventNpcThreadArray[i];
-	m_EventNpcThreadArray.clear();		*/
-
-	// Item Array Delete
-	if (m_NpcItem.m_ppItem)
-	{
-		for (int i = 0; i < m_NpcItem.m_nRow; i++)
-		{
-			delete[] m_NpcItem.m_ppItem[i];
-			m_NpcItem.m_ppItem[i] = nullptr;
-		}
-		delete[] m_NpcItem.m_ppItem;
-		m_NpcItem.m_ppItem = nullptr;
-	}
-
-	if (!m_MakeWeaponTableMap.IsEmpty())
-		m_MakeWeaponTableMap.DeleteAllData();
-
-	if (!m_MakeDefensiveTableMap.IsEmpty())
-		m_MakeDefensiveTableMap.DeleteAllData();
-
-	if (!m_MakeGradeItemArray.IsEmpty())
-		m_MakeGradeItemArray.DeleteAllData();
-
-	if (!m_MakeItemRareCodeTableMap.IsEmpty())
-		m_MakeItemRareCodeTableMap.DeleteAllData();
-
-	// MagicTable Array Delete
-	if (!m_MagicTableMap.IsEmpty())
-		m_MagicTableMap.DeleteAllData();
-
-	if (!m_MagicType1TableMap.IsEmpty())
-		m_MagicType1TableMap.DeleteAllData();
-
-	if (!m_MagicType2TableMap.IsEmpty())
-		m_MagicType2TableMap.DeleteAllData();
-
-	if (!m_MagicType3TableMap.IsEmpty())
-		m_MagicType3TableMap.DeleteAllData();
-
-	if (!m_MagicType4TableMap.IsEmpty())
-		m_MagicType4TableMap.DeleteAllData();
-
-	if (!m_MagicType7TableMap.IsEmpty())
-		m_MagicType7TableMap.DeleteAllData();
-
-	// Npc Array Delete
-	if (!m_NpcMap.IsEmpty())
-		m_NpcMap.DeleteAllData();
-
-	// User Array Delete
-	for (int i = 0; i < MAX_USER; i++)
-	{
-		delete m_pUser[i];
-		m_pUser[i] = nullptr;
-	}
-
-	// Party Array Delete 
-	if (!m_PartyMap.IsEmpty())
-		m_PartyMap.DeleteAllData();
 
 	while (!m_ZoneNpcList.empty())
 		m_ZoneNpcList.pop_front();
-
-	DeleteCriticalSection(&g_User_critical);
-	DeleteCriticalSection(&g_region_critical);
 	
 	ConnectionManager::Destroy();
 	s_pInstance = nullptr;
@@ -249,7 +174,7 @@ bool CServerDlg::Init()
 	//----------------------------------------------------------------------
 	spdlog::info("ServerDlg::Init: initializing sockets");
 	_socketManager.Init(MAX_SOCKET, 0, 1);
-	_socketManager.AllocateServerSockets<CGameSocket>();
+	_socketManager.AllocateServerSockets<CGameSocket>(this);
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table
@@ -386,7 +311,6 @@ bool CServerDlg::Init()
 	_checkAliveThread->start();
 
 	//::ResumeThread( _socketManager.m_hAcceptThread );
-	UpdateData(FALSE);
 
 	spdlog::info("AIServer successfully initialized");
 
@@ -709,7 +633,7 @@ bool CServerDlg::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 			{
 				for (int j = 0; j < nMonsterNumber; j++)
 				{
-					CNpc* pNpc = new CNpc();
+					CNpc* pNpc = new CNpc(this);
 					pNpc->m_sNid = nSerial++;						// 서버 내에서의 고유 번호
 					pNpc->m_sSid = (int16_t) row->NpcId;				// MONSTER(NPC) Serial ID
 
@@ -953,85 +877,6 @@ void CServerDlg::StartNpcThreads()
 	m_pZoneEventThread->start();
 }
 
-//	메모리 정리
-BOOL CServerDlg::DestroyWindow()
-{
-	// TODO: Add your specialized code here and/or call the base class
-	if (_checkAliveThread != nullptr)
-		_checkAliveThread->shutdown();
-
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-		npcThread->shutdown();
-
-	m_pZoneEventThread->shutdown();
-
-	_socketManager.Shutdown();
-
-	// DB테이블 삭제 부분
-
-	// Map(Zone) Array Delete...
-	for (MAP* map : m_ZoneArray)
-		delete map;
-	m_ZoneArray.clear();
-
-	delete m_pZoneEventThread;
-	m_pZoneEventThread = nullptr;
-
-	// NpcTable Array Delete
-	m_MonTableMap.DeleteAllData();
-	m_NpcTableMap.DeleteAllData();
-
-	// NpcThread Array Delete
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-		delete npcThread;
-	m_NpcThreadArray.clear();
-
-	// Item Array Delete
-	if (m_NpcItem.m_ppItem != nullptr)
-	{
-		for (int i = 0; i < m_NpcItem.m_nRow; i++)
-		{
-			delete[] m_NpcItem.m_ppItem[i];
-			m_NpcItem.m_ppItem[i] = nullptr;
-		}
-		delete[] m_NpcItem.m_ppItem;
-		m_NpcItem.m_ppItem = nullptr;
-	}
-
-	m_MakeWeaponTableMap.DeleteAllData();
-	m_MakeDefensiveTableMap.DeleteAllData();
-	m_MakeGradeItemArray.DeleteAllData();
-	m_MakeItemRareCodeTableMap.DeleteAllData();
-
-	// MagicTable Array Delete
-	m_MagicTableMap.DeleteAllData();
-	m_MagicType1TableMap.DeleteAllData();
-	m_MagicType2TableMap.DeleteAllData();
-	m_MagicType3TableMap.DeleteAllData();
-	m_MagicType4TableMap.DeleteAllData();
-	m_MagicType7TableMap.DeleteAllData();
-
-	// Npc Array Delete
-	m_NpcMap.DeleteAllData();
-
-	// User Array Delete
-	for (int i = 0; i < MAX_USER; i++)
-	{
-		delete m_pUser[i];
-		m_pUser[i] = nullptr;
-	}
-
-	// Party Array Delete 
-	m_PartyMap.DeleteAllData();
-
-	while (!m_ZoneNpcList.empty())
-		m_ZoneNpcList.pop_front();
-
-	s_pInstance = nullptr;
-
-	return CDialog::DestroyWindow();
-}
-
 void CServerDlg::DeleteUserList(int uid)
 {
 	if (uid < 0
@@ -1082,7 +927,7 @@ bool CServerDlg::MapFileLoad()
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
 	{
 		// Build the base MAP directory
-		std::filesystem::path mapDir(GetProgPath().GetString());
+		std::filesystem::path mapDir(GetProgPath());
 		mapDir /= MAP_DIR;
 
 		// Resolve it to strip the relative references to be nice.
@@ -1101,18 +946,18 @@ bool CServerDlg::MapFileLoad()
 			if (!file)
 			{
 				spdlog::error(fmt::format("ServerDlg::MapFileLoad: Failed to open file: {}",
-					mapPath.c_str()));
+					mapPath.string()));
 				return;
 			}
 
-			MAP* pMap = new MAP();
+			MAP* pMap = new MAP(this);
 			pMap->m_nServerNo = row.ServerId;
 			pMap->m_nZoneNumber = row.ZoneId;
 
 			if (!pMap->LoadMap(file))
 			{
 				spdlog::error(fmt::format("ServerDlg::MapFileLoad: Failed to load map file: {}",
-					mapPath.c_str()));
+					mapPath.string()));
 				delete pMap;
 				return;
 			}
@@ -1125,7 +970,7 @@ bool CServerDlg::MapFileLoad()
 				if (!pMap->LoadRoomEvent(row.RoomEvent))
 				{
 					spdlog::error(fmt::format("ServerDlg::MapFileLoad: LoadRoomEvent failed: {}",
-						mapPath.c_str()));
+						mapPath.string()));
 					delete pMap;
 					return;
 				}
@@ -1299,11 +1144,7 @@ void CServerDlg::CheckAliveTest()
 
 	CGameSocket* pSocket = nullptr;
 	int size = 0, count = 0;
-
-	CString logstr;
-	CTime time = CTime::GetCurrentTime();
 	int socketCount = _socketManager.GetServerSocketCount();
-
 	for (int i = 0; i < socketCount; i++)
 	{
 		pSocket = _socketManager.GetServerSocketUnchecked(i);
@@ -1624,7 +1465,7 @@ bool CServerDlg::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 	bFindNpcTable = true;
 
-	CNpc* pNpc = new CNpc();
+	CNpc* pNpc = new CNpc(this);
 
 	pNpc->m_sNid = m_sMapEventNpc++;				// 서버 내에서의 고유 번호
 	pNpc->m_sSid = (int16_t) pEvent->sIndex;			// MONSTER(NPC) Serial ID
@@ -1713,19 +1554,17 @@ int CServerDlg::GetServerNumber(int zoneId) const
 
 void CServerDlg::GetServerInfoIni()
 {
-	CString exePath = GetProgPath();
-	std::string exePathUtf8(CT2A(exePath, CP_UTF8));
-
-	std::filesystem::path iniPath(exePath.GetString());
+	std::string exePath = GetProgPath();
+	std::filesystem::path iniPath(exePath);
 	iniPath /= L"server.ini";
 	
 	CIni inifile;
 	inifile.Load(iniPath);
 
 	// logger setup
-	_logger.Setup(inifile, exePathUtf8);
+	_logger.Setup(inifile, exePath);
 	
-	m_byZone = inifile.GetInt(_T("SERVER"), _T("ZONE"), 1);
+	m_byZone = inifile.GetInt("SERVER", "ZONE", 1);
 
 	std::string datasourceName = inifile.GetString("ODBC", "GAME_DSN", "KN_online");
 	std::string datasourceUser = inifile.GetString("ODBC", "GAME_UID", "knight");

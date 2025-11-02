@@ -61,7 +61,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>shared-server.lib;shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -131,6 +131,8 @@
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalLibraryDirectories>..\..\Client\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -152,7 +154,7 @@
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="RoomEvent.cpp" />
     <ClCompile Include="SendThreadMain.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="AiServer.cpp" />
     <ClCompile Include="ServerDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -178,20 +180,12 @@
     <ClInclude Include="PartyUser.h" />
     <ClInclude Include="PathFind.h" />
     <ClInclude Include="Region.h" />
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="RoomEvent.h" />
     <ClInclude Include="SendThreadMain.h" />
-    <ClInclude Include="Server.h" />
     <ClInclude Include="ServerDlg.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="ZoneEventThread.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\Server.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Server.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

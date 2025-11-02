@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "global.h"
 
+#include <filesystem>
 #include <shared/StringConversion.h>
 
 bool CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index)
@@ -154,16 +155,9 @@ int ParseSpace(char* tBuf, const char* sBuf)
 	return index;
 }
 
-CString GetProgPath()
+std::string GetProgPath()
 {
-	TCHAR Buf[256], Path[256];
-	TCHAR drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-
-	::GetModuleFileName(AfxGetApp()->m_hInstance, Buf, 256);
-	_tsplitpath(Buf, drive, dir, fname, ext);
-	_tcscpy(Path, drive);
-	_tcscat(Path, dir);
-	return Path;
+	return std::filesystem::current_path().string();
 }
 
 int myrand(int min, int max, bool bSame)

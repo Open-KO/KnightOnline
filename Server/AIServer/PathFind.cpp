@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "server.h"
 #include "PathFind.h"
 #include "math.h"
 #include "Serverdlg.h"
@@ -13,7 +12,6 @@
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
-#define new DEBUG_NEW
 #endif
 
 #define LEVEL_ONE_FIND_CROSS			2
@@ -25,19 +23,20 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPathFind::CPathFind()
+CPathFind::CPathFind(CServerDlg* instance)
 {
 	m_pStack = (STACK*) calloc(1, sizeof(STACK));
 	m_pOpen = nullptr;
 	m_pClosed = nullptr;
 	m_pMap = nullptr;
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
+	m_pMain = instance;
 }
 
 CPathFind::~CPathFind()
 {
 	ClearData();
 	free(m_pStack);
+	m_pMain = nullptr;
 }
 
 void CPathFind::ClearData()

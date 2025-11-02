@@ -24,6 +24,9 @@
 //
 // #include <afxtempl.h>
 // #include <afxdb.h>
+#include <sql.h>
+#pragma comment(lib, "odbc32.lib")
+#include <atlexcept.h>
 
 #include "packet.h"			// packet 정의
 #include "global.h"			// 전역 funtion

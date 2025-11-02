@@ -133,7 +133,8 @@ inline bool CNpc::SetUid(float x, float z, int id)
 	return true;
 }
 
-CNpc::CNpc()
+CNpc::CNpc(CServerDlg* instance) :
+	m_vPathFind(instance)
 {
 	m_NpcState = NPC_LIVE;
 	m_byGateOpen = GATE_CLOSE;
@@ -185,7 +186,7 @@ CNpc::CNpc()
 	InitUserList();
 	InitMagicValuable();
 
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
+	m_pMain = instance;
 	m_MagicProcess.m_pMain = m_pMain;
 	m_MagicProcess.m_pSrcNpc = this;
 
@@ -1239,7 +1240,6 @@ bool CNpc::SetLive()
 		{
 			std::string logstr = fmt::format("All NPCs initialized [count={}]",
 				m_pMain->m_CurrentNPC);
-			m_pMain->AddOutputMessage(logstr);
 			spdlog::info("Npc::SetLive: {}", logstr);
 			m_pMain->GameServerAcceptThread();				// 게임서버 Accept
 		}
@@ -1568,7 +1568,7 @@ bool CNpc::RandomMove()
 	if (min_z >= pMap->m_sizeMap.cy)
 		min_z = pMap->m_sizeMap.cy-1;
 
-	CPoint start, end;
+	_POINT start, end;
 	start.x = (int) (m_fCurX / TILE_SIZE) - min_x;
 	start.y = (int) (m_fCurZ / TILE_SIZE) - min_z;
 	end.x = (int) (fDestX / TILE_SIZE) - min_x;
@@ -1742,7 +1742,7 @@ bool CNpc::RandomBackMove()
 	{
 	}
 
-	CPoint start, end;
+	_POINT start, end;
 	start.x = (int) (m_fCurX / TILE_SIZE) - min_x;
 	start.y = (int) (m_fCurZ / TILE_SIZE) - min_z;
 	end.x = (int) (fDestX / TILE_SIZE) - min_x;
@@ -1885,7 +1885,7 @@ bool CNpc::IsInRange(int nX, int nZ)
 /////////////////////////////////////////////////////////////////////////////////////////
 //	PathFind 를 수행한다.
 //
-int CNpc::PathFind(CPoint start, CPoint end, float fDistance)
+int CNpc::PathFind(_POINT start, _POINT end, float fDistance)
 {
 	ClearPathFindData();
 
@@ -2051,7 +2051,6 @@ void CNpc::Dead(int iDeadType)
 	pMap->RegionNpcRemove(m_iRegion_X, m_iRegion_Z, m_sNid + NPC_BAND);
 
 	//TRACE(_T("-- Npc-Dead RegionRemove : [nid=%d, name=%hs], nRX=%d, nRZ=%d \n"), m_sNid+NPC_BAND, m_strName, m_iRegion_X, m_iRegion_Z);
-	CTime t = CTime::GetCurrentTime();
 	//TRACE(_T("****** (%hs,%d) Dead regentime = %d , m_byDeadType=%d, dungeonfam=%d, time=%d:%d-%d ****************\n"), m_strName, m_sNid+NPC_BAND, m_sRegenTime, m_byDeadType, m_byDungeonFamily, t.GetHour(), t.GetMinute(), t.GetSecond());
 
 	// User에 의해 죽은것이 아니기 때문에... 클라이언트에 Dead패킷전송...
@@ -3242,8 +3241,9 @@ int CNpc::GetTargetPath(int option)
 	if (targetUser != nullptr)
 	{
 		// Check if user is within search range
-		CRect r(min_x, min_z, max_x + 1, max_z + 1);
-		if (!r.PtInRect(CPoint((int) targetUser->m_curx / TILE_SIZE, (int) targetUser->m_curz / TILE_SIZE)))
+		_RECT r(min_x, min_z, max_x + 1, max_z + 1);
+		if (!IsPointInRect( _POINT(static_cast<int>(targetUser->m_curx / TILE_SIZE),
+			static_cast<int>(targetUser->m_curz / TILE_SIZE)), r))
 		{
 			spdlog::debug("Npc::GetTargetPath: user outside of search range [serial={} npcId={} npcName={} charId={} attackPos={}]",
 				m_sNid + NPC_BAND, m_sSid, m_strName, targetUser->m_strUserID, m_byAttackPos);
@@ -3287,8 +3287,9 @@ int CNpc::GetTargetPath(int option)
 	else if (npcTarget != nullptr)
 	{
 		// check if target is in search range
-		CRect r(min_x, min_z, max_x + 1, max_z + 1);
-		if (!r.PtInRect( { (int) npcTarget->m_fCurX / TILE_SIZE, (int) npcTarget->m_fCurZ / TILE_SIZE }))
+		_RECT r(min_x, min_z, max_x + 1, max_z + 1);
+		if (!IsPointInRect( _POINT(static_cast<int>(npcTarget->m_fCurX / TILE_SIZE),
+			static_cast<int>(npcTarget->m_fCurZ / TILE_SIZE)), r))
 		{
 			spdlog::debug("Npc::GetTargetPath: target outside of search range [serial={} npcId={} npcName={} targetSerial={} targetId={} targetName={} attackPos={}]",
 				m_sNid + NPC_BAND, m_sSid, m_strName,
@@ -3337,7 +3338,7 @@ int CNpc::GetTargetPath(int option)
 			return 0;
 	}
 
-	CPoint start, end;
+	_POINT start, end;
 	start.x = (int) (m_fCurX / TILE_SIZE) - min_x;
 	start.y = (int) (m_fCurZ / TILE_SIZE) - min_z;
 	end.x = (int) (vEnd22.x / TILE_SIZE) - min_x;

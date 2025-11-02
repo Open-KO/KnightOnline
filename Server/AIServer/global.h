@@ -20,7 +20,7 @@ void	Setfloat(char* tBuf, float sFloat, int& index);
 void	SetString1(char* tBuf, const std::string_view str, int& index);
 void	SetString2(char* tBuf, const std::string_view str, int& index);
 int		ParseSpace(char* tBuf, const char* sBuf);
-CString	GetProgPath();
+std::string	GetProgPath();
 int		myrand(int min, int max, bool bSame = false);
 int		XdY(int x, int y);
 

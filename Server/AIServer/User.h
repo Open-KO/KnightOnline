@@ -93,7 +93,7 @@ public:
 	void InitUserLog();
 	void WriteUserLog();
 	int16_t GetMagicDamage(int damage, int16_t tid);
-	void Initialize();
+	void Initialize(CServerDlg* instance);
 	void InitNpcAttack();
 	void Attack(int sid, int tid);	// ATTACK
 	void SetDamage(int damage, int tid);				// user damage

@@ -266,7 +266,7 @@ public:
 			return;
 
 		// 10MB is far more than you'll ever need.
-		ASSERT(size() < 10000000);
+		_ASSERT(size() < 10000000);
 
 		if (_storage.size() < _wpos + cnt)
 			_storage.resize(_wpos + cnt);
@@ -283,20 +283,20 @@ public:
 
 	void append(const ByteBuffer& buffer, size_t len)
 	{
-		ASSERT(buffer.rpos() + len <= buffer.size());
+		_ASSERT(buffer.rpos() + len <= buffer.size());
 		append(buffer.contents() + buffer.rpos(), len);
 	}
 
 	void readFrom(ByteBuffer& buffer, size_t len)
 	{
-		ASSERT(buffer.rpos() + len <= buffer.size());
+		_ASSERT(buffer.rpos() + len <= buffer.size());
 		append(buffer.contents() + buffer.rpos(), len);
 		buffer.rpos(buffer.rpos() + len);
 	}
 
 	void put(size_t pos, const void* src, size_t cnt)
 	{
-		ASSERT(pos + cnt <= size());
+		_ASSERT(pos + cnt <= size());
 		memcpy(&_storage[pos], src, cnt);
 	}
 

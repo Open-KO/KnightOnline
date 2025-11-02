@@ -9,9 +9,6 @@
       <UniqueIdentifier>{be5b9c02-8632-440a-8297-01b8d6d7f6d7}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{7c266682-32f6-4f21-9907-d7c52dc4ed9d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameSocket.cpp">
@@ -53,7 +50,7 @@
     <ClCompile Include="RoomEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Server.cpp">
+    <ClCompile Include="AiServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ServerDlg.cpp">
@@ -124,9 +121,6 @@
     <ClInclude Include="RoomEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ServerDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -135,9 +129,6 @@
     </ClInclude>
     <ClInclude Include="User.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="AIResourceFormatter.h">
       <Filter>Header Files</Filter>
@@ -151,15 +142,5 @@
     <ClInclude Include="ZoneEventThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\Server.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Server.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

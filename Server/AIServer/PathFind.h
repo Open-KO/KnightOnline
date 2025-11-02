@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <shared-server/GeometricStructs.h>
+
 class _PathNode {
 public:
 	int f;
@@ -43,7 +45,7 @@ public:
 	void ClearData();
 	_PathNode* ReturnBestNode();
 	_PathNode* FindPath(int start_x, int start_y, int dest_x, int dest_y);
-	CPathFind();
+	CPathFind(CServerDlg* instance);
 	virtual ~CPathFind();
 
 	void Push(_PathNode* node);
@@ -54,7 +56,7 @@ protected:
 	STACK*		m_pStack;
 //	int**		m_pMap;
 	int*		m_pMap;
-	CSize		m_vMapSize;
+	_SIZE		m_vMapSize;
 
 	CServerDlg*	m_pMain;
 };

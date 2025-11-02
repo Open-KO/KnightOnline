@@ -57,7 +57,7 @@ private:
 
 
 public:
-	CRoomEvent();
+	CRoomEvent(CServerDlg* instance);
 	virtual ~CRoomEvent();
 
 	void MainRoom(double currentTime);

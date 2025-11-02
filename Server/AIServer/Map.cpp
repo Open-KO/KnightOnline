@@ -29,9 +29,9 @@ CMapInfo::~CMapInfo()
 {
 }
 
-MAP::MAP()
+MAP::MAP(CServerDlg* instance)
 {
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
+	m_pMain = instance;
 	m_nMapSize = 0;
 	m_fUnitDist = 0.0f;
 	m_fHeight = nullptr;
@@ -57,6 +57,7 @@ MAP::MAP()
 MAP::~MAP()
 {
 	RemoveMapData();
+	m_pMain = nullptr;
 }
 
 void MAP::RemoveMapData()
@@ -494,7 +495,7 @@ bool MAP::LoadRoomEvent(int zone_number)
 	CRoomEvent* pEvent = nullptr;
 
 	// Build the base MAP directory
-	std::filesystem::path evtPath(GetProgPath().GetString());
+	std::filesystem::path evtPath(GetProgPath());
 	evtPath /= MAP_DIR;
 	evtPath /= std::to_string(zone_number) + ".evt";
 
@@ -683,9 +684,7 @@ bool MAP::LoadRoomEvent(int zone_number)
 	return true;
 
 cancel_event_load:
-	CString str;
-	str.Format(_T("LoadRoomEvent Failed [zoneId=%d eventId=%d]"), zone_number, event_num);
-	AfxMessageBox(str);
+	spdlog::error("LoadRoomEvent Failed [zoneId={} eventId={}]", zone_number, event_num);
 //	DeleteAll();
 	return false;
 }
@@ -799,7 +798,7 @@ CRoomEvent* MAP::SetRoomEvent(int number)
 		return nullptr;
 	}
 
-	pEvent = new CRoomEvent;
+	pEvent = new CRoomEvent(m_pMain);
 	pEvent->m_iZoneNumber = m_nZoneNumber;
 	pEvent->m_sRoomNumber = number;
 	if (!m_arRoomEventArray.PutData(pEvent->m_sRoomNumber, pEvent))

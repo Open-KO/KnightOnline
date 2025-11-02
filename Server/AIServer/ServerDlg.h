@@ -9,12 +9,9 @@
 #include "Pathfind.h"
 #include "User.h"
 #include "Npc.h"
-#include "Server.h"
 #include "Party.h"
 
 #include "Extern.h"			// 전역 객체
-
-#include "resource.h"
 
 #include <shared-server/logger.h>
 #include <shared-server/STLMap.h>

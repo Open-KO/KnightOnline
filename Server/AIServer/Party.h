@@ -28,7 +28,7 @@ public:
 	CParty();
 	virtual ~CParty();
 
-	void Initialize();
+	void Initialize(CServerDlg* instance);
 
 	void PartyDelete(char* pBuf);
 	void PartyRemove(char* pBuf);

@@ -24,7 +24,7 @@ class CCircularBuffer
 public:
 	inline CCircularBuffer(int size)
 	{
-		ASSERT(size > 0);
+		_ASSERT(size > 0);
 		m_iBufSize = size;
 		m_pBuffer = new char[m_iBufSize];
 
@@ -34,7 +34,7 @@ public:
 
 	inline ~CCircularBuffer()
 	{
-		ASSERT(m_pBuffer != nullptr);
+		_ASSERT(m_pBuffer != nullptr);
 		delete[] m_pBuffer;
 		m_pBuffer = nullptr;
 	}
@@ -139,7 +139,7 @@ inline CircularBufferSpan CCircularBuffer::PutData(char* pData, int len, bool re
 	{
 		int FirstCopyLen = m_iBufSize - m_iTailPos;
 		int SecondCopyLen = len - FirstCopyLen;
-		ASSERT(FirstCopyLen);
+		_ASSERT(FirstCopyLen);
 
 		span.Buffer1 = &m_pBuffer[m_iTailPos];
 		span.Length1 = FirstCopyLen;
@@ -181,7 +181,7 @@ inline int CCircularBuffer::GetOutData(char* pData)
 		memcpy(pData, m_pBuffer + m_iHeadPos, fc);
 		memcpy(pData + fc, m_pBuffer, sc);
 		m_iHeadPos = sc;
-		ASSERT(m_iHeadPos == m_iTailPos);
+		_ASSERT(m_iHeadPos == m_iTailPos);
 	}
 	else
 	{
@@ -195,7 +195,7 @@ inline int CCircularBuffer::GetOutData(char* pData)
 
 inline void CCircularBuffer::GetData(char* pData, int len)
 {
-	ASSERT(len > 0 && len <= GetValidCount());
+	_ASSERT(len > 0 && len <= GetValidCount());
 	if (len < m_iBufSize - m_iHeadPos)
 	{
 		memcpy(pData, m_pBuffer + m_iHeadPos, len);
@@ -212,7 +212,7 @@ inline void CCircularBuffer::GetData(char* pData, int len)
 
 inline bool CCircularBuffer::HeadIncrease(int increasement)
 {
-	ASSERT(increasement <= GetValidCount());
+	_ASSERT(increasement <= GetValidCount());
 	m_iHeadPos += increasement;
 	m_iHeadPos %= m_iBufSize;
 	return m_iHeadPos != m_iTailPos;

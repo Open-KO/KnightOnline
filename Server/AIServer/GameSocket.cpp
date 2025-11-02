@@ -12,6 +12,8 @@
 #include "ServerDlg.h"
 #include "User.h"
 
+#include <ctime>
+
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 
@@ -20,7 +22,6 @@
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
-#define new DEBUG_NEW
 #endif
 
 extern std::mutex g_region_mutex;
@@ -34,10 +35,11 @@ extern std::mutex g_region_mutex;
 	1. RecvUserInfo(), RecvAttackReq(), RecvUserUpdate() 수정
 */
 
-CGameSocket::CGameSocket(SocketManager* socketManager)
+CGameSocket::CGameSocket(CServerDlg* instance, SocketManager* socketManager)
 	: TcpServerSocket(socketManager)
 {
 	//m_pParty = nullptr;
+	m_pMain = instance;
 }
 
 CGameSocket::~CGameSocket()
@@ -51,10 +53,9 @@ CGameSocket::~CGameSocket()
 void CGameSocket::Initialize()
 {
 	_zoneNo = -1;
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
 	//m_pParty = new CParty;
 	//m_pParty->Init();
-	m_Party.Initialize();
+	m_Party.Initialize(m_pMain);
 
 	TcpServerSocket::Initialize();
 }
@@ -274,7 +275,6 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 	uint8_t byReConnect = GetByte(pBuf, index);	// 0 : 처음접속, 1 : 재접속
 
 	std::string logstr = fmt::format("Ebenezer connected to zone={}", byZoneNumber);
-	m_pMain->AddOutputMessage(logstr);
 	spdlog::info("GameSocket::RecvServerConnect: {}", logstr);
 
 	if (byZoneNumber < 0)
@@ -396,7 +396,7 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 	//CUser* pUser = m_pMain->GetActiveUserPtr(uid);
 	//if( pUser == nullptr )		return;
 	CUser* pUser = new CUser;
-	pUser->Initialize();
+	pUser->Initialize(m_pMain);
 
 	pUser->m_iUserId = uid;
 	strcpy(pUser->m_strUserID, strName);
@@ -427,9 +427,8 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 		&& uid < MAX_USER)
 		m_pMain->m_pUser[uid] = pUser;
 
-	_USERLOG* pUserLog = nullptr;
-	pUserLog = new _USERLOG;
-	pUserLog->t = CTime::GetCurrentTime();
+	_USERLOG* pUserLog = new _USERLOG;
+	pUserLog->t = std::time(0);
 	pUserLog->byFlag = USER_LOGIN;
 	pUserLog->byLevel = pUser->m_byLevel;
 	strcpy(pUserLog->strUserID, pUser->m_strUserID);
@@ -774,9 +773,8 @@ void CGameSocket::RecvUserLogOut(char* pBuf)
 	if (pUser == nullptr)
 		return;
 
-	_USERLOG* pUserLog = nullptr;
-	pUserLog = new _USERLOG;
-	pUserLog->t = CTime::GetCurrentTime();
+	_USERLOG* pUserLog = new _USERLOG;
+	pUserLog->t = std::time(0);
 	pUserLog->byFlag = USER_LOGOUT;
 	pUserLog->byLevel = pUser->m_byLevel;
 	strcpy(pUserLog->strUserID, pUser->m_strUserID);
@@ -872,9 +870,8 @@ void CGameSocket::RecvUserUpdate(char* pBuf)
 		pUser->m_sHP = sHP;
 		pUser->m_sMP = sMP;
 		//pUser->m_sSP = sSP;
-		_USERLOG* pUserLog = nullptr;
-		pUserLog = new _USERLOG;
-		pUserLog->t = CTime::GetCurrentTime();
+		_USERLOG* pUserLog = new _USERLOG;
+		pUserLog->t = std::time(0);
 		pUserLog->byFlag = USER_LEVEL_UP;
 		pUserLog->byLevel = byLevel;
 		strcpy(pUserLog->strUserID, pUser->m_strUserID);
@@ -1056,7 +1053,7 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 		//CUser* pUser = m_pMain->GetActiveUserPtr(uid);
 		//if (pUser == nullptr)	continue;
 		CUser* pUser = new CUser();
-		pUser->Initialize();
+		pUser->Initialize(m_pMain);
 
 		pUser->m_iUserId = uid;
 		strcpy(pUser->m_strUserID, strName);

@@ -11,6 +11,7 @@
 
 #include <shared-server/N3ShapeMgr.h>
 #include <shared-server/STLMap.h>
+#include <shared-server/GeometricStructs.h>
 #include "RoomEvent.h"
 
 #include <iosfwd>
@@ -41,8 +42,8 @@ public:
 	CMapInfo**			m_pMap;				// 타일의 정보(1셀 : 4미터)
 	CRegion**			m_ppRegion;			// 64미터의 타일정보..
 	//CRoomEvent*		m_pRoomEvent;
-	CSize				m_sizeMap;			// 맵의 크기
-	CSize				m_sizeRegion;		// 맵의 resion size
+	_SIZE				m_sizeMap;			// 맵의 크기
+	_SIZE				m_sizeRegion;		// 맵의 resion size
 	int					m_nZoneNumber;		// zone number
 	int					m_nServerNo;
 	int					m_nMapSize;			// Grid Unit ex) 4m
@@ -58,7 +59,7 @@ public:
 	int16_t				m_sKarusRoom;		// karus의 성갯수
 	int16_t				m_sElmoradRoom;		// elmorad의 성갯수
 	
-	MAP();
+	MAP(CServerDlg* instance);
 	virtual ~MAP();
 
 	bool LoadMap(std::istream& fs);

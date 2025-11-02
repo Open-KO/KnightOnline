@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "server.h"
 #include "ServerDlg.h"
 #include "Party.h"
 
@@ -12,7 +11,6 @@
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
-#define new DEBUG_NEW
 #endif
 
 extern std::mutex g_region_mutex;
@@ -27,11 +25,12 @@ CParty::CParty()
 
 CParty::~CParty()
 {
+	m_pMain = nullptr;
 }
 
-void CParty::Initialize()
+void CParty::Initialize(CServerDlg* instance)
 {
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
+	m_pMain = instance;
 }
 
 void CParty::PartyProcess(char* pBuf)

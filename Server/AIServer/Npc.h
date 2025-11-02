@@ -15,6 +15,7 @@
 #include "NpcMagicProcess.h"
 
 #include <shared-server/My_3DStruct.h>
+#include <shared-server/GeometricStructs.h>
 
 #define MAX_MAP_SIZE		10000
 #define MAX_PATH_SIZE		100
@@ -356,7 +357,7 @@ public:
 	int16_t m_sThreadNumber;			// 자신이 속한 스레드의 번호
 
 public:
-	CNpc();
+	CNpc(CServerDlg* instance);
 	virtual ~CNpc();
 
 	void Load(const model::Npc* pNpcTable, bool transformSpeeds);
@@ -459,7 +460,7 @@ public:
 	__Vector3 ComputeDestPos(__Vector3 vCur, float fDegree, float fDegreeOffset, float fDistance);
 	void Yaw2D(float fDirX, float fDirZ, float& fYawResult);
 	float GetDistance(__Vector3 vOrig, __Vector3 vDest);
-	int  PathFind(CPoint start, CPoint end, float fDistance);
+	int  PathFind(_POINT start, _POINT end, float fDistance);
 	bool GetUserInView();	// Npc의 가시 거리안에 User가 있는지를 판단
 	bool GetUserInViewRange(int x, int z);
 	void MoveAttack();

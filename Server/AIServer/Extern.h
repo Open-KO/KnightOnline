@@ -16,7 +16,7 @@ struct _PARTY_GROUP
 
 struct _USERLOG
 {
-	CTime t;
+	std::time_t t;
 	uint8_t  byFlag;	// 
 	uint8_t  byLevel;
 	char  strUserID[MAX_ID_SIZE + 1];		// 아이디(캐릭터 이름)

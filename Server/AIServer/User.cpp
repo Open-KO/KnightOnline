@@ -13,7 +13,6 @@
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
-#define new DEBUG_NEW
 #endif
 
 #include "Extern.h"
@@ -57,9 +56,9 @@ CUser::~CUser()
 {
 }
 
-void CUser::Initialize()
+void CUser::Initialize(CServerDlg* instance)
 {
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
+	m_pMain = instance;
 
 	m_MagicProcess.m_pMain = m_pMain;
 	m_MagicProcess.m_pSrcUser = this;

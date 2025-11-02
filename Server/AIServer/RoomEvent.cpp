@@ -13,7 +13,6 @@
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
-#define new DEBUG_NEW
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -21,7 +20,7 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 extern std::mutex g_region_mutex;
 
-CRoomEvent::CRoomEvent()
+CRoomEvent::CRoomEvent(CServerDlg* instance)
 {
 	m_iZoneNumber = 0;
 	m_sRoomNumber = 0;
@@ -36,7 +35,7 @@ CRoomEvent::CRoomEvent()
 	m_iEndMaxZ = 0;
 	m_byCheck = 0;
 	m_byRoomType = 0;
-	m_pMain = (CServerDlg*) AfxGetApp()->GetMainWnd();
+	m_pMain = instance;
 
 	Initialize();
 }
@@ -45,6 +44,8 @@ CRoomEvent::~CRoomEvent()
 {
 	if (!m_mapRoomNpcArray.IsEmpty())
 		m_mapRoomNpcArray.DeleteAllData();
+
+	m_pMain = nullptr;
 }
 
 void CRoomEvent::Initialize()

@@ -16,7 +16,7 @@ public:
 	int16_t		_zoneNo;
 
 public:
-	CGameSocket(SocketManager* socketManager);
+	CGameSocket(CServerDlg* instance, SocketManager* socketManager);
 	~CGameSocket() override;
 
 	void Initialize() override;

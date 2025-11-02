@@ -22,7 +22,7 @@ namespace fmt
 			if (::LoadStringW(nullptr, resourceId, buffer, _countof(buffer)) == 0)
 				return false;
 
-			fmtStr = CW2A(buffer, outputCodePage);
+			fmtStr = ATL::CW2A(buffer, outputCodePage);
 			return true;
 		}
 	}
