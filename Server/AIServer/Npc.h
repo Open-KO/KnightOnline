@@ -121,8 +121,8 @@ class AiServerInstance;
 class CNpc
 {
 public:
-	AiServerInstance* m_pMain;
-	CNpcMagicProcess m_MagicProcess;
+	AiServerInstance*	m_pMain;
+	CNpcMagicProcess	m_MagicProcess;
 
 	_Target		m_Target;			// 공격할 유저 저장,,
 	int16_t		m_ItemUserLevel;	// 죽을때 매직 이상 아이템를 떨구기위해 참조해야하는 유저의레벨

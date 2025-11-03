@@ -37,7 +37,7 @@ public:
 class MAP
 {
 public:
-	AiServerInstance*			m_pMain;
+	AiServerInstance*	m_pMain;
 	CN3ShapeMgr			m_N3ShapeMgr;
 	CMapInfo**			m_pMap;				// 타일의 정보(1셀 : 4미터)
 	CRegion**			m_ppRegion;			// 64미터의 타일정보..

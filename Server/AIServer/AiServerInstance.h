@@ -165,9 +165,6 @@ private:
 
 	AIServerLogger&		_logger;
 
-	std::queue<std::wstring>		_listBoxQueue;
-	std::mutex						_listBoxQueueMutex;
-
 	std::unique_ptr<TimerThread>	_checkAliveThread;
 
 	void StartNpcThreads();

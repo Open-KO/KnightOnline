@@ -52,11 +52,12 @@ public:
 	_PathNode* Pop();
 
 protected:
-	_PathNode*	m_pOpen, *m_pClosed;
-	STACK*		m_pStack;
-//	int**		m_pMap;
-	int*		m_pMap;
-	_SIZE		m_vMapSize;
+	_PathNode*			m_pOpen;
+	_PathNode*			m_pClosed;
+	STACK*				m_pStack;
+//	int**				m_pMap;
+	int*				m_pMap;
+	_SIZE				m_vMapSize;
 
 	AiServerInstance*	m_pMain;
 };

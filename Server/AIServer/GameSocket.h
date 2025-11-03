@@ -11,9 +11,9 @@ class CIOCPort;
 class CGameSocket : public TcpServerSocket
 {
 public:
-	AiServerInstance* m_pMain;
-	CParty		m_Party;
-	int16_t		_zoneNo;
+	AiServerInstance*	m_pMain;
+	CParty				m_Party;
+	int16_t				_zoneNo;
 
 public:
 	CGameSocket(AiServerInstance* instance, SocketManager* socketManager);
