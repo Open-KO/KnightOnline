@@ -187,7 +187,10 @@
     <ClInclude Include="ZoneEventThread.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\Server.ico" />
+    <ResourceCompile Include="AIServer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\Server.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

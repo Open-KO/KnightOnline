@@ -9,6 +9,9 @@
       <UniqueIdentifier>{be5b9c02-8632-440a-8297-01b8d6d7f6d7}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
+    <Filter Include="RES">
+      <UniqueIdentifier>{22545d28-24c6-444c-9486-0d15938f1e40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameSocket.cpp">
@@ -141,8 +144,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-      <Image Include="res\Server.ico">
-        <Filter>Resource Files</Filter>
-      </Image>
-    </ItemGroup>
+    <Image Include="RES\Server.ico">
+      <Filter>RES</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AIServer.rc" />
+  </ItemGroup>
 </Project>
