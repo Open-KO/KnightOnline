@@ -269,16 +269,41 @@ bool AiServerInstance::Start()
 void AiServerInstance::Shutdown()
 {
 	spdlog::info("AiServerInstance::Shutdown: Graceful shutdown triggered, releasing resources.");
-	if (_checkAliveThread != nullptr)
-		_checkAliveThread->shutdown();
+	_socketManager.Shutdown();
+	spdlog::info("AiServerInstance::Shutdown: SocketManager stopped.");
 
+	// wait for all of these threads to be fully shut down.
+	spdlog::info("AiServerInstance::Shutdown: Waiting for worker threads to fully shut down.");
+
+	if (_checkAliveThread != nullptr)
+	{
+		_checkAliveThread->shutdown();
+		_checkAliveThread->BlockUntilShutdown();
+	}
+	spdlog::info("AiServerInstance::Shutdown: CheckAliveThread stopped.");
+	
 	for (CNpcThread* npcThread : m_NpcThreadArray)
 		npcThread->shutdown();
 
-	m_pZoneEventThread->shutdown();
-	
-	_socketManager.Shutdown();
+	for (CNpcThread* npcThread : m_NpcThreadArray)
+	{
+		if (npcThread != nullptr && !npcThread->IsStopped())
+		{
+			npcThread->BlockUntilShutdown();
+		}
+	}
 
+	spdlog::info("AiServerInstance::Shutdown: NPC Threads stopped.");
+	
+	if (m_pZoneEventThread != nullptr)
+	{
+		m_pZoneEventThread->shutdown();
+		m_pZoneEventThread->BlockUntilShutdown();
+	}
+
+	spdlog::info("AiServerInstance::Shutdown: ZoneEventThread stopped.");
+	spdlog::info("AiServerInstance::Shutdown: All worker threads stopped, freeing caches.");
+	
 	// DB테이블 삭제 부분
 
 	// Map(Zone) Array Delete...
@@ -339,7 +364,7 @@ void AiServerInstance::Shutdown()
 	while (!m_ZoneNpcList.empty())
 		m_ZoneNpcList.pop_front();
 
-	spdlog::info("AiServerInstance::Shutdown: Resources released.");
+	spdlog::info("AiServerInstance::Shutdown: All resources safely released.");
 }
 
 void AiServerInstance::thread_loop()

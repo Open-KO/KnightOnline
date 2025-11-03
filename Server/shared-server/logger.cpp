@@ -116,5 +116,4 @@ void logger::Logger::SetupExtraLogger(CIni& ini,
 
 logger::Logger::~Logger()
 {
-	spdlog::shutdown();
 }

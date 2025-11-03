@@ -26,7 +26,7 @@ void CNpcThread::thread_loop()
 	double	fTime2 = 0.0, fTime3 = 0.0;
 	int		duration_damage = 0;
 
-	while (_running)
+	while (_running.load())
 	{
 		fTime2 = TimeGet();
 

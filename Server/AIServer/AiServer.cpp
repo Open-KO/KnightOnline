@@ -23,14 +23,15 @@ void signalHandler(int signalNumber)
 		{
 			appThread->shutdown();
 		}
-		spdlog::shutdown();
-		delete appThread;
 		break;
 	}
+	
+	signal(signalNumber, signalHandler);
 }
 
 int main()
 {
+	int retCode = EXIT_SUCCESS;
 	// catch interrupt signals for graceful shutdowns.
 	signal(SIGINT, signalHandler);
 	signal(SIGABRT, signalHandler);
@@ -41,13 +42,24 @@ int main()
 	appThread = new AiServerInstance(_logger);
 	appThread->start();
 
-	// We keep the main() thread alive to catch interrupt signals and call shutdown
-	while (appThread->IsRunning())
+	try
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		// We keep the main() thread alive to catch interrupt signals and call shutdown
+		while (appThread != nullptr && !appThread->IsStopped())
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+	} catch (const std::exception& ex)
+	{
+		spdlog::error("AiServer::main: Exception caught: {}", ex.what());
+		retCode = EXIT_FAILURE;
+	} catch (...)
+	{
+		spdlog::error("AiServer::main: Unknown exception caught");
+		retCode = EXIT_FAILURE;
 	}
 
 	delete appThread;
-
-	return 0;
+	
+	exit(retCode);
 }

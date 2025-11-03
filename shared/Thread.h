@@ -7,14 +7,24 @@
 class Thread
 {
 public:
+	/// \brief Returns true if the thread has been started and has not
+	/// been ordered to shutdown yet
 	bool IsRunning() const
 	{
-		return _running;
+		return _running.load();
+	}
+
+	/// \brief Returns true if the thread has not been fully started, or
+	/// if the thread has been fully shut down.
+	bool IsStopped() const
+	{
+		return _stopped.load();
 	}
 
 	Thread();
 	virtual void start();
 	virtual bool shutdown(bool join = true);
+	void BlockUntilShutdown();
 	virtual ~Thread();
 
 protected:
@@ -25,5 +35,6 @@ protected:
 	std::mutex				_mutex;
 	std::condition_variable	_cv;
 	std::thread				_thread;
-	bool					_running;
+	std::atomic<bool>		_running;
+	std::atomic<bool>		_stopped;
 };
