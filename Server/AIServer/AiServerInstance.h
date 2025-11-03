@@ -136,10 +136,7 @@ public:
 protected:
 	/// \brief Loads config, database caches, then starts sockets and thread pools.
 	/// \returns true when successful, false otherwise
-	bool Start();
-
-	/// \brief Releases resources and closes connections
-	void Shutdown();
+	bool OnStart();
 
 	/// \brief The main thread loop for the server instance
 	void thread_loop() override;

@@ -71,14 +71,87 @@ AiServerInstance::AiServerInstance(AIServerLogger& logger)
 
 AiServerInstance::~AiServerInstance()
 {
-	Shutdown();
+	spdlog::info("AiServerInstance::~AiServerInstance: Graceful shutdown triggered, releasing resources.");
+	_socketManager.Shutdown();
+	spdlog::info("AiServerInstance::~AiServerInstance: SocketManager stopped.");
+
+	// wait for all of these threads to be fully shut down.
+	spdlog::info("AiServerInstance::~AiServerInstance: Waiting for worker threads to fully shut down.");
+
+	if (_checkAliveThread != nullptr)
+	{
+		spdlog::info("AiServerInstance::~AiServerInstance: Shutting down CheckAliveThread...");
+
+		_checkAliveThread->shutdown();
+
+		spdlog::info("AiServerInstance::~AiServerInstance: CheckAliveThread stopped.");
+	}
+
+	if (!m_NpcThreadArray.empty())
+	{
+		spdlog::info("AiServerInstance::~AiServerInstance: Shutting down {} NPC threads...", m_NpcThreadArray.size());
+
+		for (CNpcThread* npcThread : m_NpcThreadArray)
+			npcThread->shutdown(false);
+
+		for (CNpcThread* npcThread : m_NpcThreadArray)
+			npcThread->join();
+
+		spdlog::info("AiServerInstance::~AiServerInstance: NPC threads stopped.");
+	}
+
+	if (m_pZoneEventThread != nullptr)
+	{
+		spdlog::info("AiServerInstance::~AiServerInstance: Shutting down ZoneEventThread...");
+
+		m_pZoneEventThread->shutdown();
+
+		spdlog::info("AiServerInstance::~AiServerInstance: ZoneEventThread stopped.");
+	}
+
+	spdlog::info("AiServerInstance::~AiServerInstance: All worker threads stopped, freeing caches.");
+
+	for (MAP* map : m_ZoneArray)
+		delete map;
+	m_ZoneArray.clear();
+
+	delete m_pZoneEventThread;
+	m_pZoneEventThread = nullptr;
+
+	for (CNpcThread* npcThread : m_NpcThreadArray)
+		delete npcThread;
+	m_NpcThreadArray.clear();
+
+	if (m_NpcItem.m_ppItem != nullptr)
+	{
+		for (int i = 0; i < m_NpcItem.m_nRow; i++)
+		{
+			delete[] m_NpcItem.m_ppItem[i];
+			m_NpcItem.m_ppItem[i] = nullptr;
+		}
+
+		delete[] m_NpcItem.m_ppItem;
+		m_NpcItem.m_ppItem = nullptr;
+	}
+
+	for (int i = 0; i < MAX_USER; i++)
+	{
+		delete m_pUser[i];
+		m_pUser[i] = nullptr;
+	}
+
+	while (!m_ZoneNpcList.empty())
+		m_ZoneNpcList.pop_front();
+
+	spdlog::info("AiServerInstance::~AiServerInstance: All resources safely released.");
+
 	ConnectionManager::Destroy();
 
 	assert(s_instance != nullptr);
 	s_instance = nullptr;
 }
 
-bool AiServerInstance::Start()
+bool AiServerInstance::OnStart()
 {
 	// load config
 	GetServerInfoIni();
@@ -111,24 +184,24 @@ bool AiServerInstance::Start()
 		m_pUser[i] = nullptr;
 
 	// Server Start message
-	spdlog::info("AiServerInstance::Start: starting...");
+	spdlog::info("AiServerInstance::OnStart: starting...");
 
 	//----------------------------------------------------------------------
 	//	DB part initialize
 	//----------------------------------------------------------------------
 	if (m_byZone == UNIFY_ZONE)
-		spdlog::info("AiServerInstance::Start: Server Zone: UNIFY");
+		spdlog::info("AiServerInstance::OnStart: Server Zone: UNIFY");
 	else if (m_byZone == KARUS_ZONE)
-		spdlog::info("AiServerInstance::Start: Server Zone: KARUS");
+		spdlog::info("AiServerInstance::OnStart: Server Zone: KARUS");
 	else if (m_byZone == ELMORAD_ZONE)
-		spdlog::info("AiServerInstance::Start: Server Zone: ELMORAD");
+		spdlog::info("AiServerInstance::OnStart: Server Zone: ELMORAD");
 	else if (m_byZone == BATTLE_ZONE)
-		spdlog::info("AiServerInstance::Start: Server Zone: BATTLE");
+		spdlog::info("AiServerInstance::OnStart: Server Zone: BATTLE");
 	
 	//----------------------------------------------------------------------
 	//	Communication Part Init ...
 	//----------------------------------------------------------------------
-	spdlog::info("AiServerInstance::Start: initializing sockets");
+	spdlog::info("AiServerInstance::OnStart: initializing sockets");
 	_socketManager.Init(MAX_SOCKET, 0, 1);
 	_socketManager.AllocateServerSockets<CGameSocket>();
 
@@ -137,37 +210,37 @@ bool AiServerInstance::Start()
 	//----------------------------------------------------------------------
 	if (!GetMagicTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAGIC, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAGIC, closing server");
 		return false;
 	}
 
 	if (!GetMagicType1Data())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE1, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAGIC_TYPE1, closing server");
 		return false;
 	}
 
 	if (!GetMagicType2Data())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE2, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAGIC_TYPE2, closing server");
 		return false;
 	}
 
 	if (!GetMagicType3Data())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE3, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAGIC_TYPE3, closing server");
 		return false;
 	}
 
 	if (!GetMagicType4Data())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE4, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAGIC_TYPE4, closing server");
 		return false;
 	}
 
 	if (!GetMagicType7Data())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAGIC_TYPE7, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAGIC_TYPE7, closing server");
 		return false;
 	}
 
@@ -176,37 +249,37 @@ bool AiServerInstance::Start()
 	//----------------------------------------------------------------------
 	if (!GetNpcItemTable())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load K_MONSTER_ITEM, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load K_MONSTER_ITEM, closing server");
 		return false;
 	}
 
 	if (!GetMakeWeaponItemTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAKE_WEAPON, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAKE_WEAPON, closing server");
 		return false;
 	}
 
 	if (!GetMakeDefensiveItemTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAKE_DEFENSIVE, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAKE_DEFENSIVE, closing server");
 		return false;
 	}
 
 	if (!GetMakeGradeItemTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAKE_ITEM_GRADECODE, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAKE_ITEM_GRADECODE, closing server");
 		return false;
 	}
 
 	if (!GetMakeRareItemTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAKE_ITEM_LARECODE, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAKE_ITEM_LARECODE, closing server");
 		return false;
 	}
 
 	if (!GetMakeItemGroupTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load MAKE_ITEM_GROUP, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load MAKE_ITEM_GROUP, closing server");
 		return false;
 	}
 
@@ -221,14 +294,14 @@ bool AiServerInstance::Start()
 	// Monster 특성치 테이블 Load
 	if (!GetMonsterTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load K_MONSTER, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load K_MONSTER, closing server");
 		return false;
 	}
 
 	// NPC 특성치 테이블 Load
 	if (!GetNpcTableData())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load K_NPC, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load K_NPC, closing server");
 		return false;
 	}
 
@@ -237,13 +310,13 @@ bool AiServerInstance::Start()
 	//----------------------------------------------------------------------
 	if (!MapFileLoad())
 	{
-		spdlog::error("AiServerInstance::Start: failed to load maps, closing server");
+		spdlog::error("AiServerInstance::OnStart: failed to load maps, closing server");
 		return false;
 	}
 
 	if (!CreateNpcThread())
 	{
-		spdlog::error("AiServerInstance::Start: CreateNpcThread failed, closing server");
+		spdlog::error("AiServerInstance::OnStart: CreateNpcThread failed, closing server");
 		return false;
 	}
 
@@ -268,120 +341,14 @@ bool AiServerInstance::Start()
 
 	//::ResumeThread( _socketManager.m_hAcceptThread );
 
-	spdlog::info("AiServerInstance::Start: AIServer successfully initialized");
+	spdlog::info("AiServerInstance::OnStart: AIServer successfully initialized");
 
 	return true;
 }
 
-void AiServerInstance::Shutdown()
-{
-	spdlog::info("AiServerInstance::Shutdown: Graceful shutdown triggered, releasing resources.");
-	_socketManager.Shutdown();
-	spdlog::info("AiServerInstance::Shutdown: SocketManager stopped.");
-
-	// wait for all of these threads to be fully shut down.
-	spdlog::info("AiServerInstance::Shutdown: Waiting for worker threads to fully shut down.");
-
-	if (_checkAliveThread != nullptr)
-	{
-		spdlog::info("AiServerInstance::Shutdown: Shutting down CheckAliveThread...");
-
-		_checkAliveThread->shutdown();
-
-		spdlog::info("AiServerInstance::Shutdown: CheckAliveThread stopped.");
-	}
-	
-	if (!m_NpcThreadArray.empty())
-	{
-		spdlog::info("AiServerInstance::Shutdown: Shutting down {} NPC threads...", m_NpcThreadArray.size());
-
-		for (CNpcThread* npcThread : m_NpcThreadArray)
-			npcThread->shutdown(false);
-
-		for (CNpcThread* npcThread : m_NpcThreadArray)
-			npcThread->join();
-
-		spdlog::info("AiServerInstance::Shutdown: NPC threads stopped.");
-	}
-	
-	if (m_pZoneEventThread != nullptr)
-	{
-		spdlog::info("AiServerInstance::Shutdown: Shutting down ZoneEventThread...");
-
-		m_pZoneEventThread->shutdown();
-
-		spdlog::info("AiServerInstance::Shutdown: ZoneEventThread stopped.");
-	}
-
-	spdlog::info("AiServerInstance::Shutdown: All worker threads stopped, freeing caches.");
-	
-	// DB테이블 삭제 부분
-
-	// Map(Zone) Array Delete...
-	for (MAP* map : m_ZoneArray)
-		delete map;
-	m_ZoneArray.clear();
-
-	delete m_pZoneEventThread;
-	m_pZoneEventThread = nullptr;
-
-	// NpcTable Array Delete
-	m_MonTableMap.DeleteAllData();
-	m_NpcTableMap.DeleteAllData();
-
-	// NpcThread Array Delete
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-		delete npcThread;
-	m_NpcThreadArray.clear();
-
-	// Item Array Delete
-	if (m_NpcItem.m_ppItem != nullptr)
-	{
-		for (int i = 0; i < m_NpcItem.m_nRow; i++)
-		{
-			delete[] m_NpcItem.m_ppItem[i];
-			m_NpcItem.m_ppItem[i] = nullptr;
-		}
-		delete[] m_NpcItem.m_ppItem;
-		m_NpcItem.m_ppItem = nullptr;
-	}
-
-	m_MakeWeaponTableMap.DeleteAllData();
-	m_MakeDefensiveTableMap.DeleteAllData();
-	m_MakeGradeItemArray.DeleteAllData();
-	m_MakeItemRareCodeTableMap.DeleteAllData();
-
-	// MagicTable Array Delete
-	m_MagicTableMap.DeleteAllData();
-	m_MagicType1TableMap.DeleteAllData();
-	m_MagicType2TableMap.DeleteAllData();
-	m_MagicType3TableMap.DeleteAllData();
-	m_MagicType4TableMap.DeleteAllData();
-	m_MagicType7TableMap.DeleteAllData();
-	
-	// Npc Array Delete
-	m_NpcMap.DeleteAllData();
-
-	// User Array Delete
-	for (int i = 0; i < MAX_USER; i++)
-	{
-		delete m_pUser[i];
-		m_pUser[i] = nullptr;
-	}
-
-	// Party Array Delete 
-	m_PartyMap.DeleteAllData();
-
-	while (!m_ZoneNpcList.empty())
-		m_ZoneNpcList.pop_front();
-
-	spdlog::info("AiServerInstance::Shutdown: All resources safely released.");
-}
-
 void AiServerInstance::thread_loop()
 {
-	// server startup failed
-	if (!Start())
+	if (!OnStart())
 		return;
 		
 	while (_canTick)
