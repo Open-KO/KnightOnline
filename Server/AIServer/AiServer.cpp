@@ -46,6 +46,7 @@ int main()
 
 	// We keep the main() thread alive to catch interrupt signals and call shutdown
 	appThread.join();
+	_appThread = nullptr;
 
 	return EXIT_SUCCESS;
 }

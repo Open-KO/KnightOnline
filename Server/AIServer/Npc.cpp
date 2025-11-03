@@ -5746,19 +5746,7 @@ __Vector3 CNpc::GetDirection(__Vector3 vStart, __Vector3 vEnd)
 // sungyong 2002.05.22
 void CNpc::SendAll(const char* pBuf, int nLength)
 {
-	if (nLength <= 0
-		|| nLength > sizeof(_SEND_DATA::pBuf))
-		return;
-
-	_SEND_DATA* pNewData = new _SEND_DATA;
-	if (pNewData == nullptr)
-		return;
-
-	pNewData->sCurZone = m_sCurZone;
-	pNewData->sLength = nLength;
-	memcpy(pNewData->pBuf, pBuf, nLength);
-
-	m_pMain->_socketManager.QueueSendData(pNewData);
+	m_pMain->Send(pBuf, nLength, m_sCurZone);
 }
 // ~sungyong 2002.05.22
 

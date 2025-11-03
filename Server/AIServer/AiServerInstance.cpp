@@ -1338,8 +1338,17 @@ void AiServerInstance::SendCompressedData(int nZone)
 }
 
 // sungyong 2002.05.23
-int AiServerInstance::Send(char* pData, int length, int nZone)
+int AiServerInstance::Send(const char* pData, int length, int nZone)
 {
+	// Not connected to any servers.
+	// No point queueing updates, the server will be fully synced upon connection.
+	if (!m_bFirstServerFlag)
+		return 0;
+
+	if (length <= 0
+		|| length > sizeof(_SEND_DATA::pBuf))
+		return 0;
+
 	_SEND_DATA* pNewData = new _SEND_DATA;
 	if (pNewData == nullptr)
 		return 0;

@@ -218,10 +218,6 @@ void CUser::SendMagicAttackResult(int tuid, uint8_t result, int16_t sDamage, int
 // sungyong 2002.05.22
 void CUser::SendAll(const char* pBuf, int nLength)
 {
-	if (nLength <= 0
-		|| nLength > sizeof(_SEND_DATA::pBuf))
-		return;
-
 	if (m_iUserId < 0
 		|| m_iUserId >= MAX_USER)
 	{
@@ -234,15 +230,7 @@ void CUser::SendAll(const char* pBuf, int nLength)
 	if (pMap == nullptr)
 		return;
 
-	_SEND_DATA* pNewData = new _SEND_DATA;
-	if (pNewData == nullptr)
-		return;
-
-	pNewData->sCurZone = m_curZone;
-	pNewData->sLength = nLength;
-	memcpy(pNewData->pBuf, pBuf, nLength);
-
-	m_pMain->_socketManager.QueueSendData(pNewData);
+	m_pMain->Send(pBuf, nLength, m_curZone);
 }
 // ~sungyong 2002.05.22
 
