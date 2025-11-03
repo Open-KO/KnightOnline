@@ -7,8 +7,7 @@
 #include <signal.h>
 #include <spdlog/spdlog.h>
 
-AIServerLogger _logger;
-AiServerInstance* appThread;
+AiServerInstance* _appThread = nullptr;
 
 void signalHandler(int signalNumber)
 {
@@ -19,8 +18,11 @@ void signalHandler(int signalNumber)
 	case SIGABRT:
 	case SIGTERM:
 		// Shutdown the application thread
-		if (appThread != nullptr)
-			appThread->shutdown();
+		if (_appThread != nullptr)
+		{
+			_appThread->shutdown(false);
+			_appThread = nullptr;
+		}
 		break;
 	}
 	
@@ -29,37 +31,21 @@ void signalHandler(int signalNumber)
 
 int main()
 {
-	int retCode = EXIT_SUCCESS;
+	AIServerLogger logger;
+
 	// catch interrupt signals for graceful shutdowns.
 	signal(SIGINT, signalHandler);
 	signal(SIGABRT, signalHandler);
 	signal(SIGTERM, signalHandler);
-	
+
 	// Logger config/setup is handled by the server instance.
 	// We just instantiate it early for signal handling.
-	appThread = new AiServerInstance(_logger);
-	appThread->start();
+	AiServerInstance appThread(logger);
+	_appThread = &appThread;
+	appThread.start();
 
-	try
-	{
-		// We keep the main() thread alive to catch interrupt signals and call shutdown
-		while (appThread != nullptr && !appThread->IsShutdown())
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-	}
-	catch (const std::exception& ex)
-	{
-		spdlog::error("AiServer::main: Exception caught: {}", ex.what());
-		retCode = EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		spdlog::error("AiServer::main: Unknown exception caught");
-		retCode = EXIT_FAILURE;
-	}
+	// We keep the main() thread alive to catch interrupt signals and call shutdown
+	appThread.join();
 
-	delete appThread;
-	
-	exit(retCode);
+	return EXIT_SUCCESS;
 }

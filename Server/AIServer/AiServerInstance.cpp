@@ -39,8 +39,8 @@ using namespace db;
 
 /////////////////////////////////////////////////////////////////////////////
 // AiServerInstance dialog
-AiServerInstance::AiServerInstance(AIServerLogger logger) :
-	_logger(logger)
+AiServerInstance::AiServerInstance(AIServerLogger& logger)
+	: _logger(logger)
 {
 	m_iYear = 0;
 	m_iMonth = 0;
@@ -68,6 +68,7 @@ AiServerInstance::AiServerInstance(AIServerLogger logger) :
 
 AiServerInstance::~AiServerInstance()
 {
+	Shutdown();
 	ConnectionManager::Destroy();
 }
 
@@ -276,18 +277,36 @@ void AiServerInstance::Shutdown()
 	spdlog::info("AiServerInstance::Shutdown: Waiting for worker threads to fully shut down.");
 
 	if (_checkAliveThread != nullptr)
-		_checkAliveThread->shutdown();
-	spdlog::info("AiServerInstance::Shutdown: CheckAliveThread stopped.");
-	
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-		npcThread->shutdown();
+	{
+		spdlog::info("AiServerInstance::Shutdown: Shutting down CheckAliveThread...");
 
-	spdlog::info("AiServerInstance::Shutdown: NPC Threads stopped.");
+		_checkAliveThread->shutdown();
+
+		spdlog::info("AiServerInstance::Shutdown: CheckAliveThread stopped.");
+	}
+	
+	if (!m_NpcThreadArray.empty())
+	{
+		spdlog::info("AiServerInstance::Shutdown: Shutting down {} NPC threads...", m_NpcThreadArray.size());
+
+		for (CNpcThread* npcThread : m_NpcThreadArray)
+			npcThread->shutdown(false);
+
+		for (CNpcThread* npcThread : m_NpcThreadArray)
+			npcThread->join();
+
+		spdlog::info("AiServerInstance::Shutdown: NPC threads stopped.");
+	}
 	
 	if (m_pZoneEventThread != nullptr)
+	{
+		spdlog::info("AiServerInstance::Shutdown: Shutting down ZoneEventThread...");
+
 		m_pZoneEventThread->shutdown();
 
-	spdlog::info("AiServerInstance::Shutdown: ZoneEventThread stopped.");
+		spdlog::info("AiServerInstance::Shutdown: ZoneEventThread stopped.");
+	}
+
 	spdlog::info("AiServerInstance::Shutdown: All worker threads stopped, freeing caches.");
 	
 	// DB테이블 삭제 부분
@@ -355,12 +374,9 @@ void AiServerInstance::Shutdown()
 
 void AiServerInstance::thread_loop()
 {
+	// server startup failed
 	if (!Start())
-	{
-		// server startup failed
-		shutdown();
 		return;
-	}
 		
 	while (_canTick)
 	{
@@ -368,11 +384,6 @@ void AiServerInstance::thread_loop()
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
-}
-
-void AiServerInstance::before_shutdown() 
-{
-	Shutdown();
 }
 
 /// \brief attempts to listen on the port associated with m_byZone

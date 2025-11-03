@@ -6,7 +6,7 @@
 Thread::Thread()
 {
 	_canTick = false;
-	_isShutdown = false;
+	_isShutdown = true;
 }
 
 void Thread::start()

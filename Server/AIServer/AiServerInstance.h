@@ -81,7 +81,7 @@ public:
 	MAP* GetMapByIndex(int iZoneIndex) const;
 	MAP* GetMapByID(int iZoneID) const;
 
-	AiServerInstance(AIServerLogger logger);	// standard constructor
+	AiServerInstance(AIServerLogger& logger);
 	~AiServerInstance();
 
 	NpcMap						m_NpcMap;
@@ -144,9 +144,6 @@ protected:
 	/// \brief The main thread loop for the server instance
 	void thread_loop() override;
 
-	/// \brief Called when the thread is being shut down, used to gracefully shut down connections/resources
-	void before_shutdown() override;
-
 	/// \brief attempts to listen on the port associated with m_byZone
 	/// \see m_byZone
 	/// \returns true when successful, otherwise false
@@ -166,7 +163,7 @@ private:
 
 	uint8_t				m_byZone;
 
-	AIServerLogger		_logger;
+	AIServerLogger&		_logger;
 
 	std::queue<std::wstring>		_listBoxQueue;
 	std::mutex						_listBoxQueueMutex;
