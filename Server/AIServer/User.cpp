@@ -45,17 +45,15 @@ extern std::mutex g_region_mutex;
 
 CUser::CUser()
 {
+	m_pMain = AiServerInstance::instance();
 }
 
 CUser::~CUser()
 {
 }
 
-void CUser::Initialize(AiServerInstance* instance)
+void CUser::Initialize()
 {
-	m_pMain = instance;
-
-	m_MagicProcess.m_pMain = m_pMain;
 	m_MagicProcess.m_pSrcUser = this;
 
 	memset(m_strUserID, 0, sizeof(m_strUserID));// 캐릭터의 이름
@@ -1063,32 +1061,4 @@ void CUser::HealAreaCheck(int rx, int rz)
 
 	delete[] pNpcIDList;
 	pNpcIDList = nullptr;
-}
-
-void CUser::WriteUserLog()
-{
-	for (const _USERLOG* pUserLog : m_UserLogList)
-	{
-		if (pUserLog->byFlag == USER_LOGIN)
-			spdlog::get(logger::AIServerUser)->info("Login: level={}, charId={}",
-				pUserLog->byLevel, pUserLog->strUserID);
-		else if (pUserLog->byFlag == USER_LOGOUT)
-			spdlog::get(logger::AIServerUser)->info("Logout: level={}, charId={}",
-				pUserLog->byLevel, pUserLog->strUserID);
-		else if (pUserLog->byFlag == USER_LEVEL_UP)
-			spdlog::get(logger::AIServerUser)->info("LevelUp: level={}, charId={}",
-				pUserLog->byLevel, pUserLog->strUserID);
-	}
-
-	InitUserLog();
-}
-
-void CUser::InitUserLog()
-{
-	while (!m_UserLogList.empty())
-	{
-		delete m_UserLogList.front();
-		m_UserLogList.pop_front();
-	}
-	m_UserLogList.clear();
 }

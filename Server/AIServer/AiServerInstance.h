@@ -10,17 +10,13 @@
 
 #include "Extern.h"			// 전역 객체
 
+#include <shared/Thread.h>
+
 #include <shared-server/logger.h>
 #include <shared-server/STLMap.h>
 
 #include <vector>
 #include <list>
-#include <shared/Thread.h>
-
-namespace recordset_loader
-{
-	struct Error;
-}
 
 class AIServerLogger : public logger::Logger
 {
@@ -63,11 +59,15 @@ class AiServerInstance : public Thread
 {
 // Construction
 public:
+	static AiServerInstance* instance()
+	{
+		return s_instance;
+	}
+
 	void GameServerAcceptThread();
 	bool AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number);
 	void AllNpcInfo();
 	CUser* GetUserPtr(int nid);
-	CNpc* GetNpcPtr(const char* pNpcName);
 	int GetZoneIndex(int zoneId) const;
 	int GetServerNumber(int zoneId) const;
 
@@ -113,7 +113,7 @@ public:
 	// 전역 객체 변수
 	long			m_TotalNPC;			// DB에있는 총 수
 	long			m_CurrentNPCError;	// 세팅에서 실패한 수
-	long			m_CurrentNPC;		// 현재 게임상에서 실제로 셋팅된 수
+	std::atomic<long>	m_CurrentNPC;		// 현재 게임상에서 실제로 셋팅된 수
 	int16_t			m_sTotalMap;		// Zone 수 
 	int16_t			m_sMapEventNpc;		// Map에서 읽어들이는 event npc 수
 
@@ -167,10 +167,11 @@ private:
 
 	std::unique_ptr<TimerThread>	_checkAliveThread;
 
+	static AiServerInstance* s_instance;
+
 	void StartNpcThreads();
 	bool LoadNpcPosTable(std::vector<model::NpcPos*>& rows);
 	bool CreateNpcThread();
-	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);
 	bool GetMagicTableData();
 	bool GetMagicType1Data();
 	bool GetMagicType2Data();

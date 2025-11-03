@@ -4,9 +4,10 @@
 #include "NpcThread.h"
 #include "AiServerInstance.h"
 
-ZoneEventThread::ZoneEventThread(AiServerInstance* main)
-	: Thread(), _main(main)
+ZoneEventThread::ZoneEventThread()
+	: Thread()
 {
+	_main = AiServerInstance::instance();
 }
 
 void ZoneEventThread::thread_loop()

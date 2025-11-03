@@ -14,9 +14,6 @@
 #include "Extern.h"
 
 #include <shared-server/STLMap.h>
-#include <list>
-
-typedef std::list <_USERLOG*>		UserLogList;
 
 class AiServerInstance;
 class CUser
@@ -24,8 +21,6 @@ class CUser
 public:
 	AiServerInstance*	m_pMain;
 	CMagicProcess		m_MagicProcess;
-
-	UserLogList			m_UserLogList;
 
 	// 필요한 정보 변수만 선언,,,
 	// 캐릭터 기본 속성
@@ -90,10 +85,8 @@ public:
 	int16_t	m_sMagicAmountRightHand;        // The amount of magic item in user's left hand
 
 public:
-	void InitUserLog();
-	void WriteUserLog();
 	int16_t GetMagicDamage(int damage, int16_t tid);
-	void Initialize(AiServerInstance* instance);
+	void Initialize();
 	void InitNpcAttack();
 	void Attack(int sid, int tid);	// ATTACK
 	void SetDamage(int damage, int tid);				// user damage

@@ -29,9 +29,9 @@ CMapInfo::~CMapInfo()
 {
 }
 
-MAP::MAP(AiServerInstance* instance)
+MAP::MAP()
 {
-	m_pMain = instance;
+	m_pMain = AiServerInstance::instance();
 	m_nMapSize = 0;
 	m_fUnitDist = 0.0f;
 	m_fHeight = nullptr;
@@ -798,7 +798,7 @@ CRoomEvent* MAP::SetRoomEvent(int number)
 		return nullptr;
 	}
 
-	pEvent = new CRoomEvent(m_pMain);
+	pEvent = new CRoomEvent();
 	pEvent->m_iZoneNumber = m_nZoneNumber;
 	pEvent->m_sRoomNumber = number;
 	if (!m_arRoomEventArray.PutData(pEvent->m_sRoomNumber, pEvent))

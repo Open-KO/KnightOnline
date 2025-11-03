@@ -37,11 +37,14 @@ import AIServerBinder;
 
 using namespace db;
 
-/////////////////////////////////////////////////////////////////////////////
-// AiServerInstance dialog
+AiServerInstance* AiServerInstance::s_instance = nullptr;
+
 AiServerInstance::AiServerInstance(AIServerLogger& logger)
 	: _logger(logger)
 {
+	assert(s_instance == nullptr);
+	s_instance = this;
+
 	m_iYear = 0;
 	m_iMonth = 0;
 	m_iDate = 0;
@@ -70,6 +73,9 @@ AiServerInstance::~AiServerInstance()
 {
 	Shutdown();
 	ConnectionManager::Destroy();
+
+	assert(s_instance != nullptr);
+	s_instance = nullptr;
 }
 
 bool AiServerInstance::Start()
@@ -124,7 +130,7 @@ bool AiServerInstance::Start()
 	//----------------------------------------------------------------------
 	spdlog::info("AiServerInstance::Start: initializing sockets");
 	_socketManager.Init(MAX_SOCKET, 0, 1);
-	_socketManager.AllocateServerSockets<CGameSocket>(this);
+	_socketManager.AllocateServerSockets<CGameSocket>();
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table
@@ -404,7 +410,7 @@ bool AiServerInstance::ListenByZone()
 		return false;
 	}
 
-	spdlog::info(fmt::format("AiServerInstance::ListenByZone: Listening on 0.0.0.0:{}", port));
+	spdlog::info("AiServerInstance::ListenByZone: Listening on 0.0.0.0:{}", port);
 	return true;
 }
 
@@ -430,19 +436,14 @@ int AiServerInstance::GetListenPortByZone() const
 	}
 }
 
-void AiServerInstance::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
-{
-	spdlog::error(fmt::format("AiServerInstance::ReportTableLoadError: {} failed: {}",
-		source, err.Message));
-}
-
 //	Magic Table 을 읽는다.
 bool AiServerInstance::GetMagicTableData()
 {
 	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMagicTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 	
@@ -455,7 +456,8 @@ bool AiServerInstance::GetMakeWeaponItemTableData()
 	recordset_loader::STLMap loader(m_MakeWeaponTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMakeWeaponItemTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -469,7 +471,8 @@ bool AiServerInstance::GetMakeDefensiveItemTableData()
 		m_MakeDefensiveTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMakeDefensiveItemTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -482,7 +485,8 @@ bool AiServerInstance::GetMakeGradeItemTableData()
 	recordset_loader::STLMap loader(m_MakeGradeItemArray);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMakeGradeItemTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -495,7 +499,8 @@ bool AiServerInstance::GetMakeRareItemTableData()
 	recordset_loader::STLMap loader(m_MakeItemRareCodeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMakeRareItemTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -508,7 +513,8 @@ bool AiServerInstance::GetMakeItemGroupTableData()
 	recordset_loader::STLMap loader(m_MakeItemGroupTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMakeItemGroupTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -528,7 +534,8 @@ bool AiServerInstance::GetNpcItemTable()
 	recordset_loader::Vector<ModelType> loader(rows);
 	if (!loader.Load_ForbidEmpty(true))
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetNpcItemTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -576,7 +583,8 @@ bool AiServerInstance::GetMonsterTableData()
 		model::Monster> loader(tableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMonsterTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -601,7 +609,8 @@ bool AiServerInstance::GetNpcTableData()
 	recordset_loader::STLMap loader(tableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetNpcTableData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -667,7 +676,7 @@ bool AiServerInstance::CreateNpcThread()
 	}
 
 	if (m_pZoneEventThread == nullptr)
-		m_pZoneEventThread = new ZoneEventThread(this);
+		m_pZoneEventThread = new ZoneEventThread();
 	
 	spdlog::info("AiServerInstance::CreateNpcThread: Monsters/NPCs loaded: {}", m_TotalNPC);
 	return true;
@@ -680,7 +689,8 @@ bool AiServerInstance::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 	recordset_loader::Vector<model::NpcPos> loader(rows);
 	if (!loader.Load_ForbidEmpty(true))
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::LoadNpcPosTable: failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -702,7 +712,7 @@ bool AiServerInstance::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 			{
 				for (int j = 0; j < nMonsterNumber; j++)
 				{
-					CNpc* pNpc = new CNpc(this);
+					CNpc* pNpc = new CNpc();
 					pNpc->m_sNid = nSerial++;						// 서버 내에서의 고유 번호
 					pNpc->m_sSid = (int16_t) row->NpcId;				// MONSTER(NPC) Serial ID
 
@@ -804,15 +814,9 @@ bool AiServerInstance::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						if (row->PathPointCount == 0
 							|| !row->Path.has_value())
 						{
-							std::string error = fmt::format("AiServerInstance::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
-								row->ZoneId,
-								pNpc->m_sNid + NPC_BAND,
-								pNpc->m_sSid,
-								pNpc->m_strName,
-								pNpc->m_byMoveType,
-								pNpc->m_sMaxPathCount);
-
-							spdlog::error(error);
+							spdlog::error(
+								"AiServerInstance::LoadNpcPosTable: NPC expects path to be set [zoneId={} serial={}, npcId={}, npcName={}, moveType={}, pathCount={}]",
+								row->ZoneId, pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byMoveType, pNpc->m_sMaxPathCount);
 							return false;
 						}
 					}
@@ -829,16 +833,9 @@ bool AiServerInstance::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						const std::string& path = *row->Path;
 						if ((row->PathPointCount * CharactersPerPoint) > path.size())
 						{
-							std::string error = fmt::format("LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
-								row->ZoneId,
-								row->PathPointCount,
-								pNpc->m_sNid + NPC_BAND,
-								pNpc->m_sSid,
-								pNpc->m_strName.c_str(),
-								pNpc->m_byMoveType,
-								pNpc->m_sMaxPathCount);
-
-							spdlog::error(error);
+							spdlog::error(
+								"LoadNpcPosTable: NPC expects a larger path for this PathPointCount [zoneId={} serial={} npcId={} npcName={} moveType={}, pathCount={}]",
+								row->ZoneId, row->PathPointCount, pNpc->m_sNid + NPC_BAND, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byMoveType, pNpc->m_sMaxPathCount);
 							return false;
 						}
 
@@ -886,7 +883,8 @@ bool AiServerInstance::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 
 					if (pMap == nullptr)
 					{
-						spdlog::error("AiServerInstance::LoadNpcPosTable: NPC invalid zone [npcId:{}, npcZoneId:{}]", pNpc->m_sSid, pNpc->m_sCurZone);
+						spdlog::error("AiServerInstance::LoadNpcPosTable: NPC invalid zone [npcId:{}, npcZoneId:{}]",
+							pNpc->m_sSid, pNpc->m_sCurZone);
 						return false;
 					}
 
@@ -1014,19 +1012,19 @@ bool AiServerInstance::MapFileLoad()
 			std::ifstream file(mapPath, std::ios::in | std::ios::binary);
 			if (!file)
 			{
-				spdlog::error(fmt::format("AiServerInstance::MapFileLoad: Failed to open file: {}",
-					mapPath.string()));
+				spdlog::error("AiServerInstance::MapFileLoad: Failed to open file: {}",
+					mapPath.string());
 				return;
 			}
 
-			MAP* pMap = new MAP(this);
+			MAP* pMap = new MAP();
 			pMap->m_nServerNo = row.ServerId;
 			pMap->m_nZoneNumber = row.ZoneId;
 
 			if (!pMap->LoadMap(file))
 			{
-				spdlog::error(fmt::format("AiServerInstance::MapFileLoad: Failed to load map file: {}",
-					mapPath.string()));
+				spdlog::error("AiServerInstance::MapFileLoad: Failed to load map file: {}",
+					mapPath.string());
 				delete pMap;
 				return;
 			}
@@ -1038,8 +1036,8 @@ bool AiServerInstance::MapFileLoad()
 			{
 				if (!pMap->LoadRoomEvent(row.RoomEvent))
 				{
-					spdlog::error(fmt::format("AiServerInstance::MapFileLoad: LoadRoomEvent failed: {}",
-						mapPath.string()));
+					spdlog::error("AiServerInstance::MapFileLoad: LoadRoomEvent failed: {}",
+						mapPath.string());
 					delete pMap;
 					return;
 				}
@@ -1057,7 +1055,8 @@ bool AiServerInstance::MapFileLoad()
 
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::MapFileLoad: load failed (ZONE_INFO) - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1223,11 +1222,9 @@ void AiServerInstance::CheckAliveTest()
 		size = pSocket->Send(send_buff, send_index);
 		if (size > 0)
 		{
-			++m_sErrorSocketCount;
-			if (m_sErrorSocketCount == 10)
-			{
+			if (++m_sErrorSocketCount == 10)
 				spdlog::debug("AiServerInstance::CheckAliveTest: all ebenezer sockets are connected");
-			}
+
 			count++;
 		}
 		//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
@@ -1393,19 +1390,6 @@ void AiServerInstance::SyncTest()
 	}
 }
 
-CNpc* AiServerInstance::GetNpcPtr(const char* pNpcName)
-{
-	for (const auto& [_, pNpc] : m_NpcMap)
-	{
-		if (pNpc != nullptr
-			&& strcmp(pNpc->m_strName.c_str(), pNpcName) == 0)
-			return pNpc;
-	}
-
-	spdlog::error("AiServerInstance::GetNpcPtr: failed to find npc with name: {}", pNpcName);
-	return nullptr;
-}
-
 void AiServerInstance::TestCode()
 {
 	//InitTrigonometricFunction();
@@ -1432,7 +1416,8 @@ bool AiServerInstance::GetMagicType1Data()
 	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMagicType1Data: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1445,7 +1430,8 @@ bool AiServerInstance::GetMagicType2Data()
 	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMagicType2Data: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1458,7 +1444,8 @@ bool AiServerInstance::GetMagicType3Data()
 	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMagicType3Data: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1471,7 +1458,8 @@ bool AiServerInstance::GetMagicType4Data()
 	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMagicType4Data: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1484,7 +1472,8 @@ bool AiServerInstance::GetMagicType7Data()
 	recordset_loader::STLMap loader(m_MagicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("AiServerInstance::GetMagicType7Data: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1543,7 +1532,7 @@ bool AiServerInstance::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 	bFindNpcTable = true;
 
-	CNpc* pNpc = new CNpc(this);
+	CNpc* pNpc = new CNpc();
 
 	pNpc->m_sNid = m_sMapEventNpc++;				// 서버 내에서의 고유 번호
 	pNpc->m_sSid = (int16_t) pEvent->sIndex;			// MONSTER(NPC) Serial ID

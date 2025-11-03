@@ -6,7 +6,7 @@ class AiServerInstance;
 class ZoneEventThread : public Thread
 {
 public:
-	ZoneEventThread(AiServerInstance* main);
+	ZoneEventThread();
 	void thread_loop() override;
 
 protected:

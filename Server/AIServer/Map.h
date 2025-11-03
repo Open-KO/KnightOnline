@@ -59,7 +59,7 @@ public:
 	int16_t				m_sKarusRoom;		// karus의 성갯수
 	int16_t				m_sElmoradRoom;		// elmorad의 성갯수
 	
-	MAP(AiServerInstance* instance);
+	MAP();
 	virtual ~MAP();
 
 	bool LoadMap(std::istream& fs);

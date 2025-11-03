@@ -357,7 +357,7 @@ public:
 	int16_t m_sThreadNumber;			// 자신이 속한 스레드의 번호
 
 public:
-	CNpc(AiServerInstance* instance);
+	CNpc();
 	virtual ~CNpc();
 
 	void Load(const model::Npc* pNpcTable, bool transformSpeeds);

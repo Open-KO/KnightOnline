@@ -45,7 +45,7 @@ public:
 	void ClearData();
 	_PathNode* ReturnBestNode();
 	_PathNode* FindPath(int start_x, int start_y, int dest_x, int dest_y);
-	CPathFind(AiServerInstance* instance);
+	CPathFind();
 	virtual ~CPathFind();
 
 	void Push(_PathNode* node);

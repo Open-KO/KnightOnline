@@ -14,7 +14,7 @@
 
 CNpcMagicProcess::CNpcMagicProcess()
 {
-	m_pMain = nullptr;
+	m_pMain = AiServerInstance::instance();
 	m_pSrcNpc = nullptr;
 	m_bMagicState = NONE;
 }

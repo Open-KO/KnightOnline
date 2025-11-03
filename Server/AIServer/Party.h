@@ -28,8 +28,6 @@ public:
 	CParty();
 	virtual ~CParty();
 
-	void Initialize(AiServerInstance* instance);
-
 	void PartyDelete(char* pBuf);
 	void PartyRemove(char* pBuf);
 	void PartyInsert(char* pBuf);

@@ -18,13 +18,13 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPathFind::CPathFind(AiServerInstance* instance)
+CPathFind::CPathFind()
 {
 	m_pStack = (STACK*) calloc(1, sizeof(STACK));
 	m_pOpen = nullptr;
 	m_pClosed = nullptr;
 	m_pMap = nullptr;
-	m_pMain = instance;
+	m_pMain = AiServerInstance::instance();
 }
 
 CPathFind::~CPathFind()

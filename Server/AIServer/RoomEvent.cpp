@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////
 extern std::mutex g_region_mutex;
 
-CRoomEvent::CRoomEvent(AiServerInstance* instance)
+CRoomEvent::CRoomEvent()
 {
 	m_iZoneNumber = 0;
 	m_sRoomNumber = 0;
@@ -29,7 +29,7 @@ CRoomEvent::CRoomEvent(AiServerInstance* instance)
 	m_iEndMaxZ = 0;
 	m_byCheck = 0;
 	m_byRoomType = 0;
-	m_pMain = instance;
+	m_pMain = AiServerInstance::instance();
 
 	Initialize();
 }

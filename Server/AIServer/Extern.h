@@ -13,10 +13,3 @@ struct _PARTY_GROUP
 			uid[i] = -1;
 	}
 };
-
-struct _USERLOG
-{
-	uint8_t  byFlag;	// 
-	uint8_t  byLevel;
-	char  strUserID[MAX_ID_SIZE + 1];		// 아이디(캐릭터 이름)
-};

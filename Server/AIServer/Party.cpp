@@ -15,17 +15,12 @@ extern std::mutex g_region_mutex;
 
 CParty::CParty()
 {
-	m_pMain = nullptr;
+	m_pMain = AiServerInstance::instance();
 }
 
 CParty::~CParty()
 {
 	m_pMain = nullptr;
-}
-
-void CParty::Initialize(AiServerInstance* instance)
-{
-	m_pMain = instance;
 }
 
 void CParty::PartyProcess(char* pBuf)

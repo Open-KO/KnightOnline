@@ -133,9 +133,10 @@ inline bool CNpc::SetUid(float x, float z, int id)
 	return true;
 }
 
-CNpc::CNpc(AiServerInstance* instance) :
-	m_vPathFind(instance)
+CNpc::CNpc()
 {
+	m_pMain = AiServerInstance::instance();
+
 	m_NpcState = NPC_LIVE;
 	m_byGateOpen = GATE_CLOSE;
 	m_byObjectType = NORMAL_OBJECT;
@@ -186,8 +187,6 @@ CNpc::CNpc(AiServerInstance* instance) :
 	InitUserList();
 	InitMagicValuable();
 
-	m_pMain = instance;
-	m_MagicProcess.m_pMain = m_pMain;
 	m_MagicProcess.m_pSrcNpc = this;
 
 	for (int i = 0; i < NPC_MAX_PATH_LIST; i++)
@@ -1231,16 +1230,14 @@ bool CNpc::SetLive()
 		NpcTypeParser();
 		m_bFirstLive = false;
 
-		InterlockedIncrement(&m_pMain->m_CurrentNPC);
+		++m_pMain->m_CurrentNPC;
 
 		//TRACE(_T("Npc - SerLive :  cur = %d\n"), m_pMain->m_CurrentNPC);
 
 		// 몬스터 총 수와 초기화한 몬스터의 수가 같다면
 		if (m_pMain->m_TotalNPC == m_pMain->m_CurrentNPC)
 		{
-			std::string logstr = fmt::format("All NPCs initialized [count={}]",
-				m_pMain->m_CurrentNPC);
-			spdlog::info("Npc::SetLive: {}", logstr);
+			spdlog::info("Npc::SetLive: All NPCs initialized [count={}]", m_pMain->m_TotalNPC);
 			m_pMain->GameServerAcceptThread();				// 게임서버 Accept
 		}
 		//TRACE(_T("Npc - SerLive : CurrentNpc = %d\n"), m_pMain->m_CurrentNPC);

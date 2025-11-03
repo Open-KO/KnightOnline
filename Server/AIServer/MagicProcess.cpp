@@ -20,7 +20,7 @@ extern std::mutex g_region_mutex;
 
 CMagicProcess::CMagicProcess()
 {
-	m_pMain = nullptr;
+	m_pMain = AiServerInstance::instance();
 	m_pSrcUser = nullptr;
 	m_bMagicState = NONE;
 }
