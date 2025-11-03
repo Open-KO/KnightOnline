@@ -86,14 +86,15 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 	}
 	else
 	{
-		// Send currently in progress.
-		// Don't attempt to write; it's in the queue, it'll be processed once the send is completed.
-		if (_sendInProgress)
-			return false;
-
 		// Send queue is empty, nothing more to queue up.
 		// Consider this successful.
 		if (_sendQueue.empty())
+			return true;
+
+		// Send currently in progress.
+		// Don't attempt to write; it's in the queue, it'll be processed once the send is completed.
+		// Consider this successful; it is in the queue.
+		if (_sendInProgress)
 			return true;
 	}
 

@@ -22,5 +22,5 @@ protected:
 protected:
 	AISocketManager*		_socketManager;
 	std::queue<_SEND_DATA*>	_insertionQueue;
-	int						_aiSocketCount;
+	int						_nextRoundRobinSocketId;
 };

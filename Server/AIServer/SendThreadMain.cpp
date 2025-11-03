@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 
 SendThreadMain::SendThreadMain(AISocketManager* socketManager)
-	: _socketManager(socketManager), _aiSocketCount(0)
+	: _socketManager(socketManager), _nextRoundRobinSocketId(0)
 {
 }
 
@@ -69,36 +69,43 @@ void SendThreadMain::thread_loop()
 void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 {
 	int socketCount = _socketManager->GetServerSocketCount();
+	if (socketCount <= 0)
+		return;
+
 	while (!processingQueue.empty())
 	{
 		_SEND_DATA* sendData = processingQueue.front();
 
-		int count = -1;
-		for (int i = 0; i < socketCount; i++)
+		bool sent = false;
+		for (int checkedSockets = 0; checkedSockets < socketCount; ++checkedSockets, ++_nextRoundRobinSocketId)
 		{
-			CGameSocket* gameSocket = _socketManager->GetServerSocketUnchecked(i);
+			_nextRoundRobinSocketId %= socketCount;
+
+			int socketId = _nextRoundRobinSocketId;
+			++_nextRoundRobinSocketId;
+
+			CGameSocket* gameSocket = _socketManager->GetServerSocketUnchecked(socketId);
 			if (gameSocket == nullptr)
 				continue;
 
-			count++;
-
-			if (_aiSocketCount == count)
+			int ret = gameSocket->Send(sendData->pBuf, sendData->sLength);
+			if (ret <= 0)
 			{
-				int size = gameSocket->Send(sendData->pBuf, sendData->sLength);
-				if (size <= 0)
-				{
-					spdlog::error("SendThreadMain::tick: send failed: size={} socket_num={}",
-						size, count);
-					count--;
-					continue;
-				}
-
-				if (++_aiSocketCount >= MAX_AI_SOCKET)
-					_aiSocketCount = 0;
-
-				//TRACE(_T("SendThreadMain - Send : size=%d, socket_num=%d\n"), size, count);
-				break;
+				spdlog::warn(
+					"SendThreadMain::tick: send failed, trying next - ret={} opcode={:02X} packetSize={} socketId={}",
+					ret, sendData->pBuf[0], sendData->sLength, socketId);
+				continue;
 			}
+
+			//TRACE(_T("SendThreadMain - Send : size=%d, socket_num=%d\n"), size, count);
+			sent = true;
+			break;
+		}
+
+		if (!sent)
+		{
+			spdlog::error("SendThreadMain::tick: send failed, skipped packet - opcode={:02X} packetSize={}",
+				sendData->pBuf[0], sendData->sLength);
 		}
 
 		delete sendData;
