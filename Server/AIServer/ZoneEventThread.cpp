@@ -11,7 +11,7 @@ ZoneEventThread::ZoneEventThread(AiServerInstance* main)
 
 void ZoneEventThread::thread_loop()
 {
-	while (_running)
+	while (_canTick)
 	{
 		double fCurrentTime = TimeGet();
 		for (MAP* pMap : _main->m_ZoneArray)

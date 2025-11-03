@@ -12,7 +12,7 @@ void ReadQueueThread::thread_loop()
 	char buffer[SharedMemoryQueue::MAX_MSG_SIZE] = {};
 	int len;
 
-	while (_running)
+	while (_canTick)
 	{
 		len = _sharedMemoryQueue.GetData(buffer);
 		if (len >= SMQ_ERROR_RANGE)
@@ -20,7 +20,7 @@ void ReadQueueThread::thread_loop()
 			std::unique_lock<std::mutex> lock(_mutex);
 			std::cv_status status = _cv.wait_for(lock, std::chrono::milliseconds(100));
 
-			if (!_running)
+			if (!_canTick)
 				break;
 
 			continue;

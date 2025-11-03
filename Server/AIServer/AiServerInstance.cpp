@@ -276,30 +276,16 @@ void AiServerInstance::Shutdown()
 	spdlog::info("AiServerInstance::Shutdown: Waiting for worker threads to fully shut down.");
 
 	if (_checkAliveThread != nullptr)
-	{
 		_checkAliveThread->shutdown();
-		_checkAliveThread->BlockUntilShutdown();
-	}
 	spdlog::info("AiServerInstance::Shutdown: CheckAliveThread stopped.");
 	
 	for (CNpcThread* npcThread : m_NpcThreadArray)
 		npcThread->shutdown();
 
-	for (CNpcThread* npcThread : m_NpcThreadArray)
-	{
-		if (npcThread != nullptr && !npcThread->IsStopped())
-		{
-			npcThread->BlockUntilShutdown();
-		}
-	}
-
 	spdlog::info("AiServerInstance::Shutdown: NPC Threads stopped.");
 	
 	if (m_pZoneEventThread != nullptr)
-	{
 		m_pZoneEventThread->shutdown();
-		m_pZoneEventThread->BlockUntilShutdown();
-	}
 
 	spdlog::info("AiServerInstance::Shutdown: ZoneEventThread stopped.");
 	spdlog::info("AiServerInstance::Shutdown: All worker threads stopped, freeing caches.");
@@ -376,7 +362,7 @@ void AiServerInstance::thread_loop()
 		return;
 	}
 		
-	while (_running)
+	while (_canTick)
 	{
 		// check for threads that may need to be restarted
 

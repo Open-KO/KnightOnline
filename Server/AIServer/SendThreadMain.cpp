@@ -10,20 +10,17 @@ SendThreadMain::SendThreadMain(AISocketManager* socketManager)
 {
 }
 
-bool SendThreadMain::shutdown(bool join /*= true*/)
+void SendThreadMain::shutdown(bool waitForShutdown /*= true*/)
 {
-	if (!Thread::shutdown(join))
-		return false;
-
+	Thread::shutdown(waitForShutdown);
 	clear();
-	return true;
 }
 
 void SendThreadMain::queue(_SEND_DATA* sendData)
 {
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
-		if (!_running)
+		if (!_canTick)
 			return;
 
 		_insertionQueue.push(sendData);
@@ -42,18 +39,18 @@ void SendThreadMain::thread_loop()
 	auto waitUntilPredicate = [this] -> bool
 	{
 		// Wait until we're shutting down
-		return !_running
+		return !_canTick
 			// Or there's something in the queue
 			|| !_insertionQueue.empty();
 	};
 
-	while (_running)
+	while (_canTick)
 	{
 		{
 			std::unique_lock<std::mutex> lock(_mutex);
 			_cv.wait(lock, waitUntilPredicate);
 
-			if (!_running)
+			if (!_canTick)
 				break;
 
 			// As tick() processes the entire queue, we don't need to worry

@@ -1,49 +1,67 @@
 ﻿#include "stdafx.h"
 #include "Thread.h"
 
+#include <spdlog/spdlog.h>
+
 Thread::Thread()
 {
-	_running.store(false);
-	_stopped.store(true);
+	_canTick = false;
+	_isShutdown = false;
 }
 
 void Thread::start()
 {
-	if (_running.load())
+	if (_canTick)
 		return;
 
-	_running.store(true);
-	_thread = std::thread(&Thread::thread_loop, this);
-	_stopped.store(false);
+	_canTick = true;
+	_isShutdown = false;
+	_thread = std::thread(&Thread::thread_loop_wrapper, this);
 }
 
-bool Thread::shutdown(bool join /*= true*/)
+void Thread::shutdown(bool waitForShutdown /*= true*/)
 {
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
-		if (!_running.load())
-			return false;
+		if (_canTick)
+		{
+			_canTick = false;
+			before_shutdown();
 
-		_running.store(false);
-		before_shutdown();
-
-		_cv.notify_one();
+			_cv.notify_one();
+		}
 	}
 
-	if (join && _thread.joinable())
-		_thread.join();
-
-	_stopped.store(true);
-	_stopped.notify_all();
-	return true;
+	if (waitForShutdown)
+		join();
 }
 
-void Thread::BlockUntilShutdown()
+void Thread::join()
 {
-	if (!_stopped.load())
+	if (!_thread.joinable())
+		return;
+	
+	try
 	{
-		_stopped.wait(true);
+		_thread.join();
 	}
+	catch (const std::system_error& ex)
+	{
+		if (ex.code() == std::errc::resource_deadlock_would_occur)
+			spdlog::error("Thread::join: cannot join from same thread, would cause deadlock");
+		else if (ex.code() == std::errc::no_such_process)
+			spdlog::error("Thread::join: thread is not valid");
+		else
+			throw;
+	}
+}
+
+void Thread::thread_loop_wrapper()
+{
+	thread_loop();
+
+	_canTick = false;
+	_isShutdown = true;
 }
 
 Thread::~Thread()

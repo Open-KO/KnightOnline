@@ -13,13 +13,13 @@ SendWorkerThread::SendWorkerThread(EbenezerSocketManager* socketManager)
 
 void SendWorkerThread::thread_loop()
 {
-	while (_running)
+	while (_canTick)
 	{
 		{
 			std::unique_lock<std::mutex> lock(_mutex);
 			std::cv_status status = _cv.wait_for(lock, std::chrono::milliseconds(200));
 
-			if (!_running)
+			if (!_canTick)
 				break;
 
 			// Only tick every 200ms as per official, ignore spurious wakeups

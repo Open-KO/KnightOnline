@@ -19,10 +19,8 @@ void signalHandler(int signalNumber)
 	case SIGABRT:
 	case SIGTERM:
 		// Shutdown the application thread
-		if (appThread != nullptr && appThread->IsRunning())
-		{
+		if (appThread != nullptr)
 			appThread->shutdown();
-		}
 		break;
 	}
 	
@@ -45,15 +43,17 @@ int main()
 	try
 	{
 		// We keep the main() thread alive to catch interrupt signals and call shutdown
-		while (appThread != nullptr && !appThread->IsStopped())
+		while (appThread != nullptr && !appThread->IsShutdown())
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
-	} catch (const std::exception& ex)
+	}
+	catch (const std::exception& ex)
 	{
 		spdlog::error("AiServer::main: Exception caught: {}", ex.what());
 		retCode = EXIT_FAILURE;
-	} catch (...)
+	}
+	catch (...)
 	{
 		spdlog::error("AiServer::main: Unknown exception caught");
 		retCode = EXIT_FAILURE;
