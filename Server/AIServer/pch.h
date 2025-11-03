@@ -4,6 +4,8 @@
 //
 #pragma once
 
+#include <cassert>
+
 #include <asio.hpp>
 
 #include "Packet.h"

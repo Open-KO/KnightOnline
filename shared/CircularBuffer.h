@@ -2,14 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CIRCULARBUFFER_H__F4D345A4_CE05_11D1_8BEE_0060979C5900__INCLUDED_)
-#define AFX_CIRCULARBUFFER_H__F4D345A4_CE05_11D1_8BEE_0060979C5900__INCLUDED_
-
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
 
 #include <spdlog/spdlog.h>
+#include <cassert>
 
 struct CircularBufferSpan
 {
@@ -24,7 +20,7 @@ class CCircularBuffer
 public:
 	inline CCircularBuffer(int size)
 	{
-		_ASSERT(size > 0);
+		assert(size > 0);
 		m_iBufSize = size;
 		m_pBuffer = new char[m_iBufSize];
 
@@ -34,7 +30,7 @@ public:
 
 	inline ~CCircularBuffer()
 	{
-		_ASSERT(m_pBuffer != nullptr);
+		assert(m_pBuffer != nullptr);
 		delete[] m_pBuffer;
 		m_pBuffer = nullptr;
 	}
@@ -139,7 +135,7 @@ inline CircularBufferSpan CCircularBuffer::PutData(char* pData, int len, bool re
 	{
 		int FirstCopyLen = m_iBufSize - m_iTailPos;
 		int SecondCopyLen = len - FirstCopyLen;
-		_ASSERT(FirstCopyLen);
+		assert(FirstCopyLen);
 
 		span.Buffer1 = &m_pBuffer[m_iTailPos];
 		span.Length1 = FirstCopyLen;
@@ -181,7 +177,7 @@ inline int CCircularBuffer::GetOutData(char* pData)
 		memcpy(pData, m_pBuffer + m_iHeadPos, fc);
 		memcpy(pData + fc, m_pBuffer, sc);
 		m_iHeadPos = sc;
-		_ASSERT(m_iHeadPos == m_iTailPos);
+		assert(m_iHeadPos == m_iTailPos);
 	}
 	else
 	{
@@ -195,7 +191,7 @@ inline int CCircularBuffer::GetOutData(char* pData)
 
 inline void CCircularBuffer::GetData(char* pData, int len)
 {
-	_ASSERT(len > 0 && len <= GetValidCount());
+	assert(len > 0 && len <= GetValidCount());
 	if (len < m_iBufSize - m_iHeadPos)
 	{
 		memcpy(pData, m_pBuffer + m_iHeadPos, len);
@@ -212,10 +208,8 @@ inline void CCircularBuffer::GetData(char* pData, int len)
 
 inline bool CCircularBuffer::HeadIncrease(int increasement)
 {
-	_ASSERT(increasement <= GetValidCount());
+	assert(increasement <= GetValidCount());
 	m_iHeadPos += increasement;
 	m_iHeadPos %= m_iBufSize;
 	return m_iHeadPos != m_iTailPos;
 }
-
-#endif // !defined(AFX_CIRCULARBUFFER_H__F4D345A4_CE05_11D1_8BEE_0060979C5900__INCLUDED_)

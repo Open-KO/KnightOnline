@@ -131,8 +131,8 @@ int CGameSocket::Send(char* pBuf, int length)
 {
 	constexpr int PacketHeaderSize = 6;
 
-	_ASSERT(length >= 0);
-	_ASSERT((length + PacketHeaderSize) <= MAX_PACKET_SIZE);
+	assert(length >= 0);
+	assert((length + PacketHeaderSize) <= MAX_PACKET_SIZE);
 
 	if (length < 0
 		|| (length + PacketHeaderSize) > MAX_PACKET_SIZE)
@@ -970,14 +970,14 @@ void CGameSocket::RecvCompressedData(char* pBuf)
 		&decompressedBuffer[0],
 		sOrgLen);
 
-	_ASSERT(nDecompressedLength == sOrgLen);
+	assert(nDecompressedLength == sOrgLen);
 
 	if (nDecompressedLength != sOrgLen)
 		return;
 
 	dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
 
-	_ASSERT(dwCrcValue == dwActualCrcValue);
+	assert(dwCrcValue == dwActualCrcValue);
 
 	if (dwCrcValue != dwActualCrcValue)
 		return;

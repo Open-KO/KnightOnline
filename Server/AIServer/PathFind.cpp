@@ -31,7 +31,6 @@ CPathFind::~CPathFind()
 {
 	ClearData();
 	free(m_pStack);
-	m_pMain = nullptr;
 }
 
 void CPathFind::ClearData()

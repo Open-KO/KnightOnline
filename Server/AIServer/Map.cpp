@@ -183,7 +183,7 @@ float MAP::GetHeight(float x, float z)
 	int iX, iZ;
 	iX = (int) (x / m_fUnitDist);
 	iZ = (int) (z / m_fUnitDist);
-	//_ASSERT( iX, iZ가 범위내에 있는 값인지 체크하기);
+	//assert( iX, iZ가 범위내에 있는 값인지 체크하기);
 
 	float y;
 	float h1, h2, h3;
@@ -191,7 +191,7 @@ float MAP::GetHeight(float x, float z)
 	dX = (x - iX * m_fUnitDist) / m_fUnitDist;
 	dZ = (z - iZ * m_fUnitDist) / m_fUnitDist;
 
-//	_ASSERT(dX>=0.0f && dZ>=0.0f && dX<1.0f && dZ<1.0f);
+//	assert(dX>=0.0f && dZ>=0.0f && dX<1.0f && dZ<1.0f);
 	if (!(dX >= 0.0f
 		&& dZ >= 0.0f
 		&& dX < 1.0f

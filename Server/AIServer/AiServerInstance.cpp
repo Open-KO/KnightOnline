@@ -1310,7 +1310,7 @@ void AiServerInstance::SendCompressedData(int nZone)
 
 	comp_data_len = lzf_compress(m_CompBuf, m_iCompIndex, comp_buff, sizeof(comp_buff));
 
-	_ASSERT(comp_data_len != 0 && comp_data_len <= sizeof(comp_buff));
+	assert(comp_data_len != 0 && comp_data_len <= sizeof(comp_buff));
 
 	if (comp_data_len == 0
 		|| comp_data_len > sizeof(comp_buff))

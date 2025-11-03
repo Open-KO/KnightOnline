@@ -274,7 +274,7 @@ void CNpc::Load(const model::Npc* pNpcTable, bool transformSpeeds)
 {
 	constexpr int16_t MONSTER_SPEED = 1500;
 
-	_ASSERT(pNpcTable != nullptr);
+	assert(pNpcTable != nullptr);
 
 	if (pNpcTable == nullptr)
 		return;
