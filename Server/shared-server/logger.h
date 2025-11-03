@@ -77,6 +77,7 @@ namespace ini
 	static constexpr char LOGGER[] = "LOGGER";
 	static constexpr char LEVEL[] = "LEVEL";
 	static constexpr char PATTERN[] = "PATTERN";
+	static constexpr char CONSOLE_PATTERN[] = "CONSOLE_PATTERN";
 	static constexpr char FILE[] = "FILE";
 	static constexpr char ITEM_LOG_FILE[] = "ITEM_LOG_FILE";
 	static constexpr char USER_LOG_FILE[] = "USER_LOG_FILE";
@@ -86,4 +87,7 @@ namespace ini
 
 	/// \brief default logger line prefix ([12:59:59][AppName][  level] log line...)
 	static constexpr char DEFAULT_LOG_PATTERN[] = "[%H:%M:%S][%n][%7l] %v";
+
+	/// \brief default console logger line prefix ([12:59:59][AppName][  level] log line...)
+	static constexpr char DEFAULT_CONSOLE_LOG_PATTERN[] = "[%H:%M:%S][%n][%^%7l%$] %v";
 }

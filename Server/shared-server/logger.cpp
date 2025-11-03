@@ -38,26 +38,29 @@ void logger::Logger::Setup(CIni& ini, const std::string& baseDir)
 	// setup console logger
 	auto consoleLogger = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
-	// setup multi-sink async logger as default (combines file+console logger)
+	std::string logPattern = ini.GetString(ini::LOGGER, ini::PATTERN, ini::DEFAULT_LOG_PATTERN);
+	fileLogger->set_pattern(logPattern);
+
+	std::string consoleLogPattern = ini.GetString(ini::LOGGER, ini::CONSOLE_PATTERN, ini::DEFAULT_CONSOLE_LOG_PATTERN);
+	consoleLogger->set_pattern(consoleLogPattern);
+
 	spdlog::init_thread_pool(MessageQueueSize, ThreadPoolSize);
 
-	std::vector<spdlog::sink_ptr> sinks{fileLogger, consoleLogger};
+	// setup multi-sink async logger as default (combines file+console logger)
+	spdlog::sinks_init_list sinks = { fileLogger, consoleLogger };
 
 	auto threadPool = spdlog::thread_pool();
 	auto appLogger = std::make_shared<spdlog::async_logger>(
 		_appName, sinks.begin(), sinks.end(), threadPool, spdlog::async_overflow_policy::block);
 	spdlog::set_default_logger(appLogger);
 
-	// add any extra loggers
-	SetupExtraLoggers(ini, threadPool, baseDir);
-
 	// set default logger level and pattern
 	// we default to debug level logging
 	int logLevel = ini.GetInt(ini::LOGGER, ini::LEVEL, spdlog::level::debug);
 	spdlog::set_level(static_cast<spdlog::level::level_enum>(logLevel));
 
-	std::string logPattern = ini.GetString(ini::LOGGER, ini::PATTERN, ini::DEFAULT_LOG_PATTERN);
-	spdlog::set_pattern(logPattern);
+	// add any extra loggers
+	SetupExtraLoggers(ini, threadPool, baseDir);
 
 	// periodically flush all *registered* loggers every 3 seconds:
 	// warning: only use if all your loggers are thread-safe ("_mt" loggers)
@@ -96,8 +99,14 @@ void logger::Logger::SetupExtraLogger(CIni& ini,
 	// setup console logger
 	auto consoleLogger = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
+	std::string logPattern = ini.GetString(ini::LOGGER, ini::PATTERN, ini::DEFAULT_LOG_PATTERN);
+	fileLogger->set_pattern(logPattern);
+
+	std::string consoleLogPattern = ini.GetString(ini::LOGGER, ini::CONSOLE_PATTERN, ini::DEFAULT_CONSOLE_LOG_PATTERN);
+	consoleLogger->set_pattern(consoleLogPattern);
+
 	// setup multi-sink async logger as default (combines file+console logger)
-	std::vector<spdlog::sink_ptr> sinks{fileLogger, consoleLogger};
+	spdlog::sinks_init_list sinks = { fileLogger, consoleLogger };
 	auto extraLogger = std::make_shared<spdlog::async_logger>(
 		appName, sinks.begin(), sinks.end(), threadPool, spdlog::async_overflow_policy::block);
 
@@ -105,9 +114,6 @@ void logger::Logger::SetupExtraLogger(CIni& ini,
 	// we default to debug level logging
 	int logLevel = ini.GetInt(ini::LOGGER, ini::LEVEL, spdlog::level::debug);
 	extraLogger->set_level(static_cast<spdlog::level::level_enum>(logLevel));
-
-	std::string logPattern = ini.GetString(ini::LOGGER, ini::PATTERN, ini::DEFAULT_LOG_PATTERN);
-	extraLogger->set_pattern(logPattern);
 
 	// register the logger
 	spdlog::register_logger(extraLogger);
