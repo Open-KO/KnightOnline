@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "logger.h"
+#include "ftxui_sink_mt.h"
 
 #include <shared/Ini.h>
 
@@ -34,18 +35,18 @@ void logger::Logger::Setup(CIni& ini, const std::filesystem::path& baseDir)
 	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(fileName, 0, 0);
 
 	// setup console logger
-	auto consoleLogger = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+	_consoleLogger = std::make_shared<ftxui::sink_mt>();
 
 	std::string logPattern = ini.GetString(ini::LOGGER, ini::PATTERN, ini::DEFAULT_LOG_PATTERN);
 	fileLogger->set_pattern(logPattern);
 
 	std::string consoleLogPattern = ini.GetString(ini::LOGGER, ini::CONSOLE_PATTERN, ini::DEFAULT_CONSOLE_LOG_PATTERN);
-	consoleLogger->set_pattern(consoleLogPattern);
+	_consoleLogger->set_pattern(consoleLogPattern);
 
 	spdlog::init_thread_pool(MessageQueueSize, ThreadPoolSize);
 
 	// setup multi-sink async logger as default (combines file+console logger)
-	spdlog::sinks_init_list sinks = { fileLogger, consoleLogger };
+	spdlog::sinks_init_list sinks = { fileLogger, _consoleLogger };
 
 	auto threadPool = spdlog::thread_pool();
 	auto appLogger = std::make_shared<spdlog::async_logger>(

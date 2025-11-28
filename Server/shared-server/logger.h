@@ -12,6 +12,11 @@ namespace spdlog::details
 	class thread_pool;
 }
 
+namespace ftxui
+{
+	class sink_mt;
+}
+
 namespace logger
 {
 
@@ -22,6 +27,11 @@ namespace logger
 		static constexpr uint8_t ThreadPoolSize = 1;
 
 	public:
+		std::shared_ptr<ftxui::sink_mt> consoleLogger()
+		{
+			return _consoleLogger;
+		}
+
 		/// \param appName application name (VersionManager, Aujard, AIServer, Ebenezer)
 		Logger(const std::string& appName);
 
@@ -44,6 +54,8 @@ namespace logger
 	protected:
 		std::string _appName;
 		std::string _defaultLogPath;
+
+		std::shared_ptr<ftxui::sink_mt> _consoleLogger;
 	};
 
 	//

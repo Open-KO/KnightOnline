@@ -6,4 +6,5 @@
       <PreprocessorDefinitions>_WIN32_WINNT=0x0A00;NOMINMAX;%(PreprocessorDefinitions);</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
+  <Import Project="ftxui.props" />
 </Project>

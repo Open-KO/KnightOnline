@@ -43,3 +43,6 @@
 [submodule "deps/boost"]
 	path = deps/boost
 	url = https://github.com/Open-KO/OpenKO-boost
+[submodule "deps/FTXUI"]
+	path = deps/FTXUI
+	url = https://github.com/ArthurSonzogni/FTXUI

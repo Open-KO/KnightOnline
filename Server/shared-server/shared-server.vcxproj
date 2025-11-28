@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppThread.cpp" />
+    <ClCompile Include="ftxui_sink_mt.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="N3ShapeMgr.cpp" />
     <ClCompile Include="ReadQueueThread.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppThread.h" />
+    <ClInclude Include="ftxui_sink_mt.h" />
     <ClInclude Include="utilities.h" />
     <ClInclude Include="My_3DStruct.h" />
     <ClInclude Include="GeometricStructs.h" />

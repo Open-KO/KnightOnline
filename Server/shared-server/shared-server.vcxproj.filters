@@ -31,6 +31,7 @@
     <ClCompile Include="AppThread.cpp">
       <Filter>Threads</Filter>
     </ClCompile>
+    <ClCompile Include="ftxui_sink_mt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server_config.h" />
@@ -69,6 +70,7 @@
     <ClInclude Include="AppThread.h">
       <Filter>Threads</Filter>
     </ClInclude>
+    <ClInclude Include="ftxui_sink_mt.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="N3Base">
