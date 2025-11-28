@@ -49,6 +49,7 @@ void AppThread::thread_loop()
 
 	int focusedLineNumber = 0;
 	bool autoScroll = true; // TODO: ensure this gets reset
+	int elementCount = 0;
 
     auto input = Input(&inputText, "Enter command...");
     
@@ -111,12 +112,17 @@ void AppThread::thread_loop()
 		}
     	
     	// clamping
-    	int elementCount = static_cast<int>(logElements.size());
-    	focusedLineNumber = std::clamp(focusedLineNumber, 0, elementCount - 1);
-    	float scrollPosition = std::clamp(static_cast<float>(focusedLineNumber)/static_cast<float>(elementCount), 0.0f, 1.0f);
+    	int oldElementCount = elementCount;
+    	elementCount = static_cast<int>(logElements.size());
+    	focusedLineNumber = std::clamp(focusedLineNumber, 0, std::max(0, elementCount - 1));
+    	float scrollPosition = 0.0f;
+    	if (elementCount > 0)
+    	{
+    		scrollPosition = std::clamp(static_cast<float>(focusedLineNumber)/static_cast<float>(elementCount), 0.0f, 1.0f);
+    	}
 
-    	// Auto-scroll to bottom
-    	if (autoScroll && entryCount > 0)
+    	// Auto-scroll to bottom when new lines are added
+    	if (autoScroll && oldElementCount != elementCount)
     	{
     		focusedLineNumber = elementCount - 1;
     		scrollPosition = 1.0f;
@@ -145,48 +151,40 @@ void AppThread::thread_loop()
 
 	renderer |= CatchEvent([&](Event event)
 	{
-		// We don't have access to our log elements here, so we let the renderer handle the clamping.
 		// Keyboard events
 		if (event == Event::ArrowUp)
 		{
-			focusedLineNumber--;
-			autoScroll = false;
+			focusedLineNumber = std::clamp(focusedLineNumber-1, 0, std::max(0, elementCount - 1));
 			return true;
 		}
 
 		if (event == Event::ArrowDown)
 		{
-			++focusedLineNumber;
-			autoScroll = false;
+			focusedLineNumber = std::clamp(focusedLineNumber+1, 0, std::max(0, elementCount - 1));
 			return true;
 		}
 
 		if (event == Event::PageUp)
 		{
-			focusedLineNumber -= PageSize;
-			autoScroll = false;
+			focusedLineNumber = std::clamp(focusedLineNumber-PageSize, 0, std::max(0, elementCount - 1));
 			return true;
 		}
 
 		if (event == Event::PageDown)
 		{
-			focusedLineNumber += PageSize;
-			autoScroll = false;
+			focusedLineNumber = std::clamp(focusedLineNumber+PageSize, 0, std::max(0, elementCount - 1));
 			return true;
 		}
 
 		if (event == Event::Home)
 		{
 			focusedLineNumber = 0;
-			autoScroll = false;
 			return true;
 		}
 
 		if (event == Event::End)
 		{
-			
-			focusedLineNumber = INT_MAX-1;
-			autoScroll = false;
+			focusedLineNumber = std::max(0, elementCount - 1);
 			return true;
 		}
 
@@ -194,15 +192,13 @@ void AppThread::thread_loop()
 		if (event.is_mouse()) {
 			if (event.mouse().button == Mouse::WheelUp)
 			{
-				focusedLineNumber -= WheelSize;
-				autoScroll = false;
+				focusedLineNumber = std::clamp(focusedLineNumber-WheelSize, 0, std::max(0, elementCount - 1));
 				return true;
 			}
 			
 			if (event.mouse().button == Mouse::WheelDown)
 			{
-				focusedLineNumber += WheelSize;
-				autoScroll = false;
+				focusedLineNumber = std::clamp(focusedLineNumber+WheelSize, 0, std::max(0, elementCount - 1));
 				return true;
 			}
 		}
