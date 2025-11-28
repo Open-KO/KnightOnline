@@ -47,7 +47,7 @@ void AppThread::thread_loop()
     
     std::string inputText;
 
-	int scrollPosition = 0;
+	int focusedLineNumber = 0;
 	bool autoScroll = true; // TODO: ensure this gets reset
 
     auto input = Input(&inputText, "Enter command...");
@@ -76,6 +76,15 @@ void AppThread::thread_loop()
 			for (int i = 0; i < 10; i++)
 				spdlog::info("Test {}", i + 1);
 		}
+    	else if (inputText == "exit")
+		{
+			if (!s_shutdown
+					&& s_instance != nullptr)
+			{
+				s_instance->shutdown(false);
+				s_shutdown = true;
+			}
+		}
 
 		inputText.clear();
 		return true;
@@ -100,17 +109,22 @@ void AppThread::thread_loop()
 				logElements.push_back(logLine);
 			}
 		}
+    	
+    	// clamping
+    	int elementCount = static_cast<int>(logElements.size());
+    	focusedLineNumber = std::clamp(focusedLineNumber, 0, elementCount - 1);
+    	float scrollPosition = std::clamp(static_cast<float>(focusedLineNumber)/static_cast<float>(elementCount), 0.0f, 1.0f);
 
-		// Auto-scroll to bottom
-		if (autoScroll
-			&& entryCount > 0)
-		{
-			// TODO: 
-			scrollPosition = std::max(0, static_cast<int>(entryCount) - 20);
-		}
+    	// Auto-scroll to bottom
+    	if (autoScroll && entryCount > 0)
+    	{
+    		focusedLineNumber = elementCount - 1;
+    		scrollPosition = 1.0f;
+    	}
 
+    	// render
 		auto logDisplay = vbox(logElements)
-			| focusPositionRelative(0, static_cast<float>(scrollPosition))
+			| focusPositionRelative(0, scrollPosition)
 			| vscroll_indicator
 			| frame
 			| flex;
@@ -131,48 +145,66 @@ void AppThread::thread_loop()
 
 	renderer |= CatchEvent([&](Event event)
 	{
+		// We don't have access to our log elements here, so we let the renderer handle the clamping.
+		// Keyboard events
 		if (event == Event::ArrowUp)
 		{
-			scrollPosition = std::max(0, scrollPosition - 1);
+			focusedLineNumber--;
 			autoScroll = false;
 			return true;
 		}
 
 		if (event == Event::ArrowDown)
 		{
-			++scrollPosition;
+			++focusedLineNumber;
 			autoScroll = false;
 			return true;
 		}
 
 		if (event == Event::PageUp)
 		{
-			scrollPosition = std::max(0, scrollPosition - PageSize);
+			focusedLineNumber -= PageSize;
 			autoScroll = false;
 			return true;
 		}
 
 		if (event == Event::PageDown)
 		{
-			scrollPosition += PageSize;
+			focusedLineNumber += PageSize;
 			autoScroll = false;
 			return true;
 		}
 
-		if (event.is_mouse()
-			&& event.mouse().button == Mouse::WheelUp)
+		if (event == Event::Home)
 		{
-			scrollPosition = std::max(0, scrollPosition - WheelSize);
+			focusedLineNumber = 0;
 			autoScroll = false;
 			return true;
 		}
 
-		if (event.is_mouse()
-			&& event.mouse().button == Mouse::WheelDown)
+		if (event == Event::End)
 		{
-			scrollPosition += WheelSize;
+			
+			focusedLineNumber = INT_MAX-1;
 			autoScroll = false;
 			return true;
+		}
+
+		// Mouse events
+		if (event.is_mouse()) {
+			if (event.mouse().button == Mouse::WheelUp)
+			{
+				focusedLineNumber -= WheelSize;
+				autoScroll = false;
+				return true;
+			}
+			
+			if (event.mouse().button == Mouse::WheelDown)
+			{
+				focusedLineNumber += WheelSize;
+				autoScroll = false;
+				return true;
+			}
 		}
 
 		return false;
