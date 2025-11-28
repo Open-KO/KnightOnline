@@ -185,11 +185,15 @@ void AppThread::thread_loop()
 	// TODO: Couple this to our main loop. This is just for testing.
 	screen.Loop(renderer);
 
+	consoleLogger->set_screen(nullptr);
+
+#if 0
 	while (_canTick)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
 		_cv.wait(lock);
 	}
+#endif
 
 	_exitCode = EXIT_SUCCESS;
 }
