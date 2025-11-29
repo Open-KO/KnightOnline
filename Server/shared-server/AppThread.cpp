@@ -1,9 +1,19 @@
 ﻿#include "pch.h"
 #include "AppThread.h"
+#include "ftxui_sink_mt.h"
 
+#include <spdlog/spdlog.h>
+
+#include <ftxui/component/component.hpp>
+#include <ftxui/component/component_base.hpp>
+#include <ftxui/component/loop.hpp>
+#include <ftxui/component/screen_interactive.hpp>
+#include <ftxui/dom/elements.hpp>
+
+#include <vector>
 #include <signal.h>
 #include <stdlib.h>
-#include <spdlog/spdlog.h>
+#include <string>
 
 AppThread* AppThread::s_instance = nullptr;
 bool AppThread::s_shutdown = false;
@@ -21,17 +31,6 @@ AppThread::~AppThread()
 	s_instance = nullptr;
 }
 
-
-#include <ftxui/component/component.hpp>
-#include <ftxui/component/component_base.hpp>
-#include <ftxui/component/screen_interactive.hpp>
-#include <ftxui/dom/elements.hpp>
-
-#include <vector>
-#include <string>
-
-#include "ftxui_sink_mt.h"
-
 /// \brief The main thread loop for the server instance
 void AppThread::thread_loop()
 {
@@ -44,7 +43,7 @@ void AppThread::thread_loop()
 	using namespace ftxui;
 
 	auto consoleLogger = _logger.consoleLogger();
-    
+
     std::string inputText;
 
 	int focusedLineNumber = 0;
@@ -80,7 +79,7 @@ void AppThread::thread_loop()
     	else if (inputText == "exit")
 		{
 			if (!s_shutdown
-					&& s_instance != nullptr)
+				&& s_instance != nullptr)
 			{
 				s_instance->shutdown(false);
 				s_shutdown = true;
@@ -110,16 +109,16 @@ void AppThread::thread_loop()
 				logElements.push_back(logLine);
 			}
 		}
-    	
-    	// clamping
-    	int oldElementCount = elementCount;
-    	elementCount = static_cast<int>(logElements.size());
-    	focusedLineNumber = std::clamp(focusedLineNumber, 0, std::max(0, elementCount - 1));
-    	float scrollPosition = 0.0f;
-    	if (elementCount > 0)
-    	{
-    		scrollPosition = std::clamp(static_cast<float>(focusedLineNumber)/static_cast<float>(elementCount), 0.0f, 1.0f);
-    	}
+
+		// clamping
+		int oldElementCount = elementCount;
+		elementCount = static_cast<int>(logElements.size());
+		focusedLineNumber = std::clamp(focusedLineNumber, 0, std::max(0, elementCount - 1));
+		float scrollPosition = 0.0f;
+		if (elementCount > 0)
+		{
+			scrollPosition = std::clamp(static_cast<float>(focusedLineNumber) / static_cast<float>(elementCount), 0.0f, 1.0f);
+		}
 
     	// Auto-scroll to bottom when new lines are added
     	if (autoScroll && oldElementCount != elementCount)
@@ -154,25 +153,25 @@ void AppThread::thread_loop()
 		// Keyboard events
 		if (event == Event::ArrowUp)
 		{
-			focusedLineNumber = std::clamp(focusedLineNumber-1, 0, std::max(0, elementCount - 1));
+			--focusedLineNumber;
 			return true;
 		}
 
 		if (event == Event::ArrowDown)
 		{
-			focusedLineNumber = std::clamp(focusedLineNumber+1, 0, std::max(0, elementCount - 1));
+			++focusedLineNumber;
 			return true;
 		}
 
 		if (event == Event::PageUp)
 		{
-			focusedLineNumber = std::clamp(focusedLineNumber-PageSize, 0, std::max(0, elementCount - 1));
+			focusedLineNumber -= PageSize;
 			return true;
 		}
 
 		if (event == Event::PageDown)
 		{
-			focusedLineNumber = std::clamp(focusedLineNumber+PageSize, 0, std::max(0, elementCount - 1));
+			focusedLineNumber += PageSize;
 			return true;
 		}
 
@@ -189,16 +188,17 @@ void AppThread::thread_loop()
 		}
 
 		// Mouse events
-		if (event.is_mouse()) {
+		if (event.is_mouse())
+		{
 			if (event.mouse().button == Mouse::WheelUp)
 			{
-				focusedLineNumber = std::clamp(focusedLineNumber-WheelSize, 0, std::max(0, elementCount - 1));
+				focusedLineNumber -= WheelSize;
 				return true;
 			}
 			
 			if (event.mouse().button == Mouse::WheelDown)
 			{
-				focusedLineNumber = std::clamp(focusedLineNumber+WheelSize, 0, std::max(0, elementCount - 1));
+				focusedLineNumber += WheelSize;
 				return true;
 			}
 		}
