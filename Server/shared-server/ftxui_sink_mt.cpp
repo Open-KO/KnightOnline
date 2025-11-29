@@ -1,15 +1,18 @@
 ﻿#include "pch.h"
 #include "ftxui_sink_mt.h"
 
+#include <ftxui/screen/color.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 
 namespace ftxui
 {
+	static Color spdlog_level_to_fxtui_color(spdlog::level::level_enum level);
+
 	sink_mt::sink_mt()
 	{
 		_screen = nullptr;
 		_useStdout = false;
-		_bufferSize = DEFAULT_BUFFER_SIZE;
+		_backlogSize = DEFAULT_BACKLOG_SIZE;
 	}
 
 	void sink_mt::set_screen(ScreenInteractive* screen)
@@ -22,17 +25,17 @@ namespace ftxui
 			_useStdout = true;
 	}
 
-	void sink_mt::set_buffer_size(size_t bufferSize)
+	void sink_mt::set_backlog_size(size_t backlogSize)
 	{
-		_bufferSize = bufferSize;
+		_backlogSize = backlogSize;
 
-		if (_bufferSize != 0)
+		if (backlogSize != 0)
 		{
 			std::lock_guard<std::mutex> lock(_logBufferMutex);
 
-			if (_logBuffer.size() > _bufferSize)
+			if (_logBuffer.size() > backlogSize)
 			{
-				size_t entriesOverLimit = _logBuffer.size() - _bufferSize;
+				size_t entriesOverLimit = _logBuffer.size() - backlogSize;
 
 				// Remove the first (oldest) entries from the buffer.
 				_logBuffer.erase(_logBuffer.begin(), _logBuffer.begin() + entriesOverLimit);
@@ -64,14 +67,24 @@ namespace ftxui
 				logStr.pop_back();
 		}
 
+		std::string_view textBeforeColor(logStr.data(), msg.color_range_start);
+		std::string_view textColored(logStr.data() + msg.color_range_start, msg.color_range_end - msg.color_range_start);
+		std::string_view textAfterColor(logStr.data() + msg.color_range_end, logStr.length() - msg.color_range_end);
+
+		auto logLine = hbox({
+			text(std::string(textBeforeColor)),
+			text(std::string(textColored)) | color(spdlog_level_to_fxtui_color(msg.level)),
+			text(std::string(textAfterColor))
+		});
+
 		{
 			std::lock_guard<std::mutex> lock(_logBufferMutex);
 
-			if (_bufferSize != 0
-				&& _logBuffer.size() >= _bufferSize)
-				_logBuffer.pop_front();
+			if (_backlogSize != 0
+				&& _logBuffer.size() >= _backlogSize)
+				_logBuffer.erase(_logBuffer.begin());
 
-			_logBuffer.push_back({ logStr, msg.color_range_start, msg.color_range_end, msg.level });
+			_logBuffer.push_back(logLine);
 		}
 
 		// Trigger UI refresh when new log is added
@@ -83,9 +96,9 @@ namespace ftxui
 	{
 	}
 
-	Color ColoredLog::color() const
+	static Color spdlog_level_to_fxtui_color(spdlog::level::level_enum level)
 	{
-		switch (Level)
+		switch (level)
 		{
 			case spdlog::level::trace:
 				return Color::White;

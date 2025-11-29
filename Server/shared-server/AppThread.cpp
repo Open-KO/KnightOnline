@@ -70,25 +70,9 @@ void AppThread::thread_loop()
 	{
 		size_t entryCount = 0;
 
-		logElements.clear();
-
 		{
 			std::lock_guard<std::mutex> lock(fxtuiSink->lock());
-
-			entryCount = fxtuiSink->log_buffer().size();
-			for (const ColoredLog& log : fxtuiSink->log_buffer())
-			{
-				std::string_view textBeforeColor(log.Message.data(), log.ColorRangeStart);
-				std::string_view textColored(log.Message.data() + log.ColorRangeStart, log.ColorRangeEnd - log.ColorRangeStart);
-				std::string_view textAfterColor(log.Message.data() + log.ColorRangeEnd, log.Message.length() - log.ColorRangeEnd);
-
-				auto logLine = hbox({
-					text(std::string(textBeforeColor)),
-					text(std::string(textColored)) | color(log.color()),
-					text(std::string(textAfterColor))
-				});
-				logElements.push_back(logLine);
-			}
+			logElements = fxtuiSink->log_buffer(); // this is intentionally a copy, but it's a container of shared pointers
 		}
 
 		// clamping
