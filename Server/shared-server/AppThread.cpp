@@ -44,17 +44,18 @@ void AppThread::thread_loop()
 
 	auto fxtuiSink = _logger.fxtuiSink();
 
-    std::string inputText;
+	std::string inputText;
+	Elements logElements;
 
 	int focusedLineNumber = 0;
-	bool autoScroll = true; // TODO: ensure this gets reset
-	int elementCount = 0;
+	bool autoScroll = true;
+	int elementCount = 0, lastElementIndex = 0;
 
-    auto input = Input(&inputText, "Enter command...");
-    
-    input |= CatchEvent([&](Event event)
+	auto input = Input(&inputText, "Enter command...");
+
+	input |= CatchEvent([&](Event event)
 	{
-        if (event == Event::Return)
+		if (event == Event::Return)
 		{
 			ParseCommand(inputText);
 			inputText.clear();
@@ -62,11 +63,9 @@ void AppThread::thread_loop()
 		}
 
 		return false;
-    });
+	});
 
-	Elements logElements;
-
-    auto renderer = Renderer(input, [&]
+	auto renderer = Renderer(input, [&]
 	{
 		size_t entryCount = 0;
 
@@ -78,21 +77,21 @@ void AppThread::thread_loop()
 		// clamping
 		int oldElementCount = elementCount;
 		elementCount = static_cast<int>(logElements.size());
-		focusedLineNumber = std::clamp(focusedLineNumber, 0, std::max(0, elementCount - 1));
+		lastElementIndex = std::max(0, elementCount - 1);
+		focusedLineNumber = std::clamp(focusedLineNumber, 0, lastElementIndex);
+
 		float scrollPosition = 0.0f;
 		if (elementCount > 0)
-		{
 			scrollPosition = std::clamp(static_cast<float>(focusedLineNumber) / static_cast<float>(elementCount), 0.0f, 1.0f);
-		}
 
-    	// Auto-scroll to bottom when new lines are added
-    	if (autoScroll && oldElementCount != elementCount)
-    	{
-    		focusedLineNumber = elementCount - 1;
-    		scrollPosition = 1.0f;
-    	}
+		// Auto-scroll to bottom when new lines are added
+		if (autoScroll && oldElementCount != elementCount)
+		{
+			focusedLineNumber = lastElementIndex;
+			scrollPosition = 1.0f;
+	 	}
 
-    	// render
+		// render
 		auto logDisplay = vbox(logElements)
 			| focusPositionRelative(0, scrollPosition)
 			| vscroll_indicator
@@ -108,7 +107,7 @@ void AppThread::thread_loop()
 			logDisplay,
 			inputBox
 		});
-    });
+	});
 
 	constexpr int PageSize	= 10;
 	constexpr int WheelSize	= 3;
@@ -125,6 +124,9 @@ void AppThread::thread_loop()
 		if (event == Event::ArrowDown)
 		{
 			++focusedLineNumber;
+
+			if (focusedLineNumber >= lastElementIndex)
+				autoScroll = true;
 			return true;
 		}
 
@@ -137,6 +139,9 @@ void AppThread::thread_loop()
 		if (event == Event::PageDown)
 		{
 			focusedLineNumber += PageSize;
+
+			if (focusedLineNumber >= lastElementIndex)
+				autoScroll = true;
 			return true;
 		}
 
@@ -149,6 +154,7 @@ void AppThread::thread_loop()
 		if (event == Event::End)
 		{
 			focusedLineNumber = std::max(0, elementCount - 1);
+			autoScroll = true;
 			return true;
 		}
 
@@ -164,6 +170,9 @@ void AppThread::thread_loop()
 			if (event.mouse().button == Mouse::WheelDown)
 			{
 				focusedLineNumber += WheelSize;
+
+				if (focusedLineNumber >= lastElementIndex)
+					autoScroll = true;
 				return true;
 			}
 		}
