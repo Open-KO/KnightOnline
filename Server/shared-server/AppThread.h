@@ -3,6 +3,8 @@
 #include <shared/Thread.h>
 #include "logger.h"
 
+#include <ftxui/component/event.hpp>
+
 class AppThread : public Thread
 {
 public:
@@ -20,6 +22,10 @@ public:
 	/// \brief Initializes the server, loading caches, socket managers, etc.
 	/// \returns true when successful, false otherwise
 	virtual bool OnStart() = 0;
+
+	/// \brief Handles input events from the UI
+	/// \returns true when handled, false otherwise
+	virtual bool HandleInputEvent(const ftxui::Event& event);
 
 	/// \brief Parses command input from the console and dispatches command handling via HandleCommand.
 	/// \see HandleCommand

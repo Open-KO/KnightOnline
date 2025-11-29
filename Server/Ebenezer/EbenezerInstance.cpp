@@ -1875,6 +1875,25 @@ bool EbenezerInstance::HandleCommand(const std::string& command)
 	return true;
 }
 
+bool EbenezerInstance::HandleInputEvent(const ftxui::Event& event)
+{
+	using namespace ftxui;
+
+	if (event == Event::F8)
+	{
+		SyncTest(1);
+		return true;
+	}
+	
+	if (event == Event::F9)
+	{
+		SyncTest(2);
+		return true;
+	}
+
+	return false;
+}
+
 bool EbenezerInstance::LoadNoticeData()
 {
 	std::filesystem::path NoticePath = GetProgPath() / "Notice.txt";

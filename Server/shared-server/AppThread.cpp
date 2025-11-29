@@ -168,7 +168,7 @@ void AppThread::thread_loop()
 			}
 		}
 
-		return false;
+		return HandleInputEvent(event);
 	});
 
 	auto screen = ScreenInteractive::Fullscreen();
@@ -194,6 +194,11 @@ void AppThread::thread_loop()
 		uiThread.join();
 
 	_exitCode = EXIT_SUCCESS;
+}
+
+bool AppThread::HandleInputEvent(const ftxui::Event& event)
+{
+	return false;
 }
 
 void AppThread::ParseCommand(const std::string& command)
