@@ -26,7 +26,6 @@ namespace ftxui
 		sink_mt();
 		void set_screen(ftxui::ScreenInteractive* screen);
 		void set_buffer_size(size_t bufferSize);
-		void dump_to_console();
 
 	protected:
 		void sink_it_(const spdlog::details::log_msg& msg) override;

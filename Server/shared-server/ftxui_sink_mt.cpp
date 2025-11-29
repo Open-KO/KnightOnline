@@ -3,8 +3,6 @@
 
 #include <ftxui/component/screen_interactive.hpp>
 
-#include <iostream>
-
 namespace ftxui
 {
 	sink_mt::sink_mt()
@@ -21,10 +19,7 @@ namespace ftxui
 
 		if (previousScreen != nullptr
 			&& screen == nullptr)
-		{
 			_useStdout = true;
-			dump_to_console();
-		}
 	}
 
 	void sink_mt::set_buffer_size(size_t bufferSize)
@@ -45,17 +40,11 @@ namespace ftxui
 		}
 	}
 
-	void sink_mt::dump_to_console()
-	{
-		std::lock_guard<std::mutex> lock(_logBufferMutex);
-		for (const ColoredLog& log : _logBuffer)
-			std::cout << log.Message << std::endl;
-
-		_logBuffer.clear();
-	}
-
 	void sink_mt::sink_it_(const spdlog::details::log_msg& msg)
 	{
+		if (_useStdout)
+			return;
+
 		msg.color_range_start = 0;
 		msg.color_range_end = 0;
 
@@ -73,12 +62,6 @@ namespace ftxui
 			if (!logStr.empty()
 				&& logStr.back() == '\r')
 				logStr.pop_back();
-		}
-
-		if (_useStdout)
-		{
-			std::cout << logStr << std::endl;
-			return;
 		}
 
 		{

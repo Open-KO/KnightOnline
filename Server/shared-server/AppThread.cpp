@@ -42,7 +42,7 @@ void AppThread::thread_loop()
 
 	using namespace ftxui;
 
-	auto consoleLogger = _logger.consoleLogger();
+	auto fxtuiSink = _logger.fxtuiSink();
 
     std::string inputText;
 
@@ -63,17 +63,20 @@ void AppThread::thread_loop()
 
 		return false;
     });
-    
+
+	Elements logElements;
+
     auto renderer = Renderer(input, [&]
 	{
-		Elements logElements;
 		size_t entryCount = 0;
 
-		{
-			std::lock_guard<std::mutex> lock(consoleLogger->lock());
+		logElements.clear();
 
-			entryCount = consoleLogger->log_buffer().size();
-			for (const ColoredLog& log : consoleLogger->log_buffer())
+		{
+			std::lock_guard<std::mutex> lock(fxtuiSink->lock());
+
+			entryCount = fxtuiSink->log_buffer().size();
+			for (const ColoredLog& log : fxtuiSink->log_buffer())
 			{
 				std::string_view textBeforeColor(log.Message.data(), log.ColorRangeStart);
 				std::string_view textColored(log.Message.data() + log.ColorRangeStart, log.ColorRangeEnd - log.ColorRangeStart);
@@ -188,9 +191,9 @@ void AppThread::thread_loop()
 
 	std::thread uiThread([&]
 	{
-		consoleLogger->set_screen(&screen);
+		fxtuiSink->set_screen(&screen);
 		screen.Loop(renderer);
-		consoleLogger->set_screen(nullptr);
+		fxtuiSink->set_screen(nullptr);
 
 		shutdown(false);
 	});
@@ -224,11 +227,11 @@ bool AppThread::HandleCommand(const std::string& command)
 {
 	if (command == "/clear")
 	{
-		auto consoleLogger = _logger.consoleLogger();
-		if (consoleLogger != nullptr)
+		auto fxtuiSink = _logger.fxtuiSink();
+		if (fxtuiSink != nullptr)
 		{
-			std::lock_guard<std::mutex> lock(consoleLogger->lock());
-			consoleLogger->log_buffer().clear();
+			std::lock_guard<std::mutex> lock(fxtuiSink->lock());
+			fxtuiSink->log_buffer().clear();
 		}
 
 		spdlog::info("Logs cleared");
