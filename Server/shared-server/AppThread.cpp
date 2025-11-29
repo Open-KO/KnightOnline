@@ -78,12 +78,7 @@ void AppThread::thread_loop()
 		}
     	else if (inputText == "exit")
 		{
-			if (!s_shutdown
-				&& s_instance != nullptr)
-			{
-				s_instance->shutdown(false);
-				s_shutdown = true;
-			}
+			shutdown(false);
 		}
 
 		inputText.clear();
@@ -208,20 +203,23 @@ void AppThread::thread_loop()
 
 	auto screen = ScreenInteractive::Fullscreen();
 
-	consoleLogger->set_screen(&screen);
+	std::thread uiThread([&]
+	{
+		consoleLogger->set_screen(&screen);
+		screen.Loop(renderer);
+		consoleLogger->set_screen(nullptr);
+	});
 
-	// TODO: Couple this to our main loop. This is just for testing.
-	screen.Loop(renderer);
-
-	consoleLogger->set_screen(nullptr);
-
-#if 0
 	while (_canTick)
 	{
 		std::unique_lock<std::mutex> lock(_mutex);
 		_cv.wait(lock);
 	}
-#endif
+
+	screen.Exit();
+
+	if (uiThread.joinable())
+		uiThread.join();
 
 	_exitCode = EXIT_SUCCESS;
 }
