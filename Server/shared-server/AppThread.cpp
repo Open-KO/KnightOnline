@@ -92,15 +92,19 @@ void AppThread::thread_loop()
 
 		{
 			std::lock_guard<std::mutex> lock(consoleLogger->lock());
+
 			entryCount = consoleLogger->log_buffer().size();
 			for (const ColoredLog& log : consoleLogger->log_buffer())
 			{
-				auto logLine = hbox({
-					text(log.Prefix),
-					text(log.LevelText) | color(log.color()),
-					text(log.Suffix)
-				});
+				std::string_view textBeforeColor(log.Message.data(), log.ColorRangeStart);
+				std::string_view textColored(log.Message.data() + log.ColorRangeStart, log.ColorRangeEnd - log.ColorRangeStart);
+				std::string_view textAfterColor(log.Message.data() + log.ColorRangeEnd, log.Message.length() - log.ColorRangeEnd);
 
+				auto logLine = hbox({
+					text(std::string(textBeforeColor)),
+					text(std::string(textColored)) | color(log.color()),
+					text(std::string(textAfterColor))
+				});
 				logElements.push_back(logLine);
 			}
 		}

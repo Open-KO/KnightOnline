@@ -9,9 +9,9 @@ namespace ftxui
 {
 	struct ColoredLog
 	{
-		std::string Prefix;		// "[12:34:56] ["
-		std::string LevelText;	// "info"
-		std::string Suffix;		// "] message text"
+		std::string Message;
+		size_t ColorRangeStart;
+		size_t ColorRangeEnd;
 		spdlog::level::level_enum Level;
 
 		Color color() const;
