@@ -212,6 +212,8 @@ void AppThread::thread_loop()
 		consoleLogger->set_screen(&screen);
 		screen.Loop(renderer);
 		consoleLogger->set_screen(nullptr);
+
+		shutdown(false);
 	});
 
 	while (_canTick)
