@@ -46,11 +46,12 @@ void logger::Logger::Setup(CIni& ini, const std::filesystem::path& baseDir)
 	consoleLogger->set_pattern(consoleLogPattern);
 
 	_fxtuiSink->set_pattern(consoleLogPattern);
+	_fxtuiSink->set_console_sink(consoleLogger);
 
 	spdlog::init_thread_pool(MessageQueueSize, ThreadPoolSize);
 
-	// setup multi-sink async logger as default (combines file+console logger)
-	spdlog::sinks_init_list sinks = { fileLogger, _fxtuiSink, consoleLogger };
+	// setup multi-sink async logger as default (combines file + console logger [under ftxui])
+	spdlog::sinks_init_list sinks = { fileLogger, _fxtuiSink };
 
 	auto threadPool = spdlog::thread_pool();
 	auto appLogger = std::make_shared<spdlog::async_logger>(
@@ -99,17 +100,11 @@ void logger::Logger::SetupExtraLogger(CIni& ini,
 
 	auto fileLogger = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(fileName, 0, 0);
 
-	// setup console logger
-	auto consoleLogger = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-
 	std::string logPattern = ini.GetString(ini::LOGGER, ini::PATTERN, ini::DEFAULT_LOG_PATTERN);
 	fileLogger->set_pattern(logPattern);
 
-	std::string consoleLogPattern = ini.GetString(ini::LOGGER, ini::CONSOLE_PATTERN, ini::DEFAULT_CONSOLE_LOG_PATTERN);
-	consoleLogger->set_pattern(consoleLogPattern);
-
-	// setup multi-sink async logger as default (combines file+console logger)
-	spdlog::sinks_init_list sinks = { fileLogger, _fxtuiSink, consoleLogger };
+	// setup multi-sink async logger as default (combines file + console logger [under fxtui])
+	spdlog::sinks_init_list sinks = { fileLogger, _fxtuiSink };
 	auto extraLogger = std::make_shared<spdlog::async_logger>(
 		appName, sinks.begin(), sinks.end(), threadPool, spdlog::async_overflow_policy::block);
 

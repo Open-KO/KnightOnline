@@ -7,6 +7,18 @@
 
 namespace ftxui
 {
+	struct ReplayLog
+	{
+		std::string						logger_name;
+		spdlog::level::level_enum		level;
+		spdlog::log_clock::time_point	time;
+		size_t							thread_id;
+		std::string						source_filename;
+		int								source_line;
+		std::string						source_funcname;
+		std::string						payload;
+	};
+
 	class ScreenInteractive;
 	class sink_mt : public spdlog::sinks::base_sink<std::mutex>
 	{
@@ -21,6 +33,7 @@ namespace ftxui
 		sink_mt();
 		void set_screen(ftxui::ScreenInteractive* screen);
 		void set_backlog_size(size_t backlogSize);
+		void set_console_sink(std::shared_ptr<spdlog::sinks::sink> consoleSink);
 
 	protected:
 		void sink_it_(const spdlog::details::log_msg& msg) override;
@@ -38,10 +51,12 @@ namespace ftxui
 		}
 
 	private:
-		Elements					_logBuffer;
-		std::mutex					_logBufferMutex;
-		ftxui::ScreenInteractive*	_screen;
-		bool						_useStdout;
-		size_t						_backlogSize;
+		Elements								_logBuffer;
+		std::deque<ReplayLog>					_replayLogBuffer;
+		std::mutex								_logBufferMutex;
+		ftxui::ScreenInteractive*				_screen;
+		bool									_useStdout;
+		size_t									_backlogSize;
+		std::shared_ptr<spdlog::sinks::sink>	_consoleSink;
 	};
 }
