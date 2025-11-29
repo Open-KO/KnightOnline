@@ -135,7 +135,8 @@ public:
 	int GetAIServerPort() const;
 	int GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char* buff, int& t_count);
 	bool LoadNoticeData();
-	int GetZoneIndex(int zonenumber);
+	bool HandleCommand(const std::string& command);
+	int GetZoneIndex(int zonenumber) const;
 	int GetRegionNpcList(C3DMap* pMap, int region_x, int region_z, char* nid_buff, int& t_count, int nType = 0); // Region All Npcs nid Packaging Function
 	void RegionNpcInfoForMe(CUser* pSendUser, int nType = 0);	// 9 Regions All Npcs nid Packaging Function
 	int GetRegionUserList(C3DMap* pMap, int region_x, int region_z, char* buff, int& t_count); // Region All Users uid Packaging Function

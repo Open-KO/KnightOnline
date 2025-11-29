@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "OperationMessage.h"
 #include "EbenezerInstance.h"
+#include "EbenezerResourceFormatter.h"
 #include "User.h"
+#include "db_resources.h"
 
 #include <djb2/djb2_hasher.h>
 #include <shared/StringUtils.h>
@@ -388,10 +390,17 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
+			case "/permanent"_djb2:
+				Permanent();
+				break;
+
+			case "/offpermanent"_djb2:
+				OffPermanent();
+				break;
+
 			// Unhandled command.
 			default:
 				return false;
-
 		}
 	}
 	catch (const std::invalid_argument& ex)
@@ -831,6 +840,42 @@ void OperationMessage::ItemDownReset()
 void OperationMessage::ChallengeStop()
 {
 	// TODO
+}
+
+void OperationMessage::Permanent()
+{
+	_main->m_bPermanentChatMode = true;
+	_main->m_bPermanentChatFlag = true;
+}
+
+void OperationMessage::OffPermanent()
+{
+	_main->m_bPermanentChatMode = false;
+	_main->m_bPermanentChatFlag = false;
+
+	char sendBuff[1024] = {};
+	int sendIndex = 0;
+
+	SetByte(sendBuff, WIZ_CHAT, sendIndex);
+	SetByte(sendBuff, END_PERMANENT_CHAT, sendIndex);
+
+	SetByte(sendBuff, 0x01, sendIndex);		// nation
+	SetShort(sendBuff, -1, sendIndex);		// sid
+	SetByte(sendBuff, 0, sendIndex);		// sender name length
+	SetString2(sendBuff, "", sendIndex);
+	_main->Send_All(sendBuff, sendIndex);
+
+	sendIndex = 0;
+	memset(sendBuff, 0, 1024);
+	SetByte(sendBuff, STS_CHAT, sendIndex);
+	SetString2(sendBuff, _command, sendIndex);
+
+	for (const auto& [_, pInfo] : _main->m_ServerArray)
+	{
+		if (pInfo != nullptr
+			&& pInfo->sServerNo != _main->m_nServerNo)
+			_main->m_pUdpSocket->SendUDPPacket(pInfo->strServerIP, sendBuff, sendIndex);
+	}
 }
 
 bool OperationMessage::ParseCommand(const std::string_view command, size_t& key)

@@ -21,6 +21,14 @@ public:
 	/// \returns true when successful, false otherwise
 	virtual bool OnStart() = 0;
 
+	/// \brief Parses command input from the console and dispatches command handling via HandleCommand.
+	/// \see HandleCommand
+	virtual void ParseCommand(const std::string& command);
+
+	/// \brief Handles command processing.
+	/// \returns true when handled, false otherwise
+	virtual bool HandleCommand(const std::string& command);
+
 	template <typename AppThreadType, typename LoggerType>
 	static int main(LoggerType& logger)
 	{

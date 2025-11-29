@@ -1810,7 +1810,7 @@ int EbenezerInstance::GetRegionNpcList(C3DMap* pMap, int region_x, int region_z,
 	return buff_index;
 }
 
-int EbenezerInstance::GetZoneIndex(int zonenumber)
+int EbenezerInstance::GetZoneIndex(int zonenumber) const
 {
 	for (size_t i = 0; i < m_ZoneArray.size(); i++)
 	{
@@ -1823,113 +1823,57 @@ int EbenezerInstance::GetZoneIndex(int zonenumber)
 	return -1;
 }
 
-#if 0
-BOOL EbenezerInstance::PreTranslateMessage(MSG* pMsg)
+bool EbenezerInstance::HandleCommand(const std::string& command)
 {
-	char buff[1024] = {};
-	char chatstr[256] = {}, killstr[256] = {};
-	int chatlen = 0, buffindex = 0;
+	OperationMessage opMessage(this, nullptr);
+	if (opMessage.Process(command))
+		return true;
 
-	std::string buff2;
-//
-	bool permanent_off = false;
-//
-	if (pMsg->message == WM_KEYDOWN)
+	std::string finalstr;
+
+	char sendBuff[1024] = {};
+	int sendIndex = 0;
+	SetByte(sendBuff, WIZ_CHAT, sendIndex);
+
+	if (m_bPermanentChatFlag)
 	{
-		if (pMsg->wParam == VK_RETURN)
+		finalstr = fmt::format("- {} -", command);
+		if (finalstr.length() >= sizeof(m_strPermanentChat))
 		{
-			::GetWindowTextA(m_AnnounceEdit.GetSafeHwnd(), chatstr, 256);
-
-			UpdateData(TRUE);
-			chatlen = strlen(chatstr);
-			if (chatlen == 0)
-				return TRUE;
-
-			m_AnnounceEdit.SetWindowText(_T(""));
-			UpdateData(FALSE);
-
-			OperationMessage opMessage(this, nullptr);
-			if (opMessage.Process(chatstr))
-				return TRUE;
-
-			// 비러머글 남는 공지 --;
-			if (_strnicmp("/permanent", chatstr, 10) == 0)
-			{
-				m_bPermanentChatMode = true;
-				m_bPermanentChatFlag = true;
-				return TRUE;
-			}
-
-			if (_strnicmp("/offpermanent", chatstr, 13) == 0)
-			{
-				m_bPermanentChatMode = false;
-				m_bPermanentChatFlag = false;
-				permanent_off = true;
-//				return TRUE;	//이것은 고의적으로 TRUE를 뺐었음
-			}
-//
-
-			std::string finalstr;
-
-			// 비러머글 남는 공지		
-			if (m_bPermanentChatFlag)
-				finalstr = fmt::format("- {} -", chatstr);
-			else
-				finalstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, chatstr);
-
-			//
-			SetByte(buff, WIZ_CHAT, buffindex);
-			// SetByte( buff, PUBLIC_CHAT, buffindex );
-
-			// 비러머글 남는 공지
-			if (permanent_off)
-			{
-				SetByte(buff, END_PERMANENT_CHAT, buffindex);
-			}
-			else if (!m_bPermanentChatFlag)
-			{
-				SetByte(buff, PUBLIC_CHAT, buffindex);
-			}
-			else
-			{
-				SetByte(buff, PERMANENT_CHAT, buffindex);
-				strcpy(m_strPermanentChat, finalstr.c_str());
-				m_bPermanentChatFlag = false;
-			}
-//
-			SetByte(buff, 0x01, buffindex);		// nation
-			SetShort(buff, -1, buffindex);		// sid
-			SetByte(buff, 0, buffindex);		// sender name length
-			SetString2(buff, finalstr, buffindex);
-			Send_All(buff, buffindex);
-
-			buffindex = 0;
-			memset(buff, 0x00, 1024);
-			SetByte(buff, STS_CHAT, buffindex);
-			SetString2(buff, finalstr, buffindex);
-
-			for (const auto& [_, pInfo] : m_ServerArray)
-			{
-				if (pInfo != nullptr
-					&& pInfo->sServerNo != m_nServerNo)
-					m_pUdpSocket->SendUDPPacket(pInfo->strServerIP, buff, buffindex);
-			}
-
-			return TRUE;
+			spdlog::warn("Supplied permanent chat notice too long: {}", finalstr);
+			return false;
 		}
 
-		if (pMsg->wParam == VK_ESCAPE)
-			return TRUE;
+		SetByte(sendBuff, PERMANENT_CHAT, sendIndex);
+		strcpy(m_strPermanentChat, finalstr.c_str());
+		m_bPermanentChatFlag = false;
+	}
+	else
+	{
+		finalstr = fmt::format_db_resource(IDP_ANNOUNCEMENT, command);
+		SetByte(sendBuff, PUBLIC_CHAT, sendIndex);
 	}
 
-	if (pMsg->wParam == VK_F8)
-		SyncTest(1);
-	else if (pMsg->wParam == VK_F9)
-		SyncTest(2);
+	SetByte(sendBuff, 0x01, sendIndex);		// nation
+	SetShort(sendBuff, -1, sendIndex);		// sid
+	SetByte(sendBuff, 0, sendIndex);		// sender name length
+	SetString2(sendBuff, finalstr, sendIndex);
+	Send_All(sendBuff, sendIndex);
 
-	return CDialog::PreTranslateMessage(pMsg);
+	sendIndex = 0;
+	memset(sendBuff, 0, 1024);
+	SetByte(sendBuff, STS_CHAT, sendIndex);
+	SetString2(sendBuff, finalstr, sendIndex);
+
+	for (const auto& [_, pInfo] : m_ServerArray)
+	{
+		if (pInfo != nullptr
+			&& pInfo->sServerNo != m_nServerNo)
+			m_pUdpSocket->SendUDPPacket(pInfo->strServerIP, sendBuff, sendIndex);
+	}
+
+	return true;
 }
-#endif
 
 bool EbenezerInstance::LoadNoticeData()
 {

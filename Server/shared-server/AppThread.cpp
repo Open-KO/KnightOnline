@@ -54,35 +54,14 @@ void AppThread::thread_loop()
     
     input |= CatchEvent([&](Event event)
 	{
-        if (event != Event::Return)
-			return false;
-
-		if (inputText.empty())
-			return false;
-
-		spdlog::info("Command: {}", inputText);
-
-		if (inputText == "clear")
+        if (event == Event::Return)
 		{
-			{
-				std::lock_guard<std::mutex> lock(consoleLogger->lock());
-				consoleLogger->log_buffer().clear();
-			}
-
-			spdlog::info("Logs cleared");
-		}
-		else if (inputText == "test")
-		{
-			for (int i = 0; i < 10; i++)
-				spdlog::info("Test {}", i + 1);
-		}
-    	else if (inputText == "exit")
-		{
-			shutdown(false);
+			ParseCommand(inputText);
+			inputText.clear();
+			return true;
 		}
 
-		inputText.clear();
-		return true;
+		return false;
     });
     
     auto renderer = Renderer(input, [&]
@@ -228,6 +207,41 @@ void AppThread::thread_loop()
 		uiThread.join();
 
 	_exitCode = EXIT_SUCCESS;
+}
+
+void AppThread::ParseCommand(const std::string& command)
+{
+	if (command.empty())
+		return;
+
+	if (HandleCommand(command))
+		spdlog::info("Command handled: {}", command);
+	else
+		spdlog::warn("Command not handled: {}", command);
+}
+
+bool AppThread::HandleCommand(const std::string& command)
+{
+	if (command == "/clear")
+	{
+		auto consoleLogger = _logger.consoleLogger();
+		if (consoleLogger != nullptr)
+		{
+			std::lock_guard<std::mutex> lock(consoleLogger->lock());
+			consoleLogger->log_buffer().clear();
+		}
+
+		spdlog::info("Logs cleared");
+		return true;
+	}
+	
+	if (command == "/exit")
+	{
+		shutdown(false);
+		return true;
+	}
+
+	return false;
 }
 
 void AppThread::catchInterruptSignals()

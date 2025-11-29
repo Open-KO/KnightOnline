@@ -89,6 +89,8 @@ protected:
 	void ItemDown();
 	void ItemDownReset();
 	void ChallengeStop();
+	void Permanent();
+	void OffPermanent();
 
 	bool ParseCommand(const std::string_view command, size_t& key);
 
