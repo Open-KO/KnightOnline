@@ -1,0 +1,67 @@
+# persistent storage
+volumes:
+  sqlserver_data:
+  init_data:
+
+# shared container network
+networks:
+  backend:
+
+# Use 'docker-compose down --rmi all -v' to completely remove database images.
+# This is useful for when you want to reset the database to the current
+# standard saved in the OpenKO-db project.
+services:
+  # Microsoft SQL Server service
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    networks:
+      - backend
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${Sa_Password}
+      - MSSQL_PID=Developer
+#      - MSSQL_TCP_ENCRYPTION=OFF
+    ports:
+      - 1433:1433
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password} -C -Q 'SELECT 1' || exit 1"]
+      interval: 3s
+      retries: 30
+      start_period: 10s
+      timeout: 3s
+  sqlserver.configurator:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    env_file:
+      - path: .env
+        required: true
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    command: >
+      bash -c '
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password} -C -d master;
+      echo "All done!";
+      '
+
+  # Service to do a clean load of the KN_online database from Git
+  refreshdb:
+    build: docker/refreshdb/
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file:
+      - path: .env
+        required: true
+    volumes:
+      - init_data:/var/lib/app
+    entrypoint: /usr/local/bin/entry.sh
