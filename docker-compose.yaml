@@ -1,6 +1,7 @@
 # persistent storage
 volumes:
   sqlserver_data:
+  sqlserver_scripts:
   kodb_util_data:
 
 # shared container network
@@ -15,6 +16,8 @@ services:
   sqlserver:
     #image: mcr.microsoft.com/mssql/server:2022-latest
     build: docker/sqlserver
+    # required to make docker desktop (windows) behave correctly
+    x-buildkit: true
     networks:
       - backend
     env_file:
@@ -28,9 +31,10 @@ services:
       - ${SQL_PORT:-1433}:1433
     volumes:
       - sqlserver_data:/var/opt/mssql
+      - sqlserver_scripts:/var/opt/appscripts
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
+      test: ["CMD-SHELL", "/var/opt/appscripts/healthcheck.sh"]
       interval: 3s
       retries: 10
       start_period: 10s
@@ -38,6 +42,8 @@ services:
   sqlserver.configurator:
     #image: mcr.microsoft.com/mssql/server:2022-latest
     build: docker/sqlserver
+    # required to make docker desktop (windows) behave correctly
+    x-buildkit: true
     env_file:
       - path: .env
         required: false
@@ -52,12 +58,14 @@ services:
       - backend
     command: >
       bash -c '
-      /usr/local/bin/configurator.sh;
+      /var/opt/appscripts/configurator.sh;
       '
 
   # Service to do a clean load of the KN_online database from Git
   kodb-util:
     build: docker/kodb-util/
+    # required to make docker desktop (windows) behave correctly
+    x-buildkit: true
     environment:
       - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
       - SQL_PORT=${SQL_PORT:-1433}

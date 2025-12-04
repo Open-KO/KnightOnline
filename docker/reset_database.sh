@@ -6,4 +6,4 @@ cd ..
 # DB_NAME from the .env file (default: KN_Online), then 
 # create a replacement database using the latest data 
 # from the OpenKO-db project.
-docker exec -it knightonline-kodb-util-1 /usr/local/bin/cleanImport.sh
+docker exec knightonline-kodb-util-1 /usr/local/bin/cleanImport.sh

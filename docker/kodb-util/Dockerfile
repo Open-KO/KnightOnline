@@ -23,6 +23,8 @@ COPY kodb-util-config.yaml /var/lib/app/kodb-util/kodb-util-config.yaml.template
 # copy the entry script onto the image
 COPY cleanImport.sh /usr/local/bin/cleanImport.sh
 RUN chmod +x /usr/local/bin/cleanImport.sh
+# Remove Windows carriage returns that may break the shebang
+RUN sed -i 's/\r$//' /usr/local/bin/cleanImport.sh
 
 # keep the container alive so that it may recieve commands
 # via `docker exec`

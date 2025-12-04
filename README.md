@@ -4,50 +4,9 @@ We started this project to learn more about how the MMORPG Knight Online works. 
 
 This code is for academic purposes only! If you have questions, or would like help getting started, feel free visit the <a href="http://ko4life.net/topic/50-the-openko-project/" target="_blank">forums</a>.
 
-## Prerequisites
+### Project Setup
 
-### Visual Studio 2022
-
-You will also need the following components installed, which can be installed from within Visual Studio via:
- * `Tools`
- * `Get Tools and Features...`
- * `Individual Components`.
- 
-Use the search field to find them from there.
-
-#### Components to install:
- * C++ ATL for latest v143 build tools (x86 & x64)
- * C++ MFC for latest v143 build tools (x86 & x64)
- * MSVC v143 - VS 2022 C++ x64/x86 build tools (Latest) 
-
-### Microsoft SQL Server Express/Developer
-
-Along with its accompanying SQL Server Management Studio.
-
-Additionally, you will need to download and restore [our database](https://mega.nz/file/C8VCAbaC#roPiSnFHzHRlet8cKuzqU8ZFB8kSRVjOCKyzNHpa47U), which restores fine as of Microsoft SQL Server 2022.
-
-### Git or Github Desktop
-
-This is a personal preference.
-
-You can find Git for Windows here:
-https://git-scm.com/downloads/win
-
-Or Github Desktop here:
-https://desktop.github.com/download/
-
-## Getting started
-
-### Clone our repository
-
-```
-git clone https://github.com/Open-KO/KnightOnline.git
-```
-
-If using Github Desktop, you can instead clone via `File` -> `Clone repository...` -> `URL` and then paste in our URL:
-```
-https://github.com/Open-KO/KnightOnline.git
-```
+A guide to using this project is maintained on the wiki: [Project Setup - OpenKO Wiki](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup)
 
 ### Run the solution
 
