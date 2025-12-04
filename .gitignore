@@ -57,4 +57,4 @@ All.sln.DotSettings.user
 *.txt
 last-build-states/
 module-output/
-
+.env
