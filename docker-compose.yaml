@@ -1,7 +1,7 @@
 # persistent storage
 volumes:
   sqlserver_data:
-  init_data:
+  kodb_util_data:
 
 # shared container network
 networks:
@@ -13,47 +13,58 @@ networks:
 services:
   # Microsoft SQL Server service
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    #image: mcr.microsoft.com/mssql/server:2022-latest
+    build: docker/sqlserver
     networks:
       - backend
     env_file:
       - path: .env
-        required: true
+        required: false
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${Sa_Password}
-      - MSSQL_PID=Developer
-#      - MSSQL_TCP_ENCRYPTION=OFF
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
     ports:
-      - 1433:1433
+      # internal port is always 1433, but it can be port-forwarded to 
+      # a different host port using SQL_PORT
+      - ${SQL_PORT:-1433}:1433
     volumes:
       - sqlserver_data:/var/opt/mssql
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password} -C -Q 'SELECT 1' || exit 1"]
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
       interval: 3s
-      retries: 30
+      retries: 10
       start_period: 10s
       timeout: 3s
   sqlserver.configurator:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    #image: mcr.microsoft.com/mssql/server:2022-latest
+    build: docker/sqlserver
     env_file:
       - path: .env
-        required: true
+        required: false
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
     volumes:
       - ./init:/docker-entrypoint-initdb.d
     depends_on:
       sqlserver:
         condition: service_healthy
+    networks:
+      - backend
     command: >
       bash -c '
-      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password} -C -d master;
-      echo "All done!";
+      /usr/local/bin/configurator.sh;
       '
 
   # Service to do a clean load of the KN_online database from Git
-  refreshdb:
-    build: docker/refreshdb/
+  kodb-util:
+    build: docker/kodb-util/
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
+      - SQL_PORT=${SQL_PORT:-1433}
+      - GAME_DB_NAME=${GAME_DB_NAME:-KN_Online}
+      - GAME_DB_USER=${GAME_DB_USER:-knight}
+      - GAME_DB_PASS=${GAME_DB_PASS:-knight}
+      - GAME_DB_SCHEMA=${GAME_DB_SCHEMA:-knight}
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -61,7 +72,6 @@ services:
       - backend
     env_file:
       - path: .env
-        required: true
+        required: false
     volumes:
-      - init_data:/var/lib/app
-    entrypoint: /usr/local/bin/entry.sh
+      - kodb_util_data:/var/lib/app

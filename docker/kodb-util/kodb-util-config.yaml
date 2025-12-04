@@ -3,7 +3,7 @@
 databaseConfig:
   host: sqlserver
   instance: SQLEXPRESS
-  port: 1433
+  port: ${SQL_PORT}
 
 # Database Generation configuration
 # Order of operations: Create DBs (with schemas), Create Users (with schemas), Create Logins (to databases)
@@ -13,22 +13,22 @@ genConfig:
   # to pull updates: git submodule update --recursive --remote
   schemaDir: ./OpenKO-db
   gameDb:
-    - name: KN_online
+    - name: ${GAME_DB_NAME}
       # Forbid options are here if you want to prevent a database from processing an operation type
       # this can be useful if you want to have a source database to export from, and a test database to import to
       isForbidClean: false
       isForbidImport: false
       isForbidExport: true
       schemas:
-        - knight
+        - ${GAME_DB_SCHEMA}
       # logins are stored under db config as a way of specifying their default database;
       # the same login should not be specified for multiple dbs
       logins:
-        - name: knight
-          pass: knight
+        - name: ${GAME_DB_USER}
+          pass: ${GAME_DB_PASS}
       # we're creating users at the database-level to discourage the use of system database users
       # it should be OK to create the same user in multiple non-system databases if you want to
       # reuse the same user
       users:
-        - name: knight
-          schema: knight
+        - name: ${GAME_DB_USER}
+          schema: ${GAME_DB_SCHEMA}
