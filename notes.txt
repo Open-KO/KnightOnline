@@ -56,8 +56,6 @@ grep -r “keyword” <search-directory>
 - binary client doesn's show the noah user pays when they purchase something
 
 ===============================================================================
-two will remember this file one day
-===============================================================================
 QUEST_HELPER
 nIndex;              -> useful for SaveEvent()
 bMessageType;        -> not used at all

@@ -69,7 +69,7 @@ services:
     environment:
       - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
       - SQL_PORT=${SQL_PORT:-1433}
-      - GAME_DB_NAME=${GAME_DB_NAME:-KN_Online}
+      - GAME_DB_NAME=${GAME_DB_NAME:-KN_online}
       - GAME_DB_USER=${GAME_DB_USER:-knight}
       - GAME_DB_PASS=${GAME_DB_PASS:-knight}
       - GAME_DB_SCHEMA=${GAME_DB_SCHEMA:-knight}
