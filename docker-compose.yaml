@@ -36,7 +36,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "/var/opt/appscripts/healthcheck.sh"]
       interval: 3s
-      retries: 10
+      retries: 30
       start_period: 10s
       timeout: 3s
   sqlserver.configurator:
