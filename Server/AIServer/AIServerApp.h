@@ -1,6 +1,4 @@
-﻿// AIServerApp.h : header file
-//
-#pragma once
+﻿#pragma once
 
 #include "AISocketManager.h"
 
@@ -11,27 +9,10 @@
 #include "Extern.h"			// 전역 객체
 
 #include <shared-server/AppThread.h>
-#include <shared-server/logger.h>
 #include <shared-server/STLMap.h>
 
 #include <vector>
 #include <list>
-
-class AIServerLogger : public logger::Logger
-{
-public:
-	AIServerLogger()
-		: Logger(logger::AIServer)
-	{
-	}
-
-	void SetupExtraLoggers(CIni& ini,
-		std::shared_ptr<spdlog::details::thread_pool> threadPool,
-		const std::filesystem::path& baseDir) override;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-// AIServerApp dialog
 
 class CNpcThread;
 class ZoneEventThread;
@@ -54,6 +35,7 @@ typedef CSTLMap <model::ZoneInfo>			ZoneInfoTableMap;
 typedef std::list <int>						ZoneNpcInfoList;
 typedef std::vector <MAP*>					ZoneArray;
 
+class AIServerLogger;
 class TimerThread;
 class AIServerApp : public AppThread
 {

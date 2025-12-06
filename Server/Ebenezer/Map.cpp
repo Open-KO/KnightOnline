@@ -574,7 +574,8 @@ bool C3DMap::LoadEvent()
 
 	if (!loader.Load_ForbidEmpty())
 	{
-		m_pMain->ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("Map::LoadEvent: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 

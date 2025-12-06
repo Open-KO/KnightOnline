@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include "EbenezerApp.h"
+#include "EbenezerLogger.h"
+#include "EbenezerReadQueueThread.h"
 #include "OperationMessage.h"
 #include "User.h"
 #include "db_resources.h"
@@ -9,8 +11,11 @@
 #include <shared/lzf.h>
 #include <shared/packets.h>
 #include <shared/StringUtils.h>
+#include <shared/TimerThread.h>
 
 #include <db-library/ConnectionManager.h>
+#include <db-library/RecordSetLoader_STLMap.h>
+#include <db-library/RecordSetLoader_Vector.h>
 
 #include <fstream>
 
@@ -18,12 +23,6 @@ constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
 constexpr int NUM_FLAG_VICTORY    = 4;
 constexpr int AWARD_GOLD          = 5000;
-
-// NOTE: Explicitly handled under DEBUG_NEW override
-#include "EbenezerReadQueueThread.h"
-#include <db-library/RecordSetLoader_STLMap.h>
-#include <db-library/RecordSetLoader_Vector.h>
-#include <shared/TimerThread.h>
 
 import EbenezerBinder;
 
@@ -938,17 +937,12 @@ bool EbenezerApp::MapFileLoad()
 
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::MapFileLoad: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
 	return loaded;
-}
-
-void EbenezerApp::ReportTableLoadError(const recordset_loader::Error& err, const char* source)
-{
-	spdlog::error("EbenezerApp::ReportTableLoadError: {} failed: {}",
-		source, err.Message);
 }
 
 bool EbenezerApp::LoadItemTable()
@@ -956,7 +950,8 @@ bool EbenezerApp::LoadItemTable()
 	recordset_loader::STLMap loader(m_ItemTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadItemTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -968,7 +963,8 @@ bool EbenezerApp::LoadMagicTable()
 	recordset_loader::STLMap loader(m_MagicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -980,7 +976,8 @@ bool EbenezerApp::LoadMagicType1()
 	recordset_loader::STLMap loader(m_MagicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType1: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -992,7 +989,8 @@ bool EbenezerApp::LoadMagicType2()
 	recordset_loader::STLMap loader(m_MagicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType2: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1004,7 +1002,8 @@ bool EbenezerApp::LoadMagicType3()
 	recordset_loader::STLMap loader(m_MagicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType3: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1016,7 +1015,8 @@ bool EbenezerApp::LoadMagicType4()
 	recordset_loader::STLMap loader(m_MagicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType4: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1028,7 +1028,8 @@ bool EbenezerApp::LoadMagicType5()
 	recordset_loader::STLMap loader(m_MagicType5TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType5: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1040,7 +1041,8 @@ bool EbenezerApp::LoadMagicType7()
 	recordset_loader::STLMap loader(m_MagicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType7: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1052,7 +1054,8 @@ bool EbenezerApp::LoadMagicType8()
 	recordset_loader::STLMap loader(m_MagicType8TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadMagicType8: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1064,7 +1067,8 @@ bool EbenezerApp::LoadCoefficientTable()
 	recordset_loader::STLMap loader(m_CoefficientTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadCoefficientTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1076,7 +1080,8 @@ bool EbenezerApp::LoadLevelUpTable()
 	recordset_loader::Vector<model::LevelUp> loader(m_LevelUpTableArray);
 	if (!loader.Load_ForbidEmpty(true))
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadLevelUpTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -1173,14 +1178,6 @@ void EbenezerApp::LoadConfig()
 
 	// Trigger a save to flush defaults to file.
 	m_Ini.Save();
-}
-
-void EbenezerLogger::SetupExtraLoggers(CIni& ini,
-	std::shared_ptr<spdlog::details::thread_pool> threadPool,
-	const std::filesystem::path& baseDir)
-{
-	SetupExtraLogger(ini, threadPool, baseDir, logger::EbenezerEvent, ini::EVENT_LOG_FILE);
-	SetupExtraLogger(ini, threadPool, baseDir, logger::EbenezerRegion, ini::REGION_LOG_FILE);
 }
 
 void EbenezerApp::UpdateGameTime()
@@ -2625,7 +2622,8 @@ bool EbenezerApp::LoadStartPositionTable()
 	recordset_loader::STLMap loader(m_StartPositionTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadStartPositionTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -2639,7 +2637,8 @@ bool EbenezerApp::LoadServerResourceTable()
 	recordset_loader::STLMap loader(tableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadServerResourceTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -2658,7 +2657,8 @@ bool EbenezerApp::LoadHomeTable()
 	recordset_loader::STLMap loader(m_HomeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadHomeTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -2746,7 +2746,8 @@ bool EbenezerApp::LoadAllKnights()
 
 	if (!loader.Load_AllowEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadAllKnights: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -2775,7 +2776,8 @@ bool EbenezerApp::LoadAllKnightsUserData()
 
 	if (!loader.Load_AllowEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadAllKnightsUserData: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -2801,7 +2803,8 @@ bool EbenezerApp::LoadKnightsSiegeWarfareTable()
 
 	if (!loader.Load_AllowEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadKnightsSiegeWarfareTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -3133,7 +3136,8 @@ bool EbenezerApp::LoadBattleTable()
 
 	if (!loader.Load_ForbidEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadBattleTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -3261,7 +3265,8 @@ bool EbenezerApp::LoadKnightsRankTable()
 
 	if (!loader.Load_AllowEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadKnightsRankTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 
@@ -3409,7 +3414,8 @@ bool EbenezerApp::LoadEventTriggerTable()
 
 	if (!loader.Load_AllowEmpty())
 	{
-		ReportTableLoadError(loader.GetError(), __func__);
+		spdlog::error("EbenezerApp::LoadEventTriggerTable: load failed - {}",
+			loader.GetError().Message);
 		return false;
 	}
 

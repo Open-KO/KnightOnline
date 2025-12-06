@@ -1,8 +1,6 @@
-﻿// AIServer.cpp : contains the main() function to start the server
-//
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "AIServerApp.h"
+#include "AIServerLogger.h"
 
 int main()
 {

@@ -127,6 +127,7 @@
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="Ebenezer.cpp" />
     <ClCompile Include="EbenezerApp.cpp" />
+    <ClCompile Include="EbenezerLogger.cpp" />
     <ClCompile Include="EbenezerReadQueueThread.cpp" />
     <ClCompile Include="EbenezerSocketManager.cpp" />
     <ClCompile Include="EVENT.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="db_resources.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="EbenezerApp.h" />
+    <ClInclude Include="EbenezerLogger.h" />
     <ClInclude Include="EbenezerReadQueueThread.h" />
     <ClInclude Include="EbenezerResourceFormatter.h" />
     <ClInclude Include="EbenezerSocketManager.h" />
@@ -174,7 +176,7 @@
     <ClInclude Include="OperationMessage.h" />
     <ClInclude Include="RecvUDPThread.h" />
     <ClInclude Include="Region.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SendWorkerThread.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="UdpSocket.h" />

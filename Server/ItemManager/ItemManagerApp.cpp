@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "ItemManagerApp.h"
+#include "ItemManagerLogger.h"
 #include "ItemManagerReadQueueThread.h"
 
 #include <shared/Ini.h>
@@ -55,14 +56,6 @@ bool ItemManagerApp::OnStart()
 	spdlog::info("ItemManager started");
 
 	return true;
-}
-
-void ItemManagerLogger::SetupExtraLoggers(CIni& ini,
-	std::shared_ptr<spdlog::details::thread_pool> threadPool,
-	const std::filesystem::path& baseDir)
-{
-	SetupExtraLogger(ini, threadPool, baseDir, logger::ItemManagerItem, ini::ITEM_LOG_FILE);
-	SetupExtraLogger(ini, threadPool, baseDir, logger::ItemManagerExp, ini::EXP_LOG_FILE);
 }
 
 void ItemManagerApp::ItemLogWrite(const char* pBuf)

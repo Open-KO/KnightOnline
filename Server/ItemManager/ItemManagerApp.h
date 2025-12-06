@@ -3,22 +3,9 @@
 #include "Define.h"
 
 #include <shared-server/AppThread.h>
-#include <shared-server/logger.h>
 #include <shared-server/SharedMemoryQueue.h>
 
-class ItemManagerLogger : public logger::Logger
-{
-public:
-	ItemManagerLogger()
-		: Logger(logger::ItemManager)
-	{
-	}
-
-	void SetupExtraLoggers(CIni& ini,
-		std::shared_ptr<spdlog::details::thread_pool> threadPool,
-		const std::filesystem::path& baseDir) override;
-};
-
+class ItemManagerLogger;
 class ReadQueueThread;
 class ItemManagerApp : public AppThread
 {

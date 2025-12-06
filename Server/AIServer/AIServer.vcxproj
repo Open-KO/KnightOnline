@@ -136,6 +136,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIServerLogger.cpp" />
     <ClCompile Include="AISocketManager.cpp" />
     <ClCompile Include="GameSocket.cpp" />
     <ClCompile Include="MagicProcess.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="ZoneEventThread.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIServerLogger.h" />
     <ClInclude Include="AISocketManager.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Extern.h" />

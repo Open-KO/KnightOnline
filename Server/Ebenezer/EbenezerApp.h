@@ -14,7 +14,6 @@
 
 #include <shared/Ini.h>
 #include <shared-server/AppThread.h>
-#include <shared-server/logger.h>
 #include <shared-server/SharedMemoryBlock.h>
 #include <shared-server/SharedMemoryQueue.h>
 #include <shared-server/STLMap.h>
@@ -22,26 +21,6 @@
 #include <unordered_map>
 #include <vector>
 #include <queue>
-
-#include "resource.h"
-
-namespace recordset_loader
-{
-	struct Error;
-}
-
-class EbenezerLogger : public logger::Logger
-{
-public:
-	EbenezerLogger()
-		: Logger(logger::Ebenezer)
-	{
-	}
-
-	void SetupExtraLoggers(CIni& ini,
-		std::shared_ptr<spdlog::details::thread_pool> threadPool,
-		const std::filesystem::path& baseDir) override;
-};
 
 typedef std::vector <C3DMap*>				ZoneArray;
 typedef std::vector <model::LevelUp*>		LevelUpTableArray;
@@ -74,6 +53,7 @@ enum class NameType
 };
 
 class CUser;
+class EbenezerLogger;
 class ReadQueueThread;
 class TimerThread;
 class EbenezerApp : public AppThread
@@ -154,7 +134,6 @@ public:
 	bool LoadCoefficientTable();
 	bool LoadMagicTable();
 	bool LoadItemTable();
-	void ReportTableLoadError(const recordset_loader::Error& err, const char* source);
 	bool MapFileLoad();
 	void UserAcceptThread();
 	// sungyong 2001.11.06

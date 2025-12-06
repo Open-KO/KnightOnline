@@ -1,8 +1,6 @@
-﻿// AIServerApp.cpp : implementation file
-//
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "AIServerApp.h"
+#include "AIServerLogger.h"
 #include "GameSocket.h"
 #include "NpcThread.h"
 #include "Region.h"
@@ -1601,14 +1599,6 @@ void AIServerApp::GetServerInfoIni()
 
 	// Trigger a save to flush defaults to file.
 	inifile.Save();
-}
-
-void AIServerLogger::SetupExtraLoggers(CIni& ini,
-	std::shared_ptr<spdlog::details::thread_pool> threadPool,
-	const std::filesystem::path& baseDir)
-{
-	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerItem, ini::ITEM_LOG_FILE);
-	SetupExtraLogger(ini, threadPool, baseDir, logger::AIServerUser, ini::USER_LOG_FILE);
 }
 
 void AIServerApp::SendSystemMsg(const std::string_view msg, int zone, int type, int who)

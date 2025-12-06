@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="ItemManagerApp.cpp" />
+    <ClCompile Include="ItemManagerLogger.cpp" />
     <ClCompile Include="ItemManagerReadQueueThread.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -140,8 +141,9 @@
   <ItemGroup>
     <ClInclude Include="Define.h" />
     <ClInclude Include="ItemManagerApp.h" />
+    <ClInclude Include="ItemManagerLogger.h" />
     <ClInclude Include="ItemManagerReadQueueThread.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

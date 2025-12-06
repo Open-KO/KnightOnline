@@ -1,8 +1,6 @@
-﻿// Ebenezer.cpp : contains the main() function to start the server
-//
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "EbenezerApp.h"
+#include "EbenezerLogger.h"
 
 int main()
 {
