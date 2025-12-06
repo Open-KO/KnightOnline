@@ -15,7 +15,7 @@ void ZoneEventThread::thread_loop()
 	while (_canTick)
 	{
 		double fCurrentTime = TimeGet();
-		for (MAP* pMap : _main->m_ZoneArray)
+		for (MAP* pMap : _main->_zones)
 		{
 			if (pMap == nullptr)
 				continue;

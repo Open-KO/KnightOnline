@@ -284,57 +284,57 @@ void CGameSocket::RecvServerConnect(char* pBuf)
 	// 재접속해서 리스트 받기 (강제로)
 	if (byReConnect == 1)
 	{
-		if (m_pMain->m_sReSocketCount == 0)
-			m_pMain->m_fReConnectStart = TimeGet();
+		if (m_pMain->_reconnectSocketCount == 0)
+			m_pMain->_reconnectStartTime = TimeGet();
 
-		m_pMain->m_sReSocketCount++;
+		m_pMain->_reconnectSocketCount++;
 
 		spdlog::info("GameSocket::RecvServerConnect: Ebenezer reconnect: zone={} sockets={}",
-			byZoneNumber, m_pMain->m_sReSocketCount);
+			byZoneNumber, m_pMain->_reconnectSocketCount);
 
 		fReConnectEndTime = TimeGet();
 
 		// all sockets reconnected within 2 minutes
-		if (fReConnectEndTime > m_pMain->m_fReConnectStart + 120)
+		if (fReConnectEndTime > m_pMain->_reconnectStartTime + 120)
 		{
 			spdlog::info("GameSocket::RecvServerConnect: Ebenezer sockets reconnected in under 2 minutes [sockets={}]",
-				m_pMain->m_sReSocketCount);
-			m_pMain->m_sReSocketCount = 0;
-			m_pMain->m_fReConnectStart = 0.0;
+				m_pMain->_reconnectSocketCount);
+			m_pMain->_reconnectSocketCount = 0;
+			m_pMain->_reconnectStartTime = 0.0;
 		}
 
-		if (m_pMain->m_sReSocketCount == MAX_AI_SOCKET)
+		if (m_pMain->_reconnectSocketCount == MAX_AI_SOCKET)
 		{
 			fReConnectEndTime = TimeGet();
 
 			// all sockets reconnected within 1 minute
-			if (fReConnectEndTime < m_pMain->m_fReConnectStart + 60)
+			if (fReConnectEndTime < m_pMain->_reconnectStartTime + 60)
 			{
 				spdlog::info("GameSocket::RecvServerConnect: Ebenezer sockets reconnected within a minute [sockets={}]",
-					m_pMain->m_sReSocketCount);
-				m_pMain->m_bFirstServerFlag = true;
-				m_pMain->m_sReSocketCount = 0;
+					m_pMain->_reconnectSocketCount);
+				m_pMain->_firstServerFlag = true;
+				m_pMain->_reconnectSocketCount = 0;
 				m_pMain->AllNpcInfo();
 			}
 			// 하나의 떨어진 소켓이라면...
 			else
 			{
-				m_pMain->m_sReSocketCount = 0;
-				m_pMain->m_fReConnectStart = 0.0;
+				m_pMain->_reconnectSocketCount = 0;
+				m_pMain->_reconnectStartTime = 0.0;
 			}
 		}
 	}
 	else
 	{
-		m_pMain->m_sSocketCount++;
+		m_pMain->_socketCount++;
 		spdlog::info("GameSocket::RecvServerConnect: Ebenezer connected [zone={}, sockets={}]",
-			byZoneNumber, m_pMain->m_sSocketCount);
-		if (m_pMain->m_sSocketCount == MAX_AI_SOCKET)
+			byZoneNumber, m_pMain->_socketCount);
+		if (m_pMain->_socketCount == MAX_AI_SOCKET)
 		{
 			spdlog::info("GameSocket::RecvServerConnect: Ebenezer sockets all connected [sockets={}]",
-				m_pMain->m_sSocketCount);
-			m_pMain->m_bFirstServerFlag = true;
-			m_pMain->m_sSocketCount = 0;
+				m_pMain->_socketCount);
+			m_pMain->_firstServerFlag = true;
+			m_pMain->_socketCount = 0;
 			m_pMain->AllNpcInfo();
 		}
 	}
@@ -415,7 +415,7 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 
 	if (uid >= USER_BAND
 		&& uid < MAX_USER)
-		m_pMain->m_pUser[uid] = pUser;
+		m_pMain->_users[uid] = pUser;
 
 	spdlog::get(logger::AIServerUser)->info("Login: level={}, charId={}",
 		pUser->m_byLevel, pUser->m_strUserID);
@@ -1058,7 +1058,7 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 
 		if (uid >= USER_BAND
 			&& uid < MAX_USER)
-			m_pMain->m_pUser[uid] = pUser;
+			m_pMain->_users[uid] = pUser;
 	}
 
 	spdlog::debug("GameSocket::RecvUserInfoAllData: end");
@@ -1080,7 +1080,7 @@ void CGameSocket::RecvGateOpen(char* pBuf)
 		return;
 	}
 
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
+	CNpc* pNpc = m_pMain->_npcMap.GetData(nid);
 	if (pNpc == nullptr)
 		return;
 
@@ -1140,7 +1140,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 		//TRACE(_T("party info ,, index = %d, i=%d, uid=%d, %d, %d, %d \n"), sPartyIndex, i, uid, sHp, byLevel, sClass);
 	}
 
-	if (m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
+	if (m_pMain->_partyMap.PutData(pParty->wIndex, pParty))
 	{
 		spdlog::debug("GameSocket::RecvPartyInfoAllData: created partyIndex={}", sPartyIndex);
 	}
@@ -1149,7 +1149,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 void CGameSocket::RecvCheckAlive(char* pBuf)
 {
 //	TRACE(_T("CAISocket-RecvCheckAlive : zone_num=%d\n"), m_iZoneNum);
-	m_pMain->m_sErrorSocketCount = 0;
+	m_pMain->_aliveSocketCount = 0;
 }
 
 void CGameSocket::RecvHealMagic(char* pBuf)
@@ -1191,23 +1191,23 @@ void CGameSocket::RecvTimeAndWeather(char* pBuf)
 {
 	int index = 0;
 
-	m_pMain->m_iYear = GetShort(pBuf, index);
-	m_pMain->m_iMonth = GetShort(pBuf, index);
-	m_pMain->m_iDate = GetShort(pBuf, index);
-	m_pMain->m_iHour = GetShort(pBuf, index);
-	m_pMain->m_iMin = GetShort(pBuf, index);
-	m_pMain->m_iWeather = GetByte(pBuf, index);
-	m_pMain->m_iAmount = GetShort(pBuf, index);
+	m_pMain->_year = GetShort(pBuf, index);
+	m_pMain->_month = GetShort(pBuf, index);
+	m_pMain->_dayOfMonth = GetShort(pBuf, index);
+	m_pMain->_hour = GetShort(pBuf, index);
+	m_pMain->_minute = GetShort(pBuf, index);
+	m_pMain->_weatherType = GetByte(pBuf, index);
+	m_pMain->_weatherAmount = GetShort(pBuf, index);
 
 	// 낮
-	if (m_pMain->m_iHour >= 5
-		&& m_pMain->m_iHour < 21)
-		m_pMain->m_byNight = 1;
+	if (m_pMain->_hour >= 5
+		&& m_pMain->_hour < 21)
+		m_pMain->_nightMode = 1;
 	// 밤
 	else
-		m_pMain->m_byNight = 2;
+		m_pMain->_nightMode = 2;
 
-	m_pMain->m_sErrorSocketCount = 0;	// Socket Check도 같이 하기 때문에...
+	m_pMain->_aliveSocketCount = 0;	// Socket Check도 같이 하기 때문에...
 }
 
 void CGameSocket::RecvUserFail(char* pBuf)
@@ -1238,21 +1238,21 @@ void CGameSocket::RecvBattleEvent(char* pBuf)
 
 	if (nEvent == BATTLEZONE_OPEN)
 	{
-		m_pMain->m_sKillKarusNpc = 0;
-		m_pMain->m_sKillElmoNpc = 0;
-		m_pMain->m_byBattleEvent = BATTLEZONE_OPEN;
+		m_pMain->_battleNpcsKilledByKarus = 0;
+		m_pMain->_battleNpcsKilledByElmorad = 0;
+		m_pMain->_battleEventType = BATTLEZONE_OPEN;
 		spdlog::debug("GameSocket::RecvBattleEvent: battle zone open");
 	}
 	else if (nEvent == BATTLEZONE_CLOSE)
 	{
-		m_pMain->m_sKillKarusNpc = 0;
-		m_pMain->m_sKillElmoNpc = 0;
-		m_pMain->m_byBattleEvent = BATTLEZONE_CLOSE;
+		m_pMain->_battleNpcsKilledByKarus = 0;
+		m_pMain->_battleNpcsKilledByElmorad = 0;
+		m_pMain->_battleEventType = BATTLEZONE_CLOSE;
 		spdlog::debug("GameSocket::RecvBattleEvent: battle zone closed");
 		m_pMain->ResetBattleZone();
 	}
 
-	for (const auto& [_, pNpc] : m_pMain->m_NpcMap)
+	for (const auto& [_, pNpc] : m_pMain->_npcMap)
 	{
 		if (pNpc == nullptr)
 			continue;

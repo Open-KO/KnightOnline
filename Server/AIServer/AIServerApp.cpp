@@ -23,34 +23,30 @@
 #include <shared/TimerThread.h>
 
 using namespace std::chrono_literals;
-
-bool g_bNpcExit = false;
-ZoneArray m_ZoneArray;
+using namespace db;
 
 std::mutex g_user_mutex;
 std::mutex g_region_mutex;
 
 import AIServerBinder;
 
-using namespace db;
-
 AIServerApp::AIServerApp(AIServerLogger& logger)
 	: AppThread(logger)
 {
-	m_iYear = 0;
-	m_iMonth = 0;
-	m_iDate = 0;
-	m_iHour = 0;
-	m_iMin = 0;
-	m_iWeather = 0;
-	m_iAmount = 0;
-	m_byNight = 1;
-	m_byZone = KARUS_ZONE;
-	m_byBattleEvent = BATTLEZONE_CLOSE;
-	m_sKillKarusNpc = 0;
-	m_sKillElmoNpc = 0;
-	m_pZoneEventThread = nullptr;
-	m_byTestMode = 0;
+	_year = 0;
+	_month = 0;
+	_dayOfMonth = 0;
+	_hour = 0;
+	_minute = 0;
+	_weatherType = 0;
+	_weatherAmount = 0;
+	_nightMode = 1;
+	_serverZoneType = KARUS_ZONE;
+	_battleEventType = BATTLEZONE_CLOSE;
+	_battleNpcsKilledByKarus = 0;
+	_battleNpcsKilledByElmorad = 0;
+	_zoneEventThread = nullptr;
+	_testMode = 0;
 	//m_ppUserActive = nullptr;
 	//m_ppUserInActive = nullptr;
 
@@ -79,61 +75,58 @@ AIServerApp::~AIServerApp()
 		spdlog::info("AIServerApp::~AIServerApp: CheckAliveThread stopped.");
 	}
 
-	if (!m_NpcThreadArray.empty())
+	if (!_npcThreads.empty())
 	{
-		spdlog::info("AIServerApp::~AIServerApp: Shutting down {} NPC threads...", m_NpcThreadArray.size());
+		spdlog::info("AIServerApp::~AIServerApp: Shutting down {} NPC threads...", _npcThreads.size());
 
-		for (CNpcThread* npcThread : m_NpcThreadArray)
+		for (CNpcThread* npcThread : _npcThreads)
 			npcThread->shutdown(false);
 
-		for (CNpcThread* npcThread : m_NpcThreadArray)
+		for (CNpcThread* npcThread : _npcThreads)
 			npcThread->join();
 
 		spdlog::info("AIServerApp::~AIServerApp: NPC threads stopped.");
 	}
 
-	if (m_pZoneEventThread != nullptr)
+	if (_zoneEventThread != nullptr)
 	{
 		spdlog::info("AIServerApp::~AIServerApp: Shutting down ZoneEventThread...");
 
-		m_pZoneEventThread->shutdown();
+		_zoneEventThread->shutdown();
 
 		spdlog::info("AIServerApp::~AIServerApp: ZoneEventThread stopped.");
 	}
 
 	spdlog::info("AIServerApp::~AIServerApp: All worker threads stopped, freeing caches.");
 
-	for (MAP* map : m_ZoneArray)
+	for (MAP* map : _zones)
 		delete map;
-	m_ZoneArray.clear();
+	_zones.clear();
 
-	delete m_pZoneEventThread;
-	m_pZoneEventThread = nullptr;
+	delete _zoneEventThread;
+	_zoneEventThread = nullptr;
 
-	for (CNpcThread* npcThread : m_NpcThreadArray)
+	for (CNpcThread* npcThread : _npcThreads)
 		delete npcThread;
-	m_NpcThreadArray.clear();
+	_npcThreads.clear();
 
-	if (m_NpcItem.m_ppItem != nullptr)
+	if (_npcItem.m_ppItem != nullptr)
 	{
-		for (int i = 0; i < m_NpcItem.m_nRow; i++)
+		for (int i = 0; i < _npcItem.m_nRow; i++)
 		{
-			delete[] m_NpcItem.m_ppItem[i];
-			m_NpcItem.m_ppItem[i] = nullptr;
+			delete[] _npcItem.m_ppItem[i];
+			_npcItem.m_ppItem[i] = nullptr;
 		}
 
-		delete[] m_NpcItem.m_ppItem;
-		m_NpcItem.m_ppItem = nullptr;
+		delete[] _npcItem.m_ppItem;
+		_npcItem.m_ppItem = nullptr;
 	}
 
 	for (int i = 0; i < MAX_USER; i++)
 	{
-		delete m_pUser[i];
-		m_pUser[i] = nullptr;
+		delete _users[i];
+		_users[i] = nullptr;
 	}
-
-	while (!m_ZoneNpcList.empty())
-		m_ZoneNpcList.pop_front();
 
 	spdlog::info("AIServerApp::~AIServerApp: All resources safely released.");
 
@@ -156,21 +149,21 @@ bool AIServerApp::OnStart()
 		myrand(1, 10000);	// don't delete
 
 	// Compress Init
-	memset(m_CompBuf, 0, sizeof(m_CompBuf));	// 압축할 데이터를 모으는 버퍼
-	m_iCompIndex = 0;							// 압축할 데이터의 길이
-	m_CompCount = 0;							// 압축할 데이터의 개수
+	memset(_compressedPacketBuffer, 0, sizeof(_compressedPacketBuffer));	// 압축할 데이터를 모으는 버퍼
+	_compressedPacketIndex = 0;							// 압축할 데이터의 길이
+	_compressedPacketCount = 0;							// 압축할 데이터의 개수
 
-	m_sSocketCount = 0;
-	m_sErrorSocketCount = 0;
-	m_sMapEventNpc = 0;
-	m_sReSocketCount = 0;
-	m_fReConnectStart = 0.0;
-	m_bFirstServerFlag = false;
-	m_byTestMode = NOW_TEST_MODE;
+	_socketCount = 0;
+	_aliveSocketCount = 0;
+	_mapEventNpcCount = 0;
+	_reconnectSocketCount = 0;
+	_reconnectStartTime = 0.0;
+	_firstServerFlag = false;
+	_testMode = NOW_TEST_MODE;
 
 	// User Point Init
 	for (int i = 0; i < MAX_USER; i++)
-		m_pUser[i] = nullptr;
+		_users[i] = nullptr;
 
 	// Server Start message
 	spdlog::info("AIServerApp::OnStart: starting...");
@@ -178,13 +171,13 @@ bool AIServerApp::OnStart()
 	//----------------------------------------------------------------------
 	//	DB part initialize
 	//----------------------------------------------------------------------
-	if (m_byZone == UNIFY_ZONE)
+	if (_serverZoneType == UNIFY_ZONE)
 		spdlog::info("AIServerApp::OnStart: Server Zone: UNIFY");
-	else if (m_byZone == KARUS_ZONE)
+	else if (_serverZoneType == KARUS_ZONE)
 		spdlog::info("AIServerApp::OnStart: Server Zone: KARUS");
-	else if (m_byZone == ELMORAD_ZONE)
+	else if (_serverZoneType == ELMORAD_ZONE)
 		spdlog::info("AIServerApp::OnStart: Server Zone: ELMORAD");
-	else if (m_byZone == BATTLE_ZONE)
+	else if (_serverZoneType == BATTLE_ZONE)
 		spdlog::info("AIServerApp::OnStart: Server Zone: BATTLE");
 	
 	//----------------------------------------------------------------------
@@ -323,48 +316,44 @@ bool AIServerApp::OnStart()
 	//----------------------------------------------------------------------
 	//	Start Accepting...
 	//----------------------------------------------------------------------
-	if (!ListenByZone())
-	{
+	if (!ListenByServerZoneType())
 		return false;
-	}
 
 	_checkAliveThread->start();
-
-	//::ResumeThread( _socketManager.m_hAcceptThread );
 
 	spdlog::info("AIServerApp::OnStart: AIServer successfully initialized");
 
 	return true;
 }
 
-/// \brief attempts to listen on the port associated with m_byZone
-/// \see m_byZone
+/// \brief attempts to listen on the port associated with _serverZoneType
+/// \see _serverZoneType
 /// \returns true when successful, otherwise false
-bool AIServerApp::ListenByZone()
+bool AIServerApp::ListenByServerZoneType()
 {
-	int port = GetListenPortByZone();
+	int port = GetListenPortByServerZoneType();
 	if (port < 0)
 	{
-		spdlog::error("AIServerApp::ListenByZone: failed to associate listen port for zone {}", m_byZone);
+		spdlog::error("AIServerApp::ListenByServerZoneType: failed to associate listen port for zone {}", _serverZoneType);
 		return false;
 	}
 
 	if (!_socketManager.Listen(port))
 	{
-		spdlog::error("AIServerApp::ListenByZone: failed to listen on port {}", port);
+		spdlog::error("AIServerApp::ListenByServerZoneType: failed to listen on port {}", port);
 		return false;
 	}
 
-	spdlog::info("AIServerApp::ListenByZone: Listening on 0.0.0.0:{}", port);
+	spdlog::info("AIServerApp::ListenByServerZoneType: Listening on 0.0.0.0:{}", port);
 	return true;
 }
 
-/// \brief fetches the listen port associated with m_byZone
-/// \see m_byZone
+/// \brief fetches the listen port associated with _serverZoneType
+/// \see _serverZoneType
 /// \returns the associated listen port or -1 if invalid
-int AIServerApp::GetListenPortByZone() const
+int AIServerApp::GetListenPortByServerZoneType() const
 {
-	switch (m_byZone)
+	switch (_serverZoneType)
 	{
 		case KARUS_ZONE:
 		case UNIFY_ZONE:
@@ -384,7 +373,7 @@ int AIServerApp::GetListenPortByZone() const
 //	Magic Table 을 읽는다.
 bool AIServerApp::GetMagicTableData()
 {
-	recordset_loader::STLMap loader(m_MagicTableMap);
+	recordset_loader::STLMap loader(_magicTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMagicTableData: load failed - {}",
@@ -398,7 +387,7 @@ bool AIServerApp::GetMagicTableData()
 
 bool AIServerApp::GetMakeWeaponItemTableData()
 {
-	recordset_loader::STLMap loader(m_MakeWeaponTableMap);
+	recordset_loader::STLMap loader(_makeWeaponTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMakeWeaponItemTableData: load failed - {}",
@@ -413,7 +402,7 @@ bool AIServerApp::GetMakeWeaponItemTableData()
 bool AIServerApp::GetMakeDefensiveItemTableData()
 {
 	recordset_loader::STLMap<MakeWeaponTableMap, model::MakeDefensive> loader(
-		m_MakeDefensiveTableMap);
+		_makeDefensiveTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMakeDefensiveItemTableData: load failed - {}",
@@ -427,7 +416,7 @@ bool AIServerApp::GetMakeDefensiveItemTableData()
 
 bool AIServerApp::GetMakeGradeItemTableData()
 {
-	recordset_loader::STLMap loader(m_MakeGradeItemArray);
+	recordset_loader::STLMap loader(_makeGradeItemCodeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMakeGradeItemTableData: load failed - {}",
@@ -441,7 +430,7 @@ bool AIServerApp::GetMakeGradeItemTableData()
 
 bool AIServerApp::GetMakeRareItemTableData()
 {
-	recordset_loader::STLMap loader(m_MakeItemRareCodeTableMap);
+	recordset_loader::STLMap loader(_makeItemRareCodeTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMakeRareItemTableData: load failed - {}",
@@ -455,7 +444,7 @@ bool AIServerApp::GetMakeRareItemTableData()
 
 bool AIServerApp::GetMakeItemGroupTableData()
 {
-	recordset_loader::STLMap loader(m_MakeItemGroupTableMap);
+	recordset_loader::STLMap loader(_makeItemGroupTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMakeItemGroupTableData: load failed - {}",
@@ -484,31 +473,31 @@ bool AIServerApp::GetNpcItemTable()
 		return false;
 	}
 
-	m_NpcItem.m_nField = loader.GetColumnCount();
-	m_NpcItem.m_nRow = static_cast<int>(rows.size());
+	_npcItem.m_nField = loader.GetColumnCount();
+	_npcItem.m_nRow = static_cast<int>(rows.size());
 
 	if (rows.empty())
 		return false;
 
-	m_NpcItem.m_ppItem = new int* [m_NpcItem.m_nRow];
-	for (int i = 0; i < m_NpcItem.m_nRow; i++)
-		m_NpcItem.m_ppItem[i] = new int[m_NpcItem.m_nField];
+	_npcItem.m_ppItem = new int* [_npcItem.m_nRow];
+	for (int i = 0; i < _npcItem.m_nRow; i++)
+		_npcItem.m_ppItem[i] = new int[_npcItem.m_nField];
 
 	for (size_t i = 0; i < rows.size(); i++)
 	{
 		ModelType* row = rows[i];
 
-		m_NpcItem.m_ppItem[i][0] = row->MonsterId;
-		m_NpcItem.m_ppItem[i][1] = row->ItemId1;
-		m_NpcItem.m_ppItem[i][2] = row->DropChance1;
-		m_NpcItem.m_ppItem[i][3] = row->ItemId2;
-		m_NpcItem.m_ppItem[i][4] = row->DropChance2;
-		m_NpcItem.m_ppItem[i][5] = row->ItemId3;
-		m_NpcItem.m_ppItem[i][6] = row->DropChance3;
-		m_NpcItem.m_ppItem[i][7] = row->ItemId4;
-		m_NpcItem.m_ppItem[i][8] = row->DropChance4;
-		m_NpcItem.m_ppItem[i][9] = row->ItemId5;
-		m_NpcItem.m_ppItem[i][10] = row->DropChance5;
+		_npcItem.m_ppItem[i][0] = row->MonsterId;
+		_npcItem.m_ppItem[i][1] = row->ItemId1;
+		_npcItem.m_ppItem[i][2] = row->DropChance1;
+		_npcItem.m_ppItem[i][3] = row->ItemId2;
+		_npcItem.m_ppItem[i][4] = row->DropChance2;
+		_npcItem.m_ppItem[i][5] = row->ItemId3;
+		_npcItem.m_ppItem[i][6] = row->DropChance3;
+		_npcItem.m_ppItem[i][7] = row->ItemId4;
+		_npcItem.m_ppItem[i][8] = row->DropChance4;
+		_npcItem.m_ppItem[i][9] = row->ItemId5;
+		_npcItem.m_ppItem[i][10] = row->DropChance5;
 
 		delete row;
 	}
@@ -521,7 +510,7 @@ bool AIServerApp::GetNpcItemTable()
 
 bool AIServerApp::GetZoneInfoTableData()
 {
-	recordset_loader::STLMap loader(m_ZoneInfoTableMap);
+	recordset_loader::STLMap loader(_zoneInfoTableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetZoneInfoTableData: load failed - {}",
@@ -555,7 +544,7 @@ bool AIServerApp::GetMonsterTableData()
 	}
 #endif
 
-	m_MonTableMap.Swap(tableMap);
+	_monTableMap.Swap(tableMap);
 
 	spdlog::info("AIServerApp::GetMonsterTableData: K_MONSTER loaded");
 	return true;
@@ -581,7 +570,7 @@ bool AIServerApp::GetNpcTableData()
 	}
 #endif
 
-	m_NpcTableMap.Swap(tableMap);
+	_npcTableMap.Swap(tableMap);
 
 	spdlog::info("AIServerApp::GetNpcTableData: K_NPC loaded");
 	return true;
@@ -590,9 +579,8 @@ bool AIServerApp::GetNpcTableData()
 //	Npc Thread 를 만든다.
 bool AIServerApp::CreateNpcThread()
 {
-	m_TotalNPC = 0;			// DB에 있는 수
-	m_CurrentNPC = 0;
-	m_CurrentNPCError = 0;
+	_totalNpcCount = 0;			// DB에 있는 수
+	_loadedNpcCount = 0;
 
 	std::vector<model::NpcPos*> rows;
 	if (!LoadNpcPosTable(rows))
@@ -609,7 +597,7 @@ bool AIServerApp::CreateNpcThread()
 	int nThreadNumber = 0;
 	CNpcThread* pNpcThread = nullptr;
 
-	for (auto& [_, pNpc] : m_NpcMap)
+	for (auto& [_, pNpc] : _npcMap)
 	{
 		if (step == 0)
 			pNpcThread = new CNpcThread();
@@ -623,7 +611,7 @@ bool AIServerApp::CreateNpcThread()
 		if (step == NPC_NUM)
 		{
 			pNpcThread->m_sThreadNumber = nThreadNumber++;
-			m_NpcThreadArray.push_back(pNpcThread);
+			_npcThreads.push_back(pNpcThread);
 			step = 0;
 		}
 	}
@@ -631,13 +619,13 @@ bool AIServerApp::CreateNpcThread()
 	if (step != 0)
 	{
 		pNpcThread->m_sThreadNumber = nThreadNumber++;
-		m_NpcThreadArray.push_back(pNpcThread);
+		_npcThreads.push_back(pNpcThread);
 	}
 
-	if (m_pZoneEventThread == nullptr)
-		m_pZoneEventThread = new ZoneEventThread();
+	if (_zoneEventThread == nullptr)
+		_zoneEventThread = new ZoneEventThread();
 	
-	spdlog::info("AIServerApp::CreateNpcThread: Monsters/NPCs loaded: {}", m_TotalNPC);
+	spdlog::info("AIServerApp::CreateNpcThread: Monsters/NPCs loaded: {}", _totalNpcCount);
 	return true;
 }
 
@@ -653,7 +641,7 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 		return false;
 	}
 
-	int nSerial = m_sMapEventNpc;
+	int nSerial = _mapEventNpcCount;
 
 	for (model::NpcPos* row : rows)
 	{
@@ -666,8 +654,8 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 			int nMonsterNumber = row->NumNpc;
 			int nServerNum = GetServerNumber(row->ZoneId);
 
-			if (m_byZone == nServerNum
-				|| m_byZone == UNIFY_ZONE)
+			if (_serverZoneType == nServerNum
+				|| _serverZoneType == UNIFY_ZONE)
 			{
 				for (int j = 0; j < nMonsterNumber; j++)
 				{
@@ -684,14 +672,14 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					if (row->ActType >= 0
 						&& row->ActType < 100)
 					{
-						pNpcTable = m_MonTableMap.GetData(pNpc->m_sSid);
+						pNpcTable = _monTableMap.GetData(pNpc->m_sSid);
 					}
 					else if (row->ActType >= 100)
 					{
 						pNpc->m_byMoveType = row->ActType - 100;
 						//pNpc->m_byInitMoveType = row->ActType - 100;
 
-						pNpcTable = m_NpcTableMap.GetData(pNpc->m_sSid);
+						pNpcTable = _npcTableMap.GetData(pNpc->m_sSid);
 					}
 
 					pNpc->m_byBattlePos = 0;
@@ -830,12 +818,12 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					pNpc->m_ZoneIndex = -1;
 
 					MAP* pMap = nullptr;
-					for (size_t i = 0; i < m_ZoneArray.size(); i++)
+					for (size_t i = 0; i < _zones.size(); i++)
 					{
-						if (m_ZoneArray[i]->m_nZoneNumber == pNpc->m_sCurZone)
+						if (_zones[i]->m_nZoneNumber == pNpc->m_sCurZone)
 						{
 							pNpc->m_ZoneIndex = static_cast<int16_t>(i);
-							pMap = m_ZoneArray[i];
+							pMap = _zones[i];
 							break;
 						}
 					}
@@ -848,8 +836,8 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 					}
 
 					//pNpc->Init();
-					//m_NpcMap.Add(pNpc);
-					if (!m_NpcMap.PutData(pNpc->m_sNid, pNpc))
+					//_npcMap.Add(pNpc);
+					if (!_npcMap.PutData(pNpc->m_sNid, pNpc))
 					{
 						spdlog::error("AIServerApp::LoadNpcPosTable: Npc PutData Fail [serial={}]",
 							pNpc->m_sNid);
@@ -878,7 +866,7 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 						}
 					}
 
-					m_TotalNPC = nSerial;
+					_totalNpcCount = nSerial;
 
 					if (--nNpcCount > 0)
 						continue;
@@ -897,10 +885,10 @@ bool AIServerApp::LoadNpcPosTable(std::vector<model::NpcPos*>& rows)
 //	NPC Thread 들을 작동시킨다.
 void AIServerApp::StartNpcThreads()
 {
-	for (CNpcThread* npcThread : m_NpcThreadArray)
+	for (CNpcThread* npcThread : _npcThreads)
 		npcThread->start();
 
-	m_pZoneEventThread->start();
+	_zoneEventThread->start();
 }
 
 void AIServerApp::DeleteUserList(int uid)
@@ -916,7 +904,7 @@ void AIServerApp::DeleteUserList(int uid)
 
 	std::unique_lock<std::mutex> lock(g_user_mutex);
 
-	CUser* pUser = m_pUser[uid];
+	CUser* pUser = _users[uid];
 	if (pUser == nullptr)
 	{
 		lock.unlock();
@@ -934,8 +922,8 @@ void AIServerApp::DeleteUserList(int uid)
 	characterName = pUser->m_strUserID;
 
 	pUser->m_lUsed = 1;
-	delete m_pUser[uid];
-	m_pUser[uid] = nullptr;
+	delete _users[uid];
+	_users[uid] = nullptr;
 
 	lock.unlock();
 	spdlog::debug("AIServerApp::DeleteUserList: User Logout: userId={}, charId={}", uid, characterName);
@@ -947,7 +935,7 @@ bool AIServerApp::MapFileLoad()
 
 	bool loaded = false;
 
-	m_sTotalMap = 0;
+	_mapCount = 0;
 
 	recordset_loader::Base<ModelType> loader;
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
@@ -1007,8 +995,8 @@ bool AIServerApp::MapFileLoad()
 				pMap->m_byRoomEvent = 1;
 			}
 
-			m_ZoneArray.push_back(pMap);
-			++m_sTotalMap;
+			_zones.push_back(pMap);
+			++_mapCount;
 		}
 		while (recordset.next());
 
@@ -1032,13 +1020,13 @@ void AIServerApp::AllNpcInfo()
 	// server alive check
 	CNpc* pNpc = nullptr;
 	int nZone = 0;
-	int size = m_NpcMap.GetSize();
+	int size = _npcMap.GetSize();
 
 	int send_index = 0, zone_index = 0, packet_size = 0;
 	int count = 0, send_count = 0, send_tot = 0;
 	char send_buff[2048] = {};
 
-	for (MAP* pMap : m_ZoneArray)
+	for (MAP* pMap : _zones)
 	{
 		if (pMap == nullptr)
 			continue;
@@ -1056,15 +1044,15 @@ void AIServerApp::AllNpcInfo()
 		send_index = 2;
 		count = 0;
 		send_count = 0;
-		m_CompCount = 0;
-		m_iCompIndex = 0;
+		_compressedPacketCount = 0;
+		_compressedPacketIndex = 0;
 		memset(send_buff, 0, sizeof(send_buff));
 
 		spdlog::debug("AIServerApp::AllNpcInfo: start for zoneIndex={}", nZone);
 
 		for (int i = 0; i < size; i++)
 		{
-			pNpc = m_NpcMap.GetData(i);
+			pNpc = _npcMap.GetData(i);
 			if (pNpc == nullptr)
 			{
 				spdlog::warn("AIServerApp::AllNpcInfo: NpcMap[{}] is null", i);
@@ -1081,11 +1069,11 @@ void AIServerApp::AllNpcInfo()
 			{
 				SetByte(send_buff, NPC_INFO_ALL, send_count);
 				SetByte(send_buff, (uint8_t) count, send_count);
-				m_CompCount++;
-				//memcpy(m_CompBuf+m_iCompIndex, send_buff, send_index);
-				memset(m_CompBuf, 0, sizeof(m_CompBuf));
-				memcpy(m_CompBuf, send_buff, send_index);
-				m_iCompIndex = send_index;
+				_compressedPacketCount++;
+				//memcpy(_compressedPacketBuffer+_compressedPacketIndex, send_buff, send_index);
+				memset(_compressedPacketBuffer, 0, sizeof(_compressedPacketBuffer));
+				memcpy(_compressedPacketBuffer, send_buff, send_index);
+				_compressedPacketIndex = send_index;
 				SendCompressedData(nZone);
 				send_index = 2;
 				send_count = 0;
@@ -1115,7 +1103,7 @@ void AIServerApp::AllNpcInfo()
 		SetByte(send_buff, AG_SERVER_INFO, send_index);
 		SetByte(send_buff, SERVER_INFO_END, send_index);
 		SetByte(send_buff, nZone, send_index);
-		SetShort(send_buff, (int16_t) m_TotalNPC, send_index);
+		SetShort(send_buff, (int16_t) _totalNpcCount, send_index);
 		packet_size = Send(send_buff, send_index, nZone);
 
 		spdlog::debug("AIServerApp::AllNpcInfo: end for zoneId={}", nZone);
@@ -1145,7 +1133,7 @@ CUser* AIServerApp::GetUserPtr(int nid)
 
 	pUser = (CUser*)m_ppUserActive[nid];
 */
-	pUser = m_pUser[nid];
+	pUser = _users[nid];
 	if (pUser == nullptr)
 		return nullptr;
 
@@ -1184,8 +1172,8 @@ void AIServerApp::CheckAliveTest()
 		size = pSocket->Send(send_buff, send_index);
 		if (size > 0)
 		{
-			if (++m_sErrorSocketCount == 10)
-				spdlog::debug("AIServerApp::CheckAliveTest: all ebenezer sockets are connected");
+			if (++_aliveSocketCount == MAX_AI_SOCKET)
+				spdlog::debug("AIServerApp::CheckAliveTest: all Ebenezer sockets are connected");
 
 			count++;
 		}
@@ -1205,14 +1193,14 @@ void AIServerApp::DeleteAllUserList(int zone)
 
 	// 모든 소켓이 끊어진 상태...
 	if (zone == 9999
-		&& m_bFirstServerFlag)
+		&& _firstServerFlag)
 	{
 		spdlog::debug("AIServerApp::DeleteAllUserList: start");
 
 		{
 			std::lock_guard<std::mutex> lock(g_region_mutex);
 
-			for (MAP* pMap : m_ZoneArray)
+			for (MAP* pMap : _zones)
 			{
 				if (pMap == nullptr)
 					continue;
@@ -1231,18 +1219,18 @@ void AIServerApp::DeleteAllUserList(int zone)
 			// User Array Delete
 			for (int i = 0; i < MAX_USER; i++)
 			{
-				delete m_pUser[i];
-				m_pUser[i] = nullptr;
+				delete _users[i];
+				_users[i] = nullptr;
 			}
 		}
 
 		// Party Array Delete 
 		{
 			std::lock_guard<std::mutex> lock(g_region_mutex);
-			m_PartyMap.DeleteAllData();
+			_partyMap.DeleteAllData();
 		}
 
-		m_bFirstServerFlag = false;
+		_firstServerFlag = false;
 		spdlog::debug("AIServerApp::DeleteAllUserList: end");
 	}
 	else if (zone != 9999)
@@ -1254,13 +1242,13 @@ void AIServerApp::DeleteAllUserList(int zone)
 
 void AIServerApp::SendCompressedData(int nZone)
 {
-	if (m_CompCount <= 0
-		|| m_iCompIndex <= 0)
+	if (_compressedPacketCount <= 0
+		|| _compressedPacketIndex <= 0)
 	{
-		m_CompCount = 0;
-		m_iCompIndex = 0;
+		_compressedPacketCount = 0;
+		_compressedPacketIndex = 0;
 		spdlog::error("AIServerApp::SendCompressData: count={}, index={}",
-			m_CompCount, m_iCompIndex);
+			_compressedPacketCount, _compressedPacketIndex);
 		return;
 	}
 
@@ -1270,7 +1258,7 @@ void AIServerApp::SendCompressedData(int nZone)
 	unsigned int comp_data_len = 0;
 	uint32_t crc_value = 0;
 
-	comp_data_len = lzf_compress(m_CompBuf, m_iCompIndex, comp_buff, sizeof(comp_buff));
+	comp_data_len = lzf_compress(_compressedPacketBuffer, _compressedPacketIndex, comp_buff, sizeof(comp_buff));
 
 	assert(comp_data_len != 0 && comp_data_len <= sizeof(comp_buff));
 
@@ -1281,19 +1269,19 @@ void AIServerApp::SendCompressedData(int nZone)
 		return;
 	}
 
-	crc_value = crc32(reinterpret_cast<uint8_t*>(m_CompBuf), m_iCompIndex);
+	crc_value = crc32(reinterpret_cast<uint8_t*>(_compressedPacketBuffer), _compressedPacketIndex);
 
 	SetByte(send_buff, AG_COMPRESSED_DATA, send_index);
 	SetShort(send_buff, (int16_t) comp_data_len, send_index);
-	SetShort(send_buff, (int16_t) m_iCompIndex, send_index);
+	SetShort(send_buff, (int16_t) _compressedPacketIndex, send_index);
 	SetDWORD(send_buff, crc_value, send_index);
-	SetShort(send_buff, (int16_t) m_CompCount, send_index);
+	SetShort(send_buff, (int16_t) _compressedPacketCount, send_index);
 	SetString(send_buff, reinterpret_cast<const char*>(comp_buff), comp_data_len, send_index);
 
 	Send(send_buff, send_index, nZone);
 
-	m_CompCount = 0;
-	m_iCompIndex = 0;
+	_compressedPacketCount = 0;
+	_compressedPacketIndex = 0;
 }
 
 // sungyong 2002.05.23
@@ -1301,7 +1289,7 @@ int AIServerApp::Send(const char* pData, int length, int nZone)
 {
 	// Not connected to any servers.
 	// No point queueing updates, the server will be fully synced upon connection.
-	if (!m_bFirstServerFlag)
+	if (!_firstServerFlag)
 		return 0;
 
 	if (length <= 0
@@ -1375,7 +1363,7 @@ void AIServerApp::TestCode()
 
 bool AIServerApp::GetMagicType1Data()
 {
-	recordset_loader::STLMap loader(m_MagicType1TableMap);
+	recordset_loader::STLMap loader(_magicType1TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMagicType1Data: load failed - {}",
@@ -1389,7 +1377,7 @@ bool AIServerApp::GetMagicType1Data()
 
 bool AIServerApp::GetMagicType2Data()
 {
-	recordset_loader::STLMap loader(m_MagicType2TableMap);
+	recordset_loader::STLMap loader(_magicType2TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMagicType2Data: load failed - {}",
@@ -1403,7 +1391,7 @@ bool AIServerApp::GetMagicType2Data()
 
 bool AIServerApp::GetMagicType3Data()
 {
-	recordset_loader::STLMap loader(m_MagicType3TableMap);
+	recordset_loader::STLMap loader(_magicType3TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMagicType3Data: load failed - {}",
@@ -1417,7 +1405,7 @@ bool AIServerApp::GetMagicType3Data()
 
 bool AIServerApp::GetMagicType4Data()
 {
-	recordset_loader::STLMap loader(m_MagicType4TableMap);
+	recordset_loader::STLMap loader(_magicType4TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMagicType4Data: load failed - {}",
@@ -1431,7 +1419,7 @@ bool AIServerApp::GetMagicType4Data()
 
 bool AIServerApp::GetMagicType7Data()
 {
-	recordset_loader::STLMap loader(m_MagicType7TableMap);
+	recordset_loader::STLMap loader(_magicType7TableMap);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("AIServerApp::GetMagicType7Data: load failed - {}",
@@ -1445,7 +1433,7 @@ bool AIServerApp::GetMagicType7Data()
 
 void AIServerApp::RegionCheck()
 {
-	for (MAP* pMap : m_ZoneArray)
+	for (MAP* pMap : _zones)
 	{
 		if (pMap == nullptr)
 			continue;
@@ -1476,10 +1464,10 @@ bool AIServerApp::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	bool bFindNpcTable = false;
 	int offset = 0;
 	int nServerNum = GetServerNumber(zone_number);
-	if (m_byZone != nServerNum)
+	if (_serverZoneType != nServerNum)
 		return false;
 
-	pNpcTable = m_NpcTableMap.GetData(pEvent->sIndex);
+	pNpcTable = _npcTableMap.GetData(pEvent->sIndex);
 	if (pNpcTable == nullptr)
 	{
 		bFindNpcTable = false;
@@ -1492,7 +1480,7 @@ bool AIServerApp::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 
 	CNpc* pNpc = new CNpc();
 
-	pNpc->m_sNid = m_sMapEventNpc++;				// 서버 내에서의 고유 번호
+	pNpc->m_sNid = _mapEventNpcCount++;				// 서버 내에서의 고유 번호
 	pNpc->m_sSid = (int16_t) pEvent->sIndex;			// MONSTER(NPC) Serial ID
 
 	pNpc->m_byMoveType = 100;
@@ -1537,7 +1525,7 @@ bool AIServerApp::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 	}	*/
 
 	//pNpc->Init();
-	if (!m_NpcMap.PutData(pNpc->m_sNid, pNpc))
+	if (!_npcMap.PutData(pNpc->m_sNid, pNpc))
 	{
 		spdlog::warn("AIServerApp::AddObjectEventNpc: Npc PutData Fail [serial={}]",
 			pNpc->m_sNid);
@@ -1545,16 +1533,16 @@ bool AIServerApp::AddObjectEventNpc(_OBJECT_EVENT* pEvent, int zone_number)
 		pNpc = nullptr;
 	}
 
-	m_TotalNPC = m_sMapEventNpc;
+	_totalNpcCount = _mapEventNpcCount;
 
 	return true;
 }
 
 int AIServerApp::GetZoneIndex(int zoneId) const
 {
-	for (size_t i = 0; i < m_ZoneArray.size(); i++)
+	for (size_t i = 0; i < _zones.size(); i++)
 	{
-		MAP* pMap = m_ZoneArray[i];
+		MAP* pMap = _zones[i];
 		if (pMap != nullptr
 			&& pMap->m_nZoneNumber == zoneId)
 			return i;
@@ -1566,7 +1554,7 @@ int AIServerApp::GetZoneIndex(int zoneId) const
 
 int AIServerApp::GetServerNumber(int zoneId) const
 {
-	const model::ZoneInfo* zoneInfo = m_ZoneInfoTableMap.GetData(zoneId);
+	const model::ZoneInfo* zoneInfo = _zoneInfoTableMap.GetData(zoneId);
 	if (zoneInfo == nullptr)
 	{
 		spdlog::error("AIServerApp::GetServerNumber: zoneId={} not found", zoneId);
@@ -1587,7 +1575,7 @@ void AIServerApp::GetServerInfoIni()
 	// logger setup
 	_logger.Setup(inifile, exePath);
 	
-	m_byZone = inifile.GetInt("SERVER", "ZONE", 1);
+	_serverZoneType = inifile.GetInt("SERVER", "ZONE", 1);
 
 	std::string datasourceName = inifile.GetString("ODBC", "GAME_DSN", "KN_online");
 	std::string datasourceUser = inifile.GetString("ODBC", "GAME_UID", "knight");
@@ -1620,7 +1608,7 @@ void AIServerApp::ResetBattleZone()
 {
 	spdlog::debug("AIServerApp::ResetBattleZone: start");
 
-	for (MAP* pMap : m_ZoneArray)
+	for (MAP* pMap : _zones)
 	{
 		if (pMap== nullptr)
 			continue;
@@ -1642,18 +1630,18 @@ void AIServerApp::ResetBattleZone()
 MAP* AIServerApp::GetMapByIndex(int iZoneIndex) const
 {
 	if (iZoneIndex < 0
-		|| iZoneIndex >= static_cast<int>(m_ZoneArray.size()))
+		|| iZoneIndex >= static_cast<int>(_zones.size()))
 	{
 		spdlog::error("AIServerApp::GetMapByIndex: zoneIndex={} out of bounds", iZoneIndex);
 		return nullptr;
 	}
 
-	return m_ZoneArray[iZoneIndex];
+	return _zones[iZoneIndex];
 }
 
 MAP* AIServerApp::GetMapByID(int iZoneID) const
 {
-	for (MAP* pMap : m_ZoneArray)
+	for (MAP* pMap : _zones)
 	{
 		if (pMap != nullptr
 			&& pMap->m_nZoneNumber == iZoneID)

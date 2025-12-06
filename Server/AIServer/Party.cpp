@@ -77,7 +77,7 @@ void CParty::PartyCreate(char* pBuf)
 	pParty->wIndex = sPartyIndex;
 	pParty->uid[0] = sUid;
 
-	if (!m_pMain->m_PartyMap.PutData(pParty->wIndex, pParty))
+	if (!m_pMain->_partyMap.PutData(pParty->wIndex, pParty))
 	{
 		lock.unlock();
 
@@ -108,7 +108,7 @@ void CParty::PartyInsert(char* pBuf)
 	//byLevel = GetByte(pBuf, index);
 	//sClass = GetShort(pBuf, index);
 
-	pParty = m_pMain->m_PartyMap.GetData(sPartyIndex);
+	pParty = m_pMain->_partyMap.GetData(sPartyIndex);
 
 	// 이상한 경우
 	if (!pParty)
@@ -146,7 +146,7 @@ void CParty::PartyRemove(char* pBuf)
 	if (sPartyIndex <= -1)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(sPartyIndex);
+	pParty = m_pMain->_partyMap.GetData(sPartyIndex);
 
 	// 이상한 경우
 	if (!pParty)
@@ -183,7 +183,7 @@ void CParty::PartyDelete(char* pBuf)
 	if (sPartyIndex <= -1)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(sPartyIndex);
+	pParty = m_pMain->_partyMap.GetData(sPartyIndex);
 
 	// 이상한 경우
 	if (!pParty)
@@ -203,5 +203,5 @@ void CParty::PartyDelete(char* pBuf)
 	}
 
 	std::lock_guard<std::mutex> lock(g_region_mutex);
-	m_pMain->m_PartyMap.DeleteData(pParty->wIndex);
+	m_pMain->_partyMap.DeleteData(pParty->wIndex);
 }

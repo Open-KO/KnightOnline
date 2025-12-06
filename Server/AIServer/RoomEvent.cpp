@@ -295,7 +295,7 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 		if (nMonsterid < 0)
 			continue;
 
-		pNpc = m_pMain->m_NpcMap.GetData(nMonsterid);
+		pNpc = m_pMain->_npcMap.GetData(nMonsterid);
 		if (pNpc == nullptr)
 			continue;
 
@@ -358,7 +358,7 @@ bool CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 		if (nMonsterid < 0)
 			continue;
 
-		pNpc = m_pMain->m_NpcMap.GetData(nMonsterid);
+		pNpc = m_pMain->_npcMap.GetData(nMonsterid);
 		if (pNpc == nullptr)
 			continue;
 

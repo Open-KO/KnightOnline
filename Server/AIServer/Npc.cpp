@@ -119,7 +119,7 @@ inline bool CNpc::SetUid(float x, float z, int id)
 
 		//TRACE(_T("++ Npc-SetUid RegionAdd : [nid=%d, name=%hs], x=%.2f, z=%.2f, nRX=%d, nRZ=%d \n"), m_sNid+NPC_BAND, m_strName,x,z, nRX, nRY);
 		// 새로운 region으로 npc이동 - npc의 정보 추가..
-		CNpc* pNpc = m_pMain->m_NpcMap.GetData(id - NPC_BAND);
+		CNpc* pNpc = m_pMain->_npcMap.GetData(id - NPC_BAND);
 		if (pNpc == nullptr)
 			return false;
 
@@ -866,7 +866,7 @@ void CNpc::NpcStanding()
 	char send_buff[128];
 	int send_index = 0;
 
-/*	if(m_pMain->m_byNight == 2)	{	// 밤이면
+/*	if(m_pMain->_nightMode == 2)	{	// 밤이면
 		m_NpcState = NPC_SLEEPING;
 		m_Delay = 0;
 		m_fDelayTime = TimeGet();
@@ -925,7 +925,7 @@ void CNpc::NpcStanding()
 	m_fDelayTime = TimeGet();
 
 	if (m_tNpcType == NPC_SPECIAL_GATE
-		&& m_pMain->m_byBattleEvent == BATTLEZONE_OPEN)
+		&& m_pMain->_battleEventType == BATTLEZONE_OPEN)
 	{
 		// 문이 자동으로 열리고 닫히도록(2분을 주기로-standing time을 이용)
 		m_byGateOpen = !m_byGateOpen;		// 
@@ -959,7 +959,7 @@ void CNpc::NpcBack()
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		if (m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND) == nullptr)
+		if (m_pMain->_npcMap.GetData(m_Target.id - NPC_BAND) == nullptr)
 		{
 			m_NpcState = NPC_STANDING;
 			m_Delay = m_sSpeed;
@@ -1230,17 +1230,17 @@ bool CNpc::SetLive()
 		NpcTypeParser();
 		m_bFirstLive = false;
 
-		++m_pMain->m_CurrentNPC;
+		++m_pMain->_loadedNpcCount;
 
-		//TRACE(_T("Npc - SerLive :  cur = %d\n"), m_pMain->m_CurrentNPC);
+		//TRACE(_T("Npc - SerLive :  cur = %d\n"), m_pMain->_loadedNpcCount);
 
 		// 몬스터 총 수와 초기화한 몬스터의 수가 같다면
-		if (m_pMain->m_TotalNPC == m_pMain->m_CurrentNPC)
+		if (m_pMain->_totalNpcCount == m_pMain->_loadedNpcCount)
 		{
-			spdlog::info("Npc::SetLive: All NPCs initialized [count={}]", m_pMain->m_TotalNPC);
+			spdlog::info("Npc::SetLive: All NPCs initialized [count={}]", m_pMain->_totalNpcCount);
 			m_pMain->GameServerAcceptThread();				// 게임서버 Accept
 		}
-		//TRACE(_T("Npc - SerLive : CurrentNpc = %d\n"), m_pMain->m_CurrentNPC);
+		//TRACE(_T("Npc - SerLive : CurrentNpc = %d\n"), m_pMain->_loadedNpcCount);
 	}
 
 	// 해야 할 일 : Npc의 초기 방향,, 결정하기..
@@ -2613,7 +2613,7 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 			if (nNpcid < NPC_BAND)
 				continue;
 
-			pNpc = m_pMain->m_NpcMap.GetData(nNpcid - NPC_BAND);
+			pNpc = m_pMain->_npcMap.GetData(nNpcid - NPC_BAND);
 
 			if (m_sNid == pNpc->m_sNid)
 				continue;
@@ -2991,7 +2991,7 @@ int CNpc::IsCloseTarget(int nRange, int Flag)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(m_Target.id - NPC_BAND);
 		if (pNpc == nullptr)
 		{
 			InitTarget();
@@ -3190,7 +3190,7 @@ int CNpc::GetTargetPath(int option)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		npcTarget = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
+		npcTarget = m_pMain->_npcMap.GetData(m_Target.id - NPC_BAND);
 		if (npcTarget == nullptr)
 		{
 			InitTarget();
@@ -3570,7 +3570,7 @@ int CNpc::Attack()
 		nDamage = GetFinalDamage(pUser);	// 최종 대미지
 
 		// sungyong test
-		if (m_pMain->m_byTestMode)
+		if (m_pMain->_testMode)
 			nDamage = 10;
 
 		//TRACE(_T("Npc-Attack() : [mon: x=%.2f, z=%.2f], [user : x=%.2f, z=%.2f]\n"), m_fCurX, m_fCurZ, pUser->m_curx, pUser->m_curz);
@@ -3594,7 +3594,7 @@ int CNpc::Attack()
 	else if (nID >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(nID - NPC_BAND);
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr)
@@ -3765,8 +3765,8 @@ int CNpc::LongAndMagicAttack()
 	else if (nID >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
-		//pNpc = m_pMain->m_NpcMap[nID - NPC_BAND];
+		pNpc = m_pMain->_npcMap.GetData(nID - NPC_BAND);
+		//pNpc = m_pMain->_npcMap[nID - NPC_BAND];
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr)
@@ -3841,7 +3841,7 @@ int CNpc::TracingAttack()		// 0:attack fail, 1:attack success
 		nDamage = GetFinalDamage(pUser);	// 최종 대미지
 
 		// sungyong test
-		if (m_pMain->m_byTestMode)
+		if (m_pMain->_testMode)
 			nDamage = 1;
 
 		if (nDamage > 0)
@@ -3864,7 +3864,7 @@ int CNpc::TracingAttack()		// 0:attack fail, 1:attack success
 	else if (nID >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(nID - NPC_BAND);
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr)
@@ -3958,8 +3958,8 @@ void CNpc::MoveAttack()
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
-		//pNpc = m_pMain->m_NpcMap[m_Target.id - NPC_BAND];
+		pNpc = m_pMain->_npcMap.GetData(m_Target.id - NPC_BAND);
+		//pNpc = m_pMain->_npcMap[m_Target.id - NPC_BAND];
 		if (pNpc == nullptr)
 		{
 			InitTarget();
@@ -4178,8 +4178,8 @@ bool CNpc::GetTargetPos(float& x, float& z)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		CNpc* pNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
-		//CNpc* pNpc = m_pMain->m_NpcMap[m_Target.id - NPC_BAND];
+		CNpc* pNpc = m_pMain->_npcMap.GetData(m_Target.id - NPC_BAND);
+		//CNpc* pNpc = m_pMain->_npcMap[m_Target.id - NPC_BAND];
 		if (pNpc == nullptr)
 			return false;
 
@@ -4596,7 +4596,7 @@ void CNpc::ChangeNTarget(CNpc* pNpc)
 	else if (m_Target.id >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		preNpc = m_pMain->m_NpcMap.GetData(m_Target.id - NPC_BAND);
+		preNpc = m_pMain->_npcMap.GetData(m_Target.id - NPC_BAND);
 	}
 
 	if (pNpc == preNpc)
@@ -4726,7 +4726,7 @@ bool CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int u
 	else if (uid >= NPC_BAND
 		&& m_Target.id < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(uid - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(uid - NPC_BAND);
 		if (pNpc == nullptr)
 			return true;
 
@@ -5002,7 +5002,7 @@ void CNpc::SendExpToUserList()
 				if (bFlag)
 				{
 					int uid = 0;
-					pParty = m_pMain->m_PartyMap.GetData(pUser->m_sPartyNumber);
+					pParty = m_pMain->_partyMap.GetData(pUser->m_sPartyNumber);
 					if (pParty != nullptr)
 					{
 						int nTotalMan = 0, nTotalLevel = 0;
@@ -5060,7 +5060,7 @@ void CNpc::SendExpToUserList()
 			else if (i == 0)
 			{
 				int uid = 0;
-				pParty = m_pMain->m_PartyMap.GetData(pUser->m_sPartyNumber);
+				pParty = m_pMain->_partyMap.GetData(pUser->m_sPartyNumber);
 				if (pParty != nullptr)
 				{
 					int nTotalMan = 0, nTotalLevel = 0;
@@ -5174,7 +5174,7 @@ void CNpc::SendExpToUserList()
 	}
 
 	// 전쟁중
-	if (m_pMain->m_byBattleEvent == BATTLEZONE_OPEN)
+	if (m_pMain->_battleEventType == BATTLEZONE_OPEN)
 	{
 		// 죽었을때 데미지를 많이 입힌 유저를 기록해 주세여
 		if (m_bySpecialType >= 90
@@ -5194,32 +5194,32 @@ void CNpc::SendExpToUserList()
 				else if (m_bySpecialType == 90)
 				{
 					SetByte(send_buff, 3, send_index);
-					m_pMain->m_sKillKarusNpc++;
+					m_pMain->_battleNpcsKilledByKarus++;
 				}
 				else if (m_bySpecialType == 91)
 				{
 					SetByte(send_buff, 4, send_index);
-					m_pMain->m_sKillKarusNpc++;
+					m_pMain->_battleNpcsKilledByKarus++;
 				}
 				else if (m_bySpecialType == 92)
 				{
 					SetByte(send_buff, 5, send_index);
-					m_pMain->m_sKillElmoNpc++;
+					m_pMain->_battleNpcsKilledByElmorad++;
 				}
 				else if (m_bySpecialType == 93)
 				{
 					SetByte(send_buff, 6, send_index);
-					m_pMain->m_sKillElmoNpc++;
+					m_pMain->_battleNpcsKilledByElmorad++;
 				}
 				else if (m_bySpecialType == 98)
 				{
 					SetByte(send_buff, 7, send_index);
-					m_pMain->m_sKillKarusNpc++;
+					m_pMain->_battleNpcsKilledByKarus++;
 				}
 				else if (m_bySpecialType == 99)
 				{
 					SetByte(send_buff, 8, send_index);
-					m_pMain->m_sKillElmoNpc++;
+					m_pMain->_battleNpcsKilledByElmorad++;
 				}
 
 				SetString1(send_buff, strMaxDamageUser, send_index);
@@ -5230,7 +5230,7 @@ void CNpc::SendExpToUserList()
 				memset(send_buff, 0, sizeof(send_buff));
 				send_index = 0;
 
-				if (m_pMain->m_sKillKarusNpc == pMap->m_sKarusRoom)
+				if (m_pMain->_battleNpcsKilledByKarus == pMap->m_sKarusRoom)
 				{
 					SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 					SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
@@ -5238,9 +5238,9 @@ void CNpc::SendExpToUserList()
 					SetString1(send_buff, strMaxDamageUser, send_index);
 					m_pMain->Send(send_buff, send_index, m_sCurZone);
 					spdlog::info("Npc::SendExpToUserList: Karus Victory [killKarusNpc={} karusRoom={}]",
-					m_pMain->m_sKillKarusNpc, pMap->m_sKarusRoom);
+						m_pMain->_battleNpcsKilledByKarus, pMap->m_sKarusRoom);
 				}
-				else if (m_pMain->m_sKillElmoNpc == pMap->m_sElmoradRoom)
+				else if (m_pMain->_battleNpcsKilledByElmorad == pMap->m_sElmoradRoom)
 				{
 					SetByte(send_buff, AG_BATTLE_EVENT, send_index);
 					SetByte(send_buff, BATTLE_EVENT_RESULT, send_index);
@@ -5248,7 +5248,7 @@ void CNpc::SendExpToUserList()
 					SetString1(send_buff, strMaxDamageUser, send_index);
 					m_pMain->Send(send_buff, send_index, m_sCurZone);
 					spdlog::info("Npc::SendExpToUserList: Elmorad Victory [killElmoNpc={} elmoradRoom={}]",
-					m_pMain->m_sKillElmoNpc, pMap->m_sElmoradRoom);
+						m_pMain->_battleNpcsKilledByElmorad, pMap->m_sElmoradRoom);
 				}
 			}
 		}
@@ -5431,7 +5431,7 @@ void CNpc::FindFriendRegion(int x, int z, MAP* pMap, _TargetHealer* pHealer, int
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = m_pMain->m_NpcMap.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD
@@ -6257,7 +6257,7 @@ void CNpc::IsNoPathFind(float fDistance)
 		return;
 	}
 
-	MAP* pMap = m_pMain->m_ZoneArray[m_ZoneIndex];
+	MAP* pMap = m_pMain->_zones[m_ZoneIndex];
 	if (pMap == nullptr)
 	{
 		ClearPathFindData();
@@ -6364,22 +6364,22 @@ void CNpc::GiveNpcHaveItem()
 		}
 	}
 
-	for (i = 0; i < m_pMain->m_NpcItem.m_nRow; i++)
+	for (i = 0; i < m_pMain->_npcItem.m_nRow; i++)
 	{
-		if (m_pMain->m_NpcItem.m_ppItem[i][0] != m_iItem)
+		if (m_pMain->_npcItem.m_ppItem[i][0] != m_iItem)
 			continue;
 
-		for (int j = 1; j < m_pMain->m_NpcItem.m_nField; j += 2)
+		for (int j = 1; j < m_pMain->_npcItem.m_nField; j += 2)
 		{
-			if (m_pMain->m_NpcItem.m_ppItem[i][j] == 0)
+			if (m_pMain->_npcItem.m_ppItem[i][j] == 0)
 				continue;
 
 			iRandom = myrand(1, 10000);
-			iPer = m_pMain->m_NpcItem.m_ppItem[i][j + 1];
+			iPer = m_pMain->_npcItem.m_ppItem[i][j + 1];
 			if (iPer == 0)
 				continue;
 
-			int iItemID = m_pMain->m_NpcItem.m_ppItem[i][j];
+			int iItemID = m_pMain->_npcItem.m_ppItem[i][j];
 
 			// 우선 기본테이블를 참조하기위해	
 			if (iRandom <= iPer)
@@ -6904,7 +6904,7 @@ int	CNpc::ItemProdution(int item_number) const
 
 int CNpc::GetItemGrade(int item_grade) const
 {
-	model::MakeItemGradeCode* pItemData = m_pMain->m_MakeGradeItemArray.GetData(item_grade);
+	model::MakeItemGradeCode* pItemData = m_pMain->_makeGradeItemCodeTableMap.GetData(item_grade);
 	if (pItemData == nullptr)
 		return 0;
 
@@ -6935,13 +6935,13 @@ int CNpc::GetWeaponItemCodeNumber(int item_type) const
 	if (item_type == 1)
 	{
 		iItem_level = m_sLevel / 10;
-		pItemData = m_pMain->m_MakeWeaponTableMap.GetData(iItem_level);
+		pItemData = m_pMain->_makeWeaponTableMap.GetData(iItem_level);
 	}
 	// 방어구
 	else if (item_type == 2)
 	{
 		iItem_level = m_sLevel / 10;
-		pItemData = m_pMain->m_MakeDefensiveTableMap.GetData(iItem_level);
+		pItemData = m_pMain->_makeDefensiveTableMap.GetData(iItem_level);
 	}
 
 	if (pItemData == nullptr)
@@ -6969,7 +6969,7 @@ int CNpc::GetItemCodeNumber(int level, int item_type) const
 	int iItemPercent[3];
 
 	int iRandom = myrand(0, 1000);
-	model::MakeItemRareCode* pItemData = m_pMain->m_MakeItemRareCodeTableMap.GetData(level);
+	model::MakeItemRareCode* pItemData = m_pMain->_makeItemRareCodeTableMap.GetData(level);
 	if (pItemData == nullptr)
 		return -1;
 
@@ -7040,7 +7040,7 @@ int CNpc::GetItemCodeNumber(int level, int item_type) const
 
 int CNpc::GetItemGroupNumber(int groupId) const
 {
-	model::MakeItemGroup* makeItemGroup = m_pMain->m_MakeItemGroupTableMap.GetData(groupId);
+	model::MakeItemGroup* makeItemGroup = m_pMain->_makeItemGroupTableMap.GetData(groupId);
 	if (makeItemGroup == nullptr)
 		return 0;
 	
@@ -7158,10 +7158,10 @@ void CNpc::ChangeMonsterInfo(int iChangeType)
 	{
 		// 다른 몬스터로 변환..
 		if (iChangeType == 1)
-			pNpcTable = m_pMain->m_MonTableMap.GetData(m_sChangeSid);
+			pNpcTable = m_pMain->_monTableMap.GetData(m_sChangeSid);
 		// 원래의 몬스터로 변환..
 		else if (iChangeType == 2)
-			pNpcTable = m_pMain->m_MonTableMap.GetData(m_sSid);
+			pNpcTable = m_pMain->_monTableMap.GetData(m_sSid);
 
 		if (pNpcTable == nullptr)
 		{
@@ -7173,10 +7173,10 @@ void CNpc::ChangeMonsterInfo(int iChangeType)
 	{
 		// 다른 몬스터로 변환..
 		if (iChangeType == 1)
-			pNpcTable = m_pMain->m_NpcTableMap.GetData(m_sChangeSid);
+			pNpcTable = m_pMain->_npcTableMap.GetData(m_sChangeSid);
 		// 원래의 몬스터로 변환..
 		else if (iChangeType == 2)
-			pNpcTable = m_pMain->m_NpcTableMap.GetData(m_sSid);
+			pNpcTable = m_pMain->_npcTableMap.GetData(m_sSid);
 
 		if (pNpcTable == nullptr)
 		{
@@ -7266,7 +7266,7 @@ void CNpc::NpcSleeping()
 
 
 	// 낮
-	if (m_pMain->m_byNight == 1)
+	if (m_pMain->_nightMode == 1)
 	{
 		m_NpcState = NPC_STANDING;
 		m_Delay = 0;
@@ -7398,7 +7398,7 @@ void CNpc::NpcHealing()
 	if (nID >= NPC_BAND
 		&& nID < INVALID_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(nID - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(nID - NPC_BAND);
 
 		// User 가 Invalid 한 경우
 		if (pNpc == nullptr
@@ -7529,7 +7529,7 @@ void CNpc::ChangeAbility(int iChangeType)
 	}
 	else if (m_byInitMoveType >= 100)
 	{
-		pNpcTable = m_pMain->m_NpcTableMap.GetData(m_sSid);
+		pNpcTable = m_pMain->_npcTableMap.GetData(m_sSid);
 		if (pNpcTable == nullptr)
 		{
 			spdlog::error("Npc::ChangeAbility: invalid npcId [serial={} npcId={} npcName={}]",

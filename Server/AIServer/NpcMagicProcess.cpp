@@ -171,7 +171,7 @@ model::Magic* CNpcMagicProcess::IsAvailable(int magicid, int tid, uint8_t type)
 		return nullptr;
 
 	// Get main magic table.
-	pTable = m_pMain->m_MagicTableMap.GetData(magicid);
+	pTable = m_pMain->_magicTableMap.GetData(magicid);
 	if (!pTable)
 		goto fail_return;
 
@@ -189,7 +189,7 @@ model::Magic* CNpcMagicProcess::IsAvailable(int magicid, int tid, uint8_t type)
 	// Compare morals between source and target NPC.            
 	else if (tid >= NPC_BAND)
 	{
-		pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 		if (!pNpc
 			|| pNpc->m_NpcState == NPC_DEAD)
 			goto fail_return;
@@ -316,7 +316,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 	model::Magic* pMagic = nullptr;
 
 	// Get main magic table.
-	pMagic = m_pMain->m_MagicTableMap.GetData(magicid);
+	pMagic = m_pMain->_magicTableMap.GetData(magicid);
 	if (!pMagic)
 		return;
 
@@ -324,7 +324,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 	if (tid == -1)
 		goto packet_send;
 
-	pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)
@@ -334,7 +334,7 @@ void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, 
 	}
 
 	// Get magic skill table type 3.
-	pType = m_pMain->m_MagicType3TableMap.GetData(magicid);
+	pType = m_pMain->_magicType3TableMap.GetData(magicid);
 	if (!pType)
 		return;
 
@@ -452,7 +452,7 @@ int16_t CNpcMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, 
 		return 0;
 
 	CNpc* pNpc = nullptr;
-	pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr
 		|| pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP == 0)

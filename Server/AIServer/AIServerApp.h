@@ -65,82 +65,82 @@ public:
 	AIServerApp(AIServerLogger& logger);
 	~AIServerApp();
 
-	NpcMap						m_NpcMap;
-	NpcTableMap					m_MonTableMap;
-	NpcTableMap					m_NpcTableMap;
-	NpcThreadArray				m_NpcThreadArray;
-	PartyMap					m_PartyMap;
-	ZoneNpcInfoList				m_ZoneNpcList;
-	MagicTableMap				m_MagicTableMap;
-	MagicType1TableMap			m_MagicType1TableMap;
-	MagicType2TableMap			m_MagicType2TableMap;
-	MagicType3TableMap			m_MagicType3TableMap;
-	MagicType4TableMap			m_MagicType4TableMap;
-	MagicType7TableMap			m_MagicType7TableMap;
-	MakeItemGroupMap			m_MakeItemGroupTableMap;
-	MakeWeaponTableMap			m_MakeWeaponTableMap;
-	MakeWeaponTableMap			m_MakeDefensiveTableMap;
-	MakeGradeItemCodeTableMap	m_MakeGradeItemArray;
-	MakeItemRareCodeTableMap	m_MakeItemRareCodeTableMap;
-	ZoneArray					m_ZoneArray;
-	ZoneInfoTableMap			m_ZoneInfoTableMap;
+	NpcMap						_npcMap;
+	NpcTableMap					_monTableMap;
+	NpcTableMap					_npcTableMap;
+	NpcThreadArray				_npcThreads;
+	PartyMap					_partyMap;
+	MagicTableMap				_magicTableMap;
+	MagicType1TableMap			_magicType1TableMap;
+	MagicType2TableMap			_magicType2TableMap;
+	MagicType3TableMap			_magicType3TableMap;
+	MagicType4TableMap			_magicType4TableMap;
+	MagicType7TableMap			_magicType7TableMap;
+	MakeItemGroupMap			_makeItemGroupTableMap;
+	MakeWeaponTableMap			_makeWeaponTableMap;
+	MakeWeaponTableMap			_makeDefensiveTableMap;
+	MakeGradeItemCodeTableMap	_makeGradeItemCodeTableMap;
+	MakeItemRareCodeTableMap	_makeItemRareCodeTableMap;
+	ZoneArray					_zones;
+	ZoneInfoTableMap			_zoneInfoTableMap;
 
-	ZoneEventThread*			m_pZoneEventThread;		// zone
+	ZoneEventThread*			_zoneEventThread;
 
-	CUser*			m_pUser[MAX_USER];
+	CUser*						_users[MAX_USER];
 
 	// class 객체
-	CNpcItem		m_NpcItem;
+	CNpcItem					_npcItem;
 
 	// 전역 객체 변수
-	long			m_TotalNPC;			// DB에있는 총 수
-	long			m_CurrentNPCError;	// 세팅에서 실패한 수
-	std::atomic<long>	m_CurrentNPC;		// 현재 게임상에서 실제로 셋팅된 수
-	int16_t			m_sTotalMap;		// Zone 수 
-	int16_t			m_sMapEventNpc;		// Map에서 읽어들이는 event npc 수
+	long						_totalNpcCount;		// DB에있는 총 수
+	std::atomic<long>			_loadedNpcCount;	// 현재 게임상에서 실제로 셋팅된 수
+	int16_t						_mapCount;			// Zone 수 
+	int16_t						_mapEventNpcCount;	// Map에서 읽어들이는 event npc 수
 
 	// sungyong 2002.05.23
-	bool			m_bFirstServerFlag;	// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
-	int16_t			m_sSocketCount;		// GameServer와 처음접시 필요
-	int16_t			m_sReSocketCount;	// GameServer와 재접시 필요
-	double			m_fReConnectStart;	// 처음 소켓이 도착한 시간
-	int16_t			m_sErrorSocketCount;  // 이상소켓 감시용
+	bool						_firstServerFlag;	// 서버가 처음시작한 후 게임서버가 붙은 경우에는 1, 붙지 않은 경우 0
+	int16_t						_socketCount;		// GameServer와 처음접시 필요
+	int16_t						_reconnectSocketCount;	// GameServer와 재접시 필요
+	double						_reconnectStartTime;	// 처음 소켓이 도착한 시간
+	int16_t						_aliveSocketCount;  // 이상소켓 감시용
 	// ~sungyong 2002.05.23
-	uint8_t			m_byBattleEvent;	// 전쟁 이벤트 관련 플래그( 1:전쟁중이 아님, 0:전쟁중)
-	int16_t			m_sKillKarusNpc, m_sKillElmoNpc; // 전쟁동안에 죽은 npc숫자
+	uint8_t						_battleEventType;	// 전쟁 이벤트 관련 플래그( 1:전쟁중이 아님, 0:전쟁중)
+	int16_t						_battleNpcsKilledByKarus, _battleNpcsKilledByElmorad; // 전쟁동안에 죽은 npc숫자
 
-	int				m_iYear, m_iMonth, m_iDate, m_iHour, m_iMin, m_iWeather, m_iAmount;
-	uint8_t			m_byNight;			// 밤인지,, 낮인지를 판단... 1:낮, 2:밤
-	uint8_t			m_byTestMode;
+	int							_year, _month, _dayOfMonth, _hour, _minute;
+	int							_weatherType, _weatherAmount;
+	uint8_t						_nightMode;			// 밤인지,, 낮인지를 판단... 1:낮, 2:밤
+	uint8_t						_testMode;
 
-	AISocketManager	_socketManager;
+	AISocketManager				_socketManager;
+
+private:
+	// 패킷 압축에 필요 변수   -------------
+	int							_compressedPacketCount;
+	char						_compressedPacketBuffer[10240];
+	int							_compressedPacketIndex;
+	// ~패킷 압축에 필요 변수   -------------
+
+	uint8_t						_serverZoneType;
+
+	std::unique_ptr<TimerThread>	_checkAliveThread;
 
 protected:
 	/// \brief Loads config, database caches, then starts sockets and thread pools.
 	/// \returns true when successful, false otherwise
 	bool OnStart() override;
 
-	/// \brief attempts to listen on the port associated with m_byZone
-	/// \see m_byZone
+	/// \brief attempts to listen on the port associated with _serverZoneType
+	/// \see _serverZoneType
 	/// \returns true when successful, otherwise false
-	bool ListenByZone();
+	bool ListenByServerZoneType();
 
-	/// \brief fetches the listen port associated with m_byZone
-	/// \see m_byZone
+	/// \brief fetches the listen port associated with _serverZoneType
+	/// \see _serverZoneType
 	/// \returns the associated listen port or -1 if invalid
-	int GetListenPortByZone() const;
+	int GetListenPortByServerZoneType() const;
 
 private:
-	// 패킷 압축에 필요 변수   -------------
-	int					m_CompCount;
-	char				m_CompBuf[10240];
-	int					m_iCompIndex;
-	// ~패킷 압축에 필요 변수   -------------
-
-	uint8_t				m_byZone;
-
-	std::unique_ptr<TimerThread>	_checkAliveThread;
-
 	void StartNpcThreads();
 	bool LoadNpcPosTable(std::vector<model::NpcPos*>& rows);
 	bool CreateNpcThread();

@@ -105,7 +105,7 @@ void CUser::Initialize()
 
 void CUser::Attack(int sid, int tid)
 {
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
 		return;
 
@@ -137,7 +137,7 @@ void CUser::Attack(int sid, int tid)
 		nFinalDamage = USER_DAMAGE_OVERRIDE_GM;
 	else if (m_byIsOP == AUTHORITY_LIMITED_MANAGER)
 		nFinalDamage = USER_DAMAGE_OVERRIDE_LIMITED_GM;
-	else if (m_pMain->m_byTestMode)
+	else if (m_pMain->_testMode)
 		nFinalDamage = USER_DAMAGE_OVERRIDE_TEST_MODE;	// sungyong test
 
 	// Calculate Target HP	 -------------------------------------------------------//
@@ -485,7 +485,7 @@ int16_t CUser::GetDamage(int tid, int magicid)
 		|| tid > INVALID_BAND)
 		return damage;
 
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
 		return damage;
 
@@ -506,7 +506,7 @@ int16_t CUser::GetDamage(int tid, int magicid)
 	if (magicid > 0)
 	{
 		// Get main magic table.
-		pTable = m_pMain->m_MagicTableMap.GetData(magicid);
+		pTable = m_pMain->_magicTableMap.GetData(magicid);
 		if (pTable == nullptr)
 			return -1;
 
@@ -514,7 +514,7 @@ int16_t CUser::GetDamage(int tid, int magicid)
 		if (pTable->Type1 == 1)
 		{
 			// Get magic skill table type 1.
-			pType1 = m_pMain->m_MagicType1TableMap.GetData(magicid);
+			pType1 = m_pMain->_magicType1TableMap.GetData(magicid);
 			if (!pType1)
 				return -1;
 
@@ -550,7 +550,7 @@ int16_t CUser::GetDamage(int tid, int magicid)
 		else if (pTable->Type1 == 2)
 		{
 			// Get magic skill table type 2.
-			pType2 = m_pMain->m_MagicType2TableMap.GetData(magicid);
+			pType2 = m_pMain->_magicType2TableMap.GetData(magicid);
 			if (pType2 == nullptr)
 				return -1;
 
@@ -634,7 +634,7 @@ int16_t CUser::GetMagicDamage(int damage, int16_t tid)
 {
 	int16_t total_r = 0, temp_damage = 0;
 
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(tid - NPC_BAND);
+	CNpc* pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
 		return damage;
 
@@ -1040,7 +1040,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 		if (nid < NPC_BAND)
 			continue;
 
-		pNpc = m_pMain->m_NpcMap.GetData(nid - NPC_BAND);
+		pNpc = m_pMain->_npcMap.GetData(nid - NPC_BAND);
 
 		if (pNpc != nullptr
 			&& pNpc->m_NpcState != NPC_DEAD)
