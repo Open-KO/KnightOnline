@@ -1842,7 +1842,7 @@ bool EbenezerApp::HandleCommand(const std::string& command)
 		}
 
 		SetByte(sendBuff, PERMANENT_CHAT, sendIndex);
-		strcpy(m_strPermanentChat, finalstr.c_str());
+		strcpy_s(m_strPermanentChat, finalstr.c_str());
 		m_bPermanentChatFlag = false;
 	}
 	else
@@ -1904,32 +1904,45 @@ bool EbenezerApp::LoadNoticeData()
 		return false;
 	}
 
+	bool loadedNotice = true;
 	while (std::getline(file, line))
 	{
 		if (count > 19)
 		{
-			spdlog::warn("EbenezerApp::LoadNoticeData: notice count overflow [count={}]", count);
+			spdlog::error("EbenezerApp::LoadNoticeData: notice count overflow [count={}]", count);
+			loadedNotice = false;
 			break;
 		}
 
-		strcpy(m_ppNotice[count], line.c_str());
+		if (strcpy_s(m_ppNotice[count], line.c_str()))
+		{
+			spdlog::error("EbenezerApp::LoadNoticeData: notice line {} is too long", count + 1);
+			loadedNotice = false;
+			break;
+		}
+
 		count++;
 	}
 
 	file.close();
 
-	return true;
+	return loadedNotice;
 }
 
 void EbenezerApp::SyncTest(int nType)
 {
 	char strPath[100] = {};
 	if (nType == 1)
-		strcpy(strPath, "c:\\userlist.txt");
+		strcpy_s(strPath, "./userlist.txt");
 	else if (nType == 2)
-		strcpy(strPath, "c:\\npclist.txt");
+		strcpy_s(strPath, "./npclist.txt");
 
-	FILE* stream = fopen(strPath, "w");
+	FILE* stream = nullptr;
+#if defined(_MSC_VER)
+	fopen_s(&stream, strPath, "w");
+#else
+	stream = fopen(strPath, "w");
+#endif
 	if (stream == nullptr)
 		return;
 
@@ -2687,19 +2700,39 @@ bool EbenezerApp::LoadAllKnights()
 #if defined(DB_COMPAT_PADDED_NAMES)
 			rtrim(row.Name);
 #endif
-			strcpy(pKnights->m_strName, row.Name.c_str());
+			if (strcpy_s(pKnights->m_strName, row.Name.c_str()))
+			{
+				spdlog::warn("EbenezerApp::LoadAllKnights: IDName too long, truncating - knightsId={}",
+					pKnights->m_sIndex);
+				strncpy_s(pKnights->m_strName, row.Name.c_str(), MAX_ID_SIZE);
+				pKnights->m_strName[MAX_ID_SIZE] = '\0';
+			}
 
 #if defined(DB_COMPAT_PADDED_NAMES)
 			rtrim(row.Chief);
 #endif
-			strcpy(pKnights->m_strChief, row.Chief.c_str());
+
+			if (strcpy_s(pKnights->m_strChief, row.Chief.c_str()))
+			{
+				spdlog::warn("EbenezerApp::LoadAllKnights: Chief too long, truncating - knightsId={}",
+					pKnights->m_sIndex);
+				strncpy_s(pKnights->m_strChief, row.Chief.c_str(), MAX_ID_SIZE);
+				pKnights->m_strChief[MAX_ID_SIZE] = '\0';
+			}
 
 			if (row.ViceChief1.has_value())
 			{
 #if defined(DB_COMPAT_PADDED_NAMES)
 				rtrim(*row.ViceChief1);
 #endif
-				strcpy(pKnights->m_strViceChief_1, row.ViceChief1->c_str());
+
+				if (strcpy_s(pKnights->m_strViceChief_1, row.ViceChief1->c_str()))
+				{
+					spdlog::warn("EbenezerApp::LoadAllKnights: ViceChief_1 too long, truncating - knightsId={}",
+						pKnights->m_sIndex);
+					strncpy_s(pKnights->m_strViceChief_1, row.ViceChief1->c_str(), MAX_ID_SIZE);
+					pKnights->m_strViceChief_1[MAX_ID_SIZE] = '\0';
+				}
 			}
 
 			if (row.ViceChief2.has_value())
@@ -2707,7 +2740,14 @@ bool EbenezerApp::LoadAllKnights()
 #if defined(DB_COMPAT_PADDED_NAMES)
 				rtrim(*row.ViceChief2);
 #endif
-				strcpy(pKnights->m_strViceChief_2, row.ViceChief2->c_str());
+
+				if (strcpy_s(pKnights->m_strViceChief_2, row.ViceChief2->c_str()))
+				{
+					spdlog::warn("EbenezerApp::LoadAllKnights: ViceChief_2 too long, truncating - knightsId={}",
+						pKnights->m_sIndex);
+					strncpy_s(pKnights->m_strViceChief_2, row.ViceChief2->c_str(), MAX_ID_SIZE);
+					pKnights->m_strViceChief_2[MAX_ID_SIZE] = '\0';
+				}
 			}
 
 			if (row.ViceChief3.has_value())
@@ -2715,7 +2755,14 @@ bool EbenezerApp::LoadAllKnights()
 #if defined(DB_COMPAT_PADDED_NAMES)
 				rtrim(*row.ViceChief3);
 #endif
-				strcpy(pKnights->m_strViceChief_3, row.ViceChief3->c_str());
+
+				if (strcpy_s(pKnights->m_strViceChief_3, row.ViceChief3->c_str()))
+				{
+					spdlog::warn("EbenezerApp::LoadAllKnights: ViceChief_3 too long, truncating - knightsId={}",
+						pKnights->m_sIndex);
+					strncpy_s(pKnights->m_strViceChief_3, row.ViceChief3->c_str(), MAX_ID_SIZE);
+					pKnights->m_strViceChief_3[MAX_ID_SIZE] = '\0';
+				}
 			}
 
 			pKnights->m_sMembers = row.Members;
@@ -2731,7 +2778,7 @@ bool EbenezerApp::LoadAllKnights()
 			for (int i = 0; i < MAX_CLAN; i++)
 			{
 				pKnights->m_arKnightsUser[i].byUsed = 0;
-				strcpy(pKnights->m_arKnightsUser[i].strUserName, "");
+				strcpy_s(pKnights->m_arKnightsUser[i].strUserName, "");
 			}
 
 			if (!m_KnightsMap.PutData(pKnights->m_sIndex, pKnights))
@@ -2829,8 +2876,7 @@ int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& bu
 			// 같은 소속의 클랜..
 			if (pUser->m_pUserData->m_bKnights == knightsindex)
 			{
-				SetShort(temp_buff, strlen(pUser->m_pUserData->m_id), buff_index);
-				SetString(temp_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), buff_index);
+				SetString2(temp_buff, pUser->m_pUserData->m_id, buff_index);
 				SetByte(temp_buff, pUser->m_pUserData->m_bFame, buff_index);
 				SetByte(temp_buff, pUser->m_pUserData->m_bLevel, buff_index);
 				SetShort(temp_buff, pUser->m_pUserData->m_sClass, buff_index);
@@ -2855,8 +2901,7 @@ int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& bu
 				{
 					if (pUser->m_pUserData->m_bKnights == knightsindex)
 					{
-						SetShort(temp_buff, strlen(pUser->m_pUserData->m_id), buff_index);
-						SetString(temp_buff, pUser->m_pUserData->m_id, strlen(pUser->m_pUserData->m_id), buff_index);
+						SetString2(temp_buff, pUser->m_pUserData->m_id, buff_index);
 						SetByte(temp_buff, pUser->m_pUserData->m_bFame, buff_index);
 						SetByte(temp_buff, pUser->m_pUserData->m_bLevel, buff_index);
 						SetShort(temp_buff, pUser->m_pUserData->m_sClass, buff_index);
@@ -2872,8 +2917,7 @@ int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& bu
 				// 비접속중인 회원
 				else
 				{
-					SetShort(temp_buff, strlen(pKnights->m_arKnightsUser[i].strUserName), buff_index);
-					SetString(temp_buff, pKnights->m_arKnightsUser[i].strUserName, strlen(pKnights->m_arKnightsUser[i].strUserName), buff_index);
+					SetString2(temp_buff, pKnights->m_arKnightsUser[i].strUserName, buff_index);
 					SetByte(temp_buff, 0, buff_index);
 					SetByte(temp_buff, 0, buff_index);
 					SetShort(temp_buff, 0, buff_index);

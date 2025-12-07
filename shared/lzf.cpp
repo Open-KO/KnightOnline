@@ -71,8 +71,8 @@ unsigned int
 		)
 		{
 			/* match found at *ref++ */
-			unsigned int len = 2;
-			unsigned int maxlen = in_end - ip - len;
+			size_t len = 2;
+			size_t maxlen = in_end - ip - len;
 			maxlen = maxlen > MAX_REF ? MAX_REF : maxlen;
 
 			if (expect_false (op + 3 + 1 >= out_end)) /* first a faster conservative test */
@@ -119,12 +119,12 @@ unsigned int
 
 			if (len < 7)
 			{
-				*op++ = (u8)(off >> 8) + (len << 5);
+				*op++ = (u8)((off >> 8) + (len << 5));
 			}
 			else
 			{
 				*op++ = (u8)((off >> 8) + (7 << 5));
-				*op++ = len - 7;
+				*op++ = (u8)(len - 7);
 			}
 
 			*op++ = (u8)off;
@@ -196,7 +196,7 @@ unsigned int
 	op [- lit - 1] = lit - 1; /* end run */
 	op -= !lit; /* undo run if length is zero */
 
-	return op - (u8 *)out_data;
+	return static_cast<unsigned int>(op - (u8 *)out_data);
 }
 
 unsigned int 
@@ -292,5 +292,5 @@ unsigned int
 	}
 	while (ip < in_end);
 
-	return op - (u8 *)out_data;
+	return static_cast<unsigned int>(op - (u8 *)out_data);
 }

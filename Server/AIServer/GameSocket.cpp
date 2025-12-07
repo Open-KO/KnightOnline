@@ -389,7 +389,7 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 	pUser->Initialize();
 
 	pUser->m_iUserId = uid;
-	strcpy(pUser->m_strUserID, strName);
+	strcpy_s(pUser->m_strUserID, strName);
 	pUser->m_curZone = bZone;
 	pUser->m_sZoneIndex = sZoneIndex;
 	pUser->m_bNation = bNation;
@@ -1033,7 +1033,7 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 		pUser->Initialize();
 
 		pUser->m_iUserId = uid;
-		strcpy(pUser->m_strUserID, strName);
+		strcpy_s(pUser->m_strUserID, strName);
 		pUser->m_curZone = bZone;
 		pUser->m_sZoneIndex = sZoneIndex;
 		pUser->m_bNation = bNation;

@@ -172,9 +172,9 @@ void CUser::LogInReq(char* pBuf)
 	int index = 0, idlen = 0, pwdlen = 0, send_index = 0, result = 0, serverno = 0;
 	bool bCurrentuser = false;
 	char send_buff[256] = {},
-		serverip[MAX_IP_SIZE + 1] = {},
 		accountid[MAX_ID_SIZE + 1] = {},
 		pwd[MAX_PW_SIZE + 1] = {};
+	std::string serverIp;
 	int16_t sPremiumTimeDaysRemaining = -1;
 	VersionManagerApp* appInstance = VersionManagerApp::instance();
 
@@ -197,14 +197,14 @@ void CUser::LogInReq(char* pBuf)
 
 	if (result == AUTH_OK)
 	{
-		bCurrentuser = appInstance->DbProcess.IsCurrentUser(accountid, serverip, serverno);
+		bCurrentuser = appInstance->DbProcess.IsCurrentUser(accountid, serverIp, serverno);
 		if (bCurrentuser)
 		{
 			// Kick out
 			result = AUTH_IN_GAME;
 
 			SetByte(send_buff, result, send_index);
-			SetString2(send_buff, serverip, send_index);
+			SetString2(send_buff, serverIp, send_index);
 			SetShort(send_buff, serverno, send_index);
 		}
 		else

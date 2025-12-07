@@ -4687,7 +4687,8 @@ int CNpc::GetDefense()
 //	Damage 계산, 만약 m_iHP 가 0 이하이면 사망처리
 bool CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int uid)
 {
-	int i = 0, len = 0;
+	int i = 0;
+	size_t len = 0;
 	int userDamage = 0;
 	bool bFlag = false;
 	_ExpUserList* tempUser = nullptr;
@@ -4746,7 +4747,7 @@ bool CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int u
 			if (_stricmp("**duration**", sourceName) == 0)
 			{
 				bFlag = true;
-				strcpy(strDurationID, pUser->m_strUserID);
+				strcpy_s(strDurationID, pUser->m_strUserID);
 				if (_stricmp(m_DamagedUserList[i].strUserID, strDurationID) == 0)
 				{
 					m_DamagedUserList[i].nDamage += userDamage;
@@ -4779,15 +4780,16 @@ bool CNpc::SetDamage(int nAttackType, int nDamage, const char* sourceName, int u
 
 				if (bFlag)
 				{
-					strcpy(m_DamagedUserList[i].strUserID, strDurationID);
+					strcpy_s(m_DamagedUserList[i].strUserID, strDurationID);
 				}
 				else
 				{
 					if (_stricmp("**duration**", sourceName) == 0)
-						strcpy(m_DamagedUserList[i].strUserID, pUser->m_strUserID);
+						strcpy_s(m_DamagedUserList[i].strUserID, pUser->m_strUserID);
 					else
-						strcpy(m_DamagedUserList[i].strUserID, sourceName);
+						strcpy_s(m_DamagedUserList[i].strUserID, sourceName);
 				}
+
 				m_DamagedUserList[i].iUid = uid;
 				m_DamagedUserList[i].nDamage = userDamage;
 				m_DamagedUserList[i].bIs = false;
@@ -4943,12 +4945,12 @@ void CNpc::SendExpToUserList()
 					if (pMaxDamageUser == nullptr)
 					{
 						m_byMaxDamagedNation = pUser->m_bNation;
-						strcpy(strMaxDamageUser, pUser->m_strUserID);
+						strcpy_s(strMaxDamageUser, pUser->m_strUserID);
 					}
 					else
 					{
 						m_byMaxDamagedNation = pMaxDamageUser->m_bNation;
-						strcpy(strMaxDamageUser, pMaxDamageUser->m_strUserID);
+						strcpy_s(strMaxDamageUser, pMaxDamageUser->m_strUserID);
 					}
 				}
 
@@ -5141,12 +5143,12 @@ void CNpc::SendExpToUserList()
 					if (pMaxDamageUser == nullptr)
 					{
 						m_byMaxDamagedNation = pUser->m_bNation;
-						strcpy(strMaxDamageUser, pUser->m_strUserID);
+						strcpy_s(strMaxDamageUser, pUser->m_strUserID);
 					}
 					else
 					{
 						m_byMaxDamagedNation = pMaxDamageUser->m_bNation;
-						strcpy(strMaxDamageUser, pMaxDamageUser->m_strUserID);
+						strcpy_s(strMaxDamageUser, pMaxDamageUser->m_strUserID);
 					}
 				}
 

@@ -18,6 +18,11 @@ endif()
 # Use C++23
 target_compile_features(Aujard PUBLIC cxx_std_23)
 
+# Enable warnings as errors
+if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+  set_property(TARGET Aujard PROPERTY COMPILE_WARNING_AS_ERROR ON)
+endif()
+
 # Setup PCH
 target_precompile_headers(Aujard PRIVATE pch.h)
 
@@ -27,3 +32,11 @@ target_link_libraries(Aujard
     shared-server
     db-library
 )
+
+# Setup warning levels
+target_compile_options(Aujard PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
+)
+

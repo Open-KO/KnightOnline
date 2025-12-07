@@ -24,8 +24,13 @@ add_library(shared STATIC
   version.h
 )
 
-# Use C++20
-target_compile_features(shared PUBLIC cxx_std_20)
+# Use C++23
+target_compile_features(shared PUBLIC cxx_std_23)
+
+# Enable warnings as errors
+if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+  set_property(TARGET shared PROPERTY COMPILE_WARNING_AS_ERROR ON)
+endif()
 
 # Setup PCH
 target_precompile_headers(shared PRIVATE pch.h)
@@ -40,4 +45,11 @@ set_source_files_properties(
 # Setup dependencies
 target_link_libraries(shared
   PUBLIC spdlog::spdlog # expose spdlog to consumers
+)
+
+# Setup warning levels
+target_compile_options(shared PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
 )

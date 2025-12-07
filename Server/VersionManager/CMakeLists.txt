@@ -18,6 +18,11 @@ endif()
 # Use C++23
 target_compile_features(VersionManager PUBLIC cxx_std_23)
 
+# Enable warnings as errors
+if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+  set_property(TARGET VersionManager PROPERTY COMPILE_WARNING_AS_ERROR ON)
+endif()
+
 # Setup PCH
 target_precompile_headers(VersionManager PRIVATE pch.h)
 
@@ -26,4 +31,11 @@ target_link_libraries(VersionManager
   PRIVATE
     shared-server
     db-library
+)
+
+# Setup warning levels
+target_compile_options(VersionManager PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
 )

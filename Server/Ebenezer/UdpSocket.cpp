@@ -416,8 +416,8 @@ void CUdpSocket::RecvCreateKnights(char* pBuf)
 	pKnights->m_sIndex = knightsindex;
 	pKnights->m_byFlag = community;
 	pKnights->m_byNation = nation;
-	strcpy(pKnights->m_strName, knightsname);
-	strcpy(pKnights->m_strChief, chiefname);
+	strcpy_s(pKnights->m_strName, knightsname);
+	strcpy_s(pKnights->m_strChief, chiefname);
 	pKnights->m_sMembers = 1;
 	pKnights->m_nMoney = 0;
 	pKnights->m_nPoints = 0;

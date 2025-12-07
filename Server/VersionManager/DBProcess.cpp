@@ -212,7 +212,7 @@ bool CDBProcess::LoadUserCountList()
 /// \param[out] serverIp output of the server IP the user is connected to
 /// \param[out] serverId output of the serverId the user is connected to
 /// \return true on success, false on failure
-bool CDBProcess::IsCurrentUser(const char* accountId, char* serverIp, int& serverId)
+bool CDBProcess::IsCurrentUser(const char* accountId, std::string& serverIp, int& serverId)
 {
 	db::SqlBuilder<model::CurrentUser> sql;
 	sql.IsWherePK = true;
@@ -222,9 +222,7 @@ bool CDBProcess::IsCurrentUser(const char* accountId, char* serverIp, int& serve
 
 		auto stmt = recordSet.prepare(sql);
 		if (stmt == nullptr)
-		{
 			throw db::ApplicationError("DBProcess::IsCurrentUser: statement could not be allocated");
-		}
 
 		stmt->bind(0, accountId);
 		recordSet.execute();
@@ -234,7 +232,7 @@ bool CDBProcess::IsCurrentUser(const char* accountId, char* serverIp, int& serve
 
 		model::CurrentUser user = recordSet.get();
 		serverId = user.ServerId;
-		strcpy(serverIp, user.ServerIP.c_str());
+		serverIp = std::move(user.ServerIP);
 
 		return true;
 	}

@@ -1542,7 +1542,7 @@ int AIServerApp::GetZoneIndex(int zoneId) const
 		MAP* pMap = _zones[i];
 		if (pMap != nullptr
 			&& pMap->m_nZoneNumber == zoneId)
-			return i;
+			return static_cast<int>(i);
 	}
 
 	spdlog::error("AIServerApp::GetZoneIndex: zoneId={} not found", zoneId);

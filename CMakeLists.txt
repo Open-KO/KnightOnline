@@ -7,6 +7,7 @@ project(OpenKO
 
 # Config
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
+option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
 
 if(WIN32)
   # Set the minimum Windows version

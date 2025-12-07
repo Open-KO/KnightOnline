@@ -453,7 +453,7 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		pNpc->m_sSize = sSize;
 		pNpc->m_iWeapon_1 = iweapon_1;
 		pNpc->m_iWeapon_2 = iweapon_2;
-		strcpy(pNpc->m_strName, npcName);
+		strcpy_s(pNpc->m_strName, npcName);
 		pNpc->m_byGroup = byGroup;
 		pNpc->m_byLevel = byLevel;
 		pNpc->m_sCurZone = sZone;
@@ -1022,7 +1022,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	pNpc->m_sSize = sSize;
 	pNpc->m_iWeapon_1 = iWeapon_1;
 	pNpc->m_iWeapon_2 = iWeapon_2;
-	strcpy(pNpc->m_strName, npcName);
+	strcpy_s(pNpc->m_strName, npcName);
 	pNpc->m_byGroup = byGroup;
 	pNpc->m_byLevel = byLevel;
 	pNpc->m_sCurZone = sZone;
@@ -1612,7 +1612,7 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			{
 				pKnights = _main->m_KnightsMap.GetData(pUser->m_pUserData->m_bKnights);
 				if (pKnights != nullptr)
-					strcpy(strKnightsName, pKnights->m_strName);
+					strcpy_s(strKnightsName, pKnights->m_strName);
 			}
 
 			//TRACE(_T("--> RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
