@@ -34,7 +34,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)asio.props" />
-  <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)db-library.props" />
   <Import Project="$(PropsDir)server.props" />
   <Import Project="$(PropsDir)spdlog.props" />
@@ -146,7 +145,6 @@
     <ClCompile Include="NpcMagicProcess.cpp" />
     <ClCompile Include="NpcThread.cpp" />
     <ClCompile Include="Party.cpp" />
-    <ClCompile Include="PartyUser.cpp" />
     <ClCompile Include="PathFind.cpp" />
     <ClCompile Include="Region.cpp" />
     <ClCompile Include="RoomEvent.cpp" />
@@ -173,7 +171,6 @@
     <ClInclude Include="NpcThread.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="Party.h" />
-    <ClInclude Include="PartyUser.h" />
     <ClInclude Include="PathFind.h" />
     <ClInclude Include="Region.h" />
     <ClInclude Include="resource.h" />

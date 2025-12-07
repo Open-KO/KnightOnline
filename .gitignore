@@ -58,3 +58,7 @@ All.sln.DotSettings.user
 last-build-states/
 module-output/
 .env
+build/
+
+# Do not ignore CMakeLists.txt
+!CMakeLists.txt

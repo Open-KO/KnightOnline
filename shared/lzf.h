@@ -34,12 +34,7 @@
 * either the BSD or the GPL.
 */
 
-#ifndef __LZF_H
-#define __LZF_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 #define LZF_MARGIN 128
 #define LZF_VERSION 0x0105 /* 1.5, API version */
@@ -248,9 +243,3 @@ unsigned int
 unsigned int 
 	lzf_decompress (const void *const in_data,  unsigned int in_len,
 	void             *out_data, unsigned int out_len);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif

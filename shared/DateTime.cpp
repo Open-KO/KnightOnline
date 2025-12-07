@@ -29,7 +29,11 @@ DateTime::DateTime(const DateTime& other)
 
 void DateTime::Set(time_t timestamp)
 {
+#ifdef _MSC_VER
+	localtime_s(&_tm, &timestamp);
+#else
 	_tm = *localtime(&timestamp);
+#endif
 	_unixTimestamp = timestamp;
 }
 

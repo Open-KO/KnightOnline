@@ -5347,8 +5347,7 @@ bool CUser::IsValidName(const char* name)
 		"~", "`", "!", "@", "#", "$", "%", "^", "&", "*",
 		"(", ")", "-", "+", "=", "|", "\\", "<", ">", ",",
 		".", "?", "/", "{", "[", "}", "]", "\"", "\'", " ", "　",
-		"운영자", "나이트", "도우미", "Knight", "Noahsystem", "Wizgate", "Mgame",
-		"노아시스템", "위즈게이트", "엠게임"
+		"Knight", "Noahsystem", "Wizgate", "Mgame"
 	};
 
 	// taiwan version

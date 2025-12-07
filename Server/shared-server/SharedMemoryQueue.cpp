@@ -85,7 +85,7 @@ int SharedMemoryQueue::PutData(const char* pBuf, int size)
 	{
 		try
 		{
-			if (_queue->try_send(pBuf, size, priority))
+			if (_queue->try_send(pBuf, static_cast<size_t>(size), priority))
 				return SMQ_OK;
 		}
 		catch (interprocess_exception& ex)
@@ -102,7 +102,7 @@ int SharedMemoryQueue::PutData(const char* pBuf, int size)
 
 int SharedMemoryQueue::GetData(char* pBuf)
 {
-	uint32_t receivedSize = 0;
+	size_t receivedSize = 0;
 	uint32_t priority = 0;
 
 	try
