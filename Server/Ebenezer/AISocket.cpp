@@ -1317,34 +1317,36 @@ void CAISocket::RecvCompressedData(char* pBuf)
 	int index = 0;
 	std::vector<uint8_t> decompressedBuffer;
 
-	int16_t sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
-	int16_t sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
+	uint32_t dwCompLen = static_cast<uint32_t>(GetShort(pBuf, index));	// 압축된 데이타길이얻기...
+	uint32_t dwOrgLen = static_cast<uint32_t>(GetShort(pBuf, index));	// 원래데이타길이얻기...
 	uint32_t dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
 	/*int16_t sCompCount =*/ GetShort(pBuf, index);	// 압축 데이타 수 얻기...
 
-	decompressedBuffer.resize(sOrgLen);
+	decompressedBuffer.resize(dwOrgLen);
 
 	uint8_t* pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
-	index += sCompLen;
+	index += dwCompLen;
 
 	uint32_t nDecompressedLength = lzf_decompress(
 		pCompressedBuffer,
-		sCompLen,
+		dwCompLen,
 		&decompressedBuffer[0],
-		sOrgLen);
+		dwOrgLen);
 
-	assert(nDecompressedLength == sOrgLen);
+	assert(nDecompressedLength == dwOrgLen);
 
-	if (nDecompressedLength != static_cast<uint32_t>(sOrgLen))
+	if (nDecompressedLength != dwOrgLen)
 		return;
 
-	uint32_t dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
+	uint32_t dwActualCrcValue = crc32(&decompressedBuffer[0], dwOrgLen);
 	assert(dwCrcValue == dwActualCrcValue);
 
 	if (dwCrcValue != dwActualCrcValue)
 		return;
 
-	Parsing(sOrgLen, reinterpret_cast<char*>(&decompressedBuffer[0]));
+	Parsing(
+		static_cast<int>(dwOrgLen),
+		reinterpret_cast<char*>(&decompressedBuffer[0]));
 }
 
 void CAISocket::InitEventMonster(int instanceId)
