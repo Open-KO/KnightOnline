@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_STRINGUTILS_H
+#define SHARED_STRINGUTILS_H
+
+#pragma once
 
 #include <cstring>
 #include <string>
@@ -41,3 +44,5 @@ size_t strcpy_safe(char (&dst)[BufferSize], const std::string_view src)
 {
 	return strcpy_safe(dst, src.data(), BufferSize, src.length());
 }
+
+#endif // SHARED_STRINGUTILS_H

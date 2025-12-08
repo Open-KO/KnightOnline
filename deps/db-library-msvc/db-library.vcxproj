@@ -28,7 +28,7 @@
     <ClInclude Include="..\db-library\ModelRecordSet.h" />
     <ClInclude Include="..\db-library\pch.h" />
     <ClInclude Include="..\db-library\PoolConnection.h" />
-    <ClInclude Include="..\db-library\RecordsetLoader_Vector.h" />
+    <ClInclude Include="..\db-library\RecordSetLoader_Vector.h" />
     <ClInclude Include="..\db-library\RecordSetLoader_STLMap.h" />
     <ClInclude Include="..\db-library\SqlBuilder.h" />
     <ClInclude Include="..\db-library\RecordSetLoader.h" />

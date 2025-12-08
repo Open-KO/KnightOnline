@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_VERSIONMANAGER_DEFINE_H
+#define SERVER_VERSIONMANAGER_DEFINE_H
+
+#pragma once
 
 #include <filesystem>
 #if defined(_DEBUG)
@@ -74,3 +77,5 @@ namespace ini
 	static constexpr char URL[] = "URL";
 	static constexpr char PATH[] = "PATH";
 }
+
+#endif // SERVER_VERSIONMANAGER_DEFINE_H

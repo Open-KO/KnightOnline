@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_NPC_H
+#define SERVER_EBENEZER_NPC_H
+
+#pragma once
 
 #include "Define.h"
 
@@ -65,3 +68,5 @@ public:
 		return m_byState;
 	}
 };
+
+#endif // SERVER_EBENEZER_NPC_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_JVCRYPTION_H
+#define SHARED_JVCRYPTION_H
+
+#pragma once
 
 #define USE_CRYPTION
 
@@ -35,3 +38,5 @@ public:
 
 	int JvDecryptionWithCRC32(int len, uint8_t* datain, uint8_t* dataout);
 };
+
+#endif // SHARED_JVCRYPTION_H

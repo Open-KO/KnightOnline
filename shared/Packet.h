@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_PACKET_H
+#define SHARED_PACKET_H
+
+#pragma once
 
 #include "ByteBuffer.h"
 
@@ -35,3 +38,5 @@ public:
 		append(&opcode, 1);
 	}
 };
+
+#endif // SHARED_PACKET_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_TCPCLIENTSOCKET_H
+#define SERVER_SHAREDSERVER_TCPCLIENTSOCKET_H
+
+#pragma once
 
 #include "TcpSocket.h"
 
@@ -13,3 +16,5 @@ public:
 protected:
 	void ReleaseToManager() override;
 };
+
+#endif // SERVER_SHAREDSERVER_TCPCLIENTSOCKET_H

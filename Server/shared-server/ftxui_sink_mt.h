@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_FTXUI_SINK_MT_H
+#define SERVER_SHAREDSERVER_FTXUI_SINK_MT_H
+
+#pragma once
 
 #include <spdlog/sinks/base_sink.h>
 #include <ftxui/dom/elements.hpp>
@@ -61,3 +64,5 @@ namespace ftxui
 		std::shared_ptr<spdlog::sinks::sink>	_consoleSink;
 	};
 }
+
+#endif // SERVER_SHAREDSERVER_FTXUI_SINK_MT_H

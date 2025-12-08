@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_TCPSOCKET_H
+#define SERVER_SHAREDSERVER_TCPSOCKET_H
+
+#pragma once
 
 #include <shared/CircularBuffer.h>
 #include <asio.hpp>
@@ -108,3 +111,5 @@ protected:
 
 	int						_socketId;
 };
+
+#endif // SERVER_SHAREDSERVER_TCPSOCKET_H

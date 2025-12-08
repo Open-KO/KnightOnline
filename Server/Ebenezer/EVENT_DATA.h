@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_EVENT_DATA_H
+#define SERVER_EBENEZER_EVENT_DATA_H
+
+#pragma once
 
 #include "EXEC.h"
 #include "LOGIC_ELSE.h"
@@ -18,3 +21,5 @@ public:
 	EVENT_DATA();
 	virtual ~EVENT_DATA();
 };
+
+#endif // SERVER_EBENEZER_EVENT_DATA_H

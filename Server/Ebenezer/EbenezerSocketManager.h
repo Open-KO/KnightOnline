@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_EBENEZERSOCKETMANAGER_H
+#define SERVER_EBENEZER_EBENEZERSOCKETMANAGER_H
+
+#pragma once
 
 #include <shared-server/SocketManager.h>
 
@@ -23,3 +26,5 @@ protected:
 protected:
 	SendWorkerThread* _sendWorkerThread;
 };
+
+#endif // SERVER_EBENEZER_EBENEZERSOCKETMANAGER_H

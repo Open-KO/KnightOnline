@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_KNIGHTS_H
+#define SERVER_EBENEZER_KNIGHTS_H
+
+#pragma once
 
 #include "Define.h"
 #include "GameDefine.h"
@@ -35,3 +38,5 @@ public:
 
 	void InitializeValue();
 };
+
+#endif // SERVER_EBENEZER_KNIGHTS_H

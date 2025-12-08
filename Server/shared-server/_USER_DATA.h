@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER__USER_DATA_H
+#define SERVER_SHAREDSERVER__USER_DATA_H
+
+#pragma once
 
 #include <shared/globals.h>
 
@@ -82,3 +85,5 @@ struct _USER_DATA
 
 constexpr int ALLOCATED_USER_DATA_BLOCK = 8000;
 static_assert(sizeof(_USER_DATA) <= ALLOCATED_USER_DATA_BLOCK);
+
+#endif // SERVER_SHAREDSERVER__USER_DATA_H

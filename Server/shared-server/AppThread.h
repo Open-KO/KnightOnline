@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_APPTHREAD_H
+#define SERVER_SHAREDSERVER_APPTHREAD_H
+
+#pragma once
 
 #include <shared/Thread.h>
 #include "logger.h"
@@ -91,3 +94,5 @@ protected:
 	static AppThread*	s_instance;
 	static bool			s_shutdown;
 };
+
+#endif // SERVER_SHAREDSERVER_APPTHREAD_H

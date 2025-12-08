@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_VERSIONMANAGER_DBPROCESS_H
+#define SERVER_VERSIONMANAGER_DBPROCESS_H
+
+#pragma once
 
 #include <memory>
 
@@ -52,3 +55,5 @@ public:
 	CDBProcess();
 	virtual ~CDBProcess();
 };
+
+#endif // SERVER_VERSIONMANAGER_DBPROCESS_H

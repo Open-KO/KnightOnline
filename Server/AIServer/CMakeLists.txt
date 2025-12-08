@@ -65,6 +65,6 @@ target_link_libraries(AIServer
 # Setup warning levels
 target_compile_options(AIServer PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
-  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )

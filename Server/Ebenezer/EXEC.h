@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_EXEC_H
+#define SERVER_EBENEZER_EXEC_H
+
+#pragma once
 
 class EXEC
 {
@@ -11,3 +14,5 @@ public:
 	EXEC();
 	virtual ~EXEC();
 };
+
+#endif // SERVER_EBENEZER_EXEC_H

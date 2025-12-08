@@ -1,7 +1,6 @@
-﻿// pch.h : include file for standard system include files,
-//  or project specific include files that are used frequently, but
-//      are changed infrequently
-//
+﻿#ifndef SERVER_AISERVER_PCH_H
+#define SERVER_AISERVER_PCH_H
+
 #pragma once
 
 #include <cassert>
@@ -15,3 +14,5 @@
 #include <shared-server/utilities.h>
 
 #define myrand myrand_ai
+
+#endif // SERVER_AISERVER_PCH_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_MAP_H
+#define SERVER_EBENEZER_MAP_H
+
+#pragma once
 
 #include "Region.h"
 #include "GameEvent.h"
@@ -93,3 +96,5 @@ public:
 
 	uint32_t m_wBundle;	// Zone Item Max Count
 };
+
+#endif // SERVER_EBENEZER_MAP_H

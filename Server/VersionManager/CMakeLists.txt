@@ -36,6 +36,6 @@ target_link_libraries(VersionManager
 # Setup warning levels
 target_compile_options(VersionManager PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
-  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )

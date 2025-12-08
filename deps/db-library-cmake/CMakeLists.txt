@@ -15,7 +15,7 @@ add_library(db-library STATIC
   ${DB_LIBRARY_DIR}/PoolConnection.h
   ${DB_LIBRARY_DIR}/RecordSetLoader.h
   ${DB_LIBRARY_DIR}/RecordSetLoader_STLMap.h
-  ${DB_LIBRARY_DIR}/RecordsetLoader_Vector.h
+  ${DB_LIBRARY_DIR}/RecordSetLoader_Vector.h
   ${DB_LIBRARY_DIR}/SqlBuilder.h
   ${DB_LIBRARY_DIR}/StoredProc.h
   ${DB_LIBRARY_DIR}/utils.cpp
@@ -38,6 +38,6 @@ target_link_libraries(db-library
 # Setup warning levels
 target_compile_options(db-library PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
-  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )

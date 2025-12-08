@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_MAGICPROCESS_H
+#define SERVER_EBENEZER_MAGICPROCESS_H
+
+#pragma once
 
 #include "GameDefine.h"
 
@@ -44,3 +47,5 @@ public:
 	CUser*			m_pSrcUser;
 	uint8_t			m_bMagicState;
 };
+
+#endif // SERVER_EBENEZER_MAGICPROCESS_H

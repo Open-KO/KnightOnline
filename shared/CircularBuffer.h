@@ -1,6 +1,5 @@
-﻿// CircularBuffer.h: interface for the CCircularBuffer class.
-//
-//////////////////////////////////////////////////////////////////////
+﻿#ifndef SHARED_CIRCULARBUFFER_H
+#define SHARED_CIRCULARBUFFER_H
 
 #pragma once
 
@@ -213,3 +212,5 @@ inline bool CCircularBuffer::HeadIncrease(int increasement)
 	m_iHeadPos %= m_iBufSize;
 	return m_iHeadPos != m_iTailPos;
 }
+
+#endif // SHARED_CIRCULARBUFFER_H

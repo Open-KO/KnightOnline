@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_NPCTHREAD_H
+#define SERVER_AISERVER_NPCTHREAD_H
+
+#pragma once
 
 #include <shared/Thread.h>
 
@@ -17,3 +20,5 @@ public:
 
 	int16_t	m_sThreadNumber;	// thread number ,, test
 };
+
+#endif // SERVER_AISERVER_NPCTHREAD_H

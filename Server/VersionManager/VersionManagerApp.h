@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_VERSIONMANAGER_VERSIONMANAGERAPP_H
+#define SERVER_VERSIONMANAGER_VERSIONMANAGERAPP_H
+
+#pragma once
 
 #include "Define.h"
 #include "DBProcess.h"
@@ -67,3 +70,5 @@ protected:
 
 	std::unique_ptr<TimerThread>	_dbPoolCheckThread;
 };
+
+#endif // SERVER_VERSIONMANAGER_VERSIONMANAGERAPP_H

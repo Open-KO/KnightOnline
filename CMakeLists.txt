@@ -64,6 +64,13 @@ if(OPENKO_BUILD_SERVERS)
   add_subdirectory(deps/nanodbc)
   target_compile_features(nanodbc PUBLIC cxx_std_20)
 
+  # codecvt conversions are being deprecated.
+  # For now we'll just ignore the warning and hope they fix it before it's removed.
+  target_compile_options(nanodbc
+    PRIVATE
+      $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-declarations>
+  )
+
   add_subdirectory(deps/db-modules-cmake)
   add_subdirectory(deps/db-library-cmake)
 

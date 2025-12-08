@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_REGION_H
+#define SERVER_AISERVER_REGION_H
+
+#pragma once
 
 #include <shared-server/STLMap.h>
 
@@ -18,3 +21,5 @@ public:
 protected:
 	int		m_nIndex;
 };
+
+#endif // SERVER_AISERVER_REGION_H

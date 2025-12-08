@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_TIMERTHREAD_H
+#define SHARED_TIMERTHREAD_H
+
+#pragma once
 
 #include "Thread.h"
 
@@ -18,3 +21,5 @@ protected:
 	std::chrono::milliseconds	_tickDelay;
 	TickCallback_t				_tickCallback;
 };
+
+#endif // SHARED_TIMERTHREAD_H

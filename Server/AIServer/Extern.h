@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_EXTERN_H
+#define SERVER_AISERVER_EXTERN_H
+
+#pragma once
 
 #include <AIServer/model/AIServerModel.h>
 namespace model = aiserver_model;
@@ -13,3 +16,5 @@ struct _PARTY_GROUP
 			uid[i] = -1;
 	}
 };
+
+#endif // SERVER_AISERVER_EXTERN_H

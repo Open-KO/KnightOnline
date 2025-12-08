@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_USER_H
+#define SERVER_EBENEZER_USER_H
+
+#pragma once
 
 #include "Define.h"
 #include "GameDefine.h"
@@ -399,3 +402,5 @@ public:
 	void Rotate(char* pBuf);
 	void LoginProcess(char* pBuf);
 };
+
+#endif // SERVER_EBENEZER_USER_H

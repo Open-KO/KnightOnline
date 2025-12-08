@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_LOGIC_ELSE_H
+#define SERVER_EBENEZER_LOGIC_ELSE_H
+
+#pragma once
 
 class LOGIC_ELSE
 {
@@ -12,3 +15,5 @@ public:
 	LOGIC_ELSE();
 	virtual ~LOGIC_ELSE();
 };
+
+#endif // SERVER_EBENEZER_LOGIC_ELSE_H

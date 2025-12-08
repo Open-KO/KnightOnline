@@ -1,5 +1,7 @@
-﻿#ifndef _GAMEDEFINE_H
-#define _GAMEDEFINE_H
+﻿#ifndef SERVER_EBENEZER_GAMEDEFINE_H
+#define SERVER_EBENEZER_GAMEDEFINE_H
+
+#pragma once
 
 #include <shared/globals.h>
 #include <shared-server/_USER_DATA.h>
@@ -384,4 +386,4 @@ struct _WARP_INFO
 };
 #pragma pack(pop)
 
-#endif
+#endif // SERVER_EBENEZER_GAMEDEFINE_H

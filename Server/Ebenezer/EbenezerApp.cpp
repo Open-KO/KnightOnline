@@ -15,7 +15,7 @@
 
 #include <db-library/ConnectionManager.h>
 #include <db-library/RecordSetLoader_STLMap.h>
-#include <db-library/RecordsetLoader_Vector.h>
+#include <db-library/RecordSetLoader_Vector.h>
 
 #include <fstream>
 

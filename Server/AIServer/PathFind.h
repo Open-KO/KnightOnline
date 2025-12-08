@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_PATHFIND_H
+#define SERVER_AISERVER_PATHFIND_H
+
+#pragma once
 
 #include <shared-server/GeometricStructs.h>
 
@@ -53,3 +56,5 @@ protected:
 
 	AIServerApp*	m_pMain;
 };
+
+#endif // SERVER_AISERVER_PATHFIND_H

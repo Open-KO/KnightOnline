@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_THREAD_H
+#define SHARED_THREAD_H
+
+#pragma once
 
 #include <condition_variable>
 #include <mutex>
@@ -36,3 +39,5 @@ protected:
 	bool					_canTick;
 	bool					_isShutdown;
 };
+
+#endif // SHARED_THREAD_H

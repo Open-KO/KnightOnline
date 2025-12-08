@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_PACKETS_H
+#define SHARED_PACKETS_H
+
+#pragma once
 
 enum e_GameOpcode
 {
@@ -668,3 +671,5 @@ constexpr uint8_t	AG_USER_FAIL		= 110;	// 잘못된 유저 처리...
 constexpr uint8_t	AG_USER_PARTY		= 111;	// 파티처리 담당
 constexpr uint8_t	AG_USER_VISIBILITY  = 112;	// updates invisibility status
 constexpr uint8_t	AG_NPC_HP_CHANGE	= 113;	// updates an NPC's HP
+
+#endif // SHARED_PACKETS_H

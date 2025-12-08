@@ -11,7 +11,7 @@
     <ClInclude Include="..\db-library\RecordSetLoader_STLMap.h">
       <Filter>helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\db-library\RecordsetLoader_Vector.h">
+    <ClInclude Include="..\db-library\RecordSetLoader_Vector.h">
       <Filter>helpers</Filter>
     </ClInclude>
     <ClInclude Include="..\db-library\ConnectionManager.h" />

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_LOGGER_H
+#define SERVER_SHAREDSERVER_LOGGER_H
+
+#pragma once
 
 #include <filesystem>
 #include <memory>
@@ -104,3 +107,5 @@ namespace ini
 	/// \brief default console logger line prefix ([12:59:59][AppName][  level] log line...)
 	static constexpr char DEFAULT_CONSOLE_LOG_PATTERN[] = "[%H:%M:%S][%n][%^%7l%$] %v";
 }
+
+#endif // SERVER_SHAREDSERVER_LOGGER_H

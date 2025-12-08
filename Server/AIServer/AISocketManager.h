@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_AISOCKETMANAGER_H
+#define SERVER_AISERVER_AISOCKETMANAGER_H
+
+#pragma once
 
 #include <shared-server/SocketManager.h>
 #include "Define.h"
@@ -30,3 +33,5 @@ protected:
 protected:
 	SendThreadMain* _sendThreadMain;
 };
+
+#endif // SERVER_AISERVER_AISOCKETMANAGER_H

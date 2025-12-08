@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_GAMESOCKET_H
+#define SERVER_AISERVER_GAMESOCKET_H
+
+#pragma once
 
 #include "Party.h"
 
@@ -51,3 +54,5 @@ public:
 	void Send_UserError(int16_t uid, int16_t tid = 10000);
 	void RecvBattleEvent(char* pBuf);
 };
+
+#endif // SERVER_AISERVER_GAMESOCKET_H

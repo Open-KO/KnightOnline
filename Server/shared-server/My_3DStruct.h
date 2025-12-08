@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_MY_3DSTRUCT_H
+#define SERVER_SHAREDSERVER_MY_3DSTRUCT_H
+
+#pragma once
 
 #include <string>
 #include <stdint.h>
@@ -1044,3 +1047,5 @@ inline float _Yaw2D(float fDirX, float fDirZ)
 	// 방향을 구하고..
 	////////////////////////////////
 }
+
+#endif // SERVER_SHAREDSERVER_MY_3DSTRUCT_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_INI_H
+#define SHARED_INI_H
+
+#pragma once
 
 #include <algorithm>
 #include <filesystem>
@@ -61,3 +64,5 @@ public:
 	int SetInt(std::string_view svAppName, std::string_view svKeyName, const int iDefault);
 	int SetString(std::string_view svAppName, std::string_view svKeyName, std::string_view svDefault);
 };
+
+#endif // SHARED_INI_H

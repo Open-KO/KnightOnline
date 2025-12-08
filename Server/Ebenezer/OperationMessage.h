@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_OPERATIONMESSAGE_H
+#define SERVER_EBENEZER_OPERATIONMESSAGE_H
+
+#pragma once
 
 #include <vector>
 #include <string>
@@ -106,3 +109,5 @@ protected:
 	std::string _command;
 	std::vector<std::string> _args;
 };
+
+#endif // SERVER_EBENEZER_OPERATIONMESSAGE_H

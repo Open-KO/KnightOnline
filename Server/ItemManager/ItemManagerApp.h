@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_ITEMMANAGER_ITEMMANAGERAPP_H
+#define SERVER_ITEMMANAGER_ITEMMANAGERAPP_H
+
+#pragma once
 
 #include "Define.h"
 
@@ -32,3 +35,5 @@ public:
 	void ItemLogWrite(const char* pBuf);
 	void ExpLogWrite(const char* pBuf);
 };
+
+#endif // SERVER_ITEMMANAGER_ITEMMANAGERAPP_H

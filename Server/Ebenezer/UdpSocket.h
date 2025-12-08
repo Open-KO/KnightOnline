@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_UDPSOCKET_H
+#define SERVER_EBENEZER_UDPSOCKET_H
+
+#pragma once
 
 #include "Define.h"
 #include "RecvUDPThread.h"
@@ -38,3 +41,5 @@ protected:
 	char					_recvBuff[UDP_SOCKET_BUFFER_SIZE];
 	EbenezerApp*			_main;
 };
+
+#endif // SERVER_EBENEZER_UDPSOCKET_H

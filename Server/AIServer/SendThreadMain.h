@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_SENDTHREADMAIN_H
+#define SERVER_AISERVER_SENDTHREADMAIN_H
+
+#pragma once
 
 #include <shared/Thread.h>
 
@@ -24,3 +27,5 @@ protected:
 	std::queue<_SEND_DATA*>	_insertionQueue;
 	int						_nextRoundRobinSocketId;
 };
+
+#endif // SERVER_AISERVER_SENDTHREADMAIN_H

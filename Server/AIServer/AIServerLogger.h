@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_AISERVERLOGGER_H
+#define SERVER_AISERVER_AISERVERLOGGER_H
+
+#pragma once
 
 #include <shared-server/logger.h>
 
@@ -13,3 +16,5 @@ public:
 		std::shared_ptr<spdlog::details::thread_pool> threadPool,
 		const std::filesystem::path& baseDir) override;
 };
+
+#endif // SERVER_AISERVER_AISERVERLOGGER_H

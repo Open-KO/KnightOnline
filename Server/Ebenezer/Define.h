@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_DEFINE_H
+#define SERVER_EBENEZER_DEFINE_H
+
+#pragma once
 
 #include <shared/globals.h>
 
@@ -298,3 +301,5 @@ struct _REGION_BUFFER
 		memset(pDataBuff, 0, sizeof(pDataBuff));
 	}
 };
+
+#endif // SERVER_EBENEZER_DEFINE_H

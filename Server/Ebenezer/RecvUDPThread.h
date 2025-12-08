@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_RECVUDPTHREAD_H
+#define SERVER_EBENEZER_RECVUDPTHREAD_H
+
+#pragma once
 
 #include <shared/Thread.h>
 
@@ -16,3 +19,5 @@ protected:
 protected:
 	CUdpSocket* _udpSocket;
 };
+
+#endif // SERVER_EBENEZER_RECVUDPTHREAD_H

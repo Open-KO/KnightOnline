@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_PARTY_H
+#define SERVER_AISERVER_PARTY_H
+
+#pragma once
 
 class AIServerApp;
 class CParty
@@ -16,3 +19,5 @@ public:
 	void PartyCreate(char* pBuf);
 	void PartyProcess(char* pBuf);
 };
+
+#endif // SERVER_AISERVER_PARTY_H

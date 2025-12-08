@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_STLMAP_H
+#define SERVER_SHAREDSERVER_STLMAP_H
+
+#pragma once
 
 #include <map>
 
@@ -118,3 +121,5 @@ public:
 		return m_UserTypeMap.rend();
 	}
 };
+
+#endif // SERVER_SHAREDSERVER_STLMAP_H

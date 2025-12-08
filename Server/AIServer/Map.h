@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_MAP_H
+#define SERVER_AISERVER_MAP_H
+
+#pragma once
 
 #include <shared-server/N3ShapeMgr.h>
 #include <shared-server/STLMap.h>
@@ -92,3 +95,5 @@ public:
 protected:
 	void RemoveMapData();
 };
+
+#endif // SERVER_AISERVER_MAP_H

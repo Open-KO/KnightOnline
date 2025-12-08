@@ -25,8 +25,14 @@ Functions for computing 32-bit CRC.
 *
 * $Endlog$
 */
+
+#ifndef SHARED_CRC32_H
+#define SHARED_CRC32_H
+
 #pragma once
 
 /* This computes a 32 bit CRC of the data in the buffer, and returns the
 CRC.  The polynomial used is 0xedb88320. */
 unsigned int crc32(const unsigned char* s, unsigned int len, unsigned int startVal = 0);
+
+#endif // SHARED_CRC32_H

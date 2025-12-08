@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_ROOMEVENT_H
+#define SERVER_AISERVER_ROOMEVENT_H
+
+#pragma once
 
 #include <shared-server/STLMap.h>
 
@@ -61,3 +64,5 @@ private:
 	CNpc* GetNpcPtr(int sid);
 	void EndEventSay(int option1, int option2);
 };
+
+#endif // SERVER_AISERVER_ROOMEVENT_H

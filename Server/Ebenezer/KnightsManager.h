@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_KNIGHTSMANAGER_H
+#define SERVER_EBENEZER_KNIGHTSMANAGER_H
+
+#pragma once
 
 class CUser;
 class EbenezerApp;
@@ -34,3 +37,5 @@ public:
 
 	EbenezerApp* m_pMain;
 };
+
+#endif // SERVER_EBENEZER_KNIGHTSMANAGER_H

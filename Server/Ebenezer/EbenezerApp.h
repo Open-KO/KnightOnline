@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_EBENEZERAPP_H
+#define SERVER_EBENEZER_EBENEZERAPP_H
+
+#pragma once
 
 #include "EbenezerSocketManager.h"
 #include "Map.h"
@@ -316,3 +319,5 @@ private:
 
 	std::mutex							_serialMutex;
 };
+
+#endif // SERVER_EBENEZER_EBENEZERAPP_H

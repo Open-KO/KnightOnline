@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_GAMEEVENT_H
+#define SERVER_EBENEZER_GAMEEVENT_H
+
+#pragma once
 
 class CUser;
 class CGameEvent
@@ -13,3 +16,5 @@ public:
 
 	int		m_iExec[5];
 };
+
+#endif // SERVER_EBENEZER_GAMEEVENT_H

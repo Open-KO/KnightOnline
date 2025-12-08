@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_N3SHAPEMGR_H
+#define SERVER_SHAREDSERVER_N3SHAPEMGR_H
+
+#pragma once
 
 #include "My_3DStruct.h"
 
@@ -105,3 +108,5 @@ public:
 	CN3ShapeMgr();
 	virtual ~CN3ShapeMgr();
 };
+
+#endif // SERVER_SHAREDSERVER_N3SHAPEMGR_H

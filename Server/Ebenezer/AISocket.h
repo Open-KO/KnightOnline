@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_EBENEZER_AISOCKET_H
+#define SERVER_EBENEZER_AISOCKET_H
+
+#pragma once
 
 #include <shared-server/TcpClientSocket.h>
 
@@ -50,3 +53,5 @@ public:
 	void RecvNpcEventItem(char* pBuf);
 	void RecvGateOpen(char* pBuf);
 };
+
+#endif // SERVER_EBENEZER_AISOCKET_H

@@ -62,6 +62,8 @@ target_link_libraries(shared-server
     shared
     nanodbc
     ftxui::component
+    ftxui::dom
+    ftxui::screen
   PRIVATE
     Boost::interprocess
 )
@@ -76,6 +78,6 @@ target_include_directories(shared-server
 # Setup warning levels
 target_compile_options(shared-server PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
-  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )

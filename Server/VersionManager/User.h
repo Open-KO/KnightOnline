@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_VERSIONMANAGER_USER_H
+#define SERVER_VERSIONMANAGER_USER_H
+
+#pragma once
 
 #include <shared-server/TcpServerSocket.h>
 
@@ -14,3 +17,5 @@ public:
 	void SendDownloadInfo(int version);
 	void LogInReq(char* pBuf);
 };
+
+#endif // SERVER_VERSIONMANAGER_USER_H

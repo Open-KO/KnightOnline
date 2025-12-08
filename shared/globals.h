@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_GLOBALS_H
+#define SHARED_GLOBALS_H
+
+#pragma once
 
 #include "version.h"
 #include "packets.h"
@@ -350,3 +353,5 @@ constexpr int CLAN_SYMBOL_COST		= 5000000;
 
 uint64_t RandUInt64();
 double TimeGet();
+
+#endif // SHARED_GLOBALS_H

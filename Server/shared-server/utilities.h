@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_UTILITIES_H
+#define SERVER_SHAREDSERVER_UTILITIES_H
+
+#pragma once
 
 #include <filesystem>
 #include <string_view>
@@ -28,3 +31,5 @@ int		ParseSpace(char* tBuf, const char* sBuf);
 std::filesystem::path	GetProgPath();
 int		myrand_ai(int min, int max, bool bSame = false);
 int		myrand_generic(int min, int max);
+
+#endif // SERVER_SHAREDSERVER_UTILITIES_H

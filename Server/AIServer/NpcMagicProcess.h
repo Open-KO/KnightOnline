@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_NPCMAGICPROCESS_H
+#define SERVER_AISERVER_NPCMAGICPROCESS_H
+
+#pragma once
 
 #include "Extern.h"
 
@@ -30,3 +33,5 @@ public:
 	model::Magic* IsAvailable(int magicid, int tid, uint8_t type);
 	void MagicPacket(char* pBuf, int len);
 };
+
+#endif // SERVER_AISERVER_NPCMAGICPROCESS_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_NPCITEM_H
+#define SERVER_AISERVER_NPCITEM_H
+
+#pragma once
 
 class CNpcItem
 {
@@ -10,3 +13,5 @@ public:
 	CNpcItem();
 	~CNpcItem();
 };
+
+#endif // SERVER_AISERVER_NPCITEM_H

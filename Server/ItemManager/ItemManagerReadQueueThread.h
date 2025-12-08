@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_ITEMMANAGER_ITEMMANAGERREADQUEUETHREAD_H
+#define SERVER_ITEMMANAGER_ITEMMANAGERREADQUEUETHREAD_H
+
+#pragma once
 
 #include <shared-server/ReadQueueThread.h>
 
@@ -10,3 +13,5 @@ public:
 protected:
 	void process_packet(const char* buffer, int len) override;
 };
+
+#endif // SERVER_ITEMMANAGER_ITEMMANAGERREADQUEUETHREAD_H

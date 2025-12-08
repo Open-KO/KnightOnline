@@ -1,8 +1,12 @@
-﻿#pragma once
+﻿#ifndef SHARED_BYTEBUFFER_H
+#define SHARED_BYTEBUFFER_H
+
+#pragma once
 
 #include <cassert>
 #include <cstring>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 class ByteBuffer
@@ -160,16 +164,16 @@ public:
 	template <typename T>
 	T read()
 	{
-		T r = read<T>(_rpos);
-		_rpos += sizeof(T);
-		return r;
-	}
-
-	template <>
-	std::string read()
-	{
-		std::string r;
-		readString(r);
+		T r;
+		if constexpr (std::is_same_v<T, std::string>)
+		{
+			readString(r);
+		}
+		else
+		{
+			r = read<T>(_rpos);
+			_rpos += sizeof(T);
+		}
 		return r;
 	}
 
@@ -307,3 +311,5 @@ protected:
 	size_t _rpos, _wpos;
 	std::vector<uint8_t> _storage;
 };
+
+#endif // SHARED_BYTEBUFFER_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_DEFINE_H
+#define SERVER_AISERVER_DEFINE_H
+
+#pragma once
 
 #include <shared/globals.h>
 #include <shared-server/GeometricStructs.h>
@@ -258,3 +261,5 @@ struct _OBJECT_EVENT
 #define ATTRIBUTE_FIRE			 1
 #define ATTRIBUTE_ICE			 2
 #define ATTRIBUTE_LIGHTNING		 3
+
+#endif // SERVER_AISERVER_DEFINE_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_SOCKETMANAGER_H
+#define SERVER_SHAREDSERVER_SOCKETMANAGER_H
+
+#pragma once
 
 #include <asio.hpp>
 
@@ -152,3 +155,5 @@ protected:
 	std::queue<int>								_socketIdQueue;
 	std::recursive_mutex						_mutex;
 };
+
+#endif // SERVER_SHAREDSERVER_SOCKETMANAGER_H

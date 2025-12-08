@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_SHAREDMEMORYBLOCK_H
+#define SERVER_SHAREDSERVER_SHAREDMEMORYBLOCK_H
+
+#pragma once
 
 #include <memory>
 #include <string>
@@ -20,3 +23,5 @@ private:
 	std::unique_ptr<mapped_region_impl> _mappedRegion;
 	bool _created;
 };
+
+#endif // SERVER_SHAREDSERVER_SHAREDMEMORYBLOCK_H

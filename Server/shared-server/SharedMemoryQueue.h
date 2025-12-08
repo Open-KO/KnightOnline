@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_SHAREDMEMORYQUEUE_H
+#define SERVER_SHAREDSERVER_SHAREDMEMORYQUEUE_H
+
+#pragma once
 
 #include <memory>
 
@@ -35,3 +38,5 @@ private:
 	std::unique_ptr<message_queue_impl> _queue;
 	int _sendRetryCount;
 };
+
+#endif // SERVER_SHAREDSERVER_SHAREDMEMORYQUEUE_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_USER_H
+#define SERVER_AISERVER_USER_H
+
+#pragma once
 
 #include "MagicProcess.h"
 #include "Extern.h"
@@ -99,3 +102,5 @@ public:
 	CUser();
 	virtual ~CUser();
 };
+
+#endif // SERVER_AISERVER_USER_H

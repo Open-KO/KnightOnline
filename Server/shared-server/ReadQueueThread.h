@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_SHAREDSERVER_READQUEUETHREAD_H
+#define SERVER_SHAREDSERVER_READQUEUETHREAD_H
+
+#pragma once
 
 #include <shared/Thread.h>
 
@@ -15,3 +18,5 @@ protected:
 protected:
 	SharedMemoryQueue& _sharedMemoryQueue;
 };
+
+#endif // SERVER_SHAREDSERVER_READQUEUETHREAD_H

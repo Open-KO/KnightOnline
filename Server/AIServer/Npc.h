@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SERVER_AISERVER_NPC_H
+#define SERVER_AISERVER_NPC_H
+
+#pragma once
 
 #include "Map.h"
 #include "PathFind.h"
@@ -470,3 +473,5 @@ public:
 	void ChangeAbility(int iChangeType);
 	bool Teleport();
 };
+
+#endif // SERVER_AISERVER_NPC_H

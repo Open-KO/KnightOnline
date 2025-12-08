@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef SHARED_DATETIME_H
+#define SHARED_DATETIME_H
+
+#pragma once
 
 #include <ctime>
 
@@ -101,3 +104,5 @@ protected:
 	tm _tm;
 	time_t _unixTimestamp;
 };
+
+#endif // SHARED_DATETIME_H
