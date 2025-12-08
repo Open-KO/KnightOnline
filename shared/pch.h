@@ -8,4 +8,4 @@
 
 #include "globals.h"
 
-#endif SHARED_PCH_H
+#endif // SHARED_PCH_H
