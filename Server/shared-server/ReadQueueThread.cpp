@@ -18,7 +18,7 @@ void ReadQueueThread::thread_loop()
 		if (len >= SMQ_ERROR_RANGE)
 		{
 			std::unique_lock<std::mutex> lock(_mutex);
-			std::cv_status status = _cv.wait_for(lock, std::chrono::milliseconds(100));
+			_cv.wait_for(lock, std::chrono::milliseconds(100));
 
 			if (!_canTick)
 				break;

@@ -39,4 +39,3 @@ target_compile_options(Aujard PRIVATE
   $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
 )
-

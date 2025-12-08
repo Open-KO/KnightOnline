@@ -62,7 +62,7 @@ bool CIni::Load(const std::filesystem::path& path)
 			if (itr == _configMap.end())
 			{
 				_configMap.insert(
-					std::make_pair(currentSection, std::move(ConfigEntryMap())));
+					std::make_pair(currentSection, ConfigEntryMap()));
 				itr = _configMap.find(currentSection);
 			}
 
@@ -194,7 +194,7 @@ int CIni::SetString(std::string_view svAppName, std::string_view svKeyName, std:
 	if (itr == _configMap.end())
 	{
 		auto ret = _configMap.insert(
-			std::make_pair(svAppName, std::move(ConfigEntryMap())));
+			std::make_pair(svAppName, ConfigEntryMap()));
 		if (!ret.second)
 			return 0;
 

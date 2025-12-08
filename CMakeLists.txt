@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.2.0) # TODO: downgrade this to minimum modern version required
+cmake_minimum_required(VERSION 3.28.3)
 include(FetchContent)
 
 project(OpenKO

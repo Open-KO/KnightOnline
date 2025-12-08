@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <cassert>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -8,22 +9,22 @@ class ByteBuffer
 {
 public:
 	constexpr static size_t DEFAULT_SIZE = 32;
-	bool m_doubleByte;
+	bool _doubleByte;
 
 	ByteBuffer()
-		: _rpos(0), _wpos(0), m_doubleByte(true)
+		: _doubleByte(true), _rpos(0), _wpos(0)
 	{
 		_storage.reserve(DEFAULT_SIZE);
 	}
 
 	ByteBuffer(size_t res)
-		: _rpos(0), _wpos(0), m_doubleByte(true)
+		: _doubleByte(true), _rpos(0), _wpos(0)
 	{
 		_storage.reserve(res <= 0 ? DEFAULT_SIZE : res);
 	}
 
 	ByteBuffer(const ByteBuffer& buf)
-		: _rpos(buf._rpos), _wpos(buf._wpos), _storage(buf._storage)
+		: _doubleByte(true), _rpos(buf._rpos), _wpos(buf._wpos), _storage(buf._storage)
 	{
 	}
 
@@ -121,12 +122,12 @@ public:
 	// Hacky KO string flag - either it's a single byte length, or a double byte.
 	void SByte()
 	{
-		m_doubleByte = false;
+		_doubleByte = false;
 	}
 
 	void DByte()
 	{
-		m_doubleByte = true;
+		_doubleByte = true;
 	}
 
 	uint8_t operator[](size_t pos)
@@ -193,7 +194,7 @@ public:
 	void readString(std::string& dest)
 	{
 		size_t len = 0;
-		if (m_doubleByte)
+		if (_doubleByte)
 			len = read<uint16_t>();
 		else
 			len = read<uint8_t>();
