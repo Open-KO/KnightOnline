@@ -7,7 +7,7 @@ AujardReadQueueThread::AujardReadQueueThread()
 {
 }
 
-void AujardReadQueueThread::process_packet(const char* buffer, int len)
+void AujardReadQueueThread::process_packet(const char* buffer, int /*len*/)
 {
 	AujardApp* appInstance = AujardApp::instance();
 

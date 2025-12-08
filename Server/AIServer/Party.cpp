@@ -1,17 +1,10 @@
-﻿// Party.cpp: implementation of the CParty class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "AIServerApp.h"
 #include "Party.h"
 
 #include <spdlog/spdlog.h>
 
 extern std::mutex g_region_mutex;
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CParty::CParty()
 {
@@ -53,16 +46,12 @@ void CParty::PartyCreate(char* pBuf)
 {
 	int index = 0;
 	int16_t sPartyIndex = 0;
-	int16_t sUid = 0, sHP = 0, sClass = 0;
-	uint8_t byLevel = 0;
+	int16_t sUid = 0;
 	_PARTY_GROUP* pParty = nullptr;
 	CUser* pUser = nullptr;
 
 	sPartyIndex = GetShort(pBuf, index);
 	sUid = GetShort(pBuf, index);
-	//sHP = GetShort(pBuf, index);
-	//byLevel = GetByte(pBuf, index);
-	//sClass = GetShort(pBuf, index);
 
 	pUser = m_pMain->GetUserPtr(sUid);
 	if (pUser != nullptr)
@@ -77,10 +66,12 @@ void CParty::PartyCreate(char* pBuf)
 	pParty->wIndex = sPartyIndex;
 	pParty->uid[0] = sUid;
 
-	if (!m_pMain->_partyMap.PutData(pParty->wIndex, pParty))
-	{
-		lock.unlock();
+	bool ret = m_pMain->_partyMap.PutData(pParty->wIndex, pParty);
 
+	lock.unlock();
+
+	if (!ret)
+	{
 		spdlog::error("Party::PartyCreate: failed [partyId={} uid0={} uid1={}]",
 			sPartyIndex, pParty->uid[0], pParty->uid[1]);
 		delete pParty;
@@ -96,17 +87,13 @@ void CParty::PartyInsert(char* pBuf)
 	int index = 0;
 	int16_t sPartyIndex = 0;
 	uint8_t  byIndex = -1;
-	int16_t sUid = 0, sHP = 0, sClass = 0;
-	uint8_t  byLevel = 0;
+	int16_t sUid = 0;
 	_PARTY_GROUP* pParty = nullptr;
 	CUser* pUser = nullptr;
 
 	sPartyIndex = GetShort(pBuf, index);
 	byIndex = GetByte(pBuf, index);
 	sUid = GetShort(pBuf, index);
-	//sHP = GetShort(pBuf, index);
-	//byLevel = GetByte(pBuf, index);
-	//sClass = GetShort(pBuf, index);
 
 	pParty = m_pMain->_partyMap.GetData(sPartyIndex);
 

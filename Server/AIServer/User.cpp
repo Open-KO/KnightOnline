@@ -1,8 +1,4 @@
-﻿// User.cpp: implementation of the CUser class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "User.h"
 #include "AIServerApp.h"
 #include "Region.h"
@@ -11,10 +7,6 @@
 #include <spdlog/spdlog.h>
 
 #include "Extern.h"
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
@@ -103,7 +95,7 @@ void CUser::Initialize()
 	m_sMagicAmountRightHand = 0;
 }
 
-void CUser::Attack(int sid, int tid)
+void CUser::Attack(int /*sid*/, int tid)
 {
 	CNpc* pNpc = m_pMain->_npcMap.GetData(tid - NPC_BAND);
 	if (pNpc == nullptr)
@@ -126,12 +118,8 @@ void CUser::Attack(int sid, int tid)
 	//	return;
 	}	*/
 
-	int nDefence = 0, nFinalDamage = 0;
-	// NPC 방어값 
-	nDefence = pNpc->GetDefense();
-
 	// 명중이면 //Damage 처리 ----------------------------------------------------------------//
-	nFinalDamage = GetDamage(tid);
+	int nFinalDamage = GetDamage(tid);
 
 	if (m_byIsOP == AUTHORITY_MANAGER)
 		nFinalDamage = USER_DAMAGE_OVERRIDE_GM;
@@ -139,9 +127,6 @@ void CUser::Attack(int sid, int tid)
 		nFinalDamage = USER_DAMAGE_OVERRIDE_LIMITED_GM;
 	else if (m_pMain->_testMode)
 		nFinalDamage = USER_DAMAGE_OVERRIDE_TEST_MODE;	// sungyong test
-
-	// Calculate Target HP	 -------------------------------------------------------//
-	int16_t sOldNpcHP = pNpc->m_iHP;
 
 	// Npc가 죽은 경우,,
 	if (!pNpc->SetDamage(0, nFinalDamage, m_strUserID, m_iUserId + USER_BAND))
@@ -166,7 +151,6 @@ void CUser::SendAttackSuccess(int tuid, uint8_t result, int16_t sDamage, int nHP
 	int sid = -1, tid = -1;
 	uint8_t type, bResult;
 	char buff[256] = {};
-	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
 	type = 0x01;
 	bResult = result;
@@ -193,7 +177,6 @@ void CUser::SendMagicAttackResult(int tuid, uint8_t result, int16_t sDamage, int
 	int sid = -1, tid = -1;
 	uint8_t type, bResult;
 	char buff[256] = {};
-	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
 	type = 0x01;
 	bResult = result;
@@ -241,7 +224,7 @@ void CUser::SetDamage(int damage, int tid)
 	if (m_bLive == USER_DEAD)
 		return;
 
-	int16_t sHP = m_sHP;
+	// int16_t sHP = m_sHP;
 
 	m_sHP -= (int16_t) damage;
 
@@ -301,8 +284,6 @@ void CUser::Dead(int tid, int nDamage)
 	char buff[256] = {};
 	memset(buff, 0, sizeof(buff));
 	spdlog::debug("User::Dead: userId={} charId={}", m_iUserId, m_strUserID);
-
-	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
 
 	type = 0x02;
 	result = ATTACK_TARGET_DEAD;
@@ -437,15 +418,10 @@ void CUser::SetExp(int iNpcExp, int iLoyalty, int iLevel)
 	SendExp(nExp, nLoyalty);
 }
 
-void CUser::SetPartyExp(int iNpcExp, int iLoyalty, int iPartyLevel, int iMan)
+void CUser::SetPartyExp(int iNpcExp, int iLoyalty, int /*iPartyLevel*/, int /*iMan*/)
 {
-	int nExp = 0;
-	int nLoyalty = 0;
-	int nPercent = 0, nLevelPercent = 0, nExpPercent = 0;
-	double TempValue = 0;
-
-	TempValue = iPartyLevel / 100.0;
-	nExpPercent = static_cast<int>(iNpcExp * TempValue);
+	// double TempValue = iPartyLevel / 100.0;
+	// int nExpPercent = static_cast<int>(iNpcExp * TempValue);
 
 	//TRACE(_T("$$ User - SetPartyExp Level : %hs, exp=%d->%d, loy=%d->%d, mylevel=%d, iPartyLevel=%d $$\n"), m_strUserID, iNpcExp, nExpPercent, iLoyalty, nLoyalty, m_sLevel, iPartyLevel);
 
@@ -453,7 +429,7 @@ void CUser::SetPartyExp(int iNpcExp, int iLoyalty, int iPartyLevel, int iMan)
 }
 
 //  경험치를 보낸다. (레벨업일때 관련 수치를 준다)
-void CUser::SendExp(int iExp, int iLoyalty, int tType)
+void CUser::SendExp(int iExp, int iLoyalty, int /*tType*/)
 {
 	int send_index = 0;
 	char buff[256] = {};
@@ -924,7 +900,7 @@ int CUser::IsSurroundCheck(float fX, float fY, float fZ, int NpcID)
 	return nDir;
 }
 
-bool CUser::IsOpIDCheck(const char* szName)
+bool CUser::IsOpIDCheck(const char* /*szName*/)
 {
 /*	int nSize = sizeof(g_pszOPID)/sizeof(char*);
 	CString szCheck = szName;
@@ -1013,8 +989,7 @@ void CUser::HealAreaCheck(int rx, int rz)
 	CNpc* pNpc = nullptr;
 	float fDis = 0.0f;
 	vStart.Set(m_curx, (float) 0, m_curz);
-	char send_buff[256] = {};
-	int nid = 0, send_index = 0, result = 1, count = 0, total_mon = 0;
+	int nid = 0, count = 0, total_mon = 0;
 	int* pNpcIDList = nullptr;
 
 	{

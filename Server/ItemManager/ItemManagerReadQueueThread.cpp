@@ -7,7 +7,7 @@ ItemManagerReadQueueThread::ItemManagerReadQueueThread()
 {
 }
 
-void ItemManagerReadQueueThread::process_packet(const char* buffer, int len)
+void ItemManagerReadQueueThread::process_packet(const char* buffer, int /*len*/)
 {
 	ItemManagerApp* appInstance = ItemManagerApp::instance();
 

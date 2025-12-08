@@ -4,9 +4,9 @@
 
 TcpSocket::TcpSocket(SocketManager* socketManager)
 	: _socketManager(socketManager),
+	_socket(*socketManager->GetWorkerPool()),
 	_recvCircularBuffer(socketManager->GetRecvBufferSize()),
-	_sendCircularBuffer(socketManager->GetSendBufferSize()),
-	_socket(*socketManager->GetWorkerPool())
+	_sendCircularBuffer(socketManager->GetSendBufferSize())	
 {
 	_state = CONNECTION_STATE_DISCONNECTED;
 	_socketId = -1;
@@ -105,19 +105,20 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 
 	try
 	{
-		std::array<asio::const_buffer, 2> buffers;
-		size_t bufferCount = 1;
-		buffers[0] = asio::buffer(span.Buffer1, span.Length1);
-
 		if (span.Buffer2 != nullptr
 			&& span.Length2 > 0)
 		{
+			std::array<asio::const_buffer, 2> buffers;
+			buffers[0] = asio::buffer(span.Buffer1, span.Length1);
 			buffers[1] = asio::buffer(span.Buffer2, span.Length2);
-			++bufferCount;
+			_socket.async_write_some(buffers,
+				std::bind(&SocketManager::OnPostSend, _socketManager, std::placeholders::_1, std::placeholders::_2, this));
 		}
-
-		_socket.async_write_some(buffers,
-			std::bind(&SocketManager::OnPostSend, _socketManager, std::placeholders::_1, std::placeholders::_2, this));
+		else
+		{
+			_socket.async_write_some(asio::buffer(span.Buffer1, span.Length1),
+				std::bind(&SocketManager::OnPostSend, _socketManager, std::placeholders::_1, std::placeholders::_2, this));
+		}
 
 		_sendInProgress = true;
 	}

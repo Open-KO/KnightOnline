@@ -173,10 +173,6 @@ void EVENT::Init()
 	DeleteAll();
 }
 
-void EVENT::Parsing(char* pBuf)
-{
-}
-
 void EVENT::DeleteAll()
 {
 	if (!m_arEvent.IsEmpty())

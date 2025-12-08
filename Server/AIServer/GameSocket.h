@@ -44,7 +44,7 @@ public:
 	void RecvUserInfoAllData(char* pBuf);
 	void RecvPartyInfoAllData(char* pBuf);
 	void RecvGateOpen(char* pBuf);
-	void RecvCheckAlive(char* pBuf);
+	void RecvCheckAlive();
 	void RecvHealMagic(char* pBuf);
 	void RecvTimeAndWeather(char* pBuf);
 	void RecvUserFail(char* pBuf);

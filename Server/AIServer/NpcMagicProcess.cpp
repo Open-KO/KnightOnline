@@ -1,16 +1,8 @@
-﻿// NpcMagicProcess.cpp: implementation of the CNpcMagicProcess class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "NpcMagicProcess.h"
 #include "AIServerApp.h"
 #include "User.h"
 #include "Npc.h"
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CNpcMagicProcess::CNpcMagicProcess()
 {
@@ -164,7 +156,7 @@ model::Magic* CNpcMagicProcess::IsAvailable(int magicid, int tid, uint8_t type)
 	CNpc* pNpc = nullptr;
 	model::Magic* pTable = nullptr;
 
-	int modulator = 0, Class = 0, send_index = 0, moral = 0;
+	int send_index = 0, moral = 0;
 
 	char send_buff[128] = {};
 	if (m_pSrcNpc == nullptr)
@@ -297,17 +289,17 @@ fail_return:    // In case the magic failed.
 }
 
 // Applied to an attack skill using a weapon.
-void CNpcMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int data3)
+void CNpcMagicProcess::ExecuteType1(int /*magicid*/, int /*tid*/, int /*data1*/, int /*data2*/, int /*data3*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, int data3)
+void CNpcMagicProcess::ExecuteType2(int /*magicid*/, int /*tid*/, int /*data1*/, int /*data2*/, int /*data3*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int data2, int data3, int moral)  // Applied when a magical attack, healing, and mana restoration is done.
+void CNpcMagicProcess::ExecuteType3(int magicid, int tid, int data1, int /*data2*/, int data3, int moral)  // Applied when a magical attack, healing, and mana restoration is done.
 {
-	int damage = 0, result = 1, send_index = 0, attack_type = 0;
+	int damage = 0, result = 1, send_index = 0;
 	char send_buff[256] = {};
 	model::MagicType3* pType = nullptr;
 	CNpc* pNpc = nullptr;      // Pointer initialization!
@@ -410,38 +402,38 @@ packet_send:
 	m_pSrcNpc->SendAll(&m_pMain->_socketManager, send_buff, send_index);	*/
 }
 
-void CNpcMagicProcess::ExecuteType4(int magicid, int tid)
+void CNpcMagicProcess::ExecuteType4(int /*magicid*/, int /*tid*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType5(int magicid)
+void CNpcMagicProcess::ExecuteType5(int /*magicid*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType6(int magicid)
+void CNpcMagicProcess::ExecuteType6(int /*magicid*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType7(int magicid)
+void CNpcMagicProcess::ExecuteType7(int /*magicid*/)
 {
 }
 
 // Warp, resurrection, and summon spells.
-void CNpcMagicProcess::ExecuteType8(int magicid, int tid, int sid, int data1, int data2, int data3)
+void CNpcMagicProcess::ExecuteType8(int /*magicid*/, int /*tid*/, int /*sid*/, int /*data1*/, int /*data2*/, int /*data3*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType9(int magicid)
+void CNpcMagicProcess::ExecuteType9(int /*magicid*/)
 {
 }
 
-void CNpcMagicProcess::ExecuteType10(int magicid)
+void CNpcMagicProcess::ExecuteType10(int /*magicid*/)
 {
 }
 
 int16_t CNpcMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int dexpoint)
 {
-	int16_t damage = 0, temp_hit = 0;
+	int16_t damage = 0;
 	int random = 0, total_r = 0;
 	uint8_t result;
 	bool bSign = true;			// false이면 -, true이면 +

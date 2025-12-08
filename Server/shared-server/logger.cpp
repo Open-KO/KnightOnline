@@ -73,14 +73,11 @@ void logger::Logger::Setup(CIni& ini, const std::filesystem::path& baseDir)
 	spdlog::info("{} logger configured", _appName);
 }
 
-void logger::Logger::SetupExtraLoggers(CIni& ini,
-	std::shared_ptr<spdlog::details::thread_pool> threadPool,
-	const std::filesystem::path& baseDir)
+void logger::Logger::SetupExtraLoggers(CIni& /*ini*/,
+	std::shared_ptr<spdlog::details::thread_pool> /*threadPool*/,
+	const std::filesystem::path& /*baseDir*/)
 {
 	/* do nothing - consumers will implement this */
-	ini;
-	threadPool;
-	baseDir;
 }
 
 void logger::Logger::SetupExtraLogger(CIni& ini,

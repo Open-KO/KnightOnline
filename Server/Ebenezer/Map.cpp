@@ -7,9 +7,10 @@
 
 #include <db-library/RecordSetLoader.h>
 
-#include <istream>
-
 #include <Ebenezer/binder/EbenezerBinder.h>
+
+#include <float.h>
+#include <istream>
 
 using namespace db;
 
@@ -582,7 +583,7 @@ bool C3DMap::LoadEvent()
 	return true;
 }
 
-bool C3DMap::IsValidPosition(float x, float z, float y) const
+bool C3DMap::IsValidPosition(float x, float z) const
 {
 	if (x >= m_N3ShapeMgr.Width())
 		return false;

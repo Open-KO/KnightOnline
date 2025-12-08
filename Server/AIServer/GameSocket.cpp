@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "GameSocket.h"
 #include "Extern.h"
-#include "MAP.h"
+#include "Map.h"
 #include "NpcThread.h"
 #include "Party.h"
 #include "Region.h"
@@ -14,13 +14,10 @@
 
 #include <shared/crc32.h>
 #include <shared/lzf.h>
+#include <shared/StringUtils.h>
 #include <spdlog/spdlog.h>
 
 extern std::mutex g_region_mutex;
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 /*
 	 ** Repent AI Server 작업시 참고 사항 **
@@ -157,7 +154,7 @@ void CGameSocket::CloseProcess()
 	TcpServerSocket::CloseProcess();
 }
 
-void CGameSocket::Parsing(int length, char* pData)
+void CGameSocket::Parsing(int /*length*/, char* pData)
 {
 	int index = 0;
 	uint8_t bType = GetByte(pData, index);
@@ -230,7 +227,7 @@ void CGameSocket::Parsing(int length, char* pData)
 			break;
 
 		case AG_CHECK_ALIVE_REQ:
-			RecvCheckAlive(pData + index);
+			RecvCheckAlive();
 			break;
 
 		case AG_HEAL_MAGIC:
@@ -259,7 +256,7 @@ void CGameSocket::Parsing(int length, char* pData)
 void CGameSocket::RecvServerConnect(char* pBuf)
 {
 	int index = 1;
-	int outindex = 0, zone_index = 0;
+	int outindex = 0;
 	double fReConnectEndTime = 0.0;
 	char pData[1024] = {};
 	uint8_t byZoneNumber = GetByte(pBuf, index);
@@ -389,7 +386,7 @@ void CGameSocket::RecvUserInfo(char* pBuf)
 	pUser->Initialize();
 
 	pUser->m_iUserId = uid;
-	strcpy_s(pUser->m_strUserID, strName);
+	strcpy_safe(pUser->m_strUserID, strName);
 	pUser->m_curZone = bZone;
 	pUser->m_sZoneIndex = sZoneIndex;
 	pUser->m_bNation = bNation;
@@ -461,8 +458,6 @@ void CGameSocket::RecvUserInOut(char* pBuf)
 	if (pUser != nullptr)
 	{
 	//	TRACE(_T("##### Fail : ^^& RecvUserInOut() [name = %hs]. state=%d, hp=%d\n"), pUser->m_strUserID, pUser->m_bLive, pUser->m_sHP);
-		bool bFlag = false;
-
 		if (pUser->m_bLive == USER_DEAD
 			|| pUser->m_sHP <= 0)
 		{
@@ -535,14 +530,11 @@ void CGameSocket::RecvUserMove(char* pBuf)
 {
 //	TRACE(_T("RecvUserMove()\n"));
 	int index = 0;
-	int16_t uid = -1, speed = 0;
-	float fX = -1.0f, fZ = -1.0f, fY = -1.0f;
-
-	uid = GetShort(pBuf, index);
-	fX = GetFloat(pBuf, index);
-	fZ = GetFloat(pBuf, index);
-	fY = GetFloat(pBuf, index);
-	speed = GetShort(pBuf, index);
+	int16_t uid = GetShort(pBuf, index);
+	float fX = GetFloat(pBuf, index);
+	float fZ = GetFloat(pBuf, index);
+	/*float fY =*/ GetFloat(pBuf, index);
+	int16_t speed = GetShort(pBuf, index);
 
 	SetUid(fX, fZ, uid, speed);
 	//TRACE(_T("RecvUserMove()---> uid = %d, x=%f, z=%f \n"), uid, fX, fZ);
@@ -552,13 +544,11 @@ void CGameSocket::RecvUserMoveEdge(char* pBuf)
 {
 //	TRACE(_T("RecvUserMoveEdge()\n"));
 	int index = 0;
-	int16_t uid = -1, speed = 0;
-	float fX = -1.0f, fZ = -1.0f, fY = -1.0f;
-
-	uid = GetShort(pBuf, index);
-	fX = GetFloat(pBuf, index);
-	fZ = GetFloat(pBuf, index);
-	fY = GetFloat(pBuf, index);
+	int16_t uid = GetShort(pBuf, index);
+	float fX = GetFloat(pBuf, index);
+	float fZ = GetFloat(pBuf, index);
+	/*float fY =*/ GetFloat(pBuf, index);
+	int16_t speed = 0;
 
 	SetUid(fX, fZ, uid, speed);
 //	TRACE(_T("RecvUserMoveEdge()---> uid = %d, x=%f, z=%f \n"), uid, fX, fZ);
@@ -657,7 +647,7 @@ bool CGameSocket::SetUid(float x, float z, int id, int speed)
 
 	// dungeon work
 	// if( pUser->m_curZone == 던젼 ) 
-	int room = pMap->IsRoomCheck(x, z);
+	/*int room =*/ pMap->IsRoomCheck(x, z);
 
 	return true;
 }
@@ -665,32 +655,21 @@ bool CGameSocket::SetUid(float x, float z, int id, int speed)
 void CGameSocket::RecvAttackReq(char* pBuf)
 {
 	int index = 0;
-	int sid = -1, tid = -1;
-	uint8_t type, result;
-	char buff[256] = {};
-	float rx = 0.0f, ry = 0.0f, rz = 0.0f;
-	float fDir = 0.0f;
-	int16_t sDamage, sAC;
-	float fHitAgi, fAvoidAgi;
-//
-	int16_t sItemAC, sAmountLeft, sAmountRight;
-	uint8_t bTypeLeft, bTypeRight;
-//
 
-	type = GetByte(pBuf, index);
-	result = GetByte(pBuf, index);
-	sid = GetShort(pBuf, index);
-	tid = GetShort(pBuf, index);
-	sDamage = GetShort(pBuf, index);
-	sAC = GetShort(pBuf, index);
-	fHitAgi = GetFloat(pBuf, index);
-	fAvoidAgi = GetFloat(pBuf, index);
+	/*uint8_t type =*/ GetByte(pBuf, index);
+	/*uint8_t result =*/ GetByte(pBuf, index);
+	int sid = GetShort(pBuf, index);
+	int tid = GetShort(pBuf, index);
+	int16_t sDamage = GetShort(pBuf, index);
+	int16_t sAC = GetShort(pBuf, index);
+	float fHitAgi = GetFloat(pBuf, index);
+	float fAvoidAgi = GetFloat(pBuf, index);
 //
-	sItemAC = GetShort(pBuf, index);
-	bTypeLeft = GetByte(pBuf, index);
-	bTypeRight = GetByte(pBuf, index);
-	sAmountLeft = GetShort(pBuf, index);
-	sAmountRight = GetShort(pBuf, index);
+	int16_t sItemAC = GetShort(pBuf, index);
+	uint8_t bTypeLeft = GetByte(pBuf, index);
+	uint8_t bTypeRight = GetByte(pBuf, index);
+	int16_t sAmountLeft = GetShort(pBuf, index);
+	int16_t sAmountRight = GetShort(pBuf, index);
 //
 
 	//TRACE(_T("RecvAttackReq : [sid=%d, tid=%d, zone_num=%d] \n"), sid, tid, _zoneNo);
@@ -814,7 +793,7 @@ void CGameSocket::RecvUserSetHP(char* pBuf)
 void CGameSocket::RecvUserUpdate(char* pBuf)
 {
 	int index = 0;
-	int16_t uid = -1, sHP = 0, sMP = 0, sSP = 0;
+	int16_t uid = -1, sHP = 0, sMP = 0;
 	uint8_t byLevel;
 
 	int16_t sDamage, sAC;
@@ -911,12 +890,7 @@ void CGameSocket::RecvZoneChange(char* pBuf)
 void CGameSocket::RecvMagicAttackReq(char* pBuf)
 {
 	int index = 0;
-	int sid = -1, tid = -1;
-	int iMagicID = 0;
-
-	sid = GetShort(pBuf, index);
-	//tid = GetShort(pBuf,index);
-	//iMagicID = GetDWORD(pBuf, index);
+	int sid = GetShort(pBuf, index);
 
 	CUser* pUser = m_pMain->GetUserPtr(sid);
 	if (pUser == nullptr)
@@ -936,7 +910,7 @@ void CGameSocket::RecvMagicAttackReq(char* pBuf)
 			spdlog::error("GameSocket::RecvMagicAttackReq: user is dead [charId={} isAlive={}, hp={}]",
 				pUser->m_strUserID, pUser->m_bLive, pUser->m_sHP);
 			// process the death on the game server
-			Send_UserError(sid, tid);
+			Send_UserError(sid, -1);
 			return;
 		}
 	}
@@ -948,20 +922,16 @@ void CGameSocket::RecvMagicAttackReq(char* pBuf)
 void CGameSocket::RecvCompressedData(char* pBuf)
 {
 	int index = 0;
-	int16_t sCompLen, sOrgLen, sCompCount;
 	std::vector<uint8_t> decompressedBuffer;
-	uint8_t* pCompressedBuffer = nullptr;
 
-	uint32_t dwCrcValue = 0, dwActualCrcValue = 0;
-
-	sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
-	sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
-	dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
-	sCompCount = GetShort(pBuf, index);	// 압축 데이타 수 얻기...
+	int16_t sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
+	int16_t sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
+	uint32_t dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
+	/*int16_t sCompCount =*/ GetShort(pBuf, index);	// 압축 데이타 수 얻기...
 
 	decompressedBuffer.resize(sOrgLen);
 
-	pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
+	uint8_t* pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
 	index += sCompLen;
 
 	uint32_t nDecompressedLength = lzf_decompress(
@@ -972,10 +942,10 @@ void CGameSocket::RecvCompressedData(char* pBuf)
 
 	assert(nDecompressedLength == sOrgLen);
 
-	if (nDecompressedLength != sOrgLen)
+	if (nDecompressedLength != static_cast<uint32_t>(sOrgLen))
 		return;
 
-	dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
+	uint32_t dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
 
 	assert(dwCrcValue == dwActualCrcValue);
 
@@ -1033,7 +1003,7 @@ void CGameSocket::RecvUserInfoAllData(char* pBuf)
 		pUser->Initialize();
 
 		pUser->m_iUserId = uid;
-		strcpy_s(pUser->m_strUserID, strName);
+		strcpy_safe(pUser->m_strUserID, strName);
 		pUser->m_curZone = bZone;
 		pUser->m_sZoneIndex = sZoneIndex;
 		pUser->m_bNation = bNation;
@@ -1146,7 +1116,7 @@ void CGameSocket::RecvPartyInfoAllData(char* pBuf)
 	}
 }
 
-void CGameSocket::RecvCheckAlive(char* pBuf)
+void CGameSocket::RecvCheckAlive()
 {
 //	TRACE(_T("CAISocket-RecvCheckAlive : zone_num=%d\n"), m_iZoneNum);
 	m_pMain->_aliveSocketCount = 0;
@@ -1213,13 +1183,10 @@ void CGameSocket::RecvTimeAndWeather(char* pBuf)
 void CGameSocket::RecvUserFail(char* pBuf)
 {
 	int index = 0;
-	int sid = -1, tid = -1, sHP = 0;
-	char buff[256];
-	memset(buff, 0x00, 256);
 
-	sid = GetShort(pBuf, index);
-	tid = GetShort(pBuf, index);
-	sHP = GetShort(pBuf, index);
+	int sid = GetShort(pBuf, index);
+	/*int tid =*/ GetShort(pBuf, index);
+	int sHP = GetShort(pBuf, index);
 
 	CUser* pUser = m_pMain->GetUserPtr(sid);
 	if (pUser == nullptr)
@@ -1231,10 +1198,10 @@ void CGameSocket::RecvUserFail(char* pBuf)
 
 void CGameSocket::RecvBattleEvent(char* pBuf)
 {
-	int index = 0, nType = 0, nEvent = 0;
+	int index = 0;
 
-	nType = GetByte(pBuf, index);
-	nEvent = GetByte(pBuf, index);
+	/*int nType =*/ GetByte(pBuf, index);
+	int nEvent = GetByte(pBuf, index);
 
 	if (nEvent == BATTLEZONE_OPEN)
 	{

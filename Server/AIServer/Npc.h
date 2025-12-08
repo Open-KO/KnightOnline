@@ -168,7 +168,7 @@ public:
 
 	int			m_pMap[MAX_MAP_SIZE]; // 2차원 -> 1차원 배열로 x * sizey + y
 
-	SIZE		m_vMapSize;
+	_SIZE		m_vMapSize;
 
 	float		m_fStartPoint_X, m_fStartPoint_Y;
 	float		m_fEndPoint_X, m_fEndPoint_Y;

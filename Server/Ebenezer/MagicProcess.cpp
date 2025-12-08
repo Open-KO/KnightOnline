@@ -55,11 +55,10 @@ CMagicProcess::~CMagicProcess()
 {
 }
 
-void CMagicProcess::MagicPacket(char* pBuf, int len)
+void CMagicProcess::MagicPacket(char* pBuf)
 {
 	int index = 0, send_index = 0, magicid = 0, sid = -1, tid = -2, data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0;
 	char send_buff[128] = {};
-	int type3_attribute = 0;
 
 	model::Magic* pTable = nullptr;
 	CNpc* pMon = nullptr;
@@ -502,10 +501,9 @@ return_echo:
 	}
 }
 
-model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, uint8_t type, int data1, int data2, int data3)
+model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, uint8_t type, int data1, int /*data2*/, int /*data3*/)
 {
 	CUser* pUser = nullptr;		// When the target is a player....
-	CUser* pParty = nullptr;	// When the target is a party....
 	CNpc* pNpc = nullptr;		// When the monster is the target....
 	CNpc* pMon = nullptr;		// When the monster is the source....
 	bool bFlag = false;			// Identifies source : true means source is NPC.
@@ -513,7 +511,6 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, int sid, uint8_t 
 
 	int modulator = 0, Class = 0, send_index = 0, moral = 0;	// Variable Initialization.
 	char send_buff[128] = {};
-	int skill_mod = 0;
 
 	model::Magic* pTable = m_pMain->m_MagicTableMap.GetData(magicid);   // Get main magic table.
 	if (pTable == nullptr)
@@ -1089,7 +1086,7 @@ packet_send:
 	return result;
 }
 
-uint8_t CMagicProcess::ExecuteType2(int magicid, int sid, int tid, int data1, int data2, int data3)
+uint8_t CMagicProcess::ExecuteType2(int magicid, int sid, int tid, int data1, int /*data2*/, int data3)
 {
 	int damage = 0, send_index = 0, result = 1; // Variable initialization. result == 1 : success, 0 : fail	
 	char send_buff[128] = {};	// For the packet. 
@@ -1208,11 +1205,10 @@ packet_send:
 	return result;
 }
 
-void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int data2, int data3)  // Applied when a magical attack, healing, and mana restoration is done.
+void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /*data2*/, int data3)  // Applied when a magical attack, healing, and mana restoration is done.
 {
 	int damage = 0, duration_damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
-	char strLogData[128] = {};
 	bool bFlag = false;
 	CNpc* pMon = nullptr;
 
@@ -1587,9 +1583,9 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int d
 	return;
 }
 
-void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int data2, int data3)
+void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int /*data2*/, int data3)
 {
-	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
+	int send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 
 	std::vector<int> casted_member;
@@ -1886,9 +1882,9 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int d
 	}
 }
 
-void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int data2, int data3)
+void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int /*data2*/, int data3)
 {
-	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
+	int send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 	int i = 0, j = 0, k = 0, buff_test = 0;
 	bool bType3Test = true, bType4Test = true;
@@ -2212,17 +2208,17 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int d
 	}
 }
 
-void CMagicProcess::ExecuteType6(int magicid)
+void CMagicProcess::ExecuteType6(int /*magicid*/)
 {
 }
 
-void CMagicProcess::ExecuteType7(int magicid)
+void CMagicProcess::ExecuteType7(int /*magicid*/)
 {
 }
 
-void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int data2, int data3)	// Warp, resurrection, and summon spells.
+void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /*data2*/, int data3)	// Warp, resurrection, and summon spells.
 {
-	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
+	int send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 
 	std::vector<int> casted_member;
@@ -2600,11 +2596,11 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int d
 	}
 }
 
-void CMagicProcess::ExecuteType9(int magicid)
+void CMagicProcess::ExecuteType9(int /*magicid*/)
 {
 }
 
-void CMagicProcess::ExecuteType10(int magicid)
+void CMagicProcess::ExecuteType10(int /*magicid*/)
 {
 }
 
@@ -2612,7 +2608,7 @@ int16_t CMagicProcess::GetMagicDamage(int sid, int tid, int total_hit, int attri
 {
 	CNpc* pMon = nullptr;
 
-	int16_t damage = 0, temp_hit = 0, righthand_damage = 0, attribute_damage = 0;
+	int16_t damage = 0, righthand_damage = 0, attribute_damage = 0;
 	int random = 0, total_r = 0;
 	uint8_t result;
 

@@ -9,7 +9,6 @@ class EVENT
 {
 public:
 	void DeleteAll();
-	void Parsing(char* pBuf);
 	void Init();
 	bool LoadEvent(int zone);
 	int m_Zone;

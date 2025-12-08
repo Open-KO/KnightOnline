@@ -258,7 +258,7 @@ public:
 	void GoldGain(int gold);
 	void SendItemWeight();
 	void ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial, int itemid, int count, int durability);
-	void TestPacket(char* pBuf);
+	void TestPacket();
 	bool RunEvent(const EVENT_DATA* pEventData);
 	bool RunNpcEvent(CNpc* pNpc, const EXEC* pExec);
 	bool CheckEventLogic(const EVENT_DATA* pEventData);

@@ -10,7 +10,7 @@ public:
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
 	void Parsing(int len, char* pData) override;
-	void NewsReq(char* pBuf);
+	void NewsReq();
 	void SendDownloadInfo(int version);
 	void LogInReq(char* pBuf);
 };

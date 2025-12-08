@@ -1,11 +1,8 @@
-﻿// PathFind.cpp: implementation of the CPathFind class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "PathFind.h"
-#include "math.h"
 #include "AIServerApp.h"
+
+#include <math.h>
 
 //#include "Extern.h"
 
@@ -13,10 +10,6 @@
 #define LEVEL_ONE_FIND_DIAGONAL			3
 #define LEVEL_TWO_FIND_CROSS			11
 #define LEVEL_TWO_FIND_DIAGONAL			10
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CPathFind::CPathFind()
 {
@@ -368,7 +361,7 @@ bool CPathFind::IsBlankMap(int x, int y)
 		|| y >= m_vMapSize.cy)
 		return false;
 
-	bool bRet = true;
+	//bool bRet = true;
 	//if(m_pMain->m_pMap->m_pMap[x][y].m_bMove > 0) bRet = false;
 	//if
 	return m_pMap[x * m_vMapSize.cy + y] == 0;

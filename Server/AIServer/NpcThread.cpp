@@ -9,14 +9,12 @@
 #include "AIServerApp.h"
 
 #include <chrono>
-#include <mmsystem.h>
 
 //////////////////////////////////////////////////////////////////////
 // NPC Thread Callback Function
 //
 void CNpcThread::thread_loop()
 {
-	uint32_t			dwDiffTime	= 0;
 	uint32_t			dwTickTime	= 0;
 
 	srand((unsigned int) time(nullptr));
@@ -24,7 +22,6 @@ void CNpcThread::thread_loop()
 	myrand(1, 10000);
 
 	double	fTime2 = 0.0, fTime3 = 0.0;
-	int		duration_damage = 0;
 
 	while (_canTick)
 	{

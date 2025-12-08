@@ -882,19 +882,18 @@ inline float __Quaternion::Dot(const __Quaternion& qt) const
 	return (x*qt.x) + (y*qt.y) + (z*qt.z) + (w*qt.w);
 }
 
-#include "CrtDbg.h"
+#include <cassert>
+#include <spdlog/spdlog.h>
 
 #ifndef _DEBUG
-#define __ASSERT(expr, expMessage)
+#define __ASSERT(expression, expressionMessage) (void)0
 #else
-#define __ASSERT(expr, expMessage) \
-if (!(expr)) \
-{ \
-	_CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, "N3 Custom Assert Function", expMessage); \
-	char __szErr[512] = {}; \
-	snprintf(__szErr, sizeof(__szErr), "%s(%d): %s\n", __FILE__, __LINE__, expMessage); \
-	OutputDebugStringA(__szErr); \
-	_CrtDbgBreak(); \
+#define __ASSERT(expression, expressionMessage) ASSERT_IMPL(#expression, expression, __FILE__, __LINE__, expressionMessage)
+
+inline static void ASSERT_IMPL(const char* expressionString, bool expressionResult, const char* file, int line, const char* expressionMessage)
+{
+	if (!expressionResult)
+		spdlog::error("Assertion failed: {}({}) - {} ({})", file, line, expressionMessage, expressionString);
 }
 #endif
 

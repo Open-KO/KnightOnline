@@ -92,8 +92,6 @@ void AppThread::thread_loop()
 
 	auto renderer = Renderer(input, [&]
 	{
-		size_t entryCount = 0;
-
 		{
 			std::lock_guard<std::mutex> lock(fxtuiSink->lock());
 			logElements = fxtuiSink->log_buffer(); // this is intentionally a copy, but it's a container of shared pointers
@@ -246,7 +244,7 @@ void AppThread::thread_loop()
 /// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
 /// \param iniFile The loaded application ini file.
 /// \returns true when successful, false otherwise
-bool AppThread::LoadConfig(CIni& iniFile)
+bool AppThread::LoadConfig(CIni& /*iniFile*/)
 {
 	return true;
 }
@@ -281,7 +279,7 @@ bool AppThread::StartupImpl(CIni& iniFile)
 	}
 }
 
-bool AppThread::HandleInputEvent(const ftxui::Event& event)
+bool AppThread::HandleInputEvent(const ftxui::Event& /*event*/)
 {
 	return false;
 }

@@ -145,8 +145,7 @@ void CNpc::RegisterRegion()
 
 void CNpc::RemoveRegion(int del_x, int del_z)
 {
-	int send_index = 0, i = 0;
-	int region_x = -1, region_z = -1, uid = -1;
+	int send_index = 0;
 	char buff[128] = {};
 
 	C3DMap* pMap = m_pMain->GetMapByIndex(m_sZoneIndex);
@@ -193,8 +192,7 @@ void CNpc::RemoveRegion(int del_x, int del_z)
 
 void CNpc::InsertRegion(int del_x, int del_z)
 {
-	int send_index = 0, buff_index = 0, i = 0;
-	int region_x = -1, region_z = -1;
+	int send_index = 0;
 	char buff[128] = {};
 
 	C3DMap* pMap = m_pMain->GetMapByIndex(m_sZoneIndex);

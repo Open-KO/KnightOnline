@@ -30,7 +30,7 @@ public:
 	void InitEventMonster(int index);
 	// Packet recv
 	void LoginProcess(char* pBuf);
-	void RecvCheckAlive(char* pBuf);
+	void RecvCheckAlive();
 	void RecvServerInfo(char* pBuf);
 	void RecvNpcInfoAll(char* pBuf);
 	void RecvNpcMoveResult(char* pBuf);

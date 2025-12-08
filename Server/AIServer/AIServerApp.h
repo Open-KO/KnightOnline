@@ -5,7 +5,7 @@
 
 #include "AISocketManager.h"
 
-#include "MAP.h"
+#include "Map.h"
 #include "NpcItem.h"
 #include "Npc.h"
 

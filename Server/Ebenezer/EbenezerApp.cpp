@@ -15,7 +15,7 @@
 
 #include <db-library/ConnectionManager.h>
 #include <db-library/RecordSetLoader_STLMap.h>
-#include <db-library/RecordSetLoader_Vector.h>
+#include <db-library/RecordsetLoader_Vector.h>
 
 #include <fstream>
 
@@ -467,7 +467,7 @@ bool EbenezerApp::OnStart()
 
 	spdlog::info("EbenezerApp::OnInitDialog: successfully initialized");
 
-	return TRUE;
+	return true;
 }
 
 void EbenezerApp::UserAcceptThread()
@@ -486,7 +486,7 @@ CUser* EbenezerApp::GetUserPtr(const char* userid, NameType type)
 		{
 			CUser* pUser = GetUserPtrUnchecked(i);
 			if (pUser != nullptr
-				&& _strnicmp(pUser->m_strAccountID, userid, MAX_ID_SIZE) == 0)
+				&& strnicmp(pUser->m_strAccountID, userid, MAX_ID_SIZE) == 0)
 				return pUser;
 		}
 	}
@@ -496,7 +496,7 @@ CUser* EbenezerApp::GetUserPtr(const char* userid, NameType type)
 		{
 			CUser* pUser = GetUserPtrUnchecked(i);
 			if (pUser != nullptr
-				&& _strnicmp(pUser->m_pUserData->m_id, userid, MAX_ID_SIZE) == 0)
+				&& strnicmp(pUser->m_pUserData->m_id, userid, MAX_ID_SIZE) == 0)
 				return pUser;
 		}
 	}
@@ -738,9 +738,6 @@ void EbenezerApp::Send_FilterUnitRegion(C3DMap* pMap, char* pBuf, int len, int x
 
 	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
-	auto Iter1 = pMap->m_ppRegion[x][z].m_RegionUserArray.begin();
-	auto Iter2 = pMap->m_ppRegion[x][z].m_RegionUserArray.end();
-
 	for (const auto& [_, pUid] : pMap->m_ppRegion[x][z].m_RegionUserArray)
 	{
 		int uid = *pUid;
@@ -806,7 +803,7 @@ void EbenezerApp::Send_KnightsMember(int index, char* pBuf, int len, int zone)
 }
 
 // sungyong 2002.05.22
-void EbenezerApp::Send_AIServer(int zone, char* pBuf, int len)
+void EbenezerApp::Send_AIServer(int /*zone*/, char* pBuf, int len)
 {
 	for (int i = 0; i < MAX_AI_SOCKET; i++)
 	{
@@ -823,7 +820,7 @@ void EbenezerApp::Send_AIServer(int zone, char* pBuf, int len)
 		if (i == m_sSendSocket)
 		{
 			int send_size = pSocket->Send(pBuf, len);
-			int old_send_socket = m_sSendSocket;
+			// int old_send_socket = m_sSendSocket;
 			m_sSendSocket++;
 			if (m_sSendSocket >= MAX_AI_SOCKET)
 				m_sSendSocket = 0;
@@ -1097,7 +1094,7 @@ std::filesystem::path EbenezerApp::ConfigPath() const
 /// \returns true when successful, false otherwise
 bool EbenezerApp::LoadConfig(CIni& iniFile)
 {
-	int year = 0, month = 0, date = 0, hour = 0, serverCount = 0, sgroup_count = 0;
+	int serverCount = 0, sgroup_count = 0;
 	std::string key;
 
 	m_nYear = iniFile.GetInt("TIMER", "YEAR", 1);
@@ -1119,7 +1116,7 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 		modelUtil::DbType::GAME,
 		datasourceName, datasourceUser, datasourcePass);
 
-	iniFile.GetString("AI_SERVER", "IP", "127.0.0.1", m_AIServerIP, _countof(m_AIServerIP));
+	iniFile.GetString("AI_SERVER", "IP", "127.0.0.1", m_AIServerIP, sizeof(m_AIServerIP));
 
 	// NOTE: officially this is required to be explicitly set, so it defaults to 0 and fails.
 	m_nServerIndex = iniFile.GetInt("SG_INFO", "SERVER_INDEX", 1);
@@ -1142,7 +1139,7 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 		pInfo->sServerNo = iniFile.GetInt("ZONE_INFO", key, 1);
 
 		key = fmt::format("SERVER_IP_{:02}", i);
-		iniFile.GetString("ZONE_INFO", key, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
+		iniFile.GetString("ZONE_INFO", key, "127.0.0.1", pInfo->strServerIP, sizeof(pInfo->strServerIP));
 
 		pInfo->sPort = _LISTEN_PORT + pInfo->sServerNo;
 
@@ -1168,7 +1165,7 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 			pInfo->sServerNo = iniFile.GetInt("SG_INFO", key, 1);
 
 			key = fmt::format("GSERVER_IP_{:02}", i);
-			iniFile.GetString("SG_INFO", key, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
+			iniFile.GetString("SG_INFO", key, "127.0.0.1", pInfo->strServerIP, sizeof(pInfo->strServerIP));
 
 			pInfo->sPort = _LISTEN_PORT + pInfo->sServerNo;
 
@@ -1181,7 +1178,6 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 
 void EbenezerApp::UpdateGameTime()
 {
-	CUser* pUser = nullptr;
 	bool bKnights = false;
 
 	m_nMin++;
@@ -1301,9 +1297,9 @@ void EbenezerApp::SetGameTime()
 
 void EbenezerApp::UserInOutForMe(CUser* pSendUser)
 {
-	int send_index = 0, buff_index = 0, i = 0, j = 0, t_count = 0, prevIndex = 0;
+	int send_index = 0, buff_index = 0, t_count = 0, prevIndex = 0;
 	C3DMap* pMap = nullptr;
-	int region_x = -1, region_z = -1, user_count = 0, uid = -1;
+	int region_x = -1, region_z = -1;
 	char buff[16384] = {}, send_buff[49152] = {};
 
 	if (pSendUser == nullptr)
@@ -1419,7 +1415,7 @@ void EbenezerApp::UserInOutForMe(CUser* pSendUser)
 
 void EbenezerApp::RegionUserInOutForMe(CUser* pSendUser)
 {
-	int send_index = 0, buff_index = 0, i = 0, j = 0, t_count = 0;
+	int buff_index = 0;
 	C3DMap* pMap = nullptr;
 	int region_x = -1, region_z = -1, userCount = 0, uid_sendindex = 0;
 	char uid_buff[2048] = {}, send_buff[16384] = {};
@@ -1667,7 +1663,7 @@ int EbenezerApp::GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char* 
 
 void EbenezerApp::RegionNpcInfoForMe(CUser* pSendUser, int nType)
 {
-	int send_index = 0, buff_index = 0, i = 0, j = 0, t_count = 0;
+	int buff_index = 0;
 	C3DMap* pMap = nullptr;
 	int region_x = -1, region_z = -1, npcCount = 0, nid_sendindex = 0;
 	char nid_buff[1024] = {}, send_buff[8192] = {};
@@ -1842,7 +1838,7 @@ bool EbenezerApp::HandleCommand(const std::string& command)
 		}
 
 		SetByte(sendBuff, PERMANENT_CHAT, sendIndex);
-		strcpy_s(m_strPermanentChat, finalstr.c_str());
+		strcpy_safe(m_strPermanentChat, finalstr);
 		m_bPermanentChatFlag = false;
 	}
 	else
@@ -1914,7 +1910,7 @@ bool EbenezerApp::LoadNoticeData()
 			break;
 		}
 
-		if (strcpy_s(m_ppNotice[count], line.c_str()))
+		if (strcpy_safe(m_ppNotice[count], line))
 		{
 			spdlog::error("EbenezerApp::LoadNoticeData: notice line {} is too long", count + 1);
 			loadedNotice = false;
@@ -1933,9 +1929,9 @@ void EbenezerApp::SyncTest(int nType)
 {
 	char strPath[100] = {};
 	if (nType == 1)
-		strcpy_s(strPath, "./userlist.txt");
+		strcpy_safe(strPath, "./userlist.txt");
 	else if (nType == 2)
-		strcpy_s(strPath, "./npclist.txt");
+		strcpy_safe(strPath, "./npclist.txt");
 
 	FILE* stream = nullptr;
 #if defined(_MSC_VER)
@@ -2089,7 +2085,8 @@ void EbenezerApp::SendAllUserInfo()
 				send_count = 0;
 				count = 0;
 				send_tot++;
-				//TRACE(_T("AllNpcInfo - send_count=%d, count=%d\n"), send_tot, count);
+				spdlog::debug("EbenezerApp::SendAllUserInfo: send_count={} count={}",
+					send_tot, count);
 				memset(send_buff, 0, sizeof(send_buff));
 				//Sleep(320);
 			}
@@ -2104,7 +2101,8 @@ void EbenezerApp::SendAllUserInfo()
 		SetByte(send_buff, (uint8_t) count, send_count);
 		Send_AIServer(1000, send_buff, send_index);
 		send_tot++;
-		//TRACE(_T("AllNpcInfo - send_count=%d, count=%d\n"), send_tot, count);
+		spdlog::debug("EbenezerApp::SendAllUserInfo: send_count={} count={}",
+			send_tot, count);
 		//Sleep(1);
 	}
 
@@ -2186,7 +2184,7 @@ void EbenezerApp::SendCompressedData()
 }
 
 // sungyong 2002. 05. 23
-void EbenezerApp::DeleteAllNpcList(int flag)
+void EbenezerApp::DeleteAllNpcList(int /*flag*/)
 {
 	if (!m_bServerCheckFlag)
 		return;
@@ -2200,8 +2198,6 @@ void EbenezerApp::DeleteAllNpcList(int flag)
 	
 	spdlog::debug("EbenezerApp::DeleteAllNpcList: start");
 
-	CUser* pUser = nullptr;
-
 	// region Npc Array Delete
 	for (C3DMap* pMap : m_ZoneArray)
 	{
@@ -2211,17 +2207,11 @@ void EbenezerApp::DeleteAllNpcList(int flag)
 		for (int i = 0; i < pMap->GetXRegionMax(); i++)
 		{
 			for (int j = 0; j < pMap->GetZRegionMax(); j++)
-			{
-				if (!pMap->m_ppRegion[i][j].m_RegionNpcArray.IsEmpty())
-					pMap->m_ppRegion[i][j].m_RegionNpcArray.DeleteAllData();
-			}
+				pMap->m_ppRegion[i][j].m_RegionNpcArray.DeleteAllData();
 		}
 	}
 
-	// Npc Array Delete
-	if (!m_NpcMap.IsEmpty())
-		m_NpcMap.DeleteAllData();
-
+	m_NpcMap.DeleteAllData();
 	m_bServerCheckFlag = false;
 
 	spdlog::debug("EbenezerApp::DeleteAllNpcList: end");
@@ -2316,15 +2306,13 @@ void EbenezerApp::AliveUserCheck()
 /////// BATTLEZONE RELATED by Yookozuna 2002.6.18 /////////////////
 void EbenezerApp::BattleZoneOpenTimer()
 {
-	DateTime cur = DateTime::GetNow();
+	// DateTime cur = DateTime::GetNow();
 
 	// sungyong modify
-	int nWeek = cur.GetDayOfWeek();
-	int nTime = cur.GetHour();
+	// int nWeek = cur.GetDayOfWeek();
+	// int nTime = cur.GetHour();
 	char send_buff[128] = {};
-	int send_index = 0, loser_nation = 0, snow_battle = 0;
-	CUser* pKarusUser = nullptr;
-	CUser* pElmoUser = nullptr;
+	int send_index = 0, loser_nation = 0;
 
 /*	if( m_byBattleOpen == NO_BATTLE )	{	// When Battlezone is closed, open it!
 		if( nWeek == m_nBattleZoneOpenWeek && nTime == m_nBattleZoneOpenHourStart )	{	// 수요일, 20시에 전쟁존 open
@@ -2700,24 +2688,20 @@ bool EbenezerApp::LoadAllKnights()
 #if defined(DB_COMPAT_PADDED_NAMES)
 			rtrim(row.Name);
 #endif
-			if (strcpy_s(pKnights->m_strName, row.Name.c_str()))
+			if (strcpy_safe(pKnights->m_strName, row.Name))
 			{
 				spdlog::warn("EbenezerApp::LoadAllKnights: IDName too long, truncating - knightsId={}",
 					pKnights->m_sIndex);
-				strncpy_s(pKnights->m_strName, row.Name.c_str(), MAX_ID_SIZE);
-				pKnights->m_strName[MAX_ID_SIZE] = '\0';
 			}
 
 #if defined(DB_COMPAT_PADDED_NAMES)
 			rtrim(row.Chief);
 #endif
 
-			if (strcpy_s(pKnights->m_strChief, row.Chief.c_str()))
+			if (strcpy_safe(pKnights->m_strChief, row.Chief) != 0)
 			{
 				spdlog::warn("EbenezerApp::LoadAllKnights: Chief too long, truncating - knightsId={}",
 					pKnights->m_sIndex);
-				strncpy_s(pKnights->m_strChief, row.Chief.c_str(), MAX_ID_SIZE);
-				pKnights->m_strChief[MAX_ID_SIZE] = '\0';
 			}
 
 			if (row.ViceChief1.has_value())
@@ -2726,12 +2710,10 @@ bool EbenezerApp::LoadAllKnights()
 				rtrim(*row.ViceChief1);
 #endif
 
-				if (strcpy_s(pKnights->m_strViceChief_1, row.ViceChief1->c_str()))
+				if (strcpy_safe(pKnights->m_strViceChief_1, row.ViceChief1.value()) != 0)
 				{
 					spdlog::warn("EbenezerApp::LoadAllKnights: ViceChief_1 too long, truncating - knightsId={}",
 						pKnights->m_sIndex);
-					strncpy_s(pKnights->m_strViceChief_1, row.ViceChief1->c_str(), MAX_ID_SIZE);
-					pKnights->m_strViceChief_1[MAX_ID_SIZE] = '\0';
 				}
 			}
 
@@ -2741,12 +2723,10 @@ bool EbenezerApp::LoadAllKnights()
 				rtrim(*row.ViceChief2);
 #endif
 
-				if (strcpy_s(pKnights->m_strViceChief_2, row.ViceChief2->c_str()))
+				if (strcpy_safe(pKnights->m_strViceChief_2, row.ViceChief2.value()) != 0)
 				{
 					spdlog::warn("EbenezerApp::LoadAllKnights: ViceChief_2 too long, truncating - knightsId={}",
 						pKnights->m_sIndex);
-					strncpy_s(pKnights->m_strViceChief_2, row.ViceChief2->c_str(), MAX_ID_SIZE);
-					pKnights->m_strViceChief_2[MAX_ID_SIZE] = '\0';
 				}
 			}
 
@@ -2756,12 +2736,10 @@ bool EbenezerApp::LoadAllKnights()
 				rtrim(*row.ViceChief3);
 #endif
 
-				if (strcpy_s(pKnights->m_strViceChief_3, row.ViceChief3->c_str()))
+				if (strcpy_safe(pKnights->m_strViceChief_3, row.ViceChief3.value()) != 0)
 				{
 					spdlog::warn("EbenezerApp::LoadAllKnights: ViceChief_3 too long, truncating - knightsId={}",
 						pKnights->m_sIndex);
-					strncpy_s(pKnights->m_strViceChief_3, row.ViceChief3->c_str(), MAX_ID_SIZE);
-					pKnights->m_strViceChief_3[MAX_ID_SIZE] = '\0';
 				}
 			}
 
@@ -2778,7 +2756,7 @@ bool EbenezerApp::LoadAllKnights()
 			for (int i = 0; i < MAX_CLAN; i++)
 			{
 				pKnights->m_arKnightsUser[i].byUsed = 0;
-				strcpy_s(pKnights->m_arKnightsUser[i].strUserName, "");
+				strcpy_safe(pKnights->m_arKnightsUser[i].strUserName, "");
 			}
 
 			if (!m_KnightsMap.PutData(pKnights->m_sIndex, pKnights))
@@ -2934,8 +2912,6 @@ int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& bu
 
 void EbenezerApp::MarketBBSTimeCheck()
 {
-	int send_index = 0;
-	char send_buff[256] = {};
 	double currentTime = TimeGet();
 
 	for (int i = 0; i < MAX_BBS_POST; i++)
@@ -2951,23 +2927,7 @@ void EbenezerApp::MarketBBSTimeCheck()
 			}
 
 			if (m_fBuyStartTime[i] + BBS_CHECK_TIME < currentTime)
-			{
-//				if (pUser->m_pUserData->m_iGold >= BUY_POST_PRICE) {
-//					pUser->m_pUserData->m_iGold -= BUY_POST_PRICE ;
-//					m_fBuyStartTime[i] = TimeGet();
-
-//					memset(send_buff, 0, sizeof(send_buff));
-//					send_index = 0;	
-//					SetByte( send_buff, WIZ_GOLD_CHANGE, send_index );	// Now the target
-//					SetByte( send_buff, 0x02, send_index );
-//					SetDWORD( send_buff, BUY_POST_PRICE, send_index );
-//					SetDWORD( send_buff, pUser->m_pUserData->m_iGold, send_index );
-//					pUser->Send( send_buff, send_index );	
-//				}
-//				else {
 				MarketBBSBuyDelete(i);
-//				}
-			}
 		}
 
 		// SELL!!!
@@ -2981,23 +2941,7 @@ void EbenezerApp::MarketBBSTimeCheck()
 			}
 
 			if (m_fSellStartTime[i] + BBS_CHECK_TIME < currentTime)
-			{
-//				if (pUser->m_pUserData->m_iGold >= SELL_POST_PRICE) {
-//					pUser->m_pUserData->m_iGold -= SELL_POST_PRICE ;
-//					m_fSellStartTime[i] = TimeGet();
-
-//					memset(send_buff, 0, sizeof(send_buff));
-//					send_index = 0;
-//					SetByte( send_buff, WIZ_GOLD_CHANGE, send_index );	// Now the target
-//					SetByte( send_buff, 0x02, send_index );
-//					SetDWORD( send_buff, SELL_POST_PRICE, send_index );
-//					SetDWORD( send_buff, pUser->m_pUserData->m_iGold, send_index );
-//					pUser->Send( send_buff, send_index );	
-//				}
-//				else {
 				MarketBBSSellDelete(i);
-//				}
-			}
 		}
 	}
 }
@@ -3083,7 +3027,7 @@ void EbenezerApp::KickOutAllUsers()
 			continue;
 
 		pUser->Close();
-		Sleep(1000);
+		std::this_thread::sleep_for(1s);
 	}
 }
 
@@ -3188,7 +3132,7 @@ bool EbenezerApp::LoadBattleTable()
 	return true;
 }
 
-void EbenezerApp::Send_CommandChat(char* pBuf, int len, int nation, CUser* pExceptUser)
+void EbenezerApp::Send_CommandChat(char* pBuf, int len, int nation, CUser* /*pExceptUser*/)
 {
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
@@ -3216,7 +3160,7 @@ bool EbenezerApp::LoadKnightsRankTable()
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
 	{
 		char send_buff[1024] = {};
-		int nKarusRank = 0, nElmoRank = 0, nFindKarus = 0, nFindElmo = 0, send_index = 0;
+		int nKarusRank = 0, nElmoRank = 0, send_index = 0;
 
 		do
 		{
@@ -3252,7 +3196,6 @@ bool EbenezerApp::LoadKnightsRankTable()
 					strKarusCaptain[nKarusRank] = fmt::format("[{}][{}]", row.Name, pUser->m_pUserData->m_id);
 					nKarusRank++;
 
-					nFindKarus = 1;
 					memset(send_buff, 0, sizeof(send_buff));
 					send_index = 0;
 					SetByte(send_buff, WIZ_AUTHORITY_CHANGE, send_index);
@@ -3286,7 +3229,6 @@ bool EbenezerApp::LoadKnightsRankTable()
 				{
 					pUser->m_pUserData->m_bFame = COMMAND_CAPTAIN;
 					strElmoCaptain[nElmoRank] = fmt::format("[{}][{}]", row.Name, pUser->m_pUserData->m_id);
-					nFindElmo = 1;
 					nElmoRank++;
 
 					memset(send_buff, 0, sizeof(send_buff));

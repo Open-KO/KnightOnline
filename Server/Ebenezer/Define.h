@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <mmsystem.h>
 #include <shared/globals.h>
 
 constexpr int MAX_USER				= 3000;

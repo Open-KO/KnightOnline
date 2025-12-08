@@ -38,6 +38,6 @@ target_link_libraries(db-library
 # Setup warning levels
 target_compile_options(db-library PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
-  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic>
-  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra -Wpedantic -Wno-gnu-anonymous-struct -Wno-nested-anon-types>
 )

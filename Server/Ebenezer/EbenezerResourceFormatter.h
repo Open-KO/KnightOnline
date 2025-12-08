@@ -35,9 +35,4 @@ namespace fmt
 
 		return std::to_string(resourceId);
 	}
-
-	inline std::string format_db_resource(uint32_t resourceId, const std::string_view str)
-	{
-		return format_db_resource(resourceId, str);
-	}
 }

@@ -7,6 +7,7 @@
 #include "db_resources.h"
 
 #include <shared/packets.h>
+#include <shared/StringUtils.h>
 #include <spdlog/spdlog.h>
 
 CUdpSocket::CUdpSocket(EbenezerApp* main)
@@ -88,7 +89,7 @@ int CUdpSocket::SendUDPPacket(char* strAddress, char* pBuf, int len)
 	int s_size = 0, index = 0;
 	uint8_t pTBuf[2048] = {};
 
-	if (len > sizeof(pTBuf)
+	if (len > static_cast<int>(sizeof(pTBuf))
 		|| len <= 0)
 		return 0;
 
@@ -187,7 +188,7 @@ cancelRoutine:
 	return foundCore;
 }
 
-void CUdpSocket::Parsing(char* pBuf, int len)
+void CUdpSocket::Parsing(char* pBuf, int /*len*/)
 {
 	uint8_t command;
 	int index = 0;
@@ -230,11 +231,10 @@ void CUdpSocket::ServerChat(char* pBuf)
 
 void CUdpSocket::RecvBattleEvent(char* pBuf)
 {
-	int index = 0, send_index = 0, udp_index = 0;
+	int index = 0, send_index = 0;
 	int nType = 0, nResult = 0, nLen = 0, nKillKarus = 0, nElmoKill = 0;
 	char strMaxUserName[MAX_ID_SIZE + 1] = {},
-		send_buff[256] = {},
-		udp_buff[256] = {};
+		send_buff[256] = {};
 
 	nType = GetByte(pBuf, index);
 	nResult = GetByte(pBuf, index);
@@ -363,7 +363,7 @@ void CUdpSocket::RecvBattleEvent(char* pBuf)
 
 void CUdpSocket::ReceiveKnightsProcess(char* pBuf)
 {
-	int index = 0, command = 0, pktsize = 0, count = 0;
+	int index = 0, command = 0;
 
 	command = GetByte(pBuf, index);
 	//TRACE(_T("UDP - ReceiveKnightsProcess - command=%d\n"), command);
@@ -397,7 +397,7 @@ void CUdpSocket::ReceiveKnightsProcess(char* pBuf)
 
 void CUdpSocket::RecvCreateKnights(char* pBuf)
 {
-	int index = 0, send_index = 0, namelen = 0, idlen = 0, knightsindex = 0, nation = 0, community = 0;
+	int index = 0, namelen = 0, idlen = 0, knightsindex = 0, nation = 0, community = 0;
 	char knightsname[MAX_ID_SIZE + 1] = {},
 		chiefname[MAX_ID_SIZE + 1] = {};
 	CKnights* pKnights = nullptr;
@@ -416,8 +416,8 @@ void CUdpSocket::RecvCreateKnights(char* pBuf)
 	pKnights->m_sIndex = knightsindex;
 	pKnights->m_byFlag = community;
 	pKnights->m_byNation = nation;
-	strcpy_s(pKnights->m_strName, knightsname);
-	strcpy_s(pKnights->m_strChief, chiefname);
+	strcpy_safe(pKnights->m_strName, knightsname);
+	strcpy_safe(pKnights->m_strChief, chiefname);
 	pKnights->m_sMembers = 1;
 	pKnights->m_nMoney = 0;
 	pKnights->m_nPoints = 0;
@@ -438,13 +438,10 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, uint8_t command)
 	char charId[MAX_ID_SIZE + 1] = {},
 		send_buff[128] = {};
 	std::string finalstr;
-	CKnights* pKnights = nullptr;
 
 	knightsId = GetShort(pBuf, index);
 	idlen = GetShort(pBuf, index);
 	GetString(charId, pBuf, idlen, index);
-
-	pKnights = _main->m_KnightsMap.GetData(knightsId);
 
 	if (command == KNIGHTS_JOIN)
 	{
@@ -482,19 +479,17 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, uint8_t command)
 
 void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 {
-	int index = 0, send_index = 0, knightsindex = 0, idlen = 0, vicechief = 0;
+	int index = 0, send_index = 0, knightsindex = 0, idlen = 0;
 	char send_buff[128] = {},
 		userid[MAX_ID_SIZE + 1] = {};
 	std::string finalstr;
 	CUser* pTUser = nullptr;
-	CKnights* pKnights = nullptr;
 
 	knightsindex = GetShort(pBuf, index);
 	idlen = GetShort(pBuf, index);
 	GetString(userid, pBuf, idlen, index);
 
 	pTUser = _main->GetUserPtr(userid, NameType::Character);
-	pKnights = _main->m_KnightsMap.GetData(knightsindex);
 
 	switch (command)
 	{

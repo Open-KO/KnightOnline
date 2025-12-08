@@ -7,6 +7,7 @@
 
 #include <spdlog/fmt/bundled/format.h>
 
+#include <float.h>
 #include <istream>
 
 CN3ShapeMgr::__CellSub::__CellSub()
@@ -384,58 +385,6 @@ int CN3ShapeMgr::SubCellPathThru(const __Vector3& vFrom, const __Vector3& vAt, i
 	} // end of for(int z = zz1; z <= zz2; z++) // 범위만큼 처리..
 
 	return iSubCellCount; // 걸친 셀 포인터 돌려주기..
-}
-
-// 가장 가까운 높이값을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.
-float CN3ShapeMgr::GetHeightNearstPos(const __Vector3& vPos, float fDist, __Vector3* pvNormal)
-{
-	__CellSub* pCell = SubCell(vPos.x, vPos.z); // 서브셀을 가져온다..
-
-	// 없음 말자.
-	if (pCell == nullptr
-		|| pCell->nCCPolyCount <= 0)
-		return -FLT_MAX;
-
-	// 꼭대기에 위치를 하고..
-	__Vector3 vPosV = vPos;
-	vPosV.y = 5000.0f;
-
-	__Vector3 vDir(0, -1, 0); // 수직 방향 벡터
-	__Vector3 vColTmp(0, 0, 0); // 최종적으로 가장 가까운 충돌 위치..
-
-	int nIndex0, nIndex1, nIndex2;
-	float fT, fU, fV;
-	float fNearst = FLT_MAX, fHeight = -FLT_MAX;		// 일단 최소값을 큰값으로 잡고..
-
-	for (int i = 0; i < pCell->nCCPolyCount; i++)
-	{
-		nIndex0 = pCell->pdwCCVertIndices[i * 3];
-		nIndex1 = pCell->pdwCCVertIndices[i * 3 + 1];
-		nIndex2 = pCell->pdwCCVertIndices[i * 3 + 2];
-
-		// 충돌된 점이 있으면..
-		if (!::_IntersectTriangle(vPosV, vDir, m_pvCollisions[nIndex0], m_pvCollisions[nIndex1], m_pvCollisions[nIndex2], fT, fU, fV, &vColTmp))
-			continue;
-
-		float fMinTmp = (vColTmp - vPos).Magnitude();
-
-		// 가장 가까운 충돌 위치를 찾기 위한 코드..
-		if (fMinTmp < fNearst)
-		{
-			fNearst = fMinTmp;
-			fHeight = vColTmp.y; // 높이값.
-
-			if (pvNormal != nullptr)
-			{
-				pvNormal->Cross(
-					m_pvCollisions[nIndex1] - m_pvCollisions[nIndex0],
-					m_pvCollisions[nIndex2] - m_pvCollisions[nIndex0]);
-				pvNormal->Normalize();
-			}
-		}
-	}
-
-	return fHeight;
 }
 
 // 가장 가까운 높이값을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.

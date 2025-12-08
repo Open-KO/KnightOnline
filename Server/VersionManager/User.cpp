@@ -109,7 +109,7 @@ int CUser::Send(char* pBuf, int length)
 	return QueueAndSend(sendBuffer, index);
 }
 
-void CUser::Parsing(int len, char* pData)
+void CUser::Parsing(int /*len*/, char* pData)
 {
 	int index = 0, send_index = 0, client_version = 0;
 	char buff[2048] = {};
@@ -162,7 +162,7 @@ void CUser::Parsing(int len, char* pData)
 			break;
 
 		case LS_NEWS:
-			NewsReq(pData + index);
+			NewsReq();
 			break;
 	}
 }
@@ -256,7 +256,7 @@ void CUser::SendDownloadInfo(int version)
 	Send(buff, send_index);
 }
 
-void CUser::NewsReq(char* pBuf)
+void CUser::NewsReq()
 {
 	constexpr char szHeader[] = "Login Notice";	// this isn't really used, but it's always set to this
 	constexpr char szEmpty[] = "<empty>";		// unofficial but when used, will essentially cause it to skip since it's not formatted.
@@ -266,13 +266,13 @@ void CUser::NewsReq(char* pBuf)
 	VersionManagerApp* appInstance = VersionManagerApp::instance();
 
 	SetByte(send_buff, LS_NEWS, send_index);
-	SetString2(send_buff, szHeader, _countof(szHeader) - 1, send_index);
+	SetString2(send_buff, szHeader, sizeof(szHeader) - 1, send_index);
 
 	const _NEWS& news = appInstance->News;
 	if (news.Size > 0)
 		SetString2(send_buff, news.Content, news.Size, send_index);
 	else
-		SetString2(send_buff, szEmpty, _countof(szEmpty) - 1, send_index);
+		SetString2(send_buff, szEmpty, sizeof(szEmpty) - 1, send_index);
 
 	Send(send_buff, send_index);
 }

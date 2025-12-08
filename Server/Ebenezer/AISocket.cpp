@@ -10,6 +10,7 @@
 #include <shared/crc32.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
+#include <shared/StringUtils.h>
 
 #include <spdlog/spdlog.h>
 
@@ -125,7 +126,7 @@ int CAISocket::Send(char* pBuf, int length)
 	return QueueAndSend(sendBuffer, index);
 }
 
-void CAISocket::Parsing(int len, char* pData)
+void CAISocket::Parsing(int /*len*/, char* pData)
 {
 	int index = 0;
 
@@ -136,7 +137,7 @@ void CAISocket::Parsing(int len, char* pData)
 	switch (command)
 	{
 		case AG_CHECK_ALIVE_REQ:
-			RecvCheckAlive(pData + index);
+			RecvCheckAlive();
 			break;
 
 		case AI_SERVER_CONNECT:
@@ -319,7 +320,7 @@ void CAISocket::RecvServerInfo(char* pBuf)
 	}
 	else if (type == SERVER_INFO_END)
 	{
-		int16_t sTotalMonster = GetShort(pBuf, index);
+		/*int16_t sTotalMonster =*/; GetShort(pBuf, index);
 		spdlog::info("NPC info received for zoneId {}", byZone);
 		//Sleep(100);
 
@@ -453,7 +454,7 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 		pNpc->m_sSize = sSize;
 		pNpc->m_iWeapon_1 = iweapon_1;
 		pNpc->m_iWeapon_2 = iweapon_2;
-		strcpy_s(pNpc->m_strName, npcName);
+		strcpy_safe(pNpc->m_strName, npcName);
 		pNpc->m_byGroup = byGroup;
 		pNpc->m_byLevel = byLevel;
 		pNpc->m_sCurZone = sZone;
@@ -522,22 +523,16 @@ void CAISocket::RecvNpcInfoAll(char* pBuf)
 
 void CAISocket::RecvNpcMoveResult(char* pBuf)
 {
-	// sungyong tw
-	char send_buff[256];	memset(send_buff, 0x00, 256);
-	int index = 0, send_index = 0;
-	uint8_t		flag;			// 01(INFO_MODIFY)	: NPC 정보 변경
-								// 02(INFO_DELETE)	: NPC 정보 삭제
-	int16_t		nid;			// NPC index
-	float		fPosX;			// X Position
-	float		fPosZ;			// Z Position
-	float		fPosY;			// Y Position
-	float		fSecForMetor;	// Sec당 metor
-	flag = GetByte(pBuf, index);
-	nid = GetShort(pBuf, index);
-	fPosX = GetFloat(pBuf, index);
-	fPosZ = GetFloat(pBuf, index);
-	fPosY = GetFloat(pBuf, index);
-	fSecForMetor = GetFloat(pBuf, index);
+	int index = 0;
+
+	// 01(INFO_MODIFY)	: NPC 정보 변경
+	// 02(INFO_DELETE)	: NPC 정보 삭제
+	/*uint8_t flag =*/ GetByte(pBuf, index);
+	int16_t nid = GetShort(pBuf, index);			// NPC index
+	float fPosX = GetFloat(pBuf, index);			// X position
+	float fPosZ = GetFloat(pBuf, index);			// Z position
+	float fPosY = GetFloat(pBuf, index);			// Y position
+	float fSecForMetor = GetFloat(pBuf, index);		// Sec당 metor
 
 	CNpc* pNpc = _main->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
@@ -547,6 +542,8 @@ void CAISocket::RecvNpcMoveResult(char* pBuf)
 	if (pNpc->m_NpcState == NPC_DEAD
 		|| pNpc->m_iHP <= 0)
 	{
+		char send_buff[256] = {};
+		int send_index = 0;
 		SetByte(send_buff, AG_NPC_HP_REQ, send_index);
 		SetShort(send_buff, nid, send_index);
 		SetDWORD(send_buff, pNpc->m_iHP, send_index);
@@ -928,7 +925,7 @@ void CAISocket::RecvMagicAttackResult(char* pBuf)
 			SetShort(send_buff, data3, send_index);
 			SetShort(send_buff, data4, send_index);
 			SetShort(send_buff, data5, send_index);
-			_magicProcess.MagicPacket(send_buff, send_index);
+			_magicProcess.MagicPacket(send_buff);
 		}
 	}
 }
@@ -1022,7 +1019,7 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 	pNpc->m_sSize = sSize;
 	pNpc->m_iWeapon_1 = iWeapon_1;
 	pNpc->m_iWeapon_2 = iWeapon_2;
-	strcpy_s(pNpc->m_strName, npcName);
+	strcpy_safe(pNpc->m_strName, npcName);
 	pNpc->m_byGroup = byGroup;
 	pNpc->m_byLevel = byLevel;
 	pNpc->m_sCurZone = sZone;
@@ -1089,14 +1086,11 @@ void CAISocket::RecvNpcInfo(char* pBuf)
 
 void CAISocket::RecvUserHP(char* pBuf)
 {
-	int index = 0, send_index = 0;
-	int nid = 0;
-	int nHP = 0, nMaxHP = 0;
-	char send_buff[256] = {};
+	int index = 0;
 
-	nid = GetShort(pBuf, index);
-	nHP = GetDWORD(pBuf, index);
-	nMaxHP = GetDWORD(pBuf, index);
+	int nid = GetShort(pBuf, index);
+	int nHP = GetDWORD(pBuf, index);
+	int nMaxHP = GetDWORD(pBuf, index);
 
 	if (nid >= USER_BAND
 		&& nid < NPC_BAND)
@@ -1113,7 +1107,7 @@ void CAISocket::RecvUserHP(char* pBuf)
 		if (pNpc == nullptr)
 			return;
 
-		int nOldHP = pNpc->m_iHP;
+		// int nOldHP = pNpc->m_iHP;
 		pNpc->m_iHP = nHP;
 		pNpc->m_iMaxHP = nMaxHP;
 //		TRACE(_T("RecvNpcHP - (%d,%hs), %d->%d\n"), pNpc->m_sNid, pNpc->m_strName, nOldHP, pNpc->m_sHP);
@@ -1321,20 +1315,16 @@ void CAISocket::RecvUserFail(char* pBuf)
 void CAISocket::RecvCompressedData(char* pBuf)
 {
 	int index = 0;
-	int16_t sCompLen, sOrgLen, sCompCount;
 	std::vector<uint8_t> decompressedBuffer;
-	uint8_t* pCompressedBuffer = nullptr;
 
-	uint32_t dwCrcValue = 0, dwActualCrcValue = 0;
-
-	sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
-	sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
-	dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
-	sCompCount = GetShort(pBuf, index);	// 압축 데이타 수 얻기...
+	int16_t sCompLen = GetShort(pBuf, index);	// 압축된 데이타길이얻기...
+	int16_t sOrgLen = GetShort(pBuf, index);	// 원래데이타길이얻기...
+	uint32_t dwCrcValue = GetDWORD(pBuf, index);	// CRC값 얻기...
+	/*int16_t sCompCount =*/ GetShort(pBuf, index);	// 압축 데이타 수 얻기...
 
 	decompressedBuffer.resize(sOrgLen);
 
-	pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
+	uint8_t* pCompressedBuffer = reinterpret_cast<uint8_t*>(pBuf + index);
 	index += sCompLen;
 
 	uint32_t nDecompressedLength = lzf_decompress(
@@ -1345,11 +1335,10 @@ void CAISocket::RecvCompressedData(char* pBuf)
 
 	assert(nDecompressedLength == sOrgLen);
 
-	if (nDecompressedLength != sOrgLen)
+	if (nDecompressedLength != static_cast<uint32_t>(sOrgLen))
 		return;
 
-	dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
-
+	uint32_t dwActualCrcValue = crc32(&decompressedBuffer[0], sOrgLen);
 	assert(dwCrcValue == dwActualCrcValue);
 
 	if (dwCrcValue != dwActualCrcValue)
@@ -1391,7 +1380,7 @@ void CAISocket::InitEventMonster(int instanceId)
 	spdlog::debug("AISocket::InitEventMonster: TotalMonster = {}", _main->m_NpcMap.GetSize());
 }
 
-void CAISocket::RecvCheckAlive(char* pBuf)
+void CAISocket::RecvCheckAlive()
 {
 //	TRACE(_T("CAISocket-RecvCheckAlive : zone_num=%d\n"), m_iZoneNum);
 	_main->m_sErrorSocketCount = 0;
@@ -1404,15 +1393,13 @@ void CAISocket::RecvCheckAlive(char* pBuf)
 
 void CAISocket::RecvGateDestroy(char* pBuf)
 {
-	int index = 0, send_index = 0, cur_zone = 0, rx = 0, rz = 0;
-	int instanceId = 0, gateStatus = 0;
-	char send_buff[256] = {};
+	int index = 0;
 
-	instanceId = GetShort(pBuf, index);
-	gateStatus = GetByte(pBuf, index);
-	cur_zone = GetShort(pBuf, index);
-	rx = GetShort(pBuf, index);
-	rz = GetShort(pBuf, index);
+	int instanceId = GetShort(pBuf, index);
+	int gateStatus = GetByte(pBuf, index);
+	/*int cur_zone =*/ GetShort(pBuf, index);
+	/*int rx =*/ GetShort(pBuf, index);
+	/*int rz =*/ GetShort(pBuf, index);
 
 	if (instanceId >= NPC_BAND)
 	{
@@ -1427,6 +1414,8 @@ void CAISocket::RecvGateDestroy(char* pBuf)
 		spdlog::debug("AISocket::RecvGateDestroy: [serial={} npcId={} npcName={} gateOpen={}]",
 			pNpc->m_sNid, pNpc->m_sSid, pNpc->m_strName, pNpc->m_byGateOpen);
 /*
+		int send_index = 0;
+		char send_buff[256] = {};
 		SetByte( send_buff, WIZ_OBJECT_EVENT, send_index );
 		SetByte( send_buff, 1, send_index );					// type
 		SetByte( send_buff, 1, send_index );
@@ -1479,10 +1468,9 @@ void CAISocket::RecvNpcDead(char* pBuf)
 
 void CAISocket::RecvNpcInOut(char* pBuf)
 {
-	int index = 0, send_index = 0;
+	int index = 0;
 	int nid = 0, nType = 0;
 	float fx = 0.0f, fz = 0.0f, fy = 0.0f;
-	char send_buff[256] = {};
 
 	nType = GetByte(pBuf, index);
 	nid = GetShort(pBuf, index);
@@ -1612,7 +1600,7 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 			{
 				pKnights = _main->m_KnightsMap.GetData(pUser->m_pUserData->m_bKnights);
 				if (pKnights != nullptr)
-					strcpy_s(strKnightsName, pKnights->m_strName);
+					strcpy_safe(strKnightsName, pKnights->m_strName);
 			}
 
 			//TRACE(_T("--> RecvBattleEvent : 적국의 대장을 죽인 유저이름은? %hs, len=%d\n"), strMaxUserName, nResult);
@@ -1702,16 +1690,13 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 
 void CAISocket::RecvNpcEventItem(char* pBuf)
 {
-	int index = 0, send_index = 0, zoneindex = -1;
-	char send_buff[1024] = {};
-	int16_t sUid = 0, sNid = 0;
-	int nItemNumber = 0, nCount = 0;
+	int index = 0;
 	CUser* pUser = nullptr;
 
-	sUid = GetShort(pBuf, index);	// Item을 가져갈 사람의 아이디... (이것을 참조해서 작업하셈~)
-	sNid = GetShort(pBuf, index);
-	nItemNumber = GetDWORD(pBuf, index);
-	nCount = GetDWORD(pBuf, index);
+	int16_t sUid = GetShort(pBuf, index);	// Item을 가져갈 사람의 아이디... (이것을 참조해서 작업하셈~)
+	/*int16_t sNid =*/ GetShort(pBuf, index);
+	int nItemNumber = GetDWORD(pBuf, index);
+	int nCount = GetDWORD(pBuf, index);
 
 	pUser = _main->GetUserPtr(sUid);
 	if (pUser == nullptr)

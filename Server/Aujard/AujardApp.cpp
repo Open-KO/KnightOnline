@@ -2,12 +2,11 @@
 #include "AujardApp.h"
 #include "AujardReadQueueThread.h"
 
-#include <process.h>
-
 #include <db-library/ConnectionManager.h>
 #include <db-library/RecordSetLoader_STLMap.h>
 
 #include <shared/Ini.h>
+#include <shared/StringUtils.h>
 #include <shared/TimerThread.h>
 
 #include <spdlog/spdlog.h>
@@ -187,7 +186,7 @@ bool AujardApp::InitSharedMemory()
 	if (memory == nullptr)
 		return false;
 
-	spdlog::info("AujardApp:InitSharedMemory: shared memory loaded successfully");
+	spdlog::info("AujardApp::InitSharedMemory: shared memory loaded successfully");
 
 	_dbAgent.UserData.reserve(MAX_USER);
 
@@ -234,7 +233,7 @@ void AujardApp::SelectCharacter(const char* buffer)
 	init = GetByte(buffer, index);
 	packetIndex = GetDWORD(buffer, index);
 
-	spdlog::debug("AujardApp:SelectCharacter: acctId={}, charId={}, index={}",
+	spdlog::debug("AujardApp::SelectCharacter: acctId={}, charId={}, index={}",
 		accountId, charId, packetIndex);
 	
 	_recvPacketCount++;		// packet count
@@ -270,9 +269,9 @@ void AujardApp::SelectCharacter(const char* buffer)
 	if (user == nullptr)
 		goto fail_return;
 
-	if (strcpy_s(user->m_Accountid, accountId))
+	if (strcpy_safe(user->m_Accountid, accountId) != 0)
 	{
-		spdlog::error("AujardApp:SelectCharacter: failed to write accountId(len: {}, val: {}) to user->m_Accountid",
+		spdlog::error("AujardApp::SelectCharacter: accountId too long (len: {}, val: {})",
 			std::strlen(accountId), accountId);
 		// it didn't fail here before and we don't currently return anything upstream
 		// if this exposes any problems we'll have to decide how to handle it then
@@ -287,7 +286,7 @@ void AujardApp::SelectCharacter(const char* buffer)
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 	{
-		spdlog::error("AujardApp:SelectCharacter: Packet Drop: WIZ_SEL_CHAR");
+		spdlog::error("AujardApp::SelectCharacter: Packet Drop: WIZ_SEL_CHAR");
 		return;
 	}
 
@@ -333,7 +332,7 @@ void AujardApp::UserLogOut(const char* buffer)
 	SetShort(sendBuff, userId, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:UserLogOut: Packet Drop: WIZ_LOGOUT");
+		spdlog::error("AujardApp::UserLogOut: Packet Drop: WIZ_LOGOUT");
 }
 
 /// \brief handles user logout functions
@@ -349,7 +348,7 @@ bool AujardApp::HandleUserLogout(int userId, uint8_t saveType, bool forceLogout)
 	_USER_DATA* pUser = _dbAgent.UserData[userId];
 	if (pUser == nullptr || std::strlen(pUser->m_id) == 0)
 	{
-		spdlog::error("AujardApp:HandleUserLogout: Invalid logout: UserData[{}] is not in use", userId);
+		spdlog::error("AujardApp::HandleUserLogout: Invalid logout: UserData[{}] is not in use", userId);
 		return false;
 	}
 
@@ -366,12 +365,12 @@ bool AujardApp::HandleUserLogout(int userId, uint8_t saveType, bool forceLogout)
 	bool success = userdataSuccess && logoutResult;
 	if (!success)
 	{
-		spdlog::error("AujardApp:HandleUserLogout: Invalid Logout: {}, {} (UserData: {}, Logout: {})",
+		spdlog::error("AujardApp::HandleUserLogout: Invalid Logout: {}, {} (UserData: {}, Logout: {})",
 			pUser->m_Accountid, pUser->m_id, userdataSuccess, logoutResult);
 		return false;
 	}
 
-	spdlog::debug("AujardApp:HandleUserLogout: Logout: {}, {} (UserData: {}, Logout: {})",
+	spdlog::debug("AujardApp::HandleUserLogout: Logout: {}, {} (UserData: {}, Logout: {})",
 	pUser->m_Accountid, pUser->m_id, userdataSuccess, logoutResult);
 
 	// reset the object stored in UserData[userId] before returning
@@ -406,7 +405,7 @@ bool AujardApp::HandleUserUpdate(int userId, const _USER_DATA& user, uint8_t sav
 	{
 		if (retryCount >= maxRetry)
 		{
-			spdlog::error("AujardApp:HandleUserUpdate: UserData Save Error: [accountId={} charId={} (W:{},U:{})]",
+			spdlog::error("AujardApp::HandleUserUpdate: UserData Save Error: [accountId={} charId={} (W:{},U:{})]",
 				user.m_Accountid, user.m_id, updateWarehouseResult, updateUserResult);
 			break;
 		}
@@ -433,13 +432,13 @@ bool AujardApp::HandleUserUpdate(int userId, const _USER_DATA& user, uint8_t sav
 		{
 			if (!updateWarehouseResult)
 			{
-				spdlog::error("AujardApp:HandleUserUpdate: Warehouse Save Check Error [accountId={} charId={} (W:{})]",
+				spdlog::error("AujardApp::HandleUserUpdate: Warehouse Save Check Error [accountId={} charId={} (W:{})]",
 					user.m_Accountid, user.m_id, updateWarehouseResult);
 			}
 
 			if (!updateUserResult)
 			{
-				spdlog::error("AujardApp:HandleUserUpdate: UserData Save Check Error: [accountId={} charId={} (U:{})]",
+				spdlog::error("AujardApp::HandleUserUpdate: UserData Save Check Error: [accountId={} charId={} (U:{})]",
 					user.m_Accountid, user.m_id, updateUserResult);
 			}
 			break;
@@ -488,7 +487,7 @@ void AujardApp::AccountLogIn(const char* buffer)
 	SetByte(sendBuff, nation, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:AccountLogIn: Packet Drop: WIZ_LOGIN");
+		spdlog::error("AujardApp::AccountLogIn: Packet Drop: WIZ_LOGIN");
 }
 
 /// \brief handles a WIZ_SEL_NATION request to a selected game server
@@ -498,7 +497,6 @@ void AujardApp::SelectNation(const char* buffer)
 	int index = 0, userId = -1, accountIdLen = 0, sendIndex = 0;
 	int nation = -1;
 	char accountId[MAX_ID_SIZE + 1] = {},
-		password[MAX_PW_SIZE + 1] = {},
 		sendBuff[256] = {};
 
 	userId = GetShort(buffer, index);
@@ -517,7 +515,7 @@ void AujardApp::SelectNation(const char* buffer)
 		SetByte(sendBuff, 0x00, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:SelectNation: Packet Drop: WIZ_SEL_NATION");
+		spdlog::error("AujardApp::SelectNation: Packet Drop: WIZ_SEL_NATION");
 }
 
 /// \brief handles a WIZ_NEW_CHAR request
@@ -554,7 +552,7 @@ void AujardApp::CreateNewChar(const char* buffer)
 	SetByte(sendBuff, result, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:CreateNewChar: Packet Drop: WIZ_NEW_CHAR");
+		spdlog::error("AujardApp::CreateNewChar: Packet Drop: WIZ_NEW_CHAR");
 }
 
 /// \brief handles a WIZ_DEL_CHAR request
@@ -581,7 +579,7 @@ void AujardApp::DeleteChar(const char* buffer)
 	// Not implemented.  Allow result to default to 0.
 	//result = _dbAgent.DeleteChar(charindex, accountid, charid, socno);
 
-	spdlog::trace("AujardApp:DeleteChar: [charId={}, socNo={}]", charId, socNo);
+	spdlog::trace("AujardApp::DeleteChar: [charId={}, socNo={}]", charId, socNo);
 
 	SetByte(sendBuff, WIZ_DEL_CHAR, sendIndex);
 	SetShort(sendBuff, userId, sendIndex);
@@ -592,7 +590,7 @@ void AujardApp::DeleteChar(const char* buffer)
 		SetByte(sendBuff, 0xFF, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:DeleteChar: Packet Drop: WIZ_DEL_CHAR");
+		spdlog::error("AujardApp::DeleteChar: Packet Drop: WIZ_DEL_CHAR");
 }
 
 /// \brief handles a WIZ_ALLCHAR_INFO_REQ request
@@ -626,7 +624,7 @@ void AujardApp::AllCharInfoReq(const char* buffer)
 	SetString(sendBuff, charBuff, charBuffIndex, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:AllCharInfoReq: Packet Drop: WIZ_ALLCHAR_INFO_REQ");
+		spdlog::error("AujardApp::AllCharInfoReq: Packet Drop: WIZ_ALLCHAR_INFO_REQ");
 }
 
 /// \brief handling for when CheckHeartbeat detects no heatbeat from Ebenezer for a time
@@ -639,14 +637,14 @@ void AujardApp::AllSaveRoutine()
 	bool allUsersSaved = true;
 
 	// log the disconnect
-	spdlog::error("AujardApp:AllSaveRoutine: Ebenezer disconnected. Saving users...");
+	spdlog::error("AujardApp::AllSaveRoutine: Ebenezer disconnected. Saving users...");
 	
 	for (int userId = 0; userId < static_cast<int>(_dbAgent.UserData.size()); userId++)
 	{
 		_USER_DATA* pUser = _dbAgent.UserData[userId];
 		if (pUser == nullptr)
 		{
-			spdlog::debug("AujardApp:AllSaveRoutine: userId skipped for invalid data: {}", userId);
+			spdlog::debug("AujardApp::AllSaveRoutine: userId skipped for invalid data: {}", userId);
 			continue;
 		}
 
@@ -655,21 +653,21 @@ void AujardApp::AllSaveRoutine()
 
 		if (HandleUserLogout(userId, UPDATE_ALL_SAVE, true))
 		{
-			spdlog::debug("AujardApp:AllSaveRoutine: Character saved: {}", pUser->m_id);
+			spdlog::debug("AujardApp::AllSaveRoutine: Character saved: {}", pUser->m_id);
 		}
 		else
 		{
 			allUsersSaved = false;
-			spdlog::error("AujardApp:AllSaveRoutine: failed to save character: {}", pUser->m_id);
+			spdlog::error("AujardApp::AllSaveRoutine: failed to save character: {}", pUser->m_id);
 		}
 
 		std::this_thread::sleep_for(sleepTime);
 	}
 
 	if (allUsersSaved)
-		spdlog::info("AujardApp:AllSaveRoutine: Ebenezer disconnect: all users saved successfully");
+		spdlog::info("AujardApp::AllSaveRoutine: Ebenezer disconnect: all users saved successfully");
 	else
-		spdlog::error("AujardApp:AllSaveRoutine: Ebenezer disconnect: not all users saved");
+		spdlog::error("AujardApp::AllSaveRoutine: Ebenezer disconnect: not all users saved");
 }
 
 /// \brief Called every 5min by _concurrentCheckThread
@@ -690,7 +688,7 @@ void AujardApp::ConCurrentUserCount()
 		usercount++;
 	}
 
-	spdlog::trace("AujardApp:ConCurrentUserCount: [serverId={} zoneId={} userCount={}]",
+	spdlog::trace("AujardApp::ConCurrentUserCount: [serverId={} zoneId={} userCount={}]",
 		_serverId, _zoneId, usercount);
 
 	_dbAgent.UpdateConCurrentUserCount(_serverId, _zoneId, usercount);
@@ -724,7 +722,7 @@ void AujardApp::UserDataSave(const char* buffer)
 	bool userdataSuccess = HandleUserUpdate(userId, *pUser, UPDATE_PACKET_SAVE);
 	if (!userdataSuccess)
 	{
-		spdlog::error("AujardApp:UserDataSave: failed for UserData[{}] [accountId={} charId={}]",
+		spdlog::error("AujardApp::UserDataSave: failed for UserData[{}] [accountId={} charId={}]",
 			userId, accountId, charId);
 	}
 }
@@ -741,7 +739,7 @@ _USER_DATA* AujardApp::GetUserPtr(const char* charId, int& userId)
 		if (!pUser)
 			continue;
 
-		if (_strnicmp(charId, pUser->m_id, MAX_ID_SIZE) == 0)
+		if (strnicmp(charId, pUser->m_id, MAX_ID_SIZE) == 0)
 		{
 			userId = i;
 			return pUser;
@@ -804,7 +802,7 @@ void AujardApp::KnightsPacket(const char* buffer)
 			break;
 
 		default:
-			spdlog::error("AujardApp:KnightsPacket: Invalid WIZ_KNIGHTS_PROCESS command code received: {:X}",
+			spdlog::error("AujardApp::KnightsPacket: Invalid WIZ_KNIGHTS_PROCESS command code received: {:X}",
 				command);
 	}
 }
@@ -834,7 +832,7 @@ void AujardApp::CreateKnights(const char* buffer)
 
 	result = _dbAgent.CreateKnights(knightsId, nation, knightsName, chiefName, community);
 
-	spdlog::trace("AujardApp:CreateKnights: userId={}, knightsId={}, result={}",
+	spdlog::trace("AujardApp::CreateKnights: userId={}, knightsId={}, result={}",
 		userId, knightsId, result);
 
 	SetByte(sendBuff, KNIGHTS_CREATE, sendIndex);
@@ -849,7 +847,7 @@ void AujardApp::CreateKnights(const char* buffer)
 	SetString(sendBuff, chiefName, chiefNameLen, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:CreateKnights: Packet Drop: KNIGHTS_CREATE");
+		spdlog::error("AujardApp::CreateKnights: Packet Drop: KNIGHTS_CREATE");
 }
 
 /// \brief attempts to add a character to a knights clan
@@ -873,7 +871,7 @@ void AujardApp::JoinKnights(const char* buffer)
 
 	result = _dbAgent.UpdateKnights(KNIGHTS_JOIN, pUser->m_id, knightsId, 0);
 
-	spdlog::trace("AujardApp:JoinKnights: userId={}, charId={}, knightsId={}, result={}",
+	spdlog::trace("AujardApp::JoinKnights: userId={}, charId={}, knightsId={}, result={}",
 		userId, pUser->m_id, knightsId, result);
 
 	SetByte(sendBuff, KNIGHTS_JOIN, sendIndex);
@@ -882,7 +880,7 @@ void AujardApp::JoinKnights(const char* buffer)
 	SetShort(sendBuff, knightsId, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:JoinKnights: Packet Drop: KNIGHTS_JOIN");
+		spdlog::error("AujardApp::JoinKnights: Packet Drop: KNIGHTS_JOIN");
 }
 
 /// \brief attempt to remove a character from a knights clan
@@ -905,7 +903,7 @@ void AujardApp::WithdrawKnights(const char* buffer)
 		return;
 
 	result = _dbAgent.UpdateKnights(KNIGHTS_WITHDRAW, pUser->m_id, knightsId, 0);
-	spdlog::trace("AujardApp:WithdrawKnights: userId={}, knightsId={}, result={}",
+	spdlog::trace("AujardApp::WithdrawKnights: userId={}, knightsId={}, result={}",
 		userId, knightsId, result);
 
 	SetByte(sendBuff, KNIGHTS_WITHDRAW, sendIndex);
@@ -914,7 +912,7 @@ void AujardApp::WithdrawKnights(const char* buffer)
 	SetShort(sendBuff, knightsId, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:WithdrawKnights: Packet Drop: KNIGHTS_WITHDRAW");
+		spdlog::error("AujardApp::WithdrawKnights: Packet Drop: KNIGHTS_WITHDRAW");
 }
 
 /// \brief attempts to modify a knights character
@@ -945,7 +943,7 @@ void AujardApp::ModifyKnightsMember(const char* buffer, uint8_t command)
 	}	*/
 
 	result = _dbAgent.UpdateKnights(command, charId, knightsId, removeFlag);
-	spdlog::trace("AujardApp:ModifyKnights: command={}, userId={}, knightsId={}, result={}",
+	spdlog::trace("AujardApp::ModifyKnights: command={}, userId={}, knightsId={}, result={}",
 		command, userId, knightsId, result);
 
 	//SetByte(sendBuff, WIZ_KNIGHTS_PROCESS, sendBuff);
@@ -987,7 +985,7 @@ void AujardApp::ModifyKnightsMember(const char* buffer, uint8_t command)
 			cmdStr = "ModifyKnightsMember";
 		}
 
-		spdlog::error("AujardApp:ModifyKnightsMember: Packet Drop: {}", cmdStr);
+		spdlog::error("AujardApp::ModifyKnightsMember: Packet Drop: {}", cmdStr);
 	}
 }
 
@@ -1006,7 +1004,7 @@ void AujardApp::DestroyKnights(const char* buffer)
 		return;
 
 	result = _dbAgent.DeleteKnights(knightsId);
-	spdlog::trace("AujardApp:DestroyKnights: userId={}, knightsId={}, result={}",
+	spdlog::trace("AujardApp::DestroyKnights: userId={}, knightsId={}, result={}",
 	userId, knightsId, result);
 
 	SetByte(sendBuff, KNIGHTS_DESTROY, sendIndex);
@@ -1015,7 +1013,7 @@ void AujardApp::DestroyKnights(const char* buffer)
 	SetShort(sendBuff, knightsId, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:DestroyKnights: Packet Drop: KNIGHTS_DESTROY");
+		spdlog::error("AujardApp::DestroyKnights: Packet Drop: KNIGHTS_DESTROY");
 }
 
 /// \brief attempts to return a list of all knights members
@@ -1024,7 +1022,6 @@ void AujardApp::AllKnightsMember(const char* buffer)
 {
 	int index = 0, sendIndex = 0, knightsId = 0, userId = -1,
 		dbIndex = 0, count = 0;
-	uint8_t result = 0;
 	char sendBuff[2048] = {},
 		dbBuff[2048] = {};
 
@@ -1050,7 +1047,7 @@ void AujardApp::AllKnightsMember(const char* buffer)
 	SetString(sendBuff, dbBuff, dbIndex, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:AllKnightsMember: Packet Drop: KNIGHTS_MEMBER_REQ");
+		spdlog::error("AujardApp::AllKnightsMember: Packet Drop: KNIGHTS_MEMBER_REQ");
 }
 
 /// \brief attempts to retrieve metadata for a knights clan
@@ -1076,7 +1073,7 @@ void AujardApp::KnightsList(const char* buffer)
 	SetString(sendBuff, dbBuff, dbIndex, sendIndex);
 
 	if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-		spdlog::error("AujardApp:KnightsList: Packet Drop: KNIGHTS_LIST_REQ");
+		spdlog::error("AujardApp::KnightsList: Packet Drop: KNIGHTS_LIST_REQ");
 }
 
 /// \brief handles WIZ_LOGIN_INFO requests, updating CURRENTUSER for a user
@@ -1113,7 +1110,7 @@ void AujardApp::SetLogInInfo(const char* buffer)
 
 		if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
 		{
-			spdlog::error("AujardApp:SetLoginInfo: Packet Drop: WIZ_LOGIN_INFO [accountId={}, charId={}, init={}]",
+			spdlog::error("AujardApp::SetLoginInfo: Packet Drop: WIZ_LOGIN_INFO [accountId={}, charId={}, init={}]",
 				accountId, charId, init);
 		}
 	}
@@ -1135,7 +1132,7 @@ void AujardApp::UserKickOut(const char* buffer)
 /// \brief writes a packet summary line to the log file
 void AujardApp::WritePacketLog()
 {
-	spdlog::info("AujardApp:WritePacketLog: Packet Count: recv={}, send={}, realsend={}",
+	spdlog::info("AujardApp::WritePacketLog: Packet Count: recv={}, send={}, realsend={}",
 		_recvPacketCount, _packetCount, _sendPacketCount);
 }
 
@@ -1154,7 +1151,7 @@ void AujardApp::BattleEventResult(const char* data)
 		&& charIdLen < MAX_ID_SIZE + 1)
 	{
 		GetString(charId, data, charIdLen, index);
-		spdlog::info("AujardApp:BattleEventResult : The user who killed the enemy commander is {}, _type={}, nation={}",
+		spdlog::info("AujardApp::BattleEventResult : The user who killed the enemy commander is {}, _type={}, nation={}",
 			charId, _type, result);
 		_dbAgent.UpdateBattleEvent(charId, result);
 	}
@@ -1165,24 +1162,24 @@ void AujardApp::BattleEventResult(const char* data)
 /// \see DB_COUPON_EVENT
 void AujardApp::CouponEvent(const char* data)
 {
-	int nSid = 0, nEventNum = 0, nLen = 0, nCharLen = 0, nCouponLen = 0, index = 0, nType = 0, nResult = 0, sendIndex = 0;
-	int nItemID = 0, nItemCount = 0, nMessageNum = 0;
+	int index = 0, sendIndex = 0;
 	char strAccountName[MAX_ID_SIZE + 1] = {},
 		strCharName[MAX_ID_SIZE + 1] = {},
 		strCouponID[MAX_ID_SIZE + 1] = {},
 		sendBuff[256] = {};
 
-	nType = GetByte(data, index);
+	int nType = GetByte(data, index);
 	if (nType == CHECK_COUPON_EVENT)
 	{
-		nSid = GetShort(data, index);
-		nLen = GetShort(data, index);
+		int nSid = GetShort(data, index);
+		int nLen = GetShort(data, index);
 		GetString(strAccountName, data, nLen, index);
-		nEventNum = GetDWORD(data, index);
+		int nEventNum = GetDWORD(data, index);
 		// 비러머글 대사문 >.<
-		nMessageNum = GetDWORD(data, index);
+		int nMessageNum = GetDWORD(data, index);
 		// TODO: Not implemented. Allow nResult to default to 0
-		// nResult = _dbAgent.CheckCouponEvent(strAccountName);
+		// int nResult = _dbAgent.CheckCouponEvent(strAccountName);
+		int nResult = 0;
 
 		SetByte(sendBuff, DB_COUPON_EVENT, sendIndex);
 		SetShort(sendBuff, nSid, sendIndex);
@@ -1193,22 +1190,22 @@ void AujardApp::CouponEvent(const char* data)
 		//
 
 		if (LoggerSendQueue.PutData(sendBuff, sendIndex) != SMQ_OK)
-			spdlog::error("AujardApp:CouponEvent: Packet Drop: DB_COUPON_EVENT");
+			spdlog::error("AujardApp::CouponEvent: Packet Drop: DB_COUPON_EVENT");
 	}
 	else if (nType == UPDATE_COUPON_EVENT)
 	{
-		nSid = GetShort(data, index);
-		nLen = GetShort(data, index);
+		/*int nSid =*/ GetShort(data, index);
+		int nLen = GetShort(data, index);
 		GetString(strAccountName, data, nLen, index);
-		nCharLen = GetShort(data, index);
+		int nCharLen = GetShort(data, index);
 		GetString(strCharName, data, nCharLen, index);
-		nCouponLen = GetShort(data, index);
+		int nCouponLen = GetShort(data, index);
 		GetString(strCouponID, data, nCouponLen, index);
-		nItemID = GetDWORD(data, index);
-		nItemCount = GetDWORD(data, index);
+		/*int nItemID =*/ GetDWORD(data, index);
+		/*int nItemCount =*/ GetDWORD(data, index);
 
 		// TODO: not implemented.  Allow nResult to default to 0
-		// nResult = _dbAgent.UpdateCouponEvent(strAccountName, strCharName, strCouponID, nItemID, nItemCount);
+		// int nResult = _dbAgent.UpdateCouponEvent(strAccountName, strCharName, strCouponID, nItemID, nItemCount);
 	}
 }
 

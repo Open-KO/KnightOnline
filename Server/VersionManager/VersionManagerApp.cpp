@@ -11,8 +11,6 @@
 
 #include <VersionManager/binder/VersionManagerBinder.h>
 
-constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
-
 using namespace std::chrono_literals;
 
 VersionManagerApp::VersionManagerApp(logger::Logger& logger)
@@ -107,8 +105,8 @@ std::filesystem::path VersionManagerApp::ConfigPath() const
 bool VersionManagerApp::LoadConfig(CIni& iniFile)
 {
 	// ftp config
-	iniFile.GetString(ini::DOWNLOAD, ini::URL, "127.0.0.1", _ftpUrl, _countof(_ftpUrl));
-	iniFile.GetString(ini::DOWNLOAD, ini::PATH, "/", _ftpPath, _countof(_ftpPath));
+	iniFile.GetString(ini::DOWNLOAD, ini::URL, "127.0.0.1", _ftpUrl, sizeof(_ftpUrl));
+	iniFile.GetString(ini::DOWNLOAD, ini::PATH, "/", _ftpPath, sizeof(_ftpPath));
 	
 	// TODO: KN_online should be Knight_Account
 	std::string datasourceName = iniFile.GetString(ini::ODBC, ini::DSN, "KN_online");
@@ -161,10 +159,10 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 		_SERVER_INFO* pInfo = new _SERVER_INFO;
 
 		snprintf(key, sizeof(key), "SERVER_%02d", i);
-		iniFile.GetString(ini::SERVER_LIST, key, "127.0.0.1", pInfo->strServerIP, _countof(pInfo->strServerIP));
+		iniFile.GetString(ini::SERVER_LIST, key, "127.0.0.1", pInfo->strServerIP, sizeof(pInfo->strServerIP));
 
 		snprintf(key, sizeof(key), "NAME_%02d", i);
-		iniFile.GetString(ini::SERVER_LIST, key, "TEST|Server 1", pInfo->strServerName, _countof(pInfo->strServerName));
+		iniFile.GetString(ini::SERVER_LIST, key, "TEST|Server 1", pInfo->strServerName, sizeof(pInfo->strServerName));
 
 		snprintf(key, sizeof(key), "ID_%02d", i);
 		pInfo->sServerID = static_cast<int16_t>(iniFile.GetInt(ini::SERVER_LIST, key, 1));

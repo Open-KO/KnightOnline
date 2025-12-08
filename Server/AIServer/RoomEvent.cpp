@@ -1,17 +1,10 @@
-﻿// RoomEvent.cpp: implementation of the CRoomEvent class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "RoomEvent.h"
 #include "AIServerApp.h"
 #include "Define.h"
 
 #include <spdlog/spdlog.h>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 extern std::mutex g_region_mutex;
 
 CRoomEvent::CRoomEvent()
@@ -62,7 +55,7 @@ void CRoomEvent::MainRoom(double currentTime)
 {
 	// 조건 검색먼저 해야 겠지..
 	bool bCheck = false, bRunCheck = false;
-	char notify[50] = {};
+	// char notify[50] = {};
 
 	int event_num = m_Logic[m_byLogicNumber - 1].sNumber;
 
@@ -164,10 +157,9 @@ bool CRoomEvent::CheckEvent(int event_num, double currentTime)
 
 bool CRoomEvent::RunEvent(int event_num)
 {
-	char notify[50] = {};
+	// char notify[50] = {};
 	CNpc* pNpc = nullptr;
 	int nOption_1 = 0, nOption_2 = 0;
-	bool bRetValue = false;
 	switch (event_num)
 	{
 		// 다른 몬스터의 출현
@@ -223,7 +215,7 @@ bool CRoomEvent::RunEvent(int event_num)
 		case 4:
 			nOption_1 = m_Exec[m_byLogicNumber - 1].sOption_1;
 			nOption_2 = m_Exec[m_byLogicNumber - 1].sOption_2;
-			bRetValue = CheckMonsterCount(nOption_1, nOption_2, 2);
+			/*bRetValue =*/ CheckMonsterCount(nOption_1, nOption_2, 2);
 
 			//wsprintf(notify, "** 알림 : [%d, %d] 몬스터 출현 **", nOption_1, nOption_2);
 			//m_pMain->SendSystemMsg( notify, m_iZoneNumber, PUBLIC_CHAT, SEND_ALL);

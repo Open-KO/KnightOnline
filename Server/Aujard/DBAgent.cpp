@@ -196,9 +196,7 @@ bool CDBAgent::LoadUserData(const char* accountId, const char* charId, int userI
 	rtrim(newCharId);
 #endif
 
-	// data successfully loaded from the database, copy to UserData record
-	if (newCharId.length() > MAX_ID_SIZE
-		|| strcpy_s(user->m_id, newCharId.c_str()))
+	if (strcpy_safe(user->m_id, newCharId) != 0)
 	{
 		spdlog::error("DBAgent::LoadUserData(): failed to write newCharId(len: {}, val: {}) to user->m_id",
 			newCharId.length(), newCharId);
@@ -402,7 +400,7 @@ bool CDBAgent::UpdateUser(const char* charId, int userId, int updateType)
 	if (user == nullptr)
 		return false;
 
-	if (_strnicmp(user->m_id, charId, MAX_ID_SIZE) != 0)
+	if (strnicmp(user->m_id, charId, MAX_ID_SIZE) != 0)
 		return false;
 
 	if (updateType == UPDATE_PACKET_SAVE)
@@ -652,7 +650,7 @@ bool CDBAgent::LoadCharInfo(char* charId_, char* buff, int& buffIndex)
 	{
 		int32_t itemId = items.read<int32_t>();
 		int16_t duration = items.read<int16_t>();
-		int16_t count = items.read<int16_t>();
+		/*int16_t count =*/ items.read<int16_t>();
 
 		if (i == HEAD
 			|| i == BREAST
@@ -718,24 +716,21 @@ bool CDBAgent::GetAllCharID(const char* accountId, char* charId1_, char* charId2
 	rtrim(charId3);
 #endif
 
-	if (charId1.length() > MAX_ID_SIZE
-		|| strcpy_s(charId1_, MAX_ID_SIZE + 1, charId1.c_str()))
+	if (strcpy_safe(charId1_, charId1, MAX_ID_SIZE) != 0)
 	{
 		spdlog::error("DBAgent::GetAllCharID: failed to write charId1(len: {}, val: {}) to charId1_",
 			charId1.length(), charId1);
 		return false;
 	}
 
-	if (charId2.length() > MAX_ID_SIZE
-		|| strcpy_s(charId2_, MAX_ID_SIZE + 1, charId2.c_str()))
+	if (strcpy_safe(charId2_, charId2, MAX_ID_SIZE) != 0)
 	{
 		spdlog::error("DBAgent::GetAllCharID: failed to write charId2(len: {}, val: {}) to charId2_",
 			charId2.length(), charId2);
 		return false;
 	}
 
-	if (charId3.length() > MAX_ID_SIZE
-		|| strcpy_s(charId3_, MAX_ID_SIZE + 1, charId3.c_str()))
+	if (strcpy_safe(charId3_, charId3, MAX_ID_SIZE) != 0)
 	{
 		spdlog::error("DBAgent::GetAllCharID: failed to write charId3(len: {}, val: {}) to charId3_",
 			charId3.length(), charId3);
@@ -1026,7 +1021,7 @@ bool CDBAgent::UpdateWarehouseData(const char* accountId, int userId, int update
 		return false;
 	}
 
-	if (_strnicmp(pUser->m_Accountid, accountId, MAX_ID_SIZE) != 0)
+	if (strnicmp(pUser->m_Accountid, accountId, MAX_ID_SIZE) != 0)
 	{
 		spdlog::error("DBAgent::UpdateWarehouseData: accountId mismatch user.accountId={} accountId={}",
 					pUser->m_Accountid, accountId);
@@ -1291,8 +1286,8 @@ bool CDBAgent::CheckUserData(const char* accountId, const char* charId, int chec
 		return false;
 	}
 
-	if (dbTime != userUpdateTime
-		|| dbData != compareData)
+	if (static_cast<int>(dbTime) != userUpdateTime
+		|| static_cast<int>(dbData) != compareData)
 	{
 		spdlog::error("DBAgent::CheckUserData: data mismatch dbTime(expected: {}, actual: {}) dbData(expected: {}, actual: {})",
 			userUpdateTime, dbTime,

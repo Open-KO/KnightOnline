@@ -70,9 +70,6 @@ public:
 	}
 
 	// 가장 가까운 높이을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.
-	float		GetHeightNearstPos(const __Vector3& vPos, float fDist, __Vector3* pvNormal = nullptr);
-
-	// 가장 가까운 높이을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.
 	float		GetHeightNearstPos(const __Vector3& vPos, __Vector3* pvNormal = nullptr);
 
 	// 현재 지점에서 제일 높은 값을 돌려준다. 없으면 -FLT_MAX 을 돌려준다.

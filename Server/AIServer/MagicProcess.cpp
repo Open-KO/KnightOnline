@@ -1,8 +1,4 @@
-﻿// MagicProcess.cpp: implementation of the CMagicProcess class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "MagicProcess.h"
 #include "Npc.h"
 #include "NpcThread.h"
@@ -13,10 +9,6 @@
 #include <spdlog/spdlog.h>
 
 extern std::mutex g_region_mutex;
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CMagicProcess::CMagicProcess()
 {
@@ -31,9 +23,8 @@ CMagicProcess::~CMagicProcess()
 
 void CMagicProcess::MagicPacket(char* pBuf)
 {
-	int index = 0, send_index = 0, magicid = 0, sid = -1, tid = -1, TotalDex = 0, righthand_damage = 0;
+	int index = 0, magicid = 0, sid = -1, tid = -1, TotalDex = 0, righthand_damage = 0;
 	int data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0, result = 1;
-	char send_buff[128] = {};
 	model::Magic* pTable = nullptr;
 
 	sid = m_pSrcUser->m_iUserId;
@@ -151,13 +142,10 @@ void CMagicProcess::MagicPacket(char* pBuf)
 	}
 }
 
-model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, uint8_t type)
+model::Magic* CMagicProcess::IsAvailable(int magicid, int /*tid*/, uint8_t /*type*/)
 {
 	model::Magic* pTable = nullptr;
 
-	int modulator = 0, Class = 0, send_index = 0, moral = 0;
-
-	char send_buff[128] = {};
 	if (m_pSrcUser == nullptr)
 		return nullptr;
 
@@ -168,8 +156,6 @@ model::Magic* CMagicProcess::IsAvailable(int magicid, int tid, uint8_t type)
 	return pTable;      // Magic was successful! 
 
 fail_return:    // In case the magic failed. 
-	memset(send_buff, 0, sizeof(send_buff));
-	send_index = 0;
 	//SetByte( send_buff, WIZ_MAGIC_PROCESS, send_index );
 	//SetByte( send_buff, MAGIC_FAIL, send_index );
 	//SetShort( send_buff, m_pSrcUser->GetSocketID(), send_index );
@@ -180,7 +166,7 @@ fail_return:    // In case the magic failed.
 }
 
 // Applied to an attack skill using a weapon.
-uint8_t CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int data2, int data3, uint8_t sequence)
+uint8_t CMagicProcess::ExecuteType1(int magicid, int tid, int data1, int /*data2*/, int data3, uint8_t /*sequence*/)
 {
 	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
@@ -247,7 +233,7 @@ packet_send:
 	return result;
 }
 
-uint8_t CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int data2, int data3)
+uint8_t CMagicProcess::ExecuteType2(int magicid, int tid, int data1, int /*data2*/, int data3)
 {
 	int damage = 0, send_index = 0, result = 1; // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {}; // For the packet. 
@@ -482,7 +468,7 @@ packet_send:
 
 void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int data2, int data3, int moral)
 {
-	int damage = 0, send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
+	int send_index = 0, result = 1;     // Variable initialization. result == 1 : success, 0 : fail
 	char send_buff[128] = {};
 
 	model::MagicType4* pType = nullptr;
@@ -586,11 +572,11 @@ fail_return:
 	m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
 }
 
-void CMagicProcess::ExecuteType5(int magicid)
+void CMagicProcess::ExecuteType5(int /*magicid*/)
 {
 }
 
-void CMagicProcess::ExecuteType6(int magicid)
+void CMagicProcess::ExecuteType6(int /*magicid*/)
 {
 }
 
@@ -664,21 +650,21 @@ packet_send:
 		m_pMain->Send(send_buff, send_index, m_pSrcUser->m_curZone);
 }
 
-void CMagicProcess::ExecuteType8(int magicid)
+void CMagicProcess::ExecuteType8(int /*magicid*/)
 {
 }
 
-void CMagicProcess::ExecuteType9(int magicid)
+void CMagicProcess::ExecuteType9(int /*magicid*/)
 {
 }
 
-void CMagicProcess::ExecuteType10(int magicid)
+void CMagicProcess::ExecuteType10(int /*magicid*/)
 {
 }
 
 int16_t CMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, int dexpoint, int righthand_damage)
 {
-	int16_t damage = 0, temp_hit = 0;
+	int16_t damage = 0;
 	int random = 0, total_r = 0;
 	uint8_t result;
 	bool bSign = true;			// false이면 -, true이면 +
@@ -864,7 +850,7 @@ int16_t CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int dat
 	return 1;
 }
 
-void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid, int moral, int data1, int data2, int data3, int dexpoint, int righthand_damage)
+void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid, int moral, int data1, int /*data2*/, int data3, int dexpoint, int righthand_damage)
 {
 	MAP* pMap = m_pMain->GetMapByIndex(m_pSrcUser->m_sZoneIndex);
 	if (pMap == nullptr)
@@ -890,7 +876,7 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 	model::MagicType7* pType7 = nullptr;
 	model::Magic* pMagic = nullptr;
 
-	int damage = 0, tid = 0, target_damage = 0, attribute = 0;
+	int damage = 0, target_damage = 0, attribute = 0;
 	float fRadius = 0;
 
 	pMagic = m_pMain->_magicTableMap.GetData(magicid);

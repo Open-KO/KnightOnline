@@ -345,7 +345,7 @@ void SocketManager::OnPostReceive(const asio::error_code& ec, size_t bytesTransf
 	tcpSocket->AsyncReceive();
 }
 
-void SocketManager::OnPostSend(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket)
+void SocketManager::OnPostSend(const asio::error_code& ec, size_t /*bytesTransferred*/, TcpSocket* tcpSocket)
 {
 	if (ec)
 	{

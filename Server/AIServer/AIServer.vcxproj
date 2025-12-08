@@ -139,14 +139,13 @@
     <ClCompile Include="AISocketManager.cpp" />
     <ClCompile Include="GameSocket.cpp" />
     <ClCompile Include="MagicProcess.cpp" />
-    <ClCompile Include="MAP.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Npc.cpp" />
     <ClCompile Include="NpcItem.cpp" />
     <ClCompile Include="NpcMagicProcess.cpp" />
     <ClCompile Include="NpcThread.cpp" />
     <ClCompile Include="Party.cpp" />
     <ClCompile Include="PathFind.cpp" />
-    <ClCompile Include="Region.cpp" />
     <ClCompile Include="RoomEvent.cpp" />
     <ClCompile Include="SendThreadMain.cpp" />
     <ClCompile Include="AIServer.cpp" />
@@ -164,7 +163,7 @@
     <ClInclude Include="Extern.h" />
     <ClInclude Include="GameSocket.h" />
     <ClInclude Include="MagicProcess.h" />
-    <ClInclude Include="MAP.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Npc.h" />
     <ClInclude Include="NpcItem.h" />
     <ClInclude Include="NpcMagicProcess.h" />

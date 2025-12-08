@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "MAP.h"
+#include "Map.h"
 #include "Npc.h"
 #include "NpcThread.h"
 #include "Region.h"
@@ -11,6 +11,7 @@
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
+#include <float.h>
 #include <fstream>
 
 //////////////////////////////////////////////////////////////////////
@@ -321,8 +322,7 @@ void MAP::RegionNpcAdd(int rx, int rz, int nid)
 		spdlog::error("Map::RegionNpcAdd: RegionNpcArray put failed [x={} z={} npcId={}]", rx, rz, nid);
 	}
 
-	int nSize = m_ppRegion[rx][rz].m_RegionNpcArray.GetSize();
-	//TRACE(_T("+++ Map - RegionNpcAdd : x=%d,z=%d, nid=%d, total=%d \n"), rx,rz,nid, nSize);
+	//TRACE(_T("+++ Map - RegionNpcAdd : x=%d,z=%d, nid=%d, total=%d \n"), rx,rz,nid, region->m_RegionNpcArray.GetSize());
 }
 
 void MAP::RegionNpcRemove(int rx, int rz, int nid)
@@ -346,8 +346,6 @@ void MAP::LoadMapTile(std::istream& fs)
 	//	1이면 그냥 가는 곳...
 	//	그외는 이벤트 ID.
 	//
-	int x1 = m_sizeMap.cx;
-	int z1 = m_sizeMap.cy;
 	int16_t** pEvent = new int16_t* [m_sizeMap.cx];
 
 	// 잠시 막아놓고..
@@ -439,7 +437,7 @@ int  MAP::GetRegionNpcSize(int rx, int rz)
 
 void MAP::LoadObjectEvent(std::istream& fs)
 {
-	int iEventObjectCount = 0, zonenum = 0;
+	int iEventObjectCount = 0;
 	__Vector3 vPos(0, 0, 0);
 	_OBJECT_EVENT* pEvent = nullptr;
 
@@ -693,7 +691,7 @@ int MAP::IsRoomCheck(float fx, float fz)
 	// 현재의 존이 던젼인지를 판단, 아니면 리턴처리
 
 	CRoomEvent* pRoom = nullptr;
-	char notify[100] = {};
+	// char notify[100] = {};
 
 	int nSize = m_arRoomEventArray.GetSize();
 	int nX = (int) fx;

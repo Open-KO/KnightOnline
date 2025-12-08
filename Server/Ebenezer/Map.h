@@ -36,7 +36,7 @@ public:
 
 	void LoadWarpList(std::istream& fs);
 	void LoadRegeneEvent(std::istream& fs);
-	bool IsValidPosition(float x, float z, float y) const;
+	bool IsValidPosition(float x, float z) const;
 
 	_OBJECT_EVENT* GetObjectEvent(int objectindex)
 	{

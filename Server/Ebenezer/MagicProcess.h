@@ -35,7 +35,7 @@ public:
 	uint8_t ExecuteType1(int magicid, int sid, int tid, int data1, int data2, int data3);
 
 	model::Magic* IsAvailable(int magicid, int tid, int sid, uint8_t type, int data1, int data2, int data3);
-	void MagicPacket(char* pBuf, int len);
+	void MagicPacket(char* pBuf);
 
 	CMagicProcess();
 	virtual ~CMagicProcess();
