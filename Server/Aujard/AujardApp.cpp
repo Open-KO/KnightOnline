@@ -20,8 +20,8 @@ static constexpr auto SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE = 30s;
 
 constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
-import AujardBinder;
-import AujardModel;
+#include <Aujard/binder/AujardBinder.h>
+#include <Aujard/model/AujardModel.h>
 namespace model = aujard_model;
 
 AujardApp::AujardApp(logger::Logger& logger)

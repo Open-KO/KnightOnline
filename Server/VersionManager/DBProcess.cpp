@@ -16,8 +16,8 @@
 #include <nanodbc/nanodbc.h>
 #include <spdlog/spdlog.h>
 
-import VersionManagerBinder;
-import StoredProc;
+#include <VersionManager/binder/VersionManagerBinder.h>
+#include <StoredProc/StoredProc.h>
 
 CDBProcess::CDBProcess()
 {

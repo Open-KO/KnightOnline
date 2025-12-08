@@ -9,7 +9,7 @@
 
 #include <spdlog/spdlog.h>
 
-import VersionManagerBinder;
+#include <VersionManager/binder/VersionManagerBinder.h>
 
 constexpr int WM_PROCESS_LISTBOX_QUEUE = WM_APP + 1;
 

@@ -6,7 +6,7 @@
   </ImportGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalBMIDirectories>$(BaseIntDir)db-modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <AdditionalIncludeDirectories>$(DependencyDir)db-modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>db-modules.lib;%(AdditionalDependencies)</AdditionalDependencies>

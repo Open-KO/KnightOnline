@@ -15,20 +15,21 @@
 #include <spdlog/spdlog.h>
 
 #include <db-library/ConnectionManager.h>
+#include <db-library/RecordSetLoader_STLMap.h>
+#include <db-library/RecordsetLoader_Vector.h>
+
+#include <AIServer/binder/AIServerBinder.h>
+
+#include <shared/TimerThread.h>
 
 #include <math.h>
 #include <fstream>
-#include <db-library/RecordSetLoader_STLMap.h>
-#include <db-library/RecordsetLoader_Vector.h>
-#include <shared/TimerThread.h>
 
 using namespace std::chrono_literals;
 using namespace db;
 
 std::mutex g_user_mutex;
 std::mutex g_region_mutex;
-
-import AIServerBinder;
 
 AIServerApp::AIServerApp(AIServerLogger& logger)
 	: AppThread(logger)

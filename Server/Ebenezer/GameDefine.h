@@ -266,7 +266,7 @@ enum e_AbnormalStatusType
 #define ATTRIBUTE_ICE				2
 #define ATTRIBUTE_LIGHTNING			3
 
-import EbenezerModel;
+#include <Ebenezer/model/EbenezerModel.h>
 namespace model = ebenezer_model;
 
 // Bundle unit

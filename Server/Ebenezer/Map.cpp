@@ -9,7 +9,7 @@
 
 #include <istream>
 
-import EbenezerBinder;
+#include <Ebenezer/binder/EbenezerBinder.h>
 
 using namespace db;
 

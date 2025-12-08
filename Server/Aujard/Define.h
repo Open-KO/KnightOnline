@@ -112,7 +112,7 @@ constexpr long DB_PROCESS_TIMEOUT = 10;
 // Structure Define
 /////////////////////////////////////////////////////////////////////////////////
 
-import AujardModel;
+#include <Aujard/model/AujardModel.h>
 namespace model = aujard_model;
 
 namespace ini

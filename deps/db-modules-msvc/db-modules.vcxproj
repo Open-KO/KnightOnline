@@ -49,11 +49,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <Import Project="$(PropsDir)nanodbc.props" />
-  <Import Project="$(PropsDir)cpp_modules.props" />
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DependencyDir)\db-modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -103,49 +103,37 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <Target Name="RebuildProject" BeforeTargets="PrepareForBuild">
-    <Exec Command="RebuildProject.bat" />
-  </Target>
   <ItemGroup>
-    <ClCompile Include="..\db-modules\AIServer\binder\AIServerBinder.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\AIServer\model\AIServerModel.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\Aujard\binder\AujardBinder.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\Aujard\model\AujardModel.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\BinderUtil\BinderUtil.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\Ebenezer\binder\EbenezerBinder.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\Ebenezer\model\EbenezerModel.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\Full\binder\FullBinder.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\Full\model\FullModel.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\ModelUtil\ModelUtil.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\StoredProc\StoredProc.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\VersionManager\binder\VersionManagerBinder.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
-    <ClCompile Include="..\db-modules\VersionManager\model\VersionManagerModel.ixx">
-        <CompileAsCppModule>true</CompileAsCppModule>
-    </ClCompile>
+    <ClCompile Include="..\db-modules\AIServer\binder\AIServerBinder.cpp" />
+    <ClCompile Include="..\db-modules\AIServer\model\AIServerModel.cpp" />
+    <ClCompile Include="..\db-modules\Aujard\binder\AujardBinder.cpp" />
+    <ClCompile Include="..\db-modules\Aujard\model\AujardModel.cpp" />
+    <ClCompile Include="..\db-modules\BinderUtil\BinderUtil.cpp" />
+    <ClCompile Include="..\db-modules\Ebenezer\binder\EbenezerBinder.cpp" />
+    <ClCompile Include="..\db-modules\Ebenezer\model\EbenezerModel.cpp" />
+    <ClCompile Include="..\db-modules\Full\binder\FullBinder.cpp" />
+    <ClCompile Include="..\db-modules\Full\model\FullModel.cpp" />
+    <ClCompile Include="..\db-modules\ModelUtil\ModelUtil.cpp" />
+    <ClCompile Include="..\db-modules\StoredProc\StoredProc.cpp" />
+    <ClCompile Include="..\db-modules\StoredProc\detail\StoredProcedure.cpp" />
+    <ClCompile Include="..\db-modules\VersionManager\binder\VersionManagerBinder.cpp" />
+    <ClCompile Include="..\db-modules\VersionManager\model\VersionManagerModel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\db-modules\AIServer\binder\AIServerBinder.h" />
+    <ClInclude Include="..\db-modules\AIServer\model\AIServerModel.h" />
+    <ClInclude Include="..\db-modules\Aujard\binder\AujardBinder.h" />
+    <ClInclude Include="..\db-modules\Aujard\model\AujardModel.h" />
+    <ClInclude Include="..\db-modules\BinderUtil\BinderUtil.h" />
+    <ClInclude Include="..\db-modules\Ebenezer\binder\EbenezerBinder.h" />
+    <ClInclude Include="..\db-modules\Ebenezer\model\EbenezerModel.h" />
+    <ClInclude Include="..\db-modules\Full\binder\FullBinder.h" />
+    <ClInclude Include="..\db-modules\Full\model\FullModel.h" />
+    <ClInclude Include="..\db-modules\ModelUtil\ModelUtil.h" />
+    <ClInclude Include="..\db-modules\StoredProc\StoredProc.h" />
+    <ClInclude Include="..\db-modules\StoredProc\detail\StoredProcedure.h" />
+    <ClInclude Include="..\db-modules\VersionManager\binder\VersionManagerBinder.h" />
+    <ClInclude Include="..\db-modules\VersionManager\model\VersionManagerModel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,8 +16,8 @@
 #include <nanodbc/nanodbc.h>
 #include <spdlog/spdlog.h>
 
-import AujardBinder;
-import StoredProc;
+#include <Aujard/binder/AujardBinder.h>
+#include <StoredProc/StoredProc.h>
 
 CDBAgent::CDBAgent()
 {

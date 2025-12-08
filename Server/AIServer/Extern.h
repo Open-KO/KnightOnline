@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-import AIServerModel;
+#include <AIServer/model/AIServerModel.h>
 namespace model = aiserver_model;
 
 struct _PARTY_GROUP

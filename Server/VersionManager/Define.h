@@ -36,7 +36,7 @@ typedef union
 	uint8_t		b[2];
 } MYSHORT;
 
-import VersionManagerModel;
+#include <VersionManager/model/VersionManagerModel.h>
 namespace model = versionmanager_model; 
 
 struct _NEWS
