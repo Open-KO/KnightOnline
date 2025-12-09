@@ -1,8 +1,27 @@
-set(ASIO_DIR "${OPENKO_DEPS_DIR}/asio/asio")
+fetchcontent_declare(
+  asio
+  GIT_REPOSITORY        https://github.com/chriskohlhoff/asio.git
+  GIT_TAG               asio-1-36-0
+  GIT_PROGRESS          ON
+  GIT_SHALLOW           ON
+  OVERRIDE_FIND_PACKAGE TRUE
+  EXCLUDE_FROM_ALL
+)
+
+message(STATUS "OpenKO: [asio] Checking and fetching...")
+
+fetchcontent_makeavailable(asio)
+
+message(STATUS "OpenKO: [asio] Up-to-date!")
 
 add_library(asio STATIC
-  ${ASIO_DIR}/src/asio.cpp
-  ${ASIO_DIR}/include/asio.hpp
+  ${asio_SOURCE_DIR}/asio/src/asio.cpp
+  ${asio_SOURCE_DIR}/asio/include/asio.hpp
+)
+
+target_include_directories(asio
+  PUBLIC ${asio_SOURCE_DIR}/asio/include
+  PRIVATE ${asio_SOURCE_DIR}
 )
 
 # Use C++23
@@ -11,8 +30,3 @@ target_compile_features(asio PUBLIC cxx_std_23)
 # Build as standalone
 target_compile_definitions(asio PUBLIC ASIO_STANDALONE)
 target_compile_definitions(asio PRIVATE ASIO_SEPARATE_COMPILATION)
-
-target_include_directories(asio
-  PUBLIC ${ASIO_DIR}/include
-  PRIVATE ${OPENKO_DEPS_DIR}/asio
-)

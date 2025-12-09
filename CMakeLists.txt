@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.28.3)
-include(FetchContent)
 
 project(OpenKO
   VERSION 0.0.1
 )
+
+find_package(Git REQUIRED)
+include(FetchContent)
 
 # Config
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
@@ -18,11 +20,13 @@ if(WIN32)
   add_definitions(-D_WIN32_WINNT=${_WIN32_WINNT})
 endif()
 
-set(SPDLOG_ENABLE_PCH ON CACHE BOOL "Enable PCH in spdlog")
-set(NANODBC_FORCE_LIBCXX OFF CACHE BOOL "Force the use of libc++ (default off)")
-set(NANODBC_DISABLE_MSSQL_TVP ON CACHE BOOL "Disable MSSQL Table-valued parameters in nanodbc")
-set(NANODBC_DISABLE_NULL_ACCESS_ERROR ON CACHE BOOL "Disable null_access_error() exceptions in nanodbc")
-set(NANODBC_USE_UINT8_FOR_TINYINT ON CACHE BOOL "Enable use of uint8 to represent TINYINT fields instead of int16 in nanodbc")
+message(STATUS "OpenKO feature: OPENKO_BUILD_SERVERS - ${OPENKO_BUILD_SERVERS}")
+message(STATUS "OpenKO feature: OPENKO_COMPILE_WARNINGS_AS_ERROR - ${OPENKO_COMPILE_WARNINGS_AS_ERROR}")
+message(STATUS "OpenKO feature: OPENKO_BIN_DIR - ${OPENKO_BIN_DIR}")
+
+if(WIN32)
+  message(STATUS "OpenKO feature: _WIN32_WINNT - ${_WIN32_WINNT}")
+endif()
 
 # Setup output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
@@ -37,9 +41,6 @@ foreach(CONFIG_TYPE Debug Release RelWithDebInfo MinSizeRel)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE} "${OPENKO_BIN_DIR}")
 endforeach()
 
-# Setup dependency dir
-set(OPENKO_DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
-
 # Set the default solution folder
 set(OPENKO_DEFAULT_SOLUTION_FOLDER "_deps")
 
@@ -47,7 +48,7 @@ set(OPENKO_DEFAULT_SOLUTION_FOLDER "_deps")
 set(CMAKE_FOLDER "${OPENKO_DEFAULT_SOLUTION_FOLDER}")
 
 add_subdirectory(deps/asio-cmake)
-add_subdirectory(deps/spdlog)
+add_subdirectory(deps/spdlog-cmake)
 
 add_subdirectory(shared)
 set_target_properties(shared PROPERTIES FOLDER "")
@@ -58,48 +59,24 @@ include_directories(
 )
 
 if(OPENKO_BUILD_SERVERS)
+
+  message(STATUS "OpenKO: Preparing to build servers...")
+
   ###############
   # Dependencies
   ###############
-  set(BOOST_ENABLE_CMAKE ON)
-  set(BOOST_SUBMODULES # This isn't exactly ideal, but since we only use a tiny subset of Boost it's probably manageable
-      "tools/cmake;"
-      "libs/assert;libs/config;libs/container;libs/interprocess;"
-      "libs/intrusive;libs/move;libs/predef;libs/type_traits;"
-      "libs/winapi"
-  )
-
   set(CMAKE_FOLDER "Server/_deps/boost")
-  fetchcontent_declare(
-      Boost
-      GIT_REPOSITORY "https://github.com/boostorg/boost.git"
-      GIT_TAG "boost-1.89.0"
-      GIT_SUBMODULES ${BOOST_SUBMODULES}
-      GIT_PROGRESS ON
-      GIT_SHALLOW ON
-      OVERRIDE_FIND_PACKAGE TRUE
-      EXCLUDE_FROM_ALL
-  )
-
-  fetchcontent_makeavailable(Boost)
-  find_package(Boost 1.89.0 EXACT REQUIRED COMPONENTS interprocess)
+  add_subdirectory(deps/boost-cmake EXCLUDE_FROM_ALL)
 
   set(CMAKE_FOLDER "Server/_deps/ftxui")
-  add_subdirectory(deps/FTXUI EXCLUDE_FROM_ALL)
+  add_subdirectory(deps/FTXUI-cmake EXCLUDE_FROM_ALL)
 
   set(CMAKE_FOLDER "Server/_deps")
-  add_subdirectory(deps/nanodbc EXCLUDE_FROM_ALL)
-  target_compile_features(nanodbc PUBLIC cxx_std_20)
-
-  # codecvt conversions are being deprecated.
-  # For now we'll just ignore the warning and hope they fix it before it's removed.
-  target_compile_options(nanodbc
-    PRIVATE
-      $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-declarations>
-  )
+  add_subdirectory(deps/nanodbc-cmake EXCLUDE_FROM_ALL)
 
   add_subdirectory(deps/db-models-cmake EXCLUDE_FROM_ALL)
   add_subdirectory(deps/db-library-cmake EXCLUDE_FROM_ALL)
+  add_subdirectory(deps/djb2-cmake EXCLUDE_FROM_ALL)
   add_subdirectory(Server/shared-server)
 
   add_custom_target(copy-server-assets ALL

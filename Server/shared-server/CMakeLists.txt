@@ -64,6 +64,7 @@ target_link_libraries(shared-server
     ftxui::component
     ftxui::dom
     ftxui::screen
+    djb2
   PRIVATE
     Boost::interprocess
 )
