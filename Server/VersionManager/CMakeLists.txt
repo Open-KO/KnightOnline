@@ -39,3 +39,14 @@ target_compile_options(VersionManager PRIVATE
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
+
+if(MSVC)
+  # Override default working directory for ease-of-use
+  set_property(TARGET VersionManager PROPERTY
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:VersionManager>"
+  )
+endif()
+
+add_custom_command(TARGET VersionManager POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:VersionManager> has been built"
+)

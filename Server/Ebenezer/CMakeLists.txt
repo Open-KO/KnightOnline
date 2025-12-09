@@ -52,8 +52,11 @@ add_executable(Ebenezer
   User.h
 )
 
+# Ensure we require the server assets to be copied
+add_dependencies(AIServer copy-server-assets)
+
 if(WIN32)
-    target_sources(Ebenezer PRIVATE Ebenezer.rc)
+  target_sources(Ebenezer PRIVATE Ebenezer.rc)
 endif()
 
 # Use C++23
@@ -79,4 +82,15 @@ target_compile_options(Ebenezer PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+)
+
+if(MSVC)
+  # Override default working directory for ease-of-use
+  set_property(TARGET Ebenezer PROPERTY
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Ebenezer>"
+  )
+endif()
+
+add_custom_command(TARGET Ebenezer POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:Ebenezer> has been built"
 )

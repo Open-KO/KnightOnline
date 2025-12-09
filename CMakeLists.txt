@@ -9,6 +9,9 @@ project(OpenKO
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
 option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
 
+# Define the bin directory; defaults to repo/bin
+set(OPENKO_BIN_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Directory for final binaries")
+
 if(WIN32)
   # Set the minimum Windows version
   set(_WIN32_WINNT "0x0A00" CACHE STRING "Minimum Windows version (default 0x0A00 - Windows 10)")
@@ -17,9 +20,22 @@ endif()
 
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "Enable PCH in spdlog")
 set(NANODBC_FORCE_LIBCXX OFF CACHE BOOL "Force the use of libc++ (default off)")
-set(NANODBC_DISABLE_MSSQL_TVP ON "Disable MSSQL Table-valued parameters in nanodbc")
-set(NANODBC_DISABLE_NULL_ACCESS_ERROR ON "Disable null_access_error() exceptions in nanodbc")
-set(NANODBC_USE_UINT8_FOR_TINYINT ON "Enable use of uint8 to represent TINYINT fields instead of int16 in nanodbc")
+set(NANODBC_DISABLE_MSSQL_TVP ON CACHE BOOL "Disable MSSQL Table-valued parameters in nanodbc")
+set(NANODBC_DISABLE_NULL_ACCESS_ERROR ON CACHE BOOL "Disable null_access_error() exceptions in nanodbc")
+set(NANODBC_USE_UINT8_FOR_TINYINT ON CACHE BOOL "Enable use of uint8 to represent TINYINT fields instead of int16 in nanodbc")
+
+# Setup output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
+
+set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/MAP")
+set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
+set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/QUESTS")
+set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
+
+# Multi-config generators
+foreach(CONFIG_TYPE Debug Release RelWithDebInfo MinSizeRel)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE} "${OPENKO_BIN_DIR}")
+endforeach()
 
 # Setup dependency dir
 set(OPENKO_DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
@@ -60,9 +76,9 @@ if(OPENKO_BUILD_SERVERS)
   fetchcontent_makeavailable(Boost)
   find_package(Boost 1.89.0 EXACT REQUIRED COMPONENTS interprocess)
 
-  add_subdirectory(deps/FTXUI)
+  add_subdirectory(deps/FTXUI EXCLUDE_FROM_ALL)
 
-  add_subdirectory(deps/nanodbc)
+  add_subdirectory(deps/nanodbc EXCLUDE_FROM_ALL)
   target_compile_features(nanodbc PUBLIC cxx_std_20)
 
   # codecvt conversions are being deprecated.
@@ -72,11 +88,20 @@ if(OPENKO_BUILD_SERVERS)
       $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-declarations>
   )
 
-  add_subdirectory(deps/db-models-cmake)
-  add_subdirectory(deps/db-library-cmake)
+  add_subdirectory(deps/db-models-cmake EXCLUDE_FROM_ALL)
+  add_subdirectory(deps/db-library-cmake EXCLUDE_FROM_ALL)
 
   add_subdirectory(Server/shared-server)
-  
+
+  add_custom_target(copy-server-assets ALL
+    COMMENT "Copying server assets"
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying server MAP dir to ${OPENKO_SERVER_MAP_DST_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${OPENKO_SERVER_MAP_SRC_DIR}" "${OPENKO_SERVER_MAP_DST_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying server QUESTS dir to ${OPENKO_SERVER_QUESTS_DST_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${OPENKO_SERVER_QUESTS_SRC_DIR}" "${OPENKO_SERVER_QUESTS_DST_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Server assets copied."
+  )
+
   ###############
   # Servers
   ###############

@@ -2936,7 +2936,7 @@ bool CNpc::StepNoPathMove(int /*nStep*/)
 //	NPC와 Target 과의 거리가 지정 범위보다 작은지 판단
 int CNpc::IsCloseTarget(int nRange, int Flag)
 {
-	__Vector3 vUser, vWillUser, vNpc, vDistance;
+	__Vector3 vUser = {}, vWillUser = {}, vNpc = {}, vDistance = {};
 	CUser* pUser = nullptr;
 	CNpc* pNpc = nullptr;
 	float fDis = 0.0f, fWillDis = 0.0f, fX = 0.0f, fZ = 0.0f;
@@ -3101,7 +3101,7 @@ int CNpc::GetTargetPath(int option)
 	CUser* targetUser = nullptr;
 	CNpc* npcTarget = nullptr;
 	float chaseRange = 0.0f;
-	__Vector3 vUser, vNpc, vDistance, vEnd22;
+	__Vector3 vUser = {}, vNpc = {}, vDistance = {}, vEnd22 = {};
 	float fDis = 0.0f;
 	float fDegree = 0.0f, fTargetDistance = 0.0f;
 	float fSurX = 0.0f, fSurZ = 0.0f;
@@ -3888,10 +3888,7 @@ void CNpc::MoveAttack()
 {
 	char pBuf[1024] = {};
 	int index = 0;
-	__Vector3 vUser;
-	__Vector3 vNpc;
-	__Vector3 vDistance;
-	__Vector3 vEnd22;
+	__Vector3 vUser = {}, vNpc = {}, vDistance = {}, vEnd22 = {};
 	CUser* pUser = nullptr;
 	CNpc* pNpc = nullptr;
 	float fDis = 0.0f;
@@ -4173,7 +4170,7 @@ bool CNpc::GetTargetPos(float& x, float& z)
 //	Target 과 NPC 간에 길찾기를 다시한다.
 bool CNpc::ResetPath()
 {
-	float cur_x, cur_z;
+	float cur_x = 0.0f, cur_z = 0.0f;
 	GetTargetPos(cur_x, cur_z);
 
 //	TRACE(_T("ResetPath : user pos ,, x=%.2f, z=%.2f\n"), cur_x, cur_z);

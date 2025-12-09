@@ -40,8 +40,11 @@ add_executable(AIServer
   ZoneEventThread.h
 )
 
+# Ensure we require the server assets to be copied
+add_dependencies(AIServer copy-server-assets)
+
 if(WIN32)
-    target_sources(AIServer PRIVATE AIServer.rc)
+  target_sources(AIServer PRIVATE AIServer.rc)
 endif()
 
 # Use C++23
@@ -67,4 +70,14 @@ target_compile_options(AIServer PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+)
+
+if(MSVC)
+  set_property(TARGET AIServer PROPERTY
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:AIServer>"
+  )
+endif()
+
+add_custom_command(TARGET AIServer POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:AIServer> has been built"
 )

@@ -38,3 +38,14 @@ target_compile_options(ItemManager PRIVATE
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
+
+if(MSVC)
+  # Override default working directory for ease-of-use
+  set_property(TARGET ItemManager PROPERTY
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:ItemManager>"
+  )
+endif()
+
+add_custom_command(TARGET ItemManager POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:ItemManager> has been built"
+)
