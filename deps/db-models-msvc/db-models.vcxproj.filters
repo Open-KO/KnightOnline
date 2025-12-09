@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\db-models\AIServer\binder\AIServerBinder.cpp" />
+    <ClCompile Include="..\db-models\AIServer\model\AIServerModel.cpp" />
+    <ClCompile Include="..\db-models\Aujard\binder\AujardBinder.cpp" />
+    <ClCompile Include="..\db-models\Aujard\model\AujardModel.cpp" />
+    <ClCompile Include="..\db-models\BinderUtil\BinderUtil.cpp" />
+    <ClCompile Include="..\db-models\Ebenezer\binder\EbenezerBinder.cpp" />
+    <ClCompile Include="..\db-models\Ebenezer\model\EbenezerModel.cpp" />
+    <ClCompile Include="..\db-models\Full\binder\FullBinder.cpp" />
+    <ClCompile Include="..\db-models\Full\model\FullModel.cpp" />
+    <ClCompile Include="..\db-models\ModelUtil\ModelUtil.cpp" />
+    <ClCompile Include="..\db-models\StoredProc\StoredProc.cpp" />
+    <ClCompile Include="..\db-models\StoredProc\detail\StoredProcedure.cpp" />
+    <ClCompile Include="..\db-models\VersionManager\binder\VersionManagerBinder.cpp" />
+    <ClCompile Include="..\db-models\VersionManager\model\VersionManagerModel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\db-models\AIServer\binder\AIServerBinder.h" />
+    <ClInclude Include="..\db-models\AIServer\model\AIServerModel.h" />
+    <ClInclude Include="..\db-models\Aujard\binder\AujardBinder.h" />
+    <ClInclude Include="..\db-models\Aujard\model\AujardModel.h" />
+    <ClInclude Include="..\db-models\BinderUtil\BinderUtil.h" />
+    <ClInclude Include="..\db-models\Ebenezer\binder\EbenezerBinder.h" />
+    <ClInclude Include="..\db-models\Ebenezer\model\EbenezerModel.h" />
+    <ClInclude Include="..\db-models\Full\binder\FullBinder.h" />
+    <ClInclude Include="..\db-models\Full\model\FullModel.h" />
+    <ClInclude Include="..\db-models\ModelUtil\ModelUtil.h" />
+    <ClInclude Include="..\db-models\StoredProc\StoredProc.h" />
+    <ClInclude Include="..\db-models\StoredProc\detail\StoredProcedure.h" />
+    <ClInclude Include="..\db-models\VersionManager\binder\VersionManagerBinder.h" />
+    <ClInclude Include="..\db-models\VersionManager\model\VersionManagerModel.h" />
+  </ItemGroup>
+</Project>

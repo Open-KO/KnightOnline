@@ -50,14 +50,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fetch wrappers", "fetch wra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-dx9sdk", "deps\fetch-and-build-wrappers\fetch-dx9sdk.vcxproj", "{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-db-modules", "deps\fetch-and-build-wrappers\fetch-db-modules.vcxproj", "{057C1ABC-6137-37A9-9935-8CF811D7CEDA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-db-models", "deps\fetch-and-build-wrappers\fetch-db-models.vcxproj", "{057C1ABC-6137-37A9-9935-8CF811D7CEDA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC} = {3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-nanodbc", "deps\fetch-and-build-wrappers\fetch-nanodbc.vcxproj", "{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "db-modules", "deps\db-modules-msvc\db-modules.vcxproj", "{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "db-models", "deps\db-models-msvc\db-models.vcxproj", "{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{057C1ABC-6137-37A9-9935-8CF811D7CEDA} = {057C1ABC-6137-37A9-9935-8CF811D7CEDA}
 		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC} = {3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}

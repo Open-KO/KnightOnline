@@ -31,7 +31,7 @@ target_precompile_headers(db-library PRIVATE ${DB_LIBRARY_DIR}/pch.h)
 # Setup dependencies
 target_link_libraries(db-library
   PUBLIC
-    db-modules
+    db-models
     spdlog
 )
 

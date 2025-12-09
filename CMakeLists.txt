@@ -72,7 +72,7 @@ if(OPENKO_BUILD_SERVERS)
       $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-declarations>
   )
 
-  add_subdirectory(deps/db-modules-cmake)
+  add_subdirectory(deps/db-models-cmake)
   add_subdirectory(deps/db-library-cmake)
 
   add_subdirectory(Server/shared-server)

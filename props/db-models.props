@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets">
-    <Import Project="cpp_modules.props" />
     <Import Project="nanodbc.props" />
   </ImportGroup>
   <ItemDefinitionGroup>
@@ -9,7 +8,7 @@
       <AdditionalIncludeDirectories>$(DependencyDir)db-modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>db-modules.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>db-models.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 </Project>

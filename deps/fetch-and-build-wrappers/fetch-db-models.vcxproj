@@ -6,9 +6,9 @@
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="UserMacros">
-    <DependencyName>db-modules</DependencyName>
-    <LocalDependencyDir>deps\db-modules</LocalDependencyDir>
-    <RealProjectPath>$(RootDir)deps\db-modules-msvc\db-modules.vcxproj</RealProjectPath>
+    <DependencyName>db-models</DependencyName>
+    <LocalDependencyDir>deps\db-models</LocalDependencyDir>
+    <RealProjectPath>$(RootDir)deps\db-models-msvc\db-models.vcxproj</RealProjectPath>
   </PropertyGroup>
   <Import Project="$(PropsDir)fetch_wrapper.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
