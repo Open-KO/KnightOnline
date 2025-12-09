@@ -27,7 +27,7 @@
 	branch = main
 [submodule "deps/spdlog"]
 	path = deps/spdlog
-	url = https://github.com/gabime/spdlog.git
+	url = https://github.com/Open-KO/spdlog.git
 	branch = v1.x
 [submodule "deps/mpg123"]
 	path = deps/mpg123
