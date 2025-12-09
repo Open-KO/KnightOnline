@@ -151,7 +151,7 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 		return false;
 	}
 
-	char key[20] = {};
+	char key[32] = {};
 	ServerList.reserve(serverCount);
 
 	for (int i = 0; i < serverCount; i++)

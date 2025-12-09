@@ -486,16 +486,16 @@ bool AIServerApp::GetNpcItemTable()
 		ModelType* row = rows[i];
 
 		_npcItem.m_ppItem[i][0] = row->MonsterId;
-		_npcItem.m_ppItem[i][1] = row->ItemId1;
-		_npcItem.m_ppItem[i][2] = row->DropChance1;
-		_npcItem.m_ppItem[i][3] = row->ItemId2;
-		_npcItem.m_ppItem[i][4] = row->DropChance2;
-		_npcItem.m_ppItem[i][5] = row->ItemId3;
-		_npcItem.m_ppItem[i][6] = row->DropChance3;
-		_npcItem.m_ppItem[i][7] = row->ItemId4;
-		_npcItem.m_ppItem[i][8] = row->DropChance4;
-		_npcItem.m_ppItem[i][9] = row->ItemId5;
-		_npcItem.m_ppItem[i][10] = row->DropChance5;
+		_npcItem.m_ppItem[i][1] = row->ItemId[0];
+		_npcItem.m_ppItem[i][2] = row->DropChance[0];
+		_npcItem.m_ppItem[i][3] = row->ItemId[1];
+		_npcItem.m_ppItem[i][4] = row->DropChance[1];
+		_npcItem.m_ppItem[i][5] = row->ItemId[2];
+		_npcItem.m_ppItem[i][6] = row->DropChance[2];
+		_npcItem.m_ppItem[i][7] = row->ItemId[3];
+		_npcItem.m_ppItem[i][8] = row->DropChance[3];
+		_npcItem.m_ppItem[i][9] = row->ItemId[4];
+		_npcItem.m_ppItem[i][10] = row->DropChance[4];
 
 		delete row;
 	}

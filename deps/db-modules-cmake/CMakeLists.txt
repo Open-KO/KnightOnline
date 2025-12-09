@@ -11,6 +11,8 @@ add_library(db-modules STATIC
   ${DB_MODULES_DIR}/Aujard/model/AujardModel.h
   ${DB_MODULES_DIR}/BinderUtil/BinderUtil.cpp
   ${DB_MODULES_DIR}/BinderUtil/BinderUtil.h
+  ${DB_MODULES_DIR}/detail/StoredProc/StoredProcedure.cpp
+  ${DB_MODULES_DIR}/detail/StoredProc/StoredProcedure.h
   ${DB_MODULES_DIR}/Ebenezer/binder/EbenezerBinder.cpp
   ${DB_MODULES_DIR}/Ebenezer/binder/EbenezerBinder.h
   ${DB_MODULES_DIR}/Ebenezer/model/EbenezerModel.cpp
@@ -23,8 +25,6 @@ add_library(db-modules STATIC
   ${DB_MODULES_DIR}/ModelUtil/ModelUtil.h
   ${DB_MODULES_DIR}/StoredProc/StoredProc.cpp
   ${DB_MODULES_DIR}/StoredProc/StoredProc.h
-  ${DB_MODULES_DIR}/StoredProc/detail/StoredProcedure.cpp
-  ${DB_MODULES_DIR}/StoredProc/detail/StoredProcedure.h
   ${DB_MODULES_DIR}/VersionManager/binder/VersionManagerBinder.cpp
   ${DB_MODULES_DIR}/VersionManager/binder/VersionManagerBinder.h
   ${DB_MODULES_DIR}/VersionManager/model/VersionManagerModel.cpp

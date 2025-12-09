@@ -107,13 +107,13 @@
     <ClCompile Include="..\db-modules\Aujard\binder\AujardBinder.cpp" />
     <ClCompile Include="..\db-modules\Aujard\model\AujardModel.cpp" />
     <ClCompile Include="..\db-modules\BinderUtil\BinderUtil.cpp" />
+    <ClCompile Include="..\db-modules\detail\StoredProc\StoredProcedure.cpp" />
     <ClCompile Include="..\db-modules\Ebenezer\binder\EbenezerBinder.cpp" />
     <ClCompile Include="..\db-modules\Ebenezer\model\EbenezerModel.cpp" />
     <ClCompile Include="..\db-modules\Full\binder\FullBinder.cpp" />
     <ClCompile Include="..\db-modules\Full\model\FullModel.cpp" />
     <ClCompile Include="..\db-modules\ModelUtil\ModelUtil.cpp" />
     <ClCompile Include="..\db-modules\StoredProc\StoredProc.cpp" />
-    <ClCompile Include="..\db-modules\StoredProc\detail\StoredProcedure.cpp" />
     <ClCompile Include="..\db-modules\VersionManager\binder\VersionManagerBinder.cpp" />
     <ClCompile Include="..\db-modules\VersionManager\model\VersionManagerModel.cpp" />
   </ItemGroup>
@@ -123,13 +123,13 @@
     <ClInclude Include="..\db-modules\Aujard\binder\AujardBinder.h" />
     <ClInclude Include="..\db-modules\Aujard\model\AujardModel.h" />
     <ClInclude Include="..\db-modules\BinderUtil\BinderUtil.h" />
+    <ClInclude Include="..\db-modules\detail\StoredProc\StoredProcedure.h" />
     <ClInclude Include="..\db-modules\Ebenezer\binder\EbenezerBinder.h" />
     <ClInclude Include="..\db-modules\Ebenezer\model\EbenezerModel.h" />
     <ClInclude Include="..\db-modules\Full\binder\FullBinder.h" />
     <ClInclude Include="..\db-modules\Full\model\FullModel.h" />
     <ClInclude Include="..\db-modules\ModelUtil\ModelUtil.h" />
     <ClInclude Include="..\db-modules\StoredProc\StoredProc.h" />
-    <ClInclude Include="..\db-modules\StoredProc\detail\StoredProcedure.h" />
     <ClInclude Include="..\db-modules\VersionManager\binder\VersionManagerBinder.h" />
     <ClInclude Include="..\db-modules\VersionManager\model\VersionManagerModel.h" />
   </ItemGroup>

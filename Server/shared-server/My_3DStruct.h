@@ -364,7 +364,7 @@ inline __Matrix44::__Matrix44()
 
 inline __Matrix44::__Matrix44(const __Matrix44& mtx)
 {
-	memcpy(this, &mtx, sizeof(__Matrix44));
+	memcpy(&m, &mtx.m, sizeof(__Matrix44));
 }
 
 inline __Matrix44::__Matrix44(const __Quaternion& qt)
@@ -384,7 +384,7 @@ inline __Matrix44::__Matrix44(const __Quaternion& qt)
 
 inline void __Matrix44::Zero() 
 {
-	memset(this, 0, sizeof(__Matrix44)); 
+	memset(&m, 0, sizeof(__Matrix44));
 }
 
 inline void __Matrix44::Identity()
@@ -544,7 +544,7 @@ inline void __Matrix44::operator *= (const __Matrix44& mtx)
 {
 	__Matrix44 mtxTmp;
 
-	memcpy(&mtxTmp, this, sizeof(__Matrix44));
+	memcpy(&mtxTmp.m, &m, sizeof(__Matrix44));
 
 	_11 = mtxTmp._11 * mtx._11 + mtxTmp._12 * mtx._21 + mtxTmp._13 * mtx._31 + mtxTmp._14 * mtx._41;
 	_12 = mtxTmp._11 * mtx._12 + mtxTmp._12 * mtx._22 + mtxTmp._13 * mtx._32 + mtxTmp._14 * mtx._42;
