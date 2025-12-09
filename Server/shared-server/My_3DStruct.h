@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include <string>
-#include <stdint.h>
 #include <inttypes.h>
+#include <stdint.h>
+#include <string>
+#include <math.h>
 
 constexpr float __PI = 3.141592654f;
 constexpr float __PI2 = 6.283185308f;

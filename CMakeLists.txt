@@ -16,9 +16,10 @@ if(WIN32)
 endif()
 
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "Enable PCH in spdlog")
+set(NANODBC_FORCE_LIBCXX OFF CACHE BOOL "Force the use of libc++ (default off)")
 set(NANODBC_DISABLE_MSSQL_TVP ON "Disable MSSQL Table-valued parameters in nanodbc")
-set(NANODBC_DISABLE_NULL_ACCESS_ERROR ON "Disable null_access_error() exceptions in nanodbc" ON)
-set(NANODBC_USE_UINT8_FOR_TINYINT ON "Enable use of uint8 to represent TINYINT fields instead of int16 in nanodbc" ON)
+set(NANODBC_DISABLE_NULL_ACCESS_ERROR ON "Disable null_access_error() exceptions in nanodbc")
+set(NANODBC_USE_UINT8_FOR_TINYINT ON "Enable use of uint8 to represent TINYINT fields instead of int16 in nanodbc")
 
 # Setup dependency dir
 set(OPENKO_DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
