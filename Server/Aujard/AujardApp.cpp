@@ -74,7 +74,7 @@ AujardApp::~AujardApp()
 
 		_dbPoolCheckThread->shutdown();
 
-		spdlog::info("AiServerInstance::~AiServerInstance: DB pool check thread stopped.");
+		spdlog::info("AujardApp::~AujardApp: DB pool check thread stopped.");
 	}
 
 	if (_heartbeatCheckThread != nullptr)
@@ -83,7 +83,7 @@ AujardApp::~AujardApp()
 
 		_heartbeatCheckThread->shutdown();
 
-		spdlog::info("AiServerInstance::~AiServerInstance: heartbeat check thread stopped.");
+		spdlog::info("AujardApp::~AujardApp: heartbeat check thread stopped.");
 	}
 
 	if (_concurrentCheckThread != nullptr)
@@ -92,7 +92,7 @@ AujardApp::~AujardApp()
 
 		_concurrentCheckThread->shutdown();
 
-		spdlog::info("AiServerInstance::~AiServerInstance: concurrent check thread stopped.");
+		spdlog::info("AujardApp::~AujardApp: concurrent check thread stopped.");
 	}
 
 	if (_packetCheckThread != nullptr)
@@ -101,7 +101,7 @@ AujardApp::~AujardApp()
 
 		_packetCheckThread->shutdown();
 
-		spdlog::info("AiServerInstance::~AiServerInstance: packet check thread stopped.");
+		spdlog::info("AujardApp::~AujardApp: packet check thread stopped.");
 	}
 
 	spdlog::info("AujardApp::~AujardApp: All resources safely released.");
