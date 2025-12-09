@@ -40,10 +40,17 @@ endforeach()
 # Setup dependency dir
 set(OPENKO_DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
 
+# Set the default solution folder
+set(OPENKO_DEFAULT_SOLUTION_FOLDER "_deps")
+
 # Add dependencies
+set(CMAKE_FOLDER "${OPENKO_DEFAULT_SOLUTION_FOLDER}")
+
 add_subdirectory(deps/asio-cmake)
 add_subdirectory(deps/spdlog)
+
 add_subdirectory(shared)
+set_target_properties(shared PROPERTIES FOLDER "")
 
 include_directories(
   ${CMAKE_SOURCE_DIR} # repo root, for <shared/...>
@@ -62,6 +69,7 @@ if(OPENKO_BUILD_SERVERS)
       "libs/winapi"
   )
 
+  set(CMAKE_FOLDER "Server/_deps/boost")
   fetchcontent_declare(
       Boost
       GIT_REPOSITORY "https://github.com/boostorg/boost.git"
@@ -76,8 +84,10 @@ if(OPENKO_BUILD_SERVERS)
   fetchcontent_makeavailable(Boost)
   find_package(Boost 1.89.0 EXACT REQUIRED COMPONENTS interprocess)
 
+  set(CMAKE_FOLDER "Server/_deps/ftxui")
   add_subdirectory(deps/FTXUI EXCLUDE_FROM_ALL)
 
+  set(CMAKE_FOLDER "Server/_deps")
   add_subdirectory(deps/nanodbc EXCLUDE_FROM_ALL)
   target_compile_features(nanodbc PUBLIC cxx_std_20)
 
@@ -90,7 +100,6 @@ if(OPENKO_BUILD_SERVERS)
 
   add_subdirectory(deps/db-models-cmake EXCLUDE_FROM_ALL)
   add_subdirectory(deps/db-library-cmake EXCLUDE_FROM_ALL)
-
   add_subdirectory(Server/shared-server)
 
   add_custom_target(copy-server-assets ALL
@@ -105,6 +114,7 @@ if(OPENKO_BUILD_SERVERS)
   ###############
   # Servers
   ###############
+  set(CMAKE_FOLDER "Server")
   add_subdirectory(Server/AIServer)
   add_subdirectory(Server/Aujard)
   add_subdirectory(Server/Ebenezer)
