@@ -64,7 +64,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: 'true'
+        submodules: 'false'
 
     - uses: lukka/get-cmake@latest
 
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: 'false'
 
       - name: Install unixODBC
         run: sudo apt-get install unixodbc-dev -y
