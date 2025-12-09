@@ -1,0 +1,105 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build server (CMake)
+
+on:
+  push:
+    branches:
+    - master
+    - cmake
+
+    paths:
+      - 'build_cmake_server.yml'
+      - 'CMakeLists.txt'
+      - 'Server/**/*.cpp'
+      - 'Server/**/*.h'
+      - 'deps/asio/**'
+      - 'deps/asio-cmake/CMakeLists.txt'
+      - 'deps/db-library/**'
+      - 'deps/db-library-cmake/CMakeLists.txt'
+      - 'deps/db-models/**'
+      - 'deps/db-models-cmake/CMakeLists.txt'
+      - 'deps/djb2/**'
+      - 'deps/FTXUI/**'
+      - 'deps/nanodbc/**'
+      - 'deps/spdlog/**'
+
+  pull_request:
+    branches:
+    - master
+    - cmake
+
+    paths:
+      - 'build_cmake_server.yml'
+      - 'CMakeLists.txt'
+      - 'Server/**/*.cpp'
+      - 'Server/**/*.h'
+      - 'deps/asio/**'
+      - 'deps/asio-cmake/CMakeLists.txt'
+      - 'deps/db-library/**'
+      - 'deps/db-library-cmake/CMakeLists.txt'
+      - 'deps/db-models/**'
+      - 'deps/db-models-cmake/CMakeLists.txt'
+      - 'deps/djb2/**'
+      - 'deps/FTXUI/**'
+      - 'deps/nanodbc/**'
+      - 'deps/spdlog/**'
+
+  workflow_dispatch:
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        BUILD_PLATFORM: [Win32, x64]
+
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }} (Windows)"
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+
+    - uses: lukka/get-cmake@latest
+
+    - name: Configure CMake
+      run: cmake -S . -B build \
+        -G "Visual Studio 17 2022" \
+        -A ${{ matrix.BUILD_PLATFORM }} \
+        -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }}
+
+    - name: Build server
+      run: cmake --build build --config ${{ matrix.BUILD_CONFIGURATION }}
+
+  build_linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} (Linux)"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Install unixODBC
+        run: sudo apt-get install unixodbc-dev -y
+
+      - uses: lukka/get-cmake@latest
+
+      - name: Configure CMake
+        run: cmake -S . -B build \
+          -G "Ninja" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }}
+
+      - name: Build server
+        run: cmake --build build --config ${{ matrix.BUILD_CONFIGURATION }}

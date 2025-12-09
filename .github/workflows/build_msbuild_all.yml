@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build all
+name: Build all (MSBuild)
 
 on:
   push:
@@ -13,12 +13,11 @@ on:
     # This specifically builds when anything relating to a build changes.
     # Everything else can be ignored.
     paths:
-      - '.github/workflows/build_all.yml'
+      - 'build_msbuild_all.yml'
       - '**/*.props'
       - '**/*.cpp'
       - '**/*.h'
       - '**/*.hpp'
-      - '**/*.ixx'
       - '**/*.vcxproj'
       - 'deps/**'
       - 'All.sln'
@@ -31,12 +30,11 @@ on:
     # This specifically builds when anything relating to a build changes.
     # Everything else can be ignored.
     paths:
-      - '.github/workflows/build_all.yml'
+      - 'build_msbuild_all.yml'
       - '**/*.props'
       - '**/*.cpp'
       - '**/*.h'
       - '**/*.hpp'
-      - '**/*.ixx'
       - '**/*.vcxproj'
       - 'deps/**'
       - 'All.sln'
