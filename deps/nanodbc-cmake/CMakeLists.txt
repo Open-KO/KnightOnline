@@ -1,7 +1,7 @@
 fetchcontent_declare(
   nanodbc
-  GIT_REPOSITORY        https://github.com/Open-KO/nanodbc.git
-  GIT_TAG               v2.1.4.0a-OpenKO
+  GIT_REPOSITORY        "https://github.com/Open-KO/nanodbc.git"
+  GIT_TAG               "v2.1.4.0a-OpenKO"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   OVERRIDE_FIND_PACKAGE TRUE

@@ -1,7 +1,7 @@
 fetchcontent_declare(
   spdlog
-  GIT_REPOSITORY        https://github.com/Open-KO/spdlog.git
-  GIT_TAG               v1.15.3b-OpenKO
+  GIT_REPOSITORY        "https://github.com/Open-KO/spdlog.git"
+  GIT_TAG               "v1.15.3b-OpenKO"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   OVERRIDE_FIND_PACKAGE TRUE

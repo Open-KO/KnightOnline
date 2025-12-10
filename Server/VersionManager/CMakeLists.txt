@@ -24,10 +24,9 @@ endif()
 target_precompile_headers(VersionManager PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(VersionManager
-  PRIVATE
-    shared-server
-    db-library
+target_link_libraries(VersionManager PRIVATE
+  shared-server
+  db-library
 )
 
 # Setup warning levels
@@ -45,5 +44,5 @@ if(MSVC)
 endif()
 
 add_custom_command(TARGET VersionManager POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:VersionManager> has been built"
+  COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:VersionManager> has been built"
 )

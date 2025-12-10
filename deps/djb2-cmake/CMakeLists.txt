@@ -1,7 +1,7 @@
 fetchcontent_declare(
   djb2
-  GIT_REPOSITORY        https://github.com/Open-KO/djb2.git
-  GIT_TAG               v0.0.2-OpenKO
+  GIT_REPOSITORY        "https://github.com/Open-KO/djb2.git"
+  GIT_TAG               "v0.0.2-OpenKO"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   OVERRIDE_FIND_PACKAGE TRUE
@@ -18,11 +18,10 @@ fetchcontent_makeavailable(djb2)
 message(STATUS "OpenKO: [djb2] Up-to-date!")
 
 add_library(djb2 INTERFACE
-  ${djb2_SOURCE_DIR}/djb2_hasher.h
+  "${djb2_SOURCE_DIR}/djb2_hasher.h"
 )
 
 # Expose include path
-target_include_directories(djb2
-  INTERFACE
-  ${djb2_SOURCE_DIR}/../
+target_include_directories(djb2 INTERFACE
+  "${djb2_SOURCE_DIR}/../"
 )

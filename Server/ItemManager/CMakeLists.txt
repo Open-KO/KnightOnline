@@ -24,9 +24,8 @@ endif()
 target_precompile_headers(ItemManager PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(ItemManager
-  PRIVATE
-    shared-server
+target_link_libraries(ItemManager PRIVATE
+  shared-server
 )
 
 # Setup warning levels
@@ -44,5 +43,5 @@ if(MSVC)
 endif()
 
 add_custom_command(TARGET ItemManager POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:ItemManager> has been built"
+  COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:ItemManager> has been built"
 )

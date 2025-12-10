@@ -1,7 +1,7 @@
 fetchcontent_declare(
   asio
-  GIT_REPOSITORY        https://github.com/chriskohlhoff/asio.git
-  GIT_TAG               asio-1-36-0
+  GIT_REPOSITORY        "https://github.com/chriskohlhoff/asio.git"
+  GIT_TAG               "asio-1-36-0"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   OVERRIDE_FIND_PACKAGE TRUE
@@ -15,13 +15,13 @@ fetchcontent_makeavailable(asio)
 message(STATUS "OpenKO: [asio] Up-to-date!")
 
 add_library(asio STATIC
-  ${asio_SOURCE_DIR}/asio/src/asio.cpp
-  ${asio_SOURCE_DIR}/asio/include/asio.hpp
+  "${asio_SOURCE_DIR}/asio/src/asio.cpp"
+  "${asio_SOURCE_DIR}/asio/include/asio.hpp"
 )
 
 target_include_directories(asio
-  PUBLIC ${asio_SOURCE_DIR}/asio/include
-  PRIVATE ${asio_SOURCE_DIR}
+  PUBLIC "${asio_SOURCE_DIR}/asio/include"
+  PRIVATE "${asio_SOURCE_DIR}"
 )
 
 # Build as standalone

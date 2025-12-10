@@ -47,7 +47,8 @@ if(is_multi_config)
 else()
   # Default build type to Debug
   if(NOT CMAKE_BUILD_TYPE)
-    message(STATUS "Setting build type to 'Debug' as none was specified via -DCMAKE_BUILD_TYPE (expected build types: Debug, Release, RelWithDebugInfo, MinSizeRel)")
+    message(STATUS "OpenKO: Defaulting build type to 'Debug' as none was specified via -DCMAKE_BUILD_TYPE (expected build types: Debug, Release, RelWithDebugInfo, MinSizeRel)")
+
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
   endif()
@@ -72,8 +73,7 @@ add_subdirectory(shared)
 set_target_properties(shared PROPERTIES FOLDER "")
 
 include_directories(
-  ${CMAKE_SOURCE_DIR} # repo root, for <shared/...>
-  ${OPENKO_DEPS_DIR}  # dependencies like asio, spdlog, etc.
+  "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
 )
 
 if(OPENKO_BUILD_SERVERS)
@@ -96,11 +96,11 @@ if(OPENKO_BUILD_SERVERS)
 
   add_custom_target(copy-server-assets ALL
     COMMENT "Copying server assets"
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying server MAP dir to ${OPENKO_SERVER_MAP_DST_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${OPENKO_SERVER_MAP_SRC_DIR}" "${OPENKO_SERVER_MAP_DST_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying server QUESTS dir to ${OPENKO_SERVER_QUESTS_DST_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${OPENKO_SERVER_QUESTS_SRC_DIR}" "${OPENKO_SERVER_QUESTS_DST_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E echo "Server assets copied."
+    COMMAND "${CMAKE_COMMAND}" -E echo "Copying server MAP dir to ${OPENKO_SERVER_MAP_DST_DIR}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${OPENKO_SERVER_MAP_SRC_DIR}" "${OPENKO_SERVER_MAP_DST_DIR}"
+    COMMAND "${CMAKE_COMMAND}" -E echo "Copying server QUESTS dir to ${OPENKO_SERVER_QUESTS_DST_DIR}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${OPENKO_SERVER_QUESTS_SRC_DIR}" "${OPENKO_SERVER_QUESTS_DST_DIR}"
+    COMMAND "${CMAKE_COMMAND}" -E echo "Server assets copied."
   )
 
   # Servers

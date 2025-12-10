@@ -56,10 +56,9 @@ endif()
 target_precompile_headers(AIServer PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(AIServer
-  PRIVATE
-    shared-server
-    db-library
+target_link_libraries(AIServer PRIVATE
+  shared-server
+  db-library
 )
 
 # Setup warning levels
@@ -76,5 +75,5 @@ if(MSVC)
 endif()
 
 add_custom_command(TARGET AIServer POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:AIServer> has been built"
+  COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:AIServer> has been built"
 )

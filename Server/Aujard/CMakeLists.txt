@@ -24,10 +24,9 @@ endif()
 target_precompile_headers(Aujard PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(Aujard
-  PRIVATE
-    shared-server
-    db-library
+target_link_libraries(Aujard PRIVATE
+  shared-server
+  db-library
 )
 
 # Setup warning levels
@@ -45,5 +44,5 @@ if(MSVC)
 endif()
 
 add_custom_command(TARGET Aujard POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:Aujard> has been built"
+  COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:Aujard> has been built"
 )

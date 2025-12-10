@@ -68,10 +68,9 @@ endif()
 target_precompile_headers(Ebenezer PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(Ebenezer
-  PRIVATE
-    shared-server
-    db-library
+target_link_libraries(Ebenezer PRIVATE
+  shared-server
+  db-library
 )
 
 # Setup warning levels
@@ -89,5 +88,5 @@ if(MSVC)
 endif()
 
 add_custom_command(TARGET Ebenezer POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:Ebenezer> has been built"
+  COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:Ebenezer> has been built"
 )
