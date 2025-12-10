@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build server (CMake)
+name: "Build server (CMake)"
 
 on:
   push:
@@ -91,7 +91,7 @@ jobs:
     env:
       clang-version: 20
 
-    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (${{ runner.os }}-${{ runner.arch }})"
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux)"
 
     steps:
       - uses: actions/checkout@v4
