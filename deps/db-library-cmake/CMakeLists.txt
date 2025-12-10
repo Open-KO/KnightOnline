@@ -54,8 +54,6 @@ target_include_directories(db-library
     ${db_library_SOURCE_DIR}/../
 )
 
-message(STATUS "DB library path: ${db_library_SOURCE_DIR}/../")
-
 # Setup warning levels
 target_compile_options(db-library PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>

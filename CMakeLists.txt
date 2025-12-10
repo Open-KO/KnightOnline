@@ -36,18 +36,30 @@ if(WIN32)
   message(STATUS "OpenKO feature: _WIN32_WINNT - ${_WIN32_WINNT}")
 endif()
 
-# Setup output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
+# Multiconfig generators don't require a build type at config time.
+# They generate multiple configurations.
+# The output directory will have the build type auto-appended.
+if(is_multi_config)
+  # Set output directory
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}")
+else()
+  # Default build type to Debug
+  if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "Setting build type to 'Debug' as none was specified via -DCMAKE_BUILD_TYPE (expected build types: Debug, Release, RelWithDebugInfo, MinSizeRel)")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
+  endif()
+
+  # Set output directory
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
+endif()
 
 set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/MAP")
 set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
 set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/QUESTS")
 set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
-
-# Multi-config generators
-foreach(CONFIG_TYPE Debug Release RelWithDebInfo MinSizeRel)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE} "${OPENKO_BIN_DIR}")
-endforeach()
 
 # Set the default solution folder
 set(OPENKO_DEFAULT_SOLUTION_FOLDER "_deps")
@@ -67,12 +79,9 @@ include_directories(
 )
 
 if(OPENKO_BUILD_SERVERS)
-
   message(STATUS "OpenKO: Preparing to configure servers...")
 
-  ###############
   # Dependencies
-  ###############
   set(CMAKE_FOLDER "Server/_deps/boost")
   add_subdirectory(deps/boost-cmake EXCLUDE_FROM_ALL)
 
@@ -96,9 +105,7 @@ if(OPENKO_BUILD_SERVERS)
     COMMAND ${CMAKE_COMMAND} -E echo "Server assets copied."
   )
 
-  ###############
   # Servers
-  ###############
   set(CMAKE_FOLDER "Server")
   add_subdirectory(Server/AIServer)
   add_subdirectory(Server/Aujard)
