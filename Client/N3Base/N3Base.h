@@ -41,7 +41,22 @@ struct __CameraData
 {
 	__CameraData()
 	{
-		Release();
+		vEye = {};
+		vAt = {};
+		vUp = {};
+
+		fFOV = 0.0f;
+		fAspect = 0.0f;
+		fNP = 0.0f;
+		fFP = 0.0f;
+
+		vp = {};
+
+		mtxView = {};
+		mtxViewInverse ={};
+		mtxProjection = {};
+
+		memset(&fFrustum, 0, sizeof(fFrustum));
 	}
 
 	void Release()
