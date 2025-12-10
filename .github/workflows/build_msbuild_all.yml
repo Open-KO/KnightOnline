@@ -13,7 +13,7 @@ on:
     # This specifically builds when anything relating to a build changes.
     # Everything else can be ignored.
     paths:
-      - 'build_msbuild_all.yml'
+      - '.github/workflows/build_msbuild_all.yml'
       - '**/*.props'
       - '**/*.cpp'
       - '**/*.h'
@@ -30,7 +30,7 @@ on:
     # This specifically builds when anything relating to a build changes.
     # Everything else can be ignored.
     paths:
-      - 'build_msbuild_all.yml'
+      - '.github/workflows/build_msbuild_all.yml'
       - '**/*.props'
       - '**/*.cpp'
       - '**/*.h'

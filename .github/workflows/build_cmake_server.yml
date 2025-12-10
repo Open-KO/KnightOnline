@@ -11,7 +11,7 @@ on:
     - master
 
     paths:
-      - 'build_cmake_server.yml'
+      - '.github/workflows/build_cmake_server.yml'
       - 'CMakeLists.txt'
       - 'Server/**/*.cpp'
       - 'Server/**/*.h'
@@ -29,7 +29,7 @@ on:
     - master
 
     paths:
-      - 'build_cmake_server.yml'
+      - '.github/workflows/build_cmake_server.yml'
       - 'CMakeLists.txt'
       - 'Server/**/*.cpp'
       - 'Server/**/*.h'

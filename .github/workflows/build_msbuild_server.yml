@@ -11,14 +11,14 @@ on:
     - master
 
     paths:
-      - 'build_msbuild_server.yml'
+      - '.github/workflows/build_msbuild_server.yml'
 
   pull_request:
     branches:
     - master
 
     paths:
-      - 'build_msbuild_server.yml'
+      - '.github/workflows/build_msbuild_server.yml'
 
   workflow_dispatch:
 
