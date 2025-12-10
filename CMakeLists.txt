@@ -7,6 +7,11 @@ project(OpenKO
 find_package(Git REQUIRED)
 include(FetchContent)
 
+# Set minimum standard to C++23 (unless otherwise specified)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Config
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
 option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)

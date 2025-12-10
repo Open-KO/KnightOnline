@@ -38,9 +38,6 @@ add_library(db-library STATIC
   ${db_library_SOURCE_DIR}/utils.h
 )
 
-# Use C++23
-target_compile_features(db-library PUBLIC cxx_std_23)
-
 # Setup PCH
 target_precompile_headers(db-library PRIVATE ${db_library_SOURCE_DIR}/pch.h)
 

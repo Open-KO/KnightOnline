@@ -21,8 +21,6 @@ add_library(djb2 INTERFACE
   ${djb2_SOURCE_DIR}/djb2_hasher.h
 )
 
-target_compile_features(djb2 INTERFACE cxx_std_23)
-
 # Expose include path
 target_include_directories(djb2
   INTERFACE

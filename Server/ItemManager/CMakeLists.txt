@@ -15,9 +15,6 @@ if(WIN32)
     target_sources(ItemManager PRIVATE ItemManager.rc)
 endif()
 
-# Use C++23
-target_compile_features(ItemManager PUBLIC cxx_std_23)
-
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET ItemManager PROPERTY COMPILE_WARNING_AS_ERROR ON)

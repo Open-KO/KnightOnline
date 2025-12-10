@@ -44,9 +44,6 @@ add_library(shared-server STATIC
   ${TARGET_CONFIG_HEADER}
 )
 
-# Use C++23
-target_compile_features(shared-server PUBLIC cxx_std_23)
-
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET shared-server PROPERTY COMPILE_WARNING_AS_ERROR ON)

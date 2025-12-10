@@ -24,9 +24,6 @@ target_include_directories(asio
   PRIVATE ${asio_SOURCE_DIR}
 )
 
-# Use C++23
-target_compile_features(asio PUBLIC cxx_std_23)
-
 # Build as standalone
 target_compile_definitions(asio PUBLIC ASIO_STANDALONE)
 target_compile_definitions(asio PRIVATE ASIO_SEPARATE_COMPILATION)

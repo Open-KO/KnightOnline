@@ -15,9 +15,6 @@ if(WIN32)
     target_sources(VersionManager PRIVATE VersionManager.rc)
 endif()
 
-# Use C++23
-target_compile_features(VersionManager PUBLIC cxx_std_23)
-
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET VersionManager PROPERTY COMPILE_WARNING_AS_ERROR ON)

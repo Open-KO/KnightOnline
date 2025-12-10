@@ -47,9 +47,6 @@ add_library(db-models STATIC
   ${db_models_SOURCE_DIR}/VersionManager/model/VersionManagerModel.h
 )
 
-# Use C++23
-target_compile_features(db-models PUBLIC cxx_std_23)
-
 # Require nanodbc
 target_link_libraries(db-models PUBLIC nanodbc)
 

@@ -19,6 +19,7 @@ fetchcontent_makeavailable(nanodbc)
 
 message(STATUS "OpenKO: [nanodbc] Up-to-date!")
 
+# Use C++20 explicitly for better compatibility, but it needs updates so we don't want to push our luck
 target_compile_features(nanodbc PUBLIC cxx_std_20)
 
 # codecvt conversions are being deprecated.
