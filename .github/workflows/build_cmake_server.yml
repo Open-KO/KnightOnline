@@ -84,10 +84,10 @@ jobs:
     strategy:
       matrix:
         BUILD_CONFIGURATION: [Debug, Release]
-        COMPILER: [gcc, clang]
+        COMPILER: [gcc, clang, clang-20]
 
     env:
-      clang-version: 20
+      clang-latest-version: 20
 
     name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux)"
 
@@ -106,13 +106,16 @@ jobs:
           if [ "${{ matrix.COMPILER }}" = "gcc" ]; then
             export CC=gcc
             export CXX=g++
+          elif [ "${{ matrix.COMPILER }}" = "clang" ]; then
+            export CC=clang
+            export CXX=clang++
           else
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
-            sudo ./llvm.sh ${{ env.clang-version }}
+            sudo ./llvm.sh ${{ env.clang-latest-version }}
             sudo apt-get update          
-            export CC=clang-${{ env.clang-version }}
-            export CXX=clang++-${{ env.clang-version }}
+            export CC=clang-${{ env.clang-latest-version }}
+            export CXX=clang++-${{ env.clang-latest-version }}
           fi
           echo "CC=$CC" >> $GITHUB_ENV
           echo "CXX=$CXX" >> $GITHUB_ENV
