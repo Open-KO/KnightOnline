@@ -136,9 +136,6 @@ AIServerApp::~AIServerApp()
 
 bool AIServerApp::OnStart()
 {
-	// TestCode
-	TestCode();
-
 	//----------------------------------------------------------------------
 	//	Sets a random number starting point.
 	//----------------------------------------------------------------------
@@ -1335,27 +1332,6 @@ void AIServerApp::SyncTest()
 
 		spdlog::info("AIServerApp::SyncTest: size={}, zoneNo={}", size, pSocket->_zoneNo);
 	}
-}
-
-void AIServerApp::TestCode()
-{
-	//InitTrigonometricFunction();
-
-	int random = 0, count_1 = 0, count_2 = 0, count_3 = 0;
-
-	// TestCoding
-	for (int i = 0; i < 100; i++)
-	{
-		random = myrand(1, 3);
-		if (random == 1)
-			count_1++;
-		else if (random == 2)
-			count_2++;
-		else if (random == 3)
-			count_3++;
-	}
-
-	spdlog::debug("AIServerApp::TestCode: random test 1={} 2={} 3={}", count_1, count_2, count_3);
 }
 
 bool AIServerApp::GetMagicType1Data()

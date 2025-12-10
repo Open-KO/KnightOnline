@@ -174,7 +174,6 @@ private:
 
 	void SyncTest();
 	void RegionCheck();		// region안에 들어오는 유저 체크 (스레드에서 FindEnermy()함수의 부하를 줄이기 위한 꽁수)
-	void TestCode();
 };
 
 #endif // SERVER_AISERVER_AISERVERAPP_H
