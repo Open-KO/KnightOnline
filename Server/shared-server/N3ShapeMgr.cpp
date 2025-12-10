@@ -12,7 +12,8 @@
 
 CN3ShapeMgr::__CellSub::__CellSub()
 {
-	memset(this, 0, sizeof(__CellSub));
+	nCCPolyCount = 0;
+	pdwCCVertIndices = nullptr;
 }
 
 void CN3ShapeMgr::__CellSub::Load(std::istream& fs)
