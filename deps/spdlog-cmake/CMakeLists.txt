@@ -15,3 +15,5 @@ message(STATUS "OpenKO: [spdlog] Checking and fetching...")
 fetchcontent_makeavailable(spdlog)
 
 message(STATUS "OpenKO: [spdlog] Up-to-date!")
+
+target_compile_features(spdlog PUBLIC cxx_std_23)

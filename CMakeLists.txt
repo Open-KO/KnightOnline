@@ -60,7 +60,7 @@ include_directories(
 
 if(OPENKO_BUILD_SERVERS)
 
-  message(STATUS "OpenKO: Preparing to build servers...")
+  message(STATUS "OpenKO: Preparing to configure servers...")
 
   ###############
   # Dependencies
