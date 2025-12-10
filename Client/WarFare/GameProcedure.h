@@ -30,7 +30,12 @@ struct __WndInfo
 	bool			bVisible;
 	POINT			ptPosition;
 
-	__WndInfo()	{ memset(this, 0, sizeof(__WndInfo));	}
+	__WndInfo()
+	{
+		memset(szName, 0, sizeof(szName));
+		bVisible = false;
+		ptPosition = {};
+	}
 };
 
 class CHotkeyData 
@@ -40,11 +45,18 @@ public:
 	int column;
 	int iID;
 
-	CHotkeyData() {	memset(this, 0, sizeof(CHotkeyData)); }
-	CHotkeyData(int rw, int cl, int id) 
+	CHotkeyData()
 	{
-		CHotkeyData();
-		row = rw;	column = cl;	iID = id;
+		row = 0;
+		column = 0;
+		iID = 0;
+	}
+
+	CHotkeyData(int rw, int cl, int id)
+	{
+		row = rw;
+		column = cl;
+		iID = id;
 	}
 };
 

@@ -71,7 +71,11 @@ struct __InfoSelectedIcon	{
 								__UIWndIconInfo		UIWndSelect;
 								__IconItemSkill*	pItemSelect;					
 								
-								__InfoSelectedIcon() { memset(this, 0, sizeof(__InfoSelectedIcon)); }
+								__InfoSelectedIcon()
+								{
+									UIWndSelect = {};
+									pItemSelect = nullptr;
+								}
 							};								
 
 // Recovery Job Info..

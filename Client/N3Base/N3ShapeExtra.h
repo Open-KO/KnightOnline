@@ -28,8 +28,10 @@ protected:
 
 		__Rotation()
 		{
-			memset(this, 0, sizeof(__Rotation));
+			fRadianPerSec = 0.0f;
 			vAxis.Set(0,1,0);
+			fRadianCur = 0.0f;
+			fRadianToReach = 0.0f;
 		}
 	};
 

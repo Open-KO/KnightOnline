@@ -57,7 +57,8 @@ public:
 
 		__CellSub()
 		{
-			memset(this, 0, sizeof(__CellSub));
+			nCCPolyCount = 0;
+			pdwCCVertIndices = nullptr;
 		}
 
 		~__CellSub()

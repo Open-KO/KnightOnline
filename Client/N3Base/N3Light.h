@@ -20,7 +20,11 @@ public:
 		BOOL		bOn; // 라이트가 켜져 있는지..
 		int			nNumber; // 0 ~ 8
 		
-		void		Zero() { memset(this, 0, sizeof(__Light)); }
+		void		Zero()
+		{
+			*this = {};
+		}
+
 		void		InitPoint(int nLgtNumber, const D3DXVECTOR3& dvPos, _D3DCOLORVALUE& ltColor, float fRange = 10000.0f, float fAttenuation = 0.5f)
 		{
 			this->Zero();

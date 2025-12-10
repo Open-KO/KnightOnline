@@ -43,13 +43,16 @@ struct __CameraData
 	{
 		Release();
 	}
-	void	Release()
+
+	void Release()
 	{
-		memset(this, 0, sizeof(__CameraData));
+		*this = {};
+
 		mtxView.Identity();
 		mtxViewInverse.Identity();
 		mtxProjection.Identity();
 	}
+
 	__Vector3		vEye; // Camera Position Vector
 	__Vector3		vAt; // Camera At Vector
 	__Vector3		vUp; // Camera Up Vector

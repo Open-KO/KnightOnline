@@ -39,8 +39,12 @@ public:
 	public:
 		__Particle()
 		{
-			memset(this, 0, sizeof(__Particle));
+			x = y = z = 0.0f;
+			vx = vy = vz = 0.0f;
+			LocalForce = {};
+			mass = 0.0f;
 		}
+
 		~__Particle(){}
 
 		float			x, y, z;

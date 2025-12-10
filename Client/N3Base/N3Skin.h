@@ -18,8 +18,19 @@ struct __VertexSkinned
 	int*		pnJoints; // 관절 인덱스
 	float*		pfWeights; // 가중치
 
-	__VertexSkinned() { memset(this, 0, sizeof(__VertexSkinned)); }
-	~__VertexSkinned() { delete [] pnJoints; delete [] pfWeights; }
+	__VertexSkinned()
+	{
+		vOrigin = {};
+		nAffect = 0;
+		pnJoints = nullptr;
+		pfWeights = nullptr;
+	}
+
+	~__VertexSkinned()
+	{
+		delete[] pnJoints;
+		delete[] pfWeights;
+	}
 };
 
 class CN3Skin : public CN3IMesh
