@@ -69,8 +69,8 @@ set(CMAKE_FOLDER "_deps")
 add_subdirectory(deps/asio-cmake)
 add_subdirectory(deps/spdlog-cmake)
 
+set(CMAKE_FOLDER) # reset so shared is placed in the root
 add_subdirectory(shared)
-set_target_properties(shared PROPERTIES FOLDER "")
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
