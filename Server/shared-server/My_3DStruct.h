@@ -95,7 +95,7 @@ public:
 		float m[4][4];
 	};
 
-	__Matrix44();
+	__Matrix44() = default;
 	__Matrix44(const __Matrix44& mtx);
 	__Matrix44(const __Quaternion& qt);
 	void Zero();
@@ -131,7 +131,7 @@ struct __Quaternion
 public:
 	float x, y, z, w;
 
-	__Quaternion();
+	__Quaternion() = default;
 	__Quaternion(const __Matrix44& mtx);
 	__Quaternion(const __Quaternion& qt);
 
@@ -356,10 +356,6 @@ inline __Vector3 __Vector3::operator / (float fDelta) const
 	vTmp.y = y / fDelta;
 	vTmp.z = z / fDelta;
 	return vTmp;
-}
-
-inline __Matrix44::__Matrix44()
-{
 }
 
 inline __Matrix44::__Matrix44(const __Matrix44& mtx)
@@ -753,10 +749,6 @@ inline bool __Matrix44::BuildInverse(__Matrix44* mtxOut, float* pdeterminant) co
 	}
 
 	return true;
-}
-
-inline __Quaternion::__Quaternion()
-{
 }
 
 inline __Quaternion::__Quaternion(const __Matrix44& mtx)
