@@ -14,6 +14,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ByteBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

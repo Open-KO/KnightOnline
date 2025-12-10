@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ByteBuffer.cpp" />
     <ClCompile Include="crc32.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

@@ -1,4 +1,5 @@
 add_library(shared STATIC
+  ByteBuffer.cpp
   ByteBuffer.h
   CircularBuffer.h
   crc32.cpp
