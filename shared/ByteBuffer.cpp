@@ -3,6 +3,70 @@
 
 #include <cassert>
 
+#define IMPL_BYTEBUFFER_POD_TEMPLATE(type) \
+	template <> \
+	void ByteBuffer::append<type>(type value) \
+	{ \
+		append(&value, sizeof(value)); \
+	} \
+	template <> \
+	void ByteBuffer::put<type>(size_t pos, type value) \
+	{ \
+		put(pos, &value, sizeof(value)); \
+	} \
+	template <> \
+	ByteBuffer& ByteBuffer::operator<< <type>(type value) \
+	{ \
+		append<type>(value); \
+		return *this; \
+	} \
+	template <> \
+	type ByteBuffer::read<type>(size_t pos) const \
+	{ \
+		/*assert(pos + sizeof(type) <= size());*/ \
+		if (pos + sizeof(type) > size()) \
+			return {}; \
+		return *((type*) &_storage[pos]); \
+	} \
+	template <> \
+	type ByteBuffer::read<type>() \
+	{ \
+		type r = read<type>(_rpos); \
+		_rpos += sizeof(type); \
+		return r; \
+	}
+
+IMPL_BYTEBUFFER_POD_TEMPLATE(float)
+IMPL_BYTEBUFFER_POD_TEMPLATE(bool)
+IMPL_BYTEBUFFER_POD_TEMPLATE(char)
+IMPL_BYTEBUFFER_POD_TEMPLATE(uint8_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(uint16_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(uint32_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(uint64_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(int8_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(int16_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(int32_t)
+IMPL_BYTEBUFFER_POD_TEMPLATE(int64_t)
+
+#undef IMPL_BYTEBUFFER_POD_TEMPLATE
+
+template <>
+std::string ByteBuffer::read<std::string>(size_t pos) const
+{
+	std::string r;
+	readString(pos, r);
+	return r;
+}
+
+template <>
+std::string ByteBuffer::read<std::string>()
+{
+	std::string r;
+	readString(r);
+	return r;
+}
+
+
 ByteBuffer::ByteBuffer()
 	: _doubleByte(true), _rpos(0), _wpos(0)
 {
@@ -28,69 +92,6 @@ void ByteBuffer::clear()
 {
 	_storage.clear();
 	_rpos = _wpos = 0;
-}
-
-// stream like operators for storing data
-ByteBuffer& ByteBuffer::operator<<(bool value)
-{
-	append<char>((char) value);
-	return *this;
-}
-
-// unsigned
-ByteBuffer& ByteBuffer::operator<<(uint8_t value)
-{
-	append<uint8_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(uint16_t value)
-{
-	append<uint16_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(uint32_t value)
-{
-	append<uint32_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(uint64_t value)
-{
-	append<uint64_t>(value);
-	return *this;
-}
-
-// signed as in 2e complement
-ByteBuffer& ByteBuffer::operator<<(int8_t value)
-{
-	append<int8_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(int16_t value)
-{
-	append<int16_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(int32_t value)
-{
-	append<int32_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(int64_t value)
-{
-	append<int64_t>(value);
-	return *this;
-}
-
-ByteBuffer& ByteBuffer::operator<<(float value)
-{
-	append<float>(value);
-	return *this;
 }
 
 ByteBuffer& ByteBuffer::operator<<(ByteBuffer& value)
@@ -138,33 +139,90 @@ size_t ByteBuffer::wpos(size_t wpos)
 	return _wpos;
 }
 
-void ByteBuffer:: read(void* dest, size_t len)
+bool ByteBuffer::read(size_t pos, void* dest, size_t len) const
 {
-	if (_rpos + len <= size())
-		memcpy(dest, &_storage[_rpos], len);
-	else // throw error();
-		memset(dest, 0, len);
+	if (pos + len > size())
+		return false;
+
+	memcpy(dest, &_storage[_rpos], len);
+	return true;
+}
+
+bool ByteBuffer::read(void* dest, size_t len)
+{
+	if (!read(_rpos, dest, len))
+		return false;
+
 	_rpos += len;
+	return true;
 }
 
-void ByteBuffer::readString(std::string& dest)
+bool ByteBuffer::readString(size_t pos, std::string& dest) const
 {
-	size_t len = 0;
-	if (_doubleByte)
-		len = read<uint16_t>();
-	else
-		len = read<uint8_t>();
+	dest.clear();
 
-	readString(dest, len);
+	if (_doubleByte)
+	{
+		uint16_t len = 0;
+		if (!read(pos, &len, sizeof(uint16_t)))
+			return false;
+
+		pos += sizeof(uint16_t);
+		dest.assign(len, '\0');
+		return read(pos, &dest[0], len);
+	}
+	else
+	{
+		uint8_t len = 0;
+		if (!read(pos, &len, sizeof(uint8_t)))
+			return false;
+
+		pos += sizeof(uint8_t);
+		dest.assign(len, '\0');
+		return read(pos, &dest[0], len);
+	}
 }
 
-void ByteBuffer::readString(std::string& dest, size_t len)
+bool ByteBuffer::readString(size_t pos, std::string& dest, size_t len) const
 {
 	dest.clear();
 	dest.assign(len, '\0');
 
-	if (_rpos + len <= size())
-		read(&dest[0], len);
+	if (pos + len > size())
+		return false;
+
+	return read(pos, &dest[0], len);
+}
+
+bool ByteBuffer::readString(std::string& dest)
+{
+	dest.clear();
+
+	if (_doubleByte)
+	{
+		uint16_t len = 0;
+		if (!read(&len, sizeof(uint16_t)))
+			return false;
+
+		dest.assign(len, '\0');
+		return read(&dest[0], len);
+	}
+	else
+	{
+		uint8_t len = 0;
+		if (!read(&len, sizeof(uint8_t)))
+			return false;
+
+		dest.assign(len, '\0');
+		return read(&dest[0], len);
+	}
+}
+
+bool ByteBuffer::readString(std::string& dest, size_t len)
+{
+	dest.clear();
+	dest.assign(len, '\0');
+	return read(&dest[0], len);
 }
 
 const std::vector<uint8_t>& ByteBuffer::storage() const

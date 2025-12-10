@@ -5,7 +5,6 @@
 
 #include <cstring>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 class ByteBuffer
@@ -20,43 +19,13 @@ public:
 	virtual ~ByteBuffer();
 	void clear();
 
-	template <typename T>
-	requires std::is_trivial_v<T>
-	void append(T value)
-	{
-		append(&value, sizeof(value));
-	}
-
-	template <typename T>
-	requires std::is_trivial_v<T>
-	void put(size_t pos, T value)
-	{
-		put(pos, &value, sizeof(value));
-	}
-
 	//
 	// stream like operators for storing data
 	//
-
-	ByteBuffer& operator<<(bool value);
-
-	// unsigned
-
-	ByteBuffer& operator<<(uint8_t value);
-	ByteBuffer& operator<<(uint16_t value);
-	ByteBuffer& operator<<(uint32_t value);
-	ByteBuffer& operator<<(uint64_t value);
-
-	// signed
-
-	ByteBuffer& operator<<(int8_t value);
-	ByteBuffer& operator<<(int16_t value);
-	ByteBuffer& operator<<(int32_t value);
-	ByteBuffer& operator<<(int64_t value);
-
-	ByteBuffer& operator<<(float value);
-
 	ByteBuffer& operator<<(ByteBuffer& value);
+
+	template <typename T>
+	ByteBuffer& operator<<(T value);
 
 	// Hacky KO string flag - either it's a single byte length, or a double byte.
 	void SByte();
@@ -68,34 +37,20 @@ public:
 	size_t wpos() const;
 	size_t wpos(size_t wpos);
 
-	template <typename T>
-	T read()
-	{
-		T r;
-		if constexpr (std::is_same_v<T, std::string>)
-		{
-			readString(r);
-		}
-		else
-		{
-			r = read<T>(_rpos);
-			_rpos += sizeof(T);
-		}
-		return r;
-	}
+	bool read(size_t pos, void* dest, size_t len) const;
+	bool read(void* dest, size_t len);
 
 	template <typename T>
-	T read(size_t pos) const
-	{
-		//ASSERT(pos + sizeof(T) <= size());
-		if (pos + sizeof(T) > size())
-			return (T) 0;
-		return *((T*) &_storage[pos]);
-	}
+	T read(size_t pos) const;
 
-	void read(void* dest, size_t len);
-	void readString(std::string& dest);
-	void readString(std::string& dest, size_t len);
+	template <typename T>
+	T read();
+
+	bool readString(size_t pos, std::string& dest) const;
+	bool readString(size_t pos, std::string& dest, size_t len) const;
+
+	bool readString(std::string& dest);
+	bool readString(std::string& dest, size_t len);
 
 	const std::vector<uint8_t>& storage() const;
 	std::vector<uint8_t>& storage();
@@ -112,8 +67,15 @@ public:
 	void append(const ByteBuffer& buffer);
 	void append(const ByteBuffer& buffer, size_t len);
 
+	template <typename T>
+	void append(T value);
+
 	void readFrom(ByteBuffer& buffer, size_t len);
+
 	void put(size_t pos, const void* src, size_t cnt);
+
+	template <typename T>
+	void put(size_t pos, T value);
 
 protected:
 	// read and write positions
