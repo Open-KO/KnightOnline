@@ -61,12 +61,10 @@ set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
 set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/QUESTS")
 set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
 
-# Set the default solution folder
-set(OPENKO_DEFAULT_SOLUTION_FOLDER "_deps")
+# Set the default solution folder to place targets/projects in
+set(CMAKE_FOLDER "_deps")
 
 # Add dependencies
-set(CMAKE_FOLDER "${OPENKO_DEFAULT_SOLUTION_FOLDER}")
-
 add_subdirectory(deps/asio-cmake)
 add_subdirectory(deps/spdlog-cmake)
 
