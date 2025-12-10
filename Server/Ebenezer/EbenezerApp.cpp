@@ -2085,7 +2085,7 @@ void EbenezerApp::SendAllUserInfo()
 				send_count = 0;
 				count = 0;
 				send_tot++;
-				spdlog::debug("EbenezerApp::SendAllUserInfo: send_count={} count={}",
+				spdlog::trace("EbenezerApp::SendAllUserInfo: send_count={} count={}",
 					send_tot, count);
 				memset(send_buff, 0, sizeof(send_buff));
 				//Sleep(320);
@@ -2101,7 +2101,7 @@ void EbenezerApp::SendAllUserInfo()
 		SetByte(send_buff, (uint8_t) count, send_count);
 		Send_AIServer(1000, send_buff, send_index);
 		send_tot++;
-		spdlog::debug("EbenezerApp::SendAllUserInfo: send_count={} count={}",
+		spdlog::trace("EbenezerApp::SendAllUserInfo: send_count={} count={}",
 			send_tot, count);
 		//Sleep(1);
 	}
