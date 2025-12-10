@@ -49,13 +49,20 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fetch wrappers", "fetch wrappers", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-dx9sdk", "deps\fetch-and-build-wrappers\fetch-dx9sdk.vcxproj", "{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-db-models", "deps\fetch-and-build-wrappers\fetch-db-models.vcxproj", "{057C1ABC-6137-37A9-9935-8CF811D7CEDA}"
 	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
 		{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC} = {3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-nanodbc", "deps\fetch-and-build-wrappers\fetch-nanodbc.vcxproj", "{3F38FD98-5C7E-97C7-70A9-FDA7E34A0CFC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "db-models", "deps\db-models-msvc\db-models.vcxproj", "{17EF3A49-55B8-4FB6-883F-D1D02E20C11D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -67,6 +74,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-db-library", "deps\fe
 	ProjectSection(ProjectDependencies) = postProject
 		{057C1ABC-6137-37A9-9935-8CF811D7CEDA} = {057C1ABC-6137-37A9-9935-8CF811D7CEDA}
 		{10898C84-AF45-F0B0-5144-EA801DF15503} = {10898C84-AF45-F0B0-5144-EA801DF15503}
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "db-library", "deps\db-library-msvc\db-library.vcxproj", "{05054154-A8F1-4094-AB01-E1402CD9F65A}"
@@ -76,12 +84,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "db-library", "deps\db-libra
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-spdlog", "deps\fetch-and-build-wrappers\fetch-spdlog.vcxproj", "{10898C84-AF45-F0B0-5144-EA801DF15503}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-djb2", "deps\fetch-and-build-wrappers\fetch-djb2.vcxproj", "{9E410F3D-EF94-41FA-A373-B2136D5F3D1E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-asio", "deps\fetch-and-build-wrappers\fetch-asio.vcxproj", "{98F92112-9EC7-4F20-A6C3-A0346ACB271C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-boost", "deps\fetch-and-build-wrappers\fetch-boost.vcxproj", "{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared-server", "Server\shared-server\shared-server.vcxproj", "{C630CF44-84A8-4586-A710-C420BF54DC13}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -93,6 +113,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared-server", "Server\sha
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-FTXUI", "deps\fetch-and-build-wrappers\fetch-FTXUI.vcxproj", "{418A7A17-10EC-4159-8D0F-CC49BAF6EC35}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sync-submodules", "deps\fetch-and-build-wrappers\sync-submodules.vcxproj", "{1F14357D-E06A-48A1-B39A-74082F381FC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,6 +193,10 @@ Global
 		{418A7A17-10EC-4159-8D0F-CC49BAF6EC35}.Debug|Win32.Build.0 = Debug|Win32
 		{418A7A17-10EC-4159-8D0F-CC49BAF6EC35}.Release|Win32.ActiveCfg = Release|Win32
 		{418A7A17-10EC-4159-8D0F-CC49BAF6EC35}.Release|Win32.Build.0 = Release|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Debug|Win32.Build.0 = Debug|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Release|Win32.ActiveCfg = Release|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,6 +216,7 @@ Global
 		{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{C630CF44-84A8-4586-A710-C420BF54DC13} = {9D5EEECB-6F40-493E-9D35-58BE18DF0690}
 		{418A7A17-10EC-4159-8D0F-CC49BAF6EC35} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {023E6273-2767-4477-85B6-B02DF66FB3DB}

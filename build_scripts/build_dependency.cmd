@@ -102,7 +102,6 @@ IF "%UPDATE_SUBMODULE%"=="1" (
 
 	REM Update submodule.
 	PUSHD "%REPO_ROOT%"
-	"%GitPath%" submodule sync
 	"%GitPath%" submodule update --init --recursive "%DEP_PATH%"
 	POPD
 )

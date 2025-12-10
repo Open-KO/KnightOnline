@@ -26,12 +26,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_deps", "_deps", "{7002AB72-3020-4E04-8E43-3784FFDCD539}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-dx9sdk", "deps\fetch-and-build-wrappers\fetch-dx9sdk.vcxproj", "{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-ko-client-assets", "deps\fetch-and-build-wrappers\fetch-ko-client-assets.vcxproj", "{0047BEE8-1361-6BCB-3EDF-26DCB127E1B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fetch wrappers", "fetch wrappers", "{FCEEB93A-A502-48BF-83AA-715C2E88D883}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-libjpeg-turbo", "deps\fetch-and-build-wrappers\fetch-libjpeg-turbo.vcxproj", "{56988836-40F9-F81D-C8B4-4DC1CE5901E2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JpegFile", "Client\JpegFile\JpegFile.vcxproj", "{E3CE5B4F-97BC-46B1-B36D-25AB39D4A3F9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -39,8 +48,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JpegFile", "Client\JpegFile
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-mpg123", "deps\fetch-and-build-wrappers\fetch-mpg123.vcxproj", "{B24123A5-2FE3-4AD6-9B8D-C3090E87408D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-spdlog", "deps\fetch-and-build-wrappers\fetch-spdlog.vcxproj", "{10898C84-AF45-F0B0-5144-EA801DF15503}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sync-submodules", "deps\fetch-and-build-wrappers\sync-submodules.vcxproj", "{1F14357D-E06A-48A1-B39A-74082F381FC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +101,10 @@ Global
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Debug|Win32.Build.0 = Debug|Win32
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.ActiveCfg = Release|Win32
 		{10898C84-AF45-F0B0-5144-EA801DF15503}.Release|Win32.Build.0 = Release|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Debug|Win32.Build.0 = Debug|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Release|Win32.ActiveCfg = Release|Win32
+		{1F14357D-E06A-48A1-B39A-74082F381FC0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +119,7 @@ Global
 		{E3CE5B4F-97BC-46B1-B36D-25AB39D4A3F9} = {7002AB72-3020-4E04-8E43-3784FFDCD539}
 		{B24123A5-2FE3-4AD6-9B8D-C3090E87408D} = {FCEEB93A-A502-48BF-83AA-715C2E88D883}
 		{10898C84-AF45-F0B0-5144-EA801DF15503} = {FCEEB93A-A502-48BF-83AA-715C2E88D883}
+		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {FCEEB93A-A502-48BF-83AA-715C2E88D883}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0034A25-63CF-4A69-9E84-BA0E8F0B47C2}
