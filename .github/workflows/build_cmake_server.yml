@@ -16,16 +16,14 @@ on:
       - 'CMakeLists.txt'
       - 'Server/**/*.cpp'
       - 'Server/**/*.h'
-      - 'deps/asio/**'
       - 'deps/asio-cmake/CMakeLists.txt'
-      - 'deps/db-library/**'
+      - 'deps/boost-cmake/CMakeLists.txt'
       - 'deps/db-library-cmake/CMakeLists.txt'
-      - 'deps/db-models/**'
       - 'deps/db-models-cmake/CMakeLists.txt'
-      - 'deps/djb2/**'
-      - 'deps/FTXUI/**'
-      - 'deps/nanodbc/**'
-      - 'deps/spdlog/**'
+      - 'deps/djb2-cmake/CMakeLists.txt'
+      - 'deps/FTXUI-cmake/CMakeLists.txt'
+      - 'deps/nanodbc-cmake/CMakeLists.txt'
+      - 'deps/spdlog-cmake/CMakeLists.txt'
 
   pull_request:
     branches:
@@ -37,16 +35,14 @@ on:
       - 'CMakeLists.txt'
       - 'Server/**/*.cpp'
       - 'Server/**/*.h'
-      - 'deps/asio/**'
       - 'deps/asio-cmake/CMakeLists.txt'
-      - 'deps/db-library/**'
+      - 'deps/boost-cmake/CMakeLists.txt'
       - 'deps/db-library-cmake/CMakeLists.txt'
-      - 'deps/db-models/**'
       - 'deps/db-models-cmake/CMakeLists.txt'
-      - 'deps/djb2/**'
-      - 'deps/FTXUI/**'
-      - 'deps/nanodbc/**'
-      - 'deps/spdlog/**'
+      - 'deps/djb2-cmake/CMakeLists.txt'
+      - 'deps/FTXUI-cmake/CMakeLists.txt'
+      - 'deps/nanodbc-cmake/CMakeLists.txt'
+      - 'deps/spdlog-cmake/CMakeLists.txt'
 
   workflow_dispatch:
 
@@ -92,7 +88,10 @@ jobs:
         BUILD_CONFIGURATION: [Debug, Release]
         COMPILER: [gcc, clang]
 
-    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux)"
+    env:
+      clang-version: 20
+
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (${{ runner.os }}-${{ runner.arch }})"
 
     steps:
       - uses: actions/checkout@v4
@@ -110,8 +109,12 @@ jobs:
             export CC=gcc
             export CXX=g++
           else
-            export CC=clang
-            export CXX=clang++
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh ${{ env.clang-version }}
+            sudo apt-get update          
+            export CC=clang-${{ env.clang-version }}
+            export CXX=clang++-${{ env.clang-version }}
           fi
           echo "CC=$CC" >> $GITHUB_ENV
           echo "CXX=$CXX" >> $GITHUB_ENV
