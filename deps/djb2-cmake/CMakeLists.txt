@@ -1,7 +1,7 @@
 fetchcontent_declare(
   djb2
   GIT_REPOSITORY        https://github.com/Open-KO/djb2.git
-  GIT_TAG               v0.0.1-OpenKO
+  GIT_TAG               v0.0.2-OpenKO
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   OVERRIDE_FIND_PACKAGE TRUE
