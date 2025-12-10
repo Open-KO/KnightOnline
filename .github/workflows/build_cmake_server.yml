@@ -9,7 +9,6 @@ on:
   push:
     branches:
     - master
-    - cmake
 
     paths:
       - 'build_cmake_server.yml'
@@ -28,7 +27,6 @@ on:
   pull_request:
     branches:
     - master
-    - cmake
 
     paths:
       - 'build_cmake_server.yml'
