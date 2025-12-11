@@ -37,25 +37,30 @@ bool CN3Skin::Load(HANDLE hFile)
 	CN3IMesh::Load(hFile);
 
 	DWORD dwRWC = 0;
-	for(int i = 0; i < m_nVC; i++)
+	for (int i = 0; i < m_nVC; i++)
 	{
-		ReadFile(hFile, &m_pSkinVertices[i], sizeof(__VertexSkinned), &dwRWC, nullptr);
-		m_pSkinVertices[i].pnJoints = nullptr;
-		m_pSkinVertices[i].pfWeights = nullptr;
-		
-		int nAffect = m_pSkinVertices[i].nAffect;
-		if(nAffect > 1)
-		{
-			m_pSkinVertices[i].pnJoints = new int[nAffect];
-			m_pSkinVertices[i].pfWeights = new float[nAffect];
+		__VertexSkinned* pVtx = &m_pSkinVertices[i];
+		ReadFile(hFile, &pVtx->vOrigin, sizeof(__Vector3), &dwRWC, nullptr);
+		ReadFile(hFile, &pVtx->nAffect, sizeof(int), &dwRWC, nullptr);
+		// Skip the useless pointers pnJoints, pfWeights (assume they're 32-bit).
+		SetFilePointer(hFile, 8, nullptr, FILE_CURRENT);
 
-			ReadFile(hFile, m_pSkinVertices[i].pnJoints, 4 * nAffect, &dwRWC, nullptr);
-			ReadFile(hFile, m_pSkinVertices[i].pfWeights, 4 * nAffect, &dwRWC, nullptr);
-		}
-		else if(nAffect == 1)
+		pVtx->pnJoints = nullptr;
+		pVtx->pfWeights = nullptr;
+
+		int nAffect = pVtx->nAffect;
+		if (nAffect > 1)
 		{
-			m_pSkinVertices[i].pnJoints = new int[1];
-			ReadFile(hFile, m_pSkinVertices[i].pnJoints, 4, &dwRWC, nullptr);
+			pVtx->pnJoints = new int[nAffect];
+			pVtx->pfWeights = new float[nAffect];
+
+			ReadFile(hFile, pVtx->pnJoints, 4 * nAffect, &dwRWC, nullptr);
+			ReadFile(hFile, pVtx->pfWeights, 4 * nAffect, &dwRWC, nullptr);
+		}
+		else if (nAffect == 1)
+		{
+			pVtx->pnJoints = new int[1];
+			ReadFile(hFile, pVtx->pnJoints, 4, &dwRWC, nullptr);
 		}
 	}
 
@@ -67,19 +72,26 @@ bool CN3Skin::Save(HANDLE hFile)
 {
 	CN3IMesh::Save(hFile);
 
-	DWORD dwRWC = 0;
-	for(int i = 0; i < m_nVC; i++)
+	DWORD dwRWC = 0, dwUnused = 0;
+	for (int i = 0; i < m_nVC; i++)
 	{
-		WriteFile(hFile, &m_pSkinVertices[i], sizeof(__VertexSkinned), &dwRWC, nullptr);
-		int nAffect = m_pSkinVertices[i].nAffect;
-		if(nAffect > 1)
+		__VertexSkinned* pVtx = &m_pSkinVertices[i];
+		WriteFile(hFile, &pVtx->vOrigin, sizeof(__Vector3), &dwRWC, nullptr);
+		WriteFile(hFile, &pVtx->nAffect, sizeof(int), &dwRWC, nullptr);
+
+		// Skip the useless pointers pnJoints, pfWeights (assume they're 32-bit).
+		WriteFile(hFile, &dwUnused, sizeof(DWORD), &dwRWC, nullptr);
+		WriteFile(hFile, &dwUnused, sizeof(DWORD), &dwRWC, nullptr);
+
+		int nAffect = pVtx->nAffect;
+		if (nAffect > 1)
 		{
-			WriteFile(hFile, m_pSkinVertices[i].pnJoints, 4 * nAffect, &dwRWC, nullptr);
-			WriteFile(hFile, m_pSkinVertices[i].pfWeights, 4 * nAffect, &dwRWC, nullptr);
+			WriteFile(hFile, pVtx->pnJoints, 4 * nAffect, &dwRWC, nullptr);
+			WriteFile(hFile, pVtx->pfWeights, 4 * nAffect, &dwRWC, nullptr);
 		}
-		else if(nAffect == 1)
+		else if (nAffect == 1)
 		{
-			WriteFile(hFile, m_pSkinVertices[i].pnJoints, 4, &dwRWC, nullptr);
+			WriteFile(hFile, pVtx->pnJoints, 4, &dwRWC, nullptr);
 		}
 	}
 
