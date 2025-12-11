@@ -5,7 +5,13 @@
     <Import Project="spdlog.props" />
   </ImportGroup>
   <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Client;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <!-- CN3SndMgr depends on mpg123; mpg123 depends on shlwapi -->
       <AdditionalDependencies>mpg123.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

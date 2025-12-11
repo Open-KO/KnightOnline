@@ -23,14 +23,10 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{17ef3a49-55b8-4fb6-883f-d1d02e20c11d}</ProjectGuid>
     <RootNamespace>dbmodels</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ReadOnlyProject>true</ReadOnlyProject>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
     <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>db-models</TargetName>
   </PropertyGroup>

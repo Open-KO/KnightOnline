@@ -106,12 +106,10 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{EF723FC6-BAC2-4A95-9816-8F9AA8F9D52E}</ProjectGuid>
     <RootNamespace>ftxui</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>ftxui</TargetName>

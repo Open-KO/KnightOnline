@@ -23,14 +23,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>spdlog</ProjectName>
     <ProjectGuid>{0888A97F-4754-7968-1176-1349CFDD6018}</ProjectGuid>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>spdlog</TargetName>

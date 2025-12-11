@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="UserMacros">
     <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))\</RootDir>
     <PropsDir>$(RootDir)props\</PropsDir>
     <DependencyDir>$(RootDir)deps\</DependencyDir>
-    <ToolBuild>false</ToolBuild>
-    <ToolBuild Condition="$(Configuration.StartsWith('Tool_'))">true</ToolBuild>	 
-    <BaseConfiguration>$(Configuration)</BaseConfiguration>
-    <BaseConfiguration Condition="'$(Configuration)'=='Tool_Debug'">Debug</BaseConfiguration>
-    <BaseConfiguration Condition="'$(Configuration)'=='Tool_Release'">Release</BaseConfiguration>
     <BaseIntDir>$(RootDir).int\$(Platform)\$(Configuration)\</BaseIntDir>
     <IntDir>$(BaseIntDir)$(ProjectName)\</IntDir>
-    <OutDir>$(RootDir)bin\$(Platform)\$(BaseConfiguration)\</OutDir>
+    <OutDir>$(RootDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <BaseOutDir>$(OutDir)</BaseOutDir>
-    <StaticLibDir>$(RootDir)lib\$(Platform)\$(BaseConfiguration)\</StaticLibDir>
+    <StaticLibDir>$(RootDir)lib\$(Platform)\$(Configuration)\</StaticLibDir>
     <LinkIncremental>false</LinkIncremental>
     <LinkIncremental Condition="$(Configuration.Contains('Debug'))">true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+
+	<!-- If we're running Visual Studio 2026, use its toolset.              -->
+	<!-- Note that we cannot nicely detect if the toolset exists on its own -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' AND '$(VisualStudioVersion)' == '18.0'">v145</PlatformToolset>
+
+	<!-- Fallback to Visual Studio 2022's toolset if it's not otherwise set/overridden -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v143</PlatformToolset>
+
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>

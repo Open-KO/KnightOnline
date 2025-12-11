@@ -52,13 +52,11 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C93D6595-CD66-4E98-B99D-31DA0E2EC408}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>mpg123</ProjectName>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>mpg123</TargetName>

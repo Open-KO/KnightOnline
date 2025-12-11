@@ -18,7 +18,6 @@
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <OutDir>$(StaticLibDir)</OutDir>
     <TargetName>zlib</TargetName>
