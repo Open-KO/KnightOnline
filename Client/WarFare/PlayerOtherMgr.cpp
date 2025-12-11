@@ -372,17 +372,20 @@ CPlayerNPC* CPlayerOtherMgr::PickCorpse(int ixScreen, int iyScreen, int& iIDResu
 	// 카메라 거리순으로 정렬
 	std::vector<CPlayerNPC*> Corpses;
 	Corpses.reserve(m_Corpses.size());
-	it_NPC it = m_Corpses.begin(), itEnd = m_Corpses.end();
-	for(; it != itEnd; it++) Corpses.push_back(it->second);
-	qsort(&(Corpses[0]), Corpses.size(), 4, SortByCameraDistance);
 
-	for (auto itr = Corpses.begin(); itr != Corpses.end(); ++itr)
+	for (auto& [_, pCorpse] : m_Corpses)
+		Corpses.push_back(pCorpse);
+
+	qsort(&Corpses[0], m_Corpses.size(), sizeof(CPlayerNPC*), SortByCameraDistance);
+
+	for (CPlayerNPC* pCorpse : Corpses)
 	{
-		auto pCorpse = *itr;
-		if(pCorpse->LODLevel() < 0 || pCorpse->LODLevel() >= MAX_CHR_LOD) continue; // Level Of Detail 이 없는건 지나간다.
+		// Level Of Detail 이 없는건 지나간다.
+		if (pCorpse->LODLevel() < 0 || pCorpse->LODLevel() >= MAX_CHR_LOD)
+			continue;
 
 		CN3VMesh* pvMesh = pCorpse->m_Chr.CollisionMesh();
-		if(nullptr != pvMesh && pvMesh->Pick(pCorpse->m_Chr.m_Matrix, vPos, vDir)) 
+		if (pvMesh != nullptr && pvMesh->Pick(pCorpse->m_Chr.m_Matrix, vPos, vDir))
 		{
 			iIDResult = pCorpse->IDNumber();
 			return pCorpse;
