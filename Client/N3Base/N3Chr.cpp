@@ -1216,8 +1216,11 @@ bool CN3Chr::Load(HANDLE hFile)
 		this->AniCtrlSet(szFN);
 	}
 
-	ReadFile(hFile, m_nJointPartStarts, sizeof(m_nJointPartStarts), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
-	ReadFile(hFile, m_nJointPartEnds, sizeof(m_nJointPartEnds), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 끝 번호
+	for (int i = 0; i < 2; i++)
+		ReadFile(hFile, &m_nJointPartStarts[i], sizeof(int), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
+
+	for (int i = 0; i < 2; i++)
+		ReadFile(hFile, &m_nJointPartEnds[i], sizeof(int), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 끝 번호
 
 //////////////////////////////////////////////////
 //	Coded (By Dino On 2002-10-10 오후 2:33:07 )
@@ -1350,8 +1353,11 @@ bool CN3Chr::Save(HANDLE hFile)
 	if (nL > 0)
 		WriteFile(hFile, m_pAniCtrlRef->FileName().c_str(), nL, &dwRWC, nullptr);
 
-	WriteFile(hFile, m_nJointPartStarts, sizeof(m_nJointPartStarts), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
-	WriteFile(hFile, m_nJointPartEnds, sizeof(m_nJointPartEnds), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 끝 번호
+	for (int i = 0; i < 2; i++)
+		WriteFile(hFile, &m_nJointPartStarts[i], sizeof(int), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
+
+	for (int i = 0; i < 2; i++)
+		WriteFile(hFile, &m_nJointPartEnds[i], sizeof(int), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 끝 번호
 
 //////////////////////////////////////////////////
 //	Coded (By Dino On 2002-10-11 오후 2:19:11 )
@@ -1806,14 +1812,12 @@ void CN3Chr::BuildMesh()
 	float fWeight = 0;
 	int nJIndex = 0, nAffect = 0;
 
-	CN3IMesh* pIMesh = nullptr;
-	CN3Skin* pSkin = nullptr;
-
 	__Matrix44* pMtxJs = &(m_MtxJoints[0]);
 	__Matrix44* pMtxJIs = &(m_MtxInverses[0]);
 
 	for (CN3CPart* pPart : m_Parts)
 	{
+		CN3Skin* pSkin = pPart->Skin(m_nLOD);
 		if (pSkin == nullptr)
 			continue;
 
@@ -2101,15 +2105,12 @@ void CN3Chr::AniCtrlSet(const std::string& szFN)
 	s_MngAniCtrl.Delete(&m_pAniCtrlRef);
 	m_pAniCtrlRef = s_MngAniCtrl.Get(szFN);
 	
-	for(int i = 0; i < MAX_CHR_ANI_PART; i++)
-	{
-		m_FrmCtrl.iAni = -1;
-		m_FrmCtrl.bOnceAndFreeze = false;	// 한번만 하고 멈춰야 되는가??
-		m_FrmCtrl.fFrmCur = 0;
-		m_FrmCtrl.fFrmPrev = 0;				// 최근 프레임
-		m_FrmCtrl.iAniLoop = 0;
-		m_FrmCtrl.pAniData = nullptr;
-	}
+	m_FrmCtrl.iAni = -1;
+	m_FrmCtrl.bOnceAndFreeze = false;	// 한번만 하고 멈춰야 되는가??
+	m_FrmCtrl.fFrmCur = 0;
+	m_FrmCtrl.fFrmPrev = 0;				// 최근 프레임
+	m_FrmCtrl.iAniLoop = 0;
+	m_FrmCtrl.pAniData = nullptr;
 }
 
 int	CN3Chr::AniCurSet(	int iAni,					// Animation 번호,
