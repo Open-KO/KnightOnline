@@ -24,6 +24,10 @@ on:
       - 'Server/**/*'
       - 'shared/**/*'
 
+    paths-ignore:
+      - '**/*.vcxproj'
+      - '**/*.vcxproj.filters'
+
   pull_request:
     branches:
     - master
@@ -41,6 +45,10 @@ on:
       - 'deps/spdlog-cmake/CMakeLists.txt'
       - 'Server/**/*'
       - 'shared/**/*'
+      
+    paths-ignore:
+      - '**/*.vcxproj'
+      - '**/*.vcxproj.filters'
 
   workflow_dispatch:
 
