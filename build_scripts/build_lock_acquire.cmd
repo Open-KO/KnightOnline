@@ -14,7 +14,7 @@ IF "%~1"=="" (
 SET "GIT_LOCK_DIR=%~1"
 
 REM Config
-SET MAX_WAIT_TIME=300
+SET MAX_WAIT_TIME=1800
 SET SECONDS_ELAPSED=0
 
 REM Try to acquire the "lock"
