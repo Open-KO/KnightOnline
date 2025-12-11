@@ -104,29 +104,32 @@ BOOL CDlgSaveDivision::OnInitDialog()
 void CDlgSaveDivision::OnSelchangeCbDivision() 
 {
 	int idx = m_cbDivision.GetCurSel();
-	if(idx<0) return;
+	if (idx < 0)
+		return;
 
-	m_iDivisionSize = m_cbDivision.GetItemData(idx);
+	m_iDivisionSize = static_cast<int>(m_cbDivision.GetItemData(idx));
 	m_rtDrawRegion.right = m_rtDrawRegion.left + (m_iDivisionSize * TEX_VIEW_SIZE / m_iTotalSize);
 	m_rtDrawRegion.bottom = m_rtDrawRegion.top + (m_iDivisionSize * TEX_VIEW_SIZE / m_iTotalSize);
 
-	if(m_rtDrawRegion.left<0)
+	if (m_rtDrawRegion.left < 0)
 	{
 		m_rtDrawRegion.left = 0;
 		m_rtDrawRegion.right = m_iDivisionSize * TEX_VIEW_SIZE / m_iTotalSize;
 	}
-	if(m_rtDrawRegion.right>=TEX_VIEW_SIZE)
+
+	if (m_rtDrawRegion.right >= TEX_VIEW_SIZE)
 	{
 		m_rtDrawRegion.right = TEX_VIEW_SIZE - 1;
 		m_rtDrawRegion.left = m_rtDrawRegion.right - (m_iDivisionSize * TEX_VIEW_SIZE / m_iTotalSize);
 	}
-	if(m_rtDrawRegion.top<0)
+
+	if (m_rtDrawRegion.top < 0)
 	{
 		m_rtDrawRegion.top = 0;
 		m_rtDrawRegion.bottom = m_iDivisionSize * TEX_VIEW_SIZE / m_iTotalSize;
-		
 	}
-	if(m_rtDrawRegion.bottom>=TEX_VIEW_SIZE)
+
+	if (m_rtDrawRegion.bottom >= TEX_VIEW_SIZE)
 	{
 		m_rtDrawRegion.bottom = TEX_VIEW_SIZE - 1;
 		m_rtDrawRegion.top = m_rtDrawRegion.bottom - (m_iDivisionSize * TEX_VIEW_SIZE / m_iTotalSize);

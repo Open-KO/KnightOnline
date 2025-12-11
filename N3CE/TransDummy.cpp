@@ -209,8 +209,9 @@ __DUMMYCUBE* CTransDummy::Pick(int x, int y)
 
 BOOL CTransDummy::MouseMsgFilter(LPMSG pMsg)
 {
-	int iSize = m_SelObjArray.GetSize();
-	if (iSize == 0) return FALSE;
+	int iSize = static_cast<int>(m_SelObjArray.GetSize());
+	if (iSize == 0)
+		return FALSE;
 
 	switch(pMsg->message)
 	{
@@ -305,20 +306,23 @@ void CTransDummy::GetPickRay(POINT point, __Vector3& vDir, __Vector3& vOrig)
 
 void CTransDummy::TransDiff(__Vector3* pvDiffPos, __Quaternion* pqDiffRot, __Vector3* pvDiffScale)
 {
-	int i, iSize = m_SelObjArray.GetSize();
-	if (iSize<=0) return;
-	if (pvDiffPos)
+	int iSize = static_cast<int>(m_SelObjArray.GetSize());
+	if (iSize <= 0)
+		return;
+
+	if (pvDiffPos != nullptr)
 	{
-		for (i=0; i<iSize; ++i)
+		for (int i = 0; i < iSize; i++)
 		{
 			CN3Transform* pSelObj = m_SelObjArray.GetAt(i);
 			_ASSERT(pSelObj);
-			pSelObj->PosSet( pSelObj->Pos() + (*pvDiffPos) );
+			pSelObj->PosSet(pSelObj->Pos() + (*pvDiffPos));
 		}
 	}
-	if (pqDiffRot)
+
+	if (pqDiffRot != nullptr)
 	{
-		for (i=0; i<iSize; ++i)
+		for (int i = 0; i < iSize; i++)
 		{
 			CN3Transform* pSelObj = m_SelObjArray.GetAt(i);
 			_ASSERT(pSelObj);
@@ -327,16 +331,17 @@ void CTransDummy::TransDiff(__Vector3* pvDiffPos, __Quaternion* pqDiffRot, __Vec
 			pSelObj->RotSet(qtRot);
 		}
 	}
-	if (pvDiffScale)
+
+	if (pvDiffScale != nullptr)
 	{
-		for (i=0; i<iSize; ++i)
+		for (int i = 0; i < iSize; i++)
 		{
 			CN3Transform* pSelObj = m_SelObjArray.GetAt(i);
 			_ASSERT(pSelObj && m_vPrevScaleArray);
 			__Vector3 vScale;
-			vScale.x = m_vPrevScaleArray[i].x*pvDiffScale->x;
-			vScale.y = m_vPrevScaleArray[i].y*pvDiffScale->y;
-			vScale.z = m_vPrevScaleArray[i].z*pvDiffScale->z;
+			vScale.x = m_vPrevScaleArray[i].x * pvDiffScale->x;
+			vScale.y = m_vPrevScaleArray[i].y * pvDiffScale->y;
+			vScale.z = m_vPrevScaleArray[i].z * pvDiffScale->z;
 			pSelObj->ScaleSet(vScale);
 		}
 	}

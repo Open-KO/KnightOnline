@@ -399,13 +399,13 @@ void GLItemViewer::RenderItem(ItemInfo* item, e_Race race) {
 	e_ItemType type = item->getItemType();
 
 	char filename[0xFFFF] = "";
-	if(mesh_file != "") {
+	if(!mesh_file.empty()){
 		strcpy(filename, mesh_file.c_str());
 
-		int len_fn = strlen(filename);
+		size_t len_fn = strlen(filename);
 		char* exten = &filename[len_fn-7];
 
-		if(!strcmp(exten, "n3cplug")) {
+		if(len_fn >= 7 && !strcmp(exten, "n3cplug")) {
 
 			eType = ITEM_TYPE_PLUG;
 
@@ -418,7 +418,7 @@ void GLItemViewer::RenderItem(ItemInfo* item, e_Race race) {
 
 			CN3CPlug_Load(pFile);
 			fclose(pFile);
-		} else if(!strcmp(exten, "n3cpart")) {
+		} else if(len_fn >= 7 && !strcmp(exten, "n3cpart")) {
 
 			eType = ITEM_TYPE_PART;
 

@@ -340,36 +340,41 @@ CN3Transform* CMapMng::AddObjectToOutputScene(CN3Transform* pObj)
 // 선택한 객체를 지움
 void CMapMng::DeleteSelObjectFromOutputScene()
 {
-	if (GetCursorMode() == CM_EDIT_RIVER)		// 강물 편집일 경우 선택 점 지우기
+	// 강물 편집일 경우 선택 점 지우기
+	if (GetCursorMode() == CM_EDIT_RIVER)
 	{
 		m_RiverMng.DeleteSelectedVertex();
 		return;
 	}
 
-	if(GetCursorMode() == CM_EDIT_POND)
-//	{
-//		m_PondMng.DeleteSelectedVertex();
+	if (GetCursorMode() == CM_EDIT_POND)
+	{
+		// m_PondMng.DeleteSelectedVertex();
 		return;
-//	}
+	}
 
-	int i, iSize = m_SelOutputObjArray.GetSize();
-	if (iSize == 0) return;
-	for (i=0; i<iSize; ++i)
+	int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+	if (iSize == 0)
+		return;
+
+	for (int i = 0; i < iSize; i++)
 	{
 		CN3Transform* pSelObj = m_SelOutputObjArray.GetAt(i);
-		if (pSelObj == nullptr) continue;
+		if (pSelObj == nullptr)
+			continue;
+
 		DWORD dwType = pSelObj->Type();
-		if ( dwType & OBJ_CHARACTER)
-		{
-			m_pSceneOutput->ChrDelete((CN3Chr*)pSelObj);
-		}
+		if (dwType & OBJ_CHARACTER)
+			m_pSceneOutput->ChrDelete((CN3Chr*) pSelObj);
 		else if (dwType & OBJ_SHAPE)
-		{
-			m_pSceneOutput->ShapeDelete((CN3Shape*)pSelObj);
-		}
+			m_pSceneOutput->ShapeDelete((CN3Shape*) pSelObj);
 	}
+
 	m_SelOutputObjArray.RemoveAll();
-	if (m_pDummy) m_pDummy->SetSelObj(nullptr);
+
+	if (m_pDummy != nullptr)
+		m_pDummy->SetSelObj(nullptr);
+
 	m_pDlgOutputList->UpdateTree(m_pSceneOutput);
 	Invalidate();
 }
@@ -571,10 +576,13 @@ void CMapMng::Tick()
 
 void CMapMng::Render()
 {
-	if(false == m_bLoadingComplete) return; // 로딩이 아직 안 끝났다...
+	// 로딩이 아직 안 끝났다...
+	if (!m_bLoadingComplete)
+		return;
 
 	CN3EngTool* pEng = m_pMainFrm->m_pEng;
-	if (pEng == nullptr) return;
+	if (pEng == nullptr)
+		return;
 
 	pEng->s_lpD3DDev->SetRenderState(D3DRS_FILLMODE, m_FillMode);
 	pEng->s_lpD3DDev->SetRenderState(D3DRS_SHADEMODE, m_ShadeMode);
@@ -582,32 +590,37 @@ void CMapMng::Render()
 	if (m_bRenderAxisAndGrid) // 축과 그리드 그리기...
 	{
 		pEng->RenderAxis();
-		__Matrix44 mtxWorld; mtxWorld.Scale(32.0f, 32.0f, 32.0f);
-		if(m_SelOutputObjArray.GetSize() > 0)
+
+		__Matrix44 mtxWorld;
+		mtxWorld.Scale(32.0f, 32.0f, 32.0f);
+
+		if (m_SelOutputObjArray.GetSize() > 0)
 		{
 			CN3Transform* pSelObj = m_SelOutputObjArray.GetAt(0);
-			if(pSelObj) // 선택된 객체가 있으면..
-			{
+
+			// 선택된 객체가 있으면..
+			if (pSelObj != nullptr)
 				mtxWorld.PosSet(0, pSelObj->Pos().y, 0); // 높이를 올린다.
-			}
 		}
+
 		pEng->RenderGrid(mtxWorld); // 그리드 그리기...
 	}
 
 	if (m_pTerrain) m_pTerrain->Render();
 	if (m_pSceneOutput && !m_bHideObj) m_pSceneOutput->Render();
 
-	int i, iSize = m_SelOutputObjArray.GetSize();
-	for (i=0; i<iSize; ++i)
+	int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+	for (int i = 0; i < iSize; i++)
 	{
 		CN3Transform* pSelObj = m_SelOutputObjArray.GetAt(i);
-		if (pSelObj == nullptr) continue;
-		
-		if(pSelObj->Type() & OBJ_SHAPE)
+		if (pSelObj == nullptr)
+			continue;
+
+		if (pSelObj->Type() & OBJ_SHAPE)
 		{
-			((CN3Shape*)pSelObj)->RenderSelected(m_bViewWireFrame);
-			((CN3Shape*)pSelObj)->RenderCollisionMesh(); // 충돌 메시 그리기...
-			((CN3Shape*)pSelObj)->RenderClimbMesh(); // 올라가는 메시 그리기..
+			((CN3Shape*) pSelObj)->RenderSelected(m_bViewWireFrame);
+			((CN3Shape*) pSelObj)->RenderCollisionMesh(); // 충돌 메시 그리기...
+			((CN3Shape*) pSelObj)->RenderClimbMesh(); // 올라가는 메시 그리기..
 		}
 	}
 
@@ -616,30 +629,37 @@ void CMapMng::Render()
 		if (m_pSelSourceObj && m_bRenderSelObj)
 		{
 			m_bRenderSelObj = FALSE;
+
 			DWORD dwType = m_pSelSourceObj->Type();
 			if (dwType & OBJ_CHARACTER)
-			{
-				((CN3Chr*)m_pSelSourceObj)->Render();
-			}
+				((CN3Chr*) m_pSelSourceObj)->Render();
 			else if (dwType & OBJ_SHAPE)
-			{
-				((CN3Shape*)m_pSelSourceObj)->Render();
-			}
+				((CN3Shape*) m_pSelSourceObj)->Render();
 		}
 	}
 	if (m_pDummy) m_pDummy->Render();
 
-	if(m_pNPCPath && m_pNPCPath->m_bActive) m_pNPCPath->Render();
-	if(m_pWall&& m_pWall->m_bActive) m_pWall->Render();
-	if(m_pEventMgr && m_pEventMgr->m_bActive) m_pEventMgr->Render();
-	if(m_pRegenUser && m_pRegenUser->m_bActive) m_pRegenUser->Render();	
-	if(m_pSoundMgr && m_pSoundMgr->m_bActive) m_pSoundMgr->Render();
-	if(m_pLightObjMgr && m_pLightObjMgr->m_bActive) m_pLightObjMgr->Render();
-	
-	// 풀심기 테스트 
-	if( m_SowSeedMng.bActive == TRUE)
-		m_SowSeedMng.Render(s_lpD3DDev);
+	if (m_pNPCPath != nullptr && m_pNPCPath->m_bActive)
+		m_pNPCPath->Render();
 
+	if (m_pWall != nullptr && m_pWall->m_bActive)
+		m_pWall->Render();
+
+	if (m_pEventMgr != nullptr && m_pEventMgr->m_bActive)
+		m_pEventMgr->Render();
+
+	if (m_pRegenUser != nullptr && m_pRegenUser->m_bActive)
+		m_pRegenUser->Render();
+
+	if (m_pSoundMgr != nullptr && m_pSoundMgr->m_bActive)
+		m_pSoundMgr->Render();
+
+	if (m_pLightObjMgr != nullptr && m_pLightObjMgr->m_bActive)
+		m_pLightObjMgr->Render();
+
+	// 풀심기 테스트 
+	if (m_SowSeedMng.bActive)
+		m_SowSeedMng.Render(s_lpD3DDev);
 
 	m_RiverMng.Render();
 	m_PondMng.Render();
@@ -675,16 +695,20 @@ void CMapMng::FocusSelObj()
 {
 	ASSERT(m_pSceneOutput);
 	CN3Camera* pCamera = m_pSceneOutput->CameraGetActive();
-	int iSize = m_SelOutputObjArray.GetSize();
-	if (iSize<=0 || pCamera == nullptr) return;
+	int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+	if (iSize <= 0 || pCamera == nullptr)
+		return;
+
 	__Vector3 vMin, vMax;
-	vMin.Set(FLT_MAX,FLT_MAX,FLT_MAX);	vMax.Set(-FLT_MAX,-FLT_MAX,-FLT_MAX);
-	CN3Transform *pN3;
+	vMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+	vMax.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+	CN3Transform* pN3;
 	CN3TransformCollision* pSelObj;
-	for (int i=0; i<iSize; ++i)
+	for (int i = 0; i < iSize; ++i)
 	{
 		pN3 = m_SelOutputObjArray.GetAt(i);
-		pSelObj = (CN3TransformCollision*)pN3;
+		pSelObj = (CN3TransformCollision*) pN3;
 
 		__Vector3 vTmpMin = pSelObj->Min();
 		__Vector3 vTmpMax = pSelObj->Max();
@@ -697,8 +721,9 @@ void CMapMng::FocusSelObj()
 		if (vTmpMax.z > vMax.z) vMax.z = vTmpMax.z;
 	}
 
+	// 물체 크기에 맞춰 카메라 거리 조절
 	if (vMin.x != FLT_MAX && vMax.x != -FLT_MAX)
-	{	// 물체 크기에 맞춰 카메라 거리 조절
+	{
 		__Vector3 vDir = pCamera->Dir();
 		__Vector3 vAt = vMin + ((vMax-vMin)/2);
 		pCamera->AtPosSet(vAt);
@@ -917,11 +942,11 @@ BOOL CMapMng::CameraMove(LPMSG pMsg)
 
 BOOL CMapMng::MouseMsgFilter(LPMSG pMsg)
 {
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_LBUTTONDOWN:
 	{
-		DWORD nFlags = pMsg->wParam;
+		DWORD_PTR nFlags = pMsg->wParam;
 		POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 		if (m_CursorMode == CM_FLAT_TERRAIN && m_pBrushDlg->m_rdoFlatMode==0)
 		{
@@ -1002,11 +1027,11 @@ BOOL CMapMng::MouseMsgFilter(LPMSG pMsg)
 	}
 
 	// 나머지 객체 선택 및 배치
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 			if (bSelectDrag)
 			{
@@ -1213,73 +1238,105 @@ CN3Base* CMapMng::Pick(POINT point, int* pnPart)	// Object Picking...
 
 void CMapMng::SelectObject(CN3Base* pObj, BOOL IsSourceObj, BOOL bAdd)
 {
+	// source 선택
 	if (IsSourceObj)
-	{	// source 선택
-		if (pObj && pObj->Type() & (OBJ_CHARACTER | OBJ_SHAPE))	m_pSelSourceObj = (CN3Transform*)pObj;
-		else m_pSelSourceObj = nullptr;
+	{
+		if (pObj != nullptr
+			&& pObj->Type() & (OBJ_CHARACTER | OBJ_SHAPE))
+			m_pSelSourceObj = (CN3Transform*) pObj;
+		else
+			m_pSelSourceObj = nullptr;
 	}
+	// 이미 배치된 객체 선택
 	else
-	{	// 이미 배치된 객체 선택
-		CN3Transform* pSelObj=nullptr;
-		if (pObj && pObj->Type() & (OBJ_CHARACTER | OBJ_SHAPE))
+	{
+		CN3Transform* pSelObj = nullptr;
+		if (pObj != nullptr && pObj->Type() & (OBJ_CHARACTER | OBJ_SHAPE))
 		{
-			pSelObj = (CN3Transform*)pObj;
-			if (bAdd)	// 추가
+			pSelObj = (CN3Transform*) pObj;
+
+			// 추가
+			if (bAdd)
 			{
 				BOOL bAleadySelected = FALSE;
-				int i, iSize = m_SelOutputObjArray.GetSize();
-				for (i=0; i<iSize; ++i) if (m_SelOutputObjArray.GetAt(i) == pSelObj) {bAleadySelected=TRUE;break;}
-				if (bAleadySelected) m_SelOutputObjArray.RemoveAt(i);	// 이미 있으므로 선택목록에서 제거
-				else m_SelOutputObjArray.InsertAt(0, pSelObj);			// 추가
+				int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+				int i = 0;
+				for (; i < iSize; i++)
+				{
+					if (m_SelOutputObjArray.GetAt(i) == pSelObj)
+					{
+						bAleadySelected = TRUE;
+						break;
+					}
+				}
+
+				if (bAleadySelected)
+					m_SelOutputObjArray.RemoveAt(i);			// 이미 있으므로 선택목록에서 제거
+				else
+					m_SelOutputObjArray.InsertAt(0, pSelObj);	// 추가
 			}
-			else	// 새로 선택
+			// 새로 선택
+			else
 			{
 				m_SelOutputObjArray.RemoveAll();
 				m_SelOutputObjArray.Add(pSelObj);
 			}
 		}
-		else	// 잘못 선택했거나 캐릭터나 shape를 선택하지 않았다.
+		// 잘못 선택했거나 캐릭터나 shape를 선택하지 않았다.
+		else
 		{
-			if (bAdd==FALSE) m_SelOutputObjArray.RemoveAll();
+			if (!bAdd)
+				m_SelOutputObjArray.RemoveAll();
 		}
+
 		OnSelChanged();
 	}
 
-	if(m_SelOutputObjArray.GetSize() == 1) // 한개를 선택했다면..
-	{
+	// 한개를 선택했다면..
+	if (m_SelOutputObjArray.GetSize() == 1)
 		m_pMainFrm->UpdateTransformInfo();
-	}
 }
 
 void CMapMng::OnSelChanged()
 {
-	CN3Transform* pSelObj=nullptr;
-	int iCount = m_SelOutputObjArray.GetSize();
-	if (iCount>0) pSelObj = m_SelOutputObjArray.GetAt(0);
-	if (pSelObj)
+	CN3Transform* pSelObj = nullptr;
+
+	int iCount = static_cast<int>(m_SelOutputObjArray.GetSize());
+	if (iCount > 0)
+		pSelObj = m_SelOutputObjArray.GetAt(0);
+
+	if (pSelObj != nullptr)
 	{
-		if(m_pDlgBase && m_pDlgBase->IsWindowVisible())
+		if (m_pDlgBase != nullptr && m_pDlgBase->IsWindowVisible())
 		{
 			m_pDlgBase->UpdateInfo();
 			m_pDlgBase->UpdateWindow();
 		}
-		if(iCount == 1 && m_pDlgOutputList 
-			&& m_pDlgOutputList->GetSafeHwnd() != nullptr) 
+
+		if (iCount == 1
+			&& m_pDlgOutputList != nullptr
+			&& m_pDlgOutputList->GetSafeHwnd() != nullptr)
 			//m_pDlgOutputList->SelectObject(TVI_ROOT, pSelObj);
 			m_pDlgOutputList->SelectObject(pSelObj);
 	}
-	if (m_pDummy)
+
+	if (m_pDummy != nullptr)
 	{
 		m_pDummy->SetSelObj(pSelObj);
-		for(int i=1; i<iCount; ++i)	m_pDummy->AddSelObj(m_SelOutputObjArray.GetAt(i));
+
+		for (int i = 1; i < iCount; i++)
+			m_pDummy->AddSelObj(m_SelOutputObjArray.GetAt(i));
 	}
+
 	Invalidate();
 }
 
 void CMapMng::SelectObjectByDragRect(RECT* pRect, BOOL bAdd)
 {
-	if (pRect == nullptr || m_pSceneOutput == nullptr) return;
-	if (bAdd == FALSE) m_SelOutputObjArray.RemoveAll();
+	if (pRect == nullptr || m_pSceneOutput == nullptr)
+		return;
+
+	if (!bAdd) m_SelOutputObjArray.RemoveAll();
 
 	CN3Eng* pEng = m_pMainFrm->m_pEng;
 	LPDIRECT3DDEVICE9 pD3DDev = pEng->s_lpD3DDev;
@@ -1291,33 +1348,44 @@ void CMapMng::SelectObjectByDragRect(RECT* pRect, BOOL bAdd)
 
 	D3DVIEWPORT9 vp = pEng->s_CameraData.vp;
 
-	int i, iSC = m_pSceneOutput->ShapeCount();
-	for (i=0; i<iSC;)
+	int iSC = m_pSceneOutput->ShapeCount();
+	for (int i = 0; i < iSC; i++)
 	{
-		CN3TransformCollision*	pObj = m_pSceneOutput->ShapeGet(i);
+		CN3TransformCollision* pObj = m_pSceneOutput->ShapeGet(i);
 		D3DXVECTOR4 v;
-		D3DXVec3Transform(&v, &(pObj->Pos()), &matVP);
-		float fScreenZ = (v.z/v.w);
-		if (fScreenZ<1.0 && fScreenZ>0.0)
+		D3DXVec3Transform(&v, &pObj->Pos(), &matVP);
+		float fScreenZ = (v.z / v.w);
+		if (fScreenZ < 1.0 && fScreenZ>0.0)
 		{
-			float fScreenX = ((v.x/v.w)+1.0f)*(vp.Width)/2.0f;
-			float fScreenY = (1.0f-(v.y/v.w))*(vp.Height)/2.0f;
-			if (fScreenX >= pRect->left && fScreenX <= pRect->right &&
-				fScreenY >= pRect->top && fScreenY <= pRect->bottom)
+			float fScreenX = ((v.x / v.w) + 1.0f) * (vp.Width) / 2.0f;
+			float fScreenY = (1.0f - (v.y / v.w)) * (vp.Height) / 2.0f;
+			if (fScreenX >= pRect->left && fScreenX <= pRect->right
+				&& fScreenY >= pRect->top && fScreenY <= pRect->bottom)
 			{
 				BOOL bAleadySelected = FALSE;
-				int j, iSize = m_SelOutputObjArray.GetSize();
-				for (j=0; j<iSize;++j) if (m_SelOutputObjArray.GetAt(j) == pObj) {bAleadySelected=TRUE;break;}
-				if (bAleadySelected) m_SelOutputObjArray.RemoveAt(j);	// 이미 있으므로 선택목록에서 제거
-				else m_SelOutputObjArray.InsertAt(0, pObj);			// 추가
+				int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+				int j = 0;
+				for (; j < iSize; j++)
+				{
+					if (m_SelOutputObjArray.GetAt(j) == pObj)
+					{
+						bAleadySelected = TRUE;
+						break;
+					}
+				}
+
+				if (bAleadySelected)
+					m_SelOutputObjArray.RemoveAt(j);		// 이미 있으므로 선택목록에서 제거
+				else
+					m_SelOutputObjArray.InsertAt(0, pObj);	// 추가
 			}
 		}
-		++i;
 	}
+
 	OnSelChanged();
 }
 
-int CMapMng::SortByCameraDistance(const void *pArg1, const void *pArg2)
+int CMapMng::SortByCameraDistance(const void* pArg1, const void* pArg2)
 {
 	__Sort *pObj1 = (__Sort*)pArg1;
 	__Sort *pObj2 = (__Sort*)pArg2;
@@ -1843,18 +1911,24 @@ void CMapMng::SetCursorMode(int iMode)
 	}
 
 	m_CursorMode = iMode;
-	if (m_pDummy)
+
+	if (m_pDummy != nullptr)
 	{
-		int iSize = m_SelOutputObjArray.GetSize();
-		if (iSize>0)
+		int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+		if (iSize > 0)
 		{
 			m_pDummy->SetSelObj(m_SelOutputObjArray.GetAt(0));
-			for(int i=1; i<iSize; ++i)	m_pDummy->AddSelObj(m_SelOutputObjArray.GetAt(i));
+			for (int i = 1; i < iSize; i++)
+				m_pDummy->AddSelObj(m_SelOutputObjArray.GetAt(i));
 		}
-		else m_pDummy->SetSelObj(nullptr);
+		else
+		{
+			m_pDummy->SetSelObj(nullptr);
+		}
 
 		m_pDummy->m_pTerrainRef = m_pTerrain; // 더미에 지형 포인터를 넣어준다.
 	}
+
 	m_pMainFrm->GetActiveView()->Invalidate(FALSE);
 }
 
@@ -1867,19 +1941,26 @@ void CMapMng::Invalidate()
 	}
 }
 
+// 선택한 객체를 지형에 붙인다.(Y값만 조정)
 void CMapMng::DropSelObjToTerrain()
-{// 선택한 객체를 지형에 붙인다.(Y값만 조정)
-	if (m_pTerrain == nullptr) return;
-	int i, iSize = m_SelOutputObjArray.GetSize();
-	for (i=0; i<iSize; ++i)
+{
+	if (m_pTerrain == nullptr)
+		return;
+
+	int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+	for (int i = 0; i < iSize; i++)
 	{
 		CN3Transform* pSelObj = m_SelOutputObjArray.GetAt(i);
 		ASSERT(pSelObj);
+
 		__Vector3 vPos = pSelObj->Pos();
 		vPos.y = m_pTerrain->GetHeight(vPos.x, vPos.z);
 		pSelObj->PosSet(vPos);
-		if (i==0 && m_pDummy) m_pDummy->PosSet(vPos);
+
+		if (i == 0 && m_pDummy)
+			m_pDummy->PosSet(vPos);
 	}
+
 	Invalidate();
 }
 
@@ -2108,7 +2189,7 @@ void CMapMng::SaveObjectPostDataPartition(LPCTSTR lpszFileName, float psx, float
 		ShapeList.push_back(i);
 	}
 
-	int RealCount = ShapeList.size();
+	int RealCount = static_cast<int>(ShapeList.size());
 	fprintf(stream, "Shape Post Count : %d\n", RealCount);
 
 	char szSFN[MAX_PATH] = "";
@@ -2472,25 +2553,20 @@ void CMapMng::DeleteUnusedFiles()
 	
 	// 파일 지우기 대화상자 띄우기..
 	CDlgUnusedFiles dlg;
-	int iUFC = unusedFNs.size();
-	for(i = 0; i < iUFC; i++)
-	{
-		dlg.m_FileNames.Add(unusedFNs[i].c_str());
-	}
+	for (const std::string& filename : unusedFNs)
+		dlg.m_FileNames.Add(filename.c_str());
 
-	int iIFC = invalidFNs.size();
-	for(i = 0; i < iIFC; i++)
-	{
-		dlg.m_InvalidFileNames.Add(invalidFNs[i].c_str());
-	}
+	for (const std::string& filename : invalidFNs)
+		dlg.m_InvalidFileNames.Add(filename.c_str());
 
 	dlg.DoModal();
 	
 	// 모두 업데이트..
 	m_pSelSourceObj = nullptr; // 이렇게 해주어야 뻑이 안난다.
 	m_SelOutputObjArray.RemoveAll();
-	this->LoadSourceObjects(); // Source Object 를 다시 읽고..
-	this->UpdateAll(); // 몽땅 업데이트...
+
+	LoadSourceObjects(); // Source Object 를 다시 읽고..
+	UpdateAll(); // 몽땅 업데이트...
 }
 
 void CMapMng::DeleteOverlappedObjects() // 위치가 겹친 젝트를 찾는다.
@@ -2523,11 +2599,8 @@ void CMapMng::DeleteOverlappedObjects() // 위치가 겹친 젝트를 찾는다.
 		ProgressBar.SetPos(iPosProgress);
 	}
 
-	iSC = OverlappedObjects.size();
-	for(i = 0; i < iSC; i++)
-	{
-		m_pSceneOutput->ShapeDelete(OverlappedObjects[i]); // 겹친거 지우기..
-	}
+	for (CN3Shape* pShape : OverlappedObjects)
+		m_pSceneOutput->ShapeDelete(pShape); // 겹친거 지우기..
 
 	// 업데이트...
 	m_pSelSourceObj = nullptr; // 이렇게 해주어야 뻑이 안난다.
@@ -2537,33 +2610,26 @@ void CMapMng::DeleteOverlappedObjects() // 위치가 겹친 젝트를 찾는다.
 
 void CMapMng::DeleteSelectedSourceObjects()
 {
-	if(nullptr == m_pSelSourceObj || !(m_pSelSourceObj->Type() & OBJ_SHAPE)) return;
+	if (m_pSelSourceObj == nullptr || !(m_pSelSourceObj->Type() & OBJ_SHAPE))
+		return;
 
 	std::vector<CN3Shape*> SameObjects;
 	int iSC = m_pSceneOutput->ShapeCount();
-
-	CN3Shape* pObj;
-	int i;
-	for(i = 0; i < iSC; i++)
+	for (int i = 0; i < iSC; i++)
 	{
-		pObj = m_pSceneOutput->ShapeGet(i);
-		if(pObj->FileName() == m_pSelSourceObj->FileName())
-		{
+		CN3Shape* pObj = m_pSceneOutput->ShapeGet(i);
+		if (pObj->FileName() == m_pSelSourceObj->FileName())
 			SameObjects.push_back(pObj);
-		}
 	}
 
-	iSC = SameObjects.size();
-	for(i = 0; i < iSC; i++)
-	{
-		m_pSceneOutput->ShapeDelete(SameObjects[i]); // 겹친거 지우기..
-	}
+	for (CN3Shape* pShape : SameObjects)
+		m_pSceneOutput->ShapeDelete(pShape); // 겹친거 지우기..
 
 	// 업데이트...
-	m_pSceneSource->ShapeDelete((CN3Shape*)m_pSelSourceObj);
+	m_pSceneSource->ShapeDelete((CN3Shape*) m_pSelSourceObj);
 	m_pSelSourceObj = nullptr; // 이렇게 해주어야 뻑이 안난다.
 	m_SelOutputObjArray.RemoveAll();
-	this->UpdateAll(); // 몽땅 업데이트...
+	UpdateAll(); // 몽땅 업데이트...
 }
 
 CN3Camera* CMapMng::CameraGet()
@@ -2628,15 +2694,16 @@ void CMapMng::SetEditState(ENUM_EDIT_STATE eEditStat)
 
 			//	선택한 것들을 백업하고
 			CN3Transform* pDestObj = nullptr;
-			int j, iSize = m_SelOutputObjArray.GetSize();
-			for(j=0;j<iSize;++j)
+			int iSize = static_cast<int>(m_SelOutputObjArray.GetSize());
+			for (int j = 0; j < iSize; j++)
 			{
 				pDestObj = m_SelOutputObjArray.GetAt(j);
-				if(pDestObj==nullptr) continue;
+				if (pDestObj == nullptr)
+					continue;
 
-				m_SelOutputObjBack.InsertAt(0,pDestObj);
+				m_SelOutputObjBack.InsertAt(0, pDestObj);
 
-				if(vOldPos.Magnitude() == 0.0f)
+				if (vOldPos.Magnitude() == 0.0f)
 					vOldPos = pDestObj->Pos();
 			}
 			m_eSelObjBackState = eEDIT_COPY;
@@ -2645,50 +2712,54 @@ void CMapMng::SetEditState(ENUM_EDIT_STATE eEditStat)
 
 	case eEDIT_PASTE:
 		{
-			if(m_eSelObjBackState == eEDIT_COPY)
+			if (m_eSelObjBackState == eEDIT_COPY)
 			{
-				CN3Transform* pDestObj = nullptr, *pNewObj=nullptr;
-				__Vector3 vNewPos,vObjPos;
-				int j, iSize;
+				CN3Transform* pDestObj = nullptr, *pNewObj = nullptr;
+				__Vector3 vNewPos, vObjPos;
 
-				iSize = m_SelOutputObjBack.GetSize();
-				if(iSize==0) return;	
+
+				int iSize = static_cast<int>(m_SelOutputObjBack.GetSize());
+				if (iSize == 0) return;
 
 				//	찍을 새로운위치를 입력
 				ASSERT(m_pTerrain);
-				CPoint point = ((CN3MEView*)m_pMainFrm->GetActiveView())->m_CurrMousePos;
+				CPoint point = ((CN3MEView*) m_pMainFrm->GetActiveView())->m_CurrMousePos;
 				m_pTerrain->Pick(point.x, point.y, &vNewPos);
 
-				if(vOldPos.Magnitude() == 0.0f || vNewPos.Magnitude() == 0.0f) return;
+				if (vOldPos.Magnitude() == 0.0f || vNewPos.Magnitude() == 0.0f)
+					return;
 
-				vNewPos -= vOldPos;	//	새로 이사갈 백터를 구함 
+				// 새로 이사갈 백터를 구함 
+				vNewPos -= vOldPos;
 
-				if (m_pDummy)	//	더미의 새로운 좌표 입력
-				{
+				//	더미의 새로운 좌표 입력
+				if (m_pDummy != nullptr)
 					m_pDummy->PosSet(m_pDummy->Pos() + vNewPos);
-				}
 
-				m_SelOutputObjArray.RemoveAll();	//	기존 선택된 정보를 지우고
-				for(j=0;j<iSize;++j)
+				m_SelOutputObjArray.RemoveAll();				// 기존 선택된 정보를 지우고
+				for (int j = 0; j < iSize; j++)
 				{
-					pDestObj = m_SelOutputObjBack.GetAt(j);	//	백업된 데이터를 찾는다
-					if(pDestObj==nullptr) continue;
+					pDestObj = m_SelOutputObjBack.GetAt(j);		// 백업된 데이터를 찾는다
+					if (pDestObj == nullptr)
+						continue;
 
-					pNewObj = AddObjectToOutputScene(pDestObj);	//	주소의 정보로만 새로운 데이터를 만든다
-					if(pNewObj == nullptr) continue;
+					pNewObj = AddObjectToOutputScene(pDestObj);	// 주소의 정보로만 새로운 데이터를 만든다
+					if (pNewObj == nullptr)
+						continue;
 
-					m_SelOutputObjArray.InsertAt(0,pNewObj);	//	기존 정보에 새로 입력한다
+					m_SelOutputObjArray.InsertAt(0, pNewObj);	// 기존 정보에 새로 입력한다
 
-					pNewObj->ScaleSet(pDestObj->Scale());	//	크기 입력
-					pNewObj->RotSet(pDestObj->Rot());	//	회전각 입력
+					pNewObj->ScaleSet(pDestObj->Scale());		// 크기 입력
+					pNewObj->RotSet(pDestObj->Rot());			// 회전각 입력
 
 					vObjPos = pDestObj->Pos() + vNewPos;
-					vObjPos.y = m_pTerrain->GetHeight(vObjPos.x,vObjPos.z);
-					pNewObj->PosSet(vObjPos);		//	새로운 위치점 입력
+					vObjPos.y = m_pTerrain->GetHeight(vObjPos.x, vObjPos.z);
+					pNewObj->PosSet(vObjPos);					// 새로운 위치점 입력
 				}
-				OnSelChanged();	//	데이터입력등 새로운데이터로 갱신
+
+				OnSelChanged(); // 데이터입력등 새로운데이터로 갱신
 			}
 		}
 		break;
-	}	
+	}
 }

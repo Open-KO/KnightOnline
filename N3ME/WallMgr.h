@@ -38,11 +38,15 @@ protected:
 	void MakeBoard(__Vector3 sv, __Vector3 ev, D3DCOLOR color);
 
 public:
+	int GetSize() const
+	{
+		return static_cast<int>(m_pWalls.size());
+	}
+
 	void AddWall2Coll(CN3ShapeMgr* pShapeMgr);
 	void SetFocus(CWall* pWall);
 	void SetCurrWall(CWall* pWall);
 	void DelWall(CWall* pWall);
-	int	 GetSize() { return m_pWalls.size(); }
 	CWall*	GetpWall(int idx);
 		
 	void Render();

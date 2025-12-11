@@ -67,7 +67,7 @@ protected:
 	afx_msg void OnProjectSet();
 	afx_msg void OnAddLod();
 	afx_msg void OnPlay();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnToolFixProgressiveMesh();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

@@ -97,8 +97,9 @@ void CTblEditorView::RefreshTable()
 
 		for (size_t i = 1; i < fields.size() && i < columnCount; i++)
 		{
-			CString text = DecodeField(fields[i], i);
-			m_ListCtrl.SetItemText(nItem, static_cast<int>(i), text);
+			int iColNo = static_cast<int>(i);
+			CString text = DecodeField(fields[i], iColNo);
+			m_ListCtrl.SetItemText(nItem, iColNo, text);
 
 			CSize size = dc.GetTextExtent(text);
 			if (size.cx + Padding > columnWidths[i])

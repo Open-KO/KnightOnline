@@ -62,11 +62,9 @@ BOOL CDlgUnusedFileList::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	int iFC = m_szFileNames.GetSize();
-	for(int i = 0; i < iFC; i++)
-	{
+	int iFC = static_cast<int>(m_szFileNames.GetSize());
+	for (int i = 0; i < iFC; i++)
 		m_ListFiles.AddString(m_szFileNames[i]);
-	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

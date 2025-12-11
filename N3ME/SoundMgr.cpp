@@ -141,7 +141,7 @@ BOOL CSoundMgr::MouseMsgFilter(LPMSG pMsg)
 		return TRUE;
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 			if(nFlags & MK_LBUTTON)	
 			{
@@ -275,17 +275,14 @@ bool CSoundMgr::Save(HANDLE hFile)
 {
 	DWORD dwRWC;
 	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
-	if(!m_pDlgSound->SaveSoundGroup(hFile)) return false;
+	if (!m_pDlgSound->SaveSoundGroup(hFile))
+		return false;
 
-	int cnt = m_pSound.size(); 
+	int cnt = static_cast<int>(m_pSound.size());
 	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
 
-	std::list<CSoundCell*>::iterator it;
-	for(it = m_pSound.begin(); it != m_pSound.end(); it++)
-	{
-		CSoundCell* pSoundCell = (*it);
+	for (CSoundCell* pSoundCell : m_pSound)
 		pSoundCell->Save(hFile);
-	}
 
 	return true;
 }
@@ -315,7 +312,7 @@ void CSoundMgr::SaveGameData(HANDLE hFile)
 
 	std::map<int, int> tmpMap;
 	std::list<int>::iterator it_int = tmpList.begin();
-	int cnt = tmpList.size();
+	int cnt = static_cast<int>(tmpList.size());
 	DWORD dwRWC;
 	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
 	for(int i=0;i<cnt;i++)
@@ -337,13 +334,13 @@ void CSoundMgr::SaveGameData(HANDLE hFile)
 			std::string str;
 			
 			str = pSI->szBGM[j];
-			str_size = str.size();
+			str_size = static_cast<int>(str.size());
 			WriteFile(hFile, &str_size, sizeof(int), &dwRWC, nullptr);
 			WriteFile(hFile, str.c_str(), str_size, &dwRWC, nullptr);
 			WriteFile(hFile, &(pSI->fBGMRegenTime[j]), sizeof(float), &dwRWC, nullptr);
 
 			str = pSI->szBGE[j];
-			str_size = str.size();
+			str_size = static_cast<int>(str.size());
 			WriteFile(hFile, &str_size, sizeof(int), &dwRWC, nullptr);
 			WriteFile(hFile, str.c_str(), str_size, &dwRWC, nullptr);
 			WriteFile(hFile, &(pSI->fBGERegenTime[j]), sizeof(float), &dwRWC, nullptr);

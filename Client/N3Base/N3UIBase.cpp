@@ -753,17 +753,15 @@ bool CN3UIBase::Save(HANDLE hFile)
 	DWORD dwRWC = 0;
 
 	// child 정보
-	int iCC = m_Children.size();
+	int iCC = static_cast<int>(m_Children.size());
 
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
-	{
-		
+	{	
 		int16_t sCC = static_cast<int16_t>(iCC);
 		int16_t sIdk0 = 1; // unknown
 
 		WriteFile(hFile, &sCC, sizeof(int16_t), &dwRWC, nullptr); // children count
 		WriteFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, nullptr); //unknown
-
 	}
 	else
 	{
@@ -783,28 +781,32 @@ bool CN3UIBase::Save(HANDLE hFile)
 	}
 
 	// base 정보
-	int iIDLen = 0;
-	iIDLen = m_szID.size();
-	WriteFile(hFile, &iIDLen, sizeof(iIDLen), &dwRWC, nullptr);				// id length
-	if (iIDLen>0) WriteFile(hFile, m_szID.c_str(), iIDLen, &dwRWC, nullptr);			// ui id
-	WriteFile(hFile, &m_rcRegion, sizeof(m_rcRegion), &dwRWC, nullptr);		// m_rcRegion
+	int iIDLen = static_cast<int>(m_szID.size());
+	WriteFile(hFile, &iIDLen, sizeof(iIDLen), &dwRWC, nullptr);					// id length
+	if (iIDLen > 0)
+		WriteFile(hFile, m_szID.c_str(), iIDLen, &dwRWC, nullptr);				// ui id
+	WriteFile(hFile, &m_rcRegion, sizeof(m_rcRegion), &dwRWC, nullptr);			// m_rcRegion
 	WriteFile(hFile, &m_rcMovable, sizeof(m_rcMovable), &dwRWC, nullptr);		// m_rcMovable
 	WriteFile(hFile, &m_dwStyle, sizeof(m_dwStyle), &dwRWC, nullptr);			// style
-	WriteFile(hFile, &m_dwReserved, sizeof(m_dwReserved), &dwRWC, nullptr);	//	m_dwReserved
+	WriteFile(hFile, &m_dwReserved, sizeof(m_dwReserved), &dwRWC, nullptr);		//	m_dwReserved
 
-	int iTooltipLen = m_szToolTip.size();
+	int iTooltipLen = static_cast<int>(m_szToolTip.size());
 	WriteFile(hFile, &iTooltipLen, sizeof(iTooltipLen), &dwRWC, nullptr);		//	tooltip문자열 길이
-	if (iTooltipLen>0) WriteFile(hFile, m_szToolTip.c_str(), iTooltipLen, &dwRWC, nullptr);
+	if (iTooltipLen > 0)
+		WriteFile(hFile, m_szToolTip.c_str(), iTooltipLen, &dwRWC, nullptr);
 
 	int iSndFNLen = 0;
-	if (m_pSnd_OpenUI) iSndFNLen = m_pSnd_OpenUI->m_szFileName.size();
-	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	if (m_pSnd_OpenUI != nullptr)
+		iSndFNLen = static_cast<int>(m_pSnd_OpenUI->m_szFileName.size());
+	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);			//	사운드 파일 문자열 길이
 	if (iSndFNLen>0) WriteFile(hFile, m_pSnd_OpenUI->m_szFileName.c_str(), iSndFNLen, &dwRWC, nullptr);
 
 	iSndFNLen = 0;
-	if (m_pSnd_CloseUI) iSndFNLen = m_pSnd_CloseUI->m_szFileName.size();
-	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0) WriteFile(hFile, m_pSnd_CloseUI->m_szFileName.c_str(), iSndFNLen, &dwRWC, nullptr);
+	if (m_pSnd_CloseUI != nullptr)
+		iSndFNLen = static_cast<int>(m_pSnd_CloseUI->m_szFileName.size());
+	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);			//	사운드 파일 문자열 길이
+	if (iSndFNLen > 0)
+		WriteFile(hFile, m_pSnd_CloseUI->m_szFileName.c_str(), iSndFNLen, &dwRWC, nullptr);
 	
 	return true;
 }

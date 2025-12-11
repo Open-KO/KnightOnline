@@ -46,11 +46,15 @@ public:
 	unsigned char	m_cAttr_Option;
 
 public:
+	int GetSize() const
+	{
+		return static_cast<int>(m_Path.size());
+	}
+
 	bool	CheckValid();
 	void	TransPos(float x, float z);
 	void	Load(HANDLE hFile);
 	void	Save(HANDLE hFile);
-	int		GetSize() { return m_Path.size(); }
 	bool	GetPath(int idx, __Vector3* pPos);	// idx째 점 가져오기..
 	void	AddPos(__Vector3 Path);	//path더하기.
 	void	DelPrevPos();

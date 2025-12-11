@@ -276,15 +276,21 @@ void CN3UIImage::operator = (const CN3UIImage& other)
 bool CN3UIImage::Save(HANDLE hFile)
 {
 	ReorderChildImage();	// child image들 순서대로 정렬
-	if (false == CN3UIBase::Save(hFile)) return false;
-	DWORD dwNum;
-	// texture 정보
-	if (m_pTexRef) m_szTexFN = m_pTexRef->FileName();
-	int iStrLen = m_szTexFN.size();
-	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// 파일 길이
-	if (iStrLen>0)	WriteFile(hFile, m_szTexFN.c_str(), iStrLen, &dwNum, nullptr);	// 파일 이름
+	if (!CN3UIBase::Save(hFile))
+		return false;
 
-	WriteFile(hFile, &m_frcUVRect, sizeof(m_frcUVRect), &dwNum, nullptr);		// uv좌표
+	DWORD dwNum;
+
+	// texture 정보
+	if (m_pTexRef != nullptr)
+		m_szTexFN = m_pTexRef->FileName();
+
+	int iStrLen = static_cast<int>(m_szTexFN.size());
+	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// 파일 길이
+	if (iStrLen > 0)
+		WriteFile(hFile, m_szTexFN.c_str(), iStrLen, &dwNum, nullptr);		// 파일 이름
+
+	WriteFile(hFile, &m_frcUVRect, sizeof(m_frcUVRect), &dwNum, nullptr);	// uv좌표
 	WriteFile(hFile, &m_fAnimFrame, sizeof(m_fAnimFrame), &dwNum, nullptr);	// Animate frame
 
 	return true;
@@ -296,16 +302,23 @@ void CN3UIImage::ChangeImagePath(const std::string& szPathOld, const std::string
 
 	std::string szOld = szPathOld, szNew = szPathNew;
 
-	if(!szOld.empty()) ::CharLower(&(szOld[0]));
-	if(!szNew.empty()) ::CharLower(&(szNew[0]));
-	if(!m_szTexFN.empty()) ::CharLower(&(m_szTexFN[0]));
+	if (!szOld.empty())
+		CharLower(&szOld[0]);
 
-	if(m_pTexRef) m_szTexFN = m_pTexRef->FileName();
-	int i = m_szTexFN.find(szOld);
-	if(i >= 0) 
+	if (!szNew.empty())
+		CharLower(&szNew[0]);
+
+	if (!m_szTexFN.empty())
+		CharLower(&m_szTexFN[0]);
+
+	if (m_pTexRef != nullptr)
+		m_szTexFN = m_pTexRef->FileName();
+
+	size_t pos = m_szTexFN.find(szOld);
+	if (pos != std::string::npos)
 	{
-		std::string szF = m_szTexFN.substr(0, i);
-		std::string szL = m_szTexFN.substr(i + szOld.size());
+		std::string szF = m_szTexFN.substr(0, pos);
+		std::string szL = m_szTexFN.substr(pos + szOld.size());
 		m_szTexFN = szF + szNew + szL;
 		s_MngTex.Delete(&m_pTexRef);
 		m_pTexRef = s_MngTex.Get(m_szTexFN);

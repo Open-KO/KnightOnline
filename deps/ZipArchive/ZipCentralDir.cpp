@@ -601,8 +601,7 @@ void CZipCentralDir::InsertFindFastElement(CZipFileHeader* pHeader, WORD uIndex)
 {
 	CString fileName = pHeader->GetFileName();
 
-	
-	int iSize = m_findarray.GetSize();
+	int iSize = static_cast<int>(m_findarray.GetSize());
 
 	//	Our initial binary search range encompasses the entire array of filenames:
 	int start = 0;
@@ -642,7 +641,7 @@ void CZipCentralDir::InsertFindFastElement(CZipFileHeader* pHeader, WORD uIndex)
 int CZipCentralDir::FindFileNameIndex(LPCTSTR lpszFileName, bool bCaseSensitive)
 {
 	int start = 0;
-	int end = m_findarray.GetUpperBound();
+	int end = static_cast<int>(m_findarray.GetUpperBound());
 
 	//	Keep halving our search range until we find the given element:
 	while ( start <= end )

@@ -367,7 +367,7 @@ void CFormViewAnimation::OnCPlay()
 	}
 }
 
-void CFormViewAnimation::OnTimer(UINT nIDEvent) 
+void CFormViewAnimation::OnTimer(UINT_PTR nIDEvent)
 {
 	CN3Chr* pChr = GetDocument()->m_Scene.ChrGet(0);
 

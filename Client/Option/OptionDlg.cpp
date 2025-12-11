@@ -403,7 +403,7 @@ void COptionDlg::SettingSave(CString szIniFile)
 	iSel = m_CB_ColorDepth.GetCurSel();
 	if (CB_ERR != iSel)
 	{
-		m_Option.iViewColorDepth = m_CB_ColorDepth.GetItemData(iSel);
+		m_Option.iViewColorDepth = static_cast<int>(m_CB_ColorDepth.GetItemData(iSel));
 		if (m_Option.iViewColorDepth != 16
 			&& m_Option.iViewColorDepth != 32)
 			m_Option.iViewColorDepth = 16;

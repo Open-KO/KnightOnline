@@ -476,12 +476,9 @@ bool CN3SkyMng::SaveToTextFile(const char* szIniFN)
 	}
 	
 
-	int iDC = m_DayChanges.size();
-	fprintf(fp, "DayChange Count : %d\r\n", iDC);
-	for(i = 0; i < iDC; i++)
-	{
-		this->DayChangeWrite(fp, &(m_DayChanges[i]));
-	}
+	fprintf(fp, "DayChange Count : %zu\r\n", m_DayChanges.size());
+	for (__SKY_DAYCHANGE& dayChange : m_DayChanges)
+		DayChangeWrite(fp, &dayChange);
 
 	fclose(fp); // 파일 닫기..
 
@@ -519,7 +516,7 @@ void CN3SkyMng::InitToDefaultHardCoding()
 
 	// 임시 hard coding
 	__SKY_DAYCHANGE tmpDayChange;
-	m_DayChanges.resize(64);
+	m_DayChanges.reserve(64);
 	uint32_t dwTime = 0;
 
 	// 해뜨기..
@@ -883,7 +880,7 @@ void CN3SkyMng::SetWeather(eSKY_WEATHER eWeather, int iPercentage)
 		// 날씨 변화 큐 만들기
 		m_WeatherChanges.clear();
 		m_iWeatherChangeCurPos = 0;
-		m_WeatherChanges.resize(16);
+		m_WeatherChanges.reserve(16);
 		__SKY_DAYCHANGE tmpWeatherChange;
 		int iPos = 0;
 
@@ -988,7 +985,7 @@ void CN3SkyMng::SetWeather(eSKY_WEATHER eWeather, int iPercentage)
 		// 날씨 변화 큐 만들기
 		m_WeatherChanges.clear();
 		m_iWeatherChangeCurPos = 0;
-		m_WeatherChanges.resize(16);
+		m_WeatherChanges.reserve(16);
 		__SKY_DAYCHANGE tmpWeatherChange;
 		__ColorValue crTmp1, crTmp2;
 		float fDelta = (0.5f + 0.3f * (100 - iPercentage) / 100.0f);
@@ -1346,36 +1343,47 @@ bool CN3SkyMng::Save(HANDLE hFile)
 	std::string szClouds[NUM_CLOUD];
 	std::string szMoon;
 
-	int i = 0;
-	for(i = 0; i < NUM_SUNPART; i++) if(m_pSun && m_pSun->m_Parts[i].pTex) szSuns[i] = m_pSun->m_Parts[i].pTex->FileName();
-	for(i = 0; i < NUM_CLOUD; i++) if(m_pCloud) szClouds[i] = m_pCloud->m_szTextures[i];
-	if(m_pMoon && m_pMoon->m_pTexture) szMoon = m_pMoon->m_pTexture->FileName();
-
-	for(i = 0; i < NUM_SUNPART; i++) 
+	for (int i = 0; i < NUM_SUNPART; i++)
 	{
-		int iL = szSuns[i].size();
-		WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
-		if(iL > 0) WriteFile(hFile, szSuns[i].c_str(), iL, &dwRWC, nullptr);
+		if (m_pSun != nullptr && m_pSun->m_Parts[i].pTex != nullptr)
+			szSuns[i] = m_pSun->m_Parts[i].pTex->FileName();
 	}
 
-	for(i = 0; i < NUM_CLOUD; i++)
+	for (int i = 0; i < NUM_CLOUD; i++)
 	{
-		int iL = szClouds[i].size();
-		WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
-		if(iL > 0) WriteFile(hFile, szClouds[i].c_str(), iL, &dwRWC, nullptr);
+		if (m_pCloud != nullptr)
+			szClouds[i] = m_pCloud->m_szTextures[i];
 	}
-	
-	int iL = szMoon.size();
+
+	if (m_pMoon != nullptr && m_pMoon->m_pTexture != nullptr)
+		szMoon = m_pMoon->m_pTexture->FileName();
+
+	for (int i = 0; i < NUM_SUNPART; i++)
+	{
+		int iL = static_cast<int>(szSuns[i].size());
+		WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
+		if (iL > 0)
+			WriteFile(hFile, szSuns[i].c_str(), iL, &dwRWC, nullptr);
+	}
+
+	for (int i = 0; i < NUM_CLOUD; i++)
+	{
+		int iL = static_cast<int>(szClouds[i].size());
+		WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
+		if (iL > 0)
+			WriteFile(hFile, szClouds[i].c_str(), iL, &dwRWC, nullptr);
+	}
+
+	int iL = static_cast<int>(szMoon.size());
 	WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
-	if(iL > 0) WriteFile(hFile, szMoon.c_str(), iL, &dwRWC, nullptr);
+	if (iL > 0)
+		WriteFile(hFile, szMoon.c_str(), iL, &dwRWC, nullptr);
 
 	// Day Change .....
-	int iSDCC = m_DayChanges.size();
+	int iSDCC = static_cast<int>(m_DayChanges.size());
 	WriteFile(hFile, &iSDCC, 4, &dwRWC, nullptr);
-	for(i = 0; i < iSDCC; i++)
-	{
+	for (int i = 0; i < iSDCC; i++)
 		m_DayChanges[i].Save(hFile);
-	}
 
 	return true;
 }

@@ -75,9 +75,10 @@ public:
 //	static	void	MP_AddString(BYTE *dest, int &iOffset, BYTE *sor, int len) { CopyMemory(dest+iOffset, sor, len); iOffset += len; }
 	static	void	MP_AddString(BYTE *dest, int &iOffset, const std::string& szString)
 	{
-		if(!szString.empty())
+		if (!szString.empty())
 		{
-			CopyMemory(dest+iOffset, &(szString[0]), szString.size()); iOffset += szString.size();
+			CopyMemory(dest + iOffset, &szString[0], szString.size());
+			iOffset += static_cast<int>(szString.size());
 		}
 	}
 

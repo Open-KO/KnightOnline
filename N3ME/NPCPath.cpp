@@ -144,7 +144,7 @@ void CNPCPath::Save(HANDLE hFile)
 	WriteFile(hFile, m_strNPCName, 80, &dwRWC, nullptr);
 
 	m_iVersion = 4;
-	int size = (m_iVersion*1000) + m_Path.size();
+	int size = (m_iVersion * 1000) + static_cast<int>(m_Path.size());
 	WriteFile(hFile, &size, sizeof(int), &dwRWC, nullptr);
 
 	std::list<__Vector3>::iterator itVertex;

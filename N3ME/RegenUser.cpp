@@ -170,7 +170,7 @@ BOOL CRegenUser::MouseMsgFilter(LPMSG pMsg)
 
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 
 			__Vector3 vec;
@@ -207,7 +207,7 @@ BOOL CRegenUser::MouseMsgFilter(LPMSG pMsg)
 
 void CRegenUser::SaveServerData(HANDLE hFile)
 {
-	int NumRegion = m_vrListRegion.size();
+	int NumRegion = static_cast<int>(m_vrListRegion.size());
 
 	DWORD dwNum;
 	WriteFile(hFile, &NumRegion, sizeof(int), &dwNum, nullptr);
@@ -380,7 +380,7 @@ void CRegenUser::SaveToFile(LPCTSTR pFullFileName)
 	FILE* file = fopen(pFullFileName, "w");
 	if(!file) return;
 
-	fprintf(file,"<NUM_REGION> %d\n", m_vrListRegion.size());
+	fprintf(file,"<NUM_REGION> %zu\n", m_vrListRegion.size());
 
 	std::list<VERTEXRECT*>::iterator it, ite;
 	ite = m_vrListRegion.end();

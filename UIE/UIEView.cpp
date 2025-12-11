@@ -849,11 +849,11 @@ void CUIEView::OnDropFiles(HDROP hDropInfo)
 	::DragQueryFile(hDropInfo, 0, szFile, MAX_PATH - 1);
 	::DragFinish(hDropInfo);
 
-	int nLen = strlen(szFile);
+	size_t len = strlen(szFile);
+	szExt = (szFile + len) - 3;
 
-	szExt = szFile + nLen - 3;
-	
-	if(0 == lstrcmpi(szExt,"uif") && pDoc)
+	if (len >= 3
+		&& 0 == lstrcmpi(szExt, "uif") && pDoc)
 	{
 		pDoc->OnOpenDocument(szFile);
 		pDoc->UpdateAllViews(nullptr);

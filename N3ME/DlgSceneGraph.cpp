@@ -90,8 +90,8 @@ void CDlgSceneGraph::UpdateTreeItem(HTREEITEM hParent, CN3Base *pBase)
 	else if(dwType & OBJ_SKIN) nItem = 9;
 	else if(dwType & OBJ_TRANSFORM) nItem = 10;
 
-	HTREEITEM hItem = m_Tree.InsertItem(TVIF_IMAGE |TVIF_SELECTEDIMAGE| TVIF_TEXT, pBase->m_szName.c_str(), nItem, nItem, 0, 0, 0, hParent, nullptr);
-	m_Tree.SetItemData(hItem, (DWORD)pBase);
+	HTREEITEM hItem = m_Tree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT, pBase->m_szName.c_str(), nItem, nItem, 0, 0, 0, hParent, nullptr);
+	m_Tree.SetItemData(hItem, (DWORD_PTR) pBase);
 
 	if(dwType & OBJ_SCENE)
 	{
@@ -192,13 +192,14 @@ void CDlgSceneGraph::OnRclickTreeObj(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CDlgSceneGraph::SelectObject(HTREEITEM hItem, void *pItemData)
+void CDlgSceneGraph::SelectObject(HTREEITEM hItem, void* pItemData)
 {
-	if(hItem == nullptr) return;
+	if (hItem == nullptr)
+		return;
 
-	if(hItem != TVI_ROOT)
+	if (hItem != TVI_ROOT)
 	{
-		if(m_Tree.GetItemData(hItem) == (DWORD)pItemData)
+		if (m_Tree.GetItemData(hItem) == (DWORD_PTR) pItemData)
 		{
 			m_Tree.SelectItem(hItem);
 			return;
@@ -206,9 +207,9 @@ void CDlgSceneGraph::SelectObject(HTREEITEM hItem, void *pItemData)
 	}
 
 	HTREEITEM hChild = m_Tree.GetChildItem(hItem);
-	while(hChild != nullptr)
+	while (hChild != nullptr)
 	{
-		this->SelectObject(hChild, pItemData);
+		SelectObject(hChild, pItemData);
 		hChild = m_Tree.GetNextItem(hChild, TVGN_NEXT);
 	}
 }

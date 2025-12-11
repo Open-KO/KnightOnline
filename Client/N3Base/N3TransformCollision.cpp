@@ -76,17 +76,20 @@ bool CN3TransformCollision::Save(HANDLE hFile)
 	DWORD dwRWC;
 
 	int nL = 0;
-	if(m_pMeshCollision) nL = m_pMeshCollision->FileName().size();
+	if (m_pMeshCollision != nullptr)
+		nL = static_cast<int>(m_pMeshCollision->FileName().size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
-	if(nL > 0) 
+
+	if (nL > 0)
 	{
-		if(m_pMeshCollision->FileName().find("object\\") < 0) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
+		// 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
+		if (m_pMeshCollision->FileName().find("object\\") == std::string::npos)
 		{
 			std::string szFNTmp = fmt::format("Object\\{}.N3VMesh", m_pMeshCollision->m_szName);
 			m_pMeshCollision->FileNameSet(szFNTmp);
 
 			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
-			nL = m_pMeshCollision->FileName().size();
+			nL = static_cast<int>(m_pMeshCollision->FileName().size());
 			WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
 		}
 
@@ -94,17 +97,20 @@ bool CN3TransformCollision::Save(HANDLE hFile)
 	}
 
 	nL = 0;
-	if(m_pMeshClimb) nL = m_pMeshClimb->FileName().size();
+	if (m_pMeshClimb != nullptr)
+		nL = static_cast<int>(m_pMeshClimb->FileName().size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
-	if(nL > 0) 
+
+	if (nL > 0)
 	{
-		if(-1 == m_pMeshClimb->FileName().find("object\\")) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
+		// 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
+		if (m_pMeshClimb->FileName().find("object\\") == std::string::npos)
 		{
 			std::string szFNTmp = fmt::format("Object\\{}.N3VMesh", m_pMeshClimb->m_szName);
 			m_pMeshClimb->FileNameSet(szFNTmp);
 
 			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
-			nL = m_pMeshClimb->FileName().size();
+			nL = static_cast<int>(m_pMeshClimb->FileName().size());
 			WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
 		}
 

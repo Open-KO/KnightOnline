@@ -473,25 +473,16 @@ void CPondMesh::ReCalcVexUV()
 
 void CPondMesh::ClearSelectPos()
 {
-	ZeroMemory(m_vSelectBox, sizeof(__Vector3)*2);
+	memset(m_vSelectBox, 0, sizeof(__Vector3) * 2);
 
-	int iSize = m_vSelect.size();
-	if(iSize>0)
-	{
-		__SELECT_PO* pSel = nullptr;
-		it_SelVtx it = m_vSelect.begin();
-		for(int i = 0; i < iSize; i++, it++)
-		{
-			pSel = *it;
-			if (pSel) delete pSel;
-		}
-		m_vSelect.clear();
-	}
+	for (__SELECT_PO* pSel : m_vSelect)
+		delete pSel;
+	m_vSelect.clear();
 }
 
-void CPondMesh::InputSelectPos(float fX,float fY,float fZ,int iVC)
+void CPondMesh::InputSelectPos(float fX, float fY, float fZ, int iVC)
 {
-	if(m_vSelectBox[0].x == 0.0f || m_vSelectBox[0].z == 0.0f)
+	if (m_vSelectBox[0].x == 0.0f || m_vSelectBox[0].z == 0.0f)
 	{
 		m_vSelectBox[0].x = fX, m_vSelectBox[0].y = fY, m_vSelectBox[0].z = fZ;
 		m_vSelectBox[1].x = fX, m_vSelectBox[1].y = fY, m_vSelectBox[1].z = fZ;
@@ -499,31 +490,29 @@ void CPondMesh::InputSelectPos(float fX,float fY,float fZ,int iVC)
 	else
 	{
 		//	선택한 점들의 최대영역을 잡고
-		if(m_vSelectBox[0].x > fX) m_vSelectBox[0].x = fX;
-		if(m_vSelectBox[1].x < fX) m_vSelectBox[1].x = fX;
-		if(m_vSelectBox[0].z > fZ) m_vSelectBox[0].z = fZ;
-		if(m_vSelectBox[1].z < fZ) m_vSelectBox[1].z = fZ;
+		if (m_vSelectBox[0].x > fX) m_vSelectBox[0].x = fX;
+		if (m_vSelectBox[1].x < fX) m_vSelectBox[1].x = fX;
+		if (m_vSelectBox[0].z > fZ) m_vSelectBox[0].z = fZ;
+		if (m_vSelectBox[1].z < fZ) m_vSelectBox[1].z = fZ;
 	}
 
 	//	높이가 틀려지면 높이를 재 설정
-	if(m_vSelectBox[0].y != fY)
+	if (m_vSelectBox[0].y != fY)
 	{
 		SetWaterHeight(fY);
 		m_vSelectBox[0].y = fY;
 	}
 
-	if(iVC>-1)	//	전체 선택이 아닌 일부선택시
+	if (iVC > -1)	//	전체 선택이 아닌 일부선택시
 	{
-		int iHeight = iVC/m_iWaterScaleWidth;
-		int iWidth = iVC%m_iWaterScaleWidth;
+		int iHeight = iVC / m_iWaterScaleWidth;
+		int iWidth = iVC % m_iWaterScaleWidth;
 
-		int iSize = m_vSelect.size();
-		it_SelVtx it = m_vSelect.begin();
-		__SELECT_PO* pSelpo = nullptr;
-		for(int i=0;i<iSize;++i,++it)
+		for (__SELECT_PO* pSelpo : m_vSelect)
 		{
-			pSelpo = *it;
-			if (pSelpo && pSelpo->ix == iWidth && pSelpo->iz == iHeight)  
+			if (pSelpo != nullptr
+				&& pSelpo->ix == iWidth
+				&& pSelpo->iz == iHeight)
 			{
 				pSelpo = nullptr;
 				return;
@@ -531,7 +520,7 @@ void CPondMesh::InputSelectPos(float fX,float fY,float fZ,int iVC)
 		}
 
 		//	선택한 점들을 임시로 가지고 있음
-		pSelpo = new __SELECT_PO;
+		__SELECT_PO* pSelpo = new __SELECT_PO;
 		pSelpo->ix = iWidth;
 		pSelpo->iz = iHeight;
 
@@ -582,17 +571,10 @@ void CPondMesh::SetBottom(float fBottom)	{m_vDrawBox[2].z = fBottom,m_vDrawBox[3
 //	기본적으로 선택된 점들은 이미 움직인 상태로 원본이라 할수있는 m_pVertices참조해서 움직일 예상점을 계산
 void CPondMesh::MovingPos()
 {
-	int iSize = m_vSelect.size();
-	it_SelVtx it = m_vSelect.begin();
-	__SELECT_PO* pSelpo = nullptr;
-
-	for(int i=0;i<iSize;++i,++it)
+	for (__SELECT_PO* pSelpo : m_vSelect)
 	{
-		pSelpo = *it;
-		if (pSelpo)
-		{
-			CalcuWidth(pSelpo->ix,pSelpo->iz);
-		}
+		if (pSelpo != nullptr)
+			CalcuWidth(pSelpo->ix, pSelpo->iz);
 	}
 
 	ReInputBackPos();
@@ -954,17 +936,18 @@ bool CPondMesh::Save(HANDLE hFile)
 
 	WriteFile(hFile, m_vDrawBox, sizeof(m_vDrawBox), &dwNum, nullptr);				// 한줄에 있는 점 갯수
 
-	WriteFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);				// 점 갯수
-	if (m_iVC>0) WriteFile(hFile, m_pViewVts, m_iVC*sizeof(__VertexXyzT2), &dwNum, nullptr);	// vertex buffer
-	WriteFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);				// IndexBuffer Count.
+	WriteFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);						// 점 갯수
+	if (m_iVC > 0)
+		WriteFile(hFile, m_pViewVts, m_iVC * sizeof(__VertexXyzT2), &dwNum, nullptr);	// vertex buffer
+	WriteFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);						// IndexBuffer Count.
 
 	int iLen = 0;
-	if(m_pTexture) iLen = m_pTexture->FileName().size();
-	WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
-	if (iLen>0)
-	{
-		WriteFile(hFile, m_pTexture->FileName().c_str(), iLen, &dwNum, nullptr);			// texture file name
-	}
+	if (m_pTexture != nullptr)
+		iLen = static_cast<int>(m_pTexture->FileName().size());
+
+	WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);							// texture file name length
+	if (iLen > 0)
+		WriteFile(hFile, m_pTexture->FileName().c_str(), iLen, &dwNum, nullptr);	// texture file name
 
 	return 0;
 }

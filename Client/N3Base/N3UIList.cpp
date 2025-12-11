@@ -332,10 +332,10 @@ bool CN3UIList::Save(HANDLE hFile)
 	DWORD dwNum;
 	
 	// font 정보
-	int iStrLen = m_szFontName.size();
-	__ASSERT(iStrLen>0, "No font name");
+	int iStrLen = static_cast<int>(m_szFontName.size());
+	__ASSERT(iStrLen > 0, "No font name");
 	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// font 이름 길이 
-	if (iStrLen>0)
+	if (iStrLen > 0)
 	{
 		WriteFile(hFile, m_szFontName.c_str(), iStrLen, &dwNum, nullptr);				// string
 		WriteFile(hFile, &m_dwFontHeight, 4, &dwNum, nullptr);	// font height

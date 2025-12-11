@@ -430,37 +430,39 @@ void CN3UIString::operator = (const CN3UIString& other)
 #ifdef _N3TOOL
 bool CN3UIString::Save(HANDLE hFile)
 {
-	if (false == CN3UIBase::Save(hFile)) return false;
+	if (!CN3UIBase::Save(hFile))
+		return false;
+
 	DWORD dwNum;
+
 	// font 정보
 	char* pszFontName = nullptr;
 	__ASSERT(m_pDFont, "no font");
 	const std::string strFontName(m_pDFont->GetFontName());
-	int iStrLen = strFontName.size();
-	__ASSERT(iStrLen>0, "No font name");
+	int iStrLen = static_cast<int>(strFontName.size());
+	__ASSERT(iStrLen > 0, "No font name");
 	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// font 이름 길이 
-	if (iStrLen>0)
+	if (iStrLen > 0)
 	{
 		WriteFile(hFile, strFontName.c_str(), iStrLen, &dwNum, nullptr);				// string
 		uint32_t dwFontFlags = 0, dwFontHeight = 0;
-		if (m_pDFont)
+
+		if (m_pDFont != nullptr)
 		{
 			dwFontHeight = m_pDFont->GetFontHeight();
 			dwFontFlags = m_pDFont->GetFontFlags();
 		}
+
 		WriteFile(hFile, &dwFontHeight, sizeof(dwFontHeight), &dwNum, nullptr);	// font height
 		WriteFile(hFile, &dwFontFlags, sizeof(dwFontFlags), &dwNum, nullptr);	// font flag (bold, italic)
 	}
 
 	// string
-	WriteFile(hFile, &m_Color, sizeof(m_Color), &dwNum, nullptr);			// 글자 색
-	iStrLen = 0;
-	iStrLen = m_szString.size();
-	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// string 길이 
-	if (iStrLen>0)
-	{
-		WriteFile(hFile, m_szString.c_str(), iStrLen, &dwNum, nullptr);				// string
-	}
+	WriteFile(hFile, &m_Color, sizeof(m_Color), &dwNum, nullptr);				// 글자 색
+	iStrLen = static_cast<int>(m_szString.size());
+	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);				// string 길이 
+	if (iStrLen > 0)
+		WriteFile(hFile, m_szString.c_str(), iStrLen, &dwNum, nullptr);			// string
 
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 		WriteFile(hFile, &m_iIdk0, sizeof(int), &dwNum, nullptr);

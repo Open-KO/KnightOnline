@@ -125,15 +125,16 @@ void CVtxPosDummy::AddSelVtx(__VertexXyzT1* pVtx)			// 선택된 점 추가
 
 BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 {
-	int iSize = m_SelVtxArray.GetSize();
-	if (iSize == 0) return FALSE;
+	int iSize = static_cast<int>(m_SelVtxArray.GetSize());
+	if (iSize == 0)
+		return FALSE;
 
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_MOUSEMOVE:
 		{
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			if (m_pSelectedCube && (nFlags & MK_LBUTTON))
 			{
 				__Vector3 vRayDir, vRayOrig;	// 화면 중앙(시점)과 마우스 포인터를 이은 직선의 방향과 원점
@@ -257,18 +258,17 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 
 void CVtxPosDummy::TransDiff(__Vector3* pvDiffPos, __Quaternion* pqDiffRot, __Vector3* pvDiffScale)		// 차이만큼 선택된 오브젝트들을 변형시킨다.
 {
-	int i, iSize = m_SelVtxArray.GetSize();
-	if (iSize<=0) return;
-	if (pvDiffPos)
+	if (pvDiffPos == nullptr)
+		return;
+
+	int iSize = static_cast<int>(m_SelVtxArray.GetSize());
+	for (int i = 0; i < iSize; i++)
 	{
-		for (i=0; i<iSize; ++i)
-		{
-			__VertexXyzT1* pSelVtx = m_SelVtxArray.GetAt(i);
-			_ASSERT(pSelVtx);
-			pSelVtx->x += pvDiffPos->x;
-			pSelVtx->y += pvDiffPos->y;
-			pSelVtx->z += pvDiffPos->z;
-		}
+		__VertexXyzT1* pSelVtx = m_SelVtxArray.GetAt(i);
+		_ASSERT(pSelVtx);
+		pSelVtx->x += pvDiffPos->x;
+		pSelVtx->y += pvDiffPos->y;
+		pSelVtx->z += pvDiffPos->z;
 	}
 }
 

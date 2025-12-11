@@ -39,14 +39,15 @@ void CPosDummy::SetSelObj(CN3Transform* pObj)
 
 BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 {
-	if (m_SelObjArray.GetSize() == 0) return FALSE;
+	if (m_SelObjArray.GetSize() == 0)
+		return FALSE;
 
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_MOUSEMOVE:
 		{
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			if (m_pSelectedCube && (nFlags & MK_LBUTTON))
 			{
 				__Vector3 vRayDir, vRayOrig;	// 화면 중앙(시점)과 마우스 포인터를 이은 직선의 방향과 원점

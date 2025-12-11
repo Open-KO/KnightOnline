@@ -650,7 +650,7 @@ int CN3ShapeMgr::Add(CN3Shape* pShape)
 	m_Shapes.push_back(pShapeAdd); // 추가 한다..
 	m_pCells[nX][nZ]->nShapeCount++; // Shape Count 를 늘린다.
 
-	return m_Shapes.size() - 1;
+	return static_cast<int>(m_Shapes.size()) - 1;
 }
 #endif // end of _N3TOOL
 

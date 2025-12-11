@@ -76,15 +76,9 @@ void CWall::Save(HANDLE hFile)
 	DWORD dwRWC;
 	WriteFile(hFile, m_Name, 80, &dwRWC, nullptr);
 
-	int size = m_Wall.size();
+	int size = static_cast<int>(m_Wall.size());
 	WriteFile(hFile, &size, sizeof(int), &dwRWC, nullptr);
 
-	std::list<__Vector3>::iterator itVertex;
-
-	__Vector3 Vertex;
-	for(itVertex = m_Wall.begin(); itVertex != m_Wall.end(); itVertex++)
-	{
-		Vertex = (*itVertex);
+	for (const __Vector3& Vertex : m_Wall)
 		WriteFile(hFile, &Vertex, sizeof(__Vector3), &dwRWC, nullptr);
-	}
 }

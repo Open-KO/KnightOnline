@@ -110,7 +110,7 @@ BOOL CEventMgr::MouseMsgFilter(LPMSG pMsg)
 		return TRUE;
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 			if(nFlags & MK_LBUTTON)	
 			{
@@ -351,17 +351,12 @@ bool CEventMgr::Load(HANDLE hFile)
 bool CEventMgr::Save(HANDLE hFile)
 {
 	DWORD dwRWC;
-	int NumEvent = m_pEvents.size();
+
+	int NumEvent = static_cast<int>(m_pEvents.size());
 	WriteFile(hFile, &NumEvent, sizeof(int), &dwRWC, nullptr);
 
-	std::list<CEventCell*>::iterator itEvent;
-
-	CEventCell* pEvent;
-	for(itEvent = m_pEvents.begin(); itEvent != m_pEvents.end(); itEvent++)
-	{
-		pEvent = (*itEvent);
+	for (CEventCell* pEvent : m_pEvents)
 		pEvent->Save(hFile);
-	}
 
 	return true;
 }
@@ -402,9 +397,9 @@ void CEventMgr::SaveInfoTextFile(char* szEvent)
 		while(!feof(stream))
 		{
 			pEvent = new CEventCell;
-			fscanf(stream, "%d", &pEvent->m_ZoneID);
-			fscanf(stream, "\t%d", &pEvent->m_EventID);
-			fscanf(stream, "\t%d", &pEvent->m_EventType);
+			fscanf(stream, "%hd", &pEvent->m_ZoneID);
+			fscanf(stream, "\t%hd", &pEvent->m_EventID);
+			fscanf(stream, "\t%hd", &pEvent->m_EventType);
 			int i;
 			for(i=0;i<5;i++)
 				fscanf(stream, "\t%s", &pEvent->m_Con[i]);
@@ -530,16 +525,12 @@ bool CEventMgr::MakeGameFile(HANDLE hFile, int iSize)
 //	for(int x=0;x<iSize;x++)
 //		WriteFile(hFile, m_ppEvent[x], sizeof(short)*iSize, &dwNum, nullptr);
 
-	int nEventCellCount = m_pEvents.size();
+	int nEventCellCount = static_cast<int>(m_pEvents.size());
 	WriteFile(hFile, &nEventCellCount, sizeof(int), &dwNum, nullptr);
 
-	std::list<CEventCell*>::iterator itEvent;
-
-	CEventCell* pEvent;
-	for(itEvent = m_pEvents.begin(); itEvent != m_pEvents.end(); itEvent++)
+	for (CEventCell* pEvent : m_pEvents)
 	{
-		pEvent = (*itEvent);
-		if(pEvent)
+		if (pEvent != nullptr)
 		{
 			RECT rt = pEvent->m_Rect;
 			WriteFile(hFile, &rt, sizeof(RECT), &dwNum, nullptr);
@@ -549,7 +540,7 @@ bool CEventMgr::MakeGameFile(HANDLE hFile, int iSize)
 		{
 			short sEventType = -1;
 			RECT rt;
-			memset(&rt,0x00,sizeof(rt));
+			memset(&rt, 0, sizeof(rt));
 			WriteFile(hFile, &rt, sizeof(RECT), &dwNum, nullptr);
 			WriteFile(hFile, &sEventType, sizeof(short), &dwNum, nullptr);
 		}

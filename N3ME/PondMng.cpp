@@ -44,13 +44,8 @@ void CPondMng::Release()
 	VtxBackupRelease();
 	SelPondRelease();
 
-	it_PondMesh it = m_PondMeshes.begin();
-	int iSize = m_PondMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CPondMesh* pRM = *it;
-		if (pRM) delete pRM;
-	}
+	for (CPondMesh* pRM : m_PondMeshes)
+		delete pRM;
 	m_PondMeshes.clear();
 
 	m_SelVtxArray.RemoveAll();
@@ -69,47 +64,28 @@ void CPondMng::MainInvalidate()
 
 void CPondMng::SelPondDelete(CPondMesh* pPondMesh)
 {
-	it_PondMesh it = m_pSelPonds.begin();
-	int iSize = m_pSelPonds.size();
-	int i;
-	for(i = 0; i < iSize; i++, it++)
+	for (auto it = m_pSelPonds.begin(); it != m_pSelPonds.end(); ++it)
 	{
 		CPondMesh* pRM = *it;
-		if(pRM == pPondMesh)
+		if (pRM == pPondMesh)
 		{
+			it = m_pSelPonds.erase(it);
 			break;
 		}
-	}
-
-	if(i!=iSize) 
-	{
-		it = m_pSelPonds.erase(it);
 	}
 }
 
 void CPondMng::SelPondRelease()
 {
-	it_PondMesh it = m_pSelPonds.begin();
-	int iSize = m_pSelPonds.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CPondMesh* pRM = *it;
-		if(pRM)
-		{
-			pRM=nullptr;
-		}
-	}
 	m_pSelPonds.clear();
 }
 
 void CPondMng::SetSelPonds(CPondMesh* pPondMesh)
 {
-	it_PondMesh it = m_pSelPonds.begin();
-	int iSize = m_pSelPonds.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CPondMesh* pRM : m_pSelPonds)
 	{
-		CPondMesh* pRM = *it;
-		if (pRM == pPondMesh) return;
+		if (pRM == pPondMesh)
+			return;
 	}
 
 	m_pSelPonds.push_back(pPondMesh);
@@ -168,16 +144,14 @@ bool CPondMng::Save(HANDLE hFile)
 	int nFileVersion = 1001;
 	WriteFile(hFile, &nFileVersion, sizeof(nFileVersion), &dwNum, nullptr);		// 연못 번호
 
-	int iSize = m_PondMeshes.size();
+	int iSize = static_cast<int>(m_PondMeshes.size());
 	WriteFile(hFile, &iSize, 4, &dwNum, nullptr);
 	
 	it_PondMesh it = m_PondMeshes.begin();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CPondMesh* pRM = *it;
+	for (CPondMesh* pRM : m_PondMeshes)
 		pRM->Save(hFile);
-	}
-	return 0;
+
+	return true;
 }
 
 void CPondMng::Tick()
@@ -200,13 +174,8 @@ void CPondMng::Render()
 	if(dwFog != FALSE)				hr = s_lpD3DDev->SetRenderState(D3DRS_FOGENABLE, FALSE);
 
 	// 기존에 있던 연못 그리기
-	it_PondMesh it = m_PondMeshes.begin();
-	int iSize = m_PondMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CPondMesh* pRM = *it;
+	for (CPondMesh* pRM : m_PondMeshes)
 		pRM->Render();
-	}
 
 	if (m_bEditMode)
 	{
@@ -231,22 +200,16 @@ void CPondMng::Render()
 
 		BOOL bisFix=FALSE;
 
-		CPondMesh* pSelPond;
-		it_PondMesh it = m_pSelPonds.begin();
-		int iSize = m_pSelPonds.size();
-		for(int i = 0; i < iSize; i++, it++)
+		for (CPondMesh* pSelPond : m_pSelPonds)
 		{
-			pSelPond= *it;
-			if(pSelPond)
-			{
-				// 선택된 연못의 점그리기 (삘깅)
+			// 선택된 연못의 점그리기 (삘깅)
+			if (pSelPond != nullptr)
 				pSelPond->RenderVertexPoint();
-			}
 		}
 
 		// 선택된 점 그리기 (초록)
-		iSize = m_SelVtxArray.GetSize();
-		if (iSize>0)
+		int iSize = static_cast<int>(m_SelVtxArray.GetSize());
+		if (iSize > 0)
 		{
 			// transform
 			__Matrix44 matView, matProj, matVP;
@@ -261,7 +224,7 @@ void CPondMng::Render()
 			else clr = D3DCOLOR_ARGB(0xff, 0x00, 0xff, 0x00);
 			s_lpD3DDev->SetFVF(FVF_TRANSFORMEDCOLOR);
 
-			for (int i=0; i<iSize; ++i)
+			for (int i = 0; i < iSize; i++)
 			{
 				__VertexXyzT2* pVtx = m_SelVtxArray.GetAt(i);
 				if (pVtx == nullptr) continue;
@@ -338,12 +301,10 @@ CPondMesh*	CPondMng::CreateNewPondMesh()
 
 void CPondMng::RemovePondMesh(int iPondID)	//	연못을 만들거나 선택하여 지우고자 버튼 눌렀을시
 {
-	it_PondMesh it = m_PondMeshes.begin();
-	int iSize = m_PondMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (auto it = m_PondMeshes.begin(); it != m_PondMeshes.begin(); ++it)
 	{
 		CPondMesh* pRM = *it;
-		if (pRM && pRM->GetPondID() == iPondID)
+		if (pRM != nullptr && pRM->GetPondID() == iPondID)
 		{
 			delete pRM;
 			it = m_PondMeshes.erase(it);
@@ -640,51 +601,55 @@ void CPondMng::ReSetDrawRect(__Vector3 vStrPos,__Vector3 vEndPos)	//	받은 두 
 
 CPondMesh* CPondMng::GetPondMesh(int iPondID)
 {
-	it_PondMesh it = m_PondMeshes.begin();
-	int iSize = m_PondMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CPondMesh* pRM : m_PondMeshes)
 	{
-		CPondMesh* pRM = *it;
-		if (pRM->GetPondID() == iPondID) return pRM;
+		if (pRM->GetPondID() == iPondID)
+			return pRM;
 	}
+
 	return nullptr;
 }
 
 CPondMesh* CPondMng::GetSelPond()
 {
-	int iSize = m_pSelPonds.size();
-	if(iSize==0) return nullptr;
+	if (m_pSelPonds.empty())
+		return nullptr;
 
 	return *(m_pSelPonds.begin());
 }
 
 it_PondMesh CPondMng::GetDrawPond()
 {
-	int iSize = m_PondMeshes.size();
-	if(iSize==0) return m_PondMeshes.end();
+	if (m_PondMeshes.empty())
+		return m_PondMeshes.end();
 
-	it_PondMesh it = m_PondMeshes.begin();
-	return it;
+	return m_PondMeshes.begin();
 }
 
-void CPondMng::SetSelPond(CPondMesh* pPondMesh,BOOL bChooseGroup)
+void CPondMng::SetSelPond(CPondMesh* pPondMesh, BOOL bChooseGroup)
 {
-	int iSize = m_pSelPonds.size();
-	if(iSize==0&&pPondMesh!=nullptr)
+	if (m_pSelPonds.empty()
+		&& pPondMesh != nullptr)
 	{
-		m_VtxPosDummy.SetSelVtx(nullptr);	
+		m_VtxPosDummy.SetSelVtx(nullptr);
 		m_pSelPonds.push_back(pPondMesh);
 	}
-	else if(pPondMesh==nullptr && bChooseGroup==FALSE && m_bChooseEditPond == FALSE)
+	else if (pPondMesh == nullptr
+		&& !bChooseGroup
+		&& !m_bChooseEditPond)
 	{
 		SelPondRelease();
 	}
 
-	if(bChooseGroup==TRUE && pPondMesh!=nullptr && m_bChooseEditPond == FALSE)
+	if (bChooseGroup
+		&& pPondMesh != nullptr
+		&& !m_bChooseEditPond)
 	{
 		SetSelPonds(pPondMesh);
 	}
-	if (m_pDlgProperty) m_pDlgProperty->UpdateInfo();
+
+	if (m_pDlgProperty != nullptr)
+		m_pDlgProperty->UpdateInfo();
 }
 
 BOOL CPondMng::SetPondID(CPondMesh* pPondMesh, int iPondID)
@@ -716,13 +681,10 @@ void CPondMng::SetEditMode(BOOL bEditMode)
 
 void CPondMng::ClearSelectRcAllPond()
 {
-	CPondMesh* pRM = nullptr;
-	it_PondMesh it = m_PondMeshes.begin();
-	int iSize = m_PondMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CPondMesh* pRM : m_PondMeshes)
 	{
-		pRM = *it;
-		if(pRM) pRM->ClearSelectPos();
+		if (pRM != nullptr)
+			pRM->ClearSelectPos();
 	}
 }
 
@@ -750,38 +712,48 @@ BOOL CPondMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd,BOOL bSelectPond)
 
 	D3DVIEWPORT9 vp = pEng->s_CameraData.vp;
 
-	CPondMesh* pSelPond=nullptr;
-	int iSize = m_pSelPonds.size();
-	it_PondMesh it = m_pSelPonds.begin();
-	int i,k;
-	for(i = 0; i < iSize; ++i, ++it) 	// 이미 선택된 연못이 있다면..
+	// 이미 선택된 연못이 있다면..
+	for (CPondMesh* pSelPond : m_pSelPonds)
 	{
-		pSelPond= *it;
-		if(pSelPond==nullptr) continue;
+		if (pSelPond == nullptr)
+			continue;
 
 		int iVC = pSelPond->VertexCount();	// 그연못의 점 숫자를 구하기
-		for (k=0; k<iVC;++k)
+		for (int k = 0; k < iVC; k++)
 		{
 			__VertexXyzT2* pVtx = pSelPond->GetVertex(k);	// 점 하나 구하기
-			if (pVtx == nullptr) continue;
+			if (pVtx == nullptr)
+				continue;
 
-			if(bSelectPond == FALSE)
+			if (!bSelectPond)
 			{
 				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, (D3DXVECTOR3*)(pVtx), &matVP);
-				float fScreenZ = (v.z/v.w);
-				if (fScreenZ>1.0 || fScreenZ<0.0) continue;
+				D3DXVec3Transform(&v, (D3DXVECTOR3*) (pVtx), &matVP);
+				float fScreenZ = (v.z / v.w);
+				if (fScreenZ > 1.0f || fScreenZ < 0.0f)
+					continue;
 
-				float fScreenX = ((v.x/v.w)+1.0f)*(vp.Width)/2.0f;
-				float fScreenY = (1.0f-(v.y/v.w))*(vp.Height)/2.0f;
-				if (fScreenX >= pRect->left && fScreenX <= pRect->right &&
-					fScreenY >= pRect->top && fScreenY <= pRect->bottom)
+				float fScreenX = ((v.x / v.w) + 1.0f) * (vp.Width) / 2.0f;
+				float fScreenY = (1.0f - (v.y / v.w)) * (vp.Height) / 2.0f;
+				if (fScreenX >= pRect->left && fScreenX <= pRect->right
+					&& fScreenY >= pRect->top && fScreenY <= pRect->bottom)
 				{
 					BOOL bAleadySelected = FALSE;
-					int j, ivtxSize = m_SelVtxArray.GetSize();
-					for (j=0; j<ivtxSize;++j) if (m_SelVtxArray.GetAt(j) == pVtx) {bAleadySelected=TRUE;break;}
-					if (bAleadySelected) m_SelVtxArray.RemoveAt(j);	// 이미 있으므로 선택목록에서 제거
-					else m_SelVtxArray.InsertAt(0, pVtx);			// 추가
+					int ivtxSize = static_cast<int>(m_SelVtxArray.GetSize());
+					int j = 0;
+					for (; j < ivtxSize; j++)
+					{
+						if (m_SelVtxArray.GetAt(j) == pVtx)
+						{
+							bAleadySelected = TRUE;
+							break;
+						}
+					}
+
+					if (bAleadySelected)
+						m_SelVtxArray.RemoveAt(j);			// 이미 있으므로 선택목록에서 제거
+					else
+						m_SelVtxArray.InsertAt(0, pVtx);	// 추가
 
 					pSelPond->InputSelectPos(pVtx->x,pVtx->y,pVtx->z,k);	//	좌표입력하여 가상의 영역잡음
 				}
@@ -789,62 +761,77 @@ BOOL CPondMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd,BOOL bSelectPond)
 			else
 			{
 				BOOL bAleadySelected = FALSE;
-				int j, ivtxSize = m_SelVtxArray.GetSize();
-				for (j=0; j<ivtxSize;++j) if (m_SelVtxArray.GetAt(j) == pVtx) {bAleadySelected=TRUE;break;}
-				if (bAleadySelected) m_SelVtxArray.RemoveAt(j);	// 이미 있으므로 선택목록에서 제거
-				else m_SelVtxArray.InsertAt(0, pVtx);			// 추가
-			
-				pSelPond->InputSelectPos(pVtx->x,pVtx->y,pVtx->z);	//	좌표입력하여 가상의 영역잡음
+				int ivtxSize = static_cast<int>(m_SelVtxArray.GetSize());
+				int j = 0;
+				for (; j < ivtxSize; j++)
+				{
+					if (m_SelVtxArray.GetAt(j) == pVtx)
+					{
+						bAleadySelected = TRUE;
+						break;
+					}
+				}
+
+				if (bAleadySelected)
+					m_SelVtxArray.RemoveAt(j);	// 이미 있으므로 선택목록에서 제거
+				else
+					m_SelVtxArray.InsertAt(0, pVtx);			// 추가
+
+				pSelPond->InputSelectPos(pVtx->x, pVtx->y, pVtx->z);	//	좌표입력하여 가상의 영역잡음
 			}
 		}
 	}
 	
-	if(iSize==0)	// 선택된 연못이 아무것도 없다면 (모든연못 검색해서 연못 선택후 그 연못 점들만 선택..)
+	// 선택된 연못이 아무것도 없다면 (모든연못 검색해서 연못 선택후 그 연못 점들만 선택..)
+	if (m_pSelPonds.empty())
 	{
 		ASSERT(m_SelVtxArray.GetSize() == 0);
 
-		it = m_PondMeshes.begin();
-		iSize = m_PondMeshes.size();
 		BOOL bChkSamePond;
-		for(i = 0; i < iSize; ++i, ++it)
+		for (CPondMesh* pRM : m_PondMeshes)
 		{
-			CPondMesh* pRM = *it;
-			if (pRM == nullptr) continue;
+			if (pRM == nullptr)
+				continue;
 
-			int j, iVC = pRM->VertexCount();				// 이연못의 점 갯수
-			pSelPond = nullptr;
-			bChkSamePond=TRUE;
-			for (j=0; j<iVC; ++j)
+			int iVC = pRM->VertexCount();				// 이연못의 점 갯수
+			CPondMesh* pSelPond = nullptr;
+			bChkSamePond = TRUE;
+			for (int j = 0; j < iVC; j++)
 			{
 				__VertexXyzT2* pVtx = pRM->GetVertex(j);	// 점 하나 구하기
-				if (pVtx == nullptr) continue;
+				if (pVtx == nullptr)
+					continue;
 
 				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, (D3DXVECTOR3*)(pVtx), &matVP);
-				float fScreenZ = (v.z/v.w);
-				if (fScreenZ>1.0 || fScreenZ<0.0) continue;
+				D3DXVec3Transform(&v, (D3DXVECTOR3*) (pVtx), &matVP);
+				float fScreenZ = (v.z / v.w);
+				if (fScreenZ > 1.0f || fScreenZ < 0.0f)
+					continue;
 
-				float fScreenX = ((v.x/v.w)+1.0f)*(vp.Width)/2.0f;
-				float fScreenY = (1.0f-(v.y/v.w))*(vp.Height)/2.0f;
-				if (fScreenX >= pRect->left && fScreenX <= pRect->right &&
-					fScreenY >= pRect->top && fScreenY <= pRect->bottom)
+				float fScreenX = ((v.x / v.w) + 1.0f) * (vp.Width) / 2.0f;
+				float fScreenY = (1.0f - (v.y / v.w)) * (vp.Height) / 2.0f;
+				if (fScreenX >= pRect->left && fScreenX <= pRect->right
+					&& fScreenY >= pRect->top && fScreenY <= pRect->bottom)
 				{
 					m_SelVtxArray.Add(pVtx);			// 추가
-					pRM->InputSelectPos(pVtx->x,pVtx->y,pVtx->z,j);	//	좌표입력하여 가상의 영역잡음
-					if(bChkSamePond==TRUE)
+					pRM->InputSelectPos(pVtx->x, pVtx->y, pVtx->z, j);	//	좌표입력하여 가상의 영역잡음
+
+					if (bChkSamePond)
 					{
 						pSelPond = pRM;
-						SetSelPond(pSelPond,m_bChooseGroup);
-						bChkSamePond= FALSE;
+						SetSelPond(pSelPond, m_bChooseGroup);
+						bChkSamePond = FALSE;
 					}
 				}
 			}
-			if (pSelPond && m_bChooseGroup==FALSE) break;
+
+			if (pSelPond != nullptr && !m_bChooseGroup)
+				break;
 		}
 	}
 
-	iSize = m_SelVtxArray.GetSize();
-	if ( iSize == 0)
+	int iSize = static_cast<int>(m_SelVtxArray.GetSize());
+	if (iSize == 0)
 	{
 		SetSelPond(nullptr);
 		m_VtxPosDummy.SetSelVtx(nullptr);
@@ -852,48 +839,45 @@ BOOL CPondMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd,BOOL bSelectPond)
 	else
 	{
 		m_VtxPosDummy.SetSelVtx(m_SelVtxArray.GetAt(0));
-		for (i=1; i<iSize; ++i)
-		{
+		for (int i = 1; i < iSize; i++)
 			m_VtxPosDummy.AddSelVtx(m_SelVtxArray.GetAt(i));
-		}
+
 		SetVtxBackup();
 		return TRUE;
-	}	
+	}
 
 	return FALSE;
 }
 
 void CPondMng::ReCalcUV()
 {
-	int iSize = m_pSelPonds.size();
-	if(iSize==0) return;
-	it_PondMesh it = m_pSelPonds.begin();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CPondMesh* pSelPond= *it;
+	if (m_pSelPonds.empty())
+		return;
+
+	for (CPondMesh* pSelPond : m_pSelPonds)
 		pSelPond->ReCalcUV();
-	}
+
+
 	m_pMainFrm->Invalidate(FALSE);
 }
 
 void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
 {
-	int iPondCount = m_PondMeshes.size();
+	int iPondCount = static_cast<int>(m_PondMeshes.size());
 	DWORD dwNum;
 
-	it_PondMesh it = m_PondMeshes.begin();
 	WriteFile(hFile, &iPondCount, sizeof(int), &dwNum, nullptr);
-	for (int i=0;i<iPondCount;i++, it++)
+	for (CPondMesh* pRM : m_PondMeshes)
 	{
-		CPondMesh *pRM =  *it;
 		ASSERT(pRM);
 
 		int iVC = pRM->VertexCount();
-		__VertexXyzT2* pVtx0 = pRM->GetVertex(0), *pSrcVtx=nullptr;
+		__VertexXyzT2* pVtx0 = pRM->GetVertex(0), *pSrcVtx = nullptr;
 		ASSERT(pVtx0);
 		WriteFile(hFile, &iVC, sizeof(iVC), &dwNum, nullptr);				// 점 갯수
 
-		if(iVC<=0) continue;
+		if (iVC <= 0)
+			continue;
 
 		int iWidthVtxNum = pRM->GetWaterScaleWidht();
 		WriteFile(hFile, &iWidthVtxNum, sizeof(int), &dwNum, nullptr);				// 점 갯수
@@ -901,25 +885,25 @@ void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
 		CN3Texture* pPondTex = pRM->TexGet();
 		int iLen = 0;
 
-		if(pPondTex)
-		{			
+		if (pPondTex != nullptr)
+		{
 			char szFileName[MAX_PATH], szFindName[50];
-			sprintf(szFileName,"%s",pPondTex->FileName().c_str());
-			iLen = pPondTex->FileName().size();
-			for(int i=iLen;i>0;--i)
+			sprintf(szFileName, "%s", pPondTex->FileName().c_str());
+			iLen = static_cast<int>(pPondTex->FileName().size());
+			for (int i = iLen; i > 0; --i)
 			{
-				if(szFileName[i] == '\\')
+				if (szFileName[i] == '\\')
 				{
-					sprintf(szFindName,"%s",&szFileName[i+1]);
+					sprintf(szFindName, "%s", &szFileName[i + 1]);
 					iLen -= i;
 					i = 0;
 				}
 			}
+
 			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
-			if (iLen>0)
-			{
+
+			if (iLen > 0)
 				WriteFile(hFile, szFindName, iLen, &dwNum, nullptr);			// texture file name
-			}
 		}
 		else
 		{
@@ -929,37 +913,34 @@ void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
 		// XyxT2 -> XyzColorT2 Converting.
 		DWORD dwAplha = pRM->GetAlphaFactor();
 		__VertexPond __vTemp;
-		for (int k=0;k<iVC;++k)
+		for (int k = 0; k < iVC; k++)
 		{
-			pSrcVtx = pVtx0+k;
-			__vTemp.Set(*pSrcVtx,0.0f, 1.0f, 0.0f,dwAplha);
+			pSrcVtx = pVtx0 + k;
+			__vTemp.Set(*pSrcVtx, 0.0f, 1.0f, 0.0f, dwAplha);
 			WriteFile(hFile, &__vTemp, sizeof(__VertexPond), &dwNum, nullptr);	// vertex buffer
 		}
-		
+
 		int iIC = pRM->IndexCount();
 		WriteFile(hFile, &iIC, sizeof(iIC), &dwNum, nullptr);				// IndexBuffer Count.
-	}	
-
+	}
 }
 
 void CPondMng::ReCalcSelectedVertex()
 {
-	int iSize = m_pSelPonds.size();
-	if(iSize==0) return;
+	if (m_pSelPonds.empty())
+		return;
 
 	__VertexXyzT2* pVtxSel = m_SelVtxArray.GetAt(0);
 	if (pVtxSel == nullptr)
 		return;
 
-	auto it = m_pSelPonds.begin();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CPondMesh* pSelPond : m_pSelPonds)
 	{
-		CPondMesh* pSelPond = *it;
 		__VertexXyzT2* pVtx0 = pSelPond->GetVertex(0);
 		if (pVtx0 == nullptr)
 			continue;
 
-		int nIndex = pVtxSel - pVtx0;
+		int nIndex = static_cast<int>(pVtxSel - pVtx0);
 		int iLastVtxNum = pSelPond->LastVertexCount();
 
 		nIndex = (nIndex / iLastVtxNum) * iLastVtxNum;
@@ -975,15 +956,17 @@ void CPondMng::ReCalcSelectedVertex()
 		vPos2 = pVtxTmp[iLastVtxNum - 1];
 
 		vDif = vPos2 - vPos1;
+
 		float Length = vDif.Magnitude();
 		vDif.Normalize();
 		vDif *= Length / (float) iLastVtxNum;
 
-		for (int i = 1;i < iLastVtxNum;i++)
+		for (int i = 1; i < iLastVtxNum; i++)
 		{
 			vPos2 = vPos1 + vDif * (float) i;
 			pVtxTmp[i].Set(vPos2, 0, 0, 0, 0);
 		}
+
 		pSelPond->ReCalcUV();
 	}
 
@@ -992,79 +975,83 @@ void CPondMng::ReCalcSelectedVertex()
 
 void CPondMng::SetVtxCenter()	//	연못(들)의 중간점을 찾아 세팅,예전 스케일도 백업
 {
-	int iSize = m_pSelPonds.size();
+	size_t selectedPondCount = m_pSelPonds.size();
 	m_vPondsCenter.Zero();
 
-	if(iSize==0) return;
+	if (selectedPondCount == 0)
+		return;
 
 	__Vector3 vtotCenter;
 	__Vector3* pvCenter;
-	int nCenterCnt=0;
+	int nCenterCnt = 0;
 
-	pvCenter = new __Vector3 [iSize];
+	pvCenter = new __Vector3[selectedPondCount];
 
 	it_PondMesh it = m_pSelPonds.begin();
-	int i;
-	for(i = 0; i < iSize; i++, it++)
+	for (size_t i = 0; i < selectedPondCount; i++, it++)
 	{
 		CPondMesh* pRM = *it;
-		if(pRM) 
+		if (pRM != nullptr)
 		{
 			pvCenter[i] = pRM->GetCenter();	//	연못(들)의 중간점을 받음, 현재의 스케일도 백업
 			nCenterCnt++;
 		}
 	}
 
-	if(iSize==1)
+	if (selectedPondCount == 1)
+	{
 		m_vPondsCenter = pvCenter[0];
+	}
 	else
 	{
-		float Stx,Enx,Stz,Enz;
-		Stx=Enx=pvCenter[0].x, Stz=Enz= pvCenter[0].z;
-		for(i=0;i<nCenterCnt;i++)
+		float Stx, Enx, Stz, Enz;
+		Stx = Enx = pvCenter[0].x, Stz = Enz = pvCenter[0].z;
+		for (int i = 0; i < nCenterCnt; i++)
 		{
-			if(Stx>pvCenter[i].x) Stx  = pvCenter[i].x;
-			if(Enx<pvCenter[i].x) Enx  = pvCenter[i].x;
-			if(Stz>pvCenter[i].z) Stz  = pvCenter[i].z;
-			if(Enz<pvCenter[i].z) Enz  = pvCenter[i].z;
+			if (Stx > pvCenter[i].x) Stx = pvCenter[i].x;
+			if (Enx < pvCenter[i].x) Enx = pvCenter[i].x;
+			if (Stz > pvCenter[i].z) Stz = pvCenter[i].z;
+			if (Enz < pvCenter[i].z) Enz = pvCenter[i].z;
 		}
 
-		m_vPondsCenter.Set(Stx + (Enx-Stx)/2 , 0.0f,Stz + (Enz-Stz)/2);
+		m_vPondsCenter.Set(Stx + (Enx - Stx) / 2, 0.0f, Stz + (Enz - Stz) / 2);
 	}
 
-	delete []pvCenter;
-	pvCenter=nullptr;
+	delete[] pvCenter;
+	pvCenter = nullptr;
 }
 
 void CPondMng::SetRotatePonds(float fMove)
 {
-	int iSize = m_pSelPonds.size();
-	if(iSize==0) return;
-	if(m_vPondsCenter.x == 0.0f && 	m_vPondsCenter.z == 0.0f) return;
+	if (m_pSelPonds.empty())
+		return;
 
-	if(m_bShift) fMove/=5.0f;
+	if (m_vPondsCenter.x == 0.0f && m_vPondsCenter.z == 0.0f)
+		return;
+
+	if (m_bShift)
+		fMove /= 5.0f;
 
 	__Matrix44 matRotate;
-	matRotate.RotationY(D3DXToRadian(fMove/10.0f));
+	matRotate.RotationY(D3DXToRadian(fMove / 10.0f));
 
-	m_VtxPosDummy.PosRotate(matRotate,m_vPondsCenter);
+	m_VtxPosDummy.PosRotate(matRotate, m_vPondsCenter);
 
-	it_PondMesh it = m_pSelPonds.begin();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CPondMesh* pRM : m_pSelPonds)
 	{
-		CPondMesh* pRM = *it;
-		if(pRM) pRM->Rotation(matRotate,m_vPondsCenter);
+		if (pRM != nullptr)
+			pRM->Rotation(matRotate, m_vPondsCenter);
 	}
 }
 
 void CPondMng::SetVtxBackup()
 {
-	int iSelSize = m_SelVtxArray.GetSize();
-	if(iSelSize==0) return;
+	int iSelSize = static_cast<int>(m_SelVtxArray.GetSize());
+	if (iSelSize == 0) return;
 
 	VtxBackupRelease();
 
-	for(int i=0;i<iSelSize;i++)
+	for (int i = 0; i < iSelSize; i++)
 	{
 		__VertexXyzT2* pVtx = m_SelVtxArray.GetAt(i);
 
@@ -1078,16 +1065,17 @@ void CPondMng::SetVtxBackup()
 
 void CPondMng::ReSetVtxBackup()
 {
-	int iSize = m_SelVtxBakArray.size();
-	int iVtxSize = m_SelVtxArray.GetSize();
-	if(iSize==0||iVtxSize==0) return;
+	int iSize = static_cast<int>(m_SelVtxBakArray.size());
+	int iVtxSize = static_cast<int>(m_SelVtxArray.GetSize());
+	if (iSize == 0 || iVtxSize == 0)
+		return;
 
-	it_SelVtxBak SetVtx = m_SelVtxBakArray.begin();
-	for(int i=0;i<iSize;i++,SetVtx++)
+	auto SetVtx = m_SelVtxBakArray.begin();
+	for (int i = 0; i < iSize; i++, SetVtx++)
 	{
 		__Vector3* pBacVtx = *SetVtx;
 		__VertexXyzT2* pVtx = m_SelVtxArray.GetAt(i);
-		if(pBacVtx)
+		if (pBacVtx != nullptr)
 		{
 			pVtx->x = pBacVtx->x;
 			pVtx->y = pBacVtx->y;
@@ -1098,54 +1086,41 @@ void CPondMng::ReSetVtxBackup()
 
 void CPondMng::VtxBackupRelease()
 {
-	int iSize = m_SelVtxBakArray.size();
-	if(iSize==0) return;
-
-	it_SelVtxBak SetVtx = m_SelVtxBakArray.begin();
-	for(int i=0;i<iSize;i++,SetVtx++)
-	{
-		__Vector3* pVtx = *SetVtx;
-		if(pVtx) delete pVtx;
-	}
+	for (__Vector3* pVtx : m_SelVtxBakArray)
+		delete pVtx;
 	m_SelVtxBakArray.clear();
 }
 
 void CPondMng::InputDummyMovePos(__Vector3 vMovePos)
 {
-	if(vMovePos.x == 0.0f && vMovePos.y == 0.0f && vMovePos.z == 0.0f) return;
+	if (vMovePos.x == 0.0f && vMovePos.y == 0.0f && vMovePos.z == 0.0f)
+		return;
 
-	int iSize = m_pSelPonds.size();
-	it_PondMesh it = m_pSelPonds.begin();
-	CPondMesh* pRM;
-	BOOL bDrawBoxMove;
-
-	for(int i = 0; i < iSize; ++i, ++it)
+	for (CPondMesh* pRM : m_pSelPonds)
 	{
-		pRM = *it;
-		if(pRM)
-		{
-			bDrawBoxMove = pRM->InputDummyMovingPos(vMovePos,m_bMovePond);
-			if(bDrawBoxMove==TRUE)
-				m_pDlgProperty->UpdateWaterLength(pRM);
-		}
+		if (pRM == nullptr)
+			continue;
+
+		BOOL bDrawBoxMove = pRM->InputDummyMovingPos(vMovePos, m_bMovePond);
+		if (bDrawBoxMove)
+			m_pDlgProperty->UpdateWaterLength(pRM);
 	}
 
-	if (m_pDlgProperty && (vMovePos.y!=0.0f || m_bMovePond==TRUE)) //	높이나 움직여서 정보를 갱신
+	// 높이나 움직여서 정보를 갱신
+	if (m_pDlgProperty != nullptr
+		&& (vMovePos.y != 0.0f || m_bMovePond == TRUE))
 	{
-		m_pDlgProperty->UpdateInfo();	
+		m_pDlgProperty->UpdateInfo();
 		MainInvalidate();
 	}
 }
 
 void CPondMng::StationPond()
 {
-	CPondMesh* pRM = nullptr;
-	it_PondMesh it = m_pSelPonds.begin();
-	int iSize = m_pSelPonds.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CPondMesh* pRM : m_pSelPonds)
 	{
-		pRM = *it;
-		if(pRM) pRM->MakePondPos();
+		if (pRM != nullptr)
+			pRM->MakePondPos();
 	}
 
 	MainInvalidate();

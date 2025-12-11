@@ -213,25 +213,23 @@ void CHierarchyView::UpdateTreeItem(HTREEITEM hParent, CN3UIBase *pUIBase)
 	str += pUIBase->m_szID.c_str(); // 이름을 붙여준다... !!
 
 	HTREEITEM hItem = GetTreeCtrl().InsertItem(str, hParent);	// insert
-	GetTreeCtrl().SetItemData(hItem, (DWORD)pUIBase);	// pointer 저장
-	GetTreeCtrl().Expand(hItem, TVE_EXPAND);			// expand
+	GetTreeCtrl().SetItemData(hItem, (DWORD_PTR) pUIBase);		// pointer 저장
+	GetTreeCtrl().Expand(hItem, TVE_EXPAND);					// expand
 
 	// update child
-	for(UIListItor itor = pUIBase->m_Children.begin(); pUIBase->m_Children.end() != itor; ++itor)
-	{
-		CN3UIBase* pChild = (*itor);
+	for (CN3UIBase* pChild : pUIBase->m_Children)
 		UpdateTreeItem(hItem, pChild);
-	}
 }
 
 // UIBase 포인터로 tree item 선택하기
 void CHierarchyView::SelectObject(HTREEITEM hItem, CN3UIBase* pUIBase)
 {
-	if(nullptr == pUIBase || nullptr == hItem) return;
+	if (pUIBase == nullptr || hItem == nullptr)
+		return;
 
-	if(hItem != TVI_ROOT)
+	if (hItem != TVI_ROOT)
 	{
-		if(GetTreeCtrl().GetItemData(hItem) == (DWORD)pUIBase)
+		if (GetTreeCtrl().GetItemData(hItem) == (DWORD_PTR) pUIBase)
 		{
 			GetTreeCtrl().SelectItem(hItem);
 			return;
@@ -239,13 +237,12 @@ void CHierarchyView::SelectObject(HTREEITEM hItem, CN3UIBase* pUIBase)
 	}
 
 	HTREEITEM hChild = GetTreeCtrl().GetChildItem(hItem);
-	while(hChild != nullptr)
+	while (hChild != nullptr)
 	{
 		SelectObject(hChild, pUIBase);
 		hChild = GetTreeCtrl().GetNextItem(hChild, TVGN_NEXT);
 	}
 }
-
 
 void CHierarchyView::OnKillFocus(CWnd* pNewWnd) 
 {

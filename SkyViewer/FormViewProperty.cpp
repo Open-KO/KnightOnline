@@ -367,7 +367,7 @@ void CFormViewProperty::OnCPlay()
 	}
 }
 
-void CFormViewProperty::OnTimer(UINT nIDEvent) 
+void CFormViewProperty::OnTimer(UINT_PTR nIDEvent)
 {
 	if(nIDEvent == 0) // Play..
 	{

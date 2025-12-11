@@ -284,14 +284,20 @@ void CN3CEView::OnDraw(CDC* pDC)
 	}
 	pDC->TextOut(0, 0, m_szFPS);
 
-	int iAC = m_DequeAnimation.size();
-	for(int i = 0; i < iAC; i++)
+	int iAC = static_cast<int>(m_DequeAnimation.size());
+	for (int i = 0; i < iAC; i++)
 	{
 		CN3AnimControl* pAC = pChr->AniCtrl();
-		int iAI = m_DequeAnimation[i];
-		if(nullptr == pAC || nullptr == pAC->DataGet(iAI)) continue;
+		if (pAC == nullptr)
+			continue;
 
-		CString szAniName = pAC->DataGet(iAI)->szName.c_str();
+		int iAni = m_DequeAnimation[i];
+		
+		__AnimData* pAni = pAC->DataGet(iAni);
+		if (pAni == nullptr)
+			continue;
+
+		CString szAniName = pAni->szName.c_str();
 		pDC->TextOut(20, 20 + i * 18, szAniName);
 	}
 }

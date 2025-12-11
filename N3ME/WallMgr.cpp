@@ -439,7 +439,7 @@ bool CWallMgr::Load(HANDLE hFile)
 bool CWallMgr::Save(HANDLE hFile)
 {
 	DWORD dwRWC;
-	int NumWall = m_pWalls.size();
+	int NumWall = static_cast<int>(m_pWalls.size());
 	WriteFile(hFile, &NumWall, sizeof(int), &dwRWC, nullptr);
 
 	std::list<CWall*>::iterator itWall;
@@ -466,7 +466,7 @@ void CWallMgr::AddWall2Coll(CN3ShapeMgr* pShapeMgr)
 	// Let's embed it as a text file...
 	FILE* stream = fopen("c:\\Wall_info.txt", "w");
 
-	fprintf(stream, "Walls = %d\n", m_pWalls.size());
+	fprintf(stream, "Walls = %zu\n", m_pWalls.size());
 	for(itWall = m_pWalls.begin(); itWall != m_pWalls.end(); itWall++)
 	{
 		pWall = (*itWall);
@@ -476,7 +476,7 @@ void CWallMgr::AddWall2Coll(CN3ShapeMgr* pShapeMgr)
 			continue;
 		}
 
-		fprintf(stream, "wall = %d\n", pWall->m_Wall.size());
+		fprintf(stream, "wall = %zu\n", pWall->m_Wall.size());
 		for(itVertex = pWall->m_Wall.begin(); itVertex != pWall->m_Wall.end(); itVertex++)
 		{
 			Vertex = (*itVertex);

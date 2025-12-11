@@ -642,14 +642,17 @@ BOOL CViewProperty::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				}
 
 				CN3BaseFileAccess tmp;
-				int nTC = szArr.GetSize();
+
+				int nTC = static_cast<int>(szArr.GetSize());
 				pPD->TexAlloc(nTC);
-				for(int i = 0; i < nTC; i++)
+
+				for (int i = 0; i < nTC; i++)
 				{
 					tmp.FileNameSet(std::string(szArr[i]));
 					pPD->TexSet(i, tmp.FileName());
 				}
-				this->UpdateInfo();
+				
+				UpdateInfo();
 
 			}
 

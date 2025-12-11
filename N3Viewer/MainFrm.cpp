@@ -224,7 +224,7 @@ void CMainFrame::OnPlay()
 	else this->KillTimer(100);
 }
 
-void CMainFrame::OnTimer(UINT nIDEvent) 
+void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 {
 	if(100 == nIDEvent)
 	{

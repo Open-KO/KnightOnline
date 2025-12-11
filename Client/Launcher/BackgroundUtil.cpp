@@ -59,7 +59,7 @@ BOOL CBackgroundUtil::SetBitmap(UINT uResourceID)
 
 BOOL CBackgroundUtil::GetBitmapAndPalette(UINT nIDResource, CBitmap & bitmap, CPalette & pal)
 {
-	LPCTSTR lpszResourceName = (LPCTSTR)nIDResource;
+	LPCTSTR lpszResourceName = (LPCTSTR)(UINT_PTR) nIDResource;
 
 	HBITMAP hBmp = (HBITMAP)::LoadImage( AfxGetInstanceHandle(), 
 		lpszResourceName, IMAGE_BITMAP, 0,0, LR_CREATEDIBSECTION);

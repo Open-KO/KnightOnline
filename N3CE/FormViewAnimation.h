@@ -107,7 +107,7 @@ protected:
 	afx_msg void OnCDelayedLooping();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnClose();
 	afx_msg void OnBSetFrameStrike0();
 	afx_msg void OnBSetFrameStrike1();

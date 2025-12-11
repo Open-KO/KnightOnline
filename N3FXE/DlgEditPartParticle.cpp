@@ -282,15 +282,11 @@ void CDlgEditPartParticle::OnPartParticleBtnSave()
 	fprintf(file,"<create_count> %d\n", m_iCreateNum);
 	fprintf(file,"<create_delay> %5.4f\n", m_fCreateInterval);
 
-	int EmitType = m_CBEmitType.GetItemData(m_CBEmitType.GetCurSel());
-	if(EmitType==FX_PART_PARTICLE_EMIT_TYPE_SPREAD)
-	{
-		fprintf(file,"<emit_type> spread %5.4f\n", m_fEmitArg1);
-	}
-	else if(EmitType==FX_PART_PARTICLE_EMIT_TYPE_GATHER)
-	{
-		fprintf(file,"<emit_type> gather %5.4f %5.4f %5.4f\n", m_fEmitArg1, m_fEmitArg2, m_fEmitArg3);
-	}
+	DWORD EmitType = static_cast<DWORD>(m_CBEmitType.GetItemData(m_CBEmitType.GetCurSel()));
+	if (EmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD)
+		fprintf(file, "<emit_type> spread %5.4f\n", m_fEmitArg1);
+	else if (EmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER)
+		fprintf(file, "<emit_type> gather %5.4f %5.4f %5.4f\n", m_fEmitArg1, m_fEmitArg2, m_fEmitArg3);
 	
 	fprintf(file,"<particle_direction> %5.4f %5.4f %5.4f\n", m_EmitDirX, m_EmitDirY, m_EmitDirZ);
 	fprintf(file,"<particle_velocity> %5.4f\n", m_fEmitVel);
@@ -410,10 +406,10 @@ bool CDlgEditPartParticle::LoadPartScript(const char* szPath)
 	}
 
 	int EmitTypeCount = m_CBEmitType.GetCount();
-	for(int i=0;i<EmitTypeCount;i++)
+	for (int i = 0; i < EmitTypeCount; i++)
 	{
-		DWORD Type = m_CBEmitType.GetItemData(i);
-		if(pPart->m_dwEmitType==Type)
+		DWORD Type = static_cast<DWORD>(m_CBEmitType.GetItemData(i));
+		if (pPart->m_dwEmitType == Type)
 		{
 			m_CBEmitType.SetCurSel(i);
 			break;
@@ -563,7 +559,7 @@ void CDlgEditPartParticle::SetEmitTypeState(int EmitType)
 void CDlgEditPartParticle::OnSelchangePartParticleCbEmitType() 
 {
 	int idx = m_CBEmitType.GetCurSel();
-	SetEmitTypeState(m_CBEmitType.GetItemData(idx));
+	SetEmitTypeState(static_cast<DWORD>(m_CBEmitType.GetItemData(idx)));
 }
 
 void CDlgEditPartParticle::OnPartParticleBtnPutColor() 

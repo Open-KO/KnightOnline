@@ -208,11 +208,11 @@ void CPropertyList::OnSelchange()
 
 		//add the choices for this particular property
 		m_ComboBox.ResetContent();
-		int nCmbC = pItem->m_szCBItemsOrFilter.GetSize();
-		for(int i = 0; i <  nCmbC; i++)
-		{
+
+		int nCmbC = static_cast<int>(pItem->m_szCBItemsOrFilter.GetSize());
+		for (int i = 0; i < nCmbC; i++)
 			m_ComboBox.AddString(pItem->m_szCBItemsOrFilter.GetAt(i));
-		}
+
 		m_ComboBox.SetCurSel(pItem->m_crColor);
 
 		m_ComboBox.ShowWindow(SW_SHOW);
@@ -343,13 +343,14 @@ void CPropertyList::OnSelchangeCmbBox()
 	CString selStr;
 	if (m_ComboBox)
 	{
-		m_ComboBox.GetLBText(m_ComboBox.GetCurSel(),selStr);
+		m_ComboBox.GetLBText(m_ComboBox.GetCurSel(), selStr);
 		CPropertyItem* pItem = (CPropertyItem*) GetItemDataPtr(m_curSel);
 		pItem->m_curValue = selStr;
 		pItem->m_crColor = m_ComboBox.GetCurSel();
 
 		CWnd* pWnd = GetParent();
-		if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+		if (pWnd != nullptr)
+			pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 	}
 }
 
@@ -362,7 +363,8 @@ void CPropertyList::OnChangeEditBox()
 	pItem->m_curValue = newStr;
 
 	CWnd* pWnd = GetParent();
-	if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+	if (pWnd != nullptr)
+		pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 }
 
 void CPropertyList::OnButton()
@@ -383,7 +385,8 @@ void CPropertyList::OnButton()
 		}
 
 		CWnd* pWnd = GetParent();
-		if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+		if (pWnd != nullptr)
+			pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 
 	}
 	else if (pItem->m_nItemType == PIT_FILE)
@@ -408,7 +411,8 @@ void CPropertyList::OnButton()
 		}
 
 		CWnd* pWnd = GetParent();
-		if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+		if (pWnd != nullptr)
+			pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 
 	}
 	else if (pItem->m_nItemType == PIT_FILE_MULTI)
@@ -430,13 +434,15 @@ void CPropertyList::OnButton()
 			}
 
 			pItem->m_curValue = "";
-			int iSC = szFNs.GetSize();
-			if(iSC > 0)
+
+			int iSC = static_cast<int>(szFNs.GetSize());
+			if (iSC > 0)
 			{
-				pItem->m_curValue += szFNs[iSC-1];
+				pItem->m_curValue += szFNs[iSC - 1];
 				pItem->m_curValue += '\n';
 
-				for(int i = 1; i < iSC-1; i++) // 1 부터 시작하는 이유는 파일 대화상자에서 여러 파일을 부르면 첨과 끝 파일 이름이 바뀌기 때문이다.
+				// 1 부터 시작하는 이유는 파일 대화상자에서 여러 파일을 부르면 첨과 끝 파일 이름이 바뀌기 때문이다.
+				for (int i = 1; i < iSC - 1; i++)
 				{
 					pItem->m_curValue += szFNs[i];
 					pItem->m_curValue += '\n';
@@ -449,7 +455,8 @@ void CPropertyList::OnButton()
 				Invalidate();
 
 				CWnd* pWnd = GetParent();
-				if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+				if (pWnd != nullptr)
+					pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 			}
 		}
 	}
@@ -468,12 +475,14 @@ void CPropertyList::OnButton()
 		}
 
 		CWnd* pWnd = GetParent();
-		if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+		if (pWnd != nullptr)
+			pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 	}
 	else
 	{
 		CWnd* pWnd = GetParent();
-		if(pWnd) pWnd->SendMessage(WM_NOTIFY, (DWORD)this, (DWORD)pItem); // 부모 윈도우에 메시지 보내기..
+		if (pWnd != nullptr)
+			pWnd->SendMessage(WM_NOTIFY, (DWORD_PTR) this, (DWORD_PTR) pItem); // 부모 윈도우에 메시지 보내기..
 	}
 }
 

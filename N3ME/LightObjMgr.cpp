@@ -131,18 +131,15 @@ bool CLightObjMgr::Save(HANDLE hFile)
 
 	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
 
-	int cnt = m_ListObj.size();
+	int cnt = static_cast<int>(m_ListObj.size());
 	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
 
-	std::list<LIGHTOBJ*>::iterator it, ite;
-
-	ite = m_ListObj.end();
-	for(it=m_ListObj.begin(); it!=ite; it++)
+	for (LIGHTOBJ* pLO : m_ListObj)
 	{
-		LIGHTOBJ* pLO = (*it);
-		WriteFile(hFile, &(pLO->szName[0]), 80, &dwRWC, nullptr);
+		WriteFile(hFile, &pLO->szName[0], 80, &dwRWC, nullptr);
 		pLO->pRefLight->Save(hFile);
 	}
+
 	return true;
 }
 
@@ -471,8 +468,9 @@ void CLightObjMgr::ChangeSelLights()
 
 bool CLightObjMgr::MakeGameFile(char* szFN)
 {
-	int cnt = m_ListObj.size();
-	if(cnt<=0) return true;
+	int cnt = static_cast<int>(m_ListObj.size());
+	if (cnt <= 0)
+		return true;
 
 	HANDLE hFile = CreateFile(szFN, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
@@ -480,14 +478,9 @@ bool CLightObjMgr::MakeGameFile(char* szFN)
 	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
 	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
 
-	std::list<LIGHTOBJ*>::iterator it, ite;
-
-	ite = m_ListObj.end();
-	for(it=m_ListObj.begin(); it!=ite; it++)
-	{
-		LIGHTOBJ* pLO = (*it);
+	for (LIGHTOBJ* pLO : m_ListObj)
 		pLO->pRefLight->Save(hFile);
-	}
+
 	CloseHandle(hFile);
 	return true;
 }

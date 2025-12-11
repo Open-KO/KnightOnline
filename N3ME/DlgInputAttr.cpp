@@ -46,22 +46,22 @@ END_MESSAGE_MAP()
 BOOL CDlgInputAttr::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	SetWindowPos(nullptr, m_Point.x, m_Point.y,0,0, SWP_NOSIZE );
-	
-	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
+	SetWindowPos(nullptr, m_Point.x, m_Point.y, 0, 0, SWP_NOSIZE);
+
+	CMainFrame* pFrm = (CMainFrame*) AfxGetMainWnd();
 	CDTexGroupMng* pDTexGroupMng = pFrm->GetDTexGroupMng();
-	
-	it_DTexGroup it = pDTexGroupMng->m_Groups.begin();
-	int iSize = pDTexGroupMng->m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+
+	auto it = pDTexGroupMng->m_Groups.begin();
+	int iSize = static_cast<int>(pDTexGroupMng->m_Groups.size());
+	for (int i = 0; i < iSize; i++, it++)
 	{
 		CDTexGroup* pDTG = *it;
 		m_LBGroup.InsertString(i, pDTG->m_Name);
-		m_LBGroup.SetItemData(i, (DWORD)pDTG->m_ID);
+		m_LBGroup.SetItemData(i, (DWORD_PTR) pDTG->m_ID);
 	}
 
 	m_LBGroup.SetCurSel(0);
-	m_SelectedGroupID = m_LBGroup.GetItemData(0);
+	m_SelectedGroupID = static_cast<int>(m_LBGroup.GetItemData(0));
 		
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -75,5 +75,5 @@ void CDlgInputAttr::OnDblclkLbGroup()
 void CDlgInputAttr::OnSelchangeLbGroup() 
 {
 	int CurSel = m_LBGroup.GetCurSel();
-	m_SelectedGroupID = m_LBGroup.GetItemData(CurSel);
+	m_SelectedGroupID = static_cast<int>(m_LBGroup.GetItemData(CurSel));
 }

@@ -157,16 +157,22 @@ bool CN3CPart::Save(HANDLE hFile)
 
 	WriteFile(hFile, &m_dwReserved, 4, &dwRWC, nullptr);
 	WriteFile(hFile, &m_Mtl, sizeof(__Material), &dwRWC, nullptr);
-	
-	if(m_pTexRef) nL = m_pTexRef->FileName().size();
-	else nL = 0;
-	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) WriteFile(hFile, m_pTexRef->FileName().c_str(), nL, &dwRWC, nullptr);
 
-	if(m_pSkinsRef) nL = m_pSkinsRef->FileName().size();
-	else nL = 0;
+	if (m_pTexRef != nullptr)
+		nL = static_cast<int>(m_pTexRef->FileName().size());
+	else
+		nL = 0;
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) WriteFile(hFile, m_pSkinsRef->FileName().c_str(), nL, &dwRWC, nullptr);
+	if (nL > 0)
+		WriteFile(hFile, m_pTexRef->FileName().c_str(), nL, &dwRWC, nullptr);
+
+	if (m_pSkinsRef != nullptr)
+		nL = static_cast<int>(m_pSkinsRef->FileName().size());
+	else
+		nL = 0;
+	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+	if (nL > 0)
+		WriteFile(hFile, m_pSkinsRef->FileName().c_str(), nL, &dwRWC, nullptr);
 
 	return true;
 }
@@ -495,14 +501,18 @@ bool CN3CPlugBase::Save(HANDLE hFile)
 
 	nL = 0;
 	CN3PMesh* pPMesh = m_PMeshInst.GetMesh();
-	if(pPMesh) nL = pPMesh->FileName().size();
+	if (pPMesh != nullptr)
+		nL = static_cast<int>(pPMesh->FileName().size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) WriteFile(hFile, pPMesh->FileName().c_str(), nL, &dwRWC, nullptr);
+	if (nL > 0)
+		WriteFile(hFile, pPMesh->FileName().c_str(), nL, &dwRWC, nullptr);
 
 	nL = 0;
-	if(m_pTexRef) nL = m_pTexRef->FileName().size();
+	if (m_pTexRef != nullptr)
+		nL = static_cast<int>(m_pTexRef->FileName().size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) WriteFile(hFile, m_pTexRef->FileName().c_str(), nL, &dwRWC, nullptr);
+	if (nL > 0)
+		WriteFile(hFile, m_pTexRef->FileName().c_str(), nL, &dwRWC, nullptr);
 
 	return 0;
 }
@@ -1249,27 +1259,29 @@ bool CN3Chr::Save(HANDLE hFile)
 	int nL = 0;
 
 	// 관절 파일 이름 써주기..
-	if(m_pRootJointRef) nL = m_pRootJointRef->FileName().size();
+	if (m_pRootJointRef != nullptr)
+		nL = static_cast<int>(m_pRootJointRef->FileName().size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) WriteFile(hFile, m_pRootJointRef->FileName().c_str(), nL, &dwRWC, nullptr);
+	if (nL > 0)
+		WriteFile(hFile, m_pRootJointRef->FileName().c_str(), nL, &dwRWC, nullptr);
 
 	// 내용이 없는 Part Data는 걸러낸다..
 	std::vector<CN3CPart*> PartsTmp = m_Parts;
 	m_Parts.clear();
-	m_Parts.resize(64);
+	m_Parts.reserve(64);
 
 	it_CPart it = PartsTmp.begin(), itEnd = PartsTmp.end();
 	CN3CPart* pPart = nullptr;
-	for(; it != itEnd; it++)
+	for (; it != itEnd; it++)
 	{
 		pPart = *it;
-		
+
 		bool bHaveData = false;
-		if(pPart->m_pSkinsRef)
+		if (pPart->m_pSkinsRef)
 		{
-			for(int j = 0; j < MAX_CHR_LOD; j++)
+			for (int j = 0; j < MAX_CHR_LOD; j++)
 			{
-				if(pPart->m_pSkinsRef->m_Skins[j].VertexCount() > 0)
+				if (pPart->m_pSkinsRef->m_Skins[j].VertexCount() > 0)
 				{
 					bHaveData = true;
 					break;
@@ -1277,7 +1289,7 @@ bool CN3Chr::Save(HANDLE hFile)
 			}
 		}
 
-		if(bHaveData) // 실제 데이터가 있으면..
+		if (bHaveData) // 실제 데이터가 있으면..
 		{
 			m_Parts.push_back(pPart);
 		}
@@ -1289,54 +1301,54 @@ bool CN3Chr::Save(HANDLE hFile)
 	}
 
 	// 실제 저장..
-	int iPC = m_Parts.size();
+	int iPC = static_cast<int>(m_Parts.size());
 	WriteFile(hFile, &iPC, 4, &dwRWC, nullptr);
-	int i;
-	for(i = 0; i < iPC; i++)
+
+	for (int i = 0; i < iPC; i++)
 	{
-		nL = m_Parts[i]->FileName().size();
-		if(nL <= 0)
+		nL = static_cast<int>(m_Parts[i]->FileName().size());
+		if (nL <= 0)
 		{
 			std::string szFNTmp = fmt::format("{}_Default{}.N3CPart", m_szName, i);
 			m_Parts[i]->FileNameSet(szFNTmp);
 		}
-		nL = m_Parts[i]->FileName().size();
+
+		nL = static_cast<int>(m_Parts[i]->FileName().size());
 		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
 		WriteFile(hFile, m_Parts[i]->FileName().c_str(), nL, &dwRWC, nullptr);
 		m_Parts[i]->SaveToFile();
 	}
-	
-	iPC = m_Plugs.size();
+
+	iPC = static_cast<int>(m_Plugs.size());
 	WriteFile(hFile, &iPC, 4, &dwRWC, nullptr);
-	for(i = 0; i < iPC; i++)
+	for (int i = 0; i < iPC; i++)
 	{
-		nL = m_Plugs[i]->FileName().size();
-		if(nL <= 0)
+		nL = static_cast<int>(m_Plugs[i]->FileName().size());
+		if (nL <= 0)
 		{
 			std::string szFNTmp = fmt::format("{}_Default{}.N3CPlug", m_szName, i);
 			m_Plugs[i]->FileNameSet(szFNTmp);
 			i++;
 		}
 
-		nL = m_Plugs[i]->FileName().size();
+		nL = static_cast<int>(m_Plugs[i]->FileName().size());
 		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
 		WriteFile(hFile, m_Plugs[i]->FileName().c_str(), nL, &dwRWC, nullptr);
 		m_Plugs[i]->SaveToFile();
 	}
-	
+
 //	nL = 0;
 //	if(m_pSkinCollision) nL = m_pSkinCollision->m_szName.size();
 //	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
 //	if(nL > 0) WriteFile(hFile, m_pSkinCollision->m_szName.c_str(), nL, &dwRWC, nullptr);
-	
+
 	// Animation Control..
 	nL = 0;
-	if(m_pAniCtrlRef) nL = m_pAniCtrlRef->FileName().size();
+	if (m_pAniCtrlRef != nullptr)
+		nL = static_cast<int>(m_pAniCtrlRef->FileName().size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0)
-	{
+	if (nL > 0)
 		WriteFile(hFile, m_pAniCtrlRef->FileName().c_str(), nL, &dwRWC, nullptr);
-	}
 
 	WriteFile(hFile, m_nJointPartStarts, sizeof(m_nJointPartStarts), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
 	WriteFile(hFile, m_nJointPartEnds, sizeof(m_nJointPartEnds), &dwRWC, nullptr); // 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 끝 번호
@@ -1345,9 +1357,10 @@ bool CN3Chr::Save(HANDLE hFile)
 //	Coded (By Dino On 2002-10-11 오후 2:19:11 )
 //	FXPlug
 	nL = 0;
-	if (m_pFXPlug) nL = m_pFXPlug->FileName().size();
+	if (m_pFXPlug != nullptr)
+		nL = static_cast<int>(m_pFXPlug->FileName().size());
 	WriteFile(hFile, &nL, sizeof(nL), &dwRWC, nullptr);
-	if (nL>0)
+	if (nL > 0)
 	{
 		WriteFile(hFile, m_pFXPlug->FileName().c_str(), nL, &dwRWC, nullptr);
 		m_pFXPlug->SaveToFile();

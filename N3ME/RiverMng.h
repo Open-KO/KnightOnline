@@ -47,10 +47,23 @@ public:
 
 // Attributes
 public:
-	CRiverMesh*		GetSelRiver() const {return m_pSelRiver;}
-	int				GetRCursorMode() const {return m_RCursorMode;}
-	int				GetDrawRiverNum() {return m_RiverMeshes.size();}
-	it_RiverMesh	GetDrawRiver();
+	CRiverMesh* GetSelRiver() const
+	{
+		return m_pSelRiver;
+	}
+
+	int GetRCursorMode() const
+	{
+		return m_RCursorMode;
+	}
+
+	int GetDrawRiverNum() const
+	{
+		return static_cast<int>(m_RiverMeshes.size());
+	}
+
+	it_RiverMesh GetDrawRiver();
+
 protected:
 	std::list<CRiverMesh*>			m_RiverMeshes;				// River Mesh list
 	CRiverMesh*						m_pSelRiver;				// 선택된 RiverMesh

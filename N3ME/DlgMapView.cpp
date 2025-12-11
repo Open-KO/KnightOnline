@@ -350,16 +350,13 @@ void CDlgMapView::Render(void)
 
 	RECT RenderRect;
 	SetRect(&RenderRect,sx,sz,ex,ez);
-	it_QTNode it = m_pFrame->GetMapMng()->GetTerrain()->m_RenderNodes.begin();
-	int iSize = m_pFrame->GetMapMng()->GetTerrain()->m_RenderNodes.size();
 	POINT point;
-	for(int i = 0; i < iSize; i++, it++)
+	for (CQTNode* pQTNode : m_pFrame->GetMapMng()->GetTerrain()->m_RenderNodes)
 	{
-		CQTNode* pQTNode = *it;
 		point.x = pQTNode->GetCenterX();
 		point.y = pQTNode->GetCenterZ();
-			
-		if( PtInRect(&RenderRect,point))
+
+		if (PtInRect(&RenderRect, point))
 			pQTNode->Render();
 	}
 }

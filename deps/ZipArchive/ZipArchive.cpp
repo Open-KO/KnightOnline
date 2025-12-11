@@ -116,9 +116,8 @@ bool CZipArchive::DeleteFile(WORD uIndex)
 
 int CZipArchive::GetNoEntries()
 {
-	return m_centralDir.m_headers.GetSize();
+	return static_cast<int>(m_centralDir.m_headers.GetSize());
 }
-
 
 bool CZipArchive::GetFileInfo(CZipFileHeader & fhInfo, WORD uIndex)
 {
@@ -896,9 +895,10 @@ void CZipArchive::DeleteFiles(CWordArray &aIndexes)
 	}
 	
 	// sorting the index table using qsort 
-	int uSize = aIndexes.GetSize();
+	int uSize = static_cast<int>(aIndexes.GetSize());
 	if (!uSize)
 		return;
+
 	qsort((void*)&aIndexes[0], uSize, sizeof(WORD), CompareWords);
 	
 	m_centralDir.RemoveFromDisk();
@@ -1334,7 +1334,7 @@ bool CZipArchive::TestFile(WORD uIndex, ZIPCALLBACKFUN pCallback, void* pUserDat
 
 int CZipArchive::WideToSingle(LPCTSTR lpWide, CZipAutoBuffer &szSingle)
 {
-	size_t wideLen = _tcslen(lpWide);
+	int wideLen = static_cast<int>(_tcslen(lpWide));
 	if (wideLen == 0)
 	{
 		szSingle.Release();

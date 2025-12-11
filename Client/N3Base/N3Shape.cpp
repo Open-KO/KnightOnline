@@ -260,7 +260,8 @@ void CN3SPart::Render()
 #ifdef _N3TOOL
 void CN3SPart::RenderSelected(bool bWireFrame)
 {
-	if(m_bOutOfCameraRange || m_PMInst.GetNumVertices() <= 0) return;
+	if (m_bOutOfCameraRange || m_PMInst.GetNumVertices() <= 0)
+		return;
 
 #ifdef _DEBUG
 	CN3Base::s_RenderInfo.nShape_Part++; // Rendering Information Update...
@@ -268,11 +269,11 @@ void CN3SPart::RenderSelected(bool bWireFrame)
 #endif _DEBUG
 
 	LPDIRECT3DTEXTURE9 lpTex = nullptr;
-	int iTC = m_TexRefs.size();
-	if(iTC > 0)
+	int iTC = static_cast<int>(m_TexRefs.size());
+	if (iTC > 0)
 	{
-		int iTexIndex = (int)m_fTexIndex;
-		if(iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
+		int iTexIndex = (int) m_fTexIndex;
+		if (iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
 	}
 
 	s_lpD3DDev->SetTexture(0, lpTex);
@@ -356,11 +357,13 @@ bool CN3SPart::Save(HANDLE hFile)
 	CN3PMesh* pPMesh = m_PMInst.GetMesh();
 	__ASSERT(pPMesh, "Progressive mesh pointer is NULL!");
 	int nL = 0;
-	if (pPMesh) nL = pPMesh->FileName().size();
-	else MessageBox(s_hWndBase, "Progressive mesh pointer is NULL! : object가 제대로 보이지 않을 수 있습니다.(리소스 파일이 Load되지 않았을 가능성이 큼)", "warning", MB_OK);
+	if (pPMesh != nullptr)
+		nL = static_cast<int>(pPMesh->FileName().size());
+	else
+		MessageBox(s_hWndBase, "Progressive mesh pointer is NULL! : object가 제대로 보이지 않을 수 있습니다.(리소스 파일이 Load되지 않았을 가능성이 큼)", "warning", MB_OK);
 
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
-	if(nL > 0)
+	if (nL > 0)
 	{
 		
 //		if(-1 == pPMesh->FileName().find("object\\")) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
@@ -381,16 +384,18 @@ bool CN3SPart::Save(HANDLE hFile)
 
 	WriteFile(hFile, &m_Mtl, sizeof(__Material), &dwRWC, nullptr); // 재질
 
-	int iTC = m_TexRefs.size();
+	int iTC = static_cast<int>(m_TexRefs.size());
 	WriteFile(hFile, &iTC, 4, &dwRWC, nullptr);
 	WriteFile(hFile, &m_fTexFPS, 4, &dwRWC, nullptr);
-	for(int j = 0; j < iTC; j++) // Texture File 이름 쓰기...
+	for (int j = 0; j < iTC; j++) // Texture File 이름 쓰기...
 	{
-		if(m_TexRefs[j]) nL = m_TexRefs[j]->FileName().size();
-		else nL = 0;
+		if (m_TexRefs[j])
+			nL = static_cast<int>(m_TexRefs[j]->FileName().size());
+		else
+			nL = 0;
 
 		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL > 0)
+		if (nL > 0)
 		{
 			
 //			if(-1 == m_TexRefs[j]->FileName().find("object\\")) // 임시로 경로를 바꾸려고 넣었다.. 나중에 필요없음 지운다..
@@ -407,9 +412,6 @@ bool CN3SPart::Save(HANDLE hFile)
 //				WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
 //			}
 
-			
-			
-			
 			
 			WriteFile(hFile, m_TexRefs[j]->FileName().c_str(), nL, &dwRWC, nullptr); // 택스처 파일 이름..
 		}
@@ -610,12 +612,8 @@ void CN3Shape::RenderSelected(bool bWireFrame)
 	// 축그리기..
 	CN3Transform::Render(nullptr, m_fRadius * 3.0f);
 
-	CN3SPart* pPD = nullptr;
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
-	{
-		m_Parts[i]->RenderSelected(bWireFrame);
-	}
+	for (CN3SPart* pPart : m_Parts)
+		pPart->RenderSelected(bWireFrame);
 }
 #endif // end of _N3TOOL
 
@@ -667,13 +665,10 @@ bool CN3Shape::Save(HANDLE hFile)
 	
 	int nL = 0;
 	
-	CN3SPart* pPD = nullptr;
-	int iPC = m_Parts.size();
+	int iPC = static_cast<int>(m_Parts.size());
 	WriteFile(hFile, &iPC, 4, &dwRWC, nullptr); // Mesh FileName
-	for(int i = 0; i < iPC; i++)
-	{
+	for (int i = 0; i < iPC; i++)
 		m_Parts[i]->Save(hFile);
-	}
 
 	WriteFile(hFile, &m_iBelong, 4, &dwRWC, nullptr);		// 소속
 	WriteFile(hFile, &m_iEventID, 4, &dwRWC, nullptr);		// Event ID
@@ -711,19 +706,16 @@ void CN3Shape::RenderSelected(int iPart, bool bWireFrame)
 #ifdef _N3TOOL
 bool CN3Shape::IsPMeshProcessed()
 {
-	int iPC = m_Parts.size();
-	if(iPC <= 0) return false;
+	if (m_Parts.empty())
+		return false;
 
-	CN3SPart* pPD = nullptr;
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		pPD = m_Parts[i];
-		if(nullptr == pPD || nullptr == pPD->MeshInstance()) continue;
+		if (pPart == nullptr || pPart->MeshInstance() == nullptr)
+			continue;
 
-		if(false == pPD->MeshInstance()->IsLOD())
-		{
+		if (!pPart->MeshInstance()->IsLOD())
 			return false;
-		}
 	}
 
 	return true;
@@ -1031,11 +1023,8 @@ void CN3Shape::MakeDefaultMaterial()
 	__Material mtlBasic;
 	mtlBasic.Init();
 
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
-	{
-		memcpy(&(m_Parts[i]->m_Mtl), &mtlBasic, sizeof(_D3DMATERIAL9));
-	}
+	for (CN3SPart* pPart : m_Parts)
+		memcpy(&pPart->m_Mtl, &mtlBasic, sizeof(_D3DMATERIAL9));
 }
 #endif // end of _N3TOOL
 
@@ -1043,11 +1032,8 @@ void CN3Shape::MakeDefaultMaterial()
 void CN3Shape::RemoveRenderFlags(int nFlags)
 {
 	// 각 파트의 매트릭스를 다시 계산해 준다..
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
-	{
-		m_Parts[i]->m_Mtl.nRenderFlags &= (~nFlags);; // 기본 흰색..
-	}
+	for (CN3SPart* pPart : m_Parts)
+		pPart->m_Mtl.nRenderFlags &= ~nFlags; // 기본 흰색..
 }
 #endif // end of _N3TOOL
 
@@ -1057,12 +1043,11 @@ bool CN3Shape::SaveToSameFolder(const std::string& szFullPath)
 	if(szFullPath.empty()) return false;
 	
 	std::string szPath = szFullPath;
-	int i;
-	for(i = szFullPath.size() - 1; i >= 0; i--)
+	for (int i = static_cast<int>(szFullPath.size()) - 1; i >= 0; i--)
 	{
-		if('\\' == szPath[i] || '/' == szPath[i])
+		if ('\\' == szPath[i] || '/' == szPath[i])
 		{
-			szPath = szPath.substr(0, i+1);
+			szPath = szPath.substr(0, i + 1);
 			break;
 		}
 	}
@@ -1070,22 +1055,21 @@ bool CN3Shape::SaveToSameFolder(const std::string& szFullPath)
 	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 	std::string szNameTmp, szOldFN;
 
-	int iPC = m_Parts.size();
 	std::vector<std::string> OldPartFNs;
 	std::vector<std::string> OldTexFNs;
-	for(i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		szOldFN = m_Parts[i]->Mesh()->FileName();
+		szOldFN = pPart->Mesh()->FileName();
 		OldPartFNs.push_back(szOldFN); // 파일 이름 보관..
 
 		_splitpath(szOldFN.c_str(), szDrive, szDir, szFName, szExt);
 		szNameTmp = szPath + szFName + szExt;
-		m_Parts[i]->Mesh()->SaveToFile(szNameTmp);
+		pPart->Mesh()->SaveToFile(szNameTmp);
 
-		int iTC = m_Parts[i]->TexCount();
-		for(int j = 0; j < iTC; j++)
+		int iTC = pPart->TexCount();
+		for (int j = 0; j < iTC; j++)
 		{
-			CN3Texture* pTex = m_Parts[i]->Tex(j);
+			CN3Texture* pTex = pPart->Tex(j);
 
 			szOldFN = pTex->FileName();
 			OldTexFNs.push_back(szOldFN); // 파일 이름 보관..
@@ -1099,20 +1083,20 @@ bool CN3Shape::SaveToSameFolder(const std::string& szFullPath)
 	szOldFN = m_szFileName;
 	_splitpath(m_szFileName.c_str(), szDrive, szDir, szFName, szExt);
 	szNameTmp = szPath + szFName + szExt;
-	this->SaveToFile(szNameTmp);
+	SaveToFile(szNameTmp);
 	m_szFileName = szOldFN;
 
 	// 원래대로 파일 이름 돌려놓기..
-	iPC = m_Parts.size();
 	int iSeq = 0;
-	for(i = 0; i < iPC; i++)
+	for (size_t i = 0; i < m_Parts.size(); i++)
 	{
-		m_Parts[i]->Mesh()->FileNameSet(OldPartFNs[i]);
+		CN3SPart* pPart = m_Parts[i];
+		pPart->Mesh()->FileNameSet(OldPartFNs[i]);
 
-		int iTC = m_Parts[i]->TexCount();
-		for(int j = 0; j < iTC; j++)
+		int iTC = pPart->TexCount();
+		for (int j = 0; j < iTC; j++)
 		{
-			m_Parts[i]->Tex(j)->FileNameSet(OldTexFNs[iSeq]);
+			pPart->Tex(j)->FileNameSet(OldTexFNs[iSeq]);
 			iSeq++;
 		}
 	}
@@ -1138,12 +1122,11 @@ bool CN3Shape::SaveToSameFolderAndMore(const std::string& szFullPath, const std:
 	if(szFullPath.empty()) return false;
 	
 	std::string szPath = szFullPath;
-	int i;
-	for(i = szFullPath.size() - 1; i >= 0; i--)
+	for (int i = static_cast<int>(szFullPath.size()) - 1; i >= 0; i--)
 	{
-		if('\\' == szPath[i] || '/' == szPath[i])
+		if ('\\' == szPath[i] || '/' == szPath[i])
 		{
-			szPath = szPath.substr(0, i+1);
+			szPath = szPath.substr(0, i + 1);
 			break;
 		}
 	}
@@ -1151,20 +1134,19 @@ bool CN3Shape::SaveToSameFolderAndMore(const std::string& szFullPath, const std:
 	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 	std::string szNameTmp, szOldFN;
 
-	int iPC = m_Parts.size();
-	for(i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		szOldFN = m_Parts[i]->Mesh()->FileName();
+		szOldFN = pPart->Mesh()->FileName();
 
 		_splitpath(szOldFN.c_str(), szDrive, szDir, szFName, szExt);
 		szNameTmp = szPath + szFName + szExt;
-		m_Parts[i]->Mesh()->SaveToFile(szNameTmp);
-		m_Parts[i]->Mesh()->FileNameSet(szRelativePath + szFName + szExt);
+		pPart->Mesh()->SaveToFile(szNameTmp);
+		pPart->Mesh()->FileNameSet(szRelativePath + szFName + szExt);
 
-		int iTC = m_Parts[i]->TexCount();
+		int iTC = pPart->TexCount();
 		for(int j = 0; j < iTC; j++)
 		{
-			CN3Texture* pTex = m_Parts[i]->Tex(j);
+			CN3Texture* pTex = pPart->Tex(j);
 
 			szOldFN = pTex->FileName();
 
@@ -1177,7 +1159,7 @@ bool CN3Shape::SaveToSameFolderAndMore(const std::string& szFullPath, const std:
 
 	_splitpath(m_szFileName.c_str(), szDrive, szDir, szFName, szExt);
 	szNameTmp = szPath + szFName + szExt;
-	this->SaveToFile(szNameTmp);
+	SaveToFile(szNameTmp);
 	m_szFileName = szRelativePath + szFName + szExt;
 
 //	By : Ecli666 ( On 2002-10-16 오전 11:44:19 )

@@ -84,16 +84,11 @@ BOOL CDlgUnusedFiles::OnInitDialog()
 
 void CDlgUnusedFiles::UpdateAll()
 {
-	int iFNC = m_FileNames.GetSize();
-	int i;
-	for(i = 0; i < iFNC; i++)
-	{
+	int iFNC = static_cast<int>(m_FileNames.GetSize());
+	for (int i = 0; i < iFNC; i++)
 		m_ListFiles.AddString(m_FileNames[i]);
-	}
 
-	iFNC = m_InvalidFileNames.GetSize();
-	for(i = 0; i < iFNC; i++)
-	{
+	iFNC = static_cast<int>(m_InvalidFileNames.GetSize());
+	for (int i = 0; i < iFNC; i++)
 		m_ListInvalidObjects.AddString(m_InvalidFileNames[i]);
-	}
 }

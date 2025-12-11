@@ -63,7 +63,7 @@ END_MESSAGE_MAP()
 void CDlgDTexGroupView::AddGroup(CDTexGroup *pGroup)
 {
 	HTREEITEM hGroup = m_Tree.InsertItem(pGroup->m_Name, nullptr);
-	m_Tree.SetItemData(hGroup,(DWORD)pGroup);
+	m_Tree.SetItemData(hGroup, (DWORD_PTR) pGroup);
 
 	int i;
 	HTREEITEM hAttr;
@@ -98,19 +98,19 @@ void CDlgDTexGroupView::AddGroup(CDTexGroup *pGroup)
 			Attr.Format("3/8");
 			break;
 		}
-		hAttr = m_Tree.InsertItem((LPCTSTR)Attr, hGroup);
-		m_Tree.SetItemData(hAttr, (DWORD)i);
+		hAttr = m_Tree.InsertItem((LPCTSTR) Attr, hGroup);
+		m_Tree.SetItemData(hAttr, (DWORD_PTR) i);
 		//m_Tree.SetItemData(hAttr, 0);
 
-		it_DTexTileAttr it = pGroup->m_Attributes[i].begin();
-		int iSize = pGroup->m_Attributes[i].size();
-		for(int j = 0; j < iSize; j++, it++)
+		auto it = pGroup->m_Attributes[i].begin();
+		int iSize = static_cast<int>(pGroup->m_Attributes[i].size());
+		for (int j = 0; j < iSize; j++, it++)
 		{
 			LPDTEXTILEATTR pAttr = (*it);
 			CString name;
-			name.Format("%s%2d",(LPCTSTR)Attr, j);
+			name.Format("%s%2d", (LPCTSTR) Attr, j);
 			HTREEITEM hElem = m_Tree.InsertItem(name, hAttr);
-			m_Tree.SetItemData(hElem, (DWORD)(pAttr));
+			m_Tree.SetItemData(hElem, (DWORD_PTR) pAttr);
 		}
 	}
 }
@@ -119,13 +119,8 @@ void CDlgDTexGroupView::ResetAll()
 {
 	m_Tree.DeleteAllItems();
 
-	it_DTexGroup it = m_pDTexGroupMng->m_Groups.begin();
-	int iSize = m_pDTexGroupMng->m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CDTexGroup* pDTG = *it;
+	for (CDTexGroup* pDTG : m_pDTexGroupMng->m_Groups)
 		AddGroup(pDTG);
-	}
 }
 
 void CDlgDTexGroupView::OnSelchangedTreeDtexGroup(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -148,7 +143,7 @@ void CDlgDTexGroupView::OnSelchangedTreeDtexGroup(NMHDR* pNMHDR, LRESULT* pResul
 	if(nullptr == hChild)
 	{
 		LPDTEXTILEATTR pDTTAttr = (LPDTEXTILEATTR)m_Tree.GetItemData(hTree);
-		if((int)pDTTAttr>10)
+		if ((DWORD_PTR) pDTTAttr > 10)
 		{
 			m_pDTexGroupMng->m_SelectedDTexTile = *pDTTAttr;
 		

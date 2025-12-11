@@ -73,7 +73,7 @@ protected:
 	afx_msg void OnBMoveDown();
 	afx_msg void OnChangeEName();
 	afx_msg void OnCPlay();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDblclkListCloudTextures();
 	afx_msg void OnDblclkListSunTextures();
 	afx_msg void OnBBrowseMoonTexture();

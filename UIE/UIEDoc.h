@@ -25,18 +25,27 @@ protected:
 	std::list<CN3UIBase*>	m_SelectedUIs;
 
 public:
-	CN3UIBase*	GetRootUI(){return &m_RootUI;}
-	int			GetSelectedUICount() { return m_SelectedUIs.size(); }
-	CN3UIBase*	GetSelectedUI(int iIndex = 0)
+	CN3UIBase* GetRootUI()
+	{
+		return &m_RootUI;
+	}
+
+	int GetSelectedUICount() const
+	{
+		return static_cast<int>(m_SelectedUIs.size());
+	}
+
+	CN3UIBase* GetSelectedUI(int iIndex = 0)
 	{
 		if (iIndex < 0
 			|| iIndex >= static_cast<int>(m_SelectedUIs.size()))
 			return nullptr;
 
-		it_UI it = m_SelectedUIs.begin();
-		for(int i = 0; i < iIndex; i++, it++);
+		auto it = m_SelectedUIs.begin();
+		std::advance(it, iIndex);
 		return *it;
 	}
+
 	void		SetSelectedUI(CN3UIBase* pUI);
 
 protected:

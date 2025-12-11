@@ -158,9 +158,12 @@ void CViewSceneTree::UpdateTreeItem(HTREEITEM hParent, CN3Base *pBase)
 	if(pBase->Type() & OBJ_BASE_FILEACCESS) pBFA = (CN3BaseFileAccess*)pBase;
 	
 	HTREEITEM hItem = nullptr;
-	if(pBFA) hItem = GetTreeCtrl().InsertItem(pBFA->FileName().c_str(), nItem, nItem, hParent, nullptr);
-	else hItem = GetTreeCtrl().InsertItem(pBase->m_szName.c_str(), nItem, nItem, hParent, nullptr);
-	GetTreeCtrl().SetItemData(hItem, (DWORD)pBase);
+	if (pBFA != nullptr)
+		hItem = GetTreeCtrl().InsertItem(pBFA->FileName().c_str(), nItem, nItem, hParent, nullptr);
+	else
+		hItem = GetTreeCtrl().InsertItem(pBase->m_szName.c_str(), nItem, nItem, hParent, nullptr);
+
+	GetTreeCtrl().SetItemData(hItem, (DWORD_PTR) pBase);
 
 	if(dwType & OBJ_SCENE)
 	{
@@ -225,17 +228,17 @@ void CViewSceneTree::UpdateTreeItem(HTREEITEM hParent, CN3Base *pBase)
 
 			if(pChr->JointGet(i) != nullptr) szTmp = pChr->JointGet(i)->Name(); else szTmp = "";
 			str.Format("Joint : %s", szTmp);
-			hItem3 = GetTreeCtrl().InsertItem(str, hItem2); GetTreeCtrl().SetItemData(hItem3, (DWORD)pChr->JointGet(i));
+			hItem3 = GetTreeCtrl().InsertItem(str, hItem2); GetTreeCtrl().SetItemData(hItem3, pChr->JointGet(i));
 			
 			for(int j = 0; j < MAX_CHR_PART; j++)
 			{
 				if(pChr->MeshGet(i, j) != nullptr) szTmp = pChr->MeshGet(i, j)->Name(); else szTmp = "";
 				str .Format("Mesh : %s", szTmp);
-				hItem3 = GetTreeCtrl().InsertItem(str, hItem2); GetTreeCtrl().SetItemData(hItem3, (DWORD)pChr->MeshGet(i, j));
+				hItem3 = GetTreeCtrl().InsertItem(str, hItem2); GetTreeCtrl().SetItemData(hItem3, pChr->MeshGet(i, j));
 				
 				if(pChr->SkinGet(i, j) != nullptr) szTmp = pChr->SkinGet(i, j)->Name(); else szTmp = "";
 				str .Format("Skin : %s", szTmp);
-				hItem3 = GetTreeCtrl().InsertItem(str, hItem2); GetTreeCtrl().SetItemData(hItem3, (DWORD)pChr->SkinGet(i, j));
+				hItem3 = GetTreeCtrl().InsertItem(str, hItem2); GetTreeCtrl().SetItemData(hItem3, pChr->SkinGet(i, j));
 			}
 		}
 	}
@@ -251,7 +254,7 @@ void CViewSceneTree::UpdateTreeItem(HTREEITEM hParent, CN3Base *pBase)
 			if(pPMeshInstance == nullptr) continue;
 			
 			str.Format("Mesh : %s", pPMeshInstance->Name());
-			hItem2 = GetTreeCtrl().InsertItem(str, hItem); GetTreeCtrl().SetItemData(hItem2, (DWORD)pPMeshInstance);
+			hItem2 = GetTreeCtrl().InsertItem(str, hItem); GetTreeCtrl().SetItemData(hItem2, pPMeshInstance);
 		}
 	}
 */
@@ -284,11 +287,12 @@ void CViewSceneTree::GetSeq(HTREEITEM hParent, HTREEITEM hItem, int& nDepth, int
 
 void CViewSceneTree::SelectObject(HTREEITEM hItem, void *pItemData)
 {
-	if(nullptr == pItemData || nullptr == hItem) return;
+	if (pItemData == nullptr || hItem == nullptr)
+		return;
 
-	if(hItem != TVI_ROOT)
+	if (hItem != TVI_ROOT)
 	{
-		if(GetTreeCtrl().GetItemData(hItem) == (DWORD)pItemData)
+		if (GetTreeCtrl().GetItemData(hItem) == (DWORD_PTR) pItemData)
 		{
 			GetTreeCtrl().SelectItem(hItem);
 			return;
@@ -296,9 +300,9 @@ void CViewSceneTree::SelectObject(HTREEITEM hItem, void *pItemData)
 	}
 
 	HTREEITEM hChild = GetTreeCtrl().GetChildItem(hItem);
-	while(hChild != nullptr)
+	while (hChild != nullptr)
 	{
-		this->SelectObject(hChild, pItemData);
+		SelectObject(hChild, pItemData);
 		hChild = GetTreeCtrl().GetNextItem(hChild, TVGN_NEXT);
 	}
 }

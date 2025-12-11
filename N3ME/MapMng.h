@@ -57,19 +57,44 @@ public:
 
 // Attributes
 public:
-
-	CN3Transform*	GetSelOutputObj(int iIndex) const 
+	CN3Transform* GetSelOutputObj(int iIndex) const
 	{
-		if (iIndex < 0 || iIndex >= m_SelOutputObjArray.GetSize() )
+		if (iIndex < 0 || iIndex >= m_SelOutputObjArray.GetSize())
 			return nullptr;
+
 		return m_SelOutputObjArray.GetAt(iIndex);
 	}
-	int				GetSelOutputObjCount() const {return m_SelOutputObjArray.GetSize();};
-	CLyTerrain*		GetTerrain() const { return m_pTerrain;}
-	CWnd*			GetDlgSourceList() const {return (CWnd*)m_pDlgSourceList;}
-	CWnd*			GetDlgOutputList() const {return (CWnd*)m_pDlgOutputList;}
-	CWnd*			GetDlgBase() const {return (CWnd*)m_pDlgBase;}
-	CN3Scene*       GetSceneOutput() { return m_pSceneOutput;}
+
+	int GetSelOutputObjCount() const
+	{
+		return static_cast<int>(m_SelOutputObjArray.GetSize());
+	}
+
+	CLyTerrain* GetTerrain() const
+	{
+		return m_pTerrain;
+	}
+
+	CWnd* GetDlgSourceList() const
+	{
+		return (CWnd*) m_pDlgSourceList;
+	}
+
+	CWnd* GetDlgOutputList() const
+	{
+		return (CWnd*) m_pDlgOutputList;
+	}
+
+	CWnd* GetDlgBase() const
+	{
+		return (CWnd*) m_pDlgBase;
+	}
+
+	CN3Scene* GetSceneOutput()
+	{
+		return m_pSceneOutput;
+	}
+
 	D3DSHADEMODE	m_ShadeMode;
 	D3DFILLMODE		m_FillMode;
 	bool			m_bViewWireFrame; // 선택된 오브젝트를 와이어 프레임으로 보게 한다..

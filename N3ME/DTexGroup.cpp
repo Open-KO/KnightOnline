@@ -38,15 +38,10 @@ CDTexGroup::~CDTexGroup()
 //
 void CDTexGroup::Release()
 {
-	for(int i = DTEX_FULL; i < DTEX_MAX; i++)
+	for (int i = DTEX_FULL; i < DTEX_MAX; i++)
 	{
-		it_DTexTileAttr it = m_Attributes[i].begin();
-		int iSize = m_Attributes[i].size();
-		for(int j = 0; j < iSize; j++, it++)
-		{
-			DTEXTILEATTR* pTile = *it;
+		for (DTEXTILEATTR* pTile : m_Attributes[i])
 			delete pTile;
-		}
 		m_Attributes[i].clear();
 	}
 }
@@ -85,19 +80,21 @@ void CDTexGroup::SetAttr(int attr, DTEXTILEATTR tile)
 //
 void CDTexGroup::DelAttr(int attr, DTEXTILEATTR tile)
 {
-	if( ( attr >= DTEX_FULL ) && ( attr < DTEX_MAX ) )
+	if (attr < DTEX_FULL
+		|| attr >= DTEX_MAX)
+		return;
+
+	auto& attrList = m_Attributes[attr];
+	for (auto itr = attrList.begin(); itr != attrList.end(); ++itr)
 	{
-		it_DTexTileAttr it = m_Attributes[attr].begin();
-		int iSize = m_Attributes[attr].size();
-		for(int i = 0; i < iSize; i++, it++)
+		DTEXTILEATTR* pTile = *itr;
+		if (pTile->TexID == tile.TexID
+			&& pTile->TileX == tile.TileX
+			&& pTile->TileY == tile.TileY)
 		{
-			DTEXTILEATTR* pTile = *it;
-			if((pTile->TexID == tile.TexID) && (pTile->TileX == tile.TileX) && (pTile->TileY == tile.TileY))
-			{
-				delete pTile;
-				it = m_Attributes[attr].erase(it);
-				break;
-			}
+			delete pTile;
+			itr = attrList.erase(itr);
+			break;
 		}
 	}
 }
@@ -134,19 +131,16 @@ void CDTexGroup::DelAttrByDTexID(int DTexID)
 //
 void CDTexGroup::ClearDTex()
 {
-	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrm = (CMainFrame*) AfxGetMainWnd();
 	CDTexMng* pDTexMng = pFrm->GetDTexMng();
 
-	for(int i=DTEX_FULL; i<DTEX_MAX; i++)
+	for (int i = DTEX_FULL; i < DTEX_MAX; i++)
 	{
-		it_DTexTileAttr it = m_Attributes[i].begin();
-		int iSize = m_Attributes[i].size();
-		for(int j = 0; j < iSize; j++, it++)
+		auto& attrList = m_Attributes[i];
+		for (DTEXTILEATTR* pTile : attrList)
 		{
-			DTEXTILEATTR* pTile = *it;
 			CDTex* pDTex = pDTexMng->GetDTexByID(pTile->TexID);
-
-			if(pDTex)
+			if (pDTex != nullptr)
 			{
 				pDTex->m_Attr[pTile->TileX][pTile->TileY].Group = 0;
 				pDTex->m_Attr[pTile->TileX][pTile->TileY].Attr = pTile->TileX;

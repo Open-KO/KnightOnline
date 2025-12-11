@@ -410,10 +410,12 @@ void mesh_cb(Fl_Widget* w, void*) {
 
 	char tmp[0xFFF] = {};
 	strcpy(tmp, chooser.value());
-	int start = strlen(tmp);
+	int start = static_cast<int>(strlen(tmp));
 	for(; start>=0; --start) {
 		if(tmp[start] == '/') break;
-	} start++;
+	}
+	
+	start++;
 
 	printf("filename: %s\n", &tmp[start]);
 

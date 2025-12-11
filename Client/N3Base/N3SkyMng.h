@@ -167,7 +167,11 @@ public:
 	bool DayChangeParse(FILE* fp, __SKY_DAYCHANGE* pDayChange);
 	bool DayChangeWrite(FILE* fp, __SKY_DAYCHANGE* pDayChange);
 
-	int					DayChangeCount() { return m_DayChanges.size(); };
+	int DayChangeCount() const
+	{
+		return static_cast<int>(m_DayChanges.size());
+	}
+
 	__SKY_DAYCHANGE*	DayChangeGet(int iIndex);
 	__SKY_DAYCHANGE*	DayChangeAdd();
 	__SKY_DAYCHANGE*	DayChangeInsert(int iIndex);

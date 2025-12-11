@@ -220,53 +220,57 @@ void CN3TexViewerDoc::FindFiles()
 void CN3TexViewerDoc::OpenNextFile()
 {
 	m_nCurFile++;
-	int nFC = m_szFiles.GetSize();
-	if(m_nCurFile < 0 || m_nCurFile >= nFC)
+
+	int nFC = static_cast<int>(m_szFiles.GetSize());
+	if (m_nCurFile < 0 || m_nCurFile >= nFC)
 	{
 		m_nCurFile = nFC - 1;
 		return;
 	}
 
-	this->OnOpenDocument(m_szFiles[m_nCurFile]);
+	OnOpenDocument(m_szFiles[m_nCurFile]);
 }
 
 void CN3TexViewerDoc::OpenPrevFile()
 {
 	m_nCurFile--;
-	int nFC = m_szFiles.GetSize();
-	if(m_nCurFile < 0 || m_nCurFile >= nFC)
+
+	int nFC = static_cast<int>(m_szFiles.GetSize());
+	if (m_nCurFile < 0 || m_nCurFile >= nFC)
 	{
 		m_nCurFile = 0;
 		return;
 	}
 
-	this->OnOpenDocument(m_szFiles[m_nCurFile]);
+	OnOpenDocument(m_szFiles[m_nCurFile]);
 }
 
 void CN3TexViewerDoc::OpenFirstFile()
 {
 	m_nCurFile = 0;
-	int nFC = m_szFiles.GetSize();
-	if(m_nCurFile < 0 || m_nCurFile >= nFC)
+
+	int nFC = static_cast<int>(m_szFiles.GetSize());
+	if (m_nCurFile < 0 || m_nCurFile >= nFC)
 	{
 		m_nCurFile = 0;
 		return;
 	}
 
-	this->OnOpenDocument(m_szFiles[m_nCurFile]);
+	OnOpenDocument(m_szFiles[m_nCurFile]);
 }
 
 void CN3TexViewerDoc::OpenLastFile()
 {
-	m_nCurFile = m_szFiles.GetSize() - 1;
-	int nFC = m_szFiles.GetSize();
-	if(m_nCurFile < 0 || m_nCurFile >= nFC)
+	int nFC = static_cast<int>(m_szFiles.GetSize());
+	m_nCurFile = nFC - 1;
+
+	if (m_nCurFile < 0 || m_nCurFile >= nFC)
 	{
 		m_nCurFile = 0;
 		return;
 	}
 
-	this->OnOpenDocument(m_szFiles[m_nCurFile]);
+	OnOpenDocument(m_szFiles[m_nCurFile]);
 }
 
 void CN3TexViewerDoc::OnFileSaveAsBitmap() 

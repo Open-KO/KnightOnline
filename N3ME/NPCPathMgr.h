@@ -53,11 +53,15 @@ protected:
 	void MakeCube(__Vector3 cv, D3DCOLOR color);
 	
 public:
+	int GetSize() const
+	{
+		return static_cast<int>(m_pPaths.size());
+	}
+
 	void TransPos(float x, float z);
 	void SetCurrPath(CNPCPath* pPath);
 	void DelPath(CNPCPath* pPath);
-	int	 GetSize() { return m_pPaths.size(); }
-	CNPCPath*	GetpPath(int idx);
+	CNPCPath* GetpPath(int idx);
 	void LoadFromFile(const char* FileName);
 	void SaveToFile(const char* FileName);
 	void MakeServerDataFile(const char* FullFileName);

@@ -51,10 +51,19 @@ public:
 
 // Attributes
 public:
-	CPondMesh*	GetSelPond();
-	int			GetDrawPondNum() {return m_PondMeshes.size();}
+	CPondMesh* GetSelPond();
+	int GetDrawPondNum() const
+	{
+		return static_cast<int>(m_PondMeshes.size());
+	}
+
 	it_PondMesh	GetDrawPond();
-	int GetPCursorMode() const {return m_PCursorMode;}
+
+	int GetPCursorMode() const
+	{
+		return m_PCursorMode;
+	}
+
 protected:
 	std::list<CPondMesh*>			m_PondMeshes;				// Pond Mesh list
 	std::list<CPondMesh*>			m_pSelPonds;				// 선택된 PondMesh

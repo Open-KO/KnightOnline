@@ -77,15 +77,11 @@ bool CN3Joint::Save(HANDLE hFile)
 	
 	m_KeyOrient.Save(hFile); // 
 
-	int iSize = m_Children.size();
+	int iSize = static_cast<int>(m_Children.size());
 	WriteFile(hFile, &iSize, 4, &dwRWC, nullptr);
 
-	CN3Joint* pChild = nullptr;
-	it_Joint it = m_Children.begin();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CN3Joint* pChild : m_Children)
 	{
-		pChild = *it;
-
 		__ASSERT(pChild, "Child joint pointer is NULL!");
 		pChild->Save(hFile);
 	}
@@ -187,13 +183,8 @@ void CN3Joint::Render(const __Matrix44* pMtxParent, float fUnitSize)
 	if(dwAlpha) s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, dwAlpha);
 	if(dwLight) s_lpD3DDev->SetRenderState(D3DRS_LIGHTING, dwLight);
 
-	CN3Joint* pChild = nullptr;
-	it_Joint it = m_Children.begin();
-	int iSize = m_Children.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CN3Joint* pChild : m_Children)
 	{
-		pChild = *it;
-
 		__ASSERT(pChild, "Child joint pointer is NULL!");
 		pChild->Render(pMtxParent, fUnitSize);
 	}
@@ -271,15 +262,11 @@ BOOL CN3Joint::FindPointerByName(const std::string& szName, CN3Joint *&pJoint) /
 	if(m_szName == szName) return TRUE;
 	pJoint = this;
 		
-	CN3Joint* pChild = nullptr;
-	it_Joint it = m_Children.begin();
-	int iSize = m_Children.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CN3Joint* pChild : m_Children)
 	{
-		pChild = *it;
-
 		__ASSERT(pChild, "Child joint pointer is NULL!");
-		if(TRUE == pChild->FindPointerByName(szName, pJoint)) return TRUE;
+		if (pChild->FindPointerByName(szName, pJoint))
+			return TRUE;
 	}
 	
 	return FALSE;
@@ -320,15 +307,11 @@ BOOL CN3Joint::FindIndex(const std::string& szName, int &nIndex)
 	if(m_szName == szName) return TRUE;
 	nIndex++;
 		
-	CN3Joint* pChild = nullptr;
-	it_Joint it = m_Children.begin();
-	int iSize = m_Children.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CN3Joint* pChild : m_Children)
 	{
-		pChild = *it;
-
 		__ASSERT(pChild, "Child joint pointer is NULL!");
-		if(TRUE == pChild->FindIndex(szName, nIndex)) return TRUE;
+		if (pChild->FindIndex(szName, nIndex))
+			return TRUE;
 	}
 	
 	return FALSE;
@@ -503,18 +486,18 @@ void CN3Joint::KeyDelete(CN3Joint *pJoint, int nKS, int nKE)
 #endif // end of _N3TOOL
 
 #ifdef _N3TOOL
-void CN3Joint::AddKey(CN3Joint *pJSrc, int nIndexS, int nIndexE)
+void CN3Joint::AddKey(CN3Joint* pJSrc, int nIndexS, int nIndexE)
 {
 	m_KeyPos.Add(pJSrc->m_KeyPos, nIndexS, nIndexE);
 	m_KeyRot.Add(pJSrc->m_KeyRot, nIndexS, nIndexE);
 	m_KeyScale.Add(pJSrc->m_KeyScale, nIndexS, nIndexE);
 
-	it_Joint it = pJSrc->m_Children.begin();
-	it_Joint it2 = m_Children.begin();
-	int iSize = pJSrc->m_Children.size();
-	int iSize2 = m_Children.size();
-	__ASSERT(iSize == iSize2, "can't copy animation key - because child count is different from each other.");
-	for(int i = 0; i < iSize; i++, it++, it2++)
+	auto it = pJSrc->m_Children.begin();
+	auto it2 = m_Children.begin();
+	size_t srcSize = pJSrc->m_Children.size();
+	size_t destSize = m_Children.size();
+	__ASSERT(srcSize == destSize, "can't copy animation key - because child count is different from each other.");
+	for (size_t i = 0; i < srcSize; i++, it++, it2++)
 	{
 		CN3Joint* pChildSrc = *it;
 		CN3Joint* pChildDest = *it2;

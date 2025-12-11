@@ -88,7 +88,7 @@ BOOL CSowSeedMng::MouseMessage(LPMSG pMsg)
 	{
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 
 			if( pFrame->m_pDlgSowSeed->Sow_Select_Flage == CS_SOW)
@@ -619,56 +619,53 @@ void CSowSeedMng::Render_Box(LPDIRECT3DDEVICE9 lpD3DDevice,__Vector3 Pos)
 	if(dwLight)
 		lpD3DDevice->SetRenderState(D3DRS_LIGHTING, dwLight);
 
-};
-
+}
 void CSowSeedMng::SaveData(void)
 {
-
-
-
 	// Seed List 읽어 오기..
 	DWORD dwFlags = OFN_EXPLORER | OFN_CREATEPROMPT | OFN_LONGNAMES | OFN_OVERWRITEPROMPT;
 	CFileDialog dlg(FALSE, "tgi", nullptr, dwFlags, "Grass Info File(*.tgi)|*.tgi||", nullptr);
 
-	if(dlg.DoModal() == IDCANCEL) return;
+	if (dlg.DoModal() == IDCANCEL)
+		return;
 
-	int size = Grass_Group.size();
-	if( size > 0)
+	int size = static_cast<int>(Grass_Group.size());
+	if (size > 0)
 	{
-		FILE* fp = fopen((LPCTSTR)dlg.GetPathName(), "w");
+		FILE* fp = fopen((LPCTSTR) dlg.GetPathName(), "w");
 	// 그룹의 총겟수 
-		fwrite(&size,sizeof(int),1,fp);
+		fwrite(&size, sizeof(int), 1, fp);
 		it_Grass_Group it = Grass_Group.begin();
-		for( int i = 0 ; i < size ; i++,it++)
+		for (int i = 0; i < size; i++, it++)
 		{
 			LPGRASS_GROUP group = *it;
 			// 브러시 크기 
-			fwrite(&group->b_size,sizeof( group->b_size),1,fp);
+			fwrite(&group->b_size, sizeof(group->b_size), 1, fp);
 			// 그룹 아이디
-			fwrite(&group->Group_id,sizeof(group->Group_id),1,fp);
+			fwrite(&group->Group_id, sizeof(group->Group_id), 1, fp);
 			// 오브젝트 아이디
-			fwrite(&group->Obj_ID,sizeof(group->Obj_ID),1,fp);
+			fwrite(&group->Obj_ID, sizeof(group->Obj_ID), 1, fp);
 			// 그룹 위치 
-			fwrite(group->Pos,sizeof(group->Pos),1,fp);
+			fwrite(group->Pos, sizeof(group->Pos), 1, fp);
 			// 서브 그룹 크기 
-			int grass_size = group->grass.size();
-			fwrite(&grass_size,sizeof(grass_size),1,fp);
+			int grass_size = static_cast<int>(group->grass.size());
+			fwrite(&grass_size, sizeof(grass_size), 1, fp);
 
 			// 파일명 쓰기 
-			int len = strlen(group->FileName);
-			fwrite(&len,sizeof(int),1,fp);
-			fwrite(group->FileName,len,1,fp);
+			int len = static_cast<int>(strlen(group->FileName));
+			fwrite(&len, sizeof(int), 1, fp);
+			fwrite(group->FileName, len, 1, fp);
 
 
 			it_Grass it_grass = group->grass.begin();
-			for( int j = 0 ; j < grass_size ; j++, it_grass++)
+			for (int j = 0; j < grass_size; j++, it_grass++)
 			{
 				LPGRASS grass = *it_grass;
 				// 풀의 위치 
-				fwrite(grass->Pos,sizeof(grass->Pos),1,fp);
+				fwrite(grass->Pos, sizeof(grass->Pos), 1, fp);
 				// 풀의 타일 번호 
-				fwrite(&grass->Tile_x,sizeof(grass->Tile_x),1,fp);
-				fwrite(&grass->Tile_z,sizeof(grass->Tile_z),1,fp);
+				fwrite(&grass->Tile_x, sizeof(grass->Tile_x), 1, fp);
+				fwrite(&grass->Tile_z, sizeof(grass->Tile_z), 1, fp);
 			}
 		}
 		fclose(fp);
@@ -823,16 +820,16 @@ void CSowSeedMng::SaveDataGame(void)
 
 	}
 
-	int iNum = Obj_Name.size();
+	int iNum = static_cast<int>(Obj_Name.size());
 	WriteFile(hFile, &iNum, sizeof(int), &dwRWC, nullptr);
 
 	it_Obj_Name it_Obj = Obj_Name.begin();
 	for (int j = 0; j < static_cast<int>(Obj_Name.size()); j++, it_Obj++)
 	{
 		LPOBJ_NAME Obj = *it_Obj;
-		int len = strlen(Obj->FileName);
-		WriteFile(hFile,&len,sizeof(int),&dwRWC,nullptr);
-		WriteFile(hFile,Obj->FileName,strlen(Obj->FileName),&dwRWC,nullptr);
+		int len = static_cast<int>(strlen(Obj->FileName));
+		WriteFile(hFile, &len, sizeof(int), &dwRWC, nullptr);
+		WriteFile(hFile, Obj->FileName, len, &dwRWC, nullptr);
 	}
 
 	CloseHandle(hFile);
@@ -853,68 +850,61 @@ void CSowSeedMng::Test_GameDataSave(void)
 	HANDLE hFile = CreateFile(dlg.GetPathName(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 
-	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrm = (CMainFrame*) AfxGetMainWnd();
 	int Map_Size = pFrm->GetMapMng()->GetTerrain()->m_iHeightMapSize;
 	//타일에 풀 속성 저장..
-	LPSEEDGROUP SeedAttr = new SEEDGROUP[Map_Size*Map_Size];
-	ZeroMemory(SeedAttr, sizeof(unsigned char)*Map_Size*Map_Size);
+	LPSEEDGROUP SeedAttr = new SEEDGROUP[Map_Size * Map_Size];
+	ZeroMemory(SeedAttr, sizeof(unsigned char) * Map_Size * Map_Size);
 
-	int  i;
-	for(i = 0 ; i < Map_Size*Map_Size ; i++)
+	for (int i = 0; i < Map_Size * Map_Size; i++)
 	{
 		SeedAttr[i].Obj_Id = 0;
 		SeedAttr[i].Seed_Count = 0;
 		SeedAttr[i].SeedGroup_Sub = nullptr;
 		SeedAttr[i].sub_flage = 0;
 	}
-	int size = pFrm->GetMapMng()->m_SowSeedMng.Grass_Group.size();
-	it_Grass_Group it = pFrm->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
-	for( i = 0 ; i < size ; i++,it++)
+
+	for (LPGRASS_GROUP group : pFrm->GetMapMng()->m_SowSeedMng.Grass_Group)
 	{
-		LPGRASS_GROUP group = (LPGRASS_GROUP)*it;
-		it_Grass it_grass = group->grass.begin();
-		for( int j = 0 ; j < static_cast<int>(group->grass.size()); j++, it_grass++)
+		for (LPGRASS grass : group->grass)
 		{
-			LPGRASS grass = *it_grass;
+			int index = grass->Tile_z + (grass->Tile_x * Map_Size);
 
-			if( SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Obj_Id == 0)
+			if (SeedAttr[index].Obj_Id == 0)
 			{
-				SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Obj_Id = group->Group_id+1;
+				SeedAttr[index].Obj_Id = group->Group_id + 1;
 
-				if( SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Seed_Count < 15)
-					SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Seed_Count += 1;
+				if (SeedAttr[index].Seed_Count < 15)
+					SeedAttr[index].Seed_Count += 1;
 			}
 			else
 			{
-
-				if( SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Obj_Id == group->Group_id+1)
+				if (SeedAttr[index].Obj_Id == group->Group_id + 1)
 				{
-					if( SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Seed_Count < 15)
-						SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].Seed_Count += 1;
+					if (SeedAttr[index].Seed_Count < 15)
+						SeedAttr[index].Seed_Count += 1;
 				}
 				else
 				{
-					if( SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].SeedGroup_Sub == nullptr)
+					if (SeedAttr[index].SeedGroup_Sub == nullptr)
 					{
-						SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].sub_flage = 1;
-						SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].SeedGroup_Sub = new SEEDGROUP;
+						SeedAttr[index].sub_flage = 1;
+						SeedAttr[index].SeedGroup_Sub = new SEEDGROUP;
 					}
 
-					SeedAttr[grass->Tile_z + (grass->Tile_x*Map_Size)].SeedGroup_Sub->Obj_Id = group->Group_id+1;
-					if( SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].SeedGroup_Sub->Seed_Count < 15)
-						SeedAttr[grass->Tile_z +(grass->Tile_x*Map_Size)].SeedGroup_Sub->Seed_Count += 1;
-					
+					SeedAttr[index].SeedGroup_Sub->Obj_Id = group->Group_id + 1;
+					if (SeedAttr[index].SeedGroup_Sub->Seed_Count < 15)
+						SeedAttr[index].SeedGroup_Sub->Seed_Count += 1;
 				}
-
 			}
 		}
 	}
 
-	for( i = 0 ; i < Map_Size*Map_Size; i++)
+	for (int i = 0; i < Map_Size * Map_Size; i++)
 	{
-		WriteFile(hFile,&SeedAttr[i],sizeof(unsigned char),&dwRWC,nullptr);
-		if( SeedAttr[i].sub_flage == 1)
-			WriteFile(hFile,SeedAttr[i].SeedGroup_Sub,sizeof(unsigned char),&dwRWC,nullptr);
+		WriteFile(hFile, &SeedAttr[i], sizeof(unsigned char), &dwRWC, nullptr);
+		if (SeedAttr[i].sub_flage == 1)
+			WriteFile(hFile, SeedAttr[i].SeedGroup_Sub, sizeof(unsigned char), &dwRWC, nullptr);
 	}
 
 

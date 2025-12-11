@@ -815,9 +815,9 @@ BOOL CDlgBase::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				}
 
 				CN3Base tmp;
-				n = szArr.GetSize();
+				n = static_cast<int>(szArr.GetSize());
 				pPD->TexAlloc(n);
-				for(int i = 0; i < n; i++)
+				for (int i = 0; i < n; i++)
 				{
 					tmp.m_szName = szArr[i];
 					pPD->TexSet(i, tmp.m_szName);

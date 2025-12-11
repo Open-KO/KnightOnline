@@ -65,7 +65,7 @@ BOOL CDlgPondProperty::OnInitDialog()
 
 	m_ComGoPond.ResetContent();
 	int idx = m_ComGoPond.AddString("NONE");
-	m_ComGoPond.SetItemData(idx, (DWORD)0);
+	m_ComGoPond.SetItemData(idx, 0);
 	
 	m_LPPond.AddPropItem("Pond ID", "", PIT_EDIT, "");
 
@@ -237,13 +237,13 @@ void CDlgPondProperty::PondComboSetting()
 	if(iPondSize == 0) 
 	{
 		idx = m_ComGoPond.AddString("NONE");
-		m_ComGoPond.SetItemData(idx, (DWORD)0);
+		m_ComGoPond.SetItemData(idx, 0);
 
 		return;
 	}
 
 	idx = m_ComGoPond.AddString("Select");
-	m_ComGoPond.SetItemData(idx, (DWORD)0);
+	m_ComGoPond.SetItemData(idx, 0);
 
 
 	int iPondID;
@@ -257,7 +257,7 @@ void CDlgPondProperty::PondComboSetting()
 			iPondID = pRM->GetPondID();
 			sprintf(szPondID,"%d",iPondID);
 			idx = m_ComGoPond.AddString(szPondID);
-			m_ComGoPond.SetItemData(idx, (DWORD)iPondID);
+			m_ComGoPond.SetItemData(idx, iPondID);
 		}
 	}
 

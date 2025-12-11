@@ -105,7 +105,7 @@ void CKscViewerView::OnDropFiles(HDROP hDropInfo)
 	::DragQueryFile(hDropInfo, 0, szFile, MAX_PATH - 1);
 	::DragFinish(hDropInfo);
 
-	int nLen = strlen(szFile);
+	size_t nLen = strlen(szFile);
 
 	szExt = szFile + nLen - 3;
 

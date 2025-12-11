@@ -153,33 +153,32 @@ BOOL CDlgSowSeed::OnInitDialog()
 
 void CDlgSowSeed::OnBtnDelSeed() 
 {
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
 
 	pFrame->GetMapMng()->m_SowSeedMng.Render_Grass = FALSE;
 
-	it_Grass_Group it = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
-	int size = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.size();
+	auto it = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
+	int size = static_cast<int>(pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.size());
 	int index = m_CB_TileGroup.GetCurSel();
-	for( int ii = 0 ,listCount = 0; ii < size ; ii++,it++)
+	for (int ii = 0, listCount = 0; ii < size; ii++, it++)
 	{
-		if( index == ii)
+		if (index == ii)
 		{
 			LPGRASS_GROUP group_list = *it;
 			it_Grass it_grass = group_list->grass.begin();
-			for (int jj = 0; jj < static_cast<int>(group_list->grass.size()); jj++, it_grass++)
+			for (size_t jj = 0; jj < group_list->grass.size(); jj++, it_grass++)
 			{
 				LPGRASS grass_list = *it_grass;
 //				group_list->grass.remove(grass_list);
 				delete grass_list;
 			}
 
-
 			group_list->grass.clear();
 			pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.remove(group_list);
 			delete group_list;
 			pFrame->GetMapMng()->m_SowSeedMng.Render_Grass = TRUE;
 			RePaint();
-			return ;
+			return;
 		}
 	}
 
@@ -187,20 +186,20 @@ void CDlgSowSeed::OnBtnDelSeed()
 
 void CDlgSowSeed::RePaint()
 {
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
 
 	m_CB_Seed.ResetContent();
 	m_CB_TileGroup.ResetContent();
  
 	char text[256];
 
-	it_Grass_Group it = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
-	int size = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.size();
-	for( int ii = 0 ,listCount = 0,groupCount = 0; ii < size ; ii++,it++,groupCount++)
+	auto it = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
+	int size = static_cast<int>(pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.size());
+	for (int ii = 0, listCount = 0, groupCount = 0; ii < size; ii++, it++, groupCount++)
 	{
 		LPGRASS_GROUP group_list = *it;
-		it_Grass it_grass = group_list->grass.begin();
-		for (int jj = 0; jj < static_cast<int>(group_list->grass.size()); jj++, it_grass++)
+		auto it_grass = group_list->grass.begin();
+		for (size_t jj = 0; jj < group_list->grass.size(); jj++, it_grass++)
 		{
 			LPGRASS grass_list = *it_grass;
 
@@ -368,31 +367,27 @@ void CDlgSowSeed::OnSelchangeCbSeed()
 	this->Invalidate(FALSE);	
 }
 
-void CDlgSowSeed::OnSelchangeCbTilegroup() 
+void CDlgSowSeed::OnSelchangeCbTilegroup()
 {
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
 
 	m_CB_Seed.ResetContent();
 
 	it_Grass_Group it = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
-	int size = pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.size();
+	int size = static_cast<int>(pFrame->GetMapMng()->m_SowSeedMng.Grass_Group.size());
 	int index = m_CB_TileGroup.GetCurSel();
 	pFrame->GetMapMng()->m_SowSeedMng.Select_Group_Id = index;
-	for( int ii = 0 ,listCount = 0; ii < size ; ii++,it++)
+	for (size_t ii = 0, listCount = 0; ii < size; ii++, it++)
 	{
-		if( index == ii)
+		if (index == ii)
 		{
 			LPGRASS_GROUP group_list = *it;
-			it_Grass it_grass = group_list->grass.begin();
-			for (int jj = 0; jj < static_cast<int>(group_list->grass.size()); jj++, it_grass++)
+			for (LPGRASS grass_list : group_list->grass)
 			{
-				LPGRASS grass_list = *it_grass;
-
 				char text[256];
-				sprintf(text,"SubID:%d, x :%f, y :%f, z :%f",listCount,grass_list->Pos.x,grass_list->Pos.y,grass_list->Pos.z);
+				sprintf(text, "SubID:%zu, x :%f, y :%f, z :%f", listCount, grass_list->Pos.x, grass_list->Pos.y, grass_list->Pos.z);
 				m_CB_Seed.AddString(text);
-				listCount ++;
-
+				listCount++;
 			}
 		}
 	}

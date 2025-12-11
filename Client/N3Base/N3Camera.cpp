@@ -131,7 +131,7 @@ BOOL CN3Camera::MoveByWindowMessage(MSG* pMsg)
 				static __Vector3 vAts[10] = { m_vAt, m_vAt, m_vAt, m_vAt, m_vAt, m_vAt, m_vAt, m_vAt, m_vAt, m_vAt};
 				static __Vector3 vUps[10] = { m_vScale, m_vScale, m_vScale, m_vScale, m_vScale, m_vScale, m_vScale, m_vScale, m_vScale, m_vScale };
 				
-				int nCamIndex = pMsg->wParam - '0';
+				int nCamIndex = static_cast<int>(pMsg->wParam) - '0';
 
 				if (::_IsKeyDown(VK_CONTROL))
 				{
@@ -184,7 +184,7 @@ BOOL CN3Camera::MoveByWindowMessage(MSG* pMsg)
 			break;
 		case WM_MOUSEMOVE:
 			{
-				uint32_t nFlags = pMsg->wParam;
+				UINT_PTR nFlags = pMsg->wParam;
 				ptPrev = point;
 
 				if(	(nFlags & MK_LBUTTON) && (nFlags & MK_MBUTTON) ) // Alt + LB + MB

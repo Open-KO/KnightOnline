@@ -56,7 +56,7 @@ bool ItemInfo::LoadInformation(void) {
 	}
 
 	long count = 0;
-	SQLINTEGER cbData;
+	SQLLEN cbData = {};
 	while(SQLFetch(hStmt) == SQL_SUCCESS) {
 
 		_ITEM_TABLE* item = new _ITEM_TABLE();
@@ -81,8 +81,8 @@ bool ItemInfo::LoadInformation(void) {
 	int num_files = fl_filename_list("./item", &dir_list);
 
 	for(int i=0; i<num_files; ++i) {
-		int len_fn = strlen(dir_list[i]->d_name);
-		if(strlen(dir_list[i]->d_name)>7 && (
+		size_t len_fn = strlen(dir_list[i]->d_name);
+		if(len_fn>7 && (
 			!strcmp(&dir_list[i]->d_name[len_fn-7], "n3cplug") || 
 			!strcmp(&dir_list[i]->d_name[len_fn-7], "n3cpart")
 		)) {
@@ -96,8 +96,8 @@ bool ItemInfo::LoadInformation(void) {
 	num_files = fl_filename_list("./ui", &dir_list);
 
 	for(int i=0; i<num_files; ++i) {
-		int len_fn = strlen(dir_list[i]->d_name);
-		if(strlen(dir_list[i]->d_name)>3 && (
+		size_t len_fn = strlen(dir_list[i]->d_name);
+		if(len_fn>3 && (
 			!strcmp(&dir_list[i]->d_name[len_fn-3], "dxt")
 		)) {
 			_mesh_files_in_dir.push_back("UI\\"+string(dir_list[i]->d_name));
@@ -186,7 +186,7 @@ void ItemInfo::setMeshFileForRace(e_Race race, bool check_type) {
 
 		if (!strcmp(tmp1, tmp2))
 		{
-			filename_ind = i;
+			filename_ind = static_cast<int>(i);
 			break;
 		}
 	}
@@ -255,7 +255,7 @@ void ItemInfo::setItemMeshFileForRace(e_Race race, string& filename) {
 
 		if (!strcmp(tmp1, tmp2))
 		{
-			filename_ind = i;
+			filename_ind = static_cast<int>(i);
 			break;
 		}
 	}

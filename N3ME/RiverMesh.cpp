@@ -134,27 +134,23 @@ bool CRiverMesh::Save(HANDLE hFile)
 	WriteFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);				// IndexBuffer Count.
 
 	int iLen = 0;
-	if(m_pTexture) iLen = m_pTexture->FileName().size();
+	if (m_pTexture != nullptr)
+		iLen = static_cast<int>(m_pTexture->FileName().size());
 	WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
-	if (iLen>0)
-	{
+	if (iLen > 0)
 		WriteFile(hFile, m_pTexture->FileName().c_str(), iLen, &dwNum, nullptr);			// texture file name
-	}
 
 	// Animation Texture Data
 	WriteFile(hFile, &m_fAnimTexFPS, sizeof(m_fAnimTexFPS), &dwNum, nullptr);	// Anim Tex frame/sec
 	WriteFile(hFile, &m_iAnimTextureCount, sizeof(m_iAnimTextureCount), &dwNum, nullptr);	// AnimTexture Count
 
-	int i;
-	for (i=0; i<m_iAnimTextureCount; ++i)
+	for (int i = 0; i < m_iAnimTextureCount; i++)
 	{
 		__ASSERT(m_pAnimTextures[i], "강물 텍스쳐 포인터가 NULL입니다.");
-		int iLen = m_pAnimTextures[i]->FileName().size();
+		int iLen = static_cast<int>(m_pAnimTextures[i]->FileName().size());
 		WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture name length
-		if (iLen>0)
-		{
+		if (iLen > 0)
 			WriteFile(hFile, m_pAnimTextures[i]->FileName().c_str(), iLen, &dwNum, nullptr);	// texture name
-		}
 	}
 	return 0;
 }

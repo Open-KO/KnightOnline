@@ -516,15 +516,16 @@ void CFormViewProperty::UpdateAllInfo()
 //	Coded (By Dino On 2002-10-10 오후 4:44:49 )
 //	FXPlug
 	CN3FXPlug* pFXP = pChr->FXPlugGet();
-	if (pFXP)
+	if (pFXP != nullptr)
 	{
-		int nFXPPC = pFXP->m_FXPParts.size();
-		for (int i=0; i<nFXPPC; ++i)
+		for (size_t i = 0; i < pFXP->m_FXPParts.size(); i++)
 		{
+			CN3FXPlugPart* pPart = pFXP->m_FXPParts[i];
+
 			TCHAR szName[_MAX_PATH] = {};
-			_stprintf(szName, _T("FXPlugPart_%03d"), i);
+			_stprintf(szName, _T("FXPlugPart_%03zu"), i);
 			hInsert = m_TreeChr.InsertItem(szName, 11, 11, m_hTI_FXPlug);
-			m_TreeChr.SetItemData(hInsert, (DWORD_PTR) pFXP->m_FXPParts[i]);
+			m_TreeChr.SetItemData(hInsert, (DWORD_PTR) pPart);
 		}
 	}
 //	End Of Code (By Dino On 2002-10-10 오후 4:44:49 )
@@ -553,8 +554,9 @@ void CFormViewProperty::UpdateAllInfo()
 		}
 		
 		hInsert = m_TreeChr.InsertItem(pChr->Part(i)->FileName().c_str(), 10, 10, m_hTI_Parts);
-		m_TreeChr.SetItemData(hInsert, (DWORD)pChr->Part(i));
+		m_TreeChr.SetItemData(hInsert, (DWORD_PTR) pChr->Part(i));
 	}
+
 	m_TreeChr.Expand(m_hTI_Parts, TVE_EXPAND);
 
 	nPC = pChr->PlugCount();
@@ -569,10 +571,9 @@ void CFormViewProperty::UpdateAllInfo()
 		
 		
 		hInsert = m_TreeChr.InsertItem(pPlug->FileName().c_str(), 11, 11, m_hTI_Plugs);
-		m_TreeChr.SetItemData(hInsert, (DWORD)pPlug);
+		m_TreeChr.SetItemData(hInsert, (DWORD_PTR) pPlug);
 
 		CString szTmp;
-		HTREEITEM hI2 = nullptr;
 	}
 	m_TreeChr.Expand(m_hTI_Plugs, TVE_EXPAND);
 
@@ -929,14 +930,12 @@ void CFormViewProperty::UpdateJointItem(HTREEITEM hItem, CN3Joint *pJoint, int& 
 		char szBuff[128];
 		sprintf(szBuff, "%d : %s", iNumber, pJoint->m_szName.c_str());
 		HTREEITEM hInsert = m_TreeChr.InsertItem(szBuff, 9, 9, hItem);
-		m_TreeChr.SetItemData(hInsert, (DWORD)pJoint);
+		m_TreeChr.SetItemData(hInsert, (DWORD_PTR) pJoint);
 		iNumber++;
 
 		int nCJC = pJoint->ChildCount();
-		for(int i = 0; i < nCJC; i++)
-		{
-			this->UpdateJointItem(hInsert, (CN3Joint*)(pJoint->Child(i)), iNumber);
-		}
+		for (int i = 0; i < nCJC; i++)
+			UpdateJointItem(hInsert, (CN3Joint*) (pJoint->Child(i)), iNumber);
 	}
 	else 
 	{
@@ -1090,23 +1089,29 @@ void CFormViewProperty::OnEditFxplugPartAdd()
 
 void CFormViewProperty::OnEditFxplugPartDelete() 
 {
-	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
-	CN3CEDoc* pDoc = (CN3CEDoc*)pFrm->GetActiveDocument();
+	CMainFrame* pFrm = (CMainFrame*) AfxGetMainWnd();
+	CN3CEDoc* pDoc = (CN3CEDoc*) pFrm->GetActiveDocument();
 	CN3Chr* pChr = pDoc->m_Scene.ChrGet(0);
-	if(nullptr == pChr) return;
+	if (pChr == nullptr)
+		return;
+
 	CN3FXPlug* pFXPlug = pChr->FXPlugGet();
-	if(nullptr == pFXPlug) return;
+	if (pFXPlug == nullptr)
+		return;
 
 	HTREEITEM hI = m_TreeChr.GetSelectedItem();
-	if(nullptr == hI) return;
-	CN3Base* pBase = (CN3Base*) m_TreeChr.GetItemData(hI);
-	if(nullptr == pBase || !(pBase->Type() & OBJ_FX_PLUG_PART)) return;
+	if (hI == nullptr)
+		return;
 
-	CN3FXPlugPart* pPart = (CN3FXPlugPart*)pBase;
-	int nPC = pFXPlug->m_FXPParts.size();
-	for(int i = 0; i < nPC; i++)
+	CN3Base* pBase = (CN3Base*) m_TreeChr.GetItemData(hI);
+	if (pBase == nullptr || !(pBase->Type() & OBJ_FX_PLUG_PART))
+		return;
+
+	CN3FXPlugPart* pPart = (CN3FXPlugPart*) pBase;
+	int nPC = static_cast<int>(pFXPlug->m_FXPParts.size());
+	for (int i = 0; i < nPC; i++)
 	{
-		if(pFXPlug->m_FXPParts[i] == pPart)
+		if (pFXPlug->m_FXPParts[i] == pPart)
 		{
 			pFXPlug->FXPPartDelete(i);
 			break;

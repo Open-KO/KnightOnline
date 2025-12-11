@@ -641,10 +641,10 @@ bool CLyTerrain::SaveToFilePartition(const char* lpszPath, float psx, float psz,
 	}
 
 	//풀 관련 정보 저장..
-	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
-	
-	int NumSeedInfo = pFrm->m_SeedGroupList.size();
-	WriteFile(hFile, &(NumSeedInfo), sizeof(int), &dwRWC, nullptr);
+	CMainFrame* pFrm = (CMainFrame*) AfxGetMainWnd();
+
+	int NumSeedInfo = static_cast<int>(pFrm->m_SeedGroupList.size());
+	WriteFile(hFile, &NumSeedInfo, sizeof(int), &dwRWC, nullptr);
 
 	ProgressBar.Create("Save Grass Info", 50, NumSeedInfo);
 
@@ -870,8 +870,8 @@ bool CLyTerrain::SaveToFile(const char* lpszPath)
 	//풀 관련 정보 저장..
 	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
 	
-	int NumSeedInfo = pFrm->m_SeedGroupList.size();
-	WriteFile(hFile, &(NumSeedInfo), sizeof(int), &dwRWC, nullptr);
+	int NumSeedInfo = static_cast<int>(pFrm->m_SeedGroupList.size());
+	WriteFile(hFile, &NumSeedInfo, sizeof(int), &dwRWC, nullptr);
 
 	ProgressBar.Create("Save Grass Info", 50, NumSeedInfo);
 
@@ -1374,65 +1374,74 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 	int x,z;
 	short tmpTexIdx;
 	short tmpTileIdx;
-	int i;
-	int TTCount;
 	///////////////////////
 
 	CProgressBar ProgressBar;
 	ProgressBar.Create("Analyze TileMap...", 50,  m_iHeightMapSize);
 
 	TexTree.clear();
-	for(x=0; x<m_iHeightMapSize-1;x++)
+	for (x = 0; x < m_iHeightMapSize - 1; x++)
 	{
 		ProgressBar.StepIt();
 
-		for(z=0; z<m_iHeightMapSize-1;z++)
+		for (z = 0; z < m_iHeightMapSize - 1; z++)
 		{
 			tmpTexIdx = (m_ppMapData[x][z].DTexInfo1.TexIdx.TexID * NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo1.TexIdx.TileY;
 			tmpTileIdx = m_ppMapData[x][z].DTexInfo1.TexIdx.TileX;
 
-			if(GetTileTex(m_ppMapData[x][z].DTexInfo1.TexIdx.TexID)!=nullptr)
+			if (GetTileTex(m_ppMapData[x][z].DTexInfo1.TexIdx.TexID) != nullptr)
 			{
 				TTIt = TexTree.lower_bound(tmpTexIdx);
-				TTCount = TexTree.count(tmpTexIdx);
-				for(i=0;i<TTCount; i++)
+				size_t TTCount = TexTree.count(tmpTexIdx);
+				size_t i = 0;
+				for (; i < TTCount; i++)
 				{
-					if((*TTIt).second==tmpTileIdx) break;
+					if ((*TTIt).second == tmpTileIdx)
+						break;
+
 					TTIt++;
 				}
-				if(i==TTCount && tmpTexIdx>=0 && tmpTileIdx>=0  && tmpTileIdx < 5000 ) TexTree.insert(MMValue(tmpTexIdx, tmpTileIdx));
+
+				if (i == TTCount && tmpTexIdx >= 0 && tmpTileIdx >= 0 && tmpTileIdx < 5000)
+					TexTree.insert(std::make_pair(tmpTexIdx, tmpTileIdx));
 			}
-			
-			tmpTexIdx = (m_ppMapData[x][z].DTexInfo2.TexIdx.TexID*NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo2.TexIdx.TileY;
+
+			tmpTexIdx = (m_ppMapData[x][z].DTexInfo2.TexIdx.TexID * NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo2.TexIdx.TileY;
 			tmpTileIdx = m_ppMapData[x][z].DTexInfo2.TexIdx.TileX;
 
-			if(GetTileTex(m_ppMapData[x][z].DTexInfo2.TexIdx.TexID)!=nullptr)
+			if (GetTileTex(m_ppMapData[x][z].DTexInfo2.TexIdx.TexID) != nullptr)
 			{
 				TTIt = TexTree.lower_bound(tmpTexIdx);
-				TTCount = TexTree.count(tmpTexIdx);
-				for(i=0;i<TTCount; i++)
+				size_t TTCount = TexTree.count(tmpTexIdx);
+				size_t i = 0;
+				for (; i < TTCount; i++)
 				{
-					if((*TTIt).second==tmpTileIdx) break;
+					if ((*TTIt).second == tmpTileIdx)
+						break;
+
 					TTIt++;
 				}
-				if(i==TTCount && tmpTexIdx>=0 && tmpTileIdx>=0 && tmpTileIdx < 5000 ) TexTree.insert(MMValue(tmpTexIdx, tmpTileIdx));
+
+				if (i == TTCount && tmpTexIdx >= 0 && tmpTileIdx >= 0 && tmpTileIdx < 5000)
+					TexTree.insert(std::make_pair(tmpTexIdx, tmpTileIdx));
 			}
 		}
 	}
 	
-	int NumTile = TexTree.size();
+	int NumTile = static_cast<int>(TexTree.size());
 	int NumTileSrcTex = 0;
 
 	LList TileList;
-	if(NumTile!=0)
+	if (NumTile != 0)
 	{
 		TTIt = TexTree.begin();
-		while(TTIt != TexTree.end())
+		while (TTIt != TexTree.end())
 		{
 			NumTileSrcTex++;
 			TileList.push_back((*TTIt).first);
-			TTCount = TexTree.count((*TTIt).first);
-			for(i=0;i<TTCount;i++) TTIt++;
+
+			size_t TTCount = TexTree.count((*TTIt).first);
+			std::advance(TTIt, TTCount);
 		}
 	}
 
@@ -1453,7 +1462,7 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 	{
 		ProgressBar.StepIt();
 
-		for(z=0; z<m_iHeightMapSize;z++)
+		for (z = 0; z < m_iHeightMapSize; z++)
 		{
 			GAMEMAPDATA* pGMD = &pGMDs[x*m_iHeightMapSize+z];
 
@@ -1465,23 +1474,24 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 			pGMD->Tex2Dir = (char)m_ppMapData[x][z].DTexInfo2.Dir;
 
 			TTIt = TexTree.begin();
-			for(i=0;i<NumTile;i++)
+			for (int i = 0; i < NumTile; i++)
 			{
 				tmpTexIdx = (*TTIt).first;
 				tmpTileIdx = (*TTIt).second;
-				if( ( tmpTexIdx == ( (m_ppMapData[x][z].DTexInfo1.TexIdx.TexID*NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo1.TexIdx.TileY ) )&&
-					( tmpTileIdx == m_ppMapData[x][z].DTexInfo1.TexIdx.TileX ) )
-				{
+
+				if ((tmpTexIdx == ((m_ppMapData[x][z].DTexInfo1.TexIdx.TexID * NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo1.TexIdx.TileY))
+					&& (tmpTileIdx == m_ppMapData[x][z].DTexInfo1.TexIdx.TileX))
 					pGMD->Tex1Idx = i;
-				}
-				if( ( tmpTexIdx == ( (m_ppMapData[x][z].DTexInfo2.TexIdx.TexID*NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo2.TexIdx.TileY ) )&&
-					( tmpTileIdx == m_ppMapData[x][z].DTexInfo2.TexIdx.TileX ) )
-				{
+
+				if ((tmpTexIdx == ((m_ppMapData[x][z].DTexInfo2.TexIdx.TexID * NUM_DTEXTILE) + m_ppMapData[x][z].DTexInfo2.TexIdx.TileY))
+					&& (tmpTileIdx == m_ppMapData[x][z].DTexInfo2.TexIdx.TileX))
 					pGMD->Tex2Idx = i;
-				}
+
 				TTIt++;
 			}
-			if(pGMD->Tex2Idx<0 && (m_ppMapData[x][z].DTexInfo1.Attr.Attr>0)) pGMD->bIsTileFull = false;
+
+			if (pGMD->Tex2Idx < 0 && (m_ppMapData[x][z].DTexInfo1.Attr.Attr > 0))
+				pGMD->bIsTileFull = false;
 		}
 	}
 	
@@ -1531,73 +1541,61 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 	ZeroMemory(SeedAttr, sizeof(unsigned char)*m_iHeightMapSize*m_iHeightMapSize);
 	CDlgSowSeed* pSowSeed = pFrm->m_pDlgSowSeed;
 
-	for( i = 0 ; i < m_iHeightMapSize*m_iHeightMapSize ; i++)
+	for (int i = 0; i < m_iHeightMapSize * m_iHeightMapSize; i++)
 	{
 		SeedAttr[i].Obj_Id = 0;
 		SeedAttr[i].Seed_Count = 0;
 		SeedAttr[i].SeedGroup_Sub = nullptr;
 		SeedAttr[i].sub_flage = 0;
 	}
-	int size = pFrm->GetMapMng()->m_SowSeedMng.Grass_Group.size();
-	it_Grass_Group it = pFrm->GetMapMng()->m_SowSeedMng.Grass_Group.begin();
-	int temp_Id = 0;
-	for( i = 0 ; i < size ; i++,it++)
-	{
-		LPGRASS_GROUP group = (LPGRASS_GROUP)*it;
-		it_Grass it_grass = group->grass.begin();
-		for (int j = 0; j < static_cast<int>(group->grass.size()); j++, it_grass++)
-		{
-			LPGRASS grass = *it_grass;
 
-			it_Obj_Name it_Obj = pFrm->GetMapMng()->m_SowSeedMng.Obj_Name.begin();
-			temp_Id =0;
-			for (int jj = 0; jj < static_cast<int>(pFrm->GetMapMng()->m_SowSeedMng.Obj_Name.size()); jj++, it_Obj++)
+	int temp_Id = 0;
+	for (LPGRASS_GROUP group : pFrm->GetMapMng()->m_SowSeedMng.Grass_Group)
+	{
+		for (LPGRASS grass : group->grass)
+		{
+			temp_Id = 0;
+			for (LPOBJ_NAME Obj : pFrm->GetMapMng()->m_SowSeedMng.Obj_Name)
 			{
-				LPOBJ_NAME Obj = *it_Obj;
-				if( strcmp( group->FileName,Obj->FileName) == 0 )
-				{
+				if (strcmp(group->FileName, Obj->FileName) == 0)
 					temp_Id = Obj->Id;
-				}
 			}
 
-
-			if( SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Obj_Id == 0)
+			if (SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Obj_Id == 0)
 			{
-				SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Obj_Id = temp_Id +1;
+				SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Obj_Id = temp_Id + 1;
 
-				if( SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Seed_Count < 15)
-					SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Seed_Count += 1;
+				if (SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Seed_Count < 15)
+					SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Seed_Count += 1;
 			}
 			else
 			{
 
-				if( SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Obj_Id == temp_Id +1)
+				if (SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Obj_Id == temp_Id + 1)
 				{
-					if( SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Seed_Count < 15)
-						SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].Seed_Count += 1;
+					if (SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Seed_Count < 15)
+						SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].Seed_Count += 1;
 				}
 				else
 				{
-					if( SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].SeedGroup_Sub == nullptr)
+					if (SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].SeedGroup_Sub == nullptr)
 					{
-						SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].sub_flage = 1;
-						SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].SeedGroup_Sub = new SEEDGROUP;
+						SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].sub_flage = 1;
+						SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].SeedGroup_Sub = new SEEDGROUP;
 					}
 
-					SeedAttr[grass->Tile_z + (grass->Tile_x*m_iHeightMapSize)].SeedGroup_Sub->Obj_Id = temp_Id +1;
-					if( SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].SeedGroup_Sub->Seed_Count < 15)
-						SeedAttr[grass->Tile_z +(grass->Tile_x*m_iHeightMapSize)].SeedGroup_Sub->Seed_Count += 1;
-					
+					SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].SeedGroup_Sub->Obj_Id = temp_Id + 1;
+					if (SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].SeedGroup_Sub->Seed_Count < 15)
+						SeedAttr[grass->Tile_z + (grass->Tile_x * m_iHeightMapSize)].SeedGroup_Sub->Seed_Count += 1;
 				}
-
 			}
 		}
 	}
-	for( i = 0 ; i < m_iHeightMapSize*m_iHeightMapSize ; i++)
+	for (int i = 0; i < m_iHeightMapSize * m_iHeightMapSize; i++)
 	{
-		WriteFile(hFile,&SeedAttr[i],sizeof(unsigned char),&dwRWC,nullptr);
-		if( SeedAttr[i].SeedGroup_Sub != nullptr)
-			WriteFile(hFile,SeedAttr[i].SeedGroup_Sub,sizeof(unsigned char),&dwRWC,nullptr);
+		WriteFile(hFile, &SeedAttr[i], sizeof(unsigned char), &dwRWC, nullptr);
+		if (SeedAttr[i].SeedGroup_Sub != nullptr)
+			WriteFile(hFile, SeedAttr[i].SeedGroup_Sub, sizeof(unsigned char), &dwRWC, nullptr);
 	}
 
 
@@ -1664,7 +1662,7 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 		// Tile Map Resource
 		LLIter TLIt = TileList.begin();
 		CN3Texture* pTexture;
-		for(i=0;i<NumTileSrcTex;i++)
+		for (int i = 0; i < NumTileSrcTex; i++)
 		{
 			int TexIdx = (*TLIt) / NUM_DTEXTILE;
 			int YIdx = (*TLIt) % NUM_DTEXTILE;
@@ -1683,15 +1681,14 @@ void CLyTerrain::SaveGameData(HANDLE hFile)
 
 		int SrcIdx, TileIdx;
 		TTIt = TexTree.begin();
-		for(i=0;i<NumTile;i++)
+		for (int i = 0; i < NumTile; i++)
 		{
 			SrcIdx = 0;
-			for(TLIt=TileList.begin();TLIt!=TileList.end();TLIt++)
+			for (TLIt = TileList.begin(); TLIt != TileList.end(); TLIt++)
 			{
-				if((*TTIt).first==(*TLIt)) 
-				{
+				if ((*TTIt).first == (*TLIt))
 					WriteFile(hFile, &SrcIdx, sizeof(short), &dwRWC, nullptr);
-				}
+
 				SrcIdx++;
 			}
 			TileIdx = (*TTIt).second;
@@ -2292,25 +2289,19 @@ void CLyTerrain::Render()
 	hr = s_lpD3DDev->SetSamplerState( 1, D3DSAMP_ADDRESSU,  D3DTADDRESS_MIRROR );
 	hr = s_lpD3DDev->SetSamplerState( 1, D3DSAMP_ADDRESSV,  D3DTADDRESS_MIRROR );
 
-	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	CMainFrame* pFrame = (CMainFrame*) AfxGetMainWnd();
 
-	if( pFrame->m_pDlgMapView->Select_Map_Edit == TRUE)
+	if (pFrame->m_pDlgMapView->Select_Map_Edit)
 	{
 		pFrame->m_pDlgMapView->Render();
 	}
 	else
 	{
-		it_QTNode it = m_RenderNodes.begin();
-		int iSize = m_RenderNodes.size();
-		for(int i = 0; i < iSize; i++, it++)
-		{
-			CQTNode* pQTNode = *it;
+		for (CQTNode* pQTNode : m_RenderNodes)
 			pQTNode->Render();
-		}
 	}
 
 	RenderBrushArea();
-
 
 	//라이트맵 라인..
 	//if(m_bDrawLineLightMap)
@@ -2485,11 +2476,11 @@ BOOL CLyTerrain::MouseMsgFilter(LPMSG pMsg)
 	const float fDelta = 0.10f;
 	static int	iSumOfEditedHeight=0;	// 이번 드래그로 변화된 지형높이의 합
 
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 			if(nFlags & MK_LBUTTON && m_iEditMode == TEM_DTEX)
 			{
@@ -3887,15 +3878,16 @@ void CLyTerrain::TilingAll()
 //
 void CLyTerrain::PutColorMapTile(int x, int z)
 {
-	MMIter it = m_ColorMapTileTree.lower_bound((short)x);
-	int count = m_ColorMapTileTree.count((short)x);
+	auto it = m_ColorMapTileTree.lower_bound((short) x);
+	size_t count = m_ColorMapTileTree.count((short) x);
 
-	for(int i=0;i<count; i++)
+	for (size_t i = 0; i < count; i++)
 	{
-		if((*it).second==(short)z) return;
+		if ((*it).second == (short) z)
+			return;
 		it++;
 	}
-	m_ColorMapTileTree.insert(MMValue((short)x, (short)z));
+	m_ColorMapTileTree.insert(MMValue((short) x, (short) z));
 }
 
 
@@ -3924,7 +3916,7 @@ void CLyTerrain::GeneraterColorMap(bool bIsAll)
 		return;
 	}
 
-	ProgressBar.Create("Generate ColorMap..", 50, m_ColorMapTileTree.size());
+	ProgressBar.Create("Generate ColorMap..", 50, static_cast<int>(m_ColorMapTileTree.size()));
 	ProgressBar.SetStep(1);
 	
 	MMIter it;

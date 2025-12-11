@@ -313,19 +313,25 @@ void CN3UIButton::operator = (const CN3UIButton& other)
 #ifdef _N3TOOL
 bool CN3UIButton::Save(HANDLE hFile)
 {
-	if (false == CN3UIBase::Save(hFile)) return false;
+	if (!CN3UIBase::Save(hFile))
+		return false;
+
 	DWORD dwNum;
-	WriteFile(hFile, &m_rcClick, sizeof(m_rcClick), &dwNum, nullptr);	// click 영역
+	WriteFile(hFile, &m_rcClick, sizeof(m_rcClick), &dwNum, nullptr);		// click 영역
 
 	int iSndFNLen = 0;
-	if (m_pSnd_On) iSndFNLen = m_pSnd_On->m_szFileName.size();
+	if (m_pSnd_On != nullptr)
+		iSndFNLen = static_cast<int>(m_pSnd_On->m_szFileName.size());
 	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0) WriteFile(hFile, m_pSnd_On->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
+	if (iSndFNLen > 0)
+		WriteFile(hFile, m_pSnd_On->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
 
 	iSndFNLen = 0;
-	if (m_pSnd_Click) iSndFNLen = m_pSnd_Click->m_szFileName.size();
+	if (m_pSnd_Click != nullptr)
+		iSndFNLen = static_cast<int>(m_pSnd_Click->m_szFileName.size());
 	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0) WriteFile(hFile, m_pSnd_Click->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
+	if (iSndFNLen > 0)
+		WriteFile(hFile, m_pSnd_Click->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
 
 	return true;
 }

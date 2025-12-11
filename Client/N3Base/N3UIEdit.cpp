@@ -716,14 +716,17 @@ void CN3UIEdit::operator = (const CN3UIEdit& other)
 
 bool CN3UIEdit::Save(HANDLE hFile)
 {
-	if (false == CN3UIStatic::Save(hFile)) return false;
+	if (!CN3UIStatic::Save(hFile))
+		return false;
 
 	DWORD dwNum;
 
 	int iSndFNLen = 0;
-	if (m_pSnd_Typing) iSndFNLen = m_pSnd_Typing->m_szFileName.size();
+	if (m_pSnd_Typing != nullptr)
+		iSndFNLen = static_cast<int>(m_pSnd_Typing->m_szFileName.size());
 	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0) WriteFile(hFile, m_pSnd_Typing->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
+	if (iSndFNLen > 0)
+		WriteFile(hFile, m_pSnd_Typing->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
 
 	return true;
 }

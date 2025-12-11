@@ -54,13 +54,11 @@ bool CN3AnimControl::Save(HANDLE hFile)
 	DWORD dwRWC = 0;
 
 	int nL = 0;
-	int iSize = m_Datas.size();
+	int iSize = static_cast<int>(m_Datas.size());
 	WriteFile(hFile, &iSize, 4, &dwRWC, nullptr);
 
-	for(int i = 0; i < iSize; i++)
-	{
+	for (int i = 0; i < iSize; i++)
 		m_Datas[i].Save(hFile);
-	}
 
 	return true;
 }

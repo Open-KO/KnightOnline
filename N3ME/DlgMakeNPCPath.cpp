@@ -120,16 +120,16 @@ BOOL CDlgMakeNPCPath::OnInitDialog()
 	m_OptionList.ResetContent();
 	
 	int idx = m_AttrRegenList.AddString("NONE");
-	m_AttrRegenList.SetItemData(idx, (DWORD)0);
+	m_AttrRegenList.SetItemData(idx, 0);
 
 	idx = m_AttrGroupList.AddString("NONE");
-	m_AttrGroupList.SetItemData(idx, (DWORD)0);
+	m_AttrGroupList.SetItemData(idx, 0);
 
 	idx = m_AttrCreateList.AddString("NONE");
-	m_AttrCreateList.SetItemData(idx, (DWORD)0);
+	m_AttrCreateList.SetItemData(idx, 0);
 
 	idx = m_OptionList.AddString("NONE");
-	m_OptionList.SetItemData(idx, (DWORD)0);
+	m_OptionList.SetItemData(idx, 0);
 	
 	char szLine[512] = "", szID[80] = "", szBuff[4][80] = {"", "", "", ""};
 	char szName[512] = "";
@@ -159,7 +159,7 @@ BOOL CDlgMakeNPCPath::OnInitDialog()
 				sprintf(szName,"%s %s %s %s", szBuff[0], szBuff[1], szBuff[2], szBuff[3]);
 				
 				idx = m_NPCList.AddString(szName);
-				m_NPCList.SetItemData(idx, (DWORD)id);
+				m_NPCList.SetItemData(idx, (DWORD_PTR) id);
 				//m_NPCList.SetCurSel(0);
 			}
 			else break;
@@ -190,7 +190,7 @@ BOOL CDlgMakeNPCPath::OnInitDialog()
 				sprintf(szName,"%s %s %s %s", szBuff[0], szBuff[1], szBuff[2], szBuff[3]);
 				
 				int idx = m_ActTypeList.AddString(szName);
-				m_ActTypeList.SetItemData(idx, (DWORD)id);
+				m_ActTypeList.SetItemData(idx, (DWORD_PTR) id);
 			}
 			else break;
 		}
@@ -274,7 +274,7 @@ void CDlgMakeNPCPath::OnChangeEditRegentime()
 void CDlgMakeNPCPath::OnSelchangeComboActiontype() 
 {
 	int idx = m_ActTypeList.GetCurSel();
-	m_iSelActType = m_ActTypeList.GetItemData(idx);	
+	m_iSelActType = static_cast<int>(m_ActTypeList.GetItemData(idx));
 }
 
 void CDlgMakeNPCPath::OnBtnLoadPathset() 
@@ -529,7 +529,7 @@ void CDlgMakeNPCPath::OnBtnLoadNpclist()
 				sprintf(szName,"%s %s %s %s", szBuff[0], szBuff[1], szBuff[2], szBuff[3]);
 				if(id==0) continue;
 				int idx = m_NPCList.AddString(szName);
-				m_NPCList.SetItemData(idx, (DWORD)id);
+				m_NPCList.SetItemData(idx, (DWORD_PTR) id);
 				m_NPCList.SetCurSel(0);
 			}
 			else break;
@@ -556,7 +556,7 @@ void CDlgMakeNPCPath::OnBtnLoadCreate()
 	m_AttrCreateList.ResetContent();
 
 	int idx = m_AttrCreateList.AddString("NONE");
-	m_AttrCreateList.SetItemData(idx, (DWORD)0);
+	m_AttrCreateList.SetItemData(idx, 0);
 
 	char szLine[512] = "", szID[80] = "", szBuff[4][80] = {"", "", "", ""};
 	char szName[512] = "";
@@ -581,7 +581,7 @@ void CDlgMakeNPCPath::OnBtnLoadCreate()
 				sprintf(szName,"%s %s %s %s", szBuff[0], szBuff[1], szBuff[2], szBuff[3]);
 				
 				int idx = m_AttrCreateList.AddString(szName);
-				m_AttrCreateList.SetItemData(idx, (DWORD)id);
+				m_AttrCreateList.SetItemData(idx, (DWORD_PTR) id);
 			}
 			else break;
 		}
@@ -599,7 +599,7 @@ void CDlgMakeNPCPath::OnBtnLoadGroup()
 	m_AttrGroupList.ResetContent();
 
 	int idx = m_AttrGroupList.AddString("NONE");
-	m_AttrGroupList.SetItemData(idx, (DWORD)0);
+	m_AttrGroupList.SetItemData(idx, 0);
 
 	char szLine[512] = "", szID[80] = "", szBuff[4][80] = {"", "", "", ""};
 	char szName[512] = "";
@@ -624,7 +624,7 @@ void CDlgMakeNPCPath::OnBtnLoadGroup()
 				sprintf(szName,"%s %s %s %s", szBuff[0], szBuff[1], szBuff[2], szBuff[3]);
 				
 				int idx = m_AttrGroupList.AddString(szName);
-				m_AttrGroupList.SetItemData(idx, (DWORD)id);
+				m_AttrGroupList.SetItemData(idx, (DWORD_PTR) id);
 			}
 			else break;
 		}
@@ -642,7 +642,7 @@ void CDlgMakeNPCPath::OnBtnLoadRegen()
 	m_AttrRegenList.ResetContent();
 
 	int idx = m_AttrRegenList.AddString("NONE");
-	m_AttrRegenList.SetItemData(idx, (DWORD)0);
+	m_AttrRegenList.SetItemData(idx, 0);
 
 	char szLine[512] = "", szID[80] = "", szBuff[4][80] = {"", "", "", ""};
 	char szName[512] = "";
@@ -667,7 +667,7 @@ void CDlgMakeNPCPath::OnBtnLoadRegen()
 				sprintf(szName,"%s %s %s %s", szBuff[0], szBuff[1], szBuff[2], szBuff[3]);
 				
 				int idx = m_AttrRegenList.AddString(szName);
-				m_AttrRegenList.SetItemData(idx, (DWORD)id);
+				m_AttrRegenList.SetItemData(idx, (DWORD_PTR) id);
 			}
 			else break;
 		}
@@ -685,7 +685,7 @@ void CDlgMakeNPCPath::OnBtnLoadOption()
 	m_OptionList.ResetContent();
 
 	int idx = m_OptionList.AddString("NONE");
-	m_OptionList.SetItemData(idx, (DWORD)0);
+	m_OptionList.SetItemData(idx, 0);
 
 	char szLine[512] = "", szID[80] = "", szBuff[4][80] = {"", "", "", ""};
 	char szName[512] = "";

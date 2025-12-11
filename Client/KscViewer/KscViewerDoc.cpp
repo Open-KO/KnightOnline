@@ -94,7 +94,7 @@ BOOL CKscViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
 		return FALSE;
 
 	char* szExt = nullptr;
-	int nLen = strlen(lpszPathName);
+	size_t nLen = strlen(lpszPathName);
 
 	szExt = (char*)lpszPathName + nLen - 3;
 	

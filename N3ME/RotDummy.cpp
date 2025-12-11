@@ -30,12 +30,12 @@ BOOL CRotDummy::MouseMsgFilter(LPMSG pMsg)
 	if (m_SelObjArray.GetSize() == 0) return FALSE;
 
 	static POINT ptPrevCursor;
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_MOUSEMOVE:
 		{
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 
 			int iDiff = point.x - ptPrevCursor.x;
 			const float fDelta = 0.005f;

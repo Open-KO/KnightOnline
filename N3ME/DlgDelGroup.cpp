@@ -51,16 +51,16 @@ BOOL CDlgDelGroup::OnInitDialog()
 	CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
 	CDTexGroupMng* pDTexGroupMng = pFrm->GetDTexGroupMng();
 
-	it_DTexGroup it = pDTexGroupMng->m_Groups.begin();
-	int iSize = pDTexGroupMng->m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	auto it = pDTexGroupMng->m_Groups.begin();
+	int iSize = static_cast<int>(pDTexGroupMng->m_Groups.size());
+	for (int i = 0; i < iSize; i++, it++)
 	{
 		CDTexGroup* pDTG = *it;
 		m_GroupList.InsertString(i, pDTG->m_Name);
-		m_GroupList.SetItemData(i, (DWORD)pDTG->m_ID);
+		m_GroupList.SetItemData(i, (DWORD_PTR) pDTG->m_ID);
 	}
 	m_GroupList.SetCurSel(0);
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

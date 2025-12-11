@@ -64,11 +64,13 @@ bool CN3FXPlugPart::Load(HANDLE hFile)
 #ifdef _N3TOOL
 bool CN3FXPlugPart::Save(HANDLE hFile)
 {
-	if (false == CN3BaseFileAccess::Save(hFile)) return false;
+	if (!CN3BaseFileAccess::Save(hFile))
+		return false;
+
 	__ASSERT(m_pFXB, "no FXB");
 
 	DWORD dwNum;
-	int nStrLen = m_pFXB->FileName().size();
+	int nStrLen = static_cast<int>(m_pFXB->FileName().size());
 	WriteFile(hFile, &nStrLen, sizeof(nStrLen), &dwNum, nullptr);
 	WriteFile(hFile, m_pFXB->FileName().c_str(), nStrLen, &dwNum, nullptr);
 	WriteFile(hFile, &m_nRefIndex, sizeof(m_nRefIndex), &dwNum, nullptr);
@@ -236,22 +238,22 @@ bool CN3FXPlug::Save(HANDLE hFile)
 
 void CN3FXPlug::RemoveFXPParts_HaveNoBundle()	// 번들 없는 Part들 제거하기
 {
-	int i, nCount = m_FXPParts.size();
-	for(i=0; i<nCount; ++i)
+	for (auto itr = m_FXPParts.begin(); itr != m_FXPParts.end();)
 	{
-		if (m_FXPParts[i] && nullptr == m_FXPParts[i]->GetFXB())
+		CN3FXPlugPart* pPart = *itr;
+		if (pPart == nullptr)
 		{
-			delete m_FXPParts[i];								// FXB가 없으면 이 파트는 지운다.
-			m_FXPParts[i] = nullptr;
+			itr = m_FXPParts.erase(itr);
 		}
-	}
-
-	// nullptr인 포인터들을 없앤다.
-	std::vector<CN3FXPlugPart*>::iterator itor;
-	for (itor = m_FXPParts.begin(); itor != m_FXPParts.end();)
-	{
-		if (nullptr == (*itor)) itor = m_FXPParts.erase(itor);
-		else ++itor;
+		else if (pPart->GetFXB() == nullptr)
+		{
+			delete pPart;								// FXB가 없으면 이 파트는 지운다.
+			itr = m_FXPParts.erase(itr);
+		}
+		else
+		{
+			++itr;
+		}
 	}
 }
 

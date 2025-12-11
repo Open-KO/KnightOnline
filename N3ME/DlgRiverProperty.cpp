@@ -58,7 +58,7 @@ BOOL CDlgRiverProperty::OnInitDialog()
 	
 	m_ComGoRiver.ResetContent();
 	int idx = m_ComGoRiver.AddString("NONE");
-	m_ComGoRiver.SetItemData(idx, (DWORD)0);
+	m_ComGoRiver.SetItemData(idx, 0);
 
 	m_LPRiver.AddPropItem("River ID", "", PIT_EDIT, "");
 	m_LPRiver.AddPropItem("Alpha factor(hex)", "", PIT_EDIT, "");
@@ -193,13 +193,13 @@ void CDlgRiverProperty::RiverComboSetting()
 	if(iRiverSize == 0) 
 	{
 		idx = m_ComGoRiver.AddString("NONE");
-		m_ComGoRiver.SetItemData(idx, (DWORD)0);
+		m_ComGoRiver.SetItemData(idx, 0);
 
 		return;
 	}
 
 	idx = m_ComGoRiver.AddString("Select");
-	m_ComGoRiver.SetItemData(idx, (DWORD)0);
+	m_ComGoRiver.SetItemData(idx, 0);
 
 
 	int iRiverID;
@@ -213,7 +213,7 @@ void CDlgRiverProperty::RiverComboSetting()
 			iRiverID = pRM->GetRiverID();
 			sprintf(szRiverID,"%d",iRiverID);
 			idx = m_ComGoRiver.AddString(szRiverID);
-			m_ComGoRiver.SetItemData(idx, (DWORD)iRiverID);
+			m_ComGoRiver.SetItemData(idx, (DWORD_PTR) iRiverID);
 		}
 	}
 

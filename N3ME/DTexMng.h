@@ -29,11 +29,19 @@ public:
 	//CDTex*			m_pDTex[MAX_TILETEXTURE];
 				
 public:
+	int GetMaxID() const
+	{
+		return m_NextID - 1;
+	}
+
+	int GetNumDTex() const
+	{
+		return static_cast<int>(m_pDTex.size());
+	}
+
 	bool	IsInDTex(CString FileName);
-	int		GetMaxID() { return m_NextID-1; }
 	CDTex*	GetDTexByID(int id);
 	CDTex*	GetDTexByName(CString FileName);
-	int		GetNumDTex() { return m_pDTex.size(); }
 	bool	AddDTex(CString FileName);
 	void	DelDTexByID(int id);
 	void	Init(CMainFrame* pFrm = nullptr);

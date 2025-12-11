@@ -42,13 +42,8 @@ CRiverMng::~CRiverMng()
 
 void CRiverMng::Release()
 {
-	it_RiverMesh it = m_RiverMeshes.begin();
-	int iSize = m_RiverMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CRiverMesh* pRM = *it;
-		if (pRM) delete pRM;
-	}
+	for (CRiverMesh* pRM : m_RiverMeshes)
+		delete pRM;
 	m_RiverMeshes.clear();
 
 	m_SelVtxArray.RemoveAll();
@@ -77,7 +72,7 @@ bool CRiverMng::Load(HANDLE hFile)
 bool CRiverMng::Save(HANDLE hFile)
 {
 	DWORD dwNum;
-	int iSize = m_RiverMeshes.size();
+	int iSize = static_cast<int>(m_RiverMeshes.size());
 	WriteFile(hFile, &iSize, 4, &dwNum, nullptr);
 	
 	it_RiverMesh it = m_RiverMeshes.begin();
@@ -103,13 +98,8 @@ void CRiverMng::Render()
 	hr = s_lpD3DDev->GetRenderState(D3DRS_LIGHTING, &dwLighting);
 
 	// 기존에 있던 강 그리기
-	it_RiverMesh it = m_RiverMeshes.begin();
-	int iSize = m_RiverMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CRiverMesh* pRM = *it;
+	for (CRiverMesh* pRM : m_RiverMeshes)
 		pRM->Render();
-	}
 
 	if (m_bEditMode)
 	{
@@ -179,8 +169,8 @@ void CRiverMng::Render()
 		}
 
 		// 선택된 점 그리기 (초록)
-		int iSize = m_SelVtxArray.GetSize();
-		if (iSize>0)
+		int iSize = static_cast<int>(m_SelVtxArray.GetSize());
+		if (iSize > 0)
 		{
 			// transform
 			__Matrix44 matView, matProj, matVP;
@@ -252,12 +242,11 @@ CRiverMesh*	CRiverMng::CreateNewRiverMesh(__Vector3& vPos1, __Vector3& vPos2, __
 
 void CRiverMng::RemoveRiverMesh(int iRiverID)
 {
-	it_RiverMesh it = m_RiverMeshes.begin();
-	int iSize = m_RiverMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (auto it = m_RiverMeshes.begin(); it != m_RiverMeshes.end(); ++it)
 	{
 		CRiverMesh* pRM = *it;
-		if (pRM && pRM->GetRiverID() == iRiverID)
+		if (pRM != nullptr
+			&& pRM->GetRiverID() == iRiverID)
 		{
 			delete pRM;
 			it = m_RiverMeshes.erase(it);
@@ -277,11 +266,11 @@ BOOL CRiverMng::MouseMsgFilter(LPMSG pMsg)
 
 	static POINT ptDownBuff;
 
-	switch(pMsg->message)
+	switch (pMsg->message)
 	{
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 			if (RCM_CREATE == m_RCursorMode)
 			{	// 새로운 강 추가할때 드래그 하는 선 설정
@@ -419,13 +408,12 @@ BOOL CRiverMng::MouseMsgFilter(LPMSG pMsg)
 
 CRiverMesh* CRiverMng::GetRiverMesh(int iRiverID)
 {
-	it_RiverMesh it = m_RiverMeshes.begin();
-	int iSize = m_RiverMeshes.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CRiverMesh* pRM : m_RiverMeshes)
 	{
-		CRiverMesh* pRM = *it;
-		if (pRM->GetRiverID() == iRiverID) return pRM;
+		if (pRM->GetRiverID() == iRiverID)
+			return pRM;
 	}
+
 	return nullptr;
 }
 
@@ -482,30 +470,42 @@ void CRiverMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd)
 
 	D3DVIEWPORT9 vp = pEng->s_CameraData.vp;
 
-	int i;
-	if (m_pSelRiver)	// 이미 선택된 강이 있다면..
+	// 이미 선택된 강이 있다면..
+	if (m_pSelRiver != nullptr)
 	{
 		int iVC = m_pSelRiver->VertexCount();	// 그강의 점 숫자를 구하기
-		for (i=0; i<iVC;++i)
+		for (int i = 0; i < iVC; ++i)
 		{
 			__VertexXyzT2* pVtx = m_pSelRiver->GetVertex(i);	// 점 하나 구하기
-			if (pVtx == nullptr) continue;
+			if (pVtx == nullptr)
+				continue;
 
 			D3DXVECTOR4 v;
 			D3DXVec3Transform(&v, pVtx, &matVP);
-			float fScreenZ = (v.z/v.w);
-			if (fScreenZ>1.0 || fScreenZ<0.0) continue;
+			float fScreenZ = (v.z / v.w);
+			if (fScreenZ > 1.0f || fScreenZ < 0.0f)
+				continue;
 
-			float fScreenX = ((v.x/v.w)+1.0f)*(vp.Width)/2.0f;
-			float fScreenY = (1.0f-(v.y/v.w))*(vp.Height)/2.0f;
+			float fScreenX = ((v.x / v.w) + 1.0f) * (vp.Width) / 2.0f;
+			float fScreenY = (1.0f - (v.y / v.w)) * (vp.Height) / 2.0f;
 			if (fScreenX >= pRect->left && fScreenX <= pRect->right &&
 				fScreenY >= pRect->top && fScreenY <= pRect->bottom)
 			{
 				BOOL bAleadySelected = FALSE;
-				int j, iSize = m_SelVtxArray.GetSize();
-				for (j=0; j<iSize;++j) if (m_SelVtxArray.GetAt(j) == pVtx) {bAleadySelected=TRUE;break;}
-				if (bAleadySelected) m_SelVtxArray.RemoveAt(j);	// 이미 있으므로 선택목록에서 제거
-				else m_SelVtxArray.InsertAt(0, pVtx);			// 추가
+				int j, iSize = static_cast<int>(m_SelVtxArray.GetSize());
+				for (j = 0; j < iSize; j++)
+				{
+					if (m_SelVtxArray.GetAt(j) == pVtx)
+					{
+						bAleadySelected = TRUE;
+						break;
+					}
+				}
+
+				if (bAleadySelected)
+					m_SelVtxArray.RemoveAt(j);			// 이미 있으므로 선택목록에서 제거
+				else
+					m_SelVtxArray.InsertAt(0, pVtx);	// 추가
 			}
 		}
 	}
@@ -514,39 +514,42 @@ void CRiverMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd)
 		ASSERT(m_SelVtxArray.GetSize() == 0);
 
 		CRiverMesh* pSelRiver = nullptr;	// 선택된 강
-		it_RiverMesh it = m_RiverMeshes.begin();
-		int iSize = m_RiverMeshes.size();
-		for(int i = 0; i < iSize; i++, it++)
+		for (CRiverMesh* pRM : m_RiverMeshes)
 		{
-			CRiverMesh* pRM = *it;
-			if (pRM == nullptr) continue;
+			if (pRM == nullptr)
+				continue;
 
-			int j, iVC = pRM->VertexCount();				// 이강의 점 갯수
-			for (j=0; j<iVC; ++j)
+			int iVC = pRM->VertexCount();				// 이강의 점 갯수
+			for (int j = 0; j < iVC; ++j)
 			{
 				__VertexXyzT2* pVtx = pRM->GetVertex(j);	// 점 하나 구하기
-				if (pVtx == nullptr) continue;
+				if (pVtx == nullptr)
+					continue;
 
 				D3DXVECTOR4 v;
 				D3DXVec3Transform(&v, pVtx, &matVP);
-				float fScreenZ = (v.z/v.w);
-				if (fScreenZ>1.0 || fScreenZ<0.0) continue;
+				float fScreenZ = (v.z / v.w);
+				if (fScreenZ > 1.0f || fScreenZ < 0.0f)
+					continue;
 
-				float fScreenX = ((v.x/v.w)+1.0f)*(vp.Width)/2.0f;
-				float fScreenY = (1.0f-(v.y/v.w))*(vp.Height)/2.0f;
-				if (fScreenX >= pRect->left && fScreenX <= pRect->right &&
-					fScreenY >= pRect->top && fScreenY <= pRect->bottom)
+				float fScreenX = ((v.x / v.w) + 1.0f) * (vp.Width) / 2.0f;
+				float fScreenY = (1.0f - (v.y / v.w)) * (vp.Height) / 2.0f;
+				if (fScreenX >= pRect->left && fScreenX <= pRect->right
+					&& fScreenY >= pRect->top && fScreenY <= pRect->bottom)
 				{
 					m_SelVtxArray.Add(pVtx);			// 추가
 					pSelRiver = pRM;
 					SetSelRiver(pSelRiver);
 				}
 			}
-			if (pSelRiver) break;
+
+			if (pSelRiver != nullptr)
+				break;
 		}
 	}
-	int iSize = m_SelVtxArray.GetSize();
-	if ( iSize == 0)
+
+	int iSize = static_cast<int>(m_SelVtxArray.GetSize());
+	if (iSize == 0)
 	{
 		SetSelRiver(nullptr);
 		m_VtxPosDummy.SetSelVtx(nullptr);
@@ -554,12 +557,10 @@ void CRiverMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd)
 	else
 	{
 		m_VtxPosDummy.SetSelVtx(m_SelVtxArray.GetAt(0));
-		for (i=1; i<iSize; ++i)
-		{
+
+		for (int i = 1; i < iSize; i++)
 			m_VtxPosDummy.AddSelVtx(m_SelVtxArray.GetAt(i));
-		}
 	}
-	
 }
 
 void CRiverMng::ExtrudeRiverEdge()
@@ -598,13 +599,13 @@ void CRiverMng::DeleteSelectedVertex()									// 선택된 점들 지우기
 		return;
 	}
 	
-	int iSize = m_SelVtxArray.GetSize();
+	int iSize = static_cast<int>(m_SelVtxArray.GetSize());
 	if (iSize > 0)
 	{
 		// Delete line first selected vertex placed.
 		__VertexXyzT2* pVtx0 = m_pSelRiver->GetVertex(0);
 		__VertexXyzT2* pVtxSel = m_SelVtxArray.GetAt(0);
-		int iIndex = pVtxSel - pVtx0;
+		int iIndex = static_cast<int>(pVtxSel - pVtx0);
 		iVC = m_pSelRiver->DeleteVertex(iIndex);
 	}
 
@@ -622,67 +623,67 @@ void CRiverMng::ReCalcUV()
 
 void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
 {
-	int iRiverCount = m_RiverMeshes.size();
+	int iRiverCount = static_cast<int>(m_RiverMeshes.size());
 	DWORD dwNum;
 
-	it_RiverMesh it = m_RiverMeshes.begin();
+	auto it = m_RiverMeshes.begin();
 	WriteFile(hFile, &iRiverCount, sizeof(int), &dwNum, nullptr);
-	for (int i=0;i<iRiverCount;i++, it++)
+	for (int i = 0; i < iRiverCount; i++, it++)
 	{
-		CRiverMesh *pRM =  *it;
+		CRiverMesh* pRM = *it;
 		ASSERT(pRM);
 
 		int iVC = pRM->VertexCount();
-		__VertexXyzT2* pVtx0 = pRM->GetVertex(0), *pSrcVtx=nullptr;
+		__VertexXyzT2* pVtx0 = pRM->GetVertex(0), *pSrcVtx = nullptr;
 		ASSERT(pVtx0);
 		WriteFile(hFile, &iVC, sizeof(iVC), &dwNum, nullptr);				// 점 갯수
 
 		// XyxT2 -> XyzColorT2 Converting.
-		__VertexRiver	*pTemp = new __VertexRiver[iVC];
-		for (int k=0;k<iVC;k++)
+		__VertexRiver* pTemp = new __VertexRiver[iVC];
+		for (int k = 0; k < iVC; k++)
 		{
-			pSrcVtx = pVtx0+k;
-			if ( k%4==0 || k%4==3)
+			pSrcVtx = pVtx0 + k;
+			if (k % 4 == 0 || k % 4 == 3)
 				pTemp[k].Set(pSrcVtx->x, pSrcVtx->y, pSrcVtx->z, 0.0f, 1.0f, 0.0f, 0x30ffffff, pSrcVtx->tu, pSrcVtx->tv, pSrcVtx->tu2, pSrcVtx->tv2);
 			else
 				pTemp[k].Set(pSrcVtx->x, pSrcVtx->y, pSrcVtx->z, 0.0f, 1.0f, 0.0f, 0xffffffff, pSrcVtx->tu, pSrcVtx->tv, pSrcVtx->tu2, pSrcVtx->tv2);
 		}
-		
-		if (iVC>0) WriteFile(hFile, pTemp, iVC*sizeof(__VertexRiver), &dwNum, nullptr);	// vertex buffer
+
+		if (iVC > 0)
+			WriteFile(hFile, pTemp, iVC * sizeof(__VertexRiver), &dwNum, nullptr);	// vertex buffer
+
 		int iIC = pRM->IndexCount();
 		WriteFile(hFile, &iIC, sizeof(iIC), &dwNum, nullptr);				// IndexBuffer Count.
-		delete[] pTemp; pTemp = nullptr;
+		delete[] pTemp;
+		pTemp = nullptr;
 
 		CN3Texture* pRiverTex = pRM->TexGet();
 		int iLen = 0;
 
-		if(pRiverTex)
-		{			
+		if (pRiverTex != nullptr)
+		{
 			char szFileName[MAX_PATH], szFindName[50];
-			sprintf(szFileName,"%s",pRiverTex->FileName().c_str());
-			iLen = pRiverTex->FileName().size();
-			for(int i=iLen;i>0;--i)
+			sprintf(szFileName, "%s", pRiverTex->FileName().c_str());
+			iLen = static_cast<int>(pRiverTex->FileName().size());
+			for (int i = iLen; i > 0; --i)
 			{
-				if(szFileName[i] == '\\')
+				if (szFileName[i] == '\\')
 				{
-					sprintf(szFindName,"%s",&szFileName[i+1]);
+					sprintf(szFindName, "%s", &szFileName[i + 1]);
 					iLen -= i;
 					i = 0;
 				}
 			}
+
 			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
-			if (iLen>0)
-			{
+			if (iLen > 0)
 				WriteFile(hFile, szFindName, iLen, &dwNum, nullptr);			// texture file name
-			}
 		}
 		else
 		{
 			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
 		}
-
-
-	}	
+	}
 
 /*
 	// 모든 강 정보 저장 (*.grm) game river main
@@ -912,7 +913,7 @@ void CRiverMng::ReCalcSelectedVertex()
 	if (pVtxSel == nullptr)
 		return;
 
-	int nIndex = pVtxSel - pVtx0;
+	int nIndex = static_cast<int>(pVtxSel - pVtx0);
 	nIndex = (nIndex / 4) * 4;
 
 	pVtxSel = m_pSelRiver->GetVertex(nIndex);
@@ -935,11 +936,10 @@ void CRiverMng::ReCalcSelectedVertex()
 
 it_RiverMesh CRiverMng::GetDrawRiver()
 {
-	int iSize = m_RiverMeshes.size();
-	if(iSize==0) return m_RiverMeshes.end();
+	if (m_RiverMeshes.empty())
+		return m_RiverMeshes.end();
 
-	it_RiverMesh it = m_RiverMeshes.begin();
-	return it;
+	return m_RiverMeshes.begin();
 }
 
 void CRiverMng::GoRiver(int iRiverID)

@@ -165,7 +165,7 @@ void CNPCPathMgr::SaveToFile(const char* FileName)
 	DWORD dwRWC;
 	HANDLE hFile = CreateFile(szNPCPathFileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	
-	int NumPath = m_pPaths.size();
+	int NumPath = static_cast<int>(m_pPaths.size());
 	WriteFile(hFile, &NumPath, sizeof(int), &dwRWC, nullptr);
 
 	std::list<CNPCPath*>::iterator itPath;
@@ -224,7 +224,7 @@ void CNPCPathMgr::MakeServerDataFile(const char* FullFileName)
 		SetRect(&LimitRC, (int)pPath->m_LTActVertex.x, (int)pPath->m_LTActVertex.z,
 					(int)pPath->m_RBActVertex.x, (int)pPath->m_RBActVertex.z );
 
-		int DotCount = pPath->m_Path.size();
+		int DotCount = static_cast<int>(pPath->m_Path.size());
 		pPath->m_iZoneID = m_pRefMapMng->m_iZoneID;
 
 		fprintf(stream, "%04d", pPath->m_iZoneID);
@@ -372,7 +372,7 @@ BOOL CNPCPathMgr::MouseMsgFilter(LPMSG pMsg)
 
 	case WM_MOUSEMOVE:
 		{
-			DWORD nFlags = pMsg->wParam;
+			DWORD_PTR nFlags = pMsg->wParam;
 			POINT point = {short(LOWORD(pMsg->lParam)), short(HIWORD(pMsg->lParam))};
 
 			__Vector3 vec;

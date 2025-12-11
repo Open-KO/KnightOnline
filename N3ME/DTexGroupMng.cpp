@@ -67,20 +67,15 @@ void CDTexGroupMng::Init(CWnd* pWndParent)
 //
 void CDTexGroupMng::Release()
 {
-	if(m_pGroupView)
+	if (m_pGroupView != nullptr)
 	{
 		m_pGroupView->DestroyWindow();
 		delete m_pGroupView;
 		m_pGroupView = nullptr;
 	}
 
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CDTexGroup* pDTG = *it;
+	for (CDTexGroup* pDTG : m_Groups)
 		delete pDTG;
-	}
 	m_Groups.clear();
 }
 
@@ -105,12 +100,10 @@ void CDTexGroupMng::SetGroup(const char* pName)
 {
 	//^^
 	//셋팅하려는 그룹이 있으면 걍 리턴해버려..
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CDTexGroup* pDTG : m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
-		if(strcmp(pDTG->m_Name, pName)==0) return;
+		if (strcmp(pDTG->m_Name, pName) == 0)
+			return;
 	}
 	//
 	//^^
@@ -121,11 +114,10 @@ void CDTexGroupMng::SetGroup(const char* pName)
 	wsprintf(pGroup->m_Name, pName);
 
 	//새로운 idx를 지정하기 위해서 일단 정렬을 하자..
-	it = m_Groups.begin();
-	iSize = m_Groups.size();
+	auto it = m_Groups.begin();
+	int iSize = static_cast<int>(m_Groups.size());
 	int* ArrayIdx = new int[iSize];
-	int i;
-	for(i = 0; i < iSize; i++, it++)
+	for (int i = 0; i < iSize; i++, it++)
 	{
 		CDTexGroup* pDTG = *it;
 		ArrayIdx[i] = pDTG->m_ID;
@@ -134,9 +126,10 @@ void CDTexGroupMng::SetGroup(const char* pName)
 	qsort( ArrayIdx, iSize, sizeof(int), this->CompareIdx );
 
 	int idx = 0;
-	for(i=0; i < iSize; i++)
+	for (int i = 0; i < iSize; i++)
 	{
-		if(idx == ArrayIdx[i]) idx++;
+		if (idx == ArrayIdx[i])
+			idx++;
 	}
 	delete ArrayIdx;
 
@@ -185,21 +178,19 @@ int CDTexGroupMng::CompareIdx( const void *arg1, const void *arg2 )
 //
 void CDTexGroupMng::DelGroup(int ID)
 {
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (auto it = m_Groups.begin(); it != m_Groups.end(); ++it)
 	{
 		CDTexGroup* pDTG = *it;
-		if(pDTG)
+		if (pDTG == nullptr)
+			continue;
+
+		if (pDTG->m_ID == ID)
 		{
-			if(pDTG->m_ID==ID)
-			{
-				pDTG->ClearDTex();
-				delete pDTG;
-				it = m_Groups.erase(it);
-				m_pGroupView->ResetAll();
-				return;
-			}
+			pDTG->ClearDTex();
+			delete pDTG;
+			it = m_Groups.erase(it);
+			m_pGroupView->ResetAll();
+			return;
 		}
 	}
 }
@@ -210,12 +201,9 @@ void CDTexGroupMng::DelGroup(int ID)
 //
 void CDTexGroupMng::SetTile(int ID, int attr, __DTexTileAttr tile)
 {
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CDTexGroup* pDTG : m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
-		if(pDTG && pDTG->m_ID == ID)
+		if (pDTG != nullptr && pDTG->m_ID == ID)
 		{
 			pDTG->SetAttr(attr, tile);
 			m_pGroupView->ResetAll();
@@ -224,18 +212,14 @@ void CDTexGroupMng::SetTile(int ID, int attr, __DTexTileAttr tile)
 	}
 }
 
-
 //
 //
 //
 void CDTexGroupMng::DelTile(int ID, int attr, __DTexTileAttr tile)
 {
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CDTexGroup* pDTG : m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
-		if(pDTG && pDTG->m_ID == ID)
+		if (pDTG != nullptr && pDTG->m_ID == ID)
 		{
 			pDTG->DelAttr(attr, tile);
 			m_pGroupView->ResetAll();
@@ -244,39 +228,32 @@ void CDTexGroupMng::DelTile(int ID, int attr, __DTexTileAttr tile)
 	}
 }
 
-
 //
 //
 //
 void CDTexGroupMng::DelTileByDTexID(int DTexID)
 {
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
-	{
-		CDTexGroup* pDTG = *it;
+	for (CDTexGroup* pDTG : m_Groups)
 		pDTG->DelAttrByDTexID(DTexID);
-	}
 	m_pGroupView->ResetAll();
 }
-
 
 //
 //
 //
 int CDTexGroupMng::GetID2Index(int id)
 {
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	auto it = m_Groups.begin();
+	auto itEnd = m_Groups.end();
+	int i = 0;
+	for (; it != itEnd; ++it, ++i)
 	{
 		CDTexGroup* pDTG = *it;
-		if(pDTG && pDTG->m_ID==id)
+		if (pDTG != nullptr && pDTG->m_ID == id)
 			return i;
 	}
 	return 0;
 }
-
 
 //
 //
@@ -287,12 +264,12 @@ int CDTexGroupMng::GetIndex2ID(int idx)
 		|| idx >= static_cast<int>(m_Groups.size()))
 		return 0;
 
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = static_cast<int>(m_Groups.size());
-	for(int i = 0; i < idx; i++, it++);
+	auto it = m_Groups.begin();
+	std::advance(it, idx);
 
 	CDTexGroup* pDTG = *it;
-	if(pDTG) return pDTG->m_ID;
+	if (pDTG != nullptr)
+		return pDTG->m_ID;
 	
 	return 0;
 }
@@ -306,35 +283,30 @@ __DTexTileAttr CDTexGroupMng::GetTileAttr(int groupID, int attr)
 	__DTexTileAttr DTileAttr;
 	DTileAttr.TexID = -1;
 
-	if(groupID==0)
-	{
+	if (groupID == 0)
 		return DTileAttr;
-	}
 
 	CDTexGroup* pGroup = nullptr;
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CDTexGroup* pDTG : m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
-		if(pDTG && pDTG->m_ID == groupID) pGroup = pDTG;
+		if (pDTG != nullptr && pDTG->m_ID == groupID)
+			pGroup = pDTG;
 	}
 
-	if(pGroup)
+	if (pGroup != nullptr)
 	{
-		iSize = pGroup->m_Attributes[attr].size();
-		if(iSize != 0) 
+		size_t attrCount = pGroup->m_Attributes[attr].size();
+		if (attrCount != 0)
 		{
-			int AttrIdx = rand()%iSize;
+			size_t AttrIdx = static_cast<size_t>(rand()) % attrCount;
 			it_DTexTileAttr it = pGroup->m_Attributes[attr].begin();
-			for(int i = 0; i < AttrIdx; i++, it++);
+			std::advance(it, AttrIdx);
 			DTileAttr = *(*it);
 		}
 	}
 
 	return DTileAttr;
 }
-
 
 //
 //
@@ -345,37 +317,30 @@ __DTexTileAttr CDTexGroupMng::GetTileAttrManuel(int groupID, int attr, int AttrI
 	DTileAttr.TexID = -1;
 
 	CDTexGroup* pGroup = nullptr;
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CDTexGroup* pDTG : m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
-		if(pDTG && pDTG->m_ID == groupID) pGroup =  pDTG;
+		if (pDTG != nullptr && pDTG->m_ID == groupID)
+			pGroup = pDTG;
 	}
 
-	iSize = pGroup->m_Attributes[attr].size();
-	if(AttrIdx >= 0 && AttrIdx < iSize) 
+	int attrCount = static_cast<int>(pGroup->m_Attributes[attr].size());
+	if (AttrIdx >= 0 && AttrIdx < attrCount)
 	{
-		int AttrIdx = rand()%iSize;
-		it_DTexTileAttr it = pGroup->m_Attributes[attr].begin();
-		for(int i = 0; i < AttrIdx; i++, it++);
+		auto it = pGroup->m_Attributes[attr].begin();
+		std::advance(it, AttrIdx);
 		DTileAttr = *(*it);
 	}
 	return DTileAttr;
 }
-
 
 //
 //
 //
 char* CDTexGroupMng::GetGroupName(int id)
 {
-	it_DTexGroup it = m_Groups.begin();
-	int iSize = m_Groups.size();
-	for(int i = 0; i < iSize; i++, it++)
+	for (CDTexGroup* pDTG : m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
-		if(pDTG && pDTG->m_ID==id)
+		if (pDTG != nullptr && pDTG->m_ID == id)
 			return pDTG->m_Name;
 	}
 
@@ -438,33 +403,32 @@ bool CDTexGroupMng::SaveToFile(CString RealFileName)
 	sprintf(szDTexInfoFileName,"dtex\\%s.tgx", (LPCTSTR)RealFileName);
 
 	FILE* stream = fopen(szDTexInfoFileName, "w");
+	if (stream == nullptr)
+		return false;
 
-	if(stream)
+	int iCount = static_cast<int>(m_Groups.size()) - 1;
+	fprintf(stream, "NumGroup = %d\n", iCount);
+
+	CProgressBar ProgressBar;
+	ProgressBar.Create("Save TileGroup Info..", 50, iCount);
+
+	int id;
+	char szDTexGroupName[40];
+	auto it = m_Groups.begin();
+	for (int i = 0; i <= iCount; i++, it++)
 	{
-		int iCount = m_Groups.size()-1;
-		fprintf(stream, "NumGroup = %d\n", iCount);
+		ProgressBar.StepIt();
 
-		CProgressBar ProgressBar;
-		ProgressBar.Create("Save TileGroup Info..", 50,  iCount);
-		
-		int id;
-		char szDTexGroupName[40];
-		it_DTexGroup it = m_Groups.begin();
-		CDTexGroup* pDTG = *it;
-		for(int i=0; i <= iCount; i++, it++)
-		{
-			ProgressBar.StepIt();
+		CDTexGroup* pGroup = *it;
+		sprintf(szDTexGroupName, pGroup->m_Name);
+		id = pGroup->m_ID;
 
-			CDTexGroup* pGroup = *it;
-			sprintf(szDTexGroupName, pGroup->m_Name);
-			id = pGroup->m_ID;
+		if (id == 0)
+			continue;
 
-			if(id==0) continue;
-
-			fprintf(stream, "%s %d\n", szDTexGroupName, id);
-		}
-		fclose(stream);
-		return true;
+		fprintf(stream, "%s %d\n", szDTexGroupName, id);
 	}
-	return false;
+
+	fclose(stream);
+	return true;
 }

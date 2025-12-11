@@ -155,9 +155,10 @@ void CMainFrame::OnFileConvert()
 	dlg.m_nWidth = pDoc->m_pTex->Width();
 	dlg.m_nHeight = pDoc->m_pTex->Height();
 	dlg.m_bMipMap = pDoc->m_pTex->MipMapCount() > 1 ? TRUE : FALSE;
-	int nOK = dlg.DoModal();
 
-	if(IDOK != nOK) return;
+	INT_PTR nOK = dlg.DoModal();
+	if (IDOK != nOK)
+		return;
 
 	pDoc->m_pTex->Convert(dlg.m_Fmt, dlg.m_nWidth, dlg.m_nHeight, dlg.m_bMipMap);
 	pDoc->SetTitle(""); // 타이틀 바꾸기..
@@ -561,24 +562,23 @@ void CMainFrame::OnToolSaveRepeat()
 	dlg.m_ofn.nMaxFile = 102400;
 	dlg.m_ofn.lpstrFile = szBuff;
 
-	if(dlg.DoModal() == IDCANCEL) return;
+	if (dlg.DoModal() == IDCANCEL)
+		return;
 
 	CN3Texture Tex;
 	POSITION pos = dlg.GetStartPosition();
 	CStringArray FileNames;
-	while(pos != nullptr)
-	{
+	while (pos != nullptr)
 		FileNames.Add(dlg.GetNextPathName(pos));
-	}
 
-	int nFNC = FileNames.GetSize();
+	int nFNC = static_cast<int>(FileNames.GetSize());
 
 	// progress bar
 	CProgressBar ProgressBar;
 	ProgressBar.Create("ReSave DXT Files..", 50, nFNC);
 	ProgressBar.SetStep(1);
 
-	for(int i = 0; i < nFNC; i++)
+	for (int i = 0; i < nFNC; i++)
 	{
 		CT2A FileNameA(FileNames[i]);
 		std::string szFN = FileNameA.m_psz;

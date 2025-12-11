@@ -90,30 +90,25 @@ BOOL CDlgSetDTex::OnInitDialog()
 
 	m_TileSetName = pFrm->m_DTexInfoFileName;
 
-	int i;
-	int iSize = pDTexMng->m_pDTex.size();
-	it_DTex DTexIt = pDTexMng->m_pDTex.begin();
-	CDTex* pDTex;
-	for(i = 0; i<iSize; i++)
+	int i = 0;
+	for (CDTex* pDTex : pDTexMng->m_pDTex)
 	{
-		pDTex = (*DTexIt);
-		if(pDTex)
-		{
-			m_FileList.InsertString(i, pDTex->m_pTex->FileName().c_str());
-			m_FileList.SetItemDataPtr(i, pDTex);
-		}
-		DTexIt++;
+		if (pDTex == nullptr)
+			continue;
+
+		m_FileList.InsertString(i, pDTex->m_pTex->FileName().c_str());
+		m_FileList.SetItemDataPtr(i, pDTex);
+		++i;
 	}
 	m_FileList.SetCurSel(0);
 
 	CDTexGroupMng* pGroup = pFrm->GetDTexGroupMng();
 
-	it_DTexGroup it = pGroup->m_Groups.begin();
-	iSize = pGroup->m_Groups.size();
-	for(i = 0; i < iSize; i++, it++)
+	i = 0;
+	for (CDTexGroup* pDTG : pGroup->m_Groups)
 	{
-		CDTexGroup* pDTG = *it;
 		m_GroupList.InsertString(i, pDTG->m_Name);
+		++i;
 	}
 
 	CWnd* pView = GetDlgItem(IDC_TEXTUREVIEW);
@@ -137,10 +132,10 @@ BOOL CDlgSetDTex::OnInitDialog()
 	__VertexTransformedColor* pVerticesC = nullptr;
 	m_pGridVB->Lock(0,0, (void**)&pVerticesC, 0);
 
-	int GridInterval = (int)m_fTexSurfaceSize / NUM_DTEXTILE;
-	for(i=1;i<NUM_DTEXTILE;i++)
+	int GridInterval = (int) m_fTexSurfaceSize / NUM_DTEXTILE;
+	for (i = 1; i < NUM_DTEXTILE; i++)
 	{
-		int index = (i-1)*4;
+		int index = (i - 1) * 4;
 		pVerticesC[index].Set((float)((i*GridInterval)-1),	0.0f,							0.1f, 0.5f, 0xff800080);
 		pVerticesC[index+1].Set((float)((i*GridInterval)-1),511.0f,							0.1f, 0.5f, 0xff800080);
 		pVerticesC[index+2].Set(0.0f,						(float)((i*GridInterval)-1),	0.1f, 0.5f, 0xff800080);
@@ -668,29 +663,25 @@ void CDlgSetDTex::OnBtnLoadTileset()
 		//reset dialog box...
 		m_FileList.ResetContent();
 		m_GroupList.ResetContent();
-		int i;
-		int iSize = pDTexMng->m_pDTex.size();
-		it_DTex DTexIt = pDTexMng->m_pDTex.begin();
-		CDTex* pDTex;
-		for(i = 0; i<iSize; i++)
+		int i = 0;
+		for (CDTex* pDTex : pDTexMng->m_pDTex)
 		{
-			pDTex = (*DTexIt);
-			if(pDTex)
-			{
-				m_FileList.InsertString(i, pDTex->m_pTex->FileName().c_str());
-				m_FileList.SetItemDataPtr(i, pDTex);
-			}
-			DTexIt++;
+			if (pDTex == nullptr)
+				continue;
+
+			m_FileList.InsertString(i, pDTex->m_pTex->FileName().c_str());
+			m_FileList.SetItemDataPtr(i, pDTex);
+			++i;
 		}
 		m_FileList.SetCurSel(0);
 
-		it_DTexGroup it = pDTexGroupMng->m_Groups.begin();
-		iSize = pDTexGroupMng->m_Groups.size();
-		for(i = 0; i < iSize; i++, it++)
+		i = 0;
+		for (CDTexGroup* pDTG : pDTexGroupMng->m_Groups)
 		{
-			CDTexGroup* pDTG = *it;
 			m_GroupList.InsertString(i, pDTG->m_Name);
+			++i;
 		}
+
 		Invalidate(FALSE);
 	}
 }

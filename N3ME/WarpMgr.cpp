@@ -97,34 +97,22 @@ bool CWarpMgr::Save(HANDLE hFile)
 	DWORD dwRWC;
 	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
 
-	int cnt = m_ListWarpInfo.size();
+	int cnt = static_cast<int>(m_ListWarpInfo.size());
 	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
 
-	std::list<WARPINFO*>::iterator it, ite;
-
-	ite = m_ListWarpInfo.end();
-	for(it=m_ListWarpInfo.begin(); it!=ite; it++)
-	{
-		WARPINFO* pWI = (*it);
+	for (WARPINFO* pWI : m_ListWarpInfo)
 		WriteFile(hFile, pWI, sizeof(WARPINFO), &dwRWC, nullptr);
-	}
 	return true;
 }
 
 void CWarpMgr::SaveServerData(HANDLE hFile)
 {
 	DWORD dwRWC;
-	int cnt = m_ListWarpInfo.size();
+	int cnt = static_cast<int>(m_ListWarpInfo.size());
 	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
 
-	std::list<WARPINFO*>::iterator it, ite;
-
-	ite = m_ListWarpInfo.end();
-	for(it=m_ListWarpInfo.begin(); it!=ite; it++)
-	{
-		WARPINFO* pWI = (*it);
+	for (WARPINFO* pWI : m_ListWarpInfo)
 		WriteFile(hFile, pWI, sizeof(WARPINFO), &dwRWC, nullptr);
-	}
 }
 
 WARPINFO* CWarpMgr::GetInfoByName(char* pName)
