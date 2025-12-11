@@ -31,8 +31,8 @@ CN3SPart::CN3SPart()
 
 CN3SPart::~CN3SPart()
 {
-	int iTC = m_TexRefs.size();
-	for(int i = 0; i < iTC; i++) s_MngTex.Delete(&m_TexRefs[i]);
+	for (size_t i = 0; i < m_TexRefs.size(); i++)
+		s_MngTex.Delete(&m_TexRefs[i]);
 }
 
 void CN3SPart::Release()
@@ -50,8 +50,9 @@ void CN3SPart::Release()
 	m_fWindFactorCur = 0;			// 현재 바람 부는 값.. 이값으로 회전을 시킨다..
 	m_fWindFactorToReach = 0;		// 바람 부는 값..
 
-	int iTC = m_TexRefs.size();
-	for(int i = 0; i < iTC; i++) s_MngTex.Delete(&m_TexRefs[i]);
+	for (size_t i = 0; i < m_TexRefs.size(); i++)
+		s_MngTex.Delete(&m_TexRefs[i]);
+
 	m_TexRefs.clear();
 	m_PMInst.Release();
 }
@@ -63,10 +64,11 @@ void CN3SPart::MeshSet(const std::string& szFN)
 
 void CN3SPart::TexAlloc(int nCount)
 {
-	if(nCount <= 0) return;
+	if (nCount <= 0)
+		return;
 
-	int iTC = m_TexRefs.size();
-	for(int i = 0; i < iTC; i++) s_MngTex.Delete(&m_TexRefs[i]);
+	for (size_t i = 0; i < m_TexRefs.size(); i++)
+		s_MngTex.Delete(&m_TexRefs[i]);
 	m_TexRefs.clear();
 
 	m_TexRefs.assign(nCount, nullptr);
@@ -96,11 +98,12 @@ void CN3SPart::Tick(const __Matrix44& mtxParent, const __Quaternion& qRot, float
 //	fLOD *= 256.0f / s_CameraData.fFP;
 	m_PMInst.SetLOD(fLOD);
 	
-	int iTC = m_TexRefs.size();
-	if(iTC > 1) // 텍스처 에니메이션
+	int iTC = static_cast<int>(m_TexRefs.size());
+	if (iTC > 1) // 텍스처 에니메이션
 	{
 		m_fTexIndex += CN3Base::s_fSecPerFrm * m_fTexFPS;
-		if(m_fTexIndex >= iTC) m_fTexIndex -= (iTC * m_fTexIndex) / iTC; // 정수로 나누면 소숫점만 남기게 된다??(하여튼 비슷해~)
+		if (m_fTexIndex >= iTC)
+			m_fTexIndex -= (iTC * m_fTexIndex) / iTC; // 정수로 나누면 소숫점만 남기게 된다??(하여튼 비슷해~)
 	}
 
 	if(m_Mtl.nRenderFlags & RF_BOARD_Y) // 카메라를 바라봐야하는 거면..
@@ -177,11 +180,11 @@ void CN3SPart::Render()
 #endif
 
 	LPDIRECT3DTEXTURE9 lpTex = nullptr;
-	int iTC = m_TexRefs.size();
-	if(iTC > 0)
+	int iTC = static_cast<int>(m_TexRefs.size());
+	if (iTC > 0)
 	{
-		int iTexIndex = (int)m_fTexIndex;
-		if(iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
+		int iTexIndex = (int) m_fTexIndex;
+		if (iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
 	}
 
 	if(m_Mtl.nRenderFlags & RF_ALPHABLENDING) // Alpha 사용
@@ -425,11 +428,11 @@ void CN3SPart::PartialRender(int iCount, uint16_t* pIndices)
 #endif
 
 	LPDIRECT3DTEXTURE9 lpTex = nullptr;
-	int iTC = m_TexRefs.size();
-	if(iTC > 0)
+	int iTC = static_cast<int>(m_TexRefs.size());
+	if (iTC > 0)
 	{
-		int iTexIndex = (int)m_fTexIndex;
-		if(iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
+		int iTexIndex = (int) m_fTexIndex;
+		if (iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
 	}
 
 	if(m_Mtl.nRenderFlags & RF_ALPHABLENDING) // Alpha 사용
@@ -518,8 +521,8 @@ CN3Shape::CN3Shape()
 
 CN3Shape::~CN3Shape()
 {
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++) delete m_Parts[i];
+	for (CN3SPart* pPart : m_Parts)
+		delete pPart;
 	m_Parts.clear();
 }
 
@@ -528,8 +531,8 @@ void CN3Shape::Release()
 	m_bDontRender = false;
 	m_bVisible = true;
 	
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++) delete m_Parts[i];
+	for (CN3SPart* pPart : m_Parts)
+		delete pPart;
 	m_Parts.clear();
 	
 	m_iBelong = 0;
@@ -573,13 +576,10 @@ void CN3Shape::Tick(float fFrm)
 
 	CN3TransformCollision::Tick(fFrm);
 
-	CN3SPart* pPD = nullptr;
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		if(nullptr == m_Parts[i]) continue;
-
-		m_Parts[i]->Tick(m_Matrix, m_qRot, fScale);
+		if (pPart != nullptr)
+			pPart->Tick(m_Matrix, m_qRot, fScale);
 	}
 }
 
@@ -587,19 +587,20 @@ void CN3Shape::Tick(float fFrm)
 // [0][1]:카메라 위치와 벡터, [2][3]:카메라 범위 위치와 방향 벡터, [4][5] ~ [10][11]:상하좌우평면벡터
 void CN3Shape::Render()
 {
-	if(false == m_bVisible) return;
-	if(true == m_bDontRender) return;
+	if (!m_bVisible)
+		return;
+
+	if (m_bDontRender)
+		return;
 
 #ifdef _DEBUG
 	CN3Base::s_RenderInfo.nShape++;
 #endif
 
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		if(nullptr == m_Parts[i]) continue;
-
-		m_Parts[i]->Render();
+		if (pPart != nullptr)
+			pPart->Render();
 	}
 }
 
@@ -624,15 +625,16 @@ bool CN3Shape::Load(HANDLE hFile)
 
 	DWORD dwRWC = 0;
 	
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++) delete m_Parts[i];
+	for (CN3SPart* pPart : m_Parts)
+		delete pPart;
 	m_Parts.clear();
 
+	int iPC = 0;
 	ReadFile(hFile, &iPC, 4, &dwRWC, nullptr); // Part Count
-	if(iPC > 0)
+	if (iPC > 0)
 	{
 		m_Parts.assign(iPC, nullptr);
-		for(int i = 0; i < iPC; i++)
+		for (int i = 0; i < iPC; i++)
 		{
 			m_Parts[i] = new CN3SPart();
 			m_Parts[i]->Load(hFile);
@@ -739,11 +741,8 @@ void CN3Shape::ReCalcMatrix()
 void CN3Shape::ReCalcPartMatrix()
 {
 	// 각 파트의 매트릭스를 다시 계산해 준다..
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
-	{
-		m_Parts[i]->ReCalcMatrix(m_Matrix);
-	}
+	for (CN3SPart* pPart : m_Parts)
+		pPart->ReCalcMatrix(m_Matrix);
 }
 
 void CN3Shape::FindMinMax()
@@ -752,8 +751,8 @@ void CN3Shape::FindMinMax()
 	m_vMax.Zero();
 	m_fRadius = 0;
 
-	int iPC = m_Parts.size();
-	if(iPC <= 0) return;
+	if (m_Parts.empty())
+		return;
 
 	m_vMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
 	m_vMax.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -763,17 +762,17 @@ void CN3Shape::FindMinMax()
 	// 가장 큰 지점찾기..
 	static __Matrix44 mtxWI;
 	D3DXMatrixInverse(&mtxWI, nullptr, &m_Matrix); // World Matrix Inverse
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		vMinTmp = m_Parts[i]->Min() * mtxWI; // 월드 상의 최소값을 로컬 좌표로 바꾸어준다..
-		vMaxTmp = m_Parts[i]->Max() * mtxWI; // 월드 상의 최대값을 로컬 좌표로 바꾸어준다..
+		vMinTmp = pPart->Min() * mtxWI; // 월드 상의 최소값을 로컬 좌표로 바꾸어준다..
+		vMaxTmp = pPart->Max() * mtxWI; // 월드 상의 최대값을 로컬 좌표로 바꾸어준다..
 
-		if(vMinTmp.x < m_vMin.x) m_vMin.x = vMinTmp.x;
-		if(vMinTmp.y < m_vMin.y) m_vMin.y = vMinTmp.y;
-		if(vMinTmp.z < m_vMin.z) m_vMin.z = vMinTmp.z;
-		if(vMaxTmp.x > m_vMax.x) m_vMax.x = vMaxTmp.x;
-		if(vMaxTmp.y > m_vMax.y) m_vMax.y = vMaxTmp.y;
-		if(vMaxTmp.z > m_vMax.z) m_vMax.z = vMaxTmp.z;
+		if (vMinTmp.x < m_vMin.x) m_vMin.x = vMinTmp.x;
+		if (vMinTmp.y < m_vMin.y) m_vMin.y = vMinTmp.y;
+		if (vMinTmp.z < m_vMin.z) m_vMin.z = vMinTmp.z;
+		if (vMaxTmp.x > m_vMax.x) m_vMax.x = vMaxTmp.x;
+		if (vMaxTmp.y > m_vMax.y) m_vMax.y = vMaxTmp.y;
+		if (vMaxTmp.z > m_vMax.z) m_vMax.z = vMaxTmp.z;
 	}
 
 	// 최대 최소값을 갖고 반지름 계산한다..
@@ -802,52 +801,64 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, int ixScreen, int iy
 
 int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, const __Vector3& vPos, const __Vector3& vDir, __Vector3* pVCol, __Vector3* pVNormal)
 {
-	if(false == bIgnoreBoxCheck && false == ::_CheckCollisionByBox(vPos, vDir, m_vMin * m_Matrix, m_vMax * m_Matrix)) return -1; // 박스 체크 먼저한다..
+	// 박스 체크 먼저한다..
+	if (!bIgnoreBoxCheck
+		&& !_CheckCollisionByBox(vPos, vDir, m_vMin * m_Matrix, m_vMax * m_Matrix))
+		return -1;
 
 	__Vector3 vPos2 = vPos, vDir2 = vDir;
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	int partCount = static_cast<int>(m_Parts.size());
+	for (int i = 0; i < partCount; i++)
 	{
-		CN3PMeshInstance* pPMI = m_Parts[i]->MeshInstance();
-		if(nullptr == pPMI) continue;
+		CN3SPart* pPart = m_Parts[i];
+
+		CN3PMeshInstance* pPMI = pPart->MeshInstance();
+		if (pPMI == nullptr)
+			continue;
 
 		__VertexT1* pVs = pPMI->GetVertices();
 		uint16_t* pwIs = pPMI->GetIndices();
 		int nIndexCount = pPMI->GetNumIndices();
 
 		int nFC = nIndexCount / 3; // Face Count
-		if(nFC > 64 && false == ::_CheckCollisionByBox(vPos, vDir, m_Parts[i]->Min(), m_Parts[i]->Max())) continue;  // Face 수가 24 개보다 많은 경우 일단 박스체크를 한다..
-		
+
+		// Face 수가 24 개보다 많은 경우 일단 박스체크를 한다..
+		if (nFC > 64 && !::_CheckCollisionByBox(vPos, vDir, pPart->Min(), pPart->Max()))
+			continue; 
+
 		static __Matrix44 mtxWI;
-		D3DXMatrixInverse(&mtxWI, nullptr, &(m_Parts[i]->m_Matrix)); // World Matrix Inverse
+		D3DXMatrixInverse(&mtxWI, nullptr, &pPart->m_Matrix); // World Matrix Inverse
 
 		vPos2 = vPos * mtxWI;
-		mtxWI.PosSet(0,0,0);
+		mtxWI.PosSet(0, 0, 0);
 		vDir2 = vDir * mtxWI; // 역행렬로 회전..
 
 		int nCI0, nCI1, nCI2;
 		__Vector3 v0, v1, v2;
-		for(int j = 0; j < nFC; j++) // 각각의 Face 마다 충돌체크..
+		for (int j = 0; j < nFC; j++) // 각각의 Face 마다 충돌체크..
 		{
-			nCI0 = pwIs[j*3+0];
-			nCI1 = pwIs[j*3+1];
-			nCI2 = pwIs[j*3+2];
+			nCI0 = pwIs[j * 3 + 0];
+			nCI1 = pwIs[j * 3 + 1];
+			nCI2 = pwIs[j * 3 + 2];
 
-			if(false == ::_IntersectTriangle(vPos2, vDir2, pVs[nCI0], pVs[nCI1], pVs[nCI2])) continue;
+			if (!_IntersectTriangle(vPos2, vDir2, pVs[nCI0], pVs[nCI1], pVs[nCI2]))
+				continue;
 
-			
 			float fT, fU, fV;
 			::_IntersectTriangle(vPos2, vDir2, pVs[nCI0], pVs[nCI1], pVs[nCI2], fT, fU, fV, pVCol);
-			if(pVCol) (*pVCol) *= m_Parts[i]->m_Matrix; 
-			if(pVNormal)
-			{
-				(*pVNormal).Cross(pVs[nCI1] - pVs[nCI0], pVs[nCI2] - pVs[nCI1]);
-				(*pVNormal).Normalize();
+			if (pVCol != nullptr)
+				(*pVCol) *= pPart->m_Matrix;
 
-				D3DXMatrixInverse(&mtxWI, nullptr, &(m_Parts[i]->m_Matrix)); // World Matrix Inverse
-				mtxWI.PosSet(0,0,0); // 역행렬로 회전..
-				(*pVNormal) *= mtxWI; // 역행렬로 회전..
+			if (pVNormal != nullptr)
+			{
+				pVNormal->Cross(pVs[nCI1] - pVs[nCI0], pVs[nCI2] - pVs[nCI1]);
+				pVNormal->Normalize();
+
+				D3DXMatrixInverse(&mtxWI, nullptr, &pPart->m_Matrix); // World Matrix Inverse
+				mtxWI.PosSet(0, 0, 0); // 역행렬로 회전..
+				*pVNormal *= mtxWI; // 역행렬로 회전..
 			}
+
 			return i;
 		}
 	}
@@ -857,18 +868,19 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, const __Vector3& vPo
 
 bool CN3Shape::MakeCollisionMeshByParts()  // 충돌 메시를 박스로 만든다...
 {
-	int iPC = m_Parts.size();
 	int iVC = 0, iIC = 0;
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		CN3PMesh* pPMesh = m_Parts[i]->Mesh();
-		if(nullptr == pPMesh) continue;
+		CN3PMesh* pPMesh = pPart->Mesh();
+		if (pPMesh == nullptr)
+			continue;
 
 		iVC += 8;
 		iIC += 36;
 	}
 
-	if(iVC <= 0 || iIC <= 0) return false;
+	if (iVC <= 0 || iIC <= 0)
+		return false;
 
 	CN3VMesh* pVMesh = new CN3VMesh();
 	pVMesh->CreateVertices(iVC);
@@ -882,27 +894,33 @@ bool CN3Shape::MakeCollisionMeshByParts()  // 충돌 메시를 박스로 만든�
 	CN3VMesh VMTmp;
 
 	iVC = 0; iIC = 0;
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		CN3PMesh* pPMesh = m_Parts[i]->Mesh();
-		if(nullptr == pPMesh) continue;
+		CN3PMesh* pPMesh = pPart->Mesh();
+		if (pPMesh == nullptr)
+			continue;
 
 		VMTmp.CreateCube(pPMesh->Min(), pPMesh->Max());
 
 		__Vector3* pVSrc = VMTmp.Vertices();
 		uint16_t* pwISrc = VMTmp.Indices();
 
-		m_Parts[i]->Tick(m_Matrix, m_qRot, 1.0f);
-		__Matrix44 mtxPart = m_Parts[i]->m_Matrix;
+		pPart->Tick(m_Matrix, m_qRot, 1.0f);
+
+		__Matrix44 mtxPart = pPart->m_Matrix;
 		mtxPart *= mtxI;
-		for(int j = 0; j < 8; j++) pVDest[iVC+j] = pVSrc[j] * mtxPart;
-		for(int j = 0; j < 36; j++) pwIDest[iIC+j] = pwISrc[j] + iVC;
+
+		for (int j = 0; j < 8; j++)
+			pVDest[iVC + j] = pVSrc[j] * mtxPart;
+
+		for (int j = 0; j < 36; j++)
+			pwIDest[iIC + j] = pwISrc[j] + iVC;
 
 		iVC += 8;
 		iIC += 36;
 	}
 
-	if(iVC <= 0 || iIC <= 0)
+	if (iVC <= 0 || iIC <= 0)
 	{
 		delete pVMesh;
 		return false;
@@ -923,14 +941,14 @@ bool CN3Shape::MakeCollisionMeshByParts()  // 충돌 메시를 박스로 만든�
 
 bool CN3Shape::MakeCollisionMeshByPartsDetail()  // 현재 모습 그대로... 충돌 메시를 만든다...
 {
-	int iPC = m_Parts.size();
 	int iMaxNumVertices = 0, iMaxNumIndices = 0;
 	int iVC = 0, iIC = 0;
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		CN3PMesh* pPMesh = m_Parts[i]->Mesh();
-		CN3PMeshInstance* pPMI = m_Parts[i]->MeshInstance();
-		if(nullptr == pPMesh || nullptr == pPMI) continue;
+		CN3PMesh* pPMesh = pPart->Mesh();
+		CN3PMeshInstance* pPMI = pPart->MeshInstance();
+		if (pPMesh == nullptr || pPMI == nullptr)
+			continue;
 
 		iMaxNumVertices = pPMesh->GetMaxNumVertices();
 		iMaxNumIndices = pPMesh->GetMaxNumIndices();
@@ -939,7 +957,8 @@ bool CN3Shape::MakeCollisionMeshByPartsDetail()  // 현재 모습 그대로... �
 		iIC += iMaxNumIndices;
 	}
 
-	if(iVC <= 0 || iIC <= 0) return false;
+	if (iVC <= 0 || iIC <= 0)
+		return false;
 
 	CN3VMesh* pVMesh = new CN3VMesh();
 	pVMesh->CreateVertices(iVC);
@@ -950,35 +969,43 @@ bool CN3Shape::MakeCollisionMeshByPartsDetail()  // 현재 모습 그대로... �
 
 	__VertexT1* pVSrc = nullptr;
 	uint16_t* pwISrc = nullptr;
-	
+
 	iVC = 0; iIC = 0;
 	__Matrix44 mtxI = m_Matrix;
 	D3DXMatrixInverse(&mtxI, nullptr, &m_Matrix);
 
-	for(int i = 0; i < iPC; i++)
+	for (CN3SPart* pPart : m_Parts)
 	{
-		CN3PMesh* pPMesh = m_Parts[i]->Mesh();
-		CN3PMeshInstance* pPMI = m_Parts[i]->MeshInstance();
-		if(nullptr == pPMesh || nullptr == pPMI) continue;
+		CN3PMesh* pPMesh = pPart->Mesh();
+		CN3PMeshInstance* pPMI = pPart->MeshInstance();
+		if (pPMesh == nullptr || pPMI == nullptr)
+			continue;
 
 		iMaxNumVertices = pPMesh->GetMaxNumVertices();
 		iMaxNumIndices = pPMesh->GetMaxNumIndices();
 		pPMI->SetLODByNumVertices(iMaxNumVertices);
+
 		pVSrc = pPMesh->GetVertices();
 		pwISrc = pPMI->GetIndices();
-		if(nullptr == pVSrc || nullptr == pwISrc) continue;
+		if (pVSrc == nullptr || pwISrc == nullptr)
+			continue;
 
-		m_Parts[i]->Tick(m_Matrix, m_qRot, 1.0f);
-		__Matrix44 mtxPart = m_Parts[i]->m_Matrix;
+		pPart->Tick(m_Matrix, m_qRot, 1.0f);
+
+		__Matrix44 mtxPart = pPart->m_Matrix;
 		mtxPart *= mtxI;
-		for(int j = 0; j < iMaxNumVertices; j++) pVDest[iVC+j] = pVSrc[j] * mtxPart;
-		for(int j = 0; j < iMaxNumIndices; j++) pwIDest[iIC+j] = pwISrc[j] + iVC;
+
+		for (int j = 0; j < iMaxNumVertices; j++)
+			pVDest[iVC + j] = pVSrc[j] * mtxPart;
+
+		for (int j = 0; j < iMaxNumIndices; j++)
+			pwIDest[iIC + j] = pwISrc[j] + iVC;
 
 		iVC += iMaxNumVertices;
 		iIC += iMaxNumIndices;
 	}
 
-	if(iVC <= 0 || iIC <= 0)
+	if (iVC <= 0 || iIC <= 0)
 	{
 		delete pVMesh;
 		return false;

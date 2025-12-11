@@ -169,14 +169,16 @@ void CPlayerOtherMgr::Render(float fSunAngle)
 //	}
 
 	// 카메라 거리순으로 정렬
-	int iUPCSize = m_UPCs.size();
-	if(iUPCSize > 0)
+	int iUPCSize = static_cast<int>(m_UPCs.size());
+	if (iUPCSize > 0)
 	{
 		std::vector<CPlayerOther*> UPCs;
 		UPCs.reserve(iUPCSize);
-		it_UPC it = m_UPCs.begin(), itEnd = m_UPCs.end();
-		for(; it != itEnd; it++) UPCs.push_back(it->second);
-		qsort(&(UPCs[0]), UPCs.size(), 4, SortByCameraDistance);
+
+		for (auto& [_, pUPC] : m_UPCs)
+			UPCs.push_back(pUPC);
+
+		qsort(&UPCs[0], UPCs.size(), sizeof(CPlayerOther*), SortByCameraDistance);
 
 		for(int i = iUPCSize - 1; i >= 0; i--)
 		{
@@ -199,16 +201,18 @@ void CPlayerOtherMgr::Render(float fSunAngle)
 //		pNPC->Render(true, fSunAngle);
 //	}
 	// 카메라 거리순으로 정렬
-	int iNPCSize = m_NPCs.size();
-	if(iNPCSize > 0)
+	int iNPCSize = static_cast<int>(m_NPCs.size());
+	if (iNPCSize > 0)
 	{
 		std::vector<CPlayerNPC*> NPCs;
 		NPCs.reserve(iNPCSize);
-		it_NPC it = m_NPCs.begin(), itEnd = m_NPCs.end();
-		for(; it != itEnd; it++) NPCs.push_back(it->second);
-		qsort(&(NPCs[0]), NPCs.size(), 4, SortByCameraDistance);
 
-		for(int i = iNPCSize - 1; i >= 0; i--)
+		for (auto& [_, pNpc] : m_NPCs)
+			NPCs.push_back(pNpc);
+
+		qsort(&NPCs[0], NPCs.size(), sizeof(CPlayerNPC*), SortByCameraDistance);
+
+		for (int i = iNPCSize - 1; i >= 0; i--)
 			NPCs[i]->Render(fSunAngle);
 	}
 
@@ -222,16 +226,18 @@ void CPlayerOtherMgr::Render(float fSunAngle)
 //		pCorpse->Render(false, fSunAngle);
 //	}
 	// 카메라 거리순으로 정렬
-	int iCorpseSize = m_Corpses.size();
-	if(iCorpseSize > 0)
+	int iCorpseSize = static_cast<int>(m_Corpses.size());
+	if (iCorpseSize > 0)
 	{
 		std::vector<CPlayerNPC*> Corpses;
 		Corpses.reserve(iCorpseSize);
-		it_NPC it = m_Corpses.begin(), itEnd = m_Corpses.end();
-		for(; it != itEnd; it++) Corpses.push_back(it->second);
-		qsort(&(Corpses[0]), iCorpseSize, 4, SortByCameraDistance);
 
-		for(int i = iCorpseSize - 1; i >= 0; i--)
+		for (auto& [_, pCorpse] : m_Corpses)
+			Corpses.push_back(pCorpse);
+
+		qsort(&Corpses[0], iCorpseSize, sizeof(CPlayerNPC*), SortByCameraDistance);
+
+		for (int i = iCorpseSize - 1; i >= 0; i--)
 		{
 			Corpses[i]->m_InfoBase.bRenderID = false;
 			Corpses[i]->Render(fSunAngle);
@@ -275,19 +281,22 @@ CPlayerOther* CPlayerOtherMgr::PickUPC(int ixScreen, int iyScreen, int& iIDResul
 	__Vector3 vPos, vDir;
 	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
 
-	if(!m_UPCs.empty())
+	if (!m_UPCs.empty())
 	{
 		// 카메라 거리순으로 정렬
 		std::vector<CPlayerOther*> UPCs;
 		UPCs.reserve(m_UPCs.size());
-		it_UPC it = m_UPCs.begin(), itEnd = m_UPCs.end();
-		for(; it != itEnd; it++) UPCs.push_back(it->second);
-		qsort(&(UPCs[0]), UPCs.size(), 4, SortByCameraDistance);
 
-		for (auto itr = UPCs.begin(); itr != UPCs.end(); ++itr)
+		for (auto& [_, pUPC] : m_UPCs)
+			UPCs.push_back(pUPC);
+
+		qsort(&UPCs[0], UPCs.size(), sizeof(CPlayerOther*), SortByCameraDistance);
+
+		for (CPlayerOther* pUPC : UPCs)
 		{
-			auto pUPC = *itr;
-			if(pUPC->LODLevel() < 0 || pUPC->LODLevel() >= MAX_CHR_LOD) continue; // Level Of Detail 이 없는건 지나간다.
+			// Level Of Detail 이 없는건 지나간다.
+			if (pUPC->LODLevel() < 0 || pUPC->LODLevel() >= MAX_CHR_LOD)
+				continue;
 
 			CN3VMesh* pvMesh = pUPC->m_Chr.CollisionMesh();
 			if(nullptr != pvMesh && pvMesh->Pick(pUPC->m_Chr.m_Matrix, vPos, vDir, pvPick)) 
@@ -312,10 +321,12 @@ CPlayerNPC* CPlayerOtherMgr::PickNPC(int ixScreen, int iyScreen, int& iIDResult,
 	{
 		// 카메라 거리순으로 정렬
 		std::vector<CPlayerNPC*> NPCs;
-		it_NPC it = m_NPCs.begin(), itEnd = m_NPCs.end();
 		NPCs.reserve(m_NPCs.size());
-		for(; it != itEnd; it++) NPCs.push_back(it->second);
-		qsort(&(NPCs[0]), NPCs.size(), 4, SortByCameraDistance);
+
+		for (auto& [_, pNPC] : m_NPCs)
+			NPCs.push_back(pNPC);
+
+		qsort(&NPCs[0], NPCs.size(), sizeof(CPlayerNPC*), SortByCameraDistance);
 
 		for (auto itr = NPCs.begin(); itr != NPCs.end(); ++itr)
 		{
@@ -621,26 +632,27 @@ CPlayerNPC* CPlayerOtherMgr::PickAllPrecisely(int ixScreen, int iyScreen, int &i
 	// 카메라 거리순으로 정렬
 	std::vector<CPlayerNPC*> NPCs;
 	std::vector<CPlayerNPC*> NUPCBufs;
-	if(!m_NPCs.empty() || !m_UPCs.empty())
-	{
-		it_NPC it = m_NPCs.begin(), itEnd = m_NPCs.end();
-		it_UPC it_u = m_UPCs.begin(), itEnd_u = m_UPCs.end();
-		NPCs.reserve(m_NPCs.size()+m_UPCs.size());
-		for(; it != itEnd; it++) NPCs.push_back(it->second);
-		for(; it_u != itEnd_u; it_u++) NPCs.push_back(it_u->second);
-		qsort(&(NPCs[0]), NPCs.size(), 4, SortByCameraDistance);
-	}
-	else
-	{
+	if (m_NPCs.empty() && m_UPCs.empty())
 		return nullptr;
-	}
 
+	NPCs.reserve(m_NPCs.size() + m_UPCs.size());
 
-	for (auto itr = NPCs.begin(); itr != NPCs.end(); ++itr)
+	for (auto& [_, pNPC] : m_NPCs)
+		NPCs.push_back(pNPC);
+
+	for (auto& [_, pUPC] : m_UPCs)
+		NPCs.push_back(pUPC);
+
+	qsort(&NPCs[0], NPCs.size(), sizeof(CPlayerNPC*), SortByCameraDistance);
+
+	for (CPlayerNPC* pNPC : NPCs)
 	{
-		pNPC = *itr;
-		if(pNPC == nullptr) continue;
-		if(pNPC->LODLevel() < 0 || pNPC->LODLevel() >= MAX_CHR_LOD) continue; // Level Of Detail 이 없는건 지나간다.
+		if (pNPC == nullptr)
+			continue;
+
+		// Level Of Detail 이 없는건 지나간다.
+		if (pNPC->LODLevel() < 0 || pNPC->LODLevel() >= MAX_CHR_LOD)
+			continue;
 
 		CN3VMesh* pvMesh = nullptr;
 		__Matrix44* pMtx = nullptr;
@@ -727,16 +739,19 @@ CPlayerNPC* CPlayerOtherMgr::PickNPCPrecisely(int ixScreen, int iyScreen, int &i
 	{
 		// 카메라 거리순으로 정렬
 		std::vector<CPlayerNPC*> NPCs;
-		it_NPC it = m_NPCs.begin(), itEnd = m_NPCs.end();
 		NPCs.reserve(m_NPCs.size());
-		for(; it != itEnd; it++) NPCs.push_back(it->second);
-		qsort(&(NPCs[0]), NPCs.size(), 4, SortByCameraDistance);
 
-		CPlayerNPC* pNPC = nullptr; // NPC 를 먼저 찍어본다...
-		for (auto itr = NPCs.begin(); itr != NPCs.end(); ++itr)
+		for (auto& [_, pNPC] : m_NPCs)
+			NPCs.push_back(pNPC);
+
+		qsort(&NPCs[0], NPCs.size(), sizeof(CPlayerNPC*), SortByCameraDistance);
+
+		// NPC 를 먼저 찍어본다...
+		for (CPlayerNPC* pNPC : NPCs)
 		{
-			pNPC = *itr;
-			if(pNPC->LODLevel() < 0 || pNPC->LODLevel() >= MAX_CHR_LOD) continue; // Level Of Detail 이 없는건 지나간다.
+			// Level Of Detail 이 없는건 지나간다.
+			if (pNPC->LODLevel() < 0 || pNPC->LODLevel() >= MAX_CHR_LOD)
+				continue;
 
 			CN3VMesh* pvMesh = nullptr;
 			__Matrix44* pMtx = nullptr;
@@ -783,9 +798,11 @@ CPlayerOther* CPlayerOtherMgr::PickUPCPrecisely(int ixScreen, int iyScreen, int 
 		// 카메라 거리순으로 정렬
 		std::vector<CPlayerOther*> UPCs;
 		UPCs.reserve(m_UPCs.size());
-		it_UPC it = m_UPCs.begin(), itEnd = m_UPCs.end();
-		for(; it != itEnd; it++) UPCs.push_back(it->second);
-		qsort(&(UPCs[0]), UPCs.size(), 4, SortByCameraDistance);
+
+		for (auto& [_, pUPC] : m_UPCs)
+			UPCs.push_back(pUPC);
+
+		qsort(&UPCs[0], UPCs.size(), sizeof(CPlayerOther*), SortByCameraDistance);
 
 		CPlayerOther*	pUPC = nullptr;
 		for (auto itr = UPCs.begin(); itr != UPCs.end(); ++itr)

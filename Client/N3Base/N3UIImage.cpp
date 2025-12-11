@@ -254,7 +254,7 @@ void CN3UIImage::operator = (const CN3UIImage& other)
 	m_szTexFN = other.m_szTexFN;
 
 	// Animate 되는 image이면 관련된 변수 세팅
-	m_iAnimCount = m_Children.size();	// animate image 수 정하기
+	m_iAnimCount = static_cast<int>(m_Children.size());	// animate image 수 정하기
 	if ((UISTYLE_IMAGE_ANIMATE & m_dwStyle) && m_iAnimCount>0)
 	{
 		m_pAnimImagesRef = new CN3UIImage*[m_iAnimCount];

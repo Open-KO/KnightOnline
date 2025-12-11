@@ -30,7 +30,10 @@ protected:
 	typename std::map<T*, int>			m_Refs;
 
 public:
-	int		Count() { return m_Datas.size(); }
+	int Count() const
+	{
+		return static_cast<int>(m_Datas.size());
+	}
 
 	int Add(T* pData)
 	{
@@ -68,7 +71,7 @@ public:
 			return -1;
 		}
 
-		return m_Datas.size() - 1;
+		return static_cast<int>(m_Datas.size()) - 1;
 	}
 
 	T* 	Get(int index, bool bIncreaseRefCount = TRUE)

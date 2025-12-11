@@ -31,7 +31,7 @@ void CN3AlphaPrimitiveManager::Render()
 	
 	static __AlphaPrimitive* pBuffs[MAX_ALPHAPRIMITIVE_BUFFER];
 	for(int i = 0; i < m_nToDrawCount; i++) pBuffs[i] = &(m_Buffers[i]);
-	qsort(pBuffs, m_nToDrawCount, 4, SortByCameraDistance); // 버퍼에 쌓인 프리미티브대로 정렬하고..
+	qsort(pBuffs, m_nToDrawCount, sizeof(__AlphaPrimitive*), SortByCameraDistance); // 버퍼에 쌓인 프리미티브대로 정렬하고..
 
 	struct __RenderState
 	{
@@ -244,7 +244,7 @@ void CN3AlphaPrimitiveManager::Render()
 	
 	static __AlphaPrimitive* pBuffs[MAX_ALPHAPRIMITIVE_BUFFER];
 	for(int i = 0; i < m_nToDrawCount; i++) pBuffs[i] = &(m_Buffers[i]);
-	qsort(pBuffs, m_nToDrawCount, 4, SortByCameraDistance); // 버퍼에 쌓인 프리미티브대로 정렬하고..
+	qsort(pBuffs, m_nToDrawCount, sizeof(__AlphaPrimitive*), SortByCameraDistance); // 버퍼에 쌓인 프리미티브대로 정렬하고..
 
 	struct __RenderState
 	{

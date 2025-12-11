@@ -234,7 +234,10 @@ void CN3UIList::UpdateChildRegions()
 		}
 
 		pt = pStr->GetPos();
-		pStr->GetTextExtent(pStr->GetString(), pStr->GetString().size(), &size);
+
+		const std::string& str = pStr->GetString();
+
+		pStr->GetTextExtent(str, static_cast<int>(str.size()), &size);
 		pStr->SetPos(rc.left, rc.top);
 		RECT rcTmp = { rc.left, rc.top, rc.left + (rc.right - rc.left), rc.top + size.cy };
 		pStr->SetRegion(rcTmp);

@@ -690,7 +690,7 @@ void CUIKnights::PreviousPageButtonHandler()
 void CUIKnights::NextPageButtonHandler()
 {
 	m_iPageCur++;
-	int MaxPage = m_MemberList.size() / 10 + 1;
+	int MaxPage = static_cast<int>(m_MemberList.size()) / 10 + 1;
 	if (m_iPageCur > MaxPage)
 		m_iPageCur = MaxPage;
 
@@ -1054,29 +1054,33 @@ bool CUIFriends::Load(HANDLE hFile)
 
 	std::string szFN = CGameProcedure::s_szAccount + "_" + CGameProcedure::s_szServer + ".txt"; // 파일이름은 계정_서버.txt 로 한다.
 	FILE* pFile = fopen(szFN.c_str(), "r");
-	if (pFile)
+	if (pFile != nullptr)
 	{
 		char szLine[256] = "";
 		char* pszResult = fgets(szLine, 256, pFile); // 줄을 읽고..
-		while(pszResult)
+		while (pszResult)
 		{
 			int iLen = lstrlen(szLine);
-			if(iLen > 3 && iLen <= 22)
+			if (iLen > 3 && iLen <= 22)
 			{
 				std::string szTmp = szLine;
-				int iTmp = szTmp.find("\r");
-				if(iTmp >= 0) szTmp = szTmp.substr(0, iTmp);
-				iTmp = szTmp.find("\n");
-				if(iTmp >= 0) szTmp = szTmp.substr(0, iTmp);
 
-				if(!szTmp.empty())
-					this->MemberAdd(szTmp, -1, false, false);
+				size_t pos = szTmp.find("\r");
+				if (pos != std::string::npos)
+					szTmp = szTmp.substr(0, pos);
+
+				pos = szTmp.find("\n");
+				if (pos != std::string::npos)
+					szTmp = szTmp.substr(0, pos);
+
+				if (!szTmp.empty())
+					MemberAdd(szTmp, -1, false, false);
 			}
 			pszResult = fgets(szLine, 256, pFile); // 첫째 줄을 읽고..
 		}
 		fclose(pFile);
 
-		this->UpdateList();
+		UpdateList();
 	}
 
 	return true;

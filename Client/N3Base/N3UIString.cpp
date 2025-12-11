@@ -125,8 +125,10 @@ void CN3UIString::WordWrap()
 {
 	m_iLineCount = 0;
 
-	if (nullptr == m_pDFont) return;
-	int iStrLen = m_szString.size();
+	if (m_pDFont == nullptr)
+		return;
+
+	int iStrLen = static_cast<int>(m_szString.size());
 
 	if (0 == iStrLen)
 	{
@@ -159,7 +161,7 @@ void CN3UIString::WordWrap()
 	// 문자열의 pixel 길이 측정
 	SIZE size;
 	const std::string szString = GetString();
-	iStrLen = szString.size();
+	iStrLen = static_cast<int>(szString.size());
 	if (FALSE == m_pDFont->GetTextExtent(szString.c_str(), iStrLen, &size))
 	{	// 길이를 측정할 수 없을경우(m_hDC가 생성되지 않았을경우)
 		m_pDFont->SetText(szString);
@@ -328,33 +330,40 @@ void CN3UIString::SetStartLine(int iLine)
 		iEndLine = m_iLineCount;
 		bMoreLine = false;
 	}
-	int i, iCC, iSize;
+	int i, iCC;
 	std::string strNew;
-	for (i=m_iStartLine; i<iEndLine-1; ++i)
+	for (i = m_iStartLine; i < iEndLine - 1; ++i)
 	{
-		iCC = m_NewLineIndices[i+1] - m_NewLineIndices[i];
-		if (iCC>0)
+		iCC = m_NewLineIndices[i + 1] - m_NewLineIndices[i];
+		if (iCC > 0)
 		{
 			strNew += m_szString.substr(m_NewLineIndices[i], iCC);
-			iSize = strNew.size();
-			if ((iSize>0) && ('\n' != strNew[iSize-1])) strNew += "\n";
+			if (strNew.size() > 0
+				&& ('\n' != strNew[strNew.size() - 1]))
+				strNew += "\n";
 		}
 	}
+
 	// 마지막줄 처리
 	if (bMoreLine)
 	{
-		if (iEndLine > 0) {
+		if (iEndLine > 0)
+		{
 			iCC = m_NewLineIndices[iEndLine] - m_NewLineIndices[iEndLine - 1];
-			if (iCC > 0) strNew += m_szString.substr(m_NewLineIndices[i], iCC);
+			if (iCC > 0)
+				strNew += m_szString.substr(m_NewLineIndices[i], iCC);
 		}
 	}
 	else
 	{
-		if (iEndLine > 0) {
-			iCC = m_szString.size() - m_NewLineIndices[iEndLine - 1];
-			if (iCC > 0) strNew += m_szString.substr(m_NewLineIndices[i], iCC);
+		if (iEndLine > 0)
+		{
+			iCC = static_cast<int>(m_szString.size()) - m_NewLineIndices[iEndLine - 1];
+			if (iCC > 0)
+				strNew += m_szString.substr(m_NewLineIndices[i], iCC);
 		}
 	}
+
 	m_pDFont->SetText(strNew);
 }
 

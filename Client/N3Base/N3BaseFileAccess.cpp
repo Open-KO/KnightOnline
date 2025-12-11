@@ -38,11 +38,13 @@ void CN3BaseFileAccess::FileNameSet(const std::string& szFileName)
 {
 	std::string szTmpFN = szFileName;
 
-	if(!szTmpFN.empty()) CharLower(&(szTmpFN[0])); // 모두 소문자로 만든다..
- 	int iPos = szTmpFN.find(s_szPath); // 문자열에 Base Path 와 일치하는 이름이 있는지 본다.
-	if(iPos >= 0)
+	if (!szTmpFN.empty())
+		CharLower(&szTmpFN[0]); // 모두 소문자로 만든다..
+
+	size_t pos = szTmpFN.find(s_szPath); // 문자열에 Base Path 와 일치하는 이름이 있는지 본다.
+	if (pos != std::string::npos)
 		m_szFileName = szTmpFN.substr(s_szPath.size()); // 경로가 일치하면.. 긴경로는 짤라준다..
-	else 
+	else
 		m_szFileName = szTmpFN;
 }
 
@@ -166,9 +168,10 @@ bool CN3BaseFileAccess::Save(HANDLE hFile)
 {
 	DWORD dwRWC = 0;
 
-	int nL = m_szName.size();
+	int nL = static_cast<int>(m_szName.size());
 	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) WriteFile(hFile, m_szName.c_str(), nL, &dwRWC, nullptr);
+	if (nL > 0)
+		WriteFile(hFile, m_szName.c_str(), nL, &dwRWC, nullptr);
 
 	return true;
 }

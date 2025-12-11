@@ -567,14 +567,10 @@ void CUIStateBar::TickMiniMap()
 
 void CUIStateBar::TickMagicIcon()
 {
-	int cnt = m_pMagic.size();
-	it_MagicImg it = m_pMagic.begin();
 	__TABLE_UPC_SKILL* pRemoveSkill = nullptr;
 
-	for (int i = 0; i < cnt; i++, it++)
+	for (__DurationMagicImg* pMagicImg : m_pMagic)
 	{
-		__DurationMagicImg* pMagicImg = (*it);
-
 		pMagicImg->fDuration -= CN3Base::s_fSecPerFrm;
 
 		if (pMagicImg->fDuration <= 0.0f)
@@ -583,13 +579,13 @@ void CUIStateBar::TickMagicIcon()
 			pRemoveSkill = CGameBase::s_pTbl_Skill.Find(pMagicImg->dwSkillID);
 			break;
 		}
-		else if (pMagicImg->fDuration <= 10.0f)
-		{
-			pMagicImg->pIcon->SetVisible(pMagicImg->fDuration - (int)pMagicImg->fDuration<0.5f);
-		}
+		
+		if (pMagicImg->fDuration <= 10.0f)
+			pMagicImg->pIcon->SetVisible(pMagicImg->fDuration - (int) pMagicImg->fDuration < 0.5f);
 	}
 
-	if (pRemoveSkill) DelMagic(pRemoveSkill);
+	if (pRemoveSkill != nullptr)
+		DelMagic(pRemoveSkill);
 }
 
 bool CUIStateBar::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
@@ -730,14 +726,16 @@ void CUIStateBar::AddMagic(__TABLE_UPC_SKILL* pSkill, float fDuration)
 		delete pMagicImg;
 		return;
 	}
-	
+
 	RECT rt;
 	rt.left = rt.top = 0;
 	rt.right = pTex->Width();
-	rt.bottom = pTex->Height();		
-	int PosX = CN3Base::s_CameraData.vp.Width - (rt.right)*(m_pMagic.size()+1);
+	rt.bottom = pTex->Height();
+
+	int iconCount = static_cast<int>(m_pMagic.size());
+	int PosX = static_cast<int>(s_CameraData.vp.Width) - (rt.right * (iconCount + 1));
 	pIcon->SetRegion(rt);
-	pIcon->SetPos(PosX,0);
+	pIcon->SetPos(PosX, 0);
 
 	m_pMagic.push_back(pMagicImg);
 }
@@ -793,15 +791,12 @@ uint32_t CUIStateBar::MouseProc(uint32_t dwFlags, const POINT &ptCur, const POIN
 {
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 
-	int cnt = m_pMagic.size();
-	it_MagicImg it = m_pMagic.begin();
-	for(int i=0;i<cnt;i++,it++)
+	for (const __DurationMagicImg* pMagicImg : m_pMagic)
 	{
-		__DurationMagicImg* pMagicImg = (*it);
-
-		dwRet |= pMagicImg->pIcon->MouseProc(CGameProcedure::s_pLocalInput->MouseGetFlag(),
-									CGameProcedure::s_pLocalInput->MouseGetPos(),
-									CGameProcedure::s_pLocalInput->MouseGetPosOld());
+		dwRet |= pMagicImg->pIcon->MouseProc(
+			CGameProcedure::s_pLocalInput->MouseGetFlag(),
+			CGameProcedure::s_pLocalInput->MouseGetPos(),
+			CGameProcedure::s_pLocalInput->MouseGetPosOld());
 	}
 
 	dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);

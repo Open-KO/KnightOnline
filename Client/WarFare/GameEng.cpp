@@ -93,12 +93,8 @@ CGameEng::CGameEng()
 
 CGameEng::~CGameEng()
 {
-	it_Camera itCam = m_Cameras.begin();
-	int iSize = m_Cameras.size();
-	for(int i = 0; i < iSize; i++, itCam++)
-	{
-		delete *itCam; 
-	}
+	for (CN3Camera* pCamera : m_Cameras)
+		delete pCamera;
 	m_Cameras.clear();
 
 /*	it_Light itLgt = m_Lights.begin();

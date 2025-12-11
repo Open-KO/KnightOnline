@@ -1368,11 +1368,14 @@ void CN3FXPartParticles::CreateParticles_Gather()
 //
 void CN3FXPartParticles::CreateParticles()
 {
-	int iNumLiveParticle = m_pVBList_Alive.size();
-	if( iNumLiveParticle > m_iNumLodParticle )
+	int iNumLiveParticle = static_cast<int>(m_pVBList_Alive.size());
+	if (iNumLiveParticle > m_iNumLodParticle)
 		return;
-	if(m_dwEmitType==FX_PART_PARTICLE_EMIT_TYPE_SPREAD) CreateParticles_Spread();
-	else if(m_dwEmitType==FX_PART_PARTICLE_EMIT_TYPE_GATHER) CreateParticles_Gather();
+
+	if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD)
+		CreateParticles_Spread();
+	else if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER)
+		CreateParticles_Gather();
 }
 
 //

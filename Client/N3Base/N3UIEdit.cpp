@@ -100,7 +100,7 @@ BOOL CN3UIEdit::CreateEditWindow(HWND hParent, RECT rect)
 
 	s_hWndParent = hParent;
 	s_hWndEdit = CreateWindow("EDIT", "EditWindow", WS_CHILD|WS_TABSTOP|ES_LEFT|ES_WANTRETURN, rect.left, rect.top, rect.right-rect.left, rect.bottom-rect.top, hParent, nullptr, nullptr, nullptr);
-	s_lpfnEditProc = (WNDPROC)SetWindowLong(s_hWndEdit, GWL_WNDPROC, (uint32_t)(CN3UIEdit::EditWndProc));
+	s_lpfnEditProc = (WNDPROC) SetWindowLongPtr(s_hWndEdit, GWLP_WNDPROC, (LONG_PTR) CN3UIEdit::EditWndProc);
 
 	// Set the edit control's text size to the maximum.
 	::SendMessage(s_hWndEdit, EM_LIMITTEXT, 0, 0);
@@ -534,7 +534,7 @@ uint32_t CN3UIEdit::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT&
 	return dwRet;
 }
 
-void CN3UIEdit::SetCaretPos(uint32_t nPos)
+void CN3UIEdit::SetCaretPos(size_t nPos)
 {
 	if (nPos > m_iMaxStrLen)
 		nPos = m_iMaxStrLen;	// 최대 길이보다 길경우 작게 세팅
@@ -542,15 +542,18 @@ void CN3UIEdit::SetCaretPos(uint32_t nPos)
 
 	const std::string& szBuff = m_pBuffOutRef->GetString();
 	__ASSERT(szBuff.empty() || -1 == szBuff.find('\n'), "multiline edit");	// 지금은 multiline은 지원하지 않는다.
-	SIZE size = {0,0};
-	if (!szBuff.empty() && m_pBuffOutRef ) m_pBuffOutRef->GetTextExtent(szBuff, m_nCaretPos, &size) ;
+	SIZE size = { 0,0 };
+	if (!szBuff.empty() && m_pBuffOutRef != nullptr)
+		m_pBuffOutRef->GetTextExtent(szBuff, static_cast<int>(m_nCaretPos), &size);
 
 	int iRegionWidth = m_rcRegion.right - m_rcRegion.left;
-	if (size.cx > iRegionWidth) size.cx = iRegionWidth;
+	if (size.cx > iRegionWidth)
+		size.cx = iRegionWidth;
+
 	s_Caret.SetPos(m_pBuffOutRef->m_ptDrawPos.x + size.cx, m_pBuffOutRef->m_ptDrawPos.y);
 }
 
-void CN3UIEdit::SetMaxString(uint32_t nMax)		// 최대 글씨 수를 정해준다
+void CN3UIEdit::SetMaxString(size_t nMax)		// 최대 글씨 수를 정해준다
 {
 	if (nMax == 0)
 	{
@@ -608,20 +611,21 @@ const std::string& CN3UIEdit::GetString()
 
 void CN3UIEdit::SetString(const std::string& szString)
 {
-	if (nullptr == m_pBuffOutRef) return;
+	if (m_pBuffOutRef == nullptr)
+		return;
+
 	if (szString.size() > m_iMaxStrLen)
 	{
 		std::string szNewBuff(m_iMaxStrLen, '?');
 
-		if (IsHangulMiddleByte(szString.c_str(), m_iMaxStrLen))
+		if (IsHangulMiddleByte(szString.c_str(), static_cast<int>(m_iMaxStrLen)))
 		{
-			szNewBuff = szString.substr(0, m_iMaxStrLen-1);	// -1은 한글이므로 하나 덜 카피하기 위해 +1은 맨 마지막에 nullptr 넣기 위해
+			szNewBuff = szString.substr(0, m_iMaxStrLen - 1);	// -1은 한글이므로 하나 덜 카피하기 위해 +1은 맨 마지막에 nullptr 넣기 위해
 			if (UISTYLE_EDIT_PASSWORD & m_dwStyle)
 			{
-				int iNewBuffLen = szNewBuff.size();
 				m_szPassword = szNewBuff;
 
-				szNewBuff.assign(m_iMaxStrLen-1, '*');
+				szNewBuff.assign(m_iMaxStrLen - 1, '*');
 				__ASSERT('\0' == szNewBuff[m_iMaxStrLen - 1], "글자수가 다르다.");
 			}
 			m_pBuffOutRef->SetString(szNewBuff);
@@ -631,7 +635,6 @@ void CN3UIEdit::SetString(const std::string& szString)
 			szNewBuff = szString.substr(0, m_iMaxStrLen);	// +1은 맨 마지막에 nullptr 넣기 위해
 			if (UISTYLE_EDIT_PASSWORD & m_dwStyle)
 			{
-				int iNewBuffLen = szNewBuff.size();
 				m_szPassword = szNewBuff;
 
 				szNewBuff.assign(m_iMaxStrLen, '*');
@@ -650,7 +653,10 @@ void CN3UIEdit::SetString(const std::string& szString)
 				std::string szNewBuff(szString.size(), '*');
 				m_pBuffOutRef->SetString(szNewBuff);
 			}
-			else m_pBuffOutRef->SetString("");
+			else
+			{
+				m_pBuffOutRef->SetString("");
+			}
 		}
 		else
 		{
@@ -766,9 +772,9 @@ void CN3UIEdit::UpdateCaretPosFromEditCtrl()
 		ReleaseDC(s_hWndEdit, hDC);
 	}
 */
-	int iTmp = ::SendMessage(s_hWndEdit, EM_GETSEL, 0, 0);
-	int iCaret = LOWORD(iTmp);
-	int iCTmp2 = HIWORD(iTmp);
+	LRESULT lResult = ::SendMessage(s_hWndEdit, EM_GETSEL, 0, 0);
+	int iCaret = LOWORD(lResult);
+	int iCTmp2 = HIWORD(lResult);
 	s_pFocusedEdit->SetCaretPos(iCaret);
 }
 

@@ -859,21 +859,21 @@ void CGameProcedure::ReportServerConnectionClosed(bool bNeedQuitGame)
 
 void CGameProcedure::ReportDebugStringAndSendToServer(const std::string& szDebug)
 {
-	if(szDebug.empty()) return;
+	if (szDebug.empty())
+		return;
 
 	CLogWriter::Write(szDebug);
 
-	if(s_pSocket && s_pSocket->IsConnected())
-	{
-		int iLen = szDebug.size();
-		std::vector<uint8_t> buffer;	// 버퍼.. 
-		buffer.assign(iLen + 4, 0x00);
-		int iOffset=0;												// 옵셋..
-		s_pSocket->MP_AddByte(&(buffer[0]), iOffset, WIZ_DEBUG_STRING_PACKET);
-		s_pSocket->MP_AddShort(&(buffer[0]), iOffset, iLen);
-		s_pSocket->MP_AddString(&(buffer[0]), iOffset, szDebug);
-		s_pSocket->Send(&(buffer[0]), iOffset);				// 보냄..
-	}
+	if (s_pSocket == nullptr
+		|| !s_pSocket->IsConnected())
+		return;
+
+	std::vector<uint8_t> buffer(szDebug.size() + 4, 0);	// 버퍼.. 
+	int iOffset = 0;												// 옵셋..
+	s_pSocket->MP_AddByte(&buffer[0], iOffset, WIZ_DEBUG_STRING_PACKET);
+	s_pSocket->MP_AddShort(&buffer[0], iOffset, static_cast<int16_t>(szDebug.size()));
+	s_pSocket->MP_AddString(&buffer[0], iOffset, szDebug);
+	s_pSocket->Send(&buffer[0], iOffset);				// 보냄..
 }
 
 void CGameProcedure::MsgSend_GameServerLogIn()

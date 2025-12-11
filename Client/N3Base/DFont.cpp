@@ -199,7 +199,7 @@ HRESULT CDFont::SetText(const std::string& szText, uint32_t dwFlags)
 		return S_OK;
 	}
 
-	int iStrLen = szText.size();
+	int iStrLen = static_cast<int>(szText.size());
 
 	HRESULT hr;
 	// \n을 빼고 한줄로 만들어서 글자 길이 계산하기
@@ -239,7 +239,7 @@ HRESULT CDFont::SetText(const std::string& szText, uint32_t dwFlags)
 
 	// 텍스쳐 사이즈 결정하기
 	SelectObject(s_hDC, m_hFont);
-	GetTextExtentPoint32( s_hDC, szTemp.c_str(), szTemp.size(), &size );
+	GetTextExtentPoint32(s_hDC, szTemp.c_str(), static_cast<int>(szTemp.size()), &size);
 	szTemp = "";
 
 	if(size.cx <= 0 || size.cy <= 0)
@@ -403,13 +403,18 @@ HRESULT CDFont::SetText(const std::string& szText, uint32_t dwFlags)
 
 void CDFont::Make2DVertex(const int iFontHeight, const std::string& szText)
 {
-	if(nullptr == m_pVB || nullptr == s_hDC || nullptr == m_hFont)
+	if (m_pVB == nullptr
+		|| s_hDC == nullptr
+		|| m_hFont == nullptr)
 	{
 		__ASSERT(0, "NULL Vertex Buffer or DC or Font Handle ");
 		return;
 	}
-	if(szText.empty()) return;
-	int iStrLen = szText.size();
+
+	if (szText.empty())
+		return;
+
+	int iStrLen = static_cast<int>(szText.size());
 
 	// lock vertex buffer
 	__VertexTransformed* pVertices = nullptr;
@@ -565,13 +570,15 @@ void CDFont::Make2DVertex(const int iFontHeight, const std::string& szText)
 
 void CDFont::Make3DVertex(const int iFontHeight, const std::string& szText, uint32_t dwFlags)
 {
-	if(nullptr == m_pVB || nullptr == s_hDC || nullptr == m_hFont) 
+	if (m_pVB == nullptr
+		|| s_hDC == nullptr
+		|| m_hFont == nullptr)
 	{
 		__ASSERT(0, "NULL Vertex Buffer or DC or Font Handle ");
 		return;
 	}
 
-	int iStrLen = szText.size();
+	int iStrLen = static_cast<int>(szText.size());
 
 	// 임시 vertex buffer에 넣기
 	__VertexXyzColorT1	TempVertices[MAX_NUM_VERTICES];

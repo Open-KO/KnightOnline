@@ -198,21 +198,22 @@ void CPortalVolume::RenderShape()
 		while (vit != pSP->m_viIndex.end())
 		{
 			vpi = *vit++;
-			int iSize = vpi.m_ivVector.size();
-		
+
+			size_t vecSize = vpi.m_ivVector.size();
+
 			LPWORD pIndices;
-			pIndices = new uint16_t[iSize]; memset(pIndices, 0, sizeof(uint16_t)*iSize);
-			int iSizes = vpi.m_ivVector.size();
-			for( int k = 0; k < iSizes; k++)
-			{
+			pIndices = new uint16_t[vecSize];
+			memset(pIndices, 0, sizeof(uint16_t) * vecSize);
+
+			for (size_t k = 0; k < vecSize; k++)
 				pIndices[k] = vpi.m_ivVector[k];
-			}
+
 			pSI = CPvsMgr::GetShapeInfoByManager(pSP->m_iID);
 			pSI->m_pShape->PosSet(pSI->Pos());
 			pSI->m_pShape->RotSet(pSI->Rot());
 			pSI->m_pShape->ScaleSet(pSI->Scale());
 			pSI->m_pShape->Part(vpi.m_iPartIndex)->m_bOutOfCameraRange = FALSE;
-			pSI->m_pShape->PartialRender(vpi.m_iPartIndex, iSize, pIndices);
+			pSI->m_pShape->PartialRender(vpi.m_iPartIndex, static_cast<int>(vecSize), pIndices);
 			delete pIndices;
 		}
 	}
@@ -234,20 +235,20 @@ void CPortalVolume::RenderCollision()
 
 		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
 
-		uint32_t * pIndices;
-		int iSize = pCI->m_ivVector.size();
-		pIndices = new uint32_t[iSize]; memset(pIndices, 0, sizeof(uint32_t)*iSize);
-		int iSizes = pCI->m_ivVector.size();
-		for( int k = 0; k < iSizes; k++)
-		{
+		size_t vecSize = pCI->m_ivVector.size();
+		uint32_t* pIndices = new uint32_t[vecSize];
+		memset(pIndices, 0, sizeof(uint32_t) * vecSize);
+
+		for (size_t k = 0; k < vecSize; k++)
 			pIndices[k] = pCI->m_ivVector[k];
-		}
 
 		__Matrix44 mtxBackup;
 		CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, &mtxBackup);
 		pSI = CPvsMgr::GetShapeInfoByManager(pCI->m_iID);
 		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &pSI->m_Matrix);
-		pSI->m_pShape->PartialColRender(iSize, (int*)pIndices);
+		pSI->m_pShape->PartialColRender(
+			static_cast<int>(vecSize),
+			reinterpret_cast<int*>(pIndices));
 		delete pIndices;
 
 		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxBackup);
@@ -375,24 +376,23 @@ bool CPortalVolume::CheckCollisionCameraWithTerrain(__Vector3& vEyeResult, const
 	__Vector3 vDir = vEyeResult- vAt;	vDir.Normalize();
 	__ColIndex * pCI = nullptr;
 
-	int iCount = m_lpShapeColPartList.size();
 	ciiter ciit = m_lpShapeColPartList.begin();
 	while(ciit != m_lpShapeColPartList.end())
 	{
 		pCI = *ciit++;
 
-		int iSize = pCI->m_ivVector.size();
+		size_t vecSize = pCI->m_ivVector.size();
 		__Vector3 vA, vB, vC, vPick;
-		float t,u,v;
+		float t, u, v;
 
 		ShapeInfo* pSI = CPvsMgr::GetShapeInfoByManager(pCI->m_iID);
 		pSI->m_pShape->PosSet(pSI->Pos());
 		pSI->m_pShape->RotSet(pSI->Rot());
 		pSI->m_pShape->ScaleSet(pSI->Scale());
 		pSI->m_pShape->Tick(-1000);
-		CN3Shape *pShape = pSI->m_pShape;
+		CN3Shape* pShape = pSI->m_pShape;
 
-		for( int k = 0; k < iSize/3; k++)
+		for (size_t k = 0; k < vecSize / 3; k++)
 		{
 			pShape->PartialGetCollision(pCI->m_ivVector[k*3], vA);			vA *= pShape->m_Matrix;		vA.y += m_fCameraOffs;
 			pShape->PartialGetCollision(pCI->m_ivVector[k*3+1], vB);		vB *= pShape->m_Matrix;		vB.y += m_fCameraOffs;
@@ -475,22 +475,21 @@ bool CPortalVolume::GetHeightWithTerrain(float fx, float fz, float& fy)
 		pVol = vPP.m_pVol;
 
 		__ColIndex * pCI = nullptr;
-		int iCount = pVol->m_lpShapeColPartList.size();
 		ciiter ciit = pVol->m_lpShapeColPartList.begin();
 		while(ciit != pVol->m_lpShapeColPartList.end())
 		{
 			pCI = *ciit++;
 
-			int iSize = pCI->m_ivVector.size();
+			size_t vecSize = pCI->m_ivVector.size();
 			__Vector3 vA, vB, vC;
 			ShapeInfo* pSI = CPvsMgr::GetShapeInfoByManager(pCI->m_iID);
 			pSI->m_pShape->PosSet(pSI->Pos());
 			pSI->m_pShape->RotSet(pSI->Rot());
 			pSI->m_pShape->ScaleSet(pSI->Scale());
 			pSI->m_pShape->Tick(-1000);
-			CN3Shape *pShape = pSI->m_pShape;
+			CN3Shape* pShape = pSI->m_pShape;
 
-			for( int k = 0; k < iSize/3; k++)
+			for (size_t k = 0; k < vecSize / 3; k++)
 			{
 				pShape->PartialGetCollision(pCI->m_ivVector[k*3], vA);		 vA *= pShape->m_Matrix;
 				pShape->PartialGetCollision(pCI->m_ivVector[k*3+1], vB);	vB *= pShape->m_Matrix;
@@ -528,7 +527,6 @@ float CPortalVolume::GetHeightNearstPosWithShape(const __Vector3& vPos, float fD
 	float fHeight = FLT_MIN;
 	ShapeInfo* pSI = nullptr;
 
-	int iCount = m_plShapeInfoList.size();
 	siiter siit = m_plShapeInfoList.begin();
 	while(siit != m_plShapeInfoList.end())
 	{
@@ -536,7 +534,7 @@ float CPortalVolume::GetHeightNearstPosWithShape(const __Vector3& vPos, float fD
 
 		int iSize = pSI->m_pShape->GetColIndexbufferCount();
 		__Vector3 vA, vB, vC;
-		for( int k = 0; k < iSize/3; k++)
+		for (int k = 0; k < iSize / 3; k++)
 		{
 			vA = pSI->m_pShape->GetColVertexByIndex(pSI->m_pShape->GetColIndexByiOrder(k*3));		 vA *= pSI->m_Matrix;
 			vB = pSI->m_pShape->GetColVertexByIndex(pSI->m_pShape->GetColIndexByiOrder(k*3+1));		 vB *= pSI->m_Matrix;
@@ -616,7 +614,6 @@ BOOL CPortalVolume::PickWideWithTerrain(int x, int y, __Vector3& vPick)
 	float t, u, v;
 	__ColIndex * pCI = nullptr;
 
-	int iCount = m_lpShapeColPartList.size();
 	ciiter ciit = m_lpShapeColPartList.begin();
 	while(ciit != m_lpShapeColPartList.end())
 	{
@@ -629,8 +626,8 @@ BOOL CPortalVolume::PickWideWithTerrain(int x, int y, __Vector3& vPick)
 		pSI->m_pShape->Tick(-1000);
 		CN3Shape *pShape = pSI->m_pShape;
 
-		int iSize = pCI->m_ivVector.size();
-		for( int k = 0; k < iSize/3; k++)
+		size_t vecSize = pCI->m_ivVector.size();
+		for (size_t k = 0; k < vecSize / 3; k++)
 		{
 			pShape->PartialGetCollision(pCI->m_ivVector[k*3], A);		 A *= pShape->m_Matrix;
 			pShape->PartialGetCollision(pCI->m_ivVector[k*3+1], B);		B *= pShape->m_Matrix;
@@ -680,22 +677,27 @@ CN3Shape* CPortalVolume::PickWithShape(int iXScreen, int iYScreen, bool bMustHav
 		}
 	}
 
-	int iSC = Shapes.size();
-	qsort(&(Shapes[0]), iSC, 4, CN3ShapeMgr::SortByCameraDistance);
-	for(int i = 0; i < iSC; i++)
+	// NOTE: This is broken. This is meant to be used with __AlphaPrimitive*, not ShapeInfo*.
+	// If called, this would crash.
+	// qsort(&Shapes[0], Shapes.size(), sizeof(ShapeInfo*), CN3ShapeMgr::SortByCameraDistance);
+
+	for (ShapeInfo* pShr : Shapes)
 	{
-		ShapeInfo* pShr = Shapes[i];
-		if(bMustHaveEvent && Shapes[i]->m_iEventID <= 0) continue; // 이벤트가 있어야 한다면...
-		Shapes[i]->m_pShape->PosSet(Shapes[i]->Pos());
-		Shapes[i]->m_pShape->RotSet(Shapes[i]->Rot());
-		Shapes[i]->m_pShape->ScaleSet(Shapes[i]->Scale());
-		if(Shapes[i]->m_pShape->CheckCollisionPrecisely(false, vPos, vDir, pvPick) >= 0)
+		// 이벤트가 있어야 한다면...
+		if (bMustHaveEvent && pShr->m_iEventID <= 0)
+			continue;
+
+		pShr->m_pShape->PosSet(pShr->Pos());
+		pShr->m_pShape->RotSet(pShr->Rot());
+		pShr->m_pShape->ScaleSet(pShr->Scale());
+
+		if (pShr->m_pShape->CheckCollisionPrecisely(false, vPos, vDir, pvPick) >= 0)
 		{
-			Shapes[i]->m_pShape->m_iEventID			= Shapes[i]->m_iEventID;
-			Shapes[i]->m_pShape->m_iEventType	 = Shapes[i]->m_iEventType;
-			Shapes[i]->m_pShape->m_iNPC_ID		   = Shapes[i]->m_iNPC_ID;
-			Shapes[i]->m_pShape->m_iNPC_Status  = Shapes[i]->m_iNPC_Status;
-			return Shapes[i]->m_pShape;
+			pShr->m_pShape->m_iEventID = pShr->m_iEventID;
+			pShr->m_pShape->m_iEventType = pShr->m_iEventType;
+			pShr->m_pShape->m_iNPC_ID = pShr->m_iNPC_ID;
+			pShr->m_pShape->m_iNPC_Status = pShr->m_iNPC_Status;
+			return pShr->m_pShape;
 		}
 	}
 

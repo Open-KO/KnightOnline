@@ -582,30 +582,36 @@ void CUITradeSellBBS::OnButtonTrade()
 
 void CUITradeSellBBS::RefreshExplanation(bool bPageUp)
 {
-	if(m_iCurIndex <= -1) return;
+	if (m_iCurIndex <= -1)
+		return;
 
-	if(bPageUp)
+	if (bPageUp)
 	{
-		if(m_iCurIndex == 0) return;
-		m_iCurIndex--;
+		if (m_iCurIndex == 0)
+			return;
+
+		--m_iCurIndex;
 	}
 	else
 	{
-		int iCnt = m_Datas.size();
-		if((m_iCurIndex+1) >= iCnt) return;
-		m_iCurIndex++;
+		if ((m_iCurIndex + 1) >= static_cast<int>(m_Datas.size()))
+			return;
+
+		++m_iCurIndex;
 	}
 
-	it_TradeSellBBS it = m_Datas.begin();
+	auto it = m_Datas.begin();
 
-	for( int i = 0 ; i < TRADE_BBS_MAX_LINE ; i++, it++ )
+	for (int i = 0; i < TRADE_BBS_MAX_LINE; i++, it++)
 	{
-		if( it == m_Datas.end() ) break;
-		if( i == m_iCurIndex )
+		if (it == m_Datas.end())
+			break;
+
+		if (i == m_iCurIndex)
 		{
 			__InfoTradeSellBBS ITSB = (*it);
 
-			m_UIExplanation.SetExplanation(m_iCurIndex,ITSB.szExplanation);
+			m_UIExplanation.SetExplanation(m_iCurIndex, ITSB.szExplanation);
 			break;
 		}
 	}//for(

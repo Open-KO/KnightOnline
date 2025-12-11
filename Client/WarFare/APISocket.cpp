@@ -95,36 +95,37 @@ void CAPISocket::Disconnect()
 
 int CAPISocket::Connect(HWND hWnd, const char* pszIP, uint32_t dwPort)
 {	
-	if (!pszIP || !dwPort) return -1;
+	if (pszIP == nullptr || dwPort == 0)
+		return -1;
 
-	//
-	if ((SOCKET)m_hSocket != INVALID_SOCKET)
+	if ((SOCKET) m_hSocket != INVALID_SOCKET)
 		this->Disconnect();
 
 	//
-	int i=0;
 	struct sockaddr_in far server;
-	struct hostent far *hp;
+	struct hostent far* hp;
   
-	if( (pszIP[0] >= '0') && (pszIP[0] <= '9') ) 
+	if ((pszIP[0] >= '0') && (pszIP[0] <= '9'))
 	{
-	   memset((char *) &server,0,sizeof(server));
+		memset(&server, 0, sizeof(server));
 	   server.sin_family      = AF_INET;
 	   server.sin_addr.s_addr = inet_addr(pszIP);
 	   server.sin_port        = htons((u_short)dwPort);
 	}
 	else
 	{
-		if ( (hp = (hostent far *)gethostbyname(pszIP)) == nullptr)
+		hp = gethostbyname(pszIP);
+		if (hp == nullptr)
 		{
 #ifdef _DEBUG
 			std::string msg = fmt::format("Error: Connecting to {}.", pszIP);
 			MessageBoxA(hWnd, msg.c_str(), "socket error", MB_OK | MB_ICONSTOP);
 #endif
-			return INVALID_SOCKET;
+			return -1;
 		}
-		memset((char *) &server,0,sizeof(server));
-		memcpy((char *) &server.sin_addr,hp->h_addr,hp->h_length);
+
+		memset(&server, 0, sizeof(server));
+		memcpy(&server.sin_addr, hp->h_addr, hp->h_length);
 		server.sin_family = hp->h_addrtype;
 		server.sin_port = htons((u_short)dwPort);  
 	}// else 
@@ -174,7 +175,7 @@ int CAPISocket::Connect(HWND hWnd, const char* pszIP, uint32_t dwPort)
 
 int	CAPISocket::ReConnect()
 {
-	return this->Connect(m_hWndTarget, m_szIP.c_str(), m_dwPort);
+	return Connect(m_hWndTarget, m_szIP.c_str(), m_dwPort);
 }
 
 void CAPISocket::Receive()
@@ -182,11 +183,11 @@ void CAPISocket::Receive()
 	if (INVALID_SOCKET == (SOCKET)m_hSocket || FALSE == m_bConnected)
 		return;
 
-	u_long	dwPktSize;
+	u_long	dwPktSize = 0;
 	u_long	dwRead = 0;
 	int		count = 0;
 
-	ioctlsocket((SOCKET)m_hSocket, FIONREAD, &dwPktSize);
+	ioctlsocket((SOCKET) m_hSocket, FIONREAD, &dwPktSize);
 	while(dwRead < dwPktSize)
 	{
 		count = recv((SOCKET)m_hSocket, (char*)m_RecvBuf, RECEIVE_BUF_SIZE, 0);

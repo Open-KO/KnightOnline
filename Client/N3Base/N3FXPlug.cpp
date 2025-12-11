@@ -7,7 +7,6 @@
 #include "N3FXBundle.h"
 #include "N3Chr.h"
 
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -15,8 +14,8 @@ static char THIS_FILE[]=__FILE__;
 
 ////////////////////////////////////////////////////////////////////////////////////
 // CN3FXPlugPart
-CN3FXPlugPart::CN3FXPlugPart() :
-m_vOffsetPos(0,0,0), m_vOffsetDir(0,0,1)
+CN3FXPlugPart::CN3FXPlugPart()
+	: m_vOffsetPos(0, 0, 0), m_vOffsetDir(0, 0, 1)
 {
 	m_dwType |= OBJ_FX_PLUG_PART;
 	m_pFXB = nullptr;
@@ -155,8 +154,8 @@ CN3FXPlug::CN3FXPlug()
 
 CN3FXPlug::~CN3FXPlug()
 {
-	int i, nCount = m_FXPParts.size();
-	for (i=0; i<nCount; ++i) delete m_FXPParts[i];
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		delete pPart;
 	m_FXPParts.clear();
 }
 
@@ -164,21 +163,25 @@ void CN3FXPlug::Release()
 {
 	CN3BaseFileAccess::Release();
 
-	int i, nCount = m_FXPParts.size();
-	for (i=0; i<nCount; ++i) delete m_FXPParts[i];
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		delete pPart;
 	m_FXPParts.clear();
 }
 
 bool CN3FXPlug::Load(HANDLE hFile)
 {
-	if (false == CN3BaseFileAccess::Load(hFile)) return false;
+	if (!CN3BaseFileAccess::Load(hFile))
+		return false;
+
 	__ASSERT(0 == m_FXPParts.size(), "must 0");
 	DWORD dwNum;
-	int i, nCount;
+	int nCount;
 	ReadFile(hFile, &nCount, sizeof(nCount), &dwNum, nullptr);		// Part의 갯수
 
-	if (nCount > 0) m_FXPParts.assign(nCount, nullptr);
-	for(i=0; i<nCount; ++i)
+	if (nCount > 0)
+		m_FXPParts.assign(nCount, nullptr);
+
+	for (int i = 0; i < nCount; ++i)
 	{
 		m_FXPParts[i] = new CN3FXPlugPart();
 		m_FXPParts[i]->Load(hFile);
@@ -188,46 +191,45 @@ bool CN3FXPlug::Load(HANDLE hFile)
 
 void CN3FXPlug::Tick(const CN3Chr* pChr)
 {
-	if (nullptr == pChr) return;
-	int i, nCount = m_FXPParts.size();
-	for(i=0; i<nCount; ++i) m_FXPParts[i]->Tick(pChr);
+	if (pChr == nullptr)
+		return;
+
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		pPart->Tick(pChr);
 }
 
 void CN3FXPlug::Render()
 {
-	int i, nCount = m_FXPParts.size();
-	for(i=0; i<nCount; ++i) m_FXPParts[i]->Render();
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		pPart->Render();
 }
 
 void CN3FXPlug::StopAll(bool bImmediately)
 {
-	int i, nCount = m_FXPParts.size();
-	for(i=0; i<nCount; ++i)
-	{
-		m_FXPParts[i]->StopFXB(bImmediately);
-	}
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		pPart->StopFXB(bImmediately);
 }
 
 void CN3FXPlug::TriggerAll()
 {
-	int i, nCount = m_FXPParts.size();
-	for(i=0; i<nCount; ++i)
-	{
-		m_FXPParts[i]->TriggerFXB();
-	}
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		pPart->TriggerFXB();
 }
 
 #ifdef _N3TOOL
 bool CN3FXPlug::Save(HANDLE hFile)
 {
-	if (false == CN3BaseFileAccess::Save(hFile)) return false;
+	if (!CN3BaseFileAccess::Save(hFile))
+		return false;
 
 	RemoveFXPParts_HaveNoBundle();	// 번들 없는 파트들 지우기
 
 	DWORD dwNum;
-	int i, nCount = m_FXPParts.size();
+	int nCount = static_cast<int>(m_FXPParts.size());
 	WriteFile(hFile, &nCount, sizeof(nCount), &dwNum, nullptr);		// Part의 갯수
-	for(i=0; i<nCount; ++i)	m_FXPParts[i]->Save(hFile);
+
+	for (CN3FXPlugPart* pPart : m_FXPParts)
+		pPart->Save(hFile);
 
 	return true;
 }

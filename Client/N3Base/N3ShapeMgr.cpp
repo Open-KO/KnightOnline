@@ -994,13 +994,13 @@ CN3Shape* CN3ShapeMgr::Pick(int iXScreen, int iYScreen, bool bMustHaveEvent, __V
 	::_Convert2D_To_3DCoordinate(iXScreen, iYScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
 
 	// 눈에 보이는것만 대상으로 해서...
-	int iSC = m_ShapesToRender.size();
+	size_t shapeCount = m_ShapesToRender.size();
 
 	// 거리순으로 정렬..
 	std::vector<CN3Shape*> Shapes(m_ShapesToRender.begin(), m_ShapesToRender.end());
 
 	if (Shapes.size() > 1)
-		qsort(&Shapes[0], iSC, sizeof(CN3Shape*), SortByCameraDistance);
+		qsort(&Shapes[0], shapeCount, sizeof(CN3Shape*), SortByCameraDistance);
 
 	for (CN3Shape* pShape : Shapes)
 	{

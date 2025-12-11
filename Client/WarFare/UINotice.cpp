@@ -85,27 +85,29 @@ bool CUINotice::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 void CUINotice::GenerateText()
 {
-	if(nullptr == m_pText_Notice) return;
-	
+	if (m_pText_Notice == nullptr)
+		return;
+
 	// 글자수를 센다..
-	int iTextLen = 0;
-	it_String it = m_Texts.begin(), itEnd = m_Texts.end();
-	for(; it != itEnd; it++)
-		iTextLen += it->size() + 3; // LineFeed, Carriage return
+	size_t textLength = 0;
+	auto it = m_Texts.begin(), itEnd = m_Texts.end();
+	for (; it != itEnd; it++)
+		textLength += it->size() + 3; // LineFeed, Carriage return
 
-	if(iTextLen <= 0) return;
+	if (textLength == 0)
+		return;
 
-	std::vector<char> szBuff(iTextLen * 2, 0);
+	std::vector<char> szBuff(textLength * 2, 0);
 
 	// 글자들을 붙이고  // LineFeed, Carriage return 을 붙인다.
 	it = m_Texts.begin(); itEnd = m_Texts.end();
-	for(; it != itEnd; it++)
+	for (; it != itEnd; it++)
 	{
-		lstrcat(&(szBuff[0]), it->c_str());
-		lstrcat(&(szBuff[0]), "\n");
+		lstrcat(&szBuff[0], it->c_str());
+		lstrcat(&szBuff[0], "\n");
 	}
 
-	m_pText_Notice->SetString(&(szBuff[0])); // 글자 적용..
+	m_pText_Notice->SetString(&szBuff[0]); // 글자 적용..
 }
 
 bool CUINotice::OnKeyPress(int iKey)

@@ -184,7 +184,7 @@ int APIENTRY WinMain(
 
 	CGameProcedure::StaticMemberRelease();
 
-	return msg.wParam;
+	return static_cast<int>(msg.wParam);
 }
 
 HWND CreateMainWindow(HINSTANCE hInstance)

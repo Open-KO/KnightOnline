@@ -171,8 +171,7 @@ bool CGameProcCharacterCreate::MsgSendCharacterCreate()
 	e_ErrorCharacterCreate eErrCode = ERROR_CHARACTER_CREATE_SUCCESS;
 	const std::string& szID = s_pPlayer->IDString();
 
-	int iIDLength = szID.size();
-	if(iIDLength <= 0)
+	if (szID.empty())
 	{
 		eErrCode = ERROR_CHARACTER_CREATE_INVALID_NAME;
 	}
@@ -196,40 +195,40 @@ bool CGameProcCharacterCreate::MsgSendCharacterCreate()
 	{
 		// 이름에 빈칸이나 특수문자가 들어 있는지 확인
 		bool bHasSpecialLetter = false;
-		for(int i = 0; i < iIDLength; i++)
+		for (char c : szID)
 		{
 			// CompadmreString(LOCALE_USER_DEFAULT, NORM_IGNOREWIDTH, id, strlen(id), pUser->m_UserId, strlen(pUser->m_UserId) ) == CSTR_EQUAL )
-			if(	'~' == szID[i] || 
-				'`' == szID[i] || 
-				'!' == szID[i] || 
-				'@' == szID[i] || 
-				'#' == szID[i] || 
-				'$' == szID[i] || 
-				'%' == szID[i] || 
-				'^' == szID[i] || 
-				'&' == szID[i] || 
-				'*' == szID[i] || 
-				'(' == szID[i] || 
-				')' == szID[i] || 
-//				'_' == szID[i] || 
-				'-' == szID[i] || 
-				'+' == szID[i] || 
-				'=' == szID[i] || 
-				'|' == szID[i] || 
-				'\\' == szID[i] || 
-				'<' == szID[i] || 
-				'>' == szID[i] || 
-				',' == szID[i] || 
-				'.' == szID[i] || 
-				'?' == szID[i] || 
-				'/' == szID[i] || 
-				'{' == szID[i] || 
-				'[' == szID[i] || 
-				'}' == szID[i] || 
-				']' == szID[i] ||
-				'\"' == szID[i] ||
-				'\'' == szID[i] ||
-				' ' == szID[i] ) 
+			if(	'~' == c || 
+				'`' == c || 
+				'!' == c || 
+				'@' == c || 
+				'#' == c || 
+				'$' == c || 
+				'%' == c || 
+				'^' == c || 
+				'&' == c || 
+				'*' == c || 
+				'(' == c || 
+				')' == c || 
+//				'_' == c || 
+				'-' == c || 
+				'+' == c || 
+				'=' == c || 
+				'|' == c || 
+				'\\' == c || 
+				'<' == c || 
+				'>' == c || 
+				',' == c || 
+				'.' == c || 
+				'?' == c || 
+				'/' == c || 
+				'{' == c || 
+				'[' == c || 
+				'}' == c || 
+				']' == c ||
+				'\"' == c ||
+				'\'' == c ||
+				' ' == c ) 
 			{
 				bHasSpecialLetter = true;
 				eErrCode = ERROR_CHARACTER_CREATE_INVALID_NAME_HAS_SPECIAL_LETTER;
@@ -245,9 +244,9 @@ bool CGameProcCharacterCreate::MsgSendCharacterCreate()
 
 			uint8_t byBuff[64];
 			int iOffset = 0;
-			CAPISocket::MP_AddByte(byBuff, iOffset,  WIZ_NEW_CHAR);					// 커멘드.
+			CAPISocket::MP_AddByte(byBuff, iOffset,  WIZ_NEW_CHAR);						// 커멘드.
 			CAPISocket::MP_AddByte(byBuff, iOffset, CGameProcedure::s_iChrSelectIndex);	// 캐릭터 인덱스 b
-			CAPISocket::MP_AddShort(byBuff, iOffset, iIDLength);						// Id 길이 s
+			CAPISocket::MP_AddShort(byBuff, iOffset, static_cast<int16_t>(szID.length())); // Id 길이 s
 			CAPISocket::MP_AddString(byBuff, iOffset, s_pPlayer->IDString());			// ID 문자열 str
 			CAPISocket::MP_AddByte(byBuff, iOffset, s_pPlayer->m_InfoBase.eRace);		// 종족 b
 			CAPISocket::MP_AddShort(byBuff, iOffset, s_pPlayer->m_InfoBase.eClass);		// 직업 b

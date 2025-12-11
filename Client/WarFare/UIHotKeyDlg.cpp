@@ -1131,7 +1131,7 @@ void CUIHotKeyDlg::RenderCooldown(const __IconItemSkill* pSkill, float fCooldown
 
 	CN3Base::s_lpD3DDev->SetFVF(FVF_TRANSFORMED);
 	// CN3Base::s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	CN3Base::s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, vertices.size() - 2, &vertices[0], sizeof(__VertexTransformedColor));
+	CN3Base::s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, static_cast<UINT>(vertices.size()) - 2, &vertices[0], sizeof(__VertexTransformedColor));
 
 	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, dwZ);
 	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_FOGENABLE, dwFog);

@@ -604,7 +604,7 @@ CN3PMesh *CN3PMeshCreate::CreateRendererMesh()
 		__ASSERT(pPMesh->m_pCollapses, "Collpases pointer is NULL!");
 	}
 
-	pPMesh->m_iNumCollapses = m_pCollapseUpTo - m_pCollapses;
+	pPMesh->m_iNumCollapses = static_cast<int>(m_pCollapseUpTo - m_pCollapses);
 
 	// Copy the collapses in reverse order, so that the lowest detail collapses are first
 	int i;
@@ -616,7 +616,7 @@ CN3PMesh *CN3PMeshCreate::CreateRendererMesh()
 		CN3PMesh::__EdgeCollapse &dest = pPMesh->m_pCollapses[i];
 
 		dest.CollapseTo = src.CollapseTo;
-		dest.iIndexChanges = (src.IndexChanges - m_pAllIndexChanges);
+		dest.iIndexChanges = static_cast<int>(src.IndexChanges - m_pAllIndexChanges);
 		dest.NumIndicesToChange = src.NumIndicesToChange;
 		dest.NumIndicesToLose = src.NumTrianglesToLose * 3;
 		dest.NumVerticesToLose = src.NumVerticesToLose;
@@ -673,7 +673,7 @@ int CN3PMeshCreate::ReGenerate(CN3PMesh *pPMesh)
 		__ASSERT(pPMesh->m_pCollapses, "Collpases pointer is NULL!");
 	}
 
-	pPMesh->m_iNumCollapses = m_pCollapseUpTo - m_pCollapses;
+	pPMesh->m_iNumCollapses = static_cast<int>(m_pCollapseUpTo - m_pCollapses);
 
 	// Copy the collapses in reverse order, so that the lowest detail collapses are first
 	int i;
@@ -685,8 +685,8 @@ int CN3PMeshCreate::ReGenerate(CN3PMesh *pPMesh)
 		CN3PMesh::__EdgeCollapse &dest = pPMesh->m_pCollapses[i];
 
 		dest.CollapseTo = src.CollapseTo;
-		if(src.IndexChanges && m_pAllIndexChanges) 
-			dest.iIndexChanges = (src.IndexChanges - m_pAllIndexChanges);
+		if (src.IndexChanges != nullptr && m_pAllIndexChanges != nullptr)
+			dest.iIndexChanges = static_cast<int>(src.IndexChanges - m_pAllIndexChanges);
 		else
 			dest.iIndexChanges = 0;
 		dest.NumIndicesToChange = src.NumIndicesToChange;

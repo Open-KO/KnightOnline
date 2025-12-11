@@ -26,9 +26,9 @@ CUIMessageBoxManager::~CUIMessageBoxManager()
 	Release();
 }
 
-int CUIMessageBoxManager::GetCount()
+int CUIMessageBoxManager::GetCount() const
 {
-	return m_UBMs.size();
+	return static_cast<int>(m_UBMs.size());
 }
 
 std::string CUIMessageBoxManager::MessageBoxPost(const std::string& szMsg, const std::string& szTitle, int iStyle, e_Behavior eBehavior)

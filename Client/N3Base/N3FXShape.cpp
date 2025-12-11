@@ -36,8 +36,8 @@ CN3FXSPart::CN3FXSPart()
 
 CN3FXSPart::~CN3FXSPart()
 {
-	int iTC = m_TexRefs.size();
-	for(int i = 0; i < iTC; i++) s_MngTex.Delete(&m_TexRefs[i]);
+	for (size_t i = 0; i < m_TexRefs.size(); i++)
+		s_MngTex.Delete(&m_TexRefs[i]);
 
 //	if(m_pPM) { m_pPM->Release(); delete m_pPM; m_pPM = nullptr; }
 }
@@ -51,8 +51,8 @@ void CN3FXSPart::Release()
 	m_fTexFPS = 10.0f; // Texture Animation Interval;
 	m_fTexIndex = 0; // Current Texture Index.. Animation 시킬때 필요한 인덱스이다..
 
-	int iTC = m_TexRefs.size();
-	for(int i = 0; i < iTC; i++) s_MngTex.Delete(&m_TexRefs[i]);
+	for (size_t i = 0; i < m_TexRefs.size(); i++)
+		s_MngTex.Delete(&m_TexRefs[i]);
 	m_TexRefs.clear();
 
 //	if(m_pPM) { m_pPM->Release(); delete m_pPM; m_pPM = nullptr; }
@@ -64,10 +64,11 @@ void CN3FXSPart::Release()
 
 void CN3FXSPart::TexAlloc(int nCount)
 {
-	if(nCount <= 0) return;
+	if (nCount <= 0)
+		return;
 
-	int iTC = m_TexRefs.size();
-	for(int i = 0; i < iTC; i++) s_MngTex.Delete(&m_TexRefs[i]);
+	for (size_t i = 0; i < m_TexRefs.size(); i++)
+		s_MngTex.Delete(&m_TexRefs[i]);
 	m_TexRefs.clear();
 
 	m_TexRefs.assign(nCount, nullptr);
@@ -129,9 +130,8 @@ void CN3FXSPart::Tick(const __Matrix44& mtxParent)
 	float fLOD = fDist * s_CameraData.fFOV;
 	m_FXPMInst.SetLOD(fLOD);
 
-
-	int iTC = m_TexRefs.size();
-	if(iTC > 1) m_fTexIndex += CN3Base::s_fSecPerFrm * m_fTexFPS;
+	if (m_TexRefs.size() > 1)
+		m_fTexIndex += CN3Base::s_fSecPerFrm * m_fTexFPS;
 }
 
 void CN3FXSPart::Render()
@@ -144,13 +144,17 @@ void CN3FXSPart::Render()
 #endif
 	
 	LPDIRECT3DTEXTURE9 lpTex = nullptr;
-	int iTC = m_TexRefs.size();
-	if(iTC > 0)
+	int iTC = static_cast<int>(m_TexRefs.size());
+	if (iTC > 0)
 	{
-		int iTexIndex = (int)m_fTexIndex;
-		if(m_bTexLoop) iTexIndex = (int)m_fTexIndex % iTC;
-		if(iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex]) lpTex = m_TexRefs[iTexIndex]->Get();
-		else return;
+		int iTexIndex = (int) m_fTexIndex;
+		if (m_bTexLoop)
+			iTexIndex = (int) m_fTexIndex % iTC;
+
+		if (iTexIndex >= 0 && iTexIndex < iTC && m_TexRefs[iTexIndex] != nullptr)
+			lpTex = m_TexRefs[iTexIndex]->Get();
+		else
+			return;
 	}
 
 	if(m_Mtl.nRenderFlags & RF_ALPHABLENDING) // Alpha 사용
@@ -320,22 +324,20 @@ CN3FXShape::CN3FXShape()
 
 CN3FXShape::~CN3FXShape()
 {
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	for (CN3FXSPart* pPart : m_Parts)
 	{
-		m_Parts[i]->Release();
-		delete m_Parts[i];		
+		pPart->Release();
+		delete pPart;
 	}
 	m_Parts.clear();
 }
 
 void CN3FXShape::Release()
 {
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	for (CN3FXSPart* pPart : m_Parts)
 	{
-		m_Parts[i]->Release();
-		delete m_Parts[i];
+		pPart->Release();
+		delete pPart;
 	}
 	m_Parts.clear();
 	
@@ -347,23 +349,16 @@ void CN3FXShape::Tick(float fFrm)
 	CN3TransformCollision::Tick(m_fFrmCur);
 	m_mtxFinalTransform = CN3Transform::m_Matrix * m_mtxParent;
 
-	CN3FXSPart* pPD = nullptr;
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
-	{
-		m_Parts[i]->Tick(m_mtxFinalTransform);
-	}
+	for (CN3FXSPart* pPart : m_Parts)
+		pPart->Tick(m_mtxFinalTransform);
 }
 
 // 카메라 위치, 카메라 평면(관찰 절두체 평면) -> 12개의 벡터 배열로 되어 있다.
 // [0][1]:카메라 위치와 벡터, [2][3]:카메라 범위 위치와 방향 벡터, [4][5] ~ [10][11]:상하좌우평면벡터
 void CN3FXShape::Render()
 {
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
-	{
-		m_Parts[i]->Render();
-	}
+	for (CN3FXSPart* pPart : m_Parts)
+		pPart->Render();
 }
 
 bool CN3FXShape::Load(HANDLE hFile)
@@ -372,19 +367,20 @@ bool CN3FXShape::Load(HANDLE hFile)
 
 	DWORD dwRWC = 0;
 	
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++) delete m_Parts[i];
+	for (CN3FXSPart* pPart : m_Parts)
+		delete pPart;
 	m_Parts.clear();
 
+	int iPC = 0;
 	ReadFile(hFile, &iPC, 4, &dwRWC, nullptr); // Part Count
-	if(iPC > 0)
+	if (iPC > 0)
 	{
 		m_Parts.assign(iPC, nullptr);
-		for(int i = 0; i < iPC; i++)
+		for (int i = 0; i < iPC; i++)
 		{
 			m_Parts[i] = new CN3FXSPart();
 			m_Parts[i]->m_pRefShape = this;
-			if(!m_Parts[i]->Load(hFile)) return false;
+			if (!m_Parts[i]->Load(hFile)) return false;
 			//m_Parts[i]->ReCalcMatrix(m_Matrix); // Part Matrix 계산
 		}
 	}
@@ -456,19 +452,18 @@ void CN3FXShape::FindMinMax()
 	// 가장 큰 지점찾기..
 	static __Matrix44 mtxWI;
 	D3DXMatrixInverse(&mtxWI, nullptr, &m_mtxFinalTransform); // World Matrix Inverse
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	for (CN3FXSPart* pPart : m_Parts)
 	{
-		//m_Parts[i]->ReCalcMatrix(m_mtxFinalTransform);
-		vMinTmp = m_Parts[i]->Min() * mtxWI; // 월드 상의 최소값을 로컬 좌표로 바꾸어준다..
-		vMaxTmp = m_Parts[i]->Max() * mtxWI; // 월드 상의 최대값을 로컬 좌표로 바꾸어준다..
+		//pPart->ReCalcMatrix(m_mtxFinalTransform);
+		vMinTmp = pPart->Min() * mtxWI; // 월드 상의 최소값을 로컬 좌표로 바꾸어준다..
+		vMaxTmp = pPart->Max() * mtxWI; // 월드 상의 최대값을 로컬 좌표로 바꾸어준다..
 
-		if(vMinTmp.x < vMin.x) vMin.x = vMinTmp.x;
-		if(vMinTmp.y < vMin.y) vMin.y = vMinTmp.y;
-		if(vMinTmp.z < vMin.z) vMin.z = vMinTmp.z;
-		if(vMaxTmp.x > vMax.x) vMax.x = vMaxTmp.x;
-		if(vMaxTmp.y > vMax.y) vMax.y = vMaxTmp.y;
-		if(vMaxTmp.z > vMax.z) vMax.z = vMaxTmp.z;
+		if (vMinTmp.x < vMin.x) vMin.x = vMinTmp.x;
+		if (vMinTmp.y < vMin.y) vMin.y = vMinTmp.y;
+		if (vMinTmp.z < vMin.z) vMin.z = vMinTmp.z;
+		if (vMaxTmp.x > vMax.x) vMax.x = vMaxTmp.x;
+		if (vMaxTmp.y > vMax.y) vMax.y = vMaxTmp.y;
+		if (vMaxTmp.z > vMax.z) vMax.z = vMaxTmp.z;
 	}
 
 	// 최대 최소값을 저장
@@ -519,15 +514,15 @@ void CN3FXShape::Duplicate(CN3FXShape* pSrc)
 	m_fFrmWhole = pSrc->m_fFrmWhole;
 	m_fFrmCur = 0.0f;
 
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++) delete m_Parts[i];
+	for (CN3FXSPart* pPart : m_Parts)
+		delete pPart;
 	m_Parts.clear();
 
-	iPC = pSrc->m_Parts.size();
-	if(iPC > 0)
+	size_t partCount = pSrc->m_Parts.size();
+	if (partCount > 0)
 	{
-		m_Parts.assign(iPC, nullptr);
-		for(int i = 0; i < iPC; i++)
+		m_Parts.assign(partCount, nullptr);
+		for (size_t i = 0; i < partCount; i++)
 		{
 			m_Parts[i] = new CN3FXSPart();
 			m_Parts[i]->m_pRefShape = this;
@@ -566,23 +561,32 @@ void CN3FXShape::SetPartsMtl(BOOL bAlpha, uint32_t dwSrcBlend, uint32_t dwDestBl
 	m_dwLight = dwLight;
 	m_dwDoubleSide = dwDoubleSide;
 
-	uint32_t dwRenderFlag = RF_ALPHABLENDING | RF_NOTUSEFOG | RF_DIFFUSEALPHA | RF_NOTUSELIGHT | RF_DOUBLESIDED | RF_NOTZWRITE | RF_NOTZBUFFER; 
-	if(m_dwZEnable == D3DZB_TRUE) dwRenderFlag ^= RF_NOTZBUFFER;
-	if(m_dwZWrite == TRUE) dwRenderFlag ^= RF_NOTZWRITE;
-	if(m_dwDoubleSide != D3DCULL_NONE) dwRenderFlag ^= RF_DOUBLESIDED;
-	if(m_dwLight == TRUE) dwRenderFlag ^= RF_NOTUSELIGHT;
-	if(m_bAlpha != TRUE) dwRenderFlag ^= RF_ALPHABLENDING;
+	uint32_t dwRenderFlag = RF_ALPHABLENDING | RF_NOTUSEFOG | RF_DIFFUSEALPHA | RF_NOTUSELIGHT | RF_DOUBLESIDED | RF_NOTZWRITE | RF_NOTZBUFFER;
 
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++) m_Parts[i]->m_Mtl.nRenderFlags = dwRenderFlag;
+	if (m_dwZEnable == D3DZB_TRUE)
+		dwRenderFlag ^= RF_NOTZBUFFER;
+
+	if (m_dwZWrite == TRUE)
+		dwRenderFlag ^= RF_NOTZWRITE;
+
+	if (m_dwDoubleSide != D3DCULL_NONE)
+		dwRenderFlag ^= RF_DOUBLESIDED;
+
+	if (m_dwLight == TRUE)
+		dwRenderFlag ^= RF_NOTUSELIGHT;
+
+	if (m_bAlpha != TRUE)
+		dwRenderFlag ^= RF_ALPHABLENDING;
+
+	for (CN3FXSPart* pPart : m_Parts)
+		pPart->m_Mtl.nRenderFlags = dwRenderFlag;
 }
 
 void CN3FXShape::SetMaxLOD()
 {
-	int iPC = m_Parts.size();
-	for(int i = 0; i < iPC; i++)
+	for (CN3FXSPart* pPart : m_Parts)
 	{
-		m_Parts[i]->m_bOutOfCameraRange = FALSE;
-		m_Parts[i]->m_FXPMInst.SetLOD(0);
+		pPart->m_bOutOfCameraRange = FALSE;
+		pPart->m_FXPMInst.SetLOD(0);
 	}
 }

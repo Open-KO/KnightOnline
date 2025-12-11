@@ -697,23 +697,14 @@ void CPlayerBase::TickDurationColor()
 		m_fDurationColorTime = 0;
 		m_fDurationColorTimeCur = 0;
 
-		CN3CPart* pPart = nullptr;
-		int iPC = m_Chr.m_Parts.size();
-		for(int i = 0; i < iPC; i++)
-		{
-			pPart = m_Chr.m_Parts[i];
+		for (CN3CPart* pPart : m_Chr.m_Parts)
 			pPart->m_Mtl = pPart->m_MtlOrg; // 원래 색대로 돌린다.
-		}
 	}
 	else
 	{
 		float fD = m_fDurationColorTimeCur / m_fDurationColorTime;
-		CN3CPart* pPart = nullptr;
-		int iPC = m_Chr.m_Parts.size();
-		for(int i = 0; i < iPC; i++)
+		for (CN3CPart* pPart : m_Chr.m_Parts)
 		{
-			pPart = m_Chr.m_Parts[i];
-
 //			pPart->m_Mtl.Ambient.a = pPart->m_MtlOrg.Ambient.a * fD + m_cvDuration.a * (1.0f - fD);
 			pPart->m_Mtl.Ambient.r = pPart->m_MtlOrg.Ambient.r * fD + m_cvDuration.r * (1.0f - fD);
 			pPart->m_Mtl.Ambient.g = pPart->m_MtlOrg.Ambient.g * fD + m_cvDuration.g * (1.0f - fD);

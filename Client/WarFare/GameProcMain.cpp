@@ -288,39 +288,43 @@ void CGameProcMain::Init()
 
 	s_SndMgr.ReleaseStreamObj(&s_pSnd_BGM);
 
-	if(m_pWarMessage) m_pWarMessage->InitFont();
-	this->InitUI(); // 국가에 따라 다른 UI 로딩...
-	this->InitZone(s_pPlayer->m_InfoExt.iZoneCur, s_pPlayer->Position()); // 존 로딩..
+	if (m_pWarMessage != nullptr)
+		m_pWarMessage->InitFont();
+
+	InitUI(); // 국가에 따라 다른 UI 로딩...
+	InitZone(s_pPlayer->m_InfoExt.iZoneCur, s_pPlayer->Position()); // 존 로딩..
 
 	//sound obj...
-	if(m_pSnd_Battle==nullptr)
+	if (m_pSnd_Battle == nullptr)
 	{
 		int iIDSndBattle = ((NATION_KARUS == s_pPlayer->m_InfoBase.eNation) ? ID_SOUND_BGM_KA_BATTLE : ID_SOUND_BGM_EL_BATTLE);
 		m_pSnd_Battle = s_pEng->s_SndMgr.CreateStreamObj(iIDSndBattle);	// 전투음악 ID
-		if(m_pSnd_Battle) 
+		if (m_pSnd_Battle)
 		{
 			m_pSnd_Battle->Looping(true);
 			m_pSnd_Battle->Stop();
 		}
 	}
-	if(m_pSnd_Town==nullptr)
+
+	if (m_pSnd_Town == nullptr)
 	{
 		m_pSnd_Town = s_pEng->s_SndMgr.CreateStreamObj(ID_SOUND_BGM_TOWN);	// 마을음악 ID
-		if(m_pSnd_Town)
+		if (m_pSnd_Town)
 		{
 			m_pSnd_Town->Looping(true);
 			m_pSnd_Town->Play(nullptr, 3.0f);
 		}
 	}
 
-	if(s_pUILoading) s_pUILoading->Render("Loading Character Data...", 0);
+	if (s_pUILoading != nullptr)
+		s_pUILoading->Render("Loading Character Data...", 0);
 
 	// 경로 기억..
 	char szPathOld[_MAX_PATH], szPathFind[_MAX_PATH];
 	::GetCurrentDirectory(_MAX_PATH, szPathOld);
 
 	_finddata_t fi;
-	long hFind = -1;
+	intptr_t hFind = 0;
 
 	// 리소스 다 읽기..
 	// 에니메이션 다 읽기..
@@ -328,21 +332,22 @@ void CGameProcMain::Init()
 	lstrcat(szPathFind, "\\Chr");
 	::SetCurrentDirectory(szPathFind);
 	hFind = _findfirst("*.N3Anim", &fi);
-	if(hFind)
+	if (hFind)
 	{
 		std::string szFN = "Chr\\";
 		szFN += fi.name;
-		CN3AnimControl* pObjTmp = s_MngAniCtrl.Get(szFN.c_str());
-		while(_findnext(hFind, &fi) != -1)
+		CN3AnimControl* pObjTmp = s_MngAniCtrl.Get(szFN);
+		while (_findnext(hFind, &fi) != -1)
 		{
 			szFN = "Chr\\";
 			szFN += fi.name;
-			pObjTmp = s_MngAniCtrl.Get(szFN.c_str());
+			pObjTmp = s_MngAniCtrl.Get(szFN);
 		}
 	}
 	_findclose(hFind);
 
-	if(s_pUILoading) s_pUILoading->Render("Loading Character Data... 10 %", 10);
+	if (s_pUILoading != nullptr)
+		s_pUILoading->Render("Loading Character Data... 10 %", 10);
 
 	// 리소스 다 읽기..
 	// 텍스처 다 읽기..
@@ -350,43 +355,45 @@ void CGameProcMain::Init()
 	lstrcat(szPathFind, "\\Item");
 	::SetCurrentDirectory(szPathFind);
 	hFind = _findfirst("*.dxt", &fi);
-	if(hFind)
+	if (hFind)
 	{
 		std::string szFN = "Item\\";
 		szFN += fi.name;
-		CN3Texture* pObjTmp = s_MngTex.Get(szFN.c_str());
-		while(_findnext(hFind, &fi) != -1)
+		CN3Texture* pObjTmp = s_MngTex.Get(szFN);
+		while (_findnext(hFind, &fi) != -1)
 		{
 			szFN = "Item\\";
 			szFN += fi.name;
-			pObjTmp = s_MngTex.Get(szFN.c_str());
+			pObjTmp = s_MngTex.Get(szFN);
 		}
 	}
 	_findclose(hFind);
 
-	if(s_pUILoading) s_pUILoading->Render("Loading Character Data... 25 %", 25);
-	
+	if (s_pUILoading != nullptr)
+		s_pUILoading->Render("Loading Character Data... 25 %", 25);
+
 	// 리소스 다 읽기..
 	// 조인트 다 읽기..
 	lstrcpy(szPathFind, szPathOld);
 	lstrcat(szPathFind, "\\Chr");
 	::SetCurrentDirectory(szPathFind);
 	hFind = _findfirst("*.N3Joint", &fi);
-	if(hFind)
+	if (hFind)
 	{
 		std::string szFN = "Chr\\";
 		szFN += fi.name;
-		CN3Joint* pObjTmp = s_MngJoint.Get(szFN.c_str());
-		while(_findnext(hFind, &fi) != -1)
+		CN3Joint* pObjTmp = s_MngJoint.Get(szFN);
+		while (_findnext(hFind, &fi) != -1)
 		{
 			szFN = "Chr\\";
 			szFN += fi.name;
-			pObjTmp = s_MngJoint.Get(szFN.c_str());
+			pObjTmp = s_MngJoint.Get(szFN);
 		}
 	}
 	_findclose(hFind);
 
-	if(s_pUILoading) s_pUILoading->Render("Loading Character Data... 50 %", 50);
+	if (s_pUILoading != nullptr)
+		s_pUILoading->Render("Loading Character Data... 50 %", 50);
 
 	// 리소스 다 읽기..
 	// 스킨 읽기..
@@ -394,45 +401,47 @@ void CGameProcMain::Init()
 	lstrcat(szPathFind, "\\Item");
 	::SetCurrentDirectory(szPathFind);
 	hFind = _findfirst("*.N3CSkins", &fi);
-	if(hFind)
+	if (hFind)
 	{
 		std::string szFN = "Item\\";
 		szFN += fi.name;
-		CN3CPartSkins* pObjTmp = s_MngSkins.Get(szFN.c_str());
-		while(_findnext(hFind, &fi) != -1)
+		CN3CPartSkins* pObjTmp = s_MngSkins.Get(szFN);
+		while (_findnext(hFind, &fi) != -1)
 		{
 			szFN = "Item\\";
 			szFN += fi.name;
-			pObjTmp = s_MngSkins.Get(szFN.c_str());
+			pObjTmp = s_MngSkins.Get(szFN);
 		}
 	}
 	_findclose(hFind);
 
-	if(s_pUILoading) s_pUILoading->Render("Loading Character Data... 75 %", 75);
-	
+	if (s_pUILoading != nullptr)
+		s_pUILoading->Render("Loading Character Data... 75 %", 75);
+
 	// 리소스 다 읽기..
 	// PMesh 읽기..
 	lstrcpy(szPathFind, szPathOld);
 	lstrcat(szPathFind, "\\Item");
 	::SetCurrentDirectory(szPathFind);
 	hFind = _findfirst("*.N3PMesh", &fi);
-	if(hFind)
+	if (hFind)
 	{
 		std::string szFN = "Item\\";
 		szFN += fi.name;
-		CN3PMesh* pObjTmp = s_MngPMesh.Get(szFN.c_str());
-		while(_findnext(hFind, &fi) != -1)
+		CN3PMesh* pObjTmp = s_MngPMesh.Get(szFN);
+		while (_findnext(hFind, &fi) != -1)
 		{
 			szFN = "Item\\";
 			szFN += fi.name;
-			pObjTmp = s_MngPMesh.Get(szFN.c_str());
+			pObjTmp = s_MngPMesh.Get(szFN);
 		}
 	}
 	_findclose(hFind);
 
-	if(s_pUILoading) s_pUILoading->Render("Loading Character Data... 100 %", 100);
+	if (s_pUILoading != nullptr)
+		s_pUILoading->Render("Loading Character Data... 100 %", 100);
 
-	this->MsgSend_GameStart();
+	MsgSend_GameStart();
 
 	// 경로 돌리기..
 	::SetCurrentDirectory(szPathOld);
@@ -1710,13 +1719,11 @@ void CGameProcMain::MsgSend_KnightsJoin(int iTargetID)
 void CGameProcMain::MsgSend_KnightsLeave(std::string& szName)
 {
 	uint8_t byBuff[64];
-	int iOffset=0;
-
-	int iLen = szName.size();
+	int iOffset = 0;
 
 	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_KNIGHTS_PROCESS); // 관리자 전용패킷..
 	CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_KNIGHTS_MEMBER_REMOVE);
-	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t)iLen);
+	CAPISocket::MP_AddShort(byBuff, iOffset, static_cast<int16_t>(szName.length()));
 	CAPISocket::MP_AddString(byBuff, iOffset, szName);	// 아이디 문자열 패킷에 넣기..
 	s_pSocket->Send(byBuff, iOffset);
 }
@@ -1734,13 +1741,11 @@ void CGameProcMain::MsgSend_KnightsWithdraw()
 void CGameProcMain::MsgSend_KnightsAppointViceChief(std::string& szName)
 {
 	uint8_t byBuff[64];
-	int iOffset=0;
-
-	int iLen = szName.size();
+	int iOffset = 0;
 
 	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_KNIGHTS_PROCESS); // 관리자 전용패킷..
 	CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_KNIGHTS_APPOINT_VICECHIEF);
-	CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t)iLen);
+	CAPISocket::MP_AddShort(byBuff, iOffset, static_cast<int16_t>(szName.length()));
 	CAPISocket::MP_AddString(byBuff, iOffset, szName);	// 아이디 문자열 패킷에 넣기..
 	s_pSocket->Send(byBuff, iOffset);
 }
@@ -2120,15 +2125,15 @@ bool CGameProcMain::MsgRecv_Chat(Packet& pkt)
 	else
 		szChat = szName + " : " + szMsg;
 
-	int iChatLen = szChat.size();
-	
+	//지속 공지 삭제...
 	if(eCM == N3_CHAT_CONTINUE_DELETE)
-	{//지속 공지 삭제...
+	{
 		m_pUIChatDlg->DeleteContinueMsg();
 		return true;
 	}
+	//타이틀 공지 삭제...
 	else if(eCM == N3_CHAT_TITLE_DELETE)
-	{//타이틀 공지 삭제...
+	{
 		m_pUIChatDlg->SetNoticeTitle("", 0xffffffff);
 		return true;
 	}
@@ -2182,10 +2187,10 @@ bool CGameProcMain::MsgRecv_Chat(Packet& pkt)
 			if (!bIamManager
 				&& !bTalkerIsManager)
 			{
-				int i = static_cast<int>(szChat.find(':'));
-				if (i >= 0)
+				size_t i = szChat.find(':');
+				if (i != std::string::npos)
 				{
-					for (; i < iChatLen; i++)
+					for (; i < szChat.length(); i++)
 						szChat[i] = '!' + rand() % 10; // 이상한 말로 바꾼다..
 				}
 			}
@@ -2669,21 +2674,21 @@ bool CGameProcMain::MsgRecv_UserInAndRequest(Packet& pkt)
 
 	////////////////////////////////////////////////////////////////////////////
 	// 바로 요청 패킷을 만들어 보낸다..
-	int iNewUPCCount = m_SetUPCID.size();
-	if(iNewUPCCount > 0)
+	int iNewUPCCount = static_cast<int>(m_SetUPCID.size());
+	if (iNewUPCCount > 0)
 	{
-		int iOffset=0;														// 버퍼의 오프셋..
-		std::vector<uint8_t> byBuff(iNewUPCCount * 2 + 10, 0);					// 패킷 버퍼..
-		CAPISocket::MP_AddByte(&(byBuff[0]), iOffset, WIZ_REQ_USERIN);	// 커멘드.
-		CAPISocket::MP_AddShort(&(byBuff[0]), iOffset, iNewUPCCount);		// 아이디 갯수..
+		int iOffset = 0;												// 버퍼의 오프셋..
+		std::vector<uint8_t> byBuff(iNewUPCCount * 2 + 10, 0);			// 패킷 버퍼..
+		CAPISocket::MP_AddByte(&byBuff[0], iOffset, WIZ_REQ_USERIN);	// 커멘드.
+		CAPISocket::MP_AddShort(&byBuff[0], iOffset, iNewUPCCount);		// 아이디 갯수..
 		
 		itID = m_SetUPCID.begin(); itIDEnd = m_SetUPCID.end();
 		for(int i = 0; itID != itIDEnd; itID++, i++)
 		{
 			iID = *itID;
-			CAPISocket::MP_AddShort(&(byBuff[0]), iOffset, iID);			// 자세한 정보가 필요한 아이디들..
+			CAPISocket::MP_AddShort(&byBuff[0], iOffset, iID);			// 자세한 정보가 필요한 아이디들..
 		}
-		s_pSocket->Send(&(byBuff[0]), iOffset); // 보낸다
+		s_pSocket->Send(&byBuff[0], iOffset); // 보낸다
 	}
 	// 바로 요청 패킷을 만들어 보낸다..
 	////////////////////////////////////////////////////////////////////////////
@@ -3030,21 +3035,21 @@ bool CGameProcMain::MsgRecv_NPCInAndRequest(Packet& pkt)
 
 	////////////////////////////////////////////////////////////////////////////
 	// 바로 요청 패킷을 만들어 보낸다..
-	int iNewNPCCount = m_SetNPCID.size();
-	if(iNewNPCCount > 0)
+	int iNewNPCCount = static_cast<int>(m_SetNPCID.size());
+	if (iNewNPCCount > 0)
 	{
-		int iOffset=0;														// 버퍼의 오프셋..
-		std::vector<uint8_t> byBuff(iNewNPCCount * 2 + 10, 0);					// 패킷 버퍼..
-		CAPISocket::MP_AddByte(&(byBuff[0]), iOffset, WIZ_REQ_NPCIN);	// 커멘드.
-		CAPISocket::MP_AddShort(&(byBuff[0]), iOffset, iNewNPCCount);		// 아이디 갯수..
-		
+		int iOffset = 0;												// 버퍼의 오프셋..
+		std::vector<uint8_t> byBuff(iNewNPCCount * 2 + 10, 0);			// 패킷 버퍼..
+		CAPISocket::MP_AddByte(&byBuff[0], iOffset, WIZ_REQ_NPCIN);		// 커멘드.
+		CAPISocket::MP_AddShort(&byBuff[0], iOffset, iNewNPCCount);		// 아이디 갯수..
+
 		itID = m_SetNPCID.begin(); itIDEnd = m_SetNPCID.end();
-		for(int i = 0; itID != itIDEnd; itID++, i++)
+		for (int i = 0; itID != itIDEnd; itID++, i++)
 		{
 			iID = *itID;
-			CAPISocket::MP_AddShort(&(byBuff[0]), iOffset, iID);			// 자세한 정보가 필요한 아이디들..
+			CAPISocket::MP_AddShort(&byBuff[0], iOffset, iID);			// 자세한 정보가 필요한 아이디들..
 		}
-		s_pSocket->Send(&(byBuff[0]), iOffset); // 보낸다
+		s_pSocket->Send(&byBuff[0], iOffset); // 보낸다
 	}
 	// 바로 요청 패킷을 만들어 보낸다..
 	////////////////////////////////////////////////////////////////////////////

@@ -31,7 +31,7 @@ public:
 	uint32_t			MouseProcAndTick(uint32_t& dwFlags, const POINT& ptCur, const POINT& ptOld );
 	void			MessageBoxCloseAll();
 	void			Render();
-	int				GetCount();
+	int				GetCount() const;
 
 	void			MessageBoxClose(const std::string& szMsg);
 	std::string		MessageBoxPost(const std::string& szMsg, const std::string& szTitle, int iStyle, e_Behavior eBehavior = BEHAVIOR_NOTHING);

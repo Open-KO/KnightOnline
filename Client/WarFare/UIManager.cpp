@@ -155,27 +155,30 @@ uint32_t CUIManager::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT
 
 void CUIManager::ReorderChildList()	// 다이알로그 순서 재배치
 {
-	int iChildCount = m_Children.size();
-	if (iChildCount<=0) return;
-	CN3UIBase** ppBuffer = new CN3UIBase*[iChildCount];
+	int iChildCount = static_cast<int>(m_Children.size());
+	if (iChildCount <= 0)
+		return;
+
+	CN3UIBase** ppBuffer = new CN3UIBase* [iChildCount];
 	int iAlwaysTopChildCount = 0;
 
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; )
+	for (auto itor = m_Children.begin(); m_Children.end() != itor; )
 	{
 		CN3UIBase* pChild = (*itor);
 		if (pChild->GetStyle() & UISTYLE_ALWAYSTOP)
 		{
 			itor = m_Children.erase(itor);			// 우선 리스트에서 지우고
 			ppBuffer[iAlwaysTopChildCount++] = pChild;
+
+			if (iAlwaysTopChildCount >= iChildCount)
+				break;
 		}
 		else ++itor;
 	}
-	int i;
-	for (i=iAlwaysTopChildCount-1; i>=0; --i)
-	{
+	for (int i = iAlwaysTopChildCount - 1; i >= 0; --i)
 		m_Children.push_front(ppBuffer[i]);	// 맨앞에 넣는다. 그리는 순서를 맨 나중에 그리도록 하고 메세지를 맨 먼저 받게 하려고
-	}
-	delete [] ppBuffer;
+
+	delete[] ppBuffer;
 }
 
 void CUIManager::Tick()

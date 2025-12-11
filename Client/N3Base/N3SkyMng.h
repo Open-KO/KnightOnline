@@ -91,9 +91,10 @@ struct		__SKY_DAYCHANGE
 	{
 		DWORD dwRWC = 0;
 
-		int nL = szName.size();
+		int nL = static_cast<int>(szName.size());
 		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL > 0) WriteFile(hFile, szName.c_str(), nL, &dwRWC, nullptr);
+		if (nL > 0)
+			WriteFile(hFile, szName.c_str(), nL, &dwRWC, nullptr);
 
 		WriteFile(hFile, &eSkyDayChange, 4, &dwRWC, nullptr);
 		WriteFile(hFile, &dwWhen, 4, &dwRWC, nullptr);

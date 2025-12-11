@@ -180,14 +180,15 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 		szFullPath += m_szFileName;
 	}
 
-	int nFNL = szFullPath.size();
-	if(lstrcmpi(&szFullPath[nFNL-3], "DXT") == 0)
+	size_t nFNL = szFullPath.size();
+	if (nFNL >= 3
+		&& lstrcmpi(&szFullPath[nFNL - 3], "DXT") == 0)
 	{
 		HANDLE hFile = ::CreateFile(szFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 		if(hFile == INVALID_HANDLE_VALUE)
 		{
 #ifdef _N3GAME
-			CLogWriter::Write("invalid file handle({}) - Can't open texture file({})", (int)hFile, szFullPath);
+			CLogWriter::Write("invalid file handle({}) - Can't open texture file({})", (intptr_t) hFile, szFullPath);
 #endif
 			return false;
 		}

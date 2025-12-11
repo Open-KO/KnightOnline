@@ -259,19 +259,43 @@ public:
 #endif
 
 	//패킷 만들기 함수
-	static	void	MP_AddByte(uint8_t *dest, int& iOffset, uint8_t byte) { CopyMemory(dest+iOffset, &byte, 1); iOffset ++; }
-	static	void	MP_AddShort(uint8_t *dest, int& iOffset, int16_t value) { CopyMemory(dest+iOffset, &value, 2); iOffset += 2; }
-	static	void	MP_AddWord(uint8_t *dest, int& offset, uint16_t value) { CopyMemory(dest+offset, &value, 2); offset += 2; }
-	static	void	MP_AddDword(uint8_t *dest, int &iOffset, uint32_t dword) { CopyMemory(dest+iOffset, &dword, 4); iOffset += 4; }
-	static	void	MP_AddFloat(uint8_t *dest, int &iOffset, float value) { CopyMemory(dest+iOffset, &value, 4);	iOffset += 4; }
-	static	void	MP_AddString(uint8_t *dest, int &iOffset, const std::string& szString)
+	static void MP_AddByte(uint8_t* dest, int& iOffset, uint8_t byte)
 	{
-		if(!szString.empty())
-		{
-			CopyMemory(dest+iOffset, &(szString[0]), szString.size());
-			iOffset += szString.size();
-		}
+		memcpy(dest + iOffset, &byte, 1);
+		++iOffset;
+	}
 
+	static void MP_AddShort(uint8_t* dest, int& iOffset, int16_t value)
+	{
+		memcpy(dest + iOffset, &value, 2);
+		iOffset += 2;
+	}
+
+	static void MP_AddWord(uint8_t* dest, int& offset, uint16_t value)
+	{
+		memcpy(dest + offset, &value, 2);
+		offset += 2;
+	}
+
+	static void MP_AddDword(uint8_t* dest, int& iOffset, uint32_t dword)
+	{
+		memcpy(dest + iOffset, &dword, 4);
+		iOffset += 4;
+	}
+
+	static void MP_AddFloat(uint8_t* dest, int& iOffset, float value)
+	{
+		memcpy(dest + iOffset, &value, 4);
+		iOffset += 4;
+	}
+
+	static void MP_AddString(uint8_t* dest, int& iOffset, const std::string& szString)
+	{
+		if (szString.empty())
+			return;
+
+		memcpy(dest + iOffset, &szString[0], szString.size());
+		iOffset += static_cast<int>(szString.size());
 	}
 
 	CAPISocket();

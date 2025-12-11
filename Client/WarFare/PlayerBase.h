@@ -242,9 +242,21 @@ public:
 	bool			IsMovingNow() { if(PSM_WALK == m_eStateMove || PSM_RUN == m_eStateMove || PSM_WALK_BACKWARD == m_eStateMove) return true; return false; } // 움직이고 있는지?
 
 	void			AnimationAdd(e_Ani eAni, bool bImmediately);
-	void			AnimationClear() { m_AnimationDeque.clear(); }
-	int				AnimationCountRemain() { return m_AnimationDeque.size() + 1; }
-	bool			IsAnimationChange() { return m_bAnimationChanged; }	// 큐에 넣은 에니메이션이 변하는 순간만 세팅된다..
+	void AnimationClear()
+	{
+		m_AnimationDeque.clear();
+	}
+
+	int AnimationCountRemain() const
+	{
+		return static_cast<int>(m_AnimationDeque.size()) + 1;
+	}
+
+	// 큐에 넣은 에니메이션이 변하는 순간만 세팅된다..
+	bool IsAnimationChange() const
+	{
+		return m_bAnimationChanged;
+	}
 
 	bool			Action(e_StateAction eState, bool bLooping, CPlayerBase* pTarget = nullptr, bool bForceSet = false); // 행동 테이블에 따른 행동을 한다..
 	bool			ActionMove(e_StateMove eMove); // 움직이기..

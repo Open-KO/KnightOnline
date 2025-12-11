@@ -211,7 +211,7 @@ bool CN3Scene::Save(HANDLE hFile)
 	WriteFile(hFile, &iCC, 4, &dwRWC, nullptr); // 캐릭터
 	for (CN3Chr* chr : m_Chrs)
 	{
-		int nL = chr->FileName().size();
+		int nL = static_cast<int>(chr->FileName().size());
 		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
 		if (nL <= 0)
 			continue;
@@ -498,8 +498,8 @@ void CN3Scene::ChrDelete(CN3Chr* pChr)
 
 void CN3Scene::ChrRelease()
 {
-	int iCC = m_Chrs.size();
-	for(int i = 0; i < iCC; i++) delete m_Chrs[i];
+	for (CN3Chr* pChr : m_Chrs)
+		delete pChr;
 	m_Chrs.clear();
 }
 

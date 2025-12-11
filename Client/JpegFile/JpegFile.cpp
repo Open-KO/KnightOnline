@@ -1545,7 +1545,7 @@ BOOL CJpegFile::DibToSamps(
 	}
 	
 	//Point to the color table and pixels
-	DWORD     dwCTab = (DWORD)pbBmHdr + pbBmHdr->biSize;
+	uintptr_t     dwCTab = (uintptr_t)pbBmHdr + pbBmHdr->biSize;
 	LPRGBQUAD pCTab  = (LPRGBQUAD)(dwCTab);
 	LPSTR     lpBits = (LPSTR)pbBmHdr +
 		(WORD)pbBmHdr->biSize +
@@ -1865,25 +1865,29 @@ BOOL CJpegFile::DecryptJPEG(std::string csJpeg)
 	DWORD dst_len, src_len, src_hlen;
 	DWORD result_len, i, j;
 
-	int rfv = csJpeg.rfind('\\');
+	size_t rfv = csJpeg.rfind('\\');
 	szDstpath = csJpeg;
-	szDstpath.resize(rfv);
-	if(szDstpath.size()== 2) szDstpath += '\\';//_T('\\');
 
-	if(GetTempFileName((LPCTSTR)szDstpath.c_str(), "ksc", 0, szTempName) == 0)
+	if (rfv != std::string::npos)
+		szDstpath.resize(rfv);
+
+	if (szDstpath.size() == 2)
+		szDstpath += '\\';//_T('\\');
+
+	if(GetTempFileName(szDstpath.c_str(), "ksc", 0, szTempName) == 0)
 	{
 //		AfxMessageBox("임시 파일을 생성할 수가 없습니다.", MB_ICONSTOP|MB_OK);
 		return FALSE;
 	}
 
-	hSrc = CreateFile((LPCTSTR)csJpeg.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	hSrc = CreateFile(csJpeg.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if(hSrc == INVALID_HANDLE_VALUE)
 	{
 //		AfxMessageBox("소스 파일이 존재하지 않습니다. 다른 파일을 선택해주세요.", MB_ICONSTOP|MB_OK);
 		return FALSE;
 	}
 
-	hDst = CreateFile((LPCTSTR)szTempName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	hDst = CreateFile(szTempName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if(hDst == INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hSrc);

@@ -131,9 +131,10 @@ public:
 		WriteFile(hFile, &fFrmStrike1, 4, &dwRWC, nullptr);
 
 		// 이름 읽기..
-		nL = szName.size();
+		nL = static_cast<int>(szName.size());
 		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL > 0) WriteFile(hFile, szName.c_str(), nL, &dwRWC, nullptr);
+		if (nL > 0)
+			WriteFile(hFile, szName.c_str(), nL, &dwRWC, nullptr);
 	}
 
 #ifdef _N3TOOL

@@ -357,63 +357,61 @@ bool CUILogIn_1298::ServerInfoGetCur(__GameServerInfo& GSI)
 
 void CUILogIn_1298::ServerInfoUpdate()
 {
-	
-	if (!m_ListServerInfos.empty())
+	if (m_ListServerInfos.empty())
+		return;
+
+	// sort(m_ListServerInfos.begin(), m_ListServerInfos.end(), not2(__GameServerInfo()));
+
+	// show ui of existing servers
+	int iMaxPlayerCount = 3000;
+	int iNumUserForLine = 3000 / 12;
+	int iNumLines = 1;
+
+	for (size_t i = 0; i < m_ListServerInfos.size(); i++)
 	{
-		// sort(m_ListServerInfos.begin(), m_ListServerInfos.end(), not2(__GameServerInfo()));
-		int iSize = m_ListServerInfos.size();
+		if (m_pServer_Group[i] == nullptr)
+			continue;
 
-		// show ui of existing servers
-		int iMaxPlayerCount = 3000;
-		int iNumUserForLine = 3000 / 12;
-		int iNumLines = 1;
+		if (m_pList_Group[i] != nullptr)
+			m_pList_Group[i]->SetString(m_ListServerInfos[i].szName);
 
-		for (int i = 0; i < iSize; i++)
+		m_pServer_Group[i]->SetVisible(true); 
+
+		if (m_pArrow_Group[i] != nullptr)
+			m_pArrow_Group[i]->SetVisible(true);
+
+		// hide number of lines with respect to user number
+		iNumLines = m_ListServerInfos[i].iConcurrentUserCount / iNumUserForLine;
+
+		if (iNumLines < 1) // minimum 1 lines
+			iNumLines = 1;
+
+		if (iNumLines > 12) // uif file has max 12 lines 
+			iNumLines = 12;
+
+		// ids of lines set as 1,2,3 ... 12 in .uif file
+		for (int j = iNumLines + 1; j <= 12; j++)
 		{
-			if (m_pServer_Group[i] == nullptr)
-				continue;
+			// TODO: Pre-load this.
+			std::string szID = std::to_string(j);
 
-			if (m_pList_Group[i] != nullptr)
-				m_pList_Group[i]->SetString(m_ListServerInfos[i].szName);
-
-			m_pServer_Group[i]->SetVisible(true); 
-
-			if (m_pArrow_Group[i] != nullptr)
-				m_pArrow_Group[i]->SetVisible(true);
-
-			// hide number of lines with respect to user number
-			iNumLines = m_ListServerInfos[i].iConcurrentUserCount / iNumUserForLine;
-
-			if (iNumLines < 1) // minimum 1 lines
-				iNumLines = 1;
-
-			if (iNumLines > 12) // uif file has max 12 lines 
-				iNumLines = 12;
-
-			// ids of lines set as 1,2,3 ... 12 in .uif file
-			for (int j = iNumLines + 1; j <= 12; j++)
-			{
-				// TODO: Pre-load this.
-				std::string szID = std::to_string(j);
-
-				CN3UIBase* pChild = m_pServer_Group[i]->GetChildByID(szID);
-				if (pChild != nullptr)
-					pChild->SetVisible(false);
-			}
+			CN3UIBase* pChild = m_pServer_Group[i]->GetChildByID(szID);
+			if (pChild != nullptr)
+				pChild->SetVisible(false);
 		}
-
-		// hide ui of extra servers
-		for (int i = iSize; i < MAX_SERVERS; i++)
-		{
-			if (m_pServer_Group[i] != nullptr)
-				m_pServer_Group[i]->SetVisible(false);
-
-			if (m_pArrow_Group[i] != nullptr)
-				m_pArrow_Group[i]->SetVisible(false);
-		}
-	 
-		// TODO: Show Premium info if user have premium
 	}
+
+	// hide ui of extra servers
+	for (size_t i = m_ListServerInfos.size(); i < MAX_SERVERS; i++)
+	{
+		if (m_pServer_Group[i] != nullptr)
+			m_pServer_Group[i]->SetVisible(false);
+
+		if (m_pArrow_Group[i] != nullptr)
+			m_pArrow_Group[i]->SetVisible(false);
+	}
+	 
+	// TODO: Show Premium info if user have premium
 }
 
 void CUILogIn_1298::AddNews(const std::string& strNews)

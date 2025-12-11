@@ -31,46 +31,58 @@ bool CN3ShapeExtra::Load(HANDLE hFile)
 {
 	bool bSuccess = CN3Shape::Load(hFile);
 
-	int iPC = m_Parts.size();
 	m_Rotations.clear();
-	if(iPC <= 0) return bSuccess;
 
-	m_Rotations.assign(iPC, __Rotation());
+	size_t partCount = m_Parts.size();
+	if (partCount <= 0)
+		return bSuccess;
 
+	m_Rotations.assign(partCount, __Rotation());
 	return bSuccess;
 }
 
 void CN3ShapeExtra::Tick(float fFrm)
 {
-	if(false == m_bVisible) 
+	if (!m_bVisible)
 	{
 		m_bDontRender = true;
 		return; // 강제로 렌더링 하지 않는다.
 	}
 
 	CN3Shape::Tick();
-	if(m_bDontRender) return;
-	if(m_Parts.empty()) return;
+
+	if (m_bDontRender)
+		return;
+
+	if (m_Parts.empty())
+		return;
 
 	bool bNeedRemakeCollisionMeshes = false;
-	int iPC = m_Parts.size();
 	float fDir = 0, fRotDelta = 0;
 	__Rotation* pRot = nullptr;
 	__Quaternion qRot;
-	CN3SPart* pPart = nullptr;
-	for(int i = 0; i < iPC; i++)
+	for (size_t i = 0; i < m_Parts.size(); i++)
 	{
-		pPart = m_Parts[i];
-		if(pPart->m_bOutOfCameraRange) continue;
+		CN3SPart* pPart = m_Parts[i];
+		if (pPart->m_bOutOfCameraRange)
+			continue;
 
-		__Rotation* pRot = &(m_Rotations[i]);
-		if(	pRot->fRadianPerSec == 0 || 
-			pRot->fRadianCur == pRot->fRadianToReach) continue;
-		(pRot->fRadianCur < pRot->fRadianToReach) ? fDir = 1.0f : fDir = -1.0f; // 도는 방향..
-		
+		__Rotation* pRot = &m_Rotations[i];
+		if (pRot->fRadianPerSec == 0
+			|| pRot->fRadianCur == pRot->fRadianToReach)
+			continue;
+
+		// 도는 방향..
+		if (pRot->fRadianCur < pRot->fRadianToReach)
+			fDir = 1.0f;
+		else
+			fDir = -1.0f;
+
 		fRotDelta = pRot->fRadianPerSec * fDir * CN3Base::s_fSecPerFrm;
 		pRot->fRadianCur += fRotDelta;
-		if(std::abs(pRot->fRadianToReach - pRot->fRadianCur) <= fRotDelta) /// 원하는 곳까지 다 열렸다!!
+
+		// 원하는 곳까지 다 열렸다!!
+		if (std::abs(pRot->fRadianToReach - pRot->fRadianCur) <= fRotDelta)
 		{
 			bNeedRemakeCollisionMeshes = true;
 			pRot->fRadianPerSec = 0;
@@ -83,8 +95,8 @@ void CN3ShapeExtra::Tick(float fFrm)
 		pPart->m_Matrix *= m_Matrix;
 	}
 
-	if(bNeedRemakeCollisionMeshes) 
-		this->MakeCollisionMeshByParts(); // 충돌메시를 다시 만든다..
+	if (bNeedRemakeCollisionMeshes)
+		MakeCollisionMeshByParts(); // 충돌메시를 다시 만든다..
 }
 
 void CN3ShapeExtra::RotateTo(int iPart, const __Vector3& vAxis, float fRadianToReach, float fRadianPerSec, bool bImmediately)
