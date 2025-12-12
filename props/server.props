@@ -7,5 +7,6 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
+  <Import Project="argparse.props" />
   <Import Project="ftxui.props" />
 </Project>
