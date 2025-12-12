@@ -19,3 +19,6 @@ docker compose up --build kodb-util -d
 :: Before the script completes, the script to create an up-to-date 
 :: OpenKO database will be invoked.
 docker exec knightonline-kodb-util-1 /usr/local/bin/cleanImport.sh
+
+:: return to original directory
+popd
