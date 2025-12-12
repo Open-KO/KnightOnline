@@ -55,13 +55,14 @@ target_precompile_headers(shared-server PRIVATE pch.h)
 # Setup dependencies
 target_link_libraries(shared-server
   PUBLIC
+    argparse
     asio
-    shared
-    nanodbc
+    djb2
     ftxui::component
     ftxui::dom
     ftxui::screen
-    djb2
+    nanodbc
+    shared
   PRIVATE
     Boost::interprocess
 )

@@ -5,16 +5,16 @@
 
 #include <shared/Ini.h>
 
-#include <spdlog/spdlog.h>
+#include <argparse/argparse.hpp>
 
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
-#include <ftxui/component/loop.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 
-#include <signal.h>
-#include <stdlib.h>
+#include <spdlog/spdlog.h>
+
+#include <csignal>
 #include <string>
 #include <vector>
 
@@ -22,7 +22,7 @@ AppThread* AppThread::s_instance = nullptr;
 bool AppThread::s_shutdown = false;
 
 AppThread::AppThread(logger::Logger& logger)
-	: _logger(logger), _exitCode(EXIT_SUCCESS)
+	: _logger(logger), _exitCode(EXIT_SUCCESS), _headless(false)
 {
 	assert(s_instance == nullptr);
 	s_instance = this;
@@ -43,11 +43,44 @@ std::filesystem::path AppThread::LogBaseDir() const
 	return GetProgPath();
 }
 
+/// \brief Sets up the parser & parses the command-line args, dispatching it to the app
+bool AppThread::parse_commandline(int argc, char* argv[])
+{
+	argparse::ArgumentParser parser(_logger.AppName());
+
+	SetupCommandLineArgParser(parser);
+
+	try
+	{
+		parser.parse_args(argc, argv);
+		ProcessCommandLineArgs(parser);
+		return true;
+	}
+	catch (const std::exception& ex)
+	{
+		spdlog::error("AppThread::parse_commandline: {}", ex.what());
+		return false;
+	}
+}
+
+/// \brief Sets up the command-line arg parser, binding args for parsing.
+void AppThread::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
+{
+	parser.add_argument("--headless")
+		.help("run in headless mode, without the ftxui terminal UI for input")
+		.flag()
+		.store_into(_headless);
+}
+
+/// \brief Processes any parsed command-line args as needed by the app.
+void AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser& /*parser*/)
+{
+	/* for implementation, only if needed by the app - bound args won't need this */
+}
+
 /// \brief The main thread loop for the server instance
 void AppThread::thread_loop()
 {
-	int exitCode = EXIT_SUCCESS;
-
 	CIni& iniFile = IniFile();
 	bool configFileLoaded = iniFile.Load(ConfigPath());
 
@@ -63,10 +96,42 @@ void AppThread::thread_loop()
 			filename);
 	}
 
+	auto color = ftxui::Terminal::ColorSupport();
+
+	// Explicitly run in headless mode to avoid using ftxui.
+	if (_headless)
+	{
+		spdlog::info("AppThread::thread_loop: Running in headless mode. No input available.");
+		_exitCode = thread_loop_fallback(iniFile);
+	}
+	// This isn't a very robust test, but if we're on a terminal with this little support, we shouldn't use ftxui.
+	else if (color == ftxui::Terminal::Color::Palette16)
+	{
+		spdlog::warn("AppThread::thread_loop: No terminal support detected for ftxui. Proceeding with regular console logger.");
+		_exitCode = thread_loop_fallback(iniFile);
+	}
+	// We can assume ftxui should be used in all other cases.
+	else
+	{
+		_exitCode = thread_loop_ftxui(iniFile);
+	}
+}
+
+/// \brief Thread loop with main ftxui logic.
+/// \param iniFile The loaded application ini file.
+/// \returns Exit code.
+int AppThread::thread_loop_ftxui(CIni& iniFile)
+{
 	using namespace ftxui;
 
+	int exitCode = EXIT_SUCCESS;
+
 	bool isServerLoaded = false;
-	auto fxtuiSink = _logger.fxtuiSink();
+	auto screen = ScreenInteractive::Fullscreen();
+
+	auto fxtuiSink = _logger.FxtuiSink();
+	if (fxtuiSink != nullptr)
+		fxtuiSink->set_screen(nullptr);
 
 	std::string inputText;
 	Elements logElements;
@@ -192,7 +257,7 @@ void AppThread::thread_loop()
 				focusedLineNumber -= WheelSize;
 				return true;
 			}
-			
+
 			if (event.mouse().button == Mouse::WheelDown)
 			{
 				focusedLineNumber += WheelSize;
@@ -205,8 +270,6 @@ void AppThread::thread_loop()
 
 		return HandleInputEvent(event);
 	});
-
-	auto screen = ScreenInteractive::Fullscreen();
 
 	std::thread uiThread([&]
 	{
@@ -238,7 +301,32 @@ void AppThread::thread_loop()
 	if (uiThread.joinable())
 		uiThread.join();
 
-	_exitCode = exitCode;
+	return exitCode;
+}
+
+/// \brief Thread loop with basic console logger fallback logic.
+/// \param iniFile The loaded application ini file.
+/// \returns Exit code.
+int AppThread::thread_loop_fallback(CIni& iniFile)
+{
+	auto ftxuiSink = _logger.FxtuiSink();
+	if (ftxuiSink != nullptr)
+		ftxuiSink->disable_log_buffer();
+
+	int exitCode = EXIT_SUCCESS;
+	if (!StartupImpl(iniFile))
+	{
+		exitCode = EXIT_FAILURE;
+		shutdown(false);
+	}
+
+	while (_canTick)
+	{
+		std::unique_lock<std::mutex> lock(_mutex);
+		_cv.wait(lock);
+	}
+
+	return exitCode;
 }
 
 /// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
@@ -299,7 +387,7 @@ bool AppThread::HandleCommand(const std::string& command)
 {
 	if (command == "/clear")
 	{
-		auto fxtuiSink = _logger.fxtuiSink();
+		auto fxtuiSink = _logger.FxtuiSink();
 		if (fxtuiSink != nullptr)
 		{
 			std::lock_guard<std::mutex> lock(fxtuiSink->lock());

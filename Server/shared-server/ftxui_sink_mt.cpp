@@ -25,40 +25,45 @@ namespace ftxui
 		if (previousScreen != nullptr
 			&& screen == nullptr)
 		{
-			using namespace spdlog;
-
-			std::lock_guard<std::mutex> lock(_logBufferMutex);
-
-			while (!_replayLogBuffer.empty())
-			{
-				const ReplayLog& replayLog = _replayLogBuffer.front();
-
-				details::log_msg msg;
-				msg.logger_name	= replayLog.logger_name;
-				msg.level		= replayLog.level;
-				msg.time		= replayLog.time;
-				msg.thread_id	= replayLog.thread_id;
-				msg.payload		= replayLog.payload;
-				msg.source.line	= replayLog.source_line;
-
-				if (!replayLog.source_filename.empty())
-					msg.source.filename = replayLog.source_filename.c_str();
-
-				if (!replayLog.source_funcname.empty())
-					msg.source.funcname = replayLog.source_funcname.c_str();
-
-				_consoleSink->log(msg);
-				_replayLogBuffer.pop_front();
-			}
-
-			_useConsoleSink = true;
-			_storeLogBuffer = false;
+			disable_log_buffer();
 		}
 		else if (screen != nullptr)
 		{
 			_useConsoleSink = false;
 			_storeLogBuffer = true;
 		}
+	}
+
+	void sink_mt::disable_log_buffer()
+	{
+		using namespace spdlog;
+
+		std::lock_guard<std::mutex> lock(_logBufferMutex);
+
+		while (!_replayLogBuffer.empty())
+		{
+			const ReplayLog& replayLog = _replayLogBuffer.front();
+
+			details::log_msg msg;
+			msg.logger_name	= replayLog.logger_name;
+			msg.level		= replayLog.level;
+			msg.time		= replayLog.time;
+			msg.thread_id	= replayLog.thread_id;
+			msg.payload		= replayLog.payload;
+			msg.source.line	= replayLog.source_line;
+
+			if (!replayLog.source_filename.empty())
+				msg.source.filename = replayLog.source_filename.c_str();
+
+			if (!replayLog.source_funcname.empty())
+				msg.source.funcname = replayLog.source_funcname.c_str();
+
+			_consoleSink->log(msg);
+			_replayLogBuffer.pop_front();
+		}
+
+		_useConsoleSink = true;
+		_storeLogBuffer = false;
 	}
 
 	void sink_mt::set_backlog_size(size_t backlogSize)
@@ -91,7 +96,7 @@ namespace ftxui
 
 	void sink_mt::set_console_sink(std::shared_ptr<spdlog::sinks::sink> consoleSink)
 	{
-		_consoleSink = consoleSink;
+		_consoleSink = std::move(consoleSink);
 	}
 
 	void sink_mt::sink_it_(const spdlog::details::log_msg& msg)

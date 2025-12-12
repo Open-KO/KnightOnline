@@ -30,9 +30,14 @@ namespace logger
 		static constexpr uint8_t ThreadPoolSize = 1;
 
 	public:
-		std::shared_ptr<ftxui::sink_mt> fxtuiSink()
+		std::shared_ptr<ftxui::sink_mt> FxtuiSink()
 		{
 			return _fxtuiSink;
+		}
+
+		const std::string& AppName() const
+		{
+			return _appName;
 		}
 
 		/// \param appName application name (VersionManager, Aujard, AIServer, Ebenezer)
