@@ -467,7 +467,7 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	CN3Base::s_lpD3DDev->GetTransform( D3DTS_VIEW, &mtxviewback );
 	CN3Base::s_lpD3DDev->GetTransform( D3DTS_WORLD, &mtxworldback );
 
-	D3DXMatrixOrthoLH(&mtxproj, 12.0f, 9.0f, 0, 100);  
+	mtxproj.OrthoLH(12.0f, 9.0f, 0, 100);  
     CN3Base::s_lpD3DDev->SetTransform( D3DTS_PROJECTION, &mtxproj );
 
     mtxview.LookAtLH(

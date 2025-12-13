@@ -443,8 +443,8 @@ void CN3Camera::Tick(float fFrm)
 	if(m_bOrtho)
 	{
 		float fL = (m_Data.vAt - m_Data.vEye).Magnitude() / 2.0f;
-		::D3DXMatrixOrthoLH(&m_Data.mtxProjection, fL, fL / m_Data.fAspect, m_Data.fNP * (1.0f + fL / 1000.0f), m_Data.fFP);  // Projection Matrix Setting
-//		::D3DXMatrixOrthoLH(&m_Data.mtxProjection, 2.0f, 2.0f, m_Data.fNP, m_Data.fFP);  // Projection Matrix Setting
+		m_Data.mtxProjection.OrthoLH(fL, fL / m_Data.fAspect, m_Data.fNP * (1.0f + fL / 1000.0f), m_Data.fFP);  // Projection Matrix Setting
+//		m_Data.mtxProjection.OrthoLH(2.0f, 2.0f, m_Data.fNP, m_Data.fFP);  // Projection Matrix Setting
 	}
 	else
 	{

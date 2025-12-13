@@ -282,4 +282,9 @@ void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const
 	D3DXMatrixLookAtLH(this, &vEye, &vAt, &vUp);
 }
 
+void __Matrix44::OrthoLH(float w, float h, float zn, float zf)
+{
+	D3DXMatrixOrthoLH(this, w, h, zn, zf);
+}
+
 #endif CLIENT_N3BASE_MATRIX44_INL

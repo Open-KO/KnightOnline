@@ -515,7 +515,7 @@ void CPlayerBase::RenderChrInRect(CN3Chr* pChr, const RECT& Rect)
 	float fViewVolumeHeight = fChrHeight * vp.Height / iHeight;	// 캐릭터의 키(클리핑 될 경우 클리핑 되는 비율에 맞게 좁혀준다.)
 	float fViewVolumeWidth = fChrHeight * vp.Width / iHeight;	// 가로는 pRect의 가로 세로 비율에 맞게 (클리핑 될 경우 클리핑 되는 비율에 맞게 좁혀준다.)
 																// 원래는 이거 : fChrHeight * iWidth / iHeight * vp.Width / iWidth;
-	D3DXMatrixOrthoLH(&mtxProj, fViewVolumeWidth, fViewVolumeHeight, 0, 20);
+	mtxProj.OrthoLH(fViewVolumeWidth, fViewVolumeHeight, 0, 20);
 	
 	float fCameraMoveX = ((fChrHeight*iWidth/iHeight)-fViewVolumeWidth)/2.0f;	// 클리핑에 따른 카메라 이동 수치
 	float fCameraMoveY = (fChrHeight-fViewVolumeHeight)/2.0f;
