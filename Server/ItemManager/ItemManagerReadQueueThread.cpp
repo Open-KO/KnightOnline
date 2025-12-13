@@ -3,7 +3,7 @@
 #include "ItemManagerApp.h"
 
 ItemManagerReadQueueThread::ItemManagerReadQueueThread()
-	: ReadQueueThread(ItemManagerApp::instance()->m_LoggerRecvQueue)
+	: ReadQueueThread(ItemManagerApp::instance()->LoggerRecvQueue)
 {
 }
 

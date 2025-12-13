@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Option", "Client\Option\Option.vcxproj", "{3FEFBF4A-B12C-4E32-BE93-4EA51FD09F63}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_deps", "_deps", "{657121FA-968C-4276-9AA6-EC6692DC6465}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fetch wrappers", "fetch wrappers", "{6EEB718D-CCE4-446E-A0BE-172669B7BC98}"
@@ -36,8 +38,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Launcher", "Client\Launcher
 	ProjectSection(ProjectDependencies) = postProject
 		{6E97FD6E-7530-4BE3-B8E6-9E17ED45CD45} = {6E97FD6E-7530-4BE3-B8E6-9E17ED45CD45}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Option", "Client\Option\Option.vcxproj", "{3FEFBF4A-B12C-4E32-BE93-4EA51FD09F63}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sync-submodules", "deps\fetch-and-build-wrappers\sync-submodules.vcxproj", "{1F14357D-E06A-48A1-B39A-74082F381FC0}"
 EndProject

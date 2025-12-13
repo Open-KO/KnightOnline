@@ -23,6 +23,11 @@ public:
 	static constexpr uint32_t MAX_MSG_SIZE	= 512;
 	static constexpr uint32_t MAX_NUM_MSG	= 4096;
 
+	bool IsOpen() const
+	{
+		return _queue != nullptr;
+	}
+
 	SharedMemoryQueue(int sendRetryCount = 0);
 	bool Create(const char* name);
 	bool OpenOrCreate(const char* name);

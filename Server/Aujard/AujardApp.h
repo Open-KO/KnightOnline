@@ -182,7 +182,19 @@ protected:
 	/// \returns true when successful, false otherwise
 	bool LoadConfig(CIni& iniFile) override;
 
+	/// \brief Initializes the server, loading caches, attempting to load shared memory etc.
+	/// \returns true when successful, false otherwise
 	bool OnStart() override;
+
+	/// \brief Attempts to open all shared memory queues & blocks that we've yet to open.
+	bool AttemptOpenSharedMemory();
+
+	/// \brief Thread tick attempting to open all shared memory queues & blocks that we've yet to open.
+	/// \see AttemptOpenSharedMemory
+	void AttemptOpenSharedMemoryThreadTick();
+
+	/// \brief Finishes server initialization and starts processing threads.
+	void OnSharedMemoryOpened();
 
 private:
 	time_t								_heartbeatReceivedTime;
@@ -190,6 +202,7 @@ private:
 	std::unique_ptr<TimerThread>		_heartbeatCheckThread;
 	std::unique_ptr<TimerThread>		_concurrentCheckThread;
 	std::unique_ptr<TimerThread>		_packetCheckThread;
-										
+	std::unique_ptr<TimerThread>		_smqOpenThread;
+
 	std::unique_ptr<ReadQueueThread>	_readQueueThread;
 };

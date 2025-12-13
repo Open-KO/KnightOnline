@@ -10,6 +10,8 @@
 #include <mpg123.h>
 #include <filesystem>
 
+#include <shlobj.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -413,18 +415,43 @@ bool CN3SndMgr::PreprocessFilename(std::string& szFN)
 
 bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 {
-	std::filesystem::path newPath(filename);
+	// We've seen this MP3 before. Replace its filename.
+	auto itr = m_mp3ToWavFileMap.find(filename);
+	if (itr != m_mp3ToWavFileMap.end())
+	{
+		filename = itr->second;
+		return true;
+	}
 
-	// Differentiate the converted files from any that already exist.
-	// We want to be able to identify them for ignoring (so they don't make the repo 'dirty'),
-	// and we generally don't want to assume any old, existing wav files match.
-	newPath.replace_extension(".mp3.wav");
+	PWSTR path = {};
+	HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &path);
+	if (FAILED(hr))
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to fetch LocalAppData directory: {:X}", hr);
+#endif
+		return false;
+	}
+
+	std::error_code fsErrorCode = {};
+
+	std::wstring audioDir = path;
+	CoTaskMemFree(path);
+	audioDir += L"\\OpenKO\\Snd";
+
+	std::filesystem::path newPath(audioDir);
+	std::filesystem::create_directories(newPath, fsErrorCode);
+		
+	std::filesystem::path oldPath(filename);
+	newPath /= oldPath.filename();
+	newPath.replace_extension(".wav");
 
 	// If we've already converted this file, we can just use it immediately.
-	std::error_code fsErrorCode = {};
 	if (std::filesystem::exists(newPath, fsErrorCode))
 	{
-		filename = newPath.string();
+		std::string newFilename = newPath.string();
+		m_mp3ToWavFileMap.insert(std::make_pair(filename, newFilename));
+		filename = std::move(newFilename);
 		return true;
 	}
 
@@ -433,7 +460,13 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 
 	mpg123_handle* mpgHandle = mpg123_new(nullptr, &error);
 	if (mpgHandle == nullptr)
+	{
+#ifdef _N3GAME
+		CLogWriter::Write("Failed to allocate MP3 handle: {} ({})",
+			filename, error);
+#endif
 		return false;
+	}
 
 	// Force output as 16-bit PCM - preserve sample rate and channel count.
 	mpg123_format(mpgHandle, 0, 0, MPG123_ENC_SIGNED_16);
@@ -544,6 +577,8 @@ bool CN3SndMgr::DecodeMp3ToWav(std::string& filename)
 	fseek(fp, endOfFileOffset, SEEK_SET);
 	fclose(fp);
 
+	m_mp3ToWavFileMap.insert(std::make_pair(filename, newFilename));
 	filename = std::move(newFilename);
+
 	return true;
 }

@@ -6,12 +6,18 @@
 #include <shared/Ini.h>
 #include <spdlog/spdlog.h>
 
+#include <chrono>
 #include <filesystem>
+
+using namespace std::chrono_literals;
 
 ItemManagerApp::ItemManagerApp(ItemManagerLogger& logger)
 	: AppThread(logger)
 {
 	_readQueueThread = std::make_unique<ItemManagerReadQueueThread>();
+	_smqOpenThread = std::make_unique<TimerThread>(
+		5s,
+		std::bind(&ItemManagerApp::AttemptOpenSharedMemoryThreadTick, this));
 }
 
 ItemManagerApp::~ItemManagerApp()
@@ -40,17 +46,48 @@ std::filesystem::path ItemManagerApp::ConfigPath() const
 
 bool ItemManagerApp::OnStart()
 {
-	if (!m_LoggerRecvQueue.Open(SMQ_ITEMLOGGER))
+	// Attempt to open shared memory queue first.
+	// If it fails (memory not yet available), we'll run the _smqOpenThread to periodically check
+	// until it can finally be opened.
+	if (!AttemptOpenSharedMemory())
 	{
-		spdlog::error("Shared memory queue not yet available. Run Ebenezer first.");
-		return false;
+		spdlog::info("ItemManagerApp::OnStart: shared memory unavailable, waiting for memory to become available");
+		_smqOpenThread->start();
+	}
+	else
+	{
+		OnSharedMemoryOpened();
 	}
 
+	return true;
+}
+
+/// \brief Attempts to open shared memory queue.
+bool ItemManagerApp::AttemptOpenSharedMemory()
+{
+	return LoggerRecvQueue.Open(SMQ_ITEMLOGGER);
+}
+
+/// \brief Thread tick attempting to open shared memory queue.
+/// \see AttemptOpenSharedMemory
+void ItemManagerApp::AttemptOpenSharedMemoryThreadTick()
+{
+	if (!AttemptOpenSharedMemory())
+		return;
+
+	// Shared memory is open, this thread doesn't need to exist anymore.
+	_smqOpenThread->shutdown(false);
+
+	// Run the server
+	OnSharedMemoryOpened();
+}
+
+/// \brief Finishes server initialization and starts processing threads.
+void ItemManagerApp::OnSharedMemoryOpened()
+{
 	_readQueueThread->start();
 
-	spdlog::info("ItemManager started");
-
-	return true;
+	spdlog::info("ItemManagerApp::OnSharedMemoryOpened: server started, processing requests");
 }
 
 void ItemManagerApp::ItemLogWrite(const char* pBuf)

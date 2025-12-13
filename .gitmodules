@@ -9,7 +9,7 @@
 	shallow = true
 [submodule "deps/zlib"]
 	path = deps/zlib
-	url = https://github.com/madler/zlib.git
+	url = https://github.com/madler/zlib
 	branch = master
 	shallow = true
 [submodule "deps/libjpeg-turbo"]
@@ -24,22 +24,22 @@
 	shallow = true
 [submodule "deps/nanodbc"]
 	path = deps/nanodbc
-	url = https://github.com/Open-KO/nanodbc.git
+	url = https://github.com/Open-KO/nanodbc
 	branch = OpenKO
 	shallow = true
 [submodule "deps/db-library"]
 	path = deps/db-library
-	url = https://github.com/Open-KO/OpenKO-db-library.git
+	url = https://github.com/Open-KO/OpenKO-db-library
 	branch = main
 	shallow = true
 [submodule "deps/spdlog"]
 	path = deps/spdlog
-	url = https://github.com/Open-KO/spdlog.git
+	url = https://github.com/Open-KO/spdlog
 	branch = v1.x
 	shallow = true
 [submodule "deps/mpg123"]
 	path = deps/mpg123
-	url = https://github.com/madebr/mpg123.git
+	url = https://github.com/madebr/mpg123
 	branch = master-with-github-ci
 	shallow = true
 [submodule "deps/djb2"]
@@ -58,4 +58,8 @@
 [submodule "deps/FTXUI"]
 	path = deps/FTXUI
 	url = https://github.com/ArthurSonzogni/FTXUI
+	shallow = true
+[submodule "deps/argparse"]
+	path = deps/argparse
+	url = https://github.com/p-ranav/argparse
 	shallow = true
