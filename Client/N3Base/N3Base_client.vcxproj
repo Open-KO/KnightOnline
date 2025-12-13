@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AVIPlayer.h" />
     <ClInclude Include="BitMapFile.h" />
     <ClInclude Include="DebugUtils.h" />
     <ClInclude Include="DFont.h" />
@@ -106,6 +105,7 @@
     <ClCompile Include="DebugUtils.cpp" />
     <ClCompile Include="DFont.cpp" />
     <ClCompile Include="LogWriter.cpp" />
+    <ClCompile Include="My_3DStruct.cpp" />
     <ClCompile Include="N3AlphaPrimitiveManager.cpp" />
     <ClCompile Include="N3AnimControl.cpp" />
     <ClCompile Include="N3AnimKey.cpp" />
@@ -172,6 +172,14 @@
     </ClCompile>
     <ClCompile Include="WaveFile.cpp" />
     <ClCompile Include="WinCrypt.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ColorValue.inl" />
+    <None Include="Material.inl" />
+    <None Include="Matrix44.inl" />
+    <None Include="Quaternion.inl" />
+    <None Include="Vector2.inl" />
+    <None Include="Vector3.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D06D505A-F28E-343F-09F4-C3809398B508}</ProjectGuid>

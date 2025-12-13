@@ -39,9 +39,6 @@
     <ClInclude Include="N3Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AVIPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BitMapFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -464,5 +461,28 @@
     <ClCompile Include="DebugUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="My_3DStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Matrix44.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Vector3.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Vector2.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Quaternion.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Material.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="ColorValue.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
