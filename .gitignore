@@ -62,3 +62,4 @@ build/
 
 # Do not ignore CMakeLists.txt
 !CMakeLists.txt
+cmake-build-debug

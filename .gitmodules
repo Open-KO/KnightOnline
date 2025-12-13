@@ -63,3 +63,7 @@
 	path = deps/argparse
 	url = https://github.com/p-ranav/argparse
 	shallow = true
+[submodule "deps/googletest"]
+    path = deps/googletest
+    url = https://github.com/google/googletest
+    shallow = true
