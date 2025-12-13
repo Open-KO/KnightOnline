@@ -86,6 +86,9 @@ if(OPENKO_BUILD_SERVERS)
   set(CMAKE_FOLDER "Server/_deps/ftxui")
   add_subdirectory(deps/FTXUI-cmake EXCLUDE_FROM_ALL)
 
+  set(CMAKE_FOLDER "Server/_deps/argparse")
+  add_subdirectory(deps/argparse-cmake EXCLUDE_FROM_ALL)
+
   set(CMAKE_FOLDER "Server/_deps")
   add_subdirectory(deps/nanodbc-cmake EXCLUDE_FROM_ALL)
 

@@ -70,7 +70,8 @@ char* SharedMemoryBlock::Open(const std::string& name)
 	}
 	catch (const interprocess_exception& ex)
 	{
-		spdlog::error("SharedMemoryBlock::Open: failed to open existing shared memory block. name='{}' ex={}", name, ex.what());
+		if (ex.get_error_code() != not_found_error)
+			spdlog::error("SharedMemoryBlock::Open: failed to open existing shared memory block. name='{}' ex={}", name, ex.what());
 	}
 
 	return nullptr;

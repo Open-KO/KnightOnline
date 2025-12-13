@@ -1,4 +1,5 @@
 # Linux script
+
 # Find script location on FS and use that as the working directory
 # $0 is the command line input (e.g., ./myscript.sh, /usr/bin/myscript)
 SCRIPT_PATH="$0"

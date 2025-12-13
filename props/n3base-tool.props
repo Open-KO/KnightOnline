@@ -5,7 +5,7 @@
   </ImportGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_N3TOOL;_CRT_SECURE_NO_WARNINGSNO_WARN_MBCS_MFC_DEPRECATION;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_N3TOOL;_CRT_SECURE_NO_WARNINGSNO_WARN_MBCS_MFC_DEPRECATION;_WIN32_WINNT=_WIN32_WINNT_WIN10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>

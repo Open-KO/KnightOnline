@@ -8,6 +8,11 @@
 
 #include <ftxui/component/event.hpp>
 
+namespace argparse
+{
+	class ArgumentParser;
+}
+
 class CIni;
 class AppThread : public Thread
 {
@@ -31,8 +36,30 @@ public:
 	/// \returns The application's ini config path.
 	virtual std::filesystem::path ConfigPath() const = 0;
 
+private:
+	/// \brief Sets up the parser & parses the command-line args, dispatching it to the app
+	bool parse_commandline(int argc, char* argv[]);
+
+protected:
+	/// \brief Sets up the command-line arg parser, binding args for parsing.
+	virtual void SetupCommandLineArgParser(argparse::ArgumentParser& parser);
+
+	/// \brief Processes any parsed command-line args as needed by the app.
+	virtual void ProcessCommandLineArgs(const argparse::ArgumentParser& parser);
+
 	/// \brief The main thread loop for the server instance
 	void thread_loop() override;
+
+private:
+	/// \brief Thread loop with main ftxui logic.
+	/// \param iniFile The loaded application ini file.
+	/// \returns Exit code.
+	int thread_loop_ftxui(CIni& iniFile);
+
+	/// \brief Thread loop with basic console logger fallback logic.
+	/// \param iniFile The loaded application ini file.
+	/// \returns Exit code.
+	int thread_loop_fallback(CIni& iniFile);
 
 protected:
 	/// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
@@ -64,7 +91,7 @@ public:
 	virtual bool HandleCommand(const std::string& command);
 
 	template <typename AppThreadType, typename LoggerType>
-	static int main(LoggerType& logger)
+	static int main(int argc, char* argv[], LoggerType& logger)
 	{
 		// catch interrupt signals for graceful shutdowns.
 		catchInterruptSignals();
@@ -72,6 +99,9 @@ public:
 		// Logger config/setup is handled by the server instance.
 		// We just instantiate it early for signal handling.
 		AppThreadType appThread(logger);
+		if (!appThread.parse_commandline(argc, argv))
+			return 1;
+
 		appThread.start();
 
 		// We keep the main() thread alive to catch interrupt signals and call shutdown
@@ -90,6 +120,7 @@ private:
 protected:
 	logger::Logger&		_logger;
 	int					_exitCode;
+	bool				_headless;
 
 	static AppThread*	s_instance;
 	static bool			s_shutdown;

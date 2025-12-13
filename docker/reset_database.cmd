@@ -15,3 +15,6 @@ echo Working directory set to: %CD%
 :: create a replacement database using the latest data 
 :: from the OpenKO-db project.
 docker exec knightonline-kodb-util-1 /usr/local/bin/cleanImport.sh
+
+:: return to original directory
+popd

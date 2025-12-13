@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIE", "UIE\UIE.vcxproj", "{A3B3D543-E737-4888-83F6-6C696F4E6194}"
+	ProjectSection(ProjectDependencies) = postProject
+		{74C1CB7D-63CD-40D3-ABEA-2A17EB3719ED} = {74C1CB7D-63CD-40D3-ABEA-2A17EB3719ED}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ItemEditor", "ItemEditor\ItemEditor.vcxproj", "{734350E8-5586-46D9-8197-EEEEA3034D86}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared", "shared\shared.vcxproj", "{C2FEB024-8E46-4533-918B-7196CAAA4E7D}"
@@ -48,11 +53,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TblEditor", "TblEditor\TblEditor.vcxproj", "{98BDB1F7-63EE-9D53-6DF8-B89B2B7A8BF3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274} = {50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIE", "UIE\UIE.vcxproj", "{A3B3D543-E737-4888-83F6-6C696F4E6194}"
-	ProjectSection(ProjectDependencies) = postProject
-		{74C1CB7D-63CD-40D3-ABEA-2A17EB3719ED} = {74C1CB7D-63CD-40D3-ABEA-2A17EB3719ED}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-dx9sdk", "deps\fetch-and-build-wrappers\fetch-dx9sdk.vcxproj", "{50D2B40A-5AE4-F5FB-4D79-AC6CC3C75274}"

@@ -3,8 +3,8 @@
 
 #include <shared-server/logger.h>
 
-int main()
+int main(int argc, char* argv[])
 {
 	logger::Logger logger(logger::Aujard);
-	return AppThread::main<AujardApp>(logger);
+	return AppThread::main<AujardApp>(argc, argv, logger);
 }

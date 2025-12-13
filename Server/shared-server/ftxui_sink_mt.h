@@ -35,6 +35,7 @@ namespace ftxui
 
 		sink_mt();
 		void set_screen(ftxui::ScreenInteractive* screen);
+		void disable_log_buffer();
 		void set_backlog_size(size_t backlogSize);
 		void set_console_sink(std::shared_ptr<spdlog::sinks::sink> consoleSink);
 

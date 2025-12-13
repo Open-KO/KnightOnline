@@ -12,3 +12,6 @@ echo Working directory set to: %CD%
 :: Stop the containers without removing any images or volumes
 :: resume with resume_containers.sh
 docker compose down
+
+:: return to original directory
+popd

@@ -1,4 +1,5 @@
 # Linux script
+
 # Find script location on FS and use that as the working directory
 # $0 is the command line input (e.g., ./myscript.sh, /usr/bin/myscript)
 SCRIPT_PATH="$0"
@@ -28,4 +29,4 @@ echo "Working dir: " && pwd
 
 # Bring containers back online after a stop
 # For first-time setup, or a clean database, use clean_setup.sh
-docker compose up
+docker compose up -d

@@ -29,6 +29,7 @@ bool SharedMemoryQueue::Create(const char* name)
 	catch (const interprocess_exception& ex)
 	{
 		spdlog::error("SharedMemoryQueue::Create: failed to create shared memory. name='{}' ex='{}'", name, ex.what());
+		_queue.reset();
 	}
 
 	return false;
@@ -47,6 +48,7 @@ bool SharedMemoryQueue::OpenOrCreate(const char* name)
 	catch (const interprocess_exception& ex)
 	{
 		spdlog::error("SharedMemoryQueue::OpenOrCreate: failed to open or create shared memory. name='{}' ex='{}'", name, ex.what());
+		_queue.reset();
 	}
 
 	return false;
@@ -61,7 +63,10 @@ bool SharedMemoryQueue::Open(const char* name)
 	}
 	catch (const interprocess_exception& ex)
 	{
-		spdlog::error("SharedMemoryQueue::Open: failed to open existing shared memory. name='{}' ex='{}'", name, ex.what());
+		if (ex.get_error_code() != not_found_error)
+			spdlog::error("SharedMemoryQueue::Open: failed to open existing shared memory. name='{}' ex='{}'", name, ex.what());
+
+		_queue.reset();
 	}
 
 	return false;

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{61A124FB-035E-4560-8499-198C6299B7DA}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="UserMacros">
+    <DependencyName>argparse</DependencyName>
+    <LocalDependencyDir>deps\argparse</LocalDependencyDir>
+    <RealProjectPath></RealProjectPath>
+  </PropertyGroup>
+  <Import Project="$(PropsDir)fetch_wrapper.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

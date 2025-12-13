@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_WIN32_WINNT=_WIN32_WINNT_WIN10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(DependencyDir)argparse\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 </Project>

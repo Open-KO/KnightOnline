@@ -7,14 +7,18 @@
 
 #include <shared-server/AppThread.h>
 #include <shared-server/SharedMemoryQueue.h>
+#include <shared/TimerThread.h>
 
 class ItemManagerLogger;
 class ReadQueueThread;
 class ItemManagerApp : public AppThread
 {
 public:
-	SharedMemoryQueue m_LoggerRecvQueue;
-	std::unique_ptr<ReadQueueThread> _readQueueThread;
+	SharedMemoryQueue					LoggerRecvQueue;
+
+private:
+	std::unique_ptr<ReadQueueThread>	_readQueueThread;
+	std::unique_ptr<TimerThread>		_smqOpenThread;
 
 public:
 	static ItemManagerApp* instance()
@@ -30,6 +34,16 @@ protected:
 	std::filesystem::path ConfigPath() const override;
 
 	bool OnStart() override;
+
+	/// \brief Attempts to open shared memory queue.
+	bool AttemptOpenSharedMemory();
+
+	/// \brief Thread tick attempting to open shared memory queue.
+	/// \see AttemptOpenSharedMemory
+	void AttemptOpenSharedMemoryThreadTick();
+
+	/// \brief Finishes server initialization and starts processing threads.
+	void OnSharedMemoryOpened();
 
 public:
 	void ItemLogWrite(const char* pBuf);

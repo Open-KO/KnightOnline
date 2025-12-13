@@ -30,9 +30,14 @@ namespace logger
 		static constexpr uint8_t ThreadPoolSize = 1;
 
 	public:
-		std::shared_ptr<ftxui::sink_mt> fxtuiSink()
+		std::shared_ptr<ftxui::sink_mt> FxtuiSink()
 		{
 			return _fxtuiSink;
+		}
+
+		const std::string& AppName() const
+		{
+			return _appName;
 		}
 
 		/// \param appName application name (VersionManager, Aujard, AIServer, Ebenezer)
@@ -105,7 +110,7 @@ namespace ini
 	static constexpr char DEFAULT_LOG_PATTERN[] = "[%H:%M:%S][%n][%7l] %v";
 
 	/// \brief default console logger line prefix ([12:59:59][AppName][  level] log line...)
-	static constexpr char DEFAULT_CONSOLE_LOG_PATTERN[] = "[%H:%M:%S][%n][%^%7l%$] %v";
+	static constexpr char DEFAULT_CONSOLE_LOG_PATTERN[] = "[%H:%M:%S][%n]%^[%7l] %$%v";
 }
 
 #endif // SERVER_SHAREDSERVER_LOGGER_H

@@ -51,6 +51,10 @@ AujardApp::AujardApp(logger::Logger& logger)
 		std::bind(&AujardApp::WritePacketLog, this));
 
 	_readQueueThread = std::make_unique<AujardReadQueueThread>();
+
+	_smqOpenThread = std::make_unique<TimerThread>(
+		5s,
+		std::bind(&AujardApp::AttemptOpenSharedMemoryThreadTick, this));
 }
 
 AujardApp::~AujardApp()
@@ -109,7 +113,6 @@ AujardApp::~AujardApp()
 	db::ConnectionManager::Destroy();
 }
 
-
 /// \returns The application's ini config path.
 std::filesystem::path AujardApp::ConfigPath() const
 {
@@ -149,34 +152,78 @@ bool AujardApp::LoadConfig(CIni& iniFile)
 	return true;
 }
 
+/// \brief Initializes the server, loading caches, attempting to load shared memory etc.
+/// \returns true when successful, false otherwise
 bool AujardApp::OnStart()
 {
-	LoggerRecvQueue.Open(SMQ_LOGGERSEND);	// Dispatcher 의 Send Queue
-	LoggerSendQueue.Open(SMQ_LOGGERRECV);	// Dispatcher 의 Read Queue
-
-	if (!InitSharedMemory())
-	{
-		spdlog::error("Main Shared Memory Initialize Fail");
-		return false;
-	}
-	
 	if (!_dbAgent.InitDatabase())
 		return false;
 
 	if (!LoadItemTable())
-	{
-		spdlog::error("Load ItemTable Fail!!");
 		return false;
+
+	// Attempt to open all shared memory queues & blocks first.
+	// If it fails (memory not yet available), we'll run the _smqOpenThread to periodically check
+	// until it can finally be opened.
+	if (!AttemptOpenSharedMemory())
+	{
+		spdlog::info("AujardApp::OnStart: shared memory unavailable, waiting for memory to become available");
+		_smqOpenThread->start();
+	}
+	else
+	{
+		OnSharedMemoryOpened();
 	}
 
+	return true;
+}
+
+/// \brief Attempts to open all shared memory queues & blocks that we've yet to open.
+bool AujardApp::AttemptOpenSharedMemory()
+{
+	bool openedAll = true;
+
+	if (!LoggerRecvQueue.IsOpen()
+		&& !LoggerRecvQueue.Open(SMQ_LOGGERSEND))
+		openedAll = false;
+
+	if (!LoggerSendQueue.IsOpen()
+		&& !LoggerSendQueue.Open(SMQ_LOGGERRECV))
+		openedAll = false;
+
+	// NOTE: This looks unsafe, but the server isn't started up until all of this finishes,
+	//       so nothing else is using _dbAgent.UserData yet.
+	if (_dbAgent.UserData.empty()
+		&& !InitSharedMemory())
+		openedAll = false;
+
+	return openedAll;
+}
+
+/// \brief Thread tick attempting to open all shared memory queues & blocks that we've yet to open.
+/// \see AttemptOpenSharedMemory
+void AujardApp::AttemptOpenSharedMemoryThreadTick()
+{
+	if (!AttemptOpenSharedMemory())
+		return;
+
+	// Shared memory is open, this thread doesn't need to exist anymore.
+	_smqOpenThread->shutdown(false);
+
+	// Run the server
+	OnSharedMemoryOpened();
+}
+
+/// \brief Finishes server initialization and starts processing threads.
+void AujardApp::OnSharedMemoryOpened()
+{
 	_dbPoolCheckThread->start();
 	_heartbeatCheckThread->start();
 	_concurrentCheckThread->start();
 	_packetCheckThread->start();
 	_readQueueThread->start();
 
-	spdlog::info("AujardApp::OnStart: initialized");
-	return true;
+	spdlog::info("AujardApp::OnSharedMemoryOpened: server started, processing requests");
 }
 
 /// \brief initializes shared memory with other server applications
