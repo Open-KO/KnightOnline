@@ -1971,7 +1971,7 @@ void CN3Chr::Init()
 	{
 		m_JointRefs[i] = nullptr;
 		m_pRootJointRef->FindPointerByID(i, m_JointRefs[i]);
-		::D3DXMatrixInverse(&(m_MtxInverses[i]), nullptr, &(m_JointRefs[i]->m_Matrix)); // 로컬 축에 대한 역행렬을 구한다..
+		m_MtxInverses[i] = m_JointRefs[i]->m_Matrix.Inverse(); // 로컬 축에 대한 역행렬을 구한다..
 		m_MtxJoints[i] = m_JointRefs[i]->m_Matrix;
 	}
 
@@ -2267,8 +2267,8 @@ int CN3Chr::CheckCollisionPrecisely(int ixScreen, int iyScreen, __Vector3* pvPic
 	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, CN3Base::s_CameraData.mtxView, CN3Base::s_CameraData.mtxProjection, CN3Base::s_CameraData.vp, vPos, vDir);
 
 
-	static __Matrix44 mtxWI, mtxWIRot;
-	D3DXMatrixInverse(&mtxWI, nullptr, &m_Matrix); // World Matrix Inverse
+	__Matrix44 mtxWI, mtxWIRot;
+	mtxWI = m_Matrix.Inverse(); // World Matrix Inverse
 	mtxWIRot = mtxWI;
 	mtxWIRot.PosSet(0,0,0);
 	__Vector3 vPos2 = vPos * mtxWI;

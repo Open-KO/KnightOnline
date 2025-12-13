@@ -273,8 +273,7 @@ void _Convert2D_To_3DCoordinate(
 	vTmp.z = 1.0f;
 
 	// Transform the screen space pick ray into 3D space
-	__Matrix44 mtxVI;
-	::D3DXMatrixInverse(&mtxVI, nullptr, &mtxView);
+	__Matrix44 mtxVI = mtxView.Inverse();
 	vDirResult.x = vTmp.x * mtxVI._11 + vTmp.y * mtxVI._21 + vTmp.z * mtxVI._31;
 	vDirResult.y = vTmp.x * mtxVI._12 + vTmp.y * mtxVI._22 + vTmp.z * mtxVI._32;
 	vDirResult.z = vTmp.x * mtxVI._13 + vTmp.y * mtxVI._23 + vTmp.z * mtxVI._33;

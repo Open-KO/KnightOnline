@@ -617,7 +617,7 @@ LRESULT CN3CEView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						__Matrix44 inv_mtx;
 						float M;
 
-						D3DXMatrixInverse(&inv_mtx, &M, &mtx);
+						inv_mtx = mtx.Inverse();
 
 						__Vector3 vPos = m_pFXPosTransform->Pos() * inv_mtx;
 
@@ -666,7 +666,7 @@ void CN3CEView::OnMouseMove(UINT nFlags, CPoint point)
 					__Vector3 vDelta(ptDelta.x * 0.003f, -ptDelta.y * 0.003f, 0);
 					vDelta *= mtx;
 
-					::D3DXMatrixInverse(&mtx, nullptr, pMtxTmp);
+					mtx = pMtxTmp->Inverse();
 					mtx.PosSet(0,0,0);
 					vDelta *= mtx;
 
@@ -691,7 +691,7 @@ void CN3CEView::OnMouseMove(UINT nFlags, CPoint point)
 					__Matrix44 mtx;
 					mtx.Identity();
 
-					::D3DXMatrixInverse(&mtx, nullptr, pMtxTmp);
+					mtx = pMtxTmp->Inverse();
 					mtx.PosSet(0,0,0);
 
 					vAxis = CN3Base::s_CameraData.vAt - CN3Base::s_CameraData.vEye;
@@ -758,7 +758,7 @@ void CN3CEView::OnMouseMove(UINT nFlags, CPoint point)
 					__Vector3 vDelta(ptDelta.x * 0.003f, -ptDelta.y * 0.003f, 0);
 					vDelta *= mtx;
 
-					::D3DXMatrixInverse(&mtx, nullptr, pMtxTmp);
+					mtx = pMtxTmp->Inverse();
 					mtx.PosSet(0,0,0);
 					vDelta *= mtx;
 
@@ -773,7 +773,7 @@ void CN3CEView::OnMouseMove(UINT nFlags, CPoint point)
 					__Matrix44 mtx;
 					mtx.Identity();
 
-					::D3DXMatrixInverse(&mtx, nullptr, pMtxTmp);
+					mtx = pMtxTmp->Inverse();
 					mtx.PosSet(0,0,0);
 
 					vAxis = CN3Base::s_CameraData.vAt - CN3Base::s_CameraData.vEye;

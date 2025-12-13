@@ -284,16 +284,15 @@ void CTransDummy::GetPickRay(POINT point, __Vector3& vDir, __Vector3& vOrig)
     lpD3DDev->GetTransform( D3DTS_PROJECTION, &matProj );
 
     // Compute the vector of the pick ray in screen space
-    D3DXVECTOR3 v;
+    __Vector3 v;
     v.x =  ( ( ( 2.0f * point.x ) / (s_CameraData.vp.Width) ) - 1 ) / matProj._11;
     v.y = -( ( ( 2.0f * point.y ) / (s_CameraData.vp.Height) ) - 1 ) / matProj._22;
     v.z =  1.0f;
 
-
     // Get the inverse view matrix
-    D3DXMATRIX matView, m;
+    __Matrix44 matView, m;
     lpD3DDev->GetTransform( D3DTS_VIEW, &matView );
-    D3DXMatrixInverse( &m, nullptr, &matView );
+    m = matView.Inverse();
 
     // Transform the screen space pick ray into 3D space
     vDir.x  = v.x*m._11 + v.y*m._21 + v.z*m._31;

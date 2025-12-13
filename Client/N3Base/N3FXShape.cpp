@@ -450,8 +450,7 @@ void CN3FXShape::FindMinMax()
 	__Vector3 vMaxTmp(0,0,0);
 
 	// 가장 큰 지점찾기..
-	static __Matrix44 mtxWI;
-	D3DXMatrixInverse(&mtxWI, nullptr, &m_mtxFinalTransform); // World Matrix Inverse
+	__Matrix44 mtxWI = m_mtxFinalTransform.Inverse(); // World Matrix Inverse
 	for (CN3FXSPart* pPart : m_Parts)
 	{
 		//pPart->ReCalcMatrix(m_mtxFinalTransform);

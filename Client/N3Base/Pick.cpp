@@ -26,20 +26,19 @@ void CPick::SetPickXY(long x, long y)
 	LPDIRECT3DDEVICE9 lpD3DDev = CN3Base::s_lpD3DDev;
 
     // Get the pick ray from the mouse position
-    D3DXMATRIX matProj;
+    __Matrix44 matProj;
     lpD3DDev->GetTransform( D3DTS_PROJECTION, &matProj );
 
     // Compute the vector of the pick ray in screen space
-    D3DXVECTOR3 v;
+    __Vector3 v;
     v.x =  ( ( ( 2.0f * x ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / matProj._11;
     v.y = -( ( ( 2.0f * y ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / matProj._22;
     v.z =  1.0f;
 
-
     // Get the inverse view matrix
-    D3DXMATRIX matView, m;
+    __Matrix44 matView, m;
     lpD3DDev->GetTransform( D3DTS_VIEW, &matView );
-    D3DXMatrixInverse( &m, nullptr, &matView );
+    m = matView.Inverse();
 
     // Transform the screen space pick ray into 3D space
     m_vPickRayDir.x  = v.x*m._11 + v.y*m._21 + v.z*m._31;

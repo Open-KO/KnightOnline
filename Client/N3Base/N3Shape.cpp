@@ -752,8 +752,7 @@ void CN3Shape::FindMinMax()
 	__Vector3 vMaxTmp(0,0,0);
 
 	// 가장 큰 지점찾기..
-	static __Matrix44 mtxWI;
-	D3DXMatrixInverse(&mtxWI, nullptr, &m_Matrix); // World Matrix Inverse
+	__Matrix44 mtxWI = m_Matrix.Inverse(); // World Matrix Inverse
 	for (CN3SPart* pPart : m_Parts)
 	{
 		vMinTmp = pPart->Min() * mtxWI; // 월드 상의 최소값을 로컬 좌표로 바꾸어준다..
@@ -818,8 +817,7 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, const __Vector3& vPo
 		if (nFC > 64 && !::_CheckCollisionByBox(vPos, vDir, pPart->Min(), pPart->Max()))
 			continue; 
 
-		static __Matrix44 mtxWI;
-		D3DXMatrixInverse(&mtxWI, nullptr, &pPart->m_Matrix); // World Matrix Inverse
+		__Matrix44 mtxWI = pPart->m_Matrix.Inverse(); // World Matrix Inverse
 
 		vPos2 = vPos * mtxWI;
 		mtxWI.PosSet(0, 0, 0);
@@ -846,7 +844,7 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, const __Vector3& vPo
 				pVNormal->Cross(pVs[nCI1] - pVs[nCI0], pVs[nCI2] - pVs[nCI1]);
 				pVNormal->Normalize();
 
-				D3DXMatrixInverse(&mtxWI, nullptr, &pPart->m_Matrix); // World Matrix Inverse
+				mtxWI= pPart->m_Matrix.Inverse(); // World Matrix Inverse
 				mtxWI.PosSet(0, 0, 0); // 역행렬로 회전..
 				*pVNormal *= mtxWI; // 역행렬로 회전..
 			}
@@ -881,8 +879,7 @@ bool CN3Shape::MakeCollisionMeshByParts()  // 충돌 메시를 박스로 만든�
 	__Vector3* pVDest = pVMesh->Vertices();
 	uint16_t* pwIDest = pVMesh->Indices();
 
-	__Matrix44 mtxI = m_Matrix;
-	D3DXMatrixInverse(&mtxI, nullptr, &m_Matrix);
+	__Matrix44 mtxI = m_Matrix.Inverse();
 	CN3VMesh VMTmp;
 
 	iVC = 0; iIC = 0;
@@ -963,8 +960,7 @@ bool CN3Shape::MakeCollisionMeshByPartsDetail()  // 현재 모습 그대로... �
 	uint16_t* pwISrc = nullptr;
 
 	iVC = 0; iIC = 0;
-	__Matrix44 mtxI = m_Matrix;
-	D3DXMatrixInverse(&mtxI, nullptr, &m_Matrix);
+	__Matrix44 mtxI = m_Matrix.Inverse();
 
 	for (CN3SPart* pPart : m_Parts)
 	{

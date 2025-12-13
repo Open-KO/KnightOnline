@@ -249,7 +249,7 @@ bool CN3VMesh::CheckCollision(const __Matrix44& MtxWorld, const __Vector3& v0, c
 	static float fT, fU, fV, fDistTmp, fDistClosest;
 	fDistClosest = FLT_MAX;
 
-	D3DXMatrixInverse(&mtxWI, nullptr, &MtxWorld); // World Matrix Inverse
+	mtxWI = MtxWorld.Inverse(); // World Matrix Inverse
 	mtxWIRot = mtxWI;
 	mtxWIRot.PosSet(0,0,0);
 	mtxRot = MtxWorld;
@@ -312,8 +312,8 @@ bool CN3VMesh::Pick(const __Matrix44& MtxWorld, const __Vector3& vPos, const __V
 {
 	if(m_nVC <= 0) return false;
 
-	static __Matrix44 mtxWI, mtxWIRot, mtxRot;
-	D3DXMatrixInverse(&mtxWI, nullptr, &MtxWorld); // World Matrix Inverse
+	__Matrix44 mtxWI, mtxWIRot, mtxRot;
+	mtxWI = MtxWorld.Inverse(); // World Matrix Inverse
 	mtxWIRot = mtxWI;
 	mtxWIRot.PosSet(0,0,0);
 	mtxRot = MtxWorld;

@@ -2806,7 +2806,7 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
     __Matrix44 matView, m;
 	__Vector3 vOrig, vDir;
 	CN3Base::s_lpD3DDev->GetTransform( D3DTS_VIEW, &matView );		// 내 맘대로 되라..!! 얍..~~
-    D3DXMatrixInverse( &m, nullptr, &matView );
+    m = matView.Inverse();
 
     // Transform the screen space pick ray into 3D space
     vDir.x  = vect.x*m._11 + vect.y*m._21 + vect.z*m._31;

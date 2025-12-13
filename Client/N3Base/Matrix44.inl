@@ -31,6 +31,14 @@ void __Matrix44::Identity()
 	_11 = _22 = _33 = _44 = 1.0f;
 }
 
+__Matrix44 __Matrix44::Inverse(float* determinant /*= nullptr*/) const
+{
+	__Matrix44 mtxOut;
+	mtxOut.Identity();
+	D3DXMatrixInverse(&mtxOut, determinant, this);
+	return mtxOut;
+}
+
 const __Vector3 __Matrix44::Pos() const
 {
 	__Vector3 vTmp;
@@ -254,7 +262,7 @@ void __Matrix44::Direction(const D3DXVECTOR3& vDir)
 	_23 = vDir2.y; // view(1, 2) = view_dir.y;
 	_33 = vDir2.z; // view(2, 2) = view_dir.z;
 
-	D3DXMatrixInverse(this, nullptr, this);
+	*this = Inverse();
 
 //  view(3, 0) = -DotProduct(right, from);
 //  view(3, 1) = -DotProduct(up, from);

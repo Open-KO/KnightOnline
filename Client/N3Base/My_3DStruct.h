@@ -84,6 +84,7 @@ public:
 
 	void Zero();
 	void Identity();
+	__Matrix44 Inverse(float* determinant = nullptr) const;
 	const __Vector3 Pos() const;
 	void PosSet(float x, float y, float z);
 	void PosSet(const D3DXVECTOR3& v);

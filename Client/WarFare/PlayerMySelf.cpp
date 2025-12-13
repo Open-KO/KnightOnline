@@ -495,8 +495,8 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	vPos.y = (fHeight - vPos.y)/fHeight;
 
 	__Matrix44 mtxProjInv, mtxViewInv;
-	D3DXMatrixInverse(&mtxProjInv, nullptr, &mtxproj);
-	D3DXMatrixInverse(&mtxViewInv, nullptr, &mtxview);
+	mtxProjInv = mtxproj.Inverse();
+	mtxViewInv = mtxview.Inverse();
 
 	vPos *= mtxProjInv;
 	vPos *= mtxViewInv;
