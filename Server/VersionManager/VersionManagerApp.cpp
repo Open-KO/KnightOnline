@@ -31,67 +31,94 @@ VersionManagerApp::VersionManagerApp(logger::Logger& logger)
 
 VersionManagerApp::~VersionManagerApp()
 {
-	spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down, releasing resources.");
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	spdlog::info("🛑 Shutting down Version Manager Server...");
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	
+	spdlog::info("  → Stopping Socket Manager...");
 	_socketManager.Shutdown();
-	spdlog::info("VersionManagerApp::~VersionManagerApp: SocketManager stopped.");
+	spdlog::info("  ✓ Socket Manager stopped successfully");
 
-	spdlog::info("VersionManagerApp::~VersionManagerApp: Waiting for worker threads to fully shut down.");
+	spdlog::info("  → Waiting for worker threads to shutdown...");
 
 	if (_dbPoolCheckThread != nullptr)
 	{
-		spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down CheckAliveThread...");
-
+		spdlog::info("  → Stopping DB Pool Check Thread...");
 		_dbPoolCheckThread->shutdown();
-
-		spdlog::info("VersionManagerApp::~VersionManagerApp: DB pool check thread stopped.");
+		spdlog::info("  ✓ DB Pool Check Thread stopped");
 	}
 
-	spdlog::info("VersionManagerApp::~VersionManagerApp: All worker threads stopped, freeing caches.");
-
+	spdlog::info("  → Freeing server list cache...");
 	for (_SERVER_INFO* pInfo : ServerList)
 		delete pInfo;
 	ServerList.clear();
+	spdlog::info("  ✓ Server list cache cleared");
 
-	spdlog::info("VersionManagerApp::~VersionManagerApp: All resources safely released.");
-
+	spdlog::info("  → Destroying database connection manager...");
 	db::ConnectionManager::Destroy();
+	spdlog::info("  ✓ Database connections closed");
+
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	spdlog::info("✓ All resources safely released. Server shutdown complete.");
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 }
 
 bool VersionManagerApp::OnStart()
 {
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	spdlog::info("🚀 Initializing Version Manager Server...");
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+	spdlog::info("  → Initializing Socket Manager (Max Users: {})...", MAX_USER);
 	_socketManager.Init(MAX_USER, 0, 1);
 	_socketManager.AllocateServerSockets<CUser>();
-
-	spdlog::info("Version Manager initialized");
+	spdlog::info("  ✓ Socket Manager initialized");
 
 	// print the ODBC connection string
 	// TODO: modelUtil::DbType::ACCOUNT;  Currently all models are assigned to GAME
-	spdlog::debug(
+	spdlog::debug("  → ODBC Connection: {}", 
 		db::ConnectionManager::GetOdbcConnectionString(modelUtil::DbType::GAME));
 
+	spdlog::info("  → Connecting to database...");
 	if (!DbProcess.InitDatabase())
 	{
-		spdlog::error("Database Connection Fail!!");
+		spdlog::error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+		spdlog::error("❌ FATAL ERROR: Database connection failed!");
+		spdlog::error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		return false;
 	}
+	spdlog::info("  ✓ Database connection established");
 
+	spdlog::info("  → Loading version list from database...");
 	if (!LoadVersionList())
 	{
-		spdlog::error("Load Version List Fail!!");
+		spdlog::error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+		spdlog::error("❌ FATAL ERROR: Failed to load version list!");
+		spdlog::error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		return false;
 	}
+	spdlog::info("  ✓ Version list loaded successfully");
 
+	spdlog::info("  → Starting network listener on port {}...", _LISTEN_PORT);
 	if (!_socketManager.Listen(_LISTEN_PORT))
 	{
-		spdlog::error("FAIL TO CREATE LISTEN STATE");
+		spdlog::error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+		spdlog::error("❌ FATAL ERROR: Failed to create listen socket!");
+		spdlog::error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 		return false;
 	}
 
 	_socketManager.StartAccept();
+	spdlog::info("  ✓ Network listener started");
 
-	spdlog::info("Listening on 0.0.0.0:{}", _LISTEN_PORT);
-
+	spdlog::info("  → Starting DB pool check thread...");
 	_dbPoolCheckThread->start();
+	spdlog::info("  ✓ DB pool check thread started");
+
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	spdlog::info("✅ Server is now ONLINE and listening on 0.0.0.0:{}", _LISTEN_PORT);
+	spdlog::info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+	spdlog::info("");
 
 	return true;
 }
@@ -104,6 +131,8 @@ std::filesystem::path VersionManagerApp::ConfigPath() const
 
 bool VersionManagerApp::LoadConfig(CIni& iniFile)
 {
+	spdlog::info("  → Loading configuration from: {}", ConfigPath().string());
+	
 	// ftp config
 	iniFile.GetString(ini::DOWNLOAD, ini::URL, "127.0.0.1", _ftpUrl, sizeof(_ftpUrl));
 	iniFile.GetString(ini::DOWNLOAD, ini::PATH, "/", _ftpPath, sizeof(_ftpPath));
@@ -126,13 +155,13 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 
 	if (strlen(_ftpUrl) == 0)
 	{
-		spdlog::error("VersionManagerApp::LoadConfig: The FTP URL must be set.");
+		spdlog::error("  ❌ Configuration Error: FTP URL must be set in [DOWNLOAD] section");
 		return false;
 	}
 
 	if (strlen(_ftpPath) == 0)
 	{
-		spdlog::error("VersionManagerApp::LoadConfig: The FTP path must be set.");
+		spdlog::error("  ❌ Configuration Error: FTP path must be set in [DOWNLOAD] section");
 		return false;
 	}
 
@@ -141,13 +170,13 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 		|| datasourceUser.empty()
 		|| datasourcePass.empty())
 	{
-		spdlog::error("VersionManagerApp::LoadConfig: Datasource config must be set.");
+		spdlog::error("  ❌ Configuration Error: Database credentials must be set in [ODBC] section");
 		return false;
 	}
 
 	if (serverCount <= 0)
 	{
-		spdlog::error("VersionManagerApp::LoadConfig: At least 1 server must exist in the server list.");
+		spdlog::error("  ❌ Configuration Error: At least 1 server must exist in server list");
 		return false;
 	}
 
@@ -172,6 +201,7 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 
 		ServerList.push_back(pInfo);
 	}
+	spdlog::info("  ✓ Loaded {} server(s) from configuration", serverCount);
 
 	// Read news from INI (max 3 blocks)
 	std::stringstream ss;
@@ -201,14 +231,17 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 	{
 		if (newsContent.size() > sizeof(News.Content))
 		{
-			spdlog::error("VersionManagerApp::LoadConfig: News too long");
+			spdlog::error("  ❌ Configuration Error: News content exceeds maximum size ({} bytes)", 
+				sizeof(News.Content));
 			return false;
 		}
 
 		memcpy(&News.Content, newsContent.c_str(), newsContent.size());
 		News.Size = static_cast<int16_t>(newsContent.size());
+		spdlog::info("  ✓ News content loaded ({} bytes)", News.Size);
 	}
 
+	spdlog::info("  ✓ Configuration loaded successfully");
 	return true;
 }
 
@@ -227,7 +260,7 @@ bool VersionManagerApp::LoadVersionList()
 	}
 
 	if (lastVersion != _lastVersion)
-		spdlog::info("Latest Version: {}", lastVersion);
+		spdlog::info("  📦 Latest Client Version: {}", lastVersion);
 
 	_lastVersion = lastVersion;
 

@@ -5,6 +5,8 @@
 #include <shared/packets.h>
 
 #include <set>
+#include <vector>
+#include <memory>
 
 CUser::CUser(SocketManager* socketManager)
 	: TcpServerSocket(socketManager)
@@ -13,66 +15,73 @@ CUser::CUser(SocketManager* socketManager)
 
 bool CUser::PullOutCore(char*& data, int& length)
 {
-	uint8_t*	pTmp;
-	int			len;
-	bool		foundCore;
-	MYSHORT		slen;
+	int len = _recvCircularBuffer.GetValidCount();
 
-	len = _recvCircularBuffer.GetValidCount();
-
-	if (len == 0
-		|| len < 0)
+	if (len <= 0)
 		return false;
 
-	pTmp = new uint8_t[len];
+	// Use RAII to ensure automatic cleanup even if exceptions occur
+	std::vector<uint8_t> tmpBuffer(len);
 
-	_recvCircularBuffer.GetData((char*) pTmp, len);
+	_recvCircularBuffer.GetData(reinterpret_cast<char*>(tmpBuffer.data()), len);
 
-	foundCore = false;
-
-	int	sPos = 0, ePos = 0;
+	bool foundCore = false;
+	int sPos = 0;
+	int ePos = 0;
+	MYSHORT slen;
 
 	for (int i = 0; i < len && !foundCore; i++)
 	{
 		if (i + 2 >= len)
 			break;
 
-		if (pTmp[i] == PACKET_START1
-			&& pTmp[i + 1] == PACKET_START2)
+		if (tmpBuffer[i] == PACKET_START1
+			&& tmpBuffer[i + 1] == PACKET_START2)
 		{
 			sPos = i + 2;
 
-			slen.b[0] = pTmp[sPos];
-			slen.b[1] = pTmp[sPos + 1];
+			slen.b[0] = tmpBuffer[sPos];
+			slen.b[1] = tmpBuffer[sPos + 1];
 
 			length = slen.i;
 
-			if (length < 0)
-				goto cancelRoutine;
-
-			if (length > len)
-				goto cancelRoutine;
+			// Validate packet length before proceeding
+			if (length < 0 || length > len)
+			{
+				// Invalid packet length, skip this start marker
+				_recvCircularBuffer.HeadIncrease(3);
+				break;
+			}
 
 			ePos = sPos + length + 2;
 
 			if ((ePos + 2) > len)
-				goto cancelRoutine;
-//			ASSERT(ePos+2 <= len);
-
-			if (pTmp[ePos] == PACKET_END1
-				&& pTmp[ePos + 1] == PACKET_END2)
 			{
-				data = new char[length + 1];
-				memcpy(data, (pTmp + sPos + 2), length);
+				// Packet not complete yet, wait for more data
+				_recvCircularBuffer.HeadIncrease(3);
+				break;
+			}
+
+			if (tmpBuffer[ePos] == PACKET_END1
+				&& tmpBuffer[ePos + 1] == PACKET_END2)
+			{
+				// Allocate memory for the packet data
+				// If new throws std::bad_alloc, tmpBuffer will be automatically cleaned up (RAII)
+				data = new (std::nothrow) char[length + 1];
+				if (data == nullptr)
+				{
+					// Memory allocation failed
+					return false;
+				}
+
+				memcpy(data, tmpBuffer.data() + sPos + 2, length);
 				data[length] = 0;
 				foundCore = true;
-//				int head = _recvCircularBuffer.GetHeadPos(), tail = _recvCircularBuffer.GetTailPos();
-//				TRACE("data : %s, len : %d\n", data, length);
-//				TRACE("head : %d, tail : %d\n", head, tail );
 				break;
 			}
 			else
 			{
+				// Invalid packet end marker, skip this start marker
 				_recvCircularBuffer.HeadIncrease(3);
 				break;
 			}
@@ -82,8 +91,7 @@ bool CUser::PullOutCore(char*& data, int& length)
 	if (foundCore)
 		_recvCircularBuffer.HeadIncrease(6 + length); // 6: header 2+ end 2+ length 2
 
-cancelRoutine:
-	delete[] pTmp;
+	// tmpBuffer is automatically cleaned up here (RAII)
 	return foundCore;
 }
 

@@ -54,8 +54,7 @@ bool CDBProcess::LoadVersionList(VersionInfoList* versionList)
 	recordset_loader::STLMap loader(*versionList);
 	if (!loader.Load_ForbidEmpty())
 	{
-		spdlog::error("DBProcess::LoadVersionList: failed: {}",
-			loader.GetError().Message);
+		spdlog::error("  ❌ Failed to load version list: {}", loader.GetError().Message);
 		return false;
 	}
 

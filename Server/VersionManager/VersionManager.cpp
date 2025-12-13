@@ -2,6 +2,8 @@
 #include "VersionManagerApp.h"
 
 #include <shared-server/logger.h>
+#include <spdlog/spdlog.h>
+#include <iostream>
 
 int main()
 {
