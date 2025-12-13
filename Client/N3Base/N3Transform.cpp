@@ -120,12 +120,8 @@ void CN3Transform::Tick(float fFrm)
 void CN3Transform::ReCalcMatrix()
 {
 	m_Matrix.Scale(m_vScale);
-	if(m_qRot.w != 0)
-	{
-		static __Matrix44 mtxRot;
-		D3DXMatrixRotationQuaternion(&mtxRot, &m_qRot);
-		m_Matrix *= mtxRot;
-	}
+	if (m_qRot.w != 0)
+		m_Matrix *= m_qRot;
 	m_Matrix.PosSet(m_vPos);
 }
 

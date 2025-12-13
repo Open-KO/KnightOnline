@@ -49,17 +49,13 @@ void CGrassBoard::Release()
 void CGrassBoard::ReCalcMatrix()
 {
 	Grass_Info* pGrass;
-	for(int i=0;i<m_ucTexNum;++i)
+	for (int i = 0; i < m_ucTexNum; ++i)
 	{
 		pGrass = &m_sGrassInfo[i];
 
 		pGrass->mtxWorld.Scale(m_vScale);
-		if(m_qRot.w != 0)
-		{
-			static __Matrix44 mtxRot;
-			D3DXMatrixRotationQuaternion(&mtxRot, &m_qRot);
-			pGrass->mtxWorld *= mtxRot;
-		}
+		if (m_qRot.w != 0)
+			pGrass->mtxWorld *= m_qRot;
 		pGrass->mtxWorld.PosSet(m_vPos);
 	}
 }

@@ -344,8 +344,7 @@ bool CN3Joint::TickAnimationKey(float fFrm)
 
 void CN3Joint::ReCalcMatrix()
 {
-	static __Matrix44 mtx;
-	static __Quaternion qt;
+	__Matrix44 mtx;
 //	원래 행렬 계산 코드...
 //	m_Matrix.Identity();
 //	mtx.Rotation(m_vRot.x, m_vRot.y, m_vRot.z); m_Matrix *= mtx; // 부모 축 만큼 회전.
@@ -365,15 +364,10 @@ void CN3Joint::ReCalcMatrix()
 //		mtx.RotationZ(m_vRot.z); m_Matrix *= mtx;
 //	}
 
-	if(m_KeyOrient.Count() > 0) // Orient 키값이 있으면..
-	{
-		qt = m_qRot * m_qOrient;
-		::D3DXMatrixRotationQuaternion(&m_Matrix, &qt); // 회전.. 쿼터니언 계산..
-	}
+	if (m_KeyOrient.Count() > 0) // Orient 키값이 있으면..
+		m_Matrix = m_qRot * m_qOrient; // 회전.. 쿼터니언 계산..
 	else
-	{
-		::D3DXMatrixRotationQuaternion(&m_Matrix, &m_qRot); // 회전.. 쿼터니언 계산..
-	}
+		m_Matrix = m_qRot; // 회전.. 쿼터니언 계산..
 
 	if(1.0f != m_vScale.x || 1.0f != m_vScale.y || 1.0f != m_vScale.z) // 스케일 값이 있으면..
 	{

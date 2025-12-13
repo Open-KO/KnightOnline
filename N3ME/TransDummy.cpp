@@ -329,9 +329,7 @@ void CTransDummy::TransDiff(__Vector3* pvDiffPos, __Quaternion* pqDiffRot, __Vec
 		CN3Transform* pSelObj = m_SelObjArray.GetAt(0);
 		__Vector3 vCenter = pSelObj->Pos();
 		__Vector3 vPos;
-		__Matrix44 mtx44Rotate;
-
-		D3DXMatrixRotationQuaternion(&mtx44Rotate,pqDiffRot);
+		__Matrix44 mtx44Rotate = *pqDiffRot;
 
 		for (int i = 0; i < iSize; i++)
 		{

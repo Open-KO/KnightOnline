@@ -226,8 +226,8 @@ void CLightObjMgr::Render()
 	// set transform
 	HRESULT hr;
 
-	D3DXMATRIX mtx;
-	D3DXMatrixIdentity(&mtx);
+	__Matrix44 mtx;
+	mtx.Identity();
 		
 	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx); // 월드 행렬 적용..
 	
