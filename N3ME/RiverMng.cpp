@@ -282,7 +282,7 @@ BOOL CRiverMng::MouseMsgFilter(LPMSG pMsg)
 				m_VtxPosDummy.GetPickRay(point, vRayDir, vRayOrig);	// 이함수 잠시 빌려씀.
 
 				__Vector3 vTmp = vPV - vRayOrig;
-				float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+				float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 				vPos = vRayOrig + vRayDir*fT;
 				m_CreateLine[1] = vPos;
 				return TRUE;
@@ -386,7 +386,7 @@ BOOL CRiverMng::MouseMsgFilter(LPMSG pMsg)
 				m_VtxPosDummy.GetPickRay(point, vRayDir, vRayOrig);	// 이함수 잠시 빌려씀.
 
 				__Vector3 vTmp = vPV - vRayOrig;
-				float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+				float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 				vPos = vRayOrig + vRayDir*fT;
 				m_CreateLine[1] = vPos;
 

@@ -383,7 +383,7 @@ BOOL CPondMng::MouseMsgFilter(LPMSG pMsg)
 				m_VtxPosDummy.GetPickRay(point, vRayDir, vRayOrig);	// 이함수 잠시 빌려씀.
 
 				__Vector3 vTmp = vPV - vRayOrig;
-				float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+				float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 				vPos = vRayOrig + vRayDir*fT;	//	시작점과 마우스점을 구했음
 
 				ReSetDrawRect(vMouseStrPos,vPos);	//	받은 두점을 맵상의 사각형태로 변환
@@ -517,7 +517,7 @@ BOOL CPondMng::MouseMsgFilter(LPMSG pMsg)
 				m_VtxPosDummy.GetPickRay(point, vRayDir, vRayOrig);	// 이함수 잠시 빌려씀.
 
 				__Vector3 vTmp = vPV - vRayOrig;
-				float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+				float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 				vPos = vRayOrig + vRayDir*fT;
 
 				ReSetDrawRect(vMouseStrPos,vPos);

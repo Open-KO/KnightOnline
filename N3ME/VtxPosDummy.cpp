@@ -153,7 +153,7 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 						vPN.Set(0,1,0);
 
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 
 						__Vector3 vDiffPos = vPos - m_vPos;
@@ -167,7 +167,7 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 						vPN.Normalize();
 
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -182,7 +182,7 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 						vPN.Normalize();
 
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -197,7 +197,7 @@ BOOL CVtxPosDummy::MouseMsgFilter(LPMSG pMsg)				// 마우스 메세지 처리
 						vPN.Normalize();
 
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 

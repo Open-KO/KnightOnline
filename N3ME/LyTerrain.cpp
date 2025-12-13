@@ -2801,9 +2801,10 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 	vect.y = -( ( ( 2.0f * y ) / rect.Height() ) - 1 ) / mtx._22;
 	vect.z = 1.0f;
 
-	BOOL boo = FALSE;
+	bool boo = false;
     // Get the inverse view matrix
-    D3DXMATRIX matView, m; D3DXVECTOR3 vOrig, vDir;
+    __Matrix44 matView, m;
+	__Vector3 vOrig, vDir;
 	CN3Base::s_lpD3DDev->GetTransform( D3DTS_VIEW, &matView );		// 내 맘대로 되라..!! 얍..~~
     D3DXMatrixInverse( &m, nullptr, &matView );
 
@@ -2825,7 +2826,8 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 		int ix = ((int)vec2.x)/TERRAIN_CELL_SIZE;
 		int iz = ((int)vec2.z)/TERRAIN_CELL_SIZE;
 
-		if ( boo == TRUE ) break;
+		if (boo)
+			break;
 
 		for ( int i = 0; i < 10; i++ )
 		{
@@ -2879,8 +2881,8 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				C.Set((float)(ix+1)*TERRAIN_CELL_SIZE, m_ppMapData[ix+1][iz].fHeight, (float)iz*TERRAIN_CELL_SIZE);
 				B.Set((float)ix*TERRAIN_CELL_SIZE, m_ppMapData[ix][iz+1].fHeight, (float)(iz+1)*TERRAIN_CELL_SIZE);
 
-				boo = IntersectTriangle( vOrig, vDir, A, B, C, &ftx, &fty, &ftz );
-				if ( boo == TRUE ) 
+				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
+				if (boo)
 				{
 					if (vec) *vec = vOrig + ftx*vDir;
 					if (pHeightMapPos)
@@ -2896,8 +2898,8 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				B.Set((float)(ix+1)*TERRAIN_CELL_SIZE, m_ppMapData[ix+1][iz].fHeight, (float)iz*TERRAIN_CELL_SIZE);
 				C.Set((float)ix*TERRAIN_CELL_SIZE, m_ppMapData[ix][iz+1].fHeight, (float)(iz+1)*TERRAIN_CELL_SIZE);
 
-				boo = IntersectTriangle( vOrig, vDir, A, B, C, &ftx, &fty, &ftz );
-				if ( boo == TRUE )
+				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
+				if (boo)
 				{
 					if (vec) *vec = vOrig + ftx*vDir;
 					if (pHeightMapPos)
@@ -2915,8 +2917,8 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				C.Set((float)ix*TERRAIN_CELL_SIZE, m_ppMapData[ix][iz].fHeight, (float)iz*TERRAIN_CELL_SIZE);
 				B.Set((float)(ix+1)*TERRAIN_CELL_SIZE, m_ppMapData[ix+1][iz+1].fHeight, (float)(iz+1)*TERRAIN_CELL_SIZE);
 
-				boo = IntersectTriangle( vOrig, vDir, A, B, C, &ftx, &fty, &ftz );
-				if ( boo == TRUE )
+				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
+				if (boo)
 				{
 					if (vec) *vec = vOrig + ftx*vDir;
 					if (pHeightMapPos)
@@ -2932,8 +2934,8 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				B.Set((float)ix*TERRAIN_CELL_SIZE, m_ppMapData[ix][iz].fHeight, (float)iz*TERRAIN_CELL_SIZE);
 				C.Set((float)(ix+1)*TERRAIN_CELL_SIZE, m_ppMapData[ix+1][iz+1].fHeight, (float)(iz+1)*TERRAIN_CELL_SIZE);
 
-				boo = IntersectTriangle( vOrig, vDir, A, B, C, &ftx, &fty, &ftz );
-				if ( boo == TRUE )
+				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
+				if (boo)
 				{
 					if (vec) *vec = vOrig + ftx*vDir;
 					if (pHeightMapPos)
@@ -4374,73 +4376,6 @@ void CLyTerrain::SetColorMap(int x, int y)
 	m_pColorTexture[idxX][idxZ].GenerateMipMap(); // Mip Map 을 만든다..
 }
 //*/
-
-
-//
-//	IntersectTriangle..
-//
-//	orig	: 시작점...
-//	dir		: 피킹 방향..
-//	v0, v1, v2 : 삼각형의 세점..
-//	t		: orig부터 피킹된점까지 거리..
-//	u, v	: v0(0,0) v1(1,0) v2(0,1)로 봤을때 피킹된 점의 uv좌표..
-//
-BOOL CLyTerrain::IntersectTriangle( const D3DXVECTOR3 orig, const D3DXVECTOR3 dir, D3DXVECTOR3& v0, D3DXVECTOR3& v1, 
-								  D3DXVECTOR3& v2, float* t, float* u, float* v)
-{
-    // Find vectors for two edges sharing vert0
-    D3DXVECTOR3 edge1 = v1 - v0;
-    D3DXVECTOR3 edge2 = v2 - v0;
-
-    // Begin calculating determinant - also used to calculate U parameter
-    D3DXVECTOR3 pvec;
-    D3DXVec3Cross( &pvec, &dir, &edge2 );
-
-    // If determinant is near zero, ray lies in plane of triangle
-    FLOAT det = D3DXVec3Dot( &edge1, &pvec );
-    if( det < 0.0001f )		// 거의 0에 가까우면 삼각형 평면과 지나가는 선이 평행하다.
-        return FALSE;
-
-    // Calculate distance from vert0 to ray origin
-    D3DXVECTOR3 tvec = orig - v0;
-
-    // Calculate U parameter and test bounds
-    *u = D3DXVec3Dot( &tvec, &pvec );
-    if( *u < 0.0f || *u > det )
-        return FALSE;
-
-    // Prepare to test V parameter
-    D3DXVECTOR3 qvec;
-    D3DXVec3Cross( &qvec, &tvec, &edge1 );
-
-    // Calculate V parameter and test bounds
-    *v = D3DXVec3Dot( &dir, &qvec );
-    if( *v < 0.0f || *u + *v > det )
-        return FALSE;
-
-    // Calculate t, scale parameters, ray intersects triangle
-    *t = D3DXVec3Dot( &edge2, &qvec );
-    FLOAT fInvDet = 1.0f / det;
-    *t *= fInvDet;
-    *u *= fInvDet;
-    *v *= fInvDet;
-
-	// t가 클수록 멀리 직선과 평면과 만나는 점이 멀다.
-	// t*dir + orig 를 구하면 만나는 점을 구할 수 있다.
-	// u와 v의 의미는 무엇일까?
-	// 추측 : v0 (0,0), v1(1,0), v2(0,1) <괄호안은 (U, V)좌표> 이런식으로 어느 점에 가깝나 나타낸 것 같음
-	//
-
-    return TRUE;
-}
-
-
-
-//////////////////////////////////////////////////
-//	Coded By : Dino
-//	Coded On 2001-06-21 오후 12:18:31
-//	아래로 지형 Edit관련 함수들
-
 
 //
 //	에디트 모드로 전환...

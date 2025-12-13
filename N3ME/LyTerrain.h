@@ -146,8 +146,6 @@ protected:
 	//
 	void SetDTexManual(int x, int y);	//수동찍기
 	void SetDTex(int x, int y);			//자동찍기.
-	BOOL IntersectTriangle( const D3DXVECTOR3 orig, const D3DXVECTOR3 dir, 
-						D3DXVECTOR3& v0, D3DXVECTOR3& v1, D3DXVECTOR3& v2, float* t, float* u, float* v);
 	void Heighten(POINT ptCenter, float fHeight);	// 지형을 높게하거나 낮게 하는 함수
 	void Smooth(POINT ptCenter);		// 지형을 주변 맵의 높이값과 비교해서 부드럽게 한다.
 	void Flaten(POINT ptCenter);

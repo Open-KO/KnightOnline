@@ -154,12 +154,12 @@ bool _IntersectTriangle(
 	qVec.Cross(tVec, vEdge1);
 
 	// Calculate V parameter and test bounds
-	fV = D3DXVec3Dot(&vDir, &qVec);
+	fV = vDir.Dot(qVec);
 	if (fV < 0.0f || fU + fV > fDet)
 		return false;
 
 	// Calculate t, scale parameters, ray intersects triangle
-	fT = D3DXVec3Dot(&vEdge2, &qVec);
+	fT = vEdge2.Dot(qVec);
 
 	float fInvDet = 1.0f / fDet;
 	fT *= fInvDet;
@@ -222,12 +222,12 @@ bool _IntersectTriangle(
 	qVec.Cross(tVec, vEdge1);
 
 	// Calculate V parameter and test bounds
-	fV = D3DXVec3Dot(&vDir, &qVec);
+	fV = vDir.Dot(qVec);
 	if (fV < 0.0f || fU + fV > fDet)
 		return false;
 
 	// Calculate t, scale parameters, ray intersects triangle
-	fT = D3DXVec3Dot(&vEdge2, &qVec) / fDet;
+	fT = vEdge2.Dot(qVec) / fDet;
 
 	// *t < 0 이면 뒤쪽...
 	if (fT < 0.0f)
