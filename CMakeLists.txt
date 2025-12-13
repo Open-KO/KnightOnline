@@ -117,6 +117,7 @@ if(OPENKO_BUILD_SERVERS)
 endif()
 
 if(OPENKO_BUILD_TESTS)
+  set(CMAKE_FOLDER "Tests")
   add_subdirectory(deps/googletest-cmake)
   add_subdirectory(tests)
 endif ()
