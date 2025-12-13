@@ -18,7 +18,7 @@ set(CXX_SCAN_FOR_MODULES OFF)
 # Config
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
 option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
-
+option(OPENKO_BUILD_TESTS "Build the test project (default on)" ON)
 # Define the bin directory; defaults to repo/bin
 set(OPENKO_BIN_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Directory for final binaries")
 
@@ -31,6 +31,7 @@ endif()
 message(STATUS "OpenKO feature: OPENKO_BUILD_SERVERS - ${OPENKO_BUILD_SERVERS}")
 message(STATUS "OpenKO feature: OPENKO_COMPILE_WARNINGS_AS_ERROR - ${OPENKO_COMPILE_WARNINGS_AS_ERROR}")
 message(STATUS "OpenKO feature: OPENKO_BIN_DIR - ${OPENKO_BIN_DIR}")
+message(STATUS "OpenKO feature: OPENKO_BUILD_TESTS - ${OPENKO_BUILD_TESTS}")
 
 if(WIN32)
   message(STATUS "OpenKO feature: _WIN32_WINNT - ${_WIN32_WINNT}")
@@ -115,4 +116,7 @@ if(OPENKO_BUILD_SERVERS)
   add_subdirectory(Server/VersionManager)
 endif()
 
-add_subdirectory(deps/googletest-cmake)
+if(OPENKO_BUILD_TESTS)
+  add_subdirectory(deps/googletest-cmake)
+  add_subdirectory(tests)
+endif ()

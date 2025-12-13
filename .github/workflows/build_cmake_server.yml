@@ -86,6 +86,12 @@ jobs:
           --build build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} \
           --config ${{ matrix.BUILD_CONFIGURATION }}
 
+    - name: Run tests
+      shell: bash
+      working-directory: build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}
+      run: |
+        ctest  
+
   build_linux:
     runs-on: ubuntu-latest
 
@@ -140,3 +146,9 @@ jobs:
           cmake \
             --build build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }} \
             --config ${{ matrix.BUILD_CONFIGURATION }}
+
+      - name: Run tests
+        shell: bash
+        working-directory: build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }}
+        run: |
+          ctest 
