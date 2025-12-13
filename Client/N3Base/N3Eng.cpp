@@ -161,7 +161,7 @@ Used to set the view matrix for DirectX
 void CN3Eng::LookAt(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp)
 {
 	__Matrix44 matView;
-	D3DXMatrixLookAtLH(&matView, &vEye, &vAt, &vUp);
+	matView.LookAtLH(vEye, vAt, vUp);
 	s_lpD3DDev->SetTransform(D3DTS_VIEW, &matView);
 }
 

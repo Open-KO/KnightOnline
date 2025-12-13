@@ -277,4 +277,9 @@ void __Matrix44::Direction(const D3DXVECTOR3& vDir)
 //} // end ViewMatrix
 }
 
+void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp)
+{
+	D3DXMatrixLookAtLH(this, &vEye, &vAt, &vUp);
+}
+
 #endif CLIENT_N3BASE_MATRIX44_INL

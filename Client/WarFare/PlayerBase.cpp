@@ -522,9 +522,9 @@ void CPlayerBase::RenderChrInRect(CN3Chr* pChr, const RECT& Rect)
 	if (rcViewport.left != Rect.left) fCameraMoveX = -fCameraMoveX;		// 왼쪽 영역이 짤리게 그려야 하므로 카메라를 오른쪽(카메라가 -Z축을 바라보기 때문에 카메라의 오른쪽은 -X쪽이다.)으로 이동
 	if (rcViewport.top != Rect.top) fCameraMoveY = -fCameraMoveY;			// 위쪽 영역이 짤리게 그려야 하므로 카메라를 아래쪽으로 이동
 
-//	D3DXMatrixLookAtLH( &mtxView, &D3DXVECTOR3( 0.0f + fCameraMoveX, fVCenter+2.0f + fCameraMoveY, 10.0f ),	// 여기서 View matrix는 카메라 각도와 상관있다. 거리는 원근에 아무 영향을 미치지 않는다.
-//								  &D3DXVECTOR3( 0.0f + fCameraMoveX, fVCenter + fCameraMoveY, 0.0f ),	// fVCenter: 캐릭터 키의 중간을 바라보기
-//								  &D3DXVECTOR3( 0.0f, 1.0f, 0.0f ) );
+//	mtxView.LookAtLH(	{ 0.0f + fCameraMoveX, fVCenter+2.0f + fCameraMoveY, 10.0f },	// 여기서 View matrix는 카메라 각도와 상관있다. 거리는 원근에 아무 영향을 미치지 않는다.
+//						{ 0.0f + fCameraMoveX, fVCenter + fCameraMoveY, 0.0f },	// fVCenter: 캐릭터 키의 중간을 바라보기
+//						{ 0.0f, 1.0f, 0.0f } );
 	const __Vector3& vChrPos = pChr->Pos();
 
 	// 여기서 View matrix는 카메라 각도와 상관있다. 거리는 원근에 아무 영향을 미치지 않는다.
@@ -542,7 +542,7 @@ void CPlayerBase::RenderChrInRect(CN3Chr* pChr, const RECT& Rect)
 	const __Vector3 vUp(
 		0.0f, 1.0f, 0.0f);
 
-	D3DXMatrixLookAtLH(&mtxView, &vEye, &vAt, &vUp);
+	mtxView.LookAtLH(vEye, vAt, vUp);
 	s_lpD3DDev->SetTransform( D3DTS_VIEW, &mtxView );
 	s_lpD3DDev->SetTransform( D3DTS_PROJECTION, &mtxProj);
 

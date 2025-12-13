@@ -99,6 +99,8 @@ public:
 
 	void Direction(const D3DXVECTOR3& vDir);
 
+	void LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp);
+
 	__Matrix44 operator * (const D3DXMATRIX& mtx) const;
 	void operator *= (const D3DXMATRIX& mtx);
 	void operator += (const D3DXVECTOR3& v);

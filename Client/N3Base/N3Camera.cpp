@@ -435,7 +435,7 @@ void CN3Camera::Tick(float fFrm)
 
 //	m_Data.fInverse_SineHalfOfFOV = 1.0f/sinf(m_Data.fFOV*0.5f);
 
-	::D3DXMatrixLookAtLH(&m_Data.mtxView, &m_Data.vEye, &m_Data.vAt, &m_Data.vUp); // Look At 적용
+	m_Data.mtxView.LookAtLH(m_Data.vEye, m_Data.vAt, m_Data.vUp); // Look At 적용
 	m_Data.mtxViewInverse = m_Data.mtxView.Inverse(); // View Inverse 행렬 구하기..
 	CN3Base::s_lpD3DDev->GetViewport(&m_Data.vp); // View port 가져오기...
 	

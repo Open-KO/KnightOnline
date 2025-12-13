@@ -1742,7 +1742,7 @@ void CMapMng::RenderObjectToWindow(CN3TransformCollision* pObj, HWND hWnd)
 
 	// View Matrix 및 Projection Matrix Setting
 //	__Matrix44 viewmtx;
-//	::D3DXMatrixLookAtLH(&viewmtx, &vEye, &vAt, &vUp);
+//	viewmtx.LookAtLH(vEye, vAt, vUp);
 //	pD3DDev->SetTransform(D3DTS_VIEW, &viewmtx);
 //	__Matrix44 prjmtx;
 //	::D3DXMatrixPerspectiveFovLH(&prjmtx, D3DXToRadian(54.0f), pEng->s_CameraData.fAspect, 0.01f, 1000.0f);
