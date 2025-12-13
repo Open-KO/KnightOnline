@@ -1344,7 +1344,7 @@ void CMapMng::SelectObjectByDragRect(RECT* pRect, BOOL bAdd)
 	__Matrix44 matView, matProj, matVP;
 	pD3DDev->GetTransform(D3DTS_VIEW, &matView);
 	pD3DDev->GetTransform(D3DTS_PROJECTION, &matProj);
-	D3DXMatrixMultiply(&matVP, &matView, &matProj);
+	matVP = matView * matProj;
 
 	D3DVIEWPORT9 vp = pEng->s_CameraData.vp;
 

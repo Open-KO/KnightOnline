@@ -266,7 +266,7 @@ void CRiverMesh::RenderVertexPoint()	// 잘보이게 점만 다시 그리기
 	__Matrix44 matView, matProj, matVP;
 	s_lpD3DDev->GetTransform(D3DTS_VIEW, &matView);
 	s_lpD3DDev->GetTransform(D3DTS_PROJECTION, &matProj);
-	D3DXMatrixMultiply(&matVP, &matView, &matProj);
+	matVP = matView * matProj;
 	D3DVIEWPORT9 vp = s_CameraData.vp;
 
 	__VertexTransformedColor Vertices[4];

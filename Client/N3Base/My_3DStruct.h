@@ -97,12 +97,12 @@ public:
 
 	void Direction(const D3DXVECTOR3& vDir);
 
-	__Matrix44 operator * (const D3DXMATRIX& mtx);
+	__Matrix44 operator * (const D3DXMATRIX& mtx) const;
 	void operator *= (const D3DXMATRIX& mtx);
 	void operator += (const D3DXVECTOR3& v);
 	void operator -= (const D3DXVECTOR3& v);
 
-	__Matrix44 operator * (const __Quaternion& qRot);
+	__Matrix44 operator * (const __Quaternion& qRot) const;
 	void operator *= (const __Quaternion& qRot);
 
 	void operator = (const D3DXQUATERNION& qt);

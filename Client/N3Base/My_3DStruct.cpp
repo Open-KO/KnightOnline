@@ -241,8 +241,7 @@ POINT _Convert3D_To_2DCoordinate(
 	const __Matrix44& mtxView, const __Matrix44& mtxProjection,
 	int nVPW, int nVPH)
 {
-	__Matrix44 matVP;
-	D3DXMatrixMultiply(&matVP, &mtxView, &mtxProjection);
+	__Matrix44 matVP = mtxView * mtxProjection;
 	D3DXVECTOR4 v;
 	D3DXVec3Transform(&v, &vPos, &matVP);
 

@@ -142,7 +142,7 @@ void __Matrix44::Scale(const D3DXVECTOR3& v)
 	_33 = v.z;
 }
 
-__Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx)
+__Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
 {
 	__Matrix44 mtxTmp;
 
@@ -210,7 +210,7 @@ void __Matrix44::operator -= (const D3DXVECTOR3& v)
 	_43 -= v.z;
 }
 
-__Matrix44 __Matrix44::operator * (const __Quaternion& qRot)
+__Matrix44 __Matrix44::operator * (const __Quaternion& qRot) const
 {
 	__Matrix44 mtx;
 	mtx.operator = (qRot);
