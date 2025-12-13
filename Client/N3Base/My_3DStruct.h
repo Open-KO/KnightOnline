@@ -44,6 +44,7 @@ public:
 	__Vector3(const D3DXVECTOR3& vec);
 
 	void	Normalize();
+	void	Normalize(const D3DXVECTOR3& vec);
 	float	Magnitude() const;
 	float	Dot(const D3DXVECTOR3& vec) const;
 	void	Cross(const D3DXVECTOR3& v1, const D3DXVECTOR3& v2);

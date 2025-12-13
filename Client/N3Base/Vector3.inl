@@ -37,6 +37,20 @@ void __Vector3::Normalize()
 	z /= fn;
 }
 
+void __Vector3::Normalize(const D3DXVECTOR3& vec)
+{
+	float fn = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+	if (fn == 0)
+	{
+		x = y = z = 0;
+		return;
+	}
+
+	x = vec.x / fn;
+	y = vec.y / fn;
+	z = vec.z / fn;
+}
+
 float __Vector3::Magnitude() const
 {
 	return sqrtf(x * x + y * y + z * z);

@@ -69,7 +69,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 						vPN = vCameraDir;
 
 						vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 
 						__Vector3 vDiffPos = vPos - m_vPos;
@@ -82,7 +82,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 						vPN.Set(0, vCameraDir.y, vCameraDir.z);		vPN.Normalize();
 
 						vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -93,10 +93,11 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 					break;
 				case DUMMY_Y:
 					{
-						vPN.Set(vCameraDir.x, 0, vCameraDir.z);		vPN.Normalize();
+						vPN.Set(vCameraDir.x, 0, vCameraDir.z);
+						vPN.Normalize();
 
 						vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -110,7 +111,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 						vPN.Set(vCameraDir.x, vCameraDir.y, 0);		vPN.Normalize();
 
 						vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 

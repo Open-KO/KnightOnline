@@ -64,7 +64,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 					{
 						vPN = vCameraDir;
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 
 						// 평면상의 점에서 지형의 높이를 구한다.
@@ -83,7 +83,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 						vPN.Set(0, vCameraDir.y, vCameraDir.z);
 						vPN.Normalize();
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -98,7 +98,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 						vPN.Normalize();
 
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 
@@ -113,7 +113,7 @@ BOOL CPosDummy::MouseMsgFilter(LPMSG pMsg)
 						vPN.Normalize();
 
 						__Vector3 vTmp = vPV - vRayOrig;
-						float fT = D3DXVec3Dot(&vPN, &vTmp) / D3DXVec3Dot(&vPN, &vRayDir);
+						float fT = vPN.Dot(vTmp) / vPN.Dot(vRayDir);
 						vPos = vRayOrig + vRayDir*fT;
 						vPos += ((m_pSelectedCube->vCenterPos*(-1.0f))*mat);
 

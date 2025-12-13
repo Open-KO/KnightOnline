@@ -43,24 +43,31 @@ void CN3PMeshCreate::swap_triangle(uint16_t *t1, uint16_t *t2)
 float CN3PMeshCreate::GetTriCollapsesLoss(uint16_t* pTriIndex, bool bArea)
 {
 	// These are the corners of the triangle.
-	D3DXVECTOR3 pts[3] = {
-			D3DXVECTOR3(m_pVertices[pTriIndex[0]].x, m_pVertices[pTriIndex[0]].y, m_pVertices[pTriIndex[0]].z),
-			D3DXVECTOR3(m_pVertices[pTriIndex[1]].x, m_pVertices[pTriIndex[1]].y, m_pVertices[pTriIndex[1]].z),
-			D3DXVECTOR3(m_pVertices[pTriIndex[2]].x, m_pVertices[pTriIndex[2]].y, m_pVertices[pTriIndex[2]].z)};
+	__Vector3 pts[3] =
+	{
+		m_pVertices[pTriIndex[0]],
+		m_pVertices[pTriIndex[1]],
+		m_pVertices[pTriIndex[2]]
+	};
+	
 	if (bArea)
 	{
 		// Calculate the area.
-		D3DXVECTOR3 cross, V1, V2;
-		V1 = pts[2] - pts[0];	V2 = pts[1] - pts[0];
-		D3DXVec3Cross(&cross, &V1, &V2);
-		return D3DXVec3Length(&cross);
+		__Vector3 cross, V1, V2;
+		V1 = pts[2] - pts[0];
+		V2 = pts[1] - pts[0];
+		cross.Cross(V1, V2);
+		return cross.Magnitude();
 	}
 	else
 	{
 		// Calculate side length.
-		D3DXVECTOR3 V1, V2, V3;
-		V1 = pts[2] - pts[0];	V2 = pts[1] - pts[0];	V3 = pts[1] - pts[2];
-		float fLoss = D3DXVec3Length(&V1) + D3DXVec3Length(&V2) + D3DXVec3Length(&V3) + 0.0001f;
+		__Vector3 V1, V2, V3;
+		V1 = pts[2] - pts[0];
+		V2 = pts[1] - pts[0];
+		V3 = pts[1] - pts[2];
+
+		float fLoss = V1.Magnitude() + V2.Magnitude() + V3.Magnitude() + 0.0001f;
 		__ASSERT(fLoss > 0, "Loss value is less than 0");
 		return fLoss;
 	}
@@ -71,41 +78,45 @@ float CN3PMeshCreate::GetTriCollapsesLoss(uint16_t* pTriIndex, bool bArea)
 void CN3PMeshCreate::combine_modified(float &sofar, uint16_t *tri, int which, int what_to, bool bSumOfLoss)
 {
 	// These are the corners of the triangle at the moment.
-	D3DXVECTOR3 pts[3] = {
-			D3DXVECTOR3(m_pVertices[tri[0]].x, m_pVertices[tri[0]].y, m_pVertices[tri[0]].z),
-			D3DXVECTOR3(m_pVertices[tri[1]].x, m_pVertices[tri[1]].y, m_pVertices[tri[1]].z),
-			D3DXVECTOR3(m_pVertices[tri[2]].x, m_pVertices[tri[2]].y, m_pVertices[tri[2]].z) };
+	__Vector3 pts[3] =
+	{
+			m_pVertices[tri[0]],
+			m_pVertices[tri[1]],
+			m_pVertices[tri[2]]
+	};
 
 	// This is a point in the plane of the triangle.
-	D3DXVECTOR3 in_plane = pts[0];
+	__Vector3 in_plane = pts[0];
 
 	// Calculate the area and face normal for the triangle at the moment.
-	D3DXVECTOR3 oldcross, V1, V2;
-	V1 = pts[2] - pts[0];	V2 = pts[1] - pts[0];
-	D3DXVec3Cross(&oldcross, &V1, &V2);
+	__Vector3 oldcross, V1, V2;
+	V1 = pts[2] - pts[0];
+	V2 = pts[1] - pts[0];
+	oldcross.Cross(V1, V2);
 
-	float oldarea = D3DXVec3Length(&oldcross);
-	D3DXVECTOR3 oldnorm;
-	D3DXVec3Normalize(&oldnorm, &oldcross);
+	float oldarea = oldcross.Magnitude();
+	__Vector3 oldnorm;
+	oldnorm.Normalize(oldcross);
 
 	// Change the triangle.
-	pts[which] = D3DXVECTOR3(m_pVertices[what_to].x, m_pVertices[what_to].y, m_pVertices[what_to].z);
+	pts[which] = m_pVertices[what_to];
 
 	// Re-calculate the area and face normal.
-	D3DXVECTOR3 newcross;
-	V1 = pts[2] - pts[0];	V2 = pts[1] - pts[0];
-	D3DXVec3Cross(&newcross, &V1, &V2);
+	__Vector3 newcross;
+	V1 = pts[2] - pts[0];
+	V2 = pts[1] - pts[0];
+	newcross.Cross(V1, V2);
 
-	float newarea = D3DXVec3Length(&newcross);
-	D3DXVECTOR3 newnorm;
-	D3DXVec3Normalize(&newnorm, &newcross);
+	float newarea = newcross.Magnitude();
+	__Vector3 newnorm;
+	newnorm.Normalize(newcross);
 
 	// A measure of the difference in the face normals.
-	float cosangdiff = D3DXVec3Dot(&newnorm, &oldnorm);
+	float cosangdiff = newnorm.Dot(oldnorm);
 
 	// Calculate some statistics about the triangle change.
 	V1 = D3DXVECTOR3(m_pVertices[what_to].x, m_pVertices[what_to].y, m_pVertices[what_to].z) - in_plane;
-	float volume_change = std::abs(D3DXVec3Dot(&V1, &oldcross));
+	float volume_change = std::abs(V1.Dot(oldcross));
 
 	// The angle change weighted by the area of the triangle.
 	float weighted_angle_change = (1.0f - cosangdiff) * (oldarea + newarea);
