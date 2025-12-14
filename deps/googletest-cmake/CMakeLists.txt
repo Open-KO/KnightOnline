@@ -13,4 +13,3 @@ message(STATUS "OpenKO: [googletest] Checking and fetching...")
 fetchcontent_makeavailable(googletest)
 
 message(STATUS "OpenKO: [googletest] Up-to-date!")
-

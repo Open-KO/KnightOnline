@@ -82,3 +82,13 @@ jobs:
     - name: Build client tools
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ClientTools.sln
+
+    - name: Build tests
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tests.sln
+
+    - name: Run tests
+      working-directory: ${{env.GITHUB_WORKSPACE}}/bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}
+      run: >
+        client-tests.exe
+        server-tests.exe

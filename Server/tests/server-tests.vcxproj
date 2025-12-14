@@ -19,15 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Client\hello_test_client.cpp" />
-    <ClCompile Include="Server\hello_test_server.cpp" />
+    <ClCompile Include="hello_test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f1626769-3d40-4524-912e-4b0780393b37}</ProjectGuid>
-    <RootNamespace>tests</RootNamespace>
+    <ProjectGuid>{642EEED1-6C69-4888-9EC6-BEC40A46080B}</ProjectGuid>
+    <RootNamespace>clienttests</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\props\platform_root.props" />
+  <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

@@ -18,7 +18,8 @@ set(CXX_SCAN_FOR_MODULES OFF)
 # Config
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
 option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
-option(OPENKO_BUILD_TESTS "Build the test project (default on)" ON)
+option(OPENKO_BUILD_TESTS "Build the test projects (default on)" ON)
+
 # Define the bin directory; defaults to repo/bin
 set(OPENKO_BIN_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Directory for final binaries")
 
@@ -117,7 +118,16 @@ if(OPENKO_BUILD_SERVERS)
 endif()
 
 if(OPENKO_BUILD_TESTS)
-  set(CMAKE_FOLDER "Tests")
+  include(CTest)
+
+  set(CMAKE_FOLDER "Tests/_deps")
   add_subdirectory(deps/googletest-cmake)
-  add_subdirectory(tests)
-endif ()
+
+  set(CMAKE_FOLDER "Tests")
+  add_subdirectory(Server/tests)
+
+  # TODO: Client builds via CMake (even just for MSVC for now)
+  #if(MSVC)
+  #  add_subdirectory(Client/tests)
+  #endif()
+endif()
