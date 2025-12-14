@@ -82,7 +82,8 @@ jobs:
       run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tests.sln
 
     - name: Run tests
+      shell: pwsh
       working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}"
-      run: >
-        client-tests.exe
-        server-tests.exe
+      run: |
+        ./client-tests.exe
+        ./server-tests.exe

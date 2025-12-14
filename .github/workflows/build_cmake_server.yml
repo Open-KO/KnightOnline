@@ -90,7 +90,7 @@ jobs:
       shell: bash
       working-directory: build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}
       run: |
-        ctest  
+        ctest -c "${{ matrix.BUILD_CONFIGURATION }}"
 
   build_linux:
     runs-on: ubuntu-latest
