@@ -188,6 +188,7 @@
     <None Include="Quaternion.inl" />
     <None Include="Vector2.inl" />
     <None Include="Vector3.inl" />
+    <None Include="Vector4.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{74C1CB7D-63CD-40D3-ABEA-2A17EB3719ED}</ProjectGuid>

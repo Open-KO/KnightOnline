@@ -178,11 +178,11 @@ void CPondMesh::RenderVertexPoint()	// 잘보이게 점만 다시 그리기
 	s_lpD3DDev->SetFVF(FVF_TRANSFORMEDCOLOR);
 
 	int i;
-	D3DXVECTOR4 v;
+	__Vector4 v;
 	//	화면상에 빨간점
 	for (i=0; i<=m_iVC; ++i)
 	{
-		D3DXVec3Transform(&v, (D3DXVECTOR3*)(&(m_pViewVts[i])), &matVP);
+		v.Transform(m_pViewVts[i], matVP);
 
 		float fScreenZ = (v.z/v.w);
 		if (fScreenZ>1.0 || fScreenZ<0.0) continue;
@@ -205,7 +205,7 @@ void CPondMesh::RenderVertexPoint()	// 잘보이게 점만 다시 그리기
 	//	영역을 나타내는 점
 	for(i=0;i<m_iRectVC;++i)
 	{
-		D3DXVec3Transform(&v, (D3DXVECTOR3*)(&(m_pRectVts[i])), &matVP);
+		v.Transform(m_pRectVts[i], matVP);
 
 		float fScreenZ = (v.z/v.w);
 		if (fScreenZ>1.0 || fScreenZ<0.0) continue;

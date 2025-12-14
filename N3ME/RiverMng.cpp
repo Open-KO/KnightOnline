@@ -187,8 +187,8 @@ void CRiverMng::Render()
 			{
 				__VertexXyzT2* pVtx = m_SelVtxArray.GetAt(i);
 				if (pVtx == nullptr) continue;
-				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, pVtx, &matVP);
+				__Vector4 v;
+				v.Transform(*pVtx, matVP);
 
 				float fScreenZ = (v.z/v.w);
 				if (fScreenZ>1.0 || fScreenZ<0.0) continue;
@@ -480,8 +480,8 @@ void CRiverMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd)
 			if (pVtx == nullptr)
 				continue;
 
-			D3DXVECTOR4 v;
-			D3DXVec3Transform(&v, pVtx, &matVP);
+			__Vector4 v;
+			v.Transform(*pVtx, matVP);
 			float fScreenZ = (v.z / v.w);
 			if (fScreenZ > 1.0f || fScreenZ < 0.0f)
 				continue;
@@ -526,8 +526,8 @@ void CRiverMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd)
 				if (pVtx == nullptr)
 					continue;
 
-				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, pVtx, &matVP);
+				__Vector4 v;
+				v.Transform(*pVtx, matVP);
 				float fScreenZ = (v.z / v.w);
 				if (fScreenZ > 1.0f || fScreenZ < 0.0f)
 					continue;

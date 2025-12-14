@@ -84,6 +84,27 @@ public:
 	__Vector3 operator / (float fDelta) const;
 };
 
+// 4D vertex
+struct __Vector4 : public D3DXVECTOR4
+{
+public:
+	__Vector4() = default;
+	__Vector4(float fx, float fy, float fz, float fw);
+	void Zero();
+	void Set(float fx, float fy, float fz, float fw);
+	void Transform(const D3DXVECTOR3& v, const D3DXMATRIX& m);
+
+	__Vector4& operator += (const D3DXVECTOR4&);
+	__Vector4& operator -= (const D3DXVECTOR4&);
+	__Vector4& operator *= (float);
+	__Vector4& operator /= (float);
+
+	__Vector4 operator + (const D3DXVECTOR4&) const;
+	__Vector4 operator - (const D3DXVECTOR4&) const;
+	__Vector4 operator * (float) const;
+	__Vector4 operator / (float) const;
+};
+
 // 4x4 matrix
 struct __Matrix44 : public D3DXMATRIX
 {

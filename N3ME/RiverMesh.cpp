@@ -276,8 +276,8 @@ void CRiverMesh::RenderVertexPoint()	// 잘보이게 점만 다시 그리기
 	int i;
 	for (i=0; i<m_iVC; ++i)
 	{
-		D3DXVECTOR4 v;
-		D3DXVec3Transform(&v, &m_pVertices[i], &matVP);
+		__Vector4 v;
+		v.Transform(m_pVertices[i], matVP);
 
 		float fScreenZ = (v.z/v.w);
 		if (fScreenZ>1.0 || fScreenZ<0.0) continue;

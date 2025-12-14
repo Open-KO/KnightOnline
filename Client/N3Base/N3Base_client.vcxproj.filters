@@ -484,5 +484,8 @@
     <None Include="ColorValue.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="Vector4.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

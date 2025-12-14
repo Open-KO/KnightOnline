@@ -6,6 +6,7 @@
 #include "Matrix44.inl"
 #include "Vector2.inl"
 #include "Vector3.inl"
+#include "Vector4.inl"
 #include "Quaternion.inl"
 
 D3DCOLOR _RGB_To_D3DCOLOR(COLORREF cr, uint32_t dwAlpha)
@@ -242,8 +243,8 @@ POINT _Convert3D_To_2DCoordinate(
 	int nVPW, int nVPH)
 {
 	__Matrix44 matVP = mtxView * mtxProjection;
-	D3DXVECTOR4 v;
-	D3DXVec3Transform(&v, &vPos, &matVP);
+	__Vector4 v;
+	v.Transform(vPos, matVP);
 
 	POINT pt;
 	float fScreenZ = (v.z / v.w);

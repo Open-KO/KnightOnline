@@ -448,7 +448,7 @@ void CN3Camera::Tick(float fFrm)
 	}
 	else
 	{
-		::D3DXMatrixPerspectiveFovLH(&m_Data.mtxProjection, m_Data.fFOV, m_Data.fAspect, m_Data.fNP, m_Data.fFP); // Projection Matrix Setting
+		m_Data.mtxProjection.PerspectiveFovLH(m_Data.fFOV, m_Data.fAspect, m_Data.fNP, m_Data.fFP); // Projection Matrix Setting
 	}
 
 	__Matrix44 mtx = m_Data.mtxView * m_Data.mtxProjection;
