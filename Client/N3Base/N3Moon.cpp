@@ -19,7 +19,7 @@ static char THIS_FILE[]=__FILE__;
 CN3Moon::CN3Moon()
 {
 	m_pTexture = nullptr;
-	m_fCurRadian = D3DX_PI;
+	m_fCurRadian = __PI;
 	m_iMoonPhaseIndex = 0;
 }
 
@@ -32,7 +32,7 @@ void CN3Moon::Release()
 {
 	CN3Base::Release();
 	s_MngTex.Delete(&m_pTexture);
-	m_fCurRadian = D3DX_PI;
+	m_fCurRadian = __PI;
 	m_iMoonPhaseIndex = 0;
 }
 

@@ -35,7 +35,7 @@ CGameEng::CGameEng()
 	// 기본 카메라 세팅..
 	CN3Camera* pCamera			= new CN3Camera();
 	pCamera->m_bFogUse			= TRUE;
-	pCamera->m_Data.fFOV		= D3DXToRadian(70);
+	pCamera->m_Data.fFOV		= DegreesToRadians(70);
 	pCamera->m_Data.fNP			= 0.7f;
 	pCamera->m_Data.fFP			= 512.0f;
 	this->CameraAdd(pCamera);
@@ -49,7 +49,7 @@ CGameEng::CGameEng()
 	m_fRotPitchFirstPerson = 0.0f; // 일인칭 시점일때 카메라 피치 각도.
 	m_fRotPitchBackward = 0.0f; // 삼인칭 시점일때 카메라 피치 각도.
 	m_fRotPitchFoward = 0.0f; // 앞에서 본 시점일때  카메라 피치 각도.
-	m_fRotPitchThirdFirson = D3DXToRadian(25.0f);
+	m_fRotPitchThirdFirson = DegreesToRadians(25.0f);
 	m_fOffsetVPGod = 7.0f; // 위에서 본시점일때 카메라 거리..
 	m_fRotYawVPGod = 0.0f; // 위에서 바라본 시점일 경우에 카메라 회전각도..
 	m_fZoomBackwardOrFoward = 1.0f; // 1.5인칭, 앞에서 본 시점일때 카메라 Zoom 1.0f 가 기준이다.
@@ -453,8 +453,8 @@ void CGameEng::ViewPointChange(e_ViewPoint eVP)
 void CGameEng::CameraPitchAdd(float fRotXPerSec)
 {
 	if(nullptr == m_pActiveCam) return;
-	float fPitchMax = D3DXToRadian(70.0f);
-	float fPitchMin = -D3DXToRadian(50.0f);
+	float fPitchMax = DegreesToRadians(70.0f);
+	float fPitchMin = -DegreesToRadians(50.0f);
 	if(VP_BACKWARD == m_eViewPoint)
 	{
 		m_fRotPitchBackward += fRotXPerSec * s_fSecPerFrm;
@@ -475,7 +475,7 @@ void CGameEng::CameraPitchAdd(float fRotXPerSec)
 	}
 	else if(VP_THIRD_PERSON == m_eViewPoint) // 위에서 보는 건 거리만 늘였다 줄였다 한다..
 	{
-		fPitchMin = D3DXToRadian(10.0f); // 젤 밑에값 한계
+		fPitchMin = DegreesToRadians(10.0f); // 젤 밑에값 한계
 
 		m_fRotPitchThirdFirson += fRotXPerSec * s_fSecPerFrm;
 		if(m_fRotPitchThirdFirson > fPitchMax) m_fRotPitchThirdFirson = fPitchMax; // 아래 보는값

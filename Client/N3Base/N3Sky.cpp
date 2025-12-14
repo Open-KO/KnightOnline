@@ -55,8 +55,8 @@ void CN3Sky::Render()
 	__Matrix44 matWorld;
 	__Vector3 vDir = s_CameraData.vEye - s_CameraData.vAt;	// Camera direction
 	if (0.0f == vDir.x) matWorld.Identity();
-	else if( vDir.x > 0.0f ) matWorld.RotationY(-atanf(vDir.z/vDir.x) - (D3DX_PI * 0.5f));
-	else  matWorld.RotationY(-atanf(vDir.z/vDir.x) + (D3DX_PI * 0.5f));
+	else if( vDir.x > 0.0f ) matWorld.RotationY(-atanf(vDir.z/vDir.x) - (__PI * 0.5f));
+	else  matWorld.RotationY(-atanf(vDir.z/vDir.x) + (__PI * 0.5f));
 	s_lpD3DDev->SetTransform( D3DTS_WORLD, &matWorld );
 
 	s_lpD3DDev->SetTexture(0, nullptr); // Do not set a texture as we want to create an illusion of distance fog.

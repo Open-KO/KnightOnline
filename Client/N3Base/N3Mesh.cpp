@@ -278,7 +278,7 @@ void CN3Mesh::Create_Axis(float fLength)
 	__Matrix44 mtx;
 	
 	// y 축
-	mtx.RotationZ(D3DX_PI / -2.0f);
+	mtx.RotationZ(__PI / -2.0f);
 	int i;
 	for(i = 0; i < 4; i++) 
 	{
@@ -286,7 +286,7 @@ void CN3Mesh::Create_Axis(float fLength)
 	}
 
 	// z 축
-	mtx.RotationY(D3DX_PI / -2.0f);
+	mtx.RotationY(__PI / -2.0f);
 	for(i = 0; i < 4; i++) 
 	{
 		m_pVertices[8+i].Set(m_pVertices[i] * mtx, m_pVertices[i].n * mtx, 0, 0);

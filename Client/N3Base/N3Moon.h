@@ -36,7 +36,7 @@ protected:
 public:
 	void	Init(const std::string& szTexFN);
 	void	SetMoonPhase(int iIndex);	// 달의 모양 설정
-	void	SetCurAngle(float fAngle)	{m_fCurRadian = D3DXToRadian(fAngle);}	// 현재 각도설정
+	void	SetCurAngle(float fAngle)	{m_fCurRadian = DegreesToRadians(fAngle);}	// 현재 각도설정
 
 	void	Render(__Matrix44& matView, __Matrix44& matProj);
 	void	Release();

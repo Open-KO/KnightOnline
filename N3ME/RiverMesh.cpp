@@ -338,7 +338,7 @@ int CRiverMesh::AddVertex()
 	v3 = m_pVertices[m_iVC-2];	v4 = m_pVertices[m_iVC-1];
 
 	v5 = v4 - v1;
-	__Matrix44 mat;	mat.RotationY(D3DXToRadian(-90.0f));
+	__Matrix44 mat;	mat.RotationY(DegreesToRadians(-90.0f));
 	vDir = v5*mat;	vDir.Normalize();
 	vDiff = vDir * (s_CameraData.vEye-(v1+(v5/2))).Magnitude() * 0.1f;
 

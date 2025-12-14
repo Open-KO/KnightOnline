@@ -419,7 +419,7 @@ bool CDlgEditPartParticle::LoadPartScript(const char* szPath)
 
 	m_fEmitAccel = pPart->m_fPtAccel;
 	m_fEmitGravity = pPart->m_fPtGravity;
-	m_fEmitRot = D3DXToDegree(pPart->m_fPtRotVelocity);
+	m_fEmitRot = RadiansToDegrees(pPart->m_fPtRotVelocity);
 	m_fEmitVel = pPart->m_fPtVelocity;
 
 	m_EmitDirX = pPart->m_vPtEmitDir.x;

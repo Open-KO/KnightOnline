@@ -1187,8 +1187,8 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 	if(s_pEng->ViewPoint() == VP_THIRD_PERSON)
 	{
 		float fPitch = 0;
-		if(s_pLocalInput->IsKeyDown(DIK_HOME)) fPitch = D3DXToRadian(45.0f);		// home 키가 눌리면..
-		else if(s_pLocalInput->IsKeyDown(DIK_END)) fPitch = D3DXToRadian(-45.0f);	// End 키가 눌리면..
+		if(s_pLocalInput->IsKeyDown(DIK_HOME)) fPitch = DegreesToRadians(45.0f);		// home 키가 눌리면..
+		else if(s_pLocalInput->IsKeyDown(DIK_END)) fPitch = DegreesToRadians(-45.0f);	// End 키가 눌리면..
 		if(fPitch) s_pEng->CameraPitchAdd(fPitch);
 	}
 
@@ -1222,7 +1222,7 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 		if (s_pLocalInput->IsKeyPress(KM_TARGET_NEAREST_NPC)) // target nearest NPC with 'B'
 			CommandTargetSelect_NearestNPC();
 
-		float fRotKeyDelta = D3DXToRadian(60); // 초당 60 도 돌기..
+		float fRotKeyDelta = DegreesToRadians(60); // 초당 60 도 돌기..
 		if(s_pLocalInput->IsKeyDown(KM_ROTATE_LEFT) || s_pLocalInput->IsKeyDown(DIK_LEFT))	
 		{
 			if(s_pPlayer->IsAlive()) s_pPlayer->RotAdd(-fRotKeyDelta); // 초당 180 도 왼쪽으로 돌기.
@@ -2528,7 +2528,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->m_InfoBase.iLevel = iLevel;
 	pUPC->m_InfoBase.iAuthority = byAuthority;
 	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities);
-	pUPC->RotateTo(D3DXToRadian(rand()%360), true);
+	pUPC->RotateTo(DegreesToRadians(rand()%360), true);
 	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
 
 	//__KnightsInfoBase* pKIB = m_pUIKnightsOp->KnightsInfoFind(iKightsID);
@@ -2536,7 +2536,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 
 	pUPC->PositionSet(__Vector3(fXPos, fYPos, fZPos), true);			// 다른 플레이어 현재 위치 셋팅..
 	pUPC->MoveTo(fXPos, fYPos, fZPos, 0, 0);					// 현재 위치..
-	pUPC->RotateTo(D3DXToRadian(rand()%360), true);
+	pUPC->RotateTo(DegreesToRadians(rand()%360), true);
 	s_pOPMgr->UPCAdd(pUPC);										// 캐릭터 추가...
 
 	//if(bWithFX)
@@ -2902,20 +2902,20 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 		if(OBJECT_TYPE_DOOR_LEFTRIGHT == pSE->m_iEventType) // 좌우열림 성문
 		{
 			vAxis.Set(0,1,0);
-			fRadian = D3DXToRadian(80);
+			fRadian = DegreesToRadians(80);
 			fRadian2 = 0;
 		} 
 		else if(OBJECT_TYPE_DOOR_TOPDOWN == pSE->m_iEventType)
 		{
 			vAxis.Set(0,0,1);
-			fRadian = D3DXToRadian(90);
+			fRadian = DegreesToRadians(90);
 			fRadian2 = 0;
 		} // 상하열림 성문
 		else if(OBJECT_TYPE_LEVER_TOPDOWN == pSE->m_iEventType)
 		{
 			vAxis.Set(1,0,0);
-			fRadian = D3DXToRadian(45);
-			fRadian2 = D3DXToRadian(-45);
+			fRadian = DegreesToRadians(45);
+			fRadian2 = DegreesToRadians(-45);
 		} // 상하 레버
 		else if(OBJECT_TYPE_FLAG == pSE->m_iEventType)
 		{
@@ -2956,7 +2956,7 @@ bool CGameProcMain::MsgRecv_NPCIn(Packet& pkt)
 
 	pNPC->PositionSet(__Vector3(fXPos, fYPos, fZPos), true);	// 현재 위치 셋팅..
 	pNPC->MoveTo(fXPos, fYPos, fZPos, 0, 0);					// 현재 위치..
-	pNPC->RotateTo(D3DXToRadian(rand()%360), false);
+	pNPC->RotateTo(DegreesToRadians(rand()%360), false);
 	pNPC->Action(PSA_BASIC, true, nullptr, true);
 	pNPC->ActionMove(PSM_STOP);
 
@@ -4381,7 +4381,7 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 	if(pCamera)
 	{
 		__Vector3 vPosPlayer = s_pPlayer->Position();
-		pCamera->m_Data.fFOV	= D3DXToRadian(70);				// Field of View ..
+		pCamera->m_Data.fFOV	= DegreesToRadians(70);				// Field of View ..
 		pCamera->m_Data.fFP		= 512.0f;						// Far Plane..
 		pCamera->m_Data.fNP		= 0.5f;							// Near Plane..
 		pCamera->LookAt(vPosPlayer + __Vector3(0,0,-1), vPosPlayer, __Vector3(0,1,0));
@@ -5519,18 +5519,18 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 			if (pNPC->m_pShapeExtraRef)
 			{
 				__Vector3 vAxis(0, 1, 0);
-				float fRadian = D3DXToRadian(90);
+				float fRadian = DegreesToRadians(90);
 				bool bShouldBeRotate = true; // 돌려야 하는지??
 				if (OBJECT_TYPE_DOOR_LEFTRIGHT == iType) // 좌우열림 성문
 				{
 					if (0x01 == iActivate)
 					{
-						fRadian = D3DXToRadian(80);
+						fRadian = DegreesToRadians(80);
 						szMsg = fmt::format_text_resource(IDS_DOOR_OPENED);
 					}
 					else
 					{
-						fRadian = D3DXToRadian(0);
+						fRadian = DegreesToRadians(0);
 						szMsg = fmt::format_text_resource(IDS_DOOR_CLOSED);
 					}
 					vAxis.Set(0, 1, 0);
@@ -5539,12 +5539,12 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 				{
 					if (0x01 == iActivate)
 					{
-						fRadian = D3DXToRadian(90);
+						fRadian = DegreesToRadians(90);
 						szMsg = fmt::format_text_resource(IDS_DOOR_OPENED);
 					}
 					else
 					{
-						D3DXToRadian(0);
+						DegreesToRadians(0);
 						szMsg = fmt::format_text_resource(IDS_DOOR_CLOSED);
 					}
 					vAxis.Set(0, 0, 1);
@@ -5553,12 +5553,12 @@ void CGameProcMain::MsgRecv_ObjectEvent(Packet& pkt)
 				{
 					if (0x01 == iActivate)
 					{
-						fRadian = D3DXToRadian(-45);
+						fRadian = DegreesToRadians(-45);
 						szMsg = fmt::format_text_resource(IDS_LEVER_ACTIVATE);
 					}
 					else
 					{
-						fRadian = D3DXToRadian(45);
+						fRadian = DegreesToRadians(45);
 						szMsg = fmt::format_text_resource(IDS_LEVER_DEACTIVATE);
 					}
 					vAxis.Set(1, 0, 0);
@@ -7273,8 +7273,8 @@ void CGameProcMain::ControlViewVDegree(int16_t sValue)
 	if(s_pEng->ViewPoint() == VP_THIRD_PERSON)
 	{
 		float fPitch = 0;
-		if(sValue > 0)	fPitch = D3DXToRadian(45.0f)*3;
-		else			fPitch = D3DXToRadian(-45.0f)*3;
+		if(sValue > 0)	fPitch = DegreesToRadians(45.0f)*3;
+		else			fPitch = DegreesToRadians(-45.0f)*3;
 		if(fPitch) s_pEng->CameraPitchAdd(fPitch);
 	}
 }
@@ -7689,8 +7689,8 @@ bool CGameProcMain::OnMouseRbtnDown(
 
 	float fMouseSensivity = 0.02f;//0.05f;//
 
-	float fRotY = D3DXToRadian(180.0f) * ((ptCur.x - ptPrev.x) * fMouseSensivity); // 회전할 양을 계산하고..
-	float fRotX = D3DXToRadian(180.0f) * ((ptCur.y - ptPrev.y) * fMouseSensivity);
+	float fRotY = DegreesToRadians(180.0f) * ((ptCur.x - ptPrev.x) * fMouseSensivity); // 회전할 양을 계산하고..
+	float fRotX = DegreesToRadians(180.0f) * ((ptCur.y - ptPrev.y) * fMouseSensivity);
 	if (fRotY != 0.0f
 		&& s_pPlayer->IsAlive())
 	{

@@ -540,19 +540,19 @@ void CGameProcCharacterSelect::AddChr(e_ChrPos eCP, __CharacterSelectInfo* pInfo
 			{
 				case 0:
 					m_pChrs[0]->PosSet(0.0f, -1.16f, 2.72f);		// ok..
-					qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(0.0f));
+					qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(0.0f));
 					m_pChrs[0]->RotSet(qt);
 					break;
 
 				case 1:
 					m_pChrs[1]->PosSet(1.86f, -1.16f, 2.1f);		// ok..		
-					qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(42.0f));
+					qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(42.0f));
 					m_pChrs[1]->RotSet(qt);
 					break;
 
 				case 2:
 					m_pChrs[2]->PosSet(-1.9f, -1.16f, 2.1f);		// ok..
-					qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(-42.0f));
+					qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(-42.0f));
 					m_pChrs[2]->RotSet(qt);
 					break;
 			};
@@ -563,19 +563,19 @@ void CGameProcCharacterSelect::AddChr(e_ChrPos eCP, __CharacterSelectInfo* pInfo
 			{
 				case 0:
 					m_pChrs[0]->PosSet(0.0f, -1.20f, 2.74f);		// ok..
-					qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(0.0f));
+					qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(0.0f));
 					m_pChrs[0]->RotSet(qt);
 					break;
 
 				case 1:
 					m_pChrs[1]->PosSet(1.86f, -1.20f, 2.0f);		// ok
-					qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(42.0f));
+					qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(42.0f));
 					m_pChrs[1]->RotSet(qt);
 					break;
 
 				case 2:
 					m_pChrs[2]->PosSet(-1.9f, -1.20f, 2.0f);		// ok
-					qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(-46.0f));
+					qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(-46.0f));
 					m_pChrs[2]->RotSet(qt);
 					break;
 			};

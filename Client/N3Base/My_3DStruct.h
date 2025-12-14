@@ -15,8 +15,19 @@
 #include "DebugUtils.h"
 #endif
 
-const float __PI = 3.141592654f;
-const float __PI2 = 6.283185308f;
+constexpr float __PI = 3.141592654f;
+constexpr float __PI2 = 6.283185308f;
+
+constexpr float DegreesToRadians(auto degrees)
+{
+	return static_cast<float>(degrees) * (__PI / 180.0f);
+}
+
+constexpr float RadiansToDegrees(auto radians)
+{
+	return static_cast<float>(radians) * (180.0f / __PI);
+}
+
 const float FRAME_SELFPLAY = FLT_MIN;
 
 struct __Matrix44;

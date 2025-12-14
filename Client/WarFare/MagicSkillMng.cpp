@@ -1341,7 +1341,7 @@ void CMagicSkillMng::Tick()
 			m_fZonePointerRadiusEffective += 1.0f;
 
 		// Get REAL-TIME mouse position
-		m_fZonePointerRotRad += CN3Base::s_fSecPerFrm * D3DXToRadian(50.0f);
+		m_fZonePointerRotRad += CN3Base::s_fSecPerFrm * DegreesToRadians(50.0f);
 
 		UpdateZonePointerPositions();
 	}
@@ -1409,7 +1409,7 @@ void CMagicSkillMng::UpdateZonePointerPositions()
 	// Update all FX positions
 	for (int j = 0; j < 8; j++)
 	{
-		const float fRadians = m_fZonePointerRotRad + (D3DXToRadian(45.0f) * j);
+		const float fRadians = m_fZonePointerRotRad + (DegreesToRadians(45.0f) * j);
 
 		__Vector3 vNewPos = m_pGameProcMain->m_vMouseSkillPos;
 		vNewPos.y = CGameBase::ACT_WORLD->GetHeightWithTerrain(vNewPos.x, vNewPos.z);

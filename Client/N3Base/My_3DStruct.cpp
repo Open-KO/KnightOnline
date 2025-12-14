@@ -290,14 +290,14 @@ float _Yaw2D(float fDirX, float fDirZ)
 		if (fDirZ >= 0.0f)
 			return (float) (asin(fDirX));
 		else
-			return (D3DXToRadian(90.0f) + (float) (acos(fDirX)));
+			return (DegreesToRadians(90.0f) + (float) (acos(fDirX)));
 	}
 	else
 	{
 		if (fDirZ >= 0.0f)
-			return (D3DXToRadian(270.0f) + (float) (acos(-fDirX)));
+			return (DegreesToRadians(270.0f) + (float) (acos(-fDirX)));
 		else
-			return (D3DXToRadian(180.0f) + (float) (asin(-fDirX)));
+			return (DegreesToRadians(180.0f) + (float) (asin(-fDirX)));
 	}
 	// 방향을 구하고..
 	////////////////////////////////

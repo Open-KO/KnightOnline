@@ -229,7 +229,7 @@ void CUIManager::Render()
 
 	fmt::format_to(std::back_inserter(szDebugs[2]),
 		"Camera : FieldOfView({:.1f}), NearPlane({:.1f}) FarPlane({:.1f})",
-		D3DXToDegree(CN3Base::s_CameraData.fFOV),
+		RadiansToDegrees(CN3Base::s_CameraData.fFOV),
 		CN3Base::s_CameraData.fNP,
 		CN3Base::s_CameraData.fFP);
 

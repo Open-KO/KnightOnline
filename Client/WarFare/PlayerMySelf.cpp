@@ -426,8 +426,8 @@ void CPlayerMySelf::RotAdd(const float fRotRadianPerSec)			// y 축을 기준으
 {
 	m_fYawCur += fRotRadianPerSec * s_fSecPerFrm;
 
-	if(m_fYawCur >= D3DXToRadian(180.0f) * 2) m_fYawCur -= D3DXToRadian(180.0f) * 2;
-	if(m_fYawCur <= -D3DXToRadian(180.0f) * 2) m_fYawCur += D3DXToRadian(180.0f) * 2;
+	if(m_fYawCur >= DegreesToRadians(180.0f) * 2) m_fYawCur -= DegreesToRadians(180.0f) * 2;
+	if(m_fYawCur <= -DegreesToRadians(180.0f) * 2) m_fYawCur += DegreesToRadians(180.0f) * 2;
 	m_fYawToReach = m_fYawCur; // 바로 돌린다..
 }
 
@@ -504,7 +504,7 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 
 	m_ChrInv.PosSet(vPos.x, vPos.y, 1.0f);
 	__Quaternion qt;
-	qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(198.0f));
+	qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(198.0f));
 	m_ChrInv.RotSet(qt);
 
 	CGameProcedure::s_pEng->ClearZBuffer(nullptr);
@@ -550,7 +550,7 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	// 캐릭터 위치와 방향 세팅
 	m_ChrInv.PosSet(__Vector3(0,0,0));
 	__Quaternion qt;
-	qt.RotationAxis(0.0f, 1.0f, 0.0f, D3DXToRadian(18.0f));	// 약간 비스듬하게 서있게..
+	qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(18.0f));	// 약간 비스듬하게 서있게..
 	m_ChrInv.RotSet(qt);
 
 	// render

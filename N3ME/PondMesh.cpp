@@ -11,11 +11,6 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#define D3DX_PI    ((FLOAT)  3.141592654f)
-#define D3DX_1BYPI ((FLOAT)  0.318309886f)
-
-#define D3DXToRadian( degree ) ((degree) * (D3DX_PI / 180.0f))
-#define D3DXToDegree( radian ) ((radian) * (180.0f / D3DX_PI))
 
 CPondMesh::CPondMesh()
 {
@@ -1116,7 +1111,7 @@ int CPondMesh::AddVertex()
 	v1 = m_pVertices[m_iVC-2];	v2 = m_pVertices[m_iVC-1];
 
 	v3 = v2 - v1;
-	__Matrix44 mat;	mat.RotationY(D3DXToRadian(-90.0f));
+	__Matrix44 mat;	mat.RotationY(DegreesToRadians(-90.0f));
 	vDir = v3*mat;	vDir.Normalize();
 	vDiff = vDir*4.0f;
 	vScaleDiff = vDiff;

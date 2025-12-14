@@ -423,7 +423,7 @@ bool CN3Eng::Init(
 
 	// 기본 뷰와 프로젝션 설정.
 	this->LookAt(__Vector3(5,5,-10), __Vector3(0,0,0), __Vector3(0,1,0));
-	this->SetProjection(0.1f, 256.0f, D3DXToRadian(45.0f), (float)dwHeight/dwWidth);
+	this->SetProjection(0.1f, 256.0f, DegreesToRadians(45.0f), (float)dwHeight/dwWidth);
 	
 	RECT rcView = { 0, 0, (int)dwWidth, (int)dwHeight };
 	this->SetViewPort(rcView);

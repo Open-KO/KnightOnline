@@ -135,9 +135,9 @@ bool CN3FXPartBillBoard::ParseScript(char* szCommand, char* szBuff0, char* szBuf
 		m_fRotBillBoardZ = static_cast<float>(atof(szBuff2));
 		m_mtxRot.Identity();
 		m_mtxRot.Rotation(
-			D3DXToRadian(m_fRotBillBoardX),
-			D3DXToRadian(m_fRotBillBoardY),
-			D3DXToRadian(m_fRotBillBoardZ));
+			DegreesToRadians(m_fRotBillBoardX),
+			DegreesToRadians(m_fRotBillBoardY),
+			DegreesToRadians(m_fRotBillBoardZ));
 		//m_mtxRot.PosSet(0,0,0);
 		return true;
 	}

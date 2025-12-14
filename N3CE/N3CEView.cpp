@@ -378,7 +378,7 @@ void CN3CEView::SetCameraToDefault()
 
 	pCamera->m_Data.fNP = 0.1f;
 	pCamera->m_Data.fFP = 256.0f;
-	pCamera->m_Data.fFOV = D3DXToRadian(72.0f);
+	pCamera->m_Data.fFOV = DegreesToRadians(72.0f);
 	pCamera->EyePosSet(1.0f, 1.2f, 1.5f);
 	pCamera->AtPosSet(0.0f, 0.8f, 0.0f);
 	pCamera->UpVectorSet(0.0f, 1.0f, 0.0f);

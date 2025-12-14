@@ -1077,9 +1077,9 @@ void CUIHotKeyDlg::RenderCooldown(const __IconItemSkill* pSkill, float fCooldown
 	// not 100% sure on the color. Choosing arbitrary 50% opacity.
 	vertices.emplace_back(centerX, centerY, UI_DEFAULT_Z, UI_DEFAULT_RHW, Color);
 
-	const float fullCircle = D3DX_PI * 2.0f;
+	const float fullCircle = __PI * 2.0f;
 	const float maxAngle = fullCircle * progress;
-	const float startAngle = -D3DX_PI / 2.0f; // 12 o'clock
+	const float startAngle = -__PI / 2.0f; // 12 o'clock
 
 	std::vector<__VertexTransformedColor> arcVertices;
 	arcVertices.reserve(segmentCountToDraw);

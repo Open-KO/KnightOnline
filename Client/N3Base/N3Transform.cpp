@@ -154,8 +154,8 @@ void CN3Transform::Render(const __Matrix44* pMtxParent, float fUnitSize)
 		for(int i = 0; i < 3; i++)
 		{
 			if(i == 0) { mtxRot.Identity(); } // X 축
-			else if(i == 1) { mtxRot.RotationZ(D3DXToRadian(90.0f)); } // Y 축
-			else if(i == 2) { mtxRot.RotationY(D3DXToRadian(-90.0f)); } // Z 축
+			else if(i == 1) { mtxRot.RotationZ(DegreesToRadians(90.0f)); } // Y 축
+			else if(i == 2) { mtxRot.RotationY(DegreesToRadians(-90.0f)); } // Z 축
 			
 			vAxis[i*3+0] = v0*mtxRot;
 			vAxis[i*3+1] = v1*mtxRot;

@@ -70,7 +70,7 @@ void CN3GESnow::Tick()
 
 	__Vector3	vN = m_vVelocity;	vN.Normalize();
 	__Vector3	vAdd = m_vVelocity*s_fSecPerFrm;
-	float		fAddRadian = D3DX_PI*s_fSecPerFrm*0.1f;
+	float		fAddRadian = __PI*s_fSecPerFrm*0.1f;
 
 	const float fHalfWidth = m_fWidth/2.0f;
 	const float fHalfHeight = m_fHeight/2.0f;
@@ -99,9 +99,9 @@ void CN3GESnow::Tick()
 			pParticle->vPos.z = m_fWidth*(rand()%10000-5000)/10000.f;
 
 			pParticle->fRadius = (rand()%10000)/10000.f;
-			pParticle->fRadian = 2*D3DX_PI*((rand()%10000)/10000.f);
+			pParticle->fRadian = 2*__PI*((rand()%10000)/10000.f);
 
-			float		fRadian = D3DX_PI*((rand()%10000)/10000.f);
+			float		fRadian = __PI*((rand()%10000)/10000.f);
 			pParticle->vOffset1.Set(0, sqrt3*m_fSnowSize/3.f, 0);
 			pParticle->vOffset2.Set(cosf(fRadian)*m_fSnowSize/2, -sqrt3*m_fSnowSize/6.f, sinf(fRadian)*m_fSnowSize/2);
 			pParticle->vOffset3.Set(-cosf(fRadian)*m_fSnowSize/2, -sqrt3*m_fSnowSize/6.f, -sinf(fRadian)*m_fSnowSize/2);
@@ -241,9 +241,9 @@ void CN3GESnow::Create(float fDensity, float fWidth, float fHeight, float fSnowS
 									fHeight*(rand()%10000-5000)/10000.f,
 									fWidth*(rand()%10000-5000)/10000.f);
 		m_pSnowParticle[i].fRadius = (rand()%10000)/10000.f;
-		m_pSnowParticle[i].fRadian = 2*D3DX_PI*((rand()%10000)/10000.f);
+		m_pSnowParticle[i].fRadian = 2*__PI*((rand()%10000)/10000.f);
 
-		float		fRadian = D3DX_PI*((rand()%10000)/10000.f);
+		float		fRadian = __PI*((rand()%10000)/10000.f);
 //		정삼각형(한변의 길이가 fSnowSize)
 //		m_pSnowParticle[i].vOffset1.Set(0, sqrt3*fSnowSize/3.f, 0);
 //		m_pSnowParticle[i].vOffset2.Set(cosf(fRadian)*fSnowSize/2, -sqrt3*fSnowSize/6.f, sinf(fRadian)*fSnowSize/2);

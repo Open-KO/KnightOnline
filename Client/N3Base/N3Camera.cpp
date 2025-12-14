@@ -21,7 +21,7 @@ CN3Camera::CN3Camera()
 	m_Data.vAt = m_vAt = __Vector3(0,0,0);
 	m_Data.vUp = m_vScale = __Vector3(0,1,0);
 
-	m_Data.fFOV = D3DXToRadian(55.0f); // 기본값 55 도
+	m_Data.fFOV = DegreesToRadians(55.0f); // 기본값 55 도
 	m_Data.fNP = 0.7f;
 	m_Data.fFP = 512.0f;
 
@@ -46,7 +46,7 @@ void CN3Camera::Release()
 	m_Data.vAt = m_vAt = __Vector3(0,0,0);
 	m_Data.vUp = m_vScale = __Vector3(0,1,0);
 
-	m_Data.fFOV = D3DXToRadian(55.0f); // 기본값 55 도
+	m_Data.fFOV = DegreesToRadians(55.0f); // 기본값 55 도
 	m_Data.fNP = 0.7f;
 	m_Data.fFP = 512.0f;
 

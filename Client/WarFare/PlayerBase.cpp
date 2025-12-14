@@ -67,7 +67,7 @@ CPlayerBase::CPlayerBase()
 	m_eStateDying = PSD_UNKNOWN; // 죽을때 방법
 	m_fTimeDying = 0; // 죽는 모션 취할때 지난 시간..
 
-	m_fRotRadianPerSec = D3DXToRadian(270.0f); // 초당 회전 라디안값
+	m_fRotRadianPerSec = DegreesToRadians(270.0f); // 초당 회전 라디안값
 	m_fMoveSpeedPerSec = 0; // 초당 움직임 값.. 이값은 기본값이고 상태(걷기, 달리기, 뒤로, 저주등) 에 따라 가감해서 쓴다..
 	m_fYawCur = 0; // 현재 회전값..
 	m_fYawToReach = 0;
@@ -200,7 +200,7 @@ void CPlayerBase::Release()
 	m_eStateDying = PSD_UNKNOWN; // 죽을때 방법
 	m_fTimeDying = 0; // 죽는 모션 취할때 지난 시간..
 
-	m_fRotRadianPerSec = D3DXToRadian(270.0f); // 초당 회전 라디안값
+	m_fRotRadianPerSec = DegreesToRadians(270.0f); // 초당 회전 라디안값
 	m_fMoveSpeedPerSec = 0; // 초당 움직임 값.. 이값은 기본값이고 상태(걷기, 달리기, 뒤로, 저주등) 에 따라 가감해서 쓴다..
 	m_fYawCur = 0; // 현재 회전값..
 	m_fYawToReach = 0;
@@ -2282,7 +2282,7 @@ void CPlayerBase::RenderShadow(float fAngle)
 			fAngle = 3.14f - fAngle;
 		}
 	}
-	float fAngleDeg = D3DXToDegree(fAngle);
+	float fAngleDeg = RadiansToDegrees(fAngle);
 
 	float zVal = s_vLightOffset.Magnitude();
 	int iDiv = (int)((int)fAngleDeg)%((int)(180));
@@ -2293,7 +2293,7 @@ void CPlayerBase::RenderShadow(float fAngle)
 	else if ( (fAngleDeg > 130.0f) && (fAngleDeg <= 180.0f) )
 		fAngleDeg = 130.0f;
 
-	__Matrix44 mtxRZ; mtxRZ.RotationZ(D3DXToRadian(fAngleDeg));
+	__Matrix44 mtxRZ; mtxRZ.RotationZ(DegreesToRadians(fAngleDeg));
 	__Vector3 vLP; vLP.Set(-zVal, 0.0f, 0.0f );	vLP *= mtxRZ;	vLP.Normalize();
 
 	int iPC = m_Chr.PartCount();

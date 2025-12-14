@@ -243,7 +243,7 @@ bool CN3FXPartParticles::ParseScript(char* szCommand, char* szBuff0, char* szBuf
 	if (lstrcmpi(szCommand, "<particle_rotation_velocity>") == 0)
 	{
 		float Degree = static_cast<float>(atof(szBuff0));
-		m_fPtRotVelocity = D3DXToRadian(Degree);
+		m_fPtRotVelocity = DegreesToRadians(Degree);
 		return true;
 	}
 
@@ -1018,7 +1018,7 @@ void CN3FXPartParticles::CreateParticles_Spread()
 
 		float fUnitAxisZ = (float)(rand()%360);
 
-		vDir.Set(sin(D3DXToRadian(fUnitAngleXZ)), 0, cos(D3DXToRadian(fUnitAngleXZ)));
+		vDir.Set(sin(DegreesToRadians(fUnitAngleXZ)), 0, cos(DegreesToRadians(fUnitAngleXZ)));
 		
 		RotMtx.RotationZ(fUnitAxisZ);
 		vDir *= RotMtx;

@@ -52,19 +52,19 @@ void CBird::Tick()
 
 	m_fRadian += (m_fRadianSpeed*s_fSecPerFrm);
 
-	if (m_fRadian > 2*D3DX_PI) m_fRadian -= (2*D3DX_PI);
+	if (m_fRadian > 2*__PI) m_fRadian -= (2*__PI);
 	
 	m_fFactor1 += (m_fFactorSpeed1*s_fSecPerFrm);
-	if (m_fFactor1 > 2*D3DX_PI) m_fFactor1 -= (2*D3DX_PI);
+	if (m_fFactor1 > 2*__PI) m_fFactor1 -= (2*__PI);
 	
 	m_fFactor2 += (m_fFactorSpeed2*s_fSecPerFrm);
-	if (m_fFactor2 > 2*D3DX_PI) m_fFactor2 -= (2*D3DX_PI);
+	if (m_fFactor2 > 2*__PI) m_fFactor2 -= (2*__PI);
 
 	m_fFactorY1 += (m_fFactorYSpeed1*s_fSecPerFrm);
-	if (m_fFactorY1 > 2*D3DX_PI) m_fFactorY1 -= (2*D3DX_PI);
+	if (m_fFactorY1 > 2*__PI) m_fFactorY1 -= (2*__PI);
 	
 	m_fFactorY2 += (m_fFactorYSpeed2*s_fSecPerFrm);
-	if (m_fFactorY2 > 2*D3DX_PI) m_fFactorY2 -= (2*D3DX_PI);
+	if (m_fFactorY2 > 2*__PI) m_fFactorY2 -= (2*__PI);
 
 	// 위치계산
 	__Vector3 vPos;
@@ -78,7 +78,7 @@ void CBird::Tick()
 		 m_fRadianSpeed*sinf(m_fFactor1)*sinf(m_fRadian));
 	float z = (m_fFactorSpeed2*cosf(m_fFactor2)*sinf(m_fRadian) + 
 		 m_fRadianSpeed*sinf(m_fFactor2)*cosf(m_fRadian));
-	float fRotY = atan2f(z, x)-(D3DX_PI/2);
+	float fRotY = atan2f(z, x)-(__PI/2);
 
 	__Vector3 vAxis(0, 1, 0);	 
 	__Quaternion qt;

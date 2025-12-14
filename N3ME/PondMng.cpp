@@ -1033,7 +1033,7 @@ void CPondMng::SetRotatePonds(float fMove)
 		fMove /= 5.0f;
 
 	__Matrix44 matRotate;
-	matRotate.RotationY(D3DXToRadian(fMove / 10.0f));
+	matRotate.RotationY(DegreesToRadians(fMove / 10.0f));
 
 	m_VtxPosDummy.PosRotate(matRotate, m_vPondsCenter);
 

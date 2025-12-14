@@ -110,8 +110,8 @@ void CN3SPart::Tick(const __Matrix44& mtxParent, const __Quaternion& qRot, float
 	{
 		__Vector3 vPos = m_vPivot * mtxParent;
 		__Vector3 vDir = s_CameraData.vEye - vPos;
-		if( vDir.x > 0.0f ) m_Matrix.RotationY(-atanf(vDir.z/vDir.x) - (D3DX_PI * 0.5f));
-		else m_Matrix.RotationY(-atanf(vDir.z/vDir.x) + (D3DX_PI * 0.5f));
+		if( vDir.x > 0.0f ) m_Matrix.RotationY(-atanf(vDir.z/vDir.x) - (__PI * 0.5f));
+		else m_Matrix.RotationY(-atanf(vDir.z/vDir.x) + (__PI * 0.5f));
 
 		// 부모 회전과 반대로 회전을 시킨다..
 		float fAngle;
