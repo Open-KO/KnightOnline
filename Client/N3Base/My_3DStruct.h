@@ -161,6 +161,7 @@ public:
 
 	void AxisAngle(__Vector3& vAxisResult, float& fRadianResult) const;
 	void Slerp(const D3DXQUATERNION& qt1, const D3DXQUATERNION& qt2, float fDelta);
+	void RotationYawPitchRoll(float Yaw, float Pitch, float Roll);
 };
 
 struct __ColorValue : public _D3DCOLORVALUE

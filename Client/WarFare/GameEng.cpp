@@ -178,7 +178,7 @@ void CGameEng::Tick(const D3DCOLOR* crDiffuses,			// Diffuse 라이트 색깔.. 
 	{
 		case VP_BACKWARD:
 		{
-			::D3DXQuaternionRotationYawPitchRoll(&qtRot, fYaw, m_fRotPitchBackward, 0);
+			qtRot.RotationYawPitchRoll(fYaw, m_fRotPitchBackward, 0);
 			__Matrix44 mtxRot = qtRot;
 
 			m_vEyeToReach.Set(0, 0, -(fRadius / s_CameraData.fFOV) * m_fZoomBackwardOrFoward);
@@ -188,7 +188,7 @@ void CGameEng::Tick(const D3DCOLOR* crDiffuses,			// Diffuse 라이트 색깔.. 
 		break;
 		case VP_FIRST_PERSON:
 		{
-			::D3DXQuaternionRotationYawPitchRoll(&qtRot, fYaw, m_fRotPitchFirstPerson, 0);
+			qtRot.RotationYawPitchRoll(fYaw, m_fRotPitchFirstPerson, 0);
 			__Matrix44 mtxRot = qtRot;
 
 			m_vEyeToReach = vPosPlayer; m_vEyeToReach.y += fHeightPlayer - 0.1f;
@@ -198,7 +198,7 @@ void CGameEng::Tick(const D3DCOLOR* crDiffuses,			// Diffuse 라이트 색깔.. 
 		break;
 		case VP_FOWARD:
 		{
-			::D3DXQuaternionRotationYawPitchRoll(&qtRot, fYaw, -m_fRotPitchFoward, 0);
+			qtRot.RotationYawPitchRoll(fYaw, -m_fRotPitchFoward, 0);
 			__Matrix44 mtxRot = qtRot;
 
 			m_vEyeToReach.Set(0, 0, fRadius * m_fZoomBackwardOrFoward);
@@ -208,7 +208,7 @@ void CGameEng::Tick(const D3DCOLOR* crDiffuses,			// Diffuse 라이트 색깔.. 
 		break;
 		case VP_THIRD_PERSON:
 		{
-			::D3DXQuaternionRotationYawPitchRoll(&qtRot, m_fRotYawVPGod, m_fRotPitchThirdFirson, 0);
+			qtRot.RotationYawPitchRoll(m_fRotYawVPGod, m_fRotPitchThirdFirson, 0);
 			__Matrix44 mtxRot = qtRot;
 
 			m_vAtToReach = vPosPlayer; m_vAtToReach.y += fHeightPlayer * 0.8f;

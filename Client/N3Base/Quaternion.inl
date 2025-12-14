@@ -58,4 +58,9 @@ void __Quaternion::Slerp(const D3DXQUATERNION& qt1, const D3DXQUATERNION& qt2, f
 	D3DXQuaternionSlerp(this, &qt1, &qt2, fDelta);
 }
 
+void __Quaternion::RotationYawPitchRoll(float Yaw, float Pitch, float Roll)
+{
+	D3DXQuaternionRotationYawPitchRoll(this, Yaw, Pitch, Roll);
+}
+
 #endif // CLIENT_N3BASE_QUATERNION_INL
