@@ -229,7 +229,7 @@ void CPondMng::Render()
 				__VertexXyzT2* pVtx = m_SelVtxArray.GetAt(i);
 				if (pVtx == nullptr) continue;
 				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, (D3DXVECTOR3*)(pVtx), &matVP);
+				D3DXVec3Transform(&v, pVtx, &matVP);
 
 				float fScreenZ = (v.z/v.w);
 				if (fScreenZ>1.0 || fScreenZ<0.0) continue;
@@ -728,7 +728,7 @@ BOOL CPondMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd,BOOL bSelectPond)
 			if (!bSelectPond)
 			{
 				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, (D3DXVECTOR3*) (pVtx), &matVP);
+				D3DXVec3Transform(&v, pVtx, &matVP);
 				float fScreenZ = (v.z / v.w);
 				if (fScreenZ > 1.0f || fScreenZ < 0.0f)
 					continue;
@@ -803,7 +803,7 @@ BOOL CPondMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd,BOOL bSelectPond)
 					continue;
 
 				D3DXVECTOR4 v;
-				D3DXVec3Transform(&v, (D3DXVECTOR3*) (pVtx), &matVP);
+				D3DXVec3Transform(&v, pVtx, &matVP);
 				float fScreenZ = (v.z / v.w);
 				if (fScreenZ > 1.0f || fScreenZ < 0.0f)
 					continue;

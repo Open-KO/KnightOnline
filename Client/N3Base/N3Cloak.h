@@ -61,12 +61,12 @@ public:
 
 	void				Init(CN3CPlug_Cloak *pPlugCloak);	
 	void				SetLOD(int nLevel);
-	void				ApplyOffset(D3DXVECTOR3	&vDif);
+	void				ApplyOffset(__Vector3&vDif);
 protected:
 	//	Anchor
 	e_Cloak_AnchorMovePattern	m_eAnchorPattern;
 	float				m_fAnchorPreserveTime;
-	D3DXVECTOR3			m_vOffset[CLOAK_MAX_WIDTH];
+	__Vector3			m_vOffset[CLOAK_MAX_WIDTH];
 
 	void				RestoreAnchorLine();
 	void				MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTime);
@@ -86,8 +86,8 @@ protected:
 
 
 	__Particle*			m_pParticle;
-	D3DXVECTOR3			m_GravityForce;		// 중력(.y)가 항상있어야 변형이 일어나지 않는다..
-	D3DXVECTOR3			m_Force;			// 외부에서 가해지는 힘.
+	__Vector3			m_GravityForce;		// 중력(.y)가 항상있어야 변형이 일어나지 않는다..
+	__Vector3			m_Force;			// 외부에서 가해지는 힘.
 
 
 	void				UpdateLocalForce();	

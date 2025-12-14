@@ -190,7 +190,7 @@ void CN3Cloak::UpdateLocalForce()
 	float length;
 
 	int i, j, index, idx;
-	D3DXVECTOR3 up, down, left, right;
+	__Vector3 up, down, left, right;
 	const float nSub = 0.2f;
 
 	for ( i = 0; i < m_nGridH; i ++ )
@@ -316,7 +316,7 @@ void CN3Cloak::SetLOD(int nLevel)
 	if (m_pIndex)
 		delete[] m_pIndex, m_pIndex = nullptr;
 
-	memset(m_vOffset, 0, sizeof(D3DXVECTOR3)*CLOAK_MAX_WIDTH);
+	memset(m_vOffset, 0, sizeof(__Vector3)*CLOAK_MAX_WIDTH);
 
 	switch(nLevel)
 	{
@@ -399,7 +399,7 @@ void CN3Cloak::SetLOD(int nLevel)
 	//TRACE ("CN3Cloak Set LOD lvl %d\n", nLevel);
 }
 
-void CN3Cloak::ApplyOffset(D3DXVECTOR3	&vDif)
+void CN3Cloak::ApplyOffset(__Vector3&vDif)
 {	
 /*
 	if (m_fOffsetRecoveryTime == 0.0f)

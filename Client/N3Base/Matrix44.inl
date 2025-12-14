@@ -287,4 +287,9 @@ void __Matrix44::OrthoLH(float w, float h, float zn, float zf)
 	D3DXMatrixOrthoLH(this, w, h, zn, zf);
 }
 
+void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
+{
+	D3DXMatrixPerspectiveFovLH(this, fovy, Aspect, zn, zf);
+}
+
 #endif CLIENT_N3BASE_MATRIX44_INL

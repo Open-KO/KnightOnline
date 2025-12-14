@@ -253,7 +253,7 @@ Set the projection matrix for DirectX
 void CN3Eng::SetProjection(float fNear, float fFar, float fLens, float fAspect)
 {
 	__Matrix44 matProjection;
-	D3DXMatrixPerspectiveFovLH(&matProjection, fLens, fAspect, fNear, fFar);
+	matProjection.PerspectiveFovLH(fLens, fAspect, fNear, fFar);
 	s_lpD3DDev->SetTransform(D3DTS_PROJECTION, &matProjection);
 }
 

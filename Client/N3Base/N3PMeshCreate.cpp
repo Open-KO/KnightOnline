@@ -115,7 +115,7 @@ void CN3PMeshCreate::combine_modified(float &sofar, uint16_t *tri, int which, in
 	float cosangdiff = newnorm.Dot(oldnorm);
 
 	// Calculate some statistics about the triangle change.
-	V1 = D3DXVECTOR3(m_pVertices[what_to].x, m_pVertices[what_to].y, m_pVertices[what_to].z) - in_plane;
+	V1 = m_pVertices[what_to] - in_plane;
 	float volume_change = std::abs(V1.Dot(oldcross));
 
 	// The angle change weighted by the area of the triangle.

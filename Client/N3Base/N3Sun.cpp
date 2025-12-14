@@ -62,7 +62,7 @@ void CN3Sun::Render(__Matrix44& matView, __Matrix44& matProj)
 
 	__Vector3 vSun;	vSun.Set(5, 0, 0);
 	D3DXVECTOR4	 vOut;
-	D3DXVec3Transform(&vOut, (D3DXVECTOR3*)(&vSun), &matFinal);
+	D3DXVec3Transform(&vOut, &vSun, &matFinal);
 
 	int Width = s_CameraData.vp.Width;
 	int Height = s_CameraData.vp.Height;

@@ -101,6 +101,7 @@ public:
 
 	void LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp);
 	void OrthoLH(float w, float h, float zn, float zf);
+	void PerspectiveFovLH(float fovy, float Aspect, float zn, float zf);
 
 	__Matrix44 operator * (const D3DXMATRIX& mtx) const;
 	void operator *= (const D3DXMATRIX& mtx);
