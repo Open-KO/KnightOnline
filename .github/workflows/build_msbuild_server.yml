@@ -42,5 +42,4 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build server
-      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Server.sln

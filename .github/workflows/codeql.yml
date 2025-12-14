@@ -42,7 +42,6 @@ jobs:
     # as needed from within All.sln; this ensures they're built first so they won't build again during
     # CodeQL monitoring.
     - name: Build third party dependencies
-      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
 
     # Initializes the CodeQL tools for scanning.
@@ -53,7 +52,6 @@ jobs:
         build-mode: manual
 
     - name: Build all
-      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.sln
 
     - name: Perform CodeQL Analysis

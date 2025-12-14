@@ -151,4 +151,4 @@ jobs:
         shell: bash
         working-directory: build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }}
         run: |
-          ctest -C "${{ matrix.BUILD_CONFIGURATION }}"
+          ctest -c "${{ matrix.BUILD_CONFIGURATION }}"
