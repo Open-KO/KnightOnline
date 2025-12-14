@@ -1,8 +1,9 @@
 ﻿#include "pch.h"
 #include "ZoneEventThread.h"
+#include "AIServerApp.h"
 #include "Map.h"
 #include "NpcThread.h"
-#include "AIServerApp.h"
+#include "RoomEvent.h"
 
 ZoneEventThread::ZoneEventThread()
 	: Thread()

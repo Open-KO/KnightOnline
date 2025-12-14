@@ -6,26 +6,22 @@
 #include <shared-server/N3ShapeMgr.h>
 #include <shared-server/STLMap.h>
 #include <shared-server/GeometricStructs.h>
-#include "RoomEvent.h"
 
 #include <iosfwd>
-
-typedef CSTLMap <_OBJECT_EVENT>		ObjectEventArray;
-typedef CSTLMap <CRoomEvent>		RoomEventArray;
 
 class CRegion;
 class CNpc;
 class CUser;
 class AIServerApp;
-//class CRoomEvent;
+class CRoomEvent;
+
+typedef CSTLMap <_OBJECT_EVENT>		ObjectEventArray;
+typedef CSTLMap <CRoomEvent>		RoomEventArray;
 
 class CMapInfo					// 각 좌표의 정보
 {
 public:
-	int16_t	m_sEvent;			// 현좌표의 이벤트 번호
-
-	CMapInfo();
-	virtual ~CMapInfo();
+	int16_t	m_sEvent = 0;		// 현좌표의 이벤트 번호
 };
 
 class MAP
@@ -35,7 +31,6 @@ public:
 	CN3ShapeMgr			m_N3ShapeMgr;
 	CMapInfo**			m_pMap;				// 타일의 정보(1셀 : 4미터)
 	CRegion**			m_ppRegion;			// 64미터의 타일정보..
-	//CRoomEvent*		m_pRoomEvent;
 	_SIZE				m_sizeMap;			// 맵의 크기
 	_SIZE				m_sizeRegion;		// 맵의 resion size
 	int					m_nZoneNumber;		// zone number

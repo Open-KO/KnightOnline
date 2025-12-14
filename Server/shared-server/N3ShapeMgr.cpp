@@ -178,7 +178,7 @@ bool CN3ShapeMgr::CheckCollision(
 	if (fSpeedPerSec <= 0)
 		return false;
 
-	static __CellSub* ppCells[128];
+	__CellSub* ppCells[128];
 
 	// 다음 위치
 	__Vector3 vPosNext = vPos + (vDir * fSpeedPerSec);
@@ -201,7 +201,7 @@ bool CN3ShapeMgr::CheckCollision(
 
 	__Vector3 vColTmp(0, 0, 0);
 	int nIndex0, nIndex1, nIndex2;
-	static float fT, fU, fV;
+	float fT, fU, fV;
 	float fDistClosest = FLT_MAX;
 
 	for (int i = 0; i < iSubCellCount; i++)

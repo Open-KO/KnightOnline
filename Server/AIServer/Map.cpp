@@ -20,15 +20,6 @@
 
 extern std::mutex g_region_mutex;
 
-CMapInfo::CMapInfo()
-{
-	m_sEvent = 0;
-}
-
-CMapInfo::~CMapInfo()
-{
-}
-
 MAP::MAP()
 {
 	m_pMain = AIServerApp::instance();

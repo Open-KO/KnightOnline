@@ -5,6 +5,7 @@
 #include "AIServerApp.h"
 #include "Region.h"
 #include "Party.h"
+#include "RoomEvent.h"
 #include "Extern.h"
 
 #include <math.h>

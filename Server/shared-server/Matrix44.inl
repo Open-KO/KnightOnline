@@ -1,30 +1,19 @@
-﻿#ifndef CLIENT_N3BASE_MATRIX44_INL
-#define CLIENT_N3BASE_MATRIX44_INL
+﻿#ifndef SERVER_SHAREDSERVER_MATRIX44_INL
+#define SERVER_SHAREDSERVER_MATRIX44_INL
 
 #pragma once
 
 #include "My_3DStruct.h"
+#include <cstring> // memcpy, memset
 
-#include <cstring> // memcpy(), memset()
-
-__Matrix44::__Matrix44(const _D3DMATRIX& mtx)
+__Matrix44::__Matrix44(const __Matrix44& mtx)
 {
-	std::memcpy(&m, &mtx.m, sizeof(_D3DMATRIX));
-}
-
-__Matrix44::__Matrix44(const D3DXMATRIX& mtx)
-{
-	std::memcpy(&m, &mtx.m, sizeof(D3DXMATRIX));
-}
-
-__Matrix44::__Matrix44(const D3DXQUATERNION& qt)
-{
-	D3DXMatrixRotationQuaternion(this, &qt);
+	std::memcpy(&m, &mtx.m, sizeof(__Matrix44));
 }
 
 void __Matrix44::Zero()
 {
-	std::memset(&m, 0, sizeof(_D3DMATRIX));
+	std::memset(&m, 0, sizeof(__Matrix44));
 }
 
 void __Matrix44::Identity()
@@ -33,17 +22,12 @@ void __Matrix44::Identity()
 	_11 = _22 = _33 = _44 = 1.0f;
 }
 
-__Matrix44 __Matrix44::Inverse(float* determinant /*= nullptr*/) const
-{
-	__Matrix44 mtxOut;
-	mtxOut.Identity();
-	D3DXMatrixInverse(&mtxOut, determinant, this);
-	return mtxOut;
-}
-
 const __Vector3 __Matrix44::Pos() const
 {
-	return { _41, _42, _43 };
+	__Vector3 vTmp;
+
+	vTmp.Set(_41, _42, _43);
+	return vTmp;
 }
 
 void __Matrix44::PosSet(float x, float y, float z)
@@ -53,7 +37,7 @@ void __Matrix44::PosSet(float x, float y, float z)
 	_43 = z;
 }
 
-void __Matrix44::PosSet(const D3DXVECTOR3& v)
+void __Matrix44::PosSet(const __Vector3& v)
 {
 	_41 = v.x;
 	_42 = v.y;
@@ -92,7 +76,6 @@ void __Matrix44::Rotation(float fX, float fY, float fZ)
 	float SX = sinf(fX), CX = cosf(fX);
 	float SY = sinf(fY), CY = cosf(fY);
 	float SZ = sinf(fZ), CZ = cosf(fZ);
-
 	_11 = CY * CZ;
 	_12 = CY * SZ;
 	_13 = -SY;
@@ -108,16 +91,14 @@ void __Matrix44::Rotation(float fX, float fY, float fZ)
 	_33 = CX * CY;
 	_34 = 0;
 
-	_41 = _42 = _43 = 0;
-	_44 = 1;
+	_41 = _42 = _43 = 0; _44 = 1;
 }
 
-void __Matrix44::Rotation(const D3DXVECTOR3& v)
+void __Matrix44::Rotation(const __Vector3& v)
 {
 	float SX = sinf(v.x), CX = cosf(v.x);
 	float SY = sinf(v.y), CY = cosf(v.y);
 	float SZ = sinf(v.z), CZ = cosf(v.z);
-
 	_11 = CY * CZ;
 	_12 = CY * SZ;
 	_13 = -SY;
@@ -133,29 +114,26 @@ void __Matrix44::Rotation(const D3DXVECTOR3& v)
 	_33 = CX * CY;
 	_34 = 0;
 
-	_41 = _42 = _43 = 0;
-	_44 = 1;
+	_41 = _42 = _43 = 0; _44 = 1;
 }
 
 void __Matrix44::Scale(float sx, float sy, float sz)
 {
 	Identity();
-
 	_11 = sx;
 	_22 = sy;
 	_33 = sz;
 }
 
-void __Matrix44::Scale(const D3DXVECTOR3& v)
+void __Matrix44::Scale(const __Vector3& v)
 {
 	Identity();
-
 	_11 = v.x;
 	_22 = v.y;
 	_33 = v.z;
 }
 
-__Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
+__Matrix44 __Matrix44::operator * (const __Matrix44& mtx)
 {
 	__Matrix44 mtxTmp;
 
@@ -182,11 +160,11 @@ __Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
 	return mtxTmp;
 }
 
-void __Matrix44::operator *= (const D3DXMATRIX& mtx)
+void __Matrix44::operator *= (const __Matrix44& mtx)
 {
 	__Matrix44 mtxTmp;
 
-	memcpy(&mtxTmp.m, &m, sizeof(__Matrix44));
+	std::memcpy(&mtxTmp.m, &m, sizeof(__Matrix44));
 
 	_11 = mtxTmp._11 * mtx._11 + mtxTmp._12 * mtx._21 + mtxTmp._13 * mtx._31 + mtxTmp._14 * mtx._41;
 	_12 = mtxTmp._11 * mtx._12 + mtxTmp._12 * mtx._22 + mtxTmp._13 * mtx._32 + mtxTmp._14 * mtx._42;
@@ -209,92 +187,18 @@ void __Matrix44::operator *= (const D3DXMATRIX& mtx)
 	_44 = mtxTmp._41 * mtx._14 + mtxTmp._42 * mtx._24 + mtxTmp._43 * mtx._34 + mtxTmp._44 * mtx._44;
 }
 
-void __Matrix44::operator += (const D3DXVECTOR3& v)
+void __Matrix44::operator += (const __Vector3& v)
 {
 	_41 += v.x;
 	_42 += v.y;
 	_43 += v.z;
 }
 
-void __Matrix44::operator -= (const D3DXVECTOR3& v)
+void __Matrix44::operator -= (const __Vector3& v)
 {
 	_41 -= v.x;
 	_42 -= v.y;
 	_43 -= v.z;
 }
 
-__Matrix44 __Matrix44::operator * (const __Quaternion& qRot) const
-{
-	__Matrix44 mtx;
-	mtx.operator = (qRot);
-
-	return this->operator * (mtx);
-}
-
-void __Matrix44::operator *= (const __Quaternion& qRot)
-{
-	__Matrix44 mtx;
-	mtx.operator = (qRot);
-
-	this->operator *= (mtx);
-}
-
-void __Matrix44::operator = (const D3DXQUATERNION& qt)
-{
-	D3DXMatrixRotationQuaternion(this, &qt);
-}
-
-void __Matrix44::Direction(const D3DXVECTOR3& vDir)
-{
-	Identity();
-
-	__Vector3 vDir2, vRight, vUp;
-	vUp.Set(0, 1, 0);
-	vDir2 = vDir;
-	vDir2.Normalize();
-	vRight.Cross(vUp, vDir2); // right = CrossProduct(world_up, view_dir);
-	vUp.Cross(vDir2, vRight); // up = CrossProduct(view_dir, right);
-	vRight.Normalize(); // right = Normalize(right);
-	vUp.Normalize(); // up = Normalize(up);
-
-	_11 = vRight.x; // view(0, 0) = right.x;
-	_21 = vRight.y; // view(1, 0) = right.y;
-	_31 = vRight.z; // view(2, 0) = right.z;
-	_12 = vUp.x; // view(0, 1) = up.x;
-	_22 = vUp.y; // view(1, 1) = up.y;
-	_32 = vUp.z; // view(2, 1) = up.z;
-	_13 = vDir2.x; // view(0, 2) = view_dir.x;
-	_23 = vDir2.y; // view(1, 2) = view_dir.y;
-	_33 = vDir2.z; // view(2, 2) = view_dir.z;
-
-	*this = Inverse();
-
-//  view(3, 0) = -DotProduct(right, from);
-//  view(3, 1) = -DotProduct(up, from);
-//  view(3, 2) = -DotProduct(view_dir, from);
-
-	// Set roll
-//	if (roll != 0.0f) {
-//		view = MatrixMult(RotateZMatrix(-roll), view);
-//	}
-
-//  return view;
-//} // end ViewMatrix
-}
-
-void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp)
-{
-	D3DXMatrixLookAtLH(this, &vEye, &vAt, &vUp);
-}
-
-void __Matrix44::OrthoLH(float w, float h, float zn, float zf)
-{
-	D3DXMatrixOrthoLH(this, w, h, zn, zf);
-}
-
-void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
-{
-	D3DXMatrixPerspectiveFovLH(this, fovy, Aspect, zn, zf);
-}
-
-#endif // CLIENT_N3BASE_MATRIX44_INL
+#endif // SERVER_SHAREDSERVER_MATRIX44_INL

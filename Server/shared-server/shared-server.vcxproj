@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClCompile Include="AppThread.cpp" />
     <ClCompile Include="ftxui_sink_mt.cpp" />
+    <ClCompile Include="My_3DStruct.cpp" />
     <ClCompile Include="utilities.cpp" />
     <ClCompile Include="N3ShapeMgr.cpp" />
     <ClCompile Include="ReadQueueThread.cpp" />
@@ -152,6 +153,10 @@
     <ClInclude Include="TcpClientSocket.h" />
     <ClInclude Include="TcpServerSocket.h" />
     <ClInclude Include="TcpSocket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Matrix44.inl" />
+    <None Include="Vector3.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

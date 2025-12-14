@@ -32,6 +32,9 @@
       <Filter>Threads</Filter>
     </ClCompile>
     <ClCompile Include="ftxui_sink_mt.cpp" />
+    <ClCompile Include="My_3DStruct.cpp">
+      <Filter>N3Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server_config.h" />
@@ -85,5 +88,13 @@
     <Filter Include="Threads">
       <UniqueIdentifier>{1c435bbd-960d-4b60-be04-47ebe4d8a995}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Vector3.inl">
+      <Filter>N3Base</Filter>
+    </None>
+    <None Include="Matrix44.inl">
+      <Filter>N3Base</Filter>
+    </None>
   </ItemGroup>
 </Project>

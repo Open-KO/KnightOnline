@@ -4,6 +4,7 @@
 #include "GameSocket.h"
 #include "NpcThread.h"
 #include "Region.h"
+#include "RoomEvent.h"
 #include "ZoneEventThread.h"
 
 #include <shared/crc32.h>
