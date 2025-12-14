@@ -82,7 +82,7 @@ void CBird::Tick()
 
 	__Vector3 vAxis(0, 1, 0);	 
 	__Quaternion qt;
-	D3DXQuaternionRotationAxis(&qt, &vAxis, -fRotY);
+	qt.RotationAxis(vAxis, -fRotY);
 
 	__Vector3 vNewPos = m_vPivot+vPos;
 	 
