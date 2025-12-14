@@ -85,5 +85,5 @@ jobs:
       shell: pwsh
       working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}"
       run: |
-        ./client-tests.exe
-        ./server-tests.exe
+        .\client-tests.exe
+        .\server-tests.exe
