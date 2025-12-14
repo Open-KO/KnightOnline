@@ -59,9 +59,9 @@ public:
 		}
 	};
 
-	void				Init(CN3CPlug_Cloak *pPlugCloak);	
+	void				Init(CN3CPlug_Cloak* pPlugCloak);
 	void				SetLOD(int nLevel);
-	void				ApplyOffset(__Vector3&vDif);
+	void				ApplyOffset(__Vector3& vDif);
 protected:
 	//	Anchor
 	e_Cloak_AnchorMovePattern	m_eAnchorPattern;

@@ -186,7 +186,7 @@ void __Matrix44::operator *= (const D3DXMATRIX& mtx)
 {
 	__Matrix44 mtxTmp;
 
-	memcpy(&mtxTmp.m, &m, sizeof(__Matrix44));
+	std::memcpy(&mtxTmp.m, &m, sizeof(__Matrix44));
 
 	_11 = mtxTmp._11 * mtx._11 + mtxTmp._12 * mtx._21 + mtxTmp._13 * mtx._31 + mtxTmp._14 * mtx._41;
 	_12 = mtxTmp._11 * mtx._12 + mtxTmp._12 * mtx._22 + mtxTmp._13 * mtx._32 + mtxTmp._14 * mtx._42;

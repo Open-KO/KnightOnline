@@ -844,7 +844,7 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, const __Vector3& vPo
 				pVNormal->Cross(pVs[nCI1] - pVs[nCI0], pVs[nCI2] - pVs[nCI1]);
 				pVNormal->Normalize();
 
-				mtxWI= pPart->m_Matrix.Inverse(); // World Matrix Inverse
+				mtxWI = pPart->m_Matrix.Inverse(); // World Matrix Inverse
 				mtxWI.PosSet(0, 0, 0); // 역행렬로 회전..
 				*pVNormal *= mtxWI; // 역행렬로 회전..
 			}
