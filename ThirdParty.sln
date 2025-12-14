@@ -97,8 +97,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-googletest", "deps\fe
 		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vcxproj", "{F1626769-3D40-4524-912E-4B0780393B37}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -235,14 +233,6 @@ Global
 		{D4F3D338-A7EF-430C-AD99-2FC6A591A711}.Release|Win32.Build.0 = Release|Win32
 		{D4F3D338-A7EF-430C-AD99-2FC6A591A711}.Release|x64.ActiveCfg = Release|x64
 		{D4F3D338-A7EF-430C-AD99-2FC6A591A711}.Release|x64.Build.0 = Release|x64
-		{F1626769-3D40-4524-912E-4B0780393B37}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F1626769-3D40-4524-912E-4B0780393B37}.Debug|Win32.Build.0 = Debug|Win32
-		{F1626769-3D40-4524-912E-4B0780393B37}.Debug|x64.ActiveCfg = Debug|x64
-		{F1626769-3D40-4524-912E-4B0780393B37}.Debug|x64.Build.0 = Debug|x64
-		{F1626769-3D40-4524-912E-4B0780393B37}.Release|Win32.ActiveCfg = Release|Win32
-		{F1626769-3D40-4524-912E-4B0780393B37}.Release|Win32.Build.0 = Release|Win32
-		{F1626769-3D40-4524-912E-4B0780393B37}.Release|x64.ActiveCfg = Release|x64
-		{F1626769-3D40-4524-912E-4B0780393B37}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
