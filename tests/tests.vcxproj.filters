@@ -1,6 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="hello_test.cpp" />
+    <Filter Include="Client">
+      <UniqueIdentifier>{e5536cee-35c0-4840-9e52-b9a4c56fc262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{e7cb180f-fefd-4566-bd5f-a788400dd6d9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Client\hello_test_client.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Server\hello_test_server.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

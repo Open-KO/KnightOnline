@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hello_test.cpp" />
+    <ClCompile Include="Client\hello_test_client.cpp" />
+    <ClCompile Include="Server\hello_test_server.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
