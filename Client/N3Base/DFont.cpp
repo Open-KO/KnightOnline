@@ -793,7 +793,7 @@ HRESULT CDFont::DrawText( FLOAT sx, FLOAT sy, uint32_t dwColor, uint32_t dwFlags
         return E_FAIL;
 
 	// 위치 색 조정
-	D3DXVECTOR2 vDiff = D3DXVECTOR2(sx, sy) - m_PrevLeftTop;
+	__Vector2 vDiff = __Vector2(sx, sy) - m_PrevLeftTop;
 	if ( fabs(vDiff.x)>0.5f || fabs(vDiff.y)>0.5f || dwColor != m_dwFontColor)
 	{
 		// lock vertex buffer
@@ -1101,7 +1101,7 @@ void CDFont::AddToAlphaManager(uint32_t dwColor, float fDist, __Matrix44& mtxWor
 		dwFVFSize = sizeof(__VertexTransformed);
 
 		// 위치 색 조정
-		D3DXVECTOR2 vDiff = D3DXVECTOR2(mtxWorld._41, mtxWorld._42) - m_PrevLeftTop;
+		__Vector2 vDiff = __Vector2(mtxWorld._41, mtxWorld._42) - m_PrevLeftTop;
 		if ( fabs(vDiff.x)>0.5f || fabs(vDiff.y)>0.5f || dwColor != m_dwFontColor)
 		{
 			// lock vertex buffer

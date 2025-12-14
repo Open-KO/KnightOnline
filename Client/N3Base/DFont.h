@@ -69,8 +69,8 @@ protected:
 //	HDC			m_hDC;							// DC handle
 	HFONT		m_hFont;						// Font handle
 	UINT		m_iPrimitiveCount;				// 글씨 찍을 판의 갯수
-	D3DXVECTOR2	m_PrevLeftTop;				// DrawText의 경우 찍는 곳의 위치가 변경되었을때를 위한 변수
-	uint32_t		m_dwFontColor;				// 글씨 색
+	__Vector2	m_PrevLeftTop;				// DrawText의 경우 찍는 곳의 위치가 변경되었을때를 위한 변수
+	uint32_t	m_dwFontColor;				// 글씨 색
 	BOOL		m_Is2D;						// 2D Text인가?
 	SIZE		m_Size;						// 쓴 글씨들이 차지하는 크기(pixel단위, 가로 세로)
 

@@ -32,6 +32,16 @@ public:
 	__Vector2(float fx, float fy);
 	void Zero();
 	void Set(float fx, float fy);
+
+	__Vector2& operator += (const D3DXVECTOR2&);
+	__Vector2& operator -= (const D3DXVECTOR2&);
+	__Vector2& operator *= (float);
+	__Vector2& operator /= (float);
+
+	__Vector2 operator + (const D3DXVECTOR2&) const;
+	__Vector2 operator - (const D3DXVECTOR2&) const;
+	__Vector2 operator * (float) const;
+	__Vector2 operator / (float) const;
 };
 
 // 3D vertex

@@ -128,7 +128,6 @@ void CN3Joint::Render(const __Matrix44* pMtxParent, float fUnitSize)
 		v[1] = m_Matrix.Pos();
 		if(pMtxParent)
 		{
-			D3DXMATRIX mmm;
 			v[0] *= *pMtxParent;
 			v[1] *= *pMtxParent;
 		}

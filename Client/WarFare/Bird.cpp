@@ -80,8 +80,8 @@ void CBird::Tick()
 		 m_fRadianSpeed*sinf(m_fFactor2)*cosf(m_fRadian));
 	float fRotY = atan2f(z, x)-(D3DX_PI/2);
 
-	D3DXVECTOR3 vAxis(0, 1, 0);	 
-	D3DXQUATERNION qt;
+	__Vector3 vAxis(0, 1, 0);	 
+	__Quaternion qt;
 	D3DXQuaternionRotationAxis(&qt, &vAxis, -fRotY);
 
 	__Vector3 vNewPos = m_vPivot+vPos;

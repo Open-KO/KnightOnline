@@ -280,7 +280,7 @@ void CTransDummy::GetPickRay(POINT point, __Vector3& vDir, __Vector3& vOrig)
 	LPDIRECT3DDEVICE9 lpD3DDev = s_lpD3DDev;
 
     // Get the pick ray from the mouse position
-    D3DXMATRIX matProj;
+    __Matrix44 matProj;
     lpD3DDev->GetTransform( D3DTS_PROJECTION, &matProj );
 
     // Compute the vector of the pick ray in screen space

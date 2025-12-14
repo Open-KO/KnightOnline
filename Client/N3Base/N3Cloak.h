@@ -49,7 +49,7 @@ public:
 
 		float			x, y, z;
 		float			vx, vy, vz;
-		D3DXVECTOR3		LocalForce;
+		__Vector3		LocalForce;
 		float			mass;
 		void Set(float mass1, float x1, float y1, float z1, float vx1, float vy1, float vz1)
 		{
