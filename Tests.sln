@@ -3,6 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B887DA07-22C8-4A3E-8D8E-5CA7B6FDD3B7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-tests", "Client\tests\client-tests.vcxproj", "{F1626769-3D40-4524-912E-4B0780393B37}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D4F3D338-A7EF-430C-AD99-2FC6A591A711} = {D4F3D338-A7EF-430C-AD99-2FC6A591A711}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-tests", "Server\tests\server-tests.vcxproj", "{642EEED1-6C69-4888-9EC6-BEC40A46080B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D4F3D338-A7EF-430C-AD99-2FC6A591A711} = {D4F3D338-A7EF-430C-AD99-2FC6A591A711}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared", "shared\shared.vcxproj", "{C2FEB024-8E46-4533-918B-7196CAAA4E7D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{10898C84-AF45-F0B0-5144-EA801DF15503} = {10898C84-AF45-F0B0-5144-EA801DF15503}
@@ -132,18 +144,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-googletest", "deps\fetch-and-build-wrappers\fetch-googletest.vcxproj", "{D4F3D338-A7EF-430C-AD99-2FC6A591A711}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1F14357D-E06A-48A1-B39A-74082F381FC0} = {1F14357D-E06A-48A1-B39A-74082F381FC0}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B887DA07-22C8-4A3E-8D8E-5CA7B6FDD3B7}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-tests", "Client\tests\client-tests.vcxproj", "{F1626769-3D40-4524-912E-4B0780393B37}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D4F3D338-A7EF-430C-AD99-2FC6A591A711} = {D4F3D338-A7EF-430C-AD99-2FC6A591A711}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server-tests", "Server\tests\server-tests.vcxproj", "{642EEED1-6C69-4888-9EC6-BEC40A46080B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D4F3D338-A7EF-430C-AD99-2FC6A591A711} = {D4F3D338-A7EF-430C-AD99-2FC6A591A711}
 	EndProjectSection
 EndProject
 Global
