@@ -444,8 +444,6 @@ public:
 	int GetDir(float x1, float z1, float x2, float z2);
 	void NpcMoveEnd();
 
-	inline float RandomGenf(float max, float min);
-	__Vector3 MyFunc(__Vector3 vCur, __Vector3 vDir, float fYDegree, float fDistance);
 	__Vector3 GetDirection(__Vector3 vStart, __Vector3 vEnd);
 	// GetVectorPosition : vOrig->vDest방향으로 vOrig에서 fDis거리만큼 떨어진 좌표를 리턴
 	__Vector3 GetVectorPosition(__Vector3 vOrig, __Vector3 vDest, float fDis);

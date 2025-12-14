@@ -5670,42 +5670,6 @@ result_value:
 	return nDir;
 }
 
-inline float CNpc::RandomGenf(float max, float min)
-{
-	if (max == min)
-		return max;
-
-	if (min > max)
-		std::swap(min, max);
-
-	int k = rand() % (int) ((max * 100 - min * 100));
-	return (float) ((float) (k * 0.01f) + min);
-}
-
-//////////////////////////////////////////////////////////////////////
-// 인자: 현재 위치, 방향, random각, 이동거리
-// 반환값: 최종위치
-//////////////////////////////////////////////////////////////////////
-__Vector3 CNpc::MyFunc(__Vector3 vCur, __Vector3 vDir, float fYDegree, float fDistance)
-{
-	float fYRandom = RandomGenf(fYDegree / 2.0f, -fYDegree / 2.0f);
-
-	vDir.Normalize();
-	__Matrix44 mtx;
-	mtx.Identity();
-	__Quaternion qt;
-
-	qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(fYRandom));
-	mtx = qt;
-
-	vDir *= mtx;
-	vDir *= fDistance;
-
-	__Vector3 vResult;
-	vResult = vCur + vDir;
-	return vResult;
-}
-
 __Vector3 CNpc::GetDirection(__Vector3 vStart, __Vector3 vEnd)
 {
 	__Vector3 vDir = vEnd - vStart;

@@ -21,22 +21,8 @@ constexpr float RadiansToDegrees(float radians)
 	return radians * (180.0f / __PI);
 }
 
-struct __Vector2;
 struct __Vector3;
 struct __Matrix44;
-struct __Quaternion;
-
-// 2D Vertex
-struct __Vector2
-{
-public:
-	float x, y;
-
-	__Vector2() = default;
-	__Vector2(float fx, float fy);
-	void Zero();
-	void Set(float fx, float fy);
-};
 
 // 3D Vertex
 struct __Vector3
@@ -97,7 +83,6 @@ public:
 
 	__Matrix44() = default;
 	__Matrix44(const __Matrix44& mtx);
-	__Matrix44(const __Quaternion& qt);
 	void Zero();
 	void Identity();
 	const __Vector3 Pos() const;
@@ -111,59 +96,11 @@ public:
 	void Scale(float sx, float sy, float sz);
 	void Scale(const __Vector3& v);
 
-	void Direction(const __Vector3& vDir);
-
-	bool Inverse(float* pdeterminant = nullptr);
-	bool BuildInverse(__Matrix44* mtxOut, float* pdeterminant) const;
-
 	__Matrix44 operator * (const __Matrix44& mtx);
 	void operator *= (const __Matrix44& mtx);
 	void operator += (const __Vector3& v);
 	void operator -= (const __Vector3& v);
-
-	__Matrix44 operator * (const __Quaternion& qRot);
-	void operator *= (const __Quaternion& qRot);
-	void operator = (const __Quaternion& qt);
 };
-
-struct __Quaternion
-{
-public:
-	float x, y, z, w;
-
-	__Quaternion() = default;
-	__Quaternion(const __Matrix44& mtx);
-	__Quaternion(const __Quaternion& qt);
-
-	void Identity();
-	void Set(const __Matrix44& mtx);
-	void Set(float fX, float fY, float fZ, float fW);
-
-	void RotationAxis(const __Vector3& v, float fRadian);
-	void RotationAxis(float fX, float fY, float fZ, float fRadian);
-	void operator = (const __Matrix44& mtx);
-
-	void AxisAngle(__Vector3& vAxisResult, float& fRadianResult) const;
-	void Slerp(const __Quaternion& qt1, const __Quaternion& qt2, float fDelta);
-	float Dot(const __Quaternion& qt) const;
-};
-
-inline __Vector2::__Vector2(float fx, float fy)
-{
-	x = fx;
-	y = fy;
-}
-
-inline void __Vector2::Zero()
-{
-	x = y = 0;
-}
-
-inline void __Vector2::Set(float fx, float fy)
-{
-	x = fx; 
-	y = fy;
-}
 
 inline __Vector3::__Vector3(float fx, float fy, float fz)
 {
@@ -361,21 +298,6 @@ inline __Vector3 __Vector3::operator / (float fDelta) const
 inline __Matrix44::__Matrix44(const __Matrix44& mtx)
 {
 	memcpy(&m, &mtx.m, sizeof(__Matrix44));
-}
-
-inline __Matrix44::__Matrix44(const __Quaternion& qt)
-{
-	Identity();
-
-	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
-	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);
-	m[0][2] = 2.0f * (qt.x * qt.z - qt.y * qt.w);
-	m[1][0] = 2.0f * (qt.x * qt.y - qt.z * qt.w);
-	m[1][1] = 1.0f - 2.0f * (qt.x * qt.x + qt.z * qt.z);
-	m[1][2] = 2.0f * (qt.y * qt.z + qt.x * qt.w);
-	m[2][0] = 2.0f * (qt.x * qt.z + qt.y * qt.w);
-	m[2][1] = 2.0f * (qt.y * qt.z - qt.x * qt.w);
-	m[2][2] = 1.0f - 2.0f * (qt.x * qt.x + qt.y * qt.y);
 }
 
 inline void __Matrix44::Zero() 
@@ -598,284 +520,6 @@ inline void __Matrix44::operator -= (const __Vector3& v)
 	_41 -= v.x;
 	_42 -= v.y;
 	_43 -= v.z;
-}
-
-inline __Matrix44 __Matrix44::operator * (const __Quaternion& qRot)
-{
-	__Matrix44 mtx;
-	mtx.operator = (qRot);
-
-	return this->operator * (mtx);
-}
-
-inline void __Matrix44::operator *= (const __Quaternion& qRot)
-{
-	__Matrix44 mtx;
-	mtx.operator = (qRot);
-
-	this->operator *= (mtx);
-}
-
-inline void __Matrix44::operator = (const __Quaternion& qt)
-{
-	Identity();
-
-	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
-	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);
-	m[0][2] = 2.0f * (qt.x * qt.z - qt.y * qt.w);
-	m[1][0] = 2.0f * (qt.x * qt.y - qt.z * qt.w);
-	m[1][1] = 1.0f - 2.0f * (qt.x * qt.x + qt.z * qt.z);
-	m[1][2] = 2.0f * (qt.y * qt.z + qt.x * qt.w);
-	m[2][0] = 2.0f * (qt.x * qt.z + qt.y * qt.w);
-	m[2][1] = 2.0f * (qt.y * qt.z - qt.x * qt.w);
-	m[2][2] = 1.0f - 2.0f * (qt.x * qt.x + qt.y * qt.y);
-}
-
-inline void __Matrix44::Direction(const __Vector3& vDir)
-{
-	Identity();
-
-	__Vector3 vDir2, vRight, vUp;
-	vUp.Set(0,1,0);
-	vDir2 = vDir;
-	vDir2.Normalize();
-	vRight.Cross(vUp, vDir2); // right = CrossProduct(world_up, view_dir);
-	vUp.Cross(vDir2, vRight); // up = CrossProduct(view_dir, right);
-	vRight.Normalize(); // right = Normalize(right);
-	vUp.Normalize(); // up = Normalize(up);
-
-	_11 = vRight.x; // view(0, 0) = right.x;
-	_21 = vRight.y; // view(1, 0) = right.y;
-	_31 = vRight.z; // view(2, 0) = right.z;
-	_12 = vUp.x; // view(0, 1) = up.x;
-	_22 = vUp.y; // view(1, 1) = up.y;
-	_32 = vUp.z; // view(2, 1) = up.z;
-	_13 = vDir2.x; // view(0, 2) = view_dir.x;
-	_23 = vDir2.y; // view(1, 2) = view_dir.y;
-	_33 = vDir2.z; // view(2, 2) = view_dir.z;
-
-	Inverse();
-	
-//  view(3, 0) = -DotProduct(right, from);
-//  view(3, 1) = -DotProduct(up, from);
-//  view(3, 2) = -DotProduct(view_dir, from);
-
-	// Set roll
-//	if (roll != 0.0f) {
-//		view = MatrixMult(RotateZMatrix(-roll), view);
-//	}
-
-//  return view;
-//} // end ViewMatrix
-}
-
-inline bool __Matrix44::Inverse(float* pdeterminant /*= nullptr*/)
-{
-	__Matrix44 tmpMatrix(*this);
-	if (!BuildInverse(&tmpMatrix, pdeterminant))
-		return false;
-
-	memcpy(&m, &tmpMatrix.m, sizeof(m));
-	return true;
-}
-
-inline bool __Matrix44::BuildInverse(__Matrix44* mtxOut, float* pdeterminant) const
-{
-	float t[3], v[16];
-
-	t[0] = m[2][2] * m[3][3] - m[2][3] * m[3][2];
-	t[1] = m[1][2] * m[3][3] - m[1][3] * m[3][2];
-	t[2] = m[1][2] * m[2][3] - m[1][3] * m[2][2];
-	v[0] = m[1][1] * t[0] - m[2][1] * t[1] + m[3][1] * t[2];
-	v[4] = -m[1][0] * t[0] + m[2][0] * t[1] - m[3][0] * t[2];
-
-	t[0] = m[1][0] * m[2][1] - m[2][0] * m[1][1];
-	t[1] = m[1][0] * m[3][1] - m[3][0] * m[1][1];
-	t[2] = m[2][0] * m[3][1] - m[3][0] * m[2][1];
-	v[8] = m[3][3] * t[0] - m[2][3] * t[1] + m[1][3] * t[2];
-	v[12] = -m[3][2] * t[0] + m[2][2] * t[1] - m[1][2] * t[2];
-
-	float det = m[0][0] * v[0] + m[0][1] * v[4] + m[0][2] * v[8] + m[0][3] * v[12];
-	if (det == 0.0f)
-		return false;
-
-	if (pdeterminant != nullptr)
-		*pdeterminant = det;
-
-	t[0] = m[2][2] * m[3][3] - m[2][3] * m[3][2];
-	t[1] = m[0][2] * m[3][3] - m[0][3] * m[3][2];
-	t[2] = m[0][2] * m[2][3] - m[0][3] * m[2][2];
-	v[1] = -m[0][1] * t[0] + m[2][1] * t[1] - m[3][1] * t[2];
-	v[5] = m[0][0] * t[0] - m[2][0] * t[1] + m[3][0] * t[2];
-
-	t[0] = m[0][0] * m[2][1] - m[2][0] * m[0][1];
-	t[1] = m[3][0] * m[0][1] - m[0][0] * m[3][1];
-	t[2] = m[2][0] * m[3][1] - m[3][0] * m[2][1];
-	v[9] = -m[3][3] * t[0] - m[2][3] * t[1] - m[0][3] * t[2];
-	v[13] = m[3][2] * t[0] + m[2][2] * t[1] + m[0][2] * t[2];
-
-	t[0] = m[1][2] * m[3][3] - m[1][3] * m[3][2];
-	t[1] = m[0][2] * m[3][3] - m[0][3] * m[3][2];
-	t[2] = m[0][2] * m[1][3] - m[0][3] * m[1][2];
-	v[2] = m[0][1] * t[0] - m[1][1] * t[1] + m[3][1] * t[2];
-	v[6] = -m[0][0] * t[0] + m[1][0] * t[1] - m[3][0] * t[2];
-
-	t[0] = m[0][0] * m[1][1] - m[1][0] * m[0][1];
-	t[1] = m[3][0] * m[0][1] - m[0][0] * m[3][1];
-	t[2] = m[1][0] * m[3][1] - m[3][0] * m[1][1];
-	v[10] = m[3][3] * t[0] + m[1][3] * t[1] + m[0][3] * t[2];
-	v[14] = -m[3][2] * t[0] - m[1][2] * t[1] - m[0][2] * t[2];
-
-	t[0] = m[1][2] * m[2][3] - m[1][3] * m[2][2];
-	t[1] = m[0][2] * m[2][3] - m[0][3] * m[2][2];
-	t[2] = m[0][2] * m[1][3] - m[0][3] * m[1][2];
-	v[3] = -m[0][1] * t[0] + m[1][1] * t[1] - m[2][1] * t[2];
-	v[7] = m[0][0] * t[0] - m[1][0] * t[1] + m[2][0] * t[2];
-
-	v[11] = -m[0][0] * (m[1][1] * m[2][3] - m[1][3] * m[2][1]) +
-		m[1][0] * (m[0][1] * m[2][3] - m[0][3] * m[2][1]) -
-		m[2][0] * (m[0][1] * m[1][3] - m[0][3] * m[1][1]);
-
-	v[15] = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
-		m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1]) +
-		m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
-
-	det = 1.0f / det;
-
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-			mtxOut->m[i][j] = v[4 * i + j] * det;
-	}
-
-	return true;
-}
-
-inline __Quaternion::__Quaternion(const __Matrix44& mtx)
-{
-	Set(mtx);
-}
-
-inline __Quaternion::__Quaternion(const __Quaternion& qt)
-{
-	x = qt.x; y = qt.y; z = qt.z; w = qt.w;
-}
-
-inline void __Quaternion::Identity()
-{
-	x = y = z = 0; w = 1.0f;
-}
-
-inline void __Quaternion::Set(const __Matrix44& mtx)
-{
-	float s, trace = mtx.m[0][0] + mtx.m[1][1] + mtx.m[2][2] + 1.0f;
-	if (trace > 1.0f)
-	{
-		s = 2.0f * sqrtf(trace);
-		x = (mtx.m[1][2] - mtx.m[2][1]) / s;
-		y = (mtx.m[2][0] - mtx.m[0][2]) / s;
-		z = (mtx.m[0][1] - mtx.m[1][0]) / s;
-		w = 0.25f * s;
-	}
-	else
-	{
-		int maxi = 0;
-		for (int i = 1; i < 3; i++)
-		{
-			if (mtx.m[i][i] > mtx.m[maxi][maxi])
-				maxi = i;
-		}
-
-		switch (maxi)
-		{
-			case 0:
-				s = 2.0f * sqrtf(1.0f + mtx.m[0][0] - mtx.m[1][1] - mtx.m[2][2]);
-				x = 0.25f * s;
-				y = (mtx.m[0][1] + mtx.m[1][0]) / s;
-				z = (mtx.m[0][2] + mtx.m[2][0]) / s;
-				w = (mtx.m[1][2] - mtx.m[2][1]) / s;
-				break;
-
-			case 1:
-				s = 2.0f * sqrtf(1.0f + mtx.m[1][1] - mtx.m[0][0] - mtx.m[2][2]);
-				x = (mtx.m[0][1] + mtx.m[1][0]) / s;
-				y = 0.25f * s;
-				z = (mtx.m[1][2] + mtx.m[2][1]) / s;
-				w = (mtx.m[2][0] - mtx.m[0][2]) / s;
-				break;
-
-			case 2:
-				s = 2.0f * sqrtf(1.0f + mtx.m[2][2] - mtx.m[0][0] - mtx.m[1][1]);
-				x = (mtx.m[0][2] + mtx.m[2][0]) / s;
-				y = (mtx.m[1][2] + mtx.m[2][1]) / s;
-				z = 0.25f * s;
-				w = (mtx.m[0][1] - mtx.m[1][0]) / s;
-				break;
-		}
-	}
-}
-
-inline void __Quaternion::Set(float fX, float fY, float fZ, float fW)
-{
-	x = fX; y = fY; z = fZ; w = fW;
-}
-
-inline void __Quaternion::RotationAxis(const __Vector3& v, float fRadian)
-{
-	RotationAxis(v.x, v.y, v.z, fRadian);
-}
-
-inline void __Quaternion::RotationAxis(float fX, float fY, float fZ, float fRadian)
-{
-	__Vector3 v(fX, fY, fZ);
-	v.Normalize();
-
-	x = sinf(fRadian / 2.0f) * v.x;
-	y = sinf(fRadian / 2.0f) * v.y;
-	z = sinf(fRadian / 2.0f) * v.z;
-	w = cosf(fRadian / 2.0f);
-}
-
-inline void __Quaternion::operator = (const __Matrix44& mtx)
-{
-	Set(mtx);
-}
-
-inline void __Quaternion::AxisAngle(__Vector3& vAxisResult, float& fRadianResult) const
-{
-	vAxisResult.x = x;
-	vAxisResult.y = y;
-	vAxisResult.z = z;
-
-	fRadianResult = 2.0f * acosf(w);
-}
-
-inline void __Quaternion::Slerp(const __Quaternion& qt1, const __Quaternion& qt2, float fDelta)
-{
-	float temp = 1.0f - fDelta;
-	float dot = qt1.Dot(qt2);
-	if (dot < 0.0f)
-	{
-		fDelta = -fDelta;
-		dot = -dot;
-	}
-
-	if ((1.0f - dot) > 0.00001f)
-	{
-		float theta = acosf(dot);
-		temp = sinf(theta * temp) / sinf(theta);
-		fDelta = sinf(theta * fDelta) / sinf(theta);
-	}
-
-	x = temp * qt1.x + fDelta * qt2.x;
-	y = temp * qt1.y + fDelta * qt2.y;
-	z = temp * qt1.z + fDelta * qt2.z;
-	w = temp * qt1.w + fDelta * qt2.w;
-}
-
-inline float __Quaternion::Dot(const __Quaternion& qt) const
-{
-	return (x*qt.x) + (y*qt.y) + (z*qt.z) + (w*qt.w);
 }
 
 #include <cassert>
