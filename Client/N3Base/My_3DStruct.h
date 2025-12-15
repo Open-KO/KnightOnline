@@ -62,13 +62,12 @@ public:
 	__Vector3() = default;
 	__Vector3(float fx, float fy, float fz);
 	__Vector3(const _D3DVECTOR& vec);
-	__Vector3(const D3DXVECTOR3& vec);
 
 	void	Normalize();
-	void	Normalize(const D3DXVECTOR3& vec);
+	void	Normalize(const _D3DVECTOR& vec);
 	float	Magnitude() const;
-	float	Dot(const D3DXVECTOR3& vec) const;
-	void	Cross(const D3DXVECTOR3& v1, const D3DXVECTOR3& v2);
+	float	Dot(const _D3DVECTOR& vec) const;
+	void	Cross(const _D3DVECTOR& v1, const _D3DVECTOR& v2);
 	void	Absolute();
 
 	void Zero();
@@ -79,15 +78,15 @@ public:
 	const __Vector3 operator * (const D3DXMATRIX& mtx) const;
 	void operator *= (float fDelta);
 	void operator *= (const D3DXMATRIX& mtx);
-	__Vector3 operator + (const D3DXVECTOR3& vec) const;
-	__Vector3 operator - (const D3DXVECTOR3& vec) const;
-	__Vector3 operator * (const D3DXVECTOR3& vec) const;
-	__Vector3 operator / (const D3DXVECTOR3& vec) const;
+	__Vector3 operator + (const _D3DVECTOR& vec) const;
+	__Vector3 operator - (const _D3DVECTOR& vec) const;
+	__Vector3 operator * (const _D3DVECTOR& vec) const;
+	__Vector3 operator / (const _D3DVECTOR& vec) const;
 
-	void operator += (const D3DXVECTOR3& vec);
-	void operator -= (const D3DXVECTOR3& vec);
-	void operator *= (const D3DXVECTOR3& vec);
-	void operator /= (const D3DXVECTOR3& vec);
+	void operator += (const _D3DVECTOR& vec);
+	void operator -= (const _D3DVECTOR& vec);
+	void operator *= (const _D3DVECTOR& vec);
+	void operator /= (const _D3DVECTOR& vec);
 
 	__Vector3 operator + (float fDelta) const;
 	__Vector3 operator - (float fDelta) const;

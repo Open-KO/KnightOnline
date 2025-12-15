@@ -12,13 +12,6 @@ __Vector3::__Vector3(float fx, float fy, float fz)
 	z = fz;
 }
 
-__Vector3::__Vector3(const D3DXVECTOR3& vec)
-{
-	x = vec.x;
-	y = vec.y;
-	z = vec.z;
-}
-
 __Vector3::__Vector3(const _D3DVECTOR& vec)
 {
 	x = vec.x;
@@ -37,7 +30,7 @@ void __Vector3::Normalize()
 	z /= fn;
 }
 
-void __Vector3::Normalize(const D3DXVECTOR3& vec)
+void __Vector3::Normalize(const _D3DVECTOR& vec)
 {
 	float fn = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	if (fn == 0)
@@ -56,12 +49,12 @@ float __Vector3::Magnitude() const
 	return sqrtf(x * x + y * y + z * z);
 }
 
-float __Vector3::Dot(const D3DXVECTOR3& vec) const
+float __Vector3::Dot(const _D3DVECTOR& vec) const
 {
 	return x * vec.x + y * vec.y + z * vec.z;
 }
 
-void __Vector3::Cross(const D3DXVECTOR3& v1, const D3DXVECTOR3& v2)
+void __Vector3::Cross(const _D3DVECTOR& v1, const _D3DVECTOR& v2)
 {
 	x = v1.y * v2.z - v1.z * v2.y;
 	y = v1.z * v2.x - v1.x * v2.z;
@@ -128,7 +121,7 @@ void __Vector3::operator *= (const D3DXMATRIX& mtx)
 	z = vTmp.x * mtx._13 + vTmp.y * mtx._23 + vTmp.z * mtx._33 + mtx._43;
 }
 
-__Vector3 __Vector3::operator + (const D3DXVECTOR3& vec) const
+__Vector3 __Vector3::operator + (const _D3DVECTOR& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x + vec.x;
@@ -137,7 +130,7 @@ __Vector3 __Vector3::operator + (const D3DXVECTOR3& vec) const
 	return vTmp;
 }
 
-__Vector3 __Vector3::operator - (const D3DXVECTOR3& vec) const
+__Vector3 __Vector3::operator - (const _D3DVECTOR& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x - vec.x;
@@ -146,7 +139,7 @@ __Vector3 __Vector3::operator - (const D3DXVECTOR3& vec) const
 	return vTmp;
 }
 
-__Vector3 __Vector3::operator * (const D3DXVECTOR3& vec) const
+__Vector3 __Vector3::operator * (const _D3DVECTOR& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x * vec.x;
@@ -155,7 +148,7 @@ __Vector3 __Vector3::operator * (const D3DXVECTOR3& vec) const
 	return vTmp;
 }
 
-__Vector3 __Vector3::operator / (const D3DXVECTOR3& vec) const
+__Vector3 __Vector3::operator / (const _D3DVECTOR& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x / vec.x;
@@ -164,28 +157,28 @@ __Vector3 __Vector3::operator / (const D3DXVECTOR3& vec) const
 	return vTmp;
 }
 
-void __Vector3::operator += (const D3DXVECTOR3& vec)
+void __Vector3::operator += (const _D3DVECTOR& vec)
 {
 	x += vec.x;
 	y += vec.y;
 	z += vec.z;
 }
 
-void __Vector3::operator -= (const D3DXVECTOR3& vec)
+void __Vector3::operator -= (const _D3DVECTOR& vec)
 {
 	x -= vec.x;
 	y -= vec.y;
 	z -= vec.z;
 }
 
-void __Vector3::operator *= (const D3DXVECTOR3& vec)
+void __Vector3::operator *= (const _D3DVECTOR& vec)
 {
 	x *= vec.x;
 	y *= vec.y;
 	z *= vec.z;
 }
 
-void __Vector3::operator /= (const D3DXVECTOR3& vec)
+void __Vector3::operator /= (const _D3DVECTOR& vec)
 {
 	x /= vec.x;
 	y /= vec.y;

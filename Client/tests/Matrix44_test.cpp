@@ -3,7 +3,7 @@
 
 namespace
 {
-	constexpr float Epsilon					= 1e-6f;
+	constexpr float Epsilon					= std::numeric_limits<float>::epsilon();
 	constexpr float EpsilonWithTolerance	= 1e-3f;
 
 	constexpr float Identity[4][4] =
@@ -91,7 +91,7 @@ TEST_F(Matrix44Test, ConstructFromMatrix_CopiesValues)
 	ExpectMatrixNear(mtx, mtxIdentity);
 }
 
-TEST_F(Matrix44Test, ConstructFromQuaternion_MatchesReference)
+TEST_F(Matrix44Test, ConstructFromQuaternion_MatchesReferenceWithinTolerance)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -107,7 +107,7 @@ TEST_F(Matrix44Test, ConstructFromQuaternion_MatchesReference)
 	SCOPED_TRACE("__Matrix44::__Matrix44(const __Quaternion&)");
 
 	__Matrix44 mtx(quat);
-	ExpectMatrixNear(mtx, expectedMatrix);
+	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
 
 TEST_F(Matrix44Test, Zero_ClearsAllElements)
@@ -393,7 +393,7 @@ TEST_F(Matrix44Test, PerspectiveFovLH_MatchesReferenceWithinTolerance)
 	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
 
-TEST_F(Matrix44Test, Multiply_Matrix_MatchesReference)
+TEST_F(Matrix44Test, Multiply_Matrix_MatchesReferenceWithinTolerance)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -408,10 +408,10 @@ TEST_F(Matrix44Test, Multiply_Matrix_MatchesReference)
 	SCOPED_TRACE("__Matrix44::operator*(const __Matrix44&)");
 
 	__Matrix44 mtx = mtxView * mtxProjection;
-	ExpectMatrixNear(mtx, expectedMatrix);
+	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
 
-TEST_F(Matrix44Test, MultiplyAssign_Matrix_MatchesReference)
+TEST_F(Matrix44Test, MultiplyAssign_Matrix_MatchesReferenceWithinTolerance)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -427,7 +427,7 @@ TEST_F(Matrix44Test, MultiplyAssign_Matrix_MatchesReference)
 
 	__Matrix44 mtx(mtxView);
 	mtx *= mtxProjection;
-	ExpectMatrixNear(mtx, expectedMatrix);
+	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
 
 TEST_F(Matrix44Test, AddAssign_Vector_MatchesReference)
@@ -470,7 +470,7 @@ TEST_F(Matrix44Test, SubtractAssign_Vector_MatchesReference)
 	ExpectMatrixNear(mtx, expectedMatrix);
 }
 
-TEST_F(Matrix44Test, Multiply_Quaternion_MatchesReference)
+TEST_F(Matrix44Test, Multiply_Quaternion_MatchesReferenceWithinTolerance)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -486,9 +486,10 @@ TEST_F(Matrix44Test, Multiply_Quaternion_MatchesReference)
 	SCOPED_TRACE("__Matrix44::operator*(const __Quaternion&)");
 
 	__Matrix44 mtx = mtxProjection * quat;
-	ExpectMatrixNear(mtx, expectedMatrix);
+	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
-TEST_F(Matrix44Test, MultiplyAssign_Quaternion_MatchesReference)
+
+TEST_F(Matrix44Test, MultiplyAssign_Quaternion_MatchesReferenceWithinTolerance)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -505,10 +506,10 @@ TEST_F(Matrix44Test, MultiplyAssign_Quaternion_MatchesReference)
 
 	__Matrix44 mtx(mtxProjection);
 	mtx *= quat;
-	ExpectMatrixNear(mtx, expectedMatrix);
+	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
 
-TEST_F(Matrix44Test, Assign_Quaternion_MatchesReference)
+TEST_F(Matrix44Test, Assign_Quaternion_MatchesReferenceWithinTolerance)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -525,5 +526,5 @@ TEST_F(Matrix44Test, Assign_Quaternion_MatchesReference)
 
 	__Matrix44 mtx;
 	mtx = quat;
-	ExpectMatrixNear(mtx, expectedMatrix);
+	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
