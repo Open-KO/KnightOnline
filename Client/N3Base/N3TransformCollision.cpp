@@ -137,7 +137,11 @@ void CN3TransformCollision::ClimbMeshSet(const std::string& szFN)
 int CN3TransformCollision::CheckCollisionPrecisely(bool bIgnoreBoxCheck, int ixScreen, int iyScreen, __Vector3* pVCol, __Vector3* pVNormal)
 {
 	__Vector3 vPos, vDir; // 2D 좌표를 3D 좌표로 바꾸고..
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	if(false == m_pMeshCollision->Pick(m_Matrix, vPos, vDir, pVCol, pVNormal)) return -1;
 	else return 0;

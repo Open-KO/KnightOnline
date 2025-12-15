@@ -656,7 +656,11 @@ BOOL CPortalVolume::PickWideWithTerrain(int x, int y, __Vector3& vPick)
 CN3Shape* CPortalVolume::PickWithShape(int iXScreen, int iYScreen, bool bMustHaveEvent, __Vector3* pvPick)
 {
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(iXScreen, iYScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		iXScreen, iYScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	// 거리순으로 정렬..
 	std::vector<ShapeInfo*> Shapes;

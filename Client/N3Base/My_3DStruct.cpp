@@ -241,7 +241,7 @@ bool _IntersectTriangle(
 POINT _Convert3D_To_2DCoordinate(
 	const __Vector3& vPos,
 	const __Matrix44& mtxView, const __Matrix44& mtxProjection,
-	int nVPW, int nVPH)
+	uint32_t nViewportWidth, uint32_t nViewportHeight)
 {
 	__Matrix44 matVP = mtxView * mtxProjection;
 	__Vector4 v;
@@ -256,22 +256,23 @@ POINT _Convert3D_To_2DCoordinate(
 		return pt;
 	}
 
-	pt.x = int(((v.x / v.w) + 1.0f) * (nVPW) / 2.0f);
-	pt.y = int((1.0f - (v.y / v.w)) * (nVPH) / 2.0f);
+	pt.x = int(((v.x / v.w) + 1.0f) * nViewportWidth / 2.0f);
+	pt.y = int((1.0f - (v.y / v.w)) * nViewportHeight / 2.0f);
 
 	return pt;
 }
 
 void _Convert2D_To_3DCoordinate(
 	int ixScreen, int iyScreen,
-	const __Matrix44& mtxView, const __Matrix44& mtxPrj, const D3DVIEWPORT9& vp,
+	const __Matrix44& mtxView, const __Matrix44& mtxPrj,
+	uint32_t nViewportWidth, uint32_t nViewportHeight,
 	__Vector3& vPosResult, __Vector3& vDirResult)
 {
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
 
-	vTmp.x = (((2.0f * ixScreen) / (vp.Width)) - 1) / mtxPrj._11;
-	vTmp.y = -(((2.0f * iyScreen) / (vp.Height)) - 1) / mtxPrj._22;
+	vTmp.x = (((2.0f * ixScreen) / nViewportWidth) - 1) / mtxPrj._11;
+	vTmp.y = -(((2.0f * iyScreen) / nViewportHeight) - 1) / mtxPrj._22;
 	vTmp.z = 1.0f;
 
 	// Transform the screen space pick ray into 3D space

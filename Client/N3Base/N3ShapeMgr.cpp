@@ -991,7 +991,11 @@ CN3Shape* CN3ShapeMgr::Pick(int iXScreen, int iYScreen, bool bMustHaveEvent, __V
 		return nullptr;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(iXScreen, iYScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		iXScreen, iYScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	// 눈에 보이는것만 대상으로 해서...
 	size_t shapeCount = m_ShapesToRender.size();
@@ -1024,7 +1028,11 @@ CN3Shape* CN3ShapeMgr::PickMovable(int iXScreen, int iYScreen, __Vector3* pvPick
 		return nullptr;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(iXScreen, iYScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		iXScreen, iYScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	// 눈에 보이는것만 대상으로 해서...
 	// 거리순으로 정렬..

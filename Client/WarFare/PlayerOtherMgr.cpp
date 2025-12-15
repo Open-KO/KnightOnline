@@ -279,7 +279,11 @@ CPlayerOther* CPlayerOtherMgr::PickUPC(int ixScreen, int iyScreen, int& iIDResul
 	iIDResult = -1;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	if (!m_UPCs.empty())
 	{
@@ -315,7 +319,11 @@ CPlayerNPC* CPlayerOtherMgr::PickNPC(int ixScreen, int iyScreen, int& iIDResult,
 	iIDResult = -1;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 	
 	if(!m_NPCs.empty())
 	{
@@ -366,8 +374,11 @@ CPlayerNPC* CPlayerOtherMgr::PickCorpse(int ixScreen, int iyScreen, int& iIDResu
 	if(m_Corpses.empty()) return nullptr;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
-
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	// 카메라 거리순으로 정렬
 	std::vector<CPlayerNPC*> Corpses;
@@ -627,8 +638,11 @@ CPlayerNPC* CPlayerOtherMgr::PickAllPrecisely(int ixScreen, int iyScreen, int &i
 	iIDResult = -1;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
-
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	CPlayerNPC* pNPC = nullptr; // NPC라기 보다는 캐릭터 포인터
 
@@ -736,7 +750,11 @@ CPlayerNPC* CPlayerOtherMgr::PickNPCPrecisely(int ixScreen, int iyScreen, int &i
 	iIDResult = -1;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 	
 	if(!m_NPCs.empty())
 	{
@@ -794,7 +812,11 @@ CPlayerOther* CPlayerOtherMgr::PickUPCPrecisely(int ixScreen, int iyScreen, int 
 	iIDResult = -1;
 
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp, vPos, vDir);
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	if(!m_UPCs.empty())
 	{

@@ -2264,8 +2264,11 @@ void CN3Chr::FindMinMax()
 int CN3Chr::CheckCollisionPrecisely(int ixScreen, int iyScreen, __Vector3* pvPick)
 {
 	__Vector3 vPos, vDir;
-	::_Convert2D_To_3DCoordinate(ixScreen, iyScreen, CN3Base::s_CameraData.mtxView, CN3Base::s_CameraData.mtxProjection, CN3Base::s_CameraData.vp, vPos, vDir);
-
+	::_Convert2D_To_3DCoordinate(
+		ixScreen, iyScreen,
+		s_CameraData.mtxView, s_CameraData.mtxProjection,
+		s_CameraData.vp.Width, s_CameraData.vp.Height,
+		vPos, vDir);
 
 	__Matrix44 mtxWI, mtxWIRot;
 	mtxWI = m_Matrix.Inverse(); // World Matrix Inverse

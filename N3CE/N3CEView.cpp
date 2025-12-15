@@ -614,11 +614,7 @@ LRESULT CN3CEView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							mtx *= pChr->m_Matrix;
 						}
 
-						__Matrix44 inv_mtx;
-						float M;
-
-						inv_mtx = mtx.Inverse();
-
+						__Matrix44 inv_mtx =mtx.Inverse();
 						__Vector3 vPos = m_pFXPosTransform->Pos() * inv_mtx;
 
 						//pPlug->m_vFXs[iIndex] = vPos;
