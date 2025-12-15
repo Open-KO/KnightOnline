@@ -1,5 +1,6 @@
 # NOTE: Unused - no CMake client builds currently.
 add_executable(client-tests
+  IntersectTriangle_test.cpp
   Matrix44_test.cpp
   Vector2_test.cpp
   Vector3_test.cpp

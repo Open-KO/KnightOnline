@@ -1,11 +1,8 @@
 ﻿#include <gtest/gtest.h>
-#include <N3Base/My_3DStruct.h>
+#include "MathHelpers.h"
 
-namespace
-{
-	constexpr float Epsilon					= std::numeric_limits<float>::epsilon();
-	constexpr float EpsilonWithTolerance	= 1e-3f;
-}
+using test::EpsilonWithTolerance;
+using test::ExpectVector3Near;
 
 class Vector3Test : public ::testing::Test
 {
@@ -23,13 +20,6 @@ protected:
 	void SetUp() override
 	{
 		mtxProjection = Projection;
-	}
-
-	void ExpectVector3Near(const __Vector3& a, const __Vector3& b, float epsilon = Epsilon)
-	{
-		EXPECT_NEAR(a.x, b.x, epsilon);
-		EXPECT_NEAR(a.y, b.y, epsilon);
-		EXPECT_NEAR(a.z, b.z, epsilon);
 	}
 };
 

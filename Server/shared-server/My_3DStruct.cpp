@@ -24,7 +24,8 @@ bool _IntersectTriangle(
 	vEdge2 = v2 - v0;
 
 	// Begin calculating determinant - also used to calculate U parameter
-	__Vector3 pVec;	float fDet;
+	__Vector3 pVec;
+	float fDet;
 
 //	By : Ecli666 ( On 2001-09-12 오전 10:39:01 )
 

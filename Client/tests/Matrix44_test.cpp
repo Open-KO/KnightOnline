@@ -1,11 +1,11 @@
 ﻿#include <gtest/gtest.h>
-#include <N3Base/My_3DStruct.h>
+#include "MathHelpers.h"
+
+using test::EpsilonWithTolerance;
+using test::ExpectMatrixNear;
 
 namespace
 {
-	constexpr float Epsilon					= std::numeric_limits<float>::epsilon();
-	constexpr float EpsilonWithTolerance	= 1e-3f;
-
 	constexpr float Identity[4][4] =
 	{
 		{ 1.000000000f,   0.000000000f,  0.000000000f, 0.000000000f },
@@ -63,15 +63,6 @@ protected:
 		mtxView = View;
 		mtxViewInverse = ViewInverse;
 		mtxProjection = Projection;
-	}
-
-	void ExpectMatrixNear(const __Matrix44& a, const __Matrix44& b, float epsilon = Epsilon)
-	{
-		for (int row = 0; row < 4; row++)
-		{
-			for (int col = 0; col < 4; col++)
-				EXPECT_NEAR(a.m[row][col], b.m[row][col], epsilon);
-		}
 	}
 };
 
