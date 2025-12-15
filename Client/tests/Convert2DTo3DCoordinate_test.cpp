@@ -37,6 +37,8 @@ TEST(Convert2DTo3DCoordinate, ReturnedPoint_MatchesReferenceWithinTolerance)
 	__Vector3 posResult = { -FLT_MIN, -FLT_MIN, -FLT_MIN };
 	__Vector3 dirResult = { -FLT_MIN, -FLT_MIN, -FLT_MIN };
 
+	SCOPED_TRACE("Convert2DTo3DCoordinate::ReturnedPoint_MatchesReferenceWithinTolerance");
+
 	_Convert2D_To_3DCoordinate(pt.x, pt.y, viewMatrix, projectionMatrix, ViewportWidth, ViewportHeight, posResult, dirResult);
 
 	ExpectVector3Near(posResult, expectedPos, EpsilonWithTolerance);

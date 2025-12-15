@@ -7,6 +7,8 @@ TEST(Yaw2D, MatchesReferenceWithinTolerance)
 {
 	float yaw;
 
+	SCOPED_TRACE("Yaw2D::MatchesReferenceWithinTolerance");
+
 	yaw = _Yaw2D(-1.0f, -1.0f);
 	EXPECT_NEAR(yaw, 4.71238899f, EpsilonWithTolerance);
 

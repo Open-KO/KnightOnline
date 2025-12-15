@@ -28,7 +28,10 @@ TEST(Convert3DTo2DCoordinate, ReturnedPoint_MatchesReference)
 	const __Matrix44 viewMatrix(View), projectionMatrix(Projection);
 	const __Vector3 pos = { 311.0f, 1.0f, 351.0f };
 
+	SCOPED_TRACE("Convert3DTo2DCoordinate::ReturnedPoint_MatchesReference");
+
 	POINT pt = _Convert3D_To_2DCoordinate(pos, viewMatrix, projectionMatrix, ViewportWidth, ViewportHeight);
+
 	EXPECT_EQ(pt.x, 130);
 	EXPECT_EQ(pt.y, 1633);
 }
@@ -40,6 +43,8 @@ TEST(Convert3DTo2DCoordinate, PointInFrontOfCamera_MapsInsideViewport)
 	__Matrix44 viewMatrix, projectionMatrix;
 	viewMatrix.Identity();
 	projectionMatrix.Identity();
+
+	SCOPED_TRACE("Convert3DTo2DCoordinate::PointInFrontOfCamera_MapsInsideViewport");
 
 	POINT pt = _Convert3D_To_2DCoordinate(pos, viewMatrix, projectionMatrix, ViewportWidth, ViewportHeight);
 
@@ -57,6 +62,8 @@ TEST(Convert3DTo2DCoordinate, PointBehindCamera_IsInvalid)
 	viewMatrix.Identity();
 	projectionMatrix.Identity();
 
+	SCOPED_TRACE("Convert3DTo2DCoordinate::PointBehindCamera_IsInvalid");
+
 	POINT pt = _Convert3D_To_2DCoordinate(pos, viewMatrix, projectionMatrix, ViewportWidth, ViewportHeight);
 
 	EXPECT_EQ(pt.x, -1);
@@ -71,6 +78,8 @@ TEST(Convert3DTo2DCoordinate, PointOutsideFarPlane_IsInvalid)
 	viewMatrix.Identity();
 	projectionMatrix.Identity();
 
+	SCOPED_TRACE("Convert3DTo2DCoordinate::PointOutsideFarPlane_IsInvalid");
+
 	POINT pt = _Convert3D_To_2DCoordinate(pos, viewMatrix, projectionMatrix, ViewportWidth, ViewportHeight);
 
 	EXPECT_EQ(pt.x, -1);
@@ -84,6 +93,8 @@ TEST(Convert3DTo2DCoordinate, WorldOrigin_MapsToMiddleOfScreen)
 	__Matrix44 viewMatrix, projectionMatrix;
 	viewMatrix.Identity();
 	projectionMatrix.Identity();
+
+	SCOPED_TRACE("Convert3DTo2DCoordinate::WorldOrigin_MapsToMiddleOfScreen");
 
 	POINT pt = _Convert3D_To_2DCoordinate(pos, viewMatrix, projectionMatrix, ViewportWidth, ViewportHeight);
 

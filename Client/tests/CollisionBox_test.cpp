@@ -9,71 +9,100 @@ namespace
 
 TEST(CheckCollisionByBox, HitsFrontFace)
 {
-	__Vector3 orig = { 0.5f, 0.5f, -1.0f };
-	__Vector3 dir = { 0.0f, 0.0f, 1.0f };
+	const __Vector3 orig = { 0.5f, 0.5f, -1.0f };
+	const __Vector3 dir = { 0.0f, 0.0f, 1.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsFrontFace");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsBackFace)
 {
-	__Vector3 orig = { 0.5f, 0.5f, 2.0f };
-	__Vector3 dir = { 0.0f, 0.0f, -1.0f };
+	const __Vector3 orig = { 0.5f, 0.5f, 2.0f };
+	const __Vector3 dir = { 0.0f, 0.0f, -1.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsBackFace");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsTopFace)
 {
-	__Vector3 orig = { 0.5f, 2.0f, 0.5f };
-	__Vector3 dir = { 0.0f, -1.0f, 0.0f };
+	const __Vector3 orig = { 0.5f, 2.0f, 0.5f };
+	const __Vector3 dir = { 0.0f, -1.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsTopFace");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsBottomFace)
 {
-	__Vector3 orig = { 0.5f, -1.0f, 0.5f };
-	__Vector3 dir = { 0.0f, 1.0f, 0.0f };
+	const __Vector3 orig = { 0.5f, -1.0f, 0.5f };
+	const __Vector3 dir = { 0.0f, 1.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsBottomFace");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsLeftFace)
 {
-	__Vector3 orig = { -1.0f, 0.5f, 0.5f };
-	__Vector3 dir = { 1.0f, 0.0f, 0.0f };
+	const __Vector3 orig = { -1.0f, 0.5f, 0.5f };
+	const __Vector3 dir = { 1.0f, 0.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsLeftFace");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsRightFace)
 {
-	__Vector3 orig = { 2.0f, 0.5f, 0.5f };
-	__Vector3 dir = { -1.0f, 0.0f, 0.0f };
+	const __Vector3 orig = { 2.0f, 0.5f, 0.5f };
+	const __Vector3 dir = { -1.0f, 0.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsRightFace");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsEdge)
 {
-	__Vector3 orig = { -1.0f, 0.0f, 0.0f };
-	__Vector3 dir = { 1.0f, 0.0f, 0.0f };
+	const __Vector3 orig = { -1.0f, 0.0f, 0.0f };
+	const __Vector3 dir = { 1.0f, 0.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsEdge");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, HitsVertex)
 {
-	__Vector3 orig = { -1.0f, -1.0f, -1.0f };
-	__Vector3 dir = { 1.0f, 1.0f, 1.0f };
+	const __Vector3 orig = { -1.0f, -1.0f, -1.0f };
+	const __Vector3 dir = { 1.0f, 1.0f, 1.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::HitsVertex");
+
 	EXPECT_TRUE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, RayMissesBox)
 {
-	__Vector3 orig = { -1.0f, -1.0f, -1.0f };
-	__Vector3 dir = { -1.0f, -1.0f, 0.0f };
+	const __Vector3 orig = { -1.0f, -1.0f, -1.0f };
+	const __Vector3 dir = { -1.0f, -1.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::RayMissesBox");
+
 	EXPECT_FALSE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
 
 TEST(CheckCollisionByBox, RayStartsInsideBox)
 {
-	__Vector3 orig = { 0.5f, 0.5f, 0.5f };
-	__Vector3 dir = { 1.0f, 0.0f, 0.0f };
+	const __Vector3 orig = { 0.5f, 0.5f, 0.5f };
+	const __Vector3 dir = { 1.0f, 0.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::RayStartsInsideBox");
 
 	// NOTE: _CheckCollisionByBox() does not detect rays starting inside,
 	// so this *should* fail.
@@ -82,7 +111,10 @@ TEST(CheckCollisionByBox, RayStartsInsideBox)
 
 TEST(CheckCollisionByBox, RayParallelToFacesMisses)
 {
-	__Vector3 orig = { 2.0f, 2.0f, 2.0f };
-	__Vector3 dir = { 0.0f, 1.0f, 0.0f };
+	const __Vector3 orig = { 2.0f, 2.0f, 2.0f };
+	const __Vector3 dir = { 0.0f, 1.0f, 0.0f };
+
+	SCOPED_TRACE("CheckCollisionByBox::RayParallelToFacesMisses");
+
 	EXPECT_FALSE(_CheckCollisionByBox(orig, dir, Min, Max));
 }
