@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CollisionBox_test.cpp" />
+    <ClCompile Include="Convert2DTo3DCoordinate_test.cpp" />
+    <ClCompile Include="Convert3DTo2DCoordinate_test.cpp" />
     <ClCompile Include="IntersectTriangle_test.cpp" />
     <ClCompile Include="Matrix44_test.cpp" />
     <ClCompile Include="Vector2_test.cpp" />
