@@ -89,11 +89,11 @@ jobs:
       working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}/client-tests"
       run: |
         xcopy "${{ github.workspace }}\OpenKO-runner-dependencies\${{matrix.BUILD_PLATFORM}}" . /E /I /Y
-        client-tests.exe --gtest_color=no --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
+        client-tests.exe --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
 
     - name: Run server tests
       shell: cmd
       working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}/server-tests"
       run: |
         xcopy "${{ github.workspace }}\OpenKO-runner-dependencies\${{matrix.BUILD_PLATFORM}}" . /E /I /Y
-        server-tests.exe --gtest_color=no --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
+        server-tests.exe --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
