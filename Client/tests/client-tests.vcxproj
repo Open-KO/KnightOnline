@@ -27,6 +27,7 @@
     <ClCompile Include="Vector2_test.cpp" />
     <ClCompile Include="Vector3_test.cpp" />
     <ClCompile Include="Vector4_test.cpp" />
+    <ClCompile Include="Yaw2D_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MathHelpers.h" />
