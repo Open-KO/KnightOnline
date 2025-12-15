@@ -60,12 +60,7 @@ jobs:
         submodules: 'false'
 
     - name: Clone OpenKO-runner-dependencies
-      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
-      with:
-        depth: 1
-        branch: 'main'
-        owner: 'Open-KO'
-        repository: 'OpenKO-runner-dependencies'
+      run: git clone https://github.com/Open-KO/OpenKO-runner-dependencies --depth 1
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
