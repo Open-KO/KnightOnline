@@ -5,16 +5,16 @@
 
 #include "My_3DStruct.h"
 
-#include <cstring> // memcpy(), memset()
+#include <cstring> // std::memcpy(), std::memset()
+
+__Matrix44::__Matrix44(const float mtx[4][4])
+{
+	std::memcpy(&m, mtx, sizeof(m));
+}
 
 __Matrix44::__Matrix44(const _D3DMATRIX& mtx)
 {
-	std::memcpy(&m, &mtx.m, sizeof(_D3DMATRIX));
-}
-
-__Matrix44::__Matrix44(const D3DXMATRIX& mtx)
-{
-	std::memcpy(&m, &mtx.m, sizeof(D3DXMATRIX));
+	std::memcpy(&m, &mtx.m, sizeof(m));
 }
 
 __Matrix44::__Matrix44(const D3DXQUATERNION& qt)
@@ -155,6 +155,59 @@ void __Matrix44::Scale(const D3DXVECTOR3& v)
 	_33 = v.z;
 }
 
+void __Matrix44::Direction(const D3DXVECTOR3& vDir)
+{
+	Identity();
+
+	__Vector3 vDir2, vRight, vUp;
+	vUp.Set(0, 1, 0);
+	vDir2 = vDir;
+	vDir2.Normalize();
+	vRight.Cross(vUp, vDir2); // right = CrossProduct(world_up, view_dir);
+	vUp.Cross(vDir2, vRight); // up = CrossProduct(view_dir, right);
+	vRight.Normalize(); // right = Normalize(right);
+	vUp.Normalize(); // up = Normalize(up);
+
+	_11 = vRight.x; // view(0, 0) = right.x;
+	_21 = vRight.y; // view(1, 0) = right.y;
+	_31 = vRight.z; // view(2, 0) = right.z;
+	_12 = vUp.x; // view(0, 1) = up.x;
+	_22 = vUp.y; // view(1, 1) = up.y;
+	_32 = vUp.z; // view(2, 1) = up.z;
+	_13 = vDir2.x; // view(0, 2) = view_dir.x;
+	_23 = vDir2.y; // view(1, 2) = view_dir.y;
+	_33 = vDir2.z; // view(2, 2) = view_dir.z;
+
+	*this = Inverse();
+
+//  view(3, 0) = -DotProduct(right, from);
+//  view(3, 1) = -DotProduct(up, from);
+//  view(3, 2) = -DotProduct(view_dir, from);
+
+	// Set roll
+//	if (roll != 0.0f) {
+//		view = MatrixMult(RotateZMatrix(-roll), view);
+//	}
+
+//  return view;
+//} // end ViewMatrix
+}
+
+void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp)
+{
+	D3DXMatrixLookAtLH(this, &vEye, &vAt, &vUp);
+}
+
+void __Matrix44::OrthoLH(float w, float h, float zn, float zf)
+{
+	D3DXMatrixOrthoLH(this, w, h, zn, zf);
+}
+
+void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
+{
+	D3DXMatrixPerspectiveFovLH(this, fovy, Aspect, zn, zf);
+}
+
 __Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
 {
 	__Matrix44 mtxTmp;
@@ -242,59 +295,6 @@ void __Matrix44::operator *= (const __Quaternion& qRot)
 void __Matrix44::operator = (const D3DXQUATERNION& qt)
 {
 	D3DXMatrixRotationQuaternion(this, &qt);
-}
-
-void __Matrix44::Direction(const D3DXVECTOR3& vDir)
-{
-	Identity();
-
-	__Vector3 vDir2, vRight, vUp;
-	vUp.Set(0, 1, 0);
-	vDir2 = vDir;
-	vDir2.Normalize();
-	vRight.Cross(vUp, vDir2); // right = CrossProduct(world_up, view_dir);
-	vUp.Cross(vDir2, vRight); // up = CrossProduct(view_dir, right);
-	vRight.Normalize(); // right = Normalize(right);
-	vUp.Normalize(); // up = Normalize(up);
-
-	_11 = vRight.x; // view(0, 0) = right.x;
-	_21 = vRight.y; // view(1, 0) = right.y;
-	_31 = vRight.z; // view(2, 0) = right.z;
-	_12 = vUp.x; // view(0, 1) = up.x;
-	_22 = vUp.y; // view(1, 1) = up.y;
-	_32 = vUp.z; // view(2, 1) = up.z;
-	_13 = vDir2.x; // view(0, 2) = view_dir.x;
-	_23 = vDir2.y; // view(1, 2) = view_dir.y;
-	_33 = vDir2.z; // view(2, 2) = view_dir.z;
-
-	*this = Inverse();
-
-//  view(3, 0) = -DotProduct(right, from);
-//  view(3, 1) = -DotProduct(up, from);
-//  view(3, 2) = -DotProduct(view_dir, from);
-
-	// Set roll
-//	if (roll != 0.0f) {
-//		view = MatrixMult(RotateZMatrix(-roll), view);
-//	}
-
-//  return view;
-//} // end ViewMatrix
-}
-
-void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp)
-{
-	D3DXMatrixLookAtLH(this, &vEye, &vAt, &vUp);
-}
-
-void __Matrix44::OrthoLH(float w, float h, float zn, float zf)
-{
-	D3DXMatrixOrthoLH(this, w, h, zn, zf);
-}
-
-void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
-{
-	D3DXMatrixPerspectiveFovLH(this, fovy, Aspect, zn, zf);
 }
 
 #endif // CLIENT_N3BASE_MATRIX44_INL

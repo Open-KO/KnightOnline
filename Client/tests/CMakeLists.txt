@@ -1,6 +1,6 @@
 # NOTE: Unused - no CMake client builds currently.
 add_executable(client-tests
-  hello_test.cpp)
+  Matrix44_test.cpp)
 
 target_link_libraries(client-tests PRIVATE
   gtest

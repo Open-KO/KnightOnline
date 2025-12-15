@@ -121,8 +121,8 @@ struct __Matrix44 : public D3DXMATRIX
 {
 public:
 	__Matrix44() = default;
+	__Matrix44(const float mtx[4][4]);
 	__Matrix44(const _D3DMATRIX& mtx);
-	__Matrix44(const D3DXMATRIX& mtx);
 	__Matrix44(const D3DXQUATERNION& qt);
 
 	void Zero();
@@ -138,9 +138,7 @@ public:
 	void Rotation(const D3DXVECTOR3& v);
 	void Scale(float sx, float sy, float sz);
 	void Scale(const D3DXVECTOR3& v);
-
 	void Direction(const D3DXVECTOR3& vDir);
-
 	void LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp);
 	void OrthoLH(float w, float h, float zn, float zf);
 	void PerspectiveFovLH(float fovy, float Aspect, float zn, float zf);

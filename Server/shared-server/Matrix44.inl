@@ -4,7 +4,7 @@
 #pragma once
 
 #include "My_3DStruct.h"
-#include <cstring> // memcpy, memset
+#include <cstring> // std::memcpy(), std::memset()
 
 __Matrix44::__Matrix44(const __Matrix44& mtx)
 {
