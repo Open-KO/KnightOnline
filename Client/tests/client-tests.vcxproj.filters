@@ -4,5 +4,6 @@
     <ClCompile Include="Matrix44_test.cpp" />
     <ClCompile Include="Vector3_test.cpp" />
     <ClCompile Include="Vector4_test.cpp" />
+    <ClCompile Include="Vector2_test.cpp" />
   </ItemGroup>
 </Project>

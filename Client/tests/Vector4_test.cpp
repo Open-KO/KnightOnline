@@ -56,7 +56,7 @@ TEST_F(Vector4Test, ConstructFromFloats_MatchesReference)
 	EXPECT_FLOAT_EQ(vec.w, 4.0f);
 }
 
-TEST_F(Vector4Test, ConstructFromVector_MatchesReference)
+TEST_F(Vector4Test, ConstructFromVector4_MatchesReference)
 {
 	const __Vector4 initialisedVector(1.0f, 2.0f, 3.0f, 4.0f);
 

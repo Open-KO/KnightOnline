@@ -53,7 +53,7 @@ TEST_F(Vector3Test, ConstructFromFloats_MatchesReference)
 	EXPECT_FLOAT_EQ(vec.z, 3.0f);
 }
 
-TEST_F(Vector3Test, ConstructFromVector_MatchesReference)
+TEST_F(Vector3Test, ConstructFromVector3_MatchesReference)
 {
 	const __Vector3 initialisedVector(1.0f, 2.0f, 3.0f);
 
@@ -190,9 +190,10 @@ TEST_F(Vector3Test, MultiplyAssign_Delta_MatchesReference)
 	const __Vector3 expectedVec = { 8192.0f, 16384.0f, 32768.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
 
-	SCOPED_TRACE("__Vector3::operator*(float)");
+	SCOPED_TRACE("__Vector3::operator*=(float)");
 
-	__Vector3 vec = lhsVec * 128.0f;
+	__Vector3 vec(lhsVec);
+	vec *= 128.0f;
 	ExpectVector3Near(vec, expectedVec);
 }
 
