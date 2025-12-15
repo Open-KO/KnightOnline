@@ -148,7 +148,7 @@ TEST_F(Matrix44Test, Pos_ReturnsTranslationComponent)
 	EXPECT_FLOAT_EQ(pos.z, 347.672943f);
 }
 
-TEST_F(Matrix44Test, PosSet_Vector_SetsTranslationComponent)
+TEST_F(Matrix44Test, PosSet_Vector3_SetsTranslationComponent)
 {
 	SCOPED_TRACE("__Matrix44::PosSet(const __Vector3&)");
 
@@ -253,7 +253,7 @@ TEST_F(Matrix44Test, Rotation_Floats_MatchesReference)
 	ExpectMatrixNear(mtx, expectedMatrix);
 }
 
-TEST_F(Matrix44Test, Rotation_Vector_MatchesReference)
+TEST_F(Matrix44Test, Rotation_Vector3_MatchesReference)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -293,7 +293,7 @@ TEST_F(Matrix44Test, Scale_Floats_MatchesReference)
 	ExpectMatrixNear(mtx, expectedMatrix);
 }
 
-TEST_F(Matrix44Test, Scale_Vector_MatchesReference)
+TEST_F(Matrix44Test, Scale_Vector3_MatchesReference)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -430,7 +430,7 @@ TEST_F(Matrix44Test, MultiplyAssign_Matrix_MatchesReferenceWithinTolerance)
 	ExpectMatrixNear(mtx, expectedMatrix, EpsilonWithTolerance);
 }
 
-TEST_F(Matrix44Test, AddAssign_Vector_MatchesReference)
+TEST_F(Matrix44Test, AddAssign_Vector3_MatchesReference)
 {
 	constexpr float ExpectedResult[4][4] =
 	{
@@ -450,7 +450,7 @@ TEST_F(Matrix44Test, AddAssign_Vector_MatchesReference)
 	ExpectMatrixNear(mtx, expectedMatrix);
 }
 
-TEST_F(Matrix44Test, SubtractAssign_Vector_MatchesReference)
+TEST_F(Matrix44Test, SubtractAssign_Vector3_MatchesReference)
 {
 	constexpr float ExpectedResult[4][4] =
 	{

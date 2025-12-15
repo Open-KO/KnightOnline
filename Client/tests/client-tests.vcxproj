@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Matrix44_test.cpp" />
     <ClCompile Include="Vector3_test.cpp" />
+    <ClCompile Include="Vector4_test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>

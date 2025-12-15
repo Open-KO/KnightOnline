@@ -246,6 +246,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fetch-googletest", "deps\fe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client-tests", "Client\tests\client-tests.vcxproj", "{F1626769-3D40-4524-912E-4B0780393B37}"
 	ProjectSection(ProjectDependencies) = postProject
+		{D06D505A-F28E-343F-09F4-C3809398B508} = {D06D505A-F28E-343F-09F4-C3809398B508}
 		{D4F3D338-A7EF-430C-AD99-2FC6A591A711} = {D4F3D338-A7EF-430C-AD99-2FC6A591A711}
 	EndProjectSection
 EndProject

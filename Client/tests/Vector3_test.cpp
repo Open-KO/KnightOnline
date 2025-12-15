@@ -74,7 +74,7 @@ TEST_F(Vector3Test, Normalize_Self_MatchesReference)
 	ExpectVector3Near(vec, expectedVector);
 }
 
-TEST_F(Vector3Test, Normalize_Vector_MatchesReference)
+TEST_F(Vector3Test, Normalize_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVector = { 0.218217880f, 0.436435759f, 0.872871518f };
 
@@ -163,7 +163,7 @@ TEST_F(Vector3Test, Set_Floats_MatchesReference)
 	ExpectVector3Near(vec, expectedVector);
 }
 
-TEST_F(Vector3Test, Assign_Vector_MatchesReference)
+TEST_F(Vector3Test, Assign_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVector = { 64.0f, 128.0f, 256.0f };
 
@@ -208,7 +208,7 @@ TEST_F(Vector3Test, MultiplyAssign_Matrix_MatchesReferenceWithinTolerance)
 	ExpectVector3Near(vec, expectedVec, EpsilonWithTolerance);
 }
 
-TEST_F(Vector3Test, Add_Vector_MatchesReference)
+TEST_F(Vector3Test, Add_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 80.0f, 160.0f, 320.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -220,7 +220,7 @@ TEST_F(Vector3Test, Add_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, Subtract_Vector_MatchesReference)
+TEST_F(Vector3Test, Subtract_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 48.0f, 96.0f, 192.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -232,7 +232,7 @@ TEST_F(Vector3Test, Subtract_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, Multiply_Vector_MatchesReference)
+TEST_F(Vector3Test, Multiply_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 1024.0f, 4096.0f, 16384.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -244,7 +244,7 @@ TEST_F(Vector3Test, Multiply_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, Divide_Vector_MatchesReference)
+TEST_F(Vector3Test, Divide_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 4.0f, 4.0f, 4.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -256,7 +256,7 @@ TEST_F(Vector3Test, Divide_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, AddAssign_Vector_MatchesReference)
+TEST_F(Vector3Test, AddAssign_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 80.0f, 160.0f, 320.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -269,7 +269,7 @@ TEST_F(Vector3Test, AddAssign_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, SubtractAssign_Vector_MatchesReference)
+TEST_F(Vector3Test, SubtractAssign_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 48.0f, 96.0f, 192.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -282,7 +282,7 @@ TEST_F(Vector3Test, SubtractAssign_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, MultiplyAssign_Vector_MatchesReference)
+TEST_F(Vector3Test, MultiplyAssign_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 1024.0f, 4096.0f, 16384.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
@@ -295,7 +295,7 @@ TEST_F(Vector3Test, MultiplyAssign_Vector_MatchesReference)
 	ExpectVector3Near(vec, expectedVec);
 }
 
-TEST_F(Vector3Test, DivideAssign_Vector_MatchesReference)
+TEST_F(Vector3Test, DivideAssign_Vector3_MatchesReference)
 {
 	const __Vector3 expectedVec = { 4.0f, 4.0f, 4.0f };
 	const __Vector3 lhsVec = { 64.0f, 128.0f, 256.0f };
