@@ -59,6 +59,14 @@ jobs:
       with:
         submodules: 'false'
 
+    - name: Clone OpenKO-runner-dependencies
+      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+      with:
+        depth: 1
+        branch: 'main'
+        owner: 'Open-KO'
+        repository: 'OpenKO-runner-dependencies'
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
@@ -82,13 +90,15 @@ jobs:
       run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tests.sln
 
     - name: Run client tests
-      shell: pwsh
+      shell: cmd
       working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}/client-tests"
       run: |
-        .\client-tests.exe
+        xcopy "${{ github.workspace }}\OpenKO-runner-dependencies\${{matrix.BUILD_PLATFORM}}" . /E /I /Y
+        client-tests.exe --gtest_color=no --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
 
     - name: Run server tests
-      shell: pwsh
+      shell: cmd
       working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}/server-tests"
       run: |
-        .\server-tests.exe
+        xcopy "${{ github.workspace }}\OpenKO-runner-dependencies\${{matrix.BUILD_PLATFORM}}" . /E /I /Y
+        server-tests.exe --gtest_color=no --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
