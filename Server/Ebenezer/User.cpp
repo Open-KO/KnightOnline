@@ -2472,7 +2472,7 @@ void CUser::Regene(char* pBuf, int magicid)
 		m_fBlinkStartTime = TimeGet();
 //
 		m_bResHpType = USER_STANDING;
-//		HpChange( m_iMaxHp );
+		HpChange( m_iMaxHp );
 		m_bRegeneType = REGENE_NORMAL;
 	}
 
