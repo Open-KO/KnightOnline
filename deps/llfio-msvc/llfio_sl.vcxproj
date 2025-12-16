@@ -1,0 +1,456 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{34820A7C-1DCF-3626-925D-B51E2E375334}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>llfio_sl</ProjectName>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <OutDir>$(StaticLibDir)</OutDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(DependencyDir)llfio\include\llfio\ntkernel-error-category\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "$(DependencyDir)llfio-msvc-dep-headers\include"</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <MinimalRebuild>false</MinimalRebuild>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_SILENCE_CXX20_CODECVT_CHAR8_T_FACETS_DEPRECATION_WARNING;QUICKCPPLIB_ENABLE_VALGRIND=1;LLFIO_DISABLE_OPENSSL=1;LLFIO_EXCLUDE_DYNAMIC_THREAD_POOL_GROUP=1;LLFIO_EXCLUDE_NETWORKING=1;LLFIO_INCLUDE_STORAGE_PROFILE=1;LLFIO_ENABLE_TEST_IO_MULTIPLEXERS=1;_WIN32_WINNT=0x601;LLFIO_SOURCE=1;LLFIO_STATIC_LINK=1;NTKERNEL_ERROR_CATEGORY_INLINE=0</PreprocessorDefinitions>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;QUICKCPPLIB_ENABLE_VALGRIND=1;LLFIO_DISABLE_OPENSSL=1;LLFIO_EXCLUDE_DYNAMIC_THREAD_POOL_GROUP=1;LLFIO_EXCLUDE_NETWORKING=1;LLFIO_INCLUDE_STORAGE_PROFILE=1;LLFIO_ENABLE_TEST_IO_MULTIPLEXERS=1;_WIN32_WINNT=0x601;LLFIO_SOURCE=1;LLFIO_STATIC_LINK=1</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(DependencyDir)llfio\include\llfio\ntkernel-error-category\include;$(DependencyDir)llfio-msvc-dep-headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(DependencyDir)llfio\include\llfio\ntkernel-error-category\include;$(DependencyDir)llfio-msvc-dep-headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\llfio\include\kvstore\kvstore.hpp" />
+    <ClInclude Include="..\llfio\include\llfio.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\llfio.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\ntkernel-error-category\include\ntkernel-error-category\config.hpp" />
+    <None Include="..\llfio\include\llfio\ntkernel-error-category\include\ntkernel-error-category\detail\ntkernel-table.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\ntkernel-error-category\include\ntkernel-error-category\detail\ntkernel_category_impl.ipp">
+    </None>
+    <ClInclude Include="..\llfio\include\llfio\ntkernel-error-category\include\ntkernel-error-category\ntkernel_category.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\revision.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\clone.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\contents.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\difference.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\handle_adapter\cached_parent.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\handle_adapter\combining.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\handle_adapter\xor.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\reduce.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\shared_fs_mutex\atomic_append.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\shared_fs_mutex\base.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\shared_fs_mutex\byte_ranges.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\shared_fs_mutex\lock_files.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\shared_fs_mutex\memory_map.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\shared_fs_mutex\safe_byte_ranges.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\summarize.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\traverse.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\algorithm\trivial_vector.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\byte_io_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\byte_io_multiplexer.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\byte_socket_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\config.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\deadline.h" />
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\byte_io_multiplexer.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\byte_socket_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\cached_parent_handle_adapter.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\clone.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\config.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\dynamic_thread_pool_group.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\fast_random_file_handle.ipp">
+    </None>
+    <ClInclude Include="..\llfio\include\llfio\v2.0\detail\impl\getaddrinfo_category.hpp" />
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\map_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\path_discovery.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\path_view.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\byte_io_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\byte_socket_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\directory_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\file_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\fs_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\handle.ipp">
+    </None>
+    <ClInclude Include="..\llfio\include\llfio\v2.0\detail\impl\posix\import.hpp" />
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\lockable_byte_io_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\map_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\mapped_file_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\path_discovery.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\path_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\pipe_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\process_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\stat.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\statfs.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\storage_profile.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\symlink_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\test\io_uring_multiplexer.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\posix\utils.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\reduce.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\safe_byte_ranges.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\storage_profile.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\test\null_multiplexer.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\tls_socket_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\tls_socket_sources\openssl.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\traverse.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\byte_io_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\byte_io_multiplexer.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\byte_socket_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\directory_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\file_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\fs_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\handle.ipp">
+    </None>
+    <ClInclude Include="..\llfio\include\llfio\v2.0\detail\impl\windows\import.hpp" />
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\lockable_byte_io_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\map_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\mapped_file_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\path_discovery.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\path_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\pipe_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\process_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\stat.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\statfs.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\storage_profile.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\symlink_handle.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\test\iocp_multiplexer.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\tls_socket_sources\schannel.ipp">
+    </None>
+    <None Include="..\llfio\include\llfio\v2.0\detail\impl\windows\utils.ipp">
+    </None>
+    <ClInclude Include="..\llfio\include\llfio\v2.0\directory_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\dynamic_thread_pool_group.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\fast_random_file_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\file_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\fs_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\llfio.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\lockable_byte_io_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\logging.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\map_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\mapped.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\mapped_file_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\multiplex.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\native_handle_type.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\path_discovery.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\path_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\path_view.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\pipe_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\process_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\stat.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\statfs.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\status_code.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\storage_profile.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\symlink_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\tls_socket_handle.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\v2.0\utils.hpp" />
+    <ClInclude Include="..\llfio\include\llfio\version.hpp" />
+    <ClCompile Include="..\llfio\src\llfio.cpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\bad_access.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\basic_outcome.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\basic_result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\boost_outcome.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\boost_result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\config.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\convert.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\coroutine_support.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_outcome_exception_observers.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_outcome_exception_observers_impl.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_outcome_failure_observers.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_result_error_observers.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_result_final.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_result_storage.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\basic_result_value_observers.hpp" />
+    <None Include="..\llfio-msvc-dep-headers\include\outcome\detail\coroutine_support.ipp">
+    </None>
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\revision.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\trait_std_error_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\trait_std_exception.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\try.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\value_storage.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\detail\version.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\coroutine_support.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\result.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\boost_error_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\com_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\config.hpp" />
+    <None Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\detail\nt_code_to_generic_code.ipp">
+    </None>
+    <None Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\detail\nt_code_to_win32_code.ipp">
+    </None>
+    <None Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\detail\win32_code_to_generic_code.ipp">
+    </None>
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\error.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\errored_status_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\generic_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\getaddrinfo_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\http_status_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\iostream_support.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\nested_status_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\nt_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\posix_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\quick_status_code_from_enum.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\status_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\status_code_domain.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\status_error.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\std_error_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\system_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\system_code_from_exception.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\system_error2.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\include\status-code\win32_code.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\single-header\system_error2-nowindows.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status-code\single-header\system_error2.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status_outcome.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\status_result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\all.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\all.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\config.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\result.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\status_code.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\status_code_domain.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\status_code_generic.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\status_code_posix.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\status_code_system.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\include\wg14_result\try.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\test\test_common.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\experimental\wg14_result\test\ticks_clock.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\iostream_support.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\iostream_support_result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\outcome.hpp" />
+    <Natvis Include="..\llfio-msvc-dep-headers\include\outcome\outcome.natvis">
+    </Natvis>
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\outcome_gdb.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\all_narrow.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\base.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\fail_to_compile_observers.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\outcome_error_code_throw_as_system_error.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\outcome_exception_ptr_rethrow.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\result_error_code_throw_as_system_error.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\result_exception_ptr_rethrow.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\terminate.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\policy\throw_bad_result_access.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\std_outcome.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\std_result.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\success_failure.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\trait.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\try.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\outcome\utils.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\bit_interleave.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\bitwise_trie.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\hash.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\memory.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\open_hash_index.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\prime_modulus.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\secded_ecc.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\small_prng.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\algorithm\string.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\aligned_allocator.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\allocator_testing.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\bit_cast.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\bitfield.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\boost\test\unit_test.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\byte.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\byte\include\nonstd\byte.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\byte\test\byte-main.t.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\byte\test\lest\lest_cpp03.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\config.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\console_colours.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\cpp_feature.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\declval.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\detach_cast.hpp" />
+    <None Include="..\llfio-msvc-dep-headers\include\quickcpplib\detail\impl\execinfo_win64.ipp">
+    </None>
+    <None Include="..\llfio-msvc-dep-headers\include\quickcpplib\detail\impl\signal_guard.ipp">
+    </None>
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\detail\preprocessor_macro_overload.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\erasure_cast.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\execinfo_win64.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\function_ptr.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\import.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\in_place_detach_attach.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\mem_flush_loads_stores.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\memory_resource.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\offset_ptr.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\optional.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\optional\optional.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\packed_backtrace.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\revision.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\ringbuffer_log.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\scope.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\signal_guard.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\span-lite\example\nonstd\span.tweak.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\span-lite\include\nonstd\span.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\span-lite\test\lest\lest_cpp03.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\span-lite\test\nonstd\span.tweak.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\span-lite\test\span-main.t.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\span.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\spinlock.hpp" />
+    <Natvis Include="..\llfio-msvc-dep-headers\include\quickcpplib\spinlock.natvis">
+    </Natvis>
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\start_lifetime_as.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\string_view.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\tribool.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\type_traits.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\uint128.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\utils\thread.hpp" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\valgrind\drd.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\valgrind\helgrind.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\valgrind\memcheck.h" />
+    <ClInclude Include="..\llfio-msvc-dep-headers\include\quickcpplib\valgrind\valgrind.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

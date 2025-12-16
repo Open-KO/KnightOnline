@@ -41,8 +41,9 @@ set_source_files_properties(
 )
 
 # Setup dependencies
-target_link_libraries(shared
-  PUBLIC spdlog::spdlog # expose spdlog to consumers
+target_link_libraries(shared PUBLIC
+  llfio_sl
+  spdlog::spdlog
 )
 
 # Setup warning levels

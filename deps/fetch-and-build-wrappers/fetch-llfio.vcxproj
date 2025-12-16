@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{47BEB39C-B62A-4E48-8A9F-0DED4450CF9E}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="UserMacros">
+    <DependencyName>llfio</DependencyName>
+    <LocalDependencyDir>deps\llfio</LocalDependencyDir>
+    <RealProjectPath>$(RootDir)deps\llfio-msvc\llfio.sln</RealProjectPath>
+  </PropertyGroup>
+  <Import Project="$(PropsDir)fetch_wrapper.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

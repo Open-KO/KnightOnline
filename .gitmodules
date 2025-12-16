@@ -67,3 +67,11 @@
 	path = deps/googletest
 	url = https://github.com/google/googletest
 	shallow = true
+[submodule "deps/llfio"]
+	path = deps/llfio
+	url = https://github.com/twostars/llfio
+	shallow = true
+[submodule "deps/llfio-msvc-dep-headers"]
+	path = deps/llfio-msvc-dep-headers
+	url = https://github.com/twostars/llfio-msvc-dep-headers
+	shallow = true
