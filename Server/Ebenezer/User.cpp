@@ -2412,6 +2412,15 @@ void CUser::Regene(char* pBuf, int magicid)
 				}
 				else return;
 			}
+			else
+			{
+				int16_t spawnX = 0, spawnZ = 0;
+				if (GetStartPosition(&spawnX, &spawnZ))
+				{
+					x = static_cast<float>(spawnX);
+					z = static_cast<float>(spawnZ);
+				}
+			}
 
 			m_pUserData->m_curx = x;
 			m_pUserData->m_curz = z;
