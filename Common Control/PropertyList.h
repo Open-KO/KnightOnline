@@ -51,9 +51,7 @@ public:
 	CPropertyItem(const char* szPropName, const char* szVal, int nItemType, const char* szComboItemsOrFilter, COLORREF crColor = 0);
 	
 	__Vector3 VectorGet();
-	D3DVECTOR VectorGetD3D();
 	void VectorSet(const __Vector3& v);
-	void VectorSet(const D3DVECTOR& v);
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -113,9 +113,7 @@ void __Vector3::operator *= (float fDelta)
 
 void __Vector3::operator *= (const __Matrix44& mtx)
 {
-	__Vector3 vTmp;
-
-	vTmp.Set(x, y, z);
+	__Vector3 vTmp = { x, y, z };
 	x = vTmp.x * mtx.m[0][0] + vTmp.y * mtx.m[1][0] + vTmp.z * mtx.m[2][0] + mtx.m[3][0];
 	y = vTmp.x * mtx.m[0][1] + vTmp.y * mtx.m[1][1] + vTmp.z * mtx.m[2][1] + mtx.m[3][1];
 	z = vTmp.x * mtx.m[0][2] + vTmp.y * mtx.m[1][2] + vTmp.z * mtx.m[2][2] + mtx.m[3][2];
@@ -123,38 +121,22 @@ void __Vector3::operator *= (const __Matrix44& mtx)
 
 __Vector3 __Vector3::operator + (const __Vector3& vec) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x + vec.x;
-	vTmp.y = y + vec.y;
-	vTmp.z = z + vec.z;
-	return vTmp;
+	return { x + vec.x, y + vec.y, z + vec.z };
 }
 
 __Vector3 __Vector3::operator - (const __Vector3& vec) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x - vec.x;
-	vTmp.y = y - vec.y;
-	vTmp.z = z - vec.z;
-	return vTmp;
+	return { x - vec.x, y - vec.y, z - vec.z };
 }
 
 __Vector3 __Vector3::operator * (const __Vector3& vec) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x * vec.x;
-	vTmp.y = y * vec.y;
-	vTmp.z = z * vec.z;
-	return vTmp;
+	return { x * vec.x, y * vec.y, z * vec.z };
 }
 
 __Vector3 __Vector3::operator / (const __Vector3& vec) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x / vec.x;
-	vTmp.y = y / vec.y;
-	vTmp.z = z / vec.z;
-	return vTmp;
+	return { x / vec.x, y / vec.y, z / vec.z };
 }
 
 void __Vector3::operator += (const __Vector3& vec)
@@ -187,38 +169,22 @@ void __Vector3::operator /= (const __Vector3& vec)
 
 __Vector3 __Vector3::operator + (float fDelta) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x + fDelta;
-	vTmp.y = y + fDelta;
-	vTmp.z = z + fDelta;
-	return vTmp;
+	return { x + fDelta, y + fDelta, z + fDelta };
 }
 
 __Vector3 __Vector3::operator - (float fDelta) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x - fDelta;
-	vTmp.y = y - fDelta;
-	vTmp.z = z - fDelta;
-	return vTmp;
+	return { x - fDelta, y - fDelta, z - fDelta };
 }
 
 __Vector3 __Vector3::operator * (float fDelta) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x * fDelta;
-	vTmp.y = y * fDelta;
-	vTmp.z = z * fDelta;
-	return vTmp;
+	return { x * fDelta, y * fDelta, z * fDelta };
 }
 
 __Vector3 __Vector3::operator / (float fDelta) const
 {
-	__Vector3 vTmp;
-	vTmp.x = x / fDelta;
-	vTmp.y = y / fDelta;
-	vTmp.z = z / fDelta;
-	return vTmp;
+	return { x / fDelta, y / fDelta, z / fDelta };
 }
 
 bool __Vector3::operator==(const __Vector3& rhs) const

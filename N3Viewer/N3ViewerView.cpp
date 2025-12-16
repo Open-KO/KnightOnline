@@ -323,7 +323,6 @@ CN3Base* CN3ViewerView::Pick(POINT point, int* pnPart)
 	qsort(sort, nSortCount, sizeof(__Sort), SortByCameraDistance);
 
 	int nPart = -1;
-	__Vector3 vI;
 	for(int i = 0; i < nSortCount; i++)
 	{
 		nPart = sort[i].pObj->CheckCollisionPrecisely(true, point.x, point.y);

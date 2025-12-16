@@ -29,18 +29,7 @@ __Vector3 CPropertyItem::VectorGet()
 	return { xyz[0], xyz[1], xyz[2] };
 }
 
-D3DVECTOR CPropertyItem::VectorGetD3D()
-{
-	__Vector3 v = VectorGet();
-	return { v.x, v.y, v.z };
-}
-
 void CPropertyItem::VectorSet(const __Vector3& v)
-{
-	m_curValue.Format("%f, %f, %f", v.x, v.y, v.z);
-}
-
-void CPropertyItem::VectorSet(const D3DVECTOR& v)
 {
 	m_curValue.Format("%f, %f, %f", v.x, v.y, v.z);
 }

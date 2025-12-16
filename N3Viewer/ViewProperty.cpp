@@ -598,7 +598,7 @@ BOOL CViewProperty::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				else if(pItem->m_curValue == "Directional") pL->m_Data.Type = D3DLIGHT_DIRECTIONAL;
 				else if(pItem->m_curValue == "Spot") pL->m_Data.Type = D3DLIGHT_SPOT;
 			}
-			else if(pItem->m_propName == "Direction") pL->m_Data.Direction = pItem->VectorGetD3D();
+			else if(pItem->m_propName == "Direction") pL->m_Data.Direction = pItem->VectorGet();
 			else if(pItem->m_propName == "Ambient Color") pL->m_Data.Ambient = pItem->D3DColorValueGet();
 			else if(pItem->m_propName == "Diffuse Color") pL->m_Data.Diffuse = pItem->D3DColorValueGet();
 			else if(pItem->m_propName == "Specular Color") pL->m_Data.Specular = pItem->D3DColorValueGet();

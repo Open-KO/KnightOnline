@@ -135,16 +135,16 @@ void CDlgLight::OnBtnUpload()
 
 	float fAtten = (100.0f - (float)m_sld_Atten.GetPos()) / 100.0f;
 
-	D3DCOLORVALUE crLgt;
+	__ColorValue crLgt;
 	crLgt.a = 0.0f;
 	crLgt.r = (float)((m_pLOColor<<24)>>24) / 255.0f;
 	crLgt.g = (float)((m_pLOColor<<16)>>24) / 255.0f;
 	crLgt.b = (float)((m_pLOColor<<8)>>24) / 255.0f;
 
-	int idx = m_ListLO.AddString((LPCTSTR)m_strLightObjName);
-	m_ListLO.SetItemDataPtr(idx, (LPLIGHTOBJ)m_pRefLightObjMgr->m_pCurrLO);
+	int idx = m_ListLO.AddString(m_strLightObjName);
+	m_ListLO.SetItemDataPtr(idx, m_pRefLightObjMgr->m_pCurrLO);
 
-	m_pRefLightObjMgr->UpLoad((LPCTSTR)m_strLightObjName, fRange, fAtten, crLgt);
+	m_pRefLightObjMgr->UpLoad(m_strLightObjName.GetString(), fRange, fAtten, crLgt);
 
 	LPLIGHTOBJ pLO = m_pRefLightObjMgr->m_pCurrLO;
 
@@ -290,7 +290,7 @@ void CDlgLight::RefreshCurrLight()
 {
 	float fRange = (float)m_sld_Range.GetPos() / 10.0f;
 	float fAtten = (100.0f - (float)m_sld_Atten.GetPos()) / 100.0f;
-	D3DCOLORVALUE crLgt;
+	__ColorValue crLgt;
 	crLgt.a = 0.0f;
 	crLgt.r = (float)((m_pLOColor<<24)>>24) / 255.0f;
 	crLgt.g = (float)((m_pLOColor<<16)>>24) / 255.0f;

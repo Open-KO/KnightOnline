@@ -141,9 +141,6 @@
     <ClInclude Include="N3PMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3PMeshCreate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3PMeshInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -157,9 +154,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3ShapeMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3ShapeMod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3Skin.h">
@@ -363,9 +357,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3PMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3PMeshCreate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="N3PMeshInstance.cpp">

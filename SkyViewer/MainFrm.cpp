@@ -75,10 +75,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_Camera.m_bFogUse = true;
 
-	D3DCOLORVALUE crLgt = { 1.0f, 1.0f, 1.0f, 1.0f };
-	m_Lights[0].m_Data.InitDirection(0, __Vector3(0,0,1), crLgt);
-	m_Lights[1].m_Data.InitDirection(1, __Vector3(0,0,-1), crLgt);
-	m_Lights[2].m_Data.InitPoint(2, __Vector3(0,0,0), crLgt, 32.0f);
+	__ColorValue crLgt = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_Lights[0].m_Data.InitDirection(0, { 0, 0, 1 }, crLgt);
+	m_Lights[1].m_Data.InitDirection(1, { 0, 0, -1 }, crLgt);
+	m_Lights[2].m_Data.InitPoint(2, { 0, 0, 0 }, crLgt, 32.0f);
 
 	m_ObjectBundle.LoadFromFile("Object\\Field.N3Shape"); // 배경으로 쓸 오브젝트 부르기..
 

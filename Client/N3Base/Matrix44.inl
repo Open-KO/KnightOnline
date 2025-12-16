@@ -39,7 +39,7 @@ __Matrix44::__Matrix44(const __Quaternion& qt)
 
 void __Matrix44::Zero()
 {
-	std::memset(&m, 0, sizeof(_D3DMATRIX));
+	std::memset(&m, 0, sizeof(m));
 }
 
 void __Matrix44::Identity()
@@ -111,13 +111,15 @@ void __Matrix44::BuildInverse(__Matrix44& mtxOut) const
 	v[3] = -m[0][1] * t[0] + m[1][1] * t[1] - m[2][1] * t[2];
 	v[7] = m[0][0] * t[0] - m[1][0] * t[1] + m[2][0] * t[2];
 
-	v[11] = -m[0][0] * (m[1][1] * m[2][3] - m[1][3] * m[2][1]) +
-		m[1][0] * (m[0][1] * m[2][3] - m[0][3] * m[2][1]) -
-		m[2][0] * (m[0][1] * m[1][3] - m[0][3] * m[1][1]);
+	v[11]
+		= -m[0][0] * (m[1][1] * m[2][3] - m[1][3] * m[2][1])
+		+ m[1][0] * (m[0][1] * m[2][3] - m[0][3] * m[2][1])
+		- m[2][0] * (m[0][1] * m[1][3] - m[0][3] * m[1][1]);
 
-	v[15] = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
-		m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1]) +
-		m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
+	v[15]
+		= m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+		- m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])
+		+ m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
 
 	det = 1.0f / det;
 
@@ -406,16 +408,13 @@ __Matrix44 __Matrix44::operator * (const __Quaternion& qRot) const
 {
 	__Matrix44 mtx;
 	mtx.operator = (qRot);
-
-	return this->operator * (mtx);
+	return *this * mtx;
 }
 
 void __Matrix44::operator *= (const __Quaternion& qRot)
 {
-	__Matrix44 mtx;
-	mtx.operator = (qRot);
-
-	this->operator *= (mtx);
+	__Matrix44 mtx(qRot);
+	*this *= mtx;
 }
 
 void __Matrix44::operator = (const __Quaternion& qt)

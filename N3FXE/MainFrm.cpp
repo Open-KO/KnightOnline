@@ -192,11 +192,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//m_Light.m_Data.InitDirection(0, __Vector3(-1, -1, -1), crLgt);
 	//m_Light.m_Data.InitPoint(0, __Vector3(0, 0, 0), crLgt);
 
-	D3DCOLORVALUE crLgt;
+	__ColorValue crLgt;
 	crLgt.a = 0.0f, crLgt.r = crLgt.g = crLgt.b = 0.8f;
 	//CN3Light* pLightGlobal = new CN3Light(); // 전체를 비출 라이트..
-	m_Light[0].m_Data.InitDirection(0, __Vector3(0,-1,0), crLgt);
-	m_Light[1].m_Data.InitDirection(1, __Vector3(0,1,0), crLgt);
+	m_Light[0].m_Data.InitDirection(0, { 0, -1, 0 }, crLgt);
+	m_Light[1].m_Data.InitDirection(1, { 0, 1, 0 }, crLgt);
 	
 	//
 	m_Chr.LoadFromFile("object\\obj_baba.n3shape");

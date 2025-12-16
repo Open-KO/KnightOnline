@@ -525,12 +525,12 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	// 아래로 dino수정
 	// backup render state
 	DWORD dwLighting;
-	D3DLIGHT9 BackupLight0;
+	__D3DLight9 BackupLight0;
 
 	s_lpD3DDev->GetRenderState( D3DRS_LIGHTING, &dwLighting );
 	BOOL bLight[8];
 	for ( int i = 0; i < 8; ++i )	s_lpD3DDev->GetLightEnable(i, &(bLight[i]));
-	s_lpD3DDev->GetLight(0, &BackupLight0);
+	s_lpD3DDev->GetLight(0, BackupLight0.toD3D());
 
 	// set render state
 	if (TRUE != dwLighting) s_lpD3DDev->SetRenderState( D3DRS_LIGHTING, TRUE );
@@ -538,14 +538,14 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	s_lpD3DDev->LightEnable(0, TRUE);
 
 	// 0번 light 설정
-	D3DLIGHT9 Light0;
-	memset(&Light0, 0, sizeof(D3DLIGHT9));
+	__D3DLight9 Light0;
+	memset(&Light0, 0, sizeof(__D3DLight9));
 	Light0.Type = D3DLIGHT_POINT;
 	Light0.Attenuation0 = 0.5f;
 	Light0.Range = 100.0f;
 	Light0.Position = { 0.0f, 2.0f, 10.0f };
 	Light0.Diffuse.r = 220/255.0f; Light0.Diffuse.g = 255/255.0f; Light0.Diffuse.b = 220/255.0f;
-	s_lpD3DDev->SetLight(0, &Light0);
+	s_lpD3DDev->SetLight(0, Light0.toD3D());
 
 	// 캐릭터 위치와 방향 세팅
 	m_ChrInv.PosSet(0, 0, 0);
@@ -559,7 +559,7 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	// restore
 	if (TRUE != dwLighting) s_lpD3DDev->SetRenderState( D3DRS_LIGHTING, dwLighting );
 	for (int i = 0; i < 8; ++i )	s_lpD3DDev->LightEnable(i, bLight[i]);
-	s_lpD3DDev->SetLight(0, &BackupLight0);
+	s_lpD3DDev->SetLight(0, BackupLight0.toD3D());
 }
 
 void CPlayerMySelf::InventoryChrTick()

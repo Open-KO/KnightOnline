@@ -981,7 +981,6 @@ void CPondMng::SetVtxCenter()	//	연못(들)의 중간점을 찾아 세팅,예�
 	if (selectedPondCount == 0)
 		return;
 
-	__Vector3 vtotCenter;
 	__Vector3* pvCenter;
 	int nCenterCnt = 0;
 

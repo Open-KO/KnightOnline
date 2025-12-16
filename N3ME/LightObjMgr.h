@@ -69,10 +69,10 @@ public:
 	*/
 	bool MakeGameFile(char* szFN);
 	void ChangeSelLights();
-	void RefreshCurrLights(float fRange, float fAtten, D3DCOLORVALUE crLgt);
+	void RefreshCurrLights(float fRange, float fAtten, const __ColorValue& crLgt);
 	void DeleteLO(LPLIGHTOBJ pLO);
 	void DownLoad();
-	void UpLoad(const char* pName, float fRange, float fAtten, D3DCOLORVALUE crLgt);
+	void UpLoad(const char* pName, float fRange, float fAtten, __ColorValue crLgt);
 	
 	bool IsActive() { return m_bActive; }
 	void SetActive(bool active);

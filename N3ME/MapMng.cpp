@@ -150,12 +150,14 @@ void CMapMng::Release()
 		//m_pSceneOutput->DefaultLightAdd();
 		for(int i=0;i<NUM_UNIT_LIGHT;i++)
 		{
-			D3DCOLORVALUE crLgt;
+			__ColorValue crLgt;
 			crLgt.a = 0.0f, crLgt.r = crLgt.g = crLgt.b = 0.7f;
 			
 			CN3Light* pLight = new CN3Light;
-			if(i==0) pLight->m_Data.InitDirection(0, __Vector3(0,-1,0), crLgt);
-			else pLight->m_Data.InitDirection(1, __Vector3(0,1,0), crLgt);
+			if (i == 0)
+				pLight->m_Data.InitDirection(0, { 0, -1, 0 }, crLgt);
+			else
+				pLight->m_Data.InitDirection(1, { 0, 1, 0 }, crLgt);
 			pLight->m_Data.bOn = true;
 			m_pSceneOutput->LightAdd(pLight);
 		}
@@ -1221,7 +1223,6 @@ CN3Base* CMapMng::Pick(POINT point, int* pnPart)	// Object Picking...
 	qsort(sort, nSortCount, sizeof(__Sort), SortByCameraDistance);
 
 	int nPart = -1;
-	__Vector3 vI;
 	for(i = 0; i < nSortCount; i++)
 	{
 //		bIntersect = pick.PickByBox(sort[i].vMin, sort[i].vMax, vI);
@@ -2647,11 +2648,11 @@ void CMapMng::SetLight(float fLgt)
 			CN3Light* pLight = m_pSceneOutput->LightGet(i);
 			if(pLight)
 			{
-				D3DCOLORVALUE crLgt;
+				__ColorValue crLgt;
 				crLgt.a = 0.0f, crLgt.r = crLgt.g = crLgt.b = fLgt;
 				
-				if(i==0) pLight->m_Data.InitDirection(0, __Vector3(0,-1,0), crLgt);
-				else pLight->m_Data.InitDirection(1, __Vector3(0,1,0), crLgt);
+				if(i==0) pLight->m_Data.InitDirection(0, { 0, -1, 0 }, crLgt);
+				else pLight->m_Data.InitDirection(1, { 0, 1, 0 }, crLgt);
 			}
 		}
 		Invalidate();				

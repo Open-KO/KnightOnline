@@ -59,13 +59,11 @@
     <ClInclude Include="N3Mng.h" />
     <ClInclude Include="N3Moon.h" />
     <ClInclude Include="N3PMesh.h" />
-    <ClInclude Include="N3PMeshCreate.h" />
     <ClInclude Include="N3PMeshInstance.h" />
     <ClInclude Include="N3Scene.h" />
     <ClInclude Include="N3Shape.h" />
     <ClInclude Include="N3ShapeExtra.h" />
     <ClInclude Include="N3ShapeMgr.h" />
-    <ClInclude Include="N3ShapeMod.h" />
     <ClInclude Include="N3Skin.h" />
     <ClInclude Include="N3Sky.h" />
     <ClInclude Include="N3SkyMng.h" />
@@ -137,7 +135,6 @@
     <ClCompile Include="N3Mesh.cpp" />
     <ClCompile Include="N3Moon.cpp" />
     <ClCompile Include="N3PMesh.cpp" />
-    <ClCompile Include="N3PMeshCreate.cpp" />
     <ClCompile Include="N3PMeshInstance.cpp" />
     <ClCompile Include="N3Scene.cpp" />
     <ClCompile Include="N3Shape.cpp" />

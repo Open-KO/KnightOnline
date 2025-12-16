@@ -394,7 +394,6 @@ BOOL CNPCPathMgr::MouseMsgFilter(LPMSG pMsg)
 
 					m_RBStartVertex = vec;
 
-					__Vector3 lt, rb;
 					m_pCurrPath->m_LTStartVertex = m_LTStartVertex;
 					m_pCurrPath->m_RBStartVertex = m_RBStartVertex;
 					SetLTRB(&(m_pCurrPath->m_LTStartVertex), &(m_pCurrPath->m_RBStartVertex));
@@ -409,7 +408,6 @@ BOOL CNPCPathMgr::MouseMsgFilter(LPMSG pMsg)
 
 					m_RBActVertex = vec;
 
-					__Vector3 lt, rb;
 					m_pCurrPath->m_LTActVertex = m_LTActVertex;
 					m_pCurrPath->m_RBActVertex = m_RBActVertex;
 					SetLTRB(&(m_pCurrPath->m_LTActVertex), &(m_pCurrPath->m_RBActVertex));
@@ -527,7 +525,6 @@ void CNPCPathMgr::Render()
 		{
 			Vertex = (*itVertex);
 			Vertex.y += 0.5f;
-			__Vector3 rgnLT, rgnRB;
 						
 			if(itVertex==pPath->m_Path.begin()) PrevVertex = Vertex;
 			

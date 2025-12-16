@@ -2816,7 +2816,7 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
     vOrig.y = m.m[3][1];
     vOrig.z = m.m[3][2];
 
-	__Vector3 A, B, C, AB, AC;
+	__Vector3 A, B, C;
 	float ftx, fty, ftz;
 	vec2 = vOrig;
 	vec3 = vDir;

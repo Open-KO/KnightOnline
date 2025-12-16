@@ -295,13 +295,13 @@ void CN3Scene::TickLights(float fFrm)
 		__Vector3 vDir = s_CameraData.vAt - s_CameraData.vEye;
 		vDir.Normalize();
 
-		D3DCOLORVALUE crLgt = { 1.0f, 1.0f, 1.0f, 1.0f };
+		__ColorValue crLgt = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 		CN3Light::__Light lgt;
 		lgt.InitDirection(7, vDir, crLgt);
 
 		s_lpD3DDev->LightEnable(7, TRUE);
-		s_lpD3DDev->SetLight(7, &lgt);
+		s_lpD3DDev->SetLight(7, lgt.toD3D());
 	}
 
 	// Ambient Light 바꾸기..
@@ -543,8 +543,8 @@ void CN3Scene::DefaultLightAdd()
 	pLight->FileNameSet("Data\\DefaultLight.N3Light");
 	int nLight = this->LightAdd(pLight) - 1;
 
-	D3DCOLORVALUE ltColor = { 0.7f, 0.7f, 0.7f, 1.0f};
-	pLight->m_Data.InitDirection(0, __Vector3(-1.0f,-1.0f,0.5f), ltColor);
+	__ColorValue ltColor = { 0.7f, 0.7f, 0.7f, 1.0f};
+	pLight->m_Data.InitDirection(0, { -1.0f, -1.0f, 0.5f }, ltColor);
 	pLight->PosSet(1000.0f, 1000.0f, -1000.0f);
 	pLight->m_Data.bOn = TRUE;
 	pLight->m_Data.nNumber = nLight;

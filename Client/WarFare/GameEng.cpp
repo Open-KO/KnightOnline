@@ -333,7 +333,7 @@ void CGameEng::Tick(const D3DCOLOR* crDiffuses,			// Diffuse 라이트 색깔.. 
 		__Vector3 vDir(-1,0,1);
 		vDir *= mtxRot;
 		vDir.Normalize();
-		m_pRefLightSun->m_Data.Direction = { vDir.x, vDir.y, vDir.z };
+		m_pRefLightSun->m_Data.Direction = vDir;
 		
 		// 라이트 컬러 적용..
 		m_pRefLightSun->m_Data.Diffuse = ::_D3DCOLOR_To_D3DCOLORVALUE(crDiffuses[0]);
@@ -361,7 +361,7 @@ void CGameEng::Tick(const D3DCOLOR* crDiffuses,			// Diffuse 라이트 색깔.. 
 	{
 		__Vector3 vDir(2,-3, 2); // 위에서 아래로 ...
 		vDir.Normalize();
-		m_pRefLightSupport->m_Data.Direction = { vDir.x, vDir.y, vDir.z };
+		m_pRefLightSupport->m_Data.Direction = vDir;
 		
 		// 라이트 컬러 적용..
 		m_pRefLightSupport->m_Data.Diffuse = ::_D3DCOLOR_To_D3DCOLORVALUE(crDiffuses[1]);

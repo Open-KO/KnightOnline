@@ -56,22 +56,22 @@ void CLightMgr::Release()
 		
 	///////////////////////////////////////////////////////////////
 	// 기본 라이트 세팅
-	D3DCOLORVALUE crLgt;
+	__ColorValue crLgt;
 
 	crLgt.a = 0.0f, crLgt.r = crLgt.g = crLgt.b = 0.8f;
 	CN3Light* pLightGlobal = new CN3Light(); // 전체를 비출 라이트..
-	pLightGlobal->m_Data.InitDirection(LGT_DEFAULT0, __Vector3(0,-1,0), crLgt);
+	pLightGlobal->m_Data.InitDirection(LGT_DEFAULT0, { 0, -1, 0 }, crLgt);
 	m_pActiveLight[LGT_DEFAULT0] = pLightGlobal;
 
 
 	crLgt.a = 0.0f, crLgt.r = crLgt.g = crLgt.b = 0.5f;
 	CN3Light* pLightGlobal2 = new CN3Light(); // 반대 편에서 전체를 비출 라이트..
-	pLightGlobal2->m_Data.InitDirection(LGT_DEFAULT1, __Vector3(0,1,0), crLgt);
+	pLightGlobal2->m_Data.InitDirection(LGT_DEFAULT1, { 0, 1, 0}, crLgt);
 	m_pActiveLight[LGT_DEFAULT1] = pLightGlobal2;
 
 	crLgt.a = 0.0f, crLgt.r = crLgt.g = crLgt.b = 0.3f;
 	CN3Light* pLight = new CN3Light(); // 카메라와 붙어 다닌다...
-	pLight->m_Data.InitPoint(LGT_DEFAULT2, __Vector3(0,0,0), crLgt, 32.0f);
+	pLight->m_Data.InitPoint(LGT_DEFAULT2, { 0, 0, 0 }, crLgt, 32.0f);
 	m_pActiveLight[LGT_DEFAULT2] = pLight;
 	// 기본 라이트 세팅
 	///////////////////////////////////////////////////////////////	

@@ -160,10 +160,10 @@ void CLightObjMgr::SetActive(bool active)
 		pOutPutScene->LightAdd(pLgt);
 
 		//set light..
-		D3DCOLORVALUE crLgt;
+		__ColorValue crLgt;
 		crLgt.a = 0.0f;
 		crLgt.r = crLgt.g = crLgt.b = 1.0f;
-		pLO->pRefLight->m_Data.InitPoint(IDX_CURR_LIGHT, __Vector3 { 0.0f, 0.0f, 0.0f }, crLgt, 0.0f, 0.0f);
+		pLO->pRefLight->m_Data.InitPoint(IDX_CURR_LIGHT, { 0.0f, 0.0f, 0.0f }, crLgt, 0.0f, 0.0f);
 		m_vCurrLOPos.Set({ 0.0f, 0.0f, 0.0f }, 0.0f, 0.0f);
 
 		if(m_pCurrLO)
@@ -390,9 +390,9 @@ void CLightObjMgr::DownLoad()
 	m_VtxPosDummy.SetSelVtx(&m_vCurrLOPos);
 }
 
-void CLightObjMgr::UpLoad(const char* pName, float fRange, float fAtten, D3DCOLORVALUE crLgt)
+void CLightObjMgr::UpLoad(const char* pName, float fRange, float fAtten, __ColorValue crLgt)
 {
-	m_pCurrLO->pRefLight->m_Data.InitPoint(IDX_STANDBY_LIGHT, __Vector3 { 0.0f, 0.0f, 0.0f }, crLgt, fRange, fAtten);
+	m_pCurrLO->pRefLight->m_Data.InitPoint(IDX_STANDBY_LIGHT, { 0.0f, 0.0f, 0.0f }, crLgt, fRange, fAtten);
 	m_pCurrLO->pRefLight->m_Data.bOn = false;
 	sprintf(m_pCurrLO->szName, pName);
 	
@@ -408,7 +408,7 @@ void CLightObjMgr::UpLoad(const char* pName, float fRange, float fAtten, D3DCOLO
 	//set light..	
 	crLgt.a = 0.0f;
 	crLgt.r = crLgt.g = crLgt.b = 1.0f;
-	pLO->pRefLight->m_Data.InitPoint(IDX_CURR_LIGHT, __Vector3 { 0.0f, 0.0f, 0.0f }, crLgt, 0.0f, 0.0f);
+	pLO->pRefLight->m_Data.InitPoint(IDX_CURR_LIGHT, { 0.0f, 0.0f, 0.0f }, crLgt, 0.0f, 0.0f);
 	m_vCurrLOPos.Set({ 0.0f, 0.0f, 0.0f }, 0.0f, 0.0f);
 
 	m_pCurrLO = pLO;
@@ -439,7 +439,7 @@ void CLightObjMgr::DeleteLO(LPLIGHTOBJ pLO)
 	}	
 }
 
-void CLightObjMgr::RefreshCurrLights(float fRange, float fAtten, D3DCOLORVALUE crLgt)
+void CLightObjMgr::RefreshCurrLights(float fRange, float fAtten, const __ColorValue& crLgt)
 {
 	__Vector3 vPos = m_pCurrLO->pRefLight->Pos();
 	m_pCurrLO->pRefLight->m_Data.InitPoint(IDX_CURR_LIGHT, vPos, crLgt, fRange, fAtten);	

@@ -288,6 +288,34 @@ public:
 	void ColorSet(const _D3DCOLORVALUE& crDiffuse);
 };
 
+// This must match the layout of _D3DLIGHT9.
+struct __D3DLight9
+{
+	_D3DLIGHT9* toD3D()
+	{
+		return reinterpret_cast<_D3DLIGHT9*>(this);
+	}
+
+	const _D3DLIGHT9* toD3D() const
+	{
+		return reinterpret_cast<const _D3DLIGHT9*>(this);
+	}
+
+	D3DLIGHTTYPE	Type;            /* Type of light source */
+	__ColorValue	Diffuse;         /* Diffuse color of light */
+	__ColorValue	Specular;        /* Specular color of light */
+	__ColorValue	Ambient;         /* Ambient color of light */
+	__Vector3		Position;         /* Position in world space */
+	__Vector3		Direction;        /* Direction in world space */
+	float			Range;            /* Cutoff range */
+	float			Falloff;          /* Falloff */
+	float			Attenuation0;     /* Constant attenuation */
+	float			Attenuation1;     /* Linear attenuation */
+	float			Attenuation2;     /* Quadratic attenuation */
+	float			Theta;            /* Inner angle of spotlight cone */
+	float			Phi;              /* Outer angle of spotlight cone */
+};
+
 struct __VertexColor : public __Vector3
 {
 public:

@@ -7,7 +7,7 @@
 
 __Quaternion::__Quaternion(const __Matrix44& mtx)
 {
-	*this = mtx;
+	this->operator=(mtx);
 }
 
 __Quaternion::__Quaternion(const __Quaternion& qt)
@@ -176,7 +176,7 @@ __Quaternion __Quaternion::operator * (const __Quaternion& q) const
 
 void __Quaternion::operator *= (const __Quaternion& q)
 {
-	__Quaternion tmp = *this * q;
+	__Quaternion tmp = this->operator*(q);
 	Set(tmp.x, tmp.y, tmp.z, tmp.w);
 }
 #endif // CLIENT_N3BASE_QUATERNION_INL

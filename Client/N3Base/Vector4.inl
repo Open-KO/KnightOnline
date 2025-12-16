@@ -73,23 +73,23 @@ __Vector4& __Vector4::operator /= (float f)
 
 __Vector4 __Vector4::operator + (const __Vector4& v) const
 {
-	return __Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
+	return { x + v.x, y + v.y, z + v.z, w + v.w };
 }
 
 __Vector4 __Vector4::operator - (const __Vector4& v) const
 {
-	return __Vector4(x - v.x, y - v.y, z - v.z, w - v.w);
+	return { x - v.x, y - v.y, z - v.z, w - v.w };
 }
 
 __Vector4 __Vector4::operator * (float f) const
 {
-	return __Vector4(x * f, y * f, z * f, w * f);
+	return { x * f, y * f, z * f, w * f };
 }
 
 __Vector4 __Vector4::operator / (float f) const
 {
 	float fInv = 1.0f / f;
-	return __Vector4(x * fInv, y * fInv, z * fInv, w * fInv);
+	return { x * fInv, y * fInv, z * fInv, w * fInv };
 }
 
 #endif // CLIENT_N3BASE_VECTOR4_INL

@@ -88,7 +88,7 @@ public:
 	__Vector3				m_vEyeBackup;
 	__Vector3				m_vAt;
 	__Vector3				m_vUp;
-	D3DLIGHT9				m_lgt[3];
+	__D3DLight9				m_lgt[3];
 
 	CUICharacterSelect*		m_pUICharacterSelect;
 

@@ -14,9 +14,10 @@
 class CN3Light : public CN3Transform
 {
 public:
-	typedef struct __Light : public _D3DLIGHT9
+	struct __Light : public __D3DLight9
 	{
 	public:
+
 		BOOL		bOn; // 라이트가 켜져 있는지..
 		int			nNumber; // 0 ~ 8
 		
@@ -25,13 +26,7 @@ public:
 			*this = {};
 		}
 
-		void InitPoint(int nLgtNumber, const __Vector3& dvPos, _D3DCOLORVALUE& ltColor, float fRange = 10000.0f, float fAttenuation = 0.5f)
-		{
-			D3DXVECTOR3 pos = { dvPos.x, dvPos.y, dvPos.z };
-			InitPoint(nLgtNumber, pos, ltColor, fRange, fAttenuation);
-		}
-
-		void InitPoint(int nLgtNumber, const D3DXVECTOR3& dvPos, _D3DCOLORVALUE& ltColor, float fRange = 10000.0f, float fAttenuation = 0.5f)
+		void InitPoint(int nLgtNumber, const __Vector3& dvPos, const __ColorValue& ltColor, float fRange = 10000.0f, float fAttenuation = 0.5f)
 		{
 			Zero();
 
@@ -53,13 +48,7 @@ public:
 			bOn = TRUE;
 		}
 
-		void InitDirection(int nLgtNumber, const __Vector3& dvDir, _D3DCOLORVALUE& ltColor)
-		{
-			D3DXVECTOR3 dir = { dvDir.x, dvDir.y, dvDir.z };
-			InitDirection(nLgtNumber, dir, ltColor);
-		}
-
-		void InitDirection(int nLgtNumber, const D3DXVECTOR3& dvDir, _D3DCOLORVALUE& ltColor)
+		void InitDirection(int nLgtNumber, const __Vector3& dvDir, const __ColorValue& ltColor)
 		{
 			Zero();
 
@@ -76,14 +65,7 @@ public:
 			Ambient.b = ltColor.b * 0.7f;
 		}
 
-		void InitSpot(int nLgtNumber, const __Vector3& dvPos, const __Vector3& dvDir, _D3DCOLORVALUE& ltColor, float fTheta, float fPhi, float fRange = 10000.0f)
-		{
-			D3DXVECTOR3 pos = { dvPos.x, dvPos.y, dvPos.z };
-			D3DXVECTOR3 dir = { dvDir.x, dvDir.y, dvDir.z };
-			InitSpot(nLgtNumber, pos, dir, ltColor, fTheta, fPhi, fRange);
-		}
-
-		void InitSpot(int nLgtNumber, const D3DXVECTOR3& dvPos, const D3DXVECTOR3& dvDir, _D3DCOLORVALUE& ltColor, float fTheta, float fPhi, float fRange = 10000.0f)
+		void InitSpot(int nLgtNumber, const __Vector3& dvPos, const __Vector3& dvDir, const __ColorValue& ltColor, float fTheta, float fPhi, float fRange = 10000.0f)
 		{
 			Zero();
 
@@ -109,7 +91,7 @@ public:
 			Phi = fPhi;
 			bOn = TRUE;
 		}
-	} __Light;
+	};
 
 	__Light m_Data;
 
@@ -121,9 +103,7 @@ public:
 
 	void DirSet(float fx, float fy, float fz)
 	{
-		m_Data.Direction.x = fx;
-		m_Data.Direction.y = fy;
-		m_Data.Direction.z = fz;
+		m_Data.Direction = { fx, fy, fz };
 	}
 
 	void PosSet(const __Vector3& vPos)
@@ -133,10 +113,7 @@ public:
 
 	void PosSet(float fx, float fy, float fz)
 	{
-		m_vPos.Set(fx, fy, fz);
-		m_Data.Position.x = fx;
-		m_Data.Position.y = fy;
-		m_Data.Position.z = fz;
+		m_Data.Position = m_vPos = { fx, fy, fz };
 	}
 
 	void		Apply(); // 세팅된 라이트값을 실제 D3DDevice 에 적용
