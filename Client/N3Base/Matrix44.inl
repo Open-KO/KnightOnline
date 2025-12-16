@@ -19,7 +19,22 @@ __Matrix44::__Matrix44(const _D3DMATRIX& mtx)
 
 __Matrix44::__Matrix44(const D3DXQUATERNION& qt)
 {
-	D3DXMatrixRotationQuaternion(this, &qt);
+	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
+	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);
+	m[0][2] = 2.0f * (qt.x * qt.z - qt.y * qt.w);
+	m[0][3] = 0.0f;
+	m[1][0] = 2.0f * (qt.x * qt.y - qt.z * qt.w);
+	m[1][1] = 1.0f - 2.0f * (qt.x * qt.x + qt.z * qt.z);
+	m[1][2] = 2.0f * (qt.y * qt.z + qt.x * qt.w);
+	m[1][3] = 0.0f;
+	m[2][0] = 2.0f * (qt.x * qt.z + qt.y * qt.w);
+	m[2][1] = 2.0f * (qt.y * qt.z - qt.x * qt.w);
+	m[2][2] = 1.0f - 2.0f * (qt.x * qt.x + qt.y * qt.y);
+	m[2][3] = 0.0f;
+	m[3][0] = 0.0f;
+	m[3][1] = 0.0f;
+	m[3][2] = 0.0f;
+	m[3][3] = 1.0f;
 }
 
 void __Matrix44::Zero()
@@ -29,62 +44,137 @@ void __Matrix44::Zero()
 
 void __Matrix44::Identity()
 {
-	_12 = _13 = _14 = _21 = _23 = _24 = _31 = _32 = _34 = _41 = _42 = _43 = 0;
-	_11 = _22 = _33 = _44 = 1.0f;
+	m[0][1] = m[0][2] = m[0][3] = 0.0f;
+	m[1][0] = m[1][2] = m[1][3] = 0.0f;
+	m[2][0] = m[2][1] = m[2][3] = 0.0f;
+	m[3][0] = m[3][1] = m[3][2] = 0.0f;
+	m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1.0f;
 }
 
-__Matrix44 __Matrix44::Inverse(float* determinant /*= nullptr*/) const
+__Matrix44 __Matrix44::Inverse() const
 {
 	__Matrix44 mtxOut;
-	mtxOut.Identity();
-	D3DXMatrixInverse(&mtxOut, determinant, this);
+	BuildInverse(mtxOut);
 	return mtxOut;
+}
+
+void __Matrix44::BuildInverse(__Matrix44& mtxOut) const
+{
+	float t[3], v[16];
+
+	t[0] = m[2][2] * m[3][3] - m[2][3] * m[3][2];
+	t[1] = m[1][2] * m[3][3] - m[1][3] * m[3][2];
+	t[2] = m[1][2] * m[2][3] - m[1][3] * m[2][2];
+	v[0] = m[1][1] * t[0] - m[2][1] * t[1] + m[3][1] * t[2];
+	v[4] = -m[1][0] * t[0] + m[2][0] * t[1] - m[3][0] * t[2];
+
+	t[0] = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+	t[1] = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	t[2] = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	v[8] = m[3][3] * t[0] - m[2][3] * t[1] + m[1][3] * t[2];
+	v[12] = -m[3][2] * t[0] + m[2][2] * t[1] - m[1][2] * t[2];
+
+	float det = m[0][0] * v[0] + m[0][1] * v[4] + m[0][2] * v[8] + m[0][3] * v[12];
+	if (det == 0.0f)
+	{
+		mtxOut.Identity();
+		return;
+	}
+
+	t[0] = m[2][2] * m[3][3] - m[2][3] * m[3][2];
+	t[1] = m[0][2] * m[3][3] - m[0][3] * m[3][2];
+	t[2] = m[0][2] * m[2][3] - m[0][3] * m[2][2];
+	v[1] = -m[0][1] * t[0] + m[2][1] * t[1] - m[3][1] * t[2];
+	v[5] = m[0][0] * t[0] - m[2][0] * t[1] + m[3][0] * t[2];
+
+	t[0] = m[0][0] * m[2][1] - m[2][0] * m[0][1];
+	t[1] = m[3][0] * m[0][1] - m[0][0] * m[3][1];
+	t[2] = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	v[9] = -m[3][3] * t[0] - m[2][3] * t[1] - m[0][3] * t[2];
+	v[13] = m[3][2] * t[0] + m[2][2] * t[1] + m[0][2] * t[2];
+
+	t[0] = m[1][2] * m[3][3] - m[1][3] * m[3][2];
+	t[1] = m[0][2] * m[3][3] - m[0][3] * m[3][2];
+	t[2] = m[0][2] * m[1][3] - m[0][3] * m[1][2];
+	v[2] = m[0][1] * t[0] - m[1][1] * t[1] + m[3][1] * t[2];
+	v[6] = -m[0][0] * t[0] + m[1][0] * t[1] - m[3][0] * t[2];
+
+	t[0] = m[0][0] * m[1][1] - m[1][0] * m[0][1];
+	t[1] = m[3][0] * m[0][1] - m[0][0] * m[3][1];
+	t[2] = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	v[10] = m[3][3] * t[0] + m[1][3] * t[1] + m[0][3] * t[2];
+	v[14] = -m[3][2] * t[0] - m[1][2] * t[1] - m[0][2] * t[2];
+
+	t[0] = m[1][2] * m[2][3] - m[1][3] * m[2][2];
+	t[1] = m[0][2] * m[2][3] - m[0][3] * m[2][2];
+	t[2] = m[0][2] * m[1][3] - m[0][3] * m[1][2];
+	v[3] = -m[0][1] * t[0] + m[1][1] * t[1] - m[2][1] * t[2];
+	v[7] = m[0][0] * t[0] - m[1][0] * t[1] + m[2][0] * t[2];
+
+	v[11] = -m[0][0] * (m[1][1] * m[2][3] - m[1][3] * m[2][1]) +
+		m[1][0] * (m[0][1] * m[2][3] - m[0][3] * m[2][1]) -
+		m[2][0] * (m[0][1] * m[1][3] - m[0][3] * m[1][1]);
+
+	v[15] = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
+		m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1]) +
+		m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
+
+	det = 1.0f / det;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+			mtxOut.m[i][j] = v[4 * i + j] * det;
+	}
 }
 
 const __Vector3 __Matrix44::Pos() const
 {
-	return { _41, _42, _43 };
+	return { m[3][0], m[3][1], m[3][2] };
 }
 
 void __Matrix44::PosSet(float x, float y, float z)
 {
-	_41 = x;
-	_42 = y;
-	_43 = z;
+	m[3][0] = x;
+	m[3][1] = y;
+	m[3][2] = z;
 }
 
 void __Matrix44::PosSet(const D3DXVECTOR3& v)
 {
-	_41 = v.x;
-	_42 = v.y;
-	_43 = v.z;
+	m[3][0] = v.x;
+	m[3][1] = v.y;
+	m[3][2] = v.z;
 }
 
 void __Matrix44::RotationX(float fDelta)
 {
 	Identity();
-	_22 = cosf(fDelta);
-	_23 = sinf(fDelta);
-	_32 = -_23;
-	_33 = _22;
+
+	m[1][1] = cosf(fDelta);
+	m[1][2] = sinf(fDelta);
+	m[2][1] = -m[1][2];
+	m[2][2] = m[1][1];
 }
 
 void __Matrix44::RotationY(float fDelta)
 {
 	Identity();
-	_11 = cosf(fDelta);
-	_13 = -sinf(fDelta);
-	_31 = -_13;
-	_33 = _11;
+
+	m[0][0] = cosf(fDelta);
+	m[0][2] = -sinf(fDelta);
+	m[2][0] = -m[0][2];
+	m[2][2] = m[0][0];
 }
 
 void __Matrix44::RotationZ(float fDelta)
 {
 	Identity();
-	_11 = cosf(fDelta);
-	_12 = sinf(fDelta);
-	_21 = -_12;
-	_22 = _11;
+
+	m[0][0] = cosf(fDelta);
+	m[0][1] = sinf(fDelta);
+	m[1][0] = -m[0][1];
+	m[1][1] = m[0][0];
 }
 
 void __Matrix44::Rotation(float fX, float fY, float fZ)
@@ -93,23 +183,23 @@ void __Matrix44::Rotation(float fX, float fY, float fZ)
 	float SY = sinf(fY), CY = cosf(fY);
 	float SZ = sinf(fZ), CZ = cosf(fZ);
 
-	_11 = CY * CZ;
-	_12 = CY * SZ;
-	_13 = -SY;
-	_14 = 0;
+	m[0][0] = CY * CZ;
+	m[0][1] = CY * SZ;
+	m[0][2] = -SY;
+	m[0][3] = 0;
 
-	_21 = SX * SY * CZ - CX * SZ;
-	_22 = SX * SY * SZ + CX * CZ;
-	_23 = SX * CY;
-	_24 = 0;
+	m[1][0] = SX * SY * CZ - CX * SZ;
+	m[1][1] = SX * SY * SZ + CX * CZ;
+	m[1][2] = SX * CY;
+	m[1][3] = 0;
 
-	_31 = CX * SY * CZ + SX * SZ;
-	_32 = CX * SY * SZ - SX * CZ;
-	_33 = CX * CY;
-	_34 = 0;
+	m[2][0] = CX * SY * CZ + SX * SZ;
+	m[2][1] = CX * SY * SZ - SX * CZ;
+	m[2][2] = CX * CY;
+	m[2][3] = 0;
 
-	_41 = _42 = _43 = 0;
-	_44 = 1;
+	m[3][0] = m[3][1] = m[3][2] = 0;
+	m[3][3] = 1;
 }
 
 void __Matrix44::Rotation(const D3DXVECTOR3& v)
@@ -118,41 +208,41 @@ void __Matrix44::Rotation(const D3DXVECTOR3& v)
 	float SY = sinf(v.y), CY = cosf(v.y);
 	float SZ = sinf(v.z), CZ = cosf(v.z);
 
-	_11 = CY * CZ;
-	_12 = CY * SZ;
-	_13 = -SY;
-	_14 = 0;
+	m[0][0] = CY * CZ;
+	m[0][1] = CY * SZ;
+	m[0][2] = -SY;
+	m[0][3] = 0;
 
-	_21 = SX * SY * CZ - CX * SZ;
-	_22 = SX * SY * SZ + CX * CZ;
-	_23 = SX * CY;
-	_24 = 0;
+	m[1][0] = SX * SY * CZ - CX * SZ;
+	m[1][1] = SX * SY * SZ + CX * CZ;
+	m[1][2] = SX * CY;
+	m[1][3] = 0;
 
-	_31 = CX * SY * CZ + SX * SZ;
-	_32 = CX * SY * SZ - SX * CZ;
-	_33 = CX * CY;
-	_34 = 0;
+	m[2][0] = CX * SY * CZ + SX * SZ;
+	m[2][1] = CX * SY * SZ - SX * CZ;
+	m[2][2] = CX * CY;
+	m[2][3] = 0;
 
-	_41 = _42 = _43 = 0;
-	_44 = 1;
+	m[3][0] = m[3][1] = m[3][2] = 0;
+	m[3][3] = 1;
 }
 
 void __Matrix44::Scale(float sx, float sy, float sz)
 {
 	Identity();
 
-	_11 = sx;
-	_22 = sy;
-	_33 = sz;
+	m[0][0] = sx;
+	m[1][1] = sy;
+	m[2][2] = sz;
 }
 
 void __Matrix44::Scale(const D3DXVECTOR3& v)
 {
 	Identity();
 
-	_11 = v.x;
-	_22 = v.y;
-	_33 = v.z;
+	m[0][0] = v.x;
+	m[1][1] = v.y;
+	m[2][2] = v.z;
 }
 
 void __Matrix44::Direction(const D3DXVECTOR3& vDir)
@@ -168,17 +258,17 @@ void __Matrix44::Direction(const D3DXVECTOR3& vDir)
 	vRight.Normalize(); // right = Normalize(right);
 	vUp.Normalize(); // up = Normalize(up);
 
-	_11 = vRight.x; // view(0, 0) = right.x;
-	_21 = vRight.y; // view(1, 0) = right.y;
-	_31 = vRight.z; // view(2, 0) = right.z;
-	_12 = vUp.x; // view(0, 1) = up.x;
-	_22 = vUp.y; // view(1, 1) = up.y;
-	_32 = vUp.z; // view(2, 1) = up.z;
-	_13 = vDir2.x; // view(0, 2) = view_dir.x;
-	_23 = vDir2.y; // view(1, 2) = view_dir.y;
-	_33 = vDir2.z; // view(2, 2) = view_dir.z;
+	m[0][0] = vRight.x; // view(0, 0) = right.x;
+	m[1][0] = vRight.y; // view(1, 0) = right.y;
+	m[2][0] = vRight.z; // view(2, 0) = right.z;
+	m[0][1] = vUp.x; // view(0, 1) = up.x;
+	m[1][1] = vUp.y; // view(1, 1) = up.y;
+	m[2][1] = vUp.z; // view(2, 1) = up.z;
+	m[0][2] = vDir2.x; // view(0, 2) = view_dir.x;
+	m[1][2] = vDir2.y; // view(1, 2) = view_dir.y;
+	m[2][2] = vDir2.z; // view(2, 2) = view_dir.z;
 
-	*this = Inverse();
+	BuildInverse(*this);
 
 //  view(3, 0) = -DotProduct(right, from);
 //  view(3, 1) = -DotProduct(up, from);
@@ -195,85 +285,121 @@ void __Matrix44::Direction(const D3DXVECTOR3& vDir)
 
 void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp)
 {
-	D3DXMatrixLookAtLH(this, &vEye, &vAt, &vUp);
+	__Vector3 right, upn, vec;
+
+	vec = vAt - vEye;
+	vec.Normalize();
+
+	right.Cross(vUp, vec);
+	upn.Cross(vec, right);
+
+	right.Normalize();
+	upn.Normalize();
+
+	m[0][0] = right.x;
+	m[1][0] = right.y;
+	m[2][0] = right.z;
+	m[3][0] = -right.Dot(vEye);
+	m[0][1] = upn.x;
+	m[1][1] = upn.y;
+	m[2][1] = upn.z;
+	m[3][1] = -upn.Dot(vEye);
+	m[0][2] = vec.x;
+	m[1][2] = vec.y;
+	m[2][2] = vec.z;
+	m[3][2] = -vec.Dot(vEye);
+	m[0][3] = 0.0f;
+	m[1][3] = 0.0f;
+	m[2][3] = 0.0f;
+	m[3][3] = 1.0f;
 }
 
 void __Matrix44::OrthoLH(float w, float h, float zn, float zf)
 {
-	D3DXMatrixOrthoLH(this, w, h, zn, zf);
+	Identity();
+
+	m[0][0] = 2.0f / w;
+	m[1][1] = 2.0f / h;
+	m[2][2] = 1.0f / (zf - zn);
+	m[3][2] = zn / (zn - zf);
 }
 
 void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
 {
-	D3DXMatrixPerspectiveFovLH(this, fovy, Aspect, zn, zf);
+	Identity();
+
+	m[0][0] = 1.0f / (Aspect * tanf(fovy / 2.0f));
+	m[1][1] = 1.0f / tanf(fovy / 2.0f);
+	m[2][2] = zf / (zf - zn);
+	m[2][3] = 1.0f;
+	m[3][2] = (zf * zn) / (zn - zf);
+	m[3][3] = 0.0f;
 }
 
 __Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
 {
-	__Matrix44 mtxTmp;
+	__Matrix44 mtxOut;
 
-	mtxTmp._11 = _11 * mtx._11 + _12 * mtx._21 + _13 * mtx._31 + _14 * mtx._41;
-	mtxTmp._12 = _11 * mtx._12 + _12 * mtx._22 + _13 * mtx._32 + _14 * mtx._42;
-	mtxTmp._13 = _11 * mtx._13 + _12 * mtx._23 + _13 * mtx._33 + _14 * mtx._43;
-	mtxTmp._14 = _11 * mtx._14 + _12 * mtx._24 + _13 * mtx._34 + _14 * mtx._44;
+	mtxOut.m[0][0] = m[0][0] * mtx.m[0][0] + m[0][1] * mtx.m[1][0] + m[0][2] * mtx.m[2][0] + m[0][3] * mtx.m[3][0];
+	mtxOut.m[0][1] = m[0][0] * mtx.m[0][1] + m[0][1] * mtx.m[1][1] + m[0][2] * mtx.m[2][1] + m[0][3] * mtx.m[3][1];
+	mtxOut.m[0][2] = m[0][0] * mtx.m[0][2] + m[0][1] * mtx.m[1][2] + m[0][2] * mtx.m[2][2] + m[0][3] * mtx.m[3][2];
+	mtxOut.m[0][3] = m[0][0] * mtx.m[0][3] + m[0][1] * mtx.m[1][3] + m[0][2] * mtx.m[2][3] + m[0][3] * mtx.m[3][3];
 
-	mtxTmp._21 = _21 * mtx._11 + _22 * mtx._21 + _23 * mtx._31 + _24 * mtx._41;
-	mtxTmp._22 = _21 * mtx._12 + _22 * mtx._22 + _23 * mtx._32 + _24 * mtx._42;
-	mtxTmp._23 = _21 * mtx._13 + _22 * mtx._23 + _23 * mtx._33 + _24 * mtx._43;
-	mtxTmp._24 = _21 * mtx._14 + _22 * mtx._24 + _23 * mtx._34 + _24 * mtx._44;
+	mtxOut.m[1][0] = m[1][0] * mtx.m[0][0] + m[1][1] * mtx.m[1][0] + m[1][2] * mtx.m[2][0] + m[1][3] * mtx.m[3][0];
+	mtxOut.m[1][1] = m[1][0] * mtx.m[0][1] + m[1][1] * mtx.m[1][1] + m[1][2] * mtx.m[2][1] + m[1][3] * mtx.m[3][1];
+	mtxOut.m[1][2] = m[1][0] * mtx.m[0][2] + m[1][1] * mtx.m[1][2] + m[1][2] * mtx.m[2][2] + m[1][3] * mtx.m[3][2];
+	mtxOut.m[1][3] = m[1][0] * mtx.m[0][3] + m[1][1] * mtx.m[1][3] + m[1][2] * mtx.m[2][3] + m[1][3] * mtx.m[3][3];
 
-	mtxTmp._31 = _31 * mtx._11 + _32 * mtx._21 + _33 * mtx._31 + _34 * mtx._41;
-	mtxTmp._32 = _31 * mtx._12 + _32 * mtx._22 + _33 * mtx._32 + _34 * mtx._42;
-	mtxTmp._33 = _31 * mtx._13 + _32 * mtx._23 + _33 * mtx._33 + _34 * mtx._43;
-	mtxTmp._34 = _31 * mtx._14 + _32 * mtx._24 + _33 * mtx._34 + _34 * mtx._44;
+	mtxOut.m[2][0] = m[2][0] * mtx.m[0][0] + m[2][1] * mtx.m[1][0] + m[2][2] * mtx.m[2][0] + m[2][3] * mtx.m[3][0];
+	mtxOut.m[2][1] = m[2][0] * mtx.m[0][1] + m[2][1] * mtx.m[1][1] + m[2][2] * mtx.m[2][1] + m[2][3] * mtx.m[3][1];
+	mtxOut.m[2][2] = m[2][0] * mtx.m[0][2] + m[2][1] * mtx.m[1][2] + m[2][2] * mtx.m[2][2] + m[2][3] * mtx.m[3][2];
+	mtxOut.m[2][3] = m[2][0] * mtx.m[0][3] + m[2][1] * mtx.m[1][3] + m[2][2] * mtx.m[2][3] + m[2][3] * mtx.m[3][3];
 
-	mtxTmp._41 = _41 * mtx._11 + _42 * mtx._21 + _43 * mtx._31 + _44 * mtx._41;
-	mtxTmp._42 = _41 * mtx._12 + _42 * mtx._22 + _43 * mtx._32 + _44 * mtx._42;
-	mtxTmp._43 = _41 * mtx._13 + _42 * mtx._23 + _43 * mtx._33 + _44 * mtx._43;
-	mtxTmp._44 = _41 * mtx._14 + _42 * mtx._24 + _43 * mtx._34 + _44 * mtx._44;
+	mtxOut.m[3][0] = m[3][0] * mtx.m[0][0] + m[3][1] * mtx.m[1][0] + m[3][2] * mtx.m[2][0] + m[3][3] * mtx.m[3][0];
+	mtxOut.m[3][1] = m[3][0] * mtx.m[0][1] + m[3][1] * mtx.m[1][1] + m[3][2] * mtx.m[2][1] + m[3][3] * mtx.m[3][1];
+	mtxOut.m[3][2] = m[3][0] * mtx.m[0][2] + m[3][1] * mtx.m[1][2] + m[3][2] * mtx.m[2][2] + m[3][3] * mtx.m[3][2];
+	mtxOut.m[3][3] = m[3][0] * mtx.m[0][3] + m[3][1] * mtx.m[1][3] + m[3][2] * mtx.m[2][3] + m[3][3] * mtx.m[3][3];
 
-	return mtxTmp;
+	return mtxOut;
 }
 
 void __Matrix44::operator *= (const D3DXMATRIX& mtx)
 {
-	__Matrix44 mtxTmp;
+	__Matrix44 tmp(*this);
 
-	std::memcpy(&mtxTmp.m, &m, sizeof(__Matrix44));
+	m[0][0] = tmp.m[0][0] * mtx.m[0][0] + tmp.m[0][1] * mtx.m[1][0] + tmp.m[0][2] * mtx.m[2][0] + tmp.m[0][3] * mtx.m[3][0];
+	m[0][1] = tmp.m[0][0] * mtx.m[0][1] + tmp.m[0][1] * mtx.m[1][1] + tmp.m[0][2] * mtx.m[2][1] + tmp.m[0][3] * mtx.m[3][1];
+	m[0][2] = tmp.m[0][0] * mtx.m[0][2] + tmp.m[0][1] * mtx.m[1][2] + tmp.m[0][2] * mtx.m[2][2] + tmp.m[0][3] * mtx.m[3][2];
+	m[0][3] = tmp.m[0][0] * mtx.m[0][3] + tmp.m[0][1] * mtx.m[1][3] + tmp.m[0][2] * mtx.m[2][3] + tmp.m[0][3] * mtx.m[3][3];
 
-	_11 = mtxTmp._11 * mtx._11 + mtxTmp._12 * mtx._21 + mtxTmp._13 * mtx._31 + mtxTmp._14 * mtx._41;
-	_12 = mtxTmp._11 * mtx._12 + mtxTmp._12 * mtx._22 + mtxTmp._13 * mtx._32 + mtxTmp._14 * mtx._42;
-	_13 = mtxTmp._11 * mtx._13 + mtxTmp._12 * mtx._23 + mtxTmp._13 * mtx._33 + mtxTmp._14 * mtx._43;
-	_14 = mtxTmp._11 * mtx._14 + mtxTmp._12 * mtx._24 + mtxTmp._13 * mtx._34 + mtxTmp._14 * mtx._44;
+	m[1][0] = tmp.m[1][0] * mtx.m[0][0] + tmp.m[1][1] * mtx.m[1][0] + tmp.m[1][2] * mtx.m[2][0] + tmp.m[1][3] * mtx.m[3][0];
+	m[1][1] = tmp.m[1][0] * mtx.m[0][1] + tmp.m[1][1] * mtx.m[1][1] + tmp.m[1][2] * mtx.m[2][1] + tmp.m[1][3] * mtx.m[3][1];
+	m[1][2] = tmp.m[1][0] * mtx.m[0][2] + tmp.m[1][1] * mtx.m[1][2] + tmp.m[1][2] * mtx.m[2][2] + tmp.m[1][3] * mtx.m[3][2];
+	m[1][3] = tmp.m[1][0] * mtx.m[0][3] + tmp.m[1][1] * mtx.m[1][3] + tmp.m[1][2] * mtx.m[2][3] + tmp.m[1][3] * mtx.m[3][3];
 
-	_21 = mtxTmp._21 * mtx._11 + mtxTmp._22 * mtx._21 + mtxTmp._23 * mtx._31 + mtxTmp._24 * mtx._41;
-	_22 = mtxTmp._21 * mtx._12 + mtxTmp._22 * mtx._22 + mtxTmp._23 * mtx._32 + mtxTmp._24 * mtx._42;
-	_23 = mtxTmp._21 * mtx._13 + mtxTmp._22 * mtx._23 + mtxTmp._23 * mtx._33 + mtxTmp._24 * mtx._43;
-	_24 = mtxTmp._21 * mtx._14 + mtxTmp._22 * mtx._24 + mtxTmp._23 * mtx._34 + mtxTmp._24 * mtx._44;
+	m[2][0] = tmp.m[2][0] * mtx.m[0][0] + tmp.m[2][1] * mtx.m[1][0] + tmp.m[2][2] * mtx.m[2][0] + tmp.m[2][3] * mtx.m[3][0];
+	m[2][1] = tmp.m[2][0] * mtx.m[0][1] + tmp.m[2][1] * mtx.m[1][1] + tmp.m[2][2] * mtx.m[2][1] + tmp.m[2][3] * mtx.m[3][1];
+	m[2][2] = tmp.m[2][0] * mtx.m[0][2] + tmp.m[2][1] * mtx.m[1][2] + tmp.m[2][2] * mtx.m[2][2] + tmp.m[2][3] * mtx.m[3][2];
+	m[2][3] = tmp.m[2][0] * mtx.m[0][3] + tmp.m[2][1] * mtx.m[1][3] + tmp.m[2][2] * mtx.m[2][3] + tmp.m[2][3] * mtx.m[3][3];
 
-	_31 = mtxTmp._31 * mtx._11 + mtxTmp._32 * mtx._21 + mtxTmp._33 * mtx._31 + mtxTmp._34 * mtx._41;
-	_32 = mtxTmp._31 * mtx._12 + mtxTmp._32 * mtx._22 + mtxTmp._33 * mtx._32 + mtxTmp._34 * mtx._42;
-	_33 = mtxTmp._31 * mtx._13 + mtxTmp._32 * mtx._23 + mtxTmp._33 * mtx._33 + mtxTmp._34 * mtx._43;
-	_34 = mtxTmp._31 * mtx._14 + mtxTmp._32 * mtx._24 + mtxTmp._33 * mtx._34 + mtxTmp._34 * mtx._44;
-
-	_41 = mtxTmp._41 * mtx._11 + mtxTmp._42 * mtx._21 + mtxTmp._43 * mtx._31 + mtxTmp._44 * mtx._41;
-	_42 = mtxTmp._41 * mtx._12 + mtxTmp._42 * mtx._22 + mtxTmp._43 * mtx._32 + mtxTmp._44 * mtx._42;
-	_43 = mtxTmp._41 * mtx._13 + mtxTmp._42 * mtx._23 + mtxTmp._43 * mtx._33 + mtxTmp._44 * mtx._43;
-	_44 = mtxTmp._41 * mtx._14 + mtxTmp._42 * mtx._24 + mtxTmp._43 * mtx._34 + mtxTmp._44 * mtx._44;
+	m[3][0] = tmp.m[3][0] * mtx.m[0][0] + tmp.m[3][1] * mtx.m[1][0] + tmp.m[3][2] * mtx.m[2][0] + tmp.m[3][3] * mtx.m[3][0];
+	m[3][1] = tmp.m[3][0] * mtx.m[0][1] + tmp.m[3][1] * mtx.m[1][1] + tmp.m[3][2] * mtx.m[2][1] + tmp.m[3][3] * mtx.m[3][1];
+	m[3][2] = tmp.m[3][0] * mtx.m[0][2] + tmp.m[3][1] * mtx.m[1][2] + tmp.m[3][2] * mtx.m[2][2] + tmp.m[3][3] * mtx.m[3][2];
+	m[3][3] = tmp.m[3][0] * mtx.m[0][3] + tmp.m[3][1] * mtx.m[1][3] + tmp.m[3][2] * mtx.m[2][3] + tmp.m[3][3] * mtx.m[3][3];
 }
 
 void __Matrix44::operator += (const D3DXVECTOR3& v)
 {
-	_41 += v.x;
-	_42 += v.y;
-	_43 += v.z;
+	m[3][0] += v.x;
+	m[3][1] += v.y;
+	m[3][2] += v.z;
 }
 
 void __Matrix44::operator -= (const D3DXVECTOR3& v)
 {
-	_41 -= v.x;
-	_42 -= v.y;
-	_43 -= v.z;
+	m[3][0] -= v.x;
+	m[3][1] -= v.y;
+	m[3][2] -= v.z;
 }
 
 __Matrix44 __Matrix44::operator * (const __Quaternion& qRot) const
@@ -294,7 +420,22 @@ void __Matrix44::operator *= (const __Quaternion& qRot)
 
 void __Matrix44::operator = (const D3DXQUATERNION& qt)
 {
-	D3DXMatrixRotationQuaternion(this, &qt);
+	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
+	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);
+	m[0][2] = 2.0f * (qt.x * qt.z - qt.y * qt.w);
+	m[0][3] = 0.0f;
+	m[1][0] = 2.0f * (qt.x * qt.y - qt.z * qt.w);
+	m[1][1] = 1.0f - 2.0f * (qt.x * qt.x + qt.z * qt.z);
+	m[1][2] = 2.0f * (qt.y * qt.z + qt.x * qt.w);
+	m[1][3] = 0.0f;
+	m[2][0] = 2.0f * (qt.x * qt.z + qt.y * qt.w);
+	m[2][1] = 2.0f * (qt.y * qt.z - qt.x * qt.w);
+	m[2][2] = 1.0f - 2.0f * (qt.x * qt.x + qt.y * qt.y);
+	m[2][3] = 0.0f;
+	m[3][0] = 0.0f;
+	m[3][1] = 0.0f;
+	m[3][2] = 0.0f;
+	m[3][3] = 1.0f;
 }
 
 #endif // CLIENT_N3BASE_MATRIX44_INL

@@ -126,7 +126,8 @@ public:
 
 	void Zero();
 	void Identity();
-	__Matrix44 Inverse(float* determinant = nullptr) const;
+	__Matrix44 Inverse() const;
+	void BuildInverse(__Matrix44& mtxOut) const;
 	const __Vector3 Pos() const;
 	void PosSet(float x, float y, float z);
 	void PosSet(const D3DXVECTOR3& v);

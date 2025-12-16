@@ -28,7 +28,10 @@ void __Vector4::Set(float fx, float fy, float fz, float fw)
 
 void __Vector4::Transform(const D3DXVECTOR3& v, const D3DXMATRIX& m)
 {
-	D3DXVec3Transform(this, &v, &m);
+	x = m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + m.m[3][0];
+	y = m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + m.m[3][1];
+	z = m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + m.m[3][2];
+	w = m.m[0][3] * v.x + m.m[1][3] * v.y + m.m[2][3] * v.z + m.m[3][3];
 }
 
 __Vector4& __Vector4::operator += (const D3DXVECTOR4& v)
