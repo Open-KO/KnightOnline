@@ -330,7 +330,7 @@ void CN3SndMgr::Release()
 
 // 이 함수는 한번 플레이 하고 그 포인터를 다시 쓸수있게 ReleaseObj를 호출한다.
 // 대신 위치는 처음 한번밖에 지정할 수 없다.
-bool CN3SndMgr::PlayOnceAndRelease(int iSndID, const _D3DVECTOR* pPos)
+bool CN3SndMgr::PlayOnceAndRelease(int iSndID, const __Vector3* pPos)
 {
 	if (!m_bSndEnable)
 		return false;

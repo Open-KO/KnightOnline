@@ -375,7 +375,7 @@ void CN3CPlugBase::Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoin
 	mtx = m_Matrix;
 	mtx *= mtxJoint;
 	mtx *= mtxParent;
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 
 	s_lpD3DDev->SetMaterial(&m_Mtl);
 	LPDIRECT3DTEXTURE9 lpTex = nullptr;
@@ -739,7 +739,7 @@ void CN3CPlug::RenderFXLines(const __Matrix44& mtxParent, const __Matrix44& mtxJ
 	mtx = m_Matrix;
 	mtx *= mtxJoint;
 	mtx *= mtxParent;
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 
 	DWORD dwCull;
 	s_lpD3DDev->GetRenderState(D3DRS_CULLMODE, &dwCull);
@@ -1737,7 +1737,7 @@ void CN3Chr::Render()
 		if(m_nLOD >= MAX_CHR_LOD) m_nLOD = MAX_CHR_LOD - 1; // LOD 밖이면 ... 
 	}
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	TickJoints(); // 조인트 행렬들 계산...
 	BuildMesh(); // 행렬에 따라 점위치 계산..
@@ -2299,8 +2299,6 @@ int CN3Chr::CheckCollisionPrecisely(const __Vector3 &vPos, const __Vector3 &vDir
 {
 	TickJoints(); // 조인트 행렬들 계산...
 	BuildMesh(m_nLOD);
-
-	__Vector3 v0, v1, v2;
 
 	__Vector3 vPos2 = vPos, vDir2 = vDir;
 	int iPC = static_cast<int>(m_Parts.size());

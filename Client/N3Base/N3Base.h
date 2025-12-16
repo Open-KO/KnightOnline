@@ -52,9 +52,9 @@ struct __CameraData
 
 		vp = {};
 
-		mtxView = {};
-		mtxViewInverse ={};
-		mtxProjection = {};
+		mtxView.Identity();
+		mtxViewInverse.Identity();
+		mtxProjection.Identity();
 
 		memset(&fFrustum, 0, sizeof(fFrustum));
 	}

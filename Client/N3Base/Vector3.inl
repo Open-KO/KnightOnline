@@ -12,7 +12,7 @@ __Vector3::__Vector3(float fx, float fy, float fz)
 	z = fz;
 }
 
-__Vector3::__Vector3(const _D3DVECTOR& vec)
+__Vector3::__Vector3(const __Vector3& vec)
 {
 	x = vec.x;
 	y = vec.y;
@@ -30,7 +30,7 @@ void __Vector3::Normalize()
 	z /= fn;
 }
 
-void __Vector3::Normalize(const _D3DVECTOR& vec)
+void __Vector3::Normalize(const __Vector3& vec)
 {
 	float fn = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	if (fn == 0)
@@ -49,12 +49,12 @@ float __Vector3::Magnitude() const
 	return sqrtf(x * x + y * y + z * z);
 }
 
-float __Vector3::Dot(const _D3DVECTOR& vec) const
+float __Vector3::Dot(const __Vector3& vec) const
 {
 	return x * vec.x + y * vec.y + z * vec.z;
 }
 
-void __Vector3::Cross(const _D3DVECTOR& v1, const _D3DVECTOR& v2)
+void __Vector3::Cross(const __Vector3& v1, const __Vector3& v2)
 {
 	x = v1.y * v2.z - v1.z * v2.y;
 	y = v1.z * v2.x - v1.x * v2.z;
@@ -93,13 +93,13 @@ const __Vector3& __Vector3::operator = (const __Vector3& vec)
 	return *this;
 }
 
-const __Vector3 __Vector3::operator * (const D3DXMATRIX& mtx) const
+const __Vector3 __Vector3::operator * (const __Matrix44& mtx) const
 {
 	__Vector3 vTmp;
 
-	vTmp.x = x * mtx._11 + y * mtx._21 + z * mtx._31 + mtx._41;
-	vTmp.y = x * mtx._12 + y * mtx._22 + z * mtx._32 + mtx._42;
-	vTmp.z = x * mtx._13 + y * mtx._23 + z * mtx._33 + mtx._43;
+	vTmp.x = x * mtx.m[0][0] + y * mtx.m[1][0] + z * mtx.m[2][0] + mtx.m[3][0];
+	vTmp.y = x * mtx.m[0][1] + y * mtx.m[1][1] + z * mtx.m[2][1] + mtx.m[3][1];
+	vTmp.z = x * mtx.m[0][2] + y * mtx.m[1][2] + z * mtx.m[2][2] + mtx.m[3][2];
 
 	return vTmp;
 }
@@ -111,17 +111,17 @@ void __Vector3::operator *= (float fDelta)
 	z *= fDelta;
 }
 
-void __Vector3::operator *= (const D3DXMATRIX& mtx)
+void __Vector3::operator *= (const __Matrix44& mtx)
 {
 	__Vector3 vTmp;
 
 	vTmp.Set(x, y, z);
-	x = vTmp.x * mtx._11 + vTmp.y * mtx._21 + vTmp.z * mtx._31 + mtx._41;
-	y = vTmp.x * mtx._12 + vTmp.y * mtx._22 + vTmp.z * mtx._32 + mtx._42;
-	z = vTmp.x * mtx._13 + vTmp.y * mtx._23 + vTmp.z * mtx._33 + mtx._43;
+	x = vTmp.x * mtx.m[0][0] + vTmp.y * mtx.m[1][0] + vTmp.z * mtx.m[2][0] + mtx.m[3][0];
+	y = vTmp.x * mtx.m[0][1] + vTmp.y * mtx.m[1][1] + vTmp.z * mtx.m[2][1] + mtx.m[3][1];
+	z = vTmp.x * mtx.m[0][2] + vTmp.y * mtx.m[1][2] + vTmp.z * mtx.m[2][2] + mtx.m[3][2];
 }
 
-__Vector3 __Vector3::operator + (const _D3DVECTOR& vec) const
+__Vector3 __Vector3::operator + (const __Vector3& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x + vec.x;
@@ -130,7 +130,7 @@ __Vector3 __Vector3::operator + (const _D3DVECTOR& vec) const
 	return vTmp;
 }
 
-__Vector3 __Vector3::operator - (const _D3DVECTOR& vec) const
+__Vector3 __Vector3::operator - (const __Vector3& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x - vec.x;
@@ -139,7 +139,7 @@ __Vector3 __Vector3::operator - (const _D3DVECTOR& vec) const
 	return vTmp;
 }
 
-__Vector3 __Vector3::operator * (const _D3DVECTOR& vec) const
+__Vector3 __Vector3::operator * (const __Vector3& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x * vec.x;
@@ -148,7 +148,7 @@ __Vector3 __Vector3::operator * (const _D3DVECTOR& vec) const
 	return vTmp;
 }
 
-__Vector3 __Vector3::operator / (const _D3DVECTOR& vec) const
+__Vector3 __Vector3::operator / (const __Vector3& vec) const
 {
 	__Vector3 vTmp;
 	vTmp.x = x / vec.x;
@@ -157,28 +157,28 @@ __Vector3 __Vector3::operator / (const _D3DVECTOR& vec) const
 	return vTmp;
 }
 
-void __Vector3::operator += (const _D3DVECTOR& vec)
+void __Vector3::operator += (const __Vector3& vec)
 {
 	x += vec.x;
 	y += vec.y;
 	z += vec.z;
 }
 
-void __Vector3::operator -= (const _D3DVECTOR& vec)
+void __Vector3::operator -= (const __Vector3& vec)
 {
 	x -= vec.x;
 	y -= vec.y;
 	z -= vec.z;
 }
 
-void __Vector3::operator *= (const _D3DVECTOR& vec)
+void __Vector3::operator *= (const __Vector3& vec)
 {
 	x *= vec.x;
 	y *= vec.y;
 	z *= vec.z;
 }
 
-void __Vector3::operator /= (const _D3DVECTOR& vec)
+void __Vector3::operator /= (const __Vector3& vec)
 {
 	x /= vec.x;
 	y /= vec.y;
@@ -221,4 +221,15 @@ __Vector3 __Vector3::operator / (float fDelta) const
 	return vTmp;
 }
 
+bool __Vector3::operator==(const __Vector3& rhs) const
+{
+	return x == rhs.x
+		&& y == rhs.y
+		&& z == rhs.z;
+}
+
+bool __Vector3::operator!=(const __Vector3& rhs) const
+{
+	return !(*this == rhs);
+}
 #endif // CLIENT_N3BASE_VECTOR3_INL

@@ -418,7 +418,6 @@ void CN3IMesh::ReGenerateSmoothNormal()
 #ifdef _N3TOOL
 void CN3IMesh::ApplyOffset(__Vector3 vOffset)
 {
-	__Vector3 v;
 	for(int i = 0; i < m_nVC; i++)
 	{
 		m_pVertices[i].x += vOffset.x;

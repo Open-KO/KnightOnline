@@ -464,7 +464,7 @@ void CMainFrame::TickRender()
 	__Matrix44 mtxScale;
 	__Matrix44 mtxWorld;
 	mtxWorld.Identity();
-	m_Eng.s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+	m_Eng.s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 
 	mtxScale.Scale(1,1,1);
 	if(m_bRenderGrid) m_Eng.RenderGrid(mtxScale);
@@ -494,7 +494,7 @@ void CMainFrame::TickRender()
 	}
 
 	mtxWorld.Identity();
-	m_Eng.s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+	m_Eng.s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 
 	if(m_bRenderFloor) m_pGround->Render();
 	

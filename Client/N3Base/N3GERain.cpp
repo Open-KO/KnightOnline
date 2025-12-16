@@ -158,7 +158,7 @@ void CN3GERain::Render(__Vector3& vPos)
 	s_lpD3DDev->SetRenderState(D3DRS_DESTBLEND,  D3DBLEND_INVSRCALPHA);
 
 	// set transform
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	// set texture 
 	s_lpD3DDev->SetTexture(0, nullptr);

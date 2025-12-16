@@ -71,7 +71,7 @@ void CN3Star::Render()
 {
 	if (0 == m_iCurNumStar) return;
 	__Matrix44 matWorld; matWorld.Identity();
-	s_lpD3DDev->SetTransform( D3DTS_WORLD, &matWorld );
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 
 	s_lpD3DDev->SetTexture(0, nullptr);
 	s_lpD3DDev->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );

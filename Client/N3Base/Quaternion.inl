@@ -5,12 +5,12 @@
 
 #include "My_3DStruct.h"
 
-__Quaternion::__Quaternion(const D3DXMATRIX& mtx)
+__Quaternion::__Quaternion(const __Matrix44& mtx)
 {
 	*this = mtx;
 }
 
-__Quaternion::__Quaternion(const D3DXQUATERNION& qt)
+__Quaternion::__Quaternion(const __Quaternion& qt)
 {
 	x = qt.x;
 	y = qt.y;
@@ -59,7 +59,7 @@ void __Quaternion::RotationAxis(float fX, float fY, float fZ, float fRadian)
 	w = cosf(fRadian / 2.0f);
 }
 
-void __Quaternion::operator = (const D3DXMATRIX& mtx)
+void __Quaternion::operator = (const __Matrix44& mtx)
 {
 	float s, trace;
 
@@ -120,7 +120,7 @@ void __Quaternion::AxisAngle(__Vector3& vAxisResult, float& fRadianResult) const
 	fRadianResult = 2.0f * acosf(w);
 }
 
-void __Quaternion::Slerp(const D3DXQUATERNION& qt1, const D3DXQUATERNION& qt2, float fDelta)
+void __Quaternion::Slerp(const __Quaternion& qt1, const __Quaternion& qt2, float fDelta)
 {
 	float dot, temp;
 
@@ -164,4 +164,19 @@ void __Quaternion::RotationYawPitchRoll(float Yaw, float Pitch, float Roll)
 	w = cyaw * cpitch * croll + syaw * spitch * sroll;
 }
 
+__Quaternion __Quaternion::operator * (const __Quaternion& q) const
+{
+	__Quaternion out;
+	out.x = q.w * x + q.x * w + q.y * z - q.z * y;
+	out.y = q.w * y - q.x * z + q.y * w + q.z * x;
+	out.z = q.w * z + q.x * y - q.y * x + q.z * w;
+	out.w = q.w * w - q.x * x - q.y * y - q.z * z;
+	return out;
+}
+
+void __Quaternion::operator *= (const __Quaternion& q)
+{
+	__Quaternion tmp = *this * q;
+	Set(tmp.x, tmp.y, tmp.z, tmp.w);
+}
 #endif // CLIENT_N3BASE_QUATERNION_INL

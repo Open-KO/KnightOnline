@@ -687,7 +687,7 @@ bool CN3FXPartParticles::Tick()
 //
 void CN3FXPartParticles::Rotate()
 {
-	m_pShape->m_mtxParent.Rotation(m_fCurrLife*m_vRotVelocity);
+	m_pShape->m_mtxParent.Rotation(m_vRotVelocity * m_fCurrLife);
 }
 
 
@@ -696,7 +696,6 @@ void CN3FXPartParticles::Rotate()
 //
 void CN3FXPartParticles::Move()
 {
-	__Vector3 v;
 	m_vCurrVelocity += m_vAcceleration*CN3Base::s_fSecPerFrm;
 	m_vShapePos += m_vCurrVelocity*CN3Base::s_fSecPerFrm;
 	m_pShape->m_mtxParent.PosSet(m_vShapePos);

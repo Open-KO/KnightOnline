@@ -1,6 +1,10 @@
 ﻿#if !defined(AFX_PROPERTYLIST_H__74205380_1B56_11D4_BC48_00105AA2186F__INCLUDED_)
 #define AFX_PROPERTYLIST_H__74205380_1B56_11D4_BC48_00105AA2186F__INCLUDED_
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes
@@ -9,9 +13,8 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#include <N3Base/My_3DStruct.h>
+
 // PropertyList.h : header file
 //
 
@@ -47,7 +50,9 @@ public:
 	D3DCOLORVALUE D3DColorValueGet();
 	CPropertyItem(const char* szPropName, const char* szVal, int nItemType, const char* szComboItemsOrFilter, COLORREF crColor = 0);
 	
-	D3DVECTOR VectorGet();
+	__Vector3 VectorGet();
+	D3DVECTOR VectorGetD3D();
+	void VectorSet(const __Vector3& v);
 	void VectorSet(const D3DVECTOR& v);
 };
 

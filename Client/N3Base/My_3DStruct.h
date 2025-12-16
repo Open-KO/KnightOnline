@@ -36,7 +36,7 @@ struct __Vector2;
 struct __Vector3;
 
 // 2D vertex
-struct __Vector2 : public D3DXVECTOR2
+struct __Vector2
 {
 public:
 	__Vector2() = default;
@@ -44,30 +44,33 @@ public:
 	void Zero();
 	void Set(float fx, float fy);
 
-	__Vector2& operator += (const D3DXVECTOR2&);
-	__Vector2& operator -= (const D3DXVECTOR2&);
+	__Vector2& operator += (const __Vector2&);
+	__Vector2& operator -= (const __Vector2&);
 	__Vector2& operator *= (float);
 	__Vector2& operator /= (float);
 
-	__Vector2 operator + (const D3DXVECTOR2&) const;
-	__Vector2 operator - (const D3DXVECTOR2&) const;
+	__Vector2 operator + (const __Vector2&) const;
+	__Vector2 operator - (const __Vector2&) const;
 	__Vector2 operator * (float) const;
 	__Vector2 operator / (float) const;
+
+public:
+	float x, y;
 };
 
 // 3D vertex
-struct __Vector3 : public D3DXVECTOR3
+struct __Vector3
 {
 public:
 	__Vector3() = default;
 	__Vector3(float fx, float fy, float fz);
-	__Vector3(const _D3DVECTOR& vec);
+	__Vector3(const __Vector3& vec);
 
 	void	Normalize();
-	void	Normalize(const _D3DVECTOR& vec);
+	void	Normalize(const __Vector3& vec);
 	float	Magnitude() const;
-	float	Dot(const _D3DVECTOR& vec) const;
-	void	Cross(const _D3DVECTOR& v1, const _D3DVECTOR& v2);
+	float	Dot(const __Vector3& vec) const;
+	void	Cross(const __Vector3& v1, const __Vector3& v2);
 	void	Absolute();
 
 	void Zero();
@@ -75,54 +78,75 @@ public:
 
 	const __Vector3& operator = (const __Vector3& vec);
 
-	const __Vector3 operator * (const D3DXMATRIX& mtx) const;
+	const __Vector3 operator * (const __Matrix44& mtx) const;
 	void operator *= (float fDelta);
-	void operator *= (const D3DXMATRIX& mtx);
-	__Vector3 operator + (const _D3DVECTOR& vec) const;
-	__Vector3 operator - (const _D3DVECTOR& vec) const;
-	__Vector3 operator * (const _D3DVECTOR& vec) const;
-	__Vector3 operator / (const _D3DVECTOR& vec) const;
+	void operator *= (const __Matrix44& mtx);
+	__Vector3 operator + (const __Vector3& vec) const;
+	__Vector3 operator - (const __Vector3& vec) const;
+	__Vector3 operator * (const __Vector3& vec) const;
+	__Vector3 operator / (const __Vector3& vec) const;
 
-	void operator += (const _D3DVECTOR& vec);
-	void operator -= (const _D3DVECTOR& vec);
-	void operator *= (const _D3DVECTOR& vec);
-	void operator /= (const _D3DVECTOR& vec);
+	void operator += (const __Vector3& vec);
+	void operator -= (const __Vector3& vec);
+	void operator *= (const __Vector3& vec);
+	void operator /= (const __Vector3& vec);
 
 	__Vector3 operator + (float fDelta) const;
 	__Vector3 operator - (float fDelta) const;
 	__Vector3 operator * (float fDelta) const;
 	__Vector3 operator / (float fDelta) const;
+
+	bool operator==(const __Vector3& rhs) const;
+	bool operator!=(const __Vector3& rhs) const;
+
+public:
+	float x, y, z;
 };
 
 // 4D vertex
-struct __Vector4 : public D3DXVECTOR4
+struct __Vector4
 {
 public:
 	__Vector4() = default;
 	__Vector4(float fx, float fy, float fz, float fw);
 	void Zero();
 	void Set(float fx, float fy, float fz, float fw);
-	void Transform(const D3DXVECTOR3& v, const D3DXMATRIX& m);
+	void Transform(const __Vector3& v, const __Matrix44& m);
 
-	__Vector4& operator += (const D3DXVECTOR4&);
-	__Vector4& operator -= (const D3DXVECTOR4&);
+	__Vector4& operator += (const __Vector4&);
+	__Vector4& operator -= (const __Vector4&);
 	__Vector4& operator *= (float);
 	__Vector4& operator /= (float);
 
-	__Vector4 operator + (const D3DXVECTOR4&) const;
-	__Vector4 operator - (const D3DXVECTOR4&) const;
+	__Vector4 operator + (const __Vector4&) const;
+	__Vector4 operator - (const __Vector4&) const;
 	__Vector4 operator * (float) const;
 	__Vector4 operator / (float) const;
+
+public:
+	float x, y, z, w;
 };
 
+struct _D3DMATRIX;
+
 // 4x4 matrix
-struct __Matrix44 : public D3DXMATRIX
+struct __Matrix44
 {
 public:
 	__Matrix44() = default;
 	__Matrix44(const float mtx[4][4]);
-	__Matrix44(const _D3DMATRIX& mtx);
-	__Matrix44(const D3DXQUATERNION& qt);
+	__Matrix44(const __Matrix44& mtx);
+	__Matrix44(const __Quaternion& qt);
+
+	_D3DMATRIX* toD3D()
+	{
+		return reinterpret_cast<_D3DMATRIX*>(this);
+	}
+
+	const _D3DMATRIX* toD3D() const
+	{
+		return reinterpret_cast<const _D3DMATRIX*>(this);
+	}
 
 	void Zero();
 	void Identity();
@@ -130,36 +154,39 @@ public:
 	void BuildInverse(__Matrix44& mtxOut) const;
 	const __Vector3 Pos() const;
 	void PosSet(float x, float y, float z);
-	void PosSet(const D3DXVECTOR3& v);
+	void PosSet(const __Vector3& v);
 	void RotationX(float fDelta);
 	void RotationY(float fDelta);
 	void RotationZ(float fDelta);
 	void Rotation(float fX, float fY, float fZ);
-	void Rotation(const D3DXVECTOR3& v);
+	void Rotation(const __Vector3& v);
 	void Scale(float sx, float sy, float sz);
-	void Scale(const D3DXVECTOR3& v);
-	void Direction(const D3DXVECTOR3& vDir);
-	void LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp);
+	void Scale(const __Vector3& v);
+	void Direction(const __Vector3& vDir);
+	void LookAtLH(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp);
 	void OrthoLH(float w, float h, float zn, float zf);
 	void PerspectiveFovLH(float fovy, float Aspect, float zn, float zf);
 
-	__Matrix44 operator * (const D3DXMATRIX& mtx) const;
-	void operator *= (const D3DXMATRIX& mtx);
-	void operator += (const D3DXVECTOR3& v);
-	void operator -= (const D3DXVECTOR3& v);
+	__Matrix44 operator * (const __Matrix44& mtx) const;
+	void operator *= (const __Matrix44& mtx);
+	void operator += (const __Vector3& v);
+	void operator -= (const __Vector3& v);
 
 	__Matrix44 operator * (const __Quaternion& qRot) const;
 	void operator *= (const __Quaternion& qRot);
 
-	void operator = (const D3DXQUATERNION& qt);
+	void operator = (const __Quaternion& qt);
+
+public:
+	float m[4][4];
 };
 
-struct __Quaternion : public D3DXQUATERNION
+struct __Quaternion
 {
 public:
 	__Quaternion() = default;
-	__Quaternion(const D3DXMATRIX& mtx);
-	__Quaternion(const D3DXQUATERNION& qt);
+	__Quaternion(const __Matrix44& mtx);
+	__Quaternion(const __Quaternion& qt);
 	__Quaternion(float fX, float fY, float fZ, float fW);
 
 	void Identity();
@@ -167,11 +194,17 @@ public:
 
 	void RotationAxis(const __Vector3& v, float fRadian);
 	void RotationAxis(float fX, float fY, float fZ, float fRadian);
-	void operator = (const D3DXMATRIX& mtx);
+	void operator = (const __Matrix44& mtx);
 
 	void AxisAngle(__Vector3& vAxisResult, float& fRadianResult) const;
-	void Slerp(const D3DXQUATERNION& qt1, const D3DXQUATERNION& qt2, float fDelta);
+	void Slerp(const __Quaternion& qt1, const __Quaternion& qt2, float fDelta);
 	void RotationYawPitchRoll(float Yaw, float Pitch, float Roll);
+
+	__Quaternion operator * (const __Quaternion& q) const;
+	void operator *= (const __Quaternion& q);
+
+public:
+	float x, y, z, w;
 };
 
 struct __ColorValue : public _D3DCOLORVALUE
@@ -261,13 +294,41 @@ public:
 	D3DCOLOR color;
 
 public:
-	void Set(const _D3DVECTOR& p, D3DCOLOR sColor) { x = p.x; y = p.y; z = p.z; color = sColor; }
-	void Set(float sx, float sy, float sz, D3DCOLOR sColor) { x = sx; y = sy; z = sz; color = sColor; }
-	const __VertexColor& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(const __Vector3& p, D3DCOLOR sColor)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		color = sColor;
+	}
+
+	void Set(float sx, float sy, float sz, D3DCOLOR sColor)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		color = sColor;
+	}
+
+	const __VertexColor& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexColor() = default;
-	__VertexColor(const _D3DVECTOR& p, D3DCOLOR sColor) { this->Set(p, sColor); }
-	__VertexColor(float sx, float sy, float sz, D3DCOLOR sColor) { this->Set(sx, sy, sz, sColor); }
+
+	__VertexColor(const __Vector3& p, D3DCOLOR sColor)
+	{
+		Set(p, sColor);
+	}
+
+	__VertexColor(float sx, float sy, float sz, D3DCOLOR sColor)
+	{
+		Set(sx, sy, sz, sColor);
+	}
 };
 
 struct __VertexParticle : public __Vector3
@@ -277,12 +338,39 @@ public:
 	D3DCOLOR color;
 
 public:
-	void Set(const _D3DVECTOR& p, float fPointSize, D3DCOLOR sColor) { x = p.x; y = p.y; z = p.z; color = sColor; PointSize = fPointSize; }
-	void Set(float sx, float sy, float sz, float fPointSize, D3DCOLOR sColor) { x = sx; y = sy; z = sz; color = sColor; PointSize = fPointSize; }
-	
-	__VertexParticle() { PointSize = 1.0f; color=0xffffffff; }
-	__VertexParticle(const _D3DVECTOR& p, float fPointSize, D3DCOLOR sColor) { this->Set(p, fPointSize, sColor); }
-	__VertexParticle(float sx, float sy, float sz, float fPointSize, D3DCOLOR sColor) { this->Set(sx, sy, sz, fPointSize, sColor); }
+	void Set(const __Vector3& p, float fPointSize, D3DCOLOR sColor)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		color = sColor;
+		PointSize = fPointSize;
+	}
+
+	void Set(float sx, float sy, float sz, float fPointSize, D3DCOLOR sColor)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		color = sColor;
+		PointSize = fPointSize;
+	}
+
+	__VertexParticle()
+	{
+		PointSize = 1.0f;
+		color = 0xffffffff;
+	}
+
+	__VertexParticle(const __Vector3& p, float fPointSize, D3DCOLOR sColor)
+	{
+		Set(p, fPointSize, sColor);
+	}
+
+	__VertexParticle(float sx, float sy, float sz, float fPointSize, D3DCOLOR sColor)
+	{
+		Set(sx, sy, sz, fPointSize, sColor);
+	}
 };
 
 struct __VertexTransformedColor : public __Vector3
@@ -292,9 +380,21 @@ public:
 	D3DCOLOR color;
 
 public:
-	void Set(float sx, float sy, float sz, float srhw, D3DCOLOR sColor) { x = sx; y = sy; z = sz; rhw = srhw; color = sColor; }
+	void Set(float sx, float sy, float sz, float srhw, D3DCOLOR sColor)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		rhw = srhw;
+		color = sColor;
+	}
+
 	__VertexTransformedColor() = default;
-	__VertexTransformedColor(float sx, float sy, float sz, float srhw, D3DCOLOR sColor) { this->Set(sx, sy, sz, srhw, sColor); }
+
+	__VertexTransformedColor(float sx, float sy, float sz, float srhw, D3DCOLOR sColor)
+	{
+		Set(sx, sy, sz, srhw, sColor);
+	}
 };
 
 struct __VertexT1 : public __Vector3
@@ -304,48 +404,84 @@ public:
 	float tu, tv;
 
 public:
-	void Set(const _D3DVECTOR& p, const _D3DVECTOR& sn, float u, float v)
+	void Set(const __Vector3& p, const __Vector3& sn, float u, float v)
 	{
-		x = p.x; y = p.y; z = p.z;
+		x = p.x;
+		y = p.y;
+		z = p.z;
 		n = sn;
-		tu = u; tv = v;
+		tu = u;
+		tv = v;
 	}
+
 	void Set(float sx, float sy, float sz, float snx, float sny, float snz, float stu, float stv)
 	{
-		x = sx; y = sy; z = sz;
-		n.x = snx; n.y = sny; n.z = snz;
-		tu = stu; tv = stv;
+		x = sx;
+		y = sy;
+		z = sz;
+		n.x = snx;
+		n.y = sny;
+		n.z = snz;
+		tu = stu;
+		tv = stv;
 	}
 
 	__VertexT1() = default;
-	__VertexT1(const _D3DVECTOR& p, const _D3DVECTOR& n, float u, float v) { this->Set(p, n, u, v); }
-	__VertexT1(float sx, float sy, float sz, float snx, float sny, float snz, float stu, float stv) 
-		{ this->Set(sx, sy, sz, snx, sny, snz, stu, stv); } 
+
+	__VertexT1(const __Vector3& p, const __Vector3& n, float u, float v)
+	{
+		Set(p, n, u, v);
+	}
+
+	__VertexT1(float sx, float sy, float sz, float snx, float sny, float snz, float stu, float stv)
+	{
+		Set(sx, sy, sz, snx, sny, snz, stu, stv);
+	}
 };
 
 struct __VertexT2 : public __VertexT1
 {
 public:
 	float tu2, tv2;
+
 public:
-	void Set(const _D3DVECTOR& p, const _D3DVECTOR& sn, float u, float v, float u2, float v2)
+	void Set(const __Vector3& p, const __Vector3& sn, float u, float v, float u2, float v2)
 	{
-		x = p.x; y = p.y; z = p.z;
+		x = p.x;
+		y = p.y;
+		z = p.z;
 		n = sn;
-		tu = u; tv = v; tu2 = u2; tv2 = v2;
+		tu = u;
+		tv = v;
+		tu2 = u2;
+		tv2 = v2;
 	}
+
 	void Set(float sx, float sy, float sz, float snx, float sny, float snz, float stu, float stv, float stu2, float stv2)
 	{
-		x = sx; y = sy; z = sz;
-		n.x = snx; n.y = sny; n.z = snz;
-		tu = stu; tv = stv;
-		tu2 = stu2; tv2 = stv2;
+		x = sx;
+		y = sy;
+		z = sz;
+		n.x = snx;
+		n.y = sny;
+		n.z = snz;
+		tu = stu;
+		tv = stv;
+		tu2 = stu2;
+		tv2 = stv2;
 	}
 
 	__VertexT2() = default;
-	__VertexT2(const _D3DVECTOR& p, const _D3DVECTOR& n, float u, float v, float u2, float v2) { this->Set(p, n, u, v, u2, v2); }
+
+	__VertexT2(const __Vector3& p, const __Vector3& n, float u, float v, float u2, float v2)
+	{
+		Set(p, n, u, v, u2, v2);
+	}
+
 	__VertexT2(float sx, float sy, float sz, float snx, float sny, float snz, float stu, float stv, float stu2, float stv2)
-		{ this->Set(sx, sy, sz, snx, sny, snz, stu, stv, stu2, stv2); } 
+	{
+		Set(sx, sy, sz, snx, sny, snz, stu, stv, stu2, stv2);
+	}
 };
 
 struct __VertexTransformed : public __Vector3
@@ -357,11 +493,22 @@ public:
 
 public:
 	void Set(float sx, float sy, float sz, float srhw, D3DCOLOR sColor, float stu, float stv)
-		{ x = sx; y = sy; z = sz; rhw = srhw; color = sColor; tu = stu; tv = stv; }
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		rhw = srhw;
+		color = sColor;
+		tu = stu;
+		tv = stv;
+	}
 
 	__VertexTransformed() = default;
+
 	__VertexTransformed(float sx, float sy, float sz, float srhw, D3DCOLOR sColor, float stu, float stv)
-		{ this->Set(sx, sy, sz, srhw, sColor, stu, stv); }
+	{
+		Set(sx, sy, sz, srhw, sColor, stu, stv);
+	}
 };
 
 struct __VertexTransformedT2 : public __VertexTransformed
@@ -371,48 +518,117 @@ public:
 
 public:
 	void Set(float sx, float sy, float sz, float srhw, D3DCOLOR sColor, float stu, float stv, float stu2, float stv2)
-	{ x = sx; y = sy; z = sz; rhw = srhw; color = sColor; tu = stu; tv = stv; tu2 = stu2; tv2 = stv2; }
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		rhw = srhw;
+		color = sColor;
+		tu = stu;
+		tv = stv;
+		tu2 = stu2;
+		tv2 = stv2;
+	}
 
 	__VertexTransformedT2() = default;
+
 	__VertexTransformedT2(float sx, float sy, float sz, float srhw, D3DCOLOR sColor, float stu, float stv, float stu2, float stv2)
 	{
-		this->Set(sx, sy, sz, srhw, sColor, stu, stv, stu2, stv2);
+		Set(sx, sy, sz, srhw, sColor, stu, stv, stu2, stv2);
 	}
 };
 
-
-//..
 struct __VertexXyzT1 : public __Vector3
 {
 public:
 	float tu, tv;	
 
 public:
-	void Set(const _D3DVECTOR& p, float u, float v) { x = p.x; y = p.y; z = p.z; tu = u; tv = v; }
-	void Set(float sx, float sy, float sz, float u, float v) { x = sx; y = sy; z = sz; tu = u; tv = v; }
+	void Set(const __Vector3& p, float u, float v)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		tu = u; tv = v;
+	}
 
-	const __VertexXyzT1& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
-	
+	void Set(float sx, float sy, float sz, float u, float v)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		tu = u;
+		tv = v;
+	}
+
+	const __VertexXyzT1& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
+
 	__VertexXyzT1() = default;
-	__VertexXyzT1(const _D3DVECTOR& p, float u, float v) { this->Set(p, u, v); }
-	__VertexXyzT1(float sx, float sy, float sz, float u, float v) { this->Set(sx, sy, sz, u, v); }
-};
 
+	__VertexXyzT1(const __Vector3& p, float u, float v)
+	{
+		Set(p, u, v);
+	}
+
+	__VertexXyzT1(float sx, float sy, float sz, float u, float v)
+	{
+		Set(sx, sy, sz, u, v);
+	}
+};
 
 struct __VertexXyzT2 : public __VertexXyzT1
 {
 public:
-	float tu2, tv2;	
+	float tu2, tv2;
 
 public:
-	void Set(const _D3DVECTOR& p, float u, float v, float u2, float v2) { x = p.x; y = p.y; z = p.z; tu = u; tv = v; tu2 = u2; tv2 = v2;}
-	void Set(float sx, float sy, float sz, float u, float v, float u2, float v2) { x = sx; y = sy; z = sz; tu = u; tv = v; tu2 = u2; tv2 = v2;}
+	void Set(const __Vector3& p, float u, float v, float u2, float v2)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		tu = u;
+		tv = v;
+		tu2 = u2;
+		tv2 = v2;
+	}
 
-	const __VertexXyzT2& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(float sx, float sy, float sz, float u, float v, float u2, float v2)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		tu = u;
+		tv = v;
+		tu2 = u2;
+		tv2 = v2;
+	}
+
+	const __VertexXyzT2& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexXyzT2() = default;
-	__VertexXyzT2(const _D3DVECTOR& p, float u, float v, float u2, float v2) { this->Set(p, u, v, u2, v2); }
-	__VertexXyzT2(float sx, float sy, float sz, float u, float v, float u2, float v2) { this->Set(sx, sy, sz, u, v, u2, v2); }
+
+	__VertexXyzT2(const __Vector3& p, float u, float v, float u2, float v2)
+	{
+		Set(p, u, v, u2, v2);
+	}
+
+	__VertexXyzT2(float sx, float sy, float sz, float u, float v, float u2, float v2)
+	{
+		Set(sx, sy, sz, u, v, u2, v2);
+	}
 };
 
 struct __VertexXyzNormal : public __Vector3
@@ -421,16 +637,44 @@ public:
 	__Vector3 n;
 
 public:
-	void Set(const _D3DVECTOR& p, const _D3DVECTOR& sn) { x = p.x; y = p.y; z = p.z; n = sn; }
-	void Set(float xx, float yy, float zz, float nxx, float nyy, float nzz) { x = xx; y = yy; z = zz; n.x = nxx; n.y = nyy; n.z = nzz; }
+	void Set(const __Vector3& p, const __Vector3& sn)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		n = sn;
+	}
 
-	const __VertexXyzNormal& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(float xx, float yy, float zz, float nxx, float nyy, float nzz)
+	{
+		x = xx;
+		y = yy;
+		z = zz;
+		n.x = nxx;
+		n.y = nyy;
+		n.z = nzz;
+	}
+
+	const __VertexXyzNormal& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexXyzNormal() = default;
-	__VertexXyzNormal(const _D3DVECTOR& p, const _D3DVECTOR& n) { this->Set(p, n); }
-	__VertexXyzNormal(float sx, float sy, float sz, float xx, float yy, float zz) { this->Set(sx, sy, sz, xx, yy, zz); }
-};
 
+	__VertexXyzNormal(const __Vector3& p, const __Vector3& n)
+	{
+		Set(p, n);
+	}
+
+	__VertexXyzNormal(float sx, float sy, float sz, float xx, float yy, float zz)
+	{
+		Set(sx, sy, sz, xx, yy, zz);
+	}
+};
 
 struct __VertexXyzColorSpecularT1 : public __Vector3
 {
@@ -440,12 +684,39 @@ public:
 	float tu, tv;
 
 public:
-	void Set(const _D3DVECTOR& p, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v) { x = p.x; y = p.y; z = p.z; color = sColor; specular = sSpecular, tu = u; tv = v; }
-	void Set(float sx, float sy, float sz, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v) { x = sx; y = sy; z = sz; color = sColor; specular = sSpecular, tu = u; tv = v;	}
+	void Set(const __Vector3& p, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		color = sColor;
+		specular = sSpecular;
+		tu = u;
+		tv = v;
+	}
+
+	void Set(float sx, float sy, float sz, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		color = sColor;
+		specular = sSpecular;
+		tu = u;
+		tv = v;
+	}
 
 	__VertexXyzColorSpecularT1() = default;
-	__VertexXyzColorSpecularT1(const _D3DVECTOR& p, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v) { this->Set(p, sColor, sSpecular, u, v); }
-	__VertexXyzColorSpecularT1(float sx, float sy, float sz, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v) { this->Set(sx, sy, sz, sColor, sSpecular, u, v); }
+
+	__VertexXyzColorSpecularT1(const __Vector3& p, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v)
+	{
+		Set(p, sColor, sSpecular, u, v);
+	}
+
+	__VertexXyzColorSpecularT1(float sx, float sy, float sz, D3DCOLOR sColor, D3DCOLOR sSpecular, float u, float v)
+	{
+		Set(sx, sy, sz, sColor, sSpecular, u, v);
+	}
 };
 
 struct __VertexXyzColorT1 : public __Vector3
@@ -455,14 +726,45 @@ public:
 	float tu, tv;
 
 public:
-	void Set(const _D3DVECTOR& p, D3DCOLOR sColor, float u, float v) { x = p.x; y = p.y; z = p.z; color = sColor; tu = u; tv = v; }
-	void Set(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v) { x = sx; y = sy; z = sz; color = sColor; tu = u; tv = v;	}
-	
-	const __VertexXyzColorT1& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(const __Vector3& p, D3DCOLOR sColor, float u, float v)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		color = sColor;
+		tu = u;
+		tv = v;
+	}
+
+	void Set(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		color = sColor;
+		tu = u;
+		tv = v;
+	}
+
+	const __VertexXyzColorT1& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexXyzColorT1() = default;
-	__VertexXyzColorT1(const _D3DVECTOR& p, D3DCOLOR sColor, float u, float v) { this->Set(p, sColor, u, v); }
-	__VertexXyzColorT1(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v) { this->Set(sx, sy, sz, sColor, u, v); }
+
+	__VertexXyzColorT1(const __Vector3& p, D3DCOLOR sColor, float u, float v)
+	{
+		Set(p, sColor, u, v);
+	}
+
+	__VertexXyzColorT1(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v)
+	{
+		Set(sx, sy, sz, sColor, u, v);
+	}
 };
 
 struct __VertexXyzColorT2 : public __VertexXyzColorT1
@@ -470,14 +772,49 @@ struct __VertexXyzColorT2 : public __VertexXyzColorT1
 public:
 	float tu2, tv2;
 public:
-	void Set(const _D3DVECTOR& p, D3DCOLOR sColor, float u, float v, float u2, float v2) { x = p.x; y = p.y; z = p.z; color = sColor; tu = u; tv = v; tu2 = u2; tv2 = v2;}
-	void Set(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v, float u2, float v2) { x = sx; y = sy; z = sz; color = sColor; tu = u; tv = v; tu2 = u2; tv2 = v2;	}
-	
-	const __VertexXyzColorT2& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(const __Vector3& p, D3DCOLOR sColor, float u, float v, float u2, float v2)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		color = sColor;
+		tu = u;
+		tv = v;
+		tu2 = u2;
+		tv2 = v2;
+	}
+
+	void Set(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v, float u2, float v2)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		color = sColor;
+		tu = u;
+		tv = v;
+		tu2 = u2;
+		tv2 = v2;
+	}
+
+	const __VertexXyzColorT2& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexXyzColorT2() = default;
-	__VertexXyzColorT2(const _D3DVECTOR& p, D3DCOLOR sColor, float u, float v, float u2, float v2) { this->Set(p, sColor, u, v, u2, v2); }
-	__VertexXyzColorT2(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v, float u2, float v2) { this->Set(sx, sy, sz, sColor, u, v, u2, v2); }
+
+	__VertexXyzColorT2(const __Vector3& p, D3DCOLOR sColor, float u, float v, float u2, float v2)
+	{
+		Set(p, sColor, u, v, u2, v2);
+	}
+
+	__VertexXyzColorT2(float sx, float sy, float sz, D3DCOLOR sColor, float u, float v, float u2, float v2)
+	{
+		Set(sx, sy, sz, sColor, u, v, u2, v2);
+	}
 };
 
 struct __VertexXyzColor : public __Vector3
@@ -486,14 +823,40 @@ public:
 	D3DCOLOR color;
 
 public:
-	void Set(const _D3DVECTOR& p, D3DCOLOR sColor) { x = p.x; y = p.y; z = p.z; color = sColor; }
-	void Set(float sx, float sy, float sz, D3DCOLOR sColor) { x = sx; y = sy; z = sz; color = sColor; }
+	void Set(const __Vector3& p, D3DCOLOR sColor)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		color = sColor;
+	}
 
-	const __VertexXyzColor& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(float sx, float sy, float sz, D3DCOLOR sColor)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		color = sColor;
+	}
+
+	const __VertexXyzColor& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexXyzColor() = default;
-	__VertexXyzColor(const _D3DVECTOR& p, D3DCOLOR sColor) { this->Set(p, sColor); }
-	__VertexXyzColor(float sx, float sy, float sz, D3DCOLOR sColor) { this->Set(sx, sy, sz, sColor); }
+
+	__VertexXyzColor(const __Vector3& p, D3DCOLOR sColor)
+	{
+		Set(p, sColor);
+	}
+	__VertexXyzColor(float sx, float sy, float sz, D3DCOLOR sColor)
+	{
+		Set(sx, sy, sz, sColor);
+	}
 };
 
 struct __VertexXyzNormalColor : public __Vector3
@@ -503,14 +866,45 @@ public:
 	D3DCOLOR color;
 
 public:
-	void Set(const _D3DVECTOR& p, const _D3DVECTOR& sn, D3DCOLOR sColor) { x = p.x; y = p.y; z = p.z; n = sn; color = sColor; }
-	void Set(float sx, float sy, float sz, float nxx, float nyy, float nzz, D3DCOLOR sColor) { x = sx; y = sy; z = sz; n.x = nxx; n.y = nyy; n.z = nzz; color = sColor; }
+	void Set(const __Vector3& p, const __Vector3& sn, D3DCOLOR sColor)
+	{
+		x = p.x;
+		y = p.y;
+		z = p.z;
+		n = sn;
+		color = sColor;
+	}
 
-	const __VertexXyzNormalColor& operator = (const __Vector3& vec) { x = vec.x; y = vec.y; z = vec.z; return *this; }
+	void Set(float sx, float sy, float sz, float nxx, float nyy, float nzz, D3DCOLOR sColor)
+	{
+		x = sx;
+		y = sy;
+		z = sz;
+		n.x = nxx;
+		n.y = nyy;
+		n.z = nzz;
+		color = sColor;
+	}
+
+	const __VertexXyzNormalColor& operator = (const __Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+		return *this;
+	}
 
 	__VertexXyzNormalColor() = default;
-	__VertexXyzNormalColor(const _D3DVECTOR& p, const _D3DVECTOR& n, D3DCOLOR sColor) { this->Set(p, n, sColor); }
-	__VertexXyzNormalColor(float sx, float sy, float sz, float xx, float yy, float zz, D3DCOLOR sColor) { this->Set(sx, sy, sz, xx, yy, zz, sColor); }
+
+	__VertexXyzNormalColor(const __Vector3& p, const __Vector3& n, D3DCOLOR sColor)
+	{
+		Set(p, n, sColor);
+	}
+
+	__VertexXyzNormalColor(float sx, float sy, float sz, float xx, float yy, float zz, D3DCOLOR sColor)
+	{
+		Set(sx, sy, sz, xx, yy, zz, sColor);
+	}
 };
 
 constexpr int MAX_MIPMAP_COUNT = 10; // 1024 * 1024 단계까지 생성

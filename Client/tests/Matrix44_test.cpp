@@ -76,9 +76,9 @@ TEST_F(Matrix44Test, DefaultConstructor_InitializesToZero)
 
 TEST_F(Matrix44Test, ConstructFromMatrix_CopiesValues)
 {
-	SCOPED_TRACE("__Matrix44::__Matrix44(const _D3DMATRIX&)");
+	SCOPED_TRACE("__Matrix44::__Matrix44(const __Matrix44&)");
 
-	__Matrix44 mtx(static_cast<const _D3DMATRIX&>(mtxIdentity));
+	__Matrix44 mtx(mtxIdentity);
 	ExpectMatrixNear(mtx, mtxIdentity);
 }
 
@@ -93,7 +93,7 @@ TEST_F(Matrix44Test, ConstructFromQuaternion_MatchesReferenceWithinTolerance)
 	};
 
 	const __Matrix44 expectedMatrix(ExpectedResult);
-	const D3DXQUATERNION quat = { 1.0f, 2.0f, 3.0f, 4.0f };
+	const __Quaternion quat = { 1.0f, 2.0f, 3.0f, 4.0f };
 
 	SCOPED_TRACE("__Matrix44::__Matrix44(const __Quaternion&)");
 
@@ -472,7 +472,7 @@ TEST_F(Matrix44Test, Multiply_Quaternion_MatchesReferenceWithinTolerance)
 	};
 
 	const __Matrix44 expectedMatrix(ExpectedResult);
-	const D3DXQUATERNION quat = { 64.0f, 128.0f, 256.0f, 512.0f };
+	const __Quaternion quat = { 64.0f, 128.0f, 256.0f, 512.0f };
 
 	SCOPED_TRACE("__Matrix44::operator*(const __Quaternion&)");
 
@@ -491,7 +491,7 @@ TEST_F(Matrix44Test, MultiplyAssign_Quaternion_MatchesReferenceWithinTolerance)
 	};
 
 	const __Matrix44 expectedMatrix(ExpectedResult);
-	const D3DXQUATERNION quat = { 64.0f, 128.0f, 256.0f, 512.0f };
+	const __Quaternion quat = { 64.0f, 128.0f, 256.0f, 512.0f };
 
 	SCOPED_TRACE("__Matrix44::operator*=(const __Quaternion&)");
 
@@ -511,7 +511,7 @@ TEST_F(Matrix44Test, Assign_Quaternion_MatchesReferenceWithinTolerance)
 	};
 
 	const __Matrix44 expectedMatrix(ExpectedResult);
-	const D3DXQUATERNION quat = { 1.0f, 2.0f, 3.0f, 4.0f };
+	const __Quaternion quat = { 1.0f, 2.0f, 3.0f, 4.0f };
 
 	SCOPED_TRACE("__Matrix44::operator=(const __Quaternion&)");
 

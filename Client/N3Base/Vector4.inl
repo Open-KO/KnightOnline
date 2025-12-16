@@ -26,7 +26,7 @@ void __Vector4::Set(float fx, float fy, float fz, float fw)
 	w = fw;
 }
 
-void __Vector4::Transform(const D3DXVECTOR3& v, const D3DXMATRIX& m)
+void __Vector4::Transform(const __Vector3& v, const __Matrix44& m)
 {
 	x = m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + m.m[3][0];
 	y = m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + m.m[3][1];
@@ -34,7 +34,7 @@ void __Vector4::Transform(const D3DXVECTOR3& v, const D3DXMATRIX& m)
 	w = m.m[0][3] * v.x + m.m[1][3] * v.y + m.m[2][3] * v.z + m.m[3][3];
 }
 
-__Vector4& __Vector4::operator += (const D3DXVECTOR4& v)
+__Vector4& __Vector4::operator += (const __Vector4& v)
 {
 	x += v.x;
 	y += v.y;
@@ -43,7 +43,7 @@ __Vector4& __Vector4::operator += (const D3DXVECTOR4& v)
 	return *this;
 }
 
-__Vector4& __Vector4::operator -= (const D3DXVECTOR4& v)
+__Vector4& __Vector4::operator -= (const __Vector4& v)
 {
 	x -= v.x;
 	y -= v.y;
@@ -71,12 +71,12 @@ __Vector4& __Vector4::operator /= (float f)
 	return *this;
 }
 
-__Vector4 __Vector4::operator + (const D3DXVECTOR4& v) const
+__Vector4 __Vector4::operator + (const __Vector4& v) const
 {
 	return __Vector4(x + v.x, y + v.y, z + v.z, w + v.w);
 }
 
-__Vector4 __Vector4::operator - (const D3DXVECTOR4& v) const
+__Vector4 __Vector4::operator - (const __Vector4& v) const
 {
 	return __Vector4(x - v.x, y - v.y, z - v.z, w - v.w);
 }

@@ -5,7 +5,7 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyList
-D3DVECTOR CPropertyItem::VectorGet()
+__Vector3 CPropertyItem::VectorGet()
 {
 	float xyz[3] = {0,0,0};
 	int j = 0, k = 0;
@@ -26,8 +26,18 @@ D3DVECTOR CPropertyItem::VectorGet()
 		k = j;
 	}
 
-	D3DVECTOR v = { xyz[0], xyz[1], xyz[2] };
-	return v;
+	return { xyz[0], xyz[1], xyz[2] };
+}
+
+D3DVECTOR CPropertyItem::VectorGetD3D()
+{
+	__Vector3 v = VectorGet();
+	return { v.x, v.y, v.z };
+}
+
+void CPropertyItem::VectorSet(const __Vector3& v)
+{
+	m_curValue.Format("%f, %f, %f", v.x, v.y, v.z);
 }
 
 void CPropertyItem::VectorSet(const D3DVECTOR& v)

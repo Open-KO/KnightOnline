@@ -116,7 +116,7 @@ void CN3Eng::SetDefaultEnvironment()
 	__Matrix44 matWorld;
 	matWorld.Identity();
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &matWorld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 	s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 	s_lpD3DDev->SetRenderState(D3DRS_LIGHTING, TRUE);
 
@@ -162,7 +162,7 @@ void CN3Eng::LookAt(const __Vector3& vEye, const __Vector3& vAt, const __Vector3
 {
 	__Matrix44 matView;
 	matView.LookAtLH(vEye, vAt, vUp);
-	s_lpD3DDev->SetTransform(D3DTS_VIEW, &matView);
+	s_lpD3DDev->SetTransform(D3DTS_VIEW, matView.toD3D());
 }
 
 //-----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ void CN3Eng::SetProjection(float fNear, float fFar, float fLens, float fAspect)
 {
 	__Matrix44 matProjection;
 	matProjection.PerspectiveFovLH(fLens, fAspect, fNear, fFar);
-	s_lpD3DDev->SetTransform(D3DTS_PROJECTION, &matProjection);
+	s_lpD3DDev->SetTransform(D3DTS_PROJECTION, matProjection.toD3D());
 }
 
 bool CN3Eng::Init(

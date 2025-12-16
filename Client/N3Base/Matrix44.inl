@@ -12,12 +12,12 @@ __Matrix44::__Matrix44(const float mtx[4][4])
 	std::memcpy(&m, mtx, sizeof(m));
 }
 
-__Matrix44::__Matrix44(const _D3DMATRIX& mtx)
+__Matrix44::__Matrix44(const __Matrix44& mtx)
 {
 	std::memcpy(&m, &mtx.m, sizeof(m));
 }
 
-__Matrix44::__Matrix44(const D3DXQUATERNION& qt)
+__Matrix44::__Matrix44(const __Quaternion& qt)
 {
 	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
 	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);
@@ -140,7 +140,7 @@ void __Matrix44::PosSet(float x, float y, float z)
 	m[3][2] = z;
 }
 
-void __Matrix44::PosSet(const D3DXVECTOR3& v)
+void __Matrix44::PosSet(const __Vector3& v)
 {
 	m[3][0] = v.x;
 	m[3][1] = v.y;
@@ -202,7 +202,7 @@ void __Matrix44::Rotation(float fX, float fY, float fZ)
 	m[3][3] = 1;
 }
 
-void __Matrix44::Rotation(const D3DXVECTOR3& v)
+void __Matrix44::Rotation(const __Vector3& v)
 {
 	float SX = sinf(v.x), CX = cosf(v.x);
 	float SY = sinf(v.y), CY = cosf(v.y);
@@ -236,7 +236,7 @@ void __Matrix44::Scale(float sx, float sy, float sz)
 	m[2][2] = sz;
 }
 
-void __Matrix44::Scale(const D3DXVECTOR3& v)
+void __Matrix44::Scale(const __Vector3& v)
 {
 	Identity();
 
@@ -245,7 +245,7 @@ void __Matrix44::Scale(const D3DXVECTOR3& v)
 	m[2][2] = v.z;
 }
 
-void __Matrix44::Direction(const D3DXVECTOR3& vDir)
+void __Matrix44::Direction(const __Vector3& vDir)
 {
 	Identity();
 
@@ -283,7 +283,7 @@ void __Matrix44::Direction(const D3DXVECTOR3& vDir)
 //} // end ViewMatrix
 }
 
-void __Matrix44::LookAtLH(const D3DXVECTOR3& vEye, const D3DXVECTOR3& vAt, const D3DXVECTOR3& vUp)
+void __Matrix44::LookAtLH(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp)
 {
 	__Vector3 right, upn, vec;
 
@@ -336,7 +336,7 @@ void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
 	m[3][3] = 0.0f;
 }
 
-__Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
+__Matrix44 __Matrix44::operator * (const __Matrix44& mtx) const
 {
 	__Matrix44 mtxOut;
 
@@ -363,7 +363,7 @@ __Matrix44 __Matrix44::operator * (const D3DXMATRIX& mtx) const
 	return mtxOut;
 }
 
-void __Matrix44::operator *= (const D3DXMATRIX& mtx)
+void __Matrix44::operator *= (const __Matrix44& mtx)
 {
 	__Matrix44 tmp(*this);
 
@@ -388,14 +388,14 @@ void __Matrix44::operator *= (const D3DXMATRIX& mtx)
 	m[3][3] = tmp.m[3][0] * mtx.m[0][3] + tmp.m[3][1] * mtx.m[1][3] + tmp.m[3][2] * mtx.m[2][3] + tmp.m[3][3] * mtx.m[3][3];
 }
 
-void __Matrix44::operator += (const D3DXVECTOR3& v)
+void __Matrix44::operator += (const __Vector3& v)
 {
 	m[3][0] += v.x;
 	m[3][1] += v.y;
 	m[3][2] += v.z;
 }
 
-void __Matrix44::operator -= (const D3DXVECTOR3& v)
+void __Matrix44::operator -= (const __Vector3& v)
 {
 	m[3][0] -= v.x;
 	m[3][1] -= v.y;
@@ -418,7 +418,7 @@ void __Matrix44::operator *= (const __Quaternion& qRot)
 	this->operator *= (mtx);
 }
 
-void __Matrix44::operator = (const D3DXQUATERNION& qt)
+void __Matrix44::operator = (const __Quaternion& qt)
 {
 	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
 	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);

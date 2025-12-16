@@ -1101,7 +1101,7 @@ void CDFont::AddToAlphaManager(uint32_t dwColor, float fDist, __Matrix44& mtxWor
 		dwFVFSize = sizeof(__VertexTransformed);
 
 		// 위치 색 조정
-		__Vector2 vDiff = __Vector2(mtxWorld._41, mtxWorld._42) - m_PrevLeftTop;
+		__Vector2 vDiff = __Vector2(mtxWorld.m[3][0], mtxWorld.m[3][1]) - m_PrevLeftTop;
 		if ( fabs(vDiff.x)>0.5f || fabs(vDiff.y)>0.5f || dwColor != m_dwFontColor)
 		{
 			// lock vertex buffer
@@ -1112,7 +1112,7 @@ void CDFont::AddToAlphaManager(uint32_t dwColor, float fDist, __Matrix44& mtxWor
 			int i, iVC = m_iPrimitiveCount*3;
 			if (fabs(vDiff.x)>0.5f)
 			{
-				m_PrevLeftTop.x = mtxWorld._41;
+				m_PrevLeftTop.x = mtxWorld.m[3][0];
 				for (i=0; i<iVC; ++i)
 				{
 					pVertices[i].x += vDiff.x;
@@ -1121,7 +1121,7 @@ void CDFont::AddToAlphaManager(uint32_t dwColor, float fDist, __Matrix44& mtxWor
 
 			if (fabs(vDiff.y)>0.5f)
 			{
-				m_PrevLeftTop.y = mtxWorld._42;
+				m_PrevLeftTop.y = mtxWorld.m[3][1];
 				for (i=0; i<iVC; ++i)
 				{
 					pVertices[i].y += vDiff.y;
@@ -1131,7 +1131,7 @@ void CDFont::AddToAlphaManager(uint32_t dwColor, float fDist, __Matrix44& mtxWor
 			if (dwColor != m_dwFontColor)
 			{
 				m_dwFontColor = dwColor;
-				m_PrevLeftTop.y = mtxWorld._42;
+				m_PrevLeftTop.y = mtxWorld.m[3][1];
 				for (i=0; i<iVC; ++i)
 				{
 					pVertices[i].color = m_dwFontColor;

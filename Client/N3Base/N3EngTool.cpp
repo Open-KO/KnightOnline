@@ -70,7 +70,7 @@ void CN3EngTool::RenderGrid(const __Matrix44& mtxWorld)
 		bInit = true;
 	}
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 	s_lpD3DDev->SetTexture(0, nullptr);
 
 	s_lpD3DDev->SetFVF(FVF_CV); //s_lpD3DDev->SetVertexShader(FVF_CV);
@@ -116,7 +116,7 @@ void CN3EngTool::RenderAxis(bool bShowDir)
 		bInit = true;
 	}
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &stm);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, stm.toD3D());
 	s_lpD3DDev->SetTexture(0, nullptr);
 
 	s_lpD3DDev->SetFVF(FVF_CV); //s_lpD3DDev->SetVertexShader(FVF_CV);

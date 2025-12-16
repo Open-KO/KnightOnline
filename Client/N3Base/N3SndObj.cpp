@@ -249,7 +249,7 @@ bool CN3SndObj::Create(const std::string& szFN, e_SndType eType)
 	return true;
 }
 
-bool CN3SndObj::Duplicate(CN3SndObj* pSrc, e_SndType eType, D3DVECTOR* pPos)
+bool CN3SndObj::Duplicate(CN3SndObj* pSrc, e_SndType eType, __Vector3* pPos)
 {
 	if(nullptr == s_lpDS || nullptr == pSrc || nullptr == pSrc->m_lpDSBuff)
 		return false;
@@ -275,12 +275,12 @@ bool CN3SndObj::Duplicate(CN3SndObj* pSrc, e_SndType eType, D3DVECTOR* pPos)
 		}
 		*/
 
-		if(pPos) this->SetPos(pPos);
-		this->SetMaxDistance(100);
+		if (pPos != nullptr)
+			SetPos(pPos);
+		SetMaxDistance(100);
 		
-		D3DVECTOR vDir;
-		vDir.x = 0.0f;	vDir.z = 0.0f;	vDir.y = 1.0f;
-		this->SetConeOrientation(&vDir);
+		__Vector3 vDir = { 0.0f, 1.0f, 0.0f };
+		SetConeOrientation(&vDir);
 	}
 
 	s_bNeedDeferredTick = true;	// 3D Listener CommitDeferredSetting
@@ -459,9 +459,9 @@ void CN3SndObj::Tick()
 //
 //
 //
-void CN3SndObj::Play(const D3DVECTOR* pvPos, float delay, float fFadeInTime, bool bImmediately)
+void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime, bool bImmediately)
 {
-	this->SetPos(pvPos);
+	SetPos(pvPos);
 	if(bImmediately) this->Stop();
 
 	m_fFadeInTime = fFadeInTime;
@@ -527,7 +527,7 @@ void CN3SndObj::Stop(float fFadeOutTime)
 }
 
 
-void CN3SndObj::SetPos(const D3DVECTOR* pvPos)
+void CN3SndObj::SetPos(const __Vector3* pvPos)
 {
     if( m_lpDS3DBuff && pvPos ) 
 		HRESULT hr = m_lpDS3DBuff->SetPosition(pvPos->x, pvPos->y, pvPos->z, DS3D_IMMEDIATE );
@@ -564,7 +564,7 @@ void CN3SndObj::SetConeOutSizeVolume(int32_t vol)
 //
 //
 //
-void CN3SndObj::SetConeOrientation(D3DVECTOR* pDir)
+void CN3SndObj::SetConeOrientation(__Vector3* pDir)
 {
 	if( m_lpDS3DBuff )	m_lpDS3DBuff->SetConeOrientation(pDir->x, pDir->y, pDir->z, DS3D_IMMEDIATE);
 }
@@ -582,7 +582,7 @@ void CN3SndObj::SetDopplerFactor(D3DVALUE factor)
 	s_bNeedDeferredTick = true;	// 3D Listener CommitDeferredSetting
 }
 
-void CN3SndObj::SetListenerPos(const D3DVECTOR* pVPos, bool IsDeferred)
+void CN3SndObj::SetListenerPos(const __Vector3* pVPos, bool IsDeferred)
 {
 	if(nullptr == s_lpDSListener || nullptr == pVPos) return;
 	DWORD dwParam = (IsDeferred) ? DS3D_DEFERRED : DS3D_IMMEDIATE;
@@ -594,7 +594,7 @@ void CN3SndObj::SetListenerPos(const D3DVECTOR* pVPos, bool IsDeferred)
 //
 //
 //
-void CN3SndObj::SetListenerOrientation(const D3DVECTOR* pVAt, const D3DVECTOR* pVUp, bool IsDeferred)
+void CN3SndObj::SetListenerOrientation(const __Vector3* pVAt, const __Vector3* pVUp, bool IsDeferred)
 {
 	if(nullptr == s_lpDSListener || nullptr == pVAt || nullptr == pVUp) return;
 	DWORD dwParam = (IsDeferred) ? DS3D_DEFERRED : DS3D_IMMEDIATE;

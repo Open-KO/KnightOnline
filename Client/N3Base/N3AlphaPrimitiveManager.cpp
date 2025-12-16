@@ -128,7 +128,7 @@ void CN3AlphaPrimitiveManager::Render()
 
 		CN3Base::s_lpD3DDev->SetFVF(pBuffs[i]->dwFVF);
 		CN3Base::s_lpD3DDev->SetTexture(0, pBuffs[i]->lpTex);
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &(pBuffs[i]->MtxWorld)); // 월드 행렬 적용
+		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, pBuffs[i]->MtxWorld.toD3D()); // 월드 행렬 적용
 
 		if(pBuffs[i]->lpTex)
 		{

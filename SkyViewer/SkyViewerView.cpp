@@ -75,14 +75,14 @@ void CSkyViewerView::OnDraw(CDC* pDC)
 			__Vector3 vDir(-1,0,1);
 			vDir *= mtxRot;
 			vDir.Normalize();
-			pFrm->m_Lights[i].m_Data.Direction = vDir;
+			pFrm->m_Lights[i].m_Data.Direction = { vDir.x, vDir.y, vDir.z };
 		}
 		else if(1 == i)
 		{
 //			__Vector3 vDir = CN3Base::s_CameraData.vAt - CN3Base::s_CameraData.vEye;
 			__Vector3 vDir(2,-3, 2);
 			vDir.Normalize();
-			pFrm->m_Lights[i].m_Data.Direction = vDir;
+			pFrm->m_Lights[i].m_Data.Direction = { vDir.x, vDir.y, vDir.z };
 		}
 		else if(2 == i)
 		{

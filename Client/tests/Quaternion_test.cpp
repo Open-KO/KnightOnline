@@ -180,3 +180,28 @@ TEST_F(QuaternionTest, RotationYawPitchRoll_MatchesReferenceWithinTolerance)
 
 	ExpectQuaternionNear(quat, expectedQuat, EpsilonWithTolerance);
 }
+
+TEST_F(QuaternionTest, Multiply_Quaternion_MatchesReferenceWithinTolerance)
+{
+	const __Quaternion expectedQuat = { 0.465000004f, 0.295000017f, 0.310000002f, -0.242500007f };
+	const __Quaternion lhsQuat = { 0.5f, 0.8f, 0.9f, 0.75f };
+	const __Quaternion rhsQuat = { 0.2f, 0.3f, 0.1f, 0.25f };
+
+	SCOPED_TRACE("__Quaternion::operator*(const __Quaternion&)");
+
+	__Quaternion quat = lhsQuat * rhsQuat;
+	ExpectQuaternionNear(quat, expectedQuat, EpsilonWithTolerance);
+}
+
+TEST_F(QuaternionTest, MultiplyAssign_Quaternion_MatchesReferenceWithinTolerance)
+{
+	const __Quaternion expectedQuat = { 0.465000004f, 0.295000017f, 0.310000002f, -0.242500007f };
+	const __Quaternion lhsQuat = { 0.5f, 0.8f, 0.9f, 0.75f };
+	const __Quaternion rhsQuat = { 0.2f, 0.3f, 0.1f, 0.25f };
+
+	SCOPED_TRACE("__Quaternion::operator*=(const __Quaternion&)");
+
+	__Quaternion quat = lhsQuat;
+	quat *= rhsQuat;
+	ExpectQuaternionNear(quat, expectedQuat, EpsilonWithTolerance);
+}

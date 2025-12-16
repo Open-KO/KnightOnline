@@ -48,8 +48,8 @@ public:
 	static void StaticRelease();
 	static void StaticTick();
 	static void SetDopplerFactor(D3DVALUE factor);
-	static void SetListenerPos(const D3DVECTOR* pVPos, bool IsDeferred = true);
-	static void SetListenerOrientation(const D3DVECTOR* pVAt, const D3DVECTOR* pVUp, bool IsDeferred = true);
+	static void SetListenerPos(const __Vector3* pVPos, bool IsDeferred = true);
+	static void SetListenerOrientation(const __Vector3* pVAt, const __Vector3* pVUp, bool IsDeferred = true);
 
 	LPDIRECTSOUNDBUFFER		GetDSBuffer() { return m_lpDSBuff; }
 	LPDIRECTSOUND3DBUFFER	GetDS3DBuffer() { return m_lpDS3DBuff; }
@@ -68,17 +68,17 @@ public:
 	void	Init();
 	void	Release(); // 참조 카운트를 리턴 해준다.. 사운드 매니저에서는 이 참조 카운트를 보고 맵에서 지운다..
 	virtual bool Create(const std::string& szFN, e_SndType eType);
-	bool	Duplicate(CN3SndObj* pSrc, e_SndType eType, D3DVECTOR* pPos = nullptr);
+	bool	Duplicate(CN3SndObj* pSrc, e_SndType eType, __Vector3* pPos = nullptr);
 
-	void	Play(const D3DVECTOR* pvPos = nullptr, float delay = 0.0f, float fFadeInTime = 0.0f, bool bImmediately = true);
+	void	Play(const __Vector3* pvPos = nullptr, float delay = 0.0f, float fFadeInTime = 0.0f, bool bImmediately = true);
 	void	Stop(float fFadeOutTime = 0.0f);
 	void	Tick();
 
-	void	SetConeOrientation(D3DVECTOR* pDir);
+	void	SetConeOrientation(__Vector3* pDir);
 	void	SetConeOutSizeVolume(int32_t vol);
 	void	SetMaxDistance(D3DVALUE max);
 	void	SetMinDistance(D3DVALUE min);	
-	void	SetPos(const D3DVECTOR* pvPos);
+	void	SetPos(const __Vector3* pvPos);
 
 	CN3SndObj();
 	virtual ~CN3SndObj();

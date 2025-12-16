@@ -183,7 +183,7 @@ void CPondMng::Render()
 		if (m_PCursorMode == PCM_CREATE)
 		{
 			__Matrix44 matWorld;	matWorld.Identity();
-			s_lpD3DDev->SetTransform(D3DTS_WORLD, &matWorld);
+			s_lpD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 
 			// set texture
 			hr = s_lpD3DDev->SetTexture(0, nullptr);
@@ -213,8 +213,8 @@ void CPondMng::Render()
 		{
 			// transform
 			__Matrix44 matView, matProj, matVP;
-			s_lpD3DDev->GetTransform(D3DTS_VIEW, &matView);
-			s_lpD3DDev->GetTransform(D3DTS_PROJECTION, &matProj);
+			s_lpD3DDev->GetTransform(D3DTS_VIEW, matView.toD3D());
+			s_lpD3DDev->GetTransform(D3DTS_PROJECTION, matProj.toD3D());
 			matVP = matView * matProj;
 			D3DVIEWPORT9 vp = s_CameraData.vp;
 
@@ -706,8 +706,8 @@ BOOL CPondMng::SelectVtxByDragRect(RECT* pRect, BOOL bAdd,BOOL bSelectPond)
 	LPDIRECT3DDEVICE9 pD3DDev = pEng->s_lpD3DDev;
 
 	__Matrix44 matView, matProj, matVP;
-	pD3DDev->GetTransform(D3DTS_VIEW, &matView);
-	pD3DDev->GetTransform(D3DTS_PROJECTION, &matProj);
+	pD3DDev->GetTransform(D3DTS_VIEW, matView.toD3D());
+	pD3DDev->GetTransform(D3DTS_PROJECTION, matProj.toD3D());
 	matVP = matView * matProj;
 
 	D3DVIEWPORT9 vp = pEng->s_CameraData.vp;

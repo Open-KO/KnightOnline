@@ -142,7 +142,7 @@ void CPortalVolume::Render()
 	__Matrix44 mtxWorld;
 	mtxWorld.Identity();
 
-	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 	CN3Base::s_lpD3DDev->SetTexture(0, nullptr);
 
 	// Shape..
@@ -175,15 +175,15 @@ void CPortalVolume::RenderShape()
 
 		// 로딩할때 미리 계산해 놓은 월드 행렬 적용..
 		__Matrix44 mtxBackup;
-		CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, &mtxBackup);
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &pSI->m_pShape->m_Matrix);
+		CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, mtxBackup.toD3D());
+		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, pSI->m_pShape->m_Matrix.toD3D());
 
 #ifdef _DEBUG
 		if (pSI->m_pShape->CollisionMesh())
 			pSI->m_pShape->CollisionMesh()->Render(0xffffffff);
 #endif 
 
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxBackup);
+		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxBackup.toD3D());
 	}
 
 	ShapePart* pSP = nullptr;
@@ -233,7 +233,7 @@ void CPortalVolume::RenderCollision()
 		__Matrix44 mtxWorld;
 		mtxWorld.Identity();
 
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 
 		size_t vecSize = pCI->m_ivVector.size();
 		uint32_t* pIndices = new uint32_t[vecSize];
@@ -243,15 +243,15 @@ void CPortalVolume::RenderCollision()
 			pIndices[k] = pCI->m_ivVector[k];
 
 		__Matrix44 mtxBackup;
-		CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, &mtxBackup);
+		CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, mtxBackup.toD3D());
 		pSI = CPvsMgr::GetShapeInfoByManager(pCI->m_iID);
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &pSI->m_Matrix);
+		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, pSI->m_Matrix.toD3D());
 		pSI->m_pShape->PartialColRender(
 			static_cast<int>(vecSize),
 			reinterpret_cast<int*>(pIndices));
 		delete pIndices;
 
-		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxBackup);
+		CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxBackup.toD3D());
 	}
 }
 
@@ -595,16 +595,16 @@ BOOL CPortalVolume::PickWideWithTerrain(int x, int y, __Vector3& vPick)
 
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
-	vTmp.x =  ( ( ( 2.0f * x ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / CN3Base::s_CameraData.mtxProjection._11;
-	vTmp.y = -( ( ( 2.0f * y ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / CN3Base::s_CameraData.mtxProjection._22;
+	vTmp.x =  ( ( ( 2.0f * x ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / CN3Base::s_CameraData.mtxProjection.m[0][0];
+	vTmp.y = -( ( ( 2.0f * y ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / CN3Base::s_CameraData.mtxProjection.m[1][1];
 	vTmp.z =  1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44* pMtxVI = &CN3Base::s_CameraData.mtxViewInverse;
 	__Vector3 vDir;
-	vDir.x  = vTmp.x * pMtxVI->_11 + vTmp.y * pMtxVI->_21 + vTmp.z * pMtxVI->_31;
-	vDir.y  = vTmp.x * pMtxVI->_12 + vTmp.y * pMtxVI->_22 + vTmp.z * pMtxVI->_32;
-	vDir.z  = vTmp.x * pMtxVI->_13 + vTmp.y * pMtxVI->_23 + vTmp.z * pMtxVI->_33;
+	vDir.x  = vTmp.x * pMtxVI->m[0][0] + vTmp.y * pMtxVI->m[1][0] + vTmp.z * pMtxVI->m[2][0];
+	vDir.y  = vTmp.x * pMtxVI->m[0][1] + vTmp.y * pMtxVI->m[1][1] + vTmp.z * pMtxVI->m[2][1];
+	vDir.z  = vTmp.x * pMtxVI->m[0][2] + vTmp.y * pMtxVI->m[1][2] + vTmp.z * pMtxVI->m[2][2];
 	__Vector3 vPos = pMtxVI->Pos();
 	__Vector3 vPosCur = vPos;
 

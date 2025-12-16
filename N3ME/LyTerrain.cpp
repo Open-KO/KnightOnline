@@ -2268,7 +2268,7 @@ void CLyTerrain::Render()
 
 	__Matrix44 WorldMtx;
 	WorldMtx.Identity();
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &WorldMtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, WorldMtx.toD3D());
 
 	s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
@@ -2309,7 +2309,7 @@ void CLyTerrain::Render()
 	{
 		HRESULT hr;
 		WorldMtx.Identity();
-		s_lpD3DDev->SetTransform(D3DTS_WORLD, &WorldMtx);
+		s_lpD3DDev->SetTransform(D3DTS_WORLD, WorldMtx.toD3D());
 
 		hr = s_lpD3DDev->SetTexture(0, nullptr);
 		hr = s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -2794,27 +2794,27 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 	if(y < rect.top || y>=rect.bottom ) return false;
 	
 	__Matrix44 mtx; mtx.Identity();
-	CN3Base::s_lpD3DDev->GetTransform( D3DTS_PROJECTION, &mtx );		// Perspective Division..
+	CN3Base::s_lpD3DDev->GetTransform(D3DTS_PROJECTION, mtx.toD3D());		// Perspective Division..
 
 	__Vector3 vect;
-	vect.x =  ( ( ( 2.0f * x ) / rect.Width()  ) - 1 ) / mtx._11;
-	vect.y = -( ( ( 2.0f * y ) / rect.Height() ) - 1 ) / mtx._22;
+	vect.x =  ( ( ( 2.0f * x ) / rect.Width()  ) - 1 ) / mtx.m[0][0];
+	vect.y = -( ( ( 2.0f * y ) / rect.Height() ) - 1 ) / mtx.m[1][1];
 	vect.z = 1.0f;
 
 	bool boo = false;
     // Get the inverse view matrix
     __Matrix44 matView, m;
 	__Vector3 vOrig, vDir;
-	CN3Base::s_lpD3DDev->GetTransform( D3DTS_VIEW, &matView );		// 내 맘대로 되라..!! 얍..~~
+	CN3Base::s_lpD3DDev->GetTransform(D3DTS_VIEW, matView.toD3D());		// 내 맘대로 되라..!! 얍..~~
     m = matView.Inverse();
 
     // Transform the screen space pick ray into 3D space
-    vDir.x  = vect.x*m._11 + vect.y*m._21 + vect.z*m._31;
-    vDir.y  = vect.x*m._12 + vect.y*m._22 + vect.z*m._32;
-    vDir.z  = vect.x*m._13 + vect.y*m._23 + vect.z*m._33;
-    vOrig.x = m._41;
-    vOrig.y = m._42;
-    vOrig.z = m._43;
+    vDir.x  = vect.x*m.m[0][0] + vect.y*m.m[1][0] + vect.z*m.m[2][0];
+    vDir.y  = vect.x*m.m[0][1] + vect.y*m.m[1][1] + vect.z*m.m[2][1];
+    vDir.z  = vect.x*m.m[0][2] + vect.y*m.m[1][2] + vect.z*m.m[2][2];
+    vOrig.x = m.m[3][0];
+    vOrig.y = m.m[3][1];
+    vOrig.z = m.m[3][2];
 
 	__Vector3 A, B, C, AB, AC;
 	float ftx, fty, ftz;
@@ -2884,7 +2884,7 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 				if (boo)
 				{
-					if (vec) *vec = vOrig + ftx*vDir;
+					if (vec) *vec = vOrig + vDir*ftx;
 					if (pHeightMapPos)
 					{
 						if (fty>0.5f) { pHeightMapPos->x=ix+1;	pHeightMapPos->y=iz; }
@@ -2901,7 +2901,7 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 				if (boo)
 				{
-					if (vec) *vec = vOrig + ftx*vDir;
+					if (vec) *vec = vOrig + vDir*ftx;
 					if (pHeightMapPos)
 					{
 						if (fty>0.5f) { pHeightMapPos->x=ix+1;	pHeightMapPos->y=iz; }
@@ -2920,7 +2920,7 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 				if (boo)
 				{
-					if (vec) *vec = vOrig + ftx*vDir;
+					if (vec) *vec = vOrig + vDir*ftx;
 					if (pHeightMapPos)
 					{
 						if (fty>0.5f) { pHeightMapPos->x=ix;	pHeightMapPos->y=iz; }
@@ -2937,7 +2937,7 @@ bool CLyTerrain::Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos)
 				boo = _IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 				if (boo)
 				{
-					if (vec) *vec = vOrig + ftx*vDir;
+					if (vec) *vec = vOrig + vDir*ftx;
 					if (pHeightMapPos)
 					{
 						if (fty>0.5f) { pHeightMapPos->x=ix;	pHeightMapPos->y=iz; }
@@ -4748,7 +4748,7 @@ void CLyTerrain::RenderBrushArea()
 	if (m_iEditMode == TEM_NOT || m_iEditMode == TEM_DTEX || m_iBrushIndexCount == 0) return;
 
 	__Matrix44 WorldMtx;	WorldMtx.Identity();	
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &WorldMtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, WorldMtx.toD3D());
 
 	// backup
 	DWORD dwAlphaBlend, dwSrcBlend, dwDestBlend;

@@ -159,7 +159,7 @@ void CGameProcCharacterSelect::Init()
 	m_lgt[2].Falloff = m_lgt[1].Falloff = m_lgt[0].Falloff = 20.0f;
 
 
-	__Vector3 vTemp; 
+	D3DXVECTOR3 vTemp; 
 	switch ( s_pPlayer->m_InfoBase.eNation )
 	{
 		case NATION_KARUS:
@@ -171,19 +171,22 @@ void CGameProcCharacterSelect::Init()
 			m_pLights[1]->LoadFromFile("ChrSelect\\ka_light_1.n3light");	
 			m_pLights[2]->LoadFromFile("ChrSelect\\ka_light_2.n3light");	
 
-			m_lgt[0].Position = m_vEye;	// 카루스
+			m_lgt[0].Position = { m_vEye.x, m_vEye.y, m_vEye.z };	// 카루스
 			m_lgt[0].Position.y += 2.0f;	// 카루스
-			vTemp.Set(0.0f, 0.0f, 3.5f);	vTemp -= m_lgt[0].Position;
+			vTemp = { 0.0f, 0.0f, 3.5f };
+			vTemp -= m_lgt[0].Position;
 			m_lgt[0].Direction = vTemp;
 			m_lgt[0].Phi   = 0.6f;
 
-			m_lgt[1].Position = __Vector3(5.87f, 2.4f, 4.73f);	// 카루스
-			vTemp.Set(2.32f, 0.0f, 2.54f);	vTemp -= m_lgt[1].Position;
+			m_lgt[1].Position = { 5.87f, 2.4f, 4.73f };	// 카루스
+			vTemp = { 2.32f, 0.0f, 2.54f };
+			vTemp -= m_lgt[1].Position;
 			m_lgt[1].Direction = vTemp;
 			m_lgt[1].Phi   = 0.6f;
 
-			m_lgt[2].Position = __Vector3(-5.87f, 2.4f, 4.73f);	// 카루스
-			vTemp.Set(-2.32f, 0.0f, 2.54f);	vTemp -= m_lgt[2].Position;
+			m_lgt[2].Position = { -5.87f, 2.4f, 4.73f };	// 카루스
+			vTemp = { -2.32f, 0.0f, 2.54f };
+			vTemp -= m_lgt[2].Position;
 			m_lgt[2].Direction = vTemp;
 			m_lgt[2].Phi   = 0.6f;
 			break;
@@ -196,19 +199,22 @@ void CGameProcCharacterSelect::Init()
 			m_pLights[1]->LoadFromFile("ChrSelect\\el_light_1.n3light");	
 			m_pLights[2]->LoadFromFile("ChrSelect\\el_light_2.n3light");	
 
-			m_lgt[0].Position = m_vEye;	// 카루스
+			m_lgt[0].Position = { m_vEye.x, m_vEye.y, m_vEye.z };	// 카루스
 			m_lgt[0].Position.y += 2.0f;	// 카루스
-			vTemp.Set(0.0f, -0.1f, 3.0f);	vTemp -= m_lgt[0].Position;
+			vTemp = { 0.0f, -0.1f, 3.0f };
+			vTemp -= m_lgt[0].Position;
 			m_lgt[0].Direction = vTemp;
 			m_lgt[0].Phi   = 0.45f;
 
-			m_lgt[1].Position = __Vector3(5.6f, 2.4f, 4.68f);	// 카루스
-			vTemp.Set(2.2f, -0.1f, 2.36f);	vTemp -= m_lgt[1].Position;
+			m_lgt[1].Position = { 5.6f, 2.4f, 4.68f };	// 카루스
+			vTemp = { 2.2f, -0.1f, 2.36f };
+			vTemp -= m_lgt[1].Position;
 			m_lgt[1].Direction = vTemp;
 			m_lgt[1].Phi   = 0.45f;
 
-			m_lgt[2].Position = __Vector3(-5.6f, 2.4f, 4.68f);	// 카루스
-			vTemp.Set(-2.4f, -0.1f, 2.23f);	vTemp -= m_lgt[2].Position;
+			m_lgt[2].Position = { -5.6f, 2.4f, 4.68f };	// 카루스
+			vTemp = { -2.4f, -0.1f, 2.23f };
+			vTemp -= m_lgt[2].Position;
 			m_lgt[2].Direction = vTemp;
 			m_lgt[2].Phi   = 0.45f;
 			break;
@@ -283,7 +289,7 @@ void CGameProcCharacterSelect::Render()
 
 	__Matrix44 mtxWorld;
 	mtxWorld.Identity();
-	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld); 
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D()); 
 
 	m_pCamera->EyePosSet(m_vEye);
 	m_pCamera->AtPosSet(m_vAt);
@@ -746,7 +752,7 @@ void CGameProcCharacterSelect::ProcessOnReturn()
 bool CGameProcCharacterSelect::CheckRotateLeft()
 {
 	__Matrix44 mtxrot; mtxrot.Identity();
-	__Vector3 vOffs, v1, v2, v3;
+	__Vector3 vOffs, v1, v2;
 	__Vector3 vEyeTemp;
 	bool	bReturn = false; 
 
@@ -809,7 +815,7 @@ bool CGameProcCharacterSelect::CheckRotateCenterToLeft()
 bool CGameProcCharacterSelect::CheckRotateRight()
 {
 	__Matrix44 mtxrot; mtxrot.Identity();
-	__Vector3 vOffs, v1, v2, v3;
+	__Vector3 vOffs, v1, v2;
 	__Vector3 vEyeTemp;
 	bool	bReturn = false; 
 

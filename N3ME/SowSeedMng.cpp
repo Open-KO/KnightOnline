@@ -609,7 +609,7 @@ void CSowSeedMng::Render_Box(LPDIRECT3DDEVICE9 lpD3DDevice,__Vector3 Pos)
 	__Matrix44 WorldMtx;
 	WorldMtx.Identity();
 	WorldMtx.PosSet(Pos);
-	lpD3DDevice->SetTransform(D3DTS_WORLD, &WorldMtx);
+	lpD3DDevice->SetTransform(D3DTS_WORLD, WorldMtx.toD3D());
 
 	lpD3DDevice->SetTexture(0, nullptr);
  	lpD3DDevice->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
@@ -646,7 +646,7 @@ void CSowSeedMng::SaveData(void)
 			// 오브젝트 아이디
 			fwrite(&group->Obj_ID, sizeof(group->Obj_ID), 1, fp);
 			// 그룹 위치 
-			fwrite(group->Pos, sizeof(group->Pos), 1, fp);
+			fwrite(&group->Pos, sizeof(group->Pos), 1, fp);
 			// 서브 그룹 크기 
 			int grass_size = static_cast<int>(group->grass.size());
 			fwrite(&grass_size, sizeof(grass_size), 1, fp);
@@ -662,7 +662,7 @@ void CSowSeedMng::SaveData(void)
 			{
 				LPGRASS grass = *it_grass;
 				// 풀의 위치 
-				fwrite(grass->Pos, sizeof(grass->Pos), 1, fp);
+				fwrite(&grass->Pos, sizeof(grass->Pos), 1, fp);
 				// 풀의 타일 번호 
 				fwrite(&grass->Tile_x, sizeof(grass->Tile_x), 1, fp);
 				fwrite(&grass->Tile_z, sizeof(grass->Tile_z), 1, fp);
@@ -720,7 +720,7 @@ void CSowSeedMng::LoadData(void)
 		fread(&group->b_size,sizeof( group->b_size),1,fp);
 		fread(&group->Group_id,sizeof(group->Group_id),1,fp);
 		fread(&group->Obj_ID,sizeof(group->Obj_ID),1,fp);
-		fread(group->Pos,sizeof(group->Pos),1,fp);
+		fread(&group->Pos,sizeof(group->Pos),1,fp);
 		int grass_sub_size = 0;
 		fread(&grass_sub_size ,sizeof(grass_sub_size),1,fp);
 
@@ -734,7 +734,7 @@ void CSowSeedMng::LoadData(void)
 
 			LPGRASS grass = new GRASS;
 			// 풀의 위치 
-			fread(grass->Pos,sizeof(grass->Pos),1,fp);
+			fread(&grass->Pos,sizeof(grass->Pos),1,fp);
 			// 풀의 타일 번호 
 			fread(&grass->Tile_x,sizeof(grass->Tile_x),1,fp);
 			fread(&grass->Tile_z,sizeof(grass->Tile_z),1,fp);

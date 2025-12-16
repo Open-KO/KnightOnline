@@ -151,7 +151,7 @@ void CN3Cloud::Tick()
 void CN3Cloud::Render()
 {
 	__Matrix44 matWorld; matWorld.Identity();
-	s_lpD3DDev->SetTransform( D3DTS_WORLD, &matWorld );
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 
 	static uint16_t CloudIndex[30] = {0,1,4,1,2,5,2,3,6,3,0,7,5,4,1,6,5,2,7,6,3,4,7,0,4,5,7,5,6,7};
 	//static uint16_t CloudIndex[54] = {0,1,4,1,2,5,2,3,6,3,0,7,5,4,1,6,5,2,7,6,3,4,7,0,

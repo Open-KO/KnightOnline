@@ -200,8 +200,8 @@ void CN3FXSPart::Render()
 	}
 
 	__Matrix44 mtx;
-	s_lpD3DDev->GetTransform(D3DTS_WORLD, &mtx);
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_WorldMtx);
+	s_lpD3DDev->GetTransform(D3DTS_WORLD, mtx.toD3D());
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_WorldMtx.toD3D());
 
 	DWORD dwCullMode, dwZWriteEnable, dwZBufferEnable, dwLight;
 	s_lpD3DDev->GetRenderState( D3DRS_ZWRITEENABLE, &dwZWriteEnable );
@@ -221,7 +221,7 @@ void CN3FXSPart::Render()
 	if(m_pRefShape->m_dwLight != dwLight) s_lpD3DDev->SetRenderState(D3DRS_LIGHTING, dwLight);
 	if(m_pRefShape->m_dwDoubleSide != dwCullMode) s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, dwCullMode);
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 }
 
 bool CN3FXSPart::Load(HANDLE hFile)

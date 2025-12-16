@@ -129,9 +129,9 @@ void CN3SkyMng::Render()
 {
     // Disable zbuffer, center view matrix, and set FOV to 72 degrees
     __Matrix44 matView = s_CameraData.mtxView;
-    matView._41 = matView._42 = matView._43 = 0.0f;
+    matView.m[3][0] = matView.m[3][1] = matView.m[3][2] = 0.0f;
     
-    s_lpD3DDev->SetTransform( D3DTS_VIEW,       &matView );
+    s_lpD3DDev->SetTransform(D3DTS_VIEW, matView.toD3D());
 
 	// backup render state
 	DWORD dwAlphaBlend, dwSrcBlend, dwDestBlend, dwZEnable, dwFog, dwLighting;
@@ -165,7 +165,7 @@ void CN3SkyMng::Render()
 	if (D3DZB_FALSE != dwZEnable) s_lpD3DDev->SetRenderState( D3DRS_ZENABLE, dwZEnable );
     if (FALSE != dwFog) s_lpD3DDev->SetRenderState( D3DRS_FOGENABLE, dwFog );
 	if (FALSE != dwLighting) s_lpD3DDev->SetRenderState( D3DRS_LIGHTING, dwLighting );
-    s_lpD3DDev->SetTransform( D3DTS_VIEW,       &s_CameraData.mtxView );
+	s_lpD3DDev->SetTransform(D3DTS_VIEW, s_CameraData.mtxView.toD3D());
 }
 
 void CN3SkyMng::RenderWeather()

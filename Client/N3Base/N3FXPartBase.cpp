@@ -169,7 +169,6 @@ bool CN3FXPartBase::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 	//	속도..
 	if (lstrcmpi(szCommand, "<velocity>") == 0)
 	{
-		__Vector3 v;
 		m_vVelocity.x = static_cast<float>(atof(szBuff0));
 		m_vVelocity.y = static_cast<float>(atof(szBuff1));
 		m_vVelocity.z = static_cast<float>(atof(szBuff2));
@@ -179,7 +178,6 @@ bool CN3FXPartBase::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 	//	가속도..
 	if (lstrcmpi(szCommand, "<acceleration>") == 0)
 	{
-		__Vector3 v;
 		m_vAcceleration.x = static_cast<float>(atof(szBuff0));
 		m_vAcceleration.y = static_cast<float>(atof(szBuff1));
 		m_vAcceleration.z = static_cast<float>(atof(szBuff2));
@@ -189,7 +187,6 @@ bool CN3FXPartBase::ParseScript(char* szCommand, char* szBuff0, char* szBuff1, c
 	//	회전 각속도..
 	if (lstrcmpi(szCommand, "<rot_velocity>") == 0)
 	{
-		__Vector3 v;
 		m_vRotVelocity.x = static_cast<float>(atof(szBuff0));
 		m_vRotVelocity.y = static_cast<float>(atof(szBuff1));
 		m_vRotVelocity.z = static_cast<float>(atof(szBuff2));

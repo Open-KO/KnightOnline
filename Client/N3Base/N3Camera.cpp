@@ -375,8 +375,8 @@ bool CN3Camera::Save(HANDLE hFile)
 
 void CN3Camera::Apply()
 {
-	s_lpD3DDev->SetTransform(D3DTS_VIEW, &m_Data.mtxView);
-	s_lpD3DDev->SetTransform(D3DTS_PROJECTION, &m_Data.mtxProjection); // Projection Matrix Setting
+	s_lpD3DDev->SetTransform(D3DTS_VIEW, m_Data.mtxView.toD3D());
+	s_lpD3DDev->SetTransform(D3DTS_PROJECTION, m_Data.mtxProjection.toD3D()); // Projection Matrix Setting
 	memcpy(&(CN3Base::s_CameraData), &m_Data, sizeof(__CameraData)); // Static Data Update...
 
 	// 안개 색깔 맞추기..
@@ -453,10 +453,10 @@ void CN3Camera::Tick(float fFrm)
 
 	__Matrix44 mtx = m_Data.mtxView * m_Data.mtxProjection;
 	float frustum [6][4];
-	frustum[0][0] = mtx._14 - mtx._11;
-	frustum[0][1] = mtx._24 - mtx._21;
-	frustum[0][2] = mtx._34 - mtx._31;
-	frustum[0][3] = mtx._44 - mtx._41;
+	frustum[0][0] = mtx.m[0][3] - mtx.m[0][0];
+	frustum[0][1] = mtx.m[1][3] - mtx.m[1][0];
+	frustum[0][2] = mtx.m[2][3] - mtx.m[2][0];
+	frustum[0][3] = mtx.m[3][3] - mtx.m[3][0];
 
 	// Normalize the result 
 	float t = sqrt( frustum[0][0] * frustum[0][0] + frustum[0][1] * frustum[0][1] + frustum[0][2] * frustum[0][2] );
@@ -466,10 +466,10 @@ void CN3Camera::Tick(float fFrm)
 	frustum[0][3] /= t;
 
 	// Extract the numbers for the LEFT plane 
-	frustum[1][0] = mtx._14 + mtx._11;
-	frustum[1][1] = mtx._24 + mtx._21;
-	frustum[1][2] = mtx._34 + mtx._31;
-	frustum[1][3] = mtx._44 + mtx._41;
+	frustum[1][0] = mtx.m[0][3] + mtx.m[0][0];
+	frustum[1][1] = mtx.m[1][3] + mtx.m[1][0];
+	frustum[1][2] = mtx.m[2][3] + mtx.m[2][0];
+	frustum[1][3] = mtx.m[3][3] + mtx.m[3][0];
 
 	// Normalize the result 
 	t = sqrt( frustum[1][0] * frustum[1][0] + frustum[1][1] * frustum[1][1] + frustum[1][2] * frustum[1][2] );
@@ -479,10 +479,10 @@ void CN3Camera::Tick(float fFrm)
 	frustum[1][3] /= t;
 
 	// Extract the BOTTOM plane 
-	frustum[2][0] = mtx._14 + mtx._12;
-	frustum[2][1] = mtx._24 + mtx._22;
-	frustum[2][2] = mtx._34 + mtx._32;
-	frustum[2][3] = mtx._44 + mtx._42;
+	frustum[2][0] = mtx.m[0][3] + mtx.m[0][1];
+	frustum[2][1] = mtx.m[1][3] + mtx.m[1][1];
+	frustum[2][2] = mtx.m[2][3] + mtx.m[2][1];
+	frustum[2][3] = mtx.m[3][3] + mtx.m[3][1];
 
 	// Normalize the result 
 	t = sqrt( frustum[2][0] * frustum[2][0] + frustum[2][1] * frustum[2][1] + frustum[2][2] * frustum[2][2] );
@@ -492,10 +492,10 @@ void CN3Camera::Tick(float fFrm)
 	frustum[2][3] /= t;
 
 	// Extract the TOP plane 
-	frustum[3][0] = mtx._14 - mtx._12;
-	frustum[3][1] = mtx._24 - mtx._22;
-	frustum[3][2] = mtx._34 - mtx._32;
-	frustum[3][3] = mtx._44 - mtx._42;
+	frustum[3][0] = mtx.m[0][3] - mtx.m[0][1];
+	frustum[3][1] = mtx.m[1][3] - mtx.m[1][1];
+	frustum[3][2] = mtx.m[2][3] - mtx.m[2][1];
+	frustum[3][3] = mtx.m[3][3] - mtx.m[3][1];
 
 	// Normalize the result 
 	t = sqrt( frustum[3][0] * frustum[3][0] + frustum[3][1] * frustum[3][1] + frustum[3][2] * frustum[3][2] );
@@ -505,10 +505,10 @@ void CN3Camera::Tick(float fFrm)
 	frustum[3][3] /= t;
 
 	// Extract the FAR plane
-	frustum[4][0] = mtx._14 - mtx._13;
-	frustum[4][1] = mtx._24 - mtx._23;
-	frustum[4][2] = mtx._34 - mtx._33;
-	frustum[4][3] = mtx._44 - mtx._43;
+	frustum[4][0] = mtx.m[0][3] - mtx.m[0][2];
+	frustum[4][1] = mtx.m[1][3] - mtx.m[1][2];
+	frustum[4][2] = mtx.m[2][3] - mtx.m[2][2];
+	frustum[4][3] = mtx.m[3][3] - mtx.m[3][2];
 
 	// Normalize the result 
 	t = sqrt( frustum[4][0] * frustum[4][0] + frustum[4][1] * frustum[4][1] + frustum[4][2] * frustum[4][2] );
@@ -518,10 +518,10 @@ void CN3Camera::Tick(float fFrm)
 	frustum[4][3] /= t;
 
 	// Extract the NEAR plane
-	frustum[5][0] = mtx._14 + mtx._13;
-	frustum[5][1] = mtx._24 + mtx._23;
-	frustum[5][2] = mtx._34 + mtx._33;
-	frustum[5][3] = mtx._44 + mtx._43;
+	frustum[5][0] = mtx.m[0][3] + mtx.m[0][2];
+	frustum[5][1] = mtx.m[1][3] + mtx.m[1][2];
+	frustum[5][2] = mtx.m[2][3] + mtx.m[2][2];
+	frustum[5][3] = mtx.m[3][3] + mtx.m[3][2];
 
 	// Normalize the result 
 	t = sqrt( frustum[5][0] * frustum[5][0] + frustum[5][1] * frustum[5][1] + frustum[5][2] * frustum[5][2] );

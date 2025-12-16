@@ -61,7 +61,7 @@ void CVtxPosDummy::Render()
 	HRESULT hr;
 
 	// set transform
-	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix); // 월드 행렬 적용..
+	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D()); // 월드 행렬 적용..
 
 	// set texture
 	hr = s_lpD3DDev->SetTexture(0, nullptr);

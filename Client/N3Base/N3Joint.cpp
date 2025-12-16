@@ -115,7 +115,7 @@ void CN3Joint::Render(const __Matrix44* pMtxParent, float fUnitSize)
 		bInit = true;
 	}
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &stm);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, stm.toD3D());
 	s_lpD3DDev->SetMaterial(&smtl);
 	s_lpD3DDev->SetTexture(0, nullptr);
 
@@ -172,9 +172,9 @@ void CN3Joint::Render(const __Matrix44* pMtxParent, float fUnitSize)
 	mtxAxis *= m_Matrix;
 
 	s_lpD3DDev->SetFVF(FVF_CV);
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxBox);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxBox.toD3D());
 	s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 12, vBoxes, sizeof(__VertexColor)); // 박스 그리기..
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxAxis);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxAxis.toD3D());
 	s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINELIST, 3, vAxis, sizeof(__VertexColor)); // 축 그리기..
 
 	if(dwZ) s_lpD3DDev->SetRenderState(D3DRS_ZENABLE, dwZ);

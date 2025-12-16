@@ -427,11 +427,11 @@ void CPlayerBase::RenderShadow()
 
 		pAP->MtxWorld.Identity();
 		pAP->MtxWorld.PosSet(m_Chr.m_Matrix.Pos());
-		pAP->MtxWorld._42 = 0.05f;
+		pAP->MtxWorld.m[3][1] = 0.05f;
 	}
 
 	for(int i = 0; i < 4; i++)
-		m_vShadows[i].y = s_pTerrain->GetHeight(pAP->MtxWorld._41 + m_vShadows[i].x, pAP->MtxWorld._43 + m_vShadows[i].z);
+		m_vShadows[i].y = s_pTerrain->GetHeight(pAP->MtxWorld.m[3][0] + m_vShadows[i].x, pAP->MtxWorld.m[3][2] + m_vShadows[i].z);
 
 	return; // 렌더링 안하지롱.
 */
@@ -458,14 +458,14 @@ void CPlayerBase::RenderShadow()
 	static __Matrix44 mtx;
 	mtx.Identity();
 	mtx.PosSet(m_Chr.m_Matrix.Pos());
-	mtx._41 += 0.1f;
-	mtx._42 = 0.05f;
-	mtx._43 -= 0.1f;
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx);
+	mtx.m[3][0] += 0.1f;
+	mtx.m[3][1] = 0.05f;
+	mtx.m[3][2] -= 0.1f;
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 	s_lpD3DDev->SetFVF(FVF_XYZT1);
 
 	for(int i = 0; i < 4; i++)
-		m_vShadows[i].y = s_pTerrain->GetHeight(mtx._41 + m_vShadows[i].x, mtx._43 + m_vShadows[i].z);
+		m_vShadows[i].y = s_pTerrain->GetHeight(mtx.m[3][0] + m_vShadows[i].x, mtx.m[3][2] + m_vShadows[i].z);
 	
 	s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, m_vShadows, sizeof(__VertexXyzT1));
 
@@ -543,8 +543,8 @@ void CPlayerBase::RenderChrInRect(CN3Chr* pChr, const RECT& Rect)
 		0.0f, 1.0f, 0.0f);
 
 	mtxView.LookAtLH(vEye, vAt, vUp);
-	s_lpD3DDev->SetTransform( D3DTS_VIEW, &mtxView );
-	s_lpD3DDev->SetTransform( D3DTS_PROJECTION, &mtxProj);
+	s_lpD3DDev->SetTransform(D3DTS_VIEW, mtxView.toD3D());
+	s_lpD3DDev->SetTransform(D3DTS_PROJECTION, mtxProj.toD3D());
 
 	// backup render state
 	DWORD dwFog, dwZEnable;//, dwLighting;
@@ -571,8 +571,8 @@ void CPlayerBase::RenderChrInRect(CN3Chr* pChr, const RECT& Rect)
 	if (D3DZB_TRUE != dwZEnable) s_lpD3DDev->SetRenderState( D3DRS_ZENABLE, dwZEnable);
 //	if (FALSE != dwLighting) s_lpD3DDev->SetRenderState( D3DRS_LIGHTING, dwLighting);
 	if (FALSE != dwFog) s_lpD3DDev->SetRenderState( D3DRS_FOGENABLE, dwFog);
-    s_lpD3DDev->SetTransform( D3DTS_PROJECTION, &(s_CameraData.mtxProjection));
-	s_lpD3DDev->SetTransform( D3DTS_VIEW, &(s_CameraData.mtxView) );
+    s_lpD3DDev->SetTransform( D3DTS_PROJECTION, s_CameraData.mtxProjection.toD3D());
+	s_lpD3DDev->SetTransform( D3DTS_VIEW, s_CameraData.mtxView.toD3D());
 	s_lpD3DDev->SetViewport(&(s_CameraData.vp));
 }
 
@@ -978,7 +978,7 @@ void CPlayerBase::Render(float fSunAngle)
 #ifdef _DEBUG
 	if(m_Chr.CollisionMesh()) // 충돌 체크용 박스..
 	{
-		s_lpD3DDev->SetTransform(D3DTS_WORLD, &(m_Chr.m_Matrix));
+		s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Chr.m_Matrix.toD3D());
 		m_Chr.CollisionMesh()->Render(0xffff0000);
 	}
 
@@ -987,7 +987,7 @@ void CPlayerBase::Render(float fSunAngle)
 	vLine[1] = m_vPosFromServer; vLine[1].y += 1.3f;
 	vLine[2] = vLine[1]; vLine[2].y += 3.0f;
 	__Matrix44 mtx; mtx.Identity();
-	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx);
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 	CN3Base::RenderLines(vLine, 2, 0xff00ffff);
 #endif
 
@@ -1821,12 +1821,12 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 
 	__Vector3 vLines[2] = { v1, v2 };
 	__Matrix44 mtxTmp; mtxTmp.Identity();
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxTmp);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxTmp.toD3D());
 	RenderLines(vLines, 1, (D3DCOLOR)0xffff8080); // 선을 그려본다..
 
 	if(m_pShapeExtraRef && m_pShapeExtraRef->CollisionMesh())
 	{
-		s_lpD3DDev->SetTransform(D3DTS_WORLD, &(m_pShapeExtraRef->m_Matrix));
+		s_lpD3DDev->SetTransform(D3DTS_WORLD, m_pShapeExtraRef->m_Matrix.toD3D());
 		m_pShapeExtraRef->CollisionMesh()->Render((D3DCOLOR)0xffff0000); // 충돌 박스를 그려본다.
 	}
 	s_lpD3DDev->EndScene();
@@ -2201,13 +2201,13 @@ const __Matrix44 CPlayerBase::CalcShadowMtxBasicPlane(__Vector3 vOffs)
 	__Matrix44	mtx;	
 	mtx.Identity();
 
-	mtx._21 = -vOffs.x/vOffs.y;
-	mtx._22 = 0.0f;
-	mtx._23 = -vOffs.z/vOffs.y;
+	mtx.m[1][0] = -vOffs.x/vOffs.y;
+	mtx.m[1][1] = 0.0f;
+	mtx.m[1][2] = -vOffs.z/vOffs.y;
 
-	mtx._41	= vOffs.x/vOffs.y;
-	mtx._42	= 1.0f;
-	mtx._43	= vOffs.z/vOffs.y;
+	mtx.m[3][0]	= vOffs.x/vOffs.y;
+	mtx.m[3][1]	= 1.0f;
+	mtx.m[3][2]	= vOffs.z/vOffs.y;
 
 	return mtx;
 }
@@ -2225,7 +2225,7 @@ void CPlayerBase::RenderShadow(float fAngle)
 	__Vector3 vPosBack, vNom;
 	CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, (_D3DMATRIX* )&mVBack); 
 	vPosBack = m_Chr.m_Matrix.Pos();	
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mV);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mV.toD3D());
 	ACT_WORLD->GetNormalWithTerrain(vPosBack.x, vPosBack.z, vNom);	vNom.Normalize();
 
 	mV.PosSet(0.0f, 0.0f, 0.0f);
@@ -2480,9 +2480,9 @@ void CPlayerBase::CalcPart(CN3CPart* pPart, int nLOD, __Vector3 vDir)
 		{
 			vec = pVDest[i];	
 			vec *= m_Chr.m_Matrix;
-			//vec.x = vec.x*m_Chr.m_Matrix._11 + vec.y*m_Chr.m_Matrix._21 + vec.z*m_Chr.m_Matrix._31 + m_Chr.m_Matrix._41;
-			//vec.y = vec.x*m_Chr.m_Matrix._12 + vec.y*m_Chr.m_Matrix._22 + vec.z*m_Chr.m_Matrix._32 + m_Chr.m_Matrix._42;
-			//vec.z = vec.x*m_Chr.m_Matrix._13 + vec.y*m_Chr.m_Matrix._23 + vec.z*m_Chr.m_Matrix._33 + m_Chr.m_Matrix._43;
+			//vec.x = vec.x*m_Chr.m_Matrix.m[0][0] + vec.y*m_Chr.m_Matrix.m[1][0] + vec.z*m_Chr.m_Matrix.m[2][0] + m_Chr.m_Matrix.m[3][0];
+			//vec.y = vec.x*m_Chr.m_Matrix.m[0][1] + vec.y*m_Chr.m_Matrix.m[1][1] + vec.z*m_Chr.m_Matrix.m[2][1] + m_Chr.m_Matrix.m[3][1];
+			//vec.z = vec.x*m_Chr.m_Matrix.m[0][2] + vec.y*m_Chr.m_Matrix.m[1][2] + vec.z*m_Chr.m_Matrix.m[2][2] + m_Chr.m_Matrix.m[3][2];
 
 			int iX, iZ;
 			
@@ -2522,7 +2522,6 @@ void CPlayerBase::CalcPlug(CN3CPlugBase* pPlug, const __Matrix44* pmtxJoint, __M
 #endif
 
 	static __Matrix44 mtx, mtxBack;
-	__Vector3 vOf;
 	mtx = pPlug->m_Matrix;
 	mtx *= (*pmtxJoint);
 	mtx *= m_Chr.m_Matrix;

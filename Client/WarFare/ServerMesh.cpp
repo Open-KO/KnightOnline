@@ -279,7 +279,7 @@ void CServerMesh::Render()
 {
     __Matrix44 mtxWorld;
 	mtxWorld.Identity();
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 	s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	
 	DWORD dwFillPrev;

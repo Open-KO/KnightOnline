@@ -271,15 +271,15 @@ void _Convert2D_To_3DCoordinate(
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
 
-	vTmp.x = (((2.0f * ixScreen) / nViewportWidth) - 1) / mtxPrj._11;
-	vTmp.y = -(((2.0f * iyScreen) / nViewportHeight) - 1) / mtxPrj._22;
+	vTmp.x = (((2.0f * ixScreen) / nViewportWidth) - 1) / mtxPrj.m[0][0];
+	vTmp.y = -(((2.0f * iyScreen) / nViewportHeight) - 1) / mtxPrj.m[1][1];
 	vTmp.z = 1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44 mtxVI = mtxView.Inverse();
-	vDirResult.x = vTmp.x * mtxVI._11 + vTmp.y * mtxVI._21 + vTmp.z * mtxVI._31;
-	vDirResult.y = vTmp.x * mtxVI._12 + vTmp.y * mtxVI._22 + vTmp.z * mtxVI._32;
-	vDirResult.z = vTmp.x * mtxVI._13 + vTmp.y * mtxVI._23 + vTmp.z * mtxVI._33;
+	vDirResult.x = vTmp.x * mtxVI.m[0][0] + vTmp.y * mtxVI.m[1][0] + vTmp.z * mtxVI.m[2][0];
+	vDirResult.y = vTmp.x * mtxVI.m[0][1] + vTmp.y * mtxVI.m[1][1] + vTmp.z * mtxVI.m[2][1];
+	vDirResult.z = vTmp.x * mtxVI.m[0][2] + vTmp.y * mtxVI.m[1][2] + vTmp.z * mtxVI.m[2][2];
 	vPosResult = mtxVI.Pos();
 }
 

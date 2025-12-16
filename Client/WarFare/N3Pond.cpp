@@ -283,7 +283,7 @@ void CN3Pond::Render()
 	// Backup
 	__Matrix44 matWorld, matOld;	matWorld.Identity();
 	DWORD dwAlphaEnable, dwSrcBlend, dwDestBlend;
-	s_lpD3DDev->GetTransform(D3DTS_WORLD, &matOld);
+	s_lpD3DDev->GetTransform(D3DTS_WORLD, matOld.toD3D());
 	s_lpD3DDev->GetRenderState(D3DRS_ALPHABLENDENABLE, &dwAlphaEnable);
 	s_lpD3DDev->GetRenderState(D3DRS_SRCBLEND, &dwSrcBlend);
 	s_lpD3DDev->GetRenderState(D3DRS_DESTBLEND, &dwDestBlend);
@@ -300,7 +300,7 @@ void CN3Pond::Render()
 
 
 	// Set
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &matWorld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 
 
 	// texture state 세팅 (alpha)
@@ -342,7 +342,7 @@ void CN3Pond::Render()
 
 
 	// restore 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &matOld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, matOld.toD3D());
 	s_lpD3DDev->SetRenderState(D3DRS_ALPHABLENDENABLE, dwAlphaEnable);
 	s_lpD3DDev->SetRenderState(D3DRS_SRCBLEND, dwSrcBlend);
 	s_lpD3DDev->SetRenderState(D3DRS_DESTBLEND, dwDestBlend);

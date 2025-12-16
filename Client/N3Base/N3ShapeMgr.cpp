@@ -922,7 +922,7 @@ void CN3ShapeMgr::RenderCollision(const __Vector3& vPos)
 
 	__Matrix44 mtxWorld;
 	mtxWorld.Identity();
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxWorld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxWorld.toD3D());
 
 	DWORD dwFillPrev;
 	s_lpD3DDev->GetRenderState(D3DRS_FILLMODE, &dwFillPrev);

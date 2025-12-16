@@ -1392,7 +1392,7 @@ void CN3Terrain::Render()
 {
 	__Matrix44 WorldMtx;
 	WorldMtx.Identity();
-	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &WorldMtx);
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, WorldMtx.toD3D());
 
 	__Material mtl;
 	mtl.Init();
@@ -1682,16 +1682,16 @@ BOOL CN3Terrain::Pick(int x, int y, __Vector3& vPick)
 {
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
-	vTmp.x = (((2.0f * x) / (CN3Base::s_CameraData.vp.Width)) - 1) / CN3Base::s_CameraData.mtxProjection._11;
-	vTmp.y = -(((2.0f * y) / (CN3Base::s_CameraData.vp.Height)) - 1) / CN3Base::s_CameraData.mtxProjection._22;
+	vTmp.x = (((2.0f * x) / (CN3Base::s_CameraData.vp.Width)) - 1) / CN3Base::s_CameraData.mtxProjection.m[0][0];
+	vTmp.y = -(((2.0f * y) / (CN3Base::s_CameraData.vp.Height)) - 1) / CN3Base::s_CameraData.mtxProjection.m[1][1];
 	vTmp.z = 1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44* pMtxVI = &CN3Base::s_CameraData.mtxViewInverse;
 	__Vector3 vDir;
-	vDir.x = vTmp.x * pMtxVI->_11 + vTmp.y * pMtxVI->_21 + vTmp.z * pMtxVI->_31;
-	vDir.y = vTmp.x * pMtxVI->_12 + vTmp.y * pMtxVI->_22 + vTmp.z * pMtxVI->_32;
-	vDir.z = vTmp.x * pMtxVI->_13 + vTmp.y * pMtxVI->_23 + vTmp.z * pMtxVI->_33;
+	vDir.x = vTmp.x * pMtxVI->m[0][0] + vTmp.y * pMtxVI->m[1][0] + vTmp.z * pMtxVI->m[2][0];
+	vDir.y = vTmp.x * pMtxVI->m[0][1] + vTmp.y * pMtxVI->m[1][1] + vTmp.z * pMtxVI->m[2][1];
+	vDir.z = vTmp.x * pMtxVI->m[0][2] + vTmp.y * pMtxVI->m[1][2] + vTmp.z * pMtxVI->m[2][2];
 	__Vector3 vPos = pMtxVI->Pos();
 	__Vector3 vPosCur = vPos;
 
@@ -1778,16 +1778,16 @@ BOOL CN3Terrain::PickWide(int x, int y, __Vector3& vPick)
 {
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
-	vTmp.x = (((2.0f * x) / (CN3Base::s_CameraData.vp.Width)) - 1) / CN3Base::s_CameraData.mtxProjection._11;
-	vTmp.y = -(((2.0f * y) / (CN3Base::s_CameraData.vp.Height)) - 1) / CN3Base::s_CameraData.mtxProjection._22;
+	vTmp.x = (((2.0f * x) / (CN3Base::s_CameraData.vp.Width)) - 1) / CN3Base::s_CameraData.mtxProjection.m[0][0];
+	vTmp.y = -(((2.0f * y) / (CN3Base::s_CameraData.vp.Height)) - 1) / CN3Base::s_CameraData.mtxProjection.m[1][1];
 	vTmp.z = 1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44* pMtxVI = &CN3Base::s_CameraData.mtxViewInverse;
 	__Vector3 vDir;
-	vDir.x = vTmp.x * pMtxVI->_11 + vTmp.y * pMtxVI->_21 + vTmp.z * pMtxVI->_31;
-	vDir.y = vTmp.x * pMtxVI->_12 + vTmp.y * pMtxVI->_22 + vTmp.z * pMtxVI->_32;
-	vDir.z = vTmp.x * pMtxVI->_13 + vTmp.y * pMtxVI->_23 + vTmp.z * pMtxVI->_33;
+	vDir.x = vTmp.x * pMtxVI->m[0][0] + vTmp.y * pMtxVI->m[1][0] + vTmp.z * pMtxVI->m[2][0];
+	vDir.y = vTmp.x * pMtxVI->m[0][1] + vTmp.y * pMtxVI->m[1][1] + vTmp.z * pMtxVI->m[2][1];
+	vDir.z = vTmp.x * pMtxVI->m[0][2] + vTmp.y * pMtxVI->m[1][2] + vTmp.z * pMtxVI->m[2][2];
 	__Vector3 vPos = pMtxVI->Pos();
 	__Vector3 vPosCur = vPos;
 
@@ -1946,7 +1946,7 @@ void CN3Terrain::CalcCollisionTerrainByOTPlayer(__Vector3 vOrig, __Vector3 vAt, 
 {
 	bool boo = FALSE;
 	__Vector3 vec2, vec3, vec4, vDir;		// vec1 & vec2 is 2D..  vec3 & vec4 is 3D..
-	__Vector3 A, B, C, AB, AC;
+	__Vector3 A, B, C;
 	float ftx, fty, ftz;
 	vec2 = vOrig;
 	vec3 = vAt;
@@ -1967,7 +1967,7 @@ void CN3Terrain::CalcCollisionTerrainByOTPlayer(__Vector3 vOrig, __Vector3 vAt, 
 		boo = ::_IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 		if (boo == TRUE)
 		{
-			Vec = vOrig + ftx * vDir;
+			Vec = vOrig + vDir*ftx;
 			return;
 		}
 
@@ -1978,7 +1978,7 @@ void CN3Terrain::CalcCollisionTerrainByOTPlayer(__Vector3 vOrig, __Vector3 vAt, 
 		boo = ::_IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 		if (boo == TRUE)
 		{
-			Vec = vOrig + ftx * vDir;
+			Vec = vOrig + vDir*ftx;
 			return;
 		}
 	}
@@ -1991,7 +1991,7 @@ void CN3Terrain::CalcCollisionTerrainByOTPlayer(__Vector3 vOrig, __Vector3 vAt, 
 		boo = ::_IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 		if (boo == TRUE)
 		{
-			Vec = vOrig + ftx * vDir;
+			Vec = vOrig + vDir*ftx;
 			return;
 		}
 
@@ -2002,7 +2002,7 @@ void CN3Terrain::CalcCollisionTerrainByOTPlayer(__Vector3 vOrig, __Vector3 vAt, 
 		boo = ::_IntersectTriangle(vOrig, vDir, A, B, C, ftx, fty, ftz);
 		if (boo == TRUE)
 		{
-			Vec = vOrig + ftx * vDir;
+			Vec = vOrig + vDir*ftx;
 			return;
 		}
 	}
@@ -2053,7 +2053,7 @@ void CN3Terrain::CalcCollisionTerrainByOTPlayer(__Vector3 vOrig, __Vector3 vAt, 
 		if (boo == TRUE)
 			break;
 	}
-	Vec = vOrig + ftx * vDir;
+	Vec = vOrig + vDir*ftx;
 }
 
 bool CN3Terrain::CheckIncline(const __Vector3& vPos, const __Vector3& vDir, float fIncline)
@@ -2087,7 +2087,7 @@ bool CN3Terrain::CheckCollision(__Vector3& vPos, __Vector3& vDir, float fVelocit
 	vDir.Normalize();
 
 	fHeight1 = vPos.y - this->GetHeight(vPos.x, vPos.z);
-	__Vector3 vNextPos = vPos + (fVelocity * CN3Base::s_fSecPerFrm * vDir);
+	__Vector3 vNextPos = vPos + (vDir * (fVelocity * CN3Base::s_fSecPerFrm));
 	fHeight2 = vNextPos.y - this->GetHeight(vNextPos.x, vNextPos.z);
 	if (fHeight1 <= 0)
 	{

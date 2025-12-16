@@ -1342,8 +1342,8 @@ void CMapMng::SelectObjectByDragRect(RECT* pRect, BOOL bAdd)
 	LPDIRECT3DDEVICE9 pD3DDev = pEng->s_lpD3DDev;
 
 	__Matrix44 matView, matProj, matVP;
-	pD3DDev->GetTransform(D3DTS_VIEW, &matView);
-	pD3DDev->GetTransform(D3DTS_PROJECTION, &matProj);
+	pD3DDev->GetTransform(D3DTS_VIEW, matView.toD3D());
+	pD3DDev->GetTransform(D3DTS_PROJECTION, matProj.toD3D());
 	matVP = matView * matProj;
 
 	D3DVIEWPORT9 vp = pEng->s_CameraData.vp;
@@ -1725,8 +1725,8 @@ void CMapMng::RenderObjectToWindow(CN3TransformCollision* pObj, HWND hWnd)
 
 	// back up
 	__Matrix44 mtxOldView, mtxOldProj;
-	pD3DDev->GetTransform(D3DTS_VIEW, &mtxOldView);
-	pD3DDev->GetTransform(D3DTS_PROJECTION, &mtxOldProj);
+	pD3DDev->GetTransform(D3DTS_VIEW, mtxOldView.toD3D());
+	pD3DDev->GetTransform(D3DTS_PROJECTION, mtxOldProj.toD3D());
 	DWORD dwLighting;
 	pD3DDev->GetRenderState(D3DRS_LIGHTING, &dwLighting);
 
@@ -1743,10 +1743,10 @@ void CMapMng::RenderObjectToWindow(CN3TransformCollision* pObj, HWND hWnd)
 	// View Matrix 및 Projection Matrix Setting
 //	__Matrix44 viewmtx;
 //	viewmtx.LookAtLH(vEye, vAt, vUp);
-//	pD3DDev->SetTransform(D3DTS_VIEW, &viewmtx);
+//	pD3DDev->SetTransform(D3DTS_VIEW, viewmtx.toD3D());
 //	__Matrix44 prjmtx;
 //	prjmtx.PerspectiveFovLH(DegreesToRadians(54.0f), pEng->s_CameraData.fAspect, 0.01f, 1000.0f);
-//	pD3DDev->SetTransform(D3DTS_PROJECTION, &prjmtx);
+//	pD3DDev->SetTransform(D3DTS_PROJECTION, prjmtx.toD3D());
 
 	// Set Render State
 	pD3DDev->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -1770,8 +1770,8 @@ void CMapMng::RenderObjectToWindow(CN3TransformCollision* pObj, HWND hWnd)
 	pEng->Present(hWnd); // present
 
 	// restore (이전 상태로 되돌려주지 않으면 지형에서 picking이 제대로 되지 않는다)
-	pD3DDev->SetTransform(D3DTS_VIEW, &mtxOldView);
-	pD3DDev->SetTransform(D3DTS_PROJECTION, &mtxOldProj);
+	pD3DDev->SetTransform(D3DTS_VIEW, mtxOldView.toD3D());
+	pD3DDev->SetTransform(D3DTS_PROJECTION, mtxOldProj.toD3D());
 	CopyMemory(&CN3Base::s_CameraData, &CameraDataBackUp, sizeof(CameraDataBackUp));
 	pD3DDev->SetViewport(&CN3Base::s_CameraData.vp);
 	pD3DDev->SetRenderState(D3DRS_LIGHTING, dwLighting);
@@ -2046,7 +2046,7 @@ void CMapMng::RenderGrid(float fGridSize, float fMaxDistance)	// fGridSize크기
 	pD3DDev->SetRenderState(D3DRS_ZENABLE, FALSE);
 
 	__Matrix44 matWorld;	matWorld.Identity();
-	pD3DDev->SetTransform(D3DTS_WORLD, &matWorld);
+	pD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 
 	pD3DDev->SetTexture(0, nullptr);
 

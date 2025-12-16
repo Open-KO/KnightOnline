@@ -196,7 +196,7 @@ void CN3CEView::OnDraw(CDC* pDC)
 			CN3CPart* pPart = (CN3CPart*)pBase;
 			
 			int nLOD = pFrm->GetPaneTool()->m_CBLOD.GetCurSel();
-			CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, &(pChr->m_Matrix));
+			CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, pChr->m_Matrix.toD3D());
 			pPart->RenderSelected(nLOD);
 		}
 		else if(pBase && (pBase->Type() & OBJ_CHARACTER_PLUG) )

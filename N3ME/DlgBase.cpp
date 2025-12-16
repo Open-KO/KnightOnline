@@ -727,9 +727,9 @@ BOOL CDlgBase::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 			CN3Transform* pT = (CN3Transform*)pBase;
 
 			CPropertyItem* pItem = (CPropertyItem*)lParam;
-			if(pItem->m_propName == "Position") pT->PosSet(__Vector3(pItem->VectorGet()));
-//			else if(pItem->m_propName == "Rotation") pT->RotSet(__Vector3(pItem->VectorGet()));
-			else if(pItem->m_propName == "Scale") pT->ScaleSet(__Vector3(pItem->VectorGet()));
+			if(pItem->m_propName == "Position") pT->PosSet(pItem->VectorGet());
+//			else if(pItem->m_propName == "Rotation") pT->RotSet(pItem->VectorGet());
+			else if(pItem->m_propName == "Scale") pT->ScaleSet(pItem->VectorGet());
 		}
 		
 		if((void*)wParam == &m_LPCamera && (pBase->Type() & OBJ_CAMERA))
@@ -737,9 +737,9 @@ BOOL CDlgBase::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 			CN3Camera* pC = (CN3Camera*)pBase;
 
 			CPropertyItem* pItem = (CPropertyItem*)lParam;
-			if(pItem->m_propName == "Eye") pC->EyePosSet(__Vector3(pItem->VectorGet()));
-			else if(pItem->m_propName == "At") pC->AtPosSet(__Vector3(pItem->VectorGet()));
-			else if(pItem->m_propName == "Up") pC->UpVectorSet(__Vector3(pItem->VectorGet()));
+			if(pItem->m_propName == "Eye") pC->EyePosSet(pItem->VectorGet());
+			else if(pItem->m_propName == "At") pC->AtPosSet(pItem->VectorGet());
+			else if(pItem->m_propName == "Up") pC->UpVectorSet(pItem->VectorGet());
 			else if(pItem->m_propName == "Field Of View") pC->m_Data.fFOV = (float)atof(pItem->m_curValue);
 			else if(pItem->m_propName == "Near Plane") pC->m_Data.fNP = (float)atof(pItem->m_curValue);
 			else if(pItem->m_propName == "Far Plane") pC->m_Data.fFP = (float)atof(pItem->m_curValue);
@@ -771,7 +771,7 @@ BOOL CDlgBase::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 				else if(pItem->m_curValue == "Directional") pL->m_Data.Type = D3DLIGHT_DIRECTIONAL;
 				else if(pItem->m_curValue == "Spot") pL->m_Data.Type = D3DLIGHT_SPOT;
 			}
-			else if(pItem->m_propName == "Direction") pL->m_Data.Direction = pItem->VectorGet();
+			else if(pItem->m_propName == "Direction") pL->m_Data.Direction = pItem->VectorGetD3D();
 			else if(pItem->m_propName == "Ambient Color") pL->m_Data.Ambient = pItem->D3DColorValueGet();
 			else if(pItem->m_propName == "Diffuse Color") pL->m_Data.Diffuse = pItem->D3DColorValueGet();
 			else if(pItem->m_propName == "Specular Color") pL->m_Data.Specular = pItem->D3DColorValueGet();
@@ -982,9 +982,9 @@ BOOL CDlgBase::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 					if(pJ) pJ->NodeCount(nJC); // Joint Node Count;
 					if(nJI >= 0 && nJI < nJC) pPlug->m_nJointIndex = nJI;
 				}
-				else if(pItem->m_propName == "Plug Offset") pPlug->PositionSet(__Vector3(pItem->VectorGet()));
+				else if(pItem->m_propName == "Plug Offset") pPlug->PositionSet(pItem->VectorGet());
 				else if(pItem->m_propName == "Plug Rotation") { __Matrix44 mtx; mtx.Identity(); pPlug->RotationSet(mtx); }
-				else if(pItem->m_propName == "Plug Scale") pPlug->ScaleSet(__Vector3(pItem->VectorGet()));
+				else if(pItem->m_propName == "Plug Scale") pPlug->ScaleSet(pItem->VectorGet());
 				else if(pItem->m_propName == "Plug Mesh File" && pItem->m_curValue.GetLength() > 0)
 				{
 					CN3Base tmp;

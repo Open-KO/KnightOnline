@@ -183,7 +183,7 @@ void CN3GESnow::Render(__Vector3& vPos)
 	s_lpD3DDev->SetRenderState(D3DRS_LIGHTING,	 FALSE);
 
 	// set transform
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	// set texture 
 	__ASSERT(m_pTex, "Texture pointer is NULL!");

@@ -111,7 +111,7 @@ void CN3Cloak::Render(__Matrix44 &mtx)
 {
 	if (m_nLOD < 0)	return;
 
-	s_lpD3DDev->SetTransform( D3DTS_WORLD, &mtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 	DWORD dwCull, dwLight;
 	s_lpD3DDev->GetRenderState(D3DRS_LIGHTING, &dwLight);
 	s_lpD3DDev->GetRenderState(D3DRS_CULLMODE, &dwCull);

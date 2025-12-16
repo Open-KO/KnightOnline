@@ -248,7 +248,7 @@ void CN3SPart::Render()
 	}
 
 	// 로딩할때 미리 계산해 놓은 월드 행렬 적용..
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	m_PMInst.Render();
 
@@ -281,7 +281,7 @@ void CN3SPart::RenderSelected(bool bWireFrame)
 	if(lpTex != nullptr) s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	else s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 	if(bWireFrame)
 	{
 		__Vector3 vLines[4];
@@ -493,7 +493,7 @@ void CN3SPart::PartialRender(int iCount, uint16_t* pIndices)
 	}
 
 	// 로딩할때 미리 계산해 놓은 월드 행렬 적용..
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	m_PMInst.PartialRender(iCount, pIndices);
 
@@ -775,16 +775,16 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, int ixScreen, int iy
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
 
-	vTmp.x =  ( ( ( 2.0f * ixScreen ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / CN3Base::s_CameraData.mtxProjection._11;
-	vTmp.y = -( ( ( 2.0f * iyScreen ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / CN3Base::s_CameraData.mtxProjection._22;
+	vTmp.x =  ( ( ( 2.0f * ixScreen ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / CN3Base::s_CameraData.mtxProjection.m[0][0];
+	vTmp.y = -( ( ( 2.0f * iyScreen ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / CN3Base::s_CameraData.mtxProjection.m[1][1];
 	vTmp.z =  1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44* pMtxVI = &CN3Base::s_CameraData.mtxViewInverse;
 	__Vector3 vPos, vDir;
-	vDir.x  = vTmp.x * pMtxVI->_11 + vTmp.y * pMtxVI->_21 + vTmp.z * pMtxVI->_31;
-	vDir.y  = vTmp.x * pMtxVI->_12 + vTmp.y * pMtxVI->_22 + vTmp.z * pMtxVI->_32;
-	vDir.z  = vTmp.x * pMtxVI->_13 + vTmp.y * pMtxVI->_23 + vTmp.z * pMtxVI->_33;
+	vDir.x  = vTmp.x * pMtxVI->m[0][0] + vTmp.y * pMtxVI->m[1][0] + vTmp.z * pMtxVI->m[2][0];
+	vDir.y  = vTmp.x * pMtxVI->m[0][1] + vTmp.y * pMtxVI->m[1][1] + vTmp.z * pMtxVI->m[2][1];
+	vDir.z  = vTmp.x * pMtxVI->m[0][2] + vTmp.y * pMtxVI->m[1][2] + vTmp.z * pMtxVI->m[2][2];
 	vPos = pMtxVI->Pos();
 
 	return this->CheckCollisionPrecisely(bIgnoreBoxCheck, vPos, vDir, pVCol, pVNormal);
@@ -824,7 +824,6 @@ int CN3Shape::CheckCollisionPrecisely(bool bIgnoreBoxCheck, const __Vector3& vPo
 		vDir2 = vDir * mtxWI; // 역행렬로 회전..
 
 		int nCI0, nCI1, nCI2;
-		__Vector3 v0, v1, v2;
 		for (int j = 0; j < nFC; j++) // 각각의 Face 마다 충돌체크..
 		{
 			nCI0 = pwIs[j * 3 + 0];

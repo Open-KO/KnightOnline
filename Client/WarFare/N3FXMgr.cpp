@@ -680,7 +680,7 @@ void CN3FXMgr::Render()
 	
 	__Matrix44 mtx;
 	mtx.Identity();
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 	
 	stlLIST_BUNDLEGAME_IT itBegin = m_ListBundle.begin();
 	stlLIST_BUNDLEGAME_IT itEnd = m_ListBundle.end();
@@ -722,7 +722,7 @@ bool CN3FXMgr::CheckCollisionSphere(__Vector3 vSp, __Vector3 vEp, __Vector3 vCp,
 		{
 			float DistCol = DistSpCross - sqrt((fRadius*fRadius)-sqDistCross);
 			
-			(*vCol) = vSp + DistCol*vDir;
+			(*vCol) = vSp + vDir*DistCol;
 			return true;
 		}
 	}

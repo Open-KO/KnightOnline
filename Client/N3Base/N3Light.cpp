@@ -58,7 +58,7 @@ void CN3Light::Tick(float fFrm)
 {
 	CN3Transform::Tick(fFrm);
 
-	m_Data.Position = m_vPos;
+	m_Data.Position = { m_vPos.x, m_vPos.y, m_vPos.z };
 }
 
 void CN3Light::Apply()

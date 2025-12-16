@@ -125,7 +125,7 @@ void CTransDummy::Render()
 	HRESULT hr;
 
 	// set transform
-	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix); // 월드 행렬 적용..
+	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D()); // 월드 행렬 적용..
 
 	// set texture
 	hr = s_lpD3DDev->SetTexture(0, nullptr);
@@ -281,26 +281,26 @@ void CTransDummy::GetPickRay(POINT point, __Vector3& vDir, __Vector3& vOrig)
 
     // Get the pick ray from the mouse position
     __Matrix44 matProj;
-    lpD3DDev->GetTransform( D3DTS_PROJECTION, &matProj );
+    lpD3DDev->GetTransform(D3DTS_PROJECTION, matProj.toD3D());
 
     // Compute the vector of the pick ray in screen space
     __Vector3 v;
-    v.x =  ( ( ( 2.0f * point.x ) / (s_CameraData.vp.Width) ) - 1 ) / matProj._11;
-    v.y = -( ( ( 2.0f * point.y ) / (s_CameraData.vp.Height) ) - 1 ) / matProj._22;
+    v.x =  ( ( ( 2.0f * point.x ) / (s_CameraData.vp.Width) ) - 1 ) / matProj.m[0][0];
+    v.y = -( ( ( 2.0f * point.y ) / (s_CameraData.vp.Height) ) - 1 ) / matProj.m[1][1];
     v.z =  1.0f;
 
     // Get the inverse view matrix
     __Matrix44 matView, m;
-    lpD3DDev->GetTransform( D3DTS_VIEW, &matView );
+    lpD3DDev->GetTransform(D3DTS_VIEW, matView.toD3D());
     m = matView.Inverse();
 
     // Transform the screen space pick ray into 3D space
-    vDir.x  = v.x*m._11 + v.y*m._21 + v.z*m._31;
-    vDir.y  = v.x*m._12 + v.y*m._22 + v.z*m._32;
-    vDir.z  = v.x*m._13 + v.y*m._23 + v.z*m._33;
-    vOrig.x = m._41;
-    vOrig.y = m._42;
-    vOrig.z = m._43;
+    vDir.x  = v.x*m.m[0][0] + v.y*m.m[1][0] + v.z*m.m[2][0];
+    vDir.y  = v.x*m.m[0][1] + v.y*m.m[1][1] + v.z*m.m[2][1];
+    vDir.z  = v.x*m.m[0][2] + v.y*m.m[1][2] + v.z*m.m[2][2];
+    vOrig.x = m.m[3][0];
+    vOrig.y = m.m[3][1];
+    vOrig.z = m.m[3][2];
 }
 
 void CTransDummy::TransDiff(__Vector3* pvDiffPos, __Quaternion* pqDiffRot, __Vector3* pvDiffScale)

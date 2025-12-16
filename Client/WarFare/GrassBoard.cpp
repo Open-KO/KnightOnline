@@ -107,7 +107,7 @@ void CGrassBoard::Render(CN3Texture** ppTex)
 		pGrass = &m_sGrassInfo[i];
 		if(ppTex[pGrass->iTexIndex]==nullptr) continue;
 
-		s_lpD3DDev->SetTransform(D3DTS_WORLD, &pGrass->mtxWorld);
+		s_lpD3DDev->SetTransform(D3DTS_WORLD, pGrass->mtxWorld.toD3D());
 
 		s_lpD3DDev->SetTexture(0,ppTex[pGrass->iTexIndex]->Get());
 		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);

@@ -169,7 +169,7 @@ void CN3Transform::Render(const __Matrix44* pMtxParent, float fUnitSize)
 	mtxBox.Scale(fUnitSize, fUnitSize, fUnitSize); // 관절부 박스에 스케일 적용
 	mtxBox *= m_Matrix;
 
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtxBox);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxBox.toD3D());
 	CN3Base::RenderLines(&(vAxis[0]), 2, 0xffff0000); // 선그리기..
 	CN3Base::RenderLines(&(vAxis[3]), 2, 0xff00ff00); // 선그리기..
 	CN3Base::RenderLines(&(vAxis[6]), 2, 0xff0000ff); // 선그리기..

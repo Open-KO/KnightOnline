@@ -463,21 +463,21 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	//
 	__Matrix44 mtxproj, mtxview, mtxworld, mtxprojback, mtxviewback, mtxworldback;
 
-	CN3Base::s_lpD3DDev->GetTransform( D3DTS_PROJECTION, &mtxprojback );
-	CN3Base::s_lpD3DDev->GetTransform( D3DTS_VIEW, &mtxviewback );
-	CN3Base::s_lpD3DDev->GetTransform( D3DTS_WORLD, &mtxworldback );
+	CN3Base::s_lpD3DDev->GetTransform(D3DTS_PROJECTION, mtxprojback.toD3D());
+	CN3Base::s_lpD3DDev->GetTransform(D3DTS_VIEW, mtxviewback.toD3D());
+	CN3Base::s_lpD3DDev->GetTransform(D3DTS_WORLD, mtxworldback.toD3D());
 
 	mtxproj.OrthoLH(12.0f, 9.0f, 0, 100);  
-    CN3Base::s_lpD3DDev->SetTransform( D3DTS_PROJECTION, &mtxproj );
+    CN3Base::s_lpD3DDev->SetTransform(D3DTS_PROJECTION, mtxproj.toD3D());
 
     mtxview.LookAtLH(
 		{ 0.0f, 2.0f,-10.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 1.0f, 0.0f });
-    CN3Base::s_lpD3DDev->SetTransform( D3DTS_VIEW, &mtxview );
+    CN3Base::s_lpD3DDev->SetTransform(D3DTS_VIEW, mtxview.toD3D());
 
 	mtxworld.Identity();
-	CN3Base::s_lpD3DDev->SetTransform( D3DTS_WORLD, &mtxworld );
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxworld.toD3D());
 
 
 ///////////////////////////////////////////////////////////////
@@ -512,9 +512,9 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	m_ChrInv.m_nLOD = 0;
 	m_ChrInv.Render();
 
-	CN3Base::s_lpD3DDev->SetTransform( D3DTS_PROJECTION, &mtxprojback );
-	CN3Base::s_lpD3DDev->SetTransform( D3DTS_VIEW, &mtxviewback );
-	CN3Base::s_lpD3DDev->SetTransform( D3DTS_WORLD, &mtxworldback );
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_PROJECTION, mtxprojback.toD3D());
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_VIEW, mtxviewback.toD3D());
+	CN3Base::s_lpD3DDev->SetTransform(D3DTS_WORLD, mtxworldback.toD3D());
 
 	CN3Base::s_lpD3DDev->SetRenderState(D3DRS_AMBIENT, 0x00000000);
 
@@ -543,12 +543,12 @@ void CPlayerMySelf::InventoryChrRender(const RECT& Rect)
 	Light0.Type = D3DLIGHT_POINT;
 	Light0.Attenuation0 = 0.5f;
 	Light0.Range = 100.0f;
-	Light0.Position = __Vector3(0.0f, 2.0f, 10.0f);
+	Light0.Position = { 0.0f, 2.0f, 10.0f };
 	Light0.Diffuse.r = 220/255.0f; Light0.Diffuse.g = 255/255.0f; Light0.Diffuse.b = 220/255.0f;
 	s_lpD3DDev->SetLight(0, &Light0);
 
 	// 캐릭터 위치와 방향 세팅
-	m_ChrInv.PosSet(__Vector3(0,0,0));
+	m_ChrInv.PosSet(0, 0, 0);
 	__Quaternion qt;
 	qt.RotationAxis(0.0f, 1.0f, 0.0f, DegreesToRadians(18.0f));	// 약간 비스듬하게 서있게..
 	m_ChrInv.RotSet(qt);

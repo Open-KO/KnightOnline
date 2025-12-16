@@ -560,7 +560,7 @@ void CN3FXPartMesh::Rotate()
 	//mtx.Rotation(m_fCurrLife*m_vRotVelocity);
 	//__Quaternion qtLocalRot(mtx);
 
-	m_pShape->m_mtxParent.Rotation(m_fCurrLife*m_vRotVelocity);
+	m_pShape->m_mtxParent.Rotation(m_vRotVelocity * m_fCurrLife);
 		
 	//mesh방향과 bundle방향을 맞춰라...
 	__Quaternion qtBundle;

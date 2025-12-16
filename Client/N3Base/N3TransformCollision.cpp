@@ -151,7 +151,7 @@ int CN3TransformCollision::CheckCollisionPrecisely(bool bIgnoreBoxCheck, int ixS
 void CN3TransformCollision::RenderCollisionMesh()
 {
 	if(nullptr == m_pMeshCollision) return;
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	m_pMeshCollision->Render(0xffff0000); // 빨간색.
 }
@@ -159,7 +159,7 @@ void CN3TransformCollision::RenderCollisionMesh()
 void CN3TransformCollision::RenderClimbMesh()
 {
 	if(nullptr == m_pMeshClimb) return;
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &m_Matrix);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, m_Matrix.toD3D());
 
 	m_pMeshClimb->Render(0xff0000ff); // 파란색..
 }
@@ -245,16 +245,16 @@ BOOL CN3TransformCollision::CheckClimb(int x, int y, __Vector3* pVCol, __Vector3
 
 	// Compute the vector of the pick ray in screen space
 	__Vector3 vTmp;
-	vTmp.x =  ( ( ( 2.0f * x ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / CN3Base::s_CameraData.mtxProjection._11;
-	vTmp.y = -( ( ( 2.0f * y ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / CN3Base::s_CameraData.mtxProjection._22;
+	vTmp.x =  ( ( ( 2.0f * x ) / (CN3Base::s_CameraData.vp.Width) ) - 1 ) / CN3Base::s_CameraData.mtxProjection.m[0][0];
+	vTmp.y = -( ( ( 2.0f * y ) / (CN3Base::s_CameraData.vp.Height) ) - 1 ) / CN3Base::s_CameraData.mtxProjection.m[1][1];
 	vTmp.z =  1.0f;
 
 	// Transform the screen space pick ray into 3D space
 	__Matrix44* pMtxVI = &CN3Base::s_CameraData.mtxViewInverse;
 	__Vector3 vPos, vDir;
-	vDir.x  = vTmp.x * pMtxVI->_11 + vTmp.y * pMtxVI->_21 + vTmp.z * pMtxVI->_31;
-	vDir.y  = vTmp.x * pMtxVI->_12 + vTmp.y * pMtxVI->_22 + vTmp.z * pMtxVI->_32;
-	vDir.z  = vTmp.x * pMtxVI->_13 + vTmp.y * pMtxVI->_23 + vTmp.z * pMtxVI->_33;
+	vDir.x  = vTmp.x * pMtxVI->m[0][0] + vTmp.y * pMtxVI->m[1][0] + vTmp.z * pMtxVI->m[2][0];
+	vDir.y  = vTmp.x * pMtxVI->m[0][1] + vTmp.y * pMtxVI->m[1][1] + vTmp.z * pMtxVI->m[2][1];
+	vDir.z  = vTmp.x * pMtxVI->m[0][2] + vTmp.y * pMtxVI->m[1][2] + vTmp.z * pMtxVI->m[2][2];
 	vPos = pMtxVI->Pos();
 
 	return CheckClimb(vPos, vDir, pVCol, pVNormal, pVPolygon);

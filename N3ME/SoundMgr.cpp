@@ -192,7 +192,7 @@ void CSoundMgr::Render()
 	__Matrix44 mtx;
 	mtx.Identity();
 		
-	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, &mtx); // 월드 행렬 적용..
+	hr = s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D()); // 월드 행렬 적용..
 	
 	// set texture
 	hr = s_lpD3DDev->SetTexture(0, nullptr);

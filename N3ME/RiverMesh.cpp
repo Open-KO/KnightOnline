@@ -160,7 +160,7 @@ void CRiverMesh::Render()
 	if (0 > m_iVC) return;
 
 	__Matrix44 matWorld;	matWorld.Identity();
-	s_lpD3DDev->SetTransform(D3DTS_WORLD, &matWorld);
+	s_lpD3DDev->SetTransform(D3DTS_WORLD, matWorld.toD3D());
 	s_lpD3DDev->SetFVF(FVF_XYZT2);
 
 	// Texture state
@@ -264,8 +264,8 @@ void CRiverMesh::RenderVertexPoint()	// 잘보이게 점만 다시 그리기
 
 	// transform
 	__Matrix44 matView, matProj, matVP;
-	s_lpD3DDev->GetTransform(D3DTS_VIEW, &matView);
-	s_lpD3DDev->GetTransform(D3DTS_PROJECTION, &matProj);
+	s_lpD3DDev->GetTransform(D3DTS_VIEW, matView.toD3D());
+	s_lpD3DDev->GetTransform(D3DTS_PROJECTION, matProj.toD3D());
 	matVP = matView * matProj;
 	D3DVIEWPORT9 vp = s_CameraData.vp;
 
