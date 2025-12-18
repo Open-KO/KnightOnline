@@ -41,7 +41,7 @@ bool FileReader::Open(const std::filesystem::path& path)
 	return true;
 }
 
-bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead)
+bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
 	assert(buffer != nullptr);
 
@@ -71,7 +71,7 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead)
 	return bytesToCopy == bytesToRead;
 }
 
-bool FileReader::Write(void* buffer, size_t byteToWrite, size_t* bytesWritten)
+bool FileReader::Write(void* buffer, size_t byteToWrite, size_t* bytesWritten /*= nullptr*/)
 {
 	spdlog::error("FileReader::Write: Write not supported in a reader");
 	assert(!"FileReader: Write not supported");

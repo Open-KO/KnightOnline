@@ -32,14 +32,14 @@ bool FileWriter::Open(const std::filesystem::path& path)
 	return true;
 }
 
-bool FileWriter::Read(void* buffer, size_t bytesToRead, size_t* bytesRead)
+bool FileWriter::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
 	spdlog::error("FileWriter::Read: Read not supported in a writer");
 	assert(!"FileWriter: Read not supported");
 	return false;
 }
 
-bool FileWriter::Write(void* buffer, size_t bytesToWrite, size_t* bytesWritten)
+bool FileWriter::Write(void* buffer, size_t bytesToWrite, size_t* bytesWritten /*= nullptr*/)
 {
 	assert(_fileHandle.is_valid());
 	assert(buffer != nullptr);

@@ -117,7 +117,7 @@ bool MAP::IsMovable(int dest_x, int dest_y) const
 ///////////////////////////////////////////////////////////////////////
 //	각 서버가 담당하고 있는 zone의 Map을 로드한다.
 //
-bool MAP::LoadMap(std::istream& fs)
+bool MAP::LoadMap(File& fs)
 {
 	LoadTerrain(fs);
 
@@ -153,10 +153,10 @@ bool MAP::LoadMap(std::istream& fs)
 	return true;
 }
 
-void MAP::LoadTerrain(std::istream& fs)
+void MAP::LoadTerrain(File& fs)
 {
-	fs.read(reinterpret_cast<char*>(&m_nMapSize), sizeof(int));	// 가로세로 정보가 몇개씩인가?
-	fs.read(reinterpret_cast<char*>(&m_fUnitDist), sizeof(float));
+	fs.Read(&m_nMapSize, sizeof(int));	// 가로세로 정보가 몇개씩인가?
+	fs.Read(&m_fUnitDist, sizeof(float));
 
 	m_fHeight = new float* [m_nMapSize];
 	for (int i = 0; i < m_nMapSize; i++)
@@ -165,7 +165,7 @@ void MAP::LoadTerrain(std::istream& fs)
 	for (int z = 0; z < m_nMapSize; z++)
 	{
 		for (int x = 0; x < m_nMapSize; x++)
-			fs.read(reinterpret_cast<char*>(&m_fHeight[x][z]), sizeof(float));	// 높이값 읽어오기
+			fs.Read(&m_fHeight[x][z], sizeof(float));	// 높이값 읽어오기
 	}
 }
 
@@ -330,7 +330,7 @@ void MAP::RegionNpcRemove(int rx, int rz, int nid)
 	region->m_RegionNpcArray.DeleteData(nid);
 }
 
-void MAP::LoadMapTile(std::istream& fs)
+void MAP::LoadMapTile(File& fs)
 {
 	//MapTile속성 읽기..
 	//	속성이 0이면 못 가는 곳.
@@ -343,7 +343,7 @@ void MAP::LoadMapTile(std::istream& fs)
 	for (int x = 0; x < m_sizeMap.cx; x++)
 	{
 		pEvent[x] = new int16_t[m_sizeMap.cx];
-		fs.read(reinterpret_cast<char*>(pEvent[x]), sizeof(int16_t) * m_sizeMap.cy);
+		fs.Read(pEvent[x], sizeof(int16_t) * m_sizeMap.cy);
 	}
 
 	m_pMap = new CMapInfo* [m_sizeMap.cx];
@@ -426,24 +426,24 @@ int  MAP::GetRegionNpcSize(int rx, int rz)
 	return region->m_RegionNpcArray.GetSize();
 }
 
-void MAP::LoadObjectEvent(std::istream& fs)
+void MAP::LoadObjectEvent(File& fs)
 {
 	int iEventObjectCount = 0;
 	__Vector3 vPos(0, 0, 0);
 	_OBJECT_EVENT* pEvent = nullptr;
 
-	fs.read(reinterpret_cast<char*>(&iEventObjectCount), 4);
+	fs.Read(&iEventObjectCount, 4);
 	for (int i = 0; i < iEventObjectCount; i++)
 	{
 		pEvent = new _OBJECT_EVENT;
-		fs.read(reinterpret_cast<char*>(&pEvent->sBelong), 4);				// 소속 
-		fs.read(reinterpret_cast<char*>(&pEvent->sIndex), 2);				// Event Index
-		fs.read(reinterpret_cast<char*>(&pEvent->sType), 2);
-		fs.read(reinterpret_cast<char*>(&pEvent->sControlNpcID), 2);
-		fs.read(reinterpret_cast<char*>(&pEvent->sStatus), 2);
-		fs.read(reinterpret_cast<char*>(&pEvent->fPosX), 4);
-		fs.read(reinterpret_cast<char*>(&pEvent->fPosY), 4);
-		fs.read(reinterpret_cast<char*>(&pEvent->fPosZ), 4);
+		fs.Read(&pEvent->sBelong, 4);				// 소속 
+		fs.Read(&pEvent->sIndex, 2);				// Event Index
+		fs.Read(&pEvent->sType, 2);
+		fs.Read(&pEvent->sControlNpcID, 2);
+		fs.Read(&pEvent->sStatus, 2);
+		fs.Read(&pEvent->fPosX, 4);
+		fs.Read(&pEvent->fPosY, 4);
+		fs.Read(&pEvent->fPosZ, 4);
 
 		//TRACE(_T("Object - belong=%d, index=%d, type=%d, con=%d, sta=%d\n"), pEvent->sBelong, pEvent->sIndex, pEvent->sType, pEvent->sControlNpcID, pEvent->sStatus);
 

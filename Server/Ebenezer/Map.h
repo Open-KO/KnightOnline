@@ -37,8 +37,8 @@ public:
 	int			m_nMapSize;		// Grid Unit ex) 4m
 	float		m_fUnitDist;	// i Grid Distance
 
-	void LoadWarpList(std::istream& fs);
-	void LoadRegeneEvent(std::istream& fs);
+	void LoadWarpList(File& fs);
+	void LoadRegeneEvent(File& fs);
 	bool IsValidPosition(float x, float z) const;
 
 	_OBJECT_EVENT* GetObjectEvent(int objectindex)
@@ -51,7 +51,7 @@ public:
 		return m_ObjectRegeneArray.GetData(objectindex);
 	}
 
-	void LoadObjectEvent(std::istream& fs);
+	void LoadObjectEvent(File& fs);
 	bool LoadEvent();
 	bool CheckEvent(float x, float z, CUser* pUser = nullptr);
 	void RegionNpcRemove(int rx, int rz, int nid);
@@ -62,9 +62,9 @@ public:
 	bool RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem);
 	bool ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float y, float z);
-	void LoadMapTile(std::istream& fs);
-	bool LoadMap(std::istream& fs);
-	void LoadTerrain(std::istream& fs);
+	void LoadMapTile(File& fs);
+	bool LoadMap(File& fs);
+	void LoadTerrain(File& fs);
 
 	int GetXRegionMax() const
 	{

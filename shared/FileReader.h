@@ -17,8 +17,8 @@ public:
 
 	FileReader();
 	bool Open(const std::filesystem::path& path) override;
-	bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead) override;
-	bool Write(void* buffer, size_t byteToWrite, size_t* bytesWritten) override;
+	bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) override;
+	bool Write(void* buffer, size_t byteToWrite, size_t* bytesWritten = nullptr) override;
 	bool Seek(size_t offset, int origin) override;
 	void Close() override;
 	~FileReader() override;

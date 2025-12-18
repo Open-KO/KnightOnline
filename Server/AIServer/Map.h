@@ -51,10 +51,10 @@ public:
 	MAP();
 	virtual ~MAP();
 
-	bool LoadMap(std::istream& fs);
-	void LoadTerrain(std::istream& fs);
-	void LoadMapTile(std::istream& fs);
-	void LoadObjectEvent(std::istream& fs);
+	bool LoadMap(File& fs);
+	void LoadTerrain(File& fs);
+	void LoadMapTile(File& fs);
+	void LoadObjectEvent(File& fs);
 	bool LoadRoomEvent(int zone_number);
 	bool ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float z);

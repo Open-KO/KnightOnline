@@ -8,6 +8,7 @@
 
 #include <shared/crc32.h>
 #include <shared/DateTime.h>
+#include <shared/FileReader.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
 #include <shared/StringUtils.h>
@@ -17,9 +18,9 @@
 #include <db-library/RecordSetLoader_STLMap.h>
 #include <db-library/RecordSetLoader_Vector.h>
 
-#include <fstream>
-
 #include <Ebenezer/binder/EbenezerBinder.h>
+
+#include <fstream>
 
 constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
@@ -887,8 +888,8 @@ bool EbenezerApp::MapFileLoad()
 			std::u8string filenameUtf8 = mapPath.u8string();
 			std::string filename(filenameUtf8.begin(), filenameUtf8.end());
 
-			std::ifstream file(mapPath, std::ios::in | std::ios::binary);
-			if (!file)
+			FileReader file;
+			if (!file.Open(mapPath))
 			{
 				spdlog::error("EbenezerApp::MapFileLoad: File Open Fail - {}", filename);
 				return;
@@ -910,7 +911,7 @@ bool EbenezerApp::MapFileLoad()
 				return;
 			}
 
-			file.close();
+			file.Close();
 
 			m_ZoneArray.push_back(pMap);
 

@@ -83,7 +83,7 @@ C3DMap::~C3DMap()
 		m_WarpArray.DeleteAllData();
 }
 
-bool C3DMap::LoadMap(std::istream& fs)
+bool C3DMap::LoadMap(File& fs)
 {
 	m_pMain = EbenezerApp::instance();
 
@@ -124,23 +124,23 @@ bool C3DMap::LoadMap(std::istream& fs)
 	return true;
 }
 
-void C3DMap::LoadObjectEvent(std::istream& fs)
+void C3DMap::LoadObjectEvent(File& fs)
 {
 	int iEventObjectCount = 0;
-	fs.read(reinterpret_cast<char*>(&iEventObjectCount), 4);
+	fs.Read(&iEventObjectCount, 4);
 
 	for (int i = 0; i < iEventObjectCount; i++)
 	{
 		_OBJECT_EVENT* pEvent = new _OBJECT_EVENT;
 
-		fs.read(reinterpret_cast<char*>(&pEvent->sBelong), 4);			// 소속 : 0 -> 무소속
-		fs.read(reinterpret_cast<char*>(&pEvent->sIndex), 2);			// Event Index
-		fs.read(reinterpret_cast<char*>(&pEvent->sType), 2);			// 0 : bind point, 1,2 : gate, 3 : lever, 4 : flag lever, 5 : Warp point
-		fs.read(reinterpret_cast<char*>(&pEvent->sControlNpcID), 2);
-		fs.read(reinterpret_cast<char*>(&pEvent->sStatus), 2);
-		fs.read(reinterpret_cast<char*>(&pEvent->fPosX), 4);
-		fs.read(reinterpret_cast<char*>(&pEvent->fPosY), 4);
-		fs.read(reinterpret_cast<char*>(&pEvent->fPosZ), 4);
+		fs.Read(&pEvent->sBelong, 4);			// 소속 : 0 -> 무소속
+		fs.Read(&pEvent->sIndex, 2);			// Event Index
+		fs.Read(&pEvent->sType, 2);			// 0 : bind point, 1,2 : gate, 3 : lever, 4 : flag lever, 5 : Warp point
+		fs.Read(&pEvent->sControlNpcID, 2);
+		fs.Read(&pEvent->sStatus, 2);
+		fs.Read(&pEvent->fPosX, 4);
+		fs.Read(&pEvent->fPosY, 4);
+		fs.Read(&pEvent->fPosZ, 4);
 
 		pEvent->byLife = 1;
 
@@ -159,20 +159,20 @@ void C3DMap::LoadObjectEvent(std::istream& fs)
 	}
 }
 
-void C3DMap::LoadMapTile(std::istream& fs)
+void C3DMap::LoadMapTile(File& fs)
 {
 	m_ppnEvent = new int16_t* [m_nMapSize];
 	for (int x = 0; x < m_nMapSize;x++)
 	{
 		m_ppnEvent[x] = new int16_t[m_nMapSize];
-		fs.read(reinterpret_cast<char*>(m_ppnEvent[x]), sizeof(int16_t) * m_nMapSize);
+		fs.Read(m_ppnEvent[x], sizeof(int16_t) * m_nMapSize);
 	}
 }
 
-void C3DMap::LoadRegeneEvent(std::istream& fs)
+void C3DMap::LoadRegeneEvent(File& fs)
 {
 	int iEventObjectCount = 0;
-	fs.read(reinterpret_cast<char*>(&iEventObjectCount), 4);
+	fs.Read(&iEventObjectCount, 4);
 
 	for (int i = 0; i < iEventObjectCount; i++)
 	{
@@ -180,11 +180,11 @@ void C3DMap::LoadRegeneEvent(std::istream& fs)
 
 		pEvent->sRegenePoint = i;
 
-		fs.read(reinterpret_cast<char*>(&pEvent->fRegenePosX), 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 X
-		fs.read(reinterpret_cast<char*>(&pEvent->fRegenePosY), 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Y
-		fs.read(reinterpret_cast<char*>(&pEvent->fRegenePosZ), 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Z
-		fs.read(reinterpret_cast<char*>(&pEvent->fRegeneAreaZ), 4);	// 캐릭터 나타나는 지역의 Z 축 길이 
-		fs.read(reinterpret_cast<char*>(&pEvent->fRegeneAreaX), 4);	// 캐릭터 나타나는 지역의 X 축 길이
+		fs.Read(&pEvent->fRegenePosX, 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 X
+		fs.Read(&pEvent->fRegenePosY, 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Y
+		fs.Read(&pEvent->fRegenePosZ, 4);	// 캐릭터 나타나는 지역의 왼아래쪽 구석 좌표 Z
+		fs.Read(&pEvent->fRegeneAreaZ, 4);	// 캐릭터 나타나는 지역의 Z 축 길이 
+		fs.Read(&pEvent->fRegeneAreaX, 4);	// 캐릭터 나타나는 지역의 X 축 길이
 
 		if (pEvent->sRegenePoint < 0)
 			continue;
@@ -207,16 +207,16 @@ void C3DMap::LoadRegeneEvent(std::istream& fs)
 //	m_pMain->m_bMaxRegenePoint = iEventObjectCount;
 }
 
-void C3DMap::LoadWarpList(std::istream& fs)
+void C3DMap::LoadWarpList(File& fs)
 {
 	int WarpCount = 0;
-	fs.read(reinterpret_cast<char*>(&WarpCount), 4);
+	fs.Read(&WarpCount, 4);
 
 	for (int i = 0; i < WarpCount; i++)
 	{
 		_WARP_INFO* pWarp = new _WARP_INFO;
 
-		fs.read(reinterpret_cast<char*>(pWarp), sizeof(_WARP_INFO));
+		fs.Read(pWarp, sizeof(_WARP_INFO));
 
 		if (!m_WarpArray.PutData(pWarp->sWarpID, pWarp))
 		{
@@ -228,10 +228,10 @@ void C3DMap::LoadWarpList(std::istream& fs)
 	}
 }
 
-void C3DMap::LoadTerrain(std::istream& fs)
+void C3DMap::LoadTerrain(File& fs)
 {
-	fs.read(reinterpret_cast<char*>(&m_nMapSize), sizeof(int));	// 가로세로 정보가 몇개씩인가?
-	fs.read(reinterpret_cast<char*>(&m_fUnitDist), sizeof(float));
+	fs.Read(&m_nMapSize, sizeof(int));	// 가로세로 정보가 몇개씩인가?
+	fs.Read(&m_fUnitDist, sizeof(float));
 
 	m_fHeight = new float* [m_nMapSize];
 	for (int z = 0; z < m_nMapSize; z++)
@@ -240,7 +240,7 @@ void C3DMap::LoadTerrain(std::istream& fs)
 	for (int z = 0; z < m_nMapSize; z++)
 	{
 		for (int x = 0; x < m_nMapSize; x++)
-			fs.read(reinterpret_cast<char*>(&m_fHeight[x][z]), sizeof(float));	// 높이값 읽어오기
+			fs.Read(&m_fHeight[x][z], sizeof(float));	// 높이값 읽어오기
 	}
 }
 

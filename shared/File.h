@@ -20,12 +20,14 @@ public:
 
 protected:
 	File() = default;
+	virtual ~File() {}
+
+public:
 	virtual bool Open(const std::filesystem::path& path) = 0;
-	virtual bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead) = 0;
-	virtual bool Write(void* buffer, size_t byteToWrite, size_t* bytesWritten) = 0;
+	virtual bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) = 0;
+	virtual bool Write(void* buffer, size_t byteToWrite, size_t* bytesWritten = nullptr) = 0;
 	virtual bool Seek(size_t offset, int origin) = 0;
 	virtual void Close() = 0;
-	virtual ~File() {};
 
 protected:
 	size_t _offset = 0;

@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "N3ShapeMgr.h"
 
+#include <shared/File.h>
 #include <spdlog/fmt/bundled/format.h>
 
 #include <float.h>
@@ -16,9 +17,9 @@ CN3ShapeMgr::__CellSub::__CellSub()
 	pdwCCVertIndices = nullptr;
 }
 
-void CN3ShapeMgr::__CellSub::Load(std::istream& fs)
+void CN3ShapeMgr::__CellSub::Load(File& fs)
 {
-	fs.read(reinterpret_cast<char*>(&nCCPolyCount), 4);
+	fs.Read(&nCCPolyCount, 4);
 
 	if (nCCPolyCount > 0)
 	{
@@ -26,7 +27,7 @@ void CN3ShapeMgr::__CellSub::Load(std::istream& fs)
 		pdwCCVertIndices = new uint32_t[nCCPolyCount * 3];
 		__ASSERT(pdwCCVertIndices, "New memory failed");
 
-		fs.read(reinterpret_cast<char*>(pdwCCVertIndices), nCCPolyCount * 3 * 4);
+		fs.Read(pdwCCVertIndices, nCCPolyCount * 3 * sizeof(uint32_t));
 
 		// TRACE(_T("CollisionCheckPolygon : %d\n"), nCCPolyCount);
 	}
@@ -43,15 +44,15 @@ CN3ShapeMgr::__CellMain::__CellMain()
 	pwShapeIndices = nullptr;
 }
 
-void CN3ShapeMgr::__CellMain::Load(std::istream& fs)
+void CN3ShapeMgr::__CellMain::Load(File& fs)
 {
-	fs.read(reinterpret_cast<char*>(&nShapeCount), 4);
+	fs.Read(&nShapeCount, 4);
 
 	if (nShapeCount > 0)
 	{
 		delete[] pwShapeIndices;
 		pwShapeIndices = new uint16_t[nShapeCount];
-		fs.read(reinterpret_cast<char*>(pwShapeIndices), nShapeCount * 2);
+		fs.Read(pwShapeIndices, nShapeCount * sizeof(uint16_t));
 	}
 
 	for (int z = 0; z < CELL_MAIN_DIVIDE; z++)
@@ -108,16 +109,16 @@ void CN3ShapeMgr::Release()
 	memset(m_pCells, 0, sizeof(MAX_CELL_MAIN));
 }
 
-bool CN3ShapeMgr::LoadCollisionData(std::istream& fs)
+bool CN3ShapeMgr::LoadCollisionData(File& fs)
 {
-	fs.read(reinterpret_cast<char*>(&m_fMapWidth), 4);
-	fs.read(reinterpret_cast<char*>(&m_fMapLength), 4);
+	fs.Read(&m_fMapWidth, 4);
+	fs.Read(&m_fMapLength, 4);
 
 	if (!Create(m_fMapWidth, m_fMapLength))
 		return false;
 
 	// 충돌 체크 폴리곤 데이터 읽기..
-	fs.read(reinterpret_cast<char*>(&m_nCollisionFaceCount), 4);
+	fs.Read(&m_nCollisionFaceCount, 4);
 
 	delete[] m_pvCollisions;
 	m_pvCollisions = nullptr;
@@ -125,7 +126,7 @@ bool CN3ShapeMgr::LoadCollisionData(std::istream& fs)
 	if (m_nCollisionFaceCount > 0)
 	{
 		m_pvCollisions = new __Vector3[m_nCollisionFaceCount * 3];
-		fs.read(reinterpret_cast<char*>(m_pvCollisions), sizeof(__Vector3) * m_nCollisionFaceCount * 3);
+		fs.Read(m_pvCollisions, sizeof(__Vector3) * m_nCollisionFaceCount * 3);
 	}
 
 	// Cell Data 쓰기.
@@ -138,7 +139,7 @@ bool CN3ShapeMgr::LoadCollisionData(std::istream& fs)
 		{
 			delete m_pCells[x][z]; m_pCells[x][z] = nullptr;
 
-			fs.read(reinterpret_cast<char*>(&iExist), 4); // 데이터가 있는 셀인지 쓰고..
+			fs.Read(&iExist, 4); // 데이터가 있는 셀인지 쓰고..
 
 			if (iExist == 0)
 				continue;

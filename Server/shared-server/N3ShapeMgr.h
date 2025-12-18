@@ -11,8 +11,6 @@ constexpr int CELL_MAIN_SIZE = CELL_MAIN_DIVIDE * CELL_SUB_SIZE; // 메인셀 �
 constexpr int MAX_CELL_MAIN = 4096 / CELL_MAIN_SIZE; // 메인셀의 최대 갯수는 지형크기 / 메인셀크기 이다.
 constexpr int MAX_CELL_SUB = MAX_CELL_MAIN * CELL_MAIN_DIVIDE; // 서브셀 최대 갯수는 메인셀 * 메인셀나눔수 이다.
 
-#include <iosfwd>
-
 class CN3ShapeMgr
 {
 public:
@@ -23,7 +21,7 @@ public:
 		uint32_t*	pdwCCVertIndices;	// Collision Check Polygon Vertex Indices - wCCPolyCount * 3 만큼 생성된다.
 
 		__CellSub();
-		void Load(std::istream& fs);
+		void Load(File& fs);
 		~__CellSub();
 	};
 
@@ -35,7 +33,7 @@ public:
 		__CellSub	SubCells[CELL_MAIN_DIVIDE][CELL_MAIN_DIVIDE];
 
 		__CellMain();
-		void Load(std::istream& fs);
+		void Load(File& fs);
 		~__CellMain();
 	};
 
@@ -102,7 +100,7 @@ public:
 		__Vector3* pVec = nullptr);		// 충돌한 면 의 폴리곤 __Vector3[3]
 
 	bool		Create(float fMapWidth, float fMapLength); // 맵의 너비와 높이를 미터 단위로 넣는다..
-	bool		LoadCollisionData(std::istream& fs);
+	bool		LoadCollisionData(File& fs);
 
 	void Release();
 	CN3ShapeMgr();

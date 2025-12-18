@@ -8,9 +8,10 @@
 #include "ZoneEventThread.h"
 
 #include <shared/crc32.h>
-#include <shared/lzf.h>
+#include <shared/FileReader.h>
 #include <shared/globals.h>
 #include <shared/Ini.h>
+#include <shared/lzf.h>
 #include <shared/StringUtils.h>
 
 #include <spdlog/spdlog.h>
@@ -24,7 +25,6 @@
 #include <shared/TimerThread.h>
 
 #include <math.h>
-#include <fstream>
 
 using namespace std::chrono_literals;
 using namespace db;
@@ -955,8 +955,8 @@ bool AIServerApp::MapFileLoad()
 			std::u8string filenameUtf8 = mapPath.u8string();
 			std::string filename(filenameUtf8.begin(), filenameUtf8.end());
 
-			std::ifstream file(mapPath, std::ios::in | std::ios::binary);
-			if (!file)
+			FileReader file;
+			if (!file.Open(mapPath))
 			{
 				spdlog::error("AIServerApp::MapFileLoad: Failed to open file: {}",
 					filename);
@@ -975,7 +975,7 @@ bool AIServerApp::MapFileLoad()
 				return;
 			}
 
-			file.close();
+			file.Close();
 
 			// dungeon work
 			if (row.RoomEvent > 0)
