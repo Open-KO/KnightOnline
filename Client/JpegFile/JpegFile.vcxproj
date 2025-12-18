@@ -42,7 +42,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>

@@ -14,6 +14,7 @@
 #include "JpegFile.h"
 
 #include <assert.h>
+#include <filesystem>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -1337,7 +1338,7 @@ WORD FAR CJpegFile::SaveDIB(HDIB hDib, LPSTR lpFileName)
 	
 	if (!hDib)
 		return ERR_INVALIDHANDLE;
-	fh = CreateFile(lpFileName, GENERIC_READ|GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	fh = CreateFile(lpFileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (fh == INVALID_HANDLE_VALUE)
 		return ERR_OPEN;
 	
@@ -1799,26 +1800,35 @@ BOOL CJpegFile::EncryptJPEG(
 	std::string	csJpeg,		// Pathname to jpeg file
 	const char*	pcsMsg)		// Error msg to return
 {
-	if(JpegFromDib(hDib, nQuality, csJpeg, pcsMsg) == FALSE)
+	if (!JpegFromDib(hDib, nQuality, csJpeg, pcsMsg))
 		return FALSE;
 
-	HANDLE fh;
-	DWORD loSize, hiSize;
-	BYTE *data_byte;
-	DWORD encrypt_len, i;
+	uint8_t* data_byte;
+	size_t encrypt_len, i;
+	FILE* fileHandle = nullptr;
 
 	// JPEG 파일 읽어오기
-	fh = CreateFile(csJpeg.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (fh == INVALID_HANDLE_VALUE) return false;
+#ifdef _MSC_VER
+	fopen_s(&fileHandle, csJpeg.c_str(), "rb");
+#else
+	fileHandle = fopen(csJpeg.c_str(), "rb");
+#endif
+	if (fileHandle == nullptr)
+		return FALSE;
 
-	loSize = GetFileSize(fh, &hiSize);
-	if(loSize == INVALID_FILE_SIZE)
+	size_t fileSize = 0;
+	fseek(fileHandle, 0, SEEK_END);
+	fileSize = static_cast<size_t>(ftell(fileHandle));
+
+	if (fileSize == 0)
 	{
-		CloseHandle(fh);
+		fclose(fileHandle);
 		return FALSE;
 	}
 
-	data_byte = new BYTE[loSize+8];
+	fseek(fileHandle, 0, SEEK_SET);
+
+	data_byte = new BYTE[fileSize+8];
 
 	srand((unsigned)time( nullptr ));
 	for(i = 0; i < 4; i++) data_byte[i] = rand() % 0x100;
@@ -1828,28 +1838,31 @@ BOOL CJpegFile::EncryptJPEG(
 	data_byte[6] = 'C';
 	data_byte[7] = 1;
 
-	ReadFile(fh, (LPVOID)(data_byte+8), loSize, &hiSize, nullptr);
-	CloseHandle(fh);
+	fread(data_byte + 8, fileSize, 1, fileHandle);
+	fclose(fileHandle);
+	fileHandle = nullptr;
 
 	m_r = 1124;
+
 	// JPEG 파일 Encoding
-	encrypt_len = loSize+8;
-	for(i = 0; i < encrypt_len; i++)
-	{
+	encrypt_len = fileSize + 8;
+	for (i = 0; i < encrypt_len; i++)
 		data_byte[i] = Encrypt(data_byte[i]);
-	}
 
 	// Encoding 파일 Writing
-	fh = CreateFile(csJpeg.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (fh == INVALID_HANDLE_VALUE)
+#ifdef _MSC_VER
+	fopen_s(&fileHandle, csJpeg.c_str(), "wb");
+#else
+	fileHandle = fopen(csJpeg.c_str(), "wb");
+#endif
+	if (fileHandle == nullptr)
 	{
 		delete[] data_byte;
 		return FALSE;
 	}
 
-	WriteFile(fh, (LPCVOID)data_byte, encrypt_len, &hiSize, nullptr);
-
-	CloseHandle(fh);
+	fwrite(data_byte, encrypt_len, 1, fileHandle);
+	fclose(fileHandle);
 
 	delete[] data_byte;
 
@@ -1858,12 +1871,11 @@ BOOL CJpegFile::EncryptJPEG(
 
 BOOL CJpegFile::DecryptJPEG(std::string csJpeg)
 {
-	char szTempName[MAX_PATH] = "";
+	char szTempName[MAX_PATH] = {};
 	std::string szDstpath;
-	HANDLE hSrc, hDst;
-	BYTE *dst_data, *src_data;
-	DWORD dst_len, src_len, src_hlen;
-	DWORD result_len, i, j;
+	uint8_t* dst_data, *src_data;
+	size_t jpegLen, kscLen;
+	size_t i, j;
 
 	size_t rfv = csJpeg.rfind('\\');
 	szDstpath = csJpeg;
@@ -1874,130 +1886,156 @@ BOOL CJpegFile::DecryptJPEG(std::string csJpeg)
 	if (szDstpath.size() == 2)
 		szDstpath += '\\';//_T('\\');
 
-	if(GetTempFileName(szDstpath.c_str(), "ksc", 0, szTempName) == 0)
+	if (GetTempFileName(szDstpath.c_str(), "ksc", 0, szTempName) == 0)
 	{
 //		AfxMessageBox("임시 파일을 생성할 수가 없습니다.", MB_ICONSTOP|MB_OK);
 		return FALSE;
 	}
 
-	hSrc = CreateFile(csJpeg.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(hSrc == INVALID_HANDLE_VALUE)
+	FILE* kscHandle = nullptr;
+	FILE* jpegHandle = nullptr;
+
+#ifdef _MSC_VER
+	fopen_s(&kscHandle, csJpeg.c_str(), "rb");
+#else
+	kscHandle = fopen(csJpeg.c_str(), "rb");
+#endif
+
+	if (kscHandle == nullptr)
 	{
 //		AfxMessageBox("소스 파일이 존재하지 않습니다. 다른 파일을 선택해주세요.", MB_ICONSTOP|MB_OK);
 		return FALSE;
 	}
 
-	hDst = CreateFile(szTempName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(hDst == INVALID_HANDLE_VALUE)
+#ifdef _MSC_VER
+	fopen_s(&jpegHandle, szTempName, "wb");
+#else
+	jpegHandle = fopen(szTempName, "wb");
+#endif
+
+	if (jpegHandle == nullptr)
 	{
-		CloseHandle(hSrc);
+		fclose(kscHandle);
 		return FALSE;
 	}
 
-	src_len = GetFileSize(hSrc, &src_hlen);
-	if(src_hlen > 0)
+	fseek(kscHandle, 0, SEEK_END);
+	kscLen = static_cast<size_t>(ftell(kscHandle));
+	if (kscLen < 8)
 	{
-		CloseHandle(hSrc);
-		CloseHandle(hDst);
+		fclose(kscHandle);
+		fclose(jpegHandle);
+		return FALSE;
 	}
-	dst_len = src_len - 8;
 
-	src_data = new BYTE[src_len];
-	dst_data = new BYTE[dst_len];
+	fseek(kscHandle, 0, SEEK_SET);
 
-	ReadFile(hSrc, (LPVOID)src_data, src_len, &result_len, nullptr);
+	jpegLen = kscLen - 8;
+
+	src_data = new uint8_t[kscLen];
+	dst_data = new uint8_t[jpegLen];
+
+	fread(src_data, kscLen, 1, kscHandle);
+	fclose(kscHandle);
+	kscHandle = nullptr;
 
 	m_r = 1124;
-	for(i = 0; i < 4; i++)
-	{
+	for (i = 0; i < 4; i++)
 		Decrypt(src_data[i]);
-	}
 
-	BYTE magic[4];
-	for(i = 4; i < 8; i++)
-	{
-		magic[i-4] = Decrypt(src_data[i]);
-	}
+	uint8_t magic[4];
+	for (i = 4; i < 8; i++)
+		magic[i - 4] = Decrypt(src_data[i]);
 
-	if(magic[0] == 'K' && magic[1] == 'S' && magic[2] == 'C' && magic[3] == 1)
+	if (magic[0] == 'K' && magic[1] == 'S' && magic[2] == 'C' && magic[3] == 1)
 	{
 		//버전 1번
 	}
 	else
 	{
-		CloseHandle(hSrc);
-		CloseHandle(hDst);
+		fclose(jpegHandle);
+
 		delete[] dst_data;
 		delete[] src_data;
 		return FALSE;
 	}
 
-	for(j = 0; i < src_len; i++, j++)
-	{
+	for (j = 0; i < kscLen; i++, j++)
 		dst_data[j] = Decrypt(src_data[i]);
-	}
 
-	WriteFile(hDst, (LPCVOID)dst_data, dst_len, &result_len, nullptr);
-	
-	CloseHandle(hSrc);
-	CloseHandle(hDst);
+	fwrite(dst_data, jpegLen, 1, jpegHandle);
+	fclose(jpegHandle);
 
 	delete[] dst_data;
 	delete[] src_data;
 
 	LoadJpegFile(szTempName);
-	DeleteFile((LPCTSTR)szTempName);
+
+	std::error_code ec;
+	std::filesystem::remove(szTempName, ec);
 
 	return TRUE;
 }
 
 BOOL CJpegFile::SaveFromDecryptToJpeg(std::string csKsc, std::string csJpeg)
 {
-	HANDLE hSrc, hDst;
-	BYTE *dst_data, *src_data;
-	DWORD dst_len, src_len, src_hlen;
-	DWORD result_len, i, j;
+	FILE* kscHandle = nullptr;
+	FILE* jpegHandle = nullptr;
+	uint8_t* dst_data, *src_data;
+	size_t i, j;
 
-	hSrc = CreateFile((LPCTSTR)csKsc.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(hSrc == INVALID_HANDLE_VALUE)
+#ifdef _MSC_VER
+	fopen_s(&kscHandle, csKsc.c_str(), "rb");
+#else
+	kscHandle = fopen(csKsc.c_str(), "rb");
+#endif
+
+	if (kscHandle == nullptr)
+		return FALSE;
+
+#ifdef _MSC_VER
+	fopen_s(&jpegHandle, csJpeg.c_str(), "wb");
+#else
+	jpegHandle = fopen(csJpeg.c_str(), "wb");
+#endif
+
+	if (jpegHandle == nullptr)
 	{
+		fclose(kscHandle);
 		return FALSE;
 	}
 
-	hDst = CreateFile((LPCTSTR)csJpeg.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(hDst == INVALID_HANDLE_VALUE)
+	size_t kscLen = 0;
+	
+	fseek(kscHandle, 0, SEEK_END);
+	kscLen = static_cast<size_t>(ftell(kscHandle));
+	if (kscLen < 8)
 	{
-		CloseHandle(hSrc);
+		fclose(jpegHandle);
+		fclose(kscHandle);
 		return FALSE;
 	}
 
-	src_len = GetFileSize(hSrc, &src_hlen);
-	if(src_hlen > 0)
-	{
-		CloseHandle(hSrc);
-		CloseHandle(hDst);
-	}
-	dst_len = src_len - 8;
+	fseek(kscHandle, 0, SEEK_SET);
 
-	src_data = new BYTE[src_len];
-	dst_data = new BYTE[dst_len];
+	size_t jpegLen = kscLen - 8;
 
-	ReadFile(hSrc, (LPVOID)src_data, src_len, &result_len, nullptr);
+	src_data = new uint8_t[kscLen];
+	dst_data = new uint8_t[jpegLen];
+
+	fread(src_data, kscLen, 1, kscHandle);
+	fclose(kscHandle);
+	kscHandle = nullptr;
 
 	m_r = 1124;
-	for(i = 0; i < 8; i++)
-	{
+	for (i = 0; i < 8; i++)
 		Decrypt(src_data[i]);
-	}
-	for(j = 0; i < src_len; i++, j++)
-	{
-		dst_data[j] = Decrypt(src_data[i]);
-	}
 
-	WriteFile(hDst, (LPCVOID)dst_data, dst_len, &result_len, nullptr);
-	
-	CloseHandle(hSrc);
-	CloseHandle(hDst);
+	for (j = 0; i < kscLen; i++, j++)
+		dst_data[j] = Decrypt(src_data[i]);
+
+	fwrite(dst_data, jpegLen, 1, jpegHandle);
+	fclose(jpegHandle);
 
 	delete[] dst_data;
 	delete[] src_data;
