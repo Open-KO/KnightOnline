@@ -79,7 +79,7 @@ public:
 
 public:
 	void		Release();
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 	void		Render();
 	void		Tick();
 

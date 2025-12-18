@@ -255,9 +255,9 @@ void CCountableItemEditDlg::SetVisibleWithNoSound(bool bVisible, bool bWork, boo
 	CN3UIBase::SetVisibleWithNoSound(bVisible, bWork, bReFocus);
 }
 
-bool CCountableItemEditDlg::Load(HANDLE hFile)
+bool CCountableItemEditDlg::Load(File& file)
 {
-	if(false == CN3UIBase::Load(hFile)) return false;
+	if(false == CN3UIBase::Load(file)) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtnOk,		GetChildByID<CN3UIButton>("btn_ok"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnCancel,	GetChildByID<CN3UIButton>("btn_cancel"));

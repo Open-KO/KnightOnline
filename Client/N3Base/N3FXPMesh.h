@@ -19,7 +19,7 @@ public:
 	void					Render();
 	void					Release();
 	void					FindMinMax();
-	bool					Load(HANDLE hFile);
+	bool					Load(File& file);
 	void					SetColor(uint32_t dwColor = 0xffffffff);
 	HRESULT					Create(int iNumVertices, int iNumIndices);
 	void					operator=(const CN3FXPMesh& fxPMesh);

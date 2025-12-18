@@ -5,14 +5,12 @@
 #include "stdafx.h"
 #include "LightMgr.h"
 
+#include <shared/FileReader.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CLightMgr::CLightMgr()
 {
@@ -153,24 +151,23 @@ void CLightMgr::AddLight(CN3Light* pLgt)
 
 void CLightMgr::LoadZoneLight(const char* szFN)
 {
-	if(!szFN) return;
+	if (szFN == nullptr)
+		return;
 	
-	DWORD dwRWC;
-	HANDLE hFile = CreateFile(szFN, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hFile) return;
+	FileReader file;
+	if (!file.Open(szFN))
+		return;
 
 	int iVersion;
-	ReadFile(hFile, &iVersion, sizeof(int), &dwRWC, nullptr);
+	file.Read(&iVersion, sizeof(int));
 
 	int cnt;
-	ReadFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
-	for(int i=0;i<cnt;i++)
+	file.Read(&cnt, sizeof(int));
+	for (int i = 0; i < cnt; i++)
 	{
 		CN3Light* pLgt = new CN3Light;
 		pLgt->m_iFileFormatVersion = N3FORMAT_VER_DEFAULT;
-
-		pLgt->Load(hFile);
+		pLgt->Load(file);
 		AddLight(pLgt);
 	}
-	CloseHandle(hFile);
 }

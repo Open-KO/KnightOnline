@@ -9,14 +9,12 @@
 #include "BitmapFile.h"
 #endif // #ifdef _N3TOOL
 
+#include <shared/FileReader.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 static inline uint32_t GetTextureSize(
 	const D3DSURFACE_DESC& sd)
@@ -184,16 +182,16 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 	if (nFNL >= 3
 		&& lstrcmpi(&szFullPath[nFNL - 3], "DXT") == 0)
 	{
-		HANDLE hFile = ::CreateFile(szFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if(hFile == INVALID_HANDLE_VALUE)
+		FileReader file;
+		if (!file.Open(szFullPath))
 		{
 #ifdef _N3GAME
-			CLogWriter::Write("invalid file handle({}) - Can't open texture file({})", (intptr_t) hFile, szFullPath);
+			CLogWriter::Write("Can't open texture file({})", szFullPath);
 #endif
 			return false;
 		}
-		this->Load(hFile);
-		CloseHandle(hFile);
+
+		Load(file);
 	}
 	else
 	{
@@ -245,15 +243,14 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 	return true;
 }
 
-bool CN3Texture::Load(HANDLE hFile)
+bool CN3Texture::Load(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
+	CN3BaseFileAccess::Load(file);
 
-	DWORD dwRWC = 0;
 	CWinCrypt crypt;
 
 	__DXT_HEADER HeaderOrg; // 헤더를 저장해 놓고..
-	ReadFile(hFile, &HeaderOrg, sizeof(HeaderOrg), &dwRWC, nullptr); // 헤더를 읽는다..
+	file.Read(&HeaderOrg, sizeof(HeaderOrg)); // 헤더를 읽는다..
 	if ('N' != HeaderOrg.szID[0]
 		|| 'T' != HeaderOrg.szID[1]
 		|| 'F' != HeaderOrg.szID[2]
@@ -347,7 +344,8 @@ bool CN3Texture::Load(HANDLE hFile)
 						else
 							iSkipSize += iWTmp * iHTmp; // DXT2 ~ DXT5 형식은 16비트 포맷에 비해 1/2 로 압축..
 					}
-					::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+
+					file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 				}
 
 				for (int i = 0; i < iMMC; i++)
@@ -359,7 +357,7 @@ bool CN3Texture::Load(HANDLE hFile)
 					m_lpTexture->LockRect(i, &LR, nullptr, 0);
 
 					// 일렬로 된 데이터를 쓰고..
-					crypt.ReadFile(hFile, LR.pBits, nTexSize, &dwRWC, nullptr);
+					crypt.ReadFile(file, LR.pBits, nTexSize);
 
 					m_lpTexture->UnlockRect(i);
 				}
@@ -367,7 +365,7 @@ bool CN3Texture::Load(HANDLE hFile)
 				// 텍스처 압축안되는 비디오 카드를 위한 여분의 데이터 건너뛰기.. 
 				int iWTmp = HeaderOrg.nWidth / 2, iHTmp = HeaderOrg.nHeight / 2;
 				for(; iWTmp >= 4 && iHTmp >= 4; iWTmp /= 2, iHTmp /= 2) // 한픽셀에 두바이트가 들어가는 A1R5G5B5 혹은 A4R4G4B4 포맷으로 되어 있다..
-					::SetFilePointer(hFile, iWTmp * iHTmp * 2, 0, FILE_CURRENT); // 건너뛰고.
+					file.Seek(iWTmp * iHTmp * 2, SEEK_CUR); // 건너뛰고.
 			}
 			else // pair of if(iMMC > 1)
 			{
@@ -378,13 +376,14 @@ bool CN3Texture::Load(HANDLE hFile)
 				m_lpTexture->LockRect(0, &LR, nullptr, 0);
 
 				// 일렬로 된 데이터를 쓰고..
-				crypt.ReadFile(hFile, LR.pBits, nTexSize, &dwRWC, nullptr);
+				crypt.ReadFile(file, LR.pBits, nTexSize);
 
 				m_lpTexture->UnlockRect(0);
 
 				// 텍스처 압축안되는 비디오 카드를 위한 여분의 데이터 건너뛰기.. 
-				::SetFilePointer(hFile, HeaderOrg.nWidth * HeaderOrg.nHeight / 4, 0, FILE_CURRENT); // 건너뛰고.
-				if(HeaderOrg.nWidth >= 1024) SetFilePointer(hFile, 256 * 256 * 2, 0, FILE_CURRENT); // 사이즈가 512 보다 클경우 부두용 데이터 건너뛰기..
+				file.Seek(HeaderOrg.nWidth * HeaderOrg.nHeight / 4, SEEK_CUR); // 건너뛰고.
+				if (HeaderOrg.nWidth >= 1024)
+					file.Seek(256 * 256 * 2, SEEK_CUR); // 사이즈가 512 보다 클경우 부두용 데이터 건너뛰기..
 			}
 		}
 		else // DXT 지원이 안되면..
@@ -400,7 +399,8 @@ bool CN3Texture::Load(HANDLE hFile)
 					else
 						iSkipSize += iWTmp * iHTmp; // DXT2 ~ DXT5 형식은 16비트 포맷에 비해 1/2 로 압축..
 				}
-				::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+
+				file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 
 				// LOD 만큼 건너뛰기..
 				iWTmp = HeaderOrg.nWidth / 2; iHTmp = HeaderOrg.nHeight / 2; iSkipSize = 0;
@@ -414,7 +414,8 @@ bool CN3Texture::Load(HANDLE hFile)
 				for (; iWTmp > static_cast<int>(s_DevCaps.MaxTextureWidth) || iHTmp > static_cast<int>(s_DevCaps.MaxTextureHeight);
 					iWTmp /= 2, iHTmp /= 2)
 					iSkipSize += iWTmp * iHTmp * 2;
-				if(iSkipSize) ::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+				if (iSkipSize != 0)
+					file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 
 				for (int i = 0; i < iMMC; i++)
 				{
@@ -424,7 +425,7 @@ bool CN3Texture::Load(HANDLE hFile)
 					for (int y = 0; y < nH; y++)
 					{
 						uint8_t* pBits = (uint8_t*) LR.pBits + y * LR.Pitch;
-						if (!crypt.ReadFile(hFile, pBits, 2 * sd.Width, &dwRWC, nullptr))
+						if (!crypt.ReadFile(file, pBits, 2 * sd.Width))
 							break;
 					}
 					m_lpTexture->UnlockRect(i);
@@ -455,8 +456,9 @@ bool CN3Texture::Load(HANDLE hFile)
 			if(m_iLOD > 0) // LOD 만큼 건너뛰기...
 			{
 				int iWTmp = HeaderOrg.nWidth, iHTmp = HeaderOrg.nHeight, iSkipSize = 0;
-				for(int i = 0; i < m_iLOD; i++, iWTmp /= 2, iHTmp /= 2) iSkipSize += iWTmp * iHTmp * iPixelSize; // 피치에 너비를 나눈게 픽셀의 크기라 생각한다...
-				::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+				for (int i = 0; i < m_iLOD; i++, iWTmp /= 2, iHTmp /= 2)
+					iSkipSize += iWTmp * iHTmp * iPixelSize; // 피치에 너비를 나눈게 픽셀의 크기라 생각한다...
+				file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 			}
 
 			// 비디오 카드 지원 텍스처 크기가 작을경우 건너뛰기..
@@ -465,7 +467,7 @@ bool CN3Texture::Load(HANDLE hFile)
 				iWTmp /= 2, iHTmp /= 2)
 				iSkipSize += iWTmp * iHTmp * iPixelSize;
 			if (iSkipSize != 0)
-				::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+				file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 
 			// 데이터 읽기..
 			for (int i = 0; i < iMMC; i++)
@@ -475,7 +477,7 @@ bool CN3Texture::Load(HANDLE hFile)
 				for (int y = 0; y < (int) sd.Height; y++)
 				{
 					uint8_t* pBits = (uint8_t*) LR.pBits + y * LR.Pitch;
-					if (!crypt.ReadFile(hFile, pBits, iPixelSize * sd.Width, &dwRWC, nullptr))
+					if (!crypt.ReadFile(file, pBits, iPixelSize * sd.Width))
 						break;
 				}
 				m_lpTexture->UnlockRect(i);
@@ -484,8 +486,8 @@ bool CN3Texture::Load(HANDLE hFile)
 		else // pair of if(iMMC > 1)
 		{
 			// 비디오 카드 지원 텍스처 크기가 작을경우 건너뛰기..
-			if(HeaderOrg.nWidth >= 512 && m_Header.nWidth <= 256)
-				::SetFilePointer(hFile, HeaderOrg.nWidth * HeaderOrg.nHeight * iPixelSize, 0, FILE_CURRENT); // 건너뛰고.
+			if (HeaderOrg.nWidth >= 512 && m_Header.nWidth <= 256)
+				file.Seek(HeaderOrg.nWidth * HeaderOrg.nHeight * iPixelSize, SEEK_CUR); // 건너뛰고.
 
 			m_lpTexture->LockRect(0, &LR, nullptr, 0);
 			D3DSURFACE_DESC sd;
@@ -493,13 +495,13 @@ bool CN3Texture::Load(HANDLE hFile)
 			for (int y = 0; y < (int) sd.Height; y++)
 			{
 				uint8_t* pBits = (uint8_t*) LR.pBits + y * LR.Pitch;
-				if (!crypt.ReadFile(hFile, pBits, iPixelSize * sd.Width, &dwRWC, nullptr))
+				if (!crypt.ReadFile(file, pBits, iPixelSize * sd.Width))
 					break;
 			}
 			m_lpTexture->UnlockRect(0);
 
 			if (m_Header.nWidth >= 512 && m_Header.nHeight >= 512)
-				SetFilePointer(hFile, 256 * 256 * 2, 0, FILE_CURRENT); // 사이즈가 512 보다 클경우 부두용 데이터 건너뛰기..
+				file.Seek(256 * 256 * 2, SEEK_CUR); // 사이즈가 512 보다 클경우 부두용 데이터 건너뛰기..
 		}
 	}
 
@@ -507,13 +509,12 @@ bool CN3Texture::Load(HANDLE hFile)
 	return true;
 }
 
-bool CN3Texture::SkipFileHandle(HANDLE hFile)
+bool CN3Texture::SkipFileHandle(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
+	CN3BaseFileAccess::Load(file);
 
 	__DXT_HEADER HeaderOrg; // 헤더를 저장해 놓고..
-	DWORD dwRWC = 0;
-	ReadFile(hFile, &HeaderOrg, sizeof(HeaderOrg), &dwRWC, nullptr); // 헤더를 읽는다..
+	file.Read(&HeaderOrg, sizeof(HeaderOrg)); // 헤더를 읽는다..
 	if(	'N' != HeaderOrg.szID[0] || 'T' != HeaderOrg.szID[1] || 'F' != HeaderOrg.szID[2] || 3 != HeaderOrg.szID[3] ) // "NTF"3 - Noah Texture File Ver. 3.0
 	{
 #ifdef _N3GAME
@@ -553,7 +554,7 @@ bool CN3Texture::SkipFileHandle(HANDLE hFile)
 			if(HeaderOrg.nWidth >= 1024) iSkipSize += 256 * 256 * 2; // 사이즈가 1024 보다 클경우 부두용 데이터 건너뛰기..
 		}
 
-		::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+		file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 	}
 	else
 	{
@@ -578,7 +579,7 @@ bool CN3Texture::SkipFileHandle(HANDLE hFile)
 			if(HeaderOrg.nWidth >= 512) iSkipSize += 256 * 256 * 2; // 사이즈가 512 보다 클경우 부두용 데이터 건너뛰기..
 		}
 		
-		::SetFilePointer(hFile, iSkipSize, 0, FILE_CURRENT); // 건너뛰고.
+		file.Seek(iSkipSize, SEEK_CUR); // 건너뛰고.
 	}
 	return true;
 }

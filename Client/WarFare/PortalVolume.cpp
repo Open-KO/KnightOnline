@@ -257,83 +257,83 @@ void CPortalVolume::RenderCollision()
 
 //////////////////////////////////////////////////////////////////////
 
-bool CPortalVolume::Load(HANDLE hFile)
+bool CPortalVolume::Load(File& file)
 {
-	CN3Transform::Load(hFile);
+	CN3Transform::Load(file);
 
 	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 
 	// 자신의 데이터 로드..
-	DWORD dwNum;
 	std::string strSrc, strDest;
 
 	// 링크된 갯수를 로드..	일단 읽구 버린다..
 	int iLinkedCount = 0, iTID, iEWT;
-	ReadFile(hFile, &iLinkedCount, sizeof(int), &dwNum, nullptr);
+	file.Read(&iLinkedCount, sizeof(int));
 	for( int i = 0; i < iLinkedCount; i++ )
 	{
-		ReadFile(hFile, &iTID, sizeof(int), &dwNum, nullptr);
-		ReadFile(hFile, &iEWT, sizeof(int), &dwNum, nullptr);
+		file.Read(&iTID, sizeof(int));
+		file.Read(&iEWT, sizeof(int));
 	}
 
 	// 링크된 Shape 갯수 로드..
 	int iCount = 0;
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);
+	file.Read(&iCount, sizeof(int));
 	for (int i = 0; i < iCount; i++)
 	{
 		ShapeInfo*	pSI = new ShapeInfo;
-		ReadFile(hFile, &pSI->m_iID, sizeof(int), &dwNum, nullptr);
+		file.Read(&pSI->m_iID, sizeof(int));
 
 		// 문자열 길이..
-		strSrc = CPvsMgr::ReadDecryptString(hFile);
+		strSrc = CPvsMgr::ReadDecryptString(file);
 		_splitpath(strSrc.c_str(), szDrive, szDir, szFName, szExt);
 		strDest = szFName;	strDest +=  szExt;
 		pSI->m_strShapeFile = m_pManager->GetIndoorFolderPath() + strDest;
-		ReadFile(hFile, &pSI->m_iBelong, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iEventID, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iEventType, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iNPC_ID, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iNPC_Status, sizeof(int), &dwNum, nullptr);	
+		file.Read(&pSI->m_iBelong, sizeof(int));	
+		file.Read(&pSI->m_iEventID, sizeof(int));	
+		file.Read(&pSI->m_iEventType, sizeof(int));	
+		file.Read(&pSI->m_iNPC_ID, sizeof(int));	
+		file.Read(&pSI->m_iNPC_Status, sizeof(int));	
 		if (pSI->m_iEventID || pSI->m_iEventType || pSI->m_iNPC_ID || pSI->m_iNPC_Status ) // 이벤트가 있으면
 			pSI->m_pShape = CPvsMgr::s_MngShapeExt.Get(m_pManager->GetIndoorFolderPath() + strDest);
 		else
 			pSI->m_pShape = CPvsMgr::s_MngShape.Get(m_pManager->GetIndoorFolderPath() + strDest);
+
 		__ASSERT(pSI->m_pShape, "Shape Not Found");
-		pSI->Load(hFile);
+		pSI->Load(file);
 		m_plShapeInfoList.push_back(pSI);		
 	}
 
 	// Visible..
 	IDAndPriority IDAP;
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);
+	file.Read(&iCount, sizeof(int));
 
 	for(int i = 0; i < iCount; i++ )
 	{
-		ReadFile(hFile, &IDAP.m_iID, sizeof(int), &dwNum, nullptr);
-		ReadFile(hFile, &IDAP.m_iPriority, sizeof(int), &dwNum, nullptr);
+		file.Read(&IDAP.m_iID, sizeof(int));
+		file.Read(&IDAP.m_iPriority, sizeof(int));
 		__ASSERT(IDAP.m_iPriority != -1, "잘못된 파일");
 		m_piVisibleIDList.push_back(IDAP);
 	}
 
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);
+	file.Read(&iCount, sizeof(int));
 
 	int iSize_2 = 0, iSize_3 = 0;
 	for(int i = 0; i < iCount; i++ )
 	{
 		ShapePart* pSP = new ShapePart;
-		ReadFile(hFile, &pSP->m_iID, sizeof(int), &dwNum, nullptr);
+		file.Read(&pSP->m_iID, sizeof(int));
 		
-		ReadFile(hFile, &iSize_2, sizeof(int), &dwNum, nullptr);
+		file.Read(&iSize_2, sizeof(int));
 		for( int j = 0; j <iSize_2; j++ )
 		{
 			__VPI vpi;
-			ReadFile(hFile, &vpi.m_iPartIndex, sizeof(int), &dwNum, nullptr);
+			file.Read(&vpi.m_iPartIndex, sizeof(int));
 
-			ReadFile(hFile, &iSize_3, sizeof(int), &dwNum, nullptr);
+			file.Read(&iSize_3, sizeof(int));
 			for( int k = 0; k < iSize_3; k++ )
 			{
 				int iV = 0;
-				ReadFile(hFile, &iV, sizeof(int), &dwNum, nullptr);
+				file.Read(&iV, sizeof(int));
 				vpi.m_ivVector.push_back(iV);
 			}
 
@@ -343,18 +343,18 @@ bool CPortalVolume::Load(HANDLE hFile)
 		m_lpShapePartList.push_back(pSP);
 	}
 
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);
+	file.Read(&iCount, sizeof(int));
 
 	for(int i = 0; i < iCount; i++ )
 	{
 		__ColIndex* pCI = new __ColIndex;
-		ReadFile(hFile, &pCI->m_iID, sizeof(int), &dwNum, nullptr);		
+		file.Read(&pCI->m_iID, sizeof(int));		
 
-		ReadFile(hFile, &iSize_2, sizeof(int), &dwNum, nullptr);
+		file.Read(&iSize_2, sizeof(int));
 		for( int j = 0; j <iSize_2; j++ )
 		{
 			int iV = 0;			
-			ReadFile(hFile, &iV, sizeof(int), &dwNum, nullptr);
+			file.Read(&iV, sizeof(int));
 			pCI->m_ivVector.push_back(iV);
 		}
 

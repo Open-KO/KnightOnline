@@ -96,7 +96,7 @@ public:
 	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);	// Offset만큼 이동해준다.(region, children, move rect 이동)
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual void	SetRegion(const RECT& Rect);	// 영역 지정(사이즈가 변할때 호출된다. 단순 이동은 호출되지 않는다.(단순이동은 MoveOffset이 호출))
 
 	void				SetString(const std::string& szChat);
@@ -124,7 +124,7 @@ protected:
 public:
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 
 	CUIChat2();
 };

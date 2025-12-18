@@ -86,7 +86,7 @@ public:
 	virtual void	Release();
 	virtual void	ReCalcMatrix();
 	virtual void	Tick(float fFrm = FRAME_SELFPLAY);
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 protected:
 	CN3SPart* GetPartByPMeshFileName(const std::string& szFN);	// 이름으로 PMesh포인터 구하기
 

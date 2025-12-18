@@ -163,9 +163,9 @@ void CN3UIProgress::SetFrGndUVFromFrGndImage()
 	UpdateFrGndImage();
 }
 
-bool CN3UIProgress::Load(HANDLE hFile)
+bool CN3UIProgress::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (false == CN3UIBase::Load(file)) return false;
 
 	// m_ImageRef 설정하기
 	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)

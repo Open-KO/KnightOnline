@@ -35,18 +35,17 @@ CN3FXGroup::~CN3FXGroup()
 
 ///////////////////////////////////////////////////////////////////////
 
-bool CN3FXGroup::Load(HANDLE hFile)
+bool CN3FXGroup::Load(File& file)
 {
-	DWORD			dwRWC = 0;
-	ReadFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
+	file.Read(&m_iVersion, sizeof(int));
 
 	int count;
-	ReadFile(hFile, &count, sizeof(int), &dwRWC, nullptr);
+	file.Read(&count, sizeof(int));
 
-	for(int i=0;i<count;i++)
+	for (int i = 0; i < count; i++)
 	{
 		__FXBInfo* pFXB = new __FXBInfo;
-		ReadFile(hFile, pFXB, sizeof(__FXBInfo), &dwRWC, nullptr);
+		file.Read(pFXB, sizeof(__FXBInfo));
 		FXBList.push_back(pFXB);
 	}
 	return true;

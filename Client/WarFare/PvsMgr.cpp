@@ -131,70 +131,70 @@ void CPvsMgr::Render()
 	}
 }
 
-bool CPvsMgr::LoadOldVersion(HANDLE hFile, int iVersionFromData)
+bool CPvsMgr::LoadOldVersion(File& file, int iVersionFromData)
 {
 	//..
 
 	return true;
 }
 
-bool CPvsMgr::Load(HANDLE hFile)
+bool CPvsMgr::Load(File& file)
 {
-	DWORD dwNum;
 	int iT;
 
-	ReadFile(hFile, &iT, sizeof(int), &dwNum, nullptr);
+	file.Read(&iT, sizeof(int));
 	if (iT != ciVersion)
-		return LoadOldVersion(hFile, iT);
+		return LoadOldVersion(file, iT);
 
 	// N3Scene 화일.. 안쓴다.. -.-;
-	std::string strSrc = ReadDecryptString(hFile), strDest;
+	std::string strSrc = ReadDecryptString(file), strDest;
 
 	// 전체 이동값.. 안슨다.. -.-;
-	ReadFile(hFile, &iT, sizeof(int), &dwNum, nullptr);
-	ReadFile(hFile, &iT, sizeof(int), &dwNum, nullptr);	
-	ReadFile(hFile, &iT, sizeof(int), &dwNum, nullptr);	
+	file.Read(&iT, sizeof(int));
+	file.Read(&iT, sizeof(int));	
+	file.Read(&iT, sizeof(int));	
 
 	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 	int iCount;
 
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);	
+	file.Read(&iCount, sizeof(int));	
 
 	for (int i = 0; i < iCount; i++ )
 	{
 		ShapeInfo*	pSI = new ShapeInfo;
-		ReadFile(hFile, &pSI->m_iID, sizeof(int), &dwNum, nullptr);
+		file.Read(&pSI->m_iID, sizeof(int));
 		
 		// 문자열 길이..
-		strSrc = ReadDecryptString(hFile);
+		strSrc = ReadDecryptString(file);
 		_splitpath(strSrc.c_str(), szDrive, szDir, szFName, szExt);
 		strDest = szFName;	strDest +=  szExt;
 		pSI->m_strShapeFile = m_IndoorFolder + strDest;
 		pSI->m_pShape = s_MngShape.Get(m_IndoorFolder + strDest);
 		__ASSERT(pSI->m_pShape, "Shape Not Found");
 	
-		ReadFile(hFile, &pSI->m_iBelong, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iEventID, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iEventType, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iNPC_ID, sizeof(int), &dwNum, nullptr);	
-		ReadFile(hFile, &pSI->m_iNPC_Status, sizeof(int), &dwNum, nullptr);	
-		pSI->Load(hFile);
+		file.Read(&pSI->m_iBelong, sizeof(int));	
+		file.Read(&pSI->m_iEventID, sizeof(int));	
+		file.Read(&pSI->m_iEventType, sizeof(int));	
+		file.Read(&pSI->m_iNPC_ID, sizeof(int));	
+		file.Read(&pSI->m_iNPC_Status, sizeof(int));	
+		pSI->Load(file);
 		s_plShapeInfoList.push_back(pSI);
 	}
 
 	// Total Count.. 
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);
+	file.Read(&iCount, sizeof(int));
 
 	CPortalVolume* pVol = nullptr, *pVolTo = nullptr;
 	int iID;
 
 	for(int i = 0; i < iCount; i++ )
 	{
-		ReadFile(hFile, &iID, sizeof(int), &dwNum, nullptr);
+		file.Read(&iID, sizeof(int));
+
 		pVol = new CPortalVolume;
 		pVol->m_pManager = this;
 		pVol->m_iID	= iID;	 
-		pVol->Load(hFile);
+		pVol->Load(file);
 		m_pPvsList.push_back(pVol);
 	}
 
@@ -242,18 +242,17 @@ CPortalVolume* CPvsMgr::GetPortalVolPointerByID(int iID)
 
 #define CRY_KEY 0x0816
 
-std::string CPvsMgr::ReadDecryptString(HANDLE hFile)
+std::string CPvsMgr::ReadDecryptString(File& file)
 {
-	DWORD dwRWC;
 	int iCount;
 
-	ReadFile(hFile, &iCount, sizeof(int), &dwRWC, nullptr);
+	file.Read(&iCount, sizeof(int));
 
 	std::string strDest;
 	if (iCount > 0)
 	{
 		strDest.assign(iCount, '\0');
-		ReadFile(hFile, &strDest[0], iCount, &dwRWC, nullptr);
+		file.Read(&strDest[0], iCount);
 
 		for (int i = 0; i < iCount; i++)
 			strDest[i] ^= CRY_KEY;

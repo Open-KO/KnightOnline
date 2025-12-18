@@ -41,7 +41,7 @@ public:
 	void				Tick(const class CN3Chr* pChr);
 	void				Render();
 	virtual void		Release();
-	virtual bool		Load(HANDLE hFile);
+	virtual bool		Load(File& file);
 
 	const CN3FXBundle*	GetFXB() const {return m_pFXB;}
 	void				SetFXB(const std::string& strFN);
@@ -77,7 +77,7 @@ public:
 	void			Tick(const CN3Chr* pChr);
 	void			Render();
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 
 	void			StopAll(bool bImmediately = false);	// FX Stop
 	void			TriggerAll();						// FX 시작

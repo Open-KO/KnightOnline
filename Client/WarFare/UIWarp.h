@@ -49,7 +49,7 @@ public:
 	void	UpdateList();
 	void	UpdateAgreement();
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 };
 

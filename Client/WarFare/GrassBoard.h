@@ -59,7 +59,7 @@ public:
 
 	void ReCalcMatrix();
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	void LoadFromFile(int iTexIndex,uint8_t ucTexOrgIndex,__Vector3 vPos);
 
 	void SetBrightInit(float min,float max) {m_fBrightmin = min,m_fBrightmax = max - min;};

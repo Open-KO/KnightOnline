@@ -50,7 +50,7 @@ protected:
 public:
 	__VertexSkinned*	SkinVertices() { return m_pSkinVertices; }
 	bool				Create(int nFC, int nVC, int nUVC);
-	bool				Load(HANDLE hFile);
+	bool				Load(File& file);
 
 	bool				CheckCollisionPrecisely(const __Vector3 &vPos, const __Vector3 &vDir, __Vector3* pvPick);
 

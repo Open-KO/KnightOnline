@@ -41,7 +41,7 @@ public:
 	void SetActive(bool active);
 	void Render();
 
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	Save(HANDLE hFile);
 
 	CEventMgr();

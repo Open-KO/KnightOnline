@@ -48,11 +48,19 @@ void Thread::join()
 	catch (const std::system_error& ex)
 	{
 		if (ex.code() == std::errc::resource_deadlock_would_occur)
+		{
+			assert(!"Thread::join: cannot join from same thread, would cause deadlock");
 			spdlog::error("Thread::join: cannot join from same thread, would cause deadlock");
+		}
 		else if (ex.code() == std::errc::no_such_process)
+		{
+			assert(!"Thread::join: thread is not valid");
 			spdlog::error("Thread::join: thread is not valid");
+		}
 		else
+		{
 			throw;
+		}
 	}
 }
 

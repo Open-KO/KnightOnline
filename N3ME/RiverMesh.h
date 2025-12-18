@@ -69,7 +69,7 @@ protected:
 // Operations
 public:
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	Save(HANDLE hFile);
 	void			Render();
 	void			RenderVertexPoint();	// 잘보이게 점만 다시 그리기

@@ -18,10 +18,9 @@ CUIUpgradeSelect::~CUIUpgradeSelect()
 {
 }
 
-bool CUIUpgradeSelect::Load(
-	HANDLE hFile)
+bool CUIUpgradeSelect::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Upgrade_1,	GetChildByID<CN3UIButton>("upgrade_1"));
@@ -31,9 +30,7 @@ bool CUIUpgradeSelect::Load(
 	return true;
 }
 
-bool CUIUpgradeSelect::ReceiveMessage(
-	CN3UIBase* pSender,
-	uint32_t dwMsg)
+bool CUIUpgradeSelect::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (pSender == nullptr)
 		return false;
@@ -85,8 +82,7 @@ bool CUIUpgradeSelect::ReceiveMessage(
 	return true;
 }
 
-void CUIUpgradeSelect::SetVisible(
-	bool bVisible)
+void CUIUpgradeSelect::SetVisible(bool bVisible)
 {
 	CN3UIBase::SetVisible(bVisible);
 

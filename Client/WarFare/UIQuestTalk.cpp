@@ -110,9 +110,9 @@ bool CUIQuestTalk::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	return true;
 }
 
-bool CUIQuestTalk::Load(HANDLE hFile)
+bool CUIQuestTalk::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pTextTalk,			GetChildByID<CN3UIString>("Text_Talk"));

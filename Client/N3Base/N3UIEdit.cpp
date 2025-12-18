@@ -686,20 +686,19 @@ BOOL CN3UIEdit::MoveOffset(int iOffsetX, int iOffsetY)		// 위치 지정(chilren
 	return TRUE;
 }
 
-bool CN3UIEdit::Load(HANDLE hFile)
+bool CN3UIEdit::Load(File& file)
 {
-	if (!CN3UIStatic::Load(hFile))
+	if (!CN3UIStatic::Load(file))
 		return false;
 
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
 	int iSndFNLen = 0;
-	DWORD dwRWC;
 
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	file.Read(&iSndFNLen, sizeof(iSndFNLen));		//	사운드 파일 문자열 길이
 	if (iSndFNLen > 0)
 	{
 		std::string filename(iSndFNLen, '\0');
-		ReadFile(hFile, &filename[0], iSndFNLen, &dwRWC, nullptr);
+		file.Read(&filename[0], iSndFNLen);
 
 		__ASSERT(nullptr == m_pSnd_Typing, "memory leak");
 		m_pSnd_Typing = s_SndMgr.CreateObj(filename, SNDTYPE_2D);

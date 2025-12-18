@@ -315,31 +315,30 @@ void CN3SPart::RenderAxis()
 }
 #endif // end of _N3TOOL
 
-bool CN3SPart::Load(HANDLE hFile)
+bool CN3SPart::Load(File& file)
 {
-	DWORD dwRWC;
 	int nL = 0;
 	char szFN[256];
 
-	ReadFile(hFile, &m_vPivot, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Read(&m_vPivot, sizeof(__Vector3));
 
-	ReadFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
-	ReadFile(hFile, szFN, nL, &dwRWC, nullptr); szFN[nL] = '\0'; // 메시 파일 이름..
+	file.Read(&nL, 4); // Mesh FileName
+	file.Read(szFN, nL); szFN[nL] = '\0'; // 메시 파일 이름..
 	this->MeshSet(szFN);
 
-	ReadFile(hFile, &m_Mtl, sizeof(__Material), &dwRWC, nullptr); // 재질
+	file.Read(&m_Mtl, sizeof(__Material)); // 재질
 
 	int iTC = 0;
-	ReadFile(hFile, &iTC, 4, &dwRWC, nullptr);
-	ReadFile(hFile, &m_fTexFPS, 4, &dwRWC, nullptr);
+	file.Read(&iTC, 4);
+	file.Read(&m_fTexFPS, 4);
 	m_TexRefs.clear();
 	this->TexAlloc(iTC); // Texture Pointer Pointer 할당..
 	for(int j = 0; j < iTC; j++) // Texture Count 만큼 파일 이름 읽어서 텍스처 부르기..
 	{
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
+		file.Read(&nL, 4);
 		if(nL > 0)
 		{
-			ReadFile(hFile, szFN, nL, &dwRWC, nullptr); szFN[nL] = '\0'; // 텍스처 파일 이름..
+			file.Read(szFN, nL); szFN[nL] = '\0'; // 텍스처 파일 이름..
 			m_TexRefs[j] = s_MngTex.Get(szFN, true, s_Options.iTexLOD_Shape);
 		}
 	}
@@ -617,43 +616,41 @@ void CN3Shape::RenderSelected(bool bWireFrame)
 }
 #endif // end of _N3TOOL
 
-bool CN3Shape::Load(HANDLE hFile)
+bool CN3Shape::Load(File& file)
 {
-	CN3TransformCollision::Load(hFile); // 기본정보 읽기...
+	CN3TransformCollision::Load(file); // 기본정보 읽기...
 
-	DWORD dwRWC = 0;
-	
 	for (CN3SPart* pPart : m_Parts)
 		delete pPart;
 	m_Parts.clear();
 
 	int iPC = 0;
-	ReadFile(hFile, &iPC, 4, &dwRWC, nullptr); // Part Count
+	file.Read(&iPC, 4); // Part Count
 	if (iPC > 0)
 	{
 		m_Parts.assign(iPC, nullptr);
 		for (int i = 0; i < iPC; i++)
 		{
 			m_Parts[i] = new CN3SPart();
-			m_Parts[i]->Load(hFile);
+			m_Parts[i]->Load(file);
 			m_Parts[i]->ReCalcMatrix(m_Matrix); // Part Matrix 계산
 		}
 	}
 		
-	ReadFile(hFile, &m_iBelong, 4, &dwRWC, nullptr);	// 소속
-	ReadFile(hFile, &m_iEventID, 4, &dwRWC, nullptr);	// Event ID
-	ReadFile(hFile, &m_iEventType, 4, &dwRWC, nullptr); // Event Type - 바인드 포인트, 성문, 레버 등등...
-	ReadFile(hFile, &m_iNPC_ID, 4, &dwRWC, nullptr);	// NPC 로 쓰는 오브젝트일 경우 NPC ID
-	ReadFile(hFile, &m_iNPC_Status, 4, &dwRWC, nullptr); // NPC 로 쓰는 오브젝트일 경우 NPC Status
+	file.Read(&m_iBelong, 4);	// 소속
+	file.Read(&m_iEventID, 4);	// Event ID
+	file.Read(&m_iEventType, 4); // Event Type - 바인드 포인트, 성문, 레버 등등...
+	file.Read(&m_iNPC_ID, 4);	// NPC 로 쓰는 오브젝트일 경우 NPC ID
+	file.Read(&m_iNPC_Status, 4); // NPC 로 쓰는 오브젝트일 경우 NPC Status
 
 	this->FindMinMax();
 
 	return true;
 }
 
-bool CN3Shape::LoadTransformOnly(HANDLE hFile)
+bool CN3Shape::LoadTransformOnly(File& file)
 {
-	return CN3Transform::Load(hFile); // 기본정보 읽기...
+	return CN3Transform::Load(file); // 기본정보 읽기...
 }
 
 #ifdef _N3TOOL

@@ -24,7 +24,7 @@ public:
 	bool OnKeyPress(int iChar) override;
 	void SetVisible(bool bVisible) override;
 	void ShowWindow(int iID = -1, CN3UIBase* pParent = nullptr) override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	std::string GetTradeTitle();

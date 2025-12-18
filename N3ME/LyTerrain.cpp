@@ -6,23 +6,26 @@
 #include "stdafx.h"
 #include "LyTerrain.h"
 #include "QTNode.h"
-#include <N3Base/N3Texture.h>
-#include <N3Base/N3Scene.h>
 #include "MainFrm.h"
 #include "DTexGroup.h"
 #include "DTexGroupMng.h"
 #include "DTexMng.h"
 #include "DTex.h"
 #include "ProgressBar.h"
-#include <N3Base/N3EngTool.h>
-#include <N3Base/BitMapFile.h>
-#include <N3Base/N3VMesh.h>
 #include "DlgDTexGroupView.h"
 #include "DlgModifyDTex.h"
 #include "DlgSetLightMap.h"
 #include "DlgSowSeed.h"
 #include "SowSeedMng.h"
 #include "MapMng.h"
+
+#include <N3Base/BitMapFile.h>
+#include <N3Base/N3EngTool.h>
+#include <N3Base/N3Scene.h>
+#include <N3Base/N3Texture.h>
+#include <N3Base/N3VMesh.h>
+
+#include <shared/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -937,19 +940,18 @@ bool CLyTerrain::SaveToFile(const char* lpszPath)
 //
 bool CLyTerrain::LoadFromFile(const char* lpszPath)
 {
-	HANDLE hFile = CreateFile(lpszPath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hFile) return false;
+	FileReader file;
+	if (!file.Open(lpszPath))
+		return false;
 
-	DWORD dwRWC;
 	int x, z;
 	int HeightMapSize;
 	int version = 0;
-	ReadFile(hFile, &(version), sizeof(int), &dwRWC, nullptr);
-	if(version<0)	//버전이 기록된 데이터들....
-	{
-		ReadFile(hFile, &(HeightMapSize), sizeof(int), &dwRWC, nullptr);
-	}
-	else HeightMapSize = version;	//버전이 기록되어 있지 않은 이전 데이터들..
+	file.Read(&version, sizeof(int));
+	if (version < 0)	//버전이 기록된 데이터들....
+		file.Read(&(HeightMapSize), sizeof(int));
+	else
+		HeightMapSize = version;	//버전이 기록되어 있지 않은 이전 데이터들..
 	
 	Init(HeightMapSize);
 
@@ -962,7 +964,7 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 		HGLOBAL hAlloc = ::GlobalAlloc(GMEM_FIXED, dwAlloc);
 		__ASSERT(hAlloc, "Global allocation failed.");
 		float* fHeights = (float*)GlobalLock(hAlloc);
-		ReadFile(hFile, fHeights, dwAlloc, &dwRWC, nullptr);
+		file.Read(fHeights, dwAlloc);
 		
 		ProgressBar.Create("Load terrain data..", 50, m_iHeightMapSize);
 		for(z=0;z<m_iHeightMapSize;z++)
@@ -982,7 +984,7 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 		hAlloc = ::GlobalAlloc(GMEM_FIXED, dwAlloc);
 		__ASSERT(hAlloc, "Global allocation failed.");
 		DTEXINFO* pDTIs = (DTEXINFO*)GlobalLock(hAlloc);
-		ReadFile(hFile, pDTIs, dwAlloc, &dwRWC, nullptr);
+		file.Read(pDTIs, dwAlloc);
 
 		ProgressBar.Create("Load tile map data..", 50, m_iHeightMapSize);
 		for(z=0;z<m_iHeightMapSize;z++)
@@ -1004,7 +1006,7 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 	if(version <= -1)	//버전 1부터....^^
 	{
 		//라이트맵 정보 읽기..
-		ReadFile(hFile, &(m_iNumLightMap), sizeof(int), &dwRWC, nullptr); // LightMap의 갯수 기록..
+		file.Read(&(m_iNumLightMap), sizeof(int)); // LightMap의 갯수 기록..
 		ProgressBar.Create("Load Light Map Data", 50, m_iNumLightMap);
 		
 		if(version>-3)
@@ -1013,13 +1015,13 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 			for(int i=0;i<m_iNumLightMap;i++)
 			{
 				ProgressBar.StepIt();
-				ReadFile(hFile, &(sx), sizeof(short), &dwRWC, nullptr);
-				ReadFile(hFile, &(sz), sizeof(short), &dwRWC, nullptr);
+				file.Read(&(sx), sizeof(short));
+				file.Read(&(sz), sizeof(short));
 
 				if(!m_ppLightMapTexture[sx][sz]) m_ppLightMapTexture[sx][sz] = new CN3Texture;
 
 				m_ppIsLightMap[sx][sz] = true;
-				m_ppLightMapTexture[sx][sz]->Load(hFile);
+				m_ppLightMapTexture[sx][sz]->Load(file);
 			}
 			ConvertLightMapToolDataV2toV3();
 		}
@@ -1029,13 +1031,13 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 			for(int i=0;i<m_iNumLightMap;i++)
 			{
 				ProgressBar.StepIt();
-				ReadFile(hFile, &(sx), sizeof(short), &dwRWC, nullptr);
-				ReadFile(hFile, &(sz), sizeof(short), &dwRWC, nullptr);
+				file.Read(&(sx), sizeof(short));
+				file.Read(&(sz), sizeof(short));
 
 				if(!m_ppLightMapTexture[sx][sz]) m_ppLightMapTexture[sx][sz] = new CN3Texture;
 
 				m_ppIsLightMap[sx][sz] = true;
-				m_ppLightMapTexture[sx][sz]->Load(hFile);
+				m_ppLightMapTexture[sx][sz]->Load(file);
 				if(m_ppLightMapTexture[sx][sz]->PixelFormat() != D3DFMT_A8R8G8B8)
 					m_ppLightMapTexture[sx][sz]->Convert(D3DFMT_A8R8G8B8, LIGHTMAP_TEX_SIZE, LIGHTMAP_TEX_SIZE);				
 			}
@@ -1045,7 +1047,7 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 	{
 		// 풀씨에 관한 정보 읽기..
 		int NumSeedInfo;
-		ReadFile(hFile, &(NumSeedInfo), sizeof(int), &dwRWC, nullptr);
+		file.Read(&(NumSeedInfo), sizeof(int));
 
 		CMainFrame* pFrm = (CMainFrame*)AfxGetMainWnd();
 		pFrm->m_SeedGroupList.clear();
@@ -1056,13 +1058,13 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 		{
 			ProgressBar.StepIt();
 			LPSEEDGROUP pSeedGroup = new SEEDGROUP;
-			ReadFile(hFile, pSeedGroup, sizeof(SEEDGROUP), &dwRWC, nullptr);
+			file.Read(pSeedGroup, sizeof(SEEDGROUP));
 
 			pFrm->m_SeedGroupList.push_back(pSeedGroup);
 		}
 	}
 
-	CloseHandle(hFile);
+	file.Close();
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 컬러맵 읽기.
@@ -1073,12 +1075,12 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 	char szNewFName[_MAX_PATH] = "", szAdd[_MAX_PATH] = "";
 
 	_makepath(szNewFName, szDrive, szDir, szFName, "tcm"); // 파일 이름과 동일한 이름으로 컬러맵 저장되어 있다.
-	HANDLE hCMFile = CreateFile(szNewFName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hCMFile)
+	FileReader colorMapFile;
+	if (!colorMapFile.Open(szNewFName))
 	{
-		for(x=0;x<m_iNumColorMap;x++)
+		for (x = 0; x < m_iNumColorMap; x++)
 		{
-			for(z=0;z<m_iNumColorMap;z++)
+			for (z = 0; z < m_iNumColorMap; z++)
 			{
 				ProgressBar.StepIt();
 
@@ -1086,25 +1088,25 @@ bool CLyTerrain::LoadFromFile(const char* lpszPath)
 				wsprintf(szAdd, "_%02d%02d.DXT", x, z);  // Tool 경로를 붙이고 번호와 확장자를 붙여서 저장되어 있다.
 				lstrcat(szNewFName, szAdd);
 
-				if(m_pColorTexture[x][z].LoadFromFile(szNewFName)==false)
+				if (m_pColorTexture[x][z].LoadFromFile(szNewFName) == false)
 				{
 					MessageBox(::GetActiveWindow(), "컬러맵은 32bit dxt파일만 사용할 수 있어요..", "ㅠ.ㅠ", MB_OK);
 				}
 			}
 		}
 	}
-	
 	else
 	{
-		for(x=0;x<m_iNumColorMap;x++)
+		for (x = 0; x < m_iNumColorMap; x++)
 		{
-			for(z=0;z<m_iNumColorMap;z++)
+			for (z = 0; z < m_iNumColorMap; z++)
 			{
 				ProgressBar.StepIt();
-				m_pColorTexture[x][z].Load(hCMFile);
+				m_pColorTexture[x][z].Load(colorMapFile);
 			}
 		}
-		CloseHandle(hCMFile);
+
+		colorMapFile.Close();
 	}
 	
 	// 컬러맵 읽기.

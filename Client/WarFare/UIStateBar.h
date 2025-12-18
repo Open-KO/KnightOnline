@@ -98,7 +98,7 @@ public:
 
 	virtual void	Tick();
 	virtual void	Render(); // 미니맵 렌더링..
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	
 	virtual void	Release();
 	CUIStateBar();

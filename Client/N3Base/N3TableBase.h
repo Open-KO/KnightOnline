@@ -14,6 +14,10 @@
 
 #include "My_3DStruct.h" // _ASSERT
 
+// TODO: Move these out of the header.
+#include <shared/FileReader.h>
+#include <shared/FileWriter.h>
+
 #ifdef _N3GAME
 #include "LogWriter.h"
 #endif
@@ -87,15 +91,15 @@ public:
 		return false;
 	}
 
-	BOOL	LoadFromFile(const std::string& szFN);
+	bool	LoadFromFile(const std::string& szFN);
 
 protected:
-	BOOL	Load(HANDLE hFile);
-	BOOL	WriteData(HANDLE hFile, DATA_TYPE DataType, const char* lpszData);
-	BOOL	ReadData(HANDLE hFile, DATA_TYPE DataType, void* pData);
+	bool	Load(File& file);
+	bool	WriteData(File& file, DATA_TYPE DataType, const char* lpszData);
+	bool	ReadData(File& file, DATA_TYPE DataType, void* pData);
 
 	int		SizeOf(DATA_TYPE DataType) const;
-	BOOL	MakeOffsetTable(std::vector<int>& offsets);
+	bool	MakeOffsetTable(std::vector<int>& offsets);
 };
 
 
@@ -122,228 +126,223 @@ void CN3TableBase<Type>::Release()
 
 // 파일에 데이타 타입별로 쓰기..
 template <class Type>
-BOOL CN3TableBase<Type>::WriteData(HANDLE hFile, DATA_TYPE DataType, const char* lpszData)
+bool CN3TableBase<Type>::WriteData(File& file, DATA_TYPE DataType, const char* lpszData)
 {
-	DWORD dwNum;
-	switch(DataType)
+	switch (DataType)
 	{
-	case DT_CHAR:
+		case DT_CHAR:
 		{
-			char cWrite;
-			if (isdigit(lpszData[0]))
-			{
-				int iTemp = atoi(lpszData);
-				if (iTemp < -127 || iTemp > 128) return FALSE; // 범위가 벗어났어~
-				cWrite = (char)iTemp;
-			}
-			else return FALSE;		// 문자는 안되~!
+			if (!isdigit(lpszData[0]))
+				return false; // 문자는 안되~!
 
-			WriteFile(hFile, &cWrite, sizeof(cWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_BYTE:
-		{
-			uint8_t byteWrite;
-			if (isdigit(lpszData[0]))
-			{
-				int iTemp = atoi(lpszData);
-				if (iTemp < 0 || iTemp > 255) return FALSE; // 범위가 벗어났어~
-				byteWrite = (uint8_t)iTemp;
-			}
-			else return FALSE;		// 문자는 안되~!
+			int iTemp = atoi(lpszData);
+			if (iTemp < -127 || iTemp > 128)
+				return false; // 범위가 벗어났어~
 
-			WriteFile(hFile, &byteWrite, sizeof(byteWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_SHORT:
-		{
-			int16_t iWrite;
-			if (isdigit(lpszData[0]) || '-' == lpszData[0] )
-			{
-				int iTemp = atoi(lpszData);
-				if (iTemp < -32767 || iTemp > 32768) return FALSE; // 범위가 벗어났어~
-				iWrite = (int16_t)iTemp;
-			}
-			else return FALSE;		// 문자는 안되~!
-
-			WriteFile(hFile, &iWrite, sizeof(iWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_WORD:
-		{
-			uint16_t iWrite;
-			if (isdigit(lpszData[0]) )
-			{
-				int iTemp = atoi(lpszData);
-				if (iTemp < 0 || iTemp > 65535) return FALSE; // 범위가 벗어났어~
-				iWrite = (int16_t)iTemp;
-			}
-			else return FALSE;		// 문자는 안되~!
-
-			WriteFile(hFile, &iWrite, sizeof(iWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_INT:
-		{
-			int iWrite;
-			if (isdigit(lpszData[0]) || '-' == lpszData[0] )	iWrite = atoi(lpszData);
-			else return FALSE;		// 문자는 안되~!
-
-			WriteFile(hFile, &iWrite, sizeof(iWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_DWORD:
-		{
-			uint32_t iWrite;
-			if (isdigit(lpszData[0]) )	iWrite = strtoul(lpszData, nullptr, 10);
-			else return FALSE;		// 문자는 안되~!
-
-			WriteFile(hFile, &iWrite, sizeof(iWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_STRING:
-		{
-			std::string& szString = *((std::string*)lpszData);
-			int iStrLen = szString.size();
-			WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);
-			if (iStrLen>0) WriteFile(hFile, &(szString[0]), iStrLen, &dwNum, nullptr);
-		}
-		break;
-	case DT_FLOAT:
-		{
-			float fWrite;
-			if (isdigit(lpszData[0]) || '-' == lpszData[0] ||
-				'.' == lpszData[0] )	fWrite = (float)atof(lpszData);
-			else return FALSE;	// 문자는 안되~!
-			WriteFile(hFile, &fWrite, sizeof(fWrite), &dwNum, nullptr);
-		}
-		break;
-	case DT_DOUBLE:
-		{
-			double dWrite;
-			if (isdigit(lpszData[0]) || '-' == lpszData[0] ||
-				'.' == lpszData[0] )	dWrite = atof(lpszData);
-			WriteFile(hFile, &dWrite, sizeof(dWrite), &dwNum, nullptr);
+			char cWrite = (char) iTemp;
+			file.Write(&cWrite, sizeof(cWrite));
 		}
 		break;
 
-	case DT_NONE:
-	default:
-		__ASSERT(0,"");
+		case DT_BYTE:
+		{
+			if (!isdigit(lpszData[0]))
+				return false; // 문자는 안되~!
+
+			int iTemp = atoi(lpszData);
+			if (iTemp < 0 || iTemp > 255)
+				return false; // 범위가 벗어났어~
+
+			uint8_t byteWrite = (uint8_t) iTemp;
+			file.Write(&byteWrite, sizeof(byteWrite));
+		}
+		break;
+
+		case DT_SHORT:
+		{
+			if (!isdigit(lpszData[0])
+				&& lpszData[0] != '-')
+				return false; // 문자는 안되~!
+
+			int iTemp = atoi(lpszData);
+			if (iTemp < -32767 || iTemp > 32768)
+				return false; // 범위가 벗어났어~
+
+			int16_t iWrite = (int16_t) iTemp;
+			file.Write(&iWrite, sizeof(iWrite));
+		}
+		break;
+
+		case DT_WORD:
+		{
+			if (!isdigit(lpszData[0]))
+				return false; // // 문자는 안되~!
+
+			int iTemp = atoi(lpszData);
+			if (iTemp < 0 || iTemp > 65535)
+				return false; // 범위가 벗어났어~
+
+			uint16_t iWrite = (uint16_t) iTemp;
+			file.Write(&iWrite, sizeof(iWrite));
+		}
+		break;
+
+		case DT_INT:
+		{
+			if (!isdigit(lpszData[0])
+				&& lpszData[0] != '-')
+				return false; // 문자는 안되~!
+
+			int iWrite = atoi(lpszData);
+			file.Write(&iWrite, sizeof(iWrite));
+		}
+		break;
+
+		case DT_DWORD:
+		{
+			if (!isdigit(lpszData[0]))
+				return false; // // 문자는 안되~!
+			
+			uint32_t iWrite = strtoul(lpszData, nullptr, 10);
+			file.Write(&iWrite, sizeof(iWrite));
+		}
+		break;
+
+		case DT_STRING:
+		{
+			std::string& szString = *((std::string*) lpszData);
+			int iStrLen = static_cast<int>(szString.size());
+			file.Write(&iStrLen, sizeof(iStrLen));
+			if (iStrLen > 0)
+				file.Write(&szString[0], iStrLen);
+		}
+		break;
+
+		case DT_FLOAT:
+		{
+			if (!isdigit(lpszData[0])
+				&& lpszData[0] != '-'
+				&& lpszData[0] != '.')
+				return false; // 문자는 안되~!
+
+			float fWrite = (float) atof(lpszData);
+			file.Write(&fWrite, sizeof(fWrite));
+		}
+		break;
+
+		case DT_DOUBLE:
+		{
+			if (!isdigit(lpszData[0])
+				&& lpszData[0] != '-'
+				&& lpszData[0] != '.')
+				return false;
+
+			double dWrite = atof(lpszData);
+			file.Write(&dWrite, sizeof(dWrite));
+		}
+		break;
+
+		case DT_NONE:
+		default:
+			__ASSERT(0, "");
 	}
-	return TRUE;
+
+	return true;
 }
 
 template <class Type>
-BOOL CN3TableBase<Type>::ReadData(HANDLE hFile, DATA_TYPE DataType, void* pData)
+bool CN3TableBase<Type>::ReadData(File& file, DATA_TYPE DataType, void* pData)
 {
-	DWORD dwNum;
-	switch(DataType)
+	switch (DataType)
 	{
-	case DT_CHAR:
-		{
-			ReadFile(hFile, pData, sizeof(char), &dwNum, nullptr);
-		}
-		break;
-	case DT_BYTE:
-		{
-			ReadFile(hFile, pData, sizeof(uint8_t), &dwNum, nullptr);
-		}
-		break;
-	case DT_SHORT:
-		{
-			ReadFile(hFile, pData, sizeof(int16_t), &dwNum, nullptr);
-		}
-		break;
-	case DT_WORD:
-		{
-			ReadFile(hFile, pData, sizeof(uint16_t), &dwNum, nullptr);
-		}
-		break;
-	case DT_INT:
-		{
-			ReadFile(hFile, pData, sizeof(int), &dwNum, nullptr);
-		}
-		break;
-	case DT_DWORD:
-		{
-			ReadFile(hFile, pData, sizeof(uint32_t), &dwNum, nullptr);
-		}
-		break;
-	case DT_STRING:
-		{
-			std::string& szString = *((std::string*)pData);
-			
-			int iStrLen = 0;
-			ReadFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);
+		case DT_CHAR:
+			file.Read(pData, sizeof(char));
+			break;
 
-			szString = "";
-			if (iStrLen>0)
+		case DT_BYTE:
+			file.Read(pData, sizeof(uint8_t));
+			break;
+
+		case DT_SHORT:
+			file.Read(pData, sizeof(int16_t));
+			break;
+
+		case DT_WORD:
+			file.Read(pData, sizeof(uint16_t));
+			break;
+
+		case DT_INT:
+			file.Read(pData, sizeof(int));
+			break;
+
+		case DT_DWORD:
+			file.Read(pData, sizeof(uint32_t));
+			break;
+
+		case DT_STRING:
+		{
+			std::string& szString = *((std::string*) pData);
+
+			int iStrLen = 0;
+			file.Read(&iStrLen, sizeof(iStrLen));
+
+			szString.clear();
+			if (iStrLen > 0)
 			{
 				szString.assign(iStrLen, ' ');
-				ReadFile(hFile, &(szString[0]), iStrLen, &dwNum, nullptr);
+				file.Read(&szString[0], iStrLen);
 			}
 		}
 		break;
-	case DT_FLOAT:
-		{
-			ReadFile(hFile, pData, sizeof(float), &dwNum, nullptr);
-		}
-		break;
-	case DT_DOUBLE:
-		{
-			ReadFile(hFile, pData, sizeof(double), &dwNum, nullptr);
-		}
-		break;
 
-	case DT_NONE:
-	default:
-		__ASSERT(0,"");
-		return FALSE;
+		case DT_FLOAT:
+			file.Read(pData, sizeof(float));
+			break;
+
+		case DT_DOUBLE:
+			file.Read(pData, sizeof(double));
+			break;
+
+		case DT_NONE:
+		default:
+			__ASSERT(0, "");
+			return false;
 	}
-	return TRUE;
+
+	return true;
 }
 
 template <class Type>
-BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
+bool CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 {
-	if(szFN.empty()) return FALSE;
+	if (szFN.empty())
+		return FALSE;
 
-	HANDLE hFile = ::CreateFile(szFN.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-	if(INVALID_HANDLE_VALUE == hFile)
+	FileReader encryptedFile;
+	if (!encryptedFile.Open(szFN))
 	{
 #ifdef _N3GAME
 		CLogWriter::Write("N3TableBase - Can't open file(read) File Handle error ({})", szFN);
 #endif
-		return FALSE;
+		return false;
 	}
 
+	std::error_code ec;
 
-	
-	
-	
-	
-	
-	
-	
-	
 	// 파일 암호화 풀기.. .. 임시 파일에다 쓴다음 ..
 	std::string szFNTmp = szFN + ".tmp";
-	DWORD dwSizeHigh = 0;
-	DWORD dwSizeLow = ::GetFileSize(hFile, &dwSizeHigh);
-	if(dwSizeLow <= 0)
+	size_t encryptedFileSize = encryptedFile.Size();
+	if (encryptedFileSize == 0)
 	{
-		CloseHandle(hFile);
-		::remove(szFNTmp.c_str()); // 임시 파일 지우기..
-		return FALSE;
+		encryptedFile.Close();
+		std::filesystem::remove(szFNTmp, ec); // 임시 파일 지우기..
+		return false;
 	}
 
 	// 원래 파일을 읽고..
-	uint8_t* pDatas = new uint8_t[dwSizeLow];
-	DWORD dwRWC = 0;
-	::ReadFile(hFile, pDatas, dwSizeLow, &dwRWC, nullptr); // 암호화된 데이터 읽고..
-	CloseHandle(hFile); // 원래 파일 닫고
+	uint8_t* pDatas = new uint8_t[encryptedFileSize];
+	encryptedFile.Read(pDatas, encryptedFileSize); // 암호화된 데이터 읽고..
+	encryptedFile.Close(); // 원래 파일 닫고
 
 // 테이블 만드는 툴에서 쓰는 키와 같은 키..
 	uint16_t key_r = 0x0816;
@@ -367,33 +366,41 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 //}
 
 	// 암호화 풀고..
-	for(uint32_t i = 0; i < dwSizeLow; i++)
+	for (uint32_t i = 0; i < encryptedFileSize; i++)
 	{
-		uint8_t byData = (pDatas[i] ^ (key_r>>8));
+		uint8_t byData = (pDatas[i] ^ (key_r >> 8));
 		key_r = (pDatas[i] + key_r) * key_c1 + key_c2;
 		pDatas[i] = byData;
 	}
 
+	// TODO: Rather than write to file to read it back again, we should just read it from a memory stream.
+
 	// 임시 파일에 쓴다음.. 다시 연다..
-	hFile = ::CreateFile(szFNTmp.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	::WriteFile(hFile, pDatas, dwSizeLow, &dwRWC, nullptr); // 임시파일에 암호화 풀린 데이터 쓰기
-	CloseHandle(hFile); // 임시 파일 닫기
-	delete [] pDatas; pDatas = nullptr;
+	{
+		FileWriter tmpFileWriter;
+		if (!tmpFileWriter.Open(szFNTmp))
+		{
+			tmpFileWriter.Close();
+			delete[] pDatas;
+			return false;
+		}
 
-	hFile = ::CreateFile(szFNTmp.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr); // 임시 파일 읽기 모드로 열기.
+		tmpFileWriter.Write(pDatas, encryptedFileSize); // 임시파일에 암호화 풀린 데이터 쓰기
+	}
 
-	
+	delete[] pDatas;
+	pDatas = nullptr;
 
+	// 임시 파일 읽기 모드로 열기.
+	FileReader decryptedFile;
+	if (!decryptedFile.Open(szFNTmp))
+	{
+		std::filesystem::remove(szFNTmp, ec);
+		return false;
+	}
 
-
-
-	
-	
-	
-	
-	BOOL bResult = Load(hFile);
-
-	CloseHandle(hFile);
+	bool bResult = Load(decryptedFile);
+	decryptedFile.Close();
 
 	if (!bResult)
 	{
@@ -402,63 +409,60 @@ BOOL CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 #endif
 	}
 
-
 	// 임시 파일 지우기..
-	::remove(szFNTmp.c_str());
+	std::filesystem::remove(szFNTmp, ec);
 
 	return bResult;
 }
 
 template <class Type>
-BOOL CN3TableBase<Type>::Load(HANDLE hFile)
+bool CN3TableBase<Type>::Load(File& file)
 {
 	Release();
 
 	// data(column) 의 구조가 어떻게 되어 있는지 읽기
-	DWORD dwNum;
 	int i, j, iDataTypeCount = 0;
-	ReadFile(hFile, &iDataTypeCount, 4, &dwNum, nullptr);			// (엑셀에서 column 수)
+	file.Read(&iDataTypeCount, 4);			// (엑셀에서 column 수)
 
 	std::vector<int> offsets;
 	__ASSERT(iDataTypeCount>0, "Data Type 이 0 이하입니다.");
 	if (iDataTypeCount>0)
 	{
 		m_DataTypes.insert(m_DataTypes.begin(), iDataTypeCount, DT_NONE);
-		ReadFile(hFile, &(m_DataTypes[0]), sizeof(DATA_TYPE)*iDataTypeCount, &dwNum, nullptr);	// 각각의 column에 해당하는 data type
+		file.Read(&m_DataTypes[0], sizeof(DATA_TYPE)*iDataTypeCount);	// 각각의 column에 해당하는 data type
 
-		if(FALSE == MakeOffsetTable(offsets))
+		if (!MakeOffsetTable(offsets))
 		{
 			__ASSERT(0, "can't make offset table");
 			return FALSE;	// structure변수에 대한 offset table 만들어주기
 		}
 
 		int iSize = offsets[iDataTypeCount];	// MakeOffstTable 함수에서 리턴되는 값중 m_iDataTypeCount번째에 이 함수의 실제 사이즈가 들어있다.
-		if (sizeof(Type) != iSize ||		// 전체 type의 크기와 실제 구조체의 크기와 다르거나 
-			DT_DWORD != m_DataTypes[0] )	// 맨 처음의 데이타가 DT_DWORD형이 아닐때(맨처음은 고유한 ID이므로)
+		if (sizeof(Type) != iSize				// 전체 type의 크기와 실제 구조체의 크기와 다르거나 
+			|| DT_DWORD != m_DataTypes[0])		// 맨 처음의 데이타가 DT_DWORD형이 아닐때(맨처음은 고유한 ID이므로)
 		{
 			m_DataTypes.clear();
 			__ASSERT(0, "DataType is mismatch or DataSize is incorrect!!");
-			return FALSE;
+			return false;
 		}
 	}
 
 	// row 가 몇줄인지 읽기
 	int iRC;
-	ReadFile(hFile, &iRC, sizeof(iRC), &dwNum, nullptr);
+	file.Read(&iRC, sizeof(iRC));
 	Type Data;
-	for (i=0; i<iRC; ++i)
+	for (i = 0; i < iRC; ++i)
 	{
-		for (j=0; j<iDataTypeCount; ++j)
-		{
-			ReadData(hFile, m_DataTypes[j], (char*)(&Data) + offsets[j]);
-		}
+		for (j = 0; j < iDataTypeCount; ++j)
+			ReadData(file, m_DataTypes[j], (char*) (&Data) + offsets[j]);
 
-		uint32_t dwKey = *((uint32_t*)(&Data));
+		uint32_t dwKey = *((uint32_t*) (&Data));
 		auto pt = m_Datas.insert(std::make_pair(dwKey, Data));
 
 		__ASSERT(pt.second, "CN3TableBase<Type> : Key 중복 경고.");
 	}
-	return TRUE;
+
+	return true;
 }
 
 template <class Type>
@@ -468,31 +472,40 @@ int CN3TableBase<Type>::SizeOf(DATA_TYPE DataType) const
 	{
 	case DT_CHAR:
 		return sizeof(char);
+
 	case DT_BYTE:
 		return sizeof(uint8_t);
+
 	case DT_SHORT:
 		return sizeof(int16_t);
+
 	case DT_WORD:
 		return sizeof(uint16_t);
+
 	case DT_INT:
 		return sizeof(int);
+
 	case DT_DWORD:
 		return sizeof(uint32_t);
+
 	case DT_STRING:
 		return sizeof(std::string);
+
 	case DT_FLOAT:
 		return sizeof(float);
+
 	case DT_DOUBLE:
 		return sizeof(double);
 	}
-	__ASSERT(0,"");
+
+	__ASSERT(0, "");
 	return 0;
 }
 
 // structure는 4바이트 정렬하여서 메모리를 잡는다. 따라서 아래 함수가 필요하다.
 // 아래 함수로 OffsetTable을 만들어 쓴 후에는 만드시 리턴값을 delete [] 를 해주어야 한다.
 template <class Type>
-BOOL CN3TableBase<Type>::MakeOffsetTable(std::vector<int>& offsets)
+bool CN3TableBase<Type>::MakeOffsetTable(std::vector<int>& offsets)
 {
 	if (m_DataTypes.empty())
 		return false;

@@ -68,31 +68,32 @@ void CN3AnimKey::Alloc(int nCount, float fSamplingRate, ANIMATION_KEY_TYPE eType
 	}
 }
 
-bool CN3AnimKey::Load(HANDLE hFile)
+bool CN3AnimKey::Load(File& file)
 {
-	if(m_nCount > 0) this->Release();
+	if (m_nCount > 0)
+		Release();
 
-	DWORD dwRWC = 0;
-	ReadFile(hFile, &m_nCount, 4, &dwRWC, nullptr); // 키가 몇개 있는지
+	file.Read(&m_nCount, 4); // 키가 몇개 있는지
 
 	// 키값을 파일에서 읽기..
-	if(m_nCount > 0)
+	if (m_nCount > 0)
 	{
-		ReadFile(hFile, &m_eType, 4, &dwRWC, nullptr); // Key Type
-		ReadFile(hFile, &m_fSamplingRate, 4, &dwRWC, nullptr); // Sampling Rate
+		file.Read(&m_eType, 4); // Key Type
+		file.Read(&m_fSamplingRate, 4); // Sampling Rate
 
-		this->Alloc(m_nCount, m_fSamplingRate, m_eType);
-		if(KEY_VECTOR3 == m_eType)
+		Alloc(m_nCount, m_fSamplingRate, m_eType);
+
+		if (KEY_VECTOR3 == m_eType)
 		{
-			ReadFile(hFile, m_pDatas, sizeof(__Vector3)*m_nCount, &dwRWC, nullptr);
-			__Vector3* pKeys = (__Vector3*)m_pDatas; // 끝에 하나더 복사해준다.
-			pKeys[m_nCount] = pKeys[m_nCount-1];
+			file.Read(m_pDatas, sizeof(__Vector3) * m_nCount);
+			__Vector3* pKeys = (__Vector3*) m_pDatas; // 끝에 하나더 복사해준다.
+			pKeys[m_nCount] = pKeys[m_nCount - 1];
 		}
-		else if(KEY_QUATERNION == m_eType)
+		else if (KEY_QUATERNION == m_eType)
 		{
-			ReadFile(hFile, m_pDatas, sizeof(__Quaternion)*m_nCount, &dwRWC, nullptr);
-			__Quaternion* pKeys = (__Quaternion*)m_pDatas; // 끝에 하나더 복사해준다.
-			pKeys[m_nCount] = pKeys[m_nCount-1];
+			file.Read(m_pDatas, sizeof(__Quaternion) * m_nCount);
+			__Quaternion* pKeys = (__Quaternion*) m_pDatas; // 끝에 하나더 복사해준다.
+			pKeys[m_nCount] = pKeys[m_nCount - 1];
 		}
 	}
 

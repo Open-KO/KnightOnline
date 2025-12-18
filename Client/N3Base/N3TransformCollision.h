@@ -56,7 +56,7 @@ public:
 	void			CollisionMeshSet(const std::string& szFN);
 	void			ClimbMeshSet(const std::string& szFN);
 
-	bool			Load(HANDLE hFile) override;
+	bool			Load(File& file) override;
 #ifdef _N3TOOL
 	bool			Save(HANDLE hFile) override;
 #endif // end of _N3TOOL

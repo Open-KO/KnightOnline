@@ -43,9 +43,9 @@ void CUILoading::Release()
 	m_pProgress_Loading = nullptr;
 }
 
-bool CUILoading::Load(HANDLE hFile)
+bool CUILoading::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pText_Version,		GetChildByID<CN3UIString>("Text_Version"));

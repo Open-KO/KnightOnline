@@ -17,7 +17,7 @@ public:
 	int16_t	m_sEventType;
 	RECT	m_Rect;
 
-	void	Load(HANDLE hFile);
+	void	Load(File& file);
 	CEventCell();
 	virtual ~CEventCell();
 

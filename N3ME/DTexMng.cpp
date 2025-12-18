@@ -4,15 +4,17 @@
 
 #include "stdafx.h"
 #include "MainFrm.h"
-#include "n3me.h"
+#include "N3ME.h"
 #include "LyTerrainDef.h"
-
 #include "DTex.h"
-#include <N3Base/N3Texture.h>
 #include "DlgDTexGroupView.h"
 #include "DTexMng.h"
 #include "DTexGroupMng.h"
 #include "ProgressBar.h"
+
+#include <N3Base/N3Texture.h>
+
+#include <shared/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -147,8 +149,9 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 
 		int i;
 		char szDTexFileName[_MAX_PATH];
-		DWORD dwRWC;
-		for(i=0; i<iCount; i++)
+		FileReader dtexInfoFile;
+
+		for (i = 0; i < iCount; i++)
 		{
 			result = fscanf(stream, "%s\n", szDTexFileName);
 			__ASSERT(result != EOF, "Invalid DTex Info File...");
@@ -160,20 +163,19 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 			pDTex->Init();
 			pDTex->m_ID = i;
 			pDTex->m_pTex->LoadFromFile(szDTexFileName);
-			
+
 			//	그에 관한 타일 정보들을 읽고..
 			char szDir[_MAX_DIR], szFName[_MAX_FNAME];
 			_splitpath(szDTexFileName, nullptr, szDir, szFName, nullptr);
 			wsprintf(szDTexInfoFileName, "%s%s%s.dif", s_szPath.c_str(), szDir, szFName); // Texture Information file
 
-			HANDLE hFile = CreateFile(szDTexInfoFileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-			if(hFile != INVALID_HANDLE_VALUE)
+			if (dtexInfoFile.Open(szDTexInfoFileName))
 			{
-				for(int x=0; x<NUM_DTEXTILE; x++)
+				for (int x = 0; x < NUM_DTEXTILE; x++)
 				{
-					for(int y=0; y<NUM_DTEXTILE; y++)
+					for (int y = 0; y < NUM_DTEXTILE; y++)
 					{
-						ReadFile(hFile, &(pDTex->m_Attr[x][y]), sizeof(DTEXATTR), &dwRWC, nullptr);
+						dtexInfoFile.Read(&pDTex->m_Attr[x][y], sizeof(DTEXATTR));
 						DTEXTILEATTR tile;
 						tile.TexID = i;
 						tile.TileX = x;
@@ -181,10 +183,9 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 						pDTexGroupMng->SetTile(pDTex->m_Attr[x][y].Group, pDTex->m_Attr[x][y].Attr, tile);
 					}
 				}
-			}
-			CloseHandle(hFile);
-			
 
+				dtexInfoFile.Close();
+			}
 
 			m_pDTex.push_back(pDTex);
 		}	// end of for(i=0; i<iCount; i++)
@@ -203,19 +204,19 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 		CDTexGroupMng* pDTexGroupMng = m_pMainFrm->GetDTexGroupMng();
 		int i;
 		char szDTexFileName[_MAX_PATH];
-		DWORD dwRWC;
+		FileReader dtexInfoFile;
 
 		CProgressBar ProgressBar;
-		ProgressBar.Create("Load TileTex Info..", 50,  iCount);
+		ProgressBar.Create("Load TileTex Info..", 50, iCount);
 
-		for(i=0;i<iCount;i++)
+		for (i = 0; i < iCount; i++)
 		{
 			ProgressBar.StepIt();
 
 			result = fscanf(stream, "%s %d\n", szDTexFileName, &id);
 			__ASSERT(result != EOF, "Invalid DTex Info File...");
 
-			if(m_NextID <= id) m_NextID = id + 1;
+			if (m_NextID <= id) m_NextID = id + 1;
 
 			//	실제 텍스쳐 소스를 읽고..
 			CDTex* pDTex = new CDTex;
@@ -223,13 +224,13 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 			pDTex->m_ID = id;
 			pDTex->m_pTex->LoadFromFile(szDTexFileName);
 
-			if(version==2)
+			if (version == 2)
 			{
-				for(int y=0; y<NUM_DTEXTILE; y++)
+				for (int y = 0; y < NUM_DTEXTILE; y++)
 				{
 					int Group;
 					fscanf(stream, "%d\n", &Group);
-					for(int x=0; x<NUM_DTEXTILE; x++)
+					for (int x = 0; x < NUM_DTEXTILE; x++)
 					{
 						pDTex->m_Attr[x][y].Group = Group;
 						pDTex->m_Attr[x][y].Attr = x;
@@ -238,27 +239,27 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 						tile.TexID = id;
 						tile.TileX = x;
 						tile.TileY = y;
-						
+
 						pDTexGroupMng->SetTile(pDTex->m_Attr[x][y].Group, pDTex->m_Attr[x][y].Attr, tile);
 					}
 				}
 			}
 
-			if(version==1)
+			if (version == 1)
 			{
 				//	그에 관한 타일 정보들을 읽고..
 				char szDir[_MAX_DIR], szFName[_MAX_FNAME];
 				_splitpath(szDTexFileName, nullptr, szDir, szFName, nullptr);
 				wsprintf(szDTexInfoFileName, "%s%s%s.dif", s_szPath.c_str(), szDir, szFName); // Texture Information file
 
-				HANDLE hFile = CreateFile(szDTexInfoFileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-				if(hFile != INVALID_HANDLE_VALUE)
+				if (dtexInfoFile.Open(szDTexInfoFileName))
 				{
-					for(int x=0; x<NUM_DTEXTILE; x++)
+					for (int x = 0; x < NUM_DTEXTILE; x++)
 					{
-						for(int y=0; y<NUM_DTEXTILE; y++)
+						for (int y = 0; y < NUM_DTEXTILE; y++)
 						{
-							ReadFile(hFile, &(pDTex->m_Attr[x][y]), sizeof(DTEXATTR), &dwRWC, nullptr);
+							dtexInfoFile.Read(&pDTex->m_Attr[x][y], sizeof(DTEXATTR));
+
 							DTEXTILEATTR tile;
 							tile.TexID = id;
 							tile.TileX = x;
@@ -266,8 +267,9 @@ void CDTexMng::LoadFromFile(CString RealFileName)
 							pDTexGroupMng->SetTile(pDTex->m_Attr[x][y].Group, pDTex->m_Attr[x][y].Attr, tile);
 						}
 					}
+
+					dtexInfoFile.Close();
 				}
-				CloseHandle(hFile);
 			}
 			m_pDTex.push_back(pDTex);
 		}

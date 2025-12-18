@@ -91,43 +91,41 @@ void CPondMng::SetSelPonds(CPondMesh* pPondMesh)
 	m_pSelPonds.push_back(pPondMesh);
 }
 
-bool CPondMng::Load(HANDLE hFile)
+bool CPondMng::Load(File& file)
 {
 	Release();
 
-	DWORD dwNum;
-
 	int iVersion;
-	ReadFile(hFile, &iVersion, sizeof(iVersion), &dwNum,nullptr);	//	GetVersion
+	file.Read(&iVersion, sizeof(iVersion));	// get version
 
 	int i, iPondMeshCount;
-	if(iVersion==1001)
+	if (iVersion == 1001)
 	{
-		ReadFile(hFile, &iPondMeshCount, sizeof(iPondMeshCount), &dwNum, nullptr);
-		for (i=0; i<iPondMeshCount; ++i)
+		file.Read(&iPondMeshCount, sizeof(iPondMeshCount));
+		for (i = 0; i < iPondMeshCount; ++i)
 		{
 			CPondMesh* pPondMesh = new CPondMesh;
-			pPondMesh->Load1001(hFile);
+			pPondMesh->Load1001(file);
 			m_PondMeshes.push_back(pPondMesh);
 		}
 	}
-	else if(iVersion==1000)
+	else if (iVersion == 1000)
 	{
-		ReadFile(hFile, &iPondMeshCount, sizeof(iPondMeshCount), &dwNum, nullptr);
-		for (i=0; i<iPondMeshCount; ++i)
+		file.Read(&iPondMeshCount, sizeof(iPondMeshCount));
+		for (i = 0; i < iPondMeshCount; ++i)
 		{
 			CPondMesh* pPondMesh = new CPondMesh;
-			pPondMesh->Load1000(hFile);
+			pPondMesh->Load1000(file);
 			m_PondMeshes.push_back(pPondMesh);
 		}
 	}
 	else
 	{
 		iPondMeshCount = iVersion;
-		for (i=0; i<iPondMeshCount; ++i)
+		for (i = 0; i < iPondMeshCount; ++i)
 		{
 			CPondMesh* pPondMesh = new CPondMesh;
-			pPondMesh->Load(hFile);
+			pPondMesh->Load(file);
 			m_PondMeshes.push_back(pPondMesh);
 		}
 	}

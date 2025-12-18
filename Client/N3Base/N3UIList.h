@@ -94,7 +94,7 @@ public:
 	
 	virtual void	Render();
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
 
 #ifdef _N3TOOL

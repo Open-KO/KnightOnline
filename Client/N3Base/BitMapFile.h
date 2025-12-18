@@ -12,6 +12,7 @@
 #include <Windows.h>
 #include <string>
 
+class File;
 class CBitMapFile
 {
 protected:
@@ -26,8 +27,8 @@ public:
 	void* Pixels(int x = 0, int y = 0);
 	BITMAPINFOHEADER * GetBitmapInfoHeader() { return &m_bmInfoHeader;}
 	BITMAPFILEHEADER * GetBitmapFileHeader() { return &m_bmfHeader;}
-	bool Load(HANDLE hFile);
-	bool Save(HANDLE hFile);
+	bool Load(File& file);
+	bool Save(File& file);
 	bool LoadFromFile(const char* pszFN);
 	bool SaveToFile(const char* pszFN);
 

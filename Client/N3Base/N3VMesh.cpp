@@ -51,29 +51,27 @@ void CN3VMesh::Release()
 	m_fRadius = 0.0f; // 반지름
 }
 
-bool CN3VMesh::Load(HANDLE hFile)
+bool CN3VMesh::Load(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
-
-	DWORD dwRWC = 0;
+	CN3BaseFileAccess::Load(file);
 
 	int nVC;
-	ReadFile(hFile, &nVC, 4, &dwRWC, nullptr); // 점갯수 읽기..
-	if(nVC > 0)
+	file.Read(&nVC, 4); // 점갯수 읽기..
+	if (nVC > 0)
 	{
-		this->CreateVertices(nVC); // Vertex Buffer 생성 및 데이터 채우기
-		ReadFile(hFile, m_pVertices, nVC * sizeof(__Vector3), &dwRWC, nullptr);
+		CreateVertices(nVC); // Vertex Buffer 생성 및 데이터 채우기
+		file.Read(m_pVertices, nVC * sizeof(__Vector3));
 	}
 
 	int nIC;
-	ReadFile(hFile, &nIC, 4, &dwRWC, nullptr); // Index Count..
-	if(nIC > 0)
+	file.Read(&nIC, 4); // Index Count..
+	if (nIC > 0)
 	{
-		this->CreateIndex(nIC); // Vertex Buffer 생성 및 데이터 채우기
-		ReadFile(hFile, m_pwIndices, nIC * 2, &dwRWC, nullptr);
+		CreateIndex(nIC); // Vertex Buffer 생성 및 데이터 채우기
+		file.Read(m_pwIndices, nIC * 2);
 	}
 
-	this->FindMinMax(); // 최대 최소점과 중심점과 반지름을 계산해 준다..
+	FindMinMax(); // 최대 최소점과 중심점과 반지름을 계산해 준다..
 
 	return true;
 }

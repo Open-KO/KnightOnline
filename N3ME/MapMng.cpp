@@ -14,14 +14,6 @@
 #include "DlgShapeList.h"
 #include "DlgBase.h"
 #include "BrushDlg.h"
-#include <N3Base/N3EngTool.h>
-#include <N3Base/N3Camera.h>
-#include <N3Base/N3Chr.h>
-#include <N3Base/N3Shape.h>
-#include <N3Base/N3Scene.h>
-#include <N3Base/Pick.h>
-#include <N3Base/N3PMeshInstance.h>
-#include <N3Base/N3ShapeMgr.h>
 #include "DlgTerrainSize.h"
 #include "NPCPathMgr.h"
 #include "WallMgr.h"
@@ -32,6 +24,17 @@
 #include "ProgressBar.h"
 #include "SoundMgr.h"
 #include "LightObjMgr.h"
+
+#include <N3Base/N3Camera.h>
+#include <N3Base/N3Chr.h>
+#include <N3Base/N3EngTool.h>
+#include <N3Base/N3Shape.h>
+#include <N3Base/N3ShapeMgr.h>
+#include <N3Base/N3Scene.h>
+#include <N3Base/N3PMeshInstance.h>
+#include <N3Base/Pick.h>
+
+#include <shared/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -2352,78 +2355,78 @@ void CMapMng::UpdateAll()
 	if (m_pDlgSourceList) m_pDlgSourceList->UpdateTree(m_pSceneSource);
 }
 
-void CMapMng::ImportPostDataFromScene(const char *szFileName)
+void CMapMng::ImportPostDataFromScene(const char* szFileName)
 {
-	HANDLE hFile = CreateFile(szFileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hFile) return;
-
-	DWORD dwRWC = 0;
+	FileReader file;
+	if (!file.Open(szFileName))
+		return;
 	
 	int nCameraActive; float fFrmCur, fFrmStart, fFrmEnd;
-	ReadFile(hFile, &nCameraActive, 4, &dwRWC, nullptr);
-	ReadFile(hFile, &fFrmCur, 4, &dwRWC, nullptr); // Animation Frame;
-	ReadFile(hFile, &fFrmStart, 4, &dwRWC, nullptr); // 전체 프레임.
-	ReadFile(hFile, &fFrmEnd, 4, &dwRWC, nullptr); // 전체 프레임.
+	file.Read(&nCameraActive, 4);
+	file.Read(&fFrmCur, 4); // Animation Frame;
+	file.Read(&fFrmStart, 4); // 전체 프레임.
+	file.Read(&fFrmEnd, 4); // 전체 프레임.
 
 	int i = 0, nL = 0;
 	char szName[512] = "";
 
 	int nCC = 0;
-	ReadFile(hFile, &nCC, 4, &dwRWC, nullptr); // 카메라..
-	for(i = 0; i < nCC; i++)
+	file.Read(&nCC, 4); // 카메라..
+	for (i = 0; i < nCC; i++)
 	{
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL <= 0) continue;
+		file.Read(&nL, 4);
+		if (nL <= 0)
+			continue;
 
-		ReadFile(hFile, szName, nL, &dwRWC, nullptr);
+		file.Read(szName, nL);
 		szName[nL] = '\0';
 	}
 
 	int nLC = 0;
-	ReadFile(hFile, &nLC, 4, &dwRWC, nullptr); // 카메라..
-	for(i = 0; i < nLC; i++) 
+	file.Read(&nLC, 4); // 카메라..
+	for (i = 0; i < nLC; i++)
 	{
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL <= 0) continue;
+		file.Read(&nL, 4);
+		if (nL <= 0)
+			continue;
 
-		ReadFile(hFile, szName, nL, &dwRWC, nullptr);
+		file.Read(szName, nL);
 		szName[nL] = '\0';
 	}
 
 	int nSC = 0;
-	ReadFile(hFile, &nSC, 4, &dwRWC, nullptr); // Shapes..
-	for(i = 0; i < nSC; i++)
+	file.Read(&nSC, 4); // Shapes..
+	for (i = 0; i < nSC; i++)
 	{
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL <= 0) continue;
+		file.Read(&nL, 4);
+		if (nL <= 0)
+			continue;
 
-		ReadFile(hFile, szName, nL, &dwRWC, nullptr);
+		file.Read(szName, nL);
 		szName[nL] = '\0';
 
 		// Import...
-		this->AddShape(m_pSceneOutput, std::string(szName), TRUE);
+		AddShape(m_pSceneOutput, szName, TRUE);
 	}
 
 	int nChrC = 0;
-	ReadFile(hFile, &nChrC, 4, &dwRWC, nullptr); // 캐릭터
-	for(i = 0; i < nChrC; i++)
+	file.Read(&nChrC, 4); // 캐릭터
+	for (i = 0; i < nChrC; i++)
 	{
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL <= 0) continue;
+		file.Read(&nL, 4);
+		if (nL <= 0) continue;
 
-		ReadFile(hFile, szName, nL, &dwRWC, nullptr);
+		file.Read(szName, nL);
 		szName[nL] = '\0';
 	}
 
 	m_pDlgOutputList->UpdateTree(m_pSceneOutput); // 트리 업데이트...
-
-	CloseHandle(hFile);
 }
 
-void CMapMng::ImportShape(const char *szFullPath)
+void CMapMng::ImportShape(const char* szFullPath)
 {
 	// Import...
-	this->AddShape(m_pSceneOutput, szFullPath, FALSE);
+	AddShape(m_pSceneOutput, szFullPath, FALSE);
 }
 
 void CMapMng::DeleteUnusedFiles()

@@ -102,7 +102,7 @@ public:
 	void SetContentString(int iIndex, std::string szID, int iPrice, std::string szTitle);
 
 	void SetBBSKind(uint8_t byKind){ m_byBBSKind = byKind; }
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg) override;
 	void SetVisible(bool bVisible) override;
 

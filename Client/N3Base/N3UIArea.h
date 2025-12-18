@@ -37,21 +37,21 @@ public:
 	eUI_AREA_TYPE	m_eAreaType;
 
 public:
-	virtual void	Release();
-	virtual bool	Load(HANDLE);
-	virtual void	SetRegion(const RECT& Rect);
+	void	Release() override;
+	bool	Load(File& file) override;
+	void	SetRegion(const RECT& Rect) override;
 
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
+	uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 #ifndef _REPENT
 #ifdef _N3GAME
-	virtual	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 #endif
 #endif
 
 #ifdef _N3TOOL
 // 툴에서 사용하기 위한 함수
 	virtual void	operator = (const CN3UIArea& other);
-	virtual bool	Save(HANDLE hFile);
+	bool	Save(HANDLE hFile) override;
 #endif
 };
 

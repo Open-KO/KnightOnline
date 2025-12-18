@@ -68,37 +68,33 @@ public:
 		szName = other.szName;
 	}
 
-	void Load(HANDLE hFile)
+	void Load(File& file)
 	{
-		if(nullptr == hFile || INVALID_HANDLE_VALUE == hFile) return;
-
-		DWORD dwRWC = 0;
-
 		int nL = 0;
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr); // 원래는 문자열 포인터가 있던자리이다.. 호환성을 위헤서.. 걍...
+		file.Read(&nL, 4); // 원래는 문자열 포인터가 있던자리이다.. 호환성을 위헤서.. 걍...
 
-		ReadFile(hFile, &fFrmStart, 4, &dwRWC, nullptr); // 상체 시작
-		ReadFile(hFile, &fFrmEnd, 4, &dwRWC, nullptr); // 상체 끝
-		ReadFile(hFile, &fFrmPerSec, 4, &dwRWC, nullptr); // 초당 30프레임이 표준이다..
+		file.Read(&fFrmStart, 4); // 상체 시작
+		file.Read(&fFrmEnd, 4); // 상체 끝
+		file.Read(&fFrmPerSec, 4); // 초당 30프레임이 표준이다..
 
-		ReadFile(hFile, &fFrmPlugTraceStart, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &fFrmPlugTraceEnd, 4, &dwRWC, nullptr);
+		file.Read(&fFrmPlugTraceStart, 4);
+		file.Read(&fFrmPlugTraceEnd, 4);
 		
-		ReadFile(hFile, &fFrmSound0, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &fFrmSound1, 4, &dwRWC, nullptr);
+		file.Read(&fFrmSound0, 4);
+		file.Read(&fFrmSound1, 4);
 
-		ReadFile(hFile, &fTimeBlend, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &iBlendFlags, 4, &dwRWC, nullptr); // 블렌딩 플래그 0 이면 걍 블렌딩.. 1이면 루핑시 블렌딩 타임만큼 시간 지연
+		file.Read(&fTimeBlend, 4);
+		file.Read(&iBlendFlags, 4); // 블렌딩 플래그 0 이면 걍 블렌딩.. 1이면 루핑시 블렌딩 타임만큼 시간 지연
 		
-		ReadFile(hFile, &fFrmStrike0, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &fFrmStrike1, 4, &dwRWC, nullptr);
+		file.Read(&fFrmStrike0, 4);
+		file.Read(&fFrmStrike1, 4);
 
 		// 이름 읽기..
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
+		file.Read(&nL, 4);
 		if (nL > 0)
 		{
 			szName.assign(nL, '\0');
-			ReadFile(hFile, &szName[0], nL, &dwRWC, nullptr);
+			file.Read(&szName[0], nL);
 		}
 		else
 		{
@@ -174,7 +170,7 @@ public:
 		return &m_Datas[index];
 	}
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 	int Count() const
 	{

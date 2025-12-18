@@ -22,8 +22,8 @@ protected:
 public:
 	void				UpdateRenderInfo();
 	bool				LoadFromFile(const std::string& szFileName, uint32_t iVer = N3FORMAT_VER_DEFAULT);
-	bool				Load(HANDLE hFile);
-	bool				SkipFileHandle(HANDLE hFile);
+	bool				Load(File& file);
+	bool				SkipFileHandle(File& file);
 
 #ifdef _N3TOOL
 	bool				GenerateMipMap(LPDIRECT3DSURFACE9 lpSurf = nullptr); // nullptr 이면 0 레벨의 서피스로부터 생성..

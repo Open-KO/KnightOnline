@@ -70,9 +70,9 @@ void CUILevelGuide::Release()
 	}
 }
 
-bool CUILevelGuide::Load(HANDLE hFile)
+bool CUILevelGuide::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile)) 
+	if (!CN3UIBase::Load(file)) 
 		return false;
 
 	std::string szID;

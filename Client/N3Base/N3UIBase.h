@@ -164,7 +164,7 @@ public:
 
 	virtual void	CallBackProc(int iID, uint32_t dwFlag);
 	virtual void	ShowWindow(int iID = -1, CN3UIBase* pParent = nullptr);
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg
 	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
 	virtual void	Tick();

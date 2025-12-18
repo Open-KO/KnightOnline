@@ -188,9 +188,9 @@ void CUIExitMenu::ReturnToCharacterSelection()
 	CGameProcedure::ProcActiveSet((CGameProcedure*) CGameProcedure::s_pProcCharacterSelect);
 }
 
-bool CUIExitMenu::Load(HANDLE hFile)
+bool CUIExitMenu::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Chr,		GetChildByID<CN3UIButton>("btn_chr"));

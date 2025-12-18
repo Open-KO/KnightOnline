@@ -80,7 +80,7 @@ public:
 	void Render();
 	void ClearList();
 	
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool Save(HANDLE hFile) override;
 		
 	CLightObjMgr();

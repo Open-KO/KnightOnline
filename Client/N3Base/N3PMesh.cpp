@@ -68,18 +68,17 @@ void CN3PMesh::Release()
 	CN3BaseFileAccess::Release();
 }
 
-bool CN3PMesh::Load(HANDLE hFile)
+bool CN3PMesh::Load(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
+	CN3BaseFileAccess::Load(file);
 
-	DWORD dwNum;
-	ReadFile(hFile, &m_iNumCollapses, sizeof(m_iNumCollapses), &dwNum, nullptr);
-	ReadFile(hFile, &m_iTotalIndexChanges, sizeof(m_iTotalIndexChanges), &dwNum, nullptr);
+	file.Read(&m_iNumCollapses, sizeof(m_iNumCollapses));
+	file.Read(&m_iTotalIndexChanges, sizeof(m_iTotalIndexChanges));
 
-	ReadFile(hFile, &m_iMaxNumVertices, sizeof(int), &dwNum, nullptr);
-	ReadFile(hFile, &m_iMaxNumIndices , sizeof(int), &dwNum, nullptr);
-	ReadFile(hFile, &m_iMinNumVertices, sizeof(int), &dwNum, nullptr);
-	ReadFile(hFile, &m_iMinNumIndices , sizeof(int), &dwNum, nullptr);
+	file.Read(&m_iMaxNumVertices, sizeof(int));
+	file.Read(&m_iMaxNumIndices , sizeof(int));
+	file.Read(&m_iMinNumVertices, sizeof(int));
+	file.Read(&m_iMinNumIndices , sizeof(int));
 
 	HRESULT hr = Create(m_iMaxNumVertices, m_iMaxNumIndices);
 	__ASSERT(SUCCEEDED(hr), "Failed to create progressive mesh");
@@ -87,19 +86,19 @@ bool CN3PMesh::Load(HANDLE hFile)
 	if (m_iMaxNumVertices>0)
 	{
 //		m_pVertices = new __VertexT1[m_iMaxNumVertices];
-		ReadFile(hFile, m_pVertices, m_iMaxNumVertices*sizeof(__VertexT1), &dwNum, nullptr);
+		file.Read(m_pVertices, m_iMaxNumVertices*sizeof(__VertexT1));
 	}
 
 	if (m_iMaxNumIndices>0)
 	{
 //		m_pIndices = new uint16_t[m_iMaxNumIndices];
-		ReadFile(hFile, m_pIndices, m_iMaxNumIndices*sizeof(uint16_t), &dwNum, nullptr);
+		file.Read(m_pIndices, m_iMaxNumIndices*sizeof(uint16_t));
 	}
 
 	if (m_iNumCollapses>0)
 	{
 		m_pCollapses = new __EdgeCollapse[m_iNumCollapses+1];	// +1을 한 이유 : PMeshInstance::SplitOne() 함수에서 부득이하게 포인터가 경계선을 가르키게 해야 하는 경우가 있어서.
-		ReadFile(hFile, m_pCollapses, m_iNumCollapses*sizeof(__EdgeCollapse), &dwNum, nullptr);
+		file.Read(m_pCollapses, m_iNumCollapses*sizeof(__EdgeCollapse));
 		ZeroMemory(m_pCollapses + m_iNumCollapses, sizeof(__EdgeCollapse));	// 위의 +1을 한이유와 같음. 만약을 대비해 마지막 데이타를 초기화 해둠
 
 		bool bFixed = false;
@@ -119,15 +118,15 @@ bool CN3PMesh::Load(HANDLE hFile)
 	if (m_iTotalIndexChanges>0)
 	{
 		m_pAllIndexChanges = new int[m_iTotalIndexChanges];
-		ReadFile(hFile, m_pAllIndexChanges, m_iTotalIndexChanges*sizeof(int), &dwNum, nullptr);
+		file.Read(m_pAllIndexChanges, m_iTotalIndexChanges*sizeof(int));
 	}
 
 	__ASSERT(m_pLODCtrlValues == nullptr && m_iLODCtrlValueCount == 0, "Invalid Level of detail control value");
-	ReadFile(hFile, &m_iLODCtrlValueCount, sizeof(m_iLODCtrlValueCount), &dwNum, nullptr);
+	file.Read(&m_iLODCtrlValueCount, sizeof(m_iLODCtrlValueCount));
 	if (m_iLODCtrlValueCount>0)
 	{
 		m_pLODCtrlValues = new __LODCtrlValue[m_iLODCtrlValueCount];
-		ReadFile(hFile, m_pLODCtrlValues, m_iLODCtrlValueCount*sizeof(__LODCtrlValue), &dwNum, nullptr);
+		file.Read(m_pLODCtrlValues, m_iLODCtrlValueCount*sizeof(__LODCtrlValue));
 	}
 
 	FindMinMax();

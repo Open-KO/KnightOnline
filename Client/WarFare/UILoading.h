@@ -20,7 +20,7 @@ protected:
 
 public:
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	CUILoading();
 	~CUILoading() override;
 

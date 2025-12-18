@@ -81,7 +81,7 @@ protected:
 	float				m_fTexIndex;
 	void				UpdateWaterPositions();
 public:
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	void			Render();
 	void			Tick();
 };

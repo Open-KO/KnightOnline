@@ -48,9 +48,9 @@ CUIDead::~CUIDead()
 {
 }
 
-bool CUIDead::Load(HANDLE hFile)
+bool CUIDead::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pTextAlive,	GetChildByID<CN3UIString>("Text_Alive"));

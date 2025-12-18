@@ -237,35 +237,32 @@ void CSoundMgr::Render()
 	hr = s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, dwCullMode);
 }
 
-bool CSoundMgr::Load(HANDLE hFile)
+bool CSoundMgr::Load(File& file)
 {
 	//dlg 클리어..
 	m_pDlgSound->Clear();
 
-	DWORD dwRWC;
-	ReadFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
-	if(!m_pDlgSound->LoadSoundGroup(hFile)) return false;
+	file.Read(&m_iVersion, sizeof(int));
+	if (!m_pDlgSound->LoadSoundGroup(file))
+		return false;
 
-	//m_pSound클리어...
-	std::list<CSoundCell*>::iterator it;
-	for(it = m_pSound.begin(); it != m_pSound.end(); it++)
-	{
-		CSoundCell* pSoundCell = (*it);
+	// m_pSound클리어...
+	for (CSoundCell* pSoundCell : m_pSound)
 		delete pSoundCell;
-	}	
+	m_pSound.clear();
 
 	CLyTerrain* pRefTerrain = m_pRefMapMng->GetTerrain();
 
 	int cnt = 0;
-	ReadFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
-	for(int i=0;i<cnt;i++)
+	file.Read(&cnt, sizeof(int));
+	for (int i = 0; i < cnt; i++)
 	{
 		CSoundCell* pSoundCell = new CSoundCell(pRefTerrain);
-		pSoundCell->Load(hFile);
+		pSoundCell->Load(file);
 
 		m_pSound.push_back(pSoundCell);
 		//dlg에 추가...
-		m_pDlgSound->AddSoundInfo(pSoundCell);		
+		m_pDlgSound->AddSoundInfo(pSoundCell);
 	}
 	m_pRefMapMng->Invalidate();
 	return true;

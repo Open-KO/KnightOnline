@@ -2,9 +2,11 @@
 #include "WinCrypt.h"
 #include "N3Base.h"
 
+#include <shared/File.h>
+
 CWinCrypt::CWinCrypt()
 {
-	m_bIsLoaded			= FALSE;
+	m_bIsLoaded			= false;
 	m_hCryptProvider	= 0;
 	m_hCryptHash		= 0;
 	m_hCryptKey			= 0;
@@ -51,65 +53,31 @@ void CWinCrypt::Release()
 		CryptReleaseContext(m_hCryptProvider, 0);
 	}
 
-	m_bIsLoaded			= FALSE;
+	m_bIsLoaded			= false;
 	m_hCryptProvider	= 0;
 	m_hCryptHash		= 0;
 	m_hCryptKey			= 0;
 }
 
-BOOL CWinCrypt::ReadFile(
-	HANDLE hFile,
-	LPVOID lpBuffer,
-	DWORD nNumberOfBytesToRead,
-	LPDWORD lpNumberOfBytesRead,
-	LPOVERLAPPED lpOverlapped)
+bool CWinCrypt::ReadFile(File& file, void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
-	// NOTE: This wrapper logic is inlined officially (it's probably manual)
+	if (!file.Read(buffer, bytesToRead, bytesRead))
+		return false;
+
 	if (IsLoaded())
 	{
-		return ReadFileImpl(
-			hFile,
-			lpBuffer,
-			nNumberOfBytesToRead,
-			lpNumberOfBytesRead,
-			lpOverlapped);
+		DWORD dwDataLen = static_cast<DWORD>(bytesToRead);
+		if (!CryptDecrypt(
+			m_hCryptKey,
+			0,
+			TRUE,
+			0,
+			static_cast<BYTE*>(buffer),
+			&dwDataLen))
+			return false;
 	}
-	else
-	{
-		return ::ReadFile(
-			hFile,
-			lpBuffer,
-			nNumberOfBytesToRead,
-			lpNumberOfBytesRead,
-			lpOverlapped);
-	}
-}
 
-BOOL CWinCrypt::ReadFileImpl(
-	HANDLE hFile,
-	LPVOID lpBuffer,
-	DWORD nNumberOfBytesToRead,
-	LPDWORD lpNumberOfBytesRead,
-	LPOVERLAPPED lpOverlapped)
-{
-	if (!m_bIsLoaded)
-		return FALSE;
-
-	if (!::ReadFile(
-		hFile,
-		lpBuffer,
-		nNumberOfBytesToRead,
-		lpNumberOfBytesRead,
-		lpOverlapped))
-		return FALSE;
-
-	return CryptDecrypt(
-		m_hCryptKey,
-		0,
-		TRUE,
-		0,
-		(BYTE*) lpBuffer,
-		&nNumberOfBytesToRead);
+	return true;
 }
 
 CWinCrypt::~CWinCrypt()

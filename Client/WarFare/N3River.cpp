@@ -31,12 +31,11 @@ CN3River::~CN3River()
 		delete[] m_pRiverInfo, m_pRiverInfo = nullptr;
 }
 
-bool CN3River::Load(HANDLE hFile)
+bool CN3River::Load(File& file)
 {
-	DWORD dwNum;
 	uint16_t wIndex[18] = {4,0,1,4,1,5,5,1,2,5,2,6,6,2,3,6,3,7};
 
-	ReadFile(hFile, &m_iRiverCount, sizeof(m_iRiverCount), &dwNum, nullptr);
+	file.Read(&m_iRiverCount, sizeof(m_iRiverCount));
 	if (m_iRiverCount == 0)	return true;
 	
 	m_pRiverInfo = new _RIVER_INFO[m_iRiverCount];
@@ -45,21 +44,21 @@ bool CN3River::Load(HANDLE hFile)
 	for (int i=0;i<m_iRiverCount;i++)
 	{
 		pInfo = m_pRiverInfo+i;
-		ReadFile(hFile, &pInfo->iVC, sizeof(int), &dwNum, nullptr);
+		file.Read(&pInfo->iVC, sizeof(int));
 		__ASSERT(pInfo->iVC, "CN3River : nVertexCount is zero!!");
 		__ASSERT(pInfo->iVC%4==0, "RiverVertex is a multiple of 4");
 
 		pInfo->pVertices = new __VertexRiver[pInfo->iVC];
-		ReadFile(hFile, pInfo->pVertices, pInfo->iVC*sizeof(__VertexRiver), &dwNum, nullptr);
-		ReadFile(hFile, &pInfo->iIC, sizeof(int), &dwNum, nullptr);
+		file.Read(pInfo->pVertices, pInfo->iVC*sizeof(__VertexRiver));
+		file.Read(&pInfo->iIC, sizeof(int));
 		__ASSERT(pInfo->iIC%18==0, "River-Vertex-Index is a multiple of 18");
 
 		int iTexNameLength = 0;
-		ReadFile(hFile, &iTexNameLength, sizeof(int), &dwNum, nullptr);
+		file.Read(&iTexNameLength, sizeof(int));
 		if (iTexNameLength > 0)
 		{
 			char szTexture[50];
-			ReadFile(hFile, szTexture, iTexNameLength, &dwNum, nullptr);			// texture name
+			file.Read(szTexture, iTexNameLength);			// texture name
 			szTexture[iTexNameLength] = '\0';
 
 			std::string szTextureFName = fmt::format("misc\\river\\{}", szTexture);

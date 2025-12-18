@@ -39,7 +39,7 @@ public:
 //	void SetVisibleOptButtons(bool bVisible);
 //	void SetVisibleActButtons(bool bVisible);
 	bool OnKeyPress(int iKey) override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void UpdatePartyButtons(bool bIAmLeader, bool bIAmMemberOfParty, int iMemberIndex, const class CPlayerBase* pTarget);
 };

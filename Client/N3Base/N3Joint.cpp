@@ -46,23 +46,19 @@ void CN3Joint::Release()
 	CN3Transform::Release();
 }
 
-bool CN3Joint::Load(HANDLE hFile)
+bool CN3Joint::Load(File& file)
 {
-	CN3Transform::Load(hFile);
+	CN3Transform::Load(file);
 
-	DWORD dwRWC = 0;
-	int nL = 0;
-
-	m_KeyOrient.Load(hFile); // Joint Orient...
+	m_KeyOrient.Load(file); // Joint Orient...
 
 	int nCC = 0;
-	ReadFile(hFile, &nCC, 4, &dwRWC, nullptr);
-	for(int i = 0; i < nCC; i++)
+	file.Read(&nCC, 4);
+	for (int i = 0; i < nCC; i++)
 	{
 		CN3Joint* pChild = new CN3Joint();
-		this->ChildAdd(pChild);
-
-		pChild->Load(hFile);
+		ChildAdd(pChild);
+		pChild->Load(file);
 	}
 
 	return true;

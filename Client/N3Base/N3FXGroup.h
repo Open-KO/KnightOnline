@@ -24,7 +24,7 @@ public:
 
 	__FXBInfo* GetFXBInfo(int idx);
 
-	virtual bool	Load(HANDLE hFile); // 핸들에서 읽어오기..
+	virtual bool	Load(File& file); // 핸들에서 읽어오기..
 	bool	Save(HANDLE hFile);	// 저장하기..
 	
 	CN3FXGroup();	

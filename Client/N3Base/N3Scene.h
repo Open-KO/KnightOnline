@@ -132,7 +132,7 @@ public:
 
 	void ChrRelease();
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool Save(HANDLE hFile) override;
 	
 	void Release() override;

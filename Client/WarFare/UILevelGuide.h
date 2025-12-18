@@ -34,7 +34,7 @@ protected:
 public:
 	CUILevelGuide();
 	~CUILevelGuide() override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	void Release() override;
 	void SetVisible(bool bVisible) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;

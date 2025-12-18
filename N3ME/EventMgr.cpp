@@ -3,13 +3,15 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "n3me.h"
+#include "N3ME.h"
 #include "EventMgr.h"
 #include "MapMng.h"
 #include "EventCell.h"
 #include "LyTerrain.h"
 #include "DlgEditEvent.h"
 #include "DlgEditEventAttr.h"
+
+#include <shared/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -291,10 +293,11 @@ void CEventMgr::LoadFromFile(const char* RealFileName)
 	char szNPCPathFileName[_MAX_PATH];
 	wsprintf(szNPCPathFileName, "%sevent\\%s.evt", s_szPath.c_str(), (LPCTSTR)RealFileName);
 	
-	//DWORD dwRWC;
-	HANDLE hFile = CreateFile(szNPCPathFileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	Load(hFile);
-	CloseHandle(hFile);
+	FileReader file;
+	if (!file.Open(szNPCPathFileName))
+		return;
+
+	Load(file);
 }
 
 void CEventMgr::SaveToFile(const char* RealFileName)
@@ -314,7 +317,7 @@ void CEventMgr::SaveToFile(const char* RealFileName)
 	SetCurrentDirectory(szOldPath);
 }
 
-bool CEventMgr::Load(HANDLE hFile)
+bool CEventMgr::Load(File& file)
 {
 	if(m_pCurrEvent)
 	{
@@ -331,15 +334,14 @@ bool CEventMgr::Load(HANDLE hFile)
 		delete (*itEvent);
 	}
 	
-	DWORD dwRWC;
 	int NumEvent;
-	ReadFile(hFile, &NumEvent, sizeof(int), &dwRWC, nullptr);
+	file.Read(&NumEvent, sizeof(int));
 
 	m_pEvents.clear();
 	for(int i=0;i<NumEvent;i++)
 	{
 		CEventCell* pEvent = new CEventCell(pRefTerrain);
-		pEvent->Load(hFile);
+		pEvent->Load(file);
 		m_pEvents.push_back(pEvent);
 	}
 

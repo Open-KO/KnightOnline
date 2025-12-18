@@ -237,30 +237,29 @@ void CN3UIBase::ShowWindow(int iID, CN3UIBase* pParent)
 	SetVisible(true);
 }
 
-bool CN3UIBase::Load(HANDLE hFile)
+bool CN3UIBase::Load(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
-	DWORD dwRWC = 0;
+	CN3BaseFileAccess::Load(file);
 
 	// children 정보
 	int iCC = 0;
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 	{
 		int16_t sCC, sIdk0;
-		ReadFile(hFile, &sCC, sizeof(int16_t), &dwRWC, nullptr); // children count
-		ReadFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, nullptr);
+		file.Read(&sCC, sizeof(int16_t)); // children count
+		file.Read(&sIdk0, sizeof(int16_t));
 		iCC = (int) sCC;
 	}
 	else
 	{
-		ReadFile(hFile, &iCC, sizeof(iCC), &dwRWC, nullptr); // children count
+		file.Read(&iCC, sizeof(iCC)); // children count
 	}
 
 	eUI_TYPE eChildUIType;
 	for (int i = 0; i < iCC; i++)
 	{
 		CN3UIBase* pChild = nullptr;
-		ReadFile(hFile, &eChildUIType, sizeof(eChildUIType), &dwRWC, nullptr); // child의 ui type
+		file.Read(&eChildUIType, sizeof(eChildUIType)); // child의 ui type
 
 		switch (eChildUIType)
 		{
@@ -281,53 +280,53 @@ bool CN3UIBase::Load(HANDLE hFile)
 		}
 		__ASSERT(pChild, "Unknown type UserInterface!!!");
 		pChild->Init(this);
-		pChild->Load(hFile);
+		pChild->Load(file);
 	}
 
 	// base 정보
 	int iIDLen = 0;
-	ReadFile(hFile, &iIDLen, sizeof(iIDLen), &dwRWC, nullptr);				// ui id length
+	file.Read(&iIDLen, sizeof(iIDLen));				// ui id length
 	if (iIDLen > 0)
 	{
 		m_szID.assign(iIDLen, '\0');
-		ReadFile(hFile, &m_szID[0], iIDLen, &dwRWC, nullptr);				// ui id
+		file.Read(&m_szID[0], iIDLen);				// ui id
 	}
 	else
 	{
 		m_szID.clear();
 	}
 
-	ReadFile(hFile, &m_rcRegion, sizeof(m_rcRegion), &dwRWC, nullptr);		// m_rcRegion
-	ReadFile(hFile, &m_rcMovable, sizeof(m_rcMovable), &dwRWC, nullptr);	// m_rcMovable
-	ReadFile(hFile, &m_dwStyle, sizeof(m_dwStyle), &dwRWC, nullptr);		// style
-	ReadFile(hFile, &m_dwReserved, sizeof(m_dwReserved), &dwRWC, nullptr);	// m_dwReserved
+	file.Read(&m_rcRegion, sizeof(m_rcRegion));		// m_rcRegion
+	file.Read(&m_rcMovable, sizeof(m_rcMovable));	// m_rcMovable
+	file.Read(&m_dwStyle, sizeof(m_dwStyle));		// style
+	file.Read(&m_dwReserved, sizeof(m_dwReserved));	// m_dwReserved
 
 	int iTooltipLen;
-	ReadFile(hFile, &iTooltipLen, sizeof(iTooltipLen), &dwRWC, nullptr);	//	tooltip문자열 길이
+	file.Read(&iTooltipLen, sizeof(iTooltipLen));	//	tooltip문자열 길이
 	if (iTooltipLen > 0)
 	{
 		m_szToolTip.assign(iTooltipLen, '\0');
-		ReadFile(hFile, &m_szToolTip[0], iTooltipLen, &dwRWC, nullptr);
+		file.Read(&m_szToolTip[0], iTooltipLen);
 	}
 
 	std::string szSoundFN;
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
 	int iSndFNLen = 0;
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	file.Read(&iSndFNLen, sizeof(iSndFNLen));		//	사운드 파일 문자열 길이
 	if (iSndFNLen > 0)
 	{
 		szSoundFN.assign(iSndFNLen, '\0');
-		ReadFile(hFile, &szSoundFN[0], iSndFNLen, &dwRWC, nullptr);
+		file.Read(&szSoundFN[0], iSndFNLen);
 
 		__ASSERT(nullptr == m_pSnd_OpenUI, "memory leak");
 		m_pSnd_OpenUI = s_SndMgr.CreateObj(szSoundFN, SNDTYPE_2D);
 	}
 
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	file.Read(&iSndFNLen, sizeof(iSndFNLen));		//	사운드 파일 문자열 길이
 	if (iSndFNLen > 0)
 	{
 		szSoundFN.assign(iSndFNLen, '\0');
-		ReadFile(hFile, &szSoundFN[0], iSndFNLen, &dwRWC, nullptr);
+		file.Read(&szSoundFN[0], iSndFNLen);
 
 		__ASSERT(nullptr == m_pSnd_CloseUI, "memory leak");
 		m_pSnd_CloseUI = s_SndMgr.CreateObj(szSoundFN, SNDTYPE_2D);

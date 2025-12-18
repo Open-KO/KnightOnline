@@ -51,7 +51,7 @@ public:
 	//this_ui_add_start
 	void				SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
 	void				SetVisible(bool bVisible) override;
-	bool				Load(HANDLE hFile) override;
+	bool				Load(File& file) override;
 	bool				OnKeyPress(int iKey) override;
 	//this_ui_add_end
 

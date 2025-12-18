@@ -293,22 +293,21 @@ void CN3IMesh::RenderSelected()
 }
 #endif // end of _N3TOOL
 
-bool CN3IMesh::Load(HANDLE hFile)
+bool CN3IMesh::Load(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
-	DWORD dwRWC = 0;
+	CN3BaseFileAccess::Load(file);
 	
 	int nFC = 0, nVC = 0, nUVC = 0;
 
-	ReadFile(hFile, &nFC, 4, &dwRWC, nullptr);
-	ReadFile(hFile, &nVC, 4, &dwRWC, nullptr);
-	ReadFile(hFile, &nUVC, 4, &dwRWC, nullptr);
+	file.Read(&nFC, 4);
+	file.Read(&nVC, 4);
+	file.Read(&nUVC, 4);
 
 	if(nFC > 0 && nVC > 0)
 	{
 		this->Create(nFC, nVC, nUVC);
-		ReadFile(hFile, m_pVertices, sizeof(__VertexXyzNormal) * nVC, &dwRWC, nullptr);
-		ReadFile(hFile, m_pwVtxIndices, 2 * nFC * 3, &dwRWC, nullptr); // uint16_t
+		file.Read(m_pVertices, sizeof(__VertexXyzNormal) * nVC);
+		file.Read(m_pwVtxIndices, 2 * nFC * 3); // uint16_t
 	}
 	else
 	{
@@ -317,8 +316,8 @@ bool CN3IMesh::Load(HANDLE hFile)
 	
 	if(m_nUVC > 0)
 	{
-		ReadFile(hFile, m_pfUVs, 8 * nUVC, &dwRWC, nullptr);
-		ReadFile(hFile, m_pwUVsIndices, 2 * nFC * 3, &dwRWC, nullptr); // uint16_t
+		file.Read(m_pfUVs, 8 * nUVC);
+		file.Read(m_pwUVsIndices, 2 * nFC * 3); // uint16_t
 	}
 
 	this->FindMinMax(); // 최소 최대값을 찾는다..

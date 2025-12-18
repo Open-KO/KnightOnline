@@ -83,7 +83,7 @@ public:
 	void			Tick();
 	void			Render();
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	Save(HANDLE hFile);
 
 	void			MakeGameFiles(HANDLE hFile, float fSize);				// Game file로 저장

@@ -115,9 +115,9 @@ BOOL CUIMessageWnd::MoveOffset(int iOffsetX, int iOffsetY)
 	return true;
 }
 
-bool CUIMessageWnd::Load(HANDLE hFile)
+bool CUIMessageWnd::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (false == CN3UIBase::Load(file)) return false;
 	N3_VERIFY_UI_COMPONENT(m_pChatOut, GetChildByID<CN3UIString>("text_message"));
 	N3_VERIFY_UI_COMPONENT(m_pScrollbar, GetChildByID<CN3UIScrollBar>("scroll"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Fold, GetChildByID("btn_off"));
@@ -453,9 +453,9 @@ CUIMessageWnd2::CUIMessageWnd2()
 	m_pBtn_Fold = nullptr;
 }
 
-bool CUIMessageWnd2::Load(HANDLE hFile)
+bool CUIMessageWnd2::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (false == CN3UIBase::Load(file)) return false;
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Fold, GetChildByID("btn_on"));
 	return true;
 }

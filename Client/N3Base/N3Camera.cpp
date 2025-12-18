@@ -61,18 +61,17 @@ void CN3Camera::Release()
 	CN3Transform::Release();
 }
 
-bool CN3Camera::Load(HANDLE hFile)
+bool CN3Camera::Load(File& file)
 {
-	CN3Transform::Load(hFile);
+	CN3Transform::Load(file);
 
-	DWORD dwRWC = 0;
-	ReadFile(hFile, &m_vAt, sizeof(__Vector3), &dwRWC, nullptr); // At position
-	ReadFile(hFile, &m_Data, sizeof(__CameraData), &dwRWC, nullptr); // CameraData
-	ReadFile(hFile, &m_bFogUse, 4, &dwRWC, nullptr);
-	ReadFile(hFile, &m_FogColor, 4, &dwRWC, nullptr);
-//	ReadFile(hFile, &m_fFogDensity, 4, &dwRWC, nullptr);
-//	ReadFile(hFile, &m_fFogStart, 4, &dwRWC, nullptr);
-//	ReadFile(hFile, &m_fFogEnd, 4, &dwRWC, nullptr);
+	file.Read(&m_vAt, sizeof(__Vector3)); // At position
+	file.Read(&m_Data, sizeof(__CameraData)); // CameraData
+	file.Read(&m_bFogUse, 4);
+	file.Read(&m_FogColor, 4);
+//	file.Read(&m_fFogDensity, 4);
+//	file.Read(&m_fFogStart, 4);
+//	file.Read(&m_fFogEnd, 4);
 
 	return true;
 }

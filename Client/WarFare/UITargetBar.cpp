@@ -53,9 +53,9 @@ BOOL CUITargetBar::SetIDString(const std::string& szID, D3DCOLOR crID)
 	return TRUE;
 }
 
-bool CUITargetBar::Load(HANDLE hFile)
+bool CUITargetBar::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 	CN3UIString* amountStr = new CN3UIString();
 	amountStr->Init(this);
 

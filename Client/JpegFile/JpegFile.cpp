@@ -1851,6 +1851,7 @@ BOOL CJpegFile::EncryptJPEG(
 
 	// Encoding 파일 Writing
 #ifdef _MSC_VER
+	fileHandle = nullptr;
 	fopen_s(&fileHandle, csJpeg.c_str(), "wb");
 #else
 	fileHandle = fopen(csJpeg.c_str(), "wb");

@@ -57,7 +57,7 @@ public:
 
 	void PartyStringSet(uint8_t byType);
 	void RefreshPage();
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg) override;
 	bool SelectedString(CN3UIBase* pSender, int& iID);
 	

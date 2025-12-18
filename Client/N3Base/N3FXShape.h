@@ -36,7 +36,7 @@ protected:
 	float						m_fTexIndex;	// Current Texture Index.. Animation 시킬때 필요한 인덱스이다.. float 로 해서 텍스처 에니메이션 제어한다.
 
 public:
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool Save(HANDLE hFile) override;
 	void Duplicate(CN3FXSPart* pSrc);
 		
@@ -122,7 +122,7 @@ public:
 
 	void	PartDelete(int iIndex);
 	
-	bool	Load(HANDLE hFile) override;
+	bool	Load(File& file) override;
 	bool	Save(HANDLE hFile) override;
 	void	Duplicate(CN3FXShape* pSrc);
 

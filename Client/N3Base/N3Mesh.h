@@ -34,7 +34,7 @@ public:
 	int			IndexCount() { return m_nIC; }
 	uint16_t*		Indices() { return m_psnIndices; } // 인덱스 버퍼
 
-	bool	Load(HANDLE hFile);
+	bool	Load(File& file);
 
 	void	Create(int nVC, int nIC);
 	void	Create_Cube(const __Vector3& vMin, const __Vector3& vMax);

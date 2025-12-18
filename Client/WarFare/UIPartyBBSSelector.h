@@ -22,7 +22,7 @@ protected:
 
 public:
 	void MsgSend_PartyBBSKind(uint8_t byKind);
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	CUIPartyBBSSelector();

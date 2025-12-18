@@ -750,43 +750,42 @@ __Vector3 CPondMesh::GetCenter()
 	return vCenter;
 }
 
-bool CPondMesh::Load1001(HANDLE hFile)
+bool CPondMesh::Load1001(File& file)
 {
 	Release();
 
-	DWORD dwNum;
-	int iLen; char szTextueFName[_MAX_PATH];
+	int iLen;
+	char szTextueFName[_MAX_PATH];
 
-	ReadFile(hFile, &m_iPondID, sizeof(m_iPondID), &dwNum, nullptr);		// 연못 번호
-	ReadFile(hFile, &m_dwPondAlpha, sizeof(m_dwPondAlpha), &dwNum, nullptr);		// 연못 알파
-	ReadFile(hFile, &m_fWaterHeight, sizeof(m_fWaterHeight), &dwNum, nullptr);
-	ReadFile(hFile, &m_iWaterScaleWidth, sizeof(m_iWaterScaleWidth), &dwNum, nullptr);
-	ReadFile(hFile, &m_iWaterScaleHeight, sizeof(m_iWaterScaleHeight), &dwNum, nullptr);
-	ReadFile(hFile, &m_fTU, sizeof(m_fTU), &dwNum, nullptr);
-	ReadFile(hFile, &m_fTV, sizeof(m_fTV), &dwNum, nullptr);
-	ReadFile(hFile, &m_fWaterScaleX, sizeof(m_fWaterScaleX), &dwNum, nullptr);
-	ReadFile(hFile, &m_fWaterScaleZ, sizeof(m_fWaterScaleZ), &dwNum, nullptr);
-	ReadFile(hFile, &m_bUVState, sizeof(m_bUVState), &dwNum, nullptr);
+	file.Read(&m_iPondID, sizeof(m_iPondID));		// 연못 번호
+	file.Read(&m_dwPondAlpha, sizeof(m_dwPondAlpha));		// 연못 알파
+	file.Read(&m_fWaterHeight, sizeof(m_fWaterHeight));
+	file.Read(&m_iWaterScaleWidth, sizeof(m_iWaterScaleWidth));
+	file.Read(&m_iWaterScaleHeight, sizeof(m_iWaterScaleHeight));
+	file.Read(&m_fTU, sizeof(m_fTU));
+	file.Read(&m_fTV, sizeof(m_fTV));
+	file.Read(&m_fWaterScaleX, sizeof(m_fWaterScaleX));
+	file.Read(&m_fWaterScaleZ, sizeof(m_fWaterScaleZ));
+	file.Read(&m_bUVState, sizeof(m_bUVState));
 
-	ReadFile(hFile, m_vDrawBox, sizeof(m_vDrawBox), &dwNum, nullptr);				// 한줄에 있는 점 갯수
+	file.Read(m_vDrawBox, sizeof(m_vDrawBox));				// 한줄에 있는 점 갯수
 
-	ReadFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);				// 점 갯수
-	if (m_iVC>0)
+	file.Read(&m_iVC, sizeof(m_iVC));				// 점 갯수
+	if (m_iVC > 0)
 	{
-		ReadFile(hFile, m_pViewVts, m_iVC*sizeof(__VertexXyzT2), &dwNum, nullptr);	// vertex buffer
+		file.Read(m_pViewVts, m_iVC * sizeof(__VertexXyzT2));	// vertex buffer
 		ReInputBackPos();	//	백업용에 새로좌표입력
 	}
-	ReadFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);				// IndexBuffer Count.
+	file.Read(&m_iIC, sizeof(m_iIC));				// IndexBuffer Count.
 
-	ReadFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
-	if (iLen>0)
+	file.Read(&iLen, sizeof(iLen));				// texture file name length
+	if (iLen > 0)
 	{
-		ReadFile(hFile, szTextueFName, iLen, &dwNum, nullptr);			// texture name
+		file.Read(szTextueFName, iLen);			// texture name
 		szTextueFName[iLen] = '\0';
 		m_pTexture = s_MngTex.Get(szTextueFName, TRUE);				// load texture
 	}
 
-	
 	MakeIndex();	//	인덱스를 다시 계산
 	MakeDrawRect(m_vDrawBox);	//	영역라인 설정
 
@@ -796,36 +795,38 @@ bool CPondMesh::Load1001(HANDLE hFile)
 	return 0;
 }
 
-bool CPondMesh::Load1000(HANDLE hFile)
+bool CPondMesh::Load1000(File& file)
 {
 	Release();
-	DWORD dwNum;
-	int iLen; char szTextueFName[_MAX_PATH];
+
+	int iLen;
+	char szTextueFName[_MAX_PATH];
 	float fScaleTemp;
 
-	ReadFile(hFile, &m_iPondID, sizeof(m_iPondID), &dwNum, nullptr);			// 연못 번호
-	ReadFile(hFile, &m_dwPondAlpha, sizeof(m_dwPondAlpha), &dwNum, nullptr);	// 연못 알파
+	file.Read(&m_iPondID, sizeof(m_iPondID));			// 연못 번호
+	file.Read(&m_dwPondAlpha, sizeof(m_dwPondAlpha));	// 연못 알파
 
-	ReadFile(hFile, &m_iWaterScaleWidth, sizeof(m_iWaterScaleWidth), &dwNum, nullptr);	// 한줄에 있는 점 갯수
+	file.Read(&m_iWaterScaleWidth, sizeof(m_iWaterScaleWidth));	// 한줄에 있는 점 갯수
 
-	ReadFile(hFile, &fScaleTemp, sizeof(fScaleTemp), &dwNum, nullptr);
-	ReadFile(hFile, &fScaleTemp, sizeof(fScaleTemp), &dwNum, nullptr);
+	file.Read(&fScaleTemp, sizeof(fScaleTemp));
+	file.Read(&fScaleTemp, sizeof(fScaleTemp));
 
-	ReadFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);			// 점 갯수
-	if (m_iVC>0)	ReadFile(hFile, m_pVertices, m_iVC*sizeof(__Vector3), &dwNum, nullptr);	// vertex buffer
-	ReadFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);			// IndexBufferCount.
-	ReadFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture name length
-	if (iLen>0)
+	file.Read(&m_iVC, sizeof(m_iVC));			// 점 갯수
+	if (m_iVC > 0)
+		file.Read(m_pVertices, m_iVC * sizeof(__Vector3));	// vertex buffer
+	file.Read(&m_iIC, sizeof(m_iIC));			// IndexBufferCount.
+	file.Read(&iLen, sizeof(iLen));				// texture name length
+	if (iLen > 0)
 	{
-		ReadFile(hFile, szTextueFName, iLen, &dwNum, nullptr);			// texture name
+		file.Read(szTextueFName, iLen);			// texture name
 		szTextueFName[iLen] = '\0';
 		m_pTexture = s_MngTex.Get(szTextueFName, TRUE);				// load texture
 	}
 
 	//	---------------------------------------------------------------------------------------------------------
 	m_fWaterHeight = m_pVertices[0].y;
-	m_iWaterScaleHeight = m_iVC/m_iWaterScaleWidth;
-	m_iIC = (m_iWaterScaleWidth-1)*2*(m_iWaterScaleHeight-1);
+	m_iWaterScaleHeight = m_iVC / m_iWaterScaleWidth;
+	m_iIC = (m_iWaterScaleWidth - 1) * 2 * (m_iWaterScaleHeight - 1);
 	m_fTU = 50.0f;
 	m_fTV = 50.0f;
 
@@ -835,15 +836,15 @@ bool CPondMesh::Load1000(HANDLE hFile)
 
 	//	---------------------------------------------------------------------------------------------------------
 	int i;
-	for(i=0;i<4;++i) m_vDrawBox[i] = m_pVertices[0];
-	for(i=0;i<m_iVC;++i)
+	for (i = 0; i < 4; ++i) m_vDrawBox[i] = m_pVertices[0];
+	for (i = 0; i < m_iVC; ++i)
 	{
-		m_pViewVts[i].x = m_pVertices[i].x , m_pViewVts[i].y = m_pVertices[i].y , m_pViewVts[i].z = m_pVertices[i].z;
+		m_pViewVts[i].x = m_pVertices[i].x, m_pViewVts[i].y = m_pVertices[i].y, m_pViewVts[i].z = m_pVertices[i].z;
 
-		if(m_vDrawBox[0].x < m_pVertices[i].x) m_vDrawBox[0].x = m_pVertices[i].x,m_vDrawBox[3].x = m_pVertices[i].x;
-		if(m_vDrawBox[1].x > m_pVertices[i].x) m_vDrawBox[1].x = m_pVertices[i].x,m_vDrawBox[2].x = m_pVertices[i].x;
-		if(m_vDrawBox[0].z > m_pVertices[i].z) m_vDrawBox[0].z = m_pVertices[i].z,m_vDrawBox[3].z = m_pVertices[i].z;
-		if(m_vDrawBox[1].z < m_pVertices[i].z) m_vDrawBox[1].z = m_pVertices[i].z,m_vDrawBox[2].z = m_pVertices[i].z;
+		if (m_vDrawBox[0].x < m_pVertices[i].x) m_vDrawBox[0].x = m_pVertices[i].x, m_vDrawBox[3].x = m_pVertices[i].x;
+		if (m_vDrawBox[1].x > m_pVertices[i].x) m_vDrawBox[1].x = m_pVertices[i].x, m_vDrawBox[2].x = m_pVertices[i].x;
+		if (m_vDrawBox[0].z > m_pVertices[i].z) m_vDrawBox[0].z = m_pVertices[i].z, m_vDrawBox[3].z = m_pVertices[i].z;
+		if (m_vDrawBox[1].z < m_pVertices[i].z) m_vDrawBox[1].z = m_pVertices[i].z, m_vDrawBox[2].z = m_pVertices[i].z;
 	}
 	m_vDrawBox[0].x += 1.0f, m_vDrawBox[3].x += 1.0f, m_vDrawBox[1].x -= 1.0f, m_vDrawBox[2].x -= 1.0f;
 	m_vDrawBox[0].z -= 1.0f, m_vDrawBox[3].z -= 1.0f, m_vDrawBox[1].z += 1.0f, m_vDrawBox[2].z += 1.0f;
@@ -854,41 +855,42 @@ bool CPondMesh::Load1000(HANDLE hFile)
 	return 0;
 }
 
-bool CPondMesh::Load(HANDLE hFile)
+bool CPondMesh::Load(File& file)
 {
 	Release();
-	DWORD dwNum;
-	int iLen; char szTextueFName[_MAX_PATH];
+
+	int iLen;
+	char szTextueFName[_MAX_PATH];
 	float fScaleTemp;
 
-	ReadFile(hFile, &m_iPondID, sizeof(m_iPondID), &dwNum, nullptr);		// 연못 번호
+	file.Read(&m_iPondID, sizeof(m_iPondID));		// 연못 번호
 
 	m_dwPondAlpha = 0xddffffff;
 
-	ReadFile(hFile, &m_iWaterScaleWidth, sizeof(int), &dwNum, nullptr);				// 한줄에 있는 점 갯수
+	file.Read(&m_iWaterScaleWidth, sizeof(int));				// 한줄에 있는 점 갯수
 
-	ReadFile(hFile, &fScaleTemp, sizeof(fScaleTemp), &dwNum, nullptr);
-	ReadFile(hFile, &fScaleTemp, sizeof(fScaleTemp), &dwNum, nullptr);
+	file.Read(&fScaleTemp, sizeof(fScaleTemp));
+	file.Read(&fScaleTemp, sizeof(fScaleTemp));
 
-	ReadFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);			// 점 갯수
-	if (m_iVC>0)
+	file.Read(&m_iVC, sizeof(m_iVC));			// 점 갯수
+	if (m_iVC > 0)
 	{
-		ReadFile(hFile, m_pViewVts, m_iVC*sizeof(__VertexXyzT2), &dwNum, nullptr);	// vertex buffer
+		file.Read(m_pViewVts, m_iVC * sizeof(__VertexXyzT2));	// vertex buffer
 		ReInputBackPos();	//	백업용에 새로좌표입력
 	}
-	ReadFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);			// IndexBufferCount.
-	ReadFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture name length
-	if (iLen>0)
+	file.Read(&m_iIC, sizeof(m_iIC));			// IndexBufferCount.
+	file.Read(&iLen, sizeof(iLen));				// texture name length
+	if (iLen > 0)
 	{
-		ReadFile(hFile, szTextueFName, iLen, &dwNum, nullptr);	// texture name
+		file.Read(szTextueFName, iLen);	// texture name
 		szTextueFName[iLen] = '\0';
 		m_pTexture = s_MngTex.Get(szTextueFName, TRUE);				// load texture
 	}
 
 	//	---------------------------------------------------------------------------------------------------------
 	m_fWaterHeight = m_pVertices[0].y;
-	m_iWaterScaleHeight = m_iVC/m_iWaterScaleWidth;
-	m_iIC = (m_iWaterScaleWidth-1)*2*(m_iWaterScaleHeight-1);
+	m_iWaterScaleHeight = m_iVC / m_iWaterScaleWidth;
+	m_iIC = (m_iWaterScaleWidth - 1) * 2 * (m_iWaterScaleHeight - 1);
 	m_fTU = 50.0f;
 	m_fTV = 50.0f;
 
@@ -897,13 +899,13 @@ bool CPondMesh::Load(HANDLE hFile)
 
 	//	---------------------------------------------------------------------------------------------------------
 	int i;
-	for(i=0;i<4;++i) m_vDrawBox[i] = m_pVertices[0];
-	for(i=0;i<m_iVC;++i)
+	for (i = 0; i < 4; ++i) m_vDrawBox[i] = m_pVertices[0];
+	for (i = 0; i < m_iVC; ++i)
 	{
-		if(m_vDrawBox[0].x < m_pVertices[i].x) m_vDrawBox[0].x = m_pVertices[i].x,m_vDrawBox[3].x = m_pVertices[i].x;
-		if(m_vDrawBox[1].x > m_pVertices[i].x) m_vDrawBox[1].x = m_pVertices[i].x,m_vDrawBox[2].x = m_pVertices[i].x;
-		if(m_vDrawBox[0].z > m_pVertices[i].z) m_vDrawBox[0].z = m_pVertices[i].z,m_vDrawBox[3].z = m_pVertices[i].z;
-		if(m_vDrawBox[1].z < m_pVertices[i].z) m_vDrawBox[1].z = m_pVertices[i].z,m_vDrawBox[2].z = m_pVertices[i].z;
+		if (m_vDrawBox[0].x < m_pVertices[i].x) m_vDrawBox[0].x = m_pVertices[i].x, m_vDrawBox[3].x = m_pVertices[i].x;
+		if (m_vDrawBox[1].x > m_pVertices[i].x) m_vDrawBox[1].x = m_pVertices[i].x, m_vDrawBox[2].x = m_pVertices[i].x;
+		if (m_vDrawBox[0].z > m_pVertices[i].z) m_vDrawBox[0].z = m_pVertices[i].z, m_vDrawBox[3].z = m_pVertices[i].z;
+		if (m_vDrawBox[1].z < m_pVertices[i].z) m_vDrawBox[1].z = m_pVertices[i].z, m_vDrawBox[2].z = m_pVertices[i].z;
 	}
 	m_vDrawBox[0].x += 1.0f, m_vDrawBox[3].x += 1.0f, m_vDrawBox[1].x -= 1.0f, m_vDrawBox[2].x -= 1.0f;
 	m_vDrawBox[0].z -= 1.0f, m_vDrawBox[3].z -= 1.0f, m_vDrawBox[1].z += 1.0f, m_vDrawBox[2].z += 1.0f;

@@ -125,9 +125,9 @@ void CUIStateBar::Release()
 	m_vViewPos.Zero();
 }
 
-bool CUIStateBar::Load(HANDLE hFile)
+bool CUIStateBar::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	CN3UIString* pText = nullptr;

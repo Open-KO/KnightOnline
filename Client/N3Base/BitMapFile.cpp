@@ -5,14 +5,13 @@
 #include "StdAfxBase.h"
 #include "BitMapFile.h"
 
+#include <shared/FileReader.h>
+#include <shared/FileWriter.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CBitMapFile::CBitMapFile()
 {
@@ -33,31 +32,29 @@ void CBitMapFile::Release()
 	m_pPixels = nullptr;
 }
 
-bool CBitMapFile::Load(HANDLE hFile)
+bool CBitMapFile::Load(File& file)
 {
-	this->Release(); // 일단 다 해제하고..
-
-	DWORD dwRWC = 0;
+	Release(); // 일단 다 해제하고..
 
 	// 파일 헤더 읽기
-	ReadFile(hFile, &m_bmfHeader, sizeof(m_bmfHeader), &dwRWC, nullptr);
+	file.Read(&m_bmfHeader, sizeof(m_bmfHeader));
 
 	// bmp 파일임을 나타내는 "BM"마커 확인
 	if (m_bmfHeader.bfType != 0x4D42)
 	{
 		MessageBox(::GetActiveWindow(), "원본 파일이 bitmap파일이 아닙니다.", "error", MB_OK);
-		return FALSE;
+		return false;
 	}
 
 	// BITMAPINFOHEADER 얻기
-	ReadFile(hFile, &m_bmInfoHeader, sizeof(m_bmInfoHeader), &dwRWC, nullptr);
+	file.Read(&m_bmInfoHeader, sizeof(m_bmInfoHeader));
 
 	// 픽셀당 비트 수 확인
 	uint16_t wBitCount = m_bmInfoHeader.biBitCount;
 	if (24 != wBitCount || m_bmInfoHeader.biWidth <= 0 || m_bmInfoHeader.biHeight <= 0)		// 24비트 bmp가 아니면 return해 버린다.
 	{
 		MessageBox(::GetActiveWindow(), "원본 bitmap이 너비, 높이에 이상이 있거나 24bit파일이 아닙니다.", "error", MB_OK);
-		return FALSE;
+		return false;
 	}
 
 	// 실제 이미지의 메모리상에 잡힌 가로 길이 (24bit)
@@ -69,16 +66,14 @@ bool CBitMapFile::Load(HANDLE hFile)
 	if ((m_pPixels = ::GlobalAlloc(GMEM_FIXED | GMEM_ZEROINIT, iDIBSize )) == nullptr )
 	{
 		MessageBox(::GetActiveWindow(), "메모리를 할당하지 못했습니다.", "error", MB_OK);
-		return FALSE;
+		return false;
 	}
 
 	// 픽셀을 읽는다..
 	for(int y = m_bmInfoHeader.biHeight - 1; y >= 0; y--) // 비트맵은 위아래가 거꾸로 있다..
-	{
-		ReadFile(hFile, (uint8_t*)m_pPixels + y * iRealWidth, iRealWidth, &dwRWC, nullptr);
-	}
+		file.Read((uint8_t*)m_pPixels + y * iRealWidth, iRealWidth);
 
-	return TRUE;
+	return true;
 }
 
 void* CBitMapFile::Pixels(int x, int y)
@@ -90,24 +85,20 @@ void* CBitMapFile::Pixels(int x, int y)
 	return (char*)m_pPixels + y * nPitch + x * nPixelSize;
 }
 
-bool CBitMapFile::Save(HANDLE hFile)
+bool CBitMapFile::Save(File& file)
 {
-	DWORD dwRWC = 0;
-
 	// 파일 헤더 쓰기
-	WriteFile(hFile, &m_bmfHeader, sizeof(m_bmfHeader), &dwRWC, nullptr);
+	file.Write(&m_bmfHeader, sizeof(m_bmfHeader));
 
 	// BITMAPINFOHEADER 쓰기
-	WriteFile(hFile, &m_bmInfoHeader, sizeof(m_bmInfoHeader), &dwRWC, nullptr);
+	file.Write(&m_bmInfoHeader, sizeof(m_bmInfoHeader));
 
 	// 실제 이미지의 메모리상에 잡힌 가로 길이 (24bit)
 	int iRealWidth = this->Pitch();
 
 	// 픽셀을 저장한다...
 	for(int y = m_bmInfoHeader.biHeight - 1; y >= 0; y--) // 비트맵은 위아래가 거꾸로 있다..
-	{
-		WriteFile(hFile, (uint8_t*)m_pPixels + y * iRealWidth, iRealWidth, &dwRWC, nullptr);
-	}
+		file.Write((uint8_t*)m_pPixels + y * iRealWidth, iRealWidth);
 
 	return true;
 }
@@ -129,7 +120,7 @@ bool CBitMapFile::SaveRectToFile(const std::string& szFN, RECT rc)
 	if (nWidth <=0 || nHeight <=0)
 	{
 		MessageBox(::GetActiveWindow(), "가로 세로가 0이하인 bitmap으로 저장할수 없습니다.", "error", MB_OK);
-		return FALSE;
+		return false;
 	}
 
 	DWORD dwRWC = 0;
@@ -180,37 +171,26 @@ bool CBitMapFile::SaveRectToFile(const std::string& szFN, RECT rc)
 
 bool CBitMapFile::LoadFromFile(const char* pszFN)
 {
-	if(nullptr == pszFN || lstrlen(pszFN) <= 0)
+	if (pszFN == nullptr || lstrlen(pszFN) <= 0)
 		return false;
 
-	DWORD dwRWC = 0;
-	HANDLE hFile = ::CreateFile(pszFN, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-	if(INVALID_HANDLE_VALUE == hFile)
+	FileReader file;
+	if (!file.Open(pszFN))
 		return false;
 
-	bool bSuccess =	this->Load(hFile);
-
-	CloseHandle(hFile);
-
-	return bSuccess;
+	return Load(file);
 }
 
 bool CBitMapFile::SaveToFile(const char* pszFN)
 {
-	if(nullptr == pszFN || lstrlen(pszFN) <= 0)
+	if (pszFN == nullptr || lstrlen(pszFN) <= 0)
 		return false;
 
-	DWORD dwRWC = 0;
-	HANDLE hFile = ::CreateFile(pszFN, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-	if(hFile == INVALID_HANDLE_VALUE)
+	FileWriter file;
+	if (!file.Open(pszFN))
 		return false;
 
-	this->Save(hFile);
-
-	CloseHandle(hFile);
-	return true;
+	return Save(file);
 }
 
 bool CBitMapFile::Create(int nWidth, int nHeight, int nBPP)
@@ -226,7 +206,7 @@ bool CBitMapFile::Create(int nWidth, int nHeight, int nBPP)
 	if ((m_pPixels = ::GlobalAlloc(GMEM_FIXED | GMEM_ZEROINIT, iDIBSize )) == nullptr )
 	{
 		MessageBox(::GetActiveWindow(), "메모리를 할당하지 못했습니다.", "error", MB_OK);
-		return FALSE;
+		return false;
 	}
 
 	memset(m_pPixels, 0, iDIBSize);
@@ -244,5 +224,5 @@ bool CBitMapFile::Create(int nWidth, int nHeight, int nBPP)
 	m_bmInfoHeader.biPlanes = 1;
 	m_bmInfoHeader.biSizeImage = iRealWidth * nHeight;
 
-	return TRUE;
+	return true;
 }

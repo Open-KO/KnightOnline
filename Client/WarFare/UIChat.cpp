@@ -255,9 +255,9 @@ void CUIChat::CreateLines()
 	}
 }
 
-bool CUIChat::Load(HANDLE hFile)
+bool CUIChat::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (false == CN3UIBase::Load(file)) return false;
 	N3_VERIFY_UI_COMPONENT(m_pChatOut, GetChildByID<CN3UIString>("text0"));
 	N3_VERIFY_UI_COMPONENT(m_pScrollbar, GetChildByID<CN3UIScrollBar>("scroll"));
 	N3_VERIFY_UI_COMPONENT(m_pNoticeTitle, GetChildByID<CN3UIString>("text_notice_title"));
@@ -833,9 +833,9 @@ CUIChat2::CUIChat2()
 	m_pBtn_Fold = nullptr;
 }
 
-bool CUIChat2::Load(HANDLE hFile)
+bool CUIChat2::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (false == CN3UIBase::Load(file)) return false;
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Fold, GetChildByID("btn_on"));
 	return true;
 }

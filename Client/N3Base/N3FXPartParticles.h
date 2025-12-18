@@ -111,7 +111,7 @@ public:
 	void	Stop();				//	파트 구동 멈춤..
 	bool	Tick();				//	ticktick...
 	void	Render();			//	화면에 뿌리기..
-	bool	Load(HANDLE hFile);	//	게임파일 불러오기.
+	bool	Load(File& file);	//	게임파일 불러오기.
 	bool	Save(HANDLE hFile);	//	게임파일 저장오기.
 	void	Duplicate(CN3FXPartParticles* pSrc);
 

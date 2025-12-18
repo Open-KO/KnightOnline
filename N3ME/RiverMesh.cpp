@@ -70,35 +70,36 @@ void CRiverMesh::ReleaseAnimTextures()
 	m_iAnimTextureCount = 0;
 }
 
-bool CRiverMesh::Load(HANDLE hFile)
+bool CRiverMesh::Load(File& file)
 {
 	Release();
-	DWORD dwNum;
-	int iLen; char szTextueFName[_MAX_PATH];
 
-	ReadFile(hFile, &m_iRiverID, sizeof(m_iRiverID), &dwNum, nullptr);		// 강 번호
-	ReadFile(hFile, &m_fSpeed1, sizeof(m_fSpeed1), &dwNum, nullptr);			// 유속
-	ReadFile(hFile, &m_fSpeed2, sizeof(m_fSpeed2), &dwNum, nullptr);			// 유속2
-	ReadFile(hFile, &m_fMeterPerV, sizeof(m_fMeterPerV), &dwNum, nullptr);	// U좌표 1.0에 해당하는 강의 길이
-	ReadFile(hFile, &m_fMeterPerU, sizeof(m_fMeterPerU), &dwNum, nullptr);	// V좌표 1.0에 해당하는 강의 길이
-	ReadFile(hFile, &m_fMeterPerV2, sizeof(m_fMeterPerV2), &dwNum, nullptr);// U2좌표 1.0에 해당하는 강의 길이
-	ReadFile(hFile, &m_fMeterPerU2, sizeof(m_fMeterPerU2), &dwNum, nullptr);// V2좌표 1.0에 해당하는 강의 길이
-	ReadFile(hFile, &m_dwAlphaFactor, sizeof(m_dwAlphaFactor), &dwNum, nullptr);	// 강을 투명하게 하기 위한 알파값
+	int iLen;
+	char szTextueFName[_MAX_PATH];
 
-	ReadFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);			// 점 갯수
-	if (m_iVC>0) ReadFile(hFile, m_pVertices, m_iVC*sizeof(__VertexXyzT2), &dwNum, nullptr);	// vertex buffer
-	ReadFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);			// IndexBufferCount.
-	ReadFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture name length
+	file.Read(&m_iRiverID, sizeof(m_iRiverID));		// 강 번호
+	file.Read(&m_fSpeed1, sizeof(m_fSpeed1));			// 유속
+	file.Read(&m_fSpeed2, sizeof(m_fSpeed2));			// 유속2
+	file.Read(&m_fMeterPerV, sizeof(m_fMeterPerV));	// U좌표 1.0에 해당하는 강의 길이
+	file.Read(&m_fMeterPerU, sizeof(m_fMeterPerU));	// V좌표 1.0에 해당하는 강의 길이
+	file.Read(&m_fMeterPerV2, sizeof(m_fMeterPerV2));// U2좌표 1.0에 해당하는 강의 길이
+	file.Read(&m_fMeterPerU2, sizeof(m_fMeterPerU2));// V2좌표 1.0에 해당하는 강의 길이
+	file.Read(&m_dwAlphaFactor, sizeof(m_dwAlphaFactor));	// 강을 투명하게 하기 위한 알파값
+
+	file.Read(&m_iVC, sizeof(m_iVC));			// 점 갯수
+	if (m_iVC>0) file.Read(m_pVertices, m_iVC*sizeof(__VertexXyzT2));	// vertex buffer
+	file.Read(&m_iIC, sizeof(m_iIC));			// IndexBufferCount.
+	file.Read(&iLen, sizeof(iLen));				// texture name length
 	if (iLen>0)
 	{
-		ReadFile(hFile, szTextueFName, iLen, &dwNum, nullptr);	// texture name
+		file.Read(szTextueFName, iLen);	// texture name
 		szTextueFName[iLen] = '\0';
 		m_pTexture = s_MngTex.Get(szTextueFName, TRUE);				// load texture
 	}
 
 	// Animation Texture Data
-	ReadFile(hFile, &m_fAnimTexFPS, sizeof(m_fAnimTexFPS), &dwNum, nullptr);	// Anim Tex frame/sec
-	ReadFile(hFile, &m_iAnimTextureCount, sizeof(m_iAnimTextureCount), &dwNum, nullptr);	// AnimTexture Count
+	file.Read(&m_fAnimTexFPS, sizeof(m_fAnimTexFPS));	// Anim Tex frame/sec
+	file.Read(&m_iAnimTextureCount, sizeof(m_iAnimTextureCount));	// AnimTexture Count
 
 	__ASSERT(m_pAnimTextures == nullptr, "강물 텍스쳐 포인터가 NULL이야야 합니다.");
 
@@ -107,9 +108,9 @@ bool CRiverMesh::Load(HANDLE hFile)
 	int i;
 	for (i=0; i<m_iAnimTextureCount; ++i)
 	{
-		ReadFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);	// texture name length
+		file.Read(&iLen, sizeof(iLen));	// texture name length
 		if (iLen <=0) { m_pAnimTextures[i] = nullptr; __ASSERT(0, "텍스쳐가 없다"); continue;}
-		ReadFile(hFile, szTextueFName, iLen, &dwNum, nullptr);	// texture name
+		file.Read(szTextueFName, iLen);	// texture name
 		szTextueFName[iLen] = '\0';
 		m_pAnimTextures[i] = s_MngTex.Get(szTextueFName, TRUE);				// load texture
 	}

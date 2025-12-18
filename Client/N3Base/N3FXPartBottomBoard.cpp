@@ -186,31 +186,29 @@ void CN3FXPartBottomBoard::Init()
 //
 //
 //
-bool CN3FXPartBottomBoard::Load(HANDLE hFile)
+bool CN3FXPartBottomBoard::Load(File& file)
 {
-	if (!CN3FXPartBase::Load(hFile))
+	if (!CN3FXPartBase::Load(file))
 		return false;
 
-	DWORD dwRWC = 0;
+	file.Read(&m_fSizeX, sizeof(float));
+	file.Read(&m_fSizeZ, sizeof(float));
 
-	ReadFile(hFile, &m_fSizeX, sizeof(float), &dwRWC, nullptr);
-	ReadFile(hFile, &m_fSizeZ, sizeof(float), &dwRWC, nullptr);
+	file.Read(&m_fScaleVelX, sizeof(float));
+	file.Read(&m_fScaleVelZ, sizeof(float));
 
-	ReadFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, nullptr);
-	ReadFile(hFile, &m_fScaleVelZ, sizeof(float), &dwRWC, nullptr);
-
-	ReadFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, nullptr);
+	file.Read(&m_bTexLoop, sizeof(bool));
 
 	if (m_iVersion >= 1)
-		ReadFile(hFile, &m_fGap, sizeof(float), &dwRWC, nullptr);
+		file.Read(&m_fGap, sizeof(float));
 
 	// TODO: implement m_bNew_Uv
 	if (m_iVersion >= 2)
-		ReadFile(hFile, &m_bNew_Uv, sizeof(bool), &dwRWC, nullptr);
+		file.Read(&m_bNew_Uv, sizeof(bool));
 
 	// TODO: implement m_bHdr_uv
 	if (m_iVersion >= 3)
-		ReadFile(hFile, &m_bHdr_uv, sizeof(bool), &dwRWC, nullptr);
+		file.Read(&m_bHdr_uv, sizeof(bool));
 
 	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
 	// and otherwise be broken for now.

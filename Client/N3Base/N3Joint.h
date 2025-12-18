@@ -79,7 +79,7 @@ public:
 #endif // end of _N3TOOL
 
 	void Release() override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 #ifdef _N3TOOL
 	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL

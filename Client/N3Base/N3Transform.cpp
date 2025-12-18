@@ -46,33 +46,37 @@ void CN3Transform::Release()
 	CN3Base::Release();
 }
 
-bool CN3Transform::Load(HANDLE hFile)
+bool CN3Transform::Load(File& file)
 {
-	CN3BaseFileAccess::Load(hFile);
+	CN3BaseFileAccess::Load(file);
 
-	DWORD dwRWC = 0;
-	ReadFile(hFile, &m_vPos, sizeof(__Vector3), &dwRWC, nullptr); // 위치, 스케일, 회전 벡터. 
-	ReadFile(hFile, &m_qRot, sizeof(__Quaternion), &dwRWC, nullptr);
-	ReadFile(hFile, &m_vScale, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Read(&m_vPos, sizeof(__Vector3)); // 위치, 스케일, 회전 벡터. 
+	file.Read(&m_qRot, sizeof(__Quaternion));
+	file.Read(&m_vScale, sizeof(__Vector3));
 
 	// 에니메이션 키
-	m_KeyPos.Load(hFile);
-	m_KeyRot.Load(hFile);
-	m_KeyScale.Load(hFile);
+	m_KeyPos.Load(file);
+	m_KeyRot.Load(file);
+	m_KeyScale.Load(file);
 
 	m_fFrmCur = 0;
 	m_fFrmWhole = 0;
 
 	float fFrmWhole = 0;
-	
-	fFrmWhole = m_KeyPos.Count() * m_KeyPos.SamplingRate() / 30.0f;
-	if(fFrmWhole > m_fFrmWhole) m_fFrmWhole = fFrmWhole;
-	fFrmWhole = m_KeyRot.Count() * m_KeyRot.SamplingRate() / 30.0f;
-	if(fFrmWhole > m_fFrmWhole) m_fFrmWhole = fFrmWhole;
-	fFrmWhole = m_KeyScale.Count() * m_KeyScale.SamplingRate() / 30.0f;
-	if(fFrmWhole > m_fFrmWhole) m_fFrmWhole = fFrmWhole;
 
-	this->ReCalcMatrix(); // 변환 행렬 계산..
+	fFrmWhole = m_KeyPos.Count() * m_KeyPos.SamplingRate() / 30.0f;
+	if (fFrmWhole > m_fFrmWhole)
+		m_fFrmWhole = fFrmWhole;
+
+	fFrmWhole = m_KeyRot.Count() * m_KeyRot.SamplingRate() / 30.0f;
+	if (fFrmWhole > m_fFrmWhole)
+		m_fFrmWhole = fFrmWhole;
+
+	fFrmWhole = m_KeyScale.Count() * m_KeyScale.SamplingRate() / 30.0f;
+	if (fFrmWhole > m_fFrmWhole)
+		m_fFrmWhole = fFrmWhole;
+
+	ReCalcMatrix(); // 변환 행렬 계산..
 
 	return true;
 }

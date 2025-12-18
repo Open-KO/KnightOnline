@@ -404,30 +404,22 @@ void CWallMgr::SetFocus(CWall* pWall)
 	}
 }
 
-bool CWallMgr::Load(HANDLE hFile)
+bool CWallMgr::Load(File& file)
 {
-	if(m_pCurrWall)
-	{
-		delete m_pCurrWall;
-		m_pCurrWall = nullptr;
-	}
+	delete m_pCurrWall;
 	m_pCurrWall = new CWall;
 
-	std::list<CWall*>::iterator itWall;
-	for(itWall = m_pWalls.begin(); itWall != m_pWalls.end(); itWall++)
-	{
-		delete (*itWall);
-	}
-	
-	DWORD dwRWC;
-	int NumWall;
-	ReadFile(hFile, &NumWall, sizeof(int), &dwRWC, nullptr);
-
+	for (CWall* pWall : m_pWalls)
+		delete pWall;
 	m_pWalls.clear();
-	for(int i=0;i<NumWall;i++)
+
+	int NumWall;
+	file.Read(&NumWall, sizeof(int));
+
+	for (int i = 0; i < NumWall; i++)
 	{
 		CWall* pWall = new CWall;
-		pWall->Load(hFile);
+		pWall->Load(file);
 		m_pWalls.push_back(pWall);
 	}
 
@@ -442,14 +434,8 @@ bool CWallMgr::Save(HANDLE hFile)
 	int NumWall = static_cast<int>(m_pWalls.size());
 	WriteFile(hFile, &NumWall, sizeof(int), &dwRWC, nullptr);
 
-	std::list<CWall*>::iterator itWall;
-
-	CWall* pWall;
-	for(itWall = m_pWalls.begin(); itWall != m_pWalls.end(); itWall++)
-	{
-		pWall = (*itWall);
+	for (CWall* pWall : m_pWalls)
 		pWall->Save(hFile);
-	}
 
 	return true;
 }

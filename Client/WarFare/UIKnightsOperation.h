@@ -78,7 +78,7 @@ public:
 	void	EnableKnightsUIs(bool bEnable);
 	
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 	void Release() override;
 	CUIKnightsOperation();

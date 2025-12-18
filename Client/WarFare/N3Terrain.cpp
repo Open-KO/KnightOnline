@@ -419,9 +419,8 @@ void CN3Terrain::TestAvailableTile()
 //
 //	Load...
 //
-bool CN3Terrain::Load(HANDLE hFile)
+bool CN3Terrain::Load(File& file)
 {
-	DWORD dwRWC;
 	std::string szFNBackup = m_szFileName; // Init 를 하고 나면 파일 이름이 없어진다.... 그래서...
 
 	Init();
@@ -429,15 +428,15 @@ bool CN3Terrain::Load(HANDLE hFile)
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 	{
 		int iIdk0;
-		ReadFile(hFile, &iIdk0, sizeof(int), &dwRWC, nullptr);
+		file.Read(&iIdk0, sizeof(int));
 
 		int iNL;
-		ReadFile(hFile, &iNL, sizeof(int), &dwRWC, nullptr);
+		file.Read(&iNL, sizeof(int));
 
 		if (iNL > 0)
 		{
 			m_szName.assign(iNL, '\0');
-			ReadFile(hFile, &m_szName[0], iNL, &dwRWC, nullptr);
+			file.Read(&m_szName[0], iNL);
 		}
 		else
 		{
@@ -453,7 +452,7 @@ bool CN3Terrain::Load(HANDLE hFile)
 #endif
 	if (pUILoading) pUILoading->Render("Allocating Terrain...", 0);
 
-	ReadFile(hFile, &(m_ti_MapSize), sizeof(int), &dwRWC, nullptr);
+	file.Read(&(m_ti_MapSize), sizeof(int));
 	m_pat_MapSize = (m_ti_MapSize - 1) / PATCH_TILE_SIZE;
 
 	int x, z;
@@ -464,7 +463,7 @@ bool CN3Terrain::Load(HANDLE hFile)
 	if (m_pMapData == nullptr) CLogWriter::Write("Terrain Error : MapData Memory Allocation Failed..-.-");
 #endif
 	__ASSERT(m_pMapData, "MapData Memory Allocation Failed..-.-");
-	ReadFile(hFile, m_pMapData, sizeof(MAPDATA) * m_ti_MapSize * m_ti_MapSize, &dwRWC, nullptr);
+	file.Read(m_pMapData, sizeof(MAPDATA) * m_ti_MapSize * m_ti_MapSize);
 
 	m_pNormal = (__Vector3*) GlobalAlloc(GMEM_FIXED, sizeof(__Vector3) * m_ti_MapSize * m_ti_MapSize);
 #ifdef _N3GAME
@@ -492,8 +491,8 @@ bool CN3Terrain::Load(HANDLE hFile)
 	{
 		for (z = 0; z < m_pat_MapSize; z++)
 		{
-			ReadFile(hFile, &m_ppPatchMiddleY[x][z], sizeof(float), &dwRWC, nullptr);
-			ReadFile(hFile, &m_ppPatchRadius[x][z], sizeof(float), &dwRWC, nullptr);
+			file.Read(&m_ppPatchMiddleY[x][z], sizeof(float));
+			file.Read(&m_ppPatchRadius[x][z], sizeof(float));
 		}
 
 		int iLoading = (x + 1) * 100 / m_pat_MapSize;
@@ -507,7 +506,7 @@ bool CN3Terrain::Load(HANDLE hFile)
 //	for(x=0; x<m_ti_MapSize; x++)
 //	{
 //		m_ppGrassAttr[x] = new uint8_t[m_ti_MapSize];
-//		ReadFile(hFile, m_ppGrassAttr[x], sizeof(uint8_t)*m_ti_MapSize, &dwRWC, nullptr);
+//		file.Read(m_ppGrassAttr[x], sizeof(uint8_t)*m_ti_MapSize);
 //
 //		if(!(x%256))
 //		{
@@ -523,7 +522,7 @@ bool CN3Terrain::Load(HANDLE hFile)
 	if (m_pGrassAttr == nullptr) CLogWriter::Write("Terrain Error : GrassAttr Data Memory Allocation Failed..-.-");
 #endif
 	__ASSERT(m_pGrassAttr, "GrassAttr Data Memory Allocation Failed..-.-");
-	ReadFile(hFile, m_pGrassAttr, sizeof(uint8_t) * m_ti_MapSize * m_ti_MapSize, &dwRWC, nullptr);
+	file.Read(m_pGrassAttr, sizeof(uint8_t) * m_ti_MapSize * m_ti_MapSize);
 
 	//^^v풀갯수 정보 넣기...(조만간 넣어라..)
 	m_pGrassNum = (uint8_t*) GlobalAlloc(GMEM_FIXED, sizeof(uint8_t) * m_ti_MapSize * m_ti_MapSize);
@@ -531,28 +530,29 @@ bool CN3Terrain::Load(HANDLE hFile)
 	if (m_pGrassNum == nullptr) CLogWriter::Write("Terrain Error : GrassNum Data Memory Allocation Failed..-.-");
 #endif
 	__ASSERT(m_pGrassNum, "GrassNum Data Memory Allocation Failed..-.-");
-	//ReadFile(hFile, m_pGrassNum, sizeof(uint8_t)*m_ti_MapSize*m_ti_MapSize, &dwRWC, nullptr);	
+	//file.Read(m_pGrassNum, sizeof(uint8_t)*m_ti_MapSize*m_ti_MapSize);	
 	memset(m_pGrassNum, 5, sizeof(uint8_t) * m_ti_MapSize * m_ti_MapSize);
 
-	//load colormap....
-	ReadFile(hFile, m_pGrassFileName, MAX_PATH, &dwRWC, nullptr);
+	// load colormap....
+	file.Read(m_pGrassFileName, MAX_PATH);
 	LoadGrassInfo();
 
-	LoadTileInfo(hFile);
+	LoadTileInfo(file);
 
-	//load lightmap..
-	if (pUILoading) pUILoading->Render("Loading Lightmap Data...", 0);
+	// load lightmap..
+	if (pUILoading != nullptr)
+		pUILoading->Render("Loading Lightmap Data...", 0);
 
 	int NumLightMap = 0;
-	ReadFile(hFile, &NumLightMap, sizeof(int), &dwRWC, nullptr);
+	file.Read(&NumLightMap, sizeof(int));
 
 	int16_t sx, sz;
 	CN3Texture* pTmpTex = new CN3Texture;
 	for (int i = 0; i < NumLightMap; i++)
 	{
-		ReadFile(hFile, &sx, sizeof(int16_t), &dwRWC, nullptr);
-		ReadFile(hFile, &sz, sizeof(int16_t), &dwRWC, nullptr);
-		pTmpTex->Load(hFile);
+		file.Read(&sx, sizeof(int16_t));
+		file.Read(&sz, sizeof(int16_t));
+		pTmpTex->Load(file);
 
 		//loading bar...
 		int iLoading = (i + 1) * 100 / NumLightMap;
@@ -565,8 +565,8 @@ bool CN3Terrain::Load(HANDLE hFile)
 	if (pUILoading != nullptr)
 		pUILoading->Render("Loading River Data...", 0);
 
-	m_pRiver->Load(hFile); // 맵데이터 올때까지만 잠시만 막자..2002.11.15
-	m_pPond->Load(hFile);
+	m_pRiver->Load(file); // 맵데이터 올때까지만 잠시만 막자..2002.11.15
+	m_pPond->Load(file);
 
 	if (pUILoading != nullptr)
 		pUILoading->Render("", 100);
@@ -669,64 +669,42 @@ void CN3Terrain::LoadGrassInfo()
 	}
 
 	char szDrive[_MAX_DRIVE];
-	char szDir[_MAX_DIR];
-	char szGrassDir[_MAX_DIR] = {};
-	char szModuleFilePath[_MAX_PATH];
+	char szDir[_MAX_DIR] = {}, szGrassDir[_MAX_DIR] = {},
+		szModuleFilePath[_MAX_PATH] = {}, szFullPath[_MAX_PATH] = {};
 	GetModuleFileName(nullptr, szModuleFilePath, _MAX_PATH);
 	_splitpath(szModuleFilePath, szDrive, szDir, nullptr, nullptr);
 
-	// strcpy(szGrassDir, szDir);
-	// strcat(szGrassDir, "misc\\grass");
 	strcpy(szGrassDir, "misc\\grass");
+	_makepath(szFullPath, szDrive, szGrassDir, m_pGrassFileName, "grs");
 
-	std::string szFullPath = fmt::format(".\\{}\\{}.{}",
-		szGrassDir, "elmorad_start"/*m_pGrassFileName*/, "grs");
-	//_makepath(szFullPath.c_str(), szDrive, szGrassDir, m_pGrassFileName, "grs");
-
-	DWORD dwRWC;
-	HANDLE hFile = CreateFile(szFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	FileReader file;
+	if (!file.Open(szFullPath))
+		return;
 
 	char Buff[80] = {};
-	if (!ReadFile(hFile, Buff, 80, &dwRWC, nullptr))
-	{
-		CloseHandle(hFile);
+	if (!file.Read(Buff, 80))
 		return;
-	}
 
 	if (strcmp(Buff, "GrassInfoFile") != 0)
-	{
-		CloseHandle(hFile);
 		return;
-	}
 
-	if (!ReadFile(hFile, &m_iNumGrass, sizeof(int), &dwRWC, nullptr))
-	{
-		CloseHandle(hFile);
+	if (!file.Read(&m_iNumGrass, sizeof(int)))
 		return;
-	}
 
 	int id;
-	char FileName[MAX_PATH];
-	std::string szLoadingBuff, szDxtFullPath;
+	char FileName[MAX_PATH] = {}, szDxtFullPath[MAX_PATH] = {};
+	std::string szLoadingBuff;
 
 	for (int i = 0; i < m_iNumGrass; i++)
 	{
-		if (!ReadFile(hFile, &id, sizeof(int), &dwRWC, nullptr))
-		{
-			CloseHandle(hFile);
+		if (!file.Read(&id, sizeof(int)))
 			return;
-		}
 
-		if (!ReadFile(hFile, FileName, MAX_PATH, &dwRWC, nullptr))
-		{
-			CloseHandle(hFile);
+		if (!file.Read(FileName, MAX_PATH))
 			return;
-		}
 
-		szDxtFullPath = fmt::format(".\\{}\\{}", szGrassDir, FileName);
-		//_makepath(szDxtFullPath, szDrive, szGrassDir, FileName, nullptr);
-
-		strcpy(m_pGrassTextureName[Log2(id)], szDxtFullPath.c_str());
+		_makepath(szDxtFullPath, szDrive, szGrassDir, FileName, nullptr);
+		strcpy(m_pGrassTextureName[Log2(id)], szDxtFullPath);
 
 		//loading bar...
 		int iLoading = (i + 1) * 100 / m_iNumGrass;
@@ -734,35 +712,26 @@ void CN3Terrain::LoadGrassInfo()
 		if (pUILoading != nullptr)
 			pUILoading->Render(szLoadingBuff, iLoading);
 	}
-	CloseHandle(hFile);
 }
 
 
 //
 //
 //
-void CN3Terrain::LoadTileInfo(HANDLE hFile)
+void CN3Terrain::LoadTileInfo(File& file)
 {
-	CUILoading* pUILoading = nullptr;
-#ifdef _N3GAME
-	pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
-#endif
-	if (pUILoading) pUILoading->Render("Loading Terrain Tile Data...", 0);
+	CUILoading* pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
+	if (pUILoading != nullptr)
+		pUILoading->Render("Loading Terrain Tile Data...", 0);
 
-	DWORD dwRWC;
-	ReadFile(hFile, &m_NumTileTex, sizeof(uint32_t), &dwRWC, nullptr);
-	if (m_NumTileTex == 0) return;
+	file.Read(&m_NumTileTex, sizeof(uint32_t));
+	if (m_NumTileTex == 0)
+		return;
 
 	m_pTileTex = new CN3Texture[m_NumTileTex];
 
-	// NOTE: kinda a temp thing...
-	for (uint32_t i = 0; i < m_NumTileTex; ++i)
-	{
-		m_pTileTex[i].m_iFileFormatVersion = m_iFileFormatVersion;
-	}
-
 	int NumTileTexSrc;
-	ReadFile(hFile, &NumTileTexSrc, sizeof(int), &dwRWC, nullptr);
+	file.Read(&NumTileTexSrc, sizeof(int));
 	if (NumTileTexSrc == 0)
 		return;
 
@@ -770,35 +739,37 @@ void CN3Terrain::LoadTileInfo(HANDLE hFile)
 	for (int i = 0; i < NumTileTexSrc; i++)
 	{
 		SrcName[i] = new char[MAX_PATH];
-		ReadFile(hFile, SrcName[i], MAX_PATH, &dwRWC, nullptr);
+		file.Read(SrcName[i], MAX_PATH);
 	}
 
 	int16_t SrcIdx, TileIdx;
-	HANDLE hTTGFile;
 	std::string szLoadingBuff;
 	for (uint32_t i = 0; i < m_NumTileTex; i++)
 	{
-		ReadFile(hFile, &SrcIdx, sizeof(int16_t), &dwRWC, nullptr);
-		ReadFile(hFile, &TileIdx, sizeof(int16_t), &dwRWC, nullptr);
+		file.Read(&SrcIdx, sizeof(int16_t));
+		file.Read(&TileIdx, sizeof(int16_t));
 
-		hTTGFile = CreateFile(SrcName[SrcIdx], GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		// NOTE: kinda a temp thing...
+		m_pTileTex[i].m_iFileFormatVersion = m_iFileFormatVersion;
 
-		for (int j = 0;j < TileIdx;j++)
+		FileReader gttFile;
+		if (!gttFile.Open(SrcName[SrcIdx]))
+			continue;
+
+		for (int j = 0; j < TileIdx; j++)
 		{
 //			m_pTileTex[i].m_iLOD = s_Options.iTexLOD_Terrain; // LOD 적용후 읽기..
-//			m_pTileTex[i].Load(hTTGFile);// 앞에 있는 쓸때 없는 것들...
-			m_pTileTex[i].SkipFileHandle(hTTGFile);// 앞에 있는 쓸때 없는 것들...
+//			m_pTileTex[i].Load(gttFile);// 앞에 있는 쓸때 없는 것들...
+			m_pTileTex[i].SkipFileHandle(gttFile);// 앞에 있는 쓸때 없는 것들...
 		}
 		m_pTileTex[i].m_iLOD = s_Options.iTexLOD_Terrain; // LOD 적용후 읽기..
-		m_pTileTex[i].Load(hTTGFile);// 진짜 타일...
+		m_pTileTex[i].Load(gttFile);// 진짜 타일...
 
 		//loading bar...
 		int iLoading = (i + 1) * 100 / m_NumTileTex;
 		szLoadingBuff = fmt::format("Loading Terrain Tile Data... {} %", iLoading);
 		if (pUILoading != nullptr)
 			pUILoading->Render(szLoadingBuff, iLoading);
-
-		CloseHandle(hTTGFile);
 	}
 
 	for (int i = 0; i < NumTileTexSrc; i++)
@@ -1031,16 +1002,17 @@ void CN3Terrain::SetLightMap(int dir)
 {
 #ifndef _N3TOOL
 	__TABLE_ZONE* pZoneData = CGameBase::s_pTbl_Zones.Find(CGameBase::s_pPlayer->m_InfoExt.iZoneCur);
-	if (!pZoneData) return;
+	if (pZoneData == nullptr)
+		return;
 
-	HANDLE hFile = CreateFile(pZoneData->szLightMapFN.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (!hFile) return;
+	FileReader file;
+	if (!file.Open(pZoneData->szLightMapFN))
+		return;
 
-	DWORD dwRWC;
 	int* Addr = new int[m_pat_MapSize * m_pat_MapSize];
 	int iVersion;
-	BOOL b = ReadFile(hFile, &(iVersion), sizeof(int), &dwRWC, nullptr);
-	b = ReadFile(hFile, &(Addr[0]), sizeof(int) * m_pat_MapSize * m_pat_MapSize, &dwRWC, nullptr);
+	file.Read(&iVersion, sizeof(int));
+	file.Read(&Addr[0], sizeof(int) * m_pat_MapSize * m_pat_MapSize);
 
 	//DIR_LT = 0, DIR_CT = 1, DIR_RT = 2,
 	//DIR_LM = 3, DIR_CM = 4, DIR_RM = 5,
@@ -1050,17 +1022,17 @@ void CN3Terrain::SetLightMap(int dir)
 	{
 		case DIR_LT:
 		{
-			SetLightMapPatch(0, 0, hFile, Addr);
+			SetLightMapPatch(0, 0, file, Addr);
 			ReplaceLightMapPatch(1, 0, m_LightMapPatch[0][1]);
 			ReplaceLightMapPatch(2, 0, m_LightMapPatch[1][1]);
 
-			SetLightMapPatch(0, 1, hFile, Addr);
+			SetLightMapPatch(0, 1, file, Addr);
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[0][2]);
 			ReplaceLightMapPatch(2, 1, m_LightMapPatch[1][2]);
 
-			SetLightMapPatch(0, 2, hFile, Addr);
-			SetLightMapPatch(1, 2, hFile, Addr);
-			SetLightMapPatch(2, 2, hFile, Addr);
+			SetLightMapPatch(0, 2, file, Addr);
+			SetLightMapPatch(1, 2, file, Addr);
+			SetLightMapPatch(2, 2, file, Addr);
 			break;
 		}
 		case DIR_CT:
@@ -1073,24 +1045,24 @@ void CN3Terrain::SetLightMap(int dir)
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[1][2]);
 			ReplaceLightMapPatch(2, 1, m_LightMapPatch[2][2]);
 
-			SetLightMapPatch(0, 2, hFile, Addr);
-			SetLightMapPatch(1, 2, hFile, Addr);
-			SetLightMapPatch(2, 2, hFile, Addr);
+			SetLightMapPatch(0, 2, file, Addr);
+			SetLightMapPatch(1, 2, file, Addr);
+			SetLightMapPatch(2, 2, file, Addr);
 			break;
 		}
 		case DIR_RT:
 		{
 			ReplaceLightMapPatch(0, 0, m_LightMapPatch[1][1]);
 			ReplaceLightMapPatch(1, 0, m_LightMapPatch[2][1]);
-			SetLightMapPatch(2, 0, hFile, Addr);
+			SetLightMapPatch(2, 0, file, Addr);
 
 			ReplaceLightMapPatch(0, 1, m_LightMapPatch[1][2]);
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[2][2]);
-			SetLightMapPatch(2, 1, hFile, Addr);
+			SetLightMapPatch(2, 1, file, Addr);
 
-			SetLightMapPatch(0, 2, hFile, Addr);
-			SetLightMapPatch(1, 2, hFile, Addr);
-			SetLightMapPatch(2, 2, hFile, Addr);
+			SetLightMapPatch(0, 2, file, Addr);
+			SetLightMapPatch(1, 2, file, Addr);
+			SetLightMapPatch(2, 2, file, Addr);
 			break;
 		}
 		case DIR_LM:
@@ -1103,24 +1075,24 @@ void CN3Terrain::SetLightMap(int dir)
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[0][1]);
 			ReplaceLightMapPatch(1, 2, m_LightMapPatch[0][2]);
 
-			SetLightMapPatch(0, 0, hFile, Addr);
-			SetLightMapPatch(0, 1, hFile, Addr);
-			SetLightMapPatch(0, 2, hFile, Addr);
+			SetLightMapPatch(0, 0, file, Addr);
+			SetLightMapPatch(0, 1, file, Addr);
+			SetLightMapPatch(0, 2, file, Addr);
 			break;
 		}
 		case DIR_WARP:
 		{
-			SetLightMapPatch(0, 0, hFile, Addr);
-			SetLightMapPatch(1, 0, hFile, Addr);
-			SetLightMapPatch(2, 0, hFile, Addr);
+			SetLightMapPatch(0, 0, file, Addr);
+			SetLightMapPatch(1, 0, file, Addr);
+			SetLightMapPatch(2, 0, file, Addr);
 
-			SetLightMapPatch(0, 1, hFile, Addr);
-			SetLightMapPatch(1, 1, hFile, Addr);
-			SetLightMapPatch(2, 1, hFile, Addr);
+			SetLightMapPatch(0, 1, file, Addr);
+			SetLightMapPatch(1, 1, file, Addr);
+			SetLightMapPatch(2, 1, file, Addr);
 
-			SetLightMapPatch(0, 2, hFile, Addr);
-			SetLightMapPatch(1, 2, hFile, Addr);
-			SetLightMapPatch(2, 2, hFile, Addr);
+			SetLightMapPatch(0, 2, file, Addr);
+			SetLightMapPatch(1, 2, file, Addr);
+			SetLightMapPatch(2, 2, file, Addr);
 			break;
 		}
 		case DIR_RM:
@@ -1133,24 +1105,24 @@ void CN3Terrain::SetLightMap(int dir)
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[2][1]);
 			ReplaceLightMapPatch(1, 2, m_LightMapPatch[2][2]);
 
-			SetLightMapPatch(2, 0, hFile, Addr);
-			SetLightMapPatch(2, 1, hFile, Addr);
-			SetLightMapPatch(2, 2, hFile, Addr);
+			SetLightMapPatch(2, 0, file, Addr);
+			SetLightMapPatch(2, 1, file, Addr);
+			SetLightMapPatch(2, 2, file, Addr);
 			break;
 		}
 		case DIR_LB:
 		{
 			ReplaceLightMapPatch(2, 2, m_LightMapPatch[1][1]);
 			ReplaceLightMapPatch(1, 2, m_LightMapPatch[0][1]);
-			SetLightMapPatch(0, 2, hFile, Addr);
+			SetLightMapPatch(0, 2, file, Addr);
 
 			ReplaceLightMapPatch(2, 1, m_LightMapPatch[1][0]);
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[0][0]);
-			SetLightMapPatch(0, 1, hFile, Addr);
+			SetLightMapPatch(0, 1, file, Addr);
 
-			SetLightMapPatch(0, 0, hFile, Addr);
-			SetLightMapPatch(1, 0, hFile, Addr);
-			SetLightMapPatch(2, 0, hFile, Addr);
+			SetLightMapPatch(0, 0, file, Addr);
+			SetLightMapPatch(1, 0, file, Addr);
+			SetLightMapPatch(2, 0, file, Addr);
 			break;
 		}
 		case DIR_CB:
@@ -1163,30 +1135,29 @@ void CN3Terrain::SetLightMap(int dir)
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[1][0]);
 			ReplaceLightMapPatch(2, 1, m_LightMapPatch[2][0]);
 
-			SetLightMapPatch(0, 0, hFile, Addr);
-			SetLightMapPatch(1, 0, hFile, Addr);
-			SetLightMapPatch(2, 0, hFile, Addr);
+			SetLightMapPatch(0, 0, file, Addr);
+			SetLightMapPatch(1, 0, file, Addr);
+			SetLightMapPatch(2, 0, file, Addr);
 			break;
 		}
 		case DIR_RB:
 		{
 			ReplaceLightMapPatch(0, 2, m_LightMapPatch[1][1]);
 			ReplaceLightMapPatch(1, 2, m_LightMapPatch[2][1]);
-			SetLightMapPatch(2, 2, hFile, Addr);
+			SetLightMapPatch(2, 2, file, Addr);
 
 			ReplaceLightMapPatch(0, 1, m_LightMapPatch[1][0]);
 			ReplaceLightMapPatch(1, 1, m_LightMapPatch[2][0]);
-			SetLightMapPatch(2, 1, hFile, Addr);
+			SetLightMapPatch(2, 1, file, Addr);
 
-			SetLightMapPatch(0, 0, hFile, Addr);
-			SetLightMapPatch(1, 0, hFile, Addr);
-			SetLightMapPatch(2, 0, hFile, Addr);
+			SetLightMapPatch(0, 0, file, Addr);
+			SetLightMapPatch(1, 0, file, Addr);
+			SetLightMapPatch(2, 0, file, Addr);
 			break;
 		}
 	}
 
 	delete[] Addr;
-	CloseHandle(hFile);
 #endif
 }
 
@@ -1214,7 +1185,7 @@ void CN3Terrain::ReplaceLightMapPatch(int x, int z, stlMap_N3Tex& LightMapPatch)
 //
 //
 //
-void CN3Terrain::SetLightMapPatch(int x, int z, HANDLE hFile, int* pAddr)
+void CN3Terrain::SetLightMapPatch(int x, int z, File& file, int* pAddr)
 {
 	stlMap_N3TexIt itBegin = m_LightMapPatch[x][z].begin();
 	stlMap_N3TexIt itEnd = m_LightMapPatch[x][z].end();
@@ -1227,31 +1198,33 @@ void CN3Terrain::SetLightMapPatch(int x, int z, HANDLE hFile, int* pAddr)
 	}
 	m_LightMapPatch[x][z].clear();
 
-	DWORD dwRWC;
 	int px, pz;
 	px = m_pat_CenterPos.x - 1 + x;
 	pz = m_pat_CenterPos.y - 1 + z;
 
-	if (px < 0 || px >= m_pat_MapSize || pz < 0 || pz >= m_pat_MapSize) return;
+	if (px < 0 || px >= m_pat_MapSize || pz < 0 || pz >= m_pat_MapSize)
+		return;
 
 	int jump = pAddr[px + (m_pat_MapSize * pz)];
-	if (jump <= 0) return;
-	uint32_t dwPtr = SetFilePointer(hFile, jump, nullptr, FILE_BEGIN);
+	if (jump <= 0)
+		return;
+
+	file.Seek(jump, SEEK_SET);
 
 	int TexCount;
-	ReadFile(hFile, &TexCount, sizeof(int), &dwRWC, nullptr);
+	file.Read(&TexCount, sizeof(int));
 
 	int tx, tz;
 	int rtx, rtz;
 	for (int i = 0; i < TexCount; i++)
 	{
-		ReadFile(hFile, &tx, sizeof(int), &dwRWC, nullptr);
-		ReadFile(hFile, &tz, sizeof(int), &dwRWC, nullptr);
+		file.Read(&tx, sizeof(int));
+		file.Read(&tz, sizeof(int));
 
 		CN3Texture* pTex = new CN3Texture;
 		pTex->m_iFileFormatVersion = m_iFileFormatVersion;
 
-		pTex->Load(hFile);
+		pTex->Load(file);
 		rtx = px * PATCH_TILE_SIZE + tx;
 		rtz = pz * PATCH_TILE_SIZE + tz;
 
@@ -2197,27 +2170,20 @@ bool CN3Terrain::CheckCollision(__Vector3& vPos, __Vector3& vDir, float fVelocit
 
 bool CN3Terrain::LoadColorMap(const std::string& szFN)
 {
-	CUILoading* pUILoading = nullptr;
-#ifdef _N3GAME
-	pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
-#endif
+	CUILoading* pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
 
-	int temp1 = PATCH_PIXEL_SIZE;
-	int temp2 = COLORMAPTEX_SIZE;
 	m_iNumColorMap = (m_pat_MapSize * PATCH_PIXEL_SIZE) / COLORMAPTEX_SIZE;
 	m_ppColorMapTex = new CN3Texture* [m_iNumColorMap];
-	for (int x = 0;x < m_iNumColorMap;x++)
+	for (int x = 0; x < m_iNumColorMap; x++)
 	{
 		m_ppColorMapTex[x] = new CN3Texture[m_iNumColorMap];
 
 		for (int i = 0; i < m_iNumColorMap; ++i)
-		{
 			m_ppColorMapTex[x][i].m_iFileFormatVersion = m_iFileFormatVersion;
-		}
 	}
 
-	HANDLE hColorMapFile = CreateFile(szFN.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (INVALID_HANDLE_VALUE == hColorMapFile)
+	FileReader colorMapFile;
+	if (!colorMapFile.Open(szFN))
 	{
 #ifdef _N3GAME
 		CLogWriter::Write("Failed to load ColorMap - {}", szFN);
@@ -2226,12 +2192,12 @@ bool CN3Terrain::LoadColorMap(const std::string& szFN)
 	}
 
 	std::string szBuff;
-	for (int x = 0;x < m_iNumColorMap;x++)
+	for (int x = 0; x < m_iNumColorMap; x++)
 	{
-		for (int z = 0;z < m_iNumColorMap;z++)
+		for (int z = 0; z < m_iNumColorMap; z++)
 		{
 			m_ppColorMapTex[x][z].m_iLOD = s_Options.iTexLOD_Terrain; // LOD 적용후 읽는다..
-			m_ppColorMapTex[x][z].Load(hColorMapFile);
+			m_ppColorMapTex[x][z].Load(colorMapFile);
 		}
 
 		szBuff = fmt::format("Loading colormap {} %", x * 100 / m_iNumColorMap);
@@ -2239,7 +2205,6 @@ bool CN3Terrain::LoadColorMap(const std::string& szFN)
 			pUILoading->Render(szBuff, 60 + 15 * x / m_iNumColorMap);
 	}
 
-	CloseHandle(hColorMapFile);
 	return true;
 }
 

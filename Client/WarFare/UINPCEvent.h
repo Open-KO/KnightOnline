@@ -31,7 +31,7 @@ public:
 	CUINPCEvent();
 	~CUINPCEvent() override;
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	void Open(e_NpcEvent eNpcEvent, int iTradeId = -1, int iIDTarget = -1);

@@ -52,9 +52,9 @@ void CUINPCChangeEvent::Release()
 	CN3UIBase::Release();
 }
 
-bool CUINPCChangeEvent::Load(HANDLE hFile)
+bool CUINPCChangeEvent::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	int iW = CN3Base::s_CameraData.vp.Width;

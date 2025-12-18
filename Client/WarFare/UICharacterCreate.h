@@ -53,7 +53,7 @@ public:
 	void			UpdateClassButtons(e_Class eClass);
 
 	uint32_t		MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 	void		Release();
 	bool		ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
 

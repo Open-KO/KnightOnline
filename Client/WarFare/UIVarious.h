@@ -92,7 +92,7 @@ public:
 	void			MsgSendAblityPointChange(uint8_t byType, int16_t siValueDelta); // 능력치 변화 패킷으로 보내기..
 
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 
 	virtual void	Release();
 	CUIState();
@@ -158,7 +158,7 @@ public:
 
 	void	SetVisible(bool bVisible);		
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 	void ClearLists();
 
@@ -251,7 +251,7 @@ public:
 	bool		MemberAdd(const std::string& szID, int iID, bool bOnLine, bool bIsParty);
 
 	virtual bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 	CUIFriends();
 	virtual ~CUIFriends();
@@ -266,7 +266,7 @@ protected:
 
 
 public:
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 	CUIQuest();
 	virtual ~CUIQuest();
@@ -305,7 +305,7 @@ public:
 	
 	virtual void	Tick();
 	virtual	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 
 	virtual void Release();
 	CUIVarious();

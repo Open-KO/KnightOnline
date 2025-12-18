@@ -51,7 +51,7 @@ public:
 	virtual void	Release();	
 	virtual void	Init(CN3UIBase* pParent);
 	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);// 글씨찍는 위치도 바뀌어 준다.
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	void			ClearOnlyStringBuffer() { m_szString = ""; }	// string 버퍼만 지운다.
 	void			SetStartLine(int iLine);	// multiline일경우 시작하는 라인 변경하기
 

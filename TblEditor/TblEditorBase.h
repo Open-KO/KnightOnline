@@ -34,7 +34,7 @@ public:
 	DATA_TYPE GetColumnType(int iColNo) const;
 
 protected:
-	bool LoadRowData(HANDLE hFile);
+	bool LoadRowData(File& file);
 
 protected:
 	std::map<int, std::vector<CStringA>> m_Rows;

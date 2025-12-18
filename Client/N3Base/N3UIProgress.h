@@ -51,7 +51,7 @@ public:
 	virtual void	Release();
 	virtual void	SetRegion(const RECT& Rect);
 	virtual void	SetStyle(uint32_t dwStyle);
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 
 	void			SetCurValue(int iValue, float fTimeToDelay = 0, float fChangeSpeedPerSec = 0);
 	void			SetCurValue_Smoothly(int iValue, float fPercentPerSec){SetCurValue(iValue, 0, fPercentPerSec*(m_iMaxValue-m_iMinValue));}	// 초당 몇 퍼센트 수치로 올라간다.

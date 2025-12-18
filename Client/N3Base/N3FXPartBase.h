@@ -75,7 +75,7 @@ public:
 	virtual void	Stop();				//	파트 구동 멈춤..
 	virtual bool	Tick();				//	ticktick...
 	virtual void	Render();			//	화면에 뿌리기..
-	virtual bool	Load(HANDLE hFile);	//	게임파일 불러오기.
+	virtual bool	Load(File& file);	//	게임파일 불러오기.
 	virtual bool	Save(HANDLE hFile);	//	게임파일 저장하기.
 	void	Duplicate(CN3FXPartBase* pSrc);
 

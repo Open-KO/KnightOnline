@@ -72,9 +72,9 @@ void CUICharacterCreate::Release()
 	m_iBonusPoint = m_iMaxBonusPoint = 0;
 }
 
-bool CUICharacterCreate::Load(HANDLE hFile)
+bool CUICharacterCreate::Load(File& file)
 {
-	CN3UIBase::Load(hFile);
+	CN3UIBase::Load(file);
 
 	// 캐릭터 초기화..
 	__InfoPlayerBase* pInfoBase = &(CGameBase::s_pPlayer->m_InfoBase);

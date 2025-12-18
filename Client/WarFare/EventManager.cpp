@@ -8,37 +8,31 @@
 #include "PlayerMySelf.h"
 #include "N3FXMgr.h"
 
+#include <shared/FileReader.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 #define EVENT_TYPE_POISON	3
 
 CEventCell::CEventCell()
 {
 	m_sEventType = 1;
-	memset(&m_Rect, 0x00, sizeof(RECT));
+	memset(&m_Rect, 0, sizeof(RECT));
 }
 
 CEventCell::~CEventCell()
 {
-
 }
 
-void CEventCell::Load(HANDLE hFile)
+void CEventCell::Load(File& file)
 {
-	DWORD dwNum;
-	ReadFile(hFile, &m_Rect, sizeof(RECT), &dwNum, nullptr);
-	ReadFile(hFile, &m_sEventType, sizeof(int16_t), &dwNum, nullptr);
+	file.Read(&m_Rect, sizeof(RECT));
+	file.Read(&m_sEventType, sizeof(int16_t));
 }
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 CEventManager::CEventManager()
 {
 	Release();
@@ -54,73 +48,62 @@ bool CEventManager::LoadFromFile(const char* szFileName)
 {
 	Release();
 
-	HANDLE hGevFile = CreateFile(szFileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hGevFile)
-	{
+	FileReader gevFile;
+	if (!gevFile.Open(szFileName))
 		return false;
-	}
 
-	DWORD dwNum;
 	int nEventCellCount = 0;
-	ReadFile(hGevFile, &nEventCellCount, sizeof(int), &dwNum, nullptr);
+	gevFile.Read(&nEventCellCount, sizeof(int));
 
 	for(int i = 0; i < nEventCellCount ; i++)
 	{
 		CEventCell* pEventCell = new CEventCell();
-		pEventCell->Load(hGevFile);
+		pEventCell->Load(gevFile);
 		m_lstEvents.push_back(pEventCell);
 	}
 
-	CloseHandle(hGevFile);
 	return true;
 }
 
 void CEventManager::Release()
 {
 	m_sEventType = -1;
-	memset(&m_rcEvent, 0x00, sizeof(RECT));
+	memset(&m_rcEvent, 0, sizeof(RECT));
 
-	EventItor it;
-	for(it=m_lstEvents.begin(); it!=m_lstEvents.end(); it++)
-	{
-		CEventCell* pEventCell = (*it);
-		if(pEventCell) delete pEventCell;
-	}
+	for (CEventCell* pEventCell : m_lstEvents)
+		delete pEventCell;
 	m_lstEvents.clear();
 }
 
 int16_t CEventManager::SetPos(float fX, float fZ)
 {
-	int x = (int)fX;
-	int y = (int)fZ;
+	int x = (int) fX;
+	int y = (int) fZ;
 
-	if(PtInRect(x, y, m_rcEvent))
+	if (PtInRect(x, y, m_rcEvent))
 		return m_sEventType;
 
-	EventItor it;
-	for(it=m_lstEvents.begin(); it!=m_lstEvents.end(); it++)
+	for (CEventCell* pEventCell : m_lstEvents)
 	{
-		CEventCell* pEventCell = (*it);
-		if(pEventCell)
-		{
-			if(PtInRect(x, y, pEventCell->m_Rect))
-			{
-				if(m_sEventType != pEventCell->m_sEventType)
-				{
-					Behavior(pEventCell->m_sEventType, m_sEventType);
-				}
-				m_rcEvent = pEventCell->m_Rect;
-				m_sEventType = pEventCell->m_sEventType;
-				return pEventCell->m_sEventType;
-			}
-		}
+		if (pEventCell == nullptr)
+			continue;
+
+		if (!PtInRect(x, y, pEventCell->m_Rect))
+			continue;
+
+		if (m_sEventType != pEventCell->m_sEventType)
+			Behavior(pEventCell->m_sEventType, m_sEventType);
+
+		m_rcEvent = pEventCell->m_Rect;
+		m_sEventType = pEventCell->m_sEventType;
+		return pEventCell->m_sEventType;
 	}
 
-	if(m_sEventType != -1)
+	if (m_sEventType != -1)
 	{
 		Behavior(-1, m_sEventType);
 		m_sEventType = -1;
-		memset(&m_rcEvent, 0x00, sizeof(RECT));
+		memset(&m_rcEvent, 0, sizeof(RECT));
 	}
 
 	return m_sEventType;
@@ -128,19 +111,19 @@ int16_t CEventManager::SetPos(float fX, float fZ)
 
 bool CEventManager::PtInRect(int x, int z, RECT rc)
 {
-	if(x < rc.left)		return false;
-	if(x > rc.right)	return false;
-	if(z < rc.top)		return false;
-	if(z > rc.bottom)	return false;
+	if (x < rc.left)	return false;
+	if (x > rc.right)	return false;
+	if (z < rc.top)		return false;
+	if (z > rc.bottom)	return false;
 
 	return true;
 }
 
 void CEventManager::Behavior(int16_t sEventType, int16_t sPreEventType)
 {
-	switch(sPreEventType)
+	switch (sPreEventType)
 	{
-	case EVENT_TYPE_POISON:
+		case EVENT_TYPE_POISON:
 		{
 			int iID = CGameBase::s_pPlayer->IDNumber();
 			int iFX = FXID_REGION_POISON;
@@ -149,9 +132,9 @@ void CEventManager::Behavior(int16_t sEventType, int16_t sPreEventType)
 		break;
 	}
 
-	switch(sEventType)
+	switch (sEventType)
 	{
-	case EVENT_TYPE_POISON:
+		case EVENT_TYPE_POISON:
 		{
 			int iID = CGameBase::s_pPlayer->IDNumber();
 			int iFX = FXID_REGION_POISON;

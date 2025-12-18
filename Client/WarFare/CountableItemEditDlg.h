@@ -30,7 +30,7 @@ public:
 
 public:
 	bool OnKeyPress(int iKey) override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	void				SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
 	void				SetVisible(bool bVisible) override;
 	int					GetQuantity(); // "edit_trade" Edit Control 에서 정수값을 얻오온다..

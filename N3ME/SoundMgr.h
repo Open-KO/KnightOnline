@@ -71,7 +71,7 @@ public:
 	//
 	//////////////////////////////////////////////
 
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	Save(HANDLE hFile);
 	void SaveGameData(HANDLE hFile);
 

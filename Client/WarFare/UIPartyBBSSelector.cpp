@@ -64,9 +64,9 @@ bool CUIPartyBBSSelector::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 	return true;
 }
 
-bool CUIPartyBBSSelector::Load(HANDLE hFile)
+bool CUIPartyBBSSelector::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_WantPartyMember, GetChildByID<CN3UIButton>("Btn_WantParty"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_WantParty, GetChildByID<CN3UIButton>("Btn_WantPartyMember"));

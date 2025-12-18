@@ -63,9 +63,9 @@ void CUIPartyOrForce::Release()
 
 }
 
-bool CUIPartyOrForce::Load(HANDLE hFile)
+bool CUIPartyOrForce::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	std::string szID;

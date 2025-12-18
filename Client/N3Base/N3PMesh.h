@@ -88,7 +88,7 @@ public:
 	HRESULT Create(int iNumVertices, int iNumIndices);
 	HRESULT GenerateSecondUV();
 	
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 #ifdef _N3TOOL
 	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL

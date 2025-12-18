@@ -60,9 +60,9 @@ bool CUITradeBBSSelector::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 	return true;
 }
 
-bool CUITradeBBSSelector::Load(HANDLE hFile)
+bool CUITradeBBSSelector::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_BBSSell, GetChildByID<CN3UIButton>("btn_sell"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_BBSBuy, GetChildByID<CN3UIButton>("btn_buy"));

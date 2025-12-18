@@ -119,9 +119,9 @@ bool CUILogIn_1098::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	return false;
 }
 
-bool CUILogIn_1098::Load(HANDLE hFile)
+bool CUILogIn_1098::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pGroup_LogIn,		GetChildByID("Group_LogIn"));

@@ -41,7 +41,6 @@
   <Import Project="$(PropsDir)boost.props" />
   <Import Project="$(PropsDir)MathUtils.props" />
   <Import Project="$(PropsDir)server.props" />
-  <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>

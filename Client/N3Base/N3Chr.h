@@ -33,7 +33,7 @@ protected:
 	CN3Skin			m_Skins[MAX_CHR_LOD];
 
 public:
-	bool			Load(HANDLE hFile);
+	bool			Load(File& file);
 #ifdef _N3TOOL
 	bool			Save(HANDLE hFile);
 #endif // end of _N3TOOL
@@ -59,7 +59,7 @@ protected:
 //	std::vector<class CN3AnimatedTexture*> m_AnimatedTextures;
 	CN3CPartSkins*		m_pSkinsRef;
 public:
-	bool			Load(HANDLE hFile);
+	bool			Load(File& file);
 	void			Render(int nLOD);
 
 	CN3Texture*		Tex() { return m_pTexRef; }
@@ -116,7 +116,7 @@ public:
 	virtual ~CN3CPlugBase();
 	static e_PlugType	GetPlugTypeByFileName(const std::string& szFN);
 
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 #ifdef _N3TOOL
 	virtual bool	Save(HANDLE hFile);
 #endif // end of _N3TOOL
@@ -168,7 +168,7 @@ public:
 	std::string					m_strFXTailName;
 	
 public:
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 #ifdef _N3TOOL
 	virtual bool	Save(HANDLE hFile);
 	void			ImportPMesh(const std::string& szFileName);
@@ -192,7 +192,7 @@ public:
 	virtual ~CN3CPlug_Cloak();	
 
 public:
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 #ifdef _N3TOOL
 	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
@@ -411,7 +411,7 @@ public:
 	__AnimData* AniDataUpper();
 	bool		Save(HANDLE hFile);
 #endif // end of _N3TOOL
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 
 	void		Release();
 	

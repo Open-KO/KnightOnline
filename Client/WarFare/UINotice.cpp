@@ -39,9 +39,9 @@ void CUINotice::Release()
 	CN3UIBase::Release();
 }
 
-bool CUINotice::Load(HANDLE hFile)
+bool CUINotice::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	m_pText_Notice = GetChildByID<CN3UIString>("Text_Notice");
 	m_pScrollBar = GetChildByID<CN3UIScrollBar>("ScrollBar");

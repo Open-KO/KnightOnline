@@ -39,7 +39,7 @@ public:
 	void	AddSoundInfo(CSoundCell* pSound);
 	void	AddSoundGroup(char* szTitle, LPSOUNDINFO pSoundInfo);
 	int		MakeIdx();
-	bool	LoadSoundGroup(HANDLE hFile);
+	bool	LoadSoundGroup(File& file);
 	bool	SaveSoundGroup(HANDLE hFile);
 	LPSOUNDINFO	GetSoundGroup(DWORD dwID);
 

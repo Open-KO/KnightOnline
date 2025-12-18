@@ -54,7 +54,7 @@ public:
 	void SetActive(bool active);
 	BOOL MouseMsgFilter(LPMSG pMsg);
 
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	Save(HANDLE hFile);
 
 	CWallMgr();

@@ -29,7 +29,7 @@ protected:
 // Operations
 public:
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual void	SetRegion(const RECT& Rect);
 	virtual void	SetStyle(uint32_t dwStyle);
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg

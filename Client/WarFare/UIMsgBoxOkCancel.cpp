@@ -39,9 +39,9 @@ void CUIMsgBoxOkCancel::Release()
 	m_pText_Msg = nullptr;
 }
 
-bool CUIMsgBoxOkCancel::Load(HANDLE hFile)
+bool CUIMsgBoxOkCancel::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_OK,		GetChildByID<CN3UIButton>("btn_ok"));

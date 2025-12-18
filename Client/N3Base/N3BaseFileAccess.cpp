@@ -5,6 +5,8 @@
 #include "StdAfxBase.h"
 #include "N3BaseFileAccess.h"
 
+#include <shared/FileReader.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -44,23 +46,16 @@ void CN3BaseFileAccess::FileNameSet(const std::string& szFileName)
 		m_szFileName = szTmpFN;
 }
 
-bool CN3BaseFileAccess::Load(HANDLE hFile)
+bool CN3BaseFileAccess::Load(File& file)
 {
-	if (m_iFileFormatVersion == N3FORMAT_VER_UNKN)
-	{
-#ifdef _DEBUG
-		printf("Unknown version type\n");
-#endif
-		return false;
-	}
+	_ASSERT(m_iFileFormatVersion != N3FORMAT_VER_UNKN);
 
-	DWORD dwRWC = 0;
 	int nL = 0;
-	ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
+	file.Read(&nL, 4);
 	if (nL > 0)
 	{
 		m_szName.assign(nL, '\0');
-		ReadFile(hFile, &m_szName[0], nL, &dwRWC, nullptr);
+		file.Read(&m_szName[0], nL);
 	}
 	else
 	{
@@ -93,10 +88,13 @@ bool CN3BaseFileAccess::LoadFromFile()
 		szFullPath += m_szFileName;
 	}
 
-	DWORD dwRWC = 0;
-	HANDLE hFile = ::CreateFile(szFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	// TODO: Catch any odd cases and handle them specifically (rather than just globally penalise all potential reads)
+#ifdef _DEBUG
+	assert(szFullPath == szFullPath.c_str());
+#endif
 
-	if (INVALID_HANDLE_VALUE == hFile)
+	FileReader file;
+	if (!file.Open(szFullPath))
 	{
 		std::string szErr = szFullPath + " - Can't open file (read)";
 #ifdef _N3TOOL
@@ -108,18 +106,15 @@ bool CN3BaseFileAccess::LoadFromFile()
 		return false;
 	}
 
-	bool bSuccess = this->Load(hFile);
-
-	CloseHandle(hFile);
-
-	return bSuccess;
+	return Load(file);
 }
 
 bool CN3BaseFileAccess::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 {
 	m_iFileFormatVersion = iVer;
-	this->FileNameSet(szFileName);
-	return this->LoadFromFile();
+
+	FileNameSet(szFileName);
+	return LoadFromFile();
 }
 
 bool CN3BaseFileAccess::SaveToFile()
@@ -142,17 +137,15 @@ bool CN3BaseFileAccess::SaveToFile()
 		szFullPath += m_szFileName;
 	}
 
-	DWORD dwRWC = 0;
 	HANDLE hFile = ::CreateFile(szFullPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-	if(hFile == INVALID_HANDLE_VALUE)
+	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		std::string szErr = szFullPath + " - Can't open file(write)";
 		MessageBox(s_hWndBase, szErr.c_str(), "File Handle error", MB_OK);
 		return false;
 	}
 
-	this->Save(hFile);
+	Save(hFile);
 
 	CloseHandle(hFile);
 	return true;

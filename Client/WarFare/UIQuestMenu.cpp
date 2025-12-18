@@ -71,9 +71,9 @@ void CUIQuestMenu::InitBase(void)
 	}
 }
 
-bool CUIQuestMenu::Load(HANDLE hFile)
+bool CUIQuestMenu::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pTextSample,	GetChildByID<CN3UIString>("Text_Menu"));

@@ -102,7 +102,7 @@ public:
 	void InitEditControls();
 	void FocusCircular();
 	void FocusToID();
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	void PositionGroups();
 
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg

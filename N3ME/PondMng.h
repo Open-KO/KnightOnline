@@ -91,7 +91,7 @@ public:
 	void			Tick();
 	void			Render();
 	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual bool	Save(HANDLE hFile);
 
 	BOOL			MouseMsgFilter(LPMSG pMsg);								// Mouse 메세지 처리

@@ -49,9 +49,9 @@ CUICmd::~CUICmd()
 {
 }
 
-bool CUICmd::Load(HANDLE hFile)
+bool CUICmd::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 	
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Act,				GetChildByID<CN3UIButton>("btn_control"));

@@ -119,7 +119,7 @@ public:
 	void		Apply(); // 세팅된 라이트값을 실제 D3DDevice 에 적용
 	void		Tick(float fFrm = FRAME_SELFPLAY); // 라이트값만 세팅한다..
 	
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 #ifdef _N3TOOL
 	bool		Save(HANDLE hFile);
 #endif // end of _N3TOOL

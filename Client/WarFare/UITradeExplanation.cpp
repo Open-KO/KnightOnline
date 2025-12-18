@@ -72,9 +72,9 @@ bool CUITradeExplanation::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 	return true;
 }
 
-bool CUITradeExplanation::Load(HANDLE hFile)
+bool CUITradeExplanation::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_PageUp, GetChildByID<CN3UIButton>("btn_pageup"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_PageDown, GetChildByID<CN3UIButton>("btn_pagedown"));

@@ -26,7 +26,7 @@ public:
 	void Render() override;
 	void RestoreGameCursor();
 	void SetGameCursor(e_Cursor eCursor, bool bLocked = false);
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	CGameCursor();
 	~CGameCursor() override;
 

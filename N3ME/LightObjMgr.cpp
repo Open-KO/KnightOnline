@@ -80,7 +80,7 @@ void CLightObjMgr::ClearList()
 	m_ListObj.clear();
 }
 
-bool CLightObjMgr::Load(HANDLE hFile)
+bool CLightObjMgr::Load(File& file)
 {
 	m_pDlg->Reset();
 	ClearList();
@@ -96,13 +96,12 @@ bool CLightObjMgr::Load(HANDLE hFile)
 		}
 	}
 	
-	DWORD dwRWC;
-	ReadFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
+	file.Read(&m_iVersion, sizeof(int));
 
 	if(m_iVersion<=1)
 	{
 		int cnt = 0;
-		ReadFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
+		file.Read(&cnt, sizeof(int));
 
 		for(int i=0;i<cnt;i++)
 		{
@@ -112,8 +111,8 @@ bool CLightObjMgr::Load(HANDLE hFile)
 			pLO->pRefLight = pLight;
 			pOutPutScene->LightAdd(pLight);
 			
-			ReadFile(hFile, &(pLO->szName[0]), 80, &dwRWC, nullptr);
-			pLight->Load(hFile);
+			file.Read(&pLO->szName[0], 80);
+			pLight->Load(file);
 			pLight->m_Data.bOn = false;
 			pLight->m_Data.nNumber = IDX_STANDBY_LIGHT;
 

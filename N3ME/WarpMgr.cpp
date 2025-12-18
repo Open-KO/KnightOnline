@@ -69,21 +69,20 @@ void CWarpMgr::ClearList()
 	m_ListWarpInfo.clear();
 }
 
-bool CWarpMgr::Load(HANDLE hFile)
+bool CWarpMgr::Load(File& file)
 {
 	ClearList();
 
-	DWORD dwRWC;
-	ReadFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
+	file.Read(&m_iVersion, sizeof(int));
 
-	if(m_iVersion==1)
+	if (m_iVersion == 1)
 	{
 		int cnt;
-		ReadFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
-		for(int i=0;i<cnt;i++)
+		file.Read(&cnt, sizeof(int));
+		for (int i = 0; i < cnt; i++)
 		{
 			WARPINFO* pWI = new WARPINFO;
-			ReadFile(hFile, pWI, sizeof(WARPINFO), &dwRWC, nullptr);
+			file.Read(pWI, sizeof(WARPINFO));
 			m_ListWarpInfo.push_back(pWI);
 		}
 	}

@@ -27,7 +27,7 @@ public:
 	bool OnKeyPress(int iChar) override;
 	void MsgSend_OpenTradeBuyBBS();
 	void MsgSend_OpenTradeSellBBS();
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	CUITradeBBSSelector();

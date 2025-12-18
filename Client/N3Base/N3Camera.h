@@ -39,7 +39,7 @@ public:
 	void		UpVectorSet(const __Vector3& v) { m_vScale = v; } // Scale 은 UpVector 처럼 쓴다..
 	void		UpVectorSet(float x, float y, float z) { m_vScale.Set(x, y, z); } // Scale 은 UpVector 처럼 쓴다..
 
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 
 #ifdef _N3TOOL
 	BOOL		MoveByWindowMessage(MSG* pMsg);

@@ -1691,9 +1691,9 @@ void CUITransactionDlg::SetVisibleWithNoSound(bool bVisible, bool bWork, bool bR
 	}
 }
 
-bool CUITransactionDlg::Load(HANDLE hFile)
+bool CUITransactionDlg::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtnClose, GetChildByID<CN3UIButton>("btn_close"));
 	N3_VERIFY_UI_COMPONENT(m_pBtnPageUp, GetChildByID<CN3UIButton>("btn_page_up"));

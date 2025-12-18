@@ -27,9 +27,9 @@ void CN3ShapeExtra::Release()
 	m_Rotations.clear();
 }
 
-bool CN3ShapeExtra::Load(HANDLE hFile)
+bool CN3ShapeExtra::Load(File& file)
 {
-	bool bSuccess = CN3Shape::Load(hFile);
+	bool bSuccess = CN3Shape::Load(file);
 
 	m_Rotations.clear();
 

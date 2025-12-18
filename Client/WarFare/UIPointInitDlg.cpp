@@ -43,9 +43,9 @@ void CUIPointInitDlg::Release()
 	CN3UIBase::Release();
 }
 
-bool CUIPointInitDlg::Load(HANDLE hFile)
+bool CUIPointInitDlg::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok, GetChildByID<CN3UIButton>("btn_ok"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel, GetChildByID<CN3UIButton>("btn_cancel"));

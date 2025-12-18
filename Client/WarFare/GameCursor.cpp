@@ -38,9 +38,9 @@ CGameCursor::~CGameCursor()
 	if(m_hCursor) ::SetCursor(m_hCursor);
 }
 
-bool CGameCursor::Load(HANDLE hFile)
+bool CGameCursor::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	m_hCursor = ::GetCursor();

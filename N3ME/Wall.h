@@ -24,7 +24,7 @@ public:
 		return static_cast<int>(m_Wall.size());
 	}
 
-	void	Load(HANDLE hFile);
+	void	Load(File& file);
 	void	Save(HANDLE hFile);
 	bool	GetVertex(int idx, __Vector3* pPos);	// idx째 점 가져오기..
 	void	AddVertex(__Vector3 Vertex);	//path더하기.

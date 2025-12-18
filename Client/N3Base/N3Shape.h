@@ -43,7 +43,7 @@ protected:
 	float	m_fTexIndex; // Current Texture Index.. Animation 시킬때 필요한 인덱스이다.. float 로 해서 텍스처 에니메이션 제어한다.
 
 public:
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 #ifdef _N3TOOL
 	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
@@ -160,7 +160,7 @@ public:
 	CN3SPart*		PartAdd() { CN3SPart* pPart = new CN3SPart(); m_Parts.push_back(pPart); return pPart; }
 	void			PartDelete(int iIndex);
 	
-	bool			Load(HANDLE hFile);
+	bool			Load(File& file);
 #ifdef _N3TOOL
 	bool			Save(HANDLE hFile);
 	void			RenderSelected(bool bWireFrame);
@@ -185,7 +185,7 @@ __Vector3			GetVertexByIndex(int iPartIndex, int iIndex);
 __Vector3			GetColVertexByIndex(int iIndex); 
 	void			PartialColRender(int iCount, int* piIndices);
 	void			PartialGetCollision(int iIndex, __Vector3& vec);
-	bool			LoadTransformOnly(HANDLE hFile);
+	bool			LoadTransformOnly(File& file);
 //	~(By Ecli666 On 2002-08-06 오후 4:33:04 )
 };
 

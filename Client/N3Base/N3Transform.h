@@ -46,7 +46,7 @@ public:
 	virtual void	ScaleSet(float x, float y, float z) { m_vScale.Set(x, y, z); ReCalcMatrix(); }
 	virtual void	ReCalcMatrix();
 
-	bool			Load(HANDLE hFile);
+	bool			Load(File& file);
 #ifdef _N3TOOL
 	virtual void	Render(const __Matrix44* pMtxParent, float fUnitSize = 1.0f);
 	bool			Save(HANDLE hFile);

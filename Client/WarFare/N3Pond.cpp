@@ -63,13 +63,11 @@ void CN3Pond::Release()
 	m_fTexIndex = 0.0f;
 }
 
-bool CN3Pond::Load(HANDLE hFile)
+bool CN3Pond::Load(File& file)
 {
 	Release();
 
-	DWORD dwNum;
-
-	ReadFile(hFile, &m_iPondMeshNum, sizeof(int), &dwNum, nullptr);	///
+	file.Read(&m_iPondMeshNum, sizeof(int));	///
 //	if(m_iPondMeshNum<=0) {m_iPondMeshNum=0;return 1;}
 	if(true) {m_iPondMeshNum=0;return 1;}
 
@@ -81,7 +79,7 @@ bool CN3Pond::Load(HANDLE hFile)
 		ptmpPondMesh = &m_pCPondMesh[i];
 
 		int iVC;
-		ReadFile(hFile, &iVC, sizeof(iVC), &dwNum, nullptr);				// 점 갯수
+		file.Read(&iVC, sizeof(iVC));				// 점 갯수
 		ptmpPondMesh->m_iVC = iVC;	///
 		ptmpPondMesh->m_bTick2Rand = FALSE;		///
 		if(iVC<=0) 
@@ -91,16 +89,16 @@ bool CN3Pond::Load(HANDLE hFile)
 		}
 
 		int iWidthVertex;
-		ReadFile(hFile, &iWidthVertex, sizeof(iWidthVertex), &dwNum, nullptr);				// 한 라인당 점 갯수
+		file.Read(&iWidthVertex, sizeof(iWidthVertex));				// 한 라인당 점 갯수
 		ptmpPondMesh->m_iWidthVtx = iWidthVertex;		///
 		ptmpPondMesh->m_iHeightVtx = iVC/iWidthVertex;	///
 
 		int iTexNameLength = 0;
-		ReadFile(hFile, &iTexNameLength, sizeof(int), &dwNum, nullptr);
+		file.Read(&iTexNameLength, sizeof(int));
 		if (iTexNameLength > 0)
 		{
 			char szTexture[50];
-			ReadFile(hFile, szTexture, iTexNameLength, &dwNum, nullptr);			// texture name
+			file.Read(szTexture, iTexNameLength);			// texture name
 			szTexture[iTexNameLength] = '\0';
 
 			std::string szTextureFName = fmt::format("misc\\river\\{}", szTexture);
@@ -112,7 +110,8 @@ bool CN3Pond::Load(HANDLE hFile)
 
 		// XyxT2 -> XyzColorT2 Converting.
 		ptmpPondMesh->m_pVertices = new __VertexPond[iVC];	///
-		ReadFile(hFile,ptmpPondMesh->m_pVertices,iVC*sizeof(__VertexPond),&dwNum,nullptr);
+		file.Read(ptmpPondMesh->m_pVertices, iVC * sizeof(__VertexPond));
+
 		ptmpPondMesh->m_pVertices[0].y += 0.2f;				//	수치가 높으면 물결이 크게 요동친다
 		ptmpPondMesh->m_pVertices[iWidthVertex].y += 0.2f;	//	수치가 높으면 물결이 크게 요동친다
 		ptmpPondMesh->m_pfMaxHeight = ptmpPondMesh->m_pVertices[0].y += 0.3f;		//	물결의 최대치
@@ -122,7 +121,7 @@ bool CN3Pond::Load(HANDLE hFile)
 
 		
 		int iIC;
-		ReadFile(hFile, &iIC, sizeof(iIC), &dwNum, nullptr);				// IndexBuffer Count.
+		file.Read(&iIC, sizeof(iIC));				// IndexBuffer Count.
 		ptmpPondMesh->m_iIC = iIC;		///
 		ptmpPondMesh->m_wpIndex = new uint16_t [iVC*6];		///
 

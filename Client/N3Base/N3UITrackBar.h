@@ -34,7 +34,7 @@ protected:
 // Operations
 public:
 	void		Release() override;
-	bool		Load(HANDLE hFile) override;
+	bool		Load(File& file) override;
 	void		SetRegion(const RECT& Rect) override;
 	uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 

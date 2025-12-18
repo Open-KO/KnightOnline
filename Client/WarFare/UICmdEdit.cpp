@@ -31,9 +31,9 @@ CUICmdEdit::~CUICmdEdit()
 {
 }
 
-bool CUICmdEdit::Load(HANDLE hFile)
+bool CUICmdEdit::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile)) 
+	if (!CN3UIBase::Load(file)) 
 		return false;
 	
 	N3_VERIFY_UI_COMPONENT(m_pText_Title,	GetChildByID<CN3UIString>("Text_cmd"));

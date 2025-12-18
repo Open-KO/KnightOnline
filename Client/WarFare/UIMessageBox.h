@@ -35,7 +35,7 @@ public:
 	void SetVisibleEditControl(bool bVisible); // Edit Control Visible
 	void SetTitle(const std::string& szTitle);
 	void SetText(const std::string& szMsg);
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	
 	CUIMessageBox();

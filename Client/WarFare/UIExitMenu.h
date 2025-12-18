@@ -10,7 +10,7 @@ public:
 	void SetVisible(bool bVisible) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void ReturnToCharacterSelection();
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 protected:
 	CN3UIButton* m_pBtn_Chr;

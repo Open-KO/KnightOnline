@@ -32,7 +32,7 @@ protected:
 
 // Operations
 public:
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 	virtual void	Release();
 	virtual void	SetRegion(const RECT& Rect);
 	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);

@@ -61,9 +61,9 @@ void CUITradeBBSEditDlg::ShowWindow(int iID, CN3UIBase *pParent)
 	CN3UIBase::ShowWindow(iID, pParent);
 }
 
-bool CUITradeBBSEditDlg::Load(HANDLE hFile)
+bool CUITradeBBSEditDlg::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pEditTitle, GetChildByID<CN3UIEdit>("edit_name"));
 	N3_VERIFY_UI_COMPONENT(m_pEditPrice, GetChildByID<CN3UIEdit>("edit_price"));

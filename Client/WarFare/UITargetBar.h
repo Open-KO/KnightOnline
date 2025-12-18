@@ -25,7 +25,7 @@ public:
 	void	UpdateHP(int iHP, int iMaxHP, bool bUpdateImmediately);
 	BOOL	SetIDString(const std::string& szID, D3DCOLOR crID);
 	
-	bool	Load(HANDLE hFile);
+	bool	Load(File& file);
 	void	Release();
 	CUITargetBar();
 	virtual ~CUITargetBar();

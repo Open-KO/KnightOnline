@@ -29,19 +29,19 @@ void CN3AnimControl::Release()
 	CN3BaseFileAccess::Release();
 }
 
-bool CN3AnimControl::Load(HANDLE hFile)
+bool CN3AnimControl::Load(File& file)
 {
-	if(m_Datas.size() > 0) this->Release();
+	if (!m_Datas.empty())
+		Release();
 
-	DWORD dwRWC = 0;
 	int nCount = 0;
-	ReadFile(hFile, &nCount, 4, &dwRWC, nullptr);
+	file.Read(&nCount, 4);
 
 	m_Datas.clear(); // animation Data List
-	for(int i = 0; i < nCount; i++)
+	for (int i = 0; i < nCount; i++)
 	{
 		__AnimData Data;
-		Data.Load(hFile);
+		Data.Load(file);
 		m_Datas.push_back(Data);
 	}
 

@@ -30,12 +30,11 @@ void CN3Light::Release()
 	CN3Transform::Release();
 }
 
-bool CN3Light::Load(HANDLE hFile)
+bool CN3Light::Load(File& file)
 {
-	CN3Transform::Load(hFile);
+	CN3Transform::Load(file);
 
-	DWORD dwRWC;
-	ReadFile(hFile, &m_Data, sizeof(m_Data), &dwRWC, nullptr); // 라이트 세팅.
+	file.Read(&m_Data, sizeof(m_Data)); // 라이트 세팅.
 
 	__ASSERT(m_Data.nNumber >= 0 && m_Data.nNumber < 8, "Light Loading Warning - Light 번호가 범위를 벗어났습니다.");
 	

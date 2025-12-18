@@ -11,7 +11,7 @@ public:
 
 	CUIUpgradeSelect();
 	~CUIUpgradeSelect() override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void SetVisible(bool bVisible) override;
 

@@ -226,15 +226,13 @@ void CN3FXPartMesh::Init()
 //
 //
 //
-bool CN3FXPartMesh::Load(HANDLE hFile)
+bool CN3FXPartMesh::Load(File& file)
 {
-	if (!CN3FXPartBase::Load(hFile))
+	if (!CN3FXPartBase::Load(file))
 		return false;
 
-	DWORD dwRWC = 0;
-
 	char szShapeFileName[_MAX_PATH] = {};
-	ReadFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
+	file.Read(szShapeFileName, _MAX_PATH);
 
 	delete m_pShape;
 	m_pShape = new CN3FXShape();
@@ -249,38 +247,38 @@ bool CN3FXPartMesh::Load(HANDLE hFile)
 	else
 		m_vUnitScale = m_pShape->Scale();
 
-	ReadFile(hFile, &m_cTextureMoveDir, sizeof(char), &dwRWC, nullptr);
-	ReadFile(hFile, &m_fu, sizeof(float), &dwRWC, nullptr);
-	ReadFile(hFile, &m_fv, sizeof(float), &dwRWC, nullptr);
-	ReadFile(hFile, &m_vScaleVel, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Read(&m_cTextureMoveDir, sizeof(char));
+	file.Read(&m_fu, sizeof(float));
+	file.Read(&m_fv, sizeof(float));
+	file.Read(&m_vScaleVel, sizeof(__Vector3));
 	m_vCurrScaleVel = m_vScaleVel;
 
 	if (m_iVersion >= 2)
-		ReadFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, nullptr);
+		file.Read(&m_bTexLoop, sizeof(bool));
 
 	if (m_iVersion >= 3)
-		ReadFile(hFile, &m_vScaleAccel, sizeof(__Vector3), &dwRWC, nullptr);
+		file.Read(&m_vScaleAccel, sizeof(__Vector3));
 
 	if (m_iVersion >= 4)
-		ReadFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
+		file.Read(&m_fMeshFPS, sizeof(float));
 
 	if (m_iVersion >= 5)
-		ReadFile(hFile, &m_vUnitScale, sizeof(__Vector3), &dwRWC, nullptr);
+		file.Read(&m_vUnitScale, sizeof(__Vector3));
 
 	// TODO: implement m_bShapeLoop
 	if (m_iVersion >= 6)
-		ReadFile(hFile, &m_bShapeLoop, sizeof(bool), &dwRWC, nullptr);
+		file.Read(&m_bShapeLoop, sizeof(bool));
 
 	// TODO: implement m_bViewFix
 	if (m_iVersion >= 7)
-		ReadFile(hFile, &m_bViewFix, sizeof(bool), &dwRWC, nullptr);
+		file.Read(&m_bViewFix, sizeof(bool));
 
 	// TODO: implement m_bUseFadeShowLife
 	if (m_iVersion >= 8)
-		ReadFile(hFile, &m_bUseFadeShowLife, sizeof(bool), &dwRWC, nullptr);
+		file.Read(&m_bUseFadeShowLife, sizeof(bool));
 
 	if (m_iVersion >= 9)
-		SetFilePointer(hFile, MAX_PATH, nullptr, FILE_CURRENT);
+		file.Seek(MAX_PATH, SEEK_CUR);
 
 	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
 	// and otherwise be broken for now.

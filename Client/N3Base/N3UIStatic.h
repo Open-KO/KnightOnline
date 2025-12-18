@@ -26,18 +26,18 @@ protected:
 public:
 	virtual const std::string& GetString();
 	virtual void	SetString(const std::string& szString);
-	virtual void	Release();
-//	virtual void	Render();
-	virtual bool	Load(HANDLE);
-	virtual void	SetRegion(const RECT& Rect);
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
+	void	Release() override;
+//	void	Render() override;
+	bool	Load(File& file) override;
+	void	SetRegion(const RECT& Rect) override;
+	uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 protected:
 
 #ifdef _N3TOOL
 // 툴에서만 사용하는 함수
 public:
 	virtual	void	operator = (const CN3UIStatic& other);
-	virtual bool	Save(HANDLE hFile);
+	bool	Save(HANDLE hFile) override;
 	void			CreateImageAndString();		// 배경 이미지 및 string 생성하기
 	CN3UIImage*		GetImageBkGnd() const {return m_pImageBkGnd;}
 	CN3UIString*	GetUIString() const {return m_pBuffOutRef;}

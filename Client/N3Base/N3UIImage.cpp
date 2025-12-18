@@ -197,41 +197,46 @@ void CN3UIImage::SetColor(D3DCOLOR color)
 	SetVB();
 }
 
-bool CN3UIImage::Load(HANDLE hFile)
+bool CN3UIImage::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
-	DWORD dwNum;
+	if (!CN3UIBase::Load(file))
+		return false;
+
 	// texture 정보
 	__ASSERT(nullptr == m_pTexRef, "load 하기 전에 초기화가 되지 않았습니다.");
 	int	iStrLen = 0;
-	ReadFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// 파일 이름 길이
+	file.Read(&iStrLen, sizeof(iStrLen));			// 파일 이름 길이
 	char szFName[MAX_PATH] = "";
 	if (iStrLen>0)
 	{
-		ReadFile(hFile, szFName, iStrLen, &dwNum, nullptr);		// 파일 이름
+		file.Read(szFName, iStrLen);		// 파일 이름
 		szFName[iStrLen]='\0';
 		this->SetTex(szFName);
 	} 
 
-	ReadFile(hFile, &m_frcUVRect, sizeof(m_frcUVRect), &dwNum, nullptr);	// uv좌표
-	ReadFile(hFile, &m_fAnimFrame, sizeof(m_fAnimFrame), &dwNum, nullptr);
+	file.Read(&m_frcUVRect, sizeof(m_frcUVRect));	// uv좌표
+	file.Read(&m_fAnimFrame, sizeof(m_fAnimFrame));
 
 	// Animate 되는 image이면 관련된 변수 세팅
 	m_iAnimCount = 0; // animate image 수 정하기
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	for (CN3UIBase* pChild : m_Children)
 	{
-		if(UI_TYPE_IMAGE == (*itor)->UIType()) m_iAnimCount++;
+		if (UI_TYPE_IMAGE == pChild->UIType())
+			++m_iAnimCount;
 	}
 
 	if ((UISTYLE_IMAGE_ANIMATE & m_dwStyle) && m_iAnimCount > 0)
 	{
-		m_pAnimImagesRef = new CN3UIImage*[m_iAnimCount];
-		ZeroMemory(m_pAnimImagesRef, sizeof(CN3UIImage*)*m_iAnimCount);
-		int i=0;
-		for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+		m_pAnimImagesRef = new CN3UIImage* [m_iAnimCount];
+		ZeroMemory(m_pAnimImagesRef, sizeof(CN3UIImage*) * m_iAnimCount);
+
+		int i = 0;
+		for (CN3UIBase* pChild : m_Children)
 		{
-			if(UI_TYPE_IMAGE == (*itor)->UIType()) m_pAnimImagesRef[i] = (CN3UIImage*)(*itor);
-			__ASSERT(m_pAnimImagesRef[i]->GetReserved() == (uint32_t)i, "animate Image load fail");	// 제대로 정렬이 되지 않았을경우 실패한다.
+			if (UI_TYPE_IMAGE == pChild->UIType())
+				m_pAnimImagesRef[i] = static_cast<CN3UIImage*>(pChild);
+
+			__ASSERT(m_pAnimImagesRef[i]->GetReserved() == (uint32_t) i, "animate Image load fail");	// 제대로 정렬이 되지 않았을경우 실패한다.
 			++i;
 		}
 	}

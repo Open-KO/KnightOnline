@@ -2116,9 +2116,9 @@ bool CUIWareHouseDlg::OnKeyPress(int iKey)
 	return CN3UIBase::OnKeyPress(iKey);
 }
 
-bool CUIWareHouseDlg::Load(HANDLE hFile)
+bool CUIWareHouseDlg::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtnGold,			GetChildByID<CN3UIButton>("btn_gold"));

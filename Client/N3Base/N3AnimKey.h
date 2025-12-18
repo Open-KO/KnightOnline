@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "N3Base.h"
+#include <shared/File.h>
 
 enum ANIMATION_KEY_TYPE { 
 	KEY_VECTOR3 = 0,
@@ -67,7 +68,7 @@ public:
 		return true;
 	}
 	
-	bool Load(HANDLE hFile);
+	bool Load(File& file);
 
 #ifdef _N3TOOL
 	void*	DataGet(int index) 

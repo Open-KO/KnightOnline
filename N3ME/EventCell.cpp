@@ -156,21 +156,20 @@ void CEventCell::Render(DWORD color)
 	}
 }
 
-void CEventCell::Load(HANDLE hFile)
+void CEventCell::Load(File& file)
 {
-	DWORD dwRWC;
-	ReadFile(hFile, &m_ZoneID, sizeof(short), &dwRWC, nullptr);
-	ReadFile(hFile, m_Name, 80, &dwRWC, nullptr);
-	ReadFile(hFile, &m_EventID, sizeof(short), &dwRWC, nullptr);
-	ReadFile(hFile, &m_EventType, sizeof(short), &dwRWC, nullptr);
+	file.Read(&m_ZoneID, sizeof(short));
+	file.Read(m_Name, 80);
+	file.Read(&m_EventID, sizeof(short));
+	file.Read(&m_EventType, sizeof(short));
 
-	for(int i=0;i<MAX_CON;i++)
+	for (int i = 0; i < MAX_CON; i++)
 	{
-		ReadFile(hFile, m_Con[i], 256, &dwRWC, nullptr);
-		ReadFile(hFile, m_Exe[i], 256, &dwRWC, nullptr);
+		file.Read(m_Con[i], 256);
+		file.Read(m_Exe[i], 256);
 	}
 
-	ReadFile(hFile, &m_Rect, sizeof(RECT), &dwRWC, nullptr);
+	file.Read(&m_Rect, sizeof(RECT));
 }
 
 void CEventCell::Save(HANDLE hFile)

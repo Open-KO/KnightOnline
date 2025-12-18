@@ -30,7 +30,7 @@ public:
 	void CallBackProc(int iID, uint32_t dwFlag) override;
 	uint32_t MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &ptOld) override;
 	bool ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg) override;
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 };
 
 #endif // !defined(AFX_UIDEAD_H__B5FAFAB6_04A4_4708_945E_731AE35257EB__INCLUDED_)

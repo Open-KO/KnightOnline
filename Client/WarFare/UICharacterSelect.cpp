@@ -51,9 +51,9 @@ void CUICharacterSelect::Release()
 	CN3UIBase::Release();
 }
 
-bool CUICharacterSelect::Load(HANDLE hFile)
+bool CUICharacterSelect::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtnLeft, GetChildByID("bt_left"));

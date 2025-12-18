@@ -65,9 +65,9 @@ CUITradeSellBBS::~CUITradeSellBBS()
 	m_Datas.clear();
 }
 
-bool CUITradeSellBBS::Load(HANDLE hFile)
+bool CUITradeSellBBS::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_PageUp, GetChildByID<CN3UIButton>("btn_page_up"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_PageDown, GetChildByID<CN3UIButton>("btn_page_down"));

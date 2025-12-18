@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "n3me.h"
+#include "N3ME.h"
 #include "NPCPathMgr.h"
 #include "NPCPath.h"
 #include "DlgMakeNPCPath.h"
@@ -12,15 +12,13 @@
 #include "MapMng.h"
 #include "MainFrm.h"
 
+#include <shared/FileReader.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CNPCPathMgr::CNPCPathMgr()
 {
@@ -119,37 +117,31 @@ CNPCPathMgr::~CNPCPathMgr()
 //
 void CNPCPathMgr::LoadFromFile(const char* FileName)
 {
-	if(m_pCurrPath)
-	{
-		delete m_pCurrPath;
-		m_pCurrPath = nullptr;
-	}
+	delete m_pCurrPath;
 	m_pCurrPath = new CNPCPath;
 
-	std::list<CNPCPath*>::iterator itPath;
-	for(itPath = m_pPaths.begin(); itPath != m_pPaths.end(); itPath++)
-	{
-		delete (*itPath);
-	}
-	
-	char szNPCPathFileName[_MAX_PATH];
-	wsprintf(szNPCPathFileName, "%snpcpath\\%s.npi", s_szPath.c_str(), FileName);
-	
-	DWORD dwRWC;
-	HANDLE hFile = CreateFile(szNPCPathFileName, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-	int NumPath;
-	ReadFile(hFile, &NumPath, sizeof(int), &dwRWC, nullptr);
+	for (CNPCPath* pPath : m_pPaths)
+		delete pPath;
 
 	m_pPaths.clear();
-	for(int i=0;i<NumPath;i++)
+
+	char szNPCPathFileName[_MAX_PATH];
+	wsprintf(szNPCPathFileName, "%snpcpath\\%s.npi", s_szPath.c_str(), FileName);
+
+	FileReader npcPathFile;
+	if (!npcPathFile.Open(szNPCPathFileName))
+		return;
+
+	int NumPath;
+	npcPathFile.Read(&NumPath, sizeof(int));
+
+	for (int i = 0; i < NumPath; i++)
 	{
 		CNPCPath* pPath = new CNPCPath;
 		pPath->m_pRefTerrain = m_pRefMapMng->GetTerrain();
-		pPath->Load(hFile);
+		pPath->Load(npcPathFile);
 		m_pPaths.push_back(pPath);
 	}
-	CloseHandle(hFile);
 }
 
 void CNPCPathMgr::SaveToFile(const char* FileName)

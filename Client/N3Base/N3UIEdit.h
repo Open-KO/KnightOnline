@@ -74,7 +74,7 @@ public:
 	virtual const std::string&	GetString();
 	virtual void				SetString(const std::string& szString);
 
-	virtual bool		Load(HANDLE hFile);
+	virtual bool		Load(File& file);
 	virtual void		Render();
 	virtual void		Release();
 	virtual void		SetVisible(bool bVisible);

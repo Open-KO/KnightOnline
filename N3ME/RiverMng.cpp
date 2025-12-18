@@ -53,20 +53,20 @@ void CRiverMng::Release()
 	m_VtxPosDummy.Release();
 }
 
-bool CRiverMng::Load(HANDLE hFile)
+bool CRiverMng::Load(File& file)
 {
 	Release();
 
-	DWORD dwNum;
-	int i, iRiverMeshCount;
-	ReadFile(hFile, &iRiverMeshCount, sizeof(iRiverMeshCount), &dwNum, nullptr);
-	for (i=0; i<iRiverMeshCount; ++i)
+	int iRiverMeshCount;
+	file.Read(&iRiverMeshCount, sizeof(iRiverMeshCount));
+	for (int i = 0; i < iRiverMeshCount; ++i)
 	{
 		CRiverMesh* pRvrMesh = new CRiverMesh;
-		pRvrMesh->Load(hFile);
+		pRvrMesh->Load(file);
 		m_RiverMeshes.push_back(pRvrMesh);
 	}
-	return 0;
+
+	return true;
 }
 
 bool CRiverMng::Save(HANDLE hFile)

@@ -40,9 +40,9 @@ void CUINPCEvent::Release()
 	CN3UIBase::Release();
 }
 
-bool CUINPCEvent::Load(HANDLE hFile)
+bool CUINPCEvent::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Repair, GetChildByID<CN3UIButton>("Btn_Repair"));
 	N3_VERIFY_UI_COMPONENT(m_pText_Repair, GetChildByID<CN3UIString>("Text_Repair"));

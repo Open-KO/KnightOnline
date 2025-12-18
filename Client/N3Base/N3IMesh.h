@@ -55,7 +55,7 @@ public:
 #endif // end of _N3TOOL
 
 	virtual bool		Create(int nFC, int nVC, int nUVC); // 차례대로  Face Count, VertexCount, UV Count
-	bool				Load(HANDLE hFile);
+	bool				Load(File& file);
 #ifdef _N3TOOL
 	bool				Save(HANDLE hFile);
 #endif // end of _N3TOOL

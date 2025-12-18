@@ -35,9 +35,9 @@ CUIWarp::~CUIWarp()
 
 }
 
-bool CUIWarp::Load(HANDLE hFile)
+bool CUIWarp::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,			GetChildByID<CN3UIButton>("Btn_Ok"));

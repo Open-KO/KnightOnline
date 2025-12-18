@@ -44,25 +44,24 @@ void CN3TransformCollision::Release()
 	CN3Transform::Release();
 }
 
-bool CN3TransformCollision::Load(HANDLE hFile)
+bool CN3TransformCollision::Load(File& file)
 {
-	CN3Transform::Load(hFile);
+	CN3Transform::Load(file);
 
 	int nL = 0;
 	char szFN[512] = "";
 
-	DWORD dwRWC;
-	ReadFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Read(&nL, 4); // Mesh FileName
 	if(nL > 0)
 	{
-		ReadFile(hFile, szFN, nL, &dwRWC, nullptr); szFN[nL] = '\0'; // 메시 파일 이름..
+		file.Read(szFN, nL); szFN[nL] = '\0'; // 메시 파일 이름..
 		m_pMeshCollision = s_MngVMesh.Get(szFN);
 	}
 
-	ReadFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Read(&nL, 4); // Mesh FileName
 	if(nL > 0)
 	{
-		ReadFile(hFile, szFN, nL, &dwRWC, nullptr); szFN[nL] = '\0'; // 메시 파일 이름..
+		file.Read(szFN, nL); szFN[nL] = '\0'; // 메시 파일 이름..
 		m_pMeshClimb = s_MngVMesh.Get(szFN);
 	}
 	return true;

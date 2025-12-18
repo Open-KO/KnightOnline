@@ -39,15 +39,15 @@ void CN3UIArea::SetRegion(const RECT& Rect)
 	}
 }
 
-bool CN3UIArea::Load(HANDLE hFile)
+bool CN3UIArea::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (!CN3UIBase::Load(file))
+		return false;
 
 #ifndef _REPENT
 	// 추가사항이 있으면 이곳에 추가하기
-	DWORD dwNum;
 	int iAreaType;
-	ReadFile(hFile, &iAreaType, sizeof(int), &dwNum, nullptr);	// click 영역
+	file.Read(&iAreaType, sizeof(int));	// click 영역
 	m_eAreaType = (eUI_AREA_TYPE)iAreaType;
 #endif
 	return true;

@@ -33,9 +33,9 @@ CUIHelp::~CUIHelp()
 {
 }
 
-bool CUIHelp::Load(HANDLE hFile)
+bool CUIHelp::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	int iPageCount = 0;

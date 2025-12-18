@@ -42,7 +42,7 @@ private:
 	void DeleteAllPvsObj();
 
 	// String Cryptograph.. ^^
-	static std::string ReadDecryptString(HANDLE hFile);
+	static std::string ReadDecryptString(File& file);
 	std::string GetIndoorFolderPath() {	return m_IndoorFolder; }
 
 	CPortalVolume* GetPortalVolPointerByID(int iID);
@@ -69,8 +69,8 @@ public:
 	~CPvsMgr() override;
 
 	//..
-	bool Load(HANDLE hFile) override;
-	bool LoadOldVersion(HANDLE hFile, int iVersionFromData);
+	bool Load(File& file) override;
+	bool LoadOldVersion(File& file, int iVersionFromData);
 };
 
 #endif // !defined(AFX_PVSMGR_H__7E562A54_E3B8_4484_A861_7ADD71D4411D__INCLUDED_)

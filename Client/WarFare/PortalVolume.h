@@ -160,7 +160,7 @@ class CPortalVolume	: public CN3Transform
 
 private:
 	void DeleteAllPvsObj();
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 	bool IsInVolumn(__Vector3 vec);
 
 	void Render();

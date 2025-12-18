@@ -380,16 +380,15 @@ void CDlgSetSound::OnBtnInputInfoEdit()
 	OnSelchangeListSoundinfo();
 }
 
-bool CDlgSetSound::LoadSoundGroup(HANDLE hFile)
+bool CDlgSetSound::LoadSoundGroup(File& file)
 {
-	DWORD dwRWC;
 	int cnt = 0;
-	ReadFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
+	file.Read(&cnt, sizeof(int));
 		
-	for(int i=0;i<cnt;i++)
+	for (int i = 0; i < cnt; i++)
 	{
 		LPSOUNDINFO pSndInfo = new SOUNDINFO;
-		ReadFile(hFile, pSndInfo, sizeof(SOUNDINFO), &dwRWC, nullptr);
+		file.Read(pSndInfo, sizeof(SOUNDINFO));
 		AddSoundGroup(pSndInfo->szName, pSndInfo);
 	}
 	return true;

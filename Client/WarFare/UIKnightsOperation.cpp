@@ -64,9 +64,9 @@ void CUIKnightsOperation::Release()
 	m_pEdit_KnightsName = nullptr;
 }
 
-bool CUIKnightsOperation::Load(HANDLE hFile)
+bool CUIKnightsOperation::Load(File& file)
 {
-	if(false == CN3UIBase::Load(hFile)) return false;
+	if(false == CN3UIBase::Load(file)) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Up, GetChildByID<CN3UIButton>("btn_up"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Down, GetChildByID<CN3UIButton>("btn_down"));

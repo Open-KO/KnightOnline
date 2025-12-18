@@ -127,9 +127,9 @@ void CUIState::Release()
 	m_pImg_MAP = nullptr;
 }
 
-bool CUIState::Load(HANDLE hFile)
+bool CUIState::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pText_ID, GetChildByID<CN3UIString>("Text_ID"));
 	N3_VERIFY_UI_COMPONENT(m_pText_Level, GetChildByID<CN3UIString>("Text_Level"));
@@ -592,9 +592,9 @@ void CUIKnights::SetVisible(bool bVisible)
 	CN3UIBase::SetVisible(bVisible);
 }
 
-bool CUIKnights::Load(HANDLE hFile)
+bool CUIKnights::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pText_Name,			GetChildByID<CN3UIString>("Text_ClansName"));
@@ -1036,9 +1036,9 @@ CUIFriends::~CUIFriends()
 	this->SaveListToTextFile(""); // 몽땅 저장..
 }
 
-bool CUIFriends::Load(HANDLE hFile)
+bool CUIFriends::Load(File& file)
 {
-	if(false == CN3UIBase::Load(hFile)) return false;
+	if(false == CN3UIBase::Load(file)) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pList_Friends, GetChildByID<CN3UIList>("List_Friends"));
 	N3_VERIFY_UI_COMPONENT(m_pText_Page, GetChildByID<CN3UIString>("String_Page"));
@@ -1367,9 +1367,9 @@ void CUIFriends::MsgRecv_MemberInfo(Packet& pkt)
 
 
 
-bool CUIQuest::Load(HANDLE hFile)
+bool CUIQuest::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	return true;
@@ -1428,9 +1428,9 @@ void CUIVarious::Release()
 	m_fMoveDelta = 0; // 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
 }
 
-bool CUIVarious::Load(HANDLE hFile)
+bool CUIVarious::Load(File& file)
 {
-	if(CN3UIBase::Load(hFile)==false) return false;
+	if(CN3UIBase::Load(file)==false) return false;
 
 	N3_VERIFY_UI_COMPONENT(m_pBtn_Knights, GetChildByID<CN3UIButton>("btn_clan"));
 	N3_VERIFY_UI_COMPONENT(m_pBtn_State, GetChildByID<CN3UIButton>("Btn_State"));

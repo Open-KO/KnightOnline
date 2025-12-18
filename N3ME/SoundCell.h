@@ -36,7 +36,7 @@ public:
 	void	InitRect(__Vector3 v);
 	void	AddRect(__Vector3 v);
 	void	Render(DWORD color);
-	void	Load(HANDLE hFile);
+	void	Load(File& file);
 	void	Save(HANDLE hFile);
 
 	CSoundCell();

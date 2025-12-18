@@ -35,9 +35,9 @@ void CN3UIScrollBar::Release()
 	m_iLineSize = 1;
 }
 
-bool CN3UIScrollBar::Load(HANDLE hFile)
+bool CN3UIScrollBar::Load(File& file)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (false == CN3UIBase::Load(file)) return false;
 	__ASSERT(nullptr == m_pTrackBarRef, "scrollbar가 초기화되어 있지 않아여");
 
 	// m_pTrackBarRef, m_pBtnRef  설정하기

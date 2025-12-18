@@ -44,7 +44,7 @@ public:
 	void		Tick(float fFrm);
 	void		Render();
 
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 	void		LoadFromText(const std::string& szFName);
 	
 #ifdef _N3TOOL

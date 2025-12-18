@@ -54,19 +54,18 @@ bool CWall::GetVertex(int idx, __Vector3* pPos)
 	return true;
 }
 
-void CWall::Load(HANDLE hFile)
+void CWall::Load(File& file)
 {
-	DWORD dwRWC;
-	ReadFile(hFile, m_Name, 80, &dwRWC, nullptr);
+	file.Read(m_Name, 80);
 
 	int size;
-	ReadFile(hFile, &size, sizeof(int), &dwRWC, nullptr);
+	file.Read(&size, sizeof(int));
 
 	__Vector3 Vertex;
 	m_Wall.clear();
-	for(int i=0;i<size;i++)
+	for (int i = 0; i < size; i++)
 	{
-		ReadFile(hFile, &Vertex, sizeof(__Vector3), &dwRWC, nullptr);
+		file.Read(&Vertex, sizeof(__Vector3));
 		m_Wall.push_back(Vertex);
 	}
 }

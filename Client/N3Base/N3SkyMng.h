@@ -64,26 +64,25 @@ struct __SKY_DAYCHANGE
 		fHowLong = fHowLong_Arg;
 	}
 
-	bool Load(HANDLE hFile)
+	bool Load(File& file)
 	{
-		DWORD dwRWC = 0;
 		int nL = 0;
-		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
+		file.Read(&nL, 4);
 		if (nL > 0)
 		{
 			szName.assign(nL, '\0');
-			ReadFile(hFile, &szName[0], nL, &dwRWC, nullptr);
+			file.Read(&szName[0], nL);
 		}
 		else
 		{
 			szName.clear();
 		}
 
-		ReadFile(hFile, &eSkyDayChange, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &dwWhen, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &dwParam1, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &dwParam2, 4, &dwRWC, nullptr);
-		ReadFile(hFile, &fHowLong, 4, &dwRWC, nullptr);
+		file.Read(&eSkyDayChange, 4);
+		file.Read(&dwWhen, 4);
+		file.Read(&dwParam1, 4);
+		file.Read(&dwParam2, 4);
+		file.Read(&fHowLong, 4);
 
 		return true;
 	}
@@ -188,7 +187,7 @@ public:
 	const char*			CloudTextureFileName(int iIndex);
 #endif
 
-	bool Load(HANDLE hFile) override;
+	bool Load(File& file) override;
 
 #ifdef _N3GAME // 게임이 아닌 툴에서는 필요없다...
 	void ReleaseSound();

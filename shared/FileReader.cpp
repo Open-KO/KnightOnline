@@ -1,8 +1,6 @@
 ﻿#include "pch.h"
 #include "FileReader.h"
 
-#include <spdlog/spdlog.h>
-
 #include <cassert>
 #include <stdio.h> // SEEK_SET, SEEK_CUR, SEEK_END
 
@@ -73,7 +71,6 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 
 bool FileReader::Write(void* buffer, size_t byteToWrite, size_t* bytesWritten /*= nullptr*/)
 {
-	spdlog::error("FileReader::Write: Write not supported in a reader");
 	assert(!"FileReader: Write not supported");
 	return false;
 }
@@ -104,9 +101,7 @@ bool FileReader::Seek(size_t offset, int origin)
 			return true;
 	}
 
-	spdlog::error("FileReader::Seek: Unsupported seek type {}", origin);
 	assert(!"FileReader::Seek: Unsupported seek type");
-
 	return false;
 }
 

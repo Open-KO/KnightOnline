@@ -44,7 +44,7 @@ public:
 	int			IndexCount() { return m_nIC; }
 	uint16_t*		Indices() { return m_pwIndices; }
 
-	bool		Load(HANDLE hFile);
+	bool		Load(File& file);
 #ifdef _N3TOOL
 	bool		Import(CN3IMesh *pIMesh);
 	bool		Save(HANDLE hFile);

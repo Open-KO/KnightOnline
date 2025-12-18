@@ -60,25 +60,26 @@ void CN3Mesh::ReleaseIndices()
 	m_nIC = 0;
 }
 
-bool CN3Mesh::Load(HANDLE hFile)
+bool CN3Mesh::Load(File& file)
 {
-	if(m_pVertices != nullptr || m_psnIndices != nullptr) this->Release();
+	if (m_pVertices != nullptr
+		|| m_psnIndices != nullptr)
+		Release();
 
-	DWORD dwRWC = 0;
+	file.Read(&m_nVC, 4); // 점갯수 읽기..
 
-	ReadFile(hFile, &m_nVC, 4, &dwRWC, nullptr); // 점갯수 읽기..
-	if(m_nVC > 0)
+	if (m_nVC > 0)
 	{
-		this->Create(m_nVC, 0); // Vertex Buffer 생성 및 데이터 채우기
-		ReadFile(hFile, m_pVertices, m_nVC * sizeof(__VertexT1), &dwRWC, nullptr);
-		this->FindMinMax(); // 최대, 최소값을 찾는다.
+		Create(m_nVC, 0); // Vertex Buffer 생성 및 데이터 채우기
+		file.Read(m_pVertices, m_nVC * sizeof(__VertexT1));
+		FindMinMax(); // 최대, 최소값을 찾는다.
 	}
-	
-	ReadFile(hFile, &m_nIC, 4, &dwRWC, nullptr); // 인덱스 갯수 읽기..
-	if(m_nIC > 0)
+
+	file.Read(&m_nIC, 4); // 인덱스 갯수 읽기..
+	if (m_nIC > 0)
 	{
-		this->Create(0, m_nIC); // 인덱스 버퍼 생성 및 데이터 채우기
-		ReadFile(hFile, m_psnIndices, m_nIC * 2, &dwRWC, nullptr);
+		Create(0, m_nIC); // 인덱스 버퍼 생성 및 데이터 채우기
+		file.Read(m_psnIndices, m_nIC * 2);
 	}
 
 	return true;

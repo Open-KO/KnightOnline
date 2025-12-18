@@ -1,8 +1,6 @@
 ﻿#include "pch.h"
 #include "FileWriter.h"
 
-#include <spdlog/spdlog.h>
-
 #include <cassert>
 #include <stdio.h> // SEEK_SET, SEEK_CUR, SEEK_END
 
@@ -34,7 +32,6 @@ bool FileWriter::Open(const std::filesystem::path& path)
 
 bool FileWriter::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
-	spdlog::error("FileWriter::Read: Read not supported in a writer");
 	assert(!"FileWriter: Read not supported");
 	return false;
 }
@@ -80,14 +77,11 @@ bool FileWriter::Seek(size_t offset, int origin)
 		// unsupported - we don't know how big a file is going to be,
 		// it can grow as we seek & write to it.
 		case SEEK_END:
-			spdlog::error("FileWriter::Seek: SEEK_END not supported");
 			assert(!"FileWriter::Seek: SEEK_END not supported");
 			return false;
 	}
 
-	spdlog::error("FileReader::Seek: Unsupported seek type {}", origin);
 	assert(!"FileReader::Seek: Unsupported seek type");
-
 	return false;
 }
 

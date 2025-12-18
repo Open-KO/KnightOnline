@@ -30,9 +30,9 @@ CUICreateClanName::~CUICreateClanName()
 {
 }
 
-bool CUICreateClanName::Load(HANDLE hFile)
+bool CUICreateClanName::Load(File& file)
 {
-	if (!CN3UIBase::Load(hFile))
+	if (!CN3UIBase::Load(file))
 		return false;
 	
 	N3_VERIFY_UI_COMPONENT(m_pText_Title,		GetChildByID<CN3UIString>("Text_Message"));

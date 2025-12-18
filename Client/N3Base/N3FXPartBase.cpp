@@ -479,65 +479,64 @@ void CN3FXPartBase::Render()
 //
 //	load...
 //
-bool CN3FXPartBase::Load(HANDLE hFile)
+bool CN3FXPartBase::Load(File& file)
 {
 #if defined(_DEBUG)
 	int iType = m_iType;
 #endif
 
 	uint8_t	cTmp;
-	DWORD			dwRWC = 0;
 
-	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, nullptr);
+	file.Read(&cTmp, sizeof(uint8_t));
 	m_iVersion = (int) cTmp;
 
-	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, nullptr);
+	file.Read(&cTmp, sizeof(uint8_t));
 	m_iBaseVersion = (int) cTmp;
 
-	ReadFile(hFile, &m_fLife, sizeof(float), &dwRWC, nullptr);
+	file.Read(&m_fLife, sizeof(float));
 	if (m_fLife > 10.0f)
 		m_fLife = 10.0f;
 
 	if (m_iBaseVersion >= 3)
 	{
 		int iIDK0, iIDK1;
-		ReadFile(hFile, &iIDK0, sizeof(int), &dwRWC, nullptr);
-		ReadFile(hFile, &iIDK1, sizeof(int), &dwRWC, nullptr);
+		file.Read(&iIDK0, sizeof(int));
+		file.Read(&iIDK1, sizeof(int));
 	}
 
-	ReadFile(hFile, &cTmp, sizeof(uint8_t), &dwRWC, nullptr);
+	file.Read(&cTmp, sizeof(uint8_t));
 	m_iType = (int) cTmp;
 
-	ReadFile(hFile, &m_vVelocity, sizeof(__Vector3), &dwRWC, nullptr);
-	ReadFile(hFile, &m_vAcceleration, sizeof(__Vector3), &dwRWC, nullptr);
-	ReadFile(hFile, &m_vRotVelocity, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Read(&m_vVelocity, sizeof(__Vector3));
+	file.Read(&m_vAcceleration, sizeof(__Vector3));
+	file.Read(&m_vRotVelocity, sizeof(__Vector3));
 
-	ReadFile(hFile, &m_bOnGround, sizeof(bool), &dwRWC, nullptr);
+	file.Read(&m_bOnGround, sizeof(bool));
 
-	ReadFile(hFile, &m_vPos, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Read(&m_vPos, sizeof(__Vector3));
 
-	ReadFile(hFile, &m_iNumTex, sizeof(int), &dwRWC, nullptr);
-	ReadFile(hFile, &m_fTexFPS, sizeof(float), &dwRWC, nullptr);
-	ReadFile(hFile, &m_pTexName, MAX_PATH, &dwRWC, nullptr);
+	file.Read(&m_iNumTex, sizeof(int));
+	file.Read(&m_fTexFPS, sizeof(float));
+	file.Read(&m_pTexName, MAX_PATH);
 
 	if (m_iBaseVersion < 2)
 	{
-		ReadFile(hFile, &m_bAlpha, sizeof(BOOL), &dwRWC, nullptr);
-		ReadFile(hFile, &m_dwSrcBlend, sizeof(uint32_t), &dwRWC, nullptr);
-		ReadFile(hFile, &m_dwDestBlend, sizeof(uint32_t), &dwRWC, nullptr);
+		file.Read(&m_bAlpha, sizeof(BOOL));
+		file.Read(&m_dwSrcBlend, sizeof(uint32_t));
+		file.Read(&m_dwDestBlend, sizeof(uint32_t));
 
-		ReadFile(hFile, &m_fFadeOut, sizeof(float), &dwRWC, nullptr);
-		ReadFile(hFile, &m_fFadeIn, sizeof(float), &dwRWC, nullptr);
+		file.Read(&m_fFadeOut, sizeof(float));
+		file.Read(&m_fFadeIn, sizeof(float));
 	}
 	else // if (m_iBaseVersion >= 2)
 	{
-		ReadFile(hFile, &m_dwSrcBlend, sizeof(uint32_t), &dwRWC, nullptr);
-		ReadFile(hFile, &m_dwDestBlend, sizeof(uint32_t), &dwRWC, nullptr);
+		file.Read(&m_dwSrcBlend, sizeof(uint32_t));
+		file.Read(&m_dwDestBlend, sizeof(uint32_t));
 
-		ReadFile(hFile, &m_fFadeOut, sizeof(float), &dwRWC, nullptr);
-		ReadFile(hFile, &m_fFadeIn, sizeof(float), &dwRWC, nullptr);
+		file.Read(&m_fFadeOut, sizeof(float));
+		file.Read(&m_fFadeIn, sizeof(float));
 
-		ReadFile(hFile, &m_dwRenderFlag, sizeof(uint32_t), &dwRWC, nullptr);
+		file.Read(&m_dwRenderFlag, sizeof(uint32_t));
 
 		if (m_dwRenderFlag & RF_NOTZBUFFER) m_dwZEnable = D3DZB_FALSE;
 		else m_dwZEnable = D3DZB_TRUE;
@@ -553,7 +552,7 @@ bool CN3FXPartBase::Load(HANDLE hFile)
 
 	// TODO: implement shape_hdrname
 	if (m_iBaseVersion >= 4)
-		SetFilePointer(hFile, MAX_PATH, nullptr, FILE_CURRENT);
+		file.Seek(MAX_PATH, SEEK_CUR);
 
 	// NOTE: This should ideally just be an assertion, but we'll continue to allow it to run
 	// and otherwise be broken for now.

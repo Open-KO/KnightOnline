@@ -79,13 +79,13 @@ protected:
 
 public:
 	CPondMesh();
-	virtual ~CPondMesh();
+	~CPondMesh() override;
 
-	virtual void	Release();
-	virtual bool	Load(HANDLE hFile);
-	virtual bool	Load1000(HANDLE hFile);
-	virtual bool	Load1001(HANDLE hFile);
-	virtual bool	Save(HANDLE hFile);
+	void	Release() override;
+	bool	Load(File& file) override;
+	virtual bool	Load1000(File& file);
+	virtual bool	Load1001(File& file);
+	bool	Save(HANDLE hFile) override;
 	void			Render();
 	void			RenderVertexPoint();	// 잘보이게 점만 다시 그리기
 

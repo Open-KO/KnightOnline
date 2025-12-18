@@ -29,7 +29,7 @@ public:
 	bool	OnKeyPress(int iKey);
 	void	Release();
 
-	bool	Load(HANDLE hFile);
+	bool	Load(File& file);
 	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
 	void	Close();
 

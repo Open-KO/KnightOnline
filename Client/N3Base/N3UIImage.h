@@ -53,7 +53,7 @@ public:
 	virtual void	Render();								// 그리기
 	virtual void	RenderIconWrapper();
 	virtual void	Init(CN3UIBase* pParent);				// 초기화
-	virtual bool	Load(HANDLE hFile);
+	virtual bool	Load(File& file);
 
 	virtual void	operator = (const CN3UIImage& other);
 
