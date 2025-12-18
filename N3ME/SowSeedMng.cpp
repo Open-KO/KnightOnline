@@ -11,7 +11,7 @@
 #include "DlgSowSeed.h"
 #include "DlgShapeList.h"
 
-#include <shared/FileWriter.h>
+#include <FileIO/FileWriter.h>
 
 CSowSeedMng::CSowSeedMng()
 {

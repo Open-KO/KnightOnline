@@ -6,7 +6,6 @@
 #include <spdlog/spdlog.h>
 
 #include <MathUtils/MathUtils.h>
-#include <shared/File.h>
 
 #ifndef _DEBUG
 #define __ASSERT(expression, expressionMessage) (void)0

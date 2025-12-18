@@ -6,9 +6,10 @@
 #include "User.h"
 #include "db_resources.h"
 
+#include <FileIO/FileReader.h>
+
 #include <shared/crc32.h>
 #include <shared/DateTime.h>
-#include <shared/FileReader.h>
 #include <shared/lzf.h>
 #include <shared/packets.h>
 #include <shared/StringUtils.h>

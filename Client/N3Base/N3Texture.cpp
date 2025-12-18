@@ -9,7 +9,7 @@
 #include "BitmapFile.h"
 #endif // #ifdef _N3TOOL
 
-#include <shared/FileReader.h>
+#include <FileIO/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

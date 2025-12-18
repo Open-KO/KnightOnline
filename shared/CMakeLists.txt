@@ -5,11 +5,6 @@ add_library(shared STATIC
   crc32.cpp
   crc32.h
   DateTime.cpp
-  File.h
-  FileReader.cpp
-  FileReader.h
-  FileWriter.cpp
-  FileWriter.h
   globals.cpp
   globals.h
   Ini.cpp
@@ -47,7 +42,6 @@ set_source_files_properties(
 
 # Setup dependencies
 target_link_libraries(shared PUBLIC
-  llfio_sl
   spdlog::spdlog
 )
 

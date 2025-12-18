@@ -26,6 +26,7 @@ target_precompile_headers(ItemManager PRIVATE pch.h)
 # Setup dependencies
 target_link_libraries(ItemManager PRIVATE
   shared-server
+  FileIO
 )
 
 # Setup warning levels

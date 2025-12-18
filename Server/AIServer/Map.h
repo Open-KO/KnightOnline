@@ -5,6 +5,7 @@
 
 #include <shared-server/N3ShapeMgr.h>
 #include <shared-server/STLMap.h>
+
 #include <MathUtils/GeometricStructs.h>
 
 #include <iosfwd>
@@ -14,6 +15,7 @@ class CNpc;
 class CUser;
 class AIServerApp;
 class CRoomEvent;
+class File;
 
 typedef CSTLMap <_OBJECT_EVENT>		ObjectEventArray;
 typedef CSTLMap <CRoomEvent>		RoomEventArray;

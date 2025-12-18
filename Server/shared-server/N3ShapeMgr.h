@@ -11,6 +11,7 @@ constexpr int CELL_MAIN_SIZE = CELL_MAIN_DIVIDE * CELL_SUB_SIZE; // 메인셀 �
 constexpr int MAX_CELL_MAIN = 4096 / CELL_MAIN_SIZE; // 메인셀의 최대 갯수는 지형크기 / 메인셀크기 이다.
 constexpr int MAX_CELL_SUB = MAX_CELL_MAIN * CELL_MAIN_DIVIDE; // 서브셀 최대 갯수는 메인셀 * 메인셀나눔수 이다.
 
+class File;
 class CN3ShapeMgr
 {
 public:

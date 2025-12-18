@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C2FEB024-8E46-4533-918B-7196CAAA4E7D}</ProjectGuid>
+    <ProjectGuid>{10195385-62C0-4BDA-A8E3-B88F1C9F81AF}</ProjectGuid>
+    <RootNamespace>FileIO</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>shared</RootNamespace>
   </PropertyGroup>
   <Import Project="..\props\platform_root.props" />
   <PropertyGroup>
@@ -37,12 +37,11 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <Import Project="$(PropsDir)spdlog.props" />
+  <Import Project="$(PropsDir)FileIO.props" />
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -104,40 +103,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ByteBuffer.cpp" />
-    <ClCompile Include="crc32.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="DateTime.cpp" />
-    <ClCompile Include="globals.cpp" />
-    <ClCompile Include="Ini.cpp" />
-    <ClCompile Include="JvCryption.cpp" />
-    <ClCompile Include="lzf.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="TimerThread.cpp" />
+    <ClCompile Include="FileReader.cpp" />
+    <ClCompile Include="FileWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ByteBuffer.h" />
-    <ClInclude Include="CircularBuffer.h" />
-    <ClInclude Include="crc32.h" />
-    <ClInclude Include="DateTime.h" />
-    <ClInclude Include="globals.h" />
-    <ClInclude Include="Ini.h" />
-    <ClInclude Include="JvCryption.h" />
-    <ClInclude Include="lzf.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="packets.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="Thread.h" />
-    <ClInclude Include="TimerThread.h" />
-    <ClInclude Include="version.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="FileReader.h" />
+    <ClInclude Include="FileWriter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

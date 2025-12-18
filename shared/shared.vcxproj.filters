@@ -50,12 +50,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileReader.cpp">
-      <Filter>File I/O</Filter>
-    </ClCompile>
-    <ClCompile Include="FileWriter.cpp">
-      <Filter>File I/O</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ByteBuffer.h">
@@ -102,15 +96,6 @@
     </ClInclude>
     <ClInclude Include="DateTime.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="File.h">
-      <Filter>File I/O</Filter>
-    </ClInclude>
-    <ClInclude Include="FileReader.h">
-      <Filter>File I/O</Filter>
-    </ClInclude>
-    <ClInclude Include="FileWriter.h">
-      <Filter>File I/O</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

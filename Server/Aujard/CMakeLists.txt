@@ -27,6 +27,7 @@ target_precompile_headers(Aujard PRIVATE pch.h)
 target_link_libraries(Aujard PRIVATE
   shared-server
   db-library
+  FileIO
 )
 
 # Setup warning levels

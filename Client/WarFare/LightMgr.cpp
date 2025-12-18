@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "LightMgr.h"
 
-#include <shared/FileReader.h>
+#include <FileIO/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

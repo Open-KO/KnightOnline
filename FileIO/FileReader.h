@@ -1,5 +1,5 @@
-﻿#ifndef SHARED_FILEREADER_H
-#define SHARED_FILEREADER_H
+﻿#ifndef FILEIO_FILEREADER_H
+#define FILEIO_FILEREADER_H
 
 #pragma once
 
@@ -24,4 +24,4 @@ protected:
 	void* _address;
 };
 
-#endif // SHARED_FILEREADER_H
+#endif // FILEIO_FILEREADER_H

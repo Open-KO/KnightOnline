@@ -2,7 +2,7 @@
 #include "WinCrypt.h"
 #include "N3Base.h"
 
-#include <shared/File.h>
+#include <FileIO/File.h>
 
 CWinCrypt::CWinCrypt()
 {

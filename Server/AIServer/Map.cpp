@@ -7,6 +7,8 @@
 #include "AIServerApp.h"
 #include "User.h"
 
+#include <FileIO/File.h>
+
 #include <shared/globals.h>
 #include <spdlog/spdlog.h>
 

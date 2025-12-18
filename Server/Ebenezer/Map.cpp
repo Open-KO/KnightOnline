@@ -6,8 +6,8 @@
 #include "EbenezerApp.h"
 
 #include <db-library/RecordSetLoader.h>
-
 #include <Ebenezer/binder/EbenezerBinder.h>
+#include <FileIO/FileReader.h>
 
 #include <float.h>
 #include <istream>

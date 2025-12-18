@@ -27,6 +27,7 @@ target_precompile_headers(VersionManager PRIVATE pch.h)
 target_link_libraries(VersionManager PRIVATE
   shared-server
   db-library
+  FileIO
 )
 
 # Setup warning levels

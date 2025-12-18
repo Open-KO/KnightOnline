@@ -25,8 +25,8 @@
 #include <N3Base/N3Texture.h>
 #include <N3Base/N3VMesh.h>
 
-#include <shared/FileReader.h>
-#include <shared/FileWriter.h>
+#include <FileIO/FileReader.h>
+#include <FileIO/FileWriter.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

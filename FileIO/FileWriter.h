@@ -1,5 +1,5 @@
-﻿#ifndef SHARED_FILEWRITER_H
-#define SHARED_FILEWRITER_H
+﻿#ifndef FILEIO_FILEWRITER_H
+#define FILEIO_FILEWRITER_H
 
 #pragma once
 
@@ -23,4 +23,4 @@ protected:
 	LLFIO_V2_NAMESPACE::file_handle _fileHandle;
 };
 
-#endif // SHARED_FILEWRITER_H
+#endif // FILEIO_FILEWRITER_H

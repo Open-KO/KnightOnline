@@ -86,6 +86,7 @@ include_directories(
 
 set(CMAKE_FOLDER) # reset so shared is placed in the root
 add_subdirectory(shared)
+add_subdirectory(FileIO)
 add_subdirectory(MathUtils)
 
 if(OPENKO_BUILD_SERVERS)

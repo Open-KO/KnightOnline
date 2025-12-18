@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-#include <shared/FileReader.h>
+#include <FileIO/FileReader.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

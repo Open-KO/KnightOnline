@@ -59,6 +59,7 @@ target_precompile_headers(AIServer PRIVATE pch.h)
 target_link_libraries(AIServer PRIVATE
   shared-server
   db-library
+  FileIO
 )
 
 # Setup warning levels

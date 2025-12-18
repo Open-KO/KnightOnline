@@ -8,7 +8,7 @@
 #include "PlayerMySelf.h"
 #include "N3FXMgr.h"
 
-#include <shared/FileReader.h>
+#include <FileIO/FileReader.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

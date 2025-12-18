@@ -12,7 +12,7 @@
 #include "N3Base.h"
 #include <string>
 
-#include <shared/File.h>
+#include <FileIO/File.h>
 
 //-----------------------------------------------------------------------------
 #define N3FORMAT_VER_UNKN 0x00000000

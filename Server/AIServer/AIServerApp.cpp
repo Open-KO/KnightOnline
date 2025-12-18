@@ -7,8 +7,9 @@
 #include "RoomEvent.h"
 #include "ZoneEventThread.h"
 
+#include <FileIO/FileReader.h>
+
 #include <shared/crc32.h>
-#include <shared/FileReader.h>
 #include <shared/globals.h>
 #include <shared/Ini.h>
 #include <shared/lzf.h>

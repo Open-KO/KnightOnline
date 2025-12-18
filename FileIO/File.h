@@ -1,9 +1,10 @@
-﻿#ifndef SHARED_FILE_H
-#define SHARED_FILE_H
+﻿#ifndef FILEIO_FILE_H
+#define FILEIO_FILE_H
 
 #pragma once
 
 #include <filesystem> // std::filesystem::path, std::filesystem::file_size()
+#include <inttypes.h>
 
 class File
 {
@@ -47,4 +48,4 @@ protected:
 	bool _open = false;
 };
 
-#endif // SHARED_FILE_H
+#endif // FILEIO_FILE_H

@@ -34,18 +34,14 @@
 #include <N3Base/N3PMeshInstance.h>
 #include <N3Base/Pick.h>
 
-#include <shared/FileReader.h>
-#include <shared/FileWriter.h>
+#include <FileIO/FileReader.h>
+#include <FileIO/FileWriter.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 // 생성자
 CMapMng::CMapMng(CMainFrame* pMainFrm)

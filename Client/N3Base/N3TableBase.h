@@ -15,8 +15,8 @@
 #include "My_3DStruct.h" // _ASSERT
 
 // TODO: Move these out of the header.
-#include <shared/FileReader.h>
-#include <shared/FileWriter.h>
+#include <FileIO/FileReader.h>
+#include <FileIO/FileWriter.h>
 
 #ifdef _N3GAME
 #include "LogWriter.h"

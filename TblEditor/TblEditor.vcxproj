@@ -39,8 +39,7 @@
   </ImportGroup>
   <Import Project="$(PropsDir)cp949_strings.props" />
   <Import Project="$(PropsDir)directx9.props" />
-  <Import Project="$(PropsDir)llfio.props" />
-  <Import Project="$(PropsDir)spdlog.props" />
+  <Import Project="$(PropsDir)FileIO.props" />
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
@@ -56,7 +55,6 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <Culture>0x0409</Culture>

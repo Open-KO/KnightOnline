@@ -71,6 +71,7 @@ target_precompile_headers(Ebenezer PRIVATE pch.h)
 target_link_libraries(Ebenezer PRIVATE
   shared-server
   db-library
+  FileIO
 )
 
 # Setup warning levels

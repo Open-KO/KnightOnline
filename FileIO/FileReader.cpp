@@ -1,5 +1,4 @@
-﻿#include "pch.h"
-#include "FileReader.h"
+﻿#include "FileReader.h"
 
 #include <cassert>
 #include <stdio.h> // SEEK_SET, SEEK_CUR, SEEK_END
