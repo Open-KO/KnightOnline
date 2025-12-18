@@ -5,6 +5,11 @@ add_library(shared STATIC
   crc32.cpp
   crc32.h
   DateTime.cpp
+  File.h
+  FileReader.cpp
+  FileReader.h
+  FileWriter.cpp
+  FileWriter.h
   globals.cpp
   globals.h
   Ini.cpp

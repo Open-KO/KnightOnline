@@ -110,6 +110,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DateTime.cpp" />
+    <ClCompile Include="FileReader.cpp" />
+    <ClCompile Include="FileWriter.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="JvCryption.cpp" />
@@ -128,6 +130,9 @@
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="crc32.h" />
     <ClInclude Include="DateTime.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="FileReader.h" />
+    <ClInclude Include="FileWriter.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="JvCryption.h" />

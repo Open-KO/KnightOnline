@@ -12,6 +12,9 @@
     <Filter Include="LZF">
       <UniqueIdentifier>{109828ab-3858-4170-985f-86eb2ebb0efb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File I/O">
+      <UniqueIdentifier>{b06adf48-b855-4240-b0f7-aa7dd4df65a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ByteBuffer.cpp">
@@ -46,6 +49,12 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileReader.cpp">
+      <Filter>File I/O</Filter>
+    </ClCompile>
+    <ClCompile Include="FileWriter.cpp">
+      <Filter>File I/O</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +102,15 @@
     </ClInclude>
     <ClInclude Include="DateTime.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>File I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="FileReader.h">
+      <Filter>File I/O</Filter>
+    </ClInclude>
+    <ClInclude Include="FileWriter.h">
+      <Filter>File I/O</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

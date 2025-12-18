@@ -35,7 +35,6 @@
   <Import Project="$(PropsDir)asio.props" />
   <Import Project="$(PropsDir)db-library.props" />
   <Import Project="$(PropsDir)server.props" />
-  <Import Project="$(PropsDir)spdlog.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <OutDir>..\bin\$(Configuration)\</OutDir>
