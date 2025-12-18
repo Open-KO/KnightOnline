@@ -1,7 +1,7 @@
 fetchcontent_declare(
   llfio
-  GIT_REPOSITORY        "https://github.com/twostars/llfio.git"
-  GIT_TAG               "20250527-bump-ntkernel-error-category"
+  GIT_REPOSITORY        "https://github.com/Open-KO/llfio.git"
+  GIT_TAG               "20250527-OpenKO"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   OVERRIDE_FIND_PACKAGE TRUE

@@ -27,7 +27,7 @@ bool FileWriter::Open(const std::filesystem::path& path)
 	if (!handleResult)
 		return false;
 
-	_fileHandle = std::move(handleResult).value();
+	_fileHandle = std::move(std::move(handleResult).value());
 	_path = path;
 	return true;
 }

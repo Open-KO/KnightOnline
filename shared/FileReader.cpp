@@ -34,7 +34,7 @@ bool FileReader::Open(const std::filesystem::path& path)
 	if (!handleResult)
 		return false;
 
-	_mappedFileHandle = std::move(handleResult).value();
+	_mappedFileHandle = std::move(std::move(handleResult).value());
 	_address = _mappedFileHandle.address();
 	_size = static_cast<size_t>(fileSize);
 	_path = path;
