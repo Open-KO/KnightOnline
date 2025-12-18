@@ -1,8 +1,10 @@
 ﻿#include "pch.h"
 #include "FileWriter.h"
 
-#include <cassert>
 #include <spdlog/spdlog.h>
+
+#include <cassert>
+#include <stdio.h> // SEEK_SET, SEEK_CUR, SEEK_END
 
 namespace llfio = LLFIO_V2_NAMESPACE;
 
