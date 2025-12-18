@@ -37,7 +37,7 @@ enum		eSKY_DAYCHANGE {	SDC_SKYCOLOR=0,		// 하늘색
 								SDC_UNKNOWN = 0xffffffff
 };
 
-struct		__SKY_DAYCHANGE
+struct __SKY_DAYCHANGE
 {
 	std::string		szName;			// 이름 붙이기..
 	eSKY_DAYCHANGE	eSkyDayChange;	// 어떤 변화인가?
@@ -66,16 +66,17 @@ struct		__SKY_DAYCHANGE
 
 	bool Load(HANDLE hFile)
 	{
-		szName = "";
-
 		DWORD dwRWC = 0;
 		int nL = 0;
 		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL > 0) 
+		if (nL > 0)
 		{
-			std::vector<char> buffer(nL+1, '\0');
-			ReadFile(hFile, &buffer[0], nL, &dwRWC, nullptr);
-			szName = &buffer[0];
+			szName.assign(nL, '\0');
+			ReadFile(hFile, &szName[0], nL, &dwRWC, nullptr);
+		}
+		else
+		{
+			szName.clear();
 		}
 
 		ReadFile(hFile, &eSkyDayChange, 4, &dwRWC, nullptr);

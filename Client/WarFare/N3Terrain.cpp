@@ -433,11 +433,15 @@ bool CN3Terrain::Load(HANDLE hFile)
 
 		int iNL;
 		ReadFile(hFile, &iNL, sizeof(int), &dwRWC, nullptr);
+
 		if (iNL > 0)
 		{
-			std::vector<char> buffer(iNL + 1, '\0');
-			ReadFile(hFile, &buffer[0], iNL, &dwRWC, nullptr);
-			m_szName = &buffer[0];
+			m_szName.assign(iNL, '\0');
+			ReadFile(hFile, &m_szName[0], iNL, &dwRWC, nullptr);
+		}
+		else
+		{
+			m_szName.clear();
 		}
 	}
 

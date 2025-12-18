@@ -247,43 +247,43 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 
 bool CN3UIButton::Load(HANDLE hFile)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
-	DWORD dwNum;
-	ReadFile(hFile, &m_rcClick, sizeof(m_rcClick), &dwNum, nullptr);	// click 영역
+	DWORD dwRWC;
+	ReadFile(hFile, &m_rcClick, sizeof(m_rcClick), &dwRWC, nullptr);	// click 영역
 
 	// m_ImageRef 설정하기
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIBase* pChild = (*itor);
 		if (UI_TYPE_IMAGE != pChild->UIType()) continue;	// image만 골라내기
-		int iBtnState = (int)(pChild->GetReserved());
-		if (iBtnState<NUM_BTN_STATE)
-		{
-			m_ImageRef[iBtnState] = (CN3UIImage*)pChild;
-		}
+		int iBtnState = (int) (pChild->GetReserved());
+		if (iBtnState < NUM_BTN_STATE)
+			m_ImageRef[iBtnState] = (CN3UIImage*) pChild;
 	}
+
+	std::string filename;
 
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
 	int iSndFNLen = 0;
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0)
+	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	if (iSndFNLen > 0)
 	{
-		std::vector<char> buffer(iSndFNLen+1, '\0');
-		ReadFile(hFile, &buffer[0], iSndFNLen, &dwNum, nullptr);
+		filename.assign(iSndFNLen, '\0');
+		ReadFile(hFile, &filename[0], iSndFNLen, &dwRWC, nullptr);
 
 		__ASSERT(nullptr == m_pSnd_On, "memory leak");
-		m_pSnd_On = s_SndMgr.CreateObj(&buffer[0], SNDTYPE_2D);
+		m_pSnd_On = s_SndMgr.CreateObj(filename, SNDTYPE_2D);
 	}
 
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0)
+	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	if (iSndFNLen > 0)
 	{
-		std::vector<char> buffer(iSndFNLen+1, '\0');
-		ReadFile(hFile, &buffer[0], iSndFNLen, &dwNum, nullptr);
+		filename.assign(iSndFNLen, '\0');
+		ReadFile(hFile, &filename[0], iSndFNLen, &dwRWC, nullptr);
 
 		__ASSERT(nullptr == m_pSnd_Click, "memory leak");
-		m_pSnd_Click = s_SndMgr.CreateObj(&buffer[0], SNDTYPE_2D);
+		m_pSnd_Click = s_SndMgr.CreateObj(filename, SNDTYPE_2D);
 	}
 
 	return true;

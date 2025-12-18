@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable : 4786)
-
 #include "N3BaseFileAccess.h"
 #include <string>
 #include <vector>
@@ -96,15 +94,18 @@ public:
 		ReadFile(hFile, &fFrmStrike1, 4, &dwRWC, nullptr);
 
 		// 이름 읽기..
-		szName = "";
 		ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-		if(nL > 0)
+		if (nL > 0)
 		{
-			std::vector<char> buffer(nL+1, '\0');
-			ReadFile(hFile, &buffer[0], nL, &dwRWC, nullptr);
-			szName = &buffer[0];
+			szName.assign(nL, '\0');
+			ReadFile(hFile, &szName[0], nL, &dwRWC, nullptr);
+		}
+		else
+		{
+			szName.clear();
 		}
 	}
+
 	void Save(HANDLE hFile)
 	{
 		if(nullptr == hFile || INVALID_HANDLE_VALUE == hFile) return;

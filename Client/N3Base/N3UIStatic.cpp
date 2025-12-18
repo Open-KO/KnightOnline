@@ -62,33 +62,29 @@ void CN3UIStatic::SetRegion(const RECT& Rect)
 
 bool CN3UIStatic::Load(HANDLE hFile)
 {
-	if (false == CN3UIBase::Load(hFile)) return false;
+	if (!CN3UIBase::Load(hFile))
+		return false;
 
 	// m_pImageBkGnd,  m_pBuffOutRef 설정하기
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIBase* pChild = (*itor);
 		if (UI_TYPE_IMAGE == pChild->UIType())
-		{
 			m_pImageBkGnd = (CN3UIImage*)pChild;
-		}
 		else if (UI_TYPE_STRING == pChild->UIType())
-		{
 			m_pBuffOutRef = (CN3UIString*)pChild;
-		}
 	}
 	
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
 	int iSndFNLen = 0;
-	DWORD dwNum;
-	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
-	if (iSndFNLen>0)
+	DWORD dwRWC;
+	ReadFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);		//	사운드 파일 문자열 길이
+	if (iSndFNLen > 0)
 	{
-		std::vector<char> buffer(iSndFNLen+1, '\0');
-		ReadFile(hFile, &buffer[0], iSndFNLen, &dwNum, nullptr);
+		std::string filename(iSndFNLen, '\0');
+		ReadFile(hFile, &filename[0], iSndFNLen, &dwRWC, nullptr);
 
 		__ASSERT(nullptr == m_pSnd_Click, "memory leak");
-		m_pSnd_Click = s_SndMgr.CreateObj(&buffer[0], SNDTYPE_2D);
+		m_pSnd_Click = s_SndMgr.CreateObj(filename, SNDTYPE_2D);
 	}
 
 	return true;

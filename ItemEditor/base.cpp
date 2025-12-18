@@ -299,15 +299,10 @@ void N3LoadMesh(const char* szFN) {
 
 //-----------------------------------------------------------------------------
 bool CN3BaseFileAccess_Load(FILE* hFile) {
-	std::string m_szName = "";
-
 	int nL = 0;
 	fread(&nL, sizeof(int), 1, hFile);
-	if(nL > 0)  {
-		std::vector<char> buffer(nL+1, '\0');
-		fread(&buffer[0], sizeof(char), nL, hFile);
-		m_szName = &buffer[0];
-	}
+	if (nL > 0)
+		fseek(hFile, nL, SEEK_CUR); // skip filename
 
 	return true;
 }

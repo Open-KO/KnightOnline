@@ -4,7 +4,6 @@
 
 #include "StdAfxBase.h"
 #include "N3BaseFileAccess.h"
-#include <vector>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -55,16 +54,17 @@ bool CN3BaseFileAccess::Load(HANDLE hFile)
 		return false;
 	}
 
-	m_szName.clear();
-
 	DWORD dwRWC = 0;
 	int nL = 0;
 	ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
 	if (nL > 0)
 	{
-		std::vector<char> buffer(nL+1, '\0');
-		ReadFile(hFile, &buffer[0], nL, &dwRWC, nullptr);
-		m_szName = &buffer[0];
+		m_szName.assign(nL, '\0');
+		ReadFile(hFile, &m_szName[0], nL, &dwRWC, nullptr);
+	}
+	else
+	{
+		m_szName.clear();
 	}
 
 	return true;
@@ -72,7 +72,7 @@ bool CN3BaseFileAccess::Load(HANDLE hFile)
 
 bool CN3BaseFileAccess::LoadFromFile()
 {
-	if(m_szFileName.size() <= 0)
+	if (m_szFileName.empty())
 	{
 #ifdef _N3GAME
 		CLogWriter::Write("Can't open file (read)");
@@ -81,7 +81,7 @@ bool CN3BaseFileAccess::LoadFromFile()
 	}
 
 	std::string szFullPath;
-	if(-1 != m_szFileName.find(':') || -1 != m_szFileName.find("\\\\") || -1 != m_szFileName.find("//")) // 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
+	if (-1 != m_szFileName.find(':') || -1 != m_szFileName.find("\\\\") || -1 != m_szFileName.find("//")) // 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
 	{
 		szFullPath = m_szFileName;
 	}
@@ -96,7 +96,7 @@ bool CN3BaseFileAccess::LoadFromFile()
 	DWORD dwRWC = 0;
 	HANDLE hFile = ::CreateFile(szFullPath.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	if(INVALID_HANDLE_VALUE == hFile)
+	if (INVALID_HANDLE_VALUE == hFile)
 	{
 		std::string szErr = szFullPath + " - Can't open file (read)";
 #ifdef _N3TOOL
@@ -108,7 +108,7 @@ bool CN3BaseFileAccess::LoadFromFile()
 		return false;
 	}
 
-	bool bSuccess =	this->Load(hFile);
+	bool bSuccess = this->Load(hFile);
 
 	CloseHandle(hFile);
 
@@ -175,3 +175,4 @@ bool CN3BaseFileAccess::Save(HANDLE hFile)
 
 	return true;
 }
+

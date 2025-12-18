@@ -244,20 +244,21 @@ CPortalVolume* CPvsMgr::GetPortalVolPointerByID(int iID)
 
 std::string CPvsMgr::ReadDecryptString(HANDLE hFile)
 {
-	DWORD dwNum;
+	DWORD dwRWC;
 	int iCount;
 
-	ReadFile(hFile, &iCount, sizeof(int), &dwNum, nullptr);
-	std::vector<char> buffer(iCount);
-
-	ReadFile(hFile, &(buffer[0]), iCount, &dwNum, nullptr);				// string
-	for( int i = 0; i < iCount; i++)
-		buffer[i] ^= CRY_KEY;
-	buffer.push_back((char)0x00);
+	ReadFile(hFile, &iCount, sizeof(int), &dwRWC, nullptr);
 
 	std::string strDest;
-	strDest = &buffer[0];
-	
+	if (iCount > 0)
+	{
+		strDest.assign(iCount, '\0');
+		ReadFile(hFile, &strDest[0], iCount, &dwRWC, nullptr);
+
+		for (int i = 0; i < iCount; i++)
+			strDest[i] ^= CRY_KEY;
+	}
+
 	return strDest;
 }
 
