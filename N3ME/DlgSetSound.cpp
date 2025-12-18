@@ -394,17 +394,16 @@ bool CDlgSetSound::LoadSoundGroup(File& file)
 	return true;
 }
 
-bool CDlgSetSound::SaveSoundGroup(HANDLE hFile)
+bool CDlgSetSound::SaveSoundGroup(File& file)
 {
-	DWORD dwRWC;
 	int cnt = m_ListSoundGroup.GetCount();
-	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
+	file.Write(&cnt, sizeof(int));
 
 	LPSOUNDINFO pSndInfo;
-	for(int i=0;i<cnt;i++)
+	for (int i = 0; i < cnt; i++)
 	{
-		pSndInfo = (LPSOUNDINFO)m_ListSoundGroup.GetItemDataPtr(i);
-		WriteFile(hFile, pSndInfo, sizeof(SOUNDINFO), &dwRWC, nullptr);
+		pSndInfo = (LPSOUNDINFO) m_ListSoundGroup.GetItemDataPtr(i);
+		file.Write(pSndInfo, sizeof(SOUNDINFO));
 	}
 	return true;
 }

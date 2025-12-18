@@ -72,20 +72,19 @@ bool CN3FXPlugPart::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3FXPlugPart::Save(HANDLE hFile)
+bool CN3FXPlugPart::Save(File& file)
 {
-	if (!CN3BaseFileAccess::Save(hFile))
+	if (!CN3BaseFileAccess::Save(file))
 		return false;
 
 	__ASSERT(m_pFXB, "no FXB");
 
-	DWORD dwNum;
 	int nStrLen = static_cast<int>(m_pFXB->FileName().size());
-	WriteFile(hFile, &nStrLen, sizeof(nStrLen), &dwNum, nullptr);
-	WriteFile(hFile, m_pFXB->FileName().c_str(), nStrLen, &dwNum, nullptr);
-	WriteFile(hFile, &m_nRefIndex, sizeof(m_nRefIndex), &dwNum, nullptr);
-	WriteFile(hFile, &m_vOffsetPos, sizeof(m_vOffsetPos), &dwNum, nullptr);
-	WriteFile(hFile, &m_vOffsetDir, sizeof(m_vOffsetDir), &dwNum, nullptr);
+	file.Write(&nStrLen, sizeof(nStrLen));
+	file.Write(m_pFXB->FileName().c_str(), nStrLen);
+	file.Write(&m_nRefIndex, sizeof(m_nRefIndex));
+	file.Write(&m_vOffsetPos, sizeof(m_vOffsetPos));
+	file.Write(&m_vOffsetDir, sizeof(m_vOffsetDir));
 
 	return true;
 }
@@ -229,19 +228,18 @@ void CN3FXPlug::TriggerAll()
 }
 
 #ifdef _N3TOOL
-bool CN3FXPlug::Save(HANDLE hFile)
+bool CN3FXPlug::Save(File& file)
 {
-	if (!CN3BaseFileAccess::Save(hFile))
+	if (!CN3BaseFileAccess::Save(file))
 		return false;
 
 	RemoveFXPParts_HaveNoBundle();	// 번들 없는 파트들 지우기
 
-	DWORD dwNum;
 	int nCount = static_cast<int>(m_FXPParts.size());
-	WriteFile(hFile, &nCount, sizeof(nCount), &dwNum, nullptr);		// Part의 갯수
+	file.Write(&nCount, sizeof(nCount));		// Part의 갯수
 
 	for (CN3FXPlugPart* pPart : m_FXPParts)
-		pPart->Save(hFile);
+		pPart->Save(file);
 
 	return true;
 }

@@ -916,35 +916,33 @@ bool CPondMesh::Load(File& file)
 	return 0;
 }
 
-bool CPondMesh::Save(HANDLE hFile)
+bool CPondMesh::Save(File& file)
 {
-	DWORD dwNum = 0;
+	file.Write(&m_iPondID, sizeof(m_iPondID));		// 연못 번호
+	file.Write(&m_dwPondAlpha, sizeof(m_dwPondAlpha));		// 연못 알파
+	file.Write(&m_fWaterHeight, sizeof(m_fWaterHeight));
+	file.Write(&m_iWaterScaleWidth, sizeof(m_iWaterScaleWidth));
+	file.Write(&m_iWaterScaleHeight, sizeof(m_iWaterScaleHeight));
+	file.Write(&m_fTU, sizeof(m_fTU));
+	file.Write(&m_fTV, sizeof(m_fTV));
+	file.Write(&m_fWaterScaleX, sizeof(m_fWaterScaleX));
+	file.Write(&m_fWaterScaleZ, sizeof(m_fWaterScaleZ));
+	file.Write(&m_bUVState, sizeof(m_bUVState));
 
-	WriteFile(hFile, &m_iPondID, sizeof(m_iPondID), &dwNum, nullptr);		// 연못 번호
-	WriteFile(hFile, &m_dwPondAlpha, sizeof(m_dwPondAlpha), &dwNum, nullptr);		// 연못 알파
-	WriteFile(hFile, &m_fWaterHeight, sizeof(m_fWaterHeight), &dwNum, nullptr);
-	WriteFile(hFile, &m_iWaterScaleWidth, sizeof(m_iWaterScaleWidth), &dwNum, nullptr);
-	WriteFile(hFile, &m_iWaterScaleHeight, sizeof(m_iWaterScaleHeight), &dwNum, nullptr);
-	WriteFile(hFile, &m_fTU, sizeof(m_fTU), &dwNum, nullptr);
-	WriteFile(hFile, &m_fTV, sizeof(m_fTV), &dwNum, nullptr);
-	WriteFile(hFile, &m_fWaterScaleX, sizeof(m_fWaterScaleX), &dwNum, nullptr);
-	WriteFile(hFile, &m_fWaterScaleZ, sizeof(m_fWaterScaleZ), &dwNum, nullptr);
-	WriteFile(hFile, &m_bUVState, sizeof(m_bUVState), &dwNum, nullptr);
+	file.Write(m_vDrawBox, sizeof(m_vDrawBox));				// 한줄에 있는 점 갯수
 
-	WriteFile(hFile, m_vDrawBox, sizeof(m_vDrawBox), &dwNum, nullptr);				// 한줄에 있는 점 갯수
-
-	WriteFile(hFile, &m_iVC, sizeof(m_iVC), &dwNum, nullptr);						// 점 갯수
+	file.Write(&m_iVC, sizeof(m_iVC));						// 점 갯수
 	if (m_iVC > 0)
-		WriteFile(hFile, m_pViewVts, m_iVC * sizeof(__VertexXyzT2), &dwNum, nullptr);	// vertex buffer
-	WriteFile(hFile, &m_iIC, sizeof(m_iIC), &dwNum, nullptr);						// IndexBuffer Count.
+		file.Write(m_pViewVts, m_iVC * sizeof(__VertexXyzT2));	// vertex buffer
+	file.Write(&m_iIC, sizeof(m_iIC));						// IndexBuffer Count.
 
 	int iLen = 0;
 	if (m_pTexture != nullptr)
 		iLen = static_cast<int>(m_pTexture->FileName().size());
 
-	WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);							// texture file name length
+	file.Write(&iLen, sizeof(iLen));							// texture file name length
 	if (iLen > 0)
-		WriteFile(hFile, m_pTexture->FileName().c_str(), iLen, &dwNum, nullptr);	// texture file name
+		file.Write(m_pTexture->FileName().c_str(), iLen);	// texture file name
 
 	return 0;
 }

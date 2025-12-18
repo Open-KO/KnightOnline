@@ -9,18 +9,12 @@ namespace llfio = LLFIO_V2_NAMESPACE;
 FileReader::FileReader()
 {
 	_address = nullptr;
-	_size = 0;
 }
 
-bool FileReader::Open(const std::filesystem::path& path)
+bool FileReader::OpenExisting(const std::filesystem::path& path)
 {
 	// Close any existing file handle and reset read states.
 	Close();
-
-	std::error_code ec;
-	auto fileSize = std::filesystem::file_size(path, ec);
-	if (ec)
-		return false;
 
 	auto handleResult = llfio::mapped_file(
 		{},
@@ -34,9 +28,30 @@ bool FileReader::Open(const std::filesystem::path& path)
 
 	_mappedFileHandle = std::move(std::move(handleResult).value());
 	_address = _mappedFileHandle.address();
-	_size = static_cast<size_t>(fileSize);
 	_path = path;
+	_open = true;
+	_size = 0;
+
+	llfio::stat_t stat;
+
+	auto statResult = stat.fill(_mappedFileHandle, llfio::stat_t::want::size);
+	if (!statResult)
+	{
+		std::error_code ec;
+		_size = std::filesystem::file_size(path, ec);
+	}
+	else
+	{
+		_size = stat.st_size;
+	}
+
 	return true;
+}
+
+bool FileReader::Create(const std::filesystem::path& path)
+{
+	assert(!"FileReader: Create not supported");
+	return false;
 }
 
 bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
@@ -52,7 +67,7 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 	assert(_mappedFileHandle.is_valid());
 	assert(_offset <= _size);
 
-	const size_t remainingBytes = _size - _offset;
+	const size_t remainingBytes = static_cast<size_t>(_size - _offset);
 	const size_t bytesToCopy = std::min(bytesToRead, remainingBytes);
 
 	if (bytesToCopy == 0)
@@ -69,40 +84,46 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 	return bytesToCopy == bytesToRead;
 }
 
-bool FileReader::Write(void* buffer, size_t byteToWrite, size_t* bytesWritten /*= nullptr*/)
+bool FileReader::Write(const void* buffer, size_t byteToWrite, size_t* bytesWritten /*= nullptr*/)
 {
 	assert(!"FileReader: Write not supported");
 	return false;
 }
 
-bool FileReader::Seek(size_t offset, int origin)
+bool FileReader::Seek(int64_t offset, int origin)
 {
+	int64_t newOffset = offset;
+
 	switch (origin)
 	{
+		// explicitly set to the given offset
 		case SEEK_SET:
-			if (offset > _size)
-				return false;
+			break;
 
-			_offset = offset;
-			return true;
-
+		// set relative to the current offset
 		case SEEK_CUR:
-			if ((_offset + offset) > _size)
-				return false;
+			newOffset += static_cast<int64_t>(_offset);
+			break;
 
-			_offset += offset;
-			return true;
-
+		// set relative to the end offset (i.e. the size)
 		case SEEK_END:
-			if (offset > _size)
-				return false;
+			newOffset += static_cast<int64_t>(_size);
+			break;
 
-			_offset = _size - offset;
-			return true;
+		default:
+			assert(!"FileReader::Seek: Unsupported seek type");
+			return false;
 	}
 
-	assert(!"FileReader::Seek: Unsupported seek type");
-	return false;
+	if (newOffset < 0
+		|| static_cast<uint64_t>(newOffset) > _size)
+	{
+		assert(!"FileReader::Seek: Invalid seek");
+		return false;
+	}
+
+	_offset = static_cast<uint64_t>(newOffset);
+	return true;
 }
 
 void FileReader::Close()
@@ -115,6 +136,7 @@ void FileReader::Close()
 
 	_size = 0;
 	_offset = 0;
+	_open = false;
 }
 
 FileReader::~FileReader()

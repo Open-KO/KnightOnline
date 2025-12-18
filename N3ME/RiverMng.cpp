@@ -69,19 +69,19 @@ bool CRiverMng::Load(File& file)
 	return true;
 }
 
-bool CRiverMng::Save(HANDLE hFile)
+bool CRiverMng::Save(File& file)
 {
-	DWORD dwNum;
 	int iSize = static_cast<int>(m_RiverMeshes.size());
-	WriteFile(hFile, &iSize, 4, &dwNum, nullptr);
+	file.Write(&iSize, 4);
 	
 	it_RiverMesh it = m_RiverMeshes.begin();
 	for(int i = 0; i < iSize; i++, it++)
 	{
 		CRiverMesh* pRM = *it;
-		pRM->Save(hFile);
+		pRM->Save(file);
 	}
-	return 0;
+
+	return true;
 }
 
 void CRiverMng::Tick()
@@ -621,13 +621,12 @@ void CRiverMng::ReCalcUV()
 	m_pMainFrm->Invalidate(FALSE);
 }
 
-void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
+void CRiverMng::MakeGameFiles(File& file, float fSize)
 {
 	int iRiverCount = static_cast<int>(m_RiverMeshes.size());
-	DWORD dwNum;
 
 	auto it = m_RiverMeshes.begin();
-	WriteFile(hFile, &iRiverCount, sizeof(int), &dwNum, nullptr);
+	file.Write(&iRiverCount, sizeof(int));
 	for (int i = 0; i < iRiverCount; i++, it++)
 	{
 		CRiverMesh* pRM = *it;
@@ -636,7 +635,7 @@ void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
 		int iVC = pRM->VertexCount();
 		__VertexXyzT2* pVtx0 = pRM->GetVertex(0), *pSrcVtx = nullptr;
 		ASSERT(pVtx0);
-		WriteFile(hFile, &iVC, sizeof(iVC), &dwNum, nullptr);				// 점 갯수
+		file.Write(&iVC, sizeof(iVC));				// 점 갯수
 
 		// XyxT2 -> XyzColorT2 Converting.
 		__VertexRiver* pTemp = new __VertexRiver[iVC];
@@ -650,10 +649,10 @@ void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
 		}
 
 		if (iVC > 0)
-			WriteFile(hFile, pTemp, iVC * sizeof(__VertexRiver), &dwNum, nullptr);	// vertex buffer
+			file.Write(pTemp, iVC * sizeof(__VertexRiver));	// vertex buffer
 
 		int iIC = pRM->IndexCount();
-		WriteFile(hFile, &iIC, sizeof(iIC), &dwNum, nullptr);				// IndexBuffer Count.
+		file.Write(&iIC, sizeof(iIC));				// IndexBuffer Count.
 		delete[] pTemp;
 		pTemp = nullptr;
 
@@ -675,13 +674,13 @@ void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
 				}
 			}
 
-			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
+			file.Write(&iLen, sizeof(iLen));				// texture file name length
 			if (iLen > 0)
-				WriteFile(hFile, szFindName, iLen, &dwNum, nullptr);			// texture file name
+				file.Write(szFindName, iLen);			// texture file name
 		}
 		else
 		{
-			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
+			file.Write(&iLen, sizeof(iLen));				// texture file name length
 		}
 	}
 
@@ -719,7 +718,7 @@ void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
 			RiverInfos[i].SetAnimTexName(j, pRM->AnimTexGet(j)->Name());
 		}
 	}
-	river.Save(hFile);
+	river.Save(file);
 
 	if (iRiverCount <=0) return;
 
@@ -785,7 +784,7 @@ void CRiverMng::MakeGameFiles(HANDLE hFile, float fSize)
 	{
 		for (j=0; j<size.cy; ++j)
 		{
-			RiverPatches[j*size.cy + i].Save(hFile);
+			RiverPatches[j*size.cy + i].Save(file);
 		}
 	}
 	delete [] RiverPatches;

@@ -355,18 +355,17 @@ void CN3Camera::MovePlane(float fX, float fY)
 #endif // end of #ifdef _N3TOOL
 
 #ifdef _N3TOOL
-bool CN3Camera::Save(HANDLE hFile)
+bool CN3Camera::Save(File& file)
 {
-	CN3Transform::Save(hFile);
+	CN3Transform::Save(file);
 
-	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_vAt, sizeof(__Vector3), &dwRWC, nullptr); // At position
-	WriteFile(hFile, &m_Data, sizeof(__CameraData), &dwRWC, nullptr); // CameraData
-	WriteFile(hFile, &m_bFogUse, 4, &dwRWC, nullptr);
-	WriteFile(hFile, &m_FogColor, 4, &dwRWC, nullptr);
-//	WriteFile(hFile, &m_fFogStart, 4, &dwRWC, nullptr);
-//	WriteFile(hFile, &m_fFogEnd, 4, &dwRWC, nullptr);
-//	WriteFile(hFile, &m_fFogDensity, 4, &dwRWC, nullptr);
+	file.Write(&m_vAt, sizeof(__Vector3)); // At position
+	file.Write(&m_Data, sizeof(__CameraData)); // CameraData
+	file.Write(&m_bFogUse, 4);
+	file.Write(&m_FogColor, 4);
+//	file.Write(&m_fFogStart, 4);
+//	file.Write(&m_fFogEnd, 4);
+//	file.Write(&m_fFogDensity, 4);
 
 	return true;
 }

@@ -71,7 +71,7 @@ public:
 	__Vector3	GetPo() {return m_vCenterPo;}
 
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile) override;
+	bool Save(File& file) override;
 #endif // end of #ifdef _N3TOOL
 
 	void Release() override;

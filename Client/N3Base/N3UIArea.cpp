@@ -89,13 +89,12 @@ bool CN3UIArea::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 #endif
 
 #ifdef _N3TOOL
-bool CN3UIArea::Save(HANDLE hFile)
+bool CN3UIArea::Save(File& file)
 {
-	if (false == CN3UIBase::Save(hFile)) return false;
+	if (false == CN3UIBase::Save(file)) return false;
 #ifndef _REPENT
-	DWORD dwNum;
 	int iAreaType = (int)m_eAreaType;
-	WriteFile(hFile, &iAreaType, sizeof(int), &dwNum, nullptr);	// click 영역
+	file.Write(&iAreaType, sizeof(int));	// click 영역
 #endif
 	return true;
 }

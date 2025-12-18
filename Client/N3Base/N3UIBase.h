@@ -200,7 +200,7 @@ protected:
 
 #ifdef _N3TOOL
 public:
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	virtual void	ChangeImagePath(const std::string& szPathOld, const std::string& szPathNew);
 	virtual void	ChangeFont(const std::string& szFont);
 	virtual void	GatherImageFileName(std::set<std::string>& setImgFile);

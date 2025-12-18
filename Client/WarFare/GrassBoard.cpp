@@ -143,9 +143,9 @@ bool CGrassBoard::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CGrassBoard::Save(HANDLE hFile)
+bool CGrassBoard::Save(File& file)
 {
-	return CN3Transform::Save(hFile);
+	return CN3Transform::Save(file);
 }
 #endif // end of #ifdef _N3TOOL
 

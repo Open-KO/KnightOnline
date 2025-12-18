@@ -889,7 +889,7 @@ bool EbenezerApp::MapFileLoad()
 			std::string filename(filenameUtf8.begin(), filenameUtf8.end());
 
 			FileReader file;
-			if (!file.Open(mapPath))
+			if (!file.OpenExisting(mapPath))
 			{
 				spdlog::error("EbenezerApp::MapFileLoad: File Open Fail - {}", filename);
 				return;

@@ -278,25 +278,23 @@ void CN3UIImage::operator = (const CN3UIImage& other)
 }
 
 #ifdef _N3TOOL
-bool CN3UIImage::Save(HANDLE hFile)
+bool CN3UIImage::Save(File& file)
 {
 	ReorderChildImage();	// child image들 순서대로 정렬
-	if (!CN3UIBase::Save(hFile))
+	if (!CN3UIBase::Save(file))
 		return false;
-
-	DWORD dwNum;
 
 	// texture 정보
 	if (m_pTexRef != nullptr)
 		m_szTexFN = m_pTexRef->FileName();
 
 	int iStrLen = static_cast<int>(m_szTexFN.size());
-	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// 파일 길이
+	file.Write(&iStrLen, sizeof(iStrLen));			// 파일 길이
 	if (iStrLen > 0)
-		WriteFile(hFile, m_szTexFN.c_str(), iStrLen, &dwNum, nullptr);		// 파일 이름
+		file.Write(m_szTexFN.c_str(), iStrLen);		// 파일 이름
 
-	WriteFile(hFile, &m_frcUVRect, sizeof(m_frcUVRect), &dwNum, nullptr);	// uv좌표
-	WriteFile(hFile, &m_fAnimFrame, sizeof(m_fAnimFrame), &dwNum, nullptr);	// Animate frame
+	file.Write(&m_frcUVRect, sizeof(m_frcUVRect));	// uv좌표
+	file.Write(&m_fAnimFrame, sizeof(m_fAnimFrame));	// Animate frame
 
 	return true;
 }

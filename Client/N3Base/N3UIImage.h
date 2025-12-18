@@ -63,7 +63,7 @@ protected:
 // tool에서 사용하는 함수들
 #ifdef _N3TOOL
 public:
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	virtual void	ChangeImagePath(const std::string& szPathOld, const std::string& szPathNew);
 	void			GatherImageFileName(std::set<std::string>& setImgFile);
 	std::string		GetTexFN() { return m_szTexFN; }

@@ -268,97 +268,93 @@ bool CSoundMgr::Load(File& file)
 	return true;
 }
 
-bool CSoundMgr::Save(HANDLE hFile)
+bool CSoundMgr::Save(File& file)
 {
-	DWORD dwRWC;
-	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
-	if (!m_pDlgSound->SaveSoundGroup(hFile))
+	file.Write(&m_iVersion, sizeof(int));
+
+	if (!m_pDlgSound->SaveSoundGroup(file))
 		return false;
 
 	int cnt = static_cast<int>(m_pSound.size());
-	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
+	file.Write(&cnt, sizeof(int));
 
 	for (CSoundCell* pSoundCell : m_pSound)
-		pSoundCell->Save(hFile);
+		pSoundCell->Save(file);
 
 	return true;
 }
 
-void CSoundMgr::SaveGameData(HANDLE hFile)
+void CSoundMgr::SaveGameData(File& file)
 {
 	CLyTerrain* pRefTerrain = m_pRefMapMng->GetTerrain();
 	m_MapSize = pRefTerrain->m_iHeightMapSize;
 
-	char* pSound = (char*)GlobalAlloc(GMEM_FIXED, sizeof(char)*m_MapSize*m_MapSize);
-	memset(pSound, -1, sizeof(char)*m_MapSize*m_MapSize);
+	char* pSound = (char*) GlobalAlloc(GMEM_FIXED, sizeof(char) * m_MapSize * m_MapSize);
+	memset(pSound, -1, sizeof(char) * m_MapSize * m_MapSize);
 
 	//sound cell들을 면적순으로(큰게 앞으로 오게..)정렬하고...
 	//면적순으로 정리하면서 아이디정렬도 하고...
 	//
 	//
 	SCSort();
+
 	std::list<int> tmpList;
-	std::list<CSoundCell*>::iterator it;
-	for(it = m_pSound.begin(); it != m_pSound.end(); it++)
-	{
-		CSoundCell* pSoundCell = (*it);
+	for (CSoundCell* pSoundCell : m_pSound)
 		tmpList.push_back(pSoundCell->m_dwSoundGroupID);
-	}
+
 	tmpList.sort();
 	tmpList.unique();
 
 	std::map<int, int> tmpMap;
 	std::list<int>::iterator it_int = tmpList.begin();
 	int cnt = static_cast<int>(tmpList.size());
-	DWORD dwRWC;
-	WriteFile(hFile, &cnt, sizeof(int), &dwRWC, nullptr);
-	for(int i=0;i<cnt;i++)
+
+	file.Write(&cnt, sizeof(int));
+	for (int i = 0; i < cnt; i++)
 	{
 		int dwID = (*it_int);
-		tmpMap.insert(std::map<int, int>::value_type(dwID,i));
+		tmpMap.insert(std::make_pair(dwID, i));
 		it_int++;
 
 		LPSOUNDINFO pSI = m_pDlgSound->GetSoundGroup(dwID);
-		if(!pSI)
+		if (pSI == nullptr)
 		{
 			AfxMessageBox("Sound Group이 유효하지 않습니다.ㅠ.ㅠ");
 			return;
 		}
-		//sound group을 어케 저장한담?
-		for(int j=0;j<4;j++)
+
+		// sound group을 어케 저장한담?
+		for (int j = 0; j < 4; j++)
 		{
 			int str_size = 0;
 			std::string str;
-			
+
 			str = pSI->szBGM[j];
 			str_size = static_cast<int>(str.size());
-			WriteFile(hFile, &str_size, sizeof(int), &dwRWC, nullptr);
-			WriteFile(hFile, str.c_str(), str_size, &dwRWC, nullptr);
-			WriteFile(hFile, &(pSI->fBGMRegenTime[j]), sizeof(float), &dwRWC, nullptr);
+			file.Write(&str_size, sizeof(int));
+			file.Write(str.c_str(), str_size);
+			file.Write(&(pSI->fBGMRegenTime[j]), sizeof(float));
 
 			str = pSI->szBGE[j];
 			str_size = static_cast<int>(str.size());
-			WriteFile(hFile, &str_size, sizeof(int), &dwRWC, nullptr);
-			WriteFile(hFile, str.c_str(), str_size, &dwRWC, nullptr);
-			WriteFile(hFile, &(pSI->fBGERegenTime[j]), sizeof(float), &dwRWC, nullptr);
+			file.Write(&str_size, sizeof(int));
+			file.Write(str.c_str(), str_size);
+			file.Write(&(pSI->fBGERegenTime[j]), sizeof(float));
 		}
 	}
-	
-	// 타일에 Sound Info 셋팅하고 저장...
-	for(it = m_pSound.begin(); it != m_pSound.end(); it++)
-	{
-		CSoundCell* pSoundCell = (*it);
 
-		for(int x=pSoundCell->m_Rect.left; x<=pSoundCell->m_Rect.right;x++)
+	// 타일에 Sound Info 셋팅하고 저장...
+	for (CSoundCell* pSoundCell : m_pSound)
+	{
+		for (int x = pSoundCell->m_Rect.left; x <= pSoundCell->m_Rect.right; x++)
 		{
-			for(int z=pSoundCell->m_Rect.top; z<=pSoundCell->m_Rect.bottom;z++)
-			{
-				pSound[x + z*(m_MapSize)] = (char)pSoundCell->m_dwSoundGroupID;
-			}
+			for (int z = pSoundCell->m_Rect.top; z <= pSoundCell->m_Rect.bottom; z++)
+				pSound[x + z * (m_MapSize)] = (char) pSoundCell->m_dwSoundGroupID;
 		}
 	}
-	WriteFile(hFile, pSound, sizeof(char)*m_MapSize*m_MapSize, &dwRWC, nullptr);
-	
+
+	file.Write(pSound, sizeof(char) * m_MapSize * m_MapSize);
+
 	GlobalFree(pSound);
 	pSound = nullptr;
 }

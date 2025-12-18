@@ -60,7 +60,7 @@ bool CTblEditorBase::LoadFile(const CString& path, CString& errorMsg)
 	std::error_code ec;
 
 	FileReader encryptedFile;
-	if (!encryptedFile.Open(path.GetString()))
+	if (!encryptedFile.OpenExisting(path.GetString()))
 	{
 		TRACE(_T("Failed to open file: '%s'\n"), path);
 		errorMsg.Format(IDS_ERROR_FAILED_TO_OPEN_FILE, path);
@@ -70,7 +70,7 @@ bool CTblEditorBase::LoadFile(const CString& path, CString& errorMsg)
 	CString TemporaryPath = path + _T(".tmp");
 	TRACE(_T("Temporary Path: '%s'\n"), TemporaryPath);
 
-	size_t encryptedFileSize = encryptedFile.Size();
+	size_t encryptedFileSize = static_cast<size_t>(encryptedFile.Size());
 	if (encryptedFileSize == 0)
 	{
 		TRACE("Error: Filesize is empty\n");
@@ -103,7 +103,7 @@ bool CTblEditorBase::LoadFile(const CString& path, CString& errorMsg)
 	// Open temporary file for writing the decrypted data to.
 	{
 		FileWriter tmpFileWriter;
-		if (!tmpFileWriter.Open(TemporaryPath.GetString()))
+		if (!tmpFileWriter.Create(TemporaryPath.GetString()))
 		{
 			delete[] pDatas;
 			errorMsg.Format(IDS_ERROR_FAILED_TO_OPEN_TEMP_FILE_FOR_WRITING, path);
@@ -121,7 +121,7 @@ bool CTblEditorBase::LoadFile(const CString& path, CString& errorMsg)
 
 	// Open temporary file again for reading, so we can read the decrypted data back.
 	FileReader decryptedFile;
-	if (decryptedFile.Open(TemporaryPath.GetString()))
+	if (decryptedFile.OpenExisting(TemporaryPath.GetString()))
 	{
 		ret = LoadRowData(decryptedFile);
 
@@ -510,16 +510,14 @@ bool CTblEditorBase::SaveFile(const CString& path, const std::map<int, std::vect
 		return false;
 
 	// Create or open the file for writing
-	HANDLE hFile = ::CreateFile(path, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (hFile == INVALID_HANDLE_VALUE)
+	FileWriter file;
+	if (!file.Create(path.GetString()))
 		return false;
 
 	// Encryption key as defined earlier
 	uint16_t key_r = 0x0816;
 	uint16_t key_c1 = 0x6081;
 	uint16_t key_c2 = 0x1608;
-
-	DWORD dwRWC = 0;
 
 	// Encrypt the data before writing it to the file
 	size_t dataSize = writeBuffer.size();
@@ -536,15 +534,15 @@ bool CTblEditorBase::SaveFile(const CString& path, const std::map<int, std::vect
 	TRACE("Data size to be written: %zu\n", dataSize);
 
 	// Write encrypted data to the file
-	BOOL bResult = ::WriteFile(hFile, encryptedData, (DWORD) dataSize, &dwRWC, nullptr);
+	size_t bytesWritten = 0;
+	bool bResult = file.Write(encryptedData, dataSize, &bytesWritten);
+	file.Close();
 
-	TRACE("Actual number of bytes written: %u\n", dwRWC);
+	TRACE("Actual number of bytes written: %zu\n", bytesWritten);
 
 	// Clean up
 	delete[] encryptedData;
-	CloseHandle(hFile);
-
-	return (bResult && dwRWC == dataSize);
+	return (bResult && bytesWritten == dataSize);
 }
 
 CString CTblEditorBase::GetColumnDefault(int iColNo) const

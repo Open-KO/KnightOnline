@@ -55,7 +55,7 @@ public:
 	bool				CheckCollisionPrecisely(const __Vector3 &vPos, const __Vector3 &vDir, __Vector3* pvPick);
 
 #ifdef _N3TOOL
-	bool				Save(HANDLE hFile);
+	bool				Save(File& file);
 	void				RecalcWeight();		// 웨이트값 다시 계산하기
 #endif // end of _N3TOOL
 	

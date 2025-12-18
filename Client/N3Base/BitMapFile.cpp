@@ -105,36 +105,47 @@ bool CBitMapFile::Save(File& file)
 
 bool CBitMapFile::SaveRectToFile(const std::string& szFN, RECT rc)
 {
-	if(szFN.empty()) return false;
+	if (szFN.empty())
+		return false;
 
-	if(rc.right <= rc.left) return false;
-	if(rc.bottom <= rc.top) return false;
-	if(rc.left < 0) rc.left = 0;
-	if(rc.top < 0) rc.top = 0;
-	if(rc.right > m_bmInfoHeader.biWidth) rc.right = m_bmInfoHeader.biWidth;
-	if(rc.bottom > m_bmInfoHeader.biHeight) rc.bottom = m_bmInfoHeader.biHeight;
+	if (rc.right <= rc.left)
+		return false;
+
+	if (rc.bottom <= rc.top)
+		return false;
+
+	if (rc.left < 0)
+		rc.left = 0;
+
+	if (rc.top < 0)
+		rc.top = 0;
+
+	if (rc.right > m_bmInfoHeader.biWidth)
+		rc.right = m_bmInfoHeader.biWidth;
+
+	if (rc.bottom > m_bmInfoHeader.biHeight)
+		rc.bottom = m_bmInfoHeader.biHeight;
 
 	int nWidth = rc.right - rc.left;
 	int nHeight = rc.bottom - rc.top;
 
-	if (nWidth <=0 || nHeight <=0)
+	if (nWidth <= 0 || nHeight <= 0)
 	{
 		MessageBox(::GetActiveWindow(), "가로 세로가 0이하인 bitmap으로 저장할수 없습니다.", "error", MB_OK);
 		return false;
 	}
 
-	DWORD dwRWC = 0;
-	HANDLE hFile = ::CreateFile(szFN.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	FileWriter file;
 
 	// 쓰기 모드로 파일 열기
-	if (INVALID_HANDLE_VALUE == hFile)
+	if (!file.Create(szFN))
 	{
 		MessageBox(::GetActiveWindow(), "원본 bitmap을 열 수 없습니다.", "error", MB_OK);
 		return false;
 	}
 
 	// 실제 이미지의 메모리상에 잡힌 가로 길이 (24bit)
-	int iRealWidthDest = ((int)((nWidth*3 + 3)/4))*4;	
+	int iRealWidthDest = ((int) ((nWidth * 3 + 3) / 4)) * 4;
 	int iDestDIBSize = sizeof(BITMAPINFOHEADER) + iRealWidthDest * nHeight;
 
 	// 새로 만들 이미지 file header 정보 채우기
@@ -152,20 +163,19 @@ bool CBitMapFile::SaveRectToFile(const std::string& szFN, RECT rc)
 	bmInfoHeaderDest.biSizeImage = iRealWidthDest * nHeight;
 
 	// 파일 헤더 쓰기
-	WriteFile(hFile, &bmfHeaderDest, sizeof(bmfHeaderDest), &dwRWC, nullptr);
+	file.Write(&bmfHeaderDest, sizeof(bmfHeaderDest));
 
 	// BITMAPINFOHEADER 쓰기
-	WriteFile(hFile, &bmInfoHeaderDest, sizeof(bmInfoHeaderDest), &dwRWC, nullptr);
+	file.Write(&bmInfoHeaderDest, sizeof(bmInfoHeaderDest));
 
 	// 픽셀을 저장한다...
-	int iRealWidth = ((int)((m_bmInfoHeader.biWidth*3 + 3)/4))*4;	
-	for(int y = rc.bottom - 1; y >= rc.top; y--)
+	int iRealWidth = ((int) ((m_bmInfoHeader.biWidth * 3 + 3) / 4)) * 4;
+	for (int y = rc.bottom - 1; y >= rc.top; y--)
 	{
-		void* pPixelDest = ((uint8_t *)m_pPixels) + iRealWidth * y + (rc.left * 3);
-		WriteFile(hFile, pPixelDest, iRealWidthDest, &dwRWC, nullptr); // 라인 쓰기..
+		void* pPixelDest = ((uint8_t*) m_pPixels) + iRealWidth * y + (rc.left * 3);
+		file.Write(pPixelDest, iRealWidthDest); // 라인 쓰기..
 	}
 
-	CloseHandle(hFile);
 	return true;
 }
 
@@ -175,7 +185,7 @@ bool CBitMapFile::LoadFromFile(const char* pszFN)
 		return false;
 
 	FileReader file;
-	if (!file.Open(pszFN))
+	if (!file.OpenExisting(pszFN))
 		return false;
 
 	return Load(file);
@@ -187,7 +197,7 @@ bool CBitMapFile::SaveToFile(const char* pszFN)
 		return false;
 
 	FileWriter file;
-	if (!file.Open(pszFN))
+	if (!file.Create(pszFN))
 		return false;
 
 	return Save(file);

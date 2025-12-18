@@ -319,7 +319,7 @@ bool CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 		return FALSE;
 
 	FileReader encryptedFile;
-	if (!encryptedFile.Open(szFN))
+	if (!encryptedFile.OpenExisting(szFN))
 	{
 #ifdef _N3GAME
 		CLogWriter::Write("N3TableBase - Can't open file(read) File Handle error ({})", szFN);
@@ -331,7 +331,7 @@ bool CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 
 	// 파일 암호화 풀기.. .. 임시 파일에다 쓴다음 ..
 	std::string szFNTmp = szFN + ".tmp";
-	size_t encryptedFileSize = encryptedFile.Size();
+	size_t encryptedFileSize = static_cast<size_t>(encryptedFile.Size());
 	if (encryptedFileSize == 0)
 	{
 		encryptedFile.Close();
@@ -378,7 +378,7 @@ bool CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 	// 임시 파일에 쓴다음.. 다시 연다..
 	{
 		FileWriter tmpFileWriter;
-		if (!tmpFileWriter.Open(szFNTmp))
+		if (!tmpFileWriter.Create(szFNTmp))
 		{
 			tmpFileWriter.Close();
 			delete[] pDatas;
@@ -393,7 +393,7 @@ bool CN3TableBase<Type>::LoadFromFile(const std::string& szFN)
 
 	// 임시 파일 읽기 모드로 열기.
 	FileReader decryptedFile;
-	if (!decryptedFile.Open(szFNTmp))
+	if (!decryptedFile.OpenExisting(szFNTmp))
 	{
 		std::filesystem::remove(szFNTmp, ec);
 		return false;

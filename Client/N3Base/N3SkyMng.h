@@ -87,20 +87,18 @@ struct __SKY_DAYCHANGE
 		return true;
 	}
 	
-	bool Save(HANDLE hFile)
+	bool Save(File& file)
 	{
-		DWORD dwRWC = 0;
-
 		int nL = static_cast<int>(szName.size());
-		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		file.Write(&nL, 4);
 		if (nL > 0)
-			WriteFile(hFile, szName.c_str(), nL, &dwRWC, nullptr);
+			file.Write(szName.c_str(), nL);
 
-		WriteFile(hFile, &eSkyDayChange, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &dwWhen, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &dwParam1, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &dwParam2, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &fHowLong, 4, &dwRWC, nullptr);
+		file.Write(&eSkyDayChange, 4);
+		file.Write(&dwWhen, 4);
+		file.Write(&dwParam1, 4);
+		file.Write(&dwParam2, 4);
+		file.Write(&fHowLong, 4);
 
 		return true;
 	}
@@ -194,7 +192,7 @@ public:
 #endif // #ifdef _N3GAME
 
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile);
+	bool Save(File& file);
 #endif
 
 	D3DCOLOR	GetFogColor();

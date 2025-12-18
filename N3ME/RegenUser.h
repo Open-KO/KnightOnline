@@ -47,7 +47,7 @@ public:
 	void SetCurrRECT(__Vector3 vS, __Vector3 vE);
 
 	void ClearList();
-	void SaveServerData(HANDLE hFile);
+	void SaveServerData(File& file);
 	void LoadFromFile(LPCTSTR pFullFileName);
 	void SaveToFile(LPCTSTR pFullFileName);
 	

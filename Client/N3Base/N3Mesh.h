@@ -43,7 +43,7 @@ public:
 
 #ifdef _N3TOOL
 	bool	Import(CN3IMesh* pIMesh);	
-	bool	Save(HANDLE hFile);
+	bool	Save(File& file);
 	void	Create_Axis(float fLength);
 	void	MakeIndexed();
 	void	ReGenerateSmoothNormal();

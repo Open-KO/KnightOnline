@@ -86,21 +86,15 @@ bool CN3Mesh::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3Mesh::Save(HANDLE hFile)
+bool CN3Mesh::Save(File& file)
 {
-	DWORD dwRWC = 0;
+	file.Write(&m_nVC, 4); // 점갯수 읽기..
+	if (m_nVC > 0)
+		file.Write(m_pVertices, m_nVC * sizeof(__VertexT1));
 
-	WriteFile(hFile, &m_nVC, 4, &dwRWC, nullptr); // 점갯수 읽기..
-	if(m_nVC > 0) 
-	{
-		WriteFile(hFile, m_pVertices, m_nVC * sizeof(__VertexT1), &dwRWC, nullptr);
-	}
-	
-	WriteFile(hFile, &m_nIC, 4, &dwRWC, nullptr); // 인덱스 갯수 읽기..
-	if(m_nIC > 0)
-	{
-		WriteFile(hFile, m_psnIndices, m_nIC * 2, &dwRWC, nullptr);
-	}
+	file.Write(&m_nIC, 4); // 인덱스 갯수 읽기..
+	if (m_nIC > 0)
+		file.Write(m_psnIndices, m_nIC * 2);
 
 	return true;
 }

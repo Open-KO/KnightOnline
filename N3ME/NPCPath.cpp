@@ -128,23 +128,22 @@ void CNPCPath::Load(File& file)
 	}
 }
 
-void CNPCPath::Save(HANDLE hFile)
+void CNPCPath::Save(File& file)
 {
-	DWORD dwRWC;
-	WriteFile(hFile, &m_strPathName, 256, &dwRWC, nullptr);
-	WriteFile(hFile, &m_iActType, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &m_iNPCID, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &m_iNumNPC, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &m_iRegenTime, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &m_iZoneID, sizeof(int), &dwRWC, nullptr);
+	file.Write(&m_strPathName, 256);
+	file.Write(&m_iActType, sizeof(int));
+	file.Write(&m_iNPCID, sizeof(int));
+	file.Write(&m_iNumNPC, sizeof(int));
+	file.Write(&m_iRegenTime, sizeof(int));
+	file.Write(&m_iZoneID, sizeof(int));
 
-	WriteFile(hFile, &m_LTStartVertex, sizeof(__Vector3), &dwRWC, nullptr);
-	WriteFile(hFile, &m_RBStartVertex, sizeof(__Vector3), &dwRWC, nullptr);
-	WriteFile(hFile, m_strNPCName, 80, &dwRWC, nullptr);
+	file.Write(&m_LTStartVertex, sizeof(__Vector3));
+	file.Write(&m_RBStartVertex, sizeof(__Vector3));
+	file.Write(m_strNPCName, 80);
 
 	m_iVersion = 4;
 	int size = (m_iVersion * 1000) + static_cast<int>(m_Path.size());
-	WriteFile(hFile, &size, sizeof(int), &dwRWC, nullptr);
+	file.Write(&size, sizeof(int));
 
 	std::list<__Vector3>::iterator itVertex;
 
@@ -152,21 +151,21 @@ void CNPCPath::Save(HANDLE hFile)
 	for(itVertex = m_Path.begin(); itVertex != m_Path.end(); itVertex++)
 	{
 		Vertex = (*itVertex);
-		WriteFile(hFile, &Vertex, sizeof(__Vector3), &dwRWC, nullptr);
+		file.Write(&Vertex, sizeof(__Vector3));
 	}
 
 	if(m_iVersion>=1)
 	{
-		WriteFile(hFile, &m_dwColor, sizeof(DWORD), &dwRWC, nullptr);
+		file.Write(&m_dwColor, sizeof(DWORD));
 	}
 
-	WriteFile(hFile, &m_LTActVertex, sizeof(__Vector3), &dwRWC, nullptr);
-	WriteFile(hFile, &m_RBActVertex, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Write(&m_LTActVertex, sizeof(__Vector3));
+	file.Write(&m_RBActVertex, sizeof(__Vector3));
 
-	WriteFile(hFile, &m_cAttr_Create, sizeof(unsigned char), &dwRWC, nullptr);
-	WriteFile(hFile, &m_cAttr_Regen, sizeof(unsigned char), &dwRWC, nullptr);
-	WriteFile(hFile, &m_cAttr_Group, sizeof(unsigned char), &dwRWC, nullptr);
-	WriteFile(hFile, &m_cAttr_Option, sizeof(unsigned char), &dwRWC, nullptr);	
+	file.Write(&m_cAttr_Create, sizeof(unsigned char));
+	file.Write(&m_cAttr_Regen, sizeof(unsigned char));
+	file.Write(&m_cAttr_Group, sizeof(unsigned char));
+	file.Write(&m_cAttr_Option, sizeof(unsigned char));	
 }
 
 void CNPCPath::TransPos(float x, float z)

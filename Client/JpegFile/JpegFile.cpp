@@ -1331,15 +1331,20 @@ WORD FAR CJpegFile::SaveDIB(HDIB hDib, LPSTR lpFileName)
 {
 	BITMAPFILEHEADER bmfHdr; // Header for Bitmap file
 	LPBITMAPINFOHEADER lpBI;   // Pointer to DIB info structure
-	HANDLE fh;     // file handle for opened file
+	FILE* fileHandle;     // file handle for opened file
 	DWORD dwDIBSize;
 //	DWORD dwError;   // Error return from MyWrite
-	DWORD nWritten;
 	
-	if (!hDib)
+	if (hDib == nullptr)
 		return ERR_INVALIDHANDLE;
-	fh = CreateFile(lpFileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (fh == INVALID_HANDLE_VALUE)
+
+#ifdef _MSC_VER
+	fopen_s(&fileHandle, lpFileName, "wb");
+#else
+	fileHandle = fopen(lpFileName, "wb");
+#endif
+
+	if (fileHandle == nullptr)
 		return ERR_OPEN;
 	
 	/*
@@ -1428,36 +1433,34 @@ WORD FAR CJpegFile::SaveDIB(HDIB hDib, LPSTR lpFileName)
 	BYTE random_byte[4];
 
 	// Generate Random Byte.
-	srand((unsigned)time( nullptr ));
-	for(i = 0; i < 4; i++) random_byte[i] = rand() % 0x100;
+	srand((unsigned) time(nullptr));
+	for (i = 0; i < 4; i++)
+		random_byte[i] = rand() % 0x100;
 
-	encrypt_len = sizeof(BITMAPFILEHEADER)+dwDIBSize+4;
+	encrypt_len = sizeof(BITMAPFILEHEADER) + dwDIBSize + 4;
 	encrypt_data = new BYTE[encrypt_len];
-	for(i = 0, j = 0; i < 4; i++, j++)
-	{
+	for (i = 0, j = 0; i < 4; i++, j++)
 		encrypt_data[j] = Encrypt(random_byte[i]);
-	}
-	for(i = 0; i < sizeof(BITMAPFILEHEADER); i++, j++)
-	{
-		encrypt_data[j] = Encrypt(*((BYTE *)(&bmfHdr)+i));
-	}
-	for(i = 0; i < dwDIBSize; i++, j++)
-	{
-		encrypt_data[j] = Encrypt(*((BYTE *)lpBI + i));
-	}
+
+	for (i = 0; i < sizeof(BITMAPFILEHEADER); i++, j++)
+		encrypt_data[j] = Encrypt(*((BYTE*) (&bmfHdr) + i));
+
+	for (i = 0; i < dwDIBSize; i++, j++)
+		encrypt_data[j] = Encrypt(*((BYTE*) lpBI + i));
+
 	assert(j == encrypt_len);
-	WriteFile(fh, (LPCVOID)encrypt_data, encrypt_len, &nWritten, nullptr);
+	fwrite(encrypt_data, encrypt_len, 1, fileHandle);
 	/* Write the file header */
-//	WriteFile(fh, (LPCVOID)&bmfHdr, sizeof(BITMAPFILEHEADER), &nWritten, nullptr);
+//	fwrite(&bmfHdr, sizeof(BITMAPFILEHEADER), 1, fileHandle);
 	
 	/*
     * Write the DIB header and the bits -- use local version of
     * MyWrite, so we can write more than 32767 bytes of data
     */
 //	dwError = MyWrite(fh, (LPSTR)lpBI, dwDIBSize);
-//	WriteFile(fh, (LPCVOID)lpBI, dwDIBSize, &nWritten, nullptr);
+//	fwrite(lpBI, dwDIBSize, 1, fileHandle);
 	GlobalUnlock(hDib);
-	CloseHandle(fh);
+	fclose(fileHandle);
 
 	delete[] encrypt_data;
 

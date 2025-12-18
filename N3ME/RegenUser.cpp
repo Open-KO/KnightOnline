@@ -205,30 +205,24 @@ BOOL CRegenUser::MouseMsgFilter(LPMSG pMsg)
 	return TRUE;
 }
 
-void CRegenUser::SaveServerData(HANDLE hFile)
+void CRegenUser::SaveServerData(File& file)
 {
 	int NumRegion = static_cast<int>(m_vrListRegion.size());
 
-	DWORD dwNum;
-	WriteFile(hFile, &NumRegion, sizeof(int), &dwNum, nullptr);
+	file.Write(&NumRegion, sizeof(int));
 
-	std::list<VERTEXRECT*>::iterator it, ite;
-
-	ite = m_vrListRegion.end();
-	for(it=m_vrListRegion.begin(); it!=ite; it++)
+	for (VERTEXRECT* pVR : m_vrListRegion)
 	{
-		VERTEXRECT* pVR = (*it);
-
-		WriteFile(hFile, &(pVR->m_vLB.x), sizeof(float), &dwNum, nullptr);
-		WriteFile(hFile, &(pVR->m_vLB.y), sizeof(float), &dwNum, nullptr);
-		WriteFile(hFile, &(pVR->m_vLB.z), sizeof(float), &dwNum, nullptr);
+		file.Write(&(pVR->m_vLB.x), sizeof(float));
+		file.Write(&(pVR->m_vLB.y), sizeof(float));
+		file.Write(&(pVR->m_vLB.z), sizeof(float));
 
 		float Height, Width;
 		Height = pVR->m_vLT.z - pVR->m_vLB.z;
 		Width = pVR->m_vRB.x - pVR->m_vLB.x;
 
-		WriteFile(hFile, &Height, sizeof(float), &dwNum, nullptr);
-		WriteFile(hFile, &Width, sizeof(float), &dwNum, nullptr);
+		file.Write(&Height, sizeof(float));
+		file.Write(&Width, sizeof(float));
 	}	
 }
 

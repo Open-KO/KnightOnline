@@ -50,7 +50,7 @@ public:
 	std::string GetSndFName_Click() const;
 
 #ifdef _N3TOOL
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	void			CreateImages();
 	CN3UIImage*		GetImageRef(eBTN_STATE eState) const {	return m_ImageRef[eState];}
 #endif

@@ -678,7 +678,7 @@ void CN3Terrain::LoadGrassInfo()
 	_makepath(szFullPath, szDrive, szGrassDir, m_pGrassFileName, "grs");
 
 	FileReader file;
-	if (!file.Open(szFullPath))
+	if (!file.OpenExisting(szFullPath))
 		return;
 
 	char Buff[80] = {};
@@ -753,7 +753,7 @@ void CN3Terrain::LoadTileInfo(File& file)
 		m_pTileTex[i].m_iFileFormatVersion = m_iFileFormatVersion;
 
 		FileReader gttFile;
-		if (!gttFile.Open(SrcName[SrcIdx]))
+		if (!gttFile.OpenExisting(SrcName[SrcIdx]))
 			continue;
 
 		for (int j = 0; j < TileIdx; j++)
@@ -1006,7 +1006,7 @@ void CN3Terrain::SetLightMap(int dir)
 		return;
 
 	FileReader file;
-	if (!file.Open(pZoneData->szLightMapFN))
+	if (!file.OpenExisting(pZoneData->szLightMapFN))
 		return;
 
 	int* Addr = new int[m_pat_MapSize * m_pat_MapSize];
@@ -2183,7 +2183,7 @@ bool CN3Terrain::LoadColorMap(const std::string& szFN)
 	}
 
 	FileReader colorMapFile;
-	if (!colorMapFile.Open(szFN))
+	if (!colorMapFile.OpenExisting(szFN))
 	{
 #ifdef _N3GAME
 		CLogWriter::Write("Failed to load ColorMap - {}", szFN);

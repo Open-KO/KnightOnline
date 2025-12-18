@@ -140,18 +140,17 @@ void CN3UIStatic::operator = (const CN3UIStatic& other)
 	}
 }
 
-bool CN3UIStatic::Save(HANDLE hFile)
+bool CN3UIStatic::Save(File& file)
 {
-	if (!CN3UIBase::Save(hFile))
+	if (!CN3UIBase::Save(file))
 		return false;
 
-	DWORD dwNum;
 	int iSndFNLen = 0;
 	if (m_pSnd_Click != nullptr)
 		iSndFNLen = static_cast<int>(m_pSnd_Click->m_szFileName.size());
-	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwNum, nullptr);		//	사운드 파일 문자열 길이
+	file.Write(&iSndFNLen, sizeof(iSndFNLen));		//	사운드 파일 문자열 길이
 	if (iSndFNLen > 0)
-		WriteFile(hFile, m_pSnd_Click->m_szFileName.c_str(), iSndFNLen, &dwNum, nullptr);
+		file.Write(m_pSnd_Click->m_szFileName.c_str(), iSndFNLen);
 	return true;
 }
 

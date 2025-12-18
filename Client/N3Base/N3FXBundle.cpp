@@ -391,32 +391,31 @@ CN3FXPartBase* CN3FXBundle::AllocatePart(int iPartType) const
 //
 //
 //
-bool CN3FXBundle::Save(HANDLE hFile)
+bool CN3FXBundle::Save(File& file)
 {
-	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fLife0, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fVelocity, sizeof(float), &dwRWC, nullptr);
+	file.Write(&m_iVersion, sizeof(int));
+	file.Write(&m_fLife0, sizeof(float));
+	file.Write(&m_fVelocity, sizeof(float));
 
-	WriteFile(hFile, &m_bDependScale, sizeof(bool), &dwRWC, nullptr);
+	file.Write(&m_bDependScale, sizeof(bool));
 
 	for (int i = 0; i < MAX_FX_PART; i++)
 	{
 		if (m_pPart[i] != nullptr
 			&& m_pPart[i]->pPart != nullptr)
 		{
-			WriteFile(hFile, &m_pPart[i]->pPart->m_iType, sizeof(int), &dwRWC, nullptr);
-			WriteFile(hFile, &m_pPart[i]->fStartTime, sizeof(float), &dwRWC, nullptr);
-			m_pPart[i]->pPart->Save(hFile);
+			file.Write(&m_pPart[i]->pPart->m_iType, sizeof(int));
+			file.Write(&m_pPart[i]->fStartTime, sizeof(float));
+			m_pPart[i]->pPart->Save(file);
 		}
 		else
 		{
 			int Type = FX_PART_TYPE_NONE;
-			WriteFile(hFile, &Type, sizeof(int), &dwRWC, nullptr);
+			file.Write(&Type, sizeof(int));
 		}
 	}
 
-	WriteFile(hFile, &m_bStatic, sizeof(bool), &dwRWC, nullptr);
+	file.Write(&m_bStatic, sizeof(bool));
 
 	return true;
 }

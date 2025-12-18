@@ -191,10 +191,10 @@ public:
 	bool Pick(int x, int y, __Vector3* vec, POINT* pHeightMapPos = nullptr);
 	void Import(LPCTSTR pFileName, float fSize);
 	void ImportHeight(LPCTSTR pFileName);
-	void SaveServerData(HANDLE hFile);
+	void SaveServerData(File& file);
 	void SetEditMode(int iEditMode);		// 지형 Edit모드로 변경
 	void UpdateBrushIntensityMap(int iShape, int iSize, float fFallOff);	// 브러쉬의 모양과 사이즈에 따라서 IntensityMap을 다시 구성한다.
-	void SaveGameData(HANDLE hFile);
+	void SaveGameData(File& file);
 	void ColorMapImport(LPCTSTR lpszPathName);
 	void ColorMapExport(LPCTSTR lpszPathName);
 	void GenerateMiniMap(LPCTSTR lpszPathName, int size);

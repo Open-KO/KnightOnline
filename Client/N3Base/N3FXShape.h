@@ -37,7 +37,7 @@ protected:
 
 public:
 	bool Load(File& file) override;
-	bool Save(HANDLE hFile) override;
+	bool Save(File& file) override;
 	void Duplicate(CN3FXSPart* pSrc);
 		
 	int TexCount() const
@@ -123,7 +123,7 @@ public:
 	void	PartDelete(int iIndex);
 	
 	bool	Load(File& file) override;
-	bool	Save(HANDLE hFile) override;
+	bool	Save(File& file) override;
 	void	Duplicate(CN3FXShape* pSrc);
 
 	void	Tick(float fFrm = FRAME_SELFPLAY) override;

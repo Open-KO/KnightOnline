@@ -68,16 +68,14 @@ bool CN3TransformCollision::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3TransformCollision::Save(HANDLE hFile)
+bool CN3TransformCollision::Save(File& file)
 {
-	CN3Transform::Save(hFile);
-
-	DWORD dwRWC;
+	CN3Transform::Save(file);
 
 	int nL = 0;
 	if (m_pMeshCollision != nullptr)
 		nL = static_cast<int>(m_pMeshCollision->FileName().size());
-	WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Write(&nL, 4); // Mesh FileName
 
 	if (nL > 0)
 	{
@@ -87,18 +85,18 @@ bool CN3TransformCollision::Save(HANDLE hFile)
 			std::string szFNTmp = fmt::format("Object\\{}.N3VMesh", m_pMeshCollision->m_szName);
 			m_pMeshCollision->FileNameSet(szFNTmp);
 
-			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
+			file.Seek(-4, SEEK_CUR);
 			nL = static_cast<int>(m_pMeshCollision->FileName().size());
-			WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+			file.Write(&nL, 4); // Mesh FileName
 		}
 
-		WriteFile(hFile, m_pMeshCollision->FileName().c_str(), nL, &dwRWC, nullptr);
+		file.Write(m_pMeshCollision->FileName().c_str(), nL);
 	}
 
 	nL = 0;
 	if (m_pMeshClimb != nullptr)
 		nL = static_cast<int>(m_pMeshClimb->FileName().size());
-	WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Write(&nL, 4); // Mesh FileName
 
 	if (nL > 0)
 	{
@@ -108,12 +106,12 @@ bool CN3TransformCollision::Save(HANDLE hFile)
 			std::string szFNTmp = fmt::format("Object\\{}.N3VMesh", m_pMeshClimb->m_szName);
 			m_pMeshClimb->FileNameSet(szFNTmp);
 
-			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
+			file.Seek(-4, SEEK_CUR);
 			nL = static_cast<int>(m_pMeshClimb->FileName().size());
-			WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+			file.Write(&nL, 4); // Mesh FileName
 		}
 
-		WriteFile(hFile, m_pMeshClimb->FileName().c_str(), nL, &dwRWC, nullptr);
+		file.Write(m_pMeshClimb->FileName().c_str(), nL);
 	}
 	return true;
 }

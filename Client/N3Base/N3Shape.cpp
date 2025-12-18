@@ -347,11 +347,9 @@ bool CN3SPart::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3SPart::Save(HANDLE hFile)
+bool CN3SPart::Save(File& file)
 {
-	DWORD dwRWC;
-
-	WriteFile(hFile, &m_vPivot, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Write(&m_vPivot, sizeof(__Vector3));
 
 	CN3PMesh* pPMesh = m_PMInst.GetMesh();
 	__ASSERT(pPMesh, "Progressive mesh pointer is NULL!");
@@ -361,7 +359,7 @@ bool CN3SPart::Save(HANDLE hFile)
 	else
 		MessageBox(s_hWndBase, "Progressive mesh pointer is NULL! : object가 제대로 보이지 않을 수 있습니다.(리소스 파일이 Load되지 않았을 가능성이 큼)", "warning", MB_OK);
 
-	WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Write(&nL, 4); // Mesh FileName
 	if (nL > 0)
 	{
 		
@@ -372,20 +370,20 @@ bool CN3SPart::Save(HANDLE hFile)
 //
 //			SetFilePointer(hFile, -4, 0, FILE_CURRENT);
 //			nL = pPMesh->FileName().size();
-//			WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+//			file.Write(&nL, 4); // Mesh FileName
 //		}
 
 
 
 
-		WriteFile(hFile, pPMesh->FileName().c_str(), nL, &dwRWC, nullptr); // 메시 파일 이름..
+		file.Write(pPMesh->FileName().c_str(), nL); // 메시 파일 이름..
 	}
 
-	WriteFile(hFile, &m_Mtl, sizeof(__Material), &dwRWC, nullptr); // 재질
+	file.Write(&m_Mtl, sizeof(__Material)); // 재질
 
 	int iTC = static_cast<int>(m_TexRefs.size());
-	WriteFile(hFile, &iTC, 4, &dwRWC, nullptr);
-	WriteFile(hFile, &m_fTexFPS, 4, &dwRWC, nullptr);
+	file.Write(&iTC, 4);
+	file.Write(&m_fTexFPS, 4);
 	for (int j = 0; j < iTC; j++) // Texture File 이름 쓰기...
 	{
 		if (m_TexRefs[j])
@@ -393,7 +391,7 @@ bool CN3SPart::Save(HANDLE hFile)
 		else
 			nL = 0;
 
-		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		file.Write(&nL, 4);
 		if (nL > 0)
 		{
 			
@@ -408,11 +406,11 @@ bool CN3SPart::Save(HANDLE hFile)
 //
 //				SetFilePointer(hFile, -4, 0, FILE_CURRENT);
 //				nL = lstrlen(m_TexRefs[j]->FileName());
-//				WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // Mesh FileName
+//				file.Write(&nL, 4); // Mesh FileName
 //			}
 
 			
-			WriteFile(hFile, m_TexRefs[j]->FileName().c_str(), nL, &dwRWC, nullptr); // 택스처 파일 이름..
+			file.Write(m_TexRefs[j]->FileName().c_str(), nL); // 택스처 파일 이름..
 		}
 	}
 
@@ -654,24 +652,22 @@ bool CN3Shape::LoadTransformOnly(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3Shape::Save(HANDLE hFile)
+bool CN3Shape::Save(File& file)
 {
-	CN3TransformCollision::Save(hFile); // 기본정보 읽기...
-	
-	DWORD dwRWC = 0;
+	CN3TransformCollision::Save(file); // 기본정보 읽기...
 	
 	int nL = 0;
 	
 	int iPC = static_cast<int>(m_Parts.size());
-	WriteFile(hFile, &iPC, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Write(&iPC, 4); // Mesh FileName
 	for (int i = 0; i < iPC; i++)
-		m_Parts[i]->Save(hFile);
+		m_Parts[i]->Save(file);
 
-	WriteFile(hFile, &m_iBelong, 4, &dwRWC, nullptr);		// 소속
-	WriteFile(hFile, &m_iEventID, 4, &dwRWC, nullptr);		// Event ID
-	WriteFile(hFile, &m_iEventType, 4, &dwRWC, nullptr);		// Event Type - 바인드 포인트, 성문, 레버 등등...
-	WriteFile(hFile, &m_iNPC_ID, 4, &dwRWC, nullptr);		// NPC 로 쓰는 오브젝트일 경우 NPC ID
-	WriteFile(hFile, &m_iNPC_Status, 4, &dwRWC, nullptr);	// NPC 로 쓰는 오브젝트일 경우 NPC Status
+	file.Write(&m_iBelong, 4);		// 소속
+	file.Write(&m_iEventID, 4);		// Event ID
+	file.Write(&m_iEventType, 4);		// Event Type - 바인드 포인트, 성문, 레버 등등...
+	file.Write(&m_iNPC_ID, 4);		// NPC 로 쓰는 오브젝트일 경우 NPC ID
+	file.Write(&m_iNPC_Status, 4);	// NPC 로 쓰는 오브젝트일 경우 NPC Status
 
 	return true;
 }

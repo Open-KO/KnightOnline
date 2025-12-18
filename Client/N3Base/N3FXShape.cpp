@@ -288,7 +288,7 @@ void CN3FXSPart::Duplicate(CN3FXSPart* pSrc)
 	return;
 }
 
-bool CN3FXSPart::Save(HANDLE hFile)
+bool CN3FXSPart::Save(File& file)
 {	
 	return true;
 }
@@ -396,28 +396,26 @@ bool CN3FXShape::Load(File& file)
 	return true;
 }
 
-bool CN3FXShape::Save(HANDLE hFile)
+bool CN3FXShape::Save(File& file)
 {
 	/*
-	CN3TransformCollision::Save(hFile); // 기본정보 읽기...
-	
-	DWORD dwRWC = 0;
+	CN3TransformCollision::Save(file); // 기본정보 읽기...
 	
 	int nL = 0;
 	
 	CN3SPart* pPD = nullptr;
 	int iPC = m_Parts.size();
-	WriteFile(hFile, &iPC, 4, &dwRWC, nullptr); // Mesh FileName
+	file.Write(&iPC, 4); // Mesh FileName
 	for(int i = 0; i < iPC; i++)
 	{
-		m_Parts[i]->Save(hFile);
+		m_Parts[i]->Save(file);
 	}
 
-	WriteFile(hFile, &m_iBelong, 4, &dwRWC, nullptr); // 소속
-	WriteFile(hFile, &m_iAttr0, 4, &dwRWC, nullptr); // 속성 0
-	WriteFile(hFile, &m_iAttr1, 4, &dwRWC, nullptr); // 속성 1
-	WriteFile(hFile, &m_iAttr2, 4, &dwRWC, nullptr); // 속성 2
-	WriteFile(hFile, &m_iAttr3, 4, &dwRWC, nullptr); // 속성 3
+	file.Write(&m_iBelong, 4); // 소속
+	file.Write(&m_iAttr0, 4); // 속성 0
+	file.Write(&m_iAttr1, 4); // 속성 1
+	file.Write(&m_iAttr2, 4); // 속성 2
+	file.Write(&m_iAttr3, 4); // 속성 3
 	*/
 	return true;
 }

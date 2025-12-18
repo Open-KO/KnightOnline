@@ -81,7 +81,7 @@ public:
 	void Release() override;
 	bool Load(File& file) override;
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile) override;
+	bool Save(File& file) override;
 #endif // end of _N3TOOL
 
 	CN3Joint();

@@ -68,30 +68,30 @@ bool CN3Skin::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3Skin::Save(HANDLE hFile)
+bool CN3Skin::Save(File& file)
 {
-	CN3IMesh::Save(hFile);
+	CN3IMesh::Save(file);
 
-	DWORD dwRWC = 0, dwUnused = 0;
+	uint32_t unused = 0;
 	for (int i = 0; i < m_nVC; i++)
 	{
 		__VertexSkinned* pVtx = &m_pSkinVertices[i];
-		WriteFile(hFile, &pVtx->vOrigin, sizeof(__Vector3), &dwRWC, nullptr);
-		WriteFile(hFile, &pVtx->nAffect, sizeof(int), &dwRWC, nullptr);
+		file.Write(&pVtx->vOrigin, sizeof(__Vector3));
+		file.Write(&pVtx->nAffect, sizeof(int));
 
 		// Skip the useless pointers pnJoints, pfWeights (assume they're 32-bit).
-		WriteFile(hFile, &dwUnused, sizeof(DWORD), &dwRWC, nullptr);
-		WriteFile(hFile, &dwUnused, sizeof(DWORD), &dwRWC, nullptr);
+		file.Write(&unused, sizeof(uint32_t));
+		file.Write(&unused, sizeof(uint32_t));
 
 		int nAffect = pVtx->nAffect;
 		if (nAffect > 1)
 		{
-			WriteFile(hFile, pVtx->pnJoints, 4 * nAffect, &dwRWC, nullptr);
-			WriteFile(hFile, pVtx->pfWeights, 4 * nAffect, &dwRWC, nullptr);
+			file.Write(pVtx->pnJoints, 4 * nAffect);
+			file.Write(pVtx->pfWeights, 4 * nAffect);
 		}
 		else if (nAffect == 1)
 		{
-			WriteFile(hFile, pVtx->pnJoints, 4, &dwRWC, nullptr);
+			file.Write(pVtx->pnJoints, 4);
 		}
 	}
 

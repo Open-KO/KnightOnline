@@ -54,7 +54,7 @@ public:
 	bool	CheckValid();
 	void	TransPos(float x, float z);
 	void	Load(File& file);
-	void	Save(HANDLE hFile);
+	void	Save(File& file);
 	bool	GetPath(int idx, __Vector3* pPos);	// idx째 점 가져오기..
 	void	AddPos(__Vector3 Path);	//path더하기.
 	void	DelPrevPos();

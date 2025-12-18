@@ -515,66 +515,65 @@ bool CN3FXPartParticles::Load(File& file)
 //
 //
 //
-bool CN3FXPartParticles::Save(HANDLE hFile)
+bool CN3FXPartParticles::Save(File& file)
 {
-	if (!CN3FXPartBase::Save(hFile))
+	if (!CN3FXPartBase::Save(file))
 		return false;
 
-	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_iNumParticle, sizeof(int), &dwRWC, nullptr);
+	file.Write(&m_iNumParticle, sizeof(int));
 
-	WriteFile(hFile, &(m_pair_fParticleSize.first), sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &(m_pair_fParticleSize.second), sizeof(float), &dwRWC, nullptr);
+	file.Write(&(m_pair_fParticleSize.first), sizeof(float));
+	file.Write(&(m_pair_fParticleSize.second), sizeof(float));
 
-	WriteFile(hFile, &(m_pair_fParticleLife.first), sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &(m_pair_fParticleLife.second), sizeof(float), &dwRWC, nullptr);
+	file.Write(&(m_pair_fParticleLife.first), sizeof(float));
+	file.Write(&(m_pair_fParticleLife.second), sizeof(float));
 
-	WriteFile(hFile, &m_MinCreateRange, sizeof(__Vector3), &dwRWC, nullptr);
-	WriteFile(hFile, &m_MaxCreateRange, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Write(&m_MinCreateRange, sizeof(__Vector3));
+	file.Write(&m_MaxCreateRange, sizeof(__Vector3));
 
-	WriteFile(hFile, &m_fCreateDelay, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_iNumCreate, sizeof(int), &dwRWC, nullptr);
+	file.Write(&m_fCreateDelay, sizeof(float));
+	file.Write(&m_iNumCreate, sizeof(int));
 
-	WriteFile(hFile, &m_dwEmitType, sizeof(uint32_t), &dwRWC, nullptr);
+	file.Write(&m_dwEmitType, sizeof(uint32_t));
 
 	if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_SPREAD)
 	{
-		WriteFile(hFile, &(m_uEmitCon.fEmitAngle), sizeof(float), &dwRWC, nullptr);
+		file.Write(&(m_uEmitCon.fEmitAngle), sizeof(float));
 	}
 	else if (m_dwEmitType == FX_PART_PARTICLE_EMIT_TYPE_GATHER)
 	{
-		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.x), sizeof(float), &dwRWC, nullptr);
-		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.y), sizeof(float), &dwRWC, nullptr);
-		WriteFile(hFile, &(m_uEmitCon.vGatherPoint.z), sizeof(float), &dwRWC, nullptr);
+		file.Write(&(m_uEmitCon.vGatherPoint.x), sizeof(float));
+		file.Write(&(m_uEmitCon.vGatherPoint.y), sizeof(float));
+		file.Write(&(m_uEmitCon.vGatherPoint.z), sizeof(float));
 	}
 
-	WriteFile(hFile, &m_vPtEmitDir, sizeof(__Vector3), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fPtVelocity, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fPtAccel, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fPtRotVelocity, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fPtGravity, sizeof(float), &dwRWC, nullptr);
+	file.Write(&m_vPtEmitDir, sizeof(__Vector3));
+	file.Write(&m_fPtVelocity, sizeof(float));
+	file.Write(&m_fPtAccel, sizeof(float));
+	file.Write(&m_fPtRotVelocity, sizeof(float));
+	file.Write(&m_fPtGravity, sizeof(float));
 
-	WriteFile(hFile, &m_bChangeColor, sizeof(bool), &dwRWC, nullptr);
+	file.Write(&m_bChangeColor, sizeof(bool));
 	if (m_bChangeColor)
 	{
 		int iNumKeyColor = NUM_KEY_COLOR;
-		WriteFile(hFile, &iNumKeyColor, sizeof(int), &dwRWC, nullptr);
-		WriteFile(hFile, &m_dwChangeColor, sizeof(uint32_t) * NUM_KEY_COLOR, &dwRWC, nullptr);
+		file.Write(&iNumKeyColor, sizeof(int));
+		file.Write(&m_dwChangeColor, sizeof(uint32_t) * NUM_KEY_COLOR);
 	}
 
-	WriteFile(hFile, &m_bAnimKey, sizeof(bool), &dwRWC, nullptr);
+	file.Write(&m_bAnimKey, sizeof(bool));
 	if (m_bAnimKey)
 	{
-		WriteFile(hFile, &m_fMeshFPS, sizeof(float), &dwRWC, nullptr);
+		file.Write(&m_fMeshFPS, sizeof(float));
 
 		char szShapeFileName[_MAX_PATH];
 		strcpy(szShapeFileName, m_pRefShape->FileName().c_str());
-		WriteFile(hFile, szShapeFileName, _MAX_PATH, &dwRWC, nullptr);
+		file.Write(szShapeFileName, _MAX_PATH);
 	}
 
-	WriteFile(hFile, &m_fTexRotateVelocity, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fScaleVelY, sizeof(float), &dwRWC, nullptr);
+	file.Write(&m_fTexRotateVelocity, sizeof(float));
+	file.Write(&m_fScaleVelX, sizeof(float));
+	file.Write(&m_fScaleVelY, sizeof(float));
 
 	return true;
 }

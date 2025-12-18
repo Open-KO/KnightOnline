@@ -49,13 +49,13 @@ bool CEventManager::LoadFromFile(const char* szFileName)
 	Release();
 
 	FileReader gevFile;
-	if (!gevFile.Open(szFileName))
+	if (!gevFile.OpenExisting(szFileName))
 		return false;
 
 	int nEventCellCount = 0;
 	gevFile.Read(&nEventCellCount, sizeof(int));
 
-	for(int i = 0; i < nEventCellCount ; i++)
+	for(int i = 0; i < nEventCellCount; i++)
 	{
 		CEventCell* pEventCell = new CEventCell();
 		pEventCell->Load(gevFile);

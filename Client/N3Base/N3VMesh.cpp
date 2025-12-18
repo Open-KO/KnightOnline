@@ -77,22 +77,20 @@ bool CN3VMesh::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3VMesh::Save(HANDLE hFile)
+bool CN3VMesh::Save(File& file)
 {
-	CN3BaseFileAccess::Save(hFile);
+	CN3BaseFileAccess::Save(file);
 
-	DWORD dwRWC = 0;
-
-	WriteFile(hFile, &m_nVC, 4, &dwRWC, nullptr); // 점갯수 읽기..
+	file.Write(&m_nVC, 4); // 점갯수 읽기..
 	if(m_nVC > 0) 
 	{
-		WriteFile(hFile, m_pVertices, m_nVC * sizeof(__Vector3), &dwRWC, nullptr);
+		file.Write(m_pVertices, m_nVC * sizeof(__Vector3));
 	}
 
-	WriteFile(hFile, &m_nIC, 4, &dwRWC, nullptr); // Index Count..
+	file.Write(&m_nIC, 4); // Index Count..
 	if(m_nIC > 0)
 	{
-		WriteFile(hFile, m_pwIndices, m_nIC * 2, &dwRWC, nullptr); // Index Buffer 데이터 쓰기..
+		file.Write(m_pwIndices, m_nIC * 2); // Index Buffer 데이터 쓰기..
 	}
 
 	return true;

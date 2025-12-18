@@ -40,7 +40,7 @@ public:
 	void	AddSoundGroup(char* szTitle, LPSOUNDINFO pSoundInfo);
 	int		MakeIdx();
 	bool	LoadSoundGroup(File& file);
-	bool	SaveSoundGroup(HANDLE hFile);
+	bool	SaveSoundGroup(File& file);
 	LPSOUNDINFO	GetSoundGroup(DWORD dwID);
 
 // Overrides

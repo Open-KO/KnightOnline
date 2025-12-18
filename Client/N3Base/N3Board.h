@@ -48,7 +48,7 @@ public:
 	void		LoadFromText(const std::string& szFName);
 	
 #ifdef _N3TOOL
-	bool		Save(HANDLE hFile);
+	bool		Save(File& file);
 #endif // end of #ifdef _N3TOOL
 
 	void		Release();

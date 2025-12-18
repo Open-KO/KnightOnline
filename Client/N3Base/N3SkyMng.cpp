@@ -1334,10 +1334,8 @@ bool CN3SkyMng::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3SkyMng::Save(HANDLE hFile)
+bool CN3SkyMng::Save(File& file)
 {
-	DWORD dwRWC = 0;
-
 	std::string szSuns[NUM_SUNPART];
 	std::string szClouds[NUM_CLOUD];
 	std::string szMoon;
@@ -1360,29 +1358,29 @@ bool CN3SkyMng::Save(HANDLE hFile)
 	for (int i = 0; i < NUM_SUNPART; i++)
 	{
 		int iL = static_cast<int>(szSuns[i].size());
-		WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
+		file.Write(&iL, 4);
 		if (iL > 0)
-			WriteFile(hFile, szSuns[i].c_str(), iL, &dwRWC, nullptr);
+			file.Write(szSuns[i].c_str(), iL);
 	}
 
 	for (int i = 0; i < NUM_CLOUD; i++)
 	{
 		int iL = static_cast<int>(szClouds[i].size());
-		WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
+		file.Write(&iL, 4);
 		if (iL > 0)
-			WriteFile(hFile, szClouds[i].c_str(), iL, &dwRWC, nullptr);
+			file.Write(szClouds[i].c_str(), iL);
 	}
 
 	int iL = static_cast<int>(szMoon.size());
-	WriteFile(hFile, &iL, 4, &dwRWC, nullptr);
+	file.Write(&iL, 4);
 	if (iL > 0)
-		WriteFile(hFile, szMoon.c_str(), iL, &dwRWC, nullptr);
+		file.Write(szMoon.c_str(), iL);
 
 	// Day Change .....
 	int iSDCC = static_cast<int>(m_DayChanges.size());
-	WriteFile(hFile, &iSDCC, 4, &dwRWC, nullptr);
+	file.Write(&iSDCC, 4);
 	for (int i = 0; i < iSDCC; i++)
-		m_DayChanges[i].Save(hFile);
+		m_DayChanges[i].Save(file);
 
 	return true;
 }

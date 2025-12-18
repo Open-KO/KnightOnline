@@ -45,7 +45,7 @@ public:
 
 	virtual bool SaveToFile(); // 현재 파일 이름대로 저장.
 	virtual bool SaveToFile(const std::string& szFileName); // 새이름으로 저장.
-	virtual bool Save(HANDLE hFile); // 핸들을 통해 저장..
+	virtual bool Save(File& file); // 핸들을 통해 저장..
 
 public:
 	void Release();

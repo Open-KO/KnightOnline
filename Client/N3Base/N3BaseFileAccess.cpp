@@ -6,6 +6,7 @@
 #include "N3BaseFileAccess.h"
 
 #include <shared/FileReader.h>
+#include <shared/FileWriter.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -76,17 +77,14 @@ bool CN3BaseFileAccess::LoadFromFile()
 	}
 
 	std::string szFullPath;
-	if (-1 != m_szFileName.find(':') || -1 != m_szFileName.find("\\\\") || -1 != m_szFileName.find("//")) // 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
-	{
-		szFullPath = m_szFileName;
-	}
-	else
-	{
-		if (!s_szPath.empty())
-			szFullPath = s_szPath;
 
-		szFullPath += m_szFileName;
-	}
+	// 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
+	if (m_szFileName.find(':') != std::string::npos
+		|| m_szFileName.find("\\\\") != std::string::npos
+		|| m_szFileName.find("//") != std::string::npos)
+		szFullPath = m_szFileName;
+	else
+		szFullPath = s_szPath + m_szFileName;
 
 	// TODO: Catch any odd cases and handle them specifically (rather than just globally penalise all potential reads)
 #ifdef _DEBUG
@@ -94,7 +92,7 @@ bool CN3BaseFileAccess::LoadFromFile()
 #endif
 
 	FileReader file;
-	if (!file.Open(szFullPath))
+	if (!file.OpenExisting(szFullPath))
 	{
 		std::string szErr = szFullPath + " - Can't open file (read)";
 #ifdef _N3TOOL
@@ -119,7 +117,7 @@ bool CN3BaseFileAccess::LoadFromFile(const std::string& szFileName, uint32_t iVe
 
 bool CN3BaseFileAccess::SaveToFile()
 {
-	if(m_szFileName.size() <= 0)
+	if (m_szFileName.empty())
 	{
 		std::string szErr = m_szName + " Can't open file (write) - NULL String";
 		MessageBox(s_hWndBase, szErr.c_str(), "File Open Error", MB_OK);
@@ -127,44 +125,39 @@ bool CN3BaseFileAccess::SaveToFile()
 	}
 
 	std::string szFullPath;
-	if(-1 != m_szFileName.find(':') || -1 != m_szFileName.find("\\\\") || -1 != m_szFileName.find("//")) // 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
-	{
-		szFullPath = m_szFileName;
-	}
-	else
-	{
-		if(s_szPath.size() > 0) szFullPath = s_szPath;
-		szFullPath += m_szFileName;
-	}
 
-	HANDLE hFile = ::CreateFile(szFullPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (hFile == INVALID_HANDLE_VALUE)
+	// 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
+	if (m_szFileName.find(':') != std::string::npos
+		|| m_szFileName.find("\\\\") != std::string::npos
+		|| m_szFileName.find("//") != std::string::npos)
+		szFullPath = m_szFileName;
+	else
+		szFullPath = s_szPath + m_szFileName;
+
+	FileWriter file;
+	if (!file.Create(szFullPath))
 	{
 		std::string szErr = szFullPath + " - Can't open file(write)";
 		MessageBox(s_hWndBase, szErr.c_str(), "File Handle error", MB_OK);
 		return false;
 	}
 
-	Save(hFile);
-
-	CloseHandle(hFile);
+	Save(file);
 	return true;
 }
 
 bool CN3BaseFileAccess::SaveToFile(const std::string& szFileName)
 {
-	this->FileNameSet(szFileName);
-	return this->SaveToFile();
+	FileNameSet(szFileName);
+	return SaveToFile();
 }
 
-bool CN3BaseFileAccess::Save(HANDLE hFile)
+bool CN3BaseFileAccess::Save(File& file)
 {
-	DWORD dwRWC = 0;
-
 	int nL = static_cast<int>(m_szName.size());
-	WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+	file.Write(&nL, 4);
 	if (nL > 0)
-		WriteFile(hFile, m_szName.c_str(), nL, &dwRWC, nullptr);
+		file.Write(m_szName.c_str(), nL);
 
 	return true;
 }

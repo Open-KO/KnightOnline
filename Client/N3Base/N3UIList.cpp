@@ -310,23 +310,22 @@ bool CN3UIList::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3UIList::Save(HANDLE hFile)
+bool CN3UIList::Save(File& file)
 {
-	if (false == CN3UIBase::Save(hFile)) return false;
-	
-	DWORD dwNum;
+	if (!CN3UIBase::Save(file))
+		return false;
 	
 	// font 정보
 	int iStrLen = static_cast<int>(m_szFontName.size());
 	__ASSERT(iStrLen > 0, "No font name");
-	WriteFile(hFile, &iStrLen, sizeof(iStrLen), &dwNum, nullptr);			// font 이름 길이 
+	file.Write(&iStrLen, sizeof(iStrLen));			// font 이름 길이 
 	if (iStrLen > 0)
 	{
-		WriteFile(hFile, m_szFontName.c_str(), iStrLen, &dwNum, nullptr);				// string
-		WriteFile(hFile, &m_dwFontHeight, 4, &dwNum, nullptr);	// font height
-		WriteFile(hFile, &m_crFont, 4, &dwNum, nullptr);	// font color
-		WriteFile(hFile, &m_bFontBold, 4, &dwNum, nullptr);	// font flag (bold, italic)
-		WriteFile(hFile, &m_bFontItalic, 4, &dwNum, nullptr);	// font flag (bold, italic)
+		file.Write(m_szFontName.c_str(), iStrLen);				// string
+		file.Write(&m_dwFontHeight, 4);	// font height
+		file.Write(&m_crFont, 4);	// font color
+		file.Write(&m_bFontBold, 4);	// font flag (bold, italic)
+		file.Write(&m_bFontItalic, 4);	// font flag (bold, italic)
 	}
 
 	return true;

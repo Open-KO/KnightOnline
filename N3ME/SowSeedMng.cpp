@@ -11,9 +11,7 @@
 #include "DlgSowSeed.h"
 #include "DlgShapeList.h"
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+#include <shared/FileWriter.h>
 
 CSowSeedMng::CSowSeedMng()
 {
@@ -753,15 +751,13 @@ void CSowSeedMng::LoadData(void)
 };
 
 
-void CSowSeedMng::SaveDataGame(void)
+void CSowSeedMng::SaveDataGame()
 {
+	CMainFrame* m_pRefFrm = (CMainFrame*) AfxGetMainWnd();
 
-
-	CMainFrame* m_pRefFrm= (CMainFrame*)AfxGetMainWnd();
-
-	if(m_pRefFrm->m_SeedFileName[0] == '\0')
+	if (m_pRefFrm->m_SeedFileName[0] == '\0')
 	{
-		::MessageBox(nullptr,"맵 파일 부터 게임용으로 저장하세요","확인",MB_OK);
+		::MessageBox(nullptr, "맵 파일 부터 게임용으로 저장하세요", "확인", MB_OK);
 		return;
 	}
 
@@ -778,7 +774,7 @@ void CSowSeedMng::SaveDataGame(void)
 	SetCurrentDirectory(szCurrDir);
 
 	CreateDirectory("Seeds", nullptr);
-	sprintf(szNewDir,"%s\\Seeds",szCurrDir);
+	sprintf(szNewDir, "%s\\Seeds", szCurrDir);
 	SetCurrentDirectory(szNewDir);
 
 	char szNewPath[_MAX_PATH];
@@ -786,14 +782,13 @@ void CSowSeedMng::SaveDataGame(void)
 	//_splitpath(szModuleFilePath, szDrive, szDir, nullptr, nullptr);
 	_makepath(szNewPath, nullptr, nullptr, m_pRefFrm->m_SeedFileName, "grs");
 
-	
-	HANDLE hFile = CreateFile(szNewPath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-	DWORD dwRWC;
+	FileWriter file;
+	if (!file.Create(szNewPath))
+		return;
 
 	char Buff[80];
-	sprintf(Buff,"GrassInfoFile");
-	WriteFile(hFile, Buff, 80, &dwRWC, nullptr);
+	sprintf(Buff, "GrassInfoFile");
+	file.Write(Buff, 80);
 
 	// 그룹 크기 
 	Obj_Name.clear();
@@ -806,55 +801,55 @@ void CSowSeedMng::SaveDataGame(void)
 		for (int j = 0; j < static_cast<int>(Obj_Name.size()); j++, it_Obj++)
 		{
 			LPOBJ_NAME Obj = *it_Obj;
-			if( strcmp( group->FileName,Obj->FileName) == 0 )
+			if (strcmp(group->FileName, Obj->FileName) == 0)
 				back_push = FALSE;
 		}
-		if( back_push == TRUE)
+		if (back_push == TRUE)
 		{
 			LPOBJ_NAME File_Name = new OBJ_NAME;
-			strcpy(File_Name->FileName,group->FileName);
+			strcpy(File_Name->FileName, group->FileName);
 			File_Name->Id = Object_ID;
 			Obj_Name.push_back(File_Name);
-			Object_ID ++;
+			Object_ID++;
 		}
 
 	}
 
 	int iNum = static_cast<int>(Obj_Name.size());
-	WriteFile(hFile, &iNum, sizeof(int), &dwRWC, nullptr);
+	file.Write(&iNum, sizeof(int));
 
 	it_Obj_Name it_Obj = Obj_Name.begin();
 	for (int j = 0; j < static_cast<int>(Obj_Name.size()); j++, it_Obj++)
 	{
 		LPOBJ_NAME Obj = *it_Obj;
 		int len = static_cast<int>(strlen(Obj->FileName));
-		WriteFile(hFile, &len, sizeof(int), &dwRWC, nullptr);
-		WriteFile(hFile, Obj->FileName, len, &dwRWC, nullptr);
+		file.Write(&len, sizeof(int));
+		file.Write(Obj->FileName, len);
 	}
 
-	CloseHandle(hFile);
+	file.Close();
 
 	SetCurrentDirectory(szOldPath);
 }
 
 
-void CSowSeedMng::Test_GameDataSave(void)
+void CSowSeedMng::Test_GameDataSave()
 {
-
-	DWORD dwRWC = 0;
 	DWORD dwFlags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
 	CFileDialog dlg(FALSE, "tst", nullptr, dwFlags, "Grass Info File(*.tst)|*.tst||", nullptr);
 
-	if(dlg.DoModal() == IDCANCEL) return;
+	if (dlg.DoModal() == IDCANCEL)
+		return;
 
-	HANDLE hFile = CreateFile(dlg.GetPathName(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-
+	FileWriter file;
+	if (!file.Create(dlg.GetPathName().GetString()))
+		return;
 
 	CMainFrame* pFrm = (CMainFrame*) AfxGetMainWnd();
 	int Map_Size = pFrm->GetMapMng()->GetTerrain()->m_iHeightMapSize;
 	//타일에 풀 속성 저장..
 	LPSEEDGROUP SeedAttr = new SEEDGROUP[Map_Size * Map_Size];
-	ZeroMemory(SeedAttr, sizeof(unsigned char) * Map_Size * Map_Size);
+	memset(SeedAttr, 0, sizeof(unsigned char) * Map_Size * Map_Size);
 
 	for (int i = 0; i < Map_Size * Map_Size; i++)
 	{
@@ -902,19 +897,14 @@ void CSowSeedMng::Test_GameDataSave(void)
 
 	for (int i = 0; i < Map_Size * Map_Size; i++)
 	{
-		WriteFile(hFile, &SeedAttr[i], sizeof(unsigned char), &dwRWC, nullptr);
+		file.Write(&SeedAttr[i], sizeof(unsigned char));
 		if (SeedAttr[i].sub_flage == 1)
-			WriteFile(hFile, SeedAttr[i].SeedGroup_Sub, sizeof(unsigned char), &dwRWC, nullptr);
+			file.Write(SeedAttr[i].SeedGroup_Sub, sizeof(unsigned char));
 	}
-
-
-	CloseHandle(hFile);
-
 }
 
 void CSowSeedMng::Test_GameDataLoad(void)
 {
-	DWORD dwRWC = 0;
 	DWORD dwFlags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_HIDEREADONLY;
 	CFileDialog dlg(TRUE, "tst", nullptr, dwFlags, "Grass Info File(*.tst)|*.tst||", nullptr);
 
@@ -954,21 +944,24 @@ void CSowSeedMng::Test_GameDataLoad(void)
 
 	// 텍스트파일로 함 뽑아보자..
 	FILE* stream = fopen("c:\\grass.txt", "w");
-	for(int z=0; z<Map_Size;z++)
+	if (stream != nullptr)
 	{
-		for(int x=0; x<Map_Size;x++)
+		for (int z = 0; z < Map_Size; z++)
 		{
-			SEEDGROUP v = SeedAttr[z + (x*Map_Size)];
-			fprintf(stream, "%d,%d\t",v.Obj_Id,v.Seed_Count );
+			for (int x = 0; x < Map_Size; x++)
+			{
+				SEEDGROUP v = SeedAttr[z + (x * Map_Size)];
+				fprintf(stream, "%d,%d\t", v.Obj_Id, v.Seed_Count);
 
-			if( v.SeedGroup_Sub !=nullptr)
-				fprintf(stream, "서브 %d,%d\t",v.SeedGroup_Sub->Obj_Id,v.SeedGroup_Sub->Seed_Count );
+				if (v.SeedGroup_Sub != nullptr)
+					fprintf(stream, "서브 %d,%d\t", v.SeedGroup_Sub->Obj_Id, v.SeedGroup_Sub->Seed_Count);
 
 
-			fprintf(stream, "\n");
+				fprintf(stream, "\n");
+			}
 		}
+		fclose(stream);
 	}
-	fclose(stream);
 
 //	CloseHandle(hFile);
 	fclose(fp);

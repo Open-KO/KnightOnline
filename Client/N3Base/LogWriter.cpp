@@ -32,67 +32,62 @@ void CLogWriter::Open(const std::string& szFN)
 
 	s_szFileName = szFN;
 
-	HANDLE hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (hFile == INVALID_HANDLE_VALUE)
+	FileWriter file;
+	if (!file.OpenExisting(s_szFileName))
 	{
-		hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE)
+		if (!file.Create(s_szFileName))
 			return;
 	}
 
-	DWORD dwSizeHigh = 0;
-	DWORD dwSizeLow = ::GetFileSize(hFile, &dwSizeHigh);
-	if (dwSizeLow > 256000)  // 파일 사이즈가 너무 크면 지운다..
+	auto fileSize = file.Size();
+
+	// 파일 사이즈가 너무 크면 지운다..
+	if (fileSize > 256000)
 	{
-		CloseHandle(hFile);
-		::DeleteFile(s_szFileName.c_str());
-		hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE)
+		file.Close();
+
+		std::error_code ec;
+		std::filesystem::remove(s_szFileName, ec);
+
+		if (!file.Create(s_szFileName))
 			return;
 	}
 
-	::SetFilePointer(hFile, 0, nullptr, FILE_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
+	file.Seek(0, SEEK_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
 
 	std::string buff;
 	SYSTEMTIME time;
 	GetLocalTime(&time);
-	DWORD dwRWC = 0;
 
 	buff = "---------------------------------------------------------------------------\r\n";
-	WriteFile(hFile, buff.data(), static_cast<DWORD>(buff.length()), &dwRWC, nullptr);
+	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
 
 	buff = fmt::format("// Begin writing log... [{:02}/{:02} {:02}:{:02}]\r\n",
 		time.wMonth, time.wDay, time.wHour, time.wMinute);
-	WriteFile(hFile, buff.data(), static_cast<DWORD>(buff.length()), &dwRWC, nullptr);
-
-	CloseHandle(hFile);
+	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
 }
 
 void CLogWriter::Close()
 {
-	HANDLE hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (hFile == INVALID_HANDLE_VALUE)
+	FileWriter file;
+	if (!file.OpenExisting(s_szFileName))
 	{
-		hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE)
+		if (!file.Create(s_szFileName))
 			return;
 	}
 
-	::SetFilePointer(hFile, 0, nullptr, FILE_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
+	file.Seek(0, SEEK_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
 
 	std::string buff;
 	SYSTEMTIME time;
 	GetLocalTime(&time);
-	DWORD dwRWC = 0;
 
 	buff = fmt::format("// End writing log... [{:02}/{:02} {:02}:{:02}]\r\n",
 		time.wMonth, time.wDay, time.wHour, time.wMinute);
-	WriteFile(hFile, buff.data(), static_cast<DWORD>(buff.length()), &dwRWC, nullptr);
+	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
 
 	buff = "---------------------------------------------------------------------------\r\n";
-	WriteFile(hFile, buff.data(), static_cast<DWORD>(buff.length()), &dwRWC, nullptr);
-
-	CloseHandle(hFile);
+	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
 }
 
 void CLogWriter::Write(const std::string_view message)
@@ -101,11 +96,10 @@ void CLogWriter::Write(const std::string_view message)
 		|| message.empty())
 		return;
 
-	HANDLE hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (hFile == INVALID_HANDLE_VALUE)
+	FileWriter file;
+	if (!file.OpenExisting(s_szFileName))
 	{
-		hFile = CreateFile(s_szFileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-		if (hFile == INVALID_HANDLE_VALUE)
+		if (!file.Create(s_szFileName))
 			return;
 	}
 
@@ -115,9 +109,6 @@ void CLogWriter::Write(const std::string_view message)
 	std::string outputMessage = fmt::format("    [{:02}:{:02}:{:02}] {}\r\n",
 		time.wHour, time.wMinute, time.wSecond, message);
 
-	::SetFilePointer(hFile, 0, nullptr, FILE_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
-
-	DWORD dwRWC = 0;
-	WriteFile(hFile, outputMessage.data(), static_cast<DWORD>(outputMessage.length()), &dwRWC, nullptr);
-	CloseHandle(hFile);
+	file.Seek(0, SEEK_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
+	file.Write(outputMessage.data(), static_cast<DWORD>(outputMessage.length()));
 }

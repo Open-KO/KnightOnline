@@ -81,7 +81,7 @@ public:
 	void ClearList();
 	
 	bool Load(File& file) override;
-	bool Save(HANDLE hFile) override;
+	bool Save(File& file) override;
 		
 	CLightObjMgr();
 	~CLightObjMgr() override;

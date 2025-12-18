@@ -218,11 +218,11 @@ void CN3UIProgress::operator = (const CN3UIProgress& other)
 	SetFrGndUVFromFrGndImage();
 }
 
-bool CN3UIProgress::Save(HANDLE hFile)
+bool CN3UIProgress::Save(File& file)
 {
 	int iCur = (int)m_fCurValue;	// 이전 상태 기억해 놓기
 	SetCurValue(m_iMaxValue);	// foreground가 꽉 채운 이미지 만들기
-	bool bRet = CN3UIBase::Save(hFile);	// 저장하기
+	bool bRet = CN3UIBase::Save(file);	// 저장하기
 
 	SetCurValue((int)m_fCurValue);	// 이전 상태로 되돌리기
 

@@ -48,7 +48,7 @@ public:
 	void		MoveStraight(float fDistance, bool bSmall = false);
 	void		LookAround(float fRadianX, float fRadianY);
 	void		Zoom(float fDelta);
-	bool		Save(HANDLE hFile);
+	bool		Save(File& file);
 #endif // end of #ifdef _N3TOOL
 	void		Release();
 	CN3Camera();

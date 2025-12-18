@@ -35,6 +35,7 @@
 #include <N3Base/Pick.h>
 
 #include <shared/FileReader.h>
+#include <shared/FileWriter.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -399,16 +400,17 @@ void CMapMng::SavePartition(float x, float z, float width)
 	//n3m만들기..^^
 	char szN3M[_MAX_PATH];
 	_makepath(szN3M, szDrive, szDir, szFName, "n3m");
-	HANDLE hFile = CreateFile(szN3M, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (INVALID_HANDLE_VALUE == hFile)
+
+	FileWriter file;
+	if (!file.Create(szN3M))
 	{
 		MessageBox(::GetActiveWindow(), lpszPathName, "Fail to open map data file for save, Pleas retry.", MB_OK);
 		return;
 	}
+
 	char comment[80] = {"이파일 여는 사람 바보..^^"};
-	DWORD dwRWC;
-	WriteFile(hFile, &comment, sizeof(char)*80, &dwRWC, nullptr);
-	CloseHandle(hFile);
+	file.Write(&comment, sizeof(char)*80);
+	file.Close();
 
 	// 지형
 	if(m_pTerrain)
@@ -447,17 +449,17 @@ void CMapMng::SaveToFile(LPCTSTR lpszPathName)
 	//n3m만들기..^^
 	char szN3M[_MAX_PATH];
 	_makepath(szN3M, szDrive, szDir, szFName, "n3m");
-	HANDLE hFile = CreateFile(szN3M, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (INVALID_HANDLE_VALUE == hFile)
+
+	FileWriter file;
+	if (!file.Create(szN3M))
 	{
 		MessageBox(::GetActiveWindow(), lpszPathName, "Fail to open map data file for save, Pleas retry.", MB_OK);
 		return;
 	}
 
 	char comment[80] = {"이파일 여는 사람 바보..^^"};
-	DWORD dwRWC;
-	WriteFile(hFile, &comment, sizeof(char)*80, &dwRWC, nullptr);
-	CloseHandle(hFile);
+	file.Write(&comment, 80);
+	file.Close();
 
 	// 지형
 	if(m_pTerrain)
@@ -1408,40 +1410,40 @@ void CMapMng::MakeGameFiles(LPCTSTR lpszPathName, float fSize)
 	_splitpath(lpszPathName, szDrive, szDir, szFName, szExt);
 
 	// 파일 저장.
-	HANDLE hFile = CreateFile(lpszPathName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (INVALID_HANDLE_VALUE == hFile)
+	FileWriter file;
+	if (!file.Create(lpszPathName))
 	{
 		MessageBox(::GetActiveWindow(), lpszPathName, "Fail to open map game data file for save, Pleas retry.", MB_OK);
 		return;
 	}
-	char comment[80] = {"이파일 여는 사람 바보..^^"};
-	DWORD dwRWC;
-	WriteFile(hFile, &m_iZoneID, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &comment, sizeof(char)*80, &dwRWC, nullptr);
-	CloseHandle(hFile);
+
+	char comment[80] = { "이파일 여는 사람 바보..^^" };
+	file.Write(&m_iZoneID, sizeof(int));
+	file.Write(&comment, 80);
+	file.Close();
 
 	// 지형정보 저장
-	HANDLE hTerrainGameFile = nullptr;
 	char szTerrain[_MAX_PATH] = "";
 	_makepath(szTerrain, szDrive, szDir, szFName, ".gtd");
 	m_pTerrain->FileNameSet(szTerrain);
-	hTerrainGameFile = CreateFile(szTerrain, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hTerrainGameFile)
+
+	FileWriter terrainGameFile;
+	if (!terrainGameFile.Create(szTerrain))
 	{
 		MessageBox(::GetActiveWindow(), szTerrain, "Failed to open terrain file for save", MB_OK);
 	}
 	else
 	{
 		m_pTerrain->m_szName = szFName; // 이름을 지정한다.. 이 이름대로 저장된다.
-		m_pTerrain->SaveGameData(hTerrainGameFile);
+		m_pTerrain->SaveGameData(terrainGameFile);
 		char szColorMapName[_MAX_PATH];
 		_makepath(szColorMapName, szDrive, szDir, szFName, ".tct");
 		m_pTerrain->MakeGameColorMap(szColorMapName);
 
-		m_RiverMng.MakeGameFiles(hTerrainGameFile, fSize);
-		m_PondMng.MakeGameFiles(hTerrainGameFile, fSize);
-		//m_pSoundMgr->SaveGameData(hTerrainGameFile);
-		CloseHandle(hTerrainGameFile);
+		m_RiverMng.MakeGameFiles(terrainGameFile, fSize);
+		m_PondMng.MakeGameFiles(terrainGameFile, fSize);
+		//m_pSoundMgr->SaveGameData(terrainGameFile);
+		terrainGameFile.Close();
 
 		char szLightMapName[_MAX_PATH];
 		_makepath(szLightMapName, szDrive, szDir, szFName, ".tlt");
@@ -1502,21 +1504,22 @@ void CMapMng::MakeTerrainMovableAttr(CN3ShapeMgr* pShapeMgr)
 
 void CMapMng::MakeServerDataFiles(LPCTSTR lpszPathName)
 {
-	if(nullptr == m_pEventMgr->m_ppEvent) 
+	if (nullptr == m_pEventMgr->m_ppEvent)
 	{
 		m_pEventMgr->SetActive(true);
 		m_pEventMgr->SetActive(false);
 	}
 
-	HANDLE hFile = CreateFile(lpszPathName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if(INVALID_HANDLE_VALUE == hFile)
+	FileWriter file;
+
+	if (!file.Create(lpszPathName))
 	{
 		m_pMainFrm->MessageBox("file write error");
-		return;		
+		return;
 	}
 
 	//terrain 저장..
-	m_pTerrain->SaveServerData(hFile);
+	m_pTerrain->SaveServerData(file);
 	//
 
 	// Shape Manager 만들고 저장...
@@ -1536,17 +1539,15 @@ void CMapMng::MakeServerDataFiles(LPCTSTR lpszPathName)
 	int nSC = m_pSceneOutput->ShapeCount();
 	int i;
 	for(i = 0; i < nSC; i++)
-	{
 		ShapeMgr.Add(m_pSceneOutput->ShapeGet(i)); // Shape 추가.
-	}
+
 	if(m_pWall) m_pWall->AddWall2Coll(&ShapeMgr);
 	ShapeMgr.GenerateCollisionData(); // 충돌 메시 데이터를 생성한다..
 	MakeTerrainMovableAttr(&ShapeMgr);
-	ShapeMgr.SaveCollisionData(hFile); // 충돌 데이터만 저장...
+	ShapeMgr.SaveCollisionData(file); // 충돌 데이터만 저장...
 
 	// Object Event 저장.
 	//
-	DWORD dwNum;
 	int iEventObjectCount = 0; // 먼저 갯수를 세고..
 	for(i = 0; i < nSC; i++)
 	{
@@ -1555,23 +1556,23 @@ void CMapMng::MakeServerDataFiles(LPCTSTR lpszPathName)
 			iEventObjectCount++;
 	}
 
-	WriteFile(hFile, &iEventObjectCount, 4, &dwNum, nullptr);
+	file.Write(&iEventObjectCount, 4);
 	for(i = 0; i < nSC; i++)
 	{
 		CN3Shape* pShape = m_pSceneOutput->ShapeGet(i);
 		short sEvent = 0; __Vector3 vPos;
 		if(pShape->m_iEventID || pShape->m_iEventType || pShape->m_iNPC_ID || pShape->m_iNPC_Status ) // 이벤트가 있으면
 		{
-			WriteFile(hFile, &(pShape->m_iBelong), 4, &dwNum, nullptr);
-			sEvent = (short)(pShape->m_iEventID); WriteFile(hFile, &sEvent, 2, &dwNum, nullptr);
-			sEvent = (short)(pShape->m_iEventType); WriteFile(hFile, &sEvent, 2, &dwNum, nullptr);
-			sEvent = (short)(pShape->m_iNPC_ID); WriteFile(hFile, &sEvent, 2, &dwNum, nullptr);
-			sEvent = (short)(pShape->m_iNPC_Status); WriteFile(hFile, &sEvent, 2, &dwNum, nullptr);
+			file.Write(&(pShape->m_iBelong), 4);
+			sEvent = (short)(pShape->m_iEventID); file.Write(&sEvent, 2);
+			sEvent = (short)(pShape->m_iEventType); file.Write(&sEvent, 2);
+			sEvent = (short)(pShape->m_iNPC_ID); file.Write(&sEvent, 2);
+			sEvent = (short)(pShape->m_iNPC_Status); file.Write(&sEvent, 2);
 			
 			vPos = pShape->Pos();
-			WriteFile(hFile, &(vPos.x), 4, &dwNum, nullptr);
-			WriteFile(hFile, &(vPos.y), 4, &dwNum, nullptr);
-			WriteFile(hFile, &(vPos.z), 4, &dwNum, nullptr);
+			file.Write(&(vPos.x), 4);
+			file.Write(&(vPos.y), 4);
+			file.Write(&(vPos.z), 4);
 		}
 	}
 
@@ -1583,15 +1584,15 @@ void CMapMng::MakeServerDataFiles(LPCTSTR lpszPathName)
 	{
 		for(int x=0; x<m_pTerrain->m_iHeightMapSize; x++)
 		{
-			WriteFile(hFile, &(m_pEventMgr->m_ppEvent[x][z]), sizeof(short), &dwNum, nullptr);
+			file.Write(&(m_pEventMgr->m_ppEvent[x][z]), sizeof(short));
 		}		
 	}
 	*/
 	for(int x=0;x<m_pTerrain->m_iHeightMapSize;x++)
-		WriteFile(hFile, m_pEventMgr->m_ppEvent[x], sizeof(short)*m_pTerrain->m_iHeightMapSize, &dwNum, nullptr);
+		file.Write(m_pEventMgr->m_ppEvent[x], sizeof(short)*m_pTerrain->m_iHeightMapSize);
 
-	m_pRegenUser->SaveServerData(hFile);
-	m_pWarpMgr->SaveServerData(hFile);
+	m_pRegenUser->SaveServerData(file);
+	m_pWarpMgr->SaveServerData(file);
 
 	// 이벤트 정보..
 	// 파일 이름
@@ -1607,16 +1608,20 @@ void CMapMng::MakeServerDataFiles(LPCTSTR lpszPathName)
 
 	// 텍스트파일로 함 뽑아보자..
 	FILE* stream = fopen("c:\\move.txt", "w");
-	for(int z=m_pTerrain->m_iHeightMapSize-1; z>=0; z--)
+	if (stream != nullptr)
 	{
-		for(int x=0; x<m_pTerrain->m_iHeightMapSize; x++)
+		for(int z=m_pTerrain->m_iHeightMapSize-1; z>=0; z--)
 		{
-			int v = m_pEventMgr->m_ppEvent[x][z];
-			fprintf(stream, "%d ",v);
+			for(int x=0; x<m_pTerrain->m_iHeightMapSize; x++)
+			{
+				int v = m_pEventMgr->m_ppEvent[x][z];
+				fprintf(stream, "%d ",v);
+			}
+			fprintf(stream, "\n");
 		}
-		fprintf(stream, "\n");
+		fclose(stream);
 	}
-	fclose(stream);
+
 	//뽑았다.
 
 /*	
@@ -1624,12 +1629,11 @@ void CMapMng::MakeServerDataFiles(LPCTSTR lpszPathName)
 	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
 	_splitpath(lpszPathName, szDrive, szDir, szFName, szExt);
 	_makepath(szCollisionFN, szDrive,szDir, szFName, ".scd"); // 다른 이름으로 저장..
-	CFile file;
-	file.Open(szCollisionFN, CFile::modeCreate | CFile::modeWrite);
+	CFile colFile;
+	colFile.Open(szCollisionFN, CFile::modeCreate | CFile::modeWrite);
 	ShapeMgr.SaveCollisionData((HANDLE)file.m_hFile); // 충돌 데이터만 저장...
-	file.Close();
+	colFile.Close();
 */
-	CloseHandle(hFile);
 }
 
 BOOL CMapMng::GetObjectMinMax(CN3Transform* pObj, __Vector3& vMin, __Vector3& vMax)
@@ -2358,7 +2362,7 @@ void CMapMng::UpdateAll()
 void CMapMng::ImportPostDataFromScene(const char* szFileName)
 {
 	FileReader file;
-	if (!file.Open(szFileName))
+	if (!file.OpenExisting(szFileName))
 		return;
 	
 	int nCameraActive; float fFrmCur, fFrmStart, fFrmEnd;

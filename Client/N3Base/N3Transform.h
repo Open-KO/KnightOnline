@@ -49,7 +49,7 @@ public:
 	bool			Load(File& file);
 #ifdef _N3TOOL
 	virtual void	Render(const __Matrix44* pMtxParent, float fUnitSize = 1.0f);
-	bool			Save(HANDLE hFile);
+	bool			Save(File& file);
 #endif // end of _N3TOOL
 
 	void Release();

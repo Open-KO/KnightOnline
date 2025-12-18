@@ -42,12 +42,11 @@ bool CN3Light::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3Light::Save(HANDLE hFile)
+bool CN3Light::Save(File& file)
 {
-	CN3Transform::Save(hFile);
+	CN3Transform::Save(file);
 
-	DWORD dwRWC;
-	WriteFile(hFile, &m_Data, sizeof(m_Data), &dwRWC, nullptr); // 라이트 세팅.
+	file.Write(&m_Data, sizeof(m_Data)); // 라이트 세팅.
 
 	return true;
 }

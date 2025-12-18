@@ -50,7 +50,7 @@ public:
 	void				StopFXB(bool bImmediately);
 	void				TriggerFXB();
 #ifdef _N3TOOL
-	virtual bool		Save(HANDLE hFile);
+	virtual bool		Save(File& file);
 #endif
 protected:
 };
@@ -83,7 +83,7 @@ public:
 	void			TriggerAll();						// FX 시작
 
 #ifdef _N3TOOL
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	void			RemoveFXPParts_HaveNoBundle();		// 번들 없는 Part들 제거하기
 
 	CN3FXPlugPart*	FXPPartAdd();

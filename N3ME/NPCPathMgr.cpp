@@ -13,6 +13,7 @@
 #include "MainFrm.h"
 
 #include <shared/FileReader.h>
+#include <shared/FileWriter.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -129,7 +130,7 @@ void CNPCPathMgr::LoadFromFile(const char* FileName)
 	wsprintf(szNPCPathFileName, "%snpcpath\\%s.npi", s_szPath.c_str(), FileName);
 
 	FileReader npcPathFile;
-	if (!npcPathFile.Open(szNPCPathFileName))
+	if (!npcPathFile.OpenExisting(szNPCPathFileName))
 		return;
 
 	int NumPath;
@@ -154,21 +155,24 @@ void CNPCPathMgr::SaveToFile(const char* FileName)
 	char szNPCPathFileName[_MAX_PATH];
 	wsprintf(szNPCPathFileName, "%snpcpath\\%s.npi", s_szPath.c_str(), FileName);
 
-	DWORD dwRWC;
-	HANDLE hFile = CreateFile(szNPCPathFileName, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-	
-	int NumPath = static_cast<int>(m_pPaths.size());
-	WriteFile(hFile, &NumPath, sizeof(int), &dwRWC, nullptr);
-
-	std::list<CNPCPath*>::iterator itPath;
-	CNPCPath* pPath;
-	for(itPath = m_pPaths.begin(); itPath != m_pPaths.end(); itPath++)
+	FileWriter file;
+	if (file.Create(szNPCPathFileName))
 	{
-		pPath = (*itPath);
-		pPath->m_iZoneID = m_pRefMapMng->m_iZoneID;
-		pPath->Save(hFile);
+		int NumPath = static_cast<int>(m_pPaths.size());
+		file.Write(&NumPath, sizeof(int));
+
+		std::list<CNPCPath*>::iterator itPath;
+		CNPCPath* pPath;
+		for(itPath = m_pPaths.begin(); itPath != m_pPaths.end(); itPath++)
+		{
+			pPath = (*itPath);
+			pPath->m_iZoneID = m_pRefMapMng->m_iZoneID;
+			pPath->Save(file);
+		}
+
+		file.Close();
 	}
-	CloseHandle(hFile);
+
 	SetCurrentDirectory(szOldPath);
 }
 

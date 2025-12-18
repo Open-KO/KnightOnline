@@ -428,14 +428,13 @@ bool CWallMgr::Load(File& file)
 	return true;
 }
 
-bool CWallMgr::Save(HANDLE hFile)
+bool CWallMgr::Save(File& file)
 {
-	DWORD dwRWC;
 	int NumWall = static_cast<int>(m_pWalls.size());
-	WriteFile(hFile, &NumWall, sizeof(int), &dwRWC, nullptr);
+	file.Write(&NumWall, sizeof(int));
 
 	for (CWall* pWall : m_pWalls)
-		pWall->Save(hFile);
+		pWall->Save(file);
 
 	return true;
 }

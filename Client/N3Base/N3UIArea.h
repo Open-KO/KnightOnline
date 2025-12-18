@@ -51,7 +51,7 @@ public:
 #ifdef _N3TOOL
 // 툴에서 사용하기 위한 함수
 	virtual void	operator = (const CN3UIArea& other);
-	bool	Save(HANDLE hFile) override;
+	bool	Save(File& file) override;
 #endif
 };
 

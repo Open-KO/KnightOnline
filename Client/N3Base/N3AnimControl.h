@@ -102,36 +102,32 @@ public:
 		}
 	}
 
-	void Save(HANDLE hFile)
+	void Save(File& file)
 	{
-		if(nullptr == hFile || INVALID_HANDLE_VALUE == hFile) return;
-
-		DWORD dwRWC = 0;
-
 		int nL = 0;
-		WriteFile(hFile, &nL, 4, &dwRWC, nullptr); // 원래는 문자열 포인터가 있던자리이다.. 호환성을 위헤서.. 걍...
+		file.Write(&nL, 4); // 원래는 문자열 포인터가 있던자리이다.. 호환성을 위헤서.. 걍...
 
-		WriteFile(hFile, &fFrmStart, 4, &dwRWC, nullptr); // 상체 시작
-		WriteFile(hFile, &fFrmEnd, 4, &dwRWC, nullptr); // 상체 끝
-		WriteFile(hFile, &fFrmPerSec, 4, &dwRWC, nullptr); // 초당 30프레임이 표준이다..
+		file.Write(&fFrmStart, 4); // 상체 시작
+		file.Write(&fFrmEnd, 4); // 상체 끝
+		file.Write(&fFrmPerSec, 4); // 초당 30프레임이 표준이다..
 
-		WriteFile(hFile, &fFrmPlugTraceStart, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &fFrmPlugTraceEnd, 4, &dwRWC, nullptr);
+		file.Write(&fFrmPlugTraceStart, 4);
+		file.Write(&fFrmPlugTraceEnd, 4);
 		
-		WriteFile(hFile, &fFrmSound0, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &fFrmSound1, 4, &dwRWC, nullptr);
+		file.Write(&fFrmSound0, 4);
+		file.Write(&fFrmSound1, 4);
 
-		WriteFile(hFile, &fTimeBlend, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &iBlendFlags, 4, &dwRWC, nullptr); // 블렌딩 플래그 0 이면 걍 블렌딩.. 1이면 루핑시 블렌딩 타임만큼 시간 지연
+		file.Write(&fTimeBlend, 4);
+		file.Write(&iBlendFlags, 4); // 블렌딩 플래그 0 이면 걍 블렌딩.. 1이면 루핑시 블렌딩 타임만큼 시간 지연
 		
-		WriteFile(hFile, &fFrmStrike0, 4, &dwRWC, nullptr);
-		WriteFile(hFile, &fFrmStrike1, 4, &dwRWC, nullptr);
+		file.Write(&fFrmStrike0, 4);
+		file.Write(&fFrmStrike1, 4);
 
 		// 이름 읽기..
 		nL = static_cast<int>(szName.size());
-		WriteFile(hFile, &nL, 4, &dwRWC, nullptr);
+		file.Write(&nL, 4);
 		if (nL > 0)
-			WriteFile(hFile, szName.c_str(), nL, &dwRWC, nullptr);
+			file.Write(szName.c_str(), nL);
 	}
 
 #ifdef _N3TOOL
@@ -191,7 +187,7 @@ public:
 	void			Delete(int nIndex);
 	__AnimData*		Add();
 	__AnimData*		Insert(int nIndex);
-	bool			Save(HANDLE hFile) override;
+	bool			Save(File& file) override;
 #endif
 	void Release() override;
 	

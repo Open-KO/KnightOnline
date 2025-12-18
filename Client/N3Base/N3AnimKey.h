@@ -78,7 +78,7 @@ public:
 		else if(KEY_QUATERNION == m_eType) return &(((__Quaternion*)m_pDatas)[index]);
 		else return nullptr;
 	}
-	bool Save(HANDLE hFile);
+	bool Save(File& file);
 #endif // end of
 	
 	int Count() { return m_nCount; }

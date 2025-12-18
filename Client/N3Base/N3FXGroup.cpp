@@ -51,24 +51,16 @@ bool CN3FXGroup::Load(File& file)
 	return true;
 }
 
-bool CN3FXGroup::Save(HANDLE hFile)
+bool CN3FXGroup::Save(File& file)
 {
-	DWORD			dwRWC = 0;
-	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
+	file.Write(&m_iVersion, sizeof(int));
 
 	int count = GetCount();
-	WriteFile(hFile, &count, sizeof(int), &dwRWC, nullptr);
+	file.Write(&count, sizeof(int));
 
-	std::list<__FXBInfo*>::iterator it, ite;
-	ite = FXBList.end();
-	it = FXBList.begin();
+	for (__FXBInfo* pFXB : FXBList)
+		file.Write(pFXB, sizeof(__FXBInfo));
 
-	while(it!=ite)
-	{
-		__FXBInfo* pFXB = (*it);
-		WriteFile(hFile, pFXB, sizeof(__FXBInfo), &dwRWC, nullptr);
-		it++;
-	}
 	return true;
 }
 

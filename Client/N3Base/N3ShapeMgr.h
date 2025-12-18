@@ -44,12 +44,11 @@ public:
 		}
 
 #ifdef _N3TOOL
-		void Save(HANDLE hFile)
+		void Save(File& file)
 		{
-			DWORD dwRWC = 0;
-			WriteFile(hFile, &nCCPolyCount, 4, &dwRWC, nullptr);
+			file.Write(&nCCPolyCount, 4);
 			if (nCCPolyCount > 0)
-				WriteFile(hFile, pdwCCVertIndices, nCCPolyCount * 3 * 4, &dwRWC, nullptr);
+				file.Write(pdwCCVertIndices, nCCPolyCount * 3 * 4);
 		}
 #endif // end of _N3TOOL
 
@@ -90,17 +89,16 @@ public:
 		}
 
 #ifdef _N3TOOL
-		void Save(HANDLE hFile)
+		void Save(File& file)
 		{
-			DWORD dwRWC = 0;
-			WriteFile(hFile, &nShapeCount, 4, &dwRWC, nullptr);
+			file.Write(&nShapeCount, 4);
 			if (nShapeCount > 0)
-				WriteFile(hFile, pwShapeIndices, nShapeCount * 2, &dwRWC, nullptr);
+				file.Write(pwShapeIndices, nShapeCount * 2);
 
 			for (int z = 0; z < CELL_MAIN_DIVIDE; z++)
 			{
 				for (int x = 0; x < CELL_MAIN_DIVIDE; x++)
-					SubCells[x][z].Save(hFile);
+					SubCells[x][z].Save(file);
 			}
 		}
 #endif // end of _N3TOOL
@@ -226,8 +224,8 @@ public:
 	int			Add(CN3Shape* pShape);
 	bool		AddCollisionTriangle(const __Vector3& v1, const __Vector3& v2, const __Vector3& v3);
 	void		GenerateCollisionData();
-	bool		Save(HANDLE hFile);
-	bool		SaveCollisionData(HANDLE hFile);
+	bool		Save(File& file);
+	bool		SaveCollisionData(File& file);
 #endif // end of _N3TOOL
 
 	void Release();

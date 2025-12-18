@@ -134,20 +134,18 @@ bool CPondMng::Load(File& file)
 	return 0;
 }
 
-bool CPondMng::Save(HANDLE hFile)
+bool CPondMng::Save(File& file)
 {
-	DWORD dwNum;
-
 	//	version 1000 - alpha input
 	int nFileVersion = 1001;
-	WriteFile(hFile, &nFileVersion, sizeof(nFileVersion), &dwNum, nullptr);		// 연못 번호
+	file.Write(&nFileVersion, sizeof(nFileVersion));		// 연못 번호
 
 	int iSize = static_cast<int>(m_PondMeshes.size());
-	WriteFile(hFile, &iSize, 4, &dwNum, nullptr);
+	file.Write(&iSize, 4);
 	
 	it_PondMesh it = m_PondMeshes.begin();
 	for (CPondMesh* pRM : m_PondMeshes)
-		pRM->Save(hFile);
+		pRM->Save(file);
 
 	return true;
 }
@@ -859,12 +857,11 @@ void CPondMng::ReCalcUV()
 	m_pMainFrm->Invalidate(FALSE);
 }
 
-void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
+void CPondMng::MakeGameFiles(File& file, float fSize)
 {
 	int iPondCount = static_cast<int>(m_PondMeshes.size());
-	DWORD dwNum;
 
-	WriteFile(hFile, &iPondCount, sizeof(int), &dwNum, nullptr);
+	file.Write(&iPondCount, sizeof(int));
 	for (CPondMesh* pRM : m_PondMeshes)
 	{
 		ASSERT(pRM);
@@ -872,13 +869,13 @@ void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
 		int iVC = pRM->VertexCount();
 		__VertexXyzT2* pVtx0 = pRM->GetVertex(0), *pSrcVtx = nullptr;
 		ASSERT(pVtx0);
-		WriteFile(hFile, &iVC, sizeof(iVC), &dwNum, nullptr);				// 점 갯수
+		file.Write(&iVC, sizeof(iVC));				// 점 갯수
 
 		if (iVC <= 0)
 			continue;
 
 		int iWidthVtxNum = pRM->GetWaterScaleWidht();
-		WriteFile(hFile, &iWidthVtxNum, sizeof(int), &dwNum, nullptr);				// 점 갯수
+		file.Write(&iWidthVtxNum, sizeof(int));				// 점 갯수
 
 		CN3Texture* pPondTex = pRM->TexGet();
 		int iLen = 0;
@@ -898,14 +895,14 @@ void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
 				}
 			}
 
-			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
+			file.Write(&iLen, sizeof(iLen));				// texture file name length
 
 			if (iLen > 0)
-				WriteFile(hFile, szFindName, iLen, &dwNum, nullptr);			// texture file name
+				file.Write(szFindName, iLen);			// texture file name
 		}
 		else
 		{
-			WriteFile(hFile, &iLen, sizeof(iLen), &dwNum, nullptr);				// texture file name length
+			file.Write(&iLen, sizeof(iLen));				// texture file name length
 		}
 
 		// XyxT2 -> XyzColorT2 Converting.
@@ -915,11 +912,11 @@ void CPondMng::MakeGameFiles(HANDLE hFile, float fSize)
 		{
 			pSrcVtx = pVtx0 + k;
 			__vTemp.Set(*pSrcVtx, 0.0f, 1.0f, 0.0f, dwAplha);
-			WriteFile(hFile, &__vTemp, sizeof(__VertexPond), &dwNum, nullptr);	// vertex buffer
+			file.Write(&__vTemp, sizeof(__VertexPond));	// vertex buffer
 		}
 
 		int iIC = pRM->IndexCount();
-		WriteFile(hFile, &iIC, sizeof(iIC), &dwNum, nullptr);				// IndexBuffer Count.
+		file.Write(&iIC, sizeof(iIC));				// IndexBuffer Count.
 	}
 }
 

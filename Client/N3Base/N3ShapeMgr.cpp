@@ -237,16 +237,15 @@ bool CN3ShapeMgr::LoadCollisionData(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3ShapeMgr::Save(HANDLE hFile)
+bool CN3ShapeMgr::Save(File& file)
 {
-	if (!SaveCollisionData(hFile))
+	if (!SaveCollisionData(file))
 		return false;
 
 #ifndef _3DSERVER
-	DWORD dwRWC;
 	int iSC = static_cast<int>(m_Shapes.size());
 
-	WriteFile(hFile, &iSC, 4, &dwRWC, nullptr); // Shape Count
+	file.Write(&iSC, 4); // Shape Count
 	for (CN3Shape* pShape : m_Shapes)
 	{
 		uint32_t dwType = pShape->Type();
@@ -256,10 +255,10 @@ bool CN3ShapeMgr::Save(HANDLE hFile)
 			|| pShape->m_iNPC_Status != 0)
 			dwType |= OBJ_SHAPE_EXTRA; // NPC ID 가 있으면.. 확장 Shape 로 ...
 
-		WriteFile(hFile, &dwType, 4, &dwRWC, nullptr); // Shape Type
+		file.Write(&dwType, 4); // Shape Type
 		pShape->CollisionMeshSet(""); // 충돌 메시는 지워준다..
 		pShape->ClimbMeshSet(""); // 충돌 메시는 지워준다..
-		pShape->Save(hFile);
+		pShape->Save(file);
 	}
 #endif // end of #ifndef _3DSERVER
 	return true;
@@ -267,17 +266,15 @@ bool CN3ShapeMgr::Save(HANDLE hFile)
 #endif // end of _N3TOOL
 
 #ifdef _N3TOOL
-bool CN3ShapeMgr::SaveCollisionData(HANDLE hFile)
+bool CN3ShapeMgr::SaveCollisionData(File& file)
 {
-	DWORD dwRWC;
-
-	WriteFile(hFile, &m_fMapWidth, 4, &dwRWC, nullptr); // 맵 실제 미터 단위 너비
-	WriteFile(hFile, &m_fMapLength, 4, &dwRWC, nullptr); // 맵 실제 미터 단위 길이
+	file.Write(&m_fMapWidth, 4); // 맵 실제 미터 단위 너비
+	file.Write(&m_fMapLength, 4); // 맵 실제 미터 단위 길이
 
 	// 충돌 체크 폴리곤 데이터 쓰기..
-	WriteFile(hFile, &m_nCollisionFaceCount, 4, &dwRWC, nullptr);
+	file.Write(&m_nCollisionFaceCount, 4);
 	if (m_nCollisionFaceCount > 0)
-		WriteFile(hFile, m_pvCollisions, sizeof(__Vector3) * m_nCollisionFaceCount * 3, &dwRWC, nullptr);
+		file.Write(m_pvCollisions, sizeof(__Vector3) * m_nCollisionFaceCount * 3);
 
 	// Cell Data 쓰기.
 	int z = 0;
@@ -291,10 +288,10 @@ bool CN3ShapeMgr::SaveCollisionData(HANDLE hFile)
 				iExist = 1;
 
 			// 데이터가 있는 셀인지 쓰고..
-			WriteFile(hFile, &iExist, 4, &dwRWC, nullptr);
+			file.Write(&iExist, 4);
 
 			if (m_pCells[x][z] != nullptr)
-				m_pCells[x][z]->Save(hFile);
+				m_pCells[x][z]->Save(file);
 		}
 	}
 

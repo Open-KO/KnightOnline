@@ -183,7 +183,7 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 		&& lstrcmpi(&szFullPath[nFNL - 3], "DXT") == 0)
 	{
 		FileReader file;
-		if (!file.Open(szFullPath))
+		if (!file.OpenExisting(szFullPath))
 		{
 #ifdef _N3GAME
 			CLogWriter::Write("Can't open texture file({})", szFullPath);
@@ -607,13 +607,12 @@ bool CN3Texture::SaveToFile(const std::string& szFileName)
 
 
 #ifdef _N3TOOL
-bool CN3Texture::Save(HANDLE hFile)
+bool CN3Texture::Save(File& file)
 {
-	if(nullptr == m_lpTexture) return false;
+	if (m_lpTexture == nullptr)
+		return false;
 
-	CN3BaseFileAccess::Save(hFile);
-
-	DWORD dwRWC = 0;
+	CN3BaseFileAccess::Save(file);
 
 	D3DSURFACE_DESC sd;
 	m_lpTexture->GetLevelDesc(0, &sd);
@@ -646,7 +645,7 @@ bool CN3Texture::Save(HANDLE hFile)
 	m_Header.nHeight = sd.Height;
 	m_Header.bMipMap = (nMMC > 1) ? TRUE : FALSE;
 	
-	WriteFile(hFile, &m_Header, sizeof(m_Header), &dwRWC, nullptr); // 헤더를 쓰고
+	file.Write(&m_Header, sizeof(m_Header)); // 헤더를 쓰고
 
 	if(m_lpTexture == nullptr) return false;
 
@@ -665,7 +664,7 @@ bool CN3Texture::Save(HANDLE hFile)
 			uint32_t nTexSize = GetTextureSize(sd);
 
 			m_lpTexture->LockRect(i, &LR, nullptr, 0);
-			WriteFile(hFile, (uint8_t*)LR.pBits, nTexSize, &dwRWC, nullptr); // 일렬로 된 데이터를 쓰고..
+			file.Write((uint8_t*)LR.pBits, nTexSize); // 일렬로 된 데이터를 쓰고..
 			m_lpTexture->UnlockRect(i);
 		}
 
@@ -689,7 +688,7 @@ bool CN3Texture::Save(HANDLE hFile)
 			lpSurfDest->LockRect(&LR, nullptr, 0);
 			for(int y = 0; y < nH; y++)
 			{
-				WriteFile(hFile, (uint8_t*)LR.pBits + y * LR.Pitch, nW * 2, &dwRWC, nullptr);
+				file.Write((uint8_t*)LR.pBits + y * LR.Pitch, nW * 2);
 			}
 			lpSurfDest->UnlockRect();
 			lpSurfDest->Release(); lpSurfDest = nullptr; 
@@ -707,7 +706,7 @@ bool CN3Texture::Save(HANDLE hFile)
 			lpSurfDest->LockRect(&LR, nullptr, 0);
 			for(int y = 0; y < nH; y++)
 			{
-				WriteFile(hFile, (uint8_t*)LR.pBits + y * LR.Pitch, nW * 2, &dwRWC, nullptr);
+				file.Write((uint8_t*)LR.pBits + y * LR.Pitch, nW * 2);
 			}
 			lpSurfDest->UnlockRect();
 			lpSurfDest->Release(); lpSurfDest = nullptr; 
@@ -733,7 +732,7 @@ bool CN3Texture::Save(HANDLE hFile)
 			m_lpTexture->LockRect(i, &LR, nullptr, 0); // 각 레벨 Lock
 			int nH = sd.Height;
 			for(int y = 0; y < nH; y++) // 그냥 픽셀 저장..
-				WriteFile(hFile, (uint8_t*)LR.pBits + y * LR.Pitch, sd.Width * nPixelSize, &dwRWC, nullptr);
+				file.Write((uint8_t*)LR.pBits + y * LR.Pitch, sd.Width * nPixelSize);
 			m_lpTexture->UnlockRect(i);
 		}
 
@@ -749,7 +748,7 @@ bool CN3Texture::Save(HANDLE hFile)
 			lpSurfDest->LockRect(&LR, nullptr, 0);
 			for(int y = 0; y < nH; y++)
 			{
-				WriteFile(hFile, (uint8_t*)LR.pBits + y * LR.Pitch, nW * 2, &dwRWC, nullptr);
+				file.Write((uint8_t*)LR.pBits + y * LR.Pitch, nW * 2);
 			}
 			lpSurfDest->UnlockRect();
 			lpSurfDest->Release(); lpSurfDest = nullptr; 

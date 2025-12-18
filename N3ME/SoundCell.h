@@ -37,7 +37,7 @@ public:
 	void	AddRect(__Vector3 v);
 	void	Render(DWORD color);
 	void	Load(File& file);
-	void	Save(HANDLE hFile);
+	void	Save(File& file);
 
 	CSoundCell();
 	CSoundCell(CLyTerrain* pRefTerrain);

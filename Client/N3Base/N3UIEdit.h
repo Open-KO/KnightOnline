@@ -91,7 +91,7 @@ protected:
 #ifdef _N3TOOL
 public:	
 	virtual void		operator = (const CN3UIEdit& other);
-	virtual bool		Save(HANDLE hFile);
+	virtual bool		Save(File& file);
 	void				SetSndTyping(const std::string& strFileName);
 	std::string			GetSndFName_Typing() const;
 #endif

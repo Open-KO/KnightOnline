@@ -45,7 +45,7 @@ protected:
 public:
 	bool Load(File& file) override;
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile) override;
+	bool Save(File& file) override;
 #endif // end of _N3TOOL
 	
 	int TexCount() const
@@ -162,7 +162,7 @@ public:
 	
 	bool			Load(File& file);
 #ifdef _N3TOOL
-	bool			Save(HANDLE hFile);
+	bool			Save(File& file);
 	void			RenderSelected(bool bWireFrame);
 	void			RenderSelected(int iPart, bool bWireFrame);
 	bool			IsPMeshProcessed();

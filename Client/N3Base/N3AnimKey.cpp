@@ -101,18 +101,19 @@ bool CN3AnimKey::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3AnimKey::Save(HANDLE hFile)
+bool CN3AnimKey::Save(File& file)
 {
-	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_nCount, 4, &dwRWC, nullptr); // 키가 몇개 있는지
+	file.Write(&m_nCount, 4); // 키가 몇개 있는지
 
-	if(m_nCount > 0)
+	if (m_nCount > 0)
 	{
-		WriteFile(hFile, &m_eType, 4, &dwRWC, nullptr); // Key Type
-		WriteFile(hFile, &m_fSamplingRate, 4, &dwRWC, nullptr); // Sampling Rate
+		file.Write(&m_eType, 4); // Key Type
+		file.Write(&m_fSamplingRate, 4); // Sampling Rate
 
-		if(KEY_VECTOR3 == m_eType) WriteFile(hFile, m_pDatas, sizeof(__Vector3)*m_nCount, &dwRWC, nullptr);
-		else if(KEY_QUATERNION == m_eType) WriteFile(hFile, m_pDatas, sizeof(__Quaternion)*m_nCount, &dwRWC, nullptr);
+		if (KEY_VECTOR3 == m_eType)
+			file.Write(m_pDatas, sizeof(__Vector3) * m_nCount);
+		else if (KEY_QUATERNION == m_eType)
+			file.Write(m_pDatas, sizeof(__Quaternion) * m_nCount);
 	}
 
 	return true;

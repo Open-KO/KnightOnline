@@ -155,7 +155,7 @@ void CLightMgr::LoadZoneLight(const char* szFN)
 		return;
 	
 	FileReader file;
-	if (!file.Open(szFN))
+	if (!file.OpenExisting(szFN))
 		return;
 
 	int iVersion;

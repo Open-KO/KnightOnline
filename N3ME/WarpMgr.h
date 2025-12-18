@@ -59,8 +59,8 @@ public:
 	void ClearList();
 
 	bool Load(File& file) override;
-	bool Save(HANDLE hFile) override;
-	void SaveServerData(HANDLE hFile);
+	bool Save(File& file) override;
+	void SaveServerData(File& file);
 	
 	CWarpMgr();
 	virtual ~CWarpMgr();

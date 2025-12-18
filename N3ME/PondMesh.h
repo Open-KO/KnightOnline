@@ -85,7 +85,7 @@ public:
 	bool	Load(File& file) override;
 	virtual bool	Load1000(File& file);
 	virtual bool	Load1001(File& file);
-	bool	Save(HANDLE hFile) override;
+	bool	Save(File& file) override;
 	void			Render();
 	void			RenderVertexPoint();	// 잘보이게 점만 다시 그리기
 

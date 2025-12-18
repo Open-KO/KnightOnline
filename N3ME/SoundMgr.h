@@ -72,8 +72,8 @@ public:
 	//////////////////////////////////////////////
 
 	virtual bool	Load(File& file);
-	virtual bool	Save(HANDLE hFile);
-	void SaveGameData(HANDLE hFile);
+	virtual bool	Save(File& file);
+	void SaveGameData(File& file);
 
 	CSoundMgr();
 	virtual ~CSoundMgr();

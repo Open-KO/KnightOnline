@@ -70,14 +70,13 @@ void CWall::Load(File& file)
 	}
 }
 
-void CWall::Save(HANDLE hFile)
+void CWall::Save(File& file)
 {
-	DWORD dwRWC;
-	WriteFile(hFile, m_Name, 80, &dwRWC, nullptr);
+	file.Write(m_Name, 80);
 
 	int size = static_cast<int>(m_Wall.size());
-	WriteFile(hFile, &size, sizeof(int), &dwRWC, nullptr);
+	file.Write(&size, sizeof(int));
 
 	for (const __Vector3& Vertex : m_Wall)
-		WriteFile(hFile, &Vertex, sizeof(__Vector3), &dwRWC, nullptr);
+		file.Write(&Vertex, sizeof(__Vector3));
 }

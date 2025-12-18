@@ -326,26 +326,24 @@ bool CN3IMesh::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3IMesh::Save(HANDLE hFile)
+bool CN3IMesh::Save(File& file)
 {
-	CN3BaseFileAccess::Save(hFile);
+	CN3BaseFileAccess::Save(file);
 
-	DWORD dwRWC = 0;
-
-	WriteFile(hFile, &m_nFC, 4, (DWORD *)&dwRWC, nullptr);
-	WriteFile(hFile, &m_nVC, 4, (DWORD *)&dwRWC, nullptr);
-	WriteFile(hFile, &m_nUVC, 4, (DWORD *)&dwRWC, nullptr);
+	file.Write(&m_nFC, 4);
+	file.Write(&m_nVC, 4);
+	file.Write(&m_nUVC, 4);
 
 	if(m_nFC > 0 && m_nVC > 0)
 	{
-		WriteFile(hFile, m_pVertices, sizeof(__VertexXyzNormal) * m_nVC, (DWORD *)&dwRWC, nullptr);
-		WriteFile(hFile, m_pwVtxIndices, 2 * m_nFC * 3, (DWORD *)&dwRWC, nullptr); // uint16_t
+		file.Write(m_pVertices, sizeof(__VertexXyzNormal) * m_nVC);
+		file.Write(m_pwVtxIndices, 2 * m_nFC * 3); // uint16_t
 	}
 	
 	if(m_nUVC > 0)
 	{
-		WriteFile(hFile, m_pfUVs, 8 * m_nUVC, (DWORD *)&dwRWC, nullptr);
-		WriteFile(hFile, m_pwUVsIndices, 2 * m_nFC * 3, (DWORD *)&dwRWC, nullptr); // uint16_t
+		file.Write(m_pfUVs, 8 * m_nUVC);
+		file.Write(m_pwUVsIndices, 2 * m_nFC * 3); // uint16_t
 	}
 
 	return true;

@@ -135,32 +135,31 @@ bool CN3PMesh::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3PMesh::Save(HANDLE hFile)
+bool CN3PMesh::Save(File& file)
 {
-	CN3BaseFileAccess::Save(hFile);
+	CN3BaseFileAccess::Save(file);
 
-	DWORD dwNum;
-	WriteFile(hFile, &m_iNumCollapses, sizeof(m_iNumCollapses), &dwNum, nullptr);
-	WriteFile(hFile, &m_iTotalIndexChanges, sizeof(m_iTotalIndexChanges), &dwNum, nullptr);
+	file.Write(&m_iNumCollapses, sizeof(m_iNumCollapses));
+	file.Write(&m_iTotalIndexChanges, sizeof(m_iTotalIndexChanges));
 
-	WriteFile(hFile, &(m_iMaxNumVertices), sizeof(int), &dwNum, nullptr);
-	WriteFile(hFile, &(m_iMaxNumIndices), sizeof(int), &dwNum, nullptr);
-	WriteFile(hFile, &(m_iMinNumVertices), sizeof(int), &dwNum, nullptr);
-	WriteFile(hFile, &(m_iMinNumIndices), sizeof(int), &dwNum, nullptr);
+	file.Write(&(m_iMaxNumVertices), sizeof(int));
+	file.Write(&(m_iMaxNumIndices), sizeof(int));
+	file.Write(&(m_iMinNumVertices), sizeof(int));
+	file.Write(&(m_iMinNumIndices), sizeof(int));
 
-	if (m_iMaxNumVertices>0) WriteFile(hFile, m_pVertices, m_iMaxNumVertices*sizeof(__VertexT1), &dwNum, nullptr);
-	if (m_iMaxNumIndices>0) WriteFile(hFile, m_pIndices, m_iMaxNumIndices*sizeof(uint16_t), &dwNum, nullptr);
+	if (m_iMaxNumVertices>0) file.Write(m_pVertices, m_iMaxNumVertices*sizeof(__VertexT1));
+	if (m_iMaxNumIndices>0) file.Write(m_pIndices, m_iMaxNumIndices*sizeof(uint16_t));
 
 	if (m_iNumCollapses>0)
 	{
 		for(int i = 0; i < m_iNumCollapses; i++)
 			if(m_pCollapses[i].iIndexChanges < 0) m_pCollapses[i].iIndexChanges = 0; // 저장..
-		WriteFile(hFile, m_pCollapses, m_iNumCollapses*sizeof(__EdgeCollapse), &dwNum, nullptr);
+		file.Write(m_pCollapses, m_iNumCollapses*sizeof(__EdgeCollapse));
 	}
-	if (m_iTotalIndexChanges>0) WriteFile(hFile, m_pAllIndexChanges, m_iTotalIndexChanges*sizeof(m_pAllIndexChanges[0]), &dwNum, nullptr);
+	if (m_iTotalIndexChanges>0) file.Write(m_pAllIndexChanges, m_iTotalIndexChanges*sizeof(m_pAllIndexChanges[0]));
 
-	WriteFile(hFile, &m_iLODCtrlValueCount, sizeof(m_iLODCtrlValueCount), &dwNum, nullptr);
-	if (m_iLODCtrlValueCount>0) WriteFile(hFile, m_pLODCtrlValues, m_iLODCtrlValueCount*sizeof(__LODCtrlValue), &dwNum, nullptr);
+	file.Write(&m_iLODCtrlValueCount, sizeof(m_iLODCtrlValueCount));
+	if (m_iLODCtrlValueCount>0) file.Write(m_pLODCtrlValues, m_iLODCtrlValueCount*sizeof(__LODCtrlValue));
 
 	return true;
 }

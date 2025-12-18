@@ -149,10 +149,9 @@ void CSoundCell::Load(File& file)
 	file.Read(&m_Rect, sizeof(RECT));
 }
 
-void CSoundCell::Save(HANDLE hFile)
+void CSoundCell::Save(File& file)
 {
-	DWORD dwRWC;
-	WriteFile(hFile, &m_iVersion, sizeof(int), &dwRWC, nullptr);
-	WriteFile(hFile, &m_dwSoundGroupID, sizeof(DWORD), &dwRWC, nullptr);
-	WriteFile(hFile, &m_Rect, sizeof(RECT), &dwRWC, nullptr);
+	file.Write(&m_iVersion, sizeof(int));
+	file.Write(&m_dwSoundGroupID, sizeof(DWORD));
+	file.Write(&m_Rect, sizeof(RECT));
 }

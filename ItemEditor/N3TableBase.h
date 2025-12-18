@@ -220,7 +220,6 @@ BOOL CN3TableBase<Type>::WriteData(FILE* fileHandle, DATA_TYPE DataType, const c
 template <class Type>
 BOOL CN3TableBase<Type>::ReadData(FILE* fileHandle, DATA_TYPE DataType, void* pData)
 {
-	DWORD dwNum;
 	switch(DataType)
 	{
 	case DT_CHAR:

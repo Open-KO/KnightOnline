@@ -440,8 +440,8 @@ BOOL CMainFrame::BMPCutter(LPCTSTR lpszFileName, int iWidth, int iHeight, bool b
 	HANDLE hFile = CreateFile(szFNameDest, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if(INVALID_HANDLE_VALUE != hFile)
 	{
-		WriteFile(hFile, &iCX, sizeof(iCX), &dwNum, nullptr);
-		WriteFile(hFile, &iCY, sizeof(iCX), &dwNum, nullptr);
+		file.Write(&iCX, sizeof(iCX));
+		file.Write(&iCY, sizeof(iCX));
 		CloseHandle(hFile);
 	}
 
@@ -492,8 +492,8 @@ BOOL CMainFrame::BMPCutter(LPCTSTR lpszFileName, int iWidth, int iHeight, bool b
 			hFile = CreateFile(szFNameDest, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 			if(INVALID_HANDLE_VALUE != hFile)
 			{
-				WriteFile(hFile, &bmfHeaderDest, sizeof(bmfHeaderDest), &dwNum, nullptr);
-				WriteFile(hFile, pDestDIB, iDestDIBSize, &dwNum, nullptr);
+				file.Write(&bmfHeaderDest, sizeof(bmfHeaderDest));
+				file.Write(pDestDIB, iDestDIBSize);
 				CloseHandle(hFile);
 			}
 			ProgressBar.StepIt();

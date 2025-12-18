@@ -233,22 +233,21 @@ bool CN3FXPartBottomBoard::Load(File& file)
 //
 //
 //
-bool CN3FXPartBottomBoard::Save(HANDLE hFile)
+bool CN3FXPartBottomBoard::Save(File& file)
 {
-	if(!CN3FXPartBase::Save(hFile)) return false;
+	if (!CN3FXPartBase::Save(file))
+		return false;
 
-	DWORD dwRWC = 0;
+	file.Write(&m_fSizeX, sizeof(float));
+	file.Write(&m_fSizeZ, sizeof(float));
 
-	WriteFile(hFile, &m_fSizeX, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fSizeZ, sizeof(float), &dwRWC, nullptr);
+	file.Write(&m_fScaleVelX, sizeof(float));
+	file.Write(&m_fScaleVelZ, sizeof(float));
 
-	WriteFile(hFile, &m_fScaleVelX, sizeof(float), &dwRWC, nullptr);
-	WriteFile(hFile, &m_fScaleVelZ, sizeof(float), &dwRWC, nullptr);
-
-	WriteFile(hFile, &m_bTexLoop, sizeof(bool), &dwRWC, nullptr);	
+	file.Write(&m_bTexLoop, sizeof(bool));	
 	
 	//version 1....
-	WriteFile(hFile, &m_fGap, sizeof(float), &dwRWC, nullptr);	
+	file.Write(&m_fGap, sizeof(float));	
 	return true;
 }
 

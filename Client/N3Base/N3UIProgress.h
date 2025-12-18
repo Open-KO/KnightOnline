@@ -64,7 +64,7 @@ protected:
 // tool에서 사용하는 함수들
 public:
 	virtual void	operator = (const CN3UIProgress& other);
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	CN3UIImage*		GetBkGndImgRef() const {return m_pBkGndImgRef;}
 	CN3UIImage*		GetFrGndImgRef() const {return m_pFrGndImgRef;}
 	void			CreateImages();		// 이미지 생성

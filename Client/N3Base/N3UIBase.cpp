@@ -746,10 +746,9 @@ void CN3UIBase::operator = (const CN3UIBase& other)
 #endif
 
 #ifdef _N3TOOL
-bool CN3UIBase::Save(HANDLE hFile)
+bool CN3UIBase::Save(File& file)
 {
-	CN3BaseFileAccess::Save(hFile);
-	DWORD dwRWC = 0;
+	CN3BaseFileAccess::Save(file);
 
 	// child 정보
 	int iCC = static_cast<int>(m_Children.size());
@@ -759,15 +758,15 @@ bool CN3UIBase::Save(HANDLE hFile)
 		int16_t sCC = static_cast<int16_t>(iCC);
 		int16_t sIdk0 = 1; // unknown
 
-		WriteFile(hFile, &sCC, sizeof(int16_t), &dwRWC, nullptr); // children count
-		WriteFile(hFile, &sIdk0, sizeof(int16_t), &dwRWC, nullptr); //unknown
+		file.Write(&sCC, sizeof(int16_t)); // children count
+		file.Write(&sIdk0, sizeof(int16_t)); //unknown
 	}
 	else
 	{
-		WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, nullptr);
+		file.Write(&iCC, sizeof(iCC));
 	}
 
-	//WriteFile(hFile, &iCC, sizeof(iCC), &dwRWC, nullptr); // Child 갯수 ㅆ고..고..
+	//file.Write(&iCC, sizeof(iCC)); // Child 갯수 ㅆ고..고..
 
 	for(UIListReverseItor itor = m_Children.rbegin(); m_Children.rend() != itor; ++itor)
 	// childadd할때 push_front이므로 저장할 때 거꾸로 저장해야 한다.
@@ -775,37 +774,37 @@ bool CN3UIBase::Save(HANDLE hFile)
 		CN3UIBase* pChild = (*itor);
 		eUI_TYPE eUIType = pChild->UIType();
 
-		WriteFile(hFile, &eUIType, sizeof(eUIType), &dwRWC, nullptr); // UI Type 쓰고..
-		pChild->Save(hFile);
+		file.Write(&eUIType, sizeof(eUIType)); // UI Type 쓰고..
+		pChild->Save(file);
 	}
 
 	// base 정보
 	int iIDLen = static_cast<int>(m_szID.size());
-	WriteFile(hFile, &iIDLen, sizeof(iIDLen), &dwRWC, nullptr);					// id length
+	file.Write(&iIDLen, sizeof(iIDLen));					// id length
 	if (iIDLen > 0)
-		WriteFile(hFile, m_szID.c_str(), iIDLen, &dwRWC, nullptr);				// ui id
-	WriteFile(hFile, &m_rcRegion, sizeof(m_rcRegion), &dwRWC, nullptr);			// m_rcRegion
-	WriteFile(hFile, &m_rcMovable, sizeof(m_rcMovable), &dwRWC, nullptr);		// m_rcMovable
-	WriteFile(hFile, &m_dwStyle, sizeof(m_dwStyle), &dwRWC, nullptr);			// style
-	WriteFile(hFile, &m_dwReserved, sizeof(m_dwReserved), &dwRWC, nullptr);		//	m_dwReserved
+		file.Write(m_szID.c_str(), iIDLen);				// ui id
+	file.Write(&m_rcRegion, sizeof(m_rcRegion));			// m_rcRegion
+	file.Write(&m_rcMovable, sizeof(m_rcMovable));		// m_rcMovable
+	file.Write(&m_dwStyle, sizeof(m_dwStyle));			// style
+	file.Write(&m_dwReserved, sizeof(m_dwReserved));		//	m_dwReserved
 
 	int iTooltipLen = static_cast<int>(m_szToolTip.size());
-	WriteFile(hFile, &iTooltipLen, sizeof(iTooltipLen), &dwRWC, nullptr);		//	tooltip문자열 길이
+	file.Write(&iTooltipLen, sizeof(iTooltipLen));		//	tooltip문자열 길이
 	if (iTooltipLen > 0)
-		WriteFile(hFile, m_szToolTip.c_str(), iTooltipLen, &dwRWC, nullptr);
+		file.Write(m_szToolTip.c_str(), iTooltipLen);
 
 	int iSndFNLen = 0;
 	if (m_pSnd_OpenUI != nullptr)
 		iSndFNLen = static_cast<int>(m_pSnd_OpenUI->m_szFileName.size());
-	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);			//	사운드 파일 문자열 길이
-	if (iSndFNLen>0) WriteFile(hFile, m_pSnd_OpenUI->m_szFileName.c_str(), iSndFNLen, &dwRWC, nullptr);
+	file.Write(&iSndFNLen, sizeof(iSndFNLen));			//	사운드 파일 문자열 길이
+	if (iSndFNLen>0) file.Write(m_pSnd_OpenUI->m_szFileName.c_str(), iSndFNLen);
 
 	iSndFNLen = 0;
 	if (m_pSnd_CloseUI != nullptr)
 		iSndFNLen = static_cast<int>(m_pSnd_CloseUI->m_szFileName.size());
-	WriteFile(hFile, &iSndFNLen, sizeof(iSndFNLen), &dwRWC, nullptr);			//	사운드 파일 문자열 길이
+	file.Write(&iSndFNLen, sizeof(iSndFNLen));			//	사운드 파일 문자열 길이
 	if (iSndFNLen > 0)
-		WriteFile(hFile, m_pSnd_CloseUI->m_szFileName.c_str(), iSndFNLen, &dwRWC, nullptr);
+		file.Write(m_pSnd_CloseUI->m_szFileName.c_str(), iSndFNLen);
 	
 	return true;
 }

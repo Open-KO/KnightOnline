@@ -58,7 +58,7 @@ public:
 	virtual void	operator = (const CN3UIString& other);
 
 #ifdef _N3TOOL
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	virtual void	ChangeFont(const std::string& szFont);
 #endif
 	

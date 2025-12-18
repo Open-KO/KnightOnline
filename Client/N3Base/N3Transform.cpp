@@ -82,19 +82,18 @@ bool CN3Transform::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3Transform::Save(HANDLE hFile)
+bool CN3Transform::Save(File& file)
 {
-	CN3BaseFileAccess::Save(hFile);
+	CN3BaseFileAccess::Save(file);
 
-	DWORD dwRWC = 0;
-	WriteFile(hFile, &m_vPos, sizeof(__Vector3), &dwRWC, nullptr); // 위치, 스케일, 회전 벡터. 
-	WriteFile(hFile, &m_qRot, sizeof(__Quaternion), &dwRWC, nullptr);
-	WriteFile(hFile, &m_vScale, sizeof(__Vector3), &dwRWC, nullptr);
+	file.Write(&m_vPos, sizeof(__Vector3)); // 위치, 스케일, 회전 벡터. 
+	file.Write(&m_qRot, sizeof(__Quaternion));
+	file.Write(&m_vScale, sizeof(__Vector3));
 
 	// 에니메이션 키
-	m_KeyPos.Save(hFile);
-	m_KeyRot.Save(hFile);
-	m_KeyScale.Save(hFile);
+	m_KeyPos.Save(file);
+	m_KeyRot.Save(file);
+	m_KeyScale.Save(file);
 
 	return true;
 }

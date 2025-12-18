@@ -31,7 +31,7 @@ public:
 //#ifdef _N3TOOL
 	bool				SaveToFile(); // 현재 파일 이름대로 저장.
 	bool				SaveToFile(const std::string& szFileName); // 새이름으로 저장.
-	bool				Save(HANDLE hFile);
+	bool				Save(File& file);
 	bool				SaveToBitmapFile(const std::string& szFN); // 24비트 비트맵 파일로 저장..
 	bool				CreateFromSurface(LPDIRECT3DSURFACE9 lpSurf, D3DFORMAT Format, BOOL bGenerateMipMap);
 #endif // end of _N3TOOL

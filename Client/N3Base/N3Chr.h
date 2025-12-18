@@ -35,7 +35,7 @@ protected:
 public:
 	bool			Load(File& file);
 #ifdef _N3TOOL
-	bool			Save(HANDLE hFile);
+	bool			Save(File& file);
 #endif // end of _N3TOOL
 
 	void Release();
@@ -82,7 +82,7 @@ public:
 
 #ifdef _N3TOOL
 	void			RenderSelected(int nLOD);
-	bool			Save(HANDLE hFile);
+	bool			Save(File& file);
 #endif // end of _N3TOOL
 
 	void Release();
@@ -118,7 +118,7 @@ public:
 
 	virtual bool	Load(File& file);
 #ifdef _N3TOOL
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 #endif // end of _N3TOOL
 
 	virtual void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint);
@@ -170,7 +170,7 @@ public:
 public:
 	virtual bool	Load(File& file);
 #ifdef _N3TOOL
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	void			ImportPMesh(const std::string& szFileName);
 	void			RenderFXLines(const __Matrix44& mtxParent, const __Matrix44& mtxJoint); // FX 들어갈 곳에 선을 그려준다.
 #endif // end of _N3TOOL
@@ -194,7 +194,7 @@ public:
 public:
 	bool Load(File& file) override;
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile) override;
+	bool Save(File& file) override;
 #endif // end of _N3TOOL
 	void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint) override;
 	void Release() override;
@@ -409,7 +409,7 @@ public:
 	__AnimData* AniDataCur();
 #ifdef _N3TOOL	
 	__AnimData* AniDataUpper();
-	bool		Save(HANDLE hFile);
+	bool		Save(File& file);
 #endif // end of _N3TOOL
 	bool		Load(File& file);
 

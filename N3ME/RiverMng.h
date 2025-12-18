@@ -84,9 +84,9 @@ public:
 	void			Render();
 	virtual void	Release();
 	virtual bool	Load(File& file);
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 
-	void			MakeGameFiles(HANDLE hFile, float fSize);				// Game file로 저장
+	void			MakeGameFiles(File& file, float fSize);				// Game file로 저장
 	CRiverMesh*		CreateNewRiverMesh(__Vector3& vPos1, __Vector3& vPos2,
 		__Vector3& vPos3, __Vector3& vPos4);								// 새로운 강을 추가한다.
 	void			RemoveRiverMesh(int iRiverID);							// 선택된 강을 삭제한다.

@@ -10,23 +10,18 @@
 class FileReader : public File
 {
 public:
-	const size_t Size() const
-	{
-		return _size;
-	}
-
 	FileReader();
-	bool Open(const std::filesystem::path& path) override;
+	bool Create(const std::filesystem::path& path) override;
+	bool OpenExisting(const std::filesystem::path& path) override;
 	bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) override;
-	bool Write(void* buffer, size_t byteToWrite, size_t* bytesWritten = nullptr) override;
-	bool Seek(size_t offset, int origin) override;
+	bool Write(const void* buffer, size_t byteToWrite, size_t* bytesWritten = nullptr) override;
+	bool Seek(int64_t offset, int origin) override;
 	void Close() override;
 	~FileReader() override;
 
 protected:
 	LLFIO_V2_NAMESPACE::mapped_file_handle _mappedFileHandle;
 	void* _address;
-	size_t _size;
 };
 
 #endif // SHARED_FILEREADER_H

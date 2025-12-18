@@ -98,7 +98,7 @@ public:
 	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
 
 #ifdef _N3TOOL
-	virtual bool	Save(HANDLE hFile);
+	virtual bool	Save(File& file);
 	virtual void	operator = (const CN3UIList& other);
 #endif
 

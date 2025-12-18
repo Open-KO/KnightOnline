@@ -65,21 +65,19 @@ bool CN3Joint::Load(File& file)
 }
 
 #ifdef _N3TOOL
-bool CN3Joint::Save(HANDLE hFile)
+bool CN3Joint::Save(File& file)
 {
-	CN3Transform::Save(hFile);
-
-	DWORD dwRWC = 0;
+	CN3Transform::Save(file);
 	
-	m_KeyOrient.Save(hFile); // 
+	m_KeyOrient.Save(file); // 
 
 	int iSize = static_cast<int>(m_Children.size());
-	WriteFile(hFile, &iSize, 4, &dwRWC, nullptr);
+	file.Write(&iSize, 4);
 
 	for (CN3Joint* pChild : m_Children)
 	{
 		__ASSERT(pChild, "Child joint pointer is NULL!");
-		pChild->Save(hFile);
+		pChild->Save(file);
 	}
 
 	return true;
