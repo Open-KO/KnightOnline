@@ -66,10 +66,10 @@ private:
 
 public:
 	CPvsMgr();
-	virtual ~CPvsMgr();
+	~CPvsMgr() override;
 
 	//..
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 	bool LoadOldVersion(HANDLE hFile, int iVersionFromData);
 };
 

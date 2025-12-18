@@ -29,18 +29,18 @@ public:
 	CN3UIButton*		m_pBtnCancel;
 
 public:
-	bool OnKeyPress(int iKey);
-	bool Load(HANDLE hFile);
-	void				SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false);
-	void				SetVisible(bool bVisible);
+	bool OnKeyPress(int iKey) override;
+	bool Load(HANDLE hFile) override;
+	void				SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
+	void				SetVisible(bool bVisible) override;
 	int					GetQuantity(); // "edit_trade" Edit Control 에서 정수값을 얻오온다..
 	void				SetQuantity(int iQuantity); // "edit_trade" Edit Control 에서 정수값을 문자열로 세팅한다..
 
 	CCountableItemEditDlg();
 	virtual ~CCountableItemEditDlg();
 
-	virtual void		Release();
-	virtual bool		ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	void		Release() override;
+	bool		ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	virtual void		Open(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bCountGold, bool bWareGold = false);
 	virtual void		Close();

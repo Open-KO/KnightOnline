@@ -20,12 +20,12 @@ protected:
 
 public:
 
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 	CUILoading();
-	virtual ~CUILoading();
+	~CUILoading() override;
 
-	virtual void	Render(const std::string& szInfo, int iPercentage);
-	virtual void	Release();
+	virtual void Render(const std::string& szInfo, int iPercentage);
+	void Release() override;
 };
 
 #endif // !defined(AFX_UILoading_H__81E8BA13_2261_4A3D_9A94_BF0E7C49C4DD__INCLUDED_)

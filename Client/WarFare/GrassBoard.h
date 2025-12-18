@@ -59,7 +59,7 @@ public:
 
 	void ReCalcMatrix();
 
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 	void LoadFromFile(int iTexIndex,uint8_t ucTexOrgIndex,__Vector3 vPos);
 
 	void SetBrightInit(float min,float max) {m_fBrightmin = min,m_fBrightmax = max - min;};
@@ -71,13 +71,13 @@ public:
 	__Vector3	GetPo() {return m_vCenterPo;}
 
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile);
+	bool Save(HANDLE hFile) override;
 #endif // end of #ifdef _N3TOOL
 
-	void Release();
+	void Release() override;
 
 	CGrassBoard();
-	virtual ~CGrassBoard();
+	~CGrassBoard() override;
 
 protected:
 	void FindGrassIndex(const uint8_t uCGrassMngOrder,int* pnInputGrass,int& nGrassTotNum);

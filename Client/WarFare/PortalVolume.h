@@ -160,7 +160,7 @@ class CPortalVolume	: public CN3Transform
 
 private:
 	void DeleteAllPvsObj();
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 	bool IsInVolumn(__Vector3 vec);
 
 	void Render();
@@ -185,8 +185,7 @@ private:
 
 public:
 	CPortalVolume();
-	virtual ~CPortalVolume();
-
+	~CPortalVolume() override;
 };
 
 #endif // !defined(AFX_PORTALVOLUME_H__81823A3C_844B_4385_8D5B_F62606F89593__INCLUDED_)

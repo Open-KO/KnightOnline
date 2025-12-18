@@ -81,9 +81,9 @@ protected:
 public:
 	void SetContentString();
 	void ResetContent();
-	void Render();
+	void Render() override;
 	void RenderSelectContent();
-	bool OnKeyPress(int iKey);
+	bool OnKeyPress(int iKey) override;
 	void MsgSend_PerTrade();
 	void OnListExplanation();
 	void RefreshExplanation(bool bPageUp = true);
@@ -91,7 +91,7 @@ public:
 	void OnButtonWhisper();
 	void OnButtonRegisterCancel();
 	void OnButtonRegister();
-	void CallBackProc(int iID, uint32_t dwFlag);
+	void CallBackProc(int iID, uint32_t dwFlag) override;
 	void MsgSend_RegisterCancel(int16_t sIndex);
 	void MsgSend_Register();
 	void MsgSend_RefreshData(int iCurPage);
@@ -102,13 +102,12 @@ public:
 	void SetContentString(int iIndex, std::string szID, int iPrice, std::string szTitle);
 
 	void SetBBSKind(uint8_t byKind){ m_byBBSKind = byKind; }
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg);
-	void SetVisible(bool bVisible);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg) override;
+	void SetVisible(bool bVisible) override;
 
 	CUITradeSellBBS();
-	virtual ~CUITradeSellBBS();
-
+	~CUITradeSellBBS() override;
 };
 
 #endif // !defined(AFX_UITRADESELLBBS_H__2550F618_FFC2_425A_B66A_2275D1E1FCAB__INCLUDED_)

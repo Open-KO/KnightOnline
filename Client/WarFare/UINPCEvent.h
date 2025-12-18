@@ -24,15 +24,15 @@ class CUINPCEvent : public CN3UIBase
 	CN3UIString*		m_pText_Title;
 
 public:
-	void SetVisible(bool bVisible);
-	bool OnKeyPress(int iKey);
-	void Release();
+	void SetVisible(bool bVisible) override;
+	bool OnKeyPress(int iKey) override;
+	void Release() override;
 
 	CUINPCEvent();
-	virtual ~CUINPCEvent();
+	~CUINPCEvent() override;
 
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	void Open(e_NpcEvent eNpcEvent, int iTradeId = -1, int iIDTarget = -1);
 	void Close();

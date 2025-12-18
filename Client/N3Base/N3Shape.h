@@ -43,9 +43,9 @@ protected:
 	float	m_fTexIndex; // Current Texture Index.. Animation 시킬때 필요한 인덱스이다.. float 로 해서 텍스처 에니메이션 제어한다.
 
 public:
-	virtual bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 #ifdef _N3TOOL
-	virtual bool Save(HANDLE hFile);
+	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
 	
 	int TexCount() const

@@ -77,12 +77,12 @@ public:
 
 	void	EnableKnightsUIs(bool bEnable);
 	
-	virtual		bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual		bool Load(HANDLE hFile);
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	bool Load(HANDLE hFile) override;
 
-	virtual void Release();
+	void Release() override;
 	CUIKnightsOperation();
-	virtual ~CUIKnightsOperation();
+	~CUIKnightsOperation() override;
 
 };
 

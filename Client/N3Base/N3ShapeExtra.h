@@ -40,13 +40,12 @@ protected:
 public:
 	void RotateTo(int iPart, const __Vector3& vAxis, float fRadianToReach, float fRadianPerSec, bool bImmediately = false); // 원하는 파트를 축에 따라 지정한 각도까지 지정한 속도로 회전시킨다..
 
-	bool Load(HANDLE hFile);
-	void Tick(float fFrm);
+	bool Load(HANDLE hFile) override;
+	void Tick(float fFrm) override;
 	
-	void Release();
+	void Release() override;
 	CN3ShapeExtra();
-	virtual ~CN3ShapeExtra();
-
+	~CN3ShapeExtra() override;
 };
 
 #endif // !defined(AFX_N3SHAPEEXTRA_H__F3D6E8DF_A20F_45F5_8729_2FD36796969C__INCLUDED_)

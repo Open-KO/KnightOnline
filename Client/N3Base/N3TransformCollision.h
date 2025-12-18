@@ -56,14 +56,14 @@ public:
 	void			CollisionMeshSet(const std::string& szFN);
 	void			ClimbMeshSet(const std::string& szFN);
 
-	bool			Load(HANDLE hFile);
+	bool			Load(HANDLE hFile) override;
 #ifdef _N3TOOL
-	bool			Save(HANDLE hFile);
+	bool			Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
 
-	void Release();
+	void Release() override;
 	CN3TransformCollision();
-	virtual ~CN3TransformCollision();
+	~CN3TransformCollision() override;
 };
 
 #endif // !defined(AFX_N3TRANSFORMCOLLISION_H__81088A50_9039_45F5_82D7_B0FF14C161F2__INCLUDED_)

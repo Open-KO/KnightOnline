@@ -22,13 +22,13 @@ private:
 	HCURSOR		m_hCursor;
 
 public:
-	void Tick();
-	void Render();
+	void Tick() override;
+	void Render() override;
 	void RestoreGameCursor();
 	void SetGameCursor(e_Cursor eCursor, bool bLocked = false);
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 	CGameCursor();
-	virtual ~CGameCursor();
+	~CGameCursor() override;
 
 };
 

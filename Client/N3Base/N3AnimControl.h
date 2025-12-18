@@ -173,7 +173,7 @@ public:
 		return &m_Datas[index];
 	}
 
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 
 	int Count() const
 	{
@@ -194,12 +194,12 @@ public:
 	void			Delete(int nIndex);
 	__AnimData*		Add();
 	__AnimData*		Insert(int nIndex);
-	bool			Save(HANDLE hFile);
+	bool			Save(HANDLE hFile) override;
 #endif
-	void Release();
+	void Release() override;
 	
 	CN3AnimControl();
-	virtual ~CN3AnimControl();
+	~CN3AnimControl() override;
 
 };
 

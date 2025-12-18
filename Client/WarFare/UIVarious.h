@@ -157,8 +157,8 @@ public:
 	void	MsgSend_MemberInfoAll();
 
 	void	SetVisible(bool bVisible);		
-	virtual bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool Load(HANDLE hFile);
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	bool Load(HANDLE hFile) override;
 
 	void ClearLists();
 
@@ -251,8 +251,8 @@ public:
 	bool		MemberAdd(const std::string& szID, int iID, bool bOnLine, bool bIsParty);
 
 	virtual bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool Load(HANDLE hFile);
-	
+	bool Load(HANDLE hFile) override;
+
 	CUIFriends();
 	virtual ~CUIFriends();
 
@@ -266,7 +266,7 @@ protected:
 
 
 public:
-	virtual bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 
 	CUIQuest();
 	virtual ~CUIQuest();

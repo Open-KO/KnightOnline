@@ -40,13 +40,13 @@ protected:
 	float		m_fTime;
 
 public:
-	bool OnKeyPress(int iKey);
-	void SetVisible(bool bVisible);
+	bool OnKeyPress(int iKey) override;
+	void SetVisible(bool bVisible) override;
 	void RequestParty();
 	void RequestWhisper();
 	void SetStringColor(int iIndex, uint32_t dwColor);
 	void RenderSelectContent();
-	void Render();
+	void Render() override;
 	void SetContentString(int iIndex, std::string szID, int iLevel, std::string szClass);
 	void ResetContent();
 	void MsgSend_Register();
@@ -57,13 +57,12 @@ public:
 
 	void PartyStringSet(uint8_t byType);
 	void RefreshPage();
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg) override;
 	bool SelectedString(CN3UIBase* pSender, int& iID);
 	
-	
 	CUIPartyBBS();
-	virtual ~CUIPartyBBS();
+	~CUIPartyBBS() override;
 };
 
 #endif // !defined(AFX_UIPartyBBS_H__7B2732B7_C9CA_46A3_89BC_C59934ED3F13__INCLUDED_)

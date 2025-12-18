@@ -132,13 +132,13 @@ public:
 
 	void ChrRelease();
 
-	bool Load(HANDLE hFile);
-	bool Save(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
+	bool Save(HANDLE hFile) override;
 	
-	void Release();
+	void Release() override;
 
 	CN3Scene();
-	virtual ~CN3Scene();
+	~CN3Scene() override;
 };
 
 #endif // !defined(AFX_N3Scene_h__INCLUDED_)

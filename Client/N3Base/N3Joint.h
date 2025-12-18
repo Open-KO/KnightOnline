@@ -40,9 +40,9 @@ public:
 
 	void MatricesGet(__Matrix44 *pMtxs, int& nJointIndex);
 	
-	void Tick(float fFrm);
-	bool TickAnimationKey(float fFrm);
-	void ReCalcMatrix();
+	void Tick(float fFrm) override;
+	bool TickAnimationKey(float fFrm) override;
+	void ReCalcMatrix() override;
 	void ReCalcMatrixBlended(float fFrm0, float fFrm1, float fWeight0);
 	void ParentSet(CN3Joint* pParent);
 	void ChildAdd(CN3Joint* pChild);
@@ -78,15 +78,14 @@ public:
 	void Render(const __Matrix44* pMtxParent = nullptr, float fUnitSize = 0.1f);
 #endif // end of _N3TOOL
 
-	void Release();
-	bool Load(HANDLE hFile);
+	void Release() override;
+	bool Load(HANDLE hFile) override;
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile);
+	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
 
 	CN3Joint();
-	virtual ~CN3Joint();
-
+	~CN3Joint() override;
 };
 
 #endif // !defined(AFX_N3IJoint_h__INCLUDED_)

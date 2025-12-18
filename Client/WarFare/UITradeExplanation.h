@@ -21,15 +21,15 @@ protected:
 
 	std::string m_szExplanation;
 	int			m_iCurSel;
+
 public:
-	bool OnKeyPress(int iKey);
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool OnKeyPress(int iKey) override;
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void SetExplanation(int iCurSel, std::string szExplanation);
 
 	CUITradeExplanation();
-	virtual ~CUITradeExplanation();
-
+	~CUITradeExplanation() override;
 };
 
 #endif // !defined(AFX_UITRADEEXPLANATION_H__DFFA77BD_3013_4389_84CB_EB1DFAD7F3FA__INCLUDED_)

@@ -89,10 +89,11 @@ protected:
 	bool	m_bLogIn; // 로그인 중복 방지..
 	int		m_iSelectedServerIndex;
 	std::string m_strNoticeText;
+
 public:
 	void SetRequestedLogIn(bool bLogIn) { m_bLogIn = bLogIn; }
 	void SelectServer(int iServerListIndex);
-	bool OnKeyPress(int iKey);
+	bool OnKeyPress(int iKey) override;
 	void SetVisibleLogInUIs(bool bEnable); // 계정 LogIn 에 필요한 UI 들을 숨긴다..
 	void OpenServerList();
 	void OpenNews();
@@ -101,10 +102,10 @@ public:
 	void InitEditControls();
 	void FocusCircular();
 	void FocusToID();
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 	void PositionGroups();
 
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
 
 	int		ServerInfoCount() { return (int) m_ListServerInfos.size(); }
 	bool	ServerInfoAdd(const __GameServerInfo& GSI);

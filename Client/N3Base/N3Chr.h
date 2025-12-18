@@ -192,12 +192,12 @@ public:
 	virtual ~CN3CPlug_Cloak();	
 
 public:
-	virtual bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 #ifdef _N3TOOL
-	virtual bool Save(HANDLE hFile);
+	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
-	virtual void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint);
-	virtual void Release();
+	void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint) override;
+	void Release() override;
 
 	void	SetLOD(int nLOD);
 #ifdef _N3GAME

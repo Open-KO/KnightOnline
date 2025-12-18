@@ -84,13 +84,13 @@ public:
 	__Vector3 Min() { return m_vMin; } // 월드 행렬을 적용하지 않은상태의 최소값이다.
 	__Vector3 Max() { return m_vMax; } // 월드 행렬을 적용하지 않은상태의 최대값이다.
 
-	void Release();
+	void Release() override;
 	HRESULT Create(int iNumVertices, int iNumIndices);
 	HRESULT GenerateSecondUV();
 	
-	bool Load(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
 #ifdef _N3TOOL
-	bool Save(HANDLE hFile);
+	bool Save(HANDLE hFile) override;
 #endif // end of _N3TOOL
 	
 	void FindMinMax();
@@ -111,7 +111,7 @@ public:
 #endif // end of _N3TOOL
 
 	CN3PMesh();
-	virtual ~CN3PMesh();
+	~CN3PMesh() override;
 };
 
 #endif // !defined(AFX_N3PMesh_h__INCLUDED_)

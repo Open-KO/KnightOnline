@@ -36,8 +36,8 @@ protected:
 	float						m_fTexIndex;	// Current Texture Index.. Animation 시킬때 필요한 인덱스이다.. float 로 해서 텍스처 에니메이션 제어한다.
 
 public:
-	bool Load(HANDLE hFile);
-	bool Save(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
+	bool Save(HANDLE hFile) override;
 	void Duplicate(CN3FXSPart* pSrc);
 		
 	int TexCount() const
@@ -61,10 +61,10 @@ public:
 	bool	MeshSet(const std::string& szFN);
 	void	Tick(const __Matrix44& mtxParent);
 	void	Render();
-	void	Release();
+	void	Release() override;
 	
 	CN3FXSPart();
-	virtual ~CN3FXSPart();
+	~CN3FXSPart() override;
 };
 
 
@@ -97,7 +97,7 @@ public:
 	float			GetCurrFrm();
 	float			GetWholeFrm() { return m_fFrmWhole; }
 
-	void			FindMinMax();
+	void			FindMinMax() override;
 
 	int PartCount() const
 	{
@@ -122,18 +122,18 @@ public:
 
 	void	PartDelete(int iIndex);
 	
-	bool	Load(HANDLE hFile);
-	bool	Save(HANDLE hFile);
+	bool	Load(HANDLE hFile) override;
+	bool	Save(HANDLE hFile) override;
 	void	Duplicate(CN3FXShape* pSrc);
 
-	void	Tick(float fFrm = FRAME_SELFPLAY);
+	void	Tick(float fFrm = FRAME_SELFPLAY) override;
 	void	Render();
-	void	Release();		
+	void	Release() override;
 
 public:
 	void SetMaxLOD();
 	CN3FXShape();
-	virtual ~CN3FXShape();
+	~CN3FXShape() override;
 };
 
 #endif // !defined(AFX_N3Shape_h__INCLUDED_)

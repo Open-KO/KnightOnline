@@ -26,17 +26,16 @@ public:
 
 public:
 	void RemoveNotice();
-	void SetVisible(bool bVisible);
-	bool OnKeyPress(int iKey);
+	void SetVisible(bool bVisible) override;
+	bool OnKeyPress(int iKey) override;
 	void GenerateText();
-	void Release();
+	void Release() override;
 
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	CUINotice();
-	virtual ~CUINotice();
-
+	~CUINotice() override;
 };
 
 #endif // !defined(AFX_UINOTICE_H__28178F32_B0C2_4742_B3C0_25C8F6034BD2__INCLUDED_)

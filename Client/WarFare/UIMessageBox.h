@@ -29,17 +29,17 @@ public:
 	int			m_iStyle;		// 메시지 박스 스타일
 
 public:
-	bool OnKeyPress(int iKey);
-	void SetVisible(bool bVisible);
+	bool OnKeyPress(int iKey) override;
+	void SetVisible(bool bVisible) override;
 	void SetBoxStyle(int iStyle);
 	void SetVisibleEditControl(bool bVisible); // Edit Control Visible
 	void SetTitle(const std::string& szTitle);
 	void SetText(const std::string& szMsg);
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	
 	CUIMessageBox();
-	virtual ~CUIMessageBox();
+	~CUIMessageBox() override;
 
 };
 

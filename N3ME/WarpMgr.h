@@ -58,8 +58,8 @@ public:
 	void SetActive(bool active);
 	void ClearList();
 
-	bool Load(HANDLE hFile);
-	bool Save(HANDLE hFile);
+	bool Load(HANDLE hFile) override;
+	bool Save(HANDLE hFile) override;
 	void SaveServerData(HANDLE hFile);
 	
 	CWarpMgr();

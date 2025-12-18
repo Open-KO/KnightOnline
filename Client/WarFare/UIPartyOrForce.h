@@ -32,8 +32,8 @@ public:
 	int			m_iPartyOrForce; // 파티냐? 부대냐?? 1 이면 파티 2 이면 부대..
 
 public:
-	bool OnKeyPress(int iKey);
-	void Tick();
+	bool OnKeyPress(int iKey) override;
+	void Tick() override;
 	void		MemberClassChange(int iID, e_Class eClass);
 	void		MemberLevelChange(int iID, int iLevel);
 	void		MemberHPChange(int iID, int iHP, int iHPMax, int iMP, int iMPMax);
@@ -64,13 +64,13 @@ public:
 		m_iIndexSelected = iMemberIndex;
 	}
 
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg);
-	void Render();
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(class CN3UIBase* pSender, uint32_t dwMsg) override;
+	void Render() override;
 	
-	void Release();
+	void Release() override;
 	CUIPartyOrForce();
-	virtual ~CUIPartyOrForce();
+	~CUIPartyOrForce() override;
 };
 
 #endif // !defined(AFX_UIPartyOrForce_H__7B2732B7_C9CA_46A3_89BC_C59934ED3F13__INCLUDED_)

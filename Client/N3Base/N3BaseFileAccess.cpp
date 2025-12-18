@@ -5,9 +5,6 @@
 #include "StdAfxBase.h"
 #include "N3BaseFileAccess.h"
 #include <vector>
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -29,7 +26,7 @@ CN3BaseFileAccess::~CN3BaseFileAccess()
 
 void CN3BaseFileAccess::Release()
 {
-	m_szFileName = "";
+	m_szFileName.clear();
 	m_iLOD = 0; // 로딩할때 쓸 LOD
 	CN3Base::Release();
 }
@@ -50,17 +47,20 @@ void CN3BaseFileAccess::FileNameSet(const std::string& szFileName)
 
 bool CN3BaseFileAccess::Load(HANDLE hFile)
 {
-	if(m_iFileFormatVersion == N3FORMAT_VER_UNKN) {
-		// NOTE: unknow version format
+	if (m_iFileFormatVersion == N3FORMAT_VER_UNKN)
+	{
+#ifdef _DEBUG
 		printf("Unknown version type\n");
+#endif
+		return false;
 	}
 
-	m_szName = "";
+	m_szName.clear();
 
 	DWORD dwRWC = 0;
 	int nL = 0;
 	ReadFile(hFile, &nL, 4, &dwRWC, nullptr);
-	if(nL > 0) 
+	if (nL > 0)
 	{
 		std::vector<char> buffer(nL+1, '\0');
 		ReadFile(hFile, &buffer[0], nL, &dwRWC, nullptr);

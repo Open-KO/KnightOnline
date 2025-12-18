@@ -26,11 +26,11 @@ public:
 	void SetVisible(bool bVisible);
 	void Open(const std::string& msg);
 
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	CUICmdEdit();
-	virtual ~CUICmdEdit();
+	~CUICmdEdit() override;
 };
 
 #endif //#if !defined(__UICMDEDIT_H__)

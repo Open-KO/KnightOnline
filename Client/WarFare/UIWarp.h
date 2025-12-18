@@ -38,19 +38,19 @@ protected:
 	std::list<__WarpInfo> m_ListInfos;
 
 public:
-	bool OnKeyPress(int iKey);
-	void SetVisible(bool bVisible);
+	bool OnKeyPress(int iKey) override;
+	void SetVisible(bool bVisible) override;
 	void Reset();
 	CUIWarp();
-	virtual ~CUIWarp();
+	~CUIWarp() override;
 
 	void	InfoAdd(const __WarpInfo& ZW);
 	bool	InfoGetCur(__WarpInfo& ZW);
 	void	UpdateList();
 	void	UpdateAgreement();
 
-	bool Load(HANDLE hFile);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(HANDLE hFile) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 };
 
 #endif // !defined(AFX_UIWarp_H__27F6610C_5D61_4A22_97F2_93211B77BF9C__INCLUDED_)
