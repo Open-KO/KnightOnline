@@ -42,6 +42,7 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 
 bool FileReader::Create(const std::filesystem::path& /*path*/)
 {
+	// A FileReader cannot create files.
 	return false;
 }
 
@@ -78,6 +79,7 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 
 bool FileReader::Write(const void* /*buffer*/, size_t /*bytesToWrite*/, size_t* /*bytesWritten = nullptr*/)
 {
+	// Write operations are not supported in a FileReader.
 	return false;
 }
 
@@ -115,7 +117,7 @@ bool FileReader::Seek(int64_t offset, int origin)
 
 void FileReader::Flush()
 {
-	// nothing to flush
+	// Nothing to flush in a FileReader.
 }
 
 bool FileReader::Close()

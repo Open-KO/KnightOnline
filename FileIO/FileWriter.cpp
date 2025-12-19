@@ -65,6 +65,7 @@ bool FileWriter::Create(const std::filesystem::path& path)
 
 bool FileWriter::Read(void* /*buffer*/, size_t /*bytesToRead*/, size_t* /*bytesRead = nullptr*/)
 {
+	// Read operations are not supported in a FileWriter.
 	return false;
 }
 
