@@ -40,7 +40,7 @@ void CLogWriter::Open(const std::string& szFN)
 	auto fileSize = file.Size();
 
 	// 파일 사이즈가 너무 크면 지운다..
-	if (fileSize > 256000)
+	if (fileSize > 256'000)
 	{
 		file.Close();
 
@@ -58,11 +58,11 @@ void CLogWriter::Open(const std::string& szFN)
 	GetLocalTime(&time);
 
 	buff = "---------------------------------------------------------------------------\r\n";
-	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
+	file.Write(buff.data(), buff.length());
 
 	buff = fmt::format("// Begin writing log... [{:02}/{:02} {:02}:{:02}]\r\n",
 		time.wMonth, time.wDay, time.wHour, time.wMinute);
-	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
+	file.Write(buff.data(), buff.length());
 }
 
 void CLogWriter::Close()
@@ -82,10 +82,10 @@ void CLogWriter::Close()
 
 	buff = fmt::format("// End writing log... [{:02}/{:02} {:02}:{:02}]\r\n",
 		time.wMonth, time.wDay, time.wHour, time.wMinute);
-	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
+	file.Write(buff.data(), buff.length());
 
 	buff = "---------------------------------------------------------------------------\r\n";
-	file.Write(buff.data(), static_cast<DWORD>(buff.length()));
+	file.Write(buff.data(), buff.length());
 }
 
 void CLogWriter::Write(const std::string_view message)
@@ -108,5 +108,5 @@ void CLogWriter::Write(const std::string_view message)
 		time.wHour, time.wMinute, time.wSecond, message);
 
 	file.Seek(0, SEEK_END); // 추가 하기 위해서 파일의 끝으로 옮기고..
-	file.Write(outputMessage.data(), static_cast<DWORD>(outputMessage.length()));
+	file.Write(outputMessage.data(), outputMessage.length());
 }
