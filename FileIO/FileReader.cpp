@@ -30,13 +30,12 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 	_address = _mappedFileHandle.address();
 	_path = path;
 	_open = true;
-	_size = 0;
 
-	llfio::stat_t stat;
-
-	auto statResult = stat.fill(_mappedFileHandle, llfio::stat_t::want::size);
-	if (statResult)
-		_size = stat.st_size;
+	// Internally the size is always fetched on load (as we don't supply a size) and is what's reserved.
+	// If we can get away with it, this approach is very cheap, but we should just be careful.
+	// The next best way to get this is _mappedFileHandle.underlying_file_maximum_extent(), but
+	// we'd rather not use a second syscall unless we absolutely have to.
+	_size = static_cast<uint64_t>(_mappedFileHandle.capacity());
 
 	return true;
 }

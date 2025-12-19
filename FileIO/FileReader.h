@@ -10,6 +10,11 @@
 class FileReader : public File
 {
 public:
+	LLFIO_V2_NAMESPACE::mapped_file_handle& MappedFileHandle()
+	{
+		return _mappedFileHandle;
+	}
+
 	FileReader();
 	bool OpenExisting(const std::filesystem::path& path) override;
 	bool Create(const std::filesystem::path& path) override;

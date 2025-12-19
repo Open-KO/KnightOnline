@@ -72,6 +72,13 @@ TEST_F(FileReaderTest, Offset_IsResetAfterClose)
 	EXPECT_EQ(_file.Offset(), 0);
 }
 
+TEST_F(FileReaderTest, OpenExisting_LoadedCapacityMatchesUnderlyingFileSize)
+{
+	const auto& mappedFileHandle = _file.MappedFileHandle();
+	EXPECT_EQ(mappedFileHandle.capacity(), TEST_FILE_SIZE);
+	EXPECT_EQ(mappedFileHandle.capacity(), mappedFileHandle.underlying_file_maximum_extent().value());
+}
+
 TEST_F(FileReaderTest, Seek_Set_SucceedsOnlyWithValidOffsets)
 {
 	// SEEK_SET (absolute position within the file)
