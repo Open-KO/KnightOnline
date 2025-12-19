@@ -81,9 +81,16 @@ bool CN3BaseFileAccess::LoadFromFile()
 	if (m_szFileName.find(':') != std::string::npos
 		|| m_szFileName.find("\\\\") != std::string::npos
 		|| m_szFileName.find("//") != std::string::npos)
+	{
 		szFullPath = m_szFileName;
+	}
 	else
-		szFullPath = s_szPath + m_szFileName;
+	{
+		if (!s_szPath.empty())
+			szFullPath = s_szPath;
+
+		szFullPath += m_szFileName;
+	}
 
 	FileReader file;
 	if (!file.OpenExisting(szFullPath))
@@ -124,9 +131,16 @@ bool CN3BaseFileAccess::SaveToFile()
 	if (m_szFileName.find(':') != std::string::npos
 		|| m_szFileName.find("\\\\") != std::string::npos
 		|| m_szFileName.find("//") != std::string::npos)
+	{
 		szFullPath = m_szFileName;
+	}
 	else
-		szFullPath = s_szPath + m_szFileName;
+	{
+		if (!s_szPath.empty())
+			szFullPath = s_szPath;
+
+		szFullPath += m_szFileName;
+	}
 
 	FileWriter file;
 	if (!file.Create(szFullPath))
