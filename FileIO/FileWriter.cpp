@@ -155,7 +155,6 @@ void FileWriter::Flush()
 	if (_sizeOnDisk >= _size)
 		return;
 
-	uint64_t bytesToAppend = _size - _sizeOnDisk;
 	std::byte dummy = {};
 
 	auto writeResult = _fileHandle.write(_size - 1,
