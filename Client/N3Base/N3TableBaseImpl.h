@@ -23,7 +23,6 @@ public:
 	bool LoadFromFile(const std::string& szFN);
 
 protected:
-	bool WriteData(File& file, DATA_TYPE DataType, const char* lpszData);
 	bool ReadData(File& file, DATA_TYPE DataType, void* pData);
 	int SizeOf(DATA_TYPE DataType) const;
 };
