@@ -40,7 +40,7 @@ public:
 	virtual bool Write(const void* buffer, size_t bytesToWrite, size_t* bytesWritten = nullptr) = 0;
 	virtual bool Seek(int64_t offset, int origin) = 0;
 	virtual void Flush() = 0;
-	virtual void Close() = 0;
+	virtual bool Close() = 0;
 
 protected:
 	uint64_t _offset = 0;

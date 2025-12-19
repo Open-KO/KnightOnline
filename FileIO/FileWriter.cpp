@@ -33,15 +33,8 @@ bool FileWriter::OpenExisting(const std::filesystem::path& path)
 	llfio::stat_t stat;
 
 	auto statResult = stat.fill(_fileHandle, llfio::stat_t::want::size);
-	if (!statResult)
-	{
-		std::error_code ec;
-		_size = std::filesystem::file_size(path, ec);
-	}
-	else
-	{
+	if (statResult)
 		_size = static_cast<uint64_t>(stat.st_size);
-	}
 
 	_sizeOnDisk = _size;
 
@@ -165,15 +158,19 @@ void FileWriter::Flush()
 	_sizeOnDisk = _size;
 }
 
-void FileWriter::Close()
+bool FileWriter::Close()
 {
+	if (!_fileHandle.is_valid())
+		return false;
+
 	Flush();
 
-	if (_fileHandle.is_valid())
-		(void) _fileHandle.close();
+	(void) _fileHandle.close();
 
 	_offset = 0;
 	_open = false;
+
+	return true;
 }
 
 FileWriter::~FileWriter()

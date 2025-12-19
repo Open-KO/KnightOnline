@@ -47,31 +47,28 @@ protected:
 
 	void TearDown() override
 	{
-		_file.Close();
+		(void) _file.Close();
 
 		std::error_code ec;
 		std::filesystem::remove(_testFilePath, ec);
 	}
 };
 
-TEST_F(FileReaderTest, IsOpen_IsUnsetAfterClose)
+TEST_F(FileReaderTest, IsOpen_IsResetAfterClose)
 {
-	_file.Close();
-
+	EXPECT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 }
 
 TEST_F(FileReaderTest, Size_IsResetAfterClose)
 {
-	_file.Close();
-
+	EXPECT_TRUE(_file.Close());
 	EXPECT_EQ(_file.Size(), 0);
 }
 
 TEST_F(FileReaderTest, Offset_IsResetAfterClose)
 {
-	_file.Close();
-
+	EXPECT_TRUE(_file.Close());
 	EXPECT_EQ(_file.Offset(), 0);
 }
 
@@ -253,4 +250,15 @@ TEST_F(FileReaderTest, Read_FailsAtEndOfFile)
 	EXPECT_EQ(input[1], 0);
 	EXPECT_EQ(input[2], 0);
 	EXPECT_EQ(input[3], 0);
+}
+
+TEST_F(FileReaderTest, Close_SucceedsWhenOpen)
+{
+	EXPECT_TRUE(_file.Close());
+}
+
+TEST_F(FileReaderTest, Close_FailsWhenAlreadyClosed)
+{
+	EXPECT_TRUE(_file.Close());
+	EXPECT_FALSE(_file.Close());
 }

@@ -1,6 +1,7 @@
 ﻿#include "FileReader.h"
 
 #include <cassert>
+#include <cstring> // std::memcpy()
 #include <stdio.h> // SEEK_SET, SEEK_CUR, SEEK_END
 
 namespace llfio = LLFIO_V2_NAMESPACE;
@@ -34,15 +35,8 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 	llfio::stat_t stat;
 
 	auto statResult = stat.fill(_mappedFileHandle, llfio::stat_t::want::size);
-	if (!statResult)
-	{
-		std::error_code ec;
-		_size = std::filesystem::file_size(path, ec);
-	}
-	else
-	{
+	if (statResult)
 		_size = stat.st_size;
-	}
 
 	return true;
 }
@@ -125,17 +119,18 @@ void FileReader::Flush()
 	// nothing to flush
 }
 
-void FileReader::Close()
+bool FileReader::Close()
 {
-	if (_mappedFileHandle.is_valid())
-	{
-		(void) _mappedFileHandle.close();
-		_address = nullptr;
-	}
+	if (!_mappedFileHandle.is_valid())
+		return false;
+
+	(void) _mappedFileHandle.close();
 
 	_size = 0;
 	_offset = 0;
+	_address = nullptr;
 	_open = false;
+	return true;
 }
 
 FileReader::~FileReader()

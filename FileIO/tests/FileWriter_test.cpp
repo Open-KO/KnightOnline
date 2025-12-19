@@ -17,7 +17,7 @@ protected:
 		static std::atomic<uint32_t> s_testCounter = 0;
 		static const time_t s_time = time(nullptr);
 
-		std::string filename = "FileReaderTest_"
+		std::string filename = "FileWriterTest_"
 			+ std::to_string(s_time)
 			+ "_"
 			+ std::to_string(s_testCounter++) + ".tmp";
@@ -36,24 +36,21 @@ protected:
 	}
 };
 
-TEST_F(FileWriterTest, IsOpen_IsUnsetAfterClose)
+TEST_F(FileWriterTest, IsOpen_IsResetAfterClose)
 {
-	_file.Close();
-
+	EXPECT_TRUE(_file.Close());
 	ASSERT_FALSE(_file.IsOpen());
 }
 
 TEST_F(FileWriterTest, Size_IsResetAfterClose)
 {
-	_file.Close();
-
+	EXPECT_TRUE(_file.Close());
 	ASSERT_EQ(_file.Size(), 0);
 }
 
 TEST_F(FileWriterTest, Offset_IsResetAfterClose)
 {
-	_file.Close();
-
+	EXPECT_TRUE(_file.Close());
 	ASSERT_EQ(_file.Offset(), 0);
 }
 
@@ -164,7 +161,7 @@ TEST_F(FileWriterTest, Write_IsValidFromStart)
 	EXPECT_EQ(_file.Offset(), 4);
 
 	// Verify the data we wrote to file is still valid.
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 
 	// File should exist.
 	ASSERT_TRUE(std::filesystem::exists(_testFilePath));
@@ -218,7 +215,7 @@ TEST_F(FileWriterTest, Write_SeekingExpandsFile)
 	// Size on disk is updated as the file's flushed
 	EXPECT_EQ(_file.SizeOnDisk(), 10);
 
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 
 	std::error_code ec;
 	auto fileSize = std::filesystem::file_size(_testFilePath, ec);
@@ -242,7 +239,7 @@ TEST_F(FileWriterTest, Write_CloseInvokesFlush)
 	EXPECT_EQ(_file.SizeOnDisk(), 0);
 
 	// No explicit Flush(), we're just closing the file.
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 
 	std::error_code ec;
 	auto fileSize = std::filesystem::file_size(_testFilePath, ec);
@@ -268,7 +265,7 @@ TEST_F(FileWriterTest, Create_TruncatesFile)
 	EXPECT_EQ(_file.SizeOnDisk(), 4);
 
 	// Close so that we can check it
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// Verify that we do actually have bytes written in the file
@@ -284,7 +281,7 @@ TEST_F(FileWriterTest, Create_TruncatesFile)
 	EXPECT_EQ(_file.Size(), 0);
 
 	// Close it again so we can check the new filesize
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// File should now be truncated
@@ -306,7 +303,7 @@ TEST_F(FileWriterTest, OpenExisting_AppendsToFile)
 	EXPECT_EQ(_file.SizeOnDisk(), 4);
 
 	// Close so that we can check it
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// Verify that we do actually have bytes written in the file
@@ -325,10 +322,21 @@ TEST_F(FileWriterTest, OpenExisting_AppendsToFile)
 	EXPECT_EQ(_file.Offset(), 4);
 
 	// Close it again so we can check the new filesize
-	_file.Close();
+	EXPECT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// File should still be 4 bytes.
 	fileSize = std::filesystem::file_size(_testFilePath, ec);
 	EXPECT_EQ(fileSize, 4);
+}
+
+TEST_F(FileWriterTest, Close_SucceedsWhenOpen)
+{
+	EXPECT_TRUE(_file.Close());
+}
+
+TEST_F(FileWriterTest, Close_FailsWhenAlreadyClosed)
+{
+	EXPECT_TRUE(_file.Close());
+	EXPECT_FALSE(_file.Close());
 }
