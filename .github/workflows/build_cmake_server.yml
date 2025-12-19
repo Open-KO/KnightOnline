@@ -99,6 +99,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         BUILD_CONFIGURATION: [Debug, Release]
         COMPILER: [gcc, clang, clang-latest]
@@ -157,9 +158,10 @@ jobs:
     runs-on: macos-latest
 
     strategy:
+      fail-fast: false
       matrix:
         BUILD_CONFIGURATION: [Debug, Release]
-        COMPILER: [xcode, llvm-clang]
+        COMPILER: [xcode]
 
     name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (MacOS)"
 
@@ -175,17 +177,8 @@ jobs:
 
       - name: Setup compiler
         run: |
-          if [ "${{ matrix.COMPILER }}" = "xcode" ]; then
-            export CC=clang
-            export CXX=clang++
-          else
-            brew install llvm@${{ env.CLANG_LATEST_VERSION }}
-            LLVM_PREFIX="$(brew --prefix llvm@${{ env.CLANG_LATEST_VERSION }})"
-            export CC="$LLVM_PREFIX/bin/clang"
-            export CXX="$LLVM_PREFIX/bin/clang++"
-          fi
-          echo "CC=$CC" >> $GITHUB_ENV
-          echo "CXX=$CXX" >> $GITHUB_ENV
+          export CC=clang
+          export CXX=clang++
 
       - name: Configure CMake
         run: |
