@@ -6,6 +6,7 @@
 #include <map>
 
 #include <FileIO/FileReader.h>
+#include <FileIO/FileWriter.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

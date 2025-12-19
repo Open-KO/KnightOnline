@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{10195385-62C0-4BDA-A8E3-B88F1C9F81AF}</ProjectGuid>
+    <ProjectGuid>{10195386-62C0-4BDA-A8E3-B88F1C9F81AF}</ProjectGuid>
     <RootNamespace>FileIO</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

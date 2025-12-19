@@ -15,6 +15,8 @@
 #include "N3River.h"
 #include "N3Pond.h"
 
+#include <FileIO/FileReader.h>
+
 #include <stdio.h>
 
 #ifdef _DEBUG

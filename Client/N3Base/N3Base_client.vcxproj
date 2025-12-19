@@ -75,6 +75,7 @@
     <ClInclude Include="N3Star.h" />
     <ClInclude Include="N3Sun.h" />
     <ClInclude Include="N3TableBase.h" />
+    <ClInclude Include="N3TableBaseImpl.h" />
     <ClInclude Include="N3TerrainDef.h" />
     <ClInclude Include="N3Texture.h" />
     <ClInclude Include="N3Transform.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="N3SndObjStream.cpp" />
     <ClCompile Include="N3Star.cpp" />
     <ClCompile Include="N3Sun.cpp" />
+    <ClCompile Include="N3TableBaseImpl.cpp" />
     <ClCompile Include="N3Texture.cpp" />
     <ClCompile Include="N3Transform.cpp" />
     <ClCompile Include="N3TransformCollision.cpp" />
