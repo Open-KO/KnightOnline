@@ -26,7 +26,7 @@ public:
 
 	/// \brief Opens an existing file for writing.
 	/// \param path Path to the file to open.
-	/// \return true if the file was successfully opened, false otherwise.
+	/// \returns true if the file was successfully opened, false otherwise.
 	/// \note The initial write offset starts at 0, not at the end of the file.
 	///       The caller must manually seek to the end if they intend to append.
 	///       This matches Win32 behaviour, as well as general C file I/O behaviour
@@ -35,28 +35,28 @@ public:
 
 	/// \brief Creates a new file for writing, truncating if it exists.
 	/// \param path Path to the file to create.
-	/// \return true if the file was created successfully, false otherwise.
+	/// \returns true if the file was created successfully, false otherwise.
 	bool Create(const std::filesystem::path& path) override;
 
 	/// \brief Reading is not supported for FileWriter.
 	/// \param buffer Destination buffer for data.
 	/// \param bytesToRead Number of bytes to read.
 	/// \param bytesRead Optional output for number of bytes actually read.
-	/// \return false always.
+	/// \returns false always.
 	bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) override;
 
 	/// \brief Writes data to the file at the current offset.
 	/// \param buffer Data to write.
 	/// \param bytesToWrite Number of bytes to write.
 	/// \param bytesWritten Optional output for number of bytes actually written.
-	/// \return true if all requested bytes were written, false otherwise.
+	/// \returns true if all requested bytes were written, false otherwise.
 	/// \note Writing beyond the current file size automatically expands the internal size.
 	bool Write(const void* buffer, size_t bytesToWrite, size_t* bytesWritten = nullptr) override;
 
 	/// \brief Changes the current write offset.
 	/// \param offset Offset value.
 	/// \param origin One of SEEK_SET, SEEK_CUR, SEEK_END.
-	/// \return true if the new offset is valid, false otherwise.
+	/// \returns true if the new offset is valid, false otherwise.
 	/// \note Seeking past the current file size will expand the internal file size but does not
 	///       immediately update the file on-disk until Flush() or Close().
 	bool Seek(int64_t offset, int origin) override;
@@ -66,7 +66,7 @@ public:
 	void Flush() override;
 
 	/// \brief Closes the file and flush any pending writes.
-	/// \return true if the file was open and closed successfully, false if already closed.
+	/// \returns true if the file was open and closed successfully, false if already closed.
 	bool Close() override;
 
 	/// \brief Destroys the FileWriter object.

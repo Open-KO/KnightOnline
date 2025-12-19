@@ -26,19 +26,19 @@ public:
 
 	/// \brief Opens an existing file for reading.
 	/// \param path Path to the file to open.
-	/// \return true if the file was successfully opened, false otherwise.
+	/// \returns true if the file was successfully opened, false otherwise.
 	bool OpenExisting(const std::filesystem::path& path) override;
 
 	/// \brief Not supported for FileReader. Always returns false.
 	/// \param path Path to the file to create.
-	/// \return false
+	/// \returns false
 	bool Create(const std::filesystem::path& path) override;
 
-	/// \brief Read data from the file.
+	/// \brief Reads data from the file from the current offset.
 	/// \param buffer Destination buffer for data.
 	/// \param bytesToRead Number of bytes to read.
 	/// \param bytesRead Optional output for number of bytes actually read.
-	/// \return true if at least one byte was read successfully, false otherwise.
+	/// \returns true if at least one byte was read successfully, false otherwise.
 	/// \note Reading past EOF fails and bytesRead is set to 0.
 	bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) override;
 
@@ -46,13 +46,13 @@ public:
 	/// \param buffer Data to write.
 	/// \param bytesToWrite Number of bytes to write.
 	/// \param bytesWritten Optional output for number of bytes written.
-	/// \return false always.
+	/// \returns false always.
 	bool Write(const void* buffer, size_t bytesToWrite, size_t* bytesWritten = nullptr) override;
 
 	/// \brief Changes the current read offset.
 	/// \param offset Offset value.
 	/// \param origin One of SEEK_SET, SEEK_CUR, SEEK_END.
-	/// \return true if the new offset is valid, false otherwise.
+	/// \returns true if the new offset is valid, false otherwise.
 	/// \note Seeking past the file start or EOF is invalid and returns false.
 	bool Seek(int64_t offset, int origin) override;
 
@@ -60,7 +60,7 @@ public:
 	void Flush() override;
 
 	/// \brief Closes the file and resets internal state.
-	/// \return true if the file was open and closed successfully, false if already closed.
+	/// \returns true if the file was open and closed successfully, false if already closed.
 	bool Close() override;
 
 	/// \brief Destroys the FileReader object.
