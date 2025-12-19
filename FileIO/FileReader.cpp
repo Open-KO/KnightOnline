@@ -47,7 +47,7 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 	return true;
 }
 
-bool FileReader::Create(const std::filesystem::path& path)
+bool FileReader::Create(const std::filesystem::path& /*path*/)
 {
 	return false;
 }
@@ -83,7 +83,7 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 	return true;
 }
 
-bool FileReader::Write(const void* buffer, size_t byteToWrite, size_t* bytesWritten /*= nullptr*/)
+bool FileReader::Write(const void* /*buffer*/, size_t /*bytesToWrite*/, size_t* /*bytesWritten = nullptr*/)
 {
 	return false;
 }

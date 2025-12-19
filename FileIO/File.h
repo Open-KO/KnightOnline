@@ -37,7 +37,7 @@ public:
 	virtual bool OpenExisting(const std::filesystem::path& path) = 0;
 	virtual bool Create(const std::filesystem::path& path) = 0;
 	virtual bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) = 0;
-	virtual bool Write(const void* buffer, size_t byteToWrite, size_t* bytesWritten = nullptr) = 0;
+	virtual bool Write(const void* buffer, size_t bytesToWrite, size_t* bytesWritten = nullptr) = 0;
 	virtual bool Seek(int64_t offset, int origin) = 0;
 	virtual void Flush() = 0;
 	virtual void Close() = 0;

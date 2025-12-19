@@ -74,7 +74,7 @@ bool FileWriter::Create(const std::filesystem::path& path)
 	return true;
 }
 
-bool FileWriter::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
+bool FileWriter::Read(void* /*buffer*/, size_t /*bytesToRead*/, size_t* /*bytesRead = nullptr*/)
 {
 	return false;
 }
