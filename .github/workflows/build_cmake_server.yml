@@ -52,6 +52,9 @@ on:
 
   workflow_dispatch:
 
+env:
+  CLANG_LATEST_VERSION: 20
+
 jobs:
   build_windows:
     runs-on: windows-latest
@@ -90,20 +93,18 @@ jobs:
       shell: bash
       working-directory: build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}
       run: |
-        ctest -C "${{ matrix.BUILD_CONFIGURATION }}"
+        ctest -C "${{ matrix.BUILD_CONFIGURATION }}" --verbose
 
   build_linux:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         BUILD_CONFIGURATION: [Debug, Release]
-        COMPILER: [gcc, clang, clang-20]
+        COMPILER: [gcc, clang, clang-latest]
 
-    env:
-      clang-latest-version: 20
-
-    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux)"
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux - Ubuntu)"
 
     steps:
       - uses: actions/checkout@v4
@@ -126,13 +127,57 @@ jobs:
           else
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
-            sudo ./llvm.sh ${{ env.clang-latest-version }}
+            sudo ./llvm.sh ${{ env.CLANG_LATEST_VERSION }}
             sudo apt-get update          
-            export CC=clang-${{ env.clang-latest-version }}
-            export CXX=clang++-${{ env.clang-latest-version }}
+            export CC=clang-${{ env.CLANG_LATEST_VERSION }}
+            export CXX=clang++-${{ env.CLANG_LATEST_VERSION }}
           fi
           echo "CC=$CC" >> $GITHUB_ENV
           echo "CXX=$CXX" >> $GITHUB_ENV
+
+      - name: Configure CMake
+        run: |
+          cmake -S . \
+            -B build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }} \
+            -G "Ninja" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }}
+
+      - name: Build server
+        run: |
+          cmake \
+            --build build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }} \
+            --config ${{ matrix.BUILD_CONFIGURATION }}
+
+      - name: Run tests
+        shell: bash
+        working-directory: build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }}
+        run: |
+          ctest -C "${{ matrix.BUILD_CONFIGURATION }}" --verbose
+
+  build_macos:
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        COMPILER: [XCode]
+
+    name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (MacOS)"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'false'
+
+      - name: Install unixODBC
+        run: brew install unixodbc
+
+      - uses: lukka/get-cmake@latest
+
+      - name: Setup compiler
+        run: |
+          export CC=clang
+          export CXX=clang++
 
       - name: Configure CMake
         run: |
