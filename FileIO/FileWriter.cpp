@@ -37,10 +37,6 @@ bool FileWriter::OpenExisting(const std::filesystem::path& path)
 		_size = static_cast<uint64_t>(stat.st_size);
 
 	_sizeOnDisk = _size;
-
-	// We've opened an existing file, so we intend to append to the end.
-	_offset = _size;
-
 	return true;
 }
 

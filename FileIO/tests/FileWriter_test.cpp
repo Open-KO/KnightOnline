@@ -289,7 +289,7 @@ TEST_F(FileWriterTest, Create_TruncatesFile)
 	EXPECT_EQ(fileSize, 0);
 }
 
-TEST_F(FileWriterTest, OpenExisting_AppendsToFile)
+TEST_F(FileWriterTest, OpenExisting_AppendsAreOptIn)
 {
 	uint32_t testData = 1;
 
@@ -318,8 +318,10 @@ TEST_F(FileWriterTest, OpenExisting_AppendsToFile)
 	// Should have data in it.
 	EXPECT_EQ(_file.Size(), 4);
 
-	// Offset should also be set to the end of the file for appending.
-	EXPECT_EQ(_file.Offset(), 4);
+	// As we don't explicitly have a mode for appending,
+	// as with WinAPI & the C file I/O API, the offset should still be at the start.
+	// The onus is on the caller to seek to the appropriate place.
+	EXPECT_EQ(_file.Offset(), 0);
 
 	// Close it again so we can check the new filesize
 	EXPECT_TRUE(_file.Close());
