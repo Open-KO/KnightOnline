@@ -71,21 +71,21 @@ protected:
 	//컬려있는 마법스킬 표시하기..
 	std::list<__DurationMagicImg*> m_pMagic;
 	
-// Attributes
 public:
-	bool OnKeyPress(int iKey);
-	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	void	AddMagic(__TABLE_UPC_SKILL* pSkill, float fDuration);
-	void	DelMagic(__TABLE_UPC_SKILL* pSkill);
-	void	ClearMagic();
-	void	TickMagicIcon();
-	void	TickMiniMap();
+	bool OnKeyPress(int iKey) override;
+	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 
-	bool	ToggleMiniMap();
-
-	void	UpdateExp(int64_t iExp, int64_t iExpNext, bool bUpdateImmediately);
-	void	UpdateMSP(int iMSP, int iMSPMax, bool bUpdateImmediately);
-	void	UpdateHP(int iHP, int iHPMax, bool bUpdateImmediately);
+	void AddMagic(__TABLE_UPC_SKILL* pSkill, float fDuration);
+	void DelMagic(__TABLE_UPC_SKILL* pSkill);
+	void ClearMagic();
+	void TickMagicIcon();
+	void TickMiniMap();
+		    
+	bool ToggleMiniMap();
+		    
+	void UpdateExp(int64_t iExp, int64_t iExpNext, bool bUpdateImmediately);
+	void UpdateMSP(int iMSP, int iMSPMax, bool bUpdateImmediately);
+	void UpdateHP(int iHP, int iHPMax, bool bUpdateImmediately);
 
 	void UpdatePosition(const __Vector3& vPos, float fYaw);
 
@@ -94,16 +94,15 @@ public:
 	void PositionInfoClear();
 	bool LoadMap(const std::string& szMiniMapFN, float fMapSizeX, float fMapSizeZ); // 미니맵 비트맵 파일 이름, 매의 너비 길이..(Meter);
 	
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
 
-	virtual void	Tick();
-	virtual void	Render(); // 미니맵 렌더링..
-	virtual bool	Load(File& file);
+	void Tick() override;
+	void Render() override; // 미니맵 렌더링..
+	bool Load(File& file) override;
 	
-	virtual void	Release();
+	void Release() override;
 	CUIStateBar();
-	virtual ~CUIStateBar();
-
+	~CUIStateBar() override;
 };
 
 #endif // !defined(AFX_UIStateBar_H__C1BBB503_F9E5_43BB_93CB_C542AC016F85__INCLUDED_)

@@ -46,15 +46,15 @@ public:
 	virtual void	ScaleSet(float x, float y, float z) { m_vScale.Set(x, y, z); ReCalcMatrix(); }
 	virtual void	ReCalcMatrix();
 
-	bool			Load(File& file);
+	bool			Load(File& file) override;
 #ifdef _N3TOOL
 	virtual void	Render(const __Matrix44* pMtxParent, float fUnitSize = 1.0f);
-	bool			Save(File& file);
+	bool			Save(File& file) override;
 #endif // end of _N3TOOL
 
-	void Release();
+	void Release() override;
 	CN3Transform();
-	virtual ~CN3Transform();
+	~CN3Transform() override;
 };
 
 #endif // !defined(AFX_N3Transform_h__INCLUDED_)

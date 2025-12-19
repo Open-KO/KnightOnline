@@ -89,14 +89,14 @@ public:
 
 	static std::string FormatWithDelta(int iVal, int iDelta);
 
-	void			MsgSendAblityPointChange(uint8_t byType, int16_t siValueDelta); // 능력치 변화 패킷으로 보내기..
+	void MsgSendAblityPointChange(uint8_t byType, int16_t siValueDelta); // 능력치 변화 패킷으로 보내기..
 
-	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool	Load(File& file);
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	bool Load(File& file) override;
 
-	virtual void	Release();
+	void Release() override;
 	CUIState();
-	virtual ~CUIState();
+	~CUIState() override;
 };
 
 struct __KnightsMemberInfo // 기사 단원 정보..
@@ -142,21 +142,21 @@ public:
 	float			m_fTimeLimit_Admit;
 	
 public:
-	void	Clear();
-	void	UpdateKnightsName(const std::string& szName);
-	void	UpdateKnightsDuty(e_KnightsDuty eDuty);
-	void	UpdateKnightsGrade(int iVal);
-	void	UpdateKnightsRank(int iVal);
-	void	UpdateExceptList();
+	void Clear();
+	void UpdateKnightsName(const std::string& szName);
+	void UpdateKnightsDuty(e_KnightsDuty eDuty);
+	void UpdateKnightsGrade(int iVal);
+	void UpdateKnightsRank(int iVal);
+	void UpdateExceptList();
+		    
+	void MemberListUpdate();
+	void MemberListSort();
+		    
+	void RefreshList(); 
+		    
+	void MsgSend_MemberInfoAll();
 
-	void	MemberListUpdate();
-	void	MemberListSort();
-
-	void	RefreshList(); 
-
-	void	MsgSend_MemberInfoAll();
-
-	void	SetVisible(bool bVisible);		
+	void SetVisible(bool bVisible) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	bool Load(File& file) override;
 
@@ -174,9 +174,9 @@ public:
 	void RemoveButtonHandler();
 	void AppointButtonHandler();
 
-	virtual void Release();
+	void Release() override;
 	CUIKnights();
-	virtual ~CUIKnights();
+	~CUIKnights() override;
 
 	//쓰지 않음....
 	bool	NeedMemberListRequest() { if(m_MemberList.empty()) return true; else return false; }
@@ -242,34 +242,30 @@ protected:
 	CN3UIButton* m_pBtn_Delete;
 
 public:
-	void		SaveListToTextFile(const std::string& szID);  // 문자열이 있으면 추가하고.. 없으면 몽땅 저장..
-	void		MsgSend_MemberInfo(bool bDisableInterval); // 현재 페이지 정보 요청
-	void		MsgSend_MemberInfo(const std::string& szID); // 이넘만 요청..
-	void		MsgRecv_MemberInfo(Packet& pkt);
-	void		UpdateList();
-	bool		MemberDelete(const std::string& szID);
-	bool		MemberAdd(const std::string& szID, int iID, bool bOnLine, bool bIsParty);
+	void SaveListToTextFile(const std::string& szID);  // 문자열이 있으면 추가하고.. 없으면 몽땅 저장..
+	void MsgSend_MemberInfo(bool bDisableInterval); // 현재 페이지 정보 요청
+	void MsgSend_MemberInfo(const std::string& szID); // 이넘만 요청..
+	void MsgRecv_MemberInfo(Packet& pkt);
+	void UpdateList();
+	bool MemberDelete(const std::string& szID);
+	bool MemberAdd(const std::string& szID, int iID, bool bOnLine, bool bIsParty);
 
-	virtual bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	bool Load(File& file) override;
 
 	CUIFriends();
-	virtual ~CUIFriends();
-
+	~CUIFriends() override;
 };
 
 
 
 class CUIQuest : public CN3UIBase
 {
-protected:
-
-
 public:
 	bool Load(File& file) override;
 
 	CUIQuest();
-	virtual ~CUIQuest();
+	~CUIQuest() override;
 };
 
 
@@ -294,22 +290,22 @@ protected:
 	float		m_fMoveDelta; // 부드럽게 열리고 닫히게 만들기 위해서 현재위치 계산에 부동소수점을 쓴다..
 
 public:
-	void		SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false);
-	void		SetVisible(bool bVisible);
-	bool		OnKeyPress(int iKey);
-	void		UpdatePageButtons(CN3UIButton* pButtonToActive);
-	void		UpdateAllStates(const struct __InfoPlayerBase* pInfoBase, const struct __InfoPlayerMySelf* pInfoExt);
-	void		UpdateKnightsInfo(); // 기사단 관련 정보 업데이트
-	void		Open();
-	void		Close();
+	void SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
+	void SetVisible(bool bVisible) override;
+	bool OnKeyPress(int iKey) override;
+	void UpdatePageButtons(CN3UIButton* pButtonToActive);
+	void UpdateAllStates(const struct __InfoPlayerBase* pInfoBase, const struct __InfoPlayerMySelf* pInfoExt);
+	void UpdateKnightsInfo(); // 기사단 관련 정보 업데이트
+	void Open();
+	void Close();
 	
-	virtual void	Tick();
-	virtual	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool	Load(File& file);
+	void Tick() override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	bool Load(File& file) override;
 
-	virtual void Release();
+	void Release() override;
 	CUIVarious();
-	virtual ~CUIVarious();
+	~CUIVarious() override;
 };
 
 #endif // !defined(AFX_UIVarious_H__094F9A3E_1620_4E07_8726_82881B21B48C__INCLUDED_)

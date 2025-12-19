@@ -24,7 +24,7 @@ class CN3FXPlugPart : public CN3BaseFileAccess
 
 public:
 	CN3FXPlugPart();
-	virtual ~CN3FXPlugPart();
+	~CN3FXPlugPart() override;
 
 // Attributes
 public:
@@ -40,8 +40,8 @@ public:
 	void				Tick(const __Matrix44& mtxParent);
 	void				Tick(const class CN3Chr* pChr);
 	void				Render();
-	virtual void		Release();
-	virtual bool		Load(File& file);
+	void				Release() override;
+	bool				Load(File& file) override;
 
 	const CN3FXBundle*	GetFXB() const {return m_pFXB;}
 	void				SetFXB(const std::string& strFN);
@@ -50,7 +50,7 @@ public:
 	void				StopFXB(bool bImmediately);
 	void				TriggerFXB();
 #ifdef _N3TOOL
-	virtual bool		Save(File& file);
+	bool				Save(File& file) override;
 #endif
 protected:
 };
@@ -65,7 +65,7 @@ class CN3FXPlug : public CN3BaseFileAccess
 
 public:
 	CN3FXPlug();
-	virtual ~CN3FXPlug();
+	~CN3FXPlug() override;
 
 // Attributes
 public:
@@ -76,14 +76,14 @@ protected:
 public:
 	void			Tick(const CN3Chr* pChr);
 	void			Render();
-	virtual void	Release();
-	virtual bool	Load(File& file);
+	void			Release() override;
+	bool			Load(File& file) override;
 
 	void			StopAll(bool bImmediately = false);	// FX Stop
 	void			TriggerAll();						// FX 시작
 
 #ifdef _N3TOOL
-	virtual bool	Save(File& file);
+	bool			Save(File& file) override;
 	void			RemoveFXPParts_HaveNoBundle();		// 번들 없는 Part들 제거하기
 
 	CN3FXPlugPart*	FXPPartAdd();

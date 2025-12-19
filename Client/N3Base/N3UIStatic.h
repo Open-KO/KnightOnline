@@ -37,7 +37,7 @@ protected:
 // 툴에서만 사용하는 함수
 public:
 	virtual	void	operator = (const CN3UIStatic& other);
-	bool	Save(File& file) override;
+	bool			Save(File& file) override;
 	void			CreateImageAndString();		// 배경 이미지 및 string 생성하기
 	CN3UIImage*		GetImageBkGnd() const {return m_pImageBkGnd;}
 	CN3UIString*	GetUIString() const {return m_pBuffOutRef;}

@@ -59,7 +59,7 @@ public:
 	void	AddPos(__Vector3 Path);	//path더하기.
 	void	DelPrevPos();
 	CNPCPath();
-	virtual ~CNPCPath();
+	~CNPCPath() override;
 
 };
 

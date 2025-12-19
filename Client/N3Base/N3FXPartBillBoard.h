@@ -46,31 +46,32 @@ public:
 	bool				m_bRotationRate;	//	회전 속도 적용 여부
 	bool				m_bOnScreen;		//	화면에 보이는지 여부, true면 화면에 보이는 것, false면 화면에 보이지 않는 것
 	// N3FXPartBillBoard needs implementation of these methods
+
 protected:
 	__Vector3			m_vUnit[4];
 
 protected:
-	void	CreateVB();
-	bool	IsDead();
+	void CreateVB();
+	bool IsDead() override;
 	__Vector3 Rotate2AbsolutePos(__Vector3 vRelativePos);
-	float	CameraDist();
+	float CameraDist();
 
 public:
-	void	Init();				//	각종 변수들을 처음 로딩한 상태로 초기화...
-	void	Start();			//	파트 구동 시작.
-	void	Stop();				//	파트 구동 멈춤..
-	bool	Tick();				//	ticktick...
-	void	Render();			//	화면에 뿌리기..
-	bool	Load(File& file);	//	게임파일 불러오기.
-	bool	Save(File& file);	//	게임파일 저장오기.
-	void	Duplicate(CN3FXPartBillBoard* pSrc);
+	void Init() override;			// 각종 변수들을 처음 로딩한 상태로 초기화...
+	void Start() override;			// 파트 구동 시작.
+	void Stop() override;			// 파트 구동 멈춤..
+	bool Tick() override;			// ticktick...
+	void Render() override;			// 화면에 뿌리기..
+	bool Load(File& file) override;	// 게임파일 불러오기.
+	bool Save(File& file) override;	// 게임파일 저장오기.
+	void Duplicate(CN3FXPartBillBoard* pSrc);
 
-	void	SetScale(float size) { m_fSizeX = m_fCurrSizeX = size; m_fSizeY = m_fCurrSizeY = size; }
-	void	SetRadius(float rad) { m_fRadius = rad; }
+	void SetScale(float size) { m_fSizeX = m_fCurrSizeX = size; m_fSizeY = m_fCurrSizeY = size; }
+	void SetRadius(float rad) { m_fRadius = rad; }
 	
 public:
 	CN3FXPartBillBoard();
-	virtual ~CN3FXPartBillBoard();
+	~CN3FXPartBillBoard() override;
 
 #ifdef _N3TOOL
 	bool	ParseScript(char* szCommand, char* szBuff0, char* szBuff1, char* szBuff2, char* szBuff3);

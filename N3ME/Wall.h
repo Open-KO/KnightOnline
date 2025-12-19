@@ -31,7 +31,7 @@ public:
 	void	DelPrevVertex();
 
 	CWall();
-	virtual ~CWall();
+	~CWall() override;
 };
 
 #endif // !defined(AFX_WALL_H__77875B11_2DB7_42DB_8C20_95A1AEDC17B8__INCLUDED_)

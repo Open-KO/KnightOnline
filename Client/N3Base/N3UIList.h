@@ -92,19 +92,19 @@ public:
 	int		GetScrollPos() const;
 	bool	SetScrollPos(int iScrollPos);
 	
-	virtual void	Render();
-	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual bool	Load(File& file);
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
+	void	Render() override;
+	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	bool	Load(File& file) override;
+	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 
 #ifdef _N3TOOL
-	virtual bool	Save(File& file);
+	bool	Save(File& file) override;
 	virtual void	operator = (const CN3UIList& other);
 #endif
 
-	virtual void	Release();
+	void	Release() override;
 	CN3UIList();
-	virtual ~CN3UIList();
+	~CN3UIList() override;
 };
 
 #endif // !defined(AFX_N3UILIST_H__89CAFCE3_0042_4F6C_A195_E830111DA03F__INCLUDED_)

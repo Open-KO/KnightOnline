@@ -20,11 +20,11 @@ public:
 	class CGameProcNationSelect* m_pProcNationSelectRef;
 
 public:
-	bool	Load(File& file);
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool Load(File& file) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	CUINationSelectDlg();
-	virtual ~CUINationSelectDlg();
+	~CUINationSelectDlg() override;
 };
 
 #endif // !defined(AFX_UINATIONSELECTDLG_H__AC80EE20_C90E_4B08_807A_5431F8F23BF7__INCLUDED_)

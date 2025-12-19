@@ -36,34 +36,35 @@ public:
 	bool m_bViewFix;
 	bool m_bUseFadeShowLife;
 	// N3FXPartMesh needs implementation of these methods
+
 protected:
-	bool	IsDead();
+	bool IsDead() override;
 
 public:
-	void	Init();				//	각종 변수들을 처음 로딩한 상태로 초기화...
-	void	Start();			//	파트 구동 시작.
-	void	Stop();				//	파트 구동 멈춤..
-	bool	Tick();				//	ticktick...
-	void	Render();			//	화면에 뿌리기..
-	bool	Load(File& file);	//	게임파일 불러오기.
-	bool	Save(File& file);	//	게임파일 저장오기.
-	void	Duplicate(CN3FXPartMesh* pSrc);
+	void Init() override;			// 각종 변수들을 처음 로딩한 상태로 초기화...
+	void Start() override;			// 파트 구동 시작.
+	void Stop() override;			// 파트 구동 멈춤..
+	bool Tick() override;			// ticktick...
+	void Render() override;			// 화면에 뿌리기..
+	bool Load(File& file) override;	// 게임파일 불러오기.
+	bool Save(File& file) override;	// 게임파일 저장오기.
+	void Duplicate(CN3FXPartMesh* pSrc);
 		
 public:
-	void	Rotate();
-	void	Move();
-	void	Scaling();
-	void	MoveTexUV();
-
-	int		NumPart();
-	int		NumVertices(int Part);
+	void Rotate();
+	void Move();
+	void Scaling();
+	void MoveTexUV();
+		    
+	int NumPart();
+	int NumVertices(int Part);
 	LPDIRECT3DVERTEXBUFFER9 GetVB(int Part);
 
 	CN3FXPartMesh();
-	virtual ~CN3FXPartMesh();
+	~CN3FXPartMesh() override;
 
 #ifdef _N3TOOL
-	bool	ParseScript(char* szCommand, char* szBuff0, char* szBuff1, char* szBuff2, char* szBuff3);
+	bool ParseScript(char* szCommand, char* szBuff0, char* szBuff1, char* szBuff2, char* szBuff3);
 #endif // end of _N3TOOL
 
 };

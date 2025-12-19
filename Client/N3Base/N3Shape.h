@@ -137,10 +137,10 @@ public:
 	bool			MakeCollisionMeshByParts();  // 충돌 메시를 박스 형태로 다시 만든다...
 	bool			MakeCollisionMeshByPartsDetail();  // 현재 모습 그대로... 충돌 메시를 만든다...
 
-	void			FindMinMax();
-	virtual void	ReCalcMatrix();
+	void			FindMinMax() override;
+	void			ReCalcMatrix() override;
 	void			ReCalcPartMatrix();
-	virtual void	Tick(float fFrm = FRAME_SELFPLAY);
+	void			Tick(float fFrm = FRAME_SELFPLAY) override;
 	virtual void	Render();
 
 	int PartCount() const
@@ -160,17 +160,17 @@ public:
 	CN3SPart*		PartAdd() { CN3SPart* pPart = new CN3SPart(); m_Parts.push_back(pPart); return pPart; }
 	void			PartDelete(int iIndex);
 	
-	bool			Load(File& file);
+	bool			Load(File& file) override;
 #ifdef _N3TOOL
-	bool			Save(File& file);
+	bool			Save(File& file) override;
 	void			RenderSelected(bool bWireFrame);
 	void			RenderSelected(int iPart, bool bWireFrame);
 	bool			IsPMeshProcessed();
 #endif // end of _N3TOOL
 
-	virtual void	Release();
+	void			Release() override;
 	CN3Shape();
-	virtual ~CN3Shape();
+	~CN3Shape() override;
 
 //	By : Ecli666 ( On 2002-08-06 오후 4:33:04 )
 //

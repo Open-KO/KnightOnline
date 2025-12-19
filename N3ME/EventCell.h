@@ -44,7 +44,7 @@ public:
 
 	CEventCell();
 	CEventCell(CLyTerrain* pRefTerrain);
-	virtual ~CEventCell();
+	~CEventCell() override;
 };
 
 #endif // !defined(AFX_EVENTCELL_H__B3DFDE57_2071_433F_A831_8B26FFE0004B__INCLUDED_)

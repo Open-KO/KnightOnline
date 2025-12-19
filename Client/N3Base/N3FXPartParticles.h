@@ -81,50 +81,50 @@ public:
 	// N3FXParticle needs implementation of these methods
 
 protected:
-	void	Rotate();
-	void	Scaling();
-	void	Move();
-
-	void	InitVB();
-	void	CreateParticles();
-	void	CreateParticles_Spread();
-	void	CreateParticles_Gather();
+	void Rotate();
+	void Scaling();
+	void Move();
+		    
+	void InitVB();
+	void CreateParticles();
+	void CreateParticles_Spread();
+	void CreateParticles_Gather();
 
 	std::list<CN3FXParticle*>::iterator	DestroyParticle(std::list<CN3FXParticle*>::iterator it);
 
-	bool	IsDead();
+	bool IsDead() override;
 
 	bool RotateQuaternion(__Vector3 vSrcDir, __Vector3 vDestDir, __Quaternion* pQt);
 	float CameraDist(__Vector3 v1, __Vector3 v2, __Vector3 v3);
 
 	//////////////////////////////////////////////
 	//m_pVBList_Alive를 소트하기위함이야..
-	void	PSort();
-	void	PMerge(std::list<CN3FXParticle*>& l1, std::list<CN3FXParticle*>& l2);
-	bool	PComp(CN3FXParticle* pP1, CN3FXParticle* pP2);
+	void PSort();
+	void PMerge(std::list<CN3FXParticle*>& l1, std::list<CN3FXParticle*>& l2);
+	bool PComp(CN3FXParticle* pP1, CN3FXParticle* pP2);
 	//
 	//////////////////////////////////////////////
 	
 public:
-	void	Init();				//	각종 변수들을 처음 로딩한 상태로 초기화...
-	void	Start();			//	파트 구동 시작.
-	void	Stop();				//	파트 구동 멈춤..
-	bool	Tick();				//	ticktick...
-	void	Render();			//	화면에 뿌리기..
-	bool	Load(File& file);	//	게임파일 불러오기.
-	bool	Save(File& file);	//	게임파일 저장오기.
-	void	Duplicate(CN3FXPartParticles* pSrc);
+	void Init() override;			// 각종 변수들을 처음 로딩한 상태로 초기화...
+	void Start() override;			// 파트 구동 시작.
+	void Stop() override;			// 파트 구동 멈춤..
+	bool Tick() override;			// ticktick...
+	void Render() override;			// 화면에 뿌리기..
+	bool Load(File& file) override;	// 게임파일 불러오기.
+	bool Save(File& file) override;	// 게임파일 저장오기.
+	void Duplicate(CN3FXPartParticles* pSrc);
 
-	bool	GetColor(int key, uint32_t& color);
+	bool GetColor(int key, uint32_t& color);
 
 	CN3FXPartParticles();	
-	virtual ~CN3FXPartParticles();	
+	~CN3FXPartParticles() override;
 
 #ifdef _N3TOOL
-	bool	ParseScript(char* szCommand, char* szBuff0, char* szBuff1, char* szBuff2, char* szBuff3);
+	bool ParseScript(char* szCommand, char* szBuff0, char* szBuff1, char* szBuff2, char* szBuff3);
 
-	bool	m_bChangeColorKey[NUM_KEY_COLOR];
-	bool	m_bChangeAlphaKey[NUM_KEY_COLOR];
+	bool m_bChangeColorKey[NUM_KEY_COLOR];
+	bool m_bChangeAlphaKey[NUM_KEY_COLOR];
 #endif // end of _N3TOOL
 };
 

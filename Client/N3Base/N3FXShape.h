@@ -16,7 +16,7 @@
 
 class CN3FXSPart : public CN3BaseFileAccess
 {
-friend class CN3FXShape;
+	friend class CN3FXShape;
 
 public:
 	__Material	m_Mtl;					// Material

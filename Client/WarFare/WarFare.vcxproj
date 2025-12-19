@@ -259,7 +259,6 @@
     <ClInclude Include="LightMgr.h" />
     <ClInclude Include="LocalInput.h" />
     <ClInclude Include="MagicSkillMng.h" />
-    <ClInclude Include="N3EffectWave2.h" />
     <ClInclude Include="N3FXBundleGame.h" />
     <ClInclude Include="N3FXMgr.h" />
     <ClInclude Include="N3FXPartBillBoardGame.h" />

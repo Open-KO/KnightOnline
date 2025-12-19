@@ -46,14 +46,14 @@ public:
 	void			SetUVRect(float left, float top, float right, float bottom);	// image의 uv좌표 지정
 	void			SetColor(D3DCOLOR color);				// 칼라 지정
 
-	virtual void	SetRegion(const RECT& Rect);					// 영역 지정
-	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);
-	virtual void	Release();								// Release
-	virtual void	Tick();									// Tick
-	virtual void	Render();								// 그리기
+	void			SetRegion(const RECT& Rect);					// 영역 지정
+	BOOL			MoveOffset(int iOffsetX, int iOffsetY) override;
+	void			Release() override;								// Release
+	void			Tick() override;								// Tick
+	void			Render() override;								// 그리기
 	virtual void	RenderIconWrapper();
-	virtual void	Init(CN3UIBase* pParent);				// 초기화
-	virtual bool	Load(File& file);
+	void			Init(CN3UIBase* pParent) override;				// 초기화
+	bool			Load(File& file) override;
 
 	virtual void	operator = (const CN3UIImage& other);
 
@@ -63,7 +63,7 @@ protected:
 // tool에서 사용하는 함수들
 #ifdef _N3TOOL
 public:
-	virtual bool	Save(File& file);
+	bool			Save(File& file) override;
 	virtual void	ChangeImagePath(const std::string& szPathOld, const std::string& szPathNew);
 	void			GatherImageFileName(std::set<std::string>& setImgFile);
 	std::string		GetTexFN() { return m_szTexFN; }

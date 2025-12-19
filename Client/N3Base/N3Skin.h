@@ -42,6 +42,7 @@ protected:
 		int nIndex;
 		float fWeight;
 	};
+
 	static int SortWeightsProc(const void* pArg1, const void* pArg2);
 #endif // end of _N3TOOL
 	
@@ -50,18 +51,18 @@ protected:
 public:
 	__VertexSkinned*	SkinVertices() { return m_pSkinVertices; }
 	bool				Create(int nFC, int nVC, int nUVC);
-	bool				Load(File& file);
+	bool				Load(File& file) override;
 
-	bool				CheckCollisionPrecisely(const __Vector3 &vPos, const __Vector3 &vDir, __Vector3* pvPick);
+	bool				CheckCollisionPrecisely(const __Vector3& vPos, const __Vector3& vDir, __Vector3* pvPick);
 
 #ifdef _N3TOOL
-	bool				Save(File& file);
+	bool				Save(File& file) override;
 	void				RecalcWeight();		// 웨이트값 다시 계산하기
 #endif // end of _N3TOOL
 	
-	void Release();
+	void Release() override;
 	CN3Skin();
-	virtual ~CN3Skin();
+	~CN3Skin() override;
 
 };
 

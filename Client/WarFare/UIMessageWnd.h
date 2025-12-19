@@ -34,27 +34,29 @@ protected:
 
 // Operations
 public:
-	bool OnKeyPress(int iKey);
-	BOOL	MoveOffset(int iOffsetX, int iOffsetY);	// offsetY만큼 이동해준다.(region, children, move rect 이동)
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	void	Release();
-	bool	Load(File& file);
-	void	SetRegion(const RECT& Rect);	// 영역 지정(사이즈가 변할때 호출된다. 단순 이동은 호출되지 않는다.(단순이동은 MoveOffset이 호출))
-
-	void	AddMsg(const std::string& szString, D3DCOLOR color = 0xffffffff);		// 채팅 메세지를 저장하고 알맞은 형태로 화면에 출력해준다.
+	bool OnKeyPress(int iKey) override;
+	BOOL MoveOffset(int iOffsetX, int iOffsetY) override;	// offsetY만큼 이동해준다.(region, children, move rect 이동)
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void Release() override;
+	bool Load(File& file) override;
+	void SetRegion(const RECT& Rect) override;	// 영역 지정(사이즈가 변할때 호출된다. 단순 이동은 호출되지 않는다.(단순이동은 MoveOffset이 호출))
+		    
+	void AddMsg(const std::string& szString, D3DCOLOR color = 0xffffffff);		// 채팅 메세지를 저장하고 알맞은 형태로 화면에 출력해준다.
 
 	CUIMessageWnd();
-	virtual ~CUIMessageWnd();
+	~CUIMessageWnd() override;
 };
 
+// TODO: Use the official name for this
 class CUIMessageWnd2 : public CN3UIBase
 {
 protected:
 	CN3UIBase* m_pBtn_Fold;
+
 public:
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	void	Release();
-	bool	Load(File& file);
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void Release() override;
+	bool Load(File& file) override;
 
 	CUIMessageWnd2();
 };

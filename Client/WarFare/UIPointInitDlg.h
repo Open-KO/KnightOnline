@@ -23,17 +23,17 @@ class CUIPointInitDlg : public CN3UIBase
 
 public:
 	CUIPointInitDlg();
-	virtual ~CUIPointInitDlg();
+	~CUIPointInitDlg() override;
 
-	void	InitDlg(bool bAllpoint, int iGold);
-	bool	OnKeyPress(int iKey);
-	void	Release();
+	void InitDlg(bool bAllpoint, int iGold);
+	bool OnKeyPress(int iKey) override;
+	void Release() override;
 
-	bool	Load(File& file);
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	void	Close();
+	bool Load(File& file) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void Close();
 
-	void	PushOkButton();
+	void PushOkButton();
 };
 
 #endif // !defined(AFX_UIPOINTINITDLG_H__D784EB22_FE0A_4A62_83FF_4664854DE2EC__INCLUDED_)

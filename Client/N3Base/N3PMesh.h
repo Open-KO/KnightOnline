@@ -103,7 +103,7 @@ public:
 
 	__VertexT1*		GetVertices() const { return m_pVertices; };
 	__VertexT2*		GetVertices2() const { return m_pVertices2; };
-	uint16_t*			GetIndices() const { return m_pIndices;};		// 제대로된 Index가 아님 
+	uint16_t*		GetIndices() const { return m_pIndices;};		// 제대로된 Index가 아님 
 	// (제대로 된 인덱스를 얻으려면 N3PMeshInstance로 만든후 LOD조정후 인덱스값을 얻으면 된다.)
 
 #ifdef _N3TOOL

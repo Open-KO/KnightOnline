@@ -65,18 +65,18 @@ public:
 
 	//////////////////////////////////////////////
 	//m_pSound를 소트하기위함이야..
-	void	SCSort();
-	void	SCMerge(std::list<CSoundCell*>& l1, std::list<CSoundCell*>& l2);
-	bool	SCComp(CSoundCell* pP1, CSoundCell* pP2);
+	void SCSort();
+	void SCMerge(std::list<CSoundCell*>& l1, std::list<CSoundCell*>& l2);
+	bool SCComp(CSoundCell* pP1, CSoundCell* pP2);
 	//
 	//////////////////////////////////////////////
 
-	virtual bool	Load(File& file);
-	virtual bool	Save(File& file);
+	bool Load(File& file) override;
+	bool Save(File& file) override;
 	void SaveGameData(File& file);
 
 	CSoundMgr();
-	virtual ~CSoundMgr();
+	~CSoundMgr() override;
 };
 
 #endif // !defined(AFX_SOUNDMGR_H__73272CD9_F059_4001_A116_871CEC8B25AE__INCLUDED_)

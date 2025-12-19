@@ -234,8 +234,7 @@ protected:
 	int			GetLatestChange(eSKY_DAYCHANGE eSDC, int iPos);// m_pDayChangeQueues에서 지정된 위치(iPos) 이전의 가장 최근에 변화하는 위치 얻어오기
 	void		ChangeSky(__SKY_DAYCHANGE* pSDC, float fTakeTime);
 	int			GetDayChangePos_AfterNSec(uint32_t dwCurGameTime, float fSec);		// 실시간 N초 후에 DayChangeQueue의 위치 구하기
-	static int		CompareTime(const void* pArg1, const void* pArg2);
-
+	static int	CompareTime(const void* pArg1, const void* pArg2);
 };
 
 #endif // !defined(AFX_N3SKYMNG_H__30DC78FB_6563_43BD_841E_B90928E850CD__INCLUDED_)

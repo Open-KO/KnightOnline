@@ -46,39 +46,42 @@ public:
 	int					GetStringRealWidth(int iNum) const;
 	int					GetStringRealWidth(const std::string& szText) const;
 
-	virtual	uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	virtual void	Render();
-	virtual void	Release();	
-	virtual void	Init(CN3UIBase* pParent);
-	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);// 글씨찍는 위치도 바뀌어 준다.
-	virtual bool	Load(File& file);
-	void			ClearOnlyStringBuffer() { m_szString = ""; }	// string 버퍼만 지운다.
+	uint32_t		MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
+	void			Render() override;
+	void			Release() override;
+	void			Init(CN3UIBase* pParent) override;
+	BOOL			MoveOffset(int iOffsetX, int iOffsetY) override;// 글씨찍는 위치도 바뀌어 준다.
+	bool			Load(File& file) override;
+	void			ClearOnlyStringBuffer() { m_szString.clear(); }	// string 버퍼만 지운다.
 	void			SetStartLine(int iLine);	// multiline일경우 시작하는 라인 변경하기
 
 	virtual void	operator = (const CN3UIString& other);
 
 #ifdef _N3TOOL
-	virtual bool	Save(File& file);
+	bool			Save(File& file) override;
 	virtual void	ChangeFont(const std::string& szFont);
 #endif
 	
-	virtual void	SetRegion(const RECT& Rect);
-	virtual void	SetStyle(uint32_t dwStyle);
+	void			SetRegion(const RECT& Rect) override;
+	void			SetStyle(uint32_t dwStyle) override;
 	virtual void	SetStyle(uint32_t dwType, uint32_t dwStyleEx);
 
 	virtual void	SetString(const std::string& szString);
 	virtual void	SetStringAsInt(int iVal);
 	void			SetString_NoWordWrap(const std::string& szString);	// 글자 정렬 하지 않는다.
 	virtual void	SetFont(const std::string& szFontName, uint32_t dwHeight, BOOL bBold, BOOL bItalic); // dwHeight는 point size이다.
+
 	BOOL			GetTextExtent(const std::string& szString, int iStrLen, SIZE* pSize )
 	{
 		if (m_pDFont) return m_pDFont->GetTextExtent(szString, iStrLen, pSize);
 		return FALSE;
 	}
+
 	uint32_t				GetFontColor() const {if (m_pDFont) return m_pDFont->GetFontColor(); return 0xffffffff;}
-	const std::string&	GetFontName() const {if (m_pDFont) return m_pDFont->GetFontName(); return s_szStringTmp;} 
+	const std::string&		GetFontName() const {if (m_pDFont) return m_pDFont->GetFontName(); return s_szStringTmp;} 
 	uint32_t				GetFontHeight() const {if (m_pDFont) return m_pDFont->GetFontHeight(); return 0;} 
 	uint32_t				GetFontFlags() const {if (m_pDFont) return m_pDFont->GetFontFlags(); return 0;}
+
 protected:
 	void				WordWrap();		// wordwrap
 };

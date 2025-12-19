@@ -32,13 +32,13 @@ protected:
 
 // Operations
 public:
-	virtual bool	Load(File& file);
-	virtual void	Release();
-	virtual void	SetRegion(const RECT& Rect);
-	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);
+	bool	Load(File& file) override;
+	void	Release() override;
+	void	SetRegion(const RECT& Rect) override;
+	BOOL	MoveOffset(int iOffsetX, int iOffsetY) override;
 
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	virtual void	Render();
+	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
+	void	Render() override;
 
 // 툴에서 사용하기 위한 함수
 public:
@@ -50,7 +50,7 @@ public:
 	std::string GetSndFName_Click() const;
 
 #ifdef _N3TOOL
-	virtual bool	Save(File& file);
+	bool			Save(File& file) override;
 	void			CreateImages();
 	CN3UIImage*		GetImageRef(eBTN_STATE eState) const {	return m_ImageRef[eState];}
 #endif

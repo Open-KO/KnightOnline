@@ -23,18 +23,18 @@ class CUINPCChangeEvent : public CN3UIBase
 
 	CUIPointInitDlg*	m_pDlg;
 
-	bool				 m_bSendedAllPoint;
+	bool				m_bSendedAllPoint;
 
 public:
-	bool OnKeyPress(int iKey);
-	void SetVisible(bool bVisible);
-	void Release();
+	bool OnKeyPress(int iKey) override;
+	void SetVisible(bool bVisible) override;
+	void Release() override;
 
 	CUINPCChangeEvent();
-	virtual ~CUINPCChangeEvent();
+	~CUINPCChangeEvent() override;
 
-	bool	Load(File& file);
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	bool	Load(File& file) override;
+	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	void	Open();
 	void	Close();

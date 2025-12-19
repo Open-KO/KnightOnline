@@ -19,7 +19,6 @@ protected:
 	CN3UIProgress*	m_pProgress_Loading;
 
 public:
-
 	bool Load(File& file) override;
 	CUILoading();
 	~CUILoading() override;

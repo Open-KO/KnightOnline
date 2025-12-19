@@ -108,11 +108,11 @@ protected:
 	
 public:
 	CN3UIBase();
-	virtual ~CN3UIBase();
+	~CN3UIBase() override;
 
 // Attributes
 public:
-	void			PrintChildIDs(void);
+	void			PrintChildIDs();
 	eUI_TYPE		UIType() const { return m_eType; }
 	eUI_STATE 		GetState() const { return m_eState; }
 	bool			IsVisible()	const { return m_bVisible; }
@@ -164,12 +164,12 @@ public:
 
 	virtual void	CallBackProc(int iID, uint32_t dwFlag);
 	virtual void	ShowWindow(int iID = -1, CN3UIBase* pParent = nullptr);
-	virtual bool	Load(File& file);
+	bool			Load(File& file) override;
 	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
+	virtual uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
 	virtual void	Tick();
 	virtual void	Render();
-	virtual void	Release(); // 자식 포인터까지 delete 한다..
+	void			Release() override; // 자식 포인터까지 delete 한다..
 	virtual void	Init(CN3UIBase* pParent);
 	virtual bool	OnKeyPress(int iKey) { return false; }
 	virtual bool	OnKeyPressed(int iKey) { return false; }
@@ -200,7 +200,7 @@ protected:
 
 #ifdef _N3TOOL
 public:
-	virtual bool	Save(File& file);
+	bool			Save(File& file) override;
 	virtual void	ChangeImagePath(const std::string& szPathOld, const std::string& szPathNew);
 	virtual void	ChangeFont(const std::string& szFont);
 	virtual void	GatherImageFileName(std::set<std::string>& setImgFile);

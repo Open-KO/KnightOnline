@@ -30,17 +30,17 @@ class CUIClassChange : public CN3UIBase
 
 public:
 	CUIClassChange();
-	virtual ~CUIClassChange();
+	~CUIClassChange() override;
 
-	bool	Load(File& file);
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-
-	void	Open(int iCode);
-	void	Close();
-
-	void	RestorePrevClass();
-	void	ChangeToWarningState();
-	void	ChangeToNormalState();
+	bool Load(File& file) override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+		    
+	void Open(int iCode);
+	void Close();
+		    
+	void RestorePrevClass();
+	void ChangeToWarningState();
+	void ChangeToNormalState();
 };
 
 #endif // !defined(AFX_UICLASSCHANGE_H__74E2A304_165D_44C9_88C5_00746B408CCF__INCLUDED_)

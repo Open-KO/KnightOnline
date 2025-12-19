@@ -28,11 +28,11 @@ protected:
 
 // Operations
 public:
-	virtual void	Release();
-	virtual bool	Load(File& file);
-	virtual void	SetRegion(const RECT& Rect);
-	virtual void	SetStyle(uint32_t dwStyle);
-	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg); // 메시지를 받는다.. 보낸놈, msg
+	void			Release() override;
+	bool			Load(File& file) override;
+	void			SetRegion(const RECT& Rect) override;
+	void			SetStyle(uint32_t dwStyle) override;
+	bool			ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
 
 	void			SetRange(int iMin, int iMax) {if(m_pTrackBarRef) m_pTrackBarRef->SetRange(iMin,iMax);}
 	void			SetRangeMax(int iMax) {if(m_pTrackBarRef) m_pTrackBarRef->SetRangeMax(iMax);}

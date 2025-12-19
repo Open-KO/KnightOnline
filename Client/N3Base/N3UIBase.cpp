@@ -452,12 +452,12 @@ void CN3UIBase::DestroyTooltip()
 	if (s_pTooltipCtrl) {delete s_pTooltipCtrl; s_pTooltipCtrl = nullptr;}
 }
 
-void CN3UIBase::PrintChildIDs(void) {
-	for(UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+void CN3UIBase::PrintChildIDs()
+{
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIBase* pChild = (*itor);
-		if(pChild->m_szID == "") continue;
-		printf("%s\n", pChild->m_szID.c_str());
+		if (!pChild->m_szID.empty())
+			printf("%s\n", pChild->m_szID.c_str());
 	}
 }
 

@@ -119,22 +119,22 @@ public:
 	int		GetLODLevel() { return m_iLodLevel; }
 	bool	SetLODLevel(int level);
 	float	GetHeight(float x, float z);
-	void	Release();
+	void	Release() override;
 	void	Init();
-	bool	Load(File& file);
+	bool	Load(File& file) override;
 	void	Tick();
 	void	Render();
 	void	SetFillMode(D3DFILLMODE FillMode) { m_FillMode = FillMode; }
 	void	SetShadeMode(D3DSHADEMODE ShadeMode) {m_ShadeMode = ShadeMode; }
 		
 	CN3Terrain();
-	virtual ~CN3Terrain();
+	~CN3Terrain() override;
 
 public:	//additional........
 	bool			GetTileTexInfo(float x, float z, TERRAINTILETEXINFO& TexInfo1, TERRAINTILETEXINFO& TexInfo2);
 	CN3Texture*		GetTileTex(int x, int z);
 	MAPDATA			GetMapData(int x, int z);
-	uint16_t	GetGrassAttr(int x, int z);
+	uint16_t		GetGrassAttr(int x, int z);
 	bool			LoadColorMap(const std::string& szFN);
 	void			GetNormal(float x, float z, __Vector3& vNormal);
 	bool			IsInTerrain(float x, float z);

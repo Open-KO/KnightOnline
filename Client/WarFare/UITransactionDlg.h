@@ -75,7 +75,7 @@ public:
 
 	__IconItemSkill*	GetHighlightIconItem(CN3UIIcon* pUIIcon) override;
 
-	void				IconRestore();	
+	void				IconRestore() override;
 
 	bool				ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur) override;
 

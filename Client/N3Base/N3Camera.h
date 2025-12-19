@@ -39,7 +39,7 @@ public:
 	void		UpVectorSet(const __Vector3& v) { m_vScale = v; } // Scale 은 UpVector 처럼 쓴다..
 	void		UpVectorSet(float x, float y, float z) { m_vScale.Set(x, y, z); } // Scale 은 UpVector 처럼 쓴다..
 
-	bool		Load(File& file);
+	bool		Load(File& file) override;
 
 #ifdef _N3TOOL
 	BOOL		MoveByWindowMessage(MSG* pMsg);
@@ -48,13 +48,13 @@ public:
 	void		MoveStraight(float fDistance, bool bSmall = false);
 	void		LookAround(float fRadianX, float fRadianY);
 	void		Zoom(float fDelta);
-	bool		Save(File& file);
+	bool		Save(File& file) override;
 #endif // end of #ifdef _N3TOOL
-	void		Release();
+	void		Release() override;
 	CN3Camera();
-	virtual ~CN3Camera();
+	~CN3Camera() override;
 
-	void		Tick(float fFrm = FRAME_SELFPLAY); // 카메라값만 단순히 세팅하기만 한다..
+	void		Tick(float fFrm = FRAME_SELFPLAY) override; // 카메라값만 단순히 세팅하기만 한다..
 	void		Render(float fUnitSize = 1.0f);
 	void		Apply(); // 세팅된 카메라값을 실제 D3DDevice 에 적용
 };

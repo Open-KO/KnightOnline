@@ -31,7 +31,7 @@ class CN3UIArea : public CN3UIBase
 {
 public:
 	CN3UIArea();
-	virtual ~CN3UIArea();
+	~CN3UIArea() override;
 
 public:
 	eUI_AREA_TYPE	m_eAreaType;

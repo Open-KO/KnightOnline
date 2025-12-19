@@ -119,14 +119,14 @@ public:
 	void		Apply(); // 세팅된 라이트값을 실제 D3DDevice 에 적용
 	void		Tick(float fFrm = FRAME_SELFPLAY); // 라이트값만 세팅한다..
 	
-	bool		Load(File& file);
+	bool		Load(File& file) override;
 #ifdef _N3TOOL
-	bool		Save(File& file);
+	bool		Save(File& file) override;
 #endif // end of _N3TOOL
 
-	void		Release();
+	void		Release() override;
 	CN3Light();
-	virtual ~CN3Light();
+	~CN3Light() override;
 };
 
 #endif // !defined(AFX_N3ILight_h__INCLUDED_)

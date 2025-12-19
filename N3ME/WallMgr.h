@@ -47,19 +47,18 @@ public:
 	void SetFocus(CWall* pWall);
 	void SetCurrWall(CWall* pWall);
 	void DelWall(CWall* pWall);
-	CWall*	GetpWall(int idx);
+	CWall* GetpWall(int idx);
 		
 	void Render();
 	void UpdateWall();
 	void SetActive(bool active);
 	BOOL MouseMsgFilter(LPMSG pMsg);
 
-	virtual bool	Load(File& file);
-	virtual bool	Save(File& file);
+	bool Load(File& file) override;
+	bool Save(File& file) override;
 
 	CWallMgr();
-	virtual ~CWallMgr();
-
+	~CWallMgr() override;
 };
 
 #endif // !defined(AFX_WALLMGR_H__5633920C_20A6_4FD3_9D71_B522269163F8__INCLUDED_)

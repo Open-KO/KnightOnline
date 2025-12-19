@@ -57,7 +57,7 @@ public:
 	void Tick(CN3Terrain* pTerrain);
 	void Render(CN3Texture** ppTex);
 
-	void ReCalcMatrix();
+	void ReCalcMatrix() override;
 
 	bool Load(File& file) override;
 	void LoadFromFile(int iTexIndex,uint8_t ucTexOrgIndex,__Vector3 vPos);
@@ -80,8 +80,7 @@ public:
 	~CGrassBoard() override;
 
 protected:
-	void FindGrassIndex(const uint8_t uCGrassMngOrder,int* pnInputGrass,int& nGrassTotNum);
-
+	void FindGrassIndex(const uint8_t uCGrassMngOrder, int* pnInputGrass, int& nGrassTotNum);
 };
 
 #endif // !defined(AFX_GRASSBOARD_H__D53F0EC4_B777_49CD_BEE8_071AD4A1680E__INCLUDED_)

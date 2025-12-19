@@ -401,9 +401,6 @@
     <ClInclude Include="MagicSkillMng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3EffectWave2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3FXBundleGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>

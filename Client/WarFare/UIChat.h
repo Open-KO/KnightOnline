@@ -93,11 +93,11 @@ public:
 	void			SetEnableKillFocus(bool bKillFocus) { m_bKillFocus = bKillFocus; }
 	void			ChatListenEnable();
 	void			ChangeChattingMode(e_ChatMode eCM);
-	virtual BOOL	MoveOffset(int iOffsetX, int iOffsetY);	// Offset만큼 이동해준다.(region, children, move rect 이동)
-	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual void	Release();
-	virtual bool	Load(File& file);
-	virtual void	SetRegion(const RECT& Rect);	// 영역 지정(사이즈가 변할때 호출된다. 단순 이동은 호출되지 않는다.(단순이동은 MoveOffset이 호출))
+	BOOL			MoveOffset(int iOffsetX, int iOffsetY) override;	// Offset만큼 이동해준다.(region, children, move rect 이동)
+	bool			ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void			Release() override;
+	bool			Load(File& file) override;
+	void			SetRegion(const RECT& Rect) override;	// 영역 지정(사이즈가 변할때 호출된다. 단순 이동은 호출되지 않는다.(단순이동은 MoveOffset이 호출))
 
 	void				SetString(const std::string& szChat);
 	void				SetCaretPos(int iPos);
@@ -111,20 +111,19 @@ public:
 	void			KillFocus();
 
 	CUIChat();
-	virtual ~CUIChat();
+	~CUIChat() override;
 };
 
-
+// TODO: Use official name for this
 class CUIChat2 : public CN3UIBase
 {
 protected:
 	CN3UIBase*		m_pBtn_Fold;
 
-protected:
 public:
-	virtual bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
-	virtual void	Release();
-	virtual bool	Load(File& file);
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+	void Release() override;
+	bool Load(File& file) override;
 
 	CUIChat2();
 };

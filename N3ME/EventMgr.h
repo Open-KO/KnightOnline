@@ -45,7 +45,7 @@ public:
 	virtual bool	Save(File& file);
 
 	CEventMgr();
-	virtual ~CEventMgr();
+	~CEventMgr() override;
 };
 
 #endif // !defined(AFX_EVENTMGR_H__73272CD9_F059_4001_A116_871CEC8B25AE__INCLUDED_)

@@ -33,14 +33,14 @@ protected:
 	CN3Skin			m_Skins[MAX_CHR_LOD];
 
 public:
-	bool			Load(File& file);
+	bool			Load(File& file) override;
 #ifdef _N3TOOL
-	bool			Save(File& file);
+	bool			Save(File& file) override;
 #endif // end of _N3TOOL
 
-	void Release();
+	void Release() override;
 	CN3CPartSkins();
-	virtual ~CN3CPartSkins();
+	~CN3CPartSkins() override;
 };
 
 class CN3CPart : public CN3BaseFileAccess
@@ -59,7 +59,7 @@ protected:
 //	std::vector<class CN3AnimatedTexture*> m_AnimatedTextures;
 	CN3CPartSkins*		m_pSkinsRef;
 public:
-	bool			Load(File& file);
+	bool			Load(File& file) override;
 	void			Render(int nLOD);
 
 	CN3Texture*		Tex() { return m_pTexRef; }
@@ -82,13 +82,13 @@ public:
 
 #ifdef _N3TOOL
 	void			RenderSelected(int nLOD);
-	bool			Save(File& file);
+	bool			Save(File& file) override;
 #endif // end of _N3TOOL
 
-	void Release();
+	void Release() override;
 	
 	CN3CPart();
-	virtual ~CN3CPart();
+	~CN3CPart() override;
 };
 
 enum e_PlugType{PLUGTYPE_NORMAL=0, PLUGTYPE_CLOAK, PLUGTYPE_MAX=10, PLUGTYPE_UNDEFINED=0xffffffff};
@@ -113,16 +113,16 @@ protected:
 
 public:
 	CN3CPlugBase();
-	virtual ~CN3CPlugBase();
+	~CN3CPlugBase() override;
 	static e_PlugType	GetPlugTypeByFileName(const std::string& szFN);
 
-	virtual bool	Load(File& file);
+	bool	Load(File& file) override;
 #ifdef _N3TOOL
-	virtual bool	Save(File& file);
+	bool	Save(File& file) override;
 #endif // end of _N3TOOL
 
 	virtual void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint);
-	virtual void Release();
+	void Release() override;
 
 	void ReCalcMatrix();
 
@@ -168,28 +168,28 @@ public:
 	std::string					m_strFXTailName;
 	
 public:
-	virtual bool	Load(File& file);
+	bool Load(File& file) override;
 #ifdef _N3TOOL
-	virtual bool	Save(File& file);
-	void			ImportPMesh(const std::string& szFileName);
-	void			RenderFXLines(const __Matrix44& mtxParent, const __Matrix44& mtxJoint); // FX 들어갈 곳에 선을 그려준다.
+	bool Save(File& file) override;
+	void ImportPMesh(const std::string& szFileName);
+	void RenderFXLines(const __Matrix44& mtxParent, const __Matrix44& mtxJoint); // FX 들어갈 곳에 선을 그려준다.
 #endif // end of _N3TOOL
-	virtual void	Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint);
-	virtual void	Release();
+	void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint) override;
+	void Release() override;
 
 	void RenderFX(const __Matrix44& mtxParent, const __Matrix44& mtxJoint);
 	void InitFX(std::string& szFXMain, std::string& szFXTail, D3DCOLOR TraceCR = 0xffffffff);
 
 public:
 	CN3CPlug();
-	virtual ~CN3CPlug();
+	~CN3CPlug() override;
 };
 
 class CN3CPlug_Cloak : public CN3CPlugBase
 {
 public:
 	CN3CPlug_Cloak();
-	virtual ~CN3CPlug_Cloak();	
+	~CN3CPlug_Cloak() override;
 
 public:
 	bool Load(File& file) override;
@@ -199,7 +199,7 @@ public:
 	void Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint) override;
 	void Release() override;
 
-	void	SetLOD(int nLOD);
+	void SetLOD(int nLOD);
 #ifdef _N3GAME
 	CN3Cloak*	GetCloak(){return &m_Cloak;}
 #endif
@@ -409,15 +409,14 @@ public:
 	__AnimData* AniDataCur();
 #ifdef _N3TOOL	
 	__AnimData* AniDataUpper();
-	bool		Save(File& file);
+	bool		Save(File& file) override;
 #endif // end of _N3TOOL
-	bool		Load(File& file);
+	bool		Load(File& file) override;
 
-	void		Release();
+	void		Release() override;
 	
 	CN3Chr();
-	virtual ~CN3Chr();
-
+	~CN3Chr() override;
 };
 
 inline bool CN3Chr::IsAnimEnd() // 한번 하고 멈추는 에니메이션 일경우 .. 끝났는지?? 혹은 한번하고 전의 동작으로 돌아가는 에니메이션일 경우 돌아갔는지?

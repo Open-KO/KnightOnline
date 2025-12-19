@@ -107,11 +107,11 @@ public:
 
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
 
-	int		ServerInfoCount() { return (int) m_ListServerInfos.size(); }
-	bool	ServerInfoAdd(const __GameServerInfo& GSI);
-	bool	ServerInfoGet(int iIndex, __GameServerInfo& GSI);
-	bool	ServerInfoGetCur(__GameServerInfo& GSI);
-	void	ServerInfoUpdate();
+	int ServerInfoCount() { return (int) m_ListServerInfos.size(); }
+	bool ServerInfoAdd(const __GameServerInfo& GSI);
+	bool ServerInfoGet(int iIndex, __GameServerInfo& GSI);
+	bool ServerInfoGetCur(__GameServerInfo& GSI);
+	void ServerInfoUpdate();
 
 	void AccountIDGet(std::string& szID);
 	void AccountPWGet(std::string& szPW);

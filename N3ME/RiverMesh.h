@@ -21,7 +21,7 @@ class CRiverMesh : public CN3BaseFileAccess
 {
 public:
 	CRiverMesh();
-	virtual ~CRiverMesh();
+	~CRiverMesh() override;
 
 // Attributes
 public:
@@ -48,6 +48,7 @@ public:
 	void			SetAnimTexFPS(float fFPS) {m_fAnimTexFPS = fFPS;}
 	DWORD			GetAlphaFactor() const {return m_dwAlphaFactor;}
 	void			SetAlphaFactor(DWORD dwFactor) {m_dwAlphaFactor = dwFactor;}
+
 protected:
 	int				m_iRiverID;
 	__VertexXyzT2	m_pVertices[MAX_RIVERMESH_VERTEX];
@@ -68,9 +69,9 @@ protected:
 
 // Operations
 public:
-	virtual void	Release();
-	virtual bool	Load(File& file);
-	virtual bool	Save(File& file);
+	void			Release() override;
+	bool			Load(File& file) override;
+	bool			Save(File& file) override;
 	void			Render();
 	void			RenderVertexPoint();	// 잘보이게 점만 다시 그리기
 
@@ -83,6 +84,7 @@ public:
 	BOOL			SetTextureName(LPCTSTR pszFName);
 	BOOL			SetAnimTextureName(LPCTSTR pszFName, LPCTSTR pszExt, int iCount);
 	void			ReCalcUV();
+
 protected:
 	void			ReleaseAnimTextures();
 };

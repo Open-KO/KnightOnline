@@ -24,11 +24,11 @@ public:
 
 	__FXBInfo* GetFXBInfo(int idx);
 
-	virtual bool	Load(File& file); // 핸들에서 읽어오기..
-	bool	Save(File& file);	// 저장하기..
+	bool Load(File& file) override; // 핸들에서 읽어오기..
+	bool Save(File& file) override;	// 저장하기..
 	
 	CN3FXGroup();	
-	virtual ~CN3FXGroup();
+	~CN3FXGroup() override;
 
 #ifdef _N3TOOL	//툴에서만 쓰는 함수들...
 public:

@@ -41,20 +41,20 @@ public:
 	CN3Texture* Tex(int index) { if(m_TexRefs.empty() || index < 0 || index >= m_TexRefs.size()) return nullptr; return m_TexRefs[index]; }
 
 	void		Init(__Vector3 vPos, uint32_t dwBoardType, float fW, float fH);
-	void		Tick(float fFrm);
+	void		Tick(float fFrm) override;
 	void		Render();
 
-	bool		Load(File& file);
+	bool		Load(File& file) override;
 	void		LoadFromText(const std::string& szFName);
 	
 #ifdef _N3TOOL
-	bool		Save(File& file);
+	bool		Save(File& file) override;
 #endif // end of #ifdef _N3TOOL
 
-	void		Release();
+	void Release() override;
 
 	CN3Board();
-	virtual ~CN3Board();
+	~CN3Board() override;
 };
 
 #endif // !defined(AFX_N3BOARD_H__A6E96276_7491_4722_82C9_EA06561D1D41__INCLUDED_)

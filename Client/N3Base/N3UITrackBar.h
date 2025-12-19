@@ -15,7 +15,7 @@ class CN3UITrackBar : public CN3UIBase
 {
 public:
 	CN3UITrackBar();
-	virtual ~CN3UITrackBar();
+	~CN3UITrackBar() override;
 
 // Attributes
 public:

@@ -46,12 +46,12 @@ protected:
 	int				m_iStepValue;					// 변화값 StepIt()을 통한 변화되는 값
 //	Operations
 public:
-	virtual void	Tick();
-	virtual void	Render();
-	virtual void	Release();
-	virtual void	SetRegion(const RECT& Rect);
-	virtual void	SetStyle(uint32_t dwStyle);
-	virtual bool	Load(File& file);
+	void			Tick() override;
+	void			Render() override;
+	void			Release() override;
+	void			SetRegion(const RECT& Rect) override;
+	void			SetStyle(uint32_t dwStyle) override;
+	bool			Load(File& file) override;
 
 	void			SetCurValue(int iValue, float fTimeToDelay = 0, float fChangeSpeedPerSec = 0);
 	void			SetCurValue_Smoothly(int iValue, float fPercentPerSec){SetCurValue(iValue, 0, fPercentPerSec*(m_iMaxValue-m_iMinValue));}	// 초당 몇 퍼센트 수치로 올라간다.
@@ -64,7 +64,7 @@ protected:
 // tool에서 사용하는 함수들
 public:
 	virtual void	operator = (const CN3UIProgress& other);
-	virtual bool	Save(File& file);
+	bool			Save(File& file) override;
 	CN3UIImage*		GetBkGndImgRef() const {return m_pBkGndImgRef;}
 	CN3UIImage*		GetFrGndImgRef() const {return m_pFrGndImgRef;}
 	void			CreateImages();		// 이미지 생성

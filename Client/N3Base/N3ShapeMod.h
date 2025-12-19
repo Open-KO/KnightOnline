@@ -21,7 +21,7 @@ class CN3ShapeMod : public CN3Shape
 {
 public:
 	CN3ShapeMod();
-	virtual ~CN3ShapeMod();
+	~CN3ShapeMod() override;
 
 // Structures
 protected:
@@ -83,13 +83,13 @@ protected:
 public:
 	BOOL	SetState(int iState, float fSec);	// fSec시간동안 상태를 바꾼다. (fSec이 0일경우 즉시 바뀐다.)
 	BOOL	LoadStateInfo(FILE* stream);	// 상태 정보를 읽어온다.(text로부터)
-	virtual void	Release();
-	virtual void	ReCalcMatrix();
-	virtual void	Tick(float fFrm = FRAME_SELFPLAY);
-	virtual bool	Load(File& file);
+	void	Release() override;
+	void	ReCalcMatrix() override;
+	void	Tick(float fFrm = FRAME_SELFPLAY) override;
+	bool	Load(File& file) override;
+
 protected:
 	CN3SPart* GetPartByPMeshFileName(const std::string& szFN);	// 이름으로 PMesh포인터 구하기
-
 };
 
 #endif // !defined(AFX_N3SHAPEMOD_H__6F3C87B4_D10B_412B_B385_0ECE2D4A19A8__INCLUDED_)

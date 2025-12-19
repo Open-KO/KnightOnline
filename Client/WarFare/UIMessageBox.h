@@ -24,6 +24,7 @@ protected:
 	CN3UIString*	m_pText_Message;
 	CN3UIString*	m_pText_Title;
 	CN3UIEdit*		m_pEdit_Common;
+
 public:
 	e_Behavior	m_eBehavior;	// OK 버튼을 누르면 할짓...
 	int			m_iStyle;		// 메시지 박스 스타일
@@ -40,7 +41,6 @@ public:
 	
 	CUIMessageBox();
 	~CUIMessageBox() override;
-
 };
 
 #endif // !defined(AFX_UIMESSAGEBOX_H__943941D4_06D0_40A0_BEF2_DA3A27406EDC__INCLUDED_)

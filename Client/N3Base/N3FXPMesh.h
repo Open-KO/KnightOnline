@@ -17,9 +17,9 @@ private:
 
 public:
 	void					Render();
-	void					Release();
+	void					Release() override;
 	void					FindMinMax();
-	bool					Load(File& file);
+	bool					Load(File& file) override;
 	void					SetColor(uint32_t dwColor = 0xffffffff);
 	HRESULT					Create(int iNumVertices, int iNumIndices);
 	void					operator=(const CN3FXPMesh& fxPMesh);
@@ -27,7 +27,7 @@ public:
 
 public:
 	CN3FXPMesh();
-	virtual ~CN3FXPMesh();
+	~CN3FXPMesh() override;
 };
 
 #endif

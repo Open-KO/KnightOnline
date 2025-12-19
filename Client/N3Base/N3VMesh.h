@@ -42,18 +42,18 @@ public:
 	__Vector3*	Vertices() { return m_pVertices; }
 
 	int			IndexCount() { return m_nIC; }
-	uint16_t*		Indices() { return m_pwIndices; }
+	uint16_t*	Indices() { return m_pwIndices; }
 
-	bool		Load(File& file);
+	bool		Load(File& file) override;
 #ifdef _N3TOOL
 	bool		Import(CN3IMesh *pIMesh);
-	bool		Save(File& file);
+	bool		Save(File& file) override;
 #endif // end of _N3TOOL
 	
-	void		Release();
+	void		Release() override;
 
 	CN3VMesh();
-	virtual ~CN3VMesh();
+	~CN3VMesh() override;
 
 //	By : Ecli666 ( On 2002-08-09 오후 2:47:59 )
 //

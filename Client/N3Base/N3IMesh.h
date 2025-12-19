@@ -46,7 +46,7 @@ public:
 	__VertexXyzNormal*	m_pVertices; // 좌표 Data
 
 	__VertexXyzNormal*	Vertices() { return m_pVertices; }
-	uint16_t*				VertexInices() { return m_pwVtxIndices; }
+	uint16_t*			VertexInices() { return m_pwVtxIndices; }
 	int					UVCount() { return m_nUVC; }
 #ifdef _N3TOOL
 	void				VertexIndexSet(int index, int nVI) { if(index >= 0 && index < m_nFC*3) m_pwVtxIndices[index] = nVI; }
@@ -55,14 +55,14 @@ public:
 #endif // end of _N3TOOL
 
 	virtual bool		Create(int nFC, int nVC, int nUVC); // 차례대로  Face Count, VertexCount, UV Count
-	bool				Load(File& file);
+	bool				Load(File& file) override;
 #ifdef _N3TOOL
-	bool				Save(File& file);
+	bool				Save(File& file) override;
 #endif // end of _N3TOOL
 	
-	void Release();
+	void Release() override;
 	CN3IMesh();
-	virtual ~CN3IMesh();
+	~CN3IMesh() override;
 
 //	By : Ecli666 ( On 2002-07-23 오후 5:31:41 )
 //

@@ -70,14 +70,14 @@ protected:
 public:
 	virtual float	GetGroundHeight(float x, float z) { return 0.01f; }
 
-	virtual void	Init();				//	각종 변수들을 처음 로딩한 상태로 초기화...
-	virtual void	Start();			//	파트 구동 시작.
-	virtual void	Stop();				//	파트 구동 멈춤..
-	virtual bool	Tick();				//	ticktick...
-	virtual void	Render();			//	화면에 뿌리기..
-	virtual bool	Load(File& file);	//	게임파일 불러오기.
-	virtual bool	Save(File& file);	//	게임파일 저장하기.
-	void	Duplicate(CN3FXPartBase* pSrc);
+	virtual void Init();			// 각종 변수들을 처음 로딩한 상태로 초기화...
+	virtual void Start();			// 파트 구동 시작.
+	virtual void Stop();			// 파트 구동 멈춤..
+	virtual bool Tick();			// ticktick...
+	virtual void Render();			// 화면에 뿌리기..
+	bool Load(File& file) override;	// 게임파일 불러오기.
+	bool Save(File& file) override;	// 게임파일 저장하기.
+	void Duplicate(CN3FXPartBase* pSrc);
 
 #ifdef _N3TOOL
 protected:
@@ -90,7 +90,7 @@ public:
 public:
 //생성자 소멸자..
 	CN3FXPartBase();
-	virtual ~CN3FXPartBase();
+	~CN3FXPartBase() override;
 };
 
 #endif // !defined(AFX_N3EFFECTPARTBASE_H__E11B5E1E_C4FF_4186_9645_E05DB129747B__INCLUDED_)

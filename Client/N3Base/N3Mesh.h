@@ -32,9 +32,9 @@ public:
 	int			VertexCount() { return m_nVC; }
 	__VertexT1*	Vertices() { return m_pVertices; }
 	int			IndexCount() { return m_nIC; }
-	uint16_t*		Indices() { return m_psnIndices; } // 인덱스 버퍼
+	uint16_t*	Indices() { return m_psnIndices; } // 인덱스 버퍼
 
-	bool	Load(File& file);
+	bool	Load(File& file) override;
 
 	void	Create(int nVC, int nIC);
 	void	Create_Cube(const __Vector3& vMin, const __Vector3& vMax);
@@ -43,13 +43,13 @@ public:
 
 #ifdef _N3TOOL
 	bool	Import(CN3IMesh* pIMesh);	
-	bool	Save(File& file);
+	bool	Save(File& file) override;
 	void	Create_Axis(float fLength);
 	void	MakeIndexed();
 	void	ReGenerateSmoothNormal();
 #endif // end of _N3TOOL
 	
-	void	Release();
+	void	Release() override;
 	void	ReleaseVertices();
 	void	ReleaseIndices();
 

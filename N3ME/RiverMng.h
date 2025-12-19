@@ -26,7 +26,7 @@ class CRiverMng  : public CN3BaseFileAccess
 {
 public:
 	CRiverMng(CMainFrame* pMainFrm);
-	virtual ~CRiverMng();
+	~CRiverMng() override;
 
 	class __VertexRiver
 	{
@@ -82,9 +82,9 @@ protected:
 public:
 	void			Tick();
 	void			Render();
-	virtual void	Release();
-	virtual bool	Load(File& file);
-	virtual bool	Save(File& file);
+	void			Release() override;
+	bool			Load(File& file) override;
+	bool			Save(File& file) override;
 
 	void			MakeGameFiles(File& file, float fSize);				// Game file로 저장
 	CRiverMesh*		CreateNewRiverMesh(__Vector3& vPos1, __Vector3& vPos2,
@@ -100,10 +100,10 @@ public:
 	void			ReCalcSelectedVertex();
 
 	void			GoRiver(int iRiverID);									// 선택된 강으로 갑니다.
+
 protected:
 	void			SetSelRiver(CRiverMesh* pRiverMesh);					// RiverMesh 선택하기
 	void			SelectVtxByDragRect(RECT* pRect, BOOL bAdd);
-
 };
 
 #endif // !defined(AFX_RIVERMNG_H__3A365AC2_8F3E_4E3A_98B4_953352C11BA3__INCLUDED_)

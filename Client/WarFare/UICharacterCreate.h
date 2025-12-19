@@ -47,18 +47,18 @@ public:
 	CN3UIEdit*		m_pEdit_Name;
 
 public:
-	void			Reset();
-	void			UpdateStats();
-	void			UpdateRaceAndClassButtons(e_Race eRace);
-	void			UpdateClassButtons(e_Class eClass);
+	void Reset();
+	void UpdateStats();
+	void UpdateRaceAndClassButtons(e_Race eRace);
+	void UpdateClassButtons(e_Class eClass);
 
-	uint32_t		MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	bool		Load(File& file);
-	void		Release();
-	bool		ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
+	bool Load(File& file) override;
+	void Release() override;
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 
 	CUICharacterCreate();
-	virtual ~CUICharacterCreate();
+	~CUICharacterCreate() override;
 };
 
 #endif // !defined(AFX_UICharacterCreate_H__603E8EF7_2789_4162_9F7D_011306807491__INCLUDED_)

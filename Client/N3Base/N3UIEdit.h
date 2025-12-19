@@ -71,15 +71,15 @@ protected:
 	CN3SndObj*			m_pSnd_Typing;		// 타이핑 할 때 나는 소리
 // Operations
 public:
-	virtual const std::string&	GetString();
-	virtual void				SetString(const std::string& szString);
+	const std::string&	GetString() override;
+	void				SetString(const std::string& szString) override;
 
-	virtual bool		Load(File& file);
-	virtual void		Render();
-	virtual void		Release();
-	virtual void		SetVisible(bool bVisible);
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
-	virtual BOOL		MoveOffset(int iOffsetX, int iOffsetY);		// 위치 지정(chilren의 위치도 같이 바꾸어준다. caret위치도 같이 바꾸어줌.)
+	bool				Load(File& file) override;
+	void				Render() override;
+	void				Release() override;
+	void				SetVisible(bool bVisible) override;
+	uint32_t			MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
+	BOOL				MoveOffset(int iOffsetX, int iOffsetY) override;		// 위치 지정(chilren의 위치도 같이 바꾸어준다. caret위치도 같이 바꾸어줌.)
 	void				KillFocus();			// 포커스를 없앤다.
 	bool				SetFocus();				// 포커스를 준다.
 	bool				HaveFocus() const {return (this == s_pFocusedEdit);}
@@ -91,7 +91,7 @@ protected:
 #ifdef _N3TOOL
 public:	
 	virtual void		operator = (const CN3UIEdit& other);
-	virtual bool		Save(File& file);
+	bool				Save(File& file) override;
 	void				SetSndTyping(const std::string& strFileName);
 	std::string			GetSndFName_Typing() const;
 #endif
