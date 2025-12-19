@@ -16,6 +16,7 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 	// Close any existing file handle and reset read states.
 	Close();
 
+	// Open and map the given file into memory for reading.
 	auto handleResult = llfio::mapped_file(
 		{},
 		path.native(),
@@ -48,28 +49,41 @@ bool FileReader::Create(const std::filesystem::path& /*path*/)
 
 bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
+	// Ensure bytesRead is always initialised, regardless of whether this succeeds or fails.
 	if (bytesRead != nullptr)
 		*bytesRead = 0;
 
+	// Fail on invalid buffers.
 	if (buffer == nullptr)
 		return false;
 
+	// Nothing to read, so just skip ahead and consider this successful.
 	if (bytesToRead == 0)
 		return true;
 
 	assert(_mappedFileHandle.is_valid());
 	assert(_offset <= _size);
 
+	// Determine how many bytes are remaining to be read.
 	const size_t remainingBytes = static_cast<size_t>(_size - _offset);
+
+	// If we're trying to read more than is available, we should still
+	// attempt the read, copying only what's actually available.
 	const size_t bytesToCopy = std::min(bytesToRead, remainingBytes);
 
+	// Read operations can only be considered successful if we actually
+	// manage to read at least 1 byte.
+	// If there's nothing available to read, we must fail.
 	if (bytesToCopy == 0)
 		return false;
 
+	// Read directly from our memory mapped buffer.
 	std::memcpy(buffer, static_cast<uint8_t*>(_address) + _offset, bytesToCopy);
 
+	// Advance the current file offset by how much we actually read.
 	_offset += bytesToCopy;
 
+	// Update the caller with the number bytes we actually read.
 	if (bytesRead != nullptr)
 		*bytesRead = bytesToCopy;
 
@@ -85,33 +99,45 @@ bool FileReader::Write(const void* /*buffer*/, size_t /*bytesToWrite*/, size_t* 
 
 bool FileReader::Seek(int64_t offset, int origin)
 {
+	// File not opened, we cannot seek.
+	if (!IsOpen())
+		return false;
+
 	int64_t newOffset = offset;
 
 	switch (origin)
 	{
-		// explicitly set to the given offset
+		// Explicitly set to the given offset
 		case SEEK_SET:
 			break;
 
-		// set relative to the current offset
+		// Set is relative to the current offset
 		case SEEK_CUR:
 			newOffset += static_cast<int64_t>(_offset);
 			break;
 
-		// set relative to the end offset (i.e. the size)
+		// Set is relative to the end offset (i.e. the size)
 		case SEEK_END:
 			newOffset += static_cast<int64_t>(_size);
 			break;
 
 		default:
+			// Unsupported seek type.
 			return false;
 	}
 
-	if (newOffset < 0
-		|| static_cast<uint64_t>(newOffset) > _size)
+	// New offset would be before the start of the file, so it is invalid and should fail.
+	if (newOffset < 0)
 		return false;
 
+	// New offset is after the end of the file, so it is invalid and shoul fail.
+	if (static_cast<uint64_t>(newOffset) > _size)
+		return false;
+
+	// Update the current file offset.
 	_offset = static_cast<uint64_t>(newOffset);
+
+	// The file offset is valid, so we can consider this request successful.
 	return true;
 }
 
