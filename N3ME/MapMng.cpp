@@ -405,7 +405,7 @@ void CMapMng::SavePartition(float x, float z, float width)
 	}
 
 	char comment[80] = {"이파일 여는 사람 바보..^^"};
-	file.Write(&comment, sizeof(char)*80);
+	file.Write(&comment, sizeof(comment));
 	file.Close();
 
 	// 지형
@@ -454,7 +454,7 @@ void CMapMng::SaveToFile(LPCTSTR lpszPathName)
 	}
 
 	char comment[80] = {"이파일 여는 사람 바보..^^"};
-	file.Write(&comment, 80);
+	file.Write(&comment, sizeof(comment));
 	file.Close();
 
 	// 지형
@@ -1415,7 +1415,7 @@ void CMapMng::MakeGameFiles(LPCTSTR lpszPathName, float fSize)
 
 	char comment[80] = { "이파일 여는 사람 바보..^^" };
 	file.Write(&m_iZoneID, sizeof(int));
-	file.Write(&comment, 80);
+	file.Write(&comment, sizeof(comment));
 	file.Close();
 
 	// 지형정보 저장

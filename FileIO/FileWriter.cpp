@@ -129,16 +129,16 @@ bool FileWriter::Seek(int64_t offset, int origin)
 
 	switch (origin)
 	{
-		// explicitly set to the given offset
+		// Explicitly set to the given offset
 		case SEEK_SET:
 			break;
 
-		// set relative to the current offset
+		// Set is relative to the current offset
 		case SEEK_CUR:
 			newOffset += static_cast<int64_t>(_offset);
 			break;
 
-		// set relative to the end offset (i.e. the size)
+		// Set is relative to the end offset (i.e. the size)
 		case SEEK_END:
 			newOffset += static_cast<int64_t>(_size);
 			break;
