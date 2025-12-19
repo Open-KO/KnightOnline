@@ -158,10 +158,9 @@ jobs:
     runs-on: macos-latest
 
     strategy:
-      fail-fast: false
       matrix:
         BUILD_CONFIGURATION: [Debug, Release]
-        COMPILER: [xcode]
+        COMPILER: [XCode]
 
     name: "Server: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (MacOS)"
 
