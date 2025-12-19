@@ -7,7 +7,7 @@
 
 #include <db-library/RecordSetLoader.h>
 #include <Ebenezer/binder/EbenezerBinder.h>
-#include <FileIO/FileReader.h>
+#include <FileIO/File.h>
 
 #include <float.h>
 #include <istream>
