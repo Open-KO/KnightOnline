@@ -25,7 +25,7 @@ protected:
 
 	void TearDown() override
 	{
-		_file.Close();
+		(void) _file.Close();
 
 		std::error_code ec;
 		std::filesystem::remove(_testFilePath, ec);
