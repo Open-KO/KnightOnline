@@ -41,7 +41,7 @@ public:
 
 	bool LoadFromFile(); // 파일에서 읽어오기.
 	virtual bool LoadFromFile(const std::string& szFileName, uint32_t iVer = N3FORMAT_VER_DEFAULT); // 파일에서 읽어오기.
-	virtual bool Load(File& hFile); // 핸들에서 읽어오기..
+	virtual bool Load(File& file); // 핸들에서 읽어오기..
 
 	virtual bool SaveToFile(); // 현재 파일 이름대로 저장.
 	virtual bool SaveToFile(const std::string& szFileName); // 새이름으로 저장.
