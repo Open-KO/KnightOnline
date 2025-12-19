@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cassert>
+#include <filesystem>
 
 #include <asio.hpp>
 

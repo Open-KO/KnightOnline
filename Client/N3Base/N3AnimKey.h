@@ -10,7 +10,6 @@
 #endif // _MSC_VER > 1000
 
 #include "N3Base.h"
-#include <FileIO/File.h>
 
 enum ANIMATION_KEY_TYPE { 
 	KEY_VECTOR3 = 0,
