@@ -49,16 +49,16 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 
 bool FileReader::Create(const std::filesystem::path& path)
 {
-	assert(!"FileReader: Create not supported");
 	return false;
 }
 
 bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
-	assert(buffer != nullptr);
-
 	if (bytesRead != nullptr)
 		*bytesRead = 0;
+
+	if (buffer == nullptr)
+		return false;
 
 	if (bytesToRead == 0)
 		return true;
@@ -79,13 +79,12 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 	if (bytesRead != nullptr)
 		*bytesRead = bytesToCopy;
 
-	// Succeed if we read all of the expected bytes.
-	return bytesToCopy == bytesToRead;
+	// We read at least 1 byte, even if it wasn't the full amount.
+	return true;
 }
 
 bool FileReader::Write(const void* buffer, size_t byteToWrite, size_t* bytesWritten /*= nullptr*/)
 {
-	assert(!"FileReader: Write not supported");
 	return false;
 }
 
@@ -110,19 +109,20 @@ bool FileReader::Seek(int64_t offset, int origin)
 			break;
 
 		default:
-			assert(!"FileReader::Seek: Unsupported seek type");
 			return false;
 	}
 
 	if (newOffset < 0
 		|| static_cast<uint64_t>(newOffset) > _size)
-	{
-		assert(!"FileReader::Seek: Invalid seek");
 		return false;
-	}
 
 	_offset = static_cast<uint64_t>(newOffset);
 	return true;
+}
+
+void FileReader::Flush()
+{
+	// nothing to flush
 }
 
 void FileReader::Close()

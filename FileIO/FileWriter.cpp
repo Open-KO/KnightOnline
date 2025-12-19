@@ -7,6 +7,7 @@ namespace llfio = LLFIO_V2_NAMESPACE;
 
 FileWriter::FileWriter()
 {
+	_sizeOnDisk = 0;
 }
 
 bool FileWriter::OpenExisting(const std::filesystem::path& path)
@@ -42,6 +43,11 @@ bool FileWriter::OpenExisting(const std::filesystem::path& path)
 		_size = static_cast<uint64_t>(stat.st_size);
 	}
 
+	_sizeOnDisk = _size;
+
+	// We've opened an existing file, so we intend to append to the end.
+	_offset = _size;
+
 	return true;
 }
 
@@ -64,25 +70,27 @@ bool FileWriter::Create(const std::filesystem::path& path)
 	_path = path;
 	_open = true;
 	_size = 0;
+	_sizeOnDisk = 0;
 	return true;
 }
 
 bool FileWriter::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nullptr*/)
 {
-	assert(!"FileWriter: Read not supported");
 	return false;
 }
 
 bool FileWriter::Write(const void* buffer, size_t bytesToWrite, size_t* bytesWritten /*= nullptr*/)
 {
-	assert(_fileHandle.is_valid());
-	assert(buffer != nullptr);
-
 	if (bytesWritten != nullptr)
 		*bytesWritten = 0;
 
+	if (buffer == nullptr)
+		return false;
+
 	if (bytesToWrite == 0)
 		return true;
+
+	assert(_fileHandle.is_valid());
 
 	auto writeResult = _fileHandle.write(_offset,
 		{ { static_cast<const std::byte*>(buffer), bytesToWrite } });
@@ -96,7 +104,10 @@ bool FileWriter::Write(const void* buffer, size_t bytesToWrite, size_t* bytesWri
 		*bytesWritten = effectiveBytesWritten;
 
 	if (_offset > _size)
+	{
 		_size = _offset;
+		_sizeOnDisk = _size;
+	}
 
 	// Succeed if we wrote all of the expected bytes.
 	return effectiveBytesWritten == bytesToWrite;
@@ -123,16 +134,11 @@ bool FileWriter::Seek(int64_t offset, int origin)
 			break;
 
 		default:
-			assert(!"FileWriter::Seek: Unsupported seek type");
 			return false;
 	}
 
-	if (newOffset < 0
-		|| static_cast<uint64_t>(newOffset) > _size)
-	{
-		assert(!"FileWriter::Seek: Invalid seek");
+	if (newOffset < 0)
 		return false;
-	}
 
 	_offset = static_cast<uint64_t>(newOffset);
 	if (_offset > _size)
@@ -141,8 +147,29 @@ bool FileWriter::Seek(int64_t offset, int origin)
 	return true;
 }
 
+void FileWriter::Flush()
+{
+	if (!_fileHandle.is_valid())
+		return;
+
+	if (_sizeOnDisk >= _size)
+		return;
+
+	uint64_t bytesToAppend = _size - _sizeOnDisk;
+	std::byte dummy = {};
+
+	auto writeResult = _fileHandle.write(_size - 1,
+		{ { &dummy, 1 } });
+	if (!writeResult)
+		return;
+
+	_sizeOnDisk = _size;
+}
+
 void FileWriter::Close()
 {
+	Flush();
+
 	if (_fileHandle.is_valid())
 		(void) _fileHandle.close();
 

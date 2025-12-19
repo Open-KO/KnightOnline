@@ -10,17 +10,24 @@
 class FileWriter : public File
 {
 public:
+	uint64_t SizeOnDisk() const
+	{
+		return _sizeOnDisk;
+	}
+
 	FileWriter();
 	bool Create(const std::filesystem::path& path) override;
 	bool OpenExisting(const std::filesystem::path& path) override;
 	bool Read(void* buffer, size_t bytesToRead, size_t* bytesRead = nullptr) override;
 	bool Write(const void* buffer, size_t byteToWrite, size_t* bytesWritten = nullptr) override;
 	bool Seek(int64_t offset, int origin) override;
+	void Flush() override;
 	void Close() override;
 	~FileWriter() override;
 
 protected:
 	LLFIO_V2_NAMESPACE::file_handle _fileHandle;
+	uint64_t _sizeOnDisk;
 };
 
 #endif // FILEIO_FILEWRITER_H

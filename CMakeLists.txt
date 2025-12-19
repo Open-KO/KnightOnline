@@ -135,5 +135,6 @@ if(OPENKO_BUILD_TESTS)
   add_subdirectory(deps/googletest-cmake)
 
   set(CMAKE_FOLDER "Tests")
+  add_subdirectory(FileIO/tests)
   add_subdirectory(MathUtils/tests)
 endif()

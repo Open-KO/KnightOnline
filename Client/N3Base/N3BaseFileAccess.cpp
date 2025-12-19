@@ -18,7 +18,6 @@ CN3BaseFileAccess::CN3BaseFileAccess()
 	m_iFileFormatVersion = N3FORMAT_VER_UNKN;
 
 	m_dwType |= OBJ_BASE_FILEACCESS;
-	m_szFileName = "";
 	m_iLOD = 0; // 로딩할때 쓸 LOD
 }
 
@@ -85,11 +84,6 @@ bool CN3BaseFileAccess::LoadFromFile()
 		szFullPath = m_szFileName;
 	else
 		szFullPath = s_szPath + m_szFileName;
-
-	// TODO: Catch any odd cases and handle them specifically (rather than just globally penalise all potential reads)
-#ifdef _DEBUG
-	assert(szFullPath == szFullPath.c_str());
-#endif
 
 	FileReader file;
 	if (!file.OpenExisting(szFullPath))
@@ -161,4 +155,3 @@ bool CN3BaseFileAccess::Save(File& file)
 
 	return true;
 }
-
