@@ -7,7 +7,7 @@ add_executable(FileIO-tests
 target_link_libraries(FileIO-tests PRIVATE
   gtest
   gtest_main
-  MathUtils)
+  FileIO)
 
 add_test(
   NAME FileIOTests
