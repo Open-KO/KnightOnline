@@ -42,7 +42,7 @@ jobs:
     # as needed from within All.sln; this ensures they're built first so they won't build again during
     # CodeQL monitoring.
     - name: Build third party dependencies
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.slnx
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -52,7 +52,7 @@ jobs:
         build-mode: manual
 
     - name: Build all
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.slnx
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
