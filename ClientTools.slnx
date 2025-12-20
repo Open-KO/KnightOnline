@@ -1,0 +1,30 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/_deps/">
+    <Project Path="Client/JpegFile/JpegFile.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+    </Project>
+    <Project Path="deps/ZipArchive/ZipArchive.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/_deps/fetch wrappers/">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+  </Folder>
+  <Project Path="Client/KscViewer/KscViewer.vcxproj">
+    <BuildDependency Project="Client/JpegFile/JpegFile.vcxproj" />
+  </Project>
+  <Project Path="Client/Launcher/Launcher.vcxproj">
+    <BuildDependency Project="deps/ZipArchive/ZipArchive.vcxproj" />
+  </Project>
+  <Project Path="Client/Option/Option.vcxproj" />
+</Solution>

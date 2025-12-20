@@ -1,0 +1,79 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/fetch wrappers/">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-asio.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-boost.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-nanodbc.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-djb2.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-FTXUI.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-nanodbc.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+  </Folder>
+  <Project Path="deps/asio-msvc/asio.vcxproj">
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/db-models-msvc/db-models.vcxproj">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/FTXUI-msvc/FTXUI.vcxproj">
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/libjpeg-turbo-msvc/jpeg-static.vcxproj">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/mpg123-msvc/mpg123.vcxproj">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/nanodbc-msvc/nanodbc.vcxproj">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-nanodbc.vcxproj" />
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/spdlog-msvc/spdlog.vcxproj">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
+    <Build Project="false" />
+  </Project>
+  <Project Path="deps/zlib-msvc/zlib.vcxproj">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
+    <Build Project="false" />
+  </Project>
+</Solution>
