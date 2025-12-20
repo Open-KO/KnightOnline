@@ -20,8 +20,8 @@ on:
       - '**/*.hpp'
       - '**/*.vcxproj'
       - 'deps/**'
-      - 'All.sln'
-      - 'ThirdParty.sln'
+      - 'All.slnx'
+      - 'ThirdParty.slnx'
 
   pull_request:
     branches:
@@ -37,8 +37,8 @@ on:
       - '**/*.hpp'
       - '**/*.vcxproj'
       - 'deps/**'
-      - 'All.sln'
-      - 'ThirdParty.sln'
+      - 'All.slnx'
+      - 'ThirdParty.slnx'
 
   merge_group: 
   workflow_dispatch:
@@ -70,22 +70,22 @@ jobs:
 
     # NOTE: We could simply run All.sln, but it makes it far more obvious in the Github output when it's broken up across its solutions.
     - name: Build third party dependencies
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ThirdParty.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ThirdParty.slnx
 
     - name: Build client
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Client.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Client.slnx
 
     - name: Build server
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Server.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Server.slnx
 
     - name: Build tools
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tools.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tools.slnx
 
     - name: Build client tools
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ClientTools.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ClientTools.slnx
 
     - name: Build tests
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tests.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tests.slnx
 
     - name: Run tests - MathUtils
       shell: cmd

@@ -42,4 +42,4 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build server
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Server.sln
+      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Server.slnx
