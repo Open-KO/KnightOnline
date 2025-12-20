@@ -6,7 +6,6 @@
   <Folder Name="/client tools/">
     <Project Path="Client/KscViewer/KscViewer.vcxproj">
       <BuildDependency Project="Client/JpegFile/JpegFile.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
     </Project>
     <Project Path="Client/Launcher/Launcher.vcxproj">
       <BuildDependency Project="deps/ZipArchive/ZipArchive.vcxproj" />
@@ -146,7 +145,9 @@
     </Project>
   </Folder>
   <Folder Name="/_deps/fetch wrappers/">
-    <Project Path="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" />
+    <Project Path="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" >
+        <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-asio.vcxproj">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
