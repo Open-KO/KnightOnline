@@ -8,7 +8,7 @@
   <PropertyGroup Label="UserMacros">
     <DependencyName>llfio</DependencyName>
     <LocalDependencyDir>deps\llfio</LocalDependencyDir>
-    <RealProjectPath>$(RootDir)deps\llfio-msvc\llfio.sln</RealProjectPath>
+    <RealProjectPath>$(RootDir)deps\llfio-msvc\llfio.slnx</RealProjectPath>
   </PropertyGroup>
   <Import Project="$(PropsDir)fetch_wrapper.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
