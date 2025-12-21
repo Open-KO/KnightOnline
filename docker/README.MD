@@ -1,5 +1,5 @@
 # OpenKO Docker Scripts
-### ⚠️⚠️⚠️ **DO NOT use this to run a database for a public server - do a manual installation instead.** ⚠️⚠️⚠️
+### ⚠️⚠️ **DO NOT use this to run a database for a public server - do a manual installation instead.** ⚠️⚠️
 
 ## Docker Requirements
 You must install Docker yourself and ensure it is available on the command line (try `docker version` in a terminal.)
