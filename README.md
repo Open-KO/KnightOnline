@@ -1,14 +1,14 @@
 > [!IMPORTANT]
-> **This project is strictly for academic purposes.**
+> **This project is strictly for academic purposes only.**
 > 
 > This project **cannot currently be used for a real server**. It is still in a very early developmental state.
 > The server and client are both lacking full (or any) support in numerous critical features; upgrades, wars, even basic exchanges, etc, let alone things like the Power-Up Store.
 
 # Open Knight Online (OpenKO)
 
-We started this project to learn more about how the MMORPG Knight Online works. MMORPGs are very intricate programs requiring knowledge in many areas of computer science such as TCP/IP, SQL server, performance tuning, 3D graphics and animation, load balancing, and more. Starting with the original leaked source we have updated to DirectX 9, added function flags so that various file formats may be supported while remaining backwards compatible, and much, much more.
+We started this project to learn more about how the MMORPG Knight Online works. MMORPGs are very intricate programs requiring knowledge in many areas of computer science such as TCP/IP, SQL server, performance tuning, 3D graphics and animation, load balancing, etc. Starting with the original leaked source, we have updated to DirectX 9, added function flags so that various file formats may be supported while remaining backwards compatible, and much, much more.
 
-**This code is for academic purposes only**! If you have questions, or would like help getting started, feel free visit [our Discord](https://discord.gg/Uy73SMMjWS).
+If you have questions, or would like help getting started, feel free visit [our Discord](https://discord.gg/Uy73SMMjWS).
 
 ### Project Setup
 
@@ -20,14 +20,14 @@ A guide to setting up and building this project is maintained on the wiki:
 * [Windows Project Setup](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup-(Windows))
 * [Linux Project Setup](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup-(Linux))
 
-The following setups are tested by our GitHub workflows and known to behave:
- - Windows 11 (all projects: client, server, tools, etc)
+The following setups are tested by our GitHub workflows and are known to build:
+ - Windows 11 **(all projects: client, server, tools, etc)**
    - Microsoft Visual Studio 2022 (v143)
-   - Microsoft Visual Studio 2026 (v145) - this is not yet tested by our workflows (it will when GitHub updates their runners), but is routinely used in local development
- - Ubuntu 24.04 (only the server projects at this time)
+   - Microsoft Visual Studio 2026 (v145) (this is not yet tested by our workflows - it will be when GitHub updates their runners - but is routinely used in local development)
+ - Ubuntu 24.04 **(only the server projects at this time)**
    - clang 18 (current), 20 (bleeding edge)
    - gcc 13 (current)
- - macOS 15 (only the server projects at this time)
+ - macOS 15 **(only the server projects at this time)**
    - Apple Clang 15
 
 ### Visual Studio solutions
