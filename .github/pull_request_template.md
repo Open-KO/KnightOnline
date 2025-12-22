@@ -13,7 +13,7 @@ Please check the type of change your PR introduces:
 - [ ] Other (please describe):
 
 ## What is the current behaviour?
-<!-- Please describe the current behaviour that you are modifying, or link to a relevant issue. Be clear. Assume nobody knows what you're talking aobut. -->
+<!-- Please describe the current behaviour that you are modifying, or link to a relevant issue. Be clear. Assume nobody knows what you're talking about. -->
 
 ## What is the new behaviour?
 <!-- Please describe the behaviour or changes that are being added by this PR. Be clear. Assume nobody knows what you're talking about. -->
