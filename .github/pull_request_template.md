@@ -13,13 +13,16 @@ Please check the type of change your PR introduces:
 - [ ] Other (please describe):
 
 ## What is the current behaviour?
-<!-- Please describe the current behaviour that you are modifying, or link to a relevant issue -->
+<!-- Please describe the current behaviour that you are modifying, or link to a relevant issue. Be clear. Assume nobody knows what you're talking aobut. -->
 
 ## What is the new behaviour?
-<!-- Please describe the behaviour or changes that are being added by this PR -->
+<!-- Please describe the behaviour or changes that are being added by this PR. Be clear. Assume nobody knows what you're talking about. -->
 
 ## Why and how did I change this?
-<!-- Please describe your reasoning and thought process for why and how you changed this -->
+<!-- Please describe your reasoning and thought process for why and how you changed this. This should be more than just "this was broken". -->
+
+## Was AI used at some point for any part of this change? If so, what?
+<!-- Please specify any and all areas where AI was used here. -->
 
 ## Demo
 <!-- If applicable (it won't always be applicable), screenshots or video of this change to help us get a better idea of what you're changing. -->
@@ -30,4 +33,3 @@ Please check the type of change your PR introduces:
 - [ ] I have performed a self-review of my own code.
 - [ ] Where applicable, I have checked to make sure that this doesn't introduce incompatible behaviour with the official 1.298 server (e.g. unofficial opcodes or behavioural differences).
 - [ ] I have checked to make sure that this change does not already exist in the codebase in some fashion (e.g. UI already implemented under a different name).
-- [ ] I have not used AI to help me make this change.
