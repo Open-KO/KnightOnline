@@ -16,19 +16,19 @@ Currently, OpenKO supports 2 separate sets of builds:
 1. Windows (Visual Studio/MSBuild): Server, Client, Tools (preferred for overall development) 
 2. Cross-platform (CMake): Server only at this time
 
-Tested systems:
- - Windows 11
- - Ubuntu 24.04 (used by the GitHub workflows)
- - Arch Linux
-
-Tested compilers:
- - Microsoft Visual Studio 2022 (v143) & 2026 (v145)
- - clang 18, 19, 20
- - gcc 13, 14, 15
-
 A guide to setting up and building this project is maintained on the wiki: 
 * [Windows Project Setup](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup-(Windows))
 * [Linux Project Setup](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup-(Linux))
+
+The following setups are tested by our GitHub workflows and known to behave:
+ - Windows 11 (all projects: client, server, tools, etc)
+   - Microsoft Visual Studio 2022 (v143)
+   - Microsoft Visual Studio 2026 (v145) - this is not yet tested by our workflows (it will when GitHub updates their runners), but is routinely used in local development
+ - Ubuntu 24.04 (only the server projects at this time)
+   - clang 18 (current), 20 (bleeding edge)
+   - gcc 13 (current)
+ - macOS 15 (only the server projects at this time)
+   - Apple Clang 15
 
 ### Visual Studio solutions
 
