@@ -23,18 +23,6 @@ commiting your personal configuration.
 Absent a local port conflict there should be no need to change default config. It is recommended
 to just use the defaults.
 
-## ODBC Tweaks
-Standard ODBC configuration is the same, with the exception that you may have to
-uncheck "Dynamically assign port" in the pop-up opened from the "Client Configuration..."
-button.  You also need to use username/password authentication, as Windows authentication
-will not work.
-
-![Odbc Client Configuration button](img/odbc1.png)
-
-![Odbc Dynamically assign port](img/odbc2.png)
-
-Place your configured port value (default: 1433) here.
-
 ## Scripts in this folder
 This folder contains several helper scripts to help you create and manage a copy of the OpenKO database using Docker. Depending on your platform, you would want to use the script that ends in `.sh` for linux-based systems, and `.cmd` for Windows.
 
