@@ -26,7 +26,9 @@ Tested compilers:
  - clang 18, 19, 20
  - gcc 13, 14, 15
 
-A guide to setting up and building this project is maintained on the wiki: [Project Setup - OpenKO Wiki](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup) 
+A guide to setting up and building this project is maintained on the wiki: 
+* [Windows Project Setup](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup-(Windows))
+* [Linux Project Setup](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup-(Linux))
 
 ### Visual Studio solutions
 
