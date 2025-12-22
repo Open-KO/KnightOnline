@@ -4,7 +4,7 @@
 ## Docker Requirements
 You must install Docker yourself and ensure it is available on the command line (try `docker version` in a terminal.)
 
-Docker isn't for everyone.  It takes time to learn and troubleshoot issues.  If you're uncomfortable with the potential learning curve, you can check [Project Setup - OpenKO Wiki](https://github.com/Open-KO/KnightOnline/wiki/Project-Setup) for manual database install instructions.
+Docker isn't for everyone.  It takes time to learn and troubleshoot issues.  If you're uncomfortable with the potential learning curve, you can check [SQL Server Manual Setup](https://github.com/Open-KO/KnightOnline/wiki/SQL-Server-2022-Manual-Setup) for manual database install instructions.
 
 ## Purpose: Local Development Database
 These Docker services are only meant to be used for local development enviroments.
