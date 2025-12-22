@@ -72,9 +72,14 @@ attention when there's so much official behaviour/features still to implement, u
 
 Considering contributing? Great! That's what this project's for.
 We'll typically accept most PRs, but please be aware of a few ground rules:
-1. The PR respects our goals as outlined above (no asset changes, features must exist in 1.298 and behave correctly in both the official client & server, etc.)
-2. The change must have been made / written by you. If contributing on behalf of someone else, then this should be acknowledged.
-3. **No AI use.**
+
+### It must respect our project goals
+The PR must respect our goals as outlined above. That is, no asset changes, features must exist in 1.298 and behave correctly in both the official client & server, etc.
+
+### It must be made / written by you
+The change must have been made / written by you. If contributing on behalf of someone else, then this should be acknowledged.
+
+### No AI use
 This is somewhat coupled with 2 (as the code must be your own), but as enticing as AI is for "convenience", and how much it is pushed in virtually all areas of our day-to-day life, it is a poor replacement for a human's own critical thinking.
 The purpose of this project is for academic/learning purposes. You should not be trying to learn from AI.
 
@@ -83,9 +88,10 @@ AI is highly inaccurate, makes things up on a whim (i.e. hallucinates) and is co
 
 Regarding the code quality itself, it will regurgitate patterns it's seen, good or bad (mostly bad). The code may not even address what you're intending it to address.
 
-AI usage is reasonably easy to detect.
 We expect a certain level of code quality in our codebase (which we're happy to work with you to help improve your code before we merge it into our codebase -- **if you wrote it yourself**).
 AI, however, is a waste of everybody's time.
+
+AI usage is reasonably easy for us to detect.
 
 Please do not use AI. Thankyou.
 
