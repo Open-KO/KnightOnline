@@ -362,14 +362,11 @@ void CGameProcedure::Tick()
 			SetGameCursor(((NATION_ELMORAD == eNation) ? s_hCursorNormal1 : s_hCursorNormal));
 	}
 
-	uint32_t dwRet = 0;
-	dwRet = s_pMsgBoxMgr->MouseProcAndTick(dwMouseFlags, s_pLocalInput->MouseGetPos(), s_pLocalInput->MouseGetPosOld());
-
-	if(0 == dwRet)
-	{
+	uint32_t dwRet = s_pMsgBoxMgr->MouseProcAndTick(dwMouseFlags, s_pLocalInput->MouseGetPos(), s_pLocalInput->MouseGetPosOld());
+	if (dwRet == 0)
 		dwRet = s_pUIMgr->MouseProc(dwMouseFlags, ptCur, ptPrev);
-		s_pUIMgr->Tick();
-	}
+
+	s_pUIMgr->Tick();
 
 	// 몬가 하면... 
 //	if((dwRet & UI_MOUSEPROC_CHILDDONESOMETHING) || (dwRet & UI_MOUSEPROC_DONESOMETHING))
