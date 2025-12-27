@@ -105,13 +105,13 @@ void CTransDummy::Tick()
 		m_DummyCubes[i].fDistance = (vPos - s_CameraData.vEye).Magnitude();
 	}
 	for (i=0; i<NUM_DUMMY; ++i) m_pSortedCubes[i] = &(m_DummyCubes[i]);
-	qsort(m_pSortedCubes, sizeof(__DUMMYCUBE*), NUM_DUMMY, SortCube);
+	qsort(m_pSortedCubes, NUM_DUMMY, sizeof(__DUMMYCUBE*), SortCube);
 }
 
 int CTransDummy::SortCube(const void* pArg1, const void* pArg2)
 {
-	__DUMMYCUBE* pObj1 = (*(__DUMMYCUBE**)pArg1);
-	__DUMMYCUBE* pObj2 = (*(__DUMMYCUBE**)pArg2);
+	const __DUMMYCUBE* pObj1 = *(const __DUMMYCUBE**)pArg1;
+	const __DUMMYCUBE* pObj2 = *(const __DUMMYCUBE**)pArg2;
 
 	if (pObj1->fDistance == pObj2->fDistance) return 0;
 	else if (pObj1->fDistance > pObj2->fDistance) return -1;
