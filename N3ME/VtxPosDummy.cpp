@@ -51,7 +51,7 @@ void CVtxPosDummy::Tick()
 		m_DummyCubes[i].fDistance = (vPos - s_CameraData.vEye).Magnitude();
 	}
 	for (i=0; i<NUM_DUMMY; ++i) m_pSortedCubes[i] = &(m_DummyCubes[i]);
-	qsort(m_pSortedCubes, sizeof(__DUMMYCUBE*), NUM_DUMMY, SortCube);
+	qsort(m_pSortedCubes, NUM_DUMMY, sizeof(__DUMMYCUBE*), SortCube);
 }
 
 void CVtxPosDummy::Render()
