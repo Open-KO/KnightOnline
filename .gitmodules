@@ -27,11 +27,6 @@
 	url = https://github.com/Open-KO/nanodbc
 	branch = OpenKO
 	shallow = true
-[submodule "deps/db-library"]
-	path = deps/db-library
-	url = https://github.com/Open-KO/OpenKO-db-library
-	branch = main
-	shallow = true
 [submodule "deps/spdlog"]
 	path = deps/spdlog
 	url = https://github.com/Open-KO/spdlog

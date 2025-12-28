@@ -30,10 +30,9 @@
       <BuildDependency Project="FileIO/FileIO.vcxproj" />
       <BuildDependency Project="shared/shared.vcxproj" />
     </Project>
-    <Project Path="deps/db-library-msvc/db-library.vcxproj" Id="05054154-a8f1-4094-ab01-e1402cd9f65a">
+    <Project Path="db-library/db-library.vcxproj" Id="05054154-a8f1-4094-ab01-e1402cd9f65a">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
-      <Build Project="false" />
     </Project>
     <Project Path="deps/db-models-msvc/db-models.vcxproj" Id="17ef3a49-55b8-4fb6-883f-d1d02e20c11d">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
@@ -64,11 +63,6 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" Id="1b69c1f8-b156-4bca-aad3-168fb37b08cf">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-db-library.vcxproj" Id="e0a0ddde-1b9a-4f49-9737-65715ac6f783">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" Id="057c1abc-6137-37a9-9935-8cf811d7ceda">

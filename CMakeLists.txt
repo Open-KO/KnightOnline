@@ -104,10 +104,9 @@ if(OPENKO_BUILD_SERVERS)
 
   set(CMAKE_FOLDER "Server/_deps")
   add_subdirectory(deps/nanodbc-cmake EXCLUDE_FROM_ALL)
-
   add_subdirectory(deps/db-models-cmake EXCLUDE_FROM_ALL)
-  add_subdirectory(deps/db-library-cmake EXCLUDE_FROM_ALL)
   add_subdirectory(deps/djb2-cmake EXCLUDE_FROM_ALL)
+  add_subdirectory(db-library EXCLUDE_FROM_ALL)
   add_subdirectory(Server/shared-server)
 
   add_custom_target(copy-server-assets ALL
