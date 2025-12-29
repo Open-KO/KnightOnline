@@ -144,7 +144,7 @@ void CN3UIString::WordWrap()
 			{
 				// 문자열의 pixel 길이 측정
 				SIZE sizeTmp = {0, 0};
-				m_pDFont->GetTextExtent("가", 2, &sizeTmp);
+				m_pDFont->GetTextExtent("가", lstrlen("가"), &sizeTmp);
 				m_ptDrawPos.y = m_rcRegion.top + ((m_rcRegion.bottom - m_rcRegion.top-sizeTmp.cy)/2);
 			}
 			else m_ptDrawPos.y = m_rcRegion.top;
@@ -250,7 +250,7 @@ void CN3UIString::WordWrap()
 		int iCount = 0;
 
 		// 우선 맨 처음 한줄이 들어갈 수 있는 크기인지 체크하기
-		BOOL bFlag = m_pDFont->GetTextExtent("최", 2, &size);
+		BOOL bFlag = m_pDFont->GetTextExtent("최", lstrlen("최"), &size);
 		__ASSERT(bFlag, "cannot get size of dfont");
 //		iCY += size.cy;
 //		if (iCY > iRegionHeight)
@@ -319,7 +319,7 @@ void CN3UIString::SetStartLine(int iLine)
 	m_iStartLine = iLine;
 
 	SIZE size = {0,0};
-	BOOL bFlag = m_pDFont->GetTextExtent("최", 2, &size);
+	BOOL bFlag = m_pDFont->GetTextExtent("최", lstrlen("최"), &size);
 	__ASSERT(bFlag, "cannot get size of dfont");
 	if (0 == size.cy) return;
 

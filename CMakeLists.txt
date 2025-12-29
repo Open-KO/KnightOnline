@@ -15,9 +15,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # We don't use modules, so there's no reason to scan
 set(CXX_SCAN_FOR_MODULES OFF)
 
-# Statically link to the MSVC runtime
 if(MSVC)
+  # Statically link to the MSVC runtime
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  
+  # Ensure consistent charset builds across projects
+  add_compile_options(/utf-8)
 endif()
 
 # Config

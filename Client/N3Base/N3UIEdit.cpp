@@ -485,7 +485,7 @@ bool CN3UIEdit::SetFocus()
 	s_pFocusedEdit = this;				// 포커스를 가지고 있는 edit를 나로 설정
 
 	SIZE size;
-	if (m_pBuffOutRef && m_pBuffOutRef->GetTextExtent("가",2,&size))
+	if (m_pBuffOutRef && m_pBuffOutRef->GetTextExtent("가", lstrlen("가"), &size))
 	{
 		s_Caret.SetSize(size.cy);
 		s_Caret.SetColor(m_pBuffOutRef->GetFontColor());
