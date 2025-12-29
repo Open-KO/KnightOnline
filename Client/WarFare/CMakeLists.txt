@@ -1,3 +1,16 @@
+# We use a user-modifiable config file for the client named warfare_config.h
+# This is copied from the default if it doesn't already exist.
+set(DEFAULT_CLIENT_CONFIG_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/warfare_config.h.default")
+set(TARGET_CLIENT_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/WarFare")
+set(TARGET_CLIENT_CONFIG_HEADER "${TARGET_CLIENT_CONFIG_DIR}/warfare_config.h")
+
+# Make sure the target directory exists
+file(MAKE_DIRECTORY "${TARGET_CLIENT_CONFIG_DIR}")
+
+if(NOT EXISTS "${TARGET_CLIENT_CONFIG_HEADER}")
+    configure_file("${DEFAULT_CLIENT_CONFIG_HEADER}" "${TARGET_CLIENT_CONFIG_HEADER}" COPYONLY)
+endif()
+
 add_executable(WarFare
   APISocket.cpp
   APISocket.h
@@ -210,10 +223,11 @@ add_executable(WarFare
   UIWareHouseDlg.h
   UIWarp.cpp
   UIWarp.h
-  warfare_config.h
   WarFareMain.cpp
   WarMessage.cpp
-  WarMessage.h)
+  WarMessage.h
+  "${TARGET_CLIENT_CONFIG_HEADER}"
+)
 
 # Ensure we require the client assets to be copied
 # TODO
