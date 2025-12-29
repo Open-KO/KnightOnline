@@ -8,7 +8,7 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-set(SPDLOG_ENABLE_PCH ON CACHE BOOL "Enable PCH in spdlog")
+set(SPDLOG_ENABLE_PCH ON CACHE BOOL "spdlog: Enable PCH")
 
 message(STATUS "OpenKO: [spdlog] Checking and fetching...")
 

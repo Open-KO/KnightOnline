@@ -7,7 +7,7 @@
 
 #include "stdafx.h"
 #include "ZipFileHeader.h"
-#include <zlib/zlib.h>
+#include <zlib.h>
 #include "ZipAutoBuffer.h"
 #include "ZipArchive.h"
 

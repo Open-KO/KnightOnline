@@ -136,6 +136,10 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT_TOOLS)
     message(STATUS "OpenKO: Preparing to configure client tools...")
 
+    set(CMAKE_FOLDER "Client tools/_deps")
+    add_subdirectory(deps/zlib-cmake EXCLUDE_FROM_ALL)
+    add_subdirectory(deps/ZipArchive)
+
     set(CMAKE_FOLDER "Client tools")
     add_subdirectory(Client/KscViewer)
     # add_subdirectory(Client/Launcher)
