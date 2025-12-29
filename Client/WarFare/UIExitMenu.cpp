@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include "UIExitMenu.h"
 #include "GameProcMain.h"
 #include "UIManager.h"

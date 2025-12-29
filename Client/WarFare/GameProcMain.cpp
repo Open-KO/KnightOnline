@@ -1,7 +1,7 @@
 ﻿// GameProcMain.cpp: implementation of the CGameProcMain class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "GameProcMain.h"
 
 #include "GameEng.h"

@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UICmdEdit.h"
 #include "APISocket.h"
 #include "GameProcMain.h"

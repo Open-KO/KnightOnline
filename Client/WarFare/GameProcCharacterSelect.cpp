@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "GameProcCharacterSelect.h"
 #include "GameProcedure.h"
 #include "text_resources.h"

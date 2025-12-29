@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIPartyBBS.h"
 #include "GameProcMain.h"
 #include "UIVarious.h"

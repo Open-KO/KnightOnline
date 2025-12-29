@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "GameProcCharacterCreate.h"
 #include "GameEng.h"
 #include "UICharacterCreate.h"

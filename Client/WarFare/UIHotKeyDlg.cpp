@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIHotKeyDlg.h"
 #include "LocalInput.h"
 #include "GameProcMain.h"

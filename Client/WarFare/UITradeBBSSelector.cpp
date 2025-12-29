@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UITradeBBSSelector.h"
 #include "PacketDef.h"
 #include "APISocket.h"

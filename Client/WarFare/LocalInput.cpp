@@ -1,7 +1,7 @@
 ﻿/*
 */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "LocalInput.h"
 #include <mmsystem.h>
 

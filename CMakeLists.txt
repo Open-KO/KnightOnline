@@ -98,6 +98,7 @@ add_subdirectory(shared)
 add_subdirectory(FileIO)
 add_subdirectory(MathUtils)
 
+# Client & tool projects are currently only supported with Windows+MSVC builds.
 if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
     # Dependencies
@@ -105,7 +106,7 @@ if(MSVC)
     add_subdirectory(deps/dx9sdk-cmake EXCLUDE_FROM_ALL)
 
     set(CMAKE_FOLDER "N3Base/_deps/mpg123")
-    add_subdirectory(deps/mpg123-cmake)
+    add_subdirectory(deps/mpg123-cmake EXCLUDE_FROM_ALL)
 
     set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
     add_subdirectory(deps/openal-soft-cmake EXCLUDE_FROM_ALL)
@@ -116,7 +117,6 @@ if(MSVC)
 
   if(OPENKO_BUILD_CLIENT)
     message(STATUS "OpenKO: Preparing to configure client...")
-
     set(CMAKE_FOLDER "Client/_deps")
 
     # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
@@ -124,12 +124,8 @@ if(MSVC)
     find_package(JpegTurbo REQUIRED)
     add_subdirectory(Client/JpegFile)
 
-    # WarFare:
-    # JpegFile
-    # N3Base_client
-    # (client assets)
-
-    # WarFare:
+    set(CMAKE_FOLDER "Client/_deps")
+    add_subdirectory(Client/WarFare)
   endif()
 endif()
 

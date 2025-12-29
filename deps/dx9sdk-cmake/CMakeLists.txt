@@ -18,7 +18,7 @@ message(STATUS "OpenKO: [dx9sdk] Up-to-date!")
 
 set(DX9_INCLUDE_DIR "${dx9sdk_SOURCE_DIR}/Include")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(DX9_LIBRARY_DIR "${dx9sdk_SOURCE_DIR}/x64")
+  set(DX9_LIBRARY_DIR "${dx9sdk_SOURCE_DIR}/Lib/x64")
 else()
   set(DX9_LIBRARY_DIR "${dx9sdk_SOURCE_DIR}/Lib/x86")
 endif()
@@ -61,6 +61,7 @@ target_include_directories(dx9sdk INTERFACE
 target_link_libraries(dx9sdk INTERFACE
   "${DX9_LIBRARY_DIR}/d3d9.lib"
   "${DX9_LIBRARY_DIR}/d3dx9.lib"
+  "${DX9_LIBRARY_DIR}/dinput8.lib"
   "${DX9_LIBRARY_DIR}/dsound.lib"
   "${DX9_LIBRARY_DIR}/dxerr.lib"
   "${DX9_LIBRARY_DIR}/dxguid.lib"

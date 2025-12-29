@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIQuestTalk.h"
 #include "GameDef.h"
 #include "GameProcedure.h"

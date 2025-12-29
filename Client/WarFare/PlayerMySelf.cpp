@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PlayerMySelf.h"
 #include "PacketDef.h"
 #include "PlayerOtherMgr.h"

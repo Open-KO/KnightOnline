@@ -9,7 +9,7 @@ if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
 endif()
 
 # Setup dependencies
-target_link_libraries(JpegFile PRIVATE libjpeg-turbo)
+target_link_libraries(JpegFile PUBLIC libjpeg-turbo)
 
 # Expose include path
 target_include_directories(JpegFile PUBLIC

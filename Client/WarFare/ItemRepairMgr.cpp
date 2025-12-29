@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIRepairTooltipDlg.h"
 #include "ItemRepairMgr.h"
 #include "PacketDef.h"

@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UITradeSellBBS.h"
 #include "GameProcMain.h"
 #include "UITradeBBSEditDlg.h"

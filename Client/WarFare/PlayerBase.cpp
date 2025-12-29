@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PlayerBase.h"
 #include "N3WorldManager.h"
 #include "N3FXMgr.h"

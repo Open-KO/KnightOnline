@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIEndingDisplay.h"
 #include "UIManager.h"
 #include "GameEng.h"

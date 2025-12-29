@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIClassChange.h"
 #include "PacketDef.h"
 #include "PlayerMySelf.h"

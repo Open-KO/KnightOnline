@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIStateBar.h"
 #include "GameDef.h"
 #include "LocalInput.h"

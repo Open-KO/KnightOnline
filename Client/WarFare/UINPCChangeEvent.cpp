@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UINPCChangeEvent.h"
 #include "PacketDef.h"
 #include "GameProcMain.h"

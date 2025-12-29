@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UITradeEditDlg.h"
 #include "PacketDef.h"
 #include "LocalInput.h"
