@@ -71,5 +71,5 @@
 	shallow = true
 [submodule "deps/openal-soft"]
 	path = deps/openal-soft
-	url = https://github.com/kcat/openal-soft
+	url = https://github.com/Open-KO/openal-soft
 	shallow = true
