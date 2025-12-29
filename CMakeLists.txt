@@ -75,6 +75,9 @@ set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
 set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/QUESTS")
 set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
 
+# Search in the "cmake" directory for additional CMake modules.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Generate .gitignore in build directory
 if(NOT PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   file(WRITE "${PROJECT_BINARY_DIR}/.gitignore" "*")
@@ -114,10 +117,13 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT)
     message(STATUS "OpenKO: Preparing to configure client...")
 
-    # Dependencies
-    # JpegFile:
-	# libjpeg-turbo
-  
+    set(CMAKE_FOLDER "Client/_deps")
+
+    # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
+    # so we must structure this a little bit differently to everything else.
+    find_package(JpegTurbo REQUIRED)
+    add_subdirectory(Client/JpegFile)
+
     # WarFare:
     # JpegFile
     # N3Base_client

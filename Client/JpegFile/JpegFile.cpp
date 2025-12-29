@@ -139,9 +139,14 @@ BYTE * CJpegFile::JpegFileToRGB(std::string fileName,
 	* requires it in order to read binary files.
 	*/
 
-	if ((infile = fopen(fileName.c_str(), "rb")) == nullptr) {
+#ifdef _MSC_VER
+	fopen_s(&infile, fileName.c_str(), "rb");
+#else
+	infile = fopen(fileName.c_str(), "rb");
+#endif
+
+	if (infile == nullptr)
 		return nullptr;
-	}
 
 	/* Step 1: allocate and initialize JPEG decompression object */
 
@@ -315,9 +320,14 @@ BOOL CJpegFile::GetJPGDimensions(std::string fileName,
 	* requires it in order to read binary files.
 	*/
 
-	if ((infile = fopen(fileName.c_str(), "rb")) == nullptr) {
-		return FALSE;
-	}
+#ifdef _MSC_VER
+	fopen_s(&infile, fileName.c_str(), "rb");
+#else
+	infile = fopen(fileName.c_str(), "rb");
+#endif
+
+	if (infile == nullptr)
+		return false;
 
 	/* Step 1: allocate and initialize JPEG decompression object */
 
@@ -485,9 +495,14 @@ BOOL CJpegFile::RGBToJpegFile(std::string fileName,
 	/* Step 2: specify data destination (eg, a file) */
 	/* Note: steps 2 and 3 can be done in either order. */
 
-	if ((outfile = fopen(fileName.c_str(), "wb")) == nullptr) {
+#ifdef _MSC_VER
+	fopen_s(&outfile, fileName.c_str(), "wb");
+#else
+	outfile = fopen(fileName.c_str(), "wb");
+#endif
+
+	if (outfile == nullptr)
 		return FALSE;
-	}
 
 	jpeg_stdio_dest(&cinfo, outfile);
 
@@ -1736,8 +1751,14 @@ BOOL CJpegFile::JpegFromDib(
 	cinfo.err = jpeg_std_error(&jerr); //Use default error handling (ugly!)
 	
 	jpeg_create_compress(&cinfo);
-	
-	if ((pOutFile = fopen(csJpeg.c_str(), "wb")) == nullptr)
+
+#ifdef _MSC_VER
+	fopen_s(&pOutFile, csJpeg.c_str(), "wb");
+#else
+	pOutFile = fopen(csJpeg.c_str(), "wb");
+#endif
+
+	if (pOutFile == nullptr)
 	{
 		pcsMsg = "Cannot open Fail";
 		jpeg_destroy_compress(&cinfo);
@@ -1859,6 +1880,7 @@ BOOL CJpegFile::EncryptJPEG(
 #else
 	fileHandle = fopen(csJpeg.c_str(), "wb");
 #endif
+
 	if (fileHandle == nullptr)
 	{
 		delete[] data_byte;
