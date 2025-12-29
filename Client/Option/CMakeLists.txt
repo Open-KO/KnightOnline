@@ -26,6 +26,12 @@ target_compile_options(Option PRIVATE
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
 
+if(MSVC)
+  set_property(TARGET Option PROPERTY
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Data" # TODO: change this to build dir
+  )
+endif()
+
 add_custom_command(TARGET Option POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:Option> has been built"
 )

@@ -28,6 +28,11 @@ target_link_libraries(ZipArchive PUBLIC
   libzlib
 )
 
+# Expose include path
+target_include_directories(ZipArchive INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <ZipArchive/...>
+)
+
 # Setup warning levels
 # target_compile_options(ZipArchive PRIVATE
 #  $<$<CXX_COMPILER_ID:MSVC>:/W3>

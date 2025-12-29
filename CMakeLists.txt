@@ -142,7 +142,7 @@ if(MSVC)
 
     set(CMAKE_FOLDER "Client tools")
     add_subdirectory(Client/KscViewer)
-    # add_subdirectory(Client/Launcher)
+    add_subdirectory(Client/Launcher)
     add_subdirectory(Client/Option)
   endif()
 endif()

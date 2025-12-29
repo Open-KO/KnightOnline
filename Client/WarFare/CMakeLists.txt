@@ -8,7 +8,7 @@ set(TARGET_CLIENT_CONFIG_HEADER "${TARGET_CLIENT_CONFIG_DIR}/warfare_config.h")
 file(MAKE_DIRECTORY "${TARGET_CLIENT_CONFIG_DIR}")
 
 if(NOT EXISTS "${TARGET_CLIENT_CONFIG_HEADER}")
-    configure_file("${DEFAULT_CLIENT_CONFIG_HEADER}" "${TARGET_CLIENT_CONFIG_HEADER}" COPYONLY)
+  configure_file("${DEFAULT_CLIENT_CONFIG_HEADER}" "${TARGET_CLIENT_CONFIG_HEADER}" COPYONLY)
 endif()
 
 add_executable(WarFare
@@ -266,7 +266,6 @@ if(WIN32)
     wsock32.lib
   )
 endif()
-
 
 # Setup preprocessor defines
 target_compile_definitions(WarFare PRIVATE
