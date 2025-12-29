@@ -98,17 +98,17 @@ add_subdirectory(MathUtils)
 if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
     # Dependencies
-    set(CMAKE_FOLDER "Engine/_deps")
+    set(CMAKE_FOLDER "N3Base/_deps")
     add_subdirectory(deps/dx9sdk-cmake EXCLUDE_FROM_ALL)
 
-    set(CMAKE_FOLDER "Engine/_deps/mpg123")
-    add_subdirectory(deps/mpg123-cmake EXCLUDE_FROM_ALL)
+    set(CMAKE_FOLDER "N3Base/_deps/mpg123")
+    add_subdirectory(deps/mpg123-cmake)
 
-    set(CMAKE_FOLDER "Engine/_deps/openal-soft")
+    set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
     add_subdirectory(deps/openal-soft-cmake EXCLUDE_FROM_ALL)
 
-	# TODO: require FileIO, MathUtils, shared
-    # add_subdirectory(Client/N3Base)
+    set(CMAKE_FOLDER "N3Base")
+    add_subdirectory(Client/N3Base)
   endif()
 
   if(OPENKO_BUILD_CLIENT)
@@ -117,9 +117,6 @@ if(MSVC)
     # Dependencies
     # JpegFile:
 	# libjpeg-turbo
-  
-    # N3Base_client:
-	# (above)
   
     # WarFare:
     # JpegFile

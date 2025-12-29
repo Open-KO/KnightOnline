@@ -25,3 +25,12 @@ fetchcontent_makeavailable(mpg123)
 set_property(GLOBAL PROPERTY CMAKE_SUPPRESS_DEVELOPER_WARNINGS ${_old_no_dev})
 
 message(STATUS "OpenKO: [mpg123] Up-to-date!")
+
+# Setup a wrapper project because it won't expose its paths properly.
+add_library(libmpg123_wrapper INTERFACE)
+target_link_libraries(libmpg123_wrapper INTERFACE libmpg123)
+target_include_directories(libmpg123_wrapper INTERFACE
+  $<TARGET_PROPERTY:libmpg123,INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:libmpg123,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:libmpg123,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+)

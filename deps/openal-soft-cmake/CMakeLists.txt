@@ -15,6 +15,7 @@ set(ALSOFT_ENABLE_MODULES OFF CACHE BOOL "openal-soft: Enable use of C++20 modul
 
 if(MSVC)
   set(FORCE_STATIC_VCRT ON CACHE BOOL "openal-soft: Force /MT for static VC runtimes")
+  set(LIBTYPE STATIC CACHE STRING "openal-soft: Library type")
 endif()
 
 message(STATUS "OpenKO: [openal-soft] Checking and fetching...")

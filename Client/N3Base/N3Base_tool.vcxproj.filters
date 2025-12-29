@@ -33,9 +33,6 @@
     <ClInclude Include="N3BaseFileAccess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N3TerrainDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="N3Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,9 +55,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3AnimKey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3Board.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3Chr.h">
@@ -166,9 +160,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3ShapeMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3ShapeMod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="N3Skin.h">
