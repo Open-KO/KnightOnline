@@ -118,17 +118,28 @@ if(MSVC)
     add_subdirectory(Client/N3Base)
   endif()
 
-  if(OPENKO_BUILD_CLIENT)
-    message(STATUS "OpenKO: Preparing to configure client...")
+  if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_CLIENT_TOOLS)
     set(CMAKE_FOLDER "Client/_deps")
 
     # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
     # so we must structure this a little bit differently to everything else.
     find_package(JpegTurbo REQUIRED)
     add_subdirectory(Client/JpegFile)
+  endif()
 
-    set(CMAKE_FOLDER "Client/_deps")
+  if(OPENKO_BUILD_CLIENT)
+    message(STATUS "OpenKO: Preparing to configure client...")
+    set(CMAKE_FOLDER "Client")
     add_subdirectory(Client/WarFare)
+  endif()
+
+  if(OPENKO_BUILD_CLIENT_TOOLS)
+    message(STATUS "OpenKO: Preparing to configure client tools...")
+
+    set(CMAKE_FOLDER "Client tools")
+    add_subdirectory(Client/KscViewer)
+    # add_subdirectory(Client/Launcher)
+    # add_subdirectory(Client/Option)
   endif()
 endif()
 
