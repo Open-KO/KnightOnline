@@ -21,9 +21,12 @@ if(MSVC)
 endif()
 
 # Config
+option(OPENKO_BUILD_CLIENT "Build the client projects - MSVC only (default on)" ON)
+option(OPENKO_BUILD_CLIENT_TOOLS "Build the client tool projects - MSVC only (default on)" ON)
+option(OPENKO_BUILD_TOOLS "Build the development tool projects - MSVC only (default on)" ON)
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
-option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
 option(OPENKO_BUILD_TESTS "Build the test projects (default on)" ON)
+option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
 
 # Define the bin directory; defaults to repo/bin
 set(OPENKO_BIN_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Directory for final binaries")
@@ -34,10 +37,13 @@ if(WIN32)
   add_definitions(-D_WIN32_WINNT=${_WIN32_WINNT})
 endif()
 
+message(STATUS "OpenKO feature: OPENKO_BUILD_CLIENT - ${OPENKO_BUILD_CLIENT}")
+message(STATUS "OpenKO feature: OPENKO_BUILD_CLIENT_TOOLS - ${OPENKO_BUILD_CLIENT_TOOLS}")
+message(STATUS "OpenKO feature: OPENKO_BUILD_TOOLS - ${OPENKO_BUILD_TOOLS}")
 message(STATUS "OpenKO feature: OPENKO_BUILD_SERVERS - ${OPENKO_BUILD_SERVERS}")
+message(STATUS "OpenKO feature: OPENKO_BUILD_TESTS - ${OPENKO_BUILD_TESTS}")
 message(STATUS "OpenKO feature: OPENKO_COMPILE_WARNINGS_AS_ERROR - ${OPENKO_COMPILE_WARNINGS_AS_ERROR}")
 message(STATUS "OpenKO feature: OPENKO_BIN_DIR - ${OPENKO_BIN_DIR}")
-message(STATUS "OpenKO feature: OPENKO_BUILD_TESTS - ${OPENKO_BUILD_TESTS}")
 
 if(WIN32)
   message(STATUS "OpenKO feature: _WIN32_WINNT - ${_WIN32_WINNT}")
@@ -76,9 +82,9 @@ endif()
 
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
-add_subdirectory(deps/asio-cmake)
-add_subdirectory(deps/llfio-cmake)
-add_subdirectory(deps/spdlog-cmake)
+add_subdirectory(deps/asio-cmake EXCLUDE_FROM_ALL)
+add_subdirectory(deps/llfio-cmake EXCLUDE_FROM_ALL)
+add_subdirectory(deps/spdlog-cmake EXCLUDE_FROM_ALL)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
@@ -88,6 +94,41 @@ set(CMAKE_FOLDER) # reset so shared is placed in the root
 add_subdirectory(shared)
 add_subdirectory(FileIO)
 add_subdirectory(MathUtils)
+
+if(MSVC)
+  if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
+    # Dependencies
+    set(CMAKE_FOLDER "Engine/_deps")
+    add_subdirectory(deps/dx9sdk-cmake EXCLUDE_FROM_ALL)
+
+    set(CMAKE_FOLDER "Engine/_deps/mpg123")
+    add_subdirectory(deps/mpg123-cmake EXCLUDE_FROM_ALL)
+
+    set(CMAKE_FOLDER "Engine/_deps/openal-soft")
+    add_subdirectory(deps/openal-soft-cmake EXCLUDE_FROM_ALL)
+
+	# TODO: require FileIO, MathUtils, shared
+    # add_subdirectory(Client/N3Base)
+  endif()
+
+  if(OPENKO_BUILD_CLIENT)
+    message(STATUS "OpenKO: Preparing to configure client...")
+
+    # Dependencies
+    # JpegFile:
+	# libjpeg-turbo
+  
+    # N3Base_client:
+	# (above)
+  
+    # WarFare:
+    # JpegFile
+    # N3Base_client
+    # (client assets)
+
+    # WarFare:
+  endif()
+endif()
 
 if(OPENKO_BUILD_SERVERS)
   message(STATUS "OpenKO: Preparing to configure servers...")
