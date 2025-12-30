@@ -157,6 +157,7 @@ if(MSVC)
     add_subdirectory(N3Viewer)
     add_subdirectory(SkyViewer)
     add_subdirectory(TblEditor)
+    add_subdirectory(UIE)
   endif()
 endif()
 
