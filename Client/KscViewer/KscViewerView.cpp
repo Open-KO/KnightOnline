@@ -96,8 +96,8 @@ void CKscViewerView::OnDropFiles(HDROP hDropInfo)
 	CKscViewerDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-	char szFile[MAX_PATH];
-	char* szExt = nullptr;
+	TCHAR szFile[MAX_PATH];
+	TCHAR* szExt = nullptr;
 	UINT uiFiles;
 
 	uiFiles = DragQueryFile(hDropInfo,0xFFFF,nullptr,0);
@@ -105,7 +105,7 @@ void CKscViewerView::OnDropFiles(HDROP hDropInfo)
 	::DragQueryFile(hDropInfo, 0, szFile, MAX_PATH - 1);
 	::DragFinish(hDropInfo);
 
-	size_t nLen = strlen(szFile);
+	size_t nLen = _tcslen(szFile);
 
 	szExt = szFile + nLen - 3;
 

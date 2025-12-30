@@ -1,8 +1,14 @@
+find_package(MFC REQUIRED)
+
+# MFC (static)
+set(CMAKE_MFC_FLAG 1)
+
 add_executable(Launcher
   APISocket.cpp
   APISocket.h
   BackgroundUtil.cpp
   BackgroundUtil.h
+  BB_CircularBuffer.cpp
   BB_CircularBuffer.h
   Define.h
   Launcher.cpp
@@ -30,6 +36,10 @@ if(WIN32)
     Launcher.rc
     res/Launcher.rc2
     res/Launcher.ico)
+  target_compile_definitions(Launcher PRIVATE
+    "_UNICODE"
+    "UNICODE"
+  )
 endif()
 
 # Enable warnings as errors
@@ -43,6 +53,7 @@ target_precompile_headers(Launcher PRIVATE StdAfx.h)
 # Setup dependencies
 target_link_libraries(Launcher PRIVATE
   ZipArchive
+  wininet.lib
 )
 
 # Setup preprocessor defines

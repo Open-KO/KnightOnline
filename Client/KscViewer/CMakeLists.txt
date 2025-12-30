@@ -1,3 +1,8 @@
+find_package(MFC REQUIRED)
+
+# MFC (static)
+set(CMAKE_MFC_FLAG 1)
+
 add_executable(KscViewer
   KscViewer.cpp
   KscViewer.h
@@ -15,6 +20,10 @@ add_executable(KscViewer
 if(WIN32)
   set_target_properties(KscViewer PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(KscViewer PRIVATE KscViewer.rc)
+  target_compile_definitions(KscViewer PRIVATE
+    "_UNICODE"
+    "UNICODE"
+  )
 endif()
 
 # Enable warnings as errors

@@ -1,3 +1,8 @@
+find_package(MFC REQUIRED)
+
+# MFC (static)
+set(CMAKE_MFC_FLAG 1)
+
 add_library(ZipArchive STATIC
   StdAfx.h
   ZipArchive.cpp
@@ -14,6 +19,13 @@ add_library(ZipArchive STATIC
   ZipInternalInfo.h
   ZipStorage.cpp
   ZipStorage.h)
+
+if(WIN32)
+  target_compile_definitions(ZipArchive PRIVATE
+    "_UNICODE"
+    "UNICODE"
+  )
+endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)

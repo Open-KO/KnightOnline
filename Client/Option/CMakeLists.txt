@@ -1,3 +1,8 @@
+find_package(MFC REQUIRED)
+
+# MFC (static)
+set(CMAKE_MFC_FLAG 1)
+
 add_executable(Option
   Option.cpp
   Option.h
@@ -9,6 +14,10 @@ add_executable(Option
 if(WIN32)
   set_target_properties(Option PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(Option PRIVATE Option.rc)
+  target_compile_definitions(Option PRIVATE
+    "_UNICODE"
+    "UNICODE"
+  )
 endif()
 
 # Enable warnings as errors
