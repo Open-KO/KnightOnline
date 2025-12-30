@@ -152,6 +152,7 @@ if(MSVC)
     set(CMAKE_FOLDER "Tools")
     add_subdirectory(N3CE)
     add_subdirectory(N3FXE)
+    add_subdirectory(N3ME)
   endif()
 endif()
 

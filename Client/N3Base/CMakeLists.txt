@@ -156,12 +156,12 @@ set(N3BASE_COMMON_SOURCES
 
 set(N3BASE_COMMON_DEPENDENCIES_PUBLIC
   dx9sdk
+  FileIO
   shared
   spdlog
 )
 
 set(N3BASE_COMMON_DEPENDENCIES_PRIVATE
-  FileIO
   MathUtils
   libmpg123_wrapper
   OpenAL
