@@ -106,7 +106,7 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
     # Dependencies
     set(CMAKE_FOLDER "N3Base/_deps")
-    add_subdirectory(deps/dx9sdk-cmake EXCLUDE_FROM_ALL)
+    find_package(Directx9 REQUIRED)
 
     set(CMAKE_FOLDER "N3Base/_deps/mpg123")
     add_subdirectory(deps/mpg123-cmake EXCLUDE_FROM_ALL)
@@ -144,6 +144,13 @@ if(MSVC)
     add_subdirectory(Client/KscViewer)
     add_subdirectory(Client/Launcher)
     add_subdirectory(Client/Option)
+  endif()
+
+  if(OPENKO_BUILD_TOOLS)
+    message(STATUS "OpenKO: Preparing to configure development tools...")
+
+    set(CMAKE_FOLDER "Tools")
+    add_subdirectory(N3CE)
   endif()
 endif()
 

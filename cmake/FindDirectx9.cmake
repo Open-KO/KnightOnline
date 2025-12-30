@@ -53,9 +53,9 @@ target_compile_definitions(dx9sdk INTERFACE
 )
 
 # Expose include path
-target_include_directories(dx9sdk INTERFACE
-  "${DX9_INCLUDE_DIR}"
-)
+#target_include_directories(dx9sdk INTERFACE
+#  "${DX9_INCLUDE_DIR}"
+#)
 
 # Link in the libs that we use
 target_link_libraries(dx9sdk INTERFACE
@@ -66,3 +66,22 @@ target_link_libraries(dx9sdk INTERFACE
   "${DX9_LIBRARY_DIR}/dxerr.lib"
   "${DX9_LIBRARY_DIR}/dxguid.lib"
 )
+
+set(DIRECTX9_PROPS_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/directx9.props.template")
+set(DIRECTX9_PROPS_DIR "${CMAKE_CURRENT_BINARY_DIR}/props")
+set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props")
+
+# Make sure the target directory exists
+file(MAKE_DIRECTORY "${DIRECTX9_PROPS_DIR}")
+
+configure_file("${DIRECTX9_PROPS_TEMPLATE}" "${DIRECTX9_PROPS_PATH}" @ONLY)
+
+function(require_directx9 TARGET)
+  if(NOT TARGET ${TARGET})
+    message(FATAL_ERROR "Target ${TARGET} does not exist!")
+  endif()
+
+  if(MSVC)
+    set_target_properties(${TARGET} PROPERTIES VS_USER_PROPS "${DIRECTX9_PROPS_PATH}")
+  endif()
+endfunction()

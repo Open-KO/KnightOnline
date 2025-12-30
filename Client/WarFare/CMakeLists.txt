@@ -229,6 +229,8 @@ add_executable(WarFare
   "${TARGET_CLIENT_CONFIG_HEADER}"
 )
 
+require_directx9(WarFare)
+
 # Ensure we require the client assets to be copied
 # TODO
 # add_dependencies(WarFare copy-client-assets)

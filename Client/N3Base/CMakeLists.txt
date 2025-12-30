@@ -183,6 +183,9 @@ add_library(N3Base_tool STATIC
   Pick.h
 )
 
+require_directx9(N3Base_client)
+require_directx9(N3Base_tool)
+
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET N3Base_client PROPERTY COMPILE_WARNING_AS_ERROR ON)
@@ -208,6 +211,14 @@ target_link_libraries(N3Base_client PUBLIC  ${N3BASE_COMMON_DEPENDENCIES_PUBLIC}
 target_link_libraries(N3Base_tool   PUBLIC  ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
 target_link_libraries(N3Base_client PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
 target_link_libraries(N3Base_tool   PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
+
+# Expose include path
+target_include_directories(N3Base_client INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <N3Base/...>
+)
+target_include_directories(N3Base_tool INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <N3Base/...>
+)
 
 # Setup PCH
 target_precompile_headers(N3Base_client PRIVATE "StdAfxBase.h")
