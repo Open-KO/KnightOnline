@@ -179,6 +179,8 @@ add_library(N3Base_tool STATIC
   N3FXGroup.h
   N3GlobalEffectMng.cpp
   N3GlobalEffectMng.h
+  N3PMeshCreate.cpp
+  N3PMeshCreate.h
   Pick.cpp
   Pick.h
 )

@@ -123,6 +123,7 @@ add_executable(N3ME
   QTNode.h
   RegenUser.cpp
   RegenUser.h
+  Resource.h
   RiverMesh.cpp
   RiverMesh.h
   RiverMng.cpp
