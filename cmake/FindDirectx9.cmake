@@ -52,11 +52,6 @@ target_compile_definitions(dx9sdk INTERFACE
   "DIRECTINPUT_VERSION=0x0800"
 )
 
-# Expose include path
-#target_include_directories(dx9sdk INTERFACE
-#  "${DX9_INCLUDE_DIR}"
-#)
-
 # Link in the libs that we use
 target_link_libraries(dx9sdk INTERFACE
   "${DX9_LIBRARY_DIR}/d3d9.lib"
@@ -67,6 +62,20 @@ target_link_libraries(dx9sdk INTERFACE
   "${DX9_LIBRARY_DIR}/dxguid.lib"
 )
 
+# We need a very explicit include order for DX9, because of its awkward header conflicts.
+#
+# To ensure this, we must append it to IncludePath (not AdditionalIncludeDirectories).
+# This is technically exposed via VS_GLOBAL_IncludePath, but it's inserted before the
+# VS defaults are actually added, which would prepend rather than append if VS didn't
+# outright not bother to set it up because it has a value already.
+#
+# Instead, we can use a property sheet. This replaces the VS user default prop sheet
+# (which we must reimport ourselves), but is added late enough that we can append to
+# the existing IncludePath setting and ensure our path is consistent.
+#
+# The only problem with this approach is that we cannot propagate this to consumers.
+# So we add require_directx9() to force consumers to give themselves the property sheet
+# manually.
 set(DIRECTX9_PROPS_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/directx9.props.template")
 set(DIRECTX9_PROPS_DIR "${CMAKE_CURRENT_BINARY_DIR}/props")
 set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props")
