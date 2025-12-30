@@ -8,7 +8,6 @@ fetchcontent_declare(
   GIT_TAG               "v0.0.1"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
-  OVERRIDE_FIND_PACKAGE TRUE
   SOURCE_DIR            "${FETCHCONTENT_BASE_DIR}/db-models"
 
   EXCLUDE_FROM_ALL

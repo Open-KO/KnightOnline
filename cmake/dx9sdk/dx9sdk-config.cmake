@@ -77,10 +77,9 @@ target_link_libraries(dx9sdk INTERFACE
 # The only problem with this approach is that we cannot propagate this to consumers.
 # So we add require_directx9() to force consumers to give themselves the property sheet
 # manually.
-set(DIRECTX9_PROPS_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/directx9.props.template")
+set(DIRECTX9_PROPS_TEMPLATE "${OPENKO_MODULE_PATH}/dx9sdk/directx9.props.template")
 set(DIRECTX9_PROPS_DIR "${CMAKE_CURRENT_BINARY_DIR}/props")
-#set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props" CACHE STRING "DirectX 9 property sheet path for includes (internal)" FORCE)
-set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props")
+set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props" CACHE STRING "DirectX 9 property sheet path for includes (internal)" FORCE)
 
 # Make sure the target directory exists
 file(MAKE_DIRECTORY "${DIRECTX9_PROPS_DIR}")

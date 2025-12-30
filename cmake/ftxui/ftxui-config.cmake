@@ -8,7 +8,6 @@ fetchcontent_declare(
   GIT_TAG               "v6.1.9"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
-  OVERRIDE_FIND_PACKAGE TRUE
   EXCLUDE_FROM_ALL
 )
 

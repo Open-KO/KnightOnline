@@ -8,7 +8,6 @@ fetchcontent_declare(
   GIT_TAG               "v1.33.4-dev"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
-  OVERRIDE_FIND_PACKAGE TRUE
   SOURCE_SUBDIR         ports/cmake
   EXCLUDE_FROM_ALL
 )

@@ -36,6 +36,7 @@ option(OPENKO_BUILD_TOOLS "Build the development tool projects - MSVC only (defa
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
 option(OPENKO_BUILD_TESTS "Build the test projects (default on)" ON)
 option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
+option(OPENKO_FETCH_CLIENT_ASSETS "Enable fetching client assets (default on)" ON)
 
 # Define the bin directory; defaults to repo/bin
 set(OPENKO_BIN_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Directory for final binaries")
@@ -52,6 +53,7 @@ message(STATUS "OpenKO feature: OPENKO_BUILD_TOOLS - ${OPENKO_BUILD_TOOLS}")
 message(STATUS "OpenKO feature: OPENKO_BUILD_SERVERS - ${OPENKO_BUILD_SERVERS}")
 message(STATUS "OpenKO feature: OPENKO_BUILD_TESTS - ${OPENKO_BUILD_TESTS}")
 message(STATUS "OpenKO feature: OPENKO_COMPILE_WARNINGS_AS_ERROR - ${OPENKO_COMPILE_WARNINGS_AS_ERROR}")
+message(STATUS "OpenKO feature: OPENKO_FETCH_CLIENT_ASSETS - ${OPENKO_FETCH_CLIENT_ASSETS}")
 message(STATUS "OpenKO feature: OPENKO_BIN_DIR - ${OPENKO_BIN_DIR}")
 
 if(WIN32)

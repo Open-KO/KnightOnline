@@ -8,7 +8,6 @@ fetchcontent_declare(
   GIT_TAG               "20250527-OpenKO"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
-  OVERRIDE_FIND_PACKAGE TRUE
   EXCLUDE_FROM_ALL
 )
 

@@ -8,7 +8,6 @@ fetchcontent_declare(
   GIT_TAG               "v0.0.2-OpenKO"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
-  OVERRIDE_FIND_PACKAGE TRUE
   SOURCE_SUBDIR         "MISSING_DIRECTORY" # intentionally nonexistent to bypass their CMakeLists.txt
   SOURCE_DIR            "${FETCHCONTENT_BASE_DIR}/djb2"
 
