@@ -153,6 +153,7 @@ if(MSVC)
     add_subdirectory(N3CE)
     add_subdirectory(N3FXE)
     add_subdirectory(N3ME)
+    add_subdirectory(N3TexViewer)
   endif()
 endif()
 
