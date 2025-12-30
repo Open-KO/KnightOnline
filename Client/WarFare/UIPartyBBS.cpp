@@ -315,7 +315,7 @@ void CUIPartyBBS::PartyStringSet(uint8_t byType)
 		int iLMin = iLevel - 8;
 		if(iLMin < 0) iLMin = 0;
 		int iLMax = iLevel + 8;
-		if(iLMax > 80) iLMax = 80;
+		if(iLMax > MAX_LEVEL) iLMax = MAX_LEVEL;
 
 		std::string szMsg = fmt::format_text_resource(IDS_WANT_PARTY_MEMBER, iLMin, iLMax);
 		CGameBase::s_pPlayer->InfoStringSet(szMsg, 0xff00ff00);
