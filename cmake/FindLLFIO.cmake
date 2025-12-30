@@ -1,4 +1,4 @@
-# Get llfio package
+# Get LLFIO package
 #
 # Makes the llfio_sl target available.
 
@@ -22,3 +22,5 @@ endif()
 if(MSVC)
   target_compile_definitions(llfio_sl PUBLIC "_SILENCE_CXX20_CODECVT_CHAR8_T_FACETS_DEPRECATION_WARNING")
 endif()
+
+set(llfio_FOUND TRUE)

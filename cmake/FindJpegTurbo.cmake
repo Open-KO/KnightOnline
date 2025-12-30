@@ -1,4 +1,4 @@
-# Get libjpeg-turbo package
+# Get JpegTurbo package
 #
 # Makes the libjpeg-turbo target available.
 
@@ -49,3 +49,5 @@ add_dependencies(libjpeg-turbo libjpeg-turbo-project)
 target_include_directories(libjpeg-turbo INTERFACE
   "${LIBJPEG_TURBO_INCLUDE_DIR}"
 )
+
+set(jpegturbo_FOUND TRUE)

@@ -1,4 +1,4 @@
-# Get argparse package
+# Get Argparse package
 #
 # Makes the argparse target available.
 
@@ -15,3 +15,5 @@ fetchcontent_declare(
 )
 
 fetchcontent_makeavailable(argparse)
+
+set(argparse_FOUND TRUE)

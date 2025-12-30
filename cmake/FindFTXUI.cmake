@@ -1,4 +1,4 @@
-# Get ftxui package
+# Get FTXUI package
 #
 # Makes the ftxui::component, ftxui::dom, ftxui::screen targets available.
 
@@ -12,3 +12,5 @@ fetchcontent_declare(
 )
 
 fetchcontent_makeavailable(ftxui)
+
+set(ftxui_FOUND TRUE)

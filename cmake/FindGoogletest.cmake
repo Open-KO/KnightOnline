@@ -1,4 +1,4 @@
-# Get googletest package
+# Get Googletest package
 #
 # Makes the gtest, gtest_main, gmock, gmock_main targets available.
 
@@ -13,3 +13,5 @@ fetchcontent_declare(
 )
 
 fetchcontent_makeavailable(googletest)
+
+set(googletest_FOUND TRUE)

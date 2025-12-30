@@ -1,4 +1,4 @@
-# Get asio package
+# Get Asio package
 #
 # Makes the asio target available.
 
@@ -27,3 +27,5 @@ target_include_directories(asio
 # Build as standalone
 target_compile_definitions(asio PUBLIC ASIO_STANDALONE)
 target_compile_definitions(asio PRIVATE ASIO_SEPARATE_COMPILATION)
+
+set(asio_FOUND TRUE)

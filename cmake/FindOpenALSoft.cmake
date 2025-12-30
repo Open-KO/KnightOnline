@@ -1,4 +1,4 @@
-# Get openal-soft package
+# Get OpenALSoft package
 #
 # Makes the openal-soft target available.
 
@@ -22,3 +22,5 @@ if(MSVC)
 endif()
 
 fetchcontent_makeavailable(openalsoft)
+
+set(openalsoft_FOUND TRUE)

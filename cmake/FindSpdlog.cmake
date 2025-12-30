@@ -1,4 +1,4 @@
-# Get spdlog package
+# Get Spdlog package
 #
 # Makes the spdlog target available.
 
@@ -14,3 +14,5 @@ fetchcontent_declare(
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "spdlog: Enable PCH")
 
 fetchcontent_makeavailable(spdlog)
+
+set(spdlog_FOUND TRUE)

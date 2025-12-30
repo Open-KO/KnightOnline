@@ -11,7 +11,7 @@ set(OPENKO_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${OPENKO_MODULE_PATH}")
 
 include(FetchContent)
-include(RequireConfigPackage)
+include(RequirePackage)
 
 # Set minimum standard to C++23 (unless otherwise specified)
 set(CMAKE_CXX_STANDARD 23)
@@ -93,9 +93,9 @@ endif()
 
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
-require_config_package(asio)
-require_config_package(llfio)
-require_config_package(spdlog)
+require_package(Asio)
+require_package(LLFIO)
+require_package(Spdlog)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
@@ -114,10 +114,10 @@ if(MSVC)
     require_config_package(dx9sdk)
 
     set(CMAKE_FOLDER "N3Base/_deps/mpg123")
-	require_config_package(mpg123)
+	require_package(Mpg123)
 
     set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
-    require_config_package(openal-soft)
+    require_package(OpenALSoft)
 
     set(CMAKE_FOLDER "N3Base")
     add_subdirectory(Client/N3Base)
@@ -132,7 +132,7 @@ if(MSVC)
 
     # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
     # so we must structure this a little bit differently to everything else.
-    require_config_package(libjpeg-turbo)
+    require_package(JpegTurbo)
     add_subdirectory(Client/JpegFile)
   endif()
 
@@ -147,7 +147,7 @@ if(MSVC)
     message(STATUS "OpenKO: Preparing to configure client tools...")
 
     set(CMAKE_FOLDER "Client tools/_deps")
-    require_config_package(zlib)
+    require_package(Zlib)
     add_subdirectory(deps/ZipArchive)
 
     set(CMAKE_FOLDER "Client tools")
@@ -176,16 +176,16 @@ if(OPENKO_BUILD_SERVERS)
 
   # Dependencies
   set(CMAKE_FOLDER "Server/_deps/boost")
-  require_config_package(boost)
+  require_package(BoostSubset)
 
   set(CMAKE_FOLDER "Server/_deps/ftxui")
-  require_config_package(ftxui)
+  require_package(FTXUI)
 
   set(CMAKE_FOLDER "Server/_deps/argparse")
-  require_config_package(argparse)
+  require_package(Argparse)
 
   set(CMAKE_FOLDER "Server/_deps")
-  require_config_package(nanodbc)
+  require_package(Nanodbc)
   require_config_package(db-models)
   require_config_package(djb2)
   add_subdirectory(db-library)
@@ -213,7 +213,7 @@ if(OPENKO_BUILD_TESTS)
   include(CTest)
 
   set(CMAKE_FOLDER "Tests/_deps")
-  require_config_package(googletest)
+  require_package(Googletest)
 
   set(CMAKE_FOLDER "Tests")
   add_subdirectory(FileIO/tests)

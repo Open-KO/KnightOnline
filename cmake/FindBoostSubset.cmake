@@ -1,4 +1,4 @@
-# Get Boost package
+# Get BoostSubset package
 #
 # Makes the Boost targets available.
 
@@ -23,3 +23,5 @@ fetchcontent_declare(
 
 fetchcontent_makeavailable(Boost)
 find_package(Boost 1.89.0 EXACT REQUIRED COMPONENTS interprocess)
+
+set(boostsubset_FOUND TRUE)

@@ -1,4 +1,4 @@
-# Get zlib package
+# Get Zlib package
 #
 # Makes the libzlib target available.
 
@@ -27,3 +27,5 @@ if(MSVC)
 else()
   target_link_libraries(libzlib INTERFACE zlib)
 endif()
+
+set(zlib_FOUND TRUE)

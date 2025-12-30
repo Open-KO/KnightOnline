@@ -1,4 +1,4 @@
-# Get nanodbc package
+# Get Nanodbc package
 #
 # Makes the nanodbc target available.
 
@@ -29,3 +29,5 @@ target_compile_options(nanodbc
   PRIVATE
   $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-declarations>
 )
+
+set(nanodbc_FOUND TRUE)
