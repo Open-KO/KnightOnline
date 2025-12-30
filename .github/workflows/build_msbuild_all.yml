@@ -52,7 +52,7 @@ jobs:
         BUILD_CONFIGURATION: [Debug, Release]
         BUILD_PLATFORM: [Win32, x64]
 
-    name: "All: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
+    name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
 
     steps:
     - uses: actions/checkout@v4

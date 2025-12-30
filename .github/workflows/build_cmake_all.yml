@@ -48,7 +48,7 @@ jobs:
         BUILD_CONFIGURATION: [Debug, Release]
         BUILD_PLATFORM: [Win32, x64]
 
-    name: "CMake: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }} (Windows)"
+    name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }} (Windows)"
 
     steps:
     - uses: actions/checkout@v4
@@ -88,7 +88,7 @@ jobs:
         BUILD_CONFIGURATION: [Debug, Release]
         COMPILER: [gcc, clang, clang-latest]
 
-    name: "CMake: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux - Ubuntu)"
+    name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (Linux - Ubuntu)"
 
     steps:
       - uses: actions/checkout@v4
@@ -146,7 +146,7 @@ jobs:
         BUILD_CONFIGURATION: [Debug, Release]
         COMPILER: [XCode]
 
-    name: "CMake: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (MacOS)"
+    name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.COMPILER }} (MacOS)"
 
     steps:
       - uses: actions/checkout@v4
