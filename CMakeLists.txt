@@ -90,9 +90,9 @@ endif()
 
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
-require_package(asio)
-require_package(llfio)
-require_package(spdlog)
+require_package(Asio asio)
+require_package(Llfio llfio)
+require_package(Spdlog spdlog)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
@@ -108,11 +108,10 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
     # Dependencies
     set(CMAKE_FOLDER "N3Base/_deps")
-    require_package(directx9 dx9sdk)
-    # find_package(directx9 REQUIRED)
+    require_package(Directx9 dx9sdk)
 
     set(CMAKE_FOLDER "N3Base/_deps/mpg123")
-	require_package(mpg123)
+	require_package(Mpg123 mpg123)
 
     set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
     require_package(OpenALSoft openal-soft)
@@ -140,7 +139,7 @@ if(MSVC)
     message(STATUS "OpenKO: Preparing to configure client tools...")
 
     set(CMAKE_FOLDER "Client tools/_deps")
-    require_package(zlib)
+    require_package(Zlib zlib)
     add_subdirectory(deps/ZipArchive)
 
     set(CMAKE_FOLDER "Client tools")
@@ -172,15 +171,15 @@ if(OPENKO_BUILD_SERVERS)
   require_package(BoostSubset Boost)
 
   set(CMAKE_FOLDER "Server/_deps/ftxui")
-  require_package(ftxui)
+  require_package(Ftxui ftxui)
 
   set(CMAKE_FOLDER "Server/_deps/argparse")
-  require_package(argparse)
+  require_package(Argparse argparse)
 
   set(CMAKE_FOLDER "Server/_deps")
-  require_package(nanodbc)
+  require_package(Nanodbc nanodbc)
   require_package(DbModels db-models)
-  require_package(djb2)
+  require_package(Djb2 djb2)
   add_subdirectory(db-library EXCLUDE_FROM_ALL)
   add_subdirectory(Server/shared-server)
 
@@ -206,7 +205,7 @@ if(OPENKO_BUILD_TESTS)
   include(CTest)
 
   set(CMAKE_FOLDER "Tests/_deps")
-  require_package(googletest)
+  require_package(Googletest googletest)
 
   set(CMAKE_FOLDER "Tests")
   add_subdirectory(FileIO/tests)
