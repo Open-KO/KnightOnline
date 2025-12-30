@@ -22,8 +22,6 @@ add_executable(SkyViewer
   # Resources
   res/Toolbar.bmp)
 
-require_directx9(SkyViewer)
-
 if(WIN32)
   set_target_properties(SkyViewer PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(SkyViewer PRIVATE

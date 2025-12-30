@@ -22,8 +22,6 @@ add_executable(N3TexViewer
   # Resources
   res/Toolbar.bmp)
 
-require_directx9(N3TexViewer)
-
 if(WIN32)
   set_target_properties(N3TexViewer PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(N3TexViewer PRIVATE

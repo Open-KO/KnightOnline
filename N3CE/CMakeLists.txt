@@ -33,8 +33,6 @@ add_executable(N3CE
   res/NodeIcons.bmp
   res/Toolbar.bmp)
 
-require_directx9(N3CE)
-
 if(WIN32)
   set_target_properties(N3CE PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(N3CE PRIVATE

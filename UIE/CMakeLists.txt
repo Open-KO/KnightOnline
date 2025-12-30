@@ -38,8 +38,6 @@ add_executable(UIE
   # Resources
   res/Toolbar.bmp)
 
-require_directx9(UIE)
-
 if(WIN32)
   set_target_properties(UIE PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(UIE PRIVATE

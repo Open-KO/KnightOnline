@@ -219,9 +219,6 @@ source_group("Sky" FILES ${N3BASE_COMMON_SKY_SOURCES})
 source_group("UI" FILES ${N3BASE_COMMON_UI_SOURCES})
 source_group("Weather" FILES ${N3BASE_COMMON_WEATHER_SOURCES} ${N3BASE_TOOL_WEATHER_SOURCES})
 
-require_directx9(N3Base_client)
-require_directx9(N3Base_tool)
-
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET N3Base_client PROPERTY COMPILE_WARNING_AS_ERROR ON)

@@ -40,8 +40,6 @@ add_executable(N3FXE
   # Resources
   res/Toolbar.bmp)
 
-require_directx9(N3FXE)
-
 if(WIN32)
   set_target_properties(N3FXE PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(N3FXE PRIVATE

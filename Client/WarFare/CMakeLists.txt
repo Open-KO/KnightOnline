@@ -324,8 +324,6 @@ source_group("World/Water" FILES ${WARFARE_WORLD_WATER_SOURCES})
 source_group("Core UIs" FILES ${WARFARE_CORE_UIS_SOURCES})
 source_group("Popup notice text" FILES ${WARFARE_POPUP_NOTICE_TEXT_SOURCES})
 
-require_directx9(WarFare)
-
 set_target_properties(WarFare PROPERTIES
   OUTPUT_NAME "KnightOnLine"
 )
