@@ -3,52 +3,36 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: "Build server (CMake)"
+name: "Build all (CMake)"
 
 on:
   push:
     branches:
     - master
 
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
     paths:
-      - '.github/workflows/build_cmake_server.yml'
-      - 'CMakeLists.txt'
-      - 'deps/asio-cmake/CMakeLists.txt'
-      - 'deps/boost-cmake/CMakeLists.txt'
-      - 'deps/db-library-cmake/CMakeLists.txt'
-      - 'deps/db-models-cmake/CMakeLists.txt'
-      - 'deps/djb2-cmake/CMakeLists.txt'
-      - 'deps/FTXUI-cmake/CMakeLists.txt'
-      - 'deps/nanodbc-cmake/CMakeLists.txt'
-      - 'deps/spdlog-cmake/CMakeLists.txt'
-      - 'Server/**/CMakeLists.txt'
-      - 'Server/**/.cpp'
-      - 'Server/**/.h'
-      - 'shared/CMakeLists.txt'
-      - 'shared/**/.cpp'
-      - 'shared/**/.h'
+      - '.github/workflows/build_cmake.yml'
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
 
   pull_request:
     branches:
     - master
 
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
     paths:
-      - '.github/workflows/build_cmake_server.yml'
-      - 'CMakeLists.txt'
-      - 'deps/asio-cmake/CMakeLists.txt'
-      - 'deps/boost-cmake/CMakeLists.txt'
-      - 'deps/db-library-cmake/CMakeLists.txt'
-      - 'deps/db-models-cmake/CMakeLists.txt'
-      - 'deps/djb2-cmake/CMakeLists.txt'
-      - 'deps/FTXUI-cmake/CMakeLists.txt'
-      - 'deps/nanodbc-cmake/CMakeLists.txt'
-      - 'deps/spdlog-cmake/CMakeLists.txt'
-      - 'Server/**/CMakeLists.txt'
-      - 'Server/**/.cpp'
-      - 'Server/**/.h'
-      - 'shared/CMakeLists.txt'
-      - 'shared/**/.cpp'
-      - 'shared/**/.h'
+      - '.github/workflows/build_cmake.yml'
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
 
   workflow_dispatch:
 
