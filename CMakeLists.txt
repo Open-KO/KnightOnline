@@ -156,6 +156,7 @@ if(MSVC)
     add_subdirectory(N3TexViewer)
     add_subdirectory(N3Viewer)
     add_subdirectory(SkyViewer)
+    add_subdirectory(TblEditor)
   endif()
 endif()
 
