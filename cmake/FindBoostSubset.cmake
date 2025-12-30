@@ -1,3 +1,7 @@
+# Get BoostSubset package
+#
+# Makes the Boost targets available.
+
 set(BOOST_ENABLE_CMAKE ON)
 set(BOOST_SUBMODULES # This isn't exactly ideal, but since we only use a tiny subset of Boost it's probably manageable
   "tools/cmake;"
@@ -17,9 +21,5 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [Boost] Checking and fetching...")
-
 fetchcontent_makeavailable(Boost)
 find_package(Boost 1.89.0 EXACT REQUIRED COMPONENTS interprocess)
-
-message(STATUS "OpenKO: [Boost] Up-to-date!")

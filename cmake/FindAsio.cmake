@@ -1,3 +1,7 @@
+# Get asio package
+#
+# Makes the asio target available.
+
 fetchcontent_declare(
   asio
   GIT_REPOSITORY        "https://github.com/chriskohlhoff/asio.git"
@@ -8,11 +12,7 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [asio] Checking and fetching...")
-
 fetchcontent_makeavailable(asio)
-
-message(STATUS "OpenKO: [asio] Up-to-date!")
 
 add_library(asio STATIC
   "${asio_SOURCE_DIR}/asio/src/asio.cpp"

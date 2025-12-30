@@ -1,3 +1,7 @@
+# Get googletest package
+#
+# Makes the gtest, gtest_main, gmock, gmock_main targets available.
+
 fetchcontent_declare(
   googletest
   GIT_REPOSITORY        "https://github.com/google/googletest.git"
@@ -8,8 +12,4 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [googletest] Checking and fetching...")
-
 fetchcontent_makeavailable(googletest)
-
-message(STATUS "OpenKO: [googletest] Up-to-date!")

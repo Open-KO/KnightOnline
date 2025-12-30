@@ -1,3 +1,9 @@
+# Get directx9 package
+#
+# Makes the dx9sdk target available.
+
+include(FetchContent)
+
 fetchcontent_declare(
   dx9sdk
   GIT_REPOSITORY        "https://github.com/Open-KO/microsoft-directx-sdk.git"
@@ -10,11 +16,7 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [dx9sdk] Checking and fetching...")
-
 fetchcontent_makeavailable(dx9sdk)
-
-message(STATUS "OpenKO: [dx9sdk] Up-to-date!")
 
 set(DX9_INCLUDE_DIR "${dx9sdk_SOURCE_DIR}/Include")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -78,7 +80,7 @@ target_link_libraries(dx9sdk INTERFACE
 # manually.
 set(DIRECTX9_PROPS_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/directx9.props.template")
 set(DIRECTX9_PROPS_DIR "${CMAKE_CURRENT_BINARY_DIR}/props")
-set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props")
+set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props" CACHE STRING "DirectX 9 property sheet path for includes (internal)" FORCE)
 
 # Make sure the target directory exists
 file(MAKE_DIRECTORY "${DIRECTX9_PROPS_DIR}")

@@ -1,3 +1,7 @@
+# Get OpenALSoft package
+#
+# Makes the openal-soft target available.
+
 fetchcontent_declare(
   openalsoft
   GIT_REPOSITORY        "https://github.com/Open-KO/openal-soft.git"
@@ -18,8 +22,4 @@ if(MSVC)
   set(LIBTYPE STATIC CACHE STRING "openal-soft: Library type")
 endif()
 
-message(STATUS "OpenKO: [openal-soft] Checking and fetching...")
-
 fetchcontent_makeavailable(openalsoft)
-
-message(STATUS "OpenKO: [openal-soft] Up-to-date!")

@@ -5,7 +5,12 @@ project(OpenKO
 )
 
 find_package(Git REQUIRED)
+
+# Search in the "cmake" directory for additional CMake modules.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 include(FetchContent)
+include(RequirePackage)
 
 # Set minimum standard to C++23 (unless otherwise specified)
 set(CMAKE_CXX_STANDARD 23)
@@ -78,9 +83,6 @@ set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
 set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/QUESTS")
 set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
 
-# Search in the "cmake" directory for additional CMake modules.
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
 # Generate .gitignore in build directory
 if(NOT PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   file(WRITE "${PROJECT_BINARY_DIR}/.gitignore" "*")
@@ -88,9 +90,9 @@ endif()
 
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
-add_subdirectory(deps/asio-cmake EXCLUDE_FROM_ALL)
-add_subdirectory(deps/llfio-cmake EXCLUDE_FROM_ALL)
-add_subdirectory(deps/spdlog-cmake EXCLUDE_FROM_ALL)
+require_package(asio)
+require_package(llfio)
+require_package(spdlog)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
@@ -106,13 +108,14 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
     # Dependencies
     set(CMAKE_FOLDER "N3Base/_deps")
-    find_package(Directx9 REQUIRED)
+    require_package(directx9 dx9sdk)
+    # find_package(directx9 REQUIRED)
 
     set(CMAKE_FOLDER "N3Base/_deps/mpg123")
-    add_subdirectory(deps/mpg123-cmake EXCLUDE_FROM_ALL)
+	require_package(mpg123)
 
     set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
-    add_subdirectory(deps/openal-soft-cmake EXCLUDE_FROM_ALL)
+    require_package(OpenALSoft openal-soft)
 
     set(CMAKE_FOLDER "N3Base")
     add_subdirectory(Client/N3Base)
@@ -137,7 +140,7 @@ if(MSVC)
     message(STATUS "OpenKO: Preparing to configure client tools...")
 
     set(CMAKE_FOLDER "Client tools/_deps")
-    add_subdirectory(deps/zlib-cmake EXCLUDE_FROM_ALL)
+    require_package(zlib)
     add_subdirectory(deps/ZipArchive)
 
     set(CMAKE_FOLDER "Client tools")
@@ -166,18 +169,18 @@ if(OPENKO_BUILD_SERVERS)
 
   # Dependencies
   set(CMAKE_FOLDER "Server/_deps/boost")
-  add_subdirectory(deps/boost-cmake EXCLUDE_FROM_ALL)
+  require_package(BoostSubset Boost)
 
   set(CMAKE_FOLDER "Server/_deps/ftxui")
-  add_subdirectory(deps/FTXUI-cmake EXCLUDE_FROM_ALL)
+  require_package(ftxui)
 
   set(CMAKE_FOLDER "Server/_deps/argparse")
-  add_subdirectory(deps/argparse-cmake EXCLUDE_FROM_ALL)
+  require_package(argparse)
 
   set(CMAKE_FOLDER "Server/_deps")
-  add_subdirectory(deps/nanodbc-cmake EXCLUDE_FROM_ALL)
-  add_subdirectory(deps/db-models-cmake EXCLUDE_FROM_ALL)
-  add_subdirectory(deps/djb2-cmake EXCLUDE_FROM_ALL)
+  require_package(nanodbc)
+  require_package(DbModels db-models)
+  require_package(djb2)
   add_subdirectory(db-library EXCLUDE_FROM_ALL)
   add_subdirectory(Server/shared-server)
 
@@ -203,7 +206,7 @@ if(OPENKO_BUILD_TESTS)
   include(CTest)
 
   set(CMAKE_FOLDER "Tests/_deps")
-  add_subdirectory(deps/googletest-cmake)
+  require_package(googletest)
 
   set(CMAKE_FOLDER "Tests")
   add_subdirectory(FileIO/tests)

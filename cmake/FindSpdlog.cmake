@@ -1,3 +1,7 @@
+# Get spdlog package
+#
+# Makes the spdlog target available.
+
 fetchcontent_declare(
   spdlog
   GIT_REPOSITORY        "https://github.com/Open-KO/spdlog.git"
@@ -10,8 +14,4 @@ fetchcontent_declare(
 
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "spdlog: Enable PCH")
 
-message(STATUS "OpenKO: [spdlog] Checking and fetching...")
-
 fetchcontent_makeavailable(spdlog)
-
-message(STATUS "OpenKO: [spdlog] Up-to-date!")

@@ -1,3 +1,7 @@
+# Get djb2 package
+#
+# Makes the djb2 target available.
+
 fetchcontent_declare(
   djb2
   GIT_REPOSITORY        "https://github.com/Open-KO/djb2.git"
@@ -11,11 +15,7 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [djb2] Checking and fetching...")
-
 fetchcontent_makeavailable(djb2)
-
-message(STATUS "OpenKO: [djb2] Up-to-date!")
 
 add_library(djb2 INTERFACE
   "${djb2_SOURCE_DIR}/djb2_hasher.h"
@@ -23,5 +23,5 @@ add_library(djb2 INTERFACE
 
 # Expose include path
 target_include_directories(djb2 INTERFACE
-  "${djb2_SOURCE_DIR}/../"
+  "${djb2_SOURCE_DIR}/../" # for <djb2/...>
 )

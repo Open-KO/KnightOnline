@@ -1,3 +1,7 @@
+# Get DbModels package
+#
+# Makes the db-models target available.
+
 fetchcontent_declare(
   db_models
   GIT_REPOSITORY        "https://github.com/Open-KO/OpenKO-db-models.git"
@@ -10,11 +14,7 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [db-models] Checking and fetching...")
-
 fetchcontent_makeavailable(db_models)
-
-message(STATUS "OpenKO: [db-models] Up-to-date!")
 
 add_library(db-models STATIC
   "${db_models_SOURCE_DIR}/AIServer/binder/AIServerBinder.cpp"

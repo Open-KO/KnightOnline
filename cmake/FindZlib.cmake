@@ -1,3 +1,7 @@
+# Get zlib package
+#
+# Makes the libzlib target available.
+
 fetchcontent_declare(
   zlib
   GIT_REPOSITORY        "https://github.com/madler/zlib.git"
@@ -15,11 +19,7 @@ if(MSVC)
   set(ZLIB_BUILD_SHARED OFF CACHE BOOL "zlib: Enable building zlib shared library")
 endif()
 
-message(STATUS "OpenKO: [zlib] Checking and fetching...")
-
 fetchcontent_makeavailable(zlib)
-
-message(STATUS "OpenKO: [zlib] Up-to-date!")
 
 # Setup a wrapper project to reference the preferred zlib target for this build
 add_library(libzlib INTERFACE)

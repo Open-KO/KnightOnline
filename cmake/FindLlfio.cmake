@@ -1,3 +1,7 @@
+# Get llfio package
+#
+# Makes the llfio_sl target available.
+
 fetchcontent_declare(
   llfio
   GIT_REPOSITORY        "https://github.com/Open-KO/llfio.git"
@@ -8,11 +12,7 @@ fetchcontent_declare(
   EXCLUDE_FROM_ALL
 )
 
-message(STATUS "OpenKO: [llfio] Checking and fetching...")
-
 fetchcontent_makeavailable(llfio)
-
-message(STATUS "OpenKO: [llfio] Up-to-date!")
 
 target_compile_definitions(llfio_sl INTERFACE "LLFIO_HEADERS_ONLY=0")
 
