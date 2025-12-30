@@ -132,9 +132,6 @@
     <ClCompile Include="GameProcLogIn_1098.cpp" />
     <ClCompile Include="GameProcMain.cpp" />
     <ClCompile Include="GameProcNationSelect.cpp" />
-    <ClCompile Include="GameProcOption.cpp" />
-    <ClCompile Include="GrassBoard.cpp" />
-    <ClCompile Include="GrassMng.cpp" />
     <ClCompile Include="IconItemSkill.cpp" />
     <ClCompile Include="ItemRepairMgr.cpp" />
     <ClCompile Include="LightMgr.cpp" />
@@ -244,9 +241,6 @@
     <ClInclude Include="GameProcLogIn_1098.h" />
     <ClInclude Include="GameProcMain.h" />
     <ClInclude Include="GameProcNationSelect.h" />
-    <ClInclude Include="GameProcOption.h" />
-    <ClInclude Include="GrassBoard.h" />
-    <ClInclude Include="GrassMng.h" />
     <ClInclude Include="IconItemSkill.h" />
     <ClInclude Include="N3ClientShapeMgr.h" />
     <ClInclude Include="N3Pond.h" />

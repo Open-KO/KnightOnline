@@ -19,7 +19,6 @@ class CN3TerrainManager : public CN3WorldBase
 	class CN3ShapeMgr*		m_pShapes;										// 물체 클래스
 	class CN3SkyMng*		m_pSky;											  // 하늘 클래스
 	class CBirdMng*			m_pBirdMng;									     // 하늘에 날라다니는 새들 관리..
-//	class CGrassMng*		m_pGrasses;									  // 풀 그림
 
 	// Function..
 	void InitWorld(int iZoneID, const __Vector3& vPosPlayer);
@@ -66,14 +65,10 @@ class CN3TerrainManager : public CN3WorldBase
 
 	// Bird..
 
-	// Grass..
-	void InitWithGrass(__Vector3 CamPo);
-
 	// Rendering..
 	void RenderTerrain();
 	void RenderShape();	
 	void RenderSky();
-	void RenderGrass();
 	void RenderBirdMgr();
 	void RenderSkyWeather();
 

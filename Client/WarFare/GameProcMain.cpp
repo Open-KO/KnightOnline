@@ -694,7 +694,6 @@ void CGameProcMain::Render()
 
 	this->RenderTarget();						// 타겟으로 잡은 캐릭터 혹은 오브젝트 렌더링..
 
-	ACT_WORLD->RenderGrass();						//	풀 렌더 (asm)
 	s_pFX->Tick();
 	s_pFX->Render();
 	ACT_WORLD->RenderBirdMgr();

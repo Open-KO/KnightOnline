@@ -129,11 +129,6 @@ void CN3TerrainManager::RenderSky()
 	if (m_pSky)		m_pSky->Render();
 }
 
-void CN3TerrainManager::RenderGrass()
-{
-//	if (m_pGrasses)		m_pGrasses->Render();
-}
-
 void CN3TerrainManager::RenderBirdMgr()
 {
 	if (m_pBirdMng)		m_pBirdMng->Render();
@@ -333,17 +328,3 @@ CN3Sun*	CN3TerrainManager::GetSunPointerWithSky()
 		return nullptr;
 }
 */
-
-// Grass..
-void CN3TerrainManager::InitWithGrass(__Vector3 CamPo)
-{
-//	if (m_pGrasses)	m_pGrasses->Init(CamPo);
-}
-
-
-
-
-
-
-
-

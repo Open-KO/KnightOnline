@@ -11,118 +11,54 @@ if(NOT EXISTS "${TARGET_CLIENT_CONFIG_HEADER}")
   configure_file("${DEFAULT_CLIENT_CONFIG_HEADER}" "${TARGET_CLIENT_CONFIG_HEADER}" COPYONLY)
 endif()
 
-add_executable(WarFare
-  APISocket.cpp
-  APISocket.h
-  Bird.cpp
-  Bird.h
-  BirdMng.cpp
-  BirdMng.h
-  Bitset.h
-  ClientResourceFormatter.cpp
-  ClientResourceFormatter.h
-  CountableItemEditDlg.cpp
-  CountableItemEditDlg.h
-  DungeonManager.cpp
-  DungeonManager.h
-  EventManager.cpp
-  EventManager.h
-  GameBase.cpp
-  GameBase.h
-  GameCursor.cpp
-  GameCursor.h
-  GameDef.h
-  GameEng.cpp
-  GameEng.h
-  GameProcCharacterCreate.cpp
-  GameProcCharacterCreate.h
-  GameProcCharacterSelect.cpp
-  GameProcCharacterSelect.h
+set(WARFARE_SCENE_SOURCES
   GameProcedure.cpp
   GameProcedure.h
+)
+
+set(WARFARE_SCENE_LOGIN_SOURCES
   GameProcLogIn_1098.cpp
   GameProcLogIn_1098.h
   GameProcLogIn_1298.cpp
   GameProcLogIn_1298.h
   GameProcLogIn.h
-  GameProcMain.cpp
-  GameProcMain.h
+  UILogin_1098.cpp
+  UILogin_1098.h
+  UILogin_1298.cpp
+  UILogin_1298.h
+)
+
+set(WARFARE_SCENE_NATION_SELECTION_SOURCES
   GameProcNationSelect.cpp
   GameProcNationSelect.h
-  GameProcOption.cpp
-  GameProcOption.h
-  GrassBoard.cpp
-  GrassBoard.h
-  GrassMng.cpp
-  GrassMng.h
-  IconItemSkill.cpp
-  IconItemSkill.h
-  ItemRepairMgr.cpp
-  ItemRepairMgr.h
-  LightMgr.cpp
-  LightMgr.h
-  LocalInput.cpp
-  LocalInput.h
-  MagicSkillMng.cpp
-  MagicSkillMng.h
-  N3ClientShapeMgr.cpp
-  N3ClientShapeMgr.h
-  N3FXBundleGame.cpp
-  N3FXBundleGame.h
-  N3FXMgr.cpp
-  N3FXMgr.h
-  N3FXPartBillBoardGame.cpp
-  N3FXPartBillBoardGame.h
-  N3FXPartBottomBoardGame.cpp
-  N3FXPartBottomBoardGame.h
-  N3Pond.cpp
-  N3Pond.h
-  N3River.cpp
-  N3River.h
-  N3Terrain.cpp
-  N3Terrain.h
-  N3TerrainDef.h
-  N3TerrainManager.cpp
-  N3TerrainManager.h
-  N3TerrainPatch.cpp
-  N3TerrainPatch.h
-  N3UIDBCLButton.cpp
-  N3UIDBCLButton.h
-  N3UIIcon.cpp
-  N3UIIcon.h
-  N3UIWndBase.cpp
-  N3UIWndBase.h
-  N3WorldBase.cpp
-  N3WorldBase.h
-  N3WorldManager.cpp
-  N3WorldManager.h
-  OrderMessage.cpp
-  OrderMessage.h
-  PacketDef.h
-  PlayerBase.cpp
-  PlayerBase.h
-  PlayerMySelf.cpp
-  PlayerMySelf.h
-  PlayerNPC.cpp
-  PlayerNPC.h
-  PlayerOther.cpp
-  PlayerOther.h
-  PlayerOtherMgr.cpp
-  PlayerOtherMgr.h
-  PortalVolume.cpp
-  PortalVolume.h
-  PvsMgr.cpp
-  PvsMgr.h
-  Resource.rc
-  ServerMesh.cpp
-  ServerMesh.h
-  StdAfx.h
-  SubProcPerTrade.cpp
-  SubProcPerTrade.h
-  UICharacterCreate.cpp
-  UICharacterCreate.h
+  UINationSelectDlg.cpp
+  UINationSelectDlg.h
+)
+
+set(WARFARE_SCENE_CHARACTER_SELECTION_SOURCES
+  GameProcCharacterSelect.cpp
+  GameProcCharacterSelect.h
   UICharacterSelect.cpp
   UICharacterSelect.h
+)
+
+set(WARFARE_SCENE_CHARACTER_CREATION_SOURCES
+  GameProcCharacterCreate.cpp
+  GameProcCharacterCreate.h
+  UICharacterCreate.cpp
+  UICharacterCreate.h
+)
+
+set(WARFARE_SCENE_INGAME_SOURCES
+  GameProcMain.cpp
+  GameProcMain.h
+)
+
+set(WARFARE_SCENE_INGAME_UI_SOURCES
+  ItemRepairMgr.cpp
+  ItemRepairMgr.h
+  SubProcPerTrade.cpp
+  SubProcPerTrade.h
   UIChat.cpp
   UIChat.h
   UIClassChange.cpp
@@ -159,22 +95,10 @@ add_executable(WarFare
   UILevelGuide.h
   UILoading.cpp
   UILoading.h
-  UILogin_1098.cpp
-  UILogin_1098.h
-  UILogin_1298.cpp
-  UILogin_1298.h
-  UIManager.cpp
-  UIManager.h
-  UIMessageBox.cpp
-  UIMessageBox.h
-  UIMessageBoxManager.cpp
-  UIMessageBoxManager.h
   UIMessageWnd.cpp
   UIMessageWnd.h
   UIMsgBoxOkCancel.cpp
   UIMsgBoxOkCancel.h
-  UINationSelectDlg.cpp
-  UINationSelectDlg.h
   UINotice.cpp
   UINotice.h
   UINPCChangeEvent.cpp
@@ -223,11 +147,182 @@ add_executable(WarFare
   UIWareHouseDlg.h
   UIWarp.cpp
   UIWarp.h
-  WarFareMain.cpp
+)
+
+set(WARFARE_NETWORK_SOURCES
+  APISocket.cpp
+  APISocket.h
+  PacketDef.h
+)
+
+set(WARFARE_INPUT_SOURCES
+  LocalInput.cpp
+  LocalInput.h
+)
+
+set(WARFARE_PLAYERS_SOURCES
+  MagicSkillMng.cpp
+  MagicSkillMng.h
+  PlayerBase.cpp
+  PlayerBase.h
+  PlayerMySelf.cpp
+  PlayerMySelf.h
+  PlayerNPC.cpp
+  PlayerNPC.h
+  PlayerOther.cpp
+  PlayerOther.h
+  PlayerOtherMgr.cpp
+  PlayerOtherMgr.h
+)
+
+set(WARFARE_WORLD_SOURCES
+  EventManager.cpp
+  EventManager.h
+  N3WorldBase.cpp
+  N3WorldBase.h
+  N3WorldManager.cpp
+  N3WorldManager.h
+  ServerMesh.cpp
+  ServerMesh.h
+)
+
+set(WARFARE_WORLD_BIRDS_SOURCES
+  Bird.cpp
+  Bird.h
+  BirdMng.cpp
+  BirdMng.h
+)
+
+set(WARFARE_WORLD_EFFECTS_SOURCES
+  N3FXBundleGame.cpp
+  N3FXBundleGame.h
+  N3FXMgr.cpp
+  N3FXMgr.h
+  N3FXPartBillBoardGame.cpp
+  N3FXPartBillBoardGame.h
+  N3FXPartBottomBoardGame.cpp
+  N3FXPartBottomBoardGame.h
+)
+
+set(WARFARE_WORLD_INDOOR_SOURCES
+  DungeonManager.cpp
+  DungeonManager.h
+  PortalVolume.cpp
+  PortalVolume.h
+  PvsMgr.cpp
+  PvsMgr.h
+)
+
+set(WARFARE_WORLD_LIGHTING_SOURCES
+  LightMgr.cpp
+  LightMgr.h
+)
+
+set(WARFARE_WORLD_OBJECTS_SOURCES
+  N3ClientShapeMgr.cpp
+  N3ClientShapeMgr.h
+)
+
+set(WARFARE_WORLD_TERRAIN_SOURCES
+  N3Terrain.cpp
+  N3Terrain.h
+  N3TerrainDef.h
+  N3TerrainManager.cpp
+  N3TerrainManager.h
+  N3TerrainPatch.cpp
+  N3TerrainPatch.h
+)
+
+set(WARFARE_WORLD_WATER_SOURCES
+  N3Pond.cpp
+  N3Pond.h
+  N3River.cpp
+  N3River.h
+)
+
+set(WARFARE_CORE_UIS_SOURCES
+  CountableItemEditDlg.cpp
+  CountableItemEditDlg.h
+  GameCursor.cpp
+  GameCursor.h
+  IconItemSkill.cpp
+  IconItemSkill.h
+  N3UIDBCLButton.cpp
+  N3UIDBCLButton.h
+  N3UIIcon.cpp
+  N3UIIcon.h
+  N3UIWndBase.cpp
+  N3UIWndBase.h
+  UIManager.cpp
+  UIManager.h
+  UIMessageBox.cpp
+  UIMessageBox.h
+  UIMessageBoxManager.cpp
+  UIMessageBoxManager.h
+)
+
+set(WARFARE_POPUP_NOTICE_TEXT_SOURCES
+  OrderMessage.cpp
+  OrderMessage.h
   WarMessage.cpp
   WarMessage.h
+)
+
+add_executable(WarFare
+  Bitset.h
+  ClientResourceFormatter.cpp
+  ClientResourceFormatter.h
+  GameBase.cpp
+  GameBase.h
+  GameDef.h
+  GameEng.cpp
+  GameEng.h
+  Resource.rc
+  StdAfx.h
+  WarFareMain.cpp
+  ${WARFARE_SCENE_SOURCES}
+  ${WARFARE_SCENE_LOGIN_SOURCES}
+  ${WARFARE_SCENE_NATION_SELECTION_SOURCES}
+  ${WARFARE_SCENE_CHARACTER_SELECTION_SOURCES}
+  ${WARFARE_SCENE_CHARACTER_CREATION_SOURCES}
+  ${WARFARE_SCENE_INGAME_SOURCES}
+  ${WARFARE_SCENE_INGAME_UI_SOURCES}
+  ${WARFARE_INPUT_SOURCES}
+  ${WARFARE_NETWORK_SOURCES}
+  ${WARFARE_PLAYERS_SOURCES}
+  ${WARFARE_WORLD_SOURCES}
+  ${WARFARE_WORLD_BIRDS_SOURCES}
+  ${WARFARE_WORLD_EFFECTS_SOURCES}
+  ${WARFARE_WORLD_INDOOR_SOURCES}
+  ${WARFARE_WORLD_LIGHTING_SOURCES}
+  ${WARFARE_WORLD_OBJECTS_SOURCES}
+  ${WARFARE_WORLD_TERRAIN_SOURCES}
+  ${WARFARE_WORLD_WATER_SOURCES}
+  ${WARFARE_CORE_UIS_SOURCES}
+  ${WARFARE_POPUP_NOTICE_TEXT_SOURCES}
   "${TARGET_CLIENT_CONFIG_HEADER}"
 )
+
+source_group("Scene" FILES ${WARFARE_SCENE_SOURCES})
+source_group("Scene/Login" FILES ${WARFARE_SCENE_LOGIN_SOURCES})
+source_group("Scene/Nation selection" FILES ${WARFARE_SCENE_NATION_SELECTION_SOURCES})
+source_group("Scene/Character selection" FILES ${WARFARE_SCENE_CHARACTER_SELECTION_SOURCES})
+source_group("Scene/Character creation" FILES ${WARFARE_SCENE_CHARACTER_CREATION_SOURCES})
+source_group("Scene/Ingame" FILES ${WARFARE_SCENE_INGAME_SOURCES})
+source_group("Scene/Ingame/UI" FILES ${WARFARE_SCENE_INGAME_UI_SOURCES})
+source_group("Input" FILES ${WARFARE_INPUT_SOURCES})
+source_group("Network" FILES ${WARFARE_NETWORK_SOURCES})
+source_group("Players" FILES ${WARFARE_PLAYERS_SOURCES})
+source_group("World" FILES ${WARFARE_WORLD_SOURCES})
+source_group("World/Birds" FILES ${WARFARE_WORLD_BIRDS_SOURCES})
+source_group("World/Effects" FILES ${WARFARE_WORLD_EFFECTS_SOURCES})
+source_group("World/Indoor" FILES ${WARFARE_WORLD_INDOOR_SOURCES})
+source_group("World/Lighting" FILES ${WARFARE_WORLD_LIGHTING_SOURCES})
+source_group("World/Objects" FILES ${WARFARE_WORLD_EFFECTS_SOURCES})
+source_group("World/Terrain" FILES ${WARFARE_WORLD_TERRAIN_SOURCES})
+source_group("World/Water" FILES ${WARFARE_WORLD_WATER_SOURCES})
+source_group("Core UIs" FILES ${WARFARE_CORE_UIS_SOURCES})
+source_group("Popup notice text" FILES ${WARFARE_POPUP_NOTICE_TEXT_SOURCES})
 
 require_directx9(WarFare)
 

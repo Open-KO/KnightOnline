@@ -1,4 +1,4 @@
-set(N3BASE_COMMON_SOURCES
+set(N3BASE_COMMON_AUDIO_SOURCES
   al_wrapper.h
   AudioAsset.cpp
   AudioAsset.h
@@ -8,42 +8,16 @@ set(N3BASE_COMMON_SOURCES
   AudioHandle.h
   AudioThread.cpp
   AudioThread.h
-  BitMapFile.cpp
-  BitMapFile.h
-  ColorValue.inl
-  DebugUtils.cpp
-  DebugUtils.h
-  DFont.cpp
-  DFont.h
-  LogWriter.cpp
-  LogWriter.h
-  Material.inl
   mpg123_reader_io.cpp
   mpg123_reader_io.h
-  My_3DStruct.cpp
-  My_3DStruct.h
-  N3AlphaPrimitiveManager.cpp
-  N3AlphaPrimitiveManager.h
-  N3AnimControl.cpp
-  N3AnimControl.h
-  N3AnimKey.cpp
-  N3AnimKey.h
-  N3Base.cpp
-  N3Base.h
-  N3BaseFileAccess.cpp
-  N3BaseFileAccess.h
-  N3Camera.cpp
-  N3Camera.h
-  N3Chr.cpp
-  N3Chr.h
-  N3Cloak.cpp
-  N3Cloak.h
-  N3Cloud.cpp
-  N3Cloud.h
-  N3ColorChange.cpp
-  N3ColorChange.h
-  N3Eng.cpp
-  N3Eng.h
+  N3SndDef.h
+  N3SndMgr.cpp
+  N3SndMgr.h
+  N3SndObj.cpp
+  N3SndObj.h
+)
+
+set(N3BASE_COMMON_EFFECT_SOURCES
   N3FXBundle.cpp
   N3FXBundle.h
   N3FXDef.h
@@ -67,59 +41,29 @@ set(N3BASE_COMMON_SOURCES
   N3FXPMeshInstance.h
   N3FXShape.cpp
   N3FXShape.h
-  N3GERain.cpp
-  N3GERain.h
-  N3GESnow.cpp
-  N3GESnow.h
-  N3GlobalEffect.cpp
-  N3GlobalEffect.h
-  N3IMesh.cpp
-  N3IMesh.h
-  N3Joint.cpp
-  N3Joint.h
-  N3Light.cpp
-  N3Light.h
-  N3Mesh.cpp
-  N3Mesh.h
-  N3Mng.h
+)
+
+set(N3BASE_TOOL_EFFECT_SOURCES
+  N3FXGroup.cpp
+  N3FXGroup.h
+)
+
+set(N3BASE_COMMON_SKY_SOURCES
+  N3Cloud.cpp
+  N3Cloud.h
   N3Moon.cpp
   N3Moon.h
-  N3PMesh.cpp
-  N3PMesh.h
-  N3PMeshInstance.cpp
-  N3PMeshInstance.h
-  N3Scene.cpp
-  N3Scene.h
-  N3Shape.cpp
-  N3Shape.h
-  N3ShapeExtra.cpp
-  N3ShapeExtra.h
-  N3ShapeMgr.cpp
-  N3ShapeMgr.h
-  N3Skin.cpp
-  N3Skin.h
   N3Sky.cpp
   N3Sky.h
   N3SkyMng.cpp
   N3SkyMng.h
-  N3SndDef.h
-  N3SndMgr.cpp
-  N3SndMgr.h
-  N3SndObj.cpp
-  N3SndObj.h
   N3Star.cpp
   N3Star.h
   N3Sun.cpp
   N3Sun.h
-  N3TableBase.h
-  N3TableBaseImpl.cpp
-  N3TableBaseImpl.h
-  N3Texture.cpp
-  N3Texture.h
-  N3Transform.cpp
-  N3Transform.h
-  N3TransformCollision.cpp
-  N3TransformCollision.h
+)
+
+set(N3BASE_COMMON_UI_SOURCES
   N3UIArea.cpp
   N3UIArea.h
   N3UIBase.cpp
@@ -145,6 +89,87 @@ set(N3BASE_COMMON_SOURCES
   N3UITooltip.h
   N3UITrackBar.cpp
   N3UITrackBar.h
+)
+
+set(N3BASE_COMMON_WEATHER_SOURCES
+  N3GERain.cpp
+  N3GERain.h
+  N3GESnow.cpp
+  N3GESnow.h
+  N3GlobalEffect.cpp
+  N3GlobalEffect.h
+)
+
+set(N3BASE_TOOL_WEATHER_SOURCES
+  N3GlobalEffectMng.cpp
+  N3GlobalEffectMng.h
+)
+
+set(N3BASE_COMMON_SOURCES
+  BitMapFile.cpp
+  BitMapFile.h
+  ColorValue.inl
+  DebugUtils.cpp
+  DebugUtils.h
+  DFont.cpp
+  DFont.h
+  LogWriter.cpp
+  LogWriter.h
+  Material.inl
+  My_3DStruct.cpp
+  My_3DStruct.h
+  N3AlphaPrimitiveManager.cpp
+  N3AlphaPrimitiveManager.h
+  N3AnimControl.cpp
+  N3AnimControl.h
+  N3AnimKey.cpp
+  N3AnimKey.h
+  N3Base.cpp
+  N3Base.h
+  N3BaseFileAccess.cpp
+  N3BaseFileAccess.h
+  N3Camera.cpp
+  N3Camera.h
+  N3Chr.cpp
+  N3Chr.h
+  N3Cloak.cpp
+  N3Cloak.h
+  N3ColorChange.cpp
+  N3ColorChange.h
+  N3Eng.cpp
+  N3Eng.h
+  N3IMesh.cpp
+  N3IMesh.h
+  N3Joint.cpp
+  N3Joint.h
+  N3Light.cpp
+  N3Light.h
+  N3Mesh.cpp
+  N3Mesh.h
+  N3Mng.h
+  N3PMesh.cpp
+  N3PMesh.h
+  N3PMeshInstance.cpp
+  N3PMeshInstance.h
+  N3Scene.cpp
+  N3Scene.h
+  N3Shape.cpp
+  N3Shape.h
+  N3ShapeExtra.cpp
+  N3ShapeExtra.h
+  N3ShapeMgr.cpp
+  N3ShapeMgr.h
+  N3Skin.cpp
+  N3Skin.h
+  N3TableBase.h
+  N3TableBaseImpl.cpp
+  N3TableBaseImpl.h
+  N3Texture.cpp
+  N3Texture.h
+  N3Transform.cpp
+  N3Transform.h
+  N3TransformCollision.cpp
+  N3TransformCollision.h
   N3VMesh.cpp
   N3VMesh.h
   StdAfxBase.h
@@ -152,6 +177,11 @@ set(N3BASE_COMMON_SOURCES
   WaveFormat.h
   WinCrypt.cpp
   WinCrypt.h
+  ${N3BASE_COMMON_AUDIO_SOURCES}
+  ${N3BASE_COMMON_EFFECT_SOURCES}
+  ${N3BASE_COMMON_SKY_SOURCES}
+  ${N3BASE_COMMON_UI_SOURCES}
+  ${N3BASE_COMMON_WEATHER_SOURCES}
 )
 
 set(N3BASE_COMMON_DEPENDENCIES_PUBLIC
@@ -173,17 +203,21 @@ add_library(N3Base_client STATIC
 
 add_library(N3Base_tool STATIC
   ${N3BASE_COMMON_SOURCES}
+  ${N3BASE_TOOL_EFFECT_SOURCES}
+  ${N3BASE_TOOL_WEATHER_SOURCES}
   N3EngTool.cpp
   N3EngTool.h
-  N3FXGroup.cpp
-  N3FXGroup.h
-  N3GlobalEffectMng.cpp
-  N3GlobalEffectMng.h
   N3PMeshCreate.cpp
   N3PMeshCreate.h
   Pick.cpp
   Pick.h
 )
+
+source_group("Audio" FILES ${N3BASE_COMMON_AUDIO_SOURCES})
+source_group("Effects" FILES ${N3BASE_COMMON_EFFECT_SOURCES} ${N3BASE_TOOL_EFFECT_SOURCES})
+source_group("Sky" FILES ${N3BASE_COMMON_SKY_SOURCES})
+source_group("UI" FILES ${N3BASE_COMMON_UI_SOURCES})
+source_group("Weather" FILES ${N3BASE_COMMON_WEATHER_SOURCES} ${N3BASE_TOOL_WEATHER_SOURCES})
 
 require_directx9(N3Base_client)
 require_directx9(N3Base_tool)

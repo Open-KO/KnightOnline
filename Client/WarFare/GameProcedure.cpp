@@ -16,7 +16,6 @@
 #include "GameProcCharacterCreate.h"
 #include "GameProcCharacterSelect.h"
 #include "GameProcMain.h"
-#include "GameProcOption.h"
 #include "UILoading.h"
 #include "UIMessageBox.h"
 #include "UIMessageBoxManager.h"
@@ -69,7 +68,6 @@ CGameProcNationSelect*		CGameProcedure::s_pProcNationSelect = nullptr;
 CGameProcCharacterCreate*	CGameProcedure::s_pProcCharacterCreate = nullptr;
 CGameProcCharacterSelect*	CGameProcedure::s_pProcCharacterSelect = nullptr;
 CGameProcMain*				CGameProcedure::s_pProcMain = nullptr;
-CGameProcOption*			CGameProcedure::s_pProcOption = nullptr;
 CGameCursor*				CGameProcedure::s_pGameCursor = nullptr;
 
 HCURSOR	CGameProcedure::s_hCursorNormal    = nullptr;
@@ -228,7 +226,6 @@ void CGameProcedure::StaticMemberInit(HINSTANCE hInstance, HWND hWndMain)
 	s_pProcCharacterSelect	= new CGameProcCharacterSelect();	// 캐릭터 선택
 	s_pProcCharacterCreate	= new CGameProcCharacterCreate();	// 캐릭터 만들기
 	s_pProcMain				= new CGameProcMain();				// 메인 게임 프로시져
-	s_pProcOption			= new CGameProcOption();			// 게임 옵션 프로시져
 }
 
 void CGameProcedure::StaticMemberRelease()
@@ -317,7 +314,6 @@ void CGameProcedure::StaticMemberRelease()
 	delete s_pProcCharacterSelect; s_pProcCharacterSelect = nullptr; 	// 캐릭터 선택
 	delete s_pProcCharacterCreate; s_pProcCharacterCreate = nullptr; 	// 캐릭터 만들기
 	delete s_pProcMain; s_pProcMain = nullptr; 						// 메인 게임 프로시져
-	delete s_pProcOption; s_pProcOption = nullptr; 					// 게임 옵션 프로시져
 
 	CGameBase::StaticMemberRelease();
 

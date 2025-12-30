@@ -58,7 +58,6 @@
     <ClInclude Include="N3GESnow.h" />
     <ClInclude Include="N3GlobalEffect.h" />
     <ClInclude Include="N3GlobalEffectMng.h" />
-    <ClInclude Include="N3IME.h" />
     <ClInclude Include="N3IMesh.h" />
     <ClInclude Include="N3Joint.h" />
     <ClInclude Include="N3Light.h" />
