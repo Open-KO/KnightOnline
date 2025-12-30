@@ -33,7 +33,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)client_application.props" />
-  <Import Project="$(PropsDir)cp949_strings.props" />
+  <Import Project="$(PropsDir)utf8_strings.props" />
   <Import Project="$(PropsDir)jpegfile.props" />
   <Import Project="$(PropsDir)n3base-project.props" />
   <PropertyGroup Label="UserMacros" />
