@@ -1,4 +1,4 @@
-# Get DbModels package
+# Get db-models package
 #
 # Makes the db-models target available.
 

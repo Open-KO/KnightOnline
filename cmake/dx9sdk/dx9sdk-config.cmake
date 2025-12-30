@@ -1,4 +1,4 @@
-# Get directx9 package
+# Get dx9sdk package
 #
 # Makes the dx9sdk target available.
 
@@ -79,7 +79,8 @@ target_link_libraries(dx9sdk INTERFACE
 # manually.
 set(DIRECTX9_PROPS_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/directx9.props.template")
 set(DIRECTX9_PROPS_DIR "${CMAKE_CURRENT_BINARY_DIR}/props")
-set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props" CACHE STRING "DirectX 9 property sheet path for includes (internal)" FORCE)
+#set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props" CACHE STRING "DirectX 9 property sheet path for includes (internal)" FORCE)
+set(DIRECTX9_PROPS_PATH "${DIRECTX9_PROPS_DIR}/directx9.props")
 
 # Make sure the target directory exists
 file(MAKE_DIRECTORY "${DIRECTX9_PROPS_DIR}")

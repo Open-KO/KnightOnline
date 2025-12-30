@@ -1,4 +1,4 @@
-# Get BoostSubset package
+# Get Boost package
 #
 # Makes the Boost targets available.
 

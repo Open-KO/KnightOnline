@@ -7,10 +7,11 @@ project(OpenKO
 find_package(Git REQUIRED)
 
 # Search in the "cmake" directory for additional CMake modules.
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(OPENKO_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${OPENKO_MODULE_PATH}")
 
 include(FetchContent)
-include(RequirePackage)
+include(RequireConfigPackage)
 
 # Set minimum standard to C++23 (unless otherwise specified)
 set(CMAKE_CXX_STANDARD 23)
@@ -90,9 +91,9 @@ endif()
 
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
-require_package(Asio asio)
-require_package(Llfio llfio)
-require_package(Spdlog spdlog)
+require_config_package(asio)
+require_config_package(llfio)
+require_config_package(spdlog)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
@@ -108,13 +109,13 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
     # Dependencies
     set(CMAKE_FOLDER "N3Base/_deps")
-    require_package(Directx9 dx9sdk)
+    require_config_package(dx9sdk)
 
     set(CMAKE_FOLDER "N3Base/_deps/mpg123")
-	require_package(Mpg123 mpg123)
+	require_config_package(mpg123)
 
     set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
-    require_package(OpenALSoft openal-soft)
+    require_config_package(openal-soft)
 
     set(CMAKE_FOLDER "N3Base")
     add_subdirectory(Client/N3Base)
@@ -125,11 +126,11 @@ if(MSVC)
 
     # We technically require this for the Launcher & Option as well as the client itself (WarFare),
 	# so we'll pull this in here.
-    require_package(ClientAssets)
+    require_config_package(client-assets)
 
     # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
     # so we must structure this a little bit differently to everything else.
-    require_package(JpegTurbo libjpeg-turbo)
+    require_config_package(libjpeg-turbo)
     add_subdirectory(Client/JpegFile)
   endif()
 
@@ -144,7 +145,7 @@ if(MSVC)
     message(STATUS "OpenKO: Preparing to configure client tools...")
 
     set(CMAKE_FOLDER "Client tools/_deps")
-    require_package(Zlib zlib)
+    require_config_package(zlib)
     add_subdirectory(deps/ZipArchive)
 
     set(CMAKE_FOLDER "Client tools")
@@ -173,19 +174,19 @@ if(OPENKO_BUILD_SERVERS)
 
   # Dependencies
   set(CMAKE_FOLDER "Server/_deps/boost")
-  require_package(BoostSubset Boost)
+  require_config_package(boost)
 
   set(CMAKE_FOLDER "Server/_deps/ftxui")
-  require_package(Ftxui ftxui)
+  require_config_package(ftxui)
 
   set(CMAKE_FOLDER "Server/_deps/argparse")
-  require_package(Argparse argparse)
+  require_config_package(argparse)
 
   set(CMAKE_FOLDER "Server/_deps")
-  require_package(Nanodbc nanodbc)
-  require_package(DbModels db-models)
-  require_package(Djb2 djb2)
-  add_subdirectory(db-library EXCLUDE_FROM_ALL)
+  require_config_package(nanodbc)
+  require_config_package(db-models)
+  require_config_package(djb2)
+  add_subdirectory(db-library)
   add_subdirectory(Server/shared-server)
 
   add_custom_target(copy-server-assets ALL
@@ -210,7 +211,7 @@ if(OPENKO_BUILD_TESTS)
   include(CTest)
 
   set(CMAKE_FOLDER "Tests/_deps")
-  require_package(Googletest googletest)
+  require_config_package(googletest)
 
   set(CMAKE_FOLDER "Tests")
   add_subdirectory(FileIO/tests)

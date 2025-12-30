@@ -1,4 +1,4 @@
-# Get OpenALSoft package
+# Get openal-soft package
 #
 # Makes the openal-soft target available.
 
