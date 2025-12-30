@@ -123,14 +123,19 @@ if(MSVC)
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_CLIENT_TOOLS)
     set(CMAKE_FOLDER "Client/_deps")
 
+    # We technically require this for the Launcher & Option as well as the client itself (WarFare),
+	# so we'll pull this in here.
+    require_package(ClientAssets)
+
     # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
     # so we must structure this a little bit differently to everything else.
-    find_package(JpegTurbo REQUIRED)
+    require_package(JpegTurbo libjpeg-turbo)
     add_subdirectory(Client/JpegFile)
   endif()
 
   if(OPENKO_BUILD_CLIENT)
     message(STATUS "OpenKO: Preparing to configure client...")
+
     set(CMAKE_FOLDER "Client")
     add_subdirectory(Client/WarFare)
   endif()

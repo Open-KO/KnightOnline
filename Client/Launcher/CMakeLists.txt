@@ -70,7 +70,7 @@ target_compile_options(Launcher PRIVATE
 
 if(MSVC)
   set_property(TARGET Launcher PROPERTY
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Data" # TODO: change this to build dir
+    VS_DEBUGGER_WORKING_DIRECTORY "${OPENKO_CLIENT_DIR}"
   )
 endif()
 

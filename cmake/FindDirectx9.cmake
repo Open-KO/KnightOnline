@@ -10,7 +10,6 @@ fetchcontent_declare(
   GIT_TAG               "dx9-june-2010"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
-  OVERRIDE_FIND_PACKAGE TRUE
   SOURCE_DIR            "${FETCHCONTENT_BASE_DIR}/dx9sdk"
 
   EXCLUDE_FROM_ALL

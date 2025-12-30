@@ -231,10 +231,6 @@ add_executable(WarFare
 
 require_directx9(WarFare)
 
-# Ensure we require the client assets to be copied
-# TODO
-# add_dependencies(WarFare copy-client-assets)
-
 set_target_properties(WarFare PROPERTIES
   OUTPUT_NAME "KnightOnLine"
 )
@@ -282,7 +278,7 @@ target_compile_options(WarFare PRIVATE
 
 if(MSVC)
   set_property(TARGET WarFare PROPERTY
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Data" # TODO: change this to build dir
+    VS_DEBUGGER_WORKING_DIRECTORY "${OPENKO_CLIENT_DIR}"
   )
 endif()
 
