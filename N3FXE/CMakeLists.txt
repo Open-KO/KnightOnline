@@ -38,7 +38,7 @@ add_executable(N3FXE
   StdAfx.h
 
   # Resources
-  res/ToolBar.bmp)
+  res/Toolbar.bmp)
 
 require_directx9(N3FXE)
 

@@ -31,7 +31,7 @@ add_executable(N3CE
 
   # Resources
   res/NodeIcons.bmp
-  res/ToolBar.bmp)
+  res/Toolbar.bmp)
 
 require_directx9(N3CE)
 
