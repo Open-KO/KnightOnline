@@ -202,15 +202,15 @@ add_library(N3Base_client STATIC
 )
 
 add_library(N3Base_tool STATIC
-  ${N3BASE_COMMON_SOURCES}
-  ${N3BASE_TOOL_EFFECT_SOURCES}
-  ${N3BASE_TOOL_WEATHER_SOURCES}
   N3EngTool.cpp
   N3EngTool.h
   N3PMeshCreate.cpp
   N3PMeshCreate.h
   Pick.cpp
   Pick.h
+  ${N3BASE_COMMON_SOURCES}
+  ${N3BASE_TOOL_EFFECT_SOURCES}
+  ${N3BASE_TOOL_WEATHER_SOURCES}
 )
 
 source_group("Audio" FILES ${N3BASE_COMMON_AUDIO_SOURCES})
