@@ -7097,16 +7097,7 @@ void CUser::ClassChange(char* pBuf)
 	}
 	else
 	{
-		m_pUserData->m_sClass = classcode;
-
-		if (m_sPartyIndex != -1)
-		{
-			SetByte(send_buff, WIZ_PARTY, send_index);
-			SetByte(send_buff, PARTY_CLASSCHANGE, send_index);
-			SetShort(send_buff, _socketId, send_index);
-			SetShort(send_buff, m_pUserData->m_sClass, send_index);
-			m_pMain->Send_PartyMember(m_sPartyIndex, send_buff, send_index);
-		}
+		SendClassPromotion(classcode);
 	}
 }
 
@@ -8887,6 +8878,110 @@ bool CUser::GetStartPosition(int16_t* x, int16_t* z)
 	}
 
 	return false;
+}
+
+void CUser::SendClassPromotion(int16_t newClass)
+{
+	constexpr uint8_t classPromotionOpcode = 0x06;
+	char send_buff[32] = {};
+	int send_index = 0;
+
+	m_pUserData->m_sClass = newClass;
+	SetUserAbility();
+	Send2AI_UserUpdateInfo();
+	UserDataSaveToAgent();
+
+	SetByte(send_buff, WIZ_CLASS_CHANGE, send_index);
+	SetByte(send_buff, classPromotionOpcode, send_index);
+	SetShort(send_buff, m_pUserData->m_sClass, send_index);
+	SetShort(send_buff, _socketId, send_index);
+	Send(send_buff, send_index);
+	if (m_pMain != nullptr)
+		m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ, this);
+
+	if (m_sPartyIndex != -1)
+	{
+		send_index = 0;
+		SetByte(send_buff, WIZ_PARTY, send_index);
+		SetByte(send_buff, PARTY_CLASSCHANGE, send_index);
+		SetShort(send_buff, _socketId, send_index);
+		SetShort(send_buff, m_pUserData->m_sClass, send_index);
+		m_pMain->Send_PartyMember(m_sPartyIndex, send_buff, send_index);
+	}
+}
+
+void CUser::PromoteUser()
+{
+	int16_t newClass = m_pUserData->m_sClass;
+
+	switch (m_pUserData->m_sClass)
+	{
+		case CLASS_KA_BERSERKER:
+			newClass = CLASS_KA_GUARDIAN;
+			break;
+		case CLASS_KA_HUNTER:
+			newClass = CLASS_KA_PENETRATOR;
+			break;
+		case CLASS_KA_SORCERER:
+			newClass = CLASS_KA_NECROMANCER;
+			break;
+		case CLASS_KA_SHAMAN:
+			newClass = CLASS_KA_DARKPRIEST;
+			break;
+		case CLASS_EL_BLADE:
+			newClass = CLASS_EL_PROTECTOR;
+			break;
+		case CLASS_EL_RANGER:
+			newClass = CLASS_EL_ASSASIN;
+			break;
+		case CLASS_EL_MAGE:
+			newClass = CLASS_EL_ENCHANTER;
+			break;
+		case CLASS_EL_CLERIC:
+			newClass = CLASS_EL_DRUID;
+			break;
+	}
+
+	if (newClass != m_pUserData->m_sClass)
+		SendClassPromotion(newClass);
+}
+
+void CUser::PromoteUserNovice()
+{
+	int16_t newClass = m_pUserData->m_sClass;
+
+	switch (m_pUserData->m_sClass)
+	{
+		case CLASS_KA_WARRIOR:
+			newClass = CLASS_KA_BERSERKER;
+			break;
+		case CLASS_KA_ROGUE:
+			newClass = CLASS_KA_HUNTER;
+			break;
+		case CLASS_KA_WIZARD:
+			newClass = CLASS_KA_SORCERER;
+			break;
+		case CLASS_KA_PRIEST:
+			newClass = CLASS_KA_SHAMAN;
+			break;
+		case CLASS_EL_WARRIOR:
+			newClass = CLASS_EL_BLADE;
+			break;
+		case CLASS_EL_ROGUE:
+			newClass = CLASS_EL_RANGER;
+			break;
+		case CLASS_EL_WIZARD:
+			newClass = CLASS_EL_MAGE;
+			break;
+		case CLASS_EL_PRIEST:
+			newClass = CLASS_EL_CLERIC;
+			break;
+	}
+
+	if (newClass != m_pUserData->m_sClass)
+		SendClassPromotion(newClass);
+	else
+		ClassChangeReq();
 }
 
 CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
@@ -11180,7 +11275,7 @@ void CUser::ClientEvent(char* pBuf)
 			break;
 
 		case NPC_CAPTAIN:
-			eventid = 15002;
+			eventid = (m_pUserData->m_bNation == KARUS ? 15001 : 15002);
 			break;
 
 		case NPC_CLAN:
@@ -11723,6 +11818,17 @@ bool CUser::RunNpcEvent(CNpc* pNpc, const EXEC* pExec)
 		case EXEC_LOG_COUPON_ITEM:
 			LogCoupon(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
 			break;
+
+		case EXEC_GIVE_PROMOTION_QUEST:
+			break;
+
+		case EXEC_PROMOTE_USER:
+			PromoteUser();
+			break;
+
+		case EXEC_PROMOTE_USER_NOVICE:
+			PromoteUserNovice();
+			break;
 	//
 	// 비러머글 엑셀 >.<
 		case EXEC_SAVE_COM_EVENT:
@@ -11796,7 +11902,18 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 			case EXEC_LOG_COUPON_ITEM:
 				LogCoupon(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
 				break;
-//
+
+			case EXEC_GIVE_PROMOTION_QUEST:
+				break;
+
+			case EXEC_PROMOTE_USER:
+				PromoteUser();
+				break;
+
+			case EXEC_PROMOTE_USER_NOVICE:
+				PromoteUserNovice();
+				break;
+	//
 // 비러머글 엑셀 >.<
 			case EXEC_SAVE_COM_EVENT:
 				SaveComEvent(pExec->m_ExecInt[0]);

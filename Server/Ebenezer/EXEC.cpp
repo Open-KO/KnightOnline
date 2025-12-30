@@ -77,6 +77,21 @@ void EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			argsToParse = 2;
 			break;
 
+		// E GIVE_PROMOTION_QUEST
+		case "GIVE_PROMOTION_QUEST"_djb2:
+			m_Exec = EXEC_GIVE_PROMOTION_QUEST;
+			break;
+
+		// E PROMOTE_USER
+		case "PROMOTE_USER"_djb2:
+			m_Exec = EXEC_PROMOTE_USER;
+			break;
+
+		// E PROMOTE_USER_NOVICE
+		case "PROMOTE_USER_NOVICE"_djb2:
+			m_Exec = EXEC_PROMOTE_USER_NOVICE;
+			break;
+
 		case "RETURN"_djb2:
 			m_Exec = EXEC_RETURN;
 			break;
