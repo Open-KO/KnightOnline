@@ -453,90 +453,43 @@ void CGameProcedure::RenderActive()
 
 bool CGameProcedure::CaptureScreenAndSaveToFile(const std::string& szFN)
 {
-	/*
-	if(szFN.empty()) return false;
+	if (szFN.empty() || CN3Base::s_lpD3DDev == nullptr)
+		return false;
+
 	CJpegFile file;
 
-	RECT wndRect;
+	RECT wndRect {};
 	GetWindowRect(CN3Base::s_hWndBase, &wndRect);
-	
+
 	HANDLE hDIB = file.CopyScreenToDIB(&wndRect);
-	if(hDIB)
+	if (!hDIB)
+		return false;
+
+	const int nQuality = (s_pPlayer && s_pPlayer->m_InfoBase.iAuthority == AUTHORITY_MANAGER) ? 100 : 90;
+
+	BYTE* pBits = static_cast<BYTE*>(GlobalLock(hDIB));
+	if (pBits)
 	{
-		int nQuality = 90;
-		char szBuf[256] = "";
+		BITMAPINFOHEADER* pBIH = reinterpret_cast<BITMAPINFOHEADER*>(pBits);
+		BYTE* pPixels = pBits + pBIH->biSize;
+		const int stride = ((pBIH->biWidth * pBIH->biBitCount + 31) / 32) * 4;
 
-		//운영자는 양질의 스크린 캡쳐를 할수 있게...
-		if(s_pPlayer->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
-			nQuality = 100;
-
-		if(file.EncryptJPEG(hDIB, nQuality, szFN, szBuf) == TRUE)
+		std::vector<BYTE> flipped(stride * pBIH->biHeight);
+		for (int y = 0; y < pBIH->biHeight; ++y)
 		{
-			TRACE("Screen Captue %s\n", szFN.c_str());
+			memcpy(flipped.data() + y * stride,
+				pPixels + (pBIH->biHeight - 1 - y) * stride,
+				stride);
 		}
-		GlobalFree(hDIB);
+		memcpy(pPixels, flipped.data(), flipped.size());
 	}
-	*/
-	return true;
-/*
-	int iW = CN3Base::s_CameraData.vp.Width;
-	int iH = CN3Base::s_CameraData.vp.Height;
+	GlobalUnlock(hDIB);
 
-	bool bResult = false;
-	LPDIRECT3DSURFACE8 lpDDSTmp = nullptr;
-	LPDIRECT3DSURFACE8 lpDDSBack = nullptr;
-	CN3Base::s_lpD3DDev->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &lpDDSBack);
-	if(lpDDSBack)
-	{
-		CN3Base::s_lpD3DDev->CreateImageSurface(iW, iH, D3DFMT_X8R8G8B8, &lpDDSTmp);
-		if(lpDDSTmp)
-		{
-			HRESULT rval = D3DXLoadSurfaceFromSurface(lpDDSTmp, nullptr, nullptr, lpDDSBack, nullptr, nullptr, D3DX_FILTER_NONE, 0);
-//			HRESULT rval = s_lpD3DDev->CopyRects(lpDDSBack, nullptr, 0, lpDDSTmp, nullptr);
-//			char szErr[256];
-//			::D3DXGetErrorString(rval, szErr, 256);
+	std::string szError;
+	const BOOL ok = file.EncryptJPEG(hDIB, nQuality, szFN, szError.c_str());
 
-			if(D3D_OK == rval)
-			{
-				D3DLOCKED_RECT LR;
-				if(D3D_OK == lpDDSTmp->LockRect(&LR, nullptr, 0))
-				{
-//					std::vector<uint8_t> buff(iW * iH * 3, 0);
-					CBitMapFile bmf;
-					bmf.Create(iW, iH);
-
-					for(int y = 0; y < iH; y++)
-					{
-						uint8_t* pPS = ((uint8_t*)LR.pBits) + LR.Pitch * y;
-//						uint8_t* pPD = (uint8_t*)(&(buff[y * (iW * 3)]));
-						uint8_t* pPD = (uint8_t*)(bmf.Pixels(0, y));
-
-						for(int x = 0; x < iW; x++, pPS += 4, pPD +=3 )
-						{
-							pPD[0] = pPS[0];
-							pPD[1] = pPS[1];
-							pPD[2] = pPS[2];
-						}
-					}
-					lpDDSTmp->UnlockRect();
-
-//					CJpeg jpg;
-//					jpg.SaveJPG(szFN.c_str(), iW, iH, &(buff[0]));
-					bmf.SaveToFile(szFN.c_str());
-				}
-			}
-			
-			lpDDSTmp->Release();
-			lpDDSTmp = nullptr;
-		}
-
-
-		lpDDSBack->Release();
-		lpDDSBack = nullptr;
-	}
-
-	return bResult;
-*/
+	GlobalFree(hDIB);
+	return ok == TRUE;
 }
 
 void CGameProcedure::ProcActiveSet(CGameProcedure* pProc)
