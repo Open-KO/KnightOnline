@@ -38,9 +38,10 @@ AppThread::~AppThread()
 	s_instance = nullptr;
 }
 
+/// \returns The base directory for logs. By default this is the working directory.
 std::filesystem::path AppThread::LogBaseDir() const
 {
-	return GetProgPath();
+	return std::filesystem::current_path();
 }
 
 /// \brief Sets up the parser & parses the command-line args, dispatching it to the app
@@ -53,8 +54,7 @@ bool AppThread::parse_commandline(int argc, char* argv[])
 	try
 	{
 		parser.parse_args(argc, argv);
-		ProcessCommandLineArgs(parser);
-		return true;
+		return ProcessCommandLineArgs(parser);
 	}
 	catch (const std::exception& ex)
 	{
@@ -73,9 +73,11 @@ void AppThread::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 }
 
 /// \brief Processes any parsed command-line args as needed by the app.
-void AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser& /*parser*/)
+/// \returns true on success, false on failure
+bool AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser& /*parser*/)
 {
 	/* for implementation, only if needed by the app - bound args won't need this */
+	return true;
 }
 
 /// \brief The main thread loop for the server instance
@@ -85,7 +87,7 @@ void AppThread::thread_loop()
 	bool configFileLoaded = iniFile.Load(ConfigPath());
 
 	// Setup the logger
-	_logger.Setup(iniFile, LogBaseDir());
+	_logger.Setup(iniFile, std::filesystem::current_path());
 
 	if (!configFileLoaded)
 	{

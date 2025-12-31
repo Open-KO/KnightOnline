@@ -180,11 +180,6 @@ int ParseSpace(char* tBuf, const char* sBuf)
 	return index;
 }
 
-std::filesystem::path GetProgPath()
-{
-	return std::filesystem::current_path();
-}
-
 int myrand_ai(int min, int max, bool bSame)
 {
 	static int nOld = 0;

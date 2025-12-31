@@ -116,7 +116,7 @@ AujardApp::~AujardApp()
 /// \returns The application's ini config path.
 std::filesystem::path AujardApp::ConfigPath() const
 {
-	return GetProgPath() / "Aujard.ini";
+	return "Aujard.ini";
 }
 
 /// \brief Loads application-specific config from the loaded application ini file (`iniFile`).

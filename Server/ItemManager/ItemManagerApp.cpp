@@ -41,7 +41,7 @@ ItemManagerApp::~ItemManagerApp()
 /// \returns The application's ini config path.
 std::filesystem::path ItemManagerApp::ConfigPath() const
 {
-	return GetProgPath() / "ItemManager.ini";
+	return "ItemManager.ini";
 }
 
 bool ItemManagerApp::OnStart()

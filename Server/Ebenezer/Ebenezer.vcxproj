@@ -240,11 +240,12 @@
   <ItemGroup>
     <ResourceCompile Include="Ebenezer.rc" />
   </ItemGroup>
+  <PropertyGroup Label="Debugger defaults">
+    <LocalDebuggerWorkingDirectory>$(RootDir)Server\bin\$(Configuration)\</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>--map-dir="$(RootDir)Server\bin\MAP" --quests-dir="$(RootDir)Server\bin\QUESTS"</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <PropertyGroup Label="Debugger defaults">
-    <LocalDebuggerWorkingDirectory>$(RootDir)Server\bin\$(Configuration)\</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-  </PropertyGroup>
 </Project>

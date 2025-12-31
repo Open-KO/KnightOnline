@@ -1,3 +1,6 @@
+set(EBENEZER_VS_MAP_DIR    "${OPENKO_SERVER_MAP_SRC_DIR}")
+set(EBENEZER_VS_QUESTS_DIR "${OPENKO_SERVER_QUESTS_SRC_DIR}")
+
 add_executable(Ebenezer
   AISocket.cpp
   AISocket.h
@@ -85,6 +88,11 @@ if(MSVC)
   # Override default working directory for ease-of-use
   set_property(TARGET Ebenezer PROPERTY
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Ebenezer>"
+  )
+
+  # Ensure we setup the default MAP & QUESTS dirs as well
+  set_property(TARGET Ebenezer PROPERTY
+    VS_DEBUGGER_COMMAND_ARGUMENTS "--map-dir=\"${EBENEZER_VS_MAP_DIR}\" --quests-dir=\"${EBENEZER_VS_QUESTS_DIR}\""
   )
 endif()
 

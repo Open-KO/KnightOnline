@@ -298,6 +298,13 @@ public:
 	CUdpSocket*			m_pUdpSocket;
 
 protected:
+	/// \brief Sets up the command-line arg parser, binding args for parsing.
+	void SetupCommandLineArgParser(argparse::ArgumentParser& parser) override;
+
+	/// \brief Processes any parsed command-line args as needed by the app.
+	/// \returns true on success, false on failure
+	bool ProcessCommandLineArgs(const argparse::ArgumentParser& parser) override;
+
 	/// \returns The application's ini config path.
 	std::filesystem::path ConfigPath() const override;
 
@@ -318,6 +325,12 @@ private:
 	std::unique_ptr<ReadQueueThread>	_readQueueThread;
 
 	std::mutex							_serialMutex;
+
+	std::filesystem::path				_mapDir;
+	std::string							_overrideMapDir;
+
+	std::filesystem::path				_questsDir;
+	std::string							_overrideQuestsDir;
 };
 
 #endif // SERVER_EBENEZER_EBENEZERAPP_H

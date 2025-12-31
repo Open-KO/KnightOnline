@@ -7,8 +7,8 @@
 #include "packets.h"
 #include "Packet.h"
 
-#define MAP_DIR				"../MAP/"
-#define QUESTS_DIR			"../QUESTS/"
+constexpr char DEFAULT_MAP_DIR[]	= "../MAP/";
+constexpr char DEFAULT_QUESTS_DIR[]	= "../QUESTS/";
 
 constexpr int MIN_ID_SIZE		= 6;
 constexpr int MAX_ID_SIZE		= 20;
