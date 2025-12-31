@@ -87,7 +87,7 @@ void AppThread::thread_loop()
 	bool configFileLoaded = iniFile.Load(ConfigPath());
 
 	// Setup the logger
-	_logger.Setup(iniFile, std::filesystem::current_path());
+	_logger.Setup(iniFile, LogBaseDir());
 
 	if (!configFileLoaded)
 	{
