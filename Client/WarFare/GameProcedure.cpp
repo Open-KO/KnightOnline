@@ -379,14 +379,19 @@ void CGameProcedure::Tick()
 
 	CN3Base::s_SndMgr.Tick(); // Sound Engine...
 
-	// 스크린 캡쳐 키..
-	if(s_pLocalInput->IsKeyPress(DIK_NUMPADMINUS)) // 키패드의 마이너스 키를 누르면..
+	// Screen capture key handling
+	if (s_pLocalInput->IsKeyPress(DIK_NUMPADMINUS)) // When the numpad minus key is pressed...
 	{
 		SYSTEMTIME st;
+
+		// Retrieve current local time
 		::GetLocalTime(&st);
 
-		std::string szFN = fmt::format("{}_{}_{}_{}.{}.{}.ksc",
+		// Build a filename based on timestamp (Year_Month_Day_Hour_Minute_Second.lss)
+		std::string szFN = fmt::format("{}_{}_{}_{}_{}_{}.ksc",
 			st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+
+		// Capture the current screen and save it to the file
 		CaptureScreenAndSaveToFile(szFN);
 	}
 
