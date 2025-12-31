@@ -8882,7 +8882,6 @@ bool CUser::GetStartPosition(int16_t* x, int16_t* z)
 
 void CUser::SendClassPromotion(int16_t newClass)
 {
-	constexpr uint8_t classPromotionOpcode = 0x06;
 	char send_buff[32] = {};
 	int send_index = 0;
 
@@ -8892,12 +8891,15 @@ void CUser::SendClassPromotion(int16_t newClass)
 	UserDataSaveToAgent();
 
 	SetByte(send_buff, WIZ_CLASS_CHANGE, send_index);
-	SetByte(send_buff, classPromotionOpcode, send_index);
+	SetByte(send_buff, NOVICE_CLASS_CHANGE_REQ, send_index);
 	SetShort(send_buff, m_pUserData->m_sClass, send_index);
 	SetShort(send_buff, _socketId, send_index);
-	Send(send_buff, send_index);
-	if (m_pMain != nullptr)
-		m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ, this);
+	m_pMain->Send_Region(send_buff, send_index, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
+	if (m_pUserData->m_bKnights > 0)
+	{
+		char page_buff[2] = {};
+		m_pMain->m_KnightsManager.CurrentKnightsMember(this, page_buff);
+	}
 
 	if (m_sPartyIndex != -1)
 	{
@@ -8912,76 +8914,215 @@ void CUser::SendClassPromotion(int16_t newClass)
 
 void CUser::PromoteUser()
 {
-	int16_t newClass = m_pUserData->m_sClass;
+	if (!CheckPromotionEligible())
+		return;
 
-	switch (m_pUserData->m_sClass)
+	auto hasItems = [this](std::initializer_list<std::pair<int, int16_t>> items)
+	{
+		for (const auto& item : items)
+		{
+			if (item.first == -1 || item.second == -1)
+				continue;
+
+			if (!CheckExistItem(item.first, item.second))
+				return false;
+		}
+
+		return true;
+	};
+
+	auto sendPromotionFailureMessage = [this](int16_t currentClass)
+	{
+		switch (currentClass)
+		{
+			case CLASS_KA_BERSERKER:
+			case CLASS_EL_BLADE:
+				SendSay(-1, -1, 6007);
+				break;
+			case CLASS_KA_HUNTER:
+			case CLASS_EL_RANGER:
+				SendSay(-1, -1, 7007);
+				break;
+			case CLASS_KA_SORCERER:
+			case CLASS_EL_MAGE:
+				SendSay(-1, -1, 8007);
+				break;
+			case CLASS_KA_SHAMAN:
+			case CLASS_EL_CLERIC:
+				SendSay(-1, -1, 9007);
+				break;
+		}
+	};
+
+	bool robResult = false;
+	int16_t currentClass = m_pUserData->m_sClass;
+
+	if (currentClass == CLASS_KA_BERSERKER || currentClass == CLASS_EL_BLADE)
+	{
+		if (!hasItems({ { 320410011, 1 }, { 320410012, 1 }, { 320410013, 1 }, { 389074000, 10 }, { 389075000, 10 } })
+			|| !CheckExistItem(389076000, 10)
+			|| !RobItem(320410011, 1)
+			|| !RobItem(320410012, 1))
+		{
+			sendPromotionFailureMessage(currentClass);
+			return;
+		}
+
+		robResult = RobItem(320410013, 1);
+	}
+	else if (currentClass == CLASS_KA_HUNTER || currentClass == CLASS_EL_RANGER)
+	{
+		if (!hasItems({ { 379040000, 1 }, { 379041000, 1 }, { 379014000, 10 }, { 379042000, 1 }, { 389074000, 10 } })
+			|| !hasItems({ { 389075000, 10 }, { 389076000, 10 } })
+			|| !RobItem(379040000, 1)
+			|| !RobItem(379041000, 1)
+			|| !RobItem(379014000, 10))
+		{
+			sendPromotionFailureMessage(currentClass);
+			return;
+		}
+
+		robResult = RobItem(379042000, 1);
+	}
+	else if (currentClass == CLASS_KA_SORCERER || currentClass == CLASS_EL_MAGE)
+	{
+		if (!hasItems({ { 330310014, 1 }, { 379043000, 50 }, { 379044000, 50 }, { 379045000, 1 }, { 379046000, 1 } })
+			|| !hasItems({ { 379014000, 10 }, { 389074000, 10 }, { 389075000, 10 }, { 389076000, 10 } })
+			|| !RobItem(330310014, 1)
+			|| !RobItem(379043000, 50)
+			|| !RobItem(379044000, 50)
+			|| !RobItem(379045000, 1)
+			|| !RobItem(379046000, 1))
+		{
+			sendPromotionFailureMessage(currentClass);
+			return;
+		}
+
+		robResult = RobItem(379014000, 10);
+	}
+	else if (currentClass == CLASS_KA_SHAMAN || currentClass == CLASS_EL_CLERIC)
+	{
+		if (!hasItems({ { 379047000, 1 }, { 389074000, 10 }, { 389075000, 10 }, { 389076000, 10 } })
+			|| !GoldLose(10000000))
+		{
+			sendPromotionFailureMessage(currentClass);
+			return;
+		}
+
+		robResult = RobItem(379047000, 1);
+	}
+	else
+	{
+		return;
+	}
+
+	if (!robResult
+		|| !RobItem(389074000, 10)
+		|| !RobItem(389075000, 10)
+		|| !RobItem(389076000, 10))
+	{
+		sendPromotionFailureMessage(currentClass);
+		return;
+	}
+
+	if (CheckClass(CLASS_KA_GUARDIAN, CLASS_KA_PENETRATOR, CLASS_KA_NECROMANCER, CLASS_KA_DARKPRIEST, -1, -1)
+		|| CheckClass(CLASS_EL_PROTECTOR, CLASS_EL_ASSASIN, CLASS_EL_ENCHANTER, CLASS_EL_DRUID, -1, -1))
+	{
+		switch (currentClass)
+		{
+			case CLASS_KA_GUARDIAN:
+			case CLASS_EL_PROTECTOR:
+				SendSay(-1, -1, 6006);
+				break;
+			case CLASS_KA_PENETRATOR:
+			case CLASS_EL_ASSASIN:
+				SendSay(-1, -1, 7006);
+				break;
+			case CLASS_KA_NECROMANCER:
+			case CLASS_EL_ENCHANTER:
+				SendSay(-1, -1, 8006);
+				break;
+			case CLASS_KA_DARKPRIEST:
+			case CLASS_EL_DRUID:
+				SendSay(-1, -1, 9006);
+				break;
+		}
+		return;
+	}
+
+	int16_t newClass = -1;
+
+	switch (currentClass)
 	{
 		case CLASS_KA_BERSERKER:
+			SendSay(-1, -1, 6005);
 			newClass = CLASS_KA_GUARDIAN;
 			break;
 		case CLASS_KA_HUNTER:
+			SendSay(-1, -1, 7005);
 			newClass = CLASS_KA_PENETRATOR;
 			break;
 		case CLASS_KA_SORCERER:
+			SendSay(-1, -1, 8005);
 			newClass = CLASS_KA_NECROMANCER;
 			break;
 		case CLASS_KA_SHAMAN:
+			SendSay(-1, -1, 9005);
 			newClass = CLASS_KA_DARKPRIEST;
 			break;
 		case CLASS_EL_BLADE:
+			SendSay(-1, -1, 6005);
 			newClass = CLASS_EL_PROTECTOR;
 			break;
 		case CLASS_EL_RANGER:
+			SendSay(-1, -1, 7005);
 			newClass = CLASS_EL_ASSASIN;
 			break;
 		case CLASS_EL_MAGE:
+			SendSay(-1, -1, 8005);
 			newClass = CLASS_EL_ENCHANTER;
 			break;
 		case CLASS_EL_CLERIC:
+			SendSay(-1, -1, 9005);
 			newClass = CLASS_EL_DRUID;
 			break;
 	}
 
-	if (newClass != m_pUserData->m_sClass)
-		SendClassPromotion(newClass);
+	if (newClass == -1)
+		return;
+
+	SendClassPromotion(newClass);
 }
 
 void CUser::PromoteUserNovice()
 {
-	int16_t newClass = m_pUserData->m_sClass;
-
 	switch (m_pUserData->m_sClass)
 	{
 		case CLASS_KA_WARRIOR:
-			newClass = CLASS_KA_BERSERKER;
+			SendClassPromotion(CLASS_KA_BERSERKER);
 			break;
 		case CLASS_KA_ROGUE:
-			newClass = CLASS_KA_HUNTER;
+			SendClassPromotion(CLASS_KA_HUNTER);
 			break;
 		case CLASS_KA_WIZARD:
-			newClass = CLASS_KA_SORCERER;
+			SendClassPromotion(CLASS_KA_SORCERER);
 			break;
 		case CLASS_KA_PRIEST:
-			newClass = CLASS_KA_SHAMAN;
+			SendClassPromotion(CLASS_KA_SHAMAN);
 			break;
 		case CLASS_EL_WARRIOR:
-			newClass = CLASS_EL_BLADE;
+			SendClassPromotion(CLASS_EL_BLADE);
 			break;
 		case CLASS_EL_ROGUE:
-			newClass = CLASS_EL_RANGER;
+			SendClassPromotion(CLASS_EL_RANGER);
 			break;
 		case CLASS_EL_WIZARD:
-			newClass = CLASS_EL_MAGE;
+			SendClassPromotion(CLASS_EL_MAGE);
 			break;
 		case CLASS_EL_PRIEST:
-			newClass = CLASS_EL_CLERIC;
+			SendClassPromotion(CLASS_EL_CLERIC);
 			break;
 	}
-
-	if (newClass != m_pUserData->m_sClass)
-		SendClassPromotion(newClass);
-	else
-		ClassChangeReq();
 }
 
 CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
@@ -11819,9 +11960,6 @@ bool CUser::RunNpcEvent(CNpc* pNpc, const EXEC* pExec)
 			LogCoupon(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
 			break;
 
-		case EXEC_GIVE_PROMOTION_QUEST:
-			break;
-
 		case EXEC_PROMOTE_USER:
 			PromoteUser();
 			break;
@@ -11901,9 +12039,6 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 
 			case EXEC_LOG_COUPON_ITEM:
 				LogCoupon(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
-				break;
-
-			case EXEC_GIVE_PROMOTION_QUEST:
 				break;
 
 			case EXEC_PROMOTE_USER:
@@ -12327,9 +12462,9 @@ bool CUser::CheckPromotionEligible()
 				return false;
 			}
 			return true;
+		default:
+			return true;
 	}
-
-	return false;
 }
 
 // Receive menu reply from client.
