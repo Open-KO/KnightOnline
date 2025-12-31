@@ -34,28 +34,28 @@ bool EVENT::LoadEvent(int zone, const std::filesystem::path& questsDir)
 	EVENT_DATA* eventData = nullptr;
 	std::error_code ec;
 
-	std::filesystem::path scriptPath = questsDir;
-	scriptPath /= std::to_string(zone) + ".evt";
+	std::filesystem::path questPath = questsDir;
+	questPath /= std::to_string(zone) + ".evt";
 
 	// Doesn't exist but this isn't a problem; we don't expect it to exist.
-	if (!std::filesystem::exists(scriptPath))
+	if (!std::filesystem::exists(questPath))
 		return true;
 
 	// Resolve it to strip the relative references (to be nice).
 	// NOTE: Requires the file to exist.
-	scriptPath = std::filesystem::canonical(scriptPath);
+	questPath = std::filesystem::canonical(questPath);
 
-	length = std::filesystem::file_size(scriptPath, ec);
+	length = std::filesystem::file_size(questPath, ec);
 	if (ec)
 		return false;
 
 	m_Zone = zone;
 
-	std::ifstream file(scriptPath, std::ios::in | std::ios::binary);
+	std::ifstream file(questPath, std::ios::in | std::ios::binary);
 	if (!file)
 		return false;
 
-	std::u8string filenameUtf8 = scriptPath.u8string();
+	std::u8string filenameUtf8 = questPath.u8string();
 
 	// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
 	// This just ensures the path is always explicitly UTF-8 in a cross-platform way.

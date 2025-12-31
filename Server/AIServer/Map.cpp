@@ -484,25 +484,30 @@ bool MAP::LoadRoomEvent(int zone_number, const std::filesystem::path& eventDir)
 
 	CRoomEvent* pEvent = nullptr;
 
-	// Build the base MAP directory
-	std::filesystem::path scriptPath = eventDir;
-	scriptPath /= std::to_string(zone_number) + ".evt";
+	std::filesystem::path eventPath = eventDir;
+	eventPath /= std::to_string(zone_number) + ".evt";
 
-	if (!std::filesystem::exists(scriptPath))
+	if (!std::filesystem::exists(eventPath))
 		return true;
 
 	// Resolve it to strip the relative references (to be nice).
 	// NOTE: Requires the file to exist.
-	scriptPath = std::filesystem::canonical(scriptPath);
+	eventPath = std::filesystem::canonical(eventPath);
 
 	std::error_code ec;
-	uintmax_t length = std::filesystem::file_size(scriptPath, ec);
+	uintmax_t length = std::filesystem::file_size(eventPath, ec);
 	if (ec)
 		return false;
 
-	std::ifstream file(scriptPath, std::ios::in | std::ios::binary);
+	std::ifstream file(eventPath, std::ios::in | std::ios::binary);
 	if (!file)
 		return false;
+
+	std::u8string filenameUtf8 = eventPath.u8string();
+
+	// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
+	// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
+	std::string filename(filenameUtf8.begin(), filenameUtf8.end());
 
 	int lineNumber = 0;
 	uintmax_t count = 0;
@@ -657,10 +662,7 @@ bool MAP::LoadRoomEvent(int zone_number, const std::filesystem::path& eventDir)
 			else if (isalnum(first[0]))
 			{
 				spdlog::warn("MAP::LoadRoomEvent({}): unhandled opcode '{}' ({}:{})",
-					zone_number, first,
-					// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
-					// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
-					reinterpret_cast<const char*>(scriptPath.u8string().c_str()), lineNumber);
+					zone_number, first, filename, lineNumber);
 			}
 
 			index = 0;
