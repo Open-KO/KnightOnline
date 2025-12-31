@@ -263,7 +263,6 @@ public:
 	void ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial, int itemid, int count, int durability);
 	void TestPacket();
 	bool RunEvent(const EVENT_DATA* pEventData);
-	bool RunNpcEvent(CNpc* pNpc, const EXEC* pExec);
 	bool CheckEventLogic(const EVENT_DATA* pEventData);
 	void ClientEvent(char* pBuf);
 	void KickOut(char* pBuf);
