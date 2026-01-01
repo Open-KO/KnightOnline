@@ -6,20 +6,20 @@
 #include "EVENT_DATA.h"
 #include <shared-server/STLMap.h>
 
-typedef CSTLMap <EVENT_DATA>				EventDataArray;
+typedef CSTLMap<EVENT_DATA> EventDataArray;
 
 class EVENT
 {
-public:
-	void DeleteAll();
-	void Init();
-	bool LoadEvent(int zone, const std::filesystem::path& questsDir);
-	int m_Zone;
+  public:
+    void DeleteAll();
+    void Init();
+    bool LoadEvent(int zone, const std::filesystem::path &questsDir);
+    int m_Zone;
 
-	EventDataArray m_arEvent;
+    EventDataArray m_arEvent;
 
-	EVENT();
-	virtual ~EVENT();
+    EVENT();
+    virtual ~EVENT();
 };
 
 #endif // SERVER_EBENEZER_EVENT_H

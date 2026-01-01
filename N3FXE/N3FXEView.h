@@ -14,49 +14,49 @@ class CN3FXEDoc;
 
 class CN3FXEView : public CView
 {
-protected: // create from serialization only
-	CN3FXEView();
-	DECLARE_DYNCREATE(CN3FXEView)
+  protected: // create from serialization only
+    CN3FXEView();
+    DECLARE_DYNCREATE(CN3FXEView)
 
-// Attributes
-public:
-	CN3FXEDoc* GetDocument();
-	
-// Operations
-public:
+    // Attributes
+  public:
+    CN3FXEDoc *GetDocument();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CN3FXEView)
-	public:
-	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	//}}AFX_VIRTUAL
+    // Operations
+  public:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CN3FXEView)
+  public:
+    virtual void OnDraw(CDC *pDC); // overridden to draw this view
+    virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
 
-// Implementation
-public:
+  protected:
+    virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+    //}}AFX_VIRTUAL
 
-	virtual ~CN3FXEView();
+    // Implementation
+  public:
+    virtual ~CN3FXEView();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-protected:
-
-// Generated message map functions
-protected:
-	//{{AFX_MSG(CN3FXEView)
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  protected:
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CN3FXEView)
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in N3FXEView.cpp
-inline CN3FXEDoc* CN3FXEView::GetDocument()
-   { return (CN3FXEDoc*)m_pDocument; }
+#ifndef _DEBUG // debug version in N3FXEView.cpp
+inline CN3FXEDoc *CN3FXEView::GetDocument()
+{
+    return (CN3FXEDoc *)m_pDocument;
+}
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

@@ -9,10 +9,10 @@
 #endif // _MSC_VER > 1000
 
 #ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
+#error include 'stdafx.h' before including this file for PCH
 #endif
 
-#include "resource.h"       // main symbols
+#include "resource.h" // main symbols
 
 /////////////////////////////////////////////////////////////////////////////
 // CN3MEApp:
@@ -21,23 +21,22 @@
 
 class CN3MEApp : public CWinApp
 {
-public:
-	CN3MEApp();
+  public:
+    CN3MEApp();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CN3MEApp)
-	public:
-	virtual BOOL InitInstance();
-	//}}AFX_VIRTUAL
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CN3MEApp)
+  public:
+    virtual BOOL InitInstance();
+    //}}AFX_VIRTUAL
 
-// Implementation
-	//{{AFX_MSG(CN3MEApp)
-	afx_msg void OnAppAbout();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+    //{{AFX_MSG(CN3MEApp)
+    afx_msg void OnAppAbout();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
-
 
 /////////////////////////////////////////////////////////////////////////////
 

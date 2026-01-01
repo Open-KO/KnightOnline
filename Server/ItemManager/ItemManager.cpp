@@ -1,9 +1,9 @@
-﻿#include "pch.h"
-#include "ItemManagerApp.h"
+﻿#include "ItemManagerApp.h"
 #include "ItemManagerLogger.h"
+#include "pch.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	ItemManagerLogger logger;
-	return AppThread::main<ItemManagerApp>(argc, argv, logger);
+    ItemManagerLogger logger;
+    return AppThread::main<ItemManagerApp>(argc, argv, logger);
 }

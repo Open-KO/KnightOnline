@@ -9,35 +9,37 @@
 
 class Thread
 {
-public:
-	bool CanTick() const
-	{
-		return _canTick;
-	}
+  public:
+    bool CanTick() const
+    {
+        return _canTick;
+    }
 
-	bool IsShutdown() const
-	{
-		return _isShutdown;
-	}
+    bool IsShutdown() const
+    {
+        return _isShutdown;
+    }
 
-	Thread();
-	virtual void start();
-	virtual void shutdown(bool waitForShutdown = true);
-	void join();
-	virtual ~Thread();
+    Thread();
+    virtual void start();
+    virtual void shutdown(bool waitForShutdown = true);
+    void join();
+    virtual ~Thread();
 
-protected:
-	void thread_loop_wrapper();
+  protected:
+    void thread_loop_wrapper();
 
-	virtual void thread_loop() = 0;
-	virtual void before_shutdown() {}
+    virtual void thread_loop() = 0;
+    virtual void before_shutdown()
+    {
+    }
 
-protected:
-	std::mutex				_mutex;
-	std::condition_variable	_cv;
-	std::thread				_thread;
-	bool					_canTick;
-	bool					_isShutdown;
+  protected:
+    std::mutex _mutex;
+    std::condition_variable _cv;
+    std::thread _thread;
+    bool _canTick;
+    bool _isShutdown;
 };
 
 #endif // SHARED_THREAD_H

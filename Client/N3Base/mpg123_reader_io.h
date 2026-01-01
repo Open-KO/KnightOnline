@@ -12,7 +12,7 @@
 /// \param dst Destination buffer to fill with audio data.
 /// \param bytes Maximum number of bytes to read.
 /// \returns The number of bytes actually read, or 0 if EOF is reached.
-mpg123_ssize_t mpg123_filereader_read(void* userData, void* dst, size_t bytes);
+mpg123_ssize_t mpg123_filereader_read(void *userData, void *dst, size_t bytes);
 
 /// Seeks to a new position in a memory-mapped file for mpg123 decoding.
 ///
@@ -25,7 +25,7 @@ mpg123_ssize_t mpg123_filereader_read(void* userData, void* dst, size_t bytes);
 /// \param offset Byte offset to seek to, relative to \p whence.
 /// \param whence SEEK_SET, SEEK_CUR, or SEEK_END.
 /// \returns The new absolute position in the file, or -1 on error.
-off_t mpg123_filereader_seek(void* userData, off_t offset, int whence);
+off_t mpg123_filereader_seek(void *userData, off_t offset, int whence);
 
 /// Cleanup callback for mpg123 when using a memory-mapped file.
 ///
@@ -34,4 +34,4 @@ off_t mpg123_filereader_seek(void* userData, off_t offset, int whence);
 /// managed externally by \ref StreamedAudioAsset and \ref FileReaderHandle.
 ///
 /// \param userData Pointer to the user data (ignored).
-void mpg123_filereader_cleanup(void* userData);
+void mpg123_filereader_cleanup(void *userData);

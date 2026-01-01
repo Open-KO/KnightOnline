@@ -11,58 +11,63 @@
 
 class CIni
 {
-protected:
-	struct ci_less
-	{
-		using is_transparent = void;
+  protected:
+    struct ci_less
+    {
+        using is_transparent = void;
 
-		bool operator()(std::string_view lhs, std::string_view rhs) const
-		{
-			const size_t minLength = (std::min)(lhs.size(), rhs.size()); // NOTE: allow for Windows.h defining min
-			for (size_t i = 0; i < minLength; i++)
-			{
-				int a = std::tolower(lhs[i]);
-				int b = std::tolower(rhs[i]);
-				if (a != b)
-					return a < b;
-			}
+        bool operator()(std::string_view lhs, std::string_view rhs) const
+        {
+            const size_t minLength = (std::min)(lhs.size(), rhs.size()); // NOTE: allow for Windows.h defining min
+            for (size_t i = 0; i < minLength; i++)
+            {
+                int a = std::tolower(lhs[i]);
+                int b = std::tolower(rhs[i]);
+                if (a != b)
+                    return a < b;
+            }
 
-			return lhs.length() < rhs.length();
-		}
-	};
+            return lhs.length() < rhs.length();
+        }
+    };
 
-	std::filesystem::path _path;
+    std::filesystem::path _path;
 
-	// Defines key/value pairs within sections
-	using ConfigEntryMap = std::map<std::string, std::string, ci_less>;
+    // Defines key/value pairs within sections
+    using ConfigEntryMap = std::map<std::string, std::string, ci_less>;
 
-	// Defines the sections containing the key/value pairs
-	using ConfigMap = std::map<std::string, ConfigEntryMap, ci_less>;
+    // Defines the sections containing the key/value pairs
+    using ConfigMap = std::map<std::string, ConfigEntryMap, ci_less>;
 
-	ConfigMap _configMap;
+    ConfigMap _configMap;
 
-public:
-	const std::filesystem::path& GetPath() const
-	{
-		return _path;
-	}
+  public:
+    const std::filesystem::path &GetPath() const
+    {
+        return _path;
+    }
 
-	CIni() = default;
-	CIni(const std::filesystem::path& path);
+    CIni() = default;
+    CIni(const std::filesystem::path &path);
 
-	bool Load();
-	bool Load(const std::filesystem::path& path);
+    bool Load();
+    bool Load(const std::filesystem::path &path);
 
-	void Save();
-	void Save(const std::filesystem::path& path);
+    void Save();
+    void Save(const std::filesystem::path &path);
 
-	int GetInt(std::string_view svAppName, std::string_view svKeyName, const int iDefault);
-	bool GetBool(std::string_view svAppName, std::string_view svKeyName, const bool bDefault);
-	std::string GetString(std::string_view svAppName, std::string_view svKeyName, std::string_view svDefault);
-	void GetString(std::string_view svAppName, std::string_view svKeyName, std::string_view svDefault, char* szOutBuffer, size_t nBufferLength);
+    int GetInt(std::string_view svAppName, std::string_view svKeyName, const int iDefault);
+    bool GetBool(std::string_view svAppName, std::string_view svKeyName, const bool bDefault);
+    std::string GetString(std::string_view svAppName, std::string_view svKeyName, std::string_view svDefault);
+    void GetString(
+        std::string_view svAppName,
+        std::string_view svKeyName,
+        std::string_view svDefault,
+        char *szOutBuffer,
+        size_t nBufferLength);
 
-	int SetInt(std::string_view svAppName, std::string_view svKeyName, const int iDefault);
-	int SetString(std::string_view svAppName, std::string_view svKeyName, std::string_view svDefault);
+    int SetInt(std::string_view svAppName, std::string_view svKeyName, const int iDefault);
+    int SetString(std::string_view svAppName, std::string_view svKeyName, std::string_view svDefault);
 };
 
 #endif // SHARED_INI_H

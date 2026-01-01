@@ -1,7 +1,7 @@
-﻿#include "pch.h"
-#include "ItemManagerApp.h"
+﻿#include "ItemManagerApp.h"
 #include "ItemManagerLogger.h"
 #include "ItemManagerReadQueueThread.h"
+#include "pch.h"
 
 #include <shared/Ini.h>
 #include <spdlog/spdlog.h>
@@ -11,147 +11,139 @@
 
 using namespace std::chrono_literals;
 
-ItemManagerApp::ItemManagerApp(ItemManagerLogger& logger)
-	: AppThread(logger)
+ItemManagerApp::ItemManagerApp(ItemManagerLogger &logger) : AppThread(logger)
 {
-	_readQueueThread = std::make_unique<ItemManagerReadQueueThread>();
-	_smqOpenThread = std::make_unique<TimerThread>(
-		5s,
-		std::bind(&ItemManagerApp::AttemptOpenSharedMemoryThreadTick, this));
+    _readQueueThread = std::make_unique<ItemManagerReadQueueThread>();
+    _smqOpenThread =
+        std::make_unique<TimerThread>(5s, std::bind(&ItemManagerApp::AttemptOpenSharedMemoryThreadTick, this));
 }
 
 ItemManagerApp::~ItemManagerApp()
 {
-	spdlog::info("ItemManagerApp::~ItemManagerApp: Shutting down, releasing resources.");
+    spdlog::info("ItemManagerApp::~ItemManagerApp: Shutting down, releasing resources.");
 
-	spdlog::info("ItemManagerApp::~ItemManagerApp: Waiting for worker threads to fully shut down.");
+    spdlog::info("ItemManagerApp::~ItemManagerApp: Waiting for worker threads to fully shut down.");
 
-	if (_readQueueThread != nullptr)
-	{
-		spdlog::info("ItemManagerApp::~ItemManagerApp: Shutting down ReadQueueThread...");
+    if (_readQueueThread != nullptr)
+    {
+        spdlog::info("ItemManagerApp::~ItemManagerApp: Shutting down ReadQueueThread...");
 
-		_readQueueThread->shutdown();
+        _readQueueThread->shutdown();
 
-		spdlog::info("ItemManagerApp::~ItemManagerApp: ReadQueueThread stopped.");
-	}
+        spdlog::info("ItemManagerApp::~ItemManagerApp: ReadQueueThread stopped.");
+    }
 
-	spdlog::info("ItemManagerApp::~ItemManagerApp: All resources safely released.");
+    spdlog::info("ItemManagerApp::~ItemManagerApp: All resources safely released.");
 }
 
 std::filesystem::path ItemManagerApp::ConfigPath() const
 {
-	return "ItemManager.ini";
+    return "ItemManager.ini";
 }
 
 bool ItemManagerApp::OnStart()
 {
-	// Attempt to open shared memory queue first.
-	// If it fails (memory not yet available), we'll run the _smqOpenThread to periodically check
-	// until it can finally be opened.
-	if (!AttemptOpenSharedMemory())
-	{
-		spdlog::info("ItemManagerApp::OnStart: shared memory unavailable, waiting for memory to become available");
-		_smqOpenThread->start();
-	}
-	else
-	{
-		OnSharedMemoryOpened();
-	}
+    // Attempt to open shared memory queue first.
+    // If it fails (memory not yet available), we'll run the _smqOpenThread to periodically check
+    // until it can finally be opened.
+    if (!AttemptOpenSharedMemory())
+    {
+        spdlog::info("ItemManagerApp::OnStart: shared memory unavailable, waiting for memory to become available");
+        _smqOpenThread->start();
+    }
+    else
+    {
+        OnSharedMemoryOpened();
+    }
 
-	return true;
+    return true;
 }
 
 bool ItemManagerApp::AttemptOpenSharedMemory()
 {
-	return LoggerRecvQueue.Open(SMQ_ITEMLOGGER);
+    return LoggerRecvQueue.Open(SMQ_ITEMLOGGER);
 }
 
 void ItemManagerApp::AttemptOpenSharedMemoryThreadTick()
 {
-	if (!AttemptOpenSharedMemory())
-		return;
+    if (!AttemptOpenSharedMemory())
+        return;
 
-	// Shared memory is open, this thread doesn't need to exist anymore.
-	_smqOpenThread->shutdown(false);
+    // Shared memory is open, this thread doesn't need to exist anymore.
+    _smqOpenThread->shutdown(false);
 
-	// Run the server
-	OnSharedMemoryOpened();
+    // Run the server
+    OnSharedMemoryOpened();
 }
 
 void ItemManagerApp::OnSharedMemoryOpened()
 {
-	_readQueueThread->start();
+    _readQueueThread->start();
 
-	spdlog::info("ItemManagerApp::OnSharedMemoryOpened: server started, processing requests");
+    spdlog::info("ItemManagerApp::OnSharedMemoryOpened: server started, processing requests");
 }
 
-void ItemManagerApp::ItemLogWrite(const char* pBuf)
+void ItemManagerApp::ItemLogWrite(const char *pBuf)
 {
-	int index = 0, srclen = 0, tarlen = 0, type = 0, putitem = 0, putcount = 0, putdure = 0;
-	int64_t putserial = 0;
-	char srcid[MAX_ID_SIZE + 1] = {},
-		tarid[MAX_ID_SIZE + 1] = {};
+    int index = 0, srclen = 0, tarlen = 0, type = 0, putitem = 0, putcount = 0, putdure = 0;
+    int64_t putserial = 0;
+    char srcid[MAX_ID_SIZE + 1] = {}, tarid[MAX_ID_SIZE + 1] = {};
 
-	srclen = GetShort(pBuf, index);
-	if (srclen <= 0
-		|| srclen > MAX_ID_SIZE)
-	{
-		spdlog::trace("### ItemLogWrite Fail : srclen = %d ###\n", srclen);
-		return;
-	}
+    srclen = GetShort(pBuf, index);
+    if (srclen <= 0 || srclen > MAX_ID_SIZE)
+    {
+        spdlog::trace("### ItemLogWrite Fail : srclen = %d ###\n", srclen);
+        return;
+    }
 
-	GetString(srcid, pBuf, srclen, index);
+    GetString(srcid, pBuf, srclen, index);
 
-	tarlen = GetShort(pBuf, index);
-	if (tarlen <= 0
-		|| tarlen > MAX_ID_SIZE)
-	{
-		spdlog::trace("### ItemLogWrite Fail : tarlen = %d ###\n", tarlen);
-		return;
-	}
+    tarlen = GetShort(pBuf, index);
+    if (tarlen <= 0 || tarlen > MAX_ID_SIZE)
+    {
+        spdlog::trace("### ItemLogWrite Fail : tarlen = %d ###\n", tarlen);
+        return;
+    }
 
-	GetString(tarid, pBuf, tarlen, index);
+    GetString(tarid, pBuf, tarlen, index);
 
-	type = GetByte(pBuf, index);
-	putserial = GetInt64(pBuf, index);
-	putitem = GetDWORD(pBuf, index);
-	putcount = GetShort(pBuf, index);
-	putdure = GetShort(pBuf, index);
+    type = GetByte(pBuf, index);
+    putserial = GetInt64(pBuf, index);
+    putitem = GetDWORD(pBuf, index);
+    putcount = GetShort(pBuf, index);
+    putdure = GetShort(pBuf, index);
 
-	spdlog::get(logger::ItemManagerItem)->info("{}, {}, {}, {}, {}, {}, {}",
-		srcid, tarid, type, putserial, putitem, putcount, putdure);
+    spdlog::get(logger::ItemManagerItem)
+        ->info("{}, {}, {}, {}, {}, {}, {}", srcid, tarid, type, putserial, putitem, putcount, putdure);
 }
 
-void ItemManagerApp::ExpLogWrite(const char* pBuf)
+void ItemManagerApp::ExpLogWrite(const char *pBuf)
 {
-	int index = 0, aclen = 0, charlen = 0, type = 0, level = 0, exp = 0, loyalty = 0, money = 0;
-	char acname[MAX_ID_SIZE + 1] = {},
-		charid[MAX_ID_SIZE + 1] = {};
+    int index = 0, aclen = 0, charlen = 0, type = 0, level = 0, exp = 0, loyalty = 0, money = 0;
+    char acname[MAX_ID_SIZE + 1] = {}, charid[MAX_ID_SIZE + 1] = {};
 
-	aclen = GetShort(pBuf, index);
-	if (aclen <= 0
-		|| aclen > MAX_ID_SIZE)
-	{
-		spdlog::trace("### ExpLogWrite Fail : tarlen = %d ###\n", aclen);
-		return;
-	}
+    aclen = GetShort(pBuf, index);
+    if (aclen <= 0 || aclen > MAX_ID_SIZE)
+    {
+        spdlog::trace("### ExpLogWrite Fail : tarlen = %d ###\n", aclen);
+        return;
+    }
 
-	GetString(acname, pBuf, aclen, index);
-	charlen = GetShort(pBuf, index);
-	if (charlen <= 0
-		|| charlen > MAX_ID_SIZE)
-	{
-		spdlog::trace("### ExpLogWrite Fail : tarlen = %d ###\n", charlen);
-		return;
-	}
+    GetString(acname, pBuf, aclen, index);
+    charlen = GetShort(pBuf, index);
+    if (charlen <= 0 || charlen > MAX_ID_SIZE)
+    {
+        spdlog::trace("### ExpLogWrite Fail : tarlen = %d ###\n", charlen);
+        return;
+    }
 
-	GetString(charid, pBuf, charlen, index);
-	type = GetByte(pBuf, index);
-	level = GetByte(pBuf, index);
-	exp = GetDWORD(pBuf, index);
-	loyalty = GetDWORD(pBuf, index);
-	money = GetDWORD(pBuf, index);
+    GetString(charid, pBuf, charlen, index);
+    type = GetByte(pBuf, index);
+    level = GetByte(pBuf, index);
+    exp = GetDWORD(pBuf, index);
+    loyalty = GetDWORD(pBuf, index);
+    money = GetDWORD(pBuf, index);
 
-	spdlog::get(logger::ItemManagerExp)->info("{}, {}, {}, {}, {}, {}, {}",
-		acname, charid, type, level, exp, loyalty, money);
+    spdlog::get(logger::ItemManagerExp)
+        ->info("{}, {}, {}, {}, {}, {}, {}", acname, charid, type, level, exp, loyalty, money);
 }

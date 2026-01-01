@@ -14,22 +14,22 @@
 
 //////////////////////////////////////////////////////////////////////
 
-class CUICreateClanName : public CN3UIBase  
+class CUICreateClanName : public CN3UIBase
 {
-public:
-	CN3UIString*	m_pText_Title;
-	CN3UIEdit*		m_pEdit_ClanName;
-	std::string		m_szClanName;
+  public:
+    CN3UIString *m_pText_Title;
+    CN3UIEdit *m_pEdit_ClanName;
+    std::string m_szClanName;
 
-public:
-	CUICreateClanName();
-	~CUICreateClanName() override;
-	bool Load(File& file) override;
-	void SetVisible(bool bVisible) override;
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
-	void Open(int msg = 0);
-	bool MakeClan();
-	void MsgSend_MakeClan() const;
+  public:
+    CUICreateClanName();
+    ~CUICreateClanName() override;
+    bool Load(File &file) override;
+    void SetVisible(bool bVisible) override;
+    bool ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg) override;
+    void Open(int msg = 0);
+    bool MakeClan();
+    void MsgSend_MakeClan() const;
 };
 
-#endif //#if !defined(__UICREATECLANNAME_H__)
+#endif // #if !defined(__UICREATECLANNAME_H__)

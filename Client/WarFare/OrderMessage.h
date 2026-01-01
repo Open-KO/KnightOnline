@@ -9,12 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class COrderMessage  
+class COrderMessage
 {
-public:
-	COrderMessage();
-	virtual ~COrderMessage();
-
+  public:
+    COrderMessage();
+    virtual ~COrderMessage();
 };
 
 #endif // !defined(AFX_ORDERMESSAGE_H__D4499630_BD7A_41F0_B4B8_0E0BBA84218C__INCLUDED_)

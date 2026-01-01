@@ -2,460 +2,472 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
 #include "PvsMgr.h"
 #include "GameBase.h"
-#include "PlayerMySelf.h"
-#include "GameProcedure.h"
 #include "GameEng.h"
+#include "GameProcedure.h"
+#include "PlayerMySelf.h"
+#include "StdAfx.h"
 
 #include <N3Base/N3Camera.h>
-#include <N3Base/N3ShapeMgr.h>
 #include <N3Base/N3ShapeExtra.h>
+#include <N3Base/N3ShapeMgr.h>
 
 #define INDOOR_FOLDER "N3Indoor\\"
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
-CN3Mng <class CN3Shape>		CPvsMgr::s_MngShape; 
-CN3Mng <class CN3ShapeExtra>	CPvsMgr::s_MngShapeExt; 
-std::list<ShapeInfo* > CPvsMgr::s_plShapeInfoList;
+CN3Mng<class CN3Shape> CPvsMgr::s_MngShape;
+CN3Mng<class CN3ShapeExtra> CPvsMgr::s_MngShapeExt;
+std::list<ShapeInfo *> CPvsMgr::s_plShapeInfoList;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
- 
-CPvsMgr::CPvsMgr()	: m_IndoorFolder("N3Indoor\\"), m_fVolumeOffs(0.6f)	//..
+
+CPvsMgr::CPvsMgr() : m_IndoorFolder("N3Indoor\\"), m_fVolumeOffs(0.6f) //..
 {
-	s_plShapeInfoList.clear();
-	m_pCurVol = nullptr;
+    s_plShapeInfoList.clear();
+    m_pCurVol = nullptr;
 }
 
 CPvsMgr::~CPvsMgr()
 {
-	DeleteAllPvsObj();
+    DeleteAllPvsObj();
 }
 
 void CPvsMgr::DeleteAllPvsObj()
 {
-	iter it = m_pPvsList.begin();
+    iter it = m_pPvsList.begin();
 
-	while (it != m_pPvsList.end())	
-	{
-		CPortalVolume* pvs = *it;
-		if (pvs) delete pvs;
-		it++;
-	}	
-	m_pPvsList.clear();
+    while (it != m_pPvsList.end())
+    {
+        CPortalVolume *pvs = *it;
+        if (pvs)
+            delete pvs;
+        it++;
+    }
+    m_pPvsList.clear();
 
-	ShapeInfo* pSI;
-	siiter siit = s_plShapeInfoList.begin();
-	while(siit != s_plShapeInfoList.end())
-	{
-		pSI = *siit++;
-		delete pSI;
-	}
-	s_plShapeInfoList.clear();
-	s_MngShape.Release();
-	s_MngShapeExt.Release();
+    ShapeInfo *pSI;
+    siiter siit = s_plShapeInfoList.begin();
+    while (siit != s_plShapeInfoList.end())
+    {
+        pSI = *siit++;
+        delete pSI;
+    }
+    s_plShapeInfoList.clear();
+    s_MngShape.Release();
+    s_MngShapeExt.Release();
 }
 
-ShapeInfo* CPvsMgr::GetShapeInfoByManager(int iID)
+ShapeInfo *CPvsMgr::GetShapeInfoByManager(int iID)
 {
-	ShapeInfo* pSI;
-	siiter siit = s_plShapeInfoList.begin();
-	while(siit != s_plShapeInfoList.end())
-	{
-		pSI = *siit++;
-		if (pSI->m_iID == iID)
-			return pSI;
-	}
+    ShapeInfo *pSI;
+    siiter siit = s_plShapeInfoList.begin();
+    while (siit != s_plShapeInfoList.end())
+    {
+        pSI = *siit++;
+        if (pSI->m_iID == iID)
+            return pSI;
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
 void CPvsMgr::Tick(bool bWarp, __Vector3 vPos)
 {
-	CPortalVolume* pVol = nullptr;
-	__Vector3 vec = CGameBase::s_pPlayer->Position();	
-	if(bWarp)
-		vec = vPos;
+    CPortalVolume *pVol = nullptr;
+    __Vector3 vec = CGameBase::s_pPlayer->Position();
+    if (bWarp)
+        vec = vPos;
 
-	vec.y += m_fVolumeOffs;
-	m_pCurVol = nullptr;
-	
-	iter it = m_pPvsList.begin();
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		if (pVol->IsInVolumn(vec))
-		{
-			m_pCurVol = pVol;
-			break;
-		}
-	}
+    vec.y += m_fVolumeOffs;
+    m_pCurVol = nullptr;
 
-	it = m_pPvsList.begin();
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;
-		pVol->m_eRenderType = TYPE_UNKNOWN;
-	}
+    iter it = m_pPvsList.begin();
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        if (pVol->IsInVolumn(vec))
+        {
+            m_pCurVol = pVol;
+            break;
+        }
+    }
 
-	if (!m_pCurVol) return;
+    it = m_pPvsList.begin();
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        pVol->m_eRenderType = TYPE_UNKNOWN;
+    }
 
-	VisPortalPriority vPP;
-	vppiter vppit = m_pCurVol->m_pVisiblePvsList.begin();
-	while(vppit != m_pCurVol->m_pVisiblePvsList.end())
-	{
-		vPP = *vppit++;
-		vPP.m_pVol->m_eRenderType = TYPE_TRUE;
-	}		
+    if (!m_pCurVol)
+        return;
+
+    VisPortalPriority vPP;
+    vppiter vppit = m_pCurVol->m_pVisiblePvsList.begin();
+    while (vppit != m_pCurVol->m_pVisiblePvsList.end())
+    {
+        vPP = *vppit++;
+        vPP.m_pVol->m_eRenderType = TYPE_TRUE;
+    }
 }
 
 void CPvsMgr::Render()
 {
-	CPortalVolume* pVol = nullptr;
-	iter it = m_pPvsList.begin();
+    CPortalVolume *pVol = nullptr;
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		if ( pVol->m_eRenderType == TYPE_TRUE )
-		{
-			pVol->Render();
-		}
-	}
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        if (pVol->m_eRenderType == TYPE_TRUE)
+        {
+            pVol->Render();
+        }
+    }
 }
 
-bool CPvsMgr::LoadOldVersion(File& file, int iVersionFromData)
+bool CPvsMgr::LoadOldVersion(File &file, int iVersionFromData)
 {
-	//..
+    //..
 
-	return true;
+    return true;
 }
 
-bool CPvsMgr::Load(File& file)
+bool CPvsMgr::Load(File &file)
 {
-	int iT;
+    int iT;
 
-	file.Read(&iT, sizeof(int));
-	if (iT != ciVersion)
-		return LoadOldVersion(file, iT);
+    file.Read(&iT, sizeof(int));
+    if (iT != ciVersion)
+        return LoadOldVersion(file, iT);
 
-	// N3Scene 화일.. 안쓴다.. -.-;
-	std::string strSrc = ReadDecryptString(file), strDest;
+    // N3Scene 화일.. 안쓴다.. -.-;
+    std::string strSrc = ReadDecryptString(file), strDest;
 
-	// 전체 이동값.. 안슨다.. -.-;
-	file.Read(&iT, sizeof(int));
-	file.Read(&iT, sizeof(int));	
-	file.Read(&iT, sizeof(int));	
+    // 전체 이동값.. 안슨다.. -.-;
+    file.Read(&iT, sizeof(int));
+    file.Read(&iT, sizeof(int));
+    file.Read(&iT, sizeof(int));
 
-	char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
-	int iCount;
+    char szDrive[_MAX_DRIVE], szDir[_MAX_DIR], szFName[_MAX_FNAME], szExt[_MAX_EXT];
+    int iCount;
 
-	file.Read(&iCount, sizeof(int));	
+    file.Read(&iCount, sizeof(int));
 
-	for (int i = 0; i < iCount; i++ )
-	{
-		ShapeInfo*	pSI = new ShapeInfo;
-		file.Read(&pSI->m_iID, sizeof(int));
-		
-		// 문자열 길이..
-		strSrc = ReadDecryptString(file);
-		_splitpath(strSrc.c_str(), szDrive, szDir, szFName, szExt);
-		strDest = szFName;	strDest +=  szExt;
-		pSI->m_strShapeFile = m_IndoorFolder + strDest;
-		pSI->m_pShape = s_MngShape.Get(m_IndoorFolder + strDest);
-		__ASSERT(pSI->m_pShape, "Shape Not Found");
-	
-		file.Read(&pSI->m_iBelong, sizeof(int));	
-		file.Read(&pSI->m_iEventID, sizeof(int));	
-		file.Read(&pSI->m_iEventType, sizeof(int));	
-		file.Read(&pSI->m_iNPC_ID, sizeof(int));	
-		file.Read(&pSI->m_iNPC_Status, sizeof(int));	
-		pSI->Load(file);
-		s_plShapeInfoList.push_back(pSI);
-	}
+    for (int i = 0; i < iCount; i++)
+    {
+        ShapeInfo *pSI = new ShapeInfo;
+        file.Read(&pSI->m_iID, sizeof(int));
 
-	// Total Count.. 
-	file.Read(&iCount, sizeof(int));
+        // 문자열 길이..
+        strSrc = ReadDecryptString(file);
+        _splitpath(strSrc.c_str(), szDrive, szDir, szFName, szExt);
+        strDest = szFName;
+        strDest += szExt;
+        pSI->m_strShapeFile = m_IndoorFolder + strDest;
+        pSI->m_pShape = s_MngShape.Get(m_IndoorFolder + strDest);
+        __ASSERT(pSI->m_pShape, "Shape Not Found");
 
-	CPortalVolume* pVol = nullptr, *pVolTo = nullptr;
-	int iID;
+        file.Read(&pSI->m_iBelong, sizeof(int));
+        file.Read(&pSI->m_iEventID, sizeof(int));
+        file.Read(&pSI->m_iEventType, sizeof(int));
+        file.Read(&pSI->m_iNPC_ID, sizeof(int));
+        file.Read(&pSI->m_iNPC_Status, sizeof(int));
+        pSI->Load(file);
+        s_plShapeInfoList.push_back(pSI);
+    }
 
-	for(int i = 0; i < iCount; i++ )
-	{
-		file.Read(&iID, sizeof(int));
+    // Total Count..
+    file.Read(&iCount, sizeof(int));
 
-		pVol = new CPortalVolume;
-		pVol->m_pManager = this;
-		pVol->m_iID	= iID;	 
-		pVol->Load(file);
-		m_pPvsList.push_back(pVol);
-	}
+    CPortalVolume *pVol = nullptr, *pVolTo = nullptr;
+    int iID;
 
-	iter it = m_pPvsList.begin();
-	idapiter idapit;
-	IDAndPriority IDAP;
-	VisPortalPriority vPP;
+    for (int i = 0; i < iCount; i++)
+    {
+        file.Read(&iID, sizeof(int));
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;
+        pVol = new CPortalVolume;
+        pVol->m_pManager = this;
+        pVol->m_iID = iID;
+        pVol->Load(file);
+        m_pPvsList.push_back(pVol);
+    }
 
-		idapit = pVol->m_piVisibleIDList.begin();
-		while (idapit != pVol->m_piVisibleIDList.end())
-		{
-			 IDAP = *idapit++;
-			 pVolTo = GetPortalVolPointerByID(IDAP.m_iID);
-			 vPP.m_pVol = pVolTo;
-			 vPP.m_iPriority = IDAP.m_iPriority;
-			 pVol->m_pVisiblePvsList.push_back(vPP);
-		}
+    iter it = m_pPvsList.begin();
+    idapiter idapit;
+    IDAndPriority IDAP;
+    VisPortalPriority vPP;
 
-		pVol->m_piVisibleIDList.clear();
-	}
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
 
-	return true;
+        idapit = pVol->m_piVisibleIDList.begin();
+        while (idapit != pVol->m_piVisibleIDList.end())
+        {
+            IDAP = *idapit++;
+            pVolTo = GetPortalVolPointerByID(IDAP.m_iID);
+            vPP.m_pVol = pVolTo;
+            vPP.m_iPriority = IDAP.m_iPriority;
+            pVol->m_pVisiblePvsList.push_back(vPP);
+        }
+
+        pVol->m_piVisibleIDList.clear();
+    }
+
+    return true;
 }
 
-CPortalVolume* CPvsMgr::GetPortalVolPointerByID(int iID)
+CPortalVolume *CPvsMgr::GetPortalVolPointerByID(int iID)
 {
-	CPortalVolume* pVol = nullptr;
+    CPortalVolume *pVol = nullptr;
 
-	iter it = m_pPvsList.begin();
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		// 자신의 데이터 저장..
-		pVol = *it++;
-		if (pVol->m_iID == iID)
-			return pVol;
-	}
+    while (it != m_pPvsList.end())
+    {
+        // 자신의 데이터 저장..
+        pVol = *it++;
+        if (pVol->m_iID == iID)
+            return pVol;
+    }
 
-	return nullptr;	
+    return nullptr;
 }
 
 #define CRY_KEY 0x0816
 
-std::string CPvsMgr::ReadDecryptString(File& file)
+std::string CPvsMgr::ReadDecryptString(File &file)
 {
-	int iCount;
+    int iCount;
 
-	file.Read(&iCount, sizeof(int));
+    file.Read(&iCount, sizeof(int));
 
-	std::string strDest;
-	if (iCount > 0)
-	{
-		strDest.assign(iCount, '\0');
-		file.Read(&strDest[0], iCount);
+    std::string strDest;
+    if (iCount > 0)
+    {
+        strDest.assign(iCount, '\0');
+        file.Read(&strDest[0], iCount);
 
-		for (int i = 0; i < iCount; i++)
-			strDest[i] ^= CRY_KEY;
-	}
+        for (int i = 0; i < iCount; i++)
+            strDest[i] ^= CRY_KEY;
+    }
 
-	return strDest;
+    return strDest;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////
 
-bool CPvsMgr::CheckCollisionCameraWithTerrain(__Vector3& vEyeResult, const __Vector3& vAt, float fNP)
+bool CPvsMgr::CheckCollisionCameraWithTerrain(__Vector3 &vEyeResult, const __Vector3 &vAt, float fNP)
 {
-	fNP = (vAt - vEyeResult).Magnitude();
-	bool bCollision = false;
-	float fNPMin = fNP, fTemp = 0.0f;
+    fNP = (vAt - vEyeResult).Magnitude();
+    bool bCollision = false;
+    float fNPMin = fNP, fTemp = 0.0f;
 
-	CPortalVolume* pVol = nullptr;
-	iter it = m_pPvsList.begin();
+    CPortalVolume *pVol = nullptr;
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		if ( (pVol->m_eRenderType == TYPE_TRUE ) && pVol->CheckCollisionCameraWithTerrain(vEyeResult, vAt, fNP))
-		{
-			bCollision = true;
-			fTemp = (vEyeResult- vAt).Magnitude(); 
-			if (fTemp < fNPMin)
-				fNPMin = fTemp;
-		}
-	}
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        if ((pVol->m_eRenderType == TYPE_TRUE) && pVol->CheckCollisionCameraWithTerrain(vEyeResult, vAt, fNP))
+        {
+            bCollision = true;
+            fTemp = (vEyeResult - vAt).Magnitude();
+            if (fTemp < fNPMin)
+                fNPMin = fTemp;
+        }
+    }
 
-	if (bCollision && (fNPMin < fNP))
-	{
-		__Vector3 vT; vT.Zero();
-		vT = vEyeResult - vAt; vT.Normalize();	vT *= fNPMin; vEyeResult = vT + vAt;
-	}
-	
-	return bCollision;
+    if (bCollision && (fNPMin < fNP))
+    {
+        __Vector3 vT;
+        vT.Zero();
+        vT = vEyeResult - vAt;
+        vT.Normalize();
+        vT *= fNPMin;
+        vEyeResult = vT + vAt;
+    }
+
+    return bCollision;
 }
 
-bool CPvsMgr::CheckCollisionCameraWithShape(__Vector3& vEyeResult, const __Vector3& vAt, float fNP)
+bool CPvsMgr::CheckCollisionCameraWithShape(__Vector3 &vEyeResult, const __Vector3 &vAt, float fNP)
 {
-	fNP = (vAt - vEyeResult).Magnitude();
-	bool bCollision = false;
-	float fNPMin = fNP, fTemp = 0.0f;
+    fNP = (vAt - vEyeResult).Magnitude();
+    bool bCollision = false;
+    float fNPMin = fNP, fTemp = 0.0f;
 
-	CPortalVolume* pVol = nullptr;
-	iter it = m_pPvsList.begin();
+    CPortalVolume *pVol = nullptr;
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		if ( (pVol->m_eRenderType == TYPE_TRUE ) && pVol->CheckCollisionCameraWithShape(vEyeResult, vAt, fNP))
-		{
-			bCollision = true;
-			fTemp = (vEyeResult- vAt).Magnitude(); 
-			if (fTemp < fNPMin)
-				fNPMin = fTemp;
-		}
-	}
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        if ((pVol->m_eRenderType == TYPE_TRUE) && pVol->CheckCollisionCameraWithShape(vEyeResult, vAt, fNP))
+        {
+            bCollision = true;
+            fTemp = (vEyeResult - vAt).Magnitude();
+            if (fTemp < fNPMin)
+                fNPMin = fTemp;
+        }
+    }
 
-	if (bCollision && (fNPMin < fNP))
-	{
-		__Vector3 vT; vT.Zero();
-		vT = vEyeResult - vAt; vT.Normalize();	vT *= fNPMin; vEyeResult = vT + vAt;	
-	}
-	
-	return bCollision;
+    if (bCollision && (fNPMin < fNP))
+    {
+        __Vector3 vT;
+        vT.Zero();
+        vT = vEyeResult - vAt;
+        vT.Normalize();
+        vT *= fNPMin;
+        vEyeResult = vT + vAt;
+    }
+
+    return bCollision;
 }
 
 float CPvsMgr::GetHeightWithTerrain(float x, float z, bool bWarp)
 {
-	if (!m_pCurVol)
-		Tick();
+    if (!m_pCurVol)
+        Tick();
 
-	float fHeight = FLT_MIN;
-	if (!m_pCurVol)
-		return fHeight;
+    float fHeight = FLT_MIN;
+    if (!m_pCurVol)
+        return fHeight;
 
-	m_pCurVol->GetHeightWithTerrain(x, z, fHeight);
-	return fHeight;
+    m_pCurVol->GetHeightWithTerrain(x, z, fHeight);
+    return fHeight;
 }
 
-float CPvsMgr::GetHeightNearstPosWithShape(const __Vector3& vPos, float fDist, __Vector3* pvNormal)
+float CPvsMgr::GetHeightNearstPosWithShape(const __Vector3 &vPos, float fDist, __Vector3 *pvNormal)
 {
-	float fHeightMax = FLT_MIN, fHeight;
+    float fHeightMax = FLT_MIN, fHeight;
 
-	CPortalVolume* pVol = nullptr;
-	iter it = m_pPvsList.begin();
+    CPortalVolume *pVol = nullptr;
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		if ( pVol->m_eRenderType == TYPE_TRUE )
-		{
-			fHeight = pVol->GetHeightNearstPosWithShape(vPos, fDist, pvNormal);
-			if (fHeightMax < fHeight)
-				fHeightMax = fHeight;
-		}		
-	}
-	
-	return fHeightMax;
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        if (pVol->m_eRenderType == TYPE_TRUE)
+        {
+            fHeight = pVol->GetHeightNearstPosWithShape(vPos, fDist, pvNormal);
+            if (fHeightMax < fHeight)
+                fHeightMax = fHeight;
+        }
+    }
+
+    return fHeightMax;
 }
 
 bool CPvsMgr::IsInTerrainWithTerrain(float x, float z, __Vector3 vPosBefore)
 {
-	if (!m_pCurVol)
-		Tick();
+    if (!m_pCurVol)
+        Tick();
 
-	float fHeight = FLT_MIN;
-	if (!m_pCurVol)
-		return false;
+    float fHeight = FLT_MIN;
+    if (!m_pCurVol)
+        return false;
 
-	return m_pCurVol->GetHeightWithTerrain(x, z, fHeight);
+    return m_pCurVol->GetHeightWithTerrain(x, z, fHeight);
 }
 
-float CPvsMgr::GetHeightWithShape(float fX, float fZ, __Vector3* pvNormal)
+float CPvsMgr::GetHeightWithShape(float fX, float fZ, __Vector3 *pvNormal)
 {
-	float fHeightMax = FLT_MIN, fHeight;
+    float fHeightMax = FLT_MIN, fHeight;
 
-	CPortalVolume* pVol = nullptr, *pVolNe = nullptr;
-	iter it = m_pPvsList.begin();
+    CPortalVolume *pVol = nullptr, *pVolNe = nullptr;
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		fHeight = pVol->GetHeightNearstPosWithShape(__Vector3(fX, FLT_MIN, fZ), 0.0f);
-		if (fHeightMax < fHeight)
-		{
-			fHeightMax = fHeight;
-			pVolNe = pVol;
-		}
-	}		
-	
-	__Vector3 vPos; vPos.Set(fX, fHeightMax, fZ);
-	if (pVolNe && pVolNe->m_eRenderType != TYPE_TRUE)
-		Tick(true, vPos);
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        fHeight = pVol->GetHeightNearstPosWithShape(__Vector3(fX, FLT_MIN, fZ), 0.0f);
+        if (fHeightMax < fHeight)
+        {
+            fHeightMax = fHeight;
+            pVolNe = pVol;
+        }
+    }
 
-	return fHeightMax;
+    __Vector3 vPos;
+    vPos.Set(fX, fHeightMax, fZ);
+    if (pVolNe && pVolNe->m_eRenderType != TYPE_TRUE)
+        Tick(true, vPos);
+
+    return fHeightMax;
 }
 
-BOOL CPvsMgr::PickWideWithTerrain(int x, int y, __Vector3& vPick)
+BOOL CPvsMgr::PickWideWithTerrain(int x, int y, __Vector3 &vPick)
 {
-	BOOL bColl = FALSE;
-	__Vector3 vCamPo = CGameProcedure::s_pEng->CameraGetActive()->EyePos(), vPT;
-	float fDistMax = FLT_MAX, fDT;
+    BOOL bColl = FALSE;
+    __Vector3 vCamPo = CGameProcedure::s_pEng->CameraGetActive()->EyePos(), vPT;
+    float fDistMax = FLT_MAX, fDT;
 
-	CPortalVolume* pVol = nullptr, *pVolNe = nullptr;
-	iter it = m_pPvsList.begin();
+    CPortalVolume *pVol = nullptr, *pVolNe = nullptr;
+    iter it = m_pPvsList.begin();
 
-	while(it != m_pPvsList.end())
-	{
-		pVol = *it++;	
-		if ((pVol->m_eRenderType == TYPE_TRUE) && (pVol->PickWideWithTerrain(x, y, vPT)) )
-		{	
-			fDT = (vPT - vCamPo).Magnitude();
-			if (fDT <= fDistMax)
-			{
-				fDistMax = fDT;
-				vPick = vPT;
-				bColl = TRUE;
-			}
-		}
-	}
-	
-	return bColl;
+    while (it != m_pPvsList.end())
+    {
+        pVol = *it++;
+        if ((pVol->m_eRenderType == TYPE_TRUE) && (pVol->PickWideWithTerrain(x, y, vPT)))
+        {
+            fDT = (vPT - vCamPo).Magnitude();
+            if (fDT <= fDistMax)
+            {
+                fDistMax = fDT;
+                vPick = vPT;
+                bColl = TRUE;
+            }
+        }
+    }
+
+    return bColl;
 }
 
-CN3Shape* CPvsMgr::PickWithShape(int iXScreen, int iYScreen, bool bMustHaveEvent, __Vector3* pvPick)
+CN3Shape *CPvsMgr::PickWithShape(int iXScreen, int iYScreen, bool bMustHaveEvent, __Vector3 *pvPick)
 {
-	if (!m_pCurVol)
-		Tick();
+    if (!m_pCurVol)
+        Tick();
 
-	if (!m_pCurVol)
-		return nullptr;
+    if (!m_pCurVol)
+        return nullptr;
 
-	return m_pCurVol->PickWithShape(iXScreen, iYScreen, bMustHaveEvent, pvPick);
+    return m_pCurVol->PickWithShape(iXScreen, iYScreen, bMustHaveEvent, pvPick);
 }
 
-bool CPvsMgr::CheckCollisionWithShape(	const __Vector3& vPos,				 // 충돌 위치
-																	const __Vector3& vDir,				   // 방향 벡터
-																	float fSpeedPerSec,					    // 초당 움직이는 속도
-																	__Vector3* pvCol,						 // 충돌 지점
-																	__Vector3* pvNormal,				  // 충돌한면의 법선벡터
-																	__Vector3* pVec)						// 충돌한 면 의 폴리곤 __Vector3[3]
+bool CPvsMgr::CheckCollisionWithShape(
+    const __Vector3 &vPos, // 충돌 위치
+    const __Vector3 &vDir, // 방향 벡터
+    float fSpeedPerSec,    // 초당 움직이는 속도
+    __Vector3 *pvCol,      // 충돌 지점
+    __Vector3 *pvNormal,   // 충돌한면의 법선벡터
+    __Vector3 *pVec)       // 충돌한 면 의 폴리곤 __Vector3[3]
 {
-	if (!m_pCurVol)
-		Tick();
+    if (!m_pCurVol)
+        Tick();
 
-	if (!m_pCurVol)
-		return false;
+    if (!m_pCurVol)
+        return false;
 
-	return m_pCurVol->CheckCollisionWithShape(vPos, vDir, fSpeedPerSec, pvCol, pvNormal, pVec);
+    return m_pCurVol->CheckCollisionWithShape(vPos, vDir, fSpeedPerSec, pvCol, pvNormal, pVec);
 }
 
-CN3Shape* CPvsMgr::ShapeGetByIDWithShape(int iID)
+CN3Shape *CPvsMgr::ShapeGetByIDWithShape(int iID)
 {
-	if (!m_pCurVol)
-		Tick();
+    if (!m_pCurVol)
+        Tick();
 
-	if (!m_pCurVol)
-		return nullptr;
+    if (!m_pCurVol)
+        return nullptr;
 
-	return m_pCurVol->ShapeGetByIDWithShape(iID);
+    return m_pCurVol->ShapeGetByIDWithShape(iID);
 }

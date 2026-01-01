@@ -10,15 +10,15 @@
 class CNpc;
 class CNpcThread : public Thread
 {
-public:
-	CNpcThread();
-	void thread_loop() override;
+  public:
+    CNpcThread();
+    void thread_loop() override;
 
-public:
-	CNpc*	m_pNpc[NPC_NUM];
-	uint8_t	m_byNpcUsed[NPC_NUM];
+  public:
+    CNpc *m_pNpc[NPC_NUM];
+    uint8_t m_byNpcUsed[NPC_NUM];
 
-	int16_t	m_sThreadNumber;	// thread number ,, test
+    int16_t m_sThreadNumber; // thread number ,, test
 };
 
 #endif // SERVER_AISERVER_NPCTHREAD_H

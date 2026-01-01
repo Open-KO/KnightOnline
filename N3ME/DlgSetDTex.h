@@ -13,58 +13,59 @@ class CN3Texture;
 // CDlgSetDTex dialog
 class CDlgSetDTex : public CDialog
 {
-public:
-	float					m_fTexSurfaceSize;
-	CN3Texture*				m_pTex;
-	LPDIRECT3DVERTEXBUFFER9 m_pTexVB;
-	LPDIRECT3DVERTEXBUFFER9 m_pGridVB;
-		
-// Construction
-public:
-	CDlgSetDTex(CWnd* pParent = nullptr);   // standard constructor
-	
-// Dialog Data
-	//{{AFX_DATA(CDlgSetDTex)
-	enum { IDD = IDD_SETDETAILTEXTURE };
-	CListBox	m_GroupList;
-	CComboBox	m_FileList;
-	CString	m_szCurrAttr;
-	CString	m_TileSetName;
-	//}}AFX_DATA
+  public:
+    float m_fTexSurfaceSize;
+    CN3Texture *m_pTex;
+    LPDIRECT3DVERTEXBUFFER9 m_pTexVB;
+    LPDIRECT3DVERTEXBUFFER9 m_pGridVB;
 
+    // Construction
+  public:
+    CDlgSetDTex(CWnd *pParent = nullptr); // standard constructor
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgSetDTex)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+    // Dialog Data
+    //{{AFX_DATA(CDlgSetDTex)
+    enum
+    {
+        IDD = IDD_SETDETAILTEXTURE
+    };
+    CListBox m_GroupList;
+    CComboBox m_FileList;
+    CString m_szCurrAttr;
+    CString m_TileSetName;
+    //}}AFX_DATA
 
-// Implementation
-protected:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDlgSetDTex)
+  protected:
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+                                                     //}}AFX_VIRTUAL
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgSetDTex)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDestroy();
-	afx_msg void OnPaint();
-	afx_msg void OnSelchangeComboFilelist();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnBtnSave();
-	afx_msg void OnBtnAddgroup();
-	afx_msg void OnBtnDelgroup();
-	afx_msg void OnBtnAdddtex();
-	afx_msg void OnBtnDeldtex();
-	afx_msg void OnBtnSaveNewnameTileset();
-	afx_msg void OnBtnSaveTileset();
-	afx_msg void OnBtnLoadTileset();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-private:
-	void RenderGrid(LPDIRECT3DDEVICE9 lpDDev);
-	void RenderTex(LPDIRECT3DDEVICE9 lpDDev);
-	void InitVB();
+    // Implementation
+  protected:
+    // Generated message map functions
+    //{{AFX_MSG(CDlgSetDTex)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDestroy();
+    afx_msg void OnPaint();
+    afx_msg void OnSelchangeComboFilelist();
+    afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+    afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+    afx_msg void OnBtnSave();
+    afx_msg void OnBtnAddgroup();
+    afx_msg void OnBtnDelgroup();
+    afx_msg void OnBtnAdddtex();
+    afx_msg void OnBtnDeldtex();
+    afx_msg void OnBtnSaveNewnameTileset();
+    afx_msg void OnBtnSaveTileset();
+    afx_msg void OnBtnLoadTileset();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
+  private:
+    void RenderGrid(LPDIRECT3DDEVICE9 lpDDev);
+    void RenderTex(LPDIRECT3DDEVICE9 lpDDev);
+    void InitVB();
 };
 
 //{{AFX_INSERT_LOCATION}}

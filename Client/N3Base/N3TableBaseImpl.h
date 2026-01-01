@@ -7,24 +7,33 @@
 
 enum TBL_DATA_TYPE
 {
-	DT_NONE, DT_CHAR, DT_BYTE, DT_SHORT, DT_WORD, DT_INT, DT_DWORD, DT_STRING, DT_FLOAT, DT_DOUBLE
+    DT_NONE,
+    DT_CHAR,
+    DT_BYTE,
+    DT_SHORT,
+    DT_WORD,
+    DT_INT,
+    DT_DWORD,
+    DT_STRING,
+    DT_FLOAT,
+    DT_DOUBLE
 };
 
 class CN3TableBaseImpl
 {
-protected:
-	using DATA_TYPE = TBL_DATA_TYPE;
+  protected:
+    using DATA_TYPE = TBL_DATA_TYPE;
 
-	CN3TableBaseImpl();
+    CN3TableBaseImpl();
 
-public:
-	virtual ~CN3TableBaseImpl();
-	virtual bool Load(File& file) = 0;
-	bool LoadFromFile(const std::string& szFN);
+  public:
+    virtual ~CN3TableBaseImpl();
+    virtual bool Load(File &file) = 0;
+    bool LoadFromFile(const std::string &szFN);
 
-protected:
-	bool ReadData(File& file, DATA_TYPE DataType, void* pData);
-	int SizeOf(DATA_TYPE DataType) const;
+  protected:
+    bool ReadData(File &file, DATA_TYPE DataType, void *pData);
+    int SizeOf(DATA_TYPE DataType) const;
 };
 
 #endif // CLIENT_N3BASE_N3TABLEBASEIMPL_H

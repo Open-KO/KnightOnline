@@ -1,8 +1,8 @@
 ﻿// SkyViewerDoc.cpp : implementation of the CSkyViewerDoc class
 //
 
-#include "stdafx.h"
 #include "SkyViewer.h"
+#include "stdafx.h"
 
 #include "SkyViewerDoc.h"
 
@@ -18,9 +18,9 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CSkyViewerDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CSkyViewerDoc, CDocument)
-	//{{AFX_MSG_MAP(CSkyViewerDoc)
-	ON_COMMAND(ID_FILE_SAVE_AS_GAME_FORMAT, OnFileSaveAsGameFormat)
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CSkyViewerDoc)
+ON_COMMAND(ID_FILE_SAVE_AS_GAME_FORMAT, OnFileSaveAsGameFormat)
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -36,27 +36,25 @@ CSkyViewerDoc::~CSkyViewerDoc()
 
 BOOL CSkyViewerDoc::OnNewDocument()
 {
-	if (!CDocument::OnNewDocument())
-		return FALSE;
+    if (!CDocument::OnNewDocument())
+        return FALSE;
 
-	m_Sky.InitToDefaultHardCoding();
+    m_Sky.InitToDefaultHardCoding();
 
-	return TRUE;
+    return TRUE;
 }
-
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CSkyViewerDoc serialization
 
-void CSkyViewerDoc::Serialize(CArchive& ar)
+void CSkyViewerDoc::Serialize(CArchive &ar)
 {
-	if (ar.IsStoring())
-	{
-	}
-	else
-	{
-	}
+    if (ar.IsStoring())
+    {
+    }
+    else
+    {
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,40 +63,41 @@ void CSkyViewerDoc::Serialize(CArchive& ar)
 #ifdef _DEBUG
 void CSkyViewerDoc::AssertValid() const
 {
-	CDocument::AssertValid();
+    CDocument::AssertValid();
 }
 
-void CSkyViewerDoc::Dump(CDumpContext& dc) const
+void CSkyViewerDoc::Dump(CDumpContext &dc) const
 {
-	CDocument::Dump(dc);
+    CDocument::Dump(dc);
 }
 #endif //_DEBUG
 
 /////////////////////////////////////////////////////////////////////////////
 // CSkyViewerDoc commands
 
-BOOL CSkyViewerDoc::OnOpenDocument(LPCTSTR lpszPathName) 
+BOOL CSkyViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
 {
-	if (!CDocument::OnOpenDocument(lpszPathName))
-		return FALSE;
-	
-	return m_Sky.LoadFromTextFile(lpszPathName);
+    if (!CDocument::OnOpenDocument(lpszPathName))
+        return FALSE;
+
+    return m_Sky.LoadFromTextFile(lpszPathName);
 }
 
-BOOL CSkyViewerDoc::OnSaveDocument(LPCTSTR lpszPathName) 
+BOOL CSkyViewerDoc::OnSaveDocument(LPCTSTR lpszPathName)
 {
-	// TODO: Add your specialized code here and/or call the base class
-	CDocument::OnSaveDocument(lpszPathName);
+    // TODO: Add your specialized code here and/or call the base class
+    CDocument::OnSaveDocument(lpszPathName);
 
-	return m_Sky.SaveToTextFile(lpszPathName);
+    return m_Sky.SaveToTextFile(lpszPathName);
 }
 
-void CSkyViewerDoc::OnFileSaveAsGameFormat() 
+void CSkyViewerDoc::OnFileSaveAsGameFormat()
 {
-	DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
-	CFileDialog dlg(FALSE, "N3Sky", nullptr, dwFlags, "Sky Binary File(*.N3Sky)|*.N3Sky||", nullptr);
-	if(dlg.DoModal() == IDCANCEL) return;
-	
-	CT2A szFN(dlg.GetPathName());
-	m_Sky.SaveToFile(szFN.m_psz);
+    DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+    CFileDialog dlg(FALSE, "N3Sky", nullptr, dwFlags, "Sky Binary File(*.N3Sky)|*.N3Sky||", nullptr);
+    if (dlg.DoModal() == IDCANCEL)
+        return;
+
+    CT2A szFN(dlg.GetPathName());
+    m_Sky.SaveToFile(szFN.m_psz);
 }

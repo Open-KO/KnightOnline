@@ -7,11 +7,11 @@
 
 class ItemManagerReadQueueThread : public ReadQueueThread
 {
-public:
-	ItemManagerReadQueueThread();
+  public:
+    ItemManagerReadQueueThread();
 
-protected:
-	void process_packet(const char* buffer, int len) override;
+  protected:
+    void process_packet(const char *buffer, int len) override;
 };
 
 #endif // SERVER_ITEMMANAGER_ITEMMANAGERREADQUEUETHREAD_H

@@ -13,61 +13,66 @@ class CMapMng;
 class CN3MEDoc;
 class CN3MEView : public CView
 {
-public:
+  public:
+  protected: // create from serialization only
+    CN3MEView();
+    DECLARE_DYNCREATE(CN3MEView)
 
-protected: // create from serialization only
-	CN3MEView();
-	DECLARE_DYNCREATE(CN3MEView)
+    // Attributes
+  public:
+    CPoint m_CurrMousePos;
+    CN3MEDoc *GetDocument();
+    void SetMapMng(CMapMng *pMapMng)
+    {
+        m_pMapMng = pMapMng;
+    }
 
-// Attributes
-public:
-	CPoint		m_CurrMousePos;
-	CN3MEDoc*	GetDocument();
-	void		SetMapMng(CMapMng* pMapMng) {m_pMapMng = pMapMng;}
-protected:
-//	LYCAMERADATA	m_LyCamera;
-//	CMove			m_Move;
-	CMapMng*		m_pMapMng;
-	
-// Operations
-public:
-protected:
-	void Render();
+  protected:
+    //	LYCAMERADATA	m_LyCamera;
+    //	CMove			m_Move;
+    CMapMng *m_pMapMng;
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CN3MEView)
-	public:
-	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual void OnInitialUpdate();
-	protected:
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	//}}AFX_VIRTUAL
+    // Operations
+  public:
+  protected:
+    void Render();
 
-// Implementation
-public:
-	virtual ~CN3MEView();
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CN3MEView)
+  public:
+    virtual void OnDraw(CDC *pDC); // overridden to draw this view
+    virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
+    virtual void OnInitialUpdate();
+
+  protected:
+    virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+    //}}AFX_VIRTUAL
+
+    // Implementation
+  public:
+    virtual ~CN3MEView();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-protected:
-
-// Generated message map functions
-protected:
-	//{{AFX_MSG(CN3MEView)
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  protected:
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CN3MEView)
+    afx_msg BOOL OnSetCursor(CWnd *pWnd, UINT nHitTest, UINT message);
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg BOOL OnEraseBkgnd(CDC *pDC);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in N3MEView.cpp
-inline CN3MEDoc* CN3MEView::GetDocument()
-   { return (CN3MEDoc*)m_pDocument; }
+#ifndef _DEBUG // debug version in N3MEView.cpp
+inline CN3MEDoc *CN3MEView::GetDocument()
+{
+    return (CN3MEDoc *)m_pDocument;
+}
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

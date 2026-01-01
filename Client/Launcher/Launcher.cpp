@@ -1,9 +1,9 @@
 ﻿// Launcher.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
 #include "Launcher.h"
 #include "LauncherDlg.h"
+#include "stdafx.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,11 +15,11 @@ static char THIS_FILE[] = __FILE__;
 // CLauncherApp
 
 BEGIN_MESSAGE_MAP(CLauncherApp, CWinApp)
-	//{{AFX_MSG_MAP(CLauncherApp)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
-	//}}AFX_MSG
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
+//{{AFX_MSG_MAP(CLauncherApp)
+// NOTE - the ClassWizard will add and remove mapping macros here.
+//    DO NOT EDIT what you see in these blocks of generated code!
+//}}AFX_MSG
+ON_COMMAND(ID_HELP, CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -27,8 +27,8 @@ END_MESSAGE_MAP()
 
 CLauncherApp::CLauncherApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+    // TODO: add construction code here,
+    // Place all significant initialization in InitInstance
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -41,46 +41,46 @@ CLauncherApp theApp;
 
 BOOL CLauncherApp::InitInstance()
 {
-	if (!AfxSocketInit())
-	{
-		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
-		return FALSE;
-	}
+    if (!AfxSocketInit())
+    {
+        AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
+        return FALSE;
+    }
 
-	AfxEnableControlContainer();
-		 
-//	SetDialogBkColor(RGB(255, 0, 255), RGB(0, 255, 0));
+    AfxEnableControlContainer();
 
-	CLauncherDlg dlg;
-	m_pMainWnd = &dlg;
-	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK
-	}
-	else if (nResponse == IDCANCEL)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
-	}
+    //	SetDialogBkColor(RGB(255, 0, 255), RGB(0, 255, 0));
 
-	// Since the dialog has been closed, return FALSE so that we exit the
-	// application, rather than start the application's message pump.
+    CLauncherDlg dlg;
+    m_pMainWnd = &dlg;
+    INT_PTR nResponse = dlg.DoModal();
+    if (nResponse == IDOK)
+    {
+        // TODO: Place code here to handle when the dialog is
+        //  dismissed with OK
+    }
+    else if (nResponse == IDCANCEL)
+    {
+        // TODO: Place code here to handle when the dialog is
+        //  dismissed with Cancel
+    }
 
-	return FALSE;
+    // Since the dialog has been closed, return FALSE so that we exit the
+    // application, rather than start the application's message pump.
+
+    return FALSE;
 }
 
-CWnd* CLauncherApp::GetMainWnd() 
+CWnd *CLauncherApp::GetMainWnd()
 {
-	// TODO: Add your specialized code here and/or call the base class
-	
-	return CWinApp::GetMainWnd();
+    // TODO: Add your specialized code here and/or call the base class
+
+    return CWinApp::GetMainWnd();
 }
 
-void CLauncherApp::DoWaitCursor(int nCode) 
+void CLauncherApp::DoWaitCursor(int nCode)
 {
-	// TODO: Add your specialized code here and/or call the base class
-	
-	CWinApp::DoWaitCursor(nCode);
+    // TODO: Add your specialized code here and/or call the base class
+
+    CWinApp::DoWaitCursor(nCode);
 }

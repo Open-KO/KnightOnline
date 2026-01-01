@@ -14,18 +14,18 @@
 //////////////////////////////////////////////////////////////////////
 
 class CUIInn : public CN3UIBase
-{	
-public:
-	bool OnKeyPress(int iChar);
-	void SetVisible(bool bVisible);
-	void Message(int iMessageID);
+{
+  public:
+    bool OnKeyPress(int iChar);
+    void SetVisible(bool bVisible);
+    void Message(int iMessageID);
 
-	void MsgSend_OpenWareHouse();
+    void MsgSend_OpenWareHouse();
 
-	CUIInn();
-	virtual ~CUIInn();
+    CUIInn();
+    virtual ~CUIInn();
 
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg);
+    bool ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg);
 };
 
-#endif //#if !defined(__UIINN_H__)
+#endif // #if !defined(__UIINN_H__)

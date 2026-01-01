@@ -10,10 +10,10 @@
 #endif // _MSC_VER > 1000
 
 #include "N3Camera.h"
-#include "N3Light.h"
-#include "N3Shape.h"
 #include "N3Chr.h"
+#include "N3Light.h"
 #include "N3Mesh.h"
+#include "N3Shape.h"
 
 const int MAX_SCENE_CAMERA = 32;
 const int MAX_SCENE_LIGHT = 32;
@@ -22,123 +22,139 @@ const int MAX_SCENE_CHARACTER = 4096;
 
 #include <vector>
 
-typedef std::vector<class CN3Shape*>::iterator	it_Shape;
-typedef std::vector<class CN3Chr*>::iterator	it_Chr;
+typedef std::vector<class CN3Shape *>::iterator it_Shape;
+typedef std::vector<class CN3Chr *>::iterator it_Chr;
 
 class CN3Scene : public CN3BaseFileAccess
 {
-public:
-	float			m_fFrmCur, m_fFrmStart, m_fFrmEnd; // 현재, 시작, 끝 프레임..
-	bool			m_bDisableDefaultLight; // 참이면 기본라이트를 끈다..
-	D3DCOLOR		m_AmbientLightColor;
+  public:
+    float m_fFrmCur, m_fFrmStart, m_fFrmEnd; // 현재, 시작, 끝 프레임..
+    bool m_bDisableDefaultLight;             // 참이면 기본라이트를 끈다..
+    D3DCOLOR m_AmbientLightColor;
 
-protected:
-	int				m_nCameraActive; // 현재 선택된 카메라..
-	int				m_nCameraCount;
-	int				m_nLightCount;
+  protected:
+    int m_nCameraActive; // 현재 선택된 카메라..
+    int m_nCameraCount;
+    int m_nLightCount;
 
-	class CN3Camera*			m_pCameras[MAX_SCENE_CAMERA];
-	class CN3Light*				m_pLights[MAX_SCENE_LIGHT];
-	std::vector<class CN3Shape*>	m_Shapes;
-	std::vector<class CN3Chr*>		m_Chrs;
-	
-public:
-	void DefaultCameraAdd();
-	void DefaultLightAdd();
-	
-	bool LoadDataAndResourcesFromFile(const std::string& szFileName);
-	bool SaveDataAndResourcesToFile(const std::string& szFileName);
+    class CN3Camera *m_pCameras[MAX_SCENE_CAMERA];
+    class CN3Light *m_pLights[MAX_SCENE_LIGHT];
+    std::vector<class CN3Shape *> m_Shapes;
+    std::vector<class CN3Chr *> m_Chrs;
 
-//	bool CheckOverlappedShapesAndReport();
-//	void DeleteOverlappedShapes();
+  public:
+    void DefaultCameraAdd();
+    void DefaultLightAdd();
 
-	void Tick(float fFrm = FRAME_SELFPLAY);
-	void TickCameras(float fFrm = FRAME_SELFPLAY);
-	void TickLights(float fFrm = FRAME_SELFPLAY);
-	void TickShapes(float fFrm = FRAME_SELFPLAY);
-	void TickChrs(float fFrm = FRAME_SELFPLAY);
-	void Render();
-	
-	int	CameraCount() const
-	{
-		return m_nCameraCount;
-	}
+    bool LoadDataAndResourcesFromFile(const std::string &szFileName);
+    bool SaveDataAndResourcesToFile(const std::string &szFileName);
 
-	int	 CameraAdd(CN3Camera *pCamera);
-	void CameraDelete(CN3Camera* pCamera);
-	void CameraDelete(int iIndex);
-	CN3Camera* CameraGet(int iIndex) { if(iIndex < 0 || iIndex >= m_nCameraCount) return nullptr; return m_pCameras[iIndex]; }
-	
-	void CameraSetActive(int iIndex);
-	int	 CameraGetActiveNumber() { return m_nCameraActive; };
-	CN3Camera* CameraGetActive() { if(m_nCameraActive < 0 || m_nCameraActive >= m_nCameraCount) return nullptr; return m_pCameras[m_nCameraActive]; }
+    //	bool CheckOverlappedShapesAndReport();
+    //	void DeleteOverlappedShapes();
 
-	int	 LightCount() const
-	{
-		return m_nLightCount;
-	}
+    void Tick(float fFrm = FRAME_SELFPLAY);
+    void TickCameras(float fFrm = FRAME_SELFPLAY);
+    void TickLights(float fFrm = FRAME_SELFPLAY);
+    void TickShapes(float fFrm = FRAME_SELFPLAY);
+    void TickChrs(float fFrm = FRAME_SELFPLAY);
+    void Render();
 
-	int	 LightAdd(CN3Light* pLight);
-	void LightDelete(CN3Light* pLight);
-	void LightDelete(int iIndex);
-	CN3Light* LightGet(int iIndex) { if(iIndex < 0 || iIndex >= m_nLightCount) return nullptr; return m_pLights[iIndex]; }
+    int CameraCount() const
+    {
+        return m_nCameraCount;
+    }
 
-	int ShapeCount() const
-	{
-		return static_cast<int>(m_Shapes.size());
-	}
+    int CameraAdd(CN3Camera *pCamera);
+    void CameraDelete(CN3Camera *pCamera);
+    void CameraDelete(int iIndex);
+    CN3Camera *CameraGet(int iIndex)
+    {
+        if (iIndex < 0 || iIndex >= m_nCameraCount)
+            return nullptr;
+        return m_pCameras[iIndex];
+    }
 
-	int	 ShapeAdd(CN3Shape* pShape);
-	void ShapeDelete(CN3Shape* pShape);
-	void ShapeDelete(int iIndex);
-	CN3Shape* ShapeGet(int iIndex)
-	{
-		if (iIndex < 0
-			|| iIndex >= static_cast<int>(m_Shapes.size()))
-			return nullptr;
+    void CameraSetActive(int iIndex);
+    int CameraGetActiveNumber()
+    {
+        return m_nCameraActive;
+    };
+    CN3Camera *CameraGetActive()
+    {
+        if (m_nCameraActive < 0 || m_nCameraActive >= m_nCameraCount)
+            return nullptr;
+        return m_pCameras[m_nCameraActive];
+    }
 
-		return m_Shapes[iIndex];
-	}
+    int LightCount() const
+    {
+        return m_nLightCount;
+    }
 
-	CN3Shape* ShapeGetByFileName(const std::string& str)
-	{
-		for (CN3Shape* shape : m_Shapes)
-		{
-			if (str == shape->FileName())
-				return shape;
-		}
+    int LightAdd(CN3Light *pLight);
+    void LightDelete(CN3Light *pLight);
+    void LightDelete(int iIndex);
+    CN3Light *LightGet(int iIndex)
+    {
+        if (iIndex < 0 || iIndex >= m_nLightCount)
+            return nullptr;
+        return m_pLights[iIndex];
+    }
 
-		return nullptr;
-	}
+    int ShapeCount() const
+    {
+        return static_cast<int>(m_Shapes.size());
+    }
 
-	void ShapeRelease();
+    int ShapeAdd(CN3Shape *pShape);
+    void ShapeDelete(CN3Shape *pShape);
+    void ShapeDelete(int iIndex);
+    CN3Shape *ShapeGet(int iIndex)
+    {
+        if (iIndex < 0 || iIndex >= static_cast<int>(m_Shapes.size()))
+            return nullptr;
 
-	int ChrCount() const
-	{
-		return static_cast<int>(m_Chrs.size());
-	}
+        return m_Shapes[iIndex];
+    }
 
-	int	 ChrAdd(CN3Chr* pChr);
-	void ChrDelete(int iIndex);
-	void ChrDelete(CN3Chr* pChr);
-	CN3Chr* ChrGet(int iIndex)
-	{
-		if (iIndex < 0
-			|| iIndex >= static_cast<int>(m_Chrs.size()))
-			return nullptr;
+    CN3Shape *ShapeGetByFileName(const std::string &str)
+    {
+        for (CN3Shape *shape : m_Shapes)
+        {
+            if (str == shape->FileName())
+                return shape;
+        }
 
-		return m_Chrs[iIndex];
-	}
+        return nullptr;
+    }
 
-	void ChrRelease();
+    void ShapeRelease();
 
-	bool Load(File& file) override;
-	bool Save(File& file) override;
-	
-	void Release() override;
+    int ChrCount() const
+    {
+        return static_cast<int>(m_Chrs.size());
+    }
 
-	CN3Scene();
-	~CN3Scene() override;
+    int ChrAdd(CN3Chr *pChr);
+    void ChrDelete(int iIndex);
+    void ChrDelete(CN3Chr *pChr);
+    CN3Chr *ChrGet(int iIndex)
+    {
+        if (iIndex < 0 || iIndex >= static_cast<int>(m_Chrs.size()))
+            return nullptr;
+
+        return m_Chrs[iIndex];
+    }
+
+    void ChrRelease();
+
+    bool Load(File &file) override;
+    bool Save(File &file) override;
+
+    void Release() override;
+
+    CN3Scene();
+    ~CN3Scene() override;
 };
 
 #endif // !defined(AFX_N3Scene_h__INCLUDED_)

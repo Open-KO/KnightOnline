@@ -16,58 +16,61 @@
 
 class CFormViewTool : public CFormView
 {
-protected:
-	CFormViewTool();           // protected constructor used by dynamic creation
-	DECLARE_DYNCREATE(CFormViewTool)
+  protected:
+    CFormViewTool(); // protected constructor used by dynamic creation
+    DECLARE_DYNCREATE(CFormViewTool)
 
-// Form Data
-public:
-	//{{AFX_DATA(CFormViewTool)
-	enum { IDD = IDD_TOOL };
-	CListBox	m_ListSound1;
-	CListBox	m_ListSound0;
-	CComboBox	m_CBLOD;
-	//}}AFX_DATA
+    // Form Data
+  public:
+    //{{AFX_DATA(CFormViewTool)
+    enum
+    {
+        IDD = IDD_TOOL
+    };
+    CListBox m_ListSound1;
+    CListBox m_ListSound0;
+    CComboBox m_CBLOD;
+    //}}AFX_DATA
 
-// Attributes
-public:
+    // Attributes
+  public:
+    // Operations
+  public:
+    void UpdateAllInfo();
 
-// Operations
-public:
-	void UpdateAllInfo();
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CFormViewTool)
+  public:
+    virtual void OnInitialUpdate();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CFormViewTool)
-	public:
-	virtual void OnInitialUpdate();
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
-	//}}AFX_VIRTUAL
+  protected:
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual void OnUpdate(CView *pSender, LPARAM lHint, CObject *pHint);
+    //}}AFX_VIRTUAL
 
-// Implementation
-protected:
-	virtual ~CFormViewTool();
+    // Implementation
+  protected:
+    virtual ~CFormViewTool();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-	// Generated message map functions
-	//{{AFX_MSG(CFormViewTool)
-	afx_msg void OnBMakeSmooth();
-	afx_msg void OnSelchangeCbLod();
-	afx_msg void OnBAddTestSound0();
-	afx_msg void OnBDeleteTestSound0();
-	afx_msg void OnBAddTestSound1();
-	afx_msg void OnBDeleteTestSound1();
-	afx_msg void OnSelchangeListSound0();
-	afx_msg void OnSelchangeListSound1();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnBApplyOffsetFrame();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+    //{{AFX_MSG(CFormViewTool)
+    afx_msg void OnBMakeSmooth();
+    afx_msg void OnSelchangeCbLod();
+    afx_msg void OnBAddTestSound0();
+    afx_msg void OnBDeleteTestSound0();
+    afx_msg void OnBAddTestSound1();
+    afx_msg void OnBDeleteTestSound1();
+    afx_msg void OnSelchangeListSound0();
+    afx_msg void OnSelchangeListSound1();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnBApplyOffsetFrame();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

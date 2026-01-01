@@ -14,64 +14,63 @@ class CFormViewProperty;
 class CFormViewTool;
 class CFormViewAnimation;
 
-//#include "DlgChrProperty.h"
+// #include "DlgChrProperty.h"
 #include <N3Base/N3EngTool.h>
 #include <N3Base/N3SndMgr.h>
 
 class CMainFrame : public CFrameWnd
 {
-public:
-	CN3EngTool		m_Eng;
-	CN3SndMgr		m_SndMgr;
-	CN3SndObj*		m_pSndObj0;
-	CN3SndObj*		m_pSndObj1;
-//	CDlgChrProperty m_DlgProperty;
+  public:
+    CN3EngTool m_Eng;
+    CN3SndMgr m_SndMgr;
+    CN3SndObj *m_pSndObj0;
+    CN3SndObj *m_pSndObj1;
+    //	CDlgChrProperty m_DlgProperty;
 
-public:
-	CFormViewProperty* GetPaneProperty();
-	CN3CEView* GetPaneRender();
-	CFormViewTool* GetPaneTool();
-	CFormViewAnimation* GetPaneAnimation();
-	
-protected: // create from serialization only
-	CMainFrame();
-	DECLARE_DYNCREATE(CMainFrame)
+  public:
+    CFormViewProperty *GetPaneProperty();
+    CN3CEView *GetPaneRender();
+    CFormViewTool *GetPaneTool();
+    CFormViewAnimation *GetPaneAnimation();
 
-// Attributes
-protected:
-	CSplitterWnd m_wndSplitter;
+  protected: // create from serialization only
+    CMainFrame();
+    DECLARE_DYNCREATE(CMainFrame)
 
-// Operations
-public:
+    // Attributes
+  protected:
+    CSplitterWnd m_wndSplitter;
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CMainFrame)
-	public:
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	//}}AFX_VIRTUAL
+    // Operations
+  public:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CMainFrame)
+  public:
+    virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext);
+    virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
+    //}}AFX_VIRTUAL
 
-// Implementation
-public:
-	virtual ~CMainFrame();
+    // Implementation
+  public:
+    virtual ~CMainFrame();
 
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-protected:  // control bar embedded members
-	CStatusBar  m_wndStatusBar;
-	CToolBar    m_wndToolBar;
+  protected: // control bar embedded members
+    CStatusBar m_wndStatusBar;
+    CToolBar m_wndToolBar;
 
-// Generated message map functions
-protected:
-	//{{AFX_MSG(CMainFrame)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnEditChrProperty();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CMainFrame)
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnEditChrProperty();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -1,224 +1,219 @@
-﻿#include "pch.h"
-#include "utilities.h"
-#include <algorithm>	// std::clamp()
-#include <limits>		// INT_MAX
+﻿#include "utilities.h"
+#include "pch.h"
+#include <algorithm> // std::clamp()
+#include <limits>    // INT_MAX
 
-bool CheckGetVarString(int nLength, char* tBuf, const char* sBuf, int nSize, int& index)
+bool CheckGetVarString(int nLength, char *tBuf, const char *sBuf, int nSize, int &index)
 {
-	int nRet = GetVarString(tBuf, sBuf, nSize, index);
-	if (nRet <= 0
-		|| nRet > nLength)
-		return false;
+    int nRet = GetVarString(tBuf, sBuf, nSize, index);
+    if (nRet <= 0 || nRet > nLength)
+        return false;
 
-	return true;
+    return true;
 }
 
-int GetVarString(char* tBuf, const char* sBuf, int nSize, int& index)
+int GetVarString(char *tBuf, const char *sBuf, int nSize, int &index)
 {
-	int nLen = 0;
+    int nLen = 0;
 
-	if (nSize == sizeof(uint8_t))
-		nLen = GetByte(sBuf, index);
-	else
-		nLen = GetShort(sBuf, index);
+    if (nSize == sizeof(uint8_t))
+        nLen = GetByte(sBuf, index);
+    else
+        nLen = GetShort(sBuf, index);
 
-	GetString(tBuf, sBuf, nLen, index);
-	*(tBuf + nLen) = 0;
+    GetString(tBuf, sBuf, nLen, index);
+    *(tBuf + nLen) = 0;
 
-	return nLen;
+    return nLen;
 }
 
-void GetString(char* tBuf, const char* sBuf, int len, int& index)
+void GetString(char *tBuf, const char *sBuf, int len, int &index)
 {
-	memcpy(tBuf, sBuf + index, len);
-	index += len;
+    memcpy(tBuf, sBuf + index, len);
+    index += len;
 }
 
-uint8_t GetByte(const char* sBuf, int& index)
+uint8_t GetByte(const char *sBuf, int &index)
 {
-	int t_index = index;
-	index++;
-	return (uint8_t) (*(sBuf + t_index));
+    int t_index = index;
+    index++;
+    return (uint8_t)(*(sBuf + t_index));
 }
 
-int GetShort(const char* sBuf, int& index)
+int GetShort(const char *sBuf, int &index)
 {
-	index += 2;
-	return *(int16_t*) (sBuf + index - 2);
+    index += 2;
+    return *(int16_t *)(sBuf + index - 2);
 }
 
-int GetInt(const char* sBuf, int& index)
+int GetInt(const char *sBuf, int &index)
 {
-	index += 4;
-	return *(int*) (sBuf + index - 4);
+    index += 4;
+    return *(int *)(sBuf + index - 4);
 }
 
-uint32_t GetDWORD(const char* sBuf, int& index)
+uint32_t GetDWORD(const char *sBuf, int &index)
 {
-	index += 4;
-	return *(uint32_t*) (sBuf + index - 4);
+    index += 4;
+    return *(uint32_t *)(sBuf + index - 4);
 }
 
-float GetFloat(const char* sBuf, int& index)
+float GetFloat(const char *sBuf, int &index)
 {
-	index += 4;
-	return *(float*) (sBuf + index - 4);
+    index += 4;
+    return *(float *)(sBuf + index - 4);
 }
 
-int64_t GetInt64(const char* sBuf, int& index)
+int64_t GetInt64(const char *sBuf, int &index)
 {
-	index += 8;
-	return *(int64_t*) (sBuf + index - 8);
+    index += 8;
+    return *(int64_t *)(sBuf + index - 8);
 }
 
-void SetString(char* tBuf, const char* sBuf, int len, int& index)
+void SetString(char *tBuf, const char *sBuf, int len, int &index)
 {
-	memcpy(tBuf + index, sBuf, len);
-	index += len;
+    memcpy(tBuf + index, sBuf, len);
+    index += len;
 }
 
-void SetVarString(char* tBuf, const char* sBuf, int len, int& index)
+void SetVarString(char *tBuf, const char *sBuf, int len, int &index)
 {
-	*(tBuf + index) = (uint8_t) len;
-	index ++;
+    *(tBuf + index) = (uint8_t)len;
+    index++;
 
-	memcpy(tBuf + index, sBuf, len);
-	index += len;
+    memcpy(tBuf + index, sBuf, len);
+    index += len;
 }
 
-void SetByte(char* tBuf, uint8_t sByte, int& index)
+void SetByte(char *tBuf, uint8_t sByte, int &index)
 {
-	*(tBuf + index) = (char) sByte;
-	index++;
+    *(tBuf + index) = (char)sByte;
+    index++;
 }
 
-void SetShort(char* tBuf, int sShort, int& index)
+void SetShort(char *tBuf, int sShort, int &index)
 {
-	int16_t temp = (int16_t) sShort;
+    int16_t temp = (int16_t)sShort;
 
-	memcpy(tBuf + index, &temp, 2);
-	index += 2;
+    memcpy(tBuf + index, &temp, 2);
+    index += 2;
 }
 
-void SetInt(char* tBuf, int sInt, int& index)
+void SetInt(char *tBuf, int sInt, int &index)
 {
-	memcpy(tBuf + index, &sInt, 4);
-	index += 4;
+    memcpy(tBuf + index, &sInt, 4);
+    index += 4;
 }
 
-void SetDWORD(char* tBuf, uint32_t sDword, int& index)
+void SetDWORD(char *tBuf, uint32_t sDword, int &index)
 {
-	memcpy(tBuf + index, &sDword, 4);
-	index += 4;
+    memcpy(tBuf + index, &sDword, 4);
+    index += 4;
 }
 
-void SetFloat(char* tBuf, float sFloat, int& index)
+void SetFloat(char *tBuf, float sFloat, int &index)
 {
-	memcpy(tBuf + index, &sFloat, 4);
-	index += 4;
+    memcpy(tBuf + index, &sFloat, 4);
+    index += 4;
 }
 
-void SetInt64(char* tBuf, int64_t nInt64, int& index)
+void SetInt64(char *tBuf, int64_t nInt64, int &index)
 {
-	memcpy(tBuf + index, &nInt64, 8);
-	index += 8;
+    memcpy(tBuf + index, &nInt64, 8);
+    index += 8;
 }
 
-void SetString1(char* tBuf, const std::string_view str, int& index)
+void SetString1(char *tBuf, const std::string_view str, int &index)
 {
-	uint8_t len = static_cast<uint8_t>(str.length());
-	SetByte(tBuf, len, index);
-	SetString(tBuf, str.data(), len, index);
+    uint8_t len = static_cast<uint8_t>(str.length());
+    SetByte(tBuf, len, index);
+    SetString(tBuf, str.data(), len, index);
 }
 
-void SetString1(char* tBuf, const char* str, int length, int& index)
+void SetString1(char *tBuf, const char *str, int length, int &index)
 {
-	uint8_t len = static_cast<uint8_t>(length);
-	SetByte(tBuf, len, index);
-	SetString(tBuf, str, len, index);
+    uint8_t len = static_cast<uint8_t>(length);
+    SetByte(tBuf, len, index);
+    SetString(tBuf, str, len, index);
 }
 
-void SetString2(char* tBuf, const std::string_view str, int& index)
+void SetString2(char *tBuf, const std::string_view str, int &index)
 {
-	int16_t len = static_cast<int16_t>(str.length());
-	SetShort(tBuf, len, index);
-	SetString(tBuf, str.data(), len, index);
+    int16_t len = static_cast<int16_t>(str.length());
+    SetShort(tBuf, len, index);
+    SetString(tBuf, str.data(), len, index);
 }
 
-void SetString2(char* tBuf, const char* str, int length, int& index)
+void SetString2(char *tBuf, const char *str, int length, int &index)
 {
-	int16_t len = static_cast<int16_t>(length);
-	SetShort(tBuf, len, index);
-	SetString(tBuf, str, len, index);
+    int16_t len = static_cast<int16_t>(length);
+    SetShort(tBuf, len, index);
+    SetString(tBuf, str, len, index);
 }
 
-int ParseSpace(char* tBuf, const char* sBuf)
+int ParseSpace(char *tBuf, const char *sBuf)
 {
-	int i = 0, index = 0;
-	bool flag = false;
+    int i = 0, index = 0;
+    bool flag = false;
 
-	while (sBuf[index] == ' '
-		|| sBuf[index] == '\t')
-		index++;
+    while (sBuf[index] == ' ' || sBuf[index] == '\t')
+        index++;
 
-	while (sBuf[index] != ' '
-		&& sBuf[index] != '\t'
-		&& sBuf[index] != (uint8_t) 0)
-	{
-		tBuf[i++] = sBuf[index++];
-		flag = true;
-	}
-	tBuf[i] = 0;
+    while (sBuf[index] != ' ' && sBuf[index] != '\t' && sBuf[index] != (uint8_t)0)
+    {
+        tBuf[i++] = sBuf[index++];
+        flag = true;
+    }
+    tBuf[i] = 0;
 
-	while (sBuf[index] == ' '
-		|| sBuf[index] == '\t')
-		index++;
+    while (sBuf[index] == ' ' || sBuf[index] == '\t')
+        index++;
 
-	if (!flag)
-		return 0;
+    if (!flag)
+        return 0;
 
-	return index;
+    return index;
 }
 
 int myrand_ai(int min, int max, bool bSame)
 {
-	static int nOld = 0;
-	int nRet = 0;
-	int nLoop = 10;
+    static int nOld = 0;
+    int nRet = 0;
+    int nLoop = 10;
 
-	if (min == max)
-		return min;
+    if (min == max)
+        return min;
 
-	while (nLoop--)
-	{
-		nRet = (rand() % (max - min + 1)) + min;
-		if (bSame)
-			return nRet;
+    while (nLoop--)
+    {
+        nRet = (rand() % (max - min + 1)) + min;
+        if (bSame)
+            return nRet;
 
-		if (nRet != nOld)
-		{
-			nOld = nRet;
-			return nRet;
-		}
-	}
+        if (nRet != nOld)
+        {
+            nOld = nRet;
+            return nRet;
+        }
+    }
 
-	return nRet;
+    return nRet;
 }
 
 int myrand_generic(int min, int max)
 {
-	if (min == max)
-		return min;
+    if (min == max)
+        return min;
 
-	if (min > max)
-		std::swap(min, max);
+    if (min > max)
+        std::swap(min, max);
 
-	double gap = max - min + 1;
-	double rrr = static_cast<double>(RAND_MAX) / gap;
+    double gap = max - min + 1;
+    double rrr = static_cast<double>(RAND_MAX) / gap;
 
-	int rand_result = static_cast<int>(static_cast<double>(rand()) / rrr);
-	if (min > (INT_MAX - rand_result))
-		return max;
+    int rand_result = static_cast<int>(static_cast<double>(rand()) / rrr);
+    if (min > (INT_MAX - rand_result))
+        return max;
 
-	return std::clamp(min + rand_result, min, max);
+    return std::clamp(min + rand_result, min, max);
 }

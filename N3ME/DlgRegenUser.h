@@ -14,45 +14,45 @@
 
 class CDlgRegenUser : public CDialog
 {
-// Construction
-public:
-	CDlgRegenUser(CWnd* pParent = nullptr);   // standard constructor
+    // Construction
+  public:
+    CDlgRegenUser(CWnd *pParent = nullptr); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CDlgRegenUser)
-	enum { IDD = IDD_MAKE_REGEN_USER };
-	CListBox	m_LBRegion;
-	CString	m_PathName;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CDlgRegenUser)
+    enum
+    {
+        IDD = IDD_MAKE_REGEN_USER
+    };
+    CListBox m_LBRegion;
+    CString m_PathName;
+    //}}AFX_DATA
 
-	CRegenUser* m_pRefRegenUser;
+    CRegenUser *m_pRefRegenUser;
 
+    void PutRegion(VERTEXRECT *pVR);
+    void ClearList();
 
-	void PutRegion(VERTEXRECT* pVR);
-	void ClearList();
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDlgRegenUser)
+  protected:
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+                                                     //}}AFX_VIRTUAL
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgRegenUser)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
-protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CDlgRegenUser)
-	afx_msg void OnBtnLoadPathset();
-	afx_msg void OnBtnPathDelete();
-	afx_msg void OnBtnSavePathset();
-	afx_msg void OnSelchangeListRegenuserregion();
-	afx_msg void OnDblclkListRegenuserregion();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnBtnSaveAs();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+  protected:
+    // Generated message map functions
+    //{{AFX_MSG(CDlgRegenUser)
+    afx_msg void OnBtnLoadPathset();
+    afx_msg void OnBtnPathDelete();
+    afx_msg void OnBtnSavePathset();
+    afx_msg void OnSelchangeListRegenuserregion();
+    afx_msg void OnDblclkListRegenuserregion();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnBtnSaveAs();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

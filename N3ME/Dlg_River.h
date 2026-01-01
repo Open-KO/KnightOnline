@@ -13,47 +13,50 @@
 
 class CDlg_River : public CDialog
 {
-// Construction
-public:
-	CDlg_River(CWnd* pParent = NULL);   // standard constructor
+    // Construction
+  public:
+    CDlg_River(CWnd *pParent = NULL); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CDlg_River)
-	enum { IDD = IDD_RIVER };
-	CPropertyList	m_List;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CDlg_River)
+    enum
+    {
+        IDD = IDD_RIVER
+    };
+    CPropertyList m_List;
+    //}}AFX_DATA
 
-	D3DCOLOR	GetColor()
-	{
-		CPropertyItem *pItem = m_List.GetPropItem("Water Color");
-		return pItem->D3DColorGet();
-	}
-	float		GetHeight()
-	{
-		CPropertyItem *pItem = m_List.GetPropItem("Height");
-		return atof(pItem->m_curValue);
-	}
+    D3DCOLOR GetColor()
+    {
+        CPropertyItem *pItem = m_List.GetPropItem("Water Color");
+        return pItem->D3DColorGet();
+    }
+    float GetHeight()
+    {
+        CPropertyItem *pItem = m_List.GetPropItem("Height");
+        return atof(pItem->m_curValue);
+    }
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlg_River)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	//}}AFX_VIRTUAL
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDlg_River)
+  protected:
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+    virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult);
+    //}}AFX_VIRTUAL
 
-// Implementation
-protected:
-	float		m_fHeight;
+    // Implementation
+  protected:
+    float m_fHeight;
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlg_River)
-	virtual void OnOK();
-	virtual void OnCancel();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnChangeEditHeight();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+    //{{AFX_MSG(CDlg_River)
+    virtual void OnOK();
+    virtual void OnCancel();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnChangeEditHeight();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

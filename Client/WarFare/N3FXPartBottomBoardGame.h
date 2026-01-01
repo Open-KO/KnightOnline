@@ -9,12 +9,12 @@
 
 class CN3FXPartBottomBoardGame : public CN3FXPartBottomBoard
 {
-public:
-	float	GetGroundHeight(float x, float z);
+  public:
+    float GetGroundHeight(float x, float z);
 
-public:
-	CN3FXPartBottomBoardGame();
-	virtual ~CN3FXPartBottomBoardGame();
+  public:
+    CN3FXPartBottomBoardGame();
+    virtual ~CN3FXPartBottomBoardGame();
 };
 
 #endif // #ifndef __N3FXPARTBOTTOMBOARD_H__

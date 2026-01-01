@@ -8,13 +8,13 @@
 class CIni;
 class AIServerLogger : public logger::Logger
 {
-public:
-	AIServerLogger();
+  public:
+    AIServerLogger();
 
-	void SetupExtraLoggers(
-		CIni& ini,
-		std::shared_ptr<spdlog::details::thread_pool> threadPool,
-		const std::filesystem::path& baseDir) override;
+    void SetupExtraLoggers(
+        CIni &ini,
+        std::shared_ptr<spdlog::details::thread_pool> threadPool,
+        const std::filesystem::path &baseDir) override;
 };
 
 #endif // SERVER_AISERVER_AISERVERLOGGER_H

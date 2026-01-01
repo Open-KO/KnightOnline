@@ -14,19 +14,18 @@
 #include "ZipAutoBuffer.h"
 #include <zlib.h>
 
-class CZipInternalInfo  
+class CZipInternalInfo
 {
-public:
-	DWORD m_iBufferSize;
-	z_stream m_stream;
-	DWORD m_uUncomprLeft;
-	DWORD m_uComprLeft;
-	DWORD m_uCrc32;
-	void Init();
-	CZipAutoBuffer m_pBuffer;
-	CZipInternalInfo();
-	virtual ~CZipInternalInfo();
-
+  public:
+    DWORD m_iBufferSize;
+    z_stream m_stream;
+    DWORD m_uUncomprLeft;
+    DWORD m_uComprLeft;
+    DWORD m_uCrc32;
+    void Init();
+    CZipAutoBuffer m_pBuffer;
+    CZipInternalInfo();
+    virtual ~CZipInternalInfo();
 };
 
 #endif // !defined(AFX_ZIPINTERNALINFO_H__C6749101_590C_4F74_8121_B82E3BE9FA44__INCLUDED_)

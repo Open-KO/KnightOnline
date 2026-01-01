@@ -10,29 +10,29 @@
 
 #include <list>
 
-class CN3FXGroup : public CN3BaseFileAccess  
+class CN3FXGroup : public CN3BaseFileAccess
 {
-public:
-	int			m_iVersion;
-	std::list<__FXBInfo*> FXBList;
-	
-public:
-	int	GetCount() const
-	{
-		return static_cast<int>(FXBList.size());
-	}
+  public:
+    int m_iVersion;
+    std::list<__FXBInfo *> FXBList;
 
-	__FXBInfo* GetFXBInfo(int idx);
+  public:
+    int GetCount() const
+    {
+        return static_cast<int>(FXBList.size());
+    }
 
-	bool Load(File& file) override; // 핸들에서 읽어오기..
-	bool Save(File& file) override;	// 저장하기..
-	
-	CN3FXGroup();	
-	~CN3FXGroup() override;
+    __FXBInfo *GetFXBInfo(int idx);
 
-#ifdef _N3TOOL	//툴에서만 쓰는 함수들...
-public:
-	bool	DecodeScriptFile(const char* lpPathName);
+    bool Load(File &file) override; // 핸들에서 읽어오기..
+    bool Save(File &file) override; // 저장하기..
+
+    CN3FXGroup();
+    ~CN3FXGroup() override;
+
+#ifdef _N3TOOL // 툴에서만 쓰는 함수들...
+  public:
+    bool DecodeScriptFile(const char *lpPathName);
 #endif // end of _N3TOOL
 };
 

@@ -1,38 +1,37 @@
-﻿#include "pch.h"
-#include "TimerThread.h"
+﻿#include "TimerThread.h"
+#include "pch.h"
 
 #include <spdlog/spdlog.h>
 
-TimerThread::TimerThread(std::chrono::milliseconds tickDelay, TickCallback_t&& tickCallback)
-	: Thread(), _tickDelay(tickDelay), _tickCallback(std::move(tickCallback))
+TimerThread::TimerThread(std::chrono::milliseconds tickDelay, TickCallback_t &&tickCallback)
+    : Thread(), _tickDelay(tickDelay), _tickCallback(std::move(tickCallback))
 {
 }
 
 void TimerThread::thread_loop()
 {
-	while (_canTick)
-	{
-		{
-			std::unique_lock<std::mutex> lock(_mutex);
-			std::cv_status status = _cv.wait_for(lock, _tickDelay);
+    while (_canTick)
+    {
+        {
+            std::unique_lock<std::mutex> lock(_mutex);
+            std::cv_status status = _cv.wait_for(lock, _tickDelay);
 
-			if (!_canTick)
-				break;
+            if (!_canTick)
+                break;
 
-			// Only tick every _tickDelay, ignore spurious wakeups
-			if (status != std::cv_status::timeout)
-				continue;
-		}
+            // Only tick every _tickDelay, ignore spurious wakeups
+            if (status != std::cv_status::timeout)
+                continue;
+        }
 
-		try
-		{
-			if (_tickCallback != nullptr)
-				_tickCallback();
-		}
-		catch (const std::exception& ex)
-		{
-			spdlog::error("TimerThread({}) caught unhandled exception: {}",
-				static_cast<void*>(this), ex.what());
-		}
-	}
+        try
+        {
+            if (_tickCallback != nullptr)
+                _tickCallback();
+        }
+        catch (const std::exception &ex)
+        {
+            spdlog::error("TimerThread({}) caught unhandled exception: {}", static_cast<void *>(this), ex.what());
+        }
+    }
 }

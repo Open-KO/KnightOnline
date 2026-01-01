@@ -5,9 +5,9 @@
 
 namespace db
 {
-	class Connection;
-	class ConnectionManager;
-	struct DatasourceConfig;
-}
+class Connection;
+class ConnectionManager;
+struct DatasourceConfig;
+} // namespace db
 
 #endif // DBLIBRARY_FWD_H

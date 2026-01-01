@@ -11,23 +11,32 @@
 
 #include <JpegFile/JpegFile.h>
 
-class CN3JpegFile  : public CJpegFile
+class CN3JpegFile : public CJpegFile
 {
-private:
-	BYTE*		m_pImageBuf;
-	UINT		m_uiWidth;
-	UINT		m_uiHeight;
-public:
-	void		DrawImage(HDC hDC);
-	BOOL		LoadJpegFile(std::string csJpeg);
-	UINT		GetWidth() { return m_uiWidth; }
-	UINT		GetHeight() { return m_uiHeight; }
-	BYTE*		GetImageBuf() { return m_pImageBuf; }
-	void		Release();
+  private:
+    BYTE *m_pImageBuf;
+    UINT m_uiWidth;
+    UINT m_uiHeight;
 
-	CN3JpegFile();
-	virtual ~CN3JpegFile();
+  public:
+    void DrawImage(HDC hDC);
+    BOOL LoadJpegFile(std::string csJpeg);
+    UINT GetWidth()
+    {
+        return m_uiWidth;
+    }
+    UINT GetHeight()
+    {
+        return m_uiHeight;
+    }
+    BYTE *GetImageBuf()
+    {
+        return m_pImageBuf;
+    }
+    void Release();
 
+    CN3JpegFile();
+    virtual ~CN3JpegFile();
 };
 
 #endif // !defined(AFX_N3JPEGFILE_H__680B8929_B03D_45EF_8986_51561B4BDC79__INCLUDED_)

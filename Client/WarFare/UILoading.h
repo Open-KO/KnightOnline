@@ -13,18 +13,18 @@
 
 class CUILoading : public CN3UIBase
 {
-protected:
-	CN3UIString*	m_pText_Version;
-	CN3UIString*	m_pText_Info;
-	CN3UIProgress*	m_pProgress_Loading;
+  protected:
+    CN3UIString *m_pText_Version;
+    CN3UIString *m_pText_Info;
+    CN3UIProgress *m_pProgress_Loading;
 
-public:
-	bool Load(File& file) override;
-	CUILoading();
-	~CUILoading() override;
+  public:
+    bool Load(File &file) override;
+    CUILoading();
+    ~CUILoading() override;
 
-	virtual void Render(const std::string& szInfo, int iPercentage);
-	void Release() override;
+    virtual void Render(const std::string &szInfo, int iPercentage);
+    void Release() override;
 };
 
 #endif // !defined(AFX_UILoading_H__81E8BA13_2261_4A3D_9A94_BF0E7C49C4DD__INCLUDED_)

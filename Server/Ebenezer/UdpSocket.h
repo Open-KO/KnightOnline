@@ -10,36 +10,36 @@ class RecvUDPThread;
 class EbenezerApp;
 class CUdpSocket
 {
-	friend class RecvUDPThread;
+    friend class RecvUDPThread;
 
-public:
-	CUdpSocket(EbenezerApp* main = nullptr);
-	virtual ~CUdpSocket();
+  public:
+    CUdpSocket(EbenezerApp *main = nullptr);
+    virtual ~CUdpSocket();
 
-	bool CreateSocket();
-	void AsyncReceive();
-	int  SendUDPPacket(char* strAddress, char* pBuf, int len);
-	bool PacketProcess(int len);
-	void Parsing(char* pBuf, int len);
-	void ServerChat(char* pBuf);
-	void RecvBattleEvent(char* pBuf);
-	void ReceiveKnightsProcess(char* pBuf);
-	void RecvCreateKnights(char* pBuf);
-	void RecvJoinKnights(char* pBuf, uint8_t command);
-	void RecvModifyFame(char* pBuf, uint8_t command);
-	void RecvDestroyKnights(char* pBuf);
-	void RecvBattleZoneCurrentUsers(char* pBuf);
+    bool CreateSocket();
+    void AsyncReceive();
+    int SendUDPPacket(char *strAddress, char *pBuf, int len);
+    bool PacketProcess(int len);
+    void Parsing(char *pBuf, int len);
+    void ServerChat(char *pBuf);
+    void RecvBattleEvent(char *pBuf);
+    void ReceiveKnightsProcess(char *pBuf);
+    void RecvCreateKnights(char *pBuf);
+    void RecvJoinKnights(char *pBuf, uint8_t command);
+    void RecvModifyFame(char *pBuf, uint8_t command);
+    void RecvDestroyKnights(char *pBuf);
+    void RecvBattleZoneCurrentUsers(char *pBuf);
 
-protected:
-	static constexpr int UDP_SOCKET_BUFFER_SIZE	= (1024 * 32);
+  protected:
+    static constexpr int UDP_SOCKET_BUFFER_SIZE = (1024 * 32);
 
-	RecvUDPThread			_recvUdpThread;
-	asio::io_context		_io;
-	asio::ip::udp::socket	_socket;
-	asio::ip::udp::endpoint _sender;
+    RecvUDPThread _recvUdpThread;
+    asio::io_context _io;
+    asio::ip::udp::socket _socket;
+    asio::ip::udp::endpoint _sender;
 
-	char					_recvBuff[UDP_SOCKET_BUFFER_SIZE];
-	EbenezerApp*			_main;
+    char _recvBuff[UDP_SOCKET_BUFFER_SIZE];
+    EbenezerApp *_main;
 };
 
 #endif // SERVER_EBENEZER_UDPSOCKET_H

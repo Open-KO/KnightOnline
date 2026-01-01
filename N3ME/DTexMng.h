@@ -15,44 +15,44 @@
 class CDTex;
 class CMainFrame;
 
-typedef std::list<CDTex*>::iterator it_DTex;
+typedef std::list<CDTex *>::iterator it_DTex;
 
 class CDTexMng : public CN3Base
 {
-protected:
-	int					m_NextID;
+  protected:
+    int m_NextID;
 
-public:
-	std::list<CDTex*>	m_pDTex;
-	CMainFrame*			m_pMainFrm;	
-	//int					m_NumDTex;	//dtex를 담고 있는 마지막 배열 + 1...^^
-	//CDTex*			m_pDTex[MAX_TILETEXTURE];
-				
-public:
-	int GetMaxID() const
-	{
-		return m_NextID - 1;
-	}
+  public:
+    std::list<CDTex *> m_pDTex;
+    CMainFrame *m_pMainFrm;
+    // int					m_NumDTex;	//dtex를 담고 있는 마지막 배열 + 1...^^
+    // CDTex*			m_pDTex[MAX_TILETEXTURE];
 
-	int GetNumDTex() const
-	{
-		return static_cast<int>(m_pDTex.size());
-	}
+  public:
+    int GetMaxID() const
+    {
+        return m_NextID - 1;
+    }
 
-	bool	IsInDTex(CString FileName);
-	CDTex*	GetDTexByID(int id);
-	CDTex*	GetDTexByName(CString FileName);
-	bool	AddDTex(CString FileName);
-	void	DelDTexByID(int id);
-	void	Init(CMainFrame* pFrm = nullptr);
-	void	Release();
+    int GetNumDTex() const
+    {
+        return static_cast<int>(m_pDTex.size());
+    }
 
-	void	SaveToFile(CString RealFileName);
-	void	LoadFromFile(CString RealFileName);
-	void	SaveGameTile();
+    bool IsInDTex(CString FileName);
+    CDTex *GetDTexByID(int id);
+    CDTex *GetDTexByName(CString FileName);
+    bool AddDTex(CString FileName);
+    void DelDTexByID(int id);
+    void Init(CMainFrame *pFrm = nullptr);
+    void Release();
 
-	CDTexMng();
-	virtual ~CDTexMng();
+    void SaveToFile(CString RealFileName);
+    void LoadFromFile(CString RealFileName);
+    void SaveGameTile();
+
+    CDTexMng();
+    virtual ~CDTexMng();
 };
 
 #endif // !defined(AFX_DTEXMNG_H__30DCE41A_64F9_4876_AA67_5E344993325D__INCLUDED_)

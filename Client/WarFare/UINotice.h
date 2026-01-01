@@ -17,25 +17,25 @@ typedef std::list<std::string>::iterator it_String;
 
 class CUINotice : public CN3UIBase
 {
-public:
-	class CN3UIString*		m_pText_Notice;
-	class CN3UIScrollBar*	m_pScrollBar;
-	class CN3UIButton*		m_pBtn_OK;
+  public:
+    class CN3UIString *m_pText_Notice;
+    class CN3UIScrollBar *m_pScrollBar;
+    class CN3UIButton *m_pBtn_OK;
 
-	std::list<std::string>	m_Texts;
+    std::list<std::string> m_Texts;
 
-public:
-	void RemoveNotice();
-	void SetVisible(bool bVisible) override;
-	bool OnKeyPress(int iKey) override;
-	void GenerateText();
-	void Release() override;
+  public:
+    void RemoveNotice();
+    void SetVisible(bool bVisible) override;
+    bool OnKeyPress(int iKey) override;
+    void GenerateText();
+    void Release() override;
 
-	bool Load(File& file) override;
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
+    bool Load(File &file) override;
+    bool ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg) override;
 
-	CUINotice();
-	~CUINotice() override;
+    CUINotice();
+    ~CUINotice() override;
 };
 
 #endif // !defined(AFX_UINOTICE_H__28178F32_B0C2_4742_B3C0_25C8F6034BD2__INCLUDED_)

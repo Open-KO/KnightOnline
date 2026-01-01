@@ -12,107 +12,112 @@
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
-enum e_NpcTrade {	UI_BLACKSMITH = 1, UI_STORE, UI_INN	};
+enum e_NpcTrade
+{
+    UI_BLACKSMITH = 1,
+    UI_STORE,
+    UI_INN
+};
 
 //////////////////////////////////////////////////////////////////////
 
 class CUIMsgBoxOkCancel;
 class CUITransactionDlg : public CN3UIWndBase
 {
-	friend class CUIInventory;
+    friend class CUIInventory;
 
-public:
-// 직접 접근해야 할 객체 참조 포인터
-	__IconItemSkill*		m_pMyTrade[MAX_ITEM_TRADE_PAGE][MAX_ITEM_TRADE];
-	__IconItemSkill*		m_pMyTradeInv[MAX_ITEM_INVENTORY];
-	CN3UIString*			m_pStrMyGold;
-	CN3UIString*			m_pText_Weight;
+  public:
+    // 직접 접근해야 할 객체 참조 포인터
+    __IconItemSkill *m_pMyTrade[MAX_ITEM_TRADE_PAGE][MAX_ITEM_TRADE];
+    __IconItemSkill *m_pMyTradeInv[MAX_ITEM_INVENTORY];
+    CN3UIString *m_pStrMyGold;
+    CN3UIString *m_pText_Weight;
 
-	int						m_iCurPage;
-	int						m_iTradeID;
-	int						m_iNpcID;
-	CUIImageTooltipDlg*		m_pUITooltipDlg;
-	
-	CN3UIImage*				m_pUIInn;
-	CN3UIImage*				m_pUIBlackSmith;
-	CN3UIImage*				m_pUIStore;
+    int m_iCurPage;
+    int m_iTradeID;
+    int m_iNpcID;
+    CUIImageTooltipDlg *m_pUITooltipDlg;
 
-	//this_ui_add_start
-	CN3UIButton*			m_pBtnClose;
-	CN3UIButton*			m_pBtnPageUp;
-	CN3UIButton*			m_pBtnPageDown;
-	//this_ui_add_end
+    CN3UIImage *m_pUIInn;
+    CN3UIImage *m_pUIBlackSmith;
+    CN3UIImage *m_pUIStore;
 
-	CUIMsgBoxOkCancel*		m_pUIMsgBoxOkCancel;
+    // this_ui_add_start
+    CN3UIButton *m_pBtnClose;
+    CN3UIButton *m_pBtnPageUp;
+    CN3UIButton *m_pBtnPageDown;
+    // this_ui_add_end
 
-protected:
-	int					GetItemiOrder(__IconItemSkill* spItem, e_UIWND_DISTRICT eWndDist);
-	RECT				GetSampleRect();
+    CUIMsgBoxOkCancel *m_pUIMsgBoxOkCancel;
 
-	e_UIWND_DISTRICT	GetWndDistrict(__IconItemSkill* spItem);
+  protected:
+    int GetItemiOrder(__IconItemSkill *spItem, e_UIWND_DISTRICT eWndDist);
+    RECT GetSampleRect();
 
-public:
-	CUITransactionDlg();
-	~CUITransactionDlg() override;
-	void				Release() override;
+    e_UIWND_DISTRICT GetWndDistrict(__IconItemSkill *spItem);
 
-	//this_ui_add_start
-	bool				OnKeyPress(int iKey) override;
-	bool				Load(File& file) override;
-	void				SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
-	void				SetVisible(bool bVisible) override;
-	//this_ui_add_end
+  public:
+    CUITransactionDlg();
+    ~CUITransactionDlg() override;
+    void Release() override;
 
-	uint32_t			MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
-	bool				ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
-	bool				OnMouseWheelEvent(short delta) override;
-	void				Render() override;
-	void				LeaveTransactionState();
-	void				EnterTransactionState();
+    // this_ui_add_start
+    bool OnKeyPress(int iKey) override;
+    bool Load(File &file) override;
+    void SetVisibleWithNoSound(bool bVisible, bool bWork = false, bool bReFocus = false) override;
+    void SetVisible(bool bVisible) override;
+    // this_ui_add_end
 
-	void				InitIconWnd(e_UIWND eWnd) override;
-	void				InitIconUpdate() override;
+    uint32_t MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &ptOld) override;
+    bool ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg) override;
+    bool OnMouseWheelEvent(short delta) override;
+    void Render() override;
+    void LeaveTransactionState();
+    void EnterTransactionState();
 
-	__IconItemSkill*	GetHighlightIconItem(CN3UIIcon* pUIIcon) override;
+    void InitIconWnd(e_UIWND eWnd) override;
+    void InitIconUpdate() override;
 
-	void				IconRestore() override;
+    __IconItemSkill *GetHighlightIconItem(CN3UIIcon *pUIIcon) override;
 
-	bool				ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur) override;
+    void IconRestore() override;
 
-	void				CancelIconDrop(__IconItemSkill* spItem) override;
-	void				AcceptIconDrop(__IconItemSkill* spItem) override;
+    bool ReceiveIconDrop(__IconItemSkill *spItem, POINT ptCur) override;
 
-	void				SendToServerSellMsg(int itemID, byte pos, int iCount);
-	void				SendToServerBuyMsg(int itemID, byte pos, int iCount);
-	void				SendToServerMoveMsg(int itemID, byte startpos, byte destpos);
+    void CancelIconDrop(__IconItemSkill *spItem) override;
+    void AcceptIconDrop(__IconItemSkill *spItem) override;
 
-	// 물건 구입이 서버에게 보내기전 성공..
-	void				ReceiveItemDropByTradeSuccess();
+    void SendToServerSellMsg(int itemID, byte pos, int iCount);
+    void SendToServerBuyMsg(int itemID, byte pos, int iCount);
+    void SendToServerMoveMsg(int itemID, byte startpos, byte destpos);
 
-	CN3UIBase*			GetChildButtonByName(const std::string& szFN);
+    // 물건 구입이 서버에게 보내기전 성공..
+    void ReceiveItemDropByTradeSuccess();
 
-	// Item Count OK..
-	void				ItemCountOK();
-	void				ItemCountCancel();
+    CN3UIBase *GetChildButtonByName(const std::string &szFN);
 
-	// MsgBox Ok Cancel
-	void				CallBackProc(int iID, uint32_t dwFlag) override;
-	void				OnConfirm();
-	void				OnCancel();
+    // Item Count OK..
+    void ItemCountOK();
+    void ItemCountCancel();
 
-	void				ItemMoveFromInvToThis();
-	void				ItemMoveFromThisToInv();
+    // MsgBox Ok Cancel
+    void CallBackProc(int iID, uint32_t dwFlag) override;
+    void OnConfirm();
+    void OnCancel();
 
-	void				ReceiveResultTradeFromServer(byte bResult, byte bType, int	iMoney);
-	void				ReceiveResultTradeMoveSuccess();
-	void				ReceiveResultTradeMoveFail();
+    void ItemMoveFromInvToThis();
+    void ItemMoveFromThisToInv();
 
-	// 타이틀 표시..
-	void				ShowTitle(e_NpcTrade eNT);
+    void ReceiveResultTradeFromServer(byte bResult, byte bType, int iMoney);
+    void ReceiveResultTradeMoveSuccess();
+    void ReceiveResultTradeMoveFail();
 
-	void				GoldUpdate();
-	void				UpdateWeight(const std::string& szWeight);
-	static std::string	GetItemName(const __IconItemSkill* spItem);
+    // 타이틀 표시..
+    void ShowTitle(e_NpcTrade eNT);
+
+    void GoldUpdate();
+    void UpdateWeight(const std::string &szWeight);
+    static std::string GetItemName(const __IconItemSkill *spItem);
 };
 
 #endif // !defined(AFX_UITRANSACTIONDLG_H__42671245_FF4F_42FC_AF7B_DACEDA8734B7__INCLUDED_)

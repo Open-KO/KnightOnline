@@ -7,11 +7,11 @@
 
 class EbenezerReadQueueThread : public ReadQueueThread
 {
-public:
-	EbenezerReadQueueThread();
+  public:
+    EbenezerReadQueueThread();
 
-protected:
-	void process_packet(const char* buffer, int len) override;
+  protected:
+    void process_packet(const char *buffer, int len) override;
 };
 
 #endif // SERVER_EBENEZER_EBENEZERREADQUEUETHREAD_H

@@ -1,9 +1,8 @@
-﻿#include "pch.h"
-#include "utils.h"
+﻿#include "utils.h"
+#include "pch.h"
 #include <spdlog/spdlog.h>
 
-
-void db::utils::LogDatabaseError(const nanodbc::database_error& dbErr, const char* source)
+void db::utils::LogDatabaseError(const nanodbc::database_error &dbErr, const char *source)
 {
-	spdlog::error("{}: {}", source, dbErr.what());
+    spdlog::error("{}: {}", source, dbErr.what());
 }

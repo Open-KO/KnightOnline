@@ -1,40 +1,35 @@
-#include "pch.h"
 #include "ByteBuffer.h"
+#include "pch.h"
 
 #include <cassert>
 
-#define IMPL_BYTEBUFFER_POD_TEMPLATE(type) \
-	template <> \
-	void ByteBuffer::append<type>(type value) \
-	{ \
-		append(&value, sizeof(value)); \
-	} \
-	template <> \
-	void ByteBuffer::put<type>(size_t pos, type value) \
-	{ \
-		put(pos, &value, sizeof(value)); \
-	} \
-	template <> \
-	ByteBuffer& ByteBuffer::operator<< <type>(type value) \
-	{ \
-		append<type>(value); \
-		return *this; \
-	} \
-	template <> \
-	type ByteBuffer::read<type>(size_t pos) const \
-	{ \
-		/*assert(pos + sizeof(type) <= size());*/ \
-		if (pos + sizeof(type) > size()) \
-			return {}; \
-		return *((type*) &_storage[pos]); \
-	} \
-	template <> \
-	type ByteBuffer::read<type>() \
-	{ \
-		type r = read<type>(_rpos); \
-		_rpos += sizeof(type); \
-		return r; \
-	}
+#define IMPL_BYTEBUFFER_POD_TEMPLATE(type)                                                                             \
+    template <> void ByteBuffer::append<type>(type value)                                                              \
+    {                                                                                                                  \
+        append(&value, sizeof(value));                                                                                 \
+    }                                                                                                                  \
+    template <> void ByteBuffer::put<type>(size_t pos, type value)                                                     \
+    {                                                                                                                  \
+        put(pos, &value, sizeof(value));                                                                               \
+    }                                                                                                                  \
+    template <> ByteBuffer &ByteBuffer::operator<< <type>(type value)                                                  \
+    {                                                                                                                  \
+        append<type>(value);                                                                                           \
+        return *this;                                                                                                  \
+    }                                                                                                                  \
+    template <> type ByteBuffer::read<type>(size_t pos) const                                                          \
+    {                                                                                                                  \
+        /*assert(pos + sizeof(type) <= size());*/                                                                      \
+        if (pos + sizeof(type) > size())                                                                               \
+            return {};                                                                                                 \
+        return *((type *)&_storage[pos]);                                                                              \
+    }                                                                                                                  \
+    template <> type ByteBuffer::read<type>()                                                                          \
+    {                                                                                                                  \
+        type r = read<type>(_rpos);                                                                                    \
+        _rpos += sizeof(type);                                                                                         \
+        return r;                                                                                                      \
+    }
 
 IMPL_BYTEBUFFER_POD_TEMPLATE(float)
 IMPL_BYTEBUFFER_POD_TEMPLATE(bool)
@@ -50,37 +45,32 @@ IMPL_BYTEBUFFER_POD_TEMPLATE(int64_t)
 
 #undef IMPL_BYTEBUFFER_POD_TEMPLATE
 
-template <>
-std::string ByteBuffer::read<std::string>(size_t pos) const
+template <> std::string ByteBuffer::read<std::string>(size_t pos) const
 {
-	std::string r;
-	readString(pos, r);
-	return r;
+    std::string r;
+    readString(pos, r);
+    return r;
 }
 
-template <>
-std::string ByteBuffer::read<std::string>()
+template <> std::string ByteBuffer::read<std::string>()
 {
-	std::string r;
-	readString(r);
-	return r;
+    std::string r;
+    readString(r);
+    return r;
 }
 
-
-ByteBuffer::ByteBuffer()
-	: _doubleByte(true), _rpos(0), _wpos(0)
+ByteBuffer::ByteBuffer() : _doubleByte(true), _rpos(0), _wpos(0)
 {
-	_storage.reserve(DEFAULT_SIZE);
+    _storage.reserve(DEFAULT_SIZE);
 }
 
-ByteBuffer::ByteBuffer(size_t res)
-	: _doubleByte(true), _rpos(0), _wpos(0)
+ByteBuffer::ByteBuffer(size_t res) : _doubleByte(true), _rpos(0), _wpos(0)
 {
-	_storage.reserve(res <= 0 ? DEFAULT_SIZE : res);
+    _storage.reserve(res <= 0 ? DEFAULT_SIZE : res);
 }
 
-ByteBuffer::ByteBuffer(const ByteBuffer& buf)
-	: _doubleByte(true), _rpos(buf._rpos), _wpos(buf._wpos), _storage(buf._storage)
+ByteBuffer::ByteBuffer(const ByteBuffer &buf)
+    : _doubleByte(true), _rpos(buf._rpos), _wpos(buf._wpos), _storage(buf._storage)
 {
 }
 
@@ -90,218 +80,218 @@ ByteBuffer::~ByteBuffer()
 
 void ByteBuffer::clear()
 {
-	_storage.clear();
-	_rpos = _wpos = 0;
+    _storage.clear();
+    _rpos = _wpos = 0;
 }
 
-ByteBuffer& ByteBuffer::operator<<(ByteBuffer& value)
+ByteBuffer &ByteBuffer::operator<<(ByteBuffer &value)
 {
-	if (value.wpos() > 0)
-		append(value.contents(), value.wpos());
-	return *this;
+    if (value.wpos() > 0)
+        append(value.contents(), value.wpos());
+    return *this;
 }
 
 // Hacky KO string flag - either it's a single byte length, or a double byte.
-void ByteBuffer:: SByte()
+void ByteBuffer::SByte()
 {
-	_doubleByte = false;
+    _doubleByte = false;
 }
 
 void ByteBuffer::DByte()
 {
-	_doubleByte = true;
+    _doubleByte = true;
 }
 
 uint8_t ByteBuffer::operator[](size_t pos)
 {
-	return read<uint8_t>(pos);
+    return read<uint8_t>(pos);
 }
 
 size_t ByteBuffer::rpos() const
 {
-	return _rpos;
+    return _rpos;
 }
 
 size_t ByteBuffer::rpos(size_t rpos)
 {
-	_rpos = rpos;
-	return _rpos;
+    _rpos = rpos;
+    return _rpos;
 }
 
 size_t ByteBuffer::wpos() const
 {
-	return _wpos;
+    return _wpos;
 }
 
 size_t ByteBuffer::wpos(size_t wpos)
 {
-	_wpos = wpos;
-	return _wpos;
+    _wpos = wpos;
+    return _wpos;
 }
 
-bool ByteBuffer::read(size_t pos, void* dest, size_t len) const
+bool ByteBuffer::read(size_t pos, void *dest, size_t len) const
 {
-	if (pos + len > size())
-		return false;
+    if (pos + len > size())
+        return false;
 
-	memcpy(dest, &_storage[_rpos], len);
-	return true;
+    memcpy(dest, &_storage[_rpos], len);
+    return true;
 }
 
-bool ByteBuffer::read(void* dest, size_t len)
+bool ByteBuffer::read(void *dest, size_t len)
 {
-	if (!read(_rpos, dest, len))
-		return false;
+    if (!read(_rpos, dest, len))
+        return false;
 
-	_rpos += len;
-	return true;
+    _rpos += len;
+    return true;
 }
 
-bool ByteBuffer::readString(size_t pos, std::string& dest) const
+bool ByteBuffer::readString(size_t pos, std::string &dest) const
 {
-	dest.clear();
+    dest.clear();
 
-	if (_doubleByte)
-	{
-		uint16_t len = 0;
-		if (!read(pos, &len, sizeof(uint16_t)))
-			return false;
+    if (_doubleByte)
+    {
+        uint16_t len = 0;
+        if (!read(pos, &len, sizeof(uint16_t)))
+            return false;
 
-		pos += sizeof(uint16_t);
-		dest.assign(len, '\0');
-		return read(pos, &dest[0], len);
-	}
-	else
-	{
-		uint8_t len = 0;
-		if (!read(pos, &len, sizeof(uint8_t)))
-			return false;
+        pos += sizeof(uint16_t);
+        dest.assign(len, '\0');
+        return read(pos, &dest[0], len);
+    }
+    else
+    {
+        uint8_t len = 0;
+        if (!read(pos, &len, sizeof(uint8_t)))
+            return false;
 
-		pos += sizeof(uint8_t);
-		dest.assign(len, '\0');
-		return read(pos, &dest[0], len);
-	}
+        pos += sizeof(uint8_t);
+        dest.assign(len, '\0');
+        return read(pos, &dest[0], len);
+    }
 }
 
-bool ByteBuffer::readString(size_t pos, std::string& dest, size_t len) const
+bool ByteBuffer::readString(size_t pos, std::string &dest, size_t len) const
 {
-	dest.clear();
-	dest.assign(len, '\0');
+    dest.clear();
+    dest.assign(len, '\0');
 
-	if (pos + len > size())
-		return false;
+    if (pos + len > size())
+        return false;
 
-	return read(pos, &dest[0], len);
+    return read(pos, &dest[0], len);
 }
 
-bool ByteBuffer::readString(std::string& dest)
+bool ByteBuffer::readString(std::string &dest)
 {
-	dest.clear();
+    dest.clear();
 
-	if (_doubleByte)
-	{
-		uint16_t len = 0;
-		if (!read(&len, sizeof(uint16_t)))
-			return false;
+    if (_doubleByte)
+    {
+        uint16_t len = 0;
+        if (!read(&len, sizeof(uint16_t)))
+            return false;
 
-		dest.assign(len, '\0');
-		return read(&dest[0], len);
-	}
-	else
-	{
-		uint8_t len = 0;
-		if (!read(&len, sizeof(uint8_t)))
-			return false;
+        dest.assign(len, '\0');
+        return read(&dest[0], len);
+    }
+    else
+    {
+        uint8_t len = 0;
+        if (!read(&len, sizeof(uint8_t)))
+            return false;
 
-		dest.assign(len, '\0');
-		return read(&dest[0], len);
-	}
+        dest.assign(len, '\0');
+        return read(&dest[0], len);
+    }
 }
 
-bool ByteBuffer::readString(std::string& dest, size_t len)
+bool ByteBuffer::readString(std::string &dest, size_t len)
 {
-	dest.clear();
-	dest.assign(len, '\0');
-	return read(&dest[0], len);
+    dest.clear();
+    dest.assign(len, '\0');
+    return read(&dest[0], len);
 }
 
-const std::vector<uint8_t>& ByteBuffer::storage() const
+const std::vector<uint8_t> &ByteBuffer::storage() const
 {
-	return _storage;
+    return _storage;
 }
 
-std::vector<uint8_t>& ByteBuffer::storage()
+std::vector<uint8_t> &ByteBuffer::storage()
 {
-	return _storage;
+    return _storage;
 }
 
-const uint8_t* ByteBuffer::contents() const
+const uint8_t *ByteBuffer::contents() const
 {
-	return &_storage[0];
+    return &_storage[0];
 }
 
 size_t ByteBuffer::size() const
 {
-	return _storage.size();
+    return _storage.size();
 }
 
 // one should never use resize
 void ByteBuffer::resize(size_t newsize)
 {
-	_storage.resize(newsize);
-	_rpos = 0;
-	_wpos = size();
+    _storage.resize(newsize);
+    _rpos = 0;
+    _wpos = size();
 }
 
 void ByteBuffer::sync_for_read()
 {
-	_rpos = 0;
-	_wpos = size();
+    _rpos = 0;
+    _wpos = size();
 }
 
 void ByteBuffer::reserve(size_t ressize)
 {
-	if (ressize > size())
-		_storage.reserve(ressize);
+    if (ressize > size())
+        _storage.reserve(ressize);
 }
 
 // append to the end of buffer
-void ByteBuffer::append(const void* src, size_t cnt)
+void ByteBuffer::append(const void *src, size_t cnt)
 {
-	if (cnt == 0)
-		return;
+    if (cnt == 0)
+        return;
 
-	// 10MB is far more than you'll ever need.
-	assert(size() < 10000000);
+    // 10MB is far more than you'll ever need.
+    assert(size() < 10000000);
 
-	if (_storage.size() < _wpos + cnt)
-		_storage.resize(_wpos + cnt);
+    if (_storage.size() < _wpos + cnt)
+        _storage.resize(_wpos + cnt);
 
-	memcpy(&_storage[_wpos], src, cnt);
-	_wpos += cnt;
+    memcpy(&_storage[_wpos], src, cnt);
+    _wpos += cnt;
 }
 
-void ByteBuffer::append(const ByteBuffer& buffer)
+void ByteBuffer::append(const ByteBuffer &buffer)
 {
-	if (buffer.size() > 0)
-		append(buffer.contents(), buffer.size());
+    if (buffer.size() > 0)
+        append(buffer.contents(), buffer.size());
 }
 
-void ByteBuffer::append(const ByteBuffer& buffer, size_t len)
+void ByteBuffer::append(const ByteBuffer &buffer, size_t len)
 {
-	assert(buffer.rpos() + len <= buffer.size());
-	append(buffer.contents() + buffer.rpos(), len);
+    assert(buffer.rpos() + len <= buffer.size());
+    append(buffer.contents() + buffer.rpos(), len);
 }
 
-void ByteBuffer::readFrom(ByteBuffer& buffer, size_t len)
+void ByteBuffer::readFrom(ByteBuffer &buffer, size_t len)
 {
-	assert(buffer.rpos() + len <= buffer.size());
-	append(buffer.contents() + buffer.rpos(), len);
-	buffer.rpos(buffer.rpos() + len);
+    assert(buffer.rpos() + len <= buffer.size());
+    append(buffer.contents() + buffer.rpos(), len);
+    buffer.rpos(buffer.rpos() + len);
 }
 
-void ByteBuffer::put(size_t pos, const void* src, size_t cnt)
+void ByteBuffer::put(size_t pos, const void *src, size_t cnt)
 {
-	assert(pos + cnt <= size());
-	memcpy(&_storage[pos], src, cnt);
+    assert(pos + cnt <= size());
+    memcpy(&_storage[pos], src, cnt);
 }

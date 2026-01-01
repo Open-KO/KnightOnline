@@ -11,43 +11,40 @@
 
 class CN3MEDoc : public CDocument
 {
-protected: // create from serialization only
-	CN3MEDoc();
-	DECLARE_DYNCREATE(CN3MEDoc)
+  protected: // create from serialization only
+    CN3MEDoc();
+    DECLARE_DYNCREATE(CN3MEDoc)
 
-// Attributes
-public:
+    // Attributes
+  public:
+    // Operations
+  public:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CN3MEDoc)
+  public:
+    virtual BOOL OnNewDocument();
+    virtual void Serialize(CArchive &ar);
+    virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
+    virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
+    //}}AFX_VIRTUAL
 
-// Operations
-public:
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CN3MEDoc)
-	public:
-	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
-	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-	virtual ~CN3MEDoc();
+    // Implementation
+  public:
+    virtual ~CN3MEDoc();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-protected:
-
-// Generated message map functions
-protected:
-	//{{AFX_MSG(CN3MEDoc)
-	afx_msg void OnFileImportPostDataFromScene();
-	afx_msg void OnFileImportShapes();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  protected:
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CN3MEDoc)
+    afx_msg void OnFileImportPostDataFromScene();
+    afx_msg void OnFileImportShapes();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

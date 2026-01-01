@@ -11,18 +11,18 @@
 
 #include "TransDummy.h"
 
-class CScaleDummy : public CTransDummy  
+class CScaleDummy : public CTransDummy
 {
-public:
-	CScaleDummy();
-	virtual ~CScaleDummy();
+  public:
+    CScaleDummy();
+    virtual ~CScaleDummy();
 
-public:
-protected:
+  public:
+  protected:
+  public:
+    virtual BOOL MouseMsgFilter(LPMSG pMsg);
 
-public:
-	virtual BOOL MouseMsgFilter(LPMSG pMsg);
-protected:
+  protected:
 };
 
 #endif // !defined(AFX_SCALEDUMMY_H__53B4998F_13C1_456E_97D3_820A76BFC855__INCLUDED_)

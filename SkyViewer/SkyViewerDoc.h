@@ -9,50 +9,48 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <N3Base/N3SkyMng.h>
 #include <N3Base/N3GlobalEffectMng.h>
+#include <N3Base/N3SkyMng.h>
 
 class CSkyViewerDoc : public CDocument
 {
-public:
-	CN3SkyMng			m_Sky;
-	CN3GlobalEffectMng	m_Weather;
-protected: // create from serialization only
-	CSkyViewerDoc();
-	DECLARE_DYNCREATE(CSkyViewerDoc)
+  public:
+    CN3SkyMng m_Sky;
+    CN3GlobalEffectMng m_Weather;
 
-// Attributes
-public:
+  protected: // create from serialization only
+    CSkyViewerDoc();
+    DECLARE_DYNCREATE(CSkyViewerDoc)
 
-// Operations
-public:
+    // Attributes
+  public:
+    // Operations
+  public:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CSkyViewerDoc)
+  public:
+    virtual BOOL OnNewDocument();
+    virtual void Serialize(CArchive &ar);
+    virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
+    virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
+    //}}AFX_VIRTUAL
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSkyViewerDoc)
-	public:
-	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
-	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
-	virtual ~CSkyViewerDoc();
+    // Implementation
+  public:
+    virtual ~CSkyViewerDoc();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-protected:
-
-// Generated message map functions
-protected:
-	//{{AFX_MSG(CSkyViewerDoc)
-	afx_msg void OnFileSaveAsGameFormat();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  protected:
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CSkyViewerDoc)
+    afx_msg void OnFileSaveAsGameFormat();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

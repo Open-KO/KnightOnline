@@ -12,35 +12,36 @@
 
 class CDlgUnusedFileList : public CDialog
 {
-public:
-	CStringArray m_szFileNames;
-// Construction
-public:
-	CDlgUnusedFileList(CWnd* pParent = nullptr);   // standard constructor
+  public:
+    CStringArray m_szFileNames;
+    // Construction
+  public:
+    CDlgUnusedFileList(CWnd *pParent = nullptr); // standard constructor
 
-// Dialog Data
-	//{{AFX_DATA(CDlgUnusedFileList)
-	enum { IDD = IDD_UNUSED_FILE };
-	CListBox	m_ListFiles;
-	//}}AFX_DATA
+    // Dialog Data
+    //{{AFX_DATA(CDlgUnusedFileList)
+    enum
+    {
+        IDD = IDD_UNUSED_FILE
+    };
+    CListBox m_ListFiles;
+    //}}AFX_DATA
 
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDlgUnusedFileList)
+  protected:
+    virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
+                                                     //}}AFX_VIRTUAL
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgUnusedFileList)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
-protected:
-
-	// Generated message map functions
-	//{{AFX_MSG(CDlgUnusedFileList)
-	afx_msg void OnBDeleteSelect();
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Implementation
+  protected:
+    // Generated message map functions
+    //{{AFX_MSG(CDlgUnusedFileList)
+    afx_msg void OnBDeleteSelect();
+    virtual BOOL OnInitDialog();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

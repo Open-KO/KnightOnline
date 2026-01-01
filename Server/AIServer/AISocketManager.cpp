@@ -1,40 +1,39 @@
-﻿#include "pch.h"
-#include "AISocketManager.h"
-#include "SendThreadMain.h"
+﻿#include "AISocketManager.h"
 #include "GameSocket.h"
+#include "SendThreadMain.h"
+#include "pch.h"
 
-AISocketManager::AISocketManager()
-	: SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+AISocketManager::AISocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
-	_sendThreadMain = new SendThreadMain(this);
+    _sendThreadMain = new SendThreadMain(this);
 }
 
 AISocketManager::~AISocketManager()
 {
-	delete _sendThreadMain;
+    delete _sendThreadMain;
 }
 
-CGameSocket* AISocketManager::GetServerSocket(int socketId) const
+CGameSocket *AISocketManager::GetServerSocket(int socketId) const
 {
-	return static_cast<CGameSocket*>(SocketManager::GetServerSocket(socketId));
+    return static_cast<CGameSocket *>(SocketManager::GetServerSocket(socketId));
 }
 
-CGameSocket* AISocketManager::GetServerSocketUnchecked(int socketId) const
+CGameSocket *AISocketManager::GetServerSocketUnchecked(int socketId) const
 {
-	return static_cast<CGameSocket*>(SocketManager::GetServerSocketUnchecked(socketId));
+    return static_cast<CGameSocket *>(SocketManager::GetServerSocketUnchecked(socketId));
 }
 
-void AISocketManager::QueueSendData(_SEND_DATA* sendData)
+void AISocketManager::QueueSendData(_SEND_DATA *sendData)
 {
-	_sendThreadMain->queue(sendData);
+    _sendThreadMain->queue(sendData);
 }
 
 void AISocketManager::StartUserThreads()
 {
-	_sendThreadMain->start();
+    _sendThreadMain->start();
 }
 
 void AISocketManager::ShutdownUserThreads()
 {
-	_sendThreadMain->shutdown();
+    _sendThreadMain->shutdown();
 }
