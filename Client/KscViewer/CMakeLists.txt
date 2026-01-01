@@ -46,6 +46,12 @@ target_compile_options(KscViewer PRIVATE
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
 
+if(MSVC)
+  set_property(TARGET KscViewer PROPERTY
+    VS_DEBUGGER_WORKING_DIRECTORY "${OPENKO_CLIENT_DIR}"
+  )
+endif()
+
 add_custom_command(TARGET KscViewer POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E echo "$<TARGET_FILE:KscViewer> has been built"
 )

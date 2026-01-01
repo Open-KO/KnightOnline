@@ -379,8 +379,8 @@ void CGameProcedure::Tick()
 
 	CN3Base::s_SndMgr.Tick(); // Sound Engine...
 
-	// 스크린 캡쳐 키..
-	if(s_pLocalInput->IsKeyPress(DIK_NUMPADMINUS)) // 키패드의 마이너스 키를 누르면..
+	// Screen capture hotkey (NUM-)
+	if (s_pLocalInput->IsKeyPress(DIK_NUMPADMINUS))
 	{
 		SYSTEMTIME st;
 		::GetLocalTime(&st);
@@ -425,118 +425,66 @@ void CGameProcedure::Render()
 
 void CGameProcedure::TickActive()
 {
-	if(s_pProcActive != s_pProcPrev) // 프로시저가 바뀌면..
+	// When the active scene (procedure) changes (on the frame after it was changed),
+	// we should unload the old one and initialize the new one.
+	if (s_pProcActive != s_pProcPrev)
 	{
-		if(s_pProcPrev) s_pProcPrev->Release();
-		if(s_pProcActive) s_pProcActive->Init();
+		if (s_pProcPrev != nullptr)
+			s_pProcPrev->Release();
+
+		if (s_pProcActive != nullptr)
+			s_pProcActive->Init();
 
 		s_pProcPrev = s_pProcActive;
 	}
 
-	if(s_pProcActive)	s_pProcActive->Tick();		// 현재 프로시저 Tick ................................
+	// Now tick the active procedure.
+	if (s_pProcActive != nullptr)
+		s_pProcActive->Tick();
 }
 
 void CGameProcedure::RenderActive()
 {
-//	if(s_pProcActive != s_pProcPrev) // 프로시저가 바뀌면..
-//	{
-//		if(s_pProcPrev) s_pProcPrev->Release();
-//		if(s_pProcActive) s_pProcActive->Init();
-//
-//		s_pProcPrev = s_pProcActive;
-//	}
-//	else 
-//	{
-		if(s_pProcActive == s_pProcPrev) s_pProcActive->Render();
-//	}
+	if (s_pProcActive == s_pProcPrev)
+		s_pProcActive->Render();
 }
 
 bool CGameProcedure::CaptureScreenAndSaveToFile(const std::string& szFN)
 {
-	/*
-	if(szFN.empty()) return false;
+	if (szFN.empty())
+		return false;
+
 	CJpegFile file;
 
-	RECT wndRect;
-	GetWindowRect(CN3Base::s_hWndBase, &wndRect);
-	
+	RECT wndRect = {};
+	GetWindowRect(s_hWndBase, &wndRect);
+
 	HANDLE hDIB = file.CopyScreenToDIB(&wndRect);
-	if(hDIB)
+	if (hDIB == nullptr)
+		return false;
+
+	int nQuality = 90;
+	const char* errorMsg = nullptr;
+
+	// Game Masters can take higher quality screenshots.
+	if (s_pPlayer != nullptr
+		&& s_pPlayer->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
+		nQuality = 100;
+
+	if (!file.EncryptJPEG(hDIB, nQuality, szFN, &errorMsg))
 	{
-		int nQuality = 90;
-		char szBuf[256] = "";
-
-		//운영자는 양질의 스크린 캡쳐를 할수 있게...
-		if(s_pPlayer->m_InfoBase.iAuthority == AUTHORITY_MANAGER)
-			nQuality = 100;
-
-		if(file.EncryptJPEG(hDIB, nQuality, szFN, szBuf) == TRUE)
-		{
-			TRACE("Screen Captue %s\n", szFN.c_str());
-		}
 		GlobalFree(hDIB);
+
+		CLogWriter::Write("Failed to capture screen: {}",
+			errorMsg != nullptr ? errorMsg : "<NULL>");
+
+		return false;
 	}
-	*/
+
+	GlobalFree(hDIB);
+
+	CLogWriter::Write("Screen captured: {}", szFN);
 	return true;
-/*
-	int iW = CN3Base::s_CameraData.vp.Width;
-	int iH = CN3Base::s_CameraData.vp.Height;
-
-	bool bResult = false;
-	LPDIRECT3DSURFACE8 lpDDSTmp = nullptr;
-	LPDIRECT3DSURFACE8 lpDDSBack = nullptr;
-	CN3Base::s_lpD3DDev->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &lpDDSBack);
-	if(lpDDSBack)
-	{
-		CN3Base::s_lpD3DDev->CreateImageSurface(iW, iH, D3DFMT_X8R8G8B8, &lpDDSTmp);
-		if(lpDDSTmp)
-		{
-			HRESULT rval = D3DXLoadSurfaceFromSurface(lpDDSTmp, nullptr, nullptr, lpDDSBack, nullptr, nullptr, D3DX_FILTER_NONE, 0);
-//			HRESULT rval = s_lpD3DDev->CopyRects(lpDDSBack, nullptr, 0, lpDDSTmp, nullptr);
-//			char szErr[256];
-//			::D3DXGetErrorString(rval, szErr, 256);
-
-			if(D3D_OK == rval)
-			{
-				D3DLOCKED_RECT LR;
-				if(D3D_OK == lpDDSTmp->LockRect(&LR, nullptr, 0))
-				{
-//					std::vector<uint8_t> buff(iW * iH * 3, 0);
-					CBitMapFile bmf;
-					bmf.Create(iW, iH);
-
-					for(int y = 0; y < iH; y++)
-					{
-						uint8_t* pPS = ((uint8_t*)LR.pBits) + LR.Pitch * y;
-//						uint8_t* pPD = (uint8_t*)(&(buff[y * (iW * 3)]));
-						uint8_t* pPD = (uint8_t*)(bmf.Pixels(0, y));
-
-						for(int x = 0; x < iW; x++, pPS += 4, pPD +=3 )
-						{
-							pPD[0] = pPS[0];
-							pPD[1] = pPS[1];
-							pPD[2] = pPS[2];
-						}
-					}
-					lpDDSTmp->UnlockRect();
-
-//					CJpeg jpg;
-//					jpg.SaveJPG(szFN.c_str(), iW, iH, &(buff[0]));
-					bmf.SaveToFile(szFN.c_str());
-				}
-			}
-			
-			lpDDSTmp->Release();
-			lpDDSTmp = nullptr;
-		}
-
-
-		lpDDSBack->Release();
-		lpDDSBack = nullptr;
-	}
-
-	return bResult;
-*/
 }
 
 void CGameProcedure::ProcActiveSet(CGameProcedure* pProc)
