@@ -1,0 +1,31 @@
+name: clang-format
+on: [push, pull_request]
+jobs:
+  formatting-check:
+    name: Format check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - 'Client'
+          - 'Common Control'
+          - 'db-library'
+          - 'FileIO'
+          - 'MathUtils'
+          - 'N3CE'
+          - 'N3FXE'
+          - 'N3ME'
+          - 'N3TexViewer'
+          - 'N3Viewer'
+          - 'Server'
+          - 'shared'
+          - 'SkyViewer'
+          - 'TblEditor'
+          - 'UIE'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run clang-format style check for C/C++ programs.
+        uses: jidicula/clang-format-action@v4.16.0
+        with:
+          clang-format-version: '13'
+          check-path: ${{ matrix.path }}
