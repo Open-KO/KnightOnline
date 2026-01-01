@@ -2,11 +2,6 @@
 	path = deps/dx9sdk
 	url = https://github.com/Open-KO/microsoft-directx-sdk
 	shallow = true
-[submodule "Client/Data"]
-	path = Client/Data
-	url = https://github.com/Open-KO/ko-client-assets
-	branch = openko-1298
-	shallow = true
 [submodule "deps/zlib"]
 	path = deps/zlib
 	url = https://github.com/madler/zlib
