@@ -41,7 +41,6 @@ env:
 
 jobs:
   build_windows:
-    needs: formatting-check
     runs-on: windows-latest
 
     strategy:
@@ -82,7 +81,6 @@ jobs:
         ctest -C "${{ matrix.BUILD_CONFIGURATION }}" --verbose
 
   build_linux:
-    needs: formatting-check
     runs-on: ubuntu-latest
 
     strategy:
@@ -143,7 +141,6 @@ jobs:
           ctest -C "${{ matrix.BUILD_CONFIGURATION }}" --verbose
 
   build_macos:
-    needs: formatting-check
     runs-on: macos-latest
 
     strategy:

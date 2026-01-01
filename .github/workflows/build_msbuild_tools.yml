@@ -24,7 +24,6 @@ on:
 
 jobs:
   build:
-    needs: formatting-check
     runs-on: windows-latest
 
     strategy:
