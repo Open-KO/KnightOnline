@@ -25,6 +25,7 @@ on:
 # These should really be moved into the one solution.
 jobs:
   build:
+    needs: formatting-check
     runs-on: windows-latest
 
     strategy:
