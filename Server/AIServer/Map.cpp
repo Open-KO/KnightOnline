@@ -472,7 +472,7 @@ void MAP::LoadObjectEvent(File& fs)
 	}
 }
 
-bool MAP::LoadRoomEvent(int zone_number)
+bool MAP::LoadRoomEvent(int zone_number, const std::filesystem::path& eventDir)
 {
 	uint8_t		byte;
 	char		buf[4096];
@@ -484,27 +484,30 @@ bool MAP::LoadRoomEvent(int zone_number)
 
 	CRoomEvent* pEvent = nullptr;
 
-	// Build the base MAP directory
-	std::filesystem::path evtPath = GetProgPath() / MAP_DIR;
-	evtPath /= std::to_string(zone_number) + ".evt";
+	std::filesystem::path eventPath = eventDir;
+	eventPath /= std::to_string(zone_number) + ".evt";
 
-	if (!std::filesystem::exists(evtPath))
+	if (!std::filesystem::exists(eventPath))
 		return true;
 
-	// Resolve it to strip the relative references to be nice.
+	// Resolve it to strip the relative references (to be nice).
 	// NOTE: Requires the file to exist.
-	evtPath = std::filesystem::canonical(evtPath);
+	eventPath = std::filesystem::canonical(eventPath);
 
 	std::error_code ec;
-	uintmax_t length = std::filesystem::file_size(evtPath, ec);
+	uintmax_t length = std::filesystem::file_size(eventPath, ec);
 	if (ec)
 		return false;
 
-	std::ifstream file(evtPath, std::ios::in | std::ios::binary);
+	std::ifstream file(eventPath, std::ios::in | std::ios::binary);
 	if (!file)
 		return false;
 
-	std::wstring filenameWide = evtPath.wstring();
+	std::u8string filenameUtf8 = eventPath.u8string();
+
+	// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
+	// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
+	std::string filename(filenameUtf8.begin(), filenameUtf8.end());
 
 	int lineNumber = 0;
 	uintmax_t count = 0;
@@ -659,10 +662,7 @@ bool MAP::LoadRoomEvent(int zone_number)
 			else if (isalnum(first[0]))
 			{
 				spdlog::warn("MAP::LoadRoomEvent({}): unhandled opcode '{}' ({}:{})",
-					zone_number, first,
-					// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
-					// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
-					reinterpret_cast<const char*>(evtPath.u8string().c_str()), lineNumber);
+					zone_number, first, filename, lineNumber);
 			}
 
 			index = 0;
@@ -892,7 +892,6 @@ void MAP::InitializeRoom()
 	}
 }
 
-/// \brief Checks if a position is valid for the map
 bool MAP::IsValidPosition(float x, float z) const
 {
 	int mapMaxX = static_cast<int>((m_sizeMap.cx - 1) * m_fUnitDist);

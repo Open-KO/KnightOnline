@@ -27,8 +27,6 @@ CDBAgent::~CDBAgent()
 {
 }
 
-/// \brief attempts connections with db::ConnectionManager for the needed dbTypes
-/// \returns true is successful, false otherwise
 bool CDBAgent::InitDatabase()
 {
 	_main = AujardApp::instance();
@@ -62,8 +60,6 @@ bool CDBAgent::InitDatabase()
 	return true;
 }
 
-/// \brief resets a UserData[userId] record.  Called after logout actions
-/// \see UserData
 void CDBAgent::ResetUserData(int userId)
 {
 	_USER_DATA* user = UserData[userId];
@@ -74,7 +70,6 @@ void CDBAgent::ResetUserData(int userId)
 	user->m_bAuthority = AUTHORITY_USER;
 }
 
-/// \brief populates UserData[userId] from the database
 bool CDBAgent::LoadUserData(const char* accountId, const char* charId, int userId)
 {
 	// verify UserData[userId] is valid for load
@@ -388,12 +383,6 @@ bool CDBAgent::LoadUserData(const char* accountId, const char* charId, int userI
 	return true;
 }
 
-/// \brief updates the database with the data from UserData[userId]
-/// \param charId
-/// \param userId
-/// \param updateType one of UPDATE_PACKET_SAVE, UPDATE_LOGOUT, UPDATE_ALL_SAVE
-/// \see UPDATE_PACKET_SAVE, UPDATE_LOGOUT, UPDATE_ALL_SAVE
-/// \returns true when database successfully updated, false otherwise
 bool CDBAgent::UpdateUser(const char* charId, int userId, int updateType)
 {
 	_USER_DATA* user = UserData[userId];
@@ -501,8 +490,6 @@ bool CDBAgent::UpdateUser(const char* charId, int userId, int updateType)
 	return true;
 }
 
-/// \brief attempts to login a character to the game server
-/// \returns -1 for failure, 0 for unselected nation, 1 for karus, 2 for elmorad
 int CDBAgent::AccountLogInReq(char* accountId, char* password)
 {
 	int16_t retCode = 0;
@@ -522,9 +509,6 @@ int CDBAgent::AccountLogInReq(char* accountId, char* password)
 	return retCode - 1;
 }
 
-/// \brief ensures that database records are created in ACCOUNT_CHAR
-/// and WAREHOUSE prior to logging into the game
-/// \returns true if records are properly set, false otherwise
 bool CDBAgent::NationSelect(char* accountId, int nation)
 {
 	int16_t retCode = 0;
@@ -550,9 +534,6 @@ bool CDBAgent::NationSelect(char* accountId, int nation)
 	return true;
 }
 
-/// \brief attempts to create a new character
-/// \returns NEW_CHAR_SUCCESS on success, or one of the following on error:
-/// NEW_CHAR_ERROR, NEW_CHAR_NO_FREE_SLOT, NEW_CHAR_INVALID_RACE, NEW_CHAR_NAME_IN_USE, NEW_CHAR_SYNC_ERROR
 int CDBAgent::CreateNewChar(char* accountId, int index, char* charId, int race, int Class, int hair, int face, int str, int sta, int dex, int intel, int cha)
 {
 	int16_t retCode = 0;
@@ -574,11 +555,6 @@ int CDBAgent::CreateNewChar(char* accountId, int index, char* charId, int race, 
 	return retCode;
 }
 
-/// \brief loads character information needed in WIZ_ALLCHAR_INFO_REQ
-/// \param[out] charId will trime whitespace
-/// \param[out] buff buffer to write character info to
-/// \param[out] buffIndex
-/// /// \see AllCharInfoReq(), WIZ_ALLCHAR_INFO_REQ
 bool CDBAgent::LoadCharInfo(char* charId_, char* buff, int& buffIndex)
 {
 	// trim charId
@@ -669,12 +645,6 @@ bool CDBAgent::LoadCharInfo(char* charId_, char* buff, int& buffIndex)
 	return true;
 }
 
-/// \brief loads all character names for an account
-/// \param accountId
-/// \param[out] charId1
-/// \param[out] charId2
-/// \param[out] charId3
-/// \returns true if charIds were successfully loaded, false otherwise
 bool CDBAgent::GetAllCharID(const char* accountId, char* charId1_, char* charId2_, char* charId3_)
 {
 	std::string charId1, charId2, charId3;
@@ -740,8 +710,6 @@ bool CDBAgent::GetAllCharID(const char* accountId, char* charId1_, char* charId2
 	return true;
 }
 
-/// \brief attempts to create a knights clan
-/// \returns 0 for success, 3 for name already in use, 6 for db error
 int CDBAgent::CreateKnights(int knightsId, int nation, char* name, char* chief, int flag)
 {
 	int16_t retCode = 0;
@@ -767,8 +735,6 @@ int CDBAgent::CreateKnights(int knightsId, int nation, char* name, char* chief, 
 	return retCode;
 }
 
-/// \brief attempts to update a knights clan
-/// \returns 0 on success, 2 for charId not found or db error, 7 for not found, 8 for capacity error
 int CDBAgent::UpdateKnights(int type, char* charId, int knightsId, int domination)
 {
 	int16_t retCode = 0;
@@ -788,8 +754,6 @@ int CDBAgent::UpdateKnights(int type, char* charId, int knightsId, int dominatio
 	return retCode;
 }
 
-/// \brief attemps to delete a knights clan from the database
-/// \return 0 for success, 7 if not found
 int CDBAgent::DeleteKnights(int knightsId)
 {
 	int16_t retCode = 0;
@@ -810,12 +774,6 @@ int CDBAgent::DeleteKnights(int knightsId)
 	
 }
 
-/// \brief loads knight member information into buffOut
-/// \param knightsId
-/// \param start likely made for pagination, but unused by callers (always 0)
-/// \param[out] buffOut buffer to write member information to
-/// \param[out] buffIndex
-/// \returns rowCount - start
 int CDBAgent::LoadKnightsAllMembers(int knightsId, int start, char* buffOut, int& buffIndex)
 {
 	int tempIndex = 0, userId = 0;
@@ -880,8 +838,6 @@ int CDBAgent::LoadKnightsAllMembers(int knightsId, int start, char* buffOut, int
 	return std::max(rowCount - start, 0);
 }
 
-/// \brief updates concurrent zone count
-/// \returns true if successful, false otherwise
 bool CDBAgent::UpdateConCurrentUserCount(int serverId, int zoneId, int userCount)
 {
 	std::string updateQuery = fmt::format("UPDATE CONCURRENT SET [zone{}_count] = ? WHERE [serverid] = ?", zoneId);
@@ -909,8 +865,6 @@ bool CDBAgent::UpdateConCurrentUserCount(int serverId, int zoneId, int userCount
 	return true;
 }
 
-/// \brief attempts to load warehouse data for an account into UserData[userId]
-/// \returns true if successful, otherwise false
 bool CDBAgent::LoadWarehouseData(const char* accountId, int userId)
 {
 	char items[1600] = {}, serials[1600] = {};
@@ -1005,11 +959,6 @@ bool CDBAgent::LoadWarehouseData(const char* accountId, int userId)
 	return true;
 }
 
-/// \brief attempts to update warehouse data from UserData[userId]
-/// \param accountId
-/// \param userId
-/// \param updateType one of UPDATE_LOGOUT, UPDATE_ALL_SAVE, UPDATE_PACKET_SAVE
-/// \returns true for success, otherwise false
 bool CDBAgent::UpdateWarehouseData(const char* accountId, int userId, int updateType)
 {
 	_USER_DATA* pUser = UserData[userId];
@@ -1080,11 +1029,6 @@ bool CDBAgent::UpdateWarehouseData(const char* accountId, int userId, int update
 	return true;
 }
 
-/// \brief loads knights clan metadata into the supplied buffer
-/// \param knightsId
-/// \param[out] buffOut buffer to write knights data to
-/// \param[out] buffIndex
-/// \returns true if data was successfully loaded to the buffer, otherwise false
 bool CDBAgent::LoadKnightsInfo(int knightsId, char* buffOut, int& buffIndex)
 {
 	db::SqlBuilder<model::Knights> sql;
@@ -1139,14 +1083,6 @@ bool CDBAgent::LoadKnightsInfo(int knightsId, char* buffOut, int& buffIndex)
 	return true;
 }
 
-/// \brief sets CURRENTUSER record for a given accountId
-/// \param accountId
-/// \param charId
-/// \param serverIp
-/// \param serverId
-/// \param clientIp
-/// \param init 0x01 to insert, 0x02 to update CURRENTUSER
-/// \returns true when CURRENTUSER successfully updated, otherwise false
 bool CDBAgent::SetLogInInfo(const char* accountId, const char* charId, const char* serverIp, int serverId, const char* clientIp, uint8_t init)
 {
 	using ModelType = model::CurrentUser;
@@ -1195,8 +1131,6 @@ bool CDBAgent::SetLogInInfo(const char* accountId, const char* charId, const cha
 	return true;
 }
 
-/// \brief removes the CURRENTUSER record for accountId
-/// \returns true on success, otherwise false
 bool CDBAgent::AccountLogout(const char* accountId, int logoutCode)
 {
 	// these always return as 1 currently, not really useful
@@ -1237,12 +1171,6 @@ bool CDBAgent::AccountLogout(const char* accountId, int logoutCode)
 	return true;
 }
 
-/// \brief verifies that USERDATA or WAREHOUSE are in sync with the provided input
-/// \param accountId
-/// \param charId
-/// \param checkType 0 for USERDATA, 1 for WAREHOUSE
-/// \param compareData is WAREHOUSE.nMoney when checkType is 1, otherwise USERDATA.Exp
-/// \returns true when input data matches database record, false otherwise
 bool CDBAgent::CheckUserData(const char* accountId, const char* charId, int checkType, int userUpdateTime, int compareData)
 {
 	uint32_t dbData = 0, dbTime = 0;
@@ -1298,12 +1226,6 @@ bool CDBAgent::CheckUserData(const char* accountId, const char* charId, int chec
 	return true;
 }
 
-
-/// \brief loads knights ranking data by nation to handle KNIGHTS_ALLLIST_REQ
-/// \param nation 1 = karus, 2 = elmorad, 3 = battlezone
-/// \see KNIGHTS_ALLLIST_REQ
-/// \note most other functions in this file are db-ops only.  This does db-ops
-/// and socket IO.  Should likely be separated into separate functions
 void CDBAgent::LoadKnightsAllList(int nation)
 {
 	int32_t count = 0;
@@ -1398,8 +1320,6 @@ void CDBAgent::LoadKnightsAllList(int nation)
 	}
 }
 
-/// \brief updates which nation won the war and which charId killed the commander
-/// \returns true if update successful, otherwise false
 bool CDBAgent::UpdateBattleEvent(const char* charId, int nation)
 {
 	using ModelType = model::Battle;

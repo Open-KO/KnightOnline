@@ -13,7 +13,7 @@ class EVENT
 public:
 	void DeleteAll();
 	void Init();
-	bool LoadEvent(int zone);
+	bool LoadEvent(int zone, const std::filesystem::path& questsDir);
 	int m_Zone;
 
 	EventDataArray m_arEvent;

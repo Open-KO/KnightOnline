@@ -8,7 +8,7 @@
       <BuildDependency Project="Client/JpegFile/JpegFile.vcxproj" />
     </Project>
     <Project Path="Client/Launcher/Launcher.vcxproj" Id="03af3bcf-b1a8-49f3-840e-10642257873a">
-      <BuildDependency Project="deps/ZipArchive/ZipArchive.vcxproj" />
+      <BuildDependency Project="Client/ZipArchive/ZipArchive.vcxproj" />
     </Project>
     <Project Path="Client/Option/Option.vcxproj" Id="3fefbf4a-b12c-4e32-be93-4ea51fd09f63" />
   </Folder>
@@ -74,9 +74,6 @@
     </Project>
   </Folder>
   <Folder Name="/tools/">
-    <Project Path="ItemEditor/ItemEditor.vcxproj" Id="734350e8-5586-46d9-8197-eeeea3034d86">
-      <Build Solution="*|x64" Project="false" />
-    </Project>
     <Project Path="N3CE/N3CE.vcxproj" Id="1ad3ffcd-745f-4e6d-8698-f750ebb8dbcd">
       <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
     </Project>
@@ -126,7 +123,7 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
       <Build Project="false" />
     </Project>
-    <Project Path="deps/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
+    <Project Path="Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
     </Project>
     <Project Path="FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">

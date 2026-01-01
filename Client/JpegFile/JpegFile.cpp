@@ -139,9 +139,14 @@ BYTE * CJpegFile::JpegFileToRGB(std::string fileName,
 	* requires it in order to read binary files.
 	*/
 
-	if ((infile = fopen(fileName.c_str(), "rb")) == nullptr) {
+#ifdef _MSC_VER
+	fopen_s(&infile, fileName.c_str(), "rb");
+#else
+	infile = fopen(fileName.c_str(), "rb");
+#endif
+
+	if (infile == nullptr)
 		return nullptr;
-	}
 
 	/* Step 1: allocate and initialize JPEG decompression object */
 
@@ -315,9 +320,14 @@ BOOL CJpegFile::GetJPGDimensions(std::string fileName,
 	* requires it in order to read binary files.
 	*/
 
-	if ((infile = fopen(fileName.c_str(), "rb")) == nullptr) {
-		return FALSE;
-	}
+#ifdef _MSC_VER
+	fopen_s(&infile, fileName.c_str(), "rb");
+#else
+	infile = fopen(fileName.c_str(), "rb");
+#endif
+
+	if (infile == nullptr)
+		return false;
 
 	/* Step 1: allocate and initialize JPEG decompression object */
 
@@ -485,9 +495,14 @@ BOOL CJpegFile::RGBToJpegFile(std::string fileName,
 	/* Step 2: specify data destination (eg, a file) */
 	/* Note: steps 2 and 3 can be done in either order. */
 
-	if ((outfile = fopen(fileName.c_str(), "wb")) == nullptr) {
+#ifdef _MSC_VER
+	fopen_s(&outfile, fileName.c_str(), "wb");
+#else
+	outfile = fopen(fileName.c_str(), "wb");
+#endif
+
+	if (outfile == nullptr)
 		return FALSE;
-	}
 
 	jpeg_stdio_dest(&cinfo, outfile);
 
@@ -1505,16 +1520,17 @@ BOOL CJpegFile::DibToSamps(
 	int						nSampsPerRow,
 	jpeg_compress_struct	cinfo,
 	JSAMPARRAY				jsmpPixels,
-	const char*				pcsMsg)
+	const char**			pcsMsg)
 {
 	//Sanity...
-	if (hDib == nullptr    ||
-		nSampsPerRow <= 0 || pcsMsg == nullptr) 
-	{ 
-		if (pcsMsg !=nullptr) 
-			pcsMsg="Invalid input data"; 
-		return FALSE; 
-	} 
+	if (hDib == nullptr
+		|| nSampsPerRow <= 0
+		|| pcsMsg == nullptr)
+	{
+		if (pcsMsg != nullptr)
+			*pcsMsg = "Invalid input data";
+		return FALSE;
+	}
 	
 	int r=0, p=0, q=0, b=0, n=0, 
 		nUnused=0, nBytesWide=0, nUsed=0, nLastBits=0, nLastNibs=0, nCTEntries=0,
@@ -1543,7 +1559,9 @@ BOOL CJpegFile::DibToSamps(
 		break;
 		
 	default:
-		pcsMsg = "Invalid bitmap bit count";
+		if (pcsMsg != nullptr)
+			*pcsMsg = "Invalid bitmap bit count";
+
 		GlobalUnlock(hDib);
 		return FALSE; //Unsupported format
 	}
@@ -1705,21 +1723,23 @@ BOOL CJpegFile::JpegFromDib(
 	HANDLE		hDib,     // Handle to DIB
 	int			nQuality, // JPEG quality (0-100)
 	std::string csJpeg,   // Pathname to jpeg file
-	const char* pcsMsg)   // Error msg to return
+	const char** pcsMsg)   // Error msg to return
 {
-	//Basic sanity checks...
-	if (nQuality < 0 || nQuality > 100 ||
-		hDib   == nullptr ||
-		pcsMsg == nullptr ||
-		csJpeg == "")
+	// Basic sanity checks...
+	if (nQuality < 0
+		|| nQuality > 100
+		|| hDib == nullptr
+		|| pcsMsg == nullptr
+		|| csJpeg.empty())
 	{
 		if (pcsMsg != nullptr)
-			pcsMsg = "Invalid input data";
-		
+			*pcsMsg = "Invalid input data";
+
 		return FALSE;
 	}
 	
-	pcsMsg = "";
+	if (pcsMsg != nullptr)
+		*pcsMsg = "";
 	
 	LPBITMAPINFOHEADER lpbi = (LPBITMAPINFOHEADER)GlobalLock(hDib);
 	
@@ -1736,10 +1756,18 @@ BOOL CJpegFile::JpegFromDib(
 	cinfo.err = jpeg_std_error(&jerr); //Use default error handling (ugly!)
 	
 	jpeg_create_compress(&cinfo);
-	
-	if ((pOutFile = fopen(csJpeg.c_str(), "wb")) == nullptr)
+
+#ifdef _MSC_VER
+	fopen_s(&pOutFile, csJpeg.c_str(), "wb");
+#else
+	pOutFile = fopen(csJpeg.c_str(), "wb");
+#endif
+
+	if (pOutFile == nullptr)
 	{
-		pcsMsg = "Cannot open Fail";
+		if (pcsMsg != nullptr)
+			*pcsMsg = "Cannot open file for writing";
+
 		jpeg_destroy_compress(&cinfo);
 		GlobalUnlock(hDib);
 		return FALSE;
@@ -1773,14 +1801,15 @@ BOOL CJpegFile::JpegFromDib(
 	
 	GlobalUnlock(hDib);
 
-	if (DibToSamps(hDib,
+	BOOL convertedSamples = DibToSamps(hDib,
 		nSampsPerRow,
 		cinfo,
 		jsmpArray,
-		pcsMsg))
+		pcsMsg);
+	if (convertedSamples)
 	{
-		//Write the array of scan lines to the JPEG file
-		(void)jpeg_write_scanlines(&cinfo,
+		// Write the array of scan lines to the JPEG file
+		(void) jpeg_write_scanlines(&cinfo,
 			jsmpArray,
 			cinfo.image_height);
 	}
@@ -1791,17 +1820,14 @@ BOOL CJpegFile::JpegFromDib(
 	
 	jpeg_destroy_compress(&cinfo); //Free resources
 	
-	if(strlen(pcsMsg) > 0 )
-		return FALSE;
-	else
-		return TRUE;
+	return convertedSamples;
 }
 
 BOOL CJpegFile::EncryptJPEG(
 	HANDLE			hDib,	// Handle to DIB
-	int			nQuality,	// JPEG quality (0-100)
-	std::string	csJpeg,		// Pathname to jpeg file
-	const char*	pcsMsg)		// Error msg to return
+	int				nQuality,	// JPEG quality (0-100)
+	std::string		csJpeg,		// Pathname to jpeg file
+	const char**	pcsMsg)		// Error msg to return
 {
 	if (!JpegFromDib(hDib, nQuality, csJpeg, pcsMsg))
 		return FALSE;
@@ -1859,6 +1885,7 @@ BOOL CJpegFile::EncryptJPEG(
 #else
 	fileHandle = fopen(csJpeg.c_str(), "wb");
 #endif
+
 	if (fileHandle == nullptr)
 	{
 		delete[] data_byte;

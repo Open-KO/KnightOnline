@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include "UIChat.h"
 #include "GameEng.h"
 #include "resource.h"

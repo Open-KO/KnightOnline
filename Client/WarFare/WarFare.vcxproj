@@ -33,7 +33,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)client_application.props" />
-  <Import Project="$(PropsDir)cp949_strings.props" />
+  <Import Project="$(PropsDir)utf8_strings.props" />
   <Import Project="$(PropsDir)jpegfile.props" />
   <Import Project="$(PropsDir)n3base-project.props" />
   <PropertyGroup Label="UserMacros" />
@@ -132,9 +132,6 @@
     <ClCompile Include="GameProcLogIn_1098.cpp" />
     <ClCompile Include="GameProcMain.cpp" />
     <ClCompile Include="GameProcNationSelect.cpp" />
-    <ClCompile Include="GameProcOption.cpp" />
-    <ClCompile Include="GrassBoard.cpp" />
-    <ClCompile Include="GrassMng.cpp" />
     <ClCompile Include="IconItemSkill.cpp" />
     <ClCompile Include="ItemRepairMgr.cpp" />
     <ClCompile Include="LightMgr.cpp" />
@@ -244,9 +241,6 @@
     <ClInclude Include="GameProcLogIn_1098.h" />
     <ClInclude Include="GameProcMain.h" />
     <ClInclude Include="GameProcNationSelect.h" />
-    <ClInclude Include="GameProcOption.h" />
-    <ClInclude Include="GrassBoard.h" />
-    <ClInclude Include="GrassMng.h" />
     <ClInclude Include="IconItemSkill.h" />
     <ClInclude Include="N3ClientShapeMgr.h" />
     <ClInclude Include="N3Pond.h" />
@@ -340,11 +334,11 @@
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
+  <PropertyGroup Label="Debugger defaults">
+    <LocalDebuggerWorkingDirectory>$(RootDir)Client\Data\</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <PropertyGroup Label="Debugger defaults">
-    <LocalDebuggerWorkingDirectory>..\Data\</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-  </PropertyGroup>
 </Project>

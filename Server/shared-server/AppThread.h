@@ -45,7 +45,8 @@ protected:
 	virtual void SetupCommandLineArgParser(argparse::ArgumentParser& parser);
 
 	/// \brief Processes any parsed command-line args as needed by the app.
-	virtual void ProcessCommandLineArgs(const argparse::ArgumentParser& parser);
+	/// \returns true on success, false on failure
+	virtual bool ProcessCommandLineArgs(const argparse::ArgumentParser& parser);
 
 	/// \brief The main thread loop for the server instance
 	void thread_loop() override;

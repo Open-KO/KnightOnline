@@ -7,6 +7,7 @@
 #include "RoomEvent.h"
 #include "ZoneEventThread.h"
 
+#include <argparse/argparse.hpp>
 #include <FileIO/FileReader.h>
 
 #include <shared/crc32.h>
@@ -14,6 +15,7 @@
 #include <shared/Ini.h>
 #include <shared/lzf.h>
 #include <shared/StringUtils.h>
+#include <shared/TimerThread.h>
 
 #include <spdlog/spdlog.h>
 
@@ -22,8 +24,6 @@
 #include <db-library/RecordSetLoader_Vector.h>
 
 #include <AIServer/binder/AIServerBinder.h>
-
-#include <shared/TimerThread.h>
 
 #include <math.h>
 
@@ -50,8 +50,9 @@ AIServerApp::AIServerApp(AIServerLogger& logger)
 	_battleNpcsKilledByElmorad = 0;
 	_zoneEventThread = nullptr;
 	_testMode = 0;
-	//m_ppUserActive = nullptr;
-	//m_ppUserInActive = nullptr;
+
+	for (int i = 0; i < MAX_USER; i++)
+		_users[i] = nullptr;
 
 	ConnectionManager::Create();
 
@@ -323,9 +324,6 @@ bool AIServerApp::OnStart()
 	return true;
 }
 
-/// \brief attempts to listen on the port associated with _serverZoneType
-/// \see _serverZoneType
-/// \returns true when successful, otherwise false
 bool AIServerApp::ListenByServerZoneType()
 {
 	int port = GetListenPortByServerZoneType();
@@ -345,9 +343,6 @@ bool AIServerApp::ListenByServerZoneType()
 	return true;
 }
 
-/// \brief fetches the listen port associated with _serverZoneType
-/// \see _serverZoneType
-/// \returns the associated listen port or -1 if invalid
 int AIServerApp::GetListenPortByServerZoneType() const
 {
 	switch (_serverZoneType)
@@ -937,19 +932,12 @@ bool AIServerApp::MapFileLoad()
 	recordset_loader::Base<ModelType> loader;
 	loader.SetProcessFetchCallback([&](db::ModelRecordSet<ModelType>& recordset)
 	{
-		// Build the base MAP directory
-		std::filesystem::path mapDir = GetProgPath() / MAP_DIR;
-
-		// Resolve it to strip the relative references to be nice.
-		if (std::filesystem::exists(mapDir))
-			mapDir = std::filesystem::canonical(mapDir);
-
 		do
 		{
 			ModelType row = {};
 			recordset.get_ref(row);
 
-			std::filesystem::path mapPath = mapDir / row.Name;
+			std::filesystem::path mapPath = _mapDir / row.Name;
 
 			// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
 			// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
@@ -981,7 +969,7 @@ bool AIServerApp::MapFileLoad()
 			// dungeon work
 			if (row.RoomEvent > 0)
 			{
-				if (!pMap->LoadRoomEvent(row.RoomEvent))
+				if (!pMap->LoadRoomEvent(row.RoomEvent, _eventDir))
 				{
 					spdlog::error("AIServerApp::MapFileLoad: LoadRoomEvent failed: {}",
 						filename);
@@ -1531,15 +1519,49 @@ int AIServerApp::GetServerNumber(int zoneId) const
 	return zoneInfo->ServerId;
 }
 
-/// \returns The application's ini config path.
-std::filesystem::path AIServerApp::ConfigPath() const
+void AIServerApp::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 {
-	return GetProgPath() / "server.ini";
+	AppThread::SetupCommandLineArgParser(parser);
+
+	parser.add_argument("--map-dir")
+		.help("location of directory containing server map data files (.SMDs)")
+		.store_into(_overrideMapDir);
+
+	parser.add_argument("--event-dir")
+		.help("location of directory containing the AI server specific event scripts (.EVTs)")
+		.store_into(_overrideEventDir);
 }
 
-/// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
-/// \param iniFile The loaded application ini file.
-/// \returns true when successful, false otherwise
+bool AIServerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
+{
+	if (!AppThread::ProcessCommandLineArgs(parser))
+		return false;
+
+	std::error_code ec;
+	if (!_overrideMapDir.empty()
+		&& !std::filesystem::exists(_overrideMapDir, ec))
+	{
+		spdlog::error("Supplied map directory (--map-dir) doesn't exist or is inaccessible: {}",
+			_overrideMapDir);
+		return false;
+	}
+
+	if (!_overrideEventDir.empty()
+		&& !std::filesystem::exists(_overrideEventDir, ec))
+	{
+		spdlog::error("Supplied EVT directory (--event-dir) doesn't exist or is inaccessible: {}",
+			_overrideEventDir);
+		return false;
+	}
+
+	return true;
+}
+
+std::filesystem::path AIServerApp::ConfigPath() const
+{
+	return "server.ini";
+}
+
 bool AIServerApp::LoadConfig(CIni& iniFile)
 {
 	_serverZoneType = iniFile.GetInt("SERVER", "ZONE", 1);
@@ -1551,6 +1573,80 @@ bool AIServerApp::LoadConfig(CIni& iniFile)
 	ConnectionManager::SetDatasourceConfig(
 		modelUtil::DbType::GAME,
 		datasourceName, datasourceUser, datasourcePass);
+
+	// Load paths from config
+	std::string mapDir		= iniFile.GetString("PATH", "MAP_DIR", "");
+	std::string eventDir	= iniFile.GetString("PATH", "EVENT_DIR", "");
+
+	std::error_code ec;
+
+	// Map directory supplied from command-line.
+	// Replace it in the config -- but only if it's not explicitly been set already.
+	// We should always use the map directory passed from command-line over the INI.
+	if (!_overrideMapDir.empty())
+	{
+		if (mapDir.empty())
+			iniFile.SetString("PATH", "MAP_DIR", _overrideMapDir);
+
+		_mapDir = _overrideMapDir;
+	}
+	// No command-line override is present, but it is configured in the INI.
+	// We should use that.
+	else if (!mapDir.empty())
+	{
+		_mapDir = mapDir;
+
+		if (!std::filesystem::exists(_mapDir, ec))
+		{
+			spdlog::error("Configured map directory doesn't exist or is inaccessible: {}",
+				mapDir);
+			return false;
+		}
+	}
+	// Fallback to the default (don't save this).
+	else
+	{
+		_mapDir = DEFAULT_MAP_DIR;
+	}
+
+	// Resolve the path to strip the relative references (to be nice).
+	if (std::filesystem::exists(_mapDir, ec))
+		_mapDir = std::filesystem::canonical(_mapDir);
+
+	// EVT directory supplied from command-line.
+	// Replace it in the config -- but only if it's not explicitly been set already.
+	// We should always use the map directory passed from command-line over the INI.
+	if (!_overrideEventDir.empty())
+	{
+		if (eventDir.empty())
+			iniFile.SetString("PATH", "EVENT_DIR", _overrideEventDir);
+
+		_eventDir = _overrideEventDir;
+	}
+	// No command-line override is present, but it is configured in the INI.
+	// We should use that.
+	else if (!eventDir.empty())
+	{
+		_eventDir = eventDir;
+
+		if (!std::filesystem::exists(_eventDir, ec))
+		{
+			spdlog::error("Configured EVT directory doesn't exist or is inaccessible: {}",
+				eventDir);
+			return false;
+		}
+	}
+	// Fallback to the default (don't save this).
+	else
+	{
+		// NOTE: We have the AI server EVTs in the MAP dir by default.
+		// We only separate Ebenezer's EVTs into QUESTS.
+		_eventDir = DEFAULT_MAP_DIR;
+	}
+
+	// Resolve the path to strip the relative references (to be nice).
+	if (std::filesystem::exists(_eventDir, ec))
+		_eventDir = std::filesystem::canonical(_eventDir);
 
 	return true;
 }

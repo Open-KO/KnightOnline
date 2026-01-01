@@ -68,14 +68,10 @@ public:
 
 	// Bird..
 
-	// Grass..
-	virtual void InitWithGrass(__Vector3 CamPo)	{}
-
 	// Rendering..
 	virtual void RenderTerrain() = 0;
 	virtual void RenderShape() = 0;	
 	virtual void RenderSky() {}
-	virtual void RenderGrass() {}
 	virtual void RenderBirdMgr() {}
 	virtual void RenderSkyWeather() {}
 

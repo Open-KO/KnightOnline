@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIHelp.h"
 #include "GameProcedure.h"
 #include "UIManager.h"

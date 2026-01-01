@@ -60,7 +60,17 @@ private:
 	void Initialize();
 	bool CheckEvent(int event_num, double currentTime);
 	bool RunEvent(int event_num);
+
+	/// \brief checks if monster counts match given type
+	/// \param sid npcId
+	/// \param count number of monsters to check against
+	/// \param type one of:
+	/// 1: Count of monsters killed
+	/// 2: Count of active monsters
+	/// 3: All monsters dead (count unused)
+	/// 4: Reset monster (?)
 	bool CheckMonsterCount(int sid, int count, int type);
+
 	CNpc* GetNpcPtr(int sid);
 	void EndEventSay(int option1, int option2);
 };

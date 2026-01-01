@@ -35,7 +35,6 @@
     <ClInclude Include="N3AnimKey.h" />
     <ClInclude Include="N3Base.h" />
     <ClInclude Include="N3BaseFileAccess.h" />
-    <ClInclude Include="N3Board.h" />
     <ClInclude Include="N3Camera.h" />
     <ClInclude Include="N3Chr.h" />
     <ClInclude Include="N3Cloak.h" />
@@ -57,7 +56,6 @@
     <ClInclude Include="N3GERain.h" />
     <ClInclude Include="N3GESnow.h" />
     <ClInclude Include="N3GlobalEffect.h" />
-    <ClInclude Include="N3IME.h" />
     <ClInclude Include="N3IMesh.h" />
     <ClInclude Include="N3Joint.h" />
     <ClInclude Include="N3Light.h" />
@@ -80,7 +78,6 @@
     <ClInclude Include="N3Sun.h" />
     <ClInclude Include="N3TableBase.h" />
     <ClInclude Include="N3TableBaseImpl.h" />
-    <ClInclude Include="N3TerrainDef.h" />
     <ClInclude Include="N3Texture.h" />
     <ClInclude Include="N3Transform.h" />
     <ClInclude Include="N3TransformCollision.h" />
@@ -200,7 +197,7 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <Import Project="$(PropsDir)cp949_strings.props" />
+  <Import Project="$(PropsDir)utf8_strings.props" />
   <Import Project="$(PropsDir)mpg123.props" />
   <Import Project="$(PropsDir)n3base-project.props" />
   <PropertyGroup Label="UserMacros" />

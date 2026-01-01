@@ -16,9 +16,6 @@ namespace db
 	{
 	}
 
-	/// \brief Checks to see if the connection is disconnected, and attempts
-	/// to reconnect if appropriate.
-	/// \returns -1 for failed connection, 0 for no-op, 1 for successful reconnect
 	int8_t Connection::Reconnect() noexcept(false)
 	{
 		if (_conn == nullptr)
@@ -37,8 +34,6 @@ namespace db
 		return 0;
 	}
 
-	/// \brief checks if the managed connection is disconnected and attempts to reconnect if it is
-	/// \throws nanodbc::database_error
 	void Connection::ReconnectIfDisconnected() noexcept(false)
 	{
 		try
@@ -62,16 +57,12 @@ namespace db
 		}
 	}
 
-	/// \brief Creates a new statement for the current database connection.
-	/// \throws nanodbc::database_error
 	nanodbc::statement Connection::CreateStatement() noexcept(false)
 	{
 		ReconnectIfDisconnected();
 		return nanodbc::statement(*_conn);
 	}
 
-	/// \brief Creates a new statement for the current database connection, using the given query.
-	/// \throws nanodbc::database_error
 	nanodbc::statement Connection::CreateStatement(const std::string& query) noexcept(false)
 	{
 		ReconnectIfDisconnected();

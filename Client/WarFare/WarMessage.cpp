@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "WarMessage.h"
 #include "GameBase.h"
 #include "text_resources.h"

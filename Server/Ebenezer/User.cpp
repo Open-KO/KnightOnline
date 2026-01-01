@@ -11431,11 +11431,7 @@ void CUser::ClientEvent(char* pBuf)
 		return;
 
 	// Execute the 'E' events in Event #1
-	for (EXEC* pExec : pEventData->m_arExec)
-	{
-		if (!RunNpcEvent(pNpc, pExec))
-			return;
-	}
+	RunEvent(pEventData);
 }
 
 // This part reads all the 'A' parts and checks if the
@@ -11662,78 +11658,6 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 	}
 
 	return bExact;
-}
-
-// This part executes all the 'E' lines!
-bool CUser::RunNpcEvent(CNpc* pNpc, const EXEC* pExec)
-{
-	switch (pExec->m_Exec)
-	{
-		case EXEC_SAY:
-			SendNpcSay(pExec);
-			break;
-
-		case EXEC_SELECT_MSG:
-			SelectMsg(pExec);
-			break;
-
-		case EXEC_RUN_EVENT:
-		{
-			EVENT* pEvent = nullptr;
-			EVENT_DATA* pEventData = nullptr;
-
-			pEvent = m_pMain->m_EventMap.GetData(m_pUserData->m_bZone);
-			if (pEvent == nullptr)
-				break;
-
-			pEventData = pEvent->m_arEvent.GetData(pExec->m_ExecInt[0]);
-			if (pEventData == nullptr)
-				break;
-
-			if (!CheckEventLogic(pEventData))
-				break;
-
-			for (EXEC* pExec : pEventData->m_arExec)
-			{
-				if (!RunNpcEvent(pNpc, pExec))
-					return false;
-			}
-		}
-		break;
-
-		case EXEC_GIVE_ITEM:
-			if (!GiveItem(pExec->m_ExecInt[0], pExec->m_ExecInt[1]))
-				return false;
-			break;
-
-		case EXEC_ROB_ITEM:
-			if (!RobItem(pExec->m_ExecInt[0], pExec->m_ExecInt[1]))
-				return false;
-			break;
-
-		//	비러머글 복권 >.<
-		case EXEC_OPEN_EDITBOX:
-			OpenEditBox(pExec->m_ExecInt[1], pExec->m_ExecInt[2]);
-			break;
-
-		case EXEC_GIVE_NOAH:
-			GoldGain(pExec->m_ExecInt[0]);
-			break;
-
-		case EXEC_LOG_COUPON_ITEM:
-			LogCoupon(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
-			break;
-	//
-	// 비러머글 엑셀 >.<
-		case EXEC_SAVE_COM_EVENT:
-			SaveComEvent(pExec->m_ExecInt[0]);
-			break;
-	//
-		case EXEC_RETURN:
-			return false;
-	}
-
-	return true;
 }
 
 bool CUser::RunEvent(const EVENT_DATA* pEventData)

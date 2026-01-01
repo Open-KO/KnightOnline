@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIManager.h"
 #include "LocalInput.h"
 #include "N3UIWndBase.h"

@@ -38,7 +38,7 @@ Solutions are available in the root directory:
 * `ClientTools.slnx` - just the client tool projects (KscViewer, Launcher, Option) and their dependencies.
 * `Server.slnx` - just the server projects (AIServer, Aujard, Ebenezer, ItemManager, VersionManager) and their dependencies.
 * `Tests.slnx` - our various unit test projects.
-* `Tools.slnx` - just the tool projects (ItemEditor, N3CE, N3FXE, N3ME, N3TexViewer, N3Viewer, SkyViewer,  TblEditor, UIE) and their dependencies.
+* `Tools.slnx` - just the tool projects (N3CE, N3FXE, N3ME, N3TexViewer, N3Viewer, SkyViewer,  TblEditor, UIE) and their dependencies.
 
 ## Goals
 

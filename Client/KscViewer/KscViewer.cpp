@@ -45,7 +45,7 @@ CKscViewerApp theApp;
 /////////////////////////////////////////////////////////////////////////////
 // CKscViewerApp initialization
 
-static BOOL NEAR PASCAL SetRegKey(LPCSTR lpszKey, LPCSTR lpszValue) 
+static BOOL NEAR PASCAL SetRegKey(LPCTSTR lpszKey, LPCTSTR lpszValue) 
 { 
 	if (::RegSetValue(HKEY_CLASSES_ROOT, lpszKey, REG_SZ, lpszValue, lstrlen(lpszValue)) != ERROR_SUCCESS)
 	{
@@ -92,7 +92,7 @@ BOOL CKscViewerApp::InitInstance()
 	CString strFileTypeName;
 
 	pDocTemplate->GetDocString(strFileTypeName, CDocTemplate::regFileTypeId);
-	SetRegKey(".ksc", strFileTypeName);
+	SetRegKey(_T(".ksc"), strFileTypeName);
 
 	// The one and only window has been initialized, so show and update it.
 	m_pMainWnd->ShowWindow(SW_SHOW);

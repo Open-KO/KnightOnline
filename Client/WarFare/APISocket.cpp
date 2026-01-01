@@ -2,10 +2,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "APISocket.h"
 #include "ClientResourceFormatter.h"
-#include <winsock.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -108,9 +107,9 @@ int CAPISocket::Connect(HWND hWnd, const char* pszIP, uint32_t dwPort)
 	if ((pszIP[0] >= '0') && (pszIP[0] <= '9'))
 	{
 		memset(&server, 0, sizeof(server));
-	   server.sin_family      = AF_INET;
-	   server.sin_addr.s_addr = inet_addr(pszIP);
-	   server.sin_port        = htons((u_short)dwPort);
+		server.sin_family      = AF_INET;
+		server.sin_addr.s_addr = inet_addr(pszIP);
+		server.sin_port        = htons((u_short) dwPort);
 	}
 	else
 	{

@@ -1,13 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{7bc4c329-9c97-47e6-ab90-df63f67f8f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Login">
+      <UniqueIdentifier>{4c0c8aab-d1e1-4bfa-84b8-54585e26ca97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{3bc47849-8cd6-452d-a6fd-45edaea70f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World">
+      <UniqueIdentifier>{4ec81bde-edb6-4a45-81b7-a94c63c3383b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core UIs">
+      <UniqueIdentifier>{fdb466f9-e210-4d53-bd2a-5079bce00b00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Popup notice text">
+      <UniqueIdentifier>{59dfa433-8e30-4bc8-82f2-5e18e3096493}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Birds">
+      <UniqueIdentifier>{426c3f01-1579-4087-ab18-65e6ca194994}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Effects">
+      <UniqueIdentifier>{86114d34-4df4-4078-8282-2b199f8e9cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Indoor">
+      <UniqueIdentifier>{37c10ccd-f81a-47d2-8488-0706aa97e3c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Lighting">
+      <UniqueIdentifier>{c0381e57-50c9-4217-9d0b-53243c17461b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Objects">
+      <UniqueIdentifier>{d1875424-1dfe-44ff-97a5-05a3da8ad02f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Terrain">
+      <UniqueIdentifier>{01ad6f6f-81d9-44dd-a211-58acd7323794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World\Water">
+      <UniqueIdentifier>{d4280532-68f1-443c-bbe4-2e93a2d1de2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Character creation">
+      <UniqueIdentifier>{041b8aed-cf1a-4978-a1e2-8157f5381b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Character selection">
+      <UniqueIdentifier>{14a87f02-db90-40bd-823a-dc5c02e7e773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Nation selection">
+      <UniqueIdentifier>{cd0a1ff4-6cd2-4ca1-90e7-367835293c37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Ingame">
+      <UniqueIdentifier>{81a40e78-94ef-48c2-80be-ce51f83a53e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Ingame\UI">
+      <UniqueIdentifier>{02289e52-ddf0-443a-b393-16db1c29cbc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{04d0ad91-a21c-4ce4-962b-630b7cbd596d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{f6ea1129-e3c0-416b-baf2-8f89aa2313f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Players">
+      <UniqueIdentifier>{83674b1c-d0bb-4139-bfb2-920848ce2452}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
@@ -15,657 +74,639 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WarFareMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcedure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="APISocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bird.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="BirdMng.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>World\Birds</Filter>
     </ClCompile>
-    <ClCompile Include="CountableItemEditDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DungeonManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EventManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameCursor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEng.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcCharacterCreate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcCharacterSelect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcNationSelect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcOption.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GrassBoard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GrassMng.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ItemRepairMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LightMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LocalInput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicSkillMng.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OrderMessage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMySelf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerNPC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerOther.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerOtherMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PortalVolume.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PvsMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ServerMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SubProcPerTrade.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UICharacterCreate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UICharacterSelect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIChat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIClassChange.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UICmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UICreateClanName.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIDead.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIDroppedItemDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIEndingDisplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIHelp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIHotKeyDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIImageTooltipDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIInn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIInventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIKnightsOperation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UILoading.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIMessageBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIMessageBoxManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIMessageWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UINationSelectDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UINotice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UINPCChangeEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UINPCEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPartyBBS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPartyBBSSelector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPartyOrForce.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPerTradeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIPointInitDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIQuestMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIQuestTalk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIRepairTooltipDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UISkillTreeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIStateBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITargetBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITradeBBSEditDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITradeBBSSelector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITradeEditDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITradeExplanation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITradeSellBBS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UITransactionDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIVarious.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIWareHouseDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIWarp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WarMessage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UICmdList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UICmdEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIExitMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIUpgradeSelect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcLogIn_1098.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UILogin_1098.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcLogIn_1298.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UILogin_1298.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UILevelGuide.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3FXBundleGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3FXPartBillBoardGame.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Bird.cpp">
+      <Filter>World\Birds</Filter>
     </ClCompile>
     <ClCompile Include="N3FXPartBottomBoardGame.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>World\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="N3Terrain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3TerrainManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3TerrainPatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3UIWndBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3WorldManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3WorldBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3River.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3Pond.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="N3UIIcon.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="N3FXBundleGame.cpp">
+      <Filter>World\Effects</Filter>
     </ClCompile>
     <ClCompile Include="N3FXMgr.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>World\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="N3FXPartBillBoardGame.cpp">
+      <Filter>World\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicSkillMng.cpp">
+      <Filter>Players</Filter>
+    </ClCompile>
+    <ClCompile Include="IconItemSkill.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="CountableItemEditDlg.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCursor.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="LocalInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="LightMgr.cpp">
+      <Filter>World\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBase.cpp">
+      <Filter>Players</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMySelf.cpp">
+      <Filter>Players</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerNPC.cpp">
+      <Filter>Players</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerOther.cpp">
+      <Filter>Players</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerOtherMgr.cpp">
+      <Filter>Players</Filter>
     </ClCompile>
     <ClCompile Include="N3UIDBCLButton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="N3UIIcon.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="N3UIWndBase.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcLogIn_1098.cpp">
+      <Filter>Scene\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcLogIn_1298.cpp">
+      <Filter>Scene\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcedure.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcMain.cpp">
+      <Filter>Scene\Ingame</Filter>
+    </ClCompile>
+    <ClCompile Include="N3Pond.cpp">
+      <Filter>World\Water</Filter>
+    </ClCompile>
+    <ClCompile Include="N3River.cpp">
+      <Filter>World\Water</Filter>
     </ClCompile>
     <ClCompile Include="N3ClientShapeMgr.cpp">
+      <Filter>World\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="N3TerrainPatch.cpp">
+      <Filter>World\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="N3Terrain.cpp">
+      <Filter>World\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="N3TerrainManager.cpp">
+      <Filter>World\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="PortalVolume.cpp">
+      <Filter>World\Indoor</Filter>
+    </ClCompile>
+    <ClCompile Include="PvsMgr.cpp">
+      <Filter>World\Indoor</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerMesh.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="N3WorldBase.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="N3WorldManager.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="UICharacterCreate.cpp">
+      <Filter>Scene\Character creation</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcCharacterCreate.cpp">
+      <Filter>Scene\Character creation</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcCharacterSelect.cpp">
+      <Filter>Scene\Character selection</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcNationSelect.cpp">
+      <Filter>Scene\Nation selection</Filter>
+    </ClCompile>
+    <ClCompile Include="WarMessage.cpp">
+      <Filter>Popup notice text</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderMessage.cpp">
+      <Filter>Popup notice text</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemRepairMgr.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UICharacterSelect.cpp">
+      <Filter>Scene\Character selection</Filter>
+    </ClCompile>
+    <ClCompile Include="UIChat.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIClassChange.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UICmd.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UICmdEdit.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UICmdList.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UICreateClanName.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDead.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDroppedItemDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIEndingDisplay.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIExitMenu.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIHelp.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIHotKeyDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIImageTooltipDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIInn.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIInventory.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIKnightsOperation.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UILevelGuide.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UILoading.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UILogin_1098.cpp">
+      <Filter>Scene\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="UILogin_1298.cpp">
+      <Filter>Scene\Login</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMessageBox.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMessageBoxManager.cpp">
+      <Filter>Core UIs</Filter>
+    </ClCompile>
+    <ClCompile Include="SubProcPerTrade.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMessageWnd.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIMsgBoxOkCancel.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UINotice.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UINPCChangeEvent.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UINPCEvent.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPartyBBS.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPartyBBSSelector.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPartyOrForce.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPerTradeDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIPointInitDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIQuestMenu.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIQuestTalk.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIRepairTooltipDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UISkillTreeDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIStateBar.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITargetBar.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITradeBBSEditDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITradeBBSSelector.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITradeEditDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITradeExplanation.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITradeSellBBS.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UITransactionDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIUpgradeSelect.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIVarious.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIWareHouseDlg.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIWarp.cpp">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UINationSelectDlg.cpp">
+      <Filter>Scene\Nation selection</Filter>
+    </ClCompile>
+    <ClCompile Include="DungeonManager.cpp">
+      <Filter>World\Indoor</Filter>
+    </ClCompile>
+    <ClCompile Include="WarFareMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClientResourceFormatter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IconItemSkill.cpp">
+    <ClCompile Include="GameBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIMsgBoxOkCancel.cpp">
+    <ClCompile Include="GameEng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bird.h">
+      <Filter>World\Birds</Filter>
+    </ClInclude>
+    <ClInclude Include="BirdMng.h">
+      <Filter>World\Birds</Filter>
+    </ClInclude>
+    <ClInclude Include="APISocket.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketDef.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcLogIn.h">
+      <Filter>Scene\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcLogIn_1098.h">
+      <Filter>Scene\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcLogIn_1298.h">
+      <Filter>Scene\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="UILogin_1298.h">
+      <Filter>Scene\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="UILogin_1098.h">
+      <Filter>Scene\Login</Filter>
+    </ClInclude>
+    <ClInclude Include="UIWarp.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIWareHouseDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UISkillTreeDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIStateBar.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITargetBar.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITradeBBSEditDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITradeBBSSelector.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITradeEditDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITradeExplanation.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITradeSellBBS.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UITransactionDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIUpgradeSelect.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIVarious.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMessageWnd.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMsgBoxOkCancel.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UINotice.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UINPCChangeEvent.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UINPCEvent.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPartyBBS.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPartyBBSSelector.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPartyOrForce.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPerTradeDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIPointInitDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIQuestMenu.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIQuestTalk.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIRepairTooltipDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMessageBox.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="UIMessageBoxManager.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="UILoading.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UILevelGuide.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIChat.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIClassChange.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UICmd.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UICmdEdit.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UICmdList.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UICreateClanName.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIDead.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIDroppedItemDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIEndingDisplay.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIExitMenu.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHelp.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHotKeyDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIImageTooltipDlg.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIInn.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIInventory.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIKnightsOperation.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcCharacterCreate.h">
+      <Filter>Scene\Character creation</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcCharacterSelect.h">
+      <Filter>Scene\Character selection</Filter>
+    </ClInclude>
+    <ClInclude Include="UICharacterCreate.h">
+      <Filter>Scene\Character creation</Filter>
+    </ClInclude>
+    <ClInclude Include="UICharacterSelect.h">
+      <Filter>Scene\Character selection</Filter>
+    </ClInclude>
+    <ClInclude Include="N3FXBundleGame.h">
+      <Filter>World\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="N3FXMgr.h">
+      <Filter>World\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="N3FXPartBillBoardGame.h">
+      <Filter>World\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="N3FXPartBottomBoardGame.h">
+      <Filter>World\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="N3Pond.h">
+      <Filter>World\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="N3River.h">
+      <Filter>World\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="N3Terrain.h">
+      <Filter>World\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="N3TerrainDef.h">
+      <Filter>World\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="N3TerrainManager.h">
+      <Filter>World\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="N3TerrainPatch.h">
+      <Filter>World\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="N3ClientShapeMgr.h">
+      <Filter>World\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LightMgr.h">
+      <Filter>World\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalVolume.h">
+      <Filter>World\Indoor</Filter>
+    </ClInclude>
+    <ClInclude Include="PvsMgr.h">
+      <Filter>World\Indoor</Filter>
+    </ClInclude>
+    <ClInclude Include="DungeonManager.h">
+      <Filter>World\Indoor</Filter>
+    </ClInclude>
+    <ClInclude Include="IconItemSkill.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemRepairMgr.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SubProcPerTrade.h">
+      <Filter>Scene\Ingame\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="WarMessage.h">
+      <Filter>Popup notice text</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderMessage.h">
+      <Filter>Popup notice text</Filter>
+    </ClInclude>
+    <ClInclude Include="LocalInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="N3UIDBCLButton.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="N3UIIcon.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="N3UIWndBase.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="CountableItemEditDlg.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCursor.h">
+      <Filter>Core UIs</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBase.h">
+      <Filter>Players</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMySelf.h">
+      <Filter>Players</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerNPC.h">
+      <Filter>Players</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerOther.h">
+      <Filter>Players</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerOtherMgr.h">
+      <Filter>Players</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicSkillMng.h">
+      <Filter>Players</Filter>
+    </ClInclude>
+    <ClInclude Include="N3WorldBase.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="N3WorldManager.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerMesh.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcNationSelect.h">
+      <Filter>Scene\Nation selection</Filter>
+    </ClInclude>
+    <ClInclude Include="UINationSelectDlg.h">
+      <Filter>Scene\Nation selection</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcMain.h">
+      <Filter>Scene\Ingame</Filter>
+    </ClInclude>
     <ClInclude Include="GameProcedure.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameEng.h">
+    <ClInclude Include="ClientResourceFormatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameProcMain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="APISocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bird.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BirdMng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bitset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CountableItemEditDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DungeonManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameCursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcCharacterCreate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcCharacterSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcNationSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcOption.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GrassBoard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GrassMng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemRepairMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LightMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LocalInput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicSkillMng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3FXBundleGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3FXMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3FXPartBillBoardGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3FXPartBottomBoardGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3Terrain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3TerrainManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3TerrainDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3TerrainPatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3UIDBCLButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3UIIcon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3UIWndBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3WorldBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3WorldManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OrderMessage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMySelf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerNPC.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerOther.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerOtherMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PortalVolume.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PvsMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SubProcPerTrade.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UICharacterCreate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UICharacterSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIChat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIClassChange.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UICmd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UICreateClanName.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIDead.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIDroppedItemDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIEndingDisplay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIHelp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIHotKeyDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIImageTooltipDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIInn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIInventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIKnightsOperation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UILoading.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIMessageBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIMessageBoxManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIMessageWnd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UINationSelectDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UINotice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UINPCChangeEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UINPCEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIPartyBBS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIPartyBBSSelector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIPartyOrForce.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIPerTradeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIPointInitDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIQuestMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIQuestTalk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIRepairTooltipDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UISkillTreeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIStateBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITargetBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITradeBBSEditDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITradeBBSSelector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITradeEditDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITradeExplanation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITradeSellBBS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UITransactionDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIVarious.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIWareHouseDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIWarp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WarMessage.h">
+    <ClInclude Include="GameEng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UICmdList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UICmdEdit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIExitMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIUpgradeSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcLogIn_1098.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UILogin_1098.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcLogIn_1298.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UILogin_1298.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProcLogIn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UILevelGuide.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3Pond.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3River.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="N3ClientShapeMgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="text_resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="warfare_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientResourceFormatter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IconItemSkill.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIMsgBoxOkCancel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

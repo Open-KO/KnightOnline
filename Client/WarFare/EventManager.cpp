@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "EventManager.h"
 #include "GameProcedure.h"
 #include "PlayerMySelf.h"

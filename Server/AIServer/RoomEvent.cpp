@@ -305,14 +305,6 @@ CNpc* CRoomEvent::GetNpcPtr(int sid)
 	return nullptr;
 }
 
-/// \brief checks if monster counts match given type
-/// \param sid npcId
-/// \param count number of monsters to check against
-/// \param type one of:
-/// 1: Count of monsters killed
-/// 2: Count of active monsters
-/// 3: All monsters dead (count unused)
-/// 4: Reset monster (?)
 bool CRoomEvent::CheckMonsterCount(int sid, int count, int type)
 {
 	int nMonsterCount = 0;

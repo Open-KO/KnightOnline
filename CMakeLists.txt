@@ -5,7 +5,13 @@ project(OpenKO
 )
 
 find_package(Git REQUIRED)
+
+# Search in the "cmake" directory for additional CMake modules.
+set(OPENKO_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${OPENKO_MODULE_PATH}")
+
 include(FetchContent)
+include(RequirePackage)
 
 # Set minimum standard to C++23 (unless otherwise specified)
 set(CMAKE_CXX_STANDARD 23)
@@ -15,15 +21,22 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # We don't use modules, so there's no reason to scan
 set(CXX_SCAN_FOR_MODULES OFF)
 
-# Statically link to the MSVC runtime
 if(MSVC)
+  # Statically link to the MSVC runtime
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  
+  # Ensure consistent charset builds across projects
+  add_compile_options(/utf-8)
 endif()
 
 # Config
+option(OPENKO_BUILD_CLIENT "Build the client projects - MSVC only (default on)" ON)
+option(OPENKO_BUILD_CLIENT_TOOLS "Build the client tool projects - MSVC only (default on)" ON)
+option(OPENKO_BUILD_TOOLS "Build the development tool projects - MSVC only (default on)" ON)
 option(OPENKO_BUILD_SERVERS "Build the server projects (default on)" ON)
-option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
 option(OPENKO_BUILD_TESTS "Build the test projects (default on)" ON)
+option(OPENKO_COMPILE_WARNINGS_AS_ERROR "Enable treating warnings as errors (default on)" ON)
+option(OPENKO_FETCH_CLIENT_ASSETS "Enable fetching client assets (default on)" ON)
 
 # Define the bin directory; defaults to repo/bin
 set(OPENKO_BIN_DIR "${CMAKE_BINARY_DIR}/bin" CACHE PATH "Directory for final binaries")
@@ -34,10 +47,14 @@ if(WIN32)
   add_definitions(-D_WIN32_WINNT=${_WIN32_WINNT})
 endif()
 
+message(STATUS "OpenKO feature: OPENKO_BUILD_CLIENT - ${OPENKO_BUILD_CLIENT}")
+message(STATUS "OpenKO feature: OPENKO_BUILD_CLIENT_TOOLS - ${OPENKO_BUILD_CLIENT_TOOLS}")
+message(STATUS "OpenKO feature: OPENKO_BUILD_TOOLS - ${OPENKO_BUILD_TOOLS}")
 message(STATUS "OpenKO feature: OPENKO_BUILD_SERVERS - ${OPENKO_BUILD_SERVERS}")
-message(STATUS "OpenKO feature: OPENKO_COMPILE_WARNINGS_AS_ERROR - ${OPENKO_COMPILE_WARNINGS_AS_ERROR}")
-message(STATUS "OpenKO feature: OPENKO_BIN_DIR - ${OPENKO_BIN_DIR}")
 message(STATUS "OpenKO feature: OPENKO_BUILD_TESTS - ${OPENKO_BUILD_TESTS}")
+message(STATUS "OpenKO feature: OPENKO_COMPILE_WARNINGS_AS_ERROR - ${OPENKO_COMPILE_WARNINGS_AS_ERROR}")
+message(STATUS "OpenKO feature: OPENKO_FETCH_CLIENT_ASSETS - ${OPENKO_FETCH_CLIENT_ASSETS}")
+message(STATUS "OpenKO feature: OPENKO_BIN_DIR - ${OPENKO_BIN_DIR}")
 
 if(WIN32)
   message(STATUS "OpenKO feature: _WIN32_WINNT - ${_WIN32_WINNT}")
@@ -64,9 +81,9 @@ else()
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
 endif()
 
-set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/MAP")
+set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/assets/MAP")
 set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
-set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/bin/QUESTS")
+set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/assets/QUESTS")
 set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
 
 # Generate .gitignore in build directory
@@ -76,9 +93,9 @@ endif()
 
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
-add_subdirectory(deps/asio-cmake)
-add_subdirectory(deps/llfio-cmake)
-add_subdirectory(deps/spdlog-cmake)
+require_package(Asio)
+require_package(LLFIO)
+require_package(Spdlog)
 
 include_directories(
   "${CMAKE_SOURCE_DIR}" # repo root, for <shared/...>
@@ -89,24 +106,89 @@ add_subdirectory(shared)
 add_subdirectory(FileIO)
 add_subdirectory(MathUtils)
 
+# Client & tool projects are currently only supported with Windows+MSVC builds.
+if(MSVC)
+  if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
+    # Dependencies
+    set(CMAKE_FOLDER "N3Base/_deps")
+    require_config_package(dx9sdk)
+
+    set(CMAKE_FOLDER "N3Base/_deps/mpg123")
+	require_package(Mpg123)
+
+    set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
+    require_package(OpenALSoft)
+
+    set(CMAKE_FOLDER "N3Base")
+    add_subdirectory(Client/N3Base)
+  endif()
+
+  if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_CLIENT_TOOLS)
+    set(CMAKE_FOLDER "Client/_deps")
+
+    # We technically require this for the Launcher & Option as well as the client itself (WarFare),
+	# so we'll pull this in here.
+    require_config_package(client-assets)
+
+    # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
+    # so we must structure this a little bit differently to everything else.
+    require_package(JpegTurbo)
+    add_subdirectory(Client/JpegFile)
+  endif()
+
+  if(OPENKO_BUILD_CLIENT)
+    message(STATUS "OpenKO: Preparing to configure client...")
+
+    set(CMAKE_FOLDER "Client")
+    add_subdirectory(Client/WarFare)
+  endif()
+
+  if(OPENKO_BUILD_CLIENT_TOOLS)
+    message(STATUS "OpenKO: Preparing to configure client tools...")
+
+    set(CMAKE_FOLDER "Client tools/_deps")
+    require_package(Zlib)
+    add_subdirectory(Client/ZipArchive)
+
+    set(CMAKE_FOLDER "Client tools")
+    add_subdirectory(Client/KscViewer)
+    add_subdirectory(Client/Launcher)
+    add_subdirectory(Client/Option)
+  endif()
+
+  if(OPENKO_BUILD_TOOLS)
+    message(STATUS "OpenKO: Preparing to configure development tools...")
+
+    set(CMAKE_FOLDER "Tools")
+    add_subdirectory(N3CE)
+    add_subdirectory(N3FXE)
+    add_subdirectory(N3ME)
+    add_subdirectory(N3TexViewer)
+    add_subdirectory(N3Viewer)
+    add_subdirectory(SkyViewer)
+    add_subdirectory(TblEditor)
+    add_subdirectory(UIE)
+  endif()
+endif()
+
 if(OPENKO_BUILD_SERVERS)
   message(STATUS "OpenKO: Preparing to configure servers...")
 
   # Dependencies
   set(CMAKE_FOLDER "Server/_deps/boost")
-  add_subdirectory(deps/boost-cmake EXCLUDE_FROM_ALL)
+  require_package(BoostSubset)
 
   set(CMAKE_FOLDER "Server/_deps/ftxui")
-  add_subdirectory(deps/FTXUI-cmake EXCLUDE_FROM_ALL)
+  require_package(FTXUI)
 
   set(CMAKE_FOLDER "Server/_deps/argparse")
-  add_subdirectory(deps/argparse-cmake EXCLUDE_FROM_ALL)
+  require_package(Argparse)
 
   set(CMAKE_FOLDER "Server/_deps")
-  add_subdirectory(deps/nanodbc-cmake EXCLUDE_FROM_ALL)
-  add_subdirectory(deps/db-models-cmake EXCLUDE_FROM_ALL)
-  add_subdirectory(deps/djb2-cmake EXCLUDE_FROM_ALL)
-  add_subdirectory(db-library EXCLUDE_FROM_ALL)
+  require_package(Nanodbc)
+  require_config_package(db-models)
+  require_config_package(djb2)
+  add_subdirectory(db-library)
   add_subdirectory(Server/shared-server)
 
   add_custom_target(copy-server-assets ALL
@@ -131,7 +213,7 @@ if(OPENKO_BUILD_TESTS)
   include(CTest)
 
   set(CMAKE_FOLDER "Tests/_deps")
-  add_subdirectory(deps/googletest-cmake)
+  require_package(Googletest)
 
   set(CMAKE_FOLDER "Tests")
   add_subdirectory(FileIO/tests)

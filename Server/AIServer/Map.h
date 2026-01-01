@@ -57,7 +57,7 @@ public:
 	void LoadTerrain(File& fs);
 	void LoadMapTile(File& fs);
 	void LoadObjectEvent(File& fs);
-	bool LoadRoomEvent(int zone_number);
+	bool LoadRoomEvent(int zone_number, const std::filesystem::path& eventDir);
 	bool ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2);
 	float GetHeight(float x, float z);
 

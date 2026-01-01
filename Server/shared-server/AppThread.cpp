@@ -40,10 +40,9 @@ AppThread::~AppThread()
 
 std::filesystem::path AppThread::LogBaseDir() const
 {
-	return GetProgPath();
+	return std::filesystem::current_path();
 }
 
-/// \brief Sets up the parser & parses the command-line args, dispatching it to the app
 bool AppThread::parse_commandline(int argc, char* argv[])
 {
 	argparse::ArgumentParser parser(_logger.AppName());
@@ -53,8 +52,7 @@ bool AppThread::parse_commandline(int argc, char* argv[])
 	try
 	{
 		parser.parse_args(argc, argv);
-		ProcessCommandLineArgs(parser);
-		return true;
+		return ProcessCommandLineArgs(parser);
 	}
 	catch (const std::exception& ex)
 	{
@@ -63,7 +61,6 @@ bool AppThread::parse_commandline(int argc, char* argv[])
 	}
 }
 
-/// \brief Sets up the command-line arg parser, binding args for parsing.
 void AppThread::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 {
 	parser.add_argument("--headless")
@@ -72,13 +69,12 @@ void AppThread::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 		.store_into(_headless);
 }
 
-/// \brief Processes any parsed command-line args as needed by the app.
-void AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser& /*parser*/)
+bool AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser& /*parser*/)
 {
 	/* for implementation, only if needed by the app - bound args won't need this */
+	return true;
 }
 
-/// \brief The main thread loop for the server instance
 void AppThread::thread_loop()
 {
 	CIni& iniFile = IniFile();
@@ -117,9 +113,6 @@ void AppThread::thread_loop()
 	}
 }
 
-/// \brief Thread loop with main ftxui logic.
-/// \param iniFile The loaded application ini file.
-/// \returns Exit code.
 int AppThread::thread_loop_ftxui(CIni& iniFile)
 {
 	using namespace ftxui;
@@ -304,9 +297,6 @@ int AppThread::thread_loop_ftxui(CIni& iniFile)
 	return exitCode;
 }
 
-/// \brief Thread loop with basic console logger fallback logic.
-/// \param iniFile The loaded application ini file.
-/// \returns Exit code.
 int AppThread::thread_loop_fallback(CIni& iniFile)
 {
 	auto ftxuiSink = _logger.FxtuiSink();
@@ -329,9 +319,6 @@ int AppThread::thread_loop_fallback(CIni& iniFile)
 	return exitCode;
 }
 
-/// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
-/// \param iniFile The loaded application ini file.
-/// \returns true when successful, false otherwise
 bool AppThread::LoadConfig(CIni& /*iniFile*/)
 {
 	return true;

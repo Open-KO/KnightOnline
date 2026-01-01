@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIImageTooltipDlg.h"
 #include "PlayerMySelf.h"
 #include "text_resources.h"

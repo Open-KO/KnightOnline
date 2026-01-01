@@ -1,14 +1,14 @@
 # We use a user-modifiable config file for the server files named server_config.h
 # This is copied from the default if it doesn't already exist.
-set(DEFAULT_CONFIG_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/server_config.h.default")
-set(TARGET_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/shared-server")
-set(TARGET_CONFIG_HEADER "${TARGET_CONFIG_DIR}/server_config.h")
+set(DEFAULT_SERVER_CONFIG_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/server_config.h.default")
+set(TARGET_SERVER_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/shared-server")
+set(TARGET_SERVER_CONFIG_HEADER "${TARGET_SERVER_CONFIG_DIR}/server_config.h")
 
 # Make sure the target directory exists
-file(MAKE_DIRECTORY "${TARGET_CONFIG_DIR}")
+file(MAKE_DIRECTORY "${TARGET_SERVER_CONFIG_DIR}")
 
-if(NOT EXISTS "${TARGET_CONFIG_HEADER}")
-    configure_file("${DEFAULT_CONFIG_HEADER}" "${TARGET_CONFIG_HEADER}" COPYONLY)
+if(NOT EXISTS "${TARGET_SERVER_CONFIG_HEADER}")
+  configure_file("${DEFAULT_SERVER_CONFIG_HEADER}" "${TARGET_SERVER_CONFIG_HEADER}" COPYONLY)
 endif()
 
 add_library(shared-server STATIC
@@ -40,7 +40,7 @@ add_library(shared-server STATIC
   TcpSocket.h
   utilities.cpp
   utilities.h
-  "${TARGET_CONFIG_HEADER}"
+  "${TARGET_SERVER_CONFIG_HEADER}"
 )
 
 # Enable warnings as errors

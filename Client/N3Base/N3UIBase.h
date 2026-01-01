@@ -42,7 +42,6 @@ class CN3UIList;
 
 class CN3UIBase : public CN3BaseFileAccess
 {
-//friend class CN3IME;
 #ifdef _N3TOOL
 friend class CN3UIBase;
 friend class CHierarchyView;	// 툴에서 child list를 접근하기 위해서.

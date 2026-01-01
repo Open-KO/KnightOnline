@@ -1,3 +1,6 @@
+set(AISERVER_VS_MAP_DIR   "${OPENKO_SERVER_MAP_SRC_DIR}")
+set(AISERVER_VS_EVENT_DIR "${OPENKO_SERVER_MAP_SRC_DIR}") # Intentionally the same
+
 add_executable(AIServer
   AIServer.cpp
   AIServerApp.cpp
@@ -70,8 +73,14 @@ target_compile_options(AIServer PRIVATE
 )
 
 if(MSVC)
+  # Override default working directory for ease-of-use
   set_property(TARGET AIServer PROPERTY
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:AIServer>"
+  )
+
+  # Ensure we setup the default MAP & QUESTS dirs as well
+  set_property(TARGET AIServer PROPERTY
+    VS_DEBUGGER_COMMAND_ARGUMENTS "--map-dir=\"${AISERVER_VS_MAP_DIR}\" --event-dir=\"${AISERVER_VS_EVENT_DIR}\""
   )
 endif()
 

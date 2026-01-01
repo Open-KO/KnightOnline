@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIPartyBBSSelector.h"
 #include "GameProcedure.h"
 #include "PacketDef.h"

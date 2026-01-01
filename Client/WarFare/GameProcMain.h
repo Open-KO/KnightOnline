@@ -217,6 +217,7 @@ public:
 	/// \brief attempts to start the auto-attack process
 	/// \returns true if auto-attack process started, false otherwise
 	bool	TryStartAttack();
+
 	bool	OnMouseRbtnDown(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPressd(POINT ptCur, POINT ptPrev);
 	bool	OnMouseRBtnPress(POINT ptCur, POINT ptPrev);
@@ -247,10 +248,13 @@ public:
 	bool	OpenCmdEdit(std::string msg);
 
 	void	CommandMove(e_MoveDirection eMD, bool bStartOrEnd); // 움직이는 방향(전후진, 멈춤), 움직이기 시작하는가?
+
+	/// \brief toggles the player's autoattack
 	void	CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTarget);
 
 	/// \brief contains the logic that should be executed whenever starting to auto-attack
 	void	StartAutoAttack(CPlayerBase* target);
+
 	/// \brief contains the logic that should be executed whenever auto-attacking is stopped
 	void	StopAutoAttack(CPlayerBase* target = nullptr);
 	

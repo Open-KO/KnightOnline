@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIKnightsOperation.h"
 #include "GameProcMain.h"
 #include "PacketDef.h"

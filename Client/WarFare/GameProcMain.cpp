@@ -1,7 +1,7 @@
 ﻿// GameProcMain.cpp: implementation of the CGameProcMain class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "GameProcMain.h"
 
 #include "GameEng.h"
@@ -694,7 +694,6 @@ void CGameProcMain::Render()
 
 	this->RenderTarget();						// 타겟으로 잡은 캐릭터 혹은 오브젝트 렌더링..
 
-	ACT_WORLD->RenderGrass();						//	풀 렌더 (asm)
 	s_pFX->Tick();
 	s_pFX->Render();
 	ACT_WORLD->RenderBirdMgr();
@@ -2580,7 +2579,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 		int iLMin = iLevel - 8;
 		if(iLMin < 0) iLMin = 0;
 		int iLMax = iLevel + 8;
-		if(iLMax > 80) iLMax = 80;
+		if(iLMax > MAX_LEVEL) iLMax = MAX_LEVEL;
 
 		std::string szMsg = fmt::format_text_resource(IDS_WANT_PARTY_MEMBER,
 			iLMin, iLMax);
@@ -4520,7 +4519,6 @@ void CGameProcMain::CommandMove(e_MoveDirection eMD, bool bStartOrEnd)
 	}
 }
 
-/// \brief toggles the player's autoattack
 void CGameProcMain::CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTarget)
 {
 	// no change
@@ -4544,7 +4542,6 @@ void CGameProcMain::CommandEnableAttackContinous(bool bEnable, CPlayerBase* pTar
 	}
 }
 
-/// \brief contains the logic that should be executed whenever starting to auto-attack
 void CGameProcMain::StartAutoAttack(CPlayerBase* target)
 {
 	// already auto-attacking
@@ -4595,7 +4592,6 @@ void CGameProcMain::StartAutoAttack(CPlayerBase* target)
 		m_pUICmd->m_pBtn_Act_Attack->SetState(UI_STATE_BUTTON_DOWN);
 }
 
-/// \brief contains the logic that should be executed whenever auto-attacking is stopped
 void CGameProcMain::StopAutoAttack(CPlayerBase* target)
 {
 	// not auto-attacking
@@ -4926,7 +4922,7 @@ void CGameProcMain::MsgRecv_UserState(Packet& pkt)
 			int iLMin = iLevel - 8;
 			if(iLMin < 0) iLMin = 0;
 			int iLMax = iLevel + 8;
-			if(iLMax > 80) iLMax = 80;
+			if(iLMax > MAX_LEVEL) iLMax = MAX_LEVEL;
 
 			std::string szMsg = fmt::format_text_resource(IDS_WANT_PARTY_MEMBER,
 				iLMin, iLMax);
@@ -7359,8 +7355,6 @@ bool CGameProcMain::OnMouseLDBtnPress(POINT ptCur, POINT ptPrev)
 	return true;
 }
 
-/// \brief attempts to start the auto-attack process
-/// \returns true if auto-attack process started, false otherwise
 bool CGameProcMain::TryStartAttack()
 {
 	CPlayerNPC* pTarget = s_pOPMgr->CharacterGetByID(s_pPlayer->m_iIDTarget, true);

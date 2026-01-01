@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UICharacterSelect.h"
 #include "APISocket.h"
 #include "GameProcCharacterSelect.h"

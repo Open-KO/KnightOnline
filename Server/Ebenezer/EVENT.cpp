@@ -19,7 +19,7 @@ EVENT::~EVENT()
 	DeleteAll();
 }
 
-bool EVENT::LoadEvent(int zone)
+bool EVENT::LoadEvent(int zone, const std::filesystem::path& questsDir)
 {
 	uintmax_t	length, count;
 	uint8_t		byte;
@@ -34,29 +34,28 @@ bool EVENT::LoadEvent(int zone)
 	EVENT_DATA* eventData = nullptr;
 	std::error_code ec;
 
-	// Build the base MAP directory
-	std::filesystem::path evtPath = GetProgPath() / QUESTS_DIR;
-	evtPath /= std::to_string(zone) + ".evt";
+	std::filesystem::path questPath = questsDir;
+	questPath /= std::to_string(zone) + ".evt";
 
 	// Doesn't exist but this isn't a problem; we don't expect it to exist.
-	if (!std::filesystem::exists(evtPath))
+	if (!std::filesystem::exists(questPath))
 		return true;
 
-	// Resolve it to strip the relative references to be nice.
+	// Resolve it to strip the relative references (to be nice).
 	// NOTE: Requires the file to exist.
-	evtPath = std::filesystem::canonical(evtPath);
+	questPath = std::filesystem::canonical(questPath);
 
-	length = std::filesystem::file_size(evtPath, ec);
+	length = std::filesystem::file_size(questPath, ec);
 	if (ec)
 		return false;
 
 	m_Zone = zone;
 
-	std::ifstream file(evtPath, std::ios::in | std::ios::binary);
+	std::ifstream file(questPath, std::ios::in | std::ios::binary);
 	if (!file)
 		return false;
 
-	std::u8string filenameUtf8 = evtPath.u8string();
+	std::u8string filenameUtf8 = questPath.u8string();
 
 	// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
 	// This just ensures the path is always explicitly UTF-8 in a cross-platform way.

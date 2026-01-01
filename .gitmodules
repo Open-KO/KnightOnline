@@ -34,8 +34,7 @@
 	shallow = true
 [submodule "deps/mpg123"]
 	path = deps/mpg123
-	url = https://github.com/madebr/mpg123
-	branch = master-with-github-ci
+	url = https://github.com/Open-KO/mpg123
 	shallow = true
 [submodule "deps/djb2"]
 	path = deps/djb2
@@ -72,5 +71,5 @@
 	shallow = true
 [submodule "deps/openal-soft"]
 	path = deps/openal-soft
-	url = https://github.com/kcat/openal-soft
+	url = https://github.com/Open-KO/openal-soft
 	shallow = true

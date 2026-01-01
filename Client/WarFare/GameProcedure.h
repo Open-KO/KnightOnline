@@ -79,7 +79,6 @@ public:
 	static class CGameProcCharacterCreate*	s_pProcCharacterCreate;
 	static class CGameProcCharacterSelect*	s_pProcCharacterSelect;
 	static class CGameProcMain*				s_pProcMain;
-	static class CGameProcOption*			s_pProcOption;
 
 	static class CGameProcedure*			s_pProcPrev;
 	static class CGameProcedure*			s_pProcActive;

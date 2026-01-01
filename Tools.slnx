@@ -45,9 +45,6 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
   </Folder>
-  <Project Path="ItemEditor/ItemEditor.vcxproj" Id="734350e8-5586-46d9-8197-eeeea3034d86">
-    <Build Solution="*|x64" Project="false" />
-  </Project>
   <Project Path="N3CE/N3CE.vcxproj" Id="1ad3ffcd-745f-4e6d-8698-f750ebb8dbcd">
     <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
   </Project>

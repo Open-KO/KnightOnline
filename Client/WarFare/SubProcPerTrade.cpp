@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "SubProcPerTrade.h"
 #include "GameProcMain.h"
 #include "PlayerMySelf.h"

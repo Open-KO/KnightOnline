@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "StdAfx.h"
 #include "GameDef.h"
 #include "GameBase.h"
 #include "GameProcedure.h"
