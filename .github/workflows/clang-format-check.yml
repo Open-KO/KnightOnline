@@ -1,9 +1,11 @@
 name: clang-format
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
+
 jobs:
   formatting-check:
     name: Format check
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         path:
@@ -14,12 +16,14 @@ jobs:
           - 'src/N3Base'
           - 'src/Server'
           - 'src/shared'
-          - 'src/tools'
-          - 'src/tests'
+          - 'src/Tools'
+          - 'tests'
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Run clang-format style check for C/C++ programs.
         uses: jidicula/clang-format-action@v4.16.0
         with:
-          clang-format-version: '21'
+          clang-format-version: '19' # VS2022 uses 19.1.5, VS2026 currently uses 20.1.8
           check-path: ${{ matrix.path }}
