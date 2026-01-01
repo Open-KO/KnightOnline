@@ -2,11 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "UICmdEdit.h"
 #include "APISocket.h"
 #include "GameProcMain.h"
 #include "PacketDef.h"
+#include "stdafx.h"
 #include "text_resources.h"
 
 #include <N3Base/N3UIButton.h>
@@ -31,56 +31,56 @@ CUICmdEdit::~CUICmdEdit()
 {
 }
 
-bool CUICmdEdit::Load(File& file)
+bool CUICmdEdit::Load(File &file)
 {
-	if (!CN3UIBase::Load(file)) 
-		return false;
-	
-	N3_VERIFY_UI_COMPONENT(m_pText_Title,	GetChildByID<CN3UIString>("Text_cmd"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Ok,		GetChildByID<CN3UIButton>("btn_ok"));
-	N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel,	GetChildByID<CN3UIButton>("btn_cancel"));
-	N3_VERIFY_UI_COMPONENT(m_pEdit_Box,		GetChildByID<CN3UIEdit>("edit_cmd"));
+    if (!CN3UIBase::Load(file))
+        return false;
 
-	return true;
+    N3_VERIFY_UI_COMPONENT(m_pText_Title, GetChildByID<CN3UIString>("Text_cmd"));
+    N3_VERIFY_UI_COMPONENT(m_pBtn_Ok, GetChildByID<CN3UIButton>("btn_ok"));
+    N3_VERIFY_UI_COMPONENT(m_pBtn_Cancel, GetChildByID<CN3UIButton>("btn_cancel"));
+    N3_VERIFY_UI_COMPONENT(m_pEdit_Box, GetChildByID<CN3UIEdit>("edit_cmd"));
+
+    return true;
 }
 
-bool CUICmdEdit::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
+bool CUICmdEdit::ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg)
 {
-	if (dwMsg == UIMSG_BUTTON_CLICK)
-	{
-		if (pSender == m_pBtn_Ok)
-		{
-			m_szArg1 = m_pEdit_Box->GetString();
-			std::string strTempCmd = "/" + m_pText_Title->GetString() + " " + m_szArg1;
-			CGameProcedure::s_pProcMain->ParseChattingCommand(strTempCmd);
+    if (dwMsg == UIMSG_BUTTON_CLICK)
+    {
+        if (pSender == m_pBtn_Ok)
+        {
+            m_szArg1 = m_pEdit_Box->GetString();
+            std::string strTempCmd = "/" + m_pText_Title->GetString() + " " + m_szArg1;
+            CGameProcedure::s_pProcMain->ParseChattingCommand(strTempCmd);
 
-			SetVisible(false);
-			return true;
-		}
+            SetVisible(false);
+            return true;
+        }
 
-		if (pSender == m_pBtn_Cancel)
-		{
-			SetVisible(false);
-			return true;
-		}
-	}
-	return true;
+        if (pSender == m_pBtn_Cancel)
+        {
+            SetVisible(false);
+            return true;
+        }
+    }
+    return true;
 }
 
-void CUICmdEdit::Open(const std::string& msg)
+void CUICmdEdit::Open(const std::string &msg)
 {
-	m_pText_Title->SetString(msg);
-	m_pEdit_Box->SetFocus();
-	SetVisible(true);
+    m_pText_Title->SetString(msg);
+    m_pEdit_Box->SetFocus();
+    SetVisible(true);
 }
 
 void CUICmdEdit::SetVisible(bool bVisible)
 {
-	if (bVisible == IsVisible()) 
-		return;
+    if (bVisible == IsVisible())
+        return;
 
-	if (!bVisible)
-		m_pEdit_Box->KillFocus();
+    if (!bVisible)
+        m_pEdit_Box->KillFocus();
 
-	CN3UIBase::SetVisible(bVisible);
+    CN3UIBase::SetVisible(bVisible);
 }

@@ -1,37 +1,35 @@
-﻿#include "StdAfx.h"
-#include "IconItemSkill.h"
+﻿#include "IconItemSkill.h"
 #include "GameDef.h"
+#include "StdAfx.h"
 
 int __IconItemSkill::GetBuyPrice() const
 {
-	if (pItemBasic == nullptr
-		|| pItemExt == nullptr)
-		return 0;
+    if (pItemBasic == nullptr || pItemExt == nullptr)
+        return 0;
 
-	return pItemBasic->iPrice * pItemExt->siPriceMultiply;
+    return pItemBasic->iPrice * pItemExt->siPriceMultiply;
 }
 
 int __IconItemSkill::GetSellPrice(bool bHasPremium /*= false*/) const
 {
-	if (pItemBasic == nullptr
-		|| pItemExt == nullptr)
-		return 0;
+    if (pItemBasic == nullptr || pItemExt == nullptr)
+        return 0;
 
-	constexpr int PREMIUM_RATIO = 4;
-	constexpr int NORMAL_RATIO = 6;
+    constexpr int PREMIUM_RATIO = 4;
+    constexpr int NORMAL_RATIO = 6;
 
-	int iSellPrice = pItemBasic->iPrice * pItemExt->siPriceMultiply;
+    int iSellPrice = pItemBasic->iPrice * pItemExt->siPriceMultiply;
 
-	if (pItemBasic->iSaleType != SALE_TYPE_FULL)
-	{
-		if (bHasPremium)
-			iSellPrice /= PREMIUM_RATIO;
-		else
-			iSellPrice /= NORMAL_RATIO;
-	}
+    if (pItemBasic->iSaleType != SALE_TYPE_FULL)
+    {
+        if (bHasPremium)
+            iSellPrice /= PREMIUM_RATIO;
+        else
+            iSellPrice /= NORMAL_RATIO;
+    }
 
-	if (iSellPrice < 1)
-		iSellPrice = 1;
+    if (iSellPrice < 1)
+        iSellPrice = 1;
 
-	return iSellPrice;
+    return iSellPrice;
 }

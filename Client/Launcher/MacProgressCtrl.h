@@ -13,76 +13,74 @@
 // Feel free to modifiy and/or distribute this file, but
 // do not remove this header.
 //
-// I would appreciate a notification of any bugs discovered or 
+// I would appreciate a notification of any bugs discovered or
 // improvements that could be made.
 //
 // This file is provided "as is" with no expressed or implied warranty.
 //
 //	History:
-//		PMM	12/21/1999		Initial implementation.		
+//		PMM	12/21/1999		Initial implementation.
 
 /////////////////////////////////////////////////////////////////////////////
 // CMacProgressCtrl window
 
 class CMacProgressCtrl : public CProgressCtrl
 {
-// Construction
-public:
-	CMacProgressCtrl();
+    // Construction
+  public:
+    CMacProgressCtrl();
 
-// Attributes
-public:
+    // Attributes
+  public:
+    // Operations
+  public:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CMacProgressCtrl)
+    //}}AFX_VIRTUAL
 
-// Operations
-public:
+    // Implementation
+  public:
+    BOOL GetIndeterminate();
+    void SetIndeterminate(BOOL bIndeterminate = TRUE);
+    COLORREF GetColor();
+    void SetColor(COLORREF crColor);
+    virtual ~CMacProgressCtrl();
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CMacProgressCtrl)
-	//}}AFX_VIRTUAL
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CMacProgressCtrl)
+    afx_msg void OnPaint();
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
+    afx_msg BOOL OnEraseBkgnd(CDC *pDC);
+    //}}AFX_MSG
 
-// Implementation
-public:
-	BOOL GetIndeterminate();
-	void SetIndeterminate(BOOL bIndeterminate = TRUE);
-	COLORREF GetColor();
-	void SetColor(COLORREF crColor);
-	virtual ~CMacProgressCtrl();
-
-	// Generated message map functions
-protected:
-	//{{AFX_MSG(CMacProgressCtrl)
-	afx_msg void OnPaint();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-private:
-	int m_nIndOffset;
-	BOOL m_bIndeterminate;
-	void DrawVerticalBar(CDC *pDC, const CRect rect);
-	void DrawHorizontalBar(CDC *pDC, const CRect rect);
-	void DeletePens();
-	void CreatePens();
-	CPen m_penColor;
-	CPen m_penColorLight;
-	CPen m_penColorLighter;
-	CPen m_penColorDark;
-	CPen m_penColorDarker;
-	CPen m_penDkShadow;
-	CPen m_penShadow;
-	CPen m_penLiteShadow;
-	void GetColors();
-	COLORREF m_crColor;
-	COLORREF m_crColorLight;
-	COLORREF m_crColorLighter;
-	COLORREF m_crColorLightest;
-	COLORREF m_crColorDark;
-	COLORREF m_crColorDarker;
-	COLORREF m_crDkShadow;
-	COLORREF m_crShadow;
-	COLORREF m_crLiteShadow;
+    DECLARE_MESSAGE_MAP()
+  private:
+    int m_nIndOffset;
+    BOOL m_bIndeterminate;
+    void DrawVerticalBar(CDC *pDC, const CRect rect);
+    void DrawHorizontalBar(CDC *pDC, const CRect rect);
+    void DeletePens();
+    void CreatePens();
+    CPen m_penColor;
+    CPen m_penColorLight;
+    CPen m_penColorLighter;
+    CPen m_penColorDark;
+    CPen m_penColorDarker;
+    CPen m_penDkShadow;
+    CPen m_penShadow;
+    CPen m_penLiteShadow;
+    void GetColors();
+    COLORREF m_crColor;
+    COLORREF m_crColorLight;
+    COLORREF m_crColorLighter;
+    COLORREF m_crColorLightest;
+    COLORREF m_crColorDark;
+    COLORREF m_crColorDarker;
+    COLORREF m_crDkShadow;
+    COLORREF m_crShadow;
+    COLORREF m_crLiteShadow;
 };
 
 /////////////////////////////////////////////////////////////////////////////

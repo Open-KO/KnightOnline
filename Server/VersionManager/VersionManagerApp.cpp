@@ -1,6 +1,6 @@
-﻿#include "pch.h"
-#include "VersionManagerApp.h"
+﻿#include "VersionManagerApp.h"
 #include "User.h"
+#include "pch.h"
 
 #include <db-library/ConnectionManager.h>
 #include <db-library/RecordSetLoader.h>
@@ -13,224 +13,217 @@
 
 using namespace std::chrono_literals;
 
-VersionManagerApp::VersionManagerApp(logger::Logger& logger)
-	: AppThread(logger),
-	_socketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+VersionManagerApp::VersionManagerApp(logger::Logger &logger)
+    : AppThread(logger), _socketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
-	memset(_ftpUrl, 0, sizeof(_ftpUrl));
-	memset(_ftpPath, 0, sizeof(_ftpPath));
-	_lastVersion = 0;
+    memset(_ftpUrl, 0, sizeof(_ftpUrl));
+    memset(_ftpPath, 0, sizeof(_ftpPath));
+    _lastVersion = 0;
 
-	db::ConnectionManager::DefaultConnectionTimeout = DB_PROCESS_TIMEOUT;
-	db::ConnectionManager::Create();
+    db::ConnectionManager::DefaultConnectionTimeout = DB_PROCESS_TIMEOUT;
+    db::ConnectionManager::Create();
 
-	_dbPoolCheckThread = std::make_unique<TimerThread>(
-		1min,
-		std::bind(&db::ConnectionManager::ExpireUnusedPoolConnections));
+    _dbPoolCheckThread =
+        std::make_unique<TimerThread>(1min, std::bind(&db::ConnectionManager::ExpireUnusedPoolConnections));
 }
 
 VersionManagerApp::~VersionManagerApp()
 {
-	spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down, releasing resources.");
-	_socketManager.Shutdown();
-	spdlog::info("VersionManagerApp::~VersionManagerApp: SocketManager stopped.");
+    spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down, releasing resources.");
+    _socketManager.Shutdown();
+    spdlog::info("VersionManagerApp::~VersionManagerApp: SocketManager stopped.");
 
-	spdlog::info("VersionManagerApp::~VersionManagerApp: Waiting for worker threads to fully shut down.");
+    spdlog::info("VersionManagerApp::~VersionManagerApp: Waiting for worker threads to fully shut down.");
 
-	if (_dbPoolCheckThread != nullptr)
-	{
-		spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down CheckAliveThread...");
+    if (_dbPoolCheckThread != nullptr)
+    {
+        spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down CheckAliveThread...");
 
-		_dbPoolCheckThread->shutdown();
+        _dbPoolCheckThread->shutdown();
 
-		spdlog::info("VersionManagerApp::~VersionManagerApp: DB pool check thread stopped.");
-	}
+        spdlog::info("VersionManagerApp::~VersionManagerApp: DB pool check thread stopped.");
+    }
 
-	spdlog::info("VersionManagerApp::~VersionManagerApp: All worker threads stopped, freeing caches.");
+    spdlog::info("VersionManagerApp::~VersionManagerApp: All worker threads stopped, freeing caches.");
 
-	for (_SERVER_INFO* pInfo : ServerList)
-		delete pInfo;
-	ServerList.clear();
+    for (_SERVER_INFO *pInfo : ServerList)
+        delete pInfo;
+    ServerList.clear();
 
-	spdlog::info("VersionManagerApp::~VersionManagerApp: All resources safely released.");
+    spdlog::info("VersionManagerApp::~VersionManagerApp: All resources safely released.");
 
-	db::ConnectionManager::Destroy();
+    db::ConnectionManager::Destroy();
 }
 
 bool VersionManagerApp::OnStart()
 {
-	_socketManager.Init(MAX_USER, 0, 1);
-	_socketManager.AllocateServerSockets<CUser>();
+    _socketManager.Init(MAX_USER, 0, 1);
+    _socketManager.AllocateServerSockets<CUser>();
 
-	spdlog::info("Version Manager initialized");
+    spdlog::info("Version Manager initialized");
 
-	// print the ODBC connection string
-	// TODO: modelUtil::DbType::ACCOUNT;  Currently all models are assigned to GAME
-	spdlog::debug(
-		db::ConnectionManager::GetOdbcConnectionString(modelUtil::DbType::GAME));
+    // print the ODBC connection string
+    // TODO: modelUtil::DbType::ACCOUNT;  Currently all models are assigned to GAME
+    spdlog::debug(db::ConnectionManager::GetOdbcConnectionString(modelUtil::DbType::GAME));
 
-	if (!DbProcess.InitDatabase())
-	{
-		spdlog::error("Database Connection Fail!!");
-		return false;
-	}
+    if (!DbProcess.InitDatabase())
+    {
+        spdlog::error("Database Connection Fail!!");
+        return false;
+    }
 
-	if (!LoadVersionList())
-	{
-		spdlog::error("Load Version List Fail!!");
-		return false;
-	}
+    if (!LoadVersionList())
+    {
+        spdlog::error("Load Version List Fail!!");
+        return false;
+    }
 
-	if (!_socketManager.Listen(_LISTEN_PORT))
-	{
-		spdlog::error("FAIL TO CREATE LISTEN STATE");
-		return false;
-	}
+    if (!_socketManager.Listen(_LISTEN_PORT))
+    {
+        spdlog::error("FAIL TO CREATE LISTEN STATE");
+        return false;
+    }
 
-	_socketManager.StartAccept();
+    _socketManager.StartAccept();
 
-	spdlog::info("Listening on 0.0.0.0:{}", _LISTEN_PORT);
+    spdlog::info("Listening on 0.0.0.0:{}", _LISTEN_PORT);
 
-	_dbPoolCheckThread->start();
+    _dbPoolCheckThread->start();
 
-	return true;
+    return true;
 }
 
 /// \returns The application's ini config path.
 std::filesystem::path VersionManagerApp::ConfigPath() const
 {
-	return GetProgPath() / "Version.ini";
+    return GetProgPath() / "Version.ini";
 }
 
-bool VersionManagerApp::LoadConfig(CIni& iniFile)
+bool VersionManagerApp::LoadConfig(CIni &iniFile)
 {
-	// ftp config
-	iniFile.GetString(ini::DOWNLOAD, ini::URL, "127.0.0.1", _ftpUrl, sizeof(_ftpUrl));
-	iniFile.GetString(ini::DOWNLOAD, ini::PATH, "/", _ftpPath, sizeof(_ftpPath));
-	
-	// TODO: KN_online should be Knight_Account
-	std::string datasourceName = iniFile.GetString(ini::ODBC, ini::DSN, "KN_online");
-	std::string datasourceUser = iniFile.GetString(ini::ODBC, ini::UID, "knight");
-	std::string datasourcePass = iniFile.GetString(ini::ODBC, ini::PWD, "knight");
+    // ftp config
+    iniFile.GetString(ini::DOWNLOAD, ini::URL, "127.0.0.1", _ftpUrl, sizeof(_ftpUrl));
+    iniFile.GetString(ini::DOWNLOAD, ini::PATH, "/", _ftpPath, sizeof(_ftpPath));
 
-	db::ConnectionManager::SetDatasourceConfig(
-		modelUtil::DbType::ACCOUNT,
-		datasourceName, datasourceUser, datasourcePass);
+    // TODO: KN_online should be Knight_Account
+    std::string datasourceName = iniFile.GetString(ini::ODBC, ini::DSN, "KN_online");
+    std::string datasourceUser = iniFile.GetString(ini::ODBC, ini::UID, "knight");
+    std::string datasourcePass = iniFile.GetString(ini::ODBC, ini::PWD, "knight");
 
-	// TODO: Remove this - currently all models are assigned to GAME
-	db::ConnectionManager::SetDatasourceConfig(
-		modelUtil::DbType::GAME,
-		datasourceName, datasourceUser, datasourcePass);
+    db::ConnectionManager::SetDatasourceConfig(
+        modelUtil::DbType::ACCOUNT, datasourceName, datasourceUser, datasourcePass);
 
-	int serverCount = iniFile.GetInt(ini::SERVER_LIST, ini::COUNT, 1);
+    // TODO: Remove this - currently all models are assigned to GAME
+    db::ConnectionManager::SetDatasourceConfig(modelUtil::DbType::GAME, datasourceName, datasourceUser, datasourcePass);
 
-	if (strlen(_ftpUrl) == 0)
-	{
-		spdlog::error("VersionManagerApp::LoadConfig: The FTP URL must be set.");
-		return false;
-	}
+    int serverCount = iniFile.GetInt(ini::SERVER_LIST, ini::COUNT, 1);
 
-	if (strlen(_ftpPath) == 0)
-	{
-		spdlog::error("VersionManagerApp::LoadConfig: The FTP path must be set.");
-		return false;
-	}
+    if (strlen(_ftpUrl) == 0)
+    {
+        spdlog::error("VersionManagerApp::LoadConfig: The FTP URL must be set.");
+        return false;
+    }
 
-	if (datasourceName.empty()
-		// TODO: Should we not validate UID/Pass length?  Would that allow Windows Auth?
-		|| datasourceUser.empty()
-		|| datasourcePass.empty())
-	{
-		spdlog::error("VersionManagerApp::LoadConfig: Datasource config must be set.");
-		return false;
-	}
+    if (strlen(_ftpPath) == 0)
+    {
+        spdlog::error("VersionManagerApp::LoadConfig: The FTP path must be set.");
+        return false;
+    }
 
-	if (serverCount <= 0)
-	{
-		spdlog::error("VersionManagerApp::LoadConfig: At least 1 server must exist in the server list.");
-		return false;
-	}
+    if (datasourceName.empty()
+        // TODO: Should we not validate UID/Pass length?  Would that allow Windows Auth?
+        || datasourceUser.empty() || datasourcePass.empty())
+    {
+        spdlog::error("VersionManagerApp::LoadConfig: Datasource config must be set.");
+        return false;
+    }
 
-	char key[32] = {};
-	ServerList.reserve(serverCount);
+    if (serverCount <= 0)
+    {
+        spdlog::error("VersionManagerApp::LoadConfig: At least 1 server must exist in the server list.");
+        return false;
+    }
 
-	for (int i = 0; i < serverCount; i++)
-	{
-		_SERVER_INFO* pInfo = new _SERVER_INFO;
+    char key[32] = {};
+    ServerList.reserve(serverCount);
 
-		snprintf(key, sizeof(key), "SERVER_%02d", i);
-		iniFile.GetString(ini::SERVER_LIST, key, "127.0.0.1", pInfo->strServerIP, sizeof(pInfo->strServerIP));
+    for (int i = 0; i < serverCount; i++)
+    {
+        _SERVER_INFO *pInfo = new _SERVER_INFO;
 
-		snprintf(key, sizeof(key), "NAME_%02d", i);
-		iniFile.GetString(ini::SERVER_LIST, key, "TEST|Server 1", pInfo->strServerName, sizeof(pInfo->strServerName));
+        snprintf(key, sizeof(key), "SERVER_%02d", i);
+        iniFile.GetString(ini::SERVER_LIST, key, "127.0.0.1", pInfo->strServerIP, sizeof(pInfo->strServerIP));
 
-		snprintf(key, sizeof(key), "ID_%02d", i);
-		pInfo->sServerID = static_cast<int16_t>(iniFile.GetInt(ini::SERVER_LIST, key, 1));
+        snprintf(key, sizeof(key), "NAME_%02d", i);
+        iniFile.GetString(ini::SERVER_LIST, key, "TEST|Server 1", pInfo->strServerName, sizeof(pInfo->strServerName));
 
-		snprintf(key, sizeof(key), "USER_LIMIT_%02d", i);
-		pInfo->sUserLimit = static_cast<int16_t>(iniFile.GetInt(ini::SERVER_LIST, key, MAX_USER));
+        snprintf(key, sizeof(key), "ID_%02d", i);
+        pInfo->sServerID = static_cast<int16_t>(iniFile.GetInt(ini::SERVER_LIST, key, 1));
 
-		ServerList.push_back(pInfo);
-	}
+        snprintf(key, sizeof(key), "USER_LIMIT_%02d", i);
+        pInfo->sUserLimit = static_cast<int16_t>(iniFile.GetInt(ini::SERVER_LIST, key, MAX_USER));
 
-	// Read news from INI (max 3 blocks)
-	std::stringstream ss;
-	std::string title, message;
+        ServerList.push_back(pInfo);
+    }
 
-	News.Size = 0;
-	for (int i = 0; i < MAX_NEWS_COUNT; i++)
-	{
-		snprintf(key, sizeof(key), "TITLE_%02d", i);
-		title = iniFile.GetString("NEWS", key, "");
-		if (title.empty())
-			continue;
+    // Read news from INI (max 3 blocks)
+    std::stringstream ss;
+    std::string title, message;
 
-		snprintf(key, sizeof(key), "MESSAGE_%02d", i);
-		message = iniFile.GetString("NEWS", key, "");
-		if (message.empty())
-			continue;
+    News.Size = 0;
+    for (int i = 0; i < MAX_NEWS_COUNT; i++)
+    {
+        snprintf(key, sizeof(key), "TITLE_%02d", i);
+        title = iniFile.GetString("NEWS", key, "");
+        if (title.empty())
+            continue;
 
-		ss << title;
-		ss.write(NEWS_MESSAGE_START, sizeof(NEWS_MESSAGE_START));
-		ss << message;
-		ss.write(NEWS_MESSAGE_END, sizeof(NEWS_MESSAGE_END));
-	}
+        snprintf(key, sizeof(key), "MESSAGE_%02d", i);
+        message = iniFile.GetString("NEWS", key, "");
+        if (message.empty())
+            continue;
 
-	const std::string newsContent = ss.str();
-	if (!newsContent.empty())
-	{
-		if (newsContent.size() > sizeof(News.Content))
-		{
-			spdlog::error("VersionManagerApp::LoadConfig: News too long");
-			return false;
-		}
+        ss << title;
+        ss.write(NEWS_MESSAGE_START, sizeof(NEWS_MESSAGE_START));
+        ss << message;
+        ss.write(NEWS_MESSAGE_END, sizeof(NEWS_MESSAGE_END));
+    }
 
-		memcpy(&News.Content, newsContent.c_str(), newsContent.size());
-		News.Size = static_cast<int16_t>(newsContent.size());
-	}
+    const std::string newsContent = ss.str();
+    if (!newsContent.empty())
+    {
+        if (newsContent.size() > sizeof(News.Content))
+        {
+            spdlog::error("VersionManagerApp::LoadConfig: News too long");
+            return false;
+        }
 
-	return true;
+        memcpy(&News.Content, newsContent.c_str(), newsContent.size());
+        News.Size = static_cast<int16_t>(newsContent.size());
+    }
+
+    return true;
 }
 
 bool VersionManagerApp::LoadVersionList()
 {
-	VersionInfoList versionList;
-	if (!DbProcess.LoadVersionList(&versionList))
-		return false;
+    VersionInfoList versionList;
+    if (!DbProcess.LoadVersionList(&versionList))
+        return false;
 
-	int lastVersion = 0;
+    int lastVersion = 0;
 
-	for (const auto& [_, pInfo] : versionList)
-	{
-		if (lastVersion < pInfo->Number)
-			lastVersion = pInfo->Number;
-	}
+    for (const auto &[_, pInfo] : versionList)
+    {
+        if (lastVersion < pInfo->Number)
+            lastVersion = pInfo->Number;
+    }
 
-	if (lastVersion != _lastVersion)
-		spdlog::info("Latest Version: {}", lastVersion);
+    if (lastVersion != _lastVersion)
+        spdlog::info("Latest Version: {}", lastVersion);
 
-	_lastVersion = lastVersion;
+    _lastVersion = lastVersion;
 
-	VersionList.Swap(versionList);
-	return true;
+    VersionList.Swap(versionList);
+    return true;
 }

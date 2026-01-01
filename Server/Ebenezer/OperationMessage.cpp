@@ -1,9 +1,9 @@
-﻿#include "pch.h"
-#include "OperationMessage.h"
+﻿#include "OperationMessage.h"
 #include "EbenezerApp.h"
 #include "EbenezerResourceFormatter.h"
 #include "User.h"
 #include "db_resources.h"
+#include "pch.h"
 
 #include <djb2/djb2_hasher.h>
 #include <shared/StringUtils.h>
@@ -14,21 +14,20 @@
 
 extern bool g_serverdown_flag;
 
-OperationMessage::OperationMessage(EbenezerApp* main, CUser* srcUser)
-	: _main(main), _srcUser(srcUser)
+OperationMessage::OperationMessage(EbenezerApp *main, CUser *srcUser) : _main(main), _srcUser(srcUser)
 {
 }
 
 bool OperationMessage::Process(const std::string_view command)
 {
-	size_t key = 0;
-	if (!ParseCommand(command, key))
-		return false;
+    size_t key = 0;
+    if (!ParseCommand(command, key))
+        return false;
 
-	try
-	{
-		switch (key)
-		{
+    try
+    {
+        switch (key)
+        {
 #if 0 // TODO
 			case "+pursue"_djb2:
 				Pursue();
@@ -71,10 +70,10 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			case "/open"_djb2:
-			case "+open"_djb2:
-				Open();
-				break;
+        case "/open"_djb2:
+        case "+open"_djb2:
+            Open();
+            break;
 
 #if 0 // TODO
 			case "/open2"_djb2:
@@ -101,20 +100,20 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			case "/snowopen"_djb2:
-			case "+snowopen"_djb2:
-				SnowOpen();
-				break;
+        case "/snowopen"_djb2:
+        case "+snowopen"_djb2:
+            SnowOpen();
+            break;
 
-			case "/close"_djb2:
-			case "+close"_djb2:
-				Close();
-				break;
+        case "/close"_djb2:
+        case "+close"_djb2:
+            Close();
+            break;
 
-			case "/captain"_djb2:
-			case "+captain"_djb2:
-				Captain();
-				break;
+        case "/captain"_djb2:
+        case "+captain"_djb2:
+            Captain();
+            break;
 
 #if 0 // TODO
 			case "/tiebreak"_djb2:
@@ -133,15 +132,15 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			case "/down"_djb2:
-			case "+down"_djb2:
-				Down();
-				break;
+        case "/down"_djb2:
+        case "+down"_djb2:
+            Down();
+            break;
 
-			case "/discount"_djb2:
-			case "+discount"_djb2:
-				Discount();
-				break;
+        case "/discount"_djb2:
+        case "+discount"_djb2:
+            Discount();
+            break;
 
 #if 0 // TODO
 			case "/freediscount"_djb2:
@@ -150,30 +149,30 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			case "/alldiscount"_djb2:
-			case "+alldiscount"_djb2:
-				AllDiscount();
-				break;
+        case "/alldiscount"_djb2:
+        case "+alldiscount"_djb2:
+            AllDiscount();
+            break;
 
-			case "/undiscount"_djb2:
-			case "+undiscount"_djb2:
-				UnDiscount();
-				break;
+        case "/undiscount"_djb2:
+        case "+undiscount"_djb2:
+            UnDiscount();
+            break;
 
-			case "/santa"_djb2:
-			case "+santa"_djb2:
-				Santa();
-				break;
+        case "/santa"_djb2:
+        case "+santa"_djb2:
+            Santa();
+            break;
 
-			case "/angel"_djb2:
-			case "+angel"_djb2:
-				Angel();
-				break;
+        case "/angel"_djb2:
+        case "+angel"_djb2:
+            Angel();
+            break;
 
-			case "/offsanta"_djb2:
-			case "+offsanta"_djb2:
-				OffSanta();
-				break;
+        case "/offsanta"_djb2:
+        case "+offsanta"_djb2:
+            OffSanta();
+            break;
 
 #if 0 // TODO
 			case "/limitbattle"_djb2:
@@ -192,11 +191,11 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			// +zonechange: {int: zoneId} [float: x] [float: z]
-			// NOTE: Coordinates are unofficial.
-			case "+zonechange"_djb2:
-				ZoneChange();
-				break;
+        // +zonechange: {int: zoneId} [float: x] [float: z]
+        // NOTE: Coordinates are unofficial.
+        case "+zonechange"_djb2:
+            ZoneChange();
+            break;
 
 #if 0 // TODO
 			case "+siegewarfare"_djb2:
@@ -348,9 +347,9 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			case "/kill"_djb2:
-				Kill();
-				break;
+        case "/kill"_djb2:
+            Kill();
+            break;
 
 #if 0
 			case "/reload_notice"_djb2:
@@ -390,554 +389,560 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 #endif
 
-			case "/permanent"_djb2:
-				Permanent();
-				break;
+        case "/permanent"_djb2:
+            Permanent();
+            break;
 
-			case "/offpermanent"_djb2:
-				OffPermanent();
-				break;
+        case "/offpermanent"_djb2:
+            OffPermanent();
+            break;
 
-			// Unhandled command.
-			default:
-				return false;
-		}
-	}
-	catch (const std::invalid_argument& ex)
-	{
-		if (_srcUser != nullptr)
-		{
-			spdlog::warn(
-				"OperationMessage::Process: argument could not be parsed from GM [charId={} command='{}' exception='{}']",
-				_srcUser->m_pUserData->m_id, _command, ex.what());
-		}
-		else
-		{
-			spdlog::warn(
-				"OperationMessage::Process: argument could not be parsed from server [command='{}' exception='{}']",
-				_command, ex.what());
-		}
-	}
-	catch (const std::out_of_range& ex)
-	{
-		if (_srcUser != nullptr)
-		{
-			spdlog::warn(
-				"OperationMessage::Process: parsed argument out of range from GM [charId={} command='{}' exception='{}']",
-				_srcUser->m_pUserData->m_id, _command, ex.what());
-		}
-		else
-		{
-			spdlog::warn(
-				"OperationMessage::Process: parsed argument out of range from server [command='{}' exception='{}']",
-				_command, ex.what());
-		}
-	}
+        // Unhandled command.
+        default:
+            return false;
+        }
+    }
+    catch (const std::invalid_argument &ex)
+    {
+        if (_srcUser != nullptr)
+        {
+            spdlog::warn(
+                "OperationMessage::Process: argument could not be parsed from GM [charId={} command='{}' "
+                "exception='{}']",
+                _srcUser->m_pUserData->m_id,
+                _command,
+                ex.what());
+        }
+        else
+        {
+            spdlog::warn(
+                "OperationMessage::Process: argument could not be parsed from server [command='{}' exception='{}']",
+                _command,
+                ex.what());
+        }
+    }
+    catch (const std::out_of_range &ex)
+    {
+        if (_srcUser != nullptr)
+        {
+            spdlog::warn(
+                "OperationMessage::Process: parsed argument out of range from GM [charId={} command='{}' "
+                "exception='{}']",
+                _srcUser->m_pUserData->m_id,
+                _command,
+                ex.what());
+        }
+        else
+        {
+            spdlog::warn(
+                "OperationMessage::Process: parsed argument out of range from server [command='{}' exception='{}']",
+                _command,
+                ex.what());
+        }
+    }
 
-	// Command was handled, even if it errored.
-	return true;
+    // Command was handled, even if it errored.
+    return true;
 }
 
 void OperationMessage::Pursue()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ActPursue()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MonPursue()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MonCatch()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Assault()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MonSummon()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MonSummonAll()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::UnikMonster()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::UserSeekReport()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MonKill()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Open()
 {
-	_main->BattleZoneOpen(BATTLEZONE_OPEN);
+    _main->BattleZoneOpen(BATTLEZONE_OPEN);
 }
 
 void OperationMessage::Open2()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Open3()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MOpen()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ForbidUser()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ForbidConnect()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SnowOpen()
 {
-	_main->BattleZoneOpen(SNOW_BATTLEZONE_OPEN);
+    _main->BattleZoneOpen(SNOW_BATTLEZONE_OPEN);
 }
 
 void OperationMessage::Close()
 {
-	_main->m_byBanishFlag = 1;
-	// _main->WithdrawUserOut();
+    _main->m_byBanishFlag = 1;
+    // _main->WithdrawUserOut();
 }
 
 void OperationMessage::Captain()
 {
-	_main->LoadKnightsRankTable();
+    _main->LoadKnightsRankTable();
 }
 
 void OperationMessage::TieBreak()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Auto()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::AutoOff()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Down()
 {
-	g_serverdown_flag = true;
-	_main->_socketManager.StopAccept();
-	_main->KickOutAllUsers();
+    g_serverdown_flag = true;
+    _main->_socketManager.StopAccept();
+    _main->KickOutAllUsers();
 }
 
 void OperationMessage::Discount()
 {
-	_main->m_sDiscount = 1;
+    _main->m_sDiscount = 1;
 }
 
 void OperationMessage::FreeDiscount()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::AllDiscount()
 {
-	_main->m_sDiscount = 2;
+    _main->m_sDiscount = 2;
 }
 
 void OperationMessage::UnDiscount()
 {
-	_main->m_sDiscount = 0;
+    _main->m_sDiscount = 0;
 }
 
 void OperationMessage::Santa()
 {
-	_main->m_bySanta = 1;		// Make Motherfucking Santa Claus FLY!!!
+    _main->m_bySanta = 1; // Make Motherfucking Santa Claus FLY!!!
 }
 
 void OperationMessage::Angel()
 {
-	_main->m_bySanta = 2;
+    _main->m_bySanta = 2;
 }
 
 void OperationMessage::OffSanta()
 {
-	_main->m_bySanta = 0;		// SHOOT DOWN Motherfucking Santa Claus!!!
+    _main->m_bySanta = 0; // SHOOT DOWN Motherfucking Santa Claus!!!
 }
 
 void OperationMessage::LimitBattle()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::OnSummonBlock()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::OffSummonBlock()
 {
-	// TODO
+    // TODO
 }
 
 // +zonechange: {int: zoneId} [float: x] [float: z]
 // NOTE: Coordinates are unofficial.
 void OperationMessage::ZoneChange()
 {
-	// Requires a user.
-	if (_srcUser == nullptr
-		|| GetArgCount() < 1)
-		return;
+    // Requires a user.
+    if (_srcUser == nullptr || GetArgCount() < 1)
+        return;
 
-	int zoneId = ParseInt(0);
-	float x = _srcUser->m_pUserData->m_curx;
-	float z = _srcUser->m_pUserData->m_curz;
+    int zoneId = ParseInt(0);
+    float x = _srcUser->m_pUserData->m_curx;
+    float z = _srcUser->m_pUserData->m_curz;
 
-	if (GetArgCount() >= 3)
-	{
-		x = ParseFloat(1);
-		z = ParseFloat(2);
-	}
+    if (GetArgCount() >= 3)
+    {
+        x = ParseFloat(1);
+        z = ParseFloat(2);
+    }
 
-	_srcUser->ZoneChange(zoneId, x, z);
+    _srcUser->ZoneChange(zoneId, x, z);
 }
 
 void OperationMessage::SiegeWarfare()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ResetSiegeWar()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarScheduleStart()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarScheduleEnd()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarBaseReport()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarStatusReport()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarCheckBase()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ServerTestMode()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ServerNormalMode()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MerchantMoney()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarPunishKnights()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::SiegeWarLoadTable()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::MoneyAdd()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ExpAdd()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::UserBonus()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Discount1()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Discount2()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Battle1()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Battle2()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Battle3()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::BattleAuto()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::BattleReport()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ChallengeOn()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ChallengeOff()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ChallengeKill()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ChallengeLevel()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::RentalReport()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::RentalStop()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::RentalStart()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::KingReport1()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::KingReport2()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ReloadKing()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Kill()
 {
-	if (GetArgCount() < 1)
-		return;
+    if (GetArgCount() < 1)
+        return;
 
-	const std::string& charId = ParseString(0);
-	_main->KillUser(charId.c_str());
+    const std::string &charId = ParseString(0);
+    _main->KillUser(charId.c_str());
 }
 
 void OperationMessage::ReloadNotice()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ReloadHacktool()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ServerDown()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::WriteLog()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::EventLog()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::EventLogOff()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ItemDown()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ItemDownReset()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::ChallengeStop()
 {
-	// TODO
+    // TODO
 }
 
 void OperationMessage::Permanent()
 {
-	_main->m_bPermanentChatMode = true;
-	_main->m_bPermanentChatFlag = true;
+    _main->m_bPermanentChatMode = true;
+    _main->m_bPermanentChatFlag = true;
 }
 
 void OperationMessage::OffPermanent()
 {
-	_main->m_bPermanentChatMode = false;
-	_main->m_bPermanentChatFlag = false;
+    _main->m_bPermanentChatMode = false;
+    _main->m_bPermanentChatFlag = false;
 
-	char sendBuff[1024] = {};
-	int sendIndex = 0;
+    char sendBuff[1024] = {};
+    int sendIndex = 0;
 
-	SetByte(sendBuff, WIZ_CHAT, sendIndex);
-	SetByte(sendBuff, END_PERMANENT_CHAT, sendIndex);
+    SetByte(sendBuff, WIZ_CHAT, sendIndex);
+    SetByte(sendBuff, END_PERMANENT_CHAT, sendIndex);
 
-	SetByte(sendBuff, 0x01, sendIndex);		// nation
-	SetShort(sendBuff, -1, sendIndex);		// sid
-	SetByte(sendBuff, 0, sendIndex);		// sender name length
-	SetString2(sendBuff, "", sendIndex);
-	_main->Send_All(sendBuff, sendIndex);
+    SetByte(sendBuff, 0x01, sendIndex); // nation
+    SetShort(sendBuff, -1, sendIndex);  // sid
+    SetByte(sendBuff, 0, sendIndex);    // sender name length
+    SetString2(sendBuff, "", sendIndex);
+    _main->Send_All(sendBuff, sendIndex);
 
-	sendIndex = 0;
-	memset(sendBuff, 0, 1024);
-	SetByte(sendBuff, STS_CHAT, sendIndex);
-	SetString2(sendBuff, _command, sendIndex);
+    sendIndex = 0;
+    memset(sendBuff, 0, 1024);
+    SetByte(sendBuff, STS_CHAT, sendIndex);
+    SetString2(sendBuff, _command, sendIndex);
 
-	for (const auto& [_, pInfo] : _main->m_ServerArray)
-	{
-		if (pInfo != nullptr
-			&& pInfo->sServerNo != _main->m_nServerNo)
-			_main->m_pUdpSocket->SendUDPPacket(pInfo->strServerIP, sendBuff, sendIndex);
-	}
+    for (const auto &[_, pInfo] : _main->m_ServerArray)
+    {
+        if (pInfo != nullptr && pInfo->sServerNo != _main->m_nServerNo)
+            _main->m_pUdpSocket->SendUDPPacket(pInfo->strServerIP, sendBuff, sendIndex);
+    }
 }
 
-bool OperationMessage::ParseCommand(const std::string_view command, size_t& key)
+bool OperationMessage::ParseCommand(const std::string_view command, size_t &key)
 {
-	_command.assign(command.data(), command.length());
-	_args.clear();
+    _command.assign(command.data(), command.length());
+    _args.clear();
 
-	// Split string into parts.
-	// Delimit by whitespace.
-	// Empty spaces are ignored.
-	// This:
-	// +cmd arg1    arg2     arg3
-	// Will become:
-	// [0] = +cmd, [1] = arg1, [2] = arg3
-	std::istringstream ss(_command);
-	std::string part;
-	while (ss >> part)
-		_args.push_back(part);
+    // Split string into parts.
+    // Delimit by whitespace.
+    // Empty spaces are ignored.
+    // This:
+    // +cmd arg1    arg2     arg3
+    // Will become:
+    // [0] = +cmd, [1] = arg1, [2] = arg3
+    std::istringstream ss(_command);
+    std::string part;
+    while (ss >> part)
+        _args.push_back(part);
 
-	// Expect at least one "argument" (the command name).
-	if (_args.empty())
-		return false;
+    // Expect at least one "argument" (the command name).
+    if (_args.empty())
+        return false;
 
-	// Extract and transform the command name to lowercase.
-	std::string& commandNameLowercase = _args.front();
-	strtolower(commandNameLowercase);
+    // Extract and transform the command name to lowercase.
+    std::string &commandNameLowercase = _args.front();
+    strtolower(commandNameLowercase);
 
-	// Hash the lowercase key name for returning.
-	key = hashing::djb2::hash(commandNameLowercase);
+    // Hash the lowercase key name for returning.
+    key = hashing::djb2::hash(commandNameLowercase);
 
-	// Strip it from the args list for consistency; we don't need it anymore.
-	_args.erase(_args.begin());
+    // Strip it from the args list for consistency; we don't need it anymore.
+    _args.erase(_args.begin());
 
-	return true;
+    return true;
 }
 
 // Returns the number of arguments, excluding the command name.
 size_t OperationMessage::GetArgCount() const
 {
-	return _args.size();
+    return _args.size();
 }
 
 int OperationMessage::ParseInt(size_t argIndex) const
 {
-	if (argIndex >= _args.size())
-		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
+    if (argIndex >= _args.size())
+        throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
-	return std::stoi(_args[argIndex]);
+    return std::stoi(_args[argIndex]);
 }
 
 float OperationMessage::ParseFloat(size_t argIndex) const
 {
-	if (argIndex >= _args.size())
-		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
+    if (argIndex >= _args.size())
+        throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
-	return std::stof(_args[argIndex]);
+    return std::stof(_args[argIndex]);
 }
 
-const std::string& OperationMessage::ParseString(size_t argIndex) const
+const std::string &OperationMessage::ParseString(size_t argIndex) const
 {
-	if (argIndex >= _args.size())
-		throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
+    if (argIndex >= _args.size())
+        throw std::invalid_argument(fmt::format("argument {} not supplied", argIndex));
 
-	return _args[argIndex];
+    return _args[argIndex];
 }

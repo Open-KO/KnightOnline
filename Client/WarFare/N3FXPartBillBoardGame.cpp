@@ -2,14 +2,14 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "N3FXPartBillBoardGame.h"
 #include "GameProcedure.h"
 #include "N3WorldManager.h"
-#include "N3FXPartBillBoardGame.h"
+#include "StdAfx.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 //
@@ -18,7 +18,7 @@ static char THIS_FILE[]=__FILE__;
 
 float CN3FXPartBillBoardGame::GetGroundHeight(float x, float z)
 {
-	float fHeight = 0.1f;
-	fHeight = CGameBase::ACT_WORLD->GetHeightWithTerrain(x, z) + 0.1f;
-	return fHeight;
+    float fHeight = 0.1f;
+    fHeight = CGameBase::ACT_WORLD->GetHeightWithTerrain(x, z) + 0.1f;
+    return fHeight;
 }

@@ -8,15 +8,15 @@
 class SharedMemoryQueue;
 class ReadQueueThread : public Thread
 {
-public:
-	ReadQueueThread(SharedMemoryQueue& sharedMemoryQueue);
+  public:
+    ReadQueueThread(SharedMemoryQueue &sharedMemoryQueue);
 
-protected:
-	void thread_loop() override;
-	virtual void process_packet(const char* buffer, int len) = 0;
+  protected:
+    void thread_loop() override;
+    virtual void process_packet(const char *buffer, int len) = 0;
 
-protected:
-	SharedMemoryQueue& _sharedMemoryQueue;
+  protected:
+    SharedMemoryQueue &_sharedMemoryQueue;
 };
 
 #endif // SERVER_SHAREDSERVER_READQUEUETHREAD_H

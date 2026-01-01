@@ -2,12 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
 #include "N3WorldBase.h"
+#include "StdAfx.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -20,5 +20,4 @@ CN3WorldBase::CN3WorldBase()
 
 CN3WorldBase::~CN3WorldBase()
 {
-
 }

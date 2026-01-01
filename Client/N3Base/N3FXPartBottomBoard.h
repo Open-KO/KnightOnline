@@ -14,61 +14,61 @@
 //	triangle fan으로 그리고 삼각형 여덟개로 그린다..
 //
 
-class CN3FXPartBottomBoard : public CN3FXPartBase  
+class CN3FXPartBottomBoard : public CN3FXPartBase
 {
-public:
-	static constexpr int SUPPORTED_PART_VERSION = 3; // supported as far as reading only
+  public:
+    static constexpr int SUPPORTED_PART_VERSION = 3; // supported as far as reading only
 
-	float				m_fSizeX;			//	보드의 크기
-	float				m_fSizeZ;
+    float m_fSizeX; //	보드의 크기
+    float m_fSizeZ;
 
-	bool				m_bTexLoop;
-	int					m_iTexIdx;
+    bool m_bTexLoop;
+    int m_iTexIdx;
 
-	uint32_t				m_dwCurrColor;
+    uint32_t m_dwCurrColor;
 
-	__VertexXyzColorT1*	m_pVB;
+    __VertexXyzColorT1 *m_pVB;
 
-	float				m_fScaleVelX;
-	float				m_fScaleVelZ;
-	float				m_fScaleAccelX;
-	float				m_fScaleAccelZ;
+    float m_fScaleVelX;
+    float m_fScaleVelZ;
+    float m_fScaleAccelX;
+    float m_fScaleAccelZ;
 
-	float				m_fCurrScaleVelX;
-	float				m_fCurrScaleVelZ;
+    float m_fCurrScaleVelX;
+    float m_fCurrScaleVelZ;
 
-	float				m_fCurrSizeX;			//	보드의 크기
-	float				m_fCurrSizeZ;
+    float m_fCurrSizeX; //	보드의 크기
+    float m_fCurrSizeZ;
 
-	float				m_fGap;
-	// N3FXPartBottomBoard needs implementation of these methods
-	bool				m_bNew_Uv;
-	bool				m_bHdr_uv;
-	// N3FXPartBottomBoard needs implementation of these methods
+    float m_fGap;
+    // N3FXPartBottomBoard needs implementation of these methods
+    bool m_bNew_Uv;
+    bool m_bHdr_uv;
+    // N3FXPartBottomBoard needs implementation of these methods
 
-protected:
-	__Vector3*			m_vUnit;
+  protected:
+    __Vector3 *m_vUnit;
 
-protected:
-	void CreateVB();
-	bool IsDead() override;
+  protected:
+    void CreateVB();
+    bool IsDead() override;
 
-public:
-	void Init() override;			// 각종 변수들을 처음 로딩한 상태로 초기화...
-	void Start() override;			// 파트 구동 시작.
-	void Stop() override;			// 파트 구동 멈춤..
-	bool Tick() override;			// ticktick...
-	void Render() override;			// 화면에 뿌리기..
-	bool Load(File& file) override;	// 게임파일 불러오기.
-	bool Save(File& file) override;	// 게임파일 저장오기.
-	void Duplicate(CN3FXPartBottomBoard* pSrc);
+  public:
+    void Init() override;           // 각종 변수들을 처음 로딩한 상태로 초기화...
+    void Start() override;          // 파트 구동 시작.
+    void Stop() override;           // 파트 구동 멈춤..
+    bool Tick() override;           // ticktick...
+    void Render() override;         // 화면에 뿌리기..
+    bool Load(File &file) override; // 게임파일 불러오기.
+    bool Save(File &file) override; // 게임파일 저장오기.
+    void Duplicate(CN3FXPartBottomBoard *pSrc);
 
-public:
-	CN3FXPartBottomBoard();
-	~CN3FXPartBottomBoard() override;
+  public:
+    CN3FXPartBottomBoard();
+    ~CN3FXPartBottomBoard() override;
 
 #ifdef _N3TOOL
-	bool ParseScript(char* szCommand, char* szBuff0, char* szBuff1, char* szBuff2, char* szBuff3);
+    bool ParseScript(char *szCommand, char *szBuff0, char *szBuff1, char *szBuff2, char *szBuff3);
 #endif // end of _N3TOOL
 };
 

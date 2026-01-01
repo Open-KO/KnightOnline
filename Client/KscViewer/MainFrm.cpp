@@ -1,8 +1,8 @@
 // MainFrm.cpp : implementation of the CMainFrame class
 //
 
-#include "stdafx.h"
 #include "KscViewer.h"
+#include "stdafx.h"
 
 #include "MainFrm.h"
 
@@ -18,9 +18,9 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
-	//{{AFX_MSG_MAP(CMainFrame)
-	ON_WM_SIZE()
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CMainFrame)
+ON_WM_SIZE()
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -28,29 +28,28 @@ END_MESSAGE_MAP()
 
 CMainFrame::CMainFrame()
 {
-	// TODO: add member initialization code here
-	
+    // TODO: add member initialization code here
 }
 
 CMainFrame::~CMainFrame()
 {
 }
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
+BOOL CMainFrame::PreCreateWindow(CREATESTRUCT &cs)
 {
-	if( !CFrameWnd::PreCreateWindow(cs) )
-		return FALSE;
+    if (!CFrameWnd::PreCreateWindow(cs))
+        return FALSE;
 
-	CRect rc;
-	rc.SetRect(0,0,1024,768);
-	DWORD dwStyle = GetWindowLong(m_hWnd, GWL_STYLE);
-	AdjustWindowRect(&rc, dwStyle|WS_CAPTION, TRUE);
-	cs.cx = rc.Width();
-	cs.cy = rc.Height();
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+    CRect rc;
+    rc.SetRect(0, 0, 1024, 768);
+    DWORD dwStyle = GetWindowLong(m_hWnd, GWL_STYLE);
+    AdjustWindowRect(&rc, dwStyle | WS_CAPTION, TRUE);
+    cs.cx = rc.Width();
+    cs.cy = rc.Height();
+    // TODO: Modify the Window class or styles here by modifying
+    //  the CREATESTRUCT cs
 
-	return TRUE;
+    return TRUE;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,16 +58,15 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const
 {
-	CFrameWnd::AssertValid();
+    CFrameWnd::AssertValid();
 }
 
-void CMainFrame::Dump(CDumpContext& dc) const
+void CMainFrame::Dump(CDumpContext &dc) const
 {
-	CFrameWnd::Dump(dc);
+    CFrameWnd::Dump(dc);
 }
 
 #endif //_DEBUG
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
-

@@ -2,12 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "GameProcOption.h"
+#include "stdafx.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -24,20 +24,20 @@ CGameProcOption::~CGameProcOption()
 
 void CGameProcOption::Init()
 {
-	CGameProcedure::Init();
+    CGameProcedure::Init();
 }
 
 void CGameProcOption::Release()
 {
-	CGameProcedure::Release();
+    CGameProcedure::Release();
 }
 
 void CGameProcOption::Render()
 {
-	CGameProcedure::Render(); // UI 나 그밖의 기본적인 것들 렌더링..
+    CGameProcedure::Render(); // UI 나 그밖의 기본적인 것들 렌더링..
 }
 
 void CGameProcOption::Tick()
 {
-	CGameProcedure::Tick();	// 키, 마우스 입력 등등..
+    CGameProcedure::Tick(); // 키, 마우스 입력 등등..
 }

@@ -10,24 +10,27 @@
 
 class CN3FXPMesh : public CN3PMesh
 {
-friend class CN3FXPMeshInstance;
+    friend class CN3FXPMeshInstance;
 
-private:
-	__VertexXyzColorT1*		m_pColorVertices;
+  private:
+    __VertexXyzColorT1 *m_pColorVertices;
 
-public:
-	void					Render();
-	void					Release() override;
-	void					FindMinMax();
-	bool					Load(File& file) override;
-	void					SetColor(uint32_t dwColor = 0xffffffff);
-	HRESULT					Create(int iNumVertices, int iNumIndices);
-	void					operator=(const CN3FXPMesh& fxPMesh);
-	__VertexXyzColorT1*		GetColorVertices() { return m_pColorVertices; }
+  public:
+    void Render();
+    void Release() override;
+    void FindMinMax();
+    bool Load(File &file) override;
+    void SetColor(uint32_t dwColor = 0xffffffff);
+    HRESULT Create(int iNumVertices, int iNumIndices);
+    void operator=(const CN3FXPMesh &fxPMesh);
+    __VertexXyzColorT1 *GetColorVertices()
+    {
+        return m_pColorVertices;
+    }
 
-public:
-	CN3FXPMesh();
-	~CN3FXPMesh() override;
+  public:
+    CN3FXPMesh();
+    ~CN3FXPMesh() override;
 };
 
 #endif

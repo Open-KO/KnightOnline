@@ -9,52 +9,52 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
 class CKscViewerView : public CView
 {
-protected: // create from serialization only
-	CKscViewerView();
-	DECLARE_DYNCREATE(CKscViewerView)
+  protected: // create from serialization only
+    CKscViewerView();
+    DECLARE_DYNCREATE(CKscViewerView)
 
-// Attributes
-public:
-	CKscViewerDoc* GetDocument();
+    // Attributes
+  public:
+    CKscViewerDoc *GetDocument();
 
-// Operations
-public:
+    // Operations
+  public:
+    // Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CKscViewerView)
+  public:
+    virtual void OnDraw(CDC *pDC); // overridden to draw this view
+    virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CKscViewerView)
-	public:
-	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	protected:
-	//}}AFX_VIRTUAL
+  protected:
+    //}}AFX_VIRTUAL
 
-// Implementation
-public:
-	BOOL DrawImage();
-	virtual ~CKscViewerView();
+    // Implementation
+  public:
+    BOOL DrawImage();
+    virtual ~CKscViewerView();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
-protected:
-
-// Generated message map functions
-protected:
-	//{{AFX_MSG(CKscViewerView)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  protected:
+    // Generated message map functions
+  protected:
+    //{{AFX_MSG(CKscViewerView)
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnDropFiles(HDROP hDropInfo);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in KscViewerView.cpp
-inline CKscViewerDoc* CKscViewerView::GetDocument()
-   { return (CKscViewerDoc*)m_pDocument; }
+#ifndef _DEBUG // debug version in KscViewerView.cpp
+inline CKscViewerDoc *CKscViewerView::GetDocument()
+{
+    return (CKscViewerDoc *)m_pDocument;
+}
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

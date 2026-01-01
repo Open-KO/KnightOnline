@@ -5,11 +5,11 @@
 
 class CKnightsSiegeWar
 {
-public:
-	CKnightsSiegeWar();
+  public:
+    CKnightsSiegeWar();
 
-	int16_t			_castleIndex;
-	int16_t			_masterKnights;
+    int16_t _castleIndex;
+    int16_t _masterKnights;
 };
 
 #endif // SERVER_EBENEZER_KNIGHTSSIEGEWAR_H

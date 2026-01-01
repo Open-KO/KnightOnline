@@ -9,11 +9,15 @@
 
 class CN3FXPartBillBoardGame : public CN3FXPartBillBoard
 {
-public:
-	float	GetGroundHeight(float x, float z);
+  public:
+    float GetGroundHeight(float x, float z);
 
-	CN3FXPartBillBoardGame() {}
-	virtual ~CN3FXPartBillBoardGame() {}
+    CN3FXPartBillBoardGame()
+    {
+    }
+    virtual ~CN3FXPartBillBoardGame()
+    {
+    }
 };
 
 #endif // !defined(AFX_N3FXPARTBILLBOARD_H__3449DE4C_B687_459A_BF2C_A1FB98895B17__INCLUDED_)

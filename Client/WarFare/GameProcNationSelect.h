@@ -11,24 +11,24 @@
 
 #include "GameProcedure.h"
 
-class CGameProcNationSelect : public CGameProcedure   
+class CGameProcNationSelect : public CGameProcedure
 {
-public:
-	class CUINationSelectDlg* m_pUINationSelectDlg;	
+  public:
+    class CUINationSelectDlg *m_pUINationSelectDlg;
 
-protected:
-	virtual bool ProcessPacket(Packet& pkt);
+  protected:
+    virtual bool ProcessPacket(Packet &pkt);
 
-public:
-	void MsgSendNationSelect(e_Nation eNation);
-	
-	void Release();
-	void Init();
-	void Tick();
-	void Render();
+  public:
+    void MsgSendNationSelect(e_Nation eNation);
 
-	CGameProcNationSelect();
-	virtual ~CGameProcNationSelect();
+    void Release();
+    void Init();
+    void Tick();
+    void Render();
+
+    CGameProcNationSelect();
+    virtual ~CGameProcNationSelect();
 };
 
 #endif // !defined(AFX_GAMEPROCNATIONSELECT_H__83F05883_F45C_4119_BD8F_EBF2C2CF0A29__INCLUDED_)

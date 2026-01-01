@@ -8,16 +8,16 @@
 class EbenezerSocketManager;
 class SendWorkerThread : public Thread
 {
-public:
-	SendWorkerThread(EbenezerSocketManager* socketManager);
-	~SendWorkerThread() override;
+  public:
+    SendWorkerThread(EbenezerSocketManager *socketManager);
+    ~SendWorkerThread() override;
 
-protected:
-	void thread_loop() override;
-	void tick();
+  protected:
+    void thread_loop() override;
+    void tick();
 
-protected:
-	EbenezerSocketManager* _socketManager;
+  protected:
+    EbenezerSocketManager *_socketManager;
 };
 
 #endif // SERVER_EBENEZER_SENDWORKERTHREAD_H

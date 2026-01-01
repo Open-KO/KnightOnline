@@ -1,6 +1,6 @@
-﻿#include "pch.h"
-#include "AppThread.h"
+﻿#include "AppThread.h"
 #include "ftxui_sink_mt.h"
+#include "pch.h"
 #include "utilities.h"
 
 #include <shared/Ini.h>
@@ -18,420 +18,406 @@
 #include <string>
 #include <vector>
 
-AppThread* AppThread::s_instance = nullptr;
+AppThread *AppThread::s_instance = nullptr;
 bool AppThread::s_shutdown = false;
 
-AppThread::AppThread(logger::Logger& logger)
-	: _logger(logger), _exitCode(EXIT_SUCCESS), _headless(false)
+AppThread::AppThread(logger::Logger &logger) : _logger(logger), _exitCode(EXIT_SUCCESS), _headless(false)
 {
-	assert(s_instance == nullptr);
-	s_instance = this;
+    assert(s_instance == nullptr);
+    s_instance = this;
 
-	_iniFile = new CIni();
+    _iniFile = new CIni();
 }
 
 AppThread::~AppThread()
 {
-	delete _iniFile;
+    delete _iniFile;
 
-	assert(s_instance != nullptr);
-	s_instance = nullptr;
+    assert(s_instance != nullptr);
+    s_instance = nullptr;
 }
 
 std::filesystem::path AppThread::LogBaseDir() const
 {
-	return GetProgPath();
+    return GetProgPath();
 }
 
 /// \brief Sets up the parser & parses the command-line args, dispatching it to the app
-bool AppThread::parse_commandline(int argc, char* argv[])
+bool AppThread::parse_commandline(int argc, char *argv[])
 {
-	argparse::ArgumentParser parser(_logger.AppName());
+    argparse::ArgumentParser parser(_logger.AppName());
 
-	SetupCommandLineArgParser(parser);
+    SetupCommandLineArgParser(parser);
 
-	try
-	{
-		parser.parse_args(argc, argv);
-		ProcessCommandLineArgs(parser);
-		return true;
-	}
-	catch (const std::exception& ex)
-	{
-		spdlog::error("AppThread::parse_commandline: {}", ex.what());
-		return false;
-	}
+    try
+    {
+        parser.parse_args(argc, argv);
+        ProcessCommandLineArgs(parser);
+        return true;
+    }
+    catch (const std::exception &ex)
+    {
+        spdlog::error("AppThread::parse_commandline: {}", ex.what());
+        return false;
+    }
 }
 
 /// \brief Sets up the command-line arg parser, binding args for parsing.
-void AppThread::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
+void AppThread::SetupCommandLineArgParser(argparse::ArgumentParser &parser)
 {
-	parser.add_argument("--headless")
-		.help("run in headless mode, without the ftxui terminal UI for input")
-		.flag()
-		.store_into(_headless);
+    parser.add_argument("--headless")
+        .help("run in headless mode, without the ftxui terminal UI for input")
+        .flag()
+        .store_into(_headless);
 }
 
 /// \brief Processes any parsed command-line args as needed by the app.
-void AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser& /*parser*/)
+void AppThread::ProcessCommandLineArgs(const argparse::ArgumentParser & /*parser*/)
 {
-	/* for implementation, only if needed by the app - bound args won't need this */
+    /* for implementation, only if needed by the app - bound args won't need this */
 }
 
 /// \brief The main thread loop for the server instance
 void AppThread::thread_loop()
 {
-	CIni& iniFile = IniFile();
-	bool configFileLoaded = iniFile.Load(ConfigPath());
+    CIni &iniFile = IniFile();
+    bool configFileLoaded = iniFile.Load(ConfigPath());
 
-	// Setup the logger
-	_logger.Setup(iniFile, LogBaseDir());
+    // Setup the logger
+    _logger.Setup(iniFile, LogBaseDir());
 
-	if (!configFileLoaded)
-	{
-		std::u8string filenameUtf8 = iniFile.GetPath().u8string();
-		std::string filename(filenameUtf8.begin(), filenameUtf8.end());
+    if (!configFileLoaded)
+    {
+        std::u8string filenameUtf8 = iniFile.GetPath().u8string();
+        std::string filename(filenameUtf8.begin(), filenameUtf8.end());
 
-		spdlog::warn("AppThread::thread_loop: {} does not exist, will use configured defaults.",
-			filename);
-	}
+        spdlog::warn("AppThread::thread_loop: {} does not exist, will use configured defaults.", filename);
+    }
 
-	auto color = ftxui::Terminal::ColorSupport();
+    auto color = ftxui::Terminal::ColorSupport();
 
-	// Explicitly run in headless mode to avoid using ftxui.
-	if (_headless)
-	{
-		spdlog::info("AppThread::thread_loop: Running in headless mode. No input available.");
-		_exitCode = thread_loop_fallback(iniFile);
-	}
-	// This isn't a very robust test, but if we're on a terminal with this little support, we shouldn't use ftxui.
-	else if (color == ftxui::Terminal::Color::Palette16)
-	{
-		spdlog::warn("AppThread::thread_loop: No terminal support detected for ftxui. Proceeding with regular console logger.");
-		_exitCode = thread_loop_fallback(iniFile);
-	}
-	// We can assume ftxui should be used in all other cases.
-	else
-	{
-		_exitCode = thread_loop_ftxui(iniFile);
-	}
+    // Explicitly run in headless mode to avoid using ftxui.
+    if (_headless)
+    {
+        spdlog::info("AppThread::thread_loop: Running in headless mode. No input available.");
+        _exitCode = thread_loop_fallback(iniFile);
+    }
+    // This isn't a very robust test, but if we're on a terminal with this little support, we shouldn't use ftxui.
+    else if (color == ftxui::Terminal::Color::Palette16)
+    {
+        spdlog::warn(
+            "AppThread::thread_loop: No terminal support detected for ftxui. Proceeding with regular console logger.");
+        _exitCode = thread_loop_fallback(iniFile);
+    }
+    // We can assume ftxui should be used in all other cases.
+    else
+    {
+        _exitCode = thread_loop_ftxui(iniFile);
+    }
 }
 
 /// \brief Thread loop with main ftxui logic.
 /// \param iniFile The loaded application ini file.
 /// \returns Exit code.
-int AppThread::thread_loop_ftxui(CIni& iniFile)
+int AppThread::thread_loop_ftxui(CIni &iniFile)
 {
-	using namespace ftxui;
+    using namespace ftxui;
 
-	int exitCode = EXIT_SUCCESS;
+    int exitCode = EXIT_SUCCESS;
 
-	bool isServerLoaded = false;
-	auto screen = ScreenInteractive::Fullscreen();
+    bool isServerLoaded = false;
+    auto screen = ScreenInteractive::Fullscreen();
 
-	auto fxtuiSink = _logger.FxtuiSink();
-	if (fxtuiSink != nullptr)
-		fxtuiSink->set_screen(nullptr);
+    auto fxtuiSink = _logger.FxtuiSink();
+    if (fxtuiSink != nullptr)
+        fxtuiSink->set_screen(nullptr);
 
-	std::string inputText;
-	Elements logElements;
+    std::string inputText;
+    Elements logElements;
 
-	int focusedLineNumber = 0;
-	bool autoScroll = true;
-	int elementCount = 0, lastElementIndex = 0;
+    int focusedLineNumber = 0;
+    bool autoScroll = true;
+    int elementCount = 0, lastElementIndex = 0;
 
-	auto input = Input(&inputText, "Enter command...");
+    auto input = Input(&inputText, "Enter command...");
 
-	input |= CatchEvent([&](Event event)
-	{
-		if (event == Event::Return
-			&& isServerLoaded)
-		{
-			ParseCommand(inputText);
-			inputText.clear();
-			return true;
-		}
+    input |= CatchEvent([&](Event event) {
+        if (event == Event::Return && isServerLoaded)
+        {
+            ParseCommand(inputText);
+            inputText.clear();
+            return true;
+        }
 
-		return false;
-	});
+        return false;
+    });
 
-	auto renderer = Renderer(input, [&]
-	{
-		{
-			std::lock_guard<std::mutex> lock(fxtuiSink->lock());
-			logElements = fxtuiSink->log_buffer(); // this is intentionally a copy, but it's a container of shared pointers
-		}
+    auto renderer = Renderer(input, [&] {
+        {
+            std::lock_guard<std::mutex> lock(fxtuiSink->lock());
+            logElements =
+                fxtuiSink->log_buffer(); // this is intentionally a copy, but it's a container of shared pointers
+        }
 
-		// clamping
-		int oldElementCount = elementCount;
-		elementCount = static_cast<int>(logElements.size());
-		lastElementIndex = std::max(0, elementCount - 1);
-		focusedLineNumber = std::clamp(focusedLineNumber, 0, lastElementIndex);
+        // clamping
+        int oldElementCount = elementCount;
+        elementCount = static_cast<int>(logElements.size());
+        lastElementIndex = std::max(0, elementCount - 1);
+        focusedLineNumber = std::clamp(focusedLineNumber, 0, lastElementIndex);
 
-		float scrollPosition = 0.0f;
-		if (elementCount > 0)
-			scrollPosition = std::clamp(static_cast<float>(focusedLineNumber) / static_cast<float>(elementCount), 0.0f, 1.0f);
+        float scrollPosition = 0.0f;
+        if (elementCount > 0)
+            scrollPosition =
+                std::clamp(static_cast<float>(focusedLineNumber) / static_cast<float>(elementCount), 0.0f, 1.0f);
 
-		// Auto-scroll to bottom when new lines are added
-		if (autoScroll && oldElementCount != elementCount)
-		{
-			focusedLineNumber = lastElementIndex;
-			scrollPosition = 1.0f;
-	 	}
+        // Auto-scroll to bottom when new lines are added
+        if (autoScroll && oldElementCount != elementCount)
+        {
+            focusedLineNumber = lastElementIndex;
+            scrollPosition = 1.0f;
+        }
 
-		// render
-		auto logDisplay = vbox(logElements)
-			| focusPositionRelative(0, scrollPosition)
-			| vscroll_indicator
-			| yframe
-			| flex;
+        // render
+        auto logDisplay =
+            vbox(logElements) | focusPositionRelative(0, scrollPosition) | vscroll_indicator | yframe | flex;
 
-		auto inputBox = hbox({
-			text(" Command: ") | bold,
-			input->Render() | flex
-		}) | border;
+        auto inputBox = hbox({text(" Command: ") | bold, input->Render() | flex}) | border;
 
-		if (!isServerLoaded)
-			return logDisplay;
+        if (!isServerLoaded)
+            return logDisplay;
 
-		return vbox({
-			logDisplay,
-			inputBox
-		});
-	});
+        return vbox({logDisplay, inputBox});
+    });
 
-	constexpr int PageSize	= 10;
-	constexpr int WheelSize	= 3;
+    constexpr int PageSize = 10;
+    constexpr int WheelSize = 3;
 
-	renderer |= CatchEvent([&](Event event)
-	{
-		// Keyboard events
-		if (event == Event::ArrowUp)
-		{
-			--focusedLineNumber;
-			return true;
-		}
+    renderer |= CatchEvent([&](Event event) {
+        // Keyboard events
+        if (event == Event::ArrowUp)
+        {
+            --focusedLineNumber;
+            return true;
+        }
 
-		if (event == Event::ArrowDown)
-		{
-			++focusedLineNumber;
+        if (event == Event::ArrowDown)
+        {
+            ++focusedLineNumber;
 
-			if (focusedLineNumber >= lastElementIndex)
-				autoScroll = true;
-			return true;
-		}
+            if (focusedLineNumber >= lastElementIndex)
+                autoScroll = true;
+            return true;
+        }
 
-		if (event == Event::PageUp)
-		{
-			focusedLineNumber -= PageSize;
-			return true;
-		}
+        if (event == Event::PageUp)
+        {
+            focusedLineNumber -= PageSize;
+            return true;
+        }
 
-		if (event == Event::PageDown)
-		{
-			focusedLineNumber += PageSize;
+        if (event == Event::PageDown)
+        {
+            focusedLineNumber += PageSize;
 
-			if (focusedLineNumber >= lastElementIndex)
-				autoScroll = true;
-			return true;
-		}
+            if (focusedLineNumber >= lastElementIndex)
+                autoScroll = true;
+            return true;
+        }
 
-		if (event == Event::Home)
-		{
-			focusedLineNumber = 0;
-			return true;
-		}
+        if (event == Event::Home)
+        {
+            focusedLineNumber = 0;
+            return true;
+        }
 
-		if (event == Event::End)
-		{
-			focusedLineNumber = std::max(0, elementCount - 1);
-			autoScroll = true;
-			return true;
-		}
+        if (event == Event::End)
+        {
+            focusedLineNumber = std::max(0, elementCount - 1);
+            autoScroll = true;
+            return true;
+        }
 
-		// Mouse events
-		if (event.is_mouse())
-		{
-			if (event.mouse().button == Mouse::WheelUp)
-			{
-				focusedLineNumber -= WheelSize;
-				return true;
-			}
+        // Mouse events
+        if (event.is_mouse())
+        {
+            if (event.mouse().button == Mouse::WheelUp)
+            {
+                focusedLineNumber -= WheelSize;
+                return true;
+            }
 
-			if (event.mouse().button == Mouse::WheelDown)
-			{
-				focusedLineNumber += WheelSize;
+            if (event.mouse().button == Mouse::WheelDown)
+            {
+                focusedLineNumber += WheelSize;
 
-				if (focusedLineNumber >= lastElementIndex)
-					autoScroll = true;
-				return true;
-			}
-		}
+                if (focusedLineNumber >= lastElementIndex)
+                    autoScroll = true;
+                return true;
+            }
+        }
 
-		return HandleInputEvent(event);
-	});
+        return HandleInputEvent(event);
+    });
 
-	std::thread uiThread([&]
-	{
-		fxtuiSink->set_screen(&screen);
-		screen.Loop(renderer);
-		fxtuiSink->set_screen(nullptr);
+    std::thread uiThread([&] {
+        fxtuiSink->set_screen(&screen);
+        screen.Loop(renderer);
+        fxtuiSink->set_screen(nullptr);
 
-		shutdown(false);
-	});
+        shutdown(false);
+    });
 
-	if (StartupImpl(iniFile))
-	{
-		isServerLoaded = true;
-	}
-	else
-	{
-		exitCode = EXIT_FAILURE;
-		shutdown(false);
-	}
+    if (StartupImpl(iniFile))
+    {
+        isServerLoaded = true;
+    }
+    else
+    {
+        exitCode = EXIT_FAILURE;
+        shutdown(false);
+    }
 
-	while (_canTick)
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_cv.wait(lock);
-	}
+    while (_canTick)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _cv.wait(lock);
+    }
 
-	screen.Exit();
+    screen.Exit();
 
-	if (uiThread.joinable())
-		uiThread.join();
+    if (uiThread.joinable())
+        uiThread.join();
 
-	return exitCode;
+    return exitCode;
 }
 
 /// \brief Thread loop with basic console logger fallback logic.
 /// \param iniFile The loaded application ini file.
 /// \returns Exit code.
-int AppThread::thread_loop_fallback(CIni& iniFile)
+int AppThread::thread_loop_fallback(CIni &iniFile)
 {
-	auto ftxuiSink = _logger.FxtuiSink();
-	if (ftxuiSink != nullptr)
-		ftxuiSink->disable_log_buffer();
+    auto ftxuiSink = _logger.FxtuiSink();
+    if (ftxuiSink != nullptr)
+        ftxuiSink->disable_log_buffer();
 
-	int exitCode = EXIT_SUCCESS;
-	if (!StartupImpl(iniFile))
-	{
-		exitCode = EXIT_FAILURE;
-		shutdown(false);
-	}
+    int exitCode = EXIT_SUCCESS;
+    if (!StartupImpl(iniFile))
+    {
+        exitCode = EXIT_FAILURE;
+        shutdown(false);
+    }
 
-	while (_canTick)
-	{
-		std::unique_lock<std::mutex> lock(_mutex);
-		_cv.wait(lock);
-	}
+    while (_canTick)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _cv.wait(lock);
+    }
 
-	return exitCode;
+    return exitCode;
 }
 
 /// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
 /// \param iniFile The loaded application ini file.
 /// \returns true when successful, false otherwise
-bool AppThread::LoadConfig(CIni& /*iniFile*/)
+bool AppThread::LoadConfig(CIni & /*iniFile*/)
 {
-	return true;
+    return true;
 }
 
-bool AppThread::StartupImpl(CIni& iniFile)
+bool AppThread::StartupImpl(CIni &iniFile)
 {
-	try
-	{
-		// Load application-specific config
-		if (!LoadConfig(iniFile))
-		{
-			spdlog::error("AppThread::StartupImpl: LoadConfig() failed.");
-			return false;
-		}
+    try
+    {
+        // Load application-specific config
+        if (!LoadConfig(iniFile))
+        {
+            spdlog::error("AppThread::StartupImpl: LoadConfig() failed.");
+            return false;
+        }
 
-		// Trigger a save to flush defaults to file.
-		iniFile.Save();
+        // Trigger a save to flush defaults to file.
+        iniFile.Save();
 
-		// Load application-specific startup logic
-		if (!OnStart())
-		{
-			spdlog::error("AppThread::StartupImpl: OnStart() failed.");
-			return false;
-		}
+        // Load application-specific startup logic
+        if (!OnStart())
+        {
+            spdlog::error("AppThread::StartupImpl: OnStart() failed.");
+            return false;
+        }
 
-		return true;
-	}
-	catch (const std::exception& ex)
-	{
-		spdlog::error("AppThread::StartupImpl: unhandled exception - {}", ex.what());
-		return false;
-	}
+        return true;
+    }
+    catch (const std::exception &ex)
+    {
+        spdlog::error("AppThread::StartupImpl: unhandled exception - {}", ex.what());
+        return false;
+    }
 }
 
-bool AppThread::HandleInputEvent(const ftxui::Event& /*event*/)
+bool AppThread::HandleInputEvent(const ftxui::Event & /*event*/)
 {
-	return false;
+    return false;
 }
 
-void AppThread::ParseCommand(const std::string& command)
+void AppThread::ParseCommand(const std::string &command)
 {
-	if (command.empty())
-		return;
+    if (command.empty())
+        return;
 
-	if (HandleCommand(command))
-		spdlog::info("Command handled: {}", command);
-	else
-		spdlog::warn("Command not handled: {}", command);
+    if (HandleCommand(command))
+        spdlog::info("Command handled: {}", command);
+    else
+        spdlog::warn("Command not handled: {}", command);
 }
 
-bool AppThread::HandleCommand(const std::string& command)
+bool AppThread::HandleCommand(const std::string &command)
 {
-	if (command == "/clear")
-	{
-		auto fxtuiSink = _logger.FxtuiSink();
-		if (fxtuiSink != nullptr)
-		{
-			std::lock_guard<std::mutex> lock(fxtuiSink->lock());
-			fxtuiSink->log_buffer().clear();
-		}
+    if (command == "/clear")
+    {
+        auto fxtuiSink = _logger.FxtuiSink();
+        if (fxtuiSink != nullptr)
+        {
+            std::lock_guard<std::mutex> lock(fxtuiSink->lock());
+            fxtuiSink->log_buffer().clear();
+        }
 
-		spdlog::info("Logs cleared");
-		return true;
-	}
-	
-	if (command == "/exit")
-	{
-		shutdown(false);
-		return true;
-	}
+        spdlog::info("Logs cleared");
+        return true;
+    }
 
-	return false;
+    if (command == "/exit")
+    {
+        shutdown(false);
+        return true;
+    }
+
+    return false;
 }
 
 void AppThread::catchInterruptSignals()
 {
-	// catch interrupt signals for graceful shutdowns.
-	signal(SIGINT, signalHandler);
-	signal(SIGABRT, signalHandler);
-	signal(SIGTERM, signalHandler);
+    // catch interrupt signals for graceful shutdowns.
+    signal(SIGINT, signalHandler);
+    signal(SIGABRT, signalHandler);
+    signal(SIGTERM, signalHandler);
 }
 
 void AppThread::signalHandler(int signalNumber)
 {
-	spdlog::info("AppThread::signalHandler: Caught {}", signalNumber);
-	switch (signalNumber)
-	{
-		case SIGINT:
-		case SIGABRT:
-		case SIGTERM:
-			// Shutdown the application thread
-			if (!s_shutdown
-				&& s_instance != nullptr)
-			{
-				s_instance->shutdown(false);
-				s_shutdown = true;
-			}
-			break;
-	}
+    spdlog::info("AppThread::signalHandler: Caught {}", signalNumber);
+    switch (signalNumber)
+    {
+    case SIGINT:
+    case SIGABRT:
+    case SIGTERM:
+        // Shutdown the application thread
+        if (!s_shutdown && s_instance != nullptr)
+        {
+            s_instance->shutdown(false);
+            s_shutdown = true;
+        }
+        break;
+    }
 
-	signal(signalNumber, signalHandler);
+    signal(signalNumber, signalHandler);
 }

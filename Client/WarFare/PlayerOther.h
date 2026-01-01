@@ -14,23 +14,23 @@
 
 class CPlayerOther : public CPlayerNPC
 {
-	friend class CPlayerOtherMgr;
-public:
-	__InfoPlayerOther	m_InfoExt;					// 캐릭터 정보 확장..
-	bool				m_bSit;
+    friend class CPlayerOtherMgr;
 
-public:
-	void	InitFace();
-	void	InitHair();
-	void	KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank);
-	void	SetSoundAndInitFont(uint32_t dwFontFlag = 0UL);
+  public:
+    __InfoPlayerOther m_InfoExt; // 캐릭터 정보 확장..
+    bool m_bSit;
 
-	bool	Init(enum e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs, int* piItenDurabilities);
-	void	Tick();
+  public:
+    void InitFace();
+    void InitHair();
+    void KnightsInfoSet(int iID, const std::string &szName, int iGrade, int iRank);
+    void SetSoundAndInitFont(uint32_t dwFontFlag = 0UL);
 
-	CPlayerOther();
-	virtual ~CPlayerOther();
+    bool Init(enum e_Race eRace, int iFace, int iHair, uint32_t *pdwItemIDs, int *piItenDurabilities);
+    void Tick();
+
+    CPlayerOther();
+    virtual ~CPlayerOther();
 };
-
 
 #endif // !defined(AFX_PlayerOther_H__06F94EA0_0640_4532_B8CC_7FB9A99291AB__INCLUDED_)

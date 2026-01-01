@@ -13,19 +13,19 @@
 
 class CItemRepairMgr : CGameBase
 {
-	struct __IconItemSkill*	m_pspItemBack;	
-	int						m_iArm;
-	int						m_iiOrder;
+    struct __IconItemSkill *m_pspItemBack;
+    int m_iArm;
+    int m_iiOrder;
 
-public:
-	CItemRepairMgr();
-	virtual ~CItemRepairMgr();
+  public:
+    CItemRepairMgr();
+    virtual ~CItemRepairMgr();
 
-	void	Tick();
-	void	ReceiveResultFromServer(int iResult, int iUserGold);
+    void Tick();
+    void ReceiveResultFromServer(int iResult, int iUserGold);
 
-	void	UpdateUserTotalGold(int iGold);
-	int		CalcRepairGold(struct __IconItemSkill* spItem);
+    void UpdateUserTotalGold(int iGold);
+    int CalcRepairGold(struct __IconItemSkill *spItem);
 };
 
 #endif // !defined(AFX_ITEMREPAIRMGR_H__773AD64F_2ADD_44CC_BCE8_1EF2F38C76FB__INCLUDED_)

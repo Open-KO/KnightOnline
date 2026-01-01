@@ -7,12 +7,12 @@
 
 class TcpServerSocket : public TcpSocket
 {
-public:
-	TcpServerSocket(SocketManager* socketManager);
-	void Close() override;
+  public:
+    TcpServerSocket(SocketManager *socketManager);
+    void Close() override;
 
-protected:
-	void ReleaseToManager() override;
+  protected:
+    void ReleaseToManager() override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPSERVERSOCKET_H

@@ -1,23 +1,23 @@
 ﻿#pragma once
 
 #if defined(_DEBUG) || defined(DEBUG)
-void FormattedDebugString(const char* fmt, ...);
+void FormattedDebugString(const char *fmt, ...);
 
-#	include <cassert>
+#include <cassert>
 
-#	define ASSERT assert
-#	define TRACE FormattedDebugString
+#define ASSERT assert
+#define TRACE FormattedDebugString
 
 //	Ensure both typically used debug defines behave as intended
-#	ifndef DEBUG
-#		define DEBUG
-#	endif
+#ifndef DEBUG
+#define DEBUG
+#endif
 
-#	ifndef _DEBUG
-#		define _DEBUG
-#	endif
+#ifndef _DEBUG
+#define _DEBUG
+#endif
 
 #else
-#	define ASSERT(...)
-#	define TRACE(...)
+#define ASSERT(...)
+#define TRACE(...)
 #endif

@@ -2,12 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfxBase.h"
 #include "N3Light.h"
+#include "StdAfxBase.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static char THIS_FILE[] = __FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -16,8 +16,8 @@ static char THIS_FILE[]=__FILE__;
 
 CN3Light::CN3Light()
 {
-	m_dwType |= OBJ_LIGHT;
-	memset(&m_Data, 0, sizeof(m_Data));
+    m_dwType |= OBJ_LIGHT;
+    memset(&m_Data, 0, sizeof(m_Data));
 }
 
 CN3Light::~CN3Light()
@@ -26,48 +26,46 @@ CN3Light::~CN3Light()
 
 void CN3Light::Release()
 {
-	memset(&m_Data, 0, sizeof(m_Data));
-	CN3Transform::Release();
+    memset(&m_Data, 0, sizeof(m_Data));
+    CN3Transform::Release();
 }
 
-bool CN3Light::Load(File& file)
+bool CN3Light::Load(File &file)
 {
-	CN3Transform::Load(file);
+    CN3Transform::Load(file);
 
-	file.Read(&m_Data, sizeof(m_Data)); // 라이트 세팅.
+    file.Read(&m_Data, sizeof(m_Data)); // 라이트 세팅.
 
-	__ASSERT(m_Data.nNumber >= 0 && m_Data.nNumber < 8, "Light Loading Warning - Light 번호가 범위를 벗어났습니다.");
-	
-	return true;
+    __ASSERT(m_Data.nNumber >= 0 && m_Data.nNumber < 8, "Light Loading Warning - Light 번호가 범위를 벗어났습니다.");
+
+    return true;
 }
 
 #ifdef _N3TOOL
-bool CN3Light::Save(File& file)
+bool CN3Light::Save(File &file)
 {
-	CN3Transform::Save(file);
+    CN3Transform::Save(file);
 
-	file.Write(&m_Data, sizeof(m_Data)); // 라이트 세팅.
+    file.Write(&m_Data, sizeof(m_Data)); // 라이트 세팅.
 
-	return true;
+    return true;
 }
 #endif // end of _N3TOOL
 
 void CN3Light::Tick(float fFrm)
 {
-	CN3Transform::Tick(fFrm);
+    CN3Transform::Tick(fFrm);
 
-	m_Data.Position = m_vPos;
+    m_Data.Position = m_vPos;
 }
 
 void CN3Light::Apply()
 {
-	__ASSERT(m_Data.nNumber >= 0 && m_Data.nNumber < 8, "Invalid Light Number");
-	s_lpD3DDev->LightEnable(m_Data.nNumber, m_Data.bOn);
-	if (m_Data.bOn)
-	{
-		if (m_Data.Type == D3DLIGHT_POINT
-			|| m_Data.Type == D3DLIGHT_DIRECTIONAL
-			|| m_Data.Type == D3DLIGHT_SPOT)
-			s_lpD3DDev->SetLight(m_Data.nNumber, m_Data.toD3D());
-	}
+    __ASSERT(m_Data.nNumber >= 0 && m_Data.nNumber < 8, "Invalid Light Number");
+    s_lpD3DDev->LightEnable(m_Data.nNumber, m_Data.bOn);
+    if (m_Data.bOn)
+    {
+        if (m_Data.Type == D3DLIGHT_POINT || m_Data.Type == D3DLIGHT_DIRECTIONAL || m_Data.Type == D3DLIGHT_SPOT)
+            s_lpD3DDev->SetLight(m_Data.nNumber, m_Data.toD3D());
+    }
 }

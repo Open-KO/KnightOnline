@@ -2,8 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "OrderMessage.h"
+#include "stdafx.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -11,10 +11,8 @@
 
 COrderMessage::COrderMessage()
 {
-
 }
 
 COrderMessage::~COrderMessage()
 {
-
 }

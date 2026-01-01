@@ -13,98 +13,97 @@
 #include <list>
 
 class CN3UIString;
-typedef std::list<CN3UIString*>::iterator it_pString;
+typedef std::list<CN3UIString *>::iterator it_pString;
 
-class CN3UIList : public CN3UIBase  
+class CN3UIList : public CN3UIBase
 {
-protected:
-	int						m_iCurSel;		// 현재 선택..
-	std::list<CN3UIString*>	m_ListString;	// String List
-	class CN3UIScrollBar*	m_pScrollBarRef;
+  protected:
+    int m_iCurSel;                         // 현재 선택..
+    std::list<CN3UIString *> m_ListString; // String List
+    class CN3UIScrollBar *m_pScrollBarRef;
 
-	std::string				m_szFontName;
-	uint32_t				m_dwFontHeight;
-	BOOL					m_bFontBold;
-	BOOL					m_bFontItalic;
-	D3DCOLOR				m_crFont;
-	
-public:
-	const std::string& FontName() const
-	{
-		return m_szFontName;
-	}
+    std::string m_szFontName;
+    uint32_t m_dwFontHeight;
+    BOOL m_bFontBold;
+    BOOL m_bFontItalic;
+    D3DCOLOR m_crFont;
 
-	uint32_t FontHeight() const
-	{
-		return m_dwFontHeight;
-	}
+  public:
+    const std::string &FontName() const
+    {
+        return m_szFontName;
+    }
 
-	D3DCOLOR FontColor() const
-	{
-		return m_crFont;
-	}
+    uint32_t FontHeight() const
+    {
+        return m_dwFontHeight;
+    }
 
-	BOOL FontIsBold() const
-	{
-		return m_bFontBold;
-	}
+    D3DCOLOR FontColor() const
+    {
+        return m_crFont;
+    }
 
-	BOOL FontIsItalic() const
-	{
-		return m_bFontItalic;
-	}
+    BOOL FontIsBold() const
+    {
+        return m_bFontBold;
+    }
 
-	void	SetFont(const std::string& szFontName, uint32_t dwHeight, BOOL bBold, BOOL bItalic);
-	void	SetFontColor(D3DCOLOR color);
-	void	SetFontColor(int iIndex, D3DCOLOR color);
+    BOOL FontIsItalic() const
+    {
+        return m_bFontItalic;
+    }
 
-	void	ResetContent();
-	void	UpdateChildRegions();
-	int		AddStrings(const std::string* pszStrings, int iStringCount);
-	int		AddString(const std::string& szString);
-	bool	InsertString(int iIndex, const std::string& szString);
-	bool	DeleteString(int iIndex);
-	bool	GetString(int iIndex, std::string& szString);
-	bool	SetString(int iIndex, const std::string& szString);
+    void SetFont(const std::string &szFontName, uint32_t dwHeight, BOOL bBold, BOOL bItalic);
+    void SetFontColor(D3DCOLOR color);
+    void SetFontColor(int iIndex, D3DCOLOR color);
 
-	int	GetCurSel() const
-	{
-		return m_iCurSel;
-	}
+    void ResetContent();
+    void UpdateChildRegions();
+    int AddStrings(const std::string *pszStrings, int iStringCount);
+    int AddString(const std::string &szString);
+    bool InsertString(int iIndex, const std::string &szString);
+    bool DeleteString(int iIndex);
+    bool GetString(int iIndex, std::string &szString);
+    bool SetString(int iIndex, const std::string &szString);
 
-	bool SetCurSel(int iIndex)
-	{
-		if (iIndex < 0
-			|| iIndex >= static_cast<int>(m_ListString.size()))
-			m_iCurSel = -1;
-		else
-			m_iCurSel = iIndex;
-		return true;
-	}
+    int GetCurSel() const
+    {
+        return m_iCurSel;
+    }
 
-	CN3UIString* GetChildStrFromList(const std::string& str);
+    bool SetCurSel(int iIndex)
+    {
+        if (iIndex < 0 || iIndex >= static_cast<int>(m_ListString.size()))
+            m_iCurSel = -1;
+        else
+            m_iCurSel = iIndex;
+        return true;
+    }
 
-	int GetCount() const
-	{
-		return static_cast<int>(m_ListString.size());
-	}
+    CN3UIString *GetChildStrFromList(const std::string &str);
 
-	int		GetScrollPos() const;
-	bool	SetScrollPos(int iScrollPos);
-	
-	void	Render() override;
-	bool	ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
-	bool	Load(File& file) override;
-	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
+    int GetCount() const
+    {
+        return static_cast<int>(m_ListString.size());
+    }
+
+    int GetScrollPos() const;
+    bool SetScrollPos(int iScrollPos);
+
+    void Render() override;
+    bool ReceiveMessage(CN3UIBase *pSender, uint32_t dwMsg) override;
+    bool Load(File &file) override;
+    uint32_t MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &ptOld) override;
 
 #ifdef _N3TOOL
-	bool	Save(File& file) override;
-	virtual void	operator = (const CN3UIList& other);
+    bool Save(File &file) override;
+    virtual void operator=(const CN3UIList &other);
 #endif
 
-	void	Release() override;
-	CN3UIList();
-	~CN3UIList() override;
+    void Release() override;
+    CN3UIList();
+    ~CN3UIList() override;
 };
 
 #endif // !defined(AFX_N3UILIST_H__89CAFCE3_0042_4F6C_A195_E830111DA03F__INCLUDED_)

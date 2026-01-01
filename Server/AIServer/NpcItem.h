@@ -5,13 +5,13 @@
 
 class CNpcItem
 {
-public:
-	int** m_ppItem;
-	int m_nRow;
-	int m_nField;
+  public:
+    int **m_ppItem;
+    int m_nRow;
+    int m_nField;
 
-	CNpcItem();
-	~CNpcItem();
+    CNpcItem();
+    ~CNpcItem();
 };
 
 #endif // SERVER_AISERVER_NPCITEM_H

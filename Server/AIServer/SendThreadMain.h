@@ -11,21 +11,21 @@ class AISocketManager;
 struct _SEND_DATA;
 class SendThreadMain : public Thread
 {
-public:
-	SendThreadMain(AISocketManager* socketManager);
-	void shutdown(bool waitForShutdown = true) override;
-	void queue(_SEND_DATA* sendData);
-	~SendThreadMain() override;
+  public:
+    SendThreadMain(AISocketManager *socketManager);
+    void shutdown(bool waitForShutdown = true) override;
+    void queue(_SEND_DATA *sendData);
+    ~SendThreadMain() override;
 
-protected:
-	void thread_loop() override;
-	void tick(std::queue<_SEND_DATA*>& processingQueue);
-	void clear();
+  protected:
+    void thread_loop() override;
+    void tick(std::queue<_SEND_DATA *> &processingQueue);
+    void clear();
 
-protected:
-	AISocketManager*		_socketManager;
-	std::queue<_SEND_DATA*>	_insertionQueue;
-	int						_nextRoundRobinSocketId;
+  protected:
+    AISocketManager *_socketManager;
+    std::queue<_SEND_DATA *> _insertionQueue;
+    int _nextRoundRobinSocketId;
 };
 
 #endif // SERVER_AISERVER_SENDTHREADMAIN_H

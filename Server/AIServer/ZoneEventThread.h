@@ -8,12 +8,12 @@
 class AIServerApp;
 class ZoneEventThread : public Thread
 {
-public:
-	ZoneEventThread();
-	void thread_loop() override;
+  public:
+    ZoneEventThread();
+    void thread_loop() override;
 
-protected:
-	AIServerApp* _main;
+  protected:
+    AIServerApp *_main;
 };
 
 #endif // SERVER_AISERVER_ZONEEVENTTHREAD_H

@@ -13,11 +13,11 @@
 
 class CN3UIDBCLButton : public CN3UIImage
 {
-public:
-	CN3UIDBCLButton();
-	virtual ~CN3UIDBCLButton();
+  public:
+    CN3UIDBCLButton();
+    virtual ~CN3UIDBCLButton();
 
-	virtual uint32_t	MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld);
+    virtual uint32_t MouseProc(uint32_t dwFlags, const POINT &ptCur, const POINT &ptOld);
 };
 
 #endif // !defined(AFX_N3UIICON_H__DD3FD0B0_334A_4DA5_81E7_F29E82C84D6D__INCLUDED_)
