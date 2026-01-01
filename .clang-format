@@ -1,0 +1,8 @@
+Language: Cpp
+BasedOnStyle: Microsoft
+
+# With this option set to 'AlwaysBreak', the formatter will break lines after opening and before closing brackets.
+# and this enforces one parameter per line
+AlignAfterOpenBracket: 'AlwaysBreak'
+BinPackArguments: false
+BinPackParameters: 'false'
