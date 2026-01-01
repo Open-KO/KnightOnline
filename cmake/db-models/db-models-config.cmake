@@ -5,7 +5,7 @@
 fetchcontent_declare(
   db_models
   GIT_REPOSITORY        "https://github.com/Open-KO/OpenKO-db-models.git"
-  GIT_TAG               "v0.0.1"
+  GIT_TAG               "v0.0.2"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   SOURCE_DIR            "${FETCHCONTENT_BASE_DIR}/db-models"

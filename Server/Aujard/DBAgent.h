@@ -101,7 +101,7 @@ public:
 	/// \param[out] charId will trime whitespace
 	/// \param[out] buff buffer to write character info to
 	/// \param[out] buffIndex
-	/// /// \see AllCharInfoReq(), WIZ_ALLCHAR_INFO_REQ
+	/// \see AllCharInfoReq(), WIZ_ALLCHAR_INFO_REQ
 	bool LoadCharInfo(char* charId, char* buff, int& buffIndex);
 
 	/// \brief ensures that database records are created in ACCOUNT_CHAR

@@ -755,10 +755,6 @@ float CPlayerMySelf::DistanceExceptRadius(CPlayerBase* pTarget)
 	return fDist - fDistRadius;
 }
 
-/// \brief checks to see if an attack can be performed on the target
-/// \param pTarget
-/// \param bMeasureAngle does the target need to be in front of the attacker?
-/// \returns true if attack would be valid, false otherwise
 bool CPlayerMySelf::IsAttackableTarget(CPlayerBase* pTarget, bool bMeasureAngle)
 {
 	if (pTarget == nullptr || pTarget->IsDead())

@@ -27,9 +27,6 @@ CDBProcess::~CDBProcess()
 {
 }
 
-/// \brief attempts a connection with db::ConnectionManager to the ACCOUNT dbType
-/// \throws nanodbc::database_error
-/// \returns true is successful, false otherwise
 bool CDBProcess::InitDatabase() noexcept(false)
 {
 	try
@@ -47,8 +44,6 @@ bool CDBProcess::InitDatabase() noexcept(false)
 	return true;
 }
 
-/// \brief loads the VERSION table into VersionManagerDlg.VersionList
-/// \return true on success, false on failure
 bool CDBProcess::LoadVersionList(VersionInfoList* versionList)
 {
 	recordset_loader::STLMap loader(*versionList);
@@ -62,8 +57,6 @@ bool CDBProcess::LoadVersionList(VersionInfoList* versionList)
 	return true;
 }
 
-/// \brief Attempts account authentication with a given accountId and password
-/// \returns AUTH_OK on success, AUTH_NOT_FOUND on failure, AUTH_BANNED for banned accounts
 int CDBProcess::AccountLogin(const char* accountId, const char* password)
 {
 	// TODO: Restore this, but it should be handled ideally in its own database, or a separate stored procedure.
@@ -113,8 +106,6 @@ int CDBProcess::AccountLogin(const char* accountId, const char* password)
 	return AUTH_OK;
 }
 
-/// \brief attempts to create a new Version table record
-/// \returns true on success, false on failure
 bool CDBProcess::InsertVersion(int version, const char* fileName, const char* compressName, int historyVersion)
 {
 	using ModelType = model::Version;
@@ -146,8 +137,6 @@ bool CDBProcess::InsertVersion(int version, const char* fileName, const char* co
 	return false;
 }
 
-/// \brief Deletes Version table entry tied to the specified key
-/// \return true on success, false on failure
 bool CDBProcess::DeleteVersion(int version)
 {
 	using ModelType = model::Version;
@@ -175,8 +164,6 @@ bool CDBProcess::DeleteVersion(int version)
 	return false;
 }
 
-/// \brief updates the server's concurrent user counts
-/// \return true on success, false on failure
 bool CDBProcess::LoadUserCountList()
 {
 	VersionManagerApp* appInstance = VersionManagerApp::instance();
@@ -206,12 +193,6 @@ bool CDBProcess::LoadUserCountList()
 	return false;
 }
 
-/// \brief Checks to see if a user is present in CURRENTUSER for a particular server
-/// writes to serverIp and serverId
-/// \param accountId
-/// \param[out] serverIp output of the server IP the user is connected to
-/// \param[out] serverId output of the serverId the user is connected to
-/// \return true on success, false on failure
 bool CDBProcess::IsCurrentUser(const char* accountId, std::string& serverIp, int& serverId)
 {
 	db::SqlBuilder<model::CurrentUser> sql;
@@ -244,11 +225,6 @@ bool CDBProcess::IsCurrentUser(const char* accountId, std::string& serverIp, int
 	return false;
 }
 
-/// \brief calls LoadPremiumServiceUser and writes how many days of premium remain
-/// to premiumDaysRemaining
-/// \param accountId
-/// \param[out] premiumDaysRemaining output value of remaining premium days
-/// \return true on success, false on failure
 bool CDBProcess::LoadPremiumServiceUser(const char* accountId, int16_t* premiumDaysRemaining)
 {
 	int32_t premiumType = 0, // NOTE: we don't need this in the login server

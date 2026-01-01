@@ -1079,7 +1079,6 @@ bool EbenezerApp::LoadLevelUpTable()
 	return true;
 }
 
-/// \brief Sets up the command-line arg parser, binding args for parsing.
 void EbenezerApp::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 {
 	AppThread::SetupCommandLineArgParser(parser);
@@ -1093,8 +1092,6 @@ void EbenezerApp::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 		.store_into(_overrideQuestsDir);
 }
 
-/// \brief Processes any parsed command-line args as needed by the app.
-/// \returns true on success, false on failure
 bool EbenezerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
 {
 	if (!AppThread::ProcessCommandLineArgs(parser))
@@ -1120,15 +1117,11 @@ bool EbenezerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
 	return true;
 }
 
-/// \returns The application's ini config path.
 std::filesystem::path EbenezerApp::ConfigPath() const
 {
 	return "gameserver.ini";
 }
 
-/// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
-/// \param iniFile The loaded application ini file.
-/// \returns true when successful, false otherwise
 bool EbenezerApp::LoadConfig(CIni& iniFile)
 {
 	int serverCount = 0, sgroup_count = 0;

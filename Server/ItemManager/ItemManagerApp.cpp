@@ -38,7 +38,6 @@ ItemManagerApp::~ItemManagerApp()
 	spdlog::info("ItemManagerApp::~ItemManagerApp: All resources safely released.");
 }
 
-/// \returns The application's ini config path.
 std::filesystem::path ItemManagerApp::ConfigPath() const
 {
 	return "ItemManager.ini";
@@ -62,14 +61,11 @@ bool ItemManagerApp::OnStart()
 	return true;
 }
 
-/// \brief Attempts to open shared memory queue.
 bool ItemManagerApp::AttemptOpenSharedMemory()
 {
 	return LoggerRecvQueue.Open(SMQ_ITEMLOGGER);
 }
 
-/// \brief Thread tick attempting to open shared memory queue.
-/// \see AttemptOpenSharedMemory
 void ItemManagerApp::AttemptOpenSharedMemoryThreadTick()
 {
 	if (!AttemptOpenSharedMemory())
@@ -82,7 +78,6 @@ void ItemManagerApp::AttemptOpenSharedMemoryThreadTick()
 	OnSharedMemoryOpened();
 }
 
-/// \brief Finishes server initialization and starts processing threads.
 void ItemManagerApp::OnSharedMemoryOpened()
 {
 	_readQueueThread->start();

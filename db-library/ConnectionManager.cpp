@@ -5,6 +5,8 @@
 #include "Exceptions.h"
 #include "PoolConnection.h"
 
+#include <spdlog/spdlog.h>
+
 namespace db
 {
 	ConnectionManager* ConnectionManager::s_instance = nullptr;
@@ -29,7 +31,6 @@ namespace db
 		s_instance = this;
 	}
 
-	/// \brief Fetches the associated previously stored database config using the code-generated dbType
 	void ConnectionManager::SetDatasourceConfig(
 		modelUtil::DbType dbType,
 		const std::string_view datasourceName,
@@ -43,31 +44,22 @@ namespace db
 			datasourcePassword);
 	}
 
-	/// \brief Fetches the associated previously stored database config using the code-generated dbType
 	std::shared_ptr<const DatasourceConfig>
 		ConnectionManager::GetDatasourceConfig(modelUtil::DbType dbType)
 	{
 		return GetInstance().GetDatasourceConfigImpl(dbType);
 	}
 
-	/// \brief Attempts a connection to the database using the code-generated dbType
-	/// \throws std::runtime_error
-	/// \throws nanodbc::database_error
 	std::shared_ptr<Connection> ConnectionManager::CreateConnection(modelUtil::DbType dbType, long timeout) noexcept(false)
 	{
 		return GetInstance().CreateConnectionImpl(dbType, timeout);
 	}
 
-	/// \brief Fetches an established pool connection using the code-generated dbType, or otherwise attempt to establish a new
-	/// pool connection using the code-generated dbType if one is not available.
-	/// \throws DatasourceConfigNotFoundException
-	/// \throws nanodbc::database_error
 	std::shared_ptr<PoolConnection> ConnectionManager::CreatePoolConnection(modelUtil::DbType dbType, long timeout) noexcept(false)
 	{
 		return GetInstance().CreatePoolConnectionImpl(dbType, timeout);
 	}
 
-	/// \brief Returns the current ODBC connection string for a given DbType, or empty string if there is none
 	std::string ConnectionManager::GetOdbcConnectionString(modelUtil::DbType dbType)
 	{
 		std::string out;
@@ -75,14 +67,13 @@ namespace db
 		auto config = GetDatasourceConfig(dbType);
 		if (config != nullptr)
 		{
-			out = "ODBC;DSN=" + config->DatasourceName + ";UID=" + config->DatasourceUsername + ";PWD=" + config->DatasourcePassword;
+			out = fmt::format("ODBC;DSN={};UID={};PWD={}",
+				config->DatasourceName, config->DatasourceUsername, config->DatasourcePassword);
 		}
 		
 		return out;
 	}
 
-	// \brief Disconnects and removes pooled connections that haven't been used in some time.
-	// Will always leave at least 1 connection available.
 	void ConnectionManager::ExpireUnusedPoolConnections()
 	{
 		GetInstance().ExpireUnusedPoolConnectionsImpl();
@@ -116,7 +107,6 @@ namespace db
 		}
 	}
 
-	/// \brief fetch the associated previously stored database config using the code-generated dbType
 	std::shared_ptr<const DatasourceConfig>
 	ConnectionManager::GetDatasourceConfigImpl(modelUtil::DbType dbType) const
 	{
@@ -129,9 +119,6 @@ namespace db
 		return itr->second;
 	}
 
-	/// \brief attempt a connection to the database using the code-generated dbType
-	/// \throws std::runtime_error
-	/// \throws nanodbc::database_error
 	std::shared_ptr<Connection> ConnectionManager::CreateConnectionImpl(modelUtil::DbType dbType, long timeout) noexcept(false)
 	{
 		auto config = GetDatasourceConfig(dbType);
@@ -151,10 +138,6 @@ namespace db
 		return std::make_shared<Connection>(nanoconn, config, timeout);
 	}
 
-	/// \brief fetch an established pool connection using the code-generated dbType, or otherwise attempt to establish a new
-	/// pool connection using the code-generated dbType if one is not available.
-	/// \throws DatasourceConfigNotFoundException
-	/// \throws nanodbc::database_error
 	std::shared_ptr<PoolConnection> ConnectionManager::CreatePoolConnectionImpl(modelUtil::DbType dbType, long timeout) noexcept(false)
 	{
 		auto conn = PullPoolConnection(dbType);
@@ -173,8 +156,6 @@ namespace db
 		return std::make_shared<PoolConnection>(dbType, conn);
 	}
 
-	// \brief Disconnects and removes pooled connections that haven't been used in some time.
-	// Will always leave at least 1 connection available.
 	void ConnectionManager::ExpireUnusedPoolConnectionsImpl()
 	{
 		time_t nowTime = time(nullptr);
@@ -203,9 +184,6 @@ namespace db
 
 	}
 
-	/// \brief pulls an established connection using the code-generated dbType from the dbType pool, if available.
-	/// \throws DatasourceConfigNotFoundException
-	/// \throws nanodbc::database_error
 	std::shared_ptr<Connection> ConnectionManager::PullPoolConnection(modelUtil::DbType dbType) noexcept(false)
 	{
 		std::lock_guard<std::mutex> lock(_connectionPoolLock);
@@ -220,7 +198,6 @@ namespace db
 		return conn;
 	}
 
-	/// \brief restores an established connection using the code-generated dbType to the dbType pool.
 	void ConnectionManager::RestorePoolConnection(modelUtil::DbType dbType, const std::shared_ptr<Connection>& conn) noexcept(false)
 	{
 		ConnectionInfo connInfo =

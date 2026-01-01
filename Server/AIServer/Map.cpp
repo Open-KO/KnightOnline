@@ -892,7 +892,6 @@ void MAP::InitializeRoom()
 	}
 }
 
-/// \brief Checks if a position is valid for the map
 bool MAP::IsValidPosition(float x, float z) const
 {
 	int mapMaxX = static_cast<int>((m_sizeMap.cx - 1) * m_fUnitDist);

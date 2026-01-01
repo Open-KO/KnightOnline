@@ -324,9 +324,6 @@ bool AIServerApp::OnStart()
 	return true;
 }
 
-/// \brief attempts to listen on the port associated with _serverZoneType
-/// \see _serverZoneType
-/// \returns true when successful, otherwise false
 bool AIServerApp::ListenByServerZoneType()
 {
 	int port = GetListenPortByServerZoneType();
@@ -346,9 +343,6 @@ bool AIServerApp::ListenByServerZoneType()
 	return true;
 }
 
-/// \brief fetches the listen port associated with _serverZoneType
-/// \see _serverZoneType
-/// \returns the associated listen port or -1 if invalid
 int AIServerApp::GetListenPortByServerZoneType() const
 {
 	switch (_serverZoneType)
@@ -1525,7 +1519,6 @@ int AIServerApp::GetServerNumber(int zoneId) const
 	return zoneInfo->ServerId;
 }
 
-/// \brief Sets up the command-line arg parser, binding args for parsing.
 void AIServerApp::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 {
 	AppThread::SetupCommandLineArgParser(parser);
@@ -1539,8 +1532,6 @@ void AIServerApp::SetupCommandLineArgParser(argparse::ArgumentParser& parser)
 		.store_into(_overrideEventDir);
 }
 
-/// \brief Processes any parsed command-line args as needed by the app.
-/// \returns true on success, false on failure
 bool AIServerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
 {
 	if (!AppThread::ProcessCommandLineArgs(parser))
@@ -1566,15 +1557,11 @@ bool AIServerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
 	return true;
 }
 
-/// \returns The application's ini config path.
 std::filesystem::path AIServerApp::ConfigPath() const
 {
 	return "server.ini";
 }
 
-/// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
-/// \param iniFile The loaded application ini file.
-/// \returns true when successful, false otherwise
 bool AIServerApp::LoadConfig(CIni& iniFile)
 {
 	_serverZoneType = iniFile.GetInt("SERVER", "ZONE", 1);

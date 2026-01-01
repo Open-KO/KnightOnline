@@ -17,9 +17,6 @@ logger::Logger::Logger(const std::string& appName)
 	_defaultLogPath = fmt::format("logs/{}.log", appName);
 }
 
-/// \brief Sets up spdlog from an ini file using standardized server settings
-/// \param ini server application's ini file (already loaded)
-/// \param baseDir base directory to store logs folder under
 void logger::Logger::Setup(CIni& ini, const std::filesystem::path& baseDir)
 {
 	// setup file logger

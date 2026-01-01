@@ -96,7 +96,6 @@ bool VersionManagerApp::OnStart()
 	return true;
 }
 
-/// \returns The application's ini config path.
 std::filesystem::path VersionManagerApp::ConfigPath() const
 {
 	return "Version.ini";

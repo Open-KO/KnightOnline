@@ -1531,7 +1531,6 @@ bool CPlayerBase::ProcessAttack(CPlayerBase* pTarget)
 	return bAttackSuccess;
 }
 
-/// \brief applies any on-hit elemental effects associated with a weapon
 bool CPlayerBase::TryWeaponElementEffect(e_PlugPosition plugPosition, const CPlayerBase& target, __Vector3 collisionPosition)
 {
 	bool affected = false;
