@@ -4,118 +4,118 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/client tools/">
-    <Project Path="Client/KscViewer/KscViewer.vcxproj" Id="4ec5fe5e-13cf-4568-93cd-4b4ba52c90af">
-      <BuildDependency Project="Client/JpegFile/JpegFile.vcxproj" />
+    <Project Path="src/Client/KscViewer/KscViewer.vcxproj" Id="4ec5fe5e-13cf-4568-93cd-4b4ba52c90af">
+      <BuildDependency Project="src/Client/JpegFile/JpegFile.vcxproj" />
     </Project>
-    <Project Path="Client/Launcher/Launcher.vcxproj" Id="03af3bcf-b1a8-49f3-840e-10642257873a">
-      <BuildDependency Project="Client/ZipArchive/ZipArchive.vcxproj" />
+    <Project Path="src/Client/Launcher/Launcher.vcxproj" Id="03af3bcf-b1a8-49f3-840e-10642257873a">
+      <BuildDependency Project="src/Client/ZipArchive/ZipArchive.vcxproj" />
     </Project>
-    <Project Path="Client/Option/Option.vcxproj" Id="3fefbf4a-b12c-4e32-be93-4ea51fd09f63" />
+    <Project Path="src/Client/Option/Option.vcxproj" Id="3fefbf4a-b12c-4e32-be93-4ea51fd09f63" />
   </Folder>
   <Folder Name="/client/">
-    <Project DefaultStartup="true" Path="Client/WarFare/WarFare.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
-      <BuildDependency Project="Client/JpegFile/JpegFile.vcxproj" />
-      <BuildDependency Project="Client/N3Base/N3Base_client.vcxproj" />
+    <Project DefaultStartup="true" Path="src/Client/WarFare/WarFare.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
+      <BuildDependency Project="src/Client/JpegFile/JpegFile.vcxproj" />
+      <BuildDependency Project="src/N3Base/N3Base_client.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-ko-client-assets.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/client/_deps/">
-    <Project Path="Client/N3Base/N3Base_client.vcxproj" Id="d06d505a-f28e-343f-09f4-c3809398b508">
+    <Project Path="src/N3Base/N3Base_client.vcxproj" Id="d06d505a-f28e-343f-09f4-c3809398b508">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="MathUtils/MathUtils.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/server/">
-    <Project Path="Server/AIServer/AIServer.vcxproj" Id="023cd26d-5809-4716-a245-b1e146c6e7fe">
-      <BuildDependency Project="db-library/db-library.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+    <Project Path="src/Server/AIServer/AIServer.vcxproj" Id="023cd26d-5809-4716-a245-b1e146c6e7fe">
+      <BuildDependency Project="src/db-library/db-library.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="Server/Aujard/Aujard.vcxproj" Id="c564ac8f-adf8-4b90-b8cd-0834f7db144b">
-      <BuildDependency Project="db-library/db-library.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+    <Project Path="src/Server/Aujard/Aujard.vcxproj" Id="c564ac8f-adf8-4b90-b8cd-0834f7db144b">
+      <BuildDependency Project="src/db-library/db-library.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="Server/Ebenezer/Ebenezer.vcxproj" Id="64439624-b2df-4550-9c52-67e61b8ec0ef">
-      <BuildDependency Project="db-library/db-library.vcxproj" />
+    <Project Path="src/Server/Ebenezer/Ebenezer.vcxproj" Id="64439624-b2df-4550-9c52-67e61b8ec0ef">
+      <BuildDependency Project="src/db-library/db-library.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-djb2.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="Server/ItemManager/ItemManager.vcxproj" Id="2208d5f7-eb5b-4b13-a89b-cfe279b4307b">
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+    <Project Path="src/Server/ItemManager/ItemManager.vcxproj" Id="2208d5f7-eb5b-4b13-a89b-cfe279b4307b">
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="Server/VersionManager/VersionManager.vcxproj" Id="d5fad895-323c-4be1-a066-3e70bb8c2bb4">
-      <BuildDependency Project="db-library/db-library.vcxproj" />
+    <Project Path="src/Server/VersionManager/VersionManager.vcxproj" Id="d5fad895-323c-4be1-a066-3e70bb8c2bb4">
+      <BuildDependency Project="src/db-library/db-library.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="FileIO/tests/FileIO-tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
+    <Project Path="tests/FileIO/FileIO-tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
     </Project>
-    <Project Path="MathUtils/tests/MathUtils-tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
+    <Project Path="tests/MathUtils/MathUtils-tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
-      <BuildDependency Project="MathUtils/MathUtils.vcxproj" />
+      <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/tools/">
-    <Project Path="N3CE/N3CE.vcxproj" Id="1ad3ffcd-745f-4e6d-8698-f750ebb8dbcd">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/N3CE/N3CE.vcxproj" Id="1ad3ffcd-745f-4e6d-8698-f750ebb8dbcd">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
-    <Project Path="N3FXE/N3FXE.vcxproj" Id="3756ba94-53b6-4aa6-9f21-036449b6a2c5">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/N3FXE/N3FXE.vcxproj" Id="3756ba94-53b6-4aa6-9f21-036449b6a2c5">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
-    <Project Path="N3ME/N3ME.vcxproj" Id="1a926f1a-da72-4d4a-8ea7-e511187398eb">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/N3ME/N3ME.vcxproj" Id="1a926f1a-da72-4d4a-8ea7-e511187398eb">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
-    <Project Path="N3TexViewer/N3TexViewer.vcxproj" Id="92f48036-04e1-4be4-bf62-886b265e6811">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/N3TexViewer/N3TexViewer.vcxproj" Id="92f48036-04e1-4be4-bf62-886b265e6811">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
-    <Project Path="N3Viewer/N3Viewer.vcxproj" Id="644f8089-9afd-49ce-a967-2e849c4a3e37">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/N3Viewer/N3Viewer.vcxproj" Id="644f8089-9afd-49ce-a967-2e849c4a3e37">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
-    <Project Path="SkyViewer/SkyViewer.vcxproj" Id="007a6955-7539-45c1-a027-483acb20ba43">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/SkyViewer/SkyViewer.vcxproj" Id="007a6955-7539-45c1-a027-483acb20ba43">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
-    <Project Path="TblEditor/TblEditor.vcxproj" Id="98bdb1f7-63ee-9d53-6df8-b89b2b7a8bf3">
+    <Project Path="src/Tools/TblEditor/TblEditor.vcxproj" Id="98bdb1f7-63ee-9d53-6df8-b89b2b7a8bf3">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />0
     </Project>
-    <Project Path="UIE/UIE.vcxproj" Id="a3b3d543-e737-4888-83f6-6c696f4e6194">
-      <BuildDependency Project="Client/N3Base/N3Base_tool.vcxproj" />
+    <Project Path="src/Tools/UIE/UIE.vcxproj" Id="a3b3d543-e737-4888-83f6-6c696f4e6194">
+      <BuildDependency Project="src/N3Base/N3Base_tool.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/tools/_deps/">
-    <Project Path="Client/N3Base/N3Base_tool.vcxproj" Id="74c1cb7d-63cd-40d3-abea-2a17eb3719ed">
+    <Project Path="src/N3Base/N3Base_tool.vcxproj" Id="74c1cb7d-63cd-40d3-abea-2a17eb3719ed">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="MathUtils/MathUtils.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/_deps/">
-    <Project Path="Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
+    <Project Path="src/Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
     </Project>
-    <Project Path="db-library/db-library.vcxproj" Id="05054154-a8f1-4094-ab01-e1402cd9f65a">
+    <Project Path="src/db-library/db-library.vcxproj" Id="05054154-a8f1-4094-ab01-e1402cd9f65a">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
     </Project>
@@ -123,23 +123,23 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
       <Build Project="false" />
     </Project>
-    <Project Path="Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
+    <Project Path="src/Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
     </Project>
-    <Project Path="FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
+    <Project Path="src/FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" />
     </Project>
-    <Project Path="MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
-    <Project Path="Server/shared-server/shared-server.vcxproj" Id="c630cf44-84a8-4586-a710-c420bf54dc13">
+    <Project Path="src/MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
+    <Project Path="src/Server/shared-server/shared-server.vcxproj" Id="c630cf44-84a8-4586-a710-c420bf54dc13">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-asio.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-FTXUI.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
-      <BuildDependency Project="MathUtils/MathUtils.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="shared/shared.vcxproj" Id="c2feb024-8e46-4533-918b-7196caaa4e7d">
+    <Project Path="src/shared/shared.vcxproj" Id="c2feb024-8e46-4533-918b-7196caaa4e7d">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
     </Project>
   </Folder>

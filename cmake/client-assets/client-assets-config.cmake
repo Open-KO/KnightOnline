@@ -1,11 +1,5 @@
 # Get client-assets package
 
-set(OPENKO_CLIENT_DIR "${CMAKE_BINARY_DIR}/ClientData" CACHE STRING "Client path")
-
-# Ensure the client directory exists.
-file(MAKE_DIRECTORY "${OPENKO_CLIENT_DIR}")
-
-
 if(OPENKO_FETCH_CLIENT_ASSETS)
   fetchcontent_declare(
     client_assets

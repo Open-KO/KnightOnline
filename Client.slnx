@@ -4,22 +4,22 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/_deps/">
-    <Project Path="Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
+    <Project Path="src/Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
     </Project>
-    <Project Path="Client/N3Base/N3Base_client.vcxproj" Id="d06d505a-f28e-343f-09f4-c3809398b508">
+    <Project Path="src/N3Base/N3Base_client.vcxproj" Id="d06d505a-f28e-343f-09f4-c3809398b508">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" />
-      <BuildDependency Project="FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="MathUtils/MathUtils.vcxproj" />
-      <BuildDependency Project="shared/shared.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
+    <Project Path="src/FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" />
     </Project>
-    <Project Path="MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
-    <Project Path="shared/shared.vcxproj" Id="c2feb024-8e46-4533-918b-7196caaa4e7d">
+    <Project Path="src/MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
+    <Project Path="src/shared/shared.vcxproj" Id="c2feb024-8e46-4533-918b-7196caaa4e7d">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
     </Project>
   </Folder>
@@ -50,10 +50,10 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
   </Folder>
-  <Project DefaultStartup="true" Path="Client/WarFare/WarFare.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
-    <BuildDependency Project="Client/JpegFile/JpegFile.vcxproj" />
-    <BuildDependency Project="Client/N3Base/N3Base_client.vcxproj" />
+  <Project DefaultStartup="true" Path="src/Client/WarFare/WarFare.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
+    <BuildDependency Project="src/Client/JpegFile/JpegFile.vcxproj" />
+    <BuildDependency Project="src/N3Base/N3Base_client.vcxproj" />
     <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-ko-client-assets.vcxproj" />
-    <BuildDependency Project="shared/shared.vcxproj" />
+    <BuildDependency Project="src/shared/shared.vcxproj" />
   </Project>
 </Solution>

@@ -81,10 +81,14 @@ else()
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
 endif()
 
-set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/assets/MAP")
+set(OPENKO_CLIENT_DIR "${CMAKE_BINARY_DIR}/ClientData" CACHE STRING "Client path")
+set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/assets/Server/MAP")
 set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
-set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/Server/assets/QUESTS")
+set(OPENKO_SERVER_QUESTS_SRC_DIR "${CMAKE_SOURCE_DIR}/assets/Server/QUESTS")
 set(OPENKO_SERVER_QUESTS_DST_DIR "${OPENKO_BIN_DIR}/QUESTS")
+
+# Ensure the client directory exists.
+file(MAKE_DIRECTORY "${OPENKO_CLIENT_DIR}")
 
 # Generate .gitignore in build directory
 if(NOT PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
@@ -102,9 +106,9 @@ include_directories(
 )
 
 set(CMAKE_FOLDER) # reset so shared is placed in the root
-add_subdirectory(shared)
-add_subdirectory(FileIO)
-add_subdirectory(MathUtils)
+add_subdirectory(src/shared)
+add_subdirectory(src/FileIO)
+add_subdirectory(src/MathUtils)
 
 # Client & tool projects are currently only supported with Windows+MSVC builds.
 if(MSVC)
@@ -120,7 +124,7 @@ if(MSVC)
     require_package(OpenALSoft)
 
     set(CMAKE_FOLDER "N3Base")
-    add_subdirectory(Client/N3Base)
+    add_subdirectory(src/N3Base)
   endif()
 
   if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_CLIENT_TOOLS)
@@ -133,14 +137,14 @@ if(MSVC)
     # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
     # so we must structure this a little bit differently to everything else.
     require_package(JpegTurbo)
-    add_subdirectory(Client/JpegFile)
+    add_subdirectory(src/Client/JpegFile)
   endif()
 
   if(OPENKO_BUILD_CLIENT)
     message(STATUS "OpenKO: Preparing to configure client...")
 
     set(CMAKE_FOLDER "Client")
-    add_subdirectory(Client/WarFare)
+    add_subdirectory(src/Client/WarFare)
   endif()
 
   if(OPENKO_BUILD_CLIENT_TOOLS)
@@ -148,26 +152,26 @@ if(MSVC)
 
     set(CMAKE_FOLDER "Client tools/_deps")
     require_package(Zlib)
-    add_subdirectory(Client/ZipArchive)
+    add_subdirectory(src/Client/ZipArchive)
 
     set(CMAKE_FOLDER "Client tools")
-    add_subdirectory(Client/KscViewer)
-    add_subdirectory(Client/Launcher)
-    add_subdirectory(Client/Option)
+    add_subdirectory(src/Client/KscViewer)
+    add_subdirectory(src/Client/Launcher)
+    add_subdirectory(src/Client/Option)
   endif()
 
   if(OPENKO_BUILD_TOOLS)
     message(STATUS "OpenKO: Preparing to configure development tools...")
 
     set(CMAKE_FOLDER "Tools")
-    add_subdirectory(N3CE)
-    add_subdirectory(N3FXE)
-    add_subdirectory(N3ME)
-    add_subdirectory(N3TexViewer)
-    add_subdirectory(N3Viewer)
-    add_subdirectory(SkyViewer)
-    add_subdirectory(TblEditor)
-    add_subdirectory(UIE)
+    add_subdirectory(src/Tools/N3CE)
+    add_subdirectory(src/Tools/N3FXE)
+    add_subdirectory(src/Tools/N3ME)
+    add_subdirectory(src/Tools/N3TexViewer)
+    add_subdirectory(src/Tools/N3Viewer)
+    add_subdirectory(src/Tools/SkyViewer)
+    add_subdirectory(src/Tools/TblEditor)
+    add_subdirectory(src/Tools/UIE)
   endif()
 endif()
 
@@ -188,8 +192,8 @@ if(OPENKO_BUILD_SERVERS)
   require_package(Nanodbc)
   require_config_package(db-models)
   require_config_package(djb2)
-  add_subdirectory(db-library)
-  add_subdirectory(Server/shared-server)
+  add_subdirectory(src/db-library)
+  add_subdirectory(src/Server/shared-server)
 
   add_custom_target(copy-server-assets ALL
     COMMENT "Copying server assets"
@@ -202,11 +206,11 @@ if(OPENKO_BUILD_SERVERS)
 
   # Servers
   set(CMAKE_FOLDER "Server")
-  add_subdirectory(Server/AIServer)
-  add_subdirectory(Server/Aujard)
-  add_subdirectory(Server/Ebenezer)
-  add_subdirectory(Server/ItemManager)
-  add_subdirectory(Server/VersionManager)
+  add_subdirectory(src/Server/AIServer)
+  add_subdirectory(src/Server/Aujard)
+  add_subdirectory(src/Server/Ebenezer)
+  add_subdirectory(src/Server/ItemManager)
+  add_subdirectory(src/Server/VersionManager)
 endif()
 
 if(OPENKO_BUILD_TESTS)
@@ -216,6 +220,6 @@ if(OPENKO_BUILD_TESTS)
   require_package(Googletest)
 
   set(CMAKE_FOLDER "Tests")
-  add_subdirectory(FileIO/tests)
-  add_subdirectory(MathUtils/tests)
+  add_subdirectory(tests/FileIO)
+  add_subdirectory(tests/MathUtils)
 endif()
