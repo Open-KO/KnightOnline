@@ -2412,6 +2412,15 @@ void CUser::Regene(char* pBuf, int magicid)
 				}
 				else return;
 			}
+			else
+			{
+				int16_t spawnX = 0, spawnZ = 0;
+				if (GetStartPosition(&spawnX, &spawnZ))
+				{
+					x = static_cast<float>(spawnX);
+					z = static_cast<float>(spawnZ);
+				}
+			}
 
 			m_pUserData->m_curx = x;
 			m_pUserData->m_curz = z;
@@ -2472,7 +2481,7 @@ void CUser::Regene(char* pBuf, int magicid)
 		m_fBlinkStartTime = TimeGet();
 //
 		m_bResHpType = USER_STANDING;
-//		HpChange( m_iMaxHp );
+		HpChange( m_iMaxHp );
 		m_bRegeneType = REGENE_NORMAL;
 	}
 
