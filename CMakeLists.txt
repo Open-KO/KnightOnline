@@ -148,7 +148,7 @@ if(MSVC)
 
     set(CMAKE_FOLDER "Client tools/_deps")
     require_package(Zlib)
-    add_subdirectory(deps/ZipArchive)
+    add_subdirectory(Client/ZipArchive)
 
     set(CMAKE_FOLDER "Client tools")
     add_subdirectory(Client/KscViewer)

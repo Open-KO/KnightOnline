@@ -38,7 +38,7 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
       <Build Project="false" />
     </Project>
-    <Project Path="deps/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
+    <Project Path="Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
     </Project>
     <Project Path="FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
