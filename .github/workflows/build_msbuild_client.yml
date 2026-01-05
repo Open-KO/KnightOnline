@@ -12,6 +12,7 @@ on:
 
     paths:
       - '.github/workflows/build_msbuild_client.yml'
+      - 'Client.slnx'
 
   pull_request:
     branches:
@@ -19,6 +20,7 @@ on:
 
     paths:
       - '.github/workflows/build_msbuild_client.yml'
+      - 'Client.slnx'
 
   workflow_dispatch:
 
