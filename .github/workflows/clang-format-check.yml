@@ -1,5 +1,16 @@
 name: clang-format
-on: [push, pull_request, workflow_dispatch]
+
+on:
+  push:
+    branches:
+    - master
+
+  pull_request:
+    branches:
+    - master
+
+  merge_group: 
+  workflow_dispatch:
 
 jobs:
   formatting-check:
