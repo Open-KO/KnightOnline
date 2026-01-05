@@ -7,20 +7,20 @@
 
 void __Material::Init(const _D3DCOLORVALUE& diffuseColor)
 {
-	*this = {};
+	*this        = {};
 
-	Diffuse = diffuseColor;
-	Ambient.a = Diffuse.a;
-	Ambient.r = Diffuse.r * 0.5f;
-	Ambient.g = Diffuse.g * 0.5f;
-	Ambient.b = Diffuse.b * 0.5f;
+	Diffuse      = diffuseColor;
+	Ambient.a    = Diffuse.a;
+	Ambient.r    = Diffuse.r * 0.5f;
+	Ambient.g    = Diffuse.g * 0.5f;
+	Ambient.b    = Diffuse.b * 0.5f;
 
-	dwColorOp = D3DTOP_MODULATE;
-	dwColorArg1 = D3DTA_DIFFUSE;
-	dwColorArg2 = D3DTA_TEXTURE;
+	dwColorOp    = D3DTOP_MODULATE;
+	dwColorArg1  = D3DTA_DIFFUSE;
+	dwColorArg2  = D3DTA_TEXTURE;
 	nRenderFlags = RF_NOTHING;
-	dwSrcBlend = D3DBLEND_SRCALPHA;
-	dwDestBlend = D3DBLEND_INVSRCALPHA;
+	dwSrcBlend   = D3DBLEND_SRCALPHA;
+	dwDestBlend  = D3DBLEND_INVSRCALPHA;
 }
 
 void __Material::Init() // 기본 흰색으로 만든다..
@@ -31,7 +31,7 @@ void __Material::Init() // 기본 흰색으로 만든다..
 
 void __Material::ColorSet(const _D3DCOLORVALUE& crDiffuse)
 {
-	Diffuse = crDiffuse;
+	Diffuse   = crDiffuse;
 	Ambient.a = Diffuse.a;
 	Ambient.r = Diffuse.r * 0.5f;
 	Ambient.g = Diffuse.g * 0.5f;

@@ -27,7 +27,7 @@ __Quaternion::__Quaternion(float fX, float fY, float fZ, float fW)
 void __Quaternion::Identity()
 {
 	x = y = z = 0;
-	w = 1.0f;
+	w         = 1.0f;
 }
 
 void __Quaternion::Set(float fX, float fY, float fZ, float fW)
@@ -60,7 +60,7 @@ void __Quaternion::RotationAxis(float fX, float fY, float fZ, float fRadian)
 	w = cosf(fRadian / 2.0f);
 }
 
-void __Quaternion::operator = (const __Matrix44& mtx)
+void __Quaternion::operator=(const __Matrix44& mtx)
 {
 	float s, trace;
 
@@ -126,20 +126,20 @@ void __Quaternion::Slerp(const __Quaternion& qt1, const __Quaternion& qt2, float
 	float dot, temp;
 
 	temp = 1.0f - fDelta;
-	dot = (qt1.x * qt2.x + qt1.y * qt2.y + qt1.z * qt2.z + qt1.w * qt2.w);
+	dot  = (qt1.x * qt2.x + qt1.y * qt2.y + qt1.z * qt2.z + qt1.w * qt2.w);
 
 	if (dot < 0.0f)
 	{
 		fDelta = -fDelta;
-		dot = -dot;
+		dot    = -dot;
 	}
 
 	if (1.0f - dot > 0.001f)
 	{
 		float theta = acosf(dot);
 
-		temp = sinf(theta * temp) / sinf(theta);
-		fDelta = sinf(theta * fDelta) / sinf(theta);
+		temp        = sinf(theta * temp) / sinf(theta);
+		fDelta      = sinf(theta * fDelta) / sinf(theta);
 	}
 
 	x = temp * qt1.x + fDelta * qt2.x;
@@ -152,20 +152,20 @@ void __Quaternion::RotationYawPitchRoll(float Yaw, float Pitch, float Roll)
 {
 	float syaw, cyaw, spitch, cpitch, sroll, croll;
 
-	syaw = sinf(Yaw / 2.0f);
-	cyaw = cosf(Yaw / 2.0f);
+	syaw   = sinf(Yaw / 2.0f);
+	cyaw   = cosf(Yaw / 2.0f);
 	spitch = sinf(Pitch / 2.0f);
 	cpitch = cosf(Pitch / 2.0f);
-	sroll = sinf(Roll / 2.0f);
-	croll = cosf(Roll / 2.0f);
+	sroll  = sinf(Roll / 2.0f);
+	croll  = cosf(Roll / 2.0f);
 
-	x = syaw * cpitch * sroll + cyaw * spitch * croll;
-	y = syaw * cpitch * croll - cyaw * spitch * sroll;
-	z = cyaw * cpitch * sroll - syaw * spitch * croll;
-	w = cyaw * cpitch * croll + syaw * spitch * sroll;
+	x      = syaw * cpitch * sroll + cyaw * spitch * croll;
+	y      = syaw * cpitch * croll - cyaw * spitch * sroll;
+	z      = cyaw * cpitch * sroll - syaw * spitch * croll;
+	w      = cyaw * cpitch * croll + syaw * spitch * sroll;
 }
 
-__Quaternion __Quaternion::operator * (const __Quaternion& q) const
+__Quaternion __Quaternion::operator*(const __Quaternion& q) const
 {
 	__Quaternion out;
 	out.x = q.w * x + q.x * w + q.y * z - q.z * y;
@@ -175,7 +175,7 @@ __Quaternion __Quaternion::operator * (const __Quaternion& q) const
 	return out;
 }
 
-void __Quaternion::operator *= (const __Quaternion& q)
+void __Quaternion::operator*=(const __Quaternion& q)
 {
 	__Quaternion tmp = this->operator*(q);
 	Set(tmp.x, tmp.y, tmp.z, tmp.w);

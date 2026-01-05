@@ -34,7 +34,7 @@ void __Vector4::Transform(const __Vector3& v, const __Matrix44& m)
 	w = m.m[0][3] * v.x + m.m[1][3] * v.y + m.m[2][3] * v.z + m.m[3][3];
 }
 
-__Vector4& __Vector4::operator += (const __Vector4& v)
+__Vector4& __Vector4::operator+=(const __Vector4& v)
 {
 	x += v.x;
 	y += v.y;
@@ -43,7 +43,7 @@ __Vector4& __Vector4::operator += (const __Vector4& v)
 	return *this;
 }
 
-__Vector4& __Vector4::operator -= (const __Vector4& v)
+__Vector4& __Vector4::operator-=(const __Vector4& v)
 {
 	x -= v.x;
 	y -= v.y;
@@ -52,7 +52,7 @@ __Vector4& __Vector4::operator -= (const __Vector4& v)
 	return *this;
 }
 
-__Vector4& __Vector4::operator *= (float f)
+__Vector4& __Vector4::operator*=(float f)
 {
 	x *= f;
 	y *= f;
@@ -61,32 +61,32 @@ __Vector4& __Vector4::operator *= (float f)
 	return *this;
 }
 
-__Vector4& __Vector4::operator /= (float f)
+__Vector4& __Vector4::operator/=(float f)
 {
-	float fInv = 1.0f / f;
-	x *= fInv;
-	y *= fInv;
-	z *= fInv;
-	w *= fInv;
+	float fInv  = 1.0f / f;
+	x          *= fInv;
+	y          *= fInv;
+	z          *= fInv;
+	w          *= fInv;
 	return *this;
 }
 
-__Vector4 __Vector4::operator + (const __Vector4& v) const
+__Vector4 __Vector4::operator+(const __Vector4& v) const
 {
 	return { x + v.x, y + v.y, z + v.z, w + v.w };
 }
 
-__Vector4 __Vector4::operator - (const __Vector4& v) const
+__Vector4 __Vector4::operator-(const __Vector4& v) const
 {
 	return { x - v.x, y - v.y, z - v.z, w - v.w };
 }
 
-__Vector4 __Vector4::operator * (float f) const
+__Vector4 __Vector4::operator*(float f) const
 {
 	return { x * f, y * f, z * f, w * f };
 }
 
-__Vector4 __Vector4::operator / (float f) const
+__Vector4 __Vector4::operator/(float f) const
 {
 	float fInv = 1.0f / f;
 	return { x * fInv, y * fInv, z * fInv, w * fInv };

@@ -40,3 +40,4 @@ jobs:
         with:
           clang-format-version: '19' # VS2022 uses 19.1.5, VS2026 currently uses 20.1.8
           check-path: ${{ matrix.path }}
+          include-regex: '^.*\.((((c|C)(c|pp|xx|\+\+)?$)|((h|H)h?(pp|xx|\+\+)?$))|(inl))$'

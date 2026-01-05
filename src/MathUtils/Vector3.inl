@@ -86,7 +86,7 @@ void __Vector3::Set(float fx, float fy, float fz)
 	z = fz;
 }
 
-const __Vector3& __Vector3::operator = (const __Vector3& vec)
+const __Vector3& __Vector3::operator=(const __Vector3& vec)
 {
 	x = vec.x;
 	y = vec.y;
@@ -94,7 +94,7 @@ const __Vector3& __Vector3::operator = (const __Vector3& vec)
 	return *this;
 }
 
-const __Vector3 __Vector3::operator * (const __Matrix44& mtx) const
+const __Vector3 __Vector3::operator*(const __Matrix44& mtx) const
 {
 	__Vector3 vTmp;
 
@@ -105,14 +105,14 @@ const __Vector3 __Vector3::operator * (const __Matrix44& mtx) const
 	return vTmp;
 }
 
-void __Vector3::operator *= (float fDelta)
+void __Vector3::operator*=(float fDelta)
 {
 	x *= fDelta;
 	y *= fDelta;
 	z *= fDelta;
 }
 
-void __Vector3::operator *= (const __Matrix44& mtx)
+void __Vector3::operator*=(const __Matrix44& mtx)
 {
 	__Vector3 vTmp = { x, y, z };
 	x = vTmp.x * mtx.m[0][0] + vTmp.y * mtx.m[1][0] + vTmp.z * mtx.m[2][0] + mtx.m[3][0];
@@ -120,79 +120,77 @@ void __Vector3::operator *= (const __Matrix44& mtx)
 	z = vTmp.x * mtx.m[0][2] + vTmp.y * mtx.m[1][2] + vTmp.z * mtx.m[2][2] + mtx.m[3][2];
 }
 
-__Vector3 __Vector3::operator + (const __Vector3& vec) const
+__Vector3 __Vector3::operator+(const __Vector3& vec) const
 {
 	return { x + vec.x, y + vec.y, z + vec.z };
 }
 
-__Vector3 __Vector3::operator - (const __Vector3& vec) const
+__Vector3 __Vector3::operator-(const __Vector3& vec) const
 {
 	return { x - vec.x, y - vec.y, z - vec.z };
 }
 
-__Vector3 __Vector3::operator * (const __Vector3& vec) const
+__Vector3 __Vector3::operator*(const __Vector3& vec) const
 {
 	return { x * vec.x, y * vec.y, z * vec.z };
 }
 
-__Vector3 __Vector3::operator / (const __Vector3& vec) const
+__Vector3 __Vector3::operator/(const __Vector3& vec) const
 {
 	return { x / vec.x, y / vec.y, z / vec.z };
 }
 
-void __Vector3::operator += (const __Vector3& vec)
+void __Vector3::operator+=(const __Vector3& vec)
 {
 	x += vec.x;
 	y += vec.y;
 	z += vec.z;
 }
 
-void __Vector3::operator -= (const __Vector3& vec)
+void __Vector3::operator-=(const __Vector3& vec)
 {
 	x -= vec.x;
 	y -= vec.y;
 	z -= vec.z;
 }
 
-void __Vector3::operator *= (const __Vector3& vec)
+void __Vector3::operator*=(const __Vector3& vec)
 {
 	x *= vec.x;
 	y *= vec.y;
 	z *= vec.z;
 }
 
-void __Vector3::operator /= (const __Vector3& vec)
+void __Vector3::operator/=(const __Vector3& vec)
 {
 	x /= vec.x;
 	y /= vec.y;
 	z /= vec.z;
 }
 
-__Vector3 __Vector3::operator + (float fDelta) const
+__Vector3 __Vector3::operator+(float fDelta) const
 {
 	return { x + fDelta, y + fDelta, z + fDelta };
 }
 
-__Vector3 __Vector3::operator - (float fDelta) const
+__Vector3 __Vector3::operator-(float fDelta) const
 {
 	return { x - fDelta, y - fDelta, z - fDelta };
 }
 
-__Vector3 __Vector3::operator * (float fDelta) const
+__Vector3 __Vector3::operator*(float fDelta) const
 {
 	return { x * fDelta, y * fDelta, z * fDelta };
 }
 
-__Vector3 __Vector3::operator / (float fDelta) const
+__Vector3 __Vector3::operator/(float fDelta) const
 {
 	return { x / fDelta, y / fDelta, z / fDelta };
 }
 
 bool __Vector3::operator==(const __Vector3& rhs) const
 {
-	return x == rhs.x
-		&& y == rhs.y
-		&& z == rhs.z;
+	return x == rhs.x && y == rhs.y && z == rhs.z;
 }
 
 bool __Vector3::operator!=(const __Vector3& rhs) const

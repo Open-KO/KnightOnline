@@ -5,8 +5,8 @@
 
 #include "MathUtils.h"
 
-#include <cmath>	// cosf(), sinf()
-#include <cstring>	// std::memcpy(), std::memset()
+#include <cmath>   // cosf(), sinf()
+#include <cstring> // std::memcpy(), std::memset()
 
 __Matrix44::__Matrix44(const float mtx[4][4])
 {
@@ -63,17 +63,17 @@ void __Matrix44::BuildInverse(__Matrix44& mtxOut) const
 {
 	float t[3], v[16];
 
-	t[0] = m[2][2] * m[3][3] - m[2][3] * m[3][2];
-	t[1] = m[1][2] * m[3][3] - m[1][3] * m[3][2];
-	t[2] = m[1][2] * m[2][3] - m[1][3] * m[2][2];
-	v[0] = m[1][1] * t[0] - m[2][1] * t[1] + m[3][1] * t[2];
-	v[4] = -m[1][0] * t[0] + m[2][0] * t[1] - m[3][0] * t[2];
+	t[0]      = m[2][2] * m[3][3] - m[2][3] * m[3][2];
+	t[1]      = m[1][2] * m[3][3] - m[1][3] * m[3][2];
+	t[2]      = m[1][2] * m[2][3] - m[1][3] * m[2][2];
+	v[0]      = m[1][1] * t[0] - m[2][1] * t[1] + m[3][1] * t[2];
+	v[4]      = -m[1][0] * t[0] + m[2][0] * t[1] - m[3][0] * t[2];
 
-	t[0] = m[1][0] * m[2][1] - m[2][0] * m[1][1];
-	t[1] = m[1][0] * m[3][1] - m[3][0] * m[1][1];
-	t[2] = m[2][0] * m[3][1] - m[3][0] * m[2][1];
-	v[8] = m[3][3] * t[0] - m[2][3] * t[1] + m[1][3] * t[2];
-	v[12] = -m[3][2] * t[0] + m[2][2] * t[1] - m[1][2] * t[2];
+	t[0]      = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+	t[1]      = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	t[2]      = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	v[8]      = m[3][3] * t[0] - m[2][3] * t[1] + m[1][3] * t[2];
+	v[12]     = -m[3][2] * t[0] + m[2][2] * t[1] - m[1][2] * t[2];
 
 	float det = m[0][0] * v[0] + m[0][1] * v[4] + m[0][2] * v[8] + m[0][3] * v[12];
 	if (det == 0.0f)
@@ -82,45 +82,43 @@ void __Matrix44::BuildInverse(__Matrix44& mtxOut) const
 		return;
 	}
 
-	t[0] = m[2][2] * m[3][3] - m[2][3] * m[3][2];
-	t[1] = m[0][2] * m[3][3] - m[0][3] * m[3][2];
-	t[2] = m[0][2] * m[2][3] - m[0][3] * m[2][2];
-	v[1] = -m[0][1] * t[0] + m[2][1] * t[1] - m[3][1] * t[2];
-	v[5] = m[0][0] * t[0] - m[2][0] * t[1] + m[3][0] * t[2];
+	t[0]  = m[2][2] * m[3][3] - m[2][3] * m[3][2];
+	t[1]  = m[0][2] * m[3][3] - m[0][3] * m[3][2];
+	t[2]  = m[0][2] * m[2][3] - m[0][3] * m[2][2];
+	v[1]  = -m[0][1] * t[0] + m[2][1] * t[1] - m[3][1] * t[2];
+	v[5]  = m[0][0] * t[0] - m[2][0] * t[1] + m[3][0] * t[2];
 
-	t[0] = m[0][0] * m[2][1] - m[2][0] * m[0][1];
-	t[1] = m[3][0] * m[0][1] - m[0][0] * m[3][1];
-	t[2] = m[2][0] * m[3][1] - m[3][0] * m[2][1];
-	v[9] = -m[3][3] * t[0] - m[2][3] * t[1] - m[0][3] * t[2];
+	t[0]  = m[0][0] * m[2][1] - m[2][0] * m[0][1];
+	t[1]  = m[3][0] * m[0][1] - m[0][0] * m[3][1];
+	t[2]  = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	v[9]  = -m[3][3] * t[0] - m[2][3] * t[1] - m[0][3] * t[2];
 	v[13] = m[3][2] * t[0] + m[2][2] * t[1] + m[0][2] * t[2];
 
-	t[0] = m[1][2] * m[3][3] - m[1][3] * m[3][2];
-	t[1] = m[0][2] * m[3][3] - m[0][3] * m[3][2];
-	t[2] = m[0][2] * m[1][3] - m[0][3] * m[1][2];
-	v[2] = m[0][1] * t[0] - m[1][1] * t[1] + m[3][1] * t[2];
-	v[6] = -m[0][0] * t[0] + m[1][0] * t[1] - m[3][0] * t[2];
+	t[0]  = m[1][2] * m[3][3] - m[1][3] * m[3][2];
+	t[1]  = m[0][2] * m[3][3] - m[0][3] * m[3][2];
+	t[2]  = m[0][2] * m[1][3] - m[0][3] * m[1][2];
+	v[2]  = m[0][1] * t[0] - m[1][1] * t[1] + m[3][1] * t[2];
+	v[6]  = -m[0][0] * t[0] + m[1][0] * t[1] - m[3][0] * t[2];
 
-	t[0] = m[0][0] * m[1][1] - m[1][0] * m[0][1];
-	t[1] = m[3][0] * m[0][1] - m[0][0] * m[3][1];
-	t[2] = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	t[0]  = m[0][0] * m[1][1] - m[1][0] * m[0][1];
+	t[1]  = m[3][0] * m[0][1] - m[0][0] * m[3][1];
+	t[2]  = m[1][0] * m[3][1] - m[3][0] * m[1][1];
 	v[10] = m[3][3] * t[0] + m[1][3] * t[1] + m[0][3] * t[2];
 	v[14] = -m[3][2] * t[0] - m[1][2] * t[1] - m[0][2] * t[2];
 
-	t[0] = m[1][2] * m[2][3] - m[1][3] * m[2][2];
-	t[1] = m[0][2] * m[2][3] - m[0][3] * m[2][2];
-	t[2] = m[0][2] * m[1][3] - m[0][3] * m[1][2];
-	v[3] = -m[0][1] * t[0] + m[1][1] * t[1] - m[2][1] * t[2];
-	v[7] = m[0][0] * t[0] - m[1][0] * t[1] + m[2][0] * t[2];
+	t[0]  = m[1][2] * m[2][3] - m[1][3] * m[2][2];
+	t[1]  = m[0][2] * m[2][3] - m[0][3] * m[2][2];
+	t[2]  = m[0][2] * m[1][3] - m[0][3] * m[1][2];
+	v[3]  = -m[0][1] * t[0] + m[1][1] * t[1] - m[2][1] * t[2];
+	v[7]  = m[0][0] * t[0] - m[1][0] * t[1] + m[2][0] * t[2];
 
-	v[11]
-		= -m[0][0] * (m[1][1] * m[2][3] - m[1][3] * m[2][1])
-		+ m[1][0] * (m[0][1] * m[2][3] - m[0][3] * m[2][1])
-		- m[2][0] * (m[0][1] * m[1][3] - m[0][3] * m[1][1]);
+	v[11] = -m[0][0] * (m[1][1] * m[2][3] - m[1][3] * m[2][1])
+			+ m[1][0] * (m[0][1] * m[2][3] - m[0][3] * m[2][1])
+			- m[2][0] * (m[0][1] * m[1][3] - m[0][3] * m[1][1]);
 
-	v[15]
-		= m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
-		- m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])
-		+ m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
+	v[15] = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+			- m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])
+			+ m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]);
 
 	det = 1.0f / det;
 
@@ -202,7 +200,7 @@ void __Matrix44::Rotation(float fX, float fY, float fZ)
 	m[2][3] = 0;
 
 	m[3][0] = m[3][1] = m[3][2] = 0;
-	m[3][3] = 1;
+	m[3][3]                     = 1;
 }
 
 void __Matrix44::Rotation(const __Vector3& v)
@@ -227,7 +225,7 @@ void __Matrix44::Rotation(const __Vector3& v)
 	m[2][3] = 0;
 
 	m[3][0] = m[3][1] = m[3][2] = 0;
-	m[3][3] = 1;
+	m[3][3]                     = 1;
 }
 
 void __Matrix44::Scale(float sx, float sy, float sz)
@@ -258,32 +256,32 @@ void __Matrix44::Direction(const __Vector3& vDir)
 	vDir2.Normalize();
 	vRight.Cross(vUp, vDir2); // right = CrossProduct(world_up, view_dir);
 	vUp.Cross(vDir2, vRight); // up = CrossProduct(view_dir, right);
-	vRight.Normalize(); // right = Normalize(right);
-	vUp.Normalize(); // up = Normalize(up);
+	vRight.Normalize();       // right = Normalize(right);
+	vUp.Normalize();          // up = Normalize(up);
 
-	m[0][0] = vRight.x; // view(0, 0) = right.x;
-	m[1][0] = vRight.y; // view(1, 0) = right.y;
-	m[2][0] = vRight.z; // view(2, 0) = right.z;
-	m[0][1] = vUp.x; // view(0, 1) = up.x;
-	m[1][1] = vUp.y; // view(1, 1) = up.y;
-	m[2][1] = vUp.z; // view(2, 1) = up.z;
-	m[0][2] = vDir2.x; // view(0, 2) = view_dir.x;
-	m[1][2] = vDir2.y; // view(1, 2) = view_dir.y;
-	m[2][2] = vDir2.z; // view(2, 2) = view_dir.z;
+	m[0][0] = vRight.x;       // view(0, 0) = right.x;
+	m[1][0] = vRight.y;       // view(1, 0) = right.y;
+	m[2][0] = vRight.z;       // view(2, 0) = right.z;
+	m[0][1] = vUp.x;          // view(0, 1) = up.x;
+	m[1][1] = vUp.y;          // view(1, 1) = up.y;
+	m[2][1] = vUp.z;          // view(2, 1) = up.z;
+	m[0][2] = vDir2.x;        // view(0, 2) = view_dir.x;
+	m[1][2] = vDir2.y;        // view(1, 2) = view_dir.y;
+	m[2][2] = vDir2.z;        // view(2, 2) = view_dir.z;
 
 	BuildInverse(*this);
 
-//  view(3, 0) = -DotProduct(right, from);
-//  view(3, 1) = -DotProduct(up, from);
-//  view(3, 2) = -DotProduct(view_dir, from);
+	//  view(3, 0) = -DotProduct(right, from);
+	//  view(3, 1) = -DotProduct(up, from);
+	//  view(3, 2) = -DotProduct(view_dir, from);
 
 	// Set roll
-//	if (roll != 0.0f) {
-//		view = MatrixMult(RotateZMatrix(-roll), view);
-//	}
+	//	if (roll != 0.0f) {
+	//		view = MatrixMult(RotateZMatrix(-roll), view);
+	//	}
 
-//  return view;
-//} // end ViewMatrix
+	//  return view;
+	//} // end ViewMatrix
 }
 
 void __Matrix44::LookAtLH(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp)
@@ -339,86 +337,118 @@ void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
 	m[3][3] = 0.0f;
 }
 
-__Matrix44 __Matrix44::operator * (const __Matrix44& mtx) const
+__Matrix44 __Matrix44::operator*(const __Matrix44& mtx) const
 {
 	__Matrix44 mtxOut;
 
-	mtxOut.m[0][0] = m[0][0] * mtx.m[0][0] + m[0][1] * mtx.m[1][0] + m[0][2] * mtx.m[2][0] + m[0][3] * mtx.m[3][0];
-	mtxOut.m[0][1] = m[0][0] * mtx.m[0][1] + m[0][1] * mtx.m[1][1] + m[0][2] * mtx.m[2][1] + m[0][3] * mtx.m[3][1];
-	mtxOut.m[0][2] = m[0][0] * mtx.m[0][2] + m[0][1] * mtx.m[1][2] + m[0][2] * mtx.m[2][2] + m[0][3] * mtx.m[3][2];
-	mtxOut.m[0][3] = m[0][0] * mtx.m[0][3] + m[0][1] * mtx.m[1][3] + m[0][2] * mtx.m[2][3] + m[0][3] * mtx.m[3][3];
+	mtxOut.m[0][0] = m[0][0] * mtx.m[0][0] + m[0][1] * mtx.m[1][0] + m[0][2] * mtx.m[2][0]
+					 + m[0][3] * mtx.m[3][0];
+	mtxOut.m[0][1] = m[0][0] * mtx.m[0][1] + m[0][1] * mtx.m[1][1] + m[0][2] * mtx.m[2][1]
+					 + m[0][3] * mtx.m[3][1];
+	mtxOut.m[0][2] = m[0][0] * mtx.m[0][2] + m[0][1] * mtx.m[1][2] + m[0][2] * mtx.m[2][2]
+					 + m[0][3] * mtx.m[3][2];
+	mtxOut.m[0][3] = m[0][0] * mtx.m[0][3] + m[0][1] * mtx.m[1][3] + m[0][2] * mtx.m[2][3]
+					 + m[0][3] * mtx.m[3][3];
 
-	mtxOut.m[1][0] = m[1][0] * mtx.m[0][0] + m[1][1] * mtx.m[1][0] + m[1][2] * mtx.m[2][0] + m[1][3] * mtx.m[3][0];
-	mtxOut.m[1][1] = m[1][0] * mtx.m[0][1] + m[1][1] * mtx.m[1][1] + m[1][2] * mtx.m[2][1] + m[1][3] * mtx.m[3][1];
-	mtxOut.m[1][2] = m[1][0] * mtx.m[0][2] + m[1][1] * mtx.m[1][2] + m[1][2] * mtx.m[2][2] + m[1][3] * mtx.m[3][2];
-	mtxOut.m[1][3] = m[1][0] * mtx.m[0][3] + m[1][1] * mtx.m[1][3] + m[1][2] * mtx.m[2][3] + m[1][3] * mtx.m[3][3];
+	mtxOut.m[1][0] = m[1][0] * mtx.m[0][0] + m[1][1] * mtx.m[1][0] + m[1][2] * mtx.m[2][0]
+					 + m[1][3] * mtx.m[3][0];
+	mtxOut.m[1][1] = m[1][0] * mtx.m[0][1] + m[1][1] * mtx.m[1][1] + m[1][2] * mtx.m[2][1]
+					 + m[1][3] * mtx.m[3][1];
+	mtxOut.m[1][2] = m[1][0] * mtx.m[0][2] + m[1][1] * mtx.m[1][2] + m[1][2] * mtx.m[2][2]
+					 + m[1][3] * mtx.m[3][2];
+	mtxOut.m[1][3] = m[1][0] * mtx.m[0][3] + m[1][1] * mtx.m[1][3] + m[1][2] * mtx.m[2][3]
+					 + m[1][3] * mtx.m[3][3];
 
-	mtxOut.m[2][0] = m[2][0] * mtx.m[0][0] + m[2][1] * mtx.m[1][0] + m[2][2] * mtx.m[2][0] + m[2][3] * mtx.m[3][0];
-	mtxOut.m[2][1] = m[2][0] * mtx.m[0][1] + m[2][1] * mtx.m[1][1] + m[2][2] * mtx.m[2][1] + m[2][3] * mtx.m[3][1];
-	mtxOut.m[2][2] = m[2][0] * mtx.m[0][2] + m[2][1] * mtx.m[1][2] + m[2][2] * mtx.m[2][2] + m[2][3] * mtx.m[3][2];
-	mtxOut.m[2][3] = m[2][0] * mtx.m[0][3] + m[2][1] * mtx.m[1][3] + m[2][2] * mtx.m[2][3] + m[2][3] * mtx.m[3][3];
+	mtxOut.m[2][0] = m[2][0] * mtx.m[0][0] + m[2][1] * mtx.m[1][0] + m[2][2] * mtx.m[2][0]
+					 + m[2][3] * mtx.m[3][0];
+	mtxOut.m[2][1] = m[2][0] * mtx.m[0][1] + m[2][1] * mtx.m[1][1] + m[2][2] * mtx.m[2][1]
+					 + m[2][3] * mtx.m[3][1];
+	mtxOut.m[2][2] = m[2][0] * mtx.m[0][2] + m[2][1] * mtx.m[1][2] + m[2][2] * mtx.m[2][2]
+					 + m[2][3] * mtx.m[3][2];
+	mtxOut.m[2][3] = m[2][0] * mtx.m[0][3] + m[2][1] * mtx.m[1][3] + m[2][2] * mtx.m[2][3]
+					 + m[2][3] * mtx.m[3][3];
 
-	mtxOut.m[3][0] = m[3][0] * mtx.m[0][0] + m[3][1] * mtx.m[1][0] + m[3][2] * mtx.m[2][0] + m[3][3] * mtx.m[3][0];
-	mtxOut.m[3][1] = m[3][0] * mtx.m[0][1] + m[3][1] * mtx.m[1][1] + m[3][2] * mtx.m[2][1] + m[3][3] * mtx.m[3][1];
-	mtxOut.m[3][2] = m[3][0] * mtx.m[0][2] + m[3][1] * mtx.m[1][2] + m[3][2] * mtx.m[2][2] + m[3][3] * mtx.m[3][2];
-	mtxOut.m[3][3] = m[3][0] * mtx.m[0][3] + m[3][1] * mtx.m[1][3] + m[3][2] * mtx.m[2][3] + m[3][3] * mtx.m[3][3];
+	mtxOut.m[3][0] = m[3][0] * mtx.m[0][0] + m[3][1] * mtx.m[1][0] + m[3][2] * mtx.m[2][0]
+					 + m[3][3] * mtx.m[3][0];
+	mtxOut.m[3][1] = m[3][0] * mtx.m[0][1] + m[3][1] * mtx.m[1][1] + m[3][2] * mtx.m[2][1]
+					 + m[3][3] * mtx.m[3][1];
+	mtxOut.m[3][2] = m[3][0] * mtx.m[0][2] + m[3][1] * mtx.m[1][2] + m[3][2] * mtx.m[2][2]
+					 + m[3][3] * mtx.m[3][2];
+	mtxOut.m[3][3] = m[3][0] * mtx.m[0][3] + m[3][1] * mtx.m[1][3] + m[3][2] * mtx.m[2][3]
+					 + m[3][3] * mtx.m[3][3];
 
 	return mtxOut;
 }
 
-void __Matrix44::operator *= (const __Matrix44& mtx)
+void __Matrix44::operator*=(const __Matrix44& mtx)
 {
 	__Matrix44 tmp(*this);
 
-	m[0][0] = tmp.m[0][0] * mtx.m[0][0] + tmp.m[0][1] * mtx.m[1][0] + tmp.m[0][2] * mtx.m[2][0] + tmp.m[0][3] * mtx.m[3][0];
-	m[0][1] = tmp.m[0][0] * mtx.m[0][1] + tmp.m[0][1] * mtx.m[1][1] + tmp.m[0][2] * mtx.m[2][1] + tmp.m[0][3] * mtx.m[3][1];
-	m[0][2] = tmp.m[0][0] * mtx.m[0][2] + tmp.m[0][1] * mtx.m[1][2] + tmp.m[0][2] * mtx.m[2][2] + tmp.m[0][3] * mtx.m[3][2];
-	m[0][3] = tmp.m[0][0] * mtx.m[0][3] + tmp.m[0][1] * mtx.m[1][3] + tmp.m[0][2] * mtx.m[2][3] + tmp.m[0][3] * mtx.m[3][3];
+	m[0][0] = tmp.m[0][0] * mtx.m[0][0] + tmp.m[0][1] * mtx.m[1][0] + tmp.m[0][2] * mtx.m[2][0]
+			  + tmp.m[0][3] * mtx.m[3][0];
+	m[0][1] = tmp.m[0][0] * mtx.m[0][1] + tmp.m[0][1] * mtx.m[1][1] + tmp.m[0][2] * mtx.m[2][1]
+			  + tmp.m[0][3] * mtx.m[3][1];
+	m[0][2] = tmp.m[0][0] * mtx.m[0][2] + tmp.m[0][1] * mtx.m[1][2] + tmp.m[0][2] * mtx.m[2][2]
+			  + tmp.m[0][3] * mtx.m[3][2];
+	m[0][3] = tmp.m[0][0] * mtx.m[0][3] + tmp.m[0][1] * mtx.m[1][3] + tmp.m[0][2] * mtx.m[2][3]
+			  + tmp.m[0][3] * mtx.m[3][3];
 
-	m[1][0] = tmp.m[1][0] * mtx.m[0][0] + tmp.m[1][1] * mtx.m[1][0] + tmp.m[1][2] * mtx.m[2][0] + tmp.m[1][3] * mtx.m[3][0];
-	m[1][1] = tmp.m[1][0] * mtx.m[0][1] + tmp.m[1][1] * mtx.m[1][1] + tmp.m[1][2] * mtx.m[2][1] + tmp.m[1][3] * mtx.m[3][1];
-	m[1][2] = tmp.m[1][0] * mtx.m[0][2] + tmp.m[1][1] * mtx.m[1][2] + tmp.m[1][2] * mtx.m[2][2] + tmp.m[1][3] * mtx.m[3][2];
-	m[1][3] = tmp.m[1][0] * mtx.m[0][3] + tmp.m[1][1] * mtx.m[1][3] + tmp.m[1][2] * mtx.m[2][3] + tmp.m[1][3] * mtx.m[3][3];
+	m[1][0] = tmp.m[1][0] * mtx.m[0][0] + tmp.m[1][1] * mtx.m[1][0] + tmp.m[1][2] * mtx.m[2][0]
+			  + tmp.m[1][3] * mtx.m[3][0];
+	m[1][1] = tmp.m[1][0] * mtx.m[0][1] + tmp.m[1][1] * mtx.m[1][1] + tmp.m[1][2] * mtx.m[2][1]
+			  + tmp.m[1][3] * mtx.m[3][1];
+	m[1][2] = tmp.m[1][0] * mtx.m[0][2] + tmp.m[1][1] * mtx.m[1][2] + tmp.m[1][2] * mtx.m[2][2]
+			  + tmp.m[1][3] * mtx.m[3][2];
+	m[1][3] = tmp.m[1][0] * mtx.m[0][3] + tmp.m[1][1] * mtx.m[1][3] + tmp.m[1][2] * mtx.m[2][3]
+			  + tmp.m[1][3] * mtx.m[3][3];
 
-	m[2][0] = tmp.m[2][0] * mtx.m[0][0] + tmp.m[2][1] * mtx.m[1][0] + tmp.m[2][2] * mtx.m[2][0] + tmp.m[2][3] * mtx.m[3][0];
-	m[2][1] = tmp.m[2][0] * mtx.m[0][1] + tmp.m[2][1] * mtx.m[1][1] + tmp.m[2][2] * mtx.m[2][1] + tmp.m[2][3] * mtx.m[3][1];
-	m[2][2] = tmp.m[2][0] * mtx.m[0][2] + tmp.m[2][1] * mtx.m[1][2] + tmp.m[2][2] * mtx.m[2][2] + tmp.m[2][3] * mtx.m[3][2];
-	m[2][3] = tmp.m[2][0] * mtx.m[0][3] + tmp.m[2][1] * mtx.m[1][3] + tmp.m[2][2] * mtx.m[2][3] + tmp.m[2][3] * mtx.m[3][3];
+	m[2][0] = tmp.m[2][0] * mtx.m[0][0] + tmp.m[2][1] * mtx.m[1][0] + tmp.m[2][2] * mtx.m[2][0]
+			  + tmp.m[2][3] * mtx.m[3][0];
+	m[2][1] = tmp.m[2][0] * mtx.m[0][1] + tmp.m[2][1] * mtx.m[1][1] + tmp.m[2][2] * mtx.m[2][1]
+			  + tmp.m[2][3] * mtx.m[3][1];
+	m[2][2] = tmp.m[2][0] * mtx.m[0][2] + tmp.m[2][1] * mtx.m[1][2] + tmp.m[2][2] * mtx.m[2][2]
+			  + tmp.m[2][3] * mtx.m[3][2];
+	m[2][3] = tmp.m[2][0] * mtx.m[0][3] + tmp.m[2][1] * mtx.m[1][3] + tmp.m[2][2] * mtx.m[2][3]
+			  + tmp.m[2][3] * mtx.m[3][3];
 
-	m[3][0] = tmp.m[3][0] * mtx.m[0][0] + tmp.m[3][1] * mtx.m[1][0] + tmp.m[3][2] * mtx.m[2][0] + tmp.m[3][3] * mtx.m[3][0];
-	m[3][1] = tmp.m[3][0] * mtx.m[0][1] + tmp.m[3][1] * mtx.m[1][1] + tmp.m[3][2] * mtx.m[2][1] + tmp.m[3][3] * mtx.m[3][1];
-	m[3][2] = tmp.m[3][0] * mtx.m[0][2] + tmp.m[3][1] * mtx.m[1][2] + tmp.m[3][2] * mtx.m[2][2] + tmp.m[3][3] * mtx.m[3][2];
-	m[3][3] = tmp.m[3][0] * mtx.m[0][3] + tmp.m[3][1] * mtx.m[1][3] + tmp.m[3][2] * mtx.m[2][3] + tmp.m[3][3] * mtx.m[3][3];
+	m[3][0] = tmp.m[3][0] * mtx.m[0][0] + tmp.m[3][1] * mtx.m[1][0] + tmp.m[3][2] * mtx.m[2][0]
+			  + tmp.m[3][3] * mtx.m[3][0];
+	m[3][1] = tmp.m[3][0] * mtx.m[0][1] + tmp.m[3][1] * mtx.m[1][1] + tmp.m[3][2] * mtx.m[2][1]
+			  + tmp.m[3][3] * mtx.m[3][1];
+	m[3][2] = tmp.m[3][0] * mtx.m[0][2] + tmp.m[3][1] * mtx.m[1][2] + tmp.m[3][2] * mtx.m[2][2]
+			  + tmp.m[3][3] * mtx.m[3][2];
+	m[3][3] = tmp.m[3][0] * mtx.m[0][3] + tmp.m[3][1] * mtx.m[1][3] + tmp.m[3][2] * mtx.m[2][3]
+			  + tmp.m[3][3] * mtx.m[3][3];
 }
 
-void __Matrix44::operator += (const __Vector3& v)
+void __Matrix44::operator+=(const __Vector3& v)
 {
 	m[3][0] += v.x;
 	m[3][1] += v.y;
 	m[3][2] += v.z;
 }
 
-void __Matrix44::operator -= (const __Vector3& v)
+void __Matrix44::operator-=(const __Vector3& v)
 {
 	m[3][0] -= v.x;
 	m[3][1] -= v.y;
 	m[3][2] -= v.z;
 }
 
-__Matrix44 __Matrix44::operator * (const __Quaternion& qRot) const
+__Matrix44 __Matrix44::operator*(const __Quaternion& qRot) const
 {
 	__Matrix44 mtx;
-	mtx.operator = (qRot);
+	mtx.operator=(qRot);
 	return *this * mtx;
 }
 
-void __Matrix44::operator *= (const __Quaternion& qRot)
+void __Matrix44::operator*=(const __Quaternion& qRot)
 {
 	__Matrix44 mtx(qRot);
 	*this *= mtx;
 }
 
-void __Matrix44::operator = (const __Quaternion& qt)
+void __Matrix44::operator=(const __Quaternion& qt)
 {
 	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
 	m[0][1] = 2.0f * (qt.x * qt.y + qt.z * qt.w);
