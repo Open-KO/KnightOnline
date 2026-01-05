@@ -7,6 +7,7 @@
     <Project Path="src/N3Base/N3Base_tool.vcxproj" Id="74c1cb7d-63cd-40d3-abea-2a17eb3719ed">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
       <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
       <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
