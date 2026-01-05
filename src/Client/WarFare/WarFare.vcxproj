@@ -62,8 +62,8 @@
         if exist "$(ProjectDir)warfare_config.h.default" if not exist "$(ProjectDir)warfare_config.h" (
           copy /Y "$(ProjectDir)warfare_config.h.default" "$(ProjectDir)warfare_config.h"
         )
-        if exist "$(ProjectDir)..\Data\Server.ini.default" if not exist "$(ProjectDir)..\Data\Server.ini" (
-          copy /Y "$(ProjectDir)..\Data\Server.ini.default" "$(ProjectDir)..\Data\Server.ini"
+        if exist "$(RootDir)assets\Client\Server.ini.default" if not exist "(RootDir)assets\Client\Server.ini" (
+          copy /Y "$(RootDir)assets\Client\Server.ini.default" "$(RootDir)assets\Client\Server.ini"
         )
       </Command>
     </PreBuildEvent>
