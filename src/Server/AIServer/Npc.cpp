@@ -2457,10 +2457,9 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 	}
 	// 경비병이 몬스터를 타겟으로 잡는 경우
 	// NOTE: In the original code, this entire section was bugged.
-	// It inadvertently defines 2 vars for the monster count; 1 in scope, and 1 out.
+	// It inadvertently defined 2 vars for the monster count; 1 in scope, and 1 out.
 	// This means that it was previously NEVER hostile towards any other NPCs.
-	// We'll disable this temporarily just to replicate this behaviour, but it should be purposefully re-enabled.
-#if 0
+	// This of course isn't official behaviour; they had fixed it by (at least) 1.298.
 	else if (nType == 2)
 	{
 		std::vector<int> npcIds;
@@ -2517,7 +2516,6 @@ float CNpc::FindEnemyExpand(int nRX, int nRZ, float fCompDis, int nType)
 			//	TRACE(_T("Npc-IsCloseTarget - target_x = %.2f, z=%.2f\n"), m_Target.x, m_Target.z);
 		}
 	}
-#endif
 
 	return fComp;
 }
