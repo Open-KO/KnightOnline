@@ -206,7 +206,7 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 	}
 
 	size_t nFNL = szFullPath.size();
-	if (nFNL >= 3 && lstrcmpi(&szFullPath[nFNL - 3], "DXT") == 0)
+	if (nFNL >= 3 && lstrcmpi(&szFullPath[nFNL - 3], "DXT") == 0 || lstrcmpi(&szFullPath[nFNL - 3], "GTT") == 0)
 	{
 		FileReader file;
 		if (!file.OpenExisting(szFullPath))
@@ -659,7 +659,7 @@ bool CN3Texture::SaveToFile()
 {
 	char szExt[_MAX_EXT];
 	_splitpath(m_szFileName.c_str(), nullptr, nullptr, nullptr, szExt);
-	if (lstrcmpi(szExt, ".dxt") != 0)
+	if (lstrcmpi(szExt, ".dxt") != 0 || lstrcmpi(szExt, ".gtt") != 0)
 		return false;
 
 	return CN3BaseFileAccess::SaveToFile();
