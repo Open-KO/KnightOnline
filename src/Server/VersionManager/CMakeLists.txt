@@ -1,4 +1,4 @@
-add_executable(VersionManager
+add_library(libversionmanager
   DBProcess.cpp
   DBProcess.h
   Define.h
@@ -6,9 +6,13 @@ add_executable(VersionManager
   resource.h
   User.cpp
   User.h
-  VersionManager.cpp
   VersionManagerApp.cpp
   VersionManagerApp.h
+)
+
+add_executable(VersionManager
+  VersionManager.cpp
+  resource.h
 )
 
 if(WIN32)
@@ -17,20 +21,31 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+  set_property(TARGET libversionmanager PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET VersionManager PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(VersionManager PRIVATE pch.h)
+target_precompile_headers(libversionmanager PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(VersionManager PRIVATE
+target_link_libraries(libversionmanager PUBLIC
   shared-server
   db-library
   FileIO
 )
 
+target_link_libraries(VersionManager PRIVATE
+  libversionmanager
+)
+
 # Setup warning levels
+target_compile_options(libversionmanager PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+)
+
 target_compile_options(VersionManager PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>

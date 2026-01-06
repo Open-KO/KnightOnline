@@ -1,7 +1,7 @@
 set(EBENEZER_VS_MAP_DIR    "${OPENKO_SERVER_MAP_SRC_DIR}")
 set(EBENEZER_VS_QUESTS_DIR "${OPENKO_SERVER_QUESTS_SRC_DIR}")
 
-add_executable(Ebenezer
+add_library(libebenezer
   AISocket.cpp
   AISocket.h
   db_resources.h
@@ -55,6 +55,11 @@ add_executable(Ebenezer
   User.h
 )
 
+add_executable(Ebenezer
+  Ebenezer.cpp
+  resource.h
+)
+
 # Ensure we require the server assets to be copied
 add_dependencies(AIServer copy-server-assets)
 
@@ -64,20 +69,31 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+  set_property(TARGET libebenezer PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET Ebenezer PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(Ebenezer PRIVATE pch.h)
+target_precompile_headers(libebenezer PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(Ebenezer PRIVATE
-  shared-server
+target_link_libraries(libebenezer PUBLIC
   db-library
   FileIO
+  shared-server
+)
+
+target_link_libraries(Ebenezer PRIVATE
+  libebenezer
 )
 
 # Setup warning levels
+target_compile_options(libebenezer PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+)
+
 target_compile_options(Ebenezer PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
