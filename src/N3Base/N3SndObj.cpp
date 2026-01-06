@@ -105,7 +105,7 @@ void CN3SndObj::SetVolume(float currentVolume)
 	if (_handle != nullptr)
 	{
 		CN3Base::s_SndMgr.QueueCallback(_handle,
-			[=](AudioHandle* handle)
+			[currentVolume](AudioHandle* handle)
 			{
 				handle->Settings->CurrentGain = currentVolume;
 
@@ -128,7 +128,7 @@ void CN3SndObj::SetMaxVolume(float maxVolume)
 	if (_handle != nullptr)
 	{
 		CN3Base::s_SndMgr.QueueCallback(_handle,
-			[=](AudioHandle* handle)
+			[maxVolume](AudioHandle* handle)
 			{
 				if (handle->Settings->CurrentGain <= maxVolume)
 					return;
@@ -221,7 +221,7 @@ void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime)
 			return;
 
 		CN3Base::s_SndMgr.QueueCallback(_handle,
-			[=](AudioHandle* handle)
+			[fFadeInTime, delay, playImmediately, audioAsset, isLooping](AudioHandle* handle)
 			{
 				handle->FadeInTime     = fFadeInTime;
 				handle->FadeOutTime    = 0.0f;
@@ -230,7 +230,7 @@ void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime)
 				handle->State          = SNDSTATE_DELAY;
 
 				if (playImmediately)
-					_soundSettings->CurrentGain = _soundSettings->MaxGain;
+					handle->Settings->CurrentGain = handle->Settings->MaxGain;
 
 				if (handle->Asset->Type == AUDIO_ASSET_BUFFERED)
 				{
@@ -284,7 +284,8 @@ void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime)
 		}
 
 		CN3Base::s_SndMgr.QueueCallback(_handle,
-			[=](AudioHandle* handle)
+			[fFadeInTime, delay, playImmediately, audioAsset, hasPosition, position, isLooping](
+				AudioHandle* handle)
 			{
 				handle->FadeInTime     = fFadeInTime;
 				handle->FadeOutTime    = 0.0f;
@@ -293,7 +294,7 @@ void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime)
 				handle->State          = SNDSTATE_DELAY;
 
 				if (playImmediately)
-					_soundSettings->CurrentGain = _soundSettings->MaxGain;
+					handle->Settings->CurrentGain = handle->Settings->MaxGain;
 
 				if (handle->Asset->Type == AUDIO_ASSET_BUFFERED)
 				{
@@ -332,7 +333,7 @@ void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime)
 	else if (GetType() == SNDTYPE_STREAM)
 	{
 		CN3Base::s_SndMgr.QueueCallback(_handle,
-			[=](AudioHandle* handle)
+			[fFadeInTime, delay, isLooping, playImmediately](AudioHandle* handle)
 			{
 				handle->FadeInTime     = fFadeInTime;
 				handle->FadeOutTime    = 0.0f;
@@ -354,9 +355,8 @@ void CN3SndObj::Play(const __Vector3* pvPos, float delay, float fFadeInTime)
 
 				if (playImmediately)
 				{
-					handle->State               = SNDSTATE_PLAY;
-
-					_soundSettings->CurrentGain = _soundSettings->MaxGain;
+					handle->State                 = SNDSTATE_PLAY;
+					handle->Settings->CurrentGain = handle->Settings->MaxGain;
 
 					alSourcef(handle->SourceId, AL_GAIN, handle->Settings->CurrentGain);
 					AL_CHECK_ERROR();
@@ -391,7 +391,7 @@ void CN3SndObj::Stop(float fFadeOutTime)
 
 	// It won't be stopped immediately, so queue the stop request so it can process with the delay.
 	CN3Base::s_SndMgr.QueueCallback(_handle,
-		[=](AudioHandle* handle)
+		[fFadeOutTime](AudioHandle* handle)
 		{
 			if (handle->State == SNDSTATE_FADEOUT || handle->State == SNDSTATE_STOP)
 				return;
@@ -419,7 +419,7 @@ void CN3SndObj::SetPos(const __Vector3 vPos)
 		return;
 
 	CN3Base::s_SndMgr.QueueCallback(_handle,
-		[=](AudioHandle* handle)
+		[vPos](AudioHandle* handle)
 		{
 			alSource3f(handle->SourceId, AL_POSITION, vPos.x, vPos.y, vPos.z);
 			AL_CLEAR_ERROR_STATE();
@@ -438,7 +438,7 @@ void CN3SndObj::Looping(bool loop)
 		return;
 
 	CN3Base::s_SndMgr.QueueCallback(_handle,
-		[=](AudioHandle* handle)
+		[](AudioHandle* handle)
 		{
 			alSourcei(
 				handle->SourceId, AL_LOOPING, static_cast<ALint>(handle->Settings->IsLooping));
