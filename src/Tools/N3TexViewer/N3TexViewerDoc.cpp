@@ -152,7 +152,7 @@ BOOL CN3TexViewerDoc::OnSaveDocument(LPCTSTR lpszPathName)
 	char szDrv[_MAX_DRIVE], szDir[_MAX_DIR], szFN[_MAX_FNAME], szExt[_MAX_EXT];
 	::_splitpath(lpszPathName, szDrv, szDir, szFN, szExt);
 
-	if(lstrcmpi(szExt, ".DXT") == 0 || lstrcmpi(szExt, ".dxt") == 0 || lstrcmpi(szExt, ".gtt") == 0) // 확장자가 DXT 면 그냥 저장..
+	if(lstrcmpi(szExt, ".DXT") == 0 || lstrcmpi(szExt, ".GTT") == 0)
 	{
 		CDocument::OnSaveDocument(lpszPathName);
 
