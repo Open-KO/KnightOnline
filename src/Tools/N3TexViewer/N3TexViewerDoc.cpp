@@ -19,9 +19,9 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CN3TexViewerDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CN3TexViewerDoc, CDocument)
-	//{{AFX_MSG_MAP(CN3TexViewerDoc)
-	ON_COMMAND(ID_FILE_SAVE_AS_BITMAP, OnFileSaveAsBitmap)
-	//}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CN3TexViewerDoc)
+ON_COMMAND(ID_FILE_SAVE_AS_BITMAP, OnFileSaveAsBitmap)
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
