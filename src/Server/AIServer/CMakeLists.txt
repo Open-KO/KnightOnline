@@ -1,3 +1,5 @@
+set(CMAKE_FOLDER "${CMAKE_FOLDER}/AIServer")
+
 set(AISERVER_VS_MAP_DIR   "${OPENKO_SERVER_MAP_SRC_DIR}")
 set(AISERVER_VS_EVENT_DIR "${OPENKO_SERVER_MAP_SRC_DIR}") # Intentionally the same
 
@@ -44,6 +46,7 @@ add_library(libaiserver
 
 add_executable(AIServer
   AIServer.cpp
+  pch.h
   resource.h
 )
 

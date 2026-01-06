@@ -1,3 +1,5 @@
+set(CMAKE_FOLDER "${CMAKE_FOLDER}/Ebenezer")
+
 set(EBENEZER_VS_MAP_DIR    "${OPENKO_SERVER_MAP_SRC_DIR}")
 set(EBENEZER_VS_QUESTS_DIR "${OPENKO_SERVER_QUESTS_SRC_DIR}")
 
@@ -57,6 +59,7 @@ add_library(libebenezer
 
 add_executable(Ebenezer
   Ebenezer.cpp
+  pch.h
   resource.h
 )
 

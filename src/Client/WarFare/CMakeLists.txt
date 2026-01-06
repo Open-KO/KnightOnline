@@ -303,8 +303,9 @@ add_library(libwarfare
 )
 
 add_executable(WarFare
-  WarFareMain.cpp
   resource.h
+  StdAfx.h
+  WarFareMain.cpp
 )
 
 source_group("Scene" FILES ${WARFARE_SCENE_SOURCES})

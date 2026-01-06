@@ -1,3 +1,5 @@
+set(CMAKE_FOLDER "${CMAKE_FOLDER}/VersionManager")
+
 add_library(libversionmanager
   DBProcess.cpp
   DBProcess.h
@@ -11,8 +13,9 @@ add_library(libversionmanager
 )
 
 add_executable(VersionManager
-  VersionManager.cpp
+  pch.h
   resource.h
+  VersionManager.cpp
 )
 
 if(WIN32)

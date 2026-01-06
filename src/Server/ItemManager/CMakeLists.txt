@@ -1,3 +1,5 @@
+set(CMAKE_FOLDER "${CMAKE_FOLDER}/ItemManager")
+
 add_library(libitemmanager
   Define.h
   ItemManagerApp.cpp
@@ -12,6 +14,7 @@ add_library(libitemmanager
 
 add_executable(ItemManager
   ItemManager.cpp
+  pch.h
   resource.h
 )
 
