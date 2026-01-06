@@ -1,5 +1,3 @@
-set(CMAKE_FOLDER "${CMAKE_FOLDER}/VersionManager")
-
 add_library(libversionmanager
   DBProcess.cpp
   DBProcess.h

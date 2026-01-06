@@ -1,5 +1,3 @@
-set(CMAKE_FOLDER "${CMAKE_FOLDER}/ItemManager")
-
 add_library(libitemmanager
   Define.h
   ItemManagerApp.cpp

@@ -1,5 +1,3 @@
-set(CMAKE_FOLDER "${CMAKE_FOLDER}/Aujard")
-
 add_library(libaujard
   AujardApp.cpp
   AujardApp.h

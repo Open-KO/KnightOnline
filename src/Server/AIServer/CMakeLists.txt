@@ -1,5 +1,3 @@
-set(CMAKE_FOLDER "${CMAKE_FOLDER}/AIServer")
-
 set(AISERVER_VS_MAP_DIR   "${OPENKO_SERVER_MAP_SRC_DIR}")
 set(AISERVER_VS_EVENT_DIR "${OPENKO_SERVER_MAP_SRC_DIR}") # Intentionally the same
 
@@ -59,7 +57,7 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
-  set_property(TARGET libaiserver  PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  set_property(TARGET libaiserver PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET AIServer PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
