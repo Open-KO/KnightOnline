@@ -6,6 +6,9 @@
 
 #include <shared/packets.h>
 
+namespace Ebenezer
+{
+
 CKnights::CKnights()
 {
 }
@@ -48,3 +51,5 @@ void CKnights::InitializeValue()
 		m_StashItem[i].sDuration = 0;
 	}
 }
+
+} // namespace Ebenezer

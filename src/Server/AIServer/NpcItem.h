@@ -3,6 +3,9 @@
 
 #pragma once
 
+namespace AIServer
+{
+
 class CNpcItem
 {
 public:
@@ -13,5 +16,7 @@ public:
 	CNpcItem();
 	~CNpcItem();
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_NPCITEM_H

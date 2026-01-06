@@ -13,6 +13,10 @@
 #include <string>
 
 class TimerThread;
+
+namespace VersionManager
+{
+
 class VersionManagerApp : public AppThread
 {
 	using ServerInfoList = std::vector<_SERVER_INFO*>;
@@ -70,5 +74,7 @@ protected:
 
 	std::unique_ptr<TimerThread> _dbPoolCheckThread;
 };
+
+} // namespace VersionManager
 
 #endif // SERVER_VERSIONMANAGER_VERSIONMANAGERAPP_H

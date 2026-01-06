@@ -6,6 +6,9 @@
 #include <shared/packets.h>
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 extern std::recursive_mutex g_region_mutex;
 
 CNpc::CNpc()
@@ -306,3 +309,5 @@ void CNpc::GetNpcInfo(char* buff, int& buff_index)
 	SetShort(buff, 0, buff_index); // Client: sIDK1
 	SetByte(buff, m_byDirection, buff_index);
 }
+
+} // namespace Ebenezer

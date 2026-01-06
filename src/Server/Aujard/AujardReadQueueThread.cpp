@@ -2,6 +2,9 @@
 #include "AujardReadQueueThread.h"
 #include "AujardApp.h"
 
+namespace Aujard
+{
+
 AujardReadQueueThread::AujardReadQueueThread() :
 	ReadQueueThread(AujardApp::instance()->LoggerRecvQueue)
 {
@@ -77,3 +80,5 @@ void AujardReadQueueThread::process_packet(const char* buffer, int /*len*/)
 			break;
 	}
 }
+
+} // namespace Aujard

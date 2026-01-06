@@ -4,6 +4,9 @@
 
 #include <cmath>
 
+namespace AIServer
+{
+
 constexpr int LEVEL_TWO_FIND_CROSS    = 11;
 constexpr int LEVEL_TWO_FIND_DIAGONAL = 10;
 
@@ -389,3 +392,5 @@ bool CPathFind::IsBlankMap(int x, int y)
 	return m_pMap[x * m_vMapSize.cy + y] == 0;
 	//return bRet;
 }
+
+} // namespace AIServer

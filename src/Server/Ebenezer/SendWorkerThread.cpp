@@ -8,6 +8,9 @@
 
 using namespace std::chrono_literals;
 
+namespace Ebenezer
+{
+
 SendWorkerThread::SendWorkerThread(EbenezerSocketManager* socketManager) :
 	_socketManager(socketManager)
 {
@@ -65,3 +68,5 @@ SendWorkerThread::~SendWorkerThread()
 {
 	shutdown();
 }
+
+} // namespace Ebenezer

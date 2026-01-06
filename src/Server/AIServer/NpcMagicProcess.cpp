@@ -4,6 +4,9 @@
 #include "User.h"
 #include "Npc.h"
 
+namespace AIServer
+{
+
 CNpcMagicProcess::CNpcMagicProcess()
 {
 	m_pMain   = AIServerApp::instance();
@@ -482,3 +485,5 @@ int16_t CNpcMagicProcess::GetMagicDamage(int tid, int total_hit, int attribute, 
 
 	return damage;
 }
+
+} // namespace AIServer

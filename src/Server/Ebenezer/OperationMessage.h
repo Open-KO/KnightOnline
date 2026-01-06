@@ -7,6 +7,9 @@
 #include <string>
 #include <string_view>
 
+namespace Ebenezer
+{
+
 class EbenezerApp;
 class CUser;
 class OperationMessage
@@ -109,5 +112,7 @@ protected:
 	std::string _command;
 	std::vector<std::string> _args;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_OPERATIONMESSAGE_H

@@ -5,9 +5,12 @@
 
 #include <shared-server/STLMap.h>
 
+namespace AIServer
+{
+
 constexpr int MAX_CHECK_EVENT = 5;
 
-typedef CSTLMap<int> mapNpcArray;
+using mapNpcArray             = CSTLMap<int>;
 
 struct _RoomEvent
 {
@@ -47,8 +50,8 @@ public:
 	AIServerApp* m_pMain;
 
 private:
-	uint8_t
-		m_byLogicNumber; // 현재의 조건문 검사 번호 (조건번호는 1부터 시작됨) (m_byCheck와 m_byLogicNumber이 같다면 클리어 상태)
+	// 현재의 조건문 검사 번호 (조건번호는 1부터 시작됨) (m_byCheck와 m_byLogicNumber이 같다면 클리어 상태)
+	uint8_t m_byLogicNumber;
 
 public:
 	CRoomEvent();
@@ -75,5 +78,7 @@ private:
 	CNpc* GetNpcPtr(int sid);
 	void EndEventSay(int option1, int option2);
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_ROOMEVENT_H

@@ -4,6 +4,8 @@
 
 int main(int argc, char* argv[])
 {
+	using namespace VersionManager;
+
 	logger::Logger logger(logger::VersionManager);
 	return AppThread::main<VersionManagerApp>(argc, argv, logger);
 }

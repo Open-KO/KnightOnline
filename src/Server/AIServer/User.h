@@ -8,6 +8,9 @@
 
 #include <shared-server/STLMap.h>
 
+namespace AIServer
+{
+
 class AIServerApp;
 class CUser
 {
@@ -102,5 +105,7 @@ public:
 	CUser();
 	virtual ~CUser();
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_USER_H

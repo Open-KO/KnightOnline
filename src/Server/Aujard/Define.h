@@ -8,7 +8,12 @@
 #include <shared/globals.h>
 #include <shared-server/_USER_DATA.h>
 
+#include <Aujard/model/AujardModel.h>
+
 #include <string_view>
+
+namespace Aujard
+{
 
 constexpr int MAX_USER            = 3000;
 constexpr long DB_PROCESS_TIMEOUT = 10;
@@ -42,11 +47,6 @@ enum e_NewCharResult : int8_t
 	NEW_CHAR_SYNC_ERROR   = 4
 };
 
-/////////////////////////////////////////////////////////////////////////////////
-// Structure Define
-/////////////////////////////////////////////////////////////////////////////////
-
-#include <Aujard/model/AujardModel.h>
 namespace model = aujard_model;
 
 namespace ini
@@ -64,5 +64,7 @@ static constexpr std::string_view ACCOUNT_PWD = "ACCOUNT_PWD";
 static constexpr std::string_view ZONE_INFO   = "ZONE_INFO";
 static constexpr std::string_view GROUP_INFO  = "GROUP_INFO";
 } // namespace ini
+
+} // namespace Aujard
 
 #endif // SERVER_AUJARD_DEFINE_H

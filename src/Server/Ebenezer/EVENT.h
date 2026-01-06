@@ -6,7 +6,10 @@
 #include "EVENT_DATA.h"
 #include <shared-server/STLMap.h>
 
-typedef CSTLMap<EVENT_DATA> EventDataArray;
+namespace Ebenezer
+{
+
+using EventDataArray = CSTLMap<EVENT_DATA>;
 
 class EVENT
 {
@@ -25,5 +28,7 @@ public:
 	EVENT();
 	virtual ~EVENT();
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_EVENT_H

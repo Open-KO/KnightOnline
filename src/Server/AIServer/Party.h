@@ -3,6 +3,9 @@
 
 #pragma once
 
+namespace AIServer
+{
+
 class AIServerApp;
 class CParty
 {
@@ -19,5 +22,7 @@ public:
 	void PartyCreate(char* pBuf);
 	void PartyProcess(char* pBuf);
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_PARTY_H

@@ -8,9 +8,12 @@
 
 #include <shared-server/STLMap.h>
 
-typedef CSTLMap<_ZONE_ITEM> ZoneItemArray;
-typedef CSTLMap<int> ZoneUserArray;
-typedef CSTLMap<int> ZoneNpcArray;
+namespace Ebenezer
+{
+
+using ZoneItemArray = CSTLMap<_ZONE_ITEM>;
+using ZoneUserArray = CSTLMap<int>;
+using ZoneNpcArray  = CSTLMap<int>;
 
 class CRegion
 {
@@ -19,5 +22,7 @@ public:
 	ZoneUserArray m_RegionUserArray;
 	ZoneNpcArray m_RegionNpcArray;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_REGION_H

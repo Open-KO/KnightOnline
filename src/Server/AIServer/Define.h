@@ -6,10 +6,8 @@
 #include <shared/globals.h>
 #include <MathUtils/GeometricStructs.h>
 
-/*
-	 ** Repent AI Server 작업시 참고 사항 **
-	1. #define AI_SOCKET_PORT	10020 -> 11020으로 수정됨..
-*/
+namespace AIServer
+{
 
 constexpr int USER_DAMAGE_OVERRIDE_GM         = 30'000;
 constexpr int USER_DAMAGE_OVERRIDE_LIMITED_GM = 0;
@@ -247,5 +245,7 @@ enum e_AttributeType : uint8_t
 	ATTRIBUTE_ICE       = 2,
 	ATTRIBUTE_LIGHTNING = 3
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_DEFINE_H

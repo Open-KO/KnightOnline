@@ -3,6 +3,9 @@
 
 #pragma once
 
+namespace AIServer
+{
+
 constexpr uint8_t INFO_MODIFY          = 1;
 constexpr uint8_t INFO_DELETE          = 2;
 
@@ -25,5 +28,7 @@ enum e_ServerInfoOpcode : uint8_t
 	SERVER_INFO_START = 1,
 	SERVER_INFO_END   = 2
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_PACKET_H

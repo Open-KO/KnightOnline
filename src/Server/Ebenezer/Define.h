@@ -5,6 +5,9 @@
 
 #include <shared/globals.h>
 
+namespace Ebenezer
+{
+
 constexpr int MAX_USER              = 3000;
 
 constexpr int _LISTEN_PORT          = 15000;
@@ -320,5 +323,7 @@ struct _REGION_BUFFER
 	int iLength = 0;
 	char pDataBuff[REGION_BUFF_SIZE] {};
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_DEFINE_H

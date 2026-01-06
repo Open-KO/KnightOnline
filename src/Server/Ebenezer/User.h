@@ -17,8 +17,11 @@
 
 #include <list>
 
-typedef std::list<_EXCHANGE_ITEM*> ItemList;
-typedef std::list<int> UserEventList; // 이밴트를 위하여 ^^;
+namespace Ebenezer
+{
+
+using ItemList                  = std::list<_EXCHANGE_ITEM*>;
+using UserEventList             = std::list<int>; // 이밴트를 위하여 ^^;
 
 constexpr int BANISH_DELAY_TIME = 30;
 
@@ -420,5 +423,7 @@ public:
 	void Rotate(char* pBuf);
 	void LoginProcess(char* pBuf);
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_USER_H

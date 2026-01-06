@@ -5,6 +5,9 @@
 
 #include <MathUtils/GeometricStructs.h>
 
+namespace AIServer
+{
+
 class _PathNode
 {
 public:
@@ -56,5 +59,7 @@ protected:
 
 	AIServerApp* m_pMain;
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_PATHFIND_H

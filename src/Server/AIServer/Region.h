@@ -5,11 +5,11 @@
 
 #include <shared-server/STLMap.h>
 
-class CUser;
-class CNpc;
+namespace AIServer
+{
 
-typedef CSTLMap<int> ZoneUserArray;
-typedef CSTLMap<int> ZoneNpcArray;
+using ZoneUserArray = CSTLMap<int>;
+using ZoneNpcArray  = CSTLMap<int>;
 
 class CRegion
 {
@@ -19,4 +19,6 @@ public:
 	uint8_t m_byMoving              = 0; // move : 1, not moving : 0
 };
 
-#endif                                   // SERVER_AISERVER_REGION_H
+} // namespace AIServer
+
+#endif // SERVER_AISERVER_REGION_H

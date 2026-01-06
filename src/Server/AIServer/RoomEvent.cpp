@@ -5,6 +5,9 @@
 
 #include <spdlog/spdlog.h>
 
+namespace AIServer
+{
+
 extern std::mutex g_region_mutex;
 
 CRoomEvent::CRoomEvent()
@@ -466,3 +469,5 @@ void CRoomEvent::EndEventSay(int option1, int option2)
 			break;
 	}
 }
+
+} // namespace AIServer

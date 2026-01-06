@@ -2,6 +2,9 @@
 #include "ItemManagerReadQueueThread.h"
 #include "ItemManagerApp.h"
 
+namespace ItemManager
+{
+
 ItemManagerReadQueueThread::ItemManagerReadQueueThread() :
 	ReadQueueThread(ItemManagerApp::instance()->LoggerRecvQueue)
 {
@@ -29,3 +32,5 @@ void ItemManagerReadQueueThread::process_packet(const char* buffer, int /*len*/)
 			break;
 	}
 }
+
+} // namespace ItemManager

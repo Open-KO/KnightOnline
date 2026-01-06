@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include "Define.h"
+
+namespace Ebenezer
+{
+
 class EXEC
 {
 public:
@@ -15,5 +20,7 @@ public:
 	EXEC();
 	virtual ~EXEC();
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_EXEC_H

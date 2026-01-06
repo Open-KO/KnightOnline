@@ -6,6 +6,11 @@
 #include <shared/globals.h>
 #include <string_view>
 
+namespace ItemManager
+{
+
 static constexpr char SMQ_ITEMLOGGER[] = "ITEMLOG_SEND";
+
+} // namespace ItemManager
 
 #endif // SERVER_ITEMMANAGER_DEFINE_H

@@ -7,6 +7,9 @@
 
 #include <queue>
 
+namespace AIServer
+{
+
 class AISocketManager;
 struct _SEND_DATA;
 class SendThreadMain : public Thread
@@ -27,5 +30,7 @@ protected:
 	std::queue<_SEND_DATA*> _insertionQueue;
 	int _nextRoundRobinSocketId;
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_SENDTHREADMAIN_H

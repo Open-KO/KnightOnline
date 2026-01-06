@@ -6,6 +6,9 @@
 
 #include <set>
 
+namespace VersionManager
+{
+
 CUser::CUser(SocketManager* socketManager) : TcpServerSocket(socketManager)
 {
 }
@@ -260,3 +263,5 @@ void CUser::NewsReq()
 
 	Send(sendBuffer, sendIndex);
 }
+
+} // namespace VersionManager

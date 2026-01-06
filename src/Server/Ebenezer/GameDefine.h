@@ -6,6 +6,11 @@
 #include <shared/globals.h>
 #include <shared-server/_USER_DATA.h>
 
+#include <Ebenezer/model/EbenezerModel.h>
+
+namespace Ebenezer
+{
+
 //////////////////// 직업별 Define ////////////////////
 constexpr int KARUWARRRIOR  = 101; // 카루전사
 constexpr int KARUROGUE     = 102; // 카루로그
@@ -279,9 +284,6 @@ enum e_AttributeType : uint8_t
 	ATTRIBUTE_LIGHTNING = 3
 };
 
-#include <Ebenezer/model/EbenezerModel.h>
-namespace model = ebenezer_model;
-
 // Bundle unit
 struct _ZONE_ITEM
 {
@@ -399,5 +401,9 @@ struct _WARP_INFO
 	int16_t sNation       = 0;
 };
 #pragma pack(pop)
+
+namespace model = ebenezer_model;
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_GAMEDEFINE_H

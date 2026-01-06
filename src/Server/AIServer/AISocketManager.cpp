@@ -3,6 +3,9 @@
 #include "SendThreadMain.h"
 #include "GameSocket.h"
 
+namespace AIServer
+{
+
 AISocketManager::AISocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
 	_sendThreadMain             = new SendThreadMain(this);
@@ -29,3 +32,5 @@ void AISocketManager::QueueSendData(_SEND_DATA* sendData)
 {
 	_sendThreadMain->queue(sendData);
 }
+
+} // namespace AIServer

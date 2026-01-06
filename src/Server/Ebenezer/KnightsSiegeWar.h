@@ -3,6 +3,9 @@
 
 #pragma once
 
+namespace Ebenezer
+{
+
 class CKnightsSiegeWar
 {
 public:
@@ -11,5 +14,7 @@ public:
 	int16_t _castleIndex;
 	int16_t _masterKnights;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_KNIGHTSSIEGEWAR_H

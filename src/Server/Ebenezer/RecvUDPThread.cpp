@@ -2,6 +2,9 @@
 #include "RecvUDPThread.h"
 #include "UdpSocket.h"
 
+namespace Ebenezer
+{
+
 RecvUDPThread::RecvUDPThread(CUdpSocket* udpSocket) : _udpSocket(udpSocket)
 {
 }
@@ -24,3 +27,5 @@ RecvUDPThread::~RecvUDPThread()
 {
 	shutdown();
 }
+
+} // namespace Ebenezer

@@ -5,6 +5,9 @@
 
 #include <shared/Thread.h>
 
+namespace AIServer
+{
+
 class AIServerApp;
 class ZoneEventThread : public Thread
 {
@@ -15,5 +18,7 @@ public:
 protected:
 	AIServerApp* _main;
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_ZONEEVENTTHREAD_H

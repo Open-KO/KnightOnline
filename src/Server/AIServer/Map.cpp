@@ -15,6 +15,9 @@
 #include <cfloat>
 #include <filesystem>
 
+namespace AIServer
+{
+
 extern std::mutex g_region_mutex;
 
 MAP::MAP()
@@ -895,3 +898,5 @@ bool MAP::IsValidPosition(float x, float z) const
 
 	return true;
 }
+
+} // namespace AIServer

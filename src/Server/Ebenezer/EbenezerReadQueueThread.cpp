@@ -3,6 +3,9 @@
 #include "EbenezerApp.h"
 #include "User.h"
 
+namespace Ebenezer
+{
+
 EbenezerReadQueueThread::EbenezerReadQueueThread() :
 	ReadQueueThread(EbenezerApp::instance()->m_LoggerRecvQueue)
 {
@@ -121,3 +124,5 @@ void EbenezerReadQueueThread::process_packet(const char* buffer, int len)
 			break;
 	}
 }
+
+} // namespace Ebenezer

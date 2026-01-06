@@ -5,6 +5,9 @@
 #include <djb2/djb2_hasher.h>
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 EXEC::EXEC()
 {
 }
@@ -99,3 +102,5 @@ void EXEC::Init()
 	for (int i = 0; i < MAX_EXEC_INT; i++)
 		m_ExecInt[i] = -1;
 }
+
+} // namespace Ebenezer

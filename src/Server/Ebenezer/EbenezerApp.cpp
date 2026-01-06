@@ -24,13 +24,16 @@
 
 #include <fstream>
 
+using namespace db;
+using namespace std::chrono_literals;
+
+namespace Ebenezer
+{
+
 constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT = 50;
 
 constexpr int NUM_FLAG_VICTORY               = 4;
 constexpr int AWARD_GOLD                     = 5000;
-
-using namespace db;
-using namespace std::chrono_literals;
 
 std::recursive_mutex g_region_mutex;
 
@@ -3576,3 +3579,5 @@ void EbenezerApp::GameTimeTick()
 	}
 	// sungyong~ 2002.05.23
 }
+
+} // namespace Ebenezer

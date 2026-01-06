@@ -7,6 +7,9 @@
 
 using namespace std::chrono_literals;
 
+namespace AIServer
+{
+
 ZoneEventThread::ZoneEventThread() : Thread()
 {
 	_main = AIServerApp::instance();
@@ -48,3 +51,5 @@ void ZoneEventThread::thread_loop()
 		std::this_thread::sleep_for(1s);
 	}
 }
+
+} // namespace AIServer

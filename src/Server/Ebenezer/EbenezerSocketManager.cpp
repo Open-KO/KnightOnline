@@ -4,6 +4,9 @@
 #include "SendWorkerThread.h"
 #include "User.h"
 
+namespace Ebenezer
+{
+
 EbenezerSocketManager::EbenezerSocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
 	_sendWorkerThread           = new SendWorkerThread(this);
@@ -35,3 +38,5 @@ CUser* EbenezerSocketManager::GetInactiveUserUnchecked(int socketId) const
 {
 	return static_cast<CUser*>(GetInactiveServerSocketUnchecked(socketId));
 }
+
+} // namespace Ebenezer

@@ -7,6 +7,9 @@
 
 #include "MagicProcess.h"
 
+namespace Ebenezer
+{
+
 class EbenezerApp;
 class CAISocket : public TcpClientSocket
 {
@@ -52,5 +55,7 @@ public:
 	void RecvNpcEventItem(char* pBuf);
 	void RecvGateOpen(char* pBuf);
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_AISOCKET_H

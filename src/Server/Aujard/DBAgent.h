@@ -3,14 +3,16 @@
 
 #pragma once
 
-#include <memory>
-
 #include "Define.h"
-#include <vector>
-
 #include <db-library/fwd.h>
 
-typedef std::vector<_USER_DATA*> UserDataArray;
+#include <memory>
+#include <vector>
+
+namespace Aujard
+{
+
+using UserDataArray = std::vector<_USER_DATA*>;
 
 class AujardApp;
 class CDBAgent
@@ -156,5 +158,7 @@ private:
 	/// \brief reference back to the main AujardApp instance
 	AujardApp* _main = nullptr;
 };
+
+} // namespace Aujard
 
 #endif // SERVER_AUJARD_DBAGENT_H

@@ -5,6 +5,9 @@
 
 #include <shared-server/ReadQueueThread.h>
 
+namespace Ebenezer
+{
+
 class EbenezerReadQueueThread : public ReadQueueThread
 {
 public:
@@ -13,5 +16,7 @@ public:
 protected:
 	void process_packet(const char* buffer, int len) override;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_EBENEZERREADQUEUETHREAD_H

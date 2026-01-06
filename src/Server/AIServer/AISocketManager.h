@@ -6,6 +6,9 @@
 #include <shared-server/SocketManager.h>
 #include "Define.h"
 
+namespace AIServer
+{
+
 struct _SEND_DATA
 {
 	int16_t sCurZone;           // 현재의 존
@@ -29,5 +32,7 @@ public:
 protected:
 	SendThreadMain* _sendThreadMain;
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_AISOCKETMANAGER_H

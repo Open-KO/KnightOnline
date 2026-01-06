@@ -14,6 +14,11 @@
 #include <shared/globals.h>
 #include <shared-server/STLMap.h>
 
+#include <VersionManager/model/VersionManagerModel.h>
+
+namespace VersionManager
+{
+
 constexpr int MAX_USER           = 3000;
 
 constexpr int _LISTEN_PORT       = 15100;
@@ -36,9 +41,6 @@ typedef union
 	uint8_t b[2];
 } MYSHORT;
 
-#include <VersionManager/model/VersionManagerModel.h>
-namespace model = versionmanager_model;
-
 struct _NEWS
 {
 	char Content[4096] = {};
@@ -54,7 +56,9 @@ struct _SERVER_INFO
 	int16_t sServerID  = 1;
 };
 
-typedef CSTLMap<model::Version> VersionInfoList;
+namespace model       = versionmanager_model;
+
+using VersionInfoList = CSTLMap<model::Version>;
 
 // ini config variable names
 namespace ini
@@ -74,5 +78,7 @@ static constexpr std::string_view DOWNLOAD    = "DOWNLOAD";
 static constexpr std::string_view URL         = "URL";
 static constexpr std::string_view PATH        = "PATH";
 } // namespace ini
+
+} // namespace VersionManager
 
 #endif // SERVER_VERSIONMANAGER_DEFINE_H

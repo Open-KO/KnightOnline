@@ -4,6 +4,8 @@
 
 bool fmt::resource_helper::get_from_db(uint32_t resourceId, std::string& fmtStr)
 {
+	using namespace Ebenezer;
+
 	EbenezerApp* appInstance = EbenezerApp::instance();
 	if (appInstance == nullptr)
 	{

@@ -5,6 +5,9 @@
 
 #include <shared-server/TcpServerSocket.h>
 
+namespace VersionManager
+{
+
 class CVersionManagerDlg;
 class CUser : public TcpServerSocket
 {
@@ -18,5 +21,7 @@ public:
 	void LogInReq(char* pBuf);
 	void SendAuthNotFound();
 };
+
+} // namespace VersionManager
 
 #endif // SERVER_VERSIONMANAGER_USER_H

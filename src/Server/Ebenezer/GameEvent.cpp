@@ -3,6 +3,9 @@
 #include "User.h"
 #include "GameDefine.h"
 
+namespace Ebenezer
+{
+
 CGameEvent::CGameEvent()
 {
 }
@@ -37,3 +40,5 @@ void CGameEvent::RunEvent(CUser* pUser)
 			break;
 	}
 }
+
+} // namespace Ebenezer

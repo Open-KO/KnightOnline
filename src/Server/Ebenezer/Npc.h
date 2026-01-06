@@ -5,6 +5,9 @@
 
 #include "Define.h"
 
+namespace Ebenezer
+{
+
 class EbenezerApp;
 class CNpc
 {
@@ -68,5 +71,7 @@ public:
 		return m_byState;
 	}
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_NPC_H

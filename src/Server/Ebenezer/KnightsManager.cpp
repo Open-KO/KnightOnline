@@ -8,7 +8,11 @@
 #include <shared/DateTime.h>
 #include <shared/packets.h>
 #include <shared/StringUtils.h>
+
 #include <spdlog/spdlog.h>
+
+namespace Ebenezer
+{
 
 CKnightsManager::CKnightsManager()
 {
@@ -1533,3 +1537,5 @@ void CKnightsManager::RecvKnightsAllList(const char* pBuf)
 		m_pMain->Send_All(sendBuffer, sendIndex, nullptr);
 	}
 }
+
+} // namespace Ebenezer

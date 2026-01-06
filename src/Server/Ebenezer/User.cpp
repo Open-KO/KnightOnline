@@ -12,6 +12,9 @@
 #include <shared/StringUtils.h>
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 extern std::recursive_mutex g_region_mutex;
 extern bool g_serverdown_flag;
 
@@ -13137,3 +13140,5 @@ bool CUser::CheckMiddleStatueCapture() const
 			return false;
 	}
 }
+
+} // namespace Ebenezer

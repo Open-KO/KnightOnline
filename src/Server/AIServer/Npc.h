@@ -10,6 +10,9 @@
 
 #include <shared-server/My_3DStruct.h>
 
+namespace AIServer
+{
+
 constexpr int MAX_MAP_SIZE         = 10000;
 constexpr int MAX_PATH_SIZE        = 100;
 
@@ -643,5 +646,7 @@ public:
 	void ChangeAbility(int iChangeType);
 	bool Teleport();
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_NPC_H

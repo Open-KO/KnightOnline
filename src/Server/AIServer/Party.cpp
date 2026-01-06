@@ -4,6 +4,9 @@
 
 #include <spdlog/spdlog.h>
 
+namespace AIServer
+{
+
 extern std::mutex g_region_mutex;
 
 CParty::CParty()
@@ -192,3 +195,5 @@ void CParty::PartyDelete(char* pBuf)
 	std::lock_guard<std::mutex> lock(g_region_mutex);
 	m_pMain->_partyMap.DeleteData(pParty->wIndex);
 }
+
+} // namespace AIServer
