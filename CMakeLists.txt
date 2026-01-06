@@ -205,19 +205,11 @@ if(OPENKO_BUILD_SERVERS)
   )
 
   # Servers
-  set(CMAKE_FOLDER "Server/AIServer")
+  set(CMAKE_FOLDER "Server")
   add_subdirectory(src/Server/AIServer)
-
-  set(CMAKE_FOLDER "Server/Aujard")
   add_subdirectory(src/Server/Aujard)
-
-  set(CMAKE_FOLDER "Server/Ebenezer")
   add_subdirectory(src/Server/Ebenezer)
-
-  set(CMAKE_FOLDER "Server/ItemManager")
   add_subdirectory(src/Server/ItemManager)
-
-  set(CMAKE_FOLDER "Server/VersionManager")
   add_subdirectory(src/Server/VersionManager)
 endif()
 

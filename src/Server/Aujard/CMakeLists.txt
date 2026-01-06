@@ -1,4 +1,4 @@
-add_library(libaujard
+add_library(Aujard.Core
   AujardApp.cpp
   AujardApp.h
   AujardReadQueueThread.cpp
@@ -22,26 +22,26 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
-  set_property(TARGET libaujard PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  set_property(TARGET Aujard.Core PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET Aujard PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(libaujard PRIVATE pch.h)
+target_precompile_headers(Aujard.Core PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(libaujard PUBLIC
+target_link_libraries(Aujard.Core PUBLIC
   db-library
   FileIO
   shared-server
 )
 
 target_link_libraries(Aujard PRIVATE
-  libaujard
+  Aujard.Core
 )
 
 # Setup warning levels
-target_compile_options(libaujard PRIVATE
+target_compile_options(Aujard.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>

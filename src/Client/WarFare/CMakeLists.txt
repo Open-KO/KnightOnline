@@ -268,7 +268,7 @@ set(WARFARE_POPUP_NOTICE_TEXT_SOURCES
   WarMessage.h
 )
 
-add_library(libwarfare
+add_library(WarFare.Core
   Bitset.h
   ClientResourceFormatter.cpp
   ClientResourceFormatter.h
@@ -340,27 +340,27 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
-  set_property(TARGET libwarfare PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  set_property(TARGET WarFare.Core PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET WarFare PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(libwarfare PRIVATE StdAfx.h)
+target_precompile_headers(WarFare.Core PRIVATE StdAfx.h)
 
 # Setup dependencies
-target_link_libraries(libwarfare PUBLIC
+target_link_libraries(WarFare.Core PUBLIC
   FileIO
   JpegFile
   N3Base_client
 )
 
 target_link_libraries(WarFare PRIVATE
-  libwarfare
+  WarFare.Core
 )
 
 # Link in the libs that we use
 if(WIN32)
-  target_link_libraries(libwarfare PRIVATE
+  target_link_libraries(WarFare.Core PRIVATE
     imm32.lib
     winmm.lib
     ws2_32.lib
@@ -369,14 +369,14 @@ if(WIN32)
 endif()
 
 # Setup preprocessor defines
-target_compile_definitions(libwarfare PRIVATE
+target_compile_definitions(WarFare.Core PRIVATE
   _WINSOCK_DEPRECATED_NO_WARNINGS)
 
 target_compile_definitions(WarFare PRIVATE
   _WINSOCK_DEPRECATED_NO_WARNINGS)
 
 # Setup warning levels
-target_compile_options(libwarfare PRIVATE
+target_compile_options(WarFare.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>

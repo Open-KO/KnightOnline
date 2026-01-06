@@ -1,7 +1,7 @@
 set(AISERVER_VS_MAP_DIR   "${OPENKO_SERVER_MAP_SRC_DIR}")
 set(AISERVER_VS_EVENT_DIR "${OPENKO_SERVER_MAP_SRC_DIR}") # Intentionally the same
 
-add_library(libaiserver
+add_library(AIServer.Core
   AIServerApp.cpp
   AIServerApp.h
   AIServerLogger.cpp
@@ -57,26 +57,26 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
-  set_property(TARGET libaiserver PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  set_property(TARGET AIServer.Core PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET AIServer PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(libaiserver PRIVATE pch.h)
+target_precompile_headers(AIServer.Core PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(libaiserver PUBLIC
+target_link_libraries(AIServer.Core PUBLIC
   db-library
   FileIO
   shared-server
 )
 
 target_link_libraries(AIServer PRIVATE
-  libaiserver
+  AIServer.Core
 )
 
 # Setup warning levels
-target_compile_options(libaiserver PRIVATE
+target_compile_options(AIServer.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>

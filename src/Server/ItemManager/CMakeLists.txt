@@ -1,4 +1,4 @@
-add_library(libitemmanager
+add_library(ItemManager.Core
   Define.h
   ItemManagerApp.cpp
   ItemManagerApp.h
@@ -22,25 +22,25 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
-  set_property(TARGET libitemmanager PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  set_property(TARGET ItemManager.Core PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET ItemManager PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(libitemmanager PRIVATE pch.h)
+target_precompile_headers(ItemManager.Core PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(libitemmanager PUBLIC
+target_link_libraries(ItemManager.Core PUBLIC
   shared-server
   FileIO
 )
 
 target_link_libraries(ItemManager PRIVATE
-  libitemmanager
+  ItemManager.Core
 )
 
 # Setup warning levels
-target_compile_options(libitemmanager PRIVATE
+target_compile_options(ItemManager.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
