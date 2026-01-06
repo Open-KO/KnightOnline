@@ -43,7 +43,7 @@ public:
 	void OpenFirstFile();
 	void OpenPrevFile();
 	void OpenNextFile();
-	void FindFiles();
+	void FindFiles(LPCTSTR lpszPathName);
 	virtual ~CN3TexViewerDoc();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
