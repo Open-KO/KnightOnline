@@ -1,0 +1,25 @@
+REGEDIT4
+; This .REG file associates .dxt and .gtt files with N3TexViewer.
+; Double-clicking these files will open them in N3TexViewer.
+
+[HKEY_CLASSES_ROOT\.dxt]
+@="N3TexViewer"
+
+[HKEY_CLASSES_ROOT\.gtt]
+@="N3TexViewer"
+
+[HKEY_CLASSES_ROOT\N3TexViewer]
+@="N3TexViewer Document"
+
+[HKEY_CLASSES_ROOT\N3TexViewer\shell]
+
+[HKEY_CLASSES_ROOT\N3TexViewer\shell\open]
+
+[HKEY_CLASSES_ROOT\N3TexViewer\shell\open\command]
+@="N3TexViewer.exe %1"
+
+[HKEY_CLASSES_ROOT\N3TexViewer\shell\open\ddeexec]
+@="[open(\"%1\")]"
+
+[HKEY_CLASSES_ROOT\N3TexViewer\shell\open\ddeexec\application]
+@="N3TexViewer"
