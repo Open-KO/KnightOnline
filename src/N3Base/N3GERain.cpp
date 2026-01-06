@@ -58,7 +58,7 @@ void CN3GERain::Tick()
 		return;
 
 	__VertexXyzColor* pVertices = nullptr;
-	HRESULT hr                  = m_pVB->Lock(0, 0, (void**) &pVertices, D3DLOCK_NOSYSLOCK);
+	HRESULT hr                  = m_pVB->Lock(0, 0, (void**) &pVertices, 0);
 	if (FAILED(hr))
 		return;
 
@@ -225,8 +225,7 @@ void CN3GERain::Create(float fDensity, float fWidth, float fHeight, float fRainL
 		return;
 
 	__VertexXyzColor* pVertices = nullptr;
-	hr                          = m_pVB->Lock(
-        0, iRainCount * 2 * sizeof(__VertexXyzColor), (void**) &pVertices, D3DLOCK_NOSYSLOCK);
+	hr = m_pVB->Lock(0, iRainCount * 2 * sizeof(__VertexXyzColor), (void**) &pVertices, 0);
 	if (FAILED(hr))
 		return;
 

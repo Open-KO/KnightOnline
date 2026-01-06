@@ -597,14 +597,13 @@ void CN3Eng::WaitForDeviceRestoration()
 	while (true)
 	{
 		HRESULT rval = s_lpD3DDev->TestCooperativeLevel();
-
-		if (D3DERR_DEVICENOTRESET == rval || D3D_OK == rval)
+		if (rval == D3DERR_DEVICENOTRESET || rval == D3D_OK)
 		{
-			if (D3D_OK == s_lpD3DDev->Reset(&s_DevParam))
+			rval = s_lpD3DDev->Reset(&s_DevParam);
+			if (rval == D3D_OK)
 			{
 #ifdef _N3GAME
-				// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
-				//CLogWriter::Write("Device Reset Success ErrCode({:X})", rval);
+				CLogWriter::Write("Device reset succeeded");
 #endif
 				SetDefaultEnvironment();
 				break;
@@ -612,7 +611,7 @@ void CN3Eng::WaitForDeviceRestoration()
 
 #ifdef _N3GAME
 			// NOTE: Officially it's ErrCode(%d) but this is horrendously useless
-			CLogWriter::Write("Device Reset Failed - ErrCode(:X)", rval);
+			CLogWriter::Write("Device reset failed - ErrCode(:X)", rval);
 #endif
 		}
 
