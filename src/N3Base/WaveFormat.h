@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <inttypes.h> // uint32_t, uint16_t
+#include <cinttypes> // uint32_t, uint16_t
 
 #pragma pack(push, 1)
 /// \brief Represents the 'data' chunk of a WAV file.

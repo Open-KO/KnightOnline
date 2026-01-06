@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <shared/globals.h>
 

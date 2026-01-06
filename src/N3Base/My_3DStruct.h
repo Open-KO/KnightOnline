@@ -5,8 +5,7 @@
 
 #include <d3dx9.h>
 #include <string>
-#include <stdint.h>
-#include <inttypes.h>
+#include <cinttypes>
 #include <cmath>
 
 #include <spdlog/fmt/bundled/format.h>

@@ -5,8 +5,7 @@
 
 #include <string>
 #include <dinput.h>
-#include <stdint.h>
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <shared/version.h>
 
