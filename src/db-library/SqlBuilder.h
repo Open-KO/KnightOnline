@@ -85,7 +85,8 @@ public:
 
 		if (!Where.empty())
 		{
-			query += " " + Where;
+			query += " WHERE ";
+			query += Where;
 		}
 		else if (IsWherePK && !ModelType::PrimaryKey().empty())
 		{
