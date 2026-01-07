@@ -93,11 +93,11 @@
     </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/FileIO/FileIO-tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
+    <Project Path="tests/FileIO/FileIO.Tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
       <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
     </Project>
-    <Project Path="tests/MathUtils/MathUtils-tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
+    <Project Path="tests/MathUtils/MathUtils.Tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
       <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
     </Project>

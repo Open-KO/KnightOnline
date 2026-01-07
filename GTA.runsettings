@@ -2,7 +2,7 @@
 <RunSettings>
   <GoogleTestAdapter>
     <TestDiscoveryTimeout>10000</TestDiscoveryTimeout>
-    <TestBinaryNamePattern>.*-tests\.exe$</TestBinaryNamePattern>
+    <TestBinaryNamePattern>(.*)\.Tests\.exe$</TestBinaryNamePattern>
     <AdditionalTestDirectories>
       $(SolutionDir)\bin\$(Platform)\$(Configuration)
     </AdditionalTestDirectories>
