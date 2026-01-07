@@ -20,10 +20,10 @@
 namespace Ebenezer
 {
 
-using ItemList                  = std::list<_EXCHANGE_ITEM*>;
-using UserEventList             = std::list<int>; // 이밴트를 위하여 ^^;
+using ItemList                         = std::list<_EXCHANGE_ITEM*>;
+using UserEventList                    = std::list<int>; // 이밴트를 위하여 ^^;
 
-constexpr int BANISH_DELAY_TIME = 30;
+inline constexpr int BANISH_DELAY_TIME = 30;
 
 class EbenezerApp;
 class CUser : public TcpServerSocket
@@ -110,7 +110,7 @@ public:
 	// For Automatic HP recovery and Type 3 durational HP recovery.
 	double m_fHPLastTime[MAX_TYPE3_REPEAT]  = {};
 	double m_fHPStartTime[MAX_TYPE3_REPEAT] = {};
-	int16_t m_bHPAmount[MAX_TYPE3_REPEAT]; /* initialized in constructor */
+	int16_t m_bHPAmount[MAX_TYPE3_REPEAT]   = {};
 	uint8_t m_bHPDuration[MAX_TYPE3_REPEAT] = {};
 	uint8_t m_bHPInterval[MAX_TYPE3_REPEAT] = {};
 	int16_t m_sSourceID[MAX_TYPE3_REPEAT]   = {};
@@ -192,7 +192,7 @@ public:
 
 	// 이밴트용 관련.... 정애씨 이거 보면 코카스 쏠께요 ^^;
 	// 실행중인 선택 메세지박스 이벤트
-	int m_iSelMsgEvent[MAX_MESSAGE_EVENT];
+	int m_iSelMsgEvent[MAX_MESSAGE_EVENT] = {};
 	UserEventList m_arUserEvent;                   // 실행한 이벤트 리스트
 	int16_t m_sEventNid                      = -1; // 마지막으로 선택한 이벤트 NPC 번호
 
@@ -200,33 +200,35 @@ public:
 	int m_iEditBoxEvent                      = -1;
 
 	// 이미 실행된 이밴트 리스트들 :)
-	int16_t m_sEvent[MAX_CURRENT_EVENT]; // initialized in constructor
+	int16_t m_sEvent[MAX_CURRENT_EVENT]      = {};
 
-	bool m_bIsPartyLeader         = false;
-	uint8_t m_byInvisibilityState = 0;
-	int16_t m_sDirection          = 0;
-	bool m_bIsChicken             = false;
-	uint8_t m_byKnightsRank       = 0;
-	uint8_t m_byPersonalRank      = 0;
+	bool m_bIsPartyLeader                    = false;
+	uint8_t m_byInvisibilityState            = 0;
+	int16_t m_sDirection                     = 0;
+	bool m_bIsChicken                        = false;
+	uint8_t m_byKnightsRank                  = 0;
+	uint8_t m_byPersonalRank                 = 0;
 
 	// Selected exchange slot for last exchange (1~5).
 	// Applicable only to exchange type 101.
-	uint8_t m_byLastExchangeNum   = 0;
+	uint8_t m_byLastExchangeNum              = 0;
 
 	// Game socket specific:
-	_REGION_BUFFER* _regionBuffer = nullptr;
+	_REGION_BUFFER* _regionBuffer            = nullptr;
 
-	CJvCryption _jvCryption       = {};
-	bool _jvCryptionEnabled       = false;
+	CJvCryption _jvCryption                  = {};
+	bool _jvCryptionEnabled                  = false;
 
-	uint32_t _sendValue           = 0;
-	uint32_t _recvValue           = 0;
+	uint32_t _sendValue                      = 0;
+	uint32_t _recvValue                      = 0;
 	//
 
 public:
+	CUser(test_tag);
 	CUser(SocketManager* socketManager);
 	~CUser() override;
 
+public:
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;

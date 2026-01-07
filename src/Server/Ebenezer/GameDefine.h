@@ -12,48 +12,48 @@ namespace Ebenezer
 {
 
 //////////////////// 직업별 Define ////////////////////
-constexpr int KARUWARRRIOR  = 101; // 카루전사
-constexpr int KARUROGUE     = 102; // 카루로그
-constexpr int KARUWIZARD    = 103; // 카루마법
-constexpr int KARUPRIEST    = 104; // 카루사제
-constexpr int BERSERKER     = 105; // 버서커
-constexpr int GUARDIAN      = 106; // 가디언
-constexpr int HUNTER        = 107; // 헌터
-constexpr int PENETRATOR    = 108; // 페너트레이터
-constexpr int SORSERER      = 109; // 소서러
-constexpr int NECROMANCER   = 110; // 네크로맨서
-constexpr int SHAMAN        = 111; // 샤만
-constexpr int DARKPRIEST    = 112; // 다크프리스트
-constexpr int ELMORWARRRIOR = 201; // 엘모전사
-constexpr int ELMOROGUE     = 202; // 엘모로그
-constexpr int ELMOWIZARD    = 203; // 엘모마법
-constexpr int ELMOPRIEST    = 204; // 엘모사제
-constexpr int BLADE         = 205; // 블레이드
-constexpr int PROTECTOR     = 206; // 프로텍터
-constexpr int RANGER        = 207; // 레인져
-constexpr int ASSASSIN      = 208; // 어쌔신
-constexpr int MAGE          = 209; // 메이지
-constexpr int ENCHANTER     = 210; // 엔첸터
-constexpr int CLERIC        = 211; // 클레릭
-constexpr int DRUID         = 212; // 드루이드
+inline constexpr int KARUWARRRIOR  = 101; // 카루전사
+inline constexpr int KARUROGUE     = 102; // 카루로그
+inline constexpr int KARUWIZARD    = 103; // 카루마법
+inline constexpr int KARUPRIEST    = 104; // 카루사제
+inline constexpr int BERSERKER     = 105; // 버서커
+inline constexpr int GUARDIAN      = 106; // 가디언
+inline constexpr int HUNTER        = 107; // 헌터
+inline constexpr int PENETRATOR    = 108; // 페너트레이터
+inline constexpr int SORSERER      = 109; // 소서러
+inline constexpr int NECROMANCER   = 110; // 네크로맨서
+inline constexpr int SHAMAN        = 111; // 샤만
+inline constexpr int DARKPRIEST    = 112; // 다크프리스트
+inline constexpr int ELMORWARRRIOR = 201; // 엘모전사
+inline constexpr int ELMOROGUE     = 202; // 엘모로그
+inline constexpr int ELMOWIZARD    = 203; // 엘모마법
+inline constexpr int ELMOPRIEST    = 204; // 엘모사제
+inline constexpr int BLADE         = 205; // 블레이드
+inline constexpr int PROTECTOR     = 206; // 프로텍터
+inline constexpr int RANGER        = 207; // 레인져
+inline constexpr int ASSASSIN      = 208; // 어쌔신
+inline constexpr int MAGE          = 209; // 메이지
+inline constexpr int ENCHANTER     = 210; // 엔첸터
+inline constexpr int CLERIC        = 211; // 클레릭
+inline constexpr int DRUID         = 212; // 드루이드
 /////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////
 // Race Define
 /////////////////////////////////////////////////////
-constexpr int KARUS_BIG     = 1;
-constexpr int KARUS_MIDDLE  = 2;
-constexpr int KARUS_SMALL   = 3;
-constexpr int KARUS_WOMAN   = 4;
-constexpr int BABARIAN      = 11;
-constexpr int ELMORAD_MAN   = 12;
-constexpr int ELMORAD_WOMAN = 13;
+inline constexpr int KARUS_BIG     = 1;
+inline constexpr int KARUS_MIDDLE  = 2;
+inline constexpr int KARUS_SMALL   = 3;
+inline constexpr int KARUS_WOMAN   = 4;
+inline constexpr int BABARIAN      = 11;
+inline constexpr int ELMORAD_MAN   = 12;
+inline constexpr int ELMORAD_WOMAN = 13;
 
 // 타격비별 성공률 //
-constexpr int GREAT_SUCCESS = 1; // 대성공
-constexpr int SUCCESS       = 2; // 성공
-constexpr int NORMAL        = 3; // 보통
-constexpr int FAIL          = 4; // 실패
+inline constexpr int GREAT_SUCCESS = 1; // 대성공
+inline constexpr int SUCCESS       = 2; // 성공
+inline constexpr int NORMAL        = 3; // 보통
+inline constexpr int FAIL          = 4; // 실패
 
 // Item Move Direction Define
 enum e_ItemMoveDirection : uint8_t
@@ -125,11 +125,14 @@ enum e_ClanType : uint8_t
 };
 ////////////////////////////////////////////////////////////
 
-constexpr int MAX_CLAN         = 36;
-constexpr int MAX_KNIGHTS_BANK = 200;
+inline constexpr int MAX_CLAN         = 36;
+inline constexpr int MAX_KNIGHTS_BANK = 200;
 
-constexpr int ITEM_GOLD        = 900000000; // 돈 아이템 번호...
-constexpr int ITEM_NO_TRADE    = 900000001; // 거래 불가 아이템들.... 비러머글 크리스마스 이밴트 >.<
+// 돈 아이템 번호...
+inline constexpr int ITEM_GOLD        = 900000000;
+
+// 거래 불가 아이템들.... 비러머글 크리스마스 이밴트 >.<
+inline constexpr int ITEM_NO_TRADE    = 900000001;
 
 ////////////////////////////////////////////////////////////
 // EVENT TYPE DEFINE
@@ -142,8 +145,8 @@ enum e_GameEventType : uint8_t
 
 ////////////////////////////////////////////////////////////
 // EVENT MISCELLANOUS DATA DEFINE
-constexpr int ZONE_TRAP_INTERVAL = 1;  // Interval is one second right now.
-constexpr int ZONE_TRAP_DAMAGE   = 10; // HP Damage is 10 for now :)
+inline constexpr int ZONE_TRAP_INTERVAL = 1;  // Interval is one second right now.
+inline constexpr int ZONE_TRAP_DAMAGE   = 10; // HP Damage is 10 for now :)
 
 ////////////////////////////////////////////////////////////
 

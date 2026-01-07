@@ -8,6 +8,7 @@
 class TcpServerSocket : public TcpSocket
 {
 public:
+	TcpServerSocket(test_tag);
 	TcpServerSocket(SocketManager* socketManager);
 	void Close() override;
 

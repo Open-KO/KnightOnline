@@ -2,6 +2,10 @@
 #include "TcpServerSocket.h"
 #include "SocketManager.h"
 
+TcpServerSocket::TcpServerSocket(test_tag tag) : TcpSocket(tag)
+{
+}
+
 TcpServerSocket::TcpServerSocket(SocketManager* socketManager) : TcpSocket(socketManager)
 {
 }

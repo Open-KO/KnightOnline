@@ -9,7 +9,7 @@
 namespace ItemManager
 {
 
-static constexpr char SMQ_ITEMLOGGER[] = "ITEMLOG_SEND";
+inline constexpr char SMQ_ITEMLOGGER[] = "ITEMLOG_SEND";
 
 } // namespace ItemManager
 

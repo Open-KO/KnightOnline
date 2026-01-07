@@ -15,14 +15,14 @@
 namespace Aujard
 {
 
-constexpr int MAX_USER            = 3000;
-constexpr long DB_PROCESS_TIMEOUT = 10;
+inline constexpr int MAX_USER            = 3000;
+inline constexpr long DB_PROCESS_TIMEOUT = 10;
 
 ////////////////////////////////////////////////////////////
 // DEFINE Shared Memory Costumizing
 
-constexpr char SMQ_LOGGERSEND[]   = "KNIGHT_SEND";
-constexpr char SMQ_LOGGERRECV[]   = "KNIGHT_RECV";
+inline constexpr char SMQ_LOGGERSEND[]   = "KNIGHT_SEND";
+inline constexpr char SMQ_LOGGERRECV[]   = "KNIGHT_RECV";
 
 ////////////////////////////////////////////////////////////////
 // Update User Data type define
@@ -52,17 +52,17 @@ namespace model = aujard_model;
 namespace ini
 {
 // ODBC Config Section
-static constexpr std::string_view ODBC        = "ODBC";
-static constexpr std::string_view GAME_DSN    = "GAME_DSN";
-static constexpr std::string_view GAME_UID    = "GAME_UID";
-static constexpr std::string_view GAME_PWD    = "GAME_PWD";
-static constexpr std::string_view ACCOUNT_DSN = "ACCOUNT_DSN";
-static constexpr std::string_view ACCOUNT_UID = "ACCOUNT_UID";
-static constexpr std::string_view ACCOUNT_PWD = "ACCOUNT_PWD";
+inline constexpr std::string_view ODBC        = "ODBC";
+inline constexpr std::string_view GAME_DSN    = "GAME_DSN";
+inline constexpr std::string_view GAME_UID    = "GAME_UID";
+inline constexpr std::string_view GAME_PWD    = "GAME_PWD";
+inline constexpr std::string_view ACCOUNT_DSN = "ACCOUNT_DSN";
+inline constexpr std::string_view ACCOUNT_UID = "ACCOUNT_UID";
+inline constexpr std::string_view ACCOUNT_PWD = "ACCOUNT_PWD";
 
 // ZONE_INFO section
-static constexpr std::string_view ZONE_INFO   = "ZONE_INFO";
-static constexpr std::string_view GROUP_INFO  = "GROUP_INFO";
+inline constexpr std::string_view ZONE_INFO   = "ZONE_INFO";
+inline constexpr std::string_view GROUP_INFO  = "GROUP_INFO";
 } // namespace ini
 
 } // namespace Aujard

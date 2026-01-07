@@ -9,14 +9,25 @@ namespace Ebenezer
 
 EbenezerSocketManager::EbenezerSocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
-	_sendWorkerThread           = new SendWorkerThread(this);
-	_startUserThreadCallback    = [this]() { _sendWorkerThread->start(); };
-	_shutdownUserThreadCallback = [this]() { _sendWorkerThread->shutdown(); };
+	_sendWorkerThread        = new SendWorkerThread(this);
+
+	_startUserThreadCallback = [this]()
+	{
+		if (_sendWorkerThread != nullptr)
+			_sendWorkerThread->start();
+	};
+
+	_shutdownUserThreadCallback = [this]()
+	{
+		if (_sendWorkerThread != nullptr)
+			_sendWorkerThread->shutdown();
+	};
 }
 
 EbenezerSocketManager::~EbenezerSocketManager()
 {
 	delete _sendWorkerThread;
+	_sendWorkerThread = nullptr;
 }
 
 CUser* EbenezerSocketManager::GetUser(int socketId) const

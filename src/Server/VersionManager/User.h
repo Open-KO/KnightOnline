@@ -12,6 +12,7 @@ class CVersionManagerDlg;
 class CUser : public TcpServerSocket
 {
 public:
+	CUser(test_tag);
 	CUser(SocketManager* socketManager);
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;

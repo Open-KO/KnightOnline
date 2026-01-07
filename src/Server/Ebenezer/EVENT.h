@@ -6,6 +6,8 @@
 #include "EVENT_DATA.h"
 #include <shared-server/STLMap.h>
 
+#include <filesystem>
+
 namespace Ebenezer
 {
 

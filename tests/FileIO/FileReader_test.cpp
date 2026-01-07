@@ -2,7 +2,7 @@
 #include <FileIO/FileReader.h>
 #include <atomic>
 #include <cstdio>
-#include <time.h>
+#include <ctime>
 
 class FileReaderTest : public ::testing::Test
 {

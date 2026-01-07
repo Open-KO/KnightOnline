@@ -19,21 +19,21 @@
 namespace VersionManager
 {
 
-constexpr int MAX_USER           = 3000;
+inline constexpr int MAX_USER           = 3000;
 
-constexpr int _LISTEN_PORT       = 15100;
-constexpr int DB_PROCESS_TIMEOUT = 100;
+inline constexpr int _LISTEN_PORT       = 15100;
+inline constexpr int DB_PROCESS_TIMEOUT = 100;
 
 ////////////////////////////////////////////////////////////
 // Socket Define
 ////////////////////////////////////////////////////////////
-constexpr int SOCKET_BUFF_SIZE   = 1024 * 16;
-constexpr int MAX_PACKET_SIZE    = 1024 * 8;
+inline constexpr int SOCKET_BUFF_SIZE   = 1024 * 16;
+inline constexpr int MAX_PACKET_SIZE    = 1024 * 8;
 
-constexpr uint8_t PACKET_START1  = 0xAA;
-constexpr uint8_t PACKET_START2  = 0x55;
-constexpr uint8_t PACKET_END1    = 0x55;
-constexpr uint8_t PACKET_END2    = 0xAA;
+inline constexpr uint8_t PACKET_START1  = 0xAA;
+inline constexpr uint8_t PACKET_START2  = 0x55;
+inline constexpr uint8_t PACKET_END1    = 0x55;
+inline constexpr uint8_t PACKET_END2    = 0xAA;
 
 typedef union
 {
@@ -64,19 +64,19 @@ using VersionInfoList = CSTLMap<model::Version>;
 namespace ini
 {
 // ODBC Config Section
-static constexpr std::string_view ODBC        = "ODBC";
-static constexpr std::string_view DSN         = "DSN";
-static constexpr std::string_view UID         = "UID";
-static constexpr std::string_view PWD         = "PWD";
+inline constexpr std::string_view ODBC        = "ODBC";
+inline constexpr std::string_view DSN         = "DSN";
+inline constexpr std::string_view UID         = "UID";
+inline constexpr std::string_view PWD         = "PWD";
 
 // SERVER_LIST section
-static constexpr std::string_view SERVER_LIST = "SERVER_LIST";
-static constexpr std::string_view COUNT       = "COUNT";
+inline constexpr std::string_view SERVER_LIST = "SERVER_LIST";
+inline constexpr std::string_view COUNT       = "COUNT";
 
 // Download section
-static constexpr std::string_view DOWNLOAD    = "DOWNLOAD";
-static constexpr std::string_view URL         = "URL";
-static constexpr std::string_view PATH        = "PATH";
+inline constexpr std::string_view DOWNLOAD    = "DOWNLOAD";
+inline constexpr std::string_view URL         = "URL";
+inline constexpr std::string_view PATH        = "PATH";
 } // namespace ini
 
 } // namespace VersionManager

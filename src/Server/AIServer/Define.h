@@ -9,56 +9,56 @@
 namespace AIServer
 {
 
-constexpr int USER_DAMAGE_OVERRIDE_GM         = 30'000;
-constexpr int USER_DAMAGE_OVERRIDE_LIMITED_GM = 0;
-constexpr int USER_DAMAGE_OVERRIDE_TEST_MODE  = 10'000;
+inline constexpr int USER_DAMAGE_OVERRIDE_GM         = 30'000;
+inline constexpr int USER_DAMAGE_OVERRIDE_LIMITED_GM = 0;
+inline constexpr int USER_DAMAGE_OVERRIDE_TEST_MODE  = 10'000;
 
 //
 //	Defines About Communication
 //
-constexpr int AI_KARUS_SOCKET_PORT            = 10020;
-constexpr int AI_ELMO_SOCKET_PORT             = 10030;
-constexpr int AI_BATTLE_SOCKET_PORT           = 10040;
-constexpr int USER_SOCKET_PORT                = 10000;
-constexpr int MAX_USER                        = 3000;
-constexpr int MAX_SOCKET                      = 100;
-constexpr int MAX_AI_SOCKET                   = 10; // sungyong 2002.05.22
-constexpr int CLIENT_SOCKSIZE                 = 10;
-constexpr int MAX_PATH_LINE                   = 100;
+inline constexpr int AI_KARUS_SOCKET_PORT            = 10020;
+inline constexpr int AI_ELMO_SOCKET_PORT             = 10030;
+inline constexpr int AI_BATTLE_SOCKET_PORT           = 10040;
+inline constexpr int USER_SOCKET_PORT                = 10000;
+inline constexpr int MAX_USER                        = 3000;
+inline constexpr int MAX_SOCKET                      = 100;
+inline constexpr int MAX_AI_SOCKET                   = 10; // sungyong 2002.05.22
+inline constexpr int CLIENT_SOCKSIZE                 = 10;
+inline constexpr int MAX_PATH_LINE                   = 100;
 
-constexpr int NOW_TEST_MODE                   = 0;
+inline constexpr int NOW_TEST_MODE                   = 0;
 
-constexpr int MAX_WEAPON_NAME_SIZE            = 40;
-constexpr int MAX_ITEM                        = 28;
-constexpr int VIEW_DIST                       = 48; // 가시거리
+inline constexpr int MAX_WEAPON_NAME_SIZE            = 40;
+inline constexpr int MAX_ITEM                        = 28;
+inline constexpr int VIEW_DIST                       = 48; // 가시거리
 
 ///////////////// NATION ///////////////////////////////////
 //
-constexpr int UNIFY_ZONE                      = 0;
-constexpr int KARUS_ZONE                      = 1;
-constexpr int ELMORAD_ZONE                    = 2;
-constexpr int BATTLE_ZONE                     = 3;
+inline constexpr int UNIFY_ZONE                      = 0;
+inline constexpr int KARUS_ZONE                      = 1;
+inline constexpr int ELMORAD_ZONE                    = 2;
+inline constexpr int BATTLE_ZONE                     = 3;
 
 // Npc InOut
-constexpr int NPC_IN                          = 1;
-constexpr int NPC_OUT                         = 2;
+inline constexpr int NPC_IN                          = 1;
+inline constexpr int NPC_OUT                         = 2;
 
 ////////////////////////////////////////////////////////////
 //
 ////////////////////////////////////////////////////////////
-constexpr int TILE_SIZE                       = 4;
-constexpr int CELL_SIZE                       = 4;
+inline constexpr int TILE_SIZE                       = 4;
+inline constexpr int CELL_SIZE                       = 4;
 
 ////////////////////////////////////////////////////////////
 // Socket Define
 ////////////////////////////////////////////////////////////
-constexpr int SOCKET_BUFF_SIZE                = (1024 * 32);
-constexpr int MAX_PACKET_SIZE                 = (1024 * 8);
+inline constexpr int SOCKET_BUFF_SIZE                = (1024 * 32);
+inline constexpr int MAX_PACKET_SIZE                 = (1024 * 8);
 
-constexpr uint8_t PACKET_START1               = 0xAA;
-constexpr uint8_t PACKET_START2               = 0x55;
-constexpr uint8_t PACKET_END1                 = 0x55;
-constexpr uint8_t PACKET_END2                 = 0xAA;
+inline constexpr uint8_t PACKET_START1               = 0xAA;
+inline constexpr uint8_t PACKET_START2               = 0x55;
+inline constexpr uint8_t PACKET_END1                 = 0x55;
+inline constexpr uint8_t PACKET_END2                 = 0xAA;
 ////////////////////////////////////////////////////////////
 
 typedef union
@@ -130,16 +130,16 @@ enum e_UserLogType : uint8_t
 //
 //	About NPC
 //
-constexpr int NPC_NUM                  = 20;
-constexpr int MAX_DUNGEON_BOSS_MONSTER = 20;
-constexpr int NPC_MAX_MOVE_RANGE       = 100;
+inline constexpr int NPC_NUM                  = 20;
+inline constexpr int MAX_DUNGEON_BOSS_MONSTER = 20;
+inline constexpr int NPC_MAX_MOVE_RANGE       = 100;
 
 //
 //	About Map Object
 //
-constexpr int USER_BAND                = 0;     // Map 위에 유저가 있다.
-constexpr int NPC_BAND                 = 10000; // Map 위에 NPC(몹포함)가 있다.
-constexpr int INVALID_BAND             = 20000; // 잘못된 ID BAND
+inline constexpr int USER_BAND                = 0;     // Map 위에 유저가 있다.
+inline constexpr int NPC_BAND                 = 10000; // Map 위에 NPC(몹포함)가 있다.
+inline constexpr int INVALID_BAND             = 20000; // 잘못된 ID BAND
 
 //
 //	To Who ???

@@ -222,7 +222,13 @@ void SocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 		return;
 	}
 
-	tcpSocket->_socket = std::move(rawSocket);
+	if (tcpSocket->_socket == nullptr)
+	{
+		spdlog::error("SocketManager::OnAccept: no raw socket allocated [socketId:{}]", socketId);
+		return;
+	}
+
+	*tcpSocket->_socket = std::move(rawSocket);
 
 	tcpSocket->InitSocket();
 	tcpSocket->AsyncReceive();
