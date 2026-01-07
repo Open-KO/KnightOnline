@@ -36,7 +36,6 @@
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{f1626769-3d40-4524-912e-4b0780393b37}</ProjectGuid>
-    <RootNamespace>clienttests</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
@@ -62,7 +61,7 @@
       <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <MinimalRebuild>false</MinimalRebuild>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
