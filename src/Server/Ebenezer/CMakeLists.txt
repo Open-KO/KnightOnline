@@ -88,6 +88,11 @@ target_link_libraries(Ebenezer PRIVATE
   Ebenezer.Core
 )
 
+# Expose include path
+target_include_directories(Ebenezer.Core INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <Ebenezer/...>
+)
+
 # Setup warning levels
 target_compile_options(Ebenezer.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>

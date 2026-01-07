@@ -40,6 +40,11 @@ target_link_libraries(Aujard PRIVATE
   Aujard.Core
 )
 
+# Expose include path
+target_include_directories(Aujard.Core INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <Aujard/...>
+)
+
 # Setup warning levels
 target_compile_options(Aujard.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>

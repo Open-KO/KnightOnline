@@ -75,6 +75,11 @@ target_link_libraries(AIServer PRIVATE
   AIServer.Core
 )
 
+# Expose include path
+target_include_directories(AIServer.Core INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <AIServer/...>
+)
+
 # Setup warning levels
 target_compile_options(AIServer.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>

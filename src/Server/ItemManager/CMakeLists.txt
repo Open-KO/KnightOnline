@@ -39,6 +39,11 @@ target_link_libraries(ItemManager PRIVATE
   ItemManager.Core
 )
 
+# Expose include path
+target_include_directories(ItemManager.Core INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <ItemManager/...>
+)
+
 # Setup warning levels
 target_compile_options(ItemManager.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>

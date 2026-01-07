@@ -40,6 +40,11 @@ target_link_libraries(VersionManager PRIVATE
   VersionManager.Core
 )
 
+# Expose include path
+target_include_directories(VersionManager.Core INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <VersionManager/...>
+)
+
 # Setup warning levels
 target_compile_options(VersionManager.Core PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
