@@ -27,7 +27,7 @@ inline constexpr int NPC_HAVE_ITEM_LIST    = 6;
 inline constexpr int ZONEITEM_MAX          = 2'100'000'000; // 존에 떨어지는 최대 아이템수...
 
 inline constexpr int SERVER_INFO_START     = 1;
-constexpr int SERVER_INFO_END              = 2;
+inline constexpr int SERVER_INFO_END       = 2;
 
 //////////////  Quest 관련 Define ////////////////////////////
 inline constexpr int MAX_EVENT             = 2000;

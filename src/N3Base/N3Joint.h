@@ -13,7 +13,7 @@
 class CN3Joint;
 typedef std::list<CN3Joint*>::iterator it_Joint;
 
-constexpr int MAX_JOINT_TRANSFORM = 64;
+inline constexpr int MAX_JOINT_TRANSFORM = 64;
 
 class CN3Joint : public CN3Transform
 {

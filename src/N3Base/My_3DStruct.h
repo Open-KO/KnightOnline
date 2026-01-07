@@ -54,40 +54,40 @@ public:
 	D3DCOLORVALUE operator/(const D3DCOLORVALUE& cv) const;
 };
 
-constexpr uint32_t FVF_VNT1               = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
-constexpr uint32_t FVF_VNT2               = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2;
-constexpr uint32_t FVF_CV                 = D3DFVF_XYZ | D3DFVF_DIFFUSE;
-constexpr uint32_t FVF_CSV                = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
-constexpr uint32_t FVF_TRANSFORMED        = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-constexpr uint32_t FVF_TRANSFORMEDT2      = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
-constexpr uint32_t FVF_TRANSFORMEDCOLOR   = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
-constexpr uint32_t FVF_PARTICLE           = D3DFVF_XYZ | D3DFVF_PSIZE | D3DFVF_DIFFUSE;
+inline constexpr uint32_t FVF_VNT1             = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
+inline constexpr uint32_t FVF_VNT2             = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2;
+inline constexpr uint32_t FVF_CV               = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+inline constexpr uint32_t FVF_CSV              = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
+inline constexpr uint32_t FVF_TRANSFORMED      = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+inline constexpr uint32_t FVF_TRANSFORMEDT2    = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2;
+inline constexpr uint32_t FVF_TRANSFORMEDCOLOR = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
+inline constexpr uint32_t FVF_PARTICLE         = D3DFVF_XYZ | D3DFVF_PSIZE | D3DFVF_DIFFUSE;
 
 //..
-constexpr uint32_t FVF_XYZT1              = D3DFVF_XYZ | D3DFVF_TEX1;
-constexpr uint32_t FVF_XYZT2              = D3DFVF_XYZ | D3DFVF_TEX2;
-constexpr uint32_t FVF_XYZNORMAL          = D3DFVF_XYZ | D3DFVF_NORMAL;
-constexpr uint32_t FVF_XYZCOLORT1         = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-constexpr uint32_t FVF_XYZCOLORT2         = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2;
-constexpr uint32_t FVF_XYZCOLORSPECULART1 = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR
-											| D3DFVF_TEX1;
-constexpr uint32_t FVF_XYZCOLOR         = D3DFVF_XYZ | D3DFVF_DIFFUSE;
-constexpr uint32_t FVF_XYZNORMALCOLOR   = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE;
-constexpr uint32_t FVF_XYZNORMALCOLORT1 = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+inline constexpr uint32_t FVF_XYZT1            = D3DFVF_XYZ | D3DFVF_TEX1;
+inline constexpr uint32_t FVF_XYZT2            = D3DFVF_XYZ | D3DFVF_TEX2;
+inline constexpr uint32_t FVF_XYZNORMAL        = D3DFVF_XYZ | D3DFVF_NORMAL;
+inline constexpr uint32_t FVF_XYZCOLORT1       = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+inline constexpr uint32_t FVF_XYZCOLORT2       = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2;
+inline constexpr uint32_t FVF_XYZCOLOR         = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+inline constexpr uint32_t FVF_XYZNORMALCOLOR   = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE;
 
-constexpr uint32_t RF_NOTHING           = 0x0;
-constexpr uint32_t RF_ALPHABLENDING     = 0x1;  // Alpha blending
-constexpr uint32_t RF_NOTUSEFOG         = 0x2;  // 안개 무시
-constexpr uint32_t RF_DOUBLESIDED       = 0x4;  // 양면 - D3DCULL_NONE
-constexpr uint32_t RF_BOARD_Y           = 0x8;  // Y 축으로 해서.. 카메라를 본다.
-constexpr uint32_t RF_POINTSAMPLING     = 0x10; // MipMap 에서.. PointSampling 으로 한다..
-constexpr uint32_t
-	RF_WINDY = 0x20; // 바람에 날린다.. 바람의 값은 CN3Base::s_vWindFactor 를 참조 한다..
-constexpr uint32_t RF_NOTUSELIGHT  = 0x40;  // Light Off
-constexpr uint32_t RF_DIFFUSEALPHA = 0x80;  // Diffuse 값을 갖고 투명하게 Alpha blending
-constexpr uint32_t RF_NOTZWRITE    = 0x100; // ZBuffer 에 안쓴다.
-constexpr uint32_t RF_UV_CLAMP     = 0x200; // texture UV적용을 Clamp로 한다..default는 wrap이다..
-constexpr uint32_t RF_NOTZBUFFER   = 0x400; // ZBuffer 무시.
+inline constexpr uint32_t RF_NOTHING           = 0x0;
+inline constexpr uint32_t RF_ALPHABLENDING     = 0x1;  // Alpha blending
+inline constexpr uint32_t RF_NOTUSEFOG         = 0x2;  // 안개 무시
+inline constexpr uint32_t RF_DOUBLESIDED       = 0x4;  // 양면 - D3DCULL_NONE
+inline constexpr uint32_t RF_BOARD_Y           = 0x8;  // Y 축으로 해서.. 카메라를 본다.
+inline constexpr uint32_t RF_POINTSAMPLING     = 0x10; // MipMap 에서.. PointSampling 으로 한다..
+
+// 바람에 날린다.. 바람의 값은 CN3Base::s_vWindFactor 를 참조 한다..
+inline constexpr uint32_t RF_WINDY             = 0x20;
+inline constexpr uint32_t RF_NOTUSELIGHT       = 0x40;  // Light Off
+inline constexpr uint32_t RF_DIFFUSEALPHA      = 0x80;  // Diffuse 값을 갖고 투명하게 Alpha blending
+inline constexpr uint32_t RF_NOTZWRITE         = 0x100; // ZBuffer 에 안쓴다.
+
+// texture UV적용을 Clamp로 한다..default는 wrap이다..
+inline constexpr uint32_t RF_UV_CLAMP          = 0x200;
+inline constexpr uint32_t RF_NOTZBUFFER        = 0x400; // ZBuffer 무시.
 
 struct __Material : public _D3DMATERIAL9
 {
@@ -761,39 +761,39 @@ public:
 	}
 };
 
-constexpr int MAX_MIPMAP_COUNT              = 10; // 1024 * 1024 단계까지 생성
+inline constexpr int MAX_MIPMAP_COUNT              = 10; // 1024 * 1024 단계까지 생성
 
-constexpr uint32_t OBJ_UNKNOWN              = 0;
-constexpr uint32_t OBJ_BASE                 = 0x1;
-constexpr uint32_t OBJ_BASE_FILEACCESS      = 0x2;
-constexpr uint32_t OBJ_TEXTURE              = 0x4;
-constexpr uint32_t OBJ_TRANSFORM            = 0x8;
-constexpr uint32_t OBJ_TRANSFORM_COLLISION  = 0x10;
-constexpr uint32_t OBJ_SCENE                = 0x20;
+inline constexpr uint32_t OBJ_UNKNOWN              = 0;
+inline constexpr uint32_t OBJ_BASE                 = 0x1;
+inline constexpr uint32_t OBJ_BASE_FILEACCESS      = 0x2;
+inline constexpr uint32_t OBJ_TEXTURE              = 0x4;
+inline constexpr uint32_t OBJ_TRANSFORM            = 0x8;
+inline constexpr uint32_t OBJ_TRANSFORM_COLLISION  = 0x10;
+inline constexpr uint32_t OBJ_SCENE                = 0x20;
 
-constexpr uint32_t OBJ_CAMERA               = 0x100;
-constexpr uint32_t OBJ_LIGHT                = 0x200;
-constexpr uint32_t OBJ_SHAPE                = 0x400;
-constexpr uint32_t OBJ_SHAPE_PART           = 0x800;
-constexpr uint32_t OBJ_SHAPE_EXTRA          = 0x1000;
-constexpr uint32_t OBJ_CHARACTER            = 0x2000;
-constexpr uint32_t OBJ_CHARACTER_PART       = 0x4000;
-constexpr uint32_t OBJ_CHARACTER_PLUG       = 0x8000;
-constexpr uint32_t OBJ_BOARD                = 0x1000;
-constexpr uint32_t OBJ_FX_PLUG              = 0x20000;
-constexpr uint32_t OBJ_FX_PLUG_PART         = 0x40000;
+inline constexpr uint32_t OBJ_CAMERA               = 0x100;
+inline constexpr uint32_t OBJ_LIGHT                = 0x200;
+inline constexpr uint32_t OBJ_SHAPE                = 0x400;
+inline constexpr uint32_t OBJ_SHAPE_PART           = 0x800;
+inline constexpr uint32_t OBJ_SHAPE_EXTRA          = 0x1000;
+inline constexpr uint32_t OBJ_CHARACTER            = 0x2000;
+inline constexpr uint32_t OBJ_CHARACTER_PART       = 0x4000;
+inline constexpr uint32_t OBJ_CHARACTER_PLUG       = 0x8000;
+inline constexpr uint32_t OBJ_BOARD                = 0x1000;
+inline constexpr uint32_t OBJ_FX_PLUG              = 0x20000;
+inline constexpr uint32_t OBJ_FX_PLUG_PART         = 0x40000;
 
-constexpr uint32_t OBJ_MESH                 = 0x100000;
-constexpr uint32_t OBJ_MESH_PROGRESSIVE     = 0x200000;
-constexpr uint32_t OBJ_MESH_INDEXED         = 0x400000;
-constexpr uint32_t OBJ_MESH_VECTOR3         = 0x800000;
-constexpr uint32_t OBJ_JOINT                = 0x1000000;
-constexpr uint32_t OBJ_SKIN                 = 0x2000000;
-constexpr uint32_t OBJ_CHARACTER_PART_SKINS = 0x4000000;
+inline constexpr uint32_t OBJ_MESH                 = 0x100000;
+inline constexpr uint32_t OBJ_MESH_PROGRESSIVE     = 0x200000;
+inline constexpr uint32_t OBJ_MESH_INDEXED         = 0x400000;
+inline constexpr uint32_t OBJ_MESH_VECTOR3         = 0x800000;
+inline constexpr uint32_t OBJ_JOINT                = 0x1000000;
+inline constexpr uint32_t OBJ_SKIN                 = 0x2000000;
+inline constexpr uint32_t OBJ_CHARACTER_PART_SKINS = 0x4000000;
 
-constexpr uint32_t OBJ_DUMMY                = 0x10000000;
-constexpr uint32_t OBJ_EFFECT               = 0x20000000;
-constexpr uint32_t OBJ_ANIM_CONTROL         = 0x40000000;
+inline constexpr uint32_t OBJ_DUMMY                = 0x10000000;
+inline constexpr uint32_t OBJ_EFFECT               = 0x20000000;
+inline constexpr uint32_t OBJ_ANIM_CONTROL         = 0x40000000;
 
 #ifndef _DEBUG
 #define __ASSERT(expr, expMessage)

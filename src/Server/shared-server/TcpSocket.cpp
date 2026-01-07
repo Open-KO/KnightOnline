@@ -241,8 +241,7 @@ void TcpSocket::Initialize()
 
 const std::string& TcpSocket::GetRemoteIP()
 {
-	if (!_remoteIpCached
-		&& _socket != nullptr)
+	if (!_remoteIpCached && _socket != nullptr)
 	{
 		asio::error_code ec;
 

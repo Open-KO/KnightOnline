@@ -32,8 +32,9 @@ enum e_TexCaps : uint8_t
 	TEX_CAPS_POW2       = 0x80
 };
 
-constexpr float CAMERA_RADIUS_UNIT = 2.0f;
-constexpr int MAX_CAMERA_RADIUS = 512; // 2미터 단위로 128 개의 도트 프로덕트 미리 계산해 놓는다..
+inline constexpr float CAMERA_RADIUS_UNIT = 2.0f;
+inline constexpr int
+	MAX_CAMERA_RADIUS = 512; // 2미터 단위로 128 개의 도트 프로덕트 미리 계산해 놓는다..
 
 enum TIMER_COMMAND : uint8_t
 {

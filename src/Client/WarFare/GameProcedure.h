@@ -19,11 +19,11 @@ enum e_LogInClassification : uint8_t
 
 #include "N3WorldManager.h"
 
-constexpr char UI_POST_WND_CHAT[]   = "Wnd_Chat";
-constexpr char UI_POST_WND_HOTKEY[] = "Wnd_Hotkey";
-constexpr char UI_POST_WND_PARTY[]  = "Wnd_Party";
-constexpr char UI_POST_WND_HELP[]   = "Wnd_Help";
-constexpr char UI_POST_WND_INFO[]   = "Wnd_Msg";
+inline constexpr char UI_POST_WND_CHAT[]   = "Wnd_Chat";
+inline constexpr char UI_POST_WND_HOTKEY[] = "Wnd_Hotkey";
+inline constexpr char UI_POST_WND_PARTY[]  = "Wnd_Party";
+inline constexpr char UI_POST_WND_HELP[]   = "Wnd_Help";
+inline constexpr char UI_POST_WND_INFO[]   = "Wnd_Msg";
 
 struct __WndInfo
 {

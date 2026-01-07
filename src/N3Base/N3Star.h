@@ -9,7 +9,7 @@
 
 #include "N3Base.h"
 
-constexpr int MAX_STAR = 200;
+inline constexpr int MAX_STAR = 200;
 
 class CN3Star : public CN3Base
 {

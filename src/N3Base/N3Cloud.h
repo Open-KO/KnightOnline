@@ -11,7 +11,7 @@
 #include "N3ColorChange.h"
 #include <string>
 
-constexpr int NUM_CLOUD_VERTEX = 8; // 12
+inline constexpr int NUM_CLOUD_VERTEX = 8; // 12
 
 // NOLINTNEXTLINE(performance-enum-size): copied from __SKY_DAYCHANGE::dwParam2, __SKY_DAYCHANGE::dwParam2
 enum e_CLOUDTEX : uint32_t

@@ -20,7 +20,7 @@ enum e_N3FormatVersion : uint16_t
 	N3FORMAT_VER_1298 = 1298,
 };
 
-static constexpr e_N3FormatVersion N3FORMAT_VER_DEFAULT = N3FORMAT_VER_1298;
+inline constexpr e_N3FormatVersion N3FORMAT_VER_DEFAULT = N3FORMAT_VER_1298;
 
 class CN3BaseFileAccess : public CN3Base
 {

@@ -14,10 +14,10 @@
 #include <queue>
 #include <string>
 
-constexpr int WM_SOCKETMSG     = (WM_USER + 1);
-constexpr int RECEIVE_BUF_SIZE = 262144; // 최대 버퍼..
+inline constexpr int WM_SOCKETMSG     = (WM_USER + 1);
+inline constexpr int RECEIVE_BUF_SIZE = 262144; // 최대 버퍼..
 
-#define _CRYPTION                        // 암호화 사용
+#define _CRYPTION                               // 암호화 사용
 #ifdef _CRYPTION
 #include <shared/JvCryption.h>
 #endif

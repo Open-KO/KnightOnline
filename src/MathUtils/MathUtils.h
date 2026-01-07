@@ -3,8 +3,8 @@
 
 #pragma once
 
-constexpr float __PI  = 3.141592654f;
-constexpr float __PI2 = 6.283185308f;
+inline constexpr float __PI  = 3.141592654f;
+inline constexpr float __PI2 = 6.283185308f;
 
 constexpr float DegreesToRadians(auto degrees)
 {

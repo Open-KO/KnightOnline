@@ -12,11 +12,11 @@
 
 #include <optional>
 
-constexpr int SKILL_DEF_BASIC    = 0;
-constexpr int SKILL_DEF_SPECIAL0 = 1;
-constexpr int SKILL_DEF_SPECIAL1 = 2;
-constexpr int SKILL_DEF_SPECIAL2 = 3;
-constexpr int SKILL_DEF_SPECIAL3 = 4;
+inline constexpr int SKILL_DEF_BASIC    = 0;
+inline constexpr int SKILL_DEF_SPECIAL0 = 1;
+inline constexpr int SKILL_DEF_SPECIAL1 = 2;
+inline constexpr int SKILL_DEF_SPECIAL2 = 3;
+inline constexpr int SKILL_DEF_SPECIAL3 = 4;
 
 //////////////////////////////////////////////////////////////////////
 

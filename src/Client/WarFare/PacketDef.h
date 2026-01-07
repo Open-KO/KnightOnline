@@ -3,8 +3,8 @@
 
 #pragma once
 
-constexpr int SOCKET_PORT_GAME  = 15001;
-constexpr int SOCKET_PORT_LOGIN = 15100;
+inline constexpr int SOCKET_PORT_GAME  = 15001;
+inline constexpr int SOCKET_PORT_LOGIN = 15100;
 
 #include <shared/packets.h>
 

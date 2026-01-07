@@ -7,9 +7,9 @@
 
 #pragma once
 
-constexpr int MAX_PONDMESH_LINE   = 200;
-constexpr int MAX_PONDMESH_VERTEX = 200 * 4;
-constexpr int MAX_POND_TEX        = 32;
+inline constexpr int MAX_PONDMESH_LINE   = 200;
+inline constexpr int MAX_PONDMESH_VERTEX = 200 * 4;
+inline constexpr int MAX_POND_TEX        = 32;
 
 #include <N3Base/N3BaseFileAccess.h>
 

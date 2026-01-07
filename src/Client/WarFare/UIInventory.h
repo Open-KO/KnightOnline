@@ -11,37 +11,37 @@
 #include "N3UIWndBase.h"
 #include "ItemRepairMgr.h"
 
-constexpr int ITEM_SLOT_POS_EAR_RIGHT       = 0;
-constexpr int ITEM_SLOT_POS_HEAD            = 1;
-constexpr int ITEM_SLOT_POS_EAR_LEFT        = 2;
-constexpr int ITEM_SLOT_POS_NECK            = 3;
-constexpr int ITEM_SLOT_POS_UPPER           = 4;
-constexpr int ITEM_SLOT_POS_SHOULDER        = 5;
-constexpr int ITEM_SLOT_POS_HAND_RIGHT      = 6;
-constexpr int ITEM_SLOT_POS_BELT            = 7;
-constexpr int ITEM_SLOT_POS_HAND_LEFT       = 8;
-constexpr int ITEM_SLOT_POS_RING_RIGHT      = 9;
-constexpr int ITEM_SLOT_POS_LOWER           = 10;
-constexpr int ITEM_SLOT_POS_RING_LEFT       = 11;
-constexpr int ITEM_SLOT_POS_GLOVES          = 12;
-constexpr int ITEM_SLOT_POS_SHOES           = 13;
+inline constexpr int ITEM_SLOT_POS_EAR_RIGHT       = 0;
+inline constexpr int ITEM_SLOT_POS_HEAD            = 1;
+inline constexpr int ITEM_SLOT_POS_EAR_LEFT        = 2;
+inline constexpr int ITEM_SLOT_POS_NECK            = 3;
+inline constexpr int ITEM_SLOT_POS_UPPER           = 4;
+inline constexpr int ITEM_SLOT_POS_SHOULDER        = 5;
+inline constexpr int ITEM_SLOT_POS_HAND_RIGHT      = 6;
+inline constexpr int ITEM_SLOT_POS_BELT            = 7;
+inline constexpr int ITEM_SLOT_POS_HAND_LEFT       = 8;
+inline constexpr int ITEM_SLOT_POS_RING_RIGHT      = 9;
+inline constexpr int ITEM_SLOT_POS_LOWER           = 10;
+inline constexpr int ITEM_SLOT_POS_RING_LEFT       = 11;
+inline constexpr int ITEM_SLOT_POS_GLOVES          = 12;
+inline constexpr int ITEM_SLOT_POS_SHOES           = 13;
 
-constexpr int ITEM_ATTACH_POS_DUAL          = 0;
-constexpr int ITEM_ATTACH_POS_HAND_RIGHT    = 1;
-constexpr int ITEM_ATTACH_POS_HAND_LEFT     = 2;
-constexpr int ITEM_ATTACH_POS_TWOHAND_RIGHT = 3;
-constexpr int ITEM_ATTACH_POS_TWOHAND_LEFT  = 4;
-constexpr int ITEM_ATTACH_POS_UPPER         = 5;
-constexpr int ITEM_ATTACH_POS_LOWER         = 6;
-constexpr int ITEM_ATTACH_POS_HEAD          = 7;
-constexpr int ITEM_ATTACH_POS_ARM           = 8;
-constexpr int ITEM_ATTACH_POS_FOOT          = 9;
-constexpr int ITEM_ATTACH_POS_EAR           = 10;
-constexpr int ITEM_ATTACH_POS_NECK          = 11;
-constexpr int ITEM_ATTACH_POS_FINGER        = 12;
-constexpr int ITEM_ATTACH_POS_CLOAK         = 13;
-constexpr int ITEM_ATTACH_POS_BELT          = 14;
-constexpr int ITEM_ATTACH_POS_INVENTORY     = 15;
+inline constexpr int ITEM_ATTACH_POS_DUAL          = 0;
+inline constexpr int ITEM_ATTACH_POS_HAND_RIGHT    = 1;
+inline constexpr int ITEM_ATTACH_POS_HAND_LEFT     = 2;
+inline constexpr int ITEM_ATTACH_POS_TWOHAND_RIGHT = 3;
+inline constexpr int ITEM_ATTACH_POS_TWOHAND_LEFT  = 4;
+inline constexpr int ITEM_ATTACH_POS_UPPER         = 5;
+inline constexpr int ITEM_ATTACH_POS_LOWER         = 6;
+inline constexpr int ITEM_ATTACH_POS_HEAD          = 7;
+inline constexpr int ITEM_ATTACH_POS_ARM           = 8;
+inline constexpr int ITEM_ATTACH_POS_FOOT          = 9;
+inline constexpr int ITEM_ATTACH_POS_EAR           = 10;
+inline constexpr int ITEM_ATTACH_POS_NECK          = 11;
+inline constexpr int ITEM_ATTACH_POS_FINGER        = 12;
+inline constexpr int ITEM_ATTACH_POS_CLOAK         = 13;
+inline constexpr int ITEM_ATTACH_POS_BELT          = 14;
+inline constexpr int ITEM_ATTACH_POS_INVENTORY     = 15;
 
 // 인벤토리 상태.. 기존의 상태와 구별하기 위해.. 수리 상태가 추가됐다..
 enum e_InvenState : uint8_t

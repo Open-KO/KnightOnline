@@ -23,7 +23,7 @@
 
 #include <shared/globals.h>
 
-constexpr int CURRENT_VERSION                           = 1298;
+inline constexpr int CURRENT_VERSION                           = 1298;
 
 // This is the maximum time we must wait after sending the WIZ_VERSION_CHECK packet on the login scene, before we're allowed
 // to attempt to re-establish a connection to the game server.
@@ -32,11 +32,11 @@ constexpr int CURRENT_VERSION                           = 1298;
 // If the client disconnects in this time, this timer will be reset, so there's no need to account for this.
 // Officially it Sleep()s for 1 second prior to even sending WIZ_VERSION_CHECK packet we need to wait for, so there's not really
 // a comparable official limit. All this accomplishes is reducing the number of connection attempts, not preventing overlaps.
-constexpr float TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT = 5.0f;
+inline constexpr float TIME_UNTIL_NEXT_GAME_CONNECTION_ATTEMPT = 5.0f;
 
-constexpr float PACKET_INTERVAL_MOVE                    = 1.5f; // Interval between regularly sent player/NPC movement packets.
-constexpr float PACKET_INTERVAL_ROTATE                  = 4.0f; // Interval between regularly sent player rotation packets.
-constexpr float PACKET_INTERVAL_REQUEST_TARGET_HP       = 2.0f;
+inline constexpr float PACKET_INTERVAL_MOVE                    = 1.5f; // Interval between regularly sent player/NPC movement packets.
+inline constexpr float PACKET_INTERVAL_ROTATE                  = 4.0f; // Interval between regularly sent player rotation packets.
+inline constexpr float PACKET_INTERVAL_REQUEST_TARGET_HP       = 2.0f;
 
 enum e_ExitType : uint8_t
 {
@@ -45,7 +45,7 @@ enum e_ExitType : uint8_t
 	EXIT_TYPE_QUIT       = 2,
 };
 
-constexpr int EXIT_TIME_AFTER_BATTLE = 10;
+inline constexpr int EXIT_TIME_AFTER_BATTLE = 10;
 
 // 단축키 지정해 놓은 부분..
 enum eKeyMap : uint8_t
@@ -120,9 +120,9 @@ enum e_Class_Represent : uint8_t
 	CLASS_REPRESENT_UNKNOWN = 100
 };
 
-constexpr float WEAPON_WEIGHT_STAND_SWORD = 5.0f; // Standard weight of swords
-constexpr float WEAPON_WEIGHT_STAND_AXE   = 5.0f; // Standard weight of axes
-constexpr float WEAPON_WEIGHT_STAND_BLUNT = 8.0f; // Standard weight of blunt type weapons
+inline constexpr float WEAPON_WEIGHT_STAND_SWORD = 5.0f; // Standard weight of swords
+inline constexpr float WEAPON_WEIGHT_STAND_AXE   = 5.0f; // Standard weight of axes
+inline constexpr float WEAPON_WEIGHT_STAND_BLUNT = 8.0f; // Standard weight of blunt type weapons
 
 enum e_Ani : int16_t
 {
@@ -303,7 +303,7 @@ enum e_Ani : int16_t
 };
 
 // MAX_INCLINE_CLIMB = sqrt(1 - sin(90 - Maximum slope angle)^2)
-constexpr float MAX_INCLINE_CLIMB = 0.6430f; // Maximum climbable slope value = 40 degrees
+inline constexpr float MAX_INCLINE_CLIMB = 0.6430f; // Maximum climbable slope value = 40 degrees
 
 enum e_MoveDirection : int8_t
 {
@@ -313,8 +313,8 @@ enum e_MoveDirection : int8_t
 	MD_UNKNOWN = -1
 };
 
-constexpr float MOVE_DELTA_WHEN_RUNNING = 3.0f; // Movement multiplier for running.
-constexpr float MOVE_SPEED_WHEN_WALK    = 1.5f; // Standard player walking speed.
+inline constexpr float MOVE_DELTA_WHEN_RUNNING = 3.0f; // Movement multiplier for running.
+inline constexpr float MOVE_SPEED_WHEN_WALK    = 1.5f; // Standard player walking speed.
 
 // 현재 상태...
 enum e_StateMove : uint8_t
@@ -488,9 +488,9 @@ struct __InfoPlayerOther
 	}
 };
 
-constexpr int VICTORY_ABSENCE = 0;
-constexpr int VICTORY_KARUS   = 1;
-constexpr int VICTORY_ELMORAD = 2;
+inline constexpr int VICTORY_ABSENCE = 0;
+inline constexpr int VICTORY_KARUS   = 1;
+inline constexpr int VICTORY_ELMORAD = 2;
 
 struct __InfoPlayerMySelf : public __InfoPlayerOther
 {
@@ -610,7 +610,7 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 	}
 };
 
-constexpr int MAX_PARTY_OR_FORCE = 8;
+inline constexpr int MAX_PARTY_OR_FORCE = 8;
 
 struct __InfoPartyOrForce
 {
@@ -914,9 +914,9 @@ struct __TABLE_ITEM_BASIC
 	uint8_t byGrade           = 0;  // 37
 };
 
-constexpr int MAX_ITEM_EXTENSION   = 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
-constexpr int LIMIT_FX_DAMAGE      = 64;
-constexpr int ITEM_LIMITED_EXHAUST = 17;
+inline constexpr int MAX_ITEM_EXTENSION   = 24; // Number of item extension tables. (Item_Ext_0..23.tbl is a total of 24)
+inline constexpr int LIMIT_FX_DAMAGE      = 64;
+inline constexpr int ITEM_LIMITED_EXHAUST = 17;
 
 struct __TABLE_ITEM_EXT
 {
@@ -993,7 +993,7 @@ struct __TABLE_ITEM_EXT
 	int16_t siNeedMagicAttack          = 0;  // 53 Required Charisma/Magic power
 };
 
-constexpr int MAX_NPC_SHOP_ITEM = 30;
+inline constexpr int MAX_NPC_SHOP_ITEM = 30;
 struct __TABLE_NPC_SHOP
 {
 	uint32_t dwNPCID                    = 0;
@@ -1283,43 +1283,43 @@ struct __TABLE_HELP
 };
 
 // Max equipment slots for other players (including NPCs): 0-4 = upper body, lower body, helmet, arms, legs; 5 = cloak; 6 = right hand; 7 = left hand
-constexpr int MAX_ITEM_SLOT_OPC                 = 8;
+inline constexpr int MAX_ITEM_SLOT_OPC                 = 8;
 
-constexpr int MAX_ITEM_INVENTORY                = 28; // Max items a player can hold in their inventory
-constexpr int MAX_ITEM_TRADE                    = 24; // Max items per page in NPC trades
-constexpr int MAX_ITEM_TRADE_PAGE               = 12;
-constexpr int MAX_ITEM_WARE_PAGE                = 8;
-constexpr int MAX_ITEM_PER_TRADE                = 12; // Max items in a player trading window
-constexpr int MAX_ITEM_BUNDLE_DROP_PIECE        = 6;
-constexpr int MAX_ITEM_EX_RE_NPC                = 4;  // Max items in the (outdated, unused) NPC exchange/repair UI.
+inline constexpr int MAX_ITEM_INVENTORY                = 28; // Max items a player can hold in their inventory
+inline constexpr int MAX_ITEM_TRADE                    = 24; // Max items per page in NPC trades
+inline constexpr int MAX_ITEM_TRADE_PAGE               = 12;
+inline constexpr int MAX_ITEM_WARE_PAGE                = 8;
+inline constexpr int MAX_ITEM_PER_TRADE                = 12; // Max items in a player trading window
+inline constexpr int MAX_ITEM_BUNDLE_DROP_PIECE        = 6;
+inline constexpr int MAX_ITEM_EX_RE_NPC                = 4;  // Max items in the (outdated, unused) NPC exchange/repair UI.
 
-constexpr int MAX_SKILL_FROM_SERVER             = 9;  // Max number of skill point slots received from the server.
+inline constexpr int MAX_SKILL_FROM_SERVER             = 9;  // Max number of skill point slots received from the server.
 
-constexpr int MAX_SKILL_KIND_OF                 = 5;  // Total skill types: 1 - base skills, 4 - specialized skills
-constexpr int MAX_SKILL_IN_PAGE                 = 6;  // Max number of of skill icons per page
-constexpr int MAX_SKILL_PAGE_NUM                = 7;  // Max number of pages per skill category
+inline constexpr int MAX_SKILL_KIND_OF                 = 5;  // Total skill types: 1 - base skills, 4 - specialized skills
+inline constexpr int MAX_SKILL_IN_PAGE                 = 6;  // Max number of of skill icons per page
+inline constexpr int MAX_SKILL_PAGE_NUM                = 7;  // Max number of pages per skill category
 
-constexpr int MAX_SKILL_HOTKEY_PAGE             = 8;  // Max pages for a skill bar (CUIHotKeyDlg).
-constexpr int MAX_SKILL_IN_HOTKEY               = 8;  // Max number of skill icons per page for a skill bar (CUIHotKeyDlg).
+inline constexpr int MAX_SKILL_HOTKEY_PAGE             = 8;  // Max pages for a skill bar (CUIHotKeyDlg).
+inline constexpr int MAX_SKILL_IN_HOTKEY               = 8;  // Max number of skill icons per page for a skill bar (CUIHotKeyDlg).
 
-constexpr int MAX_AVAILABLE_CHARACTER           = 3;  // Max character slots available per server
+inline constexpr int MAX_AVAILABLE_CHARACTER           = 3;  // Max character slots available per server
 
 // Sound IDs
-constexpr int ID_SOUND_ITEM_ETC_IN_INVENTORY    = 2000;
-constexpr int ID_SOUND_ITEM_IN_REPAIR           = 2001;
-constexpr int ID_SOUND_ITEM_WEAPON_IN_INVENTORY = 2002;
-constexpr int ID_SOUND_ITEM_ARMOR_IN_INVENTORY  = 2003;
-constexpr int ID_SOUND_GOLD_IN_INVENTORY        = 3000;
-constexpr int ID_SOUND_SKILL_THROW_ARROW        = 5500;
-constexpr int ID_SOUND_BGM_TOWN                 = 20000;
-constexpr int ID_SOUND_BGM_KA_BATTLE            = 20002;
-constexpr int ID_SOUND_BGM_EL_BATTLE            = 20003;
-constexpr int ID_SOUND_CHR_SELECT_ROTATE        = 2501;
+inline constexpr int ID_SOUND_ITEM_ETC_IN_INVENTORY    = 2000;
+inline constexpr int ID_SOUND_ITEM_IN_REPAIR           = 2001;
+inline constexpr int ID_SOUND_ITEM_WEAPON_IN_INVENTORY = 2002;
+inline constexpr int ID_SOUND_ITEM_ARMOR_IN_INVENTORY  = 2003;
+inline constexpr int ID_SOUND_GOLD_IN_INVENTORY        = 3000;
+inline constexpr int ID_SOUND_SKILL_THROW_ARROW        = 5500;
+inline constexpr int ID_SOUND_BGM_TOWN                 = 20000;
+inline constexpr int ID_SOUND_BGM_KA_BATTLE            = 20002;
+inline constexpr int ID_SOUND_BGM_EL_BATTLE            = 20003;
+inline constexpr int ID_SOUND_CHR_SELECT_ROTATE        = 2501;
 
-constexpr float SOUND_RANGE_TO_SET              = 10.0f;
-constexpr float SOUND_RANGE_TO_RELEASE          = 20.0f;
+inline constexpr float SOUND_RANGE_TO_SET              = 10.0f;
+inline constexpr float SOUND_RANGE_TO_RELEASE          = 20.0f;
 
-constexpr float STUN_TIME                       = 3.0f;
+inline constexpr float STUN_TIME                       = 3.0f;
 
 enum e_Behavior : int8_t
 {
@@ -1384,39 +1384,39 @@ struct __TABLE_FX
 	uint8_t byAOE      = 0;  // 05 AOE ??
 };
 
-constexpr int MAX_COMBO                    = 3;
+inline constexpr int MAX_COMBO                    = 3;
 
-constexpr int FXID_CLASS_CHANGE            = 603;
-constexpr int FXID_BLOOD                   = 10002;
-constexpr int FXID_LEVELUP_KARUS           = 10012;
-constexpr int FXID_LEVELUP_ELMORAD         = 10018;
-constexpr int FXID_REGEN_ELMORAD           = 10019;
-constexpr int FXID_REGEN_KARUS             = 10020;
-constexpr int FXID_SWORD_FIRE_MAIN         = 10021;
-constexpr int FXID_SWORD_FIRE_TAIL         = 10022;
-constexpr int FXID_SWORD_FIRE_TARGET       = 10031;
-constexpr int FXID_SWORD_ICE_MAIN          = 10023;
-constexpr int FXID_SWORD_ICE_TAIL          = 10024;
-constexpr int FXID_SWORD_ICE_TARGET        = 10032;
-constexpr int FXID_SWORD_LIGHTNING_MAIN    = 10025;
-constexpr int FXID_SWORD_LIGHTNING_TAIL    = 10026;
-constexpr int FXID_SWORD_LIGHTNING_TARGET  = 10033;
-constexpr int FXID_SWORD_POISON_MAIN       = 10027;
-constexpr int FXID_SWORD_POISON_TAIL       = 10028;
-constexpr int FXID_SWORD_POISON_TARGET     = 10034;
-//constexpr int	FXID_GROUND_TARGET = 10035;
-constexpr int FXID_REGION_TARGET_EL_ROGUE  = 10035;
-constexpr int FXID_REGION_TARGET_EL_WIZARD = 10036;
-constexpr int FXID_REGION_TARGET_EL_PRIEST = 10037;
-constexpr int FXID_REGION_TARGET_KA_ROGUE  = 10038;
-constexpr int FXID_REGION_TARGET_KA_WIZARD = 10039;
-constexpr int FXID_REGION_TARGET_KA_PRIEST = 10040;
-constexpr int FXID_CLAN_RANK_1             = 10041;
-constexpr int FXID_WARP_KARUS              = 10046;
-constexpr int FXID_WARP_ELMORAD            = 10047;
-constexpr int FXID_REGION_POISON           = 10100;
-constexpr int FXID_TARGET_POINTER          = 30001;
-constexpr int FXID_ZONE_POINTER            = 30002;
+inline constexpr int FXID_CLASS_CHANGE            = 603;
+inline constexpr int FXID_BLOOD                   = 10002;
+inline constexpr int FXID_LEVELUP_KARUS           = 10012;
+inline constexpr int FXID_LEVELUP_ELMORAD         = 10018;
+inline constexpr int FXID_REGEN_ELMORAD           = 10019;
+inline constexpr int FXID_REGEN_KARUS             = 10020;
+inline constexpr int FXID_SWORD_FIRE_MAIN         = 10021;
+inline constexpr int FXID_SWORD_FIRE_TAIL         = 10022;
+inline constexpr int FXID_SWORD_FIRE_TARGET       = 10031;
+inline constexpr int FXID_SWORD_ICE_MAIN          = 10023;
+inline constexpr int FXID_SWORD_ICE_TAIL          = 10024;
+inline constexpr int FXID_SWORD_ICE_TARGET        = 10032;
+inline constexpr int FXID_SWORD_LIGHTNING_MAIN    = 10025;
+inline constexpr int FXID_SWORD_LIGHTNING_TAIL    = 10026;
+inline constexpr int FXID_SWORD_LIGHTNING_TARGET  = 10033;
+inline constexpr int FXID_SWORD_POISON_MAIN       = 10027;
+inline constexpr int FXID_SWORD_POISON_TAIL       = 10028;
+inline constexpr int FXID_SWORD_POISON_TARGET     = 10034;
+//inline constexpr int	FXID_GROUND_TARGET = 10035;
+inline constexpr int FXID_REGION_TARGET_EL_ROGUE  = 10035;
+inline constexpr int FXID_REGION_TARGET_EL_WIZARD = 10036;
+inline constexpr int FXID_REGION_TARGET_EL_PRIEST = 10037;
+inline constexpr int FXID_REGION_TARGET_KA_ROGUE  = 10038;
+inline constexpr int FXID_REGION_TARGET_KA_WIZARD = 10039;
+inline constexpr int FXID_REGION_TARGET_KA_PRIEST = 10040;
+inline constexpr int FXID_CLAN_RANK_1             = 10041;
+inline constexpr int FXID_WARP_KARUS              = 10046;
+inline constexpr int FXID_WARP_ELMORAD            = 10047;
+inline constexpr int FXID_REGION_POISON           = 10100;
+inline constexpr int FXID_TARGET_POINTER          = 30001;
+inline constexpr int FXID_ZONE_POINTER            = 30002;
 
 enum e_SkillMagicType4 : uint8_t
 {
@@ -1441,20 +1441,20 @@ enum e_SkillMagicType3 : uint8_t
 };
 
 // Special items associated with skill usage
-constexpr uint32_t ITEM_ID_MASTER_SCROLL_WARRIOR = 379063000;
-constexpr uint32_t ITEM_ID_MASTER_SCROLL_ROGUE   = 379064000;
-constexpr uint32_t ITEM_ID_MASTER_SCROLL_MAGE    = 379065000;
-constexpr uint32_t ITEM_ID_MASTER_SCROLL_PRIEST  = 379066000;
+inline constexpr uint32_t ITEM_ID_MASTER_SCROLL_WARRIOR = 379063000;
+inline constexpr uint32_t ITEM_ID_MASTER_SCROLL_ROGUE   = 379064000;
+inline constexpr uint32_t ITEM_ID_MASTER_SCROLL_MAGE    = 379065000;
+inline constexpr uint32_t ITEM_ID_MASTER_SCROLL_PRIEST  = 379066000;
 
-constexpr uint32_t ITEM_ID_STONE_OF_WARRIOR      = 379059000;
-constexpr uint32_t ITEM_ID_STONE_OF_ROGUE        = 379060000;
-constexpr uint32_t ITEM_ID_STONE_OF_MAGE         = 379061000;
-constexpr uint32_t ITEM_ID_STONE_OF_PRIEST       = 379062000;
+inline constexpr uint32_t ITEM_ID_STONE_OF_WARRIOR      = 379059000;
+inline constexpr uint32_t ITEM_ID_STONE_OF_ROGUE        = 379060000;
+inline constexpr uint32_t ITEM_ID_STONE_OF_MAGE         = 379061000;
+inline constexpr uint32_t ITEM_ID_STONE_OF_PRIEST       = 379062000;
 
 // clan related definitions
-constexpr int CLAN_LEVEL_LIMIT                   = 20;
-constexpr int CLAN_COST                          = 500000;
-constexpr uint32_t KNIGHTS_FONT_COLOR            = 0xffff0000; // Clan name font color
+inline constexpr int CLAN_LEVEL_LIMIT                   = 20;
+inline constexpr int CLAN_COST                          = 500000;
+inline constexpr uint32_t KNIGHTS_FONT_COLOR            = 0xffff0000; // Clan name font color
 
 enum e_Cursor : int8_t
 {

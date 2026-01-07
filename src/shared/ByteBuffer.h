@@ -10,7 +10,7 @@
 class ByteBuffer
 {
 public:
-	constexpr static size_t DEFAULT_SIZE = 32;
+	static constexpr size_t DEFAULT_SIZE = 32;
 
 	ByteBuffer();
 	ByteBuffer(size_t res);

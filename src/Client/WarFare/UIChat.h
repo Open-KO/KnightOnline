@@ -32,7 +32,7 @@ struct __ChatInfo
 typedef std::deque<__ChatInfo*> ChatList;
 typedef ChatList::iterator ChatListItor;
 typedef ChatList::reverse_iterator ChatListReverseItor;
-constexpr int MAX_CHAT_LINES = 100;
+inline constexpr int MAX_CHAT_LINES = 100;
 
 enum e_ChatMode : uint8_t;
 class CUIChat : public CN3UIBase

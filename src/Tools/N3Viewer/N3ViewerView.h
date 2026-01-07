@@ -10,7 +10,7 @@
 class CN3ViewerDoc;
 class CN3TransformCollision;
 
-constexpr int MAX_SELECT = 256;
+inline constexpr int MAX_SELECT = 256;
 
 class CN3ViewerView : public CView
 {
