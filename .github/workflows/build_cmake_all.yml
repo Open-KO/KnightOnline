@@ -7,6 +7,11 @@ name: "Build all (CMake)"
 
 on:
   push:
+    # cpp-linter-action: thread-comments
+    permissions:
+      metadata: read 
+      contents: write 
+
     branches:
     - master
 
@@ -22,6 +27,10 @@ on:
       - '**/*.inl'
 
   pull_request:
+    # cpp-linter-action: tidy-review, passive-reviews
+    permissions:
+      pull-requests: write
+
     branches:
     - master
 
@@ -93,10 +102,12 @@ jobs:
         style: ""  # disable clang-format checks. (1)
         tidy-checks: "" # Use .clang-tidy config file. (2)
         files-changed-only: false
+        tidy-review: "update"
+        passive-reviews: true
 
-#    - name: Fail fast?!
-#      if: steps.linter.outputs.clang-tidy-checks-failed > 0
-#      run: exit 1
+    - name: Check clang-tidy result
+      if: steps.linter.outputs.clang-tidy-checks-failed > 0
+      run: exit 1
 
   build_linux:
     runs-on: ubuntu-latest
