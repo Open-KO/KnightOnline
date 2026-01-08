@@ -57,6 +57,8 @@ jobs:
       with:
         submodules: 'false'
 
+    - uses: ilammy/msvc-dev-cmd@v1
+
     - uses: lukka/get-cmake@latest
 
     - name: Configure CMake
