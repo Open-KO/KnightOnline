@@ -14,10 +14,6 @@ add_executable(Option
 if(WIN32)
   set_target_properties(Option PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(Option PRIVATE Option.rc)
-  target_compile_definitions(Option PRIVATE
-    "_UNICODE"
-    "UNICODE"
-  )
 endif()
 
 # Enable warnings as errors

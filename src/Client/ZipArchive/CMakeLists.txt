@@ -20,13 +20,6 @@ add_library(ZipArchive STATIC
   ZipStorage.cpp
   ZipStorage.h)
 
-if(WIN32)
-  target_compile_definitions(ZipArchive PRIVATE
-    "_UNICODE"
-    "UNICODE"
-  )
-endif()
-
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET ZipArchive PROPERTY COMPILE_WARNING_AS_ERROR ON)

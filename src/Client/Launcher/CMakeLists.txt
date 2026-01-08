@@ -36,10 +36,6 @@ if(WIN32)
     Launcher.rc
     res/Launcher.rc2
     res/Launcher.ico)
-  target_compile_definitions(Launcher PRIVATE
-    "_UNICODE"
-    "UNICODE"
-  )
 endif()
 
 # Enable warnings as errors
