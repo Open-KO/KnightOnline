@@ -141,24 +141,20 @@ BOOL CLauncherDlg::OnInitDialog()
 	}
 
 	// 소켓 접속..
-	TCHAR szIniPath[_MAX_PATH] {};
-	::GetCurrentDirectory(_MAX_PATH, szIniPath);
-	lstrcat(szIniPath, _T("\\Server.Ini"));
-	int iServerCount = GetPrivateProfileInt(_T("Server"), _T("Count"), 0, szIniPath);
+	char szIniPath[_MAX_PATH] {};
+	::GetCurrentDirectoryA(_MAX_PATH, szIniPath);
+	lstrcatA(szIniPath, "\\Server.Ini");
+	int iServerCount = GetPrivateProfileIntA("Server", "Count", 0, szIniPath);
 
 	std::vector<std::string> ips;
 	ips.reserve(iServerCount);
 	for (int i = 0; i < iServerCount; i++)
 	{
-		TCHAR szKey[32] {}, szIP[128] {};
-		char szIPA[128] {};
+		char szKey[32] {}, szIP[128] {};
 
-		_stprintf(szKey, _T("IP%d"), i);
-		GetPrivateProfileString(_T("Server"), szKey, _T(""), szIP, _countof(szIP), szIniPath);
-
-		// Just a hack for now; we should be able to trust IPs and hostnames to not be too special.
-		sprintf(szIPA, "%ls", szIP);
-		ips.push_back(szIPA);
+		snprintf(szKey, sizeof(szKey), "IP%d", i);
+		GetPrivateProfileStringA("Server", szKey, "", szIP, sizeof(szIP), szIniPath);
+		ips.push_back(szIP);
 	}
 
 	if (iServerCount > 0)

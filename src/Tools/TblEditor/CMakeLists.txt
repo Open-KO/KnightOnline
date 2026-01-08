@@ -24,10 +24,6 @@ if(WIN32)
     TblEditor.rc
     res/TblEditor.rc2
     res/TblEditor.ico)
-  target_compile_definitions(TblEditor PRIVATE
-    "_UNICODE"
-    "UNICODE"
-  )
 endif()
 
 # Enable warnings as errors

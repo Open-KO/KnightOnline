@@ -23,9 +23,6 @@
     <ProjectGuid>{B73A7541-1A9B-474C-A37B-725AC3CA7056}</ProjectGuid>
   </PropertyGroup>
   <Import Project="..\..\..\props\platform_root.props" />
-  <PropertyGroup Label="Configuration">
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
