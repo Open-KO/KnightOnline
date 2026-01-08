@@ -5,9 +5,21 @@ on:
     branches:
     - master
 
+    paths:
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+      
   pull_request:
     branches:
     - master
+
+    paths:
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
 
   merge_group: 
   workflow_dispatch:

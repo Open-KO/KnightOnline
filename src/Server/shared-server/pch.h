@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <memory>
 
 #include <shared/globals.h>
 

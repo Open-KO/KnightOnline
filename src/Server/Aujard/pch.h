@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <filesystem>
 #include <memory>
 #include <string>

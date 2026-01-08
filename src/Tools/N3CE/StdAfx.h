@@ -20,7 +20,6 @@
 #endif                // _AFX_NO_AFXCMN_SUPPORT
 
 #include <N3Base/My_3DStruct.h>
-#include <filesystem>
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

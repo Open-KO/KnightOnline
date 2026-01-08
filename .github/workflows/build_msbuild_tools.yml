@@ -44,4 +44,4 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Build tools
-      run: msbuild /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Tools.slnx
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" Tools.slnx

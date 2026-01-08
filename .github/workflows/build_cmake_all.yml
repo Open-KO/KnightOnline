@@ -60,24 +60,25 @@ jobs:
     - uses: lukka/get-cmake@latest
 
     - name: Configure CMake
-      shell: bash
+      shell: pwsh
       run: |
-        cmake -S . \
-          -B build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} \
-          -G "Visual Studio 17 2022" \
-          -A ${{ matrix.BUILD_PLATFORM }} \
-          -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }} \
+        cmake -S . `
+          -B build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
+          -G "Visual Studio 17 2022" `
+          -A ${{ matrix.BUILD_PLATFORM }} `
+          -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }} `
           -DOPENKO_FETCH_CLIENT_ASSETS=FALSE
 
     - name: Build all
-      shell: bash
+      shell: pwsh
       run: |
-        cmake \
-          --build build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} \
-          --config ${{ matrix.BUILD_CONFIGURATION }}
+        cmake `
+          --build build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
+          --config ${{ matrix.BUILD_CONFIGURATION }} `
+          --parallel
 
     - name: Run tests
-      shell: bash
+      shell: pwsh
       working-directory: build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}
       run: |
         ctest -C "${{ matrix.BUILD_CONFIGURATION }}" --verbose
@@ -134,7 +135,8 @@ jobs:
         run: |
           cmake \
             --build build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }} \
-            --config ${{ matrix.BUILD_CONFIGURATION }}
+            --config ${{ matrix.BUILD_CONFIGURATION }} \
+            --parallel
 
       - name: Run tests
         shell: bash
@@ -179,7 +181,8 @@ jobs:
         run: |
           cmake \
             --build build-${{ matrix.COMPILER }}-${{ matrix.BUILD_CONFIGURATION }} \
-            --config ${{ matrix.BUILD_CONFIGURATION }}
+            --config ${{ matrix.BUILD_CONFIGURATION }} \
+            --parallel
 
       - name: Run tests
         shell: bash

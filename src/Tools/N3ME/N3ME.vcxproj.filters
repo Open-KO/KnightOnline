@@ -5,20 +5,14 @@
       <UniqueIdentifier>{ead71091-bc3a-4472-ac8b-4b4c56c3dd85}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="N3Base">
-      <UniqueIdentifier>{42c09b20-dd07-49df-abad-1e9ce8b2e10d}</UniqueIdentifier>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{4c9d7631-9a18-4f36-a4db-d12801456768}</UniqueIdentifier>
     </Filter>
-    <Filter Include="N3ME">
-      <UniqueIdentifier>{179c7f07-3ab0-4ac4-b46e-8bd0e8997937}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="N3ME\Frames">
-      <UniqueIdentifier>{da0a99d8-7b6c-4edc-9435-476582022933}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="N3ME\Dialogs">
+    <Filter Include="Dialogs">
       <UniqueIdentifier>{c5998c26-5519-4b59-9732-fc362f62c0f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="N3ME\Controls">
-      <UniqueIdentifier>{4c9d7631-9a18-4f36-a4db-d12801456768}</UniqueIdentifier>
+    <Filter Include="Frames">
+      <UniqueIdentifier>{da0a99d8-7b6c-4edc-9435-476582022933}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,455 +31,337 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClCompile>
     <ClCompile Include="N3ME.cpp">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClCompile>
     <ClCompile Include="N3MEDoc.cpp">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClCompile>
     <ClCompile Include="N3MEView.cpp">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClCompile>
     <ClCompile Include="BrushDlg.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgAddDTex.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgAddSoundGroup.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgBar.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgBase.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgBrowsePath.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgCtrlHeightScale.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgDelGroup.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgDTexGroupView.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgEditEvent.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgEditEventAttr.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgEditWarp.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgInputAttr.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgInputGroup.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgLight.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgLoadEvt.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgLoadNPCPath.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgLoadTileSet.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgMakeNPCPath.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgMakeWall.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgModifyDTex.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgPondProperty.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgRegenUser.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgRiverProperty.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSaveDivision.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSaveEvt.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSaveNewTileSet.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSaveNPCPath.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSceneGraph.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSetDTex.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSetLightMap.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSetSound.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgShapeList.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgSowSeed.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgTerrainSize.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="DlgUnusedFiles.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="..\Common Control\PropertyList.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="ShellTree.cpp">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="ProgressBar.cpp">
-      <Filter>N3ME\Controls</Filter>
+      <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="DTex.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="DTexGroup.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="DTexGroupMng.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="DTexMng.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="EventCell.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="EventMgr.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="LightObjMgr.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="LyTerrain.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="MapMng.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="NPCPath.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="NPCPathMgr.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="PondMesh.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="PondMng.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="PosDummy.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="QTNode.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="RegenUser.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="RiverMesh.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="RiverMng.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="RotDummy.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="ScaleDummy.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundCell.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundMgr.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="TransDummy.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="VtxPosDummy.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="Wall.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="WallMgr.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="WarpMgr.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="DlgMapView.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
-    <ClCompile Include="SowSeedMng.cpp">
-      <Filter>N3ME</Filter>
-    </ClCompile>
+    <ClCompile Include="DlgMapView.cpp" />
+    <ClCompile Include="DTex.cpp" />
+    <ClCompile Include="DTexGroup.cpp" />
+    <ClCompile Include="DTexGroupMng.cpp" />
+    <ClCompile Include="DTexMng.cpp" />
+    <ClCompile Include="EventCell.cpp" />
+    <ClCompile Include="EventMgr.cpp" />
+    <ClCompile Include="LightObjMgr.cpp" />
+    <ClCompile Include="LyTerrain.cpp" />
+    <ClCompile Include="MapMng.cpp" />
+    <ClCompile Include="NPCPath.cpp" />
+    <ClCompile Include="NPCPathMgr.cpp" />
+    <ClCompile Include="PondMesh.cpp" />
+    <ClCompile Include="PondMng.cpp" />
+    <ClCompile Include="PosDummy.cpp" />
+    <ClCompile Include="QTNode.cpp" />
+    <ClCompile Include="RegenUser.cpp" />
+    <ClCompile Include="RiverMesh.cpp" />
+    <ClCompile Include="RiverMng.cpp" />
+    <ClCompile Include="RotDummy.cpp" />
+    <ClCompile Include="ScaleDummy.cpp" />
+    <ClCompile Include="SoundCell.cpp" />
+    <ClCompile Include="SoundMgr.cpp" />
+    <ClCompile Include="SowSeedMng.cpp" />
+    <ClCompile Include="TransDummy.cpp" />
+    <ClCompile Include="VtxPosDummy.cpp" />
+    <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallMgr.cpp" />
+    <ClCompile Include="WarpMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClInclude>
     <ClInclude Include="N3ME.h">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClInclude>
     <ClInclude Include="N3MEDoc.h">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClInclude>
     <ClInclude Include="N3MEView.h">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ClInclude>
     <ClInclude Include="BrushDlg.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgAddDTex.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgAddSoundGroup.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgBar.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgBase.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgBrowsePath.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgCtrlHeightScale.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgDelGroup.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgDTexGroupView.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgEditEvent.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgEditEventAttr.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgEditWarp.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgInputAttr.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgInputGroup.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgLight.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgLoadEvt.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgLoadNPCPath.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgLoadTileSet.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgMakeNPCPath.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgMakeWall.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgModifyDTex.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgPondProperty.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgRegenUser.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgRiverProperty.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSaveDivision.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSaveEvt.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSaveNewTileSet.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSaveNPCPath.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSceneGraph.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSetDTex.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSetLightMap.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSetSound.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgShapeList.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgSowSeed.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgTerrainSize.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="DlgUnusedFiles.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="..\Common Control\PropertyList.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="ShellTree.h">
-      <Filter>N3ME\Dialogs</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="ProgressBar.h">
-      <Filter>N3ME\Controls</Filter>
+      <Filter>Controls</Filter>
     </ClInclude>
-    <ClInclude Include="DTex.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="DTexGroup.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="DTexGroupMng.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="DTexMng.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="EventCell.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="EventMgr.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="LightObjMgr.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="LyTerrain.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="LyTerrainDef.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="MapMng.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="NPCPath.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="NPCPathMgr.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="PondMesh.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="PondMng.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="PosDummy.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="QTNode.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="RegenUser.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="RiverMesh.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="RiverMng.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="RotDummy.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="ScaleDummy.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundCell.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundMgr.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="TransDummy.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="VtxPosDummy.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="Wall.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="WallMgr.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="WarpMgr.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="DlgMapView.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
-    <ClInclude Include="SowSeedMng.h">
-      <Filter>N3ME</Filter>
-    </ClInclude>
+    <ClInclude Include="DlgMapView.h" />
+    <ClInclude Include="DTex.h" />
+    <ClInclude Include="DTexGroup.h" />
+    <ClInclude Include="DTexGroupMng.h" />
+    <ClInclude Include="DTexMng.h" />
+    <ClInclude Include="EventCell.h" />
+    <ClInclude Include="EventMgr.h" />
+    <ClInclude Include="LightObjMgr.h" />
+    <ClInclude Include="LyTerrain.h" />
+    <ClInclude Include="LyTerrainDef.h" />
+    <ClInclude Include="MapMng.h" />
+    <ClInclude Include="NPCPath.h" />
+    <ClInclude Include="NPCPathMgr.h" />
+    <ClInclude Include="PondMesh.h" />
+    <ClInclude Include="PondMng.h" />
+    <ClInclude Include="PosDummy.h" />
+    <ClInclude Include="QTNode.h" />
+    <ClInclude Include="RegenUser.h" />
+    <ClInclude Include="RiverMesh.h" />
+    <ClInclude Include="RiverMng.h" />
+    <ClInclude Include="RotDummy.h" />
+    <ClInclude Include="ScaleDummy.h" />
+    <ClInclude Include="SoundCell.h" />
+    <ClInclude Include="SoundMgr.h" />
+    <ClInclude Include="SowSeedMng.h" />
+    <ClInclude Include="TransDummy.h" />
+    <ClInclude Include="VtxPosDummy.h" />
+    <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallMgr.h" />
+    <ClInclude Include="WarpMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="N3ME.rc">
-      <Filter>N3ME\Frames</Filter>
+      <Filter>Frames</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>

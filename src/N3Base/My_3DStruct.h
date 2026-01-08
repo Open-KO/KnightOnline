@@ -4,9 +4,12 @@
 #pragma once
 
 #include <d3dx9.h>
-#include <string>
+
 #include <cinttypes>
 #include <cmath>
+#include <filesystem>
+#include <memory>
+#include <string>
 
 #include <spdlog/fmt/bundled/format.h>
 

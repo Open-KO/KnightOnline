@@ -4,6 +4,9 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/fetch wrappers/">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" Id="61a124fb-035e-4560-8499-198c6299b7da">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-asio.vcxproj" Id="98f92112-9ec7-4f20-a6c3-a0346acb271c">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>

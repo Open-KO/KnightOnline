@@ -32,10 +32,12 @@ public:
 	int m_iLOD; // 로딩할때 쓸 LOD
 
 public:
+	// Full Path
 	const std::string& FileName() const
 	{
 		return m_szFileName;
-	} // Full Path
+	}
+
 	void FileNameSet(const std::string& szFileName);
 
 	bool LoadFromFile();                                                      // 파일에서 읽어오기.

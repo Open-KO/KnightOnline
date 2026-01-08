@@ -5,6 +5,8 @@
 
 #include <cassert>
 #include <filesystem>
+#include <memory>
+#include <string>
 
 #include <asio.hpp>
 
