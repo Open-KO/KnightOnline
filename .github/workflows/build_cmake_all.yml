@@ -104,6 +104,7 @@ jobs:
         files-changed-only: false
         tidy-review: "update"
         passive-reviews: true
+        step-summary: true
 
     - name: Check clang-tidy result
       if: steps.linter.outputs.clang-tidy-checks-failed > 0
