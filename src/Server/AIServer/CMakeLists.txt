@@ -1,8 +1,7 @@
 set(AISERVER_VS_MAP_DIR   "${OPENKO_SERVER_MAP_SRC_DIR}")
 set(AISERVER_VS_EVENT_DIR "${OPENKO_SERVER_MAP_SRC_DIR}") # Intentionally the same
 
-add_executable(AIServer
-  AIServer.cpp
+add_library(AIServer.Core
   AIServerApp.cpp
   AIServerApp.h
   AIServerLogger.cpp
@@ -43,6 +42,12 @@ add_executable(AIServer
   ZoneEventThread.h
 )
 
+add_executable(AIServer
+  AIServer.cpp
+  pch.h
+  resource.h
+)
+
 # Ensure we require the server assets to be copied
 add_dependencies(AIServer copy-server-assets)
 
@@ -52,20 +57,36 @@ endif()
 
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+  set_property(TARGET AIServer.Core PROPERTY COMPILE_WARNING_AS_ERROR ON)
   set_property(TARGET AIServer PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif()
 
 # Setup PCH
-target_precompile_headers(AIServer PRIVATE pch.h)
+target_precompile_headers(AIServer.Core PRIVATE pch.h)
 
 # Setup dependencies
-target_link_libraries(AIServer PRIVATE
-  shared-server
+target_link_libraries(AIServer.Core PUBLIC
   db-library
   FileIO
+  shared-server
+)
+
+target_link_libraries(AIServer PRIVATE
+  AIServer.Core
+)
+
+# Expose include path
+target_include_directories(AIServer.Core INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <AIServer/...>
 )
 
 # Setup warning levels
+target_compile_options(AIServer.Core PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  $<$<CXX_COMPILER_ID:GNU>:-Wall>
+  $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+)
+
 target_compile_options(AIServer PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<CXX_COMPILER_ID:GNU>:-Wall>

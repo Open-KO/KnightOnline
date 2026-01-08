@@ -83,7 +83,7 @@ struct _USER_DATA
 	_USER_QUEST m_quests[MAX_QUEST];
 };
 
-constexpr int ALLOCATED_USER_DATA_BLOCK = 8000;
+inline constexpr int ALLOCATED_USER_DATA_BLOCK = 8000;
 static_assert(sizeof(_USER_DATA) <= ALLOCATED_USER_DATA_BLOCK);
 
 #endif // SERVER_SHAREDSERVER__USER_DATA_H

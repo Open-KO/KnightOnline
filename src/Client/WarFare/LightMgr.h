@@ -11,7 +11,7 @@
 
 #include <list>
 
-constexpr float LIGHT_VALIDRANGE = 100.0f;
+inline constexpr float LIGHT_VALIDRANGE = 100.0f;
 
 enum eIdxLight : uint8_t
 {

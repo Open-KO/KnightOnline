@@ -4,6 +4,9 @@
 #include "EXEC.h"
 #include "LOGIC_ELSE.h"
 
+namespace Ebenezer
+{
+
 EVENT_DATA::EVENT_DATA()
 {
 }
@@ -24,3 +27,5 @@ EVENT_DATA::~EVENT_DATA()
 	}
 	m_arLogicElse.clear();
 }
+
+} // namespace Ebenezer

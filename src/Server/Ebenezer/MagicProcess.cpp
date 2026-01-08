@@ -8,6 +8,9 @@
 #include <shared/packets.h>
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 enum e_MoralType : uint8_t
 {
 	MORAL_SELF            = 1,  // 나 자신..
@@ -3227,3 +3230,5 @@ int16_t CMagicProcess::GetWeatherDamage(int16_t damage, int16_t attribute)
 
 	return damage;
 }
+
+} // namespace Ebenezer

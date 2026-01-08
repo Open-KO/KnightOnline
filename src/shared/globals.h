@@ -7,20 +7,22 @@
 #include "packets.h"
 #include "Packet.h"
 
-constexpr char DEFAULT_MAP_DIR[]    = "../MAP/";
-constexpr char DEFAULT_QUESTS_DIR[] = "../QUESTS/";
+inline constexpr char DEFAULT_MAP_DIR[]    = "../MAP/";
+inline constexpr char DEFAULT_QUESTS_DIR[] = "../QUESTS/";
 
-constexpr int MIN_ID_SIZE           = 6;
-constexpr int MAX_ID_SIZE           = 20;
-constexpr int MAX_NPC_NAME_SIZE     = 30;
-constexpr int MAX_PW_SIZE           = 12;
-constexpr int MAX_IP_SIZE    = 15; // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
+inline constexpr int MIN_ID_SIZE           = 6;
+inline constexpr int MAX_ID_SIZE           = 20;
+inline constexpr int MAX_NPC_NAME_SIZE     = 30;
+inline constexpr int MAX_PW_SIZE           = 12;
 
-constexpr int MAX_ITEM_COUNT = 9999; // 한 슬롯에 가지는 최대 화살/송편 개수
-constexpr int MAX_QUEST      = 100;
-constexpr int MAX_LEVEL      = 80;   // 최고렙...
-constexpr int MAX_GOLD       = 2'100'000'000;
-constexpr int VIEW_DISTANCE  = 48;
+// IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
+inline constexpr int MAX_IP_SIZE           = 15;
+
+inline constexpr int MAX_ITEM_COUNT        = 9999; // 한 슬롯에 가지는 최대 화살/송편 개수
+inline constexpr int MAX_QUEST             = 100;
+inline constexpr int MAX_LEVEL             = 80;   // 최고렙...
+inline constexpr int MAX_GOLD              = 2'100'000'000;
+inline constexpr int VIEW_DISTANCE         = 48;
 
 enum e_AttackResult : uint8_t
 {
@@ -363,40 +365,40 @@ enum e_ZoneID : uint8_t
 };
 
 // ITEM_SLOT DEFINE
-constexpr uint8_t RIGHTEAR        = 0;
-constexpr uint8_t HEAD            = 1;
-constexpr uint8_t LEFTEAR         = 2;
-constexpr uint8_t NECK            = 3;
-constexpr uint8_t BREAST          = 4;
-constexpr uint8_t SHOULDER        = 5;
-constexpr uint8_t RIGHTHAND       = 6;
-constexpr uint8_t WAIST           = 7;
-constexpr uint8_t LEFTHAND        = 8;
-constexpr uint8_t RIGHTRING       = 9;
-constexpr uint8_t LEG             = 10;
-constexpr uint8_t LEFTRING        = 11;
-constexpr uint8_t GLOVE           = 12;
-constexpr uint8_t FOOT            = 13;
-constexpr uint8_t RESERVED        = 14;
+inline constexpr uint8_t RIGHTEAR        = 0;
+inline constexpr uint8_t HEAD            = 1;
+inline constexpr uint8_t LEFTEAR         = 2;
+inline constexpr uint8_t NECK            = 3;
+inline constexpr uint8_t BREAST          = 4;
+inline constexpr uint8_t SHOULDER        = 5;
+inline constexpr uint8_t RIGHTHAND       = 6;
+inline constexpr uint8_t WAIST           = 7;
+inline constexpr uint8_t LEFTHAND        = 8;
+inline constexpr uint8_t RIGHTRING       = 9;
+inline constexpr uint8_t LEG             = 10;
+inline constexpr uint8_t LEFTRING        = 11;
+inline constexpr uint8_t GLOVE           = 12;
+inline constexpr uint8_t FOOT            = 13;
+inline constexpr uint8_t RESERVED        = 14;
 
-constexpr uint8_t SLOT_MAX        = 14;  // 14 equipped item slots
-constexpr uint8_t HAVE_MAX        = 28;  // 28 inventory slots
-constexpr uint8_t WAREHOUSE_MAX   = 192; // 창고 아이템 MAX
+inline constexpr uint8_t SLOT_MAX        = 14;  // 14 equipped item slots
+inline constexpr uint8_t HAVE_MAX        = 28;  // 28 inventory slots
+inline constexpr uint8_t WAREHOUSE_MAX   = 192; // 창고 아이템 MAX
 
 // Start of inventory area
-constexpr int INVENTORY_INVENT    = SLOT_MAX;
+inline constexpr int INVENTORY_INVENT    = SLOT_MAX;
 
 // Total slots in the general-purpose inventory storage
-constexpr int INVENTORY_TOTAL     = SLOT_MAX + HAVE_MAX;
+inline constexpr int INVENTORY_TOTAL     = SLOT_MAX + HAVE_MAX;
 
-constexpr uint8_t MAX_MERCH_ITEMS = 12;
+inline constexpr uint8_t MAX_MERCH_ITEMS = 12;
 
-constexpr int MAX_MERCH_MESSAGE   = 40;
+inline constexpr int MAX_MERCH_MESSAGE   = 40;
 
-constexpr int ITEMCOUNT_MAX       = 9999;
+inline constexpr int ITEMCOUNT_MAX       = 9999;
 
-constexpr int MAX_KNIGHTS_MARK    = 2400;
-constexpr int CLAN_SYMBOL_COST    = 5000000;
+inline constexpr int MAX_KNIGHTS_MARK    = 2400;
+inline constexpr int CLAN_SYMBOL_COST    = 5000000;
 
 #define NEWCHAR_SUCCESS            uint8_t(0)
 #define NEWCHAR_NO_MORE            uint8_t(1)

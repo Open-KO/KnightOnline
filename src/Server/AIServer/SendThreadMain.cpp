@@ -5,6 +5,9 @@
 
 #include <spdlog/spdlog.h>
 
+namespace AIServer
+{
+
 SendThreadMain::SendThreadMain(AISocketManager* socketManager) :
 	_socketManager(socketManager), _nextRoundRobinSocketId(0)
 {
@@ -129,3 +132,5 @@ SendThreadMain::~SendThreadMain()
 {
 	SendThreadMain::shutdown();
 }
+
+} // namespace AIServer

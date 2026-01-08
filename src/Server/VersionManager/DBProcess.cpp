@@ -19,6 +19,9 @@
 #include <VersionManager/binder/VersionManagerBinder.h>
 #include <StoredProc/StoredProc.h>
 
+namespace VersionManager
+{
+
 CDBProcess::CDBProcess()
 {
 }
@@ -249,3 +252,5 @@ bool CDBProcess::LoadPremiumServiceUser(const char* accountId, int16_t* premiumD
 	*premiumDaysRemaining = static_cast<int16_t>(daysRemaining);
 	return true;
 }
+
+} // namespace VersionManager

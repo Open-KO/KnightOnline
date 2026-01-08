@@ -5,6 +5,9 @@
 
 #include <shared-server/SocketManager.h>
 
+namespace Ebenezer
+{
+
 class CUser;
 class SendWorkerThread;
 class EbenezerSocketManager : public SocketManager
@@ -22,5 +25,7 @@ public:
 protected:
 	SendWorkerThread* _sendWorkerThread;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_EBENEZERSOCKETMANAGER_H

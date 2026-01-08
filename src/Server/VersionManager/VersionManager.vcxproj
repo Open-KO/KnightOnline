@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>MFCProj</Keyword>
-    <ProjectGuid>{D5FAD895-323C-4BE1-A066-3E70BB8C2BB4}</ProjectGuid>
+    <ProjectGuid>{B73A7541-1A9B-474C-A37B-725AC3CA7056}</ProjectGuid>
   </PropertyGroup>
   <Import Project="..\..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
@@ -40,9 +40,9 @@
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(DependencyDir);$(RootDir)src;$(RootDir)src\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -51,7 +51,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared-server.lib;shared.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VersionManager.Core.lib;shared-server.lib;shared.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -167,24 +167,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DBProcess.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="User.cpp" />
     <ClCompile Include="VersionManager.cpp" />
-    <ClCompile Include="VersionManagerApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VersionManager.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DBProcess.h" />
-    <ClInclude Include="Define.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="User.h" />
-    <ClInclude Include="VersionManagerApp.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\VersionManager.ico" />

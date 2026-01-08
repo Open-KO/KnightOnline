@@ -15,19 +15,19 @@
 #pragma once
 
 // Constant Definitions..
-constexpr int PATCH_TILE_SIZE          = 8;    //	패치 하나에 타일이 8x8개 들어간다.
-constexpr float TILE_SIZE              = 4.0f; //	타일하나당 길이 4m
-constexpr int MAX_LOD_LEVEL            = 10;   //	LOD수준이 가장 높은 단계 가장 Detail...
-constexpr int MIN_LOD_LEVEL            = 0;    //	LOD수준이 가장 낮은 단계 가장 Rough...
-constexpr int MAX_PATCH_LEVEL          = 3;    //	2 ^ 3 = 8.
-constexpr int PATCH_PIXEL_SIZE         = 32;   //	패치하나에 들어가는 픽셀수..
-constexpr int UNITUV                   = 32;   //	컬러맵 텍스쳐 한장에 들어가는 타일수..
-constexpr int LIGHTMAP_TEX_SIZE        = 16;   //	타일 하나당 들어가는 라이트맵 텍스쳐 크기.
-constexpr int TILE_PIXEL_SIZE          = 128;  //	타일하나의 실제 픽셀 사이즈.
-constexpr int COLORMAPTEX_SIZE         = 128;  //	컬러맵 텍스쳐의 픽셀크기..128x128
-constexpr int DISTANCE_TABLE_SIZE      = 64;   //	셀단위의 거리 테이블 크기(64 x 64)..
-constexpr int MAX_GRASS                = 8;
-constexpr int MAX_TERRAIN_SOUND_EFFECT = 4;
+inline constexpr int PATCH_TILE_SIZE          = 8;    //	패치 하나에 타일이 8x8개 들어간다.
+inline constexpr float TILE_SIZE              = 4.0f; //	타일하나당 길이 4m
+inline constexpr int MAX_LOD_LEVEL            = 10;   //	LOD수준이 가장 높은 단계 가장 Detail...
+inline constexpr int MIN_LOD_LEVEL            = 0;    //	LOD수준이 가장 낮은 단계 가장 Rough...
+inline constexpr int MAX_PATCH_LEVEL          = 3;    //	2 ^ 3 = 8.
+inline constexpr int PATCH_PIXEL_SIZE         = 32;   //	패치하나에 들어가는 픽셀수..
+inline constexpr int UNITUV                   = 32;   //	컬러맵 텍스쳐 한장에 들어가는 타일수..
+inline constexpr int LIGHTMAP_TEX_SIZE        = 16;   //	타일 하나당 들어가는 라이트맵 텍스쳐 크기.
+inline constexpr int TILE_PIXEL_SIZE          = 128;  //	타일하나의 실제 픽셀 사이즈.
+inline constexpr int COLORMAPTEX_SIZE         = 128;  //	컬러맵 텍스쳐의 픽셀크기..128x128
+inline constexpr int DISTANCE_TABLE_SIZE      = 64;   //	셀단위의 거리 테이블 크기(64 x 64)..
+inline constexpr int MAX_GRASS                = 8;
+inline constexpr int MAX_TERRAIN_SOUND_EFFECT = 4;
 
 enum e_Dir : uint8_t
 {

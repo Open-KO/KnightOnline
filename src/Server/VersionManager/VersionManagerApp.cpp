@@ -13,6 +13,9 @@
 
 using namespace std::chrono_literals;
 
+namespace VersionManager
+{
+
 VersionManagerApp::VersionManagerApp(logger::Logger& logger) :
 	AppThread(logger), _socketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
@@ -226,3 +229,5 @@ bool VersionManagerApp::LoadVersionList()
 	VersionList.Swap(versionList);
 	return true;
 }
+
+} // namespace VersionManager

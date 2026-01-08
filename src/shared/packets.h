@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cinttypes>
+
 enum e_GameOpcode : uint8_t
 {
 	WIZ_LOGIN               = 0x01, // Account Login
@@ -173,9 +175,9 @@ enum e_AuthResult : uint8_t
 
 // NOTE: All of this is largely irrelevant.
 // It cares only about finding the first and last #.
-constexpr char NEWS_MESSAGE_START[] = { '#', '\0', '\n' };
-constexpr char NEWS_MESSAGE_END[]   = { '\0', '\n', '#', '\0', '\n', '\0', '\n' };
-constexpr int MAX_NEWS_COUNT        = 3;
+inline constexpr char NEWS_MESSAGE_START[] = { '#', '\0', '\n' };
+inline constexpr char NEWS_MESSAGE_END[]   = { '\0', '\n', '#', '\0', '\n', '\0', '\n' };
+inline constexpr int MAX_NEWS_COUNT        = 3;
 
 ////////////////////////////////////////////////////////////////
 // chat define
@@ -644,67 +646,74 @@ enum e_ZoneAbilityOpcode : uint8_t
 };
 
 // ---------------------------------------------------------------------
-// AI Server와 게임서버간의 Npc에 관련된 패킷은 1번~49번
-// ---------------------------------------------------------------------
-constexpr uint8_t AI_SERVER_CONNECT       = 1;
-constexpr uint8_t NPC_INFO_ALL            = 2;
-constexpr uint8_t MOVE_REQ                = 3;
-constexpr uint8_t MOVE_RESULT             = 4;
-constexpr uint8_t MOVE_END_REQ            = 5;
-constexpr uint8_t MOVE_END_RESULT         = 6;
-constexpr uint8_t AG_NPC_INFO             = 7;
-constexpr uint8_t AG_NPC_GIVE_ITEM        = 8;
-constexpr uint8_t AG_NPC_GATE_OPEN        = 9;
-constexpr uint8_t AG_NPC_GATE_DESTORY     = 10;
-constexpr uint8_t AG_NPC_INOUT            = 11;
-constexpr uint8_t AG_NPC_EVENT_ITEM       = 12;
-constexpr uint8_t AG_NPC_HP_REQ           = 13;
-
-// ---------------------------------------------------------------------
-// AI Server와 게임서버간의 User, Npc 공통 관련된 패킷은 50번~100번
-// ---------------------------------------------------------------------
-constexpr uint8_t AG_SERVER_INFO          = 50; //
-constexpr uint8_t AG_ATTACK_REQ           = 51; // Attck Packet
-constexpr uint8_t AG_ATTACK_RESULT        = 52; // Attck Packet
-constexpr uint8_t AG_DEAD                 = 53; // Dead Packet
-constexpr uint8_t AG_SYSTEM_MSG           = 54; // System message Packet
-constexpr uint8_t AG_CHECK_ALIVE_REQ      = 55; // Server alive check
-constexpr uint8_t AG_COMPRESSED_DATA      = 56; // Packet Data compressed
-constexpr uint8_t AG_ZONE_CHANGE          = 57; // Zone change
-constexpr uint8_t AG_MAGIC_ATTACK_REQ     = 58; // Magic Attck Packet
-constexpr uint8_t AG_MAGIC_ATTACK_RESULT  = 59; // Magic Attck Packet
-constexpr uint8_t AG_USER_INFO_ALL        = 60; // User의 모든 정보 전송
-constexpr uint8_t AG_LONG_MAGIC_ATTACK    = 61; // Magic Attck Packet
-constexpr uint8_t AG_PARTY_INFO_ALL       = 62; // Party의 모든 정보 전송
-constexpr uint8_t AG_HEAL_MAGIC           = 63; // Healing magic
-constexpr uint8_t AG_TIME_WEATHER         = 64; // time and whether info
-constexpr uint8_t AG_BATTLE_EVENT         = 65; // battle event
-constexpr uint8_t AG_COMPRESSED           = 66;
-
-// ---------------------------------------------------------------------
 // Battle Event Sub Packet
 // ---------------------------------------------------------------------
-constexpr uint8_t BATTLE_EVENT_OPEN       = 1; // battle event open
-constexpr uint8_t BATTLE_MAP_EVENT_RESULT = 2; // battle zone map event result
-constexpr uint8_t BATTLE_EVENT_RESULT     = 3; // battle event result ( victory nation )
-constexpr uint8_t BATTLE_EVENT_MAX_USER   = 4; // battle event result ( user name )
-constexpr uint8_t BATTLE_EVENT_KILL_USER  = 5; // battle event result ( user kill count )
+inline constexpr uint8_t BATTLE_EVENT_OPEN       = 1; // battle event open
+inline constexpr uint8_t BATTLE_MAP_EVENT_RESULT = 2; // battle zone map event result
+inline constexpr uint8_t BATTLE_EVENT_RESULT     = 3; // battle event result ( victory nation )
+inline constexpr uint8_t BATTLE_EVENT_MAX_USER   = 4; // battle event result ( user name )
+inline constexpr uint8_t BATTLE_EVENT_KILL_USER  = 5; // battle event result ( user kill count )
 
-// ---------------------------------------------------------------------
-// AI Server와 게임서버간의 User에 관련된 패킷은 101번 부터 시작
-// ---------------------------------------------------------------------
-constexpr uint8_t AG_USER_INFO            = 101; // User의 정보
-constexpr uint8_t AG_USER_INOUT           = 102; // User의 In,Out 정보
-constexpr uint8_t AG_USER_MOVE            = 103; // User의 move 정보
-constexpr uint8_t AG_USER_MOVEEDGE        = 104; // User의 move end 정보
-constexpr uint8_t AG_USER_SET_HP          = 105; // User의 HP
-constexpr uint8_t AG_USER_LOG_OUT         = 106; // User의 LogOut
-constexpr uint8_t AG_USER_REGENE          = 107; // User의 Regene
-constexpr uint8_t AG_USER_EXP             = 108; // User의 경험치
-constexpr uint8_t AG_USER_UPDATE          = 109; // User의 Update Info
-constexpr uint8_t AG_USER_FAIL            = 110; // 잘못된 유저 처리...
-constexpr uint8_t AG_USER_PARTY           = 111; // 파티처리 담당
-constexpr uint8_t AG_USER_VISIBILITY      = 112; // updates invisibility status
-constexpr uint8_t AG_NPC_HP_CHANGE        = 113; // updates an NPC's HP
+enum e_AIOpcode : uint8_t
+{
 
-#endif                                           // SHARED_PACKETS_H
+	// ---------------------------------------------------------------------
+	// AI Server와 게임서버간의 Npc에 관련된 패킷은 1번~49번
+	// ---------------------------------------------------------------------
+
+	AI_SERVER_CONNECT      = 1,
+	NPC_INFO_ALL           = 2,
+	MOVE_REQ               = 3,
+	MOVE_RESULT            = 4,
+	MOVE_END_REQ           = 5,
+	MOVE_END_RESULT        = 6,
+	AG_NPC_INFO            = 7,
+	AG_NPC_GIVE_ITEM       = 8,
+	AG_NPC_GATE_OPEN       = 9,
+	AG_NPC_GATE_DESTORY    = 10,
+	AG_NPC_INOUT           = 11,
+	AG_NPC_EVENT_ITEM      = 12,
+	AG_NPC_HP_REQ          = 13,
+
+	// ---------------------------------------------------------------------
+	// AI Server와 게임서버간의 User, Npc 공통 관련된 패킷은 50번~100번
+	// ---------------------------------------------------------------------
+
+	AG_SERVER_INFO         = 50, //
+	AG_ATTACK_REQ          = 51, // Attck Packet
+	AG_ATTACK_RESULT       = 52, // Attck Packet
+	AG_DEAD                = 53, // Dead Packet
+	AG_SYSTEM_MSG          = 54, // System message Packet
+	AG_CHECK_ALIVE_REQ     = 55, // Server alive check
+	AG_COMPRESSED_DATA     = 56, // Packet Data compressed
+	AG_ZONE_CHANGE         = 57, // Zone change
+	AG_MAGIC_ATTACK_REQ    = 58, // Magic Attck Packet
+	AG_MAGIC_ATTACK_RESULT = 59, // Magic Attck Packet
+	AG_USER_INFO_ALL       = 60, // User의 모든 정보 전송
+	AG_LONG_MAGIC_ATTACK   = 61, // Magic Attck Packet
+	AG_PARTY_INFO_ALL      = 62, // Party의 모든 정보 전송
+	AG_HEAL_MAGIC          = 63, // Healing magic
+	AG_TIME_WEATHER        = 64, // time and whether info
+	AG_BATTLE_EVENT        = 65, // battle event
+	AG_COMPRESSED          = 66,
+
+	// ---------------------------------------------------------------------
+	// AI Server와 게임서버간의 User에 관련된 패킷은 101번 부터 시작
+	// ---------------------------------------------------------------------
+
+	AG_USER_INFO           = 101, // User의 정보
+	AG_USER_INOUT          = 102, // User의 In,Out 정보
+	AG_USER_MOVE           = 103, // User의 move 정보
+	AG_USER_MOVEEDGE       = 104, // User의 move end 정보
+	AG_USER_SET_HP         = 105, // User의 HP
+	AG_USER_LOG_OUT        = 106, // User의 LogOut
+	AG_USER_REGENE         = 107, // User의 Regene
+	AG_USER_EXP            = 108, // User의 경험치
+	AG_USER_UPDATE         = 109, // User의 Update Info
+	AG_USER_FAIL           = 110, // 잘못된 유저 처리...
+	AG_USER_PARTY          = 111, // 파티처리 담당
+	AG_USER_VISIBILITY     = 112, // updates invisibility status
+	AG_NPC_HP_CHANGE       = 113, // updates an NPC's HP
+};
+
+#endif                            // SHARED_PACKETS_H

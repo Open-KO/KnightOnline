@@ -13,6 +13,9 @@
 
 #include <cmath>
 
+namespace AIServer
+{
+
 //bool g_bDebug = true;
 
 int surround_x[8]                   = { -1, -1, 0, 1, 1, 1, 0, -1 };
@@ -7272,3 +7275,5 @@ bool CNpc::Teleport()
 
 	return true;
 }
+
+} // namespace AIServer

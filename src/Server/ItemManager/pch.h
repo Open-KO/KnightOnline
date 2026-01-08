@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include <cassert>
+#include <filesystem>
+#include <memory>
+#include <string>
+
 #include <shared-server/server_config.h>
 #include <shared-server/utilities.h>
 

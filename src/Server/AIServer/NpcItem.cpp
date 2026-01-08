@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "NpcItem.h"
 
+namespace AIServer
+{
+
 CNpcItem::CNpcItem()
 {
 	m_nRow   = 0;
@@ -17,3 +20,5 @@ CNpcItem::~CNpcItem()
 		delete[] m_ppItem;
 	}
 }
+
+} // namespace AIServer

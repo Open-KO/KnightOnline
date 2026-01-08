@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{02A7C2DE-6DB6-477A-977A-ADF0BF2204A6}</ProjectGuid>
+    <ProjectGuid>{ED8AFB92-15CE-4537-A81C-D4120D31977C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>WarFare</RootNamespace>
   </PropertyGroup>
@@ -43,7 +43,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;_WINSOCK_DEPRECATED_NO_WARNINGS;_N3GAME;_CRT_SECURE_NO_WARNINGS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -53,7 +53,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>shared.lib;ws2_32.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base_client.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>WarFare.Core.lib;shared.lib;ws2_32.lib;winmm.lib;imm32.lib;wsock32.lib;DInput8.lib;N3Base_client.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
@@ -115,221 +115,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="APISocket.cpp" />
-    <ClCompile Include="Bird.cpp" />
-    <ClCompile Include="BirdMng.cpp" />
-    <ClCompile Include="ClientResourceFormatter.cpp" />
-    <ClCompile Include="CountableItemEditDlg.cpp" />
-    <ClCompile Include="DungeonManager.cpp" />
-    <ClCompile Include="EventManager.cpp" />
-    <ClCompile Include="GameBase.cpp" />
-    <ClCompile Include="GameCursor.cpp" />
-    <ClCompile Include="GameEng.cpp" />
-    <ClCompile Include="GameProcCharacterCreate.cpp" />
-    <ClCompile Include="GameProcCharacterSelect.cpp" />
-    <ClCompile Include="GameProcedure.cpp" />
-    <ClCompile Include="GameProcLogIn_1298.cpp" />
-    <ClCompile Include="GameProcLogIn_1098.cpp" />
-    <ClCompile Include="GameProcMain.cpp" />
-    <ClCompile Include="GameProcNationSelect.cpp" />
-    <ClCompile Include="IconItemSkill.cpp" />
-    <ClCompile Include="ItemRepairMgr.cpp" />
-    <ClCompile Include="LightMgr.cpp" />
-    <ClCompile Include="LocalInput.cpp" />
-    <ClCompile Include="MagicSkillMng.cpp" />
-    <ClCompile Include="N3ClientShapeMgr.cpp" />
-    <ClCompile Include="N3FXBundleGame.cpp" />
-    <ClCompile Include="N3FXMgr.cpp" />
-    <ClCompile Include="N3FXPartBillBoardGame.cpp" />
-    <ClCompile Include="N3FXPartBottomBoardGame.cpp" />
-    <ClCompile Include="N3Pond.cpp" />
-    <ClCompile Include="N3River.cpp" />
-    <ClCompile Include="N3Terrain.cpp" />
-    <ClCompile Include="N3TerrainManager.cpp" />
-    <ClCompile Include="N3TerrainPatch.cpp" />
-    <ClCompile Include="N3UIDBCLButton.cpp" />
-    <ClCompile Include="N3UIIcon.cpp" />
-    <ClCompile Include="N3UIWndBase.cpp" />
-    <ClCompile Include="N3WorldBase.cpp" />
-    <ClCompile Include="N3WorldManager.cpp" />
-    <ClCompile Include="OrderMessage.cpp" />
-    <ClCompile Include="PlayerBase.cpp" />
-    <ClCompile Include="PlayerMySelf.cpp" />
-    <ClCompile Include="PlayerNPC.cpp" />
-    <ClCompile Include="PlayerOther.cpp" />
-    <ClCompile Include="PlayerOtherMgr.cpp" />
-    <ClCompile Include="PortalVolume.cpp" />
-    <ClCompile Include="PvsMgr.cpp" />
-    <ClCompile Include="ServerMesh.cpp" />
-    <ClCompile Include="StdAfx.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="SubProcPerTrade.cpp" />
-    <ClCompile Include="UICharacterCreate.cpp" />
-    <ClCompile Include="UICharacterSelect.cpp" />
-    <ClCompile Include="UIChat.cpp" />
-    <ClCompile Include="UIClassChange.cpp" />
-    <ClCompile Include="UICmd.cpp" />
-    <ClCompile Include="UICmdEdit.cpp" />
-    <ClCompile Include="UICreateClanName.cpp" />
-    <ClCompile Include="UICmdList.cpp" />
-    <ClCompile Include="UIDead.cpp" />
-    <ClCompile Include="UIDroppedItemDlg.cpp" />
-    <ClCompile Include="UIEndingDisplay.cpp" />
-    <ClCompile Include="UIExitMenu.cpp" />
-    <ClCompile Include="UIHelp.cpp" />
-    <ClCompile Include="UIHotKeyDlg.cpp" />
-    <ClCompile Include="UIImageTooltipDlg.cpp" />
-    <ClCompile Include="UIInn.cpp" />
-    <ClCompile Include="UIInventory.cpp" />
-    <ClCompile Include="UIKnightsOperation.cpp" />
-    <ClCompile Include="UILevelGuide.cpp" />
-    <ClCompile Include="UILoading.cpp" />
-    <ClCompile Include="UILogin_1298.cpp" />
-    <ClCompile Include="UILogin_1098.cpp" />
-    <ClCompile Include="UIManager.cpp" />
-    <ClCompile Include="UIMessageBox.cpp" />
-    <ClCompile Include="UIMessageBoxManager.cpp" />
-    <ClCompile Include="UIMessageWnd.cpp" />
-    <ClCompile Include="UIMsgBoxOkCancel.cpp" />
-    <ClCompile Include="UINationSelectDlg.cpp" />
-    <ClCompile Include="UINotice.cpp" />
-    <ClCompile Include="UINPCChangeEvent.cpp" />
-    <ClCompile Include="UINPCEvent.cpp" />
-    <ClCompile Include="UIPartyBBS.cpp" />
-    <ClCompile Include="UIPartyBBSSelector.cpp" />
-    <ClCompile Include="UIPartyOrForce.cpp" />
-    <ClCompile Include="UIPerTradeDlg.cpp" />
-    <ClCompile Include="UIPointInitDlg.cpp" />
-    <ClCompile Include="UIQuestMenu.cpp" />
-    <ClCompile Include="UIQuestTalk.cpp" />
-    <ClCompile Include="UIRepairTooltipDlg.cpp" />
-    <ClCompile Include="UISkillTreeDlg.cpp" />
-    <ClCompile Include="UIStateBar.cpp" />
-    <ClCompile Include="UITargetBar.cpp" />
-    <ClCompile Include="UITradeBBSEditDlg.cpp" />
-    <ClCompile Include="UITradeBBSSelector.cpp" />
-    <ClCompile Include="UITradeEditDlg.cpp" />
-    <ClCompile Include="UITradeExplanation.cpp" />
-    <ClCompile Include="UITradeSellBBS.cpp" />
-    <ClCompile Include="UITransactionDlg.cpp" />
-    <ClCompile Include="UIUpgradeSelect.cpp" />
-    <ClCompile Include="UIVarious.cpp" />
-    <ClCompile Include="UIWareHouseDlg.cpp" />
-    <ClCompile Include="UIWarp.cpp" />
     <ClCompile Include="WarFareMain.cpp" />
-    <ClCompile Include="WarMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="APISocket.h" />
-    <ClInclude Include="Bird.h" />
-    <ClInclude Include="BirdMng.h" />
-    <ClInclude Include="Bitset.h" />
-    <ClInclude Include="ClientResourceFormatter.h" />
-    <ClInclude Include="CountableItemEditDlg.h" />
-    <ClInclude Include="DungeonManager.h" />
-    <ClInclude Include="EventManager.h" />
-    <ClInclude Include="GameBase.h" />
-    <ClInclude Include="GameCursor.h" />
-    <ClInclude Include="GameDef.h" />
-    <ClInclude Include="GameEng.h" />
-    <ClInclude Include="GameProcCharacterCreate.h" />
-    <ClInclude Include="GameProcCharacterSelect.h" />
-    <ClInclude Include="GameProcedure.h" />
-    <ClInclude Include="GameProcLogIn.h" />
-    <ClInclude Include="GameProcLogIn_1298.h" />
-    <ClInclude Include="GameProcLogIn_1098.h" />
-    <ClInclude Include="GameProcMain.h" />
-    <ClInclude Include="GameProcNationSelect.h" />
-    <ClInclude Include="IconItemSkill.h" />
-    <ClInclude Include="N3ClientShapeMgr.h" />
-    <ClInclude Include="N3Pond.h" />
-    <ClInclude Include="N3River.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="text_resources.h" />
-    <ClInclude Include="UICmdEdit.h" />
-    <ClInclude Include="UICmdList.h" />
-    <ClInclude Include="ItemRepairMgr.h" />
-    <ClInclude Include="LightMgr.h" />
-    <ClInclude Include="LocalInput.h" />
-    <ClInclude Include="MagicSkillMng.h" />
-    <ClInclude Include="N3FXBundleGame.h" />
-    <ClInclude Include="N3FXMgr.h" />
-    <ClInclude Include="N3FXPartBillBoardGame.h" />
-    <ClInclude Include="N3FXPartBottomBoardGame.h" />
-    <ClInclude Include="N3Terrain.h" />
-    <ClInclude Include="N3TerrainDef.h" />
-    <ClInclude Include="N3TerrainManager.h" />
-    <ClInclude Include="N3TerrainPatch.h" />
-    <ClInclude Include="N3UIDBCLButton.h" />
-    <ClInclude Include="N3UIIcon.h" />
-    <ClInclude Include="N3UIWndBase.h" />
-    <ClInclude Include="N3WorldBase.h" />
-    <ClInclude Include="N3WorldManager.h" />
-    <ClInclude Include="OrderMessage.h" />
-    <ClInclude Include="PacketDef.h" />
-    <ClInclude Include="PlayerBase.h" />
-    <ClInclude Include="PlayerMySelf.h" />
-    <ClInclude Include="PlayerNPC.h" />
-    <ClInclude Include="PlayerOther.h" />
-    <ClInclude Include="PlayerOtherMgr.h" />
-    <ClInclude Include="PortalVolume.h" />
-    <ClInclude Include="PvsMgr.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="ServerMesh.h" />
-    <ClInclude Include="SubProcPerTrade.h" />
-    <ClInclude Include="UICharacterCreate.h" />
-    <ClInclude Include="UICharacterSelect.h" />
-    <ClInclude Include="UIChat.h" />
-    <ClInclude Include="UIClassChange.h" />
-    <ClInclude Include="UICmd.h" />
-    <ClInclude Include="UICreateClanName.h" />
-    <ClInclude Include="UIDead.h" />
-    <ClInclude Include="UIDroppedItemDlg.h" />
-    <ClInclude Include="UIEndingDisplay.h" />
-    <ClInclude Include="UIExitMenu.h" />
-    <ClInclude Include="UIHelp.h" />
-    <ClInclude Include="UIHotKeyDlg.h" />
-    <ClInclude Include="UIImageTooltipDlg.h" />
-    <ClInclude Include="UIInn.h" />
-    <ClInclude Include="UIInventory.h" />
-    <ClInclude Include="UIKnightsOperation.h" />
-    <ClInclude Include="UILevelGuide.h" />
-    <ClInclude Include="UILoading.h" />
-    <ClInclude Include="UILogin_1298.h" />
-    <ClInclude Include="UILogin_1098.h" />
-    <ClInclude Include="UIManager.h" />
-    <ClInclude Include="UIMessageBox.h" />
-    <ClInclude Include="UIMessageBoxManager.h" />
-    <ClInclude Include="UIMessageWnd.h" />
-    <ClInclude Include="UIMsgBoxOkCancel.h" />
-    <ClInclude Include="UINationSelectDlg.h" />
-    <ClInclude Include="UINotice.h" />
-    <ClInclude Include="UINPCChangeEvent.h" />
-    <ClInclude Include="UINPCEvent.h" />
-    <ClInclude Include="UIPartyBBS.h" />
-    <ClInclude Include="UIPartyBBSSelector.h" />
-    <ClInclude Include="UIPartyOrForce.h" />
-    <ClInclude Include="UIPerTradeDlg.h" />
-    <ClInclude Include="UIPointInitDlg.h" />
-    <ClInclude Include="UIQuestMenu.h" />
-    <ClInclude Include="UIQuestTalk.h" />
-    <ClInclude Include="UIRepairTooltipDlg.h" />
-    <ClInclude Include="UISkillTreeDlg.h" />
-    <ClInclude Include="UIStateBar.h" />
-    <ClInclude Include="UITargetBar.h" />
-    <ClInclude Include="UITradeBBSEditDlg.h" />
-    <ClInclude Include="UITradeBBSSelector.h" />
-    <ClInclude Include="UITradeEditDlg.h" />
-    <ClInclude Include="UITradeExplanation.h" />
-    <ClInclude Include="UITradeSellBBS.h" />
-    <ClInclude Include="UITransactionDlg.h" />
-    <ClInclude Include="UIUpgradeSelect.h" />
-    <ClInclude Include="UIVarious.h" />
-    <ClInclude Include="UIWareHouseDlg.h" />
-    <ClInclude Include="UIWarp.h" />
-    <ClInclude Include="warfare_config.h" />
-    <ClInclude Include="WarMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

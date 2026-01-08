@@ -10,6 +10,9 @@
 
 #include <chrono>
 
+namespace AIServer
+{
+
 //////////////////////////////////////////////////////////////////////
 // NPC Thread Callback Function
 //
@@ -144,3 +147,5 @@ CNpcThread::CNpcThread()
 	for (int i = 0; i < NPC_NUM; i++)
 		m_pNpc[i] = nullptr;
 }
+
+} // namespace AIServer

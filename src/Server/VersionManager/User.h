@@ -5,10 +5,14 @@
 
 #include <shared-server/TcpServerSocket.h>
 
+namespace VersionManager
+{
+
 class CVersionManagerDlg;
 class CUser : public TcpServerSocket
 {
 public:
+	CUser(test_tag);
 	CUser(SocketManager* socketManager);
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
@@ -18,5 +22,7 @@ public:
 	void LogInReq(char* pBuf);
 	void SendAuthNotFound();
 };
+
+} // namespace VersionManager
 
 #endif // SERVER_VERSIONMANAGER_USER_H

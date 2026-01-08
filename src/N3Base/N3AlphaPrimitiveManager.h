@@ -27,7 +27,7 @@ struct __AlphaPrimitive
 	__Matrix44 MtxWorld             = __Matrix44::GetIdentity();
 };
 
-constexpr int MAX_ALPHAPRIMITIVE_BUFFER = 1024;
+inline constexpr int MAX_ALPHAPRIMITIVE_BUFFER = 1024;
 
 class CN3AlphaPrimitiveManager
 {

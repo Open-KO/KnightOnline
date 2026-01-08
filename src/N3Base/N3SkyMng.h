@@ -11,10 +11,10 @@
 #include <vector>
 
 // 실제 시간과 game시간의 비율(현재 게임은 실제 시간보다 열배 빨리 돌아간다..)
-constexpr float TIME_REAL_PER_GAME = 10.0f;
+inline constexpr float TIME_REAL_PER_GAME = 10.0f;
 
 // game시간과 실제 시간의 비율
-constexpr float TIME_GAME_PER_REAL = 1.0f / TIME_REAL_PER_GAME;
+inline constexpr float TIME_GAME_PER_REAL = 1.0f / TIME_REAL_PER_GAME;
 
 constexpr int CONVERT_SEC(int h, int m, int s)
 {
@@ -118,7 +118,7 @@ struct __SKY_DAYCHANGE
 	}
 };
 
-constexpr int MAX_GAME_LIGHT = 3;
+inline constexpr int MAX_GAME_LIGHT = 3;
 
 class CN3SkyMng : public CN3BaseFileAccess
 {

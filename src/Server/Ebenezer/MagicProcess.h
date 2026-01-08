@@ -5,6 +5,9 @@
 
 #include "GameDefine.h"
 
+namespace Ebenezer
+{
+
 enum e_ResistanceType : uint8_t
 {
 	NONE_R      = 0,
@@ -52,5 +55,7 @@ public:
 	CUser* m_pSrcUser     = nullptr;
 	uint8_t m_bMagicState = 0;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_MAGICPROCESS_H

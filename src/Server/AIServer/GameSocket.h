@@ -7,6 +7,9 @@
 
 #include <shared-server/TcpServerSocket.h>
 
+namespace AIServer
+{
+
 class AIServerApp;
 class CUser;
 class MAP;
@@ -54,5 +57,7 @@ public:
 	void Send_UserError(int16_t uid, int16_t tid = 10000);
 	void RecvBattleEvent(char* pBuf);
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_GAMESOCKET_H

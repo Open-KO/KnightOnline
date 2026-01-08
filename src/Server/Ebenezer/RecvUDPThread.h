@@ -5,6 +5,9 @@
 
 #include <shared/Thread.h>
 
+namespace Ebenezer
+{
+
 class CUdpSocket;
 class RecvUDPThread : public Thread
 {
@@ -19,5 +22,7 @@ protected:
 protected:
 	CUdpSocket* _udpSocket;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_RECVUDPTHREAD_H

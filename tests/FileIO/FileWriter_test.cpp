@@ -2,7 +2,7 @@
 #include <FileIO/FileWriter.h>
 #include <atomic>
 #include <cstdio>
-#include <time.h>
+#include <ctime>
 
 class FileWriterTest : public ::testing::Test
 {

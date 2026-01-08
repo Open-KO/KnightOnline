@@ -7,6 +7,7 @@
 
 #include <asio.hpp>
 
+#include <memory>
 #include <mutex>
 #include <queue>
 
@@ -22,9 +23,17 @@ class TcpSocket
 {
 	friend class SocketManager;
 
-	using RawSocket_t = asio::ip::tcp::socket;
+protected:
+	using RawSocket_t                             = asio::ip::tcp::socket;
+
+	static constexpr int DEFAULT_SEND_BUFFER_SIZE = 4096;
+	static constexpr int DEFAULT_RECV_BUFFER_SIZE = 4096;
 
 public:
+	struct test_tag
+	{
+	};
+
 	int GetSocketID() const
 	{
 		return _socketId;
@@ -40,7 +49,9 @@ public:
 		return _state;
 	}
 
+	TcpSocket(test_tag);
 	TcpSocket(SocketManager* socketManager);
+
 	virtual ~TcpSocket()
 	{
 	}
@@ -66,14 +77,14 @@ public:
 	const std::string& GetRemoteIP();
 
 protected:
-	SocketManager* _socketManager = nullptr;
-	RawSocket_t _socket;
+	SocketManager* _socketManager        = nullptr;
+	std::unique_ptr<RawSocket_t> _socket = nullptr;
 
-	int _recvBufferSize = 0;
-	int _sendBufferSize = 0;
+	int _recvBufferSize                  = 0;
+	int _sendBufferSize                  = 0;
 
 	// Data is written here directly from the socket. It shouldn't be used directly.
-	std::vector<char> _recvBuffer;
+	std::vector<char> _recvBuffer        = {};
 
 	// Received data is output to the circular buffer from _recvBuffer.
 	// This should be parsed to handle packets.
@@ -103,10 +114,10 @@ protected:
 	std::recursive_mutex _sendMutex;
 
 	CCircularBuffer _sendCircularBuffer;
-	bool _sendInProgress = false;
+	bool _sendInProgress      = false;
 
-	bool _remoteIpCached = false;
-	std::string _remoteIp;
+	bool _remoteIpCached      = false;
+	std::string _remoteIp     = {};
 
 	e_ConnectionState _state  = CONNECTION_STATE_DISCONNECTED;
 	bool _pendingDisconnect   = false;

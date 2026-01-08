@@ -8,7 +8,11 @@
 
 #include <shared/packets.h>
 #include <shared/StringUtils.h>
+
 #include <spdlog/spdlog.h>
+
+namespace Ebenezer
+{
 
 CUdpSocket::CUdpSocket(EbenezerApp* main) : _recvUdpThread(this), _socket(_io)
 {
@@ -646,3 +650,5 @@ void CUdpSocket::RecvBattleZoneCurrentUsers(char* pBuf)
 	_main->m_sElmoradCount = nElmoradMan;
 	//TRACE(_T("UDP - RecvBattleZoneCurrentUsers - karus=%d, elmorad=%d\n"), nKarusMan, nElmoradMan);
 }
+
+} // namespace Ebenezer

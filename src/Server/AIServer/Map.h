@@ -10,15 +10,20 @@
 
 #include <iosfwd>
 
+class File;
+
+namespace AIServer
+{
+
 class CRegion;
 class CNpc;
 class CUser;
 class AIServerApp;
 class CRoomEvent;
-class File;
 
-typedef CSTLMap<_OBJECT_EVENT> ObjectEventArray;
-typedef CSTLMap<CRoomEvent> RoomEventArray;
+using ObjectEventArray = CSTLMap<_OBJECT_EVENT>;
+using ObjectEventArray = CSTLMap<_OBJECT_EVENT>;
+using RoomEventArray   = CSTLMap<CRoomEvent>;
 
 class CMapInfo            // 각 좌표의 정보
 {
@@ -96,5 +101,7 @@ public:
 protected:
 	void RemoveMapData();
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_MAP_H

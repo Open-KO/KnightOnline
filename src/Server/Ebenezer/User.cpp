@@ -12,21 +12,18 @@
 #include <shared/StringUtils.h>
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 extern std::recursive_mutex g_region_mutex;
 extern bool g_serverdown_flag;
 
+CUser::CUser(test_tag tag) : TcpServerSocket(tag)
+{
+}
+
 CUser::CUser(SocketManager* socketManager) : TcpServerSocket(socketManager)
 {
-	_regionBuffer = new _REGION_BUFFER();
-
-	for (int i = 0; i < MAX_TYPE3_REPEAT; i++)
-		m_sSourceID[i] = -1;
-
-	for (int i = 0; i < MAX_MESSAGE_EVENT; i++)
-		m_iSelMsgEvent[i] = -1;
-
-	for (int i = 0; i < MAX_CURRENT_EVENT; i++)
-		m_sEvent[i] = -1;
 }
 
 CUser::~CUser()
@@ -36,7 +33,19 @@ CUser::~CUser()
 
 void CUser::Initialize()
 {
-	m_pMain                = EbenezerApp::instance();
+	m_pMain = EbenezerApp::instance();
+
+	if (_regionBuffer == nullptr)
+		_regionBuffer = new _REGION_BUFFER();
+
+	for (int i = 0; i < MAX_TYPE3_REPEAT; i++)
+		m_sSourceID[i] = -1;
+
+	for (int i = 0; i < MAX_MESSAGE_EVENT; i++)
+		m_iSelMsgEvent[i] = -1;
+
+	for (int i = 0; i < MAX_CURRENT_EVENT; i++)
+		m_sEvent[i] = -1;
 
 	_regionBuffer->iLength = 0;
 	memset(_regionBuffer->pDataBuff, 0, sizeof(_regionBuffer->pDataBuff));
@@ -13137,3 +13146,5 @@ bool CUser::CheckMiddleStatueCapture() const
 			return false;
 	}
 }
+
+} // namespace Ebenezer

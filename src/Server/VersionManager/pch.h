@@ -3,9 +3,14 @@
 
 #pragma once
 
-#include <asio.hpp>
+#include <cassert>
+#include <filesystem>
+#include <memory>
+#include <string>
 
 #include <shared-server/server_config.h>
 #include <shared-server/utilities.h>
+
+#include <asio.hpp>
 
 #endif // SERVER_VERSIONMANAGER_PCH_H

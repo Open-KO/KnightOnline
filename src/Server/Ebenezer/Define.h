@@ -5,36 +5,39 @@
 
 #include <shared/globals.h>
 
-constexpr int MAX_USER              = 3000;
+namespace Ebenezer
+{
 
-constexpr int _LISTEN_PORT          = 15000;
-constexpr int _UDP_PORT             = 8888;
-constexpr int AI_KARUS_SOCKET_PORT  = 10020;
-constexpr int AI_ELMO_SOCKET_PORT   = 10030;
-constexpr int AI_BATTLE_SOCKET_PORT = 10040;
-constexpr int CLIENT_SOCKSIZE       = 100;
-constexpr int MAX_AI_SOCKET         = 10; // sungyong~ 2002.05.22
+inline constexpr int MAX_USER              = 3000;
 
-constexpr int MAX_TYPE3_REPEAT      = 20;
-constexpr int MAX_TYPE4_BUFF        = 9;
+inline constexpr int _LISTEN_PORT          = 15000;
+inline constexpr int _UDP_PORT             = 8888;
+inline constexpr int AI_KARUS_SOCKET_PORT  = 10020;
+inline constexpr int AI_ELMO_SOCKET_PORT   = 10030;
+inline constexpr int AI_BATTLE_SOCKET_PORT = 10040;
+inline constexpr int CLIENT_SOCKSIZE       = 100;
+inline constexpr int MAX_AI_SOCKET         = 10;
 
-constexpr int MAX_ITEM              = 28;
+inline constexpr int MAX_TYPE3_REPEAT      = 20;
+inline constexpr int MAX_TYPE4_BUFF        = 9;
 
-constexpr int NPC_HAVE_ITEM_LIST    = 6;
-constexpr int ZONEITEM_MAX          = 2'100'000'000; // 존에 떨어지는 최대 아이템수...
+inline constexpr int MAX_ITEM              = 28;
 
-constexpr int SERVER_INFO_START     = 1;
-constexpr int SERVER_INFO_END       = 2;
+inline constexpr int NPC_HAVE_ITEM_LIST    = 6;
+inline constexpr int ZONEITEM_MAX          = 2'100'000'000; // 존에 떨어지는 최대 아이템수...
+
+inline constexpr int SERVER_INFO_START     = 1;
+inline constexpr int SERVER_INFO_END       = 2;
 
 //////////////  Quest 관련 Define ////////////////////////////
-constexpr int MAX_EVENT             = 2000;
-constexpr int MAX_EVENT_SIZE        = 400;
-constexpr int MAX_EVENT_NUM         = 2000;
-constexpr int MAX_EXEC_INT          = 30;
-constexpr int MAX_LOGIC_ELSE_INT    = 10;
-constexpr int MAX_MESSAGE_EVENT     = 10;
-constexpr int MAX_COUPON_ID_LENGTH  = 20;
-constexpr int MAX_CURRENT_EVENT     = 20;
+inline constexpr int MAX_EVENT             = 2000;
+inline constexpr int MAX_EVENT_SIZE        = 400;
+inline constexpr int MAX_EVENT_NUM         = 2000;
+inline constexpr int MAX_EXEC_INT          = 30;
+inline constexpr int MAX_LOGIC_ELSE_INT    = 10;
+inline constexpr int MAX_MESSAGE_EVENT     = 10;
+inline constexpr int MAX_COUPON_ID_LENGTH  = 20;
+inline constexpr int MAX_CURRENT_EVENT     = 20;
 
 // 지금 쓰이는것만 정의 해 놨습니다.
 // logic관련 define
@@ -160,27 +163,27 @@ enum e_Exec : uint8_t
 };
 
 // EVENT 시작 번호들 :)
-constexpr int EVENT_POTION          = 1;
-constexpr int EVENT_FT_1            = 20;
-constexpr int EVENT_FT_3            = 36;
-constexpr int EVENT_FT_2            = 50;
-constexpr int EVENT_LOGOS_ELMORAD   = 1001;
-constexpr int EVENT_LOGOS_KARUS     = 2001;
-constexpr int EVENT_COUPON          = 4001;
+inline constexpr int EVENT_POTION          = 1;
+inline constexpr int EVENT_FT_1            = 20;
+inline constexpr int EVENT_FT_3            = 36;
+inline constexpr int EVENT_FT_2            = 50;
+inline constexpr int EVENT_LOGOS_ELMORAD   = 1001;
+inline constexpr int EVENT_LOGOS_KARUS     = 2001;
+inline constexpr int EVENT_COUPON          = 4001;
 
 ////////////////////////////////////////////////////////////
 
 ///////////////// BBS RELATED //////////////////////////////
-constexpr int MAX_BBS_PAGE          = 23;
-constexpr int MAX_BBS_MESSAGE       = 40;
-constexpr int MAX_BBS_TITLE         = 20;
-constexpr int MAX_BBS_POST          = 500;
+inline constexpr int MAX_BBS_PAGE          = 23;
+inline constexpr int MAX_BBS_MESSAGE       = 40;
+inline constexpr int MAX_BBS_TITLE         = 20;
+inline constexpr int MAX_BBS_POST          = 500;
 
-constexpr int BUY_POST_PRICE        = 500;
-constexpr int SELL_POST_PRICE       = 1000;
+inline constexpr int BUY_POST_PRICE        = 500;
+inline constexpr int SELL_POST_PRICE       = 1000;
 
-constexpr int REMOTE_PURCHASE_PRICE = 5000;
-constexpr int BBS_CHECK_TIME        = 36000;
+inline constexpr int REMOTE_PURCHASE_PRICE = 5000;
+inline constexpr int BBS_CHECK_TIME        = 36000;
 
 ///////////////// NATION ///////////////////////////////////
 enum e_Nation : uint8_t
@@ -227,42 +230,42 @@ enum e_NpcInOutType : uint8_t
 };
 
 ////////////////// Resurrection related ////////////////////
-constexpr int BLINK_TIME        = 10;
-constexpr int CLAN_SUMMON_TIME  = 180;
+inline constexpr int BLINK_TIME        = 10;
+inline constexpr int CLAN_SUMMON_TIME  = 180;
 ////////////////////////////////////////////////////////////
 
 // Socket Define
 ////////////////////////////////////////////////////////////
-constexpr int SOCKET_BUFF_SIZE  = (1024 * 16);
-constexpr int MAX_PACKET_SIZE   = (1024 * 8);
-constexpr int REGION_BUFF_SIZE  = (1024 * 16);
+inline constexpr int SOCKET_BUFF_SIZE  = (1024 * 16);
+inline constexpr int MAX_PACKET_SIZE   = (1024 * 8);
+inline constexpr int REGION_BUFF_SIZE  = (1024 * 16);
 
-constexpr uint8_t PACKET_START1 = 0xAA;
-constexpr uint8_t PACKET_START2 = 0x55;
-constexpr uint8_t PACKET_END1   = 0x55;
-constexpr uint8_t PACKET_END2   = 0xAA;
+inline constexpr uint8_t PACKET_START1 = 0xAA;
+inline constexpr uint8_t PACKET_START2 = 0x55;
+inline constexpr uint8_t PACKET_END1   = 0x55;
+inline constexpr uint8_t PACKET_END2   = 0xAA;
 ////////////////////////////////////////////////////////////
 
 // ==================================================================
 //	About Map Object
 // ==================================================================
-constexpr int USER_BAND         = 0;     // Map 위에 유저가 있다.
-constexpr int NPC_BAND          = 10000; // Map 위에 NPC(몹포함)가 있다.
-constexpr int INVALID_BAND      = 30000; // 잘못된 ID BAND
+inline constexpr int USER_BAND         = 0;     // Map 위에 유저가 있다.
+inline constexpr int NPC_BAND          = 10000; // Map 위에 NPC(몹포함)가 있다.
+inline constexpr int INVALID_BAND      = 30000; // 잘못된 ID BAND
 
 ///////////////// snow event define //////////////////////////////
-constexpr int SNOW_EVENT_MONEY  = 2000;
-constexpr int SNOW_EVENT_SKILL  = 490043;
+inline constexpr int SNOW_EVENT_MONEY  = 2000;
+inline constexpr int SNOW_EVENT_SKILL  = 490043;
 
 //////////////////////////////////////////////////////////////////
 // DEFINE Shared Memory Queue
 //////////////////////////////////////////////////////////////////
 
 // DEFINE Shared Memory Customisation
-constexpr char SMQ_LOGGERSEND[] = "KNIGHT_SEND";
-constexpr char SMQ_LOGGERRECV[] = "KNIGHT_RECV";
+inline constexpr char SMQ_LOGGERSEND[] = "KNIGHT_SEND";
+inline constexpr char SMQ_LOGGERRECV[] = "KNIGHT_RECV";
 
-constexpr char SMQ_ITEMLOGGER[] = "ITEMLOG_SEND";
+inline constexpr char SMQ_ITEMLOGGER[] = "ITEMLOG_SEND";
 
 //
 //	To Who ???
@@ -298,7 +301,7 @@ enum e_BattleType : uint8_t
 	SNOW_BATTLE   = 2
 };
 
-constexpr int MAX_BATTLE_ZONE_USERS = 150;
+inline constexpr int MAX_BATTLE_ZONE_USERS = 150;
 
 //////////////////////////////////////////////////////////////////
 
@@ -320,5 +323,7 @@ struct _REGION_BUFFER
 	int iLength = 0;
 	char pDataBuff[REGION_BUFF_SIZE] {};
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_DEFINE_H

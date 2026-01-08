@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "ItemManagerLogger.h"
 
+namespace ItemManager
+{
+
 ItemManagerLogger::ItemManagerLogger() : Logger(logger::ItemManager)
 {
 }
@@ -11,3 +14,5 @@ void ItemManagerLogger::SetupExtraLoggers(CIni& ini,
 	SetupExtraLogger(ini, threadPool, baseDir, logger::ItemManagerItem, ini::ITEM_LOG_FILE);
 	SetupExtraLogger(ini, threadPool, baseDir, logger::ItemManagerExp, ini::EXP_LOG_FILE);
 }
+
+} // namespace ItemManager

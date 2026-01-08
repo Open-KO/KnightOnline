@@ -4,7 +4,7 @@
 #pragma once
 
 #include <filesystem> // std::filesystem::path, std::filesystem::file_size()
-#include <inttypes.h>
+#include <cinttypes>
 
 /// \brief Abstract base class representing a generic file interface.
 class File

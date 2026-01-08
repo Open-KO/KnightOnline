@@ -30,6 +30,9 @@
 using namespace std::chrono_literals;
 using namespace db;
 
+namespace AIServer
+{
+
 std::mutex g_user_mutex;
 std::mutex g_region_mutex;
 
@@ -1692,3 +1695,5 @@ MAP* AIServerApp::GetMapByID(int iZoneID) const
 	spdlog::error("AIServerApp::GetMapByID: no map found for zoneId={}", iZoneID);
 	return nullptr;
 }
+
+} // namespace AIServer

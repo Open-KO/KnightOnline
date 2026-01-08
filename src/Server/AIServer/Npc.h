@@ -10,30 +10,33 @@
 
 #include <shared-server/My_3DStruct.h>
 
-constexpr int MAX_MAP_SIZE         = 10000;
-constexpr int MAX_PATH_SIZE        = 100;
+namespace AIServer
+{
 
-constexpr int NPC_MAX_USER_LIST    = 5;
+inline constexpr int MAX_MAP_SIZE         = 10000;
+inline constexpr int MAX_PATH_SIZE        = 100;
 
-constexpr int NPC_ATTACK_SHOUT     = 0;
-constexpr int NPC_SUBTYPE_LONG_MON = 1;
+inline constexpr int NPC_MAX_USER_LIST    = 5;
 
-constexpr int NPC_TRACING_STEP     = 100;
+inline constexpr int NPC_ATTACK_SHOUT     = 0;
+inline constexpr int NPC_SUBTYPE_LONG_MON = 1;
 
-constexpr int NPC_HAVE_USER_LIST   = 5;
-constexpr int NPC_HAVE_ITEM_LIST   = 6;
-constexpr int NPC_PATTEN_LIST      = 5;
-constexpr int NPC_PATH_LIST        = 50;
-constexpr int NPC_MAX_PATH_LIST    = 100;
-constexpr int NPC_EXP_RANGE        = 50;
-constexpr int NPC_EXP_PERSENT      = 50;
+inline constexpr int NPC_TRACING_STEP     = 100;
 
-constexpr int NPC_SECFORMETER_MOVE = 4;
-constexpr int NPC_SECFORMETER_RUN  = 4;
-constexpr int NPC_VIEW_RANGE       = 100;
+inline constexpr int NPC_HAVE_USER_LIST   = 5;
+inline constexpr int NPC_HAVE_ITEM_LIST   = 6;
+inline constexpr int NPC_PATTEN_LIST      = 5;
+inline constexpr int NPC_PATH_LIST        = 50;
+inline constexpr int NPC_MAX_PATH_LIST    = 100;
+inline constexpr int NPC_EXP_RANGE        = 50;
+inline constexpr int NPC_EXP_PERSENT      = 50;
 
-constexpr int MAX_MAGIC_TYPE3      = 20;
-constexpr int MAX_MAGIC_TYPE4      = 9;
+inline constexpr int NPC_SECFORMETER_MOVE = 4;
+inline constexpr int NPC_SECFORMETER_RUN  = 4;
+inline constexpr int NPC_VIEW_RANGE       = 100;
+
+inline constexpr int MAX_MAGIC_TYPE3      = 20;
+inline constexpr int MAX_MAGIC_TYPE4      = 9;
 
 struct _NpcSkillList
 {
@@ -643,5 +646,7 @@ public:
 	void ChangeAbility(int iChangeType);
 	bool Teleport();
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_NPC_H

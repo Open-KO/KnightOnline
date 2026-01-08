@@ -9,11 +9,11 @@
 
 #include "N3Base.h"
 
-constexpr int CLOAK_MAX_WIDTH  = 7;
-constexpr int CLOAK_MAX_HEIGHT = 7;
+inline constexpr int CLOAK_MAX_WIDTH  = 7;
+inline constexpr int CLOAK_MAX_HEIGHT = 7;
 
 // 망토에서 장식용 버텍스가 들어가 있는 라인수. 이부분은 이동이 없다. ok?
-constexpr int CLOAK_SKIP_LINE  = 2;
+inline constexpr int CLOAK_SKIP_LINE  = 2;
 
 enum e_Cloak_AnchorMovePattern : uint8_t
 {

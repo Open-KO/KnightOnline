@@ -10,6 +10,9 @@
 
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 EVENT::EVENT()
 {
 }
@@ -195,3 +198,5 @@ void EVENT::DeleteAll()
 {
 	m_arEvent.DeleteAllData();
 }
+
+} // namespace Ebenezer

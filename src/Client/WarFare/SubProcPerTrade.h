@@ -33,11 +33,11 @@ enum e_PerTradeProceedCode : uint8_t
 
 enum e_PerTradeItemKindBackup : uint8_t
 {
-	PER_TRADE_ITEM_MONEY = 0,          // 전에 개인 거래창으로 ADD한 것이 돈이다..
-	PER_TRADE_ITEM_OTHER,              // 전에 개인 거래창으로 ADD한 것이 아이템이다..
+	PER_TRADE_ITEM_MONEY = 0,                 // 전에 개인 거래창으로 ADD한 것이 돈이다..
+	PER_TRADE_ITEM_OTHER,                     // 전에 개인 거래창으로 ADD한 것이 아이템이다..
 };
 
-constexpr uint32_t dwGold = 900000000; // 음...
+inline constexpr uint32_t dwGold = 900000000; // 음...
 
 class CUIManager;
 class CUIPerTradeDlg;

@@ -8,6 +8,9 @@
 #include <db-library/fwd.h>
 #include "Define.h"
 
+namespace VersionManager
+{
+
 /// \brief Handles database operations for VersionManager
 class CDBProcess
 {
@@ -56,5 +59,7 @@ public:
 	CDBProcess();
 	virtual ~CDBProcess();
 };
+
+} // namespace VersionManager
 
 #endif // SERVER_VERSIONMANAGER_DBPROCESS_H

@@ -5,6 +5,9 @@
 #include <djb2/djb2_hasher.h>
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 LOGIC_ELSE::LOGIC_ELSE()
 {
 	m_LogicElse = LOGIC_CHECK_NONE;
@@ -275,3 +278,5 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 
 	m_bAnd = true;
 }
+
+} // namespace Ebenezer

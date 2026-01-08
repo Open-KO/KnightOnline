@@ -10,7 +10,7 @@
 #include <N3Base/N3Base.h>
 #include <vector>
 
-constexpr int MAX_RIVER_TEX = 32;
+inline constexpr int MAX_RIVER_TEX = 32;
 
 class CN3River : public CN3Base // CN3RiverPatch를 관리하는 클래스
 {

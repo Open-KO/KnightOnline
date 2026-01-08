@@ -8,8 +8,11 @@
 
 #include <list>
 
-typedef std::list<EXEC*> ExecArray;
-typedef std::list<LOGIC_ELSE*> LogicElseArray;
+namespace Ebenezer
+{
+
+using ExecArray      = std::list<EXEC*>;
+using LogicElseArray = std::list<LOGIC_ELSE*>;
 
 class EVENT_DATA
 {
@@ -21,5 +24,7 @@ public:
 	EVENT_DATA();
 	virtual ~EVENT_DATA();
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_EVENT_DATA_H

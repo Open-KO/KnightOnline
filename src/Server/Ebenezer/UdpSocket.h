@@ -6,6 +6,9 @@
 #include "Define.h"
 #include "RecvUDPThread.h"
 
+namespace Ebenezer
+{
+
 class RecvUDPThread;
 class EbenezerApp;
 class CUdpSocket
@@ -41,5 +44,7 @@ protected:
 	char _recvBuff[UDP_SOCKET_BUFFER_SIZE] = {};
 	EbenezerApp* _main                     = nullptr;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_UDPSOCKET_H

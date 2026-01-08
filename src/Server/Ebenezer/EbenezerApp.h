@@ -25,29 +25,35 @@
 #include <vector>
 #include <queue>
 
-typedef std::vector<C3DMap*> ZoneArray;
-typedef std::vector<model::LevelUp*> LevelUpTableArray;
-typedef CSTLMap<model::Coefficient> CoefficientTableMap;
-typedef CSTLMap<model::Item> ItemTableMap;
-typedef CSTLMap<model::Magic> MagicTableMap;
-typedef CSTLMap<model::MagicType1> MagicType1TableMap;
-typedef CSTLMap<model::MagicType2> MagicType2TableMap;
-typedef CSTLMap<model::MagicType3> MagicType3TableMap;
-typedef CSTLMap<model::MagicType4> MagicType4TableMap;
-typedef CSTLMap<model::MagicType5> MagicType5TableMap;
-typedef CSTLMap<model::MagicType7> MagicType7TableMap;
-typedef CSTLMap<model::MagicType8> MagicType8TableMap;
-typedef CSTLMap<CNpc> NpcMap;
-typedef CSTLMap<CAISocket> AISocketMap;
-typedef CSTLMap<_PARTY_GROUP> PartyMap;
-typedef CSTLMap<CKnights> KnightsMap;
-typedef CSTLMap<_ZONE_SERVERINFO> ServerMap;
-typedef CSTLMap<model::Home> HomeTableMap;
-typedef CSTLMap<model::ServerResource> ServerResourceTableMap;
-typedef CSTLMap<model::StartPosition> StartPositionTableMap;
-typedef CSTLMap<EVENT> EventMap;
+class ReadQueueThread;
+class TimerThread;
 
-using EventTriggerMap = std::unordered_map<uint32_t, int32_t>;
+namespace Ebenezer
+{
+
+using ZoneArray              = std::vector<C3DMap*>;
+using LevelUpTableArray      = std::vector<model::LevelUp*>;
+using CoefficientTableMap    = CSTLMap<model::Coefficient>;
+using ItemTableMap           = CSTLMap<model::Item>;
+using MagicTableMap          = CSTLMap<model::Magic>;
+using MagicType1TableMap     = CSTLMap<model::MagicType1>;
+using MagicType2TableMap     = CSTLMap<model::MagicType2>;
+using MagicType3TableMap     = CSTLMap<model::MagicType3>;
+using MagicType4TableMap     = CSTLMap<model::MagicType4>;
+using MagicType5TableMap     = CSTLMap<model::MagicType5>;
+using MagicType7TableMap     = CSTLMap<model::MagicType7>;
+using MagicType8TableMap     = CSTLMap<model::MagicType8>;
+using NpcMap                 = CSTLMap<CNpc>;
+using AISocketMap            = CSTLMap<CAISocket>;
+using PartyMap               = CSTLMap<_PARTY_GROUP>;
+using KnightsMap             = CSTLMap<CKnights>;
+using ServerMap              = CSTLMap<_ZONE_SERVERINFO>;
+using HomeTableMap           = CSTLMap<model::Home>;
+using ServerResourceTableMap = CSTLMap<model::ServerResource>;
+using StartPositionTableMap  = CSTLMap<model::StartPosition>;
+using EventMap               = CSTLMap<EVENT>;
+
+using EventTriggerMap        = std::unordered_map<uint32_t, int32_t>;
 
 enum class NameType : uint8_t
 {
@@ -57,8 +63,6 @@ enum class NameType : uint8_t
 
 class CUser;
 class EbenezerLogger;
-class ReadQueueThread;
-class TimerThread;
 class EbenezerApp : public AppThread
 {
 public:
@@ -357,5 +361,7 @@ private:
 	std::shared_ptr<spdlog::logger> _regionLogger;
 	std::shared_ptr<spdlog::logger> _eventLogger;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_EBENEZERAPP_H

@@ -4,6 +4,5 @@
 #pragma once
 
 #include "My_3DStruct.h"
-#include <filesystem>
 
 #endif // N3BASE_STDAFX_H

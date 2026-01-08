@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>MFCProj</Keyword>
-    <ProjectGuid>{023CD26D-5809-4716-A245-B1E146C6E7FE}</ProjectGuid>
+    <ProjectGuid>{7F0E559A-7F03-4AD8-B1BE-EFAFF6797178}</ProjectGuid>
   </PropertyGroup>
   <Import Project="..\..\..\props\platform_root.props" />
   <PropertyGroup Label="Configuration">
@@ -39,12 +39,11 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(RootDir)src;$(RootDir)src\Server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -52,7 +51,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>shared-server.lib;shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>AIServer.Core.lib;shared-server.lib;shared.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,7 +77,6 @@
       <Culture>0x0412</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <TargetMachine>MachineX86</TargetMachine>
@@ -111,7 +109,6 @@
       <Culture>0x0412</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -142,7 +139,6 @@
       <Culture>0x0412</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -176,7 +172,6 @@
       <Culture>0x0412</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -190,50 +185,11 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIServerLogger.cpp" />
-    <ClCompile Include="AISocketManager.cpp" />
-    <ClCompile Include="GameSocket.cpp" />
-    <ClCompile Include="MagicProcess.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Npc.cpp" />
-    <ClCompile Include="NpcItem.cpp" />
-    <ClCompile Include="NpcMagicProcess.cpp" />
-    <ClCompile Include="NpcThread.cpp" />
-    <ClCompile Include="Party.cpp" />
-    <ClCompile Include="PathFind.cpp" />
-    <ClCompile Include="RoomEvent.cpp" />
-    <ClCompile Include="SendThreadMain.cpp" />
     <ClCompile Include="AIServer.cpp" />
-    <ClCompile Include="AIServerApp.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="User.cpp" />
-    <ClCompile Include="ZoneEventThread.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIServerLogger.h" />
-    <ClInclude Include="AISocketManager.h" />
-    <ClInclude Include="Define.h" />
-    <ClInclude Include="Extern.h" />
-    <ClInclude Include="GameSocket.h" />
-    <ClInclude Include="MagicProcess.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Npc.h" />
-    <ClInclude Include="NpcItem.h" />
-    <ClInclude Include="NpcMagicProcess.h" />
-    <ClInclude Include="NpcThread.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="Party.h" />
-    <ClInclude Include="PathFind.h" />
-    <ClInclude Include="Region.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="RoomEvent.h" />
-    <ClInclude Include="SendThreadMain.h" />
-    <ClInclude Include="AIServerApp.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="User.h" />
-    <ClInclude Include="ZoneEventThread.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AIServer.rc" />

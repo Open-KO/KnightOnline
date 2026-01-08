@@ -14,6 +14,9 @@
 
 using namespace db;
 
+namespace Ebenezer
+{
+
 extern std::recursive_mutex g_region_mutex;
 
 C3DMap::C3DMap()
@@ -552,3 +555,5 @@ bool C3DMap::IsValidPosition(float x, float z) const
 
 	return true;
 }
+
+} // namespace Ebenezer

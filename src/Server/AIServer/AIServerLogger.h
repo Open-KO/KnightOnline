@@ -6,6 +6,10 @@
 #include <shared-server/logger.h>
 
 class CIni;
+
+namespace AIServer
+{
+
 class AIServerLogger : public logger::Logger
 {
 public:
@@ -14,5 +18,7 @@ public:
 	void SetupExtraLoggers(CIni& ini, std::shared_ptr<spdlog::details::thread_pool> threadPool,
 		const std::filesystem::path& baseDir) override;
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_AISERVERLOGGER_H

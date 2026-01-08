@@ -12,12 +12,16 @@
 #include <shared/StringUtils.h>
 #include <shared/ByteBuffer.h>
 
-#include <format>
 #include <nanodbc/nanodbc.h>
 #include <spdlog/spdlog.h>
 
 #include <Aujard/binder/AujardBinder.h>
 #include <StoredProc/StoredProc.h>
+
+#include <string>
+
+namespace Aujard
+{
 
 CDBAgent::CDBAgent()
 {
@@ -1491,3 +1495,5 @@ bool CDBAgent::DeleteChar(int index, char* id, char* charId, char* socno)
 
 	return false;
 }*/
+
+} // namespace Aujard

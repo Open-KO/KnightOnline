@@ -32,14 +32,14 @@ enum e_ChrClass : uint8_t
 	CLASS_WIZARD
 };
 
-constexpr int SELECT_ANIM_PRE_SELECT   = 0;
-constexpr int SELECT_ANIM_SELECTED     = 1;
-constexpr int SELECT_ANIM_DUMMY        = 2;
+inline constexpr int SELECT_ANIM_PRE_SELECT   = 0;
+inline constexpr int SELECT_ANIM_SELECTED     = 1;
+inline constexpr int SELECT_ANIM_DUMMY        = 2;
 
-constexpr float KARUS_THETA_MAX        = 0.5f;
-constexpr float ELMORAD_THERA_MAX      = 0.38f;
-constexpr float KARUS_INCRESE_OFFSET   = 0.02f;
-constexpr float ELMORAD_INCRESE_OFFSET = 0.015f;
+inline constexpr float KARUS_THETA_MAX        = 0.5f;
+inline constexpr float ELMORAD_THERA_MAX      = 0.38f;
+inline constexpr float KARUS_INCRESE_OFFSET   = 0.02f;
+inline constexpr float ELMORAD_INCRESE_OFFSET = 0.015f;
 
 class CUIManager;
 class CUICharacterSelect;

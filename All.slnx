@@ -13,11 +13,14 @@
     <Project Path="src/Client/Option/Option.vcxproj" Id="3fefbf4a-b12c-4e32-be93-4ea51fd09f63" />
   </Folder>
   <Folder Name="/client/">
-    <Project DefaultStartup="true" Path="src/Client/WarFare/WarFare.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
+    <Project Path="src/Client/WarFare/WarFare.Core.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
       <BuildDependency Project="src/Client/JpegFile/JpegFile.vcxproj" />
       <BuildDependency Project="src/N3Base/N3Base_client.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-ko-client-assets.vcxproj" />
       <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project DefaultStartup="true" Path="src/Client/WarFare/WarFare.vcxproj" Id="ed8afb92-15ce-4537-a81c-d4120d31977c">
+      <BuildDependency Project="src/Client/WarFare/WarFare.Core.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/client/_deps/">
@@ -31,36 +34,51 @@
     </Project>
   </Folder>
   <Folder Name="/server/">
-    <Project Path="src/Server/AIServer/AIServer.vcxproj" Id="023cd26d-5809-4716-a245-b1e146c6e7fe">
+    <Project Path="src/Server/AIServer/AIServer.Core.vcxproj" Id="023cd26d-5809-4716-a245-b1e146c6e7fe">
       <BuildDependency Project="src/db-library/db-library.vcxproj" />
       <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
       <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
       <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="src/Server/Aujard/Aujard.vcxproj" Id="c564ac8f-adf8-4b90-b8cd-0834f7db144b">
+    <Project Path="src/Server/AIServer/AIServer.vcxproj" Id="7f0e559a-7f03-4ad8-b1be-efaff6797178">
+      <BuildDependency Project="src/Server/AIServer/AIServer.Core.vcxproj" />
+    </Project>
+    <Project Path="src/Server/Aujard/Aujard.Core.vcxproj" Id="c564ac8f-adf8-4b90-b8cd-0834f7db144b">
       <BuildDependency Project="src/db-library/db-library.vcxproj" />
       <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
       <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
       <BuildDependency Project="src/shared/shared.vcxproj" />
     </Project>
-    <Project Path="src/Server/Ebenezer/Ebenezer.vcxproj" Id="64439624-b2df-4550-9c52-67e61b8ec0ef">
-      <BuildDependency Project="src/db-library/db-library.vcxproj" />
+    <Project Path="src/Server/Aujard/Aujard.vcxproj" Id="f0440138-6168-4eb6-b4d0-195befcded40">
+      <BuildDependency Project="src/Server/Aujard/Aujard.Core.vcxproj" />
+    </Project>
+    <Project Path="src/Server/Ebenezer/Ebenezer.Core.vcxproj" Id="64439624-b2df-4550-9c52-67e61b8ec0ef">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-djb2.vcxproj" />
-      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="src/shared/shared.vcxproj" />
-    </Project>
-    <Project Path="src/Server/ItemManager/ItemManager.vcxproj" Id="2208d5f7-eb5b-4b13-a89b-cfe279b4307b">
-      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
-      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
-      <BuildDependency Project="src/shared/shared.vcxproj" />
-    </Project>
-    <Project Path="src/Server/VersionManager/VersionManager.vcxproj" Id="d5fad895-323c-4be1-a066-3e70bb8c2bb4">
       <BuildDependency Project="src/db-library/db-library.vcxproj" />
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
       <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
       <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
       <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project Path="src/Server/Ebenezer/Ebenezer.vcxproj" Id="7025a37a-bd1f-432e-bbf7-05591dc159da">
+      <BuildDependency Project="src/Server/Ebenezer/Ebenezer.Core.vcxproj" />
+    </Project>
+    <Project Path="src/Server/ItemManager/ItemManager.Core.vcxproj" Id="2208d5f7-eb5b-4b13-a89b-cfe279b4307b">
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project Path="src/Server/ItemManager/ItemManager.vcxproj" Id="2f8d19f8-5ab6-4aea-8c56-24c7b103e47e">
+      <BuildDependency Project="src/Server/ItemManager/ItemManager.Core.vcxproj" />
+    </Project>
+    <Project Path="src/Server/VersionManager/VersionManager.Core.vcxproj" Id="d5fad895-323c-4be1-a066-3e70bb8c2bb4">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
+      <BuildDependency Project="src/db-library/db-library.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project Path="src/Server/VersionManager/VersionManager.vcxproj" Id="b73a7541-1a9b-474c-a37b-725ac3ca7056">
+      <BuildDependency Project="src/Server/VersionManager/VersionManager.Core.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/server/_deps/">
@@ -75,11 +93,11 @@
     </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/FileIO/FileIO-tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
+    <Project Path="tests/FileIO/FileIO.Tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
       <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
     </Project>
-    <Project Path="tests/MathUtils/MathUtils-tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
+    <Project Path="tests/MathUtils/MathUtils.Tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
       <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
     </Project>

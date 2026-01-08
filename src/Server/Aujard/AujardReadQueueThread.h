@@ -5,6 +5,9 @@
 
 #include <shared-server/ReadQueueThread.h>
 
+namespace Aujard
+{
+
 class CAujardDlg;
 class AujardReadQueueThread : public ReadQueueThread
 {
@@ -14,5 +17,7 @@ public:
 protected:
 	void process_packet(const char* buffer, int len) override;
 };
+
+} // namespace Aujard
 
 #endif // SERVER_AUJARD_AUJARDREADQUEUETHREAD_H

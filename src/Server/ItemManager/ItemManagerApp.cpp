@@ -11,6 +11,9 @@
 
 using namespace std::chrono_literals;
 
+namespace ItemManager
+{
+
 ItemManagerApp::ItemManagerApp(ItemManagerLogger& logger) : AppThread(logger)
 {
 	_readQueueThread = std::make_unique<ItemManagerReadQueueThread>();
@@ -150,3 +153,5 @@ void ItemManagerApp::ExpLogWrite(const char* pBuf)
 	_expLogger->info(
 		"{}, {}, {}, {}, {}, {}, {}", acname, charid, type, level, exp, loyalty, money);
 }
+
+} // namespace ItemManager

@@ -8,23 +8,8 @@
 
 #include "Extern.h"
 
-/*
-	 ** Repent AI Server 작업시 참고 사항 **
-	1. Initialize() 수정
-	2. SendAttackSuccess() 수정
-	3. GetDamage() 수정
-*/
-
-// 운영자 아이디 넣기..
-/*const char* g_pszOPID[] =
+namespace AIServer
 {
-	//"여우야2",
-	//"난강해",
-	//"이쁜여우2"
-	//"Morpheus"
-//	"맨순",
-//	"민순"
-};*/
 
 float surround_fx[8] = { 0.0f, -0.7071f, -1.0f, -0.7083f, 0.0f, 0.7059f, 1.0000f, 0.7083f };
 float surround_fz[8] = { 1.0f, 0.7071f, 0.0f, -0.7059f, -1.0f, -0.7083f, -0.0017f, 0.7059f };
@@ -1012,3 +997,5 @@ void CUser::HealAreaCheck(int rx, int rz)
 		pNpc->ChangeTarget(1004, this);
 	}
 }
+
+} // namespace AIServer

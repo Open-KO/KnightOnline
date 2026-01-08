@@ -12,10 +12,17 @@
 #include <shared-server/SharedMemoryQueue.h>
 #include <shared-server/STLMap.h>
 
+#include <filesystem>
+#include <memory>
+
+class TimerThread;
+class ReadQueueThread;
+
+namespace Aujard
+{
+
 using ItemtableArray = CSTLMap<model::Item>;
 
-class ReadQueueThread;
-class TimerThread;
 class AujardApp : public AppThread
 {
 public:
@@ -213,5 +220,7 @@ private:
 
 	std::unique_ptr<ReadQueueThread> _readQueueThread;
 };
+
+} // namespace Aujard
 
 #endif // SERVER_AUJARD_AUJARDAPP_H

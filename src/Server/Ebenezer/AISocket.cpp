@@ -14,6 +14,9 @@
 
 #include <spdlog/spdlog.h>
 
+namespace Ebenezer
+{
+
 CAISocket::CAISocket(SocketManager* socketManager, int zoneNum) :
 	TcpClientSocket(socketManager), _zoneNum(zoneNum)
 {
@@ -1673,3 +1676,5 @@ void CAISocket::RecvGateOpen(char* pBuf)
 			pNpc->m_sRegion_Z, nullptr, false);
 	}
 }
+
+} // namespace Ebenezer

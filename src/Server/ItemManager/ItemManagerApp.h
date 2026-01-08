@@ -11,8 +11,12 @@
 
 #include <spdlog/spdlog.h>
 
-class ItemManagerLogger;
 class ReadQueueThread;
+
+namespace ItemManager
+{
+
+class ItemManagerLogger;
 class ItemManagerApp : public AppThread
 {
 public:
@@ -54,5 +58,7 @@ public:
 	void ItemLogWrite(const char* pBuf);
 	void ExpLogWrite(const char* pBuf);
 };
+
+} // namespace ItemManager
 
 #endif // SERVER_ITEMMANAGER_ITEMMANAGERAPP_H

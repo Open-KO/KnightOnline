@@ -50,10 +50,13 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
   </Folder>
-  <Project DefaultStartup="true" Path="src/Client/WarFare/WarFare.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
+  <Project Path="src/Client/WarFare/WarFare.Core.vcxproj" Id="02a7c2de-6db6-477a-977a-adf0bf2204a6">
     <BuildDependency Project="src/Client/JpegFile/JpegFile.vcxproj" />
     <BuildDependency Project="src/N3Base/N3Base_client.vcxproj" />
     <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-ko-client-assets.vcxproj" />
     <BuildDependency Project="src/shared/shared.vcxproj" />
+  </Project>
+  <Project DefaultStartup="true" Path="src/Client/WarFare/WarFare.vcxproj" Id="ed8afb92-15ce-4537-a81c-d4120d31977c">
+    <BuildDependency Project="src/Client/WarFare/WarFare.Core.vcxproj" />
   </Project>
 </Solution>

@@ -32,7 +32,9 @@
     </Project>
   </Folder>
   <Folder Name="/_deps/fetch wrappers/">
-    <Project Path="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" Id="61a124fb-035e-4560-8499-198c6299b7da" />
+    <Project Path="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" Id="61a124fb-035e-4560-8499-198c6299b7da">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-asio.vcxproj" Id="98f92112-9ec7-4f20-a6c3-a0346acb271c">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
@@ -66,34 +68,50 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
   </Folder>
-  <Project DefaultStartup="true" Path="src/Server/AIServer/AIServer.vcxproj" Id="023cd26d-5809-4716-a245-b1e146c6e7fe">
+  <Project Path="src/Server/AIServer/AIServer.Core.vcxproj" Id="023cd26d-5809-4716-a245-b1e146c6e7fe">
     <BuildDependency Project="src/db-library/db-library.vcxproj" />
     <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
     <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
     <BuildDependency Project="src/shared/shared.vcxproj" />
   </Project>
-  <Project Path="src/Server/Aujard/Aujard.vcxproj" Id="c564ac8f-adf8-4b90-b8cd-0834f7db144b">
+  <Project DefaultStartup="true" Path="src/Server/AIServer/AIServer.vcxproj" Id="7f0e559a-7f03-4ad8-b1be-efaff6797178">
+    <BuildDependency Project="src/Server/AIServer/AIServer.Core.vcxproj" />
+  </Project>
+  <Project Path="src/Server/Aujard/Aujard.Core.vcxproj" Id="c564ac8f-adf8-4b90-b8cd-0834f7db144b">
     <BuildDependency Project="src/db-library/db-library.vcxproj" />
     <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
     <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
     <BuildDependency Project="src/shared/shared.vcxproj" />
   </Project>
-  <Project Path="src/Server/Ebenezer/Ebenezer.vcxproj" Id="64439624-b2df-4550-9c52-67e61b8ec0ef">
-    <BuildDependency Project="src/db-library/db-library.vcxproj" />
+  <Project Path="src/Server/Aujard/Aujard.vcxproj" Id="f0440138-6168-4eb6-b4d0-195befcded40">
+    <BuildDependency Project="src/Server/Aujard/Aujard.Core.vcxproj" />
+  </Project>
+  <Project Path="src/Server/Ebenezer/Ebenezer.Core.vcxproj" Id="64439624-b2df-4550-9c52-67e61b8ec0ef">
     <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-djb2.vcxproj" />
-    <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
-    <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
-    <BuildDependency Project="src/shared/shared.vcxproj" />
-  </Project>
-  <Project Path="src/Server/ItemManager/ItemManager.vcxproj" Id="2208d5f7-eb5b-4b13-a89b-cfe279b4307b">
-    <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
-    <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
-    <BuildDependency Project="src/shared/shared.vcxproj" />
-  </Project>
-  <Project Path="src/Server/VersionManager/VersionManager.vcxproj" Id="d5fad895-323c-4be1-a066-3e70bb8c2bb4">
     <BuildDependency Project="src/db-library/db-library.vcxproj" />
     <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
     <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
     <BuildDependency Project="src/shared/shared.vcxproj" />
+  </Project>
+  <Project Path="src/Server/Ebenezer/Ebenezer.vcxproj" Id="7025a37a-bd1f-432e-bbf7-05591dc159da">
+    <BuildDependency Project="src/Server/Ebenezer/Ebenezer.Core.vcxproj" />
+  </Project>
+  <Project Path="src/Server/ItemManager/ItemManager.Core.vcxproj" Id="2208d5f7-eb5b-4b13-a89b-cfe279b4307b">
+    <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+    <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+    <BuildDependency Project="src/shared/shared.vcxproj" />
+  </Project>
+  <Project Path="src/Server/ItemManager/ItemManager.vcxproj" Id="2f8d19f8-5ab6-4aea-8c56-24c7b103e47e">
+    <BuildDependency Project="src/Server/ItemManager/ItemManager.Core.vcxproj" />
+  </Project>
+  <Project Path="src/Server/VersionManager/VersionManager.Core.vcxproj" Id="d5fad895-323c-4be1-a066-3e70bb8c2bb4">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
+    <BuildDependency Project="src/db-library/db-library.vcxproj" />
+    <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+    <BuildDependency Project="src/Server/shared-server/shared-server.vcxproj" />
+    <BuildDependency Project="src/shared/shared.vcxproj" />
+  </Project>
+  <Project Path="src/Server/VersionManager/VersionManager.vcxproj" Id="b73a7541-1a9b-474c-a37b-725ac3ca7056">
+    <BuildDependency Project="src/Server/VersionManager/VersionManager.Core.vcxproj" />
   </Project>
 </Solution>

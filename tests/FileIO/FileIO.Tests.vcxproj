@@ -19,23 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CollisionBox_test.cpp" />
-    <ClCompile Include="Convert2DTo3DCoordinate_test.cpp" />
-    <ClCompile Include="Convert3DTo2DCoordinate_test.cpp" />
-    <ClCompile Include="IntersectTriangle_test.cpp" />
-    <ClCompile Include="Matrix44_test.cpp" />
-    <ClCompile Include="Quaternion_test.cpp" />
-    <ClCompile Include="Vector2_test.cpp" />
-    <ClCompile Include="Vector3_test.cpp" />
-    <ClCompile Include="Vector4_test.cpp" />
-    <ClCompile Include="Yaw2D_test.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MathHelpers.h" />
+    <ClCompile Include="FileReaderSetup_test.cpp" />
+    <ClCompile Include="FileReader_test.cpp" />
+    <ClCompile Include="FileWriterSetup_test.cpp" />
+    <ClCompile Include="FileWriter_test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f1626769-3d40-4524-912e-4b0780393b37}</ProjectGuid>
+    <ProjectGuid>{E3207223-B4C0-40DE-AF95-4954231D1C7B}</ProjectGuid>
     <RootNamespace>clienttests</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
@@ -52,7 +43,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)googletest.props" />
-  <Import Project="$(PropsDir)MathUtils.props" />
+  <Import Project="$(PropsDir)FileIO.props" />
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
@@ -62,12 +53,12 @@
       <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <MinimalRebuild>false</MinimalRebuild>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>MathUtils.lib;gtest_main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FileIO.lib;gtest_main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BaseOutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -11,14 +11,16 @@
 
 #include <iosfwd>
 
-typedef CSTLMap<CGameEvent> EventArray;
-typedef CSTLMap<_OBJECT_EVENT> ObjectEventArray;
-typedef CSTLMap<_REGENE_EVENT> ObjectRegeneArray;
-typedef CSTLMap<_WARP_INFO> WarpArray;
+namespace Ebenezer
+{
+
+using EventArray        = CSTLMap<CGameEvent>;
+using ObjectEventArray  = CSTLMap<_OBJECT_EVENT>;
+using ObjectRegeneArray = CSTLMap<_REGENE_EVENT>;
+using WarpArray         = CSTLMap<_WARP_INFO>;
 
 class CUser;
 class EbenezerApp;
-
 class C3DMap
 {
 private:
@@ -100,4 +102,6 @@ public:
 	uint32_t m_wBundle   = 1; // Zone Item Max Count
 };
 
-#endif                        // SERVER_EBENEZER_MAP_H
+} // namespace Ebenezer
+
+#endif // SERVER_EBENEZER_MAP_H

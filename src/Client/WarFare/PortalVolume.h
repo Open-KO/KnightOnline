@@ -10,7 +10,7 @@
 #include <N3Base/N3Shape.h>
 #include <list>
 
-constexpr float fBaseVolumnSize = 1.0f;
+inline constexpr float fBaseVolumnSize = 1.0f;
 
 enum e_ExtBool : uint8_t
 {

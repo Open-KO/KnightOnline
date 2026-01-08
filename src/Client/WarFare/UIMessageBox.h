@@ -10,7 +10,7 @@
 #include <N3Base/N3UIBase.h>
 #include "GameDef.h"
 
-constexpr int MB_CANCEL = 6;
+inline constexpr int MB_CANCEL = 6;
 
 class CUIMessageBox : public CN3UIBase
 {

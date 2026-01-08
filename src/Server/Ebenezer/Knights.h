@@ -6,6 +6,9 @@
 #include "Define.h"
 #include "GameDefine.h"
 
+namespace Ebenezer
+{
+
 class CUser;
 class EbenezerApp;
 class CKnights
@@ -38,5 +41,7 @@ public:
 
 	void InitializeValue();
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_KNIGHTS_H

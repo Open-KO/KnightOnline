@@ -2,6 +2,9 @@
 #include "AujardApp.h"
 #include "AujardReadQueueThread.h"
 
+#include <Aujard/binder/AujardBinder.h>
+#include <Aujard/model/AujardModel.h>
+
 #include <db-library/ConnectionManager.h>
 #include <db-library/RecordSetLoader_STLMap.h>
 
@@ -13,15 +16,16 @@
 
 using namespace std::chrono_literals;
 
+namespace Aujard
+{
+
 // Minimum time without a heartbeat to consider saving player data.
 // This will only save periodically.
 static constexpr auto SECONDS_SINCE_LAST_HEARTBEAT_TO_SAVE = 30s;
 
 constexpr int MAX_SMQ_SEND_QUEUE_RETRY_COUNT               = 50;
 
-#include <Aujard/binder/AujardBinder.h>
-#include <Aujard/model/AujardModel.h>
-namespace model = aujard_model;
+namespace model                                            = aujard_model;
 
 AujardApp::AujardApp(logger::Logger& logger) :
 	AppThread(logger), LoggerSendQueue(MAX_SMQ_SEND_QUEUE_RETRY_COUNT)
@@ -1145,3 +1149,5 @@ void AujardApp::HeartbeatReceived()
 {
 	_heartbeatReceivedTime = time(nullptr);
 }
+
+} // namespace Aujard

@@ -17,13 +17,13 @@
 
 //	By : Ecli666 ( On 2002-07-22 오전 9:59:19 )
 //
-constexpr int SHADOW_SIZE          = 32; // 2의 승수만 된다..
-constexpr float SHADOW_PLANE_SIZE  = 4.6f;
-constexpr uint8_t SHADOW_COLOR     = 10; // 16진수 한자리.. 알파
+inline constexpr int SHADOW_SIZE          = 32; // 2의 승수만 된다..
+inline constexpr float SHADOW_PLANE_SIZE  = 4.6f;
+inline constexpr uint8_t SHADOW_COLOR     = 10; // 16진수 한자리.. 알파
 //	~(By Ecli666 On 2002-07-22 오전 9:59:19 )
 
-constexpr float TIME_CORPSE_REMAIN = 90.0f; // 시체가 남는 시간..
-constexpr float TIME_CORPSE_REMOVE = 10.0f; // 투명해지면서 없앨시간..
+inline constexpr float TIME_CORPSE_REMAIN = 90.0f; // 시체가 남는 시간..
+inline constexpr float TIME_CORPSE_REMOVE = 10.0f; // 투명해지면서 없앨시간..
 
 class CDFont;
 class CN3SndObj;

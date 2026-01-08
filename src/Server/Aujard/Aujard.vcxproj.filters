@@ -18,39 +18,12 @@
     <ClCompile Include="Aujard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AujardApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DBAgent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AujardReadQueueThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AujardApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DBAgent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared-server\_USER_DATA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AujardReadQueueThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

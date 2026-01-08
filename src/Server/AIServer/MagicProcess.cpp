@@ -8,6 +8,9 @@
 
 #include <spdlog/spdlog.h>
 
+namespace AIServer
+{
+
 extern std::mutex g_region_mutex;
 
 CMagicProcess::CMagicProcess()
@@ -1055,3 +1058,5 @@ int16_t CMagicProcess::GetWeatherDamage(int16_t damage, int16_t attribute)
 
 	return damage;
 }
+
+} // namespace AIServer

@@ -13,8 +13,8 @@ list(APPEND CMAKE_MODULE_PATH "${OPENKO_MODULE_PATH}")
 include(FetchContent)
 include(RequirePackage)
 
-# Set minimum standard to C++23 (unless otherwise specified)
-set(CMAKE_CXX_STANDARD 23)
+# Set minimum standard to C++20 (unless otherwise specified)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

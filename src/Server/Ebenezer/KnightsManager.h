@@ -3,6 +3,9 @@
 
 #pragma once
 
+namespace Ebenezer
+{
+
 class CUser;
 class EbenezerApp;
 class CKnightsManager
@@ -37,5 +40,7 @@ public:
 
 	EbenezerApp* m_pMain;
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_KNIGHTSMANAGER_H

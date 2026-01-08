@@ -17,9 +17,9 @@
 #include <list>
 #include <vector>
 
-constexpr int MAX_CHR_JOINT     = 256;
-constexpr int MAX_CHR_LOD       = 4; // 4 단계 Level Of Detail
-constexpr int MAX_CHR_LOD_DELTA = 4;
+inline constexpr int MAX_CHR_JOINT     = 256;
+inline constexpr int MAX_CHR_LOD       = 4; // 4 단계 Level Of Detail
+inline constexpr int MAX_CHR_LOD_DELTA = 4;
 
 class CN3CPartSkins : public CN3BaseFileAccess
 {
@@ -229,8 +229,8 @@ public:
 	void PMeshSet(const std::string& szFN);
 };
 
-constexpr int MAX_PLUG_FX_POSITION = 5;
-constexpr int MAX_FXTAIL           = 3;
+inline constexpr int MAX_PLUG_FX_POSITION = 5;
+inline constexpr int MAX_FXTAIL           = 3;
 
 class CN3CPlug : public CN3CPlugBase
 {
@@ -296,13 +296,13 @@ protected:
 };
 
 // 0 - 상체, 1 - 하체 ::: 관절들을 나누어서 나누어서 에니메이션 설정..
-constexpr int MAX_CHR_ANI_PART      = 2;
+inline constexpr int MAX_CHR_ANI_PART      = 2;
 
 // 최대 두개의 무기 궤적을 남긴다..
-constexpr int MAX_PLUG_TRACE        = 2;
+inline constexpr int MAX_PLUG_TRACE        = 2;
 
 // 무기 궤적 점의 수.. 점 8 개로는 잔상이 3단계로 남는다..
-constexpr int MAX_PLUG_TRACE_VERTEX = 64;
+inline constexpr int MAX_PLUG_TRACE_VERTEX = 64;
 
 typedef std::vector<CN3CPart*>::iterator it_CPart;
 typedef std::vector<CN3CPlug*>::iterator it_CPlug;

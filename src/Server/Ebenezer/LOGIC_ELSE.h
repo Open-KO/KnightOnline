@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include "Define.h"
+
+namespace Ebenezer
+{
+
 class LOGIC_ELSE
 {
 public:
@@ -15,5 +20,7 @@ public:
 	LOGIC_ELSE();
 	virtual ~LOGIC_ELSE();
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_LOGIC_ELSE_H

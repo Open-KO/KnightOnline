@@ -5,6 +5,9 @@
 
 #include "Extern.h"
 
+namespace AIServer
+{
+
 class AIServerApp;
 class CNpc;
 class CNpcMagicProcess
@@ -36,5 +39,7 @@ public:
 	model::Magic* IsAvailable(int magicid, int tid);
 	void MagicPacket(char* pBuf, int len);
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_NPCMAGICPROCESS_H

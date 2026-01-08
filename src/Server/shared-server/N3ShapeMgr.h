@@ -6,19 +6,19 @@
 #include "My_3DStruct.h"
 
 // 메인셀은 4 X 4 의 서브셀로 나뉜다..
-constexpr int CELL_MAIN_DIVIDE = 4;
+inline constexpr int CELL_MAIN_DIVIDE = 4;
 
 // 4 Meter 가 서브셀의 사이즈이다..
-constexpr int CELL_SUB_SIZE    = 4;
+inline constexpr int CELL_SUB_SIZE    = 4;
 
 // 메인셀 크기는 서브셀갯수 X 서브셀 크기이다.
-constexpr int CELL_MAIN_SIZE   = CELL_MAIN_DIVIDE * CELL_SUB_SIZE;
+inline constexpr int CELL_MAIN_SIZE   = CELL_MAIN_DIVIDE * CELL_SUB_SIZE;
 
 // 메인셀의 최대 갯수는 지형크기 / 메인셀크기 이다.
-constexpr int MAX_CELL_MAIN    = 4096 / CELL_MAIN_SIZE;
+inline constexpr int MAX_CELL_MAIN    = 4096 / CELL_MAIN_SIZE;
 
 // 서브셀 최대 갯수는 메인셀 * 메인셀나눔수 이다.
-constexpr int MAX_CELL_SUB     = MAX_CELL_MAIN * CELL_MAIN_DIVIDE;
+inline constexpr int MAX_CELL_SUB     = MAX_CELL_MAIN * CELL_MAIN_DIVIDE;
 
 class File;
 class CN3ShapeMgr

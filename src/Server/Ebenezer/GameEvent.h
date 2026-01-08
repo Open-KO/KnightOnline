@@ -3,6 +3,9 @@
 
 #pragma once
 
+namespace Ebenezer
+{
+
 class CUser;
 class CGameEvent
 {
@@ -16,5 +19,7 @@ public:
 
 	int m_iExec[5]   = {};
 };
+
+} // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_GAMEEVENT_H

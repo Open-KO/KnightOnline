@@ -12,6 +12,9 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace Ebenezer
+{
+
 extern bool g_serverdown_flag;
 
 OperationMessage::OperationMessage(EbenezerApp* main, CUser* srcUser) :
@@ -939,3 +942,5 @@ const std::string& OperationMessage::ParseString(size_t argIndex) const
 
 	return _args[argIndex];
 }
+
+} // namespace Ebenezer

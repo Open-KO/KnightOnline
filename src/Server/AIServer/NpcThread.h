@@ -7,6 +7,9 @@
 
 #include "Define.h" // NPC_NUM
 
+namespace AIServer
+{
+
 class CNpc;
 class CNpcThread : public Thread
 {
@@ -20,4 +23,6 @@ public:
 	int16_t m_sThreadNumber; // thread number ,, test
 };
 
-#endif                       // SERVER_AISERVER_NPCTHREAD_H
+} // namespace AIServer
+
+#endif // SERVER_AISERVER_NPCTHREAD_H

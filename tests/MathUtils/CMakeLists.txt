@@ -1,4 +1,4 @@
-add_executable(MathUtils-tests
+add_executable(MathUtils.Tests
   CollisionBox_test.cpp
   Convert2DTo3DCoordinate_test.cpp
   Convert3DTo2DCoordinate_test.cpp
@@ -10,11 +10,11 @@ add_executable(MathUtils-tests
   Vector4_test.cpp
   Yaw2D_test.cpp)
 
-target_link_libraries(MathUtils-tests PRIVATE
+target_link_libraries(MathUtils.Tests PRIVATE
   gtest
   gtest_main
   MathUtils)
 
 add_test(
   NAME MathUtilsTests
-  COMMAND MathUtils-tests)
+  COMMAND MathUtils.Tests)

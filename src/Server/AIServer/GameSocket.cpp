@@ -17,6 +17,9 @@
 #include <shared/StringUtils.h>
 #include <spdlog/spdlog.h>
 
+namespace AIServer
+{
+
 extern std::mutex g_region_mutex;
 
 /*
@@ -1196,3 +1199,5 @@ void CGameSocket::RecvBattleEvent(char* pBuf)
 		}
 	}
 }
+
+} // namespace AIServer

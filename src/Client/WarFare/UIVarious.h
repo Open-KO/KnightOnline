@@ -109,7 +109,7 @@ struct __KnightsMemberInfo
 };
 
 typedef std::list<__KnightsMemberInfo>::iterator it_KMI;
-constexpr int MAX_CLAN_GRADE = 5;
+inline constexpr int MAX_CLAN_GRADE = 5;
 
 class CUIKnights : public CN3UIBase
 {

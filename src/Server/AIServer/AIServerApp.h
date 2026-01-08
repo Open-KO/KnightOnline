@@ -14,32 +14,36 @@
 
 #include "Extern.h" // 전역 객체
 
-#include <vector>
 #include <list>
+#include <vector>
+
+class TimerThread;
+
+namespace AIServer
+{
 
 class CNpcThread;
 class ZoneEventThread;
 
-typedef std::vector<CNpcThread*> NpcThreadArray;
-typedef CSTLMap<model::Npc> NpcTableMap;
-typedef CSTLMap<CNpc> NpcMap;
-typedef CSTLMap<model::Magic> MagicTableMap;
-typedef CSTLMap<model::MagicType1> MagicType1TableMap;
-typedef CSTLMap<model::MagicType2> MagicType2TableMap;
-typedef CSTLMap<model::MagicType3> MagicType3TableMap;
-typedef CSTLMap<model::MagicType4> MagicType4TableMap;
-typedef CSTLMap<model::MagicType7> MagicType7TableMap;
-typedef CSTLMap<_PARTY_GROUP> PartyMap;
-typedef CSTLMap<model::MakeItemGroup> MakeItemGroupMap;
-typedef CSTLMap<model::MakeWeapon> MakeWeaponTableMap;
-typedef CSTLMap<model::MakeItemGradeCode> MakeGradeItemCodeTableMap;
-typedef CSTLMap<model::MakeItemRareCode> MakeItemRareCodeTableMap;
-typedef CSTLMap<model::ZoneInfo> ZoneInfoTableMap;
-typedef std::list<int> ZoneNpcInfoList;
-typedef std::vector<MAP*> ZoneArray;
+using NpcThreadArray            = std::vector<CNpcThread*>;
+using NpcTableMap               = CSTLMap<model::Npc>;
+using NpcMap                    = CSTLMap<CNpc>;
+using MagicTableMap             = CSTLMap<model::Magic>;
+using MagicType1TableMap        = CSTLMap<model::MagicType1>;
+using MagicType2TableMap        = CSTLMap<model::MagicType2>;
+using MagicType3TableMap        = CSTLMap<model::MagicType3>;
+using MagicType4TableMap        = CSTLMap<model::MagicType4>;
+using MagicType7TableMap        = CSTLMap<model::MagicType7>;
+using PartyMap                  = CSTLMap<_PARTY_GROUP>;
+using MakeItemGroupMap          = CSTLMap<model::MakeItemGroup>;
+using MakeWeaponTableMap        = CSTLMap<model::MakeWeapon>;
+using MakeGradeItemCodeTableMap = CSTLMap<model::MakeItemGradeCode>;
+using MakeItemRareCodeTableMap  = CSTLMap<model::MakeItemRareCode>;
+using ZoneInfoTableMap          = CSTLMap<model::ZoneInfo>;
+using ZoneNpcInfoList           = std::list<int>;
+using ZoneArray                 = std::vector<MAP*>;
 
 class AIServerLogger;
-class TimerThread;
 class AIServerApp : public AppThread
 {
 public:
@@ -212,5 +216,7 @@ private:
 	// region안에 들어오는 유저 체크 (스레드에서 FindEnermy()함수의 부하를 줄이기 위한 꽁수)
 	void RegionCheck();
 };
+
+} // namespace AIServer
 
 #endif // SERVER_AISERVER_AISERVERAPP_H
