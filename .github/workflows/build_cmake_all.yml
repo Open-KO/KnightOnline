@@ -64,9 +64,9 @@ jobs:
       run: |
         cmake -S . `
           -B build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
-          -G "Visual Studio 17 2022" `
-          -A ${{ matrix.BUILD_PLATFORM }} `
+          -G "Ninja" `
           -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }} `
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
           -DOPENKO_FETCH_CLIENT_ASSETS=FALSE
 
     - name: Build all
@@ -82,6 +82,18 @@ jobs:
       working-directory: build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}
       run: |
         ctest -C "${{ matrix.BUILD_CONFIGURATION }}" --verbose
+        
+    - uses: cpp-linter/cpp-linter-action@v2
+      id: linter
+      with:
+        database: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
+        style: ""  # disable clang-format checks. (1)
+        tidy-checks: "" # Use .clang-tidy config file. (2)
+        files-changed-only: false
+
+#    - name: Fail fast?!
+#      if: steps.linter.outputs.clang-tidy-checks-failed > 0
+#      run: exit 1
 
   build_linux:
     runs-on: ubuntu-latest
