@@ -82,13 +82,11 @@ void __Vector3::Set(float fx, float fy, float fz)
 
 const __Vector3 __Vector3::operator*(const __Matrix44& mtx) const
 {
-	__Vector3 vTmp;
-
-	vTmp.x = x * mtx.m[0][0] + y * mtx.m[1][0] + z * mtx.m[2][0] + mtx.m[3][0];
-	vTmp.y = x * mtx.m[0][1] + y * mtx.m[1][1] + z * mtx.m[2][1] + mtx.m[3][1];
-	vTmp.z = x * mtx.m[0][2] + y * mtx.m[1][2] + z * mtx.m[2][2] + mtx.m[3][2];
-
-	return vTmp;
+	return { //
+		x * mtx.m[0][0] + y * mtx.m[1][0] + z * mtx.m[2][0] + mtx.m[3][0],
+		x * mtx.m[0][1] + y * mtx.m[1][1] + z * mtx.m[2][1] + mtx.m[3][1],
+		x * mtx.m[0][2] + y * mtx.m[1][2] + z * mtx.m[2][2] + mtx.m[3][2]
+	};
 }
 
 void __Vector3::operator*=(float fDelta)

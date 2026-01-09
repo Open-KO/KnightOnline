@@ -6,7 +6,7 @@
 #include "MathUtils.h"
 #include <cmath> // acosf(), cosf(), sinf(), sqrtf()
 
-__Quaternion::__Quaternion(const __Matrix44& mtx)
+__Quaternion::__Quaternion(const __Matrix44& mtx) : x(0.0f), y(0.0f), z(0.0f), w(0.0f)
 {
 	this->operator=(mtx);
 }
@@ -165,7 +165,7 @@ void __Quaternion::RotationYawPitchRoll(float Yaw, float Pitch, float Roll)
 
 __Quaternion __Quaternion::operator*(const __Quaternion& q) const
 {
-	__Quaternion out;
+	__Quaternion out {};
 	out.x = q.w * x + q.x * w + q.y * z - q.z * y;
 	out.y = q.w * y - q.x * z + q.y * w + q.z * x;
 	out.z = q.w * z + q.x * y - q.y * x + q.z * w;

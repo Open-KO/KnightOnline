@@ -8,16 +8,19 @@
 #include <cmath>   // cosf(), sinf()
 #include <cstring> // std::memcpy(), std::memset()
 
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 __Matrix44::__Matrix44(const float mtx[4][4])
 {
 	std::memcpy(&m, mtx, sizeof(m));
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 __Matrix44::__Matrix44(const __Matrix44& mtx)
 {
 	std::memcpy(&m, &mtx.m, sizeof(m));
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 __Matrix44::__Matrix44(const __Quaternion& qt)
 {
 	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);
@@ -54,14 +57,14 @@ void __Matrix44::Identity()
 
 __Matrix44 __Matrix44::GetIdentity()
 {
-	__Matrix44 mtx;
+	__Matrix44 mtx {};
 	mtx.Identity();
 	return mtx;
 }
 
 __Matrix44 __Matrix44::Inverse() const
 {
-	__Matrix44 mtxOut;
+	__Matrix44 mtxOut {};
 	BuildInverse(mtxOut);
 	return mtxOut;
 }
@@ -257,7 +260,7 @@ void __Matrix44::Direction(const __Vector3& vDir)
 {
 	Identity();
 
-	__Vector3 vDir2, vRight, vUp;
+	__Vector3 vDir2 {}, vRight {}, vUp {};
 	vUp.Set(0, 1, 0);
 	vDir2 = vDir;
 	vDir2.Normalize();
@@ -293,7 +296,7 @@ void __Matrix44::Direction(const __Vector3& vDir)
 
 void __Matrix44::LookAtLH(const __Vector3& vEye, const __Vector3& vAt, const __Vector3& vUp)
 {
-	__Vector3 right, upn, vec;
+	__Vector3 right {}, upn {}, vec {};
 
 	vec = vAt - vEye;
 	vec.Normalize();
@@ -346,7 +349,7 @@ void __Matrix44::PerspectiveFovLH(float fovy, float Aspect, float zn, float zf)
 
 __Matrix44 __Matrix44::operator*(const __Matrix44& mtx) const
 {
-	__Matrix44 mtxOut;
+	__Matrix44 mtxOut {};
 
 	mtxOut.m[0][0] = m[0][0] * mtx.m[0][0] + m[0][1] * mtx.m[1][0] + m[0][2] * mtx.m[2][0]
 					 + m[0][3] * mtx.m[3][0];
@@ -444,7 +447,7 @@ void __Matrix44::operator-=(const __Vector3& v)
 
 __Matrix44 __Matrix44::operator*(const __Quaternion& qRot) const
 {
-	__Matrix44 mtx;
+	__Matrix44 mtx {};
 	mtx.operator=(qRot);
 	return *this * mtx;
 }
