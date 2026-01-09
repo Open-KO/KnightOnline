@@ -7,15 +7,15 @@ on:
     types: [labeled]
     
   workflow_dispatch:
-    
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
+  cancel-in-progress: true
+
 env:
   # We use a debug build for slightly faster build times
   BUILD_CONFIGURATION: Debug
   BUILD_PLATFORM: Win32
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   analyze:
