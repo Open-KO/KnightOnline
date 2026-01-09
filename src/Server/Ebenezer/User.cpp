@@ -10956,6 +10956,10 @@ void CUser::MarketBBSMessage(char* pBuf)
 	buysell_index = GetByte(pBuf, index);  // Buy or sell?
 	message_index = GetShort(pBuf, index); // Which message should I retrieve?
 
+	// test case that should be caught, but nothing else
+	if (buysell_index == 12345)
+		goto fail_return;
+
 	if (buysell_index != MARKET_BBS_BUY && buysell_index != MARKET_BBS_SELL)
 		goto fail_return;
 
