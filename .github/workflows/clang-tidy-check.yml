@@ -1,12 +1,12 @@
 name: "clang-tidy-check"
 
+permissions:
+  contents: write
+  pull-requests: write
+#  metadata: read
+
 on:
   push:
-    # cpp-linter-action: thread-comments
-    permissions:
-      metadata: read
-      contents: write
-
     branches:
     - master
 
@@ -22,11 +22,6 @@ on:
       - '**/*.inl'
 
   pull_request:
-    # cpp-linter-action: tidy-review, passive-reviews
-    permissions:
-      contents: read
-      pull-requests: write
-
     branches:
     - master
 
@@ -48,7 +43,7 @@ concurrency:
   cancel-in-progress: true
   
 jobs:
-  build_windows:
+  lint_windows:
     runs-on: windows-latest
 
     strategy:
@@ -79,7 +74,28 @@ jobs:
           -DCMAKE_DISABLE_PRECOMPILE_HEADERS=TRUE
         
     - uses: cpp-linter/cpp-linter-action@v2
-      id: linter
+      name: "Run linter (pull)"
+      if: github.event_name == 'pull'
+      id: linter_pull
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        version: "19"
+        database: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
+        ignore: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
+        style: "" # disable clang-format checks. (1)
+        tidy-checks: "" # Use .clang-tidy config file. (2)
+        lines-changed-only: true
+        extensions: "c,cpp"
+        tidy-review: false
+        passive-reviews: false
+        step-summary: true
+        thread-comments: false
+
+    - uses: cpp-linter/cpp-linter-action@v2
+      name: "Run linter (PR review)"
+      if: github.event_name == 'pull_request'
+      id: linter_pr
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -95,6 +111,10 @@ jobs:
         step-summary: true
         thread-comments: "update"
 
-    - name: Check clang-tidy result
-      if: steps.linter.outputs.clang-tidy-checks-failed > 0
+    - name: Check clang-tidy result (pull)
+      if: github.event_name == 'pull' && steps.linter_pull.outputs.clang-tidy-checks-failed > 0
+      run: exit 1
+
+    - name: Check clang-tidy result (pull_request)
+      if: github.event_name == 'pull_request' && steps.linter_pr.outputs.clang-tidy-checks-failed > 0
       run: exit 1
