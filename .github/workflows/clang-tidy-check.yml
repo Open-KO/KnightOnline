@@ -4,8 +4,8 @@ on:
   push:
     # cpp-linter-action: thread-comments
     permissions:
-      metadata: read 
-      contents: write 
+      metadata: read
+      contents: write
 
     branches:
     - master
@@ -24,6 +24,7 @@ on:
   pull_request:
     # cpp-linter-action: tidy-review, passive-reviews
     permissions:
+      contents: read
       pull-requests: write
 
     branches:
@@ -89,7 +90,7 @@ jobs:
         tidy-checks: "" # Use .clang-tidy config file. (2)
         lines-changed-only: true
         extensions: "c,cpp"
-        tidy-review: "update"
+        tidy-review: true
         passive-reviews: false
         step-summary: true
 
