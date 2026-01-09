@@ -103,7 +103,7 @@ jobs:
         style: "" # disable clang-format checks. (1)
         tidy-checks: "" # Use .clang-tidy config file. (2)
         files-changed-only: false
-        extensions: "c,C,cpp,cc,c++,cxx"
+        extensions: "c,cpp"
         tidy-review: "update"
         passive-reviews: true
         step-summary: true

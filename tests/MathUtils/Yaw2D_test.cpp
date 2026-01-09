@@ -5,7 +5,7 @@ using test::EpsilonWithTolerance;
 
 TEST(Yaw2D, MatchesReferenceWithinTolerance)
 {
-	float yaw;
+	float yaw = 0.0f;
 
 	SCOPED_TRACE("Yaw2D::MatchesReferenceWithinTolerance");
 

@@ -14,7 +14,7 @@ protected:
 		{ 0.000000000f, 0.000000000f, -0.500541806f, 0.000000000f } //
 	};
 
-	__Matrix44 mtxProjection;
+	__Matrix44 mtxProjection {};
 
 	void SetUp() override
 	{
@@ -107,7 +107,7 @@ TEST_F(Vector3Test, Cross_MatchesReference)
 
 	SCOPED_TRACE("__Vector3::Cross(const __Vector3&, const __Vector3&)");
 
-	__Vector3 vec;
+	__Vector3 vec {};
 	vec.Cross(vec1, vec2);
 	ExpectVector3Near(vec, expectedVec);
 }
@@ -147,7 +147,7 @@ TEST_F(Vector3Test, Set_Floats_MatchesReference)
 
 	SCOPED_TRACE("__Vector3::Set(float, float, float)");
 
-	__Vector3 vec;
+	__Vector3 vec {};
 	vec.Set(64.0f, 128.0f, 256.0f);
 	ExpectVector3Near(vec, expectedVec);
 }

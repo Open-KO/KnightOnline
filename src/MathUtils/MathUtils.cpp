@@ -13,7 +13,7 @@ bool _CheckCollisionByBox(
 	const __Vector3& vOrig, const __Vector3& vDir, const __Vector3& vMin, const __Vector3& vMax)
 {
 	constexpr int VertexCount = 36;
-	std::array<__Vector3, VertexCount> Vertices;
+	std::array<__Vector3, VertexCount> Vertices {};
 	int nFace = 0;
 
 	// z 축 음의 면
@@ -113,7 +113,7 @@ bool _IntersectTriangle(const __Vector3& vOrig, const __Vector3& vDir, const __V
 		return false;
 
 	// Prepare to test V parameter
-	__Vector3 qVec;
+	__Vector3 qVec {};
 	qVec.Cross(tVec, vEdge1);
 
 	// Calculate V parameter and test bounds
@@ -202,10 +202,10 @@ _POINT _Convert3D_To_2DCoordinate(const __Vector3& vPos, const __Matrix44& mtxVi
 	const __Matrix44& mtxProjection, int iViewportWidth, int iViewportHeight)
 {
 	__Matrix44 matVP = mtxView * mtxProjection;
-	__Vector4 v;
+	__Vector4 v {};
 	v.Transform(vPos, matVP);
 
-	_POINT pt;
+	_POINT pt {};
 	float fScreenZ = (v.z / v.w);
 	if (fScreenZ > 1.0 || fScreenZ < 0.0)
 	{
@@ -225,7 +225,7 @@ void _Convert2D_To_3DCoordinate(int ixScreen, int iyScreen, const __Matrix44& mt
 	__Vector3& vDirResult)
 {
 	// Compute the vector of the pick ray in screen space
-	__Vector3 vTmp;
+	__Vector3 vTmp {};
 
 	vTmp.x           = (((2.0f * ixScreen) / iViewportWidth) - 1) / mtxPrj.m[0][0];
 	vTmp.y           = -(((2.0f * iyScreen) / iViewportHeight) - 1) / mtxPrj.m[1][1];
