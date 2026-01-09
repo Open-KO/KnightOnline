@@ -90,9 +90,10 @@ jobs:
         tidy-checks: "" # Use .clang-tidy config file. (2)
         lines-changed-only: true
         extensions: "c,cpp"
-        tidy-review: true
+        tidy-review: "update"
         passive-reviews: false
         step-summary: true
+        thread-comments: "update"
 
     - name: Check clang-tidy result
       if: steps.linter.outputs.clang-tidy-checks-failed > 0
