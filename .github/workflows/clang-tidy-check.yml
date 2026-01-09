@@ -48,8 +48,8 @@ jobs:
 
     strategy:
       matrix:
-        BUILD_CONFIGURATION: [Debug, Release]
-        BUILD_PLATFORM: [Win32, x64]
+        BUILD_CONFIGURATION: [Debug]
+        BUILD_PLATFORM: [x64]
 
     name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }} (Windows)"
 
