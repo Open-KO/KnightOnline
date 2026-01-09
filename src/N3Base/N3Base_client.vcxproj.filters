@@ -490,5 +490,6 @@
     <None Include="Material.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="VertexTypes.inl" />
   </ItemGroup>
 </Project>

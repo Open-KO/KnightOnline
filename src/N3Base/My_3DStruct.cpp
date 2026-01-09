@@ -3,6 +3,7 @@
 
 #include "ColorValue.inl"
 #include "Material.inl"
+#include "VertexTypes.inl"
 
 D3DCOLOR _RGB_To_D3DCOLOR(COLORREF cr, uint32_t dwAlpha)
 {

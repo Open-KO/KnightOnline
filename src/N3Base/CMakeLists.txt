@@ -177,6 +177,7 @@ set(N3BASE_COMMON_SOURCES
   WaveFormat.h
   WinCrypt.cpp
   WinCrypt.h
+  VertexTypes.inl
   ${N3BASE_COMMON_AUDIO_SOURCES}
   ${N3BASE_COMMON_EFFECT_SOURCES}
   ${N3BASE_COMMON_SKY_SOURCES}

@@ -189,6 +189,7 @@
   <ItemGroup>
     <None Include="ColorValue.inl" />
     <None Include="Material.inl" />
+    <None Include="VertexTypes.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{74C1CB7D-63CD-40D3-ABEA-2A17EB3719ED}</ProjectGuid>
