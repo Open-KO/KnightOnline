@@ -97,9 +97,10 @@ jobs:
     - uses: cpp-linter/cpp-linter-action@v2
       id: linter
       with:
+        version: "19"
         database: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
         ignore: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
-        style: ""  # disable clang-format checks. (1)
+        style: "" # disable clang-format checks. (1)
         tidy-checks: "" # Use .clang-tidy config file. (2)
         files-changed-only: false
         extensions: "c,C,cpp,cc,c++,cxx"
