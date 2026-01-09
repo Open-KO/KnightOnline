@@ -218,9 +218,4 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
   </Folder>
-  <Folder Name="/__Solution Files/">
-    <File Path=".clang-tidy" />
-    <File Path=".editorconfig" />
-    <File Path="Directory.Build.props" />
-  </Folder>
 </Solution>
