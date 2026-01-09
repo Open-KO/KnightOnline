@@ -64,6 +64,6 @@ Checks: >
 WarningsAsErrors: '*'
 
 HeaderFilterRegex: '.*(src)[\\/].*'
-ExcludeHeaderFilterRegex: '.*([r|R]esource.h|deps[\/\\].*)'
+ExcludeHeaderFilterRegex: '.*((r|R)esource.h|deps[\/\\].*)'
 
 FormatStyle: file
