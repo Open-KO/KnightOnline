@@ -86,7 +86,6 @@ jobs:
         tidy-review: "update"
         passive-reviews: true
         step-summary: true
-        verbosity: "debug" # TODO: remove
 
     - name: Check clang-tidy result
       if: steps.linter.outputs.clang-tidy-checks-failed > 0
