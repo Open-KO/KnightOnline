@@ -79,6 +79,8 @@ jobs:
         
     - uses: cpp-linter/cpp-linter-action@v2
       id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         version: "19"
         database: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
