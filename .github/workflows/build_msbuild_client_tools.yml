@@ -24,6 +24,10 @@ on:
  
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # These should really be moved into the one solution.
 jobs:
   build:

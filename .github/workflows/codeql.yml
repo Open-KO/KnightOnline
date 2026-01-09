@@ -13,6 +13,10 @@ env:
   BUILD_CONFIGURATION: Debug
   BUILD_PLATFORM: Win32
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     if: |
