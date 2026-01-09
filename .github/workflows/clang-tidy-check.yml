@@ -4,8 +4,8 @@ on:
   push:
     # cpp-linter-action: thread-comments
     permissions:
-      metadata: read 
-      contents: write 
+      metadata: read
+      contents: write
 
     branches:
     - master
@@ -24,6 +24,7 @@ on:
   pull_request:
     # cpp-linter-action: tidy-review, passive-reviews
     permissions:
+      contents: read
       pull-requests: write
 
     branches:
