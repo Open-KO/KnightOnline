@@ -72,7 +72,7 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
           -DCMAKE_DISABLE_PRECOMPILE_HEADERS=TRUE
         
-    - uses: cpp-linter/cpp-linter-action@v2
+    - uses: Open-KO/cpp-linter-action@v2.0.0-OpenKO
       name: "Run linter"
       id: linter
       env:
@@ -88,5 +88,5 @@ jobs:
         step-summary: true
 
     - name: "Check clang-tidy result"
-      if: steps.linter.outputs.clang-tidy-checks-failed > 0
+      if: steps.linter.outputs.clang-tidy-checks-failed-errors > 0
       run: exit 1
