@@ -59,7 +59,7 @@ void CUser::Initialize()
 	///~
 
 	m_MagicProcess.m_pMain    = m_pMain;
-	m_MagicProcess.m_pSrcUser = 0;
+	m_MagicProcess.m_pSrcUser = this;
 
 	m_RegionX                 = -1;
 	m_RegionZ                 = -1;
@@ -496,7 +496,7 @@ void CUser::Parsing(int len, char* pData)
 	switch (command)
 	{
 		case WIZ_LOGIN:
-			LoginProcess(pData + index); // test
+			LoginProcess(pData + index);
 			break;
 
 		case WIZ_SEL_NATION:
