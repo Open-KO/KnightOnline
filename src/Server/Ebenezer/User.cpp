@@ -59,7 +59,7 @@ void CUser::Initialize()
 	///~
 
 	m_MagicProcess.m_pMain    = m_pMain;
-	m_MagicProcess.m_pSrcUser = this;
+	m_MagicProcess.m_pSrcUser = 0;
 
 	m_RegionX                 = -1;
 	m_RegionZ                 = -1;
