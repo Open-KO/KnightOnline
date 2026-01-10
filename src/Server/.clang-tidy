@@ -1,7 +1,4 @@
 InheritParentConfig: true
 
-Checks: >
-  -performance-unnecessary-copy-initialization
-
 WarningsAsErrors: >
   -cppcoreguidelines-pro-bounds-pointer-arithmetic

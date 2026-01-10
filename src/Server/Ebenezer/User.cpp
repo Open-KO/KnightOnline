@@ -496,7 +496,7 @@ void CUser::Parsing(int len, char* pData)
 	switch (command)
 	{
 		case WIZ_LOGIN:
-			LoginProcess(pData + index);
+			LoginProcess(pData + index); // test
 			break;
 
 		case WIZ_SEL_NATION:
