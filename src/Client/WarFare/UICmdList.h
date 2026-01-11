@@ -156,7 +156,7 @@ public:
 	bool Load(File& file);
 	void Release();
 	void SetVisible(bool bVisible);
-	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
+	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	bool OnKeyPress(int iKey) override;
 	void Open();
 	void Close();
