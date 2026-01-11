@@ -64,6 +64,8 @@
 #include <cstdio>
 #include <string>
 
+#include <Windows.h>
+
 #ifdef __cplusplus
 extern "C"
 {

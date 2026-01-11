@@ -84,7 +84,7 @@ jobs:
         style: "" # disable clang-format checks. (1)
         tidy-checks: "" # Use .clang-tidy config file. (2)
         lines-changed-only: true
-        extensions: "c,cpp"
+        extensions: "c,cpp,h,hpp,inl"
         step-summary: true
 
     - name: "Check clang-tidy result"

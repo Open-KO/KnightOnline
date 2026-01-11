@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 class CN3UIIcon;
 struct __TABLE_ITEM_BASIC;
 struct __TABLE_ITEM_EXT;
