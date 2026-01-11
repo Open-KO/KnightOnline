@@ -60,8 +60,7 @@ Checks: >
   -bugprone-multi-level-implicit-pointer-conversion,
   -clang-analyzer-optin.performance.Padding,
   -clang-analyzer-optin.core.EnumCastOutOfRange,
-  -misc-confusable-identifiers,
-  -clang-diagnostic-pragma-once-outside-header
+  -misc-confusable-identifiers
 
 WarningsAsErrors: '*'
 

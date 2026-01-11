@@ -12,7 +12,6 @@
 
 #include "Packet.h"
 #include "Define.h"
-#include <map>
 
 #include <shared-server/server_config.h>
 #include <shared-server/utilities.h>
