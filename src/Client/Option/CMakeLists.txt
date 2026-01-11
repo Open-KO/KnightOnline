@@ -11,6 +11,10 @@ add_executable(Option
   resource.h
   StdAfx.h)
 
+set_target_properties(Option PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
   set_target_properties(Option PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(Option PRIVATE Option.rc)

@@ -33,6 +33,10 @@ add_executable(N3Viewer
   res/NodeIcons.bmp
   res/Toolbar.bmp)
 
+set_target_properties(N3Viewer PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
   set_target_properties(N3Viewer PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(N3Viewer PRIVATE

@@ -13,6 +13,10 @@ add_library(MathUtils STATIC
   Vector4.h
   Vector4.inl)
 
+set_target_properties(MathUtils PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET MathUtils PROPERTY COMPILE_WARNING_AS_ERROR ON)

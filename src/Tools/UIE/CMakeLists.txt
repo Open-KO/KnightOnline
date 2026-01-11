@@ -38,6 +38,10 @@ add_executable(UIE
   # Resources
   res/Toolbar.bmp)
 
+set_target_properties(UIE PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
   set_target_properties(UIE PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(UIE PRIVATE

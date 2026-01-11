@@ -46,6 +46,10 @@ add_library(db-models STATIC
   "${db_models_SOURCE_DIR}/VersionManager/model/VersionManagerModel.h"
 )
 
+set_target_properties(db-models PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Require nanodbc
 target_link_libraries(db-models PUBLIC nanodbc)
 

@@ -16,6 +16,10 @@ add_executable(KscViewer
   N3JpegFile.h
   Resource.h
   StdAfx.h)
+  
+set_target_properties(KscViewer PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
 
 if(WIN32)
   set_target_properties(KscViewer PROPERTIES WIN32_EXECUTABLE TRUE)

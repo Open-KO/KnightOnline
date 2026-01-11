@@ -16,6 +16,14 @@ add_executable(ItemManager
   resource.h
 )
 
+set_target_properties(ItemManager.Core PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
+set_target_properties(ItemManager PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
     target_sources(ItemManager PRIVATE ItemManager.rc)
 endif()

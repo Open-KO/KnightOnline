@@ -16,6 +16,14 @@ add_executable(Aujard
   resource.h
 )
 
+set_target_properties(Aujard.Core PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
+set_target_properties(Aujard PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
     target_sources(Aujard PRIVATE Aujard.rc)
 endif()

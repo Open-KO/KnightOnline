@@ -40,6 +40,10 @@ add_executable(N3FXE
   # Resources
   res/Toolbar.bmp)
 
+set_target_properties(N3FXE PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
   set_target_properties(N3FXE PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(N3FXE PRIVATE

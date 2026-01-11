@@ -6,6 +6,10 @@ add_library(FileIO STATIC
   FileWriter.h
 )
 
+set_target_properties(FileIO PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET FileIO PROPERTY COMPILE_WARNING_AS_ERROR ON)

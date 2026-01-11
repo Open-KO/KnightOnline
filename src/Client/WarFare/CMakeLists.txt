@@ -329,8 +329,13 @@ source_group("World/Water" FILES ${WARFARE_WORLD_WATER_SOURCES})
 source_group("Core UIs" FILES ${WARFARE_CORE_UIS_SOURCES})
 source_group("Popup notice text" FILES ${WARFARE_POPUP_NOTICE_TEXT_SOURCES})
 
+set_target_properties(WarFare.Core PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 set_target_properties(WarFare PROPERTIES
-  OUTPUT_NAME "KnightOnLine"
+  OUTPUT_NAME          "KnightOnLine"
+  CXX_SCAN_FOR_MODULES OFF
 )
 
 if(WIN32)

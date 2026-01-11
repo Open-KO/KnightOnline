@@ -20,6 +20,10 @@ add_library(ZipArchive STATIC
   ZipStorage.cpp
   ZipStorage.h)
 
+set_target_properties(ZipArchive PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET ZipArchive PROPERTY COMPILE_WARNING_AS_ERROR ON)

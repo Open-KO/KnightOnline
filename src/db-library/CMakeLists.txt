@@ -20,6 +20,10 @@ add_library(db-library STATIC
   utils.h
 )
 
+set_target_properties(db-library PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Setup PCH
 target_precompile_headers(db-library PRIVATE pch.h)
 

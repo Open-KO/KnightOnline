@@ -16,6 +16,14 @@ add_executable(VersionManager
   VersionManager.cpp
 )
 
+set_target_properties(VersionManager.Core PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
+set_target_properties(VersionManager PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
     target_sources(VersionManager PRIVATE VersionManager.rc)
 endif()

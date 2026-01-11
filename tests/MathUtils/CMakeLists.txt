@@ -10,6 +10,10 @@ add_executable(MathUtils.Tests
   Vector4_test.cpp
   Yaw2D_test.cpp)
 
+set_target_properties(MathUtils.Tests PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 target_link_libraries(MathUtils.Tests PRIVATE
   gtest
   gtest_main

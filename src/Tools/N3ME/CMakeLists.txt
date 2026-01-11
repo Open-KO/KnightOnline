@@ -152,6 +152,10 @@ add_executable(N3ME
   WarpMgr.cpp
   WarpMgr.h)
 
+set_target_properties(N3ME PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
   set_target_properties(N3ME PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(N3ME PRIVATE

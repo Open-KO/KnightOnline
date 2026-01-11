@@ -43,6 +43,10 @@ add_library(shared-server STATIC
   "${TARGET_SERVER_CONFIG_HEADER}"
 )
 
+set_target_properties(shared-server PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET shared-server PROPERTY COMPILE_WARNING_AS_ERROR ON)

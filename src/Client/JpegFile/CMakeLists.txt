@@ -3,6 +3,10 @@ add_library(JpegFile STATIC
   JpegFile.h
 )
 
+set_target_properties(JpegFile PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Enable warnings as errors
 if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET JpegFile PROPERTY COMPILE_WARNING_AS_ERROR ON)

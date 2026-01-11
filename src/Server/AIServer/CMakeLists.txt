@@ -48,6 +48,14 @@ add_executable(AIServer
   resource.h
 )
 
+set_target_properties(AIServer.Core PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
+set_target_properties(AIServer PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 # Ensure we require the server assets to be copied
 add_dependencies(AIServer copy-server-assets)
 

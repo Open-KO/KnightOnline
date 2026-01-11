@@ -22,6 +22,10 @@ add_executable(SkyViewer
   # Resources
   res/Toolbar.bmp)
 
+set_target_properties(SkyViewer PROPERTIES
+  CXX_SCAN_FOR_MODULES OFF
+)
+
 if(WIN32)
   set_target_properties(SkyViewer PROPERTIES WIN32_EXECUTABLE TRUE)
   target_sources(SkyViewer PRIVATE
