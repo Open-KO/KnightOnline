@@ -24,6 +24,17 @@
 
 #include <csetjmp>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
+#include "jpeglib.h"
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 constexpr WORD PALVERSION = 0x300;
 
 constexpr auto WIDTHBYTES(auto bits)
@@ -80,6 +91,9 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo)
 void j_putRGBScanline(BYTE* jpegline, int widthPix, BYTE* outBuf, int row);
 
 void j_putGrayScanlineToRGB(BYTE* jpegline, int widthPix, BYTE* outBuf, int row);
+
+static BOOL DibToSamps(HANDLE hDib, int nSampsPerRow, JSAMPARRAY jsmpPixels, const char** pcsMsg);
+static RGBQUAD QuadFromWord(WORD b16);
 
 //
 //	constructor doesn't do much - there's no real class here...
@@ -873,7 +887,7 @@ HANDLE CJpegFile::AllocRoomForDIB(BITMAPINFOHEADER bi, HBITMAP hBitmap)
 	return hTemp;
 }
 
-RGBQUAD CJpegFile::QuadFromWord(WORD b16)
+static RGBQUAD QuadFromWord(WORD b16)
 {
 	BYTE bytVals[] = { 0, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144,
 		152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 255 };
@@ -899,8 +913,7 @@ RGBQUAD CJpegFile::QuadFromWord(WORD b16)
 	return rgb;
 }
 
-BOOL CJpegFile::DibToSamps(
-	HANDLE hDib, int nSampsPerRow, JSAMPARRAY jsmpPixels, const char** pcsMsg)
+static BOOL DibToSamps(HANDLE hDib, int nSampsPerRow, JSAMPARRAY jsmpPixels, const char** pcsMsg)
 {
 	// Sanity...
 	if (hDib == nullptr || nSampsPerRow <= 0 || pcsMsg == nullptr)
