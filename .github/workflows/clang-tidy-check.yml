@@ -16,7 +16,7 @@ on:
       - '**/*.hpp'
       - '**/*.inl'
 
-  pull_request:
+  pull_request_target:
     branches:
     - master
 
@@ -41,7 +41,7 @@ jobs:
   lint_windows:
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
 
     runs-on: windows-latest
 
@@ -94,6 +94,7 @@ jobs:
         extensions: "c,cpp"
         clang-tidy-extensions: "c,cpp,h,hpp,inl"
         step-summary: true
+        thread-comments: "update"
 
     - name: "Check clang-tidy result"
       if: steps.linter.outputs.clang-tidy-checks-failed-errors > 0
