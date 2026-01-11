@@ -153,9 +153,9 @@ protected:
 public:
 	CUICmdList();
 	~CUICmdList() override;
-	bool Load(File& file) override;
-	void Release() override;
-	void SetVisible(bool bVisible) override;
+	bool Load(File& file);
+	void Release();
+	void SetVisible(bool bVisible);
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override; // 메시지를 받는다.. 보낸놈, msg
 	bool OnKeyPress(int iKey) override;
 	void Open();
