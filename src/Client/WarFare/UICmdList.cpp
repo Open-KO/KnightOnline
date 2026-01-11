@@ -64,7 +64,7 @@ void CUICmdList::Release()
 	m_fMoveDelta        = 0.0f;
 	m_pBtn_Cancel       = nullptr;
 	m_pList_CmdCat      = nullptr;
-	m_pList_Cmds        = 0;
+	m_pList_Cmds        = nullptr;
 	m_pUICmdEdit        = nullptr;
 	m_iSelectedCategory = 0;
 	m_eSelectedList     = CMD_LIST_SEL_CATEGORY;

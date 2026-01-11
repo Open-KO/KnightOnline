@@ -79,13 +79,12 @@ jobs:
           --build build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
           --target libjpeg-turbo-project
 
-    - uses: Open-KO/cpp-linter-action@OpenKO-dev
+    - uses: Open-KO/cpp-linter-action@OpenKO
       name: "Run linter"
       id: linter
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        verbosity: "debug"
         version: "19"
         database: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
         ignore: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
