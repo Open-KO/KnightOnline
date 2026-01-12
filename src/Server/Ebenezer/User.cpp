@@ -11528,6 +11528,16 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
+			case LOGIC_CHECK_SKILL_TOTAL:
+				if (CheckSkillTotal(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_STAT_TOTAL:
+				if (CheckStatTotal(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = true;
+				break;
+
 			case LOGIC_CHECK_EXIST_ITEM:
 				if (CheckExistItem(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
 					bExact = true;
@@ -11931,6 +11941,31 @@ bool CUser::CheckSkillPoint(uint8_t skillnum, uint8_t min, uint8_t max) const
 		return false;
 
 	if (m_pUserData->m_bstrSkill[skillnum] < min || m_pUserData->m_bstrSkill[skillnum] > max)
+		return false;
+
+	return true;
+}
+
+bool CUser::CheckSkillTotal(uint8_t min, uint8_t max) const
+{
+	uint8_t skillTotal = m_pUserData->m_bstrSkill[SKILLPT_TYPE_ORDER]
+						 + m_pUserData->m_bstrSkill[SKILLPT_TYPE_PRO_1]
+						 + m_pUserData->m_bstrSkill[SKILLPT_TYPE_PRO_2]
+						 + m_pUserData->m_bstrSkill[SKILLPT_TYPE_PRO_3]
+						 + m_pUserData->m_bstrSkill[SKILLPT_TYPE_PRO_4];
+
+	if (skillTotal < min || skillTotal > max)
+		return false;
+
+	return true;
+}
+
+bool CUser::CheckStatTotal(uint8_t min, uint8_t max) const
+{
+	uint8_t statTotal = m_pUserData->m_bDex + m_pUserData->m_bIntel + m_pUserData->m_bCha
+						+ m_pUserData->m_bPoints + m_pUserData->m_bStr + m_pUserData->m_bSta;
+
+	if (statTotal < min || statTotal > max)
 		return false;
 
 	return true;

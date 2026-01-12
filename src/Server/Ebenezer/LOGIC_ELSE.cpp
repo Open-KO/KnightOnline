@@ -140,14 +140,11 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
-			// TODO:
-#if 0
-	  // A CHECK_PPCARD_SERIAL
+			// A CHECK_PPCARD_SERIAL
 		case "CHECK_PPCARD_SERIAL"_djb2:
 			m_LogicElse = LOGIC_CHECK_PPCARD_SERIAL;
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
-#endif
 
 		// A CHECK_EXIST_EVENT {quest ID} {quest state}
 		case "CHECK_EXIST_EVENT"_djb2:
@@ -239,9 +236,7 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
-			// TODO:
-#if 0
-	   // A CHECK_STAT_TOTAL {minimum} {maximum}
+			// A CHECK_STAT_TOTAL {minimum} {maximum}
 		case "CHECK_STAT_TOTAL"_djb2:
 			m_LogicElse = LOGIC_CHECK_STAT_TOTAL;
 			argsToParse = 2;
@@ -252,8 +247,6 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			m_LogicElse = LOGIC_CHECK_SKILL_TOTAL;
 			argsToParse = 2;
 			break;
-#endif // 0
-
 		// A CHECK_BEEF_ROAST_KARUS_VICTORY
 		case "CHECK_BEEF_ROAST_KARUS_VICTORY"_djb2:
 		// A CHECK_BEEF_ROAST_ELMORAD_VICTORY

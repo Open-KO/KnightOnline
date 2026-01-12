@@ -279,6 +279,8 @@ public:
 	bool CheckExistItem(int itemid, int16_t count) const;
 	bool CheckWeight(int itemid, int16_t count) const;
 	bool CheckSkillPoint(uint8_t skillnum, uint8_t min, uint8_t max) const;
+	bool CheckSkillTotal(uint8_t min, uint8_t max) const;
+	bool CheckStatTotal(uint8_t min, uint8_t max) const;
 	bool CheckExistEvent(int16_t questId, uint8_t questState) const;
 	bool GoldLose(int gold);
 	void GoldGain(int gold);

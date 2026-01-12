@@ -193,6 +193,7 @@ enum e_StatType : uint8_t
 
 enum e_SkillPtType : uint8_t
 {
+	SKILLPT_TYPE_FREE     = 0,
 	SKILLPT_TYPE_ORDER    = 1,
 	SKILLPT_TYPE_MANNER   = 2,
 	SKILLPT_TYPE_LANGUAGE = 3,
