@@ -6,8 +6,6 @@
 #include <shared/Thread.h>
 #include "logger.h"
 
-#include <ftxui/component/event.hpp>
-
 #include <memory>
 
 namespace argparse
@@ -79,15 +77,10 @@ protected:
 	void thread_loop() override;
 
 private:
-	/// \brief Thread loop with main ftxui logic.
+	/// \brief Main thread loop implementation logic.
 	/// \param iniFile The loaded application ini file.
 	/// \returns Exit code.
-	int thread_loop_ftxui(CIni& iniFile);
-
-	/// \brief Thread loop with basic console logger fallback logic.
-	/// \param iniFile The loaded application ini file.
-	/// \returns Exit code.
-	int thread_loop_fallback(CIni& iniFile);
+	int thread_loop_impl(CIni& iniFile);
 
 protected:
 	/// \brief Loads application-specific config from the loaded application ini file (`iniFile`).
@@ -105,10 +98,6 @@ public:
 	/// \brief Initializes the server, loading caches, socket managers, etc.
 	/// \returns true when successful, false otherwise
 	virtual bool OnStart() = 0;
-
-	/// \brief Handles input events from the UI
-	/// \returns true when handled, false otherwise
-	virtual bool HandleInputEvent(const ftxui::Event& event);
 
 	/// \brief Parses command input from the console and dispatches command handling via HandleCommand.
 	/// \see HandleCommand

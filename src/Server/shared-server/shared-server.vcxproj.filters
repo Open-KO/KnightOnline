@@ -31,7 +31,6 @@
     <ClCompile Include="AppThread.cpp">
       <Filter>Threads</Filter>
     </ClCompile>
-    <ClCompile Include="ftxui_sink_mt.cpp" />
     <ClCompile Include="TelnetClientThread.cpp">
       <Filter>Threads</Filter>
     </ClCompile>
@@ -75,7 +74,6 @@
     <ClInclude Include="AppThread.h">
       <Filter>Threads</Filter>
     </ClInclude>
-    <ClInclude Include="ftxui_sink_mt.h" />
     <ClInclude Include="TelnetClientThread.h">
       <Filter>Threads</Filter>
     </ClInclude>

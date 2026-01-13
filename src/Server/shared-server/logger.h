@@ -8,17 +8,14 @@
 #include <string>
 #include <string_view>
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 // forward declarations
 class CIni;
 
 namespace spdlog::details
 {
 class thread_pool;
-}
-
-namespace ftxui
-{
-class sink_mt;
 }
 
 namespace logger
@@ -31,11 +28,6 @@ class Logger
 	static constexpr uint8_t ThreadPoolSize    = 1;
 
 public:
-	std::shared_ptr<ftxui::sink_mt> FxtuiSink()
-	{
-		return _fxtuiSink;
-	}
-
 	const std::string& AppName() const
 	{
 		return _appName;
@@ -63,7 +55,7 @@ protected:
 	std::string _appName;
 	std::string _defaultLogPath;
 
-	std::shared_ptr<ftxui::sink_mt> _fxtuiSink;
+	std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> _consoleLogger;
 };
 
 //

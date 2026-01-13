@@ -182,9 +182,6 @@ if(OPENKO_BUILD_SERVERS)
   set(CMAKE_FOLDER "Server/_deps/boost")
   require_package(BoostSubset)
 
-  set(CMAKE_FOLDER "Server/_deps/ftxui")
-  require_package(FTXUI)
-
   set(CMAKE_FOLDER "Server/_deps/argparse")
   require_package(Argparse)
 

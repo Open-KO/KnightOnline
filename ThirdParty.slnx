@@ -20,9 +20,6 @@
     <Project Path="deps/fetch-and-build-wrappers/fetch-djb2.vcxproj" Id="9e410f3d-ef94-41fa-a373-b2136d5f3d1e">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-FTXUI.vcxproj" Id="418a7a17-10ec-4159-8d0f-cc49baf6ec35">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" Id="d4f3d338-a7ef-430c-ad99-2fc6a591a711">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
@@ -57,9 +54,6 @@
   </Project>
   <Project Path="deps/db-models-msvc/db-models.vcxproj" Id="17ef3a49-55b8-4fb6-883f-d1d02e20c11d">
     <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
-    <Build Project="false" />
-  </Project>
-  <Project Path="deps/FTXUI-msvc/FTXUI.vcxproj" Id="ef723fc6-bac2-4a95-9816-8f9aa8f9d52e">
     <Build Project="false" />
   </Project>
   <Project Path="deps/libjpeg-turbo-msvc/jpeg-static.vcxproj" Id="569846a7-5a48-3b16-bb39-be89e1c71caa">

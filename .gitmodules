@@ -49,10 +49,6 @@
 	path = deps/boost
 	url = https://github.com/Open-KO/OpenKO-boost
 	shallow = true
-[submodule "deps/FTXUI"]
-	path = deps/FTXUI
-	url = https://github.com/ArthurSonzogni/FTXUI
-	shallow = true
 [submodule "deps/argparse"]
 	path = deps/argparse
 	url = https://github.com/p-ranav/argparse

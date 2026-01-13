@@ -15,8 +15,6 @@ add_library(shared-server STATIC
   _USER_DATA.h
   AppThread.cpp
   AppThread.h
-  ftxui_sink_mt.cpp
-  ftxui_sink_mt.h
   logger.cpp
   logger.h
   My_3DStruct.h
@@ -66,9 +64,6 @@ target_link_libraries(shared-server
     asio
     db-library
     djb2
-    ftxui::component
-    ftxui::dom
-    ftxui::screen
 	MathUtils
     nanodbc
     shared

@@ -11835,12 +11835,9 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 	return true;
 }
 
-// 정애씨가 고생하면서 해주신 퀘스트 부분 끝
 void CUser::TestPacket()
 {
-	// npc의 리스트를 재 요청하는 군,,,,,
-	m_pMain->RegionNpcInfoForMe(this, 1);
-	m_pMain->SyncTest(2);
+	/* do nothing */
 }
 
 void CUser::ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial,

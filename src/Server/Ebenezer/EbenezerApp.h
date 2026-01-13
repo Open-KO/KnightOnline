@@ -132,7 +132,6 @@ public:
 	int GetAIServerPort() const;
 	int GetRegionNpcIn(C3DMap* pMap, int region_x, int region_z, char* buff, int& t_count);
 	bool LoadNoticeData();
-	bool HandleInputEvent(const ftxui::Event& event) override;
 	bool HandleCommand(const std::string& command) override;
 	int GetZoneIndex(int zonenumber) const;
 	int GetRegionNpcList(C3DMap* pMap, int region_x, int region_z, char* nid_buff, int& t_count,
@@ -161,8 +160,6 @@ public:
 	void UserAcceptThread();
 	// sungyong 2001.11.06
 	bool AIServerConnect();
-	void SyncTest(int nType);
-	void SyncRegionTest(C3DMap* pMap, int rx, int rz, FILE* pfile, int nType);
 	void SendAllUserInfo();
 	void SendCompressedData();
 	void DeleteAllNpcList(int flag = 0);

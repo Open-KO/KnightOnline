@@ -21,7 +21,6 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-asio.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" />
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-FTXUI.vcxproj" />
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
       <BuildDependency Project="src/db-library/db-library.vcxproj" />
       <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
@@ -50,9 +49,6 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" Id="50d2b40a-5ae4-f5fb-4d79-ac6cc3c75274">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-FTXUI.vcxproj" Id="418a7a17-10ec-4159-8d0f-cc49baf6ec35">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" Id="673f0d3f-f447-43fd-856e-fab4e776debc">

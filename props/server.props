@@ -4,7 +4,6 @@
     <Import Project="argparse.props" />
     <Import Project="disable_external_analysis.props" />
     <Import Project="FileIO.props" />
-    <Import Project="ftxui.props" />
     <Import Project="spdlog.props" />
   </ImportGroup>
   <ItemDefinitionGroup>

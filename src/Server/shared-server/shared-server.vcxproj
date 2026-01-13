@@ -119,7 +119,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppThread.cpp" />
-    <ClCompile Include="ftxui_sink_mt.cpp" />
     <ClCompile Include="TelnetClientThread.cpp" />
     <ClCompile Include="TelnetThread.cpp" />
     <ClCompile Include="utilities.cpp" />
@@ -138,7 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppThread.h" />
-    <ClInclude Include="ftxui_sink_mt.h" />
     <ClInclude Include="TelnetClientThread.h" />
     <ClInclude Include="TelnetThread.h" />
     <ClInclude Include="utilities.h" />
