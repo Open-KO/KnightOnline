@@ -81,6 +81,10 @@ else()
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OPENKO_BIN_DIR}/${CMAKE_BUILD_TYPE}")
 endif()
 
+# Ensure consistent debug flags
+# These are typically used by MSVC, so we expect them to exist
+add_compile_definitions("$<$<CONFIG:Debug>:DEBUG;_DEBUG>")
+
 set(OPENKO_CLIENT_DIR "${CMAKE_BINARY_DIR}/ClientData" CACHE STRING "Client path")
 set(OPENKO_SERVER_MAP_SRC_DIR "${CMAKE_SOURCE_DIR}/assets/Server/MAP")
 set(OPENKO_SERVER_MAP_DST_DIR "${OPENKO_BIN_DIR}/MAP")
