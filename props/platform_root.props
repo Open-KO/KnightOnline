@@ -19,14 +19,9 @@
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-
-	<!-- If we're running Visual Studio 2026, use its toolset.              -->
-	<!-- Note that we cannot nicely detect if the toolset exists on its own -->
-    <PlatformToolset Condition="'$(PlatformToolset)' == '' AND '$(VisualStudioVersion)' == '18.0'">v145</PlatformToolset>
-
-	<!-- Fallback to Visual Studio 2022's toolset if it's not otherwise set/overridden -->
-    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v143</PlatformToolset>
-
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">$(DefaultPlatformToolset)</PlatformToolset>
+    <!-- Fallback to Visual Studio 2026's toolset if it's not otherwise set/overridden -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
