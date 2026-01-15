@@ -352,6 +352,11 @@ endif()
 # Setup PCH
 target_precompile_headers(WarFare.Core PRIVATE StdAfx.h)
 
+# Expose include path
+target_include_directories(WarFare.Core PUBLIC
+  "${TARGET_CLIENT_CONFIG_DIR}/"    # we copied warfare_config.h here, so we should be able to access it too
+)
+
 # Setup dependencies
 target_link_libraries(WarFare.Core PUBLIC
   FileIO
