@@ -95,12 +95,12 @@ jobs:
 
     - name: Run tests - FileIO
       shell: cmd
-      working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}/FileIO.Tests"
+      working-directory: "bin/${{matrix.BUILD_CONFIGURATION}}-${{matrix.BUILD_PLATFORM}}/FileIO.Tests"
       run: |
         FileIO.Tests.exe --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
 
     - name: Run tests - MathUtils
       shell: cmd
-      working-directory: "bin/${{matrix.BUILD_PLATFORM}}/${{matrix.BUILD_CONFIGURATION}}/MathUtils.Tests"
+      working-directory: "bin/${{matrix.BUILD_CONFIGURATION}}-${{matrix.BUILD_PLATFORM}}/MathUtils.Tests"
       run: |
         MathUtils.Tests.exe --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
