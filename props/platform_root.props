@@ -8,11 +8,11 @@
     <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))\</RootDir>
     <PropsDir>$(RootDir)props\</PropsDir>
     <DependencyDir>$(RootDir)deps\</DependencyDir>
-    <BaseIntDir>$(RootDir).int\$(Platform)\$(Configuration)\</BaseIntDir>
+    <BaseIntDir>$(RootDir).int\$(Configuration)-$(Platform)\</BaseIntDir>
     <IntDir>$(BaseIntDir)$(ProjectName)\</IntDir>
-    <OutDir>$(RootDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(RootDir)bin\$(Configuration)-$(Platform)\</OutDir>
     <BaseOutDir>$(OutDir)</BaseOutDir>
-    <StaticLibDir>$(RootDir)lib\$(Platform)\$(Configuration)\</StaticLibDir>
+    <StaticLibDir>$(RootDir)lib\$(Configuration)-$(Platform)\</StaticLibDir>
     <LinkIncremental>false</LinkIncremental>
     <LinkIncremental Condition="$(Configuration.Contains('Debug'))">true</LinkIncremental>
   </PropertyGroup>

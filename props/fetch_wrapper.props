@@ -26,8 +26,8 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup>
-    <NMakeBuildCommandLine>CALL "$(RootDir)build_scripts\build_dependency.cmd" "$(DependencyName)" "$(LocalDependencyDir)" "$(Configuration)" "$(Platform)" "$(VCToolsVersion)" "$(RealProjectPath)"</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>CALL "$(RootDir)build_scripts\build_dependency.cmd" "$(DependencyName)" "$(LocalDependencyDir)" "$(Configuration)" "$(Platform)" "$(VCToolsVersion)" "$(RealProjectPath)"</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>CALL "$(RootDir)build_scripts\build_dependency.cmd" "$(DependencyName)" "$(LocalDependencyDir)" "$(Configuration)" "$(Platform)" "$(VCToolsVersion)" "$(PlatformToolset)" "$(RealProjectPath)"</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>CALL "$(RootDir)build_scripts\build_dependency.cmd" "$(DependencyName)" "$(LocalDependencyDir)" "$(Configuration)" "$(Platform)" "$(VCToolsVersion)" "$(PlatformToolset)" "$(RealProjectPath)"</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>CALL "$(RootDir)build_scripts\clean_dependency.cmd" "$(DependencyName)" "$(Configuration)" "$(Platform)" "$(RealProjectPath)"</NMakeCleanCommandLine>
   </PropertyGroup>
 </Project>

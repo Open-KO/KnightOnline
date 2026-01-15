@@ -20,7 +20,7 @@ CALL "%~dp0env_setup.cmd"
 IF ERRORLEVEL 1 EXIT /B 1
 
 SET "REPO_ROOT=%~dp0.."
-SET "BUILD_STATE_DIR=%~dp0..\deps\fetch-and-build-wrappers\last-build-states\%BUILD_PLATFORM%\%BUILD_CONFIG%"
+SET "BUILD_STATE_DIR=%~dp0..\deps\fetch-and-build-wrappers\last-build-states\%BUILD_CONFIG%-%BUILD_PLATFORM%"
 SET "BUILD_STATE_FILE=%BUILD_STATE_DIR%\%DEP_NAME%.txt"
 
 IF NOT "%PROJECT_PATH%" == "" (

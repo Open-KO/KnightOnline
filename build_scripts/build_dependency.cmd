@@ -3,8 +3,8 @@ SETLOCAL
 
 REM Validate arguments
 IF "%~5"=="" (
-	ECHO Usage: %~nx0 DEP_NAME DEP_PATH BUILD_CONFIG BUILD_PLATFORM VCTOOLS_VERSION [PROJECT_PATH]
-	ECHO Example: %~nx0 zlib deps\zlib Release Win32 14.44.35207 deps\zlib-msvc\zlib.vcxproj
+	ECHO Usage: %~nx0 DEP_NAME DEP_PATH BUILD_CONFIG BUILD_PLATFORM VCTOOLS_VERSION PLATFORM_TOOLSET [PROJECT_PATH]
+	ECHO Example: %~nx0 zlib deps\zlib Release Win32 14.44.35207 v143 deps\zlib-msvc\zlib.vcxproj
 	EXIT /B 1
 )
 
@@ -13,13 +13,14 @@ SET "DEP_PATH=%~2"
 SET "BUILD_CONFIG=%~3"
 SET "BUILD_PLATFORM=%~4"
 SET "VCTOOLS_VERSION=%~5"
-SET "PROJECT_PATH=%~6"
+SET "PLATFORM_TOOLSET=%~6"
+SET "PROJECT_PATH=%~7"
 
 SET "DEP_PATH_NORMALISED=%DEP_PATH:\=/%"
 
-REM ECHO "%~dp0%~nx0" "%DEP_NAME%" "%DEP_PATH%" "%BUILD_CONFIG%" "%BUILD_PLATFORM%" "%VCTOOLS_VERSION%" "%PROJECT_PATH%"
+REM ECHO "%~dp0%~nx0" "%DEP_NAME%" "%DEP_PATH%" "%BUILD_CONFIG%" "%BUILD_PLATFORM%" "%VCTOOLS_VERSION%" "%PLATFORM_TOOLSET%" "%PROJECT_PATH%"
 
-ECHO === Building dependency: %DEP_NAME% [%DEP_PATH%] (%BUILD_CONFIG%-%BUILD_PLATFORM%) with toolset %VCTOOLS_VERSION%
+ECHO === Building dependency: %DEP_NAME% [%DEP_PATH%] (%BUILD_CONFIG%-%BUILD_PLATFORM%) with toolset %VCTOOLS_VERSION% (%PLATFORM_TOOLSET%)
 
 REM Setup environment
 CALL "%~dp0env_setup.cmd"
@@ -32,7 +33,7 @@ PUSHD "%~dp0\.."
 SET REPO_ROOT=%CD%
 POPD
 
-SET "BUILD_STATE_DIR=%REPO_ROOT%\deps\fetch-and-build-wrappers\last-build-states\%BUILD_PLATFORM%\%BUILD_CONFIG%"
+SET "BUILD_STATE_DIR=%REPO_ROOT%\deps\fetch-and-build-wrappers\last-build-states\%BUILD_CONFIG%-%BUILD_PLATFORM%"
 SET "BUILD_STATE_FILE=%BUILD_STATE_DIR%\%DEP_NAME%.txt"
 SET "GIT_LOCK_DIR=%BUILD_STATE_DIR%\git_lock"
 
@@ -73,13 +74,13 @@ IF EXIST "%REPO_ROOT%\%DEP_PATH%\.git" (
 	POPD
 )
 
-REM Prepare build state key: commit + compiler version
-SET "CURRENT_BUILD_STATE_KEY=%INTENDED_COMMIT%;%VCTOOLS_VERSION%"
+REM Prepare build state key: commit + compiler version + platform toolset
+SET "CURRENT_BUILD_STATE_KEY=%INTENDED_COMMIT%;%VCTOOLS_VERSION%;%PLATFORM_TOOLSET%"
 
 REM Compare: rebuild only if changed
 IF "%OVERRIDE_BUILD%"=="0" (
 	IF "%CURRENT_BUILD_STATE_KEY%"=="%STORED_BUILD_STATE_KEY%" (
-		ECHO [%DEP_NAME%] No changes detected - commit [%INTENDED_COMMIT%] and compiler [%VCTOOLS_VERSION%] match. Skipping build.
+		ECHO [%DEP_NAME%] No changes detected - commit [%INTENDED_COMMIT%] and compiler [%VCTOOLS_VERSION% - %PLATFORM_TOOLSET%] match. Skipping build.
 		EXIT /B 0
 	)
 )
@@ -125,7 +126,7 @@ IF NOT "%PROJECT_PATH%"=="" (
 	)
 
 	REM Build dependency with a full rebuild (clean + build)
-	"%MSBUILD%" "%PROJECT_PATH%" /t:Rebuild /p:Configuration=%BUILD_CONFIG% /p:Platform=%BUILD_PLATFORM%
+	"%MSBUILD%" "%PROJECT_PATH%" /t:Rebuild /p:Configuration="%BUILD_CONFIG%" /p:Platform="%BUILD_PLATFORM%" /p:PlatformToolset="%PLATFORM_TOOLSET%"
 	IF ERRORLEVEL 1 (
 		ECHO ERROR: Failed to build dependency: %DEP_NAME%
 		EXIT /B 1
@@ -143,7 +144,7 @@ IF "%OVERRIDE_BUILD%"=="0" (
 )
 
 REM Rebuild the build state key
-SET "CURRENT_BUILD_STATE_KEY=%CURRENT_COMMIT%;%VCTOOLS_VERSION%"
+SET "CURRENT_BUILD_STATE_KEY=%CURRENT_COMMIT%;%VCTOOLS_VERSION%;%PLATFORM_TOOLSET%"
 
 REM Save new build key to the build state file for future lookups
 ECHO %CURRENT_BUILD_STATE_KEY%>"%BUILD_STATE_FILE%"
