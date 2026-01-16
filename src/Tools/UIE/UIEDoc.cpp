@@ -142,7 +142,7 @@ BOOL CUIEDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
 	// TODO(srmeier): currently the UIE saves as the old format. Would need to update this if I plan to
 	// read and write in the newer formats...
-	return m_RootUI.LoadFromFile(lpszPathName, N3FORMAT_VER_1298);
+	return m_RootUI.LoadFromFile(lpszPathName);
 }
 
 BOOL CUIEDoc::OnSaveDocument(LPCTSTR lpszPathName)

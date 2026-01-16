@@ -4,8 +4,6 @@
 
 #include "StdAfxBase.h"
 #include "N3UIBase.h"
-
-#include <vector>
 #include "N3UIButton.h"
 #include "N3UIProgress.h"
 #include "N3UIImage.h"
@@ -23,6 +21,12 @@
 
 #include "N3SndMgr.h"
 #include "N3SndObj.h"
+
+#ifdef _N3GAME
+#include "LogWriter.h"
+#endif
+
+#include <vector>
 
 #ifdef _N3GAME
 bool CN3UIBase::s_bWaitFromServer = false;
@@ -237,23 +241,82 @@ void CN3UIBase::ShowWindow(int iID, CN3UIBase* pParent)
 	SetVisible(true);
 }
 
+bool CN3UIBase::LoadSupportedVersions(File& file)
+{
+	// Release will unset the filename.
+	// We should preserve and restore it.
+	std::string szFNBackup;
+
+	// Fetch current offset, so we can rewind and try reading the file again.
+	const int64_t originalOffset = static_cast<int64_t>(file.Offset());
+
+	// Try supported file format versions, starting with our preferred version:
+	constexpr int SupportedVersions[] { N3FORMAT_VER_1264, N3FORMAT_VER_1098 };
+	for (int iFileFormatVersion : SupportedVersions)
+	{
+		// Attempt to load with the provided file format version.
+		m_iFileFormatVersion = iFileFormatVersion;
+
+		try
+		{
+			if (Load(file))
+				return true;
+		}
+		catch (const std::runtime_error& ex)
+		{
+#ifdef _N3GAME
+			CLogWriter::Write("CN3UIBase: Failed to load {} for format version {} ({}).",
+				szFNBackup, iFileFormatVersion, ex.what());
+#else
+			ex;
+#endif
+		}
+
+		// Release will unset the filename.
+		// We should preserve and restore it.
+		szFNBackup = m_szFileName;
+
+		Release();
+
+		// Restore the filename after it was released.
+		m_szFileName = szFNBackup;
+
+		// Rewind
+		file.Seek(originalOffset, SEEK_SET);
+	}
+
+#ifdef _N3GAME
+	CLogWriter::Write("CN3UIBase: Failed to load {} - unsupported.", szFNBackup);
+#endif
+	return false;
+}
+
 bool CN3UIBase::Load(File& file)
 {
-	CN3BaseFileAccess::Load(file);
+	if (!CN3BaseFileAccess::Load(file))
+		return false;
+
+	constexpr int MAX_SUPPORTED_CHILD_COUNT    = 4096;
+	constexpr int MAX_SUPPORTED_ID_LENGTH      = 128;
+	constexpr int MAX_SUPPORTED_TOOLTIP_LENGTH = 1024;
+	constexpr int MAX_SUPPORTED_PATH_LENGTH    = 256;
 
 	// children 정보
-	int iCC = 0;
+	int iCC                                    = 0;
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 	{
 		int16_t sCC = 0, sIdk0 = 0;
 		file.Read(&sCC, sizeof(int16_t)); // children count
 		file.Read(&sIdk0, sizeof(int16_t));
-		iCC = (int) sCC;
+		iCC = static_cast<int>(sCC);
 	}
 	else
 	{
 		file.Read(&iCC, sizeof(iCC)); // children count
 	}
+
+	if (iCC < 0 || iCC > MAX_SUPPORTED_CHILD_COUNT)
+		throw std::runtime_error("invalid child count");
 
 	for (int i = 0; i < iCC; i++)
 	{
@@ -303,7 +366,7 @@ bool CN3UIBase::Load(File& file)
 				break;
 
 			default:
-				break;
+				throw std::runtime_error("invalid or unhandled UI type");
 		}
 
 		__ASSERT(pChild, "Unknown type UserInterface!!!");
@@ -318,6 +381,10 @@ bool CN3UIBase::Load(File& file)
 	// base 정보
 	int iIDLen = 0;
 	file.Read(&iIDLen, sizeof(iIDLen)); // ui id length
+
+	if (iIDLen < 0 || iIDLen > MAX_SUPPORTED_ID_LENGTH)
+		throw std::runtime_error("invalid UI/control ID length");
+
 	if (iIDLen > 0)
 	{
 		m_szID.assign(iIDLen, '\0');
@@ -328,13 +395,17 @@ bool CN3UIBase::Load(File& file)
 		m_szID.clear();
 	}
 
-	file.Read(&m_rcRegion, sizeof(m_rcRegion));     // m_rcRegion
-	file.Read(&m_rcMovable, sizeof(m_rcMovable));   // m_rcMovable
-	file.Read(&m_dwStyle, sizeof(m_dwStyle));       // style
-	file.Read(&m_dwReserved, sizeof(m_dwReserved)); // m_dwReserved
+	file.Read(&m_rcRegion, sizeof(RECT));       // m_rcRegion
+	file.Read(&m_rcMovable, sizeof(RECT));      // m_rcMovable
+	file.Read(&m_dwStyle, sizeof(uint32_t));    // style
+	file.Read(&m_dwReserved, sizeof(uint32_t)); // m_dwReserved
 
 	int iTooltipLen = 0;
-	file.Read(&iTooltipLen, sizeof(iTooltipLen));   //	tooltip문자열 길이
+	file.Read(&iTooltipLen, sizeof(int));       //	tooltip문자열 길이
+
+	if (iTooltipLen < 0 || iTooltipLen > MAX_SUPPORTED_TOOLTIP_LENGTH)
+		throw std::runtime_error("invalid tooltip length");
+
 	if (iTooltipLen > 0)
 	{
 		m_szToolTip.assign(iTooltipLen, '\0');
@@ -345,6 +416,10 @@ bool CN3UIBase::Load(File& file)
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
 	int iSndFNLen = 0;
 	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+
+	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("invalid open UI sound filename length");
+
 	if (iSndFNLen > 0)
 	{
 		szSoundFN.assign(iSndFNLen, '\0');
@@ -355,6 +430,10 @@ bool CN3UIBase::Load(File& file)
 	}
 
 	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+
+	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("invalid close UI sound filename length");
+
 	if (iSndFNLen > 0)
 	{
 		szSoundFN.assign(iSndFNLen, '\0');

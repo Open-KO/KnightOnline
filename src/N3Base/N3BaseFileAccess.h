@@ -15,7 +15,7 @@
 enum e_N3FormatVersion : uint16_t
 {
 	N3FORMAT_VER_UNKN = 0,
-	N3FORMAT_VER_1068 = 1068,
+	N3FORMAT_VER_1098 = 1098,
 	N3FORMAT_VER_1264 = 1264,
 	N3FORMAT_VER_1298 = 1298,
 };
@@ -40,14 +40,14 @@ public:
 
 	void FileNameSet(const std::string& szFileName);
 
-	bool LoadFromFile();                                                      // 파일에서 읽어오기.
-	virtual bool LoadFromFile(
-		const std::string& szFileName, uint32_t iVer = N3FORMAT_VER_DEFAULT); // 파일에서 읽어오기.
-	virtual bool Load(File& file);                                            // 핸들에서 읽어오기..
+	bool LoadFromFile();                                      // 파일에서 읽어오기.
+	virtual bool LoadFromFile(const std::string& szFileName); // 파일에서 읽어오기.
+	virtual bool LoadSupportedVersions(File& file);
+	virtual bool Load(File& file);                            // 핸들에서 읽어오기..
 
-	virtual bool SaveToFile();                              // 현재 파일 이름대로 저장.
-	virtual bool SaveToFile(const std::string& szFileName); // 새이름으로 저장.
-	virtual bool Save(File& file);                          // 핸들을 통해 저장..
+	virtual bool SaveToFile();                                // 현재 파일 이름대로 저장.
+	virtual bool SaveToFile(const std::string& szFileName);   // 새이름으로 저장.
+	virtual bool Save(File& file);                            // 핸들을 통해 저장..
 
 public:
 	void Release() override;

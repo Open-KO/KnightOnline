@@ -220,6 +220,7 @@ public:
 
 	void Tick();
 	void Render();
+	bool LoadSupportedVersions(File& file) override;
 	bool Load(File& file) override;
 	bool CheckCollisionCamera(__Vector3& vEye, const __Vector3& vAt, float fNP);
 	static int SortByCameraDistance(const void* pArg1, const void* pArg2);

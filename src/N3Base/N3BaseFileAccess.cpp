@@ -10,7 +10,7 @@
 
 CN3BaseFileAccess::CN3BaseFileAccess()
 {
-	m_iFileFormatVersion  = N3FORMAT_VER_UNKN;
+	m_iFileFormatVersion  = N3FORMAT_VER_DEFAULT;
 
 	m_dwType             |= OBJ_BASE_FILEACCESS;
 	m_iLOD                = 0; // 로딩할때 쓸 LOD
@@ -41,18 +41,25 @@ void CN3BaseFileAccess::FileNameSet(const std::string& szFileName)
 		m_szFileName = szTmpFN;
 }
 
+bool CN3BaseFileAccess::LoadSupportedVersions(File& file)
+{
+	return Load(file);
+}
+
 bool CN3BaseFileAccess::Load(File& file)
 {
-	int nL = 0;
+	constexpr int MAX_SUPPORTED_NAME_LENGTH = 256;
+
+	int nL                                  = 0;
 	file.Read(&nL, 4);
+
+	if (nL < 0 || nL > MAX_SUPPORTED_NAME_LENGTH)
+		return false;
+
 	if (nL > 0)
 	{
 		m_szName.assign(nL, '\0');
 		file.Read(&m_szName[0], nL);
-	}
-	else
-	{
-		m_szName.clear();
 	}
 
 	return true;
@@ -98,13 +105,11 @@ bool CN3BaseFileAccess::LoadFromFile()
 		return false;
 	}
 
-	return Load(file);
+	return LoadSupportedVersions(file);
 }
 
-bool CN3BaseFileAccess::LoadFromFile(const std::string& szFileName, uint32_t iVer)
+bool CN3BaseFileAccess::LoadFromFile(const std::string& szFileName)
 {
-	m_iFileFormatVersion = iVer;
-
 	FileNameSet(szFileName);
 	return LoadFromFile();
 }

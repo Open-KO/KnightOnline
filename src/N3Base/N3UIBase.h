@@ -251,6 +251,8 @@ public:
 
 	virtual void CallBackProc(int iID, uint32_t dwFlag);
 	virtual void ShowWindow(int iID = -1, CN3UIBase* pParent = nullptr);
+
+	bool LoadSupportedVersions(File& file) override;
 	bool Load(File& file) override;
 
 	// 메시지를 받는다.. 보낸놈, msg

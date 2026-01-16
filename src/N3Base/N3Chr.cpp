@@ -680,7 +680,7 @@ void CN3CPlug::InitFX(std::string& szFXMain, std::string& szFXTail, D3DCOLOR Tra
 		if (m_pFXMainBundle)
 			delete m_pFXMainBundle;
 		m_pFXMainBundle = new CN3FXBundle;
-		if (!m_pFXMainBundle->LoadFromFile(m_strFXMainName.c_str()))
+		if (!m_pFXMainBundle->LoadFromFile(m_strFXMainName))
 		{
 			delete m_pFXMainBundle;
 			m_pFXMainBundle = nullptr;
@@ -714,7 +714,7 @@ void CN3CPlug::InitFX(std::string& szFXMain, std::string& szFXTail, D3DCOLOR Tra
 		if (m_pFXTailBundle[0])
 			delete m_pFXTailBundle[0];
 		m_pFXTailBundle[0] = new CN3FXBundle;
-		if (!m_pFXTailBundle[0]->LoadFromFile(m_strFXTailName.c_str()))
+		if (!m_pFXTailBundle[0]->LoadFromFile(m_strFXTailName))
 		{
 			delete m_pFXTailBundle[0];
 			m_pFXTailBundle[0] = nullptr;

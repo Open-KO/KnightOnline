@@ -101,6 +101,8 @@ public:
 	int m_iMaxVtxNum;  //	가장 많은 vertices수
 	float* m_pfMaxVtx; //	물결높이 계산을 위한 임시
 
+	int m_iGtdVersion;
+
 public:
 	void Release() override;
 	bool Load(File& file) override;

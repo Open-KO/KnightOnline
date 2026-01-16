@@ -131,6 +131,7 @@ public:
 	float GetHeight(float x, float z);
 	void Release() override;
 	void Init();
+	bool LoadSupportedVersions(File& file) override;
 	bool Load(File& file) override;
 	void Tick();
 	void Render();

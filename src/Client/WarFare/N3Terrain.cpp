@@ -303,57 +303,98 @@ void CN3Terrain::TestAvailableTile()
 //
 //	Load...
 //
+bool CN3Terrain::LoadSupportedVersions(File& file)
+{
+	// Init will release resources and unset the filename.
+	// We should preserve and restore it.
+	const std::string szFNBackup = m_szFileName;
+
+	// Fetch current offset, so we can rewind and try reading the file again.
+	const int64_t originalOffset = static_cast<int64_t>(file.Offset());
+
+	// Try supported file format versions, starting with our preferred version:
+	constexpr int SupportedVersions[] { N3FORMAT_VER_1264, N3FORMAT_VER_1098 };
+	for (int iFileFormatVersion : SupportedVersions)
+	{
+		Init();
+
+		// Restore the filename after it was released.
+		m_szFileName         = szFNBackup;
+
+		// Attempt to load with the provided file format version.
+		m_iFileFormatVersion = iFileFormatVersion;
+
+		try
+		{
+			if (Load(file))
+				return true;
+		}
+		catch (const std::runtime_error& ex)
+		{
+			CLogWriter::Write("CN3Terrain: Failed to load {} for format version {} ({}).", szFNBackup, iFileFormatVersion, ex.what());
+		}
+
+		// Rewind
+		file.Seek(originalOffset, SEEK_SET);
+	}
+
+	CLogWriter::Write("CN3Terrain: Failed to load {} - unsupported.", szFNBackup);
+	return false;
+}
+
 bool CN3Terrain::Load(File& file)
 {
-	std::string szFNBackup = m_szFileName; // Init 를 하고 나면 파일 이름이 없어진다.... 그래서...
+	constexpr int MAX_SUPPORTED_VERSION     = 2;
+	constexpr int MAX_SUPPORTED_NAME_LENGTH = 30;
+	constexpr int MAX_SUPPORTED_MAP_SIZE    = 4096; // CN3ShapeMgr's MAX_CELL_MAIN * MAX_CELL_MAP
 
-	Init();
+	int iVersion                            = 0;
 
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 	{
-		int iIdk0 = 0;
-		file.Read(&iIdk0, sizeof(int));
+		file.Read(&iVersion, sizeof(int));
+
+		if (iVersion < 0 || iVersion > MAX_SUPPORTED_VERSION)
+			throw std::runtime_error("invalid version in header");
 
 		int iNL = 0;
 		file.Read(&iNL, sizeof(int));
+
+		if (iNL < 0 || iNL > MAX_SUPPORTED_NAME_LENGTH)
+			throw std::runtime_error("invalid name length in header");
 
 		if (iNL > 0)
 		{
 			m_szName.assign(iNL, '\0');
 			file.Read(&m_szName[0], iNL);
 		}
-		else
-		{
-			m_szName.clear();
-		}
 	}
 
-	m_szFileName           = szFNBackup;
+	file.Read(&m_ti_MapSize, sizeof(int));
 
-	CUILoading* pUILoading = nullptr;
-#ifdef _N3GAME
-	pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
-#endif
-	if (pUILoading)
+	if (m_ti_MapSize <= 0 || (m_ti_MapSize - 1) > MAX_SUPPORTED_MAP_SIZE)
+		throw std::runtime_error("invalid map size");
+
+	if (((m_ti_MapSize - 1) % 4) != 0)
+		throw std::runtime_error("map size must be a multiple of 4");
+
+	CUILoading* pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
+	if (pUILoading != nullptr)
 		pUILoading->Render("Allocating Terrain...", 0);
 
-	file.Read(&(m_ti_MapSize), sizeof(int));
 	m_pat_MapSize = (m_ti_MapSize - 1) / PATCH_TILE_SIZE;
 
-	//m_pMapData = (LPMAPDATA)malloc(sizeof(MAPDATA)*m_ti_MapSize*m_ti_MapSize);
-	m_pMapData    = (LPMAPDATA) GlobalAlloc(GMEM_FIXED, sizeof(MAPDATA) * m_ti_MapSize * m_ti_MapSize);
-#ifdef _N3GAME
+	m_pMapData    = static_cast<MAPDATA*>(GlobalAlloc(GMEM_FIXED, sizeof(MAPDATA) * m_ti_MapSize * m_ti_MapSize));
 	if (m_pMapData == nullptr)
 		CLogWriter::Write("Terrain Error : MapData Memory Allocation Failed..-.-");
-#endif
+
 	__ASSERT(m_pMapData, "MapData Memory Allocation Failed..-.-");
 	file.Read(m_pMapData, sizeof(MAPDATA) * m_ti_MapSize * m_ti_MapSize);
 
-	m_pNormal = (__Vector3*) GlobalAlloc(GMEM_FIXED, sizeof(__Vector3) * m_ti_MapSize * m_ti_MapSize);
-#ifdef _N3GAME
+	m_pNormal = static_cast<__Vector3*>(GlobalAlloc(GMEM_FIXED, sizeof(__Vector3) * m_ti_MapSize * m_ti_MapSize));
 	if (m_pNormal == nullptr)
 		CLogWriter::Write("Terrain Error : Normal Vector Memory Allocation Failed..-.-");
-#endif
+
 	__ASSERT(m_pNormal, "Normal Vector Memory Allocation Failed..-.-");
 	SetNormals();
 
@@ -403,26 +444,16 @@ bool CN3Terrain::Load(File& file)
 	int NumLightMap = 0;
 	file.Read(&NumLightMap, sizeof(int));
 
-	CN3Texture* pTmpTex = new CN3Texture;
-	for (int i = 0; i < NumLightMap; i++)
-	{
-		int16_t sx = 0, sz = 0;
-		file.Read(&sx, sizeof(int16_t));
-		file.Read(&sz, sizeof(int16_t));
-		pTmpTex->Load(file);
-
-		// loading bar...
-		int iLoading  = (i + 1) * 100 / NumLightMap;
-		szLoadingBuff = fmt::format("Loading Lightmap Data... {} %", iLoading);
-		if (pUILoading != nullptr)
-			pUILoading->Render(szLoadingBuff, iLoading);
-	}
-	delete pTmpTex;
+	if (NumLightMap != 0)
+		throw std::runtime_error("unexpected lightmap count; this is deprecated");
 
 	if (pUILoading != nullptr)
 		pUILoading->Render("Loading River Data...", 0);
 
 	m_pRiver->Load(file); // 맵데이터 올때까지만 잠시만 막자..2002.11.15
+
+	m_pPond->m_iGtdVersion        = iVersion;
+	m_pPond->m_iFileFormatVersion = m_iFileFormatVersion;
 	m_pPond->Load(file);
 
 	if (pUILoading != nullptr)
@@ -493,16 +524,23 @@ const MAPDATA& CN3Terrain::GetMapData(int x, int z) const
 //
 void CN3Terrain::LoadTileInfo(File& file)
 {
-	CUILoading* pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
-	if (pUILoading != nullptr)
-		pUILoading->Render("Loading Terrain Tile Data...", 0);
+	constexpr int MAX_SUPPORTED_TILE_TEX_COUNT = 4096;
+	constexpr int MAX_SUPPORTED_GTT_COUNT      = 1024;
 
 	m_TileTex.clear();
 
-	uint32_t tileTextureCount = 0;
-	file.Read(&tileTextureCount, sizeof(uint32_t));
+	// 로딩바..
+	CUILoading* pUILoading = CGameProcedure::s_pUILoading;
+	if (pUILoading != nullptr)
+		pUILoading->Render("Loading Terrain Tile Data...", 0);
+
+	int tileTextureCount = 0;
+	file.Read(&tileTextureCount, sizeof(int));
 	if (tileTextureCount == 0)
 		return;
+
+	if (tileTextureCount < 0 || tileTextureCount > MAX_SUPPORTED_TILE_TEX_COUNT)
+		throw std::runtime_error("invalid tile texture count");
 
 	m_TileTex.resize(tileTextureCount);
 
@@ -510,6 +548,9 @@ void CN3Terrain::LoadTileInfo(File& file)
 	file.Read(&NumTileTexSrc, sizeof(int));
 	if (NumTileTexSrc == 0)
 		return;
+
+	if (NumTileTexSrc < 0 || NumTileTexSrc > MAX_SUPPORTED_GTT_COUNT)
+		throw std::runtime_error("invalid GTT texture count");
 
 	char** SrcName = new char*[NumTileTexSrc];
 	for (int i = 0; i < NumTileTexSrc; i++)
@@ -526,6 +567,12 @@ void CN3Terrain::LoadTileInfo(File& file)
 		int16_t SrcIdx = 0, TileIdx = 0;
 		file.Read(&SrcIdx, sizeof(int16_t));
 		file.Read(&TileIdx, sizeof(int16_t));
+
+		if (SrcIdx < 0)
+			throw std::runtime_error("invalid GTT filename index");
+
+		if (TileIdx < 0)
+			throw std::runtime_error("invalid tile texture index");
 
 		// NOTE: kinda a temp thing...
 		tex.m_iFileFormatVersion = m_iFileFormatVersion;

@@ -184,10 +184,8 @@ bool CN3Texture::CreateFromSurface(
 }
 #endif // end of _N3TOOL
 
-bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
+bool CN3Texture::LoadFromFile(const std::string& szFileName)
 {
-	m_iFileFormatVersion = iVer;
-
 	if (m_lpTexture != nullptr)
 		this->Release();
 
@@ -217,7 +215,7 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName, uint32_t iVer)
 			return false;
 		}
 
-		Load(file);
+		LoadSupportedVersions(file);
 	}
 	else
 	{
@@ -272,7 +270,7 @@ bool CN3Texture::Load(File& file)
 
 	CWinCrypt crypt;
 
-	__DXT_HEADER HeaderOrg;                   // 헤더를 저장해 놓고..
+	__DXT_HEADER HeaderOrg {};                // 헤더를 저장해 놓고..
 	file.Read(&HeaderOrg, sizeof(HeaderOrg)); // 헤더를 읽는다..
 	if ('N' != HeaderOrg.szID[0] || 'T' != HeaderOrg.szID[1]
 		|| 'F' != HeaderOrg.szID[2]

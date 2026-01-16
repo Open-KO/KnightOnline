@@ -24,7 +24,7 @@ protected:
 
 public:
 	void UpdateRenderInfo();
-	bool LoadFromFile(const std::string& szFileName, uint32_t iVer = N3FORMAT_VER_DEFAULT) override;
+	bool LoadFromFile(const std::string& szFileName) override;
 	bool Load(File& file) override;
 	bool SkipFileHandle(File& file);
 
