@@ -328,7 +328,7 @@ public:
 	void ClassChangeReq();
 	void FriendReport(char* pBuf);
 	CUser* GetItemRoutingUser(int itemid, int16_t itemcount);
-	bool GetStartPosition(int16_t* x, int16_t* z);
+	bool GetStartPosition(int16_t* x, int16_t* z, int zoneId) const;
 	void Home();
 	void ReportBug(char* pBuf);
 	int GetEmptySlot(int itemid, int bCountable) const;

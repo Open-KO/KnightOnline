@@ -80,6 +80,13 @@ void EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			argsToParse = 2;
 			break;
 
+		// E ZONE_CHANGE {zone ID} {x} {z}
+		case "ZONE_CHANGE"_djb2:
+			m_Exec      = EXEC_ZONE_CHANGE;
+			argsToParse = 3;
+			break;
+
+		// E RETURN
 		case "RETURN"_djb2:
 			m_Exec = EXEC_RETURN;
 			break;

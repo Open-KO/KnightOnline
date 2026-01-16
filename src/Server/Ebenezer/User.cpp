@@ -2409,7 +2409,7 @@ void CUser::Regene(char* pBuf, int magicid)
 			else
 			{
 				int16_t spawnX = 0, spawnZ = 0;
-				if (GetStartPosition(&spawnX, &spawnZ))
+				if (GetStartPosition(&spawnX, &spawnZ, m_pUserData->m_bZone))
 				{
 					x = static_cast<float>(spawnX);
 					z = static_cast<float>(spawnZ);
@@ -2646,6 +2646,24 @@ void CUser::ZoneChange(int zone, float x, float z)
 			if (m_pUserData->m_bNation != zone && zone < 3)
 				return;
 		}
+	}
+
+	// This is unofficial behaviour, but official behaviour causes players
+	// to be unintentionally reset back to 0,0 which is never desired, so we'll
+	// ensure players get returned to the intended /town positions.
+	if (static_cast<int>(x) == 0 && static_cast<int>(z) == 0)
+	{
+		int16_t sx = 0, sz = 0;
+		if (!GetStartPosition(&sx, &sz, zone))
+		{
+			spdlog::warn("User::ZoneChange: failed to fetch start position for zone {} "
+						 "[accountId={} characterName={}]",
+				zone, m_pUserData->m_Accountid, m_pUserData->m_id);
+			return;
+		}
+
+		x = static_cast<float>(sx);
+		z = static_cast<float>(sz);
 	}
 
 	m_bWarp = 0x01;
@@ -8929,7 +8947,7 @@ void CUser::Home()
 	char sendBuffer[128] {};
 
 	int16_t x = 0, z = 0; // The point where you will be warped to.
-	if (!GetStartPosition(&x, &z))
+	if (!GetStartPosition(&x, &z, m_pUserData->m_bZone))
 		return;
 
 	SetShort(sendBuffer, (uint16_t) (x * 10), sendIndex);
@@ -8937,10 +8955,9 @@ void CUser::Home()
 	Warp(sendBuffer);
 }
 
-bool CUser::GetStartPosition(int16_t* x, int16_t* z)
+bool CUser::GetStartPosition(int16_t* x, int16_t* z, int zoneId) const
 {
-	model::StartPosition* startPosition = m_pMain->m_StartPositionTableMap.GetData(
-		m_pUserData->m_bZone);
+	model::StartPosition* startPosition = m_pMain->m_StartPositionTableMap.GetData(zoneId);
 	if (startPosition == nullptr)
 		return false;
 
@@ -11800,7 +11817,7 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 					return false;
 				break;
 
-				//	비러머글 복권 >.<
+			// 비러머글 복권 >.<
 			case EXEC_OPEN_EDITBOX:
 				OpenEditBox(pExec->m_ExecInt[1], pExec->m_ExecInt[2]);
 				break;
@@ -11813,13 +11830,18 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				LogCoupon(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
 				break;
 
-				// 비러머글 엑셀 >.<
+			// 비러머글 엑셀 >.<
 			case EXEC_SAVE_COM_EVENT:
 				SaveComEvent(pExec->m_ExecInt[0]);
 				break;
 
 			case EXEC_ROB_NOAH:
 				GoldLose(pExec->m_ExecInt[0]);
+				break;
+
+			case EXEC_ZONE_CHANGE:
+				ZoneChange(pExec->m_ExecInt[0], static_cast<float>(pExec->m_ExecInt[1]),
+					static_cast<float>(pExec->m_ExecInt[2]));
 				break;
 
 			case EXEC_RETURN:
