@@ -398,6 +398,7 @@ public:
 	bool IsValidSlotPos(model::Item* pTable, int destpos) const;
 	void ItemMove(char* pBuf);
 	void Warp(char* pBuf);
+	void Warp(float x, float z);
 	void RequestNpcIn(char* pBuf);
 	void SetUserAbility();
 	void LevelChange(int16_t level, bool bLevelUp = true);

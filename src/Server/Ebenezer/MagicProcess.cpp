@@ -2394,13 +2394,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 				pEvent = pTMap->GetObjectEvent(pTUser->m_pUserData->m_sBind);
 				if (pEvent != nullptr)
 				{
-					//					m_pUserData->m_curx = m_fWill_x = pEvent->fPosX + x;
-					//					m_pUserData->m_curz = m_fWill_z = pEvent->fPosZ + z;
-					//					m_pUserData->m_cury = 0;
-
-					SetShort(sendBuffer, (uint16_t) ((pEvent->fPosX * 10) + x), sendIndex);
-					SetShort(sendBuffer, (uint16_t) ((pEvent->fPosZ * 10) + z), sendIndex);
-					pTUser->Warp(sendBuffer);
+					pTUser->Warp((pEvent->fPosX * 10) + x, (pEvent->fPosZ * 10) + z);
 				}
 				// User is in different zone.
 				else if (pTUser->m_pUserData->m_bNation != pTUser->m_pUserData->m_bZone
@@ -2408,46 +2402,27 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 				{
 					// Land of Karus
 					if (pTUser->m_pUserData->m_bNation == 1)
-					{
-						//						m_pUserData->m_curx = m_fWill_x = (float)852.0 + x;
-						//						m_pUserData->m_curz = m_fWill_z = (float)164.0 + z;
-
-						SetShort(sendBuffer, static_cast<int16_t>(852 + x), sendIndex);
-						SetShort(sendBuffer, static_cast<int16_t>(164 + z), sendIndex);
-						pTUser->Warp(sendBuffer);
-					}
+						pTUser->Warp(852 + x, 164 + z);
 					// Land of Elmorad
 					else
-					{
-						//						m_pUserData->m_curx = m_fWill_x = (float)177.0 + x;
-						//						m_pUserData->m_curz = m_fWill_z = (float)923.0 + z;
-
-						SetShort(sendBuffer, static_cast<int16_t>(177 + x), sendIndex);
-						SetShort(sendBuffer, static_cast<int16_t>(923 + z), sendIndex);
-						pTUser->Warp(sendBuffer);
-					}
+						pTUser->Warp(177 + x, 923 + z);
 				}
 				// 비러머글 대만 써비스 >.<
 				// 전쟁존 --;
 				// 개척존 --;
 				else if (pTUser->m_pUserData->m_bZone == ZONE_BATTLE)
 				{
-					SetShort(sendBuffer, (uint16_t) ((pHomeInfo->BattleZoneX * 10) + x), sendIndex);
-					SetShort(sendBuffer, (uint16_t) ((pHomeInfo->BattleZoneZ * 10) + z), sendIndex);
-					pTUser->Warp(sendBuffer);
+					pTUser->Warp(
+						(pHomeInfo->BattleZoneX * 10) + x, (pHomeInfo->BattleZoneZ * 10) + z);
 				}
 				else if (pTUser->m_pUserData->m_bZone == ZONE_FRONTIER)
 				{
-					SetShort(sendBuffer, (uint16_t) ((pHomeInfo->FreeZoneX * 10) + x), sendIndex);
-					SetShort(sendBuffer, (uint16_t) ((pHomeInfo->FreeZoneZ * 10) + z), sendIndex);
-					pTUser->Warp(sendBuffer);
+					pTUser->Warp((pHomeInfo->FreeZoneX * 10) + x, (pHomeInfo->FreeZoneZ * 10) + z);
 				}
 				// No, I don't have any idea what this part means....
 				else
 				{
-					SetShort(sendBuffer, (uint16_t) ((pTMap->m_fInitX * 10) + x), sendIndex);
-					SetShort(sendBuffer, (uint16_t) ((pTMap->m_fInitZ * 10) + z), sendIndex);
-					pTUser->Warp(sendBuffer);
+					pTUser->Warp((pTMap->m_fInitX * 10) + x, (pTMap->m_fInitZ * 10) + z);
 				}
 
 				sendIndex = 0;
@@ -2514,16 +2489,8 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 				sendIndex = 0;
 				memset(sendBuffer, 0, sizeof(sendBuffer));
 
-				SetShort(sendBuffer,
-					(uint16_t) (m_pSrcUser->m_pUserData->m_curx * 10 /* + myrand(1,3) */),
-					sendIndex); // Send packet with new positions to the Warp() function.
-				SetShort(sendBuffer,
-					(uint16_t) (m_pSrcUser->m_pUserData->m_curz * 10 /* + myrand(1,3) */),
-					sendIndex);
-				pTUser->Warp(sendBuffer);
-
-				sendIndex = 0;
-				memset(sendBuffer, 0, sizeof(sendBuffer));
+				pTUser->Warp(m_pSrcUser->m_pUserData->m_curx * 10 /* + myrand(1,3) */,
+					m_pSrcUser->m_pUserData->m_curz * 10 /* + myrand(1,3) */);
 				break;
 
 			// Summon a target outside the zone.
@@ -2611,13 +2578,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 				if (warp_z > 4096)
 					warp_z = 4096;
 
-				SetShort(sendBuffer, (uint16_t) warp_x,
-					sendIndex); // Send packet with new positions to the Warp() function.
-				SetShort(sendBuffer, (uint16_t) warp_z, sendIndex);
-				pTUser->Warp(sendBuffer);
-
-				sendIndex = 0; // Clear index and buffer!
-				memset(sendBuffer, 0, sizeof(sendBuffer));
+				pTUser->Warp(warp_x, warp_z);
 			}
 			break;
 

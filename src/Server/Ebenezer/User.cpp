@@ -2553,8 +2553,6 @@ void CUser::Regene(char* pBuf, int magicid)
 
 void CUser::ZoneChange(int zone, float x, float z)
 {
-	m_bZoneChangeFlag = true;
-
 	int sendIndex = 0, zoneindex = 0;
 	char sendBuffer[128] {};
 	C3DMap* pMap            = nullptr;
@@ -2562,6 +2560,34 @@ void CUser::ZoneChange(int zone, float x, float z)
 
 	if (g_serverdown_flag)
 		return;
+
+	// This is unofficial behaviour, but official behaviour causes players
+	// to be unintentionally reset back to 0,0 which is never desired, so we'll
+	// ensure players get returned to the intended /town positions.
+	if (static_cast<int>(x) == 0 && static_cast<int>(z) == 0)
+	{
+		int16_t sx = 0, sz = 0;
+		if (!GetStartPosition(&sx, &sz, zone))
+		{
+			spdlog::warn("User::ZoneChange: failed to fetch start position for zone {} "
+						 "[accountId={} characterName={}]",
+				zone, m_pUserData->m_Accountid, m_pUserData->m_id);
+			return;
+		}
+
+		x = static_cast<float>(sx);
+		z = static_cast<float>(sz);
+	}
+
+	// Zone changes within the same zone should just warp instead.
+	// This eliminates a redundant full zone reload.
+	// Officially this is applied inconsistently per case (calling Warp() instead of ZoneChange()),
+	// but we'll just make this consistent.
+	if (zone == m_pUserData->m_bZone)
+	{
+		Warp(x, z);
+		return;
+	}
 
 	zoneindex = m_pMain->GetZoneIndex(zone);
 
@@ -2648,25 +2674,8 @@ void CUser::ZoneChange(int zone, float x, float z)
 		}
 	}
 
-	// This is unofficial behaviour, but official behaviour causes players
-	// to be unintentionally reset back to 0,0 which is never desired, so we'll
-	// ensure players get returned to the intended /town positions.
-	if (static_cast<int>(x) == 0 && static_cast<int>(z) == 0)
-	{
-		int16_t sx = 0, sz = 0;
-		if (!GetStartPosition(&sx, &sz, zone))
-		{
-			spdlog::warn("User::ZoneChange: failed to fetch start position for zone {} "
-						 "[accountId={} characterName={}]",
-				zone, m_pUserData->m_Accountid, m_pUserData->m_id);
-			return;
-		}
-
-		x = static_cast<float>(sx);
-		z = static_cast<float>(sz);
-	}
-
-	m_bWarp = 0x01;
+	m_bZoneChangeFlag = true;
+	m_bWarp           = 0x01;
 
 	UserInOut(USER_OUT);
 
@@ -2760,6 +2769,17 @@ void CUser::ZoneChange(int zone, float x, float z)
 
 void CUser::Warp(char* pBuf)
 {
+	int index       = 0;
+	uint16_t warp_x = 0, warp_z = 0;
+
+	warp_x = GetShort(pBuf, index);
+	warp_z = GetShort(pBuf, index);
+
+	Warp(warp_x / 10.0f, warp_z / 10.0f);
+}
+
+void CUser::Warp(float x, float z)
+{
 	if (m_bWarp)
 		return;
 
@@ -2769,33 +2789,26 @@ void CUser::Warp(char* pBuf)
 	C3DMap* pMap = nullptr;
 	int index = 0, sendIndex = 0;
 	uint16_t warp_x = 0, warp_z = 0;
-	float real_x = 0.0f, real_z = 0.0f;
 	char sendBuffer[128] {};
 
-	warp_x = GetShort(pBuf, index);
-	warp_z = GetShort(pBuf, index);
-
-	pMap   = m_pMain->GetMapByIndex(m_iZoneIndex);
+	pMap = m_pMain->GetMapByIndex(m_iZoneIndex);
 	if (pMap == nullptr)
 		return;
 
-	real_x = warp_x / 10.0f;
-	real_z = warp_z / 10.0f;
-
-	if (!pMap->IsValidPosition(real_x, real_z))
+	if (!pMap->IsValidPosition(x, z))
 		return;
 
 	SetByte(sendBuffer, WIZ_WARP, sendIndex);
-	SetShort(sendBuffer, warp_x, sendIndex);
-	SetShort(sendBuffer, warp_z, sendIndex);
+	SetShort(sendBuffer, static_cast<uint16_t>(x * 10.0f), sendIndex);
+	SetShort(sendBuffer, static_cast<uint16_t>(z * 10.0f), sendIndex);
 	Send(sendBuffer, sendIndex);
 
 	UserInOut(USER_OUT);
 
-	m_pUserData->m_curx = real_x;
-	m_fWill_x           = real_x;
-	m_pUserData->m_curz = real_z;
-	m_fWill_z           = real_z;
+	m_pUserData->m_curx = x;
+	m_fWill_x           = x;
+	m_pUserData->m_curz = z;
+	m_fWill_z           = z;
 
 	m_RegionX           = (int) (m_pUserData->m_curx / VIEW_DISTANCE);
 	m_RegionZ           = (int) (m_pUserData->m_curz / VIEW_DISTANCE);
@@ -8950,9 +8963,7 @@ void CUser::Home()
 	if (!GetStartPosition(&x, &z, m_pUserData->m_bZone))
 		return;
 
-	SetShort(sendBuffer, (uint16_t) (x * 10), sendIndex);
-	SetShort(sendBuffer, (uint16_t) (z * 10), sendIndex);
-	Warp(sendBuffer);
+	Warp(static_cast<float>(x), static_cast<float>(z));
 }
 
 bool CUser::GetStartPosition(int16_t* x, int16_t* z, int zoneId) const
