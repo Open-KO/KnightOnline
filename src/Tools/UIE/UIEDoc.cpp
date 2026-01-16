@@ -1,7 +1,7 @@
 ﻿// UIEDoc.cpp : implementation of the CUIEDoc class
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIE.h"
 
 #include "UIEDoc.h"
@@ -13,7 +13,7 @@
 #include <N3Base/N3UIEdit.h>
 #include <N3Base/N3UIProgress.h>
 #include <N3Base/N3UITrackBar.h>
-#include <N3Base/N3UIToolTip.h>
+#include <N3Base/N3UITooltip.h>
 #include <N3Base/N3UIScrollBar.h>
 #include <N3Base/N3Texture.h>
 #include <N3Base/N3UIArea.h>
@@ -42,37 +42,37 @@ IMPLEMENT_DYNCREATE(CUIEDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CUIEDoc, CDocument)
 //{{AFX_MSG_MAP(CUIEDoc)
-ON_COMMAND(ID_FILE_EXPORT, OnFileExport)
-ON_COMMAND(ID_FILE_IMPORT, OnFileImport)
-ON_COMMAND(ID_FILE_IMPORT_TOOLTIP, OnFileImportTooltip)
-ON_COMMAND(ID_FILE_EXPORT_TOOLTIP, OnFileExportTooltip)
-ON_UPDATE_COMMAND_UI(ID_FILE_EXPORT_TOOLTIP, OnUpdateFileExportTooltip)
-ON_UPDATE_COMMAND_UI(ID_EDIT_DELETE, OnUpdateEditDelete)
-ON_COMMAND(ID_INSERT_IMAGE, OnInsertImage)
-ON_COMMAND(ID_INSERT_STRING, OnInsertString)
-ON_COMMAND(ID_INSERT_BUTTON, OnInsertButton)
-ON_COMMAND(ID_INSERT_STATIC, OnInsertStatic)
-ON_COMMAND(ID_INSERT_EDIT, OnInsertEdit)
-ON_COMMAND(ID_INSERT_PROGRESS, OnInsertProgress)
-ON_COMMAND(ID_INSERT_TRACKBAR, OnInsertTrackbar)
-ON_COMMAND(ID_INSERT_SCROLLBAR, OnInsertScrollbar)
-ON_COMMAND(ID_INSERT_AREA, OnInsertArea)
-ON_COMMAND(ID_INSERT_ICONSLOT, OnInsertIconslot)
-ON_COMMAND(ID_INSERT_LIST, OnInsertList)
-ON_COMMAND(ID_EDIT_DUPLICATE, OnEditDuplicate)
-ON_COMMAND(ID_EDIT_DELETE, OnEditDelete)
-ON_COMMAND(ID_EDIT_ZORDER, OnEditZorder)
-ON_COMMAND(ID_EDIT_MAKE_GROUP, OnEditMakeGroup)
-ON_COMMAND(ID_EDIT_PARENT, OnEditParent)
-ON_COMMAND(ID_EDIT_UNPARENT, OnEditUnparent)
-ON_COMMAND(ID_EDIT_MOVE_TO_LOWEST, OnEditMoveToLowest)
-ON_COMMAND(ID_EDIT_MOVE_TO_LOWER, OnEditMoveToLower)
-ON_COMMAND(ID_EDIT_MOVE_TO_UPPER, OnEditMoveToUpper)
-ON_COMMAND(ID_EDIT_REPLACE_TEX, OnEditReplaceTex)
-ON_COMMAND(ID_INSERT_GROUP, OnInsertGroup)
-ON_COMMAND(ID_BATCH_TOOL_CHANGE_IMAGE_PATH, OnBatchToolChangeImagePath)
-ON_COMMAND(ID_BATCH_TOOL_CHANGE_FONT, OnBatchToolChangeFont)
-ON_COMMAND(ID_BATCH_TOOL_GATHER_IMAGE_FILE_NAME, OnBatchToolGatherImageFileName)
+ON_COMMAND(ID_FILE_EXPORT, &CUIEDoc::OnFileExport)
+ON_COMMAND(ID_FILE_IMPORT, &CUIEDoc::OnFileImport)
+ON_COMMAND(ID_FILE_IMPORT_TOOLTIP, &CUIEDoc::OnFileImportTooltip)
+ON_COMMAND(ID_FILE_EXPORT_TOOLTIP, &CUIEDoc::OnFileExportTooltip)
+ON_UPDATE_COMMAND_UI(ID_FILE_EXPORT_TOOLTIP, &CUIEDoc::OnUpdateFileExportTooltip)
+ON_UPDATE_COMMAND_UI(ID_EDIT_DELETE, &CUIEDoc::OnUpdateEditDelete)
+ON_COMMAND(ID_INSERT_IMAGE, &CUIEDoc::OnInsertImage)
+ON_COMMAND(ID_INSERT_STRING, &CUIEDoc::OnInsertString)
+ON_COMMAND(ID_INSERT_BUTTON, &CUIEDoc::OnInsertButton)
+ON_COMMAND(ID_INSERT_STATIC, &CUIEDoc::OnInsertStatic)
+ON_COMMAND(ID_INSERT_EDIT, &CUIEDoc::OnInsertEdit)
+ON_COMMAND(ID_INSERT_PROGRESS, &CUIEDoc::OnInsertProgress)
+ON_COMMAND(ID_INSERT_TRACKBAR, &CUIEDoc::OnInsertTrackbar)
+ON_COMMAND(ID_INSERT_SCROLLBAR, &CUIEDoc::OnInsertScrollbar)
+ON_COMMAND(ID_INSERT_AREA, &CUIEDoc::OnInsertArea)
+ON_COMMAND(ID_INSERT_ICONSLOT, &CUIEDoc::OnInsertIconslot)
+ON_COMMAND(ID_INSERT_LIST, &CUIEDoc::OnInsertList)
+ON_COMMAND(ID_EDIT_DUPLICATE, &CUIEDoc::OnEditDuplicate)
+ON_COMMAND(ID_EDIT_DELETE, &CUIEDoc::OnEditDelete)
+ON_COMMAND(ID_EDIT_ZORDER, &CUIEDoc::OnEditZorder)
+ON_COMMAND(ID_EDIT_MAKE_GROUP, &CUIEDoc::OnEditMakeGroup)
+ON_COMMAND(ID_EDIT_PARENT, &CUIEDoc::OnEditParent)
+ON_COMMAND(ID_EDIT_UNPARENT, &CUIEDoc::OnEditUnparent)
+ON_COMMAND(ID_EDIT_MOVE_TO_LOWEST, &CUIEDoc::OnEditMoveToLowest)
+ON_COMMAND(ID_EDIT_MOVE_TO_LOWER, &CUIEDoc::OnEditMoveToLower)
+ON_COMMAND(ID_EDIT_MOVE_TO_UPPER, &CUIEDoc::OnEditMoveToUpper)
+ON_COMMAND(ID_EDIT_REPLACE_TEX, &CUIEDoc::OnEditReplaceTex)
+ON_COMMAND(ID_INSERT_GROUP, &CUIEDoc::OnInsertGroup)
+ON_COMMAND(ID_BATCH_TOOL_CHANGE_IMAGE_PATH, &CUIEDoc::OnBatchToolChangeImagePath)
+ON_COMMAND(ID_BATCH_TOOL_CHANGE_FONT, &CUIEDoc::OnBatchToolChangeFont)
+ON_COMMAND(ID_BATCH_TOOL_GATHER_IMAGE_FILE_NAME, &CUIEDoc::OnBatchToolGatherImageFileName)
 //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1180,15 +1180,15 @@ void CUIEDoc::OnEditReplaceTex()
 	if (m_RootUI.ReplaceAllTextures(LPCTSTR(dlg.m_strFind), LPCTSTR(dlg.m_strReplace)))
 	{
 		CString strMsg;
-		strMsg.Format(
-			"%s 텍스쳐를 %s 텍스쳐로 모두 바꾸었습니다.", dlg.m_strFind, dlg.m_strReplace);
+		strMsg.Format("%s 텍스쳐를 %s 텍스쳐로 모두 바꾸었습니다.", dlg.m_strFind.GetString(),
+			dlg.m_strReplace.GetString());
 		AfxGetMainWnd()->MessageBox(strMsg);
 	}
 	else
 	{
 		CString strMsg;
-		strMsg.Format(
-			"%s 텍스쳐를 %s 텍스쳐 바꾸기 실패 하였습니다.", dlg.m_strFind, dlg.m_strReplace);
+		strMsg.Format("%s 텍스쳐를 %s 텍스쳐 바꾸기 실패 하였습니다.", dlg.m_strFind.GetString(),
+			dlg.m_strReplace.GetString());
 		AfxGetMainWnd()->MessageBox(strMsg);
 	}
 }

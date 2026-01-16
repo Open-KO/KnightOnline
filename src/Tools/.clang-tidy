@@ -1,0 +1,7 @@
+InheritParentConfig: true
+
+WarningsAsErrors: >
+  -performance-unnecessary-copy-initialization,
+  -cppcoreguidelines-explicit-virtual-functions,
+  -cppcoreguidelines-pro-type-vararg,
+  -modernize-use-override

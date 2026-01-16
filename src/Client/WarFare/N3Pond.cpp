@@ -106,9 +106,11 @@ bool CN3Pond::Load(File& file)
 		if (m_iGtdVersion >= 2)
 			file.Read(&fWaveVariance, sizeof(float));
 
-		mesh.m_pVertices[0].y            += fWaveVariance;               //	수치가 높으면 물결이 크게 요동친다
-		mesh.m_pVertices[iWidthVertex].y += fWaveVariance;               //	수치가 높으면 물결이 크게 요동친다
-		mesh.m_pfMaxHeight = mesh.m_pVertices[0].y += fWaveVariance;     //	물결의 최대치
+		// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+		mesh.m_pVertices[0].y            += fWaveVariance;           //	수치가 높으면 물결이 크게 요동친다
+		mesh.m_pVertices[iWidthVertex].y += fWaveVariance;           //	수치가 높으면 물결이 크게 요동친다
+		mesh.m_pfMaxHeight = mesh.m_pVertices[0].y += fWaveVariance; //	물결의 최대치
+		// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
 		mesh.m_pfVelocityArray                      = new float[iVC] {}; ///
 

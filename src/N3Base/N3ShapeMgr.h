@@ -243,7 +243,7 @@ public:
 	int Add(CN3Shape* pShape);
 	bool AddCollisionTriangle(const __Vector3& v1, const __Vector3& v2, const __Vector3& v3);
 	void GenerateCollisionData();
-	bool Save(File& file);
+	bool Save(File& file) override;
 	bool SaveCollisionData(File& file);
 #endif // end of _N3TOOL
 
