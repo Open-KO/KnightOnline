@@ -328,6 +328,8 @@ bool CN3Terrain::LoadSupportedVersions(File& file)
 		{
 			if (Load(file))
 				return true;
+
+			CLogWriter::Write("CN3Terrain: Failed to load {} for format version {} (Load() failed).", szFNBackup, iFileFormatVersion);
 		}
 		catch (const std::runtime_error& ex)
 		{

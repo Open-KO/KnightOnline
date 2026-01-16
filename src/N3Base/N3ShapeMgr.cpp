@@ -98,6 +98,11 @@ bool CN3ShapeMgr::LoadSupportedVersions(File& file)
 		{
 			if (Load(file))
 				return true;
+#ifdef _N3GAME
+			CLogWriter::Write(
+				"CN3ShapeMgr: Failed to load {} for format version {} (Load() failed).", szFNBackup,
+				iFileFormatVersion);
+#endif
 		}
 		catch (const std::runtime_error& ex)
 		{
