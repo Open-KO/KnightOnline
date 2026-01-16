@@ -9,14 +9,18 @@
 constexpr float WAVE_TOP  = 0.02f;
 constexpr float WAVE_STEP = 0.001f;
 
-CN3River::CN3River()
-{
-	m_fTexIndex = 0.0f;
-	memset(m_pTexRiver, 0, sizeof(m_pTexRiver));
-}
-
 CN3River::~CN3River()
 {
+	for (int i = 0; i < MAX_RIVER_TEX; i++)
+		s_MngTex.Delete(&m_pTexRiver[i]);
+}
+
+void CN3River::Release()
+{
+	m_Rivers.clear();
+
+	for (int i = 0; i < MAX_RIVER_TEX; i++)
+		s_MngTex.Delete(&m_pTexRiver[i]);
 }
 
 bool CN3River::Load(File& file)
@@ -25,7 +29,7 @@ bool CN3River::Load(File& file)
 	constexpr int MAX_SUPPORTED_TEX_NAME_LENGTH = 50;
 	constexpr uint16_t wIndex[18]               = { 4, 0, 1, 4, 1, 5, 5, 1, 2, 5, 2, 6, 6, 2, 3, 6, 3, 7 };
 
-	m_Rivers.clear();
+	Release();
 
 	int iRiverCount = 0;
 	file.Read(&iRiverCount, sizeof(int));

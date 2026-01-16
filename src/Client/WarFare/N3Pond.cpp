@@ -9,21 +9,17 @@
 
 constexpr float ATISQRT = 4.94974747f;
 
-// 생성자.. 변수 디폴트값 할당..
-CN3Pond::CN3Pond()
-{
-	m_iGtdVersion = 0;
-	m_pfMaxVtx    = nullptr;
-
-	m_fTexIndex   = 0.0f;
-	m_iMaxVtxNum  = 0;
-
-	memset(m_pTexPond, 0, sizeof(m_pTexPond));
-}
-
 CN3Pond::~CN3Pond()
 {
-	CN3Pond::Release();
+	if (m_iMaxVtxNum > 0)
+	{
+		delete[] m_pfMaxVtx;
+		m_pfMaxVtx   = nullptr;
+		m_iMaxVtxNum = 0;
+	}
+
+	for (int i = 0; i < MAX_POND_TEX; i++)
+		s_MngTex.Delete(&m_pTexPond[i]);
 }
 
 void CN3Pond::Release()
@@ -43,14 +39,12 @@ void CN3Pond::Release()
 	m_fTexIndex = 0.0f;
 }
 
-bool CN3Pond::Load(File& file)
+bool CN3Pond::Load(File& file, int iGtdVersion)
 {
 	constexpr int MAX_SUPPORTED_POND_MESH_COUNT = 1024;
 	constexpr int MAX_SUPPORTED_TEX_NAME_LENGTH = 50;
 
 	Release();
-
-	m_PondMeshes.clear();
 
 	int iPondMeshNum = 0;
 
@@ -103,7 +97,7 @@ bool CN3Pond::Load(File& file)
 		file.Read(mesh.m_pVertices, iVC * sizeof(__VertexPond));
 
 		float fWaveVariance = 0.2f;
-		if (m_iGtdVersion >= 2)
+		if (iGtdVersion >= 2)
 			file.Read(&fWaveVariance, sizeof(float));
 
 		// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)

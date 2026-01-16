@@ -15,10 +15,10 @@ inline constexpr int MAX_POND_TEX        = 32;
 
 #include <vector>
 
-class CN3Pond : public CN3BaseFileAccess
+class CN3Pond : public CN3Base
 {
 public:
-	CN3Pond();
+	CN3Pond() = default;
 	~CN3Pond() override;
 
 	struct __VertexPond
@@ -93,19 +93,17 @@ public:
 	};
 
 public:
-	std::vector<CPondMesh> m_PondMeshes; //	연못의 정보
+	std::vector<CPondMesh> m_PondMeshes  = {}; //	연못의 정보
 
-	CN3Texture* m_pTexPond[MAX_POND_TEX];
-	float m_fTexIndex;
+	CN3Texture* m_pTexPond[MAX_POND_TEX] = {};
+	float m_fTexIndex                    = 0.0f;
 
-	int m_iMaxVtxNum;  //	가장 많은 vertices수
-	float* m_pfMaxVtx; //	물결높이 계산을 위한 임시
-
-	int m_iGtdVersion;
+	int m_iMaxVtxNum                     = 0;       //	가장 많은 vertices수
+	float* m_pfMaxVtx                    = nullptr; //	물결높이 계산을 위한 임시
 
 public:
 	void Release() override;
-	bool Load(File& file) override;
+	bool Load(File& file, int iGtdVersion);
 	void Render();
 	void Tick();
 

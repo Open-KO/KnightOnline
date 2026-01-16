@@ -7,15 +7,16 @@
 
 #pragma once
 
-#include <N3Base/N3Base.h>
+#include <N3Base/N3BaseFileAccess.h>
 #include <vector>
 
 inline constexpr int MAX_RIVER_TEX = 32;
 
-class CN3River : public CN3Base // CN3RiverPatch를 관리하는 클래스
+// CN3RiverPatch를 관리하는 클래스
+class CN3River : public CN3Base
 {
 public:
-	CN3River();
+	CN3River() = default;
 	~CN3River() override;
 
 	struct __VertexRiver
@@ -77,14 +78,15 @@ public:
 	};
 
 protected:
-	std::vector<_RIVER_INFO> m_Rivers;
-	CN3Texture* m_pTexRiver[MAX_RIVER_TEX];
+	std::vector<_RIVER_INFO> m_Rivers      = {};
+	CN3Texture* m_pTexRiver[MAX_RIVER_TEX] = {};
+	float m_fTexIndex                      = 0.0f;
 
-	float m_fTexIndex;
 	void UpdateWaterPositions();
 
 public:
-	virtual bool Load(File& file);
+	void Release() override;
+	bool Load(File& file);
 	void Render();
 	void Tick();
 };

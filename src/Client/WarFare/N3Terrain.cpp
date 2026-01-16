@@ -348,7 +348,7 @@ bool CN3Terrain::Load(File& file)
 {
 	constexpr int MAX_SUPPORTED_VERSION     = 2;
 	constexpr int MAX_SUPPORTED_NAME_LENGTH = 30;
-	constexpr int MAX_SUPPORTED_MAP_SIZE    = 4096; // CN3ShapeMgr's MAX_CELL_MAIN * MAX_CELL_MAP
+	constexpr int MAX_SUPPORTED_MAP_SIZE    = 4096; // CN3ShapeMgr: MAX_CELL_MAIN * MAX_CELL_MAIN
 
 	int iVersion                            = 0;
 
@@ -453,10 +453,7 @@ bool CN3Terrain::Load(File& file)
 		pUILoading->Render("Loading River Data...", 0);
 
 	m_pRiver->Load(file); // 맵데이터 올때까지만 잠시만 막자..2002.11.15
-
-	m_pPond->m_iGtdVersion        = iVersion;
-	m_pPond->m_iFileFormatVersion = m_iFileFormatVersion;
-	m_pPond->Load(file);
+	m_pPond->Load(file, iVersion);
 
 	if (pUILoading != nullptr)
 		pUILoading->Render("", 100);
