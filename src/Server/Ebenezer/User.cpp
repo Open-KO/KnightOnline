@@ -2786,9 +2786,8 @@ void CUser::Warp(float x, float z)
 	//	if (m_pUserData->m_bAuthority != AUTHORITY_MANAGER)
 	//		return;
 
-	C3DMap* pMap = nullptr;
-	int index = 0, sendIndex = 0;
-	uint16_t warp_x = 0, warp_z = 0;
+	C3DMap* pMap  = nullptr;
+	int sendIndex = 0;
 	char sendBuffer[128] {};
 
 	pMap = m_pMain->GetMapByIndex(m_iZoneIndex);
@@ -8956,10 +8955,7 @@ void CUser::ReportBug(char* pBuf)
 
 void CUser::Home()
 {
-	int sendIndex = 0;
-	char sendBuffer[128] {};
-
-	int16_t x = 0, z = 0; // The point where you will be warped to.
+	int16_t x = 0, z = 0;
 	if (!GetStartPosition(&x, &z, m_pUserData->m_bZone))
 		return;
 
