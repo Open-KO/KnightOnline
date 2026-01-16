@@ -167,7 +167,7 @@ bool CN3ShapeMgr::Load(File& file)
 		ReleaseShapes();
 	m_ShapesHaveID.clear();
 
-	file.Read(&iSC, 4); // Shape Count
+	file.Read(&iSC, sizeof(int)); // Shape Count
 	if (iSC > 0)
 	{
 		CN3Shape* pShape = nullptr;
@@ -176,7 +176,7 @@ bool CN3ShapeMgr::Load(File& file)
 		uint32_t dwType = 0;
 		for (int i = 0; i < iSC; i++)
 		{
-			file.Read(&dwType, 4); // Shape Type
+			file.Read(&dwType, sizeof(uint32_t)); // Shape Type
 
 			// 성문등 확장된 Object 로 쓸경우..
 			if (dwType & OBJ_SHAPE_EXTRA)

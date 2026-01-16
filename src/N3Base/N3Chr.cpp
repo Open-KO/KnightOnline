@@ -645,9 +645,8 @@ bool CN3CPlug::Load(File& file)
 
 	if (iUseVMesh != 0)
 	{
-		CN3PMesh* pPMesh = new CN3PMesh();
-		pPMesh->m_iFileFormatVersion =
-			m_iFileFormatVersion; // NOTE: Setting the version for further components
+		CN3PMesh* pPMesh             = new CN3PMesh();
+		pPMesh->m_iFileFormatVersion = m_iFileFormatVersion;
 		pPMesh->Load(file);
 
 		static int iSN      = 0;

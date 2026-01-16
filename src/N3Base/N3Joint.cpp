@@ -49,6 +49,8 @@ bool CN3Joint::Load(File& file)
 	{
 		CN3Joint* pChild = new CN3Joint();
 		ChildAdd(pChild);
+
+		pChild->m_iFileFormatVersion = m_iFileFormatVersion;
 		pChild->Load(file);
 	}
 
@@ -226,11 +228,9 @@ void CN3Joint::ParentSet(CN3Joint* pParent)
 		return;
 
 	m_pParent = pParent;
+
 	if (pParent != nullptr)
-	{
 		pParent->ChildAdd(this);
-		m_iFileFormatVersion = pParent->m_iFileFormatVersion;
-	}
 }
 
 void CN3Joint::NodeCount(int& nCount)

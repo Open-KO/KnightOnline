@@ -131,14 +131,13 @@ void CN3UIBase::RemoveChild(CN3UIBase* pChild)
 
 void CN3UIBase::SetParent(CN3UIBase* pParent)
 {
-	if (m_pParent)
+	if (m_pParent != nullptr)
 		m_pParent->RemoveChild(this);
-	m_pParent = pParent;
-	if (m_pParent)
-		m_pParent->AddChild(this);
 
-	if (pParent)
-		m_iFileFormatVersion = pParent->m_iFileFormatVersion;
+	m_pParent = pParent;
+
+	if (m_pParent != nullptr)
+		m_pParent->AddChild(this);
 }
 
 POINT CN3UIBase::GetPos() const
@@ -379,6 +378,8 @@ bool CN3UIBase::Load(File& file)
 			continue;
 
 		pChild->Init(this);
+
+		pChild->m_iFileFormatVersion = m_iFileFormatVersion;
 		pChild->Load(file);
 	}
 

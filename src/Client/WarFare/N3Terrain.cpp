@@ -573,19 +573,14 @@ void CN3Terrain::LoadTileInfo(File& file)
 		if (TileIdx < 0)
 			throw std::runtime_error("invalid tile texture index");
 
-		// NOTE: kinda a temp thing...
-		tex.m_iFileFormatVersion = m_iFileFormatVersion;
-
 		FileReader gttFile;
 		if (!gttFile.OpenExisting(SrcName[SrcIdx]))
 			continue;
 
+		tex.m_iFileFormatVersion = m_iFileFormatVersion;
+
 		for (int j = 0; j < TileIdx; j++)
-		{
-			//			m_pTileTex[i].m_iLOD = s_Options.iTexLOD_Terrain; // LOD 적용후 읽기..
-			//			m_pTileTex[i].Load(gttFile);// 앞에 있는 쓸때 없는 것들...
 			tex.SkipFileHandle(gttFile);        // 앞에 있는 쓸때 없는 것들...
-		}
 
 		tex.m_iLOD = s_Options.iTexLOD_Terrain; // LOD 적용후 읽기..
 		tex.Load(gttFile);                      // 진짜 타일...
@@ -1055,13 +1050,13 @@ void CN3Terrain::SetLightMapPatch(int x, int z, File& file, int* pAddr)
 
 		CN3Texture* pTex           = new CN3Texture;
 		pTex->m_iFileFormatVersion = m_iFileFormatVersion;
-
 		pTex->Load(file);
+
 		rtx          = px * PATCH_TILE_SIZE + tx;
 		rtz          = pz * PATCH_TILE_SIZE + tz;
 
 		uint32_t key = rtx * 10000 + rtz;
-		m_LightMapPatch[x][z].insert(stlMap_N3TexValue(key, pTex));
+		m_LightMapPatch[x][z].insert(std::make_pair(key, pTex));
 	}
 }
 

@@ -162,9 +162,8 @@ void CLightMgr::LoadZoneLight(const char* szFN)
 	file.Read(&cnt, sizeof(int));
 	for (int i = 0; i < cnt; i++)
 	{
-		CN3Light* pLgt             = new CN3Light;
-		pLgt->m_iFileFormatVersion = N3FORMAT_VER_DEFAULT;
-		pLgt->Load(file);
+		CN3Light* pLgt = new CN3Light;
+		pLgt->LoadSupportedVersions(file);
 		AddLight(pLgt);
 	}
 }
