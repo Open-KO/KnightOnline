@@ -5,7 +5,7 @@
 fetchcontent_declare(
   openalsoft
   GIT_REPOSITORY        "https://github.com/Open-KO/openal-soft.git"
-  GIT_TAG               "1.25.0-1cdd3c"
+  GIT_TAG               "1.25.0-32f75f"
   GIT_PROGRESS          ON
   GIT_SHALLOW           ON
   EXCLUDE_FROM_ALL
