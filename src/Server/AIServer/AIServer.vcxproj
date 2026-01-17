@@ -195,7 +195,7 @@
     <Image Include="RES\Server.ico" />
   </ItemGroup>
   <PropertyGroup Label="Debugger defaults">
-    <LocalDebuggerWorkingDirectory>$(OutputPath)\</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>$(OutputPath)</LocalDebuggerWorkingDirectory>
     <LocalDebuggerCommandArguments>--map-dir="$(RootDir)assets\Server\MAP" --event-dir="$(RootDir)assets\Server\MAP"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
