@@ -312,6 +312,8 @@
     <ClInclude Include="..\openal-soft\alc\backends\winmm.h" />
     <ClCompile Include="..\openal-soft\alc\backends\wave.cpp" />
     <ClInclude Include="..\openal-soft\alc\backends\wave.h" />
+    <ClInclude Include="..\openal-soft\core\allpass_conv.hpp" />
+    <ClInclude Include="..\openal-soft\core\allpass_iir.hpp" />
     <ClCompile Include="..\openal-soft\core\ambdec.cpp" />
     <ClInclude Include="..\openal-soft\core\ambdec.h" />
     <ClCompile Include="..\openal-soft\core\ambidefs.cpp" />
@@ -346,6 +348,7 @@
     <ClInclude Include="..\openal-soft\core\effects\base.h" />
     <ClCompile Include="..\openal-soft\core\effectslot.cpp" />
     <ClInclude Include="..\openal-soft\core\effectslot.h" />
+    <ClInclude Include="..\openal-soft\core\encoderbase.hpp" />
     <ClCompile Include="..\openal-soft\core\except.cpp" />
     <ClInclude Include="..\openal-soft\core\except.h" />
     <ClInclude Include="..\openal-soft\core\filters\biquad.h" />
@@ -375,6 +378,8 @@
     <ClInclude Include="..\openal-soft\core\resampler_limits.h" />
     <ClCompile Include="..\openal-soft\core\storage_formats.cpp" />
     <ClInclude Include="..\openal-soft\core\storage_formats.h" />
+    <ClCompile Include="..\openal-soft\core\tsmefilter.cpp" />
+    <ClInclude Include="..\openal-soft\core\tsmefilter.hpp" />
     <ClCompile Include="..\openal-soft\core\uhjfilter.cpp" />
     <ClInclude Include="..\openal-soft\core\uhjfilter.h" />
     <ClCompile Include="..\openal-soft\core\uiddefs.cpp" />

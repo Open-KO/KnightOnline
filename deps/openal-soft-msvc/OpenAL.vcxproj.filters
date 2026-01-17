@@ -286,6 +286,9 @@
     <ClCompile Include="..\openal-soft\core\storage_formats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\openal-soft\core\tsmefilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\openal-soft\core\uhjfilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -492,6 +495,12 @@
     <ClInclude Include="..\openal-soft\alc\backends\wave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\openal-soft\core\allpass_conv.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\openal-soft\core\allpass_iir.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\openal-soft\core\ambdec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -546,6 +555,9 @@
     <ClInclude Include="..\openal-soft\core\effectslot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\openal-soft\core\encoderbase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\openal-soft\core\except.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -592,6 +604,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\openal-soft\core\storage_formats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\openal-soft\core\tsmefilter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\openal-soft\core\uhjfilter.h">
