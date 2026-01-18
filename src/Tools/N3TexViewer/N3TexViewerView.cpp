@@ -118,7 +118,7 @@ BOOL CN3TexViewerView::PreTranslateMessage(MSG* pMsg)
 					GetDocument()->SelectNextTexture();
 					return TRUE;
 				}
-				return TRUE;
+				break;
 
 			default:
 				break;
