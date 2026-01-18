@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{17ef3a49-55b8-4fb6-883f-d1d02e20c11d}</ProjectGuid>
+    <RootNamespace>dbmodels</RootNamespace>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <OutDir>$(StaticLibDir)</OutDir>
+    <TargetName>db-models</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release'">
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <Import Project="$(PropsDir)nanodbc.props" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(DependencyDir)\db-models;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\db-models\AIServer\binder\AIServerBinder.cpp" />
+    <ClCompile Include="..\db-models\AIServer\model\AIServerModel.cpp" />
+    <ClCompile Include="..\db-models\Aujard\binder\AujardBinder.cpp" />
+    <ClCompile Include="..\db-models\Aujard\model\AujardModel.cpp" />
+    <ClCompile Include="..\db-models\BinderUtil\BinderUtil.cpp" />
+    <ClCompile Include="..\db-models\detail\StoredProc\StoredProcedure.cpp" />
+    <ClCompile Include="..\db-models\Ebenezer\binder\EbenezerBinder.cpp" />
+    <ClCompile Include="..\db-models\Ebenezer\model\EbenezerModel.cpp" />
+    <ClCompile Include="..\db-models\Full\binder\FullBinder.cpp" />
+    <ClCompile Include="..\db-models\Full\model\FullModel.cpp" />
+    <ClCompile Include="..\db-models\ModelUtil\ModelUtil.cpp" />
+    <ClCompile Include="..\db-models\StoredProc\StoredProc.cpp" />
+    <ClCompile Include="..\db-models\VersionManager\binder\VersionManagerBinder.cpp" />
+    <ClCompile Include="..\db-models\VersionManager\model\VersionManagerModel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\db-models\AIServer\binder\AIServerBinder.h" />
+    <ClInclude Include="..\db-models\AIServer\model\AIServerModel.h" />
+    <ClInclude Include="..\db-models\Aujard\binder\AujardBinder.h" />
+    <ClInclude Include="..\db-models\Aujard\model\AujardModel.h" />
+    <ClInclude Include="..\db-models\BinderUtil\BinderUtil.h" />
+    <ClInclude Include="..\db-models\detail\StoredProc\StoredProcedure.h" />
+    <ClInclude Include="..\db-models\Ebenezer\binder\EbenezerBinder.h" />
+    <ClInclude Include="..\db-models\Ebenezer\model\EbenezerModel.h" />
+    <ClInclude Include="..\db-models\Full\binder\FullBinder.h" />
+    <ClInclude Include="..\db-models\Full\model\FullModel.h" />
+    <ClInclude Include="..\db-models\ModelUtil\ModelUtil.h" />
+    <ClInclude Include="..\db-models\StoredProc\StoredProc.h" />
+    <ClInclude Include="..\db-models\VersionManager\binder\VersionManagerBinder.h" />
+    <ClInclude Include="..\db-models\VersionManager\model\VersionManagerModel.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

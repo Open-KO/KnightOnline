@@ -7,7 +7,11 @@ on:
     types: [labeled]
     
   workflow_dispatch:
-    
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
+  cancel-in-progress: true
+
 env:
   # We use a debug build for slightly faster build times
   BUILD_CONFIGURATION: Debug
@@ -42,8 +46,7 @@ jobs:
     # as needed from within All.sln; this ensures they're built first so they won't build again during
     # CodeQL monitoring.
     - name: Build third party dependencies
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" ThirdParty.slnx
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -53,8 +56,7 @@ jobs:
         build-mode: manual
 
     - name: Build all
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.sln
+      run: msbuild /p:Configuration="${{env.BUILD_CONFIGURATION}}" /p:Platform="${{env.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" All.slnx
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

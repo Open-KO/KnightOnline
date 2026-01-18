@@ -1,0 +1,100 @@
+name: "clang-tidy-check"
+
+on:
+  push:
+    branches:
+    - master
+
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
+    paths:
+      - '.github/workflows/clang-tidy-check.yml'
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+
+  pull_request:
+    branches:
+    - master
+
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
+    paths:
+      - '.github/workflows/clang-tidy-check.yml'
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
+  cancel-in-progress: true
+  
+jobs:
+  lint_windows:
+    permissions:
+      contents: read
+      pull-requests: read
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug]
+        BUILD_PLATFORM: [x64]
+
+    name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }} (Windows)"
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'false'
+
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - uses: lukka/get-cmake@latest
+
+    - name: Configure CMake
+      shell: pwsh
+      run: |
+        cmake -S . `
+          -B build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
+          -G "Ninja" `
+          -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_CONFIGURATION }} `
+          -DOPENKO_FETCH_CLIENT_ASSETS=FALSE `
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
+          -DCMAKE_DISABLE_PRECOMPILE_HEADERS=TRUE
+
+    - name: Build external CMake projects
+      shell: pwsh
+      run: |
+        cmake `
+          --build build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
+          --target libjpeg-turbo-project
+
+    - uses: Open-KO/cpp-linter-action@OpenKO
+      name: "Run linter"
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        version: "19"
+        database: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
+        ignore: "build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }}"
+        style: "" # disable clang-format checks. (1)
+        tidy-checks: "" # Use .clang-tidy config file. (2)
+        lines-changed-only: true
+        extensions: "c,cpp"
+        clang-tidy-extensions: "c,cpp,h,hpp,inl"
+        step-summary: true
+
+    - name: "Check clang-tidy result"
+      if: steps.linter.outputs.clang-tidy-checks-failed-errors > 0
+      run: exit 1

@@ -1,0 +1,902 @@
+﻿#include "pch.h"
+#include "Map.h"
+#include "Npc.h"
+#include "NpcThread.h"
+#include "Region.h"
+#include "RoomEvent.h"
+#include "AIServerApp.h"
+#include "User.h"
+
+#include <FileIO/FileReader.h>
+
+#include <shared/globals.h>
+#include <spdlog/spdlog.h>
+
+#include <cfloat>
+#include <filesystem>
+
+namespace AIServer
+{
+
+extern std::mutex g_region_mutex;
+
+MAP::MAP()
+{
+	m_pMain           = AIServerApp::instance();
+	m_nMapSize        = 0;
+	m_fUnitDist       = 0.0f;
+	m_fHeight         = nullptr;
+
+	m_sizeRegion.cx   = 0;
+	m_sizeRegion.cy   = 0;
+	m_sizeMap.cx      = 0;
+	m_sizeMap.cy      = 0;
+
+	m_pMap            = nullptr;
+	m_ppRegion        = nullptr;
+	//m_pRoomEvent = nullptr;
+	m_nServerNo       = 0;
+	m_nZoneNumber     = 0;
+	m_byRoomType      = 0;
+	m_byRoomEvent     = 0;
+	m_byRoomStatus    = 1;
+	m_byInitRoomCount = 0;
+	m_sKarusRoom      = 0;
+	m_sElmoradRoom    = 0;
+	//	for(int i=0; i<MAX_DUNGEON_BOSS_MONSTER; i++)
+	//		m_arDungeonBossMonster[i] = 1;
+}
+
+MAP::~MAP()
+{
+	RemoveMapData();
+	m_pMain = nullptr;
+}
+
+void MAP::RemoveMapData()
+{
+	//	int i, j, k;
+
+	if (m_ppRegion != nullptr)
+	{
+		for (int i = 0; i < m_sizeRegion.cx; i++)
+		{
+			delete[] m_ppRegion[i];
+			m_ppRegion[i] = nullptr;
+		}
+
+		delete[] m_ppRegion;
+		m_ppRegion = nullptr;
+	}
+
+	if (m_fHeight != nullptr)
+	{
+		for (int i = 0; i < m_nMapSize; i++)
+		{
+			delete[] m_fHeight[i];
+			m_fHeight[i] = nullptr;
+		}
+
+		delete[] m_fHeight;
+	}
+
+	if (m_pMap != nullptr)
+	{
+		for (int i = 0; i < m_sizeMap.cx; i++)
+		{
+			delete[] m_pMap[i];
+			m_pMap[i] = nullptr;
+		}
+
+		delete[] m_pMap;
+		m_pMap = nullptr;
+	}
+
+	if (!m_ObjectEventArray.IsEmpty())
+		m_ObjectEventArray.DeleteAllData();
+
+	if (!m_arRoomEventArray.IsEmpty())
+		m_arRoomEventArray.DeleteAllData();
+}
+
+bool MAP::IsMovable(int dest_x, int dest_y) const
+{
+	if (dest_x < 0 || dest_y < 0)
+		return false;
+
+	if (m_pMap == nullptr)
+		return false;
+
+	if (dest_x >= m_sizeMap.cx || dest_y >= m_sizeMap.cy)
+		return false;
+
+	return m_pMap[dest_x][dest_y].m_sEvent == 0;
+	//return m_pMap[dest_x][dest_y].m_bMove;
+}
+
+///////////////////////////////////////////////////////////////////////
+//	각 서버가 담당하고 있는 zone의 Map을 로드한다.
+//
+bool MAP::LoadMap(File& fs)
+{
+	LoadTerrain(fs);
+
+	m_N3ShapeMgr.Create((m_nMapSize - 1) * m_fUnitDist, (m_nMapSize - 1) * m_fUnitDist);
+
+	if (!m_N3ShapeMgr.LoadCollisionData(fs))
+		return false;
+
+	if ((m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Width()
+		|| (m_nMapSize - 1) * m_fUnitDist != m_N3ShapeMgr.Height())
+		return false;
+
+	int mapwidth    = (int) m_N3ShapeMgr.Width();
+
+	m_sizeRegion.cx = (int) (mapwidth / VIEW_DIST) + 1;
+	m_sizeRegion.cy = (int) (mapwidth / VIEW_DIST) + 1;
+
+	m_sizeMap.cx    = m_nMapSize;
+	m_sizeMap.cy    = m_nMapSize;
+
+	m_ppRegion      = new CRegion*[m_sizeRegion.cx];
+	for (int i = 0; i < m_sizeRegion.cx; i++)
+	{
+		m_ppRegion[i]             = new CRegion[m_sizeRegion.cy];
+		m_ppRegion[i]->m_byMoving = 0;
+	}
+
+	LoadObjectEvent(fs);
+	LoadMapTile(fs);
+
+	return true;
+}
+
+void MAP::LoadTerrain(File& fs)
+{
+	fs.Read(&m_nMapSize, sizeof(int)); // 가로세로 정보가 몇개씩인가?
+	fs.Read(&m_fUnitDist, sizeof(float));
+
+	m_fHeight = new float*[m_nMapSize];
+	for (int i = 0; i < m_nMapSize; i++)
+		m_fHeight[i] = new float[m_nMapSize];
+
+	for (int z = 0; z < m_nMapSize; z++)
+	{
+		for (int x = 0; x < m_nMapSize; x++)
+			fs.Read(&m_fHeight[x][z], sizeof(float)); // 높이값 읽어오기
+	}
+}
+
+float MAP::GetHeight(float x, float z)
+{
+	int iX = 0, iZ = 0;
+	float y = 0.0f, h1 = 0.0f, h2 = 0.0f, h3 = 0.0f;
+	float dX = 0.0f, dZ = 0.0f;
+
+	iX = static_cast<int>(x / m_fUnitDist);
+	iZ = static_cast<int>(z / m_fUnitDist);
+	//assert( iX, iZ가 범위내에 있는 값인지 체크하기);
+
+	dX = (x - iX * m_fUnitDist) / m_fUnitDist;
+	dZ = (z - iZ * m_fUnitDist) / m_fUnitDist;
+
+	//	assert(dX>=0.0f && dZ>=0.0f && dX<1.0f && dZ<1.0f);
+	if (!(dX >= 0.0f && dZ >= 0.0f && dX < 1.0f && dZ < 1.0f))
+		return FLT_MIN;
+
+	if ((iX + iZ) % 2 == 1)
+	{
+		if ((dX + dZ) < 1.0f)
+		{
+			h1        = m_fHeight[iX][iZ + 1];
+			h2        = m_fHeight[iX + 1][iZ];
+			h3        = m_fHeight[iX][iZ];
+
+			//if (dX == 1.0f) return h2;
+
+			float h12 = h1 + (h2 - h1) * dX;                      // h1과 h2사이의 높이값
+			float h32 = h3 + (h2 - h3) * dX;                      // h3과 h2사이의 높이값
+			y         = h32 + (h12 - h32) * ((dZ) / (1.0f - dX)); // 찾고자 하는 높이값
+		}
+		else
+		{
+			h1 = m_fHeight[iX][iZ + 1];
+			h2 = m_fHeight[iX + 1][iZ];
+			h3 = m_fHeight[iX + 1][iZ + 1];
+
+			if (dX == 0.0f)
+				return h1;
+
+			float h12 = h1 + (h2 - h1) * dX;                      // h1과 h2사이의 높이값
+			float h13 = h1 + (h3 - h1) * dX;                      // h1과 h3사이의 높이값
+			y         = h13 + (h12 - h13) * ((1.0f - dZ) / (dX)); // 찾고자 하는 높이값
+		}
+	}
+	else
+	{
+		if (dZ > dX)
+		{
+			h1        = m_fHeight[iX][iZ + 1];
+			h2        = m_fHeight[iX + 1][iZ + 1];
+			h3        = m_fHeight[iX][iZ];
+
+			//if (dX == 1.0f) return h2;
+
+			float h12 = h1 + (h2 - h1) * dX;                             // h1과 h2사이의 높이값
+			float h32 = h3 + (h2 - h3) * dX;                             // h3과 h2사이의 높이값
+			y         = h12 + (h32 - h12) * ((1.0f - dZ) / (1.0f - dX)); // 찾고자 하는 높이값
+		}
+		else
+		{
+			h1 = m_fHeight[iX][iZ];
+			h2 = m_fHeight[iX + 1][iZ];
+			h3 = m_fHeight[iX + 1][iZ + 1];
+
+			if (dX == 0.0f)
+				return h1;
+
+			float h12 = h1 + (h2 - h1) * dX;               // h1과 h2사이의 높이값
+			float h13 = h1 + (h3 - h1) * dX;               // h1과 h3사이의 높이값
+			y         = h12 + (h13 - h12) * ((dZ) / (dX)); // 찾고자 하는 높이값
+		}
+	}
+
+	return y;
+}
+
+bool MAP::ObjectIntersect(float x1, float z1, float y1, float x2, float z2, float y2)
+{
+	__Vector3 vec1(x1, y1, z1), vec2(x2, y2, z2);
+	__Vector3 vDir = vec2 - vec1;
+	float fSpeed   = vDir.Magnitude();
+	vDir.Normalize();
+
+	return m_N3ShapeMgr.CheckCollision(vec1, vDir, fSpeed);
+}
+
+void MAP::RegionUserAdd(int rx, int rz, int uid)
+{
+	if (rx < 0 || rz < 0 || rx >= m_sizeRegion.cx || rz >= m_sizeRegion.cy)
+		return;
+
+	int* pInt       = new int;
+	*pInt           = uid;
+
+	CRegion* region = &m_ppRegion[rx][rz];
+
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+
+	if (!region->m_RegionUserArray.PutData(uid, pInt))
+		delete pInt;
+}
+
+void MAP::RegionUserRemove(int rx, int rz, int uid)
+{
+	if (rx < 0 || rz < 0 || rx > m_sizeRegion.cx || rz > m_sizeRegion.cy)
+		return;
+
+	CRegion* region = &m_ppRegion[rx][rz];
+
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+	region->m_RegionUserArray.DeleteData(uid);
+}
+
+void MAP::RegionNpcAdd(int rx, int rz, int nid)
+{
+	if (rx < 0 || rz < 0 || rx >= m_sizeRegion.cx || rz >= m_sizeRegion.cy)
+		return;
+
+	int* pInt       = new int;
+	*pInt           = nid;
+
+	CRegion* region = &m_ppRegion[rx][rz];
+
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+
+	if (!region->m_RegionNpcArray.PutData(nid, pInt))
+	{
+		delete pInt;
+		spdlog::error(
+			"Map::RegionNpcAdd: RegionNpcArray put failed [x={} z={} npcId={}]", rx, rz, nid);
+	}
+
+	//TRACE(_T("+++ Map - RegionNpcAdd : x=%d,z=%d, nid=%d, total=%d \n"), rx,rz,nid, region->m_RegionNpcArray.GetSize());
+}
+
+void MAP::RegionNpcRemove(int rx, int rz, int nid)
+{
+	if (rx < 0 || rz < 0 || rx > m_sizeRegion.cx || rz > m_sizeRegion.cy)
+		return;
+
+	CRegion* region = &m_ppRegion[rx][rz];
+
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+	region->m_RegionNpcArray.DeleteData(nid);
+}
+
+void MAP::LoadMapTile(File& fs)
+{
+	//MapTile속성 읽기..
+	//	속성이 0이면 못 가는 곳.
+	//	1이면 그냥 가는 곳...
+	//	그외는 이벤트 ID.
+	//
+	int16_t** pEvent = new int16_t*[m_sizeMap.cx];
+
+	// 잠시 막아놓고..
+	for (int x = 0; x < m_sizeMap.cx; x++)
+	{
+		pEvent[x] = new int16_t[m_sizeMap.cx];
+		fs.Read(pEvent[x], sizeof(int16_t) * m_sizeMap.cy);
+	}
+
+	m_pMap = new CMapInfo*[m_sizeMap.cx];
+
+	for (int i = 0; i < m_sizeMap.cx; i++)
+		m_pMap[i] = new CMapInfo[m_sizeMap.cy];
+
+	int count = 0;
+	for (int i = 0; i < m_sizeMap.cy; i++)
+	{
+		for (int j = 0; j < m_sizeMap.cx; j++)
+		{
+			m_pMap[j][i].m_sEvent = (int16_t) pEvent[j][i];
+
+			// NOTE: The SMDs don't have the correct data.
+			// Since we can't trust their data, we must assume every tile is movable.
+			m_pMap[j][i].m_sEvent = 1;
+			//
+
+			if (m_pMap[j][i].m_sEvent >= 1)
+				count++;
+			//	m_pMap[j][i].m_lUser	= 0;
+			//	m_pMap[j][i].m_dwType = 0;
+		}
+	}
+	spdlog::trace("Map::LoadMapTile: move count={}", count);
+
+	/*	FILE* stream = fopen("c:\\move1.txt", "w");
+
+	for(int z=m_sizeMap.cy-1; z>=0; z--)
+	{
+		for(int x=0; x<m_sizeMap.cx; x++)
+		{
+			int v = m_pMap[x][z].m_sEvent;
+			fprintf(stream, "%d",v);
+		}
+		fprintf(stream, "\n");
+	}
+	fclose(stream);	*/
+
+	if (pEvent != nullptr)
+	{
+		for (int i = 0; i < m_sizeMap.cx; i++)
+		{
+			delete[] pEvent[i];
+			pEvent[i] = nullptr;
+		}
+
+		delete[] pEvent;
+		pEvent = nullptr;
+	}
+}
+
+int MAP::GetRegionUserSize(int rx, int rz)
+{
+	if (rx < 0 || rz < 0 || rx >= m_sizeRegion.cx || rz >= m_sizeRegion.cy)
+		return 0;
+
+	CRegion* region = &m_ppRegion[rx][rz];
+
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+	return region->m_RegionUserArray.GetSize();
+}
+
+int MAP::GetRegionNpcSize(int rx, int rz)
+{
+	if (rx < 0 || rz < 0 || rx >= m_sizeRegion.cx || rz >= m_sizeRegion.cy)
+		return 0;
+
+	CRegion* region = &m_ppRegion[rx][rz];
+
+	std::lock_guard<std::mutex> lock(g_region_mutex);
+	return region->m_RegionNpcArray.GetSize();
+}
+
+void MAP::LoadObjectEvent(File& fs)
+{
+	int iEventObjectCount = 0;
+	__Vector3 vPos(0, 0, 0);
+	_OBJECT_EVENT* pEvent = nullptr;
+
+	fs.Read(&iEventObjectCount, 4);
+	for (int i = 0; i < iEventObjectCount; i++)
+	{
+		pEvent = new _OBJECT_EVENT;
+		fs.Read(&pEvent->sBelong, 4); // 소속
+		fs.Read(&pEvent->sIndex, 2);  // Event Index
+		fs.Read(&pEvent->sType, 2);
+		fs.Read(&pEvent->sControlNpcID, 2);
+		fs.Read(&pEvent->sStatus, 2);
+		fs.Read(&pEvent->fPosX, 4);
+		fs.Read(&pEvent->fPosY, 4);
+		fs.Read(&pEvent->fPosZ, 4);
+
+		//TRACE(_T("Object - belong=%d, index=%d, type=%d, con=%d, sta=%d\n"), pEvent->sBelong, pEvent->sIndex, pEvent->sType, pEvent->sControlNpcID, pEvent->sStatus);
+
+		// 작업할것 : 맵데이터가 바뀌면 Param1이 2이면 성문인것을 판단..  3이면 레버..
+		if (pEvent->sType == OBJECT_TYPE_GATE || pEvent->sType == OBJECT_TYPE_DOOR_TOPDOWN
+			|| pEvent->sType == OBJECT_TYPE_GATE_LEVER || pEvent->sType == OBJECT_TYPE_BARRICADE
+			|| pEvent->sType == OBJECT_TYPE_REMOVE_BIND || pEvent->sType == OBJECT_TYPE_ANVIL
+			|| pEvent->sType == OBJECT_TYPE_ARTIFACT)
+			m_pMain->AddObjectEventNpc(pEvent, m_nZoneNumber);
+
+		if (pEvent->sIndex <= 0)
+			continue;
+
+		if (!m_ObjectEventArray.PutData(pEvent->sIndex, pEvent))
+		{
+			spdlog::error(
+				"Map::LoadObjectEvent: ObjectEventArray put failed [eventId={} zoneId={}]",
+				pEvent->sIndex, m_nZoneNumber);
+			delete pEvent;
+			pEvent = nullptr;
+		}
+	}
+}
+
+bool MAP::LoadRoomEvent(int zone_number, const std::filesystem::path& eventDir)
+{
+	uint8_t byte = 0;
+	char buf[4096] {}, first[1024] {}, temp[1024] {};
+	int index = 0, t_index = 0, logic = 0, exec = 0, event_num = 0, nation = 0;
+
+	CRoomEvent* pEvent               = nullptr;
+
+	std::filesystem::path eventPath  = eventDir;
+	eventPath                       /= std::to_string(zone_number) + ".evt";
+
+	std::error_code ec;
+	if (!std::filesystem::exists(eventPath, ec))
+		return true;
+
+	// Resolve it to strip the relative references (to be nice).
+	// NOTE: Requires the file to exist.
+	eventPath = std::filesystem::canonical(eventPath, ec);
+	if (ec)
+		return false;
+
+	uintmax_t length = std::filesystem::file_size(eventPath, ec);
+	if (ec)
+		return false;
+
+	FileReader file;
+	if (!file.OpenExisting(eventPath))
+		return false;
+
+	std::u8string filenameUtf8 = eventPath.u8string();
+
+	// NOTE: spdlog is a C++11 library that doesn't support std::filesystem or std::u8string
+	// This just ensures the path is always explicitly UTF-8 in a cross-platform way.
+	std::string filename(filenameUtf8.begin(), filenameUtf8.end());
+
+	int lineNumber  = 0;
+	uintmax_t count = 0;
+
+	while (count < length)
+	{
+		file.Read(&byte, 1);
+		++count;
+
+		if ((char) byte != '\r' && (char) byte != '\n')
+			buf[index++] = byte;
+
+		if ((char) byte == '\n' || count == length)
+		{
+			++lineNumber;
+
+			if (index <= 1)
+				continue;
+
+			buf[index] = (uint8_t) 0;
+			t_index    = 0;
+
+			// 주석에 대한 처리
+			if (buf[t_index] == ';' || buf[t_index] == '/')
+			{
+				index = 0;
+				continue;
+			}
+
+			ParseSpace(first, buf, t_index);
+
+			if (0 == strcmp(first, "ROOM"))
+			{
+				logic = 0;
+				exec  = 0;
+
+				ParseSpace(temp, buf, t_index);
+				event_num = atoi(temp);
+
+				if (m_arRoomEventArray.GetData(event_num) != nullptr)
+				{
+					spdlog::error("Map::LoadRoomEvent: Duplicate event definition [eventId={} "
+								  "zoneId={} lineNumber={}]",
+						event_num, m_nZoneNumber, lineNumber);
+					return false;
+				}
+
+				pEvent = SetRoomEvent(event_num);
+			}
+			else if (0 == strcmp(first, "TYPE"))
+			{
+				ParseSpace(temp, buf, t_index);
+				m_byRoomType = atoi(temp);
+			}
+			else if (0 == strcmp(first, "L") || 0 == strcmp(first, "O")
+					 || 0 == strcmp(first, "END"))
+			{
+				if (pEvent == nullptr)
+				{
+					spdlog::error(
+						"Map::LoadRoomEvent: parsing failed - '{}' missing existing event "
+						"[zoneId={} eventId={} lineNumber={}]",
+						first, zone_number, event_num, lineNumber);
+					return false;
+				}
+			}
+			else if (0 == strcmp(first, "E"))
+			{
+				if (pEvent == nullptr)
+				{
+					spdlog::error(
+						"Map::LoadRoomEvent: parsing failed - '{}' missing existing event "
+						"[zoneId={} eventId={} lineNumber={}]",
+						first, zone_number, event_num, lineNumber);
+					return false;
+				}
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_Exec[exec].sNumber = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_Exec[exec].sOption_1 = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_Exec[exec].sOption_2 = atoi(temp);
+
+				exec++;
+			}
+			else if (0 == strcmp(first, "A"))
+			{
+				if (pEvent == nullptr)
+				{
+					spdlog::error(
+						"Map::LoadRoomEvent: parsing failed - '{}' missing existing event "
+						"[zoneId={} eventId={} lineNumber={}]",
+						first, zone_number, event_num, lineNumber);
+					return false;
+				}
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_Logic[logic].sNumber = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_Logic[logic].sOption_1 = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_Logic[logic].sOption_2 = atoi(temp);
+
+				logic++;
+				pEvent->m_byCheck = logic;
+			}
+			else if (0 == strcmp(first, "NATION"))
+			{
+				if (pEvent == nullptr)
+				{
+					spdlog::error(
+						"Map::LoadRoomEvent: parsing failed - '{}' missing existing event "
+						"[zoneId={} eventId={} lineNumber={}]",
+						first, zone_number, event_num, lineNumber);
+					return false;
+				}
+
+				ParseSpace(temp, buf, t_index);
+				nation = atoi(temp);
+
+				if (nation == KARUS_ZONE)
+					++m_sKarusRoom;
+				else if (nation == ELMORAD_ZONE)
+					++m_sElmoradRoom;
+			}
+			else if (0 == strcmp(first, "POS"))
+			{
+				if (pEvent == nullptr)
+				{
+					spdlog::error(
+						"Map::LoadRoomEvent: parsing failed - '{}' missing existing event "
+						"[zoneId={} eventId={} lineNumber={}]",
+						first, zone_number, event_num, lineNumber);
+					return false;
+				}
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iInitMinX = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iInitMinZ = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iInitMaxX = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iInitMaxZ = atoi(temp);
+			}
+			else if (0 == strcmp(first, "POSEND"))
+			{
+				if (pEvent == nullptr)
+				{
+					spdlog::error(
+						"Map::LoadRoomEvent: parsing failed - '{}' missing existing event "
+						"[zoneId={} eventId={} lineNumber={}]",
+						first, zone_number, event_num, lineNumber);
+					return false;
+				}
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iEndMinX = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iEndMinZ = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iEndMaxX = atoi(temp);
+
+				ParseSpace(temp, buf, t_index);
+				pEvent->m_iEndMaxZ = atoi(temp);
+			}
+			else if (isalnum(first[0]))
+			{
+				spdlog::warn("Map::LoadRoomEvent({}): unhandled opcode '{}' ({}:{})", zone_number,
+					first, filename, lineNumber);
+			}
+
+			index = 0;
+		}
+	}
+
+	return true;
+}
+
+int MAP::IsRoomCheck(float fx, float fz)
+{
+	// dungeion work
+	// 현재의 존이 던젼인지를 판단, 아니면 리턴처리
+
+	CRoomEvent* pRoom = nullptr;
+	// char notify[100] {};
+
+	int nSize         = m_arRoomEventArray.GetSize();
+	int nX            = (int) fx;
+	int nZ            = (int) fz;
+	int minX = 0, minZ = 0, maxX = 0, maxZ = 0;
+	int room_number = 0;
+
+	for (int i = 1; i < nSize + 1; i++)
+	{
+		pRoom = m_arRoomEventArray.GetData(i);
+		if (pRoom == nullptr)
+			continue;
+
+		// 방이 실행중이거나 깬(clear) 상태라면 검색하지 않음
+		if (pRoom->m_byStatus == 3)
+			continue;
+
+		bool bFlag_1 = false;
+		bool bFlag_2 = false;
+
+		// 방이 초기화 상태
+		if (pRoom->m_byStatus == 1)
+		{
+			minX = pRoom->m_iInitMinX;
+			minZ = pRoom->m_iInitMinZ;
+			maxX = pRoom->m_iInitMaxX;
+			maxZ = pRoom->m_iInitMaxZ;
+		}
+		// 진행중인 상태
+		else if (pRoom->m_byStatus == 2)
+		{
+			// 목표지점까지 이동하는게 아니라면,,
+			if (pRoom->m_Logic[0].sNumber != 4)
+				continue;
+
+			minX = pRoom->m_iEndMinX;
+			minZ = pRoom->m_iEndMinZ;
+			maxX = pRoom->m_iEndMaxX;
+			maxZ = pRoom->m_iEndMaxZ;
+		}
+
+		if (minX < maxX)
+		{
+			if (nX >= minX && nX < maxX)
+				bFlag_1 = true;
+		}
+		else
+		{
+			if (nX >= maxX && nX < minX)
+				bFlag_1 = true;
+		}
+
+		if (minZ < maxZ)
+		{
+			if (nZ >= minZ && nZ < maxZ)
+				bFlag_2 = true;
+		}
+		else
+		{
+			if (nZ >= maxZ && nZ < minZ)
+				bFlag_2 = true;
+		}
+
+		if (bFlag_1 && bFlag_2)
+		{
+			// 방이 초기화 상태
+			if (pRoom->m_byStatus == 1)
+			{
+				pRoom->m_byStatus   = 2; // 진행중 상태로 방상태 변환
+				pRoom->m_fDelayTime = TimeGet();
+				room_number         = i;
+				spdlog::trace("Map::IsRoomCheck: [roomEventId={} zoneId={} x={} z={}]", i,
+					m_nZoneNumber, nX, nZ);
+				//wsprintf(notify, "** 알림 : [%d Zone][%d] 방에 들어오신것을 환영합니다 **", m_nZoneNumber, pRoom->m_sRoomNumber);
+				//m_pMain->SendSystemMsg( notify, m_nZoneNumber, PUBLIC_CHAT, SEND_ALL);
+			}
+			// 진행중인 상태
+			else if (pRoom->m_byStatus == 2)
+			{
+				pRoom->m_byStatus = 3; // 클리어 상태로
+				//wsprintf(notify, "** 알림 : [%d Zone][%d] 목표지점까지 도착해서 클리어 됩니다ㅇ **", m_nZoneNumber, pRoom->m_sRoomNumber);
+				//m_pMain->SendSystemMsg( notify, m_nZoneNumber, PUBLIC_CHAT, SEND_ALL);
+			}
+
+			return room_number;
+		}
+	}
+
+	return room_number;
+}
+
+CRoomEvent* MAP::SetRoomEvent(int number)
+{
+	CRoomEvent* pEvent = m_arRoomEventArray.GetData(number);
+	if (pEvent != nullptr)
+	{
+		spdlog::error(
+			"Map::SetRoomEvent: RoomEvent duplicate definition [roomEventId={} zoneId={}]", number,
+			m_nZoneNumber);
+		return nullptr;
+	}
+
+	pEvent                = new CRoomEvent();
+	pEvent->m_iZoneNumber = m_nZoneNumber;
+	pEvent->m_sRoomNumber = number;
+	if (!m_arRoomEventArray.PutData(pEvent->m_sRoomNumber, pEvent))
+	{
+		delete pEvent;
+		pEvent = nullptr;
+		return nullptr;
+	}
+
+	return pEvent;
+}
+
+bool MAP::IsRoomStatusCheck()
+{
+	CRoomEvent* pRoom = nullptr;
+	int nTotalRoom    = m_arRoomEventArray.GetSize() + 1;
+	int nClearRoom    = 1;
+
+	// 방을 초기화중
+	if (m_byRoomStatus == 2)
+		m_byInitRoomCount++;
+
+	for (int i = 1; i < nTotalRoom; i++)
+	{
+		pRoom = m_arRoomEventArray.GetData(i);
+		if (pRoom == nullptr)
+		{
+			spdlog::warn("Map::IsRoomStatusCheck: RoomEvent null [roomEventId={} zoneId={}", i,
+				m_nZoneNumber);
+			continue;
+			//return nullptr;
+		}
+
+		// 방 진행중
+		if (m_byRoomStatus == 1)
+		{
+			if (pRoom->m_byStatus == 3)
+				nClearRoom += 1;
+
+			if (m_byRoomType == 0)
+			{
+				// 방이 다 클리어 되었어여.. 초기화 해줘여,,
+				if (nTotalRoom == nClearRoom)
+				{
+					m_byRoomStatus = 2;
+					spdlog::trace("Map::IsRoomStatusCheck: all rooms cleared [zoneId={} "
+								  "roomType={} roomStatus={}]",
+						m_nZoneNumber, m_byRoomType, m_byRoomStatus);
+					return true;
+				}
+			}
+		}
+		// 방을 초기화중
+		else if (m_byRoomStatus == 2)
+		{
+			if (m_byInitRoomCount >= 10)
+			{
+				pRoom->InitializeRoom(); // 실제 방을 초기화
+				nClearRoom += 1;
+
+				// 방이 초기화 되었어여..
+				if (nTotalRoom == nClearRoom)
+				{
+					m_byRoomStatus = 3;
+					spdlog::trace("Map::IsRoomStatusCheck: room initialized [zoneId={} roomType={} "
+								  "roomStatus={}]",
+						m_nZoneNumber, m_byRoomType, m_byRoomStatus);
+					return true;
+				}
+			}
+		}
+		// 방 초기화 완료
+		else if (m_byRoomStatus == 3)
+		{
+			m_byRoomStatus    = 1;
+			m_byInitRoomCount = 0;
+			spdlog::trace(
+				"Map::IsRoomStatusCheck: room restarted [zoneId={} roomType={} roomStatus={}]",
+				m_nZoneNumber, m_byRoomType, m_byRoomStatus);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void MAP::InitializeRoom()
+{
+	CRoomEvent* pRoom = nullptr;
+	int nTotalRoom    = m_arRoomEventArray.GetSize() + 1;
+
+	for (int i = 1; i < nTotalRoom; i++)
+	{
+		pRoom = m_arRoomEventArray.GetData(i);
+		if (pRoom == nullptr)
+		{
+			spdlog::error(
+				"Map::InitializeRoom: RoomEvent null [roomEventId={} zoneId={}]", i, m_nZoneNumber);
+			continue;
+		}
+
+		pRoom->InitializeRoom(); // 실제 방을 초기화
+		m_byRoomStatus    = 1;
+		m_byInitRoomCount = 0;
+	}
+}
+
+bool MAP::IsValidPosition(float x, float z) const
+{
+	int mapMaxX = static_cast<int>((m_sizeMap.cx - 1) * m_fUnitDist);
+	int mapMaxZ = static_cast<int>((m_sizeMap.cy - 1) * m_fUnitDist);
+
+	if (x < 0 || x > mapMaxX)
+		return false;
+
+	if (z < 0 || z > mapMaxZ)
+		return false;
+
+	return true;
+}
+
+} // namespace AIServer

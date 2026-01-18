@@ -1,0 +1,110 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/tests/">
+    <Project Path="tests/FileIO/FileIO.Tests.vcxproj" Id="e3207223-b4c0-40de-af95-4954231d1c7b">
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+    </Project>
+    <Project Path="tests/MathUtils/MathUtils.Tests.vcxproj" Id="f1626769-3d40-4524-912e-4b0780393b37">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" />
+      <BuildDependency Project="src/MathUtils/MathUtils.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/_deps/">
+    <Project Path="src/Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+    </Project>
+    <Project Path="src/N3Base/N3Base_client.vcxproj" Id="d06d505a-f28e-343f-09f4-c3809398b508">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project Path="src/N3Base/N3Base_tool.vcxproj" Id="74c1cb7d-63cd-40d3-abea-2a17eb3719ed">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" />
+      <BuildDependency Project="src/FileIO/FileIO.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project Path="src/db-library/db-library.vcxproj" Id="05054154-a8f1-4094-ab01-e1402cd9f65a">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
+    </Project>
+    <Project Path="deps/db-models-msvc/db-models.vcxproj" Id="17ef3a49-55b8-4fb6-883f-d1d02e20c11d">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
+      <Build Project="false" />
+    </Project>
+    <Project Path="src/Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
+    </Project>
+    <Project Path="src/FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" />
+    </Project>
+    <Project DefaultStartup="true" Path="src/MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
+    <Project Path="src/Server/shared-server/shared-server.vcxproj" Id="c630cf44-84a8-4586-a710-c420bf54dc13">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-asio.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
+      <BuildDependency Project="src/db-library/db-library.vcxproj" />
+      <BuildDependency Project="src/shared/shared.vcxproj" />
+    </Project>
+    <Project Path="src/shared/shared.vcxproj" Id="c2feb024-8e46-4533-918b-7196caaa4e7d">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/_deps/fetch wrappers/">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-argparse.vcxproj" Id="61a124fb-035e-4560-8499-198c6299b7da" />
+    <Project Path="deps/fetch-and-build-wrappers/fetch-asio.vcxproj" Id="98f92112-9ec7-4f20-a6c3-a0346acb271c">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" Id="1b69c1f8-b156-4bca-aad3-168fb37b08cf">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" Id="057c1abc-6137-37a9-9935-8cf811d7ceda">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-nanodbc.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-djb2.vcxproj" Id="9e410f3d-ef94-41fa-a373-b2136d5f3d1e">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" Id="50d2b40a-5ae4-f5fb-4d79-ac6cc3c75274">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" Id="d4f3d338-a7ef-430c-ad99-2fc6a591a711">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-ko-client-assets.vcxproj" Id="0047bee8-1361-6bcb-3edf-26dcb127e1b5">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" Id="673f0d3f-f447-43fd-856e-fab4e776debc">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" Id="47beb39c-b62a-4e48-8a9f-0ded4450cf9e">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" Id="b24123a5-2fe3-4ad6-9b8d-c3090e87408d">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-nanodbc.vcxproj" Id="3f38fd98-5c7e-97c7-70a9-fda7e34a0cfc">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-openal-soft.vcxproj" Id="fe6338e2-792a-4c48-a2b9-95411e36d336">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-spdlog.vcxproj" Id="10898c84-af45-f0b0-5144-ea801df15503">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" Id="99b647bc-d49e-4322-c338-dc20acc4239b">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
+  </Folder>
+</Solution>

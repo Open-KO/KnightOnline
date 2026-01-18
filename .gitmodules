@@ -1,38 +1,71 @@
 [submodule "deps/dx9sdk"]
 	path = deps/dx9sdk
 	url = https://github.com/Open-KO/microsoft-directx-sdk
-[submodule "Client/Data"]
-	path = Client/Data
+	shallow = true
+[submodule "assets/Client"]
+	path = assets/Client
 	url = https://github.com/Open-KO/ko-client-assets
 	branch = openko-1298
+	shallow = true
 [submodule "deps/zlib"]
 	path = deps/zlib
-	url = https://github.com/madler/zlib.git
+	url = https://github.com/madler/zlib
 	branch = master
+	shallow = true
 [submodule "deps/libjpeg-turbo"]
 	path = deps/libjpeg-turbo
 	url = https://github.com/libjpeg-turbo/libjpeg-turbo
 	branch = main
-[submodule "deps/db-modules"]
-	path = deps/db-modules
-	url = https://github.com/Open-KO/OpenKO-db-modules
+	shallow = true
+[submodule "deps/db-models"]
+	path = deps/db-models
+	url = https://github.com/Open-KO/OpenKO-db-models
 	branch = main
+	shallow = true
 [submodule "deps/nanodbc"]
 	path = deps/nanodbc
-	url = https://github.com/Open-KO/nanodbc.git
+	url = https://github.com/Open-KO/nanodbc
 	branch = OpenKO
-[submodule "deps/db-library"]
-	path = deps/db-library
-	url = https://github.com/Open-KO/OpenKO-db-library.git
-	branch = main
+	shallow = true
 [submodule "deps/spdlog"]
 	path = deps/spdlog
-	url = https://github.com/gabime/spdlog.git
+	url = https://github.com/Open-KO/spdlog
 	branch = v1.x
+	shallow = true
 [submodule "deps/mpg123"]
 	path = deps/mpg123
-	url = https://github.com/madebr/mpg123.git
-	branch = master-with-github-ci
+	url = https://github.com/Open-KO/mpg123
+	shallow = true
 [submodule "deps/djb2"]
 	path = deps/djb2
-	url = https://github.com/ymmfty0/djb2
+	url = https://github.com/Open-KO/djb2
+	shallow = true
+[submodule "deps/asio"]
+	path = deps/asio
+	url = https://github.com/chriskohlhoff/asio
+	branch = asio-1-36-0
+	shallow = true
+[submodule "deps/boost"]
+	path = deps/boost
+	url = https://github.com/Open-KO/OpenKO-boost
+	shallow = true
+[submodule "deps/argparse"]
+	path = deps/argparse
+	url = https://github.com/p-ranav/argparse
+	shallow = true
+[submodule "deps/googletest"]
+	path = deps/googletest
+	url = https://github.com/google/googletest
+	shallow = true
+[submodule "deps/llfio"]
+	path = deps/llfio
+	url = https://github.com/Open-KO/llfio
+	shallow = true
+[submodule "deps/llfio-msvc-dep-headers"]
+	path = deps/llfio-msvc-dep-headers
+	url = https://github.com/Open-KO/llfio-msvc-dep-headers
+	shallow = true
+[submodule "deps/openal-soft"]
+	path = deps/openal-soft
+	url = https://github.com/Open-KO/openal-soft
+	shallow = true

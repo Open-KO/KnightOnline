@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{1B69C1F8-B156-4BCA-AAD3-168FB37B08CF}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="UserMacros">
+    <DependencyName>boost</DependencyName>
+    <LocalDependencyDir>deps\boost</LocalDependencyDir>
+    <RealProjectPath></RealProjectPath>
+  </PropertyGroup>
+  <Import Project="$(PropsDir)fetch_wrapper.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

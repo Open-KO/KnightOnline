@@ -1,4 +1,4 @@
-*.vcxproj.user
+*.user
 *.tlog
 *.idb
 *.res
@@ -53,8 +53,9 @@ lib/
 warfare_config.h
 server_config.h
 *.idea
-All.sln.DotSettings.user
 *.txt
 last-build-states/
-module-output/
+.env
 
+# Do not ignore CMakeLists.txt
+!CMakeLists.txt

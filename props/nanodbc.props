@@ -7,7 +7,7 @@
       <AdditionalIncludeDirectories>$(DependencyDir)nanodbc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>nanodbc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nanodbc.lib;odbc32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 </Project>

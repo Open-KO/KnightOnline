@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets">
+    <Import Project="disable_external_analysis.props" />
     <Import Project="directx9.props" />
+    <Import Project="FileIO.props" />
+    <Import Project="MathUtils.props" />
+    <Import Project="OpenAL-soft.props" />
     <Import Project="spdlog.props" />
   </ImportGroup>
   <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(RootDir)src;$(RootDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(StaticLibDir);$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <!-- CN3SndMgr depends on mpg123; mpg123 depends on shlwapi -->
-      <AdditionalDependencies>mpg123.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shared.lib;mpg123.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 </Project>

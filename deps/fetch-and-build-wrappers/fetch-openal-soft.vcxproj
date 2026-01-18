@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{FE6338E2-792A-4C48-A2B9-95411E36D336}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="UserMacros">
+    <DependencyName>openal-soft</DependencyName>
+    <LocalDependencyDir>deps\openal-soft</LocalDependencyDir>
+    <RealProjectPath>$(RootDir)deps\openal-soft-msvc\OpenAL.slnx</RealProjectPath>
+  </PropertyGroup>
+  <Import Project="$(PropsDir)fetch_wrapper.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

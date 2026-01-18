@@ -1,0 +1,52 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: "Build client (MSBuild)"
+
+on:
+  push:
+    branches:
+    - master
+
+    paths:
+      - '.github/workflows/build_msbuild_client.yml'
+      - 'Client.slnx'
+
+  pull_request:
+    branches:
+    - master
+
+    paths:
+      - '.github/workflows/build_msbuild_client.yml'
+      - 'Client.slnx'
+
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        BUILD_PLATFORM: [Win32, x64]
+
+    name: "Client: ${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'false'
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build client
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Client.slnx
