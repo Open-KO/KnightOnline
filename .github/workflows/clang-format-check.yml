@@ -1,0 +1,59 @@
+name: "clang-format-check"
+
+on:
+  push:
+    branches:
+    - master
+
+    paths:
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+      
+  pull_request:
+    branches:
+    - master
+
+    paths:
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+
+  merge_group: 
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
+  cancel-in-progress: true
+
+jobs:
+  formatting-check:
+    name: Format check
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        path:
+          - 'src/Client'
+          - 'src/db-library'
+          - 'src/FileIO'
+          - 'src/MathUtils'
+          - 'src/N3Base'
+          - 'src/Server'
+          - 'src/shared'
+          - 'src/Tools'
+          - 'tests'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run clang-format style check for C/C++ programs.
+        uses: jidicula/clang-format-action@v4.16.0
+        with:
+          clang-format-version: '19' # VS2022 uses 19.1.5, VS2026 currently uses 20.1.8
+          check-path: ${{ matrix.path }}
+          include-regex: '^.*\.((((c|C)(c|pp|xx|\+\+)?$)|((h|H)h?(pp|xx|\+\+)?$))|(inl))$'

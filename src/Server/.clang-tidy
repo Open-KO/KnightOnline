@@ -1,0 +1,4 @@
+InheritParentConfig: true
+
+WarningsAsErrors: >
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic

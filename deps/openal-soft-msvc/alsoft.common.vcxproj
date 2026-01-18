@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9C7C93D3-CB1C-3340-BF8A-B2A157EF7092}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>alsoft.common</ProjectName>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <OutDir>$(StaticLibDir)</OutDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(DependencyDir)openal-soft\include;$(ProjectDir);$(DependencyDir)openal-soft\common;$(DependencyDir)openal-soft\gsl\include;$(DependencyDir)openal-soft\fmt-11.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4127;4324;4373</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_WIN32;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;_MSVC_STL_HARDENING=1</PreprocessorDefinitions>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_WIN32;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;_MSVC_STL_HARDENING=1</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(DependencyDir)openal-soft\include;$(ProjectDir);$(DependencyDir)openal-soft\common;$(DependencyDir)openal-soft\gsl\include;$(DependencyDir)openal-soft\fmt-11.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(DependencyDir)openal-soft\include;$(ProjectDir);$(DependencyDir)openal-soft\common;$(DependencyDir)openal-soft\gsl\include;$(DependencyDir)openal-soft\fmt-11.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\openal-soft\common\albit.h" />
+    <ClCompile Include="..\openal-soft\common\alcomplex.cpp" />
+    <ClInclude Include="..\openal-soft\common\alcomplex.h" />
+    <ClInclude Include="..\openal-soft\common\alformat.hpp" />
+    <ClCompile Include="..\openal-soft\common\almalloc.cpp" />
+    <ClInclude Include="..\openal-soft\common\almalloc.h" />
+    <ClInclude Include="..\openal-soft\common\alnumeric.h" />
+    <ClCompile Include="..\openal-soft\common\alstring.cpp" />
+    <ClInclude Include="..\openal-soft\common\alstring.h" />
+    <ClCompile Include="..\openal-soft\common\althrd_setname.cpp" />
+    <ClInclude Include="..\openal-soft\common\althrd_setname.h" />
+    <ClInclude Include="..\openal-soft\common\althreads.h" />
+    <ClInclude Include="..\openal-soft\common\altypes.hpp" />
+    <ClInclude Include="..\openal-soft\common\atomic.h" />
+    <ClInclude Include="..\openal-soft\common\comptr.h" />
+    <ClCompile Include="..\openal-soft\common\dynload.cpp" />
+    <ClInclude Include="..\openal-soft\common\dynload.h" />
+    <ClInclude Include="..\openal-soft\common\dlopennote.h" />
+    <ClInclude Include="..\openal-soft\common\expected.hpp" />
+    <ClCompile Include="..\openal-soft\common\filesystem.cpp" />
+    <ClInclude Include="..\openal-soft\common\filesystem.h" />
+    <ClInclude Include="..\openal-soft\common\flexarray.h" />
+    <ClInclude Include="..\openal-soft\common\intrusive_ptr.h" />
+    <ClInclude Include="..\openal-soft\common\opthelpers.h" />
+    <ClCompile Include="..\openal-soft\common\pffft.cpp" />
+    <ClInclude Include="..\openal-soft\common\pffft.h" />
+    <ClInclude Include="..\openal-soft\common\phase_shifter.h" />
+    <ClCompile Include="..\openal-soft\common\polyphase_resampler.cpp" />
+    <ClInclude Include="..\openal-soft\common\polyphase_resampler.h" />
+    <ClInclude Include="..\openal-soft\common\pragmadefs.h" />
+    <ClInclude Include="..\openal-soft\common\ringbuffer.h" />
+    <ClCompile Include="..\openal-soft\common\strutils.cpp" />
+    <ClInclude Include="..\openal-soft\common\strutils.hpp" />
+    <ClInclude Include="..\openal-soft\common\vecmat.h" />
+    <ClInclude Include="..\openal-soft\common\vector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="fmt-11.2.0\alsoft.fmt.vcxproj">
+      <Project>{69B3474C-2AC8-380C-B006-BDF50ED85F92}</Project>
+      <Name>alsoft.fmt</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

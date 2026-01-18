@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="alsoft.common.vcxproj" Id="9c7c93d3-cb1c-3340-bf8a-b2a157ef7092">
+    <BuildDependency Project="fmt-11.2.0\alsoft.fmt.vcxproj" />
+  </Project>
+  <Project Path="fmt-11.2.0\alsoft.fmt.vcxproj" Id="69b3474c-2ac8-380c-b006-bdf50ed85f92" />
+  <Project Path="OpenAL.vcxproj" Id="ba18c4c9-1dab-3d7c-9187-bdccaa937a19">
+    <BuildDependency Project="fmt-11.2.0\alsoft.fmt.vcxproj" />
+  </Project>
+</Solution>

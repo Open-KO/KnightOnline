@@ -1,0 +1,85 @@
+# persistent storage
+volumes:
+  sqlserver_data:
+  sqlserver_scripts:
+  kodb_util_data:
+
+# shared container network
+networks:
+  backend:
+
+# Use 'docker-compose down --rmi all -v' to completely remove database images.
+# This is useful for when you want to reset the database to the current
+# standard saved in the OpenKO-db project.
+services:
+  # Microsoft SQL Server service
+  sqlserver:
+    #image: mcr.microsoft.com/mssql/server:2022-latest
+    build: docker/sqlserver
+    # required to make docker desktop (windows) behave correctly
+    x-buildkit: true
+    networks:
+      - backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
+    ports:
+      # internal port is always 1433, but it can be port-forwarded to 
+      # a different host port using SQL_PORT
+      - ${SQL_PORT:-1433}:1433
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - sqlserver_scripts:/var/opt/appscripts
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "/var/opt/appscripts/healthcheck.sh"]
+      interval: 3s
+      retries: 30
+      start_period: 10s
+      timeout: 3s
+  sqlserver.configurator:
+    #image: mcr.microsoft.com/mssql/server:2022-latest
+    build: docker/sqlserver
+    # required to make docker desktop (windows) behave correctly
+    x-buildkit: true
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - backend
+    command: >
+      bash -c '
+      /var/opt/appscripts/configurator.sh;
+      '
+
+  # Service to do a clean load of the KN_online database from Git
+  kodb-util:
+    build: docker/kodb-util/
+    # required to make docker desktop (windows) behave correctly
+    x-buildkit: true
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-D0ckeIzKn!ght}
+      - SQL_PORT=${SQL_PORT:-1433}
+      - GAME_DB_NAME=${GAME_DB_NAME:-KN_online}
+      - GAME_DB_USER=${GAME_DB_USER:-knight}
+      - GAME_DB_PASS=${GAME_DB_PASS:-knight}
+      - GAME_DB_SCHEMA=${GAME_DB_SCHEMA:-knight}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - backend
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - kodb_util_data:/var/lib/app

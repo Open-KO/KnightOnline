@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelRecordSet.h" />
+    <ClInclude Include="SqlBuilder.h" />
+    <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="RecordSetLoader.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="RecordSetLoader_STLMap.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="RecordSetLoader_Vector.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionManager.h" />
+    <ClInclude Include="Connection.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="DatasourceConfig.h" />
+    <ClInclude Include="fwd.h" />
+    <ClInclude Include="PoolConnection.h" />
+    <ClInclude Include="StoredProc.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ConnectionManager.cpp" />
+    <ClCompile Include="Connection.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PoolConnection.cpp" />
+    <ClCompile Include="utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="helpers">
+      <UniqueIdentifier>{8d53fdf3-378c-4703-a5ff-cbdcef7fc479}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

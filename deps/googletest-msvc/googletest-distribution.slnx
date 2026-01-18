@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Solution>
+	<Configurations>
+		<BuildType Name="Debug"/>
+		<BuildType Name="Release"/>
+		<Platform Name="x64"/>
+		<Platform Name="Win32"/>
+	</Configurations>
+	<Project Path="googlemock/gmock.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="1ba905cb-345f-3d15-aabd-4ab5645c55b0" />
+	<Project Path="googlemock/gmock_main.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="d49b796f-c46c-3d4a-b5de-8a568cddab82" />
+	<Project Path="googletest/gtest.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="53f55b01-c4e3-3631-8b23-2f71e7ca6c13" />
+	<Project Path="googletest/gtest_main.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="36a43a72-097c-315a-a622-34376fc0b448">
+		<BuildDependency Project="googletest/gtest.vcxproj"/>
+	</Project>
+</Solution>

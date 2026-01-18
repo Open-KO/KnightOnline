@@ -1,0 +1,30 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/_deps/">
+    <Project Path="src/Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+    </Project>
+    <Project Path="src/Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/_deps/fetch wrappers/">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" Id="99b647bc-d49e-4322-c338-dc20acc4239b">
+      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
+    </Project>
+    <Project Path="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" Id="1f14357d-e06a-48a1-b39a-74082f381fc0" />
+  </Folder>
+  <Project Path="src/Client/KscViewer/KscViewer.vcxproj" Id="4ec5fe5e-13cf-4568-93cd-4b4ba52c90af">
+    <BuildDependency Project="src/Client/JpegFile/JpegFile.vcxproj" />
+  </Project>
+  <Project Path="src/Client/Launcher/Launcher.vcxproj" Id="03af3bcf-b1a8-49f3-840e-10642257873a">
+    <BuildDependency Project="src/Client/ZipArchive/ZipArchive.vcxproj" />
+  </Project>
+  <Project DefaultStartup="true" Path="src/Client/Option/Option.vcxproj" Id="3fefbf4a-b12c-4e32-be93-4ea51fd09f63" />
+</Solution>

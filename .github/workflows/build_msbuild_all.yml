@@ -1,0 +1,106 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: "Build all (MSBuild)"
+
+on:
+  push:
+    branches:
+    - master
+
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
+    paths:
+      - '.github/workflows/build_msbuild_all.yml'
+      - '**/*.props'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+      - '**/*.vcxproj'
+      - 'deps/**'
+      - 'All.slnx'
+      - 'ThirdParty.slnx'
+
+  pull_request:
+    branches:
+    - master
+
+    # This specifically builds when anything relating to a build changes.
+    # Everything else can be ignored.
+    paths:
+      - '.github/workflows/build_msbuild_all.yml'
+      - '**/*.props'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+      - '**/*.inl'
+      - '**/*.vcxproj'
+      - 'deps/**'
+      - 'All.slnx'
+      - 'ThirdParty.slnx'
+
+  merge_group: 
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        BUILD_CONFIGURATION: [Debug, Release]
+        BUILD_PLATFORM: [Win32, x64]
+
+    name: "${{ matrix.BUILD_CONFIGURATION }} - ${{ matrix.BUILD_PLATFORM }}"
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'false'
+
+#     NOTE: This will only be needed when dealing with N3Base. This includes D3DX9_43.dll for that.
+#     It should be combined with a copy like so:
+#        xcopy "${{ github.workspace }}\OpenKO-runner-dependencies\${{matrix.BUILD_PLATFORM}}" . /E /I /Y
+#    - name: Clone OpenKO-runner-dependencies
+#      run: git clone https://github.com/Open-KO/OpenKO-runner-dependencies --depth 1
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    # NOTE: We could simply run All.sln, but it makes it far more obvious in the Github output when it's broken up across its solutions.
+    - name: Build third party dependencies
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ThirdParty.slnx
+
+    - name: Build client
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Client.slnx
+
+    - name: Build server
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Server.slnx
+
+    - name: Build tools
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tools.slnx
+
+    - name: Build client tools
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" ClientTools.slnx
+
+    - name: Build tests
+      run: msbuild /m /p:Configuration="${{matrix.BUILD_CONFIGURATION}}" /p:Platform="${{matrix.BUILD_PLATFORM}}" /p:NO_CLIENT_ASSETS="1" Tests.slnx
+
+    - name: Run tests - FileIO
+      shell: cmd
+      working-directory: "bin/${{matrix.BUILD_CONFIGURATION}}-${{matrix.BUILD_PLATFORM}}/FileIO.Tests"
+      run: |
+        FileIO.Tests.exe --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0
+
+    - name: Run tests - MathUtils
+      shell: cmd
+      working-directory: "bin/${{matrix.BUILD_CONFIGURATION}}-${{matrix.BUILD_PLATFORM}}/MathUtils.Tests"
+      run: |
+        MathUtils.Tests.exe --gtest_print_time=1 --gtest_catch_exceptions=1 --gtest_break_on_failure=0

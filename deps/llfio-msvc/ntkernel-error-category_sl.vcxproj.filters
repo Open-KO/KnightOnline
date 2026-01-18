@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\git\OpenKO\deps\llfio\include\llfio\ntkernel-error-category\src\ntkernel_category.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\git\OpenKO\deps\llfio\include\llfio\ntkernel-error-category\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{B05DD6F1-FD23-3319-9FB6-0F3833CDE4B5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

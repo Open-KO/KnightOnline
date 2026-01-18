@@ -1,0 +1,515 @@
+# ------------------------------------------------------------------------------
+# Configuration is based on v19.0.0 (v19.1.5 is currently bundled with MSVC)
+# https://web.archive.org/web/20240718073829/https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# ------------------------------------------------------------------------------
+
+# BasedOnStyle (String)
+# The style used for all options not specifically set in the configuration.
+# This option is supported only in the clang-format configuration (both within -style='{...}' and the .clang-format file).
+# Possible values:
+# LLVM A style complying with the LLVM coding standards
+# Google A style complying with Google's C++ style guide
+# Chromium A style complying with Chromium's style guide
+# Mozilla A style complying with Mozilla's style guide
+# WebKit A style complying with WebKit's style guide
+# Microsoft A style complying with Microsoft's style guide
+# GNU A style complying with the GNU coding standards
+# InheritParentConfig Not a real style, but allows to use the .clang-format file from the parent directory (or its parent if there is none).
+# If there is no parent file found it falls back to the fallback style, and applies the changes to that.
+# With this option you can overwrite some parts of your main style for your subdirectories.
+# This is also possible through the command line, e.g.: --style={BasedOnStyle: InheritParentConfig, ColumnLimit: 20}
+BasedOnStyle: LLVM
+
+# ------------------------------------------------------------------------------
+# Indentation
+# ------------------------------------------------------------------------------
+
+# UseTab (UseTabStyle)
+# The way to use tab characters in the resulting file.
+# Possible values:
+# UT_Never (in configuration: Never) Never use tab.
+# UT_ForIndentation (in configuration: ForIndentation) Use tabs only for indentation.
+# UT_ForContinuationAndIndentation (in configuration: ForContinuationAndIndentation) Fill all leading whitespace with tabs, and use spaces for alignment that appears within a line (e.g. consecutive assignments and declarations).
+# UT_AlignWithSpaces (in configuration: AlignWithSpaces) Use tabs for line continuation and indentation, and spaces for alignment.
+# UT_Always (in configuration: Always) Use tabs whenever we need to fill whitespace that spans at least from one tab stop to the next one.
+UseTab: ForContinuationAndIndentation
+
+# TabWidth (unsigned)
+# The number of columns used for tab stops.
+TabWidth: 4
+
+# IndentWidth (unsigned)
+# The number of columns to use for indentation.
+IndentWidth: 4
+
+# ContinuationIndentWidth (unsigned)
+# Indent width for line continuations.
+ContinuationIndentWidth: 4
+
+# IndentCaseLabels (bool)
+# Indent case labels one level from the switch statement.
+# When false, use the same indentation level as for the switch statement.
+# Switch statement body is always indented one level more than case labels (except the first block following the case label,
+# which itself indents the code - unless IndentCaseBlocks is enabled).
+IndentCaseLabels: true
+
+# AlignAfterOpenBracket (BracketAlignmentStyle)
+# If true, horizontally aligns arguments after an open bracket.
+# This applies to round brackets (parentheses), angle brackets and square brackets.
+# Possible values:
+# BAS_Align (in configuration: Align) Align parameters on the open bracket, e.g.:
+# someLongFunction(argument1,
+#                  argument2);
+# BAS_DontAlign (in configuration: DontAlign) Don't align, instead use ContinuationIndentWidth, e.g.:
+# someLongFunction(argument1,
+# argument2);
+# BAS_AlwaysBreak (in configuration: AlwaysBreak) Always break after an open bracket, if the parameters don't fit on a single line, e.g.:
+# someLongFunction(
+#     argument1, argument2);
+# BAS_BlockIndent (in configuration: BlockIndent) Always break after an open bracket, if the parameters don’t fit on a single line. Closing brackets will be placed on a new line. e.g.:
+# someLongFunction(
+#    argument1, argument2
+# )
+AlignAfterOpenBracket: DontAlign
+
+# BreakConstructorInitializers (BreakConstructorInitializersStyle)
+# The break constructor initializers style to use.
+# Possible values:
+# BCIS_BeforeColon (in configuration: BeforeColon) Break constructor initializers before the colon and after the commas, e.g:
+# Constructor()
+#    : initializer1(),
+#      initializer2()
+# BCIS_BeforeComma (in configuration: BeforeComma) Break constructor initializers before the colon and commas, and align the commas with the colon, e.g.:
+# Constructor()
+#    : initializer1()
+#    , initializer2()
+# BCIS_AfterColon (in configuration: AfterColon) Break constructor initializers after the colon and commas, e.g.:
+# Constructor() :
+#    initializer1(),
+#    initializer2()
+BreakConstructorInitializers: AfterColon
+
+# ------------------------------------------------------------------------------
+# Comment Handling
+# ------------------------------------------------------------------------------
+
+# ReflowComments (bool)
+# If true, clang-format will attempt to re-flow comments.
+ReflowComments: false # Avoid mangling commented-out code
+
+# ------------------------------------------------------------------------------
+# Braces and Blocks
+# ------------------------------------------------------------------------------
+
+# BreakBeforeBraces (BraceBreakingStyle)
+# The brace breaking style to use.
+# Possible values:
+# BS_Attach (in configuration: Attach) Always attach braces to surrounding context.
+# BS_Linux (in configuration: Linux) Like Attach, but break before braces on function, namespace and class definitions.
+# BS_Mozilla (in configuration: Mozilla) Like Attach, but break before braces on enum, function, and record definitions.
+# BS_Stroustrup (in configuration: Stroustrup) Like Attach, but break before function definitions, catch, and else.
+# BS_Allman (in configuration: Allman) Always break before braces.
+# BS_Whitesmiths (in configuration: Whitesmiths) Like Allman but always indent braces and line up code with braces.
+# BS_GNU (in configuration: GNU) Always break before braces and add an extra level of indentation to braces of control statements, not to those of class, function or other definitions.
+# BS_WebKit (in configuration: WebKit) Like Attach, but break before functions.
+# BS_Custom (in configuration: Custom) Configure each individual brace in BraceWrapping.
+BreakBeforeBraces: Custom
+
+# BraceWrapping (BraceWrappingFlags)
+# Control of individual brace wrapping cases.
+# If BreakBeforeBraces is set to BS_Custom, use this to specify how each individual brace case should be handled. Otherwise, this is ignored.
+BraceWrapping:
+  # bool AfterCaseLabel Wrap case labels.
+  AfterCaseLabel: true
+
+  # bool AfterClass Wrap class definitions.
+  AfterClass: true
+
+  # bool AfterControlStatement Wrap control statements (if/for/while/switch/..).
+  AfterControlStatement: true
+
+  # bool AfterEnum Wrap enum definitions.
+  AfterEnum: true
+
+  # bool AfterFunction Wrap function definitions.
+  AfterFunction: true
+
+  # bool AfterNamespace Wrap namespace definitions.
+  AfterNamespace: true
+
+  # bool AfterStruct Wrap struct definitions.
+  AfterStruct: true
+
+  # bool AfterUnion Wrap union definitions.
+  AfterUnion: true
+
+  # bool AfterExternBlock Wrap extern blocks.
+  AfterExternBlock: true
+
+  # bool BeforeCatch Wrap before catch.
+  BeforeCatch: true
+
+  # bool BeforeElse Wrap before else.
+  BeforeElse: true
+
+  # bool BeforeLambdaBody Wrap lambda block.
+  BeforeLambdaBody: true
+
+  # bool BeforeWhile Wrap before while.
+  BeforeWhile: true
+
+  # bool IndentBraces Indent the wrapped braces themselves.
+  IndentBraces: false
+  
+  # bool SplitEmptyFunction If false, empty function body can be put on a single line.
+  # This option is used only if the opening brace of the function has already been wrapped, i.e. the AfterFunction brace wrapping mode is set, and the function could/should
+  # not be put on a single line (as per AllowShortFunctionsOnASingleLine and constructor formatting options).
+  SplitEmptyFunction: true
+
+  # bool SplitEmptyRecord If false, empty record (e.g. class, struct or union) body can be put on a single line.
+  # This option is used only if the opening brace of the record has already been wrapped, i.e. the AfterClass (for classes) brace wrapping mode is set.
+  SplitEmptyRecord: true
+
+  # bool SplitEmptyNamespace If false, empty namespace body can be put on a single line.
+  # This option is used only if the opening brace of the namespace has already been wrapped, i.e. the AfterNamespace brace wrapping mode is set.
+  SplitEmptyNamespace: true
+
+# KeepEmptyLines (KeepEmptyLinesStyle)
+# Which empty lines are kept. See MaxEmptyLinesToKeep for how many consecutive empty lines are kept.
+KeepEmptyLines:
+  # bool AtEndOfFile Keep empty lines at end of file.
+  AtEndOfFile: true
+
+  # bool AtStartOfBlock Keep empty lines at start of a block.
+  AtStartOfBlock: false
+  
+  # bool AtStartOfFile Keep empty lines at start of file.
+  AtStartOfFile: false
+
+# SpaceBeforeCpp11BracedList
+# If true, a space will be inserted before a C++11 braced list used to initialize an object (after the preceding identifier or type).
+SpaceBeforeCpp11BracedList: true
+
+# ------------------------------------------------------------------------------
+# Pointers and References
+# ------------------------------------------------------------------------------
+
+# PointerAlignment (PointerAlignmentStyle)
+# Pointer and reference alignment style.
+# Possible values:
+# PAS_Left (in configuration: Left) Align pointer to the left (int* a)
+# PAS_Right (in configuration: Right) Align pointer to the right (int *a)
+# PAS_Middle (in configuration: Middle) Align pointer in the middle (int * a)
+PointerAlignment: Left
+
+# DerivePointerAlignment (Boolean)
+# If true, analyze the formatted file for the most common alignment of & and *.
+# Pointer and reference alignment styles are going to be updated according to the preferences found in the file.
+# PointerAlignment is then used only as fallback.
+DerivePointerAlignment: false
+
+# ------------------------------------------------------------------------------
+# Spacing
+# ------------------------------------------------------------------------------
+
+# SpaceBeforeParens (SpaceBeforeParensStyle)
+# Defines in which cases to put a space before opening parentheses.
+# Possible values:
+# SBPO_Never (in configuration: Never)
+# This is deprecated and replaced by Custom below, with all SpaceBeforeParensOptions but AfterPlacementOperator set to false.
+#
+# SBPO_ControlStatements (in configuration: ControlStatements)
+# Put a space before opening parentheses only after control statement keywords (for/if/while...).
+#
+# SBPO_ControlStatementsExceptControlMacros (in configuration: ControlStatementsExceptControlMacros)
+# Same as SBPO_ControlStatements except this option doesn't apply to ForEach and If macros.
+# This is useful in projects where ForEach/If macros are treated as function calls instead of control statements.
+# SBPO_ControlStatementsExceptForEachMacros remains an alias for backward compatibility.
+#
+# SBPO_NonEmptyParentheses (in configuration: NonEmptyParentheses)
+# Put a space before opening parentheses only if the parentheses are not empty.
+
+# SBPO_Always (in configuration: Always)
+# Always put a space before opening parentheses, except when it's prohibited by the syntax rules (in function-like macro definitions) or when determined by other style rules
+# (after unary operators, opening parentheses, etc.)
+#
+# SBPO_Custom (in configuration: Custom)
+# Configure each individual space before parentheses in SpaceBeforeParensOptions.
+SpaceBeforeParens: ControlStatements
+
+# SpaceAfterCStyleCast (Boolean)
+# If true, a space is inserted after C style casts.
+SpaceAfterCStyleCast: true
+
+# SpacesBeforeTrailingComments (Unsigned)
+# The number of spaces before trailing line comments (// - comments).
+# This does not affect trailing block comments (/* - comments) as those commonly have different usage patterns and a number of special cases.
+# In the case of Verilog, it doesn't affect a comment right after the opening parenthesis in the port or parameter list in a module header, because it is probably for the port on the
+# following line instead of the parenthesis it follows.
+SpacesBeforeTrailingComments: 1
+
+# MaxEmptyLinesToKeep (Unsigned)
+# The maximum number of consecutive empty lines to keep.
+MaxEmptyLinesToKeep: 1
+
+# AccessModifierOffset (Integer)
+# The extra indent or outdent of access modifiers, e.g. public:.
+AccessModifierOffset: -4
+
+# ------------------------------------------------------------------------------
+# Short Constructs
+# ------------------------------------------------------------------------------
+
+# AllowShortFunctionsOnASingleLine (ShortFunctionStyle)
+# Dependent on the value, int f() { return 0; } can be put on a single line.
+# Possible values:
+# SFS_None (in configuration: None) Never merge functions into a single line.
+# SFS_InlineOnly (in configuration: InlineOnly) Only merge functions defined inside a class. Same as inline, except it does not imply empty: i.e. top level empty functions are not merged either.
+# SFS_Empty (in configuration: Empty) Only merge empty functions.
+# SFS_Inline (in configuration: Inline) Only merge functions defined inside a class. Implies empty.
+# SFS_All (in configuration: All) Merge all functions fitting on a single line.
+AllowShortFunctionsOnASingleLine: None
+
+# AllowShortIfStatementsOnASingleLine (ShortIfStyle)
+# Dependent on the value, if (a) return; can be put on a single line.
+# Possible values:
+# SIS_Never (in configuration: Never) Never put short ifs on the same line.
+# SIS_WithoutElse (in configuration: WithoutElse) Put short ifs on the same line only if there is no else statement.
+# SIS_OnlyFirstIf (in configuration: OnlyFirstIf) Put short ifs, but not else ifs nor else statements, on the same line.
+# SIS_AllIfsAndElse (in configuration: AllIfsAndElse) Always put short ifs, else ifs and else statements on the same line.
+AllowShortIfStatementsOnASingleLine: false
+
+# AllowShortLoopsOnASingleLine (Boolean)
+# If true, while (true) continue; can be put on a single line.
+AllowShortLoopsOnASingleLine: false
+
+# AllowShortCaseLabelsOnASingleLine (Boolean)
+# If true, short case labels will be contracted to a single line.
+AllowShortCaseLabelsOnASingleLine: false
+
+# ------------------------------------------------------------------------------
+# Function Calls / Arguments
+# ------------------------------------------------------------------------------
+
+# BinPackArguments (Boolean)
+# If false, a function call's arguments will either be all on the same line or will have one line each.
+BinPackArguments: true
+
+# BinPackParameters (Boolean)
+# If false, a function declaration’s or function definition's parameters will either all be on the same line or will have one line each.
+BinPackParameters: true
+
+# AllowAllArgumentsOnNextLine (Boolean)
+# If a function call or braced initializer list doesn't fit on a line, allow putting all arguments onto the next line, even if BinPackArguments is false.
+AllowAllArgumentsOnNextLine: true
+
+# ------------------------------------------------------------------------------
+# Operators
+# ------------------------------------------------------------------------------
+
+# BreakBeforeBinaryOperators (BinaryOperatorStyle)
+# The way to wrap binary operators.
+# Possible values:
+# BOS_None (in configuration: None) Break after operators.
+# BOS_NonAssignment (in configuration: NonAssignment) Break before operators that aren't assignments.
+# BOS_All (in configuration: All) Break before operators.
+BreakBeforeBinaryOperators: NonAssignment
+
+# BreakBeforeTernaryOperators (Boolean)
+# If true, ternary operators will be placed after line breaks.
+BreakBeforeTernaryOperators: true
+
+# ------------------------------------------------------------------------------
+# Penalties
+# ------------------------------------------------------------------------------
+
+# PenaltyBreakString (Unsigned)
+# The penalty for each line break introduced inside a string literal.
+PenaltyBreakString: 1000
+
+# PenaltyBreakBeforeFirstCallParameter (Unsigned)
+# The penalty for breaking a function call after call(.
+PenaltyBreakBeforeFirstCallParameter: 1000
+
+# PenaltyBreakAssignment (Unsigned)
+# The penalty for breaking around an assignment operator.
+PenaltyBreakAssignment: 1000
+
+# ------------------------------------------------------------------------------
+# Alignment
+# ------------------------------------------------------------------------------
+
+# AlignConsecutiveAssignments (AlignConsecutiveStyle)
+# Style of aligning consecutive assignments.
+# Consecutive will result in formattings like:
+# int a            = 1;
+# int somelongname = 2;
+# double c         = 3;
+AlignConsecutiveAssignments:
+  # bool Enabled Whether aligning is enabled.
+  Enabled: true
+
+  # bool AcrossEmptyLines Whether to align across empty lines.
+  AcrossEmptyLines: true
+
+  # bool AcrossComments Whether to align across comments.
+  AcrossComments: true
+
+  # bool AlignCompound Only for AlignConsecutiveAssignments. Whether compound assignments like += are aligned along with =.
+  AlignCompound: true
+
+  # bool PadOperators Only for AlignConsecutiveAssignments.
+  # Whether short assignment operators are left-padded to the same length as long ones in order to put all assignment operators to the right of the left hand side.
+  PadOperators: true
+  
+# AlignConsecutiveBitFields (AlignConsecutiveStyle)
+# Style of aligning consecutive bit fields.
+# Consecutive will align the bitfield separators of consecutive lines. This will result in formattings like:
+# int aaaa : 1;
+# int b    : 12;
+# int ccc  : 8;
+AlignConsecutiveBitFields:
+  # bool Enabled Whether aligning is enabled.
+  Enabled: true
+
+  # bool AcrossEmptyLines Whether to align across empty lines.
+  AcrossEmptyLines: true
+
+  # bool AcrossComments Whether to align across comments.
+  AcrossComments: true
+
+# AlignConsecutiveDeclarations (AlignConsecutiveStyle)
+# Style of aligning consecutive declarations.
+# Consecutive will align the declaration names of consecutive lines. This will result in formattings like:
+# int         aaaa = 12;
+# float       b = 23;
+# std::string ccc;
+AlignConsecutiveDeclarations:
+  # bool Enabled Whether aligning is enabled.
+  Enabled: false # NOTE: disabled as it doesn't support separation between member variables and method declarations.
+
+  # bool AcrossEmptyLines Whether to align across empty lines.
+  AcrossEmptyLines: true
+
+  # bool AcrossComments Whether to align across comments.
+  AcrossComments: true
+
+  # bool AlignFunctionPointers Only for AlignConsecutiveDeclarations. Whether function pointers are aligned.
+  AlignFunctionPointers: true
+
+# AlignConsecutiveMacros (AlignConsecutiveStyle)
+# Style of aligning consecutive macro definitions.
+# Consecutive will result in formattings like:
+# #define SHORT_NAME       42
+# #define LONGER_NAME      0x007f
+# #define EVEN_LONGER_NAME (2)
+# #define foo(x)           (x * x)
+# #define bar(y, z)        (y + z)
+AlignConsecutiveMacros:
+  # bool Enabled Whether aligning is enabled.
+  Enabled: true
+
+  # bool AcrossEmptyLines Whether to align across empty lines.
+  AcrossEmptyLines: true
+
+  # bool AcrossComments Whether to align across comments.
+  AcrossComments: true
+
+# AlignEscapedNewlines (EscapedNewlineAlignmentStyle)
+# Options for aligning backslashes in escaped newlines.
+# Possible values:
+# ENAS_DontAlign (in configuration: DontAlign) Don't align escaped newlines.
+# #define A \
+#  int aaaa; \
+#  int b; \
+#  int dddddddddd;
+#
+# ENAS_Left (in configuration: Left) Align escaped newlines as far left as possible.
+# #define A  \
+#  int aaaa; \
+#  int b;    \
+#  int dddddddddd;
+# 
+# ENAS_LeftWithLastLine (in configuration: LeftWithLastLine) Align escaped newlines as far left as possible, using the last line of the preprocessor directive as the reference if it's the longest.
+# #define A        \
+#  int aaaa;       \
+#  int b;          \
+#  int dddddddddd;
+#
+# ENAS_Right (in configuration: Right) Align escaped newlines in the right-most column.
+# #define A                                                                     \
+#  int aaaa;                                                                    \
+#  int b;                                                                       \
+#  int dddddddddd;
+AlignEscapedNewlines: LeftWithLastLine
+
+# AlignTrailingComments (TrailingCommentsAlignmentStyle)
+# Control of trailing comments.
+# The alignment stops at closing braces after a line break, and only followed by other closing braces, a (do-) while, a lambda call, or a semicolon.
+AlignTrailingComments:
+  # TrailingCommentsAlignmentKinds Kind Specifies the way to align trailing comments.
+  # Possible values:
+  # TCAS_Leave (in configuration: Leave) Leave trailing comments as they are.
+  # TCAS_Always (in configuration: Always) Align trailing comments.
+  # TCAS_Never (in configuration: Never) Don't align trailing comments but other formatter applies.
+  Kind: Always
+  
+  # unsigned OverEmptyLines How many empty lines to apply alignment. When both MaxEmptyLinesToKeep and OverEmptyLines are set to 2, it formats like below.
+  # int a;      // all these
+  #
+  # int ab;     // comments are
+  #
+  # int abcdef; // aligned
+  OverEmptyLines: 2
+
+# ------------------------------------------------------------------------------
+# Other
+# ------------------------------------------------------------------------------
+
+# Cpp11BracedListStyle (Boolean)
+# If true, format braced lists as best suited for C++11 braced lists.
+# Important differences:
+# - No spaces inside the braced list.
+# - No line break before the closing brace.
+# - Indentation with the continuation indent, not with the block indent.
+#
+# Fundamentally, C++11 braced lists are formatted exactly like function calls would be formatted in their place.
+# If the braced list follows a name (e.g. a type or variable name), clang-format formats as if the {} were the parentheses of a function call with that name.
+# If there is no name, a zero-length name is assumed.
+Cpp11BracedListStyle: false
+
+# ColumnLimit (Unsigned)
+# The column limit.
+# A column limit of 0 means that there is no column limit. In this case, clang-format will respect the input's line breaking decisions within statements unless they contradict other rules.
+ColumnLimit: 100
+
+# BreakTemplateDeclarations (BreakTemplateDeclarationsStyle)
+# The template declaration breaking style to use.
+# Possible values:
+# BTDS_Leave (in configuration: Leave) Do not change the line breaking before the declaration.
+# BTDS_No (in configuration: No) Do not force break before declaration. PenaltyBreakTemplateDeclaration is taken into account.
+# BTDS_MultiLine (in configuration: MultiLine) Force break after template declaration only when the following declaration spans multiple lines.
+# BTDS_Yes (in configuration: Yes) Always break after template declaration.
+BreakTemplateDeclarations: Yes
+
+# SortIncludes (SortIncludesOptions)
+# Controls if and how clang-format will sort #includes.
+# Possible values:
+# SI_Never (in configuration: Never) Includes are never sorted.
+# SI_CaseSensitive (in configuration: CaseSensitive) Includes are sorted in an ASCIIbetical or case sensitive fashion.
+# SI_CaseInsensitive (in configuration: CaseInsensitive) Includes are sorted in an alphabetical or case insensitive fashion.
+SortIncludes: Never
+
+# SortUsingDeclarations (SortUsingDeclarationsOptions)
+# Controls if and how clang-format will sort using declarations.
+# Possible values:
+# SUD_Never (in configuration: Never) Using declarations are never sorted.
+# SUD_Lexicographic (in configuration: Lexicographic) Using declarations are sorted in the order defined as follows:
+# Split the strings by :: and discard any initial empty strings.
+# Sort the lists of names lexicographically, and within those groups, names are in case-insensitive lexicographic order.
+# SUD_LexicographicNumeric (in configuration: LexicographicNumeric) Using declarations are sorted in the order defined as follows:
+# Split the strings by :: and discard any initial empty strings.
+# The last element of each list is a non-namespace name; all others are namespace names.
+# Sort the lists of names lexicographically, where the sort order of individual names is that all non-namespace names come before all namespace names, and within those groups,
+# names are in case-insensitive lexicographic order.
+SortUsingDeclarations: Lexicographic

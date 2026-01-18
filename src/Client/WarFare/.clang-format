@@ -1,0 +1,8 @@
+BasedOnStyle: InheritParentConfig
+
+# Note: Due to very obnoxious UI code that needs to be refactored, we'll just increase the column limit for client code (not even engine) only.
+
+# ColumnLimit (Unsigned)
+# The column limit.
+# A column limit of 0 means that there is no column limit. In this case, clang-format will respect the input's line breaking decisions within statements unless they contradict other rules.
+ColumnLimit: 140

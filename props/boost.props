@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="UserMacros">
+    <BoostDir>$(DependencyDir)boost\</BoostDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(BoostDir)interprocess\include;$(BoostDir)config\include;$(BoostDir)assert\include;$(BoostDir)type_traits\include;$(BoostDir)move\include;$(BoostDir)intrusive\include;$(BoostDir)container\include;$(BoostDir)predef\include;$(BoostDir)winapi\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

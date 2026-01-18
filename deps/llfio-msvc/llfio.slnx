@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Win32" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="llfio_sl.vcxproj">
+    <BuildDependency Project="ntkernel-error-category_sl.vcxproj" />
+  </Project>
+  <Project Path="ntkernel-error-category_sl.vcxproj" />
+</Solution>

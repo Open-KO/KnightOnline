@@ -1,0 +1,346 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{1A926F1A-DA72-4D4A-8EA7-E511187398EB}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="..\..\..\props\platform_root.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <Import Project="$(PropsDir)utf8_strings.props" />
+  <Import Project="$(PropsDir)n3base-tool.props" />
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_KNIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0412</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_KNIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0412</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_KNIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0412</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_KNIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0412</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="help.doc" />
+    <CustomBuild Include="res\load.cur" />
+    <CustomBuild Include="res\move.cur" />
+    <CustomBuild Include="res\N3ME.rc2" />
+    <CustomBuild Include="res\rotate.cur" />
+    <CustomBuild Include="res\transform.cur" />
+    <CustomBuild Include="res\zoom.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\N3ME.ico" />
+    <Image Include="res\N3MEDoc.ico" />
+    <Image Include="res\SceneNodes.bmp" />
+    <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Common Control\PropertyList.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="BrushDlg.cpp" />
+    <ClCompile Include="DlgAddDTex.cpp" />
+    <ClCompile Include="DlgAddSoundGroup.cpp" />
+    <ClCompile Include="DlgBar.cpp" />
+    <ClCompile Include="DlgBase.cpp" />
+    <ClCompile Include="DlgBrowsePath.cpp" />
+    <ClCompile Include="DlgCtrlHeightScale.cpp" />
+    <ClCompile Include="DlgDelGroup.cpp" />
+    <ClCompile Include="DlgDTexGroupView.cpp" />
+    <ClCompile Include="DlgEditEvent.cpp" />
+    <ClCompile Include="DlgEditEventAttr.cpp" />
+    <ClCompile Include="DlgEditWarp.cpp" />
+    <ClCompile Include="DlgInputAttr.cpp" />
+    <ClCompile Include="DlgInputGroup.cpp" />
+    <ClCompile Include="DlgLight.cpp" />
+    <ClCompile Include="DlgLoadEvt.cpp" />
+    <ClCompile Include="DlgLoadNPCPath.cpp" />
+    <ClCompile Include="DlgLoadTileSet.cpp" />
+    <ClCompile Include="DlgMakeNPCPath.cpp" />
+    <ClCompile Include="DlgMakeWall.cpp" />
+    <ClCompile Include="DlgMapView.cpp" />
+    <ClCompile Include="DlgModifyDTex.cpp" />
+    <ClCompile Include="DlgPondProperty.cpp" />
+    <ClCompile Include="DlgRegenUser.cpp" />
+    <ClCompile Include="DlgRiverProperty.cpp" />
+    <ClCompile Include="DlgSaveDivision.cpp" />
+    <ClCompile Include="DlgSaveEvt.cpp" />
+    <ClCompile Include="DlgSaveNewTileSet.cpp" />
+    <ClCompile Include="DlgSaveNPCPath.cpp" />
+    <ClCompile Include="DlgSceneGraph.cpp" />
+    <ClCompile Include="DlgSetDTex.cpp" />
+    <ClCompile Include="DlgSetLightMap.cpp" />
+    <ClCompile Include="DlgSetSound.cpp" />
+    <ClCompile Include="DlgShapeList.cpp" />
+    <ClCompile Include="DlgSowSeed.cpp" />
+    <ClCompile Include="DlgTerrainSize.cpp" />
+    <ClCompile Include="DlgUnusedFiles.cpp" />
+    <ClCompile Include="DTex.cpp" />
+    <ClCompile Include="DTexGroup.cpp" />
+    <ClCompile Include="DTexGroupMng.cpp" />
+    <ClCompile Include="DTexMng.cpp" />
+    <ClCompile Include="EventCell.cpp" />
+    <ClCompile Include="EventMgr.cpp" />
+    <ClCompile Include="LightObjMgr.cpp" />
+    <ClCompile Include="LyTerrain.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MapMng.cpp" />
+    <ClCompile Include="N3ME.cpp" />
+    <ClCompile Include="N3MEDoc.cpp" />
+    <ClCompile Include="N3MEView.cpp" />
+    <ClCompile Include="NPCPath.cpp" />
+    <ClCompile Include="NPCPathMgr.cpp" />
+    <ClCompile Include="PondMesh.cpp" />
+    <ClCompile Include="PondMng.cpp" />
+    <ClCompile Include="PosDummy.cpp" />
+    <ClCompile Include="ProgressBar.cpp" />
+    <ClCompile Include="QTNode.cpp" />
+    <ClCompile Include="RegenUser.cpp" />
+    <ClCompile Include="RiverMesh.cpp" />
+    <ClCompile Include="RiverMng.cpp" />
+    <ClCompile Include="RotDummy.cpp" />
+    <ClCompile Include="ScaleDummy.cpp" />
+    <ClCompile Include="ShellTree.cpp" />
+    <ClCompile Include="SoundCell.cpp" />
+    <ClCompile Include="SoundMgr.cpp" />
+    <ClCompile Include="SowSeedMng.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TransDummy.cpp" />
+    <ClCompile Include="VtxPosDummy.cpp" />
+    <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallMgr.cpp" />
+    <ClCompile Include="WarpMgr.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Common Control\PropertyList.h" />
+    <ClInclude Include="BrushDlg.h" />
+    <ClInclude Include="DlgAddDTex.h" />
+    <ClInclude Include="DlgAddSoundGroup.h" />
+    <ClInclude Include="DlgBar.h" />
+    <ClInclude Include="DlgBase.h" />
+    <ClInclude Include="DlgBrowsePath.h" />
+    <ClInclude Include="DlgCtrlHeightScale.h" />
+    <ClInclude Include="DlgDelGroup.h" />
+    <ClInclude Include="DlgDTexGroupView.h" />
+    <ClInclude Include="DlgEditEvent.h" />
+    <ClInclude Include="DlgEditEventAttr.h" />
+    <ClInclude Include="DlgEditWarp.h" />
+    <ClInclude Include="DlgInputAttr.h" />
+    <ClInclude Include="DlgInputGroup.h" />
+    <ClInclude Include="DlgLight.h" />
+    <ClInclude Include="DlgLoadEvt.h" />
+    <ClInclude Include="DlgLoadNPCPath.h" />
+    <ClInclude Include="DlgLoadTileSet.h" />
+    <ClInclude Include="DlgMakeNPCPath.h" />
+    <ClInclude Include="DlgMakeWall.h" />
+    <ClInclude Include="DlgMapView.h" />
+    <ClInclude Include="DlgModifyDTex.h" />
+    <ClInclude Include="DlgPondProperty.h" />
+    <ClInclude Include="DlgRegenUser.h" />
+    <ClInclude Include="DlgRiverProperty.h" />
+    <ClInclude Include="DlgSaveDivision.h" />
+    <ClInclude Include="DlgSaveEvt.h" />
+    <ClInclude Include="DlgSaveNewTileSet.h" />
+    <ClInclude Include="DlgSaveNPCPath.h" />
+    <ClInclude Include="DlgSceneGraph.h" />
+    <ClInclude Include="DlgSetDTex.h" />
+    <ClInclude Include="DlgSetLightMap.h" />
+    <ClInclude Include="DlgSetSound.h" />
+    <ClInclude Include="DlgShapeList.h" />
+    <ClInclude Include="DlgSowSeed.h" />
+    <ClInclude Include="DlgTerrainSize.h" />
+    <ClInclude Include="DlgUnusedFiles.h" />
+    <ClInclude Include="DTex.h" />
+    <ClInclude Include="DTexGroup.h" />
+    <ClInclude Include="DTexGroupMng.h" />
+    <ClInclude Include="DTexMng.h" />
+    <ClInclude Include="EventCell.h" />
+    <ClInclude Include="EventMgr.h" />
+    <ClInclude Include="LightObjMgr.h" />
+    <ClInclude Include="LyTerrain.h" />
+    <ClInclude Include="LyTerrainDef.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MapMng.h" />
+    <ClInclude Include="N3ME.h" />
+    <ClInclude Include="N3MEDoc.h" />
+    <ClInclude Include="N3MEView.h" />
+    <ClInclude Include="NPCPath.h" />
+    <ClInclude Include="NPCPathMgr.h" />
+    <ClInclude Include="PondMesh.h" />
+    <ClInclude Include="PondMng.h" />
+    <ClInclude Include="PosDummy.h" />
+    <ClInclude Include="ProgressBar.h" />
+    <ClInclude Include="QTNode.h" />
+    <ClInclude Include="RegenUser.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RiverMesh.h" />
+    <ClInclude Include="RiverMng.h" />
+    <ClInclude Include="RotDummy.h" />
+    <ClInclude Include="ScaleDummy.h" />
+    <ClInclude Include="ShellTree.h" />
+    <ClInclude Include="SoundCell.h" />
+    <ClInclude Include="SoundMgr.h" />
+    <ClInclude Include="SowSeedMng.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="TransDummy.h" />
+    <ClInclude Include="VtxPosDummy.h" />
+    <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallMgr.h" />
+    <ClInclude Include="WarpMgr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="N3ME.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
