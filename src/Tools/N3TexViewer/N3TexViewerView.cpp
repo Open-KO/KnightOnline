@@ -96,6 +96,35 @@ void CN3TexViewerView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 	// TODO: add cleanup after printing
 }
 
+BOOL CN3TexViewerView::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		switch (pMsg->wParam)
+		{
+			case VK_UP:
+			case VK_LEFT:
+				if (GetDocument()->HasMultipleTextures())
+				{
+					GetDocument()->SelectPreviousTexture();
+					return TRUE;
+				}
+				break;
+
+			case VK_DOWN:
+			case VK_RIGHT:
+				if (GetDocument()->HasMultipleTextures())
+				{
+					GetDocument()->SelectNextTexture();
+					return TRUE;
+				}
+				return TRUE;
+		}
+	}
+
+	return CView::PreTranslateMessage(pMsg);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CN3TexViewerView diagnostics
 
@@ -159,6 +188,4 @@ void CN3TexViewerView::OnSize(UINT nType, int cx, int cy)
 BOOL CN3TexViewerView::OnEraseBkgnd(CDC* pDC)
 {
 	return TRUE;
-
-	return CView::OnEraseBkgnd(pDC);
 }

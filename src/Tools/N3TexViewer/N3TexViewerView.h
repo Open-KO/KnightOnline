@@ -23,22 +23,23 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CN3TexViewerView)
 public:
-	virtual void OnDraw(CDC* pDC); // overridden to draw this view
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual void OnInitialUpdate();
+	void OnDraw(CDC* pDC) override; // overridden to draw this view
+	BOOL PreCreateWindow(CREATESTRUCT& cs) override;
+	void OnInitialUpdate() override;
 
 protected:
-	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
-	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
-	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
+	BOOL OnPreparePrinting(CPrintInfo* pInfo) override;
+	void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo) override;
+	void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo) override;
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 	//}}AFX_VIRTUAL
 
 	// Implementation
 public:
-	virtual ~CN3TexViewerView();
+	~CN3TexViewerView() override;
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif
 
 protected:

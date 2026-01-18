@@ -9,6 +9,8 @@
 
 #include <N3Base/N3Texture.h>
 
+#include <vector>
+
 class CN3TexViewerDoc : public CDocument
 {
 protected: // create from serialization only
@@ -20,8 +22,13 @@ public:
 	CN3Texture* m_pTex;
 	CN3Texture* m_pTexAlpha;
 
+	std::vector<CN3Texture> m_gttTextures;
+	size_t m_gttTextureIndex;
+
+	CString m_szLoadedFileName;
+
 	int m_nCurFile;
-	CString m_szPath;
+	std::filesystem::path m_loadedDirectory;
 	CStringArray m_szFiles;
 
 	// Operations
@@ -30,24 +37,33 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CN3TexViewerDoc)
 public:
-	virtual BOOL OnNewDocument();
-	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	virtual void Serialize(CArchive& ar);
-	virtual void SetTitle(LPCTSTR lpszTitle);
+	BOOL OnNewDocument() override;
+	BOOL OnOpenDocument(LPCTSTR lpszPathName) override;
+	BOOL OnSaveDocument(LPCTSTR lpszPathName) override;
+	void Serialize(CArchive& ar) override;
+	void SetTitle(LPCTSTR lpszTitle) override;
 	//}}AFX_VIRTUAL
 
 	// Implementation
 public:
+	bool HasMultipleTextures() const
+	{
+		return !m_gttTextures.empty();
+	}
+
 	void OpenLastFile();
 	void OpenFirstFile();
 	void OpenPrevFile();
 	void OpenNextFile();
-	void FindFiles();
-	virtual ~CN3TexViewerDoc();
+	void FindFiles(const std::filesystem::path& loadedFilename);
+	void SelectNextTexture();
+	void SelectPreviousTexture();
+	void LoadSelectedTexture();
+	void ReleaseTexture();
+	~CN3TexViewerDoc() override;
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	void AssertValid() const override;
+	void Dump(CDumpContext& dc) const override;
 #endif
 
 protected:

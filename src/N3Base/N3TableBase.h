@@ -151,7 +151,10 @@ bool CN3TableBase<Type>::Load(File& file)
 	for (int i = 0; i < iRC; i++)
 	{
 		for (int j = 0; j < iDataTypeCount; j++)
-			ReadData(file, m_DataTypes[j], (char*) (&Data) + offsets[j]);
+		{
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+			ReadData(file, m_DataTypes[j], reinterpret_cast<char*>(&Data) + offsets[j]);
+		}
 
 		uint32_t dwKey = *((uint32_t*) (&Data));
 		auto pt        = m_Datas.insert(std::make_pair(dwKey, Data));

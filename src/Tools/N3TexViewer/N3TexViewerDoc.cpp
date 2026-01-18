@@ -1,11 +1,13 @@
 ﻿// N3TexViewerDoc.cpp : implementation of the CN3TexViewerDoc class
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "N3TexViewer.h"
 #include "N3TexViewerDoc.h"
 
-#include <N3Base/BitmapFile.h>
+#include <FileIO/FileReader.h>
+#include <FileIO/FileWriter.h>
+#include <N3Base/BitMapFile.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,7 +22,7 @@ IMPLEMENT_DYNCREATE(CN3TexViewerDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CN3TexViewerDoc, CDocument)
 //{{AFX_MSG_MAP(CN3TexViewerDoc)
-ON_COMMAND(ID_FILE_SAVE_AS_BITMAP, OnFileSaveAsBitmap)
+ON_COMMAND(ID_FILE_SAVE_AS_BITMAP, &CN3TexViewerDoc::OnFileSaveAsBitmap)
 //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -29,31 +31,43 @@ END_MESSAGE_MAP()
 
 CN3TexViewerDoc::CN3TexViewerDoc()
 {
-	// TODO: add one-time construction code here
-	m_pTex      = new CN3Texture();
-	m_pTexAlpha = new CN3Texture();
+	m_pTex            = new CN3Texture();
+	m_pTexAlpha       = new CN3Texture();
 
-	m_nCurFile  = 0;
+	m_gttTextureIndex = 0;
+	m_nCurFile        = 0;
 }
 
 CN3TexViewerDoc::~CN3TexViewerDoc()
 {
-	delete m_pTex;
+	// GTT textures refer back to their stored instance.
+	if (m_gttTextures.empty())
+		delete m_pTex;
+
 	delete m_pTexAlpha;
+}
+
+void CN3TexViewerDoc::ReleaseTexture()
+{
+	// GTT textures refer back to their stored instance.
+	if (!m_gttTextures.empty())
+	{
+		m_gttTextures.clear();
+		m_pTex = new CN3Texture();
+	}
+	// Otherwise they're managed independently.
+	else
+	{
+		m_pTex->Release();
+	}
+
+	m_gttTextureIndex = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // CN3TexViewerDoc serialization
-void CN3TexViewerDoc::Serialize(CArchive& ar)
+void CN3TexViewerDoc::Serialize(CArchive&)
 {
-	if (ar.IsStoring())
-	{
-		// TODO: add storing code here
-	}
-	else
-	{
-		// TODO: add loading code here
-	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -79,12 +93,12 @@ BOOL CN3TexViewerDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
-	// TODO: add reinitialization code here
-	// (SDI documents will reuse this document)
-	m_pTex->Release();
+	ReleaseTexture();
 	m_pTexAlpha->Release();
 
-	this->UpdateAllViews(nullptr);
+	m_szLoadedFileName.Empty();
+
+	UpdateAllViews(nullptr);
 
 	return TRUE;
 }
@@ -94,19 +108,69 @@ BOOL CN3TexViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	if (!CDocument::OnOpenDocument(lpszPathName))
 		return FALSE;
 
-	this->FindFiles(); // 파일을 찾고..
+	std::filesystem::path texturePath = lpszPathName;
+	FindFiles(texturePath); // 파일을 찾고..
 
-	// TODO: Add your specialized creation code here
+	ReleaseTexture();
 	m_pTexAlpha->Release();
-	if (!m_pTex->LoadFromFile(lpszPathName))
-		return FALSE;
+
+	m_szLoadedFileName.Empty();
+
+	if (texturePath.has_extension()
+		&& _strcmpi(texturePath.extension().string().c_str(), ".gtt") == 0)
+	{
+		// Open GTT file for reading
+		// This contains multiple textures.
+		FileReader file;
+		if (!file.OpenExisting(texturePath))
+			return FALSE;
+
+		// Determine how many textures we have in this GTT file.
+		// It should be 8, but we have no reason to assume.
+		size_t textureCount = 0;
+		while (m_pTex->SkipFileHandle(file))
+			++textureCount;
+
+		if (textureCount == 0)
+			return FALSE;
+
+		// Now let's load up each of them in memory.
+		m_gttTextures.resize(textureCount);
+
+		file.Seek(0, SEEK_SET);
+		for (size_t i = 0; i < m_gttTextures.size(); i++)
+			m_gttTextures[i].Load(file);
+	}
+	else
+	{
+		if (!m_pTex->LoadFromFile(lpszPathName))
+			return FALSE;
+	}
+
+	m_szLoadedFileName = lpszPathName;
+
+	LoadSelectedTexture();
+	return TRUE;
+}
+
+void CN3TexViewerDoc::LoadSelectedTexture()
+{
+	if (!m_gttTextures.empty())
+	{
+		if (m_gttTextureIndex >= m_gttTextures.size())
+			return;
+
+		m_pTex = &m_gttTextures[m_gttTextureIndex];
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Alpha Texture 생성...
 	m_pTexAlpha->Create(m_pTex->Width(), m_pTex->Height(), D3DFMT_A8R8G8B8, FALSE);
-	LPDIRECT3DSURFACE9 lpSurf, lpSurf2;
-	if (m_pTexAlpha->Get())
+
+	if (m_pTexAlpha->Get() != nullptr)
 	{
+		LPDIRECT3DSURFACE9 lpSurf = nullptr, lpSurf2 = nullptr;
+
 		m_pTexAlpha->Get()->GetSurfaceLevel(0, &lpSurf);
 		m_pTex->Get()->GetSurfaceLevel(0, &lpSurf2);
 		::D3DXLoadSurfaceFromSurface(
@@ -116,18 +180,23 @@ BOOL CN3TexViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
 		D3DLOCKED_RECT LR;
 		lpSurf->LockRect(&LR, nullptr, 0);
+
 		int width = m_pTexAlpha->Width(), height = m_pTexAlpha->Height();
-		DWORD dwAlpha = 0;
-		DWORD* pPixel = nullptr;
 		for (int y = 0; y < height; y++)
 		{
+			// NOLINTNEXTLINE(performance-no-int-to-ptr)
+			uint32_t* row = reinterpret_cast<uint32_t*>(
+				reinterpret_cast<uintptr_t>(LR.pBits) + (y * LR.Pitch));
+
+			// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 			for (int x = 0; x < width; x++)
 			{
-				pPixel  = (DWORD*) LR.pBits + y * (LR.Pitch / 4) + x;
-				dwAlpha = (*pPixel) >> 24;
-				*pPixel = dwAlpha | (dwAlpha << 8) | (dwAlpha << 16) | 0xff000000;
+				uint32_t dwAlpha = row[x] >> 24;
+				row[x]           = dwAlpha | (dwAlpha << 8) | (dwAlpha << 16) | 0xff000000;
 			}
+			// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 		}
+
 		lpSurf->UnlockRect();
 		lpSurf->Release();
 		lpSurf = nullptr;
@@ -135,45 +204,63 @@ BOOL CN3TexViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	// Alpha Texture 생성...
 	////////////////////////////////////////////////////////////////////////////////
 
-	char szDrv[_MAX_DRIVE], szDir[_MAX_DIR], szFN[_MAX_FNAME], szExt[_MAX_EXT];
-	::_splitpath(lpszPathName, szDrv, szDir, szFN, szExt);
+	TCHAR szDrv[_MAX_DRIVE] {}, szDir[_MAX_DIR] {}, szFN[_MAX_FNAME] {}, szExt[_MAX_EXT] {};
+	_tsplitpath_s(m_szLoadedFileName.GetString(), szDrv, szDir, szFN, szExt);
 	CString szFileName  = szFN;
 	szFileName         += szExt;
 
-	this->SetTitle(szFileName);
-	this->UpdateAllViews(nullptr);
-
-	return TRUE;
+	SetTitle(szFileName);
+	UpdateAllViews(nullptr);
 }
 
 BOOL CN3TexViewerDoc::OnSaveDocument(LPCTSTR lpszPathName)
 {
-	char szDrv[_MAX_DRIVE], szDir[_MAX_DIR], szFN[_MAX_FNAME], szExt[_MAX_EXT];
-	::_splitpath(lpszPathName, szDrv, szDir, szFN, szExt);
+	TCHAR szDrv[_MAX_DRIVE] {}, szDir[_MAX_DIR] {}, szFN[_MAX_FNAME] {}, szExt[_MAX_EXT] {};
+	_tsplitpath_s(lpszPathName, szDrv, szDir, szFN, szExt);
 
-	if (lstrcmpi(szExt, ".DXT") == 0) // 확장자가 DXT 면 그냥 저장..
+	// 확장자가 DXT 면 그냥 저장..
+	if (lstrcmpi(szExt, ".DXT") == 0)
 	{
 		CDocument::OnSaveDocument(lpszPathName);
 
-		if (false == m_pTex->SaveToFile(lpszPathName))
+		if (!m_pTex->SaveToFile(lpszPathName))
 			return FALSE;
 
 		return TRUE;
 	}
-	else
+	else if (lstrcmpi(szExt, ".GTT") == 0)
 	{
-		MessageBox(::GetActiveWindow(), "확장자를 DXT 로 바꾸어야 합니다. Save As 로 저장해주세요.",
-			"저장 실패", MB_OK);
+		CDocument::OnSaveDocument(lpszPathName);
 
-		return FALSE;
+		FileWriter file;
+		if (!file.Create(lpszPathName))
+			return FALSE;
+
+		for (CN3Texture& texture : m_gttTextures)
+			texture.Save(file);
+
+		return TRUE;
 	}
+
+	MessageBox(::GetActiveWindow(), _T("확장자를 DXT 로 바꾸어야 합니다. Save As 로 저장해주세요."),
+		_T("저장 실패"), MB_OK);
+
+	return FALSE;
 }
 
 void CN3TexViewerDoc::SetTitle(LPCTSTR lpszTitle)
 {
-	// TODO: Add your specialized code here and/or call the base class
 	CString szFmt;
-	szFmt.Format("%s - %d, %d", lpszTitle, m_pTex->Width(), m_pTex->Height());
+	if (m_gttTextures.empty())
+	{
+		szFmt.Format(_T("%s - %d, %d"), lpszTitle, m_pTex->Width(), m_pTex->Height());
+	}
+	else
+	{
+		szFmt.Format(_T("%s [%zu/%zu] - %d, %d"), lpszTitle, m_gttTextureIndex + 1u,
+			m_gttTextures.size(), m_pTex->Width(), m_pTex->Height());
+	}
+
 	D3DFORMAT fmtTex = m_pTex->PixelFormat();
 	if (D3DFMT_DXT1 == fmtTex)
 		szFmt += " DXT1";
@@ -204,37 +291,55 @@ void CN3TexViewerDoc::SetTitle(LPCTSTR lpszTitle)
 		szFmt += " - has no MipMap";
 
 	CDocument::SetTitle(szFmt);
-	//	CDocument::SetTitle(lpszTitle);
 }
 
-void CN3TexViewerDoc::FindFiles()
+void CN3TexViewerDoc::SelectPreviousTexture()
 {
-	char szPath[_MAX_PATH];
-	GetCurrentDirectory(_MAX_PATH, szPath);
-
-	CString szPath2 = szPath;
-	szPath2.MakeLower();
-
-	if (m_szPath == szPath2)
+	if (m_gttTextureIndex == 0)
 		return;
 
-	m_szPath = szPath2;
+	--m_gttTextureIndex;
+	LoadSelectedTexture();
+}
+
+void CN3TexViewerDoc::SelectNextTexture()
+{
+	size_t nextIndex = m_gttTextureIndex + 1;
+	if (nextIndex >= m_gttTextures.size())
+		return;
+
+	m_gttTextureIndex = nextIndex;
+	LoadSelectedTexture();
+}
+
+void CN3TexViewerDoc::FindFiles(const std::filesystem::path& loadedFilename)
+{
+	std::filesystem::path newDirectory = loadedFilename;
+	newDirectory.remove_filename();
+
+	if (newDirectory == m_loadedDirectory)
+		return;
+
+	m_loadedDirectory = newDirectory;
 	m_szFiles.RemoveAll();
-
-	CFileFind find;
-
-	int i      = 0;
 	m_nCurFile = 0;
-	if (FALSE == find.FindFile("*.DXT"))
-		return;
 
-	for (i = 0; find.FindNextFile(); i++)
+	for (const auto& entry : std::filesystem::directory_iterator(newDirectory))
 	{
-		CString szPathTmp = find.GetFilePath();
-		m_szFiles.Add(szPathTmp);
+		if (!entry.is_regular_file())
+			continue;
 
-		if (szPathTmp == this->GetPathName())
-			m_nCurFile = i;
+		const auto& file = entry.path();
+		std::string ext  = file.extension().string();
+
+		if (_strcmpi(ext.c_str(), ".dxt") == 0 || _strcmpi(ext.c_str(), ".gtt") == 0)
+		{
+			CString szPathTmp = file.c_str();
+			if (file == loadedFilename)
+				m_nCurFile = static_cast<int>(m_szFiles.GetCount());
+
+			m_szFiles.Add(szPathTmp);
+		}
 	}
 }
 
@@ -243,7 +348,7 @@ void CN3TexViewerDoc::OpenNextFile()
 	m_nCurFile++;
 
 	int nFC = static_cast<int>(m_szFiles.GetSize());
-	if (m_nCurFile < 0 || m_nCurFile >= nFC)
+	if (m_nCurFile >= nFC)
 	{
 		m_nCurFile = nFC - 1;
 		return;
@@ -270,14 +375,8 @@ void CN3TexViewerDoc::OpenFirstFile()
 {
 	m_nCurFile = 0;
 
-	int nFC    = static_cast<int>(m_szFiles.GetSize());
-	if (m_nCurFile < 0 || m_nCurFile >= nFC)
-	{
-		m_nCurFile = 0;
-		return;
-	}
-
-	OnOpenDocument(m_szFiles[m_nCurFile]);
+	if (!m_szFiles.IsEmpty())
+		OnOpenDocument(m_szFiles[m_nCurFile]);
 }
 
 void CN3TexViewerDoc::OpenLastFile()
@@ -296,15 +395,30 @@ void CN3TexViewerDoc::OpenLastFile()
 
 void CN3TexViewerDoc::OnFileSaveAsBitmap()
 {
-	if (nullptr == m_pTex || nullptr == m_pTex->Get())
+	if (m_pTex == nullptr || m_pTex->Get() == nullptr)
 		return;
 
 	DWORD dwFlags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_LONGNAMES | OFN_PATHMUSTEXIST;
-	CFileDialog dlg(FALSE, "bmp", nullptr, dwFlags, "Bitmap file(*.bmp)|*.bmp||", nullptr);
+	CFileDialog dlg(FALSE, _T("bmp"), nullptr, dwFlags, _T("Bitmap file(*.bmp)|*.bmp||"), nullptr);
 	if (dlg.DoModal() == IDCANCEL)
 		return;
 
-	CString szPath = dlg.GetPathName();
-	CT2A szPathA(szPath);
-	m_pTex->SaveToBitmapFile(szPathA.m_psz);
+	std::filesystem::path outputPath = dlg.GetPathName().GetString();
+	std::filesystem::path extension  = outputPath.extension();
+
+	if (HasMultipleTextures())
+	{
+		std::filesystem::path baseFilename = outputPath.filename().replace_extension("");
+
+		for (size_t i = 0; i < m_gttTextures.size(); i++)
+		{
+			outputPath.replace_filename(baseFilename.string() + std::to_string(i));
+			outputPath.replace_extension(extension);
+			m_gttTextures[i].SaveToBitmapFile(outputPath.string());
+		}
+	}
+	else
+	{
+		m_pTex->SaveToBitmapFile(outputPath.string());
+	}
 }

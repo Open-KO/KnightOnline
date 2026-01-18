@@ -26,7 +26,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CN3TexViewerApp)
 public:
-	virtual BOOL InitInstance();
+	BOOL InitInstance() override;
 	//}}AFX_VIRTUAL
 
 	// Implementation

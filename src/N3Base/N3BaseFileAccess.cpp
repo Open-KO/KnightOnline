@@ -51,18 +51,20 @@ bool CN3BaseFileAccess::Load(File& file)
 	constexpr int MAX_SUPPORTED_NAME_LENGTH = 256;
 
 	int nL                                  = 0;
-	file.Read(&nL, 4);
+	if (!file.Read(&nL, 4))
+		return false;
 
 	if (nL < 0 || nL > MAX_SUPPORTED_NAME_LENGTH)
 		return false;
 
-	if (nL > 0)
-	{
-		m_szName.assign(nL, '\0');
-		file.Read(&m_szName[0], nL);
-	}
+	if (nL == 0)
+		return true;
 
-	return true;
+	size_t bytesRead = 0;
+	m_szName.assign(nL, '\0');
+	file.Read(&m_szName[0], nL, &bytesRead);
+
+	return static_cast<int>(bytesRead) == nL;
 }
 
 bool CN3BaseFileAccess::LoadFromFile()
