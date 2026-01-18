@@ -23,15 +23,15 @@ IMPLEMENT_DYNCREATE(CN3TexViewerView, CView)
 
 BEGIN_MESSAGE_MAP(CN3TexViewerView, CView)
 //{{AFX_MSG_MAP(CN3TexViewerView)
-ON_COMMAND(ID_VIEW_ALPHA, OnViewAlpha)
-ON_UPDATE_COMMAND_UI(ID_VIEW_ALPHA, OnUpdateViewAlpha)
+ON_COMMAND(ID_VIEW_ALPHA, &CN3TexViewerView::OnViewAlpha)
+ON_UPDATE_COMMAND_UI(ID_VIEW_ALPHA, &CN3TexViewerView::OnUpdateViewAlpha)
 ON_WM_SIZE()
 ON_WM_ERASEBKGND()
 //}}AFX_MSG_MAP
 // Standard printing commands
-ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
-ON_COMMAND(ID_FILE_PRINT_DIRECT, CView::OnFilePrint)
-ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
+ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
+ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
+ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -119,6 +119,9 @@ BOOL CN3TexViewerView::PreTranslateMessage(MSG* pMsg)
 					return TRUE;
 				}
 				return TRUE;
+
+			default:
+				break;
 		}
 	}
 

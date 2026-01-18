@@ -19,15 +19,15 @@ static char THIS_FILE[] = __FILE__;
 
 BEGIN_MESSAGE_MAP(CN3TexViewerApp, CWinApp)
 //{{AFX_MSG_MAP(CN3TexViewerApp)
-ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
+ON_COMMAND(ID_APP_ABOUT, &CN3TexViewerApp::OnAppAbout)
 // NOTE - the ClassWizard will add and remove mapping macros here.
 //    DO NOT EDIT what you see in these blocks of generated code!
 //}}AFX_MSG_MAP
 // Standard file based document commands
-ON_COMMAND(ID_FILE_NEW, CWinApp::OnFileNew)
-ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
+ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
 // Standard print setup command
-ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
+ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
