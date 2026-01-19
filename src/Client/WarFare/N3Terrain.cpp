@@ -359,7 +359,7 @@ bool CN3Terrain::Load(File& file)
 		if (iVersion < 0 || iVersion > MAX_SUPPORTED_VERSION)
 			throw std::runtime_error("CN3Terrain: invalid version in header");
 
-		int iNL = 0;
+		int iNL = -1;
 		file.Read(&iNL, sizeof(int));
 
 		if (iNL < 0 || iNL > MAX_SUPPORTED_NAME_LENGTH)

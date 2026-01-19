@@ -54,7 +54,7 @@ bool CN3River::Load(File& file)
 		if ((river.iIC % 18) != 0)
 			throw std::runtime_error("CN3River: invalid river mesh index count");
 
-		int iTexNameLength = 0;
+		int iTexNameLength = -1;
 		file.Read(&iTexNameLength, sizeof(int));
 
 		if (iTexNameLength < 0 || iTexNameLength > MAX_SUPPORTED_TEX_NAME_LENGTH)

@@ -56,11 +56,11 @@ bool CN3UIStatic::Load(File& file)
 	}
 
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
-	int iSndFNLen = 0;
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	int iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
 
 	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
-		throw std::runtime_error("CN3UIStatic: invalid click sound filename length");
+		throw std::runtime_error("CN3UIStatic: invalid 'click' sound filename length");
 
 	if (iSndFNLen > 0)
 	{

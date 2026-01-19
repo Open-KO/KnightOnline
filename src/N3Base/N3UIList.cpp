@@ -278,7 +278,7 @@ bool CN3UIList::Load(File& file)
 	constexpr int MAX_SUPPORTED_FONT_NAME_LENGTH = 32;
 
 	// font 정보
-	int iStrLen                                  = 0;
+	int iStrLen                                  = -1;
 	file.Read(&iStrLen, sizeof(iStrLen)); // font 이름 길이
 	__ASSERT(iStrLen > 0, "No font name");
 

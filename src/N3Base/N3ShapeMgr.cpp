@@ -141,12 +141,12 @@ bool CN3ShapeMgr::Load(File& file)
 	int iVersion                            = 0;
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 	{
-		int iNL = 0;
 		file.Read(&iVersion, sizeof(int));
 
 		if (iVersion < 0 || iVersion > MAX_SUPPORTED_VERSION)
 			throw std::runtime_error("CN3ShapeMgr: invalid version in header");
 
+		int iNL = -1;
 		file.Read(&iNL, sizeof(int));
 
 		if (iNL < 0 || iNL > MAX_SUPPORTED_NAME_LENGTH)

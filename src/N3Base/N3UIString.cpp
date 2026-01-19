@@ -409,7 +409,7 @@ bool CN3UIString::Load(File& file)
 	constexpr int MAX_SUPPORTED_LINE_SPACING     = 128;
 
 	// font 정보
-	int iStrLen                                  = 0;
+	int iStrLen                                  = -1;
 	file.Read(&iStrLen, sizeof(iStrLen)); // font 이름 길이
 
 	if (iStrLen < 0 || iStrLen > MAX_SUPPORTED_FONT_NAME_LENGTH)

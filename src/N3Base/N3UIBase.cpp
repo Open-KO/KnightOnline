@@ -383,7 +383,7 @@ bool CN3UIBase::Load(File& file)
 	}
 
 	// base 정보
-	int iIDLen = 0;
+	int iIDLen = -1;
 	file.Read(&iIDLen, sizeof(iIDLen)); // ui id length
 
 	if (iIDLen < 0 || iIDLen > MAX_SUPPORTED_ID_LENGTH)
@@ -404,7 +404,7 @@ bool CN3UIBase::Load(File& file)
 	file.Read(&m_dwStyle, sizeof(uint32_t));    // style
 	file.Read(&m_dwReserved, sizeof(uint32_t)); // m_dwReserved
 
-	int iTooltipLen = 0;
+	int iTooltipLen = -1;
 	file.Read(&iTooltipLen, sizeof(int));       //	tooltip문자열 길이
 
 	if (iTooltipLen < 0 || iTooltipLen > MAX_SUPPORTED_TOOLTIP_LENGTH)
@@ -418,11 +418,11 @@ bool CN3UIBase::Load(File& file)
 
 	std::string szSoundFN;
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
-	int iSndFNLen = 0;
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	int iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
 
 	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
-		throw std::runtime_error("CN3UIBase: invalid open sound filename length");
+		throw std::runtime_error("CN3UIBase: invalid 'open' sound filename length");
 
 	if (iSndFNLen > 0)
 	{
@@ -433,10 +433,11 @@ bool CN3UIBase::Load(File& file)
 		m_pSnd_OpenUI = s_SndMgr.CreateObj(szSoundFN, SNDTYPE_2D);
 	}
 
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
 
 	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
-		throw std::runtime_error("CN3UIBase: invalid close sound filename length");
+		throw std::runtime_error("CN3UIBase: invalid 'close' sound filename length");
 
 	if (iSndFNLen > 0)
 	{
