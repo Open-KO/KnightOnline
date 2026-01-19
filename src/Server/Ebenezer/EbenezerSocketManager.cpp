@@ -8,7 +8,7 @@ namespace Ebenezer
 {
 
 EbenezerSocketManager::EbenezerSocketManager() :
-	TcpSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+	TcpServerSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
 	_sendWorkerThread        = new SendWorkerThread(this);
 

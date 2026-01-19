@@ -96,26 +96,12 @@ public:
 		return _inactiveSocketArray[socketId];
 	}
 
-public:
-	template <typename T, typename... Args>
-	inline void AllocateSockets(Args&&... args)
-	{
-		// NOTE: The socket manager instance should be declared last.
-		for (size_t i = 0; i < _inactiveSocketArray.size(); i++)
-			_inactiveSocketArray[i] = new T(std::forward<Args>(args)..., this);
-	}
-
-public:
+protected:
 	TcpSocketManager(int recvBufferSize, int sendBufferSize);
 	virtual ~TcpSocketManager();
-	void Init(int serverSocketCount, int clientSocketCount, uint32_t workerThreadCount = 0);
-	bool Listen(int port);
-	void StartAccept();
-	void StopAccept();
 
-private:
-	void AsyncAccept();
-	void OnAccept(asio::ip::tcp::socket& rawSocket);
+public:
+	void Init(int serverSocketCount, int clientSocketCount, uint32_t workerThreadCount = 0);
 
 protected:
 	virtual TcpSocket* AcquireSocket(int& socketId);
@@ -130,8 +116,8 @@ protected:
 	virtual void OnPostSocketClose(TcpSocket* tcpSocket);
 	bool ProcessClose(TcpSocket* tcpSocket);
 
-public:
-	void Shutdown();
+protected:
+	void ShutdownImpl();
 
 protected:
 	std::vector<TcpSocket*> _socketArray                   = {};
@@ -148,10 +134,7 @@ protected:
 	uint32_t _workerThreadCount                            = 0;
 
 	asio::io_context _io                                   = {};
-	std::unique_ptr<asio::ip::tcp::acceptor> _acceptor     = {};
 	std::shared_ptr<asio::thread_pool> _workerPool         = {};
-
-	std::atomic<bool> _acceptingConnections                = false;
 
 	std::queue<int> _socketIdQueue                         = {};
 	std::recursive_mutex _mutex                            = {};

@@ -5,7 +5,7 @@
 
 #include "Define.h"
 
-#include <shared-server/TcpSocketManager.h>
+#include <shared-server/TcpServerSocketManager.h>
 
 namespace AIServer
 {
@@ -19,7 +19,7 @@ struct _SEND_DATA
 
 class CGameSocket;
 class SendThreadMain;
-class AISocketManager : public TcpSocketManager
+class AISocketManager : public TcpServerSocketManager
 {
 public:
 	AISocketManager();

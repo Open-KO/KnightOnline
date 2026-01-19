@@ -5,11 +5,12 @@
 
 #include "TcpSocket.h"
 
+class TcpServerSocketManager;
 class TcpServerSocket : public TcpSocket
 {
 public:
 	TcpServerSocket(test_tag);
-	TcpServerSocket(TcpSocketManager* socketManager);
+	TcpServerSocket(TcpServerSocketManager* socketManager);
 	void Close() override;
 
 protected:

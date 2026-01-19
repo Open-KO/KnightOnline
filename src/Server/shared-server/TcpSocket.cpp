@@ -2,6 +2,8 @@
 #include "TcpSocket.h"
 #include "TcpSocketManager.h"
 
+#include <cassert>
+
 TcpSocket::TcpSocket(test_tag) :
 	_recvBufferSize(DEFAULT_RECV_BUFFER_SIZE), _sendBufferSize(DEFAULT_SEND_BUFFER_SIZE),
 	_recvCircularBuffer(DEFAULT_RECV_BUFFER_SIZE), _sendCircularBuffer(DEFAULT_SEND_BUFFER_SIZE)
@@ -258,4 +260,12 @@ const std::string& TcpSocket::GetRemoteIP()
 	}
 
 	return _remoteIp;
+}
+
+void TcpSocket::SetSocket(RawSocket_t&& rawSocket)
+{
+	assert(_socket != nullptr);
+
+	if (_socket != nullptr)
+		*_socket = std::move(rawSocket);
 }

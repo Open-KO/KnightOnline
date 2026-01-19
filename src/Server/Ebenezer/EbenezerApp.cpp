@@ -220,7 +220,7 @@ EbenezerApp::~EbenezerApp()
 
 	_socketManager.Shutdown();
 
-	spdlog::info("EbenezerApp::~EbenezerApp: TcpSocketManager stopped.");
+	spdlog::info("EbenezerApp::~EbenezerApp: TcpServerSocketManager stopped.");
 
 	for (C3DMap* pMap : m_ZoneArray)
 		delete pMap;

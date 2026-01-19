@@ -22,7 +22,7 @@ public:
 	CParty m_Party;
 
 public:
-	CGameSocket(TcpSocketManager* socketManager);
+	CGameSocket(TcpServerSocketManager* socketManager);
 	~CGameSocket() override;
 
 	void Initialize() override;

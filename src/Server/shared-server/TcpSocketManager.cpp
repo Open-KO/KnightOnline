@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <cassert>
 
 TcpSocketManager::TcpSocketManager(int recvBufferSize, int sendBufferSize) :
 	_recvBufferSize(recvBufferSize), _sendBufferSize(sendBufferSize)
@@ -14,14 +15,9 @@ TcpSocketManager::TcpSocketManager(int recvBufferSize, int sendBufferSize) :
 
 TcpSocketManager::~TcpSocketManager()
 {
-	try
-	{
-		Shutdown();
-	}
-	catch (const std::exception& ex)
-	{
-		spdlog::error("TcpSocketManager::~TcpSocketManager: exception occurred - {}", ex.what());
-	}
+	// NOTE: We expect the implementer of this class to shutdown appropriately.
+	assert(_io.stopped());
+	assert(_workerPool == nullptr);
 }
 
 void TcpSocketManager::Init(
@@ -59,189 +55,6 @@ void TcpSocketManager::Init(
 
 	if (_startUserThreadCallback != nullptr)
 		_startUserThreadCallback();
-}
-
-bool TcpSocketManager::Listen(int port)
-{
-	try
-	{
-		asio::error_code ec;
-
-		// Attempt to setup the acceptor.
-		_acceptor = std::make_unique<asio::ip::tcp::acceptor>(_workerPool->get_executor());
-
-		// Setup the endpoint for TCPv4 0.0.0.0:port
-		asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
-
-		// Attempt to open the socket.
-		_acceptor->open(endpoint.protocol(), ec);
-		if (ec)
-		{
-			spdlog::error("TcpSocketManager::Listen: open() failed: {}", ec.message());
-			return false;
-		}
-
-		// Attempt to bind the socket.
-		_acceptor->bind(endpoint, ec);
-		if (ec)
-		{
-			spdlog::error(
-				"TcpSocketManager::Listen: bind() failed on 0.0.0.0:{}: {}", port, ec.message());
-			return false;
-		}
-
-		// Allow address reuse (i.e. rebinding to the same port)
-		_acceptor->set_option(asio::socket_base::reuse_address(true), ec);
-		if (ec)
-		{
-			spdlog::error(
-				"TcpSocketManager::Listen: set_option(reuse_address) failed: {}", ec.message());
-			return false;
-		}
-
-		// Configure receive buffer size
-		_acceptor->set_option(asio::socket_base::receive_buffer_size(_recvBufferSize * 4), ec);
-		if (ec)
-		{
-			spdlog::error("TcpSocketManager::Listen: set_option(receive_buffer_size) failed: {}",
-				ec.message());
-			return false;
-		}
-
-		// Configure send buffer size
-		_acceptor->set_option(asio::socket_base::send_buffer_size(_sendBufferSize * 4), ec);
-		if (ec)
-		{
-			spdlog::error(
-				"TcpSocketManager::Listen: set_option(send_buffer_size) failed: {}", ec.message());
-			return false;
-		}
-
-		// Start listening with a backlog of 5
-		_acceptor->listen(5, ec);
-		if (ec)
-		{
-			spdlog::error("TcpSocketManager::Listen: listen() failed: {}", ec.message());
-			return false;
-		}
-	}
-	catch (const asio::system_error& ex)
-	{
-		spdlog::error(
-			"TcpSocketManager::Listen: failed to bind on 0.0.0.0:{}: {}", port, ex.what());
-		return false;
-	}
-
-	spdlog::info("TcpSocketManager::Listen: initialized port={:05}", port);
-	return true;
-}
-
-void TcpSocketManager::StartAccept()
-{
-	if (_acceptingConnections.exchange(true))
-	{
-		// already accepting connections
-		return;
-	}
-
-	AsyncAccept();
-}
-
-void TcpSocketManager::StopAccept()
-{
-	_acceptingConnections.store(false);
-
-	if (_acceptor != nullptr && _acceptor->is_open())
-	{
-		asio::error_code ec;
-		_acceptor->cancel(ec);
-
-		if (ec)
-			spdlog::error("TcpSocketManager::StopAccept: cancel() failed: {}", ec.message());
-	}
-}
-
-void TcpSocketManager::AsyncAccept()
-{
-	if (!_acceptingConnections.load())
-		return;
-
-	try
-	{
-		_acceptor->async_accept(
-			[this](const asio::error_code& ec, asio::ip::tcp::socket rawSocket)
-			{
-				if (!ec)
-				{
-					if (!_acceptingConnections.load())
-					{
-						rawSocket.close();
-						return;
-					}
-
-					OnAccept(rawSocket);
-				}
-				else
-				{
-					if (ec == asio::error::operation_aborted)
-					{
-						spdlog::debug("TcpSocketManager::AsyncAccept: accept operation cancelled");
-					}
-					else
-					{
-						spdlog::error(
-							"TcpSocketManager::AsyncAccept: accept failed: {}", ec.message());
-					}
-				}
-
-				AsyncAccept();
-			});
-	}
-	catch (const asio::system_error& ex)
-	{
-		spdlog::error("TcpSocketManager::AsyncAccept: async_accept() failed: {}", ex.what());
-	}
-}
-
-void TcpSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
-{
-	int socketId         = -1;
-	TcpSocket* tcpSocket = nullptr;
-
-	// NOTE: Handle the guarding externally so it's clear what's guarded and what's not,
-	// which is critical when dealing with code needing to be fairly high performance here.
-	{
-		std::lock_guard<std::recursive_mutex> lock(_mutex);
-		tcpSocket = AcquireSocket(socketId);
-	}
-
-	if (socketId == -1)
-	{
-		spdlog::error("TcpSocketManager::OnAccept: socketId list is empty");
-		return;
-	}
-
-	// This should never happen.
-	// If it does, the associated socket ID was never removed from the list so we don't have to restore it.
-	if (tcpSocket == nullptr)
-	{
-		spdlog::error("TcpSocketManager::OnAccept: null socket [socketId:{}]", socketId);
-		return;
-	}
-
-	if (tcpSocket->_socket == nullptr)
-	{
-		spdlog::error(
-			"TcpSocketManager::OnAccept: no raw socket allocated [socketId:{}]", socketId);
-		return;
-	}
-
-	*tcpSocket->_socket = std::move(rawSocket);
-
-	tcpSocket->InitSocket();
-	tcpSocket->AsyncReceive();
-
-	spdlog::debug("TcpSocketManager::AcceptThread: successfully accepted socketId={}", socketId);
 }
 
 TcpSocket* TcpSocketManager::AcquireSocket(int& socketId)
@@ -403,15 +216,8 @@ bool TcpSocketManager::ProcessClose(TcpSocket* tcpSocket)
 	return true;
 }
 
-void TcpSocketManager::Shutdown()
+void TcpSocketManager::ShutdownImpl()
 {
-	// Stop accepting new connections
-	StopAccept();
-
-	// Reset the acceptor.
-	if (_acceptor != nullptr)
-		_acceptor.reset();
-
 	// Shutdown any user-created threads
 	if (_shutdownUserThreadCallback != nullptr)
 		_shutdownUserThreadCallback();

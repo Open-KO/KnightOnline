@@ -13,7 +13,7 @@ class CUser : public TcpServerSocket
 {
 public:
 	CUser(test_tag);
-	CUser(TcpSocketManager* socketManager);
+	CUser(TcpServerSocketManager* socketManager);
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
 	void Parsing(int len, char* pData) override;

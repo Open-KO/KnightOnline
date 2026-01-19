@@ -22,7 +22,7 @@ CUser::CUser(test_tag tag) : TcpServerSocket(tag)
 {
 }
 
-CUser::CUser(TcpSocketManager* socketManager) : TcpServerSocket(socketManager)
+CUser::CUser(TcpServerSocketManager* socketManager) : TcpServerSocket(socketManager)
 {
 }
 

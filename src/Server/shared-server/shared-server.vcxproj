@@ -119,6 +119,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppThread.cpp" />
+    <ClCompile Include="TcpServerSocketManager.cpp" />
     <ClCompile Include="TelnetClientThread.cpp" />
     <ClCompile Include="TelnetThread.cpp" />
     <ClCompile Include="utilities.cpp" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppThread.h" />
+    <ClInclude Include="TcpServerSocketManager.h" />
     <ClInclude Include="TelnetClientThread.h" />
     <ClInclude Include="TelnetThread.h" />
     <ClInclude Include="utilities.h" />

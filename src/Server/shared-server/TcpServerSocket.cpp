@@ -1,12 +1,12 @@
 ﻿#include "pch.h"
 #include "TcpServerSocket.h"
-#include "TcpSocketManager.h"
+#include "TcpServerSocketManager.h"
 
 TcpServerSocket::TcpServerSocket(test_tag tag) : TcpSocket(tag)
 {
 }
 
-TcpServerSocket::TcpServerSocket(TcpSocketManager* socketManager) : TcpSocket(socketManager)
+TcpServerSocket::TcpServerSocket(TcpServerSocketManager* socketManager) : TcpSocket(socketManager)
 {
 }
 

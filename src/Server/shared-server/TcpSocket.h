@@ -49,6 +49,11 @@ public:
 		return _state;
 	}
 
+	bool HasSocket() const
+	{
+		return _socket != nullptr;
+	}
+
 	TcpSocket(test_tag);
 	TcpSocket(TcpSocketManager* socketManager);
 
@@ -75,6 +80,7 @@ public:
 	virtual void Parsing(int length, char* pData) = 0;
 	virtual void Initialize();
 	const std::string& GetRemoteIP();
+	void SetSocket(RawSocket_t&& rawSocket);
 
 protected:
 	TcpSocketManager* _socketManager     = nullptr;

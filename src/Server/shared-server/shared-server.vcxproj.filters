@@ -37,6 +37,9 @@
     <ClCompile Include="TcpSocketManager.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
+    <ClCompile Include="TcpServerSocketManager.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server_config.h" />
@@ -78,6 +81,9 @@
       <Filter>Threads</Filter>
     </ClInclude>
     <ClInclude Include="TcpSocketManager.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServerSocketManager.h">
       <Filter>Networking</Filter>
     </ClInclude>
   </ItemGroup>
