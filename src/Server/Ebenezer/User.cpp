@@ -22,7 +22,7 @@ CUser::CUser(test_tag tag) : TcpServerSocket(tag)
 {
 }
 
-CUser::CUser(SocketManager* socketManager) : TcpServerSocket(socketManager)
+CUser::CUser(TcpSocketManager* socketManager) : TcpServerSocket(socketManager)
 {
 }
 
@@ -1704,7 +1704,7 @@ void CUser::Attack(char* pBuf)
 	// USER
 	if (tid < NPC_BAND)
 	{
-		if (!_socketManager->IsValidServerSocketId(tid))
+		if (!_socketManager->IsValidSocketId(tid))
 			return;
 
 		pTUser = m_pMain->GetUserPtr(tid);

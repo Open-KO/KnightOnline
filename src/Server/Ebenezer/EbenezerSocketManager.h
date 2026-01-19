@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include <shared-server/SocketManager.h>
+#include <shared-server/TcpSocketManager.h>
 
 namespace Ebenezer
 {
 
 class CUser;
 class SendWorkerThread;
-class EbenezerSocketManager : public SocketManager
+class EbenezerSocketManager : public TcpSocketManager
 {
 public:
 	EbenezerSocketManager();

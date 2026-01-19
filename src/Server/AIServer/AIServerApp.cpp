@@ -51,7 +51,7 @@ AIServerApp::~AIServerApp()
 {
 	spdlog::info("AIServerApp::~AIServerApp: Shutting down, releasing resources.");
 	_socketManager.Shutdown();
-	spdlog::info("AIServerApp::~AIServerApp: SocketManager stopped.");
+	spdlog::info("AIServerApp::~AIServerApp: TcpSocketManager stopped.");
 
 	// wait for all of these threads to be fully shut down.
 	spdlog::info("AIServerApp::~AIServerApp: Waiting for worker threads to fully shut down.");
@@ -174,7 +174,7 @@ bool AIServerApp::OnStart()
 	//----------------------------------------------------------------------
 	spdlog::info("AIServerApp::OnStart: initializing sockets");
 	_socketManager.Init(MAX_SOCKET, 0, 1);
-	_socketManager.AllocateServerSockets<CGameSocket>();
+	_socketManager.AllocateSockets<CGameSocket>();
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table
@@ -1140,10 +1140,10 @@ void AIServerApp::CheckAliveTest()
 
 	CGameSocket* pSocket = nullptr;
 	int size = 0, count = 0;
-	int socketCount = _socketManager.GetServerSocketCount();
+	int socketCount = _socketManager.GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		pSocket = _socketManager.GetServerSocketUnchecked(i);
+		pSocket = _socketManager.GetSocketUnchecked(i);
 		if (pSocket == nullptr)
 			continue;
 
@@ -1301,11 +1301,11 @@ void AIServerApp::SyncTest()
 	SetByte(sendBuffer, AG_CHECK_ALIVE_REQ, sendIndex);
 
 	CGameSocket* pSocket = nullptr;
-	int size = 0, socketCount = _socketManager.GetServerSocketCount();
+	int size = 0, socketCount = _socketManager.GetSocketCount();
 
 	for (int i = 0; i < socketCount; i++)
 	{
-		pSocket = _socketManager.GetServerSocketUnchecked(i);
+		pSocket = _socketManager.GetSocketUnchecked(i);
 		if (pSocket == nullptr)
 			continue;
 

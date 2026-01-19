@@ -71,7 +71,7 @@ void SendThreadMain::thread_loop()
 
 void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 {
-	int socketCount = _socketManager->GetServerSocketCount();
+	int socketCount = _socketManager->GetSocketCount();
 	if (socketCount <= 0)
 		return;
 
@@ -88,7 +88,7 @@ void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 			int socketId             = _nextRoundRobinSocketId;
 			++_nextRoundRobinSocketId;
 
-			CGameSocket* gameSocket = _socketManager->GetServerSocketUnchecked(socketId);
+			CGameSocket* gameSocket = _socketManager->GetSocketUnchecked(socketId);
 			if (gameSocket == nullptr)
 				continue;
 

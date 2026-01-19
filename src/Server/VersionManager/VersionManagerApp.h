@@ -7,7 +7,7 @@
 #include "DBProcess.h"
 
 #include <shared-server/AppThread.h>
-#include <shared-server/SocketManager.h>
+#include <shared-server/TcpSocketManager.h>
 
 #include <vector>
 #include <string>
@@ -46,7 +46,7 @@ public:
 	~VersionManagerApp() override;
 	bool LoadVersionList();
 
-	SocketManager _socketManager;
+	TcpSocketManager _socketManager;
 
 	VersionInfoList VersionList;
 	ServerInfoList ServerList;

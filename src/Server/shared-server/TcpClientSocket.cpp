@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
 #include "TcpClientSocket.h"
-#include "SocketManager.h"
+#include "TcpSocketManager.h"
 
-TcpClientSocket::TcpClientSocket(SocketManager* socketManager) : TcpSocket(socketManager)
+TcpClientSocket::TcpClientSocket(TcpSocketManager* socketManager) : TcpSocket(socketManager)
 {
 }
 
@@ -124,7 +124,7 @@ void TcpClientSocket::Close()
 			return;
 
 		asio::post(
-			*threadPool, std::bind(&SocketManager::OnPostClientSocketClose, _socketManager, this));
+			*threadPool, std::bind(&TcpSocketManager::OnPostSocketClose, _socketManager, this));
 	}
 	catch (const asio::system_error& ex)
 	{

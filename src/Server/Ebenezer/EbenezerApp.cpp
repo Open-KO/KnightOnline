@@ -220,7 +220,7 @@ EbenezerApp::~EbenezerApp()
 
 	_socketManager.Shutdown();
 
-	spdlog::info("EbenezerApp::~EbenezerApp: SocketManager stopped.");
+	spdlog::info("EbenezerApp::~EbenezerApp: TcpSocketManager stopped.");
 
 	for (C3DMap* pMap : m_ZoneArray)
 		delete pMap;
@@ -260,7 +260,7 @@ bool EbenezerApp::OnStart()
 	_eventLogger             = spdlog::get(std::string(logger::EbenezerEvent));
 
 	_socketManager.Init(MAX_USER, CLIENT_SOCKSIZE, 4);
-	_socketManager.AllocateServerSockets<CUser>();
+	_socketManager.AllocateSockets<CUser>();
 
 	_ZONE_SERVERINFO* pInfo = m_ServerArray.GetData(m_nServerNo);
 	if (pInfo == nullptr)

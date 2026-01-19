@@ -8,7 +8,7 @@
 class TcpClientSocket : public TcpSocket
 {
 public:
-	TcpClientSocket(SocketManager* socketManager);
+	TcpClientSocket(TcpSocketManager* socketManager);
 	bool Create();
 	bool Connect(const char* remoteAddress, uint16_t remotePort);
 	void Close() override;

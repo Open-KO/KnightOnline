@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include <shared-server/SocketManager.h>
 #include "Define.h"
+
+#include <shared-server/TcpSocketManager.h>
 
 namespace AIServer
 {
@@ -18,14 +19,14 @@ struct _SEND_DATA
 
 class CGameSocket;
 class SendThreadMain;
-class AISocketManager : public SocketManager
+class AISocketManager : public TcpSocketManager
 {
 public:
 	AISocketManager();
 	~AISocketManager() override;
 
-	CGameSocket* GetServerSocket(int socketId) const;
-	CGameSocket* GetServerSocketUnchecked(int socketId) const;
+	CGameSocket* GetSocket(int socketId) const;
+	CGameSocket* GetSocketUnchecked(int socketId) const;
 
 	void QueueSendData(_SEND_DATA* sendData);
 

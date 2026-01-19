@@ -126,7 +126,7 @@
     <ClCompile Include="ReadQueueThread.cpp" />
     <ClCompile Include="SharedMemoryQueue.cpp" />
     <ClCompile Include="SharedMemoryBlock.cpp" />
-    <ClCompile Include="SocketManager.cpp" />
+    <ClCompile Include="TcpSocketManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -146,7 +146,7 @@
     <ClInclude Include="server_config.h" />
     <ClInclude Include="SharedMemoryQueue.h" />
     <ClInclude Include="SharedMemoryBlock.h" />
-    <ClInclude Include="SocketManager.h" />
+    <ClInclude Include="TcpSocketManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="logger.h" />

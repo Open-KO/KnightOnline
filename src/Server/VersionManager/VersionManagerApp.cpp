@@ -31,7 +31,7 @@ VersionManagerApp::~VersionManagerApp()
 {
 	spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down, releasing resources.");
 	_socketManager.Shutdown();
-	spdlog::info("VersionManagerApp::~VersionManagerApp: SocketManager stopped.");
+	spdlog::info("VersionManagerApp::~VersionManagerApp: TcpSocketManager stopped.");
 
 	spdlog::info(
 		"VersionManagerApp::~VersionManagerApp: Waiting for worker threads to fully shut down.");
@@ -60,7 +60,7 @@ VersionManagerApp::~VersionManagerApp()
 bool VersionManagerApp::OnStart()
 {
 	_socketManager.Init(MAX_USER, 0, 1);
-	_socketManager.AllocateServerSockets<CUser>();
+	_socketManager.AllocateSockets<CUser>();
 
 	spdlog::info("Version Manager initialized");
 

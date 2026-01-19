@@ -1,12 +1,12 @@
 ﻿#include "pch.h"
 #include "TcpServerSocket.h"
-#include "SocketManager.h"
+#include "TcpSocketManager.h"
 
 TcpServerSocket::TcpServerSocket(test_tag tag) : TcpSocket(tag)
 {
 }
 
-TcpServerSocket::TcpServerSocket(SocketManager* socketManager) : TcpSocket(socketManager)
+TcpServerSocket::TcpServerSocket(TcpSocketManager* socketManager) : TcpSocket(socketManager)
 {
 }
 
@@ -37,7 +37,7 @@ void TcpServerSocket::Close()
 			return;
 
 		asio::post(
-			*threadPool, std::bind(&SocketManager::OnPostServerSocketClose, _socketManager, this));
+			*threadPool, std::bind(&TcpSocketManager::OnPostSocketClose, _socketManager, this));
 	}
 	catch (const asio::system_error& ex)
 	{
@@ -48,5 +48,5 @@ void TcpServerSocket::Close()
 
 void TcpServerSocket::ReleaseToManager()
 {
-	_socketManager->ReleaseServerSocket(this, GetSocketID());
+	_socketManager->ReleaseSocket(this, GetSocketID());
 }

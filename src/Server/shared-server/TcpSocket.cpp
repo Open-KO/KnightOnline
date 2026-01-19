@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "TcpSocket.h"
-#include "SocketManager.h"
+#include "TcpSocketManager.h"
 
 TcpSocket::TcpSocket(test_tag) :
 	_recvBufferSize(DEFAULT_RECV_BUFFER_SIZE), _sendBufferSize(DEFAULT_SEND_BUFFER_SIZE),
@@ -9,7 +9,7 @@ TcpSocket::TcpSocket(test_tag) :
 	_recvBuffer.resize(_recvBufferSize);
 }
 
-TcpSocket::TcpSocket(SocketManager* socketManager) :
+TcpSocket::TcpSocket(TcpSocketManager* socketManager) :
 	_socketManager(socketManager), _recvBufferSize(socketManager->GetRecvBufferSize()),
 	_sendBufferSize(socketManager->GetSendBufferSize()),
 	_recvCircularBuffer(socketManager->GetRecvBufferSize()),
@@ -111,7 +111,7 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 			if (_socket != nullptr)
 			{
 				_socket->async_write_some(
-					buffers, std::bind(&SocketManager::OnPostSend, _socketManager,
+					buffers, std::bind(&TcpSocketManager::OnPostSend, _socketManager,
 								 std::placeholders::_1, std::placeholders::_2, this));
 			}
 		}
@@ -120,7 +120,7 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 			if (_socket != nullptr)
 			{
 				_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
-					std::bind(&SocketManager::OnPostSend, _socketManager, std::placeholders::_1,
+					std::bind(&TcpSocketManager::OnPostSend, _socketManager, std::placeholders::_1,
 						std::placeholders::_2, this));
 			}
 		}
@@ -151,9 +151,9 @@ void TcpSocket::AsyncReceive()
 	{
 		if (_socket != nullptr)
 		{
-			_socket->async_read_some(
-				asio::buffer(_recvBuffer), std::bind(&SocketManager::OnPostReceive, _socketManager,
-											   std::placeholders::_1, std::placeholders::_2, this));
+			_socket->async_read_some(asio::buffer(_recvBuffer),
+				std::bind(&TcpSocketManager::OnPostReceive, _socketManager, std::placeholders::_1,
+					std::placeholders::_2, this));
 		}
 	}
 	catch (const asio::system_error& ex)

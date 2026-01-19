@@ -18,10 +18,10 @@ enum e_ConnectionState : uint8_t
 	CONNECTION_STATE_GAMESTART
 };
 
-class SocketManager;
+class TcpSocketManager;
 class TcpSocket
 {
-	friend class SocketManager;
+	friend class TcpSocketManager;
 
 protected:
 	using RawSocket_t                             = asio::ip::tcp::socket;
@@ -50,7 +50,7 @@ public:
 	}
 
 	TcpSocket(test_tag);
-	TcpSocket(SocketManager* socketManager);
+	TcpSocket(TcpSocketManager* socketManager);
 
 	virtual ~TcpSocket()
 	{
@@ -77,7 +77,7 @@ public:
 	const std::string& GetRemoteIP();
 
 protected:
-	SocketManager* _socketManager        = nullptr;
+	TcpSocketManager* _socketManager     = nullptr;
 	std::unique_ptr<RawSocket_t> _socket = nullptr;
 
 	int _recvBufferSize                  = 0;

@@ -190,12 +190,12 @@ public:
 
 	inline int GetUserSocketCount() const
 	{
-		return _socketManager.GetServerSocketCount();
+		return _socketManager.GetSocketCount();
 	}
 
 	inline bool IsValidUserId(int socketId) const
 	{
-		return _socketManager.IsValidServerSocketId(socketId);
+		return _socketManager.IsValidSocketId(socketId);
 	}
 
 	EbenezerApp(EbenezerLogger& logger);

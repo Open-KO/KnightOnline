@@ -17,7 +17,7 @@
 namespace Ebenezer
 {
 
-CAISocket::CAISocket(SocketManager* socketManager, int zoneNum) :
+CAISocket::CAISocket(TcpSocketManager* socketManager, int zoneNum) :
 	TcpClientSocket(socketManager), _zoneNum(zoneNum)
 {
 }

@@ -1,17 +1,18 @@
 ﻿#include "pch.h"
-#include "SocketManager.h"
+#include "TcpSocketManager.h"
 #include "TcpSocket.h"
 #include "TcpClientSocket.h"
 
-#include <algorithm>
 #include <spdlog/spdlog.h>
 
-SocketManager::SocketManager(int recvBufferSize, int sendBufferSize) :
+#include <algorithm>
+
+TcpSocketManager::TcpSocketManager(int recvBufferSize, int sendBufferSize) :
 	_recvBufferSize(recvBufferSize), _sendBufferSize(sendBufferSize)
 {
 }
 
-SocketManager::~SocketManager()
+TcpSocketManager::~TcpSocketManager()
 {
 	try
 	{
@@ -19,19 +20,20 @@ SocketManager::~SocketManager()
 	}
 	catch (const std::exception& ex)
 	{
-		spdlog::error("SocketManager::~SocketManager: exception occurred - {}", ex.what());
+		spdlog::error("TcpSocketManager::~TcpSocketManager: exception occurred - {}", ex.what());
 	}
 }
 
-void SocketManager::Init(
+void TcpSocketManager::Init(
 	int serverSocketCount, int clientSocketCount, uint32_t workerThreadCount /*= 0*/)
 {
-	_serverSocketCount         = serverSocketCount;
-	_clientSocketCount         = clientSocketCount;
+	_socketCount       = serverSocketCount;
+	_clientSocketCount = clientSocketCount;
 
-	_serverSocketArray         = new TcpSocket*[serverSocketCount];
-	_inactiveServerSocketArray = new TcpSocket*[serverSocketCount];
-	_clientSocketArray         = new TcpClientSocket*[clientSocketCount];
+	_socketArray.resize(serverSocketCount);
+	_inactiveSocketArray.resize(serverSocketCount);
+
+	_clientSocketArray = new TcpClientSocket*[clientSocketCount];
 
 	// NOTE: Specifically allocate the worker pool first, as we'll need this for our sockets.
 	if (workerThreadCount == 0)
@@ -43,12 +45,7 @@ void SocketManager::Init(
 
 	std::queue<int> socketIdQueue;
 	for (int i = 0; i < serverSocketCount; i++)
-	{
-		_serverSocketArray[i]         = nullptr;
-		_inactiveServerSocketArray[i] = nullptr;
-
 		socketIdQueue.push(i);
-	}
 
 	for (int i = 0; i < clientSocketCount; i++)
 		_clientSocketArray[i] = nullptr;
@@ -64,7 +61,7 @@ void SocketManager::Init(
 		_startUserThreadCallback();
 }
 
-bool SocketManager::Listen(int port)
+bool TcpSocketManager::Listen(int port)
 {
 	try
 	{
@@ -80,7 +77,7 @@ bool SocketManager::Listen(int port)
 		_acceptor->open(endpoint.protocol(), ec);
 		if (ec)
 		{
-			spdlog::error("SocketManager::Listen: open() failed: {}", ec.message());
+			spdlog::error("TcpSocketManager::Listen: open() failed: {}", ec.message());
 			return false;
 		}
 
@@ -89,7 +86,7 @@ bool SocketManager::Listen(int port)
 		if (ec)
 		{
 			spdlog::error(
-				"SocketManager::Listen: bind() failed on 0.0.0.0:{}: {}", port, ec.message());
+				"TcpSocketManager::Listen: bind() failed on 0.0.0.0:{}: {}", port, ec.message());
 			return false;
 		}
 
@@ -98,7 +95,7 @@ bool SocketManager::Listen(int port)
 		if (ec)
 		{
 			spdlog::error(
-				"SocketManager::Listen: set_option(reuse_address) failed: {}", ec.message());
+				"TcpSocketManager::Listen: set_option(reuse_address) failed: {}", ec.message());
 			return false;
 		}
 
@@ -106,8 +103,8 @@ bool SocketManager::Listen(int port)
 		_acceptor->set_option(asio::socket_base::receive_buffer_size(_recvBufferSize * 4), ec);
 		if (ec)
 		{
-			spdlog::error(
-				"SocketManager::Listen: set_option(receive_buffer_size) failed: {}", ec.message());
+			spdlog::error("TcpSocketManager::Listen: set_option(receive_buffer_size) failed: {}",
+				ec.message());
 			return false;
 		}
 
@@ -116,7 +113,7 @@ bool SocketManager::Listen(int port)
 		if (ec)
 		{
 			spdlog::error(
-				"SocketManager::Listen: set_option(send_buffer_size) failed: {}", ec.message());
+				"TcpSocketManager::Listen: set_option(send_buffer_size) failed: {}", ec.message());
 			return false;
 		}
 
@@ -124,21 +121,22 @@ bool SocketManager::Listen(int port)
 		_acceptor->listen(5, ec);
 		if (ec)
 		{
-			spdlog::error("SocketManager::Listen: listen() failed: {}", ec.message());
+			spdlog::error("TcpSocketManager::Listen: listen() failed: {}", ec.message());
 			return false;
 		}
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error("SocketManager::Listen: failed to bind on 0.0.0.0:{}: {}", port, ex.what());
+		spdlog::error(
+			"TcpSocketManager::Listen: failed to bind on 0.0.0.0:{}: {}", port, ex.what());
 		return false;
 	}
 
-	spdlog::info("SocketManager::Listen: initialized port={:05}", port);
+	spdlog::info("TcpSocketManager::Listen: initialized port={:05}", port);
 	return true;
 }
 
-void SocketManager::StartAccept()
+void TcpSocketManager::StartAccept()
 {
 	if (_acceptingConnections.exchange(true))
 	{
@@ -149,7 +147,7 @@ void SocketManager::StartAccept()
 	AsyncAccept();
 }
 
-void SocketManager::StopAccept()
+void TcpSocketManager::StopAccept()
 {
 	_acceptingConnections.store(false);
 
@@ -159,11 +157,11 @@ void SocketManager::StopAccept()
 		_acceptor->cancel(ec);
 
 		if (ec)
-			spdlog::error("SocketManager::StopAccept: cancel() failed: {}", ec.message());
+			spdlog::error("TcpSocketManager::StopAccept: cancel() failed: {}", ec.message());
 	}
 }
 
-void SocketManager::AsyncAccept()
+void TcpSocketManager::AsyncAccept()
 {
 	if (!_acceptingConnections.load())
 		return;
@@ -186,10 +184,14 @@ void SocketManager::AsyncAccept()
 				else
 				{
 					if (ec == asio::error::operation_aborted)
-						spdlog::debug("SocketManager::AsyncAccept: accept operation cancelled");
+					{
+						spdlog::debug("TcpSocketManager::AsyncAccept: accept operation cancelled");
+					}
 					else
+					{
 						spdlog::error(
-							"SocketManager::AsyncAccept: accept failed: {}", ec.message());
+							"TcpSocketManager::AsyncAccept: accept failed: {}", ec.message());
+					}
 				}
 
 				AsyncAccept();
@@ -197,11 +199,11 @@ void SocketManager::AsyncAccept()
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error("SocketManager::AsyncAccept: async_accept() failed: {}", ex.what());
+		spdlog::error("TcpSocketManager::AsyncAccept: async_accept() failed: {}", ex.what());
 	}
 }
 
-void SocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
+void TcpSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 {
 	int socketId         = -1;
 	TcpSocket* tcpSocket = nullptr;
@@ -210,12 +212,12 @@ void SocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 	// which is critical when dealing with code needing to be fairly high performance here.
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
-		tcpSocket = AcquireServerSocket(socketId);
+		tcpSocket = AcquireSocket(socketId);
 	}
 
 	if (socketId == -1)
 	{
-		spdlog::error("SocketManager::OnAccept: socketId list is empty");
+		spdlog::error("TcpSocketManager::OnAccept: socketId list is empty");
 		return;
 	}
 
@@ -223,13 +225,14 @@ void SocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 	// If it does, the associated socket ID was never removed from the list so we don't have to restore it.
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("SocketManager::OnAccept: null socket [socketId:{}]", socketId);
+		spdlog::error("TcpSocketManager::OnAccept: null socket [socketId:{}]", socketId);
 		return;
 	}
 
 	if (tcpSocket->_socket == nullptr)
 	{
-		spdlog::error("SocketManager::OnAccept: no raw socket allocated [socketId:{}]", socketId);
+		spdlog::error(
+			"TcpSocketManager::OnAccept: no raw socket allocated [socketId:{}]", socketId);
 		return;
 	}
 
@@ -238,10 +241,10 @@ void SocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 	tcpSocket->InitSocket();
 	tcpSocket->AsyncReceive();
 
-	spdlog::debug("SocketManager::AcceptThread: successfully accepted socketId={}", socketId);
+	spdlog::debug("TcpSocketManager::AcceptThread: successfully accepted socketId={}", socketId);
 }
 
-TcpSocket* SocketManager::AcquireServerSocket(int& socketId)
+TcpSocket* TcpSocketManager::AcquireSocket(int& socketId)
 {
 	if (_socketIdQueue.empty())
 		return nullptr;
@@ -249,26 +252,26 @@ TcpSocket* SocketManager::AcquireServerSocket(int& socketId)
 	socketId = _socketIdQueue.front();
 
 	// This is all self-contained so it should never be out of range.
-	assert(socketId >= 0 && socketId < _serverSocketCount);
+	assert(socketId >= 0 && socketId < _socketCount);
 
-	TcpSocket* tcpSocket = _inactiveServerSocketArray[socketId];
+	TcpSocket* tcpSocket = _inactiveSocketArray[socketId];
 	if (tcpSocket == nullptr)
 		return nullptr;
 
 	_socketIdQueue.pop();
 
-	_serverSocketArray[socketId]         = tcpSocket;
-	_inactiveServerSocketArray[socketId] = nullptr;
+	_socketArray[socketId]         = tcpSocket;
+	_inactiveSocketArray[socketId] = nullptr;
 
 	tcpSocket->SetSocketID(socketId);
 	return tcpSocket;
 }
 
-void SocketManager::ReleaseServerSocket(TcpSocket* tcpSocket, int socketId)
+void TcpSocketManager::ReleaseSocket(TcpSocket* tcpSocket, int socketId)
 {
-	if (socketId < 0 || socketId >= _serverSocketCount)
+	if (socketId < 0 || socketId >= _socketCount)
 	{
-		spdlog::error("SocketManager::ReleaseServerSocket: out of range socketId={}", socketId);
+		spdlog::error("TcpSocketManager::ReleaseServerSocket: out of range socketId={}", socketId);
 		return;
 	}
 
@@ -276,12 +279,12 @@ void SocketManager::ReleaseServerSocket(TcpSocket* tcpSocket, int socketId)
 
 	if (tcpSocket != nullptr)
 	{
-		_serverSocketArray[socketId]         = nullptr;
-		_inactiveServerSocketArray[socketId] = tcpSocket;
+		_socketArray[socketId]         = nullptr;
+		_inactiveSocketArray[socketId] = tcpSocket;
 	}
 }
 
-bool SocketManager::AcquireClientSocket(TcpClientSocket* tcpClientSocket)
+bool TcpSocketManager::AcquireClientSocket(TcpClientSocket* tcpClientSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
@@ -294,11 +297,11 @@ bool SocketManager::AcquireClientSocket(TcpClientSocket* tcpClientSocket)
 	return true;
 }
 
-void SocketManager::ReleaseClientSocket(int socketId)
+void TcpSocketManager::ReleaseClientSocket(int socketId)
 {
 	if (socketId < 0 || socketId >= _clientSocketCount)
 	{
-		spdlog::error("SocketManager::ReleaseClientSocket: out of range socketId={}", socketId);
+		spdlog::error("TcpSocketManager::ReleaseClientSocket: out of range socketId={}", socketId);
 		return;
 	}
 
@@ -306,7 +309,7 @@ void SocketManager::ReleaseClientSocket(int socketId)
 	_clientSocketArray[socketId] = nullptr;
 }
 
-int SocketManager::GetAvailableClientSocketId() const
+int TcpSocketManager::GetAvailableClientSocketId() const
 {
 	for (int i = 0; i < _clientSocketCount; i++)
 	{
@@ -317,19 +320,19 @@ int SocketManager::GetAvailableClientSocketId() const
 	return -1;
 }
 
-void SocketManager::OnPostReceive(
+void TcpSocketManager::OnPostReceive(
 	const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket)
 {
 	if (ec)
 	{
 		if (ec == asio::error::eof)
 		{
-			spdlog::debug("SocketManager::OnPostReceive: peer closed connection. socketId={}",
+			spdlog::debug("TcpSocketManager::OnPostReceive: peer closed connection. socketId={}",
 				tcpSocket->GetSocketID());
 		}
 		else
 		{
-			spdlog::debug("SocketManager::OnPostReceive: socketId={} error={}",
+			spdlog::debug("TcpSocketManager::OnPostReceive: socketId={} error={}",
 				tcpSocket->GetSocketID(), ec.message());
 
 			if (++tcpSocket->_socketErrorCount < 2)
@@ -342,7 +345,7 @@ void SocketManager::OnPostReceive(
 
 	if (bytesTransferred == 0)
 	{
-		spdlog::debug("SocketManager::OnPostReceive: closed by 0 byte notify. socketId={}",
+		spdlog::debug("TcpSocketManager::OnPostReceive: closed by 0 byte notify. socketId={}",
 			tcpSocket->GetSocketID());
 		ProcessClose(tcpSocket);
 		return;
@@ -358,13 +361,13 @@ void SocketManager::OnPostReceive(
 	tcpSocket->AsyncReceive();
 }
 
-void SocketManager::OnPostSend(
+void TcpSocketManager::OnPostSend(
 	const asio::error_code& ec, size_t /*bytesTransferred*/, TcpSocket* tcpSocket)
 {
 	if (ec)
 	{
-		spdlog::error("SocketManager::OnPostSend: socketId={} failed: {}", tcpSocket->GetSocketID(),
-			ec.message());
+		spdlog::error("TcpSocketManager::OnPostSend: socketId={} failed: {}",
+			tcpSocket->GetSocketID(), ec.message());
 
 		tcpSocket->Close();
 		return;
@@ -379,25 +382,16 @@ void SocketManager::OnPostSend(
 	tcpSocket->AsyncSend(true);
 }
 
-void SocketManager::OnPostServerSocketClose(TcpSocket* tcpSocket)
+void TcpSocketManager::OnPostSocketClose(TcpSocket* tcpSocket)
 {
 	if (!ProcessClose(tcpSocket))
 		return;
 
-	spdlog::debug("SocketManager::OnPostServerSocketClose: socket closed by Close() socketId={}",
+	spdlog::debug("TcpSocketManager::OnPostSocketClose: socket closed by Close() socketId={}",
 		tcpSocket->GetSocketID());
 }
 
-void SocketManager::OnPostClientSocketClose(TcpClientSocket* tcpSocket)
-{
-	if (!ProcessClose(tcpSocket))
-		return;
-
-	spdlog::debug("SocketManager::OnPostClientSocketClose: socket closed by Close() socketId={}",
-		tcpSocket->GetSocketID());
-}
-
-bool SocketManager::ProcessClose(TcpSocket* tcpSocket)
+bool TcpSocketManager::ProcessClose(TcpSocket* tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)
@@ -409,7 +403,7 @@ bool SocketManager::ProcessClose(TcpSocket* tcpSocket)
 	return true;
 }
 
-void SocketManager::Shutdown()
+void TcpSocketManager::Shutdown()
 {
 	// Stop accepting new connections
 	StopAccept();
@@ -426,18 +420,15 @@ void SocketManager::Shutdown()
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
 
-		if (_serverSocketArray != nullptr)
+		for (int i = 0; i < _socketCount; i++)
 		{
-			for (int i = 0; i < _serverSocketCount; i++)
-			{
-				TcpSocket* tcpSocket = _serverSocketArray[i];
-				if (tcpSocket == nullptr)
-					continue;
+			TcpSocket* tcpSocket = _socketArray[i];
+			if (tcpSocket == nullptr)
+				continue;
 
-				// Invoke immediate save and disconnect from within this thread
-				tcpSocket->CloseProcess();
-				ReleaseServerSocket(tcpSocket, i);
-			}
+			// Invoke immediate save and disconnect from within this thread
+			tcpSocket->CloseProcess();
+			ReleaseSocket(tcpSocket, i);
 		}
 
 		if (_clientSocketArray != nullptr)
@@ -469,34 +460,20 @@ void SocketManager::Shutdown()
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
 
-		for (int i = 0; i < _serverSocketCount; i++)
-		{
-			// NOTE: We're intentionally checking the outer array here and not the instance
-			// in case the array was already freed.
-			if (_serverSocketArray != nullptr)
-			{
-				delete _serverSocketArray[i];
-				_serverSocketArray[i] = nullptr;
-			}
+		for (TcpSocket* socket : _socketArray)
+			delete socket;
+		_socketArray.clear();
 
-			// NOTE: We're intentionally checking the outer array here and not the instance
-			// in case the array was already freed.
-			if (_inactiveServerSocketArray != nullptr)
-			{
-				delete _inactiveServerSocketArray[i];
-				_inactiveServerSocketArray[i] = nullptr;
-			}
-		}
-
-		delete[] _serverSocketArray;
-		delete[] _inactiveServerSocketArray;
-
-		_serverSocketArray         = nullptr;
-		_inactiveServerSocketArray = nullptr;
+		for (TcpSocket* socket : _inactiveSocketArray)
+			delete socket;
+		_inactiveSocketArray.clear();
 
 		// We don't own these instances so we should only free the array.
 		delete[] _clientSocketArray;
 		_clientSocketArray = nullptr;
+
+		_socketCount       = 0;
+		_clientSocketCount = 0;
 	}
 
 	// Finally free the worker pool; it needs to exist while otherwise tied to sessions.

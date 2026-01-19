@@ -9,7 +9,7 @@ class TcpServerSocket : public TcpSocket
 {
 public:
 	TcpServerSocket(test_tag);
-	TcpServerSocket(SocketManager* socketManager);
+	TcpServerSocket(TcpSocketManager* socketManager);
 	void Close() override;
 
 protected:

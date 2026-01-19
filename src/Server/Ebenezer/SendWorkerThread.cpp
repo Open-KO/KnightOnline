@@ -40,7 +40,7 @@ void SendWorkerThread::thread_loop()
 
 void SendWorkerThread::tick()
 {
-	int socketCount = _socketManager->GetServerSocketCount();
+	int socketCount = _socketManager->GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
 		CUser* userSocket = _socketManager->GetUserUnchecked(i);

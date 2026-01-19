@@ -6,7 +6,7 @@
 namespace AIServer
 {
 
-AISocketManager::AISocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+AISocketManager::AISocketManager() : TcpSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
 	_sendThreadMain          = new SendThreadMain(this);
 
@@ -29,14 +29,14 @@ AISocketManager::~AISocketManager()
 	_sendThreadMain = nullptr;
 }
 
-CGameSocket* AISocketManager::GetServerSocket(int socketId) const
+CGameSocket* AISocketManager::GetSocket(int socketId) const
 {
-	return static_cast<CGameSocket*>(SocketManager::GetServerSocket(socketId));
+	return static_cast<CGameSocket*>(TcpSocketManager::GetSocket(socketId));
 }
 
-CGameSocket* AISocketManager::GetServerSocketUnchecked(int socketId) const
+CGameSocket* AISocketManager::GetSocketUnchecked(int socketId) const
 {
-	return static_cast<CGameSocket*>(SocketManager::GetServerSocketUnchecked(socketId));
+	return static_cast<CGameSocket*>(TcpSocketManager::GetSocketUnchecked(socketId));
 }
 
 void AISocketManager::QueueSendData(_SEND_DATA* sendData)

@@ -7,7 +7,8 @@
 namespace Ebenezer
 {
 
-EbenezerSocketManager::EbenezerSocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+EbenezerSocketManager::EbenezerSocketManager() :
+	TcpSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
 	_sendWorkerThread        = new SendWorkerThread(this);
 
@@ -32,22 +33,22 @@ EbenezerSocketManager::~EbenezerSocketManager()
 
 CUser* EbenezerSocketManager::GetUser(int socketId) const
 {
-	return static_cast<CUser*>(GetServerSocket(socketId));
+	return static_cast<CUser*>(GetSocket(socketId));
 }
 
 CUser* EbenezerSocketManager::GetUserUnchecked(int socketId) const
 {
-	return static_cast<CUser*>(GetServerSocketUnchecked(socketId));
+	return static_cast<CUser*>(GetSocketUnchecked(socketId));
 }
 
 CUser* EbenezerSocketManager::GetInactiveUser(int socketId) const
 {
-	return static_cast<CUser*>(GetInactiveServerSocket(socketId));
+	return static_cast<CUser*>(GetInactiveSocket(socketId));
 }
 
 CUser* EbenezerSocketManager::GetInactiveUserUnchecked(int socketId) const
 {
-	return static_cast<CUser*>(GetInactiveServerSocketUnchecked(socketId));
+	return static_cast<CUser*>(GetInactiveSocketUnchecked(socketId));
 }
 
 } // namespace Ebenezer

@@ -225,7 +225,7 @@ public:
 
 public:
 	CUser(test_tag);
-	CUser(SocketManager* socketManager);
+	CUser(TcpSocketManager* socketManager);
 	~CUser() override;
 
 public:

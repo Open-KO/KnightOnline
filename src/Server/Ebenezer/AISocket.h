@@ -24,7 +24,7 @@ public:
 		return _zoneNum;
 	}
 
-	CAISocket(SocketManager* socketManager, int zoneNum);
+	CAISocket(TcpSocketManager* socketManager, int zoneNum);
 
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
