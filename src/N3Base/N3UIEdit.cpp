@@ -494,6 +494,10 @@ bool CN3UIEdit::Load(File& file)
 	int iSndFNLen = 0;
 
 	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+
+	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("CN3UIEdit: invalid typing sound filename length");
+
 	if (iSndFNLen > 0)
 	{
 		std::string filename(iSndFNLen, '\0');

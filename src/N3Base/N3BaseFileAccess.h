@@ -25,6 +25,8 @@ inline constexpr e_N3FormatVersion N3FORMAT_VER_DEFAULT = N3FORMAT_VER_1298;
 class CN3BaseFileAccess : public CN3Base
 {
 protected:
+	static constexpr int MAX_SUPPORTED_PATH_LENGTH = 260;
+
 	std::string m_szFileName; // Base Path 를 제외한 로컬 경로 + 파일 이름
 
 public:

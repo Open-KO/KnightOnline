@@ -34,7 +34,7 @@ void CN3UIProgress::Release()
 
 	m_pBkGndImgRef = nullptr;
 	m_pFrGndImgRef = nullptr;
-	ZeroMemory(&m_frcFrGndImgUV, sizeof(m_frcFrGndImgUV));
+	memset(&m_frcFrGndImgUV, 0, sizeof(m_frcFrGndImgUV));
 	m_iMaxValue = m_iMinValue = 0;
 	m_fCurValue               = 0;
 	m_fChangeSpeedPerSec      = 0;
@@ -57,10 +57,13 @@ void CN3UIProgress::SetCurValue(int iValue, float fTimeToDelay, float fChangeSpe
 {
 	if (iValue < m_iMinValue)
 		iValue = m_iMinValue;
+
 	if (iValue > m_iMaxValue)
 		iValue = m_iMaxValue;
+
 	if (fTimeToDelay < 0.0f)
 		fTimeToDelay = 0.0f;
+
 	if (fChangeSpeedPerSec < 0.0f)
 		fChangeSpeedPerSec = 0.0f;
 
@@ -81,8 +84,10 @@ void CN3UIProgress::SetCurValue(int iValue, float fTimeToDelay, float fChangeSpe
 void CN3UIProgress::SetRegion(const RECT& Rect)
 {
 	CN3UIBase::SetRegion(Rect);
-	if (m_pBkGndImgRef)
+
+	if (m_pBkGndImgRef != nullptr)
 		m_pBkGndImgRef->SetRegion(Rect);
+
 	UpdateFrGndImage();
 }
 
@@ -94,16 +99,18 @@ void CN3UIProgress::SetStyle(uint32_t dwStyle)
 
 void CN3UIProgress::UpdateFrGndImage()
 {
-	if (nullptr == m_pFrGndImgRef)
+	if (m_pFrGndImgRef == nullptr)
 		return;
+
 	int iDiff = m_iMaxValue - m_iMinValue;
 	if (0 == iDiff)
 		return;
+
 	const float fPercentage = ((float) (m_fCurValue - m_iMinValue))
 							  / ((float) (m_iMaxValue - m_iMinValue));
 
-	RECT rcRegion;
-	__FLOAT_RECT frcUVRect;
+	RECT rcRegion {};
+	__FLOAT_RECT frcUVRect {};
 	if (m_dwStyle & UISTYLE_PROGRESS_RIGHT2LEFT)
 	{
 		rcRegion.right  = m_rcRegion.right;
@@ -173,38 +180,37 @@ void CN3UIProgress::UpdateFrGndImage()
 	m_pFrGndImgRef->SetUVRect(frcUVRect.left, frcUVRect.top, frcUVRect.right, frcUVRect.bottom);
 }
 
-void CN3UIProgress::SetFrGndUVFromFrGndImage()
 // m_pFrGndImgRef로부터 uv좌표를 얻어와서 m_frcFrGndImgUV를 세팅한다.
+void CN3UIProgress::SetFrGndUVFromFrGndImage()
 {
 	__ASSERT(m_pFrGndImgRef, "not found foreground image in N3UIProgress");
-	if (nullptr == m_pFrGndImgRef)
+	if (m_pFrGndImgRef == nullptr)
 		return;
+
 	m_frcFrGndImgUV = *(m_pFrGndImgRef->GetUVRect());
 	UpdateFrGndImage();
 }
 
 bool CN3UIProgress::Load(File& file)
 {
-	if (false == CN3UIBase::Load(file))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	// m_ImageRef 설정하기
-	for (UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIBase* pChild = (*itor);
 		if (UI_TYPE_IMAGE != pChild->UIType())
 			continue; // image만 골라내기
-		int iImageType = (int) (pChild->GetReserved());
+
+		int iImageType = static_cast<int>(pChild->GetReserved());
 		if (iImageType == IMAGETYPE_BKGND)
-		{
-			m_pBkGndImgRef = (CN3UIImage*) pChild;
-		}
+			m_pBkGndImgRef = static_cast<CN3UIImage*>(pChild);
 		else if (iImageType == IMAGETYPE_FRGND)
-		{
-			m_pFrGndImgRef = (CN3UIImage*) pChild;
-		}
+			m_pFrGndImgRef = static_cast<CN3UIImage*>(pChild);
+
 		SetFrGndUVFromFrGndImage();
 	}
+
 	return true;
 }
 
@@ -237,15 +243,11 @@ CN3UIProgress& CN3UIProgress::operator=(const CN3UIProgress& other)
 		if (UI_TYPE_IMAGE != pChild->UIType())
 			continue; // image만 골라내기
 
-		int iImageType = (int) (pChild->GetReserved());
+		int iImageType = static_cast<int>(pChild->GetReserved());
 		if (iImageType == IMAGETYPE_BKGND)
-		{
-			m_pBkGndImgRef = (CN3UIImage*) pChild;
-		}
+			m_pBkGndImgRef = static_cast<CN3UIImage*>(pChild);
 		else if (iImageType == IMAGETYPE_FRGND)
-		{
-			m_pFrGndImgRef = (CN3UIImage*) pChild;
-		}
+			m_pFrGndImgRef = static_cast<CN3UIImage*>(pChild);
 	}
 
 	SetFrGndUVFromFrGndImage();
@@ -300,28 +302,35 @@ void CN3UIProgress::Tick()
 	if (m_fTimeToDelay > 0)
 	{
 		m_fTimeToDelay -= s_fSecPerFrm; // 시간 지연
+
 		if (m_fTimeToDelay < 0)
 			m_fTimeToDelay = 0;
+
 		return;
 	}
 
 	if (m_fChangeSpeedPerSec <= 0)
 		return;
-	if ((int) m_fCurValue == m_iValueToReach)
+
+	if (static_cast<int>(m_fCurValue) == m_iValueToReach)
 		return;
 
 	if (m_fCurValue < m_iValueToReach)
 	{
 		m_fCurValue += m_fChangeSpeedPerSec * s_fSecPerFrm; // 초당 30 퍼센트 올라가게 조정..
+
 		if (m_fCurValue > m_iValueToReach)
 			m_fCurValue = (float) m_iValueToReach;
+
 		UpdateFrGndImage();
 	}
 	else if (m_fCurValue > m_iValueToReach)
 	{
 		m_fCurValue -= m_fChangeSpeedPerSec * s_fSecPerFrm; // 초당 30 퍼센트 올라가게 조정..
+
 		if (m_fCurValue < m_iValueToReach)
 			m_fCurValue = (float) m_iValueToReach;
+
 		UpdateFrGndImage();
 	}
 }

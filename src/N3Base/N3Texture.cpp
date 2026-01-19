@@ -215,7 +215,21 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName)
 			return false;
 		}
 
-		LoadSupportedVersions(file);
+		try
+		{
+			LoadSupportedVersions(file);
+		}
+		catch (const std::exception& ex)
+		{
+			std::string szErr = szFullPath + " - Failed to read file (" + std::string(ex.what())
+								+ ")";
+#ifdef _N3GAME
+			CLogWriter::Write(szErr);
+#endif
+#ifdef _N3TOOL
+			MessageBox(s_hWndBase, szErr.c_str(), "Failed to read file", MB_OK);
+#endif
+		}
 	}
 	else
 	{
@@ -256,11 +270,12 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName)
 			s_ResrcInfo.nTexture_Loaded_OtherSize++;
 	}
 
-	if (nullptr == m_lpTexture)
+	if (m_lpTexture == nullptr)
 	{
-		this->Release();
+		Release();
 		return false;
 	}
+
 	return true;
 }
 

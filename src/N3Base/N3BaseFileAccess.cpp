@@ -52,10 +52,10 @@ bool CN3BaseFileAccess::Load(File& file)
 
 	int nL                                  = 0;
 	if (!file.Read(&nL, 4))
-		return false;
+		throw std::runtime_error("CN3BaseFileAccess: failed to load length, EOF");
 
 	if (nL < 0 || nL > MAX_SUPPORTED_NAME_LENGTH)
-		return false;
+		throw std::runtime_error("CN3BaseFileAccess: invalid length");
 
 	if (nL == 0)
 		return true;
@@ -98,16 +98,31 @@ bool CN3BaseFileAccess::LoadFromFile()
 	if (!file.OpenExisting(szFullPath))
 	{
 		std::string szErr = szFullPath + " - Can't open file (read)";
-#ifdef _N3TOOL
-		MessageBox(s_hWndBase, szErr.c_str(), "File Handle error", MB_OK);
-#endif
 #ifdef _N3GAME
 		CLogWriter::Write(szErr);
+#endif
+#ifdef _N3TOOL
+		MessageBox(s_hWndBase, szErr.c_str(), "File Handle error", MB_OK);
 #endif
 		return false;
 	}
 
-	return LoadSupportedVersions(file);
+	try
+	{
+		return LoadSupportedVersions(file);
+	}
+	catch (const std::exception& ex)
+	{
+		std::string szErr = szFullPath + " - Failed to read file (" + std::string(ex.what()) + ")";
+#ifdef _N3GAME
+		CLogWriter::Write(szErr);
+#endif
+#ifdef _N3TOOL
+		MessageBox(s_hWndBase, szErr.c_str(), "Failed to read file", MB_OK);
+#endif
+	}
+
+	return false;
 }
 
 bool CN3BaseFileAccess::LoadFromFile(const std::string& szFileName)

@@ -178,7 +178,7 @@
     <ResourceCompile Include="Ebenezer.rc" />
   </ItemGroup>
   <PropertyGroup Label="Debugger defaults">
-    <LocalDebuggerWorkingDirectory>$(OutputPath)</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
     <LocalDebuggerCommandArguments>--map-dir="$(RootDir)assets\Server\MAP" --quests-dir="$(RootDir)assets\Server\QUESTS"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>

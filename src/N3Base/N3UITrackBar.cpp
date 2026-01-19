@@ -35,33 +35,32 @@ void CN3UITrackBar::Release()
 
 bool CN3UITrackBar::Load(File& file)
 {
-	if (false == CN3UIBase::Load(file))
+	if (!CN3UIBase::Load(file))
 		return false;
 
 	// ImageRef 설정하기
-	for (UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
+	for (CN3UIBase* pChild : m_Children)
 	{
-		CN3UIBase* pChild = (*itor);
 		if (UI_TYPE_IMAGE != pChild->UIType())
 			continue; // image만 골라내기
-		int iImageType = (int) (pChild->GetReserved());
-		if (IMAGETYPE_BKGND == iImageType)
-		{
-			m_pBkGndImageRef = (CN3UIImage*) pChild;
-		}
-		else if (IMAGETYPE_THUMB == iImageType)
-		{
-			m_pThumbImageRef = (CN3UIImage*) pChild;
-		}
+
+		int iImageType = static_cast<int>(pChild->GetReserved());
+		if (iImageType == IMAGETYPE_BKGND)
+			m_pBkGndImageRef = static_cast<CN3UIImage*>(pChild);
+		else if (iImageType == IMAGETYPE_THUMB)
+			m_pThumbImageRef = static_cast<CN3UIImage*>(pChild);
 	}
+
 	return true;
 }
 
 void CN3UITrackBar::SetRegion(const RECT& Rect)
 {
 	CN3UIBase::SetRegion(Rect);
-	if (m_pBkGndImageRef)
+
+	if (m_pBkGndImageRef != nullptr)
 		m_pBkGndImageRef->SetRegion(m_rcRegion); // 배경이미지는 같은 영역으로
+
 	RECT rcThumb     = m_pThumbImageRef->GetRegion();
 
 	int iThumbWidth  = rcThumb.right - rcThumb.left;
@@ -98,11 +97,13 @@ uint32_t CN3UITrackBar::MouseProc(uint32_t dwFlags, const POINT& ptCur, const PO
 	uint32_t dwRet = UI_MOUSEPROC_NONE;
 	if (!m_bVisible)
 		return dwRet;
-	if (false == IsIn(ptCur.x, ptCur.y)) // 영역 밖이면
+
+	if (!IsIn(ptCur.x, ptCur.y)) // 영역 밖이면
 	{
 		SetState(UI_STATE_COMMON_NONE);
 		return dwRet;
 	}
+
 	dwRet |= UI_MOUSEPROC_INREGION; // 이번좌표가 영역 안이다.
 
 	if (UI_STATE_TRACKBAR_THUMBDRAG == m_eState)
@@ -120,9 +121,11 @@ uint32_t CN3UITrackBar::MouseProc(uint32_t dwFlags, const POINT& ptCur, const PO
 				UpDownThumbPos(ptCur.y - ptOld.y);
 			else
 				UpDownThumbPos(ptCur.x - ptOld.x);
+
 			// 부모에게 메세지를 보내자
-			if (m_pParent)
+			if (m_pParent != nullptr)
 				m_pParent->ReceiveMessage(this, UIMSG_TRACKBAR_POS);
+
 			dwRet |= UI_MOUSEPROC_DONESOMETHING;
 			return dwRet;
 		}
@@ -154,8 +157,10 @@ uint32_t CN3UITrackBar::MouseProc(uint32_t dwFlags, const POINT& ptCur, const PO
 					else
 						SetCurrentPos(m_iCurPos + m_iPageSize); // 오른쪽 부분 클릭
 				}
-				if (m_pParent)
+
+				if (m_pParent != nullptr)
 					m_pParent->ReceiveMessage(this, UIMSG_TRACKBAR_POS);
+
 				dwRet |= UI_MOUSEPROC_DONESOMETHING;
 				return dwRet;
 			}
@@ -176,12 +181,16 @@ void CN3UITrackBar::SetRange(int iMin, int iMax)
 {
 	if (m_iMaxPos == iMax && m_iMinPos == iMin)
 		return;
+
 	m_iMaxPos = iMax;
 	m_iMinPos = iMin;
+
 	if (m_iCurPos > m_iMaxPos)
 		m_iCurPos = m_iMaxPos;
+
 	if (m_iCurPos < m_iMinPos)
 		m_iCurPos = m_iMinPos;
+
 	UpdateThumbPos();
 }
 
@@ -189,11 +198,15 @@ void CN3UITrackBar::SetCurrentPos(int iPos)
 {
 	if (iPos == m_iCurPos)
 		return;
+
 	m_iCurPos = iPos;
+
 	if (m_iCurPos > m_iMaxPos)
 		m_iCurPos = m_iMaxPos;
+
 	if (m_iCurPos < m_iMinPos)
 		m_iCurPos = m_iMinPos;
+
 	UpdateThumbPos();
 }
 
@@ -225,8 +238,9 @@ void CN3UITrackBar::UpdateThumbPos()
 // thumb을 pixel단위로 위치 조정하고 thumb의 위치를 바탕으로 pos 수치를 계산하여 넣음
 void CN3UITrackBar::UpDownThumbPos(int iDiff)
 {
-	if (nullptr == m_pThumbImageRef)
+	if (m_pThumbImageRef == nullptr)
 		return;
+
 	RECT rcThumb = m_pThumbImageRef->GetRegion();
 
 	if (UISTYLE_TRACKBAR_VERTICAL == m_dwStyle) // 아래 움직일 대
@@ -243,25 +257,26 @@ void CN3UITrackBar::UpDownThumbPos(int iDiff)
 		if (fPercentage > 1.0f) // 너무 아래로 내렸다.
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left, rcThumb.bottom - iThumbHeight);
-			m_iCurPos =
-				m_iMaxPos; // SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+
+			// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = m_iMaxPos;
 		}
 		else if (fPercentage < 0.0f) // 너무 위로 올렸다.
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left, rcThumb.top);
-			m_iCurPos =
-				m_iMinPos; // SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+
+			// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = m_iMinPos;
 		}
 		else
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left, rcThumb.top + iDiff);
-			m_iCurPos = static_cast<int>(
-				m_iMinPos
-				+ (m_iMaxPos - m_iMinPos)
-					  * fPercentage); // SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+
+			// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = static_cast<int>(m_iMinPos + (m_iMaxPos - m_iMinPos) * fPercentage);
 		}
 	}
-	else                              // 좌우로 움직일 때
+	else // 좌우로 움직일 때
 	{
 		int iRegionWidth = m_rcRegion.right - m_rcRegion.left;
 		int iThumbWidth  = rcThumb.right - rcThumb.left;
@@ -275,22 +290,23 @@ void CN3UITrackBar::UpDownThumbPos(int iDiff)
 		if (fPercentage > 1.0f) // 너무 오른쪽으로 밀었다.
 		{
 			m_pThumbImageRef->SetPos(rcThumb.right - iThumbWidth, rcThumb.top);
-			m_iCurPos =
-				m_iMaxPos; // SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+
+			// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = m_iMaxPos;
 		}
 		else if (fPercentage < 0.0f) // 너무 왼쪽으로 밀었다
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left, rcThumb.top);
-			m_iCurPos =
-				m_iMinPos; // SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+
+			// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = m_iMinPos;
 		}
 		else
 		{
 			m_pThumbImageRef->SetPos(rcThumb.left + iDiff, rcThumb.top);
-			m_iCurPos = static_cast<int>(
-				m_iMinPos
-				+ (m_iMaxPos - m_iMinPos)
-					  * fPercentage); // SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+
+			// SetCurrentPos함수를 호출하면 thumb위치를 다시 계산하기 때문에 직접 바꾸어줌.
+			m_iCurPos = static_cast<int>(m_iMinPos + (m_iMaxPos - m_iMinPos) * fPercentage);
 		}
 	}
 }
@@ -315,15 +331,11 @@ CN3UITrackBar& CN3UITrackBar::operator=(const CN3UITrackBar& other)
 		if (UI_TYPE_IMAGE != pChild->UIType())
 			continue; // image만 골라내기
 
-		int iImageType = (int) (pChild->GetReserved());
-		if (IMAGETYPE_BKGND == iImageType)
-		{
-			m_pBkGndImageRef = (CN3UIImage*) pChild;
-		}
-		else if (IMAGETYPE_THUMB == iImageType)
-		{
-			m_pThumbImageRef = (CN3UIImage*) pChild;
-		}
+		int iImageType = static_cast<int>(pChild->GetReserved());
+		if (iImageType == IMAGETYPE_BKGND)
+			m_pBkGndImageRef = static_cast<CN3UIImage*>(pChild);
+		else if (iImageType == IMAGETYPE_THUMB)
+			m_pThumbImageRef = static_cast<CN3UIImage*>(pChild);
 	}
 
 	return *this;

@@ -46,17 +46,26 @@ bool CEventManager::LoadFromFile(const char* szFileName)
 	if (!gevFile.OpenExisting(szFileName))
 		return false;
 
-	int nEventCellCount = 0;
-	gevFile.Read(&nEventCellCount, sizeof(int));
-
-	for (int i = 0; i < nEventCellCount; i++)
+	try
 	{
-		CEventCell* pEventCell = new CEventCell();
-		pEventCell->Load(gevFile);
-		m_lstEvents.push_back(pEventCell);
+		int nEventCellCount = 0;
+		gevFile.Read(&nEventCellCount, sizeof(int));
+
+		for (int i = 0; i < nEventCellCount; i++)
+		{
+			CEventCell* pEventCell = new CEventCell();
+			pEventCell->Load(gevFile);
+			m_lstEvents.push_back(pEventCell);
+		}
+
+		return true;
+	}
+	catch (const std::runtime_error& ex)
+	{
+		CLogWriter::Write("{} - Failed to read file ({})", szFileName, ex.what());
 	}
 
-	return true;
+	return false;
 }
 
 void CEventManager::Release()
