@@ -37,7 +37,7 @@ bool CN3River::Load(File& file)
 		return true;
 
 	if (iRiverCount > MAX_SUPPORTED_RIVER_COUNT)
-		throw std::runtime_error("invalid river count");
+		throw std::runtime_error("CN3River: invalid river count");
 
 	m_Rivers.resize(iRiverCount);
 
@@ -45,21 +45,20 @@ bool CN3River::Load(File& file)
 	{
 		file.Read(&river.iVC, sizeof(int));
 		if (river.iVC == 0 || (river.iVC % 4) != 0)
-			throw std::runtime_error("invalid river mesh vertex count");
+			throw std::runtime_error("CN3River: invalid river mesh vertex count");
 
 		river.pVertices = new __VertexRiver[river.iVC];
 		file.Read(river.pVertices, river.iVC * sizeof(__VertexRiver));
 		file.Read(&river.iIC, sizeof(int));
-		__ASSERT(river.iIC % 18 == 0, "River-Vertex-Index is a multiple of 18");
 
 		if ((river.iIC % 18) != 0)
-			throw std::runtime_error("invalid river mesh index count");
+			throw std::runtime_error("CN3River: invalid river mesh index count");
 
-		int iTexNameLength = 0;
+		int iTexNameLength = -1;
 		file.Read(&iTexNameLength, sizeof(int));
 
 		if (iTexNameLength < 0 || iTexNameLength > MAX_SUPPORTED_TEX_NAME_LENGTH)
-			throw std::runtime_error("invalid river mesh texture name length");
+			throw std::runtime_error("CN3River: invalid river mesh texture name length");
 
 		if (iTexNameLength > 0)
 		{
@@ -103,9 +102,8 @@ bool CN3River::Load(File& file)
 		}
 
 		// Below code expects at least 5 vertices.
-		__ASSERT(river.iVC >= 5, "Requires at least 5 vertices per river mesh");
 		if (river.iVC < 5)
-			return false;
+			throw std::runtime_error("CN3River: insufficient vertex count");
 
 		__VertexRiver* ptVtx = river.pVertices;
 		float StX = 0.0f, EnX = 0.0f, StZ = 0.0f, EnZ = 0.0f;

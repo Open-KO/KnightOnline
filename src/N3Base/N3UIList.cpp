@@ -235,7 +235,7 @@ void CN3UIList::UpdateChildRegions()
 			pStr->SetVisibleWithNoSound(true);
 	}
 
-	if (m_pScrollBarRef)
+	if (m_pScrollBarRef != nullptr)
 	{
 		if (rc.bottom <= rcThis.bottom)
 		{
@@ -271,12 +271,20 @@ bool CN3UIList::SetScrollPos(int iScrollPos)
 
 bool CN3UIList::Load(File& file)
 {
-	bool bSuccess = CN3UIBase::Load(file);
+	if (!CN3UIBase::Load(file))
+		return false;
+
+	// This is the max supported font name equivalent to LF_FACE on Windows
+	constexpr int MAX_SUPPORTED_FONT_NAME_LENGTH = 32;
 
 	// font 정보
-	int iStrLen   = 0;
+	int iStrLen                                  = -1;
 	file.Read(&iStrLen, sizeof(iStrLen)); // font 이름 길이
 	__ASSERT(iStrLen > 0, "No font name");
+
+	if (iStrLen < 0 || iStrLen > MAX_SUPPORTED_FONT_NAME_LENGTH)
+		throw std::runtime_error("CN3UIList: invalid font name length");
+
 	if (iStrLen > 0)
 	{
 		m_szFontName.assign(iStrLen, ' ');
@@ -291,10 +299,10 @@ bool CN3UIList::Load(File& file)
 	for (CN3UIBase* pUI : m_Children)
 	{
 		if (pUI->UIType() == UI_TYPE_SCROLLBAR)
-			m_pScrollBarRef = (CN3UIScrollBar*) pUI;
+			m_pScrollBarRef = static_cast<CN3UIScrollBar*>(pUI);
 	}
 
-	return bSuccess;
+	return true;
 }
 
 #ifdef _N3TOOL

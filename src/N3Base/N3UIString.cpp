@@ -11,10 +11,10 @@ CN3UIString::CN3UIString()
 	m_pDFont = nullptr;
 
 	m_Color  = 0xffffffff;
-	ZeroMemory(&m_ptDrawPos, sizeof(m_ptDrawPos));
-	m_iLineCount = 0;
-	m_iStartLine = 0;
-	m_iIdk0      = 0;
+	memset(&m_ptDrawPos, 0, sizeof(m_ptDrawPos));
+	m_iLineCount   = 0;
+	m_iStartLine   = 0;
+	m_iLineSpacing = 0;
 }
 
 CN3UIString::~CN3UIString()
@@ -27,12 +27,12 @@ void CN3UIString::Release()
 {
 	CN3UIBase::Release();
 
-	m_szString = "";
+	m_szString.clear();
 	delete m_pDFont;
 	m_pDFont = nullptr;
 	m_Color  = 0xffffffff;
 
-	ZeroMemory(&m_ptDrawPos, sizeof(m_ptDrawPos));
+	memset(&m_ptDrawPos, 0, sizeof(m_ptDrawPos));
 	m_iLineCount = 0;
 	m_iStartLine = 0;
 	m_NewLineIndices.clear();
@@ -92,9 +92,11 @@ void CN3UIString::SetFont(
 	uint32_t dwFlag = 0;
 	if (bBold)
 		dwFlag |= D3DFONT_BOLD;
+
 	if (bItalic)
 		dwFlag |= D3DFONT_ITALIC;
-	if (m_pDFont)
+
+	if (m_pDFont != nullptr)
 	{
 		m_pDFont->SetFont(szFontName, dwHeight, dwFlag);
 		WordWrap();
@@ -116,8 +118,9 @@ void CN3UIString::SetStyle(uint32_t dwStyle)
 // 글씨찍는 위치도 바뀌어 준다.
 BOOL CN3UIString::MoveOffset(int iOffsetX, int iOffsetY)
 {
-	if (FALSE == CN3UIBase::MoveOffset(iOffsetX, iOffsetY))
+	if (!CN3UIBase::MoveOffset(iOffsetX, iOffsetY))
 		return FALSE;
+
 	m_ptDrawPos.x += iOffsetX;
 	m_ptDrawPos.y += iOffsetY;
 	return TRUE;
@@ -337,6 +340,7 @@ void CN3UIString::SetStartLine(int iLine)
 {
 	if ((m_dwStyle & UISTYLE_STRING_SINGLELINE) || iLine >= m_iLineCount)
 		return;
+
 	m_iStartLine = iLine;
 
 	SIZE size    = { 0, 0 };
@@ -394,20 +398,34 @@ bool CN3UIString::Load(File& file)
 	if (!CN3UIBase::Load(file))
 		return false;
 
+	// This is the max supported font name equivalent to LF_FACE on Windows
+	constexpr int MAX_SUPPORTED_FONT_NAME_LENGTH = 32;
+
+	// This is likely overkill, but better safe than sorry.
+	constexpr int MAX_SUPPORTED_STRING_LENGTH    = 8192;
+
+	// This is also extremely overkill. This usually won't be higher than 1 or 2 pixels,
+	// but better safe than sorry.
+	constexpr int MAX_SUPPORTED_LINE_SPACING     = 128;
+
 	// font 정보
-	int iStrLen = 0;
+	int iStrLen                                  = -1;
 	file.Read(&iStrLen, sizeof(iStrLen)); // font 이름 길이
+
+	if (iStrLen < 0 || iStrLen > MAX_SUPPORTED_FONT_NAME_LENGTH)
+		throw std::runtime_error("CN3UIString: invalid font name length");
+
 	if (iStrLen > 0)
 	{
 		std::string szFontName(iStrLen, '?');
-		file.Read(&(szFontName[0]), iStrLen);           // string
+		file.Read(&szFontName[0], iStrLen);             // string
 
 		uint32_t dwFontFlags = 0, dwFontHeight = 0;
 		file.Read(&dwFontHeight, sizeof(dwFontHeight)); // font height
 		file.Read(&dwFontFlags, sizeof(dwFontFlags));   // font flag (bold, italic)
 
-		SetFont(szFontName, dwFontHeight, dwFontFlags & D3DFONT_BOLD,
-			dwFontFlags & D3DFONT_ITALIC);              // 글꼴 지정
+		// 글꼴 지정
+		SetFont(szFontName, dwFontHeight, dwFontFlags & D3DFONT_BOLD, dwFontFlags & D3DFONT_ITALIC);
 	}
 #ifdef _N3TOOL
 	else
@@ -424,16 +442,26 @@ bool CN3UIString::Load(File& file)
 	// string
 	file.Read(&m_Color, sizeof(m_Color)); // 글자 색
 	file.Read(&iStrLen, sizeof(iStrLen)); // string 길이
+
+	if (iStrLen < 0 || iStrLen > MAX_SUPPORTED_STRING_LENGTH)
+		throw std::runtime_error("CN3UIString: invalid string length");
+
 	if (iStrLen > 0)
 	{
 		std::string szString(iStrLen, '?');
-		file.Read(&(szString[0]), iStrLen); // string
+		file.Read(&szString[0], iStrLen); // string
 		SetString(szString);
 	}
 
 	// NOTE: testing UI string
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
-		file.Read(&m_iIdk0, sizeof(int));
+	{
+		if (!file.Read(&m_iLineSpacing, sizeof(int)))
+			throw std::runtime_error("CN3UIString: expected line spacing, not found");
+
+		if (m_iLineSpacing < 0 || m_iLineSpacing > MAX_SUPPORTED_LINE_SPACING)
+			throw std::runtime_error("CN3UIString: invalid line spacing size");
+	}
 
 	return true;
 }
@@ -475,8 +503,8 @@ bool CN3UIString::Save(File& file)
 	if (iStrLen > 0)
 	{
 		file.Write(strFontName.c_str(), iStrLen); // string
-		uint32_t dwFontFlags = 0, dwFontHeight = 0;
 
+		uint32_t dwFontFlags = 0, dwFontHeight = 0;
 		if (m_pDFont != nullptr)
 		{
 			dwFontHeight = m_pDFont->GetFontHeight();
@@ -495,7 +523,7 @@ bool CN3UIString::Save(File& file)
 		file.Write(m_szString.c_str(), iStrLen); // string
 
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
-		file.Write(&m_iIdk0, sizeof(int));
+		file.Write(&m_iLineSpacing, sizeof(int));
 
 	return true;
 }

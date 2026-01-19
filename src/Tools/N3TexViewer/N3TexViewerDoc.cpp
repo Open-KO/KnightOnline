@@ -128,18 +128,28 @@ BOOL CN3TexViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
 		// Determine how many textures we have in this GTT file.
 		// It should be 8, but we have no reason to assume.
 		size_t textureCount = 0;
-		while (m_pTex->SkipFileHandle(file))
-			++textureCount;
+		try
+		{
+			while (file.Offset() < file.Size() && m_pTex->SkipFileHandle(file))
+				++textureCount;
 
-		if (textureCount == 0)
+			if (textureCount == 0)
+				return FALSE;
+
+			// Now let's load up each of them in memory.
+			m_gttTextures.resize(textureCount);
+
+			file.Seek(0, SEEK_SET);
+			for (size_t i = 0; i < m_gttTextures.size(); i++)
+				m_gttTextures[i].Load(file);
+		}
+		catch (const std::runtime_error& ex)
+		{
+			std::string szErr = texturePath.string() + " - Failed to read file ("
+								+ std::string(ex.what()) + ")";
+			MessageBoxA(CN3Base::s_hWndBase, szErr.c_str(), "Failed to read file", MB_OK);
 			return FALSE;
-
-		// Now let's load up each of them in memory.
-		m_gttTextures.resize(textureCount);
-
-		file.Seek(0, SEEK_SET);
-		for (size_t i = 0; i < m_gttTextures.size(); i++)
-			m_gttTextures[i].Load(file);
+		}
 	}
 	else
 	{
@@ -314,8 +324,7 @@ void CN3TexViewerDoc::SelectNextTexture()
 
 void CN3TexViewerDoc::FindFiles(const std::filesystem::path& loadedFilename)
 {
-	std::filesystem::path newDirectory = loadedFilename;
-	newDirectory.remove_filename();
+	std::filesystem::path newDirectory = loadedFilename.parent_path();
 
 	if (newDirectory == m_loadedDirectory)
 		return;

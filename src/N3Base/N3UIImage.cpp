@@ -235,9 +235,13 @@ bool CN3UIImage::Load(File& file)
 
 	// texture 정보
 	__ASSERT(nullptr == m_pTexRef, "load 하기 전에 초기화가 되지 않았습니다.");
-	int iStrLen = 0;
+	int iStrLen = -1;
 	file.Read(&iStrLen, sizeof(iStrLen)); // 파일 이름 길이
-	char szFName[MAX_PATH] = "";
+
+	if (iStrLen < 0 || iStrLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("CN3UIImage: invalid texture filename length");
+
+	char szFName[MAX_SUPPORTED_PATH_LENGTH + 1] {};
 	if (iStrLen > 0)
 	{
 		file.Read(szFName, iStrLen); // 파일 이름
@@ -259,7 +263,7 @@ bool CN3UIImage::Load(File& file)
 	if ((UISTYLE_IMAGE_ANIMATE & m_dwStyle) && m_iAnimCount > 0)
 	{
 		m_pAnimImagesRef = new CN3UIImage*[m_iAnimCount];
-		ZeroMemory(m_pAnimImagesRef, sizeof(CN3UIImage*) * m_iAnimCount);
+		memset(m_pAnimImagesRef, 0, sizeof(CN3UIImage*) * m_iAnimCount);
 
 		int i = 0;
 		for (CN3UIBase* pChild : m_Children)

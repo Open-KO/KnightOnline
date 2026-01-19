@@ -141,16 +141,16 @@ bool CN3ShapeMgr::Load(File& file)
 	int iVersion                            = 0;
 	if (m_iFileFormatVersion >= N3FORMAT_VER_1264)
 	{
-		int iNL = 0;
 		file.Read(&iVersion, sizeof(int));
 
 		if (iVersion < 0 || iVersion > MAX_SUPPORTED_VERSION)
-			throw std::runtime_error("invalid version in header");
+			throw std::runtime_error("CN3ShapeMgr: invalid version in header");
 
+		int iNL = -1;
 		file.Read(&iNL, sizeof(int));
 
 		if (iNL < 0 || iNL > MAX_SUPPORTED_NAME_LENGTH)
-			throw std::runtime_error("invalid name length in header");
+			throw std::runtime_error("CN3ShapeMgr: invalid name length in header");
 
 		if (iNL > 0)
 		{
@@ -247,10 +247,10 @@ bool CN3ShapeMgr::LoadCollisionData(File& file)
 
 	if (m_fMapWidth <= 0.0f || m_fMapLength <= 0.0f || m_fMapWidth > MAX_SUPPORTED_MAP_SIZE
 		|| m_fMapLength > MAX_SUPPORTED_MAP_SIZE)
-		throw std::runtime_error("invalid map size");
+		throw std::runtime_error("CN3ShapeMgr: invalid map size");
 
 	if ((static_cast<int>(m_fMapWidth) % 4) != 0)
-		throw std::runtime_error("invalid map size; must be multiple of 4");
+		throw std::runtime_error("CN3ShapeMgr: invalid map size; must be multiple of 4");
 
 	// 충돌 체크 폴리곤 데이터 읽기..
 	file.Read(&m_nCollisionFaceCount, 4);

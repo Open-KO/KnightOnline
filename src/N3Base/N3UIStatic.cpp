@@ -49,15 +49,19 @@ bool CN3UIStatic::Load(File& file)
 	// m_pImageBkGnd,  m_pBuffOutRef 설정하기
 	for (CN3UIBase* pChild : m_Children)
 	{
-		if (UI_TYPE_IMAGE == pChild->UIType())
-			m_pImageBkGnd = (CN3UIImage*) pChild;
-		else if (UI_TYPE_STRING == pChild->UIType())
-			m_pBuffOutRef = (CN3UIString*) pChild;
+		if (pChild->UIType() == UI_TYPE_IMAGE)
+			m_pImageBkGnd = static_cast<CN3UIImage*>(pChild);
+		else if (pChild->UIType() == UI_TYPE_STRING)
+			m_pBuffOutRef = static_cast<CN3UIString*>(pChild);
 	}
 
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
-	int iSndFNLen = 0;
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	int iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
+
+	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("CN3UIStatic: invalid 'click' sound filename length");
+
 	if (iSndFNLen > 0)
 	{
 		std::string filename(iSndFNLen, '\0');
@@ -80,7 +84,7 @@ const std::string& CN3UIStatic::GetString()
 
 void CN3UIStatic::SetString(const std::string& szString)
 {
-	if (m_pBuffOutRef)
+	if (m_pBuffOutRef != nullptr)
 		m_pBuffOutRef->SetString(szString);
 }
 
@@ -92,10 +96,10 @@ uint32_t CN3UIStatic::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 
 	if ((dwFlags & UI_MOUSE_LBCLICK) && IsIn(ptCur.x, ptCur.y))  // 왼쪽버튼 눌르는 순간 영역 안이면
 	{
-		if (m_pSnd_Click)
+		if (m_pSnd_Click != nullptr)
 			m_pSnd_Click->Play();                                // 사운드가 있으면 play하기
 
-		if (m_pParent)
+		if (m_pParent != nullptr)
 			m_pParent->ReceiveMessage(this, UIMSG_BUTTON_CLICK); // 부모에게 버튼 클릭 통지..
 		dwRet |= (UI_MOUSEPROC_DONESOMETHING | UI_MOUSEPROC_INREGION);
 		return dwRet;
@@ -118,14 +122,10 @@ CN3UIStatic& CN3UIStatic::operator=(const CN3UIStatic& other)
 	// m_pImageBkGnd,  m_pBuffOutRef 설정하기
 	for (CN3UIBase* pChild : m_Children)
 	{
-		if (UI_TYPE_IMAGE == pChild->UIType())
-		{
-			m_pImageBkGnd = (CN3UIImage*) pChild;
-		}
-		else if (UI_TYPE_STRING == pChild->UIType())
-		{
-			m_pBuffOutRef = (CN3UIString*) pChild;
-		}
+		if (pChild->UIType() == UI_TYPE_IMAGE)
+			m_pImageBkGnd = static_cast<CN3UIImage*>(pChild);
+		else if (pChild->UIType() == UI_TYPE_STRING)
+			m_pBuffOutRef = static_cast<CN3UIString*>(pChild);
 	}
 
 	return *this;

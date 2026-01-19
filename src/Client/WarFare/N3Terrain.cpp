@@ -357,13 +357,13 @@ bool CN3Terrain::Load(File& file)
 		file.Read(&iVersion, sizeof(int));
 
 		if (iVersion < 0 || iVersion > MAX_SUPPORTED_VERSION)
-			throw std::runtime_error("invalid version in header");
+			throw std::runtime_error("CN3Terrain: invalid version in header");
 
-		int iNL = 0;
+		int iNL = -1;
 		file.Read(&iNL, sizeof(int));
 
 		if (iNL < 0 || iNL > MAX_SUPPORTED_NAME_LENGTH)
-			throw std::runtime_error("invalid name length in header");
+			throw std::runtime_error("CN3Terrain: invalid name length in header");
 
 		if (iNL > 0)
 		{
@@ -375,10 +375,10 @@ bool CN3Terrain::Load(File& file)
 	file.Read(&m_ti_MapSize, sizeof(int));
 
 	if (m_ti_MapSize <= 0 || (m_ti_MapSize - 1) > MAX_SUPPORTED_MAP_SIZE)
-		throw std::runtime_error("invalid map size");
+		throw std::runtime_error("CN3Terrain: invalid map size");
 
 	if (((m_ti_MapSize - 1) % 4) != 0)
-		throw std::runtime_error("map size must be a multiple of 4");
+		throw std::runtime_error("CN3Terrain: map size must be a multiple of 4");
 
 	CUILoading* pUILoading = CGameProcedure::s_pUILoading; // 로딩바..
 	if (pUILoading != nullptr)
@@ -447,7 +447,7 @@ bool CN3Terrain::Load(File& file)
 	file.Read(&NumLightMap, sizeof(int));
 
 	if (NumLightMap != 0)
-		throw std::runtime_error("unexpected lightmap count; this is deprecated");
+		throw std::runtime_error("CN3Terrain: unexpected lightmap count; this is deprecated");
 
 	if (pUILoading != nullptr)
 		pUILoading->Render("Loading River Data...", 0);
@@ -539,7 +539,7 @@ void CN3Terrain::LoadTileInfo(File& file)
 		return;
 
 	if (tileTextureCount < 0 || tileTextureCount > MAX_SUPPORTED_TILE_TEX_COUNT)
-		throw std::runtime_error("invalid tile texture count");
+		throw std::runtime_error("CN3Terrain: invalid tile texture count");
 
 	m_TileTex.resize(tileTextureCount);
 
@@ -549,13 +549,15 @@ void CN3Terrain::LoadTileInfo(File& file)
 		return;
 
 	if (NumTileTexSrc < 0 || NumTileTexSrc > MAX_SUPPORTED_GTT_COUNT)
-		throw std::runtime_error("invalid GTT texture count");
+		throw std::runtime_error("CN3Terrain: invalid GTT texture count");
 
-	char** SrcName = new char*[NumTileTexSrc];
+	std::vector<std::string> srcNames;
+	srcNames.reserve(NumTileTexSrc);
 	for (int i = 0; i < NumTileTexSrc; i++)
 	{
-		SrcName[i] = new char[MAX_PATH];
-		file.Read(SrcName[i], MAX_PATH);
+		char szPath[MAX_PATH + 1] {};
+		file.Read(szPath, MAX_PATH);
+		srcNames.push_back(szPath);
 	}
 
 	std::string szLoadingBuff;
@@ -568,13 +570,13 @@ void CN3Terrain::LoadTileInfo(File& file)
 		file.Read(&TileIdx, sizeof(int16_t));
 
 		if (SrcIdx < 0)
-			throw std::runtime_error("invalid GTT filename index");
+			throw std::runtime_error("CN3Terrain: invalid GTT filename index");
 
 		if (TileIdx < 0)
-			throw std::runtime_error("invalid tile texture index");
+			throw std::runtime_error("CN3Terrain: invalid tile texture index");
 
 		FileReader gttFile;
-		if (!gttFile.OpenExisting(SrcName[SrcIdx]))
+		if (!gttFile.OpenExisting(srcNames[SrcIdx]))
 			continue;
 
 		tex.m_iFileFormatVersion = m_iFileFormatVersion;
@@ -591,14 +593,6 @@ void CN3Terrain::LoadTileInfo(File& file)
 		if (pUILoading != nullptr)
 			pUILoading->Render(szLoadingBuff, static_cast<int>(loadingPercentage));
 	}
-
-	for (int i = 0; i < NumTileTexSrc; i++)
-	{
-		delete[] SrcName[i];
-		SrcName[i] = nullptr;
-	}
-
-	delete[] SrcName;
 }
 
 //

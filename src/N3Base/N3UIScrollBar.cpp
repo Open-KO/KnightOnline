@@ -10,7 +10,7 @@ CN3UIScrollBar::CN3UIScrollBar()
 {
 	m_eType        = UI_TYPE_SCROLLBAR;
 	m_pTrackBarRef = nullptr;
-	memset(&m_pBtnRef, 0, sizeof(CN3UIButton*) * NUM_BTN_TYPE);
+	memset(&m_pBtnRef, 0, sizeof(m_pBtnRef));
 	m_iLineSize = 1;
 }
 
@@ -22,7 +22,7 @@ void CN3UIScrollBar::Release()
 {
 	CN3UIBase::Release();
 	m_pTrackBarRef = nullptr;
-	memset(&m_pBtnRef, 0, sizeof(CN3UIButton*) * NUM_BTN_TYPE);
+	memset(&m_pBtnRef, 0, sizeof(m_pBtnRef));
 	m_iLineSize = 1;
 }
 
@@ -65,36 +65,38 @@ bool CN3UIScrollBar::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 {
 	if (UIMSG_TRACKBAR_POS == dwMsg)
 	{
-		if (m_pParent)
+		if (m_pParent != nullptr)
 			return m_pParent->ReceiveMessage(this, UIMSG_SCROLLBAR_POS);
 	}
 	else if (UIMSG_BUTTON_CLICK == dwMsg)
 	{
-		if (m_pTrackBarRef)
+		if (m_pTrackBarRef != nullptr)
 		{
 			if (BTN_LEFTUP == pSender->GetReserved())
 				m_pTrackBarRef->SetCurrentPos(m_pTrackBarRef->GetPos() - m_iLineSize);
 			else if (BTN_RIGHTDOWN == pSender->GetReserved())
 				m_pTrackBarRef->SetCurrentPos(m_pTrackBarRef->GetPos() + m_iLineSize);
 
-			if (m_pParent)
+			if (m_pParent != nullptr)
 				return m_pParent->ReceiveMessage(this, UIMSG_SCROLLBAR_POS);
 		}
 	}
+
 	return true;
 }
 
 void CN3UIScrollBar::SetStyle(uint32_t dwStyle)
 {
 	CN3UIBase::SetStyle(dwStyle);
+
 	if (UISTYLE_SCROLLBAR_HORIZONTAL == dwStyle)
 	{
-		if (m_pTrackBarRef)
+		if (m_pTrackBarRef != nullptr)
 			m_pTrackBarRef->SetStyle(UISTYLE_TRACKBAR_HORIZONTAL);
 	}
 	else
 	{
-		if (m_pTrackBarRef)
+		if (m_pTrackBarRef != nullptr)
 			m_pTrackBarRef->SetStyle(UISTYLE_TRACKBAR_VERTICAL);
 	}
 }

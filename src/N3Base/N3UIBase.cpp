@@ -302,7 +302,6 @@ bool CN3UIBase::Load(File& file)
 	constexpr int MAX_SUPPORTED_CHILD_COUNT    = 4096;
 	constexpr int MAX_SUPPORTED_ID_LENGTH      = 128;
 	constexpr int MAX_SUPPORTED_TOOLTIP_LENGTH = 1024;
-	constexpr int MAX_SUPPORTED_PATH_LENGTH    = 256;
 
 	// children 정보
 	int iCC                                    = 0;
@@ -319,7 +318,7 @@ bool CN3UIBase::Load(File& file)
 	}
 
 	if (iCC < 0 || iCC > MAX_SUPPORTED_CHILD_COUNT)
-		throw std::runtime_error("invalid child count");
+		throw std::runtime_error("CN3UIBase: invalid child count");
 
 	for (int i = 0; i < iCC; i++)
 	{
@@ -369,7 +368,7 @@ bool CN3UIBase::Load(File& file)
 				break;
 
 			default:
-				throw std::runtime_error("invalid or unhandled UI type");
+				throw std::runtime_error("CN3UIBase: invalid or unhandled UI type");
 		}
 
 		__ASSERT(pChild, "Unknown type UserInterface!!!");
@@ -384,11 +383,11 @@ bool CN3UIBase::Load(File& file)
 	}
 
 	// base 정보
-	int iIDLen = 0;
+	int iIDLen = -1;
 	file.Read(&iIDLen, sizeof(iIDLen)); // ui id length
 
 	if (iIDLen < 0 || iIDLen > MAX_SUPPORTED_ID_LENGTH)
-		throw std::runtime_error("invalid UI/control ID length");
+		throw std::runtime_error("CN3UIBase: invalid ID length");
 
 	if (iIDLen > 0)
 	{
@@ -405,11 +404,11 @@ bool CN3UIBase::Load(File& file)
 	file.Read(&m_dwStyle, sizeof(uint32_t));    // style
 	file.Read(&m_dwReserved, sizeof(uint32_t)); // m_dwReserved
 
-	int iTooltipLen = 0;
+	int iTooltipLen = -1;
 	file.Read(&iTooltipLen, sizeof(int));       //	tooltip문자열 길이
 
 	if (iTooltipLen < 0 || iTooltipLen > MAX_SUPPORTED_TOOLTIP_LENGTH)
-		throw std::runtime_error("invalid tooltip length");
+		throw std::runtime_error("CN3UIBase: invalid tooltip length");
 
 	if (iTooltipLen > 0)
 	{
@@ -419,11 +418,11 @@ bool CN3UIBase::Load(File& file)
 
 	std::string szSoundFN;
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
-	int iSndFNLen = 0;
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	int iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
 
 	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
-		throw std::runtime_error("invalid open UI sound filename length");
+		throw std::runtime_error("CN3UIBase: invalid 'open' sound filename length");
 
 	if (iSndFNLen > 0)
 	{
@@ -434,10 +433,11 @@ bool CN3UIBase::Load(File& file)
 		m_pSnd_OpenUI = s_SndMgr.CreateObj(szSoundFN, SNDTYPE_2D);
 	}
 
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
 
 	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
-		throw std::runtime_error("invalid close UI sound filename length");
+		throw std::runtime_error("CN3UIBase: invalid 'close' sound filename length");
 
 	if (iSndFNLen > 0)
 	{

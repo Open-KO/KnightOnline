@@ -103,8 +103,10 @@ void CN3ShapeExtra::RotateTo(
 	pRot->fRadianToReach = fRadianToReach;
 	pRot->fRadianPerSec  = fRadianPerSec;
 	pRot->vAxis          = vAxis;
+
 	if (bImmediately)
-		pRot->fRadianCur =
-			pRot->fRadianToReach
-			- 0.01f; // 이러면 직빵으로 열린다.. 약간 값을 빼주는 이유는 한번은 틱을 돌게 하기 위해서이다.
+	{
+		// 이러면 직빵으로 열린다.. 약간 값을 빼주는 이유는 한번은 틱을 돌게 하기 위해서이다.
+		pRot->fRadianCur = pRot->fRadianToReach - 0.01f;
+	}
 }

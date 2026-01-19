@@ -53,7 +53,7 @@ bool CN3Pond::Load(File& file, int iGtdVersion)
 		return true;
 
 	if (iPondMeshNum > MAX_SUPPORTED_POND_MESH_COUNT)
-		throw std::runtime_error("invalid pond mesh count");
+		throw std::runtime_error("CN3Pond: invalid pond mesh count");
 
 	m_PondMeshes.resize(iPondMeshNum);
 
@@ -78,7 +78,7 @@ bool CN3Pond::Load(File& file, int iGtdVersion)
 		file.Read(&iTexNameLength, sizeof(int));
 
 		if (iTexNameLength < 0 || iTexNameLength > MAX_SUPPORTED_TEX_NAME_LENGTH)
-			throw std::runtime_error("invalid pond mesh texture name length");
+			throw std::runtime_error("CN3Pond: invalid pond mesh texture name length");
 
 		if (iTexNameLength > 0)
 		{

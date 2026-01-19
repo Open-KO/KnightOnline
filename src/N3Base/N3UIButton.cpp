@@ -15,7 +15,7 @@ CN3UIButton::CN3UIButton()
 
 	m_dwStyle = UISTYLE_BTN_NORMAL;
 	m_eState  = UI_STATE_BUTTON_NORMAL;
-	memset(&m_ImageRef, 0, sizeof(CN3UIImage*) * NUM_BTN_STATE);
+	memset(&m_ImageRef, 0, sizeof(m_ImageRef));
 	memset(&m_rcClick, 0, sizeof(m_rcClick));
 	m_pSnd_On    = nullptr;
 	m_pSnd_Click = nullptr;
@@ -23,8 +23,8 @@ CN3UIButton::CN3UIButton()
 
 CN3UIButton::~CN3UIButton()
 {
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_On);
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_Click);
+	s_SndMgr.ReleaseObj(&m_pSnd_On);
+	s_SndMgr.ReleaseObj(&m_pSnd_Click);
 }
 
 void CN3UIButton::Release()
@@ -33,27 +33,28 @@ void CN3UIButton::Release()
 
 	m_dwStyle = UISTYLE_BTN_NORMAL;
 	m_eState  = UI_STATE_BUTTON_NORMAL;
-	ZeroMemory(m_ImageRef, sizeof(CN3UIImage*) * NUM_BTN_STATE);
-	ZeroMemory(&m_rcClick, sizeof(m_rcClick));
+	memset(&m_ImageRef, 0, sizeof(m_ImageRef));
+	memset(&m_rcClick, 0, sizeof(m_rcClick));
 
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_On);
-	CN3Base::s_SndMgr.ReleaseObj(&m_pSnd_Click);
+	s_SndMgr.ReleaseObj(&m_pSnd_On);
+	s_SndMgr.ReleaseObj(&m_pSnd_Click);
 }
 
 void CN3UIButton::SetRegion(const RECT& Rect)
 {
 	CN3UIBase::SetRegion(Rect);
+
 	SetClickRect(Rect);
-	for (UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
-	{
-		(*itor)->SetRegion(Rect);
-	}
+
+	for (CN3UIBase* pChild : m_Children)
+		pChild->SetRegion(Rect);
 }
 
 BOOL CN3UIButton::MoveOffset(int iOffsetX, int iOffsetY)
 {
-	if (FALSE == CN3UIBase::MoveOffset(iOffsetX, iOffsetY))
+	if (!CN3UIBase::MoveOffset(iOffsetX, iOffsetY))
 		return FALSE;
+
 	// click 영역
 	m_rcClick.left   += iOffsetX;
 	m_rcClick.top    += iOffsetY;
@@ -123,10 +124,11 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 #endif
 #endif
 
-	if (false == IsIn(ptCur.x, ptCur.y))        // 영역 밖이면
+	if (!IsIn(ptCur.x, ptCur.y))                // 영역 밖이면
 	{
-		if (false == IsIn(ptOld.x, ptOld.y))
+		if (!IsIn(ptOld.x, ptOld.y))
 			return dwRet;                       // 이전 pointer도 영역 밖이었으면 그냥 리턴
+
 		dwRet |= UI_MOUSEPROC_PREVINREGION;     // 이전 마우스 좌표는 영역 안이었다.
 
 		if (UI_STATE_BUTTON_DISABLE == m_eState)
@@ -144,8 +146,10 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 					 UI_STATE_BUTTON_ON == m_eState)                // on 상태일 경우
 				SetState(UI_STATE_BUTTON_NORMAL);                   // normal 상태로
 		}
+
 		return dwRet;               // 영역 밖이므로 더이상 처리 하지 않는다.
 	}
+
 	dwRet |= UI_MOUSEPROC_INREGION; // 이번 마우스 좌표는 영역 안이다
 
 	if (UI_STATE_BUTTON_DISABLE == m_eState)
@@ -176,16 +180,19 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 		if (dwFlags & UI_MOUSE_LBCLICK)     // 왼쪽버튼 눌르는 순간
 		{
 			SetState(UI_STATE_BUTTON_DOWN); // 누른 상태로 만들고..
-			if (m_pSnd_Click)
+
+			if (m_pSnd_Click != nullptr)
 				m_pSnd_Click->Play();       // 사운드가 있으면 play 하기
+
 			dwRet |= UI_MOUSEPROC_DONESOMETHING;
 			return dwRet;
 		}
-		else if (dwFlags & UI_MOUSE_LBCLICKED)                 // 왼쪽버튼을 떼는 순간
+		else if (dwFlags & UI_MOUSE_LBCLICKED)       // 왼쪽버튼을 떼는 순간
 		{
-			if (m_pParent && UI_STATE_BUTTON_DOWN == m_eState) // 이전 상태가 버튼을 Down 상태이면
+			if (m_pParent != nullptr
+				&& UI_STATE_BUTTON_DOWN == m_eState) // 이전 상태가 버튼을 Down 상태이면
 			{
-				SetState(UI_STATE_BUTTON_ON);                  // 버튼을 On 상태로 만든다..
+				SetState(UI_STATE_BUTTON_ON);        // 버튼을 On 상태로 만든다..
 				m_pParent->ReceiveMessage(this, UIMSG_BUTTON_CLICK); // 부모에게 버튼 클릭 통지..
 			}
 			dwRet |= UI_MOUSEPROC_DONESOMETHING;
@@ -194,15 +201,16 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 		else if (UI_STATE_BUTTON_NORMAL == m_eState) // normal상태이면 on상태로..
 		{
 			SetState(UI_STATE_BUTTON_ON);            // On 상태로 만들고..
-			if (m_pSnd_On)
+
+			if (m_pSnd_On != nullptr)
 				m_pSnd_On->Play();                   // 사운드가 있으면 play 하기
+
 			dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);
 			return dwRet;
 			// UI_MOUSEPROC_DONESOMETHING를 넣으면 안된다.(마우스 포인터가 버튼에서 다른 버튼으로 빠르게 옮겨갈때
 			// 이전 버튼의 상태가 이상해지는 것을 방지하기 위해)
 		}
 	}
-
 	// 체크 버튼이면
 	else if (UISTYLE_BTN_CHECK & m_dwStyle)
 	{
@@ -210,19 +218,23 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 		{
 			if (UI_STATE_BUTTON_NORMAL == m_eState || UI_STATE_BUTTON_ON == m_eState)
 			{
-				SetState(
-					UI_STATE_BUTTON_DOWN_2CHECKDOWN); // 임시로 누른 상태(DOWN_2CHECKDOWN)로 만들고..
-				if (m_pSnd_Click)
-					m_pSnd_Click->Play();             // 사운드가 있으면 play 하기
+				// 임시로 누른 상태(DOWN_2CHECKDOWN)로 만들고..
+				SetState(UI_STATE_BUTTON_DOWN_2CHECKDOWN);
+
+				if (m_pSnd_Click != nullptr)
+					m_pSnd_Click->Play(); // 사운드가 있으면 play 하기
+
 				dwRet |= UI_MOUSEPROC_DONESOMETHING;
 				return dwRet;
 			}
 			else if (UI_STATE_BUTTON_DOWN == m_eState)
 			{
-				SetState(
-					UI_STATE_BUTTON_DOWN_2CHECKUP); // 임시로 누른 상태(DOWN_2CHECKUP)로 만들고..
-				if (m_pSnd_Click)
-					m_pSnd_Click->Play();           // 사운드가 있으면 play 하기
+				// 임시로 누른 상태(DOWN_2CHECKUP)로 만들고..
+				SetState(UI_STATE_BUTTON_DOWN_2CHECKUP);
+
+				if (m_pSnd_Click != nullptr)
+					m_pSnd_Click->Play(); // 사운드가 있으면 play 하기
+
 				dwRet |= UI_MOUSEPROC_DONESOMETHING;
 				return dwRet;
 			}
@@ -232,18 +244,22 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 			if (UI_STATE_BUTTON_DOWN_2CHECKDOWN == m_eState) // 이전 상태가 2CHECKDOWN 상태이면
 			{
 				SetState(UI_STATE_BUTTON_DOWN);              // down 상태로 만들기
-				if (m_pParent)
-					m_pParent->ReceiveMessage(
-						this, UIMSG_BUTTON_CLICK);           // 부모에게 버튼 클릭 통지..
+
+				// 부모에게 버튼 클릭 통지..
+				if (m_pParent != nullptr)
+					m_pParent->ReceiveMessage(this, UIMSG_BUTTON_CLICK);
+
 				dwRet |= UI_MOUSEPROC_DONESOMETHING;
 				return dwRet;
 			}
 			else if (UI_STATE_BUTTON_DOWN_2CHECKUP == m_eState) // 전의 상태가 2CHECKUP 상태이면
 			{
 				SetState(UI_STATE_BUTTON_ON);                   // On 상태로 만들기
-				if (m_pParent)
-					m_pParent->ReceiveMessage(
-						this, UIMSG_BUTTON_CLICK);              // 부모에게 버튼 클릭 통지..
+
+																// 부모에게 버튼 클릭 통지..
+				if (m_pParent != nullptr)
+					m_pParent->ReceiveMessage(this, UIMSG_BUTTON_CLICK);
+
 				dwRet |= UI_MOUSEPROC_DONESOMETHING;
 				return dwRet;
 			}
@@ -251,8 +267,10 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 		else if (UI_STATE_BUTTON_NORMAL == m_eState) // normal상태이면 on상태로..
 		{
 			SetState(UI_STATE_BUTTON_ON);            // On 상태로 만들고..
-			if (m_pSnd_On)
+
+			if (m_pSnd_On != nullptr)
 				m_pSnd_On->Play();                   // 사운드가 있으면 play 하기
+
 			dwRet |= CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);
 			return dwRet;
 			// UI_MOUSEPROC_DONESOMETHING를 넣으면 안된다.(마우스 포인터가 버튼에서 다른 버튼으로 빠르게 옮겨갈때
@@ -276,16 +294,20 @@ bool CN3UIButton::Load(File& file)
 		if (UI_TYPE_IMAGE != pChild->UIType())
 			continue; // image만 골라내기
 
-		int iBtnState = (int) (pChild->GetReserved());
+		int iBtnState = static_cast<int>(pChild->GetReserved());
 		if (iBtnState < NUM_BTN_STATE)
-			m_ImageRef[iBtnState] = (CN3UIImage*) pChild;
+			m_ImageRef[iBtnState] = static_cast<CN3UIImage*>(pChild);
 	}
 
 	std::string filename;
 
 	// 이전 uif파일을 컨버팅 하려면 사운드 로드 하는 부분 막기
-	int iSndFNLen = 0;
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	int iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
+
+	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("CN3UIButton: invalid 'on' sound filename length");
+
 	if (iSndFNLen > 0)
 	{
 		filename.assign(iSndFNLen, '\0');
@@ -295,7 +317,12 @@ bool CN3UIButton::Load(File& file)
 		m_pSnd_On = s_SndMgr.CreateObj(filename, SNDTYPE_2D);
 	}
 
-	file.Read(&iSndFNLen, sizeof(iSndFNLen)); //	사운드 파일 문자열 길이
+	iSndFNLen = -1;
+	file.Read(&iSndFNLen, sizeof(int)); // 사운드 파일 문자열 길이
+
+	if (iSndFNLen < 0 || iSndFNLen > MAX_SUPPORTED_PATH_LENGTH)
+		throw std::runtime_error("CN3UIButton: invalid 'click' sound filename length");
+
 	if (iSndFNLen > 0)
 	{
 		filename.assign(iSndFNLen, '\0');
@@ -325,9 +352,9 @@ CN3UIButton& CN3UIButton::operator=(const CN3UIButton& other)
 		if (UI_TYPE_IMAGE != pChild->UIType())
 			continue; // image만 골라내기
 
-		int iBtnState = (int) (pChild->GetReserved());
+		int iBtnState = static_cast<int>(pChild->GetReserved());
 		if (iBtnState < NUM_BTN_STATE)
-			m_ImageRef[iBtnState] = (CN3UIImage*) pChild;
+			m_ImageRef[iBtnState] = static_cast<CN3UIImage*>(pChild);
 	}
 
 	return *this;

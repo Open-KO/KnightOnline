@@ -24,10 +24,9 @@ void CN3UIArea::Release()
 void CN3UIArea::SetRegion(const RECT& Rect)
 {
 	CN3UIBase::SetRegion(Rect);
-	for (UIListItor itor = m_Children.begin(); m_Children.end() != itor; ++itor)
-	{
-		(*itor)->SetRegion(Rect);
-	}
+
+	for (CN3UIBase* pChild : m_Children)
+		pChild->SetRegion(Rect);
 }
 
 bool CN3UIArea::Load(File& file)
@@ -36,9 +35,18 @@ bool CN3UIArea::Load(File& file)
 		return false;
 
 #ifndef _REPENT
+	// Future proof this to allow for higher area types.
+	// There's not this many as of this point, but it should give us a safe threshold
+	// far into the future.
+	constexpr int MAX_SUPPORTED_AREA_TYPE = UI_AREA_TYPE_COUNT + 20;
+
 	// 추가사항이 있으면 이곳에 추가하기
-	int iAreaType = 0;
+	int iAreaType                         = -1;
 	file.Read(&iAreaType, sizeof(int)); // click 영역
+
+	if (iAreaType < 0 || iAreaType > MAX_SUPPORTED_AREA_TYPE)
+		throw std::runtime_error("CN3UIArea: invalid or unsupported area type");
+
 	m_eAreaType = (eUI_AREA_TYPE) iAreaType;
 #endif
 	return true;
@@ -83,8 +91,9 @@ bool CN3UIArea::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 #ifdef _N3TOOL
 bool CN3UIArea::Save(File& file)
 {
-	if (false == CN3UIBase::Save(file))
+	if (!CN3UIBase::Save(file))
 		return false;
+
 #ifndef _REPENT
 	int iAreaType = (int) m_eAreaType;
 	file.Write(&iAreaType, sizeof(int)); // click 영역
