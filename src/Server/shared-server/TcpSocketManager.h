@@ -84,18 +84,16 @@ public:
 
 protected:
 	TcpSocketManager(int recvBufferSize, int sendBufferSize);
-	virtual ~TcpSocketManager();
 
 public:
+	virtual ~TcpSocketManager();
 	void Init(int socketCount, uint32_t workerThreadCount = 0);
 
 protected:
-	virtual TcpSocket* AcquireSocket(int& socketId);
-	virtual void ReleaseSocket(TcpSocket* tcpSocket);
-	virtual void OnPostReceive(
-		const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
-	virtual void OnPostSend(
-		const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
+	TcpSocket* AcquireSocket(int& socketId);
+	void ReleaseSocket(TcpSocket* tcpSocket);
+	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
+	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
 	virtual void OnPostSocketClose(TcpSocket* tcpSocket);
 	virtual bool ProcessClose(TcpSocket* tcpSocket) = 0;
 
