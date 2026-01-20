@@ -26,7 +26,8 @@ bool TcpClientSocket::Create()
 	_socket->open(asio::ip::tcp::v4(), ec);
 	if (ec)
 	{
-		spdlog::error("::Create: failed to open socket: {}", GetImplName(), ec.message());
+		spdlog::error(
+			"TcpClientSocket({})::Create: failed to open socket: {}", GetImplName(), ec.message());
 		return false;
 	}
 
