@@ -16,8 +16,7 @@ TcpClientSocketManager::~TcpClientSocketManager()
 	catch (const std::exception& ex)
 	{
 		spdlog::error(
-			"TcpClientSocketManager::~TcpClientSocketManager({}): exception occurred - {}",
-			_managerClass, ex.what());
+			"{}::~TcpClientSocketManager: exception occurred - {}", _managerClass, ex.what());
 	}
 }
 
@@ -36,8 +35,7 @@ std::shared_ptr<TcpClientSocket> TcpClientSocketManager::AcquireSocket()
 
 	if (socketId == -1)
 	{
-		spdlog::error(
-			"TcpClientSocketManager::AcquireSocket({}): socketId list is empty", _managerClass);
+		spdlog::error("{}::AcquireSocket: socketId list is empty", _managerClass);
 		return nullptr;
 	}
 
@@ -45,8 +43,7 @@ std::shared_ptr<TcpClientSocket> TcpClientSocketManager::AcquireSocket()
 	// If it does, the associated socket ID was never removed from the list so we don't have to restore it.
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("TcpClientSocketManager::AcquireSocket({}): null socket [socketId:{}]",
-			_managerClass, socketId);
+		spdlog::error("{}::AcquireSocket: null socket [socketId:{}]", _managerClass, socketId);
 		return nullptr;
 	}
 

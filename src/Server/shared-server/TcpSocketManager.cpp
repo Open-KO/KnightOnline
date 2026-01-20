@@ -77,7 +77,7 @@ void TcpSocketManager::ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket)
 {
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("TcpSocketManager::ReleaseSocket({}): tcpSocket is nullptr", _managerClass);
+		spdlog::error("{}::ReleaseSocket: tcpSocket is nullptr", _managerClass);
 		return;
 	}
 
@@ -95,14 +95,13 @@ void TcpSocketManager::OnPostReceive(
 	{
 		if (ec == asio::error::eof)
 		{
-			spdlog::debug(
-				"TcpSocketManager::OnPostReceive({}): peer closed connection. socketId={}",
-				_managerClass, tcpSocket->GetSocketID());
+			spdlog::debug("{}::OnPostReceive: peer closed connection. socketId={}", _managerClass,
+				tcpSocket->GetSocketID());
 		}
 		else
 		{
-			spdlog::debug("TcpSocketManager::OnPostReceive({}): socketId={} error={}",
-				_managerClass, tcpSocket->GetSocketID(), ec.message());
+			spdlog::debug("{}::OnPostReceive: socketId={} error={}", _managerClass,
+				tcpSocket->GetSocketID(), ec.message());
 
 			if (++tcpSocket->_socketErrorCount < 2)
 				return;
@@ -114,8 +113,8 @@ void TcpSocketManager::OnPostReceive(
 
 	if (bytesTransferred == 0)
 	{
-		spdlog::debug("TcpSocketManager::OnPostReceive({}): closed by 0 byte notify. socketId={}",
-			_managerClass, tcpSocket->GetSocketID());
+		spdlog::debug("{}::OnPostReceive: closed by 0 byte notify. socketId={}", _managerClass,
+			tcpSocket->GetSocketID());
 		ProcessClose(tcpSocket);
 		return;
 	}
@@ -135,7 +134,7 @@ void TcpSocketManager::OnPostSend(
 {
 	if (ec)
 	{
-		spdlog::error("TcpSocketManager::OnPostSend({}): socketId={} failed: {}", _managerClass,
+		spdlog::error("{}::OnPostSend: socketId={} failed: {}", _managerClass,
 			tcpSocket->GetSocketID(), ec.message());
 
 		tcpSocket->AbortSend();
@@ -157,8 +156,8 @@ void TcpSocketManager::OnPostClose(TcpSocket* tcpSocket)
 	if (!ProcessClose(tcpSocket))
 		return;
 
-	spdlog::debug("TcpSocketManager::OnPostClose({}): socket closed by Close() socketId={}",
-		_managerClass, tcpSocket->GetSocketID());
+	spdlog::debug("{}::OnPostClose: socket closed by Close() socketId={}", _managerClass,
+		tcpSocket->GetSocketID());
 }
 
 void TcpSocketManager::ShutdownImpl()
