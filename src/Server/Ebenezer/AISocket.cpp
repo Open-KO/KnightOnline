@@ -17,17 +17,10 @@
 namespace Ebenezer
 {
 
-CAISocket::CAISocket(TcpSocketManager* socketManager, int zoneNum) :
-	TcpClientSocket(socketManager), _zoneNum(zoneNum)
-{
-}
-
-void CAISocket::Initialize()
+CAISocket::CAISocket(TcpClientSocketManager* socketManager) : TcpClientSocket(socketManager)
 {
 	_main                 = EbenezerApp::instance();
 	_magicProcess.m_pMain = _main;
-
-	TcpClientSocket::Initialize();
 }
 
 bool CAISocket::PullOutCore(char*& data, int& length)

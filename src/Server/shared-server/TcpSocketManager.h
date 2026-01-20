@@ -60,11 +60,6 @@ public:
 		return _socketCount;
 	}
 
-	inline int GetClientSocketCount() const
-	{
-		return _clientSocketCount;
-	}
-
 	inline bool IsValidSocketId(int socketId) const
 	{
 		return socketId >= 0 && socketId < GetSocketCount();
@@ -101,20 +96,17 @@ protected:
 	virtual ~TcpSocketManager();
 
 public:
-	void Init(int serverSocketCount, int clientSocketCount, uint32_t workerThreadCount = 0);
+	void Init(int socketCount, uint32_t workerThreadCount = 0);
 
 protected:
 	virtual TcpSocket* AcquireSocket(int& socketId);
-	virtual void ReleaseSocket(TcpSocket* tcpSocket, int socketId);
-	bool AcquireClientSocket(TcpClientSocket* tcpClientSocket);
-	void ReleaseClientSocket(int socketId);
-	int GetAvailableClientSocketId() const;
+	virtual void ReleaseSocket(TcpSocket* tcpSocket);
 	virtual void OnPostReceive(
 		const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
 	virtual void OnPostSend(
 		const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
 	virtual void OnPostSocketClose(TcpSocket* tcpSocket);
-	bool ProcessClose(TcpSocket* tcpSocket);
+	virtual bool ProcessClose(TcpSocket* tcpSocket) = 0;
 
 protected:
 	void ShutdownImpl();
@@ -123,11 +115,7 @@ protected:
 	std::vector<TcpSocket*> _socketArray                   = {};
 	std::vector<TcpSocket*> _inactiveSocketArray           = {};
 
-	TcpClientSocket** _clientSocketArray                   = nullptr;
-
 	int _socketCount                                       = 0;
-	int _clientSocketCount                                 = 0;
-
 	int _recvBufferSize                                    = 0;
 	int _sendBufferSize                                    = 0;
 

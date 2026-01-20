@@ -45,8 +45,3 @@ void TcpServerSocket::Close()
 			ex.what());
 	}
 }
-
-void TcpServerSocket::ReleaseToManager()
-{
-	_socketManager->ReleaseSocket(this, GetSocketID());
-}

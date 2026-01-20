@@ -20,7 +20,7 @@ protected:
 	void tick();
 
 protected:
-	EbenezerSocketManager* _socketManager;
+	EbenezerSocketManager* _serverSocketManager;
 };
 
 } // namespace Ebenezer

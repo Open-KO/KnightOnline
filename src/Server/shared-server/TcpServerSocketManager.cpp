@@ -216,3 +216,15 @@ void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 	spdlog::debug(
 		"TcpServerSocketManager::AcceptThread: successfully accepted socketId={}", socketId);
 }
+
+bool TcpServerSocketManager::ProcessClose(TcpSocket* tcpSocket)
+{
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
+	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)
+		return false;
+
+	tcpSocket->CloseProcess();
+	ReleaseSocket(tcpSocket);
+
+	return true;
+}

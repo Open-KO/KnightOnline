@@ -66,10 +66,10 @@ public:
 protected:
 	int QueueAndSend(char* buffer, int length);
 	virtual bool PullOutCore(char*& data, int& length) = 0;
-	virtual void ReleaseToManager()                    = 0;
 
 private:
 	bool AsyncSend(bool fromAsyncChain);
+	void AbortSend();
 
 public:
 	void AsyncReceive();

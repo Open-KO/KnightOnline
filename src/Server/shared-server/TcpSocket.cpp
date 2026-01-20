@@ -135,11 +135,22 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 
 		spdlog::error(
 			"TcpSocket::AsyncSend: failed to post send for socketId={}: {}", _socketId, ex.what());
+
 		Close();
 		return false;
 	}
 
 	return true;
+}
+
+void TcpSocket::AbortSend()
+{
+	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+
+	while (!_sendQueue.empty())
+		_sendQueue.pop();
+
+	_sendInProgress = false;
 }
 
 void TcpSocket::AsyncReceive()

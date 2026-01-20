@@ -41,7 +41,8 @@ uint16_t g_increase_serial = 1;
 bool g_serverdown_flag     = false;
 
 EbenezerApp::EbenezerApp(EbenezerLogger& logger) :
-	AppThread(logger), m_LoggerSendQueue(MAX_SMQ_SEND_QUEUE_RETRY_COUNT),
+	AppThread(logger), _aiSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE),
+	m_LoggerSendQueue(MAX_SMQ_SEND_QUEUE_RETRY_COUNT),
 	m_ItemLoggerSendQ(MAX_SMQ_SEND_QUEUE_RETRY_COUNT)
 {
 	// Ebenezer is the only server that had built in command line support, so we'll
@@ -218,9 +219,16 @@ EbenezerApp::~EbenezerApp()
 	delete m_pUdpSocket;
 	m_pUdpSocket = nullptr;
 
-	_socketManager.Shutdown();
+	_serverSocketManager.Shutdown();
 
-	spdlog::info("EbenezerApp::~EbenezerApp: TcpServerSocketManager stopped.");
+	spdlog::info("EbenezerApp::~EbenezerApp: Ebenezer socket manager stopped.");
+
+	// We don't manage these, these are managed by _aiSocketManager.
+	// We should only empty the map.
+	_aiSocketMap.clear();
+	_aiSocketManager.Shutdown();
+
+	spdlog::info("EbenezerApp::~EbenezerApp: AI socket manager stopped.");
 
 	for (C3DMap* pMap : m_ZoneArray)
 		delete pMap;
@@ -259,8 +267,11 @@ bool EbenezerApp::OnStart()
 	_regionLogger            = spdlog::get(std::string(logger::EbenezerRegion));
 	_eventLogger             = spdlog::get(std::string(logger::EbenezerEvent));
 
-	_socketManager.Init(MAX_USER, CLIENT_SOCKSIZE, 4);
-	_socketManager.AllocateSockets<CUser>();
+	_serverSocketManager.Init(MAX_USER, 4);
+	_serverSocketManager.AllocateSockets<CUser>();
+
+	_aiSocketManager.Init(CLIENT_SOCKSIZE, 1);
+	_aiSocketManager.AllocateSockets<CAISocket>();
 
 	_ZONE_SERVERINFO* pInfo = m_ServerArray.GetData(m_nServerNo);
 	if (pInfo == nullptr)
@@ -269,7 +280,7 @@ bool EbenezerApp::OnStart()
 		return false;
 	}
 
-	if (!_socketManager.Listen(pInfo->sPort))
+	if (!_serverSocketManager.Listen(pInfo->sPort))
 	{
 		spdlog::error("FAIL TO CREATE LISTEN STATE");
 		return false;
@@ -480,7 +491,7 @@ bool EbenezerApp::OnStart()
 
 void EbenezerApp::UserAcceptThread()
 {
-	_socketManager.StartAccept();
+	_serverSocketManager.StartAccept();
 	spdlog::info("Accepting user connections");
 }
 
@@ -524,38 +535,14 @@ bool EbenezerApp::AIServerConnect()
 
 bool EbenezerApp::AISocketConnect(int zone, bool flag)
 {
-	CAISocket* pAISock = nullptr;
-	int sendIndex      = 0;
+	TcpClientSocket* tcpClientSocket = nullptr;
+	int sendIndex                    = 0;
 	char pBuf[128] {};
 
 	//if( m_nServerNo == 3 ) return false;
-
-	pAISock = m_AISocketMap.GetData(zone);
-	if (pAISock != nullptr)
-	{
-		if (pAISock->GetState() != CONNECTION_STATE_DISCONNECTED)
-			return true;
-
-		m_AISocketMap.DeleteData(zone);
-	}
-
-	pAISock = new CAISocket(&_socketManager, zone);
-
-	if (!pAISock->Create())
-	{
-		delete pAISock;
-
-		spdlog::error(
-			"EbenezerApp::AISocketConnect: Failed to create new AI socket for zone {}", zone);
-
-		return false;
-	}
-
 	int port = GetAIServerPort();
 	if (port < 0)
 	{
-		delete pAISock;
-
 		spdlog::error(
 			"EbenezerApp::AISocketConnect: Invalid port, unsupported m_nServerNo {} (zone {})",
 			m_nServerNo, zone);
@@ -563,16 +550,43 @@ bool EbenezerApp::AISocketConnect(int zone, bool flag)
 		return false;
 	}
 
-	if (!pAISock->Connect(m_AIServerIP.c_str(), port))
-	{
-		delete pAISock;
+	std::unique_lock<std::mutex> lock(_aiSocketMutex);
 
+	auto itr = _aiSocketMap.find(zone);
+	if (itr != _aiSocketMap.end() && itr->second != nullptr)
+	{
+		// Already connected.
+		if (itr->second->GetState() != CONNECTION_STATE_DISCONNECTED)
+			return true;
+
+		// Already have a socket, try to reconnect.
+		tcpClientSocket = itr->second;
+	}
+	else
+	{
+		tcpClientSocket = _aiSocketManager.AcquireSocket();
+		if (tcpClientSocket == nullptr)
+		{
+			spdlog::error("EbenezerApp::AISocketConnect: Failed to acquire new AI server socket "
+						  "(zone {}) ({}:{})",
+				zone, m_AIServerIP, port);
+
+			return false;
+		}
+
+		_aiSocketMap[zone] = tcpClientSocket;
+	}
+
+	if (!tcpClientSocket->Connect(m_AIServerIP.c_str(), port))
+	{
 		spdlog::error(
 			"EbenezerApp::AISocketConnect: Failed to connect to AI server (zone {}) ({}:{})", zone,
 			m_AIServerIP, port);
 
 		return false;
 	}
+
+	lock.unlock();
 
 	SetByte(pBuf, AI_SERVER_CONNECT, sendIndex);
 	SetByte(pBuf, zone, sendIndex);
@@ -584,12 +598,11 @@ bool EbenezerApp::AISocketConnect(int zone, bool flag)
 	else
 		SetByte(pBuf, 0, sendIndex);
 
-	pAISock->Send(pBuf, sendIndex);
+	tcpClientSocket->Send(pBuf, sendIndex);
 
 	// 해야할일 :이 부분 처리.....
 	//SendAllUserInfo();
 	//m_sSocketCount = zone;
-	m_AISocketMap.PutData(zone, pAISock);
 
 	spdlog::debug("EbenezerApp::AISocketConnect: connected to zone {}", zone);
 	return true;
@@ -808,8 +821,14 @@ void EbenezerApp::Send_AIServer(int /*zone*/, char* pBuf, int len)
 {
 	for (int i = 0; i < MAX_AI_SOCKET; i++)
 	{
-		CAISocket* pSocket = m_AISocketMap.GetData(i);
-		if (pSocket == nullptr)
+		std::unique_lock<std::mutex> lock(_aiSocketMutex);
+
+		auto itr = _aiSocketMap.find(i);
+		if (itr == _aiSocketMap.end())
+			continue;
+
+		TcpClientSocket* tcpSocket = itr->second;
+		if (tcpSocket == nullptr)
 		{
 			m_sSendSocket++;
 			if (m_sSendSocket >= MAX_AI_SOCKET)
@@ -820,7 +839,9 @@ void EbenezerApp::Send_AIServer(int /*zone*/, char* pBuf, int len)
 
 		if (i == m_sSendSocket)
 		{
-			int send_size = pSocket->Send(pBuf, len);
+			lock.unlock();
+
+			int send_size = tcpSocket->Send(pBuf, len);
 			// int old_send_socket = m_sSendSocket;
 			m_sSendSocket++;
 			if (m_sSendSocket >= MAX_AI_SOCKET)
@@ -850,7 +871,7 @@ bool EbenezerApp::InitializeMMF()
 
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = _socketManager.GetInactiveUserUnchecked(i);
+		CUser* pUser = _serverSocketManager.GetInactiveUserUnchecked(i);
 		if (pUser == nullptr)
 		{
 			spdlog::error("EbenezerApp::InitializeMMF: invalid user pointer for userId={}", i);
@@ -3423,11 +3444,18 @@ void EbenezerApp::GameTimeTick()
 		int count = 0;
 		for (int i = 0; i < MAX_AI_SOCKET; i++)
 		{
-			CAISocket* pAISock = m_AISocketMap.GetData(i);
-			if (pAISock == nullptr || pAISock->GetState() == CONNECTION_STATE_DISCONNECTED)
-				AISocketConnect(i, true);
-			else
-				count++;
+			std::unique_lock<std::mutex> lock(_aiSocketMutex);
+
+			auto itr = _aiSocketMap.find(i);
+			if (itr != _aiSocketMap.end() && itr->second != nullptr
+				&& itr->second->GetState() != CONNECTION_STATE_DISCONNECTED)
+			{
+				++count;
+				continue;
+			}
+
+			lock.unlock();
+			AISocketConnect(i, true);
 		}
 
 		if (count <= 0)

@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "TcpSocketManager.h"
 #include "TcpSocket.h"
-#include "TcpClientSocket.h"
 
 #include <spdlog/spdlog.h>
 
@@ -20,16 +19,12 @@ TcpSocketManager::~TcpSocketManager()
 	assert(_workerPool == nullptr);
 }
 
-void TcpSocketManager::Init(
-	int serverSocketCount, int clientSocketCount, uint32_t workerThreadCount /*= 0*/)
+void TcpSocketManager::Init(int socketCount, uint32_t workerThreadCount /*= 0*/)
 {
-	_socketCount       = serverSocketCount;
-	_clientSocketCount = clientSocketCount;
+	_socketCount = socketCount;
 
-	_socketArray.resize(serverSocketCount);
-	_inactiveSocketArray.resize(serverSocketCount);
-
-	_clientSocketArray = new TcpClientSocket*[clientSocketCount];
+	_socketArray.resize(socketCount);
+	_inactiveSocketArray.resize(socketCount);
 
 	// NOTE: Specifically allocate the worker pool first, as we'll need this for our sockets.
 	if (workerThreadCount == 0)
@@ -40,13 +35,10 @@ void TcpSocketManager::Init(
 	_workerPool = std::make_shared<asio::thread_pool>(_workerThreadCount);
 
 	std::queue<int> socketIdQueue;
-	for (int i = 0; i < serverSocketCount; i++)
+	for (int i = 0; i < socketCount; i++)
 		socketIdQueue.push(i);
 
-	for (int i = 0; i < clientSocketCount; i++)
-		_clientSocketArray[i] = nullptr;
-
-	// NOTE: These don't strictly need to be guarded as the server's not yet operational,
+	// NOTE: These don't strictly need to be guarded as the manager's not yet operational,
 	// but we do it for consistency.
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
@@ -76,18 +68,18 @@ TcpSocket* TcpSocketManager::AcquireSocket(int& socketId)
 	_socketArray[socketId]         = tcpSocket;
 	_inactiveSocketArray[socketId] = nullptr;
 
-	tcpSocket->SetSocketID(socketId);
 	return tcpSocket;
 }
 
-void TcpSocketManager::ReleaseSocket(TcpSocket* tcpSocket, int socketId)
+void TcpSocketManager::ReleaseSocket(TcpSocket* tcpSocket)
 {
-	if (socketId < 0 || socketId >= _socketCount)
+	if (tcpSocket == nullptr)
 	{
-		spdlog::error("TcpSocketManager::ReleaseServerSocket: out of range socketId={}", socketId);
+		spdlog::error("TcpSocketManager::ReleaseSocket: tcpSocket is nullptr");
 		return;
 	}
 
+	int socketId = tcpSocket->GetSocketID();
 	_socketIdQueue.push(socketId);
 
 	if (tcpSocket != nullptr)
@@ -95,42 +87,6 @@ void TcpSocketManager::ReleaseSocket(TcpSocket* tcpSocket, int socketId)
 		_socketArray[socketId]         = nullptr;
 		_inactiveSocketArray[socketId] = tcpSocket;
 	}
-}
-
-bool TcpSocketManager::AcquireClientSocket(TcpClientSocket* tcpClientSocket)
-{
-	std::lock_guard<std::recursive_mutex> lock(_mutex);
-
-	int socketId = GetAvailableClientSocketId();
-	if (socketId < 0)
-		return false;
-
-	_clientSocketArray[socketId] = tcpClientSocket;
-	tcpClientSocket->SetSocketID(socketId);
-	return true;
-}
-
-void TcpSocketManager::ReleaseClientSocket(int socketId)
-{
-	if (socketId < 0 || socketId >= _clientSocketCount)
-	{
-		spdlog::error("TcpSocketManager::ReleaseClientSocket: out of range socketId={}", socketId);
-		return;
-	}
-
-	// NOTE: These are managed externally, so we only have to detach them.
-	_clientSocketArray[socketId] = nullptr;
-}
-
-int TcpSocketManager::GetAvailableClientSocketId() const
-{
-	for (int i = 0; i < _clientSocketCount; i++)
-	{
-		if (_clientSocketArray[i] == nullptr)
-			return i;
-	}
-
-	return -1;
 }
 
 void TcpSocketManager::OnPostReceive(
@@ -182,6 +138,7 @@ void TcpSocketManager::OnPostSend(
 		spdlog::error("TcpSocketManager::OnPostSend: socketId={} failed: {}",
 			tcpSocket->GetSocketID(), ec.message());
 
+		tcpSocket->AbortSend();
 		tcpSocket->Close();
 		return;
 	}
@@ -204,18 +161,6 @@ void TcpSocketManager::OnPostSocketClose(TcpSocket* tcpSocket)
 		tcpSocket->GetSocketID());
 }
 
-bool TcpSocketManager::ProcessClose(TcpSocket* tcpSocket)
-{
-	std::lock_guard<std::recursive_mutex> lock(_mutex);
-	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)
-		return false;
-
-	tcpSocket->CloseProcess();
-	tcpSocket->ReleaseToManager();
-
-	return true;
-}
-
 void TcpSocketManager::ShutdownImpl()
 {
 	// Shutdown any user-created threads
@@ -234,21 +179,7 @@ void TcpSocketManager::ShutdownImpl()
 
 			// Invoke immediate save and disconnect from within this thread
 			tcpSocket->CloseProcess();
-			ReleaseSocket(tcpSocket, i);
-		}
-
-		if (_clientSocketArray != nullptr)
-		{
-			for (int i = 0; i < _clientSocketCount; i++)
-			{
-				TcpClientSocket* tcpClientSocket = _clientSocketArray[i];
-				if (tcpClientSocket == nullptr)
-					continue;
-
-				// Invoke immediate disconnect from within this thread
-				tcpClientSocket->CloseProcess();
-				ReleaseClientSocket(i);
-			}
+			ReleaseSocket(tcpSocket);
 		}
 	}
 
@@ -274,12 +205,7 @@ void TcpSocketManager::ShutdownImpl()
 			delete socket;
 		_inactiveSocketArray.clear();
 
-		// We don't own these instances so we should only free the array.
-		delete[] _clientSocketArray;
-		_clientSocketArray = nullptr;
-
-		_socketCount       = 0;
-		_clientSocketCount = 0;
+		_socketCount = 0;
 	}
 
 	// Finally free the worker pool; it needs to exist while otherwise tied to sessions.

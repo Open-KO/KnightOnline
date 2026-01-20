@@ -20,6 +20,7 @@
 #include <shared-server/SharedMemoryBlock.h>
 #include <shared-server/SharedMemoryQueue.h>
 #include <shared-server/STLMap.h>
+#include <shared-server/TcpClientSocketManager.h>
 
 #include <unordered_map>
 #include <vector>
@@ -44,7 +45,7 @@ using MagicType5TableMap     = CSTLMap<model::MagicType5>;
 using MagicType7TableMap     = CSTLMap<model::MagicType7>;
 using MagicType8TableMap     = CSTLMap<model::MagicType8>;
 using NpcMap                 = CSTLMap<CNpc>;
-using AISocketMap            = CSTLMap<CAISocket>;
+using AISocketMap            = std::unordered_map<int, TcpClientSocket*>; // unmanaged
 using PartyMap               = CSTLMap<_PARTY_GROUP>;
 using KnightsMap             = CSTLMap<CKnights>;
 using ServerMap              = CSTLMap<_ZONE_SERVERINFO>;
@@ -180,28 +181,29 @@ public:
 
 	inline CUser* GetUserPtr(int socketId) const
 	{
-		return _socketManager.GetUser(socketId);
+		return _serverSocketManager.GetUser(socketId);
 	}
 
 	inline CUser* GetUserPtrUnchecked(int socketId) const
 	{
-		return _socketManager.GetUserUnchecked(socketId);
+		return _serverSocketManager.GetUserUnchecked(socketId);
 	}
 
 	inline int GetUserSocketCount() const
 	{
-		return _socketManager.GetSocketCount();
+		return _serverSocketManager.GetSocketCount();
 	}
 
 	inline bool IsValidUserId(int socketId) const
 	{
-		return _socketManager.IsValidSocketId(socketId);
+		return _serverSocketManager.IsValidSocketId(socketId);
 	}
 
 	EbenezerApp(EbenezerLogger& logger);
 	~EbenezerApp() override;
 
-	EbenezerSocketManager _socketManager;
+	EbenezerSocketManager _serverSocketManager;
+	TcpClientSocketManager _aiSocketManager;
 
 	SharedMemoryQueue m_LoggerSendQueue;
 	SharedMemoryQueue m_LoggerRecvQueue;
@@ -214,7 +216,9 @@ public:
 	char m_ppNotice[20][128];
 	std::string m_AIServerIP;
 
-	AISocketMap m_AISocketMap;
+	AISocketMap _aiSocketMap;
+	std::mutex _aiSocketMutex;
+
 	NpcMap m_NpcMap;
 	ZoneArray m_ZoneArray;
 	ItemTableMap m_ItemTableMap;

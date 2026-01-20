@@ -59,7 +59,7 @@ VersionManagerApp::~VersionManagerApp()
 
 bool VersionManagerApp::OnStart()
 {
-	_serverSocketManager.Init(MAX_USER, 0, 1);
+	_serverSocketManager.Init(MAX_USER, 1);
 	_serverSocketManager.AllocateSockets<CUser>();
 
 	spdlog::info("Version Manager initialized");

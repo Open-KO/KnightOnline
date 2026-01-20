@@ -12,7 +12,7 @@ namespace Ebenezer
 {
 
 SendWorkerThread::SendWorkerThread(EbenezerSocketManager* socketManager) :
-	_socketManager(socketManager)
+	_serverSocketManager(socketManager)
 {
 }
 
@@ -40,10 +40,10 @@ void SendWorkerThread::thread_loop()
 
 void SendWorkerThread::tick()
 {
-	int socketCount = _socketManager->GetSocketCount();
+	int socketCount = _serverSocketManager->GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* userSocket = _socketManager->GetUserUnchecked(i);
+		CUser* userSocket = _serverSocketManager->GetUserUnchecked(i);
 		if (userSocket == nullptr)
 			continue;
 

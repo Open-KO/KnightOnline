@@ -4,16 +4,50 @@
 #pragma once
 
 #include "TcpSocketManager.h"
+#include "TcpServerSocket.h"
 
 class TcpServerSocketManager : public TcpSocketManager
 {
 public:
 	template <typename T, typename... Args>
-	inline void AllocateSockets(Args&&... args)
+	inline bool AllocateSockets(Args&&... args)
 	{
 		// NOTE: The socket manager instance should be declared last.
 		for (size_t i = 0; i < _inactiveSocketArray.size(); i++)
-			_inactiveSocketArray[i] = new T(std::forward<Args>(args)..., this);
+		{
+			if (_inactiveSocketArray[i] != nullptr)
+				continue;
+
+			T* tcpSocket = new T(std::forward<Args>(args)..., this);
+			if (tcpSocket == nullptr)
+				return false;
+
+			tcpSocket->SetSocketID(static_cast<int>(i));
+			_inactiveSocketArray[i] = tcpSocket;
+		}
+
+		return true;
+	}
+
+	inline TcpServerSocket* GetSocket(int socketId) const
+	{
+		return static_cast<TcpServerSocket*>(TcpSocketManager::GetSocket(socketId));
+	}
+
+	inline TcpServerSocket* GetSocketUnchecked(int socketId) const
+	{
+		return static_cast<TcpServerSocket*>(TcpSocketManager::GetSocketUnchecked(socketId));
+	}
+
+	inline TcpServerSocket* GetInactiveSocket(int socketId) const
+	{
+		return static_cast<TcpServerSocket*>(TcpSocketManager::GetInactiveSocket(socketId));
+	}
+
+	inline TcpServerSocket* GetInactiveSocketUnchecked(int socketId) const
+	{
+		return static_cast<TcpServerSocket*>(
+			TcpSocketManager::GetInactiveSocketUnchecked(socketId));
 	}
 
 public:
@@ -27,6 +61,9 @@ public:
 private:
 	void AsyncAccept();
 	void OnAccept(asio::ip::tcp::socket& rawSocket);
+
+protected:
+	bool ProcessClose(TcpSocket* tcpSocket) override;
 
 protected:
 	std::unique_ptr<asio::ip::tcp::acceptor> _acceptor = {};

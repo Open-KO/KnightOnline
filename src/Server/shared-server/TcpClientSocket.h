@@ -5,16 +5,18 @@
 
 #include "TcpSocket.h"
 
+class TcpClientSocketManager;
 class TcpClientSocket : public TcpSocket
 {
 public:
-	TcpClientSocket(TcpSocketManager* socketManager);
-	bool Create();
-	bool Connect(const char* remoteAddress, uint16_t remotePort);
-	void Close() override;
+	TcpClientSocket(TcpClientSocketManager* socketManager);
 
 protected:
-	void ReleaseToManager() override;
+	bool Create();
+
+public:
+	bool Connect(const char* remoteAddress, uint16_t remotePort);
+	void Close() override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPCLIENTSOCKET_H

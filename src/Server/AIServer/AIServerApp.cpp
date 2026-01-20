@@ -173,7 +173,7 @@ bool AIServerApp::OnStart()
 	//	Communication Part Init ...
 	//----------------------------------------------------------------------
 	spdlog::info("AIServerApp::OnStart: initializing sockets");
-	_socketManager.Init(MAX_SOCKET, 0, 1);
+	_socketManager.Init(MAX_SOCKET, 1);
 	_socketManager.AllocateSockets<CGameSocket>();
 
 	//----------------------------------------------------------------------

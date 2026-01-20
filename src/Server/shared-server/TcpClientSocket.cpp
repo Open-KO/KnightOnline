@@ -1,20 +1,21 @@
 ﻿#include "pch.h"
 #include "TcpClientSocket.h"
-#include "TcpSocketManager.h"
+#include "TcpClientSocketManager.h"
 
-TcpClientSocket::TcpClientSocket(TcpSocketManager* socketManager) : TcpSocket(socketManager)
+TcpClientSocket::TcpClientSocket(TcpClientSocketManager* socketManager) : TcpSocket(socketManager)
 {
 }
 
 bool TcpClientSocket::Create()
 {
+	asio::error_code ec;
+
+	_socket = std::make_unique<RawSocket_t>(*_socketManager->GetWorkerPool());
 	if (_socket == nullptr)
 	{
-		spdlog::error("TcpClientSocket::Create: raw socket not allocated");
+		spdlog::error("TcpClientSocket::Create: failed to allocate socket: out of memory");
 		return false;
 	}
-
-	asio::error_code ec;
 
 	_socket->open(asio::ip::tcp::v4(), ec);
 	if (ec)
@@ -53,19 +54,26 @@ bool TcpClientSocket::Create()
 
 bool TcpClientSocket::Connect(const char* remoteAddress, uint16_t remotePort)
 {
-	if (_socket == nullptr)
+	asio::error_code ec;
+
+	// Each new connection requires a new socket.
+	// We should ensure the old one's disconnected and shutdown first.
+	if (_socket != nullptr && _socket->is_open())
+		CloseProcess();
+
+	// Create a new socket.
+	if (!Create())
 	{
-		spdlog::error("TcpClientSocket::Connect: socket not allocated");
+		spdlog::error(
+			"TcpClientSocket::Connect: failed to create new socket [socketId={}]", GetSocketID());
 		return false;
 	}
-
-	asio::error_code ec;
 
 	asio::ip::address ip = asio::ip::make_address(remoteAddress, ec);
 	if (ec)
 	{
-		spdlog::error(
-			"TcpClientSocket::Connect: invalid address {}: {}", remoteAddress, ec.message());
+		spdlog::error("TcpClientSocket::Connect: invalid address {}: {} [socketId={}]",
+			remoteAddress, ec.message(), GetSocketID());
 		return false;
 	}
 
@@ -74,16 +82,9 @@ bool TcpClientSocket::Connect(const char* remoteAddress, uint16_t remotePort)
 	_socket->connect(endpoint, ec);
 	if (ec)
 	{
-		spdlog::error("TcpClientSocket::Connect: failed to connect: {}", ec.message());
+		spdlog::error("TcpClientSocket::Connect: failed to connect: {} [socketId={}]", ec.message(),
+			GetSocketID());
 		_socket->close();
-		return false;
-	}
-
-	assert(_socketManager != nullptr);
-
-	if (!_socketManager->AcquireClientSocket(this))
-	{
-		spdlog::error("TcpClientSocket::Connect: failed to acquire client socket ID");
 		return false;
 	}
 
@@ -131,9 +132,4 @@ void TcpClientSocket::Close()
 		spdlog::error("TcpClientSocket::Close: failed to post close for socketId={}: {}", _socketId,
 			ex.what());
 	}
-}
-
-void TcpClientSocket::ReleaseToManager()
-{
-	_socketManager->ReleaseClientSocket(GetSocketID());
 }
