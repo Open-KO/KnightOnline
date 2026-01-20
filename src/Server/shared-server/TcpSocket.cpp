@@ -133,8 +133,8 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 	{
 		lock.unlock();
 
-		spdlog::error("{}::AsyncSend: failed to post send for socketId={}: {}", GetSocketClass(),
-			_socketId, ex.what());
+		spdlog::error("{}::AsyncSend: failed to post send. [socketId={} error={}]",
+			GetSocketClass(), _socketId, ex.what());
 
 		Close();
 		return false;
@@ -173,8 +173,8 @@ void TcpSocket::AsyncReceive()
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error("{}::Receive: failed to post receive for socketId={}: {}", GetSocketClass(),
-			_socketId, ex.what());
+		spdlog::error("{}::Receive: failed to post receive. [socketId={} error={}]",
+			GetSocketClass(), _socketId, ex.what());
 		Close();
 	}
 }
@@ -213,15 +213,15 @@ void TcpSocket::CloseProcess()
 		_socket->shutdown(asio::socket_base::shutdown_both, ec);
 		if (ec)
 		{
-			spdlog::error("{}::CloseProcess: shutdown() failed for socketId={}: {}",
+			spdlog::error("{}::CloseProcess: shutdown() failed. [socketId={} error={}]",
 				GetSocketClass(), _socketId, ec.message());
 		}
 
 		_socket->close(ec);
 		if (ec)
 		{
-			spdlog::error("{}::CloseProcess: close() failed for socketId={}: {}", GetSocketClass(),
-				_socketId, ec.message());
+			spdlog::error("{}::CloseProcess: close() failed. [socketId={} error={}]",
+				GetSocketClass(), _socketId, ec.message());
 		}
 	}
 
@@ -269,7 +269,7 @@ const std::string& TcpSocket::GetRemoteIP()
 		else
 		{
 			spdlog::warn(
-				"{}::GetRemoteIP: failed lookup. socketId={}", GetSocketClass(), _socketId);
+				"{}::GetRemoteIP: failed lookup. [socketId={}]", GetSocketClass(), _socketId);
 		}
 	}
 
@@ -316,7 +316,7 @@ void TcpSocket::Close()
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error("{}::Close: failed to post close for socketId={}: {}", GetSocketClass(),
+		spdlog::error("{}::Close: failed to post close. [socketId={} error={}]", GetSocketClass(),
 			_socketId, ex.what());
 	}
 }
