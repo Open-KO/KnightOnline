@@ -3,7 +3,7 @@
 #include "TcpSocket.h"
 
 TcpServerSocketManager::TcpServerSocketManager(int recvBufferSize, int sendBufferSize,
-	std::string_view managerClass) : TcpSocketManager(recvBufferSize, sendBufferSize, managerClass)
+	std::string_view implName) : TcpSocketManager(recvBufferSize, sendBufferSize, implName)
 {
 }
 
@@ -16,7 +16,8 @@ TcpServerSocketManager::~TcpServerSocketManager()
 	catch (const std::exception& ex)
 	{
 		spdlog::error(
-			"{}::~TcpServerSocketManager: exception occurred - {}", _managerClass, ex.what());
+			"TcpServerSocketManager({})::~TcpServerSocketManager: exception occurred - {}",
+			_implName, ex.what());
 	}
 }
 
@@ -36,7 +37,8 @@ bool TcpServerSocketManager::Listen(int port)
 		_acceptor->open(endpoint.protocol(), ec);
 		if (ec)
 		{
-			spdlog::error("{}::Listen: open() failed. [error={}]", _managerClass, ec.message());
+			spdlog::error("TcpServerSocketManager({})::Listen: open() failed. [error={}]",
+				_implName, ec.message());
 			return false;
 		}
 
@@ -44,8 +46,9 @@ bool TcpServerSocketManager::Listen(int port)
 		_acceptor->bind(endpoint, ec);
 		if (ec)
 		{
-			spdlog::error("{}::Listen: bind() failed on 0.0.0.0:{}. [error={}]", _managerClass,
-				port, ec.message());
+			spdlog::error(
+				"TcpServerSocketManager({})::Listen: bind() failed on 0.0.0.0:{}. [error={}]",
+				_implName, port, ec.message());
 			return false;
 		}
 
@@ -53,8 +56,9 @@ bool TcpServerSocketManager::Listen(int port)
 		_acceptor->set_option(asio::socket_base::reuse_address(true), ec);
 		if (ec)
 		{
-			spdlog::error("{}::Listen: set_option(reuse_address) failed. [error={}]", _managerClass,
-				ec.message());
+			spdlog::error(
+				"TcpServerSocketManager({})::Listen: set_option(reuse_address) failed. [error={}]",
+				_implName, ec.message());
 			return false;
 		}
 
@@ -62,8 +66,9 @@ bool TcpServerSocketManager::Listen(int port)
 		_acceptor->set_option(asio::socket_base::receive_buffer_size(_recvBufferSize * 4), ec);
 		if (ec)
 		{
-			spdlog::error("{}::Listen: set_option(receive_buffer_size) failed. [error={}]",
-				_managerClass, ec.message());
+			spdlog::error("TcpServerSocketManager({})::Listen: set_option(receive_buffer_size) "
+						  "failed. [error={}]",
+				_implName, ec.message());
 			return false;
 		}
 
@@ -71,8 +76,9 @@ bool TcpServerSocketManager::Listen(int port)
 		_acceptor->set_option(asio::socket_base::send_buffer_size(_sendBufferSize * 4), ec);
 		if (ec)
 		{
-			spdlog::error("{}::Listen: set_option(send_buffer_size) failed. [error={}]",
-				_managerClass, ec.message());
+			spdlog::error("TcpServerSocketManager({})::Listen: set_option(send_buffer_size) "
+						  "failed. [error={}]",
+				_implName, ec.message());
 			return false;
 		}
 
@@ -80,18 +86,20 @@ bool TcpServerSocketManager::Listen(int port)
 		_acceptor->listen(5, ec);
 		if (ec)
 		{
-			spdlog::error("{}::Listen: listen() failed. [error={}]", _managerClass, ec.message());
+			spdlog::error("TcpServerSocketManager({})::Listen: listen() failed. [error={}]",
+				_implName, ec.message());
 			return false;
 		}
 	}
 	catch (const asio::system_error& ex)
 	{
 		spdlog::error(
-			"{}::Listen: failed to bind on 0.0.0.0:{}. [error={}]", _managerClass, port, ex.what());
+			"TcpServerSocketManager({})::Listen: failed to bind on 0.0.0.0:{}. [error={}]",
+			_implName, port, ex.what());
 		return false;
 	}
 
-	spdlog::info("{}::Listen: initialized port={:05}", _managerClass, port);
+	spdlog::info("TcpServerSocketManager({})::Listen: initialized port={:05}", _implName, port);
 	return true;
 }
 
@@ -129,8 +137,8 @@ void TcpServerSocketManager::StopAccept()
 
 		if (ec)
 		{
-			spdlog::error(
-				"{}::StopAccept: cancel() failed. [error={}]", _managerClass, ec.message());
+			spdlog::error("TcpServerSocketManager({})::StopAccept: cancel() failed. [error={}]",
+				_implName, ec.message());
 		}
 	}
 }
@@ -159,12 +167,15 @@ void TcpServerSocketManager::AsyncAccept()
 				{
 					if (ec == asio::error::operation_aborted)
 					{
-						spdlog::debug("{}::AsyncAccept: accept operation cancelled", _managerClass);
+						spdlog::debug(
+							"TcpServerSocketManager({})::AsyncAccept: accept operation cancelled",
+							_implName);
 					}
 					else
 					{
-						spdlog::error("{}::AsyncAccept: accept failed. [error={}]", _managerClass,
-							ec.message());
+						spdlog::error(
+							"TcpServerSocketManager({})::AsyncAccept: accept failed. [error={}]",
+							_implName, ec.message());
 					}
 				}
 
@@ -173,8 +184,8 @@ void TcpServerSocketManager::AsyncAccept()
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error(
-			"{}::AsyncAccept: async_accept() failed. [error={}]", _managerClass, ex.what());
+		spdlog::error("TcpServerSocketManager({})::AsyncAccept: async_accept() failed. [error={}]",
+			_implName, ex.what());
 	}
 }
 
@@ -192,7 +203,7 @@ void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 
 	if (socketId == -1)
 	{
-		spdlog::error("{}::OnAccept: socketId list is empty", _managerClass);
+		spdlog::error("TcpServerSocketManager({})::OnAccept: socketId list is empty", _implName);
 		return;
 	}
 
@@ -200,14 +211,15 @@ void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 	// If it does, the associated socket ID was never removed from the list so we don't have to restore it.
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("{}::OnAccept: null socket [socketId={}]", _managerClass, socketId);
+		spdlog::error(
+			"TcpServerSocketManager({})::OnAccept: null socket [socketId={}]", _implName, socketId);
 		return;
 	}
 
 	if (!tcpSocket->HasSocket())
 	{
-		spdlog::error(
-			"{}::OnAccept: no raw socket allocated [socketId={}]", _managerClass, socketId);
+		spdlog::error("TcpServerSocketManager({})::OnAccept: no raw socket allocated [socketId={}]",
+			_implName, socketId);
 		return;
 	}
 
@@ -215,7 +227,8 @@ void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 	tcpSocket->InitSocket();
 	tcpSocket->AsyncReceive();
 
-	spdlog::debug("{}::AcceptThread: successfully accepted [socketId={}]", _managerClass, socketId);
+	spdlog::debug("TcpServerSocketManager({})::AcceptThread: successfully accepted [socketId={}]",
+		_implName, socketId);
 }
 
 bool TcpServerSocketManager::ProcessClose(TcpSocket* tcpSocket)

@@ -12,7 +12,7 @@ public:
 	TcpClientSocket(TcpClientSocketManager* socketManager);
 
 private:
-	std::string_view GetSocketClass() const override;
+	std::string_view GetImplName() const override;
 
 protected:
 	bool Create();

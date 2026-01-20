@@ -40,7 +40,7 @@ CGameSocket::~CGameSocket()
 	*/
 }
 
-std::string_view CGameSocket::GetSocketClass() const
+std::string_view CGameSocket::GetImplName() const
 {
 	return "GameSocket";
 }

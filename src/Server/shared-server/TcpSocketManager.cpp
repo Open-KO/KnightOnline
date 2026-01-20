@@ -8,9 +8,9 @@
 #include <cassert>
 
 TcpSocketManager::TcpSocketManager(
-	int recvBufferSize, int sendBufferSize, std::string_view managerClass) :
+	int recvBufferSize, int sendBufferSize, std::string_view implName) :
 	_recvBufferSize(recvBufferSize), _sendBufferSize(sendBufferSize),
-	_managerClass(managerClass.data(), managerClass.length())
+	_implName(implName.data(), implName.length())
 {
 }
 
@@ -77,7 +77,7 @@ void TcpSocketManager::ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket)
 {
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("{}::ReleaseSocket: tcpSocket is nullptr", _managerClass);
+		spdlog::error("TcpSocketManager({})::ReleaseSocket: tcpSocket is nullptr", _implName);
 		return;
 	}
 
@@ -95,13 +95,15 @@ void TcpSocketManager::OnPostReceive(
 	{
 		if (ec == asio::error::eof)
 		{
-			spdlog::debug("{}::OnPostReceive: peer closed connection. [socketId={}]", _managerClass,
-				tcpSocket->GetSocketID());
+			spdlog::debug(
+				"TcpSocketManager({})::OnPostReceive: peer closed connection. [socketId={}]",
+				_implName, tcpSocket->GetSocketID());
 		}
 		else
 		{
-			spdlog::debug("{}::OnPostReceive: unexpected error [socketId={} error={}]",
-				_managerClass, tcpSocket->GetSocketID(), ec.message());
+			spdlog::debug(
+				"TcpSocketManager({})::OnPostReceive: unexpected error [socketId={} error={}]",
+				_implName, tcpSocket->GetSocketID(), ec.message());
 
 			if (++tcpSocket->_socketErrorCount < 2)
 				return;
@@ -113,8 +115,8 @@ void TcpSocketManager::OnPostReceive(
 
 	if (bytesTransferred == 0)
 	{
-		spdlog::debug("{}::OnPostReceive: closed by 0 byte notify. [socketId={}]", _managerClass,
-			tcpSocket->GetSocketID());
+		spdlog::debug("TcpSocketManager({})::OnPostReceive: closed by 0 byte notify. [socketId={}]",
+			_implName, tcpSocket->GetSocketID());
 		ProcessClose(tcpSocket);
 		return;
 	}
@@ -134,8 +136,8 @@ void TcpSocketManager::OnPostSend(
 {
 	if (ec)
 	{
-		spdlog::error("{}::OnPostSend: unexpected error [socketId={} error={}]", _managerClass,
-			tcpSocket->GetSocketID(), ec.message());
+		spdlog::error("TcpSocketManager({})::OnPostSend: unexpected error [socketId={} error={}]",
+			_implName, tcpSocket->GetSocketID(), ec.message());
 
 		tcpSocket->AbortSend();
 		tcpSocket->Close();
@@ -156,8 +158,8 @@ void TcpSocketManager::OnPostClose(TcpSocket* tcpSocket)
 	if (!ProcessClose(tcpSocket))
 		return;
 
-	spdlog::debug("{}::OnPostClose: socket closed by Close() [socketId={}]", _managerClass,
-		tcpSocket->GetSocketID());
+	spdlog::debug("TcpSocketManager({})::OnPostClose: socket closed by Close() [socketId={}]",
+		_implName, tcpSocket->GetSocketID());
 }
 
 void TcpSocketManager::ShutdownImpl()

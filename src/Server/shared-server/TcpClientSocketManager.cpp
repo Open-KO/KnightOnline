@@ -3,7 +3,7 @@
 #include "TcpSocket.h"
 
 TcpClientSocketManager::TcpClientSocketManager(int recvBufferSize, int sendBufferSize,
-	std::string_view managerClass) : TcpSocketManager(recvBufferSize, sendBufferSize, managerClass)
+	std::string_view implName) : TcpSocketManager(recvBufferSize, sendBufferSize, implName)
 {
 }
 
@@ -16,7 +16,8 @@ TcpClientSocketManager::~TcpClientSocketManager()
 	catch (const std::exception& ex)
 	{
 		spdlog::error(
-			"{}::~TcpClientSocketManager: exception occurred - {}", _managerClass, ex.what());
+			"TcpClientSocketManager({})::~TcpClientSocketManager: exception occurred - {}",
+			_implName, ex.what());
 	}
 }
 
@@ -35,7 +36,8 @@ std::shared_ptr<TcpClientSocket> TcpClientSocketManager::AcquireSocket()
 
 	if (socketId == -1)
 	{
-		spdlog::error("{}::AcquireSocket: socketId list is empty", _managerClass);
+		spdlog::error(
+			"TcpClientSocketManager({})::AcquireSocket: socketId list is empty", _implName);
 		return nullptr;
 	}
 
@@ -43,7 +45,8 @@ std::shared_ptr<TcpClientSocket> TcpClientSocketManager::AcquireSocket()
 	// If it does, the associated socket ID was never removed from the list so we don't have to restore it.
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("{}::AcquireSocket: null socket [socketId:{}]", _managerClass, socketId);
+		spdlog::error("TcpClientSocketManager({})::AcquireSocket: null socket [socketId:{}]",
+			_implName, socketId);
 		return nullptr;
 	}
 

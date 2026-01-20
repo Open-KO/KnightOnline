@@ -54,7 +54,7 @@ public:
 
 public:
 	TcpClientSocketManager(int recvBufferSize, int sendBufferSize,
-		std::string_view managerClass = "TcpClientSocketManager");
+		std::string_view implName = "TcpClientSocketManager");
 	std::shared_ptr<TcpClientSocket> AcquireSocket();
 	void ReleaseSocket(std::shared_ptr<TcpClientSocket> tcpSocket);
 	void Shutdown();

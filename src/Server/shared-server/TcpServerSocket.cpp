@@ -10,7 +10,7 @@ TcpServerSocket::TcpServerSocket(TcpServerSocketManager* socketManager) : TcpSoc
 {
 }
 
-std::string_view TcpServerSocket::GetSocketClass() const
+std::string_view TcpServerSocket::GetImplName() const
 {
 	return "TcpServerSocket";
 }

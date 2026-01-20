@@ -23,7 +23,7 @@ CAISocket::CAISocket(TcpClientSocketManager* socketManager) : TcpClientSocket(so
 	_magicProcess.m_pMain = _main;
 }
 
-std::string_view CAISocket::GetSocketClass() const
+std::string_view CAISocket::GetImplName() const
 {
 	return "User";
 }

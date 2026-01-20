@@ -85,7 +85,7 @@ public:
 	}
 
 protected:
-	TcpSocketManager(int recvBufferSize, int sendBufferSize, std::string_view managerClass);
+	TcpSocketManager(int recvBufferSize, int sendBufferSize, std::string_view implName);
 
 public:
 	virtual ~TcpSocketManager();
@@ -110,7 +110,7 @@ protected:
 	int _recvBufferSize                                          = 0;
 	int _sendBufferSize                                          = 0;
 
-	std::string _managerClass                                    = {};
+	std::string _implName                                        = {};
 
 	uint32_t _workerThreadCount                                  = 0;
 

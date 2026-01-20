@@ -73,7 +73,7 @@ protected:
 	virtual bool PullOutCore(char*& data, int& length) = 0;
 
 private:
-	virtual std::string_view GetSocketClass() const = 0;
+	virtual std::string_view GetImplName() const = 0;
 	bool AsyncSend(bool fromAsyncChain);
 	void AbortSend();
 

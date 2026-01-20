@@ -17,7 +17,7 @@ CUser::CUser(TcpServerSocketManager* socketManager) : TcpServerSocket(socketMana
 {
 }
 
-std::string_view CUser::GetSocketClass() const
+std::string_view CUser::GetImplName() const
 {
 	return "User";
 }

@@ -13,7 +13,7 @@ public:
 	TcpServerSocket(TcpServerSocketManager* socketManager);
 
 private:
-	std::string_view GetSocketClass() const override;
+	std::string_view GetImplName() const override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPSERVERSOCKET_H

@@ -31,7 +31,7 @@ CUser::~CUser()
 	delete _regionBuffer;
 }
 
-std::string_view CUser::GetSocketClass() const
+std::string_view CUser::GetImplName() const
 {
 	return "User";
 }

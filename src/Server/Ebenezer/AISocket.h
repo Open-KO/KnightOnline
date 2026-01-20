@@ -19,7 +19,7 @@ private:
 
 public:
 	CAISocket(TcpClientSocketManager* socketManager);
-	std::string_view GetSocketClass() const override;
+	std::string_view GetImplName() const override;
 
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
