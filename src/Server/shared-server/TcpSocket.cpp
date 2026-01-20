@@ -173,7 +173,7 @@ void TcpSocket::AsyncReceive()
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error("TcpSocket({})::Receive: failed to post receive. [socketId={} error={}]",
+		spdlog::error("TcpSocket({})::AsyncReceive: failed to post receive. [socketId={} error={}]",
 			GetImplName(), _socketId, ex.what());
 		Close();
 	}

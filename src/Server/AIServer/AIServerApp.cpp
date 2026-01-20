@@ -50,8 +50,8 @@ AIServerApp::AIServerApp(AIServerLogger& logger) : AppThread(logger)
 AIServerApp::~AIServerApp()
 {
 	spdlog::info("AIServerApp::~AIServerApp: Shutting down, releasing resources.");
-	_socketManager.Shutdown();
-	spdlog::info("AIServerApp::~AIServerApp: TcpSocketManager stopped.");
+	_serverSocketManager.Shutdown();
+	spdlog::info("AIServerApp::~AIServerApp: AI socket manager stopped.");
 
 	// wait for all of these threads to be fully shut down.
 	spdlog::info("AIServerApp::~AIServerApp: Waiting for worker threads to fully shut down.");
@@ -173,8 +173,8 @@ bool AIServerApp::OnStart()
 	//	Communication Part Init ...
 	//----------------------------------------------------------------------
 	spdlog::info("AIServerApp::OnStart: initializing sockets");
-	_socketManager.Init(MAX_SOCKET, 1);
-	_socketManager.AllocateSockets<CGameSocket>();
+	_serverSocketManager.Init(MAX_SOCKET, 1);
+	_serverSocketManager.AllocateSockets<CGameSocket>();
 
 	//----------------------------------------------------------------------
 	//	Load Magic Table
@@ -326,7 +326,7 @@ bool AIServerApp::ListenByServerZoneType()
 		return false;
 	}
 
-	if (!_socketManager.Listen(port))
+	if (!_serverSocketManager.Listen(port))
 	{
 		spdlog::error("AIServerApp::ListenByServerZoneType: failed to listen on port {}", port);
 		return false;
@@ -1139,10 +1139,10 @@ void AIServerApp::CheckAliveTest()
 	SetByte(sendBuffer, AG_CHECK_ALIVE_REQ, sendIndex);
 
 	int size = 0, count = 0;
-	int socketCount = _socketManager.GetSocketCount();
+	int socketCount = _serverSocketManager.GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		auto socket = _socketManager.GetSocketUnchecked(i);
+		auto socket = _serverSocketManager.GetSocketUnchecked(i);
 		if (socket == nullptr)
 			continue;
 
@@ -1279,7 +1279,7 @@ int AIServerApp::Send(const char* pData, int length, int nZone)
 	pNewData->sLength  = length;
 	memcpy(pNewData->pBuf, pData, length);
 
-	_socketManager.QueueSendData(pNewData);
+	_serverSocketManager.QueueSendData(pNewData);
 
 	return 0;
 }
@@ -1287,7 +1287,7 @@ int AIServerApp::Send(const char* pData, int length, int nZone)
 
 void AIServerApp::GameServerAcceptThread()
 {
-	_socketManager.StartAccept();
+	_serverSocketManager.StartAccept();
 }
 
 void AIServerApp::SyncTest()
@@ -1299,10 +1299,10 @@ void AIServerApp::SyncTest()
 
 	SetByte(sendBuffer, AG_CHECK_ALIVE_REQ, sendIndex);
 
-	int socketCount = _socketManager.GetSocketCount();
+	int socketCount = _serverSocketManager.GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		auto socket = _socketManager.GetSocketUnchecked(i);
+		auto socket = _serverSocketManager.GetSocketUnchecked(i);
 		if (socket == nullptr)
 			continue;
 

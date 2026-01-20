@@ -26,7 +26,7 @@ protected:
 	void clear();
 
 protected:
-	AISocketManager* _socketManager;
+	AISocketManager* _serverSocketManager;
 	std::queue<_SEND_DATA*> _insertionQueue;
 	int _nextRoundRobinSocketId;
 };
