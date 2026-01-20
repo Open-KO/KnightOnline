@@ -18,47 +18,49 @@ public:
 			if (_inactiveSocketArray[i] != nullptr)
 				continue;
 
-			T* tcpSocket = new T(std::forward<Args>(args)..., this);
+			auto tcpSocket = std::make_unique<T>(std::forward<Args>(args)..., this);
 			if (tcpSocket == nullptr)
 				return false;
 
 			tcpSocket->SetSocketID(static_cast<int>(i));
-			_inactiveSocketArray[i] = tcpSocket;
+			_inactiveSocketArray[i] = std::move(tcpSocket);
 		}
 
 		return true;
 	}
 
-	inline TcpClientSocket* GetSocket(int socketId) const
+	inline std::shared_ptr<TcpClientSocket> GetSocket(int socketId) const
 	{
-		return static_cast<TcpClientSocket*>(TcpSocketManager::GetSocket(socketId));
+		return std::static_pointer_cast<TcpClientSocket>(TcpSocketManager::GetSocket(socketId));
 	}
 
-	inline TcpClientSocket* GetSocketUnchecked(int socketId) const
+	inline std::shared_ptr<TcpClientSocket> GetSocketUnchecked(int socketId) const
 	{
-		return static_cast<TcpClientSocket*>(TcpSocketManager::GetSocketUnchecked(socketId));
+		return std::static_pointer_cast<TcpClientSocket>(
+			TcpSocketManager::GetSocketUnchecked(socketId));
 	}
 
-	inline TcpClientSocket* GetInactiveSocket(int socketId) const
+	inline std::shared_ptr<TcpClientSocket> GetInactiveSocket(int socketId) const
 	{
-		return static_cast<TcpClientSocket*>(TcpSocketManager::GetInactiveSocket(socketId));
+		return std::static_pointer_cast<TcpClientSocket>(
+			TcpSocketManager::GetInactiveSocket(socketId));
 	}
 
-	inline TcpClientSocket* GetInactiveSocketUnchecked(int socketId) const
+	inline std::shared_ptr<TcpClientSocket> GetInactiveSocketUnchecked(int socketId) const
 	{
-		return static_cast<TcpClientSocket*>(
+		return std::static_pointer_cast<TcpClientSocket>(
 			TcpSocketManager::GetInactiveSocketUnchecked(socketId));
 	}
 
 public:
 	TcpClientSocketManager(int recvBufferSize, int sendBufferSize);
-	TcpClientSocket* AcquireSocket();
-	void ReleaseSocket(TcpClientSocket* tcpSocket);
+	std::shared_ptr<TcpClientSocket> AcquireSocket();
+	void ReleaseSocket(std::shared_ptr<TcpClientSocket> tcpSocket);
 	void Shutdown();
 	~TcpClientSocketManager() override;
 
 protected:
-	bool ProcessClose(TcpSocket* tcpSocket) override;
+	bool ProcessClose(std::shared_ptr<TcpSocket> tcpSocket) override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPCLIENTSOCKETMANAGER_H

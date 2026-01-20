@@ -801,7 +801,7 @@ void CUser::VersionCheck()
 
 void CUser::LoginProcess(char* pBuf)
 {
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	int index = 0, idlen = 0, pwdlen = 0, sendIndex = 0, retvalue = 0;
 	char accountid[MAX_ID_SIZE + 1] {}, password[MAX_PW_SIZE + 1] {}, sendBuffer[256] {};
 
@@ -1030,7 +1030,7 @@ fail_return:
 
 void CUser::SelCharToAgent(char* pBuf)
 {
-	CUser* pUser            = nullptr;
+	std::shared_ptr<CUser> pUser;
 	C3DMap* pMap            = nullptr;
 	_ZONE_SERVERINFO* pInfo = nullptr;
 	uint8_t bInit           = 0x01;
@@ -1410,14 +1410,13 @@ void CUser::UserDataSaveToAgent()
 
 void CUser::LogOut()
 {
-	CUser* pUser = nullptr;
 	int index = 0, sendIndex = 0, count = 0;
 	char sendBuffer[256] {};
 
 	spdlog::debug(
 		"User::LogOut: accountId={} charId={}", m_pUserData->m_Accountid, m_pUserData->m_id);
 
-	pUser = m_pMain->GetUserPtr(m_pUserData->m_Accountid, NameType::Account);
+	auto pUser = m_pMain->GetUserPtr(m_pUserData->m_Accountid, NameType::Account);
 	if (pUser != nullptr && pUser->_socketId != _socketId)
 	{
 		spdlog::error(
@@ -1649,7 +1648,7 @@ void CUser::Rotate(char* pBuf)
 
 void CUser::Attack(char* pBuf)
 {
-	CUser* pTUser       = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	CNpc* pNpc          = nullptr;
 	model::Item* pTable = nullptr;
 	int index = 0, sendIndex = 0;
@@ -2101,7 +2100,7 @@ void CUser::Chat(char* pBuf)
 {
 	int index = 0, chatlen = 0, sendIndex = 0;
 	uint8_t type = 0;
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char chatstr[1024] {}, sendBuffer[1024] {};
 	std::string finalstr;
 
@@ -3026,7 +3025,7 @@ void CUser::RequestUserIn(char* pBuf)
 		if (i > 1000)
 			break;
 
-		CUser* pUser = m_pMain->GetUserPtr(uid);
+		auto pUser = m_pMain->GetUserPtr(uid);
 		if (pUser == nullptr || pUser->GetState() != CONNECTION_STATE_GAMESTART)
 			continue;
 
@@ -3395,7 +3394,7 @@ int16_t CUser::GetDamage(int tid, int magicid)
 	uint8_t result       = FAIL;
 	int16_t temp_hit = 0, temp_ac = 0, temp_hit_B = 0, damage = 0;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return -1;
 
@@ -3517,7 +3516,7 @@ int16_t CUser::GetMagicDamage(int damage, int tid)
 {
 	int16_t total_r = 0, temp_damage = 0;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return damage;
 
@@ -3663,7 +3662,7 @@ int16_t CUser::GetACDamage(int damage, int tid)
 {
 	model::Item *pLeftHand = nullptr, *pRightHand = nullptr;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return damage;
 
@@ -5332,8 +5331,8 @@ fail_return:
 
 void CUser::SendTargetHP(uint8_t echo, int tid, int damage)
 {
-	CUser* pTUser = nullptr;
-	CNpc* pNpc    = nullptr;
+	CNpc* pNpc = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	int sendIndex = 0, hp = 0, maxhp = 0;
 	char sendBuffer[256] {};
 
@@ -5446,9 +5445,8 @@ void CUser::ItemGet(char* pBuf)
 	_ZONE_ITEM* pItem    = nullptr;
 	C3DMap* pMap         = nullptr;
 	CRegion* pRegion     = nullptr;
-	CUser* pUser         = nullptr;
-	CUser* pGetUser      = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
+	std::shared_ptr<CUser> pUser, pGetUser;
 	char sendBuffer[256] {};
 
 	bundle_index = GetDWORD(pBuf, index);
@@ -5498,7 +5496,7 @@ void CUser::ItemGet(char* pBuf)
 	if (m_sPartyIndex != -1 && itemid != ITEM_GOLD)
 		pGetUser = GetItemRoutingUser(itemid, count);
 	else
-		pGetUser = this;
+		pGetUser = std::static_pointer_cast<CUser>(shared_from_this());
 
 	if (pGetUser == nullptr)
 		goto fail_return;
@@ -5634,7 +5632,7 @@ void CUser::ItemGet(char* pBuf)
 	}
 
 	SetByte(sendBuffer, WIZ_ITEM_GET, sendIndex);
-	if (pGetUser == this)
+	if (pGetUser.get() == this)
 		SetByte(sendBuffer, 0x01, sendIndex);
 	else
 		SetByte(sendBuffer, 0x05, sendIndex);
@@ -5654,7 +5652,7 @@ void CUser::ItemGet(char* pBuf)
 		SetString2(sendBuffer, pGetUser->m_pUserData->m_id, sendIndex);
 		m_pMain->Send_PartyMember(m_sPartyIndex, sendBuffer, sendIndex);
 
-		if (pGetUser != this)
+		if (pGetUser.get() != this)
 		{
 			memset(sendBuffer, 0, sizeof(sendBuffer));
 			sendIndex = 0;
@@ -5723,7 +5721,7 @@ void CUser::LoyaltyChange(int tid)
 	int sendIndex = 0;
 	char sendBuffer[256] {};
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -5882,7 +5880,7 @@ void CUser::PartyProcess(char* pBuf)
 {
 	int index = 0, idlength = 0, memberid = -1;
 	char strid[MAX_ID_SIZE + 1] {};
-	CUser* pUser       = nullptr;
+	std::shared_ptr<CUser> pUser;
 	uint8_t subcommand = 0, result = 0;
 
 	subcommand = GetByte(pBuf, index);
@@ -5951,7 +5949,6 @@ void CUser::PartyProcess(char* pBuf)
 // 거절한 사람한테 온다... 리더를 찾아서 알려주는 함수
 void CUser::PartyCancel()
 {
-	CUser* pUser         = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
 	int sendIndex = 0, leader_id = -1, count = 0;
 	char sendBuffer[256] {};
@@ -5972,7 +5969,7 @@ void CUser::PartyCancel()
 
 	leader_id     = pParty->uid[0];
 
-	pUser         = m_pMain->GetUserPtr(leader_id);
+	auto pUser    = m_pMain->GetUserPtr(leader_id);
 	if (pUser == nullptr)
 		return;
 
@@ -5997,12 +5994,11 @@ void CUser::PartyCancel()
 void CUser::PartyRequest(int memberid, bool bCreate)
 {
 	int sendIndex = 0, result = -1, i = 0;
-	CUser* pUser         = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
+	bool inserted        = false;
 	char sendBuffer[256] {};
-	bool inserted = false;
 
-	pUser         = m_pMain->GetUserPtr(memberid);
+	auto pUser = m_pMain->GetUserPtr(memberid);
 	if (pUser == nullptr)
 		goto fail_return;
 
@@ -6126,15 +6122,13 @@ fail_return:
 
 void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 가는것이 아님
 {
-	int sendIndex        = 0;
-	CUser* pUser         = nullptr;
-	_PARTY_GROUP* pParty = nullptr;
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -6149,7 +6143,7 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 		if (pParty->uid[i] == _socketId)
 			continue;
 
-		pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+		auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
 		if (pUser == nullptr)
 			continue;
 
@@ -6184,7 +6178,7 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 	}
 
 	// 파티 BBS를 위해 추가...	대장판!!!
-	pUser = m_pMain->GetUserPtr(pParty->uid[0]);
+	auto pUser = m_pMain->GetUserPtr(pParty->uid[0]);
 	if (pUser == nullptr)
 		return;
 
@@ -6248,18 +6242,14 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 
 void CUser::PartyRemove(int memberid)
 {
-	int sendIndex = 0, count = 0;
-	CUser* pUser         = nullptr;
-	_PARTY_GROUP* pParty = nullptr;
-
 	if (m_sPartyIndex == -1)
 		return;
 
-	pUser = m_pMain->GetUserPtr(memberid); // 제거될 사람...
+	auto pUser = m_pMain->GetUserPtr(memberid); // 제거될 사람...
 	if (pUser == nullptr)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -6286,6 +6276,7 @@ void CUser::PartyRemove(int memberid)
 		}
 	}
 
+	int count = 0;
 	for (int i = 0; i < 8; i++)
 	{
 		if (pParty->uid[i] != -1 && pParty->uid[i] != memberid)
@@ -6300,6 +6291,7 @@ void CUser::PartyRemove(int memberid)
 	}
 
 	// 삭제된 인원을 브로드캐스팅..제거될 사람한테두 패킷이 간다.
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 	SetByte(sendBuffer, WIZ_PARTY, sendIndex);
 	SetByte(sendBuffer, PARTY_REMOVE, sendIndex);
@@ -6331,13 +6323,10 @@ void CUser::PartyRemove(int memberid)
 
 void CUser::PartyDelete()
 {
-	int sendIndex        = 0;
-	CUser* pUser         = nullptr;
-	_PARTY_GROUP* pParty = nullptr;
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 	{
 		m_sPartyIndex = -1;
@@ -6346,12 +6335,13 @@ void CUser::PartyDelete()
 
 	for (int i = 0; i < 8; i++)
 	{
-		pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+		auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
 		if (pUser != nullptr)
 			pUser->m_sPartyIndex = -1;
 	}
 
 	// 삭제된 인원을 브로드캐스팅..
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 	SetByte(sendBuffer, WIZ_PARTY, sendIndex);
 	SetByte(sendBuffer, PARTY_DELETE, sendIndex);
@@ -6410,7 +6400,7 @@ void CUser::ExchangeProcess(char* pBuf)
 void CUser::ExchangeReq(char* pBuf)
 {
 	int index = 0, destid = -1, sendIndex = 0;
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char sendBuffer[256] {};
 
 	destid = GetShort(pBuf, index);
@@ -6455,7 +6445,7 @@ fail_return:
 void CUser::ExchangeAgree(char* pBuf)
 {
 	int index = 0, sendIndex = 0, result = 0;
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char sendBuffer[256] {};
 
 	result = GetByte(pBuf, index);
@@ -6488,14 +6478,13 @@ void CUser::ExchangeAgree(char* pBuf)
 void CUser::ExchangeAdd(char* pBuf)
 {
 	int index = 0, sendIndex = 0, count = 0, itemid = 0, duration = 0;
-	CUser* pUser          = nullptr;
 	_EXCHANGE_ITEM* pItem = nullptr;
 	model::Item* pTable   = nullptr;
 	uint8_t pos           = 0xff;
 	bool bAdd = true, bGold = false;
 	char sendBuffer[256] {};
 
-	pUser = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 	{
 		ExchangeCancel();
@@ -6624,11 +6613,10 @@ add_fail:
 void CUser::ExchangeDecide()
 {
 	int sendIndex = 0, getmoney = 0, putmoney = 0;
-	CUser* pUser  = nullptr;
 	bool bSuccess = true;
 	char sendBuffer[256] {};
 
-	pUser = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 	{
 		ExchangeCancel();
@@ -6751,12 +6739,11 @@ void CUser::ExchangeDecide()
 
 void CUser::ExchangeCancel()
 {
-	int sendIndex = 0;
-	CUser* pUser  = nullptr;
 	bool bFind    = true;
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 
-	pUser = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 		bFind = false;
 
@@ -6820,11 +6807,10 @@ void CUser::InitExchange(bool bStart)
 bool CUser::ExecuteExchange()
 {
 	model::Item* pTable = nullptr;
-	CUser* pUser        = nullptr;
 	int16_t weight      = 0;
 	uint8_t i           = 0;
 
-	pUser               = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser          = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 		return false;
 
@@ -6910,10 +6896,9 @@ bool CUser::ExecuteExchange()
 int CUser::ExchangeDone()
 {
 	int money           = 0;
-	CUser* pUser        = nullptr;
 	model::Item* pTable = nullptr;
 
-	pUser               = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser          = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 		return 0;
 
@@ -7223,7 +7208,6 @@ bool CUser::ItemEquipAvailable(const model::Item* pTable) const
 void CUser::ChatTargetSelect(char* pBuf)
 {
 	int index = 0, sendIndex = 0, idlen = 0;
-	CUser* pUser = nullptr;
 	char chatid[MAX_ID_SIZE + 1] {}, sendBuffer[128] {};
 
 	idlen = GetShort(pBuf, index);
@@ -7236,7 +7220,7 @@ void CUser::ChatTargetSelect(char* pBuf)
 	int i           = 0;
 	for (; i < socketCount; i++)
 	{
-		pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser != nullptr && pUser->GetState() == CONNECTION_STATE_GAMESTART
 			&& strnicmp(chatid, pUser->m_pUserData->m_id, MAX_ID_SIZE) == 0)
 		{
@@ -7283,7 +7267,7 @@ void CUser::CountConcurrentUser()
 	int socketCount = m_pMain->GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser != nullptr && pUser->GetState() == CONNECTION_STATE_GAMESTART)
 			++usercount;
 	}
@@ -7309,7 +7293,7 @@ void CUser::LoyaltyDivide(int tid)
 	if (pParty == nullptr)
 		return;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -7392,7 +7376,7 @@ void CUser::LoyaltyDivide(int tid)
 		// Distribute loyalty amongst party members.
 		for (int j = 0; j < 8; j++)
 		{
-			CUser* pUser = m_pMain->GetUserPtr(pParty->uid[j]);
+			auto pUser = m_pMain->GetUserPtr(pParty->uid[j]);
 			if (pUser == nullptr)
 				continue;
 
@@ -7422,7 +7406,7 @@ void CUser::LoyaltyDivide(int tid)
 	// Distribute loyalty amongst party members.
 	for (int j = 0; j < 8; j++)
 	{
-		CUser* pUser = m_pMain->GetUserPtr(pParty->uid[j]);
+		auto pUser = m_pMain->GetUserPtr(pParty->uid[j]);
 		if (pUser == nullptr)
 			continue;
 
@@ -7798,7 +7782,7 @@ void CUser::HPTimeChangeType3(double currentTime)
 		HpChange(m_bHPAmount[h]); // Reduce HP...
 
 		// Send report to the source...
-		CUser* pUser = m_pMain->GetUserPtr(m_sSourceID[h]);
+		auto pUser = m_pMain->GetUserPtr(m_sSourceID[h]);
 		if (pUser != nullptr)
 			pUser->SendTargetHP(0, _socketId, m_bHPAmount[h]);
 
@@ -8364,7 +8348,6 @@ fail_return:
 void CUser::OperatorCommand(char* pBuf)
 {
 	int index = 0, idlen = 0, command = 0;
-	CUser* pUser = nullptr;
 	char userid[MAX_ID_SIZE + 1] {};
 
 	// Is this user's authority operator?
@@ -8379,7 +8362,7 @@ void CUser::OperatorCommand(char* pBuf)
 
 	GetString(userid, pBuf, idlen, index);
 
-	pUser = m_pMain->GetUserPtr(userid, NameType::Character);
+	auto pUser = m_pMain->GetUserPtr(userid, NameType::Character);
 	if (pUser == nullptr)
 		return;
 
@@ -8487,7 +8470,7 @@ void CUser::Type3AreaDuration(double currentTime)
 			if (!magic_process.UserRegionCheck(_socketId, i, m_iAreaMagicID, pType->Radius))
 				continue;
 
-			CUser* pTUser = m_pMain->GetUserPtrUnchecked(i);
+			auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 			if (pTUser == nullptr)
 				continue;
 
@@ -8984,16 +8967,15 @@ bool CUser::GetStartPosition(int16_t* x, int16_t* z, int zoneId) const
 	return false;
 }
 
-CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
+std::shared_ptr<CUser> CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
 {
 	if (m_sPartyIndex == -1)
 		return nullptr;
 
-	CUser* pUser         = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
-	int select_user = -1, count = 0;
+	int count            = 0;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	pParty               = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 		return nullptr;
 
@@ -9006,8 +8988,8 @@ CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
 
 	while (count < 8)
 	{
-		select_user = pParty->uid[pParty->bItemRouting];
-		pUser       = m_pMain->GetUserPtr(select_user);
+		int select_user = pParty->uid[pParty->bItemRouting];
+		auto pUser      = m_pMain->GetUserPtr(select_user);
 		if (pUser != nullptr)
 		{
 			//	이거 않되도 저를 너무 미워하지 마세요 ㅠ.ㅠ
@@ -9063,7 +9045,6 @@ CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
 
 void CUser::FriendReport(char* pBuf)
 {
-	CUser* pUser = nullptr;
 	int index = 0, sendIndex = 0;
 	int16_t usercount = 0, idlen = 0;
 	char sendBuffer[256] {}, userid[MAX_ID_SIZE + 1] {};
@@ -9088,7 +9069,7 @@ void CUser::FriendReport(char* pBuf)
 
 		GetString(userid, pBuf, idlen, index);
 
-		pUser = m_pMain->GetUserPtr(userid, NameType::Character);
+		auto pUser = m_pMain->GetUserPtr(userid, NameType::Character);
 
 		SetShort(sendBuffer, idlen, sendIndex);
 		SetString(sendBuffer, userid, idlen, sendIndex);
@@ -9403,7 +9384,7 @@ void CUser::GoldChange(int tid, int gold)
 	char sendBuffer[256] {};
 
 	// Users ONLY!!!
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr)
 		return;
 
@@ -9464,7 +9445,7 @@ void CUser::GoldChange(int tid, int gold)
 
 			for (int i = 0; i < 8; i++)
 			{
-				CUser* pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+				auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
 				if (pUser == nullptr)
 					continue;
 
@@ -9614,7 +9595,7 @@ void CUser::ZoneConCurrentUsers(char* pBuf)
 	int socketCount = m_pMain->GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -10234,7 +10215,6 @@ void CUser::PartyBBS(char* pBuf)
 
 void CUser::PartyBBSRegister(char* /*pBuf*/)
 {
-	CUser* pUser  = nullptr;
 	int sendIndex = 0;
 	char sendBuffer[256] {};
 	int i = 0, counter = 0, socketCount = 0;
@@ -10262,7 +10242,7 @@ void CUser::PartyBBSRegister(char* /*pBuf*/)
 	socketCount = m_pMain->GetUserSocketCount();
 	for (i = 0; i < socketCount; i++)
 	{
-		pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -10328,7 +10308,6 @@ fail_return:
 
 void CUser::PartyBBSNeeded(char* pBuf, uint8_t type)
 {
-	CUser* pUser = nullptr; // Basic Initializations.
 	int index = 0, sendIndex = 0, i = 0, j = 0, socketCount = m_pMain->GetUserSocketCount();
 	int16_t page_index = 0, start_counter = 0, BBS_Counter = 0;
 	uint8_t result = 0, valid_counter = 0;
@@ -10351,7 +10330,7 @@ void CUser::PartyBBSNeeded(char* pBuf, uint8_t type)
 
 	for (i = 0; i < socketCount; i++)
 	{
-		pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 
 		// Protection codes.
 		if (pUser == nullptr)
@@ -10631,7 +10610,6 @@ fail_return:
 
 void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 {
-	CUser* pUser = nullptr;
 	int index = 0, sendIndex = 0, i = 0, j = 0;
 	int16_t page_index = 0, start_counter = 0, valid_counter = 0, BBS_Counter = 0, title_length = 0,
 			message_length = 0;
@@ -10669,7 +10647,7 @@ void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 			if (m_pMain->m_sBuyID[i] == -1)
 				continue;
 
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
 
 			// Delete info!!!
 			if (pUser == nullptr)
@@ -10714,7 +10692,7 @@ void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 				continue;
 
 			// Delete info!!!
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
 			if (pUser == nullptr)
 			{
 				m_pMain->MarketBBSSellDelete(i);
@@ -10797,12 +10775,11 @@ fail_return1:
 
 void CUser::MarketBBSRemotePurchase(char* pBuf)
 {
-	CUser* pUser  = nullptr;
 	int sendIndex = 0, index = 0;
 	int16_t message_index = -1;
 	uint8_t result = 0, sub_result = 1, buysell_index = 0;
-
 	char sendBuffer[256] {};
+	std::shared_ptr<CUser> pUser;
 
 	buysell_index = GetByte(pBuf, index);  // Buy or sell?
 	message_index = GetShort(pBuf, index); // Which message should I retrieve?
@@ -10881,7 +10858,6 @@ fail_return:
 
 void CUser::MarketBBSTimeCheck()
 {
-	CUser* pUser       = nullptr;
 	int sendIndex      = 0;
 	double currentTime = TimeGet();
 	char sendBuffer[256] {};
@@ -10891,7 +10867,7 @@ void CUser::MarketBBSTimeCheck()
 		// BUY!!!
 		if (m_pMain->m_sBuyID[i] != -1)
 		{
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
 			if (pUser == nullptr)
 			{
 				m_pMain->MarketBBSBuyDelete(i);
@@ -10924,7 +10900,7 @@ void CUser::MarketBBSTimeCheck()
 		// SELL!!!
 		if (m_pMain->m_sSellID[i] != -1)
 		{
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
 			if (pUser == nullptr)
 			{
 				m_pMain->MarketBBSSellDelete(i);
@@ -11169,7 +11145,6 @@ void CUser::SetLogInInfoToDB(uint8_t bInit)
 void CUser::KickOut(char* pBuf)
 {
 	int idlen = 0, index = 0, sendIndex = 0;
-	CUser* pUser = nullptr;
 	char accountid[MAX_ID_SIZE + 1] {}, sendBuffer[256] {};
 
 	idlen = GetShort(pBuf, index);
@@ -11178,7 +11153,7 @@ void CUser::KickOut(char* pBuf)
 
 	GetString(accountid, pBuf, idlen, index);
 
-	pUser = m_pMain->GetUserPtr(accountid, NameType::Account);
+	auto pUser = m_pMain->GetUserPtr(accountid, NameType::Account);
 	if (pUser != nullptr)
 	{
 		pUser->UserDataSaveToAgent();

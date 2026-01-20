@@ -178,8 +178,8 @@ void TcpServerSocketManager::AsyncAccept()
 
 void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 {
-	int socketId         = -1;
-	TcpSocket* tcpSocket = nullptr;
+	int socketId = -1;
+	std::shared_ptr<TcpSocket> tcpSocket;
 
 	// NOTE: Handle the guarding externally so it's clear what's guarded and what's not,
 	// which is critical when dealing with code needing to be fairly high performance here.
@@ -217,14 +217,14 @@ void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 		"TcpServerSocketManager::AcceptThread: successfully accepted socketId={}", socketId);
 }
 
-bool TcpServerSocketManager::ProcessClose(TcpSocket* tcpSocket)
+bool TcpServerSocketManager::ProcessClose(std::shared_ptr<TcpSocket> tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)
 		return false;
 
 	tcpSocket->CloseProcess();
-	ReleaseSocket(tcpSocket);
+	ReleaseSocket(std::move(tcpSocket));
 
 	return true;
 }

@@ -19,7 +19,7 @@ enum e_ConnectionState : uint8_t
 };
 
 class TcpSocketManager;
-class TcpSocket
+class TcpSocket : public std::enable_shared_from_this<TcpSocket>
 {
 	friend class TcpSocketManager;
 

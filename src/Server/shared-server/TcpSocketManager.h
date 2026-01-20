@@ -56,7 +56,7 @@ public:
 		return socketId >= 0 && socketId < GetSocketCount();
 	}
 
-	inline TcpSocket* GetSocket(int socketId) const
+	inline std::shared_ptr<TcpSocket> GetSocket(int socketId) const
 	{
 		if (socketId < 0 || socketId >= static_cast<int>(_socketArray.size()))
 			return nullptr;
@@ -64,12 +64,12 @@ public:
 		return _socketArray[socketId];
 	}
 
-	inline TcpSocket* GetSocketUnchecked(int socketId) const
+	inline std::shared_ptr<TcpSocket> GetSocketUnchecked(int socketId) const
 	{
 		return _socketArray[socketId];
 	}
 
-	inline TcpSocket* GetInactiveSocket(int socketId) const
+	inline std::shared_ptr<TcpSocket> GetInactiveSocket(int socketId) const
 	{
 		if (socketId < 0 || socketId >= static_cast<int>(_inactiveSocketArray.size()))
 			return nullptr;
@@ -77,7 +77,7 @@ public:
 		return _inactiveSocketArray[socketId];
 	}
 
-	inline TcpSocket* GetInactiveSocketUnchecked(int socketId) const
+	inline std::shared_ptr<TcpSocket> GetInactiveSocketUnchecked(int socketId) const
 	{
 		return _inactiveSocketArray[socketId];
 	}
@@ -90,34 +90,36 @@ public:
 	void Init(int socketCount, uint32_t workerThreadCount = 0);
 
 protected:
-	TcpSocket* AcquireSocket(int& socketId);
-	void ReleaseSocket(TcpSocket* tcpSocket);
-	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
-	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
-	virtual void OnPostSocketClose(TcpSocket* tcpSocket);
-	virtual bool ProcessClose(TcpSocket* tcpSocket) = 0;
+	std::shared_ptr<TcpSocket> AcquireSocket(int& socketId);
+	void ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket);
+	void OnPostReceive(
+		const asio::error_code& ec, size_t bytesTransferred, std::shared_ptr<TcpSocket> tcpSocket);
+	void OnPostSend(
+		const asio::error_code& ec, size_t bytesTransferred, std::shared_ptr<TcpSocket> tcpSocket);
+	virtual void OnPostSocketClose(std::shared_ptr<TcpSocket> tcpSocket);
+	virtual bool ProcessClose(std::shared_ptr<TcpSocket> tcpSocket) = 0;
 
 protected:
 	void ShutdownImpl();
 
 protected:
-	std::vector<TcpSocket*> _socketArray                   = {};
-	std::vector<TcpSocket*> _inactiveSocketArray           = {};
+	std::vector<std::shared_ptr<TcpSocket>> _socketArray         = {};
+	std::vector<std::shared_ptr<TcpSocket>> _inactiveSocketArray = {};
 
-	int _socketCount                                       = 0;
-	int _recvBufferSize                                    = 0;
-	int _sendBufferSize                                    = 0;
+	int _socketCount                                             = 0;
+	int _recvBufferSize                                          = 0;
+	int _sendBufferSize                                          = 0;
 
-	uint32_t _workerThreadCount                            = 0;
+	uint32_t _workerThreadCount                                  = 0;
 
-	asio::io_context _io                                   = {};
-	std::shared_ptr<asio::thread_pool> _workerPool         = {};
+	asio::io_context _io                                         = {};
+	std::shared_ptr<asio::thread_pool> _workerPool               = {};
 
-	std::queue<int> _socketIdQueue                         = {};
-	std::recursive_mutex _mutex                            = {};
+	std::queue<int> _socketIdQueue                               = {};
+	std::recursive_mutex _mutex                                  = {};
 
-	StartUserThreadCallback _startUserThreadCallback       = nullptr;
-	ShutdownUserThreadCallback _shutdownUserThreadCallback = nullptr;
+	StartUserThreadCallback _startUserThreadCallback             = nullptr;
+	ShutdownUserThreadCallback _shutdownUserThreadCallback       = nullptr;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPSOCKETMANAGER_H

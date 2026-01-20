@@ -1138,16 +1138,15 @@ void AIServerApp::CheckAliveTest()
 
 	SetByte(sendBuffer, AG_CHECK_ALIVE_REQ, sendIndex);
 
-	CGameSocket* pSocket = nullptr;
 	int size = 0, count = 0;
 	int socketCount = _socketManager.GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		pSocket = _socketManager.GetSocketUnchecked(i);
-		if (pSocket == nullptr)
+		auto socket = _socketManager.GetSocketUnchecked(i);
+		if (socket == nullptr)
 			continue;
 
-		size = pSocket->Send(sendBuffer, sendIndex);
+		size = socket->Send(sendBuffer, sendIndex);
 		if (size > 0)
 		{
 			if (++_aliveSocketCount == MAX_AI_SOCKET)
@@ -1155,7 +1154,7 @@ void AIServerApp::CheckAliveTest()
 
 			count++;
 		}
-		//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, pSocket->m_sSocketID, i);
+		//TRACE(_T("size = %d, socket_num = %d, i=%d \n"), size, socket->m_sSocketID, i);
 	}
 
 	if (count <= 0)
@@ -1300,18 +1299,15 @@ void AIServerApp::SyncTest()
 
 	SetByte(sendBuffer, AG_CHECK_ALIVE_REQ, sendIndex);
 
-	CGameSocket* pSocket = nullptr;
-	int size = 0, socketCount = _socketManager.GetSocketCount();
-
+	int socketCount = _socketManager.GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		pSocket = _socketManager.GetSocketUnchecked(i);
-		if (pSocket == nullptr)
+		auto socket = _socketManager.GetSocketUnchecked(i);
+		if (socket == nullptr)
 			continue;
 
-		size = pSocket->Send(sendBuffer, sendIndex);
-
-		spdlog::info("AIServerApp::SyncTest: size={}, zoneNo={}", size, pSocket->_zoneNo);
+		int size = socket->Send(sendBuffer, sendIndex);
+		spdlog::info("AIServerApp::SyncTest: size={}, zoneNo={}", size, socket->_zoneNo);
 	}
 }
 

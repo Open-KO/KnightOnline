@@ -49,7 +49,7 @@ void TcpSocketManager::Init(int socketCount, uint32_t workerThreadCount /*= 0*/)
 		_startUserThreadCallback();
 }
 
-TcpSocket* TcpSocketManager::AcquireSocket(int& socketId)
+std::shared_ptr<TcpSocket> TcpSocketManager::AcquireSocket(int& socketId)
 {
 	if (_socketIdQueue.empty())
 		return nullptr;
@@ -59,7 +59,7 @@ TcpSocket* TcpSocketManager::AcquireSocket(int& socketId)
 	// This is all self-contained so it should never be out of range.
 	assert(socketId >= 0 && socketId < _socketCount);
 
-	TcpSocket* tcpSocket = _inactiveSocketArray[socketId];
+	auto tcpSocket = _inactiveSocketArray[socketId];
 	if (tcpSocket == nullptr)
 		return nullptr;
 
@@ -71,7 +71,7 @@ TcpSocket* TcpSocketManager::AcquireSocket(int& socketId)
 	return tcpSocket;
 }
 
-void TcpSocketManager::ReleaseSocket(TcpSocket* tcpSocket)
+void TcpSocketManager::ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket)
 {
 	if (tcpSocket == nullptr)
 	{
@@ -82,15 +82,12 @@ void TcpSocketManager::ReleaseSocket(TcpSocket* tcpSocket)
 	int socketId = tcpSocket->GetSocketID();
 	_socketIdQueue.push(socketId);
 
-	if (tcpSocket != nullptr)
-	{
-		_socketArray[socketId]         = nullptr;
-		_inactiveSocketArray[socketId] = tcpSocket;
-	}
+	_socketArray[socketId]         = nullptr;
+	_inactiveSocketArray[socketId] = std::move(tcpSocket);
 }
 
 void TcpSocketManager::OnPostReceive(
-	const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket)
+	const asio::error_code& ec, size_t bytesTransferred, std::shared_ptr<TcpSocket> tcpSocket)
 {
 	if (ec)
 	{
@@ -131,7 +128,7 @@ void TcpSocketManager::OnPostReceive(
 }
 
 void TcpSocketManager::OnPostSend(
-	const asio::error_code& ec, size_t /*bytesTransferred*/, TcpSocket* tcpSocket)
+	const asio::error_code& ec, size_t /*bytesTransferred*/, std::shared_ptr<TcpSocket> tcpSocket)
 {
 	if (ec)
 	{
@@ -152,7 +149,7 @@ void TcpSocketManager::OnPostSend(
 	tcpSocket->AsyncSend(true);
 }
 
-void TcpSocketManager::OnPostSocketClose(TcpSocket* tcpSocket)
+void TcpSocketManager::OnPostSocketClose(std::shared_ptr<TcpSocket> tcpSocket)
 {
 	if (!ProcessClose(tcpSocket))
 		return;
@@ -173,7 +170,7 @@ void TcpSocketManager::ShutdownImpl()
 
 		for (int i = 0; i < _socketCount; i++)
 		{
-			TcpSocket* tcpSocket = _socketArray[i];
+			auto tcpSocket = _socketArray[i];
 			if (tcpSocket == nullptr)
 				continue;
 
@@ -197,14 +194,8 @@ void TcpSocketManager::ShutdownImpl()
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
 
-		for (TcpSocket* socket : _socketArray)
-			delete socket;
 		_socketArray.clear();
-
-		for (TcpSocket* socket : _inactiveSocketArray)
-			delete socket;
 		_inactiveSocketArray.clear();
-
 		_socketCount = 0;
 	}
 

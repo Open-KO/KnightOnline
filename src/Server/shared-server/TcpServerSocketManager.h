@@ -18,35 +18,37 @@ public:
 			if (_inactiveSocketArray[i] != nullptr)
 				continue;
 
-			T* tcpSocket = new T(std::forward<Args>(args)..., this);
+			auto tcpSocket = std::make_unique<T>(std::forward<Args>(args)..., this);
 			if (tcpSocket == nullptr)
 				return false;
 
 			tcpSocket->SetSocketID(static_cast<int>(i));
-			_inactiveSocketArray[i] = tcpSocket;
+			_inactiveSocketArray[i] = std::move(tcpSocket);
 		}
 
 		return true;
 	}
 
-	inline TcpServerSocket* GetSocket(int socketId) const
+	inline std::shared_ptr<TcpServerSocket> GetSocket(int socketId) const
 	{
-		return static_cast<TcpServerSocket*>(TcpSocketManager::GetSocket(socketId));
+		return std::static_pointer_cast<TcpServerSocket>(TcpSocketManager::GetSocket(socketId));
 	}
 
-	inline TcpServerSocket* GetSocketUnchecked(int socketId) const
+	inline std::shared_ptr<TcpServerSocket> GetSocketUnchecked(int socketId) const
 	{
-		return static_cast<TcpServerSocket*>(TcpSocketManager::GetSocketUnchecked(socketId));
+		return std::static_pointer_cast<TcpServerSocket>(
+			TcpSocketManager::GetSocketUnchecked(socketId));
 	}
 
-	inline TcpServerSocket* GetInactiveSocket(int socketId) const
+	inline std::shared_ptr<TcpServerSocket> GetInactiveSocket(int socketId) const
 	{
-		return static_cast<TcpServerSocket*>(TcpSocketManager::GetInactiveSocket(socketId));
+		return std::static_pointer_cast<TcpServerSocket>(
+			TcpSocketManager::GetInactiveSocket(socketId));
 	}
 
-	inline TcpServerSocket* GetInactiveSocketUnchecked(int socketId) const
+	inline std::shared_ptr<TcpServerSocket> GetInactiveSocketUnchecked(int socketId) const
 	{
-		return static_cast<TcpServerSocket*>(
+		return std::static_pointer_cast<TcpServerSocket>(
 			TcpSocketManager::GetInactiveSocketUnchecked(socketId));
 	}
 
@@ -63,7 +65,7 @@ private:
 	void OnAccept(asio::ip::tcp::socket& rawSocket);
 
 protected:
-	bool ProcessClose(TcpSocket* tcpSocket) override;
+	bool ProcessClose(std::shared_ptr<TcpSocket> tcpSocket) override;
 
 protected:
 	std::unique_ptr<asio::ip::tcp::acceptor> _acceptor = {};

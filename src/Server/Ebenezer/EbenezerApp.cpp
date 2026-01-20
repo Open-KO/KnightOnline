@@ -495,7 +495,7 @@ void EbenezerApp::UserAcceptThread()
 	spdlog::info("Accepting user connections");
 }
 
-CUser* EbenezerApp::GetUserPtr(const char* userid, NameType type)
+std::shared_ptr<CUser> EbenezerApp::GetUserPtr(const char* userid, NameType type)
 {
 	int socketCount = GetUserSocketCount();
 
@@ -503,7 +503,7 @@ CUser* EbenezerApp::GetUserPtr(const char* userid, NameType type)
 	{
 		for (int i = 0; i < socketCount; i++)
 		{
-			CUser* pUser = GetUserPtrUnchecked(i);
+			auto pUser = GetUserPtrUnchecked(i);
 			if (pUser != nullptr && strnicmp(pUser->m_strAccountID, userid, MAX_ID_SIZE) == 0)
 				return pUser;
 		}
@@ -512,7 +512,7 @@ CUser* EbenezerApp::GetUserPtr(const char* userid, NameType type)
 	{
 		for (int i = 0; i < socketCount; i++)
 		{
-			CUser* pUser = GetUserPtrUnchecked(i);
+			auto pUser = GetUserPtrUnchecked(i);
 			if (pUser != nullptr && strnicmp(pUser->m_pUserData->m_id, userid, MAX_ID_SIZE) == 0)
 				return pUser;
 		}
@@ -535,8 +535,8 @@ bool EbenezerApp::AIServerConnect()
 
 bool EbenezerApp::AISocketConnect(int zone, bool flag)
 {
-	TcpClientSocket* tcpClientSocket = nullptr;
-	int sendIndex                    = 0;
+	std::shared_ptr<TcpClientSocket> tcpClientSocket;
+	int sendIndex = 0;
 	char pBuf[128] {};
 
 	//if( m_nServerNo == 3 ) return false;
@@ -632,8 +632,8 @@ void EbenezerApp::Send_All(char* pBuf, int len, CUser* pExceptUser, int nation)
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
-		if (pUser == nullptr || pUser == pExceptUser)
+		auto pUser = GetUserPtrUnchecked(i);
+		if (pUser == nullptr || pUser.get() == pExceptUser)
 			continue;
 
 		if (pUser->GetState() == CONNECTION_STATE_GAMESTART)
@@ -675,10 +675,10 @@ void EbenezerApp::Send_UnitRegion(
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[x][z].m_RegionUserArray)
 	{
-		int uid      = *pUid;
+		int uid    = *pUid;
 
-		CUser* pUser = GetUserPtr(uid);
-		if (pUser == pExceptUser)
+		auto pUser = GetUserPtr(uid);
+		if (pUser.get() == pExceptUser)
 			continue;
 
 		if (pUser != nullptr && (pUser->GetState() == CONNECTION_STATE_GAMESTART))
@@ -757,10 +757,10 @@ void EbenezerApp::Send_FilterUnitRegion(
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[x][z].m_RegionUserArray)
 	{
-		int uid      = *pUid;
+		int uid    = *pUid;
 
-		CUser* pUser = GetUserPtr(uid);
-		if (pUser == pExceptUser)
+		auto pUser = GetUserPtr(uid);
+		if (pUser.get() == pExceptUser)
 			continue;
 
 		if (pUser != nullptr && pUser->GetState() == CONNECTION_STATE_GAMESTART)
@@ -784,7 +784,7 @@ void EbenezerApp::Send_PartyMember(int party, char* pBuf, int len)
 
 	for (int i = 0; i < 8; i++)
 	{
-		CUser* pUser = GetUserPtr(pParty->uid[i]);
+		auto pUser = GetUserPtr(pParty->uid[i]);
 		if (pUser != nullptr)
 			pUser->Send(pBuf, len);
 	}
@@ -802,7 +802,7 @@ void EbenezerApp::Send_KnightsMember(int index, char* pBuf, int len, int zone)
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -827,7 +827,7 @@ void EbenezerApp::Send_AIServer(int /*zone*/, char* pBuf, int len)
 		if (itr == _aiSocketMap.end())
 			continue;
 
-		TcpClientSocket* tcpSocket = itr->second;
+		auto tcpSocket = itr->second;
 		if (tcpSocket == nullptr)
 		{
 			m_sSendSocket++;
@@ -871,7 +871,7 @@ bool EbenezerApp::InitializeMMF()
 
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = _serverSocketManager.GetInactiveUserUnchecked(i);
+		auto pUser = _serverSocketManager.GetInactiveUserUnchecked(i);
 		if (pUser == nullptr)
 		{
 			spdlog::error("EbenezerApp::InitializeMMF: invalid user pointer for userId={}", i);
@@ -1637,9 +1637,9 @@ int EbenezerApp::GetRegionUserIn(C3DMap* pMap, int region_x, int region_z, char*
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[region_x][region_z].m_RegionUserArray)
 	{
-		int uid      = *pUid;
+		int uid    = *pUid;
 
-		CUser* pUser = GetUserPtr(uid);
+		auto pUser = GetUserPtr(uid);
 		if (pUser == nullptr)
 			continue;
 
@@ -1674,9 +1674,9 @@ int EbenezerApp::GetRegionUserList(
 
 	for (const auto& [_, pUid] : pMap->m_ppRegion[region_x][region_z].m_RegionUserArray)
 	{
-		int uid      = *pUid;
+		int uid    = *pUid;
 
-		CUser* pUser = GetUserPtr(uid);
+		auto pUser = GetUserPtr(uid);
 		if (pUser != nullptr && pUser->GetState() == CONNECTION_STATE_GAMESTART)
 		{
 			SetShort(buff, pUser->GetSocketID(), buff_index);
@@ -2068,7 +2068,7 @@ void EbenezerApp::SendAllUserInfo()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser != nullptr)
 		{
 			pUser->SendUserInfo(sendBuffer, sendIndex);
@@ -2220,7 +2220,7 @@ void EbenezerApp::KillUser(const char* strbuff)
 	if (strlen(strbuff) <= 0 || strlen(strbuff) > MAX_ID_SIZE)
 		return;
 
-	CUser* pUser = GetUserPtr(strbuff, NameType::Character);
+	auto pUser = GetUserPtr(strbuff, NameType::Character);
 	if (pUser != nullptr)
 		pUser->Close();
 }
@@ -2259,7 +2259,7 @@ void EbenezerApp::WithdrawUserOut()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser != nullptr && pUser->m_pUserData->m_bZone == pUser->m_pUserData->m_bNation)
 		{
 			C3DMap* pMap = GetMapByID(pUser->m_pUserData->m_bNation);
@@ -2276,7 +2276,7 @@ void EbenezerApp::AliveUserCheck()
 	int socketCount    = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -2474,7 +2474,7 @@ void EbenezerApp::BattleZoneVictoryCheck()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pTUser = GetUserPtrUnchecked(i);
+		auto pTUser = GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 
@@ -2491,7 +2491,7 @@ void EbenezerApp::BanishLosers()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pTUser = GetUserPtrUnchecked(i);
+		auto pTUser = GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 
@@ -2606,7 +2606,7 @@ void EbenezerApp::Announcement(uint8_t type, int nation, int chat_type)
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -2854,7 +2854,7 @@ int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& bu
 		int socketCount = GetUserSocketCount();
 		for (int i = 0; i < socketCount; i++)
 		{
-			CUser* pUser = GetUserPtrUnchecked(i);
+			auto pUser = GetUserPtrUnchecked(i);
 			if (pUser == nullptr)
 				continue;
 
@@ -2881,7 +2881,7 @@ int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& bu
 			if (pKnights->m_arKnightsUser[i].byUsed == 1)
 			{
 				// 접속중인 회원
-				CUser* pUser = GetUserPtr(
+				auto pUser = GetUserPtr(
 					pKnights->m_arKnightsUser[i].strUserName, NameType::Character);
 				if (pUser != nullptr)
 				{
@@ -2926,7 +2926,7 @@ void EbenezerApp::MarketBBSTimeCheck()
 		// BUY!!!
 		if (m_sBuyID[i] != -1)
 		{
-			CUser* pUser = GetUserPtr(m_sBuyID[i]);
+			auto pUser = GetUserPtr(m_sBuyID[i]);
 			if (pUser == nullptr)
 			{
 				MarketBBSBuyDelete(i);
@@ -2940,7 +2940,7 @@ void EbenezerApp::MarketBBSTimeCheck()
 		// SELL!!!
 		if (m_sSellID[i] != -1)
 		{
-			CUser* pUser = GetUserPtr(m_sSellID[i]);
+			auto pUser = GetUserPtr(m_sSellID[i]);
 			if (pUser == nullptr)
 			{
 				MarketBBSSellDelete(i);
@@ -3002,7 +3002,7 @@ void EbenezerApp::CheckAliveUser()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -3025,7 +3025,7 @@ void EbenezerApp::KickOutAllUsers()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -3065,7 +3065,7 @@ void EbenezerApp::KickOutZoneUsers(int16_t zone)
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pTUser = GetUserPtrUnchecked(i);
+		auto pTUser = GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 
@@ -3132,7 +3132,7 @@ void EbenezerApp::Send_CommandChat(char* pBuf, int len, int nation, CUser* /*pEx
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -3179,7 +3179,7 @@ bool EbenezerApp::LoadKnightsRankTable()
 
 					//nKarusRank++;
 
-					CUser* pUser = GetUserPtr(pKnights->m_strChief, NameType::Character);
+					auto pUser = GetUserPtr(pKnights->m_strChief, NameType::Character);
 					if (pUser == nullptr)
 						continue;
 
@@ -3216,7 +3216,7 @@ bool EbenezerApp::LoadKnightsRankTable()
 
 					//nElmoRank++;
 
-					CUser* pUser = GetUserPtr(pKnights->m_strChief, NameType::Character);
+					auto pUser = GetUserPtr(pKnights->m_strChief, NameType::Character);
 					if (pUser == nullptr)
 						continue;
 
@@ -3284,7 +3284,7 @@ bool EbenezerApp::LoadKnightsRankTable()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -3316,7 +3316,7 @@ void EbenezerApp::BattleZoneCurrentUsers()
 	int socketCount = GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = GetUserPtrUnchecked(i);
+		auto pUser = GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 

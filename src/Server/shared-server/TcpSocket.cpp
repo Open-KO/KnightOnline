@@ -114,7 +114,7 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 			{
 				_socket->async_write_some(
 					buffers, std::bind(&TcpSocketManager::OnPostSend, _socketManager,
-								 std::placeholders::_1, std::placeholders::_2, this));
+								 std::placeholders::_1, std::placeholders::_2, shared_from_this()));
 			}
 		}
 		else
@@ -123,7 +123,7 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 			{
 				_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
 					std::bind(&TcpSocketManager::OnPostSend, _socketManager, std::placeholders::_1,
-						std::placeholders::_2, this));
+						std::placeholders::_2, shared_from_this()));
 			}
 		}
 
@@ -166,7 +166,7 @@ void TcpSocket::AsyncReceive()
 		{
 			_socket->async_read_some(asio::buffer(_recvBuffer),
 				std::bind(&TcpSocketManager::OnPostReceive, _socketManager, std::placeholders::_1,
-					std::placeholders::_2, this));
+					std::placeholders::_2, shared_from_this()));
 		}
 	}
 	catch (const asio::system_error& ex)

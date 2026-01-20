@@ -20,16 +20,17 @@ TcpClientSocketManager::~TcpClientSocketManager()
 	}
 }
 
-TcpClientSocket* TcpClientSocketManager::AcquireSocket()
+std::shared_ptr<TcpClientSocket> TcpClientSocketManager::AcquireSocket()
 {
-	int socketId               = -1;
-	TcpClientSocket* tcpSocket = nullptr;
+	int socketId = -1;
+	std::shared_ptr<TcpClientSocket> tcpSocket;
 
 	// NOTE: Handle the guarding externally so it's clear what's guarded and what's not,
 	// which is critical when dealing with code needing to be fairly high performance here.
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
-		tcpSocket = static_cast<TcpClientSocket*>(TcpSocketManager::AcquireSocket(socketId));
+		tcpSocket = std::static_pointer_cast<TcpClientSocket>(
+			TcpSocketManager::AcquireSocket(socketId));
 	}
 
 	if (socketId == -1)
@@ -49,7 +50,7 @@ TcpClientSocket* TcpClientSocketManager::AcquireSocket()
 	return tcpSocket;
 }
 
-bool TcpClientSocketManager::ProcessClose(TcpSocket* tcpSocket)
+bool TcpClientSocketManager::ProcessClose(std::shared_ptr<TcpSocket> tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)
@@ -62,10 +63,10 @@ bool TcpClientSocketManager::ProcessClose(TcpSocket* tcpSocket)
 	return true;
 }
 
-void TcpClientSocketManager::ReleaseSocket(TcpClientSocket* tcpSocket)
+void TcpClientSocketManager::ReleaseSocket(std::shared_ptr<TcpClientSocket> tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
-	TcpSocketManager::ReleaseSocket(tcpSocket);
+	TcpSocketManager::ReleaseSocket(std::move(tcpSocket));
 }
 
 void TcpClientSocketManager::Shutdown()

@@ -29,14 +29,14 @@ AISocketManager::~AISocketManager()
 	_sendThreadMain = nullptr;
 }
 
-CGameSocket* AISocketManager::GetSocket(int socketId) const
+std::shared_ptr<CGameSocket> AISocketManager::GetSocket(int socketId) const
 {
-	return static_cast<CGameSocket*>(TcpServerSocketManager::GetSocket(socketId));
+	return std::static_pointer_cast<CGameSocket>(TcpSocketManager::GetSocket(socketId));
 }
 
-CGameSocket* AISocketManager::GetSocketUnchecked(int socketId) const
+std::shared_ptr<CGameSocket> AISocketManager::GetSocketUnchecked(int socketId) const
 {
-	return static_cast<CGameSocket*>(TcpServerSocketManager::GetSocketUnchecked(socketId));
+	return std::static_pointer_cast<CGameSocket>(TcpSocketManager::GetSocketUnchecked(socketId));
 }
 
 void AISocketManager::QueueSendData(_SEND_DATA* sendData)

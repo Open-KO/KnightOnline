@@ -45,7 +45,7 @@ using MagicType5TableMap     = CSTLMap<model::MagicType5>;
 using MagicType7TableMap     = CSTLMap<model::MagicType7>;
 using MagicType8TableMap     = CSTLMap<model::MagicType8>;
 using NpcMap                 = CSTLMap<CNpc>;
-using AISocketMap            = std::unordered_map<int, TcpClientSocket*>; // unmanaged
+using AISocketMap            = std::unordered_map<int, std::shared_ptr<TcpClientSocket>>;
 using PartyMap               = CSTLMap<_PARTY_GROUP>;
 using KnightsMap             = CSTLMap<CKnights>;
 using ServerMap              = CSTLMap<_ZONE_SERVERINFO>;
@@ -177,14 +177,14 @@ public:
 		int nation = 0);                  // pointer != nullptr don`t send to that user pointer
 	void Send_AIServer(int zone, char* pBuf, int len);
 
-	CUser* GetUserPtr(const char* userid, NameType type);
+	std::shared_ptr<CUser> GetUserPtr(const char* userid, NameType type);
 
-	inline CUser* GetUserPtr(int socketId) const
+	inline std::shared_ptr<CUser> GetUserPtr(int socketId) const
 	{
 		return _serverSocketManager.GetUser(socketId);
 	}
 
-	inline CUser* GetUserPtrUnchecked(int socketId) const
+	inline std::shared_ptr<CUser> GetUserPtrUnchecked(int socketId) const
 	{
 		return _serverSocketManager.GetUserUnchecked(socketId);
 	}

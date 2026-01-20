@@ -43,7 +43,7 @@ void SendWorkerThread::tick()
 	int socketCount = _serverSocketManager->GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* userSocket = _serverSocketManager->GetUserUnchecked(i);
+		auto userSocket = _serverSocketManager->GetUserUnchecked(i);
 		if (userSocket == nullptr)
 			continue;
 

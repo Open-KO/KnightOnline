@@ -25,8 +25,8 @@ public:
 	AISocketManager();
 	~AISocketManager() override;
 
-	CGameSocket* GetSocket(int socketId) const;
-	CGameSocket* GetSocketUnchecked(int socketId) const;
+	std::shared_ptr<CGameSocket> GetSocket(int socketId) const;
+	std::shared_ptr<CGameSocket> GetSocketUnchecked(int socketId) const;
 
 	void QueueSendData(_SEND_DATA* sendData);
 

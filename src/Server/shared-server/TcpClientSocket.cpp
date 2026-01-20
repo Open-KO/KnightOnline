@@ -124,8 +124,8 @@ void TcpClientSocket::Close()
 		if (threadPool == nullptr)
 			return;
 
-		asio::post(
-			*threadPool, std::bind(&TcpSocketManager::OnPostSocketClose, _socketManager, this));
+		asio::post(*threadPool,
+			std::bind(&TcpSocketManager::OnPostSocketClose, _socketManager, shared_from_this()));
 	}
 	catch (const asio::system_error& ex)
 	{

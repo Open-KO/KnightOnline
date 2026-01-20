@@ -88,7 +88,7 @@ void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 			int socketId             = _nextRoundRobinSocketId;
 			++_nextRoundRobinSocketId;
 
-			CGameSocket* gameSocket = _socketManager->GetSocketUnchecked(socketId);
+			auto gameSocket = _socketManager->GetSocketUnchecked(socketId);
 			if (gameSocket == nullptr)
 				continue;
 
