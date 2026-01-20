@@ -11,7 +11,6 @@ class TcpServerSocket : public TcpSocket
 public:
 	TcpServerSocket(test_tag);
 	TcpServerSocket(TcpServerSocketManager* socketManager);
-	void Close() override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPSERVERSOCKET_H

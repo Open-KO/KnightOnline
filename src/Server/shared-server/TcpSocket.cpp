@@ -97,6 +97,9 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 			return true;
 	}
 
+	if (_socket == nullptr)
+		return false;
+
 	// Fetch the next entry to send.
 	// Note that we keep this in the queue until the send completes.
 	const auto& queuedSend = _sendQueue.front();
@@ -104,27 +107,24 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 
 	try
 	{
+		// Force shared pointer copy.
+		auto self = shared_from_this();
+
 		if (span.Buffer2 != nullptr && span.Length2 > 0)
 		{
 			std::array<asio::const_buffer, 2> buffers;
 			buffers[0] = asio::buffer(span.Buffer1, span.Length1);
 			buffers[1] = asio::buffer(span.Buffer2, span.Length2);
 
-			if (_socket != nullptr)
-			{
-				_socket->async_write_some(
-					buffers, std::bind(&TcpSocketManager::OnPostSend, _socketManager,
-								 std::placeholders::_1, std::placeholders::_2, shared_from_this()));
-			}
+			_socket->async_write_some(buffers,
+				[self](const asio::error_code& ec, size_t bytesTransferred)
+				{ self->GetManager()->OnPostSend(ec, bytesTransferred, self.get()); });
 		}
 		else
 		{
-			if (_socket != nullptr)
-			{
-				_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
-					std::bind(&TcpSocketManager::OnPostSend, _socketManager, std::placeholders::_1,
-						std::placeholders::_2, shared_from_this()));
-			}
+			_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
+				[self](const asio::error_code& ec, size_t bytesTransferred)
+				{ self->GetManager()->OnPostSend(ec, bytesTransferred, self.get()); });
 		}
 
 		_sendInProgress = true;
@@ -160,14 +160,16 @@ void TcpSocket::AsyncReceive()
 
 	memset(_recvBuffer.data(), 0, _recvBuffer.size());
 
+	if (_socket == nullptr)
+		return;
+
 	try
 	{
-		if (_socket != nullptr)
-		{
-			_socket->async_read_some(asio::buffer(_recvBuffer),
-				std::bind(&TcpSocketManager::OnPostReceive, _socketManager, std::placeholders::_1,
-					std::placeholders::_2, shared_from_this()));
-		}
+		// Force shared pointer copy.
+		auto self = shared_from_this();
+		_socket->async_read_some(asio::buffer(_recvBuffer),
+			[self](const asio::error_code& ec, size_t bytesTransferred)
+			{ self->GetManager()->OnPostReceive(ec, bytesTransferred, self.get()); });
 	}
 	catch (const asio::system_error& ex)
 	{
@@ -279,4 +281,41 @@ void TcpSocket::SetSocket(RawSocket_t&& rawSocket)
 
 	if (_socket != nullptr)
 		*_socket = std::move(rawSocket);
+}
+
+void TcpSocket::Close()
+{
+	if (GetState() == CONNECTION_STATE_DISCONNECTED)
+		return;
+
+	{
+		std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+
+		// From this point onward we're effectively disconnected.
+		// We should stop handling or sending new packets, and just ensure any existing queued packets are sent.
+		// Once all existing packets are sent, we can fully disconnect the socket.
+		_pendingDisconnect = true;
+
+		// Wait until the send chain is complete.
+		// The send chain will trigger this again.
+		if (_sendInProgress || !_sendQueue.empty())
+			return;
+	}
+
+	asio::error_code ec;
+	try
+	{
+		auto threadPool = _socketManager->GetWorkerPool();
+		if (threadPool == nullptr)
+			return;
+
+		// Force shared pointer copy.
+		auto self = shared_from_this();
+		asio::post(*threadPool, [self]() { self->GetManager()->OnPostClose(self.get()); });
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error(
+			"TcpSocket::Close: failed to post close for socketId={}: {}", _socketId, ex.what());
+	}
 }

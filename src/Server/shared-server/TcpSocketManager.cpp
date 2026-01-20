@@ -87,7 +87,7 @@ void TcpSocketManager::ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket)
 }
 
 void TcpSocketManager::OnPostReceive(
-	const asio::error_code& ec, size_t bytesTransferred, std::shared_ptr<TcpSocket> tcpSocket)
+	const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket)
 {
 	if (ec)
 	{
@@ -128,7 +128,7 @@ void TcpSocketManager::OnPostReceive(
 }
 
 void TcpSocketManager::OnPostSend(
-	const asio::error_code& ec, size_t /*bytesTransferred*/, std::shared_ptr<TcpSocket> tcpSocket)
+	const asio::error_code& ec, size_t /*bytesTransferred*/, TcpSocket* tcpSocket)
 {
 	if (ec)
 	{
@@ -149,12 +149,12 @@ void TcpSocketManager::OnPostSend(
 	tcpSocket->AsyncSend(true);
 }
 
-void TcpSocketManager::OnPostSocketClose(std::shared_ptr<TcpSocket> tcpSocket)
+void TcpSocketManager::OnPostClose(TcpSocket* tcpSocket)
 {
 	if (!ProcessClose(tcpSocket))
 		return;
 
-	spdlog::debug("TcpSocketManager::OnPostSocketClose: socket closed by Close() socketId={}",
+	spdlog::debug("TcpSocketManager::OnPostClose: socket closed by Close() socketId={}",
 		tcpSocket->GetSocketID());
 }
 
@@ -176,7 +176,7 @@ void TcpSocketManager::ShutdownImpl()
 
 			// Invoke immediate save and disconnect from within this thread
 			tcpSocket->CloseProcess();
-			ReleaseSocket(tcpSocket);
+			ReleaseSocket(std::move(tcpSocket));
 		}
 	}
 

@@ -54,6 +54,11 @@ public:
 		return _socket != nullptr;
 	}
 
+	TcpSocketManager* GetManager()
+	{
+		return _socketManager;
+	}
+
 	TcpSocket(test_tag);
 	TcpSocket(TcpSocketManager* socketManager);
 
@@ -74,7 +79,7 @@ private:
 public:
 	void AsyncReceive();
 	void ReceivedData(int length);
-	virtual void Close() = 0;
+	void Close();
 	virtual void CloseProcess();
 	void InitSocket();
 	virtual void Parsing(int length, char* pData) = 0;

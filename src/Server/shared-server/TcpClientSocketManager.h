@@ -60,7 +60,7 @@ public:
 	~TcpClientSocketManager() override;
 
 protected:
-	bool ProcessClose(std::shared_ptr<TcpSocket> tcpSocket) override;
+	bool ProcessClose(TcpSocket* tcpSocket) override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPCLIENTSOCKETMANAGER_H

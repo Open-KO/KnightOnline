@@ -50,7 +50,7 @@ std::shared_ptr<TcpClientSocket> TcpClientSocketManager::AcquireSocket()
 	return tcpSocket;
 }
 
-bool TcpClientSocketManager::ProcessClose(std::shared_ptr<TcpSocket> tcpSocket)
+bool TcpClientSocketManager::ProcessClose(TcpSocket* tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)

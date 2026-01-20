@@ -217,14 +217,14 @@ void TcpServerSocketManager::OnAccept(asio::ip::tcp::socket& rawSocket)
 		"TcpServerSocketManager::AcceptThread: successfully accepted socketId={}", socketId);
 }
 
-bool TcpServerSocketManager::ProcessClose(std::shared_ptr<TcpSocket> tcpSocket)
+bool TcpServerSocketManager::ProcessClose(TcpSocket* tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (tcpSocket->GetState() == CONNECTION_STATE_DISCONNECTED)
 		return false;
 
 	tcpSocket->CloseProcess();
-	ReleaseSocket(std::move(tcpSocket));
+	ReleaseSocket(tcpSocket->shared_from_this());
 
 	return true;
 }

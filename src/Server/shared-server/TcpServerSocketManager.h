@@ -65,7 +65,7 @@ private:
 	void OnAccept(asio::ip::tcp::socket& rawSocket);
 
 protected:
-	bool ProcessClose(std::shared_ptr<TcpSocket> tcpSocket) override;
+	bool ProcessClose(TcpSocket* tcpSocket) override;
 
 protected:
 	std::unique_ptr<asio::ip::tcp::acceptor> _acceptor = {};

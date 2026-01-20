@@ -92,12 +92,10 @@ public:
 protected:
 	std::shared_ptr<TcpSocket> AcquireSocket(int& socketId);
 	void ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket);
-	void OnPostReceive(
-		const asio::error_code& ec, size_t bytesTransferred, std::shared_ptr<TcpSocket> tcpSocket);
-	void OnPostSend(
-		const asio::error_code& ec, size_t bytesTransferred, std::shared_ptr<TcpSocket> tcpSocket);
-	virtual void OnPostSocketClose(std::shared_ptr<TcpSocket> tcpSocket);
-	virtual bool ProcessClose(std::shared_ptr<TcpSocket> tcpSocket) = 0;
+	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
+	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
+	void OnPostClose(TcpSocket* tcpSocket);
+	virtual bool ProcessClose(TcpSocket* tcpSocket) = 0;
 
 protected:
 	void ShutdownImpl();
