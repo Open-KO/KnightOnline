@@ -17,6 +17,11 @@ CUser::CUser(TcpServerSocketManager* socketManager) : TcpServerSocket(socketMana
 {
 }
 
+std::string_view CUser::GetSocketClass() const
+{
+	return "User";
+}
+
 bool CUser::PullOutCore(char*& data, int& length)
 {
 	MYSHORT slen;

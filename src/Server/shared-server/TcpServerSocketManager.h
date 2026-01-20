@@ -53,7 +53,8 @@ public:
 	}
 
 public:
-	TcpServerSocketManager(int recvBufferSize, int sendBufferSize);
+	TcpServerSocketManager(int recvBufferSize, int sendBufferSize,
+		std::string_view managerClass = "TcpServerSocketManager");
 	~TcpServerSocketManager() override;
 	bool Listen(int port);
 	void Shutdown();

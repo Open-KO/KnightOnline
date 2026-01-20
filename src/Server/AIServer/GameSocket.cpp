@@ -40,6 +40,11 @@ CGameSocket::~CGameSocket()
 	*/
 }
 
+std::string_view CGameSocket::GetSocketClass() const
+{
+	return "GameSocket";
+}
+
 void CGameSocket::Initialize()
 {
 	_zoneNo = -1;

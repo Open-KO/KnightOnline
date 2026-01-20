@@ -11,6 +11,9 @@ class TcpClientSocket : public TcpSocket
 public:
 	TcpClientSocket(TcpClientSocketManager* socketManager);
 
+private:
+	std::string_view GetSocketClass() const override;
+
 protected:
 	bool Create();
 

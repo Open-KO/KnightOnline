@@ -14,6 +14,7 @@ class CUser : public TcpServerSocket
 public:
 	CUser(test_tag);
 	CUser(TcpServerSocketManager* socketManager);
+	std::string_view GetSocketClass() const override;
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
 	void Parsing(int len, char* pData) override;

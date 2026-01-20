@@ -25,6 +25,8 @@ public:
 	CGameSocket(TcpServerSocketManager* socketManager);
 	~CGameSocket() override;
 
+	std::string_view GetSocketClass() const override;
+
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;

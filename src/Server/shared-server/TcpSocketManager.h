@@ -9,6 +9,8 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <string>
+#include <string_view>
 
 class TcpSocket;
 class TcpSocketManager
@@ -83,7 +85,7 @@ public:
 	}
 
 protected:
-	TcpSocketManager(int recvBufferSize, int sendBufferSize);
+	TcpSocketManager(int recvBufferSize, int sendBufferSize, std::string_view managerClass);
 
 public:
 	virtual ~TcpSocketManager();
@@ -107,6 +109,8 @@ protected:
 	int _socketCount                                             = 0;
 	int _recvBufferSize                                          = 0;
 	int _sendBufferSize                                          = 0;
+
+	std::string _managerClass                                    = {};
 
 	uint32_t _workerThreadCount                                  = 0;
 

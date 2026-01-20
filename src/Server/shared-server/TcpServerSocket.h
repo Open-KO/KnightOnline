@@ -11,6 +11,9 @@ class TcpServerSocket : public TcpSocket
 public:
 	TcpServerSocket(test_tag);
 	TcpServerSocket(TcpServerSocketManager* socketManager);
+
+private:
+	std::string_view GetSocketClass() const override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPSERVERSOCKET_H

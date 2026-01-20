@@ -229,6 +229,7 @@ public:
 	~CUser() override;
 
 public:
+	std::string_view GetSocketClass() const override;
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;

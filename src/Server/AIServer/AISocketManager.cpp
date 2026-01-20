@@ -6,7 +6,8 @@
 namespace AIServer
 {
 
-AISocketManager::AISocketManager() : TcpServerSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+AISocketManager::AISocketManager() :
+	TcpServerSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE, "AISocketManager")
 {
 	_sendThreadMain          = new SendThreadMain(this);
 

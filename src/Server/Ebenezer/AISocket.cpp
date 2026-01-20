@@ -23,6 +23,11 @@ CAISocket::CAISocket(TcpClientSocketManager* socketManager) : TcpClientSocket(so
 	_magicProcess.m_pMain = _main;
 }
 
+std::string_view CAISocket::GetSocketClass() const
+{
+	return "User";
+}
+
 bool CAISocket::PullOutCore(char*& data, int& length)
 {
 	MYSHORT slen;

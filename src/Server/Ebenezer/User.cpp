@@ -31,6 +31,11 @@ CUser::~CUser()
 	delete _regionBuffer;
 }
 
+std::string_view CUser::GetSocketClass() const
+{
+	return "User";
+}
+
 void CUser::Initialize()
 {
 	m_pMain = EbenezerApp::instance();

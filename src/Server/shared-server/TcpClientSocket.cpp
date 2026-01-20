@@ -6,6 +6,11 @@ TcpClientSocket::TcpClientSocket(TcpClientSocketManager* socketManager) : TcpSoc
 {
 }
 
+std::string_view TcpClientSocket::GetSocketClass() const
+{
+	return "TcpClientSocket";
+}
+
 bool TcpClientSocket::Create()
 {
 	asio::error_code ec;
@@ -13,14 +18,16 @@ bool TcpClientSocket::Create()
 	_socket = std::make_unique<RawSocket_t>(*_socketManager->GetWorkerPool());
 	if (_socket == nullptr)
 	{
-		spdlog::error("TcpClientSocket::Create: failed to allocate socket: out of memory");
+		spdlog::error("TcpClientSocket::Create({}): failed to allocate socket: out of memory",
+			GetSocketClass());
 		return false;
 	}
 
 	_socket->open(asio::ip::tcp::v4(), ec);
 	if (ec)
 	{
-		spdlog::error("TcpClientSocket::Create: failed to open socket: {}", ec.message());
+		spdlog::error("TcpClientSocket::Create({}): failed to open socket: {}", GetSocketClass(),
+			ec.message());
 		return false;
 	}
 
@@ -28,7 +35,8 @@ bool TcpClientSocket::Create()
 	_socket->set_option(asio::socket_base::linger(false, 0), ec);
 	if (ec)
 	{
-		spdlog::error("TcpClientSocket::Create: failed to set linger option: {}", ec.message());
+		spdlog::error("TcpClientSocket::Create({}): failed to set linger option: {}",
+			GetSocketClass(), ec.message());
 		return false;
 	}
 
@@ -36,8 +44,8 @@ bool TcpClientSocket::Create()
 	_socket->set_option(asio::socket_base::receive_buffer_size(_recvBufferSize * 4), ec);
 	if (ec)
 	{
-		spdlog::error(
-			"TcpClientSocket::Create: failed to set receive buffer size: {}", ec.message());
+		spdlog::error("TcpClientSocket::Create({}): failed to set receive buffer size: {}",
+			GetSocketClass(), ec.message());
 		return false;
 	}
 
@@ -45,7 +53,8 @@ bool TcpClientSocket::Create()
 	_socket->set_option(asio::socket_base::send_buffer_size(_sendBufferSize * 4), ec);
 	if (ec)
 	{
-		spdlog::error("TcpClientSocket::Create: failed to set send buffer size: {}", ec.message());
+		spdlog::error("TcpClientSocket::Create({}): failed to set send buffer size: {}",
+			GetSocketClass(), ec.message());
 		return false;
 	}
 
@@ -64,16 +73,16 @@ bool TcpClientSocket::Connect(const char* remoteAddress, uint16_t remotePort)
 	// Create a new socket.
 	if (!Create())
 	{
-		spdlog::error(
-			"TcpClientSocket::Connect: failed to create new socket [socketId={}]", GetSocketID());
+		spdlog::error("TcpClientSocket::Connect({}): failed to create new socket [socketId={}]",
+			GetSocketClass(), GetSocketID());
 		return false;
 	}
 
 	asio::ip::address ip = asio::ip::make_address(remoteAddress, ec);
 	if (ec)
 	{
-		spdlog::error("TcpClientSocket::Connect: invalid address {}: {} [socketId={}]",
-			remoteAddress, ec.message(), GetSocketID());
+		spdlog::error("TcpClientSocket::Connect({}): invalid address {}: {} [socketId={}]",
+			GetSocketClass(), remoteAddress, ec.message(), GetSocketID());
 		return false;
 	}
 
@@ -82,8 +91,8 @@ bool TcpClientSocket::Connect(const char* remoteAddress, uint16_t remotePort)
 	_socket->connect(endpoint, ec);
 	if (ec)
 	{
-		spdlog::error("TcpClientSocket::Connect: failed to connect: {} [socketId={}]", ec.message(),
-			GetSocketID());
+		spdlog::error("TcpClientSocket::Connect({}): failed to connect: {} [socketId={}]",
+			GetSocketClass(), ec.message(), GetSocketID());
 		_socket->close();
 		return false;
 	}
