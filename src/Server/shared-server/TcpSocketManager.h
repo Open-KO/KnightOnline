@@ -11,15 +11,6 @@
 #include <queue>
 
 class TcpSocket;
-class TcpClientSocket;
-
-// NOTE: As with official behaviour, this class manages both:
-// 1. Server sockets (client connects to us) and
-// 2. Client sockets (we connect to a remote server).
-// Ideally this should be separated, but we preserve this because parsing for both sockets
-// uses shared game data which relies on everything acted in an effectively single-threaded fashion.
-// This should be refactored and improved later, but for now we continue to preserve this behaviour
-// to avoid any such unintentional data access issues.
 class TcpSocketManager
 {
 	friend class TcpSocket;
