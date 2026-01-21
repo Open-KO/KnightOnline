@@ -45,7 +45,7 @@ int TcpSocket::QueueAndSend(char* buffer, int length)
 	}
 
 	// Allocate and queue.
-	_sendQueue.push(std::move(span));
+	_sendQueue.push(span);
 
 	if (!AsyncSend(false))
 		return -1;
