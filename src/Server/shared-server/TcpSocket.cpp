@@ -14,41 +14,38 @@ TcpSocket::TcpSocket(test_tag) :
 TcpSocket::TcpSocket(TcpSocketManager* socketManager) :
 	_socketManager(socketManager), _recvBufferSize(socketManager->GetRecvBufferSize()),
 	_sendBufferSize(socketManager->GetSendBufferSize()),
+	_recvBuffer(socketManager->GetRecvBufferSize()),
 	_recvCircularBuffer(socketManager->GetRecvBufferSize()),
 	_sendCircularBuffer(socketManager->GetSendBufferSize())
 {
 	_socket = std::make_unique<RawSocket_t>(*socketManager->GetWorkerPool());
-	_recvBuffer.resize(_recvBufferSize);
 }
 
 int TcpSocket::QueueAndSend(char* buffer, int length)
 {
-	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+	std::unique_lock<std::recursive_mutex> lock(_sendMutex);
 
 	if (_pendingDisconnect)
 		return -1;
 
 	// Add this packet to the circular buffer.
 	// Ensure we do not allow resizing; we do not want these pointers invalidated.
-	auto span = _sendCircularBuffer.PutData(buffer, length, false);
-	if (span.Buffer1 != nullptr && span.Length1 > 0)
-	{
-		auto queuedSend        = std::make_unique<QueuedSend>();
-		queuedSend->IsOwned    = false;
-		queuedSend->BufferSpan = span;
-		_sendQueue.push(std::move(queuedSend));
-	}
+	auto span = _sendCircularBuffer.PutDataNoResize(buffer, length);
+
 	// Failed to add to the buffer, it has no room.
-	// Allocate and queue.
-	else
+	if (span.Buffer1 == nullptr || span.Length1 <= 0)
 	{
-		auto queuedSend                = std::make_unique<QueuedSend>();
-		queuedSend->IsOwned            = true;
-		queuedSend->BufferSpan.Buffer1 = new char[length];
-		queuedSend->BufferSpan.Length1 = length;
-		memcpy(queuedSend->BufferSpan.Buffer1, buffer, length);
-		_sendQueue.push(std::move(queuedSend));
+		lock.unlock();
+
+		spdlog::error("TcpSocket({})::QueueAndSend: no more room in buffer. [socketId={}]",
+			GetImplName(), _socketId);
+
+		Close();
+		return -1;
 	}
+
+	// Allocate and queue.
+	_sendQueue.push(std::move(span));
 
 	if (!AsyncSend(false))
 		return -1;
@@ -56,7 +53,7 @@ int TcpSocket::QueueAndSend(char* buffer, int length)
 	return length;
 }
 
-bool TcpSocket::AsyncSend(bool fromAsyncChain)
+bool TcpSocket::AsyncSend(bool fromAsyncChain, size_t bytesToRemove /*= 0*/)
 {
 	std::unique_lock<std::recursive_mutex> lock(_sendMutex);
 
@@ -67,7 +64,10 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 		_sendInProgress = false;
 
 		if (!_sendQueue.empty())
+		{
+			_sendCircularBuffer.HeadIncrease(static_cast<int>(bytesToRemove));
 			_sendQueue.pop();
+		}
 
 		if (_sendQueue.empty())
 		{
@@ -102,8 +102,7 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 
 	// Fetch the next entry to send.
 	// Note that we keep this in the queue until the send completes.
-	const auto& queuedSend = _sendQueue.front();
-	const auto& span       = queuedSend->BufferSpan;
+	const auto& span = _sendQueue.front();
 
 	try
 	{
@@ -150,6 +149,7 @@ void TcpSocket::AbortSend()
 	while (!_sendQueue.empty())
 		_sendQueue.pop();
 
+	_sendCircularBuffer.SetEmpty();
 	_sendInProgress = false;
 }
 

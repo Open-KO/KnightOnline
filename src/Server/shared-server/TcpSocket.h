@@ -74,7 +74,7 @@ protected:
 
 private:
 	virtual std::string_view GetImplName() const = 0;
-	bool AsyncSend(bool fromAsyncChain);
+	bool AsyncSend(bool fromAsyncChain, size_t bytesToRemove = 0);
 	void AbortSend();
 
 public:
@@ -106,23 +106,8 @@ protected:
 	// These are typically submitted as spans of the circular buffer, so we usually just send {portion 1},{len 1}.
 	// Upon wraparound, this splits the write into 2, so we submit {portion 1},{len 1} (end of the circular buffer)
 	// and {portion 2},{len 2} (start of the buffer).
-	// These are not considered owned.
-	// In the event there's too much data in the circular buffer to send, we allocate our own contiguous buffer here for it,
-	// and submit that instead.
-	// This buffer is considered owned (by the send queue), so the buffer will be freed once the send is complete.
-	struct QueuedSend
-	{
-		CircularBufferSpan BufferSpan = {};
-		bool IsOwned                  = false;
-
-		~QueuedSend()
-		{
-			if (IsOwned)
-				delete[] BufferSpan.Buffer1;
-		}
-	};
-
-	std::queue<std::unique_ptr<QueuedSend>> _sendQueue;
+	// In the event there's too much data in the circular buffer to send, the send will fail.
+	std::queue<CircularBufferSpan> _sendQueue;
 	std::recursive_mutex _sendMutex;
 
 	CCircularBuffer _sendCircularBuffer;

@@ -41,7 +41,7 @@ uint16_t g_increase_serial = 1;
 bool g_serverdown_flag     = false;
 
 EbenezerApp::EbenezerApp(EbenezerLogger& logger) :
-	AppThread(logger), _aiSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE),
+	AppThread(logger), _aiSocketManager(AI_SOCKET_RECV_BUFF_SIZE, AI_SOCKET_SEND_BUFF_SIZE),
 	m_LoggerSendQueue(MAX_SMQ_SEND_QUEUE_RETRY_COUNT),
 	m_ItemLoggerSendQ(MAX_SMQ_SEND_QUEUE_RETRY_COUNT)
 {

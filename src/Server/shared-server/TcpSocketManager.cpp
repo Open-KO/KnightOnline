@@ -132,7 +132,7 @@ void TcpSocketManager::OnPostReceive(
 }
 
 void TcpSocketManager::OnPostSend(
-	const asio::error_code& ec, size_t /*bytesTransferred*/, TcpSocket* tcpSocket)
+	const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket)
 {
 	if (ec)
 	{
@@ -150,7 +150,7 @@ void TcpSocketManager::OnPostSend(
 	}
 
 	// Pop this queued entry & dispatch next queued send if applicable.
-	tcpSocket->AsyncSend(true);
+	tcpSocket->AsyncSend(true, bytesTransferred);
 }
 
 void TcpSocketManager::OnPostClose(TcpSocket* tcpSocket)

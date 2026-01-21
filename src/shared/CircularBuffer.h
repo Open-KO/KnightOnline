@@ -34,7 +34,8 @@ public:
 		m_pBuffer = nullptr;
 	}
 
-	CircularBufferSpan PutData(char* pData, int len, bool resize = true);
+	CircularBufferSpan PutData(char* pData, int len);
+	CircularBufferSpan PutDataNoResize(char* pData, int len);
 	void GetData(char* pData, int len);
 	int GetOutData(char* pData); //HeadPos, 변화
 
@@ -116,7 +117,7 @@ inline void CCircularBuffer::BufferResize()
 	m_pBuffer = pNewData;
 }
 
-inline CircularBufferSpan CCircularBuffer::PutData(char* pData, int len, bool resize /*= true*/)
+inline CircularBufferSpan CCircularBuffer::PutData(char* pData, int len)
 {
 	CircularBufferSpan span {};
 
@@ -126,16 +127,57 @@ inline CircularBufferSpan CCircularBuffer::PutData(char* pData, int len, bool re
 		return span;
 	}
 
-	if (resize)
+	while (IsOverFlowCondition(len))
+		BufferResize();
+
+	if (IsIndexOverFlow(len))
 	{
-		while (IsOverFlowCondition(len))
-			BufferResize();
+		int FirstCopyLen  = m_iBufSize - m_iTailPos;
+		int SecondCopyLen = len - FirstCopyLen;
+		assert(FirstCopyLen);
+
+		span.Buffer1 = &m_pBuffer[m_iTailPos];
+		span.Length1 = FirstCopyLen;
+
+		memcpy(span.Buffer1, pData, FirstCopyLen);
+
+		if (SecondCopyLen > 0)
+		{
+			span.Buffer2 = m_pBuffer;
+			span.Length2 = SecondCopyLen;
+
+			memcpy(span.Buffer2, pData + FirstCopyLen, SecondCopyLen);
+			m_iTailPos = SecondCopyLen;
+		}
+		else
+		{
+			m_iTailPos = 0;
+		}
 	}
 	else
 	{
-		if (IsOverFlowCondition(len))
-			return span;
+		span.Buffer1 = &m_pBuffer[m_iTailPos];
+		span.Length1 = len;
+
+		memcpy(span.Buffer1, pData, len);
+		m_iTailPos += len;
 	}
+
+	return span;
+}
+
+inline CircularBufferSpan CCircularBuffer::PutDataNoResize(char* pData, int len)
+{
+	CircularBufferSpan span {};
+
+	if (len <= 0)
+	{
+		spdlog::error("CircularBuffer::PutDataNoResize len is <= 0");
+		return span;
+	}
+
+	if (IsOverFlowCondition(len))
+		return span;
 
 	if (IsIndexOverFlow(len))
 	{
