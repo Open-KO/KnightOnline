@@ -2,6 +2,8 @@
 #include "TcpServerSocketManager.h"
 #include "TcpSocket.h"
 
+#include <spdlog/spdlog.h>
+
 TcpServerSocketManager::TcpServerSocketManager(int recvBufferSize, int sendBufferSize,
 	std::string_view implName) : TcpSocketManager(recvBufferSize, sendBufferSize, implName)
 {

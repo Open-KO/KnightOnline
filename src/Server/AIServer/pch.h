@@ -16,6 +16,8 @@
 #include <shared-server/server_config.h>
 #include <shared-server/utilities.h>
 
+#include <spdlog/spdlog.h>
+
 #define myrand myrand_ai
 
 #endif // SERVER_AISERVER_PCH_H

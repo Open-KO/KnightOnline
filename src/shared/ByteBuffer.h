@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <cstring>
+#include <cstdint>
 #include <string>
 #include <vector>
 

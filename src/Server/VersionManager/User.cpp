@@ -3,6 +3,7 @@
 #include "User.h"
 
 #include <shared/packets.h>
+#include <spdlog/spdlog.h>
 
 #include <set>
 

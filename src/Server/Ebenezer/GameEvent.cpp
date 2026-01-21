@@ -3,6 +3,8 @@
 #include "User.h"
 #include "GameDefine.h"
 
+#include <spdlog/spdlog.h>
+
 namespace Ebenezer
 {
 

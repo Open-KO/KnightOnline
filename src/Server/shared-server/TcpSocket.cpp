@@ -3,6 +3,7 @@
 #include "TcpSocketManager.h"
 
 #include <cassert>
+#include <spdlog/spdlog.h>
 
 TcpSocket::TcpSocket(test_tag) :
 	_recvBufferSize(DEFAULT_RECV_BUFFER_SIZE), _sendBufferSize(DEFAULT_SEND_BUFFER_SIZE),
@@ -29,8 +30,9 @@ int TcpSocket::QueueAndSend(char* buffer, int length)
 		return -1;
 
 	// Add this packet to the circular buffer.
-	// Ensure we do not allow resizing; we do not want these pointers invalidated.
-	auto span = _sendCircularBuffer.PutDataNoResize(buffer, length);
+	// This uses the non-expandable circular buffer so it doesn't get resized;
+	// we do not want these pointers invalidated.
+	auto span = _sendCircularBuffer.PutData(buffer, length);
 
 	// Failed to add to the buffer, it has no room.
 	if (span.Buffer1 == nullptr || span.Length1 <= 0)

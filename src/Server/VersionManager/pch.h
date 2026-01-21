@@ -12,5 +12,6 @@
 #include <shared-server/utilities.h>
 
 #include <asio.hpp>
+#include <spdlog/spdlog.h>
 
 #endif // SERVER_VERSIONMANAGER_PCH_H

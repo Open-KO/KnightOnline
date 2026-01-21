@@ -2,6 +2,8 @@
 #include "TcpClientSocket.h"
 #include "TcpClientSocketManager.h"
 
+#include <spdlog/spdlog.h>
+
 TcpClientSocket::TcpClientSocket(TcpClientSocketManager* socketManager) : TcpSocket(socketManager)
 {
 }

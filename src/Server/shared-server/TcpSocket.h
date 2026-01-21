@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <shared/CircularBuffer.h>
+#include <shared/ExpandableCircularBuffer.h>
 
 #include <asio.hpp>
 
@@ -100,7 +100,7 @@ protected:
 
 	// Received data is output to the circular buffer from _recvBuffer.
 	// This should be parsed to handle packets.
-	CCircularBuffer _recvCircularBuffer;
+	ExpandableCircularBuffer _recvCircularBuffer;
 
 	// Sends are queued for consistency.
 	// These are typically submitted as spans of the circular buffer, so we usually just send {portion 1},{len 1}.
@@ -110,7 +110,7 @@ protected:
 	std::queue<CircularBufferSpan> _sendQueue;
 	std::recursive_mutex _sendMutex;
 
-	CCircularBuffer _sendCircularBuffer;
+	CircularBuffer _sendCircularBuffer;
 	bool _sendInProgress      = false;
 
 	bool _remoteIpCached      = false;
