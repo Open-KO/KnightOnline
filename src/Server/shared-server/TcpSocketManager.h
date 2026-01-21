@@ -93,7 +93,7 @@ public:
 
 protected:
 	std::shared_ptr<TcpSocket> AcquireSocket(int& socketId);
-	void ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket);
+	void ReleaseSocketImpl(TcpSocket* tcpSocket);
 	void OnPostReceive(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
 	void OnPostSend(const asio::error_code& ec, size_t bytesTransferred, TcpSocket* tcpSocket);
 	void OnPostClose(TcpSocket* tcpSocket);

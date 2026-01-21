@@ -106,24 +106,24 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain, size_t bytesToRemove /*= 0*/)
 
 	try
 	{
-		// Force shared pointer copy.
-		auto self = shared_from_this();
-
+		// Dispatch async sender for either 1 or 2 (if it wraps around to the start of the circular buffer) send buffers.
+		// Note that as the socket instance is managed by TcpSocketManager and only freed after these events are shutdown,
+		// we can safely supply the pointer directly without caring about our ref count.
 		if (span.Buffer2 != nullptr && span.Length2 > 0)
 		{
 			std::array<asio::const_buffer, 2> buffers;
 			buffers[0] = asio::buffer(span.Buffer1, span.Length1);
 			buffers[1] = asio::buffer(span.Buffer2, span.Length2);
 
-			_socket->async_write_some(buffers,
-				[self](const asio::error_code& ec, size_t bytesTransferred)
-				{ self->GetManager()->OnPostSend(ec, bytesTransferred, self.get()); });
+			_socket->async_write_some(
+				buffers, std::bind(&TcpSocketManager::OnPostSend, _socketManager,
+							 std::placeholders::_1, std::placeholders::_2, this));
 		}
 		else
 		{
 			_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
-				[self](const asio::error_code& ec, size_t bytesTransferred)
-				{ self->GetManager()->OnPostSend(ec, bytesTransferred, self.get()); });
+				std::bind(&TcpSocketManager::OnPostSend, _socketManager, std::placeholders::_1,
+					std::placeholders::_2, this));
 		}
 
 		_sendInProgress = true;
@@ -158,18 +158,17 @@ void TcpSocket::AsyncReceive()
 	if (_pendingDisconnect)
 		return;
 
-	memset(_recvBuffer.data(), 0, _recvBuffer.size());
-
 	if (_socket == nullptr)
 		return;
 
 	try
 	{
-		// Force shared pointer copy.
-		auto self = shared_from_this();
-		_socket->async_read_some(asio::buffer(_recvBuffer),
-			[self](const asio::error_code& ec, size_t bytesTransferred)
-			{ self->GetManager()->OnPostReceive(ec, bytesTransferred, self.get()); });
+		// Dispatch async reader.
+		// Note that as the socket instance is managed by TcpSocketManager and only freed after these events are shutdown,
+		// we can safely supply the pointer directly without caring about our ref count.
+		_socket->async_read_some(
+			asio::buffer(_recvBuffer), std::bind(&TcpSocketManager::OnPostReceive, _socketManager,
+										   std::placeholders::_1, std::placeholders::_2, this));
 	}
 	catch (const asio::system_error& ex)
 	{
@@ -310,9 +309,10 @@ void TcpSocket::Close()
 		if (threadPool == nullptr)
 			return;
 
-		// Force shared pointer copy.
-		auto self = shared_from_this();
-		asio::post(*threadPool, [self]() { self->GetManager()->OnPostClose(self.get()); });
+		// Dispatch socket close request.
+		// Note that as the socket instance is managed by TcpSocketManager and only freed after these events are shutdown,
+		// we can safely supply the pointer directly without caring about our ref count.
+		asio::post(*threadPool, std::bind(&TcpSocketManager::OnPostClose, _socketManager, this));
 	}
 	catch (const asio::system_error& ex)
 	{

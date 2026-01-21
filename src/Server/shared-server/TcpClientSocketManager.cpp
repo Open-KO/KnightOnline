@@ -66,10 +66,10 @@ bool TcpClientSocketManager::ProcessClose(TcpSocket* tcpSocket)
 	return true;
 }
 
-void TcpClientSocketManager::ReleaseSocket(std::shared_ptr<TcpClientSocket> tcpSocket)
+void TcpClientSocketManager::ReleaseSocket(TcpClientSocket* tcpSocket)
 {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
-	TcpSocketManager::ReleaseSocket(std::move(tcpSocket));
+	ReleaseSocketImpl(tcpSocket);
 }
 
 void TcpClientSocketManager::Shutdown()

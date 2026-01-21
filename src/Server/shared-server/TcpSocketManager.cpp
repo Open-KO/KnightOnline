@@ -4,8 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include <algorithm>
 #include <cassert>
+#include <utility> // std::swap()
 
 TcpSocketManager::TcpSocketManager(
 	int recvBufferSize, int sendBufferSize, std::string_view implName) :
@@ -73,19 +73,23 @@ std::shared_ptr<TcpSocket> TcpSocketManager::AcquireSocket(int& socketId)
 	return tcpSocket;
 }
 
-void TcpSocketManager::ReleaseSocket(std::shared_ptr<TcpSocket> tcpSocket)
+void TcpSocketManager::ReleaseSocketImpl(TcpSocket* tcpSocket)
 {
 	if (tcpSocket == nullptr)
 	{
-		spdlog::error("TcpSocketManager({})::ReleaseSocket: tcpSocket is nullptr", _implName);
+		spdlog::error("TcpSocketManager({})::ReleaseSocketImpl: tcpSocket is nullptr", _implName);
 		return;
 	}
 
 	int socketId = tcpSocket->GetSocketID();
+
+	// Restore socket ID back to queue
 	_socketIdQueue.push(socketId);
 
-	_socketArray[socketId]         = nullptr;
-	_inactiveSocketArray[socketId] = std::move(tcpSocket);
+	// Swap socket instance back to the inactive pool.
+	assert(_socketArray[socketId] != nullptr);
+	assert(_inactiveSocketArray[socketId] == nullptr);
+	std::swap(_socketArray[socketId], _inactiveSocketArray[socketId]);
 }
 
 void TcpSocketManager::OnPostReceive(
@@ -180,7 +184,7 @@ void TcpSocketManager::ShutdownImpl()
 
 			// Invoke immediate save and disconnect from within this thread
 			tcpSocket->CloseProcess();
-			ReleaseSocket(std::move(tcpSocket));
+			ReleaseSocketImpl(tcpSocket.get());
 		}
 	}
 

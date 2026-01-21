@@ -238,7 +238,7 @@ bool TcpServerSocketManager::ProcessClose(TcpSocket* tcpSocket)
 		return false;
 
 	tcpSocket->CloseProcess();
-	ReleaseSocket(tcpSocket->shared_from_this());
+	ReleaseSocketImpl(tcpSocket);
 
 	return true;
 }
