@@ -5,7 +5,7 @@
 
 #include <d3dx9.h>
 
-#include <cinttypes>
+#include <cstdint>
 #include <cmath>
 #include <filesystem>
 #include <memory>

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <cinttypes>
+#include <cstdint>
 
 enum e_GameOpcode : uint8_t
 {

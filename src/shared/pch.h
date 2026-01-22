@@ -5,7 +5,7 @@
 
 #include "globals.h"
 
-#include <cinttypes>
+#include <cstdint>
 #include <spdlog/spdlog.h>
 
 #endif // SHARED_PCH_H

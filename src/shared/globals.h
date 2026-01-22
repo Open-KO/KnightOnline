@@ -7,7 +7,7 @@
 #include "packets.h"
 #include "Packet.h"
 
-#include <cinttypes>
+#include <cstdint>
 
 inline constexpr char DEFAULT_MAP_DIR[]    = "../MAP/";
 inline constexpr char DEFAULT_QUESTS_DIR[] = "../QUESTS/";
