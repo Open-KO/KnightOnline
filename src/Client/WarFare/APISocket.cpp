@@ -41,11 +41,6 @@ CAPISocket::CAPISocket() : m_SendBuf(SEND_BUF_SIZE), m_RecvBuf(RECV_BUF_SIZE), m
 	m_bConnected     = FALSE;
 	m_bEnableSend    = TRUE; // 보내기 가능..?
 
-#ifdef _DEBUG
-	memset(m_Statistics_Send_Sum, 0, sizeof(m_Statistics_Send_Sum));
-	memset(m_Statistics_Recv_Sum, 0, sizeof(m_Statistics_Recv_Sum));
-#endif
-
 	memset(m_SendBuf.data(), 0, m_SendBuf.size());
 	memset(m_RecvBuf.data(), 0, m_RecvBuf.size());
 }
@@ -220,12 +215,13 @@ BOOL CAPISocket::ReceiveProcess()
 		std::vector<uint8_t> data(iCount);
 		m_CB.GetData(reinterpret_cast<char*>(data.data()), iCount);
 
-		if (PACKET_HEADER == ntohs(*((uint16_t*) &data[0])))
+		if (PACKET_HEADER == ntohs(*reinterpret_cast<uint16_t*>(&data[0])))
 		{
-			int16_t siCore = *((int16_t*) (&data[2]));
+			int16_t siCore = *reinterpret_cast<int16_t*>(&data[2]);
 			if (siCore <= iCount)
 			{
-				if (PACKET_TAIL == ntohs(*((uint16_t*) (&data[iCount - 2])))) // 패킷 꼬리 부분 검사..
+				// 패킷 꼬리 부분 검사..
+				if (PACKET_TAIL == ntohs(*reinterpret_cast<uint16_t*>(&data[iCount - 2])))
 				{
 					Packet* pkt = new Packet();
 					if (s_bCryptionFlag)
@@ -233,7 +229,7 @@ BOOL CAPISocket::ReceiveProcess()
 						// NOTE: Decrypts in-place
 						s_JvCrypt.JvDecryptionFast(siCore, &data[4], &data[4]);
 
-						uint16_t sig = *(uint16_t*) &data[4];
+						uint16_t sig = *reinterpret_cast<uint16_t*>(&data[4]);
 
 						if (sig != 0x1EFC)
 						{

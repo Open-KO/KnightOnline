@@ -56,8 +56,8 @@ public:
 #ifdef _DEBUG
 struct __SocketStatisics
 {
-	uint32_t dwTime;
-	int iSize;
+	uint32_t dwTime = 0;
+	int iSize       = 0;
 };
 #endif
 
@@ -78,8 +78,8 @@ protected:
 	ExpandableCircularBuffer m_CB;
 
 #ifdef _DEBUG
-	__SocketStatisics m_Statistics_Send_Sum[256];
-	__SocketStatisics m_Statistics_Recv_Sum[256];
+	__SocketStatisics m_Statistics_Send_Sum[256] = {};
+	__SocketStatisics m_Statistics_Recv_Sum[256] = {};
 #endif
 
 public:
