@@ -28,12 +28,11 @@ const uint16_t PACKET_TAIL   = 0X55AA;
 #include <N3Base/LogWriter.h>
 #endif
 
-CAPISocket::CAPISocket()
+CAPISocket::CAPISocket() : m_SendBuf(SEND_BUF_SIZE), m_RecvBuf(RECV_BUF_SIZE), m_CB(RECV_BUF_SIZE)
 {
 	m_hSocket    = INVALID_SOCKET;
 	m_hWndTarget = nullptr;
-	m_szIP.clear();
-	m_dwPort = 0;
+	m_dwPort     = 0;
 
 	if (s_nInstanceCount++ == 0)
 		(void) WSAStartup(0x0101, &s_WSData);
@@ -47,18 +46,16 @@ CAPISocket::CAPISocket()
 	memset(m_Statistics_Recv_Sum, 0, sizeof(m_Statistics_Recv_Sum));
 #endif
 
-	memset(m_RecvBuf, 0, sizeof(m_RecvBuf));
+	memset(m_SendBuf.data(), 0, m_SendBuf.size());
+	memset(m_RecvBuf.data(), 0, m_RecvBuf.size());
 }
 
 CAPISocket::~CAPISocket()
 {
 	Release();
 
-	s_nInstanceCount--;
-	if (s_nInstanceCount == 0)
-	{
+	if (--s_nInstanceCount == 0)
 		WSACleanup();
-	}
 }
 
 void CAPISocket::Release()
@@ -67,8 +64,7 @@ void CAPISocket::Release()
 
 	while (!m_qRecvPkt.empty())
 	{
-		auto pkt = m_qRecvPkt.front();
-		delete pkt;
+		delete m_qRecvPkt.front();
 		m_qRecvPkt.pop();
 	}
 
@@ -148,7 +144,7 @@ int CAPISocket::Connect(HWND hWnd, const std::string& szIP, uint32_t dwPort)
 	m_hSocket          = sock;
 
 	// 소켓 옵션
-	int iRecvBufferLen = RECEIVE_BUF_SIZE;
+	int iRecvBufferLen = RECV_BUF_SIZE;
 	setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*) &iRecvBufferLen, 4);
 
 	if (connect(sock, (struct sockaddr*) &server, sizeof(server)) != 0)
@@ -193,7 +189,7 @@ void CAPISocket::Receive()
 	ioctlsocket((SOCKET) m_hSocket, FIONREAD, &dwPktSize);
 	while (dwRead < dwPktSize)
 	{
-		count = recv((SOCKET) m_hSocket, (char*) m_RecvBuf, RECEIVE_BUF_SIZE, 0);
+		count = recv((SOCKET) m_hSocket, m_RecvBuf.data(), static_cast<int>(m_RecvBuf.size()), 0);
 		if (count == SOCKET_ERROR)
 		{
 			__ASSERT(0, "socket receive error!");
@@ -206,7 +202,7 @@ void CAPISocket::Receive()
 		if (count)
 		{
 			dwRead += count;
-			m_CB.PutData(m_RecvBuf, count);
+			m_CB.PutData(m_RecvBuf.data(), count);
 		}
 	}
 
@@ -221,46 +217,45 @@ BOOL CAPISocket::ReceiveProcess()
 	BOOL bFoundTail = FALSE;
 	if (iCount >= 7)
 	{
-		uint8_t* pData = new uint8_t[iCount];
-		m_CB.GetData(pData, iCount);
+		std::vector<uint8_t> data(iCount);
+		m_CB.GetData(reinterpret_cast<char*>(data.data()), iCount);
 
-		if (PACKET_HEADER == ntohs(*((uint16_t*) pData)))
+		if (PACKET_HEADER == ntohs(*((uint16_t*) &data[0])))
 		{
-			int16_t siCore = *((int16_t*) (pData + 2));
+			int16_t siCore = *((int16_t*) (&data[2]));
 			if (siCore <= iCount)
 			{
-				if (PACKET_TAIL == ntohs(*((uint16_t*) (pData + iCount - 2)))) // 패킷 꼬리 부분 검사..
+				if (PACKET_TAIL == ntohs(*((uint16_t*) (&data[iCount - 2])))) // 패킷 꼬리 부분 검사..
 				{
 					Packet* pkt = new Packet();
 					if (s_bCryptionFlag)
 					{
-						static uint8_t pTBuf[RECEIVE_BUF_SIZE];
-						s_JvCrypt.JvDecryptionFast(siCore, pData + 4, pTBuf);
+						// NOTE: Decrypts in-place
+						s_JvCrypt.JvDecryptionFast(siCore, &data[4], &data[4]);
 
-						uint16_t sig = *(uint16_t*) pTBuf;
+						uint16_t sig = *(uint16_t*) &data[4];
 
 						if (sig != 0x1EFC)
 						{
+							delete pkt;
 							__ASSERT(0, "Crypt Error");
+							return FALSE;
 						}
-						else
-						{
-							// uint16_t sequence = *(uint16_t*) &pTBuf[2];
-							// uint8_t empty     = pTBuf[4];
-							uint8_t* payload = &pTBuf[5];
-							pkt->append(payload, siCore - 5);
-						}
+
+						// uint16_t sequence = *(uint16_t*) &&data[6];
+						// uint8_t empty     = &data[8];
+						pkt->append(&data[9], siCore - 5);
 					}
 					else
 					{
-						pkt->append(pData + 4, siCore);
+						pkt->append(&data[4], siCore);
 					}
 
 					m_qRecvPkt.push(pkt);
 					m_CB.HeadIncrease(siCore + 6); // 환형 버퍼 인덱스 증가 시키기..
 					bFoundTail = TRUE;
 #ifdef _DEBUG
-					uint8_t byCmd = pData[4];
+					uint8_t byCmd = data[4];
 					m_Statistics_Recv_Sum[byCmd].dwTime++;
 					m_Statistics_Recv_Sum[byCmd].iSize += siCore;
 #endif
@@ -273,8 +268,6 @@ BOOL CAPISocket::ReceiveProcess()
 			__ASSERT(0, "broken packet header.. skip!");
 			m_CB.HeadIncrease(iCount); // 환형 버퍼 인덱스 증가 시키기..
 		}
-
-		delete[] pData, pData = nullptr;
 	}
 
 	return bFoundTail;
@@ -292,7 +285,7 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 
 	if (s_bCryptionFlag)
 	{
-		static uint8_t pTBuf[RECEIVE_BUF_SIZE];
+		static uint8_t pTBuf[SEND_BUF_SIZE];
 
 		++s_wSendVal;
 
@@ -313,7 +306,7 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 #endif
 
 	int nTotalSize            = nSize + 6;
-	uint8_t* pSendData        = m_RecvBuf;
+	char* pSendData           = m_SendBuf.data();
 	*((uint16_t*) pSendData)  = htons(PACKET_HEADER);
 	pSendData                += 2;
 	*((uint16_t*) pSendData)  = nSize;
@@ -327,7 +320,7 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 	int count                 = 0;
 	while (nSent < nTotalSize)
 	{
-		count = send((SOCKET) m_hSocket, (char*) m_RecvBuf, nTotalSize, 0);
+		count = send((SOCKET) m_hSocket, m_SendBuf.data(), nTotalSize, 0);
 		if (count == SOCKET_ERROR)
 		{
 			__ASSERT(0, "socket send error!");

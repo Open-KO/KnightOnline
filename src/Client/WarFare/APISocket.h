@@ -7,191 +7,24 @@
 
 #pragma once
 
-#include <N3Base/N3Base.h>
 #include "GameDef.h"
 #include "PacketDef.h"
 
-#include <queue>
-#include <string>
+#include <N3Base/N3Base.h>
+#include <shared/ExpandableCircularBuffer.h>
 
-inline constexpr int WM_SOCKETMSG     = (WM_USER + 1);
-inline constexpr int RECEIVE_BUF_SIZE = 262144; // 최대 버퍼..
-
-#define _CRYPTION                               // 암호화 사용
+#define _CRYPTION // 암호화 사용
 #ifdef _CRYPTION
 #include <shared/JvCryption.h>
 #endif
 
-class BB_CircularBuffer
-{
-public:
-	BB_CircularBuffer(int size = RECEIVE_BUF_SIZE)
-	{
-		__ASSERT(size > 0, "1");
-		m_iBufSize = size;
-		m_pBuffer  = new uint8_t[m_iBufSize];
+#include <queue>
+#include <string>
+#include <vector>
 
-		m_iHeadPos = 0;
-		m_iTailPos = 0;
-	}
-
-	virtual ~BB_CircularBuffer()
-	{
-		__ASSERT(m_pBuffer, "1");
-		if (m_pBuffer)
-			delete[] m_pBuffer, m_pBuffer = nullptr;
-	}
-
-	void PutData(uint8_t* pData, int len)
-	{
-		if (len <= 0)
-		{
-#ifdef _DEBUG
-			//OutputDebugString("BB_CircularBuffer::PutData len is <= 0\n");
-#endif
-			return;
-		}
-		while (IsOverFlowCondition(len))
-			BufferResize();
-		if (IsIndexOverFlow(len))
-		{
-			int FirstCopyLen  = m_iBufSize - m_iTailPos;
-			int SecondCopyLen = len - FirstCopyLen;
-			__ASSERT(FirstCopyLen, "1");
-			CopyMemory(m_pBuffer + m_iTailPos, pData, FirstCopyLen);
-			if (SecondCopyLen)
-			{
-				CopyMemory(m_pBuffer, pData + FirstCopyLen, SecondCopyLen);
-				m_iTailPos = SecondCopyLen;
-			}
-			else
-				m_iTailPos = 0;
-		}
-		else
-		{
-			CopyMemory(m_pBuffer + m_iTailPos, pData, len);
-			m_iTailPos += len;
-		}
-	}
-	void GetData(uint8_t* pData, int len)
-	{
-		__ASSERT(len > 0 && len <= GetValidCount(), "GetData error");
-		if (len < m_iBufSize - m_iHeadPos)
-		{
-			CopyMemory(pData, m_pBuffer + m_iHeadPos, len);
-		}
-		else
-		{
-			int fc = m_iBufSize - m_iHeadPos;
-			int sc = len - fc;
-			CopyMemory(pData, m_pBuffer + m_iHeadPos, fc);
-			if (sc)
-				CopyMemory(pData + fc, m_pBuffer, sc);
-		}
-	}
-	int GetOutData(uint8_t* pData) //HeadPos, 변화
-	{
-		int len = GetValidCount();
-		int fc  = m_iBufSize - m_iHeadPos;
-		if (len > fc)
-		{
-			int sc = len - fc;
-			CopyMemory(pData, m_pBuffer + m_iHeadPos, fc);
-			CopyMemory(pData + fc, m_pBuffer, sc);
-			m_iHeadPos = sc;
-			__ASSERT(m_iHeadPos == m_iTailPos, "1");
-		}
-		else
-		{
-			CopyMemory(pData, m_pBuffer + m_iHeadPos, len);
-			m_iHeadPos += len;
-			if (m_iHeadPos == m_iBufSize)
-				m_iHeadPos = 0;
-		}
-
-		return len;
-	}
-
-	void PutData(uint8_t& data)
-	{
-		int len = 1;
-		while (IsOverFlowCondition(len))
-			BufferResize();
-		m_pBuffer[m_iTailPos++] = data;
-		if (m_iTailPos == m_iBufSize)
-			m_iTailPos = 0;
-	}
-	uint8_t& GetHeadData()
-	{
-		return m_pBuffer[m_iHeadPos];
-	}
-	//1 Byte Operation;
-	//false : 모든데이터 다빠짐, TRUE: 정상적으로 진행중
-	BOOL HeadIncrease(int increasement = 1)
-	{
-		__ASSERT(increasement <= GetValidCount(), "1");
-		m_iHeadPos += increasement;
-		m_iHeadPos %= m_iBufSize;
-		return m_iHeadPos != m_iTailPos;
-	}
-	void SetEmpty()
-	{
-		m_iHeadPos = 0;
-		m_iTailPos = 0;
-	}
-
-	int& GetBufferSize()
-	{
-		return m_iBufSize;
-	}
-	int& GetHeadPos()
-	{
-		return m_iHeadPos;
-	}
-	int& GetTailPos()
-	{
-		return m_iTailPos;
-	}
-	int GetValidCount()
-	{
-		int count = m_iTailPos - m_iHeadPos;
-		if (count < 0)
-			count = m_iBufSize + count;
-		return count;
-	}
-
-protected:
-	//over flow 먼저 점검한 후 IndexOverFlow 점검
-	BOOL IsOverFlowCondition(int& len)
-	{
-		return (len >= m_iBufSize - GetValidCount()) ? TRUE : FALSE;
-	}
-	BOOL IsIndexOverFlow(int& len)
-	{
-		return (len + m_iTailPos >= m_iBufSize) ? TRUE : FALSE;
-	}
-	void BufferResize() //overflow condition 일때 size를 현재의 두배로 늘림
-	{
-		int prevBufSize     = m_iBufSize;
-		m_iBufSize        <<= 1;
-		uint8_t* pNewData   = new uint8_t[m_iBufSize];
-		CopyMemory(pNewData, m_pBuffer, prevBufSize);
-		if (m_iTailPos < m_iHeadPos)
-		{
-			CopyMemory(pNewData + prevBufSize, m_pBuffer, m_iTailPos);
-			m_iTailPos += prevBufSize;
-		}
-		delete[] m_pBuffer;
-		m_pBuffer = pNewData;
-	}
-
-protected:
-	int m_iBufSize;
-	uint8_t* m_pBuffer;
-
-	int m_iHeadPos;
-	int m_iTailPos;
-};
+inline constexpr int WM_SOCKETMSG  = (WM_USER + 1);
+inline constexpr int SEND_BUF_SIZE = 262144; // 최대 버퍼..
+inline constexpr int RECV_BUF_SIZE = 262144; // 최대 버퍼..
 
 class DataPack
 {
@@ -226,8 +59,6 @@ struct __SocketStatisics
 	uint32_t dwTime;
 	int iSize;
 };
-#include <vector>
-#include <string>
 #endif
 
 class CAPISocket
@@ -239,10 +70,12 @@ protected:
 	std::string m_szIP;
 	uint32_t m_dwPort;
 
-	uint8_t m_RecvBuf[RECEIVE_BUF_SIZE];
+	std::vector<char> m_SendBuf;
+	std::vector<char> m_RecvBuf;
+
 	BOOL m_bConnected;
 
-	BB_CircularBuffer m_CB;
+	ExpandableCircularBuffer m_CB;
 
 #ifdef _DEBUG
 	__SocketStatisics m_Statistics_Send_Sum[256];
