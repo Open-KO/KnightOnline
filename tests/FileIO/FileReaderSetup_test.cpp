@@ -68,12 +68,12 @@ TEST_F(FileReaderSetupTest, OpenExisting_SucceedsOnExistingFile)
 
 	EXPECT_FALSE(_file.IsOpen());
 	ASSERT_TRUE(_file.OpenExisting(_testFilePath));
-	ASSERT_TRUE(_file.IsOpen());
+	EXPECT_TRUE(_file.IsOpen());
 }
 
 TEST_F(FileReaderSetupTest, Create_FailsOnReaderCall)
 {
 	EXPECT_FALSE(_file.IsOpen());
 	ASSERT_FALSE(_file.Create(_testFilePath));
-	ASSERT_FALSE(_file.IsOpen());
+	EXPECT_FALSE(_file.IsOpen());
 }

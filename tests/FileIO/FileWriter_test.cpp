@@ -36,20 +36,20 @@ protected:
 
 TEST_F(FileWriterTest, IsOpen_IsResetAfterClose)
 {
-	EXPECT_TRUE(_file.Close());
-	ASSERT_FALSE(_file.IsOpen());
+	ASSERT_TRUE(_file.Close());
+	EXPECT_FALSE(_file.IsOpen());
 }
 
 TEST_F(FileWriterTest, Size_IsResetAfterClose)
 {
-	EXPECT_TRUE(_file.Close());
-	ASSERT_EQ(_file.Size(), 0);
+	ASSERT_TRUE(_file.Close());
+	EXPECT_EQ(_file.Size(), 0);
 }
 
 TEST_F(FileWriterTest, Offset_IsResetAfterClose)
 {
-	EXPECT_TRUE(_file.Close());
-	ASSERT_EQ(_file.Offset(), 0);
+	ASSERT_TRUE(_file.Close());
+	EXPECT_EQ(_file.Offset(), 0);
 }
 
 TEST_F(FileWriterTest, Seek_Set_SucceedsOnlyWithValidOffsets)
@@ -58,15 +58,15 @@ TEST_F(FileWriterTest, Seek_Set_SucceedsOnlyWithValidOffsets)
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Start of the file
-	EXPECT_TRUE(_file.Seek(0, SEEK_SET));
+	ASSERT_TRUE(_file.Seek(0, SEEK_SET));
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Before the start of the file
-	EXPECT_FALSE(_file.Seek(-1, SEEK_SET));
+	ASSERT_FALSE(_file.Seek(-1, SEEK_SET));
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Expand the file
-	EXPECT_TRUE(_file.Seek(TEST_FILE_SIZE, SEEK_SET));
+	ASSERT_TRUE(_file.Seek(TEST_FILE_SIZE, SEEK_SET));
 	EXPECT_EQ(_file.Offset(), TEST_FILE_SIZE);
 }
 
@@ -76,19 +76,19 @@ TEST_F(FileWriterTest, Seek_Cur_SucceedsOnlyWithValidOffsets)
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Start of the file
-	EXPECT_TRUE(_file.Seek(0, SEEK_CUR));
+	ASSERT_TRUE(_file.Seek(0, SEEK_CUR));
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Before the start of the file
-	EXPECT_FALSE(_file.Seek(-1, SEEK_CUR));
+	ASSERT_FALSE(_file.Seek(-1, SEEK_CUR));
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// 10 bytes ahead of where we are (from 0 -> 10)
-	EXPECT_TRUE(_file.Seek(10, SEEK_CUR));
+	ASSERT_TRUE(_file.Seek(10, SEEK_CUR));
 	EXPECT_EQ(_file.Offset(), 10);
 
 	// Expand the file
-	EXPECT_TRUE(_file.Seek(TEST_FILE_SIZE, SEEK_CUR));
+	ASSERT_TRUE(_file.Seek(TEST_FILE_SIZE, SEEK_CUR));
 	EXPECT_EQ(_file.Offset(), 10 + TEST_FILE_SIZE);
 }
 
@@ -98,20 +98,20 @@ TEST_F(FileWriterTest, Seek_End_SucceedsOnlyWithValidOffsets)
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Expand the file
-	EXPECT_TRUE(_file.Seek(TEST_FILE_SIZE, SEEK_SET));
+	ASSERT_TRUE(_file.Seek(TEST_FILE_SIZE, SEEK_SET));
 	EXPECT_EQ(_file.Offset(), TEST_FILE_SIZE);
 
 	// Reset us back to the start of the file
 	// That is, from the end, go all the way back to the start:
-	EXPECT_TRUE(_file.Seek(-TEST_FILE_SIZE, SEEK_END));
+	ASSERT_TRUE(_file.Seek(-TEST_FILE_SIZE, SEEK_END));
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// End of the file
-	EXPECT_TRUE(_file.Seek(0, SEEK_END));
+	ASSERT_TRUE(_file.Seek(0, SEEK_END));
 	EXPECT_EQ(_file.Offset(), TEST_FILE_SIZE);
 
 	// After the end of the file (will expand)
-	EXPECT_TRUE(_file.Seek(1, SEEK_END));
+	ASSERT_TRUE(_file.Seek(1, SEEK_END));
 	EXPECT_EQ(_file.Offset(), TEST_FILE_SIZE + 1);
 }
 
@@ -124,7 +124,7 @@ TEST_F(FileWriterTest, Read_FailsOnWriterCall)
 TEST_F(FileWriterTest, Write_FailsWhenBufferIsNullptr)
 {
 	size_t bytesWritten = 100;
-	EXPECT_FALSE(_file.Write(nullptr, 0, &bytesWritten));
+	ASSERT_FALSE(_file.Write(nullptr, 0, &bytesWritten));
 
 	// bytesWritten should be reset
 	EXPECT_EQ(bytesWritten, 0);
@@ -133,7 +133,7 @@ TEST_F(FileWriterTest, Write_FailsWhenBufferIsNullptr)
 TEST_F(FileWriterTest, Write_SucceedsOnWriteOfZero)
 {
 	uint8_t test;
-	EXPECT_TRUE(_file.Write(&test, 0));
+	ASSERT_TRUE(_file.Write(&test, 0));
 }
 
 TEST_F(FileWriterTest, Write_IsValidFromStart)
@@ -159,7 +159,7 @@ TEST_F(FileWriterTest, Write_IsValidFromStart)
 	EXPECT_EQ(_file.Offset(), 4);
 
 	// Verify the data we wrote to file is still valid.
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 
 	// File should exist.
 	ASSERT_TRUE(std::filesystem::exists(_testFilePath));
@@ -172,7 +172,7 @@ TEST_F(FileWriterTest, Write_IsValidFromStart)
 #endif
 
 	// Should be accessible...
-	EXPECT_TRUE(fp != nullptr);
+	ASSERT_TRUE(fp != nullptr);
 
 	if (fp != nullptr)
 	{
@@ -213,7 +213,7 @@ TEST_F(FileWriterTest, Write_SeekingExpandsFile)
 	// Size on disk is updated as the file's flushed
 	EXPECT_EQ(_file.SizeOnDisk(), 10);
 
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 
 	std::error_code ec;
 	auto fileSize = std::filesystem::file_size(_testFilePath, ec);
@@ -237,7 +237,7 @@ TEST_F(FileWriterTest, Write_CloseInvokesFlush)
 	EXPECT_EQ(_file.SizeOnDisk(), 0);
 
 	// No explicit Flush(), we're just closing the file.
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 
 	std::error_code ec;
 	auto fileSize = std::filesystem::file_size(_testFilePath, ec);
@@ -273,13 +273,13 @@ TEST_F(FileWriterTest, Create_TruncatesFile)
 
 	// Reopen the file
 	ASSERT_TRUE(_file.Create(_testFilePath));
-	ASSERT_TRUE(_file.IsOpen());
+	EXPECT_TRUE(_file.IsOpen());
 
 	// Should be empty.
 	EXPECT_EQ(_file.Size(), 0);
 
 	// Close it again so we can check the new filesize
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// File should now be truncated
@@ -301,7 +301,7 @@ TEST_F(FileWriterTest, OpenExisting_AppendsAreOptIn)
 	EXPECT_EQ(_file.SizeOnDisk(), 4);
 
 	// Close so that we can check it
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// Verify that we do actually have bytes written in the file
@@ -311,7 +311,7 @@ TEST_F(FileWriterTest, OpenExisting_AppendsAreOptIn)
 
 	// Reopen the file, but this time as existing.
 	ASSERT_TRUE(_file.OpenExisting(_testFilePath));
-	ASSERT_TRUE(_file.IsOpen());
+	EXPECT_TRUE(_file.IsOpen());
 
 	// Should have data in it.
 	EXPECT_EQ(_file.Size(), 4);
@@ -322,7 +322,7 @@ TEST_F(FileWriterTest, OpenExisting_AppendsAreOptIn)
 	EXPECT_EQ(_file.Offset(), 0);
 
 	// Close it again so we can check the new filesize
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 	EXPECT_FALSE(_file.IsOpen());
 
 	// File should still be 4 bytes.
@@ -332,11 +332,11 @@ TEST_F(FileWriterTest, OpenExisting_AppendsAreOptIn)
 
 TEST_F(FileWriterTest, Close_SucceedsWhenOpen)
 {
-	EXPECT_TRUE(_file.Close());
+	ASSERT_TRUE(_file.Close());
 }
 
 TEST_F(FileWriterTest, Close_FailsWhenAlreadyClosed)
 {
-	EXPECT_TRUE(_file.Close());
-	EXPECT_FALSE(_file.Close());
+	ASSERT_TRUE(_file.Close());
+	ASSERT_FALSE(_file.Close());
 }
