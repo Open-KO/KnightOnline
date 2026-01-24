@@ -18,7 +18,7 @@ public:
 			if (_inactiveSocketArray[i] != nullptr)
 				continue;
 
-			auto tcpSocket = std::make_unique<T>(std::forward<Args>(args)..., this);
+			auto tcpSocket = std::make_shared<T>(std::forward<Args>(args)..., this);
 			if (tcpSocket == nullptr)
 				return false;
 
