@@ -86,7 +86,7 @@ mkdir -p "${BUILD_DIR}"
 
 cmake -S "${CONTAINER_SRC_DIR}" \
       -B "${BUILD_DIR}" \
-      -G "Unix Makefiles" \
+      -G "Ninja" \
       -DCMAKE_C_COMPILER="x86_64-w64-mingw32-gcc" \
       -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-g++" \
       -DCMAKE_SYSTEM_NAME="Windows" \
@@ -98,6 +98,12 @@ cmake -S "${CONTAINER_SRC_DIR}" \
       -DOPENKO_BUILD_SERVERS=OFF \
       -DCMAKE_VERBOSE_MAKEFILE=ON \
       -Wno-dev
+
+      # 32-bit
+      #      -DCMAKE_C_FLAGS="-m32" \
+      #      -DCMAKE_CXX_FLAGS="-m32" \
+      #      -DCMAKE_C_COMPILER="i686-w64-mingw32-gcc" \
+      #      -DCMAKE_CXX_COMPILER="i686-w64-mingw32-g++" \
 
 cmake --build "${BUILD_DIR}" \
       --target WarFare \

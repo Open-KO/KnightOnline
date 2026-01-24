@@ -6,6 +6,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         mingw-w64 \
+        mingw-w64-i686-dev \
         git \
         ca-certificates \
         cmake \
@@ -15,7 +16,8 @@ RUN apt-get update && \
         util-linux \
         libssl-dev \
         unixodbc \
-        unixodbc-dev && \
+        unixodbc-dev \
+        ninja-build && \
     rm -rf /var/lib/apt/lists/*
 
 FROM ubuntu:25.10
