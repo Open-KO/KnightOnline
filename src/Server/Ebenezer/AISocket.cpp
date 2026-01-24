@@ -25,7 +25,7 @@ CAISocket::CAISocket(TcpClientSocketManager* socketManager) : TcpClientSocket(so
 
 std::string_view CAISocket::GetImplName() const
 {
-	return "User";
+	return "AISocket";
 }
 
 bool CAISocket::PullOutCore(char*& data, int& length)
