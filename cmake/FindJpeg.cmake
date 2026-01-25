@@ -20,6 +20,8 @@ else()
 endif()
 
 set(LIBJPEG_INSTALL OFF CACHE BOOL "libjpeg: Install targets and headers")
+set(LIBJPEG_BUILD_EXECUTABLES OFF CACHE BOOL "libjpeg: Build JPEG utilities")
+set(LIBJPEG_BUILD_TESTS OFF CACHE BOOL "libjpeg: Build test executables")
 
 fetchcontent_makeavailable(jpeg)
 
