@@ -12,11 +12,6 @@
 	url = https://github.com/madler/zlib
 	branch = master
 	shallow = true
-[submodule "deps/libjpeg-turbo"]
-	path = deps/libjpeg-turbo
-	url = https://github.com/libjpeg-turbo/libjpeg-turbo
-	branch = main
-	shallow = true
 [submodule "deps/db-models"]
 	path = deps/db-models
 	url = https://github.com/Open-KO/OpenKO-db-models
@@ -60,4 +55,8 @@
 [submodule "deps/openal-soft"]
 	path = deps/openal-soft
 	url = https://github.com/Open-KO/openal-soft
+	shallow = true
+[submodule "deps/libjpeg"]
+	path = deps/libjpeg
+	url = https://github.com/Open-KO/jpeg-cmake
 	shallow = true

@@ -138,9 +138,7 @@ if(MSVC)
 	# so we'll pull this in here.
     require_config_package(client-assets)
 
-    # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
-    # so we must structure this a little bit differently to everything else.
-    require_package(JpegTurbo)
+    require_package(Jpeg)
     add_subdirectory(src/Client/JpegFile)
   endif()
 

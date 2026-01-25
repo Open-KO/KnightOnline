@@ -23,7 +23,7 @@
     <Project Path="deps/fetch-and-build-wrappers/fetch-googletest.vcxproj" Id="d4f3d338-a7ef-430c-ad99-2fc6a591a711">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" Id="b24123a5-2fe3-4ad6-9b8d-c3090e87408d">
@@ -50,8 +50,8 @@
     <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
     <Build Project="false" />
   </Project>
-  <Project Path="deps/libjpeg-turbo-msvc/jpeg-static.vcxproj" Id="569846a7-5a48-3b16-bb39-be89e1c71caa">
-    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+  <Project Path="deps/libjpeg-msvc/jpeg-static.vcxproj" Id="569846a7-5a48-3b16-bb39-be89e1c71caa">
+    <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg.vcxproj" />
     <Build Project="false" />
   </Project>
   <Project Path="deps/mpg123-msvc/mpg123.vcxproj" Id="c93d6595-cd66-4e98-b99d-31da0e2ec408">

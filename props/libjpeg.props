@@ -3,10 +3,10 @@
   <ImportGroup Label="PropertySheets" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DependencyDir);$(DependencyDir)libjpeg-turbo\src;$(DependencyDir)libjpeg-turbo-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DependencyDir);$(DependencyDir)libjpeg\libjpeg;$(DependencyDir)libjpeg-msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>jpeg-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jpeg_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 </Project>
