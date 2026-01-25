@@ -49,8 +49,7 @@ public:
 	virtual void FadeSet(float fTimeToFade, bool bFadeIn);
 	void Release() override;
 
-	// NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-	virtual void Tick();
+	void Tick(float fFrm = -1.0f) override;
 
 	virtual void Render(__Vector3& vPos);
 };

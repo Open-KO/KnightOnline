@@ -29,6 +29,7 @@ struct __IconItemSkill
 	};
 
 	__IconItemSkill();
+	int GetItemID() const;
 	int GetBuyPrice() const;
 	int GetSellPrice(bool bHasPremium = false) const;
 };

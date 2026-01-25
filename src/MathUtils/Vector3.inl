@@ -10,10 +10,6 @@ __Vector3::__Vector3(float fx, float fy, float fz) : x(fx), y(fy), z(fz)
 {
 }
 
-__Vector3::__Vector3(const __Vector3& vec) : x(vec.x), y(vec.y), z(vec.z)
-{
-}
-
 void __Vector3::Normalize()
 {
 	float fn = sqrtf(x * x + y * y + z * z);

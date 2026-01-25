@@ -12,6 +12,18 @@ __IconItemSkill::__IconItemSkill()
 	pUIIcon     = nullptr;
 }
 
+int __IconItemSkill::GetItemID() const
+{
+	if (pItemBasic == nullptr)
+		return 0;
+
+	int iItemID = static_cast<int>(pItemBasic->dwID / 1000 * 1000);
+	if (pItemExt != nullptr)
+		iItemID += static_cast<int>(pItemExt->dwID % 1000);
+
+	return iItemID;
+}
+
 int __IconItemSkill::GetBuyPrice() const
 {
 	if (pItemBasic == nullptr || pItemExt == nullptr)

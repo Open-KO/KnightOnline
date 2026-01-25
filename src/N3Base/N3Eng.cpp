@@ -3,8 +3,6 @@
 #include "N3Light.h"
 #include "LogWriter.h"
 
-#include <DxErr.h>
-
 CN3Eng::CN3Eng()
 {
 	m_lpD3D         = nullptr;
@@ -270,7 +268,7 @@ void CN3Eng::SetProjection(float fNear, float fFar, float fLens, float fAspect)
 bool CN3Eng::Init(
 	BOOL bWindowed, HWND hWnd, uint32_t dwWidth, uint32_t dwHeight, uint32_t dwBPP, BOOL bUseHW)
 {
-	memset(&s_ResrcInfo, 0, sizeof(__ResrcInfo)); // Rendering Information 초기화..
+	s_ResrcInfo        = {}; // Rendering Information 초기화..
 
 	s_hWndBase         = hWnd;
 
@@ -646,7 +644,7 @@ void CN3Eng::Clear(D3DCOLOR crFill, RECT* pRC)
 	}
 
 #ifdef _DEBUG
-	memset(&s_RenderInfo, 0, sizeof(__RenderInfo));
+	s_RenderInfo = {};
 #endif
 }
 

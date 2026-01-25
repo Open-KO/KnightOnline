@@ -1160,12 +1160,13 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 		float fRotY = 0, fRotX = 0;
 		if (0 == ptCur.x)
 			fRotY = -2.0f;
-		else if ((CN3Base::s_CameraData.vp.Width - 1) == ptCur.x)
+		else if ((static_cast<int>(s_CameraData.vp.Width) - 1) == ptCur.x)
 			fRotY = 2.0f;
 		if (0 == ptCur.y)
 			fRotX = -1.0f;
-		else if ((CN3Base::s_CameraData.vp.Height - 1) == ptCur.y)
+		else if ((static_cast<int>(s_CameraData.vp.Height) - 1) == ptCur.y)
 			fRotX = 1.0f;
+
 		if (fRotY)
 		{
 			if (VP_THIRD_PERSON == s_pEng->ViewPoint())
@@ -1173,6 +1174,7 @@ void CGameProcMain::ProcessLocalInput(uint32_t dwMouseFlags)
 			else
 				s_pPlayer->RotAdd(fRotY);
 		}
+
 		if (fRotX && VP_THIRD_PERSON != s_pEng->ViewPoint())
 			s_pEng->CameraPitchAdd(fRotX);
 	}
@@ -2623,7 +2625,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->m_InfoBase.eClass     = eClass;
 	pUPC->m_InfoBase.iLevel     = iLevel;
 	pUPC->m_InfoBase.iAuthority = byAuthority;
-	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities);
+	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities, byItemFlags);
 	pUPC->RotateTo(DegreesToRadians(rand() % 360), true);
 	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
 

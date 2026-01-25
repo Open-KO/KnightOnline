@@ -346,7 +346,7 @@ void CUITransactionDlg::EnterTransactionState()
 			continue;
 		}
 
-		if (pItemExt->dwID != iExt)
+		if (pItemExt->dwID != static_cast<uint32_t>(iExt))
 			continue;
 
 		e_PartPosition ePart = PART_POS_UNKNOWN;

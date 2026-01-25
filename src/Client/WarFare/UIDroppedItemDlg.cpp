@@ -577,7 +577,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 		bFound = false;
 		for (i = 0; i < MAX_ITEM_BUNDLE_DROP_PIECE; i++)
 		{
-			if (m_pMyDroppedItem[i] != nullptr && (m_pMyDroppedItem[i]->pItemBasic->dwID + m_pMyDroppedItem[i]->pItemExt->dwID == iItemID))
+			if (m_pMyDroppedItem[i] != nullptr && m_pMyDroppedItem[i]->GetItemID() == iItemID)
 			{
 				bFound = true;
 				break;
@@ -664,7 +664,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 		// 아이템이 있다..
 		if (spItemDest != nullptr)
 		{
-			if (iItemID != (spItemDest->pItemBasic->dwID + spItemDest->pItemExt->dwID))
+			if (iItemID != spItemDest->GetItemID())
 			{
 				// 기존 이이템을 클리어..
 				if (spItemDest == nullptr)
@@ -754,7 +754,7 @@ void CUIDroppedItemDlg::GetItemByIDToInventory(
 			// 아이템이 있다..
 			if (spItemDest != nullptr)
 			{
-				if (iItemID != (spItemDest->pItemBasic->dwID + spItemDest->pItemExt->dwID))
+				if (iItemID != spItemDest->GetItemID())
 				{
 					// 기존 이이템을 클리어..
 					if (spItemDest == nullptr)

@@ -43,6 +43,8 @@
 
 #include <shared/lzf.h>
 
+#include <cassert>
+
 CN3SndObj* CGameProcedure::s_pSnd_BGM                            = nullptr; // 메인 배경음악 포인터..
 CLocalInput* CGameProcedure::s_pLocalInput                       = nullptr; // 마우스와 키보드 입력 객체 .. Direct Input 을 썼다.
 CAPISocket* CGameProcedure::s_pSocket                            = nullptr; // 메인 소켓 객체
@@ -879,7 +881,7 @@ void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이�
 
 	uint32_t decompressedLength = lzf_decompress(pkt.contents() + pkt.rpos(), compressedLength, &decompressedBuffer[0], originalLength);
 
-	_ASSERT(decompressedLength == originalLength);
+	assert(decompressedLength == originalLength);
 
 	if (decompressedLength != originalLength)
 		return;
@@ -890,7 +892,7 @@ void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이�
 	if (originalChecksum != 0)
 	{
 		uint32_t actualChecksum = crc32(&decompressedBuffer[0], decompressedLength);
-		_ASSERT(actualChecksum == originalChecksum);
+		assert(actualChecksum == originalChecksum);
 
 		if (actualChecksum != originalChecksum)
 			return;

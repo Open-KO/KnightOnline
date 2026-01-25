@@ -14,7 +14,7 @@ fetchcontent_declare(
 set(ZLIB_BUILD_TESTING OFF CACHE BOOL "zlib: Enable Zlib Examples as tests")
 set(ZLIB_INSTALL ON CACHE BOOL "zlib: Enable installation of zlib")
 
-if(MSVC)
+if(WIN32)
   set(ZLIB_BUILD_SHARED OFF CACHE BOOL "zlib: Enable building zlib shared library")
 endif()
 
@@ -22,7 +22,7 @@ fetchcontent_makeavailable(zlib)
 
 # Setup a wrapper project to reference the preferred zlib target for this build
 add_library(libzlib INTERFACE)
-if(MSVC)
+if(WIN32)
   target_link_libraries(libzlib INTERFACE zlibstatic)
 else()
   target_link_libraries(libzlib INTERFACE zlib)

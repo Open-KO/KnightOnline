@@ -1052,7 +1052,7 @@ void CUIHotKeyDlg::RenderCooldown(const __IconItemSkill* pSkill, float fCooldown
 	const float halfWidth    = static_cast<float>(centerX - rc.left);
 	const float halfHeight   = static_cast<float>(centerY - rc.top);
 
-	const float radius       = std::sqrtf(std::pow(halfWidth, 2.0f) + std::pow(halfHeight, 2.0f));
+	const float radius       = std::sqrt(std::pow(halfWidth, 2.0f) + std::pow(halfHeight, 2.0f));
 
 	float progress           = 0.0f;
 

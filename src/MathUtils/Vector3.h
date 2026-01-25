@@ -9,8 +9,8 @@ struct __Matrix44;
 struct __Vector3
 {
 public:
-	__Vector3() = default;
-	__Vector3(const __Vector3& vec);
+	__Vector3()                 = default;
+	__Vector3(const __Vector3&) = default;
 	__Vector3(float fx, float fy, float fz);
 
 	void Normalize();

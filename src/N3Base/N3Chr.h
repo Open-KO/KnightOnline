@@ -380,12 +380,13 @@ protected:
 	__FrmCtrl m_FrmCtrlUpper; // 상체용...
 	float m_fAniSpeedDelta;   // 에니메이션 속도 조정 변수 1 이보통, 더 크면 빨라진다..
 
+protected:
+	using CN3TransformCollision::CheckCollisionPrecisely;
+
 public:
-	// NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
 	int CheckCollisionPrecisely(
 		const __Vector3& vPos, const __Vector3& vDir, __Vector3* pvPick = nullptr);
 
-	// NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
 	int CheckCollisionPrecisely(int ixScreen, int iyScreen, __Vector3* pvPick = nullptr);
 
 	static void LODDeltaSet(int iLODDelta)

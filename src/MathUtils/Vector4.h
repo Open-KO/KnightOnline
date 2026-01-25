@@ -9,7 +9,8 @@ struct __Vector3;
 struct __Vector4
 {
 public:
-	__Vector4() = default;
+	__Vector4()                 = default;
+	__Vector4(const __Vector4&) = default;
 	__Vector4(float fx, float fy, float fz, float fw);
 	void Zero();
 	void Set(float fx, float fy, float fz, float fw);

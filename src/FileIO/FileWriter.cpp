@@ -19,7 +19,7 @@ bool FileWriter::OpenExisting(const std::filesystem::path& path)
 	// NOTE: As we have no 'append' flag, we will leave the offset set to 0.
 	// If the user wishes to append, they must seek to the end of the file themselves.
 	// This matches WinAPI & general C file I/O API behaviour (where the "a" mode isn't used).
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 	_wfopen_s(&fileHandle, path.native().c_str(), L"rb+");
 #else
 	fileHandle = fopen(path.native().c_str(), "rb+");
@@ -57,7 +57,7 @@ bool FileWriter::Create(const std::filesystem::path& path)
 	// Open the given file for writing.
 	// If it doesn't exist, create it.
 	// If it already exists, truncate it.
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 	_wfopen_s(&fileHandle, path.native().c_str(), L"wb");
 #else
 	fileHandle = fopen(path.native().c_str(), "wb");

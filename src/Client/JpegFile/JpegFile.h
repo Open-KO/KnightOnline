@@ -61,6 +61,7 @@
 #ifndef _INCLUDE_JPEGFILE
 #define _INCLUDE_JPEGFILE
 
+#include <cstdint>
 #include <cstdio>
 #include <string>
 

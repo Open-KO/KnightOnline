@@ -64,11 +64,6 @@ void CAPISocket::Release()
 	}
 
 	m_iSendByteCount = 0;
-
-#ifdef _DEBUG
-	memset(m_Statistics_Send_Sum, 0, sizeof(m_Statistics_Send_Sum));
-	memset(m_Statistics_Recv_Sum, 0, sizeof(m_Statistics_Recv_Sum));
-#endif
 }
 
 void CAPISocket::Disconnect()
@@ -159,11 +154,6 @@ int CAPISocket::Connect(HWND hWnd, const std::string& szIP, uint32_t dwPort)
 	m_dwPort     = dwPort;
 	m_bConnected = TRUE;
 
-#ifdef _DEBUG
-	memset(m_Statistics_Send_Sum, 0, sizeof(m_Statistics_Send_Sum));
-	memset(m_Statistics_Recv_Sum, 0, sizeof(m_Statistics_Recv_Sum));
-#endif
-
 	return 0;
 }
 
@@ -250,11 +240,6 @@ BOOL CAPISocket::ReceiveProcess()
 					m_qRecvPkt.push(pkt);
 					m_CB.HeadIncrease(siCore + 6); // 환형 버퍼 인덱스 증가 시키기..
 					bFoundTail = TRUE;
-#ifdef _DEBUG
-					uint8_t byCmd = data[4];
-					m_Statistics_Recv_Sum[byCmd].dwTime++;
-					m_Statistics_Recv_Sum[byCmd].iSize += siCore;
-#endif
 				}
 			}
 		}
@@ -331,13 +316,6 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 		if (count > 0)
 			nSent += count;
 	}
-
-#ifdef _DEBUG
-	uint8_t byCmd = pData[0]; // 통계 넣기..
-
-	m_Statistics_Send_Sum[byCmd].dwTime++;
-	m_Statistics_Send_Sum[byCmd].iSize += nSize;
-#endif
 
 	m_iSendByteCount += nTotalSize;
 }

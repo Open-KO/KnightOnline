@@ -4,7 +4,7 @@
 
 include(ExternalProject)
 
-if(MSVC)
+if(WIN32)
   set(LIBJPEG_TURBO_STATIC_SUFFIX "-static")
   set(LIBJPEG_TURBO_ENABLE_SHARED OFF)
   set(LIBJPEG_TURBO_ENABLE_STATIC ON)

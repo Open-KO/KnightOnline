@@ -186,11 +186,16 @@ set(N3BASE_COMMON_SOURCES
 )
 
 set(N3BASE_COMMON_DEPENDENCIES_PUBLIC
-  dx9sdk
   FileIO
   shared
   spdlog
 )
+
+# Only include the DX9 SDK with MSVC.
+# mingw packages its own
+if (MSVC)
+  list(APPEND N3BASE_COMMON_DEPENDENCIES_PUBLIC dx9sdk)
+endif ()
 
 set(N3BASE_COMMON_DEPENDENCIES_PRIVATE
   MathUtils
@@ -229,10 +234,10 @@ set_target_properties(N3Base_tool PROPERTIES
 )
 
 # Enable warnings as errors
-if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
+if (OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET N3Base_client PROPERTY COMPILE_WARNING_AS_ERROR ON)
-  set_property(TARGET N3Base_tool   PROPERTY COMPILE_WARNING_AS_ERROR ON)
-endif()
+  set_property(TARGET N3Base_tool PROPERTY COMPILE_WARNING_AS_ERROR ON)
+endif ()
 
 # Setup preprocessor defines
 target_compile_definitions(N3Base_client PUBLIC
@@ -249,10 +254,10 @@ target_compile_definitions(N3Base_tool INTERFACE
   NO_WARN_MBCS_MFC_DEPRECATION)
 
 # Setup dependencies
-target_link_libraries(N3Base_client PUBLIC  ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
-target_link_libraries(N3Base_tool   PUBLIC  ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
+target_link_libraries(N3Base_client PUBLIC ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
+target_link_libraries(N3Base_tool PUBLIC ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
 target_link_libraries(N3Base_client PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
-target_link_libraries(N3Base_tool   PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
+target_link_libraries(N3Base_tool PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
 
 # Expose include path
 target_include_directories(N3Base_client INTERFACE
@@ -264,7 +269,7 @@ target_include_directories(N3Base_tool INTERFACE
 
 # Setup PCH
 target_precompile_headers(N3Base_client PRIVATE "StdAfxBase.h")
-target_precompile_headers(N3Base_tool   PRIVATE "StdAfxBase.h")
+target_precompile_headers(N3Base_tool PRIVATE "StdAfxBase.h")
 
 # Setup warning levels
 set(N3BASE_COMMON_COMPILE_OPTIONS
@@ -274,4 +279,4 @@ set(N3BASE_COMMON_COMPILE_OPTIONS
 )
 
 target_compile_options(N3Base_client PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})
-target_compile_options(N3Base_tool   PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})
+target_compile_options(N3Base_tool PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})

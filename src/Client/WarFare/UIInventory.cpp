@@ -2412,7 +2412,7 @@ int CUIInventory::GetCountInInvByID(int iID) const
 	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
 		__IconItemSkill* spItem = m_pMyInvWnd[i];
-		if (spItem == nullptr || spItem->pItemBasic->dwID != (iID / 1000 * 1000) || spItem->pItemExt->dwID != (iID % 1000))
+		if (spItem == nullptr || spItem->GetItemID() != iID)
 			continue;
 
 		if (spItem->pItemBasic->byClass == ITEM_CLASS_CONSUMABLE)
@@ -2430,8 +2430,8 @@ void CUIInventory::ItemCountChange(int iDistrict, int iIndex, int iCount, int iI
 	switch (iDistrict)
 	{
 		case 0x00:
-			if (m_pMySlot[iIndex]
-				&& ((m_pMySlot[iIndex]->pItemBasic->dwID + m_pMySlot[iIndex]->pItemExt->dwID) != iID)) // 엉뚱한 아이템이 있는경우..
+			// 엉뚱한 아이템이 있는경우..
+			if (m_pMySlot[iIndex] != nullptr && m_pMySlot[iIndex]->GetItemID() != iID)
 			{
 				// 아이템 삭제.. 현재 인벤토리 윈도우만..
 				spItem            = m_pMySlot[iIndex];
@@ -2546,8 +2546,8 @@ void CUIInventory::ItemCountChange(int iDistrict, int iIndex, int iCount, int iI
 			break;
 
 		case 0x01:
-			if (m_pMyInvWnd[iIndex]
-				&& ((m_pMyInvWnd[iIndex]->pItemBasic->dwID + m_pMyInvWnd[iIndex]->pItemExt->dwID) != iID)) // 엉뚱한 아이템이 있는경우..
+			// 엉뚱한 아이템이 있는경우..
+			if (m_pMyInvWnd[iIndex] != nullptr && m_pMyInvWnd[iIndex]->GetItemID() != iID)
 			{
 				// 아이템 삭제.. 현재 인벤토리 윈도우만..
 				spItem              = m_pMyInvWnd[iIndex];

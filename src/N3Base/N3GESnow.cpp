@@ -30,11 +30,12 @@ void CN3GESnow::Release()
 	CN3GlobalEffect::Release();
 }
 
-void CN3GESnow::Tick()
+void CN3GESnow::Tick(float fFrm /*= -1.0f*/)
 {
 	if (!m_bActive || m_iVC <= 0 || m_pVB == nullptr)
 		return;
-	CN3GlobalEffect::Tick();
+
+	CN3GlobalEffect::Tick(fFrm);
 
 	int iCount       = m_iVC / 3;
 	int iActiveCount = iCount;
