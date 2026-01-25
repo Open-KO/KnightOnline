@@ -72,13 +72,6 @@ jobs:
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
           -DCMAKE_DISABLE_PRECOMPILE_HEADERS=TRUE
 
-    - name: Build external CMake projects
-      shell: pwsh
-      run: |
-        cmake `
-          --build build-windows-${{ matrix.BUILD_CONFIGURATION }}-${{ matrix.BUILD_PLATFORM }} `
-          --target libjpeg-turbo-project
-
     - uses: Open-KO/cpp-linter-action@OpenKO
       name: "Run linter"
       id: linter

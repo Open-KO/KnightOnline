@@ -23,7 +23,7 @@ set(LIBJPEG_INSTALL OFF CACHE BOOL "libjpeg: Install targets and headers")
 
 fetchcontent_makeavailable(jpeg)
 
-# Setup a wrapper project to reference the preferred zlib target for this build
+# Setup a wrapper project to reference the preferred jpeg target for this build
 add_library(libjpeg INTERFACE)
 if(WIN32)
   target_link_libraries(libjpeg INTERFACE jpeg_static)
