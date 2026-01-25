@@ -144,7 +144,7 @@
   </Folder>
   <Folder Name="/_deps/">
     <Project Path="src/Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg.vcxproj" />
     </Project>
     <Project Path="src/db-library/db-library.vcxproj" Id="05054154-a8f1-4094-ab01-e1402cd9f65a">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-db-models.vcxproj" />
@@ -191,7 +191,7 @@
     <Project Path="deps/fetch-and-build-wrappers/fetch-ko-client-assets.vcxproj" Id="0047bee8-1361-6bcb-3edf-26dcb127e1b5">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" Id="b24123a5-2fe3-4ad6-9b8d-c3090e87408d">

@@ -6,9 +6,9 @@
   </PropertyGroup>
   <Import Project="..\..\props\platform_root.props" />
   <PropertyGroup Label="UserMacros">
-    <DependencyName>libjpeg-turbo</DependencyName>
-    <LocalDependencyDir>deps\libjpeg-turbo</LocalDependencyDir>
-    <RealProjectPath>$(RootDir)deps\libjpeg-turbo-msvc\jpeg-static.vcxproj</RealProjectPath>
+    <DependencyName>libjpeg</DependencyName>
+    <LocalDependencyDir>deps\libjpeg</LocalDependencyDir>
+    <RealProjectPath>$(RootDir)deps\libjpeg-msvc\jpeg_static.vcxproj</RealProjectPath>
   </PropertyGroup>
   <Import Project="$(PropsDir)fetch_wrapper.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>Win32</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{569846A7-5A48-3B16-BB39-BE89E1C71CAA}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>jpeg_static</ProjectName>
+  </PropertyGroup>
+  <Import Project="..\..\props\platform_root.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <OutDir>$(StaticLibDir)</OutDir>
+    <TargetName>jpeg_static</TargetName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(DependencyDir)libjpeg\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(DependencyDir)libjpeg\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(DependencyDir)libjpeg\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_NONSTDC_NO_WARNINGS;</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\libjpeg\libjpeg\jaricom.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcapimin.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcapistd.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcarith.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jccoefct.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jccolor.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcdctmgr.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jchuff.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcinit.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcmainct.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcmarker.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcmaster.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcomapi.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcparam.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcprepct.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jcsample.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jctrans.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdapimin.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdapistd.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdarith.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdatadst.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdatasrc.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdcoefct.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdcolor.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jddctmgr.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdhuff.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdinput.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdmainct.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdmarker.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdmaster.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdmerge.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdpostct.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdsample.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jdtrans.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jerror.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jfdctflt.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jfdctfst.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jfdctint.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jidctflt.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jidctfst.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jidctint.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jmemmgr.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jmemnobs.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jquant1.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jquant2.c" />
+    <ClCompile Include="..\libjpeg\libjpeg\jutils.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
