@@ -354,7 +354,7 @@ inline constexpr uint32_t OBJ_EFFECT               = 0x20000000;
 inline constexpr uint32_t OBJ_ANIM_CONTROL         = 0x40000000;
 
 #ifndef _DEBUG
-#define __ASSERT(expr, expMessage)
+#define __ASSERT(expr, expMessage) ((void) 0)
 #else
 
 #ifdef _MSC_VER
