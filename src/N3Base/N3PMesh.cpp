@@ -163,7 +163,7 @@ bool CN3PMesh::Load(File& file)
 			{
 				m_pCollapses[i].iIndexChanges = 0;
 #ifdef _DEBUG
-				bFixed                        = true;
+				bFixed = true;
 #endif
 			}
 		}

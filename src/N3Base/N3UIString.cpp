@@ -235,7 +235,7 @@ void CN3UIString::WordWrap()
 				if ('\n' == szString[iCount]) // \n
 					break;
 
-				if (0x80 & szString[iCount]) // 2BYTE 문자
+				if (0x80 & szString[iCount])  // 2BYTE 문자
 				{
 					BOOL bFlag = m_pDFont->GetTextExtent(szString.c_str(), iCount + 2, &size);
 					__ASSERT(bFlag, "cannot get size of dfont");

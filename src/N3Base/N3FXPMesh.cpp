@@ -150,7 +150,6 @@ bool CN3FXPMesh::Load(File& file)
 		return false;
 	}
 
-
 	if (m_iMaxNumVertices > 0)
 	{
 		file.Read(m_pVertices, m_iMaxNumVertices * sizeof(__VertexT1));
@@ -189,7 +188,7 @@ bool CN3FXPMesh::Load(File& file)
 			{
 				m_pCollapses[i].iIndexChanges = 0;
 #ifdef _DEBUG
-				bFixed                        = true;
+				bFixed = true;
 #endif
 			}
 		}
