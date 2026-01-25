@@ -239,6 +239,18 @@ if (OPENKO_COMPILE_WARNINGS_AS_ERROR)
   set_property(TARGET N3Base_tool PROPERTY COMPILE_WARNING_AS_ERROR ON)
 endif ()
 
+# Link in the libs that we use
+set(N3BASE_COMMON_LIBS_PRIVATE
+  d3d9.lib
+  d3dx9.lib
+  dinput8.lib
+  dsound.lib
+  dxguid.lib
+)
+
+target_link_libraries(N3Base_client PRIVATE ${N3BASE_COMMON_LIBS_PRIVATE})
+target_link_libraries(N3Base_tool PRIVATE ${N3BASE_COMMON_LIBS_PRIVATE})
+
 # Setup preprocessor defines
 target_compile_definitions(N3Base_client PUBLIC
   _N3GAME
