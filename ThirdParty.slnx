@@ -26,12 +26,6 @@
     <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" Id="673f0d3f-f447-43fd-856e-fab4e776debc">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" Id="47beb39c-b62a-4e48-8a9f-0ded4450cf9e">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" />
-    </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" Id="b24123a5-2fe3-4ad6-9b8d-c3090e87408d">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>

@@ -158,7 +158,7 @@
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
     </Project>
     <Project Path="src/FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" />
     </Project>
     <Project Path="src/MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
     <Project Path="src/shared/shared.vcxproj" Id="c2feb024-8e46-4533-918b-7196caaa4e7d">
@@ -193,12 +193,6 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" Id="673f0d3f-f447-43fd-856e-fab4e776debc">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" Id="47beb39c-b62a-4e48-8a9f-0ded4450cf9e">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-mpg123.vcxproj" Id="b24123a5-2fe3-4ad6-9b8d-c3090e87408d">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />

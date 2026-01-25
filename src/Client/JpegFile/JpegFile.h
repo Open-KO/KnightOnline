@@ -64,7 +64,7 @@
 #include <cstdio>
 #include <string>
 
-#include <Windows.h>
+#include <windows.h>
 
 enum e_JpegFileError : uint8_t
 {

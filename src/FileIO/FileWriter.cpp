@@ -3,8 +3,6 @@
 #include <cassert>
 #include <cstdio> // SEEK_SET, SEEK_CUR, SEEK_END
 
-namespace llfio = LLFIO_V2_NAMESPACE;
-
 FileWriter::FileWriter()
 {
 }
@@ -14,32 +12,38 @@ bool FileWriter::OpenExisting(const std::filesystem::path& path)
 	// Close any existing file handle and reset write states.
 	Close();
 
+	FILE* fileHandle = nullptr;
+
 	// Open the given file for writing.
-	// If it doesn't exist, create it.
-	// If it already exists, simply load it.
+	// This must already exist so that we can simply load it for writing.
 	// NOTE: As we have no 'append' flag, we will leave the offset set to 0.
 	// If the user wishes to append, they must seek to the end of the file themselves.
 	// This matches WinAPI & general C file I/O API behaviour (where the "a" mode isn't used).
-	auto handleResult = llfio::file({}, path.native(), llfio::handle::mode::write,
-		llfio::handle::creation::open_existing, llfio::handle::caching::all,
-		llfio::handle::flag::none);
-	if (!handleResult)
+#ifdef _MSC_VER
+	_wfopen_s(&fileHandle, path.native().c_str(), L"rb+");
+#else
+	fileHandle = fopen(path.native().c_str(), "rb+");
+#endif
+	if (fileHandle == nullptr)
 		return false;
 
-	_fileHandle = std::move(std::move(handleResult).value());
+	_fileHandle = fileHandle;
 	_path       = path;
 	_open       = true;
 	_size       = 0;
 
-	// We don't initialize this for performance; we purposefully only request the size component.
-	// NOLINTNEXTLINE(*.cplusplus.UninitializedObject)
-	llfio::stat_t stat;
+	if (fseek(fileHandle, 0, SEEK_END) == 0)
+	{
+		long fileSize = ftell(fileHandle);
+		if (fileSize >= 0)
+			_size = static_cast<uint64_t>(fileSize);
 
-	auto statResult = stat.fill(_fileHandle, llfio::stat_t::want::size);
-	if (statResult)
-		_size = static_cast<uint64_t>(stat.st_size);
+		// Reset offset to start
+		(void) fseek(fileHandle, 0, SEEK_SET);
+	}
 
 	_sizeOnDisk = _size;
+
 	return true;
 }
 
@@ -48,16 +52,21 @@ bool FileWriter::Create(const std::filesystem::path& path)
 	// Close any existing file handle and reset write states.
 	Close();
 
+	FILE* fileHandle = nullptr;
+
 	// Open the given file for writing.
 	// If it doesn't exist, create it.
 	// If it already exists, truncate it.
-	auto handleResult = llfio::file({}, path.native(), llfio::handle::mode::write,
-		llfio::handle::creation::always_new, llfio::handle::caching::all,
-		llfio::handle::flag::none);
-	if (!handleResult)
+#ifdef _MSC_VER
+	_wfopen_s(&fileHandle, path.native().c_str(), L"wb");
+#else
+	fileHandle = fopen(path.native().c_str(), "wb");
+#endif
+
+	if (fileHandle == nullptr)
 		return false;
 
-	_fileHandle = std::move(std::move(handleResult).value());
+	_fileHandle = fileHandle;
 	_path       = path;
 	_open       = true;
 	_size       = 0;
@@ -85,21 +94,18 @@ bool FileWriter::Write(const void* buffer, size_t bytesToWrite, size_t* bytesWri
 	if (bytesToWrite == 0)
 		return true;
 
-	assert(_fileHandle.is_valid());
+	assert(_fileHandle != nullptr);
 
 	// Write the given bytes out to file.
-	auto writeResult = _fileHandle.write(
-		_offset, { { static_cast<const std::byte*>(buffer), bytesToWrite } });
-	if (!writeResult)
+	if (fwrite(buffer, bytesToWrite, 1, static_cast<FILE*>(_fileHandle)) != 1)
 		return false;
 
-	// Advance the current file's offset by the number of bytes actually written.
-	size_t effectiveBytesWritten  = writeResult.value();
-	_offset                      += effectiveBytesWritten;
+	// Advance the current file's offset by the number of bytes written.
+	_offset += bytesToWrite;
 
 	// Update the caller with the number of bytes actually written.
 	if (bytesWritten != nullptr)
-		*bytesWritten = effectiveBytesWritten;
+		*bytesWritten = bytesToWrite;
 
 	// Expand the size of the file if we've written past the end of it.
 	if (_offset > _size)
@@ -108,8 +114,7 @@ bool FileWriter::Write(const void* buffer, size_t bytesToWrite, size_t* bytesWri
 		_sizeOnDisk = _size;
 	}
 
-	// Succeed if we wrote all of the expected bytes.
-	return effectiveBytesWritten == bytesToWrite;
+	return true;
 }
 
 bool FileWriter::Seek(int64_t offset, int origin)
@@ -155,12 +160,22 @@ bool FileWriter::Seek(int64_t offset, int origin)
 	if (_offset > _size)
 		_size = _offset;
 
+	fseek(static_cast<FILE*>(_fileHandle), static_cast<long>(offset), origin);
+
 	return true;
 }
 
 void FileWriter::Flush()
 {
-	if (!_fileHandle.is_valid())
+	FlushImpl();
+}
+
+void FileWriter::FlushImpl()
+{
+	if (_fileHandle == nullptr)
+		return;
+
+	if (fflush(static_cast<FILE*>(_fileHandle)) != 0)
 		return;
 
 	// Our size in memory is larger than the physical size on disk.
@@ -170,30 +185,40 @@ void FileWriter::Flush()
 	// the operating system will fill in the blanks.
 	if (_size > _sizeOnDisk)
 	{
-		std::byte dummy {};
+		uint8_t dummy = 0;
+		fseek(static_cast<FILE*>(_fileHandle), static_cast<long>(_size - 1), SEEK_SET);
 
-		auto writeResult = _fileHandle.write(_size - 1, { { &dummy, 1 } });
-		if (writeResult)
+		if (fwrite(&dummy, sizeof(uint8_t), 1, static_cast<FILE*>(_fileHandle)) == 1)
 			_sizeOnDisk = _size;
+
+		fseek(static_cast<FILE*>(_fileHandle), static_cast<long>(_offset), SEEK_SET);
 	}
 }
 
 bool FileWriter::Close()
 {
-	if (!_fileHandle.is_valid())
+	if (_fileHandle == nullptr)
 		return false;
 
 	// Ensure we flush any changes before closing.
 	Flush();
 
-	(void) _fileHandle.close();
+	fclose(static_cast<FILE*>(_fileHandle));
+	_fileHandle = nullptr;
 
-	_offset = 0;
-	_open   = false;
+	_offset     = 0;
+	_open       = false;
 
 	return true;
 }
 
 FileWriter::~FileWriter()
 {
+	if (_fileHandle != nullptr)
+	{
+		FlushImpl();
+
+		fclose(static_cast<FILE*>(_fileHandle));
+		_fileHandle = nullptr;
+	}
 }

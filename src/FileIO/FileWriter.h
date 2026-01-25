@@ -5,8 +5,6 @@
 
 #include "File.h"
 
-#include <llfio/llfio.hpp>
-
 /// \brief FileWriter implements a write-capable file interface.
 ///
 /// Supports writing to a file, seeking, and flushing data to disk.
@@ -65,6 +63,12 @@ public:
 	/// \note This will expand the on-disk file if the offset moved beyond the previous size.
 	void Flush() override;
 
+protected:
+	/// \brief Flushes any buffered writes to disk.
+	/// \note This will expand the on-disk file if the offset moved beyond the previous size.
+	void FlushImpl();
+
+public:
 	/// \brief Closes the file and flush any pending writes.
 	/// \returns true if the file was open and closed successfully, false if already closed.
 	bool Close() override;
@@ -73,8 +77,11 @@ public:
 	~FileWriter() override;
 
 protected:
-	LLFIO_V2_NAMESPACE::file_handle _fileHandle; ///< File handle used for writing.
-	uint64_t _sizeOnDisk = 0;                    ///< Current size of the file on disk.
+	/// \brief File handle used for writing.
+	void* _fileHandle    = nullptr;
+
+	/// \brief Current size of the file on disk.
+	uint64_t _sizeOnDisk = 0;
 };
 
-#endif                                           // FILEIO_FILEWRITER_H
+#endif // FILEIO_FILEWRITER_H

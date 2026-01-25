@@ -5,7 +5,8 @@
 
 #include "File.h"
 
-#include <llfio/llfio.hpp>
+#include <boost/interprocess/file_mapping.hpp>
+#include <boost/interprocess/mapped_region.hpp>
 
 /// \brief FileReader implements a read-only file interface.
 ///
@@ -14,11 +15,11 @@
 class FileReader : public File
 {
 public:
-	/// \brief Gets the underlying mapped file handle. Intended only for testing.
-	/// \returns Reference to the mapped_file_handle used internally.
-	LLFIO_V2_NAMESPACE::mapped_file_handle& MappedFileHandle()
+	/// \brief Gets the underlying mapped file region. Intended only for testing.
+	/// \returns Reference to the mapped_region used internally.
+	boost::interprocess::mapped_region& MappedFileRegion()
 	{
-		return _mappedFileHandle;
+		return _mappedFileRegion;
 	}
 
 	/// \brief Gets the pointer to the mapped memory for the loaded file.
@@ -74,9 +75,14 @@ public:
 	~FileReader() override;
 
 protected:
-	LLFIO_V2_NAMESPACE::mapped_file_handle
-		_mappedFileHandle;    ///< Memory-mapped file handle for read access.
-	void* _address = nullptr; ///< Pointer to the memory-mapped data.
+	/// \brief Memory-mapped file handle for read access.
+	boost::interprocess::file_mapping _mappedFileHandle;
+
+	/// \brief Memory-mapped file region for read access.
+	boost::interprocess::mapped_region _mappedFileRegion;
+
+	/// \brief Pointer to the memory-mapped data.
+	void* _address = nullptr;
 };
 
-#endif                        // FILEIO_FILEREADER_H
+#endif // FILEIO_FILEREADER_H

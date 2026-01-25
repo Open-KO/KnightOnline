@@ -4,7 +4,7 @@
 #include <cstdio>  // SEEK_SET, SEEK_CUR, SEEK_END
 #include <cstring> // std::memcpy()
 
-namespace llfio = LLFIO_V2_NAMESPACE;
+namespace boost_ipc = boost::interprocess;
 
 FileReader::FileReader()
 {
@@ -16,22 +16,20 @@ bool FileReader::OpenExisting(const std::filesystem::path& path)
 	Close();
 
 	// Open and map the given file into memory for reading.
-	auto handleResult = llfio::mapped_file({}, path.native(), llfio::handle::mode::read,
-		llfio::handle::creation::open_existing, llfio::handle::caching::all,
-		llfio::handle::flag::none);
-	if (!handleResult)
+	try
+	{
+		_mappedFileHandle = boost_ipc::file_mapping(path.native().c_str(), boost_ipc::read_only);
+		_mappedFileRegion = boost_ipc::mapped_region(_mappedFileHandle, boost_ipc::read_only);
+	}
+	catch (const boost_ipc::interprocess_exception&)
+	{
 		return false;
+	}
 
-	_mappedFileHandle = std::move(std::move(handleResult).value());
-	_address          = _mappedFileHandle.address();
-	_path             = path;
-	_open             = true;
-
-	// Internally the size is always fetched on load (as we don't supply a size) and is what's reserved.
-	// If we can get away with it, this approach is very cheap, but we should just be careful.
-	// The next best way to get this is _mappedFileHandle.underlying_file_maximum_extent(), but
-	// we'd rather not use a second syscall unless we absolutely have to.
-	_size             = static_cast<uint64_t>(_mappedFileHandle.capacity());
+	_address = _mappedFileRegion.get_address();
+	_size    = static_cast<uint64_t>(_mappedFileRegion.get_size());
+	_path    = path;
+	_open    = true;
 
 	return true;
 }
@@ -56,7 +54,7 @@ bool FileReader::Read(void* buffer, size_t bytesToRead, size_t* bytesRead /*= nu
 	if (bytesToRead == 0)
 		return true;
 
-	assert(_mappedFileHandle.is_valid());
+	assert(_open);
 	assert(_offset <= _size);
 
 	// Determine how many bytes are remaining to be read.
@@ -144,15 +142,16 @@ void FileReader::Flush()
 
 bool FileReader::Close()
 {
-	if (!_mappedFileHandle.is_valid())
+	if (!_open)
 		return false;
 
-	(void) _mappedFileHandle.close();
+	_mappedFileRegion = {};
+	_mappedFileHandle = {};
 
-	_size    = 0;
-	_offset  = 0;
-	_address = nullptr;
-	_open    = false;
+	_size             = 0;
+	_offset           = 0;
+	_address          = nullptr;
+	_open             = false;
 	return true;
 }
 

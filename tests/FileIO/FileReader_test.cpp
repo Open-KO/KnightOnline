@@ -24,7 +24,7 @@ protected:
 
 		FILE* fp      = nullptr;
 #ifdef _MSC_VER
-		fopen_s(&fp, _testFilePath.string().c_str(), "wb");
+		_wfopen_s(&fp, _testFilePath.native().c_str(), L"wb");
 #else
 		fp = fopen(_testFilePath.string().c_str(), "wb");
 #endif
@@ -72,10 +72,8 @@ TEST_F(FileReaderTest, Offset_IsResetAfterClose)
 
 TEST_F(FileReaderTest, OpenExisting_LoadedCapacityMatchesUnderlyingFileSize)
 {
-	const auto& mappedFileHandle = _file.MappedFileHandle();
-	EXPECT_EQ(mappedFileHandle.capacity(), TEST_FILE_SIZE);
-	EXPECT_EQ(
-		mappedFileHandle.capacity(), mappedFileHandle.underlying_file_maximum_extent().value());
+	const auto& mappedFileRegion = _file.MappedFileRegion();
+	EXPECT_EQ(mappedFileRegion.get_size(), TEST_FILE_SIZE);
 }
 
 TEST_F(FileReaderTest, Seek_Set_SucceedsOnlyWithValidOffsets)
@@ -139,7 +137,7 @@ TEST_F(FileReaderTest, Seek_End_SucceedsOnlyWithValidOffsets)
 	EXPECT_TRUE(_file.Seek(-10, SEEK_END));
 	EXPECT_EQ(_file.Offset(), TEST_FILE_SIZE - 10);
 
-	// After the start of the file
+	// Before the start of the file
 	EXPECT_FALSE(_file.Seek(TEST_FILE_SIZE + 10, SEEK_END));
 	EXPECT_EQ(_file.Offset(), TEST_FILE_SIZE - 10);
 }

@@ -10,7 +10,7 @@
 //	See jpegfile.h for usage.
 //
 ////////////////////////////////////////////////////////////
-#include <Windows.h>
+#include <windows.h>
 #include "JpegFile.h"
 
 #include <cassert>

@@ -1,8 +1,10 @@
 ﻿#include <gtest/gtest.h>
 #include <FileIO/FileReader.h>
+
 #include <atomic>
 #include <cstdio>
 #include <ctime>
+#include <string_view>
 
 class FileReaderSetupTest : public ::testing::Test
 {
@@ -56,15 +58,20 @@ TEST_F(FileReaderSetupTest, OpenExisting_SucceedsOnExistingFile)
 {
 	FILE* fp = nullptr;
 #ifdef _MSC_VER
-	fopen_s(&fp, _testFilePath.string().c_str(), "wb");
+	_wfopen_s(&fp, _testFilePath.native().c_str(), L"wb");
 #else
-	fp = fopen(_testFilePath.string().c_str(), "wb");
+	fp = fopen(_testFilePath.native().c_str(), "wb");
 #endif
 
 	ASSERT_TRUE(fp != nullptr);
 
 	if (fp != nullptr)
+	{
+		constexpr std::string_view TestData = "test";
+
+		fwrite(TestData.data(), TestData.size(), 1, fp);
 		fclose(fp);
+	}
 
 	EXPECT_FALSE(_file.IsOpen());
 	ASSERT_TRUE(_file.OpenExisting(_testFilePath));

@@ -14,7 +14,7 @@
       <Build Project="false" />
     </Project>
     <Project Path="src/FileIO/FileIO.vcxproj" Id="10195386-62c0-4bda-a8e3-b88f1c9f81af">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-boost.vcxproj" />
     </Project>
     <Project Path="src/MathUtils/MathUtils.vcxproj" Id="07cd39fe-8cb1-46a2-81ab-485f2cae215f" />
     <Project Path="src/Server/shared-server/shared-server.vcxproj" Id="c630cf44-84a8-4586-a710-c420bf54dc13">
@@ -50,12 +50,6 @@
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-dx9sdk.vcxproj" Id="50d2b40a-5ae4-f5fb-4d79-ac6cc3c75274">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" Id="673f0d3f-f447-43fd-856e-fab4e776debc">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
-    </Project>
-    <Project Path="deps/fetch-and-build-wrappers/fetch-llfio.vcxproj" Id="47beb39c-b62a-4e48-8a9f-0ded4450cf9e">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-llfio-msvc-dep-headers.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-nanodbc.vcxproj" Id="3f38fd98-5c7e-97c7-70a9-fda7e34a0cfc">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />

@@ -102,7 +102,7 @@ endif()
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
 require_package(Asio)
-require_package(LLFIO)
+require_package(BoostSubset)
 require_package(Spdlog)
 
 include_directories(
@@ -183,9 +183,6 @@ if(OPENKO_BUILD_SERVERS)
   message(STATUS "OpenKO: Preparing to configure servers...")
 
   # Dependencies
-  set(CMAKE_FOLDER "Server/_deps/boost")
-  require_package(BoostSubset)
-
   set(CMAKE_FOLDER "Server/_deps/argparse")
   require_package(Argparse)
 
