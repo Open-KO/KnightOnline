@@ -29,6 +29,11 @@ if(MSVC)
   add_compile_options(/utf-8)
 endif()
 
+if(MINGW)
+  # Statically link (everything)
+  add_link_options(-static)
+endif()
+
 # Config
 option(OPENKO_BUILD_CLIENT "Build the client projects - MSVC only (default on)" ON)
 option(OPENKO_BUILD_CLIENT_TOOLS "Build the client tool projects - MSVC only (default on)" ON)

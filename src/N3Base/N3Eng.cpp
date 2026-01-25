@@ -3,6 +3,8 @@
 #include "N3Light.h"
 #include "LogWriter.h"
 
+#include <bit>
+
 CN3Eng::CN3Eng()
 {
 	m_lpD3D         = nullptr;
@@ -140,7 +142,7 @@ void CN3Eng::SetDefaultEnvironment()
 		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fMipMapLODBias)));
+		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, std::bit_cast<uint32_t>(fMipMapLODBias));
 	}
 
 	// 기본 라이트 정보 지정..

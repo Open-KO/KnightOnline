@@ -486,6 +486,10 @@ void CUIChat::AddLineBuffer(const std::string& szString, D3DCOLOR color)
 
 			BOOL bFlag = m_pChatOut->GetTextExtent(&(szString[iCount]), iCC, &size);
 			__ASSERT(bFlag, "cannot get size of dfont");
+
+			if (!bFlag)
+				break;
+
 			if ((iCX + size.cx) > iRegionWidth) // 가로 길이가 넘었으면
 			{
 				// 한 라인 더 추가하기

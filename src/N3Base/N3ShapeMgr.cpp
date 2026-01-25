@@ -761,7 +761,9 @@ void CN3ShapeMgr::Tick()
 	if (zMainE > MAX_CELL_MAIN)
 		zMainE = MAX_CELL_MAIN;
 
+#ifdef _DEBUG
 	int iSC = static_cast<int>(m_Shapes.size());
+#endif
 
 	m_ShapesToRender.clear();
 

@@ -880,7 +880,6 @@ void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이�
 	std::vector<uint8_t> decompressedBuffer(originalLength);
 
 	uint32_t decompressedLength = lzf_decompress(pkt.contents() + pkt.rpos(), compressedLength, &decompressedBuffer[0], originalLength);
-
 	assert(decompressedLength == originalLength);
 
 	if (decompressedLength != originalLength)
@@ -897,6 +896,8 @@ void CGameProcedure::MsgRecv_CompressedPacket(Packet& pkt) // 압축된 데이�
 		if (actualChecksum != originalChecksum)
 			return;
 	}
+#else
+	(void) originalChecksum;
 #endif
 
 	Packet decompressedPkt;
