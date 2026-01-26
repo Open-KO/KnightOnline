@@ -45,7 +45,7 @@ if [[ ! -f $WARFARE_EXE_BIN ]]; then
     exit 1
 fi
 echo "Copying client executable from bin/Debug..."
-cp WARFARE_EXE_BIN .
+cp "$WARFARE_EXE_BIN" .
 echo "Using WarFare executable: $WARFARE_EXE"
 
 export GAMEID=openko
