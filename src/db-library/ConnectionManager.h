@@ -54,10 +54,10 @@ public:
 		modelUtil::DbType dbType, long timeout = -1) noexcept(false);
 
 	/// \brief Returns the current ODBC connection string for a given DbType, or empty string if there is none
-	std::string GetOdbcConnectionString(modelUtil::DbType dbType);
+	static std::string GetOdbcConnectionString(modelUtil::DbType dbType);
 
 	/// \brief Returns the current ODBC connection string for a given config, or empty string if there is none
-	std::string GetOdbcConnectionString(const DatasourceConfig* config);
+	static std::string GetOdbcConnectionString(const DatasourceConfig* config);
 
 	// \brief Disconnects and removes pooled connections that haven't been used in some time.
 	// Will always leave at least 1 connection available.
