@@ -38,7 +38,6 @@
   <Import Project="$(PropsDir)n3base-project.props" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>KnightOnLine</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
