@@ -115,7 +115,7 @@ cmake --build "${BUILD_DIR}" \
 SCRIPT
 )"
 
-docker cp "$containerID:/tmp/build/Client" "${BUILD_ARTIFACTS}/Client"
+docker cp "$containerID:/tmp/build/bin" "${BUILD_ARTIFACTS}/bin"
 
 echo "Windows executable built:"
-ls -l "$BUILD_ARTIFACTS/Client/*.exe"
+ls -l "$BUILD_ARTIFACTS/bin/Debug/*.exe"
