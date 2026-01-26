@@ -1,4 +1,4 @@
-set -euox pipefail
+set -euo pipefail
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 export IMAGE=cross-win-builder
 
@@ -65,8 +65,8 @@ done
 # Make sure the container is removed regardless of error/success cases
 defer() {
   echo "Cleaning up container $containerID"
-  #docker stop "$containerID" 2>/dev/null || true
-  #docker rm "$containerID"
+  docker stop "$containerID" 2>/dev/null || true
+  docker rm "$containerID"
 }
 trap defer EXIT
 
@@ -115,7 +115,12 @@ cmake --build "${BUILD_DIR}" \
 SCRIPT
 )"
 
-docker cp "$containerID:/tmp/build/bin" "${BUILD_ARTIFACTS}/bin"
+echo "Copying executables..."
+docker cp "$containerID:/tmp/build/bin" "${BUILD_ARTIFACTS}"
+echo "Copying ClientData..."
+docker cp "$containerID:/tmp/build/ClientData" "${BUILD_ARTIFACTS}"
 
 echo "Windows executable built:"
-ls -l "$BUILD_ARTIFACTS/bin/Debug/*.exe"
+ls -l "$BUILD_ARTIFACTS/bin/Debug/KnightOnLine.exe"
+
+echo "Run the 'run_client.sh' script to start the game using Proton."
