@@ -64,7 +64,7 @@ std::string ConnectionManager::GetOdbcConnectionString(modelUtil::DbType dbType)
 	auto config = GetDatasourceConfig(dbType);
 	if (config != nullptr)
 	{
-		out = fmt::format("ODBC;DSN={};UID={};PWD={}", config->DatasourceName,
+		out = fmt::format("DSN={};UID={};PWD={};AutoTranslate=no", config->DatasourceName,
 			config->DatasourceUsername, config->DatasourcePassword);
 	}
 
@@ -125,7 +125,7 @@ std::shared_ptr<Connection> ConnectionManager::CreateConnectionImpl(
 		timeout = DefaultConnectionTimeout;
 
 	auto nanoconn = std::make_shared<nanodbc::connection>(
-		config->DatasourceName, config->DatasourceUsername, config->DatasourcePassword, timeout);
+		GetOdbcConnectionString(dbType), timeout);
 
 	return std::make_shared<Connection>(nanoconn, config, timeout);
 }
