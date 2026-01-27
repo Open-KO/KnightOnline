@@ -42,7 +42,7 @@ BUILD_ARTIFACTS="$(pwd)/cmake-build-debug"
 mkdir -p "$BUILD_ARTIFACTS"
 
 # remove any stray containers
-CONTAINER_NAME="winbuild-temp"
+CONTAINER_NAME="openko-winbuild-temp"
 OLD_CID=$(docker ps -aq --filter "name=${CONTAINER_NAME}")
 if [[ -n "$OLD_CID" ]]; then
     docker stop "$OLD_CID" 2>/dev/null || true
@@ -57,7 +57,7 @@ containerID=$(docker create \
             -v "${HOST_GIT_DIR}":/src:ro \
             "$IMAGE" tail -f /dev/null)
 
-echo "winbuild-temp container starting..."
+echo "$CONTAINER_NAME container starting..."
 docker start "$containerID"
 until docker inspect --format='{{.State.Running}}' "$containerID" | grep -q true; do
     sleep 0.1
@@ -73,10 +73,11 @@ trap defer EXIT
 
 docker exec "$containerID" bash -c "$(cat <<'SCRIPT'
 # IN-CONTAINER SCRIPT
-set -euox pipefail
+set -euo pipefail
 
 # Verify the compiler is present
-command -v x86_64-w64-mingw32-g++ >/dev/null || { echo "Missing MinGW compiler"; exit 1; }
+command -v x86_64-w64-mingw32-g++ >/dev/null || { echo "Missing MinGW x64 C++ compiler"; exit 1; }
+command -v x86_64-w64-mingw32-gcc >/dev/null || { echo "Missing MinGW x64 C compiler"; exit 1; }
 
 if [[ ! -f ${CONTAINER_SRC_DIR}/CMakeLists.txt ]]; then
   echo "Error: ${CONTAINER_SRC_DIR}/CMakeLists.txt was not found in the mounted source." >&2
@@ -105,7 +106,6 @@ cmake -S "${CONTAINER_SRC_DIR}" \
       -DOPENKO_BUILD_CLIENT_TOOLS=OFF \
       -DOPENKO_BUILD_TOOLS=OFF \
       -DOPENKO_BUILD_SERVERS=OFF \
-      -DCMAKE_VERBOSE_MAKEFILE=ON \
       -Wno-dev
 
       # 32-bit
@@ -117,7 +117,6 @@ cmake -S "${CONTAINER_SRC_DIR}" \
 cmake --build "${BUILD_DIR}" \
       --target WarFare \
       --config Debug \
-      --verbose \
       -j "${CORE_COUNT}"
 
 # END IN-CONTAINER SCRIPT
