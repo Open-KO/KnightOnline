@@ -14,12 +14,12 @@ include(FetchContent)
 include(RequirePackage)
 
 # Set minimum standard to C++20 (unless otherwise specified)
-set(CMAKE_CXX_STANDARD 20 CACHE STRING "" FORCE)
-set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "" FORCE)
-set(CMAKE_CXX_EXTENSIONS OFF CACHE BOOL "" FORCE)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # We don't use modules, so there's no reason to scan
-set(CXX_SCAN_FOR_MODULES OFF CACHE BOOL "" FORCE)
+set(CXX_SCAN_FOR_MODULES OFF)
 
 if(MSVC)
   # Statically link to the MSVC runtime
