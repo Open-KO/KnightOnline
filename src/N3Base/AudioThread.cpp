@@ -7,6 +7,7 @@
 
 #include <cassert>       // assert()
 #include <unordered_map> // std::unordered_map<>
+#include <algorithm>
 
 #include "N3Base.h"      // CN3Base::TimeGet()
 

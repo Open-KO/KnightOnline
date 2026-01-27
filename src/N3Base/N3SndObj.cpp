@@ -12,6 +12,7 @@
 
 #include <AL/alc.h>
 #include <cassert> // assert()
+#include <algorithm>
 
 #ifdef _N3GAME
 #include "LogWriter.h"
