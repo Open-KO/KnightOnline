@@ -40,7 +40,7 @@ on:
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref || github.run_id }}"
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   CLANG_LATEST_VERSION: 20
