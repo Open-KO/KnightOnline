@@ -59,16 +59,17 @@ std::shared_ptr<PoolConnection> ConnectionManager::CreatePoolConnection(
 
 std::string ConnectionManager::GetOdbcConnectionString(modelUtil::DbType dbType)
 {
-	std::string out;
-
 	auto config = GetDatasourceConfig(dbType);
-	if (config != nullptr)
-	{
-		out = fmt::format("ODBC;DSN={};UID={};PWD={}", config->DatasourceName,
-			config->DatasourceUsername, config->DatasourcePassword);
-	}
+	return GetOdbcConnectionString(config.get());
+}
 
-	return out;
+std::string ConnectionManager::GetOdbcConnectionString(const DatasourceConfig* config)
+{
+	if (config == nullptr)
+		return {};
+
+	return fmt::format("DSN={};UID={};PWD={};AutoTranslate=no", config->DatasourceName,
+		config->DatasourceUsername, config->DatasourcePassword);
 }
 
 void ConnectionManager::ExpireUnusedPoolConnections()
@@ -125,7 +126,7 @@ std::shared_ptr<Connection> ConnectionManager::CreateConnectionImpl(
 		timeout = DefaultConnectionTimeout;
 
 	auto nanoconn = std::make_shared<nanodbc::connection>(
-		config->DatasourceName, config->DatasourceUsername, config->DatasourcePassword, timeout);
+		GetOdbcConnectionString(config.get()), timeout);
 
 	return std::make_shared<Connection>(nanoconn, config, timeout);
 }
