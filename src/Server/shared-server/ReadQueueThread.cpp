@@ -13,16 +13,20 @@ ReadQueueThread::ReadQueueThread(SharedMemoryQueue& sharedMemoryQueue) :
 
 void ReadQueueThread::thread_loop()
 {
-	std::array<char, SharedMemoryQueue::MAX_MSG_SIZE> buffer {};
 	int len = 0;
+	std::array<char, SharedMemoryQueue::MAX_MSG_SIZE> buffer {};
 
+	auto nextTick = std::chrono::steady_clock::now();
 	while (CanTick())
 	{
-		len = _sharedMemoryQueue.GetData(buffer.data());
+		nextTick += 100ms;
+
+		len       = _sharedMemoryQueue.GetData(buffer.data());
 		if (len >= SMQ_ERROR_RANGE)
 		{
 			std::unique_lock<std::mutex> lock(ThreadMutex());
-			ThreadCondition().wait_for(lock, 100ms);
+			ThreadCondition().wait_until(lock, nextTick, [this]() { return IsSignaled(); });
+			ResetSignal();
 
 			if (!CanTick())
 				break;

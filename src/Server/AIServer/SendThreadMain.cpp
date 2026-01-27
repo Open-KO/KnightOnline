@@ -30,6 +30,7 @@ void SendThreadMain::queue(_SEND_DATA* sendData)
 		}
 
 		_insertionQueue.push(sendData);
+		SetSignaled();
 	}
 
 	// Ensure mutex is unlocked before notification to avoid unnecessary
@@ -55,6 +56,7 @@ void SendThreadMain::thread_loop()
 		{
 			std::unique_lock<std::mutex> lock(ThreadMutex());
 			ThreadCondition().wait(lock, waitUntilPredicate);
+			ResetSignal();
 
 			if (!CanTick())
 				break;
