@@ -23,6 +23,9 @@ if [ -h "$SCRIPT_PATH" ] && command -v readlink >/dev/null 2>&1 ; then
 fi
 SCRIPT_DIR=$(cd "$(dirname "$SCRIPT_PATH")" && pwd)
 
+# try to change to script directory
+cd "$SCRIPT_DIR" || { echo "Failed to change to directory: $SCRIPT_DIR"; exit 1; }
+
 # Check if the image is already built
 if ! docker image inspect $IMAGE >/dev/null 2>&1; then
     # Image not found – build it from the Dockerfile in the current directory
@@ -30,8 +33,6 @@ if ! docker image inspect $IMAGE >/dev/null 2>&1; then
     docker build -t $IMAGE .
 fi
 
-# try to change to script directory
-cd "$SCRIPT_DIR" || { echo "Failed to change to directory: $SCRIPT_DIR"; exit 1; }
 # pop up a directory to be at the project root (where the docker-compose.yaml is)
 cd ../..
 echo "Working dir: " && pwd
@@ -84,15 +85,23 @@ fi
 
 mkdir -p "${BUILD_DIR}"
 
+CORE_COUNT=1
+if command -v nproc >/dev/null 2>&1; then
+    CORE_COUNT="$(nproc)"
+else
+    CORE_COUNT=$(grep -c ^processor /proc/cpuinfo)
+fi
+
+((CORE_COUNT -= 2))
+((CORE_COUNT < 1)) && CORE_COUNT=1
+echo "Using ${CORE_COUNT} cores for cmake"
+
 cmake -S "${CONTAINER_SRC_DIR}" \
       -B "${BUILD_DIR}" \
       -G "Ninja" \
       -DCMAKE_C_COMPILER="x86_64-w64-mingw32-gcc" \
       -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-g++" \
       -DCMAKE_SYSTEM_NAME="Windows" \
-      -DLLFIO_ASSUME_CROSS_COMPILING=ON \
-      -DODBC_LIBRARY=/usr/lib/x86_64-linux-gnu/libodbc.so \
-      -DODBC_INCLUDE_DIR=/usr/include \
       -DOPENKO_BUILD_CLIENT_TOOLS=OFF \
       -DOPENKO_BUILD_TOOLS=OFF \
       -DOPENKO_BUILD_SERVERS=OFF \
@@ -109,7 +118,7 @@ cmake --build "${BUILD_DIR}" \
       --target WarFare \
       --config Debug \
       --verbose \
-      -j 14
+      -j "${CORE_COUNT}"
 
 # END IN-CONTAINER SCRIPT
 SCRIPT

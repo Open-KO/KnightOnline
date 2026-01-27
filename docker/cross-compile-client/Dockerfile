@@ -15,8 +15,6 @@ RUN apt-get update && \
         tar \
         util-linux \
         libssl-dev \
-        unixodbc \
-        unixodbc-dev \
         ninja-build && \
     rm -rf /var/lib/apt/lists/*
 

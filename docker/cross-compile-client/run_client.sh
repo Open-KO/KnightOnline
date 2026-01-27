@@ -51,6 +51,6 @@ echo "Using WarFare executable: $WARFARE_EXE"
 export GAMEID=openko
 export LOG_DIR=openko
 export PROTONFIXES_DISABLE=1
-export PROTONPATH=GE-Proton10-28
+export PROTONPATH=GE-Proton Latest
 export WINEPREFIX="${HOME}/.steam/compatibilitytools.d/OpenKO-prefix"
 umu-run $WARFARE_EXE
