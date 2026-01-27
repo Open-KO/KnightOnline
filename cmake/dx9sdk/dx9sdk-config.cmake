@@ -60,5 +60,5 @@ target_include_directories(dx9sdk INTERFACE
 
 # Expose library path
 target_link_directories(dx9sdk INTERFACE
-  "${DX9_LIBARY_DIR}"
+  "${DX9_LIBRARY_DIR}"
 )
