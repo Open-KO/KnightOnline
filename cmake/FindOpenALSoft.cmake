@@ -34,7 +34,7 @@ if(MINGW)
   set(ALSOFT_BACKEND_OBOE OFF CACHE BOOL "openal-soft: Enable Oboe backend" FORCE)
   set(ALSOFT_BACKEND_OPENSL OFF CACHE BOOL "openal-soft: Enable OpenSL backend" FORCE)
   # set(ALSOFT_BACKEND_PORTAUDIO OFF CACHE BOOL "openal-soft: Enable PortAudio backend" FORCE)
-  # set(DALSOFT_BACKEND_WAVE OFF CACHE BOOL "openal-soft: Enable Wave Writer backend" FORCE)
+  # set(ALSOFT_BACKEND_WAVE OFF CACHE BOOL "openal-soft: Enable Wave Writer backend" FORCE)
 endif()
 
 fetchcontent_makeavailable(openalsoft)
