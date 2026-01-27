@@ -177,6 +177,7 @@ bool CN3FXPMesh::Load(File& file)
 		file.Read(m_pCollapses, m_iNumCollapses * sizeof(__EdgeCollapse));
 
 		// 위의 +1을 한이유와 같음. 만약을 대비해 마지막 데이타를 초기화 해둠
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 		memset(m_pCollapses + m_iNumCollapses, 0, sizeof(__EdgeCollapse));
 
 #ifdef _DEBUG
