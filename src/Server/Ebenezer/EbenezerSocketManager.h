@@ -3,24 +3,24 @@
 
 #pragma once
 
-#include <shared-server/SocketManager.h>
+#include <shared-server/TcpServerSocketManager.h>
 
 namespace Ebenezer
 {
 
 class CUser;
 class SendWorkerThread;
-class EbenezerSocketManager : public SocketManager
+class EbenezerSocketManager : public TcpServerSocketManager
 {
 public:
 	EbenezerSocketManager();
 	~EbenezerSocketManager() override;
 
-	CUser* GetUser(int socketId) const;
-	CUser* GetUserUnchecked(int socketId) const;
+	std::shared_ptr<CUser> GetUser(int socketId) const;
+	std::shared_ptr<CUser> GetUserUnchecked(int socketId) const;
 
-	CUser* GetInactiveUser(int socketId) const;
-	CUser* GetInactiveUserUnchecked(int socketId) const;
+	std::shared_ptr<CUser> GetInactiveUser(int socketId) const;
+	std::shared_ptr<CUser> GetInactiveUserUnchecked(int socketId) const;
 
 protected:
 	SendWorkerThread* _sendWorkerThread;

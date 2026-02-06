@@ -1574,8 +1574,7 @@ bool CN3SkyMng::Load(File& file)
 	std::string szClouds[NUM_CLOUD];
 	std::string szMoon;
 
-	int i = 0;
-	for (i = 0; i < NUM_SUNPART; i++)
+	for (uint8_t i = 0; i < NUM_SUNPART; i++)
 	{
 		int iL = 0;
 		file.Read(&iL, 4);
@@ -1586,7 +1585,7 @@ bool CN3SkyMng::Load(File& file)
 		}
 	}
 
-	for (i = 0; i < NUM_CLOUD; i++)
+	for (uint32_t i = 0; i < NUM_CLOUD; i++)
 	{
 		int iL = 0;
 		file.Read(&iL, 4);
@@ -1625,7 +1624,7 @@ bool CN3SkyMng::Load(File& file)
 		m_pMoon = new CN3Moon();
 	m_pMoon->Init(szMoon);
 
-	for (i = 0; i < MAX_GAME_LIGHT; i++)
+	for (int i = 0; i < MAX_GAME_LIGHT; i++)
 	{
 		if (nullptr == m_pLightColorDiffuses[i])
 			m_pLightColorDiffuses[i] = new CN3ColorChange();
@@ -1640,7 +1639,7 @@ bool CN3SkyMng::Load(File& file)
 	if (iSDCC > 0)
 	{
 		m_DayChanges.assign(iSDCC, __SKY_DAYCHANGE());
-		for (i = 0; i < iSDCC; i++)
+		for (int i = 0; i < iSDCC; i++)
 		{
 			m_DayChanges[i].Load(file);
 		}

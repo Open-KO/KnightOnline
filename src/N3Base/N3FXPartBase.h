@@ -55,7 +55,7 @@ public:
 
 	uint32_t m_dwSrcBlend;
 	uint32_t m_dwDestBlend;
-	BOOL m_bAlpha;
+	uint32_t m_bAlpha;
 
 	uint32_t m_dwZEnable;
 	uint32_t m_dwZWrite;

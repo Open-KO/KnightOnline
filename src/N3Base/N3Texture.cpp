@@ -189,10 +189,13 @@ bool CN3Texture::LoadFromFile(const std::string& szFileName)
 	if (m_lpTexture != nullptr)
 		this->Release();
 
-	this->FileNameSet(szFileName);        // 파일 이름을 복사하고..
+	this->FileNameSet(szFileName); // 파일 이름을 복사하고..
 	std::string szFullPath;
-	if (-1 != m_szFileName.find(':') || -1 != m_szFileName.find("\\\\")
-		|| -1 != m_szFileName.find("//")) // 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
+
+	// 문자열에 ':', '\\', '//' 이 들어 있으면 전체 경로이다..
+	if (m_szFileName.find(':') != std::string::npos
+		|| m_szFileName.find("\\\\") != std::string::npos
+		|| m_szFileName.find("//") != std::string::npos)
 	{
 		szFullPath = m_szFileName;
 	}

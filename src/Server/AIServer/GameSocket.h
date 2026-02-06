@@ -22,8 +22,10 @@ public:
 	CParty m_Party;
 
 public:
-	CGameSocket(SocketManager* socketManager);
+	CGameSocket(TcpServerSocketManager* socketManager);
 	~CGameSocket() override;
+
+	std::string_view GetImplName() const override;
 
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;

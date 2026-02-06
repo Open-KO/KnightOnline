@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "TcpSocket.h"
-#include "SocketManager.h"
+#include "TcpSocketManager.h"
+
+#include <cassert>
+#include <spdlog/spdlog.h>
 
 TcpSocket::TcpSocket(test_tag) :
 	_recvBufferSize(DEFAULT_RECV_BUFFER_SIZE), _sendBufferSize(DEFAULT_SEND_BUFFER_SIZE),
@@ -9,44 +12,42 @@ TcpSocket::TcpSocket(test_tag) :
 	_recvBuffer.resize(_recvBufferSize);
 }
 
-TcpSocket::TcpSocket(SocketManager* socketManager) :
+TcpSocket::TcpSocket(TcpSocketManager* socketManager) :
 	_socketManager(socketManager), _recvBufferSize(socketManager->GetRecvBufferSize()),
 	_sendBufferSize(socketManager->GetSendBufferSize()),
+	_recvBuffer(socketManager->GetRecvBufferSize()),
 	_recvCircularBuffer(socketManager->GetRecvBufferSize()),
 	_sendCircularBuffer(socketManager->GetSendBufferSize())
 {
 	_socket = std::make_unique<RawSocket_t>(*socketManager->GetWorkerPool());
-	_recvBuffer.resize(_recvBufferSize);
 }
 
 int TcpSocket::QueueAndSend(char* buffer, int length)
 {
-	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+	std::unique_lock<std::recursive_mutex> lock(_sendMutex);
 
 	if (_pendingDisconnect)
 		return -1;
 
 	// Add this packet to the circular buffer.
-	// Ensure we do not allow resizing; we do not want these pointers invalidated.
-	auto span = _sendCircularBuffer.PutData(buffer, length, false);
-	if (span.Buffer1 != nullptr && span.Length1 > 0)
-	{
-		auto queuedSend        = std::make_unique<QueuedSend>();
-		queuedSend->IsOwned    = false;
-		queuedSend->BufferSpan = span;
-		_sendQueue.push(std::move(queuedSend));
-	}
+	// This uses the non-expandable circular buffer so it doesn't get resized;
+	// we do not want these pointers invalidated.
+	auto span = _sendCircularBuffer.PutData(buffer, length);
+
 	// Failed to add to the buffer, it has no room.
-	// Allocate and queue.
-	else
+	if (span.Buffer1 == nullptr || span.Length1 <= 0)
 	{
-		auto queuedSend                = std::make_unique<QueuedSend>();
-		queuedSend->IsOwned            = true;
-		queuedSend->BufferSpan.Buffer1 = new char[length];
-		queuedSend->BufferSpan.Length1 = length;
-		memcpy(queuedSend->BufferSpan.Buffer1, buffer, length);
-		_sendQueue.push(std::move(queuedSend));
+		lock.unlock();
+
+		spdlog::error("TcpSocket({})::QueueAndSend: no more room in buffer. [socketId={}]",
+			GetImplName(), _socketId);
+
+		Close();
+		return -1;
 	}
+
+	// Allocate and queue.
+	_sendQueue.push(span);
 
 	if (!AsyncSend(false))
 		return -1;
@@ -54,7 +55,7 @@ int TcpSocket::QueueAndSend(char* buffer, int length)
 	return length;
 }
 
-bool TcpSocket::AsyncSend(bool fromAsyncChain)
+bool TcpSocket::AsyncSend(bool fromAsyncChain, size_t bytesToRemove /*= 0*/)
 {
 	std::unique_lock<std::recursive_mutex> lock(_sendMutex);
 
@@ -65,7 +66,10 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 		_sendInProgress = false;
 
 		if (!_sendQueue.empty())
+		{
+			_sendCircularBuffer.HeadIncrease(static_cast<int>(bytesToRemove));
 			_sendQueue.pop();
+		}
 
 		if (_sendQueue.empty())
 		{
@@ -95,34 +99,33 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 			return true;
 	}
 
+	if (_socket == nullptr)
+		return false;
+
 	// Fetch the next entry to send.
 	// Note that we keep this in the queue until the send completes.
-	const auto& queuedSend = _sendQueue.front();
-	const auto& span       = queuedSend->BufferSpan;
+	const auto& span = _sendQueue.front();
 
 	try
 	{
+		// Dispatch async sender for either 1 or 2 (if it wraps around to the start of the circular buffer) send buffers.
+		// Note that as the socket instance is managed by TcpSocketManager and only freed after these events are shutdown,
+		// we can safely supply the pointer directly without caring about our ref count.
 		if (span.Buffer2 != nullptr && span.Length2 > 0)
 		{
 			std::array<asio::const_buffer, 2> buffers;
 			buffers[0] = asio::buffer(span.Buffer1, span.Length1);
 			buffers[1] = asio::buffer(span.Buffer2, span.Length2);
 
-			if (_socket != nullptr)
-			{
-				_socket->async_write_some(
-					buffers, std::bind(&SocketManager::OnPostSend, _socketManager,
-								 std::placeholders::_1, std::placeholders::_2, this));
-			}
+			_socket->async_write_some(
+				buffers, std::bind(&TcpSocketManager::OnPostSend, _socketManager,
+							 std::placeholders::_1, std::placeholders::_2, this));
 		}
 		else
 		{
-			if (_socket != nullptr)
-			{
-				_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
-					std::bind(&SocketManager::OnPostSend, _socketManager, std::placeholders::_1,
-						std::placeholders::_2, this));
-			}
+			_socket->async_write_some(asio::buffer(span.Buffer1, span.Length1),
+				std::bind(&TcpSocketManager::OnPostSend, _socketManager, std::placeholders::_1,
+					std::placeholders::_2, this));
 		}
 
 		_sendInProgress = true;
@@ -131,8 +134,9 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 	{
 		lock.unlock();
 
-		spdlog::error(
-			"TcpSocket::AsyncSend: failed to post send for socketId={}: {}", _socketId, ex.what());
+		spdlog::error("TcpSocket({})::AsyncSend: failed to post send. [socketId={} error={}]",
+			GetImplName(), _socketId, ex.what());
+
 		Close();
 		return false;
 	}
@@ -140,26 +144,38 @@ bool TcpSocket::AsyncSend(bool fromAsyncChain)
 	return true;
 }
 
+void TcpSocket::AbortSend()
+{
+	std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+
+	while (!_sendQueue.empty())
+		_sendQueue.pop();
+
+	_sendCircularBuffer.SetEmpty();
+	_sendInProgress = false;
+}
+
 void TcpSocket::AsyncReceive()
 {
 	if (_pendingDisconnect)
 		return;
 
-	memset(_recvBuffer.data(), 0, _recvBuffer.size());
+	if (_socket == nullptr)
+		return;
 
 	try
 	{
-		if (_socket != nullptr)
-		{
-			_socket->async_read_some(
-				asio::buffer(_recvBuffer), std::bind(&SocketManager::OnPostReceive, _socketManager,
-											   std::placeholders::_1, std::placeholders::_2, this));
-		}
+		// Dispatch async reader.
+		// Note that as the socket instance is managed by TcpSocketManager and only freed after these events are shutdown,
+		// we can safely supply the pointer directly without caring about our ref count.
+		_socket->async_read_some(
+			asio::buffer(_recvBuffer), std::bind(&TcpSocketManager::OnPostReceive, _socketManager,
+										   std::placeholders::_1, std::placeholders::_2, this));
 	}
 	catch (const asio::system_error& ex)
 	{
-		spdlog::error(
-			"TcpSocket::Receive: failed to post receive for socketId={}: {}", _socketId, ex.what());
+		spdlog::error("TcpSocket({})::AsyncReceive: failed to post receive. [socketId={} error={}]",
+			GetImplName(), _socketId, ex.what());
 		Close();
 	}
 }
@@ -190,7 +206,7 @@ void TcpSocket::ReceivedData(int length)
 
 void TcpSocket::CloseProcess()
 {
-	_state = CONNECTION_STATE_DISCONNECTED;
+	SetState(CONNECTION_STATE_DISCONNECTED);
 
 	if (_socket != nullptr && _socket->is_open())
 	{
@@ -198,15 +214,15 @@ void TcpSocket::CloseProcess()
 		_socket->shutdown(asio::socket_base::shutdown_both, ec);
 		if (ec)
 		{
-			spdlog::error("TcpSocket::CloseProcess: shutdown() failed for socketId={}: {}",
-				_socketId, ec.message());
+			spdlog::error("TcpSocket({})::CloseProcess: shutdown() failed. [socketId={} error={}]",
+				GetImplName(), _socketId, ec.message());
 		}
 
 		_socket->close(ec);
 		if (ec)
 		{
-			spdlog::error("TcpSocket::CloseProcess: close() failed for socketId={}: {}", _socketId,
-				ec.message());
+			spdlog::error("TcpSocket({})::CloseProcess: close() failed. [socketId={} error={}]",
+				GetImplName(), _socketId, ec.message());
 		}
 	}
 
@@ -221,7 +237,7 @@ void TcpSocket::CloseProcess()
 
 void TcpSocket::InitSocket()
 {
-	_state = CONNECTION_STATE_CONNECTED;
+	SetState(CONNECTION_STATE_CONNECTED);
 
 	_sendCircularBuffer.SetEmpty();
 	_recvCircularBuffer.SetEmpty();
@@ -253,9 +269,56 @@ const std::string& TcpSocket::GetRemoteIP()
 		}
 		else
 		{
-			spdlog::warn("TcpSocket::GetRemoteIP: failed lookup. socketId={}", _socketId);
+			spdlog::warn("TcpSocket({})::GetRemoteIP: failed lookup. [socketId={}]", GetImplName(),
+				_socketId);
 		}
 	}
 
 	return _remoteIp;
+}
+
+void TcpSocket::SetSocket(RawSocket_t&& rawSocket)
+{
+	assert(_socket != nullptr);
+
+	if (_socket != nullptr)
+		*_socket = std::move(rawSocket);
+}
+
+void TcpSocket::Close()
+{
+	if (GetState() == CONNECTION_STATE_DISCONNECTED)
+		return;
+
+	{
+		std::lock_guard<std::recursive_mutex> lock(_sendMutex);
+
+		// From this point onward we're effectively disconnected.
+		// We should stop handling or sending new packets, and just ensure any existing queued packets are sent.
+		// Once all existing packets are sent, we can fully disconnect the socket.
+		_pendingDisconnect = true;
+
+		// Wait until the send chain is complete.
+		// The send chain will trigger this again.
+		if (_sendInProgress || !_sendQueue.empty())
+			return;
+	}
+
+	asio::error_code ec;
+	try
+	{
+		auto threadPool = _socketManager->GetWorkerPool();
+		if (threadPool == nullptr)
+			return;
+
+		// Dispatch socket close request.
+		// Note that as the socket instance is managed by TcpSocketManager and only freed after these events are shutdown,
+		// we can safely supply the pointer directly without caring about our ref count.
+		asio::post(*threadPool, std::bind(&TcpSocketManager::OnPostClose, _socketManager, this));
+	}
+	catch (const asio::system_error& ex)
+	{
+		spdlog::error("TcpSocket({})::Close: failed to post close. [socketId={} error={}]",
+			GetImplName(), _socketId, ex.what());
+	}
 }

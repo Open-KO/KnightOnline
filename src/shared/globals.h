@@ -7,22 +7,28 @@
 #include "packets.h"
 #include "Packet.h"
 
-inline constexpr char DEFAULT_MAP_DIR[]    = "../MAP/";
-inline constexpr char DEFAULT_QUESTS_DIR[] = "../QUESTS/";
+#include <cstdint>
 
-inline constexpr int MIN_ID_SIZE           = 6;
-inline constexpr int MAX_ID_SIZE           = 20;
-inline constexpr int MAX_NPC_NAME_SIZE     = 30;
-inline constexpr int MAX_PW_SIZE           = 12;
+inline constexpr char DEFAULT_MAP_DIR[]              = "../MAP/";
+inline constexpr char DEFAULT_QUESTS_DIR[]           = "../QUESTS/";
+
+inline constexpr int MIN_ID_SIZE                     = 6;
+inline constexpr int MAX_ID_SIZE                     = 20;
+inline constexpr int MAX_NPC_NAME_SIZE               = 30;
+inline constexpr int MAX_PW_SIZE                     = 12;
 
 // IPv4 addresses are max ###.###.###.### (3*4 + 3), or 15 bytes
-inline constexpr int MAX_IP_SIZE           = 15;
+inline constexpr int MAX_IP_SIZE                     = 15;
 
-inline constexpr int MAX_ITEM_COUNT        = 9999; // 한 슬롯에 가지는 최대 화살/송편 개수
-inline constexpr int MAX_QUEST             = 100;
-inline constexpr int MAX_LEVEL             = 80;   // 최고렙...
-inline constexpr int MAX_GOLD              = 2'100'000'000;
-inline constexpr int VIEW_DISTANCE         = 48;
+inline constexpr int MAX_ITEM_COUNT                  = 9999; // 한 슬롯에 가지는 최대 화살/송편 개수
+inline constexpr int MAX_QUEST                       = 100;
+inline constexpr int MAX_LEVEL                       = 80;   // 최고렙...
+inline constexpr int MAX_GOLD                        = 2'100'000'000;
+inline constexpr int VIEW_DISTANCE                   = 48;
+
+inline constexpr float MAX_INTERACTION_RANGE         = 11;
+inline constexpr float MAX_INTERACTION_RANGE_SQUARED = (MAX_INTERACTION_RANGE
+														* MAX_INTERACTION_RANGE);
 
 enum e_AttackResult : uint8_t
 {
@@ -101,6 +107,52 @@ enum e_ItemSaleType : uint8_t
 	SALE_TYPE_LOW           = 0, // sells lower than purchase price
 	SALE_TYPE_FULL          = 1, // sells equal to purchase price
 	SALE_TYPE_LOW_NO_REPAIR = 2, // irreparable items sell for lower price than purchase
+};
+
+enum e_ItemClass : int16_t
+{
+	ITEM_CLASS_DAGGER        = 11,  // dagger
+	ITEM_CLASS_SWORD         = 21,  // onehandsword
+	ITEM_CLASS_SWORD_2H      = 22,  // 3 : twohandsword
+	ITEM_CLASS_AXE           = 31,  // onehandaxe
+	ITEM_CLASS_AXE_2H        = 32,  // twohandaxe
+	ITEM_CLASS_MACE          = 41,  // mace
+	ITEM_CLASS_MACE_2H       = 42,  // twohandmace
+	ITEM_CLASS_SPEAR         = 51,  // spear
+	ITEM_CLASS_POLEARM       = 52,  // polearm
+
+	ITEM_CLASS_SHIELD        = 60,  // shield
+
+	ITEM_CLASS_BOW           = 70,  //  Shortbow
+	ITEM_CLASS_BOW_CROSS     = 71,  // crossbow
+	ITEM_CLASS_BOW_LONG      = 80,  // longbow
+
+	ITEM_CLASS_EARRING       = 91,  // Earring
+	ITEM_CLASS_AMULET        = 92,  // Necklace
+	ITEM_CLASS_RING          = 93,  // Ring
+	ITEM_CLASS_BELT          = 94,  // Belt
+	ITEM_CLASS_CHARM         = 95,  // Items carried in inventory
+	ITEM_CLASS_JEWEL         = 96,  // Jewels/gems
+	ITEM_CLASS_POTION        = 97,  // Potion / consumable
+	ITEM_CLASS_SCROLL        = 98,  // Scroll
+
+	ITEM_CLASS_LAUNCHER      = 100, // Item used when throwing a spear.
+
+	ITEM_CLASS_STAFF         = 110, // Staff
+	ITEM_CLASS_ARROW         = 120, // Arrow
+	ITEM_CLASS_JAVELIN       = 130, // Javelin
+
+	ITEM_CLASS_ARMOR_WARRIOR = 210, // Warrior armor
+	ITEM_CLASS_ARMOR_ROGUE   = 220, // Rogue armor
+	ITEM_CLASS_ARMOR_MAGE    = 230, // Mage armor
+	ITEM_CLASS_ARMOR_PRIEST  = 240, // Priest armor
+
+	ITEM_CLASS_ETC           = 251, // Miscellaneous
+
+	// Consumable items with 'charges' that use the durability/duration instead of stacks
+	ITEM_CLASS_CONSUMABLE    = 255,
+
+	ITEM_CLASS_UNKNOWN       = -1
 };
 
 // Clan member position/role/duty
@@ -384,6 +436,7 @@ inline constexpr uint8_t RESERVED        = 14;
 inline constexpr uint8_t SLOT_MAX        = 14;  // 14 equipped item slots
 inline constexpr uint8_t HAVE_MAX        = 28;  // 28 inventory slots
 inline constexpr uint8_t WAREHOUSE_MAX   = 192; // 창고 아이템 MAX
+inline constexpr uint8_t ANVIL_MAX       = 9;
 
 // Start of inventory area
 inline constexpr int INVENTORY_INVENT    = SLOT_MAX;

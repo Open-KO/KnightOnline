@@ -20,6 +20,7 @@
 #include <shared-server/SharedMemoryBlock.h>
 #include <shared-server/SharedMemoryQueue.h>
 #include <shared-server/STLMap.h>
+#include <shared-server/TcpClientSocketManager.h>
 
 #include <unordered_map>
 #include <vector>
@@ -35,6 +36,7 @@ using ZoneArray              = std::vector<C3DMap*>;
 using LevelUpTableArray      = std::vector<model::LevelUp*>;
 using CoefficientTableMap    = CSTLMap<model::Coefficient>;
 using ItemTableMap           = CSTLMap<model::Item>;
+using ItemUpgradeTableArray  = std::vector<model::ItemUpgrade*>;
 using MagicTableMap          = CSTLMap<model::Magic>;
 using MagicType1TableMap     = CSTLMap<model::MagicType1>;
 using MagicType2TableMap     = CSTLMap<model::MagicType2>;
@@ -44,7 +46,7 @@ using MagicType5TableMap     = CSTLMap<model::MagicType5>;
 using MagicType7TableMap     = CSTLMap<model::MagicType7>;
 using MagicType8TableMap     = CSTLMap<model::MagicType8>;
 using NpcMap                 = CSTLMap<CNpc>;
-using AISocketMap            = CSTLMap<CAISocket>;
+using AISocketMap            = std::unordered_map<int, std::shared_ptr<TcpClientSocket>>;
 using PartyMap               = CSTLMap<_PARTY_GROUP>;
 using KnightsMap             = CSTLMap<CKnights>;
 using ServerMap              = CSTLMap<_ZONE_SERVERINFO>;
@@ -156,6 +158,7 @@ public:
 	bool LoadCoefficientTable();
 	bool LoadMagicTable();
 	bool LoadItemTable();
+	bool LoadItemUpgradeTable();
 	bool MapFileLoad();
 	void UserAcceptThread();
 	// sungyong 2001.11.06
@@ -176,32 +179,33 @@ public:
 		int nation = 0);                  // pointer != nullptr don`t send to that user pointer
 	void Send_AIServer(int zone, char* pBuf, int len);
 
-	CUser* GetUserPtr(const char* userid, NameType type);
+	std::shared_ptr<CUser> GetUserPtr(const char* userid, NameType type);
 
-	inline CUser* GetUserPtr(int socketId) const
+	inline std::shared_ptr<CUser> GetUserPtr(int socketId) const
 	{
-		return _socketManager.GetUser(socketId);
+		return _serverSocketManager.GetUser(socketId);
 	}
 
-	inline CUser* GetUserPtrUnchecked(int socketId) const
+	inline std::shared_ptr<CUser> GetUserPtrUnchecked(int socketId) const
 	{
-		return _socketManager.GetUserUnchecked(socketId);
+		return _serverSocketManager.GetUserUnchecked(socketId);
 	}
 
 	inline int GetUserSocketCount() const
 	{
-		return _socketManager.GetServerSocketCount();
+		return _serverSocketManager.GetSocketCount();
 	}
 
 	inline bool IsValidUserId(int socketId) const
 	{
-		return _socketManager.IsValidServerSocketId(socketId);
+		return _serverSocketManager.IsValidSocketId(socketId);
 	}
 
 	EbenezerApp(EbenezerLogger& logger);
 	~EbenezerApp() override;
 
-	EbenezerSocketManager _socketManager;
+	EbenezerSocketManager _serverSocketManager;
+	TcpClientSocketManager _aiSocketManager;
 
 	SharedMemoryQueue m_LoggerSendQueue;
 	SharedMemoryQueue m_LoggerRecvQueue;
@@ -214,10 +218,13 @@ public:
 	char m_ppNotice[20][128];
 	std::string m_AIServerIP;
 
-	AISocketMap m_AISocketMap;
+	AISocketMap _aiSocketMap;
+	std::mutex _aiSocketMutex;
+
 	NpcMap m_NpcMap;
 	ZoneArray m_ZoneArray;
 	ItemTableMap m_ItemTableMap;
+	ItemUpgradeTableArray m_ItemUpgradeTableArray;
 	MagicTableMap m_MagicTableMap;
 	MagicType1TableMap m_MagicType1TableMap;
 	MagicType2TableMap m_MagicType2TableMap;

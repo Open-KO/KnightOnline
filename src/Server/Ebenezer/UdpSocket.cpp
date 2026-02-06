@@ -452,7 +452,7 @@ void CUdpSocket::RecvJoinKnights(char* pBuf, uint8_t command)
 
 void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 {
-	CUser* pTUser = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	int index = 0, sendIndex = 0, knightsindex = 0, idlen = 0;
 	char sendBuffer[128] {}, userid[MAX_ID_SIZE + 1] {};
 	std::string finalstr;
@@ -575,7 +575,6 @@ void CUdpSocket::RecvModifyFame(char* pBuf, uint8_t command)
 void CUdpSocket::RecvDestroyKnights(char* pBuf)
 {
 	CKnights* pKnights = nullptr;
-	CUser* pTUser      = nullptr;
 	int sendIndex = 0, knightsId = 0, index = 0, flag = 0;
 	char sendBuffer[128] {};
 	std::string finalstr;
@@ -610,7 +609,7 @@ void CUdpSocket::RecvDestroyKnights(char* pBuf)
 	int socketCount = _main->GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		pTUser = _main->GetUserPtrUnchecked(i);
+		auto pTUser = _main->GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 

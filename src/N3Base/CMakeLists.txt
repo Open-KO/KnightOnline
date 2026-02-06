@@ -186,32 +186,21 @@ set(N3BASE_COMMON_SOURCES
 )
 
 set(N3BASE_COMMON_DEPENDENCIES_PUBLIC
-  dx9sdk
   FileIO
   shared
   spdlog
 )
 
+# Only include the DX9 SDK with MSVC.
+# mingw packages its own
+if (MSVC)
+  list(APPEND N3BASE_COMMON_DEPENDENCIES_PUBLIC dx9sdk)
+endif ()
+
 set(N3BASE_COMMON_DEPENDENCIES_PRIVATE
   MathUtils
   libmpg123_wrapper
   OpenAL
-)
-
-add_library(N3Base_client STATIC
-  ${N3BASE_COMMON_SOURCES}
-)
-
-add_library(N3Base_tool STATIC
-  N3EngTool.cpp
-  N3EngTool.h
-  N3PMeshCreate.cpp
-  N3PMeshCreate.h
-  Pick.cpp
-  Pick.h
-  ${N3BASE_COMMON_SOURCES}
-  ${N3BASE_TOOL_EFFECT_SOURCES}
-  ${N3BASE_TOOL_WEATHER_SOURCES}
 )
 
 source_group("Audio" FILES ${N3BASE_COMMON_AUDIO_SOURCES})
@@ -220,51 +209,14 @@ source_group("Sky" FILES ${N3BASE_COMMON_SKY_SOURCES})
 source_group("UI" FILES ${N3BASE_COMMON_UI_SOURCES})
 source_group("Weather" FILES ${N3BASE_COMMON_WEATHER_SOURCES} ${N3BASE_TOOL_WEATHER_SOURCES})
 
-set_target_properties(N3Base_client PROPERTIES
-  CXX_SCAN_FOR_MODULES OFF
+# Link in the libs that we use
+set(N3BASE_COMMON_LIBS_PRIVATE
+  d3d9.lib
+  d3dx9.lib
+  dinput8.lib
+  dsound.lib
+  dxguid.lib
 )
-
-set_target_properties(N3Base_tool PROPERTIES
-  CXX_SCAN_FOR_MODULES OFF
-)
-
-# Enable warnings as errors
-if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
-  set_property(TARGET N3Base_client PROPERTY COMPILE_WARNING_AS_ERROR ON)
-  set_property(TARGET N3Base_tool   PROPERTY COMPILE_WARNING_AS_ERROR ON)
-endif()
-
-# Setup preprocessor defines
-target_compile_definitions(N3Base_client PUBLIC
-  _N3GAME
-  _CRT_SECURE_NO_WARNINGS
-  NOMINMAX)
-
-target_compile_definitions(N3Base_tool PUBLIC
-  _N3TOOL
-  _CRT_SECURE_NO_WARNINGS
-  NOMINMAX)
-
-target_compile_definitions(N3Base_tool INTERFACE
-  NO_WARN_MBCS_MFC_DEPRECATION)
-
-# Setup dependencies
-target_link_libraries(N3Base_client PUBLIC  ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
-target_link_libraries(N3Base_tool   PUBLIC  ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
-target_link_libraries(N3Base_client PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
-target_link_libraries(N3Base_tool   PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
-
-# Expose include path
-target_include_directories(N3Base_client INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <N3Base/...>
-)
-target_include_directories(N3Base_tool INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <N3Base/...>
-)
-
-# Setup PCH
-target_precompile_headers(N3Base_client PRIVATE "StdAfxBase.h")
-target_precompile_headers(N3Base_tool   PRIVATE "StdAfxBase.h")
 
 # Setup warning levels
 set(N3BASE_COMMON_COMPILE_OPTIONS
@@ -273,5 +225,73 @@ set(N3BASE_COMMON_COMPILE_OPTIONS
   $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
 
-target_compile_options(N3Base_client PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})
-target_compile_options(N3Base_tool   PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})
+if(OPENKO_BUILD_CLIENT)
+  add_library(N3Base_client STATIC
+    ${N3BASE_COMMON_SOURCES}
+  )
+
+  set_target_properties(N3Base_client PROPERTIES
+    CXX_SCAN_FOR_MODULES OFF
+  )
+
+  if (OPENKO_COMPILE_WARNINGS_AS_ERROR)
+    set_property(TARGET N3Base_client PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  endif()
+
+  target_compile_definitions(N3Base_client PUBLIC
+    _N3GAME
+    _CRT_SECURE_NO_WARNINGS
+    NOMINMAX)
+
+  target_link_libraries(N3Base_client PUBLIC ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
+  target_link_libraries(N3Base_client PRIVATE ${N3BASE_COMMON_LIBS_PRIVATE})
+  target_link_libraries(N3Base_client PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
+
+  target_include_directories(N3Base_client INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <N3Base/...>
+  )
+
+  target_precompile_headers(N3Base_client PRIVATE "StdAfxBase.h")
+  target_compile_options(N3Base_client PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})
+endif()
+
+if(OPENKO_BUILD_TOOLS)
+  add_library(N3Base_tool STATIC
+    N3EngTool.cpp
+    N3EngTool.h
+    N3PMeshCreate.cpp
+    N3PMeshCreate.h
+    Pick.cpp
+    Pick.h
+    ${N3BASE_COMMON_SOURCES}
+    ${N3BASE_TOOL_EFFECT_SOURCES}
+    ${N3BASE_TOOL_WEATHER_SOURCES}
+  )
+
+  set_target_properties(N3Base_tool PROPERTIES
+    CXX_SCAN_FOR_MODULES OFF
+  )
+
+  if (OPENKO_COMPILE_WARNINGS_AS_ERROR)
+    set_property(TARGET N3Base_tool PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  endif()
+
+  target_compile_definitions(N3Base_tool PUBLIC
+    _N3TOOL
+    _CRT_SECURE_NO_WARNINGS
+    NOMINMAX)
+
+  target_compile_definitions(N3Base_tool INTERFACE
+    NO_WARN_MBCS_MFC_DEPRECATION)
+
+  target_link_libraries(N3Base_tool PUBLIC ${N3BASE_COMMON_DEPENDENCIES_PUBLIC})
+  target_link_libraries(N3Base_tool PRIVATE ${N3BASE_COMMON_LIBS_PRIVATE})
+  target_link_libraries(N3Base_tool PRIVATE ${N3BASE_COMMON_DEPENDENCIES_PRIVATE})
+
+  target_include_directories(N3Base_tool INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/../" # so we can access <N3Base/...>
+  )
+
+  target_precompile_headers(N3Base_tool PRIVATE "StdAfxBase.h")
+  target_compile_options(N3Base_tool PRIVATE ${N3BASE_COMMON_COMPILE_OPTIONS})
+endif()

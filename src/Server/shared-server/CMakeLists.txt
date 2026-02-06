@@ -27,15 +27,19 @@ add_library(shared-server STATIC
   SharedMemoryBlock.h
   SharedMemoryQueue.cpp
   SharedMemoryQueue.h
-  SocketManager.cpp
-  SocketManager.h
   STLMap.h
   TcpClientSocket.cpp
   TcpClientSocket.h
+  TcpClientSocketManager.cpp
+  TcpClientSocketManager.h
   TcpServerSocket.cpp
   TcpServerSocket.h
+  TcpServerSocketManager.cpp
+  TcpServerSocketManager.h
   TcpSocket.cpp
   TcpSocket.h
+  TcpSocketManager.cpp
+  TcpSocketManager.h
   TelnetThread.h
   TelnetThread.cpp
   TelnetClientThread.h

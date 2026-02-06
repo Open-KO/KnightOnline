@@ -555,7 +555,7 @@ void OperationMessage::AutoOff()
 void OperationMessage::Down()
 {
 	g_serverdown_flag = true;
-	_main->_socketManager.StopAccept();
+	_main->_serverSocketManager.StopAccept();
 	_main->KickOutAllUsers();
 }
 

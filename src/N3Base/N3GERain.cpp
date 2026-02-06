@@ -23,12 +23,12 @@ void CN3GERain::Release()
 	CN3GlobalEffect::Release();
 }
 
-void CN3GERain::Tick()
+void CN3GERain::Tick(float fFrm /*= -1.0f*/)
 {
 	if (!m_bActive || m_iVC <= 0 || m_pVB == nullptr)
 		return;
 
-	CN3GlobalEffect::Tick();
+	CN3GlobalEffect::Tick(fFrm);
 
 	int iCount       = m_iVC / 2;
 	int iActiveCount = iCount;

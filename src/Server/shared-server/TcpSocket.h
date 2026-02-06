@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <shared/CircularBuffer.h>
+#include <shared/ExpandableCircularBuffer.h>
 
 #include <asio.hpp>
 
@@ -18,10 +18,10 @@ enum e_ConnectionState : uint8_t
 	CONNECTION_STATE_GAMESTART
 };
 
-class SocketManager;
-class TcpSocket
+class TcpSocketManager;
+class TcpSocket : public std::enable_shared_from_this<TcpSocket>
 {
-	friend class SocketManager;
+	friend class TcpSocketManager;
 
 protected:
 	using RawSocket_t                             = asio::ip::tcp::socket;
@@ -49,8 +49,23 @@ public:
 		return _state;
 	}
 
+	void SetState(e_ConnectionState state)
+	{
+		_state = state;
+	}
+
+	bool HasSocket() const
+	{
+		return _socket != nullptr;
+	}
+
+	TcpSocketManager* GetManager()
+	{
+		return _socketManager;
+	}
+
 	TcpSocket(test_tag);
-	TcpSocket(SocketManager* socketManager);
+	TcpSocket(TcpSocketManager* socketManager);
 
 	virtual ~TcpSocket()
 	{
@@ -61,23 +76,25 @@ public:
 protected:
 	int QueueAndSend(char* buffer, int length);
 	virtual bool PullOutCore(char*& data, int& length) = 0;
-	virtual void ReleaseToManager()                    = 0;
 
 private:
-	bool AsyncSend(bool fromAsyncChain);
+	virtual std::string_view GetImplName() const = 0;
+	bool AsyncSend(bool fromAsyncChain, size_t bytesToRemove = 0);
+	void AbortSend();
 
 public:
 	void AsyncReceive();
 	void ReceivedData(int length);
-	virtual void Close() = 0;
+	void Close();
 	virtual void CloseProcess();
 	void InitSocket();
 	virtual void Parsing(int length, char* pData) = 0;
 	virtual void Initialize();
 	const std::string& GetRemoteIP();
+	void SetSocket(RawSocket_t&& rawSocket);
 
 protected:
-	SocketManager* _socketManager        = nullptr;
+	TcpSocketManager* _socketManager     = nullptr;
 	std::unique_ptr<RawSocket_t> _socket = nullptr;
 
 	int _recvBufferSize                  = 0;
@@ -88,32 +105,17 @@ protected:
 
 	// Received data is output to the circular buffer from _recvBuffer.
 	// This should be parsed to handle packets.
-	CCircularBuffer _recvCircularBuffer;
+	ExpandableCircularBuffer _recvCircularBuffer;
 
 	// Sends are queued for consistency.
 	// These are typically submitted as spans of the circular buffer, so we usually just send {portion 1},{len 1}.
 	// Upon wraparound, this splits the write into 2, so we submit {portion 1},{len 1} (end of the circular buffer)
 	// and {portion 2},{len 2} (start of the buffer).
-	// These are not considered owned.
-	// In the event there's too much data in the circular buffer to send, we allocate our own contiguous buffer here for it,
-	// and submit that instead.
-	// This buffer is considered owned (by the send queue), so the buffer will be freed once the send is complete.
-	struct QueuedSend
-	{
-		CircularBufferSpan BufferSpan = {};
-		bool IsOwned                  = false;
-
-		~QueuedSend()
-		{
-			if (IsOwned)
-				delete[] BufferSpan.Buffer1;
-		}
-	};
-
-	std::queue<std::unique_ptr<QueuedSend>> _sendQueue;
+	// In the event there's too much data in the circular buffer to send, the send will fail.
+	std::queue<CircularBufferSpan> _sendQueue;
 	std::recursive_mutex _sendMutex;
 
-	CCircularBuffer _sendCircularBuffer;
+	CircularBuffer _sendCircularBuffer;
 	bool _sendInProgress      = false;
 
 	bool _remoteIpCached      = false;

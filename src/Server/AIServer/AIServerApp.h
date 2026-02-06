@@ -138,7 +138,7 @@ public:
 	uint8_t _nightMode                 = 1; // 밤인지,, 낮인지를 판단... 1:낮, 2:밤
 	uint8_t _testMode                  = 0;
 
-	AISocketManager _socketManager;
+	AISocketManager _serverSocketManager;
 
 private:
 	// 패킷 압축에 필요 변수   -------------

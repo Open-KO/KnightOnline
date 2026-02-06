@@ -12,6 +12,8 @@
 #include <shared/StringUtils.h>
 #include <spdlog/spdlog.h>
 
+#include <unordered_set>
+
 namespace Ebenezer
 {
 
@@ -22,13 +24,18 @@ CUser::CUser(test_tag tag) : TcpServerSocket(tag)
 {
 }
 
-CUser::CUser(SocketManager* socketManager) : TcpServerSocket(socketManager)
+CUser::CUser(TcpServerSocketManager* socketManager) : TcpServerSocket(socketManager)
 {
 }
 
 CUser::~CUser()
 {
 	delete _regionBuffer;
+}
+
+std::string_view CUser::GetImplName() const
+{
+	return "User";
 }
 
 void CUser::Initialize()
@@ -733,6 +740,10 @@ void CUser::Parsing(int len, char* pData)
 			RecvEditBox(pData + index);
 			break;
 
+		case WIZ_ITEM_UPGRADE:
+			ItemUpgradeProcess(pData + index);
+			break;
+
 		default:
 			spdlog::error(
 				"User::Parsing: Unhandled opcode {:02X} [ip={} accountName={} characterName={}]",
@@ -801,7 +812,7 @@ void CUser::VersionCheck()
 
 void CUser::LoginProcess(char* pBuf)
 {
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	int index = 0, idlen = 0, pwdlen = 0, sendIndex = 0, retvalue = 0;
 	char accountid[MAX_ID_SIZE + 1] {}, password[MAX_PW_SIZE + 1] {}, sendBuffer[256] {};
 
@@ -1030,7 +1041,7 @@ fail_return:
 
 void CUser::SelCharToAgent(char* pBuf)
 {
-	CUser* pUser            = nullptr;
+	std::shared_ptr<CUser> pUser;
 	C3DMap* pMap            = nullptr;
 	_ZONE_SERVERINFO* pInfo = nullptr;
 	uint8_t bInit           = 0x01;
@@ -1410,14 +1421,13 @@ void CUser::UserDataSaveToAgent()
 
 void CUser::LogOut()
 {
-	CUser* pUser = nullptr;
 	int index = 0, sendIndex = 0, count = 0;
 	char sendBuffer[256] {};
 
 	spdlog::debug(
 		"User::LogOut: accountId={} charId={}", m_pUserData->m_Accountid, m_pUserData->m_id);
 
-	pUser = m_pMain->GetUserPtr(m_pUserData->m_Accountid, NameType::Account);
+	auto pUser = m_pMain->GetUserPtr(m_pUserData->m_Accountid, NameType::Account);
 	if (pUser != nullptr && pUser->_socketId != _socketId)
 	{
 		spdlog::error(
@@ -1649,7 +1659,7 @@ void CUser::Rotate(char* pBuf)
 
 void CUser::Attack(char* pBuf)
 {
-	CUser* pTUser       = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	CNpc* pNpc          = nullptr;
 	model::Item* pTable = nullptr;
 	int index = 0, sendIndex = 0;
@@ -1704,7 +1714,7 @@ void CUser::Attack(char* pBuf)
 	// USER
 	if (tid < NPC_BAND)
 	{
-		if (!_socketManager->IsValidServerSocketId(tid))
+		if (!_socketManager->IsValidSocketId(tid))
 			return;
 
 		pTUser = m_pMain->GetUserPtr(tid);
@@ -2101,7 +2111,7 @@ void CUser::Chat(char* pBuf)
 {
 	int index = 0, chatlen = 0, sendIndex = 0;
 	uint8_t type = 0;
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char chatstr[1024] {}, sendBuffer[1024] {};
 	std::string finalstr;
 
@@ -3026,7 +3036,7 @@ void CUser::RequestUserIn(char* pBuf)
 		if (i > 1000)
 			break;
 
-		CUser* pUser = m_pMain->GetUserPtr(uid);
+		auto pUser = m_pMain->GetUserPtr(uid);
 		if (pUser == nullptr || pUser->GetState() != CONNECTION_STATE_GAMESTART)
 			continue;
 
@@ -3395,7 +3405,7 @@ int16_t CUser::GetDamage(int tid, int magicid)
 	uint8_t result       = FAIL;
 	int16_t temp_hit = 0, temp_ac = 0, temp_hit_B = 0, damage = 0;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return -1;
 
@@ -3517,7 +3527,7 @@ int16_t CUser::GetMagicDamage(int damage, int tid)
 {
 	int16_t total_r = 0, temp_damage = 0;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return damage;
 
@@ -3663,7 +3673,7 @@ int16_t CUser::GetACDamage(int damage, int tid)
 {
 	model::Item *pLeftHand = nullptr, *pRightHand = nullptr;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return damage;
 
@@ -5332,8 +5342,8 @@ fail_return:
 
 void CUser::SendTargetHP(uint8_t echo, int tid, int damage)
 {
-	CUser* pTUser = nullptr;
-	CNpc* pNpc    = nullptr;
+	CNpc* pNpc = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	int sendIndex = 0, hp = 0, maxhp = 0;
 	char sendBuffer[256] {};
 
@@ -5446,9 +5456,8 @@ void CUser::ItemGet(char* pBuf)
 	_ZONE_ITEM* pItem    = nullptr;
 	C3DMap* pMap         = nullptr;
 	CRegion* pRegion     = nullptr;
-	CUser* pUser         = nullptr;
-	CUser* pGetUser      = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
+	std::shared_ptr<CUser> pUser, pGetUser;
 	char sendBuffer[256] {};
 
 	bundle_index = GetDWORD(pBuf, index);
@@ -5498,7 +5507,7 @@ void CUser::ItemGet(char* pBuf)
 	if (m_sPartyIndex != -1 && itemid != ITEM_GOLD)
 		pGetUser = GetItemRoutingUser(itemid, count);
 	else
-		pGetUser = this;
+		pGetUser = std::static_pointer_cast<CUser>(shared_from_this());
 
 	if (pGetUser == nullptr)
 		goto fail_return;
@@ -5634,7 +5643,7 @@ void CUser::ItemGet(char* pBuf)
 	}
 
 	SetByte(sendBuffer, WIZ_ITEM_GET, sendIndex);
-	if (pGetUser == this)
+	if (pGetUser.get() == this)
 		SetByte(sendBuffer, 0x01, sendIndex);
 	else
 		SetByte(sendBuffer, 0x05, sendIndex);
@@ -5654,7 +5663,7 @@ void CUser::ItemGet(char* pBuf)
 		SetString2(sendBuffer, pGetUser->m_pUserData->m_id, sendIndex);
 		m_pMain->Send_PartyMember(m_sPartyIndex, sendBuffer, sendIndex);
 
-		if (pGetUser != this)
+		if (pGetUser.get() != this)
 		{
 			memset(sendBuffer, 0, sizeof(sendBuffer));
 			sendIndex = 0;
@@ -5723,7 +5732,7 @@ void CUser::LoyaltyChange(int tid)
 	int sendIndex = 0;
 	char sendBuffer[256] {};
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -5882,7 +5891,7 @@ void CUser::PartyProcess(char* pBuf)
 {
 	int index = 0, idlength = 0, memberid = -1;
 	char strid[MAX_ID_SIZE + 1] {};
-	CUser* pUser       = nullptr;
+	std::shared_ptr<CUser> pUser;
 	uint8_t subcommand = 0, result = 0;
 
 	subcommand = GetByte(pBuf, index);
@@ -5951,7 +5960,6 @@ void CUser::PartyProcess(char* pBuf)
 // 거절한 사람한테 온다... 리더를 찾아서 알려주는 함수
 void CUser::PartyCancel()
 {
-	CUser* pUser         = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
 	int sendIndex = 0, leader_id = -1, count = 0;
 	char sendBuffer[256] {};
@@ -5972,7 +5980,7 @@ void CUser::PartyCancel()
 
 	leader_id     = pParty->uid[0];
 
-	pUser         = m_pMain->GetUserPtr(leader_id);
+	auto pUser    = m_pMain->GetUserPtr(leader_id);
 	if (pUser == nullptr)
 		return;
 
@@ -5997,12 +6005,11 @@ void CUser::PartyCancel()
 void CUser::PartyRequest(int memberid, bool bCreate)
 {
 	int sendIndex = 0, result = -1, i = 0;
-	CUser* pUser         = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
+	bool inserted        = false;
 	char sendBuffer[256] {};
-	bool inserted = false;
 
-	pUser         = m_pMain->GetUserPtr(memberid);
+	auto pUser = m_pMain->GetUserPtr(memberid);
 	if (pUser == nullptr)
 		goto fail_return;
 
@@ -6126,15 +6133,13 @@ fail_return:
 
 void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 가는것이 아님
 {
-	int sendIndex        = 0;
-	CUser* pUser         = nullptr;
-	_PARTY_GROUP* pParty = nullptr;
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -6149,7 +6154,7 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 		if (pParty->uid[i] == _socketId)
 			continue;
 
-		pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+		auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
 		if (pUser == nullptr)
 			continue;
 
@@ -6184,7 +6189,7 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 	}
 
 	// 파티 BBS를 위해 추가...	대장판!!!
-	pUser = m_pMain->GetUserPtr(pParty->uid[0]);
+	auto pUser = m_pMain->GetUserPtr(pParty->uid[0]);
 	if (pUser == nullptr)
 		return;
 
@@ -6248,18 +6253,14 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 
 void CUser::PartyRemove(int memberid)
 {
-	int sendIndex = 0, count = 0;
-	CUser* pUser         = nullptr;
-	_PARTY_GROUP* pParty = nullptr;
-
 	if (m_sPartyIndex == -1)
 		return;
 
-	pUser = m_pMain->GetUserPtr(memberid); // 제거될 사람...
+	auto pUser = m_pMain->GetUserPtr(memberid); // 제거될 사람...
 	if (pUser == nullptr)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 
 	// 이상한 경우
 	if (pParty == nullptr)
@@ -6286,6 +6287,7 @@ void CUser::PartyRemove(int memberid)
 		}
 	}
 
+	int count = 0;
 	for (int i = 0; i < 8; i++)
 	{
 		if (pParty->uid[i] != -1 && pParty->uid[i] != memberid)
@@ -6300,6 +6302,7 @@ void CUser::PartyRemove(int memberid)
 	}
 
 	// 삭제된 인원을 브로드캐스팅..제거될 사람한테두 패킷이 간다.
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 	SetByte(sendBuffer, WIZ_PARTY, sendIndex);
 	SetByte(sendBuffer, PARTY_REMOVE, sendIndex);
@@ -6331,13 +6334,10 @@ void CUser::PartyRemove(int memberid)
 
 void CUser::PartyDelete()
 {
-	int sendIndex        = 0;
-	CUser* pUser         = nullptr;
-	_PARTY_GROUP* pParty = nullptr;
 	if (m_sPartyIndex == -1)
 		return;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	_PARTY_GROUP* pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 	{
 		m_sPartyIndex = -1;
@@ -6346,12 +6346,13 @@ void CUser::PartyDelete()
 
 	for (int i = 0; i < 8; i++)
 	{
-		pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+		auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
 		if (pUser != nullptr)
 			pUser->m_sPartyIndex = -1;
 	}
 
 	// 삭제된 인원을 브로드캐스팅..
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 	SetByte(sendBuffer, WIZ_PARTY, sendIndex);
 	SetByte(sendBuffer, PARTY_DELETE, sendIndex);
@@ -6410,7 +6411,7 @@ void CUser::ExchangeProcess(char* pBuf)
 void CUser::ExchangeReq(char* pBuf)
 {
 	int index = 0, destid = -1, sendIndex = 0;
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char sendBuffer[256] {};
 
 	destid = GetShort(pBuf, index);
@@ -6455,7 +6456,7 @@ fail_return:
 void CUser::ExchangeAgree(char* pBuf)
 {
 	int index = 0, sendIndex = 0, result = 0;
-	CUser* pUser = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char sendBuffer[256] {};
 
 	result = GetByte(pBuf, index);
@@ -6488,14 +6489,13 @@ void CUser::ExchangeAgree(char* pBuf)
 void CUser::ExchangeAdd(char* pBuf)
 {
 	int index = 0, sendIndex = 0, count = 0, itemid = 0, duration = 0;
-	CUser* pUser          = nullptr;
 	_EXCHANGE_ITEM* pItem = nullptr;
 	model::Item* pTable   = nullptr;
 	uint8_t pos           = 0xff;
 	bool bAdd = true, bGold = false;
 	char sendBuffer[256] {};
 
-	pUser = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 	{
 		ExchangeCancel();
@@ -6624,11 +6624,10 @@ add_fail:
 void CUser::ExchangeDecide()
 {
 	int sendIndex = 0, getmoney = 0, putmoney = 0;
-	CUser* pUser  = nullptr;
 	bool bSuccess = true;
 	char sendBuffer[256] {};
 
-	pUser = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 	{
 		ExchangeCancel();
@@ -6751,12 +6750,11 @@ void CUser::ExchangeDecide()
 
 void CUser::ExchangeCancel()
 {
-	int sendIndex = 0;
-	CUser* pUser  = nullptr;
 	bool bFind    = true;
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 
-	pUser = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 		bFind = false;
 
@@ -6820,11 +6818,10 @@ void CUser::InitExchange(bool bStart)
 bool CUser::ExecuteExchange()
 {
 	model::Item* pTable = nullptr;
-	CUser* pUser        = nullptr;
 	int16_t weight      = 0;
 	uint8_t i           = 0;
 
-	pUser               = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser          = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 		return false;
 
@@ -6910,10 +6907,9 @@ bool CUser::ExecuteExchange()
 int CUser::ExchangeDone()
 {
 	int money           = 0;
-	CUser* pUser        = nullptr;
 	model::Item* pTable = nullptr;
 
-	pUser               = m_pMain->GetUserPtr(m_sExchangeUser);
+	auto pUser          = m_pMain->GetUserPtr(m_sExchangeUser);
 	if (pUser == nullptr)
 		return 0;
 
@@ -7223,7 +7219,6 @@ bool CUser::ItemEquipAvailable(const model::Item* pTable) const
 void CUser::ChatTargetSelect(char* pBuf)
 {
 	int index = 0, sendIndex = 0, idlen = 0;
-	CUser* pUser = nullptr;
 	char chatid[MAX_ID_SIZE + 1] {}, sendBuffer[128] {};
 
 	idlen = GetShort(pBuf, index);
@@ -7236,7 +7231,7 @@ void CUser::ChatTargetSelect(char* pBuf)
 	int i           = 0;
 	for (; i < socketCount; i++)
 	{
-		pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser != nullptr && pUser->GetState() == CONNECTION_STATE_GAMESTART
 			&& strnicmp(chatid, pUser->m_pUserData->m_id, MAX_ID_SIZE) == 0)
 		{
@@ -7283,7 +7278,7 @@ void CUser::CountConcurrentUser()
 	int socketCount = m_pMain->GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser != nullptr && pUser->GetState() == CONNECTION_STATE_GAMESTART)
 			++usercount;
 	}
@@ -7309,7 +7304,7 @@ void CUser::LoyaltyDivide(int tid)
 	if (pParty == nullptr)
 		return;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -7392,7 +7387,7 @@ void CUser::LoyaltyDivide(int tid)
 		// Distribute loyalty amongst party members.
 		for (int j = 0; j < 8; j++)
 		{
-			CUser* pUser = m_pMain->GetUserPtr(pParty->uid[j]);
+			auto pUser = m_pMain->GetUserPtr(pParty->uid[j]);
 			if (pUser == nullptr)
 				continue;
 
@@ -7422,7 +7417,7 @@ void CUser::LoyaltyDivide(int tid)
 	// Distribute loyalty amongst party members.
 	for (int j = 0; j < 8; j++)
 	{
-		CUser* pUser = m_pMain->GetUserPtr(pParty->uid[j]);
+		auto pUser = m_pMain->GetUserPtr(pParty->uid[j]);
 		if (pUser == nullptr)
 			continue;
 
@@ -7798,7 +7793,7 @@ void CUser::HPTimeChangeType3(double currentTime)
 		HpChange(m_bHPAmount[h]); // Reduce HP...
 
 		// Send report to the source...
-		CUser* pUser = m_pMain->GetUserPtr(m_sSourceID[h]);
+		auto pUser = m_pMain->GetUserPtr(m_sSourceID[h]);
 		if (pUser != nullptr)
 			pUser->SendTargetHP(0, _socketId, m_bHPAmount[h]);
 
@@ -8364,7 +8359,6 @@ fail_return:
 void CUser::OperatorCommand(char* pBuf)
 {
 	int index = 0, idlen = 0, command = 0;
-	CUser* pUser = nullptr;
 	char userid[MAX_ID_SIZE + 1] {};
 
 	// Is this user's authority operator?
@@ -8379,7 +8373,7 @@ void CUser::OperatorCommand(char* pBuf)
 
 	GetString(userid, pBuf, idlen, index);
 
-	pUser = m_pMain->GetUserPtr(userid, NameType::Character);
+	auto pUser = m_pMain->GetUserPtr(userid, NameType::Character);
 	if (pUser == nullptr)
 		return;
 
@@ -8487,7 +8481,7 @@ void CUser::Type3AreaDuration(double currentTime)
 			if (!magic_process.UserRegionCheck(_socketId, i, m_iAreaMagicID, pType->Radius))
 				continue;
 
-			CUser* pTUser = m_pMain->GetUserPtrUnchecked(i);
+			auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 			if (pTUser == nullptr)
 				continue;
 
@@ -8984,16 +8978,15 @@ bool CUser::GetStartPosition(int16_t* x, int16_t* z, int zoneId) const
 	return false;
 }
 
-CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
+std::shared_ptr<CUser> CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
 {
 	if (m_sPartyIndex == -1)
 		return nullptr;
 
-	CUser* pUser         = nullptr;
 	_PARTY_GROUP* pParty = nullptr;
-	int select_user = -1, count = 0;
+	int count            = 0;
 
-	pParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+	pParty               = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 	if (pParty == nullptr)
 		return nullptr;
 
@@ -9006,8 +8999,8 @@ CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
 
 	while (count < 8)
 	{
-		select_user = pParty->uid[pParty->bItemRouting];
-		pUser       = m_pMain->GetUserPtr(select_user);
+		int select_user = pParty->uid[pParty->bItemRouting];
+		auto pUser      = m_pMain->GetUserPtr(select_user);
 		if (pUser != nullptr)
 		{
 			//	이거 않되도 저를 너무 미워하지 마세요 ㅠ.ㅠ
@@ -9063,7 +9056,6 @@ CUser* CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount*/)
 
 void CUser::FriendReport(char* pBuf)
 {
-	CUser* pUser = nullptr;
 	int index = 0, sendIndex = 0;
 	int16_t usercount = 0, idlen = 0;
 	char sendBuffer[256] {}, userid[MAX_ID_SIZE + 1] {};
@@ -9088,7 +9080,7 @@ void CUser::FriendReport(char* pBuf)
 
 		GetString(userid, pBuf, idlen, index);
 
-		pUser = m_pMain->GetUserPtr(userid, NameType::Character);
+		auto pUser = m_pMain->GetUserPtr(userid, NameType::Character);
 
 		SetShort(sendBuffer, idlen, sendIndex);
 		SetString(sendBuffer, userid, idlen, sendIndex);
@@ -9403,7 +9395,7 @@ void CUser::GoldChange(int tid, int gold)
 	char sendBuffer[256] {};
 
 	// Users ONLY!!!
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr)
 		return;
 
@@ -9464,7 +9456,7 @@ void CUser::GoldChange(int tid, int gold)
 
 			for (int i = 0; i < 8; i++)
 			{
-				CUser* pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+				auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
 				if (pUser == nullptr)
 					continue;
 
@@ -9614,7 +9606,7 @@ void CUser::ZoneConCurrentUsers(char* pBuf)
 	int socketCount = m_pMain->GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -9730,7 +9722,7 @@ void CUser::InitType3()
 	m_bType3Flag = false;
 }
 
-bool CUser::BindObjectEvent(int16_t objectindex, int16_t /*nid*/)
+bool CUser::BindObjectEvent(int16_t objectIndex, int16_t /*npcId*/)
 {
 	int sendIndex = 0, result = 0;
 	char sendBuffer[128] {};
@@ -9739,7 +9731,7 @@ bool CUser::BindObjectEvent(int16_t objectindex, int16_t /*nid*/)
 	if (pMap == nullptr)
 		return false;
 
-	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectindex);
+	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectIndex);
 	if (pEvent == nullptr)
 		return false;
 
@@ -9761,7 +9753,7 @@ bool CUser::BindObjectEvent(int16_t objectindex, int16_t /*nid*/)
 	return true;
 }
 
-bool CUser::GateObjectEvent(int16_t objectindex, int16_t nid)
+bool CUser::GateObjectEvent(int16_t objectIndex, int16_t npcId)
 {
 	// 포인터 참조하면 안됨
 	if (!m_pMain->m_bPointCheckFlag)
@@ -9774,11 +9766,11 @@ bool CUser::GateObjectEvent(int16_t objectindex, int16_t nid)
 	if (pMap == nullptr)
 		return false;
 
-	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectindex);
+	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectIndex);
 	if (pEvent == nullptr)
 		return false;
 
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(npcId);
 	if (pNpc == nullptr)
 		return false;
 
@@ -9792,7 +9784,7 @@ bool CUser::GateObjectEvent(int16_t objectindex, int16_t nid)
 		memset(sendBuffer, 0, sizeof(sendBuffer));
 		sendIndex = 0;
 		SetByte(sendBuffer, AG_NPC_GATE_OPEN, sendIndex);
-		SetShort(sendBuffer, nid, sendIndex);
+		SetShort(sendBuffer, npcId, sendIndex);
 		SetByte(sendBuffer, pNpc->m_byGateOpen, sendIndex);
 		m_pMain->Send_AIServer(m_pUserData->m_bZone, sendBuffer, sendIndex);
 	}
@@ -9806,7 +9798,7 @@ bool CUser::GateObjectEvent(int16_t objectindex, int16_t nid)
 	SetByte(sendBuffer, WIZ_OBJECT_EVENT, sendIndex);
 	SetByte(sendBuffer, static_cast<uint8_t>(pEvent->sType), sendIndex);
 	SetByte(sendBuffer, result, sendIndex);
-	SetShort(sendBuffer, nid, sendIndex);
+	SetShort(sendBuffer, npcId, sendIndex);
 	SetByte(sendBuffer, pNpc->m_byGateOpen, sendIndex);
 	m_pMain->Send_Region(
 		sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ, nullptr, false);
@@ -9814,7 +9806,7 @@ bool CUser::GateObjectEvent(int16_t objectindex, int16_t nid)
 	return true;
 }
 
-bool CUser::GateLeverObjectEvent(int16_t objectindex, int16_t nid)
+bool CUser::GateLeverObjectEvent(int16_t objectIndex, int16_t npcId)
 {
 	// 포인터 참조하면 안됨
 	if (!m_pMain->m_bPointCheckFlag)
@@ -9827,11 +9819,11 @@ bool CUser::GateLeverObjectEvent(int16_t objectindex, int16_t nid)
 	if (pMap == nullptr)
 		return false;
 
-	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectindex);
+	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectIndex);
 	if (pEvent == nullptr)
 		return false;
 
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(npcId);
 	if (pNpc == nullptr)
 		return false;
 
@@ -9860,11 +9852,11 @@ bool CUser::GateLeverObjectEvent(int16_t objectindex, int16_t nid)
 			memset(sendBuffer, 0, sizeof(sendBuffer));
 			sendIndex = 0;
 			SetByte(sendBuffer, AG_NPC_GATE_OPEN, sendIndex);
-			SetShort(sendBuffer, nid, sendIndex);
+			SetShort(sendBuffer, npcId, sendIndex);
 			SetByte(sendBuffer, pNpc->m_byGateOpen, sendIndex);
 			m_pMain->Send_AIServer(m_pUserData->m_bZone, sendBuffer, sendIndex);
 
-			pGateNpc->m_byGateOpen = !pGateNpc->m_byGateOpen;
+			pGateNpc->m_byGateOpen = pGateNpc->m_byGateOpen ? 0 : 1;
 			memset(sendBuffer, 0, sizeof(sendBuffer));
 			sendIndex = 0;
 			SetByte(sendBuffer, AG_NPC_GATE_OPEN, sendIndex);
@@ -9894,7 +9886,7 @@ bool CUser::GateLeverObjectEvent(int16_t objectindex, int16_t nid)
 	SetByte(sendBuffer, WIZ_OBJECT_EVENT, sendIndex);
 	SetByte(sendBuffer, static_cast<uint8_t>(pEvent->sType), sendIndex);
 	SetByte(sendBuffer, result, sendIndex);
-	SetShort(sendBuffer, nid, sendIndex);
+	SetShort(sendBuffer, npcId, sendIndex);
 	SetByte(sendBuffer, pNpc->m_byGateOpen, sendIndex);
 	m_pMain->Send_Region(
 		sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ, nullptr, false);
@@ -9902,7 +9894,7 @@ bool CUser::GateLeverObjectEvent(int16_t objectindex, int16_t nid)
 	return true;
 }
 
-bool CUser::FlagObjectEvent(int16_t objectindex, int16_t nid)
+bool CUser::FlagObjectEvent(int16_t objectIndex, int16_t npcId)
 {
 	// 포인터 참조하면 안됨
 	if (!m_pMain->m_bPointCheckFlag)
@@ -9915,11 +9907,11 @@ bool CUser::FlagObjectEvent(int16_t objectindex, int16_t nid)
 	if (pMap == nullptr)
 		return false;
 
-	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectindex);
+	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectIndex);
 	if (pEvent == nullptr)
 		return false;
 
-	CNpc* pNpc = m_pMain->m_NpcMap.GetData(nid);
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(npcId);
 	if (pNpc == nullptr)
 		return false;
 
@@ -9956,7 +9948,7 @@ bool CUser::FlagObjectEvent(int16_t objectindex, int16_t nid)
 			memset(sendBuffer, 0, sizeof(sendBuffer));
 			sendIndex = 0;
 			SetByte(sendBuffer, AG_NPC_GATE_OPEN, sendIndex);
-			SetShort(sendBuffer, nid, sendIndex);
+			SetShort(sendBuffer, npcId, sendIndex);
 			SetByte(sendBuffer, pNpc->m_byGateOpen, sendIndex);
 			m_pMain->Send_AIServer(m_pUserData->m_bZone, sendBuffer, sendIndex);
 			memset(sendBuffer, 0, sizeof(sendBuffer));
@@ -10001,7 +9993,7 @@ bool CUser::FlagObjectEvent(int16_t objectindex, int16_t nid)
 	SetByte(sendBuffer, WIZ_OBJECT_EVENT, sendIndex);
 	SetByte(sendBuffer, static_cast<uint8_t>(pEvent->sType), sendIndex);
 	SetByte(sendBuffer, result, sendIndex);
-	SetShort(sendBuffer, nid, sendIndex);
+	SetShort(sendBuffer, npcId, sendIndex);
 	SetByte(sendBuffer, pNpc->m_byGateOpen, sendIndex);
 	m_pMain->Send_Region(
 		sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ, nullptr, false);
@@ -10009,13 +10001,13 @@ bool CUser::FlagObjectEvent(int16_t objectindex, int16_t nid)
 	return true;
 }
 
-bool CUser::WarpListObjectEvent(int16_t objectindex, int16_t /*nid*/)
+bool CUser::WarpListObjectEvent(int16_t objectIndex, int16_t /*npcId*/)
 {
 	C3DMap* pMap = m_pMain->GetMapByIndex(m_iZoneIndex);
 	if (pMap == nullptr)
 		return false;
 
-	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectindex);
+	_OBJECT_EVENT* pEvent = pMap->GetObjectEvent(objectIndex);
 	if (pEvent == nullptr)
 		return false;
 
@@ -10033,78 +10025,101 @@ bool CUser::WarpListObjectEvent(int16_t objectindex, int16_t /*nid*/)
 	return true;
 }
 
+void CUser::SendItemUpgradeRequest(int16_t npcId)
+{
+	if (m_pUserData->m_bZone != ZONE_MORADON)
+		return;
+
+	CNpc* pNpc = m_pMain->m_NpcMap.GetData(npcId);
+	if (pNpc == nullptr || pNpc->m_tNpcType != NPC_ANVIL)
+		return;
+
+	// Check distance to anvil
+	float distance = GetDistanceSquared2D(pNpc->m_fCurX, pNpc->m_fCurZ);
+	if (distance > MAX_INTERACTION_RANGE_SQUARED)
+		return;
+
+	int send_index = 0;
+	char send_buff[4] {};
+	SetByte(send_buff, WIZ_ITEM_UPGRADE, send_index);
+	SetByte(send_buff, ITEM_UPGRADE_REQ, send_index);
+	SetShort(send_buff, npcId, send_index);
+	Send(send_buff, send_index);
+}
+
 void CUser::ObjectEvent(char* pBuf)
 {
-	int index = 0, objectindex = 0, sendIndex = 0, nid = 0;
+	int index = 0, objectIndex = 0, npcId = 0;
 	uint8_t objectType    = 0;
 	C3DMap* pMap          = nullptr;
 	_OBJECT_EVENT* pEvent = nullptr;
-	char sendBuffer[128] {};
 
-	objectindex = GetShort(pBuf, index);
-	nid         = GetShort(pBuf, index);
+	objectIndex           = GetShort(pBuf, index);
+	npcId                 = GetShort(pBuf, index);
 
-	pMap        = m_pMain->GetMapByIndex(m_iZoneIndex);
+	pMap                  = m_pMain->GetMapByIndex(m_iZoneIndex);
 	if (pMap == nullptr)
-		goto fail_return;
+		return;
 
-	pEvent = pMap->GetObjectEvent(objectindex);
+	pEvent = pMap->GetObjectEvent(objectIndex);
 	if (pEvent == nullptr)
-		goto fail_return;
+	{
+		SendObjectEventFailed(objectType);
+		return;
+	}
 
 	objectType = static_cast<uint8_t>(pEvent->sType);
 
 	switch (pEvent->sType)
 	{
-		// Bind Point
-		case 0:
-
-		// Destory Bind Point
-		case 7:
-			if (!BindObjectEvent(objectindex, nid))
-				goto fail_return;
+		case OBJECT_TYPE_BIND:
+		case OBJECT_TYPE_REMOVE_BIND:
+			if (!BindObjectEvent(objectIndex, npcId))
+				SendObjectEventFailed(objectType);
 			break;
 
-		// Gate Object : 사용치 않음 : 2002.12.23
-		case 1:
-		case 2:
-			//if (!GateObjectEvent(objectindex, nid))
-			//	goto fail_return;
+		case OBJECT_TYPE_GATE:
+		case OBJECT_TYPE_DOOR_TOPDOWN:
+			//if (!GateObjectEvent(objectIndex, npcId))
+			// SendObjectEventFailed(objectType);
 			break;
 
-		// Gate lever Object
-		case 3:
-			if (!GateLeverObjectEvent(objectindex, nid))
-				goto fail_return;
+		case OBJECT_TYPE_GATE_LEVER:
+			if (!GateLeverObjectEvent(objectIndex, npcId))
+				SendObjectEventFailed(objectType);
 			break;
 
-		// Flag Lever Object
-		case 4:
-			if (!FlagObjectEvent(objectindex, nid))
-				goto fail_return;
+		// Flag lever
+		case OBJECT_TYPE_FLAG:
+			if (!FlagObjectEvent(objectIndex, npcId))
+				SendObjectEventFailed(objectType);
 			break;
 
-		// Warp List
-		case 5:
-			if (!WarpListObjectEvent(objectindex, nid))
-				goto fail_return;
+		case OBJECT_TYPE_WARP_GATE:
+			if (!WarpListObjectEvent(objectIndex, npcId))
+				SendObjectEventFailed(objectType);
+			break;
+
+		case OBJECT_TYPE_ANVIL:
+			SendItemUpgradeRequest(npcId);
 			break;
 
 		default:
 			spdlog::error("User::ObjectEvent: Unhandled object type {} [objectIndex={} npcId={} "
 						  "accountName={} characterName={}]",
-				pEvent->sType, objectindex, nid, m_strAccountID, m_pUserData->m_id);
-#ifndef _DEBUG
-			Close();
-#endif
-			goto fail_return;
+				pEvent->sType, objectIndex, npcId, m_strAccountID, m_pUserData->m_id);
+			SendObjectEventFailed(objectType);
+			break;
 	}
-	return;
+}
 
-fail_return:
+void CUser::SendObjectEventFailed(uint8_t objectType, uint8_t errorCode /*= 0*/)
+{
+	int sendIndex = 0;
+	char sendBuffer[8] {};
 	SetByte(sendBuffer, WIZ_OBJECT_EVENT, sendIndex);
 	SetByte(sendBuffer, objectType, sendIndex);
-	SetByte(sendBuffer, 0, sendIndex);
+	SetByte(sendBuffer, errorCode, sendIndex);
 	Send(sendBuffer, sendIndex);
 }
 
@@ -10234,7 +10249,6 @@ void CUser::PartyBBS(char* pBuf)
 
 void CUser::PartyBBSRegister(char* /*pBuf*/)
 {
-	CUser* pUser  = nullptr;
 	int sendIndex = 0;
 	char sendBuffer[256] {};
 	int i = 0, counter = 0, socketCount = 0;
@@ -10262,7 +10276,7 @@ void CUser::PartyBBSRegister(char* /*pBuf*/)
 	socketCount = m_pMain->GetUserSocketCount();
 	for (i = 0; i < socketCount; i++)
 	{
-		pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pUser == nullptr)
 			continue;
 
@@ -10328,7 +10342,6 @@ fail_return:
 
 void CUser::PartyBBSNeeded(char* pBuf, uint8_t type)
 {
-	CUser* pUser = nullptr; // Basic Initializations.
 	int index = 0, sendIndex = 0, i = 0, j = 0, socketCount = m_pMain->GetUserSocketCount();
 	int16_t page_index = 0, start_counter = 0, BBS_Counter = 0;
 	uint8_t result = 0, valid_counter = 0;
@@ -10351,7 +10364,7 @@ void CUser::PartyBBSNeeded(char* pBuf, uint8_t type)
 
 	for (i = 0; i < socketCount; i++)
 	{
-		pUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
 
 		// Protection codes.
 		if (pUser == nullptr)
@@ -10631,7 +10644,6 @@ fail_return:
 
 void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 {
-	CUser* pUser = nullptr;
 	int index = 0, sendIndex = 0, i = 0, j = 0;
 	int16_t page_index = 0, start_counter = 0, valid_counter = 0, BBS_Counter = 0, title_length = 0,
 			message_length = 0;
@@ -10669,7 +10681,7 @@ void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 			if (m_pMain->m_sBuyID[i] == -1)
 				continue;
 
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
 
 			// Delete info!!!
 			if (pUser == nullptr)
@@ -10714,7 +10726,7 @@ void CUser::MarketBBSReport(char* pBuf, uint8_t type)
 				continue;
 
 			// Delete info!!!
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
 			if (pUser == nullptr)
 			{
 				m_pMain->MarketBBSSellDelete(i);
@@ -10797,12 +10809,11 @@ fail_return1:
 
 void CUser::MarketBBSRemotePurchase(char* pBuf)
 {
-	CUser* pUser  = nullptr;
 	int sendIndex = 0, index = 0;
 	int16_t message_index = -1;
 	uint8_t result = 0, sub_result = 1, buysell_index = 0;
-
 	char sendBuffer[256] {};
+	std::shared_ptr<CUser> pUser;
 
 	buysell_index = GetByte(pBuf, index);  // Buy or sell?
 	message_index = GetShort(pBuf, index); // Which message should I retrieve?
@@ -10881,7 +10892,6 @@ fail_return:
 
 void CUser::MarketBBSTimeCheck()
 {
-	CUser* pUser       = nullptr;
 	int sendIndex      = 0;
 	double currentTime = TimeGet();
 	char sendBuffer[256] {};
@@ -10891,7 +10901,7 @@ void CUser::MarketBBSTimeCheck()
 		// BUY!!!
 		if (m_pMain->m_sBuyID[i] != -1)
 		{
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sBuyID[i]);
 			if (pUser == nullptr)
 			{
 				m_pMain->MarketBBSBuyDelete(i);
@@ -10924,7 +10934,7 @@ void CUser::MarketBBSTimeCheck()
 		// SELL!!!
 		if (m_pMain->m_sSellID[i] != -1)
 		{
-			pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
+			auto pUser = m_pMain->GetUserPtr(m_pMain->m_sSellID[i]);
 			if (pUser == nullptr)
 			{
 				m_pMain->MarketBBSSellDelete(i);
@@ -11169,7 +11179,6 @@ void CUser::SetLogInInfoToDB(uint8_t bInit)
 void CUser::KickOut(char* pBuf)
 {
 	int idlen = 0, index = 0, sendIndex = 0;
-	CUser* pUser = nullptr;
 	char accountid[MAX_ID_SIZE + 1] {}, sendBuffer[256] {};
 
 	idlen = GetShort(pBuf, index);
@@ -11178,7 +11187,7 @@ void CUser::KickOut(char* pBuf)
 
 	GetString(accountid, pBuf, idlen, index);
 
-	pUser = m_pMain->GetUserPtr(accountid, NameType::Account);
+	auto pUser = m_pMain->GetUserPtr(accountid, NameType::Account);
 	if (pUser != nullptr)
 	{
 		pUser->UserDataSaveToAgent();
@@ -12731,6 +12740,465 @@ void CUser::ResetEditBox()
 	memset(m_strCouponId, 0, sizeof(m_strCouponId));
 }
 
+void CUser::ItemUpgradeProcess(char* pBuf)
+{
+	int index           = 0;
+	uint8_t upgradeType = GetByte(pBuf, index);
+	if (upgradeType == ITEM_UPGRADE_PROCESS)
+		ItemUpgrade(pBuf + index);
+	else if (upgradeType == ITEM_UPGRADE_ACCESSORIES)
+		ItemUpgradeAccesories(pBuf + index);
+}
+
+void CUser::ItemUpgrade(char* pBuf)
+{
+	model::Item *originItemModel = nullptr, *upgradedItemModel = nullptr;
+	const model::ItemUpgrade* matchedItemUpgradeModel = nullptr;
+
+	uint32_t newItemId = 0, itemClass = 0, itemUpgradeElementClass = 0;
+	int16_t rand = 0, baseItemId = 0;
+	int32_t originItemId = 0;
+	int index            = 0;
+	uint16_t npcId       = 0;
+	uint8_t originPos    = -1;
+	bool upgradeSuccess  = false;
+
+	uint8_t reqItemPos[ANVIL_MAX] {};
+	int32_t reqItemId[ANVIL_MAX] {};
+
+	npcId        = GetShort(pBuf, index);
+	originItemId = GetDWORD(pBuf, index);
+	originPos    = GetByte(pBuf, index);
+
+	for (int i = 0; i < ANVIL_MAX; i++)
+	{
+		reqItemId[i]  = GetDWORD(pBuf, index);
+		reqItemPos[i] = GetByte(pBuf, index);
+	}
+
+	// Cannot upgrade while in the middle of trading.
+	if (m_sExchangeUser != -1)
+	{
+		SendItemUpgradeFailed(ITEM_UPGRADE_RESULT_TRADING);
+		return;
+	}
+
+	// Ensure origin item position is valid
+	// Note that originPos is unsigned so we don't care about checking < 0.
+	if (originPos >= HAVE_MAX)
+	{
+		spdlog::error(
+			"User::ItemUpgrade: invalid originPos [accountId={} characterName={} originPos={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, originPos);
+		return;
+	}
+
+	// The requested NPC must exist
+	CNpc* npc = m_pMain->m_NpcMap.GetData(npcId);
+	if (npc == nullptr)
+	{
+		spdlog::error("User::ItemUpgrade: NPC not found [accountId={} characterName={} npcId={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, npcId);
+		return;
+	}
+
+	// The requested NPC should be the anvil.
+	if (npc->m_tNpcType != NPC_ANVIL)
+	{
+		spdlog::error("User::ItemUpgrade: NPC is not the anvil [accountId={} characterName={} "
+					  "npcId={} npcType={} npcName={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, npcId, npc->m_tNpcType, npc->m_strName);
+		return;
+	}
+
+	// Ensure we're in the same zone as the NPC.
+	if (npc->m_sCurZone != m_pUserData->m_bZone)
+	{
+		spdlog::error("User::ItemUpgrade: not in same zone as NPC [accountId={} characterName={} "
+					  "npcId={} npcType={} npcName={} ourZoneId={} npcZoneId={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, npcId, npc->m_tNpcType, npc->m_strName,
+			m_pUserData->m_bZone, npc->m_sCurZone);
+		return;
+	}
+
+	// Ensure we're close enough to interact with it.
+	float distance = GetDistanceSquared2D(npc->m_fCurX, npc->m_fCurZ);
+	if (distance > MAX_INTERACTION_RANGE_SQUARED)
+	{
+		spdlog::error("User::ItemUpgrade: NPC is out of range [accountId={} characterName={} "
+					  "npcId={} npcType={} npcName={} ourPos={},{} npcPos={},{} distance={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, npcId, npc->m_tNpcType, npc->m_strName,
+			m_pUserData->m_curx, m_pUserData->m_curz, npc->m_fCurX, npc->m_fCurZ, distance);
+		return;
+	}
+
+	std::unordered_set<uint8_t> usedItemPositions;
+	usedItemPositions.insert(originPos);
+
+	for (int i = 0; i < ANVIL_MAX; i++)
+	{
+		// This implies the slot is unused, so we should ignore it.
+		if (reqItemPos[i] == 255)
+			continue;
+
+		// Ensure requirement item positions are valid
+		if (reqItemPos[i] >= HAVE_MAX)
+		{
+			spdlog::error("User::ItemUpgrade: invalid reqItemPos [accountId={} "
+						  "characterName={} i={} reqItemPos={}]",
+				m_pUserData->m_Accountid, m_pUserData->m_id, i, reqItemPos[i]);
+			return;
+		}
+
+		// Verify item ID actually exists
+		const model::Item* reqItemModel = m_pMain->m_ItemTableMap.GetData(reqItemId[i]);
+		if (reqItemModel == nullptr)
+		{
+			spdlog::error("User::ItemUpgrade: invalid reqItemId [accountId={} "
+						  "characterName={} i={} reqItemId={}]",
+				m_pUserData->m_Accountid, m_pUserData->m_id, i, reqItemId[i]);
+			return;
+		}
+
+		// Verify we actually have one of this item in the slot
+		const _ITEM_DATA& reqItem = m_pUserData->m_sItemArray[SLOT_MAX + reqItemPos[i]];
+		if (reqItem.sCount <= 0)
+		{
+			spdlog::error("User::ItemUpgrade: invalid stack size [accountId={} "
+						  "characterName={} i={} reqItemId={} reqItemPos={} stackSize={}]",
+				m_pUserData->m_Accountid, m_pUserData->m_id, i, reqItemId[i], reqItemPos[i],
+				reqItem.sCount);
+			return;
+		}
+
+		// And that it is the expected item.
+		if (reqItemId[i] != reqItem.nNum)
+		{
+			spdlog::error("User::ItemUpgrade: unexpected item in requirement slot [accountId={} "
+						  "characterName={} reqItemId={} i={} reqItemPos={} existingItemId={}]",
+				m_pUserData->m_Accountid, m_pUserData->m_id, i, reqItemId[i], reqItemPos[i],
+				reqItem.nNum);
+			return;
+		}
+
+		// Verify this position hasn't already been used before.
+		if (usedItemPositions.contains(reqItemPos[i]))
+		{
+			spdlog::error("User::ItemUpgrade: requirement slot already in use [accountId={} "
+						  "characterName={} i={} reqItemPos={}]",
+				m_pUserData->m_Accountid, m_pUserData->m_id, i, reqItemPos[i]);
+			return;
+		}
+
+		usedItemPositions.insert(reqItemPos[i]);
+	}
+
+	// Verify item ID actually exists
+	originItemModel = m_pMain->m_ItemTableMap.GetData(originItemId);
+	if (originItemModel == nullptr)
+	{
+		spdlog::error("User::ItemUpgrade: invalid originItemId [accountId={} characterName={} "
+					  "originItemId={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, originItemId);
+		return;
+	}
+
+	_ITEM_DATA& originItem = m_pUserData->m_sItemArray[SLOT_MAX + originPos];
+
+	// Verify origin item exists and matches what the client says is in this slot
+	if (originItem.nNum != originItemId)
+	{
+		spdlog::error("User::ItemUpgrade: unexpected item in origin slot [accountId={} "
+					  "characterName={} originItemId={} originItemPos={} existingItemId={}]",
+			m_pUserData->m_Accountid, m_pUserData->m_id, originItemId, originPos, originItem.nNum);
+		return;
+	}
+
+	// Rented items cannot be upgraded
+	// In later versions this also applies to sealed items, but 1.298 only
+	// supports rental items.
+	if (originItem.byFlag != ITEM_FLAG_NONE)
+	{
+		SendItemUpgradeFailed(ITEM_UPGRADE_RESULT_ITEM_RENTED);
+		return;
+	}
+
+	baseItemId = originItemId % 1000;
+	itemClass  = originItemId / 100'000'000;
+
+	for (const model::ItemUpgrade* itemUpgradeModel : m_pMain->m_ItemUpgradeTableArray)
+	{
+		if (itemUpgradeModel == nullptr)
+			continue;
+
+		if (itemUpgradeModel->OriginItem != baseItemId)
+			continue;
+
+		itemUpgradeElementClass = itemUpgradeModel->Index / 100'000;
+		if (itemClass != itemUpgradeElementClass && itemUpgradeModel->Index < 300'000)
+			continue;
+
+		if (itemUpgradeModel->OriginType != -1)
+		{
+			if (itemUpgradeModel->Index >= 100'000 && itemUpgradeModel->Index < 200'000)
+			{
+				switch (itemUpgradeModel->OriginType)
+				{
+					case 0:
+						if (originItemModel->Kind != ITEM_CLASS_DAGGER)
+							continue;
+						break;
+
+					case 1:
+						if (originItemModel->Kind != ITEM_CLASS_SWORD)
+							continue;
+						break;
+
+					case 2:
+						if (originItemModel->Kind != ITEM_CLASS_SWORD_2H)
+							continue;
+						break;
+
+					case 3:
+						if (originItemModel->Kind != ITEM_CLASS_AXE)
+							continue;
+						break;
+
+					case 4:
+						if (originItemModel->Kind != ITEM_CLASS_AXE_2H)
+							continue;
+						break;
+
+					case 5:
+						if (originItemModel->Kind != ITEM_CLASS_MACE)
+							continue;
+						break;
+
+					case 6:
+						if (originItemModel->Kind != ITEM_CLASS_MACE_2H)
+							continue;
+						break;
+
+					case 7:
+						if (originItemModel->Kind != ITEM_CLASS_SPEAR)
+							continue;
+						break;
+
+					case 8:
+						if (originItemModel->Kind != ITEM_CLASS_POLEARM)
+							continue;
+						break;
+
+					case 9:
+						if (originItemModel->Kind != ITEM_CLASS_BOW)
+							continue;
+						break;
+
+					case 10:
+						if (originItemModel->Kind != ITEM_CLASS_STAFF)
+							continue;
+						break;
+
+					case 11:
+						if ((originItemId / 10'000'000) != 19)
+							continue;
+						break;
+
+					case 12:
+						if (originItemModel->Kind != ITEM_CLASS_SHIELD)
+							continue;
+						break;
+
+					default:
+						break;
+				}
+			}
+			else if (itemUpgradeModel->Index >= 200'000 && itemUpgradeModel->Index < 300'000)
+			{
+				if (itemUpgradeModel->OriginType != originItemModel->Slot + 8)
+					continue;
+			}
+			else if (itemUpgradeModel->Index >= 300'000 && itemUpgradeModel->Index < 400'000)
+			{
+				if (originItemModel->Slot != itemUpgradeModel->OriginType + 73)
+					continue;
+			}
+		}
+
+		if ((itemUpgradeElementClass == 1 || itemUpgradeElementClass == 2)
+			&& itemClass != itemUpgradeElementClass)
+		{
+			SendItemUpgradeFailed(ITEM_UPGRADE_RESULT_NO_MATCH);
+			return;
+		}
+
+		bool matchedRequiredItems = true;
+		for (int j = 0; j < ANVIL_MAX - 1; j++)
+		{
+			if (itemUpgradeModel->RequiredItem[j] == 0)
+				break;
+
+			if (!MatchingItemUpgrade(
+					reqItemPos[j], reqItemId[j], itemUpgradeModel->RequiredItem[j]))
+			{
+				matchedRequiredItems = false;
+				break;
+			}
+		}
+
+		if (!matchedRequiredItems)
+			continue;
+
+		if (itemUpgradeModel->RequiredCoins > m_pUserData->m_iGold)
+		{
+			SendItemUpgradeFailed(ITEM_UPGRADE_RESULT_NEED_COINS);
+			return;
+		}
+
+		matchedItemUpgradeModel = itemUpgradeModel;
+		break;
+	}
+
+	if (matchedItemUpgradeModel == nullptr)
+	{
+		SendItemUpgradeFailed(ITEM_UPGRADE_RESULT_NO_MATCH);
+		return;
+	}
+
+	GoldLose(matchedItemUpgradeModel->RequiredCoins);
+
+	// The outer myrand call officially uses CRandomizer (a state-based randomizer).
+	// It essentially behaves more consistently and predictably, repeating its results
+	// far more frequently than the standard random number generator (which isn't really
+	// a good thing at all).
+	rand           = myrand(0, myrand(9000, 10000));
+	upgradeSuccess = (matchedItemUpgradeModel->GenRate > rand);
+
+	if (upgradeSuccess)
+	{
+		newItemId         = originItemId + matchedItemUpgradeModel->GiveItem;
+
+		upgradedItemModel = m_pMain->m_ItemTableMap.GetData(newItemId);
+		if (upgradedItemModel == nullptr)
+		{
+			upgradeSuccess = false;
+			ItemLogToAgent(m_pUserData->m_id, "UPGRADE", ITEM_LOG_UPGRADE, originItem.nSerialNum,
+				originItemId, 1, originItem.sDuration);
+		}
+		else
+		{
+			originItem.nNum           = newItemId;
+			originItem.sCount         = 1;
+			originItem.sDuration      = upgradedItemModel->Durability;
+			originItem.byFlag         = 0;
+			originItem.sTimeRemaining = 0;
+
+			ItemLogToAgent(m_pUserData->m_id, "UPGRADE", ITEM_LOG_UPGRADE, originItem.nSerialNum,
+				originItemId, 1, upgradedItemModel->Durability);
+		}
+	}
+	else
+	{
+		ItemLogToAgent(m_pUserData->m_id, "UPGRADE", ITEM_LOG_UPGRADE_FAILED, originItem.nSerialNum,
+			originItemId, 1, 0);
+
+		originItem.nNum           = 0;
+		originItem.sCount         = 0;
+		originItem.sDuration      = 0;
+		originItem.nSerialNum     = 0;
+		originItem.byFlag         = 0;
+		originItem.sTimeRemaining = 0;
+	}
+
+	for (int i = 0; i < ANVIL_MAX; i++)
+	{
+		if (reqItemPos[i] >= HAVE_MAX)
+			continue;
+
+		auto& reqItem = m_pUserData->m_sItemArray[SLOT_MAX + reqItemPos[i]];
+
+		// Remove a stack from each requirement item
+		--reqItem.sCount;
+
+		// If there's no more left, remove the entire item.
+		if (reqItem.sCount <= 0)
+		{
+			reqItem.nNum           = 0;
+			reqItem.sDuration      = 0;
+			reqItem.byFlag         = 0;
+			reqItem.sTimeRemaining = 0;
+			reqItem.nSerialNum     = 0;
+		}
+	}
+
+	int sendIndex = 0;
+	char sendBuffer[128] {};
+
+	// Send the result to the user
+	SetByte(sendBuffer, WIZ_ITEM_UPGRADE, sendIndex);
+	SetByte(sendBuffer, ITEM_UPGRADE_PROCESS, sendIndex);
+
+	if (upgradeSuccess)
+	{
+		SetByte(sendBuffer, ITEM_UPGRADE_RESULT_SUCCEEDED, sendIndex);
+		SetDWORD(sendBuffer, newItemId, sendIndex);
+	}
+	else
+	{
+		SetByte(sendBuffer, ITEM_UPGRADE_RESULT_FAILED, sendIndex);
+		SetDWORD(sendBuffer, originItemId, sendIndex);
+	}
+
+	SetByte(sendBuffer, originPos, sendIndex);
+
+	for (int i = 0; i < ANVIL_MAX; i++)
+	{
+		SetDWORD(sendBuffer, reqItemId[i], sendIndex);
+		SetByte(sendBuffer, reqItemPos[i], sendIndex);
+	}
+
+	Send(sendBuffer, sendIndex);
+
+	// Send notification for the anvil's visual effect to the region
+	sendIndex = 0;
+	memset(sendBuffer, 0, sizeof(sendBuffer));
+	SetByte(sendBuffer, WIZ_OBJECT_EVENT, sendIndex);
+	SetByte(sendBuffer, OBJECT_TYPE_ANVIL, sendIndex);
+	SetByte(sendBuffer, upgradeSuccess ? 1 : 0, sendIndex);
+	SetShort(sendBuffer, npcId, sendIndex);
+	m_pMain->Send_Region(
+		sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ, nullptr, true);
+}
+
+bool CUser::MatchingItemUpgrade(
+	uint8_t inventoryPosition, int itemRequested, int itemExpected) const
+{
+	if (inventoryPosition >= HAVE_MAX)
+		return false;
+
+	if (m_pUserData->m_sItemArray[SLOT_MAX + inventoryPosition].nNum != itemRequested)
+		return false;
+
+	if (itemRequested != itemExpected)
+		return false;
+
+	return true;
+}
+
+void CUser::ItemUpgradeAccesories(char* /*pBuf*/)
+{
+}
+
+void CUser::SendItemUpgradeFailed(e_ItemUpgradeResult resultCode)
+{
+	int sendIndex = 0;
+	char sendBuffer[8] {};
+	SetByte(sendBuffer, WIZ_ITEM_UPGRADE, sendIndex);
+	SetByte(sendBuffer, ITEM_UPGRADE_PROCESS, sendIndex);
+	SetByte(sendBuffer, resultCode, sendIndex);
+	Send(sendBuffer, sendIndex);
+}
+
 bool CUser::CheckCouponUsed() const
 {
 	// 이것은 기술지원 필요함 ㅠ.ㅠ
@@ -13015,7 +13483,7 @@ void CUser::GameStart(char* pBuf)
 		// NOTE: This behaviour is flipped as compared to official to give it a more meaningful name.
 		// bool bRecastSavedMagic = true;
 
-		_state = CONNECTION_STATE_GAMESTART;
+		SetState(CONNECTION_STATE_GAMESTART);
 
 		spdlog::debug(
 			"User::GameStart: in game [charId={} socketId={}]", m_pUserData->m_id, _socketId);
@@ -13206,6 +13674,18 @@ bool CUser::CheckMiddleStatueCapture() const
 		default:
 			return false;
 	}
+}
+
+float CUser::GetDistance2D(float targetX, float targetZ) const
+{
+	return sqrtf(GetDistanceSquared2D(targetX, targetZ));
+}
+
+float CUser::GetDistanceSquared2D(float targetX, float targetZ) const
+{
+	const float dx = m_pUserData->m_curx - targetX;
+	const float dz = m_pUserData->m_curz - targetZ;
+	return (dx * dx) + (dz * dz);
 }
 
 } // namespace Ebenezer

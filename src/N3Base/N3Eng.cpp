@@ -3,7 +3,7 @@
 #include "N3Light.h"
 #include "LogWriter.h"
 
-#include <DxErr.h>
+#include <bit>
 
 CN3Eng::CN3Eng()
 {
@@ -142,7 +142,8 @@ void CN3Eng::SetDefaultEnvironment()
 		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-		s_lpD3DDev->SetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fMipMapLODBias)));
+		s_lpD3DDev->SetSamplerState(
+			i, D3DSAMP_MIPMAPLODBIAS, std::bit_cast<uint32_t>(fMipMapLODBias));
 	}
 
 	// 기본 라이트 정보 지정..
@@ -270,7 +271,7 @@ void CN3Eng::SetProjection(float fNear, float fFar, float fLens, float fAspect)
 bool CN3Eng::Init(
 	BOOL bWindowed, HWND hWnd, uint32_t dwWidth, uint32_t dwHeight, uint32_t dwBPP, BOOL bUseHW)
 {
-	memset(&s_ResrcInfo, 0, sizeof(__ResrcInfo)); // Rendering Information 초기화..
+	s_ResrcInfo        = {}; // Rendering Information 초기화..
 
 	s_hWndBase         = hWnd;
 
@@ -646,7 +647,7 @@ void CN3Eng::Clear(D3DCOLOR crFill, RECT* pRC)
 	}
 
 #ifdef _DEBUG
-	memset(&s_RenderInfo, 0, sizeof(__RenderInfo));
+	s_RenderInfo = {};
 #endif
 }
 

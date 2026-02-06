@@ -5,14 +5,14 @@
   </Configurations>
   <Folder Name="/_deps/">
     <Project Path="src/Client/JpegFile/JpegFile.vcxproj" Id="e3ce5b4f-97bc-46b1-b36d-25ab39d4a3f9">
-      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" />
+      <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-libjpeg.vcxproj" />
     </Project>
     <Project Path="src/Client/ZipArchive/ZipArchive.vcxproj" Id="6e97fd6e-7530-4be3-b8e6-9e17ed45cd45">
       <BuildDependency Project="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" />
     </Project>
   </Folder>
   <Folder Name="/_deps/fetch wrappers/">
-    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg-turbo.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
+    <Project Path="deps/fetch-and-build-wrappers/fetch-libjpeg.vcxproj" Id="56988836-40f9-f81d-c8b4-4dc1ce5901e2">
       <BuildDependency Project="deps/fetch-and-build-wrappers/sync-submodules.vcxproj" />
     </Project>
     <Project Path="deps/fetch-and-build-wrappers/fetch-zlib.vcxproj" Id="99b647bc-d49e-4322-c338-dc20acc4239b">

@@ -7,7 +7,9 @@
 namespace Ebenezer
 {
 
-EbenezerSocketManager::EbenezerSocketManager() : SocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+EbenezerSocketManager::EbenezerSocketManager() :
+	TcpServerSocketManager(
+		GAME_SOCKET_RECV_BUFF_SIZE, GAME_SOCKET_SEND_BUFF_SIZE, "EbenezerSocketManager")
 {
 	_sendWorkerThread        = new SendWorkerThread(this);
 
@@ -30,24 +32,24 @@ EbenezerSocketManager::~EbenezerSocketManager()
 	_sendWorkerThread = nullptr;
 }
 
-CUser* EbenezerSocketManager::GetUser(int socketId) const
+std::shared_ptr<CUser> EbenezerSocketManager::GetUser(int socketId) const
 {
-	return static_cast<CUser*>(GetServerSocket(socketId));
+	return std::static_pointer_cast<CUser>(TcpSocketManager::GetSocket(socketId));
 }
 
-CUser* EbenezerSocketManager::GetUserUnchecked(int socketId) const
+std::shared_ptr<CUser> EbenezerSocketManager::GetUserUnchecked(int socketId) const
 {
-	return static_cast<CUser*>(GetServerSocketUnchecked(socketId));
+	return std::static_pointer_cast<CUser>(TcpSocketManager::GetSocketUnchecked(socketId));
 }
 
-CUser* EbenezerSocketManager::GetInactiveUser(int socketId) const
+std::shared_ptr<CUser> EbenezerSocketManager::GetInactiveUser(int socketId) const
 {
-	return static_cast<CUser*>(GetInactiveServerSocket(socketId));
+	return std::static_pointer_cast<CUser>(TcpSocketManager::GetInactiveSocket(socketId));
 }
 
-CUser* EbenezerSocketManager::GetInactiveUserUnchecked(int socketId) const
+std::shared_ptr<CUser> EbenezerSocketManager::GetInactiveUserUnchecked(int socketId) const
 {
-	return static_cast<CUser*>(GetInactiveServerSocketUnchecked(socketId));
+	return std::static_pointer_cast<CUser>(TcpSocketManager::GetInactiveSocketUnchecked(socketId));
 }
 
 } // namespace Ebenezer

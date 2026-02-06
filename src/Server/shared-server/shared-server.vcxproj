@@ -37,7 +37,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <Import Project="$(PropsDir)asio.props" />
-  <Import Project="$(PropsDir)boost.props" />
   <Import Project="$(PropsDir)db-library.props" />
   <Import Project="$(PropsDir)MathUtils.props" />
   <Import Project="$(PropsDir)server.props" />
@@ -119,6 +118,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppThread.cpp" />
+    <ClCompile Include="TcpClientSocketManager.cpp" />
+    <ClCompile Include="TcpServerSocketManager.cpp" />
     <ClCompile Include="TelnetClientThread.cpp" />
     <ClCompile Include="TelnetThread.cpp" />
     <ClCompile Include="utilities.cpp" />
@@ -126,7 +127,7 @@
     <ClCompile Include="ReadQueueThread.cpp" />
     <ClCompile Include="SharedMemoryQueue.cpp" />
     <ClCompile Include="SharedMemoryBlock.cpp" />
-    <ClCompile Include="SocketManager.cpp" />
+    <ClCompile Include="TcpSocketManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -137,6 +138,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppThread.h" />
+    <ClInclude Include="TcpClientSocketManager.h" />
+    <ClInclude Include="TcpServerSocketManager.h" />
     <ClInclude Include="TelnetClientThread.h" />
     <ClInclude Include="TelnetThread.h" />
     <ClInclude Include="utilities.h" />
@@ -146,7 +149,7 @@
     <ClInclude Include="server_config.h" />
     <ClInclude Include="SharedMemoryQueue.h" />
     <ClInclude Include="SharedMemoryBlock.h" />
-    <ClInclude Include="SocketManager.h" />
+    <ClInclude Include="TcpSocketManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="STLMap.h" />
     <ClInclude Include="logger.h" />

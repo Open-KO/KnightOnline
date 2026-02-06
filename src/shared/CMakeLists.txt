@@ -1,10 +1,13 @@
 add_library(shared STATIC
   ByteBuffer.cpp
   ByteBuffer.h
+  CircularBuffer.cpp
   CircularBuffer.h
   crc32.cpp
   crc32.h
   DateTime.cpp
+  ExpandableCircularBuffer.cpp
+  ExpandableCircularBuffer.h
   globals.cpp
   globals.h
   Ini.cpp

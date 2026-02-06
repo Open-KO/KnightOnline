@@ -7,7 +7,8 @@
 struct __Vector2
 {
 public:
-	__Vector2() = default;
+	__Vector2()                 = default;
+	__Vector2(const __Vector2&) = default;
 	__Vector2(float fx, float fy);
 	void Zero();
 	void Set(float fx, float fy);

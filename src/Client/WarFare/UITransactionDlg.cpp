@@ -346,7 +346,7 @@ void CUITransactionDlg::EnterTransactionState()
 			continue;
 		}
 
-		if (pItemExt->dwID != iExt)
+		if (pItemExt->dwID != static_cast<uint32_t>(iExt))
 			continue;
 
 		e_PartPosition ePart = PART_POS_UNKNOWN;
@@ -354,6 +354,7 @@ void CUITransactionDlg::EnterTransactionState()
 		e_ItemType eType     = CGameBase::MakeResrcFileNameForUPC(
             pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug); // 아이템에 따른 파일 이름을 만들어서
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item");
+		(void) eType;
 
 		spItem              = new __IconItemSkill;
 		spItem->pItemBasic  = pItem;

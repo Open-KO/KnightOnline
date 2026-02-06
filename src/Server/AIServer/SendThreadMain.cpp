@@ -9,7 +9,7 @@ namespace AIServer
 {
 
 SendThreadMain::SendThreadMain(AISocketManager* socketManager) :
-	_socketManager(socketManager), _nextRoundRobinSocketId(0)
+	_serverSocketManager(socketManager), _nextRoundRobinSocketId(0)
 {
 }
 
@@ -30,6 +30,7 @@ void SendThreadMain::queue(_SEND_DATA* sendData)
 		}
 
 		_insertionQueue.push(sendData);
+		SetSignaled();
 	}
 
 	// Ensure mutex is unlocked before notification to avoid unnecessary
@@ -55,6 +56,7 @@ void SendThreadMain::thread_loop()
 		{
 			std::unique_lock<std::mutex> lock(ThreadMutex());
 			ThreadCondition().wait(lock, waitUntilPredicate);
+			ResetSignal();
 
 			if (!CanTick())
 				break;
@@ -71,7 +73,7 @@ void SendThreadMain::thread_loop()
 
 void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 {
-	int socketCount = _socketManager->GetServerSocketCount();
+	int socketCount = _serverSocketManager->GetSocketCount();
 	if (socketCount <= 0)
 		return;
 
@@ -88,7 +90,7 @@ void SendThreadMain::tick(std::queue<_SEND_DATA*>& processingQueue)
 			int socketId             = _nextRoundRobinSocketId;
 			++_nextRoundRobinSocketId;
 
-			CGameSocket* gameSocket = _socketManager->GetServerSocketUnchecked(socketId);
+			auto gameSocket = _serverSocketManager->GetSocketUnchecked(socketId);
 			if (gameSocket == nullptr)
 				continue;
 

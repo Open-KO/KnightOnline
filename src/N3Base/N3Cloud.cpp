@@ -8,7 +8,7 @@
 
 CN3Cloud::CN3Cloud()
 {
-	for (int i = 0; i < NUM_CLOUD; i++)
+	for (uint32_t i = 0; i < NUM_CLOUD; i++)
 		m_pTextures[i] = nullptr;
 
 	m_Color1.ChangeColor(0xffffffff);
@@ -28,7 +28,7 @@ CN3Cloud::CN3Cloud()
 
 CN3Cloud::~CN3Cloud()
 {
-	for (int i = 0; i < NUM_CLOUD; ++i)
+	for (uint32_t i = 0; i < NUM_CLOUD; ++i)
 		s_MngTex.Delete(&m_pTextures[i]);
 }
 
@@ -36,7 +36,7 @@ void CN3Cloud::Release()
 {
 	CN3Base::Release();
 
-	for (int i = 0; i < NUM_CLOUD; ++i)
+	for (uint32_t i = 0; i < NUM_CLOUD; ++i)
 	{
 		s_MngTex.Delete(&m_pTextures[i]);
 		m_szTextures[i].clear();
@@ -247,7 +247,7 @@ void CN3Cloud::Init(const std::string* pszFNs)
 {
 	Release();
 
-	for (int i = 0; i < NUM_CLOUD; i++)
+	for (uint32_t i = 0; i < NUM_CLOUD; i++)
 		m_szTextures[i] = pszFNs[i];
 
 	//	3단일때

@@ -243,8 +243,8 @@ int CKnightsManager::GetKnightsIndex(int nation)
 void CKnightsManager::JoinKnights(CUser* pUser, char* pBuf)
 {
 	int knightsindex = 0, index = 0, sendIndex = 0, ret_value = 0, member_id = 0;
-	CUser* pTUser      = nullptr;
 	CKnights* pKnights = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	char sendBuffer[128] {};
 
 	if (pUser == nullptr)
@@ -327,8 +327,8 @@ fail_return:
 void CKnightsManager::JoinKnightsReq(CUser* pUser, char* pBuf)
 {
 	int knightsindex = 0, index = 0, sendIndex = 0, ret_value = 0, flag = 0, sid = -1;
-	CUser* pTUser      = nullptr;
 	CKnights* pKnights = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	char sendBuffer[128] {};
 
 	if (pUser == nullptr)
@@ -479,7 +479,7 @@ fail_return:
 
 void CKnightsManager::ModifyKnightsMember(CUser* pUser, char* pBuf, uint8_t command)
 {
-	CUser* pTUser = nullptr;
+	std::shared_ptr<CUser> pTUser;
 	int index = 0, sendIndex = 0, idlen = 0, ret_value = 0, remove_flag = 0;
 	char sendBuffer[128] {}, userid[MAX_ID_SIZE + 1] {};
 
@@ -743,7 +743,6 @@ void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 	int index = 0, sendIndex = 0, buff_index = 0, count = 0, i = 0, page = 0, start = 0,
 		socketCount = 0;
 	char sendBuffer[128] {}, temp_buff[4096] {};
-	CUser* pTUser        = nullptr;
 	CKnights* pKnights   = nullptr;
 	std::string errormsg = fmt::format_db_resource(IDP_KNIGHT_NOT_REGISTERED);
 
@@ -763,7 +762,7 @@ void CKnightsManager::CurrentKnightsMember(CUser* pUser, char* pBuf)
 
 	for (i = 0; i < socketCount; i++)
 	{
-		pTUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 
@@ -1083,7 +1082,6 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, const char* pBuf, uint8_t co
 
 void CKnightsManager::RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t command)
 {
-	CUser* pTUser = nullptr;
 	int index = 0, sendIndex = 0;
 	std::string finalstr;
 	char sendBuffer[128] {}, userid[MAX_ID_SIZE + 1] {};
@@ -1096,7 +1094,7 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t com
 	GetString(userid, pBuf, idlen, index);
 	/*int vicechief =*/GetByte(pBuf, index);
 
-	pTUser = m_pMain->GetUserPtr(userid, NameType::Character);
+	auto pTUser = m_pMain->GetUserPtr(userid, NameType::Character);
 
 	switch (command)
 	{
@@ -1231,7 +1229,6 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t com
 void CKnightsManager::RecvDestroyKnights(CUser* pUser, const char* pBuf)
 {
 	CKnights* pKnights = nullptr;
-	CUser* pTUser      = nullptr;
 	int sendIndex = 0, knightsindex = 0, index = 0, flag = 0;
 	char sendBuffer[128] {};
 	std::string finalstr;
@@ -1269,7 +1266,7 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, const char* pBuf)
 	int socketCount = m_pMain->GetUserSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		pTUser = m_pMain->GetUserPtrUnchecked(i);
+		auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 		if (pTUser == nullptr)
 			continue;
 

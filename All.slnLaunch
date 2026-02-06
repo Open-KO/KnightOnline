@@ -3,27 +3,27 @@
     "Name": "Servers and client",
     "Projects": [
       {
-        "Path": "Server\\AIServer\\AIServer.vcxproj",
+        "Path": "src\\Server\\AIServer\\AIServer.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\Ebenezer\\Ebenezer.vcxproj",
+        "Path": "src\\Server\\Ebenezer\\Ebenezer.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\Aujard\\Aujard.vcxproj",
+        "Path": "src\\Server\\Aujard\\Aujard.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\ItemManager\\ItemManager.vcxproj",
+        "Path": "src\\Server\\ItemManager\\ItemManager.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\VersionManager\\VersionManager.vcxproj",
+        "Path": "src\\Server\\VersionManager\\VersionManager.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Client\\WarFare\\WarFare.vcxproj",
+        "Path": "src\\Client\\WarFare\\WarFare.vcxproj",
         "Action": "Start"
       }
     ]
@@ -32,23 +32,23 @@
     "Name": "Only servers",
     "Projects": [
       {
-        "Path": "Server\\AIServer\\AIServer.vcxproj",
+        "Path": "src\\Server\\AIServer\\AIServer.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\Ebenezer\\Ebenezer.vcxproj",
+        "Path": "src\\Server\\Ebenezer\\Ebenezer.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\Aujard\\Aujard.vcxproj",
+        "Path": "src\\Server\\Aujard\\Aujard.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\ItemManager\\ItemManager.vcxproj",
+        "Path": "src\\Server\\ItemManager\\ItemManager.vcxproj",
         "Action": "Start"
       },
       {
-        "Path": "Server\\VersionManager\\VersionManager.vcxproj",
+        "Path": "src\\Server\\VersionManager\\VersionManager.vcxproj",
         "Action": "Start"
       }
     ]
@@ -57,7 +57,7 @@
     "Name": "Only client",
     "Projects": [
       {
-        "Path": "Client\\WarFare\\WarFare.vcxproj",
+        "Path": "src\\Client\\WarFare\\WarFare.vcxproj",
         "Action": "Start"
       }
     ]

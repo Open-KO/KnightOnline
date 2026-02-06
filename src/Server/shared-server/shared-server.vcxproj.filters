@@ -12,9 +12,6 @@
     <ClCompile Include="SharedMemoryQueue.cpp">
       <Filter>Shared memory</Filter>
     </ClCompile>
-    <ClCompile Include="SocketManager.cpp">
-      <Filter>Networking</Filter>
-    </ClCompile>
     <ClCompile Include="TcpClientSocket.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
@@ -37,6 +34,15 @@
     <ClCompile Include="TelnetThread.cpp">
       <Filter>Threads</Filter>
     </ClCompile>
+    <ClCompile Include="TcpSocketManager.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpServerSocketManager.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpClientSocketManager.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="server_config.h" />
@@ -54,9 +60,6 @@
     </ClInclude>
     <ClInclude Include="SharedMemoryQueue.h">
       <Filter>Shared memory</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketManager.h">
-      <Filter>Networking</Filter>
     </ClInclude>
     <ClInclude Include="TcpClientSocket.h">
       <Filter>Networking</Filter>
@@ -79,6 +82,15 @@
     </ClInclude>
     <ClInclude Include="TelnetThread.h">
       <Filter>Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpSocketManager.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServerSocketManager.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpClientSocketManager.h">
+      <Filter>Networking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

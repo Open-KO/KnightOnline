@@ -125,6 +125,31 @@ bool CN3FXPMesh::Load(File& file)
 	HRESULT hr = Create(m_iMaxNumVertices, m_iMaxNumIndices);
 	__ASSERT(SUCCEEDED(hr), "Failed to create progressive mesh");
 
+	if (FAILED(hr))
+	{
+		// Just ensure that the file is consistently read, in case this isn't checked,
+		// which is unfortunately common with tooling.
+
+		if (m_iMaxNumVertices > 0)
+			file.Seek(m_iMaxNumVertices * sizeof(__VertexT1), SEEK_CUR);
+
+		if (m_iMaxNumIndices > 0)
+			file.Seek(m_iMaxNumIndices * sizeof(uint16_t), SEEK_CUR);
+
+		if (m_iNumCollapses > 0)
+			file.Seek(m_iNumCollapses * sizeof(__EdgeCollapse), SEEK_CUR);
+
+		if (m_iTotalIndexChanges > 0)
+			file.Seek(m_iTotalIndexChanges * sizeof(int), SEEK_CUR);
+
+		file.Read(&m_iLODCtrlValueCount, sizeof(m_iLODCtrlValueCount));
+
+		if (m_iLODCtrlValueCount > 0)
+			file.Seek(m_iLODCtrlValueCount * sizeof(__LODCtrlValue), SEEK_CUR);
+
+		return false;
+	}
+
 	if (m_iMaxNumVertices > 0)
 	{
 		file.Read(m_pVertices, m_iMaxNumVertices * sizeof(__VertexT1));
@@ -147,28 +172,34 @@ bool CN3FXPMesh::Load(File& file)
 
 	if (m_iNumCollapses > 0)
 	{
-		m_pCollapses = new __EdgeCollapse
-			[m_iNumCollapses
-				+ 1]; // +1을 한 이유 : PMeshInstance::SplitOne() 함수에서 부득이하게 포인터가 경계선을 가르키게 해야 하는 경우가 있어서.
+		// +1을 한 이유 : PMeshInstance::SplitOne() 함수에서 부득이하게 포인터가 경계선을 가르키게 해야 하는 경우가 있어서.
+		m_pCollapses = new __EdgeCollapse[m_iNumCollapses + 1];
 		file.Read(m_pCollapses, m_iNumCollapses * sizeof(__EdgeCollapse));
-		ZeroMemory(m_pCollapses + m_iNumCollapses,
-			sizeof(
-				__EdgeCollapse)); // 위의 +1을 한이유와 같음. 만약을 대비해 마지막 데이타를 초기화 해둠
 
+		// 위의 +1을 한이유와 같음. 만약을 대비해 마지막 데이타를 초기화 해둠
+		// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+		memset(m_pCollapses + m_iNumCollapses, 0, sizeof(__EdgeCollapse));
+
+#ifdef _DEBUG
 		bool bFixed = false;
+#endif
 		for (int i = 0; i < m_iNumCollapses; i++)
 		{
 			if (m_pCollapses[i].iIndexChanges < 0)
 			{
 				m_pCollapses[i].iIndexChanges = 0;
-				bFixed                        = true;
+#ifdef _DEBUG
+				bFixed = true;
+#endif
 			}
 		}
+
 #ifdef _DEBUG
 		if (bFixed)
 			::MessageBox(s_hWndBase, "잘못된 Progressive Mesh 수정", m_szName.c_str(), MB_OK);
 #endif
 	}
+
 	if (m_iTotalIndexChanges > 0)
 	{
 		m_pAllIndexChanges = new int[m_iTotalIndexChanges];
@@ -177,6 +208,7 @@ bool CN3FXPMesh::Load(File& file)
 
 	__ASSERT(m_pLODCtrlValues == nullptr && m_iLODCtrlValueCount == 0,
 		"Invalid Level of detail control value");
+
 	file.Read(&m_iLODCtrlValueCount, sizeof(m_iLODCtrlValueCount));
 	if (m_iLODCtrlValueCount > 0)
 	{

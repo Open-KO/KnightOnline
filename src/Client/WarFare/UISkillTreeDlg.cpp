@@ -101,7 +101,7 @@ bool CUISkillTreeDlg::HasIDSkill(int iID) const
 		{
 			for (int k = 0; k < MAX_SKILL_IN_PAGE; k++)
 			{
-				if (m_pMySkillTree[i][j][k] != nullptr && m_pMySkillTree[i][j][k]->pSkill->dwID == iID)
+				if (m_pMySkillTree[i][j][k] != nullptr && m_pMySkillTree[i][j][k]->pSkill->dwID == static_cast<uint32_t>(iID))
 					return true;
 			}
 		}

@@ -5,16 +5,20 @@
 
 #include "TcpSocket.h"
 
+class TcpClientSocketManager;
 class TcpClientSocket : public TcpSocket
 {
 public:
-	TcpClientSocket(SocketManager* socketManager);
-	bool Create();
-	bool Connect(const char* remoteAddress, uint16_t remotePort);
-	void Close() override;
+	TcpClientSocket(TcpClientSocketManager* socketManager);
+
+private:
+	std::string_view GetImplName() const override;
 
 protected:
-	void ReleaseToManager() override;
+	bool Create();
+
+public:
+	bool Connect(const char* remoteAddress, uint16_t remotePort);
 };
 
 #endif // SERVER_SHAREDSERVER_TCPCLIENTSOCKET_H

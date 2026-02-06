@@ -23,7 +23,7 @@ class CUser;
 class EbenezerApp;
 class C3DMap
 {
-private:
+protected:
 	ObjectEventArray m_ObjectEventArray;
 	ObjectRegeneArray m_ObjectRegeneArray;
 
@@ -57,9 +57,9 @@ public:
 	bool LoadEvent();
 	bool CheckEvent(float x, float z, CUser* pUser = nullptr);
 	void RegionNpcRemove(int rx, int rz, int nid);
-	void RegionNpcAdd(int rx, int rz, int nid);
+	bool RegionNpcAdd(int rx, int rz, int nid);
 	void RegionUserRemove(int rx, int rz, int uid);
-	void RegionUserAdd(int rx, int rz, int uid);
+	bool RegionUserAdd(int rx, int rz, int uid);
 	bool RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int count);
 	bool RegionItemAdd(int rx, int rz, _ZONE_ITEM* pItem);
 	bool ObjectCollision(float x1, float z1, float y1, float x2, float z2, float y2);

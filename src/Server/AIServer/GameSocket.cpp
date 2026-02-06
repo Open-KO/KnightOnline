@@ -27,7 +27,7 @@ extern std::mutex g_region_mutex;
 	1. RecvUserInfo(), RecvAttackReq(), RecvUserUpdate() 수정
 */
 
-CGameSocket::CGameSocket(SocketManager* socketManager) : TcpServerSocket(socketManager)
+CGameSocket::CGameSocket(TcpServerSocketManager* socketManager) : TcpServerSocket(socketManager)
 {
 	m_pMain = AIServerApp::instance();
 }
@@ -38,6 +38,11 @@ CGameSocket::~CGameSocket()
 	delete m_pParty;
 	m_pParty = nullptr;
 	*/
+}
+
+std::string_view CGameSocket::GetImplName() const
+{
+	return "GameSocket";
 }
 
 void CGameSocket::Initialize()

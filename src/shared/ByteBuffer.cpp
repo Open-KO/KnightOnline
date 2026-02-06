@@ -2,6 +2,7 @@
 #include "ByteBuffer.h"
 
 #include <cassert>
+#include <cstring>
 
 // Ideally we shouldn't really be using macros for this kind've thing,
 // but the compile-time benefits from having them implemented are largely worth it here.

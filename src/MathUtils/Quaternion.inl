@@ -11,10 +11,6 @@ __Quaternion::__Quaternion(const __Matrix44& mtx) : x(0.0f), y(0.0f), z(0.0f), w
 	this->operator=(mtx);
 }
 
-__Quaternion::__Quaternion(const __Quaternion& qt) : x(qt.x), y(qt.y), z(qt.z), w(qt.w)
-{
-}
-
 __Quaternion::__Quaternion(float fX, float fY, float fZ, float fW) : x(fX), y(fY), z(fZ), w(fW)
 {
 }

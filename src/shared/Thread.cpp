@@ -3,7 +3,7 @@
 
 #include <spdlog/spdlog.h>
 
-Thread::Thread() : _canTick(false), _isShutdown(true)
+Thread::Thread()
 {
 }
 
@@ -26,6 +26,7 @@ void Thread::shutdown(bool waitForShutdown /*= true*/)
 			_canTick = false;
 			before_shutdown();
 
+			SetSignaled();
 			_cv.notify_one();
 		}
 	}
@@ -77,6 +78,7 @@ Thread::~Thread()
 		if (_canTick)
 		{
 			_canTick = false;
+			SetSignaled();
 			_cv.notify_one();
 		}
 	}

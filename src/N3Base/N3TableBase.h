@@ -156,8 +156,8 @@ bool CN3TableBase<Type>::Load(File& file)
 			ReadData(file, m_DataTypes[j], reinterpret_cast<char*>(&Data) + offsets[j]);
 		}
 
-		uint32_t dwKey = *((uint32_t*) (&Data));
-		auto pt        = m_Datas.insert(std::make_pair(dwKey, Data));
+		uint32_t dwKey           = *((uint32_t*) (&Data));
+		[[maybe_unused]] auto pt = m_Datas.insert(std::make_pair(dwKey, Data));
 
 		__ASSERT(pt.second, "CN3TableBase<Type> : Key 중복 경고.");
 	}

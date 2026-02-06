@@ -11,9 +11,9 @@ struct __Vector3;
 struct __Matrix44
 {
 public:
-	__Matrix44() = default;
+	__Matrix44()                  = default;
+	__Matrix44(const __Matrix44&) = default;
 	__Matrix44(const float mtx[4][4]);
-	__Matrix44(const __Matrix44& mtx);
 	__Matrix44(const __Quaternion& qt);
 
 	_D3DMATRIX* toD3D()

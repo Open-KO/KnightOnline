@@ -54,9 +54,9 @@ void CN3GlobalEffect::Release()
 	CN3Transform::Release();
 }
 
-void CN3GlobalEffect::Tick()
+void CN3GlobalEffect::Tick(float fFrm /*= -1.0f*/)
 {
-	CN3Transform::Tick(-1);
+	CN3Transform::Tick(fFrm);
 
 	if (m_iFadeMode && m_fFadeTime > 0) // 시간을 지나게 한다..
 	{

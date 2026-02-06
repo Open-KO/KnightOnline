@@ -317,8 +317,12 @@ void CUIMessageWnd::AddLineBuffer(const std::string& szString, D3DCOLOR color)
 			else
 				iCC = 1; // 1BYTE 문자
 
-			BOOL bFlag = m_pChatOut->GetTextExtent(&(szString[iCount]), iCC, &size);
+			BOOL bFlag = m_pChatOut->GetTextExtent(&szString[iCount], iCC, &size);
 			__ASSERT(bFlag, "cannot get size of dfont");
+
+			if (!bFlag)
+				break;
+
 			if ((iCX + size.cx) > iRegionWidth) // 가로 길이가 넘었으면
 			{
 				// 한 라인 더 추가하기

@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include <cinttypes>
-
 #include "globals.h"
+
+#include <cstdint>
+#include <spdlog/spdlog.h>
 
 #endif // SHARED_PCH_H

@@ -17,7 +17,6 @@ void EbenezerReadQueueThread::process_packet(const char* buffer, int len)
 
 	int index = 0, uid = -1, sendIndex = 0, buff_length = 0;
 	uint8_t command = 0, result = 0;
-	CUser* pUser = nullptr;
 	char sendBuffer[1024] {};
 
 	command = GetByte(buffer, index);
@@ -29,7 +28,7 @@ void EbenezerReadQueueThread::process_packet(const char* buffer, int len)
 		return;
 	}
 
-	pUser = appInstance->GetUserPtr(uid);
+	auto pUser = appInstance->GetUserPtr(uid);
 	if (pUser == nullptr)
 		return;
 
@@ -104,7 +103,8 @@ void EbenezerReadQueueThread::process_packet(const char* buffer, int len)
 		case DB_KNIGHTS_STASH:
 		case DB_KNIGHTS_LIST_REQ:
 		case DB_KNIGHTS_ALLLIST_REQ:
-			appInstance->m_KnightsManager.ReceiveKnightsProcess(pUser, buffer + index, command);
+			appInstance->m_KnightsManager.ReceiveKnightsProcess(
+				pUser.get(), buffer + index, command);
 			break;
 
 		case DB_LOGIN_INFO:

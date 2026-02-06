@@ -77,7 +77,6 @@ struct __InfoPlayerBase
 class CN3ShapeExtra;
 class CPlayerBase : public CGameBase
 {
-	friend class CPlayerBase;
 	friend class CPlayerOtherMgr;
 
 protected:

@@ -17,17 +17,15 @@
 namespace Ebenezer
 {
 
-CAISocket::CAISocket(SocketManager* socketManager, int zoneNum) :
-	TcpClientSocket(socketManager), _zoneNum(zoneNum)
-{
-}
-
-void CAISocket::Initialize()
+CAISocket::CAISocket(TcpClientSocketManager* socketManager) : TcpClientSocket(socketManager)
 {
 	_main                 = EbenezerApp::instance();
 	_magicProcess.m_pMain = _main;
+}
 
-	TcpClientSocket::Initialize();
+std::string_view CAISocket::GetImplName() const
+{
+	return "AISocket";
 }
 
 bool CAISocket::PullOutCore(char*& data, int& length)
@@ -305,8 +303,7 @@ void CAISocket::RecvServerInfo(char* pBuf)
 	}
 	else if (type == SERVER_INFO_END)
 	{
-		/*int16_t sTotalMonster =*/;
-		GetShort(pBuf, index);
+		/*int16_t sTotalMonster =*/GetShort(pBuf, index);
 		spdlog::info("NPC info received for zoneId {}", byZone);
 		//Sleep(100);
 
@@ -546,10 +543,10 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 {
 	int index = 0, sendIndex = 0, tempDamage = 0, sid = -1, tid = -1, nHP = 0;
 	uint8_t type = 0, result = 0, attackType = 0;
-	int16_t damage        = 0;
-	CNpc* pNpc            = nullptr;
-	CNpc* pMon            = nullptr;
-	CUser* pUser          = nullptr;
+	int16_t damage = 0;
+	CNpc* pNpc     = nullptr;
+	CNpc* pMon     = nullptr;
+	std::shared_ptr<CUser> pUser;
 	_OBJECT_EVENT* pEvent = nullptr;
 	char pOutBuf[1024] {};
 
@@ -597,7 +594,7 @@ void CAISocket::RecvNpcAttack(char* pBuf)
 				pNpc->m_sRegion_Z, nullptr, false);
 		}
 
-		CUser* pSrcUser = _main->GetUserPtr(sid);
+		auto pSrcUser = _main->GetUserPtr(sid);
 		if (pSrcUser != nullptr)
 		{
 			pSrcUser->SendTargetHP(0, tid, -damage);
@@ -837,8 +834,8 @@ void CAISocket::RecvMagicAttackResult(char* pBuf)
 	int sid = -1, tid = -1, magicid = 0;
 	uint8_t byCommand = 0;
 	int16_t data0 = 0, data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0;
-	CNpc* pNpc   = nullptr;
-	CUser* pUser = nullptr;
+	CNpc* pNpc = nullptr;
+	std::shared_ptr<CUser> pUser;
 	char sendBuffer[1024] {};
 
 	//byType = GetByte(pBuf,index);				// who ( 1:mon->user 2:mon->mon )
@@ -1089,7 +1086,7 @@ void CAISocket::RecvUserHP(char* pBuf)
 
 	if (nid >= USER_BAND && nid < NPC_BAND)
 	{
-		CUser* pUser = _main->GetUserPtr(nid);
+		auto pUser = _main->GetUserPtr(nid);
 		if (pUser == nullptr)
 			return;
 
@@ -1115,7 +1112,7 @@ void CAISocket::RecvUserExp(char* pBuf)
 	int16_t sExp     = GetShort(pBuf, index);
 	int16_t sLoyalty = GetShort(pBuf, index);
 
-	CUser* pUser     = _main->GetUserPtr(userId);
+	auto pUser       = _main->GetUserPtr(userId);
 	if (pUser == nullptr)
 	{
 		spdlog::error(
@@ -1179,7 +1176,7 @@ void CAISocket::RecvNpcGiveItem(char* pBuf)
 	uint8_t byCount   = 0;
 	_ZONE_ITEM* pItem = nullptr;
 	C3DMap* pMap      = nullptr;
-	CUser* pUser      = nullptr;
+	std::shared_ptr<CUser> pUser;
 	int nItemNumber[NPC_HAVE_ITEM_LIST] {};
 	int16_t sCount[NPC_HAVE_ITEM_LIST] {};
 	char sendBuffer[1024] {};
@@ -1257,10 +1254,10 @@ void CAISocket::RecvUserFail(char* pBuf)
 	int index = 0, sendIndex = 0;
 	char pOutBuf[1024] {};
 
-	instanceId   = GetShort(pBuf, index);
-	npcId        = GetShort(pBuf, index);
+	instanceId = GetShort(pBuf, index);
+	npcId      = GetShort(pBuf, index);
 
-	CUser* pUser = _main->GetUserPtr(instanceId);
+	auto pUser = _main->GetUserPtr(instanceId);
 	if (pUser == nullptr)
 		return;
 
@@ -1436,7 +1433,7 @@ void CAISocket::RecvNpcInOut(char* pBuf)
 
 void CAISocket::RecvBattleEvent(char* pBuf)
 {
-	CUser* pUser       = nullptr;
+	std::shared_ptr<CUser> pUser;
 	CKnights* pKnights = nullptr;
 	int index = 0, sendIndex = 0, udp_index = 0, retvalue = 0;
 	int nType = 0, nResult = 0, nLen = 0;
@@ -1618,7 +1615,6 @@ void CAISocket::RecvBattleEvent(char* pBuf)
 void CAISocket::RecvNpcEventItem(char* pBuf)
 {
 	int index    = 0;
-	CUser* pUser = nullptr;
 
 	// Item을 가져갈 사람의 아이디... (이것을 참조해서 작업하셈~)
 	int16_t sUid = GetShort(pBuf, index);
@@ -1626,7 +1622,7 @@ void CAISocket::RecvNpcEventItem(char* pBuf)
 	int nItemNumber = GetDWORD(pBuf, index);
 	int nCount      = GetDWORD(pBuf, index);
 
-	pUser           = _main->GetUserPtr(sUid);
+	auto pUser      = _main->GetUserPtr(sUid);
 	if (pUser == nullptr)
 		return;
 

@@ -3,18 +3,6 @@
 #include "GameDef.h"
 #include "N3UIWndBase.h"
 
-uint32_t __IconItemSkill::GetItemID() const
-{
-	if (pItemBasic == nullptr)
-		return 0;
-
-	uint32_t nItemID = pItemBasic->dwID;
-	if (pItemExt != nullptr)
-		nItemID += pItemExt->dwID;
-
-	return nItemID;
-}
-
 __IconItemSkill::__IconItemSkill()
 {
 	pItemBasic  = nullptr;
@@ -23,6 +11,18 @@ __IconItemSkill::__IconItemSkill()
 	iDurability = 0;
 	pSkill      = nullptr;
 	pUIIcon     = nullptr;
+}
+
+int __IconItemSkill::GetItemID() const
+{
+	if (pItemBasic == nullptr)
+		return 0;
+
+	int iItemID = static_cast<int>(pItemBasic->dwID / 1000 * 1000);
+	if (pItemExt != nullptr)
+		iItemID += static_cast<int>(pItemExt->dwID % 1000);
+
+	return iItemID;
 }
 
 int __IconItemSkill::GetBuyPrice() const

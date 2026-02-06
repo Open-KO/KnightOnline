@@ -15,8 +15,7 @@ CN3AnimKey::CN3AnimKey()
 
 CN3AnimKey::~CN3AnimKey()
 {
-	// NOLINTNEXTLINE(clang-diagnostic-delete-incomplete)
-	delete[] m_pDatas;
+	::operator delete[](m_pDatas);
 	m_pDatas = nullptr;
 }
 
@@ -25,8 +24,7 @@ void CN3AnimKey::Release()
 	m_nCount        = 0; // 키 카운트
 	m_fSamplingRate = 30.0;
 
-	// NOLINTNEXTLINE(clang-diagnostic-delete-incomplete)
-	delete[] m_pDatas;
+	::operator delete[](m_pDatas);
 	m_pDatas = nullptr;
 
 	CN3Base::Release();
@@ -48,8 +46,7 @@ void CN3AnimKey::Alloc(int nCount, float fSamplingRate, ANIMATION_KEY_TYPE eType
 
 	if (m_pDatas != nullptr)
 	{
-		// NOLINTNEXTLINE(clang-diagnostic-delete-incomplete)
-		delete[] m_pDatas;
+		::operator delete[](m_pDatas);
 		m_pDatas = nullptr;
 		m_nCount = 0;
 	}

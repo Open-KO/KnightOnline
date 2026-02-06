@@ -330,8 +330,10 @@ void CN3UIEdit::SetCaretPos(size_t nPos)
 	m_nCaretPos               = nPos;
 
 	const std::string& szBuff = m_pBuffOutRef->GetString();
-	__ASSERT(szBuff.empty() || -1 == szBuff.find('\n'),
-		"multiline edit"); // 지금은 multiline은 지원하지 않는다.
+
+	// 지금은 multiline은 지원하지 않는다.
+	__ASSERT(szBuff.empty() || szBuff.find('\n') == std::string::npos, "multiline edit");
+
 	SIZE size = { 0, 0 };
 	if (!szBuff.empty() && m_pBuffOutRef != nullptr)
 		m_pBuffOutRef->GetTextExtent(szBuff, static_cast<int>(m_nCaretPos), &size);

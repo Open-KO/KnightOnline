@@ -53,7 +53,7 @@ TEST_F(FileWriterSetupTest, Offset_DefaultIsZero)
 TEST_F(FileWriterSetupTest, OpenExisting_FailsOnMissingFile)
 {
 	EXPECT_FALSE(_file.IsOpen());
-	EXPECT_FALSE(_file.OpenExisting("MISSING FILE.BIN"));
+	ASSERT_FALSE(_file.OpenExisting("MISSING FILE.BIN"));
 	EXPECT_FALSE(_file.IsOpen());
 }
 
@@ -73,5 +73,5 @@ TEST_F(FileWriterSetupTest, OpenExisting_SucceedsOnExistingFile)
 
 	EXPECT_FALSE(_file.IsOpen());
 	ASSERT_TRUE(_file.OpenExisting(_testFilePath));
-	ASSERT_TRUE(_file.IsOpen());
+	EXPECT_TRUE(_file.IsOpen());
 }

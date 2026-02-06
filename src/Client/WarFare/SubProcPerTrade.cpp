@@ -973,15 +973,12 @@ void CSubProcPerTrade::ReceiveMsgPerTradeDoneItemMove(uint8_t bItemPos, int iIte
 
 	// 아이템 인벤토리 INV 영역에 추가..
 	// 아이템이 들어갈 수 있는지 확인..
-	if (m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos] != nullptr)
+	spItem                  = m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos];
+	if (spItem != nullptr)
 	{
-		if (iItemID
-			!= (m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->pItemBasic->dwID / 1000 * 1000)
-				   + (m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->pItemExt->dwID % 1000))
+		const int iInvItemID = spItem->GetItemID();
+		if (iItemID != iInvItemID)
 		{
-			// 기존 아이콘을 클리어..
-			spItem = m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos];
-
 			// 매니저에서 제거..
 			m_pUIPerTradeDlg->RemoveChild(spItem->pUIIcon);
 
@@ -997,18 +994,18 @@ void CSubProcPerTrade::ReceiveMsgPerTradeDoneItemMove(uint8_t bItemPos, int iIte
 		}
 		else
 		{
-			switch (m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->pItemBasic->byContable)
+			switch (spItem->pItemBasic->byContable)
 			{
 				case UIITEM_TYPE_COUNTABLE: // 화살 같은 종류..
-					m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->iCount += iCount;
-					if (m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->iCount > UIITEM_COUNT_MANY)
-						m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->iCount = UIITEM_COUNT_MANY;
+					spItem->iCount += iCount;
+					if (spItem->iCount > UIITEM_COUNT_MANY)
+						spItem->iCount = UIITEM_COUNT_MANY;
 					return;
 
 				case UIITEM_TYPE_COUNTABLE_SMALL: // 물약같은 종류..
-					m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->iCount += iCount;
-					if (m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->iCount > UIITEM_COUNT_FEW)
-						m_pUIPerTradeDlg->m_pPerTradeInv[bItemPos]->iCount = UIITEM_COUNT_FEW;
+					spItem->iCount += iCount;
+					if (spItem->iCount > UIITEM_COUNT_FEW)
+						spItem->iCount = UIITEM_COUNT_FEW;
 					return;
 
 				default:

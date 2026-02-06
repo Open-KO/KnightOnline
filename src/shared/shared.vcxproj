@@ -105,10 +105,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ByteBuffer.cpp" />
+    <ClCompile Include="CircularBuffer.cpp" />
     <ClCompile Include="crc32.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DateTime.cpp" />
+    <ClCompile Include="ExpandableCircularBuffer.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="JvCryption.cpp" />
@@ -127,6 +129,7 @@
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="crc32.h" />
     <ClInclude Include="DateTime.h" />
+    <ClInclude Include="ExpandableCircularBuffer.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="JvCryption.h" />

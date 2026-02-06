@@ -21,7 +21,10 @@ public:
 	CUILoading();
 	~CUILoading() override;
 
-	// NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
+protected:
+	using CN3UIBase::Render;
+
+public:
 	virtual void Render(const std::string& szInfo, int iPercentage);
 	void Release() override;
 };

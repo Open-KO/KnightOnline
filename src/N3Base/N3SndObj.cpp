@@ -10,8 +10,9 @@
 #include "WaveFormat.h"
 #include "al_wrapper.h"
 
+#include <algorithm> // std::clamp
 #include <AL/alc.h>
-#include <cassert> // assert()
+#include <cassert>   // assert()
 
 #ifdef _N3GAME
 #include "LogWriter.h"

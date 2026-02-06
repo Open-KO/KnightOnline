@@ -66,7 +66,7 @@ void CMagicProcess::MagicPacket(char* pBuf)
 {
 	model::Magic* pTable = nullptr;
 	CNpc* pMon           = nullptr;
-	CUser* pSrcUser      = nullptr;
+	std::shared_ptr<CUser> pSrcUser;
 	int index = 0, sendIndex = 0, magicid = 0, sid = -1, tid = -2, data1 = 0, data2 = 0, data3 = 0,
 		data4 = 0, data5 = 0, data6 = 0;
 	uint8_t command = 0;
@@ -127,7 +127,7 @@ void CMagicProcess::MagicPacket(char* pBuf)
 		}
 	}
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser != nullptr)
 	{
 		// Type 4 Repeat Check!!!
@@ -555,11 +555,11 @@ return_echo:
 model::Magic* CMagicProcess::IsAvailable(
 	int magicid, int tid, int sid, uint8_t type, int data1, int /*data2*/, int /*data3*/)
 {
-	CUser* pUser             = nullptr; // When the target is a player....
-	CNpc* pNpc               = nullptr; // When the monster is the target....
-	CNpc* pMon               = nullptr; // When the monster is the source....
-	bool bFlag               = false;   // Identifies source : true means source is NPC.
-	model::MagicType5* pType = nullptr; // Only for type 5 magic!
+	std::shared_ptr<CUser> pUser, pTUser; // When the target is a player....
+	CNpc* pNpc               = nullptr;   // When the monster is the target....
+	CNpc* pMon               = nullptr;   // When the monster is the source....
+	bool bFlag               = false;     // Identifies source : true means source is NPC.
+	model::MagicType5* pType = nullptr;   // Only for type 5 magic!
 
 	int modulator = 0, Class = 0, sendIndex = 0, moral = 0;           // Variable Initialization.
 	char sendBuffer[128] {};
@@ -940,7 +940,7 @@ model::Magic* CMagicProcess::IsAvailable(
 						if (pType == nullptr)
 							goto fail_return;
 
-						CUser* pTUser = m_pMain->GetUserPtr(tid);
+						pTUser = m_pMain->GetUserPtr(tid);
 						if (pTUser == nullptr)
 							goto fail_return;
 
@@ -1057,9 +1057,9 @@ uint8_t CMagicProcess::ExecuteType1(int magicid, int sid, int tid, int data1, in
 		return result;
 	}
 
-	damage        = m_pSrcUser->GetDamage(tid, magicid); // Get damage points of enemy.
+	damage      = m_pSrcUser->GetDamage(tid, magicid); // Get damage points of enemy.
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 	{
 		result = 0;
@@ -1158,7 +1158,7 @@ uint8_t CMagicProcess::ExecuteType2(
 	if (pType == nullptr)
 		return 0;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 	{
 		result = 0;
@@ -1290,7 +1290,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /
 		// Maximum number of users in the server....
 		for (int i = 0; i < socketCount; i++)
 		{
-			CUser* pTUser = m_pMain->GetUserPtrUnchecked(i);
+			auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 			if (pTUser == nullptr
 				|| pTUser->m_bResHpType == USER_DEAD
 				// || pTUser->m_bResHpType == USER_BLINKING
@@ -1334,7 +1334,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /
 	// If the target was another single player.
 	else
 	{
-		CUser* pTUser = m_pMain->GetUserPtr(tid);
+		auto pTUser = m_pMain->GetUserPtr(tid);
 
 		// Check if target exists.
 		if (pTUser == nullptr)
@@ -1347,7 +1347,7 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /
 	// THIS IS WHERE THE FUN STARTS!!!
 	for (int userId : casted_member)
 	{
-		CUser* pTUser = m_pMain->GetUserPtr(userId);
+		auto pTUser = m_pMain->GetUserPtr(userId);
 		if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 			continue;
 
@@ -1656,7 +1656,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int /
 		// Maximum number of members in a party...
 		for (int i = 0; i < socketCount; i++)
 		{
-			CUser* pTUser = m_pMain->GetUserPtrUnchecked(i);
+			auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 			if (pTUser == nullptr
 				|| pTUser->m_bResHpType == USER_DEAD
 				// || pTUser->m_bResHpType == USER_BLINKING
@@ -1695,7 +1695,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int /
 	// If the target was another single player.
 	else
 	{
-		CUser* pTUser = m_pMain->GetUserPtr(tid);
+		auto pTUser = m_pMain->GetUserPtr(tid);
 
 		// Check if target exists.
 		if (pTUser == nullptr)
@@ -1708,7 +1708,7 @@ void CMagicProcess::ExecuteType4(int magicid, int sid, int tid, int data1, int /
 	// THIS IS WHERE THE FUN STARTS!!!
 	for (int userId : casted_member)
 	{
-		CUser* pTUser = m_pMain->GetUserPtr(userId); // Get target info.
+		auto pTUser = m_pMain->GetUserPtr(userId); // Get target info.
 		if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 			continue;
 
@@ -1949,7 +1949,7 @@ void CMagicProcess::ExecuteType5(int magicid, int sid, int tid, int data1, int /
 	if (pType == nullptr)
 		return;
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr)
 		return;
 
@@ -2285,7 +2285,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 		// Maximum number of members in a party...
 		for (int i = 0; i < socketCount; i++)
 		{
-			CUser* pTUser = m_pMain->GetUserPtrUnchecked(i);
+			auto pTUser = m_pMain->GetUserPtrUnchecked(i);
 
 			// Check if target exists.
 			if (pTUser == nullptr)
@@ -2303,7 +2303,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 	// If the target was another single player.
 	else
 	{
-		CUser* pTUser = m_pMain->GetUserPtr(tid);
+		auto pTUser = m_pMain->GetUserPtr(tid);
 
 		// Check if target exists.
 		if (pTUser == nullptr)
@@ -2329,7 +2329,7 @@ void CMagicProcess::ExecuteType8(int magicid, int sid, int tid, int data1, int /
 		if (z < 2.5f)
 			z += 1.5f;
 
-		CUser* pTUser = m_pMain->GetUserPtr(userId);
+		auto pTUser = m_pMain->GetUserPtr(userId);
 		if (pTUser == nullptr)
 			continue;
 
@@ -2624,12 +2624,11 @@ int16_t CMagicProcess::GetMagicDamage(int sid, int tid, int total_hit, int attri
 		return -1;
 
 	CNpc* pMon     = nullptr;
-
+	uint8_t result = 0;
 	int16_t damage = 0, righthand_damage = 0, attribute_damage = 0;
 	int random = 0, total_r = 0;
-	uint8_t result = 0;
 
-	CUser* pTUser  = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD)
 		return -1;
 
@@ -2746,11 +2745,10 @@ bool CMagicProcess::UserRegionCheck(
 	int sid, int tid, int magicid, int radius, int16_t mousex, int16_t mousez) const
 {
 	CNpc* pMon         = nullptr;
-
 	double currentTime = 0.0;
 	bool bFlag         = false;
 
-	CUser* pTUser      = m_pMain->GetUserPtr(tid);
+	auto pTUser        = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -2900,7 +2898,7 @@ void CMagicProcess::Type4Cancel(int magicid, int tid)
 	int sendIndex = 0;
 	char sendBuffer[128] {};
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -3091,7 +3089,7 @@ void CMagicProcess::Type3Cancel(int magicid, int tid)
 	int sendIndex = 0;
 	char sendBuffer[128] {};
 
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -3147,7 +3145,7 @@ void CMagicProcess::Type3Cancel(int magicid, int tid)
 void CMagicProcess::SendType4BuffRemove(int tid, uint8_t buff)
 {
 	// Check if target exists.
-	CUser* pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(tid);
 	if (pTUser == nullptr)
 		return;
 

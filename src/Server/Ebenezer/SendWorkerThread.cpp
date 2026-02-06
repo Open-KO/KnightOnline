@@ -12,24 +12,24 @@ namespace Ebenezer
 {
 
 SendWorkerThread::SendWorkerThread(EbenezerSocketManager* socketManager) :
-	_socketManager(socketManager)
+	_serverSocketManager(socketManager)
 {
 }
 
 void SendWorkerThread::thread_loop()
 {
+	auto nextTick = std::chrono::steady_clock::now();
 	while (CanTick())
 	{
+		nextTick += 200ms;
+
 		{
 			std::unique_lock<std::mutex> lock(ThreadMutex());
-			std::cv_status status = ThreadCondition().wait_for(lock, 200ms);
+			ThreadCondition().wait_until(lock, nextTick, [this]() { return IsSignaled(); });
+			ResetSignal();
 
 			if (!CanTick())
 				break;
-
-			// Only tick every 200ms as per official, ignore spurious wakeups
-			if (status != std::cv_status::timeout)
-				continue;
 		}
 
 		// Our thread mutex doesn't need to be locked while processing external sockets.
@@ -40,10 +40,10 @@ void SendWorkerThread::thread_loop()
 
 void SendWorkerThread::tick()
 {
-	int socketCount = _socketManager->GetServerSocketCount();
+	int socketCount = _serverSocketManager->GetSocketCount();
 	for (int i = 0; i < socketCount; i++)
 	{
-		CUser* userSocket = _socketManager->GetUserUnchecked(i);
+		auto userSocket = _serverSocketManager->GetUserUnchecked(i);
 		if (userSocket == nullptr)
 			continue;
 

@@ -15,12 +15,6 @@ __Matrix44::__Matrix44(const float mtx[4][4])
 }
 
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-__Matrix44::__Matrix44(const __Matrix44& mtx)
-{
-	std::memcpy(&m, &mtx.m, sizeof(m));
-}
-
-// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 __Matrix44::__Matrix44(const __Quaternion& qt)
 {
 	m[0][0] = 1.0f - 2.0f * (qt.y * qt.y + qt.z * qt.z);

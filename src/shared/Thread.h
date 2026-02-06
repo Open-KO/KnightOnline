@@ -20,6 +20,13 @@ public:
 		return _isShutdown;
 	}
 
+protected:
+	bool IsSignaled() const
+	{
+		return _isSignaled;
+	}
+
+public:
 	std::mutex& ThreadMutex() const
 	{
 		return _mutex;
@@ -30,6 +37,18 @@ public:
 		return _cv;
 	}
 
+	void SetSignaled()
+	{
+		_isSignaled = true;
+	}
+
+protected:
+	void ResetSignal()
+	{
+		_isSignaled = false;
+	}
+
+public:
 	Thread();
 	virtual void start();
 	virtual void shutdown(bool waitForShutdown = true);
@@ -48,8 +67,9 @@ private:
 	mutable std::mutex _mutex;
 	std::condition_variable _cv;
 	std::thread _thread;
-	bool _canTick;
-	bool _isShutdown;
+	bool _canTick    = false;
+	bool _isShutdown = true;
+	bool _isSignaled = false;
 };
 
 #endif // SHARED_THREAD_H

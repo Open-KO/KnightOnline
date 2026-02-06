@@ -230,42 +230,49 @@ enum e_NpcInOutType : uint8_t
 };
 
 ////////////////// Resurrection related ////////////////////
-inline constexpr int BLINK_TIME        = 10;
-inline constexpr int CLAN_SUMMON_TIME  = 180;
+inline constexpr int BLINK_TIME                 = 10;
+inline constexpr int CLAN_SUMMON_TIME           = 180;
 ////////////////////////////////////////////////////////////
 
 // Socket Define
 ////////////////////////////////////////////////////////////
-inline constexpr int SOCKET_BUFF_SIZE  = (1024 * 16);
-inline constexpr int MAX_PACKET_SIZE   = (1024 * 8);
-inline constexpr int REGION_BUFF_SIZE  = (1024 * 16);
 
-inline constexpr uint8_t PACKET_START1 = 0xAA;
-inline constexpr uint8_t PACKET_START2 = 0x55;
-inline constexpr uint8_t PACKET_END1   = 0x55;
-inline constexpr uint8_t PACKET_END2   = 0xAA;
+inline constexpr int AI_SOCKET_RECV_BUFF_SIZE   = (1024 * 64);
+inline constexpr int AI_SOCKET_SEND_BUFF_SIZE   = (1024 * 64);
+
+inline constexpr int GAME_SOCKET_RECV_BUFF_SIZE = (1024 * 16);
+inline constexpr int GAME_SOCKET_SEND_BUFF_SIZE = (1024 * 64);
+
+// Max individual packet size
+inline constexpr int MAX_PACKET_SIZE            = (1024 * 8);
+inline constexpr int REGION_BUFF_SIZE           = (1024 * 64);
+
+inline constexpr uint8_t PACKET_START1          = 0xAA;
+inline constexpr uint8_t PACKET_START2          = 0x55;
+inline constexpr uint8_t PACKET_END1            = 0x55;
+inline constexpr uint8_t PACKET_END2            = 0xAA;
 ////////////////////////////////////////////////////////////
 
 // ==================================================================
 //	About Map Object
 // ==================================================================
-inline constexpr int USER_BAND         = 0;     // Map 위에 유저가 있다.
-inline constexpr int NPC_BAND          = 10000; // Map 위에 NPC(몹포함)가 있다.
-inline constexpr int INVALID_BAND      = 30000; // 잘못된 ID BAND
+inline constexpr int USER_BAND                  = 0;     // Map 위에 유저가 있다.
+inline constexpr int NPC_BAND                   = 10000; // Map 위에 NPC(몹포함)가 있다.
+inline constexpr int INVALID_BAND               = 30000; // 잘못된 ID BAND
 
 ///////////////// snow event define //////////////////////////////
-inline constexpr int SNOW_EVENT_MONEY  = 2000;
-inline constexpr int SNOW_EVENT_SKILL  = 490043;
+inline constexpr int SNOW_EVENT_MONEY           = 2000;
+inline constexpr int SNOW_EVENT_SKILL           = 490043;
 
 //////////////////////////////////////////////////////////////////
 // DEFINE Shared Memory Queue
 //////////////////////////////////////////////////////////////////
 
 // DEFINE Shared Memory Customisation
-inline constexpr char SMQ_LOGGERSEND[] = "KNIGHT_SEND";
-inline constexpr char SMQ_LOGGERRECV[] = "KNIGHT_RECV";
+inline constexpr char SMQ_LOGGERSEND[]          = "KNIGHT_SEND";
+inline constexpr char SMQ_LOGGERRECV[]          = "KNIGHT_RECV";
 
-inline constexpr char SMQ_ITEMLOGGER[] = "ITEMLOG_SEND";
+inline constexpr char SMQ_ITEMLOGGER[]          = "ITEMLOG_SEND";
 
 //
 //	To Who ???

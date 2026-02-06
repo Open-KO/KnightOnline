@@ -24,7 +24,7 @@ public:
 	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank) override;
 	void SetSoundAndInitFont(uint32_t dwFontFlag = 0U) override;
 
-	bool Init(enum e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs, int* piItenDurabilities);
+	bool Init(enum e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs, int* piItenDurabilities, uint8_t* pbyItemFlags);
 	void Tick() override;
 
 	CPlayerOther();

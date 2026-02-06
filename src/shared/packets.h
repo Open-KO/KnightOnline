@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <cinttypes>
+#include <cstdint>
 
 enum e_GameOpcode : uint8_t
 {
@@ -221,15 +221,6 @@ enum e_QuestOpcode : uint8_t
 {
 	QUEST_LIST   = 1,
 	QUEST_UPDATE = 2
-};
-
-enum e_ItemUpgradeResult : uint8_t
-{
-	ITEM_UPGRADE_RESULT_FAILED     = 0,
-	ITEM_UPGRADE_RESULT_SUCCEEDED  = 1,
-	ITEM_UPGRADE_RESULT_TRADING    = 2,
-	ITEM_UPGRADE_RESULT_NEED_COINS = 3,
-	ITEM_UPGRADE_RESULT_NO_MATCH   = 4
 };
 
 ////////////////////////////////////////////////////////////////
@@ -550,6 +541,16 @@ enum e_ItemUpgradeOpcode : uint8_t
 	ITEM_UPGRADE_ACCESSORIES = 3,
 	ITEM_BIFROST_REQ         = 4,
 	ITEM_BIFROST_EXCHANGE    = 5,
+};
+
+enum e_ItemUpgradeResult : uint8_t
+{
+	ITEM_UPGRADE_RESULT_FAILED      = 0,
+	ITEM_UPGRADE_RESULT_SUCCEEDED   = 1,
+	ITEM_UPGRADE_RESULT_TRADING     = 2,
+	ITEM_UPGRADE_RESULT_NEED_COINS  = 3,
+	ITEM_UPGRADE_RESULT_NO_MATCH    = 4,
+	ITEM_UPGRADE_RESULT_ITEM_RENTED = 5,
 };
 
 ////////////////////////////////////////////////////////////////

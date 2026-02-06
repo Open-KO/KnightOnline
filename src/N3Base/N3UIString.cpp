@@ -233,23 +233,24 @@ void CN3UIString::WordWrap()
 			while (iCount < iStrLen)
 			{
 				if ('\n' == szString[iCount]) // \n
-				{
 					break;
-				}
-				else if (0x80 & szString[iCount]) // 2BYTE 문자
+
+				if (0x80 & szString[iCount])  // 2BYTE 문자
 				{
 					BOOL bFlag = m_pDFont->GetTextExtent(szString.c_str(), iCount + 2, &size);
 					__ASSERT(bFlag, "cannot get size of dfont");
-					if (size.cx > iRegionWidth)
+					if (!bFlag || size.cx > iRegionWidth)
 						break;
+
 					iCount += 2;
 				}
 				else // 1BYTE 문자
 				{
 					BOOL bFlag = m_pDFont->GetTextExtent(szString.c_str(), iCount + 1, &size);
 					__ASSERT(bFlag, "cannot get size of dfont");
-					if (size.cx > iRegionWidth)
+					if (!bFlag || size.cx > iRegionWidth)
 						break;
+
 					++iCount;
 				}
 			}
@@ -257,6 +258,7 @@ void CN3UIString::WordWrap()
 			szNewBuff    = m_szString.substr(0, iCount); // +1은 맨 마지막에 nullptr 넣기 위해
 			m_iLineCount = 1;
 		}
+
 		m_pDFont->SetText(szNewBuff);
 	}
 	else
@@ -275,6 +277,10 @@ void CN3UIString::WordWrap()
 		__ASSERT(bFlag, "cannot get size of dfont");
 		//		iCY += size.cy;
 		//		if (iCY > iRegionHeight)
+
+		if (!bFlag)
+			return;
+
 		if (size.cy > iRegionHeight)
 		{
 			// NOTE: need to look into returning this back !!!
@@ -312,6 +318,10 @@ void CN3UIString::WordWrap()
 
 				BOOL bFlag = m_pDFont->GetTextExtent(&(szString[iCount]), iCC, &size);
 				__ASSERT(bFlag, "cannot get size of dfont");
+
+				if (!bFlag)
+					break;
+
 				if ((iCX + size.cx) > iRegionWidth) // 가로 길이가 넘었으면
 				{
 					//					szNewBuff += '\n';	// 다음줄로 내린다.
@@ -346,7 +356,7 @@ void CN3UIString::SetStartLine(int iLine)
 	SIZE size    = { 0, 0 };
 	BOOL bFlag   = m_pDFont->GetTextExtent("최", lstrlen("최"), &size);
 	__ASSERT(bFlag, "cannot get size of dfont");
-	if (0 == size.cy)
+	if (!bFlag || size.cy == 0)
 		return;
 
 	int iEndLine   = m_iStartLine + ((m_rcRegion.bottom - m_rcRegion.top) / size.cy);
@@ -547,6 +557,10 @@ int CN3UIString::GetStringRealWidth(int iNum) const
 	SIZE size;
 	BOOL bFlag = m_pDFont->GetTextExtent("가", lstrlen("가"), &size);
 	__ASSERT(bFlag, "cannot get size of dfont");
+
+	if (!bFlag)
+		return 0;
+
 	//int iLength = iNum/2;
 	//if (iLength == 0) return 0;
 	//return (size.cx*iLength);

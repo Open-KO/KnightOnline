@@ -36,7 +36,7 @@ protected:
 	// Operations
 public:
 	void Release() override;
-	void Tick() override;
+	void Tick(float fFrm = -1.0f) override;
 	void Render(__Vector3& vPos) override;
 
 	void Create(float fDensity, float fWidth, float fHeight, float fRainLength,

@@ -5,15 +5,15 @@
 
 #include "TcpSocket.h"
 
+class TcpServerSocketManager;
 class TcpServerSocket : public TcpSocket
 {
 public:
 	TcpServerSocket(test_tag);
-	TcpServerSocket(SocketManager* socketManager);
-	void Close() override;
+	TcpServerSocket(TcpServerSocketManager* socketManager);
 
-protected:
-	void ReleaseToManager() override;
+private:
+	std::string_view GetImplName() const override;
 };
 
 #endif // SERVER_SHAREDSERVER_TCPSERVERSOCKET_H

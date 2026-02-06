@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <WinSock2.h>
+#include <winsock2.h>
 #include <N3Base/My_3DStruct.h>
 
 #if !__has_include(<warfare_config.h>)

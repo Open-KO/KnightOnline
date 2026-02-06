@@ -16,19 +16,19 @@ void AudioDecoderThread::thread_loop()
 {
 	std::vector<QueueType> pendingQueue;
 	std::unordered_map<uint32_t, std::shared_ptr<StreamedAudioHandle>> handleMap;
+	auto nextTick = std::chrono::steady_clock::now();
 
 	while (CanTick())
 	{
+		nextTick += 20ms;
+
 		{
 			std::unique_lock<std::mutex> lock(ThreadMutex());
-			std::cv_status status = ThreadCondition().wait_for(lock, 20ms);
+			ThreadCondition().wait_until(lock, nextTick, [this]() { return IsSignaled(); });
+			ResetSignal();
 
 			if (!CanTick())
 				break;
-
-			// Ignore spurious wakeups
-			if (status != std::cv_status::timeout)
-				continue;
 
 			pendingQueue.swap(_pendingQueue);
 		}

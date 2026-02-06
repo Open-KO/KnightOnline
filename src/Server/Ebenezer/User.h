@@ -225,10 +225,11 @@ public:
 
 public:
 	CUser(test_tag);
-	CUser(SocketManager* socketManager);
+	CUser(TcpServerSocketManager* socketManager);
 	~CUser() override;
 
 public:
+	std::string_view GetImplName() const override;
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
@@ -238,6 +239,8 @@ public:
 	void CloseProcess() override;
 	void Parsing(int len, char* pData) override;
 
+	float GetDistanceSquared2D(float targetX, float targetZ) const;
+	float GetDistance2D(float targetX, float targetZ) const;
 	bool CheckMiddleStatueCapture() const;
 	void SetZoneAbilityChange(int zone);
 	int16_t GetMaxWeightForClient() const;
@@ -255,6 +258,11 @@ public:
 	void LogCoupon(int itemid, int count);
 	void RecvEditBox(char* pBuf);
 	void ResetEditBox();
+	void ItemUpgradeProcess(char* pBuf);
+	void ItemUpgrade(char* pBuf);
+	void ItemUpgradeAccesories(char* pBuf);
+	void SendItemUpgradeFailed(e_ItemUpgradeResult resultCode);
+	bool MatchingItemUpgrade(uint8_t inventoryPosition, int itemRequested, int itemExpected) const;
 	bool CheckCouponUsed() const;
 	bool CheckRandom(int16_t percent) const;
 	void OpenEditBox(int message, int event);
@@ -312,11 +320,12 @@ public:
 	void FriendAccept(char* pBuf);
 	void FriendRequest(char* pBuf);
 	void Friend(char* pBuf);
-	bool WarpListObjectEvent(int16_t objectindex, int16_t nid);
-	bool FlagObjectEvent(int16_t objectindex, int16_t nid);
-	bool GateLeverObjectEvent(int16_t objectindex, int16_t nid);
-	bool GateObjectEvent(int16_t objectindex, int16_t nid);
-	bool BindObjectEvent(int16_t objectindex, int16_t nid);
+	bool WarpListObjectEvent(int16_t objectIndex, int16_t npcId);
+	bool FlagObjectEvent(int16_t objectIndex, int16_t npcId);
+	bool GateLeverObjectEvent(int16_t objectIndex, int16_t npcId);
+	bool GateObjectEvent(int16_t objectIndex, int16_t npcId);
+	bool BindObjectEvent(int16_t objectIndex, int16_t npcId);
+	void SendItemUpgradeRequest(int16_t npcId);
 	void InitType3();
 	bool GetWarpList(int warp_group);
 	void ServerChangeOk(char* pBuf);
@@ -327,7 +336,7 @@ public:
 	void AllPointChange();
 	void ClassChangeReq();
 	void FriendReport(char* pBuf);
-	CUser* GetItemRoutingUser(int itemid, int16_t itemcount);
+	std::shared_ptr<CUser> GetItemRoutingUser(int itemid, int16_t itemcount);
 	bool GetStartPosition(int16_t* x, int16_t* z, int zoneId) const;
 	void Home();
 	void ReportBug(char* pBuf);
@@ -362,6 +371,7 @@ public:
 	void MSpChange(int amount);
 	void UpdateGameWeather(char* pBuf, uint8_t type);
 	void ObjectEvent(char* pBuf);
+	void SendObjectEventFailed(uint8_t objectType, uint8_t errorCode = 0);
 	void SkillPointChange(char* pBuf);
 	bool ExecuteExchange();
 	void InitExchange(bool bStart);

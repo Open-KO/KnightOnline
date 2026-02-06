@@ -16,9 +16,7 @@ if(OPENKO_COMPILE_WARNINGS_AS_ERROR)
 endif()
 
 # Setup dependencies
-target_link_libraries(FileIO PUBLIC
-  llfio_sl
-)
+target_link_libraries(FileIO PUBLIC Boost::interprocess)
 
 # Expose include path
 target_include_directories(FileIO INTERFACE

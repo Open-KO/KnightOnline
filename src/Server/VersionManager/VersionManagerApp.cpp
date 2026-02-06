@@ -17,7 +17,7 @@ namespace VersionManager
 {
 
 VersionManagerApp::VersionManagerApp(logger::Logger& logger) :
-	AppThread(logger), _socketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
+	AppThread(logger), _serverSocketManager(SOCKET_BUFF_SIZE, SOCKET_BUFF_SIZE)
 {
 	_telnetPort                                     = 2326;
 	db::ConnectionManager::DefaultConnectionTimeout = DB_PROCESS_TIMEOUT;
@@ -30,8 +30,8 @@ VersionManagerApp::VersionManagerApp(logger::Logger& logger) :
 VersionManagerApp::~VersionManagerApp()
 {
 	spdlog::info("VersionManagerApp::~VersionManagerApp: Shutting down, releasing resources.");
-	_socketManager.Shutdown();
-	spdlog::info("VersionManagerApp::~VersionManagerApp: SocketManager stopped.");
+	_serverSocketManager.Shutdown();
+	spdlog::info("VersionManagerApp::~VersionManagerApp: TcpServerSocketManager stopped.");
 
 	spdlog::info(
 		"VersionManagerApp::~VersionManagerApp: Waiting for worker threads to fully shut down.");
@@ -59,8 +59,8 @@ VersionManagerApp::~VersionManagerApp()
 
 bool VersionManagerApp::OnStart()
 {
-	_socketManager.Init(MAX_USER, 0, 1);
-	_socketManager.AllocateServerSockets<CUser>();
+	_serverSocketManager.Init(MAX_USER, 1);
+	_serverSocketManager.AllocateSockets<CUser>();
 
 	spdlog::info("Version Manager initialized");
 
@@ -80,13 +80,13 @@ bool VersionManagerApp::OnStart()
 		return false;
 	}
 
-	if (!_socketManager.Listen(_LISTEN_PORT))
+	if (!_serverSocketManager.Listen(_LISTEN_PORT))
 	{
 		spdlog::error("FAIL TO CREATE LISTEN STATE");
 		return false;
 	}
 
-	_socketManager.StartAccept();
+	_serverSocketManager.StartAccept();
 
 	spdlog::info("Listening on 0.0.0.0:{}", _LISTEN_PORT);
 

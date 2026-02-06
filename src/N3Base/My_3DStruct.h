@@ -5,8 +5,8 @@
 
 #include <d3dx9.h>
 
-#include <cinttypes>
-#include <cmath>
+#include <cstdint>
+#include <cfloat>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -354,9 +354,11 @@ inline constexpr uint32_t OBJ_EFFECT               = 0x20000000;
 inline constexpr uint32_t OBJ_ANIM_CONTROL         = 0x40000000;
 
 #ifndef _DEBUG
-#define __ASSERT(expr, expMessage)
+#define __ASSERT(expr, expMessage) ((void) 0)
 #else
-#include "CrtDbg.h"
+
+#ifdef _MSC_VER
+#include <crtdbg.h>
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-vararg,cppcoreguidelines-macro-usage)
 #define __ASSERT(expr, expMessage)                                                               \
@@ -367,6 +369,17 @@ inline constexpr uint32_t OBJ_ANIM_CONTROL         = 0x40000000;
 		_CrtDbgBreak();                                                                          \
 	}
 // NOLINTEND(cppcoreguidelines-pro-type-vararg,cppcoreguidelines-macro-usage)
+#else
+#include <cassert>
+
+// NOLINTBEGIN(cppcoreguidelines-pro-type-vararg,cppcoreguidelines-macro-usage)
+#define __ASSERT(expr, expMessage) \
+	if (!(expr))                   \
+	{                              \
+		assert(!expMessage);       \
+	}
+// NOLINTEND(cppcoreguidelines-pro-type-vararg,cppcoreguidelines-macro-usage)
+#endif
 
 #endif
 

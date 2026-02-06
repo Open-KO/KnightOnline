@@ -29,6 +29,11 @@ if(MSVC)
   add_compile_options(/utf-8)
 endif()
 
+if(MINGW)
+  # Statically link (everything)
+  add_link_options(-static)
+endif()
+
 # Config
 option(OPENKO_BUILD_CLIENT "Build the client projects - MSVC only (default on)" ON)
 option(OPENKO_BUILD_CLIENT_TOOLS "Build the client tool projects - MSVC only (default on)" ON)
@@ -45,6 +50,16 @@ if(WIN32)
   # Set the minimum Windows version
   set(_WIN32_WINNT "0x0A00" CACHE STRING "Minimum Windows version (default 0x0A00 - Windows 10)")
   add_definitions(-D_WIN32_WINNT=${_WIN32_WINNT})
+
+  if(MINGW)
+    set(OPENKO_BUILD_CLIENT_TOOLS OFF)
+    set(OPENKO_BUILD_TOOLS OFF)
+  endif()
+else()
+  # Client & tool projects are currently only supported on Windows.
+  set(OPENKO_BUILD_CLIENT OFF)
+  set(OPENKO_BUILD_CLIENT_TOOLS OFF)
+  set(OPENKO_BUILD_TOOLS OFF)
 endif()
 
 message(STATUS "OpenKO feature: OPENKO_BUILD_CLIENT - ${OPENKO_BUILD_CLIENT}")
@@ -102,7 +117,7 @@ endif()
 # Add dependencies
 set(CMAKE_FOLDER "_deps")
 require_package(Asio)
-require_package(LLFIO)
+require_package(BoostSubset)
 require_package(Spdlog)
 
 include_directories(
@@ -114,78 +129,70 @@ add_subdirectory(src/shared)
 add_subdirectory(src/FileIO)
 add_subdirectory(src/MathUtils)
 
-# Client & tool projects are currently only supported with Windows+MSVC builds.
-if(MSVC)
-  if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
-    # Dependencies
-    set(CMAKE_FOLDER "N3Base/_deps")
-    require_config_package(dx9sdk)
+if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_TOOLS)
+  # Dependencies
+  set(CMAKE_FOLDER "N3Base/_deps")
+  require_config_package(dx9sdk)
 
-    set(CMAKE_FOLDER "N3Base/_deps/mpg123")
-	require_package(Mpg123)
+  set(CMAKE_FOLDER "N3Base/_deps/mpg123")
+  require_package(Mpg123)
 
-    set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
-    require_package(OpenALSoft)
+  set(CMAKE_FOLDER "N3Base/_deps/openal-soft")
+  require_package(OpenALSoft)
 
-    set(CMAKE_FOLDER "N3Base")
-    add_subdirectory(src/N3Base)
-  endif()
+  set(CMAKE_FOLDER "N3Base")
+  add_subdirectory(src/N3Base)
+endif()
 
-  if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_CLIENT_TOOLS)
-    set(CMAKE_FOLDER "Client/_deps")
+if(OPENKO_BUILD_CLIENT OR OPENKO_BUILD_CLIENT_TOOLS)
+  set(CMAKE_FOLDER "Client/_deps")
 
-    # We technically require this for the Launcher & Option as well as the client itself (WarFare),
-	# so we'll pull this in here.
-    require_config_package(client-assets)
+  # We technically require this for the Launcher & Option as well as the client itself (WarFare),
+  # so we'll pull this in here.
+  require_config_package(client-assets)
 
-    # libjpeg-turbo doesn't allow regular builds. They insist on manual/external builds,
-    # so we must structure this a little bit differently to everything else.
-    require_package(JpegTurbo)
-    add_subdirectory(src/Client/JpegFile)
-  endif()
+  require_package(Jpeg)
+  add_subdirectory(src/Client/JpegFile)
+endif()
 
-  if(OPENKO_BUILD_CLIENT)
-    message(STATUS "OpenKO: Preparing to configure client...")
+if(OPENKO_BUILD_CLIENT)
+  message(STATUS "OpenKO: Preparing to configure client...")
 
-    set(CMAKE_FOLDER "Client")
-    add_subdirectory(src/Client/WarFare)
-  endif()
+  set(CMAKE_FOLDER "Client")
+  add_subdirectory(src/Client/WarFare)
+endif()
 
-  if(OPENKO_BUILD_CLIENT_TOOLS)
-    message(STATUS "OpenKO: Preparing to configure client tools...")
+if(OPENKO_BUILD_CLIENT_TOOLS)
+  message(STATUS "OpenKO: Preparing to configure client tools...")
 
-    set(CMAKE_FOLDER "Client tools/_deps")
-    require_package(Zlib)
-    add_subdirectory(src/Client/ZipArchive)
+  set(CMAKE_FOLDER "Client tools/_deps")
+  require_package(Zlib)
+  add_subdirectory(src/Client/ZipArchive)
 
-    set(CMAKE_FOLDER "Client tools")
-    add_subdirectory(src/Client/KscViewer)
-    add_subdirectory(src/Client/Launcher)
-    add_subdirectory(src/Client/Option)
-  endif()
+  set(CMAKE_FOLDER "Client tools")
+  add_subdirectory(src/Client/KscViewer)
+  add_subdirectory(src/Client/Launcher)
+  add_subdirectory(src/Client/Option)
+endif()
 
-  if(OPENKO_BUILD_TOOLS)
-    message(STATUS "OpenKO: Preparing to configure development tools...")
+if(OPENKO_BUILD_TOOLS)
+  message(STATUS "OpenKO: Preparing to configure development tools...")
 
-    set(CMAKE_FOLDER "Tools")
-    add_subdirectory(src/Tools/N3CE)
-    add_subdirectory(src/Tools/N3FXE)
-    add_subdirectory(src/Tools/N3ME)
-    add_subdirectory(src/Tools/N3TexViewer)
-    add_subdirectory(src/Tools/N3Viewer)
-    add_subdirectory(src/Tools/SkyViewer)
-    add_subdirectory(src/Tools/TblEditor)
-    add_subdirectory(src/Tools/UIE)
-  endif()
+  set(CMAKE_FOLDER "Tools")
+  add_subdirectory(src/Tools/N3CE)
+  add_subdirectory(src/Tools/N3FXE)
+  add_subdirectory(src/Tools/N3ME)
+  add_subdirectory(src/Tools/N3TexViewer)
+  add_subdirectory(src/Tools/N3Viewer)
+  add_subdirectory(src/Tools/SkyViewer)
+  add_subdirectory(src/Tools/TblEditor)
+  add_subdirectory(src/Tools/UIE)
 endif()
 
 if(OPENKO_BUILD_SERVERS)
   message(STATUS "OpenKO: Preparing to configure servers...")
 
   # Dependencies
-  set(CMAKE_FOLDER "Server/_deps/boost")
-  require_package(BoostSubset)
-
   set(CMAKE_FOLDER "Server/_deps/argparse")
   require_package(Argparse)
 
@@ -223,4 +230,8 @@ if(OPENKO_BUILD_TESTS)
   set(CMAKE_FOLDER "Tests")
   add_subdirectory(tests/FileIO)
   add_subdirectory(tests/MathUtils)
+  
+  if(OPENKO_BUILD_SERVERS)
+    add_subdirectory(tests/Server/Ebenezer)
+  endif() 
 endif()

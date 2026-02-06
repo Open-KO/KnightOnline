@@ -4,6 +4,8 @@
 #include "StdAfxBase.h"
 #include "N3Camera.h"
 
+#include <bit>
+
 CN3Camera::CN3Camera()
 {
 	m_dwType |= OBJ_CAMERA;
@@ -432,9 +434,9 @@ void CN3Camera::Apply()
 	float fFogStart   = m_Data.fFP * 0.75f;
 	float fFogEnd     = m_Data.fFP;
 
-	s_lpD3DDev->SetRenderState(D3DRS_FOGSTART, *(uint32_t*) &fFogStart);
-	s_lpD3DDev->SetRenderState(D3DRS_FOGEND, *(uint32_t*) &fFogEnd);
-	s_lpD3DDev->SetRenderState(D3DRS_FOGDENSITY, *(uint32_t*) &fFogDensity);
+	s_lpD3DDev->SetRenderState(D3DRS_FOGSTART, std::bit_cast<uint32_t>(fFogStart));
+	s_lpD3DDev->SetRenderState(D3DRS_FOGEND, std::bit_cast<uint32_t>(fFogEnd));
+	s_lpD3DDev->SetRenderState(D3DRS_FOGDENSITY, std::bit_cast<uint32_t>(fFogDensity));
 }
 
 void CN3Camera::Render(float fUnitSize)

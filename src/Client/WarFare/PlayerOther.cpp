@@ -35,7 +35,7 @@ void CPlayerOther::Tick()
 	}
 }
 
-bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs, int* piItenDurabilities)
+bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs, int* piItenDurabilities, uint8_t* /*pbyItemFlags*/)
 {
 	if (nullptr == pdwItemIDs || nullptr == piItenDurabilities)
 		return false;

@@ -14,7 +14,7 @@ TEST(IntersectTriangle, HitsTriangleFrontFace)
 
 	SCOPED_TRACE("IntersectTriangle::HitsTriangleFrontFace");
 
-	EXPECT_TRUE(_IntersectTriangle(orig, dir, v0, v1, v2));
+	ASSERT_TRUE(_IntersectTriangle(orig, dir, v0, v1, v2));
 }
 
 TEST(IntersectTriangle, MissesTriangle)
@@ -28,7 +28,7 @@ TEST(IntersectTriangle, MissesTriangle)
 
 	SCOPED_TRACE("IntersectTriangle::MissesTriangle");
 
-	EXPECT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2));
+	ASSERT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2));
 }
 
 TEST(IntersectTriangle, RayParallelToTriangle)
@@ -42,7 +42,7 @@ TEST(IntersectTriangle, RayParallelToTriangle)
 
 	SCOPED_TRACE("IntersectTriangle::RayParallelToTriangle");
 
-	EXPECT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2));
+	ASSERT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2));
 }
 
 TEST(IntersectTriangle, RayBehindTriangle)
@@ -56,7 +56,7 @@ TEST(IntersectTriangle, RayBehindTriangle)
 
 	SCOPED_TRACE("IntersectTriangle::RayBehindTriangle");
 
-	EXPECT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2));
+	ASSERT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2));
 }
 
 TEST(IntersectTriangle, HitsTriangleAtVertex)
@@ -70,7 +70,7 @@ TEST(IntersectTriangle, HitsTriangleAtVertex)
 
 	SCOPED_TRACE("IntersectTriangle::HitsTriangleAtVertex");
 
-	EXPECT_TRUE(_IntersectTriangle(orig, dir, v0, v1, v2));
+	ASSERT_TRUE(_IntersectTriangle(orig, dir, v0, v1, v2));
 }
 
 TEST(IntersectTriangle_WithColInfo, HitsTriangleFrontFace)
@@ -110,7 +110,7 @@ TEST(IntersectTriangle_WithColInfo, MissesTriangle)
 
 	SCOPED_TRACE("IntersectTriangle_WithColInfo::MissesTriangle");
 
-	EXPECT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2, t, u, v, &col));
+	ASSERT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2, t, u, v, &col));
 	ExpectVector3Near(col, { -FLT_MIN, -FLT_MIN, -FLT_MIN });
 }
 
@@ -128,7 +128,7 @@ TEST(IntersectTriangle_WithColInfo, RayParallelToTriangle)
 
 	SCOPED_TRACE("IntersectTriangle_WithColInfo::RayParallelToTriangle");
 
-	EXPECT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2, t, u, v, &col));
+	ASSERT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2, t, u, v, &col));
 }
 
 TEST(IntersectTriangle_WithColInfo, RayBehindTriangle)
@@ -145,7 +145,7 @@ TEST(IntersectTriangle_WithColInfo, RayBehindTriangle)
 
 	SCOPED_TRACE("IntersectTriangle_WithColInfo::RayBehindTriangle");
 
-	EXPECT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2, t, u, v, &col));
+	ASSERT_FALSE(_IntersectTriangle(orig, dir, v0, v1, v2, t, u, v, &col));
 	ExpectVector3Near(col, { -FLT_MIN, -FLT_MIN, -FLT_MIN });
 }
 

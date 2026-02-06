@@ -12,7 +12,6 @@
 #include <shared-server/utilities.h>
 
 #include <asio.hpp>
-
-#define myrand myrand_generic
+#include <spdlog/spdlog.h>
 
 #endif // SERVER_EBENEZER_PCH_H

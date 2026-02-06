@@ -5,6 +5,7 @@
 #include "AudioHandle.h"
 #include "al_wrapper.h"
 
+#include <algorithm>     // std::clamp
 #include <cassert>       // assert()
 #include <unordered_map> // std::unordered_map<>
 
@@ -30,18 +31,19 @@ void AudioThread::thread_loop()
 	_decoderThread     = std::make_unique<AudioDecoderThread>();
 	_decoderThread->start();
 
+	auto nextTick = std::chrono::steady_clock::now();
+
 	while (CanTick())
 	{
+		nextTick += 20ms;
+
 		{
 			std::unique_lock<std::mutex> lock(ThreadMutex());
-			std::cv_status status = ThreadCondition().wait_for(lock, 20ms);
+			ThreadCondition().wait_until(lock, nextTick, [this]() { return IsSignaled(); });
+			ResetSignal();
 
 			if (!CanTick())
 				break;
-
-			// Ignore spurious wakeups
-			if (status != std::cv_status::timeout)
-				continue;
 
 			pendingQueue.swap(_pendingQueue);
 		}

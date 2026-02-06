@@ -16,17 +16,11 @@ class CAISocket : public TcpClientSocket
 private:
 	EbenezerApp* _main          = nullptr;
 	CMagicProcess _magicProcess = {};
-	int _zoneNum                = 0;
 
 public:
-	int GetZoneNumber() const
-	{
-		return _zoneNum;
-	}
+	CAISocket(TcpClientSocketManager* socketManager);
+	std::string_view GetImplName() const override;
 
-	CAISocket(SocketManager* socketManager, int zoneNum);
-
-	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
 

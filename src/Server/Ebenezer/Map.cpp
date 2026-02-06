@@ -387,10 +387,10 @@ bool C3DMap::RegionItemRemove(int rx, int rz, int bundle_index, int itemid, int 
 	return bFind;
 }
 
-void C3DMap::RegionUserAdd(int rx, int rz, int uid)
+bool C3DMap::RegionUserAdd(int rx, int rz, int uid)
 {
 	if (rx < 0 || rz < 0 || rx >= m_nXRegion || rz >= m_nZRegion)
-		return;
+		return false;
 
 	int* pInt = new int;
 	*pInt     = uid;
@@ -399,10 +399,14 @@ void C3DMap::RegionUserAdd(int rx, int rz, int uid)
 		std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 		if (!m_ppRegion[rx][rz].m_RegionUserArray.PutData(uid, pInt))
+		{
 			delete pInt;
+			return false;
+		}
 	}
 
 	//TRACE(_T("++++ Region Add(%d) : x=%d, z=%d, uid=%d ++++\n"), m_nZoneNumber, rx, rz, uid);
+	return true;
 }
 
 void C3DMap::RegionUserRemove(int rx, int rz, int uid)
@@ -420,10 +424,10 @@ void C3DMap::RegionUserRemove(int rx, int rz, int uid)
 	//TRACE(_T("---- Region Remove(%d) : x=%d, z=%d, uid=%d ----\n"), m_nZoneNumber, rx, rz, uid);
 }
 
-void C3DMap::RegionNpcAdd(int rx, int rz, int nid)
+bool C3DMap::RegionNpcAdd(int rx, int rz, int nid)
 {
 	if (rx < 0 || rz < 0 || rx >= m_nXRegion || rz >= m_nZRegion)
-		return;
+		return false;
 
 	CRegion* region = &m_ppRegion[rx][rz];
 
@@ -432,7 +436,12 @@ void C3DMap::RegionNpcAdd(int rx, int rz, int nid)
 
 	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 	if (!region->m_RegionNpcArray.PutData(nid, pInt))
+	{
 		delete pInt;
+		return false;
+	}
+
+	return true;
 }
 
 void C3DMap::RegionNpcRemove(int rx, int rz, int nid)
