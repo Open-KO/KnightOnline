@@ -45,6 +45,29 @@ AIServerApp::AIServerApp(AIServerLogger& logger) : AppThread(logger)
 
 	_checkAliveThread = std::make_unique<TimerThread>(
 		10s, std::bind(&AIServerApp::CheckAliveTest, this));
+
+	myrand = [](int min, int max)
+	{
+		static int nOld = 0;
+
+		int nRet        = 0;
+		int nLoop       = 10;
+
+		if (min == max)
+			return min;
+
+		while (nLoop--)
+		{
+			nRet = (rand() % (max - min + 1)) + min;
+			if (nRet != nOld)
+			{
+				nOld = nRet;
+				return nRet;
+			}
+		}
+
+		return nRet;
+	};
 }
 
 AIServerApp::~AIServerApp()

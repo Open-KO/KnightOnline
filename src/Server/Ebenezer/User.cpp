@@ -12995,7 +12995,7 @@ void CUser::GameStart(char* pBuf)
 		// NOTE: This behaviour is flipped as compared to official to give it a more meaningful name.
 		// bool bRecastSavedMagic = true;
 
-		_state = CONNECTION_STATE_GAMESTART;
+		SetState(CONNECTION_STATE_GAMESTART);
 
 		spdlog::debug(
 			"User::GameStart: in game [charId={} socketId={}]", m_pUserData->m_id, _socketId);

@@ -49,6 +49,11 @@ public:
 		return _state;
 	}
 
+	void SetState(e_ConnectionState state)
+	{
+		_state = state;
+	}
+
 	bool HasSocket() const
 	{
 		return _socket != nullptr;

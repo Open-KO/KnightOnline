@@ -206,7 +206,7 @@ void TcpSocket::ReceivedData(int length)
 
 void TcpSocket::CloseProcess()
 {
-	_state = CONNECTION_STATE_DISCONNECTED;
+	SetState(CONNECTION_STATE_DISCONNECTED);
 
 	if (_socket != nullptr && _socket->is_open())
 	{
@@ -237,7 +237,7 @@ void TcpSocket::CloseProcess()
 
 void TcpSocket::InitSocket()
 {
-	_state = CONNECTION_STATE_CONNECTED;
+	SetState(CONNECTION_STATE_CONNECTED);
 
 	_sendCircularBuffer.SetEmpty();
 	_recvCircularBuffer.SetEmpty();

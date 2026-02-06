@@ -14,6 +14,4 @@
 #include <asio.hpp>
 #include <spdlog/spdlog.h>
 
-#define myrand myrand_generic
-
 #endif // SERVER_EBENEZER_PCH_H

@@ -18,6 +18,4 @@
 
 #include <spdlog/spdlog.h>
 
-#define myrand myrand_ai
-
 #endif // SERVER_AISERVER_PCH_H

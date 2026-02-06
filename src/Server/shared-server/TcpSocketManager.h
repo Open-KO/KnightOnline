@@ -89,6 +89,11 @@ protected:
 
 public:
 	virtual ~TcpSocketManager();
+
+protected:
+	void InitSockets(int socketCount);
+
+public:
 	void Init(int socketCount, uint32_t workerThreadCount = 0);
 
 protected:
