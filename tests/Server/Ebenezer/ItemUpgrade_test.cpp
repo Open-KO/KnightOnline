@@ -151,7 +151,7 @@ TEST_P(ItemUpgradeTest, BasicUpgradeSucceeds)
 
 			EXPECT_EQ(packet->Opcode, WIZ_ITEM_UPGRADE);
 			EXPECT_EQ(packet->SubOpcode, ITEM_UPGRADE_PROCESS);
-			EXPECT_EQ(packet->Result, ITEM_UPGRADE_ERROR_SUCCEEDED);
+			EXPECT_EQ(packet->Result, ITEM_UPGRADE_RESULT_SUCCEEDED);
 			EXPECT_EQ(packet->Item[0].ID, NEW_ITEM_ID);
 			EXPECT_EQ(packet->Item[0].Pos, 0);
 			EXPECT_EQ(packet->Item[1].ID, REQ_ITEM1_ID);
@@ -250,7 +250,7 @@ TEST_F(ItemUpgradeTest, BasicUpgradeBurns)
 
 			EXPECT_EQ(packet->Opcode, WIZ_ITEM_UPGRADE);
 			EXPECT_EQ(packet->SubOpcode, ITEM_UPGRADE_PROCESS);
-			EXPECT_EQ(packet->Result, ITEM_UPGRADE_ERROR_FAILED);
+			EXPECT_EQ(packet->Result, ITEM_UPGRADE_RESULT_FAILED);
 			EXPECT_EQ(packet->Item[0].ID, OLD_ITEM_ID);
 			EXPECT_EQ(packet->Item[0].Pos, 0);
 			EXPECT_EQ(packet->Item[1].ID, REQ_ITEM1_ID);
@@ -386,7 +386,7 @@ TEST_F(ItemUpgradeTest, InsufficientGoldRejected)
 			auto packet = reinterpret_cast<const ItemUpgradeProcessErrorResponsePacket*>(pBuf);
 			EXPECT_EQ(packet->Opcode, WIZ_ITEM_UPGRADE);
 			EXPECT_EQ(packet->SubOpcode, ITEM_UPGRADE_PROCESS);
-			EXPECT_EQ(packet->Result, ITEM_UPGRADE_ERROR_NEED_COINS);
+			EXPECT_EQ(packet->Result, ITEM_UPGRADE_RESULT_NEED_COINS);
 		});
 
 	// Copy it into the larger buffer in case it were to ever read beyond the struct's size.
@@ -573,7 +573,7 @@ TEST_F(ItemUpgradeTest, UserTradingRejected)
 			auto packet = reinterpret_cast<const ItemUpgradeProcessErrorResponsePacket*>(pBuf);
 			EXPECT_EQ(packet->Opcode, WIZ_ITEM_UPGRADE);
 			EXPECT_EQ(packet->SubOpcode, ITEM_UPGRADE_PROCESS);
-			EXPECT_EQ(packet->Result, ITEM_UPGRADE_ERROR_TRADING);
+			EXPECT_EQ(packet->Result, ITEM_UPGRADE_RESULT_TRADING);
 		});
 
 	// Copy it into the larger buffer in case it were to ever read beyond the struct's size.
@@ -615,7 +615,7 @@ TEST_F(ItemUpgradeTest, RentalItemRejected)
 			auto packet = reinterpret_cast<const ItemUpgradeProcessErrorResponsePacket*>(pBuf);
 			EXPECT_EQ(packet->Opcode, WIZ_ITEM_UPGRADE);
 			EXPECT_EQ(packet->SubOpcode, ITEM_UPGRADE_PROCESS);
-			EXPECT_EQ(packet->Result, ITEM_UPGRADE_ERROR_ITEM_RENTED);
+			EXPECT_EQ(packet->Result, ITEM_UPGRADE_RESULT_ITEM_RENTED);
 		});
 
 	// Copy it into the larger buffer in case it were to ever read beyond the struct's size.
