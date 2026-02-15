@@ -22,9 +22,9 @@ public:
 
 	// Attributes
 public:
-	const __FLOAT_RECT& GetUVRect() const
+	__FLOAT_RECT* GetUVRect()
 	{
-		return m_frcUVRect;
+		return &m_frcUVRect;
 	}
 
 protected:

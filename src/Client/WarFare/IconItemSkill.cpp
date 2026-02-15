@@ -95,7 +95,7 @@ __IconItemSkill* __IconItemSkill::Clone(CN3UIBase* pParent)
 		spItemNew->pUIIcon = new CN3UIIcon();
 		spItemNew->pUIIcon->Init(pParent);
 		spItemNew->pUIIcon->SetTex(szIconFN);
-		spItemNew->pUIIcon->SetUVRect(pUIIcon->GetUVRect());
+		spItemNew->pUIIcon->SetUVRect(*pUIIcon->GetUVRect());
 		spItemNew->pUIIcon->SetStyle(pUIIcon->GetStyle());
 		spItemNew->pUIIcon->SetVisible(pUIIcon->IsVisible());
 	}

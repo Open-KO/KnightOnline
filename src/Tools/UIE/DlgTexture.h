@@ -38,7 +38,7 @@ protected:
 public:
 	void SetTexture(LPCTSTR pszFileName);
 	BOOL GetSelectedUVRect(struct __FLOAT_RECT* pFRect) const;
-	void SetSelectedUVRect(const struct __FLOAT_RECT& pFRect); // 현재 선택된 UV좌표 넣기
+	void SetSelectedUVRect(const struct __FLOAT_RECT* pFRect); // 현재 선택된 UV좌표 넣기
 	CRect GetSelectedRect() const;
 	void SetImageTypes(int iCount, char** pszNames);
 	CRect GetImageRect(int iIndex, __FLOAT_RECT* pUVRect = nullptr);

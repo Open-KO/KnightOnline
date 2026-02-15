@@ -648,16 +648,17 @@ BOOL CTexViewer::GetSelectedUVRect(__FLOAT_RECT* pFRect) const
 
 	return TRUE;
 }
-
-void CTexViewer::SetSelectedUVRect(const __FLOAT_RECT& fRect)
+void CTexViewer::SetSelectedUVRect(const __FLOAT_RECT* pFRect)
 {
+	if (nullptr == pFRect)
+		return;
 	ASSERT(m_TexSize.cx > 2 && m_TexSize.cy > 2);
 
-	// 0.5f를 더하는 이유는 반올림..
-	m_rcSelectedRect.left   = int(fRect.left * m_TexSize.cx + 0.5f);
-	m_rcSelectedRect.right  = int(fRect.right * m_TexSize.cx + 0.5f);
-	m_rcSelectedRect.top    = int(fRect.top * m_TexSize.cy + 0.5f);
-	m_rcSelectedRect.bottom = int(fRect.bottom * m_TexSize.cy + 0.5f);
+	m_rcSelectedRect.left = int(
+		pFRect->left * m_TexSize.cx + 0.5f); // 0.5f를 더하는 이유는 반올림..
+	m_rcSelectedRect.right  = int(pFRect->right * m_TexSize.cx + 0.5f);
+	m_rcSelectedRect.top    = int(pFRect->top * m_TexSize.cy + 0.5f);
+	m_rcSelectedRect.bottom = int(pFRect->bottom * m_TexSize.cy + 0.5f);
 }
 
 CTexViewer::eDRAGTYPE CTexViewer::CheckDragType(CRect rcSel, CPoint point)

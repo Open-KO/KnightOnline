@@ -95,7 +95,7 @@ public:
 		eEDITMODE eMode); // mode 바꾸기 (zoom, hand, select) 실패하면 이전 mode를 돌려준다.
 	void SetLeftTopInImage(CPoint ptLeftTop);                  // 이미지의 좌측 상단 좌표 바꾸기
 	BOOL GetSelectedUVRect(struct __FLOAT_RECT* pFRect) const; // 현재 선택된 UV좌표 얻기
-	void SetSelectedUVRect(const struct __FLOAT_RECT& pFRect); // 현재 선택된 UV좌표 넣기
+	void SetSelectedUVRect(const struct __FLOAT_RECT* pFRect); // 현재 선택된 UV좌표 넣기
 
 	// image type관련
 	void SetImageTypeCount(int iCount)
