@@ -388,10 +388,8 @@ RECT CUIItemUpgrade::GetSampleRect()
 	return rect;
 }
 
-e_UIWND_DISTRICT CUIItemUpgrade::GetWndDistrict() const
+e_UIWND_DISTRICT CUIItemUpgrade::GetWndDistrict(const POINT ptCur) const
 {
-	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
-
 	if (m_pAreaUpgrade != nullptr && m_pAreaUpgrade->IsIn(ptCur.x, ptCur.y))
 		return UIWND_DISTRICT_UPGRADE_SLOT;
 
@@ -450,7 +448,7 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 		{
 			spItem = m_pSelectedItem;
 			iOrder = m_iSelectedItemSourcePos;
-			eUIWnd = GetWndDistrict();
+			eUIWnd = GetWndDistrict(CGameProcedure::s_pLocalInput->MouseGetPos());
 
 			if (eUIWnd == UIWND_DISTRICT_UPGRADE_RESULT_SLOT)
 				ResetUpgradeInventory();

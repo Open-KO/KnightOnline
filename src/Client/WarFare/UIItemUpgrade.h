@@ -73,7 +73,7 @@ public:
 
 private:
 	RECT GetSampleRect();
-	e_UIWND_DISTRICT GetWndDistrict() const;
+	e_UIWND_DISTRICT GetWndDistrict(const POINT ptCur) const;
 	bool HandleInventoryIconRightClick(__IconItemSkill* spItem);
 	bool OnKeyPress(int iKey) override;
 	bool Load(File& file) override;
