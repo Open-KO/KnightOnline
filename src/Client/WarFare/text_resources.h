@@ -516,8 +516,8 @@ enum e_TextResourceID : uint16_t
 	IDS_ITEM_UPGRADE_FAILED                 	= 6701,  // Item upgrade failed.
 	IDS_ITEM_UPGRADE_CANNOT_PERFORM         	= 6702,  // Cannot perform item upgrade.
 	IDS_ITEM_UPGRADE_NEED_COINS             	= 6703,  // You don't have enough Coins.
-	IDS_ITEM_UPGRADE_NON_MATCH              	= 6704,  // The items required for upgrade does not match.
-	IDS_ITEM_UPPGRADE_MSG_OK_CANCEL         	= 6705,  // The item might be destroyed while performing the upgrade.  Will you continue?
+	IDS_ITEM_UPGRADE_NO_MATCH              		= 6704,  // The items required for upgrade does not match.
+	IDS_ITEM_UPGRADE_CONFIRM			  		= 6705,  // The item might be destroyed while performing the upgrade.  Will you continue?
 
 	IDS_TELEPORT_TO_X_NEED_Y_COINS          	= 7612,  // To teleport to %s, you need %d coins
 

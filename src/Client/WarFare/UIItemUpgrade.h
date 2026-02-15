@@ -57,8 +57,8 @@ private:
 	int m_iSelectedItemSourcePos                         = -1;
 
 	__IconItemSkill* m_pMyUpgradeInv[MAX_ITEM_INVENTORY] = {};
-	__IconItemSkill* m_pMaterialSlot[ANVIL_REQ_MAX]      = {};
-	int8_t m_iUpgradeScrollSlotInvPos[ANVIL_REQ_MAX]     = {};
+	__IconItemSkill* m_pRequirementSlot[ANVIL_REQ_MAX]   = {};
+	int8_t m_iRequirementSlotInvPos[ANVIL_REQ_MAX]       = {};
 	int8_t m_iUpgradeItemSlotInvPos                      = -1;
 
 public:

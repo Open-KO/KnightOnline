@@ -25,7 +25,7 @@
 CUIItemUpgrade::CUIItemUpgrade()
 {
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
-		m_iUpgradeScrollSlotInvPos[i] = -1;
+		m_iRequirementSlotInvPos[i] = -1;
 }
 
 CUIItemUpgrade::~CUIItemUpgrade()
@@ -75,8 +75,8 @@ void CUIItemUpgrade::Release()
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
-		m_pSlotArea[i]                = nullptr;
-		m_iUpgradeScrollSlotInvPos[i] = -1;
+		m_pSlotArea[i]              = nullptr;
+		m_iRequirementSlotInvPos[i] = -1;
 	}
 
 	for (int i = 0; i < FLIPFLOP_MAX_FRAMES; i++)
@@ -216,7 +216,7 @@ void CUIItemUpgrade::SetSelectedIconInfo(CN3UIIcon* pUIIcon)
 	POINT ptCur = CGameProcedure::s_pLocalInput->MouseGetPos();
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
-		int8_t iOrder = m_iUpgradeScrollSlotInvPos[i];
+		int8_t iOrder = m_iRequirementSlotInvPos[i];
 		if (iOrder < 0 || iOrder >= MAX_ITEM_INVENTORY)
 			continue;
 
@@ -267,7 +267,7 @@ void CUIItemUpgrade::GetItemFromInv()
 	m_iUpgradeItemSlotInvPos = -1;
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
-		m_iUpgradeScrollSlotInvPos[i] = -1;
+		m_iRequirementSlotInvPos[i] = -1;
 
 	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
@@ -650,8 +650,7 @@ bool CUIItemUpgrade::Load(File& file)
 			m_pUIMsgBoxOkCancel = new CUIMsgBoxOkCancel();
 		m_pUIMsgBoxOkCancel->Init(this);
 		m_pUIMsgBoxOkCancel->LoadFromFile(pTbl->szMsgBoxOkCancel);
-		std::string szMsg = fmt::format_text_resource(IDS_ITEM_UPPGRADE_MSG_OK_CANCEL);
-		m_pUIMsgBoxOkCancel->SetText(szMsg);
+		m_pUIMsgBoxOkCancel->SetText(fmt::format_text_resource(IDS_ITEM_UPGRADE_CONFIRM));
 		int iX = (m_rcRegion.right + m_rcRegion.left) / 2;
 		int iY = (m_rcRegion.bottom + m_rcRegion.top) / 2;
 		m_pUIMsgBoxOkCancel->SetPos(iX - (m_pUIMsgBoxOkCancel->GetWidth() / 2), iY - (m_pUIMsgBoxOkCancel->GetHeight() / 2) - 80);
@@ -684,7 +683,7 @@ void CUIItemUpgrade::ResetUpgradeInventory()
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
-		int8_t iOrder = m_iUpgradeScrollSlotInvPos[i];
+		int8_t iOrder = m_iRequirementSlotInvPos[i];
 		if (iOrder == -1)
 			continue;
 
@@ -693,20 +692,20 @@ void CUIItemUpgrade::ResetUpgradeInventory()
 		{
 			SetupIconArea(spItem, m_pInvArea[iOrder]);
 
-			if (spItem->iCount > 0 && spItem->IsStackable() && m_pMaterialSlot[i]->pUIIcon != nullptr)
+			if (spItem->iCount > 0 && spItem->IsStackable() && m_pRequirementSlot[i]->pUIIcon != nullptr)
 			{
-				delete m_pMaterialSlot[i]->pUIIcon;
-				m_pMaterialSlot[i]->pUIIcon = nullptr;
+				delete m_pRequirementSlot[i]->pUIIcon;
+				m_pRequirementSlot[i]->pUIIcon = nullptr;
 
 				++spItem->iCount;
 			}
 
-			if (m_pSelectedItem == m_pMaterialSlot[i])
+			if (m_pSelectedItem == m_pRequirementSlot[i])
 				m_pSelectedItem = nullptr;
 
-			m_pMaterialSlot[i] = nullptr;
+			m_pRequirementSlot[i] = nullptr;
 		}
-		m_iUpgradeScrollSlotInvPos[i] = -1;
+		m_iRequirementSlotInvPos[i] = -1;
 	}
 
 	m_bUpgradeSucceeded  = false;
@@ -768,7 +767,7 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 	// Add requirement items
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
-		int8_t iOrder = m_iUpgradeScrollSlotInvPos[i];
+		int8_t iOrder = m_iRequirementSlotInvPos[i];
 		if (iOrder < 0 || iOrder >= MAX_ITEM_INVENTORY)
 			continue;
 
@@ -817,10 +816,10 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 	{
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)
 		{
-			int8_t iOrder = m_iUpgradeScrollSlotInvPos[i];
+			int8_t iOrder = m_iRequirementSlotInvPos[i];
 			if (iOrder != -1)
 			{
-				__IconItemSkill* spItem = m_pMaterialSlot[i];
+				__IconItemSkill* spItem = m_pRequirementSlot[i];
 				if (spItem != nullptr)
 				{
 					if (m_pSelectedItem == spItem)
@@ -831,12 +830,12 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 						--spItem->iCount;
 						--pInven->m_pMyInvWnd[iOrder]->iCount;
 
-						if (m_pMaterialSlot[i] != nullptr)
+						if (m_pRequirementSlot[i] != nullptr)
 						{
-							if (m_pMaterialSlot[i]->pUIIcon != nullptr)
-								delete m_pMaterialSlot[i]->pUIIcon;
-							delete m_pMaterialSlot[i];
-							m_pMaterialSlot[i] = nullptr;
+							if (m_pRequirementSlot[i]->pUIIcon != nullptr)
+								delete m_pRequirementSlot[i]->pUIIcon;
+							delete m_pRequirementSlot[i];
+							m_pRequirementSlot[i] = nullptr;
 						}
 					}
 					else
@@ -857,12 +856,12 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 							m_pMyUpgradeInv[iOrder] = nullptr;
 						}
 
-						m_pMaterialSlot[i] = nullptr;
+						m_pRequirementSlot[i] = nullptr;
 					}
 				}
 			}
 
-			m_iUpgradeScrollSlotInvPos[i] = -1;
+			m_iRequirementSlotInvPos[i] = -1;
 		}
 
 		if (pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos] != nullptr)
@@ -904,10 +903,10 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 	{
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)
 		{
-			int8_t iOrder = m_iUpgradeScrollSlotInvPos[i];
+			int8_t iOrder = m_iRequirementSlotInvPos[i];
 			if (iOrder != -1)
 			{
-				__IconItemSkill* spItem = m_pMaterialSlot[i];
+				__IconItemSkill* spItem = m_pRequirementSlot[i];
 				if (spItem != nullptr)
 				{
 					if (m_pSelectedItem == spItem)
@@ -918,12 +917,12 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 						--spItem->iCount;
 						--pInven->m_pMyInvWnd[iOrder]->iCount;
 
-						if (m_pMaterialSlot[i] != nullptr)
+						if (m_pRequirementSlot[i] != nullptr)
 						{
-							if (m_pMaterialSlot[i]->pUIIcon != nullptr)
-								delete m_pMaterialSlot[i]->pUIIcon;
-							delete m_pMaterialSlot[i];
-							m_pMaterialSlot[i] = nullptr;
+							if (m_pRequirementSlot[i]->pUIIcon != nullptr)
+								delete m_pRequirementSlot[i]->pUIIcon;
+							delete m_pRequirementSlot[i];
+							m_pRequirementSlot[i] = nullptr;
 						}
 					}
 					else
@@ -944,12 +943,12 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 							m_pMyUpgradeInv[iOrder] = nullptr;
 						}
 
-						m_pMaterialSlot[i] = nullptr;
+						m_pRequirementSlot[i] = nullptr;
 					}
 				}
 			}
 
-			m_iUpgradeScrollSlotInvPos[i] = -1;
+			m_iRequirementSlotInvPos[i] = -1;
 		}
 
 		if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] != nullptr)
@@ -1026,7 +1025,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		m_bUpgradeInProgress = false;
 		ResetUpgradeInventory();
 
-		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_NON_MATCH);
+		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_NO_MATCH);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_XRGB(255, 0, 255));
 	}
 
@@ -1157,7 +1156,7 @@ bool CUIItemUpgrade::IsMaterialSlotCompatible(__IconItemSkill* pSrc) const
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
-		int8_t iOrder = m_iUpgradeScrollSlotInvPos[i];
+		int8_t iOrder = m_iRequirementSlotInvPos[i];
 		if (iOrder < 0)
 			continue;
 
@@ -1283,7 +1282,7 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 
 			for (int i = 0; i < ANVIL_REQ_MAX; i++)
 			{
-				if (m_iUpgradeScrollSlotInvPos[i] != -1)
+				if (m_iRequirementSlotInvPos[i] != -1)
 					continue;
 
 				if (MaterialSlotDrop(spItem, i))
@@ -1305,8 +1304,8 @@ bool CUIItemUpgrade::MaterialSlotDrop(__IconItemSkill* spItem, int iOrder)
 		--m_pMyUpgradeInv[iSourceOrder]->iCount;
 
 	SetupIconArea(spItem, pArea);
-	m_iUpgradeScrollSlotInvPos[iOrder] = iSourceOrder;
-	m_pMaterialSlot[iOrder]            = spItem;
+	m_iRequirementSlotInvPos[iOrder] = iSourceOrder;
+	m_pRequirementSlot[iOrder]       = spItem;
 	return true;
 }
 void CUIItemUpgrade::CallBackProc(int iID, uint32_t dwFlag)
