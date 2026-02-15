@@ -85,7 +85,7 @@ private:
 	void SetSelectedIconInfo(CN3UIIcon* pUIIcon);
 	void CancelIconDrop(__IconItemSkill* spItem);
 	bool ReceiveIconDrop(__IconItemSkill* spItem);
-	void GetItemFromInv();
+	void CopyInventoryItems();
 	void ResetUpgradeInventory();
 	void GoldUpdate();
 	bool IsAllowedUpgradeItem(const __IconItemSkill* spItem) const;

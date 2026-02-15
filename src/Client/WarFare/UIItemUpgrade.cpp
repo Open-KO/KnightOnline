@@ -264,7 +264,7 @@ void CUIItemUpgrade::GoldUpdate()
 	m_pStrMyGold->SetString(formattedGold);
 }
 
-void CUIItemUpgrade::GetItemFromInv()
+void CUIItemUpgrade::CopyInventoryItems()
 {
 	CUIInventory* pInven = CGameProcedure::s_pProcMain->m_pUIInventory;
 	if (pInven == nullptr)
@@ -558,7 +558,7 @@ void CUIItemUpgrade::SetVisible(bool bVisible)
 
 	if (bVisible)
 	{
-		GetItemFromInv();
+		CopyInventoryItems();
 		GoldUpdate();
 		CGameProcedure::s_pUIMgr->SetVisibleFocusedUI(this);
 	}
