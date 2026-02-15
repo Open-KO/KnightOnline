@@ -496,8 +496,9 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 			e_UIWND_DISTRICT eDistrict = UIWND_DISTRICT_UNKNOWN;
 			int iOrder                 = -1;
+			__IconItemSkill* spItem    = nullptr;
 
-			if (!GetSelectedIconInfo(pSender, &iOrder, &eDistrict) || iOrder < 0)
+			if (!GetSelectedIconInfo(pSender, &iOrder, &eDistrict, &spItem) || iOrder < 0)
 			{
 				SetState(UI_STATE_COMMON_NONE);
 				return false;
@@ -509,11 +510,11 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if (eDistrict == UIWND_DISTRICT_UPGRADE_INV)
 			{
 				m_iItemBeingDraggedSourcePos = iOrder;
-				m_pItemBeingDragged          = m_pMyUpgradeInv[iOrder]->Clone(this);
+				m_pItemBeingDragged          = spItem->Clone(this);
 
 				// If stackable, reduce stack size in inventory
 				if (m_pItemBeingDragged->IsStackable())
-					--m_pMyUpgradeInv[iOrder]->iCount;
+					--spItem->iCount;
 
 				// Set icon region for moving.
 				RECT region = GetSampleRect();
@@ -652,7 +653,7 @@ bool CUIItemUpgrade::Load(File& file)
 			m_pStrInv[i]->SetVisible(false);
 	}
 
-	for (int i = 0; i < FLIPFLOP_MAX_FRAMES; ++i)
+	for (int i = 0; i < FLIPFLOP_MAX_FRAMES; i++)
 	{
 		szID = fmt::format("img_s_load_{}", i);
 		N3_VERIFY_UI_COMPONENT(m_pImgSuccess[i], GetChildByID<CN3UIImage>(szID));
