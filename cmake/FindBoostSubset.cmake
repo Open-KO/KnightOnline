@@ -13,7 +13,7 @@ set(BOOST_SUBMODULES # This isn't exactly ideal, but since we only use a tiny su
 fetchcontent_declare(
   Boost
   GIT_REPOSITORY        "https://github.com/boostorg/boost.git"
-  GIT_TAG               "boost-1.89.0"
+  GIT_TAG               "boost-1.90.0"
   GIT_SUBMODULES        "${BOOST_SUBMODULES}"
   GIT_PROGRESS          TRUE
   GIT_SHALLOW           TRUE

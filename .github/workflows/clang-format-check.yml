@@ -32,6 +32,8 @@ jobs:
   formatting-check:
     name: Format check
     runs-on: ubuntu-latest
+    env:
+      LLVM_VERSION: 19 # VS2022 uses 19.1.5, VS2026 currently uses 20.1.8
 
     strategy:
       fail-fast: false
@@ -51,9 +53,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run clang-format style check for C/C++ programs.
-        uses: jidicula/clang-format-action@v4.16.0
+#      - name: Run clang-format style check for C/C++ programs.
+#        uses: jidicula/clang-format-action@v4.16.0
+#        with:
+#          clang-format-version: '19' # VS2022 uses 19.1.5, VS2026 currently uses 20.1.8
+#          check-path: ${{ matrix.path }}
+#          include-regex: '^.*\.((((c|C)(c|pp|xx|\+\+)?$)|((h|H)h?(pp|xx|\+\+)?$))|(inl))$'
+
+      - name: Install clang-format
+        uses: nick-fields/retry@v3.0.2
         with:
-          clang-format-version: '19' # VS2022 uses 19.1.5, VS2026 currently uses 20.1.8
-          check-path: ${{ matrix.path }}
-          include-regex: '^.*\.((((c|C)(c|pp|xx|\+\+)?$)|((h|H)h?(pp|xx|\+\+)?$))|(inl))$'
+          max_attempts: 5
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          command: |
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh ${{ env.LLVM_VERSION }}
+            sudo apt install -y clang-format-${{ env.LLVM_VERSION }}
+
+      - name: Run clang-format check
+        run: |
+          cd ${{ matrix.path }} && \
+          find . \( -iname '*.c' -o -iname '*.cc' -o -iname '*.cpp' -o -iname '*.cxx' \
+           -o -iname '*.h' -o -iname '*.hh' -o -iname '*.hpp' -o -iname '*.hxx' \
+           -o -iname '*.inl' \) \
+           -exec clang-format-${{ env.LLVM_VERSION }} -style=file --dry-run --Werror {} +

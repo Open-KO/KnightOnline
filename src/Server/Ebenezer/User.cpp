@@ -285,6 +285,10 @@ void CUser::SendCompressingPacket(const char* pData, int len)
 
 void CUser::RegionPacketAdd(char* pBuf, int len)
 {
+	assert(_regionBuffer != nullptr);
+	if (_regionBuffer == nullptr)
+		return;
+
 	std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
 	SetShort(_regionBuffer->pDataBuff, len, _regionBuffer->iLength);
@@ -294,14 +298,14 @@ void CUser::RegionPacketAdd(char* pBuf, int len)
 int CUser::RegionPacketClear(char* GetBuf)
 {
 	int index = 0;
-	SetByte(GetBuf, WIZ_CONTINOUS_PACKET, index);
 
 	{
 		std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
 
-		if (_regionBuffer->iLength <= 0)
+		if (_regionBuffer == nullptr || _regionBuffer->iLength <= 0)
 			return 0;
 
+		SetByte(GetBuf, WIZ_CONTINOUS_PACKET, index);
 		SetShort(GetBuf, _regionBuffer->iLength, index);
 		SetString(GetBuf, _regionBuffer->pDataBuff, _regionBuffer->iLength, index);
 
