@@ -515,6 +515,12 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		case UIMSG_ICON_DOWN_FIRST:
 		{
+			if (m_bUpgradeInProgress)
+			{
+				SetState(UI_STATE_COMMON_NONE);
+				return false;
+			}
+
 			if (m_pItemBeingDragged != nullptr)
 				CancelIconDrop();
 
