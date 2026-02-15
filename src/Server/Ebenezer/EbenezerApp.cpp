@@ -992,12 +992,12 @@ bool EbenezerApp::LoadItemUpgradeTable()
 		return false;
 	}
 
-	// Ensure requirement items are sorted in ascending order.
+	// Ensure requirement items are sorted in descending order.
 	for (ModelType* model : localVec)
 	{
 		std::sort(std::begin(model->RequiredItem),
 			std::end(model->RequiredItem), //
-			[](int lhs, int rhs) { return lhs < rhs; });
+			[](int lhs, int rhs) { return lhs > rhs; });
 	}
 
 	// Now that we're done, swap it over to the destination container.

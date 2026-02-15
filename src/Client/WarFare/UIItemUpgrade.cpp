@@ -792,9 +792,15 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 		|| m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] == nullptr)
 		return;
 
+	struct ItemPair
+	{
+		int ID     = 0;
+		int8_t Pos = -1;
+	};
+
 	uint8_t byBuff[512];
-	int iOffset          = 0;
-	int iTotalSent       = 0;
+	std::array<ItemPair, ANVIL_REQ_MAX> reqItems {};
+	int iOffset = 0, iTotalSent = 0;
 
 	m_bUpgradeInProgress = true;
 
@@ -813,16 +819,16 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 		if (iOrder < 0 || iOrder >= MAX_ITEM_INVENTORY)
 			continue;
 
-		CAPISocket::MP_AddDword(byBuff, iOffset, m_pMyUpgradeInv[iOrder]->GetItemID());
-		CAPISocket::MP_AddByte(byBuff, iOffset, iOrder);
-		++iTotalSent;
+		reqItems[iTotalSent++] = { .ID = m_pMyUpgradeInv[iOrder]->GetItemID(), .Pos = iOrder };
 	}
 
-	while (iTotalSent < ANVIL_REQ_MAX)
+	std::sort(reqItems.begin(), reqItems.end(), //
+		[](const ItemPair& lhs, const ItemPair& rhs) { return lhs.ID > rhs.ID; });
+
+	for (const ItemPair& reqItem : reqItems)
 	{
-		CAPISocket::MP_AddDword(byBuff, iOffset, 0); // Item ID
-		CAPISocket::MP_AddByte(byBuff, iOffset, -1); // Position
-		++iTotalSent;
+		CAPISocket::MP_AddDword(byBuff, iOffset, reqItem.ID);
+		CAPISocket::MP_AddByte(byBuff, iOffset, reqItem.Pos);
 	}
 
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
