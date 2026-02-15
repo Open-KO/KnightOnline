@@ -185,7 +185,7 @@ void CUIItemUpgrade::Render()
 		if (pStr == nullptr)
 			continue;
 
-		if (m_pMyUpgradeInv[i] == nullptr || m_pMyUpgradeInv[i]->iCount <= 0 || !m_pMyUpgradeInv[i]->IsStackable())
+		if (m_pMyUpgradeInv[i] == nullptr || !m_pMyUpgradeInv[i]->IsStackable())
 			continue;
 
 		pStr->SetVisibleWithNoSound(true);
