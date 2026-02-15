@@ -217,7 +217,7 @@ __IconItemSkill* CUIItemUpgrade::GetHighlightIconItem(CN3UIBase* pUIIcon) const
 
 bool CUIItemUpgrade::GetSelectedIconInfo(CN3UIBase* pUIIcon, int* piOrder, e_UIWND_DISTRICT* peDistrict, __IconItemSkill** pspItem) const
 {
-	if (pUIIcon == nullptr || m_pAreaResult == nullptr)
+	if (pUIIcon == nullptr || m_pAreaResult == nullptr || m_pAreaUpgrade == nullptr)
 		return false;
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
@@ -253,9 +253,13 @@ bool CUIItemUpgrade::GetSelectedIconInfo(CN3UIBase* pUIIcon, int* piOrder, e_UIW
 			// Ideally this would just be assigned to an icon slot and not need to do any of this.
 			const RECT rcIcon   = spItem->pUIIcon->GetRegion();
 			const RECT rcResult = m_pAreaResult->GetRegion();
+			const RECT rcUpgrade = m_pAreaUpgrade->GetRegion();
 			if (rcIcon.left == rcResult.left && rcIcon.top == rcResult.top && rcIcon.right == rcResult.right
 				&& rcIcon.bottom == rcResult.bottom)
 				*peDistrict = UIWND_DISTRICT_UPGRADE_RESULT_SLOT;
+			else if (rcIcon.left == rcUpgrade.left && rcIcon.top == rcUpgrade.top && rcIcon.right == rcUpgrade.right
+					 && rcIcon.bottom == rcUpgrade.bottom)
+				*peDistrict = UIWND_DISTRICT_UPGRADE_SLOT;
 			else
 				*peDistrict = UIWND_DISTRICT_UPGRADE_INV;
 		}
