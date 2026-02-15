@@ -32,12 +32,13 @@ CUIItemUpgrade::~CUIItemUpgrade()
 {
 	for (int i = 0; i < MAX_ITEM_INVENTORY; i++)
 	{
-		if (m_pMyUpgradeInv[i] != nullptr)
-		{
-			m_pMyUpgradeInv[i]->pUIIcon = nullptr;
-			delete m_pMyUpgradeInv[i];
-			m_pMyUpgradeInv[i] = nullptr;
-		}
+		if (m_pMyUpgradeInv[i] == nullptr)
+			continue;
+
+		// NOTE: As a child, this is freed by CN3UIBase
+		m_pMyUpgradeInv[i]->pUIIcon = nullptr;
+		delete m_pMyUpgradeInv[i];
+		m_pMyUpgradeInv[i] = nullptr;
 	}
 }
 
@@ -165,7 +166,7 @@ void CUIItemUpgrade::Render()
 
 		pChild->Render();
 
-		if (GetState() == UI_STATE_COMMON_NONE && pChild->UIType() == UI_TYPE_ICON && pChild->GetStyle() & UISTYLE_ICON_HIGHLIGHT)
+		if (GetState() == UI_STATE_COMMON_NONE && pChild->UIType() == UI_TYPE_ICON && (pChild->GetStyle() & UISTYLE_ICON_HIGHLIGHT))
 		{
 			bTooltipRender = true;
 			SetSelectedIconInfo(static_cast<CN3UIIcon*>(pChild));
@@ -280,11 +281,8 @@ void CUIItemUpgrade::GetItemFromInv()
 	{
 		if (m_pMyUpgradeInv[i] != nullptr)
 		{
-			if (m_pMyUpgradeInv[i]->pUIIcon != nullptr)
-			{
-				delete m_pMyUpgradeInv[i]->pUIIcon;
-				m_pMyUpgradeInv[i]->pUIIcon = nullptr;
-			}
+			delete m_pMyUpgradeInv[i]->pUIIcon;
+			m_pMyUpgradeInv[i]->pUIIcon = nullptr;
 
 			if (m_pSelectedItem == m_pMyUpgradeInv[i])
 				m_pSelectedItem = nullptr;
@@ -565,7 +563,9 @@ void CUIItemUpgrade::SetVisible(bool bVisible)
 		CGameProcedure::s_pUIMgr->SetVisibleFocusedUI(this);
 	}
 	else
+	{
 		CGameProcedure::s_pUIMgr->ReFocusUI();
+	}
 }
 
 void CUIItemUpgrade::SetVisibleWithNoSound(bool bVisible, bool bWork, bool bReFocus)
@@ -726,7 +726,7 @@ void CUIItemUpgrade::ResetUpgradeInventory()
 				spItem->pUIIcon->SetMoveRect(pArea->GetRegion());
 			}
 
-			if (spItem->iCount > 0 && spItem->IsStackable() && m_pRequirementSlot[i]->pUIIcon != nullptr)
+			if (spItem->iCount > 0 && spItem->IsStackable())
 			{
 				delete m_pRequirementSlot[i]->pUIIcon;
 				m_pRequirementSlot[i]->pUIIcon = nullptr;
@@ -867,8 +867,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 						if (m_pRequirementSlot[i] != nullptr)
 						{
-							if (m_pRequirementSlot[i]->pUIIcon != nullptr)
-								delete m_pRequirementSlot[i]->pUIIcon;
+							delete m_pRequirementSlot[i]->pUIIcon;
 							delete m_pRequirementSlot[i];
 							m_pRequirementSlot[i] = nullptr;
 						}
@@ -901,11 +900,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 		if (pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos] != nullptr)
 		{
-			if (pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon != nullptr)
-			{
-				delete pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon;
-				pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
-			}
+			delete pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon;
+			pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
 
 			delete pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos];
 			pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos] = nullptr;
@@ -913,11 +909,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 		if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] != nullptr)
 		{
-			if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon != nullptr)
-			{
-				delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon;
-				m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
-			}
+			delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon;
+			m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
 
 			if (m_pSelectedItem == m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos])
 				m_pSelectedItem = nullptr;
@@ -954,8 +947,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 						if (m_pRequirementSlot[i] != nullptr)
 						{
-							if (m_pRequirementSlot[i]->pUIIcon != nullptr)
-								delete m_pRequirementSlot[i]->pUIIcon;
+							delete m_pRequirementSlot[i]->pUIIcon;
 							delete m_pRequirementSlot[i];
 							m_pRequirementSlot[i] = nullptr;
 						}
@@ -988,11 +980,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 		if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] != nullptr)
 		{
-			if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon != nullptr)
-			{
-				delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon;
-				m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
-			}
+			delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon;
+			m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
 
 			if (m_pSelectedItem == m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos])
 				m_pSelectedItem = nullptr;
