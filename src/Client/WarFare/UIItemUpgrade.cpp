@@ -86,15 +86,21 @@ void CUIItemUpgrade::Release()
 		m_pImgSuccess[i] = nullptr;
 	}
 
-	m_pImageCover1               = nullptr;
-	m_pImageCover2               = nullptr;
+	m_pImageCover1      = nullptr;
+	m_pImageCover2      = nullptr;
 
-	m_pUITooltipDlg              = nullptr;
-	m_pUIMsgBoxOkCancel          = nullptr;
+	m_pUITooltipDlg     = nullptr;
+	m_pUIMsgBoxOkCancel = nullptr;
 
-	m_pItemBeingDragged          = nullptr;
+	if (m_pItemBeingDragged != nullptr)
+	{
+		delete m_pItemBeingDragged->pUIIcon;
+		m_pItemBeingDragged->pUIIcon = nullptr;
+		delete m_pItemBeingDragged;
+		m_pItemBeingDragged = nullptr;
+	}
+
 	m_iItemBeingDraggedSourcePos = -1;
-
 	m_iUpgradeItemSlotInvPos     = -1;
 
 	CN3UIBase::Release();
@@ -180,10 +186,7 @@ void CUIItemUpgrade::Render()
 			continue;
 
 		if (m_pMyUpgradeInv[i] == nullptr || !m_pMyUpgradeInv[i]->IsStackable() || m_pMyUpgradeInv[i]->iCount <= 0)
-		{
-			pStr->SetVisible(false);
 			continue;
-		}
 
 		if (m_pMyUpgradeInv[i]->IsStackable())
 		{
@@ -191,12 +194,9 @@ void CUIItemUpgrade::Render()
 			{
 				if (m_pMyUpgradeInv[i]->iCount > 2)
 				{
+					pStr->SetVisible(true);
 					pStr->SetStringAsInt(m_pMyUpgradeInv[m_iItemBeingDraggedSourcePos]->iCount - 1);
 					pStr->Render();
-				}
-				else
-				{
-					pStr->SetVisible(false);
 				}
 			}
 			else if (m_pMyUpgradeInv[i]->iCount > 1)
@@ -205,10 +205,8 @@ void CUIItemUpgrade::Render()
 				pStr->SetStringAsInt(m_pMyUpgradeInv[i]->iCount);
 				pStr->Render();
 			}
-			else
-			{
-				pStr->SetVisible(false);
-			}
+
+			pStr->SetVisible(false);
 		}
 	}
 
@@ -327,10 +325,6 @@ void CUIItemUpgrade::CopyInventoryItems()
 		{
 			delete m_pMyUpgradeInv[i]->pUIIcon;
 			m_pMyUpgradeInv[i]->pUIIcon = nullptr;
-
-			if (m_pItemBeingDragged == m_pMyUpgradeInv[i])
-				m_pItemBeingDragged = nullptr;
-
 			delete m_pMyUpgradeInv[i];
 			m_pMyUpgradeInv[i] = nullptr;
 		}
@@ -395,51 +389,16 @@ bool CUIItemUpgrade::ReceiveIconDrop()
 	return false;
 }
 
-// Restores the icon's position to its original inventory area.
 void CUIItemUpgrade::CancelIconDrop()
 {
 	if (m_pItemBeingDragged == nullptr)
 		return;
 
-	int iOrder = m_iItemBeingDraggedSourcePos;
-	if (iOrder < 0 || iOrder >= MAX_ITEM_INVENTORY)
-		return;
-
-	if (m_pItemBeingDragged->iCount > 1 && m_pItemBeingDragged->IsStackable())
-	{
-		delete m_pItemBeingDragged->pUIIcon;
-		m_pItemBeingDragged->pUIIcon = nullptr;
-		delete m_pItemBeingDragged;
-	}
-	else
-	{
-		CN3UIArea* pArea = m_pAreaInv[iOrder];
-		if (m_pItemBeingDragged->pUIIcon != nullptr && pArea != nullptr)
-		{
-			m_pItemBeingDragged->pUIIcon->SetRegion(pArea->GetRegion());
-			m_pItemBeingDragged->pUIIcon->SetMoveRect(pArea->GetRegion());
-		}
-	}
-
+	delete m_pItemBeingDragged->pUIIcon;
+	m_pItemBeingDragged->pUIIcon = nullptr;
+	delete m_pItemBeingDragged;
 	m_pItemBeingDragged          = nullptr;
 	m_iItemBeingDraggedSourcePos = -1;
-}
-
-uint32_t CUIItemUpgrade::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld)
-{
-	uint32_t dwRet = UI_MOUSEPROC_NONE;
-
-	if (!m_bVisible)
-		return dwRet;
-
-	if (GetState() == UI_STATE_ICON_MOVING && m_pItemBeingDragged != nullptr && m_pItemBeingDragged->pUIIcon != nullptr)
-	{
-		RECT region = GetSampleRect();
-		m_pItemBeingDragged->pUIIcon->SetRegion(region);
-		m_pItemBeingDragged->pUIIcon->SetMoveRect(region);
-	}
-
-	return CN3UIBase::MouseProc(dwFlags, ptCur, ptOld);
 }
 
 // Returns a rectangle centered at the mouse position, used for moving icons.
@@ -541,16 +500,12 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 				m_iItemBeingDraggedSourcePos = iOrder;
 				m_pItemBeingDragged          = m_pMyUpgradeInv[iOrder];
 
-				// Divide countable items
-				if (m_pItemBeingDragged->iCount > 1 && m_pItemBeingDragged->IsStackable())
-				{
-					__IconItemSkill* spItemNew = new __IconItemSkill(*m_pItemBeingDragged);
-					spItemNew->CreateIcon(m_pItemBeingDragged->szIconFN, this);
-					m_pItemBeingDragged = spItemNew;
-				}
+				__IconItemSkill* spItemNew   = new __IconItemSkill(*m_pItemBeingDragged);
+				spItemNew->CreateIcon(m_pItemBeingDragged->szIconFN, this);
+				m_pItemBeingDragged = spItemNew;
 
 				// Set icon region for moving.
-				RECT region = GetSampleRect();
+				RECT region         = GetSampleRect();
 				if (m_pItemBeingDragged->pUIIcon != nullptr)
 				{
 					m_pItemBeingDragged->pUIIcon->SetRegion(region);
@@ -690,6 +645,9 @@ bool CUIItemUpgrade::Load(File& file)
 
 		szID = fmt::format("s_count_{}", i);
 		N3_VERIFY_UI_COMPONENT(m_pStrInv[i], GetChildByID<CN3UIString>(szID));
+
+		if (m_pStrInv[i] != nullptr)
+			m_pStrInv[i]->SetVisible(false);
 	}
 
 	for (int i = 0; i < FLIPFLOP_MAX_FRAMES; ++i)
@@ -785,9 +743,6 @@ void CUIItemUpgrade::ResetUpgradeInventory()
 				++spItem->iCount;
 			}
 
-			if (m_pItemBeingDragged == m_pRequirementSlot[i])
-				m_pItemBeingDragged = nullptr;
-
 			m_pRequirementSlot[i] = nullptr;
 		}
 
@@ -825,8 +780,8 @@ bool CUIItemUpgrade::IsAllowedUpgradeItem(const __IconItemSkill* spItem) const
 			return false;
 	}
 
-	e_ItemAttrib eTA = static_cast<e_ItemAttrib>(spItem->pItemExt->byMagicOrRare);
-	return eTA == ITEM_ATTRIB_UNIQUE || eTA == ITEM_ATTRIB_UPGRADE;
+	e_ItemAttrib eItemAttribute = static_cast<e_ItemAttrib>(spItem->pItemExt->byMagicOrRare);
+	return eItemAttribute == ITEM_ATTRIB_UNIQUE || eItemAttribute == ITEM_ATTRIB_UPGRADE;
 }
 
 void CUIItemUpgrade::SendToServerUpgradeMsg()
@@ -848,7 +803,6 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 	// Add item to upgrade
 	CAPISocket::MP_AddDword(byBuff, iOffset, m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->GetItemID());
 	CAPISocket::MP_AddByte(byBuff, iOffset, m_iUpgradeItemSlotInvPos);
-	++iTotalSent;
 
 	// Add requirement items
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
@@ -898,79 +852,71 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 	std::string szMsg;
 
-	if (result == ITEM_UPGRADE_RESULT_FAILED)
+	CancelIconDrop();
+
+	// When failing (burning) or succeeding, all requirement items are consumed and should be removed.
+	if (result == ITEM_UPGRADE_RESULT_FAILED || result == ITEM_UPGRADE_RESULT_SUCCEEDED)
 	{
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)
 		{
-			int8_t iOrder = m_iRequirementSlotInvPos[i];
-			if (iOrder != -1)
+			// Remove requirement items first.
+			// These are all copies, not references to existing data.
+			if (m_pRequirementSlot[i] != nullptr)
 			{
-				__IconItemSkill* spItem = m_pRequirementSlot[i];
-				if (spItem != nullptr)
-				{
-					if (m_pItemBeingDragged == spItem)
-						m_pItemBeingDragged = nullptr;
-
-					if (spItem->iCount > 1)
-					{
-						--spItem->iCount;
-						--pInven->m_pMyInvWnd[iOrder]->iCount;
-
-						if (m_pRequirementSlot[i] != nullptr)
-						{
-							delete m_pRequirementSlot[i]->pUIIcon;
-							delete m_pRequirementSlot[i];
-							m_pRequirementSlot[i] = nullptr;
-						}
-					}
-					else
-					{
-						if (pInven->m_pMyInvWnd[iOrder] != nullptr)
-						{
-							delete pInven->m_pMyInvWnd[iOrder]->pUIIcon;
-							pInven->m_pMyInvWnd[iOrder]->pUIIcon = nullptr;
-							delete pInven->m_pMyInvWnd[iOrder];
-							pInven->m_pMyInvWnd[iOrder] = nullptr;
-						}
-
-						if (m_pMyUpgradeInv[iOrder] != nullptr)
-						{
-							delete m_pMyUpgradeInv[iOrder]->pUIIcon;
-							m_pMyUpgradeInv[iOrder]->pUIIcon = nullptr;
-							delete m_pMyUpgradeInv[iOrder];
-							m_pMyUpgradeInv[iOrder] = nullptr;
-						}
-
-						m_pRequirementSlot[i] = nullptr;
-					}
-				}
+				delete m_pRequirementSlot[i]->pUIIcon;
+				m_pRequirementSlot[i]->pUIIcon = nullptr;
+				delete m_pRequirementSlot[i];
+				m_pRequirementSlot[i] = nullptr;
 			}
 
 			m_iRequirementSlotInvPos[i] = -1;
-		}
 
-		if (pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos] != nullptr)
+			// Remove a stack from the requirement items in the base inventory.
+			int8_t byInvOrder           = byReqPos[i];
+			if (byInvOrder < 0 || byInvOrder >= MAX_ITEM_INVENTORY)
+				continue;
+
+			__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[byInvOrder];
+			if (spItemInv == nullptr)
+				continue;
+
+			if (spItemInv->GetItemID() != nReqItemID[i])
+			{
+				assert(!"Unexpected item");
+				continue;
+			}
+
+			if (--spItemInv->iCount <= 0)
+			{
+				delete spItemInv->pUIIcon;
+				spItemInv->pUIIcon = nullptr;
+				delete spItemInv;
+				pInven->m_pMyInvWnd[byInvOrder] = nullptr;
+			}
+		}
+	}
+
+	if (result == ITEM_UPGRADE_RESULT_FAILED)
+	{
+		if (byUpgradePos < 0 || byUpgradePos >= MAX_ITEM_INVENTORY)
+			return;
+
+		// The item burned. We should remove it from the inventory.
+		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[byUpgradePos];
+		if (spItemInv != nullptr)
 		{
-			delete pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon;
-			pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
-
-			delete pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos];
-			pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos] = nullptr;
+			delete spItemInv->pUIIcon;
+			spItemInv->pUIIcon = nullptr;
+			delete spItemInv;
+			pInven->m_pMyInvWnd[byUpgradePos] = nullptr;
 		}
 
-		if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] != nullptr)
-		{
-			delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon;
-			m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
+		// Reset the inventory, copying it back from the original.
+		// Note that in this case, we don't need the upgrade item to be displayed.
+		// This will be reset at this point.
+		CopyInventoryItems();
 
-			if (m_pItemBeingDragged == m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos])
-				m_pItemBeingDragged = nullptr;
-
-			delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos];
-			m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] = nullptr;
-		}
-
-		m_iUpgradeItemSlotInvPos = -1;
+		m_iUpgradeItemSlotInvPos = byUpgradePos;
 
 		m_bUpgradeSucceeded      = false;
 		m_eAnimationState        = AnimationState::Start;
@@ -980,66 +926,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 	}
 	else if (result == ITEM_UPGRADE_RESULT_SUCCEEDED)
 	{
-		for (int i = 0; i < ANVIL_REQ_MAX; i++)
-		{
-			int8_t iOrder = m_iRequirementSlotInvPos[i];
-			if (iOrder != -1)
-			{
-				__IconItemSkill* spItem = m_pRequirementSlot[i];
-				if (spItem != nullptr)
-				{
-					if (m_pItemBeingDragged == spItem)
-						m_pItemBeingDragged = nullptr;
-
-					if (spItem->iCount > 1)
-					{
-						--spItem->iCount;
-						--pInven->m_pMyInvWnd[iOrder]->iCount;
-
-						if (m_pRequirementSlot[i] != nullptr)
-						{
-							delete m_pRequirementSlot[i]->pUIIcon;
-							delete m_pRequirementSlot[i];
-							m_pRequirementSlot[i] = nullptr;
-						}
-					}
-					else
-					{
-						if (pInven->m_pMyInvWnd[iOrder] != nullptr)
-						{
-							delete pInven->m_pMyInvWnd[iOrder]->pUIIcon;
-							pInven->m_pMyInvWnd[iOrder]->pUIIcon = nullptr;
-							delete pInven->m_pMyInvWnd[iOrder];
-							pInven->m_pMyInvWnd[iOrder] = nullptr;
-						}
-
-						if (m_pMyUpgradeInv[iOrder] != nullptr)
-						{
-							delete m_pMyUpgradeInv[iOrder]->pUIIcon;
-							m_pMyUpgradeInv[iOrder]->pUIIcon = nullptr;
-							delete m_pMyUpgradeInv[iOrder];
-							m_pMyUpgradeInv[iOrder] = nullptr;
-						}
-
-						m_pRequirementSlot[i] = nullptr;
-					}
-				}
-			}
-
-			m_iRequirementSlotInvPos[i] = -1;
-		}
-
-		if (m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] != nullptr)
-		{
-			delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon;
-			m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]->pUIIcon = nullptr;
-
-			if (m_pItemBeingDragged == m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos])
-				m_pItemBeingDragged = nullptr;
-
-			delete m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos];
-			m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] = nullptr;
-		}
+		if (byUpgradePos < 0 || byUpgradePos >= MAX_ITEM_INVENTORY)
+			return;
 
 		m_bUpgradeSucceeded = true;
 
@@ -1062,7 +950,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 		eItemType = CGameBase::MakeResrcFileNameForUPC(
 			pItemBasic, pItemExt, nullptr, &szIconFN, ePart, ePlug, CGameBase::s_pPlayer->Race());
-		if (eItemType == ITEM_TYPE_UNKNOWN)
+		if (eItemType == ITEM_TYPE_UNKNOWN || byUpgradePos < 0 || byUpgradePos >= MAX_ITEM_INVENTORY)
 			return;
 
 		__IconItemSkill* spItemNew = new __IconItemSkill();
@@ -1071,12 +959,38 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		spItemNew->iCount          = 1;
 		spItemNew->CreateIcon(szIconFN, this);
 
-		m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]                  = spItemNew;
+		// Upgrade the item in the inventory.
+		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[byUpgradePos];
+		if (spItemInv != nullptr)
+		{
+			spItemInv->pItemBasic  = pItemBasic;
+			spItemInv->pItemExt    = pItemExt;
+			spItemInv->iDurability = pItemBasic->siMaxDurability + pItemExt->siMaxDurability;
 
-		// Upgrade item in inventory
-		pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pItemBasic  = spItemNew->pItemBasic;
-		pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->pItemExt    = spItemNew->pItemExt;
-		pInven->m_pMyInvWnd[m_iUpgradeItemSlotInvPos]->iDurability = spItemNew->iDurability;
+			if (spItemInv->pUIIcon != nullptr)
+				spItemInv->pUIIcon->SetTex(szIconFN);
+
+			CN3UIArea* pArea = pInven->GetChildAreaByiOrder(UI_AREA_TYPE_INV, byUpgradePos);
+			if (pArea != nullptr && spItemInv->pUIIcon != nullptr)
+			{
+				spItemInv->pUIIcon->SetRegion(pArea->GetRegion());
+				spItemInv->pUIIcon->SetMoveRect(pArea->GetRegion());
+			}
+		}
+
+		// Reset the inventory, copying it back from the original.
+		CopyInventoryItems();
+
+		m_iUpgradeItemSlotInvPos = byUpgradePos;
+
+		// Note that in this case, we need the upgrade item to be displayed in the result slot.
+		// We should restore it.
+		spItemInv                = m_pMyUpgradeInv[byUpgradePos];
+		if (spItemInv != nullptr && spItemInv->pUIIcon && m_pAreaResult != nullptr)
+		{
+			spItemInv->pUIIcon->SetRegion(m_pAreaResult->GetRegion());
+			spItemInv->pUIIcon->SetMoveRect(m_pAreaResult->GetRegion());
+		}
 	}
 	else if (result == ITEM_UPGRADE_RESULT_TRADING)
 	{
@@ -1331,29 +1245,23 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 
 	if (IsValidRequirementItem(spItem))
 	{
-		// Split stackable items
-		__IconItemSkill* spItemReq = spItem;
-		if (spItem->iCount > 1 && spItem->IsStackable())
-		{
-			__IconItemSkill* spItemNew = new __IconItemSkill(*spItem);
-			spItemNew->CreateIcon(spItem->szIconFN, this);
-			spItemReq = spItemNew;
-		}
+		__IconItemSkill* spItemNew = new __IconItemSkill(*spItem);
+		spItemNew->CreateIcon(spItem->szIconFN, this);
 
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)
 		{
 			if (m_iRequirementSlotInvPos[i] != -1)
 				continue;
 
-			SetRequirementItemSlot(spItemReq, iSrcOrder, i);
+			SetRequirementItemSlot(spItemNew, iSrcOrder, i);
 			return true;
 		}
 
-		if (spItemReq != spItem && spItemReq != nullptr)
+		if (spItemNew != nullptr)
 		{
-			delete spItemReq->pUIIcon;
-			spItemReq->pUIIcon = nullptr;
-			delete spItemReq;
+			delete spItemNew->pUIIcon;
+			spItemNew->pUIIcon = nullptr;
+			delete spItemNew;
 		}
 	}
 
