@@ -847,15 +847,15 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 	byReqPos.fill(-1);
 
-	int8_t result  = pkt.read<uint8_t>();
+	int8_t result  = pkt.read<int8_t>();
 
 	nUpgradeItemID = pkt.read<uint32_t>();
-	byUpgradePos   = pkt.read<uint8_t>();
+	byUpgradePos   = pkt.read<int8_t>();
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
 		nReqItemID[i] = pkt.read<uint32_t>();
-		byReqPos[i]   = pkt.read<uint8_t>();
+		byReqPos[i]   = pkt.read<int8_t>();
 	}
 
 	std::string szMsg;
