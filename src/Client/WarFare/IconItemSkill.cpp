@@ -13,17 +13,6 @@ __IconItemSkill::__IconItemSkill()
 	pSkill      = nullptr;
 }
 
-__IconItemSkill::__IconItemSkill(const __IconItemSkill& src)
-{
-	pUIIcon     = nullptr;
-	szIconFN    = src.szIconFN;
-	pItemBasic  = src.pItemBasic;
-	pItemExt    = src.pItemExt;
-	pSkill      = src.pSkill;
-	iCount      = src.iCount;
-	iDurability = src.iDurability;
-}
-
 int __IconItemSkill::GetItemID() const
 {
 	if (pItemBasic == nullptr)
@@ -88,4 +77,28 @@ void __IconItemSkill::CreateIcon(const std::string& szFN, CN3UIBase* pParent, ui
 	pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
 	pUIIcon->SetStyle(dwStyle);
 	pUIIcon->SetVisible(true);
+}
+
+__IconItemSkill* __IconItemSkill::Clone(CN3UIBase* pParent)
+{
+	__IconItemSkill* spItemNew = new __IconItemSkill();
+
+	spItemNew->szIconFN        = szIconFN;
+	spItemNew->pItemBasic      = pItemBasic;
+	spItemNew->pItemExt        = pItemExt;
+	spItemNew->pSkill          = pSkill;
+	spItemNew->iCount          = iCount;
+	spItemNew->iDurability     = iDurability;
+
+	if (pUIIcon != nullptr)
+	{
+		spItemNew->pUIIcon = new CN3UIIcon();
+		spItemNew->pUIIcon->Init(pParent);
+		spItemNew->pUIIcon->SetTex(szIconFN);
+		spItemNew->pUIIcon->SetUVRect(pUIIcon->GetUVRect());
+		spItemNew->pUIIcon->SetStyle(pUIIcon->GetStyle());
+		spItemNew->pUIIcon->SetVisible(pUIIcon->IsVisible());
+	}
+
+	return spItemNew;
 }

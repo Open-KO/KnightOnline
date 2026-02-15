@@ -251,8 +251,8 @@ bool CUIItemUpgrade::GetSelectedIconInfo(CN3UIBase* pUIIcon, int* piOrder, e_UIW
 		{
 			// Hacky result slot check; this should be placed, so it should match.
 			// Ideally this would just be assigned to an icon slot and not need to do any of this.
-			const RECT rcIcon   = spItem->pUIIcon->GetRegion();
-			const RECT rcResult = m_pAreaResult->GetRegion();
+			const RECT rcIcon    = spItem->pUIIcon->GetRegion();
+			const RECT rcResult  = m_pAreaResult->GetRegion();
 			const RECT rcUpgrade = m_pAreaUpgrade->GetRegion();
 			if (rcIcon.left == rcResult.left && rcIcon.top == rcResult.top && rcIcon.right == rcResult.right
 				&& rcIcon.bottom == rcResult.bottom)
@@ -320,10 +320,9 @@ void CUIItemUpgrade::CopyInventoryItems()
 		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[i];
 		if (spItemInv != nullptr)
 		{
-			__IconItemSkill* spItem = new __IconItemSkill(*spItemInv);
-			spItem->CreateIcon(spItemInv->szIconFN, this);
+			__IconItemSkill* spItem = spItemInv->Clone(this);
 
-			CN3UIArea* pArea = m_pAreaInv[i];
+			CN3UIArea* pArea        = m_pAreaInv[i];
 			if (pArea != nullptr && spItem->pUIIcon != nullptr)
 			{
 				spItem->pUIIcon->SetRegion(pArea->GetRegion());
@@ -510,14 +509,10 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			if (eDistrict == UIWND_DISTRICT_UPGRADE_INV)
 			{
 				m_iItemBeingDraggedSourcePos = iOrder;
-				m_pItemBeingDragged          = m_pMyUpgradeInv[iOrder];
-
-				__IconItemSkill* spItemNew   = new __IconItemSkill(*m_pItemBeingDragged);
-				spItemNew->CreateIcon(m_pItemBeingDragged->szIconFN, this);
-				m_pItemBeingDragged = spItemNew;
+				m_pItemBeingDragged          = m_pMyUpgradeInv[iOrder]->Clone(this);
 
 				// If stackable, reduce stack size in inventory
-				if (spItemNew->IsStackable())
+				if (m_pItemBeingDragged->IsStackable())
 					--m_pMyUpgradeInv[iOrder]->iCount;
 
 				// Set icon region for moving.
@@ -1251,7 +1246,7 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 
 	if (IsValidRequirementItem(spItem))
 	{
-		__IconItemSkill* spItemNew = new __IconItemSkill(*spItem);
+		__IconItemSkill* spItemNew = spItem->Clone(this);
 		spItemNew->CreateIcon(spItem->szIconFN, this);
 
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)

@@ -327,7 +327,7 @@ BOOL CDlgTexture::GetSelectedUVRect(struct __FLOAT_RECT* pFRect) const
 	return m_pTexViewer->GetSelectedUVRect(pFRect);
 }
 
-void CDlgTexture::SetSelectedUVRect(const __FLOAT_RECT* pFRect) // 현재 선택된 UV좌표 넣기
+void CDlgTexture::SetSelectedUVRect(const __FLOAT_RECT& pFRect) // 현재 선택된 UV좌표 넣기
 {
 	if (nullptr == m_pTexViewer)
 		return;

@@ -187,7 +187,7 @@ void CN3UIProgress::SetFrGndUVFromFrGndImage()
 	if (m_pFrGndImgRef == nullptr)
 		return;
 
-	m_frcFrGndImgUV = *(m_pFrGndImgRef->GetUVRect());
+	m_frcFrGndImgUV = m_pFrGndImgRef->GetUVRect();
 	UpdateFrGndImage();
 }
 

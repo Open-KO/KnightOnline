@@ -32,13 +32,14 @@ struct __IconItemSkill
 	};
 
 	__IconItemSkill();
-	__IconItemSkill(const __IconItemSkill& src);
+	__IconItemSkill(const __IconItemSkill& src) = delete;
 	int GetItemID() const;
 	int GetBuyPrice() const;
 	int GetSellPrice(bool bHasPremium = false) const;
 	bool IsStackable() const;
 	void CreateIcon(const std::string& szFN, CN3UIBase* pParent, uint32_t dwStyle = UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED,
 		float fUVAspect = 45.0f / 64.0f);
+	__IconItemSkill* Clone(CN3UIBase* pParent);
 };
 
 #endif // CLIENT_WARFARE_ICONITEMSKILL_H

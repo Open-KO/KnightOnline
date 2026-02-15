@@ -137,11 +137,13 @@ void CN3UIImage::SetRegion(const RECT& Rect)
 
 void CN3UIImage::SetUVRect(float left, float top, float right, float bottom)
 {
-	m_frcUVRect.left   = left;
-	m_frcUVRect.top    = top;
-	m_frcUVRect.right  = right;
-	m_frcUVRect.bottom = bottom;
+	__FLOAT_RECT frc = { .left = left, .top = top, .right = right, .bottom = bottom };
+	SetUVRect(frc);
+}
 
+void CN3UIImage::SetUVRect(const __FLOAT_RECT& frc)
+{
+	m_frcUVRect = frc;
 	SetVB();
 }
 
