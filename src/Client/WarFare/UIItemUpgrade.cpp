@@ -185,29 +185,13 @@ void CUIItemUpgrade::Render()
 		if (pStr == nullptr)
 			continue;
 
-		if (m_pMyUpgradeInv[i] == nullptr || !m_pMyUpgradeInv[i]->IsStackable() || m_pMyUpgradeInv[i]->iCount <= 0)
+		if (m_pMyUpgradeInv[i] == nullptr || m_pMyUpgradeInv[i]->iCount <= 0 || !m_pMyUpgradeInv[i]->IsStackable())
 			continue;
 
-		if (m_pMyUpgradeInv[i]->IsStackable())
-		{
-			if (GetState() == UI_STATE_ICON_MOVING && i == m_iItemBeingDraggedSourcePos)
-			{
-				if (m_pMyUpgradeInv[i]->iCount > 2)
-				{
-					pStr->SetVisible(true);
-					pStr->SetStringAsInt(m_pMyUpgradeInv[m_iItemBeingDraggedSourcePos]->iCount - 1);
-					pStr->Render();
-				}
-			}
-			else if (m_pMyUpgradeInv[i]->iCount > 1)
-			{
-				pStr->SetVisible(true);
-				pStr->SetStringAsInt(m_pMyUpgradeInv[i]->iCount);
-				pStr->Render();
-			}
-
-			pStr->SetVisible(false);
-		}
+		pStr->SetVisibleWithNoSound(true);
+		pStr->SetStringAsInt(m_pMyUpgradeInv[i]->iCount);
+		pStr->Render();
+		pStr->SetVisibleWithNoSound(false);
 	}
 
 	if (spItemTooltip != nullptr)
@@ -394,6 +378,11 @@ void CUIItemUpgrade::CancelIconDrop()
 	if (m_pItemBeingDragged == nullptr)
 		return;
 
+	// If stackable, restore stack size in inventory
+	// Note that we assume this is from the inventory because it's the only draggable source.
+	if (m_pItemBeingDragged->IsStackable())
+		++m_pMyUpgradeInv[m_iItemBeingDraggedSourcePos]->iCount;
+
 	delete m_pItemBeingDragged->pUIIcon;
 	m_pItemBeingDragged->pUIIcon = nullptr;
 	delete m_pItemBeingDragged;
@@ -504,8 +493,12 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 				spItemNew->CreateIcon(m_pItemBeingDragged->szIconFN, this);
 				m_pItemBeingDragged = spItemNew;
 
+				// If stackable, reduce stack size in inventory
+				if (spItemNew->IsStackable())
+					--m_pMyUpgradeInv[iOrder]->iCount;
+
 				// Set icon region for moving.
-				RECT region         = GetSampleRect();
+				RECT region = GetSampleRect();
 				if (m_pItemBeingDragged->pUIIcon != nullptr)
 				{
 					m_pItemBeingDragged->pUIIcon->SetRegion(region);
@@ -735,14 +728,13 @@ void CUIItemUpgrade::ResetUpgradeInventory()
 				spItem->pUIIcon->SetMoveRect(pArea->GetRegion());
 			}
 
-			if (spItem->iCount > 0 && spItem->IsStackable())
-			{
-				delete m_pRequirementSlot[i]->pUIIcon;
-				m_pRequirementSlot[i]->pUIIcon = nullptr;
-
+			// If stackable, restore stack size in inventory
+			if (spItem->IsStackable())
 				++spItem->iCount;
-			}
 
+			delete m_pRequirementSlot[i]->pUIIcon;
+			m_pRequirementSlot[i]->pUIIcon = nullptr;
+			delete m_pRequirementSlot[i];
 			m_pRequirementSlot[i] = nullptr;
 		}
 
@@ -1253,6 +1245,10 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 			if (m_iRequirementSlotInvPos[i] != -1)
 				continue;
 
+			// If stackable, reduce stack size in inventory
+			if (spItemNew->IsStackable())
+				--m_pMyUpgradeInv[iSrcOrder]->iCount;
+
 			SetRequirementItemSlot(spItemNew, iSrcOrder, i);
 			return true;
 		}
@@ -1274,10 +1270,6 @@ void CUIItemUpgrade::SetRequirementItemSlot(__IconItemSkill* spItem, int iSrcOrd
 		return;
 
 	CN3UIArea* pArea = m_pSlotArea[iDstOrder];
-
-	// If countable reduce inv item count
-	if (spItem->iCount > 0 && spItem->IsStackable())
-		--m_pMyUpgradeInv[iSrcOrder]->iCount;
 
 	if (spItem->pUIIcon != nullptr && pArea != nullptr)
 	{
