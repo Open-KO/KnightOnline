@@ -841,9 +841,9 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		return;
 
 	uint32_t nUpgradeItemID {};
-	[[maybe_unused]] int8_t byUpgradePos = -1;
-	[[maybe_unused]] std::array<uint32_t, ANVIL_REQ_MAX> nReqItemID {};
-	[[maybe_unused]] std::array<int8_t, ANVIL_REQ_MAX> byReqPos {};
+	int8_t byUpgradePos = -1;
+	std::array<uint32_t, ANVIL_REQ_MAX> nReqItemID {};
+	std::array<int8_t, ANVIL_REQ_MAX> byReqPos {};
 
 	byReqPos.fill(-1);
 
