@@ -270,7 +270,6 @@ void CUIItemUpgrade::CopyInventoryItems()
 	if (pInven == nullptr)
 		return;
 
-	m_pSelectedItem          = nullptr;
 	m_iSelectedItemSourcePos = -1;
 	m_iUpgradeItemSlotInvPos = -1;
 
@@ -306,6 +305,16 @@ void CUIItemUpgrade::CopyInventoryItems()
 
 			m_pMyUpgradeInv[i] = spItem;
 		}
+	}
+
+	// If this is still set, it's a split item and currently being dragged.
+	// We can remove it.
+	if (m_pSelectedItem != nullptr)
+	{
+		delete m_pSelectedItem->pUIIcon;
+		m_pSelectedItem->pUIIcon = nullptr;
+		delete m_pSelectedItem;
+		m_pSelectedItem = nullptr;
 	}
 }
 
@@ -1276,11 +1285,12 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 		if (IsValidRequirementItem(spItem))
 		{
 			// Split stackable items
+			__IconItemSkill* spItemReq = spItem;
 			if (spItem->iCount > 1 && spItem->IsStackable())
 			{
 				__IconItemSkill* spItemNew = new __IconItemSkill(*spItem);
 				spItemNew->CreateIcon(spItem->szIconFN, this);
-				spItem = spItemNew;
+				spItemReq = spItemNew;
 			}
 
 			for (int i = 0; i < ANVIL_REQ_MAX; i++)
@@ -1288,8 +1298,15 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 				if (m_iRequirementSlotInvPos[i] != -1)
 					continue;
 
-				SetRequirementItemSlot(spItem, i);
+				SetRequirementItemSlot(spItemReq, i);
 				return true;
+			}
+
+			if (spItemReq != spItem && spItemReq != nullptr)
+			{
+				delete spItemReq->pUIIcon;
+				spItemReq->pUIIcon = nullptr;
+				delete spItemReq;
 			}
 		}
 	}
