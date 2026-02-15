@@ -74,4 +74,8 @@ jobs:
 
       - name: Run clang-format check
         run: |
-          cd ${{ matrix.path }} && find . -regex '^.*\.((((c\|C)(c\|pp\|xx\|\+\+)?$)\|((h\|H)h?(pp\|xx\|\+\+)?$))\|(inl))$' -exec clang-format-${{ env.LLVM_VERSION }} -style=file --dry-run --Werror {} +
+          cd ${{ matrix.path }} && \
+          find . \( -iname '*.c' -o -iname '*.cc' -o -iname '*.cpp' -o -iname '*.cxx' \
+           -o -iname '*.h' -o -iname '*.hh' -o -iname '*.hpp' -o -iname '*.hxx' \
+           -o -iname '*.inl' \) \
+           -exec clang-format-${{ env.LLVM_VERSION }} -style=file --dry-run --Werror {} +
