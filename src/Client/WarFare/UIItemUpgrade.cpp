@@ -965,12 +965,6 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		if (eItemType == ITEM_TYPE_UNKNOWN)
 			return;
 
-		__IconItemSkill* spItemNew = new __IconItemSkill();
-		spItemNew->pItemBasic      = pItemBasic;
-		spItemNew->pItemExt        = pItemExt;
-		spItemNew->iCount          = 1;
-		spItemNew->CreateIcon(szIconFN, this);
-
 		// Upgrade the item in the inventory.
 		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[upgradeItem.Pos];
 		if (spItemInv != nullptr)
