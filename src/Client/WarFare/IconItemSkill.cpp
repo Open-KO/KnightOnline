@@ -1,6 +1,7 @@
 ﻿#include "StdAfx.h"
 #include "IconItemSkill.h"
 #include "GameDef.h"
+#include "N3UIIcon.h"
 #include "N3UIWndBase.h"
 
 __IconItemSkill::__IconItemSkill()

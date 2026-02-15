@@ -1247,7 +1247,6 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 	if (IsValidRequirementItem(spItem))
 	{
 		__IconItemSkill* spItemNew = spItem->Clone(this);
-		spItemNew->CreateIcon(spItem->szIconFN, this);
 
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)
 		{
