@@ -76,6 +76,8 @@ private:
 	e_UIWND_DISTRICT GetWndDistrict(const POINT ptCur) const;
 	bool HandleInventoryIconRightClick(CN3UIBase* pUIIcon);
 	bool OnKeyPress(int iKey) override;
+
+	uint32_t MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld) override;
 	bool Load(File& file) override;
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void Render() override;

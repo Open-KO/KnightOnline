@@ -390,6 +390,25 @@ void CUIItemUpgrade::CancelIconDrop()
 	m_iItemBeingDraggedSourcePos = -1;
 }
 
+uint32_t CUIItemUpgrade::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POINT& ptOld)
+{
+	uint32_t dwRet = UI_MOUSEPROC_NONE;
+
+	if (!m_bVisible)
+		return dwRet;
+
+	if (GetState() == UI_STATE_ICON_MOVING && m_pItemBeingDragged != nullptr && m_pItemBeingDragged->pUIIcon != nullptr)
+	{
+		RECT region = GetSampleRect();
+		m_pItemBeingDragged->pUIIcon->SetRegion(region);
+		m_pItemBeingDragged->pUIIcon->SetMoveRect(region);
+
+		dwRet |= UI_MOUSEPROC_DONESOMETHING;
+	}
+
+	return CN3UIBase::MouseProc(dwFlags, ptCur, ptOld) | dwRet;
+}
+
 // Returns a rectangle centered at the mouse position, used for moving icons.
 RECT CUIItemUpgrade::GetSampleRect()
 {
@@ -527,15 +546,6 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			m_iItemBeingDraggedSourcePos = -1;
 
 			SetState(UI_STATE_COMMON_NONE);
-			break;
-
-		case UIMSG_ICON_DOWN:
-			if (GetState() == UI_STATE_ICON_MOVING && m_pItemBeingDragged != nullptr && m_pItemBeingDragged->pUIIcon != nullptr)
-			{
-				RECT region = GetSampleRect();
-				m_pItemBeingDragged->pUIIcon->SetRegion(region);
-				m_pItemBeingDragged->pUIIcon->SetMoveRect(region);
-			}
 			break;
 
 		case UIMSG_ICON_RDOWN_FIRST:
