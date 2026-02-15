@@ -3,9 +3,12 @@
 
 #pragma once
 
+#include <N3Base/N3UIDef.h>
+
 #include <cstdint>
 #include <string>
 
+class CN3UIBase;
 class CN3UIIcon;
 struct __TABLE_ITEM_BASIC;
 struct __TABLE_ITEM_EXT;
@@ -33,6 +36,8 @@ struct __IconItemSkill
 	int GetBuyPrice() const;
 	int GetSellPrice(bool bHasPremium = false) const;
 	bool IsStackable() const;
+	void CreateIcon(const std::string& szFN, CN3UIBase* pParent, uint32_t dwStyle = UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED,
+		float fUVAspect = 45.0f / 64.0f);
 };
 
 #endif // CLIENT_WARFARE_ICONITEMSKILL_H

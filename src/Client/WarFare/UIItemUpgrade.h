@@ -98,7 +98,6 @@ private:
 	void UpdateCoverAnimation();
 	void UpdateFlipFlopAnimation();
 	void HideAllAnimationFrames();
-	void CreateUIIconForItem(__IconItemSkill* spItem);
 	void SetRequirementItemSlot(__IconItemSkill* spItem, int iOrder);
 	bool IsValidRequirementItem(const __IconItemSkill* pSrc) const;
 	void Tick() override;

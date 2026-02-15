@@ -64,3 +64,17 @@ bool __IconItemSkill::IsStackable() const
 
 	return pItemBasic->byContable == UIITEM_TYPE_COUNTABLE || pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL;
 }
+
+void __IconItemSkill::CreateIcon(const std::string& szFN, CN3UIBase* pParent, uint32_t dwStyle, float fUVAspect)
+{
+	szIconFN = szFN;
+
+	delete pUIIcon;
+	pUIIcon = new CN3UIIcon();
+	pUIIcon->Init(pParent);
+
+	pUIIcon->SetTex(szFN);
+	pUIIcon->SetUVRect(0, 0, fUVAspect, fUVAspect);
+	pUIIcon->SetStyle(dwStyle);
+	pUIIcon->SetVisible(true);
+}

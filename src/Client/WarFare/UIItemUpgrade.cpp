@@ -293,10 +293,11 @@ void CUIItemUpgrade::GetItemFromInv()
 			m_pMyUpgradeInv[i] = nullptr;
 		}
 
-		if (pInven->m_pMyInvWnd[i] != nullptr)
+		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[i];
+		if (spItemInv != nullptr)
 		{
-			__IconItemSkill* spItem = new __IconItemSkill(*pInven->m_pMyInvWnd[i]);
-			CreateUIIconForItem(spItem);
+			__IconItemSkill* spItem = new __IconItemSkill(*spItemInv);
+			spItem->CreateIcon(spItemInv->szIconFN, this);
 
 			CN3UIArea* pArea = m_pAreaInv[i];
 			if (pArea != nullptr && spItem->pUIIcon != nullptr)
@@ -484,9 +485,9 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			// Divide countable items
 			if (spItem->iCount > 1 && spItem->IsStackable())
 			{
-				__IconItemSkill* pNew = new __IconItemSkill(*spItem);
-				CreateUIIconForItem(pNew);
-				m_pSelectedItem = pNew;
+				__IconItemSkill* spItemNew = new __IconItemSkill(*spItem);
+				spItemNew->CreateIcon(spItem->szIconFN, this);
+				m_pSelectedItem = spItemNew;
 			}
 
 			// Set icon region for moving.
@@ -1027,9 +1028,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		__IconItemSkill* spItemNew = new __IconItemSkill();
 		spItemNew->pItemBasic      = pItemBasic;
 		spItemNew->pItemExt        = pItemExt;
-		spItemNew->szIconFN        = szIconFN;
 		spItemNew->iCount          = 1;
-		CreateUIIconForItem(spItemNew);
+		spItemNew->CreateIcon(szIconFN, this);
 
 		m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos]                  = spItemNew;
 
@@ -1150,22 +1150,6 @@ void CUIItemUpgrade::HideAllAnimationFrames()
 		if (m_pImgFail[i] != nullptr)
 			m_pImgFail[i]->SetVisible(false);
 	}
-}
-
-void CUIItemUpgrade::CreateUIIconForItem(__IconItemSkill* spItem)
-{
-	if (spItem == nullptr)
-		return;
-
-	spItem->pUIIcon = new CN3UIIcon();
-	spItem->pUIIcon->Init(this);
-
-	constexpr float UV_ASPECT_RATIO = 45.0f / 64.0f;
-	spItem->pUIIcon->SetTex(spItem->szIconFN);
-	spItem->pUIIcon->SetUVRect(0, 0, UV_ASPECT_RATIO, UV_ASPECT_RATIO);
-	spItem->pUIIcon->SetUIType(UI_TYPE_ICON);
-	spItem->pUIIcon->SetStyle(UISTYLE_ICON_ITEM | UISTYLE_ICON_CERTIFICATION_NEED);
-	spItem->pUIIcon->SetVisible(true);
 }
 
 bool CUIItemUpgrade::IsValidRequirementItem(const __IconItemSkill* pSrc) const
@@ -1305,9 +1289,9 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 			// Split stackable items
 			if (spItem->iCount > 1 && spItem->IsStackable())
 			{
-				__IconItemSkill* pNew = new __IconItemSkill(*spItem);
-				CreateUIIconForItem(pNew);
-				spItem = pNew;
+				__IconItemSkill* spItemNew = new __IconItemSkill(*spItem);
+				spItemNew->CreateIcon(spItem->szIconFN, this);
+				spItem = spItemNew;
 			}
 
 			for (int i = 0; i < ANVIL_REQ_MAX; i++)
