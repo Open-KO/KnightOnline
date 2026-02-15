@@ -12763,14 +12763,14 @@ void CUser::ItemUpgrade(char* pBuf)
 	uint8_t originPos    = -1;
 	bool upgradeSuccess  = false;
 
-	uint8_t reqItemPos[ANVIL_MAX] {};
-	int32_t reqItemId[ANVIL_MAX] {};
+	uint8_t reqItemPos[ANVIL_REQ_MAX] {};
+	int32_t reqItemId[ANVIL_REQ_MAX] {};
 
 	npcId        = GetShort(pBuf, index);
 	originItemId = GetDWORD(pBuf, index);
 	originPos    = GetByte(pBuf, index);
 
-	for (int i = 0; i < ANVIL_MAX; i++)
+	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
 		reqItemId[i]  = GetDWORD(pBuf, index);
 		reqItemPos[i] = GetByte(pBuf, index);
@@ -12835,7 +12835,7 @@ void CUser::ItemUpgrade(char* pBuf)
 	std::unordered_set<uint8_t> usedItemPositions;
 	usedItemPositions.insert(originPos);
 
-	for (int i = 0; i < ANVIL_MAX; i++)
+	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
 		// This implies the slot is unused, so we should ignore it.
 		if (reqItemPos[i] == 255)
@@ -13033,7 +13033,7 @@ void CUser::ItemUpgrade(char* pBuf)
 		}
 
 		bool matchedRequiredItems = true;
-		for (int j = 0; j < ANVIL_MAX - 1; j++)
+		for (int j = 0; j < ANVIL_REQ_MAX - 1; j++)
 		{
 			if (itemUpgradeModel->RequiredItem[j] == 0)
 				break;
@@ -13110,7 +13110,7 @@ void CUser::ItemUpgrade(char* pBuf)
 		originItem.sTimeRemaining = 0;
 	}
 
-	for (int i = 0; i < ANVIL_MAX; i++)
+	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
 		if (reqItemPos[i] >= HAVE_MAX)
 			continue;
@@ -13151,7 +13151,7 @@ void CUser::ItemUpgrade(char* pBuf)
 
 	SetByte(sendBuffer, originPos, sendIndex);
 
-	for (int i = 0; i < ANVIL_MAX; i++)
+	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
 		SetDWORD(sendBuffer, reqItemId[i], sendIndex);
 		SetByte(sendBuffer, reqItemPos[i], sendIndex);

@@ -436,7 +436,7 @@ inline constexpr uint8_t RESERVED        = 14;
 inline constexpr uint8_t SLOT_MAX        = 14;  // 14 equipped item slots
 inline constexpr uint8_t HAVE_MAX        = 28;  // 28 inventory slots
 inline constexpr uint8_t WAREHOUSE_MAX   = 192; // 창고 아이템 MAX
-inline constexpr uint8_t ANVIL_MAX       = 9;
+inline constexpr uint8_t ANVIL_REQ_MAX   = 9;
 
 // Start of inventory area
 inline constexpr int INVENTORY_INVENT    = SLOT_MAX;
