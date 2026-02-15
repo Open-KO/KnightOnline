@@ -100,7 +100,7 @@ private:
 	void HideAllAnimationFrames();
 	void CreateUIIconForItem(__IconItemSkill* spItem);
 	void SetupIconArea(__IconItemSkill* spItem, CN3UIArea* pArea);
-	bool MaterialSlotDrop(__IconItemSkill* spItem, int iOrder);
-	bool IsMaterialSlotCompatible(__IconItemSkill* pSrc) const;
+	void SetRequirementItemSlot(__IconItemSkill* spItem, int iOrder);
+	bool IsValidRequirementItem(const __IconItemSkill* pSrc) const;
 	void Tick() override;
 };

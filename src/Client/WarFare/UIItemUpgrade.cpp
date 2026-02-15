@@ -320,18 +320,19 @@ bool CUIItemUpgrade::ReceiveIconDrop(__IconItemSkill* spItem)
 			return true;
 		}
 	}
-	else if (IsMaterialSlotCompatible(spItem))
+	else if (IsValidRequirementItem(spItem))
 	{
 		for (int i = 0; i < ANVIL_REQ_MAX; i++)
 		{
 			CN3UIArea* pArea = m_pSlotArea[i];
-			if (pArea != nullptr && pArea->IsIn(ptCur.x, ptCur.y))
-			{
-				if (MaterialSlotDrop(spItem, i))
-					return true;
-			}
+			if (pArea == nullptr || !pArea->IsIn(ptCur.x, ptCur.y))
+				continue;
+
+			SetRequirementItemSlot(spItem, i);
+			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -672,7 +673,7 @@ bool CUIItemUpgrade::OnKeyPress(int iKey)
 	return CN3UIBase::OnKeyPress(iKey);
 }
 
-// Restores the inventory and slots.
+// Restores the inventory and requirement slots.
 void CUIItemUpgrade::ResetUpgradeInventory()
 {
 	if (m_iUpgradeItemSlotInvPos != -1)
@@ -1143,7 +1144,7 @@ void CUIItemUpgrade::SetupIconArea(__IconItemSkill* spItem, CN3UIArea* pArea)
 	spItem->pUIIcon->SetMoveRect(pArea->GetRegion());
 }
 
-bool CUIItemUpgrade::IsMaterialSlotCompatible(__IconItemSkill* pSrc) const
+bool CUIItemUpgrade::IsValidRequirementItem(const __IconItemSkill* pSrc) const
 {
 	if (m_bUpgradeInProgress)
 		return false;
@@ -1270,7 +1271,7 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 			return true;
 		}
 
-		if (IsMaterialSlotCompatible(spItem))
+		if (IsValidRequirementItem(spItem))
 		{
 			// Split stackable items
 			if (spItem->iCount > 1 && spItem->IsStackable())
@@ -1285,8 +1286,8 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 				if (m_iRequirementSlotInvPos[i] != -1)
 					continue;
 
-				if (MaterialSlotDrop(spItem, i))
-					return true;
+				SetRequirementItemSlot(spItem, i);
+				return true;
 			}
 		}
 	}
@@ -1294,7 +1295,7 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(__IconItemSkill* spItem)
 	return false;
 }
 
-bool CUIItemUpgrade::MaterialSlotDrop(__IconItemSkill* spItem, int iOrder)
+void CUIItemUpgrade::SetRequirementItemSlot(__IconItemSkill* spItem, int iOrder)
 {
 	CN3UIArea* pArea = m_pSlotArea[iOrder];
 	int iSourceOrder = m_iSelectedItemSourcePos;
@@ -1306,15 +1307,20 @@ bool CUIItemUpgrade::MaterialSlotDrop(__IconItemSkill* spItem, int iOrder)
 	SetupIconArea(spItem, pArea);
 	m_iRequirementSlotInvPos[iOrder] = iSourceOrder;
 	m_pRequirementSlot[iOrder]       = spItem;
-	return true;
 }
+
 void CUIItemUpgrade::CallBackProc(int iID, uint32_t dwFlag)
 {
 	if (iID == CHILD_UI_MSGBOX_OKCANCEL)
 	{
 		if (dwFlag == CUIMsgBoxOkCancel::CALLBACK_OK)
+		{
 			SendToServerUpgradeMsg();
+		}
 		else if (dwFlag == CUIMsgBoxOkCancel::CALLBACK_CANCEL)
-			m_pUIMsgBoxOkCancel->SetVisible(false);
+		{
+			if (m_pUIMsgBoxOkCancel != nullptr)
+				m_pUIMsgBoxOkCancel->SetVisible(false);
+		}
 	}
 }
