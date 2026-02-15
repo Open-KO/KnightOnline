@@ -12779,7 +12779,7 @@ void CUser::ItemUpgrade(char* pBuf)
 	// Cannot upgrade while in the middle of trading.
 	if (m_sExchangeUser != -1)
 	{
-		  SendItemUpgradeFailed(ITEM_UPGRADE_ERROR_TRADING);
+		SendItemUpgradeFailed(ITEM_UPGRADE_ERROR_TRADING);
 		return;
 	}
 
