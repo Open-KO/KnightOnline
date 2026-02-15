@@ -5,12 +5,23 @@
 
 __IconItemSkill::__IconItemSkill()
 {
+	pUIIcon     = nullptr;
 	pItemBasic  = nullptr;
 	pItemExt    = nullptr;
 	iCount      = 0;
 	iDurability = 0;
 	pSkill      = nullptr;
+}
+
+__IconItemSkill::__IconItemSkill(const __IconItemSkill& src)
+{
 	pUIIcon     = nullptr;
+	szIconFN    = src.szIconFN;
+	pItemBasic  = src.pItemBasic;
+	pItemExt    = src.pItemExt;
+	pSkill      = src.pSkill;
+	iCount      = src.iCount;
+	iDurability = src.iDurability;
 }
 
 int __IconItemSkill::GetItemID() const

@@ -53,8 +53,8 @@ private:
 	CUIImageTooltipDlg* m_pUITooltipDlg                  = nullptr;
 	CUIMsgBoxOkCancel* m_pUIMsgBoxOkCancel               = nullptr;
 
-	__IconItemSkill* m_pSelectedItem                     = nullptr;
-	int m_iSelectedItemSourcePos                         = -1;
+	__IconItemSkill* m_pItemBeingDragged                 = nullptr;
+	int m_iItemBeingDraggedSourcePos                     = -1;
 
 	__IconItemSkill* m_pMyUpgradeInv[MAX_ITEM_INVENTORY] = {};
 	__IconItemSkill* m_pRequirementSlot[ANVIL_REQ_MAX]   = {};
@@ -74,7 +74,7 @@ public:
 private:
 	RECT GetSampleRect();
 	e_UIWND_DISTRICT GetWndDistrict(const POINT ptCur) const;
-	bool HandleInventoryIconRightClick(__IconItemSkill* spItem);
+	bool HandleInventoryIconRightClick(CN3UIBase* pUIIcon);
 	bool OnKeyPress(int iKey) override;
 	bool Load(File& file) override;
 
@@ -82,9 +82,11 @@ private:
 	bool ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg) override;
 	void Render() override;
 
-	void SetSelectedIconInfo(CN3UIIcon* pUIIcon);
-	void CancelIconDrop(__IconItemSkill* spItem);
-	bool ReceiveIconDrop(__IconItemSkill* spItem);
+	__IconItemSkill* GetHighlightIconItem(CN3UIBase* pUIIcon) const;
+	bool GetSelectedIconInfo(
+		CN3UIBase* pUIIcon, int* piOrder = nullptr, e_UIWND_DISTRICT* peDistrict = nullptr, __IconItemSkill** pspItem = nullptr) const;
+	void CancelIconDrop();
+	bool ReceiveIconDrop();
 	void CopyInventoryItems();
 	void ResetUpgradeInventory();
 	void GoldUpdate();
@@ -98,7 +100,7 @@ private:
 	void UpdateCoverAnimation();
 	void UpdateFlipFlopAnimation();
 	void HideAllAnimationFrames();
-	void SetRequirementItemSlot(__IconItemSkill* spItem, int iOrder);
+	void SetRequirementItemSlot(__IconItemSkill* spItem, int iSrcOrder, int iDstOrder);
 	bool IsValidRequirementItem(const __IconItemSkill* pSrc) const;
 	void Tick() override;
 };
