@@ -382,15 +382,13 @@ enum e_PlugPosition : int8_t
 
 enum e_ItemAttrib : int8_t
 {
-	ITEM_ATTRIB_GENERAL         = 0,
-	ITEM_ATTRIB_MAGIC           = 1,
-	ITEM_ATTRIB_LAIR            = 2,
-	ITEM_ATTRIB_CRAFT           = 3,
-	ITEM_ATTRIB_UNIQUE          = 4,
-	ITEM_ATTRIB_UPGRADE         = 5,
-	ITEM_ATTRIB_UNIQUE_REVERSE  = 11,
-	ITEM_ATTRIB_UPGRADE_REVERSE = 12,
-	ITEM_ATTRIB_UNKNOWN         = -1
+	ITEM_ATTRIB_GENERAL = 0,
+	ITEM_ATTRIB_MAGIC   = 1,
+	ITEM_ATTRIB_LAIR    = 2,
+	ITEM_ATTRIB_CRAFT   = 3,
+	ITEM_ATTRIB_UNIQUE  = 4,
+	ITEM_ATTRIB_UPGRADE = 5,
+	ITEM_ATTRIB_UNKNOWN = -1
 };
 
 enum e_ItemEffect2 : uint8_t

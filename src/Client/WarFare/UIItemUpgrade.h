@@ -42,8 +42,8 @@ private:
 	CN3UIString* m_pStrMyGold                            = nullptr;
 	CN3UIArea* m_pAreaUpgrade                            = nullptr;
 	CN3UIArea* m_pAreaResult                             = nullptr;
-	CN3UIArea* m_pInvArea[MAX_ITEM_INVENTORY]            = {};
-	CN3UIString* m_pInvString[MAX_ITEM_INVENTORY]        = {};
+	CN3UIArea* m_pAreaInv[MAX_ITEM_INVENTORY]            = {};
+	CN3UIString* m_pStrInv[MAX_ITEM_INVENTORY]           = {};
 	CN3UIArea* m_pSlotArea[ANVIL_REQ_MAX]                = {};
 	CN3UIImage* m_pImgFail[FLIPFLOP_MAX_FRAMES]          = {};
 	CN3UIImage* m_pImgSuccess[FLIPFLOP_MAX_FRAMES]       = {};
@@ -99,7 +99,6 @@ private:
 	void UpdateFlipFlopAnimation();
 	void HideAllAnimationFrames();
 	void CreateUIIconForItem(__IconItemSkill* spItem);
-	void SetupIconArea(__IconItemSkill* spItem, CN3UIArea* pArea);
 	void SetRequirementItemSlot(__IconItemSkill* spItem, int iOrder);
 	bool IsValidRequirementItem(const __IconItemSkill* pSrc) const;
 	void Tick() override;
