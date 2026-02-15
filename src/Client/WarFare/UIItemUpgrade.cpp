@@ -185,7 +185,7 @@ void CUIItemUpgrade::Render()
 		if (pStr == nullptr)
 			continue;
 
-		if (m_pMyUpgradeInv[i] == nullptr || !m_pMyUpgradeInv[i]->IsStackable())
+		if (m_pMyUpgradeInv[i] == nullptr || m_pMyUpgradeInv[i]->iCount <= 0 || !m_pMyUpgradeInv[i]->IsStackable())
 			continue;
 
 		pStr->SetVisibleWithNoSound(true);
@@ -383,8 +383,7 @@ void CUIItemUpgrade::CancelIconDrop()
 
 	// If stackable, restore stack size in inventory
 	// Note that we assume this is from the inventory because it's the only draggable source.
-	if (m_pItemBeingDragged->IsStackable())
-		++m_pMyUpgradeInv[m_iItemBeingDraggedSourcePos]->iCount;
+	RestoreInvItemStackSize(m_pMyUpgradeInv[m_iItemBeingDraggedSourcePos]);
 
 	delete m_pItemBeingDragged->pUIIcon;
 	m_pItemBeingDragged->pUIIcon = nullptr;
@@ -512,9 +511,7 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 				m_iItemBeingDraggedSourcePos = iOrder;
 				m_pItemBeingDragged          = spItem->Clone(this);
 
-				// If stackable, reduce stack size in inventory
-				if (m_pItemBeingDragged->IsStackable())
-					--spItem->iCount;
+				ReduceInvItemStackSize(m_pItemBeingDragged);
 
 				// Set icon region for moving.
 				RECT region = GetSampleRect();
@@ -738,9 +735,7 @@ void CUIItemUpgrade::ResetUpgradeInventory()
 				spItem->pUIIcon->SetMoveRect(pArea->GetRegion());
 			}
 
-			// If stackable, restore stack size in inventory
-			if (spItem->IsStackable())
-				++spItem->iCount;
+			RestoreInvItemStackSize(spItem);
 
 			delete m_pRequirementSlot[i]->pUIIcon;
 			m_pRequirementSlot[i]->pUIIcon = nullptr;
@@ -1259,9 +1254,7 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 				continue;
 
 			// If stackable, reduce stack size in inventory
-			if (spItemNew->IsStackable())
-				--m_pMyUpgradeInv[iSrcOrder]->iCount;
-
+			ReduceInvItemStackSize(m_pMyUpgradeInv[iSrcOrder]);
 			SetRequirementItemSlot(spItemNew, iSrcOrder, i);
 			return true;
 		}
@@ -1308,4 +1301,24 @@ void CUIItemUpgrade::CallBackProc(int iID, uint32_t dwFlag)
 				m_pUIMsgBoxOkCancel->SetVisible(false);
 		}
 	}
+}
+
+void CUIItemUpgrade::ReduceInvItemStackSize(__IconItemSkill* spItem)
+{
+	// If stackable, reduce stack size in inventory
+	if (!spItem->IsStackable())
+		return;
+
+	if (--spItem->iCount == 0 && spItem->pUIIcon != nullptr)
+		spItem->pUIIcon->SetVisibleWithNoSound(false);
+}
+
+void CUIItemUpgrade::RestoreInvItemStackSize(__IconItemSkill* spItem)
+{
+	// If stackable, restore stack size in inventory
+	if (!spItem->IsStackable())
+		return;
+
+	if (++spItem->iCount == 1 && spItem->pUIIcon != nullptr)
+		spItem->pUIIcon->SetVisibleWithNoSound(true);
 }

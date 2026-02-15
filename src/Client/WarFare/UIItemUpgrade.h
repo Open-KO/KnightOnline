@@ -103,4 +103,6 @@ private:
 	void SetRequirementItemSlot(__IconItemSkill* spItem, int iSrcOrder, int iDstOrder);
 	bool IsValidRequirementItem(const __IconItemSkill* pSrc) const;
 	void Tick() override;
+	void ReduceInvItemStackSize(__IconItemSkill* spItem);
+	void RestoreInvItemStackSize(__IconItemSkill* spItem);
 };
