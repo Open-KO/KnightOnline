@@ -840,22 +840,24 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 	if (pInven == nullptr)
 		return;
 
-	uint32_t nUpgradeItemID {};
-	int8_t byUpgradePos = -1;
-	std::array<uint32_t, ANVIL_REQ_MAX> nReqItemID {};
-	std::array<int8_t, ANVIL_REQ_MAX> byReqPos {};
+	struct ItemPair
+	{
+		int ID     = 0;
+		int8_t Pos = -1;
+	};
 
-	byReqPos.fill(-1);
+	ItemPair upgradeItem {};
+	std::array<ItemPair, ANVIL_REQ_MAX> reqItems {};
 
-	int8_t result  = pkt.read<int8_t>();
+	int8_t result   = pkt.read<int8_t>();
 
-	nUpgradeItemID = pkt.read<uint32_t>();
-	byUpgradePos   = pkt.read<int8_t>();
+	upgradeItem.ID  = pkt.read<int32_t>();
+	upgradeItem.Pos = pkt.read<int8_t>();
 
 	for (int i = 0; i < ANVIL_REQ_MAX; i++)
 	{
-		nReqItemID[i] = pkt.read<uint32_t>();
-		byReqPos[i]   = pkt.read<int8_t>();
+		reqItems[i].ID  = pkt.read<int32_t>();
+		reqItems[i].Pos = pkt.read<int8_t>();
 	}
 
 	std::string szMsg;
@@ -879,8 +881,10 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 			m_iRequirementSlotInvPos[i] = -1;
 
+			const ItemPair& reqItem     = reqItems[i];
+
 			// Remove a stack from the requirement items in the base inventory.
-			int8_t byInvOrder           = byReqPos[i];
+			int8_t byInvOrder           = reqItem.Pos;
 			if (byInvOrder < 0 || byInvOrder >= MAX_ITEM_INVENTORY)
 				continue;
 
@@ -888,7 +892,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 			if (spItemInv == nullptr)
 				continue;
 
-			if (spItemInv->GetItemID() != nReqItemID[i])
+			if (spItemInv->GetItemID() != reqItem.ID)
 			{
 				assert(!"Unexpected item");
 				continue;
@@ -906,17 +910,17 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 
 	if (result == ITEM_UPGRADE_RESULT_FAILED)
 	{
-		if (byUpgradePos < 0 || byUpgradePos >= MAX_ITEM_INVENTORY)
+		if (upgradeItem.Pos < 0 || upgradeItem.Pos >= MAX_ITEM_INVENTORY)
 			return;
 
 		// The item burned. We should remove it from the inventory.
-		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[byUpgradePos];
+		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[upgradeItem.Pos];
 		if (spItemInv != nullptr)
 		{
 			delete spItemInv->pUIIcon;
 			spItemInv->pUIIcon = nullptr;
 			delete spItemInv;
-			pInven->m_pMyInvWnd[byUpgradePos] = nullptr;
+			pInven->m_pMyInvWnd[upgradeItem.Pos] = nullptr;
 		}
 
 		// Reset the inventory, copying it back from the original.
@@ -924,7 +928,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		// This will be reset at this point.
 		CopyInventoryItems();
 
-		m_iUpgradeItemSlotInvPos = byUpgradePos;
+		m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
 
 		m_bUpgradeSucceeded      = false;
 		m_eAnimationState        = AnimationState::Start;
@@ -934,7 +938,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 	}
 	else if (result == ITEM_UPGRADE_RESULT_SUCCEEDED)
 	{
-		if (byUpgradePos < 0 || byUpgradePos >= MAX_ITEM_INVENTORY)
+		if (upgradeItem.Pos < 0 || upgradeItem.Pos >= MAX_ITEM_INVENTORY)
 			return;
 
 		m_bUpgradeSucceeded = true;
@@ -950,15 +954,15 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		e_ItemType eItemType = ITEM_TYPE_UNKNOWN;
 		std::string szIconFN;
 
-		__TABLE_ITEM_BASIC* pItemBasic = CGameBase::s_pTbl_Items_Basic.Find(nUpgradeItemID / 1000 * 1000);
+		__TABLE_ITEM_BASIC* pItemBasic = CGameBase::s_pTbl_Items_Basic.Find(upgradeItem.ID / 1000 * 1000);
 		__TABLE_ITEM_EXT* pItemExt     = nullptr;
 
 		if (pItemBasic != nullptr && pItemBasic->byExtIndex >= 0 && pItemBasic->byExtIndex < MAX_ITEM_EXTENSION)
-			pItemExt = CGameBase::s_pTbl_Items_Exts[pItemBasic->byExtIndex].Find(nUpgradeItemID % 1000);
+			pItemExt = CGameBase::s_pTbl_Items_Exts[pItemBasic->byExtIndex].Find(upgradeItem.ID % 1000);
 
 		eItemType = CGameBase::MakeResrcFileNameForUPC(
 			pItemBasic, pItemExt, nullptr, &szIconFN, ePart, ePlug, CGameBase::s_pPlayer->Race());
-		if (eItemType == ITEM_TYPE_UNKNOWN || byUpgradePos < 0 || byUpgradePos >= MAX_ITEM_INVENTORY)
+		if (eItemType == ITEM_TYPE_UNKNOWN)
 			return;
 
 		__IconItemSkill* spItemNew = new __IconItemSkill();
@@ -968,7 +972,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		spItemNew->CreateIcon(szIconFN, this);
 
 		// Upgrade the item in the inventory.
-		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[byUpgradePos];
+		__IconItemSkill* spItemInv = pInven->m_pMyInvWnd[upgradeItem.Pos];
 		if (spItemInv != nullptr)
 		{
 			spItemInv->pItemBasic  = pItemBasic;
@@ -978,7 +982,7 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 			if (spItemInv->pUIIcon != nullptr)
 				spItemInv->pUIIcon->SetTex(szIconFN);
 
-			CN3UIArea* pArea = pInven->GetChildAreaByiOrder(UI_AREA_TYPE_INV, byUpgradePos);
+			CN3UIArea* pArea = pInven->GetChildAreaByiOrder(UI_AREA_TYPE_INV, upgradeItem.Pos);
 			if (pArea != nullptr && spItemInv->pUIIcon != nullptr)
 			{
 				spItemInv->pUIIcon->SetRegion(pArea->GetRegion());
@@ -989,11 +993,11 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		// Reset the inventory, copying it back from the original.
 		CopyInventoryItems();
 
-		m_iUpgradeItemSlotInvPos = byUpgradePos;
+		m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
 
 		// Note that in this case, we need the upgrade item to be displayed in the result slot.
 		// We should restore it.
-		spItemInv                = m_pMyUpgradeInv[byUpgradePos];
+		spItemInv                = m_pMyUpgradeInv[upgradeItem.Pos];
 		if (spItemInv != nullptr && spItemInv->pUIIcon && m_pAreaResult != nullptr)
 		{
 			spItemInv->pUIIcon->SetRegion(m_pAreaResult->GetRegion());
