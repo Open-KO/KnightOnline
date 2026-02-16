@@ -121,7 +121,7 @@ void CUIItemUpgrade::Tick()
 				break;
 
 			case AnimationState::Result:
-				if (m_bUpgradeSucceeded)
+				if (m_bUpgradeSucceeded && m_iUpgradeItemSlotInvPos >= 0 && m_iUpgradeItemSlotInvPos < MAX_ITEM_INVENTORY)
 				{
 					__IconItemSkill* spItem = m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos];
 					if (spItem != nullptr && m_pAreaResult != nullptr)
@@ -508,6 +508,9 @@ bool CUIItemUpgrade::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 			if (eDistrict == UIWND_DISTRICT_UPGRADE_INV)
 			{
+				if (m_bUpgradeSucceeded)
+					ResetUpgradeInventory();
+
 				m_iItemBeingDraggedSourcePos = iOrder;
 				m_pItemBeingDragged          = spItem->Clone(this);
 
@@ -925,10 +928,8 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		{
 			CopyInventoryItems();
 
-			m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
-
-			m_bUpgradeSucceeded      = false;
-			m_eAnimationState        = AnimationState::Start;
+			m_bUpgradeSucceeded = false;
+			m_eAnimationState   = AnimationState::Start;
 		}
 
 		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_FAILED);
@@ -1248,7 +1249,10 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 
 	if (eDistrict == UIWND_DISTRICT_UPGRADE_INV)
 	{
-		if (IsAllowedUpgradeItem(spItem))
+		if (m_bUpgradeSucceeded)
+			ResetUpgradeInventory();
+
+		if (m_iUpgradeItemSlotInvPos == -1 && IsAllowedUpgradeItem(spItem))
 		{
 			if (m_pAreaUpgrade != nullptr)
 			{
