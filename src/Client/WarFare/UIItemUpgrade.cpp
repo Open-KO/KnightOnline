@@ -1234,10 +1234,6 @@ void CUIItemUpgrade::StartUpgradeAnim()
 
 bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 {
-	// Move upgrade result to inv
-	if (m_bUpgradeSucceeded)
-		ResetUpgradeInventory();
-
 	if (pUIIcon == nullptr || !pUIIcon->IsVisible())
 		return false;
 
@@ -1250,39 +1246,48 @@ bool CUIItemUpgrade::HandleInventoryIconRightClick(CN3UIBase* pUIIcon)
 	if (spItem == nullptr || spItem->pUIIcon == nullptr)
 		return false;
 
-	if (IsAllowedUpgradeItem(spItem))
+	if (eDistrict == UIWND_DISTRICT_UPGRADE_INV)
 	{
-		if (m_pAreaUpgrade != nullptr)
+		if (IsAllowedUpgradeItem(spItem))
 		{
-			spItem->pUIIcon->SetRegion(m_pAreaUpgrade->GetRegion());
-			spItem->pUIIcon->SetMoveRect(m_pAreaUpgrade->GetRegion());
-		}
+			if (m_pAreaUpgrade != nullptr)
+			{
+				spItem->pUIIcon->SetRegion(m_pAreaUpgrade->GetRegion());
+				spItem->pUIIcon->SetMoveRect(m_pAreaUpgrade->GetRegion());
+			}
 
-		m_iUpgradeItemSlotInvPos = iSrcOrder;
-		return true;
-	}
-
-	if (IsValidRequirementItem(spItem))
-	{
-		__IconItemSkill* spItemNew = spItem->Clone(this);
-
-		for (int i = 0; i < ANVIL_REQ_MAX; i++)
-		{
-			if (m_iRequirementSlotInvPos[i] != -1)
-				continue;
-
-			// If stackable, reduce stack size in inventory
-			ReduceInvItemStackSize(m_pMyUpgradeInv[iSrcOrder]);
-			SetRequirementItemSlot(spItemNew, iSrcOrder, i);
+			m_iUpgradeItemSlotInvPos = iSrcOrder;
 			return true;
 		}
 
-		if (spItemNew != nullptr)
+		if (IsValidRequirementItem(spItem))
 		{
-			delete spItemNew->pUIIcon;
-			spItemNew->pUIIcon = nullptr;
-			delete spItemNew;
+			__IconItemSkill* spItemNew = spItem->Clone(this);
+
+			for (int i = 0; i < ANVIL_REQ_MAX; i++)
+			{
+				if (m_iRequirementSlotInvPos[i] != -1)
+					continue;
+
+				// If stackable, reduce stack size in inventory
+				ReduceInvItemStackSize(m_pMyUpgradeInv[iSrcOrder]);
+				SetRequirementItemSlot(spItemNew, iSrcOrder, i);
+				return true;
+			}
+
+			if (spItemNew != nullptr)
+			{
+				delete spItemNew->pUIIcon;
+				spItemNew->pUIIcon = nullptr;
+				delete spItemNew;
+			}
 		}
+	}
+	else if (eDistrict == UIWND_DISTRICT_UPGRADE_RESULT_SLOT)
+	{
+		// Move upgrade result to inv
+		ResetUpgradeInventory();
+		return true;
 	}
 
 	return false;
