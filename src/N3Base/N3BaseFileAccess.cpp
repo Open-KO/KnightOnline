@@ -109,7 +109,8 @@ bool CN3BaseFileAccess::LoadFromFile()
 
 	try
 	{
-		return LoadSupportedVersions(file);
+		if (LoadSupportedVersions(file))
+			return true;
 	}
 	catch (const std::exception& ex)
 	{
@@ -122,6 +123,9 @@ bool CN3BaseFileAccess::LoadFromFile()
 #endif
 	}
 
+	// File failed to load. To avoid it being in an unexpected inconsistent state,
+	// we should release it.
+	Release();
 	return false;
 }
 
