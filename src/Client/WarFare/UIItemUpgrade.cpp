@@ -921,14 +921,17 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		// Reset the inventory, copying it back from the original.
 		// Note that in this case, we don't need the upgrade item to be displayed.
 		// This will be reset at this point.
-		CopyInventoryItems();
+		if (IsVisible())
+		{
+			CopyInventoryItems();
 
-		m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
+			m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
 
-		m_bUpgradeSucceeded      = false;
-		m_eAnimationState        = AnimationState::Start;
+			m_bUpgradeSucceeded      = false;
+			m_eAnimationState        = AnimationState::Start;
+		}
 
-		szMsg                    = fmt::format_text_resource(IDS_ITEM_UPGRADE_FAILED);
+		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_FAILED);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_XRGB(255, 0, 255));
 	}
 	else if (result == ITEM_UPGRADE_RESULT_SUCCEEDED)
@@ -936,10 +939,13 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 		if (upgradeItem.Pos < 0 || upgradeItem.Pos >= MAX_ITEM_INVENTORY)
 			return;
 
-		m_bUpgradeSucceeded = true;
+		if (IsVisible())
+		{
+			m_bUpgradeSucceeded = true;
 
-		if (m_bUpgradeInProgress)
-			m_eAnimationState = AnimationState::Start;
+			if (m_bUpgradeInProgress)
+				m_eAnimationState = AnimationState::Start;
+		}
 
 		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_SUCCEEDED);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_XRGB(128, 128, 255));
@@ -979,40 +985,52 @@ void CUIItemUpgrade::MsgRecv_ItemUpgrade(Packet& pkt)
 			}
 		}
 
-		// Reset the inventory, copying it back from the original.
-		CopyInventoryItems();
-
-		m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
-
-		// Note that in this case, we need the upgrade item to be displayed in the result slot.
-		// We should restore it.
-		spItemInv                = m_pMyUpgradeInv[upgradeItem.Pos];
-		if (spItemInv != nullptr && spItemInv->pUIIcon && m_pAreaResult != nullptr)
+		if (IsVisible())
 		{
-			spItemInv->pUIIcon->SetRegion(m_pAreaResult->GetRegion());
-			spItemInv->pUIIcon->SetMoveRect(m_pAreaResult->GetRegion());
+			// Reset the inventory, copying it back from the original.
+			CopyInventoryItems();
+
+			m_iUpgradeItemSlotInvPos = upgradeItem.Pos;
+
+			// Note that in this case, we need the upgrade item to be displayed in the result slot.
+			// We should restore it.
+			spItemInv                = m_pMyUpgradeInv[upgradeItem.Pos];
+			if (spItemInv != nullptr && spItemInv->pUIIcon && m_pAreaResult != nullptr)
+			{
+				spItemInv->pUIIcon->SetRegion(m_pAreaResult->GetRegion());
+				spItemInv->pUIIcon->SetMoveRect(m_pAreaResult->GetRegion());
+			}
 		}
 	}
 	else if (result == ITEM_UPGRADE_RESULT_TRADING)
 	{
-		m_bUpgradeInProgress = false;
-		ResetUpgradeInventory();
+		if (IsVisible())
+		{
+			m_bUpgradeInProgress = false;
+			ResetUpgradeInventory();
+		}
 
 		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_CANNOT_PERFORM);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_XRGB(255, 0, 255));
 	}
 	else if (result == ITEM_UPGRADE_RESULT_NEED_COINS)
 	{
-		m_bUpgradeInProgress = false;
-		ResetUpgradeInventory();
+		if (IsVisible())
+		{
+			m_bUpgradeInProgress = false;
+			ResetUpgradeInventory();
+		}
 
 		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_NEED_COINS);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_XRGB(255, 0, 255));
 	}
 	else if (result == ITEM_UPGRADE_RESULT_NO_MATCH)
 	{
-		m_bUpgradeInProgress = false;
-		ResetUpgradeInventory();
+		if (IsVisible())
+		{
+			m_bUpgradeInProgress = false;
+			ResetUpgradeInventory();
+		}
 
 		szMsg = fmt::format_text_resource(IDS_ITEM_UPGRADE_NO_MATCH);
 		CGameProcedure::s_pProcMain->MsgOutput(szMsg, D3DCOLOR_XRGB(255, 0, 255));
