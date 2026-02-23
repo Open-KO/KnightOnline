@@ -11,7 +11,7 @@ namespace Ebenezer
 class LOGIC_ELSE
 {
 public:
-	void Parse_and(const char* line, const std::string& filename, int lineNumber);
+	bool Parse_and(const char* line, const std::string& filename, int lineNumber);
 	void Init();
 	uint8_t m_LogicElse;
 	bool m_bAnd;

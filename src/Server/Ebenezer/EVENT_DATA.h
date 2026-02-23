@@ -7,6 +7,7 @@
 #include "LOGIC_ELSE.h"
 
 #include <list>
+#include <vector>
 
 namespace Ebenezer
 {
@@ -20,6 +21,8 @@ public:
 	int m_EventNum = 0;
 	ExecArray m_arExec;
 	LogicElseArray m_arLogicElse;
+
+	std::vector<std::string> _unhandledOpcodes;
 
 	EVENT_DATA();
 	virtual ~EVENT_DATA();

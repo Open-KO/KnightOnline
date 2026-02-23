@@ -16,7 +16,7 @@ public:
 	uint8_t m_Exec              = 0;
 	int m_ExecInt[MAX_EXEC_INT] = {};
 
-	void Parse(const char* line, const std::string& filename, int lineNumber);
+	bool Parse(const char* line, const std::string& filename, int lineNumber);
 	EXEC();
 	virtual ~EXEC();
 };

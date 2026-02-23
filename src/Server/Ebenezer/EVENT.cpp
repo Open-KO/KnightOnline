@@ -45,8 +45,8 @@ bool EVENT::LoadEventImpl(int zone, const std::filesystem::path& questsDir)
 
 	std::error_code ec;
 
-	std::filesystem::path questPath  = questsDir;
-	questPath                       /= std::to_string(zone) + ".evt";
+	std::string baseFilename        = std::to_string(zone) + ".evt";
+	std::filesystem::path questPath = questsDir / baseFilename;
 
 	// Doesn't exist but this isn't a problem; we don't expect it to exist.
 	if (!std::filesystem::exists(questPath, ec))
@@ -149,7 +149,13 @@ bool EVENT::LoadEventImpl(int zone, const std::filesystem::path& questsDir)
 				}
 
 				EXEC* newExec = new EXEC;
-				newExec->Parse(buf + t_index, filename, lineNumber);
+				if (!newExec->Parse(buf + t_index, filename, lineNumber))
+				{
+					ParseSpace(temp, buf, t_index);
+
+					newData->_unhandledOpcodes.emplace_back(
+						fmt::format("{}:{} {} {}", baseFilename, lineNumber, first, temp));
+				}
 				newData->m_arExec.push_back(newExec);
 			}
 			else if (0 == strcmp(first, "A"))
@@ -163,7 +169,13 @@ bool EVENT::LoadEventImpl(int zone, const std::filesystem::path& questsDir)
 				}
 
 				LOGIC_ELSE* newLogicElse = new LOGIC_ELSE;
-				newLogicElse->Parse_and(buf + t_index, filename, lineNumber);
+				if (!newLogicElse->Parse_and(buf + t_index, filename, lineNumber))
+				{
+					ParseSpace(temp, buf, t_index);
+
+					newData->_unhandledOpcodes.emplace_back(
+						fmt::format("{}:{} {} {}", baseFilename, lineNumber, first, temp));
+				}
 				newData->m_arLogicElse.push_back(newLogicElse);
 			}
 			else if (0 == strcmp(first, "END"))

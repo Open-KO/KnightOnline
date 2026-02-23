@@ -16,9 +16,10 @@ EXEC::~EXEC()
 {
 }
 
-void EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
+bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 {
 	int index = 0, argsToParse = 0;
+	bool handled = true;
 	char temp[1024] {};
 
 	ParseSpace(temp, line, index);
@@ -93,6 +94,7 @@ void EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 
 		default:
 			spdlog::warn("EXEC::Parse: unhandled opcode '{}' ({}:{})", temp, filename, lineNumber);
+			handled = false;
 			break;
 	}
 
@@ -102,6 +104,8 @@ void EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 		ParseSpace(temp, line, index);
 		m_ExecInt[i] = atoi(temp);
 	}
+
+	return handled;
 }
 
 void EXEC::Init()

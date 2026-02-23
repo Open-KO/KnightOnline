@@ -10,7 +10,9 @@
 #include <shared/lzf.h>
 #include <shared/packets.h>
 #include <shared/StringUtils.h>
+
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ranges.h>
 
 #include <unordered_set>
 
@@ -11523,6 +11525,14 @@ void CUser::ClientEvent(char* pBuf)
 	if (pEventData == nullptr)
 		return;
 
+	if (!pEventData->_unhandledOpcodes.empty())
+	{
+		spdlog::error("User::ClientEvent: failed to run event {} due to unhandled opcodes. "
+					  "[characterName={} unhandledOpcodes={}]",
+			eventid, m_pUserData->m_id, pEventData->_unhandledOpcodes);
+		return;
+	}
+
 	// Check if all 'A's meet the requirements in Event #1
 	if (!CheckEventLogic(pEventData))
 		return;
@@ -11818,6 +11828,14 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				EVENT_DATA* pEventData = pEvent->m_arEvent.GetData(pExec->m_ExecInt[0]);
 				if (pEventData == nullptr)
 					break;
+
+				if (!pEventData->_unhandledOpcodes.empty())
+				{
+					spdlog::error("User::RunEvent: failed to run event {} due to unhandled "
+								  "opcodes. [characterName={} unhandledOpcodes={}]",
+						pExec->m_ExecInt[0], m_pUserData->m_id, pEventData->_unhandledOpcodes);
+					return false;
+				}
 
 				if (!CheckEventLogic(pEventData))
 					break;
@@ -12730,6 +12748,15 @@ void CUser::RecvEditBox(char* pBuf)
 	pEventData = pEvent->m_arEvent.GetData(selevent);
 	if (pEventData == nullptr || !CheckEventLogic(pEventData))
 	{
+		ResetEditBox();
+		return;
+	}
+
+	if (!pEventData->_unhandledOpcodes.empty())
+	{
+		spdlog::error("User::RecvEditBox: failed to run event {} due to unhandled opcodes. "
+					  "[characterName={} unhandledOpcodes={}]",
+			selevent, m_pUserData->m_id, pEventData->_unhandledOpcodes);
 		ResetEditBox();
 		return;
 	}

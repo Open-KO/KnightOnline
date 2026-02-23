@@ -28,9 +28,10 @@ void LOGIC_ELSE::Init()
 	m_bAnd = true;
 }
 
-void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int lineNumber)
+bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int lineNumber)
 {
 	int index = 0, argsToParse = 0;
+	bool handled = true;
 	char temp[1024] {};
 
 	ParseSpace(temp, line, index);
@@ -140,7 +141,7 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
-			// A CHECK_PPCARD_SERIAL
+		// A CHECK_PPCARD_SERIAL
 		case "CHECK_PPCARD_SERIAL"_djb2:
 			m_LogicElse = LOGIC_CHECK_PPCARD_SERIAL;
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
@@ -260,6 +261,7 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 		default:
 			spdlog::warn(
 				"LOGIC_ELSE::Parse_and: unhandled opcode '{}' ({}:{})", temp, filename, lineNumber);
+			handled = false;
 			break;
 	}
 
@@ -271,6 +273,7 @@ void LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 	}
 
 	m_bAnd = true;
+	return handled;
 }
 
 } // namespace Ebenezer
