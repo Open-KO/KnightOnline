@@ -9171,7 +9171,7 @@ void CUser::AllSkillPointChange()
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
 	int sendIndex = 0, skill_point = 0, money = 0, i = 0, j = 0, temp_value = 0;
-	e_ClassChangeResult result = CLASS_CHANGE_FAILURE;
+	e_ClassChangeResult result = CLASS_CHANGE_SUCCESS;
 	char sendBuffer[128] {};
 
 	temp_value = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
@@ -9208,11 +9208,8 @@ void CUser::AllSkillPointChange()
 	money = m_pUserData->m_iGold - temp_value;
 	//money = m_pUserData->m_iGold - 100;
 
-	if (money < 0)
-		goto fail_return;
-
-	if (m_pUserData->m_bLevel < 10)
-		goto fail_return;
+	if (money < 0 || m_pUserData->m_bLevel < 10)
+		result = CLASS_CHANGE_FAILURE;
 
 	for (i = 1; i < 9; i++)
 		skill_point += m_pUserData->m_bstrSkill[i];
@@ -9220,30 +9217,28 @@ void CUser::AllSkillPointChange()
 	if (skill_point <= 0)
 	{
 		result = CLASS_CHANGE_NOT_YET;
-		goto fail_return;
 	}
 
-	// 문제될 소지가 많음 : 가용스킬이 255을 넘는 상황이 발생할 확율이 높음..
-	//m_pUserData->m_bstrSkill[0] += skill_point;
-	m_pUserData->m_bstrSkill[0] = (m_pUserData->m_bLevel - 9) * 2;
-	for (j = 1; j < 9; j++)
-		m_pUserData->m_bstrSkill[j] = 0;
-	m_pUserData->m_iGold = money;
-	result               = CLASS_CHANGE_SUCCESS;
-
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
 	SetByte(sendBuffer, CLASS_RESET_SKILL_REQ, sendIndex);
 	SetByte(sendBuffer, result, sendIndex);
-	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
-	SetByte(sendBuffer, m_pUserData->m_bstrSkill[0], sendIndex);
-	Send(sendBuffer, sendIndex);
-	return;
 
-fail_return:
-	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, CLASS_RESET_SKILL_REQ, sendIndex);
-	SetByte(sendBuffer, result, sendIndex);
-	SetDWORD(sendBuffer, temp_value, sendIndex);
+	if (result == CLASS_CHANGE_SUCCESS)
+	{
+		// 문제될 소지가 많음 : 가용스킬이 255을 넘는 상황이 발생할 확율이 높음..
+		//m_pUserData->m_bstrSkill[0] += skill_point;
+		m_pUserData->m_bstrSkill[0] = (m_pUserData->m_bLevel - 9) * 2;
+		for (j = 1; j < 9; j++)
+			m_pUserData->m_bstrSkill[j] = 0;
+		m_pUserData->m_iGold = money;
+		SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
+		SetByte(sendBuffer, m_pUserData->m_bstrSkill[0], sendIndex);
+	}
+	else
+	{
+		SetDWORD(sendBuffer, temp_value, sendIndex);
+	}
+
 	Send(sendBuffer, sendIndex);
 }
 
@@ -9251,178 +9246,192 @@ void CUser::AllPointChange()
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
 	int sendIndex = 0, money = 0, temp_money = 0;
-	e_ClassChangeResult result = CLASS_CHANGE_FAILURE;
+	e_ClassChangeResult result = CLASS_CHANGE_SUCCESS;
 	char sendBuffer[128] {};
 	int i = 0;
 
 	if (m_pUserData->m_bLevel > 80)
-		goto fail_return;
-
-	temp_money = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
-	temp_money = (temp_money / 100) * 100;
-	if (m_pUserData->m_bLevel < 30)
-		temp_money = static_cast<int>(temp_money * 0.4);
-#if 0
-	else if (m_pUserData->m_bLevel >= 30
-		&& m_pUserData->m_bLevel < 60)
-		temp_money = static_cast<int>(temp_money * 1);
-#endif
-	else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
-		temp_money = static_cast<int>(temp_money * 1.5);
-
-	// 할인시점이고 승리국이라면
-	if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
 	{
-		temp_money = static_cast<int>(temp_money * 0.5);
-		//TRACE(_T("^^ AllPointChange - Discount ,, money=%d->%d\n"), old_money, temp_money);
+		result = CLASS_CHANGE_FAILURE;
+	}
+	else
+	{
+		temp_money = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
+		temp_money = (temp_money / 100) * 100;
+		if (m_pUserData->m_bLevel < 30)
+			temp_money = static_cast<int>(temp_money * 0.4);
+#if 0
+		else if (m_pUserData->m_bLevel >= 30
+			&& m_pUserData->m_bLevel < 60)
+			temp_money = static_cast<int>(temp_money * 1);
+#endif
+		else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
+			temp_money = static_cast<int>(temp_money * 1.5);
+
+		// 할인시점이고 승리국이라면
+		if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
+		{
+			temp_money = static_cast<int>(temp_money * 0.5);
+			//TRACE(_T("^^ AllPointChange - Discount ,, money=%d->%d\n"), old_money, temp_money);
+		}
+
+		if (m_pMain->m_sDiscount == 2)
+			temp_money = static_cast<int>(temp_money * 0.5);
+
+		money = m_pUserData->m_iGold - temp_money;
+		if (money < 0)
+			result = CLASS_CHANGE_FAILURE;
 	}
 
-	if (m_pMain->m_sDiscount == 2)
-		temp_money = static_cast<int>(temp_money * 0.5);
-
-	money = m_pUserData->m_iGold - temp_money;
-	if (money < 0)
-		goto fail_return;
-
 	// 장착아이템이 하나라도 있으면 에러처리
-	for (i = 0; i < SLOT_MAX; i++)
+	if (result == CLASS_CHANGE_SUCCESS)
 	{
-		if (m_pUserData->m_sItemArray[i].nNum != 0)
+		for (i = 0; i < SLOT_MAX; i++)
 		{
-			result = CLASS_CHANGE_ITEM_IN_SLOT;
-			goto fail_return;
+			if (m_pUserData->m_sItemArray[i].nNum != 0)
+			{
+				result = CLASS_CHANGE_ITEM_IN_SLOT;
+			}
 		}
 	}
 
-	switch (m_pUserData->m_bRace)
+	if (result == CLASS_CHANGE_SUCCESS)
 	{
-		case KARUS_BIG:
-		case KARUS_MIDDLE:
-			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
-				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
-			{
+		switch (m_pUserData->m_bRace)
+		{
+			case KARUS_BIG:
+			case KARUS_MIDDLE:
+				if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65
+					&& m_pUserData->m_bDex == 60 && m_pUserData->m_bIntel == 50
+					&& m_pUserData->m_bCha == 50)
+				{
+					result = CLASS_CHANGE_NOT_YET;
+					break;
+				}
+
+				m_pUserData->m_bStr   = 65;
+				m_pUserData->m_bSta   = 65;
+				m_pUserData->m_bDex   = 60;
+				m_pUserData->m_bIntel = 50;
+				m_pUserData->m_bCha   = 50;
+				break;
+
+			case KARUS_SMALL:
+				if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50
+					&& m_pUserData->m_bDex == 70 && m_pUserData->m_bIntel == 70
+					&& m_pUserData->m_bCha == 50)
+				{
+					result = CLASS_CHANGE_NOT_YET;
+					break;
+				}
+
+				m_pUserData->m_bStr   = 50;
+				m_pUserData->m_bSta   = 50;
+				m_pUserData->m_bDex   = 70;
+				m_pUserData->m_bIntel = 70;
+				m_pUserData->m_bCha   = 50;
+
+			case KARUS_WOMAN:
+				if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 60
+					&& m_pUserData->m_bDex == 60 && m_pUserData->m_bIntel == 70
+					&& m_pUserData->m_bCha == 50)
+				{
+					result = CLASS_CHANGE_NOT_YET;
+					break;
+				}
+
+				m_pUserData->m_bStr   = 50;
+				m_pUserData->m_bSta   = 60;
+				m_pUserData->m_bDex   = 60;
+				m_pUserData->m_bIntel = 70;
+				m_pUserData->m_bCha   = 50;
+				break;
+
+			case BABARIAN:
+				if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65
+					&& m_pUserData->m_bDex == 60 && m_pUserData->m_bIntel == 50
+					&& m_pUserData->m_bCha == 50)
+				{
+					result = CLASS_CHANGE_NOT_YET;
+					break;
+				}
+
+				m_pUserData->m_bStr   = 65;
+				m_pUserData->m_bSta   = 65;
+				m_pUserData->m_bDex   = 60;
+				m_pUserData->m_bIntel = 50;
+				m_pUserData->m_bCha   = 50;
+				break;
+
+			case ELMORAD_MAN:
+				if (m_pUserData->m_bStr == 60 && m_pUserData->m_bSta == 60
+					&& m_pUserData->m_bDex == 70 && m_pUserData->m_bIntel == 50
+					&& m_pUserData->m_bCha == 50)
+				{
+					result = CLASS_CHANGE_NOT_YET;
+					break;
+				}
+
+				m_pUserData->m_bStr   = 60;
+				m_pUserData->m_bSta   = 60;
+				m_pUserData->m_bDex   = 70;
+				m_pUserData->m_bIntel = 50;
+				m_pUserData->m_bCha   = 50;
+				break;
+
+			case ELMORAD_WOMAN:
+				if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50
+					&& m_pUserData->m_bDex == 70 && m_pUserData->m_bIntel == 70
+					&& m_pUserData->m_bCha == 50)
+				{
+					result = CLASS_CHANGE_NOT_YET;
+					break;
+				}
+
+				m_pUserData->m_bStr   = 50;
+				m_pUserData->m_bSta   = 50;
+				m_pUserData->m_bDex   = 70;
+				m_pUserData->m_bIntel = 70;
+				m_pUserData->m_bCha   = 50;
+				break;
+
+			default:
+				spdlog::error(
+					"User::AllPointChange: Unhandled race {} [accountName={} characterName={}]",
+					m_pUserData->m_bRace, m_strAccountID, m_pUserData->m_id);
 				result = CLASS_CHANGE_NOT_YET;
-				goto fail_return;
-			}
-
-			m_pUserData->m_bStr   = 65;
-			m_pUserData->m_bSta   = 65;
-			m_pUserData->m_bDex   = 60;
-			m_pUserData->m_bIntel = 50;
-			m_pUserData->m_bCha   = 50;
-			break;
-
-		case KARUS_SMALL:
-			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
-				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
-			{
-				result = CLASS_CHANGE_NOT_YET;
-				goto fail_return;
-			}
-
-			m_pUserData->m_bStr   = 50;
-			m_pUserData->m_bSta   = 50;
-			m_pUserData->m_bDex   = 70;
-			m_pUserData->m_bIntel = 70;
-			m_pUserData->m_bCha   = 50;
-			break;
-
-		case KARUS_WOMAN:
-			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 60
-				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
-			{
-				result = CLASS_CHANGE_NOT_YET;
-				goto fail_return;
-			}
-
-			m_pUserData->m_bStr   = 50;
-			m_pUserData->m_bSta   = 60;
-			m_pUserData->m_bDex   = 60;
-			m_pUserData->m_bIntel = 70;
-			m_pUserData->m_bCha   = 50;
-			break;
-
-		case BABARIAN:
-			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
-				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
-			{
-				result = CLASS_CHANGE_NOT_YET;
-				goto fail_return;
-			}
-
-			m_pUserData->m_bStr   = 65;
-			m_pUserData->m_bSta   = 65;
-			m_pUserData->m_bDex   = 60;
-			m_pUserData->m_bIntel = 50;
-			m_pUserData->m_bCha   = 50;
-			break;
-
-		case ELMORAD_MAN:
-			if (m_pUserData->m_bStr == 60 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 70
-				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
-			{
-				result = CLASS_CHANGE_NOT_YET;
-				goto fail_return;
-			}
-
-			m_pUserData->m_bStr   = 60;
-			m_pUserData->m_bSta   = 60;
-			m_pUserData->m_bDex   = 70;
-			m_pUserData->m_bIntel = 50;
-			m_pUserData->m_bCha   = 50;
-			break;
-
-		case ELMORAD_WOMAN:
-			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
-				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
-			{
-				result = CLASS_CHANGE_NOT_YET;
-				goto fail_return;
-			}
-
-			m_pUserData->m_bStr   = 50;
-			m_pUserData->m_bSta   = 50;
-			m_pUserData->m_bDex   = 70;
-			m_pUserData->m_bIntel = 70;
-			m_pUserData->m_bCha   = 50;
-			break;
-
-		default:
-			spdlog::error(
-				"User::AllPointChange: Unhandled race {} [accountName={} characterName={}]",
-				m_pUserData->m_bRace, m_strAccountID, m_pUserData->m_id);
-			result = CLASS_CHANGE_NOT_YET;
-			goto fail_return;
+		}
 	}
 
-	m_pUserData->m_bPoints = (m_pUserData->m_bLevel - 1) * 3 + 10;
-	m_pUserData->m_iGold   = money;
-
-	SetUserAbility();
-	Send2AI_UserUpdateInfo();
-
-	result = CLASS_CHANGE_SUCCESS;
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
 	SetByte(sendBuffer, CLASS_RESET_STAT_REQ, sendIndex);
 	SetByte(sendBuffer, result, sendIndex);
-	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
-	SetShort(sendBuffer, m_pUserData->m_bStr, sendIndex);
-	SetShort(sendBuffer, m_pUserData->m_bSta, sendIndex);
-	SetShort(sendBuffer, m_pUserData->m_bDex, sendIndex);
-	SetShort(sendBuffer, m_pUserData->m_bIntel, sendIndex);
-	SetShort(sendBuffer, m_pUserData->m_bCha, sendIndex);
-	SetShort(sendBuffer, m_iMaxHp, sendIndex);
-	SetShort(sendBuffer, m_iMaxMp, sendIndex);
-	SetShort(sendBuffer, m_sTotalHit, sendIndex);
-	SetShort(sendBuffer, GetMaxWeightForClient(), sendIndex);
-	SetShort(sendBuffer, m_pUserData->m_bPoints, sendIndex);
-	Send(sendBuffer, sendIndex);
 
-fail_return:
-	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, CLASS_RESET_STAT_REQ, sendIndex);
-	SetByte(sendBuffer, result, sendIndex);
-	SetDWORD(sendBuffer, temp_money, sendIndex);
+	if (result == CLASS_CHANGE_SUCCESS)
+	{
+		m_pUserData->m_bPoints = (m_pUserData->m_bLevel - 1) * 3 + 10;
+		m_pUserData->m_iGold   = money;
+
+		SetUserAbility();
+		Send2AI_UserUpdateInfo();
+
+		SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_bStr, sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_bSta, sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_bDex, sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_bIntel, sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_bCha, sendIndex);
+		SetShort(sendBuffer, m_iMaxHp, sendIndex);
+		SetShort(sendBuffer, m_iMaxMp, sendIndex);
+		SetShort(sendBuffer, m_sTotalHit, sendIndex);
+		SetShort(sendBuffer, GetMaxWeightForClient(), sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_bPoints, sendIndex);
+	}
+	else
+	{
+		SetDWORD(sendBuffer, temp_money, sendIndex);
+	}
+
 	Send(sendBuffer, sendIndex);
 }
 
