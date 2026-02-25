@@ -199,127 +199,108 @@ $(function(){initNavTree('WarFare_2PacketDef_8h_source.html',''); initResizable(
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>};</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment">// Sub Packet..</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">enum</span> e_SubPacket_ClassChange_Main : uint8_t</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">enum</span> e_SubPacket_Knights : uint8_t</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>{</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    N3_SP_CLASS_CHANGE_PURE              = 0x01, <span class="comment">// Class Change Real..</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    N3_SP_CLASS_CHANGE_REQ               = 0x02, <span class="comment">// Class Change Req..</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    N3_SP_CLASS_ALL_POINT                = 0x03, <span class="comment">// Class Change All Point..</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    N3_SP_CLASS_SKILL_POINT              = 0x04,</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    N3_SP_CLASS_POINT_CHANGE_PRICE_QUERY = 0x05,</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    N3_SP_CLASS_PROMOTION                = 0x06</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>};</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword">enum</span> e_SubPacket_ClassChange : uint8_t</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>{</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    N3_SP_CLASS_CHANGE_SUCCESS      = 0x01, <span class="comment">// Success..</span></div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    N3_SP_CLASS_CHANGE_NOT_YET      = 0x02, <span class="comment">// Not yet..</span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    N3_SP_CLASS_CHANGE_ALREADY      = 0x03, <span class="comment">// Already..</span></div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    N3_SP_CLASS_CHANGE_ITEM_IN_SLOT = 0x04, <span class="comment">// Item in Slot..</span></div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    N3_SP_CLASS_CHANGE_FAILURE      = 0x00  <span class="comment">// Failure..</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keyword">enum</span> e_SubPacket_Knights : uint8_t</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>{</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    N3_SP_KNIGHTS_CREATE             = 0x01, <span class="comment">// 생성 Send - s1(Name Length) str1 | Recv - b1(1:성공 0:실패)</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    N3_SP_KNIGHTS_JOIN               = 0x02, <span class="comment">// 가입 Send - s1(Knights ID) | Recv - b1(1:성공 0:실패)</span></div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    N3_SP_KNIGHTS_WITHDRAW           = 0x03, <span class="comment">// 탈퇴 Send - | Recv - b1(1:성공 0:실패)</span></div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    N3_SP_KNIGHTS_MEMBER_REMOVE      = 0x04, <span class="comment">// 멤버 삭제 -</span></div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    N3_SP_KNIGHTS_DESTROY            = 0x05, <span class="comment">// 뽀개기 Send - | Recv - b1(1:성공 0:실패)</span></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    N3_SP_KNIGHTS_MEMBER_JOIN_ADMIT  = 0x06, <span class="comment">// 멤버 가입 허가 Send - s1(Knights ID) | Recv - b1(1:성공 0:실패)</span></div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    N3_SP_KNIGHTS_MEMBER_JOIN_REJECT = 0x07, <span class="comment">// 멤버 가입 거절 Send - s1(Knights ID) | Recv - b1(1:성공 0:실패)</span></div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    N3_SP_KNIGHTS_MEMBER_PUNISH      = 0x08, <span class="comment">// 멤버 징계 - 가입과 같음</span></div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    N3_SP_KNIGHTS_APPOINT_CHIEF      = 0x09, <span class="comment">// 단장 임명 - 가입과 같음</span></div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    N3_SP_KNIGHTS_APPOINT_VICECHIEF  = 0x0A, <span class="comment">// 부단장 임명 - 가입과 같음</span></div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    N3_SP_KNIGHTS_APPOINT_OFFICER    = 0x0B, <span class="comment">// 장교임명 - 가입과 같음</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    N3_SP_KNIGHTS_GRADE_CHANGE_ALL   = 0x0C, <span class="comment">// 전 기사단의 등급 및 순위 변경 Recv - s1(count) Loop { s1(Knights ID) b2(Grade Rank) }</span></div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    N3_SP_KNIGHTS_MEMBER_INFO_ALL    = 0x0D, <span class="comment">// 모든 멤버 요청 Send - s1(page) | s1(Member Count) Loop { s1(Name Length) str1 (Name) }</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    N3_SP_KNIGHTS_MEMBER_INFO_ONLINE = 0x0E, <span class="comment">// 현재 접속 리스트 Send - s1(page) | s1(Member Count) Loop { s1(Name Length) str1 (Name) }</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    N3_SP_KNIGHTS_STASH              = 0x0F, <span class="comment">// 기사단 창고</span></div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    N3_SP_KNIGHTS_DUTY_CHANGE        = 0x10, <span class="comment">// 멤버의 직위 변경.. 해당 멤버에게 간다.. Recv - s1(Knights ID) b1(직위);</span></div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    N3_SP_KNIGHTS_JOIN_REQ           = 0x11, <span class="comment">// 기사단 인덱스</span></div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    N3_SP_KNIGHTS_UNKNOWN</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>};</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="keyword">enum</span> e_SubPacket_KNights_Create : uint8_t</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>{</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    N3_SP_KNIGHTS_CREATE_FAIL_DBFAIL         = 0x00,</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    N3_SP_KNIGHTS_CREATE_SUCCESS             = 0x01,</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    N3_SP_KNIGHTS_CREATE_FAIL_LOWLEVEL       = 0x02,</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    N3_SP_KNIGHTS_CREATE_FAIL_DUPLICATEDNAME = 0x03,</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    N3_SP_KNIGHTS_CREATE_FAIL_LOWMONEY       = 0x04,</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    N3_SP_KNIGHTS_CREATE_FAIL_ALREADYJOINED  = 0x05,</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    N3_SP_KNIGHTS_CREATE_FAIL_UNKNOWN        = 0x06,</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    N3_SP_KNIGHTS_CREATE_FAIL_INVALIDDAY     = 0x07,</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    N3_SP_KNIGHTS_CREATE_FAIL_INVALIDSERVER  = 0x08</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>};</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">// join, appoint, leave, withdraw 모두 쓴다.....</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="keyword">enum</span> e_SubPacket_KNights_Common : uint8_t</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>{</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    N3_SP_KNIGHTS_COMMON_DBFAIL               = 0x00, <span class="comment">//DB검색 실패..</span></div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    N3_SP_KNIGHTS_COMMON_SUCCESS              = 0x01, <span class="comment">//성공</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    N3_SP_KNIGHTS_COMMON_FAIL_NONE_USER       = 0x02, <span class="comment">//없는 유저..</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    N3_SP_KNIGHTS_COMMON_FAIL_DEAD_USER       = 0x03, <span class="comment">//상대유저가 죽어 있음..</span></div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    N3_SP_KNIGHTS_COMMON_FAIL_ENEMY_USER      = 0x04, <span class="comment">//상대유저의 국가가 다름..</span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    N3_SP_KNIGHTS_COMMON_FAIL_OTHER_CLAN_USER = 0x05, <span class="comment">//상대유저가 이미 다른 클랜이나 기사단에 가입되어 있음..</span></div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    N3_SP_KNIGHTS_COMMON_FAIL_INVALIDRIGHT    = 0x06, <span class="comment">//권한이 없음..</span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    N3_SP_KNIGHTS_COMMON_FAIL_NONE_CLAN       = 0x07, <span class="comment">//존재하지 않는 기사단..</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    N3_SP_KNIGHTS_COMMON_FAIL_FULL            = 0x08, <span class="comment">//인원이 풀..</span></div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    N3_SP_KNIGHTS_COMMON_FAIL_ME              = 0x09, <span class="comment">//자기자신을 선택한 경우..</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    N3_SP_KNIGHTS_COMMON_FAIL_NOT_JOINED      = 0x0A, <span class="comment">//기사단이나 클랜에 가입되어 있지 않음...</span></div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    N3_SP_KNIGHTS_COMMON_FAIL_REJECT          = 0x0B, <span class="comment">//상대편에서 거절...</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    N3_SP_KNIGHTS_COMMON_FAIL_BATTLEZONE      = 0x0C  <span class="comment">// 전쟁존에서의 거부..</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>};</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="keyword">enum</span> e_SubPacket_KnightsList : uint8_t</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>{</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    N3_SP_KNIGHTS_LIST_BASIC_ALL    = 0x01, <span class="comment">// Receive - s1(knights Count) { s21(id, 이름길이), str1(이름) }</span></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    N3_SP_KNIGHTS_LIST_BASIC_INSERT = 0x02, <span class="comment">// Receive - s2(id, 이름길이), str1(이름)</span></div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    N3_SP_KNIGHTS_LIST_BASIC_REMOVE = 0x03  <span class="comment">// Receive - s1(id)</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    N3_SP_KNIGHTS_CREATE             = 0x01, <span class="comment">// 생성 Send - s1(Name Length) str1 | Recv - b1(1:성공 0:실패)</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    N3_SP_KNIGHTS_JOIN               = 0x02, <span class="comment">// 가입 Send - s1(Knights ID) | Recv - b1(1:성공 0:실패)</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    N3_SP_KNIGHTS_WITHDRAW           = 0x03, <span class="comment">// 탈퇴 Send - | Recv - b1(1:성공 0:실패)</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    N3_SP_KNIGHTS_MEMBER_REMOVE      = 0x04, <span class="comment">// 멤버 삭제 -</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    N3_SP_KNIGHTS_DESTROY            = 0x05, <span class="comment">// 뽀개기 Send - | Recv - b1(1:성공 0:실패)</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    N3_SP_KNIGHTS_MEMBER_JOIN_ADMIT  = 0x06, <span class="comment">// 멤버 가입 허가 Send - s1(Knights ID) | Recv - b1(1:성공 0:실패)</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    N3_SP_KNIGHTS_MEMBER_JOIN_REJECT = 0x07, <span class="comment">// 멤버 가입 거절 Send - s1(Knights ID) | Recv - b1(1:성공 0:실패)</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    N3_SP_KNIGHTS_MEMBER_PUNISH      = 0x08, <span class="comment">// 멤버 징계 - 가입과 같음</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    N3_SP_KNIGHTS_APPOINT_CHIEF      = 0x09, <span class="comment">// 단장 임명 - 가입과 같음</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    N3_SP_KNIGHTS_APPOINT_VICECHIEF  = 0x0A, <span class="comment">// 부단장 임명 - 가입과 같음</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    N3_SP_KNIGHTS_APPOINT_OFFICER    = 0x0B, <span class="comment">// 장교임명 - 가입과 같음</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    N3_SP_KNIGHTS_GRADE_CHANGE_ALL   = 0x0C, <span class="comment">// 전 기사단의 등급 및 순위 변경 Recv - s1(count) Loop { s1(Knights ID) b2(Grade Rank) }</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    N3_SP_KNIGHTS_MEMBER_INFO_ALL    = 0x0D, <span class="comment">// 모든 멤버 요청 Send - s1(page) | s1(Member Count) Loop { s1(Name Length) str1 (Name) }</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    N3_SP_KNIGHTS_MEMBER_INFO_ONLINE = 0x0E, <span class="comment">// 현재 접속 리스트 Send - s1(page) | s1(Member Count) Loop { s1(Name Length) str1 (Name) }</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    N3_SP_KNIGHTS_STASH              = 0x0F, <span class="comment">// 기사단 창고</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    N3_SP_KNIGHTS_DUTY_CHANGE        = 0x10, <span class="comment">// 멤버의 직위 변경.. 해당 멤버에게 간다.. Recv - s1(Knights ID) b1(직위);</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    N3_SP_KNIGHTS_JOIN_REQ           = 0x11, <span class="comment">// 기사단 인덱스</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    N3_SP_KNIGHTS_UNKNOWN</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>};</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">enum</span> e_SubPacket_KNights_Create : uint8_t</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>{</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    N3_SP_KNIGHTS_CREATE_FAIL_DBFAIL         = 0x00,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    N3_SP_KNIGHTS_CREATE_SUCCESS             = 0x01,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    N3_SP_KNIGHTS_CREATE_FAIL_LOWLEVEL       = 0x02,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    N3_SP_KNIGHTS_CREATE_FAIL_DUPLICATEDNAME = 0x03,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    N3_SP_KNIGHTS_CREATE_FAIL_LOWMONEY       = 0x04,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    N3_SP_KNIGHTS_CREATE_FAIL_ALREADYJOINED  = 0x05,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    N3_SP_KNIGHTS_CREATE_FAIL_UNKNOWN        = 0x06,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    N3_SP_KNIGHTS_CREATE_FAIL_INVALIDDAY     = 0x07,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    N3_SP_KNIGHTS_CREATE_FAIL_INVALIDSERVER  = 0x08</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>};</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment">// join, appoint, leave, withdraw 모두 쓴다.....</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="keyword">enum</span> e_SubPacket_KNights_Common : uint8_t</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>{</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    N3_SP_KNIGHTS_COMMON_DBFAIL               = 0x00, <span class="comment">//DB검색 실패..</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    N3_SP_KNIGHTS_COMMON_SUCCESS              = 0x01, <span class="comment">//성공</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    N3_SP_KNIGHTS_COMMON_FAIL_NONE_USER       = 0x02, <span class="comment">//없는 유저..</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    N3_SP_KNIGHTS_COMMON_FAIL_DEAD_USER       = 0x03, <span class="comment">//상대유저가 죽어 있음..</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    N3_SP_KNIGHTS_COMMON_FAIL_ENEMY_USER      = 0x04, <span class="comment">//상대유저의 국가가 다름..</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    N3_SP_KNIGHTS_COMMON_FAIL_OTHER_CLAN_USER = 0x05, <span class="comment">//상대유저가 이미 다른 클랜이나 기사단에 가입되어 있음..</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    N3_SP_KNIGHTS_COMMON_FAIL_INVALIDRIGHT    = 0x06, <span class="comment">//권한이 없음..</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    N3_SP_KNIGHTS_COMMON_FAIL_NONE_CLAN       = 0x07, <span class="comment">//존재하지 않는 기사단..</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    N3_SP_KNIGHTS_COMMON_FAIL_FULL            = 0x08, <span class="comment">//인원이 풀..</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    N3_SP_KNIGHTS_COMMON_FAIL_ME              = 0x09, <span class="comment">//자기자신을 선택한 경우..</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    N3_SP_KNIGHTS_COMMON_FAIL_NOT_JOINED      = 0x0A, <span class="comment">//기사단이나 클랜에 가입되어 있지 않음...</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    N3_SP_KNIGHTS_COMMON_FAIL_REJECT          = 0x0B, <span class="comment">//상대편에서 거절...</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    N3_SP_KNIGHTS_COMMON_FAIL_BATTLEZONE      = 0x0C  <span class="comment">// 전쟁존에서의 거부..</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>};</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keyword">enum</span> e_SubPacket_KnightsList : uint8_t</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>{</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    N3_SP_KNIGHTS_LIST_BASIC_ALL    = 0x01, <span class="comment">// Receive - s1(knights Count) { s21(id, 이름길이), str1(이름) }</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    N3_SP_KNIGHTS_LIST_BASIC_INSERT = 0x02, <span class="comment">// Receive - s2(id, 이름길이), str1(이름)</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    N3_SP_KNIGHTS_LIST_BASIC_REMOVE = 0x03  <span class="comment">// Receive - s1(id)</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>};</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="keyword">enum</span> e_SubPacket_Administrator : uint8_t</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>{</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    N3_SP_ADMINISTRATOR_ARREST         = 0x01, <span class="comment">// 그 유저 있는 곳으로 존체인지.. Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    N3_SP_ADMINISTRATOR_FORBID_CONNECT = 0x02, <span class="comment">// 접속금지 및 쫓아내기.. Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    N3_SP_ADMINISTRATOR_CHAT_FORBID    = 0x03, <span class="comment">// 채팅금지 Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    N3_SP_ADMINISTRATOR_CHAT_PERMIT    = 0x04  <span class="comment">// 채팅허가 Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>};</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="keyword">enum</span> e_SubPacket_WareHouse : uint8_t</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>{</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    N3_SP_WARE_OPEN      = 0x01, <span class="comment">// Open..</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    N3_SP_WARE_GET_IN    = 0x02, <span class="comment">// 堅?.</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    N3_SP_WARE_GET_OUT   = 0X03, <span class="comment">// 빼기..</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    N3_SP_WARE_WARE_MOVE = 0x04, <span class="comment">// 이동..</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    N3_SP_WARE_INV_MOVE  = 0x05, <span class="comment">// 이동..</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    N3_SP_WARE_INN       = 0x10, <span class="comment">// 맨처음..여관주인임을 받음..</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    N3_SP_WARE_UNKNOWN</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>};</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="keyword">enum</span> e_SubPacket_Administrator : uint8_t</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="keyword">enum</span> e_Party_BBS : uint8_t</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>{</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    N3_SP_ADMINISTRATOR_ARREST         = 0x01, <span class="comment">// 그 유저 있는 곳으로 존체인지.. Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    N3_SP_ADMINISTRATOR_FORBID_CONNECT = 0x02, <span class="comment">// 접속금지 및 쫓아내기.. Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    N3_SP_ADMINISTRATOR_CHAT_FORBID    = 0x03, <span class="comment">// 채팅금지 Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    N3_SP_ADMINISTRATOR_CHAT_PERMIT    = 0x04  <span class="comment">// 채팅허가 Send b1(Type) s1(유저이름길이), str1(유저이름)</span></div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>};</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="keyword">enum</span> e_SubPacket_WareHouse : uint8_t</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>{</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    N3_SP_WARE_OPEN      = 0x01, <span class="comment">// Open..</span></div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    N3_SP_WARE_GET_IN    = 0x02, <span class="comment">// 堅?.</span></div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    N3_SP_WARE_GET_OUT   = 0X03, <span class="comment">// 빼기..</span></div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    N3_SP_WARE_WARE_MOVE = 0x04, <span class="comment">// 이동..</span></div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    N3_SP_WARE_INV_MOVE  = 0x05, <span class="comment">// 이동..</span></div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    N3_SP_WARE_INN       = 0x10, <span class="comment">// 맨처음..여관주인임을 받음..</span></div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    N3_SP_WARE_UNKNOWN</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>};</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="keyword">enum</span> e_Party_BBS : uint8_t</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>{</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    N3_SP_PARTY_REGISTER        = 0x01, <span class="comment">// 파티 게시판에 등록</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    N3_SP_PARTY_REGISTER_CANCEL = 0x02, <span class="comment">// 파티 게시판에서 등록 취소</span></div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    N3_SP_PARTY_BBS_DATA        = 0x03  <span class="comment">// 파티 게시 정보 요구</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>};</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="keyword">enum</span> e_Trade_BBS_Kind : uint8_t</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>{</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    N3_SP_TRADE_BBS_BUY  = 0x01, <span class="comment">// 사는 물건 목록</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    N3_SP_TRADE_BBS_SELL = 0x02  <span class="comment">// 파는 물건 목록</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>};</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">enum</span> e_Trade_BBS_Sub : uint8_t</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>{</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    N3_SP_TYPE_REGISTER        = 0x01, <span class="comment">// 물건 등록하기</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    N3_SP_TYPE_REGISTER_CANCEL = 0x02, <span class="comment">// 등록 해제하기</span></div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    N3_SP_TYPE_BBS_DATA        = 0x03, <span class="comment">// 게시판 정보 요구</span></div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    N3_SP_TYPE_BBS_OPEN        = 0x04, <span class="comment">// 상거래 게시판 열기</span></div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    N3_SP_TYPE_BBS_TRADE       = 0x05  <span class="comment">// 게시판에서 거래 신청하기</span></div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>};</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="preprocessor">#endif                                 </span><span class="comment">// end of #ifndef __PACKET_DEF_H_</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    N3_SP_PARTY_REGISTER        = 0x01, <span class="comment">// 파티 게시판에 등록</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    N3_SP_PARTY_REGISTER_CANCEL = 0x02, <span class="comment">// 파티 게시판에서 등록 취소</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    N3_SP_PARTY_BBS_DATA        = 0x03  <span class="comment">// 파티 게시 정보 요구</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>};</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span><span class="keyword">enum</span> e_Trade_BBS_Kind : uint8_t</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>{</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    N3_SP_TRADE_BBS_BUY  = 0x01, <span class="comment">// 사는 물건 목록</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    N3_SP_TRADE_BBS_SELL = 0x02  <span class="comment">// 파는 물건 목록</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>};</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="keyword">enum</span> e_Trade_BBS_Sub : uint8_t</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>{</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    N3_SP_TYPE_REGISTER        = 0x01, <span class="comment">// 물건 등록하기</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    N3_SP_TYPE_REGISTER_CANCEL = 0x02, <span class="comment">// 등록 해제하기</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    N3_SP_TYPE_BBS_DATA        = 0x03, <span class="comment">// 게시판 정보 요구</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    N3_SP_TYPE_BBS_OPEN        = 0x04, <span class="comment">// 상거래 게시판 열기</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    N3_SP_TYPE_BBS_TRADE       = 0x05  <span class="comment">// 게시판에서 거래 신청하기</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>};</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="preprocessor">#endif                                 </span><span class="comment">// end of #ifndef __PACKET_DEF_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -412,16 +412,16 @@ $(function(){initNavTree('DBAgent_8cpp_source.html',''); initResizable(true); })
 <div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_QUEST; i++)</div>
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    {</div>
 <div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <a class="code hl_struct" href="struct__USER__QUEST.html">_USER_QUEST</a>&amp; quest = user-&gt;m_quests[i];</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        quest.sQuestID     = quests.read&lt;int16_t&gt;();</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        quest.byQuestState = quests.read&lt;uint8_t&gt;();</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        quest.sQuestID     = <span class="keyword">static_cast&lt;</span>e_QuestId<span class="keyword">&gt;</span>(quests.read&lt;int16_t&gt;());</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        quest.byQuestState = <span class="keyword">static_cast&lt;</span>e_QuestState<span class="keyword">&gt;</span>(quests.read&lt;uint8_t&gt;());</div>
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keywordflow">if</span> (quest.sQuestID &gt; 100 || quest.byQuestState &gt; 3)</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keywordflow">if</span> (quest.sQuestID &gt; QUEST_MAX_ID || quest.byQuestState &gt; QUEST_STATE_COMPLETE)</div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        {</div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            memset(&amp;quest, 0, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="struct__USER__QUEST.html">_USER_QUEST</a>));</div>
 <div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        }</div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="keywordflow">if</span> (quest.sQuestID &gt; 0)</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="keywordflow">if</span> (quest.sQuestID &gt;= QUEST_MIN_ID)</div>
 <div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>            ++sQuestTotal;</div>
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    }</div>
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
@@ -518,13 +518,13 @@ $(function(){initNavTree('DBAgent_8cpp_source.html',''); initResizable(true); })
 <div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    {</div>
 <div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>        <a class="code hl_struct" href="struct__USER__QUEST.html">_USER_QUEST</a>&amp; quest = user-&gt;m_quests[i];</div>
 <div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        <span class="keywordflow">if</span> (quest.sQuestID &gt; 100 || quest.byQuestState &gt; 3)</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        <span class="keywordflow">if</span> (quest.sQuestID &gt; QUEST_MAX_ID || quest.byQuestState &gt; QUEST_STATE_COMPLETE)</div>
 <div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>        {</div>
 <div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>            memset(&amp;quest, 0, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="struct__USER__QUEST.html">_USER_QUEST</a>));</div>
 <div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>        }</div>
 <div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        {</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>            <span class="keywordflow">if</span> (quest.sQuestID &gt; 0)</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>            <span class="keywordflow">if</span> (quest.sQuestID &gt;= QUEST_MIN_ID)</div>
 <div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>                ++questTotal;</div>
 <div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        }</div>
 <div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span> </div>

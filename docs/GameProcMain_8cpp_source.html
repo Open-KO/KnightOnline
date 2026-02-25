@@ -5751,26 +5751,26 @@ $(function(){initNavTree('GameProcMain_8cpp_source.html',''); initResizable(true
 <div class="line"><a id="l05643" name="l05643"></a><span class="lineno"> 5643</span> </div>
 <div class="line"><a id="l05644" name="l05644"></a><span class="lineno"> 5644</span><span class="keywordtype">void</span> CGameProcMain::MsgRecv_ClassChange(<a class="code hl_class" href="classPacket.html">Packet</a>&amp; pkt) <span class="comment">// 직업 변화..</span></div>
 <div class="line"><a id="l05645" name="l05645"></a><span class="lineno"> 5645</span>{</div>
-<div class="line"><a id="l05646" name="l05646"></a><span class="lineno"> 5646</span>    e_SubPacket_ClassChange eSP = (e_SubPacket_ClassChange) pkt.read&lt;uint8_t&gt;();</div>
+<div class="line"><a id="l05646" name="l05646"></a><span class="lineno"> 5646</span>    e_ClassChangeResult eSP = (e_ClassChangeResult) pkt.read&lt;uint8_t&gt;();</div>
 <div class="line"><a id="l05647" name="l05647"></a><span class="lineno"> 5647</span> </div>
 <div class="line"><a id="l05648" name="l05648"></a><span class="lineno"> 5648</span>    <span class="keywordflow">switch</span> (eSP)</div>
 <div class="line"><a id="l05649" name="l05649"></a><span class="lineno"> 5649</span>    {</div>
-<div class="line"><a id="l05650" name="l05650"></a><span class="lineno"> 5650</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_SUCCESS: <span class="comment">// Success..</span></div>
+<div class="line"><a id="l05650" name="l05650"></a><span class="lineno"> 5650</span>        <span class="keywordflow">case</span> CLASS_CHANGE_SUCCESS: <span class="comment">// Success..</span></div>
 <div class="line"><a id="l05651" name="l05651"></a><span class="lineno"> 5651</span>            <span class="keywordflow">if</span> (m_pUIClassChange != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l05652" name="l05652"></a><span class="lineno"> 5652</span>                m_pUIClassChange-&gt;Open(N3_SP_CLASS_CHANGE_SUCCESS);</div>
+<div class="line"><a id="l05652" name="l05652"></a><span class="lineno"> 5652</span>                m_pUIClassChange-&gt;Open(CLASS_CHANGE_SUCCESS);</div>
 <div class="line"><a id="l05653" name="l05653"></a><span class="lineno"> 5653</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l05654" name="l05654"></a><span class="lineno"> 5654</span> </div>
-<div class="line"><a id="l05655" name="l05655"></a><span class="lineno"> 5655</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_NOT_YET: <span class="comment">// Not Yet..</span></div>
+<div class="line"><a id="l05655" name="l05655"></a><span class="lineno"> 5655</span>        <span class="keywordflow">case</span> CLASS_CHANGE_NOT_YET: <span class="comment">// Not Yet..</span></div>
 <div class="line"><a id="l05656" name="l05656"></a><span class="lineno"> 5656</span>            <span class="keywordflow">if</span> (m_pUIClassChange != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l05657" name="l05657"></a><span class="lineno"> 5657</span>                m_pUIClassChange-&gt;Open(N3_SP_CLASS_CHANGE_NOT_YET);</div>
+<div class="line"><a id="l05657" name="l05657"></a><span class="lineno"> 5657</span>                m_pUIClassChange-&gt;Open(CLASS_CHANGE_NOT_YET);</div>
 <div class="line"><a id="l05658" name="l05658"></a><span class="lineno"> 5658</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l05659" name="l05659"></a><span class="lineno"> 5659</span> </div>
-<div class="line"><a id="l05660" name="l05660"></a><span class="lineno"> 5660</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_ALREADY: <span class="comment">// Already..</span></div>
+<div class="line"><a id="l05660" name="l05660"></a><span class="lineno"> 5660</span>        <span class="keywordflow">case</span> CLASS_CHANGE_ALREADY: <span class="comment">// Already..</span></div>
 <div class="line"><a id="l05661" name="l05661"></a><span class="lineno"> 5661</span>            <span class="keywordflow">if</span> (m_pUIClassChange != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l05662" name="l05662"></a><span class="lineno"> 5662</span>                m_pUIClassChange-&gt;Open(N3_SP_CLASS_CHANGE_ALREADY);</div>
+<div class="line"><a id="l05662" name="l05662"></a><span class="lineno"> 5662</span>                m_pUIClassChange-&gt;Open(CLASS_CHANGE_ALREADY);</div>
 <div class="line"><a id="l05663" name="l05663"></a><span class="lineno"> 5663</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l05664" name="l05664"></a><span class="lineno"> 5664</span> </div>
-<div class="line"><a id="l05665" name="l05665"></a><span class="lineno"> 5665</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_FAILURE: <span class="comment">// Failure..</span></div>
+<div class="line"><a id="l05665" name="l05665"></a><span class="lineno"> 5665</span>        <span class="keywordflow">case</span> CLASS_CHANGE_FAILURE: <span class="comment">// Failure..</span></div>
 <div class="line"><a id="l05666" name="l05666"></a><span class="lineno"> 5666</span>            <span class="keywordflow">if</span> (m_pUIClassChange != <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l05667" name="l05667"></a><span class="lineno"> 5667</span>                m_pUIClassChange-&gt;RestorePrevClass();</div>
 <div class="line"><a id="l05668" name="l05668"></a><span class="lineno"> 5668</span>            <span class="keywordflow">break</span>;</div>
@@ -6675,27 +6675,27 @@ $(function(){initNavTree('GameProcMain_8cpp_source.html',''); initResizable(true
 <div class="line"><a id="l06567" name="l06567"></a><span class="lineno"> 6567</span> </div>
 <div class="line"><a id="l06568" name="l06568"></a><span class="lineno"> 6568</span>    <span class="keywordflow">switch</span> (bSubCom)</div>
 <div class="line"><a id="l06569" name="l06569"></a><span class="lineno"> 6569</span>    {</div>
-<div class="line"><a id="l06570" name="l06570"></a><span class="lineno"> 6570</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_PURE:</div>
+<div class="line"><a id="l06570" name="l06570"></a><span class="lineno"> 6570</span>        <span class="keywordflow">case</span> CLASS_CHANGE_STATUS_REQ:</div>
 <div class="line"><a id="l06571" name="l06571"></a><span class="lineno"> 6571</span>            m_pUINpcChange-&gt;Open();</div>
 <div class="line"><a id="l06572" name="l06572"></a><span class="lineno"> 6572</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l06573" name="l06573"></a><span class="lineno"> 6573</span> </div>
-<div class="line"><a id="l06574" name="l06574"></a><span class="lineno"> 6574</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_REQ:</div>
+<div class="line"><a id="l06574" name="l06574"></a><span class="lineno"> 6574</span>        <span class="keywordflow">case</span> CLASS_CHANGE_RESULT:</div>
 <div class="line"><a id="l06575" name="l06575"></a><span class="lineno"> 6575</span>            MsgRecv_ClassChange(pkt);</div>
 <div class="line"><a id="l06576" name="l06576"></a><span class="lineno"> 6576</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l06577" name="l06577"></a><span class="lineno"> 6577</span> </div>
-<div class="line"><a id="l06578" name="l06578"></a><span class="lineno"> 6578</span>        <span class="keywordflow">case</span> N3_SP_CLASS_ALL_POINT:</div>
+<div class="line"><a id="l06578" name="l06578"></a><span class="lineno"> 6578</span>        <span class="keywordflow">case</span> CLASS_RESET_STAT_REQ:</div>
 <div class="line"><a id="l06579" name="l06579"></a><span class="lineno"> 6579</span>            MsgRecv_AllPointInit(pkt);</div>
 <div class="line"><a id="l06580" name="l06580"></a><span class="lineno"> 6580</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l06581" name="l06581"></a><span class="lineno"> 6581</span> </div>
-<div class="line"><a id="l06582" name="l06582"></a><span class="lineno"> 6582</span>        <span class="keywordflow">case</span> N3_SP_CLASS_SKILL_POINT:</div>
+<div class="line"><a id="l06582" name="l06582"></a><span class="lineno"> 6582</span>        <span class="keywordflow">case</span> CLASS_RESET_SKILL_REQ:</div>
 <div class="line"><a id="l06583" name="l06583"></a><span class="lineno"> 6583</span>            MsgRecv_SkillPointInit(pkt);</div>
 <div class="line"><a id="l06584" name="l06584"></a><span class="lineno"> 6584</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l06585" name="l06585"></a><span class="lineno"> 6585</span> </div>
-<div class="line"><a id="l06586" name="l06586"></a><span class="lineno"> 6586</span>        <span class="keywordflow">case</span> N3_SP_CLASS_POINT_CHANGE_PRICE_QUERY:</div>
+<div class="line"><a id="l06586" name="l06586"></a><span class="lineno"> 6586</span>        <span class="keywordflow">case</span> CLASS_RESET_COST_REQ:</div>
 <div class="line"><a id="l06587" name="l06587"></a><span class="lineno"> 6587</span>            MsgRecv_PointChangePriceQueryRequest(pkt);</div>
 <div class="line"><a id="l06588" name="l06588"></a><span class="lineno"> 6588</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l06589" name="l06589"></a><span class="lineno"> 6589</span> </div>
-<div class="line"><a id="l06590" name="l06590"></a><span class="lineno"> 6590</span>        <span class="keywordflow">case</span> N3_SP_CLASS_PROMOTION:</div>
+<div class="line"><a id="l06590" name="l06590"></a><span class="lineno"> 6590</span>        <span class="keywordflow">case</span> CLASS_PROMOTION_REQ:</div>
 <div class="line"><a id="l06591" name="l06591"></a><span class="lineno"> 6591</span>            MsgRecv_ClassPromotion(pkt);</div>
 <div class="line"><a id="l06592" name="l06592"></a><span class="lineno"> 6592</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l06593" name="l06593"></a><span class="lineno"> 6593</span> </div>

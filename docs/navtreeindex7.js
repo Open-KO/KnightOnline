@@ -1,5 +1,15 @@
 var NAVTREEINDEX7 =
 {
+"classdb_1_1ModelRecordSet.html#acc5cc86e2599b3c81aee21ad1716373e":[2,0,2,6,0],
+"classdb_1_1ModelRecordSet.html#acece6090743f50b6909606a48b77e61b":[2,0,2,6,2],
+"classdb_1_1PoolConnection.html":[2,0,2,7],
+"classdb_1_1PoolConnection.html#a226b4f5da83be79ce97f596552df625a":[2,0,2,7,1],
+"classdb_1_1PoolConnection.html#a7206a039b1a2a2d60b68c850d4a94c2f":[2,0,2,7,0],
+"classdb_1_1PoolConnection.html#aad64ade97c18a74577c4743e269e7174":[2,0,2,7,2],
+"classdb_1_1SqlBuilder.html":[2,0,2,8],
+"classdb_1_1SqlBuilder.html#a0550d309600adb75591752d09237414c":[2,0,2,8,1],
+"classdb_1_1SqlBuilder.html#a1c61e65a94e38e9d70d4b61b8ca54596":[2,0,2,8,4],
+"classdb_1_1SqlBuilder.html#a6af7c22d09e4a01d23c1cb63e0207326":[2,0,2,8,8],
 "classdb_1_1SqlBuilder.html#a75cbd74a9fdf94acab473d3ad17a0f71":[2,0,2,8,0],
 "classdb_1_1SqlBuilder.html#a7610fcb74a97b4f82aeb08a2e0b68d20":[2,0,2,8,3],
 "classdb_1_1SqlBuilder.html#a7cb3f16614aa1a913d39a353808f2635":[2,0,2,8,7],
@@ -191,6 +201,7 @@ var NAVTREEINDEX7 =
 "structCZipFindFast.html#a159668d24fdf40f0dc71c83376672956":[2,0,460,1],
 "structCZipFindFast.html#a89f7e5f7f740e0eeb4107dce418ef2fa":[2,0,460,0],
 "structCircularBufferSpan.html":[2,0,214],
+"structEbenezer_1_1ItemPair.html":[2,0,3,27],
 "structEbenezer_1_1__EXCHANGE__ITEM.html":[2,0,3,0],
 "structEbenezer_1_1__KNIGHTS__USER.html":[2,0,3,1],
 "structEbenezer_1_1__OBJECT__EVENT.html":[2,0,3,2],
@@ -238,16 +249,5 @@ var NAVTREEINDEX7 =
 "structWAVE__Format.html#abe006feeebbc525b0041420468d64d4a":[2,0,523,4],
 "structWAVE__Format.html#adeb57ad8da781ed0db9266c5f700c366":[2,0,523,5],
 "structWriteBuffer.html":[2,0,524],
-"struct__ITEM__DATA.html":[2,0,103],
-"struct__POINT.html":[2,0,104],
-"struct__RECT.html":[2,0,105],
-"struct__SIZE.html":[2,0,106],
-"struct__USER__DATA.html":[2,0,107],
-"struct__USER__QUEST.html":[2,0,108],
-"struct__WAREHOUSE__ITEM__DATA.html":[2,0,109],
-"struct____AlphaPrimitive.html":[2,0,9],
-"struct____AnimData.html":[2,0,10],
-"struct____CameraData.html":[2,0,11],
-"struct____CharacterSelectInfo.html":[2,0,12],
-"struct____ChatInfo.html":[2,0,13]
+"struct__ITEM__DATA.html":[2,0,103]
 };

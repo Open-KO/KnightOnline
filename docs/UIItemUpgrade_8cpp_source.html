@@ -892,14 +892,14 @@ $(function(){initNavTree('UIItemUpgrade_8cpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>        || m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] == <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>        <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span> </div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>    <span class="keyword">struct </span>ItemPair</div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>    <span class="keyword">struct </span>ItemPosPair</div>
 <div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>    {</div>
 <div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span>        <span class="keywordtype">int</span> ID     = 0;</div>
 <div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>        int8_t Pos = -1;</div>
 <div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>    };</div>
 <div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span> </div>
 <div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>    uint8_t byBuff[512];</div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    std::array&lt;ItemPair, ANVIL_REQ_MAX&gt; reqItems {};</div>
+<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    std::array&lt;ItemPosPair, ANVIL_REQ_MAX&gt; reqItems {};</div>
 <div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>    <span class="keywordtype">int</span> iOffset = 0, iTotalSent = 0;</div>
 <div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span> </div>
 <div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>    m_bUpgradeInProgress = <span class="keyword">true</span>;</div>
@@ -923,9 +923,9 @@ $(function(){initNavTree('UIItemUpgrade_8cpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    }</div>
 <div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span> </div>
 <div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>    std::sort(reqItems.begin(), reqItems.end(), <span class="comment">//</span></div>
-<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>        [](<span class="keyword">const</span> ItemPair&amp; lhs, <span class="keyword">const</span> ItemPair&amp; rhs) { return lhs.ID &gt; rhs.ID; });</div>
+<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>        [](<span class="keyword">const</span> ItemPosPair&amp; lhs, <span class="keyword">const</span> ItemPosPair&amp; rhs) { return lhs.ID &gt; rhs.ID; });</div>
 <div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span> </div>
-<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> ItemPair&amp; reqItem : reqItems)</div>
+<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> ItemPosPair&amp; reqItem : reqItems)</div>
 <div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>    {</div>
 <div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span>        CAPISocket::MP_AddDword(byBuff, iOffset, reqItem.ID);</div>
 <div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span>        CAPISocket::MP_AddByte(byBuff, iOffset, reqItem.Pos);</div>

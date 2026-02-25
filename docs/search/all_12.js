@@ -23,5 +23,6 @@ var searchData=
   ['rewindframe_20',['RewindFrame',['../classStreamedAudioHandle.html#a57614931aaedb94b9cf9f80ad0c912aa',1,'StreamedAudioHandle']]],
   ['riff_5fheader_21',['RIFF_Header',['../structRIFF__Header.html',1,'']]],
   ['riff_5fsubchunk_22',['RIFF_SubChunk',['../structRIFF__SubChunk.html',1,'']]],
-  ['rowcount_23',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]]
+  ['robitem_23',['RobItem',['../classEbenezer_1_1CUser.html#ab07f6c9d3335ce9aa051e31e90ecce41',1,'Ebenezer::CUser']]],
+  ['rowcount_24',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]]
 ];

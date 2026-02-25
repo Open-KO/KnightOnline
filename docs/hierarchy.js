@@ -701,6 +701,7 @@ var hierarchy =
     ] ],
     [ "FileReaderHandle", "structFileReaderHandle.html", null ],
     [ "GoldChangePacket", "structGoldChangePacket.html", null ],
+    [ "Ebenezer::ItemPair", "structEbenezer_1_1ItemPair.html", null ],
     [ "ItemPosPair", "structItemPosPair.html", null ],
     [ "ItemTooltipBuilderContext", "classItemTooltipBuilderContext.html", null ],
     [ "ItemUpgradeProcessErrorResponsePacket", "structItemUpgradeProcessErrorResponsePacket.html", null ],

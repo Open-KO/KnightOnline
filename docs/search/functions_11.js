@@ -15,5 +15,6 @@ var searchData=
   ['restorebufferedsourceidtopool_12',['RestoreBufferedSourceIdToPool',['../classCN3SndMgr.html#a0c87707667c824b0f96cbb01d401b637',1,'CN3SndMgr']]],
   ['restorestreamedsourceidtopool_13',['RestoreStreamedSourceIdToPool',['../classCN3SndMgr.html#a4da15fe8f5e5e374a182896b5c4cb047',1,'CN3SndMgr']]],
   ['rewindframe_14',['RewindFrame',['../classStreamedAudioHandle.html#a57614931aaedb94b9cf9f80ad0c912aa',1,'StreamedAudioHandle']]],
-  ['rowcount_15',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]]
+  ['robitem_15',['RobItem',['../classEbenezer_1_1CUser.html#ab07f6c9d3335ce9aa051e31e90ecce41',1,'Ebenezer::CUser']]],
+  ['rowcount_16',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]]
 ];

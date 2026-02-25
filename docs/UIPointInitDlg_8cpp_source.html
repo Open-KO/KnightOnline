@@ -181,9 +181,9 @@ $(function(){initNavTree('UIPointInitDlg_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_CLASS_CHANGE);</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">if</span> (m_bAllpoint)</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_ALL_POINT);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_RESET_STAT_REQ);</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_SKILL_POINT);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_RESET_SKILL_REQ);</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    CGameProcedure::s_pSocket-&gt;Send(byBuff, iOffset);</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>

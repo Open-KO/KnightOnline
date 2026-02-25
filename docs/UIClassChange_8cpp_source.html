@@ -176,7 +176,7 @@ $(function(){initNavTree('UIClassChange_8cpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">switch</span> (iCode)</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    {</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_SUCCESS:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">case</span> CLASS_CHANGE_SUCCESS:</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            m_pText_Message-&gt;SetString(szSuccess);</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            m_pBtn_Class-&gt;SetVisible(<span class="keyword">true</span>);</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            m_pBtn_Cancel-&gt;SetVisible(<span class="keyword">true</span>);</div>
@@ -223,17 +223,17 @@ $(function(){initNavTree('UIClassChange_8cpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            }</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_NOT_YET:</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">case</span> CLASS_CHANGE_NOT_YET:</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            m_pText_Message-&gt;SetString(szNotYet);</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            m_pBtn_Ok-&gt;SetVisible(<span class="keyword">true</span>);</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">case</span> N3_SP_CLASS_CHANGE_ALREADY:</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">case</span> CLASS_CHANGE_ALREADY:</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            m_pText_Message-&gt;SetString(szAlready);</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            m_pBtn_Ok-&gt;SetVisible(<span class="keyword">true</span>);</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">case</span> IDS_MSG_HASITEMINSLOT: <span class="comment">// TODO: FIXME. This is not a valid subopcode!</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">case</span> CLASS_CHANGE_ITEM_IN_SLOT:</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            m_pText_Message-&gt;SetString(szItemInSlot);</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            m_pBtn_Ok-&gt;SetVisible(<span class="keyword">true</span>);</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            <span class="keywordflow">break</span>;</div>
@@ -291,7 +291,7 @@ $(function(){initNavTree('UIClassChange_8cpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            uint8_t byBuff[4];</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            <span class="keywordtype">int</span> iOffset = 0;</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_CLASS_CHANGE);</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_CHANGE_REQ);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_CHANGE_RESULT);</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) pInfoBase-&gt;eClass);</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            CGameProcedure::s_pSocket-&gt;Send(byBuff, iOffset);</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>

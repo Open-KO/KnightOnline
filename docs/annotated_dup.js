@@ -84,6 +84,7 @@ var annotated_dup =
       [ "EVENT", "classEbenezer_1_1EVENT.html", null ],
       [ "EVENT_DATA", "classEbenezer_1_1EVENT__DATA.html", null ],
       [ "EXEC", "classEbenezer_1_1EXEC.html", null ],
+      [ "ItemPair", "structEbenezer_1_1ItemPair.html", null ],
       [ "LOGIC_ELSE", "classEbenezer_1_1LOGIC__ELSE.html", null ],
       [ "MYINT64", "unionEbenezer_1_1MYINT64.html", null ],
       [ "MYSHORT", "unionEbenezer_1_1MYSHORT.html", null ],
