@@ -131,7 +131,7 @@ void CUIClassChange::Open(int iCode)
 			m_pBtn_Ok->SetVisible(true);
 			break;
 
-		case CLASS_CHANGE_ITEM_IN_SLOT: // TODO: FIXME. This is not a valid subopcode!
+		case CLASS_CHANGE_ITEM_IN_SLOT:
 			m_pText_Message->SetString(szItemInSlot);
 			m_pBtn_Ok->SetVisible(true);
 			break;

@@ -910,7 +910,7 @@ void OperationMessage::GiveItem()
 		isSuccess = _srcUser->GiveItem(itemId, count);
 	}
 
-	spdlog::warn("OperationalMessage::GiveItem: invoked [srcUser={} authority={} itemId={} "
+	spdlog::warn("OperationMessage::GiveItem: invoked [srcUser={} authority={} itemId={} "
 				 "count={} success={}]",
 		_srcUser->m_pUserData->m_id, _srcUser->m_pUserData->m_bAuthority, itemId, count, isSuccess);
 }

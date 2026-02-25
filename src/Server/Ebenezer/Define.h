@@ -331,6 +331,12 @@ struct _REGION_BUFFER
 	char pDataBuff[REGION_BUFF_SIZE] {};
 };
 
+struct ItemPair
+{
+	int itemId;
+	int16_t count = 1;
+};
+
 } // namespace Ebenezer
 
 #endif // SERVER_EBENEZER_DEFINE_H

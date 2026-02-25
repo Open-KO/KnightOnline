@@ -12131,29 +12131,20 @@ bool CUser::CheckExistItem(int itemId, int16_t count) const
 bool CUser::CheckExistItemAnd(int id1, int16_t count1, int id2, int16_t count2, int id3,
 	int16_t count3, int id4, int16_t count4, int id5, int16_t count5) const
 {
-	const int16_t counts[5] { count1, count2, count3, count4, count5 };
-	const int itemIds[5] { id1, id2, id3, id4, id5 };
-
-	return CheckExistItemAnd(itemIds, counts);
+	const ItemPair items[5] { { id1, count1 }, { id2, count2 }, { id3, count3 }, { id4, count4 },
+		{ id5, count5 } };
+	return CheckExistItemAnd(items);
 }
 
-bool CUser::CheckExistItemAnd(
-	const std::span<const int> itemIds, const std::span<const int16_t> counts) const
+bool CUser::CheckExistItemAnd(const std::span<const ItemPair> items) const
 {
-	if (itemIds.size() != counts.size())
+	for (const ItemPair item : items)
 	{
-		spdlog::error("User::CheckExistItemAnd: Mismatched itemId({})/count({}) array sizes",
-			itemIds.size(), counts.size());
-		return false;
-	}
-
-	for (size_t i = 0; i < itemIds.size(); i++)
-	{
-		if (itemIds[i] != -1 && !CheckExistItem(itemIds[i], counts[i]))
+		if (item.itemId != -1 && !CheckExistItem(item.itemId, item.count))
 		{
 			spdlog::debug(
 				"User::CheckExistItemAnd: User missing items [charId={} itemId={} count={}]",
-				m_pUserData->m_id, itemIds[i], counts[i]);
+				m_pUserData->m_id, item.itemId, item.count);
 			return false;
 		}
 	}
@@ -12215,18 +12206,11 @@ bool CUser::RobItem(int itemId, int16_t count)
 	Send(sendBuffer, sendIndex);
 	return true;
 }
-bool CUser::CheckAndRobItems(
-	const std::span<const int> itemIds, const std::span<const int16_t> counts, const int gold)
-{
-	if (itemIds.size() != counts.size())
-	{
-		spdlog::error("User::CheckAndRobItems: Mismatched itemId({})/count({}) array sizes",
-			itemIds.size(), counts.size());
-		return false;
-	}
 
+bool CUser::CheckAndRobItems(const std::span<const ItemPair> items, const int gold)
+{
 	// Check that all items are available before attempting to take anything
-	if (!CheckExistItemAnd(itemIds, counts))
+	if (!CheckExistItemAnd(items))
 	{
 		return false;
 	}
@@ -12241,9 +12225,9 @@ bool CUser::CheckAndRobItems(
 	}
 
 	// last, rob the items.  outside of a concurrency issue, this shouldn't fail
-	for (size_t i = 0; i < itemIds.size(); i++)
+	for (const ItemPair item : items)
 	{
-		if (itemIds[i] != -1 && counts[i] > 0 && !RobItem(itemIds[i], counts[i]))
+		if (item.itemId != -1 && item.count > 0 && !RobItem(item.itemId, item.count))
 		{
 			// TODO: This is not official behavior but rolling back stolen resources
 			// on failure seems like a good idea.
@@ -13881,20 +13865,21 @@ void CUser::PromoteUserNovice()
 void CUser::PromoteUser()
 {
 	// item requirement lists
-	static constexpr int WARRIOR_ITEM_IDS[6]        = { ITEM_LOBO_PENDANT, ITEM_LUPUS_PENDANT,
-			   ITEM_LYCAON_PENDANT, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
-	static constexpr int16_t WARRIOR_ITEM_COUNTS[6] = { 1, 1, 1, 10, 10, 10 };
-	static constexpr int ROGUE_ITEM_IDS[7]          = { ITEM_TAIL_OF_SHAULA, ITEM_TAIL_OF_LESATH,
-				 ITEM_BLOOD_OF_GLYPTODONT, ITEM_FANG_OF_BAKIRRA, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL,
-				 ITEM_OPAL };
-	static constexpr int16_t ROGUE_ITEM_COUNTS[7]   = { 1, 1, 10, 1, 10, 10, 10 };
-	static constexpr int MAGE_ITEM_IDS[9] = { ITEM_KEKURI_RING, ITEM_GAVOLT_WING, ITEM_ZOMBIE_EYE,
-		ITEM_CURSED_BONE, ITEM_FEATHER_OF_HARPY_QUEEN, ITEM_BLOOD_OF_GLYPTODONT,
-		ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
-	static constexpr int16_t MAGE_ITEM_COUNTS[9] = { 1, 50, 50, 1, 1, 10, 10, 10, 10 };
-	static constexpr int PRIEST_ITEM_IDS[4]      = { ITEM_HOLY_WATER_OF_TEMPLE, ITEM_CRUDE_SAPPHIRE,
-			 ITEM_CRYSTAL, ITEM_OPAL };
-	static constexpr int16_t PRIEST_ITEM_COUNTS[4] = { 1, 10, 10, 10 };
+	static constexpr ItemPair WARRIOR_ITEMS[] = { { ITEM_LOBO_PENDANT, 1 },
+		{ ITEM_LUPUS_PENDANT, 1 }, { ITEM_LYCAON_PENDANT, 1 }, { ITEM_CRUDE_SAPPHIRE, 10 },
+		{ ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
+
+	static constexpr ItemPair ROGUE_ITEMS[]   = { { ITEM_TAIL_OF_SHAULA, 1 },
+		  { ITEM_TAIL_OF_LESATH, 1 }, { ITEM_BLOOD_OF_GLYPTODONT, 10 }, { ITEM_FANG_OF_BAKIRRA, 1 },
+		  { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
+
+	static constexpr ItemPair MAGE_ITEMS[]    = { { ITEM_KEKURI_RING, 1 }, { ITEM_GAVOLT_WING, 50 },
+		   { ITEM_ZOMBIE_EYE, 50 }, { ITEM_CURSED_BONE, 1 }, { ITEM_FEATHER_OF_HARPY_QUEEN, 1 },
+		   { ITEM_BLOOD_OF_GLYPTODONT, 10 }, { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 },
+		   { ITEM_OPAL, 10 } };
+
+	static constexpr ItemPair PRIEST_ITEMS[]  = { { ITEM_HOLY_WATER_OF_TEMPLE, 1 },
+		 { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
 
 	// Make sure user level is appropriate for current promotion
 	if (!CheckPromotionEligible())
@@ -13908,7 +13893,7 @@ void CUser::PromoteUser()
 	{
 		case CLASS_EL_BLADE:
 		case CLASS_KA_BERSERKER:
-			if (!CheckAndRobItems(WARRIOR_ITEM_IDS, WARRIOR_ITEM_COUNTS))
+			if (!CheckAndRobItems(WARRIOR_ITEMS))
 			{
 				// Send failure message - missing items
 				SendSay(-1, -1, 6007);
@@ -13921,7 +13906,7 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_HUNTER:
 		case CLASS_EL_RANGER:
-			if (!CheckAndRobItems(ROGUE_ITEM_IDS, ROGUE_ITEM_COUNTS))
+			if (!CheckAndRobItems(ROGUE_ITEMS))
 			{
 				// Send failure message
 				SendSay(-1, -1, 7007);
@@ -13934,7 +13919,7 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_SORCERER:
 		case CLASS_EL_MAGE:
-			if (!CheckAndRobItems(MAGE_ITEM_IDS, MAGE_ITEM_COUNTS))
+			if (!CheckAndRobItems(MAGE_ITEMS))
 			{
 				// Send failure message
 				SendSay(-1, -1, 8007);
@@ -13947,7 +13932,7 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_SHAMAN:
 		case CLASS_EL_CLERIC:
-			if (!CheckAndRobItems(PRIEST_ITEM_IDS, PRIEST_ITEM_COUNTS, QUEST_GOLD_PRIEST_MASTER))
+			if (!CheckAndRobItems(PRIEST_ITEMS, QUEST_GOLD_PRIEST_MASTER))
 			{
 				// Send failure message
 				SendSay(-1, -1, 9007);

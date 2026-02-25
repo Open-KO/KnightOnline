@@ -291,8 +291,7 @@ public:
 
 	/// \brief Attempts to remove all the items from the user in the input array
 	/// \return true when all items were successfully taken, false otherwise
-	bool CheckAndRobItems(
-		std::span<const int> itemIds, std::span<const int16_t> counts, int gold = 0);
+	bool CheckAndRobItems(std::span<const ItemPair> items, int gold = 0);
 
 	/// \brief Checks to see if a user has count number of itemIds
 	/// \return true when the user has count number of itemIds, false otherwise
@@ -306,7 +305,7 @@ public:
 
 	/// \brief Checks to see if a user has all the items in the input array
 	/// \return true when the user has all the items, false otherwise
-	bool CheckExistItemAnd(std::span<const int> itemIds, std::span<const int16_t> counts) const;
+	bool CheckExistItemAnd(std::span<const ItemPair> items) const;
 
 	bool CheckWeight(int itemid, int16_t count) const;
 	bool CheckSkillPoint(uint8_t skillnum, uint8_t min, uint8_t max) const;
