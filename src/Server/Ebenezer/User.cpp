@@ -13870,6 +13870,7 @@ void CUser::PromoteUser()
 
 	static constexpr ItemPair PRIEST_ITEMS[]  = { { ITEM_HOLY_WATER_OF_TEMPLE, 1 },
 		 { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
+	static constexpr int PRIEST_GOLD_REQ      = 10'000'000;
 
 	e_Class newClass                          = static_cast<e_Class>(m_pUserData->m_sClass + 1);
 
@@ -13924,7 +13925,7 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_SHAMAN:
 		case CLASS_EL_CLERIC:
-			if (!CheckAndRobItems(PRIEST_ITEMS, QUEST_GOLD_PRIEST_MASTER))
+			if (!CheckAndRobItems(PRIEST_ITEMS, PRIEST_GOLD_REQ))
 			{
 				// Send failure message
 				SendSay(-1, -1, 9007);

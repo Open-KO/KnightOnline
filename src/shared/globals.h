@@ -433,11 +433,6 @@ enum e_QuestItem : int
 	ITEM_OPAL                   = 389076000
 };
 
-enum e_QuestGold : int
-{
-	QUEST_GOLD_PRIEST_MASTER = 10000000
-};
-
 // These control neutrality-related settings client-side,
 // including whether collision is enabled for other players.
 enum e_ZoneAbilityType : uint8_t
