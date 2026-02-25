@@ -74,7 +74,7 @@ void CUIClassChange::Open(int iCode)
 
 	switch (iCode)
 	{
-		case N3_SP_CLASS_CHANGE_SUCCESS:
+		case CLASS_CHANGE_SUCCESS:
 			m_pText_Message->SetString(szSuccess);
 			m_pBtn_Class->SetVisible(true);
 			m_pBtn_Cancel->SetVisible(true);
@@ -121,17 +121,17 @@ void CUIClassChange::Open(int iCode)
 			}
 			break;
 
-		case N3_SP_CLASS_CHANGE_NOT_YET:
+		case CLASS_CHANGE_NOT_YET:
 			m_pText_Message->SetString(szNotYet);
 			m_pBtn_Ok->SetVisible(true);
 			break;
 
-		case N3_SP_CLASS_CHANGE_ALREADY:
+		case CLASS_CHANGE_ALREADY:
 			m_pText_Message->SetString(szAlready);
 			m_pBtn_Ok->SetVisible(true);
 			break;
 
-		case IDS_MSG_HASITEMINSLOT: // TODO: FIXME. This is not a valid subopcode!
+		case CLASS_CHANGE_ITEM_IN_SLOT: // TODO: FIXME. This is not a valid subopcode!
 			m_pText_Message->SetString(szItemInSlot);
 			m_pBtn_Ok->SetVisible(true);
 			break;
@@ -189,7 +189,7 @@ bool CUIClassChange::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 			uint8_t byBuff[4];
 			int iOffset = 0;
 			CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_CLASS_CHANGE);
-			CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_CHANGE_REQ);
+			CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_CHANGE_RESULT);
 			CAPISocket::MP_AddShort(byBuff, iOffset, (int16_t) pInfoBase->eClass);
 			CGameProcedure::s_pSocket->Send(byBuff, iOffset);
 

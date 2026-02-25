@@ -7021,35 +7021,34 @@ void CUser::UpdateGameWeather(char* pBuf, uint8_t type)
 
 void CUser::ClassChange(char* pBuf)
 {
-	int index = 0, classcode = 0, sendIndex = 0, classChangeOpCode = 0, sub_type = 0, money = 0;
+	int index = 0, sendIndex = 0, classChangeOpCode = 0, sub_type = 0, money = 0;
 	char sendBuffer[128] {};
-	bool bSuccess     = false;
 
 	classChangeOpCode = GetByte(pBuf, index);
 
 	// 전직요청
-	if (classChangeOpCode == CLASS_CHANGE_REQ)
+	if (classChangeOpCode == CLASS_CHANGE_STATUS_REQ)
 	{
 		ClassChangeReq();
 		return;
 	}
 
 	// 포인트 초기화
-	if (classChangeOpCode == ALL_POINT_CHANGE)
+	if (classChangeOpCode == CLASS_RESET_STAT_REQ)
 	{
 		AllPointChange();
 		return;
 	}
 
 	// 스킬 초기화
-	if (classChangeOpCode == ALL_SKILLPT_CHANGE)
+	if (classChangeOpCode == CLASS_RESET_SKILL_REQ)
 	{
 		AllSkillPointChange();
 		return;
 	}
 
 	// 포인트 & 스킬 초기화에 돈이 얼마인지를 묻는 서브 패킷
-	if (classChangeOpCode == CHANGE_MONEY_REQ)
+	if (classChangeOpCode == CLASS_RESET_COST_REQ)
 	{
 		sub_type = GetByte(pBuf, index);
 
@@ -7084,7 +7083,7 @@ void CUser::ClassChange(char* pBuf)
 			}
 
 			SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-			SetByte(sendBuffer, CHANGE_MONEY_REQ, sendIndex);
+			SetByte(sendBuffer, CLASS_RESET_COST_REQ, sendIndex);
 			SetDWORD(sendBuffer, money, sendIndex);
 			Send(sendBuffer, sendIndex);
 		}
@@ -7109,114 +7108,114 @@ void CUser::ClassChange(char* pBuf)
 			}
 
 			SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-			SetByte(sendBuffer, CHANGE_MONEY_REQ, sendIndex);
+			SetByte(sendBuffer, CLASS_RESET_COST_REQ, sendIndex);
 			SetDWORD(sendBuffer, money, sendIndex);
 			Send(sendBuffer, sendIndex);
 		}
-
-		return;
 	}
+}
 
-	classcode = GetByte(pBuf, index);
-
+bool CUser::HandlePromotion(e_Class newClassId)
+{
+	bool isSuccess = false;
 	switch (m_pUserData->m_sClass)
 	{
 		case CLASS_KA_WARRIOR:
-			if (classcode == CLASS_KA_BERSERKER)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_BERSERKER)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_BERSERKER:
-			if (classcode == CLASS_KA_GUARDIAN)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_GUARDIAN)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_ROGUE:
-			if (classcode == CLASS_KA_HUNTER)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_HUNTER)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_HUNTER:
-			if (classcode == CLASS_KA_PENETRATOR)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_PENETRATOR)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_WIZARD:
-			if (classcode == CLASS_KA_SORCERER)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_SORCERER)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_SORCERER:
-			if (classcode == CLASS_KA_NECROMANCER)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_NECROMANCER)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_PRIEST:
-			if (classcode == CLASS_KA_SHAMAN)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_SHAMAN)
+				isSuccess = true;
 			break;
 
 		case CLASS_KA_SHAMAN:
-			if (classcode == CLASS_KA_DARKPRIEST)
-				bSuccess = true;
+			if (newClassId == CLASS_KA_DARKPRIEST)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_WARRIOR:
-			if (classcode == CLASS_EL_BLADE)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_BLADE)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_BLADE:
-			if (classcode == CLASS_EL_PROTECTOR)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_PROTECTOR)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_ROGUE:
-			if (classcode == CLASS_EL_RANGER)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_RANGER)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_RANGER:
-			if (classcode == CLASS_EL_ASSASSIN)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_ASSASSIN)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_WIZARD:
-			if (classcode == CLASS_EL_MAGE)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_MAGE)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_MAGE:
-			if (classcode == CLASS_EL_ENCHANTER)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_ENCHANTER)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_PRIEST:
-			if (classcode == CLASS_EL_CLERIC)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_CLERIC)
+				isSuccess = true;
 			break;
 
 		case CLASS_EL_CLERIC:
-			if (classcode == CLASS_EL_DRUID)
-				bSuccess = true;
+			if (newClassId == CLASS_EL_DRUID)
+				isSuccess = true;
 			break;
 
 		default:
 			break;
 	}
 
-	memset(sendBuffer, 0, sizeof(sendBuffer));
-	sendIndex = 0;
-	if (!bSuccess)
+	char sendBuffer[128] {};
+	int sendIndex = 0;
+	if (!isSuccess)
 	{
 		SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
 		SetByte(sendBuffer, CLASS_CHANGE_RESULT, sendIndex);
-		SetByte(sendBuffer, 0, sendIndex);
+		SetByte(sendBuffer, CLASS_CHANGE_FAILURE, sendIndex);
 		Send(sendBuffer, sendIndex);
 	}
 	else
 	{
-		m_pUserData->m_sClass = classcode;
+		m_pUserData->m_sClass = newClassId;
 
 		if (m_sPartyIndex != -1)
 		{
@@ -7227,6 +7226,8 @@ void CUser::ClassChange(char* pBuf)
 			m_pMain->Send_PartyMember(m_sPartyIndex, sendBuffer, sendIndex);
 		}
 	}
+
+	return isSuccess;
 }
 
 bool CUser::ItemEquipAvailable(const model::Item* pTable) const
@@ -9158,11 +9159,11 @@ void CUser::ClassChangeReq()
 	SetByte(sendBuffer, CLASS_CHANGE_RESULT, sendIndex);
 
 	if (m_pUserData->m_bLevel < 10)
-		SetByte(sendBuffer, 2, sendIndex);
+		SetByte(sendBuffer, CLASS_CHANGE_NOT_YET, sendIndex);
 	else if ((m_pUserData->m_sClass % 100) > 4)
-		SetByte(sendBuffer, 3, sendIndex);
+		SetByte(sendBuffer, CLASS_CHANGE_ALREADY, sendIndex);
 	else
-		SetByte(sendBuffer, 1, sendIndex);
+		SetByte(sendBuffer, CLASS_CHANGE_SUCCESS, sendIndex);
 	Send(sendBuffer, sendIndex);
 }
 
@@ -9170,7 +9171,7 @@ void CUser::AllSkillPointChange()
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
 	int sendIndex = 0, skill_point = 0, money = 0, i = 0, j = 0, temp_value = 0;
-	uint8_t type = 0; // 0:돈이 부족, 1:성공, 2:초기화할 스킬이 없을때..
+	e_ClassChangeResult result = CLASS_CHANGE_FAILURE;
 	char sendBuffer[128] {};
 
 	temp_value = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
@@ -9218,7 +9219,7 @@ void CUser::AllSkillPointChange()
 
 	if (skill_point <= 0)
 	{
-		type = 2;
+		result = CLASS_CHANGE_NOT_YET;
 		goto fail_return;
 	}
 
@@ -9228,11 +9229,11 @@ void CUser::AllSkillPointChange()
 	for (j = 1; j < 9; j++)
 		m_pUserData->m_bstrSkill[j] = 0;
 	m_pUserData->m_iGold = money;
-	type                 = 1;
+	result               = CLASS_CHANGE_SUCCESS;
 
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, ALL_SKILLPT_CHANGE, sendIndex);
-	SetByte(sendBuffer, type, sendIndex);
+	SetByte(sendBuffer, CLASS_RESET_SKILL_REQ, sendIndex);
+	SetByte(sendBuffer, result, sendIndex);
 	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
 	SetByte(sendBuffer, m_pUserData->m_bstrSkill[0], sendIndex);
 	Send(sendBuffer, sendIndex);
@@ -9240,8 +9241,8 @@ void CUser::AllSkillPointChange()
 
 fail_return:
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, ALL_SKILLPT_CHANGE, sendIndex);
-	SetByte(sendBuffer, type, sendIndex);
+	SetByte(sendBuffer, CLASS_RESET_SKILL_REQ, sendIndex);
+	SetByte(sendBuffer, result, sendIndex);
 	SetDWORD(sendBuffer, temp_value, sendIndex);
 	Send(sendBuffer, sendIndex);
 }
@@ -9250,7 +9251,7 @@ void CUser::AllPointChange()
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
 	int sendIndex = 0, money = 0, temp_money = 0;
-	uint8_t type = 0;
+	e_ClassChangeResult result = CLASS_CHANGE_FAILURE;
 	char sendBuffer[128] {};
 	int i = 0;
 
@@ -9288,7 +9289,7 @@ void CUser::AllPointChange()
 	{
 		if (m_pUserData->m_sItemArray[i].nNum != 0)
 		{
-			type = 0x04;
+			result = CLASS_CHANGE_ITEM_IN_SLOT;
 			goto fail_return;
 		}
 	}
@@ -9300,7 +9301,7 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				type = 2;
+				result = CLASS_CHANGE_NOT_YET;
 				goto fail_return;
 			}
 
@@ -9315,7 +9316,7 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				type = 2;
+				result = CLASS_CHANGE_NOT_YET;
 				goto fail_return;
 			}
 
@@ -9330,7 +9331,7 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				type = 2;
+				result = CLASS_CHANGE_NOT_YET;
 				goto fail_return;
 			}
 
@@ -9345,7 +9346,7 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				type = 2;
+				result = CLASS_CHANGE_NOT_YET;
 				goto fail_return;
 			}
 
@@ -9360,7 +9361,7 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 60 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				type = 2;
+				result = CLASS_CHANGE_NOT_YET;
 				goto fail_return;
 			}
 
@@ -9375,7 +9376,7 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				type = 2;
+				result = CLASS_CHANGE_NOT_YET;
 				goto fail_return;
 			}
 
@@ -9390,7 +9391,7 @@ void CUser::AllPointChange()
 			spdlog::error(
 				"User::AllPointChange: Unhandled race {} [accountName={} characterName={}]",
 				m_pUserData->m_bRace, m_strAccountID, m_pUserData->m_id);
-			type = 2;
+			result = CLASS_CHANGE_NOT_YET;
 			goto fail_return;
 	}
 
@@ -9400,10 +9401,10 @@ void CUser::AllPointChange()
 	SetUserAbility();
 	Send2AI_UserUpdateInfo();
 
-	type = 1;
+	result = CLASS_CHANGE_SUCCESS;
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, ALL_POINT_CHANGE, sendIndex);
-	SetByte(sendBuffer, type, sendIndex);
+	SetByte(sendBuffer, CLASS_RESET_STAT_REQ, sendIndex);
+	SetByte(sendBuffer, result, sendIndex);
 	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
 	SetShort(sendBuffer, m_pUserData->m_bStr, sendIndex);
 	SetShort(sendBuffer, m_pUserData->m_bSta, sendIndex);
@@ -9419,8 +9420,8 @@ void CUser::AllPointChange()
 
 fail_return:
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, ALL_POINT_CHANGE, sendIndex);
-	SetByte(sendBuffer, type, sendIndex);
+	SetByte(sendBuffer, CLASS_RESET_STAT_REQ, sendIndex);
+	SetByte(sendBuffer, result, sendIndex);
 	SetDWORD(sendBuffer, temp_money, sendIndex);
 	Send(sendBuffer, sendIndex);
 }
@@ -13854,16 +13855,12 @@ void CUser::PromoteUserNovice()
 	char sendBuffer[128] {};
 	int sendIndex = 0;
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, NOVICE_CLASS_CHANGE_REQ, sendIndex);
+	SetByte(sendBuffer, CLASS_PROMOTION_REQ, sendIndex);
 	SetShort(sendBuffer, newClass, sendIndex);
 	SetShort(sendBuffer, _socketId, sendIndex);
 	m_pMain->Send_Region(sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
 
-	memset(sendBuffer, 0, sizeof(sendBuffer));
-	sendIndex = 0;
-	SetByte(sendBuffer, CLASS_CHANGE_RESULT, sendIndex);
-	SetByte(sendBuffer, newClass, sendIndex);
-	ClassChange(sendBuffer);
+	HandlePromotion(static_cast<e_Class>(newClass));
 
 	// Refresh Knights list
 	memset(sendBuffer, 0, sizeof(sendBuffer));
@@ -13874,11 +13871,27 @@ void CUser::PromoteUserNovice()
 
 void CUser::PromoteUser()
 {
+	// item requirement lists
+	static constexpr int WARRIOR_ITEM_IDS[6]        = { ITEM_LOBO_PENDANT, ITEM_LUPUS_PENDANT,
+			   ITEM_LYCAON_PENDANT, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
+	static constexpr int16_t WARRIOR_ITEM_COUNTS[6] = { 1, 1, 1, 10, 10, 10 };
+	static constexpr int ROGUE_ITEM_IDS[7]          = { ITEM_TAIL_OF_SHAULA, ITEM_TAIL_OF_LESATH,
+				 ITEM_BLOOD_OF_GLYPTODONT, ITEM_FANG_OF_BAKIRRA, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL,
+				 ITEM_OPAL };
+	static constexpr int16_t ROGUE_ITEM_COUNTS[7]   = { 1, 1, 10, 1, 10, 10, 10 };
+	static constexpr int MAGE_ITEM_IDS[9] = { ITEM_KEKURI_RING, ITEM_GAVOLT_WING, ITEM_ZOMBIE_EYE,
+		ITEM_CURSED_BONE, ITEM_FEATHER_OF_HARPY_QUEEN, ITEM_BLOOD_OF_GLYPTODONT,
+		ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
+	static constexpr int16_t MAGE_ITEM_COUNTS[9] = { 1, 50, 50, 1, 1, 10, 10, 10, 10 };
+	static constexpr int PRIEST_ITEM_IDS[4]      = { ITEM_HOLY_WATER_OF_TEMPLE, ITEM_CRUDE_SAPPHIRE,
+			 ITEM_CRYSTAL, ITEM_OPAL };
+	static constexpr int16_t PRIEST_ITEM_COUNTS[4] = { 1, 10, 10, 10 };
+
 	// Make sure user level is appropriate for current promotion
 	if (!CheckPromotionEligible())
 		return;
 
-	uint8_t newClass       = static_cast<uint8_t>(m_pUserData->m_sClass + 1);
+	e_Class newClass       = static_cast<e_Class>(m_pUserData->m_sClass + 1);
 	int16_t successMessage = -1;
 	e_QuestId masterQuest  = QUEST_MIN_ID;
 
@@ -13886,9 +13899,6 @@ void CUser::PromoteUser()
 	{
 		case CLASS_EL_BLADE:
 		case CLASS_KA_BERSERKER:
-			static constexpr int WARRIOR_ITEM_IDS[6] = { ITEM_LOBO_PENDANT, ITEM_LUPUS_PENDANT,
-				ITEM_LYCAON_PENDANT, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
-			static constexpr int16_t WARRIOR_ITEM_COUNTS[6] = { 1, 1, 1, 10, 10, 10 };
 			if (!CheckAndRobItems(WARRIOR_ITEM_IDS, WARRIOR_ITEM_COUNTS))
 			{
 				// Send failure message - missing items
@@ -13902,10 +13912,6 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_HUNTER:
 		case CLASS_EL_RANGER:
-			static constexpr int ROGUE_ITEM_IDS[7] = { ITEM_TAIL_OF_SHAULA, ITEM_TAIL_OF_LESATH,
-				ITEM_BLOOD_OF_GLYPTODONT, ITEM_FANG_OF_BAKIRRA, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL,
-				ITEM_OPAL };
-			static constexpr int16_t ROGUE_ITEM_COUNTS[7] = { 1, 1, 10, 1, 10, 10, 10 };
 			if (!CheckAndRobItems(ROGUE_ITEM_IDS, ROGUE_ITEM_COUNTS))
 			{
 				// Send failure message
@@ -13919,10 +13925,6 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_SORCERER:
 		case CLASS_EL_MAGE:
-			static constexpr int MAGE_ITEM_IDS[9]        = { ITEM_KEKURI_RING, ITEM_GAVOLT_WING,
-					   ITEM_ZOMBIE_EYE, ITEM_CURSED_BONE, ITEM_FEATHER_OF_HARPY_QUEEN,
-					   ITEM_BLOOD_OF_GLYPTODONT, ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
-			static constexpr int16_t MAGE_ITEM_COUNTS[9] = { 1, 50, 50, 1, 1, 10, 10, 10, 10 };
 			if (!CheckAndRobItems(MAGE_ITEM_IDS, MAGE_ITEM_COUNTS))
 			{
 				// Send failure message
@@ -13936,9 +13938,6 @@ void CUser::PromoteUser()
 
 		case CLASS_KA_SHAMAN:
 		case CLASS_EL_CLERIC:
-			static constexpr int PRIEST_ITEM_IDS[4]        = { ITEM_HOLY_WATER_OF_TEMPLE,
-					   ITEM_CRUDE_SAPPHIRE, ITEM_CRYSTAL, ITEM_OPAL };
-			static constexpr int16_t PRIEST_ITEM_COUNTS[4] = { 1, 10, 10, 10 };
 			if (!CheckAndRobItems(PRIEST_ITEM_IDS, PRIEST_ITEM_COUNTS, QUEST_GOLD_PRIEST_MASTER))
 			{
 				// Send failure message
@@ -13989,16 +13988,12 @@ void CUser::PromoteUser()
 	char sendBuffer[128] {};
 	int sendIndex = 0;
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-	SetByte(sendBuffer, NOVICE_CLASS_CHANGE_REQ, sendIndex);
+	SetByte(sendBuffer, CLASS_PROMOTION_REQ, sendIndex);
 	SetShort(sendBuffer, newClass, sendIndex);
 	SetShort(sendBuffer, _socketId, sendIndex);
 	m_pMain->Send_Region(sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
 
-	memset(sendBuffer, 0, sizeof(sendBuffer));
-	sendIndex = 0;
-	SetByte(sendBuffer, CLASS_CHANGE_RESULT, sendIndex);
-	SetByte(sendBuffer, newClass, sendIndex);
-	ClassChange(sendBuffer);
+	HandlePromotion(newClass);
 
 	// Refresh Knights list
 	memset(sendBuffer, 0, sizeof(sendBuffer));

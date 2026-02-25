@@ -391,6 +391,12 @@ public:
 	void ChatTargetSelect(char* pBuf);
 	bool ItemEquipAvailable(const model::Item* pTable) const;
 	void ClassChange(char* pBuf);
+
+	/// \brief Validates that the newClassId is valid promotion path from the current classId, then
+	/// updates the user's class and broadcasts any required packets
+	/// \return true when the user's class was changed, otherwise false
+	bool HandlePromotion(e_Class newClassId);
+
 	void MSpChange(int amount);
 	void UpdateGameWeather(char* pBuf, uint8_t type);
 	void ObjectEvent(char* pBuf);

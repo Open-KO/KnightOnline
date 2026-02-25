@@ -97,25 +97,6 @@ enum e_SubPacket_Magic : uint8_t
 };
 
 // Sub Packet..
-enum e_SubPacket_ClassChange_Main : uint8_t
-{
-	N3_SP_CLASS_CHANGE_PURE              = 0x01, // Class Change Real..
-	N3_SP_CLASS_CHANGE_REQ               = 0x02, // Class Change Req..
-	N3_SP_CLASS_ALL_POINT                = 0x03, // Class Change All Point..
-	N3_SP_CLASS_SKILL_POINT              = 0x04,
-	N3_SP_CLASS_POINT_CHANGE_PRICE_QUERY = 0x05,
-	N3_SP_CLASS_PROMOTION                = 0x06
-};
-
-enum e_SubPacket_ClassChange : uint8_t
-{
-	N3_SP_CLASS_CHANGE_SUCCESS      = 0x01, // Success..
-	N3_SP_CLASS_CHANGE_NOT_YET      = 0x02, // Not yet..
-	N3_SP_CLASS_CHANGE_ALREADY      = 0x03, // Already..
-	N3_SP_CLASS_CHANGE_ITEM_IN_SLOT = 0x04, // Item in Slot..
-	N3_SP_CLASS_CHANGE_FAILURE      = 0x00  // Failure..
-};
-
 enum e_SubPacket_Knights : uint8_t
 {
 	N3_SP_KNIGHTS_CREATE             = 0x01, // 생성 Send - s1(Name Length) str1 | Recv - b1(1:성공 0:실패)

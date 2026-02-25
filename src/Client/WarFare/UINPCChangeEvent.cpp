@@ -128,7 +128,7 @@ void CUINPCChangeEvent::PointChangePriceQuery(bool bAllPoint)
 	uint8_t byBuff[32];
 	int iOffset = 0;
 	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_CLASS_CHANGE);
-	CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_POINT_CHANGE_PRICE_QUERY);
+	CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_RESET_COST_REQ);
 	if (bAllPoint)
 		CAPISocket::MP_AddByte(byBuff, iOffset, 1);
 	else

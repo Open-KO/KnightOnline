@@ -497,12 +497,21 @@ enum e_WarehouseOpcode : uint8_t
 ////////////////////////////////////////////////////////////////
 enum e_ClassChangeOpcode : uint8_t
 {
-	CLASS_CHANGE_REQ        = 0x01,
+	CLASS_CHANGE_STATUS_REQ = 0x01,
 	CLASS_CHANGE_RESULT     = 0x02,
-	ALL_POINT_CHANGE        = 0x03,
-	ALL_SKILLPT_CHANGE      = 0x04,
-	CHANGE_MONEY_REQ        = 0x05,
-	NOVICE_CLASS_CHANGE_REQ = 0x06
+	CLASS_RESET_STAT_REQ    = 0x03,
+	CLASS_RESET_SKILL_REQ   = 0x04,
+	CLASS_RESET_COST_REQ    = 0x05,
+	CLASS_PROMOTION_REQ     = 0x06
+};
+
+enum e_ClassChangeResult : uint8_t
+{
+	CLASS_CHANGE_SUCCESS      = 0x01, // Success..
+	CLASS_CHANGE_NOT_YET      = 0x02, // Not yet..
+	CLASS_CHANGE_ALREADY      = 0x03, // Already..
+	CLASS_CHANGE_ITEM_IN_SLOT = 0x04, // Item in Slot..
+	CLASS_CHANGE_FAILURE      = 0x00  // Failure..
 };
 
 ////////////////////////////////////////////////////////////////

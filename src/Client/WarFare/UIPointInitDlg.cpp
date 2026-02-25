@@ -79,9 +79,9 @@ void CUIPointInitDlg::PushOkButton()
 	CAPISocket::MP_AddByte(byBuff, iOffset, WIZ_CLASS_CHANGE);
 
 	if (m_bAllpoint)
-		CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_ALL_POINT);
+		CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_RESET_STAT_REQ);
 	else
-		CAPISocket::MP_AddByte(byBuff, iOffset, N3_SP_CLASS_SKILL_POINT);
+		CAPISocket::MP_AddByte(byBuff, iOffset, CLASS_RESET_SKILL_REQ);
 
 	CGameProcedure::s_pSocket->Send(byBuff, iOffset);
 }
