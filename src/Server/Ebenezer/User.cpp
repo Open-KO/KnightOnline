@@ -13880,7 +13880,7 @@ void CUser::PromoteUser()
 		return;
 
 	int16_t successMessage = -1;
-	e_QuestId masterQuest  = QUEST_MIN_ID;
+	e_QuestId masterQuest  = QUEST_INVALID;
 
 	switch (m_pUserData->m_sClass)
 	{
@@ -13943,6 +13943,7 @@ void CUser::PromoteUser()
 
 	// Send success message
 	SendSay(-1, -1, successMessage);
+
 	if (!SaveEvent(masterQuest, QUEST_STATE_COMPLETE))
 	{
 		spdlog::debug("User::PromoteUser: Failed to save quest [charId={} questId={}]",
@@ -13968,47 +13969,46 @@ void CUser::PromoteUser()
 
 bool CUser::SaveEvent(e_QuestId questId, e_QuestState questState)
 {
-	int questIndex = 0;
-
 	// invalid questId
-	if (questId <= QUEST_MIN_ID || questId > QUEST_MAX_ID)
+	if (questId < QUEST_MIN_ID || questId > QUEST_MAX_ID)
 	{
 		spdlog::debug("User::SaveEvent: Tried to save invalid quest [charId={} questId={}].",
 			m_pUserData->m_id, static_cast<int16_t>(questId));
 		return false;
 	}
 
-	int openSlot    = -1;
-	bool isNewQuest = true;
-	for (_USER_QUEST& quest : m_pUserData->m_quests)
+	int questIndex = -1, openSlotIndex = -1;
+	bool questExists = false;
+	for (int currentQuestIndex = 0; currentQuestIndex < MAX_QUEST; currentQuestIndex++)
 	{
+		_USER_QUEST& quest = m_pUserData->m_quests[currentQuestIndex];
 		if (quest.sQuestID == questId)
 		{
 			// quest found, stop loop
-			isNewQuest = false;
+			questExists = true;
+			questIndex  = currentQuestIndex;
 			break;
 		}
 
 		// mark an open slot in case we need to write a new record
-		if ((quest.sQuestID <= QUEST_MIN_ID || quest.sQuestID > QUEST_MAX_ID) && openSlot == -1)
-		{
-			openSlot = questIndex;
-		}
+		if (openSlotIndex == -1 && (quest.sQuestID < QUEST_MIN_ID || quest.sQuestID > QUEST_MAX_ID))
+			openSlotIndex = currentQuestIndex;
+	}
 
+	if (!questExists)
+	{
 		// walked off the end of the list without finding an open slot or
 		// the requested quest
-		if (++questIndex >= MAX_QUEST && openSlot == -1)
+		if (openSlotIndex == -1)
 		{
 			spdlog::debug("User::SaveEvent: Quest log full, couldn't save [charId={} questId={}].",
 				m_pUserData->m_id, static_cast<int16_t>(questId));
 			return false;
 		}
-	}
 
-	// if we walked off the end of the list but earmarked an open slot, use it
-	if (questIndex >= MAX_QUEST && openSlot != -1)
-	{
-		questIndex = openSlot;
+		// if we walked off the end of the list but earmarked an open slot, use it
+		if (openSlotIndex != -1)
+			questIndex = openSlotIndex;
 	}
 
 	// sanity check bounds
@@ -14022,15 +14022,14 @@ bool CUser::SaveEvent(e_QuestId questId, e_QuestState questState)
 
 	m_pUserData->m_quests[questIndex].sQuestID     = questId;
 	m_pUserData->m_quests[questIndex].byQuestState = questState;
-	if (isNewQuest)
-	{
+
+	if (!questExists)
 		++m_pUserData->m_sQuestCount;
-	}
 
 	if (questId >= QUEST_WARRIOR_70_QUEST && questId <= QUEST_PRIEST_70_QUEST)
 	{
-		char sendBuff[256] {};
 		int sendIndex = 0;
+		char sendBuff[32] {};
 		SetByte(sendBuff, WIZ_QUEST, sendIndex);
 		SetByte(sendBuff, QUEST_UPDATE, sendIndex);
 		SetShort(sendBuff, static_cast<int16_t>(questId), sendIndex);

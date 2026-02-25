@@ -314,7 +314,7 @@ bool CDBAgent::LoadUserData(const char* accountId, const char* charId, int userI
 			continue;
 		}
 
-		if (quest.sQuestID > QUEST_MIN_ID)
+		if (quest.sQuestID >= QUEST_MIN_ID)
 			++sQuestTotal;
 	}
 
@@ -415,7 +415,7 @@ bool CDBAgent::UpdateUser(const char* charId, int userId, int updateType)
 		}
 		else
 		{
-			if (quest.sQuestID > QUEST_MIN_ID)
+			if (quest.sQuestID >= QUEST_MIN_ID)
 				++questTotal;
 		}
 

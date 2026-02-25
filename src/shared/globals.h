@@ -359,7 +359,8 @@ enum e_ObjectType : int8_t
 
 enum e_QuestId : int16_t
 {
-	QUEST_MIN_ID                         = 0,
+	QUEST_INVALID                        = -1,
+	QUEST_MIN_ID                         = 1,
 	QUEST_MASTER_WARRIOR                 = 1,
 	QUEST_MASTER_ROGUE                   = 2,
 	QUEST_MASTER_MAGE                    = 3,
