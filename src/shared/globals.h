@@ -431,7 +431,8 @@ enum e_QuestItem : int
 	ITEM_LYCAON_PENDANT         = 320410013,
 	ITEM_CRUDE_SAPPHIRE         = 389074000,
 	ITEM_CRYSTAL                = 389075000,
-	ITEM_OPAL                   = 389076000
+	ITEM_OPAL                   = 389076000,
+	ITEM_REDISTRIBUTION         = 700001000
 };
 
 // These control neutrality-related settings client-side,

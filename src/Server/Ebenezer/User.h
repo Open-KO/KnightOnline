@@ -360,14 +360,14 @@ public:
 	void AllSkillPointChange(bool isFree = false);
 
 	/// \brief Sends an error response for a failed skill point reset
-	void SendResetSkillError(e_ClassChangeResult errorCode, int cost);
+	void SendResetSkillError(e_ClassChangeResult errorCode, int cost, bool isFree);
 
 	/// \brief Attempts to perform a stat point reset
 	/// \param isFree set to true to bypass cost calculation/charge
 	void AllStatPointChange(bool isFree = false);
 
 	/// \brief Sends an error response for a failed stat point reset
-	void SendResetStatError(e_ClassChangeResult errorCode, int cost);
+	void SendResetStatError(e_ClassChangeResult errorCode, int cost, bool isFree);
 
 	/// \brief Sends novice promotion eligibility status
 	void ClassChangeReq();
