@@ -7115,119 +7115,96 @@ void CUser::ClassChange(char* pBuf)
 	}
 }
 
-bool CUser::HandlePromotion(e_Class newClassId)
+bool CUser::ValidatePromotion(e_Class newClassId)
 {
-	bool isSuccess = false;
 	switch (m_pUserData->m_sClass)
 	{
 		case CLASS_KA_WARRIOR:
 			if (newClassId == CLASS_KA_BERSERKER)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_BERSERKER:
 			if (newClassId == CLASS_KA_GUARDIAN)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_ROGUE:
 			if (newClassId == CLASS_KA_HUNTER)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_HUNTER:
 			if (newClassId == CLASS_KA_PENETRATOR)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_WIZARD:
 			if (newClassId == CLASS_KA_SORCERER)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_SORCERER:
 			if (newClassId == CLASS_KA_NECROMANCER)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_PRIEST:
 			if (newClassId == CLASS_KA_SHAMAN)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_KA_SHAMAN:
 			if (newClassId == CLASS_KA_DARKPRIEST)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_WARRIOR:
 			if (newClassId == CLASS_EL_BLADE)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_BLADE:
 			if (newClassId == CLASS_EL_PROTECTOR)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_ROGUE:
 			if (newClassId == CLASS_EL_RANGER)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_RANGER:
 			if (newClassId == CLASS_EL_ASSASSIN)
-				isSuccess = true;
-			break;
+				return true;
+			;
 
 		case CLASS_EL_WIZARD:
 			if (newClassId == CLASS_EL_MAGE)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_MAGE:
 			if (newClassId == CLASS_EL_ENCHANTER)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_PRIEST:
 			if (newClassId == CLASS_EL_CLERIC)
-				isSuccess = true;
-			break;
+				return true;
 
 		case CLASS_EL_CLERIC:
 			if (newClassId == CLASS_EL_DRUID)
-				isSuccess = true;
-			break;
+				return true;
 
 		default:
 			break;
 	}
 
-	char sendBuffer[128] {};
-	int sendIndex = 0;
-	if (!isSuccess)
-	{
-		SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
-		SetByte(sendBuffer, CLASS_CHANGE_RESULT, sendIndex);
-		SetByte(sendBuffer, CLASS_CHANGE_FAILURE, sendIndex);
-		Send(sendBuffer, sendIndex);
-	}
-	else
-	{
-		m_pUserData->m_sClass = newClassId;
+	return false;
+}
 
-		if (m_sPartyIndex != -1)
-		{
-			SetByte(sendBuffer, WIZ_PARTY, sendIndex);
-			SetByte(sendBuffer, PARTY_CLASSCHANGE, sendIndex);
-			SetShort(sendBuffer, _socketId, sendIndex);
-			SetShort(sendBuffer, m_pUserData->m_sClass, sendIndex);
-			m_pMain->Send_PartyMember(m_sPartyIndex, sendBuffer, sendIndex);
-		}
-	}
+void CUser::HandlePromotion(e_Class newClassId)
+{
+	m_pUserData->m_sClass = newClassId;
 
-	return isSuccess;
+	if (m_sPartyIndex != -1)
+	{
+		char sendBuffer[128] {};
+		int sendIndex = 0;
+		SetByte(sendBuffer, WIZ_PARTY, sendIndex);
+		SetByte(sendBuffer, PARTY_CLASSCHANGE, sendIndex);
+		SetShort(sendBuffer, _socketId, sendIndex);
+		SetShort(sendBuffer, m_pUserData->m_sClass, sendIndex);
+		m_pMain->Send_PartyMember(m_sPartyIndex, sendBuffer, sendIndex);
+	}
 }
 
 bool CUser::ItemEquipAvailable(const model::Item* pTable) const
@@ -12351,38 +12328,31 @@ bool CUser::CheckPromotionEligible()
 	if (npc == nullptr)
 		return false;
 
-	if (CheckClass(
-			CLASS_KA_GUARDIAN, CLASS_KA_PENETRATOR, CLASS_KA_NECROMANCER, CLASS_KA_DARKPRIEST)
-		|| CheckClass(CLASS_EL_PROTECTOR, CLASS_EL_ASSASSIN, CLASS_EL_ENCHANTER, CLASS_EL_DRUID))
+	// Here we return that the user is already mastered
+	switch (m_pUserData->m_sClass)
 	{
-		// Here we return that the user is already mastered
-		switch (m_pUserData->m_sClass)
-		{
-			case CLASS_EL_PROTECTOR:
-			case CLASS_KA_GUARDIAN:
-				SendSay(-1, -1, 6006);
-				break;
+		case CLASS_EL_PROTECTOR:
+		case CLASS_KA_GUARDIAN:
+			SendSay(-1, -1, 6006);
+			return false;
 
-			case CLASS_EL_ASSASSIN:
-			case CLASS_KA_PENETRATOR:
-				SendSay(-1, -1, 7006);
-				break;
+		case CLASS_EL_ASSASSIN:
+		case CLASS_KA_PENETRATOR:
+			SendSay(-1, -1, 7006);
+			return false;
 
-			case CLASS_EL_ENCHANTER:
-			case CLASS_KA_NECROMANCER:
-				SendSay(-1, -1, 8006);
-				break;
+		case CLASS_EL_ENCHANTER:
+		case CLASS_KA_NECROMANCER:
+			SendSay(-1, -1, 8006);
+			return false;
 
-			case CLASS_EL_DRUID:
-			case CLASS_KA_DARKPRIEST:
-				SendSay(-1, -1, 9006);
-				break;
+		case CLASS_EL_DRUID:
+		case CLASS_KA_DARKPRIEST:
+			SendSay(-1, -1, 9006);
+			return false;
 
-			default:
-				break;
-		}
-
-		return false;
+		default:
+			break;
 	}
 
 	constexpr int MASTER_LVL = 60;
@@ -13845,6 +13815,11 @@ void CUser::PromoteUserNovice()
 			return;
 	}
 
+	if (!ValidatePromotion(static_cast<e_Class>(newClass)))
+	{
+		return;
+	}
+
 	char sendBuffer[128] {};
 	int sendIndex = 0;
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
@@ -13881,11 +13856,13 @@ void CUser::PromoteUser()
 	static constexpr ItemPair PRIEST_ITEMS[]  = { { ITEM_HOLY_WATER_OF_TEMPLE, 1 },
 		 { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
 
-	// Make sure user level is appropriate for current promotion
-	if (!CheckPromotionEligible())
+	e_Class newClass                          = static_cast<e_Class>(m_pUserData->m_sClass + 1);
+
+	// Make sure user level is appropriate for current promotion and that
+	// the new class is a valid promotion path
+	if (!CheckPromotionEligible() || !ValidatePromotion(newClass))
 		return;
 
-	e_Class newClass       = static_cast<e_Class>(m_pUserData->m_sClass + 1);
 	int16_t successMessage = -1;
 	e_QuestId masterQuest  = QUEST_MIN_ID;
 
@@ -13943,40 +13920,17 @@ void CUser::PromoteUser()
 			masterQuest    = QUEST_MASTER_PRIEST;
 			break;
 
-		case CLASS_KA_GUARDIAN:
-		case CLASS_EL_PROTECTOR:
-			SendSay(-1, -1, 6006);
-			return;
-
-		case CLASS_KA_PENETRATOR:
-		case CLASS_EL_ASSASSIN:
-			SendSay(-1, -1, 7006);
-			return;
-
-		case CLASS_KA_NECROMANCER:
-		case CLASS_EL_ENCHANTER:
-			SendSay(-1, -1, 8006);
-			return;
-
-		case CLASS_KA_DARKPRIEST:
-		case CLASS_EL_DRUID:
-			SendSay(-1, -1, 9006);
-			return;
-
 		default:
 			// invalid input
 			return;
 	}
 
-	if (!CheckClass(newClass))
+	// Send success message
+	SendSay(-1, -1, successMessage);
+	if (!SaveEvent(masterQuest, QUEST_STATE_COMPLETE))
 	{
-		// Send success message
-		SendSay(-1, -1, successMessage);
-		if (!SaveEvent(masterQuest, QUEST_STATE_COMPLETE))
-		{
-			spdlog::debug("User::PromoteUser: Failed to save quest [charId={} questId={}]",
-				m_pUserData->m_id, static_cast<int16_t>(masterQuest));
-		}
+		spdlog::debug("User::PromoteUser: Failed to save quest [charId={} questId={}]",
+			m_pUserData->m_id, static_cast<int16_t>(masterQuest));
 	}
 
 	char sendBuffer[128] {};
@@ -13999,7 +13953,6 @@ void CUser::PromoteUser()
 bool CUser::SaveEvent(e_QuestId questId, e_QuestState questState)
 {
 	int questIndex = 0;
-	int maxQuests  = sizeof(m_pUserData->m_quests) / sizeof(_USER_QUEST);
 
 	// invalid questId
 	if (questId <= QUEST_MIN_ID || questId > QUEST_MAX_ID)
@@ -14028,7 +13981,7 @@ bool CUser::SaveEvent(e_QuestId questId, e_QuestState questState)
 
 		// walked off the end of the list without finding an open slot or
 		// the requested quest
-		if (++questIndex >= maxQuests && openSlot == -1)
+		if (++questIndex >= MAX_QUEST && openSlot == -1)
 		{
 			spdlog::debug("User::SaveEvent: Quest log full, couldn't save [charId={} questId={}].",
 				m_pUserData->m_id, static_cast<int16_t>(questId));
@@ -14037,13 +13990,13 @@ bool CUser::SaveEvent(e_QuestId questId, e_QuestState questState)
 	}
 
 	// if we walked off the end of the list but earmarked an open slot, use it
-	if (questIndex >= maxQuests && openSlot != -1)
+	if (questIndex >= MAX_QUEST && openSlot != -1)
 	{
 		questIndex = openSlot;
 	}
 
 	// sanity check bounds
-	if (questIndex < 0 || questIndex > maxQuests)
+	if (questIndex < 0 || questIndex > MAX_QUEST)
 	{
 		spdlog::debug(
 			"User::SaveEvent: questIndex out of bounds [charId={} questIndex={} questId={}].",
