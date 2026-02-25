@@ -7043,7 +7043,7 @@ void CUser::ClassChange(char* pBuf)
 		// 포인트 & 스킬 초기화에 돈이 얼마인지를 묻는 서브 패킷
 		case CLASS_RESET_COST_REQ:
 		{
-			int sendIndex = 0, opcode = 0, sub_type = 0, money = 0;
+			int sendIndex = 0, sub_type = 0, money = 0;
 			char sendBuffer[128] {};
 
 			sub_type = GetByte(pBuf, index);
@@ -7054,9 +7054,9 @@ void CUser::ClassChange(char* pBuf)
 			if (m_pUserData->m_bLevel < 30)
 				money = static_cast<int>(money * 0.4);
 #if 0
-		else if (m_pUserData->m_bLevel >= 30
-			&& m_pUserData->m_bLevel < 60)
-			money = static_cast<int>(money * 1);
+			else if (m_pUserData->m_bLevel >= 30
+				&& m_pUserData->m_bLevel < 60)
+				money = static_cast<int>(money * 1);
 #endif
 			else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
 				money = static_cast<int>(money * 1.5);
