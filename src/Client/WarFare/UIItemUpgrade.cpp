@@ -790,14 +790,14 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 		|| m_pMyUpgradeInv[m_iUpgradeItemSlotInvPos] == nullptr)
 		return;
 
-	struct ItemPair
+	struct ItemPosPair
 	{
 		int ID     = 0;
 		int8_t Pos = -1;
 	};
 
 	uint8_t byBuff[512];
-	std::array<ItemPair, ANVIL_REQ_MAX> reqItems {};
+	std::array<ItemPosPair, ANVIL_REQ_MAX> reqItems {};
 	int iOffset = 0, iTotalSent = 0;
 
 	m_bUpgradeInProgress = true;
@@ -821,9 +821,9 @@ void CUIItemUpgrade::SendToServerUpgradeMsg()
 	}
 
 	std::sort(reqItems.begin(), reqItems.end(), //
-		[](const ItemPair& lhs, const ItemPair& rhs) { return lhs.ID > rhs.ID; });
+		[](const ItemPosPair& lhs, const ItemPosPair& rhs) { return lhs.ID > rhs.ID; });
 
-	for (const ItemPair& reqItem : reqItems)
+	for (const ItemPosPair& reqItem : reqItems)
 	{
 		CAPISocket::MP_AddDword(byBuff, iOffset, reqItem.ID);
 		CAPISocket::MP_AddByte(byBuff, iOffset, reqItem.Pos);
