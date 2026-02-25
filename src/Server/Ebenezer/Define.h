@@ -333,7 +333,7 @@ struct _REGION_BUFFER
 
 struct ItemPair
 {
-	int itemId;
+	int itemId    = -1;
 	int16_t count = 1;
 };
 
