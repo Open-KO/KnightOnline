@@ -333,8 +333,8 @@ struct _REGION_BUFFER
 
 struct ItemPair
 {
-	int itemId    = -1;
-	int16_t count = 1;
+	int ItemId    = -1;
+	int16_t Count = 1;
 };
 
 } // namespace Ebenezer

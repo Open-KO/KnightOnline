@@ -12130,16 +12130,17 @@ bool CUser::CheckExistItemAnd(int id1, int16_t count1, int id2, int16_t count2, 
 
 bool CUser::CheckExistItemAnd(const std::span<const ItemPair> items) const
 {
-	for (const ItemPair item : items)
+	for (const ItemPair& item : items)
 	{
-		if (item.itemId != -1 && !CheckExistItem(item.itemId, item.count))
+		if (item.ItemId != -1 && !CheckExistItem(item.ItemId, item.Count))
 		{
 			spdlog::debug(
 				"User::CheckExistItemAnd: User missing items [charId={} itemId={} count={}]",
-				m_pUserData->m_id, item.itemId, item.count);
+				m_pUserData->m_id, item.ItemId, item.Count);
 			return false;
 		}
 	}
+
 	return true;
 }
 
@@ -12203,9 +12204,7 @@ bool CUser::CheckAndRobItems(const std::span<const ItemPair> items, const int go
 {
 	// Check that all items are available before attempting to take anything
 	if (!CheckExistItemAnd(items))
-	{
 		return false;
-	}
 
 	// check and take gold next
 	if (gold > 0 && !GoldLose(gold))
@@ -12217,26 +12216,36 @@ bool CUser::CheckAndRobItems(const std::span<const ItemPair> items, const int go
 	}
 
 	// last, rob the items.  outside of a concurrency issue, this shouldn't fail
-	for (const ItemPair item : items)
+	for (auto itr = items.begin(); itr != items.end(); ++itr)
 	{
-		if (item.itemId != -1 && item.count > 0 && !RobItem(item.itemId, item.count))
+		const ItemPair& item = *itr;
+		if (item.ItemId == -1 || item.Count <= 0)
+			continue;
+
+		if (!RobItem(item.ItemId, item.Count))
 		{
-			// TODO: This is not official behavior but rolling back stolen resources
+			// This is not official behavior but rolling back stolen resources
 			// on failure seems like a good idea.
 
 			// failed to rob an item
 			// refund gold
 			if (gold > 0)
-			{
 				GoldGain(gold);
-			}
 
-			// should rewind the array here and refund items, or work on a
-			// discardable copy and only replace on success.
+			// refund previously removed items
+			for (auto restoreItr = items.begin(); restoreItr != itr; ++restoreItr)
+			{
+				const ItemPair& itemToRestore = *restoreItr;
+				if (itemToRestore.ItemId == -1 || itemToRestore.Count <= 0)
+					continue;
+
+				GiveItem(itemToRestore.ItemId, itemToRestore.Count);
+			}
 
 			return false;
 		}
 	}
+
 	return true;
 }
 
@@ -13811,10 +13820,12 @@ void CUser::PromoteUserNovice()
 		case CLASS_EL_WARRIOR:
 			newClass += 4; // X01 -> X05
 			break;
+
 		case CLASS_KA_ROGUE:
 		case CLASS_EL_ROGUE:
 			newClass += 5; // X02 -> X07
 			break;
+
 		case CLASS_KA_WIZARD:
 		case CLASS_EL_WIZARD:
 			newClass += 6; // X03 -> X09
@@ -13831,9 +13842,7 @@ void CUser::PromoteUserNovice()
 	}
 
 	if (!ValidatePromotion(static_cast<e_Class>(newClass)))
-	{
 		return;
-	}
 
 	char sendBuffer[128] {};
 	int sendIndex = 0;
@@ -13855,24 +13864,31 @@ void CUser::PromoteUserNovice()
 void CUser::PromoteUser()
 {
 	// item requirement lists
-	static constexpr ItemPair WARRIOR_ITEMS[] = { { ITEM_LOBO_PENDANT, 1 },
-		{ ITEM_LUPUS_PENDANT, 1 }, { ITEM_LYCAON_PENDANT, 1 }, { ITEM_CRUDE_SAPPHIRE, 10 },
-		{ ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
+	static constexpr ItemPair WARRIOR_ITEMS[] = { //
+		{ ITEM_LOBO_PENDANT, 1 }, { ITEM_LUPUS_PENDANT, 1 }, { ITEM_LYCAON_PENDANT, 1 },
+		{ ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 }
+	};
 
-	static constexpr ItemPair ROGUE_ITEMS[]   = { { ITEM_TAIL_OF_SHAULA, 1 },
-		  { ITEM_TAIL_OF_LESATH, 1 }, { ITEM_BLOOD_OF_GLYPTODONT, 10 }, { ITEM_FANG_OF_BAKIRRA, 1 },
-		  { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
+	static constexpr ItemPair ROGUE_ITEMS[] = { //
+		{ ITEM_TAIL_OF_SHAULA, 1 }, { ITEM_TAIL_OF_LESATH, 1 }, { ITEM_BLOOD_OF_GLYPTODONT, 10 },
+		{ ITEM_FANG_OF_BAKIRRA, 1 }, { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 },
+		{ ITEM_OPAL, 10 }
+	};
 
-	static constexpr ItemPair MAGE_ITEMS[]    = { { ITEM_KEKURI_RING, 1 }, { ITEM_GAVOLT_WING, 50 },
-		   { ITEM_ZOMBIE_EYE, 50 }, { ITEM_CURSED_BONE, 1 }, { ITEM_FEATHER_OF_HARPY_QUEEN, 1 },
-		   { ITEM_BLOOD_OF_GLYPTODONT, 10 }, { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 },
-		   { ITEM_OPAL, 10 } };
+	static constexpr ItemPair MAGE_ITEMS[] = { //
+		{ ITEM_KEKURI_RING, 1 }, { ITEM_GAVOLT_WING, 50 }, { ITEM_ZOMBIE_EYE, 50 },
+		{ ITEM_CURSED_BONE, 1 }, { ITEM_FEATHER_OF_HARPY_QUEEN, 1 },
+		{ ITEM_BLOOD_OF_GLYPTODONT, 10 }, { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 },
+		{ ITEM_OPAL, 10 }
+	};
 
-	static constexpr ItemPair PRIEST_ITEMS[]  = { { ITEM_HOLY_WATER_OF_TEMPLE, 1 },
-		 { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 }, { ITEM_OPAL, 10 } };
-	static constexpr int PRIEST_GOLD_REQ      = 10'000'000;
+	static constexpr ItemPair PRIEST_ITEMS[] = { //
+		{ ITEM_HOLY_WATER_OF_TEMPLE, 1 }, { ITEM_CRUDE_SAPPHIRE, 10 }, { ITEM_CRYSTAL, 10 },
+		{ ITEM_OPAL, 10 }
+	};
+	static constexpr int PRIEST_GOLD_REQ = 10'000'000;
 
-	e_Class newClass                          = static_cast<e_Class>(m_pUserData->m_sClass + 1);
+	e_Class newClass                     = static_cast<e_Class>(m_pUserData->m_sClass + 1);
 
 	// Make sure user level is appropriate for current promotion and that
 	// the new class is a valid promotion path
