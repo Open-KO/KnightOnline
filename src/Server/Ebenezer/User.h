@@ -355,7 +355,9 @@ public:
 	void SelectWarpList(char* pBuf);
 	void GoldChange(int tid, int gold);
 	void AllSkillPointChange();
+	void SendResetSkillError(e_ClassChangeResult errorCode, int cost);
 	void AllPointChange();
+	void SendResetStatError(e_ClassChangeResult errorCode, int cost);
 	void ClassChangeReq();
 	void FriendReport(char* pBuf);
 	std::shared_ptr<CUser> GetItemRoutingUser(int itemid, int16_t itemcount);
