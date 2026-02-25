@@ -393,7 +393,7 @@ public:
 
 	/// \brief Validates that the newClassId is valid promotion path from the current classId
 	/// \return true when the user's newClassId is a valid promotion path, false otherwise
-	bool ValidatePromotion(e_Class newClassId);
+	bool ValidatePromotion(e_Class newClassId) const;
 
 	/// \brief Updates the user's class and broadcasts any required messages
 	void HandlePromotion(e_Class newClassId);

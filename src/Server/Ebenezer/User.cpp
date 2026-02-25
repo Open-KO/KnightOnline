@@ -7115,74 +7115,89 @@ void CUser::ClassChange(char* pBuf)
 	}
 }
 
-bool CUser::ValidatePromotion(e_Class newClassId)
+bool CUser::ValidatePromotion(e_Class newClassId) const
 {
 	switch (m_pUserData->m_sClass)
 	{
 		case CLASS_KA_WARRIOR:
 			if (newClassId == CLASS_KA_BERSERKER)
 				return true;
+			break;
 
 		case CLASS_KA_BERSERKER:
 			if (newClassId == CLASS_KA_GUARDIAN)
 				return true;
+			break;
 
 		case CLASS_KA_ROGUE:
 			if (newClassId == CLASS_KA_HUNTER)
 				return true;
+			break;
 
 		case CLASS_KA_HUNTER:
 			if (newClassId == CLASS_KA_PENETRATOR)
 				return true;
+			break;
 
 		case CLASS_KA_WIZARD:
 			if (newClassId == CLASS_KA_SORCERER)
 				return true;
+			break;
 
 		case CLASS_KA_SORCERER:
 			if (newClassId == CLASS_KA_NECROMANCER)
 				return true;
+			break;
 
 		case CLASS_KA_PRIEST:
 			if (newClassId == CLASS_KA_SHAMAN)
 				return true;
+			break;
 
 		case CLASS_KA_SHAMAN:
 			if (newClassId == CLASS_KA_DARKPRIEST)
 				return true;
+			break;
 
 		case CLASS_EL_WARRIOR:
 			if (newClassId == CLASS_EL_BLADE)
 				return true;
+			break;
 
 		case CLASS_EL_BLADE:
 			if (newClassId == CLASS_EL_PROTECTOR)
 				return true;
+			break;
 
 		case CLASS_EL_ROGUE:
 			if (newClassId == CLASS_EL_RANGER)
 				return true;
+			break;
 
 		case CLASS_EL_RANGER:
 			if (newClassId == CLASS_EL_ASSASSIN)
 				return true;
-			;
+			break;
 
 		case CLASS_EL_WIZARD:
 			if (newClassId == CLASS_EL_MAGE)
 				return true;
+			break;
 
 		case CLASS_EL_MAGE:
 			if (newClassId == CLASS_EL_ENCHANTER)
 				return true;
+			break;
 
 		case CLASS_EL_PRIEST:
 			if (newClassId == CLASS_EL_CLERIC)
 				return true;
+			break;
 
 		case CLASS_EL_CLERIC:
 			if (newClassId == CLASS_EL_DRUID)
 				return true;
+			break;
 
 		default:
 			break;
