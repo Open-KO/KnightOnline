@@ -7034,7 +7034,7 @@ void CUser::ClassChange(char* pBuf)
 
 		// 포인트 초기화
 		case CLASS_RESET_STAT_REQ:
-			AllPointChange();
+			AllStatPointChange();
 			break;
 
 		// 스킬 초기화
@@ -9153,67 +9153,95 @@ void CUser::ClassChangeReq()
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
 	SetByte(sendBuffer, CLASS_CHANGE_RESULT, sendIndex);
 
+	uint8_t result = CLASS_CHANGE_SUCCESS;
 	if (m_pUserData->m_bLevel < 10)
-		SetByte(sendBuffer, CLASS_CHANGE_NOT_YET, sendIndex);
+		result = CLASS_CHANGE_NOT_YET;
 	else if ((m_pUserData->m_sClass % 100) > 4)
-		SetByte(sendBuffer, CLASS_CHANGE_ALREADY, sendIndex);
-	else
-		SetByte(sendBuffer, CLASS_CHANGE_SUCCESS, sendIndex);
+		result = CLASS_CHANGE_ALREADY;
+
+	SetByte(sendBuffer, result, sendIndex);
 	Send(sendBuffer, sendIndex);
+
+	spdlog::debug("User::ClassChangeReq: Check triggered [charId={} level={} class={} status={}]",
+		m_pUserData->m_id, m_pUserData->m_bLevel, m_pUserData->m_sClass, result);
 }
 
-void CUser::AllSkillPointChange()
+void CUser::ClassChangeRespecReq()
+{
+	char sendBuff[128] = {};
+	int sendIndex      = 0;
+	SetByte(sendBuff, WIZ_CLASS_CHANGE, sendIndex);
+	SetByte(sendBuff, CLASS_CHANGE_STATUS_REQ, sendIndex);
+	Send(sendBuff, sendIndex);
+}
+
+void CUser::AllSkillPointChange(bool isFree)
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
-	int sendIndex = 0, skill_point = 0, money = 0, i = 0, j = 0, temp_value = 0;
+	int sendIndex = 0, skillPointsSpent = 0, i = 0, j = 0, respecCost = 0;
 	char sendBuffer[128] {};
 
-	temp_value = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
-	temp_value = (temp_value / 100) * 100;
+	if (!isFree)
+	{
+		respecCost = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
+		respecCost = (respecCost / 100) * 100;
 
-	if (m_pUserData->m_bLevel < 30)
-		temp_value = static_cast<int>(temp_value * 0.4);
+		if (m_pUserData->m_bLevel < 30)
+			respecCost = static_cast<int>(respecCost * 0.4);
 #if 0
-	else if (m_pUserData->m_bLevel >= 30
-		&& m_pUserData->m_bLevel < 60)
-		temp_value = temp_value * 1;
+		else if (m_pUserData->m_bLevel >= 30
+			&& m_pUserData->m_bLevel < 60)
+			respecCost = respecCost * 1;
 #endif
-	else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
-		temp_value = static_cast<int>(temp_value * 1.5);
+		else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
+			respecCost = static_cast<int>(respecCost * 1.5);
 
-	// 스킬은 한번 더
-	temp_value = static_cast<int>(temp_value * 1.5);
+		// 스킬은 한번 더
+		respecCost = static_cast<int>(respecCost * 1.5);
 
-	// 할인시점이고 승리국이라면
-	if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
-	{
-		// old_money = temp_value;
-		temp_value = static_cast<int>(temp_value * 0.5);
-		//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
+		// 할인시점이고 승리국이라면
+		if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
+		{
+			// old_money = temp_value;
+			respecCost = static_cast<int>(respecCost * 0.5);
+			//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
+		}
+
+		if (m_pMain->m_sDiscount == 2)
+		{
+			// old_money = temp_value;
+			respecCost = static_cast<int>(respecCost * 0.5);
+			//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
+		}
 	}
 
-	if (m_pMain->m_sDiscount == 2)
+	if (m_pUserData->m_bLevel < 10)
 	{
-		// old_money = temp_value;
-		temp_value = static_cast<int>(temp_value * 0.5);
-		//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
-	}
-
-	money = m_pUserData->m_iGold - temp_value;
-	//money = m_pUserData->m_iGold - 100;
-
-	if (money < 0 || m_pUserData->m_bLevel < 10)
-	{
-		SendResetSkillError(CLASS_CHANGE_FAILURE, money);
+		spdlog::debug("User::AllSkillPointChange: failed, below min level "
+					  "[charId={} level={}]",
+			m_pUserData->m_id, m_pUserData->m_bLevel);
+		SendResetSkillError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
 	for (i = 1; i < 9; i++)
-		skill_point += m_pUserData->m_bstrSkill[i];
+		skillPointsSpent += m_pUserData->m_bstrSkill[i];
 
-	if (skill_point <= 0)
+	if (skillPointsSpent <= 0)
 	{
-		SendResetSkillError(CLASS_CHANGE_NOT_YET, money);
+		spdlog::debug("User::AllSkillPointChange: failed due to lack of spent skill points "
+					  "[charId={} skillPointsSpent={} level={}]",
+			m_pUserData->m_id, skillPointsSpent, m_pUserData->m_bLevel);
+		SendResetSkillError(CLASS_CHANGE_NOT_YET, respecCost);
+		return;
+	}
+
+	if (respecCost > 0 && !GoldLose(respecCost))
+	{
+		spdlog::debug("User::AllSkillPointChange: failed, not enough gold "
+					  "[charId={} goldExpected={} goldActual={} level={}]",
+			m_pUserData->m_id, respecCost, m_pUserData->m_iGold, m_pUserData->m_bLevel);
+		SendResetSkillError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
@@ -9222,7 +9250,6 @@ void CUser::AllSkillPointChange()
 	m_pUserData->m_bstrSkill[0] = (m_pUserData->m_bLevel - 9) * 2;
 	for (j = 1; j < 9; j++)
 		m_pUserData->m_bstrSkill[j] = 0;
-	m_pUserData->m_iGold = money;
 
 	SetByte(sendBuffer, WIZ_CLASS_CHANGE, sendIndex);
 	SetByte(sendBuffer, CLASS_RESET_SKILL_REQ, sendIndex);
@@ -9230,6 +9257,10 @@ void CUser::AllSkillPointChange()
 	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
 	SetByte(sendBuffer, m_pUserData->m_bstrSkill[0], sendIndex);
 	Send(sendBuffer, sendIndex);
+
+	spdlog::debug("User::AllSkillPointChange: completed successfully "
+				  "[charId={} goldSpent={} level={}]",
+		m_pUserData->m_id, respecCost, m_pUserData->m_bLevel);
 }
 
 void CUser::SendResetSkillError(e_ClassChangeResult errorCode, int cost)
@@ -9243,53 +9274,55 @@ void CUser::SendResetSkillError(e_ClassChangeResult errorCode, int cost)
 	Send(sendBuffer, sendIndex);
 }
 
-void CUser::AllPointChange()
+void CUser::AllStatPointChange(bool isFree)
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
-	int sendIndex = 0, money = 0, temp_money = 0;
+	int sendIndex = 0, respecCost = 0;
 	char sendBuffer[128] {};
 
-	if (m_pUserData->m_bLevel > 80)
+	if (m_pUserData->m_bLevel > MAX_LEVEL)
 	{
-		SendResetStatError(CLASS_CHANGE_FAILURE, temp_money);
+		spdlog::debug("User::AllPointChange: failed, user level exceeds cap "
+					  "[charId={} level={}]",
+			m_pUserData->m_id, m_pUserData->m_bLevel);
+		SendResetStatError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
-	temp_money = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
-	temp_money = (temp_money / 100) * 100;
-	if (m_pUserData->m_bLevel < 30)
-		temp_money = static_cast<int>(temp_money * 0.4);
+	if (!isFree)
+	{
+		respecCost = static_cast<int>(pow((m_pUserData->m_bLevel * 2), 3.4));
+		respecCost = (respecCost / 100) * 100;
+		if (m_pUserData->m_bLevel < 30)
+			respecCost = static_cast<int>(respecCost * 0.4);
 #if 0
-	else if (m_pUserData->m_bLevel >= 30
-		&& m_pUserData->m_bLevel < 60)
-		temp_money = static_cast<int>(temp_money * 1);
+		else if (m_pUserData->m_bLevel >= 30
+			&& m_pUserData->m_bLevel < 60)
+			respecCost = static_cast<int>(respecCost * 1);
 #endif
-	else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
-		temp_money = static_cast<int>(temp_money * 1.5);
+		else if (m_pUserData->m_bLevel >= 60 && m_pUserData->m_bLevel <= 90)
+			respecCost = static_cast<int>(respecCost * 1.5);
 
-	// 할인시점이고 승리국이라면
-	if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
-	{
-		temp_money = static_cast<int>(temp_money * 0.5);
-		//TRACE(_T("^^ AllPointChange - Discount ,, money=%d->%d\n"), old_money, temp_money);
+		// 할인시점이고 승리국이라면
+		if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
+		{
+			respecCost = static_cast<int>(respecCost * 0.5);
+			//TRACE(_T("^^ AllPointChange - Discount ,, money=%d->%d\n"), old_money, temp_money);
+		}
+
+		if (m_pMain->m_sDiscount == 2)
+			respecCost = static_cast<int>(respecCost * 0.5);
 	}
 
-	if (m_pMain->m_sDiscount == 2)
-		temp_money = static_cast<int>(temp_money * 0.5);
-
-	money = m_pUserData->m_iGold - temp_money;
-	if (money < 0)
-	{
-		SendResetStatError(CLASS_CHANGE_FAILURE, temp_money);
-		return;
-	}
-
-	// 장착아이템이 하나라도 있으면 에러처리
+	// Ensure user has no items equipped
 	for (int i = 0; i < SLOT_MAX; i++)
 	{
 		if (m_pUserData->m_sItemArray[i].nNum != 0)
 		{
-			SendResetStatError(CLASS_CHANGE_ITEM_IN_SLOT, temp_money);
+			spdlog::debug("User::AllPointChange: failed, user has items equipped "
+						  "[charId={} level={}]",
+				m_pUserData->m_id, m_pUserData->m_bLevel);
+			SendResetStatError(CLASS_CHANGE_ITEM_IN_SLOT, respecCost);
 			return;
 		}
 	}
@@ -9301,7 +9334,10 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+							  "[charId={} level={}]",
+					m_pUserData->m_id, m_pUserData->m_bLevel);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9316,7 +9352,10 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+							  "[charId={} level={}]",
+					m_pUserData->m_id, m_pUserData->m_bLevel);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9331,7 +9370,10 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+							  "[charId={} level={}]",
+					m_pUserData->m_id, m_pUserData->m_bLevel);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9346,7 +9388,10 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+							  "[charId={} level={}]",
+					m_pUserData->m_id, m_pUserData->m_bLevel);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9361,7 +9406,10 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 60 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+							  "[charId={} level={}]",
+					m_pUserData->m_id, m_pUserData->m_bLevel);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9376,7 +9424,10 @@ void CUser::AllPointChange()
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+							  "[charId={} level={}]",
+					m_pUserData->m_id, m_pUserData->m_bLevel);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9391,12 +9442,20 @@ void CUser::AllPointChange()
 			spdlog::error(
 				"User::AllPointChange: Unhandled race {} [accountName={} characterName={}]",
 				m_pUserData->m_bRace, m_strAccountID, m_pUserData->m_id);
-			SendResetStatError(CLASS_CHANGE_NOT_YET, temp_money);
+			SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 			return;
 	}
 
+	if (respecCost > 0 && !GoldLose(respecCost))
+	{
+		spdlog::debug("User::AllPointChange: failed, not enough gold "
+					  "[charId={} goldExpected={} goldActual={} level={}]",
+			m_pUserData->m_id, respecCost, m_pUserData->m_iGold, m_pUserData->m_bLevel);
+		SendResetStatError(CLASS_CHANGE_FAILURE, respecCost);
+		return;
+	}
+
 	m_pUserData->m_bPoints = (m_pUserData->m_bLevel - 1) * 3 + 10;
-	m_pUserData->m_iGold   = money;
 
 	SetUserAbility();
 	Send2AI_UserUpdateInfo();
@@ -9416,6 +9475,10 @@ void CUser::AllPointChange()
 	SetShort(sendBuffer, GetMaxWeightForClient(), sendIndex);
 	SetShort(sendBuffer, m_pUserData->m_bPoints, sendIndex);
 	Send(sendBuffer, sendIndex);
+
+	spdlog::debug("User::AllPointChange: completed successfully "
+				  "[charId={} goldSpent={} level={}]",
+		m_pUserData->m_id, respecCost, m_pUserData->m_bLevel);
 }
 
 void CUser::SendResetStatError(e_ClassChangeResult errorCode, int cost)
@@ -11870,22 +11933,22 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				if (pEvent == nullptr)
 					break;
 
-				EVENT_DATA* pEventData = pEvent->m_arEvent.GetData(pExec->m_ExecInt[0]);
-				if (pEventData == nullptr)
+				EVENT_DATA* subEventData = pEvent->m_arEvent.GetData(pExec->m_ExecInt[0]);
+				if (subEventData == nullptr)
 					break;
 
-				if (!pEventData->_unhandledOpcodes.empty())
+				if (!subEventData->_unhandledOpcodes.empty())
 				{
 					spdlog::error("User::RunEvent: failed to run event {} due to unhandled "
 								  "opcodes. [characterName={} unhandledOpcodes={}]",
-						pExec->m_ExecInt[0], m_pUserData->m_id, pEventData->_unhandledOpcodes);
+						pExec->m_ExecInt[0], m_pUserData->m_id, subEventData->_unhandledOpcodes);
 					return false;
 				}
 
-				if (!CheckEventLogic(pEventData))
+				if (!CheckEventLogic(subEventData))
 					break;
 
-				if (!RunEvent(pEventData))
+				if (!RunEvent(subEventData))
 					return false;
 			}
 			break;
@@ -11936,6 +11999,19 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 
 			case EXEC_PROMOTE_USER:
 				PromoteUser();
+				break;
+
+			case EXEC_SKILL_POINT_FREE:
+				AllSkillPointChange(true);
+				break;
+
+			case EXEC_STAT_POINT_FREE:
+				AllStatPointChange(true);
+				break;
+
+			case EXEC_SKILL_POINT_DISTRIBUTE:
+			case EXEC_STAT_POINT_DISTRIBUTE:
+				ClassChangeRespecReq();
 				break;
 
 			default:

@@ -102,6 +102,26 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			m_Exec = EXEC_PROMOTE_USER;
 			break;
 
+		// E SKILL_POINT_DISTRIBUTE
+		case "SKILL_POINT_DISTRIBUTE"_djb2:
+			m_Exec = EXEC_SKILL_POINT_DISTRIBUTE;
+			break;
+
+		// E SKILL_POINT_DISTRIBUTE
+		case "STAT_POINT_DISTRIBUTE"_djb2:
+			m_Exec = EXEC_STAT_POINT_DISTRIBUTE;
+			break;
+
+		// E SKILL_POINT_FREE
+		case "SKILL_POINT_FREE"_djb2:
+			m_Exec = EXEC_SKILL_POINT_FREE;
+			break;
+
+		// E STAT_POINT_FREE
+		case "STAT_POINT_FREE"_djb2:
+			m_Exec = EXEC_STAT_POINT_FREE;
+			break;
+
 		default:
 			spdlog::warn("EXEC::Parse: unhandled opcode '{}' ({}:{})", temp, filename, lineNumber);
 			handled = false;

@@ -354,11 +354,28 @@ public:
 	void ZoneConCurrentUsers(char* pBuf);
 	void SelectWarpList(char* pBuf);
 	void GoldChange(int tid, int gold);
-	void AllSkillPointChange();
+
+	/// \brief Attempts to perform a skill point reset
+	/// \param isFree set to true to bypass cost calculation/charge
+	void AllSkillPointChange(bool isFree = false);
+
+	/// \brief Sends an error response for a failed skill point reset
 	void SendResetSkillError(e_ClassChangeResult errorCode, int cost);
-	void AllPointChange();
+
+	/// \brief Attempts to perform a stat point reset
+	/// \param isFree set to true to bypass cost calculation/charge
+	void AllStatPointChange(bool isFree = false);
+
+	/// \brief Sends an error response for a failed stat point reset
 	void SendResetStatError(e_ClassChangeResult errorCode, int cost);
+
+	/// \brief Sends novice promotion eligibility status
 	void ClassChangeReq();
+
+	/// \brief Sends a class change status req back to the client in response
+	/// to non-free Skill/Stat reset requests
+	void ClassChangeRespecReq();
+
 	void FriendReport(char* pBuf);
 	std::shared_ptr<CUser> GetItemRoutingUser(int itemid, int16_t itemcount);
 	bool GetStartPosition(int16_t* x, int16_t* z, int zoneId) const;
