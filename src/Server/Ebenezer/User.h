@@ -357,20 +357,23 @@ public:
 
 	/// \brief Attempts to perform a skill point reset
 	/// \param isFree set to true to bypass cost calculation/charge
-	void AllSkillPointChange(bool isFree = false);
+	/// \originalName AllSkillPointChange
+	void SkillPointResetRequest(bool isFree = false);
 
 	/// \brief Sends an error response for a failed skill point reset
-	void SendResetSkillError(e_ClassChangeResult errorCode, int cost, bool isFree);
+	void SendResetSkillError(e_ClassChangeResult errorCode, int cost);
 
 	/// \brief Attempts to perform a stat point reset
 	/// \param isFree set to true to bypass cost calculation/charge
-	void AllStatPointChange(bool isFree = false);
+	/// \originalName AllPointChange
+	void StatPointResetRequest(bool isFree = false);
 
 	/// \brief Sends an error response for a failed stat point reset
-	void SendResetStatError(e_ClassChangeResult errorCode, int cost, bool isFree);
+	void SendResetStatError(e_ClassChangeResult errorCode, int cost);
 
 	/// \brief Sends novice promotion eligibility status
-	void ClassChangeReq();
+	/// \originalName ClassChangeReq
+	void NovicePromotionStatusRequest();
 
 	/// \brief Sends a class change status req back to the client in response
 	/// to non-free Skill/Stat reset requests

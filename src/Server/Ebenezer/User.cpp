@@ -7029,17 +7029,17 @@ void CUser::ClassChange(char* pBuf)
 	{
 		// 전직요청
 		case CLASS_CHANGE_STATUS_REQ:
-			ClassChangeReq();
+			NovicePromotionStatusRequest();
 			break;
 
 		// 포인트 초기화
 		case CLASS_RESET_STAT_REQ:
-			AllStatPointChange();
+			StatPointResetRequest();
 			break;
 
 		// 스킬 초기화
 		case CLASS_RESET_SKILL_REQ:
-			AllSkillPointChange();
+			SkillPointResetRequest();
 			break;
 
 		// 포인트 & 스킬 초기화에 돈이 얼마인지를 묻는 서브 패킷
@@ -9145,7 +9145,7 @@ void CUser::FriendReport(char* pBuf)
 	Send(sendBuffer, sendIndex);
 }
 
-void CUser::ClassChangeReq()
+void CUser::NovicePromotionStatusRequest()
 {
 	int sendIndex = 0;
 	char sendBuffer[128] {};
@@ -9162,7 +9162,8 @@ void CUser::ClassChangeReq()
 	SetByte(sendBuffer, result, sendIndex);
 	Send(sendBuffer, sendIndex);
 
-	spdlog::debug("User::ClassChangeReq: Check triggered [charId={} level={} class={} status={}]",
+	spdlog::debug("User::NovicePromotionStatusRequest: Check triggered [charId={} level={} "
+				  "class={} status={}]",
 		m_pUserData->m_id, m_pUserData->m_bLevel, m_pUserData->m_sClass, result);
 }
 
@@ -9175,7 +9176,7 @@ void CUser::ClassChangeRespecReq()
 	Send(sendBuff, sendIndex);
 }
 
-void CUser::AllSkillPointChange(bool isFree)
+void CUser::SkillPointResetRequest(bool isFree)
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
 	int sendIndex = 0, skillPointsSpent = 0, i = 0, j = 0, respecCost = 0;
@@ -9204,23 +9205,21 @@ void CUser::AllSkillPointChange(bool isFree)
 		{
 			// old_money = temp_value;
 			respecCost = static_cast<int>(respecCost * 0.5);
-			//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
 		}
 
 		if (m_pMain->m_sDiscount == 2)
 		{
 			// old_money = temp_value;
 			respecCost = static_cast<int>(respecCost * 0.5);
-			//TRACE(_T("^^ AllSkillPointChange - Discount ,, money=%d->%d\n"), old_money, temp_value);
 		}
 	}
 
 	if (m_pUserData->m_bLevel < 10)
 	{
-		spdlog::debug("User::AllSkillPointChange: failed, below min level "
+		spdlog::debug("User::SkillPointResetRequest: failed, below min level "
 					  "[charId={} level={}]",
 			m_pUserData->m_id, m_pUserData->m_bLevel);
-		SendResetSkillError(CLASS_CHANGE_FAILURE, respecCost, isFree);
+		SendResetSkillError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
@@ -9229,19 +9228,19 @@ void CUser::AllSkillPointChange(bool isFree)
 
 	if (skillPointsSpent <= 0)
 	{
-		spdlog::debug("User::AllSkillPointChange: failed due to lack of spent skill points "
+		spdlog::debug("User::SkillPointResetRequest: failed due to lack of spent skill points "
 					  "[charId={} skillPointsSpent={} level={}]",
 			m_pUserData->m_id, skillPointsSpent, m_pUserData->m_bLevel);
-		SendResetSkillError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+		SendResetSkillError(CLASS_CHANGE_NOT_YET, respecCost);
 		return;
 	}
 
 	if (respecCost > 0 && !GoldLose(respecCost))
 	{
-		spdlog::debug("User::AllSkillPointChange: failed, not enough gold "
+		spdlog::debug("User::SkillPointResetRequest: failed, not enough gold "
 					  "[charId={} goldExpected={} goldActual={} level={}]",
 			m_pUserData->m_id, respecCost, m_pUserData->m_iGold, m_pUserData->m_bLevel);
-		SendResetSkillError(CLASS_CHANGE_FAILURE, respecCost, isFree);
+		SendResetSkillError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
@@ -9258,12 +9257,12 @@ void CUser::AllSkillPointChange(bool isFree)
 	SetByte(sendBuffer, m_pUserData->m_bstrSkill[0], sendIndex);
 	Send(sendBuffer, sendIndex);
 
-	spdlog::debug("User::AllSkillPointChange: completed successfully "
+	spdlog::debug("User::SkillPointResetRequest: completed successfully "
 				  "[charId={} goldSpent={} level={}]",
 		m_pUserData->m_id, respecCost, m_pUserData->m_bLevel);
 }
 
-void CUser::SendResetSkillError(e_ClassChangeResult errorCode, int cost, bool isFree)
+void CUser::SendResetSkillError(e_ClassChangeResult errorCode, int cost)
 {
 	int sendIndex = 0;
 	char sendBuffer[32] {};
@@ -9272,13 +9271,9 @@ void CUser::SendResetSkillError(e_ClassChangeResult errorCode, int cost, bool is
 	SetByte(sendBuffer, errorCode, sendIndex);
 	SetDWORD(sendBuffer, cost, sendIndex);
 	Send(sendBuffer, sendIndex);
-
-	// if a free respec failed, refund distribution item
-	if (isFree)
-		GiveItem(ITEM_REDISTRIBUTION, 1);
 }
 
-void CUser::AllStatPointChange(bool isFree)
+void CUser::StatPointResetRequest(bool isFree)
 {
 	// 돈을 먼저 깍고.. 만약,, 돈이 부족하면.. 에러...
 	int sendIndex = 0, respecCost = 0;
@@ -9286,10 +9281,10 @@ void CUser::AllStatPointChange(bool isFree)
 
 	if (m_pUserData->m_bLevel > MAX_LEVEL)
 	{
-		spdlog::debug("User::AllPointChange: failed, user level exceeds cap "
+		spdlog::debug("User::StatPointResetRequest: failed, user level exceeds cap "
 					  "[charId={} level={}]",
 			m_pUserData->m_id, m_pUserData->m_bLevel);
-		SendResetStatError(CLASS_CHANGE_FAILURE, respecCost, isFree);
+		SendResetStatError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
@@ -9309,10 +9304,7 @@ void CUser::AllStatPointChange(bool isFree)
 
 		// 할인시점이고 승리국이라면
 		if (m_pMain->m_sDiscount == 1 && m_pMain->m_byOldVictory == m_pUserData->m_bNation)
-		{
 			respecCost = static_cast<int>(respecCost * 0.5);
-			//TRACE(_T("^^ AllPointChange - Discount ,, money=%d->%d\n"), old_money, temp_money);
-		}
 
 		if (m_pMain->m_sDiscount == 2)
 			respecCost = static_cast<int>(respecCost * 0.5);
@@ -9323,10 +9315,10 @@ void CUser::AllStatPointChange(bool isFree)
 	{
 		if (m_pUserData->m_sItemArray[i].nNum != 0)
 		{
-			spdlog::debug("User::AllPointChange: failed, user has items equipped "
+			spdlog::debug("User::StatPointResetRequest: failed, user has items equipped "
 						  "[charId={} level={}]",
 				m_pUserData->m_id, m_pUserData->m_bLevel);
-			SendResetStatError(CLASS_CHANGE_ITEM_IN_SLOT, respecCost, isFree);
+			SendResetStatError(CLASS_CHANGE_ITEM_IN_SLOT, respecCost);
 			return;
 		}
 	}
@@ -9338,10 +9330,10 @@ void CUser::AllStatPointChange(bool isFree)
 			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+				spdlog::debug("User::StatPointResetRequest: failed, no stat points to refund "
 							  "[charId={} level={}]",
 					m_pUserData->m_id, m_pUserData->m_bLevel);
-				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9356,10 +9348,10 @@ void CUser::AllStatPointChange(bool isFree)
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+				spdlog::debug("User::StatPointResetRequest: failed, no stat points to refund "
 							  "[charId={} level={}]",
 					m_pUserData->m_id, m_pUserData->m_bLevel);
-				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9374,10 +9366,10 @@ void CUser::AllStatPointChange(bool isFree)
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+				spdlog::debug("User::StatPointResetRequest: failed, no stat points to refund "
 							  "[charId={} level={}]",
 					m_pUserData->m_id, m_pUserData->m_bLevel);
-				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9392,10 +9384,10 @@ void CUser::AllStatPointChange(bool isFree)
 			if (m_pUserData->m_bStr == 65 && m_pUserData->m_bSta == 65 && m_pUserData->m_bDex == 60
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+				spdlog::debug("User::StatPointResetRequest: failed, no stat points to refund "
 							  "[charId={} level={}]",
 					m_pUserData->m_id, m_pUserData->m_bLevel);
-				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9410,10 +9402,10 @@ void CUser::AllStatPointChange(bool isFree)
 			if (m_pUserData->m_bStr == 60 && m_pUserData->m_bSta == 60 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 50 && m_pUserData->m_bCha == 50)
 			{
-				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+				spdlog::debug("User::StatPointResetRequest: failed, no stat points to refund "
 							  "[charId={} level={}]",
 					m_pUserData->m_id, m_pUserData->m_bLevel);
-				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9428,10 +9420,10 @@ void CUser::AllStatPointChange(bool isFree)
 			if (m_pUserData->m_bStr == 50 && m_pUserData->m_bSta == 50 && m_pUserData->m_bDex == 70
 				&& m_pUserData->m_bIntel == 70 && m_pUserData->m_bCha == 50)
 			{
-				spdlog::debug("User::AllPointChange: failed, no stat points to refund "
+				spdlog::debug("User::StatPointResetRequest: failed, no stat points to refund "
 							  "[charId={} level={}]",
 					m_pUserData->m_id, m_pUserData->m_bLevel);
-				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+				SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 				return;
 			}
 
@@ -9444,18 +9436,18 @@ void CUser::AllStatPointChange(bool isFree)
 
 		default:
 			spdlog::error(
-				"User::AllPointChange: Unhandled race {} [accountName={} characterName={}]",
+				"User::StatPointResetRequest: Unhandled race {} [accountName={} characterName={}]",
 				m_pUserData->m_bRace, m_strAccountID, m_pUserData->m_id);
-			SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost, isFree);
+			SendResetStatError(CLASS_CHANGE_NOT_YET, respecCost);
 			return;
 	}
 
 	if (respecCost > 0 && !GoldLose(respecCost))
 	{
-		spdlog::debug("User::AllPointChange: failed, not enough gold "
+		spdlog::debug("User::StatPointResetRequest: failed, not enough gold "
 					  "[charId={} goldExpected={} goldActual={} level={}]",
 			m_pUserData->m_id, respecCost, m_pUserData->m_iGold, m_pUserData->m_bLevel);
-		SendResetStatError(CLASS_CHANGE_FAILURE, respecCost, isFree);
+		SendResetStatError(CLASS_CHANGE_FAILURE, respecCost);
 		return;
 	}
 
@@ -9480,12 +9472,12 @@ void CUser::AllStatPointChange(bool isFree)
 	SetShort(sendBuffer, m_pUserData->m_bPoints, sendIndex);
 	Send(sendBuffer, sendIndex);
 
-	spdlog::debug("User::AllPointChange: completed successfully "
+	spdlog::debug("User::StatPointResetRequest: completed successfully "
 				  "[charId={} goldSpent={} level={}]",
 		m_pUserData->m_id, respecCost, m_pUserData->m_bLevel);
 }
 
-void CUser::SendResetStatError(e_ClassChangeResult errorCode, int cost, bool isFree)
+void CUser::SendResetStatError(e_ClassChangeResult errorCode, int cost)
 {
 	int sendIndex = 0;
 	char sendBuffer[32] {};
@@ -9494,10 +9486,6 @@ void CUser::SendResetStatError(e_ClassChangeResult errorCode, int cost, bool isF
 	SetByte(sendBuffer, errorCode, sendIndex);
 	SetDWORD(sendBuffer, cost, sendIndex);
 	Send(sendBuffer, sendIndex);
-
-	// if a free respec failed, refund distribution item
-	if (isFree)
-		GiveItem(ITEM_REDISTRIBUTION, 1);
 }
 
 void CUser::GoldChange(int tid, int gold)
@@ -11941,22 +11929,22 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				if (pEvent == nullptr)
 					break;
 
-				EVENT_DATA* subEventData = pEvent->m_arEvent.GetData(pExec->m_ExecInt[0]);
-				if (subEventData == nullptr)
+				EVENT_DATA* childEventData = pEvent->m_arEvent.GetData(pExec->m_ExecInt[0]);
+				if (childEventData == nullptr)
 					break;
 
-				if (!subEventData->_unhandledOpcodes.empty())
+				if (!childEventData->_unhandledOpcodes.empty())
 				{
 					spdlog::error("User::RunEvent: failed to run event {} due to unhandled "
 								  "opcodes. [characterName={} unhandledOpcodes={}]",
-						pExec->m_ExecInt[0], m_pUserData->m_id, subEventData->_unhandledOpcodes);
+						pExec->m_ExecInt[0], m_pUserData->m_id, childEventData->_unhandledOpcodes);
 					return false;
 				}
 
-				if (!CheckEventLogic(subEventData))
+				if (!CheckEventLogic(childEventData))
 					break;
 
-				if (!RunEvent(subEventData))
+				if (!RunEvent(childEventData))
 					return false;
 			}
 			break;
@@ -12010,11 +11998,11 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				break;
 
 			case EXEC_SKILL_POINT_FREE:
-				AllSkillPointChange(true);
+				SkillPointResetRequest(true);
 				break;
 
 			case EXEC_STAT_POINT_FREE:
-				AllStatPointChange(true);
+				StatPointResetRequest(true);
 				break;
 
 			case EXEC_SKILL_POINT_DISTRIBUTE:
