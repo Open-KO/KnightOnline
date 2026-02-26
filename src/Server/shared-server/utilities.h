@@ -32,6 +32,10 @@ bool ParseSpace(char* tBuf, const char* sBuf, int& bufferIndex);
 /// \brief Returns an evt script line with any comments removed
 std::string StripEvtComment(const std::string& line);
 
+/// \brief Calculates the value of a currency change (gold, NP, Manner) by upcasting the delta
+/// to prevent overflows, then applying a clamp between 0 and 2.1B
+void CurrencyChange(int32_t& refAmount, int32_t delta);
+
 extern std::function<int(int min, int max)> myrand;
 
 #endif // SERVER_SHAREDSERVER_UTILITIES_H

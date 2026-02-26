@@ -184,6 +184,18 @@ bool ParseSpace(char* tBuf, const char* sBuf, int& bufferIndex)
 	return true;
 }
 
+void CurrencyChange(int32_t& refAmount, int32_t delta)
+{
+	int64_t upcast = static_cast<int64_t>(refAmount) + delta;
+
+	if (upcast < MIN_CURRENCY)
+		refAmount = MIN_CURRENCY;
+	else if (upcast > MAX_CURRENCY)
+		refAmount = MAX_CURRENCY;
+	else
+		refAmount = static_cast<int32_t>(upcast);
+}
+
 std::string StripEvtComment(const std::string& line)
 {
 	size_t commentPosition = line.find(';');

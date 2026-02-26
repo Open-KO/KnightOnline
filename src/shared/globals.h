@@ -23,7 +23,8 @@ inline constexpr int MAX_IP_SIZE                     = 15;
 inline constexpr int MAX_ITEM_COUNT                  = 9999; // 한 슬롯에 가지는 최대 화살/송편 개수
 inline constexpr int MAX_QUEST                       = 100;
 inline constexpr int MAX_LEVEL                       = 80;   // 최고렙...
-inline constexpr int MAX_GOLD                        = 2'100'000'000;
+inline constexpr int MIN_CURRENCY                    = 0;
+inline constexpr int MAX_CURRENCY                    = 2'100'000'000;
 inline constexpr int VIEW_DISTANCE                   = 48;
 
 inline constexpr int MAX_PARTY_SIZE                  = 8;

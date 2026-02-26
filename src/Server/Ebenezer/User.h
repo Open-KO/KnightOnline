@@ -311,8 +311,8 @@ public:
 	bool CheckSkillTotal(uint8_t min, uint8_t max) const;
 	bool CheckStatTotal(uint8_t min, uint8_t max) const;
 	bool CheckExistEvent(e_QuestId questId, e_QuestState questState) const;
-	bool GoldLose(int gold);
-	void GoldGain(int gold);
+	bool GoldLose(int amount);
+	void GoldGain(int amount);
 	void SendItemWeight();
 	void ItemLogToAgent(const char* srcid, const char* tarid, int type, int64_t serial, int itemid,
 		int count, int durability);

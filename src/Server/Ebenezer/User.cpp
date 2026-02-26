@@ -5207,7 +5207,7 @@ void CUser::ItemTrade(char* pBuf)
 		}
 
 		int64_t buyPrice = static_cast<int64_t>(pTable->BuyPrice) * count;
-		if (buyPrice < 0 || buyPrice > MAX_GOLD)
+		if (buyPrice < MIN_CURRENCY || buyPrice > MAX_CURRENCY)
 		{
 			result = 3;
 			goto fail_return;
@@ -5287,7 +5287,7 @@ void CUser::ItemTrade(char* pBuf)
 					salePrice /= 4;
 			}
 
-			if (salePrice < 0 || salePrice > MAX_GOLD)
+			if (salePrice < MIN_CURRENCY || salePrice > MAX_CURRENCY)
 			{
 				result = 3;
 				goto fail_return;
@@ -5315,7 +5315,7 @@ void CUser::ItemTrade(char* pBuf)
 					salePrice /= 4;
 			}
 
-			if (salePrice < 0 || salePrice > MAX_GOLD)
+			if (salePrice < MIN_CURRENCY || salePrice > MAX_CURRENCY)
 			{
 				result = 3;
 				goto fail_return;
@@ -5796,15 +5796,8 @@ void CUser::LoyaltyChange(int targetId)
 
 	//TRACE(_T("LoyaltyChange 222 - user1=%hs, %d,, user2=%hs, %d\n"), m_pUserData->m_id,  m_pUserData->m_iLoyalty, pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
 
-	m_pUserData->m_iLoyalty         += loyalty_source; // Recalculations of Loyalty...
-	pTUser->m_pUserData->m_iLoyalty += loyalty_target;
-
-	// Cannot be less than zero.
-	if (m_pUserData->m_iLoyalty < 0)
-		m_pUserData->m_iLoyalty = 0;
-
-	if (pTUser->m_pUserData->m_iLoyalty < 0)
-		pTUser->m_pUserData->m_iLoyalty = 0;
+	CurrencyChange(m_pUserData->m_iLoyalty, loyalty_source);
+	CurrencyChange(pTUser->m_pUserData->m_iLoyalty, loyalty_target);
 
 	//TRACE(_T("LoyaltyChange 222 - user1=%hs, %d,, user2=%hs, %d\n"), m_pUserData->m_id,  m_pUserData->m_iLoyalty, pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
 
@@ -5848,16 +5841,9 @@ void CUser::ChangeLoyalty(const int loyaltyChange, const bool isExcludeMonthly)
 		return;
 	}
 
-	m_pUserData->m_iLoyalty += loyaltyChange;
-	if (m_pUserData->m_iLoyalty < 0)
-		m_pUserData->m_iLoyalty = 0;
-
+	CurrencyChange(m_pUserData->m_iLoyalty, loyaltyChange);
 	if (!isExcludeMonthly)
-	{
-		m_pUserData->m_iLoyaltyMonthly += loyaltyChange;
-		if (m_pUserData->m_iLoyaltyMonthly < 0)
-			m_pUserData->m_iLoyaltyMonthly = 0;
-	}
+		CurrencyChange(m_pUserData->m_iLoyaltyMonthly, loyaltyChange);
 
 	char sendBuff[256] {};
 	int sendIndex = 0;
@@ -5870,8 +5856,6 @@ void CUser::ChangeLoyalty(const int loyaltyChange, const bool isExcludeMonthly)
 
 void CUser::ChangeMannerPoint(const int loyaltyAmount)
 {
-	static constexpr int MIN_MANNER_POINT           = 0;
-	static constexpr int MAX_MANNER_POINT           = 2'100'000'000;
 	static constexpr uint8_t MANNER_LEVEL_BAND_1    = 20;
 	static constexpr uint8_t MANNER_LEVEL_BAND_2    = 30;
 	static constexpr uint8_t MANNER_LEVEL_BAND_3    = 40;
@@ -5880,8 +5864,7 @@ void CUser::ChangeMannerPoint(const int loyaltyAmount)
 
 	if (loyaltyAmount > 0)
 	{
-		m_pUserData->m_iMannerPoint = std::clamp(
-			m_pUserData->m_iMannerPoint + loyaltyAmount, MIN_MANNER_POINT, MAX_MANNER_POINT);
+		CurrencyChange(m_pUserData->m_iMannerPoint, loyaltyAmount);
 
 		char sendBuff[128] {};
 		int sendIndex = 0;
@@ -5927,9 +5910,7 @@ void CUser::ChangeMannerPoint(const int loyaltyAmount)
 			if (distance > MANNER_POINT_RANGE)
 				continue;
 
-			partyMember->m_pUserData->m_iMannerPoint = std::clamp(
-				partyMember->m_pUserData->m_iMannerPoint + partyPointChange, MIN_MANNER_POINT,
-				MAX_MANNER_POINT);
+			CurrencyChange(partyMember->m_pUserData->m_iMannerPoint, partyPointChange);
 
 			char sendBuff[128] {};
 			int sendIndex = 0;
@@ -12226,10 +12207,9 @@ void CUser::SendItemWeight()
 	Send(sendBuffer, sendIndex);
 }
 
-void CUser::GoldGain(int gold)
+void CUser::GoldGain(int amount)
 {
-	int sendIndex      = 0;
-	int64_t iTotalGold = 0;
+	int sendIndex = 0;
 	char sendBuffer[256] {};
 
 	if (m_pUserData->m_iGold < 0)
@@ -12239,25 +12219,20 @@ void CUser::GoldGain(int gold)
 		return;
 	}
 
-	if (gold < 0)
-		gold = 0;
-
-	iTotalGold = static_cast<int64_t>(m_pUserData->m_iGold) + static_cast<int64_t>(gold);
-
-	if (iTotalGold > MAX_GOLD)
-		iTotalGold = MAX_GOLD;
+	if (amount < MIN_CURRENCY)
+		amount = MIN_CURRENCY;
 
 	// set user gold as iTotalGold
-	m_pUserData->m_iGold = static_cast<int>(iTotalGold);
+	CurrencyChange(m_pUserData->m_iGold, amount);
 
 	SetByte(sendBuffer, WIZ_GOLD_CHANGE, sendIndex);
 	SetByte(sendBuffer, GOLD_CHANGE_GAIN, sendIndex);
-	SetDWORD(sendBuffer, gold, sendIndex);
+	SetDWORD(sendBuffer, amount, sendIndex);
 	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
 	Send(sendBuffer, sendIndex);
 }
 
-bool CUser::GoldLose(int gold)
+bool CUser::GoldLose(int amount)
 {
 	int sendIndex = 0;
 	char sendBuffer[256] {};
@@ -12269,18 +12244,18 @@ bool CUser::GoldLose(int gold)
 		return false;
 	}
 
-	if (gold < 0)
-		gold = 0;
+	if (amount < MIN_CURRENCY)
+		amount = MIN_CURRENCY;
 
 	// Insufficient gold!
-	if (m_pUserData->m_iGold < gold)
+	if (m_pUserData->m_iGold < amount)
 		return false;
 
-	m_pUserData->m_iGold -= gold; // Subtract gold.
+	CurrencyChange(m_pUserData->m_iGold, -amount);
 
 	SetByte(sendBuffer, WIZ_GOLD_CHANGE, sendIndex);
 	SetByte(sendBuffer, GOLD_CHANGE_LOSE, sendIndex);
-	SetDWORD(sendBuffer, gold, sendIndex);
+	SetDWORD(sendBuffer, amount, sendIndex);
 	SetDWORD(sendBuffer, m_pUserData->m_iGold, sendIndex);
 	Send(sendBuffer, sendIndex);
 
