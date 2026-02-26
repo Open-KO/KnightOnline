@@ -34,7 +34,8 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 	bool handled = true;
 	char temp[1024] {};
 
-	ParseSpace(temp, line, index);
+	std::string commentStripped = StripEvtComment(line);
+	ParseSpace(temp, commentStripped.c_str(), index);
 
 	size_t opcode = hashing::djb2::hash(std::string_view(temp));
 	switch (opcode)

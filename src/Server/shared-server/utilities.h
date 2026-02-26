@@ -29,6 +29,9 @@ void SetString2(char* tBuf, const std::string_view str, int& index);
 void SetString2(char* tBuf, const char* str, int length, int& index);
 bool ParseSpace(char* tBuf, const char* sBuf, int& bufferIndex);
 
+/// \brief Returns an evt script line with any comments removed
+std::string StripEvtComment(const std::string& line);
+
 extern std::function<int(int min, int max)> myrand;
 
 #endif // SERVER_SHAREDSERVER_UTILITIES_H
