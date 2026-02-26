@@ -10,5 +10,6 @@ var searchData=
   ['openexisting_7',['OpenExisting',['../classFile.html#a11016e6aca368986a418b1b1b5fe42a6',1,'File::OpenExisting()'],['../classFileReader.html#a139418fc585051ebc355f2a59d6cbbd2',1,'FileReader::OpenExisting()'],['../classFileWriter.html#a018bf563128dd46b91e94c7b660600fa',1,'FileWriter::OpenExisting()']]],
   ['openko_8',['OpenKO',['../index.html#autotoc_md0',1,'Open Knight Online (OpenKO)'],['../index.html',1,'OpenKO']]],
   ['operationmessage_9',['OperationMessage',['../classEbenezer_1_1OperationMessage.html',1,'Ebenezer']]],
-  ['our_20project_20goals_10',['It must respect our project goals',['../index.html#autotoc_md6',1,'']]]
+  ['original_20name_10',['Original Name',['../originalName.html',1,'']]],
+  ['our_20project_20goals_11',['It must respect our project goals',['../index.html#autotoc_md6',1,'']]]
 ];

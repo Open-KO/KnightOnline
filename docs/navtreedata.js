@@ -37,6 +37,7 @@ var NAVTREE =
       ] ]
     ] ],
     [ "Todo List", "todo.html", null ],
+    [ "Original Name", "originalName.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -64,8 +65,8 @@ var NAVTREEINDEX =
 "classAppThread.html#a2fdc6a486c4e1302ba030db0e20ec517",
 "classCN3BaseFileAccess.html",
 "classCUILevelGuide.html",
-"classdb_1_1ModelRecordSet.html#acc5cc86e2599b3c81aee21ad1716373e",
-"struct__POINT.html"
+"classdb_1_1ModelRecordSet.html#a45972d66a255744fd65c77eaaa826e36",
+"structWAVE__Format.html#a99547eea6b2192530da1bf90238a83e8"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';
