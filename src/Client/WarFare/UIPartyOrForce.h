@@ -12,19 +12,19 @@
 #include "GameDef.h"
 #include <N3Base/N3UIBase.h>
 
-class CUIPartyOrForce : public CN3UIBase                      // 파티에 관한 UI, 부대와 같은 클래스로 쓴다..
+class CUIPartyOrForce : public CN3UIBase                  // 파티에 관한 UI, 부대와 같은 클래스로 쓴다..
 {
 protected:
-	CN3UIProgress* m_pProgress_HPs[MAX_PARTY_OR_FORCE];       // 부대원갯수 만큼... HP Gauge
-	CN3UIProgress* m_pProgress_HPReduce[MAX_PARTY_OR_FORCE];  // 부대원갯수 만큼... HP Reduce
-	CN3UIProgress* m_pProgress_HPSlow[MAX_PARTY_OR_FORCE];    // HP Slow
-	CN3UIProgress* m_pProgress_HPLasting[MAX_PARTY_OR_FORCE]; // HP Lasting
-	CN3UIProgress* m_pProgress_MP[MAX_PARTY_OR_FORCE];        // MP Bar
-	CN3UIStatic* m_pStatic_IDs[MAX_PARTY_OR_FORCE];           // 부대원갯수 만큼... 이름들..
-	CN3UIArea* m_pAreas[MAX_PARTY_OR_FORCE];                  // 부대원갯수 만큼... 이름들..
+	CN3UIProgress* m_pProgress_HPs[MAX_PARTY_SIZE];       // 부대원갯수 만큼... HP Gauge
+	CN3UIProgress* m_pProgress_HPReduce[MAX_PARTY_SIZE];  // 부대원갯수 만큼... HP Reduce
+	CN3UIProgress* m_pProgress_HPSlow[MAX_PARTY_SIZE];    // HP Slow
+	CN3UIProgress* m_pProgress_HPLasting[MAX_PARTY_SIZE]; // HP Lasting
+	CN3UIProgress* m_pProgress_MP[MAX_PARTY_SIZE];        // MP Bar
+	CN3UIStatic* m_pStatic_IDs[MAX_PARTY_SIZE];           // 부대원갯수 만큼... 이름들..
+	CN3UIArea* m_pAreas[MAX_PARTY_SIZE];                  // 부대원갯수 만큼... 이름들..
 
-	std::list<__InfoPartyOrForce> m_Members;                  // 파티 멤버
-	int m_iIndexSelected;                                     // 현재 선택된 멤버인덱스..
+	std::list<__InfoPartyOrForce> m_Members;              // 파티 멤버
+	int m_iIndexSelected;                                 // 현재 선택된 멤버인덱스..
 
 public:
 	bool OnKeyPress(int iKey) override;

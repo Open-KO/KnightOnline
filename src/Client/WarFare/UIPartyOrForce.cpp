@@ -15,7 +15,7 @@
 
 CUIPartyOrForce::CUIPartyOrForce()
 {
-	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
 		m_pProgress_HPs[i]       = nullptr; // 부대원갯수 만큼... HP Gauge
 		m_pProgress_HPReduce[i]  = nullptr; // 부대원갯수 만큼... HP Reduce
@@ -40,7 +40,7 @@ void CUIPartyOrForce::Release()
 	m_Members.clear();
 	m_iIndexSelected = -1; // 현재 선택된 멤버인덱스..
 
-	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
 		m_pProgress_HPs[i]       = nullptr; // 부대원갯수 만큼... HP Gauge
 		m_pProgress_HPReduce[i]  = nullptr; // 부대원갯수 만큼... HP Reduce
@@ -58,7 +58,7 @@ bool CUIPartyOrForce::Load(File& file)
 		return false;
 
 	std::string szID;
-	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++) // 빈곳을 찾자..
+	for (int i = 0; i < MAX_PARTY_SIZE; i++) // 빈곳을 찾자..
 	{
 		szID = fmt::format("progress_hp_{}", i);
 		N3_VERIFY_UI_COMPONENT(m_pProgress_HPs[i], GetChildByID<CN3UIProgress>(szID));
@@ -120,7 +120,7 @@ bool CUIPartyOrForce::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 	{
 		__InfoPartyOrForce* pIP = nullptr;
 		auto it = m_Members.begin(), itEnd = m_Members.end();
-		for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+		for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 		{
 			//			if(m_pStatic_IDs[i] && pSender == m_pStatic_IDs[i])
 			if (pSender == m_pAreas[i])
@@ -147,7 +147,7 @@ void CUIPartyOrForce::Render()
 
 	CN3UIBase::Render();
 
-	if (m_iIndexSelected < 0 || m_iIndexSelected >= static_cast<int>(m_Members.size()) || m_iIndexSelected >= MAX_PARTY_OR_FORCE)
+	if (m_iIndexSelected < 0 || m_iIndexSelected >= static_cast<int>(m_Members.size()) || m_iIndexSelected >= MAX_PARTY_SIZE)
 		return;
 
 	if (nullptr == m_pStatic_IDs[m_iIndexSelected] || nullptr == m_pProgress_HPs[m_iIndexSelected])
@@ -294,7 +294,7 @@ void CUIPartyOrForce::MemberDestroy()
 	m_Members.clear();
 
 	// 빈곳을 찾자..
-	for (int i = 0; i < MAX_PARTY_OR_FORCE; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
 		if (m_pProgress_HPs[i] != nullptr)
 			m_pProgress_HPs[i]->SetVisible(false);
@@ -321,7 +321,7 @@ void CUIPartyOrForce::MemberDestroy()
 void CUIPartyOrForce::MemberInfoReInit() // 파티원 구성이 변경될때.. 순서 및 각종 정보 업데이트..
 {
 	auto it = m_Members.begin(), itEnd = m_Members.end();
-	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 	{
 		__InfoPartyOrForce* pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
 		if (pIP->iHPMax <= 0)
@@ -374,7 +374,7 @@ const __InfoPartyOrForce* CUIPartyOrForce::MemberInfoGetSelected()
 void CUIPartyOrForce::MemberHPChange(int iID, int iHP, int iHPMax, int iMP, int iMPMax)
 {
 	auto it = m_Members.begin(), itEnd = m_Members.end();
-	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 	{
 		__InfoPartyOrForce* pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
 		if (pIP->iID == iID)
@@ -409,7 +409,7 @@ void CUIPartyOrForce::MemberStatusChange(int iID, e_PartyStatus ePS, bool bSuffe
 {
 	auto it = m_Members.begin(), itEnd = m_Members.end();
 	__InfoPartyOrForce* pIP = nullptr;
-	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 	{
 		pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
 		if (pIP->iID == iID)
@@ -427,7 +427,7 @@ void CUIPartyOrForce::MemberLevelChange(int iID, int iLevel)
 {
 	auto it = m_Members.begin(), itEnd = m_Members.end();
 	__InfoPartyOrForce* pIP = nullptr;
-	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 	{
 		pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
 		if (pIP->iID == iID)
@@ -442,7 +442,7 @@ void CUIPartyOrForce::MemberClassChange(int iID, e_Class eClass)
 {
 	auto it = m_Members.begin(), itEnd = m_Members.end();
 	__InfoPartyOrForce* pIP = nullptr;
-	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 	{
 		pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
 		if (pIP->iID == iID)
@@ -467,7 +467,7 @@ void CUIPartyOrForce::Tick()
 		bBlink = true;
 
 	auto it = m_Members.begin(), itEnd = m_Members.end();
-	for (int i = 0; it != itEnd && i < MAX_PARTY_OR_FORCE; it++, i++)
+	for (int i = 0; it != itEnd && i < MAX_PARTY_SIZE; it++, i++)
 	{
 		__InfoPartyOrForce* pIP = &(*it); // 디버깅 하기 쉬우라고 이렇게 했다..
 		if (m_pProgress_HPs[i] != nullptr)

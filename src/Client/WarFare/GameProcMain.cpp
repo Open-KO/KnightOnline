@@ -3782,7 +3782,7 @@ bool CGameProcMain::MsgRecv_MyInfo_LevelChange(Packet& pkt)
 void CGameProcMain::MsgRecv_MyInfo_RealmPoint(Packet& pkt)
 {
 	uint8_t opcode = pkt.read<uint8_t>();
-	if (opcode == 1) // TODO: @Demircivi: LOYALTY_NATIONAL_POINTS is: 1, define it in header.
+	if (opcode == LOYALTY_CHANGE_NATIONAL)
 	{
 		// TODO: @Demircivi, implement missing
 
@@ -3814,7 +3814,7 @@ void CGameProcMain::MsgRecv_MyInfo_RealmPoint(Packet& pkt)
 				s_pPlayer->m_InfoExt.iRealmPoint, s_pPlayer->m_InfoExt.iRealmPointMonthly); // 국가 기여도는 10을 나누어서 표시
 		}
 	}
-	else if (opcode == 2)
+	else if (opcode == LOYALTY_CHANGE_MANNER)
 	{
 		// TODO: @Demircivi, after implementing Manner feature call its update method from here.
 		uint32_t iNewManner = pkt.read<uint32_t>(); // IDS_MANNER_CHANGE_GET / IDS_MANNER_CHANGE_LOST

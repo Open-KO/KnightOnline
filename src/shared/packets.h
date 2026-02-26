@@ -664,6 +664,12 @@ enum e_ZoneAbilityOpcode : uint8_t
 	ZONE_ABILITY_UPDATE = 1
 };
 
+enum e_LoyaltyChangeOpcode : uint8_t
+{
+	LOYALTY_CHANGE_NATIONAL = 1,
+	LOYALTY_CHANGE_MANNER   = 2
+};
+
 // ---------------------------------------------------------------------
 // Battle Event Sub Packet
 // ---------------------------------------------------------------------

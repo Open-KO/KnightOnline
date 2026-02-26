@@ -222,14 +222,13 @@ public:
 
 	uint32_t _sendValue                      = 0;
 	uint32_t _recvValue                      = 0;
-	//
 
-public:
+	int16_t m_sEventDiceRoll                 = 0;
+
 	CUser(test_tag);
 	CUser(TcpServerSocketManager* socketManager);
 	~CUser() override;
 
-public:
 	std::string_view GetImplName() const override;
 	void Initialize() override;
 	bool PullOutCore(char*& data, int& length) override;
@@ -413,6 +412,9 @@ public:
 	bool ItemEquipAvailable(const model::Item* pTable) const;
 	void ClassChange(char* pBuf);
 
+	/// \brief Issues the level 60 promotion quest
+	void GivePromotionQuest();
+
 	/// \brief Validates that the newClassId is valid promotion path from the current classId
 	/// \return true when the user's newClassId is a valid promotion path, false otherwise
 	bool ValidatePromotion(e_Class newClassId) const;
@@ -443,7 +445,16 @@ public:
 	void UserLookChange(int pos, int itemid, int durability);
 	void SpeedHackUser();
 	void VersionCheck();
-	void LoyaltyChange(int tid);
+
+	/// \brief Processes any national point change associated with killing a target
+	void LoyaltyChange(int targetId);
+
+	/// \brief Changes national loyalty by a set amount.
+	void ChangeLoyalty(int loyaltyChange, bool isExcludeMonthly);
+
+	/// \brief Changes manner loyalty by a set amount.
+	void ChangeMannerPoint(int loyaltyChange);
+
 	void StateChange(char* pBuf);
 	void PointChange(char* pBuf);
 	void ZoneChange(int zone, float x, float z);

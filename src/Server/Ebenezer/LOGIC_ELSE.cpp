@@ -171,6 +171,12 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 6;
 			break;
 
+		// A CHECK_DICE {sides}
+		case "CHECK_DICE"_djb2:
+			m_LogicElse = LOGIC_CHECK_DICE;
+			argsToParse = 1;
+			break;
+
 		// A CHECK_LOYALTY {minimum} {maximum}
 		case "CHECK_LOYALTY"_djb2:
 			m_LogicElse = LOGIC_CHECK_LOYALTY;

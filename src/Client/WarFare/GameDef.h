@@ -571,8 +571,6 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 	}
 };
 
-inline constexpr int MAX_PARTY_OR_FORCE = 8;
-
 struct __InfoPartyOrForce
 {
 	int iID;              // Player's ID

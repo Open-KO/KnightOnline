@@ -5613,12 +5613,12 @@ void CUser::ItemGet(char* pBuf)
 					goto fail_return;
 
 				int usercount = 0, money = 0, levelsum = 0;
-				for (int i = 0; i < 8; i++)
+				for (int j = 0; j < MAX_PARTY_SIZE; j++)
 				{
-					if (pParty->uid[i] != -1)
+					if (pParty->userSocketIds[j] != -1)
 					{
 						usercount++;
-						levelsum += pParty->bLevel[i];
+						levelsum += pParty->bLevel[j];
 					}
 				}
 
@@ -5627,7 +5627,7 @@ void CUser::ItemGet(char* pBuf)
 
 				for (i = 0; i < 8; i++)
 				{
-					pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+					pUser = m_pMain->GetUserPtr(pParty->userSocketIds[i]);
 					if (pUser == nullptr)
 						continue;
 
@@ -5733,13 +5733,13 @@ void CUser::StateChange(char* pBuf)
 	m_pMain->Send_Region(sendBuffer, sendIndex, m_pUserData->m_bZone, m_RegionX, m_RegionZ);
 }
 
-void CUser::LoyaltyChange(int tid)
+void CUser::LoyaltyChange(int targetId)
 {
 	int16_t level_difference = 0, loyalty_source = 0, loyalty_target = 0;
 	int sendIndex = 0;
 	char sendBuffer[256] {};
 
-	auto pTUser = m_pMain->GetUserPtr(tid);
+	auto pTUser = m_pMain->GetUserPtr(targetId);
 
 	// Check if target exists.
 	if (pTUser == nullptr)
@@ -5839,6 +5839,106 @@ void CUser::LoyaltyChange(int tid)
 		}
 	}
 	//
+}
+
+void CUser::ChangeLoyalty(const int loyaltyChange, const bool isExcludeMonthly)
+{
+	if (m_pUserData->m_bZone == ZONE_ARENA)
+	{
+		return;
+	}
+
+	m_pUserData->m_iLoyalty += loyaltyChange;
+	if (m_pUserData->m_iLoyalty < 0)
+		m_pUserData->m_iLoyalty = 0;
+
+	if (!isExcludeMonthly)
+	{
+		m_pUserData->m_iLoyaltyMonthly += loyaltyChange;
+		if (m_pUserData->m_iLoyaltyMonthly < 0)
+			m_pUserData->m_iLoyaltyMonthly = 0;
+	}
+
+	char sendBuff[256] {};
+	int sendIndex = 0;
+	SetByte(sendBuff, WIZ_LOYALTY_CHANGE, sendIndex);
+	SetByte(sendBuff, LOYALTY_CHANGE_NATIONAL, sendIndex);
+	SetInt(sendBuff, m_pUserData->m_iLoyalty, sendIndex);
+	SetInt(sendBuff, m_pUserData->m_iLoyaltyMonthly, sendIndex);
+	Send(sendBuff, sendIndex);
+}
+
+void CUser::ChangeMannerPoint(const int loyaltyAmount)
+{
+	static constexpr int MIN_MANNER_POINT           = 0;
+	static constexpr int MAX_MANNER_POINT           = 2'100'000'000;
+	static constexpr uint8_t MANNER_LEVEL_BAND_1    = 20;
+	static constexpr uint8_t MANNER_LEVEL_BAND_2    = 30;
+	static constexpr uint8_t MANNER_LEVEL_BAND_3    = 40;
+	static constexpr uint8_t MIN_MANNER_POINT_LEVEL = 35;
+	static constexpr float MANNER_POINT_RANGE       = 50;
+
+	if (loyaltyAmount > 0)
+	{
+		m_pUserData->m_iMannerPoint = std::clamp(
+			m_pUserData->m_iMannerPoint + loyaltyAmount, MIN_MANNER_POINT, MAX_MANNER_POINT);
+
+		char sendBuff[128] {};
+		int sendIndex = 0;
+		SetByte(sendBuff, WIZ_LOYALTY_CHANGE, sendIndex);
+		SetByte(sendBuff, LOYALTY_CHANGE_MANNER, sendIndex);
+		SetInt(sendBuff, m_pUserData->m_iMannerPoint, sendIndex);
+		Send(sendBuff, sendIndex);
+	}
+	else if (m_bIsChicken && m_sPartyIndex != -1)
+	{
+		_PARTY_GROUP* userParty {};
+		{
+			std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
+			userParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
+		}
+
+		if (userParty == nullptr)
+		{
+			return;
+		}
+
+		uint8_t partyPointChange = 0;
+		if (m_pUserData->m_bLevel <= MANNER_LEVEL_BAND_1)
+			partyPointChange = 1;
+		else if (m_pUserData->m_bLevel <= MANNER_LEVEL_BAND_2)
+			partyPointChange = 2;
+		else if (m_pUserData->m_bLevel <= MANNER_LEVEL_BAND_3)
+			partyPointChange = 3;
+
+		for (int i = 0; i < MAX_PARTY_SIZE; i++)
+		{
+			if (userParty->userSocketIds[i] < 0)
+				continue;
+
+			std::shared_ptr<CUser> partyMember = m_pMain->GetUserPtr(userParty->userSocketIds[i]);
+			if (partyMember == nullptr || partyMember->m_bResHpType == USER_DEAD
+				|| partyMember->m_bIsChicken
+				|| partyMember->m_pUserData->m_bLevel < MIN_MANNER_POINT_LEVEL)
+				continue;
+
+			float distance = GetDistance2D(
+				partyMember->m_pUserData->m_curx, partyMember->m_pUserData->m_curz);
+			if (distance > MANNER_POINT_RANGE)
+				continue;
+
+			partyMember->m_pUserData->m_iMannerPoint = std::clamp(
+				partyMember->m_pUserData->m_iMannerPoint + partyPointChange, MIN_MANNER_POINT,
+				MAX_MANNER_POINT);
+
+			char sendBuff[128] {};
+			int sendIndex = 0;
+			SetByte(sendBuff, WIZ_LOYALTY_CHANGE, sendIndex);
+			SetByte(sendBuff, LOYALTY_CHANGE_MANNER, sendIndex);
+			SetInt(sendBuff, m_pUserData->m_iMannerPoint, sendIndex);
+			Send(sendBuff, sendIndex);
+		}
+	}
 }
 
 void CUser::SpeedHackUser()
@@ -5985,7 +6085,7 @@ void CUser::PartyCancel()
 
 	m_sPartyIndex = -1;
 
-	leader_id     = pParty->uid[0];
+	leader_id     = pParty->userSocketIds[0];
 
 	auto pUser    = m_pMain->GetUserPtr(leader_id);
 	if (pUser == nullptr)
@@ -5994,7 +6094,7 @@ void CUser::PartyCancel()
 	// 파티 생성시 취소한거면..파티를 뽀개야쥐...
 	for (int i = 0; i < 8; i++)
 	{
-		if (pParty->uid[i] >= 0)
+		if (pParty->userSocketIds[i] >= 0)
 			count++;
 	}
 
@@ -6046,9 +6146,9 @@ void CUser::PartyRequest(int memberid, bool bCreate)
 		if (pParty == nullptr)
 			goto fail_return;
 
-		for (i = 0; i < 8; i++)
+		for (i = 0; i < MAX_PARTY_SIZE; i++)
 		{
-			if (pParty->uid[i] < 0)
+			if (pParty->userSocketIds[i] < 0)
 				break;
 		}
 
@@ -6063,12 +6163,12 @@ void CUser::PartyRequest(int memberid, bool bCreate)
 		if (m_sPartyIndex != -1)
 			goto fail_return;
 
-		pParty            = new _PARTY_GROUP;
-		pParty->uid[0]    = _socketId;
-		pParty->sMaxHp[0] = m_iMaxHp;
-		pParty->sHp[0]    = m_pUserData->m_sHp;
-		pParty->bLevel[0] = m_pUserData->m_bLevel;
-		pParty->sClass[0] = m_pUserData->m_sClass;
+		pParty                   = new _PARTY_GROUP;
+		pParty->userSocketIds[0] = _socketId;
+		pParty->sMaxHp[0]        = m_iMaxHp;
+		pParty->sHp[0]           = m_pUserData->m_sHp;
+		pParty->bLevel[0]        = m_pUserData->m_bLevel;
+		pParty->sClass[0]        = m_pUserData->m_sClass;
 
 		{
 			std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
@@ -6094,7 +6194,7 @@ void CUser::PartyRequest(int memberid, bool bCreate)
 		SetByte(sendBuffer, AG_USER_PARTY, sendIndex);
 		SetByte(sendBuffer, PARTY_CREATE, sendIndex);
 		SetShort(sendBuffer, pParty->wIndex, sendIndex);
-		SetShort(sendBuffer, pParty->uid[0], sendIndex);
+		SetShort(sendBuffer, pParty->userSocketIds[0], sendIndex);
 		//SetShort( sendBuffer, pParty->sHp[0], sendIndex );
 		//SetByte( sendBuffer, pParty->bLevel[0], sendIndex );
 		//SetShort( sendBuffer, pParty->sClass[0], sendIndex );
@@ -6156,12 +6256,12 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 	}
 
 	// Send your info to the rest of the party members.
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
-		if (pParty->uid[i] == _socketId)
+		if (pParty->userSocketIds[i] == _socketId)
 			continue;
 
-		auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+		auto pUser = m_pMain->GetUserPtr(pParty->userSocketIds[i]);
 		if (pUser == nullptr)
 			continue;
 
@@ -6169,7 +6269,7 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 		sendIndex = 0;
 		SetByte(sendBuffer, WIZ_PARTY, sendIndex);
 		SetByte(sendBuffer, PARTY_INSERT, sendIndex);
-		SetShort(sendBuffer, pParty->uid[i], sendIndex);
+		SetShort(sendBuffer, pParty->userSocketIds[i], sendIndex);
 		SetString2(sendBuffer, pUser->m_pUserData->m_id, sendIndex);
 		SetShort(sendBuffer, pParty->sMaxHp[i], sendIndex);
 		SetShort(sendBuffer, pParty->sHp[i], sendIndex);
@@ -6184,19 +6284,19 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 	for (; i < 8; i++)
 	{
 		// Party Structure 에 추가
-		if (pParty->uid[i] != -1)
+		if (pParty->userSocketIds[i] != -1)
 			continue;
 
-		pParty->uid[i]    = _socketId;
-		pParty->sMaxHp[i] = m_iMaxHp;
-		pParty->sHp[i]    = m_pUserData->m_sHp;
-		pParty->bLevel[i] = m_pUserData->m_bLevel;
-		pParty->sClass[i] = m_pUserData->m_sClass;
+		pParty->userSocketIds[i] = _socketId;
+		pParty->sMaxHp[i]        = m_iMaxHp;
+		pParty->sHp[i]           = m_pUserData->m_sHp;
+		pParty->bLevel[i]        = m_pUserData->m_bLevel;
+		pParty->sClass[i]        = m_pUserData->m_sClass;
 		break;
 	}
 
 	// 파티 BBS를 위해 추가...	대장판!!!
-	auto pUser = m_pMain->GetUserPtr(pParty->uid[0]);
+	auto pUser = m_pMain->GetUserPtr(pParty->userSocketIds[0]);
 	if (pUser == nullptr)
 		return;
 
@@ -6251,7 +6351,7 @@ void CUser::PartyInsert() // 본인이 추가 된다.  리더에게 패킷이 �
 	SetByte(sendBuffer, PARTY_INSERT, sendIndex);
 	SetShort(sendBuffer, pParty->wIndex, sendIndex);
 	SetByte(sendBuffer, byIndex, sendIndex);
-	SetShort(sendBuffer, pParty->uid[byIndex], sendIndex);
+	SetShort(sendBuffer, pParty->userSocketIds[byIndex], sendIndex);
 	//SetShort( sendBuffer, pParty->sHp[byIndex], sendIndex );
 	//SetByte( sendBuffer, pParty->bLevel[byIndex], sendIndex );
 	//SetShort( sendBuffer, pParty->sClass[byIndex], sendIndex );
@@ -6281,13 +6381,13 @@ void CUser::PartyRemove(int memberid)
 	if (memberid != _socketId)
 	{
 		// 리더만 멤버 삭제 할수 있음..
-		if (pParty->uid[0] != _socketId)
+		if (pParty->userSocketIds[0] != _socketId)
 			return;
 	}
 	else
 	{
 		// 리더가 탈퇴하면 파티 깨짐
-		if (pParty->uid[0] == memberid)
+		if (pParty->userSocketIds[0] == memberid)
 		{
 			PartyDelete();
 			return;
@@ -6295,9 +6395,9 @@ void CUser::PartyRemove(int memberid)
 	}
 
 	int count = 0;
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
-		if (pParty->uid[i] != -1 && pParty->uid[i] != memberid)
+		if (pParty->userSocketIds[i] != -1 && pParty->userSocketIds[i] != memberid)
 			++count;
 	}
 
@@ -6317,15 +6417,15 @@ void CUser::PartyRemove(int memberid)
 	m_pMain->Send_PartyMember(m_sPartyIndex, sendBuffer, sendIndex);
 
 	// 파티가 유효한 경우 에는 파티 리스트에서 뺀다.
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
-		if (pParty->uid[i] != -1 && pParty->uid[i] == memberid)
+		if (pParty->userSocketIds[i] != -1 && pParty->userSocketIds[i] == memberid)
 		{
-			pParty->uid[i]       = -1;
-			pParty->sHp[i]       = 0;
-			pParty->bLevel[i]    = 0;
-			pParty->sClass[i]    = 0;
-			pUser->m_sPartyIndex = -1;
+			pParty->userSocketIds[i] = -1;
+			pParty->sHp[i]           = 0;
+			pParty->bLevel[i]        = 0;
+			pParty->sClass[i]        = 0;
+			pUser->m_sPartyIndex     = -1;
 		}
 	}
 
@@ -6351,9 +6451,9 @@ void CUser::PartyDelete()
 		return;
 	}
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
-		auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+		auto pUser = m_pMain->GetUserPtr(pParty->userSocketIds[i]);
 		if (pUser != nullptr)
 			pUser->m_sPartyIndex = -1;
 	}
@@ -7352,9 +7452,9 @@ void CUser::LoyaltyDivide(int tid)
 		return;
 
 	// Get total level and number of members in party.
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_PARTY_SIZE; i++)
 	{
-		if (pParty->uid[i] != -1)
+		if (pParty->userSocketIds[i] != -1)
 		{
 			levelsum += pParty->bLevel[i];
 			++total_member;
@@ -7426,9 +7526,9 @@ void CUser::LoyaltyDivide(int tid)
 		individualvalue = -1000;
 
 		// Distribute loyalty amongst party members.
-		for (int j = 0; j < 8; j++)
+		for (int j = 0; j < MAX_PARTY_SIZE; j++)
 		{
-			auto pUser = m_pMain->GetUserPtr(pParty->uid[j]);
+			auto pUser = m_pMain->GetUserPtr(pParty->userSocketIds[j]);
 			if (pUser == nullptr)
 				continue;
 
@@ -7456,9 +7556,9 @@ void CUser::LoyaltyDivide(int tid)
 		loyalty_source = 2 * loyalty_source;
 
 	// Distribute loyalty amongst party members.
-	for (int j = 0; j < 8; j++)
+	for (int j = 0; j < MAX_PARTY_SIZE; j++)
 	{
-		auto pUser = m_pMain->GetUserPtr(pParty->uid[j]);
+		auto pUser = m_pMain->GetUserPtr(pParty->userSocketIds[j]);
 		if (pUser == nullptr)
 			continue;
 
@@ -9038,9 +9138,9 @@ std::shared_ptr<CUser> CUser::GetItemRoutingUser(int itemid, int16_t /*itemcount
 	if (pTable == nullptr)
 		return nullptr;
 
-	while (count < 8)
+	while (count < MAX_PARTY_SIZE)
 	{
-		int select_user = pParty->uid[pParty->bItemRouting];
+		int select_user = pParty->userSocketIds[pParty->bItemRouting];
 		auto pUser      = m_pMain->GetUserPtr(select_user);
 		if (pUser != nullptr)
 		{
@@ -9174,6 +9274,43 @@ void CUser::ClassChangeRespecReq()
 	SetByte(sendBuff, WIZ_CLASS_CHANGE, sendIndex);
 	SetByte(sendBuff, CLASS_CHANGE_STATUS_REQ, sendIndex);
 	Send(sendBuff, sendIndex);
+}
+
+void CUser::GivePromotionQuest()
+{
+	switch (m_pUserData->m_sClass)
+	{
+		case CLASS_EL_BLADE:
+		case CLASS_KA_BERSERKER:
+			SendSay(6020, 6020, 6002, 6011);
+			if (CheckExistEvent(QUEST_MASTER_WARRIOR, QUEST_STATE_NOT_STARTED))
+				SaveEvent(QUEST_MASTER_WARRIOR, QUEST_STATE_IN_PROGRESS);
+			break;
+
+		case CLASS_KA_HUNTER:
+		case CLASS_EL_RANGER:
+			SendSay(6012, 6012, 7002, 7011);
+			if (CheckExistEvent(QUEST_MASTER_ROGUE, QUEST_STATE_NOT_STARTED))
+				SaveEvent(QUEST_MASTER_ROGUE, QUEST_STATE_IN_PROGRESS);
+			break;
+
+		case CLASS_KA_SORCERER:
+		case CLASS_EL_MAGE:
+			SendSay(6014, 6014, 8002, 8011);
+			if (CheckExistEvent(QUEST_MASTER_MAGE, QUEST_STATE_NOT_STARTED))
+				SaveEvent(QUEST_MASTER_MAGE, QUEST_STATE_IN_PROGRESS);
+			break;
+
+		case CLASS_KA_SHAMAN:
+		case CLASS_EL_CLERIC:
+			SendSay(6020, 6020, 9002, 9011);
+			if (CheckExistEvent(QUEST_MASTER_PRIEST, QUEST_STATE_NOT_STARTED))
+				SaveEvent(QUEST_MASTER_PRIEST, QUEST_STATE_IN_PROGRESS);
+			break;
+
+		default:
+			break;
+	}
 }
 
 void CUser::SkillPointResetRequest(bool isFree)
@@ -9550,9 +9687,9 @@ void CUser::GoldChange(int tid, int gold)
 			int usercount = 0, money = 0, levelsum = 0, count = 0;
 			count = s_temp_gold;
 
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < MAX_PARTY_SIZE; i++)
 			{
-				if (pParty->uid[i] != -1)
+				if (pParty->userSocketIds[i] != -1)
 				{
 					usercount++;
 					levelsum += pParty->bLevel[i];
@@ -9562,9 +9699,9 @@ void CUser::GoldChange(int tid, int gold)
 			if (usercount == 0)
 				return;
 
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < MAX_PARTY_SIZE; i++)
 			{
-				auto pUser = m_pMain->GetUserPtr(pParty->uid[i]);
+				auto pUser = m_pMain->GetUserPtr(pParty->userSocketIds[i]);
 				if (pUser == nullptr)
 					continue;
 
@@ -11711,6 +11848,10 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
+			case LOGIC_CHECK_DICE:
+				bExact = pLE->m_LogicElseInt[0] == m_sEventDiceRoll;
+				break;
+
 			case LOGIC_CHECK_WEIGHT:
 				if (!CheckWeight(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
 					bExact = true;
@@ -11981,20 +12122,50 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				GoldLose(pExec->m_ExecInt[0]);
 				break;
 
+			case EXEC_RETURN:
+				return false;
+
+			case EXEC_SAVE_EVENT:
+				SaveEvent(static_cast<e_QuestId>(pExec->m_ExecInt[0]),
+					static_cast<e_QuestState>(pExec->m_ExecInt[1]));
+				break;
+
+			case EXEC_PROMOTE_USER:
+				PromoteUser();
+				break;
+
+			case EXEC_GIVE_PROMOTION_QUEST:
+				GivePromotionQuest();
+				break;
+
 			case EXEC_ZONE_CHANGE:
 				ZoneChange(pExec->m_ExecInt[0], static_cast<float>(pExec->m_ExecInt[1]),
 					static_cast<float>(pExec->m_ExecInt[2]));
 				break;
 
-			case EXEC_RETURN:
-				return false;
-
 			case EXEC_PROMOTE_USER_NOVICE:
 				PromoteUserNovice();
 				break;
 
-			case EXEC_PROMOTE_USER:
-				PromoteUser();
+			case EXEC_SKILL_POINT_DISTRIBUTE:
+			case EXEC_STAT_POINT_DISTRIBUTE:
+				ClassChangeRespecReq();
+				break;
+
+			case EXEC_LEVEL_UP:
+				ExpChange(m_iMaxExp);
+				break;
+
+			case EXEC_EXP_CHANGE:
+				ExpChange(pExec->m_ExecInt[0]);
+				break;
+
+			case EXEC_ROLL_DICE:
+				m_sEventDiceRoll = myrand(1, pExec->m_ExecInt[0]);
+				break;
+
+			case EXEC_CHANGE_LOYALTY:
+				ChangeLoyalty(pExec->m_ExecInt[0], true);
 				break;
 
 			case EXEC_SKILL_POINT_FREE:
@@ -12005,9 +12176,8 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				StatPointResetRequest(true);
 				break;
 
-			case EXEC_SKILL_POINT_DISTRIBUTE:
-			case EXEC_STAT_POINT_DISTRIBUTE:
-				ClassChangeRespecReq();
+			case EXEC_CHANGE_MANNER:
+				ChangeMannerPoint(pExec->m_ExecInt[0]);
 				break;
 
 			default:

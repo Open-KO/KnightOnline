@@ -790,7 +790,7 @@ void EbenezerApp::Send_PartyMember(int party, char* pBuf, int len)
 
 	for (int i = 0; i < 8; i++)
 	{
-		auto pUser = GetUserPtr(pParty->uid[i]);
+		auto pUser = GetUserPtr(pParty->userSocketIds[i]);
 		if (pUser != nullptr)
 			pUser->Send(pBuf, len);
 	}
@@ -2154,7 +2154,7 @@ void EbenezerApp::SendAllUserInfo()
 		//if( i == pParty->wIndex )
 		for (int j = 0; j < 8; j++)
 		{
-			SetShort(sendBuffer, pParty->uid[j], sendIndex); // 유저 번호
+			SetShort(sendBuffer, pParty->userSocketIds[j], sendIndex); // 유저 번호
 			//SetShort(sendBuffer, pParty->sHp[j], sendIndex );				// HP
 			//SetByte(sendBuffer, pParty->bLevel[j], sendIndex );				// Level
 			//SetShort(sendBuffer, pParty->sClass[j], sendIndex );			// Class

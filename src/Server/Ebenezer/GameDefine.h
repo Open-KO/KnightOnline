@@ -287,22 +287,22 @@ struct _EXCHANGE_ITEM
 struct _PARTY_GROUP
 {
 	uint16_t wIndex;
-	int16_t uid[8]; // 하나의 파티에 8명까지 가입가능
-	int16_t sMaxHp[8];
-	int16_t sHp[8];
-	uint8_t bLevel[8];
-	int16_t sClass[8];
+	int16_t userSocketIds[MAX_PARTY_SIZE];
+	int16_t sMaxHp[MAX_PARTY_SIZE];
+	int16_t sHp[MAX_PARTY_SIZE];
+	uint8_t bLevel[MAX_PARTY_SIZE];
+	int16_t sClass[MAX_PARTY_SIZE];
 	uint8_t bItemRouting;
 
 	_PARTY_GROUP()
 	{
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < MAX_PARTY_SIZE; i++)
 		{
-			uid[i]    = -1;
-			sMaxHp[i] = 0;
-			sHp[i]    = 0;
-			bLevel[i] = 0;
-			sClass[i] = 0;
+			userSocketIds[i] = -1;
+			sMaxHp[i]        = 0;
+			sHp[i]           = 0;
+			bLevel[i]        = 0;
+			sClass[i]        = 0;
 		}
 
 		wIndex       = 0;

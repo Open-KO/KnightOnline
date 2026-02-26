@@ -26,6 +26,8 @@ inline constexpr int MAX_LEVEL                       = 80;   // 최고렙...
 inline constexpr int MAX_GOLD                        = 2'100'000'000;
 inline constexpr int VIEW_DISTANCE                   = 48;
 
+inline constexpr int MAX_PARTY_SIZE                  = 8;
+
 inline constexpr float MAX_INTERACTION_RANGE         = 11;
 inline constexpr float MAX_INTERACTION_RANGE_SQUARED = (MAX_INTERACTION_RANGE
 														* MAX_INTERACTION_RANGE);
