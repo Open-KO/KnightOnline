@@ -5875,16 +5875,9 @@ void CUser::ChangeMannerPoint(const int loyaltyAmount)
 	}
 	else if (m_bIsChicken && m_sPartyIndex != -1)
 	{
-		_PARTY_GROUP* userParty {};
-		{
-			std::lock_guard<std::recursive_mutex> lock(g_region_mutex);
-			userParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
-		}
-
+		_PARTY_GROUP* userParty = m_pMain->m_PartyMap.GetData(m_sPartyIndex);
 		if (userParty == nullptr)
-		{
 			return;
-		}
 
 		uint8_t partyPointChange = 0;
 		if (m_pUserData->m_bLevel <= MANNER_LEVEL_BAND_1)
@@ -7540,7 +7533,7 @@ void CUser::LoyaltyDivide(int tid)
 			continue;
 
 		//TRACE(_T("LoyaltyDivide 333 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
-		individualvalue                 = pUser->m_pUserData->m_bLevel * loyalty_source / levelsum;
+		individualvalue = pUser->m_pUserData->m_bLevel * loyalty_source / levelsum;
 		CurrencyChange(pUser->m_pUserData->m_iLoyalty, individualvalue);
 
 		//TRACE(_T("LoyaltyDivide 444 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
@@ -11129,7 +11122,7 @@ void CUser::MarketBBSTimeCheck()
 				if (pUser->m_pUserData->m_iGold >= BUY_POST_PRICE)
 				{
 					CurrencyChange(pUser->m_pUserData->m_iGold, -BUY_POST_PRICE);
-					m_pMain->m_fBuyStartTime[i]  = TimeGet();
+					m_pMain->m_fBuyStartTime[i] = TimeGet();
 
 					// Now the target
 					memset(sendBuffer, 0, sizeof(sendBuffer));
@@ -11162,7 +11155,7 @@ void CUser::MarketBBSTimeCheck()
 				if (pUser->m_pUserData->m_iGold >= SELL_POST_PRICE)
 				{
 					CurrencyChange(pUser->m_pUserData->m_iGold, -SELL_POST_PRICE);
-					m_pMain->m_fSellStartTime[i]  = TimeGet();
+					m_pMain->m_fSellStartTime[i] = TimeGet();
 
 					// Now the target
 					memset(sendBuffer, 0, sizeof(sendBuffer));
