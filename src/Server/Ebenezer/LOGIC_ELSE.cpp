@@ -134,6 +134,26 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
+		case "CHECK_EXIST_ITEM_AND"_djb2:
+			m_LogicElse = LOGIC_CHECK_EXIST_ITEM_AND;
+			argsToParse = 10;
+			break;
+
+		case "CHECK_EXIST_ITEM_OR"_djb2:
+			m_LogicElse = LOGIC_CHECK_EXIST_ITEM_OR;
+			argsToParse = 10;
+			break;
+
+		case "CHECK_NOEXIST_ITEM_AND"_djb2:
+			m_LogicElse = LOGIC_CHECK_EXIST_ITEM_AND;
+			argsToParse = 10;
+			break;
+
+		case "CHECK_NOEXIST_ITEM_OR"_djb2:
+			m_LogicElse = LOGIC_CHECK_EXIST_ITEM_OR;
+			argsToParse = 10;
+			break;
+
 		// A CHECK_NOEXIST_EVENT {quest ID} {quest state}
 		case "CHECK_NOEXIST_EVENT"_djb2:
 			m_LogicElse = LOGIC_CHECK_NOEXIST_EVENT;

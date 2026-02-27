@@ -296,6 +296,26 @@ public:
 	/// \return true when the user has count number of itemIds, false otherwise
 	bool CheckExistItem(int itemId, int16_t count) const;
 
+	/// \brief Checks to see if a user has any of 5 sets of items
+	/// \return true when the user has any of the items, false otherwise
+	bool CheckExistItemOr(int id1, int16_t count1, int id2, int16_t count2, int id3 = -1,
+		int16_t count3 = -1, int id4 = -1, int16_t count4 = -1, int id5 = -1,
+		int16_t count5 = -1) const;
+
+	/// \brief Checks to see if a user has any of the items in the input array
+	/// \return true when the user has any of the items, false otherwise
+	bool CheckExistItemOr(std::span<const ItemPair> items) const;
+
+	/// \brief Checks to see if a user is missing any of 5 sets of items
+	/// \return true when the user is missing any of the items, false otherwise
+	bool CheckNoExistItemOr(int id1, int16_t count1, int id2, int16_t count2, int id3 = -1,
+		int16_t count3 = -1, int id4 = -1, int16_t count4 = -1, int id5 = -1,
+		int16_t count5 = -1) const;
+
+	/// \brief Checks to see if a user is missing any of the items in the input array
+	/// \return true when the user is missing any of the items, false otherwise
+	bool CheckNoExistItemOr(std::span<const ItemPair> items) const;
+
 	/// \brief Checks to see if a user has up to 5 sets of items
 	/// \return true when the user has all the items, false otherwise
 	bool CheckExistItemAnd(int id1, int16_t count1, int id2, int16_t count2, int id3 = -1,
@@ -305,6 +325,16 @@ public:
 	/// \brief Checks to see if a user has all the items in the input array
 	/// \return true when the user has all the items, false otherwise
 	bool CheckExistItemAnd(std::span<const ItemPair> items) const;
+
+	/// \brief Checks to see if a user does not have up to 5 sets of items
+	/// \return true when the user does not have any of the items, false otherwise
+	bool CheckNoExistItemAnd(int id1, int16_t count1, int id2, int16_t count2, int id3 = -1,
+		int16_t count3 = -1, int id4 = -1, int16_t count4 = -1, int id5 = -1,
+		int16_t count5 = -1) const;
+
+	/// \brief Checks to see if a user des not have any of the items in the input array
+	/// \return true when the user does not have any of the items, false otherwise
+	bool CheckNoExistItemAnd(std::span<const ItemPair> items) const;
 
 	bool CheckWeight(int itemid, int16_t count) const;
 	bool CheckSkillPoint(uint8_t skillnum, uint8_t min, uint8_t max) const;

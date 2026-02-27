@@ -11839,6 +11839,34 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
+			case LOGIC_CHECK_EXIST_ITEM_AND:
+				bExact = CheckExistItemAnd(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1],
+					pLE->m_LogicElseInt[2], pLE->m_LogicElseInt[3], pLE->m_LogicElseInt[4],
+					pLE->m_LogicElseInt[5], pLE->m_LogicElseInt[6], pLE->m_LogicElseInt[7],
+					pLE->m_LogicElseInt[8], pLE->m_LogicElseInt[9]);
+				break;
+
+			case LOGIC_CHECK_EXIST_ITEM_OR:
+				bExact = CheckExistItemOr(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1],
+					pLE->m_LogicElseInt[2], pLE->m_LogicElseInt[3], pLE->m_LogicElseInt[4],
+					pLE->m_LogicElseInt[5], pLE->m_LogicElseInt[6], pLE->m_LogicElseInt[7],
+					pLE->m_LogicElseInt[8], pLE->m_LogicElseInt[9]);
+				break;
+
+			case LOGIC_CHECK_NOEXIST_ITEM_AND:
+				bExact = CheckNoExistItemAnd(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1],
+					pLE->m_LogicElseInt[2], pLE->m_LogicElseInt[3], pLE->m_LogicElseInt[4],
+					pLE->m_LogicElseInt[5], pLE->m_LogicElseInt[6], pLE->m_LogicElseInt[7],
+					pLE->m_LogicElseInt[8], pLE->m_LogicElseInt[9]);
+				break;
+
+			case LOGIC_CHECK_NOEXIST_ITEM_OR:
+				bExact = CheckNoExistItemOr(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1],
+					pLE->m_LogicElseInt[2], pLE->m_LogicElseInt[3], pLE->m_LogicElseInt[4],
+					pLE->m_LogicElseInt[5], pLE->m_LogicElseInt[6], pLE->m_LogicElseInt[7],
+					pLE->m_LogicElseInt[8], pLE->m_LogicElseInt[9]);
+				break;
+
 			case LOGIC_CHECK_EXIST_EVENT:
 				if (CheckExistEvent(static_cast<e_QuestId>(pLE->m_LogicElseInt[0]),
 						static_cast<e_QuestState>(pLE->m_LogicElseInt[1])))
@@ -12337,6 +12365,44 @@ bool CUser::CheckExistItem(int itemId, int16_t count) const
 	return false;
 }
 
+bool CUser::CheckExistItemOr(int id1, int16_t count1, int id2, int16_t count2, int id3,
+	int16_t count3, int id4, int16_t count4, int id5, int16_t count5) const
+{
+	const ItemPair items[5] { { id1, count1 }, { id2, count2 }, { id3, count3 }, { id4, count4 },
+		{ id5, count5 } };
+	return CheckExistItemOr(items);
+}
+
+bool CUser::CheckExistItemOr(const std::span<const ItemPair> items) const
+{
+	for (const ItemPair& item : items)
+	{
+		if (item.ItemId != -1 && CheckExistItem(item.ItemId, item.Count))
+			return true;
+	}
+
+	return false;
+}
+
+bool CUser::CheckNoExistItemOr(int id1, int16_t count1, int id2, int16_t count2, int id3,
+	int16_t count3, int id4, int16_t count4, int id5, int16_t count5) const
+{
+	const ItemPair items[5] { { id1, count1 }, { id2, count2 }, { id3, count3 }, { id4, count4 },
+		{ id5, count5 } };
+	return CheckNoExistItemOr(items);
+}
+
+bool CUser::CheckNoExistItemOr(const std::span<const ItemPair> items) const
+{
+	for (const ItemPair& item : items)
+	{
+		if (item.ItemId != -1 && !CheckExistItem(item.ItemId, item.Count))
+			return true;
+	}
+
+	return false;
+}
+
 bool CUser::CheckExistItemAnd(int id1, int16_t count1, int id2, int16_t count2, int id3,
 	int16_t count3, int id4, int16_t count4, int id5, int16_t count5) const
 {
@@ -12353,6 +12419,30 @@ bool CUser::CheckExistItemAnd(const std::span<const ItemPair> items) const
 		{
 			spdlog::debug(
 				"User::CheckExistItemAnd: User missing items [charId={} itemId={} count={}]",
+				m_pUserData->m_id, item.ItemId, item.Count);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool CUser::CheckNoExistItemAnd(int id1, int16_t count1, int id2, int16_t count2, int id3,
+	int16_t count3, int id4, int16_t count4, int id5, int16_t count5) const
+{
+	const ItemPair items[5] { { id1, count1 }, { id2, count2 }, { id3, count3 }, { id4, count4 },
+		{ id5, count5 } };
+	return CheckNoExistItemAnd(items);
+}
+
+bool CUser::CheckNoExistItemAnd(const std::span<const ItemPair> items) const
+{
+	for (const ItemPair& item : items)
+	{
+		if (item.ItemId != -1 && CheckExistItem(item.ItemId, item.Count))
+		{
+			spdlog::debug(
+				"User::CheckNoExistItemAnd: User has items [charId={} itemId={} count={}]",
 				m_pUserData->m_id, item.ItemId, item.Count);
 			return false;
 		}
