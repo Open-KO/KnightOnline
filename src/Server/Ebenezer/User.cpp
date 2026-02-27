@@ -5238,10 +5238,10 @@ void CUser::ItemTrade(char* pBuf)
 			}
 		}
 
-		m_pUserData->m_sItemArray[SLOT_MAX + pos].nNum       = itemid;
-		m_pUserData->m_sItemArray[SLOT_MAX + pos].sDuration  = pTable->Durability;
+		m_pUserData->m_sItemArray[SLOT_MAX + pos].nNum      = itemid;
+		m_pUserData->m_sItemArray[SLOT_MAX + pos].sDuration = pTable->Durability;
 
-		m_pUserData->m_iGold                                -= static_cast<int>(buyPrice);
+		CurrencyChange(m_pUserData->m_iGold, -static_cast<int>(buyPrice));
 
 		// count 개념이 있는 아이템
 		if (pTable->Countable && count > 0)
@@ -5293,7 +5293,7 @@ void CUser::ItemTrade(char* pBuf)
 				goto fail_return;
 			}
 
-			m_pUserData->m_iGold                             += static_cast<int>(salePrice);
+			CurrencyChange(m_pUserData->m_iGold, static_cast<int>(salePrice));
 
 			m_pUserData->m_sItemArray[SLOT_MAX + pos].sCount -= count;
 
@@ -5321,11 +5321,11 @@ void CUser::ItemTrade(char* pBuf)
 				goto fail_return;
 			}
 
-			m_pUserData->m_iGold                                += static_cast<int>(salePrice);
+			CurrencyChange(m_pUserData->m_iGold, static_cast<int>(salePrice));
 
-			m_pUserData->m_sItemArray[SLOT_MAX + pos].nNum       = 0;
-			m_pUserData->m_sItemArray[SLOT_MAX + pos].sDuration  = 0;
-			m_pUserData->m_sItemArray[SLOT_MAX + pos].sCount     = 0;
+			m_pUserData->m_sItemArray[SLOT_MAX + pos].nNum      = 0;
+			m_pUserData->m_sItemArray[SLOT_MAX + pos].sDuration = 0;
+			m_pUserData->m_sItemArray[SLOT_MAX + pos].sCount    = 0;
 		}
 
 		SendItemWeight();
@@ -5596,7 +5596,7 @@ void CUser::ItemGet(char* pBuf)
 		{
 			if (m_sPartyIndex == -1)
 			{
-				m_pUserData->m_iGold += count;
+				CurrencyChange(m_pUserData->m_iGold, count);
 
 				SetByte(sendBuffer, WIZ_ITEM_GET, sendIndex);
 				SetByte(sendBuffer, 0x01, sendIndex);
@@ -5633,9 +5633,9 @@ void CUser::ItemGet(char* pBuf)
 
 					money = static_cast<int>(
 						count * (float) (pUser->m_pUserData->m_bLevel / (float) levelsum));
-					pUser->m_pUserData->m_iGold += money;
+					CurrencyChange(pUser->m_pUserData->m_iGold, money);
 
-					sendIndex                    = 0;
+					sendIndex = 0;
 					memset(sendBuffer, 0, sizeof(sendBuffer));
 					SetByte(sendBuffer, WIZ_ITEM_GET, sendIndex);
 					SetByte(sendBuffer, 0x02, sendIndex);
@@ -6617,14 +6617,14 @@ void CUser::ExchangeAdd(char* pBuf)
 			if (pExchangeItem->itemid == ITEM_GOLD)
 			{
 				pExchangeItem->count += count;
-				m_pUserData->m_iGold -= count;
-				bAdd                  = false;
+				CurrencyChange(m_pUserData->m_iGold, -count);
+				bAdd = false;
 				break;
 			}
 		}
 
 		if (bAdd)
-			m_pUserData->m_iGold -= count;
+			CurrencyChange(m_pUserData->m_iGold, -count);
 	}
 	else if (m_MirrorItem[pos].nNum == itemid)
 	{
@@ -6740,7 +6740,7 @@ void CUser::ExchangeDecide()
 				if (pExchangeItem->itemid == ITEM_GOLD)
 				{
 					// 돈만 백업
-					m_pUserData->m_iGold += pExchangeItem->count;
+					CurrencyChange(m_pUserData->m_iGold, pExchangeItem->count);
 					break;
 				}
 			}
@@ -6750,7 +6750,7 @@ void CUser::ExchangeDecide()
 				if (pExchangeItem->itemid == ITEM_GOLD)
 				{
 					// 돈만 백업
-					pUser->m_pUserData->m_iGold += pExchangeItem->count;
+					CurrencyChange(pUser->m_pUserData->m_iGold, pExchangeItem->count);
 					break;
 				}
 			}
@@ -6851,7 +6851,7 @@ void CUser::ExchangeCancel()
 		if (pExchangeItem->itemid == ITEM_GOLD)
 		{
 			// 돈만 백업
-			m_pUserData->m_iGold += pExchangeItem->count;
+			CurrencyChange(m_pUserData->m_iGold, pExchangeItem->count);
 			break;
 		}
 	}
@@ -7016,7 +7016,7 @@ int CUser::ExchangeDone()
 
 	// 상대방이 준 돈.
 	if (money > 0)
-		m_pUserData->m_iGold += money;
+		CurrencyChange(m_pUserData->m_iGold, money);
 
 	// 성공시 리스토어..
 	for (int i = 0; i < HAVE_MAX; i++)
@@ -7515,11 +7515,7 @@ void CUser::LoyaltyDivide(int tid)
 
 			//TRACE(_T("LoyaltyDivide 111 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 
-			pUser->m_pUserData->m_iLoyalty += individualvalue;
-
-			// Cannot be less than zero.
-			if (pUser->m_pUserData->m_iLoyalty < 0)
-				pUser->m_pUserData->m_iLoyalty = 0;
+			CurrencyChange(pUser->m_pUserData->m_iLoyalty, individualvalue);
 
 			//TRACE(_T("LoyaltyDivide 222 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 
@@ -7545,10 +7541,7 @@ void CUser::LoyaltyDivide(int tid)
 
 		//TRACE(_T("LoyaltyDivide 333 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 		individualvalue                 = pUser->m_pUserData->m_bLevel * loyalty_source / levelsum;
-		pUser->m_pUserData->m_iLoyalty += individualvalue;
-
-		if (pUser->m_pUserData->m_iLoyalty < 0)
-			pUser->m_pUserData->m_iLoyalty = 0;
+		CurrencyChange(pUser->m_pUserData->m_iLoyalty, individualvalue);
 
 		//TRACE(_T("LoyaltyDivide 444 - user1=%hs, %d\n"), pUser->m_pUserData->m_id, pUser->m_pUserData->m_iLoyalty);
 
@@ -7559,10 +7552,7 @@ void CUser::LoyaltyDivide(int tid)
 		pUser->Send(sendBuffer, sendIndex);
 	}
 
-	pTUser->m_pUserData->m_iLoyalty += loyalty_target; // Recalculate target loyalty.
-
-	if (pTUser->m_pUserData->m_iLoyalty < 0)
-		pTUser->m_pUserData->m_iLoyalty = 0;
+	CurrencyChange(pTUser->m_pUserData->m_iLoyalty, loyalty_target); // Recalculate target loyalty.
 
 	//TRACE(_T("LoyaltyDivide 555 - user1=%hs, %d\n"), pTUser->m_pUserData->m_id, pTUser->m_pUserData->m_iLoyalty);
 
@@ -8098,7 +8088,7 @@ void CUser::ItemRepair(char* pBuf)
 	if (money > m_pUserData->m_iGold)
 		goto fail_return;
 
-	m_pUserData->m_iGold -= money;
+	CurrencyChange(m_pUserData->m_iGold, -money);
 	if (pos == 1)
 		m_pUserData->m_sItemArray[slot].sDuration = durability;
 	else if (pos == 2)
@@ -8707,8 +8697,8 @@ void CUser::WarehouseProcess(char* pBuf)
 				if ((m_pUserData->m_iGold - count) < 0)
 					goto fail_return;
 
-				m_pUserData->m_iBank += count;
-				m_pUserData->m_iGold -= count;
+				CurrencyChange(m_pUserData->m_iBank, count);
+				CurrencyChange(m_pUserData->m_iGold, -count);
 				break;
 			}
 
@@ -8778,8 +8768,8 @@ void CUser::WarehouseProcess(char* pBuf)
 				if ((m_pUserData->m_iBank - count) < 0)
 					goto fail_return;
 
-				m_pUserData->m_iGold += count;
-				m_pUserData->m_iBank -= count;
+				CurrencyChange(m_pUserData->m_iGold, count);
+				CurrencyChange(m_pUserData->m_iBank, -count);
 				break;
 			}
 
@@ -9634,14 +9624,14 @@ void CUser::GoldChange(int tid, int gold)
 		// Source is NOT in a party.
 		if (m_sPartyIndex == -1)
 		{
-			s_type                        = GOLD_CHANGE_GAIN;
-			t_type                        = GOLD_CHANGE_LOSE;
+			s_type      = GOLD_CHANGE_GAIN;
+			t_type      = GOLD_CHANGE_LOSE;
 
-			s_temp_gold                   = (pTUser->m_pUserData->m_iGold * 4) / 10;
-			t_temp_gold                   = pTUser->m_pUserData->m_iGold / 2;
+			s_temp_gold = (pTUser->m_pUserData->m_iGold * 4) / 10;
+			t_temp_gold = pTUser->m_pUserData->m_iGold / 2;
 
-			m_pUserData->m_iGold         += s_temp_gold;
-			pTUser->m_pUserData->m_iGold -= t_temp_gold;
+			CurrencyChange(m_pUserData->m_iGold, s_temp_gold);
+			CurrencyChange(pTUser->m_pUserData->m_iGold, -t_temp_gold);
 		}
 		// When the source is in a party.
 		else
@@ -9651,12 +9641,12 @@ void CUser::GoldChange(int tid, int gold)
 				return;
 
 			// s_type                     = GOLD_CHANGE_GAIN;
-			t_type                        = GOLD_CHANGE_LOSE;
+			t_type      = GOLD_CHANGE_LOSE;
 
-			s_temp_gold                   = (pTUser->m_pUserData->m_iGold * 4) / 10;
-			t_temp_gold                   = pTUser->m_pUserData->m_iGold / 2;
+			s_temp_gold = (pTUser->m_pUserData->m_iGold * 4) / 10;
+			t_temp_gold = pTUser->m_pUserData->m_iGold / 2;
 
-			pTUser->m_pUserData->m_iGold -= t_temp_gold;
+			CurrencyChange(pTUser->m_pUserData->m_iGold, -t_temp_gold);
 
 			SetByte(sendBuffer, WIZ_GOLD_CHANGE, sendIndex); // First the victim...
 			SetByte(sendBuffer, t_type, sendIndex);
@@ -9688,10 +9678,10 @@ void CUser::GoldChange(int tid, int gold)
 
 				money = static_cast<int>(
 					count * (float) (pUser->m_pUserData->m_bLevel / (float) levelsum));
-				pUser->m_pUserData->m_iGold += money;
+				CurrencyChange(pUser->m_pUserData->m_iGold, money);
 
 				// Now the party members...
-				sendIndex                    = 0;
+				sendIndex = 0;
 				memset(sendBuffer, 0, sizeof(sendBuffer));
 				SetByte(sendBuffer, WIZ_GOLD_CHANGE, sendIndex);
 				SetByte(sendBuffer, GOLD_CHANGE_GAIN, sendIndex);
@@ -9709,26 +9699,26 @@ void CUser::GoldChange(int tid, int gold)
 		// Source gains money.
 		if (gold > 0)
 		{
-			s_type                        = GOLD_CHANGE_GAIN;
-			t_type                        = GOLD_CHANGE_LOSE;
+			s_type      = GOLD_CHANGE_GAIN;
+			t_type      = GOLD_CHANGE_LOSE;
 
-			s_temp_gold                   = gold;
-			t_temp_gold                   = gold;
+			s_temp_gold = gold;
+			t_temp_gold = gold;
 
-			m_pUserData->m_iGold         += s_temp_gold;
-			pTUser->m_pUserData->m_iGold -= t_temp_gold;
+			CurrencyChange(m_pUserData->m_iGold, s_temp_gold);
+			CurrencyChange(pTUser->m_pUserData->m_iGold, -t_temp_gold);
 		}
 		// Source loses money.
 		else
 		{
-			s_type                        = GOLD_CHANGE_LOSE;
-			t_type                        = GOLD_CHANGE_GAIN;
+			s_type      = GOLD_CHANGE_LOSE;
+			t_type      = GOLD_CHANGE_GAIN;
 
-			s_temp_gold                   = gold;
-			t_temp_gold                   = gold;
+			s_temp_gold = gold;
+			t_temp_gold = gold;
 
-			m_pUserData->m_iGold         -= s_temp_gold;
-			pTUser->m_pUserData->m_iGold += t_temp_gold;
+			CurrencyChange(m_pUserData->m_iGold, -s_temp_gold);
+			CurrencyChange(pTUser->m_pUserData->m_iGold, t_temp_gold);
 		}
 	}
 
@@ -10786,12 +10776,12 @@ void CUser::MarketBBSRegister(char* pBuf)
 
 	if (buysell_index == MARKET_BBS_BUY)
 	{
-		m_pUserData->m_iGold -= BUY_POST_PRICE;
+		CurrencyChange(m_pUserData->m_iGold, -BUY_POST_PRICE);
 		SetDWORD(sendBuffer, BUY_POST_PRICE, sendIndex);
 	}
 	else if (buysell_index == MARKET_BBS_SELL)
 	{
-		m_pUserData->m_iGold -= SELL_POST_PRICE;
+		CurrencyChange(m_pUserData->m_iGold, -SELL_POST_PRICE);
 		SetDWORD(sendBuffer, SELL_POST_PRICE, sendIndex);
 	}
 
@@ -11085,7 +11075,7 @@ void CUser::MarketBBSRemotePurchase(char* pBuf)
 	// Check if user has gold.
 	if (m_pUserData->m_iGold >= REMOTE_PURCHASE_PRICE)
 	{
-		m_pUserData->m_iGold -= REMOTE_PURCHASE_PRICE;
+		CurrencyChange(m_pUserData->m_iGold, -REMOTE_PURCHASE_PRICE);
 
 		SetByte(sendBuffer, WIZ_GOLD_CHANGE, sendIndex);
 		SetByte(sendBuffer, GOLD_CHANGE_LOSE, sendIndex);
@@ -11138,7 +11128,7 @@ void CUser::MarketBBSTimeCheck()
 			{
 				if (pUser->m_pUserData->m_iGold >= BUY_POST_PRICE)
 				{
-					pUser->m_pUserData->m_iGold -= BUY_POST_PRICE;
+					CurrencyChange(pUser->m_pUserData->m_iGold, -BUY_POST_PRICE);
 					m_pMain->m_fBuyStartTime[i]  = TimeGet();
 
 					// Now the target
@@ -11171,7 +11161,7 @@ void CUser::MarketBBSTimeCheck()
 			{
 				if (pUser->m_pUserData->m_iGold >= SELL_POST_PRICE)
 				{
-					pUser->m_pUserData->m_iGold  -= SELL_POST_PRICE;
+					CurrencyChange(pUser->m_pUserData->m_iGold, -SELL_POST_PRICE);
 					m_pMain->m_fSellStartTime[i]  = TimeGet();
 
 					// Now the target
@@ -12222,7 +12212,6 @@ void CUser::GoldGain(int amount)
 	if (amount < MIN_CURRENCY)
 		amount = MIN_CURRENCY;
 
-	// set user gold as iTotalGold
 	CurrencyChange(m_pUserData->m_iGold, amount);
 
 	SetByte(sendBuffer, WIZ_GOLD_CHANGE, sendIndex);

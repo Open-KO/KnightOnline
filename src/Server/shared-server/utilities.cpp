@@ -196,15 +196,6 @@ void CurrencyChange(int32_t& refAmount, int32_t delta)
 		refAmount = static_cast<int32_t>(upcast);
 }
 
-std::string StripEvtComment(const std::string& line)
-{
-	size_t commentPosition = line.find(';');
-	if (commentPosition == std::string::npos)
-		return line;
-
-	return line.substr(0, commentPosition);
-}
-
 int myrand_generic_impl(int min, int max)
 {
 	if (min == max)

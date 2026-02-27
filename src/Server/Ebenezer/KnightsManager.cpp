@@ -896,8 +896,9 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, const char* pBuf, uint
 
 void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 {
+	static constexpr uint32_t CLAN_CREATE_COST = 500'000;
 	int index = 0, sendIndex = 0, namelen = 0, idlen = 0, knightsindex = 0, nation = 0,
-		community = 0, money = 0;
+		community      = 0;
 	CKnights* pKnights = nullptr;
 	char sendBuffer[128] {}, knightsname[MAX_ID_SIZE + 1] {}, chiefname[MAX_ID_SIZE + 1] {};
 
@@ -931,8 +932,7 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 
 	pUser->m_pUserData->m_bKnights = knightsindex;
 	pUser->m_pUserData->m_bFame    = KNIGHTS_DUTY_CHIEF;
-	money                          = pUser->m_pUserData->m_iGold - 500000;
-	pUser->m_pUserData->m_iGold    = money;
+	CurrencyChange(pUser->m_pUserData->m_iGold, -CLAN_CREATE_COST);
 
 	for (int i = 0; i < MAX_CLAN; i++)
 	{
@@ -968,7 +968,7 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 	SetString(sendBuffer, knightsname, namelen, sendIndex);
 	SetByte(sendBuffer, 5, sendIndex); // knights grade
 	SetByte(sendBuffer, 0, sendIndex);
-	SetDWORD(sendBuffer, money, sendIndex);
+	SetDWORD(sendBuffer, pUser->m_pUserData->m_iGold, sendIndex);
 	m_pMain->Send_Region(sendBuffer, sendIndex, pUser->m_pUserData->m_bZone, pUser->m_RegionX,
 		pUser->m_RegionZ, nullptr, false);
 	//pUser->Send( sendBuffer, sendIndex );

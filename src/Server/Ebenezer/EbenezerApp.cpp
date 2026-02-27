@@ -2514,7 +2514,7 @@ void EbenezerApp::BattleZoneVictoryCheck()
 		if (pTUser->m_pUserData->m_bNation == m_bVictory
 			// Zone Check!
 			&& pTUser->m_pUserData->m_bZone == pTUser->m_pUserData->m_bNation)
-			pTUser->m_pUserData->m_iGold += AWARD_GOLD; // Target is in the area.
+			CurrencyChange(pTUser->m_pUserData->m_iGold, AWARD_GOLD); // Target is in the area.
 	}
 }
 

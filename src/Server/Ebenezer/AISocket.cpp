@@ -1129,7 +1129,7 @@ void CAISocket::RecvUserExp(char* pBuf)
 		return;
 	}
 
-	pUser->m_pUserData->m_iLoyalty += sLoyalty;
+	CurrencyChange(pUser->m_pUserData->m_iLoyalty, sLoyalty);
 	pUser->ExpChange(sExp);
 
 	if (sLoyalty > 0)

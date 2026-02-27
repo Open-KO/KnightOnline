@@ -34,10 +34,14 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 	bool handled = true;
 	char temp[1024] {};
 
-	std::string commentStripped = StripEvtComment(line);
-	ParseSpace(temp, commentStripped.c_str(), index);
-
-	size_t opcode = hashing::djb2::hash(std::string_view(temp));
+	ParseSpace(temp, line, index);
+	std::string_view tempView(temp);
+	size_t commentPosition = tempView.find(';');
+	size_t opcode;
+	if (commentPosition != std::string::npos)
+		opcode = hashing::djb2::hash(tempView.substr(0, commentPosition));
+	else
+		opcode = hashing::djb2::hash(tempView);
 	switch (opcode)
 	{
 		// A CHECK_UNDER_WEIGHT
