@@ -25,11 +25,10 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 	ParseSpace(temp, line, index);
 	std::string_view tempView(temp);
 	size_t commentPosition = tempView.find(';');
-	size_t opcode {};
 	if (commentPosition != std::string::npos)
-		opcode = hashing::djb2::hash(tempView.substr(0, commentPosition));
-	else
-		opcode = hashing::djb2::hash(tempView);
+		tempView = tempView.substr(0, commentPosition);
+
+	size_t opcode = hashing::djb2::hash(tempView);
 	switch (opcode)
 	{
 		// E SAY {'up' event ID} {'ok' event ID} {talk ID 1} {talk ID 2} {talk ID 3} {talk ID 4} {talk ID 5} {talk ID 6} {talk ID 7} {talk ID 8}
