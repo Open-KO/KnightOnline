@@ -117,7 +117,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>CUIPartyOrForce::CUIPartyOrForce()</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_OR_FORCE; i++)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_SIZE; i++)</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    {</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        m_pProgress_HPs[i]       = <span class="keyword">nullptr</span>; <span class="comment">// 부대원갯수 만큼... HP Gauge</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        m_pProgress_HPReduce[i]  = <span class="keyword">nullptr</span>; <span class="comment">// 부대원갯수 만큼... HP Reduce</span></div>
@@ -142,7 +142,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    m_Members.clear();</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    m_iIndexSelected = -1; <span class="comment">// 현재 선택된 멤버인덱스..</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_OR_FORCE; i++)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_SIZE; i++)</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        m_pProgress_HPs[i]       = <span class="keyword">nullptr</span>; <span class="comment">// 부대원갯수 만큼... HP Gauge</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        m_pProgress_HPReduce[i]  = <span class="keyword">nullptr</span>; <span class="comment">// 부대원갯수 만큼... HP Reduce</span></div>
@@ -160,7 +160,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::string szID;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_OR_FORCE; i++) <span class="comment">// 빈곳을 찾자..</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_SIZE; i++) <span class="comment">// 빈곳을 찾자..</span></div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        szID = fmt::format(<span class="stringliteral">&quot;progress_hp_{}&quot;</span>, i);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        N3_VERIFY_UI_COMPONENT(m_pProgress_HPs[i], GetChildByID&lt;CN3UIProgress&gt;(szID));</div>
@@ -222,7 +222,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    {</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        __InfoPartyOrForce* pIP = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        {</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            <span class="comment">//          if(m_pStatic_IDs[i] &amp;&amp; pSender == m_pStatic_IDs[i])</span></div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            <span class="keywordflow">if</span> (pSender == m_pAreas[i])</div>
@@ -249,7 +249,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    CN3UIBase::Render();</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (m_iIndexSelected &lt; 0 || m_iIndexSelected &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(m_Members.size()) || m_iIndexSelected &gt;= MAX_PARTY_OR_FORCE)</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (m_iIndexSelected &lt; 0 || m_iIndexSelected &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(m_Members.size()) || m_iIndexSelected &gt;= MAX_PARTY_SIZE)</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (<span class="keyword">nullptr</span> == m_pStatic_IDs[m_iIndexSelected] || <span class="keyword">nullptr</span> == m_pProgress_HPs[m_iIndexSelected])</div>
@@ -396,7 +396,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    m_Members.clear();</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="comment">// 빈곳을 찾자..</span></div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_OR_FORCE; i++)</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_SIZE; i++)</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    {</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="keywordflow">if</span> (m_pProgress_HPs[i] != <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            m_pProgress_HPs[i]-&gt;SetVisible(<span class="keyword">false</span>);</div>
@@ -423,7 +423,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span><span class="keywordtype">void</span> CUIPartyOrForce::MemberInfoReInit() <span class="comment">// 파티원 구성이 변경될때.. 순서 및 각종 정보 업데이트..</span></div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>{</div>
 <div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    {</div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        __InfoPartyOrForce* pIP = &amp;(*it); <span class="comment">// 디버깅 하기 쉬우라고 이렇게 했다..</span></div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keywordflow">if</span> (pIP-&gt;iHPMax &lt;= 0)</div>
@@ -476,7 +476,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span><span class="keywordtype">void</span> CUIPartyOrForce::MemberHPChange(<span class="keywordtype">int</span> iID, <span class="keywordtype">int</span> iHP, <span class="keywordtype">int</span> iHPMax, <span class="keywordtype">int</span> iMP, <span class="keywordtype">int</span> iMPMax)</div>
 <div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>{</div>
 <div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    {</div>
 <div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        __InfoPartyOrForce* pIP = &amp;(*it); <span class="comment">// 디버깅 하기 쉬우라고 이렇게 했다..</span></div>
 <div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        <span class="keywordflow">if</span> (pIP-&gt;iID == iID)</div>
@@ -511,7 +511,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>{</div>
 <div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
 <div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    __InfoPartyOrForce* pIP = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>    {</div>
 <div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>        pIP = &amp;(*it); <span class="comment">// 디버깅 하기 쉬우라고 이렇게 했다..</span></div>
 <div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>        <span class="keywordflow">if</span> (pIP-&gt;iID == iID)</div>
@@ -529,7 +529,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>{</div>
 <div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>    <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
 <div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>    __InfoPartyOrForce* pIP = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>    {</div>
 <div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>        pIP = &amp;(*it); <span class="comment">// 디버깅 하기 쉬우라고 이렇게 했다..</span></div>
 <div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>        <span class="keywordflow">if</span> (pIP-&gt;iID == iID)</div>
@@ -544,7 +544,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>{</div>
 <div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>    <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
 <div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    __InfoPartyOrForce* pIP = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span>    {</div>
 <div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>        pIP = &amp;(*it); <span class="comment">// 디버깅 하기 쉬우라고 이렇게 했다..</span></div>
 <div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span>        <span class="keywordflow">if</span> (pIP-&gt;iID == iID)</div>
@@ -569,7 +569,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>        bBlink = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span> </div>
 <div class="line"><a id="l00469" name="l00469"></a><span class="lineno">  469</span>    <span class="keyword">auto</span> it = m_Members.begin(), itEnd = m_Members.end();</div>
-<div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_OR_FORCE; it++, i++)</div>
+<div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; it != itEnd &amp;&amp; i &lt; MAX_PARTY_SIZE; it++, i++)</div>
 <div class="line"><a id="l00471" name="l00471"></a><span class="lineno">  471</span>    {</div>
 <div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>        __InfoPartyOrForce* pIP = &amp;(*it); <span class="comment">// 디버깅 하기 쉬우라고 이렇게 했다..</span></div>
 <div class="line"><a id="l00473" name="l00473"></a><span class="lineno">  473</span>        <span class="keywordflow">if</span> (m_pProgress_HPs[i] != <span class="keyword">nullptr</span>)</div>
@@ -641,7 +641,7 @@ $(function(){initNavTree('UIPartyOrForce_8cpp_source.html',''); initResizable(tr
 <div class="ttc" id="aclassCN3UIBase_html"><div class="ttname"><a href="classCN3UIBase.html">CN3UIBase</a></div><div class="ttdef"><b>Definition</b> <a href="N3UIBase_8h_source.html#l00043">N3UIBase.h:44</a></div></div>
 <div class="ttc" id="aclassCPlayerOther_html"><div class="ttname"><a href="classCPlayerOther.html">CPlayerOther</a></div><div class="ttdef"><b>Definition</b> <a href="PlayerOther_8h_source.html#l00013">PlayerOther.h:14</a></div></div>
 <div class="ttc" id="aclassFile_html"><div class="ttname"><a href="classFile.html">File</a></div><div class="ttdoc">Abstract base class representing a generic file interface.</div><div class="ttdef"><b>Definition</b> <a href="File_8h_source.html#l00010">File.h:11</a></div></div>
-<div class="ttc" id="astruct____InfoPartyOrForce_html"><div class="ttname"><a href="struct____InfoPartyOrForce.html">__InfoPartyOrForce</a></div><div class="ttdef"><b>Definition</b> <a href="GameDef_8h_source.html#l00576">GameDef.h:577</a></div></div>
+<div class="ttc" id="astruct____InfoPartyOrForce_html"><div class="ttname"><a href="struct____InfoPartyOrForce.html">__InfoPartyOrForce</a></div><div class="ttdef"><b>Definition</b> <a href="GameDef_8h_source.html#l00574">GameDef.h:575</a></div></div>
 <div class="ttc" id="astruct____Vector3_html"><div class="ttname"><a href="struct____Vector3.html">__Vector3</a></div><div class="ttdef"><b>Definition</b> <a href="Vector3_8h_source.html#l00009">Vector3.h:10</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

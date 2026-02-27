@@ -1,5 +1,9 @@
 var NAVTREEINDEX7 =
 {
+"classdb_1_1ModelRecordSet.html":[3,0,2,6],
+"classdb_1_1ModelRecordSet.html#a021e26f262346e60755fd83fa8065eac":[3,0,2,6,5],
+"classdb_1_1ModelRecordSet.html#a0b83c32c94d2e81b9b76e9bd40678f9b":[3,0,2,6,4],
+"classdb_1_1ModelRecordSet.html#a3e2d1230b3d50a87ad8ee7506e4b6de9":[3,0,2,6,7],
 "classdb_1_1ModelRecordSet.html#a45972d66a255744fd65c77eaaa826e36":[3,0,2,6,6],
 "classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01":[3,0,2,6,10],
 "classdb_1_1ModelRecordSet.html#a54412dc2eb0b2e89df1ef332ccc64699":[3,0,2,6,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX7 =
 "structVersionManager_1_1__SERVER__INFO.html":[3,0,7,1],
 "structWAVE__Data.html":[3,0,522],
 "structWAVE__Data.html#a77bd4495275e521feed9091867b40e08":[3,0,522,1],
-"structWAVE__Data.html#a86e0f601ffe8335731e2d951c093fb2b":[3,0,522,0],
-"structWAVE__Format.html":[3,0,523],
-"structWAVE__Format.html#a2edaf99e25fc6db421ebd55bdab485ef":[3,0,523,2],
-"structWAVE__Format.html#a6310e88eeee9d03123f2c35a42e14dab":[3,0,523,3],
-"structWAVE__Format.html#a94c75fd2cce3aeb4efd8cbb0470e7b45":[3,0,523,1]
+"structWAVE__Data.html#a86e0f601ffe8335731e2d951c093fb2b":[3,0,522,0]
 };

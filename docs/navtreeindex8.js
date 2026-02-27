@@ -1,5 +1,9 @@
 var NAVTREEINDEX8 =
 {
+"structWAVE__Format.html":[3,0,523],
+"structWAVE__Format.html#a2edaf99e25fc6db421ebd55bdab485ef":[3,0,523,2],
+"structWAVE__Format.html#a6310e88eeee9d03123f2c35a42e14dab":[3,0,523,3],
+"structWAVE__Format.html#a94c75fd2cce3aeb4efd8cbb0470e7b45":[3,0,523,1],
 "structWAVE__Format.html#a99547eea6b2192530da1bf90238a83e8":[3,0,523,7],
 "structWAVE__Format.html#aa5485965d081f43bf6507c371ca8ff3a":[3,0,523,6],
 "structWAVE__Format.html#aac5eccd2cdf5a5f3ad69a654888c204f":[3,0,523,0],

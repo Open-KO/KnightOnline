@@ -20,5 +20,6 @@ var searchData=
   ['logbasedir_17',['LogBaseDir',['../classAppThread.html#a930bbcf82f3ed108604b0404c7af7353',1,'AppThread']]],
   ['logger_18',['Logger',['../classlogger_1_1Logger.html#ae832310604ea54efe53174c3294fc68b',1,'logger::Logger']]],
   ['lookat_19',['LookAt',['../classCN3Eng.html#aaa739ab40868d64d10d51f506a4caa79',1,'CN3Eng']]],
-  ['looping_20',['Looping',['../classCN3SndObj.html#a40f54d517bc99551a67c40591be5740e',1,'CN3SndObj']]]
+  ['looping_20',['Looping',['../classCN3SndObj.html#a40f54d517bc99551a67c40591be5740e',1,'CN3SndObj']]],
+  ['loyaltychange_21',['LoyaltyChange',['../classEbenezer_1_1CUser.html#a828e74089ce2b546ce68612c3cc716da',1,'Ebenezer::CUser']]]
 ];

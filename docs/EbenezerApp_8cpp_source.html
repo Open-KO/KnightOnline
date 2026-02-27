@@ -894,7 +894,7 @@ $(function(){initNavTree('EbenezerApp_8cpp_source.html',''); initResizable(true)
 <div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span> </div>
 <div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 8; i++)</div>
 <div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    {</div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>        <span class="keyword">auto</span> pUser = GetUserPtr(pParty-&gt;uid[i]);</div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>        <span class="keyword">auto</span> pUser = GetUserPtr(pParty-&gt;userSocketIds[i]);</div>
 <div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>        <span class="keywordflow">if</span> (pUser != <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span>            pUser-&gt;Send(pBuf, len);</div>
 <div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>    }</div>
@@ -2268,7 +2268,7 @@ $(function(){initNavTree('EbenezerApp_8cpp_source.html',''); initResizable(true)
 <div class="line"><a id="l02154" name="l02154"></a><span class="lineno"> 2154</span>        <span class="comment">//if( i == pParty-&gt;wIndex )</span></div>
 <div class="line"><a id="l02155" name="l02155"></a><span class="lineno"> 2155</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 8; j++)</div>
 <div class="line"><a id="l02156" name="l02156"></a><span class="lineno"> 2156</span>        {</div>
-<div class="line"><a id="l02157" name="l02157"></a><span class="lineno"> 2157</span>            SetShort(sendBuffer, pParty-&gt;uid[j], sendIndex); <span class="comment">// 유저 번호</span></div>
+<div class="line"><a id="l02157" name="l02157"></a><span class="lineno"> 2157</span>            SetShort(sendBuffer, pParty-&gt;userSocketIds[j], sendIndex); <span class="comment">// 유저 번호</span></div>
 <div class="line"><a id="l02158" name="l02158"></a><span class="lineno"> 2158</span>            <span class="comment">//SetShort(sendBuffer, pParty-&gt;sHp[j], sendIndex );             // HP</span></div>
 <div class="line"><a id="l02159" name="l02159"></a><span class="lineno"> 2159</span>            <span class="comment">//SetByte(sendBuffer, pParty-&gt;bLevel[j], sendIndex );               // Level</span></div>
 <div class="line"><a id="l02160" name="l02160"></a><span class="lineno"> 2160</span>            <span class="comment">//SetShort(sendBuffer, pParty-&gt;sClass[j], sendIndex );          // Class</span></div>
@@ -2628,7 +2628,7 @@ $(function(){initNavTree('EbenezerApp_8cpp_source.html',''); initResizable(true)
 <div class="line"><a id="l02514" name="l02514"></a><span class="lineno"> 2514</span>        <span class="keywordflow">if</span> (pTUser-&gt;m_pUserData-&gt;m_bNation == m_bVictory</div>
 <div class="line"><a id="l02515" name="l02515"></a><span class="lineno"> 2515</span>            <span class="comment">// Zone Check!</span></div>
 <div class="line"><a id="l02516" name="l02516"></a><span class="lineno"> 2516</span>            &amp;&amp; pTUser-&gt;m_pUserData-&gt;m_bZone == pTUser-&gt;m_pUserData-&gt;m_bNation)</div>
-<div class="line"><a id="l02517" name="l02517"></a><span class="lineno"> 2517</span>            pTUser-&gt;m_pUserData-&gt;m_iGold += AWARD_GOLD; <span class="comment">// Target is in the area.</span></div>
+<div class="line"><a id="l02517" name="l02517"></a><span class="lineno"> 2517</span>            CurrencyChange(pTUser-&gt;m_pUserData-&gt;m_iGold, AWARD_GOLD); <span class="comment">// Target is in the area.</span></div>
 <div class="line"><a id="l02518" name="l02518"></a><span class="lineno"> 2518</span>    }</div>
 <div class="line"><a id="l02519" name="l02519"></a><span class="lineno"> 2519</span>}</div>
 <div class="line"><a id="l02520" name="l02520"></a><span class="lineno"> 2520</span> </div>

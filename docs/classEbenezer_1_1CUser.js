@@ -1,12 +1,16 @@
 var classEbenezer_1_1CUser =
 [
+    [ "ChangeLoyalty", "classEbenezer_1_1CUser.html#ae4b953fcf8563ad076dc2bec9ecd0ede", null ],
+    [ "ChangeMannerPoint", "classEbenezer_1_1CUser.html#a3a3fc9076131e6a6f84f06ea508c39e7", null ],
     [ "CheckAndRobItems", "classEbenezer_1_1CUser.html#a29d391033404752a8f096bab74018396", null ],
     [ "CheckExistItem", "classEbenezer_1_1CUser.html#a6f8bd78d596cb3324490181dd438ee18", null ],
     [ "CheckExistItemAnd", "classEbenezer_1_1CUser.html#ac743c342f6fb75cc1687814eab5c5bdf", null ],
     [ "CheckExistItemAnd", "classEbenezer_1_1CUser.html#a0820bee6205a88ef7a94a3f1a0897fc3", null ],
     [ "ClassChangeRespecReq", "classEbenezer_1_1CUser.html#a6df19007f1739b95ed97a84e6ff32016", null ],
+    [ "GivePromotionQuest", "classEbenezer_1_1CUser.html#a681a528f4ab2a6b055e26fad1ae425bc", null ],
     [ "HandlePromotion", "classEbenezer_1_1CUser.html#adb987e11798b4919e6c209a2526b20cb", null ],
     [ "Initialize", "classEbenezer_1_1CUser.html#a5adc8b51b2100d52cd1d5c666a7be300", null ],
+    [ "LoyaltyChange", "classEbenezer_1_1CUser.html#a828e74089ce2b546ce68612c3cc716da", null ],
     [ "NovicePromotionStatusRequest", "classEbenezer_1_1CUser.html#a785f63a26effcb3f312e5542535be2ab", null ],
     [ "PromoteUser", "classEbenezer_1_1CUser.html#abb9d3fde194a0a9c07f678a124506229", null ],
     [ "PromoteUserNovice", "classEbenezer_1_1CUser.html#a90600ba1f6f9a2e4655111e2d20c67aa", null ],

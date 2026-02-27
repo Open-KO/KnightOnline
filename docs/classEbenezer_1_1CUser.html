@@ -237,10 +237,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2fd73a51ad2cffe1048e7e9b88cb5a38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb9581d3ee00536b862481991f987a68" id="r_adb9581d3ee00536b862481991f987a68"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb9581d3ee00536b862481991f987a68">CheckExistEvent</a> (e_QuestId questId, e_QuestState questState) const</td></tr>
 <tr class="separator:adb9581d3ee00536b862481991f987a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b7a8892bc6a3045fec6f271567fa979" id="r_a7b7a8892bc6a3045fec6f271567fa979"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b7a8892bc6a3045fec6f271567fa979">GoldLose</a> (int gold)</td></tr>
-<tr class="separator:a7b7a8892bc6a3045fec6f271567fa979"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa659720e7524d9b682ad326fad19cb0d" id="r_aa659720e7524d9b682ad326fad19cb0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa659720e7524d9b682ad326fad19cb0d">GoldGain</a> (int gold)</td></tr>
-<tr class="separator:aa659720e7524d9b682ad326fad19cb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fb90b586e4c250a344ea7e18eee6779" id="r_a2fb90b586e4c250a344ea7e18eee6779"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fb90b586e4c250a344ea7e18eee6779">GoldLose</a> (int amount)</td></tr>
+<tr class="separator:a2fb90b586e4c250a344ea7e18eee6779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a499e4f589a7990588d8faf93fc5aa631" id="r_a499e4f589a7990588d8faf93fc5aa631"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a499e4f589a7990588d8faf93fc5aa631">GoldGain</a> (int amount)</td></tr>
+<tr class="separator:a499e4f589a7990588d8faf93fc5aa631"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f66a168f5dc79f7dd6dd161c1b6b91c" id="r_a7f66a168f5dc79f7dd6dd161c1b6b91c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f66a168f5dc79f7dd6dd161c1b6b91c">SendItemWeight</a> ()</td></tr>
 <tr class="separator:a7f66a168f5dc79f7dd6dd161c1b6b91c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c7e49bfaf678f957b2b8e232a4da43a" id="r_a5c7e49bfaf678f957b2b8e232a4da43a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c7e49bfaf678f957b2b8e232a4da43a">ItemLogToAgent</a> (const char *srcid, const char *tarid, int type, int64_t serial, int itemid, int count, int durability)</td></tr>
@@ -406,6 +406,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Friend</b> (char *pBu
 <tr class="separator:a2a3a494bd87d507de58df8a25797d3a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f61dfdfab17c5c75385041f6e2420f9" id="r_a7f61dfdfab17c5c75385041f6e2420f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f61dfdfab17c5c75385041f6e2420f9">ClassChange</a> (char *pBuf)</td></tr>
 <tr class="separator:a7f61dfdfab17c5c75385041f6e2420f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a681a528f4ab2a6b055e26fad1ae425bc" id="r_a681a528f4ab2a6b055e26fad1ae425bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a681a528f4ab2a6b055e26fad1ae425bc">GivePromotionQuest</a> ()</td></tr>
+<tr class="memdesc:a681a528f4ab2a6b055e26fad1ae425bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues the level 60 promotion quest.  <br /></td></tr>
+<tr class="separator:a681a528f4ab2a6b055e26fad1ae425bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65a24d99bbb007d99ab7242a5ff3c3ed" id="r_a65a24d99bbb007d99ab7242a5ff3c3ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65a24d99bbb007d99ab7242a5ff3c3ed">ValidatePromotion</a> (e_Class newClassId) const</td></tr>
 <tr class="memdesc:a65a24d99bbb007d99ab7242a5ff3c3ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that the newClassId is valid promotion path from the current classId.  <br /></td></tr>
 <tr class="separator:a65a24d99bbb007d99ab7242a5ff3c3ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -458,8 +461,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Friend</b> (char *pBu
 <tr class="separator:ae435f11cfe828bc12a6a3c2c17320ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab182e6ed530a7b22565780df05241491" id="r_ab182e6ed530a7b22565780df05241491"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab182e6ed530a7b22565780df05241491">VersionCheck</a> ()</td></tr>
 <tr class="separator:ab182e6ed530a7b22565780df05241491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0321a6dcab8be05faeb39b555c2f8f91" id="r_a0321a6dcab8be05faeb39b555c2f8f91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0321a6dcab8be05faeb39b555c2f8f91">LoyaltyChange</a> (int tid)</td></tr>
-<tr class="separator:a0321a6dcab8be05faeb39b555c2f8f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a828e74089ce2b546ce68612c3cc716da" id="r_a828e74089ce2b546ce68612c3cc716da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a828e74089ce2b546ce68612c3cc716da">LoyaltyChange</a> (int targetId)</td></tr>
+<tr class="memdesc:a828e74089ce2b546ce68612c3cc716da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processes any national point change associated with killing a target.  <br /></td></tr>
+<tr class="separator:a828e74089ce2b546ce68612c3cc716da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4b953fcf8563ad076dc2bec9ecd0ede" id="r_ae4b953fcf8563ad076dc2bec9ecd0ede"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4b953fcf8563ad076dc2bec9ecd0ede">ChangeLoyalty</a> (int loyaltyChange, bool isExcludeMonthly)</td></tr>
+<tr class="memdesc:ae4b953fcf8563ad076dc2bec9ecd0ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes national loyalty by a set amount.  <br /></td></tr>
+<tr class="separator:ae4b953fcf8563ad076dc2bec9ecd0ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3fc9076131e6a6f84f06ea508c39e7" id="r_a3a3fc9076131e6a6f84f06ea508c39e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a3fc9076131e6a6f84f06ea508c39e7">ChangeMannerPoint</a> (int loyaltyChange)</td></tr>
+<tr class="memdesc:a3a3fc9076131e6a6f84f06ea508c39e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes manner loyalty by a set amount.  <br /></td></tr>
+<tr class="separator:a3a3fc9076131e6a6f84f06ea508c39e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa3ab06e6ca4cd4d53d032130a4f7f9b" id="r_afa3ab06e6ca4cd4d53d032130a4f7f9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa3ab06e6ca4cd4d53d032130a4f7f9b">StateChange</a> (char *pBuf)</td></tr>
 <tr class="separator:afa3ab06e6ca4cd4d53d032130a4f7f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88547711f984a44239bb7bbce77cc322" id="r_a88547711f984a44239bb7bbce77cc322"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88547711f984a44239bb7bbce77cc322">PointChange</a> (char *pBuf)</td></tr>
@@ -883,6 +893,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:af4e69a2a03dd048ea22bc32d227644b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef6068a3216a31ba34887c9adf396684" id="r_aef6068a3216a31ba34887c9adf396684"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef6068a3216a31ba34887c9adf396684">_recvValue</a> = 0</td></tr>
 <tr class="separator:aef6068a3216a31ba34887c9adf396684"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1cf4e32a43386fb87dfa37e6baae866" id="r_aa1cf4e32a43386fb87dfa37e6baae866"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1cf4e32a43386fb87dfa37e6baae866">m_sEventDiceRoll</a> = 0</td></tr>
+<tr class="separator:aa1cf4e32a43386fb87dfa37e6baae866"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -1058,7 +1070,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09833">9833</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09934">9934</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1077,7 +1089,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11211">11211</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11312">11312</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1097,6 +1109,52 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05392">5392</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae4b953fcf8563ad076dc2bec9ecd0ede" name="ae4b953fcf8563ad076dc2bec9ecd0ede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4b953fcf8563ad076dc2bec9ecd0ede">&#9670;&#160;</a></span>ChangeLoyalty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ebenezer::CUser::ChangeLoyalty </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>loyaltyChange</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isExcludeMonthly</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes national loyalty by a set amount. </p>
+
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05837">5837</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a3a3fc9076131e6a6f84f06ea508c39e7" name="a3a3fc9076131e6a6f84f06ea508c39e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3fc9076131e6a6f84f06ea508c39e7">&#9670;&#160;</a></span>ChangeMannerPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ebenezer::CUser::ChangeMannerPoint </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>loyaltyChange</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes manner loyalty by a set amount. </p>
+
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05857">5857</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1134,7 +1192,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07260">7260</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07334">7334</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1218,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Attempts to remove all the items from the user in the input array. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when all items were successfully taken, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12293">12293</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12420">12420</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1183,7 +1241,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13532">13532</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13659">13659</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1226,7 +1284,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12415">12415</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12542">12542</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1245,7 +1303,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13424">13424</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13551">13551</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1264,7 +1322,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12868">12868</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12995">12995</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1283,7 +1341,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11648">11648</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11749">11749</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1306,7 +1364,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08913">8913</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08977">8977</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1332,7 +1390,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Checks to see if a user has count number of itemIds. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when the user has count number of itemIds, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12186">12186</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12313">12313</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1398,7 +1456,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Checks to see if a user has up to 5 sets of items. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when the user has all the items, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12213">12213</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12340">12340</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1420,7 +1478,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Checks to see if a user has all the items in the input array. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when the user has all the items, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12221">12221</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12348">12348</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1448,7 +1506,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13474">13474</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13601">13601</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1467,7 +1525,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13547">13547</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13674">13674</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1486,7 +1544,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13884">13884</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14011">14011</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1505,7 +1563,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12439">12439</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12566">12566</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1524,7 +1582,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12907">12907</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13034">13034</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1552,7 +1610,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12120">12120</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12247">12247</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1575,7 +1633,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12131">12131</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12258">12258</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1598,7 +1656,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12145">12145</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12272">12272</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1621,7 +1679,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12156">12156</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12283">12283</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1640,7 +1698,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07024">7024</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07098">7098</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1661,7 +1719,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sends a class change status req back to the client in response to non-free Skill/Stat reset requests. </p>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09170">9170</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09234">9234</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1680,7 +1738,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11315">11315</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11416">11416</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1728,7 +1786,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10315">10315</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10416">10416</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1747,7 +1805,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07311">7311</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07385">7385</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1766,7 +1824,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13451">13451</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13578">13578</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1785,7 +1843,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07496">7496</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07560">7560</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1827,7 +1885,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12839">12839</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12966">12966</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1846,7 +1904,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06496">6496</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06570">6570</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1865,7 +1923,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06463">6463</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06537">6537</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1884,7 +1942,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06758">6758</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06832">6832</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1903,7 +1961,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06631">6631</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06705">6705</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1922,7 +1980,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06914">6914</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06988">6988</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1941,7 +1999,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06380">6380</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06454">6454</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1960,7 +2018,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06418">6418</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06492">6492</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1979,7 +2037,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06825">6825</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06899">6899</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -1998,7 +2056,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13568">13568</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13695">13695</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2040,7 +2098,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10005">10005</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10106">10106</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2059,7 +2117,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09098">9098</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09162">9162</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2078,7 +2136,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13680">13680</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13807">13807</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2101,7 +2159,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09917">9917</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10018">10018</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2124,7 +2182,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09864">9864</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09965">9965</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2166,7 +2224,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13804">13804</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13931">13931</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2212,7 +2270,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13901">13901</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14028">14028</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2235,7 +2293,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13906">13906</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14033">14033</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2258,7 +2316,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08929">8929</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08993">8993</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2329,7 +2387,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09022">9022</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09086">9086</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2371,7 +2429,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13809">13809</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13936">13936</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2390,7 +2448,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08899">8899</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08963">8963</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2418,7 +2476,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09000">9000</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09064">9064</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2441,7 +2499,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13618">13618</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13745">13745</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2460,7 +2518,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09767">9767</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09868">9868</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2483,7 +2541,28 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12342">12342</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12469">12469</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a681a528f4ab2a6b055e26fad1ae425bc" name="a681a528f4ab2a6b055e26fad1ae425bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a681a528f4ab2a6b055e26fad1ae425bc">&#9670;&#160;</a></span>GivePromotionQuest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ebenezer::CUser::GivePromotionQuest </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Issues the level 60 promotion quest. </p>
+
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09243">9243</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2506,12 +2585,12 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09491">9491</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09592">9592</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
-<a id="aa659720e7524d9b682ad326fad19cb0d" name="aa659720e7524d9b682ad326fad19cb0d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa659720e7524d9b682ad326fad19cb0d">&#9670;&#160;</a></span>GoldGain()</h2>
+<a id="a499e4f589a7990588d8faf93fc5aa631" name="a499e4f589a7990588d8faf93fc5aa631"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a499e4f589a7990588d8faf93fc5aa631">&#9670;&#160;</a></span>GoldGain()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2519,18 +2598,18 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void Ebenezer::CUser::GoldGain </td>
           <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gold</em></span></td><td>)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>amount</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12059">12059</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12193">12193</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a7b7a8892bc6a3045fec6f271567fa979" name="a7b7a8892bc6a3045fec6f271567fa979"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b7a8892bc6a3045fec6f271567fa979">&#9670;&#160;</a></span>GoldLose()</h2>
+<a id="a2fb90b586e4c250a344ea7e18eee6779" name="a2fb90b586e4c250a344ea7e18eee6779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb90b586e4c250a344ea7e18eee6779">&#9670;&#160;</a></span>GoldLose()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2538,13 +2617,13 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">bool Ebenezer::CUser::GoldLose </td>
           <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>gold</em></span></td><td>)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>amount</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12090">12090</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12217">12217</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2565,7 +2644,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Updates the user's class and broadcasts any required messages. </p>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07212">7212</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07286">7286</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2584,7 +2663,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08991">8991</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09055">9055</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2631,7 +2710,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07761">7761</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07825">7825</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2650,7 +2729,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07819">7819</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07883">7883</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2669,7 +2748,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06790">6790</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06864">6864</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2718,7 +2797,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09817">9817</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09918">9918</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2737,7 +2816,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08851">8851</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08915">8915</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2838,7 +2917,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08228">8228</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08292">8292</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2871,7 +2950,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07692">7692</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07756">7756</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2890,7 +2969,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07228">7228</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07302">7302</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2957,7 +3036,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12028">12028</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12162">12162</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -2995,7 +3074,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08339">8339</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08403">8403</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3014,7 +3093,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07971">7971</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08035">8035</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3052,7 +3131,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12975">12975</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13102">13102</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3071,7 +3150,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13410">13410</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13537">13537</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3090,7 +3169,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12965">12965</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13092">13092</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3113,7 +3192,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07555">7555</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07619">7619</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3132,7 +3211,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12647">12647</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12774">12774</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3151,7 +3230,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11287">11287</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11388">11388</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3170,7 +3249,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12784">12784</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12911">12911</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3216,7 +3295,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13430">13430</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13557">13557</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3258,8 +3337,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a0321a6dcab8be05faeb39b555c2f8f91" name="a0321a6dcab8be05faeb39b555c2f8f91"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0321a6dcab8be05faeb39b555c2f8f91">&#9670;&#160;</a></span>LoyaltyChange()</h2>
+<a id="a828e74089ce2b546ce68612c3cc716da" name="a828e74089ce2b546ce68612c3cc716da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a828e74089ce2b546ce68612c3cc716da">&#9670;&#160;</a></span>LoyaltyChange()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3267,11 +3346,13 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void Ebenezer::CUser::LoyaltyChange </td>
           <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>tid</em></span></td><td>)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>targetId</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Processes any national point change associated with killing a target. </p>
 
 <p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05736">5736</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
@@ -3292,7 +3373,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07332">7332</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07406">7406</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3311,7 +3392,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10536">10536</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10637">10637</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3330,7 +3411,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11151">11151</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11252">11252</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3349,7 +3430,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10702">10702</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10803">10803</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3368,7 +3449,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11091">11091</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11192">11192</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3387,7 +3468,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10587">10587</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10688">10688</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3406,7 +3487,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10918">10918</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11019">11019</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3429,7 +3510,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10753">10753</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10854">10854</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3448,7 +3529,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11181">11181</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11282">11282</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3467,7 +3548,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11001">11001</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11102">11102</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3486,7 +3567,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11077">11077</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11178">11178</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3514,7 +3595,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13395">13395</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13522">13522</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3571,7 +3652,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12843">12843</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12970">12970</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3612,7 +3693,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Sends novice promotion eligibility status. </p>
 <dl class="originalName"><dt><b><a class="el" href="originalName.html#_originalName000003">Original Name</a></b></dt><dd>ClassChangeReq </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09148">9148</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09212">9212</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3650,7 +3731,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10158">10158</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10259">10259</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3673,7 +3754,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12881">12881</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13008">13008</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3692,7 +3773,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08400">8400</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08464">8464</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3744,7 +3825,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10326">10326</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10427">10427</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3763,7 +3844,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10420">10420</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10521">10521</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3786,7 +3867,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10451">10451</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10552">10552</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3805,7 +3886,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10358">10358</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10459">10459</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3824,7 +3905,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05968">5968</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06042">6042</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3843,7 +3924,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06342">6342</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06416">6416</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3862,7 +3943,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06141">6141</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06215">6215</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3881,7 +3962,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05897">5897</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05971">5971</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3900,7 +3981,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06261">6261</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06335">6335</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3923,7 +4004,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06012">6012</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06086">6086</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3963,7 +4044,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Attempts to perform a character's second job change. </p>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13963">13963</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14090">14090</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -3984,7 +4065,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Attempts to perform a character's first job change. </p>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13913">13913</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14040">14040</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4036,7 +4117,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13579">13579</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13706">13706</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4055,7 +4136,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12916">12916</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13043">13043</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4074,7 +4155,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12528">12528</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12655">12655</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4093,7 +4174,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13769">13769</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13896">13896</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4219,7 +4300,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08971">8971</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09035">9035</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4276,7 +4357,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12959">12959</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13086">13086</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4295,7 +4376,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12569">12569</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12696">12696</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4321,7 +4402,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Attempts to count number of itemId from the user. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when all items were successfully taken, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12237">12237</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12364">12364</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4359,7 +4440,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11909">11909</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12014">12014</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4378,7 +4459,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13556">13556</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13683">13683</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4404,7 +4485,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Updates an event/quest status. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if quest event was successfully saved, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14085">14085</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l14212">14212</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4461,7 +4542,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12614">12614</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12741">12741</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4480,7 +4561,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09634">9634</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09735">9735</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4570,7 +4651,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08313">8313</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08377">8377</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4612,7 +4693,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13414">13414</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13541">13541</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4631,7 +4712,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10136">10136</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10237">10237</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4650,7 +4731,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12048">12048</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12182">12182</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4688,7 +4769,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05876">5876</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05950">5950</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4707,7 +4788,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12575">12575</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12702">12702</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4730,7 +4811,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10224">10224</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10325">10325</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4755,7 +4836,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sends an error response for a failed skill point reset. </p>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09265">9265</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09366">9366</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4780,7 +4861,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sends an error response for a failed stat point reset. </p>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09480">9480</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09581">9581</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4843,7 +4924,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12592">12592</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12719">12719</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4913,7 +4994,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07293">7293</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07367">7367</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4932,7 +5013,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09730">9730</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09831">9831</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4951,7 +5032,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08489">8489</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08553">8553</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -4989,7 +5070,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11258">11258</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l11359">11359</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5084,7 +5165,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13814">13814</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l13941">13941</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5103,7 +5184,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06959">6959</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07033">7033</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5131,7 +5212,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="originalName"><dt><b><a class="el" href="originalName.html#_originalName000001">Original Name</a></b></dt><dd>AllSkillPointChange </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09179">9179</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09280">9280</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5150,7 +5231,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08453">8453</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08517">8517</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5169,7 +5250,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05844">5844</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05918">5918</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5216,7 +5297,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="originalName"><dt><b><a class="el" href="originalName.html#_originalName000002">Original Name</a></b></dt><dd>AllPointChange </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09276">9276</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09377">9377</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5235,7 +5316,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12023">12023</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12157">12157</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5254,7 +5335,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12757">12757</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l12884">12884</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5273,7 +5354,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08498">8498</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08562">8562</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5292,7 +5373,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08039">8039</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08103">8103</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5315,7 +5396,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l06987">6987</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07061">7061</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5381,7 +5462,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05859">5859</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l05933">5933</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5403,7 +5484,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Validates that the newClassId is valid promotion path from the current classId. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when the user's newClassId is a valid promotion path, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07121">7121</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l07195">7195</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5443,7 +5524,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08565">8565</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l08629">8629</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5508,7 +5589,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10112">10112</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l10213">10213</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -5555,7 +5636,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09706">9706</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8cpp_source.html#l09807">9807</a> of file <a class="el" href="Ebenezer_2User_8cpp_source.html">User.cpp</a>.</p>
 
 </div>
 </div>
@@ -7317,6 +7398,22 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8h_source.html#l00204">204</a> of file <a class="el" href="Ebenezer_2User_8h_source.html">User.h</a>.</p>
+
+</div>
+</div>
+<a id="aa1cf4e32a43386fb87dfa37e6baae866" name="aa1cf4e32a43386fb87dfa37e6baae866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1cf4e32a43386fb87dfa37e6baae866">&#9670;&#160;</a></span>m_sEventDiceRoll</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t Ebenezer::CUser::m_sEventDiceRoll = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Ebenezer_2User_8h_source.html#l00226">226</a> of file <a class="el" href="Ebenezer_2User_8h_source.html">User.h</a>.</p>
 
 </div>
 </div>

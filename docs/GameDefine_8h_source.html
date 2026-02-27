@@ -394,22 +394,22 @@ $(function(){initNavTree('GameDefine_8h_source.html',''); initResizable(true); }
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno"><a class="line" href="structEbenezer_1_1__PARTY__GROUP.html">  287</a></span><span class="keyword">struct </span>_PARTY_GROUP</div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>{</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    uint16_t wIndex;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    int16_t uid[8]; <span class="comment">// 하나의 파티에 8명까지 가입가능</span></div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    int16_t sMaxHp[8];</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    int16_t sHp[8];</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    uint8_t bLevel[8];</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    int16_t sClass[8];</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    int16_t userSocketIds[MAX_PARTY_SIZE];</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    int16_t sMaxHp[MAX_PARTY_SIZE];</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    int16_t sHp[MAX_PARTY_SIZE];</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    uint8_t bLevel[MAX_PARTY_SIZE];</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    int16_t sClass[MAX_PARTY_SIZE];</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    uint8_t bItemRouting;</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    _PARTY_GROUP()</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    {</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 8; i++)</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_PARTY_SIZE; i++)</div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        {</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            uid[i]    = -1;</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            sMaxHp[i] = 0;</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            sHp[i]    = 0;</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            bLevel[i] = 0;</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            sClass[i] = 0;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            userSocketIds[i] = -1;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            sMaxHp[i]        = 0;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            sHp[i]           = 0;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            bLevel[i]        = 0;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            sClass[i]        = 0;</div>
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        }</div>
 <div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        wIndex       = 0;</div>
