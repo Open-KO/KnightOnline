@@ -11760,6 +11760,7 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 		if (pLE == nullptr)
 			return false;
 
+		// Case order is based on order set in official .IDB
 		switch (pLE->m_LogicElse)
 		{
 			case LOGIC_CHECK_UNDER_WEIGHT:
@@ -11778,23 +11779,8 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
-			case LOGIC_CHECK_SKILL_TOTAL:
-				if (CheckSkillTotal(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_STAT_TOTAL:
-				if (CheckStatTotal(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
-					bExact = true;
-				break;
-
 			case LOGIC_CHECK_EXIST_ITEM:
 				if (CheckExistItem(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_NOEXIST_ITEM:
-				if (!CheckExistItem(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
 					bExact = true;
 				break;
 
@@ -11805,22 +11791,11 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
-			case LOGIC_CHECK_NOCLASS:
-				if (!CheckClass(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1],
-						pLE->m_LogicElseInt[2], pLE->m_LogicElseInt[3], pLE->m_LogicElseInt[4],
-						pLE->m_LogicElseInt[5]))
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_DICE:
-				bExact = pLE->m_LogicElseInt[0] == m_sEventDiceRoll;
-				break;
-
 			case LOGIC_CHECK_WEIGHT:
 				if (!CheckWeight(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
 					bExact = true;
 				break;
-				// 비러머글 복권 >.<
+
 			case LOGIC_CHECK_EDITBOX:
 				if (!CheckEditBox())
 					bExact = true;
@@ -11830,8 +11805,13 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				if (CheckRandom(pLE->m_LogicElseInt[0]))
 					bExact = true;
 				break;
-				//
-				// 비러머글 엑셀 >.<
+
+			case LOGIC_HOWMUCH_ITEM:
+				if (CheckItemCount(
+						pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1], pLE->m_LogicElseInt[2]))
+					bExact = true;
+				break;
+
 			case LOGIC_CHECK_LV:
 				if (m_pUserData->m_bLevel >= pLE->m_LogicElseInt[0]
 					&& m_pUserData->m_bLevel <= pLE->m_LogicElseInt[1])
@@ -11848,12 +11828,6 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
-			case LOGIC_HOWMUCH_ITEM:
-				if (CheckItemCount(
-						pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1], pLE->m_LogicElseInt[2]))
-					bExact = true;
-				break;
-
 			case LOGIC_CHECK_NOAH:
 				if (m_pUserData->m_iGold >= pLE->m_LogicElseInt[0]
 					&& m_pUserData->m_iGold <= pLE->m_LogicElseInt[1])
@@ -11862,6 +11836,40 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 
 			case LOGIC_CHECK_NATION:
 				if (m_pUserData->m_bNation == pLE->m_LogicElseInt[0])
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_EXIST_EVENT:
+				if (CheckExistEvent(static_cast<e_QuestId>(pLE->m_LogicElseInt[0]),
+						static_cast<e_QuestState>(pLE->m_LogicElseInt[1])))
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_NOEXIST_EVENT:
+				if (!CheckExistEvent(static_cast<e_QuestId>(pLE->m_LogicElseInt[0]),
+						static_cast<e_QuestState>(pLE->m_LogicElseInt[1])))
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_PROMOTION_ELIGIBLE:
+				if (CheckPromotionEligible())
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_NOEXIST_ITEM:
+				if (!CheckExistItem(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_ITEMCHANGE_NUM:
+				if (m_byLastExchangeNum == pLE->m_LogicElseInt[0])
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_NOCLASS:
+				if (!CheckClass(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1],
+						pLE->m_LogicElseInt[2], pLE->m_LogicElseInt[3], pLE->m_LogicElseInt[4],
+						pLE->m_LogicElseInt[5]))
 					bExact = true;
 				break;
 
@@ -11886,28 +11894,13 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					bExact = true;
 				break;
 
-			case LOGIC_CHECK_MIDDLE_STATUE_CAPTURE:
-				if (CheckMiddleStatueCapture())
-				{
-					// NOTE: officially this returns true, ending check processing immediately
+			case LOGIC_CHECK_KNIGHT:
+				if (CheckKnight())
 					bExact = true;
-				}
 				break;
 
-			case LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE:
-				if (!CheckMiddleStatueCapture())
-				{
-					// NOTE: officially this returns true, ending check processing immediately
-					bExact = true;
-				}
-				break;
-
-			case LOGIC_CHECK_EMPTY_SLOT:
-				if (GetNumberOfEmptySlots() >= pLE->m_LogicElseInt[0])
-				{
-					// NOTE: officially this returns true, ending check processing immediately
-					bExact = true;
-				}
+			case LOGIC_CHECK_DICE:
+				bExact = pLE->m_LogicElseInt[0] == m_sEventDiceRoll;
 				break;
 
 			case LOGIC_CHECK_MONSTER_CHALLENGE_TIME:
@@ -11919,37 +11912,8 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				}
 				break;
 
-			case LOGIC_CHECK_EXIST_EVENT:
-				if (CheckExistEvent(static_cast<e_QuestId>(pLE->m_LogicElseInt[0]),
-						static_cast<e_QuestState>(pLE->m_LogicElseInt[1])))
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_NOEXIST_EVENT:
-				if (!CheckExistEvent(static_cast<e_QuestId>(pLE->m_LogicElseInt[0]),
-						static_cast<e_QuestState>(pLE->m_LogicElseInt[1])))
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_ITEMCHANGE_NUM:
-				if (m_byLastExchangeNum == pLE->m_LogicElseInt[0])
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_KNIGHT:
-				if (CheckKnight())
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_PROMOTION_ELIGIBLE:
-				if (CheckPromotionEligible())
-					bExact = true;
-				break;
-
-			case LOGIC_CHECK_NO_CASTLE:
-				if (m_pUserData->m_bKnights != m_pMain->m_KnightsSiegeWar._masterKnights
-					|| m_pMain->m_KnightsSiegeWar._masterKnights == 0
-					|| m_pUserData->m_bFame != KNIGHTS_DUTY_CHIEF)
+			case LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT:
+				if (m_pMain->_monsterChallengePlayerCount > pLE->m_LogicElseInt[0])
 				{
 					// NOTE: officially this returns true, ending check processing immediately
 					bExact = true;
@@ -11966,8 +11930,44 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				}
 				break;
 
-			case LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT:
-				if (m_pMain->_monsterChallengePlayerCount > pLE->m_LogicElseInt[0])
+			case LOGIC_CHECK_NO_CASTLE:
+				if (m_pUserData->m_bKnights != m_pMain->m_KnightsSiegeWar._masterKnights
+					|| m_pMain->m_KnightsSiegeWar._masterKnights == 0
+					|| m_pUserData->m_bFame != KNIGHTS_DUTY_CHIEF)
+				{
+					// NOTE: officially this returns true, ending check processing immediately
+					bExact = true;
+				}
+				break;
+
+			case LOGIC_CHECK_SKILL_TOTAL:
+				if (CheckSkillTotal(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_STAT_TOTAL:
+				if (CheckStatTotal(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]))
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_EMPTY_SLOT:
+				if (GetNumberOfEmptySlots() >= pLE->m_LogicElseInt[0])
+				{
+					// NOTE: officially this returns true, ending check processing immediately
+					bExact = true;
+				}
+				break;
+
+			case LOGIC_CHECK_MIDDLE_STATUE_CAPTURE:
+				if (CheckMiddleStatueCapture())
+				{
+					// NOTE: officially this returns true, ending check processing immediately
+					bExact = true;
+				}
+				break;
+
+			case LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE:
+				if (!CheckMiddleStatueCapture())
 				{
 					// NOTE: officially this returns true, ending check processing immediately
 					bExact = true;

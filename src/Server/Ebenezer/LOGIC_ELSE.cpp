@@ -41,6 +41,7 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 		tempView = tempView.substr(0, commentPosition);
 
 	size_t opcode = hashing::djb2::hash(tempView);
+	// Case order is based on order set in official .IDB
 	switch (opcode)
 	{
 		// A CHECK_UNDER_WEIGHT
@@ -97,12 +98,6 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
-		// A CHECK_NOAH {minimum} {maximum}
-		case "CHECK_NOAH"_djb2:
-			m_LogicElse = LOGIC_CHECK_NOAH;
-			argsToParse = 2;
-			break;
-
 		// A CHECK_LV {minimum} {maximum}
 		case "CHECK_LV"_djb2:
 			m_LogicElse = LOGIC_CHECK_LV;
@@ -121,34 +116,28 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
-		// A CHECK_NATION {nation}
-		case "CHECK_NATION"_djb2:
-			m_LogicElse = LOGIC_CHECK_NATION;
-			argsToParse = 1;
-			break;
-
 		// A EXIST_COM_EVENT {com event ID}
 		case "EXIST_COM_EVENT"_djb2:
 			m_LogicElse = LOGIC_EXIST_COM_EVENT;
 			argsToParse = 1;
 			break;
 
-		// A CHECK_PROMOTION_ELIGIBLE
-		case "CHECK_PROMOTION_ELIGIBLE"_djb2:
-			m_LogicElse = LOGIC_CHECK_PROMOTION_ELIGIBLE;
-			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
+		// A CHECK_NOAH {minimum} {maximum}
+		case "CHECK_NOAH"_djb2:
+			m_LogicElse = LOGIC_CHECK_NOAH;
+			argsToParse = 2;
 			break;
 
-		// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}
-		case "CHECK_MONSTER_CHALLENGE_TIME"_djb2:
-			m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;
+		// A CHECK_NATION {nation}
+		case "CHECK_NATION"_djb2:
+			m_LogicElse = LOGIC_CHECK_NATION;
 			argsToParse = 1;
 			break;
 
-		// A CHECK_PPCARD_SERIAL
-		case "CHECK_PPCARD_SERIAL"_djb2:
-			m_LogicElse = LOGIC_CHECK_PPCARD_SERIAL;
-			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
+		// A CHECK_NOEXIST_EVENT {quest ID} {quest state}
+		case "CHECK_NOEXIST_EVENT"_djb2:
+			m_LogicElse = LOGIC_CHECK_NOEXIST_EVENT;
+			argsToParse = 2;
 			break;
 
 		// A CHECK_EXIST_EVENT {quest ID} {quest state}
@@ -157,10 +146,10 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 2;
 			break;
 
-		// A CHECK_NOEXIST_EVENT {quest ID} {quest state}
-		case "CHECK_NOEXIST_EVENT"_djb2:
-			m_LogicElse = LOGIC_CHECK_NOEXIST_EVENT;
-			argsToParse = 2;
+		// A CHECK_PROMOTION_ELIGIBLE
+		case "CHECK_PROMOTION_ELIGIBLE"_djb2:
+			m_LogicElse = LOGIC_CHECK_PROMOTION_ELIGIBLE;
+			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
 
 		// A CHECK_ITEMCHANGE_NUM {last slot rewarded by exchange - 1..5 [nExchangeItemNum1..5]}
@@ -173,12 +162,6 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 		case "CHECK_NOCLASS"_djb2:
 			m_LogicElse = LOGIC_CHECK_NOCLASS;
 			argsToParse = 6;
-			break;
-
-		// A CHECK_DICE {sides}
-		case "CHECK_DICE"_djb2:
-			m_LogicElse = LOGIC_CHECK_DICE;
-			argsToParse = 1;
 			break;
 
 		// A CHECK_LOYALTY {minimum} {maximum}
@@ -211,33 +194,15 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
 
-		// A CHECK_MIDDLE_STATUE_NOCAPTURE
-		case "CHECK_MIDDLE_STATUE_NOCAPTURE"_djb2:
-			m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE;
-			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
-			break;
-
-		// A CHECK_MIDDLE_STATUE_CAPTURE
-		case "CHECK_MIDDLE_STATUE_CAPTURE"_djb2:
-			m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_CAPTURE;
-			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
-			break;
-
-		// A CHECK_EMPTY_SLOT {required number of empty slots}
-		case "CHECK_EMPTY_SLOT"_djb2:
-			m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
+		// A CHECK_DICE {sides}
+		case "CHECK_DICE"_djb2:
+			m_LogicElse = LOGIC_CHECK_DICE;
 			argsToParse = 1;
 			break;
 
-		// A CHECK_NO_CASTLE
-		case "CHECK_NO_CASTLE"_djb2:
-			m_LogicElse = LOGIC_CHECK_NO_CASTLE;
-			argsToParse = 1;
-			break;
-
-		// A CHECK_CASTLE
-		case "CHECK_CASTLE"_djb2:
-			m_LogicElse = LOGIC_CHECK_CASTLE;
+		// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}
+		case "CHECK_MONSTER_CHALLENGE_TIME"_djb2:
+			m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;
 			argsToParse = 1;
 			break;
 
@@ -247,10 +212,16 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
-		// A CHECK_STAT_TOTAL {minimum} {maximum}
-		case "CHECK_STAT_TOTAL"_djb2:
-			m_LogicElse = LOGIC_CHECK_STAT_TOTAL;
-			argsToParse = 2;
+		// A CHECK_CASTLE
+		case "CHECK_CASTLE"_djb2:
+			m_LogicElse = LOGIC_CHECK_CASTLE;
+			argsToParse = 1;
+			break;
+
+		// A CHECK_NO_CASTLE
+		case "CHECK_NO_CASTLE"_djb2:
+			m_LogicElse = LOGIC_CHECK_NO_CASTLE;
+			argsToParse = 1;
 			break;
 
 		// A CHECK_SKILL_TOTAL {minimum} {maximum}
@@ -259,12 +230,45 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 2;
 			break;
 
+		// A CHECK_STAT_TOTAL {minimum} {maximum}
+		case "CHECK_STAT_TOTAL"_djb2:
+			m_LogicElse = LOGIC_CHECK_STAT_TOTAL;
+			argsToParse = 2;
+			break;
+
+		// A CHECK_EMPTY_SLOT {required number of empty slots}
+		case "CHECK_EMPTY_SLOT"_djb2:
+			m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
+			argsToParse = 1;
+			break;
+
+		// A CHECK_MIDDLE_STATUE_CAPTURE
+		case "CHECK_MIDDLE_STATUE_CAPTURE"_djb2:
+			m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_CAPTURE;
+			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
+			break;
+
+		// A CHECK_MIDDLE_STATUE_NOCAPTURE
+		case "CHECK_MIDDLE_STATUE_NOCAPTURE"_djb2:
+			m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE;
+			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
+			break;
+
 		// A CHECK_BEEF_ROAST_KARUS_VICTORY
 		case "CHECK_BEEF_ROAST_KARUS_VICTORY"_djb2:
+			m_LogicElse = LOGIC_CHECK_BEEF_ROAST_KARUS_VICTORY;
+			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
+			break;
+
 		// A CHECK_BEEF_ROAST_ELMORAD_VICTORY
 		case "CHECK_BEEF_ROAST_ELMORAD_VICTORY"_djb2:
+			m_LogicElse = LOGIC_CHECK_BEEF_ROAST_ELMORAD_VICTORY;
+			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
+			break;
+
 		// A CHECK_BEEF_ROAST_NO_VICTORY
 		case "CHECK_BEEF_ROAST_NO_VICTORY"_djb2:
+			m_LogicElse = LOGIC_CHECK_BEEF_ROAST_NO_VICTORY;
 			argsToParse = 1; // officially it always parses 1 even though it doesn't use it
 			break;
 
