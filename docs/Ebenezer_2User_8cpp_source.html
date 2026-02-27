@@ -11890,214 +11890,214 @@ $(function(){initNavTree('Ebenezer_2User_8cpp_source.html',''); initResizable(tr
 <div class="line"><a id="l11760" name="l11760"></a><span class="lineno">11760</span>        <span class="keywordflow">if</span> (pLE == <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l11761" name="l11761"></a><span class="lineno">11761</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l11762" name="l11762"></a><span class="lineno">11762</span> </div>
-<div class="line"><a id="l11763" name="l11763"></a><span class="lineno">11763</span>        <span class="keywordflow">switch</span> (pLE-&gt;m_LogicElse)</div>
-<div class="line"><a id="l11764" name="l11764"></a><span class="lineno">11764</span>        {</div>
-<div class="line"><a id="l11765" name="l11765"></a><span class="lineno">11765</span>            <span class="keywordflow">case</span> LOGIC_CHECK_UNDER_WEIGHT:</div>
-<div class="line"><a id="l11766" name="l11766"></a><span class="lineno">11766</span>                <span class="keywordflow">if</span> (pLE-&gt;m_LogicElseInt[0] + m_iItemWeight &gt;= m_iMaxWeight)</div>
-<div class="line"><a id="l11767" name="l11767"></a><span class="lineno">11767</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11768" name="l11768"></a><span class="lineno">11768</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11769" name="l11769"></a><span class="lineno">11769</span> </div>
-<div class="line"><a id="l11770" name="l11770"></a><span class="lineno">11770</span>            <span class="keywordflow">case</span> LOGIC_CHECK_OVER_WEIGHT:</div>
-<div class="line"><a id="l11771" name="l11771"></a><span class="lineno">11771</span>                <span class="keywordflow">if</span> (pLE-&gt;m_LogicElseInt[0] + m_iItemWeight &lt; m_iMaxWeight)</div>
-<div class="line"><a id="l11772" name="l11772"></a><span class="lineno">11772</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11773" name="l11773"></a><span class="lineno">11773</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11774" name="l11774"></a><span class="lineno">11774</span> </div>
-<div class="line"><a id="l11775" name="l11775"></a><span class="lineno">11775</span>            <span class="keywordflow">case</span> LOGIC_CHECK_SKILL_POINT:</div>
-<div class="line"><a id="l11776" name="l11776"></a><span class="lineno">11776</span>                <span class="keywordflow">if</span> (CheckSkillPoint(</div>
-<div class="line"><a id="l11777" name="l11777"></a><span class="lineno">11777</span>                        pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1], pLE-&gt;m_LogicElseInt[2]))</div>
-<div class="line"><a id="l11778" name="l11778"></a><span class="lineno">11778</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11779" name="l11779"></a><span class="lineno">11779</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11780" name="l11780"></a><span class="lineno">11780</span> </div>
-<div class="line"><a id="l11781" name="l11781"></a><span class="lineno">11781</span>            <span class="keywordflow">case</span> LOGIC_CHECK_SKILL_TOTAL:</div>
-<div class="line"><a id="l11782" name="l11782"></a><span class="lineno">11782</span>                <span class="keywordflow">if</span> (CheckSkillTotal(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
-<div class="line"><a id="l11783" name="l11783"></a><span class="lineno">11783</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11784" name="l11784"></a><span class="lineno">11784</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11785" name="l11785"></a><span class="lineno">11785</span> </div>
-<div class="line"><a id="l11786" name="l11786"></a><span class="lineno">11786</span>            <span class="keywordflow">case</span> LOGIC_CHECK_STAT_TOTAL:</div>
-<div class="line"><a id="l11787" name="l11787"></a><span class="lineno">11787</span>                <span class="keywordflow">if</span> (CheckStatTotal(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
-<div class="line"><a id="l11788" name="l11788"></a><span class="lineno">11788</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11789" name="l11789"></a><span class="lineno">11789</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11790" name="l11790"></a><span class="lineno">11790</span> </div>
-<div class="line"><a id="l11791" name="l11791"></a><span class="lineno">11791</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EXIST_ITEM:</div>
-<div class="line"><a id="l11792" name="l11792"></a><span class="lineno">11792</span>                <span class="keywordflow">if</span> (CheckExistItem(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
-<div class="line"><a id="l11793" name="l11793"></a><span class="lineno">11793</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11794" name="l11794"></a><span class="lineno">11794</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11795" name="l11795"></a><span class="lineno">11795</span> </div>
-<div class="line"><a id="l11796" name="l11796"></a><span class="lineno">11796</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOEXIST_ITEM:</div>
-<div class="line"><a id="l11797" name="l11797"></a><span class="lineno">11797</span>                <span class="keywordflow">if</span> (!CheckExistItem(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
-<div class="line"><a id="l11798" name="l11798"></a><span class="lineno">11798</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11799" name="l11799"></a><span class="lineno">11799</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11800" name="l11800"></a><span class="lineno">11800</span> </div>
-<div class="line"><a id="l11801" name="l11801"></a><span class="lineno">11801</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CLASS:</div>
-<div class="line"><a id="l11802" name="l11802"></a><span class="lineno">11802</span>                <span class="keywordflow">if</span> (CheckClass(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1],</div>
-<div class="line"><a id="l11803" name="l11803"></a><span class="lineno">11803</span>                        pLE-&gt;m_LogicElseInt[2], pLE-&gt;m_LogicElseInt[3], pLE-&gt;m_LogicElseInt[4],</div>
-<div class="line"><a id="l11804" name="l11804"></a><span class="lineno">11804</span>                        pLE-&gt;m_LogicElseInt[5]))</div>
-<div class="line"><a id="l11805" name="l11805"></a><span class="lineno">11805</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11806" name="l11806"></a><span class="lineno">11806</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11807" name="l11807"></a><span class="lineno">11807</span> </div>
-<div class="line"><a id="l11808" name="l11808"></a><span class="lineno">11808</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOCLASS:</div>
-<div class="line"><a id="l11809" name="l11809"></a><span class="lineno">11809</span>                <span class="keywordflow">if</span> (!CheckClass(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1],</div>
-<div class="line"><a id="l11810" name="l11810"></a><span class="lineno">11810</span>                        pLE-&gt;m_LogicElseInt[2], pLE-&gt;m_LogicElseInt[3], pLE-&gt;m_LogicElseInt[4],</div>
-<div class="line"><a id="l11811" name="l11811"></a><span class="lineno">11811</span>                        pLE-&gt;m_LogicElseInt[5]))</div>
+<div class="line"><a id="l11763" name="l11763"></a><span class="lineno">11763</span>        <span class="comment">// Case order is based on order set in official .IDB</span></div>
+<div class="line"><a id="l11764" name="l11764"></a><span class="lineno">11764</span>        <span class="keywordflow">switch</span> (pLE-&gt;m_LogicElse)</div>
+<div class="line"><a id="l11765" name="l11765"></a><span class="lineno">11765</span>        {</div>
+<div class="line"><a id="l11766" name="l11766"></a><span class="lineno">11766</span>            <span class="keywordflow">case</span> LOGIC_CHECK_UNDER_WEIGHT:</div>
+<div class="line"><a id="l11767" name="l11767"></a><span class="lineno">11767</span>                <span class="keywordflow">if</span> (pLE-&gt;m_LogicElseInt[0] + m_iItemWeight &gt;= m_iMaxWeight)</div>
+<div class="line"><a id="l11768" name="l11768"></a><span class="lineno">11768</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11769" name="l11769"></a><span class="lineno">11769</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11770" name="l11770"></a><span class="lineno">11770</span> </div>
+<div class="line"><a id="l11771" name="l11771"></a><span class="lineno">11771</span>            <span class="keywordflow">case</span> LOGIC_CHECK_OVER_WEIGHT:</div>
+<div class="line"><a id="l11772" name="l11772"></a><span class="lineno">11772</span>                <span class="keywordflow">if</span> (pLE-&gt;m_LogicElseInt[0] + m_iItemWeight &lt; m_iMaxWeight)</div>
+<div class="line"><a id="l11773" name="l11773"></a><span class="lineno">11773</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11774" name="l11774"></a><span class="lineno">11774</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11775" name="l11775"></a><span class="lineno">11775</span> </div>
+<div class="line"><a id="l11776" name="l11776"></a><span class="lineno">11776</span>            <span class="keywordflow">case</span> LOGIC_CHECK_SKILL_POINT:</div>
+<div class="line"><a id="l11777" name="l11777"></a><span class="lineno">11777</span>                <span class="keywordflow">if</span> (CheckSkillPoint(</div>
+<div class="line"><a id="l11778" name="l11778"></a><span class="lineno">11778</span>                        pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1], pLE-&gt;m_LogicElseInt[2]))</div>
+<div class="line"><a id="l11779" name="l11779"></a><span class="lineno">11779</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11780" name="l11780"></a><span class="lineno">11780</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11781" name="l11781"></a><span class="lineno">11781</span> </div>
+<div class="line"><a id="l11782" name="l11782"></a><span class="lineno">11782</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EXIST_ITEM:</div>
+<div class="line"><a id="l11783" name="l11783"></a><span class="lineno">11783</span>                <span class="keywordflow">if</span> (CheckExistItem(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
+<div class="line"><a id="l11784" name="l11784"></a><span class="lineno">11784</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11785" name="l11785"></a><span class="lineno">11785</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11786" name="l11786"></a><span class="lineno">11786</span> </div>
+<div class="line"><a id="l11787" name="l11787"></a><span class="lineno">11787</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CLASS:</div>
+<div class="line"><a id="l11788" name="l11788"></a><span class="lineno">11788</span>                <span class="keywordflow">if</span> (CheckClass(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1],</div>
+<div class="line"><a id="l11789" name="l11789"></a><span class="lineno">11789</span>                        pLE-&gt;m_LogicElseInt[2], pLE-&gt;m_LogicElseInt[3], pLE-&gt;m_LogicElseInt[4],</div>
+<div class="line"><a id="l11790" name="l11790"></a><span class="lineno">11790</span>                        pLE-&gt;m_LogicElseInt[5]))</div>
+<div class="line"><a id="l11791" name="l11791"></a><span class="lineno">11791</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11792" name="l11792"></a><span class="lineno">11792</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11793" name="l11793"></a><span class="lineno">11793</span> </div>
+<div class="line"><a id="l11794" name="l11794"></a><span class="lineno">11794</span>            <span class="keywordflow">case</span> LOGIC_CHECK_WEIGHT:</div>
+<div class="line"><a id="l11795" name="l11795"></a><span class="lineno">11795</span>                <span class="keywordflow">if</span> (!CheckWeight(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
+<div class="line"><a id="l11796" name="l11796"></a><span class="lineno">11796</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11797" name="l11797"></a><span class="lineno">11797</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11798" name="l11798"></a><span class="lineno">11798</span> </div>
+<div class="line"><a id="l11799" name="l11799"></a><span class="lineno">11799</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EDITBOX:</div>
+<div class="line"><a id="l11800" name="l11800"></a><span class="lineno">11800</span>                <span class="keywordflow">if</span> (!CheckEditBox())</div>
+<div class="line"><a id="l11801" name="l11801"></a><span class="lineno">11801</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11802" name="l11802"></a><span class="lineno">11802</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11803" name="l11803"></a><span class="lineno">11803</span> </div>
+<div class="line"><a id="l11804" name="l11804"></a><span class="lineno">11804</span>            <span class="keywordflow">case</span> LOGIC_RAND:</div>
+<div class="line"><a id="l11805" name="l11805"></a><span class="lineno">11805</span>                <span class="keywordflow">if</span> (CheckRandom(pLE-&gt;m_LogicElseInt[0]))</div>
+<div class="line"><a id="l11806" name="l11806"></a><span class="lineno">11806</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11807" name="l11807"></a><span class="lineno">11807</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11808" name="l11808"></a><span class="lineno">11808</span> </div>
+<div class="line"><a id="l11809" name="l11809"></a><span class="lineno">11809</span>            <span class="keywordflow">case</span> LOGIC_HOWMUCH_ITEM:</div>
+<div class="line"><a id="l11810" name="l11810"></a><span class="lineno">11810</span>                <span class="keywordflow">if</span> (CheckItemCount(</div>
+<div class="line"><a id="l11811" name="l11811"></a><span class="lineno">11811</span>                        pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1], pLE-&gt;m_LogicElseInt[2]))</div>
 <div class="line"><a id="l11812" name="l11812"></a><span class="lineno">11812</span>                    bExact = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l11813" name="l11813"></a><span class="lineno">11813</span>                <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l11814" name="l11814"></a><span class="lineno">11814</span> </div>
-<div class="line"><a id="l11815" name="l11815"></a><span class="lineno">11815</span>            <span class="keywordflow">case</span> LOGIC_CHECK_DICE:</div>
-<div class="line"><a id="l11816" name="l11816"></a><span class="lineno">11816</span>                bExact = pLE-&gt;m_LogicElseInt[0] == m_sEventDiceRoll;</div>
-<div class="line"><a id="l11817" name="l11817"></a><span class="lineno">11817</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11818" name="l11818"></a><span class="lineno">11818</span> </div>
-<div class="line"><a id="l11819" name="l11819"></a><span class="lineno">11819</span>            <span class="keywordflow">case</span> LOGIC_CHECK_WEIGHT:</div>
-<div class="line"><a id="l11820" name="l11820"></a><span class="lineno">11820</span>                <span class="keywordflow">if</span> (!CheckWeight(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
-<div class="line"><a id="l11821" name="l11821"></a><span class="lineno">11821</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11822" name="l11822"></a><span class="lineno">11822</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11823" name="l11823"></a><span class="lineno">11823</span>                <span class="comment">// 비러머글 복권 &gt;.&lt;</span></div>
-<div class="line"><a id="l11824" name="l11824"></a><span class="lineno">11824</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EDITBOX:</div>
-<div class="line"><a id="l11825" name="l11825"></a><span class="lineno">11825</span>                <span class="keywordflow">if</span> (!CheckEditBox())</div>
-<div class="line"><a id="l11826" name="l11826"></a><span class="lineno">11826</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11827" name="l11827"></a><span class="lineno">11827</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11828" name="l11828"></a><span class="lineno">11828</span> </div>
-<div class="line"><a id="l11829" name="l11829"></a><span class="lineno">11829</span>            <span class="keywordflow">case</span> LOGIC_RAND:</div>
-<div class="line"><a id="l11830" name="l11830"></a><span class="lineno">11830</span>                <span class="keywordflow">if</span> (CheckRandom(pLE-&gt;m_LogicElseInt[0]))</div>
-<div class="line"><a id="l11831" name="l11831"></a><span class="lineno">11831</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11832" name="l11832"></a><span class="lineno">11832</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11833" name="l11833"></a><span class="lineno">11833</span>                <span class="comment">//</span></div>
-<div class="line"><a id="l11834" name="l11834"></a><span class="lineno">11834</span>                <span class="comment">// 비러머글 엑셀 &gt;.&lt;</span></div>
-<div class="line"><a id="l11835" name="l11835"></a><span class="lineno">11835</span>            <span class="keywordflow">case</span> LOGIC_CHECK_LV:</div>
-<div class="line"><a id="l11836" name="l11836"></a><span class="lineno">11836</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bLevel &gt;= pLE-&gt;m_LogicElseInt[0]</div>
-<div class="line"><a id="l11837" name="l11837"></a><span class="lineno">11837</span>                    &amp;&amp; m_pUserData-&gt;m_bLevel &lt;= pLE-&gt;m_LogicElseInt[1])</div>
-<div class="line"><a id="l11838" name="l11838"></a><span class="lineno">11838</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11839" name="l11839"></a><span class="lineno">11839</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11840" name="l11840"></a><span class="lineno">11840</span> </div>
-<div class="line"><a id="l11841" name="l11841"></a><span class="lineno">11841</span>            <span class="keywordflow">case</span> LOGIC_NOEXIST_COM_EVENT:</div>
-<div class="line"><a id="l11842" name="l11842"></a><span class="lineno">11842</span>                <span class="keywordflow">if</span> (!ExistComEvent(pLE-&gt;m_LogicElseInt[0]))</div>
-<div class="line"><a id="l11843" name="l11843"></a><span class="lineno">11843</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11844" name="l11844"></a><span class="lineno">11844</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11845" name="l11845"></a><span class="lineno">11845</span> </div>
-<div class="line"><a id="l11846" name="l11846"></a><span class="lineno">11846</span>            <span class="keywordflow">case</span> LOGIC_EXIST_COM_EVENT:</div>
-<div class="line"><a id="l11847" name="l11847"></a><span class="lineno">11847</span>                <span class="keywordflow">if</span> (ExistComEvent(pLE-&gt;m_LogicElseInt[0]))</div>
-<div class="line"><a id="l11848" name="l11848"></a><span class="lineno">11848</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11849" name="l11849"></a><span class="lineno">11849</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11850" name="l11850"></a><span class="lineno">11850</span> </div>
-<div class="line"><a id="l11851" name="l11851"></a><span class="lineno">11851</span>            <span class="keywordflow">case</span> LOGIC_HOWMUCH_ITEM:</div>
-<div class="line"><a id="l11852" name="l11852"></a><span class="lineno">11852</span>                <span class="keywordflow">if</span> (CheckItemCount(</div>
-<div class="line"><a id="l11853" name="l11853"></a><span class="lineno">11853</span>                        pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1], pLE-&gt;m_LogicElseInt[2]))</div>
-<div class="line"><a id="l11854" name="l11854"></a><span class="lineno">11854</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11855" name="l11855"></a><span class="lineno">11855</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11856" name="l11856"></a><span class="lineno">11856</span> </div>
-<div class="line"><a id="l11857" name="l11857"></a><span class="lineno">11857</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOAH:</div>
-<div class="line"><a id="l11858" name="l11858"></a><span class="lineno">11858</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_iGold &gt;= pLE-&gt;m_LogicElseInt[0]</div>
-<div class="line"><a id="l11859" name="l11859"></a><span class="lineno">11859</span>                    &amp;&amp; m_pUserData-&gt;m_iGold &lt;= pLE-&gt;m_LogicElseInt[1])</div>
-<div class="line"><a id="l11860" name="l11860"></a><span class="lineno">11860</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11861" name="l11861"></a><span class="lineno">11861</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11862" name="l11862"></a><span class="lineno">11862</span> </div>
-<div class="line"><a id="l11863" name="l11863"></a><span class="lineno">11863</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NATION:</div>
-<div class="line"><a id="l11864" name="l11864"></a><span class="lineno">11864</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bNation == pLE-&gt;m_LogicElseInt[0])</div>
-<div class="line"><a id="l11865" name="l11865"></a><span class="lineno">11865</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11866" name="l11866"></a><span class="lineno">11866</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11867" name="l11867"></a><span class="lineno">11867</span> </div>
-<div class="line"><a id="l11868" name="l11868"></a><span class="lineno">11868</span>            <span class="keywordflow">case</span> LOGIC_CHECK_LOYALTY:</div>
-<div class="line"><a id="l11869" name="l11869"></a><span class="lineno">11869</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_iLoyalty &gt;= pLE-&gt;m_LogicElseInt[0]</div>
-<div class="line"><a id="l11870" name="l11870"></a><span class="lineno">11870</span>                    &amp;&amp; m_pUserData-&gt;m_iLoyalty &lt;= pLE-&gt;m_LogicElseInt[1])</div>
-<div class="line"><a id="l11871" name="l11871"></a><span class="lineno">11871</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11872" name="l11872"></a><span class="lineno">11872</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11873" name="l11873"></a><span class="lineno">11873</span> </div>
-<div class="line"><a id="l11874" name="l11874"></a><span class="lineno">11874</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CHIEF:</div>
-<div class="line"><a id="l11875" name="l11875"></a><span class="lineno">11875</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bFame == KNIGHTS_DUTY_CHIEF)</div>
-<div class="line"><a id="l11876" name="l11876"></a><span class="lineno">11876</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11877" name="l11877"></a><span class="lineno">11877</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11878" name="l11878"></a><span class="lineno">11878</span> </div>
-<div class="line"><a id="l11879" name="l11879"></a><span class="lineno">11879</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NO_CHIEF:</div>
-<div class="line"><a id="l11880" name="l11880"></a><span class="lineno">11880</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bFame != KNIGHTS_DUTY_CHIEF)</div>
-<div class="line"><a id="l11881" name="l11881"></a><span class="lineno">11881</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11882" name="l11882"></a><span class="lineno">11882</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11883" name="l11883"></a><span class="lineno">11883</span> </div>
-<div class="line"><a id="l11884" name="l11884"></a><span class="lineno">11884</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CLAN_GRADE:</div>
-<div class="line"><a id="l11885" name="l11885"></a><span class="lineno">11885</span>                <span class="keywordflow">if</span> (CheckClanGrade(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
-<div class="line"><a id="l11886" name="l11886"></a><span class="lineno">11886</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11887" name="l11887"></a><span class="lineno">11887</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11888" name="l11888"></a><span class="lineno">11888</span> </div>
-<div class="line"><a id="l11889" name="l11889"></a><span class="lineno">11889</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MIDDLE_STATUE_CAPTURE:</div>
-<div class="line"><a id="l11890" name="l11890"></a><span class="lineno">11890</span>                <span class="keywordflow">if</span> (CheckMiddleStatueCapture())</div>
-<div class="line"><a id="l11891" name="l11891"></a><span class="lineno">11891</span>                {</div>
-<div class="line"><a id="l11892" name="l11892"></a><span class="lineno">11892</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
-<div class="line"><a id="l11893" name="l11893"></a><span class="lineno">11893</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11894" name="l11894"></a><span class="lineno">11894</span>                }</div>
+<div class="line"><a id="l11815" name="l11815"></a><span class="lineno">11815</span>            <span class="keywordflow">case</span> LOGIC_CHECK_LV:</div>
+<div class="line"><a id="l11816" name="l11816"></a><span class="lineno">11816</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bLevel &gt;= pLE-&gt;m_LogicElseInt[0]</div>
+<div class="line"><a id="l11817" name="l11817"></a><span class="lineno">11817</span>                    &amp;&amp; m_pUserData-&gt;m_bLevel &lt;= pLE-&gt;m_LogicElseInt[1])</div>
+<div class="line"><a id="l11818" name="l11818"></a><span class="lineno">11818</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11819" name="l11819"></a><span class="lineno">11819</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11820" name="l11820"></a><span class="lineno">11820</span> </div>
+<div class="line"><a id="l11821" name="l11821"></a><span class="lineno">11821</span>            <span class="keywordflow">case</span> LOGIC_NOEXIST_COM_EVENT:</div>
+<div class="line"><a id="l11822" name="l11822"></a><span class="lineno">11822</span>                <span class="keywordflow">if</span> (!ExistComEvent(pLE-&gt;m_LogicElseInt[0]))</div>
+<div class="line"><a id="l11823" name="l11823"></a><span class="lineno">11823</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11824" name="l11824"></a><span class="lineno">11824</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11825" name="l11825"></a><span class="lineno">11825</span> </div>
+<div class="line"><a id="l11826" name="l11826"></a><span class="lineno">11826</span>            <span class="keywordflow">case</span> LOGIC_EXIST_COM_EVENT:</div>
+<div class="line"><a id="l11827" name="l11827"></a><span class="lineno">11827</span>                <span class="keywordflow">if</span> (ExistComEvent(pLE-&gt;m_LogicElseInt[0]))</div>
+<div class="line"><a id="l11828" name="l11828"></a><span class="lineno">11828</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11829" name="l11829"></a><span class="lineno">11829</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11830" name="l11830"></a><span class="lineno">11830</span> </div>
+<div class="line"><a id="l11831" name="l11831"></a><span class="lineno">11831</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOAH:</div>
+<div class="line"><a id="l11832" name="l11832"></a><span class="lineno">11832</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_iGold &gt;= pLE-&gt;m_LogicElseInt[0]</div>
+<div class="line"><a id="l11833" name="l11833"></a><span class="lineno">11833</span>                    &amp;&amp; m_pUserData-&gt;m_iGold &lt;= pLE-&gt;m_LogicElseInt[1])</div>
+<div class="line"><a id="l11834" name="l11834"></a><span class="lineno">11834</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11835" name="l11835"></a><span class="lineno">11835</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11836" name="l11836"></a><span class="lineno">11836</span> </div>
+<div class="line"><a id="l11837" name="l11837"></a><span class="lineno">11837</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NATION:</div>
+<div class="line"><a id="l11838" name="l11838"></a><span class="lineno">11838</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bNation == pLE-&gt;m_LogicElseInt[0])</div>
+<div class="line"><a id="l11839" name="l11839"></a><span class="lineno">11839</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11840" name="l11840"></a><span class="lineno">11840</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11841" name="l11841"></a><span class="lineno">11841</span> </div>
+<div class="line"><a id="l11842" name="l11842"></a><span class="lineno">11842</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EXIST_EVENT:</div>
+<div class="line"><a id="l11843" name="l11843"></a><span class="lineno">11843</span>                <span class="keywordflow">if</span> (CheckExistEvent(<span class="keyword">static_cast&lt;</span>e_QuestId<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[0]),</div>
+<div class="line"><a id="l11844" name="l11844"></a><span class="lineno">11844</span>                        <span class="keyword">static_cast&lt;</span>e_QuestState<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[1])))</div>
+<div class="line"><a id="l11845" name="l11845"></a><span class="lineno">11845</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11846" name="l11846"></a><span class="lineno">11846</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11847" name="l11847"></a><span class="lineno">11847</span> </div>
+<div class="line"><a id="l11848" name="l11848"></a><span class="lineno">11848</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOEXIST_EVENT:</div>
+<div class="line"><a id="l11849" name="l11849"></a><span class="lineno">11849</span>                <span class="keywordflow">if</span> (!CheckExistEvent(<span class="keyword">static_cast&lt;</span>e_QuestId<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[0]),</div>
+<div class="line"><a id="l11850" name="l11850"></a><span class="lineno">11850</span>                        <span class="keyword">static_cast&lt;</span>e_QuestState<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[1])))</div>
+<div class="line"><a id="l11851" name="l11851"></a><span class="lineno">11851</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11852" name="l11852"></a><span class="lineno">11852</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11853" name="l11853"></a><span class="lineno">11853</span> </div>
+<div class="line"><a id="l11854" name="l11854"></a><span class="lineno">11854</span>            <span class="keywordflow">case</span> LOGIC_CHECK_PROMOTION_ELIGIBLE:</div>
+<div class="line"><a id="l11855" name="l11855"></a><span class="lineno">11855</span>                <span class="keywordflow">if</span> (CheckPromotionEligible())</div>
+<div class="line"><a id="l11856" name="l11856"></a><span class="lineno">11856</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11857" name="l11857"></a><span class="lineno">11857</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11858" name="l11858"></a><span class="lineno">11858</span> </div>
+<div class="line"><a id="l11859" name="l11859"></a><span class="lineno">11859</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOEXIST_ITEM:</div>
+<div class="line"><a id="l11860" name="l11860"></a><span class="lineno">11860</span>                <span class="keywordflow">if</span> (!CheckExistItem(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
+<div class="line"><a id="l11861" name="l11861"></a><span class="lineno">11861</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11862" name="l11862"></a><span class="lineno">11862</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11863" name="l11863"></a><span class="lineno">11863</span> </div>
+<div class="line"><a id="l11864" name="l11864"></a><span class="lineno">11864</span>            <span class="keywordflow">case</span> LOGIC_CHECK_ITEMCHANGE_NUM:</div>
+<div class="line"><a id="l11865" name="l11865"></a><span class="lineno">11865</span>                <span class="keywordflow">if</span> (m_byLastExchangeNum == pLE-&gt;m_LogicElseInt[0])</div>
+<div class="line"><a id="l11866" name="l11866"></a><span class="lineno">11866</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11867" name="l11867"></a><span class="lineno">11867</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11868" name="l11868"></a><span class="lineno">11868</span> </div>
+<div class="line"><a id="l11869" name="l11869"></a><span class="lineno">11869</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOCLASS:</div>
+<div class="line"><a id="l11870" name="l11870"></a><span class="lineno">11870</span>                <span class="keywordflow">if</span> (!CheckClass(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1],</div>
+<div class="line"><a id="l11871" name="l11871"></a><span class="lineno">11871</span>                        pLE-&gt;m_LogicElseInt[2], pLE-&gt;m_LogicElseInt[3], pLE-&gt;m_LogicElseInt[4],</div>
+<div class="line"><a id="l11872" name="l11872"></a><span class="lineno">11872</span>                        pLE-&gt;m_LogicElseInt[5]))</div>
+<div class="line"><a id="l11873" name="l11873"></a><span class="lineno">11873</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11874" name="l11874"></a><span class="lineno">11874</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11875" name="l11875"></a><span class="lineno">11875</span> </div>
+<div class="line"><a id="l11876" name="l11876"></a><span class="lineno">11876</span>            <span class="keywordflow">case</span> LOGIC_CHECK_LOYALTY:</div>
+<div class="line"><a id="l11877" name="l11877"></a><span class="lineno">11877</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_iLoyalty &gt;= pLE-&gt;m_LogicElseInt[0]</div>
+<div class="line"><a id="l11878" name="l11878"></a><span class="lineno">11878</span>                    &amp;&amp; m_pUserData-&gt;m_iLoyalty &lt;= pLE-&gt;m_LogicElseInt[1])</div>
+<div class="line"><a id="l11879" name="l11879"></a><span class="lineno">11879</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11880" name="l11880"></a><span class="lineno">11880</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11881" name="l11881"></a><span class="lineno">11881</span> </div>
+<div class="line"><a id="l11882" name="l11882"></a><span class="lineno">11882</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CHIEF:</div>
+<div class="line"><a id="l11883" name="l11883"></a><span class="lineno">11883</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bFame == KNIGHTS_DUTY_CHIEF)</div>
+<div class="line"><a id="l11884" name="l11884"></a><span class="lineno">11884</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11885" name="l11885"></a><span class="lineno">11885</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11886" name="l11886"></a><span class="lineno">11886</span> </div>
+<div class="line"><a id="l11887" name="l11887"></a><span class="lineno">11887</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NO_CHIEF:</div>
+<div class="line"><a id="l11888" name="l11888"></a><span class="lineno">11888</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bFame != KNIGHTS_DUTY_CHIEF)</div>
+<div class="line"><a id="l11889" name="l11889"></a><span class="lineno">11889</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11890" name="l11890"></a><span class="lineno">11890</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11891" name="l11891"></a><span class="lineno">11891</span> </div>
+<div class="line"><a id="l11892" name="l11892"></a><span class="lineno">11892</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CLAN_GRADE:</div>
+<div class="line"><a id="l11893" name="l11893"></a><span class="lineno">11893</span>                <span class="keywordflow">if</span> (CheckClanGrade(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
+<div class="line"><a id="l11894" name="l11894"></a><span class="lineno">11894</span>                    bExact = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l11895" name="l11895"></a><span class="lineno">11895</span>                <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l11896" name="l11896"></a><span class="lineno">11896</span> </div>
-<div class="line"><a id="l11897" name="l11897"></a><span class="lineno">11897</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE:</div>
-<div class="line"><a id="l11898" name="l11898"></a><span class="lineno">11898</span>                <span class="keywordflow">if</span> (!CheckMiddleStatueCapture())</div>
-<div class="line"><a id="l11899" name="l11899"></a><span class="lineno">11899</span>                {</div>
-<div class="line"><a id="l11900" name="l11900"></a><span class="lineno">11900</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
-<div class="line"><a id="l11901" name="l11901"></a><span class="lineno">11901</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11902" name="l11902"></a><span class="lineno">11902</span>                }</div>
-<div class="line"><a id="l11903" name="l11903"></a><span class="lineno">11903</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11904" name="l11904"></a><span class="lineno">11904</span> </div>
-<div class="line"><a id="l11905" name="l11905"></a><span class="lineno">11905</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EMPTY_SLOT:</div>
-<div class="line"><a id="l11906" name="l11906"></a><span class="lineno">11906</span>                <span class="keywordflow">if</span> (GetNumberOfEmptySlots() &gt;= pLE-&gt;m_LogicElseInt[0])</div>
-<div class="line"><a id="l11907" name="l11907"></a><span class="lineno">11907</span>                {</div>
-<div class="line"><a id="l11908" name="l11908"></a><span class="lineno">11908</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
-<div class="line"><a id="l11909" name="l11909"></a><span class="lineno">11909</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11910" name="l11910"></a><span class="lineno">11910</span>                }</div>
-<div class="line"><a id="l11911" name="l11911"></a><span class="lineno">11911</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11912" name="l11912"></a><span class="lineno">11912</span> </div>
-<div class="line"><a id="l11913" name="l11913"></a><span class="lineno">11913</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MONSTER_CHALLENGE_TIME:</div>
-<div class="line"><a id="l11914" name="l11914"></a><span class="lineno">11914</span>                <span class="keywordflow">if</span> (m_pMain-&gt;_monsterChallengeActiveType == pLE-&gt;m_LogicElseInt[0]</div>
-<div class="line"><a id="l11915" name="l11915"></a><span class="lineno">11915</span>                    &amp;&amp; m_pMain-&gt;_monsterChallengeState != 0)</div>
-<div class="line"><a id="l11916" name="l11916"></a><span class="lineno">11916</span>                {</div>
-<div class="line"><a id="l11917" name="l11917"></a><span class="lineno">11917</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
-<div class="line"><a id="l11918" name="l11918"></a><span class="lineno">11918</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11919" name="l11919"></a><span class="lineno">11919</span>                }</div>
-<div class="line"><a id="l11920" name="l11920"></a><span class="lineno">11920</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11921" name="l11921"></a><span class="lineno">11921</span> </div>
-<div class="line"><a id="l11922" name="l11922"></a><span class="lineno">11922</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EXIST_EVENT:</div>
-<div class="line"><a id="l11923" name="l11923"></a><span class="lineno">11923</span>                <span class="keywordflow">if</span> (CheckExistEvent(<span class="keyword">static_cast&lt;</span>e_QuestId<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[0]),</div>
-<div class="line"><a id="l11924" name="l11924"></a><span class="lineno">11924</span>                        <span class="keyword">static_cast&lt;</span>e_QuestState<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[1])))</div>
-<div class="line"><a id="l11925" name="l11925"></a><span class="lineno">11925</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11926" name="l11926"></a><span class="lineno">11926</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11927" name="l11927"></a><span class="lineno">11927</span> </div>
-<div class="line"><a id="l11928" name="l11928"></a><span class="lineno">11928</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NOEXIST_EVENT:</div>
-<div class="line"><a id="l11929" name="l11929"></a><span class="lineno">11929</span>                <span class="keywordflow">if</span> (!CheckExistEvent(<span class="keyword">static_cast&lt;</span>e_QuestId<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[0]),</div>
-<div class="line"><a id="l11930" name="l11930"></a><span class="lineno">11930</span>                        <span class="keyword">static_cast&lt;</span>e_QuestState<span class="keyword">&gt;</span>(pLE-&gt;m_LogicElseInt[1])))</div>
-<div class="line"><a id="l11931" name="l11931"></a><span class="lineno">11931</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11932" name="l11932"></a><span class="lineno">11932</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11933" name="l11933"></a><span class="lineno">11933</span> </div>
-<div class="line"><a id="l11934" name="l11934"></a><span class="lineno">11934</span>            <span class="keywordflow">case</span> LOGIC_CHECK_ITEMCHANGE_NUM:</div>
-<div class="line"><a id="l11935" name="l11935"></a><span class="lineno">11935</span>                <span class="keywordflow">if</span> (m_byLastExchangeNum == pLE-&gt;m_LogicElseInt[0])</div>
-<div class="line"><a id="l11936" name="l11936"></a><span class="lineno">11936</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11937" name="l11937"></a><span class="lineno">11937</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11938" name="l11938"></a><span class="lineno">11938</span> </div>
-<div class="line"><a id="l11939" name="l11939"></a><span class="lineno">11939</span>            <span class="keywordflow">case</span> LOGIC_CHECK_KNIGHT:</div>
-<div class="line"><a id="l11940" name="l11940"></a><span class="lineno">11940</span>                <span class="keywordflow">if</span> (CheckKnight())</div>
-<div class="line"><a id="l11941" name="l11941"></a><span class="lineno">11941</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11942" name="l11942"></a><span class="lineno">11942</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11943" name="l11943"></a><span class="lineno">11943</span> </div>
-<div class="line"><a id="l11944" name="l11944"></a><span class="lineno">11944</span>            <span class="keywordflow">case</span> LOGIC_CHECK_PROMOTION_ELIGIBLE:</div>
-<div class="line"><a id="l11945" name="l11945"></a><span class="lineno">11945</span>                <span class="keywordflow">if</span> (CheckPromotionEligible())</div>
-<div class="line"><a id="l11946" name="l11946"></a><span class="lineno">11946</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11947" name="l11947"></a><span class="lineno">11947</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11948" name="l11948"></a><span class="lineno">11948</span> </div>
-<div class="line"><a id="l11949" name="l11949"></a><span class="lineno">11949</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NO_CASTLE:</div>
-<div class="line"><a id="l11950" name="l11950"></a><span class="lineno">11950</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bKnights != m_pMain-&gt;m_KnightsSiegeWar._masterKnights</div>
-<div class="line"><a id="l11951" name="l11951"></a><span class="lineno">11951</span>                    || m_pMain-&gt;m_KnightsSiegeWar._masterKnights == 0</div>
-<div class="line"><a id="l11952" name="l11952"></a><span class="lineno">11952</span>                    || m_pUserData-&gt;m_bFame != KNIGHTS_DUTY_CHIEF)</div>
-<div class="line"><a id="l11953" name="l11953"></a><span class="lineno">11953</span>                {</div>
-<div class="line"><a id="l11954" name="l11954"></a><span class="lineno">11954</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
-<div class="line"><a id="l11955" name="l11955"></a><span class="lineno">11955</span>                    bExact = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l11956" name="l11956"></a><span class="lineno">11956</span>                }</div>
-<div class="line"><a id="l11957" name="l11957"></a><span class="lineno">11957</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l11958" name="l11958"></a><span class="lineno">11958</span> </div>
-<div class="line"><a id="l11959" name="l11959"></a><span class="lineno">11959</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CASTLE:</div>
-<div class="line"><a id="l11960" name="l11960"></a><span class="lineno">11960</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bKnights == m_pMain-&gt;m_KnightsSiegeWar._masterKnights</div>
-<div class="line"><a id="l11961" name="l11961"></a><span class="lineno">11961</span>                    &amp;&amp; m_pMain-&gt;m_KnightsSiegeWar._masterKnights &gt; 0</div>
-<div class="line"><a id="l11962" name="l11962"></a><span class="lineno">11962</span>                    &amp;&amp; m_pUserData-&gt;m_bFame == KNIGHTS_DUTY_CHIEF)</div>
+<div class="line"><a id="l11897" name="l11897"></a><span class="lineno">11897</span>            <span class="keywordflow">case</span> LOGIC_CHECK_KNIGHT:</div>
+<div class="line"><a id="l11898" name="l11898"></a><span class="lineno">11898</span>                <span class="keywordflow">if</span> (CheckKnight())</div>
+<div class="line"><a id="l11899" name="l11899"></a><span class="lineno">11899</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11900" name="l11900"></a><span class="lineno">11900</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11901" name="l11901"></a><span class="lineno">11901</span> </div>
+<div class="line"><a id="l11902" name="l11902"></a><span class="lineno">11902</span>            <span class="keywordflow">case</span> LOGIC_CHECK_DICE:</div>
+<div class="line"><a id="l11903" name="l11903"></a><span class="lineno">11903</span>                bExact = pLE-&gt;m_LogicElseInt[0] == m_sEventDiceRoll;</div>
+<div class="line"><a id="l11904" name="l11904"></a><span class="lineno">11904</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11905" name="l11905"></a><span class="lineno">11905</span> </div>
+<div class="line"><a id="l11906" name="l11906"></a><span class="lineno">11906</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MONSTER_CHALLENGE_TIME:</div>
+<div class="line"><a id="l11907" name="l11907"></a><span class="lineno">11907</span>                <span class="keywordflow">if</span> (m_pMain-&gt;_monsterChallengeActiveType == pLE-&gt;m_LogicElseInt[0]</div>
+<div class="line"><a id="l11908" name="l11908"></a><span class="lineno">11908</span>                    &amp;&amp; m_pMain-&gt;_monsterChallengeState != 0)</div>
+<div class="line"><a id="l11909" name="l11909"></a><span class="lineno">11909</span>                {</div>
+<div class="line"><a id="l11910" name="l11910"></a><span class="lineno">11910</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
+<div class="line"><a id="l11911" name="l11911"></a><span class="lineno">11911</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11912" name="l11912"></a><span class="lineno">11912</span>                }</div>
+<div class="line"><a id="l11913" name="l11913"></a><span class="lineno">11913</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11914" name="l11914"></a><span class="lineno">11914</span> </div>
+<div class="line"><a id="l11915" name="l11915"></a><span class="lineno">11915</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT:</div>
+<div class="line"><a id="l11916" name="l11916"></a><span class="lineno">11916</span>                <span class="keywordflow">if</span> (m_pMain-&gt;_monsterChallengePlayerCount &gt; pLE-&gt;m_LogicElseInt[0])</div>
+<div class="line"><a id="l11917" name="l11917"></a><span class="lineno">11917</span>                {</div>
+<div class="line"><a id="l11918" name="l11918"></a><span class="lineno">11918</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
+<div class="line"><a id="l11919" name="l11919"></a><span class="lineno">11919</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11920" name="l11920"></a><span class="lineno">11920</span>                }</div>
+<div class="line"><a id="l11921" name="l11921"></a><span class="lineno">11921</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11922" name="l11922"></a><span class="lineno">11922</span> </div>
+<div class="line"><a id="l11923" name="l11923"></a><span class="lineno">11923</span>            <span class="keywordflow">case</span> LOGIC_CHECK_CASTLE:</div>
+<div class="line"><a id="l11924" name="l11924"></a><span class="lineno">11924</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bKnights == m_pMain-&gt;m_KnightsSiegeWar._masterKnights</div>
+<div class="line"><a id="l11925" name="l11925"></a><span class="lineno">11925</span>                    &amp;&amp; m_pMain-&gt;m_KnightsSiegeWar._masterKnights &gt; 0</div>
+<div class="line"><a id="l11926" name="l11926"></a><span class="lineno">11926</span>                    &amp;&amp; m_pUserData-&gt;m_bFame == KNIGHTS_DUTY_CHIEF)</div>
+<div class="line"><a id="l11927" name="l11927"></a><span class="lineno">11927</span>                {</div>
+<div class="line"><a id="l11928" name="l11928"></a><span class="lineno">11928</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
+<div class="line"><a id="l11929" name="l11929"></a><span class="lineno">11929</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11930" name="l11930"></a><span class="lineno">11930</span>                }</div>
+<div class="line"><a id="l11931" name="l11931"></a><span class="lineno">11931</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11932" name="l11932"></a><span class="lineno">11932</span> </div>
+<div class="line"><a id="l11933" name="l11933"></a><span class="lineno">11933</span>            <span class="keywordflow">case</span> LOGIC_CHECK_NO_CASTLE:</div>
+<div class="line"><a id="l11934" name="l11934"></a><span class="lineno">11934</span>                <span class="keywordflow">if</span> (m_pUserData-&gt;m_bKnights != m_pMain-&gt;m_KnightsSiegeWar._masterKnights</div>
+<div class="line"><a id="l11935" name="l11935"></a><span class="lineno">11935</span>                    || m_pMain-&gt;m_KnightsSiegeWar._masterKnights == 0</div>
+<div class="line"><a id="l11936" name="l11936"></a><span class="lineno">11936</span>                    || m_pUserData-&gt;m_bFame != KNIGHTS_DUTY_CHIEF)</div>
+<div class="line"><a id="l11937" name="l11937"></a><span class="lineno">11937</span>                {</div>
+<div class="line"><a id="l11938" name="l11938"></a><span class="lineno">11938</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
+<div class="line"><a id="l11939" name="l11939"></a><span class="lineno">11939</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11940" name="l11940"></a><span class="lineno">11940</span>                }</div>
+<div class="line"><a id="l11941" name="l11941"></a><span class="lineno">11941</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11942" name="l11942"></a><span class="lineno">11942</span> </div>
+<div class="line"><a id="l11943" name="l11943"></a><span class="lineno">11943</span>            <span class="keywordflow">case</span> LOGIC_CHECK_SKILL_TOTAL:</div>
+<div class="line"><a id="l11944" name="l11944"></a><span class="lineno">11944</span>                <span class="keywordflow">if</span> (CheckSkillTotal(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
+<div class="line"><a id="l11945" name="l11945"></a><span class="lineno">11945</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11946" name="l11946"></a><span class="lineno">11946</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11947" name="l11947"></a><span class="lineno">11947</span> </div>
+<div class="line"><a id="l11948" name="l11948"></a><span class="lineno">11948</span>            <span class="keywordflow">case</span> LOGIC_CHECK_STAT_TOTAL:</div>
+<div class="line"><a id="l11949" name="l11949"></a><span class="lineno">11949</span>                <span class="keywordflow">if</span> (CheckStatTotal(pLE-&gt;m_LogicElseInt[0], pLE-&gt;m_LogicElseInt[1]))</div>
+<div class="line"><a id="l11950" name="l11950"></a><span class="lineno">11950</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11951" name="l11951"></a><span class="lineno">11951</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11952" name="l11952"></a><span class="lineno">11952</span> </div>
+<div class="line"><a id="l11953" name="l11953"></a><span class="lineno">11953</span>            <span class="keywordflow">case</span> LOGIC_CHECK_EMPTY_SLOT:</div>
+<div class="line"><a id="l11954" name="l11954"></a><span class="lineno">11954</span>                <span class="keywordflow">if</span> (GetNumberOfEmptySlots() &gt;= pLE-&gt;m_LogicElseInt[0])</div>
+<div class="line"><a id="l11955" name="l11955"></a><span class="lineno">11955</span>                {</div>
+<div class="line"><a id="l11956" name="l11956"></a><span class="lineno">11956</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
+<div class="line"><a id="l11957" name="l11957"></a><span class="lineno">11957</span>                    bExact = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l11958" name="l11958"></a><span class="lineno">11958</span>                }</div>
+<div class="line"><a id="l11959" name="l11959"></a><span class="lineno">11959</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l11960" name="l11960"></a><span class="lineno">11960</span> </div>
+<div class="line"><a id="l11961" name="l11961"></a><span class="lineno">11961</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MIDDLE_STATUE_CAPTURE:</div>
+<div class="line"><a id="l11962" name="l11962"></a><span class="lineno">11962</span>                <span class="keywordflow">if</span> (CheckMiddleStatueCapture())</div>
 <div class="line"><a id="l11963" name="l11963"></a><span class="lineno">11963</span>                {</div>
 <div class="line"><a id="l11964" name="l11964"></a><span class="lineno">11964</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
 <div class="line"><a id="l11965" name="l11965"></a><span class="lineno">11965</span>                    bExact = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l11966" name="l11966"></a><span class="lineno">11966</span>                }</div>
 <div class="line"><a id="l11967" name="l11967"></a><span class="lineno">11967</span>                <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l11968" name="l11968"></a><span class="lineno">11968</span> </div>
-<div class="line"><a id="l11969" name="l11969"></a><span class="lineno">11969</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT:</div>
-<div class="line"><a id="l11970" name="l11970"></a><span class="lineno">11970</span>                <span class="keywordflow">if</span> (m_pMain-&gt;_monsterChallengePlayerCount &gt; pLE-&gt;m_LogicElseInt[0])</div>
+<div class="line"><a id="l11969" name="l11969"></a><span class="lineno">11969</span>            <span class="keywordflow">case</span> LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE:</div>
+<div class="line"><a id="l11970" name="l11970"></a><span class="lineno">11970</span>                <span class="keywordflow">if</span> (!CheckMiddleStatueCapture())</div>
 <div class="line"><a id="l11971" name="l11971"></a><span class="lineno">11971</span>                {</div>
 <div class="line"><a id="l11972" name="l11972"></a><span class="lineno">11972</span>                    <span class="comment">// NOTE: officially this returns true, ending check processing immediately</span></div>
 <div class="line"><a id="l11973" name="l11973"></a><span class="lineno">11973</span>                    bExact = <span class="keyword">true</span>;</div>
