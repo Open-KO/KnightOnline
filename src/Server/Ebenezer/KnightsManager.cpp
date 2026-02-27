@@ -896,7 +896,6 @@ void CKnightsManager::ReceiveKnightsProcess(CUser* pUser, const char* pBuf, uint
 
 void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 {
-	static constexpr uint32_t CLAN_CREATE_COST = 500'000;
 	int index = 0, sendIndex = 0, namelen = 0, idlen = 0, knightsindex = 0, nation = 0,
 		community      = 0;
 	CKnights* pKnights = nullptr;
@@ -932,7 +931,7 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 
 	pUser->m_pUserData->m_bKnights = knightsindex;
 	pUser->m_pUserData->m_bFame    = KNIGHTS_DUTY_CHIEF;
-	CurrencyChange(pUser->m_pUserData->m_iGold, -CLAN_CREATE_COST);
+	pUser->GoldLose(CLAN_COST);
 
 	for (int i = 0; i < MAX_CLAN; i++)
 	{

@@ -29,6 +29,8 @@ inline constexpr int VIEW_DISTANCE                   = 48;
 
 inline constexpr int MAX_PARTY_SIZE                  = 8;
 
+static constexpr int32_t CLAN_COST                   = 500'000;
+
 inline constexpr float MAX_INTERACTION_RANGE         = 11;
 inline constexpr float MAX_INTERACTION_RANGE_SQUARED = (MAX_INTERACTION_RANGE
 														* MAX_INTERACTION_RANGE);
