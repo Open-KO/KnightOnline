@@ -1,5 +1,11 @@
 var NAVTREEINDEX7 =
 {
+"classdb_1_1ConnectionManager.html#a5b1da59cf1fd5b18de2ab45d56914746":[3,0,2,2,4],
+"classdb_1_1ConnectionManager.html#a7d14b3e8672073a1e3842e7520bd4b5b":[3,0,2,2,3],
+"classdb_1_1ConnectionManager.html#a8aff48361c0a536c1b2c85c53587cc67":[3,0,2,2,2],
+"classdb_1_1ConnectionManager.html#abd03bde66d17889ac9030f0cbdbd902c":[3,0,2,2,1],
+"classdb_1_1DatasourceConfigNotFoundException.html":[3,0,2,4],
+"classdb_1_1Model.html":[3,0,2,5],
 "classdb_1_1ModelRecordSet.html":[3,0,2,6],
 "classdb_1_1ModelRecordSet.html#a021e26f262346e60755fd83fa8065eac":[3,0,2,6,5],
 "classdb_1_1ModelRecordSet.html#a0b83c32c94d2e81b9b76e9bd40678f9b":[3,0,2,6,4],
@@ -243,11 +249,5 @@ var NAVTREEINDEX7 =
 "structSoundSettings.html":[3,0,497],
 "structSoundSettings.html#a59d749709cc6f01325987af43ecf8b03":[3,0,497,0],
 "structSoundSettings.html#a64187a7870c8bbf30ce6d35fc76b1e94":[3,0,497,2],
-"structSoundSettings.html#ae91127cf3edee0ada1f0a6c738c6f9be":[3,0,497,1],
-"structTcpSocket_1_1test__tag.html":[3,0,510,0],
-"structVersionManager_1_1__NEWS.html":[3,0,7,0],
-"structVersionManager_1_1__SERVER__INFO.html":[3,0,7,1],
-"structWAVE__Data.html":[3,0,522],
-"structWAVE__Data.html#a77bd4495275e521feed9091867b40e08":[3,0,522,1],
-"structWAVE__Data.html#a86e0f601ffe8335731e2d951c093fb2b":[3,0,522,0]
+"structSoundSettings.html#ae91127cf3edee0ada1f0a6c738c6f9be":[3,0,497,1]
 };

@@ -1,5 +1,11 @@
 var NAVTREEINDEX8 =
 {
+"structTcpSocket_1_1test__tag.html":[3,0,510,0],
+"structVersionManager_1_1__NEWS.html":[3,0,7,0],
+"structVersionManager_1_1__SERVER__INFO.html":[3,0,7,1],
+"structWAVE__Data.html":[3,0,522],
+"structWAVE__Data.html#a77bd4495275e521feed9091867b40e08":[3,0,522,1],
+"structWAVE__Data.html#a86e0f601ffe8335731e2d951c093fb2b":[3,0,522,0],
 "structWAVE__Format.html":[3,0,523],
 "structWAVE__Format.html#a2edaf99e25fc6db421ebd55bdab485ef":[3,0,523,2],
 "structWAVE__Format.html#a6310e88eeee9d03123f2c35a42e14dab":[3,0,523,3],
