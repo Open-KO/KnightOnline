@@ -35,6 +35,13 @@ public:
 	void CreateKnights(CUser* pUser, char* pBuf);
 	void PacketProcess(CUser* pUser, char* pBuf);
 
+	/// \brief Updates a Knights' Flag field and sends updates
+	void UpdateKnightsGrade(int16_t knightsId, uint8_t flag);
+
+	/// \brief Attempts to warp online Knights members to the given destination.  This only works
+	/// on online members in a zone less than 30 (Moradon, EMC/LFC, Eslant)
+	void ZoneChange(int16_t knightsId, int zoneId, float x, float z);
+
 	CKnightsManager();
 	virtual ~CKnightsManager();
 

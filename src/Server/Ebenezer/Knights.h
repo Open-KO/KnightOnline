@@ -27,6 +27,7 @@ public:
 	char m_strViceChief_3[MAX_ID_SIZE + 1]   = {}; // 부단장 3	(기사단에서는 사용하지 않음)
 	int64_t m_nMoney                         = 0;
 	int16_t m_sAllianceKnights               = 0;
+	int16_t m_sAllianceCape                  = 0;
 	int16_t m_sMarkVersion                   = 0;
 	int16_t m_sCape                          = 0;
 	int16_t m_sDomination                    = 0;

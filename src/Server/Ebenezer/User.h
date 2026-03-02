@@ -254,6 +254,12 @@ public:
 	bool CheckItemCount(int itemid, int16_t min, int16_t max) const;
 	bool CheckClanGrade(int min, int max) const;
 	bool CheckKnight() const;
+
+	/// \brief Checks to see if a user's clan ranking is between minRank and maxRank (inclusive).  If
+	/// the user's clan is successfully loaded, syncs the user's m_byKnightsRank value with the clan's m_byRanking
+	/// \return true when a user's clan ranking is in range, false otherwise
+	bool CheckClanRanking(int minRank, int maxRank);
+
 	void CouponEvent(const char* pBuf);
 	void LogCoupon(int itemid, int count);
 	void RecvEditBox(char* pBuf);

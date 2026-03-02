@@ -220,6 +220,16 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			argsToParse = 1;
 			break;
 
+		// A CHECK_CLAN
+		case "CHECK_CLAN"_djb2:
+			m_LogicElse = LOGIC_CHECK_CLAN;
+			break;
+
+		// A CHECK_NO_CLAN
+		case "CHECK_NO_CLAN"_djb2:
+			m_LogicElse = LOGIC_CHECK_NO_CLAN;
+			break;
+
 		// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}
 		case "CHECK_MONSTER_CHALLENGE_TIME"_djb2:
 			m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;
@@ -260,6 +270,12 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 		case "CHECK_EMPTY_SLOT"_djb2:
 			m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
 			argsToParse = 1;
+			break;
+
+		// A CHECK_CLAN_RANKING {minRank} {maxRank}
+		case "CHECK_CLAN_RANKING"_djb2:
+			m_LogicElse = LOGIC_CHECK_CLAN_RANKING;
+			argsToParse = 2;
 			break;
 
 		// A CHECK_MIDDLE_STATUE_CAPTURE

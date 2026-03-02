@@ -4922,7 +4922,10 @@ void CUser::NpcEvent(char* pBuf)
 
 	pNpc = m_pMain->m_NpcMap.GetData(nid);
 	if (pNpc == nullptr)
+	{
+		spdlog::error("User::NpcEvent: npc not found [charId={} npcId={}]", m_pUserData->m_id, nid);
 		return;
+	}
 
 	switch (pNpc->m_tNpcType)
 	{
@@ -4938,9 +4941,13 @@ void CUser::NpcEvent(char* pBuf)
 			Send(sendBuffer, sendIndex);
 			break;
 
-		case NPC_OFFICER:
+		case NPC_CLAN:
 			SetShort(sendBuffer, 0, sendIndex); // default 0 page
 			m_pMain->m_KnightsManager.AllKnightsList(this, sendBuffer);
+			memset(sendBuffer, 0, sizeof(sendBuffer));
+			sendIndex = 0;
+			SetShort(sendBuffer, nid, sendIndex);
+			ClientEvent(sendBuffer);
 			break;
 
 		case NPC_WAREHOUSE:
@@ -5048,6 +5055,7 @@ void CUser::NpcEvent(char* pBuf)
 			break;
 
 		default:
+			spdlog::error("User::NpcEvent: Unsupported npcType [npcType={}]", pNpc->m_tNpcType);
 			break;
 	}
 }
@@ -11726,7 +11734,11 @@ void CUser::ClientEvent(char* pBuf)
 	// Make sure you change this later!!!
 	pEventData = pEvent->m_arEvent.GetData(eventid);
 	if (pEventData == nullptr)
+	{
+		spdlog::error("User::ClientEvent: event data not found [characterName={} eventId={}]",
+			m_pUserData->m_id, eventid);
 		return;
+	}
 
 	if (!pEventData->_unhandledOpcodes.empty())
 	{
@@ -11923,12 +11935,21 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 				break;
 
 			case LOGIC_CHECK_KNIGHT:
-				if (CheckKnight())
-					bExact = true;
+				bExact = CheckKnight();
 				break;
 
 			case LOGIC_CHECK_DICE:
 				bExact = pLE->m_LogicElseInt[0] == m_sEventDiceRoll;
+				break;
+
+			case LOGIC_CHECK_CLAN:
+				if (m_pUserData->m_bKnights > 0)
+					bExact = true;
+				break;
+
+			case LOGIC_CHECK_NO_CLAN:
+				if (m_pUserData->m_bKnights <= 0)
+					bExact = true;
 				break;
 
 			case LOGIC_CHECK_MONSTER_CHALLENGE_TIME:
@@ -11984,6 +12005,10 @@ bool CUser::CheckEventLogic(const EVENT_DATA* pEventData)
 					// NOTE: officially this returns true, ending check processing immediately
 					bExact = true;
 				}
+				break;
+
+			case LOGIC_CHECK_CLAN_RANKING:
+				bExact = CheckClanRanking(pLE->m_LogicElseInt[0], pLE->m_LogicElseInt[1]);
 				break;
 
 			case LOGIC_CHECK_MIDDLE_STATUE_CAPTURE:
@@ -12152,8 +12177,18 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				ExpChange(pExec->m_ExecInt[0]);
 				break;
 
+			case EXEC_PROMOTE_KNIGHT:
+				m_pMain->m_KnightsManager.UpdateKnightsGrade(m_pUserData->m_bKnights, KNIGHTS_TYPE);
+				break;
+
 			case EXEC_ROLL_DICE:
 				m_sEventDiceRoll = myrand(1, pExec->m_ExecInt[0]);
+				break;
+
+			case EXEC_ZONE_CHANGE_CLAN:
+				m_pMain->m_KnightsManager.ZoneChange(m_pUserData->m_bKnights, pExec->m_ExecInt[0],
+					static_cast<float>(pExec->m_ExecInt[1]),
+					static_cast<float>(pExec->m_ExecInt[2]));
 				break;
 
 			case EXEC_CHANGE_LOYALTY:
@@ -13768,6 +13803,17 @@ bool CUser::CheckKnight() const
 		return false;
 
 	return (pKnights->m_byFlag == KNIGHTS_TYPE);
+}
+
+bool CUser::CheckClanRanking(const int minRank, const int maxRank)
+{
+	CKnights* knights = m_pMain->GetKnightsPtr(m_pUserData->m_bKnights);
+	if (knights == nullptr)
+		return false;
+
+	m_byKnightsRank = knights->m_byRanking;
+
+	return m_byKnightsRank >= minRank && m_byKnightsRank <= maxRank;
 }
 
 void CUser::SaveComEvent(int eventid)

@@ -150,10 +150,21 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			argsToParse = 1;
 			break;
 
+		// E PROMOTE_KNIGHT
+		case "PROMOTE_KNIGHT"_djb2:
+			m_Exec = EXEC_PROMOTE_KNIGHT;
+			break;
+
 		// E ROLL_DICE {sides}
 		case "ROLL_DICE"_djb2:
 			m_Exec      = EXEC_ROLL_DICE;
 			argsToParse = 1;
+			break;
+
+		// E ZONE_CHANGE_CLAN {zoneId} {x} {z}
+		case "ZONE_CHANGE_CLAN"_djb2:
+			m_Exec      = EXEC_ZONE_CHANGE_CLAN;
+			argsToParse = 3;
 			break;
 
 		// E CHANGE_LOYALTY {delta}

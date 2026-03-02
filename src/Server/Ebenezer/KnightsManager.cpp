@@ -1534,4 +1534,71 @@ void CKnightsManager::RecvKnightsAllList(const char* pBuf)
 	}
 }
 
+void CKnightsManager::UpdateKnightsGrade(int16_t knightsId, uint8_t flag)
+{
+	if (knightsId <= 0)
+		return;
+
+	CKnights* knights = m_pMain->GetKnightsPtr(knightsId);
+	if (knights == nullptr)
+		return;
+
+	knights->m_byFlag = flag;
+	if (knights->m_byFlag == KNIGHTS_TYPE)
+	{
+		knights->m_sCape = 0;
+		// TODO:  Uncomment when implementing KnightsAllianceRemove as part of #822
+		// if (knights->m_sAllianceKnights > 0)
+		// 	CKnightsManager::KnightsAllianceRemove(knights->m_sIndex);
+	}
+	else
+		knights->m_sCape = -1;
+
+	char sendBuff[128] {};
+	int sendIndex = 0;
+	SetByte(sendBuff, WIZ_KNIGHTS_PROCESS, sendIndex);
+	SetByte(sendBuff, KNIGHTS_UPDATE, sendIndex);
+	SetShort(sendBuff, knightsId, sendIndex);
+	SetByte(sendBuff, knights->m_byFlag, sendIndex);
+	SetShort(sendBuff, knights->m_sCape, sendIndex);
+	m_pMain->Send_KnightsMember(knightsId, sendBuff, sendIndex);
+
+	memset(sendBuff, 0, sizeof(sendBuff));
+	sendIndex = 0;
+	SetByte(sendBuff, UDP_KNIGHTS_PROCESS, sendIndex);
+	SetByte(sendBuff, KNIGHTS_UPDATE, sendIndex);
+	SetShort(sendBuff, knightsId, sendIndex);
+	SetByte(sendBuff, knights->m_byFlag, sendIndex);
+	SetShort(sendBuff, knights->m_sCape, sendIndex);
+	SetInt(sendBuff, knights->m_nPoints, sendIndex);
+	bool groupType = m_pMain->m_nServerGroup != 0;
+	m_pMain->Send_UDP_All(sendBuff, sendIndex, groupType);
+
+	memset(sendBuff, 0, sizeof(sendBuff));
+	sendIndex = 0;
+	SetByte(sendBuff, WIZ_KNIGHTS_PROCESS, sendIndex);
+	SetByte(sendBuff, KNIGHTS_ALLY_LIST, sendIndex);
+	SetShort(sendBuff, knightsId, sendIndex);
+	SetByte(sendBuff, knights->m_byFlag, sendIndex);
+	m_pMain->m_LoggerSendQueue.PutData(sendBuff, sendIndex);
+
+	spdlog::debug("KnightsManager::UpdateKnightsGrade: [knightsId={} flag={} grade={} "
+				  "sAllianceCape={} sCape={}]",
+		knightsId, knights->m_byFlag, knights->m_byGrade, knights->m_sAllianceCape,
+		knights->m_sCape);
+}
+
+void CKnightsManager::ZoneChange(
+	const int16_t knightsId, const int zoneId, const float x, const float z)
+{
+	const int socketCount = m_pMain->GetUserSocketCount();
+	for (int i = 0; i < socketCount; i++)
+	{
+		auto pUser = m_pMain->GetUserPtrUnchecked(i);
+		if (pUser != nullptr && pUser->m_pUserData->m_bKnights == knightsId
+			&& pUser->m_pUserData->m_bZone < ZONE_DELOS)
+			pUser->ZoneChange(zoneId, x, z);
+	}
+}
+
 } // namespace Ebenezer

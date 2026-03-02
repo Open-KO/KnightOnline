@@ -226,9 +226,9 @@ enum e_NpcType : uint8_t
 	NPC_WAREHOUSE          = 31,
 	NPC_KISS               = 32, // pretty useless.
 	NPC_ISAAC              = 33, // need to check which quests he handles
-	NPC_KAISHAN            = 34, // need to see what he actually does to name this properly
+	NPC_KAISHAN            = 34, // Captain Kunabarl
 	NPC_CAPTAIN            = 35, // 전직 시켜주는 NPC
-	NPC_CLAN               = 36, // 기사단 관리 NPC
+	NPC_CLAN               = 36, // Knight Clerk
 	NPC_OFFICER            = NPC_CLAN,
 	NPC_CLERIC             = 37, // 대사제 NPC
 	NPC_LADY               = 38, // Calamus lady event -- need to see what they're used for
