@@ -153,6 +153,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a30645c62717b042ae4ef1eb2565ad58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6be079239af57bebbae6dce3843ed37" id="r_ae6be079239af57bebbae6dce3843ed37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6be079239af57bebbae6dce3843ed37">PacketProcess</a> (<a class="el" href="classEbenezer_1_1CUser.html">CUser</a> *pUser, char *pBuf)</td></tr>
 <tr class="separator:ae6be079239af57bebbae6dce3843ed37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a856ba72db427a1bb0b418a3c33d6cf67" id="r_a856ba72db427a1bb0b418a3c33d6cf67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a856ba72db427a1bb0b418a3c33d6cf67">UpdateKnightsGrade</a> (int16_t knightsId, uint8_t flag)</td></tr>
+<tr class="memdesc:a856ba72db427a1bb0b418a3c33d6cf67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates a Knights' Flag field and sends updates.  <br /></td></tr>
+<tr class="separator:a856ba72db427a1bb0b418a3c33d6cf67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1554fcd004dc2533b8d6362eb1fde9ff" id="r_a1554fcd004dc2533b8d6362eb1fde9ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1554fcd004dc2533b8d6362eb1fde9ff">ZoneChange</a> (int16_t knightsId, int zoneId, float x, float z)</td></tr>
+<tr class="memdesc:a1554fcd004dc2533b8d6362eb1fde9ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to warp online Knights members to the given destination. This only works on online members in a zone less than 30 (Moradon, EMC/LFC, Eslant)  <br /></td></tr>
+<tr class="separator:a1554fcd004dc2533b8d6362eb1fde9ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -712,6 +718,31 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a856ba72db427a1bb0b418a3c33d6cf67" name="a856ba72db427a1bb0b418a3c33d6cf67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a856ba72db427a1bb0b418a3c33d6cf67">&#9670;&#160;</a></span>UpdateKnightsGrade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ebenezer::CKnightsManager::UpdateKnightsGrade </td>
+          <td>(</td>
+          <td class="paramtype">int16_t</td>          <td class="paramname"><span class="paramname"><em>knightsId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>flag</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates a Knights' Flag field and sends updates. </p>
+
+<p class="definition">Definition at line <a class="el" href="KnightsManager_8cpp_source.html#l01537">1537</a> of file <a class="el" href="KnightsManager_8cpp_source.html">KnightsManager.cpp</a>.</p>
+
+</div>
+</div>
 <a id="ae793047ca5098d860100eeb89d87ccb9" name="ae793047ca5098d860100eeb89d87ccb9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae793047ca5098d860100eeb89d87ccb9">&#9670;&#160;</a></span>WithdrawKnights()</h2>
 
@@ -731,6 +762,41 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a1554fcd004dc2533b8d6362eb1fde9ff" name="a1554fcd004dc2533b8d6362eb1fde9ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1554fcd004dc2533b8d6362eb1fde9ff">&#9670;&#160;</a></span>ZoneChange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ebenezer::CKnightsManager::ZoneChange </td>
+          <td>(</td>
+          <td class="paramtype">int16_t</td>          <td class="paramname"><span class="paramname"><em>knightsId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>zoneId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>z</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attempts to warp online Knights members to the given destination. This only works on online members in a zone less than 30 (Moradon, EMC/LFC, Eslant) </p>
+
+<p class="definition">Definition at line <a class="el" href="KnightsManager_8cpp_source.html#l01591">1591</a> of file <a class="el" href="KnightsManager_8cpp_source.html">KnightsManager.cpp</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a9a18b3e83ff0d95c92357c0a4bf16f24" name="a9a18b3e83ff0d95c92357c0a4bf16f24"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9a18b3e83ff0d95c92357c0a4bf16f24">&#9670;&#160;</a></span>m_pMain</h2>
@@ -744,7 +810,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="KnightsManager_8h_source.html#l00041">41</a> of file <a class="el" href="KnightsManager_8h_source.html">KnightsManager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="KnightsManager_8h_source.html#l00048">48</a> of file <a class="el" href="KnightsManager_8h_source.html">KnightsManager.h</a>.</p>
 
 </div>
 </div>

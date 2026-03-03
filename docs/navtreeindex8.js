@@ -1,5 +1,10 @@
 var NAVTREEINDEX8 =
 {
+"structResolution.html":[3,0,491],
+"structSoundSettings.html":[3,0,497],
+"structSoundSettings.html#a59d749709cc6f01325987af43ecf8b03":[3,0,497,0],
+"structSoundSettings.html#a64187a7870c8bbf30ce6d35fc76b1e94":[3,0,497,2],
+"structSoundSettings.html#ae91127cf3edee0ada1f0a6c738c6f9be":[3,0,497,1],
 "structTcpSocket_1_1test__tag.html":[3,0,510,0],
 "structVersionManager_1_1__NEWS.html":[3,0,7,0],
 "structVersionManager_1_1__SERVER__INFO.html":[3,0,7,1],

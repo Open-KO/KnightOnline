@@ -130,25 +130,26 @@ $(function(){initNavTree('Knights_8h_source.html',''); initResizable(true); });
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">char</span> m_strViceChief_3[MAX_ID_SIZE + 1]   = {}; <span class="comment">// 부단장 3 (기사단에서는 사용하지 않음)</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    int64_t m_nMoney                         = 0;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    int16_t m_sAllianceKnights               = 0;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    int16_t m_sMarkVersion                   = 0;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    int16_t m_sCape                          = 0;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    int16_t m_sDomination                    = 0;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">int</span> m_nPoints                            = 0;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    uint8_t m_Image[MAX_KNIGHTS_MARK]        = {};</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_struct" href="struct__ITEM__DATA.html">_ITEM_DATA</a> m_StashItem[MAX_KNIGHTS_BANK] = {};</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_struct" href="structEbenezer_1_1__KNIGHTS__USER.html">_KNIGHTS_USER</a> m_arKnightsUser[MAX_CLAN]  = {}; <span class="comment">// 클랜원의 정보</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    CKnights();</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">virtual</span> ~CKnights();</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> InitializeValue();</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    int16_t m_sAllianceCape                  = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    int16_t m_sMarkVersion                   = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    int16_t m_sCape                          = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    int16_t m_sDomination                    = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">int</span> m_nPoints                            = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    uint8_t m_Image[MAX_KNIGHTS_MARK]        = {};</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_struct" href="struct__ITEM__DATA.html">_ITEM_DATA</a> m_StashItem[MAX_KNIGHTS_BANK] = {};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_struct" href="structEbenezer_1_1__KNIGHTS__USER.html">_KNIGHTS_USER</a> m_arKnightsUser[MAX_CLAN]  = {}; <span class="comment">// 클랜원의 정보</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    CKnights();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">virtual</span> ~CKnights();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> InitializeValue();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
 </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>} <span class="comment">// namespace Ebenezer</span></div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_EBENEZER_KNIGHTS_H</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>} <span class="comment">// namespace Ebenezer</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_EBENEZER_KNIGHTS_H</span></div>
 <div class="ttc" id="aclassEbenezer_1_1CUser_html"><div class="ttname"><a href="classEbenezer_1_1CUser.html">Ebenezer::CUser</a></div><div class="ttdef"><b>Definition</b> <a href="Ebenezer_2User_8h_source.html#l00030">User.h:31</a></div></div>
 <div class="ttc" id="aclassEbenezer_1_1EbenezerApp_html"><div class="ttname"><a href="classEbenezer_1_1EbenezerApp.html">Ebenezer::EbenezerApp</a></div><div class="ttdef"><b>Definition</b> <a href="EbenezerApp_8h_source.html#l00068">EbenezerApp.h:69</a></div></div>
 <div class="ttc" id="astructEbenezer_1_1__KNIGHTS__USER_html"><div class="ttname"><a href="structEbenezer_1_1__KNIGHTS__USER.html">Ebenezer::_KNIGHTS_USER</a></div><div class="ttdef"><b>Definition</b> <a href="GameDefine_8h_source.html#l00349">GameDefine.h:350</a></div></div>

@@ -65,8 +65,8 @@ var NAVTREEINDEX =
 "classAppThread.html#a2fdc6a486c4e1302ba030db0e20ec517",
 "classCN3BaseFileAccess.html",
 "classCUILevelGuide.html",
-"classdb_1_1ConnectionManager.html#a5b1da59cf1fd5b18de2ab45d56914746",
-"structTcpSocket_1_1test__tag.html"
+"classdb_1_1Connection.html#ae95b5916d3d8e7da523200a9614d82f7",
+"structResolution.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

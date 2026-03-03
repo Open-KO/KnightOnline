@@ -3,6 +3,7 @@ var classEbenezer_1_1CUser =
     [ "ChangeLoyalty", "classEbenezer_1_1CUser.html#ae4b953fcf8563ad076dc2bec9ecd0ede", null ],
     [ "ChangeMannerPoint", "classEbenezer_1_1CUser.html#a3a3fc9076131e6a6f84f06ea508c39e7", null ],
     [ "CheckAndRobItems", "classEbenezer_1_1CUser.html#a29d391033404752a8f096bab74018396", null ],
+    [ "CheckClanRanking", "classEbenezer_1_1CUser.html#af81ea5a88644d058a940d7c0460a3e18", null ],
     [ "CheckExistItem", "classEbenezer_1_1CUser.html#a6f8bd78d596cb3324490181dd438ee18", null ],
     [ "CheckExistItemAnd", "classEbenezer_1_1CUser.html#ac743c342f6fb75cc1687814eab5c5bdf", null ],
     [ "CheckExistItemAnd", "classEbenezer_1_1CUser.html#a0820bee6205a88ef7a94a3f1a0897fc3", null ],

@@ -137,17 +137,26 @@ $(function(){initNavTree('KnightsManager_8h_source.html',''); initResizable(true
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> IsAvailableName(<span class="keyword">const</span> <span class="keywordtype">char</span>* strname) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> CreateKnights(<a class="code hl_class" href="classEbenezer_1_1CUser.html">CUser</a>* pUser, <span class="keywordtype">char</span>* pBuf);</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> PacketProcess(<a class="code hl_class" href="classEbenezer_1_1CUser.html">CUser</a>* pUser, <span class="keywordtype">char</span>* pBuf);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    CKnightsManager();</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">virtual</span> ~CKnightsManager();</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classEbenezer_1_1EbenezerApp.html">EbenezerApp</a>* m_pMain;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"></span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">    /// \brief Updates a Knights&#39; Flag field and sends updates</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classEbenezer_1_1CKnightsManager.html#a856ba72db427a1bb0b418a3c33d6cf67">UpdateKnightsGrade</a>(int16_t knightsId, uint8_t flag);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"></span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">    /// \brief Attempts to warp online Knights members to the given destination.  This only works</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment">    /// on online members in a zone less than 30 (Moradon, EMC/LFC, Eslant)</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classEbenezer_1_1CKnightsManager.html#a1554fcd004dc2533b8d6362eb1fde9ff">ZoneChange</a>(int16_t knightsId, <span class="keywordtype">int</span> zoneId, <span class="keywordtype">float</span> x, <span class="keywordtype">float</span> z);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    CKnightsManager();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">virtual</span> ~CKnightsManager();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classEbenezer_1_1EbenezerApp.html">EbenezerApp</a>* m_pMain;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
 </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>} <span class="comment">// namespace Ebenezer</span></div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_EBENEZER_KNIGHTSMANAGER_H</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>} <span class="comment">// namespace Ebenezer</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_EBENEZER_KNIGHTSMANAGER_H</span></div>
+<div class="ttc" id="aclassEbenezer_1_1CKnightsManager_html_a1554fcd004dc2533b8d6362eb1fde9ff"><div class="ttname"><a href="classEbenezer_1_1CKnightsManager.html#a1554fcd004dc2533b8d6362eb1fde9ff">Ebenezer::CKnightsManager::ZoneChange</a></div><div class="ttdeci">void ZoneChange(int16_t knightsId, int zoneId, float x, float z)</div><div class="ttdoc">Attempts to warp online Knights members to the given destination. This only works on online members i...</div><div class="ttdef"><b>Definition</b> <a href="KnightsManager_8cpp_source.html#l01591">KnightsManager.cpp:1591</a></div></div>
+<div class="ttc" id="aclassEbenezer_1_1CKnightsManager_html_a856ba72db427a1bb0b418a3c33d6cf67"><div class="ttname"><a href="classEbenezer_1_1CKnightsManager.html#a856ba72db427a1bb0b418a3c33d6cf67">Ebenezer::CKnightsManager::UpdateKnightsGrade</a></div><div class="ttdeci">void UpdateKnightsGrade(int16_t knightsId, uint8_t flag)</div><div class="ttdoc">Updates a Knights&#39; Flag field and sends updates.</div><div class="ttdef"><b>Definition</b> <a href="KnightsManager_8cpp_source.html#l01537">KnightsManager.cpp:1537</a></div></div>
 <div class="ttc" id="aclassEbenezer_1_1CUser_html"><div class="ttname"><a href="classEbenezer_1_1CUser.html">Ebenezer::CUser</a></div><div class="ttdef"><b>Definition</b> <a href="Ebenezer_2User_8h_source.html#l00030">User.h:31</a></div></div>
 <div class="ttc" id="aclassEbenezer_1_1EbenezerApp_html"><div class="ttname"><a href="classEbenezer_1_1EbenezerApp.html">Ebenezer::EbenezerApp</a></div><div class="ttdef"><b>Definition</b> <a href="EbenezerApp_8h_source.html#l00068">EbenezerApp.h:69</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

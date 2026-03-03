@@ -70,7 +70,7 @@ var annotated_dup =
       [ "CAISocket", "classEbenezer_1_1CAISocket.html", null ],
       [ "CGameEvent", "classEbenezer_1_1CGameEvent.html", null ],
       [ "CKnights", "classEbenezer_1_1CKnights.html", null ],
-      [ "CKnightsManager", "classEbenezer_1_1CKnightsManager.html", null ],
+      [ "CKnightsManager", "classEbenezer_1_1CKnightsManager.html", "classEbenezer_1_1CKnightsManager" ],
       [ "CKnightsSiegeWar", "classEbenezer_1_1CKnightsSiegeWar.html", null ],
       [ "CMagicProcess", "classEbenezer_1_1CMagicProcess.html", null ],
       [ "CNpc", "classEbenezer_1_1CNpc.html", "classEbenezer_1_1CNpc" ],
