@@ -54,6 +54,7 @@ using HomeTableMap           = CSTLMap<model::Home>;
 using ServerResourceTableMap = CSTLMap<model::ServerResource>;
 using StartPositionTableMap  = CSTLMap<model::StartPosition>;
 using EventMap               = CSTLMap<EVENT>;
+using ItemExchangeMap        = CSTLMap<model::ItemExchange>;
 
 using EventTriggerMap        = std::unordered_map<uint32_t, int32_t>;
 
@@ -112,6 +113,11 @@ public:
 	bool LoadStartPositionTable();
 	bool LoadServerResourceTable();
 	bool LoadHomeTable();
+
+	/// \brief Loads the m_ItemExchangeMap cache
+	/// \return true when successful, false otherwise
+	bool LoadItemExchange();
+
 	void Announcement(uint8_t type, int nation = 0, int chat_type = 8);
 	void ResetBattleZone();
 	void BanishLosers();
@@ -242,6 +248,7 @@ public:
 	StartPositionTableMap m_StartPositionTableMap;
 	EventMap m_EventMap;
 	EventTriggerMap m_EventTriggerMap;
+	ItemExchangeMap m_ItemExchangeMap;
 
 	CKnightsManager m_KnightsManager;
 	CKnightsSiegeWar m_KnightsSiegeWar;

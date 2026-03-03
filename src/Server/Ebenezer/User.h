@@ -288,7 +288,20 @@ public:
 	bool CheckPromotionEligible();
 	void RecvSelectMsg(char* pBuf);
 	void ResetSelectMsg();
-	bool GiveItem(int itemid, int16_t count);
+
+	/// \brief Attempts to insert count number of items into a user's inventory
+	/// \return true if items were successfully inserted, false otherwise
+	bool GiveItem(int itemId, int16_t count, bool isExchange101 = false);
+
+	/// \brief Attempts to insert the items array into a user's inventory
+	/// \return true if items were successfully inserted, false otherwise
+	bool GiveItemAnd(std::span<const ItemPair> items, bool isExchange101 = false);
+
+	/// \brief Attempts to send an olympic item give message
+	void GiveOlympicItem(int itemId, int16_t count);
+
+	/// \brief Attempts to send an olympic account message
+	void CheckOlympicAccount(int failedEventCount, int successfulEventCount);
 
 	/// \brief Attempts to count number of itemId from the user
 	/// \return true when all items were successfully taken, false otherwise
@@ -341,6 +354,13 @@ public:
 	/// \brief Checks to see if a user des not have any of the items in the input array
 	/// \return true when the user does not have any of the items, false otherwise
 	bool CheckNoExistItemAnd(std::span<const ItemPair> items) const;
+
+	/// \brief Checks to see if a user has enough inventory space to perform the exchange
+	/// \return true when the user has enough space, false otherwise
+	bool CheckExchange(int exchangeId) const;
+
+	/// \brief Attempts to load an ITEM_EXCHANGE record and process it for the current user
+	void RunExchange(int exchangeId);
 
 	bool CheckWeight(int itemid, int16_t count) const;
 	bool CheckSkillPoint(uint8_t skillnum, uint8_t min, uint8_t max) const;

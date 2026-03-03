@@ -118,6 +118,12 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			m_Exec = EXEC_GIVE_PROMOTION_QUEST;
 			break;
 
+		// E RUN_EXCHANGE {exchangeId}
+		case "RUN_EXCHANGE"_djb2:
+			m_Exec      = EXEC_RUN_EXCHANGE;
+			argsToParse = 1;
+			break;
+
 		// E ZONE_CHANGE {zone ID} {x} {z}
 		case "ZONE_CHANGE"_djb2:
 			m_Exec      = EXEC_ZONE_CHANGE;
@@ -187,6 +193,18 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 		case "CHANGE_MANNER"_djb2:
 			m_Exec      = EXEC_CHANGE_MANNER;
 			argsToParse = 1;
+			break;
+
+		// E CHECK_OLYMPIC_ACCOUNT {failedEventCount} {successfulEventCount}
+		case "CHECK_OLYMPIC_ACCOUNT"_djb2:
+			m_Exec      = EXEC_CHECK_OLYMPIC_ACCOUNT;
+			argsToParse = 2;
+			break;
+
+		// E LOG_OLYMPIC_ACCOUNT {itemId} {count}
+		case "LOG_OLYMPIC_ACCOUNT"_djb2:
+			m_Exec      = EXEC_LOG_OLYMPIC_ACCOUNT;
+			argsToParse = 2;
 			break;
 
 		default:

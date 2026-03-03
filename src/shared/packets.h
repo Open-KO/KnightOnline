@@ -141,12 +141,55 @@ enum e_GameOpcode : uint8_t
 
 // TODO: DB opcodes.
 // Currently they're somewhat shared with game opcodes but they should be defined separately.
-
 enum e_DBOpcode : uint8_t
 {
-	DB_COUPON_EVENT = 0x10,
-	DB_LOGIN_INFO   = 0x50,
-	DB_HEARTBEAT    = 0x7F
+	DB_LOGIN                          = 0x1,
+	DB_NEW_CHAR                       = 0x2,
+	DB_DEL_CHAR                       = 0x3,
+	DB_SEL_CHAR                       = 0x4,
+	DB_SEL_NATION                     = 0x5,
+	DB_ALLCHAR_INFO_REQ               = 0xC,
+	DB_LOGOUT                         = 0xF,
+	DB_COUPON_EVENT                   = 0x10,
+	DB_BATTLE_REQ                     = 0x11,
+	DB_ITEM_LOG                       = 0x19,
+	DB_CHECK_PP_CARD_EVENT            = 0x20,
+	DB_UPDATE_PP_CARD_EVENT           = 0x21,
+	DB_UPDATE_BILLING_VALID_TIME      = 0x30,
+	DB_DATASAVE                       = 0x37,
+	DB_KNIGHTS_PROCESS                = 0x3C,
+	DB_NAME_CHANGE                    = 0x40,
+	DB_CHECK_GAMEBANG_IP              = 0x41,
+	DB_UPDATE_PREMIUM                 = 0x42,
+	DB_INSERT_HACKTOOL                = 0x43,
+	DB_INSERT_CRM                     = 0x44,
+	DB_UPDATE_EMIGRATION_EVENT        = 0x45,
+	DB_INSERT_BATTLE_STATISTICS_CHINA = 0x46,
+	DB_RENTAL                         = 0x47,
+	DB_CLEAR_REMAIN_USERS             = 0x48,
+	DB_FRIEND_PROCESS                 = 0x49,
+	DB_KING_PROCESS                   = 0x4A,
+	DB_CLAN_PROCESS                   = 0x4E,
+	DB_FORBID_USER                    = 0x4F,
+	DB_LOGIN_INFO                     = 0x50,
+	DB_KICKOUT                        = 0x51,
+	DB_RESET_LOYALTY_MONTHLY          = 0x52,
+	DB_AUJARD_STARTED                 = 0x53,
+	DB_CHINA                          = 0x54,
+	DB_BATTLE_EVENT                   = 0x57,
+	DB_UPDATE_ITEMUP_PROBABILITY      = 0x5B,
+	DB_PC_BANG_ITEM                   = 0x60,
+	DB_PC_BANG_OWNER                  = 0x61,
+	DB_LOGTIME_EVENT                  = 0x62,
+	DB_UPDATE_GAMEBANG_LEVEL_EVENT    = 0x63,
+	DB_OLYMPIC                        = 0x64,
+	DB_BILLING_ERROR                  = 0x65,
+	DB_SKILLDATA                      = 0x66,
+	DB_INSERT_PROGRAM_CHECK_USER      = 0x67,
+	DB_SHOPPING_MALL                  = 0x6A,
+	DB_SIEGE                          = 0x6D,
+	DB_CAPE                           = 0x70,
+	DB_HEARTBEAT                      = 0x7F // unofficial - aujard communication
 };
 
 enum e_LoginOpcode : uint8_t
@@ -668,6 +711,12 @@ enum e_LoyaltyChangeOpcode : uint8_t
 {
 	LOYALTY_CHANGE_NATIONAL = 1,
 	LOYALTY_CHANGE_MANNER   = 2
+};
+
+enum e_OlympicOpCode : uint8_t
+{
+	OLYMPIC_CHECK_ACCOUNT = 1,
+	OLYMPIC_GIVE_ITEM     = 2
 };
 
 // ---------------------------------------------------------------------

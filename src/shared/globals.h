@@ -29,11 +29,12 @@ inline constexpr int VIEW_DISTANCE                   = 48;
 
 inline constexpr int MAX_PARTY_SIZE                  = 8;
 
-static constexpr int32_t CLAN_COST                   = 500'000;
+inline constexpr int32_t CLAN_COST                   = 500'000;
 
 inline constexpr float MAX_INTERACTION_RANGE         = 11;
 inline constexpr float MAX_INTERACTION_RANGE_SQUARED = (MAX_INTERACTION_RANGE
 														* MAX_INTERACTION_RANGE);
+inline constexpr uint8_t MAX_EXCHANGE_ITEMS          = 5;
 
 enum e_AttackResult : uint8_t
 {
@@ -98,6 +99,17 @@ enum e_Class : uint8_t
 	CLASS_EL_DRUID,
 
 	CLASS_UNKNOWN = 0xff
+};
+
+enum e_ExchangeFlag : uint8_t
+{
+	EXCHANGE_FLAG_STACK   = 0,
+	EXCHANGE_FLAG_PERCENT = 101
+};
+
+enum e_ExchangeId : int16_t
+{
+	EXCHANGE_ID_OLYMPIC_ITEM = 127
 };
 
 enum e_ItemFlag : uint8_t

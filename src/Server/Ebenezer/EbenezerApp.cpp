@@ -453,6 +453,13 @@ bool EbenezerApp::OnStart()
 		return false;
 	}
 
+	spdlog::info("EbenezerApp::OnInitDialog: loading ITEM_EXCHANGE table");
+	if (!LoadItemExchange())
+	{
+		spdlog::error("EbenezerApp::OnInitDialog: failed to cache ITEM_EXCHANGE, closing");
+		return false;
+	}
+
 	spdlog::info("EbenezerApp::OnInitDialog: loading maps");
 	if (!MapFileLoad())
 	{
@@ -2692,6 +2699,18 @@ bool EbenezerApp::LoadHomeTable()
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error("EbenezerApp::LoadHomeTable: load failed - {}", loader.GetError().Message);
+		return false;
+	}
+
+	return true;
+}
+
+bool EbenezerApp::LoadItemExchange()
+{
+	recordset_loader::STLMap loader(m_ItemExchangeMap);
+	if (!loader.Load_ForbidEmpty())
+	{
+		spdlog::error("EbenezerApp::LoadItemExchange: load failed - {}", loader.GetError().Message);
 		return false;
 	}
 
