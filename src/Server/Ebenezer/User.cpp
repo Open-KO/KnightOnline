@@ -12851,10 +12851,12 @@ bool CUser::GiveItem(int itemId, int16_t count, bool isExchange101)
 	SendItemWeight();                        // Change weight first :)
 	SetByte(sendBuffer, WIZ_ITEM_COUNT_CHANGE, sendIndex);
 	SetShort(sendBuffer, 1, sendIndex);      // The number of for-loops
-	SetByte(sendBuffer, 1, sendIndex);
+	SetByte(sendBuffer, 1, sendIndex);       // "district"
 	SetByte(sendBuffer, pos, sendIndex);
 	SetDWORD(sendBuffer, itemId, sendIndex); // The ID of item.
 	SetDWORD(sendBuffer, m_pUserData->m_sItemArray[SLOT_MAX + pos].sCount, sendIndex);
+	SetByte(sendBuffer, ITEM_COUNT_CHANGE_NEW, sendIndex);
+	SetShort(sendBuffer, m_pUserData->m_sItemArray[SLOT_MAX + pos].sDuration, sendIndex);
 	Send(sendBuffer, sendIndex);
 	return true;
 }

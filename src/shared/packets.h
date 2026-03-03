@@ -719,6 +719,12 @@ enum e_OlympicOpCode : uint8_t
 	OLYMPIC_GIVE_ITEM     = 2
 };
 
+enum e_ItemCountChangeType : uint8_t
+{
+	ITEM_COUNT_CHANGE_EXISTING = 0,
+	ITEM_COUNT_CHANGE_NEW      = 100
+};
+
 // ---------------------------------------------------------------------
 // Battle Event Sub Packet
 // ---------------------------------------------------------------------

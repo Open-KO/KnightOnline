@@ -3599,9 +3599,9 @@ void CGameProcMain::MsgRecv_ItemCountChange(Packet& pkt) // Item Count Change..
 
 		m_pUIInventory->ItemCountChange(iDistrict, iIndex, iCount, iID, iDurability);
 
-		if (iNewItem == 100)
+		if (iNewItem == ITEM_COUNT_CHANGE_NEW)
 		{
-			__TABLE_ITEM_BASIC* pItem = CGameProcedure::s_pTbl_Items_Basic.Find(iID / 1000 * 1000);
+			__TABLE_ITEM_BASIC* pItem = s_pTbl_Items_Basic.Find(iID / 1000 * 1000);
 			if (pItem != nullptr)
 			{
 				std::string szMsg = fmt::format_text_resource(IDS_ITEM_RECEIVED, pItem->szName);
