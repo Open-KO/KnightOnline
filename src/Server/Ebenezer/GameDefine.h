@@ -197,6 +197,7 @@ enum e_ItemType : uint8_t
 // ITEM LOG TYPE
 enum e_ItemLogType : uint8_t
 {
+	ITEM_LOG_UNSPECIFIED            = 0,
 	ITEM_LOG_MERCHANT_BUY           = 1,
 	ITEM_LOG_MERCHANT_SELL          = 2,
 	ITEM_LOG_MONSTER_GET            = 3,
@@ -207,24 +208,7 @@ enum e_ItemLogType : uint8_t
 	ITEM_LOG_WAREHOUSE_GET          = 8,
 	ITEM_LOG_UPGRADE                = 9,
 	ITEM_LOG_GIVE_ITEM              = 10,
-	ITEM_LOG_ROB_ITEM               = 11,
-	ITEM_LOG_ROOM_ROB_ITEM          = 12,
-	ITEM_LOG_ROOM_GET_ITEM          = 13,
-	ITEM_LOG_MERCHANT_BUY_ITEM2     = 15,
-	ITEM_LOG_MERCHANT_BUY_ITEM      = 16,
-	ITEM_LOG_MERCHANT_PAY_COINS     = 17,
-	ITEM_LOG_KNIGHTS_REWARD         = 18,
-	ITEM_LOG_CSW_TAX_LEVY           = 19,
-	ITEM_LOG_GIVE_ITEM_EXCHANGE_101 = 20,
-	ITEM_LOG_PERSONAL_REWARD        = 21,
-	ITEM_LOG_KING_MONEY             = 23,
-	ITEM_LOG_RESTAT                 = 24,
-	ITEM_LOG_RESKILL                = 25,
-	ITEM_LOG_PVP_RENTAL_DESTROY     = 32,
-	ITEM_LOG_PVP_RENTAL_REGISTER    = 33,
-	ITEM_LOG_KING_UNK_48            = 48,
-	ITEM_LOG_KING_TREASURY          = 50,
-	ITEM_LOG_KING_PRIZE             = 51,
+	ITEM_LOG_GIVE_ITEM_EXCHANGE_101 = 20
 };
 
 /////////////////////////////////////////////////////////////

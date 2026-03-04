@@ -297,12 +297,6 @@ public:
 	/// \return true if items were successfully inserted, false otherwise
 	bool GiveItemAnd(std::span<const ItemPair> items, bool isExchange101 = false);
 
-	/// \brief Attempts to send an olympic item give message
-	void GiveOlympicItem(int itemId, int16_t count);
-
-	/// \brief Attempts to send an olympic account message
-	void CheckOlympicAccount(int failedEventCount, int successfulEventCount);
-
 	/// \brief Attempts to count number of itemId from the user
 	/// \return true when all items were successfully taken, false otherwise
 	bool RobItem(int itemId, int16_t count);

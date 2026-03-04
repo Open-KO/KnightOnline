@@ -154,8 +154,8 @@ enum e_Exec : uint8_t
 	EXEC_CHECK_LOGTIME_ACCOUNT        = 0x3F,
 	EXEC_GIVE_LOGTIME_ITEM            = 0x40,
 	EXEC_MOVE_MIDDLE_STATUE           = 0x41,
-	EXEC_CHECK_OLYMPIC_ACCOUNT        = 0x42,
-	EXEC_LOG_OLYMPIC_ACCOUNT          = 0x43,
+	EXEC_CHECK_OLYMPIC_ACCOUNT        = 0x42, ///< Descoped, unused
+	EXEC_LOG_OLYMPIC_ACCOUNT          = 0x43, ///< Descoped, unused
 	EXEC_OPEN_INPUT_COUNT             = 0x44,
 	EXEC_ROB_ITEM_INPUT_COUNT         = 0x45,
 	EXEC_GIVE_ITEM_INPUT_COUNT        = 0x46,

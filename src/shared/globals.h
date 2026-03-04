@@ -101,15 +101,16 @@ enum e_Class : uint8_t
 	CLASS_UNKNOWN = 0xff
 };
 
-enum e_ExchangeFlag : uint8_t
+/// \enum eExchangeType
+/// \brief Exchange function type dictated by ITEM_EXCHANGE.bRandomFlag
+/// \see CUser::RunExchange for implementation
+enum e_ExchangeType : uint8_t
 {
-	EXCHANGE_FLAG_STACK   = 0,
-	EXCHANGE_FLAG_PERCENT = 101
-};
-
-enum e_ExchangeId : int16_t
-{
-	EXCHANGE_ID_OLYMPIC_ITEM = 127
+	EXCHANGE_TYPE_ALL_ITEMS = 0, ///< All items in the exchange array are granted
+	EXCHANGE_TYPE_ONE_OF_EQUAL =
+		5,  ///< Grants one of the exchange items, each with an equal chance to be selected
+	EXCHANGE_TYPE_ONE_OF_WEIGHTED =
+		101 ///< Grants one of the exchange items using a weighted roll table
 };
 
 enum e_ItemFlag : uint8_t

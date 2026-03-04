@@ -12215,14 +12215,6 @@ bool CUser::RunEvent(const EVENT_DATA* pEventData)
 				ChangeMannerPoint(pExec->m_ExecInt[0]);
 				break;
 
-			case EXEC_CHECK_OLYMPIC_ACCOUNT:
-				CheckOlympicAccount(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
-				break;
-
-			case EXEC_LOG_OLYMPIC_ACCOUNT:
-				GiveOlympicItem(pExec->m_ExecInt[0], pExec->m_ExecInt[1]);
-				break;
-
 			default:
 				spdlog::warn("User::RunEvent: unhandled opcode. opcode={:02X} zoneId={}",
 					pExec->m_Exec, m_pUserData->m_bZone);
@@ -12391,7 +12383,7 @@ bool CUser::CheckWeight(int itemid, int16_t count) const
 
 bool CUser::CheckExistItem(int itemId, int16_t count) const
 {
-	// returning true for an invalid entry seems wrong, but is official
+	// Return true for an unset item; needed for ITEM_EXCHANGE to function properly
 	if (itemId <= 0 && count <= 0)
 		return true;
 
@@ -12519,12 +12511,15 @@ bool CUser::CheckExchange(int exchangeId) const
 			openSlotCount++;
 	}
 
+	// Officially this check sums the ExchangeItemCount columns
+	// and triggers this logic if the sum is over 9000. We just check
+	// the RandomFlag instead.
 	// RandomFlag != 0 exchanges are expected to grant one random item.
 	// This likely leads to an official bug where a stackable item
 	// that already existed in a user's inventory could have fit an item.
 	// However, that would allow users to fish for stackable items only
 	// in their inventory.
-	if (exchange->RandomFlag != EXCHANGE_FLAG_STACK)
+	if (exchange->RandomFlag != EXCHANGE_TYPE_ALL_ITEMS)
 		return openSlotCount > 0;
 
 	// RandomFlag == 0 exchanges are expected to grant all exchange items listed,
@@ -12532,7 +12527,7 @@ bool CUser::CheckExchange(int exchangeId) const
 	int slotsRequired = 0;
 	for (const int32_t iNum : exchange->ExchangeItemNumber)
 	{
-		const auto& item = m_pMain->m_ItemTableMap.GetData(iNum);
+		const auto* item = m_pMain->m_ItemTableMap.GetData(iNum);
 		if (item == nullptr)
 			continue;
 
@@ -12586,16 +12581,18 @@ void CUser::RunExchange(int exchangeId)
 	}
 
 	// Reward processing varies by the exchange's RandomFlag
-	if (exchange->RandomFlag == EXCHANGE_FLAG_STACK)
+	if (exchange->RandomFlag == EXCHANGE_TYPE_ALL_ITEMS)
 	{
 		if (!GiveItemAnd(exchangeItems))
+		{
 			spdlog::debug("User::RunExchange: Failed to grant all items [charId={} exchangeId={}]",
 				m_pUserData->m_id, exchangeId);
+		}
 
 		return;
 	}
 
-	if (exchange->RandomFlag >= EXCHANGE_FLAG_PERCENT)
+	if (exchange->RandomFlag == EXCHANGE_TYPE_ONE_OF_WEIGHTED)
 	{
 		static constexpr int16_t ONE_HUNDRED_PERCENT = 10000;
 
@@ -12612,9 +12609,11 @@ void CUser::RunExchange(int exchangeId)
 			return;
 		}
 		if (sum < ONE_HUNDRED_PERCENT)
+		{
 			spdlog::warn("User::RunExchange: Exchange configured for under 100% drop rate "
 						 "[charId={} exchangeId={} sum={}]",
 				m_pUserData->m_id, exchangeId, sum);
+		}
 
 		// This is how the official server handles the exchange, with a large array.
 		// This is pretty wasteful so we'll just do a sliding window style range check instead.
@@ -12650,13 +12649,22 @@ void CUser::RunExchange(int exchangeId)
 		}
 		m_byLastExchangeNum = slotRolled + 1;
 
+		// Officially, this call is made here. We've descoped OLYMPIC
+		// events/logic as they are not used by any of the official evt files
 		// Proconsul exchange for bronze/silver/gold coin
-		if (exchangeId == EXCHANGE_ID_OLYMPIC_ITEM)
-			GiveOlympicItem(exchangeItems[slotRolled].ItemId, 1);
+		// if (exchangeId == EXCHANGE_ID_OLYMPIC_ITEM)
+		// 	GiveOlympicItem(exchangeItems[slotRolled].ItemId, 1);
 	}
 	else
 	{
-		// STACK BASED - between 1 and n (randomFlag)
+		// EXCHANGE_TYPE_ONE_OF_EQUAL impl
+		// RandomFlag can be between 1 and 100, although as far as we can tell
+		// it is only ever officially called as 5 (equal chance split).
+		// 1-4 can be used if less than 5 items are configured for the exchange.
+		//
+		// 6-100 would be out of bounds, but officially all of these indicies would
+		// fall back to 4.  This does not appear to be intended use.
+		//
 		// officially:
 		// int16_t selectedSlot = myrand(0, 1000 * exchange->RandomFlag) / 1000;
 		// this is really just myrand(0, randomFlag-1) with more ops and the chance to
@@ -12665,7 +12673,7 @@ void CUser::RunExchange(int exchangeId)
 		// For example, if a randomFlag = 5 and myrand rolled 5000, the int division
 		// would set selectedSlot to 5 and exceed the bounds of the exchange table.
 		//
-		// We clamp the db flag for bounds safety.
+		// We clamp the RandomFlag for bounds safety in our implementation.
 		const uint8_t clampFlag = std::clamp<uint8_t>(
 			exchange->RandomFlag, 0, MAX_EXCHANGE_ITEMS - 1);
 		const int16_t selectedSlot = myrand(0, clampFlag);
@@ -12874,43 +12882,6 @@ bool CUser::GiveItemAnd(const std::span<const ItemPair> items, bool isExchange10
 	}
 
 	return true;
-}
-
-void CUser::GiveOlympicItem(const int itemId, const int16_t count)
-{
-	char sendBuff[256] {};
-	int sendIndex = 0;
-	SetByte(sendBuff, DB_OLYMPIC, sendIndex);
-	SetByte(sendBuff, OLYMPIC_GIVE_ITEM, sendIndex);
-	SetShort(sendBuff, _socketId, sendIndex);
-	SetString2(sendBuff, m_strAccountID, sendIndex);
-	SetDWORD(sendBuff, itemId, sendIndex);
-	SetShort(sendBuff, count, sendIndex);
-
-	int errorCode = m_pMain->m_LoggerSendQueue.PutData(sendBuff, sendIndex);
-	if (errorCode >= 10001)
-		spdlog::error("User::GiveOlympicItem: Failed to send item [accountId={} itemId={} count={} "
-					  "errorCode={}]",
-			m_strAccountID, itemId, count, errorCode);
-}
-
-void CUser::CheckOlympicAccount(const int failedEventCount, const int successfulEventCount)
-{
-	char sendBuff[256] {};
-	int sendIndex = 0;
-	SetByte(sendBuff, DB_OLYMPIC, sendIndex);
-	SetByte(sendBuff, OLYMPIC_CHECK_ACCOUNT, sendIndex);
-	SetShort(sendBuff, _socketId, sendIndex);
-	SetString2(sendBuff, m_strAccountID, sendIndex);
-	SetDWORD(sendBuff, failedEventCount, sendIndex);
-	SetDWORD(sendBuff, successfulEventCount, sendIndex);
-
-	int errorCode = m_pMain->m_LoggerSendQueue.PutData(sendBuff, sendIndex);
-	if (errorCode >= 10001)
-		spdlog::error("User::CheckOlympicAccount: Failed to send item [accountId={} "
-					  "failedEventCount={} successfulEventCount={} "
-					  "errorCode={}]",
-			m_strAccountID, failedEventCount, successfulEventCount, errorCode);
 }
 
 bool CUser::CheckClass(int16_t class1, int16_t class2, int16_t class3, int16_t class4,
@@ -13822,7 +13793,7 @@ void CUser::ItemUpgrade(char* pBuf)
 	}
 	else
 	{
-		ItemLogToAgent(m_pUserData->m_id, "UPGRADE", ITEM_LOG_GIVE_ITEM, originItem.nSerialNum,
+		ItemLogToAgent(m_pUserData->m_id, "UPGRADE", ITEM_LOG_UNSPECIFIED, originItem.nSerialNum,
 			originItemId, 1, 0);
 
 		originItem.nNum           = 0;

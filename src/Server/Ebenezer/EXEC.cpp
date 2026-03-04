@@ -195,18 +195,6 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			argsToParse = 1;
 			break;
 
-		// E CHECK_OLYMPIC_ACCOUNT {failedEventCount} {successfulEventCount}
-		case "CHECK_OLYMPIC_ACCOUNT"_djb2:
-			m_Exec      = EXEC_CHECK_OLYMPIC_ACCOUNT;
-			argsToParse = 2;
-			break;
-
-		// E LOG_OLYMPIC_ACCOUNT {itemId} {count}
-		case "LOG_OLYMPIC_ACCOUNT"_djb2:
-			m_Exec      = EXEC_LOG_OLYMPIC_ACCOUNT;
-			argsToParse = 2;
-			break;
-
 		default:
 			spdlog::warn("EXEC::Parse: unhandled opcode '{}' ({}:{})", temp, filename, lineNumber);
 			handled = false;

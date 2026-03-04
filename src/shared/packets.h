@@ -713,12 +713,6 @@ enum e_LoyaltyChangeOpcode : uint8_t
 	LOYALTY_CHANGE_MANNER   = 2
 };
 
-enum e_OlympicOpCode : uint8_t
-{
-	OLYMPIC_CHECK_ACCOUNT = 1,
-	OLYMPIC_GIVE_ITEM     = 2
-};
-
 enum e_ItemCountChangeType : uint8_t
 {
 	ITEM_COUNT_CHANGE_EXISTING = 0,
