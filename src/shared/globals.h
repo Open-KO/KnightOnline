@@ -101,7 +101,7 @@ enum e_Class : uint8_t
 	CLASS_UNKNOWN = 0xff
 };
 
-/// \enum eExchangeType
+/// \enum e_ExchangeType
 /// \brief Exchange function type dictated by ITEM_EXCHANGE.bRandomFlag
 /// \see CUser::RunExchange for implementation
 enum e_ExchangeType : uint8_t
