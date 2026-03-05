@@ -581,6 +581,8 @@ var annotated_dup =
     [ "FileWriterSetupTest", "classFileWriterSetupTest.html", null ],
     [ "FileWriterTest", "classFileWriterTest.html", null ],
     [ "GoldChangePacket", "structGoldChangePacket.html", null ],
+    [ "ItemCountChangePacket", "structItemCountChangePacket.html", null ],
+    [ "ItemExchangeTest", "classItemExchangeTest.html", null ],
     [ "ItemPosPair", "structItemPosPair.html", null ],
     [ "ItemTooltipBuilderContext", "classItemTooltipBuilderContext.html", null ],
     [ "ItemTooltipTooLargeException", "classItemTooltipTooLargeException.html", null ],
@@ -630,5 +632,6 @@ var annotated_dup =
     [ "Vector4Test", "classVector4Test.html", null ],
     [ "WAVE_Data", "structWAVE__Data.html", "structWAVE__Data" ],
     [ "WAVE_Format", "structWAVE__Format.html", "structWAVE__Format" ],
+    [ "WeightChangePacket", "structWeightChangePacket.html", null ],
     [ "WriteBuffer", "structWriteBuffer.html", null ]
 ];

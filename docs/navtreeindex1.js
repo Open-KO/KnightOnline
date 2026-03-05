@@ -47,6 +47,8 @@ var NAVTREEINDEX1 =
 "Ini_8cpp_source.html":[4,0,0,6,12],
 "Ini_8h_source.html":[4,0,0,6,13],
 "IntersectTriangle__test_8cpp_source.html":[4,0,1,1,3],
+"ItemExchange__test_8cpp_source.html":[4,0,1,2,0,1],
+"ItemExchange__test__data_8h_source.html":[4,0,1,2,0,0,1],
 "ItemManagerApp_8cpp_source.html":[4,0,0,5,3,2],
 "ItemManagerApp_8h_source.html":[4,0,0,5,3,3],
 "ItemManagerLogger_8cpp_source.html":[4,0,0,5,3,4],
@@ -56,8 +58,8 @@ var NAVTREEINDEX1 =
 "ItemManager_8cpp_source.html":[4,0,0,5,3,1],
 "ItemRepairMgr_8cpp_source.html":[4,0,0,0,4,39],
 "ItemRepairMgr_8h_source.html":[4,0,0,0,4,40],
-"ItemUpgrade__test_8cpp_source.html":[4,0,1,2,0,1],
-"ItemUpgrade__test__data_8h_source.html":[4,0,1,2,0,0,1],
+"ItemUpgrade__test_8cpp_source.html":[4,0,1,2,0,2],
+"ItemUpgrade__test__data_8h_source.html":[4,0,1,2,0,0,2],
 "Item__test__data_8h_source.html":[4,0,1,2,0,0,0],
 "JpegFile_8cpp_source.html":[4,0,0,0,0,0],
 "JpegFile_8h_source.html":[4,0,0,0,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX1 =
 "N3ShapeExtra_8cpp_source.html":[4,0,0,4,101],
 "N3ShapeExtra_8h_source.html":[4,0,0,4,102],
 "N3Shape_8cpp_source.html":[4,0,0,4,99],
-"N3Shape_8h_source.html":[4,0,0,4,100],
-"N3Skin_8cpp_source.html":[4,0,0,4,105],
-"N3Skin_8h_source.html":[4,0,0,4,106]
+"N3Shape_8h_source.html":[4,0,0,4,100]
 };

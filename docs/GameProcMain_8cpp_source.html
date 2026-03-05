@@ -3701,9 +3701,9 @@ $(function(){initNavTree('GameProcMain_8cpp_source.html',''); initResizable(true
 <div class="line"><a id="l03599" name="l03599"></a><span class="lineno"> 3599</span> </div>
 <div class="line"><a id="l03600" name="l03600"></a><span class="lineno"> 3600</span>        m_pUIInventory-&gt;ItemCountChange(iDistrict, iIndex, iCount, iID, iDurability);</div>
 <div class="line"><a id="l03601" name="l03601"></a><span class="lineno"> 3601</span> </div>
-<div class="line"><a id="l03602" name="l03602"></a><span class="lineno"> 3602</span>        <span class="keywordflow">if</span> (iNewItem == 100)</div>
+<div class="line"><a id="l03602" name="l03602"></a><span class="lineno"> 3602</span>        <span class="keywordflow">if</span> (iNewItem == ITEM_COUNT_CHANGE_NEW)</div>
 <div class="line"><a id="l03603" name="l03603"></a><span class="lineno"> 3603</span>        {</div>
-<div class="line"><a id="l03604" name="l03604"></a><span class="lineno"> 3604</span>            __TABLE_ITEM_BASIC* pItem = CGameProcedure::s_pTbl_Items_Basic.Find(iID / 1000 * 1000);</div>
+<div class="line"><a id="l03604" name="l03604"></a><span class="lineno"> 3604</span>            __TABLE_ITEM_BASIC* pItem = s_pTbl_Items_Basic.Find(iID / 1000 * 1000);</div>
 <div class="line"><a id="l03605" name="l03605"></a><span class="lineno"> 3605</span>            <span class="keywordflow">if</span> (pItem != <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l03606" name="l03606"></a><span class="lineno"> 3606</span>            {</div>
 <div class="line"><a id="l03607" name="l03607"></a><span class="lineno"> 3607</span>                std::string szMsg = fmt::format_text_resource(IDS_ITEM_RECEIVED, pItem-&gt;szName);</div>

@@ -24,5 +24,6 @@ var searchData=
   ['riff_5fheader_21',['RIFF_Header',['../structRIFF__Header.html',1,'']]],
   ['riff_5fsubchunk_22',['RIFF_SubChunk',['../structRIFF__SubChunk.html',1,'']]],
   ['robitem_23',['RobItem',['../classEbenezer_1_1CUser.html#ab07f6c9d3335ce9aa051e31e90ecce41',1,'Ebenezer::CUser']]],
-  ['rowcount_24',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]]
+  ['rowcount_24',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]],
+  ['runexchange_25',['RunExchange',['../classEbenezer_1_1CUser.html#a33388fa0af33262e7a23cb9aec8e1965',1,'Ebenezer::CUser']]]
 ];

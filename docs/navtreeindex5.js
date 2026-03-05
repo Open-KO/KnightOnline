@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"classCN3AnimKey.html":[3,0,235],
+"classCN3Base.html":[3,0,236],
 "classCN3BaseFileAccess.html":[3,0,237],
 "classCN3CEApp.html":[3,0,239],
 "classCN3CEDoc.html":[3,0,240],
@@ -247,7 +249,5 @@ var NAVTREEINDEX5 =
 "classCUIImageTooltipDlg.html":[3,0,404],
 "classCUIInn.html":[3,0,405],
 "classCUIInventory.html":[3,0,406],
-"classCUIItemUpgrade.html":[3,0,407],
-"classCUIKnights.html":[3,0,408],
-"classCUIKnightsOperation.html":[3,0,409]
+"classCUIItemUpgrade.html":[3,0,407]
 };

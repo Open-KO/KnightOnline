@@ -701,6 +701,7 @@ var hierarchy =
     ] ],
     [ "FileReaderHandle", "structFileReaderHandle.html", null ],
     [ "GoldChangePacket", "structGoldChangePacket.html", null ],
+    [ "ItemCountChangePacket", "structItemCountChangePacket.html", null ],
     [ "Ebenezer::ItemPair", "structEbenezer_1_1ItemPair.html", null ],
     [ "ItemPosPair", "structItemPosPair.html", null ],
     [ "ItemTooltipBuilderContext", "classItemTooltipBuilderContext.html", null ],
@@ -769,6 +770,7 @@ var hierarchy =
       [ "FileReaderTest", "classFileReaderTest.html", null ],
       [ "FileWriterSetupTest", "classFileWriterSetupTest.html", null ],
       [ "FileWriterTest", "classFileWriterTest.html", null ],
+      [ "ItemExchangeTest", "classItemExchangeTest.html", null ],
       [ "Matrix44Test", "classMatrix44Test.html", null ],
       [ "QuaternionTest", "classQuaternionTest.html", null ],
       [ "Vector3Test", "classVector3Test.html", null ],
@@ -808,5 +810,6 @@ var hierarchy =
       [ "WriteBuffer", "structWriteBuffer.html", null ]
     ] ],
     [ "WAVE_Data", "structWAVE__Data.html", null ],
-    [ "WAVE_Format", "structWAVE__Format.html", null ]
+    [ "WAVE_Format", "structWAVE__Format.html", null ],
+    [ "WeightChangePacket", "structWeightChangePacket.html", null ]
 ];

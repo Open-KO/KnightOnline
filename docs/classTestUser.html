@@ -120,6 +120,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5f21e2e127838d379f892c9378bc6a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee18c8e09ac6cd2b11a64761e0f40383" id="r_aee18c8e09ac6cd2b11a64761e0f40383"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee18c8e09ac6cd2b11a64761e0f40383">Send</a> (char *pBuf, int length) override</td></tr>
 <tr class="separator:aee18c8e09ac6cd2b11a64761e0f40383"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a449790bd6605e6d52a54bf669a9055d1" id="r_a449790bd6605e6d52a54bf669a9055d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a449790bd6605e6d52a54bf669a9055d1">TestGiveItem</a> (const int32_t itemId, const int16_t count)</td></tr>
+<tr class="separator:a449790bd6605e6d52a54bf669a9055d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81b7d09fa6f27d7dc245fb99b789345d" id="r_a81b7d09fa6f27d7dc245fb99b789345d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81b7d09fa6f27d7dc245fb99b789345d">TestRobItem</a> (const int32_t itemId, const int16_t count)</td></tr>
+<tr class="separator:a81b7d09fa6f27d7dc245fb99b789345d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee30b4da29613f62df07afbca5caac27" id="r_aee30b4da29613f62df07afbca5caac27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee30b4da29613f62df07afbca5caac27">ClearInventory</a> ()</td></tr>
+<tr class="separator:aee30b4da29613f62df07afbca5caac27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classEbenezer_1_1CUser"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classEbenezer_1_1CUser')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classEbenezer_1_1CUser.html">Ebenezer::CUser</a></td></tr>
 <tr class="memitem:a03838822aab3910b791c5ba5cef76a0f inherit pub_methods_classEbenezer_1_1CUser" id="r_a03838822aab3910b791c5ba5cef76a0f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a03838822aab3910b791c5ba5cef76a0f">CUser</a> (<a class="el" href="structTcpSocket_1_1test__tag.html">test_tag</a>)</td></tr>
 <tr class="separator:a03838822aab3910b791c5ba5cef76a0f inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -224,8 +230,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afcd770568ee6f140b6c1a11d66a596bf inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e9248a480174fbf353165da2d72d741 inherit pub_methods_classEbenezer_1_1CUser" id="r_a1e9248a480174fbf353165da2d72d741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a1e9248a480174fbf353165da2d72d741">ResetSelectMsg</a> ()</td></tr>
 <tr class="separator:a1e9248a480174fbf353165da2d72d741 inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac53d8009055a003dd87e032a0b0e479b inherit pub_methods_classEbenezer_1_1CUser" id="r_ac53d8009055a003dd87e032a0b0e479b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#ac53d8009055a003dd87e032a0b0e479b">GiveItem</a> (int itemid, int16_t count)</td></tr>
-<tr class="separator:ac53d8009055a003dd87e032a0b0e479b inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a655a99c5275c7654b7a335f6ef575a8c inherit pub_methods_classEbenezer_1_1CUser" id="r_a655a99c5275c7654b7a335f6ef575a8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a655a99c5275c7654b7a335f6ef575a8c">GiveItem</a> (int itemId, int16_t count, bool isExchange101=false)</td></tr>
+<tr class="memdesc:a655a99c5275c7654b7a335f6ef575a8c inherit pub_methods_classEbenezer_1_1CUser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to insert count number of items into a user's inventory.  <br /></td></tr>
+<tr class="separator:a655a99c5275c7654b7a335f6ef575a8c inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9978d16891f8542c79ac109c984d90 inherit pub_methods_classEbenezer_1_1CUser" id="r_a6d9978d16891f8542c79ac109c984d90"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a6d9978d16891f8542c79ac109c984d90">GiveItemAnd</a> (std::span&lt; const <a class="el" href="structEbenezer_1_1ItemPair.html">ItemPair</a> &gt; items, bool isExchange101=false)</td></tr>
+<tr class="memdesc:a6d9978d16891f8542c79ac109c984d90 inherit pub_methods_classEbenezer_1_1CUser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to insert the items array into a user's inventory.  <br /></td></tr>
+<tr class="separator:a6d9978d16891f8542c79ac109c984d90 inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab07f6c9d3335ce9aa051e31e90ecce41 inherit pub_methods_classEbenezer_1_1CUser" id="r_ab07f6c9d3335ce9aa051e31e90ecce41"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#ab07f6c9d3335ce9aa051e31e90ecce41">RobItem</a> (int itemId, int16_t count)</td></tr>
 <tr class="memdesc:ab07f6c9d3335ce9aa051e31e90ecce41 inherit pub_methods_classEbenezer_1_1CUser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to count number of itemId from the user.  <br /></td></tr>
 <tr class="separator:ab07f6c9d3335ce9aa051e31e90ecce41 inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -259,6 +269,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abd0df918e0bdab3175bd6673d1a3934b inherit pub_methods_classEbenezer_1_1CUser" id="r_abd0df918e0bdab3175bd6673d1a3934b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#abd0df918e0bdab3175bd6673d1a3934b">CheckNoExistItemAnd</a> (std::span&lt; const <a class="el" href="structEbenezer_1_1ItemPair.html">ItemPair</a> &gt; items) const</td></tr>
 <tr class="memdesc:abd0df918e0bdab3175bd6673d1a3934b inherit pub_methods_classEbenezer_1_1CUser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks to see if a user des not have any of the items in the input array.  <br /></td></tr>
 <tr class="separator:abd0df918e0bdab3175bd6673d1a3934b inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf7b535e14e8184025f9b13455d8926b inherit pub_methods_classEbenezer_1_1CUser" id="r_aaf7b535e14e8184025f9b13455d8926b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#aaf7b535e14e8184025f9b13455d8926b">CheckExchange</a> (int exchangeId) const</td></tr>
+<tr class="memdesc:aaf7b535e14e8184025f9b13455d8926b inherit pub_methods_classEbenezer_1_1CUser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks to see if a user has enough inventory space to perform the exchange.  <br /></td></tr>
+<tr class="separator:aaf7b535e14e8184025f9b13455d8926b inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33388fa0af33262e7a23cb9aec8e1965 inherit pub_methods_classEbenezer_1_1CUser" id="r_a33388fa0af33262e7a23cb9aec8e1965"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a33388fa0af33262e7a23cb9aec8e1965">RunExchange</a> (int exchangeId)</td></tr>
+<tr class="memdesc:a33388fa0af33262e7a23cb9aec8e1965 inherit pub_methods_classEbenezer_1_1CUser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to load an ITEM_EXCHANGE record and process it for the current user.  <br /></td></tr>
+<tr class="separator:a33388fa0af33262e7a23cb9aec8e1965 inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3df1aa57ee1a989bb6e7a90ad39ffa88 inherit pub_methods_classEbenezer_1_1CUser" id="r_a3df1aa57ee1a989bb6e7a90ad39ffa88"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a3df1aa57ee1a989bb6e7a90ad39ffa88">CheckWeight</a> (int itemid, int16_t count) const</td></tr>
 <tr class="separator:a3df1aa57ee1a989bb6e7a90ad39ffa88 inherit pub_methods_classEbenezer_1_1CUser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c988339f8d4eb21e9fa3759127c5740 inherit pub_methods_classEbenezer_1_1CUser" id="r_a8c988339f8d4eb21e9fa3759127c5740"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEbenezer_1_1CUser.html#a8c988339f8d4eb21e9fa3759127c5740">CheckSkillPoint</a> (uint8_t skillnum, uint8_t min, uint8_t max) const</td></tr>
@@ -973,7 +989,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00020">20</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00022">22</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a4ed83c1f17b2730261c15890135abc12" name="a4ed83c1f17b2730261c15890135abc12"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4ed83c1f17b2730261c15890135abc12">&#9670;&#160;</a></span>SendCallback</h2>
@@ -987,7 +1003,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00023">23</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00025">25</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 
 </div>
 </div>
@@ -1015,7 +1031,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00025">25</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00027">27</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 
 </div>
 </div>
@@ -1043,7 +1059,34 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00044">44</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00046">46</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+
+</div>
+</div>
+<a id="aee30b4da29613f62df07afbca5caac27" name="aee30b4da29613f62df07afbca5caac27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee30b4da29613f62df07afbca5caac27">&#9670;&#160;</a></span>ClearInventory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TestUser::ClearInventory </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00115">115</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 
 </div>
 </div>
@@ -1070,7 +1113,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00031">31</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00033">33</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 
 </div>
 </div>
@@ -1097,7 +1140,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00036">36</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00038">38</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 
 </div>
 </div>
@@ -1130,7 +1173,69 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classEbenezer_1_1CUser.html">Ebenezer::CUser</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00049">49</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00051">51</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+
+</div>
+</div>
+<a id="a449790bd6605e6d52a54bf669a9055d1" name="a449790bd6605e6d52a54bf669a9055d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a449790bd6605e6d52a54bf669a9055d1">&#9670;&#160;</a></span>TestGiveItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TestUser::TestGiveItem </td>
+          <td>(</td>
+          <td class="paramtype">const int32_t</td>          <td class="paramname"><span class="paramname"><em>itemId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int16_t</td>          <td class="paramname"><span class="paramname"><em>count</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00067">67</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
+
+</div>
+</div>
+<a id="a81b7d09fa6f27d7dc245fb99b789345d" name="a81b7d09fa6f27d7dc245fb99b789345d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81b7d09fa6f27d7dc245fb99b789345d">&#9670;&#160;</a></span>TestRobItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TestUser::TestRobItem </td>
+          <td>(</td>
+          <td class="paramtype">const int32_t</td>          <td class="paramname"><span class="paramname"><em>itemId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int16_t</td>          <td class="paramname"><span class="paramname"><em>count</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="TestUser_8h_source.html#l00092">92</a> of file <a class="el" href="TestUser_8h_source.html">TestUser.h</a>.</p>
 
 </div>
 </div>

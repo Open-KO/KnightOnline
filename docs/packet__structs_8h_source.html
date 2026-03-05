@@ -164,15 +164,39 @@ $(function(){initNavTree('packet__structs_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    int16_t NpcID      = 0;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
 </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#pragma pack(pop)</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#endif </span><span class="comment">// TESTS_SERVER_EBENEZER_PACKET_STRUCTS_H</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structWeightChangePacket.html">   54</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structWeightChangePacket.html">WeightChangePacket</a></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    uint8_t Opcode        = WIZ_WEIGHT_CHANGE;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    int16_t CurrentWeight = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structItemCountChangePacket.html">   60</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structItemCountChangePacket.html">ItemCountChangePacket</a></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    uint8_t Opcode     = WIZ_ITEM_COUNT_CHANGE;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    int16_t Items      = 1;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    uint8_t District   = 1;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    uint8_t SlotNumber = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    int32_t ItemId     = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    int32_t ItemCount  = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    uint8_t ChangeType = ITEM_COUNT_CHANGE_NEW;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    int16_t Durability = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">#pragma pack(pop)</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif </span><span class="comment">// TESTS_SERVER_EBENEZER_PACKET_STRUCTS_H</span></div>
 <div class="ttc" id="astructGoldChangePacket_html"><div class="ttname"><a href="structGoldChangePacket.html">GoldChangePacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00038">packet_structs.h:39</a></div></div>
+<div class="ttc" id="astructItemCountChangePacket_html"><div class="ttname"><a href="structItemCountChangePacket.html">ItemCountChangePacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00060">packet_structs.h:61</a></div></div>
 <div class="ttc" id="astructItemPosPair_html"><div class="ttname"><a href="structItemPosPair.html">ItemPosPair</a></div><div class="ttdef"><b>Definition</b> <a href="#l00010">packet_structs.h:11</a></div></div>
 <div class="ttc" id="astructItemUpgradeProcessErrorResponsePacket_html"><div class="ttname"><a href="structItemUpgradeProcessErrorResponsePacket.html">ItemUpgradeProcessErrorResponsePacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00023">packet_structs.h:24</a></div></div>
 <div class="ttc" id="astructItemUpgradeProcessPacket_html"><div class="ttname"><a href="structItemUpgradeProcessPacket.html">ItemUpgradeProcessPacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00016">packet_structs.h:17</a></div></div>
 <div class="ttc" id="astructItemUpgradeProcessResponseSuccessPacket_html"><div class="ttname"><a href="structItemUpgradeProcessResponseSuccessPacket.html">ItemUpgradeProcessResponseSuccessPacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00030">packet_structs.h:31</a></div></div>
 <div class="ttc" id="astructObjectEventAnvilResponsePacket_html"><div class="ttname"><a href="structObjectEventAnvilResponsePacket.html">ObjectEventAnvilResponsePacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00046">packet_structs.h:47</a></div></div>
+<div class="ttc" id="astructWeightChangePacket_html"><div class="ttname"><a href="structWeightChangePacket.html">WeightChangePacket</a></div><div class="ttdef"><b>Definition</b> <a href="#l00054">packet_structs.h:55</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

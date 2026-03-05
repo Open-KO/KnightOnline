@@ -280,155 +280,161 @@ $(function(){initNavTree('LOGIC__ELSE_8cpp_source.html',''); initResizable(true)
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="comment">// A CHECK_NOCLASS {class 1} {class 2} {class 3} {class 4} {class 5} {class 6}</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NOCLASS&quot;</span>_djb2:</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            m_LogicElse = LOGIC_CHECK_NOCLASS;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            argsToParse = 6;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="comment">// A CHECK_EXCHANGE {exchangeId}</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_EXCHANGE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            m_LogicElse = LOGIC_CHECK_EXCHANGE;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="comment">// A CHECK_LOYALTY {minimum} {maximum}</span></div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_LOYALTY&quot;</span>_djb2:</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            m_LogicElse = LOGIC_CHECK_LOYALTY;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            argsToParse = 2;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="comment">// A CHECK_NOCLASS {class 1} {class 2} {class 3} {class 4} {class 5} {class 6}</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NOCLASS&quot;</span>_djb2:</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            m_LogicElse = LOGIC_CHECK_NOCLASS;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            argsToParse = 6;</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="comment">// A CHECK_CHIEF</span></div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CHIEF&quot;</span>_djb2:</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            m_LogicElse = LOGIC_CHECK_CHIEF;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="comment">// A CHECK_LOYALTY {minimum} {maximum}</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_LOYALTY&quot;</span>_djb2:</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            m_LogicElse = LOGIC_CHECK_LOYALTY;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            argsToParse = 2;</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// A CHECK_NO_CHIEF</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NO_CHIEF&quot;</span>_djb2:</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            m_LogicElse = LOGIC_CHECK_NO_CHIEF;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// A CHECK_CHIEF</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CHIEF&quot;</span>_djb2:</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            m_LogicElse = LOGIC_CHECK_CHIEF;</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// A CHECK_CLAN_GRADE {minimum} {maximum}</span></div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CLAN_GRADE&quot;</span>_djb2:</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            m_LogicElse = LOGIC_CHECK_CLAN_GRADE;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            argsToParse = 2;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// A CHECK_NO_CHIEF</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NO_CHIEF&quot;</span>_djb2:</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            m_LogicElse = LOGIC_CHECK_NO_CHIEF;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="comment">// A CHECK_KNIGHT</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_KNIGHT&quot;</span>_djb2:</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            m_LogicElse = LOGIC_CHECK_KNIGHT;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="comment">// A CHECK_CLAN_GRADE {minimum} {maximum}</span></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CLAN_GRADE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            m_LogicElse = LOGIC_CHECK_CLAN_GRADE;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            argsToParse = 2;</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="comment">// A CHECK_DICE {sides}</span></div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_DICE&quot;</span>_djb2:</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            m_LogicElse = LOGIC_CHECK_DICE;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            argsToParse = 1;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="comment">// A CHECK_KNIGHT</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_KNIGHT&quot;</span>_djb2:</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            m_LogicElse = LOGIC_CHECK_KNIGHT;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="comment">// A CHECK_CLAN</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CLAN&quot;</span>_djb2:</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            m_LogicElse = LOGIC_CHECK_CLAN;</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="comment">// A CHECK_NO_CLAN</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NO_CLAN&quot;</span>_djb2:</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            m_LogicElse = LOGIC_CHECK_NO_CLAN;</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="comment">// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}</span></div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MONSTER_CHALLENGE_TIME&quot;</span>_djb2:</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            argsToParse = 1;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="comment">// A CHECK_DICE {sides}</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_DICE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            m_LogicElse = LOGIC_CHECK_DICE;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            argsToParse = 1;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="comment">// A CHECK_CLAN</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CLAN&quot;</span>_djb2:</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            m_LogicElse = LOGIC_CHECK_CLAN;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="comment">// A CHECK_NO_CLAN</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NO_CLAN&quot;</span>_djb2:</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            m_LogicElse = LOGIC_CHECK_NO_CLAN;</div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="comment">// A CHECK_MONSTER_CHALLENGE_USERCOUNT {current number of users in Forgotten Temple}</span></div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MONSTER_CHALLENGE_USERCOUNT&quot;</span>_djb2:</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="comment">// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}</span></div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MONSTER_CHALLENGE_TIME&quot;</span>_djb2:</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;</div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="comment">// A CHECK_CASTLE</span></div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CASTLE&quot;</span>_djb2:</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            m_LogicElse = LOGIC_CHECK_CASTLE;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="comment">// A CHECK_MONSTER_CHALLENGE_USERCOUNT {current number of users in Forgotten Temple}</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MONSTER_CHALLENGE_USERCOUNT&quot;</span>_djb2:</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_USERCOUNT;</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="comment">// A CHECK_NO_CASTLE</span></div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NO_CASTLE&quot;</span>_djb2:</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            m_LogicElse = LOGIC_CHECK_NO_CASTLE;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="comment">// A CHECK_CASTLE</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CASTLE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            m_LogicElse = LOGIC_CHECK_CASTLE;</div>
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="comment">// A CHECK_SKILL_TOTAL {minimum} {maximum}</span></div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_SKILL_TOTAL&quot;</span>_djb2:</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            m_LogicElse = LOGIC_CHECK_SKILL_TOTAL;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            argsToParse = 2;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="comment">// A CHECK_NO_CASTLE</span></div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_NO_CASTLE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            m_LogicElse = LOGIC_CHECK_NO_CASTLE;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="comment">// A CHECK_STAT_TOTAL {minimum} {maximum}</span></div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_STAT_TOTAL&quot;</span>_djb2:</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            m_LogicElse = LOGIC_CHECK_STAT_TOTAL;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="comment">// A CHECK_SKILL_TOTAL {minimum} {maximum}</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_SKILL_TOTAL&quot;</span>_djb2:</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            m_LogicElse = LOGIC_CHECK_SKILL_TOTAL;</div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            argsToParse = 2;</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="comment">// A CHECK_EMPTY_SLOT {required number of empty slots}</span></div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_EMPTY_SLOT&quot;</span>_djb2:</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            argsToParse = 1;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="comment">// A CHECK_STAT_TOTAL {minimum} {maximum}</span></div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_STAT_TOTAL&quot;</span>_djb2:</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            m_LogicElse = LOGIC_CHECK_STAT_TOTAL;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            argsToParse = 2;</div>
 <div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="comment">// A CHECK_CLAN_RANKING {minRank} {maxRank}</span></div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CLAN_RANKING&quot;</span>_djb2:</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            m_LogicElse = LOGIC_CHECK_CLAN_RANKING;</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            argsToParse = 2;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="comment">// A CHECK_EMPTY_SLOT {required number of empty slots}</span></div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_EMPTY_SLOT&quot;</span>_djb2:</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            argsToParse = 1;</div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="comment">// A CHECK_MIDDLE_STATUE_CAPTURE</span></div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MIDDLE_STATUE_CAPTURE&quot;</span>_djb2:</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>            m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_CAPTURE;</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="comment">// A CHECK_CLAN_RANKING {minRank} {maxRank}</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_CLAN_RANKING&quot;</span>_djb2:</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>            m_LogicElse = LOGIC_CHECK_CLAN_RANKING;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            argsToParse = 2;</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        <span class="comment">// A CHECK_MIDDLE_STATUE_NOCAPTURE</span></div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MIDDLE_STATUE_NOCAPTURE&quot;</span>_djb2:</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        <span class="comment">// A CHECK_MIDDLE_STATUE_CAPTURE</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MIDDLE_STATUE_CAPTURE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_CAPTURE;</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="comment">// A CHECK_BEEF_ROAST_KARUS_VICTORY</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_BEEF_ROAST_KARUS_VICTORY&quot;</span>_djb2:</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            m_LogicElse = LOGIC_CHECK_BEEF_ROAST_KARUS_VICTORY;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="comment">// A CHECK_MIDDLE_STATUE_NOCAPTURE</span></div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_MIDDLE_STATUE_NOCAPTURE&quot;</span>_djb2:</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            m_LogicElse = LOGIC_CHECK_MIDDLE_STATUE_NOCAPTURE;</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="comment">// A CHECK_BEEF_ROAST_ELMORAD_VICTORY</span></div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_BEEF_ROAST_ELMORAD_VICTORY&quot;</span>_djb2:</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            m_LogicElse = LOGIC_CHECK_BEEF_ROAST_ELMORAD_VICTORY;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="comment">// A CHECK_BEEF_ROAST_KARUS_VICTORY</span></div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_BEEF_ROAST_KARUS_VICTORY&quot;</span>_djb2:</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            m_LogicElse = LOGIC_CHECK_BEEF_ROAST_KARUS_VICTORY;</div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        <span class="comment">// A CHECK_BEEF_ROAST_NO_VICTORY</span></div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_BEEF_ROAST_NO_VICTORY&quot;</span>_djb2:</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>            m_LogicElse = LOGIC_CHECK_BEEF_ROAST_NO_VICTORY;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        <span class="comment">// A CHECK_BEEF_ROAST_ELMORAD_VICTORY</span></div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_BEEF_ROAST_ELMORAD_VICTORY&quot;</span>_djb2:</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>            m_LogicElse = LOGIC_CHECK_BEEF_ROAST_ELMORAD_VICTORY;</div>
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>            <span class="keywordflow">break</span>;</div>
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keywordflow">default</span>:</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            spdlog::warn(</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                <span class="stringliteral">&quot;LOGIC_ELSE::Parse_and: unhandled opcode &#39;{}&#39; ({}:{})&quot;</span>, temp, filename, lineNumber);</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            handled = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="comment">// A CHECK_BEEF_ROAST_NO_VICTORY</span></div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        <span class="keywordflow">case</span> <span class="stringliteral">&quot;CHECK_BEEF_ROAST_NO_VICTORY&quot;</span>_djb2:</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            m_LogicElse = LOGIC_CHECK_BEEF_ROAST_NO_VICTORY;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            argsToParse = 1; <span class="comment">// officially it always parses 1 even though it doesn&#39;t use it</span></div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    }</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    assert(argsToParse &gt;= 0 &amp;&amp; argsToParse &lt;= MAX_LOGIC_ELSE_INT);</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; argsToParse; i++)</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    {</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        ParseSpace(temp, line, index);</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        m_LogicElseInt[i] = atoi(temp);</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    }</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    m_bAnd = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordflow">return</span> handled;</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>}</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>} <span class="comment">// namespace Ebenezer</span></div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>            spdlog::warn(</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>                <span class="stringliteral">&quot;LOGIC_ELSE::Parse_and: unhandled opcode &#39;{}&#39; ({}:{})&quot;</span>, temp, filename, lineNumber);</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>            handled = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    }</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span> </div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    assert(argsToParse &gt;= 0 &amp;&amp; argsToParse &lt;= MAX_LOGIC_ELSE_INT);</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; argsToParse; i++)</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    {</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        ParseSpace(temp, line, index);</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        m_LogicElseInt[i] = atoi(temp);</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    }</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    m_bAnd = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keywordflow">return</span> handled;</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>}</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>} <span class="comment">// namespace Ebenezer</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
