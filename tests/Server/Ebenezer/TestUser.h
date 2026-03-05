@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "packet_structs.h"
+
 #include <Ebenezer/User.h>
 
 #include <functional>
@@ -59,6 +61,68 @@ public:
 
 		_sendCallbacks.pop();
 		return length;
+	}
+
+	// Calls GiveItem while handling packet callbacks inline
+	void TestGiveItem(const int32_t itemId, const int16_t count)
+	{
+		if (itemId <= 0 || count <= 0)
+			return;
+
+		AddSendCallback(
+			[=](const char* pBuf, int len)
+			{
+				ASSERT_EQ(len, sizeof(WeightChangePacket));
+				auto packet = reinterpret_cast<const WeightChangePacket*>(pBuf);
+				EXPECT_EQ(packet->Opcode, WIZ_WEIGHT_CHANGE);
+			});
+		AddSendCallback(
+			[=](const char* pBuf, int len)
+			{
+				ASSERT_EQ(len, sizeof(ItemCountChangePacket));
+				auto packet = reinterpret_cast<const ItemCountChangePacket*>(pBuf);
+				EXPECT_EQ(packet->Opcode, WIZ_ITEM_COUNT_CHANGE);
+				EXPECT_EQ(packet->ItemId, itemId);
+				EXPECT_EQ(packet->ItemCount, count);
+			});
+		EXPECT_TRUE(GiveItem(itemId, count));
+	}
+
+	// Calls GiveItem while handling packet callbacks inline
+	void TestRobItem(const int32_t itemId, const int16_t count)
+	{
+		if (itemId <= 0 || count <= 0)
+			return;
+
+		AddSendCallback(
+			[=](const char* pBuf, int len)
+			{
+				ASSERT_EQ(len, sizeof(WeightChangePacket));
+				auto packet = reinterpret_cast<const WeightChangePacket*>(pBuf);
+				EXPECT_EQ(packet->Opcode, WIZ_WEIGHT_CHANGE);
+			});
+		AddSendCallback(
+			[=](const char* pBuf, int len)
+			{
+				ASSERT_EQ(len, sizeof(ItemCountChangePacket));
+				auto packet = reinterpret_cast<const ItemCountChangePacket*>(pBuf);
+				EXPECT_EQ(packet->Opcode, WIZ_ITEM_COUNT_CHANGE);
+				EXPECT_EQ(packet->ItemId, itemId);
+			});
+		EXPECT_TRUE(RobItem(itemId, count));
+	}
+
+	void ClearInventory()
+	{
+		for (int i = SLOT_MAX; i < SLOT_MAX + HAVE_MAX; i++)
+		{
+			m_pUserData->m_sItemArray[i].nNum           = 0;
+			m_pUserData->m_sItemArray[i].sCount         = 0;
+			m_pUserData->m_sItemArray[i].sDuration      = 0;
+			m_pUserData->m_sItemArray[i].nSerialNum     = 0;
+			m_pUserData->m_sItemArray[i].byFlag         = 0;
+			m_pUserData->m_sItemArray[i].sTimeRemaining = 0;
+		}
 	}
 
 private:

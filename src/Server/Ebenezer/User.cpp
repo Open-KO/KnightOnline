@@ -12733,6 +12733,9 @@ bool CUser::RobItem(int itemId, int16_t count)
 	SetByte(sendBuffer, i - SLOT_MAX, sendIndex);
 	SetDWORD(sendBuffer, itemId, sendIndex); // The ID of item.
 	SetDWORD(sendBuffer, m_pUserData->m_sItemArray[i].sCount, sendIndex);
+	SetByte(sendBuffer, ITEM_COUNT_CHANGE_EXISTING, sendIndex);
+	SetShort(sendBuffer, m_pUserData->m_sItemArray[i].sDuration, sendIndex);
+
 	Send(sendBuffer, sendIndex);
 	return true;
 }

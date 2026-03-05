@@ -1,4 +1,5 @@
 add_executable(Ebenezer.Tests
+  ItemExchange_test.cpp
   ItemUpgrade_test.cpp
 )
 

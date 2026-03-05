@@ -94,6 +94,21 @@ public:
 		return true;
 	}
 
+	bool AddItemExchangeEntry(const Ebenezer::model::ItemExchange& itemExchangeModel)
+	{
+		auto modelForInsertion = new Ebenezer::model::ItemExchange { itemExchangeModel };
+		if (modelForInsertion == nullptr)
+			return false;
+
+		if (!m_ItemExchangeMap.PutData(modelForInsertion->Index, modelForInsertion))
+		{
+			delete modelForInsertion;
+			return false;
+		}
+
+		return true;
+	}
+
 	bool AddItemUpgradeEntry(const Ebenezer::model::ItemUpgrade& itemUpgradeModel)
 	{
 		auto modelForInsertion = new Ebenezer::model::ItemUpgrade { itemUpgradeModel };

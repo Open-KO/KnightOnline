@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="data\ItemExchange_test_data.h" />
+    <ClCompile Include="ItemExchange_test.cpp" />
     <ClCompile Include="data\ItemUpgrade_test_data.h" />
     <ClCompile Include="ItemUpgrade_test.cpp" />
   </ItemGroup>

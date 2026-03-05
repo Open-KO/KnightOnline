@@ -50,6 +50,24 @@ struct ObjectEventAnvilResponsePacket
 	bool Successful    = true;
 	int16_t NpcID      = 0;
 };
+
+struct WeightChangePacket
+{
+	uint8_t Opcode        = WIZ_WEIGHT_CHANGE;
+	int16_t CurrentWeight = 0;
+};
+
+struct ItemCountChangePacket
+{
+	uint8_t Opcode     = WIZ_ITEM_COUNT_CHANGE;
+	int16_t Items      = 1;
+	uint8_t District   = 1;
+	uint8_t SlotNumber = 0;
+	int32_t ItemId     = 0;
+	int32_t ItemCount  = 0;
+	uint8_t ChangeType = ITEM_COUNT_CHANGE_NEW;
+	int16_t Durability = 0;
+};
 #pragma pack(pop)
 
 #endif // TESTS_SERVER_EBENEZER_PACKET_STRUCTS_H
