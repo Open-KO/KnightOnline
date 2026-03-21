@@ -422,10 +422,11 @@ struct __InfoPlayerOther
 	int iFace;             // Face type
 	int iHair;             // Hair type
 
-	int iCity;             // Affiliated city
-	std::string szKnights; // Clan name
-	int iKnightsGrade;     // Clan grade
-	int iKnightsRank;      // Clan ranking
+	int iCity;					// Affiliated city
+	std::string szKnights;		// Clan name
+	int iKnightsGrade;			// Clan grade
+	int iKnightsRank;			// Clan ranking
+	e_KnightsDuty eKnightsDuty; // Clan role/duty
 
 	int iRank;             // Noble rank - used to identify high-ranking titles like King [1], Senator [2].
 	int iTitle;            // Bitmask representing various titles/roles including:
@@ -443,6 +444,7 @@ struct __InfoPlayerOther
 		iCity         = 0;
 		iKnightsGrade = 0;
 		iKnightsRank  = 0;
+		eKnightsDuty  = KNIGHTS_DUTY_UNKNOWN;
 		iTitle        = 0;
 
 		szKnights.clear();
@@ -467,7 +469,6 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 	int64_t iExp;
 	int iRealmPoint;            // National Points
 	int iRealmPointMonthly;     // Monthly National Points
-	e_KnightsDuty eKnightsDuty; // Clan member position/role/duty
 	int iWeightMax;             // Max weight
 	int iWeight;                // Current weight
 	int iStrength;              // Strength
@@ -529,7 +530,6 @@ struct __InfoPlayerMySelf : public __InfoPlayerOther
 		iExp                     = 0;
 		iRealmPoint              = 0;
 		iRealmPointMonthly       = 0;
-		eKnightsDuty             = KNIGHTS_DUTY_UNKNOWN;
 		iWeightMax               = 0;
 		iWeight                  = 0;
 		iStrength                = 0;

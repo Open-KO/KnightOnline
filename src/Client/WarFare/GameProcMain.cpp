@@ -2538,7 +2538,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 
 	// 기사단 관련
 	int iKnightsID   = pkt.read<int16_t>();                               // 기사단 ID
-	/*e_KnightsDuty eKnightsDuty = (e_KnightsDuty)*/ pkt.read<uint8_t>(); // 소속 국가. 0 이면 없다. 1
+	e_KnightsDuty eKnightsDuty = (e_KnightsDuty) pkt.read<uint8_t>(); // 소속 국가. 0 이면 없다. 1
 
 	/*int16_t sAllianceID      =*/pkt.read<int16_t>();
 
@@ -2632,6 +2632,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities, byItemFlags);
 	pUPC->RotateTo(DegreesToRadians(rand() % 360), true);
 	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
+	pUPC->m_InfoExt.eKnightsDuty = eKnightsDuty;
 
 	//__KnightsInfoBase* pKIB = m_pUIKnightsOp->KnightsInfoFind(iKightsID);
 	//if(pKIB) pUPC->KnightsNameSet(pKIB->szName, 0xffff0000);

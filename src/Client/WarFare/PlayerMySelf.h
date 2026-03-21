@@ -43,6 +43,11 @@ public:
 	__Vector3 m_vTargetPos;          // 이동할 지점 위치
 	void SetMoveTargetID(int iID);
 	void SetMoveTargetPos(const __Vector3& vPos);
+	e_KnightsDuty KnightsDuty() const override
+	{
+		return m_InfoExt.eKnightsDuty;
+	}
+
 
 public:
 	void TargetOrPosMove();

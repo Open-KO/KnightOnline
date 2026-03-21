@@ -104,6 +104,10 @@ protected:
 	e_StateAction m_eStateNext                            = PSA_BASIC;                // 직전에 세팅된 행동 상태..
 	e_StateMove m_eStateMove                              = PSM_STOP;                 // 움직이는 상태..
 	e_StateDying m_eStateDying                            = PSD_UNKNOWN;              // 죽을때 어떻게 죽는가..??
+	virtual e_KnightsDuty KnightsDuty() const
+	{
+		return KNIGHTS_DUTY_UNKNOWN;
+	}
 	float m_fTimeDying                                    = 0.0f;                     // 죽는 모션을 취하는 시간..
 
 	__ColorValue m_cvDuration                             = { 1, 1, 1, 1 };           // 지속 컬러 값

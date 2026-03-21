@@ -861,6 +861,33 @@ void CPlayerBase::Render(float fSunAngle)
 			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
 			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
 
+			// Draw green line under name if clan leader
+			if (KnightsDuty() == KNIGHTS_DUTY_CHIEF)
+			{
+				SIZE nameSize                     = m_pIDFont->GetSize();
+				float fLeft                       = static_cast<float>(pt.x - (nameSize.cx / 2));
+				float fRight                      = static_cast<float>(pt.x + (nameSize.cx / 2));
+				float fTop                        = static_cast<float>(pt.y + nameSize.cy + 1);
+				float fBottom                     = static_cast<float>(pt.y + nameSize.cy + 2);
+
+				__VertexTransformedColor vLine[4] = {
+					{ fLeft, fTop, 0.0f, 1.0f, 0xff00ff00 },
+					{ fRight, fTop, 0.0f, 1.0f, 0xff00ff00 },
+					{ fRight, fBottom, 0.0f, 1.0f, 0xff00ff00 },
+					{ fLeft, fBottom, 0.0f, 1.0f, 0xff00ff00 },
+				};
+
+				DWORD dwPrevFVF;
+				s_lpD3DDev->GetFVF(&dwPrevFVF);
+
+				s_lpD3DDev->SetTexture(0, nullptr);
+				s_lpD3DDev->SetFVF(FVF_TRANSFORMEDCOLOR);
+				s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vLine, sizeof(__VertexTransformedColor));
+
+				s_lpD3DDev->SetFVF(dwPrevFVF);
+			}
+
+
 			//Knight & clan 렌더링..
 			if (m_pClanFont && m_pClanFont->IsSetText())
 			{
