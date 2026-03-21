@@ -57,3 +57,5 @@ last-build-states/
 
 # Do not ignore CMakeLists.txt
 !CMakeLists.txt
+/deps/nanodbc
+/deps/zlib
