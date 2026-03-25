@@ -1548,14 +1548,16 @@ bool AIServerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
 	std::error_code ec;
 	if (!_overrideMapDir.empty() && !std::filesystem::exists(_overrideMapDir, ec))
 	{
-		spdlog::error("Supplied map directory (--map-dir) doesn't exist or is inaccessible: {}",
+		spdlog::error("AIServerApp::ProcessCommandLineArgs: Supplied map directory (--map-dir) "
+					  "doesn't exist or is inaccessible: {}",
 			_overrideMapDir);
 		return false;
 	}
 
 	if (!_overrideEventDir.empty() && !std::filesystem::exists(_overrideEventDir, ec))
 	{
-		spdlog::error("Supplied EVT directory (--event-dir) doesn't exist or is inaccessible: {}",
+		spdlog::error("AIServerApp::ProcessCommandLineArgs: Supplied EVT directory (--event-dir) "
+					  "doesn't exist or is inaccessible: {}",
 			_overrideEventDir);
 		return false;
 	}
@@ -1583,6 +1585,12 @@ bool AIServerApp::LoadConfig(CIni& iniFile)
 	AssetDirSource dirSource = IdentifyAssetDir(
 		"MAP", _overrideMapDir, configDir, DEFAULT_MAP_DIR, &_mapDir);
 
+	if (dirSource == AssetDirSource::None)
+	{
+		spdlog::error("AIServerApp::LoadConfig: Failed to identify MAP directory");
+		return false;
+	}
+
 	// Map directory (MAP) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
 	if (dirSource == AssetDirSource::CommandLine && configDir.empty())
@@ -1591,6 +1599,12 @@ bool AIServerApp::LoadConfig(CIni& iniFile)
 	configDir = iniFile.GetString("PATH", "EVENT_DIR", "");
 	dirSource = IdentifyAssetDir(
 		"EVENT", _overrideEventDir, configDir, DEFAULT_EVENT_DIR, &_eventDir);
+
+	if (dirSource == AssetDirSource::None)
+	{
+		spdlog::error("AIServerApp::LoadConfig: Failed to identify event (MAP) directory");
+		return false;
+	}
 
 	// Event directory (by default, still in MAP) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.

@@ -1155,15 +1155,16 @@ bool EbenezerApp::ProcessCommandLineArgs(const argparse::ArgumentParser& parser)
 	std::error_code ec;
 	if (!_overrideMapDir.empty() && !std::filesystem::exists(_overrideMapDir, ec))
 	{
-		spdlog::error("Supplied map directory (--map-dir) doesn't exist or is inaccessible: {}",
+		spdlog::error("EbenezerApp::ProcessCommandLineArgs: Supplied map directory (--map-dir) "
+					  "doesn't exist or is inaccessible: {}",
 			_overrideMapDir);
 		return false;
 	}
 
 	if (!_overrideQuestsDir.empty() && !std::filesystem::exists(_overrideQuestsDir, ec))
 	{
-		spdlog::error(
-			"Supplied quests directory (--quests-dir) doesn't exist or is inaccessible: {}",
+		spdlog::error("EbenezerApp::ProcessCommandLineArgs: Supplied quests directory "
+					  "(--quests-dir) doesn't exist or is inaccessible: {}",
 			_overrideQuestsDir);
 		return false;
 	}
@@ -1185,6 +1186,12 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 	AssetDirSource dirSource = IdentifyAssetDir(
 		"MAP", _overrideMapDir, configDir, DEFAULT_MAP_DIR, &_mapDir);
 
+	if (dirSource == AssetDirSource::None)
+	{
+		spdlog::error("EbenezerApp::LoadConfig: Failed to identify MAP directory");
+		return false;
+	}
+
 	// Map directory (MAP) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
 	if (dirSource == AssetDirSource::CommandLine && configDir.empty())
@@ -1193,6 +1200,12 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 	configDir = iniFile.GetString("PATH", "QUESTS_DIR", "");
 	dirSource = IdentifyAssetDir(
 		"QUESTS", _overrideQuestsDir, configDir, DEFAULT_QUESTS_DIR, &_questsDir);
+
+	if (dirSource == AssetDirSource::None)
+	{
+		spdlog::error("EbenezerApp::LoadConfig: Failed to identify QUESTS directory");
+		return false;
+	}
 
 	// Quests (.EVT) directory (QUESTS) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
