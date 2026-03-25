@@ -8,17 +8,18 @@
 #include "Packet.h"
 
 #include <cstdint>
+#include <string_view>
 
 // Default location of server MAP directory, where .SMDs (server maps) reside.
-inline constexpr char DEFAULT_MAP_DIR[]              = "MAP";
+inline constexpr std::string_view DEFAULT_MAP_DIR    = "MAP";
 
 // Default location of server QUESTS directory, where Ebenezer's quest/event scripts (.EVTs) reside.
-inline constexpr char DEFAULT_QUESTS_DIR[]           = "QUESTS";
+inline constexpr std::string_view DEFAULT_QUESTS_DIR = "QUESTS";
 
 // Default location of server event directory, where AI server's event scripts (.EVTs) reside.
 // This is the MAP directory by default.
 // NOTE: We have the AI server EVTs in the MAP dir by default. We only separate Ebenezer's EVTs into QUESTS.
-inline constexpr char DEFAULT_EVENT_DIR[]            = "MAP";
+inline constexpr std::string_view DEFAULT_EVENT_DIR  = DEFAULT_MAP_DIR;
 
 inline constexpr int MIN_ID_SIZE                     = 6;
 inline constexpr int MAX_ID_SIZE                     = 20;
