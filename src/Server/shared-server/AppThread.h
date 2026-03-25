@@ -88,6 +88,28 @@ protected:
 	/// \returns true when successful, false otherwise
 	virtual bool LoadConfig(CIni& iniFile);
 
+	enum class AssetDirSource : uint8_t
+	{
+		None,
+		CommandLine,
+		Config,
+		Default
+	};
+
+	/// \brief Identifies an asset directory location, prioritising command-line > INI > defaults.
+	/// \param identifierName		Identifier name of a directory to be used for logging. e.g. "MAP"
+	/// \param commandLineDirectory	The directory passed to the command-line, if applicable. First in priority order.
+	/// \param configDirectory		The directory as stored in the INI config, if applicable. Second in priority order.
+	/// \param defaultDirectory		The default directory location, relative to the current working directory (e.g. ./MAP/).
+	///								As a fallback, will try the directory above (e.g. ../MAP/).
+	///								Last in the priority order.
+	/// \param outputPath			Path to output the final identified directory to.
+	/// \returns true when successful, false otherwise
+	AssetDirSource IdentifyAssetDir(const std::string_view identifierName,
+		const std::filesystem::path& commandLineDirectory,
+		const std::filesystem::path& configDirectory, const std::filesystem::path& defaultDirectory,
+		std::filesystem::path* outputPath);
+
 private:
 	/// \brief Wraps the main startup logic so that error handling can be shared by the caller.
 	/// \param iniFile The loaded application ini file.

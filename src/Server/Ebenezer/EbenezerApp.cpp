@@ -1181,76 +1181,23 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 	int serverCount = 0, sgroup_count = 0;
 	std::string key;
 
-	// Load paths from config
-	std::string mapDir    = iniFile.GetString("PATH", "MAP_DIR", "");
-	std::string questsDir = iniFile.GetString("PATH", "QUESTS_DIR", "");
+	std::string configDir    = iniFile.GetString("PATH", "MAP_DIR", "");
+	AssetDirSource dirSource = IdentifyAssetDir(
+		"MAP", _overrideMapDir, configDir, DEFAULT_MAP_DIR, &_mapDir);
 
-	std::error_code ec;
-
-	// Map directory supplied from command-line.
+	// Map directory (MAP) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
-	// We should always use the map directory passed from command-line over the INI.
-	if (!_overrideMapDir.empty())
-	{
-		if (mapDir.empty())
-			iniFile.SetString("PATH", "MAP_DIR", _overrideMapDir);
+	if (dirSource == AssetDirSource::CommandLine && configDir.empty())
+		iniFile.SetString("PATH", "MAP_DIR", _mapDir.string());
 
-		_mapDir = _overrideMapDir;
-	}
-	// No command-line override is present, but it is configured in the INI.
-	// We should use that.
-	else if (!mapDir.empty())
-	{
-		_mapDir = mapDir;
+	configDir = iniFile.GetString("PATH", "QUESTS_DIR", "");
+	dirSource = IdentifyAssetDir(
+		"QUESTS", _overrideQuestsDir, configDir, DEFAULT_QUESTS_DIR, &_questsDir);
 
-		if (!std::filesystem::exists(_mapDir, ec))
-		{
-			spdlog::error("Configured map directory doesn't exist or is inaccessible: {}", mapDir);
-			return false;
-		}
-	}
-	// Fallback to the default (don't save this).
-	else
-	{
-		_mapDir = DEFAULT_MAP_DIR;
-	}
-
-	// Resolve the path to strip the relative references (to be nice).
-	if (std::filesystem::exists(_mapDir, ec))
-		_mapDir = std::filesystem::canonical(_mapDir, ec);
-
-	// Quests (.EVT) directory supplied from command-line.
+	// Quests (.EVT) directory (QUESTS) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
-	// We should always use the map directory passed from command-line over the INI.
-	if (!_overrideQuestsDir.empty())
-	{
-		if (questsDir.empty())
-			iniFile.SetString("PATH", "QUESTS_DIR", _overrideQuestsDir);
-
-		_questsDir = _overrideQuestsDir;
-	}
-	// No command-line override is present, but it is configured in the INI.
-	// We should use that.
-	else if (!questsDir.empty())
-	{
-		_questsDir = questsDir;
-
-		if (!std::filesystem::exists(_questsDir, ec))
-		{
-			spdlog::error(
-				"Configured quests directory doesn't exist or is inaccessible: {}", questsDir);
-			return false;
-		}
-	}
-	// Fallback to the default (don't save this).
-	else
-	{
-		_questsDir = DEFAULT_QUESTS_DIR;
-	}
-
-	// Resolve the path to strip the relative references (to be nice).
-	if (std::filesystem::exists(_questsDir, ec))
-		_questsDir = std::filesystem::canonical(_questsDir);
+	if (dirSource == AssetDirSource::CommandLine && configDir.empty())
+		iniFile.SetString("PATH", "QUESTS_DIR", _questsDir.string());
 
 	m_nYear                    = iniFile.GetInt("TIMER", "YEAR", 1);
 	m_nMonth                   = iniFile.GetInt("TIMER", "MONTH", 1);

@@ -130,6 +130,73 @@ bool AppThread::LoadConfig(CIni& /*iniFile*/)
 	return true;
 }
 
+AppThread::AssetDirSource AppThread::IdentifyAssetDir(const std::string_view identifierName,
+	const std::filesystem::path& commandLineDirectory, const std::filesystem::path& configDirectory,
+	const std::filesystem::path& defaultDirectory, std::filesystem::path* outputPath)
+{
+	if (outputPath == nullptr)
+		return AssetDirSource::None;
+
+	std::error_code ec;
+	AssetDirSource dirSource = AssetDirSource::None;
+
+	// Directory supplied from command-line.
+	// We should always use the map directory passed from command-line over the INI.
+	if (!commandLineDirectory.empty())
+	{
+		if (!std::filesystem::exists(commandLineDirectory, ec))
+		{
+			spdlog::error("{} from command-line doesn't exist or is inaccessible: {}",
+				identifierName, commandLineDirectory.string());
+			return AssetDirSource::None;
+		}
+
+		dirSource   = AssetDirSource::CommandLine;
+		*outputPath = commandLineDirectory;
+	}
+	// No command-line override is present, but it is configured in the INI.
+	// We should use that.
+	else if (!configDirectory.empty())
+	{
+		if (!std::filesystem::exists(configDirectory, ec))
+		{
+			spdlog::error("Configured {} directory doesn't exist or is inaccessible: {}",
+				identifierName, configDirectory.string());
+			return AssetDirSource::None;
+		}
+
+		dirSource   = AssetDirSource::Config;
+		*outputPath = configDirectory;
+	}
+	// Fallback to the default.
+	else
+	{
+		// Check for this directory in the current folder first.
+		std::filesystem::path testPath = std::filesystem::current_path() / defaultDirectory;
+
+		// If it doesn't exist, check in the parent folder.
+		if (!std::filesystem::exists(testPath, ec))
+		{
+			testPath = std::filesystem::current_path() / ".." / defaultDirectory;
+
+			// If it still doesn't exist, we should fail.
+			if (!std::filesystem::exists(testPath, ec))
+			{
+				spdlog::error("Configured {} directory doesn't exist or is inaccessible: {}",
+					identifierName, testPath.string());
+				return AssetDirSource::None;
+			}
+		}
+
+		dirSource   = AssetDirSource::Default;
+		*outputPath = testPath;
+	}
+
+	// Resolve the path to strip the relative references (to be nice).
+	*outputPath = std::filesystem::canonical(*outputPath, ec);
+	return dirSource;
+}
+
 bool AppThread::StartupImpl(CIni& iniFile)
 {
 	try

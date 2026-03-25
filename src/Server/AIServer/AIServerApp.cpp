@@ -1579,78 +1579,23 @@ bool AIServerApp::LoadConfig(CIni& iniFile)
 	ConnectionManager::SetDatasourceConfig(
 		modelUtil::DbType::GAME, datasourceName, datasourceUser, datasourcePass);
 
-	// Load paths from config
-	std::string mapDir   = iniFile.GetString("PATH", "MAP_DIR", "");
-	std::string eventDir = iniFile.GetString("PATH", "EVENT_DIR", "");
+	std::string configDir    = iniFile.GetString("PATH", "MAP_DIR", "");
+	AssetDirSource dirSource = IdentifyAssetDir(
+		"MAP", _overrideMapDir, configDir, DEFAULT_MAP_DIR, &_mapDir);
 
-	std::error_code ec;
-
-	// Map directory supplied from command-line.
+	// Map directory (MAP) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
-	// We should always use the map directory passed from command-line over the INI.
-	if (!_overrideMapDir.empty())
-	{
-		if (mapDir.empty())
-			iniFile.SetString("PATH", "MAP_DIR", _overrideMapDir);
+	if (dirSource == AssetDirSource::CommandLine && configDir.empty())
+		iniFile.SetString("PATH", "MAP_DIR", _mapDir.string());
 
-		_mapDir = _overrideMapDir;
-	}
-	// No command-line override is present, but it is configured in the INI.
-	// We should use that.
-	else if (!mapDir.empty())
-	{
-		_mapDir = mapDir;
+	configDir = iniFile.GetString("PATH", "EVENT_DIR", "");
+	dirSource = IdentifyAssetDir(
+		"EVENT", _overrideEventDir, configDir, DEFAULT_EVENT_DIR, &_eventDir);
 
-		if (!std::filesystem::exists(_mapDir, ec))
-		{
-			spdlog::error("Configured map directory doesn't exist or is inaccessible: {}", mapDir);
-			return false;
-		}
-	}
-	// Fallback to the default (don't save this).
-	else
-	{
-		_mapDir = DEFAULT_MAP_DIR;
-	}
-
-	// Resolve the path to strip the relative references (to be nice).
-	if (std::filesystem::exists(_mapDir, ec))
-		_mapDir = std::filesystem::canonical(_mapDir, ec);
-
-	// EVT directory supplied from command-line.
+	// Event directory (by default, still in MAP) supplied from command-line.
 	// Replace it in the config -- but only if it's not explicitly been set already.
-	// We should always use the map directory passed from command-line over the INI.
-	if (!_overrideEventDir.empty())
-	{
-		if (eventDir.empty())
-			iniFile.SetString("PATH", "EVENT_DIR", _overrideEventDir);
-
-		_eventDir = _overrideEventDir;
-	}
-	// No command-line override is present, but it is configured in the INI.
-	// We should use that.
-	else if (!eventDir.empty())
-	{
-		_eventDir = eventDir;
-
-		if (!std::filesystem::exists(_eventDir, ec))
-		{
-			spdlog::error(
-				"Configured EVT directory doesn't exist or is inaccessible: {}", eventDir);
-			return false;
-		}
-	}
-	// Fallback to the default (don't save this).
-	else
-	{
-		// NOTE: We have the AI server EVTs in the MAP dir by default.
-		// We only separate Ebenezer's EVTs into QUESTS.
-		_eventDir = DEFAULT_MAP_DIR;
-	}
-
-	// Resolve the path to strip the relative references (to be nice).
-	if (std::filesystem::exists(_eventDir, ec))
-		_eventDir = std::filesystem::canonical(_eventDir, ec);
+	if (dirSource == AssetDirSource::CommandLine && configDir.empty())
+		iniFile.SetString("PATH", "EVENT_DIR", _eventDir.string());
 
 	return true;
 }
