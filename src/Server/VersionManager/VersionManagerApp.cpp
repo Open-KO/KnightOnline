@@ -132,9 +132,7 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 		return false;
 	}
 
-	if (datasourceName.empty()
-		// TODO: Should we not validate UID/Pass length?  Would that allow Windows Auth?
-		|| datasourceUser.empty() || datasourcePass.empty())
+	if (datasourceName.empty())
 	{
 		spdlog::error("VersionManagerApp::LoadConfig: Datasource config must be set.");
 		return false;
