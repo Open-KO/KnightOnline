@@ -1656,175 +1656,134 @@ $(function(){initNavTree('AIServerApp_8cpp_source.html',''); initResizable(true)
 <div class="line"><a id="l01548" name="l01548"></a><span class="lineno"> 1548</span>    std::error_code ec;</div>
 <div class="line"><a id="l01549" name="l01549"></a><span class="lineno"> 1549</span>    <span class="keywordflow">if</span> (!_overrideMapDir.empty() &amp;&amp; !std::filesystem::exists(_overrideMapDir, ec))</div>
 <div class="line"><a id="l01550" name="l01550"></a><span class="lineno"> 1550</span>    {</div>
-<div class="line"><a id="l01551" name="l01551"></a><span class="lineno"> 1551</span>        spdlog::error(<span class="stringliteral">&quot;Supplied map directory (--map-dir) doesn&#39;t exist or is inaccessible: {}&quot;</span>,</div>
-<div class="line"><a id="l01552" name="l01552"></a><span class="lineno"> 1552</span>            _overrideMapDir);</div>
-<div class="line"><a id="l01553" name="l01553"></a><span class="lineno"> 1553</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01554" name="l01554"></a><span class="lineno"> 1554</span>    }</div>
-<div class="line"><a id="l01555" name="l01555"></a><span class="lineno"> 1555</span> </div>
-<div class="line"><a id="l01556" name="l01556"></a><span class="lineno"> 1556</span>    <span class="keywordflow">if</span> (!_overrideEventDir.empty() &amp;&amp; !std::filesystem::exists(_overrideEventDir, ec))</div>
-<div class="line"><a id="l01557" name="l01557"></a><span class="lineno"> 1557</span>    {</div>
-<div class="line"><a id="l01558" name="l01558"></a><span class="lineno"> 1558</span>        spdlog::error(<span class="stringliteral">&quot;Supplied EVT directory (--event-dir) doesn&#39;t exist or is inaccessible: {}&quot;</span>,</div>
-<div class="line"><a id="l01559" name="l01559"></a><span class="lineno"> 1559</span>            _overrideEventDir);</div>
-<div class="line"><a id="l01560" name="l01560"></a><span class="lineno"> 1560</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01561" name="l01561"></a><span class="lineno"> 1561</span>    }</div>
-<div class="line"><a id="l01562" name="l01562"></a><span class="lineno"> 1562</span> </div>
-<div class="line"><a id="l01563" name="l01563"></a><span class="lineno"> 1563</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01564" name="l01564"></a><span class="lineno"> 1564</span>}</div>
-<div class="line"><a id="l01565" name="l01565"></a><span class="lineno"> 1565</span> </div>
-<div class="line"><a id="l01566" name="l01566"></a><span class="lineno"> 1566</span>std::filesystem::path AIServerApp::ConfigPath()<span class="keyword"> const</span></div>
-<div class="line"><a id="l01567" name="l01567"></a><span class="lineno"> 1567</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l01568" name="l01568"></a><span class="lineno"> 1568</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;server.ini&quot;</span>;</div>
-<div class="line"><a id="l01569" name="l01569"></a><span class="lineno"> 1569</span>}</div>
-<div class="line"><a id="l01570" name="l01570"></a><span class="lineno"> 1570</span> </div>
-<div class="line"><a id="l01571" name="l01571"></a><span class="lineno"> 1571</span><span class="keywordtype">bool</span> AIServerApp::LoadConfig(<a class="code hl_class" href="classCIni.html">CIni</a>&amp; iniFile)</div>
-<div class="line"><a id="l01572" name="l01572"></a><span class="lineno"> 1572</span>{</div>
-<div class="line"><a id="l01573" name="l01573"></a><span class="lineno"> 1573</span>    _serverZoneType            = iniFile.GetInt(<span class="stringliteral">&quot;SERVER&quot;</span>, <span class="stringliteral">&quot;ZONE&quot;</span>, 1);</div>
-<div class="line"><a id="l01574" name="l01574"></a><span class="lineno"> 1574</span> </div>
-<div class="line"><a id="l01575" name="l01575"></a><span class="lineno"> 1575</span>    std::string datasourceName = iniFile.GetString(<span class="stringliteral">&quot;ODBC&quot;</span>, <span class="stringliteral">&quot;GAME_DSN&quot;</span>, <span class="stringliteral">&quot;KN_online&quot;</span>);</div>
-<div class="line"><a id="l01576" name="l01576"></a><span class="lineno"> 1576</span>    std::string datasourceUser = iniFile.GetString(<span class="stringliteral">&quot;ODBC&quot;</span>, <span class="stringliteral">&quot;GAME_UID&quot;</span>, <span class="stringliteral">&quot;knight&quot;</span>);</div>
-<div class="line"><a id="l01577" name="l01577"></a><span class="lineno"> 1577</span>    std::string datasourcePass = iniFile.GetString(<span class="stringliteral">&quot;ODBC&quot;</span>, <span class="stringliteral">&quot;GAME_PWD&quot;</span>, <span class="stringliteral">&quot;knight&quot;</span>);</div>
-<div class="line"><a id="l01578" name="l01578"></a><span class="lineno"> 1578</span> </div>
-<div class="line"><a id="l01579" name="l01579"></a><span class="lineno"> 1579</span>    <a class="code hl_function" href="classdb_1_1ConnectionManager.html#afb7c2599a6457793f93c1bd6e78384a4">ConnectionManager::SetDatasourceConfig</a>(</div>
-<div class="line"><a id="l01580" name="l01580"></a><span class="lineno"> 1580</span>        modelUtil::DbType::GAME, datasourceName, datasourceUser, datasourcePass);</div>
-<div class="line"><a id="l01581" name="l01581"></a><span class="lineno"> 1581</span> </div>
-<div class="line"><a id="l01582" name="l01582"></a><span class="lineno"> 1582</span>    <span class="comment">// Load paths from config</span></div>
-<div class="line"><a id="l01583" name="l01583"></a><span class="lineno"> 1583</span>    std::string mapDir   = iniFile.GetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;MAP_DIR&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l01584" name="l01584"></a><span class="lineno"> 1584</span>    std::string eventDir = iniFile.GetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;EVENT_DIR&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l01585" name="l01585"></a><span class="lineno"> 1585</span> </div>
-<div class="line"><a id="l01586" name="l01586"></a><span class="lineno"> 1586</span>    std::error_code ec;</div>
+<div class="line"><a id="l01551" name="l01551"></a><span class="lineno"> 1551</span>        spdlog::error(<span class="stringliteral">&quot;AIServerApp::ProcessCommandLineArgs: Supplied map directory (--map-dir) &quot;</span></div>
+<div class="line"><a id="l01552" name="l01552"></a><span class="lineno"> 1552</span>                      <span class="stringliteral">&quot;doesn&#39;t exist or is inaccessible: {}&quot;</span>,</div>
+<div class="line"><a id="l01553" name="l01553"></a><span class="lineno"> 1553</span>            _overrideMapDir);</div>
+<div class="line"><a id="l01554" name="l01554"></a><span class="lineno"> 1554</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01555" name="l01555"></a><span class="lineno"> 1555</span>    }</div>
+<div class="line"><a id="l01556" name="l01556"></a><span class="lineno"> 1556</span> </div>
+<div class="line"><a id="l01557" name="l01557"></a><span class="lineno"> 1557</span>    <span class="keywordflow">if</span> (!_overrideEventDir.empty() &amp;&amp; !std::filesystem::exists(_overrideEventDir, ec))</div>
+<div class="line"><a id="l01558" name="l01558"></a><span class="lineno"> 1558</span>    {</div>
+<div class="line"><a id="l01559" name="l01559"></a><span class="lineno"> 1559</span>        spdlog::error(<span class="stringliteral">&quot;AIServerApp::ProcessCommandLineArgs: Supplied EVT directory (--event-dir) &quot;</span></div>
+<div class="line"><a id="l01560" name="l01560"></a><span class="lineno"> 1560</span>                      <span class="stringliteral">&quot;doesn&#39;t exist or is inaccessible: {}&quot;</span>,</div>
+<div class="line"><a id="l01561" name="l01561"></a><span class="lineno"> 1561</span>            _overrideEventDir);</div>
+<div class="line"><a id="l01562" name="l01562"></a><span class="lineno"> 1562</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01563" name="l01563"></a><span class="lineno"> 1563</span>    }</div>
+<div class="line"><a id="l01564" name="l01564"></a><span class="lineno"> 1564</span> </div>
+<div class="line"><a id="l01565" name="l01565"></a><span class="lineno"> 1565</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01566" name="l01566"></a><span class="lineno"> 1566</span>}</div>
+<div class="line"><a id="l01567" name="l01567"></a><span class="lineno"> 1567</span> </div>
+<div class="line"><a id="l01568" name="l01568"></a><span class="lineno"> 1568</span>std::filesystem::path AIServerApp::ConfigPath()<span class="keyword"> const</span></div>
+<div class="line"><a id="l01569" name="l01569"></a><span class="lineno"> 1569</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l01570" name="l01570"></a><span class="lineno"> 1570</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;server.ini&quot;</span>;</div>
+<div class="line"><a id="l01571" name="l01571"></a><span class="lineno"> 1571</span>}</div>
+<div class="line"><a id="l01572" name="l01572"></a><span class="lineno"> 1572</span> </div>
+<div class="line"><a id="l01573" name="l01573"></a><span class="lineno"> 1573</span><span class="keywordtype">bool</span> AIServerApp::LoadConfig(<a class="code hl_class" href="classCIni.html">CIni</a>&amp; iniFile)</div>
+<div class="line"><a id="l01574" name="l01574"></a><span class="lineno"> 1574</span>{</div>
+<div class="line"><a id="l01575" name="l01575"></a><span class="lineno"> 1575</span>    _serverZoneType            = iniFile.GetInt(<span class="stringliteral">&quot;SERVER&quot;</span>, <span class="stringliteral">&quot;ZONE&quot;</span>, 1);</div>
+<div class="line"><a id="l01576" name="l01576"></a><span class="lineno"> 1576</span> </div>
+<div class="line"><a id="l01577" name="l01577"></a><span class="lineno"> 1577</span>    std::string datasourceName = iniFile.GetString(<span class="stringliteral">&quot;ODBC&quot;</span>, <span class="stringliteral">&quot;GAME_DSN&quot;</span>, <span class="stringliteral">&quot;KN_online&quot;</span>);</div>
+<div class="line"><a id="l01578" name="l01578"></a><span class="lineno"> 1578</span>    std::string datasourceUser = iniFile.GetString(<span class="stringliteral">&quot;ODBC&quot;</span>, <span class="stringliteral">&quot;GAME_UID&quot;</span>, <span class="stringliteral">&quot;knight&quot;</span>);</div>
+<div class="line"><a id="l01579" name="l01579"></a><span class="lineno"> 1579</span>    std::string datasourcePass = iniFile.GetString(<span class="stringliteral">&quot;ODBC&quot;</span>, <span class="stringliteral">&quot;GAME_PWD&quot;</span>, <span class="stringliteral">&quot;knight&quot;</span>);</div>
+<div class="line"><a id="l01580" name="l01580"></a><span class="lineno"> 1580</span> </div>
+<div class="line"><a id="l01581" name="l01581"></a><span class="lineno"> 1581</span>    <a class="code hl_function" href="classdb_1_1ConnectionManager.html#afb7c2599a6457793f93c1bd6e78384a4">ConnectionManager::SetDatasourceConfig</a>(</div>
+<div class="line"><a id="l01582" name="l01582"></a><span class="lineno"> 1582</span>        modelUtil::DbType::GAME, datasourceName, datasourceUser, datasourcePass);</div>
+<div class="line"><a id="l01583" name="l01583"></a><span class="lineno"> 1583</span> </div>
+<div class="line"><a id="l01584" name="l01584"></a><span class="lineno"> 1584</span>    std::string configDir    = iniFile.GetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;MAP_DIR&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l01585" name="l01585"></a><span class="lineno"> 1585</span>    AssetDirSource dirSource = IdentifyAssetDir(</div>
+<div class="line"><a id="l01586" name="l01586"></a><span class="lineno"> 1586</span>        <span class="stringliteral">&quot;MAP&quot;</span>, _overrideMapDir, configDir, DEFAULT_MAP_DIR, &amp;_mapDir);</div>
 <div class="line"><a id="l01587" name="l01587"></a><span class="lineno"> 1587</span> </div>
-<div class="line"><a id="l01588" name="l01588"></a><span class="lineno"> 1588</span>    <span class="comment">// Map directory supplied from command-line.</span></div>
-<div class="line"><a id="l01589" name="l01589"></a><span class="lineno"> 1589</span>    <span class="comment">// Replace it in the config -- but only if it&#39;s not explicitly been set already.</span></div>
-<div class="line"><a id="l01590" name="l01590"></a><span class="lineno"> 1590</span>    <span class="comment">// We should always use the map directory passed from command-line over the INI.</span></div>
-<div class="line"><a id="l01591" name="l01591"></a><span class="lineno"> 1591</span>    <span class="keywordflow">if</span> (!_overrideMapDir.empty())</div>
-<div class="line"><a id="l01592" name="l01592"></a><span class="lineno"> 1592</span>    {</div>
-<div class="line"><a id="l01593" name="l01593"></a><span class="lineno"> 1593</span>        <span class="keywordflow">if</span> (mapDir.empty())</div>
-<div class="line"><a id="l01594" name="l01594"></a><span class="lineno"> 1594</span>            iniFile.SetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;MAP_DIR&quot;</span>, _overrideMapDir);</div>
-<div class="line"><a id="l01595" name="l01595"></a><span class="lineno"> 1595</span> </div>
-<div class="line"><a id="l01596" name="l01596"></a><span class="lineno"> 1596</span>        _mapDir = _overrideMapDir;</div>
-<div class="line"><a id="l01597" name="l01597"></a><span class="lineno"> 1597</span>    }</div>
-<div class="line"><a id="l01598" name="l01598"></a><span class="lineno"> 1598</span>    <span class="comment">// No command-line override is present, but it is configured in the INI.</span></div>
-<div class="line"><a id="l01599" name="l01599"></a><span class="lineno"> 1599</span>    <span class="comment">// We should use that.</span></div>
-<div class="line"><a id="l01600" name="l01600"></a><span class="lineno"> 1600</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!mapDir.empty())</div>
-<div class="line"><a id="l01601" name="l01601"></a><span class="lineno"> 1601</span>    {</div>
-<div class="line"><a id="l01602" name="l01602"></a><span class="lineno"> 1602</span>        _mapDir = mapDir;</div>
-<div class="line"><a id="l01603" name="l01603"></a><span class="lineno"> 1603</span> </div>
-<div class="line"><a id="l01604" name="l01604"></a><span class="lineno"> 1604</span>        <span class="keywordflow">if</span> (!std::filesystem::exists(_mapDir, ec))</div>
-<div class="line"><a id="l01605" name="l01605"></a><span class="lineno"> 1605</span>        {</div>
-<div class="line"><a id="l01606" name="l01606"></a><span class="lineno"> 1606</span>            spdlog::error(<span class="stringliteral">&quot;Configured map directory doesn&#39;t exist or is inaccessible: {}&quot;</span>, mapDir);</div>
-<div class="line"><a id="l01607" name="l01607"></a><span class="lineno"> 1607</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01608" name="l01608"></a><span class="lineno"> 1608</span>        }</div>
-<div class="line"><a id="l01609" name="l01609"></a><span class="lineno"> 1609</span>    }</div>
-<div class="line"><a id="l01610" name="l01610"></a><span class="lineno"> 1610</span>    <span class="comment">// Fallback to the default (don&#39;t save this).</span></div>
-<div class="line"><a id="l01611" name="l01611"></a><span class="lineno"> 1611</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01612" name="l01612"></a><span class="lineno"> 1612</span>    {</div>
-<div class="line"><a id="l01613" name="l01613"></a><span class="lineno"> 1613</span>        _mapDir = DEFAULT_MAP_DIR;</div>
-<div class="line"><a id="l01614" name="l01614"></a><span class="lineno"> 1614</span>    }</div>
-<div class="line"><a id="l01615" name="l01615"></a><span class="lineno"> 1615</span> </div>
-<div class="line"><a id="l01616" name="l01616"></a><span class="lineno"> 1616</span>    <span class="comment">// Resolve the path to strip the relative references (to be nice).</span></div>
-<div class="line"><a id="l01617" name="l01617"></a><span class="lineno"> 1617</span>    <span class="keywordflow">if</span> (std::filesystem::exists(_mapDir, ec))</div>
-<div class="line"><a id="l01618" name="l01618"></a><span class="lineno"> 1618</span>        _mapDir = std::filesystem::canonical(_mapDir, ec);</div>
-<div class="line"><a id="l01619" name="l01619"></a><span class="lineno"> 1619</span> </div>
-<div class="line"><a id="l01620" name="l01620"></a><span class="lineno"> 1620</span>    <span class="comment">// EVT directory supplied from command-line.</span></div>
-<div class="line"><a id="l01621" name="l01621"></a><span class="lineno"> 1621</span>    <span class="comment">// Replace it in the config -- but only if it&#39;s not explicitly been set already.</span></div>
-<div class="line"><a id="l01622" name="l01622"></a><span class="lineno"> 1622</span>    <span class="comment">// We should always use the map directory passed from command-line over the INI.</span></div>
-<div class="line"><a id="l01623" name="l01623"></a><span class="lineno"> 1623</span>    <span class="keywordflow">if</span> (!_overrideEventDir.empty())</div>
-<div class="line"><a id="l01624" name="l01624"></a><span class="lineno"> 1624</span>    {</div>
-<div class="line"><a id="l01625" name="l01625"></a><span class="lineno"> 1625</span>        <span class="keywordflow">if</span> (eventDir.empty())</div>
-<div class="line"><a id="l01626" name="l01626"></a><span class="lineno"> 1626</span>            iniFile.SetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;EVENT_DIR&quot;</span>, _overrideEventDir);</div>
+<div class="line"><a id="l01588" name="l01588"></a><span class="lineno"> 1588</span>    <span class="keywordflow">if</span> (dirSource == AssetDirSource::None)</div>
+<div class="line"><a id="l01589" name="l01589"></a><span class="lineno"> 1589</span>    {</div>
+<div class="line"><a id="l01590" name="l01590"></a><span class="lineno"> 1590</span>        spdlog::error(<span class="stringliteral">&quot;AIServerApp::LoadConfig: Failed to identify MAP directory&quot;</span>);</div>
+<div class="line"><a id="l01591" name="l01591"></a><span class="lineno"> 1591</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01592" name="l01592"></a><span class="lineno"> 1592</span>    }</div>
+<div class="line"><a id="l01593" name="l01593"></a><span class="lineno"> 1593</span> </div>
+<div class="line"><a id="l01594" name="l01594"></a><span class="lineno"> 1594</span>    <span class="comment">// Map directory (MAP) supplied from command-line.</span></div>
+<div class="line"><a id="l01595" name="l01595"></a><span class="lineno"> 1595</span>    <span class="comment">// Replace it in the config -- but only if it&#39;s not explicitly been set already.</span></div>
+<div class="line"><a id="l01596" name="l01596"></a><span class="lineno"> 1596</span>    <span class="keywordflow">if</span> (dirSource == AssetDirSource::CommandLine &amp;&amp; configDir.empty())</div>
+<div class="line"><a id="l01597" name="l01597"></a><span class="lineno"> 1597</span>        iniFile.SetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;MAP_DIR&quot;</span>, _mapDir.string());</div>
+<div class="line"><a id="l01598" name="l01598"></a><span class="lineno"> 1598</span> </div>
+<div class="line"><a id="l01599" name="l01599"></a><span class="lineno"> 1599</span>    configDir = iniFile.GetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;EVENT_DIR&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l01600" name="l01600"></a><span class="lineno"> 1600</span>    dirSource = IdentifyAssetDir(</div>
+<div class="line"><a id="l01601" name="l01601"></a><span class="lineno"> 1601</span>        <span class="stringliteral">&quot;EVENT&quot;</span>, _overrideEventDir, configDir, DEFAULT_EVENT_DIR, &amp;_eventDir);</div>
+<div class="line"><a id="l01602" name="l01602"></a><span class="lineno"> 1602</span> </div>
+<div class="line"><a id="l01603" name="l01603"></a><span class="lineno"> 1603</span>    <span class="keywordflow">if</span> (dirSource == AssetDirSource::None)</div>
+<div class="line"><a id="l01604" name="l01604"></a><span class="lineno"> 1604</span>    {</div>
+<div class="line"><a id="l01605" name="l01605"></a><span class="lineno"> 1605</span>        spdlog::error(<span class="stringliteral">&quot;AIServerApp::LoadConfig: Failed to identify event (MAP) directory&quot;</span>);</div>
+<div class="line"><a id="l01606" name="l01606"></a><span class="lineno"> 1606</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01607" name="l01607"></a><span class="lineno"> 1607</span>    }</div>
+<div class="line"><a id="l01608" name="l01608"></a><span class="lineno"> 1608</span> </div>
+<div class="line"><a id="l01609" name="l01609"></a><span class="lineno"> 1609</span>    <span class="comment">// Event directory (by default, still in MAP) supplied from command-line.</span></div>
+<div class="line"><a id="l01610" name="l01610"></a><span class="lineno"> 1610</span>    <span class="comment">// Replace it in the config -- but only if it&#39;s not explicitly been set already.</span></div>
+<div class="line"><a id="l01611" name="l01611"></a><span class="lineno"> 1611</span>    <span class="keywordflow">if</span> (dirSource == AssetDirSource::CommandLine &amp;&amp; configDir.empty())</div>
+<div class="line"><a id="l01612" name="l01612"></a><span class="lineno"> 1612</span>        iniFile.SetString(<span class="stringliteral">&quot;PATH&quot;</span>, <span class="stringliteral">&quot;EVENT_DIR&quot;</span>, _eventDir.string());</div>
+<div class="line"><a id="l01613" name="l01613"></a><span class="lineno"> 1613</span> </div>
+<div class="line"><a id="l01614" name="l01614"></a><span class="lineno"> 1614</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01615" name="l01615"></a><span class="lineno"> 1615</span>}</div>
+<div class="line"><a id="l01616" name="l01616"></a><span class="lineno"> 1616</span> </div>
+<div class="line"><a id="l01617" name="l01617"></a><span class="lineno"> 1617</span><span class="keywordtype">void</span> AIServerApp::SendSystemMsg(<span class="keyword">const</span> std::string_view msg, <span class="keywordtype">int</span> zone, <span class="keywordtype">int</span> type, <span class="keywordtype">int</span> who)</div>
+<div class="line"><a id="l01618" name="l01618"></a><span class="lineno"> 1618</span>{</div>
+<div class="line"><a id="l01619" name="l01619"></a><span class="lineno"> 1619</span>    <span class="keywordtype">int</span> sendIndex = 0;</div>
+<div class="line"><a id="l01620" name="l01620"></a><span class="lineno"> 1620</span>    <span class="keywordtype">char</span> buff[256] {};</div>
+<div class="line"><a id="l01621" name="l01621"></a><span class="lineno"> 1621</span> </div>
+<div class="line"><a id="l01622" name="l01622"></a><span class="lineno"> 1622</span>    SetByte(buff, AG_SYSTEM_MSG, sendIndex);</div>
+<div class="line"><a id="l01623" name="l01623"></a><span class="lineno"> 1623</span>    SetByte(buff, type, sendIndex); <span class="comment">// 채팅형식</span></div>
+<div class="line"><a id="l01624" name="l01624"></a><span class="lineno"> 1624</span>    SetShort(buff, who, sendIndex); <span class="comment">// 누구에게</span></div>
+<div class="line"><a id="l01625" name="l01625"></a><span class="lineno"> 1625</span>    SetString2(buff, msg, sendIndex);</div>
+<div class="line"><a id="l01626" name="l01626"></a><span class="lineno"> 1626</span>    Send(buff, sendIndex, zone);</div>
 <div class="line"><a id="l01627" name="l01627"></a><span class="lineno"> 1627</span> </div>
-<div class="line"><a id="l01628" name="l01628"></a><span class="lineno"> 1628</span>        _eventDir = _overrideEventDir;</div>
-<div class="line"><a id="l01629" name="l01629"></a><span class="lineno"> 1629</span>    }</div>
-<div class="line"><a id="l01630" name="l01630"></a><span class="lineno"> 1630</span>    <span class="comment">// No command-line override is present, but it is configured in the INI.</span></div>
-<div class="line"><a id="l01631" name="l01631"></a><span class="lineno"> 1631</span>    <span class="comment">// We should use that.</span></div>
-<div class="line"><a id="l01632" name="l01632"></a><span class="lineno"> 1632</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!eventDir.empty())</div>
-<div class="line"><a id="l01633" name="l01633"></a><span class="lineno"> 1633</span>    {</div>
-<div class="line"><a id="l01634" name="l01634"></a><span class="lineno"> 1634</span>        _eventDir = eventDir;</div>
+<div class="line"><a id="l01628" name="l01628"></a><span class="lineno"> 1628</span>    spdlog::info(</div>
+<div class="line"><a id="l01629" name="l01629"></a><span class="lineno"> 1629</span>        <span class="stringliteral">&quot;AIServerApp::SendSystemMsg: zoneId={} type={} who={} msg={}&quot;</span>, zone, type, who, msg);</div>
+<div class="line"><a id="l01630" name="l01630"></a><span class="lineno"> 1630</span>}</div>
+<div class="line"><a id="l01631" name="l01631"></a><span class="lineno"> 1631</span> </div>
+<div class="line"><a id="l01632" name="l01632"></a><span class="lineno"> 1632</span><span class="keywordtype">void</span> AIServerApp::ResetBattleZone()</div>
+<div class="line"><a id="l01633" name="l01633"></a><span class="lineno"> 1633</span>{</div>
+<div class="line"><a id="l01634" name="l01634"></a><span class="lineno"> 1634</span>    spdlog::debug(<span class="stringliteral">&quot;AIServerApp::ResetBattleZone: start&quot;</span>);</div>
 <div class="line"><a id="l01635" name="l01635"></a><span class="lineno"> 1635</span> </div>
-<div class="line"><a id="l01636" name="l01636"></a><span class="lineno"> 1636</span>        <span class="keywordflow">if</span> (!std::filesystem::exists(_eventDir, ec))</div>
-<div class="line"><a id="l01637" name="l01637"></a><span class="lineno"> 1637</span>        {</div>
-<div class="line"><a id="l01638" name="l01638"></a><span class="lineno"> 1638</span>            spdlog::error(</div>
-<div class="line"><a id="l01639" name="l01639"></a><span class="lineno"> 1639</span>                <span class="stringliteral">&quot;Configured EVT directory doesn&#39;t exist or is inaccessible: {}&quot;</span>, eventDir);</div>
-<div class="line"><a id="l01640" name="l01640"></a><span class="lineno"> 1640</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01641" name="l01641"></a><span class="lineno"> 1641</span>        }</div>
-<div class="line"><a id="l01642" name="l01642"></a><span class="lineno"> 1642</span>    }</div>
-<div class="line"><a id="l01643" name="l01643"></a><span class="lineno"> 1643</span>    <span class="comment">// Fallback to the default (don&#39;t save this).</span></div>
-<div class="line"><a id="l01644" name="l01644"></a><span class="lineno"> 1644</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01645" name="l01645"></a><span class="lineno"> 1645</span>    {</div>
-<div class="line"><a id="l01646" name="l01646"></a><span class="lineno"> 1646</span>        <span class="comment">// NOTE: We have the AI server EVTs in the MAP dir by default.</span></div>
-<div class="line"><a id="l01647" name="l01647"></a><span class="lineno"> 1647</span>        <span class="comment">// We only separate Ebenezer&#39;s EVTs into QUESTS.</span></div>
-<div class="line"><a id="l01648" name="l01648"></a><span class="lineno"> 1648</span>        _eventDir = DEFAULT_MAP_DIR;</div>
-<div class="line"><a id="l01649" name="l01649"></a><span class="lineno"> 1649</span>    }</div>
-<div class="line"><a id="l01650" name="l01650"></a><span class="lineno"> 1650</span> </div>
-<div class="line"><a id="l01651" name="l01651"></a><span class="lineno"> 1651</span>    <span class="comment">// Resolve the path to strip the relative references (to be nice).</span></div>
-<div class="line"><a id="l01652" name="l01652"></a><span class="lineno"> 1652</span>    <span class="keywordflow">if</span> (std::filesystem::exists(_eventDir, ec))</div>
-<div class="line"><a id="l01653" name="l01653"></a><span class="lineno"> 1653</span>        _eventDir = std::filesystem::canonical(_eventDir, ec);</div>
+<div class="line"><a id="l01636" name="l01636"></a><span class="lineno"> 1636</span>    <span class="keywordflow">for</span> (MAP* pMap : _zones)</div>
+<div class="line"><a id="l01637" name="l01637"></a><span class="lineno"> 1637</span>    {</div>
+<div class="line"><a id="l01638" name="l01638"></a><span class="lineno"> 1638</span>        <span class="keywordflow">if</span> (pMap == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l01639" name="l01639"></a><span class="lineno"> 1639</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l01640" name="l01640"></a><span class="lineno"> 1640</span> </div>
+<div class="line"><a id="l01641" name="l01641"></a><span class="lineno"> 1641</span>        <span class="comment">// 현재의 존이 던젼담당하는 존이 아니면 리턴..</span></div>
+<div class="line"><a id="l01642" name="l01642"></a><span class="lineno"> 1642</span>        <span class="keywordflow">if</span> (pMap-&gt;m_byRoomEvent == 0)</div>
+<div class="line"><a id="l01643" name="l01643"></a><span class="lineno"> 1643</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l01644" name="l01644"></a><span class="lineno"> 1644</span> </div>
+<div class="line"><a id="l01645" name="l01645"></a><span class="lineno"> 1645</span>        <span class="comment">// 전체방이 클리어 되었다면</span></div>
+<div class="line"><a id="l01646" name="l01646"></a><span class="lineno"> 1646</span>        <span class="comment">// if (pMap-&gt;IsRoomStatusCheck())</span></div>
+<div class="line"><a id="l01647" name="l01647"></a><span class="lineno"> 1647</span>        <span class="comment">//  continue;</span></div>
+<div class="line"><a id="l01648" name="l01648"></a><span class="lineno"> 1648</span> </div>
+<div class="line"><a id="l01649" name="l01649"></a><span class="lineno"> 1649</span>        pMap-&gt;InitializeRoom();</div>
+<div class="line"><a id="l01650" name="l01650"></a><span class="lineno"> 1650</span>    }</div>
+<div class="line"><a id="l01651" name="l01651"></a><span class="lineno"> 1651</span> </div>
+<div class="line"><a id="l01652" name="l01652"></a><span class="lineno"> 1652</span>    spdlog::debug(<span class="stringliteral">&quot;AIServerApp::ResetBattleZone: end&quot;</span>);</div>
+<div class="line"><a id="l01653" name="l01653"></a><span class="lineno"> 1653</span>}</div>
 <div class="line"><a id="l01654" name="l01654"></a><span class="lineno"> 1654</span> </div>
-<div class="line"><a id="l01655" name="l01655"></a><span class="lineno"> 1655</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01656" name="l01656"></a><span class="lineno"> 1656</span>}</div>
-<div class="line"><a id="l01657" name="l01657"></a><span class="lineno"> 1657</span> </div>
-<div class="line"><a id="l01658" name="l01658"></a><span class="lineno"> 1658</span><span class="keywordtype">void</span> AIServerApp::SendSystemMsg(<span class="keyword">const</span> std::string_view msg, <span class="keywordtype">int</span> zone, <span class="keywordtype">int</span> type, <span class="keywordtype">int</span> who)</div>
-<div class="line"><a id="l01659" name="l01659"></a><span class="lineno"> 1659</span>{</div>
-<div class="line"><a id="l01660" name="l01660"></a><span class="lineno"> 1660</span>    <span class="keywordtype">int</span> sendIndex = 0;</div>
-<div class="line"><a id="l01661" name="l01661"></a><span class="lineno"> 1661</span>    <span class="keywordtype">char</span> buff[256] {};</div>
+<div class="line"><a id="l01655" name="l01655"></a><span class="lineno"> 1655</span>MAP* AIServerApp::GetMapByIndex(<span class="keywordtype">int</span> iZoneIndex)<span class="keyword"> const</span></div>
+<div class="line"><a id="l01656" name="l01656"></a><span class="lineno"> 1656</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l01657" name="l01657"></a><span class="lineno"> 1657</span>    <span class="keywordflow">if</span> (iZoneIndex &lt; 0 || iZoneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(_zones.size()))</div>
+<div class="line"><a id="l01658" name="l01658"></a><span class="lineno"> 1658</span>    {</div>
+<div class="line"><a id="l01659" name="l01659"></a><span class="lineno"> 1659</span>        spdlog::error(<span class="stringliteral">&quot;AIServerApp::GetMapByIndex: zoneIndex={} out of bounds&quot;</span>, iZoneIndex);</div>
+<div class="line"><a id="l01660" name="l01660"></a><span class="lineno"> 1660</span>        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l01661" name="l01661"></a><span class="lineno"> 1661</span>    }</div>
 <div class="line"><a id="l01662" name="l01662"></a><span class="lineno"> 1662</span> </div>
-<div class="line"><a id="l01663" name="l01663"></a><span class="lineno"> 1663</span>    SetByte(buff, AG_SYSTEM_MSG, sendIndex);</div>
-<div class="line"><a id="l01664" name="l01664"></a><span class="lineno"> 1664</span>    SetByte(buff, type, sendIndex); <span class="comment">// 채팅형식</span></div>
-<div class="line"><a id="l01665" name="l01665"></a><span class="lineno"> 1665</span>    SetShort(buff, who, sendIndex); <span class="comment">// 누구에게</span></div>
-<div class="line"><a id="l01666" name="l01666"></a><span class="lineno"> 1666</span>    SetString2(buff, msg, sendIndex);</div>
-<div class="line"><a id="l01667" name="l01667"></a><span class="lineno"> 1667</span>    Send(buff, sendIndex, zone);</div>
-<div class="line"><a id="l01668" name="l01668"></a><span class="lineno"> 1668</span> </div>
-<div class="line"><a id="l01669" name="l01669"></a><span class="lineno"> 1669</span>    spdlog::info(</div>
-<div class="line"><a id="l01670" name="l01670"></a><span class="lineno"> 1670</span>        <span class="stringliteral">&quot;AIServerApp::SendSystemMsg: zoneId={} type={} who={} msg={}&quot;</span>, zone, type, who, msg);</div>
-<div class="line"><a id="l01671" name="l01671"></a><span class="lineno"> 1671</span>}</div>
-<div class="line"><a id="l01672" name="l01672"></a><span class="lineno"> 1672</span> </div>
-<div class="line"><a id="l01673" name="l01673"></a><span class="lineno"> 1673</span><span class="keywordtype">void</span> AIServerApp::ResetBattleZone()</div>
-<div class="line"><a id="l01674" name="l01674"></a><span class="lineno"> 1674</span>{</div>
-<div class="line"><a id="l01675" name="l01675"></a><span class="lineno"> 1675</span>    spdlog::debug(<span class="stringliteral">&quot;AIServerApp::ResetBattleZone: start&quot;</span>);</div>
-<div class="line"><a id="l01676" name="l01676"></a><span class="lineno"> 1676</span> </div>
-<div class="line"><a id="l01677" name="l01677"></a><span class="lineno"> 1677</span>    <span class="keywordflow">for</span> (MAP* pMap : _zones)</div>
-<div class="line"><a id="l01678" name="l01678"></a><span class="lineno"> 1678</span>    {</div>
-<div class="line"><a id="l01679" name="l01679"></a><span class="lineno"> 1679</span>        <span class="keywordflow">if</span> (pMap == <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l01680" name="l01680"></a><span class="lineno"> 1680</span>            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l01681" name="l01681"></a><span class="lineno"> 1681</span> </div>
-<div class="line"><a id="l01682" name="l01682"></a><span class="lineno"> 1682</span>        <span class="comment">// 현재의 존이 던젼담당하는 존이 아니면 리턴..</span></div>
-<div class="line"><a id="l01683" name="l01683"></a><span class="lineno"> 1683</span>        <span class="keywordflow">if</span> (pMap-&gt;m_byRoomEvent == 0)</div>
-<div class="line"><a id="l01684" name="l01684"></a><span class="lineno"> 1684</span>            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l01685" name="l01685"></a><span class="lineno"> 1685</span> </div>
-<div class="line"><a id="l01686" name="l01686"></a><span class="lineno"> 1686</span>        <span class="comment">// 전체방이 클리어 되었다면</span></div>
-<div class="line"><a id="l01687" name="l01687"></a><span class="lineno"> 1687</span>        <span class="comment">// if (pMap-&gt;IsRoomStatusCheck())</span></div>
-<div class="line"><a id="l01688" name="l01688"></a><span class="lineno"> 1688</span>        <span class="comment">//  continue;</span></div>
-<div class="line"><a id="l01689" name="l01689"></a><span class="lineno"> 1689</span> </div>
-<div class="line"><a id="l01690" name="l01690"></a><span class="lineno"> 1690</span>        pMap-&gt;InitializeRoom();</div>
-<div class="line"><a id="l01691" name="l01691"></a><span class="lineno"> 1691</span>    }</div>
-<div class="line"><a id="l01692" name="l01692"></a><span class="lineno"> 1692</span> </div>
-<div class="line"><a id="l01693" name="l01693"></a><span class="lineno"> 1693</span>    spdlog::debug(<span class="stringliteral">&quot;AIServerApp::ResetBattleZone: end&quot;</span>);</div>
-<div class="line"><a id="l01694" name="l01694"></a><span class="lineno"> 1694</span>}</div>
-<div class="line"><a id="l01695" name="l01695"></a><span class="lineno"> 1695</span> </div>
-<div class="line"><a id="l01696" name="l01696"></a><span class="lineno"> 1696</span>MAP* AIServerApp::GetMapByIndex(<span class="keywordtype">int</span> iZoneIndex)<span class="keyword"> const</span></div>
-<div class="line"><a id="l01697" name="l01697"></a><span class="lineno"> 1697</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l01698" name="l01698"></a><span class="lineno"> 1698</span>    <span class="keywordflow">if</span> (iZoneIndex &lt; 0 || iZoneIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(_zones.size()))</div>
-<div class="line"><a id="l01699" name="l01699"></a><span class="lineno"> 1699</span>    {</div>
-<div class="line"><a id="l01700" name="l01700"></a><span class="lineno"> 1700</span>        spdlog::error(<span class="stringliteral">&quot;AIServerApp::GetMapByIndex: zoneIndex={} out of bounds&quot;</span>, iZoneIndex);</div>
-<div class="line"><a id="l01701" name="l01701"></a><span class="lineno"> 1701</span>        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l01702" name="l01702"></a><span class="lineno"> 1702</span>    }</div>
-<div class="line"><a id="l01703" name="l01703"></a><span class="lineno"> 1703</span> </div>
-<div class="line"><a id="l01704" name="l01704"></a><span class="lineno"> 1704</span>    <span class="keywordflow">return</span> _zones[iZoneIndex];</div>
-<div class="line"><a id="l01705" name="l01705"></a><span class="lineno"> 1705</span>}</div>
-<div class="line"><a id="l01706" name="l01706"></a><span class="lineno"> 1706</span> </div>
-<div class="line"><a id="l01707" name="l01707"></a><span class="lineno"> 1707</span>MAP* AIServerApp::GetMapByID(<span class="keywordtype">int</span> iZoneID)<span class="keyword"> const</span></div>
-<div class="line"><a id="l01708" name="l01708"></a><span class="lineno"> 1708</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l01709" name="l01709"></a><span class="lineno"> 1709</span>    <span class="keywordflow">for</span> (MAP* pMap : _zones)</div>
-<div class="line"><a id="l01710" name="l01710"></a><span class="lineno"> 1710</span>    {</div>
-<div class="line"><a id="l01711" name="l01711"></a><span class="lineno"> 1711</span>        <span class="keywordflow">if</span> (pMap != <span class="keyword">nullptr</span> &amp;&amp; pMap-&gt;m_nZoneNumber == iZoneID)</div>
-<div class="line"><a id="l01712" name="l01712"></a><span class="lineno"> 1712</span>            <span class="keywordflow">return</span> pMap;</div>
-<div class="line"><a id="l01713" name="l01713"></a><span class="lineno"> 1713</span>    }</div>
-<div class="line"><a id="l01714" name="l01714"></a><span class="lineno"> 1714</span> </div>
-<div class="line"><a id="l01715" name="l01715"></a><span class="lineno"> 1715</span>    spdlog::error(<span class="stringliteral">&quot;AIServerApp::GetMapByID: no map found for zoneId={}&quot;</span>, iZoneID);</div>
-<div class="line"><a id="l01716" name="l01716"></a><span class="lineno"> 1716</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l01717" name="l01717"></a><span class="lineno"> 1717</span>}</div>
-<div class="line"><a id="l01718" name="l01718"></a><span class="lineno"> 1718</span> </div>
-<div class="line"><a id="l01719" name="l01719"></a><span class="lineno"> 1719</span>} <span class="comment">// namespace AIServer</span></div>
+<div class="line"><a id="l01663" name="l01663"></a><span class="lineno"> 1663</span>    <span class="keywordflow">return</span> _zones[iZoneIndex];</div>
+<div class="line"><a id="l01664" name="l01664"></a><span class="lineno"> 1664</span>}</div>
+<div class="line"><a id="l01665" name="l01665"></a><span class="lineno"> 1665</span> </div>
+<div class="line"><a id="l01666" name="l01666"></a><span class="lineno"> 1666</span>MAP* AIServerApp::GetMapByID(<span class="keywordtype">int</span> iZoneID)<span class="keyword"> const</span></div>
+<div class="line"><a id="l01667" name="l01667"></a><span class="lineno"> 1667</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l01668" name="l01668"></a><span class="lineno"> 1668</span>    <span class="keywordflow">for</span> (MAP* pMap : _zones)</div>
+<div class="line"><a id="l01669" name="l01669"></a><span class="lineno"> 1669</span>    {</div>
+<div class="line"><a id="l01670" name="l01670"></a><span class="lineno"> 1670</span>        <span class="keywordflow">if</span> (pMap != <span class="keyword">nullptr</span> &amp;&amp; pMap-&gt;m_nZoneNumber == iZoneID)</div>
+<div class="line"><a id="l01671" name="l01671"></a><span class="lineno"> 1671</span>            <span class="keywordflow">return</span> pMap;</div>
+<div class="line"><a id="l01672" name="l01672"></a><span class="lineno"> 1672</span>    }</div>
+<div class="line"><a id="l01673" name="l01673"></a><span class="lineno"> 1673</span> </div>
+<div class="line"><a id="l01674" name="l01674"></a><span class="lineno"> 1674</span>    spdlog::error(<span class="stringliteral">&quot;AIServerApp::GetMapByID: no map found for zoneId={}&quot;</span>, iZoneID);</div>
+<div class="line"><a id="l01675" name="l01675"></a><span class="lineno"> 1675</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l01676" name="l01676"></a><span class="lineno"> 1676</span>}</div>
+<div class="line"><a id="l01677" name="l01677"></a><span class="lineno"> 1677</span> </div>
+<div class="line"><a id="l01678" name="l01678"></a><span class="lineno"> 1678</span>} <span class="comment">// namespace AIServer</span></div>
 <div class="ttc" id="aclassAIServer_1_1AIServerApp_html_a65309393d32cec92196a2ac645421c83"><div class="ttname"><a href="classAIServer_1_1AIServerApp.html#a65309393d32cec92196a2ac645421c83">AIServer::AIServerApp::GetListenPortByServerZoneType</a></div><div class="ttdeci">int GetListenPortByServerZoneType() const</div><div class="ttdoc">fetches the listen port associated with _serverZoneType</div><div class="ttdef"><b>Definition</b> <a href="#l00362">AIServerApp.cpp:362</a></div></div>
 <div class="ttc" id="aclassAIServer_1_1AIServerApp_html_a75931d3121fa531b32f24101bf9cef13"><div class="ttname"><a href="classAIServer_1_1AIServerApp.html#a75931d3121fa531b32f24101bf9cef13">AIServer::AIServerApp::ListenByServerZoneType</a></div><div class="ttdeci">bool ListenByServerZoneType()</div><div class="ttdoc">attempts to listen on the port associated with _serverZoneType</div><div class="ttdef"><b>Definition</b> <a href="#l00341">AIServerApp.cpp:341</a></div></div>
 <div class="ttc" id="aclassAIServer_1_1AIServerApp_html_ab48859f8ca787aec3fe195a05a875af8"><div class="ttname"><a href="classAIServer_1_1AIServerApp.html#ab48859f8ca787aec3fe195a05a875af8">AIServer::AIServerApp::OnStart</a></div><div class="ttdeci">bool OnStart() override</div><div class="ttdoc">Loads config, database caches, then starts sockets and thread pools.</div><div class="ttdef"><b>Definition</b> <a href="#l00150">AIServerApp.cpp:150</a></div></div>
