@@ -228,7 +228,7 @@ AssetDirSource IdentifyAssetDir(const std::string_view identifierName,
 	AssetDirSource dirSource = AssetDirSource::None;
 
 	// Directory supplied from command-line.
-	// We should always use the map directory passed from command-line over the INI.
+	// We should always use the directory passed from command-line over the INI.
 	if (!commandLineDirectory.empty())
 	{
 		if (!std::filesystem::exists(commandLineDirectory, ec))
