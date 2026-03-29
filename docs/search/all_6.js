@@ -8,15 +8,11 @@ var searchData=
   ['filename_5',['Filename',['../classAudioAsset.html#a3f9420b5958a360cc75a8570211d74e0',1,'AudioAsset']]],
   ['filereader_6',['FileReader',['../classFileReader.html',1,'FileReader'],['../classFileReader.html#a615dcb2443cad1f2ca123c7c0c334480',1,'FileReader::FileReader()']]],
   ['filereaderhandle_7',['FileReaderHandle',['../structFileReaderHandle.html',1,'FileReaderHandle'],['../classStreamedAudioHandle.html#a0a537125503fde9b24255eee75045fcc',1,'StreamedAudioHandle::FileReaderHandle']]],
-  ['filereadersetuptest_8',['FileReaderSetupTest',['../classFileReaderSetupTest.html',1,'']]],
-  ['filereadertest_9',['FileReaderTest',['../classFileReaderTest.html',1,'']]],
-  ['filesize_10',['FileSize',['../structRIFF__Header.html#af1b3fd107da4ab9aa475710074627e4a',1,'RIFF_Header']]],
-  ['filetypeid_11',['FileTypeID',['../structRIFF__Header.html#a0da0532ff8da8f3ffa53ac2724a54715',1,'RIFF_Header']]],
-  ['filewriter_12',['FileWriter',['../classFileWriter.html',1,'FileWriter'],['../classFileWriter.html#aa6b362f5b306dd3409af81a463e97f40',1,'FileWriter::FileWriter()']]],
-  ['filewritersetuptest_13',['FileWriterSetupTest',['../classFileWriterSetupTest.html',1,'']]],
-  ['filewritertest_14',['FileWriterTest',['../classFileWriterTest.html',1,'']]],
-  ['finisheddecoding_15',['FinishedDecoding',['../classStreamedAudioHandle.html#a6171cad9643f37d442fc936b1fdeeac6',1,'StreamedAudioHandle']]],
-  ['finishedplaying_16',['FinishedPlaying',['../classAudioHandle.html#a6419b782604efdaafab15f4c6e384eee',1,'AudioHandle']]],
-  ['flush_17',['Flush',['../classFile.html#ac7be67d3745335a0447d4d2a917a7126',1,'File::Flush()'],['../classFileReader.html#a84fa3484423683b25f871dceaeea7586',1,'FileReader::Flush()'],['../classFileWriter.html#af6fc7dafc73d98dfcc6a79f1e248b118',1,'FileWriter::Flush() override']]],
-  ['flushimpl_18',['FlushImpl',['../classFileWriter.html#a8cff57026c7856f7e4dc3c0c7902a86c',1,'FileWriter']]]
+  ['filesize_8',['FileSize',['../structRIFF__Header.html#af1b3fd107da4ab9aa475710074627e4a',1,'RIFF_Header']]],
+  ['filetypeid_9',['FileTypeID',['../structRIFF__Header.html#a0da0532ff8da8f3ffa53ac2724a54715',1,'RIFF_Header']]],
+  ['filewriter_10',['FileWriter',['../classFileWriter.html',1,'FileWriter'],['../classFileWriter.html#aa6b362f5b306dd3409af81a463e97f40',1,'FileWriter::FileWriter()']]],
+  ['finisheddecoding_11',['FinishedDecoding',['../classStreamedAudioHandle.html#a6171cad9643f37d442fc936b1fdeeac6',1,'StreamedAudioHandle']]],
+  ['finishedplaying_12',['FinishedPlaying',['../classAudioHandle.html#a6419b782604efdaafab15f4c6e384eee',1,'AudioHandle']]],
+  ['flush_13',['Flush',['../classFile.html#ac7be67d3745335a0447d4d2a917a7126',1,'File::Flush()'],['../classFileReader.html#a84fa3484423683b25f871dceaeea7586',1,'FileReader::Flush()'],['../classFileWriter.html#af6fc7dafc73d98dfcc6a79f1e248b118',1,'FileWriter::Flush() override']]],
+  ['flushimpl_14',['FlushImpl',['../classFileWriter.html#a8cff57026c7856f7e4dc3c0c7902a86c',1,'FileWriter']]]
 ];

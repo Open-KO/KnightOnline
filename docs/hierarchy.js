@@ -190,9 +190,7 @@ var hierarchy =
     [ "ByteBuffer", "classByteBuffer.html", [
       [ "Packet", "classPacket.html", null ]
     ] ],
-    [ "Ebenezer::C3DMap", "classEbenezer_1_1C3DMap.html", [
-      [ "TestMap", "classTestMap.html", null ]
-    ] ],
+    [ "Ebenezer::C3DMap", "classEbenezer_1_1C3DMap.html", null ],
     [ "CAPISocket", "classCAPISocket.html", null ],
     [ "CBackgroundUtil", "classCBackgroundUtil.html", null ],
     [ "CBitMapFile", "classCBitMapFile.html", null ],
@@ -684,9 +682,7 @@ var hierarchy =
         ] ],
         [ "TcpServerSocket", "classTcpServerSocket.html", [
           [ "AIServer::CGameSocket", "classAIServer_1_1CGameSocket.html", null ],
-          [ "Ebenezer::CUser", "classEbenezer_1_1CUser.html", [
-            [ "TestUser", "classTestUser.html", null ]
-          ] ],
+          [ "Ebenezer::CUser", "classEbenezer_1_1CUser.html", null ],
           [ "VersionManager::CUser", "classVersionManager_1_1CUser.html", null ]
         ] ]
       ] ]
@@ -700,14 +696,8 @@ var hierarchy =
       [ "FileWriter", "classFileWriter.html", null ]
     ] ],
     [ "FileReaderHandle", "structFileReaderHandle.html", null ],
-    [ "GoldChangePacket", "structGoldChangePacket.html", null ],
-    [ "ItemCountChangePacket", "structItemCountChangePacket.html", null ],
     [ "Ebenezer::ItemPair", "structEbenezer_1_1ItemPair.html", null ],
-    [ "ItemPosPair", "structItemPosPair.html", null ],
     [ "ItemTooltipBuilderContext", "classItemTooltipBuilderContext.html", null ],
-    [ "ItemUpgradeProcessErrorResponsePacket", "structItemUpgradeProcessErrorResponsePacket.html", null ],
-    [ "ItemUpgradeProcessPacket", "structItemUpgradeProcessPacket.html", null ],
-    [ "ItemUpgradeProcessResponseSuccessPacket", "structItemUpgradeProcessResponseSuccessPacket.html", null ],
     [ "logger::Logger", "classlogger_1_1Logger.html", [
       [ "AIServer::AIServerLogger", "classAIServer_1_1AIServerLogger.html", null ],
       [ "Ebenezer::EbenezerLogger", "classEbenezer_1_1EbenezerLogger.html", null ],
@@ -728,7 +718,6 @@ var hierarchy =
     [ "AIServer::MYSHORT", "unionAIServer_1_1MYSHORT.html", null ],
     [ "Ebenezer::MYSHORT", "unionEbenezer_1_1MYSHORT.html", null ],
     [ "VersionManager::MYSHORT", "unionVersionManager_1_1MYSHORT.html", null ],
-    [ "ObjectEventAnvilResponsePacket", "structObjectEventAnvilResponsePacket.html", null ],
     [ "Ebenezer::OperationMessage", "classEbenezer_1_1OperationMessage.html", null ],
     [ "Point3D", "structPoint3D.html", null ],
     [ "db::PoolConnection", "classdb_1_1PoolConnection.html", null ],
@@ -740,7 +729,6 @@ var hierarchy =
     [ "RIFF_SubChunk", "structRIFF__SubChunk.html", null ],
     [ "std::runtime_error", null, [
       [ "ItemTooltipTooLargeException", "classItemTooltipTooLargeException.html", null ],
-      [ "UnhandledSendCallbackException", "classUnhandledSendCallbackException.html", null ],
       [ "db::DatasourceConfigNotFoundException", "classdb_1_1DatasourceConfigNotFoundException.html", null ]
     ] ],
     [ "shared_memory_object", null, [
@@ -765,21 +753,7 @@ var hierarchy =
         [ "Ebenezer::EbenezerSocketManager", "classEbenezer_1_1EbenezerSocketManager.html", null ]
       ] ]
     ] ],
-    [ "testing::Test", null, [
-      [ "FileReaderSetupTest", "classFileReaderSetupTest.html", null ],
-      [ "FileReaderTest", "classFileReaderTest.html", null ],
-      [ "FileWriterSetupTest", "classFileWriterSetupTest.html", null ],
-      [ "FileWriterTest", "classFileWriterTest.html", null ],
-      [ "ItemExchangeTest", "classItemExchangeTest.html", null ],
-      [ "Matrix44Test", "classMatrix44Test.html", null ],
-      [ "QuaternionTest", "classQuaternionTest.html", null ],
-      [ "Vector3Test", "classVector3Test.html", null ],
-      [ "Vector4Test", "classVector4Test.html", null ]
-    ] ],
     [ "TcpSocket::test_tag", "structTcpSocket_1_1test__tag.html", null ],
-    [ "testing::TestWithParam", null, [
-      [ "ItemUpgradeTest", "classItemUpgradeTest.html", null ]
-    ] ],
     [ "Thread", "classThread.html", [
       [ "AIServer::CNpcThread", "classAIServer_1_1CNpcThread.html", null ],
       [ "AIServer::SendThreadMain", "classAIServer_1_1SendThreadMain.html", null ],
@@ -787,9 +761,7 @@ var hierarchy =
       [ "AppThread", "classAppThread.html", [
         [ "AIServer::AIServerApp", "classAIServer_1_1AIServerApp.html", null ],
         [ "Aujard::AujardApp", "classAujard_1_1AujardApp.html", null ],
-        [ "Ebenezer::EbenezerApp", "classEbenezer_1_1EbenezerApp.html", [
-          [ "TestApp", "classTestApp.html", null ]
-        ] ],
+        [ "Ebenezer::EbenezerApp", "classEbenezer_1_1EbenezerApp.html", null ],
         [ "ItemManager::ItemManagerApp", "classItemManager_1_1ItemManagerApp.html", null ],
         [ "VersionManager::VersionManagerApp", "classVersionManager_1_1VersionManagerApp.html", null ]
       ] ],
@@ -810,6 +782,5 @@ var hierarchy =
       [ "WriteBuffer", "structWriteBuffer.html", null ]
     ] ],
     [ "WAVE_Data", "structWAVE__Data.html", null ],
-    [ "WAVE_Format", "structWAVE__Format.html", null ],
-    [ "WeightChangePacket", "structWeightChangePacket.html", null ]
+    [ "WAVE_Format", "structWAVE__Format.html", null ]
 ];

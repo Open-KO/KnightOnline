@@ -14,8 +14,5 @@ var searchData=
   ['getvolume_11',['GetVolume',['../classCN3SndObj.html#a3bfdaa16f678d0d94ac79569a9cee7e3',1,'CN3SndObj']]],
   ['giveitem_12',['GiveItem',['../classEbenezer_1_1CUser.html#a655a99c5275c7654b7a335f6ef575a8c',1,'Ebenezer::CUser']]],
   ['giveitemand_13',['GiveItemAnd',['../classEbenezer_1_1CUser.html#a6d9978d16891f8542c79ac109c984d90',1,'Ebenezer::CUser']]],
-  ['givepromotionquest_14',['GivePromotionQuest',['../classEbenezer_1_1CUser.html#a681a528f4ab2a6b055e26fad1ae425bc',1,'Ebenezer::CUser']]],
-  ['goals_15',['Goals',['../index.html#autotoc_md3',1,'']]],
-  ['goals_16',['It must respect our project goals',['../index.html#autotoc_md6',1,'']]],
-  ['goldchangepacket_17',['GoldChangePacket',['../structGoldChangePacket.html',1,'']]]
+  ['givepromotionquest_14',['GivePromotionQuest',['../classEbenezer_1_1CUser.html#a681a528f4ab2a6b055e26fad1ae425bc',1,'Ebenezer::CUser']]]
 ];

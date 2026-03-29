@@ -25,17 +25,6 @@
 var NAVTREE =
 [
   [ "OpenKO", "index.html", [
-    [ "Open Knight Online (OpenKO)", "index.html#autotoc_md0", [
-      [ "Goals", "index.html#autotoc_md3", null ],
-      [ "Intentional design decisions", "index.html#autotoc_md4", null ],
-      [ "Contributing", "index.html#autotoc_md5", [
-        [ "Project Setup", "index.html#autotoc_md1", null ],
-        [ "Visual Studio solutions", "index.html#autotoc_md2", null ],
-        [ "It must respect our project goals", "index.html#autotoc_md6", null ],
-        [ "It must be made / written by you", "index.html#autotoc_md7", null ],
-        [ "No AI use", "index.html#autotoc_md8", null ]
-      ] ]
-    ] ],
     [ "Todo List", "todo.html", null ],
     [ "Original Name", "originalName.html", null ],
     [ "Classes", "annotated.html", [
@@ -59,14 +48,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "AIServerApp_8cpp_source.html",
-"FileReader__test_8cpp_source.html",
-"N3Skin_8cpp_source.html",
-"TimerThread_8cpp_source.html",
-"classAppThread.html#a2440140740578fa7d6ecbcc4e230791a",
-"classCN3AnimKey.html",
-"classCUIKnights.html",
-"classVersionManager_1_1VersionManagerApp.html",
-"structObjectEventAnvilResponsePacket.html"
+"FormViewAnimation_8h_source.html",
+"N3TableBaseImpl_8cpp_source.html",
+"Tools_2N3TexViewer_2MainFrm_8cpp_source.html",
+"classAudioAsset.html#af0ac876bac1772f97f741af8fd632fed",
+"classCN3EngTool.html",
+"classCUIRepairTooltipDlg.html",
+"classdb_1_1SqlBuilder.html#a75cbd74a9fdf94acab473d3ad17a0f71",
+"struct____IconItemSkill.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

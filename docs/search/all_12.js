@@ -17,13 +17,12 @@ var searchData=
   ['render_14',['Render',['../classCN3Cloud.html#a56e437a5f18a767dd8330df2118db2e1',1,'CN3Cloud']]],
   ['resetuserdata_15',['ResetUserData',['../classAujard_1_1CDBAgent.html#acb6cca10b1d05ed189a721e93dde2a71',1,'Aujard::CDBAgent']]],
   ['resolution_16',['Resolution',['../structResolution.html',1,'']]],
-  ['respect_20our_20project_20goals_17',['It must respect our project goals',['../index.html#autotoc_md6',1,'']]],
-  ['restorebufferedsourceidtopool_18',['RestoreBufferedSourceIdToPool',['../classCN3SndMgr.html#a0c87707667c824b0f96cbb01d401b637',1,'CN3SndMgr']]],
-  ['restorestreamedsourceidtopool_19',['RestoreStreamedSourceIdToPool',['../classCN3SndMgr.html#a4da15fe8f5e5e374a182896b5c4cb047',1,'CN3SndMgr']]],
-  ['rewindframe_20',['RewindFrame',['../classStreamedAudioHandle.html#a57614931aaedb94b9cf9f80ad0c912aa',1,'StreamedAudioHandle']]],
-  ['riff_5fheader_21',['RIFF_Header',['../structRIFF__Header.html',1,'']]],
-  ['riff_5fsubchunk_22',['RIFF_SubChunk',['../structRIFF__SubChunk.html',1,'']]],
-  ['robitem_23',['RobItem',['../classEbenezer_1_1CUser.html#ab07f6c9d3335ce9aa051e31e90ecce41',1,'Ebenezer::CUser']]],
-  ['rowcount_24',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]],
-  ['runexchange_25',['RunExchange',['../classEbenezer_1_1CUser.html#a33388fa0af33262e7a23cb9aec8e1965',1,'Ebenezer::CUser']]]
+  ['restorebufferedsourceidtopool_17',['RestoreBufferedSourceIdToPool',['../classCN3SndMgr.html#a0c87707667c824b0f96cbb01d401b637',1,'CN3SndMgr']]],
+  ['restorestreamedsourceidtopool_18',['RestoreStreamedSourceIdToPool',['../classCN3SndMgr.html#a4da15fe8f5e5e374a182896b5c4cb047',1,'CN3SndMgr']]],
+  ['rewindframe_19',['RewindFrame',['../classStreamedAudioHandle.html#a57614931aaedb94b9cf9f80ad0c912aa',1,'StreamedAudioHandle']]],
+  ['riff_5fheader_20',['RIFF_Header',['../structRIFF__Header.html',1,'']]],
+  ['riff_5fsubchunk_21',['RIFF_SubChunk',['../structRIFF__SubChunk.html',1,'']]],
+  ['robitem_22',['RobItem',['../classEbenezer_1_1CUser.html#ab07f6c9d3335ce9aa051e31e90ecce41',1,'Ebenezer::CUser']]],
+  ['rowcount_23',['rowCount',['../classdb_1_1ModelRecordSet.html#a480a527c87dc00d40c6471512c733f01',1,'db::ModelRecordSet']]],
+  ['runexchange_24',['RunExchange',['../classEbenezer_1_1CUser.html#a33388fa0af33262e7a23cb9aec8e1965',1,'Ebenezer::CUser']]]
 ];
