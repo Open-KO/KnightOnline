@@ -43,13 +43,13 @@ public:
 	__Vector3 m_vTargetPos;          // 이동할 지점 위치
 	void SetMoveTargetID(int iID);
 	void SetMoveTargetPos(const __Vector3& vPos);
+
+public:
 	e_KnightsDuty KnightsDuty() const override
 	{
 		return m_InfoExt.eKnightsDuty;
 	}
 
-
-public:
 	void TargetOrPosMove();
 	void Stun(float fTime); // 일정한 시간동안 기절 시키기.
 	void StunRelease();     // 기절 풀기..
@@ -62,7 +62,7 @@ public:
 
 	// 갖고 있는 정보로 머리카락을 초기화 한다..
 	void InitHair() override;
-	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank) override;
+	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank, e_KnightsDuty eDuty = KNIGHTS_DUTY_UNKNOWN) override;
 	void SetSoundAndInitFont(uint32_t dwFontFlag = 0U) override;
 
 	float AttackableDistance(CPlayerBase* pTarget);
