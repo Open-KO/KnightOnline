@@ -504,7 +504,7 @@ void CGameProcMain::Tick()
 			CPlayerNPC* pNPC = it->second;
 
 			CLogWriter::Write("    ID({}) Name({}) Pos({:.1f}, {:.1f})", pNPC->IDNumber(), pNPC->IDString(), pNPC->m_vPosFromServer.x,
-							  pNPC->m_vPosFromServer.z);
+				pNPC->m_vPosFromServer.z);
 		}
 	}
 #endif
@@ -872,8 +872,7 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 				fY = fYObject;
 			this->InitPlayerPosition(__Vector3(fX, fY, fZ)); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
 			s_pFX->TriggerBundle(s_pPlayer->IDNumber(), -1,
-								 s_pPlayer->m_InfoBase.eNation == NATION_KARUS ? FXID_WARP_KARUS : FXID_WARP_ELMORAD, s_pPlayer->IDNumber(),
-								 -1, 0);
+				s_pPlayer->m_InfoBase.eNation == NATION_KARUS ? FXID_WARP_KARUS : FXID_WARP_ELMORAD, s_pPlayer->IDNumber(), -1, 0);
 		}
 			return true;
 		case WIZ_MOVE:
@@ -1462,13 +1461,13 @@ void CGameProcMain::MsgSend_Continous() // 특정 조건(?)하에서 서버에�
 //////////////////////////////////////////////////////////////////////
 
 void CGameProcMain::MsgSend_Attack(int iTargetID, float fInterval,
-								   float fDistance) // 공격 패킷 날리기 - 테이블의 공격 주기를 같이 줘서 해킹을 막는다.
+	float fDistance)       // 공격 패킷 날리기 - 테이블의 공격 주기를 같이 줘서 해킹을 막는다.
 {
 	if (s_pPlayer->m_fTimeAfterDeath > 0 || s_pPlayer->IsDead())
-		return;                                     // 죽은 넘이다..
+		return;            // 죽은 넘이다..
 
-	uint8_t byBuff[32];                             // 버퍼..
-	int iOffset       = 0;                          // 옵셋..
+	uint8_t byBuff[32];    // 버퍼..
+	int iOffset       = 0; // 옵셋..
 
 	uint8_t bySuccess = true;
 
@@ -1672,9 +1671,8 @@ bool CGameProcMain::MsgSend_PartyOrForceCreate(const std::string& szID)
 	if (m_pUIPartyOrForce->MemberCount() <= 0) // 처음 생성하는 경우...
 	{
 		m_pUIPartyOrForce->MemberAdd(s_pPlayer->IDNumber(), s_pPlayer->IDString(), s_pPlayer->m_InfoBase.iLevel,
-									 s_pPlayer->m_InfoBase.eClass, s_pPlayer->m_InfoBase.iHP, s_pPlayer->m_InfoBase.iHPMax,
-									 s_pPlayer->m_InfoExt.iMSP,
-									 s_pPlayer->m_InfoExt.iMSPMax); // 내건 미리 넣어 놓는다..
+			s_pPlayer->m_InfoBase.eClass, s_pPlayer->m_InfoBase.iHP, s_pPlayer->m_InfoBase.iHPMax, s_pPlayer->m_InfoExt.iMSP,
+			s_pPlayer->m_InfoExt.iMSPMax); // 내건 미리 넣어 놓는다..
 	}
 
 	return true;
@@ -1864,7 +1862,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	if (pLooks == nullptr)
 	{
 		CLogWriter::Write("CGameProcMain::MsgRecv_MyInfo_All : failed find character resource data (Race : {})",
-						  static_cast<int>(s_pPlayer->m_InfoBase.eRace));
+			static_cast<int>(s_pPlayer->m_InfoBase.eRace));
 	}
 	__ASSERT(pLooks, "failed find character resource data");
 	s_pPlayer->InitChr(pLooks); // 관절 세팅..
@@ -2036,7 +2034,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 		e_PartPosition ePart = PART_POS_UNKNOWN;
 		e_PlugPosition ePlug = PLUG_POS_UNKNOWN;
 		e_ItemType eType     = MakeResrcFileNameForUPC(pItem, pItemExt, &szResrcFN, &szIconFN, ePart, ePlug,
-													   s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
+				s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
 		if (ITEM_TYPE_UNKNOWN == eType)
 			CLogWriter::Write("MyInfo - slot - Unknown Item");
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item Type");
@@ -2120,7 +2118,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 		e_PartPosition ePart = PART_POS_UNKNOWN;
 		e_PlugPosition ePlug = PLUG_POS_UNKNOWN;
 		e_ItemType eType     = MakeResrcFileNameForUPC(pItem, pItemExt, nullptr, &szIconFN, ePart, ePlug,
-													   s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
+				s_pPlayer->m_InfoBase.eRace); // 아이템에 따른 파일 이름을 만들어서
 		if (ITEM_TYPE_UNKNOWN == eType)
 			CLogWriter::Write("MyInfo - slot - Unknown Item");
 		__ASSERT(ITEM_TYPE_UNKNOWN != eType, "Unknown Item");
@@ -3494,8 +3492,8 @@ bool CGameProcMain::MsgRecv_UserLookChange(Packet& pkt)
 			__TABLE_PLAYER_LOOKS* pLooks = s_pTbl_UPC_Looks.Find(pUPC->m_InfoBase.eRace); // User Player Character Skin 구조체 포인터..
 			if (nullptr == pLooks)
 			{
-				CLogWriter::Write("CGameProcMain::MsgRecv_UserLookChange() - failed find table : Race ({})",
-								  static_cast<int>(pUPC->m_InfoBase.eRace));
+				CLogWriter::Write(
+					"CGameProcMain::MsgRecv_UserLookChange() - failed find table : Race ({})", static_cast<int>(pUPC->m_InfoBase.eRace));
 				__ASSERT(pLooks, "failed find table");
 			}
 			else
@@ -3813,7 +3811,7 @@ void CGameProcMain::MsgRecv_MyInfo_RealmPoint(Packet& pkt)
 		if (m_pUIVar->m_pPageState != nullptr)
 		{
 			m_pUIVar->m_pPageState->UpdateRealmPoint(s_pPlayer->m_InfoExt.iRealmPoint,
-													 s_pPlayer->m_InfoExt.iRealmPointMonthly); // 국가 기여도는 10을 나누어서 표시
+				s_pPlayer->m_InfoExt.iRealmPointMonthly); // 국가 기여도는 10을 나누어서 표시
 		}
 	}
 	else if (opcode == LOYALTY_CHANGE_MANNER)
@@ -4454,7 +4452,7 @@ void CGameProcMain::InitZone(int iZone, const __Vector3& vPosPlayer)
 		CommandToggleMoveContinous();
 
 		CLogWriter::Write("CGameProcMain::InitZone -> Zone Change ({} -> {}) Position({:.1f}, {:.1f}, {:.1f})", iZonePrev, iZone,
-						  vPosPlayer.x, vPosPlayer.y, vPosPlayer.z);
+			vPosPlayer.x, vPosPlayer.y, vPosPlayer.z);
 
 		m_bLoadComplete = false; // 로딩 끝남..
 		m_pMagicSkillMng->ClearDurationalMagic();
@@ -6126,8 +6124,8 @@ void CGameProcMain::UpdateUI_PartyOrForceButtons()
 		m_pUICmd->UpdatePartyButtons(bIAmLeader, bIAmMemberOfParty, iMemberIndex, pTarget);
 }
 
-const __InfoPartyOrForce* CGameProcMain::PartyOrForceConditionGet(bool& bIAmLeader, bool& bIAmMember, int& iMemberIndex,
-																  class CPlayerBase*& pTarget)
+const __InfoPartyOrForce* CGameProcMain::PartyOrForceConditionGet(
+	bool& bIAmLeader, bool& bIAmMember, int& iMemberIndex, class CPlayerBase*& pTarget)
 {
 	// 파티 버튼 상태 바꾸기..
 	bIAmLeader   = false;
@@ -6291,7 +6289,7 @@ void CGameProcMain::UpdateCameraAndLight()
 	}
 
 	s_pEng->Tick(crDiffuses, crAmbients, ACT_WORLD->GetFogColorWithSky(), vPosPlayer, s_pPlayer->Rotation(), s_pPlayer->Height(),
-				 ACT_WORLD->GetSunAngleByRadinWithSky()); // 캐릭터 위치와 해의 각도를 넣어준다..
+		ACT_WORLD->GetSunAngleByRadinWithSky());          // 캐릭터 위치와 해의 각도를 넣어준다..
 	s_pEng->ApplyCameraAndLight();                        // 카메라와 라이트에 세팅된 값을 D3D Device 에 적용한다.
 }
 
@@ -7614,8 +7612,7 @@ bool CGameProcMain::OnMouseLBtnPress(POINT ptCur, POINT /*ptPrev*/)
 		return false;
 
 	_POINT ptPlayer = ::_Convert3D_To_2DCoordinate(s_pPlayer->Position(), CN3Base::s_CameraData.mtxView,
-												   CN3Base::s_CameraData.mtxProjection, CN3Base::s_CameraData.vp.Width,
-												   CN3Base::s_CameraData.vp.Height);
+		CN3Base::s_CameraData.mtxProjection, CN3Base::s_CameraData.vp.Width, CN3Base::s_CameraData.vp.Height);
 
 	__Vector3 vDir((float) (ptCur.x - ptPlayer.x), 0, (float) (ptPlayer.y - ptCur.y));
 	__Matrix44 mtxTmp;
@@ -7745,8 +7742,7 @@ bool CGameProcMain::OnMouseLbtnDown(POINT ptCur, POINT /*ptPrev*/)
 		return false;
 
 	_POINT ptPlayer = ::_Convert3D_To_2DCoordinate(s_pPlayer->Position(), CN3Base::s_CameraData.mtxView,
-												   CN3Base::s_CameraData.mtxProjection, CN3Base::s_CameraData.vp.Width,
-												   CN3Base::s_CameraData.vp.Height);
+		CN3Base::s_CameraData.mtxProjection, CN3Base::s_CameraData.vp.Width, CN3Base::s_CameraData.vp.Height);
 
 	__Vector3 vDir((float) (ptCur.x - ptPlayer.x), 0, (float) (ptPlayer.y - ptCur.y));
 	__Matrix44 mtxTmp;
