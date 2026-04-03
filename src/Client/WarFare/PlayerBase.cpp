@@ -37,8 +37,8 @@ CPlayerBase::CPlayerBase()
 	m_pvVertex[3].Set(-SHADOW_PLANE_SIZE, 0.0f, -SHADOW_PLANE_SIZE, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 
 	const uint16_t index[] = { //
-		// Bottom
-		0, 1, 3, 2, 3, 1
+							   // Bottom
+							   0, 1, 3, 2, 3, 1
 	};
 	memcpy(m_pIndex, index, sizeof(m_pIndex));
 
@@ -366,8 +366,8 @@ void CPlayerBase::RenderChrInRect(CN3Chr* pChr, const RECT& Rect)
 	int iHeight             = Rect.bottom - Rect.top;
 	float fViewVolumeHeight = fChrHeight * vp.Height / iHeight; // 캐릭터의 키(클리핑 될 경우 클리핑 되는 비율에 맞게 좁혀준다.)
 	float fViewVolumeWidth  = fChrHeight * vp.Width
-							 / iHeight; // 가로는 pRect의 가로 세로 비율에 맞게 (클리핑 될 경우 클리핑 되는 비율에 맞게 좁혀준다.)
-										// 원래는 이거 : fChrHeight * iWidth / iHeight * vp.Width / iWidth;
+							  / iHeight; // 가로는 pRect의 가로 세로 비율에 맞게 (클리핑 될 경우 클리핑 되는 비율에 맞게 좁혀준다.)
+										 // 원래는 이거 : fChrHeight * iWidth / iHeight * vp.Width / iWidth;
 	mtxProj.OrthoLH(fViewVolumeWidth, fViewVolumeHeight, 0, 20);
 
 	float fCameraMoveX = ((fChrHeight * iWidth / iHeight) - fViewVolumeWidth) / 2.0f; // 클리핑에 따른 카메라 이동 수치
@@ -793,7 +793,6 @@ void CPlayerBase::DrawClanLeaderIndicator(const _POINT& pt)
 	s_lpD3DDev->SetFVF(dwPrevFVF);
 }
 
-
 void CPlayerBase::Render(float fSunAngle)
 {
 	if (m_Chr.m_nLOD < 0 || m_Chr.m_nLOD >= MAX_CHR_LOD)
@@ -900,8 +899,8 @@ void CPlayerBase::Render(float fSunAngle)
 			vHead.y         += this->Height() / 10.0f;
 			if (PSA_SITDOWN == m_eState)
 				vHead.y += this->RootPosition().y - this->Height() / 2.0f; // 앉아 있으면..
-			_POINT pt = ::_Convert3D_To_2DCoordinate(
-				vHead, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp.Width, s_CameraData.vp.Height);
+			_POINT pt        = ::_Convert3D_To_2DCoordinate(vHead, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp.Width,
+															s_CameraData.vp.Height);
 
 			SIZE size        = m_pIDFont->GetSize();
 			pt.y            -= size.cy + 5;
@@ -914,7 +913,6 @@ void CPlayerBase::Render(float fSunAngle)
 			// Draw green line under name if clan leader
 			if (KnightsDuty() == KNIGHTS_DUTY_CHIEF)
 				DrawClanLeaderIndicator(pt);
-
 
 			//Knight & clan 렌더링..
 			if (m_pClanFont && m_pClanFont->IsSetText())
@@ -958,7 +956,6 @@ void CPlayerBase::Render(float fSunAngle)
 		}
 	}
 }
-
 
 __Vector3 CPlayerBase::HeadPosition() const
 {
@@ -1933,9 +1930,9 @@ CN3CPart* CPlayerBase::PartSet(e_PartPosition ePos, const std::string& szFN, __T
 					e_PlugPosition ePlugPos2 = PLUG_POS_UNKNOWN;
 
 					MakeResrcFileNameForUPC(m_pItemPartBasics[PART_POS_LOWER], m_pItemPartExts[PART_POS_LOWER], &szFN2, nullptr, ePartPos2,
-						ePlugPos2, m_InfoBase.eRace);
+											ePlugPos2, m_InfoBase.eRace);
 					this->PartSet(PART_POS_LOWER, szFN2, m_pItemPartBasics[PART_POS_LOWER],
-						m_pItemPartExts[PART_POS_LOWER]);                                   // 하체에 전의 옷을 입힌다..
+								  m_pItemPartExts[PART_POS_LOWER]);                         // 하체에 전의 옷을 입힌다..
 				}
 				else                                                                        // 하체에 입고 있었던 아이템이 없다면..
 				{
@@ -2055,8 +2052,8 @@ void CPlayerBase::DurabilitySet(e_ItemSlot eSlot, int iDurability)
 		{
 			if (m_pItemPartBasics[ePartPos] && m_pItemPartExts[ePartPos])
 			{
-				int iDuMax = m_pItemPartBasics[ePartPos]->siMaxDurability
-							 + m_pItemPartExts[ePartPos]->siMaxDurability; // 기본내구력 + 확장 내구력
+				int iDuMax      = m_pItemPartBasics[ePartPos]->siMaxDurability
+								  + m_pItemPartExts[ePartPos]->siMaxDurability; // 기본내구력 + 확장 내구력
 				int iPercentage = iDurability * 100 / iDuMax;
 
 				std::string szFN;
