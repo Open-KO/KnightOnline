@@ -1351,8 +1351,6 @@ bool CDBAgent::UpdateBattleEvent(const char* charId, int nation)
 	return true;
 }
 
-// Character names are null terminated, usage is fine.
-// NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
 e_StipendResponseCode CDBAgent::ClaimUserRankStipend(
 	const uint8_t type, const uint8_t rank, const uint8_t nation, const std::string_view charId)
 {
@@ -1362,6 +1360,8 @@ e_StipendResponseCode CDBAgent::ClaimUserRankStipend(
 	{
 		db::StoredProc<storedProc::ClaimUserRankStipend> proc;
 
+		// Character names are null terminated, usage is fine.
+		// NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
 		const auto weak_result = proc.execute(&responseCode, type, rank, nation, charId.data());
 		const auto result      = weak_result.lock();
 		if (result == nullptr)
