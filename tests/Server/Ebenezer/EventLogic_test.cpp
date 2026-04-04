@@ -9,6 +9,8 @@
 
 using namespace Ebenezer;
 
+// linter skips for this test
+// NOLINTBEGIN(cppcoreguidelines-pro-type-vararg)
 /**
  * Tests CUser .evt logic events (A)
  */
@@ -103,3 +105,5 @@ TEST_F(EventLogicTest, CheckUserRanking)
 		EXPECT_FALSE(_user->CheckUserRanking(1, 100, static_cast<e_StipendType>(type)));
 	}
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-vararg)

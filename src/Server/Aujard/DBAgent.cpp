@@ -1351,6 +1351,8 @@ bool CDBAgent::UpdateBattleEvent(const char* charId, int nation)
 	return true;
 }
 
+// Character names are null terminated, usage is fine.
+// NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
 e_StipendResponseCode CDBAgent::ClaimUserRankStipend(
 	const uint8_t type, const uint8_t rank, const uint8_t nation, const std::string_view charId)
 {

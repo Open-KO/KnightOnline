@@ -286,6 +286,7 @@ enum e_SendTarget : uint8_t
 };
 
 /// \brief SendSay eventIds hard-coded in Ebenezer
+// NOLINTNEXTLINE(performance-enum-size)
 enum e_SendMsgEventIds : int32_t
 {
 	EVENTID_NULL               = -1,
@@ -295,7 +296,6 @@ enum e_SendMsgEventIds : int32_t
 	EVENTID_MASTER_QUEST_MAGE  = 6014,
 	EVENTID_MASTER_QUEST_WARRIOR,
 	EVENTID_MASTER_QUEST_PRIEST = 6020
-
 };
 
 /// \brief SendSay messageIds hard-coded in Ebenezer
