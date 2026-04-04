@@ -135,8 +135,7 @@ protected:
 				if (rankInfo == nullptr)
 					return 0;
 
-				return _user->m_pUserData->m_bNation == NATION_KARUS ? rankInfo->Money
-																	 : rankInfo->Money;
+				return rankInfo->Money;
 			}
 			case STIPEND_TYPE_USER_PERSONAL:
 			{
@@ -144,9 +143,10 @@ protected:
 				if (rankInfo == nullptr)
 					return 0;
 
-				return _user->m_pUserData->m_bNation == NATION_KARUS ? rankInfo->Salary
-																	 : rankInfo->Salary;
+				return rankInfo->Salary;
 			}
+			default:
+				break;
 		}
 
 		return 0;
@@ -218,7 +218,7 @@ protected:
 
 	/// \brief Handles the verification of the messages sent by CUser in the cases where
 	/// a stipend is not paid because it was already claimed
-	void AddSendCallbacks_AlreadyClaimed(const StipendResponseSubPacket& testPacket)
+	void AddSendCallbacks_AlreadyClaimed()
 	{
 		// SendSay callback
 		_user->AddSendCallback(
@@ -272,7 +272,7 @@ TEST_F(RankStipendRewardTest, CumulativeRank)
 		testPacket.nation = NATION_KARUS;
 		MockUserFor(testPacket);
 		SetPacketName(testPacket, _user->m_pUserData->m_id);
-		AddSendCallbacks_AlreadyClaimed(testPacket);
+		AddSendCallbacks_AlreadyClaimed();
 		EXPECT_FALSE(_user->HandleUserStipendResponse(packetBuffer));
 		EXPECT_TRUE(VerifyClaim(STIPEND_TYPE_USER_KNIGHTS, testPacket.rank));
 		EXPECT_FALSE(VerifyPay(STIPEND_TYPE_USER_KNIGHTS, testPacket.rank));
@@ -281,7 +281,7 @@ TEST_F(RankStipendRewardTest, CumulativeRank)
 		testPacket.nation = NATION_ELMORAD;
 		MockUserFor(testPacket);
 		SetPacketName(testPacket, _user->m_pUserData->m_id);
-		AddSendCallbacks_AlreadyClaimed(testPacket);
+		AddSendCallbacks_AlreadyClaimed();
 		EXPECT_FALSE(_user->HandleUserStipendResponse(packetBuffer));
 		EXPECT_TRUE(VerifyClaim(STIPEND_TYPE_USER_KNIGHTS, testPacket.rank));
 		EXPECT_FALSE(VerifyPay(STIPEND_TYPE_USER_KNIGHTS, testPacket.rank));
@@ -328,7 +328,7 @@ TEST_F(RankStipendRewardTest, MonthlyRank)
 		testPacket.nation = NATION_KARUS;
 		MockUserFor(testPacket);
 		SetPacketName(testPacket, _user->m_pUserData->m_id);
-		AddSendCallbacks_AlreadyClaimed(testPacket);
+		AddSendCallbacks_AlreadyClaimed();
 		EXPECT_FALSE(_user->HandleUserStipendResponse(packetBuffer));
 		EXPECT_TRUE(VerifyClaim(STIPEND_TYPE_USER_PERSONAL, testPacket.rank));
 		EXPECT_FALSE(VerifyPay(STIPEND_TYPE_USER_PERSONAL, testPacket.rank));
@@ -337,7 +337,7 @@ TEST_F(RankStipendRewardTest, MonthlyRank)
 		testPacket.nation = NATION_ELMORAD;
 		MockUserFor(testPacket);
 		SetPacketName(testPacket, _user->m_pUserData->m_id);
-		AddSendCallbacks_AlreadyClaimed(testPacket);
+		AddSendCallbacks_AlreadyClaimed();
 		EXPECT_FALSE(_user->HandleUserStipendResponse(packetBuffer));
 		EXPECT_TRUE(VerifyClaim(STIPEND_TYPE_USER_PERSONAL, testPacket.rank));
 		EXPECT_FALSE(VerifyPay(STIPEND_TYPE_USER_PERSONAL, testPacket.rank));
