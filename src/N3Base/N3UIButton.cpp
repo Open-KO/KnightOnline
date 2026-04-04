@@ -192,7 +192,7 @@ uint32_t CN3UIButton::MouseProc(uint32_t dwFlags, const POINT& ptCur, const POIN
 			if (m_pParent != nullptr
 				&& UI_STATE_BUTTON_DOWN == m_eState) // 이전 상태가 버튼을 Down 상태이면
 			{
-				SetState(UI_STATE_BUTTON_NORMAL);        // 버튼을 On 상태로 만든다..
+				SetState(UI_STATE_BUTTON_NORMAL);    // 버튼을 On 상태로 만든다..
 				m_pParent->ReceiveMessage(this, UIMSG_BUTTON_CLICK); // 부모에게 버튼 클릭 통지..
 			}
 			dwRet |= UI_MOUSEPROC_DONESOMETHING;
