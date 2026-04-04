@@ -14204,7 +14204,7 @@ void CUser::RequestPersonalRankReward()
 	}
 }
 
-void CUser::HandleUserStipendResponse(const char* buffer)
+bool CUser::HandleUserStipendResponse(const char* buffer)
 {
 	// parse the message
 	int index                  = 0;
@@ -14221,7 +14221,7 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 		spdlog::error("User::HandleUserStipendResponse: Invalid charId length [stipendType={:X} "
 					  "charIdLen={}]",
 			stipendType, charIdLen);
-		return;
+		return false;
 	}
 
 	// while unlikely, ensure that the current User is the intended character
@@ -14230,7 +14230,7 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 		spdlog::error("User::HandleUserStipendResponse: User socket mismatch, stipend unpaid "
 					  "[stipendType={:X} charId={}]",
 			stipendType, charId);
-		return;
+		return false;
 	}
 
 	// This is not a replacement for restarting the servers after updating rankings.
@@ -14251,7 +14251,7 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 			m_pMain->LoadUserPersonalRank();
 			RequestPersonalRankReward();
 		}
-		return;
+		return false;
 	}
 
 	// Set as claimed in cache
@@ -14265,7 +14265,7 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 			spdlog::error("User::HandleUserStipendResponse: UserKnightsRank cache miss, "
 						  "stipend unpaid [stipendType={:X} charId={} rank={}]",
 				stipendType, charId, rank);
-			return;
+			return false;
 		}
 		if (nation == NATION_KARUS)
 			rankInfo->IsClaimedKarus = STIPEND_CLAIMED;
@@ -14282,7 +14282,7 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 			spdlog::error("User::HandleUserStipendResponse: UserPersonalRank cache miss, "
 						  "stipend unpaid [stipendType={:X} charId={} rank={}]",
 				stipendType, charId, rank);
-			return;
+			return false;
 		}
 		if (nation == NATION_KARUS)
 			rankInfo->IsClaimedKarus = STIPEND_CLAIMED;
@@ -14306,7 +14306,9 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 	else if (responseCode == STIPEND_RESPONSE_ALREADY_CLAIMED)
 	{
 		SendSay(MSG_STIPEND_ALREADY_CLAIMED);
+		return false;
 	}
+	return true;
 }
 
 bool CUser::CheckClanRanking(const int minRank, const int maxRank)

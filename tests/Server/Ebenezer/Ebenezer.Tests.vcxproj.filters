@@ -7,6 +7,7 @@
       <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="ItemUpgrade_test.cpp" />
+    <ClCompile Include="RankStipendReward_test.cpp" />
     <ClCompile Include="data\ItemUpgrade_test_data.h">
       <Filter>data</Filter>
     </ClCompile>

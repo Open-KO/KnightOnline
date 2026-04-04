@@ -284,7 +284,8 @@ public:
 	void RequestPersonalRankReward();
 
 	/// \brief Handles the Aujard response for a User Stipend request
-	void HandleUserStipendResponse(const char* buffer);
+	/// \return true when user stipend successfully paid, false otherwise
+	bool HandleUserStipendResponse(const char* buffer);
 
 	/// \brief Checks to see if a user's clan ranking is between minRank and maxRank (inclusive).  If
 	/// the user's clan is successfully loaded, syncs the user's m_byKnightsRank value with the clan's m_byRanking

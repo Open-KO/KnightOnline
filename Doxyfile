@@ -63,7 +63,7 @@ SUBGROUPING            = YES
 INLINE_GROUPED_CLASSES = NO
 INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
-LOOKUP_CACHE_SIZE      = 0
+LOOKUP_CACHE_SIZE      = 1
 NUM_PROC_THREADS       = 1
 TIMESTAMP              = NO
 #---------------------------------------------------------------------------
@@ -183,9 +183,16 @@ FILE_PATTERNS          = *.c \
                          *.qsf \
                          *.ice
 RECURSIVE              = YES
-EXCLUDE                = deps
+EXCLUDE                = deps \
+                         assets \
+                         .idea \
+                         .github \
+                         build_scripts \
+                         Client \
+                         docs \
+                         props
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = cmake*
 EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
