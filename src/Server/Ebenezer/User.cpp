@@ -14086,15 +14086,15 @@ bool CUser::CheckUserRanking(
 		return false;
 	}
 
-	const int16_t rank = type == STIPEND_TYPE_USER_KNIGHTS ? GetUserKnightsRank()
+	const uint8_t rank = type == STIPEND_TYPE_USER_KNIGHTS ? GetUserKnightsRank()
 														   : GetUserPersonalRank();
-	if (rank == -1)
+	if (rank == RANK_INVALID)
 		return false;
 
 	return rank >= minRank && rank <= maxRank;
 }
 
-int16_t CUser::GetUserKnightsRank() const
+uint8_t CUser::GetUserKnightsRank() const
 {
 	// rankArray is an ordered map
 	for (const auto [rank, rankInfo] : m_pMain->m_UserKnightsRankMap)
@@ -14106,13 +14106,13 @@ int16_t CUser::GetUserKnightsRank() const
 			continue;
 
 		if (rankInfo != nullptr && strcmp(userId->c_str(), m_pUserData->m_id) == 0)
-			return rank;
+			return static_cast<uint8_t>(rank);
 	}
 
-	return -1;
+	return RANK_INVALID;
 }
 
-int16_t CUser::GetUserPersonalRank() const
+uint8_t CUser::GetUserPersonalRank() const
 {
 	// rankArray is an ordered map
 	for (const auto [rank, rankInfo] : m_pMain->m_UserPersonalRankMap)
@@ -14124,10 +14124,10 @@ int16_t CUser::GetUserPersonalRank() const
 			continue;
 
 		if (rankInfo != nullptr && strcmp(userId->c_str(), m_pUserData->m_id) == 0)
-			return rank;
+			return static_cast<uint8_t>(rank);
 	}
 
-	return -1;
+	return RANK_INVALID;
 }
 
 void CUser::RequestReward()
@@ -14136,8 +14136,8 @@ void CUser::RequestReward()
 	if (m_pMain->m_nServerGroup == SERVER_GROUP_OVERFLOW)
 		return;
 
-	const int16_t rank = GetUserKnightsRank();
-	if (rank == -1)
+	const uint8_t rank = GetUserKnightsRank();
+	if (rank == RANK_INVALID)
 		return;
 
 	const model::UserKnightsRank* rankInfo = m_pMain->m_UserKnightsRankMap.GetData(rank);
@@ -14173,8 +14173,8 @@ void CUser::RequestPersonalRankReward()
 	if (m_pMain->m_nServerGroup == SERVER_GROUP_OVERFLOW)
 		return;
 
-	const int16_t rank = GetUserPersonalRank();
-	if (rank == -1)
+	const uint8_t rank = GetUserPersonalRank();
+	if (rank == RANK_INVALID)
 		return;
 
 	const model::UserPersonalRank* rankInfo = m_pMain->m_UserPersonalRankMap.GetData(rank);

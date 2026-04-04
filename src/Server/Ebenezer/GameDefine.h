@@ -122,6 +122,9 @@ enum e_GameEventType : uint8_t
 inline constexpr int ZONE_TRAP_INTERVAL = 1;  // Interval is one second right now.
 inline constexpr int ZONE_TRAP_DAMAGE   = 10; // HP Damage is 10 for now :)
 
+/// \brief Invalid User rank - either invalid parameters or the user is not in top 100
+inline constexpr uint8_t RANK_INVALID   = 0xFF;
+
 ////////////////////////////////////////////////////////////
 
 enum e_BeefRoastVictory : uint8_t

@@ -270,12 +270,12 @@ public:
 		e_StipendType type = STIPEND_TYPE_USER_KNIGHTS) const;
 
 	/// \brief Gets the user's rank from the USER_KNIGHTS_RANK cache.
-	/// \return User rank in USER_KNIGHTS_RANKING; -1 if not found
-	int16_t GetUserKnightsRank() const;
+	/// \return User rank in USER_KNIGHTS_RANKING; RANK_INVALID if not found
+	uint8_t GetUserKnightsRank() const;
 
 	/// \brief Gets the user's rank from the USER_PERSONAL_RANK cache.
-	/// \return User rank in USER_PERSONAL_RANKING; -1 if not found
-	int16_t GetUserPersonalRank() const;
+	/// \return User rank in USER_PERSONAL_RANKING; RANK_INVALID if not found
+	uint8_t GetUserPersonalRank() const;
 
 	/// \brief Processes a user request for a USER_KNIGHTS_RANK stipend
 	void RequestReward();

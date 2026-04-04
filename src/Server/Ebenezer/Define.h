@@ -297,6 +297,7 @@ enum e_SendMsgEventIds : int32_t
 	EVENTID_MASTER_QUEST_PRIEST = 6020
 
 };
+
 /// \brief SendSay messageIds hard-coded in Ebenezer
 enum e_SendSayMessageIds : int32_t
 {
