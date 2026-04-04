@@ -311,9 +311,27 @@ public:
 	bool JobGroupCheck(int16_t jobgroupid) const;
 	void SelectMsg(const EXEC* pExec);
 	void SendNpcSay(const EXEC* pExec);
-	void SendSay(int32_t eventIdUp, int32_t eventIdOk, int32_t message1, int32_t message2 = -1,
-		int32_t message3 = -1, int32_t message4 = -1, int32_t message5 = -1, int32_t message6 = -1,
-		int32_t message7 = -1, int32_t message8 = -1);
+
+	/// \brief Simplified override for single message SAY
+	/// \param message Single message to send to User
+	void SendSay(int32_t message);
+
+	/// \brief Full method signature for SAY messages
+	/// \param eventIdUp eventId 'up', appears to be unused but specified in evt scripts
+	/// \param eventIdOk eventId 'ok', appears to be unused but specified in evt scripts
+	/// \param message1 First message in chain, required
+	/// \param message2 Second message in chain, optional
+	/// \param message3 Third message in chain, optional
+	/// \param message4 Fourth message in chain, optional
+	/// \param message5 Fifth message in chain, optional
+	/// \param message6 Sixth message in chain, optional
+	/// \param message7 Seventh message in chain, optional
+	/// \param message8 Eighth message in chain, optional
+	void SendSay(int32_t eventIdUp, int32_t eventIdOk, int32_t message1,
+		int32_t message2 = MSG_NULL, int32_t message3 = MSG_NULL, int32_t message4 = MSG_NULL,
+		int32_t message5 = MSG_NULL, int32_t message6 = MSG_NULL, int32_t message7 = MSG_NULL,
+		int32_t message8 = MSG_NULL);
+
 	bool CheckClass(int16_t class1, int16_t class2 = -1, int16_t class3 = -1, int16_t class4 = -1,
 		int16_t class5 = -1, int16_t class6 = -1) const;
 	bool CheckPromotionEligible();

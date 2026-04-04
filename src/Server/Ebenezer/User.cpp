@@ -9259,28 +9259,32 @@ void CUser::GivePromotionQuest()
 	{
 		case CLASS_EL_BLADE:
 		case CLASS_KA_BERSERKER:
-			SendSay(6020, 6020, 6002, 6011);
+			SendSay(EVENTID_MASTER_QUEST_WARRIOR, EVENTID_MASTER_QUEST_WARRIOR,
+				MSG_MASTER_QUEST_DESC_WARRIOR, MSG_MASTER_QUEST_ACCEPT_WARRIOR);
 			if (CheckExistEvent(QUEST_MASTER_WARRIOR, QUEST_STATE_NOT_STARTED))
 				SaveEvent(QUEST_MASTER_WARRIOR, QUEST_STATE_IN_PROGRESS);
 			break;
 
 		case CLASS_KA_HUNTER:
 		case CLASS_EL_RANGER:
-			SendSay(6012, 6012, 7002, 7011);
+			SendSay(EVENTID_MASTER_QUEST_ROGUE, EVENTID_MASTER_QUEST_ROGUE,
+				MSG_MASTER_QUEST_DESC_ROGUE, MSG_MASTER_QUEST_ACCEPT_ROGUE);
 			if (CheckExistEvent(QUEST_MASTER_ROGUE, QUEST_STATE_NOT_STARTED))
 				SaveEvent(QUEST_MASTER_ROGUE, QUEST_STATE_IN_PROGRESS);
 			break;
 
 		case CLASS_KA_SORCERER:
 		case CLASS_EL_MAGE:
-			SendSay(6014, 6014, 8002, 8011);
+			SendSay(EVENTID_MASTER_QUEST_MAGE, EVENTID_MASTER_QUEST_MAGE,
+				MSG_MASTER_QUEST_DESC_MAGE, MSG_MASTER_QUEST_ACCEPT_MAGE);
 			if (CheckExistEvent(QUEST_MASTER_MAGE, QUEST_STATE_NOT_STARTED))
 				SaveEvent(QUEST_MASTER_MAGE, QUEST_STATE_IN_PROGRESS);
 			break;
 
 		case CLASS_KA_SHAMAN:
 		case CLASS_EL_CLERIC:
-			SendSay(6020, 6020, 9002, 9011);
+			SendSay(EVENTID_MASTER_QUEST_PRIEST, EVENTID_MASTER_QUEST_PRIEST,
+				MSG_MASTER_QUEST_DESC_PRIEST, MSG_MASTER_QUEST_ACCEPT_PRIEST);
 			if (CheckExistEvent(QUEST_MASTER_PRIEST, QUEST_STATE_NOT_STARTED))
 				SaveEvent(QUEST_MASTER_PRIEST, QUEST_STATE_IN_PROGRESS);
 			break;
@@ -12949,22 +12953,22 @@ bool CUser::CheckPromotionEligible()
 	{
 		case CLASS_EL_PROTECTOR:
 		case CLASS_KA_GUARDIAN:
-			SendSay(-1, -1, 6006);
+			SendSay(MSG_ALREADY_MASTER_WARRIOR);
 			return false;
 
 		case CLASS_EL_ASSASSIN:
 		case CLASS_KA_PENETRATOR:
-			SendSay(-1, -1, 7006);
+			SendSay(MSG_ALREADY_MASTER_ROGUE);
 			return false;
 
 		case CLASS_EL_ENCHANTER:
 		case CLASS_KA_NECROMANCER:
-			SendSay(-1, -1, 8006);
+			SendSay(MSG_ALREADY_MASTER_MAGE);
 			return false;
 
 		case CLASS_EL_DRUID:
 		case CLASS_KA_DARKPRIEST:
-			SendSay(-1, -1, 9006);
+			SendSay(MSG_ALREADY_MASTER_PRIEST);
 			return false;
 
 		default:
@@ -12981,7 +12985,7 @@ bool CUser::CheckPromotionEligible()
 					&& m_pUserData->m_sClass != CLASS_EL_BLADE)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 6001);
+				SendSay(MSG_NOT_ELIGIBLE_MASTER_WARRIOR);
 				return false;
 			}
 			return true;
@@ -12991,7 +12995,7 @@ bool CUser::CheckPromotionEligible()
 					&& m_pUserData->m_sClass != CLASS_EL_RANGER)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 7001);
+				SendSay(MSG_NOT_ELIGIBLE_MASTER_ROGUE);
 				return false;
 			}
 			return true;
@@ -13001,7 +13005,7 @@ bool CUser::CheckPromotionEligible()
 					&& m_pUserData->m_sClass != CLASS_EL_MAGE)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 8001);
+				SendSay(MSG_NOT_ELIGIBLE_MASTER_MAGE);
 				return false;
 			}
 			return true;
@@ -13011,7 +13015,7 @@ bool CUser::CheckPromotionEligible()
 					&& m_pUserData->m_sClass != CLASS_EL_CLERIC)
 				|| m_pUserData->m_bLevel < MASTER_LVL)
 			{
-				SendSay(-1, -1, 9001);
+				SendSay(MSG_NOT_ELIGIBLE_MASTER_PRIEST);
 				return false;
 			}
 			return true;
@@ -13091,9 +13095,14 @@ void CUser::SendNpcSay(const EXEC* pExec)
 	Send(sendBuffer, sendIndex);
 }
 
-void CUser::SendSay(int32_t eventIdUp, int32_t eventIdOk, int32_t message1, int32_t message2,
-	int32_t message3, int32_t message4, int32_t message5, int32_t message6, int32_t message7,
-	int32_t message8)
+void CUser::SendSay(const int32_t message)
+{
+	SendSay(EVENTID_NULL, EVENTID_NULL, message);
+}
+
+void CUser::SendSay(const int32_t eventIdUp, const int32_t eventIdOk, const int32_t message1,
+	const int32_t message2, const int32_t message3, const int32_t message4, const int32_t message5,
+	const int32_t message6, const int32_t message7, const int32_t message8)
 {
 	int sendIndex = 0;
 	char sendBuffer[128] {};
@@ -14139,7 +14148,7 @@ void CUser::RequestReward()
 																	 : rankInfo->IsClaimedElmo;
 
 	if (isClaimed == STIPEND_CLAIMED)
-		SendSay(-1, -1, MSG_STIPEND_ALREADY_CLAIMED);
+		SendSay(MSG_STIPEND_ALREADY_CLAIMED);
 	else
 	{
 		// Set up and send request to Aujard
@@ -14176,7 +14185,7 @@ void CUser::RequestPersonalRankReward()
 																	 : rankInfo->IsClaimedElmo;
 
 	if (isClaimed == STIPEND_CLAIMED)
-		SendSay(-1, -1, MSG_STIPEND_ALREADY_CLAIMED);
+		SendSay(MSG_STIPEND_ALREADY_CLAIMED);
 	else
 	{
 		// Set up and send request to Aujard
@@ -14292,11 +14301,11 @@ void CUser::HandleUserStipendResponse(const char* buffer)
 		ItemLogToAgent(
 			m_pUserData->m_id, m_pUserData->m_id, logType, 0, ITEM_NOAH, stipendAmount, 0);
 
-		SendSay(-1, -1, MSG_STIPEND_GIVE_REWARD);
+		SendSay(MSG_STIPEND_GIVE_REWARD);
 	}
 	else if (responseCode == STIPEND_RESPONSE_ALREADY_CLAIMED)
 	{
-		SendSay(-1, -1, MSG_STIPEND_ALREADY_CLAIMED);
+		SendSay(MSG_STIPEND_ALREADY_CLAIMED);
 	}
 }
 
@@ -14754,7 +14763,7 @@ void CUser::PromoteUser()
 	if (!CheckPromotionEligible() || !ValidatePromotion(newClass))
 		return;
 
-	int16_t successMessage = -1;
+	int16_t successMessage = MSG_NULL;
 	e_QuestId masterQuest  = QUEST_INVALID;
 
 	switch (m_pUserData->m_sClass)
@@ -14764,11 +14773,11 @@ void CUser::PromoteUser()
 			if (!CheckAndRobItems(WARRIOR_ITEMS))
 			{
 				// Send failure message - missing items
-				SendSay(-1, -1, 6007);
+				SendSay(MSG_MISSING_ITEMS_MASTER_WARRIOR);
 				return;
 			}
 
-			successMessage = 6005;
+			successMessage = MSG_COMPLETE_MASTER_WARRIOR;
 			masterQuest    = QUEST_MASTER_WARRIOR;
 			break;
 
@@ -14777,11 +14786,11 @@ void CUser::PromoteUser()
 			if (!CheckAndRobItems(ROGUE_ITEMS))
 			{
 				// Send failure message
-				SendSay(-1, -1, 7007);
+				SendSay(MSG_MISSING_ITEMS_MASTER_ROGUE);
 				return;
 			}
 
-			successMessage = 7005;
+			successMessage = MSG_COMPLETE_MASTER_ROGUE;
 			masterQuest    = QUEST_MASTER_ROGUE;
 			break;
 
@@ -14790,11 +14799,11 @@ void CUser::PromoteUser()
 			if (!CheckAndRobItems(MAGE_ITEMS))
 			{
 				// Send failure message
-				SendSay(-1, -1, 8007);
+				SendSay(MSG_MISSING_ITEMS_MASTER_MAGE);
 				return;
 			}
 
-			successMessage = 8005;
+			successMessage = MSG_COMPLETE_MASTER_MAGE;
 			masterQuest    = QUEST_MASTER_MAGE;
 			break;
 
@@ -14803,11 +14812,11 @@ void CUser::PromoteUser()
 			if (!CheckAndRobItems(PRIEST_ITEMS, PRIEST_GOLD_REQ))
 			{
 				// Send failure message
-				SendSay(-1, -1, 9007);
+				SendSay(MSG_MISSING_ITEMS_MASTER_PRIEST);
 				return;
 			}
 
-			successMessage = 9005;
+			successMessage = MSG_COMPLETE_MASTER_PRIEST;
 			masterQuest    = QUEST_MASTER_PRIEST;
 			break;
 
@@ -14817,7 +14826,7 @@ void CUser::PromoteUser()
 	}
 
 	// Send success message
-	SendSay(-1, -1, successMessage);
+	SendSay(successMessage);
 
 	if (!SaveEvent(masterQuest, QUEST_STATE_COMPLETE))
 	{
