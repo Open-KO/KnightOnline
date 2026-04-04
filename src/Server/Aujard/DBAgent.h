@@ -136,6 +136,15 @@ public:
 	/// \brief populates UserData[userId] from the database
 	bool LoadUserData(const char* accountId, const char* charId, int userId);
 
+	/// \brief Attempts to claim a stipend in USER_KNIGHTS_RANK/USER_PERSONAL_RANK.
+	/// \param type see e_StipendType
+	/// \param rank
+	/// \param nation
+	/// \param charId
+	/// \return e_StipendResponseCode result of the database operation
+	e_StipendResponseCode ClaimUserRankStipend(
+		uint8_t type, uint8_t rank, uint8_t nation, std::string_view charId);
+
 	// stored procs not implemented:
 	//bool UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count);
 	//bool CheckCouponEvent(const char* accountId);

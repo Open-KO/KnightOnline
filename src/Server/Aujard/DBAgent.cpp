@@ -1351,6 +1351,38 @@ bool CDBAgent::UpdateBattleEvent(const char* charId, int nation)
 	return true;
 }
 
+e_StipendResponseCode CDBAgent::ClaimUserRankStipend(
+	const uint8_t type, const uint8_t rank, const uint8_t nation, const std::string_view charId)
+{
+	// these always return as 1 currently, not really useful
+	uint8_t responseCode = STIPEND_RESPONSE_ERROR;
+	try
+	{
+		db::StoredProc<storedProc::ClaimUserRankStipend> proc;
+
+		const auto weak_result = proc.execute(&responseCode, type, rank, nation, charId.data());
+		const auto result      = weak_result.lock();
+		if (result == nullptr)
+		{
+			throw nanodbc::database_error(
+				nullptr, 0, "DBAgent::ClaimUserRankStipend: expected result set");
+		}
+	}
+	catch (const nanodbc::database_error& dbErr)
+	{
+		db::utils::LogDatabaseError(dbErr, "DBAgent::ClaimUserRankStipend()");
+		return STIPEND_RESPONSE_ERROR;
+	}
+
+	if (responseCode == STIPEND_RESPONSE_ERROR)
+	{
+		spdlog::error(
+			"DBAgent::ClaimUserRankStipend: Operation failed [charId={} type={}]", charId, type);
+	}
+
+	return static_cast<e_StipendResponseCode>(responseCode);
+}
+
 /* TODO: Proc does not exist
 bool CDBAgent::CheckCouponEvent(const char* accountId)
 {

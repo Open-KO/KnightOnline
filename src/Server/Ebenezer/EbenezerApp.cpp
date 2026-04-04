@@ -23,6 +23,7 @@
 #include <Ebenezer/binder/EbenezerBinder.h>
 
 #include <fstream>
+#include <ranges>
 
 using namespace db;
 using namespace std::chrono_literals;
@@ -93,13 +94,13 @@ EbenezerApp::EbenezerApp(EbenezerLogger& logger) :
 	m_nServerIndex                                                                = 0;
 	m_nServerNo                                                                   = 0;
 	m_nServerGroupNo                                                              = 0;
-	m_nServerGroup                                                                = 0;
-	m_iPacketCount                                                                = 0;
-	m_iSendPacketCount                                                            = 0;
-	m_iRecvPacketCount                                                            = 0;
-	m_sDiscount                                                                   = 0;
+	m_nServerGroup     = SERVER_GROUP_NONE;
+	m_iPacketCount     = 0;
+	m_iSendPacketCount = 0;
+	m_iRecvPacketCount = 0;
+	m_sDiscount        = 0;
 
-	m_pUdpSocket                                                                  = nullptr;
+	m_pUdpSocket       = nullptr;
 
 	for (int h = 0; h < MAX_BBS_POST; h++)
 	{
@@ -312,158 +313,171 @@ bool EbenezerApp::OnStart()
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading ITEM table");
+	spdlog::info("EbenezerApp::OnStart: loading ITEM table");
 	if (!LoadItemTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache ITEM table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache ITEM table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading ITEM_UPGRADE table");
+	spdlog::info("EbenezerApp::OnStart: loading ITEM_UPGRADE table");
 	if (!LoadItemUpgradeTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache ITEM_UPGRADE table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache ITEM_UPGRADE table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC table");
 	if (!LoadMagicTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE1 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE1 table");
 	if (!LoadMagicType1())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE1 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE1 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE2 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE2 table");
 	if (!LoadMagicType2())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE2 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE2 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE3 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE3 table");
 	if (!LoadMagicType3())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE3 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE3 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE4 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE4 table");
 	if (!LoadMagicType4())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE4 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE4 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE5 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE5 table");
 	if (!LoadMagicType5())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE5 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE5 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE7 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE7 table");
 	if (!LoadMagicType7())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE7 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE7 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading MAGIC_TYPE8 table");
+	spdlog::info("EbenezerApp::OnStart: loading MAGIC_TYPE8 table");
 	if (!LoadMagicType8())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache MAGIC_TYPE8 table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache MAGIC_TYPE8 table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading COEFFICIENT table");
+	spdlog::info("EbenezerApp::OnStart: loading COEFFICIENT table");
 	if (!LoadCoefficientTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache COEFFICIENT table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache COEFFICIENT table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading LEVEL_UP table");
+	spdlog::info("EbenezerApp::OnStart: loading LEVEL_UP table");
 	if (!LoadLevelUpTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache LEVEL_UP table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache LEVEL_UP table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading KNIGHTS table");
+	spdlog::info("EbenezerApp::OnStart: loading KNIGHTS table");
 	if (!LoadAllKnights())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache KNIGHTS table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache KNIGHTS table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading KNIGHTS_USER table");
+	spdlog::info("EbenezerApp::OnStart: loading KNIGHTS_USER table");
 	if (!LoadAllKnightsUserData())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache KNIGHTS_USER table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache KNIGHTS_USER table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading KNIGHTS_SIEGE_WARFARE table");
+	spdlog::info("EbenezerApp::OnStart: loading KNIGHTS_SIEGE_WARFARE table");
 	if (!LoadKnightsSiegeWarfareTable())
 	{
-		spdlog::error(
-			"EbenezerApp::OnInitDialog: failed to cache KNIGHTS_SIEGE_WARFARE table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache KNIGHTS_SIEGE_WARFARE table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading HOME table");
+	spdlog::info("EbenezerApp::OnStart: loading USER_KNIGHTS_RANK table");
+	if (!LoadUserKnightsRank())
+	{
+		spdlog::error("EbenezerApp::OnStart: failed to load USER_KNIGHTS_RANK table, closing");
+		return false;
+	}
+
+	spdlog::info("EbenezerApp::OnStart: loading USER_PERSONAL_RANK table");
+	if (!LoadUserPersonalRank())
+	{
+		spdlog::error("EbenezerApp::OnStart: failed to load USER_PERSONAL_RANK table, closing");
+		return false;
+	}
+
+	spdlog::info("EbenezerApp::OnStart: loading HOME table");
 	if (!LoadHomeTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache HOME table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache HOME table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading START_POSITION table");
+	spdlog::info("EbenezerApp::OnStart: loading START_POSITION table");
 	if (!LoadStartPositionTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache START_POSITION table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache START_POSITION table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading BATTLE table");
+	spdlog::info("EbenezerApp::OnStart: loading BATTLE table");
 	if (!LoadBattleTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache BATTLE table, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache BATTLE table, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading SERVER_RESOURCE table");
+	spdlog::info("EbenezerApp::OnStart: loading SERVER_RESOURCE table");
 	if (!LoadServerResourceTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache SERVER_RESOURCE, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache SERVER_RESOURCE, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading EVENT_TRIGGER table");
+	spdlog::info("EbenezerApp::OnStart: loading EVENT_TRIGGER table");
 	if (!LoadEventTriggerTable())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache EVENT_TRIGGER, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache EVENT_TRIGGER, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading ITEM_EXCHANGE table");
+	spdlog::info("EbenezerApp::OnStart: loading ITEM_EXCHANGE table");
 	if (!LoadItemExchange())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to cache ITEM_EXCHANGE, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to cache ITEM_EXCHANGE, closing");
 		return false;
 	}
 
-	spdlog::info("EbenezerApp::OnInitDialog: loading maps");
+	spdlog::info("EbenezerApp::OnStart: loading maps");
 	if (!MapFileLoad())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to load maps, closing");
+		spdlog::error("EbenezerApp::OnStart: failed to load maps, closing");
 		return false;
 	}
 
@@ -472,13 +486,13 @@ bool EbenezerApp::OnStart()
 	m_pUdpSocket = new CUdpSocket(this);
 	if (!m_pUdpSocket->CreateSocket())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to create UDP socket");
+		spdlog::error("EbenezerApp::OnStart: failed to create UDP socket");
 		return false;
 	}
 
 	if (!AIServerConnect())
 	{
-		spdlog::error("EbenezerApp::OnInitDialog: failed to connect to the AIServer");
+		spdlog::error("EbenezerApp::OnStart: failed to connect to the AIServer");
 #ifndef _DEBUG
 		return false;
 #endif
@@ -499,7 +513,7 @@ bool EbenezerApp::OnStart()
 
 	_readQueueThread->start();
 
-	spdlog::info("EbenezerApp::OnInitDialog: successfully initialized");
+	spdlog::info("EbenezerApp::OnStart: successfully initialized");
 	return true;
 }
 
@@ -1237,7 +1251,7 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 
 	m_nCastleCapture = iniFile.GetInt("CASTLE", "NATION", 1);
 	m_nServerNo      = iniFile.GetInt("ZONE_INFO", "MY_INFO", 1);
-	m_nServerGroup   = iniFile.GetInt("ZONE_INFO", "SERVER_NUM", 0);
+	m_nServerGroup   = static_cast<e_ServerGroupType>(iniFile.GetInt("ZONE_INFO", "SERVER_NUM", 0));
 	serverCount      = iniFile.GetInt("ZONE_INFO", "SERVER_COUNT", 1);
 	if (serverCount < 1)
 	{
@@ -1260,7 +1274,7 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 		m_ServerArray.PutData(pInfo->sServerNo, pInfo);
 	}
 
-	if (m_nServerGroup != 0)
+	if (m_nServerGroup != SERVER_GROUP_NONE)
 	{
 		m_nServerGroupNo = iniFile.GetInt("SG_INFO", "GMY_INFO", 1);
 		sgroup_count     = iniFile.GetInt("SG_INFO", "GSERVER_COUNT", 1);
@@ -2323,6 +2337,13 @@ void EbenezerApp::BattleZoneOpenTimer()
 		}
 	}	*/
 
+	// TODO:  Officially, there is a condition that will cause UserKnightsRank/UserPersonalRank to
+	// to reload here, along with some PetGuard logic.  Given that we handle ranking caches slightly
+	// differently than official, we'll have to evaluate the intent of reloading the cache
+	// when reversing the war logic.
+	// Offhand, the only effect this would seem to have is to reset the "isClaimed" flag for stipends.
+	// ResetPaymentList();
+
 	if (m_byBattleOpen == NATION_BATTLE)
 		BattleZoneCurrentUsers();
 
@@ -2853,6 +2874,42 @@ bool EbenezerApp::LoadKnightsSiegeWarfareTable()
 	}
 
 	return true;
+}
+
+bool EbenezerApp::LoadUserKnightsRank()
+{
+	recordset_loader::STLMap loader(m_UserKnightsRankMap);
+	if (!loader.Load_ForbidEmpty())
+	{
+		spdlog::error(
+			"EbenezerApp::LoadUserKnightsRank: load failed - {}", loader.GetError().Message);
+		return false;
+	}
+
+	return true;
+}
+
+bool EbenezerApp::LoadUserPersonalRank()
+{
+	recordset_loader::STLMap loader(m_UserPersonalRankMap);
+	if (!loader.Load_ForbidEmpty())
+	{
+		spdlog::error(
+			"EbenezerApp::LoadUserPersonalRank: load failed - {}", loader.GetError().Message);
+		return false;
+	}
+
+	return true;
+}
+
+void EbenezerApp::ResetPaymentList()
+{
+	spdlog::info("EbenezerApp::ResetPaymentList: Resetting stipends");
+	for (const auto& rankInfo : m_UserKnightsRankMap | std::views::values)
+	{
+		rankInfo->IsClaimedKarus = 0;
+		rankInfo->IsClaimedElmo  = 0;
+	}
 }
 
 int EbenezerApp::GetKnightsAllMembers(int knightsindex, char* temp_buff, int& buff_index, int type)

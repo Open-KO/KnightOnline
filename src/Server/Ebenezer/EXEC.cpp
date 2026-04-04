@@ -67,6 +67,16 @@ bool EXEC::Parse(const char* line, const std::string& filename, int lineNumber)
 			argsToParse = 2;
 			break;
 
+		// E REQUEST_REWARD
+		case "REQUEST_REWARD"_djb2:
+			m_Exec = EXEC_REQUEST_REWARD;
+			break;
+
+		// E REQUEST_PERSONAL_RANK_REWARD
+		case "REQUEST_PERSONAL_RANK_REWARD"_djb2:
+			m_Exec = EXEC_REQUEST_PERSONAL_RANK_REWARD;
+			break;
+
 		// E OPEN_EDITBOX {npc prototype ID - unused} {input message} {next event}
 		case "OPEN_EDITBOX"_djb2:
 			m_Exec      = EXEC_OPEN_EDITBOX;

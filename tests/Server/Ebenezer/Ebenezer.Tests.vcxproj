@@ -19,10 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EventLogic_test.cpp" />
     <ClCompile Include="data\ItemExchange_test_data.h" />
     <ClCompile Include="ItemExchange_test.cpp" />
     <ClCompile Include="data\ItemUpgrade_test_data.h" />
     <ClCompile Include="ItemUpgrade_test.cpp" />
+    <ClCompile Include="data\UserKnightsRank_test_data.h" />
+    <ClCompile Include="data\UserPersonalRank_test_data.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data\Item_test_data.h" />

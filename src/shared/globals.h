@@ -459,7 +459,19 @@ enum e_QuestItem : int
 	ITEM_CRUDE_SAPPHIRE         = 389074000,
 	ITEM_CRYSTAL                = 389075000,
 	ITEM_OPAL                   = 389076000,
-	ITEM_REDISTRIBUTION         = 700001000
+	ITEM_REDISTRIBUTION         = 700001000,
+	ITEM_NOAH                   = 900000000
+};
+
+/// \brief Possible server groupings
+enum e_ServerGroupType : uint8_t
+{
+	/// The server is not assigned to a grouping
+	SERVER_GROUP_NONE     = 0,
+	/// The server is considered the primary server in a grouping
+	SERVER_GROUP_PRIMARY  = 1,
+	/// The server is considered an overflow server in a grouping
+	SERVER_GROUP_OVERFLOW = 2
 };
 
 // These control neutrality-related settings client-side,

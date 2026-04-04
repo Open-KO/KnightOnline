@@ -285,6 +285,12 @@ enum e_SendTarget : uint8_t
 	SEND_ZONE   = 0x04
 };
 
+enum e_SayMsgIdentifier : int32_t
+{
+	MSG_STIPEND_GIVE_REWARD     = 5001,
+	MSG_STIPEND_ALREADY_CLAIMED = 35630
+};
+
 // Battlezone Announcement
 enum e_BattleZoneNoticeType : uint8_t
 {

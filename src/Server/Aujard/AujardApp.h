@@ -157,6 +157,14 @@ public:
 	/// \param sessionId The associated session ID to send it to.
 	void SendSelectCharacterFailed(int sessionId);
 
+	/// \brief Handles a DB_OPENKO_CUSTOM request
+	/// \see DB_OPENKO_CUSTOM, e_CustomOpCode
+	void HandleCustomEvent(const char* data);
+
+	/// \brief Handles a user stipend request.  Custom database operation
+	/// \see DB_CUSTOM_STIPEND_REQUEST
+	void HandleStipendRequest(const char* data, int16_t userSocketId);
+
 	SharedMemoryQueue LoggerSendQueue;
 	SharedMemoryQueue LoggerRecvQueue;
 

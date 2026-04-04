@@ -189,7 +189,41 @@ enum e_DBOpcode : uint8_t
 	DB_SHOPPING_MALL                  = 0x6A,
 	DB_SIEGE                          = 0x6D,
 	DB_CAPE                           = 0x70,
-	DB_HEARTBEAT                      = 0x7F // unofficial - aujard communication
+	/// Unofficial, used for Aujard communication
+	DB_HEARTBEAT                      = 0x7F,
+	/// OpenKO custom database operation communications
+	DB_OPENKO_CUSTOM                  = 0xF0
+};
+
+/// \brief Custom OpenKO Database sub-op codes
+enum e_CustomOpCode : uint8_t
+{
+	/// User Ranking Stipend Request
+	DB_CUSTOM_STIPEND_REQUEST  = 0,
+	/// User Ranking Stipend Response
+	DB_CUSTOM_STIPEND_RESPONSE = 1
+};
+
+/// \brief The type of stipend being requested
+enum e_StipendType : uint8_t
+{
+	/// Stipend associated with USER_KNIGHTS_RANK (Cumulative Loyalty)
+	STIPEND_TYPE_USER_KNIGHTS  = 0,
+	/// Stipend associated with USER_PERSONAL_RANK (Monthly Loyalty)
+	STIPEND_TYPE_USER_PERSONAL = 1
+};
+
+/// \brief Possible response values for DB_CUSTOM_STIPEND_RESPONSE
+enum e_StipendResponseCode : uint8_t
+{
+	/// Valid request, claim status updated
+	STIPEND_RESPONSE_SUCCESS         = 0,
+	/// Valid request, but stipend has already been claimed.  Update cache record
+	STIPEND_RESPONSE_ALREADY_CLAIMED = 1,
+	/// Request data doesn't match database, reload cache
+	STIPEND_RESPONSE_RESYNC          = 2,
+	/// Unexpected error - likely an issue communicating with the database
+	STIPEND_RESPONSE_ERROR           = 0xFF
 };
 
 enum e_LoginOpcode : uint8_t

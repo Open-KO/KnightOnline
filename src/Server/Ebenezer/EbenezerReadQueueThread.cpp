@@ -15,20 +15,20 @@ void EbenezerReadQueueThread::process_packet(const char* buffer, int len)
 {
 	EbenezerApp* appInstance = EbenezerApp::instance();
 
-	int index = 0, uid = -1, sendIndex = 0, buff_length = 0;
+	int index = 0, userSocketId = -1, sendIndex = 0, buff_length = 0;
 	uint8_t command = 0, result = 0;
 	char sendBuffer[1024] {};
 
-	command = GetByte(buffer, index);
-	uid     = GetShort(buffer, index);
+	command      = GetByte(buffer, index);
+	userSocketId = GetShort(buffer, index);
 
-	if (command == DB_KNIGHTS_ALLLIST_REQ && uid == -1)
+	if (command == DB_KNIGHTS_ALLLIST_REQ && userSocketId == -1)
 	{
 		appInstance->m_KnightsManager.RecvKnightsAllList(buffer + index);
 		return;
 	}
 
-	auto pUser = appInstance->GetUserPtr(uid);
+	auto pUser = appInstance->GetUserPtr(userSocketId);
 	if (pUser == nullptr)
 		return;
 
@@ -116,6 +116,22 @@ void EbenezerReadQueueThread::process_packet(const char* buffer, int len)
 		case DB_COUPON_EVENT:
 			if (pUser != nullptr)
 				pUser->CouponEvent(buffer + index);
+			break;
+
+		case DB_OPENKO_CUSTOM:
+			switch (const uint8_t customOpCode = GetByte(buffer, index))
+			{
+				case DB_CUSTOM_STIPEND_RESPONSE:
+					if (pUser != nullptr)
+						pUser->HandleUserStipendResponse(buffer + index);
+					break;
+
+				default:
+					spdlog::error("EbenezerReadQueueThread::process_packet: Unhandled "
+								  "DB_OPENKO_CUSTOM customOpCode {:02X}",
+						customOpCode);
+					break;
+			}
 			break;
 
 		default:

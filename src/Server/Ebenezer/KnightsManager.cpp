@@ -111,8 +111,8 @@ void CKnightsManager::CreateKnights(CUser* pUser, char* pBuf)
 		goto fail_return;
 	}
 
-	// 기사단은 서버 1군에서만 만들 수 있도록...
-	if (m_pMain->m_nServerGroup == 2)
+	// Clans cannot be created on overflow servers
+	if (m_pMain->m_nServerGroup == SERVER_GROUP_OVERFLOW)
 	{
 		ret_value = 8;
 		goto fail_return;
@@ -983,10 +983,10 @@ void CKnightsManager::RecvCreateKnights(CUser* pUser, const char* pBuf)
 	SetString(sendBuffer, knightsname, namelen, sendIndex);
 	SetShort(sendBuffer, idlen, sendIndex);
 	SetString(sendBuffer, chiefname, idlen, sendIndex);
-	if (m_pMain->m_nServerGroup == 0)
+	if (m_pMain->m_nServerGroup == SERVER_GROUP_NONE)
 		m_pMain->Send_UDP_All(sendBuffer, sendIndex);
 	else
-		m_pMain->Send_UDP_All(sendBuffer, sendIndex, 1);
+		m_pMain->Send_UDP_All(sendBuffer, sendIndex, SERVER_GROUP_OVERFLOW);
 }
 
 void CKnightsManager::RecvJoinKnights(CUser* pUser, const char* pBuf, uint8_t command)
@@ -1073,10 +1073,10 @@ void CKnightsManager::RecvJoinKnights(CUser* pUser, const char* pBuf, uint8_t co
 	SetShort(sendBuffer, knightsindex, sendIndex);
 	SetShort(sendBuffer, idlen, sendIndex);
 	SetString2(sendBuffer, pUser->m_pUserData->m_id, sendIndex);
-	if (m_pMain->m_nServerGroup == 0)
+	if (m_pMain->m_nServerGroup == SERVER_GROUP_NONE)
 		m_pMain->Send_UDP_All(sendBuffer, sendIndex);
 	else
-		m_pMain->Send_UDP_All(sendBuffer, sendIndex, 1);
+		m_pMain->Send_UDP_All(sendBuffer, sendIndex, SERVER_GROUP_PRIMARY);
 }
 
 void CKnightsManager::RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t command)
@@ -1219,10 +1219,10 @@ void CKnightsManager::RecvModifyFame(CUser* pUser, const char* pBuf, uint8_t com
 	SetByte(sendBuffer, command - 0x10, sendIndex);
 	SetShort(sendBuffer, knightsindex, sendIndex);
 	SetString2(sendBuffer, userid, sendIndex);
-	if (m_pMain->m_nServerGroup == 0)
+	if (m_pMain->m_nServerGroup == SERVER_GROUP_NONE)
 		m_pMain->Send_UDP_All(sendBuffer, sendIndex);
 	else
-		m_pMain->Send_UDP_All(sendBuffer, sendIndex, 1);
+		m_pMain->Send_UDP_All(sendBuffer, sendIndex, SERVER_GROUP_PRIMARY);
 }
 
 void CKnightsManager::RecvDestroyKnights(CUser* pUser, const char* pBuf)
@@ -1305,10 +1305,10 @@ void CKnightsManager::RecvDestroyKnights(CUser* pUser, const char* pBuf)
 	SetByte(sendBuffer, UDP_KNIGHTS_PROCESS, sendIndex);
 	SetByte(sendBuffer, KNIGHTS_DESTROY, sendIndex);
 	SetShort(sendBuffer, knightsindex, sendIndex);
-	if (m_pMain->m_nServerGroup == 0)
+	if (m_pMain->m_nServerGroup == SERVER_GROUP_NONE)
 		m_pMain->Send_UDP_All(sendBuffer, sendIndex);
 	else
-		m_pMain->Send_UDP_All(sendBuffer, sendIndex, 1);
+		m_pMain->Send_UDP_All(sendBuffer, sendIndex, SERVER_GROUP_PRIMARY);
 
 	//if( flag == KNIGHTS_TYPE )	{
 	/*	memset( sendBuffer, 0x00, 128 ); sendIndex = 0;
@@ -1571,7 +1571,7 @@ void CKnightsManager::UpdateKnightsGrade(int16_t knightsId, uint8_t flag)
 	SetByte(sendBuff, knights->m_byFlag, sendIndex);
 	SetShort(sendBuff, knights->m_sCape, sendIndex);
 	SetInt(sendBuff, knights->m_nPoints, sendIndex);
-	bool groupType = m_pMain->m_nServerGroup != 0;
+	bool groupType = m_pMain->m_nServerGroup != SERVER_GROUP_NONE;
 	m_pMain->Send_UDP_All(sendBuff, sendIndex, groupType);
 
 	memset(sendBuff, 0, sizeof(sendBuff));

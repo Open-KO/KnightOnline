@@ -74,6 +74,10 @@ void AujardReadQueueThread::process_packet(const char* buffer, int /*len*/)
 			appInstance->HeartbeatReceived();
 			break;
 
+		case DB_OPENKO_CUSTOM:
+			appInstance->HandleCustomEvent(buffer + index);
+			break;
+
 		default:
 			spdlog::error(
 				"AujardReadQueueThread::process_packet: Unhandled opcode {:02X}", command);

@@ -1152,4 +1152,62 @@ void AujardApp::HeartbeatReceived()
 	_heartbeatReceivedTime = time(nullptr);
 }
 
+void AujardApp::HandleCustomEvent(const char* data)
+{
+	int index                  = 0;
+	const int16_t userSocketId = GetShort(data, index);
+	switch (const uint8_t command = GetByte(data, index))
+	{
+		case DB_CUSTOM_STIPEND_REQUEST:
+			HandleStipendRequest(data + index, userSocketId);
+			break;
+
+		default:
+			spdlog::error("AujardApp::HandleCustomEvent: Invalid DB_OPENKO_CUSTOM command code "
+						  "received: {:X}",
+				command);
+	}
+}
+
+void AujardApp::HandleStipendRequest(const char* data, const int16_t userSocketId)
+{
+	int index                 = 0;
+	// parse request params
+	const uint8_t stipendType = GetByte(data, index);
+	const uint8_t rank        = GetByte(data, index);
+	const uint8_t nation      = GetByte(data, index);
+	const uint8_t charIdLen   = GetByte(data, index);
+	char charId[MAX_ID_SIZE + 1] {};
+	if (charIdLen > 0 && charIdLen < MAX_ID_SIZE + 1)
+		GetString(charId, data, charIdLen, index);
+	else
+	{
+		spdlog::error("AujardApp::HandleStipendRequest: Invalid charId length [stipendType={:X} "
+					  "charIdLen={}]",
+			stipendType, charIdLen);
+		return;
+	}
+
+	e_StipendResponseCode responseCode = _dbAgent.ClaimUserRankStipend(
+		stipendType, rank, nation, charId);
+	if (responseCode == STIPEND_RESPONSE_ERROR)
+	{
+		// _dbAgent.ClaimUserKnightsStipend handles logging
+		return;
+	}
+
+	// Set up and send response to Ebenezer
+	char sendBuffer[128] {};
+	int sendIndex = 0;
+	SetByte(sendBuffer, DB_OPENKO_CUSTOM, sendIndex);
+	SetShort(sendBuffer, userSocketId, sendIndex);
+	SetByte(sendBuffer, DB_CUSTOM_STIPEND_RESPONSE, sendIndex);
+	SetByte(sendBuffer, stipendType, sendIndex);
+	SetByte(sendBuffer, responseCode, sendIndex);
+	SetByte(sendBuffer, rank, sendIndex);
+	SetByte(sendBuffer, nation, sendIndex);
+	SetString1(sendBuffer, charId, sendIndex);
+	LoggerSendQueue.PutData(sendBuffer, sendIndex);
+}
+
 } // namespace Aujard

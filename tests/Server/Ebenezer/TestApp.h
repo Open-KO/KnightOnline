@@ -119,6 +119,36 @@ public:
 		return true;
 	}
 
+	bool AddUserKnightsRankEntry(const Ebenezer::model::UserKnightsRank& userKnightsRankModel)
+	{
+		auto modelForInsertion = new Ebenezer::model::UserKnightsRank { userKnightsRankModel };
+		if (modelForInsertion == nullptr)
+			return false;
+
+		if (!m_UserKnightsRankMap.PutData(modelForInsertion->Index, modelForInsertion))
+		{
+			delete modelForInsertion;
+			return false;
+		}
+
+		return true;
+	}
+
+	bool AddUserPersonalRankEntry(const Ebenezer::model::UserPersonalRank& userPersonalRankModel)
+	{
+		auto modelForInsertion = new Ebenezer::model::UserPersonalRank { userPersonalRankModel };
+		if (modelForInsertion == nullptr)
+			return false;
+
+		if (!m_UserPersonalRankMap.PutData(modelForInsertion->Rank, modelForInsertion))
+		{
+			delete modelForInsertion;
+			return false;
+		}
+
+		return true;
+	}
+
 protected:
 	Ebenezer::EbenezerLogger _logger;
 };

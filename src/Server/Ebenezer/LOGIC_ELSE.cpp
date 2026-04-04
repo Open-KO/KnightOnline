@@ -236,6 +236,12 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 			m_LogicElse = LOGIC_CHECK_NO_CLAN;
 			break;
 
+		// A CHECK_MANNER {min} {max}
+		case "CHECK_MANNER"_djb2:
+			m_LogicElse = LOGIC_CHECK_MANNER;
+			argsToParse = 2;
+			break;
+
 		// A CHECK_MONSTER_CHALLENGE_TIME {Forgotten Temple type}
 		case "CHECK_MONSTER_CHALLENGE_TIME"_djb2:
 			m_LogicElse = LOGIC_CHECK_MONSTER_CHALLENGE_TIME;
@@ -276,6 +282,18 @@ bool LOGIC_ELSE::Parse_and(const char* line, const std::string& filename, int li
 		case "CHECK_EMPTY_SLOT"_djb2:
 			m_LogicElse = LOGIC_CHECK_EMPTY_SLOT;
 			argsToParse = 1;
+			break;
+
+		// A CHECK_LOYALTY_RANK_MONTHLY {minRank} {maxRank}
+		case "CHECK_LOYALTY_RANK_MONTHLY"_djb2:
+			m_LogicElse = LOGIC_CHECK_LOYALTY_RANK_MONTHLY;
+			argsToParse = 2;
+			break;
+
+		// A CHECK_LOYALTY_RANK {minRank} {maxRank}
+		case "CHECK_LOYALTY_RANK"_djb2:
+			m_LogicElse = LOGIC_CHECK_LOYALTY_RANK;
+			argsToParse = 2;
 			break;
 
 		// A CHECK_CLAN_RANKING {minRank} {maxRank}

@@ -55,6 +55,8 @@ using ServerResourceTableMap = CSTLMap<model::ServerResource>;
 using StartPositionTableMap  = CSTLMap<model::StartPosition>;
 using EventMap               = CSTLMap<EVENT>;
 using ItemExchangeMap        = CSTLMap<model::ItemExchange>;
+using UserKnightsRankMap     = CSTLMap<model::UserKnightsRank>;
+using UserPersonalRankMap    = CSTLMap<model::UserPersonalRank>;
 
 using EventTriggerMap        = std::unordered_map<uint32_t, int32_t>;
 
@@ -113,6 +115,17 @@ public:
 	bool LoadStartPositionTable();
 	bool LoadServerResourceTable();
 	bool LoadHomeTable();
+
+	/// \brief Loads the m_UserKnightsRankMap cache
+	/// \return true when successful, false otherwise
+	bool LoadUserKnightsRank();
+
+	/// \brief Loads the m_UserPersonalRankMap cache
+	/// \return true when successful, false otherwise
+	bool LoadUserPersonalRank();
+
+	/// \brief Resets User Knights stipends
+	void ResetPaymentList();
 
 	/// \brief Loads the m_ItemExchangeMap cache
 	/// \return true when successful, false otherwise
@@ -250,6 +263,17 @@ public:
 	EventTriggerMap m_EventTriggerMap;
 	ItemExchangeMap m_ItemExchangeMap;
 
+	/// \brief User Knights Ranking cache. Officially this is split into two caches
+	/// that track stipend claims in-memory, which means stipends reset on a server crash/restart.
+	/// \originalName m_UserKnightsRankKarus, m_UserKnightsRankElmorad
+	UserKnightsRankMap m_UserKnightsRankMap;
+
+	/// \brief User Personal Ranking cache. Officially this is split into two caches
+	/// that track stipend claims in-memory, which means stipends reset on a server crash/restart.
+	/// We store these values to the database to only reset claim status on planned reset.
+	/// \originalName m_UserPersonalRankKarus, m_UserPersonalRankElmorad
+	UserPersonalRankMap m_UserPersonalRankMap;
+
 	CKnightsManager m_KnightsManager;
 	CKnightsSiegeWar m_KnightsSiegeWar;
 
@@ -329,7 +353,11 @@ public:
 	// zone server info
 	int m_nServerIndex;
 	int m_nServerNo, m_nServerGroupNo;
-	int m_nServerGroup; // server의 번호(0:서버군이 없다, 1:서버1군, 2:서버2군)
+
+	/// \brief Which group the server belongs to.  Loaded from config ZONE_INFO.SERVER_NUM
+	/// \see e_ServerGroupType for possible values
+	e_ServerGroupType m_nServerGroup;
+
 	ServerMap m_ServerArray;
 	ServerMap m_ServerGroupArray;
 	CUdpSocket* m_pUdpSocket;
