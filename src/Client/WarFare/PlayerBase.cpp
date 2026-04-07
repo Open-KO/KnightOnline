@@ -528,12 +528,24 @@ void CPlayerBase::TickAnimation()
 	// 걷고 뛰고, 에니메이션등... 속도 적용
 	float fAniSpeedDelta = 1.0f;
 	if (PSM_STOP != m_eStateMove)
-		fAniSpeedDelta = m_fMoveDelta;                 // 이동중이면 스피드 적용..
+		fAniSpeedDelta = m_fMoveDelta;      // 이동중이면 스피드 적용..
 	else if (PSA_ATTACK == m_eState)
-		fAniSpeedDelta = m_fAttackDelta;               // 공격중이면 공격 스피드 적용..
+		fAniSpeedDelta = m_fAttackDelta;    // 공격중이면 공격 스피드 적용..
 	__ASSERT(fAniSpeedDelta >= 0.1f && fAniSpeedDelta < 10.0f, "Invalid Animation Speed Delta!!!");
-	m_Chr.AniSpeedDeltaSet(fAniSpeedDelta);            // 에니메이션 스피드 실제 적용..
-	m_Chr.Tick();                                      // 에니메이션 틱..
+	m_Chr.AniSpeedDeltaSet(fAniSpeedDelta); // 에니메이션 스피드 실제 적용..
+	m_Chr.Tick();                           // 에니메이션 틱..
+
+	if (m_Chr.CloakPlug() != nullptr)
+	{
+		e_CloakMove eCloakMove = CLOAK_MOVE_STOP;
+		if (m_eStateMove == PSM_RUN)
+			eCloakMove = CLOAK_MOVE_RUN;
+		else if (m_eStateMove == PSM_WALK)
+			eCloakMove = CLOAK_MOVE_WALK;
+		else if (m_eStateMove == PSM_WALK_BACKWARD)
+			eCloakMove = CLOAK_MOVE_WALK_BACKWARD;
+		m_Chr.CloakPlug()->GetCloak()->Tick(m_Chr.m_nLOD, m_fYawCur, eCloakMove);
+	}
 
 	m_bAnimationChanged = false;                       // 큐에 넣은 에니메이션이 변하는 순간만 세팅된다..
 	if (m_Chr.IsAnimEnd())                             // 에니메이션이 끝나면..
@@ -1736,7 +1748,14 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	}
 	else if (PLUG_POS_BACK == ePos)
 	{
-		//m_pItemPlugBasics[PLUG_POS_BACK] = pItem;
+		m_pItemPlugBasics[ePos] = pItemBasic;
+		m_pItemPlugExts[ePos]   = pItemExt;
+
+		CN3CPlug_Cloak* pCloak  = m_Chr.CloakPlugSet(szFN);
+		if (pCloak != nullptr)
+			pCloak->m_nJointIndex = ITEM_POS_SHOULDER;
+
+		return pCloak;
 	}
 	else
 	{
@@ -1847,6 +1866,44 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	return pPlug;
+}
+
+void CPlayerBase::AttachCloak(int16_t sCapeID)
+{
+	m_Chr.CloakPlugSet("");
+
+	// -1 = no clan, 0 = no cape
+	if (sCapeID <= 0)
+		return;
+
+	// Cloak mesh for each race
+	const std::string szMesh = fmt::format("Item\\cloak_{:03}.n3cplug", static_cast<int>(m_InfoBase.eRace));
+	CN3CPlug_Cloak* pCloak   = m_Chr.CloakPlugSet(szMesh);
+	if (pCloak == nullptr)
+		return;
+
+	// Attach cloak to shoulders
+	pCloak->m_nJointIndex = ITEM_POS_SHOULDER;
+
+	// Cloak colour and pattern
+	int nPattern          = sCapeID / 100;
+	int nColour           = sCapeID % 100;
+
+	std::string szColour;
+	if (nColour > 0)
+		szColour = fmt::format("Item\\cloak_c_{:02}.dxt", nColour);
+	else
+		szColour = "Item\\cloak_basic.dxt";
+
+	if (pCloak->TexSet(szColour) == nullptr)
+		pCloak->TexSet("Item\\cloak_basic.dxt");
+
+	if (nPattern >= 1 && nPattern <= 5)
+		pCloak->TexOverlapSet(fmt::format("Item\\cloak_M_{:02}.dxt", nPattern));
+	else
+		pCloak->TexOverlapSet(static_cast<CN3Texture*>(nullptr));
+
+	pCloak->GetCloak()->Init(pCloak);
 }
 
 CN3CPart* CPlayerBase::PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)

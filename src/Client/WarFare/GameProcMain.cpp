@@ -1890,17 +1890,18 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	/*int iAllianceID                       =*/pkt.read<int16_t>();
 	/*uint8_t byFlag                        =*/pkt.read<uint8_t>();
 
-	int iKnightNameLen = pkt.read<uint8_t>(); // 소속 기사단 이름 길이.
+	int iKnightNameLen = pkt.read<uint8_t>();                // 소속 기사단 이름 길이.
 	pkt.readString(szKnightsName, iKnightNameLen);
-	int iKnightsGrade = pkt.read<uint8_t>();  // 소속 기사단 등급
-	int iKnightsRank  = pkt.read<uint8_t>();  // 소속 기사단 순위
+	int iKnightsGrade = pkt.read<uint8_t>();                 // 소속 기사단 등급
+	int iKnightsRank  = pkt.read<uint8_t>();                 // 소속 기사단 순위
 
 	/*int16_t sMarkVersion            =*/pkt.read<int16_t>();
-	/*int16_t sCapeID                 =*/pkt.read<int16_t>();
+	int16_t sCapeID                   = pkt.read<int16_t>(); // Clan cape
 
 	// 기사단 관련 세팅..
 	s_pPlayer->m_InfoExt.eKnightsDuty = eKnightsDuty; // 기사단에서의 권한..
 	s_pPlayer->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
+	s_pPlayer->AttachCloak(sCapeID);
 	m_pUIVar->UpdateKnightsInfo();
 
 	s_pPlayer->m_InfoBase.iHPMax             = pkt.read<int16_t>();
@@ -2178,14 +2179,6 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	InitPlayerPosition(__Vector3(fX, fY, fZ)); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
 	s_pPlayer->RegenerateCollisionMesh();
 
-	// berserk temp
-	//s_pPlayer->PlugSet(PLUG_POS_BACK, "item/babacloak.n3cplug_cloak", nullptr);	// 파트를 셋팅..
-	// end berserk temp
-
-	// berserk
-	//s_pPlayer->AttachCloak();
-
-	//..
 	s_pOPMgr->Release(); // 다른 유저 관리 클래스 초기화..
 
 	if (m_pUICmdList != nullptr)
@@ -2549,9 +2542,9 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	int iKnightsRank  = pkt.read<uint8_t>();  // 순위
 
 	/*int16_t sMarkVersion =*/pkt.read<int16_t>();
-	/*int16_t sCapeID    =*/pkt.read<int16_t>();
+	int16_t sCapeID = pkt.read<int16_t>();    // Clan cape
 
-	int iLevel      = pkt.read<uint8_t>(); // 레벨...
+	int iLevel      = pkt.read<uint8_t>();    // 레벨...
 	e_Race eRace    = (e_Race) pkt.read<uint8_t>();
 	e_Class eClass  = (e_Class) pkt.read<int16_t>();
 	float fXPos     = (pkt.read<uint16_t>()) / 10.0f;
@@ -2632,6 +2625,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities, byItemFlags);
 	pUPC->RotateTo(DegreesToRadians(rand() % 360), true);
 	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
+	pUPC->AttachCloak(sCapeID);
 
 	//__KnightsInfoBase* pKIB = m_pUIKnightsOp->KnightsInfoFind(iKightsID);
 	//if(pKIB) pUPC->KnightsNameSet(pKIB->szName, 0xffff0000);

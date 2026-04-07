@@ -595,7 +595,7 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(
 	}
 	else if (PLUG_POS_BACK == ePos)
 	{
-		//m_pItemBasicPlugRefs[PLUG_POS_BACK] = pItem;
+		return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt);
 	}
 	else
 	{
@@ -613,10 +613,6 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(
 		pPlug->ScaleSet(__Vector3(fScale, fScale, fScale));
 		pPlug->m_nJointIndex = iJoint; // 관절 번호 세팅..
 	}
-	//	else if(PLUG_POS_BACK == ePos)
-	//	{
-	//		CN3CPlug_Cloak *pPlugCloak = (CN3CPlug_Cloak*)pPlug;
-	//	}
 
 	this->SetSoundPlug(pItemBasic);
 	return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt);

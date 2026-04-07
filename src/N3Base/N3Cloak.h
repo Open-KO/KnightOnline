@@ -8,6 +8,7 @@
 #pragma once
 
 #include "N3Base.h"
+#include "N3Mesh.h"
 
 inline constexpr int CLOAK_MAX_WIDTH  = 7;
 inline constexpr int CLOAK_MAX_HEIGHT = 7;
@@ -93,7 +94,7 @@ protected:
 	int m_nGridW, m_nGridH;
 	int m_nLOD;
 
-	CN3PMesh* m_pPMesh;
+	CN3Mesh* m_pMesh;
 	float m_fOffsetRecoveryTime;
 	float m_fPrevYaw;
 
@@ -108,7 +109,7 @@ protected:
 
 public:
 	virtual void Tick(int nLOD, float fYaw, e_CloakMove eCurMove);
-	virtual void Render(__Matrix44& mtx);
+	virtual void Render(__Matrix44& mtx, CN3Texture* pTexColour = nullptr);
 	void Release() override;
 };
 

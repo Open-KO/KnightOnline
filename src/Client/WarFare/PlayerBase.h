@@ -414,6 +414,7 @@ public:
 	virtual CN3CPart* PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt);
 	virtual CN3CPlugBase* PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt);
 	virtual void DurabilitySet(e_ItemSlot eSlot, int iDurability);
+	void AttachCloak(int16_t sCapeID);
 
 	void TickYaw();           // 회전값 처리.
 	void TickAnimation();     // 에니메이션 처리.

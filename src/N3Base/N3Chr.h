@@ -12,6 +12,7 @@
 #include "N3Skin.h"
 #include "N3Cloak.h"
 #include "N3PMeshInstance.h"
+#include "N3Mesh.h"
 #include "N3Texture.h"
 #include "N3Joint.h"
 #include <list>
@@ -293,6 +294,13 @@ protected:
 #ifdef _N3GAME
 	CN3Cloak m_Cloak;
 #endif
+	CN3Mesh* m_pMesh = nullptr;
+
+public:
+	CN3Mesh* Mesh()
+	{
+		return m_pMesh;
+	}
 };
 
 // 0 - 상체, 1 - 하체 ::: 관절들을 나누어서 나누어서 에니메이션 설정..
@@ -327,12 +335,13 @@ protected:
 
 	// 각 조인트의 행렬.. 포인터로 두지 않은 이유는 각 캐릭터마다 따로 에니메이션이 되기 위함이다..
 	std::vector<__Matrix44> m_MtxJoints;
-	std::vector<__Matrix44> m_MtxInverses; // 조인트에 대한 역행렬
+	std::vector<__Matrix44> m_MtxInverses;  // 조인트에 대한 역행렬
 
-	std::vector<CN3CPart*> m_Parts;        // 각 캐릭터의 부분별 Data Pointer List
-	std::vector<CN3CPlug*> m_Plugs;        // 이 캐릭터에 붙이는 무기등의 Data Pointer List
-	std::vector<__VertexColor*> m_vTraces; // Plug Trace Polygon
-	class CN3FXPlug* m_pFXPlug;            // 캐릭터에 FX를 붙이는 것.
+	std::vector<CN3CPart*> m_Parts;         // 각 캐릭터의 부분별 Data Pointer List
+	std::vector<CN3CPlug*> m_Plugs;         // 이 캐릭터에 붙이는 무기등의 Data Pointer List
+	std::vector<__VertexColor*> m_vTraces;  // Plug Trace Polygon
+	class CN3FXPlug* m_pFXPlug;             // 캐릭터에 FX를 붙이는 것.
+	CN3CPlug_Cloak* m_pCloakPlug = nullptr; // Clan cape attachment
 
 	// 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
 	int m_nJointPartStarts[MAX_CHR_ANI_PART];
@@ -469,6 +478,12 @@ public:
 			return nullptr;
 
 		return m_Plugs[iIndex];
+	}
+
+	CN3CPlug_Cloak* CloakPlugSet(const std::string& szFN);
+	CN3CPlug_Cloak* CloakPlug()
+	{
+		return m_pCloakPlug;
 	}
 
 	void Tick(float fFrm = FRAME_SELFPLAY) override;

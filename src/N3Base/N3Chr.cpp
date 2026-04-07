@@ -1047,16 +1047,59 @@ CN3CPlug_Cloak::~CN3CPlug_Cloak()
 
 void CN3CPlug_Cloak::Release()
 {
+	s_MngMesh.Delete(&m_pMesh);
 	CN3CPlugBase::Release();
 }
 
 bool CN3CPlug_Cloak::Load(File& file)
 {
-	CN3CPlugBase::Load(file);
+	// Read the name header (CN3BaseFileAccess::Load), then re-parse all
+	// CN3CPlugBase fields manually so we can redirect the mesh load to
+	// s_MngMesh (CN3Mesh) instead of PMeshSet (CN3PMesh). Cloak assets are
+	// .n3mesh files; loading them as .n3pmesh produces garbage vertex counts.
+	CN3BaseFileAccess::Load(file);
+
+	int nL         = 0;
+	char szFN[512] = "";
+
+	file.Read(&m_ePlugType, 4);
+	if (m_ePlugType > PLUGTYPE_MAX)
+		m_ePlugType = PLUGTYPE_NORMAL;
+	file.Read(&m_nJointIndex, 4);
+	file.Read(&m_vPosition, sizeof(m_vPosition));
+	file.Read(&m_MtxRot, sizeof(m_MtxRot));
+	file.Read(&m_vScale, sizeof(m_vScale));
+	file.Read(&m_Mtl, sizeof(__Material));
+
+	// Mesh: load as CN3Mesh, not CN3PMesh
+	file.Read(&nL, 4);
+	if (nL > 0)
+	{
+		file.Read(szFN, nL);
+		szFN[nL] = '\0';
+		s_MngMesh.Delete(&m_pMesh);
+		m_pMesh = s_MngMesh.Get(szFN);
+	}
+
+	// Texture
+	file.Read(&nL, 4);
+	if (nL > 0)
+	{
+		file.Read(szFN, nL);
+		szFN[nL] = '\0';
+		TexSet(szFN);
+	}
+
+	ReCalcMatrix();
+
+	if (m_pMesh == nullptr)
+		return false; // mesh file missing; CloakPlugSet will clean up
+	if (Tex() == nullptr)
+		TexSet("Item\\cloak_basic.dxt");
 #ifdef _N3GAME
 	m_Cloak.Init(this);
 #endif
-	return 0;
+	return true;
 }
 
 #ifdef _N3TOOL
@@ -1076,7 +1119,7 @@ void CN3CPlug_Cloak::Render(const __Matrix44& mtxParent, const __Matrix44& mtxJo
 	mtx  = m_Matrix;
 	mtx *= mtxJoint;
 	mtx *= mtxParent;
-	m_Cloak.Render(mtx);
+	m_Cloak.Render(mtx, TexOverlap());
 #endif
 }
 
@@ -1122,6 +1165,9 @@ CN3Chr::~CN3Chr()
 	for (auto itr = m_Plugs.begin(); itr != m_Plugs.end(); ++itr)
 		delete *itr;
 	m_Plugs.clear();
+
+	delete m_pCloakPlug;
+	m_pCloakPlug = nullptr;
 
 	for (auto itr = m_vTraces.begin(); itr != m_vTraces.end(); ++itr)
 		delete *itr;
@@ -1892,6 +1938,12 @@ void CN3Chr::Render()
 		////////////////////////////////////////////////////
 	}
 
+	// Clan cape render
+	if (m_pCloakPlug != nullptr && m_pCloakPlug->m_bVisible && m_pCloakPlug->m_nJointIndex >= 0)
+	{
+		m_pCloakPlug->Render(m_Matrix, m_MtxJoints[m_pCloakPlug->m_nJointIndex]);
+	}
+
 	//////////////////////////////////////////////////
 	//	Coded (By Dino On 2002-10-11 오전 11:20:19 )
 	//	FXPlug
@@ -2199,6 +2251,24 @@ void CN3Chr::PlugAlloc(int iCount)
 		for (int i = 0; i < iCount; i++)
 			m_Plugs[i] = new CN3CPlug();
 	}
+}
+
+CN3CPlug_Cloak* CN3Chr::CloakPlugSet(const std::string& szFN)
+{
+	delete m_pCloakPlug;
+	m_pCloakPlug = nullptr;
+
+	if (szFN.empty())
+		return nullptr;
+
+	m_pCloakPlug = new CN3CPlug_Cloak();
+	if (!m_pCloakPlug->LoadFromFile(szFN))
+	{
+		delete m_pCloakPlug;
+		m_pCloakPlug = nullptr;
+		return nullptr;
+	}
+	return m_pCloakPlug;
 }
 
 /*

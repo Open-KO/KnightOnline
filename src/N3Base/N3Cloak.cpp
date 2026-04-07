@@ -5,7 +5,6 @@
 #include "StdAfxBase.h"
 #include "N3Cloak.h"
 #include "N3Texture.h"
-#include "N3PMeshInstance.h"
 #include "N3Chr.h"
 
 CN3Cloak::CN3Cloak()
@@ -14,7 +13,7 @@ CN3Cloak::CN3Cloak()
 	m_pTex                = nullptr;
 	m_pParticle           = nullptr;
 	m_nLOD                = -1;
-	m_pPMesh              = nullptr;
+	m_pMesh               = nullptr;
 	m_pIndex              = nullptr;
 	m_pVertex             = nullptr;
 	m_fOffsetRecoveryTime = 0.0f;
@@ -52,9 +51,9 @@ void CN3Cloak::Release()
 
 void CN3Cloak::Init(CN3CPlug_Cloak* pPlugCloak)
 {
-	m_pTex   = pPlugCloak->Tex();
-	m_pPMesh = pPlugCloak->PMesh();
-	__ASSERT(m_pPMesh && m_pTex, "IN CN3Cloak, PMesh or m_pTex is null");
+	m_pTex  = pPlugCloak->Tex();
+	m_pMesh = pPlugCloak->Mesh();
+	__ASSERT(m_pMesh && m_pTex, "IN CN3Cloak, Mesh or m_pTex is null");
 
 	SetLOD(0);
 
@@ -104,9 +103,9 @@ void CN3Cloak::Tick(int /*nLOD*/, float fYaw, e_CloakMove eCloakMove)
 	m_Force.x = m_Force.y = m_Force.z = 0.0f;
 }
 
-void CN3Cloak::Render(__Matrix44& mtx)
+void CN3Cloak::Render(__Matrix44& mtx, CN3Texture* pTexColour)
 {
-	if (m_nLOD < 0)
+	if (m_nLOD < 0 || m_pTex == nullptr)
 		return;
 
 	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
@@ -121,22 +120,33 @@ void CN3Cloak::Render(__Matrix44& mtx)
 		s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	s_lpD3DDev->SetTexture(0, m_pTex->Get());
-	s_lpD3DDev->SetTexture(1, nullptr);
 
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-	//	s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	//	s_lpD3DDev->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	//	s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+	if (pTexColour != nullptr)
+	{
+		s_lpD3DDev->SetTexture(1, pTexColour->Get());
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
+	else
+	{
+		s_lpD3DDev->SetTexture(1, nullptr);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
 
 	s_lpD3DDev->SetFVF(FVF_VNT1);
 	s_lpD3DDev->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, m_nVertexCount, m_nIndexCount / 3,
 		m_pIndex, D3DFMT_INDEX16, m_pVertex, sizeof(__VertexT1));
 
-	//
+
+	/* Grid for debugging the clan cape movement
 	__VertexXyzColor Vtx[2] {};
-	/*
 	__VertexT1 *pTemp = m_pVertex;
 	Vtx[0].Set(pTemp->x, pTemp->y, pTemp->z, 0xffffffff);
 	Vtx[1].Set(1.0f, 1.0f, 1.0f, 0xffffffff);
@@ -147,7 +157,7 @@ void CN3Cloak::Render(__Matrix44& mtx)
 	Vtx[1].Set(1.0f, 1.0f, 1.0f, 0xffffffff);
 	s_lpD3DDev->SetVertexShader(FVF_CV);
 	s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vtx, sizeof(__VertexXyzColor));
-*/
+
 
 	for (int i = 0; i < m_nGridH; i++)
 	{
@@ -179,8 +189,11 @@ void CN3Cloak::Render(__Matrix44& mtx)
 			s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vtx, sizeof(__VertexXyzColor));
 		}
 	}
+	*/
 
 	// restore renderstate.
+	s_lpD3DDev->SetTexture(1, nullptr);
+	s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	if (dwCull != D3DCULL_NONE)
 		s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, dwCull);
 }
@@ -335,12 +348,12 @@ void CN3Cloak::SetLOD(int nLevel)
 			m_nGridW         = 7;
 			m_nGridH         = 5;
 
-			int nVertexCount = m_pPMesh->GetMaxNumVertices();
-			int nIndexCount  = m_pPMesh->GetMaxNumIndices();
+			int nVertexCount = m_pMesh->VertexCount();
+			int nIndexCount  = m_pMesh->IndexCount();
 			m_pVertex        = new __VertexT1[nVertexCount];
-			memcpy(&m_pVertex, m_pPMesh->GetVertices(), sizeof(__VertexT1) * nVertexCount);
+			memcpy(m_pVertex, m_pMesh->Vertices(), sizeof(__VertexT1) * nVertexCount);
 			m_pIndex = new uint16_t[nIndexCount];
-			memcpy(m_pIndex, m_pPMesh->GetIndices(), sizeof(uint16_t) * nIndexCount);
+			memcpy(m_pIndex, m_pMesh->Indices(), sizeof(uint16_t) * nIndexCount);
 			m_nVertexCount = nVertexCount;
 			m_nIndexCount  = nIndexCount;
 			//
