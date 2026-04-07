@@ -17,11 +17,15 @@ class CPlayerOther : public CPlayerNPC
 public:
 	__InfoPlayerOther m_InfoExt; // 캐릭터 정보 확장..
 	bool m_bSit;
+	e_KnightsDuty KnightsDuty() const override
+	{
+		return m_InfoExt.eKnightsDuty;
+	}
 
 public:
 	void InitFace() override;
 	void InitHair() override;
-	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank) override;
+	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank, e_KnightsDuty eDuty = KNIGHTS_DUTY_UNKNOWN) override;
 	void SetSoundAndInitFont(uint32_t dwFontFlag = 0U) override;
 
 	bool Init(enum e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs, int* piItenDurabilities, uint8_t* pbyItemFlags);

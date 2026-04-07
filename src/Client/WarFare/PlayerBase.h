@@ -371,7 +371,13 @@ public:
 	void InfoStringSet(const std::string& szInfo, D3DCOLOR crFont);
 	void BalloonStringSet(const std::string& szBalloon, D3DCOLOR crFont);
 	void IDSet(int iID, const std::string& szID, D3DCOLOR crID);
-	virtual void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank);
+	virtual e_KnightsDuty KnightsDuty() const
+	{
+		return KNIGHTS_DUTY_UNKNOWN;
+	}
+
+	void DrawClanLeaderIndicator(const _POINT& pt);
+	virtual void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank, e_KnightsDuty eDuty = KNIGHTS_DUTY_UNKNOWN);
 
 	// ID 는 Character 포인터의 이름으로 대신한다.
 	const std::string& IDString() const

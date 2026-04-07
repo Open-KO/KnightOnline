@@ -295,7 +295,7 @@ void CPlayerBase::IDSet(int iID, const std::string& szID, D3DCOLOR crID)
 #endif
 }
 
-void CPlayerBase::KnightsInfoSet(int iID, const std::string& /*szName*/, int iGrade, int iRank)
+void CPlayerBase::KnightsInfoSet(int iID, const std::string& /*szName*/, int iGrade, int iRank, e_KnightsDuty /*eDuty*/)
 {
 	std::string szPlug;
 	if (iGrade > 0 && iGrade <= 5)
@@ -744,6 +744,55 @@ void CPlayerBase::Tick()  // 회전, 지정된 에니메이션 Tick 및 색깔 �
 	}
 }
 
+constexpr int CLAN_LEADER_LINE_OFFSET    = 1; // gap between name baseline and clan leader bar
+constexpr int CLAN_LEADER_LINE_THICKNESS = 1; // thickness the clan leader bar
+
+void CPlayerBase::DrawClanLeaderIndicator(const _POINT& pt)
+{
+	SIZE nameSize                     = m_pIDFont->GetSize();
+	float fLeft                       = static_cast<float>(pt.x) - (static_cast<float>(nameSize.cx) / 2.0f);
+	float fRight                      = static_cast<float>(pt.x) + (static_cast<float>(nameSize.cx) / 2.0f);
+	float fTop                        = static_cast<float>(pt.y + nameSize.cy + CLAN_LEADER_LINE_OFFSET);
+	float fBottom                     = static_cast<float>(pt.y + nameSize.cy + CLAN_LEADER_LINE_OFFSET + CLAN_LEADER_LINE_THICKNESS);
+
+	__VertexTransformedColor vLine[4] = {
+		{ fLeft, fTop, 0.0f, 1.0f, 0xff00ff00 },
+		{ fRight, fTop, 0.0f, 1.0f, 0xff00ff00 },
+		{ fRight, fBottom, 0.0f, 1.0f, 0xff00ff00 },
+		{ fLeft, fBottom, 0.0f, 1.0f, 0xff00ff00 },
+	};
+
+	DWORD dwPrevFVF = 0;
+	if (FAILED(s_lpD3DDev->GetFVF(&dwPrevFVF)))
+		return;
+
+	IDirect3DBaseTexture9* pPrevTexture = nullptr;
+	s_lpD3DDev->GetTexture(0, &pPrevTexture);
+
+	if (FAILED(s_lpD3DDev->SetTexture(0, nullptr)))
+	{
+		if (pPrevTexture != nullptr)
+			pPrevTexture->Release();
+		return;
+	}
+
+	if (FAILED(s_lpD3DDev->SetFVF(FVF_TRANSFORMEDCOLOR)))
+	{
+		s_lpD3DDev->SetTexture(0, pPrevTexture);
+		if (pPrevTexture != nullptr)
+			pPrevTexture->Release();
+		return;
+	}
+
+	s_lpD3DDev->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vLine, sizeof(__VertexTransformedColor));
+
+	s_lpD3DDev->SetTexture(0, pPrevTexture);
+	if (pPrevTexture != nullptr)
+		pPrevTexture->Release();
+
+	s_lpD3DDev->SetFVF(dwPrevFVF);
+}
+
 void CPlayerBase::Render(float fSunAngle)
 {
 	if (m_Chr.m_nLOD < 0 || m_Chr.m_nLOD >= MAX_CHR_LOD)
@@ -860,6 +909,10 @@ void CPlayerBase::Render(float fSunAngle)
 			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
 			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
 			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
+
+			// Draw green line under name if clan leader
+			if (KnightsDuty() == KNIGHTS_DUTY_CHIEF)
+				DrawClanLeaderIndicator(pt);
 
 			//Knight & clan 렌더링..
 			if (m_pClanFont && m_pClanFont->IsSetText())
