@@ -16,6 +16,8 @@ var classAujard_1_1AujardApp =
     [ "DeleteChar", "classAujard_1_1AujardApp.html#a2319162972a2e6189f449b598787f53d", null ],
     [ "DestroyKnights", "classAujard_1_1AujardApp.html#ae96bcba0ad5bfa2d8ef9b07ebf033317", null ],
     [ "GetUserPtr", "classAujard_1_1AujardApp.html#a6ea0f05418382b3347a9349ffbda070c", null ],
+    [ "HandleCustomEvent", "classAujard_1_1AujardApp.html#aab8ee8c86a2a0b8b52e37bbf53350d36", null ],
+    [ "HandleStipendRequest", "classAujard_1_1AujardApp.html#ab361a7dfffdb675bce79cb243cade25f", null ],
     [ "HandleUserLogout", "classAujard_1_1AujardApp.html#a07d3f578c066707f0b200f9ff57fcbc0", null ],
     [ "HandleUserUpdate", "classAujard_1_1AujardApp.html#ad0d6a6481c3cbe1bbc2bb8feb679ae91", null ],
     [ "HeartbeatReceived", "classAujard_1_1AujardApp.html#aef9c2387e2da92a810348f6ceb6ba6da", null ],

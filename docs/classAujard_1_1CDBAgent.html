@@ -167,6 +167,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afa8a6110b72a0ad78c97490d643ddd0a" id="r_afa8a6110b72a0ad78c97490d643ddd0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa8a6110b72a0ad78c97490d643ddd0a">LoadUserData</a> (const char *accountId, const char *charId, int userId)</td></tr>
 <tr class="memdesc:afa8a6110b72a0ad78c97490d643ddd0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">populates UserData[userId] from the database  <br /></td></tr>
 <tr class="separator:afa8a6110b72a0ad78c97490d643ddd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa08d49dd6b2a2adac9a998778a997cbf" id="r_aa08d49dd6b2a2adac9a998778a997cbf"><td class="memItemLeft" align="right" valign="top">e_StipendResponseCode&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa08d49dd6b2a2adac9a998778a997cbf">ClaimUserRankStipend</a> (uint8_t type, uint8_t rank, uint8_t nation, std::string_view charId)</td></tr>
+<tr class="memdesc:aa08d49dd6b2a2adac9a998778a997cbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempts to claim a stipend in USER_KNIGHTS_RANK/USER_PERSONAL_RANK.  <br /></td></tr>
+<tr class="separator:aa08d49dd6b2a2adac9a998778a997cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fb7f51a3534fcdc1a40a7ca76d4b743" id="r_a1fb7f51a3534fcdc1a40a7ca76d4b743"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fb7f51a3534fcdc1a40a7ca76d4b743">InitDatabase</a> ()</td></tr>
 <tr class="memdesc:a1fb7f51a3534fcdc1a40a7ca76d4b743"><td class="mdescLeft">&#160;</td><td class="mdescRight">attempts connections with <a class="el" href="classdb_1_1ConnectionManager.html" title="manages connections to the database via nanodbc">db::ConnectionManager</a> to needed dbTypes  <br /></td></tr>
 <tr class="separator:a1fb7f51a3534fcdc1a40a7ca76d4b743"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -329,6 +332,51 @@ Public Attributes</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>true when input data matches database record, false otherwise </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="DBAgent_8cpp_source.html#l01166">1166</a> of file <a class="el" href="DBAgent_8cpp_source.html">DBAgent.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa08d49dd6b2a2adac9a998778a997cbf" name="aa08d49dd6b2a2adac9a998778a997cbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa08d49dd6b2a2adac9a998778a997cbf">&#9670;&#160;</a></span>ClaimUserRankStipend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">e_StipendResponseCode Aujard::CDBAgent::ClaimUserRankStipend </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>rank</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t</td>          <td class="paramname"><span class="paramname"><em>nation</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>charId</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attempts to claim a stipend in USER_KNIGHTS_RANK/USER_PERSONAL_RANK. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>see e_StipendType </td></tr>
+    <tr><td class="paramname">rank</td><td></td></tr>
+    <tr><td class="paramname">nation</td><td></td></tr>
+    <tr><td class="paramname">charId</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>e_StipendResponseCode result of the database operation </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="DBAgent_8cpp_source.html#l01354">1354</a> of file <a class="el" href="DBAgent_8cpp_source.html">DBAgent.cpp</a>.</p>
 
 </div>
 </div>
@@ -1036,7 +1084,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DBAgent_8h_source.html#l00155">155</a> of file <a class="el" href="DBAgent_8h_source.html">DBAgent.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DBAgent_8h_source.html#l00164">164</a> of file <a class="el" href="DBAgent_8h_source.html">DBAgent.h</a>.</p>
 
 </div>
 </div>

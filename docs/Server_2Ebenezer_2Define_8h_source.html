@@ -386,74 +386,123 @@ $(function(){initNavTree('Server_2Ebenezer_2Define_8h_source.html',''); initResi
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    SEND_ALL    = 0x03,</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    SEND_ZONE   = 0x04</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>};</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="comment">// Battlezone Announcement</span></div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="keyword">enum</span> e_BattleZoneNoticeType : uint8_t</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>{</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    BATTLEZONE_OPEN                = 0x00,</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    BATTLEZONE_CLOSE               = 0x01,</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    DECLARE_WINNER                 = 0x02,</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    DECLARE_LOSER                  = 0x03,</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    DECLARE_BAN                    = 0x04,</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    KARUS_CAPTAIN_NOTIFY           = 0x05,</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    ELMORAD_CAPTAIN_NOTIFY         = 0x06,</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    KARUS_CAPTAIN_DEPRIVE_NOTIFY   = 0x07,</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    ELMORAD_CAPTAIN_DEPRIVE_NOTIFY = 0x08,</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    SNOW_BATTLEZONE_OPEN           = 0x09,</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>};</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span><span class="comment">// Battle define</span></div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span><span class="keyword">enum</span> e_BattleType : uint8_t</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>{</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    NO_BATTLE     = 0,</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    NATION_BATTLE = 1,</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    SNOW_BATTLE   = 2</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>};</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> MAX_BATTLE_ZONE_USERS = 150;</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span><span class="comment"></span> </div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span><span class="comment">//////////////////////////////////////////////////////////////////</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span><span class="comment"></span> </div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span><span class="comment">/////////////////////////////////////////////////////////////</span></div>
-<div class="foldopen" id="foldopen00316" data-start="{" data-end="};">
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno"><a class="line" href="unionEbenezer_1_1MYSHORT.html">  316</a></span><span class="keyword">typedef</span> <span class="keyword">union</span></div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>{</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    uint16_t w;</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    uint8_t b[2];</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>} <a class="code hl_union" href="unionEbenezer_1_1MYSHORT.html">MYSHORT</a>;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span><span class="comment"></span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="comment">/// \brief SendSay eventIds hard-coded in Ebenezer</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="comment">// NOLINTNEXTLINE(performance-enum-size)</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="keyword">enum</span> e_SendMsgEventIds : int32_t</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>{</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    EVENTID_NULL               = -1,</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="comment">// Master Quest Events</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    EVENTID_MASTER_QUEST_ROGUE = 6012,</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    EVENTID_MASTER_QUEST_MAGE  = 6014,</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    EVENTID_MASTER_QUEST_WARRIOR,</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    EVENTID_MASTER_QUEST_PRIEST = 6020</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>};</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span><span class="comment"></span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="comment">/// \brief SendSay messageIds hard-coded in Ebenezer</span></div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span><span class="keyword">enum</span> e_SendSayMessageIds : int32_t</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>{</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    MSG_NULL                         = -1,</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="comment">// Master Quest Messages</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    MSG_NOT_ELIGIBLE_MASTER_WARRIOR  = 6001,</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    MSG_NOT_ELIGIBLE_MASTER_ROGUE    = 7001,</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    MSG_NOT_ELIGIBLE_MASTER_MAGE     = 8001,</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    MSG_NOT_ELIGIBLE_MASTER_PRIEST   = 9001,</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    MSG_MASTER_QUEST_DESC_WARRIOR    = 6002,</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    MSG_MASTER_QUEST_DESC_ROGUE      = 7002,</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    MSG_MASTER_QUEST_DESC_MAGE       = 8002,</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    MSG_MASTER_QUEST_DESC_PRIEST     = 9002,</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    MSG_COMPLETE_MASTER_WARRIOR      = 6005,</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    MSG_COMPLETE_MASTER_ROGUE        = 7005,</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    MSG_COMPLETE_MASTER_MAGE         = 8005,</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    MSG_COMPLETE_MASTER_PRIEST       = 9005,</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    MSG_ALREADY_MASTER_WARRIOR       = 6006,</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    MSG_ALREADY_MASTER_ROGUE         = 7006,</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    MSG_ALREADY_MASTER_MAGE          = 8006,</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    MSG_ALREADY_MASTER_PRIEST        = 9006,</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    MSG_MISSING_ITEMS_MASTER_WARRIOR = 6007,</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    MSG_MISSING_ITEMS_MASTER_ROGUE   = 7007,</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    MSG_MISSING_ITEMS_MASTER_MAGE    = 8007,</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    MSG_MISSING_ITEMS_MASTER_PRIEST  = 9007,</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    MSG_MASTER_QUEST_ACCEPT_WARRIOR  = 6011,</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    MSG_MASTER_QUEST_ACCEPT_ROGUE    = 7011,</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    MSG_MASTER_QUEST_ACCEPT_MAGE     = 8011,</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    MSG_MASTER_QUEST_ACCEPT_PRIEST   = 9011,</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="comment">// User Rank Stipend Messages</span></div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    MSG_STIPEND_GIVE_REWARD          = 5001,</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    MSG_STIPEND_ALREADY_CLAIMED      = 35630</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>};</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="comment">// Battlezone Announcement</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span><span class="keyword">enum</span> e_BattleZoneNoticeType : uint8_t</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>{</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    BATTLEZONE_OPEN                = 0x00,</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    BATTLEZONE_CLOSE               = 0x01,</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    DECLARE_WINNER                 = 0x02,</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    DECLARE_LOSER                  = 0x03,</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    DECLARE_BAN                    = 0x04,</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    KARUS_CAPTAIN_NOTIFY           = 0x05,</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    ELMORAD_CAPTAIN_NOTIFY         = 0x06,</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    KARUS_CAPTAIN_DEPRIVE_NOTIFY   = 0x07,</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    ELMORAD_CAPTAIN_DEPRIVE_NOTIFY = 0x08,</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    SNOW_BATTLEZONE_OPEN           = 0x09,</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>};</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span><span class="comment">// Battle define</span></div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span><span class="keyword">enum</span> e_BattleType : uint8_t</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>{</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    NO_BATTLE     = 0,</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    NATION_BATTLE = 1,</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    SNOW_BATTLE   = 2</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>};</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span> </div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> MAX_BATTLE_ZONE_USERS = 150;</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span><span class="comment"></span> </div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span><span class="comment">//////////////////////////////////////////////////////////////////</span></div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span><span class="comment"></span> </div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span><span class="comment">/////////////////////////////////////////////////////////////</span></div>
+<div class="foldopen" id="foldopen00365" data-start="{" data-end="};">
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno"><a class="line" href="unionEbenezer_1_1MYSHORT.html">  365</a></span><span class="keyword">typedef</span> <span class="keyword">union</span></div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>{</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    uint16_t w;</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    uint8_t b[2];</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>} <a class="code hl_union" href="unionEbenezer_1_1MYSHORT.html">MYSHORT</a>;</div>
 </div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span> </div>
-<div class="foldopen" id="foldopen00322" data-start="{" data-end="};">
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno"><a class="line" href="unionEbenezer_1_1MYINT64.html">  322</a></span><span class="keyword">typedef</span> <span class="keyword">union</span></div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>{</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    int64_t i;</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    uint8_t b[8];</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>} <a class="code hl_union" href="unionEbenezer_1_1MYINT64.html">MYINT64</a>;</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span> </div>
+<div class="foldopen" id="foldopen00371" data-start="{" data-end="};">
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno"><a class="line" href="unionEbenezer_1_1MYINT64.html">  371</a></span><span class="keyword">typedef</span> <span class="keyword">union</span></div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>{</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    int64_t i;</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    uint8_t b[8];</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>} <a class="code hl_union" href="unionEbenezer_1_1MYINT64.html">MYINT64</a>;</div>
 </div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
-<div class="foldopen" id="foldopen00328" data-start="{" data-end="};">
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno"><a class="line" href="structEbenezer_1_1__REGION__BUFFER.html">  328</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEbenezer_1_1__REGION__BUFFER.html">_REGION_BUFFER</a></div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>{</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keywordtype">int</span> iLength = 0;</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keywordtype">char</span> pDataBuff[REGION_BUFF_SIZE] {};</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>};</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
+<div class="foldopen" id="foldopen00377" data-start="{" data-end="};">
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno"><a class="line" href="structEbenezer_1_1__REGION__BUFFER.html">  377</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEbenezer_1_1__REGION__BUFFER.html">_REGION_BUFFER</a></div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>{</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keywordtype">int</span> iLength = 0;</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <span class="keywordtype">char</span> pDataBuff[REGION_BUFF_SIZE] {};</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>};</div>
 </div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
-<div class="foldopen" id="foldopen00334" data-start="{" data-end="};">
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno"><a class="line" href="structEbenezer_1_1ItemPair.html">  334</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEbenezer_1_1ItemPair.html">ItemPair</a></div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>{</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <span class="keywordtype">int</span> ItemId    = -1;</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    int16_t Count = 1;</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>};</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span> </div>
+<div class="foldopen" id="foldopen00383" data-start="{" data-end="};">
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno"><a class="line" href="structEbenezer_1_1ItemPair.html">  383</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structEbenezer_1_1ItemPair.html">ItemPair</a></div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>{</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    <span class="keywordtype">int</span> ItemId    = -1;</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    int16_t Count = 1;</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>};</div>
 </div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span> </div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>} <span class="comment">// namespace Ebenezer</span></div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_EBENEZER_DEFINE_H</span></div>
-<div class="ttc" id="astructEbenezer_1_1ItemPair_html"><div class="ttname"><a href="structEbenezer_1_1ItemPair.html">Ebenezer::ItemPair</a></div><div class="ttdef"><b>Definition</b> <a href="#l00334">Define.h:335</a></div></div>
-<div class="ttc" id="astructEbenezer_1_1__REGION__BUFFER_html"><div class="ttname"><a href="structEbenezer_1_1__REGION__BUFFER.html">Ebenezer::_REGION_BUFFER</a></div><div class="ttdef"><b>Definition</b> <a href="#l00328">Define.h:329</a></div></div>
-<div class="ttc" id="aunionEbenezer_1_1MYINT64_html"><div class="ttname"><a href="unionEbenezer_1_1MYINT64.html">Ebenezer::MYINT64</a></div><div class="ttdef"><b>Definition</b> <a href="#l00322">Define.h:323</a></div></div>
-<div class="ttc" id="aunionEbenezer_1_1MYSHORT_html"><div class="ttname"><a href="unionEbenezer_1_1MYSHORT.html">Ebenezer::MYSHORT</a></div><div class="ttdef"><b>Definition</b> <a href="#l00316">Define.h:317</a></div></div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span> </div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>} <span class="comment">// namespace Ebenezer</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span> </div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_EBENEZER_DEFINE_H</span></div>
+<div class="ttc" id="astructEbenezer_1_1ItemPair_html"><div class="ttname"><a href="structEbenezer_1_1ItemPair.html">Ebenezer::ItemPair</a></div><div class="ttdef"><b>Definition</b> <a href="#l00383">Define.h:384</a></div></div>
+<div class="ttc" id="astructEbenezer_1_1__REGION__BUFFER_html"><div class="ttname"><a href="structEbenezer_1_1__REGION__BUFFER.html">Ebenezer::_REGION_BUFFER</a></div><div class="ttdef"><b>Definition</b> <a href="#l00377">Define.h:378</a></div></div>
+<div class="ttc" id="aunionEbenezer_1_1MYINT64_html"><div class="ttname"><a href="unionEbenezer_1_1MYINT64.html">Ebenezer::MYINT64</a></div><div class="ttdef"><b>Definition</b> <a href="#l00371">Define.h:372</a></div></div>
+<div class="ttc" id="aunionEbenezer_1_1MYSHORT_html"><div class="ttname"><a href="unionEbenezer_1_1MYSHORT.html">Ebenezer::MYSHORT</a></div><div class="ttdef"><b>Definition</b> <a href="#l00365">Define.h:366</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -3,6 +3,7 @@ var classAujard_1_1CDBAgent =
     [ "AccountLogInReq", "classAujard_1_1CDBAgent.html#a75abbeb6861439a37a9f74991e54f8d7", null ],
     [ "AccountLogout", "classAujard_1_1CDBAgent.html#a09c22dc1e0cd92bab2f97c6068060ac2", null ],
     [ "CheckUserData", "classAujard_1_1CDBAgent.html#af2aaf68af7a8d4ef2dcc006e5fbdfa65", null ],
+    [ "ClaimUserRankStipend", "classAujard_1_1CDBAgent.html#aa08d49dd6b2a2adac9a998778a997cbf", null ],
     [ "CreateKnights", "classAujard_1_1CDBAgent.html#aac2a43687fd74a9bba66d2f405655da2", null ],
     [ "CreateNewChar", "classAujard_1_1CDBAgent.html#a8eb43333787fb48d65c7d01279405679", null ],
     [ "DeleteKnights", "classAujard_1_1CDBAgent.html#ac7d29c0d2238aa987124443859cd99cf", null ],

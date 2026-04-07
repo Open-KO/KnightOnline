@@ -238,34 +238,43 @@ $(function(){initNavTree('DBAgent_8h_source.html',''); initResizable(true); });
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment"></span> </div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="comment">    /// \brief populates UserData[userId] from the database</span></div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classAujard_1_1CDBAgent.html#afa8a6110b72a0ad78c97490d643ddd0a">LoadUserData</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* accountId, <span class="keyword">const</span> <span class="keywordtype">char</span>* charId, <span class="keywordtype">int</span> userId);</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="comment">// stored procs not implemented:</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="comment">//bool UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count);</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="comment">//bool CheckCouponEvent(const char* accountId);</span></div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="comment">//bool DeleteChar(int index, char* id, char* charId, char* socno);</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="comment"></span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="comment">    /// \brief attempts connections with db::ConnectionManager to needed dbTypes</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="comment">    /// \returns true is successful, false otherwise</span></div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classAujard_1_1CDBAgent.html#a1fb7f51a3534fcdc1a40a7ca76d4b743">InitDatabase</a>();</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="comment"></span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="comment">    /// \brief resets a UserData[userId] record.  Called after logout actions</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="comment">    /// \see UserData</span></div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classAujard_1_1CDBAgent.html#acb6cca10b1d05ed189a721e93dde2a71">ResetUserData</a>(<span class="keywordtype">int</span> userId);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    CDBAgent();</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">virtual</span> ~CDBAgent();</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    UserDataArray UserData;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="keyword">private</span>:<span class="comment"></span></div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="comment">    /// \brief reference back to the main AujardApp instance</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_class" href="classAujard_1_1AujardApp.html">AujardApp</a>* _main = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>};</div>
-</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>} <span class="comment">// namespace Aujard</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="comment"></span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="comment">    /// \brief Attempts to claim a stipend in USER_KNIGHTS_RANK/USER_PERSONAL_RANK.</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="comment">    /// \param type see e_StipendType</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="comment">    /// \param rank</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="comment">    /// \param nation</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="comment">    /// \param charId</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="comment">    /// \return e_StipendResponseCode result of the database operation</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    e_StipendResponseCode <a class="code hl_function" href="classAujard_1_1CDBAgent.html#aa08d49dd6b2a2adac9a998778a997cbf">ClaimUserRankStipend</a>(</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        uint8_t type, uint8_t rank, uint8_t nation, std::string_view charId);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="comment">// stored procs not implemented:</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="comment">//bool UpdateCouponEvent(const char* accountId, char* charId, char* cpid, int itemId, int count);</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="comment">//bool CheckCouponEvent(const char* accountId);</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="comment">//bool DeleteChar(int index, char* id, char* charId, char* socno);</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="comment"></span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="comment">    /// \brief attempts connections with db::ConnectionManager to needed dbTypes</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">    /// \returns true is successful, false otherwise</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classAujard_1_1CDBAgent.html#a1fb7f51a3534fcdc1a40a7ca76d4b743">InitDatabase</a>();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="comment"></span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="comment">    /// \brief resets a UserData[userId] record.  Called after logout actions</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="comment">    /// \see UserData</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classAujard_1_1CDBAgent.html#acb6cca10b1d05ed189a721e93dde2a71">ResetUserData</a>(<span class="keywordtype">int</span> userId);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    CDBAgent();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">virtual</span> ~CDBAgent();</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_AUJARD_DBAGENT_H</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    UserDataArray UserData;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="keyword">private</span>:<span class="comment"></span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="comment">    /// \brief reference back to the main AujardApp instance</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <a class="code hl_class" href="classAujard_1_1AujardApp.html">AujardApp</a>* _main = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>};</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>} <span class="comment">// namespace Aujard</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="preprocessor">#endif </span><span class="comment">// SERVER_AUJARD_DBAGENT_H</span></div>
 <div class="ttc" id="aclassAujard_1_1AujardApp_html"><div class="ttname"><a href="classAujard_1_1AujardApp.html">Aujard::AujardApp</a></div><div class="ttdef"><b>Definition</b> <a href="AujardApp_8h_source.html#l00026">AujardApp.h:27</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_a022b64464c088745fbe1c35e71aecb84"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#a022b64464c088745fbe1c35e71aecb84">Aujard::CDBAgent::LoadCharInfo</a></div><div class="ttdeci">bool LoadCharInfo(char *charId, char *buff, int &amp;buffIndex)</div><div class="ttdoc">loads character information needed in WIZ_ALLCHAR_INFO_REQ</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l00547">DBAgent.cpp:547</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_a04638ceebda3013fd407cc1a0446ce1e"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#a04638ceebda3013fd407cc1a0446ce1e">Aujard::CDBAgent::UpdateKnights</a></div><div class="ttdeci">int UpdateKnights(int type, char *charId, int knightsId, int domination)</div><div class="ttdoc">attempts to update a knights clan</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l00724">DBAgent.cpp:724</a></div></div>
@@ -279,6 +288,7 @@ $(function(){initNavTree('DBAgent_8h_source.html',''); initResizable(true); });
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_a8a80a0ea4458b6ba8e6447fb71a621fe"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#a8a80a0ea4458b6ba8e6447fb71a621fe">Aujard::CDBAgent::UpdateConCurrentUserCount</a></div><div class="ttdeci">bool UpdateConCurrentUserCount(int serverId, int zoneId, int userCount)</div><div class="ttdoc">updates concurrent zone count</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l00827">DBAgent.cpp:827</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_a8eb43333787fb48d65c7d01279405679"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#a8eb43333787fb48d65c7d01279405679">Aujard::CDBAgent::CreateNewChar</a></div><div class="ttdeci">int CreateNewChar(char *accountId, int index, char *charId, int race, int Class, int hair, int face, int str, int sta, int dex, int intel, int cha)</div><div class="ttdoc">attempts to create a new character</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l00526">DBAgent.cpp:526</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_a9a0cf545f1a47c73c249d621556e193a"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#a9a0cf545f1a47c73c249d621556e193a">Aujard::CDBAgent::LoadKnightsAllList</a></div><div class="ttdeci">void LoadKnightsAllList(int nation)</div><div class="ttdoc">loads knights ranking data by nation to handle DB_KNIGHTS_ALLLIST_REQ</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l01224">DBAgent.cpp:1224</a></div></div>
+<div class="ttc" id="aclassAujard_1_1CDBAgent_html_aa08d49dd6b2a2adac9a998778a997cbf"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#aa08d49dd6b2a2adac9a998778a997cbf">Aujard::CDBAgent::ClaimUserRankStipend</a></div><div class="ttdeci">e_StipendResponseCode ClaimUserRankStipend(uint8_t type, uint8_t rank, uint8_t nation, std::string_view charId)</div><div class="ttdoc">Attempts to claim a stipend in USER_KNIGHTS_RANK/USER_PERSONAL_RANK.</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l01354">DBAgent.cpp:1354</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_aa42c0ce77ed39473f40392c994045fc7"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#aa42c0ce77ed39473f40392c994045fc7">Aujard::CDBAgent::UpdateBattleEvent</a></div><div class="ttdeci">bool UpdateBattleEvent(const char *charId, int nation)</div><div class="ttdoc">updates which nation won the war and which charId killed the commander</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l01318">DBAgent.cpp:1318</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_aa49475049048fde0016809ab56874a37"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#aa49475049048fde0016809ab56874a37">Aujard::CDBAgent::SetLogInInfo</a></div><div class="ttdeci">bool SetLogInInfo(const char *accountId, const char *charId, const char *serverIp, int serverId, const char *clientIp, uint8_t init)</div><div class="ttdoc">sets CURRENTUSER record for a given accountId</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l01071">DBAgent.cpp:1071</a></div></div>
 <div class="ttc" id="aclassAujard_1_1CDBAgent_html_aac2a43687fd74a9bba66d2f405655da2"><div class="ttname"><a href="classAujard_1_1CDBAgent.html#aac2a43687fd74a9bba66d2f405655da2">Aujard::CDBAgent::CreateKnights</a></div><div class="ttdeci">int CreateKnights(int knightsId, int nation, char *name, char *chief, int flag=1)</div><div class="ttdoc">attempts to create a knights clan</div><div class="ttdef"><b>Definition</b> <a href="DBAgent_8cpp_source.html#l00698">DBAgent.cpp:698</a></div></div>

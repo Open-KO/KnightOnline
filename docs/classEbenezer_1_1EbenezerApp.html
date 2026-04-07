@@ -171,6 +171,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af21781870d3382316cfc86f5d2b589b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a462f4cc86235068806553b4b5af8fa9b" id="r_a462f4cc86235068806553b4b5af8fa9b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a462f4cc86235068806553b4b5af8fa9b">LoadHomeTable</a> ()</td></tr>
 <tr class="separator:a462f4cc86235068806553b4b5af8fa9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a177c55f0ef78b5e6ab6e13a94744f821" id="r_a177c55f0ef78b5e6ab6e13a94744f821"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a177c55f0ef78b5e6ab6e13a94744f821">LoadUserKnightsRank</a> ()</td></tr>
+<tr class="memdesc:a177c55f0ef78b5e6ab6e13a94744f821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the m_UserKnightsRankMap cache.  <br /></td></tr>
+<tr class="separator:a177c55f0ef78b5e6ab6e13a94744f821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a627dbbdae0d2bf038ebff1dc1f4cabf5" id="r_a627dbbdae0d2bf038ebff1dc1f4cabf5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a627dbbdae0d2bf038ebff1dc1f4cabf5">LoadUserPersonalRank</a> ()</td></tr>
+<tr class="memdesc:a627dbbdae0d2bf038ebff1dc1f4cabf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the m_UserPersonalRankMap cache.  <br /></td></tr>
+<tr class="separator:a627dbbdae0d2bf038ebff1dc1f4cabf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af17a6589c3a23c427de6a60f391b4fcc" id="r_af17a6589c3a23c427de6a60f391b4fcc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af17a6589c3a23c427de6a60f391b4fcc">ResetPaymentList</a> ()</td></tr>
+<tr class="memdesc:af17a6589c3a23c427de6a60f391b4fcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets User Knights stipends.  <br /></td></tr>
+<tr class="separator:af17a6589c3a23c427de6a60f391b4fcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a911dbe5a35858d7e2cc09a24b1912e33" id="r_a911dbe5a35858d7e2cc09a24b1912e33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a911dbe5a35858d7e2cc09a24b1912e33">LoadItemExchange</a> ()</td></tr>
 <tr class="memdesc:a911dbe5a35858d7e2cc09a24b1912e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the m_ItemExchangeMap cache.  <br /></td></tr>
 <tr class="separator:a911dbe5a35858d7e2cc09a24b1912e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -410,6 +419,12 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a616f70a68425a715bf1dae44fa97a83a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5ac95a5b4010a8b7debb680a0c3683a" id="r_af5ac95a5b4010a8b7debb680a0c3683a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCSTLMap.html">ItemExchangeMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5ac95a5b4010a8b7debb680a0c3683a">m_ItemExchangeMap</a></td></tr>
 <tr class="separator:af5ac95a5b4010a8b7debb680a0c3683a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67f00df32a4b0c87558f015aceeda33a" id="r_a67f00df32a4b0c87558f015aceeda33a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCSTLMap.html">UserKnightsRankMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67f00df32a4b0c87558f015aceeda33a">m_UserKnightsRankMap</a></td></tr>
+<tr class="memdesc:a67f00df32a4b0c87558f015aceeda33a"><td class="mdescLeft">&#160;</td><td class="mdescRight">User Knights Ranking cache. Officially this is split into two caches that track stipend claims in-memory, which means stipends reset on a server crash/restart.  <br /></td></tr>
+<tr class="separator:a67f00df32a4b0c87558f015aceeda33a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44f92c88a3705bcfe74063e5046cfc40" id="r_a44f92c88a3705bcfe74063e5046cfc40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCSTLMap.html">UserPersonalRankMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44f92c88a3705bcfe74063e5046cfc40">m_UserPersonalRankMap</a></td></tr>
+<tr class="memdesc:a44f92c88a3705bcfe74063e5046cfc40"><td class="mdescLeft">&#160;</td><td class="mdescRight">User Personal Ranking cache. Officially this is split into two caches that track stipend claims in-memory, which means stipends reset on a server crash/restart. We store these values to the database to only reset claim status on planned reset.  <br /></td></tr>
+<tr class="separator:a44f92c88a3705bcfe74063e5046cfc40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8088a499e98ad4a00b5c463c2b496325" id="r_a8088a499e98ad4a00b5c463c2b496325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEbenezer_1_1CKnightsManager.html">CKnightsManager</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8088a499e98ad4a00b5c463c2b496325">m_KnightsManager</a></td></tr>
 <tr class="separator:a8088a499e98ad4a00b5c463c2b496325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12372ef80c0b92bba229f2f63d23776f" id="r_a12372ef80c0b92bba229f2f63d23776f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classEbenezer_1_1CKnightsSiegeWar.html">CKnightsSiegeWar</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12372ef80c0b92bba229f2f63d23776f">m_KnightsSiegeWar</a></td></tr>
@@ -552,8 +567,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a4157fc76fa5fb32947f826d194c4fdb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f9e3d6dcb893ae1035f7e59c3370ee8" id="r_a5f9e3d6dcb893ae1035f7e59c3370ee8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f9e3d6dcb893ae1035f7e59c3370ee8">m_nServerGroupNo</a></td></tr>
 <tr class="separator:a5f9e3d6dcb893ae1035f7e59c3370ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a154a85d625b511836a79b49da28d79" id="r_a5a154a85d625b511836a79b49da28d79"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a154a85d625b511836a79b49da28d79">m_nServerGroup</a></td></tr>
-<tr class="separator:a5a154a85d625b511836a79b49da28d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d411d082dda8f2c94c4ab0db22f41fa" id="r_a5d411d082dda8f2c94c4ab0db22f41fa"><td class="memItemLeft" align="right" valign="top">e_ServerGroupType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d411d082dda8f2c94c4ab0db22f41fa">m_nServerGroup</a></td></tr>
+<tr class="memdesc:a5d411d082dda8f2c94c4ab0db22f41fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which group the server belongs to. Loaded from config ZONE_INFO.SERVER_NUM.  <br /></td></tr>
+<tr class="separator:a5d411d082dda8f2c94c4ab0db22f41fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34e7648de24542d15c0aca922341c30b" id="r_a34e7648de24542d15c0aca922341c30b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCSTLMap.html">ServerMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a34e7648de24542d15c0aca922341c30b">m_ServerArray</a></td></tr>
 <tr class="separator:a34e7648de24542d15c0aca922341c30b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a0e6ef44e7007663305daa3273db9b7" id="r_a7a0e6ef44e7007663305daa3273db9b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCSTLMap.html">ServerMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a0e6ef44e7007663305daa3273db9b7">m_ServerGroupArray</a></td></tr>
@@ -624,7 +640,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00069">69</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00071">71</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a23e0e394d9484d8e2a4e99a0163cfe02" name="a23e0e394d9484d8e2a4e99a0163cfe02"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a23e0e394d9484d8e2a4e99a0163cfe02">&#9670;&#160;</a></span>EbenezerApp()</h2>
@@ -641,7 +657,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00043">43</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00044">44</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -668,7 +684,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00157">157</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00158">158</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -688,7 +704,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00539">539</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00553">553</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -711,7 +727,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00550">550</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00564">564</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -730,7 +746,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02272">2272</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02286">2286</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -758,7 +774,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02535">2535</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02556">2556</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -777,7 +793,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02488">2488</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02509">2509</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -796,7 +812,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03315">3315</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03372">3372</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -815,7 +831,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02422">2422</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02443">2443</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -834,7 +850,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02302">2302</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02316">2316</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -853,7 +869,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02461">2461</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02482">2482</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -872,7 +888,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03012">3012</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03069">3069</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -902,7 +918,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classAppThread.html#a70e8eaa75b63b615c7109bba12107898">AppThread</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01175">1175</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01189">1189</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -921,7 +937,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02184">2184</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02198">2198</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -948,7 +964,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00082">82</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00084">84</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -967,7 +983,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03355">3355</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03412">3412</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -986,7 +1002,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03449">3449</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03506">3506</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1005,7 +1021,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03049">3049</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03106">3106</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1024,7 +1040,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00626">626</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00640">640</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1047,7 +1063,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03430">3430</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03487">3487</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1070,7 +1086,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03423">3423</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03480">3480</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1103,7 +1119,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02858">2858</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02915">2915</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1122,7 +1138,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02992">2992</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03049">3049</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1141,7 +1157,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02249">2249</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02263">2263</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1176,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03373">3373</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03430">3430</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1195,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03365">3365</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03422">3422</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1202,7 +1218,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02228">2228</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02242">2242</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1240,7 +1256,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01765">1765</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01779">1779</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1283,7 +1299,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01902">1902</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01916">1916</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1321,7 +1337,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01625">1625</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01639">1639</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1359,7 +1375,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01661">1661</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01675">1675</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1382,7 +1398,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00512">512</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00526">526</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1409,7 +1425,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00190">190</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00203">203</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -1436,7 +1452,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00195">195</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00208">208</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -1463,7 +1479,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00200">200</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00213">213</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -1482,7 +1498,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01948">1948</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01962">1962</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1514,7 +1530,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classAppThread.html#a2fdc6a486c4e1302ba030db0e20ec517">AppThread</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01960">1960</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01974">1974</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1533,7 +1549,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00872">872</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00886">886</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1560,7 +1576,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00072">72</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00074">74</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -1587,7 +1603,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00205">205</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00218">218</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -1606,7 +1622,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03035">3035</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03092">3092</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1625,7 +1641,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03075">3075</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03132">3132</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1644,7 +1660,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02218">2218</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02232">2232</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1663,7 +1679,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02680">2680</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02701">2701</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1682,7 +1698,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02799">2799</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02820">2820</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1701,7 +1717,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03115">3115</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03172">3172</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1720,7 +1736,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01112">1112</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01126">1126</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1758,7 +1774,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classAppThread.html#aca754393e3c2e213af753305b88d9edb">AppThread</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01180">1180</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01194">1194</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1777,7 +1793,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03384">3384</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03441">3441</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1796,7 +1812,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02656">2656</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02677">2677</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1818,7 +1834,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Loads the m_ItemExchangeMap cache. </p>
 <dl class="section return"><dt>Returns</dt><dd>true when successful, false otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02668">2668</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02689">2689</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1837,7 +1853,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00977">977</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00991">991</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1856,7 +1872,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00989">989</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01003">1003</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1875,7 +1891,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03160">3160</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03217">3217</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1894,7 +1910,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02830">2830</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02851">2851</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1913,7 +1929,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01125">1125</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01139">1139</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1932,7 +1948,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01016">1016</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01030">1030</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1951,7 +1967,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01028">1028</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01042">1042</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1970,7 +1986,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01040">1040</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01054">1054</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -1989,7 +2005,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01052">1052</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01066">1066</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2008,7 +2024,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01064">1064</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01078">1078</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2027,7 +2043,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01076">1076</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01090">1090</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2046,7 +2062,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01088">1088</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01102">1102</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2065,7 +2081,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01100">1100</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01114">1114</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2084,7 +2100,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02014">2014</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02028">2028</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2103,7 +2119,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02634">2634</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02655">2655</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2122,7 +2138,51 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02621">2621</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02642">2642</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a177c55f0ef78b5e6ab6e13a94744f821" name="a177c55f0ef78b5e6ab6e13a94744f821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a177c55f0ef78b5e6ab6e13a94744f821">&#9670;&#160;</a></span>LoadUserKnightsRank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ebenezer::EbenezerApp::LoadUserKnightsRank </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads the m_UserKnightsRankMap cache. </p>
+<dl class="section return"><dt>Returns</dt><dd>true when successful, false otherwise </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02879">2879</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a627dbbdae0d2bf038ebff1dc1f4cabf5" name="a627dbbdae0d2bf038ebff1dc1f4cabf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a627dbbdae0d2bf038ebff1dc1f4cabf5">&#9670;&#160;</a></span>LoadUserPersonalRank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Ebenezer::EbenezerApp::LoadUserPersonalRank </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads the m_UserPersonalRankMap cache. </p>
+<dl class="section return"><dt>Returns</dt><dd>true when successful, false otherwise </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02892">2892</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2141,7 +2201,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00901">901</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00915">915</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2160,7 +2220,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02968">2968</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03025">3025</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2179,7 +2239,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02977">2977</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03034">3034</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2198,7 +2258,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02932">2932</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02989">2989</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2217,7 +2277,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01690">1690</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01704">1704</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2249,7 +2309,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classAppThread.html#aa130556414bab427657551fdc8efead7">AppThread</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00246">246</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00247">247</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2281,7 +2341,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classAppThread.html#a4a57fd28276fe689af4b8d487eccfe4d">AppThread</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01150">1150</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01164">1164</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2308,7 +2368,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00077">77</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00079">79</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -2331,7 +2391,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01804">1804</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01818">1818</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2350,7 +2410,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01546">1546</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01560">1560</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2369,7 +2429,28 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02516">2516</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02537">2537</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+
+</div>
+</div>
+<a id="af17a6589c3a23c427de6a60f391b4fcc" name="af17a6589c3a23c427de6a60f391b4fcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af17a6589c3a23c427de6a60f391b4fcc">&#9670;&#160;</a></span>ResetPaymentList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Ebenezer::EbenezerApp::ResetPaymentList </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resets User Knights stipends. </p>
+
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02905">2905</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2397,7 +2478,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00833">833</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00847">847</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2430,7 +2511,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00644">644</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00658">658</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2463,7 +2544,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03142">3142</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03199">3199</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2516,7 +2597,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00761">761</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00775">775</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2549,7 +2630,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00806">806</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00820">820</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2602,7 +2683,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00708">708</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00722">722</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2630,7 +2711,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00789">789</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00803">803</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2678,7 +2759,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00661">661</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00675">675</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2706,7 +2787,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03095">3095</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03152">3152</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2754,7 +2835,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00679">679</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00693">693</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2773,7 +2854,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02052">2052</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02066">2066</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2792,7 +2873,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02143">2143</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02157">2157</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2811,7 +2892,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03441">3441</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03498">3498</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2830,7 +2911,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01401">1401</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01415">1415</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2861,7 +2942,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classAppThread.html#a739db39ea284bce3526859c3d0464bc7">AppThread</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01137">1137</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01151">1151</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2880,7 +2961,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01293">1293</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01307">1307</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2899,7 +2980,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01366">1366</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01380">1380</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2918,7 +2999,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00506">506</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l00520">520</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2937,7 +3018,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01412">1412</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l01426">1426</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2956,7 +3037,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02257">2257</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02271">2271</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2975,7 +3056,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l02986">2986</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8cpp_source.html#l03043">3043</a> of file <a class="el" href="EbenezerApp_8cpp_source.html">EbenezerApp.cpp</a>.</p>
 
 </div>
 </div>
@@ -2992,7 +3073,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00214">214</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00227">227</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3008,7 +3089,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00227">227</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00240">240</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3024,7 +3105,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00228">228</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00241">241</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3040,7 +3121,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00317">317</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00341">341</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3056,7 +3137,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00287">287</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00311">311</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3072,7 +3153,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00286">286</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00310">310</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3088,7 +3169,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00319">319</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00343">343</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3104,7 +3185,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00321">321</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00345">345</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3120,7 +3201,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00320">320</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00344">344</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3136,7 +3217,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00213">213</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00226">226</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3152,7 +3233,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00225">225</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00238">238</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3168,7 +3249,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00281">281</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00305">305</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3184,7 +3265,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00261">261</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00285">285</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3200,7 +3281,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00281">281</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00305">305</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3216,7 +3297,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00294">294</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00318">318</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3232,7 +3313,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00311">311</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00335">335</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3248,7 +3329,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00310">310</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00334">334</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3264,7 +3345,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00264">264</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00288">288</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3280,7 +3361,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00262">262</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00286">286</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3296,7 +3377,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00280">280</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00304">304</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3312,7 +3393,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00282">282</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00306">306</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3328,7 +3409,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00278">278</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00302">302</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3344,7 +3425,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00282">282</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00306">306</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3360,7 +3441,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00282">282</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00306">306</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3376,7 +3457,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00282">282</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00306">306</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3392,7 +3473,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00279">279</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00303">303</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3408,7 +3489,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00280">280</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00304">304</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3424,7 +3505,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00315">315</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00339">339</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3440,7 +3521,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00242">242</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00255">255</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3456,7 +3537,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00325">325</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00349">349</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3472,7 +3553,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00324">324</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00348">348</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3488,7 +3569,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00249">249</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00262">262</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3504,7 +3585,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00250">250</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00263">263</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3520,7 +3601,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00301">301</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00325">325</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3536,7 +3617,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00266">266</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00290">290</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3552,7 +3633,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00307">307</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00331">331</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3568,7 +3649,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00246">246</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00259">259</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3584,7 +3665,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00300">300</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00324">324</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3600,7 +3681,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00326">326</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00350">350</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3616,7 +3697,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00270">270</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00294">294</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3632,7 +3713,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00272">272</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00296">296</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3648,7 +3729,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00306">306</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00330">330</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3664,7 +3745,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00271">271</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00295">295</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3680,7 +3761,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00251">251</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00264">264</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3696,7 +3777,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00218">218</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00231">231</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3712,7 +3793,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00232">232</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00245">245</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3728,7 +3809,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00233">233</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00246">246</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3744,7 +3825,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00253">253</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00277">277</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3760,7 +3841,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00245">245</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00258">258</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3776,7 +3857,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00254">254</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00278">278</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3792,7 +3873,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00243">243</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00256">256</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3808,7 +3889,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00217">217</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00230">230</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3824,7 +3905,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00216">216</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00229">229</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3840,7 +3921,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00234">234</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00247">247</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3856,7 +3937,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00235">235</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00248">248</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3872,7 +3953,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00236">236</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00249">249</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3888,7 +3969,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00237">237</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00250">250</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3904,7 +3985,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00238">238</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00251">251</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3920,7 +4001,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00239">239</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00252">252</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3936,7 +4017,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00240">240</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00253">253</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3952,7 +4033,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00241">241</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00254">254</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3968,7 +4049,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -3984,7 +4065,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00289">289</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00313">313</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4000,7 +4081,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00289">289</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00313">313</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4016,7 +4097,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00289">289</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00313">313</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4032,7 +4113,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00275">275</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00299">299</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4048,7 +4129,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4064,7 +4145,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4080,7 +4161,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4096,7 +4177,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4112,23 +4193,26 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00230">230</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00243">243</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
-<a id="a5a154a85d625b511836a79b49da28d79" name="a5a154a85d625b511836a79b49da28d79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a154a85d625b511836a79b49da28d79">&#9670;&#160;</a></span>m_nServerGroup</h2>
+<a id="a5d411d082dda8f2c94c4ab0db22f41fa" name="a5d411d082dda8f2c94c4ab0db22f41fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d411d082dda8f2c94c4ab0db22f41fa">&#9670;&#160;</a></span>m_nServerGroup</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Ebenezer::EbenezerApp::m_nServerGroup</td>
+          <td class="memname">e_ServerGroupType Ebenezer::EbenezerApp::m_nServerGroup</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00332">332</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p>Which group the server belongs to. Loaded from config ZONE_INFO.SERVER_NUM. </p>
+<dl class="section see"><dt>See also</dt><dd>e_ServerGroupType for possible values </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00359">359</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4144,7 +4228,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00331">331</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00355">355</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4160,7 +4244,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00330">330</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00354">354</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4176,7 +4260,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00331">331</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00355">355</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4192,7 +4276,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4208,7 +4292,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00274">274</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4224,7 +4308,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00244">244</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00257">257</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4240,7 +4324,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00224">224</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00237">237</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4256,7 +4340,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00335">335</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00363">363</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4272,7 +4356,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00284">284</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00308">308</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4288,7 +4372,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00297">297</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00321">321</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4304,7 +4388,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00283">283</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00307">307</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4320,7 +4404,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00284">284</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00308">308</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4336,7 +4420,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00284">284</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00308">308</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4352,7 +4436,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00267">267</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00291">291</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4368,7 +4452,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00333">333</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00361">361</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4384,7 +4468,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00334">334</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00362">362</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4400,7 +4484,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00222">222</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00235">235</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4416,7 +4500,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00247">247</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00260">260</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4432,7 +4516,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00284">284</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00308">308</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4448,7 +4532,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00284">284</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00308">308</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4464,7 +4548,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00256">256</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00280">280</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4480,7 +4564,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00265">265</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00289">289</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4496,7 +4580,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00303">303</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00327">327</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4512,7 +4596,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00260">260</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00284">284</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4528,7 +4612,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00258">258</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00282">282</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4544,7 +4628,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00248">248</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00261">261</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4560,7 +4644,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00299">299</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00323">323</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4576,7 +4660,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00298">298</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00322">322</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4592,7 +4676,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00291">291</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00315">315</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4608,7 +4692,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00290">290</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00314">314</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4624,7 +4708,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00312">312</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00336">336</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4640,7 +4724,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00305">305</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00329">329</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4656,7 +4740,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00304">304</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00328">328</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4672,7 +4756,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00257">257</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00281">281</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4688,7 +4772,45 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00220">220</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00233">233</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+
+</div>
+</div>
+<a id="a67f00df32a4b0c87558f015aceeda33a" name="a67f00df32a4b0c87558f015aceeda33a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67f00df32a4b0c87558f015aceeda33a">&#9670;&#160;</a></span>m_UserKnightsRankMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCSTLMap.html">UserKnightsRankMap</a> Ebenezer::EbenezerApp::m_UserKnightsRankMap</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>User Knights Ranking cache. Officially this is split into two caches that track stipend claims in-memory, which means stipends reset on a server crash/restart. </p>
+<dl class="originalName"><dt><b><a class="el" href="originalName.html#_originalName000001">Original Name</a></b></dt><dd>m_UserKnightsRankKarus, m_UserKnightsRankElmorad </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00269">269</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+
+</div>
+</div>
+<a id="a44f92c88a3705bcfe74063e5046cfc40" name="a44f92c88a3705bcfe74063e5046cfc40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44f92c88a3705bcfe74063e5046cfc40">&#9670;&#160;</a></span>m_UserPersonalRankMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classCSTLMap.html">UserPersonalRankMap</a> Ebenezer::EbenezerApp::m_UserPersonalRankMap</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>User Personal Ranking cache. Officially this is split into two caches that track stipend claims in-memory, which means stipends reset on a server crash/restart. We store these values to the database to only reset claim status on planned reset. </p>
+<dl class="originalName"><dt><b><a class="el" href="originalName.html#_originalName000002">Original Name</a></b></dt><dd>m_UserPersonalRankKarus, m_UserPersonalRankElmorad </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00275">275</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>
@@ -4704,7 +4826,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00231">231</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EbenezerApp_8h_source.html#l00244">244</a> of file <a class="el" href="EbenezerApp_8h_source.html">EbenezerApp.h</a>.</p>
 
 </div>
 </div>

@@ -16,11 +16,13 @@ var searchData=
   ['loadstreamedaudioasset_13',['LoadStreamedAudioAsset',['../classCN3SndMgr.html#aa867d5a9fa49cc8038d2a0c2d33789e3',1,'CN3SndMgr']]],
   ['loadusercountlist_14',['LoadUserCountList',['../classVersionManager_1_1CDBProcess.html#ac4c634a9af7e35214fec429277ec5a91',1,'VersionManager::CDBProcess']]],
   ['loaduserdata_15',['LoadUserData',['../classAujard_1_1CDBAgent.html#afa8a6110b72a0ad78c97490d643ddd0a',1,'Aujard::CDBAgent']]],
-  ['loadversionlist_16',['LoadVersionList',['../classVersionManager_1_1CDBProcess.html#ac2b5e0b79789d9eab9b23fd8465c61b3',1,'VersionManager::CDBProcess']]],
-  ['loadwarehousedata_17',['LoadWarehouseData',['../classAujard_1_1CDBAgent.html#acce190600904b66180d338fc9a8f2713',1,'Aujard::CDBAgent']]],
-  ['logbasedir_18',['LogBaseDir',['../classAppThread.html#a930bbcf82f3ed108604b0404c7af7353',1,'AppThread']]],
-  ['logger_19',['Logger',['../classlogger_1_1Logger.html#ae832310604ea54efe53174c3294fc68b',1,'logger::Logger']]],
-  ['lookat_20',['LookAt',['../classCN3Eng.html#aaa739ab40868d64d10d51f506a4caa79',1,'CN3Eng']]],
-  ['looping_21',['Looping',['../classCN3SndObj.html#a40f54d517bc99551a67c40591be5740e',1,'CN3SndObj']]],
-  ['loyaltychange_22',['LoyaltyChange',['../classEbenezer_1_1CUser.html#a828e74089ce2b546ce68612c3cc716da',1,'Ebenezer::CUser']]]
+  ['loaduserknightsrank_16',['LoadUserKnightsRank',['../classEbenezer_1_1EbenezerApp.html#a177c55f0ef78b5e6ab6e13a94744f821',1,'Ebenezer::EbenezerApp']]],
+  ['loaduserpersonalrank_17',['LoadUserPersonalRank',['../classEbenezer_1_1EbenezerApp.html#a627dbbdae0d2bf038ebff1dc1f4cabf5',1,'Ebenezer::EbenezerApp']]],
+  ['loadversionlist_18',['LoadVersionList',['../classVersionManager_1_1CDBProcess.html#ac2b5e0b79789d9eab9b23fd8465c61b3',1,'VersionManager::CDBProcess']]],
+  ['loadwarehousedata_19',['LoadWarehouseData',['../classAujard_1_1CDBAgent.html#acce190600904b66180d338fc9a8f2713',1,'Aujard::CDBAgent']]],
+  ['logbasedir_20',['LogBaseDir',['../classAppThread.html#a930bbcf82f3ed108604b0404c7af7353',1,'AppThread']]],
+  ['logger_21',['Logger',['../classlogger_1_1Logger.html#ae832310604ea54efe53174c3294fc68b',1,'logger::Logger']]],
+  ['lookat_22',['LookAt',['../classCN3Eng.html#aaa739ab40868d64d10d51f506a4caa79',1,'CN3Eng']]],
+  ['looping_23',['Looping',['../classCN3SndObj.html#a40f54d517bc99551a67c40591be5740e',1,'CN3SndObj']]],
+  ['loyaltychange_24',['LoyaltyChange',['../classEbenezer_1_1CUser.html#a828e74089ce2b546ce68612c3cc716da',1,'Ebenezer::CUser']]]
 ];

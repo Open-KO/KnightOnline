@@ -10,9 +10,11 @@ var searchData=
   ['getmaxvolume_7',['GetMaxVolume',['../classCN3SndObj.html#a0cabb8fa5c2e4f67c5a6358bfca1ff26',1,'CN3SndObj']]],
   ['getodbcconnectionstring_8',['GetOdbcConnectionString',['../classdb_1_1ConnectionManager.html#a2947c214972eda40b682601380ec389f',1,'db::ConnectionManager::GetOdbcConnectionString(modelUtil::DbType dbType)'],['../classdb_1_1ConnectionManager.html#a2051872bdb987ef9baa90c56d06266f3',1,'db::ConnectionManager::GetOdbcConnectionString(const DatasourceConfig *config)']]],
   ['gettype_9',['GetType',['../classCN3SndObj.html#a46f749df0bc9fcd1affb25b6c4e74b49',1,'CN3SndObj']]],
-  ['getuserptr_10',['GetUserPtr',['../classAujard_1_1AujardApp.html#a6ea0f05418382b3347a9349ffbda070c',1,'Aujard::AujardApp']]],
-  ['getvolume_11',['GetVolume',['../classCN3SndObj.html#a3bfdaa16f678d0d94ac79569a9cee7e3',1,'CN3SndObj']]],
-  ['giveitem_12',['GiveItem',['../classEbenezer_1_1CUser.html#a655a99c5275c7654b7a335f6ef575a8c',1,'Ebenezer::CUser']]],
-  ['giveitemand_13',['GiveItemAnd',['../classEbenezer_1_1CUser.html#a6d9978d16891f8542c79ac109c984d90',1,'Ebenezer::CUser']]],
-  ['givepromotionquest_14',['GivePromotionQuest',['../classEbenezer_1_1CUser.html#a681a528f4ab2a6b055e26fad1ae425bc',1,'Ebenezer::CUser']]]
+  ['getuserknightsrank_10',['GetUserKnightsRank',['../classEbenezer_1_1CUser.html#ad3c2b80d7cc6c70d076b26f282393fab',1,'Ebenezer::CUser']]],
+  ['getuserpersonalrank_11',['GetUserPersonalRank',['../classEbenezer_1_1CUser.html#aedcb07d5e54c97e271381facf83630f9',1,'Ebenezer::CUser']]],
+  ['getuserptr_12',['GetUserPtr',['../classAujard_1_1AujardApp.html#a6ea0f05418382b3347a9349ffbda070c',1,'Aujard::AujardApp']]],
+  ['getvolume_13',['GetVolume',['../classCN3SndObj.html#a3bfdaa16f678d0d94ac79569a9cee7e3',1,'CN3SndObj']]],
+  ['giveitem_14',['GiveItem',['../classEbenezer_1_1CUser.html#a655a99c5275c7654b7a335f6ef575a8c',1,'Ebenezer::CUser']]],
+  ['giveitemand_15',['GiveItemAnd',['../classEbenezer_1_1CUser.html#a6d9978d16891f8542c79ac109c984d90',1,'Ebenezer::CUser']]],
+  ['givepromotionquest_16',['GivePromotionQuest',['../classEbenezer_1_1CUser.html#a681a528f4ab2a6b055e26fad1ae425bc',1,'Ebenezer::CUser']]]
 ];
