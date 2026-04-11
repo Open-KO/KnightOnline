@@ -208,7 +208,6 @@ void CPlayerOther::KnightsInfoSet(int iID, const std::string& szName, int iGrade
 	m_InfoExt.szKnights     = szName;
 	m_InfoExt.iKnightsGrade = iGrade;
 	m_InfoExt.iKnightsRank  = iRank;
-	m_InfoExt.eKnightsDuty  = eDuty;
 
 	if (m_InfoExt.szKnights.empty())
 	{

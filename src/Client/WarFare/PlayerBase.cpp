@@ -295,9 +295,10 @@ void CPlayerBase::IDSet(int iID, const std::string& szID, D3DCOLOR crID)
 #endif
 }
 
-void CPlayerBase::KnightsInfoSet(int iID, const std::string& /*szName*/, int iGrade, int iRank, e_KnightsDuty /*eDuty*/)
+void CPlayerBase::KnightsInfoSet(int iID, const std::string& /*szName*/, int iGrade, int iRank, e_KnightsDuty eDuty)
 {
 	std::string szPlug;
+	m_InfoBase.eKnightsDuty = eDuty;
 	if (iGrade > 0 && iGrade <= 5)
 	{
 		// 종족과 등급으로 플러그 이름을 만든다..
@@ -747,6 +748,60 @@ void CPlayerBase::Tick()  // 회전, 지정된 에니메이션 Tick 및 색깔 �
 constexpr int CLAN_LEADER_LINE_OFFSET    = 1; // gap between name baseline and clan leader bar
 constexpr int CLAN_LEADER_LINE_THICKNESS = 1; // thickness the clan leader bar
 
+void CPlayerBase::RenderOverhead(_POINT pt)
+{
+	SIZE size        = m_pIDFont->GetSize();
+	pt.y            -= size.cy + 5;
+	D3DCOLOR crFont  = m_pIDFont->GetFontColor();
+
+	m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
+	m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
+	m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
+
+	if (m_InfoBase.eKnightsDuty == KNIGHTS_DUTY_CHIEF)
+		DrawClanLeaderIndicator(pt);
+
+	//Knight & clan 렌더링..
+	if (m_pClanFont && m_pClanFont->IsSetText())
+	{
+		size    = m_pClanFont->GetSize();
+		pt.y   -= size.cy + 5;
+		crFont  = m_pClanFont->GetFontColor();
+		m_pClanFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
+		m_pClanFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
+		m_pClanFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
+	}
+
+	// 파티 모집...
+	if (m_pInfoFont && m_pInfoFont->IsSetText()) //->GetFontHeight() > 0)
+	{
+		size    = m_pInfoFont->GetSize();
+		pt.y   -= size.cy + 5;
+		crFont  = m_pInfoFont->GetFontColor();
+		m_pInfoFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
+		m_pInfoFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
+		m_pInfoFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
+	}
+
+	// 풍선 메시지..
+	if (m_pBalloonFont && m_pBalloonFont->IsSetText()) //->GetFontHeight())
+	{
+		crFont = m_pBalloonFont->GetFontColor();
+		if (m_fTimeBalloon < 2.0f)                     // 천천히 흐릿하게 없앤다..
+		{
+			uint32_t crFont = m_pBalloonFont->GetFontColor();
+			crFont          = (crFont & 0x00ffffff) | ((uint32_t) (255 * (m_fTimeBalloon / 2.0f)) << 24);
+			m_pBalloonFont->SetFontColor(crFont);
+		}
+
+		size  = m_pBalloonFont->GetSize();
+		pt.y -= size.cy + 5;
+		m_pBalloonFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
+		m_pBalloonFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
+		m_pBalloonFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, D3DFONT_BOLD);
+	}
+}
+
 void CPlayerBase::DrawClanLeaderIndicator(const _POINT& pt)
 {
 	SIZE nameSize                     = m_pIDFont->GetSize();
@@ -902,57 +957,7 @@ void CPlayerBase::Render(float fSunAngle)
 			_POINT pt = ::_Convert3D_To_2DCoordinate(
 				vHead, s_CameraData.mtxView, s_CameraData.mtxProjection, s_CameraData.vp.Width, s_CameraData.vp.Height);
 
-			SIZE size        = m_pIDFont->GetSize();
-			pt.y            -= size.cy + 5;
-			D3DCOLOR crFont  = m_pIDFont->GetFontColor();
-
-			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
-			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
-			m_pIDFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
-
-			// Draw green line under name if clan leader
-			if (KnightsDuty() == KNIGHTS_DUTY_CHIEF)
-				DrawClanLeaderIndicator(pt);
-
-			//Knight & clan 렌더링..
-			if (m_pClanFont && m_pClanFont->IsSetText())
-			{
-				size    = m_pClanFont->GetSize();
-				pt.y   -= size.cy + 5;
-				crFont  = m_pClanFont->GetFontColor();
-				m_pClanFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
-				m_pClanFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
-				m_pClanFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
-			}
-
-			// 파티 모집...
-			if (m_pInfoFont && m_pInfoFont->IsSetText()) //->GetFontHeight() > 0)
-			{
-				size    = m_pInfoFont->GetSize();
-				pt.y   -= size.cy + 5;
-				crFont  = m_pInfoFont->GetFontColor();
-				m_pInfoFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
-				m_pInfoFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
-				m_pInfoFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, 0);
-			}
-
-			// 풍선 메시지..
-			if (m_pBalloonFont && m_pBalloonFont->IsSetText()) //->GetFontHeight())
-			{
-				crFont = m_pBalloonFont->GetFontColor();
-				if (m_fTimeBalloon < 2.0f)                     // 천천히 흐릿하게 없앤다..
-				{
-					uint32_t crFont = m_pBalloonFont->GetFontColor();
-					crFont          = (crFont & 0x00ffffff) | ((uint32_t) (255 * (m_fTimeBalloon / 2.0f)) << 24);
-					m_pBalloonFont->SetFontColor(crFont);
-				}
-
-				size  = m_pBalloonFont->GetSize();
-				pt.y -= size.cy + 5;
-				m_pBalloonFont->DrawText(pt.x - (size.cx / 2.0f) - 1.0f, pt.y - 1.0f, 0xff000000, 0);
-				m_pBalloonFont->DrawText(pt.x - (size.cx / 2.0f) + 1.0f, pt.y + 1.0f, 0xff000000, 0);
-				m_pBalloonFont->DrawText(pt.x - (size.cx / 2.0f) + 0.0f, pt.y + 0.0f, crFont, D3DFONT_BOLD);
-			}
+			RenderOverhead(pt); // Render information over character
 		}
 	}
 }

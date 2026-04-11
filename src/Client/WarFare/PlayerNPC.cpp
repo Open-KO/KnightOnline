@@ -127,6 +127,11 @@ void CPlayerNPC::MoveTo(float fPosX, float fPosY, float fPosZ, float fSpeed, int
 		m_fMoveSpeedPerSec *= -1.0f;   // 뒤로 간다..
 }
 
+void CPlayerNPC::RenderOverhead(_POINT pt)
+{
+	CPlayerBase::RenderOverhead(pt);
+}
+
 void CPlayerNPC::SetSoundAndInitFont(uint32_t dwFontFlag)
 {
 	CPlayerBase::SetSoundAndInitFont(dwFontFlag);

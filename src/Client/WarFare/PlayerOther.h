@@ -17,10 +17,6 @@ class CPlayerOther : public CPlayerNPC
 public:
 	__InfoPlayerOther m_InfoExt; // 캐릭터 정보 확장..
 	bool m_bSit;
-	e_KnightsDuty KnightsDuty() const override
-	{
-		return m_InfoExt.eKnightsDuty;
-	}
 
 public:
 	void InitFace() override;
