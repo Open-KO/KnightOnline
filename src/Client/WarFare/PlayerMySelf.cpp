@@ -566,8 +566,16 @@ void CPlayerMySelf::InventoryChrAnimationInitialize()
 }
 
 CN3CPlugBase* CPlayerMySelf::PlugSet(
-	e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)
+	e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce)
 {
+	if (m_InfoBase.bIsTransformed && !isForce) // Skip plug if player is transformed
+	{
+		if (pItemBasic)
+			m_pItemPlugBasics[ePos] = pItemBasic;
+		if (pItemExt)
+			m_pItemPlugExts[ePos] = pItemExt;
+		return nullptr;
+	}
 	int iJoint = 0;
 	if (PLUG_POS_RIGHTHAND == ePos)
 	{
@@ -595,7 +603,7 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(
 	}
 	else if (PLUG_POS_BACK == ePos)
 	{
-		return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt);
+		return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt, isForce);
 	}
 	else
 	{
@@ -615,7 +623,7 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(
 	}
 
 	this->SetSoundPlug(pItemBasic);
-	return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt);
+	return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt, isForce);
 }
 
 CN3CPart* CPlayerMySelf::PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)

@@ -71,10 +71,20 @@ public:
 			vx = vx1, vy = vy1, vz = vz1;
 		}
 	};
-
-	void Init(CN3CPlug_Cloak* pPlugCloak);
 	void SetLOD(int nLevel);
 	void ApplyOffset(__Vector3& vDif);
+	void InitMeshTex(CN3Mesh* pMesh, CN3Texture* pTex)
+	{
+		m_pMesh = pMesh;
+		m_pTex  = pTex;
+	}
+	void InitPhysics()
+	{
+		m_GravityForce        = { 0.0f, -0.0015f, 0.0f };
+		m_Force               = {};
+		m_fAnchorPreserveTime = 0.0f;
+		m_fOffsetRecoveryTime = 0.0f;
+	}
 
 protected:
 	//	Anchor
@@ -107,9 +117,13 @@ protected:
 	void TickYaw(float fYaw);
 	void TickByPlayerMotion(e_CloakMove eCurMove);
 
+	uint16_t* m_pIndexMark = nullptr;
+	int m_nIndexCountMark  = 0;
+
 public:
 	virtual void Tick(int nLOD, float fYaw, e_CloakMove eCurMove);
-	virtual void Render(__Matrix44& mtx, CN3Texture* pTexColour = nullptr);
+	virtual void Render(__Matrix44& mtx, CN3Texture* pTexColour = nullptr,
+		CN3Texture* pTexPattern = nullptr, CN3Texture* pTexClanMark = nullptr);
 	void Release() override;
 };
 

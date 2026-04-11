@@ -41,12 +41,15 @@ struct __InfoPlayerBase
 	int iHP;
 	int iMP;
 	int iMPMax;
-	int iAuthority; // 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
-	int iKnightsID; // Clan ID
+	int iAuthority;       // 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
+	int iKnightsID;       // Clan ID
 	int iAllianceID;
 	int iKnightsWarEnemyID;
+	int iKnightsGrade;    // Clan grade
+	int16_t iMarkVersion; // Clan mark
+	bool bIsTransformed;
 
-	bool bRenderID; // 화면에 ID 를 찍는지..
+	bool bRenderID;       // 화면에 ID 를 찍는지..
 
 	__InfoPlayerBase()
 	{
@@ -70,7 +73,10 @@ struct __InfoPlayerBase
 		iKnightsID         = 0;
 		iAllianceID        = 0;
 		iKnightsWarEnemyID = 0;
+		iKnightsGrade      = 0;
+		iMarkVersion       = 0;
 		bRenderID          = true;
+		bIsTransformed     = false;
 	}
 };
 
@@ -412,9 +418,10 @@ public:
 	}
 
 	virtual CN3CPart* PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt);
-	virtual CN3CPlugBase* PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt);
+	virtual CN3CPlugBase* PlugSet(
+		e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce = false);
 	virtual void DurabilitySet(e_ItemSlot eSlot, int iDurability);
-	void AttachCloak(int16_t sCapeID);
+	void AttachCloak(int16_t sCapeID, bool isForce = false);
 
 	void TickYaw();           // 회전값 처리.
 	void TickAnimation();     // 에니메이션 처리.

@@ -289,10 +289,15 @@ public:
 	{
 		return &m_Cloak;
 	}
+	bool Init(CN3Mesh* pMesh, const std::string& sColourTex, const std::string& sClanMarkTex,
+		const std::string& sPatternTex);
 #endif
 protected:
 #ifdef _N3GAME
 	CN3Cloak m_Cloak;
+	CN3Texture* m_pTexColour   = nullptr;
+	CN3Texture* m_pTexClanMark = nullptr;
+	CN3Texture* m_pTexPattern  = nullptr;
 #endif
 	CN3Mesh* m_pMesh = nullptr;
 
@@ -341,7 +346,7 @@ protected:
 	std::vector<CN3CPlug*> m_Plugs;         // 이 캐릭터에 붙이는 무기등의 Data Pointer List
 	std::vector<__VertexColor*> m_vTraces;  // Plug Trace Polygon
 	class CN3FXPlug* m_pFXPlug;             // 캐릭터에 FX를 붙이는 것.
-	CN3CPlug_Cloak* m_pCloakPlug = nullptr; // Clan cape attachment
+	CN3CPlug_Cloak* m_pCloakPlug = nullptr; // Cloak attachment
 
 	// 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
 	int m_nJointPartStarts[MAX_CHR_ANI_PART];
@@ -480,7 +485,7 @@ public:
 		return m_Plugs[iIndex];
 	}
 
-	CN3CPlug_Cloak* CloakPlugSet(const std::string& szFN);
+	CN3CPlug_Cloak* CloakPlugSet(const std::string& sMeshPath);
 	CN3CPlug_Cloak* CloakPlug()
 	{
 		return m_pCloakPlug;

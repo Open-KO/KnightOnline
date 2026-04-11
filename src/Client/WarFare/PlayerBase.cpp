@@ -304,9 +304,10 @@ void CPlayerBase::KnightsInfoSet(int iID, const std::string& /*szName*/, int iGr
 		szPlug = fmt::format("Item\\ClanAddOn_{:03}_{}.n3cplug", static_cast<int>(m_InfoBase.eRace), iGrade);
 	}
 
-	m_InfoBase.iKnightsID = iID;
+	m_InfoBase.iKnightsID    = iID;
+	m_InfoBase.iKnightsGrade = iGrade;
 
-	CN3CPlugBase* pPlug   = PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, nullptr, nullptr);
+	CN3CPlugBase* pPlug      = PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, nullptr, nullptr);
 	if (pPlug == nullptr)
 		return;
 
@@ -1714,7 +1715,8 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 	return pTarget->CheckCollisionByBox(v1, v2, pVCol, nullptr);
 }
 
-CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)
+CN3CPlugBase* CPlayerBase::PlugSet(
+	e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce)
 {
 	if (ePos < PLUG_POS_RIGHTHAND || ePos >= PLUG_POS_COUNT)
 	{
@@ -1868,42 +1870,35 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	return pPlug;
 }
 
-void CPlayerBase::AttachCloak(int16_t sCapeID)
+void CPlayerBase::AttachCloak(int16_t sCapeID, bool isForce)
 {
-	m_Chr.CloakPlugSet("");
+	PlugSet(PLUG_POS_BACK, "", nullptr, nullptr, isForce);
 
-	// -1 = no clan, 0 = no cape
-	if (sCapeID <= 0)
+	//Temporary to prevent cloaks on all chars while still a work in progress -1 = no cloak
+	if (sCapeID < 0)
 		return;
 
-	// Cloak mesh for each race
-	const std::string szMesh = fmt::format("Item\\cloak_{:03}.n3cplug", static_cast<int>(m_InfoBase.eRace));
-	CN3CPlug_Cloak* pCloak   = m_Chr.CloakPlugSet(szMesh);
+	const std::string sMeshPath = fmt::format("Item\\Cloak_{:03}.n3cplug", static_cast<int>(m_InfoBase.eRace)); // Cloak mesh for each race
+	CN3CPlug_Cloak* pCloak      = static_cast<CN3CPlug_Cloak*>(PlugSet(PLUG_POS_BACK, sMeshPath, nullptr, nullptr, isForce));
 	if (pCloak == nullptr)
 		return;
 
-	// Attach cloak to shoulders
-	pCloak->m_nJointIndex = ITEM_POS_SHOULDER;
+	// TODO: Implement king cloak, need to look at binary client some more
 
-	// Cloak colour and pattern
-	int nPattern          = sCapeID / 100;
-	int nColour           = sCapeID % 100;
+	int nColour                  = sCapeID % 100;
+	int nPattern                 = sCapeID / 100;
 
-	std::string szColour;
-	if (nColour > 0)
-		szColour = fmt::format("Item\\cloak_c_{:02}.dxt", nColour);
-	else
-		szColour = "Item\\cloak_basic.dxt";
+	std::string SColourTexPath   = fmt::format("Item\\Cloak_C_{:02}.dxt", nColour);                              // Cloak colour
+	std::string sPatternTexPath  = fmt::format("Item\\Cloak_M_{:02}.dxt", nPattern);                             // Cloak pattern
+	std::string sClanMarkTexPath = "";                                                                           // No Clan Mark
 
-	if (pCloak->TexSet(szColour) == nullptr)
-		pCloak->TexSet("Item\\cloak_basic.dxt");
+	if (m_InfoBase.iKnightsGrade <= 2)
+		sClanMarkTexPath = CGameProcedure::GetSymbolFilename(1, m_InfoBase.iKnightsID, m_InfoBase.iMarkVersion); // Clan Mark
+	// TODO: serverIndex is temp hard coded to 1 for testing,
+	// need to talk to someone smarter than me to confirm if
+	// this is implemented on the server side yet as I cant find the packet
 
-	if (nPattern >= 1 && nPattern <= 5)
-		pCloak->TexOverlapSet(fmt::format("Item\\cloak_M_{:02}.dxt", nPattern));
-	else
-		pCloak->TexOverlapSet(static_cast<CN3Texture*>(nullptr));
-
-	pCloak->GetCloak()->Init(pCloak);
+	pCloak->Init(pCloak->Mesh(), SColourTexPath, sClanMarkTexPath, sPatternTexPath);
 }
 
 CN3CPart* CPlayerBase::PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)

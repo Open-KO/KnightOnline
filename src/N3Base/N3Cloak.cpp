@@ -35,6 +35,7 @@ CN3Cloak::~CN3Cloak()
 	delete[] m_pParticle;
 	delete[] m_pIndex;
 	delete[] m_pVertex;
+	delete[] m_pIndexMark;
 }
 
 void CN3Cloak::Release()
@@ -47,23 +48,10 @@ void CN3Cloak::Release()
 
 	delete[] m_pVertex;
 	m_pVertex = nullptr;
-}
 
-void CN3Cloak::Init(CN3CPlug_Cloak* pPlugCloak)
-{
-	m_pTex  = pPlugCloak->Tex();
-	m_pMesh = pPlugCloak->Mesh();
-	__ASSERT(m_pMesh && m_pTex, "IN CN3Cloak, Mesh or m_pTex is null");
-
-	SetLOD(0);
-
-	//
-	m_GravityForce.x = 0.0f;
-	m_GravityForce.z = 0.0005f;
-	//m_GravityForce.y = -0.0025f;
-	m_GravityForce.y = -0.0005f;
-
-	m_Force.x = m_Force.y = m_Force.z = 0.0f;
+	delete[] m_pIndexMark;
+	m_pIndexMark      = nullptr;
+	m_nIndexCountMark = 0;
 }
 
 void CN3Cloak::Tick(int /*nLOD*/, float fYaw, e_CloakMove eCloakMove)
@@ -103,28 +91,26 @@ void CN3Cloak::Tick(int /*nLOD*/, float fYaw, e_CloakMove eCloakMove)
 	m_Force.x = m_Force.y = m_Force.z = 0.0f;
 }
 
-void CN3Cloak::Render(__Matrix44& mtx, CN3Texture* pTexColour)
+void CN3Cloak::Render(
+	__Matrix44& mtx, CN3Texture* pTexColour, CN3Texture* pTexPattern, CN3Texture* pTexClanMark)
 {
 	if (m_nLOD < 0 || m_pTex == nullptr)
 		return;
 
 	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 
-	DWORD dwCull = 0, dwLight = 0;
-	s_lpD3DDev->GetRenderState(D3DRS_LIGHTING, &dwLight);
+	DWORD dwCull = 0;
 	s_lpD3DDev->GetRenderState(D3DRS_CULLMODE, &dwCull);
-
-	//
-	//s_lpD3DDev->SetRenderState( D3DRS_LIGHTING, FALSE);
 	if (dwCull != D3DCULL_NONE)
 		s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
+	// Mesh
 	s_lpD3DDev->SetTexture(0, m_pTex->Get());
-
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
 
+	// Colour
 	if (pTexColour != nullptr)
 	{
 		s_lpD3DDev->SetTexture(1, pTexColour->Get());
@@ -132,7 +118,6 @@ void CN3Cloak::Render(__Matrix44& mtx, CN3Texture* pTexColour)
 		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
 		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
-		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	}
 	else
 	{
@@ -140,12 +125,56 @@ void CN3Cloak::Render(__Matrix44& mtx, CN3Texture* pTexColour)
 		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	}
 
+	// Pattern
+	if (pTexPattern != nullptr)
+	{
+		s_lpD3DDev->SetTexture(2, pTexPattern->Get());
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 0);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_CURRENT);
+		s_lpD3DDev->SetTextureStageState(3, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
+	else
+	{
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
+
 	s_lpD3DDev->SetFVF(FVF_VNT1);
 	s_lpD3DDev->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, m_nVertexCount, m_nIndexCount / 3,
 		m_pIndex, D3DFMT_INDEX16, m_pVertex, sizeof(__VertexT1));
 
+	if (pTexClanMark != nullptr && m_pIndexMark != nullptr && m_nIndexCountMark > 0)
+	{
+		const float fDepthBias = -0.001f;
+		s_lpD3DDev->SetRenderState(D3DRS_DEPTHBIAS, *reinterpret_cast<const DWORD*>(&fDepthBias));
 
-	/* Grid for debugging the clan cape movement
+		s_lpD3DDev->SetTexture(0, pTexClanMark->Get());
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+		D3DMATRIX texMat = { 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+			-1.0f, -1.0f, 0.0f, 1.0f };
+		s_lpD3DDev->SetTransform(D3DTS_TEXTURE0, &texMat);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
+
+		s_lpD3DDev->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, m_nVertexCount, m_nIndexCountMark,
+			m_pIndexMark, D3DFMT_INDEX16, m_pVertex, sizeof(__VertexT1));
+
+		const float fZero = 0.0f;
+		s_lpD3DDev->SetRenderState(D3DRS_DEPTHBIAS, *reinterpret_cast<const DWORD*>(&fZero));
+
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+
+		// Restore stage 0
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+	}
+
+	/* Grid for debugging the cloake movement
 	__VertexXyzColor Vtx[2] {};
 	__VertexT1 *pTemp = m_pVertex;
 	Vtx[0].Set(pTemp->x, pTemp->y, pTemp->z, 0xffffffff);
@@ -193,7 +222,9 @@ void CN3Cloak::Render(__Matrix44& mtx, CN3Texture* pTexColour)
 
 	// restore renderstate.
 	s_lpD3DDev->SetTexture(1, nullptr);
+	s_lpD3DDev->SetTexture(2, nullptr);
 	s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	if (dwCull != D3DCULL_NONE)
 		s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, dwCull);
 }
@@ -358,7 +389,35 @@ void CN3Cloak::SetLOD(int nLevel)
 			m_nIndexCount  = nIndexCount;
 			//
 		}
-		break;
+			// Center-quad index list for clan mark
+			{
+				constexpr int MARK_COL_MIN = 2, MARK_COL_MAX = 4; // exclusive
+				constexpr int MARK_ROW_MIN = 0, MARK_ROW_MAX = 2; // exclusive
+				int nMarkQuads = (MARK_COL_MAX - MARK_COL_MIN) * (MARK_ROW_MAX - MARK_ROW_MIN);
+				delete[] m_pIndexMark;
+				m_pIndexMark      = new uint16_t[nMarkQuads * 6];
+				m_nIndexCountMark = 0;
+				uint16_t* pDst    = m_pIndexMark;
+				for (int row = MARK_ROW_MIN; row < MARK_ROW_MAX; row++)
+				{
+					for (int col = MARK_COL_MIN; col < MARK_COL_MAX; col++)
+					{
+						uint16_t v0        = (row + CLOAK_SKIP_LINE) * m_nGridW + col;
+						uint16_t v1        = (row + CLOAK_SKIP_LINE) * m_nGridW + col + 1;
+						uint16_t v2        = (row + CLOAK_SKIP_LINE + 1) * m_nGridW + col;
+						uint16_t v3        = (row + CLOAK_SKIP_LINE + 1) * m_nGridW + col + 1;
+						pDst[0]            = v0;
+						pDst[1]            = v1;
+						pDst[2]            = v3;
+						pDst[3]            = v3;
+						pDst[4]            = v2;
+						pDst[5]            = v0;
+						pDst              += 6;
+						m_nIndexCountMark += 2;
+					}
+				}
+			}
+			break;
 
 		default:
 			break;
