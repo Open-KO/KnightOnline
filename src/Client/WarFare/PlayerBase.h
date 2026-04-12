@@ -421,7 +421,7 @@ public:
 	virtual CN3CPlugBase* PlugSet(
 		e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce = false);
 	virtual void DurabilitySet(e_ItemSlot eSlot, int iDurability);
-	void AttachCloak(int16_t sCapeID, bool isForce = false);
+	void AttachCloak(int16_t sCapeID, int iNobleRank, bool isForce = false);
 
 	void TickYaw();           // 회전값 처리.
 	void TickAnimation();     // 에니메이션 처리.

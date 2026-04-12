@@ -443,6 +443,7 @@ struct __InfoPlayerOther
 		iCity         = 0;
 		iKnightsGrade = 0;
 		iKnightsRank  = 0;
+		iRank         = 0;
 		iTitle        = 0;
 
 		szKnights.clear();

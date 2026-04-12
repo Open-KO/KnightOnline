@@ -284,22 +284,22 @@ public:
 	void Release() override;
 
 	void SetLOD(int nLOD);
+	bool Init(CN3Mesh* pMesh, const std::string& sColourTex, const std::string& sClanMarkTex,
+		const std::string& sPatternTex);
 #ifdef _N3GAME
 	CN3Cloak* GetCloak()
 	{
 		return &m_Cloak;
 	}
-	bool Init(CN3Mesh* pMesh, const std::string& sColourTex, const std::string& sClanMarkTex,
-		const std::string& sPatternTex);
 #endif
 protected:
 #ifdef _N3GAME
 	CN3Cloak m_Cloak;
+#endif
+	CN3Mesh* m_pMesh           = nullptr;
 	CN3Texture* m_pTexColour   = nullptr;
 	CN3Texture* m_pTexClanMark = nullptr;
 	CN3Texture* m_pTexPattern  = nullptr;
-#endif
-	CN3Mesh* m_pMesh = nullptr;
 
 public:
 	CN3Mesh* Mesh()

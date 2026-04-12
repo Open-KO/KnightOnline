@@ -1098,9 +1098,7 @@ bool CN3CPlug_Cloak::Load(File& file)
 	ReCalcMatrix();
 
 	if (m_pMesh == nullptr)
-		return false; // mesh file missing; CloakPlugSet will clean up
-	if (Tex() == nullptr)
-		TexSet("Item\\cloak_basic.dxt");
+		return false; // mesh file missing. CloakPlugSet will clean up
 	return true;
 }
 
@@ -1132,24 +1130,20 @@ void CN3CPlug_Cloak::SetLOD(int nLOD)
 #endif
 }
 
-bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex,
-	const std::string& sClanMarkTex, const std::string& sPatternTex)
+bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex, const std::string& sClanMarkTex, const std::string& sPatternTex)
 {
 	//Release();
 
 	 // Release textures only — do NOT delete m_pMesh here,
 	// pMesh may point to the same mesh we currently hold
-	#ifdef _N3GAME
-		s_MngTex.Delete(&m_pTexColour);
-		s_MngTex.Delete(&m_pTexClanMark);
-		s_MngTex.Delete(&m_pTexPattern);
-	#endif
+
+	s_MngTex.Delete(&m_pTexColour);
+	s_MngTex.Delete(&m_pTexClanMark);
+	s_MngTex.Delete(&m_pTexPattern);
 
 	if (!pMesh)
 		return false;
 
-	if (!pMesh)
-		return false;
 	//if (pMesh->VertexCount() != 49)
 	//	return false;
 	//if (pMesh->IndexCount() != 216)
@@ -1162,9 +1156,13 @@ bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex,
 	m_pTexPattern  = s_MngTex.Get(sPatternTex, true, 0);
 	//__ASSERT(m_pMesh && m_pTex, "IN CN3Cloak, Mesh or m_pTex is null");
 
-	m_Cloak.InitMeshTex(pMesh, Tex());
+	TexSet(sColourTex);
+	#ifdef _N3GAME
+		m_Cloak.InitMeshTex(pMesh, Tex());
+		m_Cloak.InitPhysics();
+	#endif
 	SetLOD(0);
-	m_Cloak.InitPhysics();
+
 
 	return true;
 }

@@ -2176,10 +2176,10 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	// 기본값 읽기..
 	////////////////////////////////////////////////////////////
 
-	InitPlayerPosition(__Vector3(fX, fY, fZ)); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
+	InitPlayerPosition(__Vector3(fX, fY, fZ));                   // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
 	s_pPlayer->RegenerateCollisionMesh();
-	s_pPlayer->AttachCloak(sCapeID);           // Cloak
-	s_pOPMgr->Release();                       // 다른 유저 관리 클래스 초기화..
+	s_pPlayer->AttachCloak(sCapeID, s_pPlayer->m_InfoExt.iRank); // Cloak
+	s_pOPMgr->Release();                                         // 다른 유저 관리 클래스 초기화..
 
 	if (m_pUICmdList != nullptr)
 		m_pUICmdList->CreateCategoryList();
@@ -2542,7 +2542,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	int iKnightsRank     = pkt.read<uint8_t>(); // 순위
 
 	int16_t sMarkVersion = pkt.read<int16_t>(); // Clan mark
-	int16_t sCapeID      = pkt.read<int16_t>(); // Clan cloak
+	int16_t sCapeID      = pkt.read<int16_t>(); // Cloak
 
 	int iLevel           = pkt.read<uint8_t>(); // 레벨...
 	e_Race eRace         = (e_Race) pkt.read<uint8_t>();
@@ -2574,7 +2574,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	/*uint8_t bInvisibilityType =*/pkt.read<uint8_t>();
 	/*int16_t sDirection        =*/pkt.read<int16_t>();
 	/*bool bIsChicken           =*/pkt.read<bool>();
-	/*uint8_t bRank             =*/pkt.read<uint8_t>();
+	uint8_t byRank = pkt.read<uint8_t>(); // Noble rank??
 	/*uint8_t bKnightsRank      =*/pkt.read<uint8_t>();
 	/*uint8_t bPersonalRank     =*/pkt.read<uint8_t>();
 
@@ -2624,8 +2624,9 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->m_InfoBase.iAuthority = byAuthority;
 	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities, byItemFlags);
 	pUPC->RotateTo(DegreesToRadians(rand() % 360), true);
+	pUPC->m_InfoBase.iMarkVersion = sMarkVersion;
 	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
-	pUPC->AttachCloak(sCapeID);
+	pUPC->AttachCloak(sCapeID, byRank);
 
 	//__KnightsInfoBase* pKIB = m_pUIKnightsOp->KnightsInfoFind(iKightsID);
 	//if(pKIB) pUPC->KnightsNameSet(pKIB->szName, 0xffff0000);
