@@ -1130,11 +1130,12 @@ void CN3CPlug_Cloak::SetLOD(int nLOD)
 #endif
 }
 
-bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex, const std::string& sClanMarkTex, const std::string& sPatternTex)
+bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex,
+	const std::string& sClanMarkTex, const std::string& sPatternTex)
 {
 	//Release();
 
-	 // Release textures only — do NOT delete m_pMesh here,
+	// Release textures only — do NOT delete m_pMesh here,
 	// pMesh may point to the same mesh we currently hold
 
 	s_MngTex.Delete(&m_pTexColour);
@@ -1157,12 +1158,11 @@ bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex, const s
 	//__ASSERT(m_pMesh && m_pTex, "IN CN3Cloak, Mesh or m_pTex is null");
 
 	TexSet(sColourTex);
-	#ifdef _N3GAME
-		m_Cloak.InitMeshTex(pMesh, Tex());
-		m_Cloak.InitPhysics();
-	#endif
+#ifdef _N3GAME
+	m_Cloak.InitMeshTex(pMesh, Tex());
+	m_Cloak.InitPhysics();
+#endif
 	SetLOD(0);
-
 
 	return true;
 }

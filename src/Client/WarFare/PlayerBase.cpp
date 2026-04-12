@@ -1883,29 +1883,28 @@ void CPlayerBase::AttachCloak(int16_t sCapeID, int iNobleRank, bool isForce)
 	if (pCloak == nullptr)
 		return;
 
-    std::string SColourTexPath;
+	std::string SColourTexPath;
 	std::string sPatternTexPath;
 	std::string sClanMarkTexPath;
 
 	if (iNobleRank == 1)
 	{
 		SColourTexPath = "Item\\Cloak_C_99.dxt"; // King cloak
-		sPatternTexPath = "";
 	}
 	else
 	{
-		int nColour                  = sCapeID % 100;
-		int nPattern                 = sCapeID / 100;
+		int nColour      = sCapeID % 100;
+		int nPattern     = sCapeID / 100;
 
-		SColourTexPath   = fmt::format("Item\\Cloak_C_{:02}.dxt", nColour);                              // Cloak colour
-		sPatternTexPath  = fmt::format("Item\\Cloak_M_{:02}.dxt", nPattern);                             // Cloak pattern
-		sClanMarkTexPath = "";                                                                           // No Clan Mark
+		SColourTexPath   = fmt::format("Item\\Cloak_C_{:02}.dxt", nColour);                                          // Cloak colour
+		sPatternTexPath  = fmt::format("Item\\Cloak_M_{:02}.dxt", nPattern);                                         // Cloak pattern
+		sClanMarkTexPath = "";                                                                                       // No Clan Mark
 
 		if (m_InfoBase.iKnightsGrade <= 2)
 			sClanMarkTexPath = CGameProcedure::GetSymbolFilename(1, m_InfoBase.iKnightsID, m_InfoBase.iMarkVersion); // Clan Mark
-			// TODO: serverIndex is temp hard coded to 1 for testing,
-			// need to talk to someone smarter than me to confirm if
-			// this is implemented on the server side yet as I cant find the packet
+		// TODO: serverIndex is temp hard coded to 1 for testing,
+		// need to talk to someone smarter than me to confirm if
+		// this is implemented on the server side yet as I cant find the packet
 	}
 
 	pCloak->Init(pCloak->Mesh(), SColourTexPath, sClanMarkTexPath, sPatternTexPath);
