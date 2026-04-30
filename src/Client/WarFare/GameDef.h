@@ -427,7 +427,6 @@ struct __InfoPlayerOther
 	int iKnightsGrade;     // Clan grade
 	int iKnightsRank;      // Clan ranking
 
-	int iRank;             // Noble rank - used to identify high-ranking titles like King [1], Senator [2].
 	int iTitle;            // Bitmask representing various titles/roles including:
 						   // Clan Leader, Clan Assistant, Castle Lord, Feudal Lord, King, Emperor, Party leader, Solo player
 
@@ -443,7 +442,6 @@ struct __InfoPlayerOther
 		iCity         = 0;
 		iKnightsGrade = 0;
 		iKnightsRank  = 0;
-		iRank         = 0;
 		iTitle        = 0;
 
 		szKnights.clear();

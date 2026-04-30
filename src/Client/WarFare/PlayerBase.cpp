@@ -1723,7 +1723,14 @@ CN3CPlugBase* CPlayerBase::PlugSet(
 		__ASSERT(0, "Invalid Plug Position");
 		return nullptr;
 	}
-
+	if (m_InfoBase.bIsTransformed && !isForce) // Skip plug if player is transformed
+	{
+		if (pItemBasic)
+			m_pItemPlugBasics[ePos] = pItemBasic;
+		if (pItemExt)
+			m_pItemPlugExts[ePos] = pItemExt;
+		return nullptr;
+	}
 	int iJoint = 0;
 	if (PLUG_POS_RIGHTHAND == ePos)
 	{
@@ -1870,12 +1877,11 @@ CN3CPlugBase* CPlayerBase::PlugSet(
 	return pPlug;
 }
 
-void CPlayerBase::AttachCloak(int16_t sCapeID, int iNobleRank, bool isForce)
+void CPlayerBase::AttachCloak(int16_t sCapeID, bool isForce)
 {
-	PlugSet(PLUG_POS_BACK, "", nullptr, nullptr, isForce);
+	PlugSet(PLUG_POS_BACK, "", nullptr, nullptr, /*isForce=*/true);                                             // Remove cloak
 
-	//Temporary to prevent cloaks on all chars while still a work in progress -1 = no cloak
-	if (sCapeID < 0)
+	if (sCapeID < 0)                                                                                            // No cloak
 		return;
 
 	const std::string sMeshPath = fmt::format("Item\\Cloak_{:03}.n3cplug", static_cast<int>(m_InfoBase.eRace)); // Cloak mesh for each race
@@ -1887,7 +1893,7 @@ void CPlayerBase::AttachCloak(int16_t sCapeID, int iNobleRank, bool isForce)
 	std::string sPatternTexPath;
 	std::string sClanMarkTexPath;
 
-	if (iNobleRank == 1)
+	if (m_InfoBase.iRank == 1)
 	{
 		SColourTexPath = "Item\\Cloak_C_99.dxt"; // King cloak
 	}
@@ -1896,15 +1902,13 @@ void CPlayerBase::AttachCloak(int16_t sCapeID, int iNobleRank, bool isForce)
 		int nColour      = sCapeID % 100;
 		int nPattern     = sCapeID / 100;
 
-		SColourTexPath   = fmt::format("Item\\Cloak_C_{:02}.dxt", nColour);                                          // Cloak colour
-		sPatternTexPath  = fmt::format("Item\\Cloak_M_{:02}.dxt", nPattern);                                         // Cloak pattern
-		sClanMarkTexPath = "";                                                                                       // No Clan Mark
+		SColourTexPath   = fmt::format("Item\\Cloak_C_{:02}.dxt", nColour);  // Cloak colour
+		sPatternTexPath  = fmt::format("Item\\Cloak_M_{:02}.dxt", nPattern); // Cloak pattern
+		sClanMarkTexPath = "";                                               // No Clan Mark
 
 		if (m_InfoBase.iKnightsGrade <= 2)
-			sClanMarkTexPath = CGameProcedure::GetSymbolFilename(1, m_InfoBase.iKnightsID, m_InfoBase.iMarkVersion); // Clan Mark
-		// TODO: serverIndex is temp hard coded to 1 for testing,
-		// need to talk to someone smarter than me to confirm if
-		// this is implemented on the server side yet as I cant find the packet
+			sClanMarkTexPath = CGameProcedure::GetSymbolFilename(
+				CGameProcedure::GetServerIndex(), m_InfoBase.iKnightsID, m_InfoBase.iMarkVersion); // Clan Mark
 	}
 
 	pCloak->Init(pCloak->Mesh(), SColourTexPath, sClanMarkTexPath, sPatternTexPath);

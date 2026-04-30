@@ -47,6 +47,7 @@ struct __InfoPlayerBase
 	int iKnightsWarEnemyID;
 	int iKnightsGrade;    // Clan grade
 	int16_t iMarkVersion; // Clan mark
+	int iRank;            // Noble rank - used to identify high-ranking titles like King [1], Senator [2]. Always 0 for NPCs.
 	bool bIsTransformed;
 
 	bool bRenderID;       // 화면에 ID 를 찍는지..
@@ -75,6 +76,7 @@ struct __InfoPlayerBase
 		iKnightsWarEnemyID = 0;
 		iKnightsGrade      = 0;
 		iMarkVersion       = 0;
+		iRank              = 0;
 		bRenderID          = true;
 		bIsTransformed     = false;
 	}
@@ -421,7 +423,7 @@ public:
 	virtual CN3CPlugBase* PlugSet(
 		e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce = false);
 	virtual void DurabilitySet(e_ItemSlot eSlot, int iDurability);
-	void AttachCloak(int16_t sCapeID, int iNobleRank, bool isForce = false);
+	void AttachCloak(int16_t sCapeID, bool isForce = false);
 
 	void TickYaw();           // 회전값 처리.
 	void TickAnimation();     // 에니메이션 처리.

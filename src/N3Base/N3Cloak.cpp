@@ -73,18 +73,20 @@ void CN3Cloak::Tick(int /*nLOD*/, float fYaw, e_CloakMove eCloakMove)
 	//		fForceDelay = 0.0f;
 	//		fForceDelayLimit = 2.0f + rand()%10;
 	//	}
-	m_fAnchorPreserveTime -= s_fSecPerFrm;
-	if (m_eAnchorPattern != AMP_NONE)
-	{
-		if (m_fAnchorPreserveTime < 0.0f)
-		{
-			RestoreAnchorLine();
-		}
-	}
+	// m_fAnchorPreserveTime -= s_fSecPerFrm;
+	// if (m_eAnchorPattern != AMP_NONE)
+	// {
+	//	if (m_fAnchorPreserveTime < 0.0f)
+	//	{
+	//		RestoreAnchorLine();
+	//	}
+	// }
 
+	// const e_Cloak_AnchorMovePattern prevAnchor = m_eAnchorPattern;
 	TickByPlayerMotion(eCloakMove);
 	TickYaw(fYaw);
-
+	// if (m_eAnchorPattern == prevAnchor && m_eAnchorPattern == AMP_NONE)
+	//	MoveAnchorLine(AMP_NONE, 2.0f);
 	UpdateLocalForce();
 	ApplyForce();
 
@@ -481,24 +483,30 @@ void CN3Cloak::ApplyOffset(__Vector3& vDif)
 void CN3Cloak::TickYaw(float fYaw)
 {
 	// 회전이 있었다.
-	if (fYaw != m_fPrevYaw)
+	/*  if (fYaw != m_fPrevYaw)
 	{
-		if (fYaw - m_fPrevYaw > 0.0f)
+		const float deltafYaw = fYaw - m_fPrevYaw;
+
+		if (deltafYaw > 2.0f)
 		{
 			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
 				MoveAnchorLine(AMP_YAWCCW, 2.0f);
 		}
-		else
+		else if (deltafYaw < -2.0f)
 		{
 			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
 				MoveAnchorLine(AMP_YAWCW, 2.0f);
 		}
-	}
+	}*/
 	m_fPrevYaw = fYaw;
 }
 
 void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 {
+	float angleFactor = 0.0f;
+	float angleMag    = 0.0f;
+	bool doWind       = false;
+
 	switch (eCurMove)
 	{
 		case CLOAK_MOVE_STOP:
@@ -506,19 +514,27 @@ void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 			break;
 
 		case CLOAK_MOVE_WALK:
-			m_Force.z        = 0.0005f;
-			m_GravityForce.y = -0.0025f;
-			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
-				MoveAnchorLine(AMP_MOVEXZ, 2.0f);
+			// m_Force.z        = 0.0005f;
+			m_GravityForce.y = -0.0015f;
+			angleFactor      = 0.314159f;
+			angleMag         = -0.0003f;
+			doWind           = true;
+			// if (m_eAnchorPattern == AMP_NONE
+			//	&& m_fAnchorPreserveTime < 0.0f)
+			//	MoveAnchorLine(AMP_MOVEXZ, 2.0f);
 			//m_GravityForce.y = (rand()%2+1)*-0.0015f;
 			//TRACE("Apply force {}", m_Force.z);
 			break;
 
 		case CLOAK_MOVE_RUN:
-			m_Force.z        = 0.0009f;
-			m_GravityForce.y = -0.0025f;
-			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
-				MoveAnchorLine(AMP_MOVEXZ2, 2.0f);
+			//m_Force.z        = 0.0009f;
+			m_GravityForce.y = -0.0005f;
+			angleFactor      = 1.0472f;
+			angleMag         = -0.001f;
+			doWind           = true;
+			break;
+			// if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
+			//	MoveAnchorLine(AMP_MOVEXZ2, 2.0f);
 			//m_GravityForce.y = (rand()%2+1)*-0.0015f;
 			//TRACE("Apply force {}", m_Force.z);
 			break;
@@ -526,9 +542,17 @@ void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 		default:
 			break;
 	}
+	if (doWind)
+	{
+		const int r       = rand() % 10;
+		const float angle = (r * 0.03f + 0.7f) * angleFactor;
+		m_Force.x         = 0.0f;
+		m_Force.y         = sinf(angle) * angleMag;
+		m_Force.z         = cosf(angle) * angleMag;
+	}
 }
 
-void CN3Cloak::MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTime)
+/* void CN3Cloak::MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTime)
 {
 	if (m_eAnchorPattern != AMP_NONE)
 		return;
@@ -595,7 +619,7 @@ void CN3Cloak::MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTi
 
 	m_fAnchorPreserveTime = fPreserveTime;
 	m_eAnchorPattern      = eType;
-}
+}*/
 
 void CN3Cloak::RestoreAnchorLine()
 {

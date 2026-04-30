@@ -108,6 +108,8 @@ protected:
 
 	bool MsgRecv_CharacterSelect(Packet& pkt) override; // virtual
 	int MsgRecv_VersionCheck(Packet& pkt) override;     // virtual
+	void MsgRecv_ServerIndex(Packet& pkt);              // Server index
+	int m_nServerIndex = 0;
 
 	bool MsgRecv_MyInfo_All(Packet& pkt);
 	void MsgRecv_MyInfo_HP(Packet& pkt);
