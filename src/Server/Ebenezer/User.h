@@ -542,6 +542,7 @@ public:
 	void Chat(char* pBuf);
 	void LogOut();
 	void SelCharToAgent(char* pBuf);
+	void SendServerIndex();
 	void SendMyInfo(int type);
 	void SelectCharacter(const char* pBuf);
 	void Send2AI_UserUpdateInfo();
