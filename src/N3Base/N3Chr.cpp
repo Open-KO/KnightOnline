@@ -306,6 +306,7 @@ CN3CPlugBase::~CN3CPlugBase()
 {
 	s_MngTex.Delete(&m_pTexRef);
 	s_MngTex.Delete(&m_pTexOverlapRef);
+	s_MngMesh.Delete(&m_pMesh);
 }
 
 void CN3CPlugBase::Release()
@@ -316,6 +317,7 @@ void CN3CPlugBase::Release()
 
 	s_MngTex.Delete(&m_pTexRef);
 	s_MngTex.Delete(&m_pTexOverlapRef);
+	s_MngMesh.Delete(&m_pMesh);
 
 	m_Mtl.Init();
 	m_vPosition.Zero();
@@ -463,7 +465,7 @@ bool CN3CPlugBase::Load(File& file)
 	char szFN[512] = "";
 
 	file.Read(&m_ePlugType, 4); // Plug Type
-								//#ifdef _N3TOOL
+	//#ifdef _N3TOOL
 	if (m_ePlugType > PLUGTYPE_MAX)
 	{
 		m_ePlugType = PLUGTYPE_NORMAL;
@@ -481,8 +483,20 @@ bool CN3CPlugBase::Load(File& file)
 	if (nL > 0)
 	{
 		file.Read(szFN, nL);
-		szFN[nL] = '\0';
-		PMeshSet(szFN);
+		szFN[nL]             = '\0';
+
+		char szExt[_MAX_EXT] = "";
+		_splitpath_s(szFN, nullptr, 0, nullptr, 0, nullptr, 0, szExt, _MAX_EXT);
+
+		if (_stricmp(szExt, ".n3pmesh") == 0)
+		{
+			PMeshSet(szFN);
+		}
+		else if (_stricmp(szExt, ".n3mesh") == 0)
+		{
+			s_MngMesh.Delete(&m_pMesh);
+			m_pMesh = s_MngMesh.Get(szFN);
+		}
 	}
 
 	file.Read(&nL, 4);
@@ -514,13 +528,16 @@ bool CN3CPlugBase::Save(File& file)
 
 	file.Write(&m_Mtl, sizeof(__Material)); // 재질
 
-	nL               = 0;
-	CN3PMesh* pPMesh = m_PMeshInst.GetMesh();
-	if (pPMesh != nullptr)
-		nL = static_cast<int>(pPMesh->FileName().size());
+	nL = 0;
+	std::string szMeshFN;
+	if (CN3PMesh* pPMesh = m_PMeshInst.GetMesh())
+		szMeshFN = pPMesh->FileName();
+	else if (m_pMesh != nullptr)
+		szMeshFN = m_pMesh->FileName();
+	nL = static_cast<int>(szMeshFN.size());
 	file.Write(&nL, 4);
 	if (nL > 0)
-		file.Write(pPMesh->FileName().c_str(), nL);
+		file.Write(szMeshFN.c_str(), nL);
 
 	nL = 0;
 	if (m_pTexRef != nullptr)
@@ -1052,61 +1069,22 @@ void CN3CPlug_Cloak::Release()
 	s_MngTex.Delete(&m_pTexClanMark);
 	s_MngTex.Delete(&m_pTexPattern);
 #endif
-	s_MngMesh.Delete(&m_pMesh);
 	CN3CPlugBase::Release();
 }
 
 bool CN3CPlug_Cloak::Load(File& file)
 {
-	// Read the name header (CN3BaseFileAccess::Load), then re-parse all
-	// CN3CPlugBase fields manually so we can redirect the mesh load to
-	// s_MngMesh (CN3Mesh) instead of PMeshSet (CN3PMesh). Cloak assets are
-	// .n3mesh files; loading them as .n3pmesh produces garbage vertex counts.
-	CN3BaseFileAccess::Load(file);
+	if (!CN3CPlugBase::Load(file))
+		return false;
 
-	int nL         = 0;
-	char szFN[512] = "";
-
-	file.Read(&m_ePlugType, 4);
-	if (m_ePlugType > PLUGTYPE_MAX)
-		m_ePlugType = PLUGTYPE_NORMAL;
-	file.Read(&m_nJointIndex, 4);
-	file.Read(&m_vPosition, sizeof(m_vPosition));
-	file.Read(&m_MtxRot, sizeof(m_MtxRot));
-	file.Read(&m_vScale, sizeof(m_vScale));
-	file.Read(&m_Mtl, sizeof(__Material));
-
-	// Mesh: load as CN3Mesh, not CN3PMesh
-	file.Read(&nL, 4);
-	if (nL > 0)
-	{
-		file.Read(szFN, nL);
-		szFN[nL] = '\0';
-		s_MngMesh.Delete(&m_pMesh);
-		m_pMesh = s_MngMesh.Get(szFN);
-	}
-
-	// Texture
-	file.Read(&nL, 4);
-	if (nL > 0)
-	{
-		file.Read(szFN, nL);
-		szFN[nL] = '\0';
-		TexSet(szFN);
-	}
-
-	ReCalcMatrix();
-
-	if (m_pMesh == nullptr)
-		return false; // mesh file missing. CloakPlugSet will clean up
-	return true;
+	return m_pMesh != nullptr; // mesh file missing or wrong extension
 }
 
 #ifdef _N3TOOL
 bool CN3CPlug_Cloak::Save(File& file)
 {
 	CN3CPlugBase::Save(file);
-	return 0;
+	return false;
 }
 #endif
 void CN3CPlug_Cloak::Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint)
@@ -1133,11 +1111,6 @@ void CN3CPlug_Cloak::SetLOD(int nLOD)
 bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex,
 	const std::string& sClanMarkTex, const std::string& sPatternTex)
 {
-	//Release();
-
-	// Release textures only — do NOT delete m_pMesh here,
-	// pMesh may point to the same mesh we currently hold
-
 	s_MngTex.Delete(&m_pTexColour);
 	s_MngTex.Delete(&m_pTexClanMark);
 	s_MngTex.Delete(&m_pTexPattern);
@@ -1149,8 +1122,6 @@ bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex,
 	//	return false;
 	//if (pMesh->IndexCount() != 216)
 	//	return false;
-
-	m_pMesh        = pMesh;
 
 	m_pTexColour   = s_MngTex.Get(sColourTex, true, 0);
 	m_pTexClanMark = s_MngTex.Get(sClanMarkTex, true, 0);

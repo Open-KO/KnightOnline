@@ -138,6 +138,7 @@ public:
 
 protected:
 	CN3PMeshInstance m_PMeshInst; // Progressive Mesh Instance
+	CN3Mesh* m_pMesh = nullptr;   // Set when the .n3cplug references .n3mesh instead of .n3pmesh
 	CN3Texture* m_pTexRef;        // Texture Reference Pointer
 	CN3Texture* m_pTexOverlapRef; // 위에 덧칠할 Texture Reference Pointer
 	__Matrix44 m_MtxRot;          // Rotation Matrix;
@@ -228,6 +229,11 @@ public:
 	}
 
 	void PMeshSet(const std::string& szFN);
+
+	CN3Mesh* Mesh()
+	{
+		return m_pMesh;
+	}
 };
 
 inline constexpr int MAX_PLUG_FX_POSITION = 5;
@@ -296,16 +302,9 @@ protected:
 #ifdef _N3GAME
 	CN3Cloak m_Cloak;
 #endif
-	CN3Mesh* m_pMesh           = nullptr;
 	CN3Texture* m_pTexColour   = nullptr;
 	CN3Texture* m_pTexClanMark = nullptr;
 	CN3Texture* m_pTexPattern  = nullptr;
-
-public:
-	CN3Mesh* Mesh()
-	{
-		return m_pMesh;
-	}
 };
 
 // 0 - 상체, 1 - 하체 ::: 관절들을 나누어서 나누어서 에니메이션 설정..
