@@ -997,7 +997,6 @@ void CPlayerMySelf::KnightsInfoSet(int iID, const std::string& szName, int iGrad
 	m_InfoExt.szKnights     = szName;
 	m_InfoExt.iKnightsGrade = iGrade;
 	m_InfoExt.iKnightsRank  = iRank;
-	m_InfoExt.eKnightsDuty  = eDuty;
 
 	if (m_InfoExt.szKnights.empty())
 	{

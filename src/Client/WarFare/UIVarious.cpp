@@ -579,7 +579,7 @@ void CUIKnights::Clear()
 	m_pText_Duty->SetString("");
 	m_pText_MemberCount->SetString("0");
 
-	this->ChangeUIByDuty(CGameBase::s_pPlayer->m_InfoExt.eKnightsDuty);
+	this->ChangeUIByDuty(CGameBase::s_pPlayer->m_InfoBase.eKnightsDuty);
 }
 
 void CUIKnights::SetVisible(bool bVisible)
@@ -1027,11 +1027,11 @@ void CUIKnights::ChangeUIByDuty(e_KnightsDuty eDuty) // 권한에 따라 UI 변�
 
 void CUIKnights::UpdateExceptList()
 {
-	UpdateKnightsDuty(CGameBase::s_pPlayer->m_InfoExt.eKnightsDuty);
+	UpdateKnightsDuty(CGameBase::s_pPlayer->m_InfoBase.eKnightsDuty);
 	UpdateKnightsName(CGameBase::s_pPlayer->m_InfoExt.szKnights);
 	UpdateKnightsGrade(CGameBase::s_pPlayer->m_InfoExt.iKnightsGrade);
 	UpdateKnightsRank(CGameBase::s_pPlayer->m_InfoExt.iKnightsRank);
-	ChangeUIByDuty(CGameBase::s_pPlayer->m_InfoExt.eKnightsDuty);
+	ChangeUIByDuty(CGameBase::s_pPlayer->m_InfoBase.eKnightsDuty);
 }
 
 CUIFriends::CUIFriends()
@@ -1781,7 +1781,7 @@ void CUIVarious::UpdateKnightsInfo()
 		return;
 
 	/*
-		m_pPageKnights->UpdateKnightsDuty(CGameBase::s_pPlayer->m_InfoExt.eKnightsDuty);
+		m_pPageKnights->UpdateKnightsDuty(CGameBase::s_pPlayer->m_InfoBase.eKnightsDuty);
 		m_pPageKnights->UpdateKnightsName(CGameBase::s_pPlayer->m_InfoExt.szKnights);
 		m_pPageKnights->UpdateKnightsGrade(CGameBase::s_pPlayer->m_InfoExt.iKnightsGrade);
 		m_pPageKnights->UpdateKnightsRank(CGameBase::s_pPlayer->m_InfoExt.iKnightsRank);

@@ -786,12 +786,11 @@ void CPlayerBase::RenderOverhead(_POINT pt)
 	// 풍선 메시지..
 	if (m_pBalloonFont && m_pBalloonFont->IsSetText()) //->GetFontHeight())
 	{
-		crFont = m_pBalloonFont->GetFontColor();
-		if (m_fTimeBalloon < 2.0f)                     // 천천히 흐릿하게 없앤다..
+		D3DCOLOR crBalloon = m_pBalloonFont->GetFontColor();
+		if (m_fTimeBalloon < 2.0f)
 		{
-			uint32_t crFont = m_pBalloonFont->GetFontColor();
-			crFont          = (crFont & 0x00ffffff) | ((uint32_t) (255 * (m_fTimeBalloon / 2.0f)) << 24);
-			m_pBalloonFont->SetFontColor(crFont);
+			crBalloon = (crBalloon & 0x00ffffff) | ((uint32_t) (255 * (m_fTimeBalloon / 2.0f)) << 24);
+			m_pBalloonFont->SetFontColor(crBalloon);
 		}
 
 		size  = m_pBalloonFont->GetSize();
