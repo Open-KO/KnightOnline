@@ -1004,25 +1004,13 @@ bool EbenezerApp::LoadItemUpgradeTable()
 {
 	using ModelType = model::ItemUpgrade;
 
-	std::vector<ModelType*> localVec;
-	recordset_loader::Vector<model::ItemUpgrade> loader(localVec);
+	recordset_loader::Vector<ModelType> loader(m_ItemUpgradeTableArray);
 	if (!loader.Load_ForbidEmpty())
 	{
 		spdlog::error(
 			"EbenezerApp::LoadItemUpgradeTable: load failed - {}", loader.GetError().Message);
 		return false;
 	}
-
-	// Ensure requirement items are sorted in descending order.
-	for (ModelType* model : localVec)
-	{
-		std::sort(std::begin(model->RequiredItem),
-			std::end(model->RequiredItem), //
-			[](int lhs, int rhs) { return lhs > rhs; });
-	}
-
-	// Now that we're done, swap it over to the destination container.
-	m_ItemUpgradeTableArray.swap(localVec);
 
 	return true;
 }
