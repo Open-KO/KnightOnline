@@ -46,6 +46,13 @@ public:
 
 	model::Magic* IsAvailable(int magicid, int tid, uint8_t type);
 	void MagicPacket(char* pBuf);
+
+private:
+	bool UsesAreaCenteredAnimation(const model::Magic* pMagic) const;
+	bool UsesPerTargetAnimation(const model::Magic* pMagic) const;
+	void SendAreaCenteredAnimation(int magicid, int moral, int data1, int data2, int data3) const;
+	void SendPerTargetAnimation(
+		int magicid, int targetId, int data1, int result, int data3, int moral) const;
 };
 
 } // namespace AIServer

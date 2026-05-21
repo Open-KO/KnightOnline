@@ -23,6 +23,7 @@ enum e_ResistanceType : uint8_t
 
 class EbenezerApp;
 class CUser;
+class CNpc;
 class CMagicProcess
 {
 public:
@@ -54,6 +55,14 @@ public:
 	EbenezerApp* m_pMain  = nullptr;
 	CUser* m_pSrcUser     = nullptr;
 	uint8_t m_bMagicState = 0;
+
+private:
+	bool UsesAreaCenteredAnimation(const model::Magic* pMagic, int tid) const;
+	bool UsesPerTargetAnimation(const model::Magic* pMagic, int tid) const;
+	void SendAreaCenteredAnimation(
+		int magicid, int sid, int data1, int data2, int data3, bool isNpcSource, CNpc* pMon) const;
+	void SendPerTargetAnimation(int magicid, int sid, int targetId, int data1, int result,
+		int data3, bool isNpcSource, CNpc* pMon) const;
 };
 
 } // namespace Ebenezer

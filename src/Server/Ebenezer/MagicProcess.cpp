@@ -62,6 +62,83 @@ CMagicProcess::~CMagicProcess()
 {
 }
 
+bool CMagicProcess::UsesAreaCenteredAnimation(const model::Magic* pMagic, int tid) const
+{
+	if (pMagic == nullptr || tid != -1)
+		return false;
+
+	// TargetEffect 2900-2999 are large ground-area FX (e.g. novas).
+	// If sent per target, the client draws the big center effect on every damaged unit.
+	return (pMagic->Moral == MORAL_AREA_ENEMY || pMagic->Moral == MORAL_AREA_ALL
+			   || pMagic->Moral == MORAL_SELF_AREA)
+		   && pMagic->FlyingEffect == 0 && pMagic->TargetEffect >= 2900
+		   && pMagic->TargetEffect < 3000;
+}
+
+bool CMagicProcess::UsesPerTargetAnimation(const model::Magic* pMagic, int tid) const
+{
+	return !UsesAreaCenteredAnimation(pMagic, tid);
+}
+
+void CMagicProcess::SendAreaCenteredAnimation(
+	int magicid, int sid, int data1, int data2, int data3, bool isNpcSource, CNpc* pMon) const
+{
+	int sendIndex = 0;
+	char sendBuffer[128] {};
+
+	SetByte(sendBuffer, WIZ_MAGIC_PROCESS, sendIndex);
+	SetByte(sendBuffer, MAGIC_EFFECTING, sendIndex);
+	SetDWORD(sendBuffer, magicid, sendIndex);
+	SetShort(sendBuffer, sid, sendIndex);
+	SetShort(sendBuffer, -1, sendIndex);
+	SetShort(sendBuffer, data1, sendIndex);
+	SetShort(sendBuffer, data2, sendIndex);
+	SetShort(sendBuffer, data3, sendIndex);
+
+	if (!isNpcSource)
+	{
+		if (m_pSrcUser != nullptr)
+		{
+			m_pMain->Send_Region(sendBuffer, sendIndex, m_pSrcUser->m_pUserData->m_bZone,
+				m_pSrcUser->m_RegionX, m_pSrcUser->m_RegionZ, nullptr, false);
+		}
+	}
+	else if (pMon != nullptr)
+	{
+		m_pMain->Send_Region(sendBuffer, sendIndex, pMon->m_sCurZone, pMon->m_sRegion_X,
+			pMon->m_sRegion_Z, nullptr, false);
+	}
+}
+
+void CMagicProcess::SendPerTargetAnimation(int magicid, int sid, int targetId, int data1,
+	int result, int data3, bool isNpcSource, CNpc* pMon) const
+{
+	int sendIndex = 0;
+	char sendBuffer[128] {};
+
+	SetByte(sendBuffer, WIZ_MAGIC_PROCESS, sendIndex);
+	SetByte(sendBuffer, MAGIC_EFFECTING, sendIndex);
+	SetDWORD(sendBuffer, magicid, sendIndex);
+	SetShort(sendBuffer, sid, sendIndex);
+	SetShort(sendBuffer, targetId, sendIndex);
+	SetShort(sendBuffer, data1, sendIndex);
+	SetShort(sendBuffer, result, sendIndex);
+	SetShort(sendBuffer, data3, sendIndex);
+	if (!isNpcSource)
+	{
+		if (m_pSrcUser != nullptr)
+		{
+			m_pMain->Send_Region(sendBuffer, sendIndex, m_pSrcUser->m_pUserData->m_bZone,
+				m_pSrcUser->m_RegionX, m_pSrcUser->m_RegionZ, nullptr, false);
+		}
+	}
+	else if (pMon != nullptr)
+	{
+		m_pMain->Send_Region(sendBuffer, sendIndex, pMon->m_sCurZone, pMon->m_sRegion_X,
+			pMon->m_sRegion_Z, nullptr, false);
+	}
+}
+
 void CMagicProcess::MagicPacket(char* pBuf)
 {
 	model::Magic* pTable = nullptr;
@@ -1252,7 +1329,7 @@ packet_send:
 	return result;
 }
 
-void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /*data2*/,
+void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int data2,
 	int data3)      // Applied when a magical attack, healing, and mana restoration is done.
 {
 	int damage = 0, duration_damage = 0, sendIndex = 0,
@@ -1343,6 +1420,12 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /
 		casted_member.reserve(1); // don't bother allocating for more than 1
 		casted_member.push_back(tid);
 	}
+
+	const bool usesAreaCenteredAnimation = UsesAreaCenteredAnimation(pMagic, tid);
+	const bool usesPerTargetAnimation    = UsesPerTargetAnimation(pMagic, tid);
+
+	if ((pMagic->Type2 == 0 || pMagic->Type2 == 3) && usesAreaCenteredAnimation)
+		SendAreaCenteredAnimation(magicid, sid, data1, data2, data3, bFlag, pMon);
 
 	// THIS IS WHERE THE FUN STARTS!!!
 	for (int userId : casted_member)
@@ -1587,30 +1670,8 @@ void CMagicProcess::ExecuteType3(int magicid, int sid, int tid, int data1, int /
 			//
 		}
 
-		if (pMagic->Type2 == 0 || pMagic->Type2 == 3)
-		{
-			SetByte(sendBuffer, WIZ_MAGIC_PROCESS, sendIndex);
-			SetByte(sendBuffer, MAGIC_EFFECTING, sendIndex);
-			SetDWORD(sendBuffer, magicid, sendIndex);
-			SetShort(sendBuffer, sid, sendIndex);
-			SetShort(sendBuffer, userId, sendIndex);
-			SetShort(sendBuffer, data1, sendIndex);
-			SetShort(sendBuffer, result, sendIndex);
-			SetShort(sendBuffer, data3, sendIndex);
-			if (!bFlag)
-			{
-				if (m_pSrcUser != nullptr)
-				{
-					m_pMain->Send_Region(sendBuffer, sendIndex, m_pSrcUser->m_pUserData->m_bZone,
-						m_pSrcUser->m_RegionX, m_pSrcUser->m_RegionZ, nullptr, false);
-				}
-			}
-			else if (pMon != nullptr)
-			{
-				m_pMain->Send_Region(sendBuffer, sendIndex, pMon->m_sCurZone, pMon->m_sRegion_X,
-					pMon->m_sRegion_Z, nullptr, false);
-			}
-		}
+		if ((pMagic->Type2 == 0 || pMagic->Type2 == 3) && usesPerTargetAnimation)
+			SendPerTargetAnimation(magicid, sid, userId, data1, result, data3, bFlag, pMon);
 
 		// Heal magic
 		if (pType->DirectType == 1 && damage > 0)

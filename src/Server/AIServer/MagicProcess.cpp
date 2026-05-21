@@ -23,6 +23,66 @@ CMagicProcess::~CMagicProcess()
 {
 }
 
+bool CMagicProcess::UsesAreaCenteredAnimation(const model::Magic* pMagic) const
+{
+	if (pMagic == nullptr)
+		return false;
+
+	// TargetEffect 2900-2999 are large ground-area FX (e.g. novas).
+	// If sent per target, the client draws the big center effect on every damaged unit.
+	return (pMagic->Moral == MORAL_AREA_ENEMY || pMagic->Moral == MORAL_AREA_ALL
+			   || pMagic->Moral == MORAL_SELF_AREA)
+		   && pMagic->FlyingEffect == 0 && pMagic->TargetEffect >= 2900
+		   && pMagic->TargetEffect < 3000;
+}
+
+bool CMagicProcess::UsesPerTargetAnimation(const model::Magic* pMagic) const
+{
+	return !UsesAreaCenteredAnimation(pMagic);
+}
+
+void CMagicProcess::SendAreaCenteredAnimation(
+	int magicid, int moral, int data1, int data2, int data3) const
+{
+	int sendIndex = 0;
+	char sendBuffer[128] {};
+
+	SetByte(sendBuffer, AG_MAGIC_ATTACK_RESULT, sendIndex);
+	SetByte(sendBuffer, MAGIC_EFFECTING, sendIndex);
+	SetDWORD(sendBuffer, magicid, sendIndex);
+	SetShort(sendBuffer, m_pSrcUser->m_iUserId, sendIndex);
+	SetShort(sendBuffer, -1, sendIndex);
+	SetShort(sendBuffer, data1, sendIndex);
+	SetShort(sendBuffer, data2, sendIndex);
+	SetShort(sendBuffer, data3, sendIndex);
+	SetShort(sendBuffer, moral, sendIndex);
+	SetShort(sendBuffer, 0, sendIndex);
+	SetShort(sendBuffer, 0, sendIndex);
+
+	m_pMain->Send(sendBuffer, sendIndex, m_pSrcUser->m_curZone);
+}
+
+void CMagicProcess::SendPerTargetAnimation(
+	int magicid, int targetId, int data1, int result, int data3, int moral) const
+{
+	int sendIndex = 0;
+	char sendBuffer[128] {};
+
+	SetByte(sendBuffer, AG_MAGIC_ATTACK_RESULT, sendIndex);
+	SetByte(sendBuffer, MAGIC_EFFECTING, sendIndex);
+	SetDWORD(sendBuffer, magicid, sendIndex);
+	SetShort(sendBuffer, m_pSrcUser->m_iUserId, sendIndex);
+	SetShort(sendBuffer, targetId, sendIndex);
+	SetShort(sendBuffer, data1, sendIndex);
+	SetShort(sendBuffer, result, sendIndex);
+	SetShort(sendBuffer, data3, sendIndex);
+	SetShort(sendBuffer, moral, sendIndex);
+	SetShort(sendBuffer, 0, sendIndex);
+	SetShort(sendBuffer, 0, sendIndex);
+
+	m_pMain->Send(sendBuffer, sendIndex, m_pSrcUser->m_curZone);
+}
+
 void CMagicProcess::MagicPacket(char* pBuf)
 {
 	int index = 0, magicid = 0, sid = -1, tid = -1, TotalDex = 0, righthand_damage = 0;
@@ -667,13 +727,22 @@ int16_t CMagicProcess::GetMagicDamage(
 int16_t CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int data1, int data2,
 	int data3, int dexpoint, int righthand_damage)
 {
-	model::MagicType3* pType3 = nullptr;
-	model::MagicType4* pType4 = nullptr;
-	model::MagicType7* pType7 = nullptr;
-	int radius                = 0;
+	model::MagicType3* pType3      = nullptr;
+	model::MagicType4* pType4      = nullptr;
+	model::MagicType7* pType7      = nullptr;
+	model::Magic* pMagic           = nullptr;
+	bool usesAreaCenteredAnimation = false;
+	int radius                     = 0;
 
 	if (magictype == 3)
 	{
+		pMagic = m_pMain->_magicTableMap.GetData(magicid);
+		if (pMagic == nullptr)
+		{
+			spdlog::error("MagicProcess::AreaAttack: No MAGIC definition [magicId={}]", magicid);
+			return 0;
+		}
+
 		pType3 = m_pMain->_magicType3TableMap.GetData(magicid);
 		if (pType3 == nullptr)
 		{
@@ -682,7 +751,9 @@ int16_t CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int dat
 			return 0;
 		}
 
-		radius = pType3->Radius;
+		radius                    = pType3->Radius;
+
+		usesAreaCenteredAnimation = UsesAreaCenteredAnimation(pMagic);
 	}
 	else if (magictype == 4)
 	{
@@ -756,6 +827,9 @@ int16_t CMagicProcess::AreaAttack(int magictype, int magicid, int moral, int dat
 				dexpoint, righthand_damage);
 	}
 
+	if (magictype == 3 && usesAreaCenteredAnimation)
+		SendAreaCenteredAnimation(magicid, moral, data1, data2, data3);
+
 	//damage = GetMagicDamage(tid, pType->FirstDamage, pType->bAttribute);
 
 	return 1;
@@ -795,6 +869,8 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 		spdlog::error("MagicProcess::AreaAttackDamage: No MAGIC definition [magicId={}]", magicid);
 		return;
 	}
+
+	const bool usesPerTargetAnimation = UsesPerTargetAnimation(pMagic);
 
 	if (magictype == 3)
 	{
@@ -918,26 +994,11 @@ void CMagicProcess::AreaAttackDamage(int magictype, int rx, int rz, int magicid,
 				}
 			}
 
-			memset(sendBuffer, 0, sizeof(sendBuffer));
-			sendIndex = 0;
-
 			// 패킷 전송.....
 			//if ( pMagic->bType2 == 0 || pMagic->bType2 == 3 )
-			{
-				SetByte(sendBuffer, AG_MAGIC_ATTACK_RESULT, sendIndex);
-				SetByte(sendBuffer, MAGIC_EFFECTING, sendIndex);
-				SetDWORD(sendBuffer, magicid, sendIndex);
-				SetShort(sendBuffer, m_pSrcUser->m_iUserId, sendIndex);
-				SetShort(sendBuffer, pNpc->m_sNid + NPC_BAND, sendIndex);
-				SetShort(sendBuffer, data1, sendIndex);
-				SetShort(sendBuffer, result, sendIndex);
-				SetShort(sendBuffer, data3, sendIndex);
-				SetShort(sendBuffer, moral, sendIndex);
-				SetShort(sendBuffer, 0, sendIndex);
-				SetShort(sendBuffer, 0, sendIndex);
-
-				m_pMain->Send(sendBuffer, sendIndex, m_pSrcUser->m_curZone);
-			}
+			if (usesPerTargetAnimation)
+				SendPerTargetAnimation(
+					magicid, pNpc->m_sNid + NPC_BAND, data1, result, data3, moral);
 		}
 		// 타잎 4일 경우...
 		else if (magictype == 4)
