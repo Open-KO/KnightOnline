@@ -1767,9 +1767,9 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	// plug 효과 붙여라..^^
 	if (pItemExt && pItemExt->dwIDK0 > 0)
 	{
-		bool hasOverride    = (pItemBasic && pItemBasic->dwEffectID2 > 0);
+		bool hasOverride    = (pItemBasic && pItemBasic->dwEffectID2 > 0); // flag that determines different fx overrides e.g raptor and glave
 		uint32_t dwFXMainID = hasOverride ? pItemBasic->dwEffectID2 : pItemExt->dwIDK0;
-		uint32_t dwFXTailID = dwFXMainID + 1;
+		uint32_t dwFXTailID = dwFXMainID + 1;  // fx table shows that tail is always main + 1
 
 		CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
 		__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(dwFXMainID);
