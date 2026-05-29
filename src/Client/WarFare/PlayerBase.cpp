@@ -1767,25 +1767,16 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	// plug 효과 붙여라..^^
 	if (pItemExt && pItemExt->dwIDK0 > 0)
 	{
-		bool hasOverride    = (pItemBasic && pItemBasic->dwEffectID2 > 0); // flag that determines different fx overrides e.g raptor and glave
-		uint32_t dwFXMainID = hasOverride ? pItemBasic->dwEffectID2 : pItemExt->dwIDK0;
-		uint32_t dwFXTailID = dwFXMainID + 1;  // fx table shows that tail is always main + 1
+		//  We need to determine fx overrides if needed. e.g raptor and glave. This is determined by base table where dwEffectID2 > 0
+		uint32_t dwFXMainID  = (pItemBasic && pItemBasic->dwEffectID2 > 0) ? pItemBasic->dwEffectID2 : pItemExt->dwIDK0;
 
-		CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
-		__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(dwFXMainID);
-		__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(dwFXTailID);
+		__TABLE_FX* pFXMain  = s_pTbl_FXSource.Find(dwFXMainID);
+		__TABLE_FX* pFXTail  = s_pTbl_FXSource.Find(dwFXMainID + 1); // Tail always = Main + 1 fx table shows this.
+		
+		std::string szFXMain = pFXMain ? pFXMain->szFN : "";
+		std::string szFXTail = pFXTail ? pFXTail->szFN : "";
 
-		std::string szFXMain, szFXTail;
-		if (pFXMain)
-			szFXMain = pFXMain->szFN;
-		else
-			szFXMain = "";
-		if (pFXTail)
-			szFXTail = pFXTail->szFN;
-		else
-			szFXTail = "";
-
-		pCPlug->InitFX(szFXMain, szFXTail, 0xffffffff);
+		((CN3CPlug*) pPlug)->InitFX(szFXMain, szFXTail, 0xffffffff);
 	}
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
