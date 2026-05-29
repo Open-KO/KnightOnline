@@ -1765,83 +1765,32 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//
 	// plug 효과 붙여라..^^
-	if (pItemExt)
+	if (pItemExt && pItemExt->dwIDK0 > 0)
 	{
-		if ((pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE && pItemExt->byDamageFire > 0)
-			|| (pItemExt->byDamageFire >= LIMIT_FX_DAMAGE)) // 17 추가데미지 - 불
+		uint32_t dwFXMainID = pItemExt->dwIDK0;
+		uint32_t dwFXTailID = pItemExt->dwIDK0 + 1; // fx table shows that plus 1 is correspondant tail fx
+
+		if (pItemBasic && pItemBasic->dwEffectID2 > 0) // plugs with overriden fx are stored in base table dwEffectID2. This is where raptor and glave fx's are differentiated.
 		{
-			CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_FIRE_TAIL);
-
-			std::string szFXMain, szFXTail;
-			if (pFXMain)
-				szFXMain = pFXMain->szFN;
-			else
-				szFXMain = "";
-			if (pFXTail)
-				szFXTail = pFXTail->szFN;
-			else
-				szFXTail = "";
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffffff00);
+			dwFXMainID = pItemBasic->dwEffectID2;
+			dwFXTailID = pItemBasic->dwEffectID2 + 1;
 		}
-		else if ((pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE && pItemExt->byDamageIce > 0)
-				 || (pItemExt->byDamageIce >= LIMIT_FX_DAMAGE)) // 18 추가데미지 - 얼음
-		{
-			CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_ICE_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_ICE_TAIL);
 
-			std::string szFXMain, szFXTail;
-			if (pFXMain)
-				szFXMain = pFXMain->szFN;
-			else
-				szFXMain = "";
-			if (pFXTail)
-				szFXTail = pFXTail->szFN;
-			else
-				szFXTail = "";
+		CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
+		__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(dwFXMainID);
+		__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(dwFXTailID);
 
-			pCPlug->InitFX(szFXMain, szFXTail, 0xff0000ff);
-		}
-		else if ((pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE && pItemExt->byDamageThuner > 0)
-				 || (pItemExt->byDamageThuner >= LIMIT_FX_DAMAGE)) // 19 추가데미지 - 전격
-		{
-			CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_LIGHTNING_TAIL);
+		std::string szFXMain, szFXTail;
+		if (pFXMain)
+			szFXMain = pFXMain->szFN;
+		else
+			szFXMain = "";
+		if (pFXTail)
+			szFXTail = pFXTail->szFN;
+		else
+			szFXTail = "";
 
-			std::string szFXMain, szFXTail;
-			if (pFXMain)
-				szFXMain = pFXMain->szFN;
-			else
-				szFXMain = "";
-			if (pFXTail)
-				szFXTail = pFXTail->szFN;
-			else
-				szFXTail = "";
-
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffffffff);
-		}
-		else if ((pItemExt->byMagicOrRare == ITEM_ATTRIB_UNIQUE && pItemExt->byDamagePoison > 0)
-				 || (pItemExt->byDamagePoison >= LIMIT_FX_DAMAGE)) // 20 추가데미지 - 독
-		{
-			CN3CPlug* pCPlug    = (CN3CPlug*) pPlug;
-			__TABLE_FX* pFXMain = s_pTbl_FXSource.Find(FXID_SWORD_POISON_MAIN);
-			__TABLE_FX* pFXTail = s_pTbl_FXSource.Find(FXID_SWORD_POISON_TAIL);
-
-			std::string szFXMain, szFXTail;
-			if (pFXMain)
-				szFXMain = pFXMain->szFN;
-			else
-				szFXMain = "";
-			if (pFXTail)
-				szFXTail = pFXTail->szFN;
-			else
-				szFXTail = "";
-
-			pCPlug->InitFX(szFXMain, szFXTail, 0xffff00ff);
-		}
+		pCPlug->InitFX(szFXMain, szFXTail, 0xffffffff);
 	}
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
