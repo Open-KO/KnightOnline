@@ -1376,6 +1376,7 @@ inline constexpr int FXID_WARP_ELMORAD            = 10047;
 inline constexpr int FXID_REGION_POISON           = 10100;
 inline constexpr int FXID_TARGET_POINTER          = 30001;
 inline constexpr int FXID_ZONE_POINTER            = 30002;
+inline constexpr int FXID_ELIXIRSTAFF_SPECIALCASE = 40000000;
 
 enum e_SkillMagicType4 : uint8_t
 {
