@@ -1770,7 +1770,7 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 		//  We need to determine fx overrides if needed. e.g raptor and glave. This is determined by base table where dwEffectID2 > 0
 		uint32_t dwFXMainID  = (pItemBasic && pItemBasic->dwEffectID2 > 0) ? pItemBasic->dwEffectID2 / 1000 : pItemExt->dwIDK0;
 
-		if (dwFXMainID == (FXID_ELIXIRSTAFF_SPECIALCASE / 1000)) // 40M divide it by 1000 and then you add offset to it to get fx id.
+		if (dwFXMainID == (FXID_ELIXIRSTAFF_SPECIALCASE))
 			dwFXMainID += (pItemExt->byDamageThuner > pItemExt->byDamageIce && pItemExt->byDamageThuner > pItemExt->byDamageFire) ? 20 : (pItemExt->byDamageIce > pItemExt->byDamageFire) ? 10 : 0;
 
 		__TABLE_FX* pFXMain  = s_pTbl_FXSource.Find(dwFXMainID);
