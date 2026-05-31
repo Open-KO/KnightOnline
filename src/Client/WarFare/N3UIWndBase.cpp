@@ -1,4 +1,4 @@
-﻿// N3UIWndBase.cpp: implementation of the CN3UIWndBase class.
+// N3UIWndBase.cpp: implementation of the CN3UIWndBase class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -40,11 +40,11 @@ CN3UIWndBase::CN3UIWndBase()
 
 	if (s_iRefCount == 0)
 	{
-		s_pSnd_Item_Etc    = s_SndMgr.CreateObj(ID_SOUND_ITEM_ETC_IN_INVENTORY);
-		s_pSnd_Item_Weapon = s_SndMgr.CreateObj(ID_SOUND_ITEM_WEAPON_IN_INVENTORY);
-		s_pSnd_Item_Armor  = s_SndMgr.CreateObj(ID_SOUND_ITEM_ARMOR_IN_INVENTORY);
-		s_pSnd_Gold        = s_SndMgr.CreateObj(ID_SOUND_GOLD_IN_INVENTORY);
-		s_pSnd_Repair      = s_SndMgr.CreateObj(ID_SOUND_ITEM_IN_REPAIR);
+		s_pSnd_Item_Etc    = s_SndMgr.CreateObj(ID_SOUND_ITEM_ETC_IN_INVENTORY, SNDTYPE_2D);
+		s_pSnd_Item_Weapon = s_SndMgr.CreateObj(ID_SOUND_ITEM_WEAPON_IN_INVENTORY, SNDTYPE_2D);
+		s_pSnd_Item_Armor  = s_SndMgr.CreateObj(ID_SOUND_ITEM_ARMOR_IN_INVENTORY, SNDTYPE_2D);
+		s_pSnd_Gold        = s_SndMgr.CreateObj(ID_SOUND_GOLD_IN_INVENTORY, SNDTYPE_2D);
+		s_pSnd_Repair      = s_SndMgr.CreateObj(ID_SOUND_ITEM_IN_REPAIR, SNDTYPE_2D);
 	}
 	s_iRefCount++; // 참조 카운트
 }
