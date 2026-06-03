@@ -1,10 +1,11 @@
-﻿// CountableItemEditDlg.cpp: implementation of the CCountableItemEditDlg class.
+// CountableItemEditDlg.cpp: implementation of the CCountableItemEditDlg class.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
 #include "text_resources.h"
 #include "CountableItemEditDlg.h"
+#include "N3UIWndBase.h"
 
 #include "GameProcedure.h"
 #include "GameProcMain.h"
@@ -174,6 +175,20 @@ bool CCountableItemEditDlg::ReceiveMessage(CN3UIBase* pSender, uint32_t dwMsg)
 
 void CCountableItemEditDlg::Open(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bCountGold, bool bWareGold)
 {
+	m_eCallerWnd         = eUW;
+	m_eCallerWndDistrict = eUD;
+	m_bWareGold          = bWareGold;
+
+	int iStackSize       = -1;
+	if (!bCountGold && CN3UIWndBase::s_sSelectedIconInfo.pItemSelect != nullptr)
+	{
+		bool bToMeOrNotToMe = (eUW == UIWND_TRANSACTION && eUD == UIWND_DISTRICT_TRADE_NPC); // that is the question...
+		if (!bToMeOrNotToMe)
+		{
+			iStackSize = CN3UIWndBase::s_sSelectedIconInfo.pItemSelect->iCount;
+		}
+	}
+
 	std::string szMsg;
 	if (bCountGold)
 		szMsg = fmt::format_text_resource(IDS_EDIT_BOX_GOLD);
@@ -189,7 +204,7 @@ void CCountableItemEditDlg::Open(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bCountG
 	int iCX = 0, iCY = 0;
 
 	m_bLocked = true;
-	SetQuantity(-1);
+	SetQuantity(iStackSize);
 
 	SetVisible(true);
 
@@ -197,10 +212,6 @@ void CCountableItemEditDlg::Open(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bCountG
 	N3_VERIFY_UI_COMPONENT(pEdit, GetChildByID<CN3UIEdit>("edit_trade"));
 	if (pEdit != nullptr)
 		pEdit->SetFocus();
-
-	m_eCallerWnd         = eUW;
-	m_eCallerWndDistrict = eUD;
-	m_bWareGold          = bWareGold;
 
 	switch (eUW)
 	{

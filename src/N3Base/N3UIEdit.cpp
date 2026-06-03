@@ -1,4 +1,4 @@
-﻿// N3UIEdit.cpp: implementation of the CN3UIEdit class.
+// N3UIEdit.cpp: implementation of the CN3UIEdit class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -293,6 +293,8 @@ bool CN3UIEdit::SetFocus()
 			else
 				::SetWindowText(s_hWndEdit, "");
 		}
+
+		::SendMessage(s_hWndEdit, EM_SETSEL, 0, -1);
 	}
 
 	return true;

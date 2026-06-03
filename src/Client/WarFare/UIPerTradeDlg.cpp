@@ -1,4 +1,4 @@
-﻿// UIPerTradeDlg.cpp: implementation of the CUIPerTradeDlg class.
+// UIPerTradeDlg.cpp: implementation of the CUIPerTradeDlg class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -664,7 +664,16 @@ bool CUIPerTradeDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 		// 활이나 물약등 아이템인 경우..
 		s_bWaitFromServer  = false;
-		s_pCountableItemEdit->Open(UIWND_PER_TRADE, UIWND_DISTRICT_PER_TRADE_MY, false);
+		if (s_sSelectedIconInfo.pItemSelect != nullptr && s_sSelectedIconInfo.pItemSelect->iCount == 1)
+		{
+			s_pCountableItemEdit->SetCallerInfo(UIWND_PER_TRADE, UIWND_DISTRICT_PER_TRADE_MY, false);
+			s_pCountableItemEdit->SetQuantity(1);
+			ItemCountOK();
+		}
+		else
+		{
+			s_pCountableItemEdit->Open(UIWND_PER_TRADE, UIWND_DISTRICT_PER_TRADE_MY, false);
+		}
 
 		AllHighLightIconFree();
 		SetState(UI_STATE_COMMON_NONE);

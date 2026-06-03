@@ -1,4 +1,4 @@
-﻿// UITransactionDlg.cpp: implementation of the CUITransactionDlg class.
+// UITransactionDlg.cpp: implementation of the CUITransactionDlg class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -998,7 +998,18 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					s_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iDestInviOrder;
 					s_bWaitFromServer                        = false;
 
-					s_pCountableItemEdit->Open(UIWND_TRANSACTION, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					if (s_sSelectedIconInfo.pItemSelect != nullptr && s_sSelectedIconInfo.pItemSelect->iCount == 1
+						&& s_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_TRADE_NPC)
+					{
+						auto eDist = s_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+						s_pCountableItemEdit->SetCallerInfo(UIWND_TRANSACTION, eDist, false);
+						s_pCountableItemEdit->SetQuantity(1);
+						ItemCountOK();
+					}
+					else
+					{
+						s_pCountableItemEdit->Open(UIWND_TRANSACTION, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					}
 					return false;
 				}
 
@@ -1112,7 +1123,18 @@ bool CUITransactionDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					|| s_sRecoveryJobInfo.pItemSource->pItemBasic->byContable == UIITEM_TYPE_COUNTABLE_SMALL)
 				{
 					// 활이나 물약등 아이템인 경우..
-					s_pCountableItemEdit->Open(UIWND_TRANSACTION, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					if (s_sSelectedIconInfo.pItemSelect != nullptr && s_sSelectedIconInfo.pItemSelect->iCount == 1
+						&& s_sSelectedIconInfo.UIWndSelect.UIWndDistrict != UIWND_DISTRICT_TRADE_NPC)
+					{
+						auto eDist = s_sSelectedIconInfo.UIWndSelect.UIWndDistrict;
+						s_pCountableItemEdit->SetCallerInfo(UIWND_TRANSACTION, eDist, false);
+						s_pCountableItemEdit->SetQuantity(1);
+						ItemCountOK();
+					}
+					else
+					{
+						s_pCountableItemEdit->Open(UIWND_TRANSACTION, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					}
 				}
 				else
 				{

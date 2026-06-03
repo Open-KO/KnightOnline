@@ -1,4 +1,4 @@
-﻿// UIWareHouseDlg.cpp: implementation of the UIWareHouseDlg class.
+// UIWareHouseDlg.cpp: implementation of the UIWareHouseDlg class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -764,7 +764,16 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 					s_sRecoveryJobInfo.UIWndSourceEnd.iOrder = iDestiOrder;
 					s_bWaitFromServer                        = false;
 
-					s_pCountableItemEdit->Open(UIWND_WARE_HOUSE, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					if (s_sSelectedIconInfo.pItemSelect != nullptr && s_sSelectedIconInfo.pItemSelect->iCount == 1)
+					{
+						s_pCountableItemEdit->SetCallerInfo(UIWND_WARE_HOUSE, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+						s_pCountableItemEdit->SetQuantity(1);
+						ItemCountOK();
+					}
+					else
+					{
+						s_pCountableItemEdit->Open(UIWND_WARE_HOUSE, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					}
 				}
 				else
 				{
@@ -942,7 +951,16 @@ bool CUIWareHouseDlg::ReceiveIconDrop(__IconItemSkill* spItem, POINT ptCur)
 
 					s_bWaitFromServer = false;
 
-					s_pCountableItemEdit->Open(UIWND_WARE_HOUSE, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					if (s_sSelectedIconInfo.pItemSelect != nullptr && s_sSelectedIconInfo.pItemSelect->iCount == 1)
+					{
+						s_pCountableItemEdit->SetCallerInfo(UIWND_WARE_HOUSE, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+						s_pCountableItemEdit->SetQuantity(1);
+						ItemCountOK();
+					}
+					else
+					{
+						s_pCountableItemEdit->Open(UIWND_WARE_HOUSE, s_sSelectedIconInfo.UIWndSelect.UIWndDistrict, false);
+					}
 					return false;
 				}
 

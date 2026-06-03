@@ -1,4 +1,4 @@
-﻿// CountableItemEditDlg.h: interface for the CCountableItemEditDlg class.
+// CountableItemEditDlg.h: interface for the CCountableItemEditDlg class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -40,6 +40,13 @@ public:
 
 	virtual void Open(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bCountGold, bool bWareGold = false);
 	virtual void Close();
+
+	void SetCallerInfo(e_UIWND eUW, e_UIWND_DISTRICT eUD, bool bWareGold = false)
+	{
+		m_eCallerWnd         = eUW;
+		m_eCallerWndDistrict = eUD;
+		m_bWareGold          = bWareGold;
+	}
 
 	bool IsLocked()
 	{
