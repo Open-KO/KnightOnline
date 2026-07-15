@@ -7,6 +7,30 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $programFilesX86 = [Environment]::GetFolderPath('ProgramFilesX86')
 $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'
 
+function Get-OdbcDsnPropertyValue {
+    param(
+        [Parameter(Mandatory)] $Dsn,
+        [Parameter(Mandatory)][string] $Name
+    )
+
+    foreach ($attribute in @($Dsn.Attribute)) {
+        if ($null -eq $attribute) { continue }
+
+        $keywordProperty = $attribute.PSObject.Properties['Keyword']
+        $valueProperty = $attribute.PSObject.Properties['Value']
+        if ($null -ne $keywordProperty -and $null -ne $valueProperty -and [string]$keywordProperty.Value -ieq $Name) {
+            return [string]$valueProperty.Value
+        }
+
+        $text = [string]$attribute
+        if ($text -match '^\s*([^=]+)=(.*)$' -and $Matches[1].Trim() -ieq $Name) {
+            return $Matches[2]
+        }
+    }
+
+    return $null
+}
+
 if (-not (Test-Path -LiteralPath $vswhere)) {
     $failures.Add('Visual Studio Installer/vswhere is missing.')
 } else {
@@ -25,10 +49,29 @@ if (-not (Get-Command go -ErrorAction SilentlyContinue)) {
 }
 
 $sql = Get-Service -Name 'MSSQL$SQLEXPRESS' -ErrorAction SilentlyContinue
-if ($null -eq $sql) { $failures.Add('SQL Server Express instance SQLEXPRESS is missing.') }
+if ($null -eq $sql) {
+    $failures.Add('SQL Server Express instance SQLEXPRESS is missing.')
+} elseif ($sql.Status -ne 'Running') {
+    $failures.Add('SQL Server Express instance SQLEXPRESS is not running.')
+}
 
 $dsn = Get-OdbcDsn -Name 'KN_online' -DsnType User -Platform '64-bit' -ErrorAction SilentlyContinue
-if ($null -eq $dsn) { $failures.Add('64-bit user DSN KN_online is missing.') }
+if ($null -eq $dsn) {
+    $failures.Add('64-bit user DSN KN_online is missing.')
+} else {
+    if ($dsn.DriverName -ne 'ODBC Driver 18 for SQL Server') {
+        $failures.Add('KN_online DSN must use ODBC Driver 18 for SQL Server.')
+    }
+    if ((Get-OdbcDsnPropertyValue -Dsn $dsn -Name 'AutoTranslate') -ne 'No') {
+        $failures.Add('KN_online DSN must set AutoTranslate=No.')
+    }
+    if ((Get-OdbcDsnPropertyValue -Dsn $dsn -Name 'Database') -ne 'KN_online') {
+        $failures.Add('KN_online DSN must set Database=KN_online.')
+    }
+    if ((Get-OdbcDsnPropertyValue -Dsn $dsn -Name 'Server') -ne '.\SQLEXPRESS') {
+        $failures.Add('KN_online DSN must set Server=.\SQLEXPRESS.')
+    }
+}
 
 foreach ($relative in @('assets\Client\Server.ini.default','deps\googletest\CMakeLists.txt','deps\db-models\CMakeLists.txt')) {
     if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $relative))) {

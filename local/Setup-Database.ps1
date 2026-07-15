@@ -2,15 +2,29 @@
 param([Parameter(Mandatory)][string] $GameDbPassword)
 
 $ErrorActionPreference = 'Stop'
+
+function ConvertTo-YamlDoubleQuotedScalar {
+    param([Parameter(Mandatory)][AllowEmptyString()][string] $Value)
+
+    if ($Value -match '[\x00-\x1F\x7F]') {
+        throw 'GameDbPassword must not contain control characters.'
+    }
+
+    return '"' + $Value.Replace('\', '\\').Replace('"', '\"') + '"'
+}
+
 $runtime = Join-Path $PSScriptRoot 'runtime'
 $util = Join-Path $runtime 'kodb-util'
 New-Item -ItemType Directory -Force -Path $runtime | Out-Null
 if (-not (Test-Path -LiteralPath (Join-Path $util '.git'))) {
     git clone https://github.com/Open-KO/kodb-util.git $util
+    if ($LASTEXITCODE -ne 0) { throw 'git clone failed while fetching Open-KO/kodb-util.' }
 }
 git -C $util submodule update --init --recursive
+if ($LASTEXITCODE -ne 0) { throw 'git submodule update failed for kodb-util.' }
 
 $configPath = Join-Path $util 'kodb-util-config.yaml'
+$gameDbPasswordYaml = ConvertTo-YamlDoubleQuotedScalar $GameDbPassword
 $yaml = @"
 databaseConfig:
   host: localhost
@@ -27,7 +41,7 @@ genConfig:
         - knight
       logins:
         - name: knight
-          pass: "$GameDbPassword"
+          pass: $gameDbPasswordYaml
       users:
         - name: knight
           schema: knight
@@ -37,7 +51,9 @@ Set-Content -LiteralPath $configPath -Value $yaml -Encoding UTF8
 Push-Location $util
 try {
     go mod download
+    if ($LASTEXITCODE -ne 0) { throw 'go mod download failed for kodb-util.' }
     go run kodb-util.go -clean -import
+    if ($LASTEXITCODE -ne 0) { throw 'kodb-util database clean/import failed.' }
 } finally {
     Pop-Location
 }

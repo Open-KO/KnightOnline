@@ -1,6 +1,6 @@
 # Local OpenKO baseline
 
-This setup is for localhost development only. Do not expose the database, DSN, or game services to another host.
+This setup is for single-machine development only. Configure every game and client service endpoint as the literal `127.0.0.1`; hostnames such as `localhost` are not permitted. Do not expose the database, DSN, or game services to another host.
 
 ## Prerequisites
 
@@ -49,4 +49,4 @@ The default development login is `testing/testing`.
 
 ## Generated local configuration
 
-The ignored local INI files are `Aujard.ini`, `ItemManager.ini`, `Version.ini`, `server.ini`, `gameserver.ini`, and `assets\Client\Server.ini`. The client file is generated from `assets\Client\Server.ini.default`. Keep all server addresses loopback-only (`127.0.0.1` or `localhost`) and never commit generated INI files.
+The ignored local INI files are `Aujard.ini`, `ItemManager.ini`, `Version.ini`, `server.ini`, `gameserver.ini`, and `assets\Client\Server.ini`. The client file is generated from `assets\Client\Server.ini.default`. Keep all game and client server addresses at the literal `127.0.0.1` only and never commit generated INI files.
