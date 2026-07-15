@@ -60,6 +60,7 @@ local/.env.local
 local/logs/
 local/runtime/
 local/pids.json
+local/pids.json.*
 
 # Do not ignore CMakeLists.txt
 !CMakeLists.txt

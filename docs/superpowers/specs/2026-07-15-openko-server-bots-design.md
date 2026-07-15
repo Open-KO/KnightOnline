@@ -333,22 +333,25 @@ yerel SQL Server Express tercih edilmiştir.
 
 ### 9.2 Yerel yardımcı betikler
 
-Aktif depoda aşağıdaki betikler tasarlanacaktır:
+Aktif depoda aşağıdaki betikler kullanılır:
 
 ```text
-local/setup-local.ps1
-local/build-local.ps1
-local/start-local.ps1
-local/stop-local.ps1
+local/Setup-Database.ps1
+local/Build-Local.ps1
+local/Start-Local.ps1
+local/Stop-Local.ps1
 ```
 
-- `setup-local.ps1`: önkoşulları ve SQL bağlantısını doğrular, yerel ayar
+- `Setup-Database.ps1`: önkoşulları ve SQL bağlantısını doğrular, yerel ayar
   şablonlarını hazırlar.
-- `build-local.ps1`: desteklenen Windows yapılandırmasını derler ve testleri
+- `Build-Local.ps1`: desteklenen Windows yapılandırmasını derler ve testleri
   çalıştırır.
-- `start-local.ps1`: bağımlılık sırasına göre servisleri başlatır ve log
-  yollarını gösterir.
-- `stop-local.ps1`: istemci dışındaki yerel servisleri ters sırada kapatır.
+- `Start-Local.ps1`: bağımlılık sırasına göre servisleri ve istemciyi gizli
+  süreçler olarak başlatır; stdout/stderr loglarını ve yalnızca oluşturduğu
+  süreçlerin kimliklerini atomik `local/pids.json` durumunda tutar.
+- `Stop-Local.ps1`: durum şemasını, executable yolu/adı ve süreç başlangıç
+  zamanını doğrular; yalnızca kaydedilmiş kesin PID'leri ters sırada kapatır.
+  Süreç adına göre tarama veya toplu kapatma yapmaz.
 
 Parolalar commit edilmez. Örnek yapılandırmalar yalnızca yer tutucu içerir;
 gerçek yerel değerler ignore edilen dosyalarda tutulur.
@@ -466,3 +469,14 @@ Temel teslim doğrulandıktan sonra geliştirme aşağıdaki sırayla genişleti
 
 Her aşama bir önceki aşamanın testlerini koruyacak ve ayrı kabul ölçütleriyle
 planlanacaktır.
+
+## 14. Doğrulama durumu
+
+Başlatma/durdurma betiklerinin PowerShell AST/statik kontrolleri ve gerçek oyun
+servislerini kullanmayan geçici bir sahte süreç sahipliği testi uygulanmıştır.
+Bu kanıt yalnızca operasyon betiklerinin dar güvenlik davranışını kapsar.
+
+Debug/Release tam derleme ve test çıktıları, gerçek yerel servis başlatma,
+istemciyle oturum açma, on botun oyun içi davranış gözlemleri ve 30 dakikalık
+dayanıklılık kaydı denetleyici tarafından henüz çalıştırılmamıştır. Bu kanıtlar
+elde edilene kadar Bölüm 12'deki ilk teslim kabulü tamamlanmış sayılmaz.
