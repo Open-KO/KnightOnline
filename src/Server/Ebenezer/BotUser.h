@@ -21,6 +21,7 @@ public:
 private:
 	_USER_DATA _userData {};
 	BotRuntime _runtime {};
+	bool _initialized = false;
 };
 
 } // namespace Ebenezer

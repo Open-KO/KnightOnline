@@ -41,7 +41,7 @@ CBotUser::CBotUser() : CUser(test_tag {})
 bool CBotUser::InitializeBot(const BotSpawnRequest& request)
 {
 	auto app = EbenezerApp::instance();
-	if (app == nullptr || request.name.empty() || request.name.length() > MAX_ID_SIZE
+	if (_initialized || app == nullptr || request.name.empty() || request.name.length() > MAX_ID_SIZE
 		|| !IsValidName(request.name.c_str()) || !IsSupportedClass(request.nation, request.characterClass)
 		|| request.level == 0 || request.level > MAX_LEVEL || !std::isfinite(request.spawn.x)
 		|| !std::isfinite(request.spawn.y) || !std::isfinite(request.spawn.z))
@@ -51,8 +51,16 @@ bool CBotUser::InitializeBot(const BotSpawnRequest& request)
 
 	const int zoneIndex = app->GetZoneIndex(request.spawn.zoneId);
 	auto map            = app->GetMapByIndex(zoneIndex);
-	if (map == nullptr || request.spawn.x < 0.0f || request.spawn.z < 0.0f
-		|| request.spawn.x >= map->m_nMapSize || request.spawn.z >= map->m_nMapSize)
+	if (map == nullptr || map->m_nMapSize <= 1 || !std::isfinite(map->m_fUnitDist)
+		|| map->m_fUnitDist <= 0.0f)
+	{
+		return false;
+	}
+
+	const float worldWidth = (map->m_nMapSize - 1) * map->m_fUnitDist;
+	if (!std::isfinite(worldWidth) || worldWidth <= 0.0f || request.spawn.x < 0.0f
+		|| request.spawn.z < 0.0f || request.spawn.x >= worldWidth
+		|| request.spawn.z >= worldWidth)
 	{
 		return false;
 	}
@@ -92,6 +100,7 @@ bool CBotUser::InitializeBot(const BotSpawnRequest& request)
 	_runtime.state = BotState::Spawn;
 	_runtime.home  = request.spawn;
 	SetState(CONNECTION_STATE_GAMESTART);
+	_initialized = true;
 	return true;
 }
 

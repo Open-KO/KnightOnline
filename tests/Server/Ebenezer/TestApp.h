@@ -52,9 +52,10 @@ public:
 		return user;
 	}
 
-	TestMap* CreateMap(uint8_t zoneId, int mapSize = TestMap::DEFAULT_MAP_SIZE)
+	TestMap* CreateMap(uint8_t zoneId, int mapSize = TestMap::DEFAULT_MAP_SIZE,
+		float unitDistance = 1.0f)
 	{
-		auto map = new TestMap(zoneId, mapSize);
+		auto map = new TestMap(zoneId, mapSize, unitDistance);
 		if (map == nullptr)
 			return nullptr;
 

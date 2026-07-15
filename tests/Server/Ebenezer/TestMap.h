@@ -14,14 +14,16 @@ class TestMap : public Ebenezer::C3DMap
 public:
 	static constexpr int DEFAULT_MAP_SIZE = 1024; // 1024x1024
 
-	TestMap(uint8_t zoneId, int mapSize = DEFAULT_MAP_SIZE)
+	TestMap(uint8_t zoneId, int mapSize = DEFAULT_MAP_SIZE, float unitDistance = 1.0f)
 	{
 		m_nZoneNumber = zoneId;
 		m_pMain       = Ebenezer::EbenezerApp::instance();
 		m_nMapSize    = mapSize;
+		m_fUnitDist   = unitDistance;
 
-		m_nXRegion    = (int) (mapSize / VIEW_DISTANCE) + 1;
-		m_nZRegion    = (int) (mapSize / VIEW_DISTANCE) + 1;
+		const float worldWidth = (mapSize - 1) * unitDistance;
+		m_nXRegion             = (int) (worldWidth / VIEW_DISTANCE) + 1;
+		m_nZRegion             = (int) (worldWidth / VIEW_DISTANCE) + 1;
 
 		m_ppRegion    = new Ebenezer::CRegion*[m_nXRegion];
 		for (int i = 0; i < m_nXRegion; i++)
