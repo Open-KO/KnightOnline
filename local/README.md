@@ -37,6 +37,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\local\Setup-Database.p
 
 The `KN_online` DSN uses ODBC Driver 18, SQL authentication, optional encryption, and `AutoTranslate=No`. The password is supplied interactively and must not be committed.
 
+Database setup pins `kodb-util` to `aa62573a9eb4594b369e1ffa2df18327669c3feb` and its `OpenKO-db` submodule to `bec619466938d278339c30e5b1a4bff3c9413bab`. Before import it force-resets the submodule and idempotently applies the auditable `local\patches\kodb-util-openko-db-knightsindex.patch`, which normalizes variable casing in `CHECK_KNIGHTS` and `EDITER_KNIGHTS` for case-sensitive SQL collations.
+
+The sanitized combined import log remains visible, but setup fails on nonzero exit or upstream false-success markers such as `Recovered from panic` and `error executing batch`. Before creating the DSN, an integrated-security SQL check requires a non-null `KN_online` collation plus tables `USERDATA`, `ITEM`, `MAGIC` and procedures `ACCOUNT_LOGIN`, `LOAD_USER_DATA`, `UPDATE_USER_DATA`, `CHECK_KNIGHTS`.
+
 ## Build and test
 
 Build every unmodified solution for x64 and run the existing server tests:

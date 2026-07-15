@@ -1,0 +1,15 @@
+diff --git a/ManualSetup/8_CreateStoredProc_CHECK_KNIGHTS.sql b/ManualSetup/8_CreateStoredProc_CHECK_KNIGHTS.sql
+--- a/ManualSetup/8_CreateStoredProc_CHECK_KNIGHTS.sql
++++ b/ManualSetup/8_CreateStoredProc_CHECK_KNIGHTS.sql
+@@ -23 +23 @@ BEGIN
+-			DELETE FROM KNIGHTS WHERE IDNum = @knightsindex
++			DELETE FROM KNIGHTS WHERE IDNum = @KnightsIndex
+@@ -31 +31 @@ BEGIN
+-					UPDATE USERDATA SET Knights = 0, Fame = 0 WHERE Knights = @knightsindex
++					UPDATE USERDATA SET Knights = 0, Fame = 0 WHERE Knights = @KnightsIndex
+diff --git a/ManualSetup/8_CreateStoredProc_EDITER_KNIGHTS.sql b/ManualSetup/8_CreateStoredProc_EDITER_KNIGHTS.sql
+--- a/ManualSetup/8_CreateStoredProc_EDITER_KNIGHTS.sql
++++ b/ManualSetup/8_CreateStoredProc_EDITER_KNIGHTS.sql
+@@ -30 +30 @@ BEGIN
+-			DELETE FROM KNIGHTS WHERE IDNum = @knightsindex
++			DELETE FROM KNIGHTS WHERE IDNum = @KnightsIndex
