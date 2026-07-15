@@ -163,6 +163,21 @@ Bu düzen ilk teslimde 10 botu, sonraki aşamalarda ise en fazla 500 botu gerçe
 oyuncu ve NPC kimlikleriyle çakışmadan destekler. Kimlik ayırıcı boş kimlikleri
 yeniden kullanır; dolu veya sınır dışı kimlik vermez.
 
+Kod düzeyinde gerçek ağ bağlantısı kapasitesi ile toplam oyuncu-nesnesi
+kapasitesi ayrılacaktır:
+
+```text
+MAX_SOCKET_USER = 3000
+MAX_BOT_USER    = 500
+MAX_USER        = 3500
+```
+
+Ebenezer socket manager yalnızca `MAX_SOCKET_USER` kadar gerçek socket ayırır.
+AIServer kullanıcı dizisi ise botlardan gelen mevcut `AG_USER_*` paketlerini
+güvenle kabul edebilmek için `MAX_USER` kapasitesini kullanır. Aujard ve
+VersionManager botları kalıcı oturum olarak görmeyeceği için 3000 gerçek kullanıcı
+sınırında kalır.
+
 ### 5.3 `BotRegistry`
 
 `BotRegistry`, sanal kimlikleri `shared_ptr<CBotUser>` nesnelerine eşler.
@@ -170,6 +185,11 @@ yeniden kullanır; dolu veya sınır dışı kimlik vermez.
 kaydını sorgular. Böylece region listelerinde yalnızca oyuncu kimliği tutulmaya
 devam ederken mevcut `USER_IN`, `USER_OUT`, hareket ve saldırı yayınları botları
 da çözebilir.
+
+Mevcut temel saldırı kodundaki doğrudan socket-id doğrulaması, gerçek veya sanal
+oyuncuyu `GetUserPtr()` üzerinden çözümleyen tek doğrulamaya dönüştürülecektir.
+Bu değişiklik hem gerçek oyuncunun botu hem de soketsiz botun gerçek oyuncuyu
+hedeflemesini sağlar; geçersiz kimlik yine null sonuçla reddedilir.
 
 Kayıt erişimi, socket iş parçacıkları ile bot tick akışı arasındaki eşzamanlı
 okuma/yazmalara karşı mevcut sunucu kilitleme düzeniyle uyumlu biçimde
