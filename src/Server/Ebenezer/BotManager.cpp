@@ -72,6 +72,11 @@ BotManager::~BotManager() noexcept
 int BotManager::Spawn(const BotSpawnRequest& request)
 {
 	std::lock_guard operationLock(_operationMutex);
+	return SpawnUnlocked(request);
+}
+
+int BotManager::SpawnUnlocked(const BotSpawnRequest& request)
+{
 	auto bot = std::make_shared<CBotUser>();
 	if (!bot->InitializeBot(request))
 		return -1;
@@ -88,6 +93,54 @@ int BotManager::Spawn(const BotSpawnRequest& request)
 		throw;
 	}
 	return userId;
+}
+
+void BotManager::RollbackUnlocked(const std::vector<int>& userIds) noexcept
+{
+	for (auto itr = userIds.rbegin(); itr != userIds.rend(); ++itr)
+	{
+		auto bot = std::dynamic_pointer_cast<CBotUser>(_app.GetBotRegistry().Get(*itr));
+		if (bot == nullptr)
+			continue;
+		try
+		{
+			_commands.Despawn(*bot);
+		}
+		catch (...)
+		{
+			_app.GetBotRegistry().Remove(*itr);
+		}
+	}
+}
+
+std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requests)
+{
+	std::lock_guard operationLock(_operationMutex);
+	if (requests.empty()
+		|| requests.size() > static_cast<size_t>(MAX_BOT_USER) - _app.GetBotRegistry().Size())
+		return {};
+
+	std::vector<int> created;
+	created.reserve(requests.size());
+	try
+	{
+		for (const auto& request : requests)
+		{
+			const int userId = SpawnUnlocked(request);
+			if (userId < 0)
+			{
+				RollbackUnlocked(created);
+				return {};
+			}
+			created.push_back(userId);
+		}
+	}
+	catch (...)
+	{
+		RollbackUnlocked(created);
+		return {};
+	}
+	return created;
 }
 
 size_t BotManager::RemoveAll()
@@ -125,7 +178,8 @@ void BotManager::StartPk()
 	std::lock_guard lock(_lifecycleMutex);
 	if (_lifecycle != Lifecycle::Idle)
 		return;
-	auto timer = _timerFactory(200ms, [this]() { Tick(std::chrono::steady_clock::now()); });
+	auto timer = _timerFactory(std::chrono::milliseconds(_app.GetBotConfig().tickMilliseconds),
+		[this]() { Tick(std::chrono::steady_clock::now()); });
 	if (timer == nullptr)
 		throw std::runtime_error("BotManager timer factory returned null");
 	_lifecycle = Lifecycle::Running;
@@ -221,7 +275,7 @@ void BotManager::TickBot(
 		runtime.state        = BotState::Dead;
 		runtime.targetId     = -1;
 		runtime.nextAttackAt = {};
-		runtime.respawnAt    = now + 15s;
+		runtime.respawnAt = now + std::chrono::seconds(_app.GetBotConfig().respawnSeconds);
 	}
 
 	auto target            = _app.GetUserPtr(runtime.targetId);
@@ -233,7 +287,8 @@ void BotManager::TickBot(
 		perception.targetDistance = bot->GetDistance2D(
 			target->m_pUserData->m_curx, target->m_pUserData->m_curz);
 
-	const BotIntent intent = _brain.Decide(runtime, perception, now, 2.5f);
+	const BotConfig& config = _app.GetBotConfig();
+	const BotIntent intent = _brain.Decide(runtime, perception, now, config.attackRange);
 	switch (intent.type)
 	{
 		case BotIntentType::SelectTarget:
@@ -241,17 +296,17 @@ void BotManager::TickBot(
 			runtime.state    = BotState::SelectTarget;
 			break;
 		case BotIntentType::Patrol:
-			_commands.Patrol(*bot);
+			_commands.Patrol(*bot, config.moveStep);
 			runtime.state = BotState::Patrol;
 			break;
 		case BotIntentType::Approach:
-			if (_commands.Approach(*bot, runtime.targetId))
+			if (_commands.Approach(*bot, runtime.targetId, config.moveStep))
 				runtime.state = BotState::Approach;
 			else
 				runtime.targetId = -1;
 			break;
 		case BotIntentType::BasicAttack:
-			_commands.BasicAttack(*bot, runtime.targetId, now);
+			_commands.BasicAttack(*bot, runtime.targetId, now, config.attackRange);
 			runtime.state = BotState::BasicAttack;
 			break;
 		case BotIntentType::Respawn:

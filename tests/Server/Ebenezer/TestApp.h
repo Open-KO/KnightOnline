@@ -150,6 +150,28 @@ public:
 		return true;
 	}
 
+	bool AddHomeEntry(uint8_t nation, int32_t x, int32_t z, int32_t lengthX = 20,
+		int32_t lengthZ = 20)
+	{
+		auto home       = new Ebenezer::model::Home {};
+		home->Nation    = nation;
+		home->FreeZoneX = x;
+		home->FreeZoneZ = z;
+		home->FreeZoneLX = lengthX;
+		home->FreeZoneLZ = lengthZ;
+		if (!m_HomeTableMap.PutData(nation, home))
+		{
+			delete home;
+			return false;
+		}
+		return true;
+	}
+
+	bool LoadConfigForTest(CIni& ini)
+	{
+		return LoadConfig(ini);
+	}
+
 protected:
 	Ebenezer::EbenezerLogger _logger;
 };

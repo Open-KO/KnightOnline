@@ -14,6 +14,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 namespace Ebenezer
 {
@@ -48,6 +49,7 @@ public:
 	BotManager(EbenezerApp& app, BotTimerFactory timerFactory);
 	~BotManager() noexcept;
 	int Spawn(const BotSpawnRequest& request);
+	std::vector<int> SpawnBatch(const std::vector<BotSpawnRequest>& requests);
 	size_t RemoveAll();
 	void StartPk();
 	void Stop() noexcept;
@@ -65,6 +67,8 @@ private:
 	};
 
 	void TickBot(const std::shared_ptr<CBotUser>& bot, std::chrono::steady_clock::time_point now);
+	int SpawnUnlocked(const BotSpawnRequest& request);
+	void RollbackUnlocked(const std::vector<int>& userIds) noexcept;
 
 	EbenezerApp& _app;
 	BotTargetSelector _selector;

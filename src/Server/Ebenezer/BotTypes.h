@@ -6,12 +6,64 @@
 #include "Define.h"
 
 #include <chrono>
+#include <algorithm>
 #include <cstddef>
+#include <cctype>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 namespace Ebenezer
 {
+
+struct BotConfig
+{
+	bool enabled              = false;
+	uint16_t count            = 10;
+	uint16_t tickMilliseconds = 200;
+	uint16_t respawnSeconds   = 15;
+	uint8_t zoneId            = ZONE_FRONTIER;
+	float attackRange         = 2.5f;
+	float moveStep            = 1.5f;
+};
+
+inline std::string NormalizeBotToken(std::string_view token)
+{
+	std::string normalized(token);
+	std::transform(normalized.begin(), normalized.end(), normalized.begin(),
+		[](unsigned char value) { return static_cast<char>(std::tolower(value)); });
+	return normalized;
+}
+
+inline uint8_t ResolveBotNation(std::string_view token)
+{
+	const std::string normalized = NormalizeBotToken(token);
+	if (normalized == "karus")
+		return NATION_KARUS;
+	if (normalized == "elmorad")
+		return NATION_ELMORAD;
+	return 0;
+}
+
+inline e_Class ResolveBotClass(uint8_t nation, std::string_view token)
+{
+	const std::string normalized = NormalizeBotToken(token);
+	if (nation == NATION_KARUS)
+	{
+		if (normalized == "warrior") return CLASS_KA_WARRIOR;
+		if (normalized == "rogue") return CLASS_KA_ROGUE;
+		if (normalized == "mage") return CLASS_KA_WIZARD;
+		if (normalized == "priest") return CLASS_KA_PRIEST;
+	}
+	else if (nation == NATION_ELMORAD)
+	{
+		if (normalized == "warrior") return CLASS_EL_WARRIOR;
+		if (normalized == "rogue") return CLASS_EL_ROGUE;
+		if (normalized == "mage") return CLASS_EL_WIZARD;
+		if (normalized == "priest") return CLASS_EL_PRIEST;
+	}
+	return CLASS_UNKNOWN;
+}
 
 enum class BotState : uint8_t
 {

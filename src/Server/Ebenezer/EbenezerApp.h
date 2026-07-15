@@ -4,6 +4,7 @@
 #pragma once
 
 #include "BotRegistry.h"
+#include "BotTypes.h"
 #include "EbenezerSocketManager.h"
 #include "Map.h"
 #include "Define.h"
@@ -216,6 +217,14 @@ public:
 
 	BotManager& GetBotManager();
 	const BotManager& GetBotManager() const;
+	const BotConfig& GetBotConfig() const
+	{
+		return _botConfig;
+	}
+	bool LoadBotConfig(CIni& iniFile);
+	bool ValidateBotConfigZone();
+	bool SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t count);
+	bool StartConfiguredBots();
 
 	inline std::shared_ptr<CUser> GetUserPtrUnchecked(int socketId) const
 	{
@@ -392,6 +401,7 @@ protected:
 
 private:
 	std::unique_ptr<BotManager> _botManager;
+	BotConfig _botConfig;
 	std::unique_ptr<TimerThread> _gameTimeThread;
 	std::unique_ptr<TimerThread> _smqHeartbeatThread;
 	std::unique_ptr<TimerThread> _aliveTimeThread;

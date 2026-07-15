@@ -14,8 +14,6 @@ namespace Ebenezer
 {
 namespace
 {
-constexpr float ATTACK_RANGE = 2.5f;
-constexpr float MOVE_STEP    = 1.5f;
 constexpr int16_t MOVE_SPEED = 45;
 
 bool IsAliveEnemy(const CBotUser& source, const std::shared_ptr<CUser>& target)
@@ -36,19 +34,19 @@ BotCommandFacade::BotCommandFacade(EbenezerApp& app) : _app(app)
 {
 }
 
-bool BotCommandFacade::Approach(CBotUser& source, int targetId)
+bool BotCommandFacade::Approach(CBotUser& source, int targetId, float moveStep)
 {
 	auto target = _app.GetUserPtr(targetId);
 	if (!IsAliveEnemy(source, target))
 		return false;
 	return BotMovement::Move(source,
 		BotMovement::NextStep(
-			source, target->m_pUserData->m_curx, target->m_pUserData->m_curz, MOVE_STEP),
+			 source, target->m_pUserData->m_curx, target->m_pUserData->m_curz, moveStep),
 		MOVE_SPEED);
 }
 
 bool BotCommandFacade::BasicAttack(
-	CBotUser& source, int targetId, std::chrono::steady_clock::time_point now)
+	CBotUser& source, int targetId, std::chrono::steady_clock::time_point now, float attackRange)
 {
 	auto target = _app.GetUserPtr(targetId);
 	if (!IsAliveEnemy(source, target) || now < source.Runtime().nextAttackAt)
@@ -56,7 +54,7 @@ bool BotCommandFacade::BasicAttack(
 
 	const float distance = source.GetDistance2D(
 		target->m_pUserData->m_curx, target->m_pUserData->m_curz);
-	if (!std::isfinite(distance) || distance > ATTACK_RANGE)
+	if (!std::isfinite(distance) || distance > attackRange)
 		return false;
 
 	char attack[16] {};
@@ -71,7 +69,7 @@ bool BotCommandFacade::BasicAttack(
 	return true;
 }
 
-bool BotCommandFacade::Patrol(CBotUser& source)
+bool BotCommandFacade::Patrol(CBotUser& source, float moveStep)
 {
 	if (source.m_pUserData == nullptr)
 		return false;
@@ -94,9 +92,9 @@ bool BotCommandFacade::Patrol(CBotUser& source)
 
 		const float distance = source.GetDistance2D(targetX, targetZ);
 		if (!BotMovement::Move(
-				source, BotMovement::NextStep(source, targetX, targetZ, MOVE_STEP), MOVE_SPEED))
+				source, BotMovement::NextStep(source, targetX, targetZ, moveStep), MOVE_SPEED))
 			return false;
-		source.Runtime().patrolIndex = distance <= MOVE_STEP ? (index + 1) % offsets.size() : index;
+		source.Runtime().patrolIndex = distance <= moveStep ? (index + 1) % offsets.size() : index;
 		return true;
 	}
 	return false;

@@ -24,7 +24,10 @@
 #include <Ebenezer/binder/EbenezerBinder.h>
 
 #include <fstream>
+#include <charconv>
+#include <cmath>
 #include <ranges>
+#include <unordered_set>
 
 using namespace db;
 using namespace std::chrono_literals;
@@ -41,6 +44,38 @@ std::recursive_mutex g_region_mutex;
 
 uint16_t g_increase_serial = 1;
 bool g_serverdown_flag     = false;
+
+namespace
+{
+template <typename T>
+bool ParseBotInteger(const std::string& value, T& result)
+{
+	int parsed = 0;
+	const auto conversion = std::from_chars(value.data(), value.data() + value.size(), parsed);
+	if (conversion.ec != std::errc {} || conversion.ptr != value.data() + value.size())
+		return false;
+	result = static_cast<T>(parsed);
+	return static_cast<int>(result) == parsed;
+}
+
+bool ParseBotFloat(const std::string& value, float& result)
+{
+	const auto conversion = std::from_chars(value.data(), value.data() + value.size(), result);
+	return conversion.ec == std::errc {} && conversion.ptr == value.data() + value.size()
+		&& std::isfinite(result);
+}
+
+bool IsSupportedBotClass(uint8_t nation, e_Class characterClass)
+{
+	if (nation == NATION_KARUS)
+		return characterClass == CLASS_KA_WARRIOR || characterClass == CLASS_KA_ROGUE
+			|| characterClass == CLASS_KA_WIZARD || characterClass == CLASS_KA_PRIEST;
+	if (nation == NATION_ELMORAD)
+		return characterClass == CLASS_EL_WARRIOR || characterClass == CLASS_EL_ROGUE
+			|| characterClass == CLASS_EL_WIZARD || characterClass == CLASS_EL_PRIEST;
+	return false;
+}
+} // namespace
 
 EbenezerApp::EbenezerApp(EbenezerLogger& logger) :
 	AppThread(logger), _aiSocketManager(AI_SOCKET_RECV_BUFF_SIZE, AI_SOCKET_SEND_BUFF_SIZE),
@@ -260,6 +295,170 @@ BotManager& EbenezerApp::GetBotManager()
 const BotManager& EbenezerApp::GetBotManager() const
 {
 	return *_botManager;
+}
+
+bool EbenezerApp::LoadBotConfig(CIni& iniFile)
+{
+	BotConfig config;
+	std::string error;
+	int enabled = 0;
+	int count = 0;
+	int tickMilliseconds = 0;
+	int respawnSeconds = 0;
+	int zoneId = 0;
+	float attackRange = 0.0f;
+	float moveStep = 0.0f;
+
+	if (!ParseBotInteger(iniFile.GetString("BOTS", "Enabled", "0"), enabled)
+		|| (enabled != 0 && enabled != 1))
+		error = "Enabled must be 0 or 1";
+	else if (!ParseBotInteger(iniFile.GetString("BOTS", "Count", "10"), count)
+		|| count < 0 || count > MAX_BOT_USER)
+		error = "Count must be between 0 and 500";
+	else if (!ParseBotInteger(
+			iniFile.GetString("BOTS", "TickMilliseconds", "200"), tickMilliseconds)
+		|| tickMilliseconds != 200)
+		error = "TickMilliseconds must be 200";
+	else if (!ParseBotInteger(
+			iniFile.GetString("BOTS", "RespawnSeconds", "15"), respawnSeconds)
+		|| respawnSeconds != 15)
+		error = "RespawnSeconds must be 15";
+	else if (!ParseBotInteger(iniFile.GetString(
+			"BOTS", "Zone", std::to_string(ZONE_FRONTIER)), zoneId)
+		|| zoneId < 0 || zoneId > UINT8_MAX)
+		error = "Zone must fit an unsigned byte";
+	else if (!ParseBotFloat(iniFile.GetString("BOTS", "AttackRange", "2.5"), attackRange)
+		|| attackRange < 0.5f || attackRange > 10.0f)
+		error = "AttackRange must be between 0.5 and 10.0";
+	else if (!ParseBotFloat(iniFile.GetString("BOTS", "MoveStep", "1.5"), moveStep)
+		|| moveStep < 0.1f || moveStep > 5.0f)
+		error = "MoveStep must be between 0.1 and 5.0";
+
+	if (!error.empty())
+	{
+		config.enabled = false;
+		_botConfig = config;
+		spdlog::error("EbenezerApp::LoadBotConfig: invalid BOTS config [{}]", error);
+		return false;
+	}
+
+	config.enabled = enabled == 1;
+	config.count = static_cast<uint16_t>(count);
+	config.tickMilliseconds = static_cast<uint16_t>(tickMilliseconds);
+	config.respawnSeconds = static_cast<uint16_t>(respawnSeconds);
+	config.zoneId = static_cast<uint8_t>(zoneId);
+	config.attackRange = attackRange;
+	config.moveStep = moveStep;
+	_botConfig = config;
+	return true;
+}
+
+bool EbenezerApp::ValidateBotConfigZone()
+{
+	if (!_botConfig.enabled)
+		return true;
+	if (GetMapByID(_botConfig.zoneId) != nullptr)
+		return true;
+	spdlog::error("EbenezerApp::ValidateBotConfigZone: invalid BOTS config [Zone={} is not loaded]",
+		_botConfig.zoneId);
+	_botConfig.enabled = false;
+	return false;
+}
+
+bool EbenezerApp::SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t count)
+{
+	if (count == 0 || count > MAX_BOT_USER || !IsSupportedBotClass(nation, characterClass)
+		|| count > static_cast<size_t>(MAX_BOT_USER) - _botRegistry.Size())
+		return false;
+
+	C3DMap* map = GetMapByID(_botConfig.zoneId);
+	model::Home* home = m_HomeTableMap.GetData(nation);
+	if (map == nullptr || home == nullptr)
+		return false;
+
+	std::unordered_set<std::string> usedNames;
+	for (const auto& entry : _botRegistry.Snapshot())
+		if (entry != nullptr && entry->m_pUserData != nullptr)
+			usedNames.insert(NormalizeBotToken(entry->m_pUserData->m_id));
+	for (int socketId = 0; socketId < GetUserSocketCount(); ++socketId)
+	{
+		auto user = GetUserPtrUnchecked(socketId);
+		if (user != nullptr && user->m_pUserData != nullptr && user->m_pUserData->m_id[0] != '\0')
+			usedNames.insert(NormalizeBotToken(user->m_pUserData->m_id));
+	}
+
+	const char nationMarker = nation == NATION_KARUS ? 'K' : 'E';
+	const int maxOffsetX = std::clamp(static_cast<int>(home->FreeZoneLX), 0, 20);
+	const int maxOffsetZ = std::clamp(static_cast<int>(home->FreeZoneLZ), 0, 20);
+	const int positionCount = (maxOffsetX + 1) * (maxOffsetZ + 1);
+	std::vector<BotSpawnRequest> requests;
+	requests.reserve(count);
+	for (int nameIndex = 0; nameIndex < MAX_BOT_USER && requests.size() < count; ++nameIndex)
+	{
+		const std::string name = fmt::format("Bot_{}_{:03}", nationMarker, nameIndex);
+		if (usedNames.contains(NormalizeBotToken(name)))
+			continue;
+
+		bool foundPosition = false;
+		BotSpawnPoint spawn;
+		spawn.zoneId = _botConfig.zoneId;
+		for (int attempt = 0; attempt < positionCount; ++attempt)
+		{
+			const int offset = (nameIndex + attempt) % positionCount;
+			spawn.x = static_cast<float>(home->FreeZoneX + offset % (maxOffsetX + 1));
+			spawn.z = static_cast<float>(home->FreeZoneZ + offset / (maxOffsetX + 1));
+			spawn.y = 0.0f;
+			if (std::isfinite(spawn.x) && std::isfinite(spawn.z)
+				&& map->IsValidPosition(spawn.x, spawn.z))
+			{
+				foundPosition = true;
+				break;
+			}
+		}
+		if (!foundPosition)
+			return false;
+
+		requests.push_back(BotSpawnRequest { name, nation, characterClass, 60, spawn });
+		usedNames.insert(NormalizeBotToken(name));
+	}
+
+	if (requests.size() != count)
+		return false;
+	return _botManager->SpawnBatch(requests).size() == count;
+}
+
+bool EbenezerApp::StartConfiguredBots()
+{
+	if (!_botConfig.enabled || !ValidateBotConfigZone() || _botManager->Status().total != 0)
+		return false;
+	if (_botConfig.count == 0)
+		return true;
+
+	const size_t karusCount = (_botConfig.count + 1) / 2;
+	const size_t elmoradCount = _botConfig.count / 2;
+	const bool spawned = SpawnBotBatch(NATION_KARUS, CLASS_KA_WARRIOR, karusCount)
+		&& (elmoradCount == 0
+			|| SpawnBotBatch(NATION_ELMORAD, CLASS_EL_WARRIOR, elmoradCount));
+	if (!spawned)
+	{
+		_botManager->RemoveAll();
+		_botConfig.enabled = false;
+		spdlog::error("EbenezerApp::StartConfiguredBots: auto-roster failed; bots disabled");
+		return false;
+	}
+
+	try
+	{
+		_botManager->StartPk();
+	}
+	catch (const std::exception& ex)
+	{
+		_botManager->RemoveAll();
+		_botConfig.enabled = false;
+		spdlog::error("EbenezerApp::StartConfiguredBots: timer failed; bots disabled [{}]", ex.what());
+		return false;
+	}
+	return _botManager->Status().running;
 }
 
 bool EbenezerApp::OnStart()
@@ -498,6 +697,7 @@ bool EbenezerApp::OnStart()
 		spdlog::error("EbenezerApp::OnStart: failed to load maps, closing");
 		return false;
 	}
+	ValidateBotConfigZone();
 
 	LoadNoticeData();
 
@@ -508,12 +708,18 @@ bool EbenezerApp::OnStart()
 		return false;
 	}
 
-	if (!AIServerConnect())
+	const bool aiServerConnected = AIServerConnect();
+	if (!aiServerConnected)
 	{
 		spdlog::error("EbenezerApp::OnStart: failed to connect to the AIServer");
 #ifndef _DEBUG
 		return false;
 #endif
+	}
+	else if (_botConfig.enabled && !StartConfiguredBots())
+	{
+		// Bot startup is optional. StartConfiguredBots() already rolled back and disabled bots.
+		spdlog::warn("EbenezerApp::OnStart: bot startup failed; continuing without bots");
 	}
 
 #ifdef _DEBUG
@@ -1214,6 +1420,9 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 {
 	int serverCount = 0, sgroup_count = 0;
 	std::string key;
+
+	// Bot configuration is deliberately non-fatal to ordinary server startup.
+	LoadBotConfig(iniFile);
 
 	std::string configDir    = iniFile.GetString("PATH", "MAP_DIR", "");
 	AssetDirSource dirSource = IdentifyAssetDir(

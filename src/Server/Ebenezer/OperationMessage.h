@@ -97,6 +97,10 @@ protected:
 	void ChallengeStop();
 	void Permanent();
 	void OffPermanent();
+	void BotAdd();
+	void BotRemoveAll();
+	void BotStartPk();
+	void BotStatus();
 #ifdef _DEBUG
 	// unoffical commands for debug builds/purposes only
 	void GiveItem();

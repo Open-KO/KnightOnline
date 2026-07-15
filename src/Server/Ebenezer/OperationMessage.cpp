@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "OperationMessage.h"
+#include "BotManager.h"
 #include "EbenezerApp.h"
 #include "EbenezerResourceFormatter.h"
 #include "User.h"
@@ -10,12 +11,37 @@
 #include <spdlog/spdlog.h>
 
 #include <sstream>
+#include <charconv>
 #include <stdexcept>
 
 namespace Ebenezer
 {
 
 extern bool g_serverdown_flag;
+
+namespace
+{
+bool IsBotCommandAuthorized(const CUser* source)
+{
+	return source == nullptr || (source->m_pUserData != nullptr
+		&& source->m_pUserData->m_bAuthority == AUTHORITY_MANAGER);
+}
+
+std::string BotCommandInvoker(const CUser* source)
+{
+	if (source == nullptr)
+		return "server";
+	if (source->m_pUserData == nullptr)
+		return "invalid-user";
+	return source->m_pUserData->m_id;
+}
+
+bool ParseBotCount(std::string_view token, int& count)
+{
+	const auto conversion = std::from_chars(token.data(), token.data() + token.size(), count);
+	return conversion.ec == std::errc {} && conversion.ptr == token.data() + token.size();
+}
+} // namespace
 
 OperationMessage::OperationMessage(EbenezerApp* main, CUser* srcUser) :
 	_main(main), _srcUser(srcUser)
@@ -409,6 +435,22 @@ bool OperationMessage::Process(const std::string_view command)
 				break;
 
 #endif
+
+			case "+bot_add"_djb2:
+				BotAdd();
+				break;
+
+			case "+bot_remove_all"_djb2:
+				BotRemoveAll();
+				break;
+
+			case "+bot_start_pk"_djb2:
+				BotStartPk();
+				break;
+
+			case "+bot_status"_djb2:
+				BotStatus();
+				break;
 
 			// Unhandled command.
 			default:
@@ -886,6 +928,79 @@ void OperationMessage::OffPermanent()
 		if (pInfo != nullptr && pInfo->sServerNo != _main->m_nServerNo)
 			_main->m_pUdpSocket->SendUDPPacket(pInfo->strServerIP, sendBuffer, sendIndex);
 	}
+}
+
+void OperationMessage::BotAdd()
+{
+	const bool authorized = IsBotCommandAuthorized(_srcUser);
+	std::string nationToken = GetArgCount() > 0 ? NormalizeBotToken(ParseString(0)) : "";
+	std::string classToken = GetArgCount() > 1 ? NormalizeBotToken(ParseString(1)) : "";
+	int requestedCount = -1;
+	const bool countParsed = GetArgCount() > 2 && ParseBotCount(ParseString(2), requestedCount);
+	const size_t before = _main->GetBotManager().Status().total;
+	const uint8_t nation = ResolveBotNation(nationToken);
+	const e_Class characterClass = ResolveBotClass(nation, classToken);
+	const bool success = authorized && GetArgCount() == 3 && countParsed
+		&& requestedCount > 0 && requestedCount <= MAX_BOT_USER && nation != 0
+		&& characterClass != CLASS_UNKNOWN
+		&& _main->SpawnBotBatch(nation, characterClass, static_cast<size_t>(requestedCount));
+	const size_t after = _main->GetBotManager().Status().total;
+	spdlog::warn("OperationMessage::BotAdd: invoked [src={} authority={} nation={} class={} "
+		"requestedCount={} resultCount={} total={} success={}]",
+		BotCommandInvoker(_srcUser),
+		_srcUser == nullptr || _srcUser->m_pUserData == nullptr
+			? -1 : static_cast<int>(_srcUser->m_pUserData->m_bAuthority),
+		nationToken, classToken, requestedCount, after >= before ? after - before : 0, after, success);
+}
+
+void OperationMessage::BotRemoveAll()
+{
+	const bool authorized = IsBotCommandAuthorized(_srcUser);
+	const size_t before = _main->GetBotManager().Status().total;
+	const size_t removed = authorized && GetArgCount() == 0 ? _main->GetBotManager().RemoveAll() : 0;
+	const size_t after = _main->GetBotManager().Status().total;
+	const bool success = authorized && GetArgCount() == 0 && after == 0;
+	spdlog::warn("OperationMessage::BotRemoveAll: invoked [src={} authority={} requestedCount={} "
+		"resultCount={} total={} success={}]", BotCommandInvoker(_srcUser),
+		_srcUser == nullptr || _srcUser->m_pUserData == nullptr
+			? -1 : static_cast<int>(_srcUser->m_pUserData->m_bAuthority),
+		before, removed, after, success);
+}
+
+void OperationMessage::BotStartPk()
+{
+	const bool authorized = IsBotCommandAuthorized(_srcUser);
+	bool success = false;
+	if (authorized && GetArgCount() == 0)
+	{
+		try
+		{
+			_main->GetBotManager().StartPk();
+			success = _main->GetBotManager().Status().running;
+		}
+		catch (const std::exception& ex)
+		{
+			spdlog::error("OperationMessage::BotStartPk: timer start failed [{}]", ex.what());
+		}
+	}
+	const auto status = _main->GetBotManager().Status();
+	spdlog::warn("OperationMessage::BotStartPk: invoked [src={} authority={} requestedCount=0 "
+		"resultCount={} success={}]", BotCommandInvoker(_srcUser),
+		_srcUser == nullptr || _srcUser->m_pUserData == nullptr
+			? -1 : static_cast<int>(_srcUser->m_pUserData->m_bAuthority),
+		status.total, success);
+}
+
+void OperationMessage::BotStatus()
+{
+	const bool success = IsBotCommandAuthorized(_srcUser) && GetArgCount() == 0;
+	const auto status = _main->GetBotManager().Status();
+	spdlog::warn("OperationMessage::BotStatus: invoked [src={} authority={} requestedCount=0 "
+		"resultCount={} total={} alive={} dead={} running={} success={}]",
+		BotCommandInvoker(_srcUser),
+		_srcUser == nullptr || _srcUser->m_pUserData == nullptr
+			? -1 : static_cast<int>(_srcUser->m_pUserData->m_bAuthority),
+		status.total, status.total, status.alive, status.dead, status.running, success);
 }
 
 #ifdef _DEBUG

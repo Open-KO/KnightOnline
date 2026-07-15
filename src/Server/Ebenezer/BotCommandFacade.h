@@ -14,9 +14,10 @@ class BotCommandFacade
 {
 public:
 	explicit BotCommandFacade(EbenezerApp& app);
-	bool Approach(CBotUser& source, int targetId);
-	bool BasicAttack(CBotUser& source, int targetId, std::chrono::steady_clock::time_point now);
-	bool Patrol(CBotUser& source);
+	bool Approach(CBotUser& source, int targetId, float moveStep = 1.5f);
+	bool BasicAttack(CBotUser& source, int targetId, std::chrono::steady_clock::time_point now,
+		float attackRange = 2.5f);
+	bool Patrol(CBotUser& source, float moveStep = 1.5f);
 	bool Respawn(CBotUser& source);
 	bool Despawn(CBotUser& source);
 
