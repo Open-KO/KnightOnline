@@ -6,7 +6,10 @@
 
 #include <shared/Ini.h>
 #include <shared/StringUtils.h>
+#include <shared/packets.h>
+#include <shared-server/utilities.h>
 
+#include <boost/interprocess/ipc/message_queue.hpp>
 #include "TestApp.h"
 
 #include <spdlog/sinks/ostream_sink.h>
@@ -24,6 +27,55 @@ using namespace Ebenezer;
 
 namespace
 {
+class ScopedMessageQueue
+{
+public:
+	explicit ScopedMessageQueue(std::string name) : _name(std::move(name))
+	{
+		boost::interprocess::message_queue::remove(_name.c_str());
+	}
+
+	~ScopedMessageQueue()
+	{
+		boost::interprocess::message_queue::remove(_name.c_str());
+	}
+
+	const char* Name() const { return _name.c_str(); }
+
+private:
+	std::string _name;
+};
+
+std::vector<char> NewCharacterRequest(std::string_view name)
+{
+	std::vector<char> packet(128);
+	int index = 0;
+	SetByte(packet.data(), 0, index);
+	SetShort(packet.data(), static_cast<int16_t>(name.size()), index);
+	SetString(packet.data(), name.data(), static_cast<int>(name.size()), index);
+	SetByte(packet.data(), 1, index);
+	SetShort(packet.data(), CLASS_KA_WARRIOR, index);
+	SetByte(packet.data(), 1, index);
+	SetByte(packet.data(), 1, index);
+	for (int i = 0; i < 5; ++i)
+		SetByte(packet.data(), 50, index);
+	packet.resize(index);
+	return packet;
+}
+
+std::vector<char> SelectCharacterRequest(
+	std::string_view account, std::string_view character, uint8_t zone)
+{
+	std::vector<char> packet(128);
+	int index = 0;
+	SetString2(packet.data(), account.data(), static_cast<int>(account.size()), index);
+	SetString2(packet.data(), character.data(), static_cast<int>(character.size()), index);
+	SetByte(packet.data(), 1, index);
+	SetByte(packet.data(), zone, index);
+	packet.resize(index);
+	return packet;
+}
+
 class BotOperationMessageTest : public testing::Test
 {
 protected:
@@ -156,6 +208,122 @@ TEST_F(BotOperationMessageTest, ResolvesAllSupportedNationAndClassTokens)
 	EXPECT_EQ(ResolveBotClass(NATION_ELMORAD, "mage"), CLASS_EL_WIZARD);
 	EXPECT_EQ(ResolveBotClass(NATION_ELMORAD, "priest"), CLASS_EL_PRIEST);
 	EXPECT_EQ(ResolveBotClass(NATION_KARUS, "invalid"), CLASS_UNKNOWN);
+}
+
+TEST(BotReservedNameTest, MatchesExactBotPrefixesCaseInsensitively)
+{
+	EXPECT_TRUE(IsReservedBotName("Bot_K_000"));
+	EXPECT_TRUE(IsReservedBotName("bOt_e_Legacy"));
+	EXPECT_TRUE(IsReservedBotName("BOT_K_"));
+	EXPECT_FALSE(IsReservedBotName("Bot_X_000"));
+	EXPECT_FALSE(IsReservedBotName("BotK_000"));
+	EXPECT_FALSE(IsReservedBotName("Player_Bot_K_000"));
+}
+
+TEST(BotReservedNameTest, CreationRejectsReservedNameWithoutAujardRequestAndAllowsNormalName)
+{
+	TestApp app;
+	ASSERT_TRUE(app.AddCoefficientEntry(CLASS_KA_WARRIOR));
+	auto user = app.AddUser();
+	ASSERT_NE(user, nullptr);
+	strcpy_safe(user->m_strAccountID, "CreateAccount");
+	ScopedMessageQueue queue("ko_t6_nc");
+	ASSERT_TRUE(app.m_LoggerSendQueue.Create(queue.Name()));
+	user->AddSendCallback([](const char* packet, int length)
+	{
+		ASSERT_EQ(length, 2);
+		EXPECT_EQ(static_cast<uint8_t>(packet[0]), WIZ_NEW_CHAR);
+		EXPECT_EQ(static_cast<uint8_t>(packet[1]), 0x05);
+	});
+
+	auto reserved = NewCharacterRequest("bOt_K_Real");
+	user->NewCharToAgent(reserved.data());
+	char queued[SharedMemoryQueue::MAX_MSG_SIZE] {};
+	EXPECT_EQ(app.m_LoggerSendQueue.GetData(queued), SMQ_EMPTY);
+	EXPECT_STREQ(user->m_strAccountID, "CreateAccount");
+
+	user->ResetSend();
+	auto normal = NewCharacterRequest("NormalHero");
+	user->NewCharToAgent(normal.data());
+	const int queuedLength = app.m_LoggerSendQueue.GetData(queued);
+	ASSERT_GT(queuedLength, 0);
+	EXPECT_EQ(static_cast<uint8_t>(queued[0]), WIZ_NEW_CHAR);
+	EXPECT_EQ(user->GetPacketsSent(), 0u);
+}
+
+TEST(BotReservedNameTest, CharacterSelectionRejectsReservedNameBeforeAujardRequest)
+{
+	TestApp app;
+	ASSERT_NE(app.CreateMap(ZONE_FRONTIER, 256), nullptr);
+	auto user = app.AddUser();
+	ASSERT_NE(user, nullptr);
+	strcpy_safe(user->m_strAccountID, "SelectAccount");
+	app.m_nServerNo = 0;
+	ScopedMessageQueue queue("ko_t6_sc");
+	ASSERT_TRUE(app.m_LoggerSendQueue.Create(queue.Name()));
+	user->AddSendCallback([](const char* packet, int length)
+	{
+		ASSERT_EQ(length, 2);
+		EXPECT_EQ(static_cast<uint8_t>(packet[0]), WIZ_SEL_CHAR);
+		EXPECT_EQ(static_cast<uint8_t>(packet[1]), 0x00);
+	});
+
+	auto reserved = SelectCharacterRequest(
+		"SelectAccount", "BOT_E_Legacy", ZONE_FRONTIER);
+	const int packetCountBefore = app.m_iPacketCount;
+	user->SelCharToAgent(reserved.data());
+	char queued[SharedMemoryQueue::MAX_MSG_SIZE] {};
+	EXPECT_EQ(app.m_LoggerSendQueue.GetData(queued), SMQ_EMPTY);
+	EXPECT_EQ(app.m_iPacketCount, packetCountBefore);
+	EXPECT_STREQ(user->m_strAccountID, "SelectAccount");
+
+	user->ResetSend();
+	user->AddSendCallback([](const char*, int) { ADD_FAILURE() << "normal name was rejected"; });
+	auto normal = SelectCharacterRequest(
+		"SelectAccount", "NormalHero", ZONE_FRONTIER);
+	user->SelCharToAgent(normal.data());
+	const int queuedLength = app.m_LoggerSendQueue.GetData(queued);
+	ASSERT_GT(queuedLength, 0);
+	EXPECT_EQ(static_cast<uint8_t>(queued[0]), WIZ_SEL_CHAR);
+	EXPECT_EQ(app.m_iPacketCount, packetCountBefore + 1);
+	EXPECT_EQ(user->GetPacketsSent(), 0u);
+}
+
+TEST(BotReservedNameTest, SelectCharacterRejectsReservedLoadedIdentityWithoutStateMutation)
+{
+	TestApp app;
+	auto user = app.AddUser();
+	ASSERT_NE(user, nullptr);
+	strcpy_safe(user->m_pUserData->m_id, "Bot_K_Legacy");
+	user->m_pUserData->m_bZone = ZONE_BATTLE;
+	user->SetState(CONNECTION_STATE_CONNECTED);
+	user->AddSendCallback([](const char* packet, int length)
+	{
+		ASSERT_EQ(length, 2);
+		EXPECT_EQ(static_cast<uint8_t>(packet[0]), WIZ_SEL_CHAR);
+		EXPECT_EQ(static_cast<uint8_t>(packet[1]), 0x00);
+	});
+	const auto stateBefore = user->GetState();
+	const int receivedBefore = app.m_iRecvPacketCount;
+	char response[] { 1, 1 };
+
+	user->SelectCharacter(response);
+
+	EXPECT_EQ(user->GetState(), stateBefore);
+	EXPECT_EQ(app.m_iRecvPacketCount, receivedBefore);
+	EXPECT_EQ(user->GetPacketsSent(), 1u);
+}
+
+TEST_F(BotOperationMessageTest, OnlineReservedRealNameRejectsWholeBotBatch)
+{
+	auto real = _app->AddUser();
+	ASSERT_NE(real, nullptr);
+	strcpy_safe(real->m_pUserData->m_id, "bOt_K_000");
+	real->SetState(CONNECTION_STATE_CONNECTED);
+
+	auto operation = Operation();
+	EXPECT_TRUE(operation.Process("+bot_add karus warrior 2"));
+	EXPECT_EQ(_app->GetBotRegistry().Size(), 0u);
 }
 
 TEST_F(BotOperationMessageTest, AddsDeterministicallyNamedBotsAndRemovesThem)

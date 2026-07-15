@@ -52,4 +52,17 @@ std::shared_ptr<CUser> EbenezerSocketManager::GetInactiveUserUnchecked(int socke
 	return std::static_pointer_cast<CUser>(TcpSocketManager::GetInactiveSocketUnchecked(socketId));
 }
 
+std::vector<std::string> EbenezerSocketManager::SnapshotCharacterNames()
+{
+	std::lock_guard<std::recursive_mutex> lock(GetMutex());
+	std::vector<std::string> names;
+	for (int socketId = 0; socketId < GetSocketCount(); ++socketId)
+	{
+		auto user = GetUserUnchecked(socketId);
+		if (user != nullptr && user->m_pUserData != nullptr && user->m_pUserData->m_id[0] != '\0')
+			names.emplace_back(user->m_pUserData->m_id);
+	}
+	return names;
+}
+
 } // namespace Ebenezer

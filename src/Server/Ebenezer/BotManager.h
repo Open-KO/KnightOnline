@@ -52,6 +52,8 @@ public:
 	int Spawn(const BotSpawnRequest& request);
 	std::vector<int> SpawnBatch(const std::vector<BotSpawnRequest>& requests,
 		std::optional<size_t> expectedRegistrySize = std::nullopt);
+	bool StartConfiguredRoster(
+		const std::vector<BotSpawnRequest>& requests, size_t expectedRegistrySize);
 	size_t RemoveBatch(const std::vector<int>& userIds);
 	size_t RemoveAll();
 	void StartPk();
@@ -61,6 +63,12 @@ public:
 	std::shared_ptr<CUser> FindUser(int userId) const;
 
 private:
+	struct OwnedBot
+	{
+		int userId = -1;
+		std::shared_ptr<CBotUser> bot;
+	};
+
 	enum class Lifecycle
 	{
 		Idle,
@@ -70,15 +78,19 @@ private:
 	};
 
 	void TickBot(const std::shared_ptr<CBotUser>& bot, std::chrono::steady_clock::time_point now);
-	int SpawnUnlocked(const BotSpawnRequest& request);
-	void RollbackUnlocked(const std::vector<int>& userIds) noexcept;
+	OwnedBot SpawnOwnedUnlocked(const BotSpawnRequest& request);
+	std::vector<OwnedBot> SpawnBatchUnlocked(const std::vector<BotSpawnRequest>& requests,
+		std::optional<size_t> expectedRegistrySize);
+	void RollbackUnlocked(const std::vector<OwnedBot>& bots) noexcept;
+	bool StartPkUnlocked();
 
 	EbenezerApp& _app;
 	BotTargetSelector _selector;
 	BotBrain _brain;
 	BotCommandFacade _commands;
-	// Lock order: _operationMutex is outermost. Registry methods take and release their own
-	// internal lock; an operation must never retain a registry lock while calling region code.
+	// Lock order inside BotManager: _operationMutex -> _lifecycleMutex. Registry methods take and
+	// release their own internal lock; an operation never retains a registry lock while calling
+	// region code. Socket-manager snapshots are completed before acquiring _operationMutex.
 	mutable std::mutex _operationMutex;
 	mutable std::mutex _lifecycleMutex;
 	std::condition_variable _lifecycleCv;

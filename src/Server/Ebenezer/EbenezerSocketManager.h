@@ -5,6 +5,9 @@
 
 #include <shared-server/TcpServerSocketManager.h>
 
+#include <string>
+#include <vector>
+
 namespace Ebenezer
 {
 
@@ -21,6 +24,7 @@ public:
 
 	std::shared_ptr<CUser> GetInactiveUser(int socketId) const;
 	std::shared_ptr<CUser> GetInactiveUserUnchecked(int socketId) const;
+	std::vector<std::string> SnapshotCharacterNames();
 
 protected:
 	SendWorkerThread* _sendWorkerThread;

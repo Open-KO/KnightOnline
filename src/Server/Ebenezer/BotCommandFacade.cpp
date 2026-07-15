@@ -174,6 +174,6 @@ bool BotCommandFacade::Despawn(CBotUser& source)
 	}
 	PurgeRegionEntries(userId);
 	source.SetState(CONNECTION_STATE_DISCONNECTED);
-	return _app.GetBotRegistry().Remove(userId) != nullptr;
+	return _app.GetBotRegistry().RemoveIfSame(userId, &source) != nullptr;
 }
 } // namespace Ebenezer

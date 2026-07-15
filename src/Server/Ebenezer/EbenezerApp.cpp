@@ -366,7 +366,7 @@ bool EbenezerApp::ValidateBotConfigZone()
 }
 
 bool EbenezerApp::BuildBotBatchRequests(uint8_t nation, e_Class characterClass, size_t count,
-	std::vector<BotSpawnRequest>& requests) const
+	std::vector<BotSpawnRequest>& requests)
 {
 	const size_t initialRequestCount = requests.size();
 	if (count == 0 || count > MAX_BOT_USER || !IsSupportedBotClass(nation, characterClass)
@@ -385,11 +385,14 @@ bool EbenezerApp::BuildBotBatchRequests(uint8_t nation, e_Class characterClass, 
 			usedNames.insert(NormalizeBotToken(entry->m_pUserData->m_id));
 	for (const auto& request : requests)
 		usedNames.insert(NormalizeBotToken(request.name));
-	for (int socketId = 0; socketId < GetUserSocketCount(); ++socketId)
+	// This socket-manager-owned snapshot releases its lock before BotManager's operation lock.
+	// With the real-user create/select gates, a legacy reserved session may leave after this point,
+	// but no new reserved-name session can enter; a stale snapshot is conservative, never unsafe.
+	for (const auto& name : _serverSocketManager.SnapshotCharacterNames())
 	{
-		auto user = GetUserPtrUnchecked(socketId);
-		if (user != nullptr && user->m_pUserData != nullptr && user->m_pUserData->m_id[0] != '\0')
-			usedNames.insert(NormalizeBotToken(user->m_pUserData->m_id));
+		if (IsReservedBotName(name))
+			return false;
+		usedNames.insert(NormalizeBotToken(name));
 	}
 
 	const char nationMarker = nation == NATION_KARUS ? 'K' : 'E';
@@ -457,30 +460,11 @@ bool EbenezerApp::StartConfiguredBots()
 		spdlog::error("EbenezerApp::StartConfiguredBots: auto-roster planning failed; bots disabled");
 		return false;
 	}
-	const std::vector<int> createdIds = _botManager->SpawnBatch(requests, 0);
-	if (createdIds.size() != 10)
+	if (!_botManager->StartConfiguredRoster(requests, 0))
 	{
 		_botConfig.enabled = false;
-		spdlog::error("EbenezerApp::StartConfiguredBots: atomic auto-roster failed; bots disabled");
-		return false;
-	}
-
-	try
-	{
-		_botManager->StartPk();
-	}
-	catch (const std::exception& ex)
-	{
-		_botManager->RemoveBatch(createdIds);
-		_botConfig.enabled = false;
-		spdlog::error("EbenezerApp::StartConfiguredBots: timer failed; bots disabled [{}]", ex.what());
-		return false;
-	}
-	if (!_botManager->Status().running)
-	{
-		_botManager->RemoveBatch(createdIds);
-		_botConfig.enabled = false;
-		spdlog::error("EbenezerApp::StartConfiguredBots: timer did not start; bots disabled");
+		spdlog::error(
+			"EbenezerApp::StartConfiguredBots: atomic startup transaction failed; bots disabled");
 		return false;
 	}
 	return true;

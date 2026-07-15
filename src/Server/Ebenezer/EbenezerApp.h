@@ -401,7 +401,7 @@ protected:
 
 private:
 	bool BuildBotBatchRequests(uint8_t nation, e_Class characterClass, size_t count,
-		std::vector<BotSpawnRequest>& requests) const;
+		std::vector<BotSpawnRequest>& requests);
 	std::unique_ptr<BotManager> _botManager;
 	BotConfig _botConfig;
 	std::unique_ptr<TimerThread> _gameTimeThread;

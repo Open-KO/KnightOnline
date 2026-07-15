@@ -35,6 +35,14 @@ inline std::string NormalizeBotToken(std::string_view token)
 	return normalized;
 }
 
+inline bool IsReservedBotName(std::string_view name)
+{
+	if (name.size() < 6)
+		return false;
+	const std::string prefix = NormalizeBotToken(name.substr(0, 6));
+	return prefix == "bot_k_" || prefix == "bot_e_";
+}
+
 inline uint8_t ResolveBotNation(std::string_view token)
 {
 	const std::string normalized = NormalizeBotToken(token);

@@ -73,17 +73,17 @@ BotManager::~BotManager() noexcept
 int BotManager::Spawn(const BotSpawnRequest& request)
 {
 	std::lock_guard operationLock(_operationMutex);
-	return SpawnUnlocked(request);
+	return SpawnOwnedUnlocked(request).userId;
 }
 
-int BotManager::SpawnUnlocked(const BotSpawnRequest& request)
+BotManager::OwnedBot BotManager::SpawnOwnedUnlocked(const BotSpawnRequest& request)
 {
 	auto bot = std::make_shared<CBotUser>();
 	if (!bot->InitializeBot(request))
-		return -1;
+		return {};
 	const int userId = _app.GetBotRegistry().Register(bot);
 	if (userId < 0)
-		return -1;
+		return {};
 	try
 	{
 		bot->UserInOut(USER_IN);
@@ -93,31 +93,31 @@ int BotManager::SpawnUnlocked(const BotSpawnRequest& request)
 		_commands.Despawn(*bot);
 		throw;
 	}
-	return userId;
+	return { userId, std::move(bot) };
 }
 
-void BotManager::RollbackUnlocked(const std::vector<int>& userIds) noexcept
+void BotManager::RollbackUnlocked(const std::vector<OwnedBot>& bots) noexcept
 {
-	for (auto itr = userIds.rbegin(); itr != userIds.rend(); ++itr)
+	for (auto itr = bots.rbegin(); itr != bots.rend(); ++itr)
 	{
-		auto bot = std::dynamic_pointer_cast<CBotUser>(_app.GetBotRegistry().Get(*itr));
-		if (bot == nullptr)
+		if (itr->bot == nullptr
+			|| _app.GetBotRegistry().Get(itr->userId).get() != itr->bot.get())
 			continue;
 		try
 		{
-			_commands.Despawn(*bot);
+			_commands.Despawn(*itr->bot);
 		}
 		catch (...)
 		{
-			_app.GetBotRegistry().Remove(*itr);
+			_app.GetBotRegistry().RemoveIfSame(itr->userId, itr->bot.get());
 		}
 	}
 }
 
-std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requests,
+std::vector<BotManager::OwnedBot> BotManager::SpawnBatchUnlocked(
+	const std::vector<BotSpawnRequest>& requests,
 	std::optional<size_t> expectedRegistrySize)
 {
-	std::lock_guard operationLock(_operationMutex);
 	const size_t registrySize = _app.GetBotRegistry().Size();
 	if ((expectedRegistrySize.has_value() && registrySize != *expectedRegistrySize)
 		|| requests.empty()
@@ -136,19 +136,19 @@ std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requ
 			return {};
 	}
 
-	std::vector<int> created;
+	std::vector<OwnedBot> created;
 	created.reserve(requests.size());
 	try
 	{
 		for (const auto& request : requests)
 		{
-			const int userId = SpawnUnlocked(request);
-			if (userId < 0)
+			OwnedBot owned = SpawnOwnedUnlocked(request);
+			if (owned.userId < 0 || owned.bot == nullptr)
 			{
 				RollbackUnlocked(created);
 				return {};
 			}
-			created.push_back(userId);
+			created.push_back(std::move(owned));
 		}
 	}
 	catch (...)
@@ -157,6 +157,57 @@ std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requ
 		return {};
 	}
 	return created;
+}
+
+std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requests,
+	std::optional<size_t> expectedRegistrySize)
+{
+	std::lock_guard operationLock(_operationMutex);
+	const auto owned = SpawnBatchUnlocked(requests, expectedRegistrySize);
+	std::vector<int> created;
+	created.reserve(owned.size());
+	for (const auto& entry : owned)
+		created.push_back(entry.userId);
+	return created;
+}
+
+bool BotManager::StartConfiguredRoster(
+	const std::vector<BotSpawnRequest>& requests, size_t expectedRegistrySize)
+{
+	std::unique_lock operationLock(_operationMutex);
+	if (requests.size() != 10)
+		return false;
+	auto owned = SpawnBatchUnlocked(requests, expectedRegistrySize);
+	if (owned.size() != requests.size())
+		return false;
+
+	bool timerStarted = false;
+	try
+	{
+		timerStarted = StartPkUnlocked();
+	}
+	catch (...)
+	{
+		RollbackUnlocked(owned);
+		return false;
+	}
+
+	bool exactOwnership = timerStarted && _app.GetBotRegistry().Size() == owned.size();
+	for (const auto& entry : owned)
+		exactOwnership = exactOwnership
+			&& _app.GetBotRegistry().Get(entry.userId).get() == entry.bot.get();
+	{
+		std::lock_guard lifecycleLock(_lifecycleMutex);
+		exactOwnership = exactOwnership && _lifecycle == Lifecycle::Running;
+	}
+	if (exactOwnership)
+		return true;
+
+	RollbackUnlocked(owned);
+	operationLock.unlock();
+	if (timerStarted)
+		Stop();
+	return false;
 }
 
 size_t BotManager::RemoveBatch(const std::vector<int>& userIds)
@@ -205,9 +256,15 @@ size_t BotManager::RemoveAll()
 
 void BotManager::StartPk()
 {
+	std::lock_guard operationLock(_operationMutex);
+	StartPkUnlocked();
+}
+
+bool BotManager::StartPkUnlocked()
+{
 	std::lock_guard lock(_lifecycleMutex);
 	if (_lifecycle != Lifecycle::Idle)
-		return;
+		return false;
 	auto timer = _timerFactory(std::chrono::milliseconds(_app.GetBotConfig().tickMilliseconds),
 		[this]() { Tick(std::chrono::steady_clock::now()); });
 	if (timer == nullptr)
@@ -224,6 +281,7 @@ void BotManager::StartPk()
 		_lifecycle = Lifecycle::Idle;
 		throw;
 	}
+	return true;
 }
 
 void BotManager::Stop() noexcept

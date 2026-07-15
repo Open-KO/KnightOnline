@@ -167,6 +167,18 @@ public:
 		return true;
 	}
 
+	bool AddCoefficientEntry(int16_t classId)
+	{
+		auto coefficient = new Ebenezer::model::Coefficient {};
+		coefficient->ClassId = classId;
+		if (!m_CoefficientTableMap.PutData(classId, coefficient))
+		{
+			delete coefficient;
+			return false;
+		}
+		return true;
+	}
+
 	bool LoadConfigForTest(CIni& ini)
 	{
 		return LoadConfig(ini);

@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "BotTypes.h"
 #include "EbenezerApp.h"
 #include "Map.h"
 #include "OperationMessage.h"
@@ -902,7 +903,7 @@ void CUser::NewCharToAgent(char* pBuf)
 		goto fail_return;
 	}
 
-	if (!IsValidName(charid))
+	if (!IsValidName(charid) || IsReservedBotName(charid))
 	{
 		result = 0x05;
 		goto fail_return;
@@ -1067,6 +1068,8 @@ void CUser::SelCharToAgent(char* pBuf)
 	GetString(charId, pBuf, idlen2, index);
 	bInit  = GetByte(pBuf, index);
 	zoneId = GetByte(pBuf, index);
+	if (IsReservedBotName(charId))
+		goto fail_return;
 
 	if (strnicmp(accountId, m_strAccountID, MAX_ID_SIZE) != 0)
 	{
@@ -1167,6 +1170,8 @@ void CUser::SelectCharacter(const char* pBuf)
 
 	result = GetByte(pBuf, index);
 	bInit  = GetByte(pBuf, index);
+	if (m_pUserData != nullptr && IsReservedBotName(m_pUserData->m_id))
+		goto fail_return;
 
 	m_pMain->m_iRecvPacketCount++;
 

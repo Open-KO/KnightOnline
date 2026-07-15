@@ -19,6 +19,7 @@ public:
 	int Register(const std::shared_ptr<CUser>& bot);
 	std::shared_ptr<CUser> Get(int userId) const;
 	std::shared_ptr<CUser> Remove(int userId);
+	std::shared_ptr<CUser> RemoveIfSame(int userId, const CUser* expected);
 	std::vector<std::shared_ptr<CUser>> Snapshot() const;
 	size_t Size() const;
 	void Clear();

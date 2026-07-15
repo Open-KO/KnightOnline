@@ -47,6 +47,18 @@ std::shared_ptr<CUser> BotRegistry::Remove(int userId)
 	return bot;
 }
 
+std::shared_ptr<CUser> BotRegistry::RemoveIfSame(int userId, const CUser* expected)
+{
+	std::unique_lock lock(_mutex);
+	const auto entry = _users.find(userId);
+	if (entry == _users.end() || entry->second.get() != expected)
+		return nullptr;
+
+	auto bot = entry->second;
+	_users.erase(entry);
+	return bot;
+}
+
 std::vector<std::shared_ptr<CUser>> BotRegistry::Snapshot() const
 {
 	std::shared_lock lock(_mutex);

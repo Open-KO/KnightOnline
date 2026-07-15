@@ -13,6 +13,7 @@
 #include "TestApp.h"
 
 #include <chrono>
+#include <barrier>
 #include <condition_variable>
 #include <cmath>
 #include <cstdlib>
@@ -115,6 +116,44 @@ private:
 	std::thread _thread;
 };
 
+class BlockingStartBotTimer final : public IBotTimer
+{
+public:
+	BlockingStartBotTimer(std::barrier<>& entered, std::barrier<>& release) :
+		_entered(entered), _release(release)
+	{
+	}
+
+	void Start() override
+	{
+		_entered.arrive_and_wait();
+		_release.arrive_and_wait();
+	}
+
+	void Shutdown() noexcept override {}
+
+private:
+	std::barrier<>& _entered;
+	std::barrier<>& _release;
+};
+
+class StartActionBotTimer final : public IBotTimer
+{
+public:
+	explicit StartActionBotTimer(std::function<void()> action) : _action(std::move(action)) {}
+
+	void Start() override
+	{
+		_action();
+		throw std::runtime_error("deterministic timer start failure");
+	}
+
+	void Shutdown() noexcept override {}
+
+private:
+	std::function<void()> _action;
+};
+
 class BotManagerTest : public testing::Test
 {
 protected:
@@ -159,6 +198,19 @@ protected:
 		if (id < 0)
 			return nullptr;
 		return std::dynamic_pointer_cast<CBotUser>(_app->GetBotManager().FindUser(id));
+	}
+
+	std::vector<BotSpawnRequest> RosterRequests() const
+	{
+		std::vector<BotSpawnRequest> requests;
+		for (int i = 0; i < 10; ++i)
+		{
+			const uint8_t nation = i < 5 ? NATION_KARUS : NATION_ELMORAD;
+			requests.push_back(Request(
+				fmt::format("Bot_{}_{:03}", nation == NATION_KARUS ? 'K' : 'E', i % 5),
+				nation, 120.0f + i, 120.0f + i));
+		}
+		return requests;
 	}
 
 	bool RegionContains(int regionX, int regionZ, int userId) const
@@ -762,6 +814,75 @@ TEST_F(BotManagerTest, StartAndStopAreIdempotentAndDoNotAutoSpawn)
 	manager.Stop();
 	EXPECT_FALSE(manager.Status().running);
 	EXPECT_EQ(manager.Status().total, 0u);
+}
+
+TEST_F(BotManagerTest, ConfiguredRosterBlocksOtherOperationsUntilAtomicCommit)
+{
+	std::barrier startEntered(2);
+	std::barrier releaseStart(2);
+	BotTimerFactory factory = [&](std::chrono::milliseconds, std::function<void()>)
+	{
+		return std::make_unique<BlockingStartBotTimer>(startEntered, releaseStart);
+	};
+	BotManager manager(*_app, std::move(factory));
+	const auto requests = RosterRequests();
+	auto startup = std::async(std::launch::async,
+		[&]() { return manager.StartConfiguredRoster(requests, 0); });
+	startEntered.arrive_and_wait();
+	ScopeRelease releaseGuard([&]() { releaseStart.arrive_and_wait(); });
+
+	std::promise<void> removeStartedPromise;
+	std::promise<void> spawnStartedPromise;
+	auto removeStarted = removeStartedPromise.get_future();
+	auto spawnStarted = spawnStartedPromise.get_future();
+	auto remove = std::async(std::launch::async, [&]()
+	{
+		removeStartedPromise.set_value();
+		return manager.RemoveAll();
+	});
+	auto spawn = std::async(std::launch::async, [&]()
+	{
+		spawnStartedPromise.set_value();
+		return manager.SpawnBatch({ Request("Bot_K_Manual", NATION_KARUS) });
+	});
+	ASSERT_EQ(removeStarted.wait_for(2s), std::future_status::ready);
+	ASSERT_EQ(spawnStarted.wait_for(2s), std::future_status::ready);
+	EXPECT_EQ(remove.wait_for(100ms), std::future_status::timeout);
+	EXPECT_EQ(spawn.wait_for(100ms), std::future_status::timeout);
+
+	releaseGuard.Release();
+	EXPECT_EQ(startup.wait_for(2s), std::future_status::ready);
+	EXPECT_TRUE(startup.get());
+	EXPECT_EQ(remove.wait_for(2s), std::future_status::ready);
+	EXPECT_EQ(spawn.wait_for(2s), std::future_status::ready);
+	remove.get();
+	spawn.get();
+}
+
+TEST_F(BotManagerTest, ConfiguredRosterStartFailureCannotDeleteReplacementAtReusedId)
+{
+	std::shared_ptr<CBotUser> replacement;
+	BotTimerFactory factory = [&](std::chrono::milliseconds, std::function<void()>)
+	{
+		return std::make_unique<StartActionBotTimer>([&]()
+		{
+			const auto original = _app->GetBotRegistry().Get(BOT_USER_ID_MIN);
+			ASSERT_NE(original, nullptr);
+			original->UserInOut(USER_OUT);
+			ASSERT_EQ(_app->GetBotRegistry().Remove(BOT_USER_ID_MIN), original);
+			replacement = std::make_shared<CBotUser>();
+			ASSERT_TRUE(replacement->InitializeBot(
+				Request("Bot_K_Replacement", NATION_KARUS, 150.0f, 150.0f)));
+			ASSERT_EQ(_app->GetBotRegistry().Register(replacement), BOT_USER_ID_MIN);
+			replacement->UserInOut(USER_IN);
+		});
+	};
+	BotManager manager(*_app, std::move(factory));
+
+	EXPECT_FALSE(manager.StartConfiguredRoster(RosterRequests(), 0));
+	ASSERT_NE(replacement, nullptr);
+	EXPECT_EQ(_app->GetBotRegistry().Size(), 1u);
+	EXPECT_EQ(_app->GetBotRegistry().Get(BOT_USER_ID_MIN), replacement);
 }
 
 TEST_F(BotManagerTest, StopWaitsForLiveCallbackAndReturnsQuiescent)
