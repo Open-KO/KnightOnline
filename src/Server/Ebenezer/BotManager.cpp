@@ -15,6 +15,28 @@ namespace Ebenezer
 {
 namespace
 {
+class TimerThreadAdapter final : public IBotTimer
+{
+public:
+	TimerThreadAdapter(std::chrono::milliseconds delay, std::function<void()> callback) :
+		_timer(delay, std::move(callback))
+	{
+	}
+
+	void Start() override
+	{
+		_timer.start();
+	}
+
+	void Shutdown() override
+	{
+		_timer.shutdown();
+	}
+
+private:
+	TimerThread _timer;
+};
+
 bool IsValidTarget(const CBotUser& source, const std::shared_ptr<CUser>& target)
 {
 	return source.m_pUserData != nullptr && target != nullptr && target->m_pUserData != nullptr
@@ -25,8 +47,18 @@ bool IsValidTarget(const CBotUser& source, const std::shared_ptr<CUser>& target)
 }
 } // namespace
 
-BotManager::BotManager(EbenezerApp& app) : _app(app), _selector(app), _commands(app)
+BotManager::BotManager(EbenezerApp& app) :
+	BotManager(app,
+		[](std::chrono::milliseconds delay, std::function<void()> callback)
+		{ return std::make_unique<TimerThreadAdapter>(delay, std::move(callback)); })
 {
+}
+
+BotManager::BotManager(EbenezerApp& app, BotTimerFactory timerFactory) :
+	_app(app), _selector(app), _commands(app), _timerFactory(std::move(timerFactory))
+{
+	if (!_timerFactory)
+		throw std::invalid_argument("BotManager requires a timer factory");
 }
 
 BotManager::~BotManager()
@@ -37,6 +69,7 @@ BotManager::~BotManager()
 
 int BotManager::Spawn(const BotSpawnRequest& request)
 {
+	std::lock_guard operationLock(_operationMutex);
 	auto bot = std::make_shared<CBotUser>();
 	if (!bot->InitializeBot(request))
 		return -1;
@@ -57,6 +90,7 @@ int BotManager::Spawn(const BotSpawnRequest& request)
 
 size_t BotManager::RemoveAll()
 {
+	std::lock_guard operationLock(_operationMutex);
 	size_t removed = 0;
 	for (const auto& entry : _app.GetBotRegistry().Snapshot())
 	{
@@ -86,27 +120,71 @@ size_t BotManager::RemoveAll()
 
 void BotManager::StartPk()
 {
-	std::lock_guard lock(_timerMutex);
-	if (_timer != nullptr)
+	std::lock_guard lock(_lifecycleMutex);
+	if (_lifecycle != Lifecycle::Idle)
 		return;
-	_timer = std::make_unique<TimerThread>(
-		200ms, [this]() { Tick(std::chrono::steady_clock::now()); });
-	_timer->start();
+	auto timer = _timerFactory(200ms, [this]() { Tick(std::chrono::steady_clock::now()); });
+	if (timer == nullptr)
+		throw std::runtime_error("BotManager timer factory returned null");
+	_lifecycle = Lifecycle::Running;
+	_timer = std::move(timer);
+	try
+	{
+		_timer->Start();
+	}
+	catch (...)
+	{
+		_timer.reset();
+		_lifecycle = Lifecycle::Idle;
+		throw;
+	}
 }
 
 void BotManager::Stop()
 {
-	std::unique_ptr<TimerThread> timer;
+	std::unique_ptr<IBotTimer> timer;
 	{
-		std::lock_guard lock(_timerMutex);
+		std::unique_lock lock(_lifecycleMutex);
+		if (_lifecycle == Lifecycle::Shutdown)
+			return;
+		if (_lifecycle == Lifecycle::Stopping)
+		{
+			_lifecycleCv.wait(lock, [this]() { return _lifecycle == Lifecycle::Shutdown; });
+			return;
+		}
+		if (_lifecycle == Lifecycle::Idle)
+		{
+			_lifecycle = Lifecycle::Shutdown;
+			_lifecycleCv.notify_all();
+			return;
+		}
+		_lifecycle = Lifecycle::Stopping;
 		timer = std::move(_timer);
 	}
-	if (timer != nullptr)
-		timer->shutdown();
+
+	try
+	{
+		if (timer != nullptr)
+			timer->Shutdown();
+	}
+	catch (const std::exception& ex)
+	{
+		spdlog::error("BotManager::Stop: timer shutdown failed: {}", ex.what());
+	}
+	catch (...)
+	{
+		spdlog::error("BotManager::Stop: timer shutdown failed with unknown error");
+	}
+	{
+		std::lock_guard lock(_lifecycleMutex);
+		_lifecycle = Lifecycle::Shutdown;
+	}
+	_lifecycleCv.notify_all();
 }
 
 void BotManager::Tick(std::chrono::steady_clock::time_point now)
 {
+	std::lock_guard operationLock(_operationMutex);
 	for (const auto& entry : _app.GetBotRegistry().Snapshot())
 	{
 		if (entry == nullptr)
@@ -197,6 +275,7 @@ void BotManager::TickBot(
 
 BotStatus BotManager::Status() const
 {
+	std::lock_guard operationLock(_operationMutex);
 	BotStatus status;
 	const auto snapshot = _app.GetBotRegistry().Snapshot();
 	status.total        = snapshot.size();
@@ -212,8 +291,8 @@ BotStatus BotManager::Status() const
 			++status.alive;
 	}
 	{
-		std::lock_guard lock(_timerMutex);
-		status.running = _timer != nullptr;
+		std::lock_guard lock(_lifecycleMutex);
+		status.running = _lifecycle == Lifecycle::Running;
 	}
 	return status;
 }

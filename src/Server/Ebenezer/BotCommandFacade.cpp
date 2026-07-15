@@ -26,7 +26,9 @@ bool IsAliveEnemy(const CBotUser& source, const std::shared_ptr<CUser>& target)
 		   && source.m_pUserData->m_bZone == target->m_pUserData->m_bZone
 		   && source.m_pUserData->m_bNation != target->m_pUserData->m_bNation
 		   && source.m_bResHpType != USER_DEAD && source.m_pUserData->m_sHp > 0
-		   && target->m_bResHpType != USER_DEAD && target->m_pUserData->m_sHp > 0;
+		   && target->m_bResHpType != USER_DEAD && target->m_pUserData->m_sHp > 0
+		   && source.m_bAbnormalType != ABNORMAL_BLINKING
+		   && target->m_bAbnormalType != ABNORMAL_BLINKING;
 }
 } // namespace
 
@@ -118,13 +120,16 @@ bool BotCommandFacade::Respawn(CBotUser& source)
 	if (source.m_pUserData == nullptr || _app.GetBotRegistry().Get(userId).get() != &source)
 		return false;
 
-	source.UserInOut(USER_OUT);
-	PurgeRegionEntries(userId);
 	const auto& home    = source.Runtime().home;
 	const int zoneIndex = _app.GetZoneIndex(home.zoneId);
 	C3DMap* map         = _app.GetMapByIndex(zoneIndex);
-	if (map == nullptr || home.x < 0.0f || home.z < 0.0f || !map->IsValidPosition(home.x, home.z))
+	if (map == nullptr || !std::isfinite(home.x) || !std::isfinite(home.y)
+		|| !std::isfinite(home.z) || home.x < 0.0f || home.z < 0.0f
+		|| !map->IsValidPosition(home.x, home.z))
 		return false;
+
+	source.UserInOut(USER_OUT);
+	PurgeRegionEntries(userId);
 
 	source.m_pUserData->m_bZone = home.zoneId;
 	source.m_iZoneIndex         = static_cast<int16_t>(zoneIndex);

@@ -23,6 +23,12 @@ BotSpawnPoint BotMovement::NextStep(
 	destination.x      = source.m_pUserData->m_curx;
 	destination.y      = source.m_pUserData->m_cury;
 	destination.z      = source.m_pUserData->m_curz;
+	if (!std::isfinite(source.m_fWill_x) || !std::isfinite(source.m_fWill_y)
+		|| !std::isfinite(source.m_fWill_z))
+		return destination;
+	destination.x = source.m_fWill_x;
+	destination.y = source.m_fWill_y;
+	destination.z = source.m_fWill_z;
 	if (!std::isfinite(targetX) || !std::isfinite(targetZ) || !std::isfinite(maxStep)
 		|| maxStep <= 0.0f)
 		return destination;

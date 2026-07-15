@@ -8,6 +8,7 @@
 #include <Ebenezer/User.h>
 
 #include <functional>
+#include <mutex>
 #include <queue>
 #include <stdexcept>
 
@@ -32,11 +33,13 @@ public:
 
 	size_t GetPacketsSent() const
 	{
+		std::lock_guard lock(_sendMutex);
 		return _packetsSent;
 	}
 
 	void ResetSend()
 	{
+		std::lock_guard lock(_sendMutex);
 		_packetsSent = 0;
 
 		while (!_sendCallbacks.empty())
@@ -45,21 +48,23 @@ public:
 
 	void AddSendCallback(const SendCallback& callback)
 	{
+		std::lock_guard lock(_sendMutex);
 		_sendCallbacks.push(callback);
 	}
 
 	int Send(char* pBuf, int length) override
 	{
-		++_packetsSent;
-
-		if (_sendCallbacks.empty())
-			throw UnhandledSendCallbackException();
-
-		const auto& sendCallback = _sendCallbacks.front();
+		SendCallback sendCallback;
+		{
+			std::lock_guard lock(_sendMutex);
+			++_packetsSent;
+			if (_sendCallbacks.empty())
+				throw UnhandledSendCallbackException();
+			sendCallback = _sendCallbacks.front();
+			_sendCallbacks.pop();
+		}
 		if (sendCallback != nullptr)
 			sendCallback(pBuf, length);
-
-		_sendCallbacks.pop();
 		return length;
 	}
 
@@ -127,6 +132,7 @@ public:
 
 private:
 	_USER_DATA _userDataStore = {};
+	mutable std::mutex _sendMutex;
 	size_t _packetsSent       = 0;
 	std::queue<SendCallback> _sendCallbacks;
 };

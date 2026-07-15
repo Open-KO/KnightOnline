@@ -13,16 +13,66 @@
 #include "TestApp.h"
 
 #include <chrono>
+#include <condition_variable>
 #include <cmath>
 #include <cstdlib>
+#include <future>
 #include <functional>
+#include <limits>
 #include <memory>
+#include <mutex>
+#include <vector>
 
 using namespace Ebenezer;
 using namespace std::chrono_literals;
 
 namespace
 {
+
+struct BlockingTimerState
+{
+	std::mutex mutex;
+	std::condition_variable cv;
+	bool shutdownEntered = false;
+	bool allowShutdown = false;
+	size_t factoryCalls = 0;
+	size_t starts = 0;
+	size_t callbackCalls = 0;
+	std::function<void()> callback;
+};
+
+class BlockingBotTimer final : public IBotTimer
+{
+public:
+	explicit BlockingBotTimer(std::shared_ptr<BlockingTimerState> state) : _state(std::move(state)) {}
+
+	void Start() override
+	{
+		std::lock_guard lock(_state->mutex);
+		++_state->starts;
+	}
+
+	void Shutdown() override
+	{
+		std::unique_lock lock(_state->mutex);
+		_state->shutdownEntered = true;
+		_state->cv.notify_all();
+		_state->cv.wait(lock, [this]() { return _state->allowShutdown; });
+	}
+
+private:
+	std::shared_ptr<BlockingTimerState> _state;
+};
+
+class ThrowingShutdownBotTimer final : public IBotTimer
+{
+public:
+	void Start() override {}
+	void Shutdown() override
+	{
+		throw std::runtime_error("timer shutdown failure");
+	}
+};
 
 class BotManagerTest : public testing::Test
 {
@@ -218,6 +268,107 @@ TEST_F(BotManagerTest, BasicAttackUsesTrueDistanceAndOneSecondCooldown)
 	EXPECT_LT(nearEnemy->m_pUserData->m_sHp, afterFirstAttack);
 }
 
+TEST_F(BotManagerTest, BasicAttackRejectsInvalidCombatStatesWithoutConsumingCooldown)
+{
+	auto source = Spawn("Bot_K_State", NATION_KARUS, 120.0f, 120.0f);
+	auto target = Spawn("Bot_E_State", NATION_ELMORAD, 122.0f, 120.0f);
+	ASSERT_NE(source, nullptr);
+	ASSERT_NE(target, nullptr);
+	BotCommandFacade commands(*_app);
+	const auto originalCooldown = _now - 1s;
+
+	struct RejectionCase
+	{
+		const char* name;
+		std::function<void()> arrange;
+	};
+	const std::vector<RejectionCase> cases {
+		{ "source zone", [&]() { source->m_pUserData->m_bZone = ZONE_BATTLE; } },
+		{ "same nation", [&]() { target->m_pUserData->m_bNation = NATION_KARUS; } },
+		{ "source state", [&]() { source->SetState(CONNECTION_STATE_CONNECTED); } },
+		{ "target state", [&]() { target->SetState(CONNECTION_STATE_CONNECTED); } },
+		{ "source hp", [&]() { source->m_pUserData->m_sHp = 0; } },
+		{ "target hp", [&]() { target->m_pUserData->m_sHp = 0; } },
+		{ "source blink", [&]() { source->m_bAbnormalType = ABNORMAL_BLINKING; } },
+		{ "target blink", [&]() { target->m_bAbnormalType = ABNORMAL_BLINKING; } },
+	};
+
+	for (const auto& testCase : cases)
+	{
+		source->m_pUserData->m_bZone = target->m_pUserData->m_bZone = ZONE_FRONTIER;
+		source->m_pUserData->m_bNation = NATION_KARUS;
+		target->m_pUserData->m_bNation = NATION_ELMORAD;
+		source->SetState(CONNECTION_STATE_GAMESTART);
+		target->SetState(CONNECTION_STATE_GAMESTART);
+		source->m_pUserData->m_sHp = source->m_iMaxHp;
+		target->m_pUserData->m_sHp = target->m_iMaxHp;
+		source->m_bResHpType = target->m_bResHpType = USER_STANDING;
+		source->m_bAbnormalType = target->m_bAbnormalType = ABNORMAL_NORMAL;
+		source->Runtime().nextAttackAt = originalCooldown;
+		testCase.arrange();
+
+		EXPECT_FALSE(commands.BasicAttack(*source, target->GetSocketID(), _now)) << testCase.name;
+		EXPECT_EQ(source->Runtime().nextAttackAt, originalCooldown) << testCase.name;
+	}
+}
+
+TEST_F(BotManagerTest, ConsecutiveMovementStepsAdvanceFromPendingEndpoint)
+{
+	auto bot = Spawn("Bot_K_Move", NATION_KARUS, 120.0f, 120.0f);
+	ASSERT_NE(bot, nullptr);
+
+	const auto first = BotMovement::NextStep(*bot, 130.0f, 120.0f, 1.5f);
+	ASSERT_TRUE(BotMovement::Move(*bot, first, 45));
+	const auto second = BotMovement::NextStep(*bot, 130.0f, 120.0f, 1.5f);
+	ASSERT_TRUE(BotMovement::Move(*bot, second, 45));
+
+	EXPECT_FLOAT_EQ(first.x, 121.5f);
+	EXPECT_FLOAT_EQ(second.x, 123.0f);
+	EXPECT_FLOAT_EQ(bot->m_pUserData->m_curx, first.x);
+	EXPECT_FLOAT_EQ(bot->m_fWill_x, second.x);
+	EXPECT_LE(std::hypot(second.x - first.x, second.z - first.z), 1.5f);
+}
+
+TEST_F(BotManagerTest, MoveRejectsInvalidCoordinatesAndSerializesValidatedPacket)
+{
+	auto observer = _app->AddUser();
+	ASSERT_NE(observer, nullptr);
+	observer->m_pUserData->m_bZone = ZONE_FRONTIER;
+	observer->SetState(CONNECTION_STATE_GAMESTART);
+	ASSERT_TRUE(_map->Add(observer.get(), 2, 2));
+	observer->AddSendCallback([](const char*, int) {});
+	auto bot = Spawn("Bot_K_Packet", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+
+	const float originalX = bot->m_fWill_x;
+	const float originalZ = bot->m_fWill_z;
+	const float nan = std::numeric_limits<float>::quiet_NaN();
+	const float inf = std::numeric_limits<float>::infinity();
+	EXPECT_FALSE(BotMovement::Move(*bot, { ZONE_FRONTIER, nan, 0.0f, 120.0f }, 45));
+	EXPECT_FALSE(BotMovement::Move(*bot, { ZONE_FRONTIER, 120.0f, 0.0f, inf }, 45));
+	EXPECT_FALSE(BotMovement::Move(*bot, { ZONE_FRONTIER, 7000.0f, 0.0f, 120.0f }, 45));
+	EXPECT_FALSE(BotMovement::Move(*bot, { ZONE_BATTLE, 120.0f, 0.0f, 120.0f }, 45));
+	EXPECT_FLOAT_EQ(bot->m_fWill_x, originalX);
+	EXPECT_FLOAT_EQ(bot->m_fWill_z, originalZ);
+
+	EXPECT_TRUE(BotMovement::Move(*bot, { ZONE_FRONTIER, 123.5f, -2.0f, 125.5f }, 45));
+	char regionPacket[1024] {};
+	const int regionLength = observer->RegionPacketClear(regionPacket);
+	ASSERT_GT(regionLength, 0);
+	int index = 0;
+	EXPECT_EQ(GetByte(regionPacket, index), WIZ_CONTINOUS_PACKET);
+	EXPECT_GT(GetShort(regionPacket, index), 0);
+	EXPECT_EQ(GetShort(regionPacket, index), 12);
+	EXPECT_EQ(GetByte(regionPacket, index), WIZ_MOVE);
+	EXPECT_EQ(GetShort(regionPacket, index), bot->GetSocketID());
+	EXPECT_EQ(GetShort(regionPacket, index), 1235);
+	EXPECT_EQ(GetShort(regionPacket, index), 1255);
+	EXPECT_EQ(static_cast<int16_t>(GetShort(regionPacket, index)), -20);
+	EXPECT_EQ(GetShort(regionPacket, index), 45);
+	EXPECT_EQ(GetByte(regionPacket, index), 0);
+	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
 TEST_F(BotManagerTest, ZeroHpMarksDeadOnceAndSetsExactRespawnDeadline)
 {
 	auto bot = Spawn("Bot_K_006", NATION_KARUS);
@@ -270,6 +421,61 @@ TEST_F(BotManagerTest, RespawnsOnlyAtExactBoundaryAtHomeWithCleanRuntimeAndRegio
 	EXPECT_TRUE(RegionContains(bot->m_RegionX, bot->m_RegionZ, id));
 }
 
+TEST_F(BotManagerTest, RespawnBroadcastsUserOutBeforeUserRegene)
+{
+	auto observer = _app->AddUser();
+	ASSERT_NE(observer, nullptr);
+	observer->m_pUserData->m_bZone = ZONE_FRONTIER;
+	observer->SetState(CONNECTION_STATE_GAMESTART);
+	ASSERT_TRUE(_map->Add(observer.get(), 2, 2));
+	observer->AddSendCallback([](const char*, int) {});
+	auto bot = Spawn("Bot_K_Order", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+
+	std::vector<uint8_t> eventTypes;
+	for (int i = 0; i < 2; ++i)
+	{
+		observer->AddSendCallback([&](const char* packet, int length)
+		{
+			ASSERT_GE(length, 4);
+			int index = 0;
+			EXPECT_EQ(GetByte(packet, index), WIZ_USER_INOUT);
+			eventTypes.push_back(GetByte(packet, index));
+			EXPECT_EQ(GetShort(packet, index), bot->GetSocketID());
+		});
+	}
+	bot->m_pUserData->m_sHp = 0;
+	BotCommandFacade commands(*_app);
+	ASSERT_TRUE(commands.Respawn(*bot));
+	ASSERT_EQ(eventTypes.size(), 2u);
+	EXPECT_EQ(eventTypes[0], USER_OUT);
+	EXPECT_EQ(eventTypes[1], USER_REGENE);
+	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
+TEST_F(BotManagerTest, RespawnRejectsInvalidHomeWithoutRemovingLiveRegionEntry)
+{
+	auto observer = _app->AddUser();
+	ASSERT_NE(observer, nullptr);
+	observer->m_pUserData->m_bZone = ZONE_FRONTIER;
+	observer->SetState(CONNECTION_STATE_GAMESTART);
+	ASSERT_TRUE(_map->Add(observer.get(), 2, 2));
+	observer->AddSendCallback([](const char*, int) {});
+	auto bot = Spawn("Bot_K_Home", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+	const int botId = bot->GetSocketID();
+	bool broadcast = false;
+	observer->AddSendCallback([&](const char*, int) { broadcast = true; });
+	bot->Runtime().home.x = std::numeric_limits<float>::quiet_NaN();
+	BotCommandFacade commands(*_app);
+
+	EXPECT_FALSE(commands.Respawn(*bot));
+	EXPECT_FALSE(broadcast);
+	EXPECT_EQ(_app->GetBotRegistry().Get(botId).get(), bot.get());
+	EXPECT_EQ(RegionOccurrenceCount(botId), 1u);
+	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
 TEST_F(BotManagerTest, RemoveAllEmitsUserOutBeforeClearingRegistryAndRegions)
 {
 	auto observer = _app->AddUser();
@@ -300,6 +506,96 @@ TEST_F(BotManagerTest, RemoveAllEmitsUserOutBeforeClearingRegistryAndRegions)
 	EXPECT_EQ(_app->GetBotManager().RemoveAll(), 1u);
 	EXPECT_TRUE(sawUserOut);
 	EXPECT_EQ(_app->GetBotManager().Status().total, 0u);
+	EXPECT_EQ(_app->GetBotRegistry().Size(), 0u);
+	EXPECT_EQ(RegionOccurrenceCount(botId), 0u);
+	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
+TEST_F(BotManagerTest, TickSerializesRemoveAllAndStatusAcrossRegionCallbacks)
+{
+	auto observer = _app->AddUser();
+	ASSERT_NE(observer, nullptr);
+	observer->m_pUserData->m_bNation = NATION_ELMORAD;
+	observer->m_pUserData->m_bZone = ZONE_FRONTIER;
+	observer->m_pUserData->m_curx = observer->m_fWill_x = 122.0f;
+	observer->m_pUserData->m_curz = observer->m_fWill_z = 120.0f;
+	observer->m_iMaxHp = observer->m_pUserData->m_sHp = 1500;
+	observer->m_bResHpType = USER_STANDING;
+	observer->m_fTotalEvasionRate = 1.0f;
+	observer->SetState(CONNECTION_STATE_GAMESTART);
+	ASSERT_TRUE(_map->Add(observer.get(), 2, 2));
+	observer->AddSendCallback([](const char*, int) {});
+	auto bot = Spawn("Bot_K_Serial", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+	bot->m_fTotalHitRate = 10.0f;
+	const int botId = bot->GetSocketID();
+	bot->Runtime().targetId = observer->GetSocketID();
+
+	std::mutex barrierMutex;
+	std::condition_variable barrierCv;
+	bool callbackEntered = false;
+	bool releaseCallback = false;
+	observer->AddSendCallback([&](const char*, int)
+	{
+		std::unique_lock lock(barrierMutex);
+		callbackEntered = true;
+		barrierCv.notify_all();
+		barrierCv.wait(lock, [&]() { return releaseCallback; });
+	});
+
+	auto tick = std::async(std::launch::async, [&]() { _app->GetBotManager().Tick(_now); });
+	{
+		std::unique_lock lock(barrierMutex);
+		ASSERT_TRUE(barrierCv.wait_for(lock, 2s, [&]() { return callbackEntered; }));
+	}
+	auto remove = std::async(std::launch::async, [&]() { return _app->GetBotManager().RemoveAll(); });
+	auto status = std::async(std::launch::async, [&]() { return _app->GetBotManager().Status(); });
+	EXPECT_EQ(remove.wait_for(100ms), std::future_status::timeout);
+	EXPECT_EQ(status.wait_for(100ms), std::future_status::timeout);
+	{
+		std::lock_guard lock(barrierMutex);
+		releaseCallback = true;
+	}
+	barrierCv.notify_all();
+	EXPECT_EQ(tick.wait_for(2s), std::future_status::ready);
+	EXPECT_EQ(remove.wait_for(2s), std::future_status::ready);
+	EXPECT_EQ(status.wait_for(2s), std::future_status::ready);
+	EXPECT_EQ(remove.get(), 1u);
+	tick.get();
+	(void) status.get();
+	EXPECT_EQ(_app->GetBotRegistry().Size(), 0u);
+	EXPECT_EQ(RegionOccurrenceCount(botId), 0u);
+	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
+TEST_F(BotManagerTest, RegistryFullSpawnLeavesExistingEntriesAndRegionsUnchanged)
+{
+	for (int i = 0; i < MAX_BOT_USER; ++i)
+	{
+		auto entry = std::make_shared<TestUser>();
+		ASSERT_GE(_app->GetBotRegistry().Register(entry), 0);
+	}
+	ASSERT_EQ(_app->GetBotRegistry().Size(), static_cast<size_t>(MAX_BOT_USER));
+
+	EXPECT_EQ(_app->GetBotManager().Spawn(Request("Bot_K_Full", NATION_KARUS)), -1);
+	EXPECT_EQ(_app->GetBotRegistry().Size(), static_cast<size_t>(MAX_BOT_USER));
+	EXPECT_EQ(RegionOccurrenceCount(BOT_USER_ID_MIN), 0u);
+}
+
+TEST_F(BotManagerTest, RemoveAllPurgesAndUnregistersWhenUserOutBroadcastThrows)
+{
+	auto observer = _app->AddUser();
+	ASSERT_NE(observer, nullptr);
+	observer->m_pUserData->m_bZone = ZONE_FRONTIER;
+	observer->SetState(CONNECTION_STATE_GAMESTART);
+	ASSERT_TRUE(_map->Add(observer.get(), 2, 2));
+	observer->AddSendCallback([](const char*, int) {});
+	auto bot = Spawn("Bot_K_Cleanup", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+	const int botId = bot->GetSocketID();
+	observer->AddSendCallback([](const char*, int) { throw UnhandledSendCallbackException(); });
+
+	EXPECT_EQ(_app->GetBotManager().RemoveAll(), 1u);
 	EXPECT_EQ(_app->GetBotRegistry().Size(), 0u);
 	EXPECT_EQ(RegionOccurrenceCount(botId), 0u);
 	observer->SetState(CONNECTION_STATE_DISCONNECTED);
@@ -349,6 +645,64 @@ TEST_F(BotManagerTest, StartAndStopAreIdempotentAndDoNotAutoSpawn)
 	manager.Stop();
 	EXPECT_FALSE(manager.Status().running);
 	EXPECT_EQ(manager.Status().total, 0u);
+}
+
+TEST_F(BotManagerTest, StartPkCannotRestartWhileStopIsJoiningTimer)
+{
+	auto state = std::make_shared<BlockingTimerState>();
+	BotTimerFactory factory = [state](std::chrono::milliseconds, std::function<void()> callback)
+	{
+		std::lock_guard lock(state->mutex);
+		++state->factoryCalls;
+		state->callback = [state, callback = std::move(callback)]()
+		{
+			{
+				std::lock_guard callbackLock(state->mutex);
+				++state->callbackCalls;
+			}
+			callback();
+		};
+		return std::make_unique<BlockingBotTimer>(state);
+	};
+	BotManager manager(*_app, std::move(factory));
+	manager.StartPk();
+	std::function<void()> firstCallback;
+	{
+		std::lock_guard lock(state->mutex);
+		firstCallback = state->callback;
+	}
+	ASSERT_TRUE(firstCallback);
+	firstCallback();
+	auto stop = std::async(std::launch::async, [&]() { manager.Stop(); });
+	{
+		std::unique_lock lock(state->mutex);
+		ASSERT_TRUE(state->cv.wait_for(lock, 2s, [&]() { return state->shutdownEntered; }));
+	}
+	manager.StartPk();
+	{
+		std::lock_guard lock(state->mutex);
+		EXPECT_EQ(state->factoryCalls, 1u);
+		EXPECT_EQ(state->starts, 1u);
+		EXPECT_EQ(state->callbackCalls, 1u);
+		state->allowShutdown = true;
+	}
+	state->cv.notify_all();
+	EXPECT_EQ(stop.wait_for(2s), std::future_status::ready);
+	stop.get();
+	EXPECT_FALSE(manager.Status().running);
+	manager.StartPk();
+	EXPECT_EQ(state->factoryCalls, 1u);
+}
+
+TEST_F(BotManagerTest, StopPublishesTerminalStateWhenTimerShutdownThrows)
+{
+	BotManager manager(*_app,
+		[](std::chrono::milliseconds, std::function<void()>)
+		{ return std::make_unique<ThrowingShutdownBotTimer>(); });
+	manager.StartPk();
+	EXPECT_NO_THROW(manager.Stop());
+	EXPECT_FALSE(manager.Status().running);
+	EXPECT_NO_THROW(manager.Stop());
 }
 
 } // namespace

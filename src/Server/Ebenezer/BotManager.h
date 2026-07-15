@@ -10,10 +10,10 @@
 
 #include <chrono>
 #include <cstddef>
+#include <condition_variable>
+#include <functional>
 #include <memory>
 #include <mutex>
-
-class TimerThread;
 
 namespace Ebenezer
 {
@@ -29,10 +29,22 @@ struct BotStatus
 	bool running = false;
 };
 
+class IBotTimer
+{
+public:
+	virtual ~IBotTimer() = default;
+	virtual void Start() = 0;
+	virtual void Shutdown() = 0;
+};
+
+using BotTimerFactory = std::function<std::unique_ptr<IBotTimer>(
+	std::chrono::milliseconds, std::function<void()>)>;
+
 class BotManager
 {
 public:
 	explicit BotManager(EbenezerApp& app);
+	BotManager(EbenezerApp& app, BotTimerFactory timerFactory);
 	~BotManager();
 	int Spawn(const BotSpawnRequest& request);
 	size_t RemoveAll();
@@ -43,14 +55,28 @@ public:
 	std::shared_ptr<CUser> FindUser(int userId) const;
 
 private:
+	enum class Lifecycle
+	{
+		Idle,
+		Running,
+		Stopping,
+		Shutdown
+	};
+
 	void TickBot(const std::shared_ptr<CBotUser>& bot, std::chrono::steady_clock::time_point now);
 
 	EbenezerApp& _app;
 	BotTargetSelector _selector;
 	BotBrain _brain;
 	BotCommandFacade _commands;
-	mutable std::mutex _timerMutex;
-	std::unique_ptr<TimerThread> _timer;
+	// Lock order: _operationMutex is outermost. Registry methods take and release their own
+	// internal lock; an operation must never retain a registry lock while calling region code.
+	mutable std::mutex _operationMutex;
+	mutable std::mutex _lifecycleMutex;
+	std::condition_variable _lifecycleCv;
+	Lifecycle _lifecycle = Lifecycle::Idle;
+	BotTimerFactory _timerFactory;
+	std::unique_ptr<IBotTimer> _timer;
 };
 } // namespace Ebenezer
 
