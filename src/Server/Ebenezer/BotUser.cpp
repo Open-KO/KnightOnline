@@ -80,6 +80,9 @@ bool CBotUser::InitializeBot(const BotSpawnRequest& request)
 	m_pUserData->m_curx       = request.spawn.x;
 	m_pUserData->m_cury       = request.spawn.y;
 	m_pUserData->m_curz       = request.spawn.z;
+	m_fWill_x                 = request.spawn.x;
+	m_fWill_y                 = request.spawn.y;
+	m_fWill_z                 = request.spawn.z;
 	m_iZoneIndex              = static_cast<int16_t>(zoneIndex);
 	m_RegionX                 = static_cast<int16_t>(request.spawn.x / VIEW_DISTANCE);
 	m_RegionZ                 = static_cast<int16_t>(request.spawn.z / VIEW_DISTANCE);

@@ -156,6 +156,9 @@
   <ItemGroup>
     <ClCompile Include="AISocket.cpp" />
     <ClCompile Include="BotBrain.cpp" />
+    <ClCompile Include="BotCommandFacade.cpp" />
+    <ClCompile Include="BotManager.cpp" />
+    <ClCompile Include="BotMovement.cpp" />
     <ClCompile Include="BotRegistry.cpp" />
     <ClCompile Include="BotTargetSelector.cpp" />
     <ClCompile Include="BotUser.cpp" />
@@ -188,6 +191,9 @@
     <ClInclude Include="..\..\shared\_USER_DATA.h" />
     <ClInclude Include="AISocket.h" />
     <ClInclude Include="BotBrain.h" />
+    <ClInclude Include="BotCommandFacade.h" />
+    <ClInclude Include="BotManager.h" />
+    <ClInclude Include="BotMovement.h" />
     <ClInclude Include="BotRegistry.h" />
     <ClInclude Include="BotTargetSelector.h" />
     <ClInclude Include="BotTypes.h" />

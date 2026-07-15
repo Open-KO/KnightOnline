@@ -17,6 +17,15 @@
     <ClCompile Include="BotBrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BotCommandFacade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BotManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BotMovement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="BotRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -98,6 +107,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BotBrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotCommandFacade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotMovement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BotRegistry.h">

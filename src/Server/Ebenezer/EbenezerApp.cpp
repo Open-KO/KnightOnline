@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "EbenezerApp.h"
+#include "BotManager.h"
 #include "EbenezerLogger.h"
 #include "EbenezerReadQueueThread.h"
 #include "OperationMessage.h"
@@ -153,10 +154,17 @@ EbenezerApp::EbenezerApp(EbenezerLogger& logger) :
 		6min, std::bind(&EbenezerApp::WritePacketLog, this));
 
 	_readQueueThread = std::make_unique<EbenezerReadQueueThread>();
+	_botManager      = std::make_unique<BotManager>(*this);
 }
 
 EbenezerApp::~EbenezerApp()
 {
+	if (_botManager != nullptr)
+	{
+		_botManager->Stop();
+		_botManager->RemoveAll();
+	}
+
 	spdlog::info("EbenezerApp::~EbenezerApp: Shutting down, releasing resources.");
 
 	// wait for all of these threads to be fully shut down.
@@ -242,6 +250,16 @@ EbenezerApp::~EbenezerApp()
 	spdlog::info("EbenezerApp::~EbenezerApp: All resources safely released.");
 
 	ConnectionManager::Destroy();
+}
+
+BotManager& EbenezerApp::GetBotManager()
+{
+	return *_botManager;
+}
+
+const BotManager& EbenezerApp::GetBotManager() const
+{
+	return *_botManager;
 }
 
 bool EbenezerApp::OnStart()

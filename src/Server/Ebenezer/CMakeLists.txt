@@ -6,6 +6,12 @@ add_library(Ebenezer.Core
   AISocket.h
   BotBrain.cpp
   BotBrain.h
+  BotCommandFacade.cpp
+  BotCommandFacade.h
+  BotManager.cpp
+  BotManager.h
+  BotMovement.cpp
+  BotMovement.h
   BotRegistry.cpp
   BotRegistry.h
   BotTargetSelector.cpp

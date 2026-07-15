@@ -22,6 +22,7 @@ public:
 		m_fUnitDist   = unitDistance;
 
 		const float worldWidth = (mapSize - 1) * unitDistance;
+		m_N3ShapeMgr.Create(worldWidth, worldWidth);
 		m_nXRegion             = (int) (worldWidth / VIEW_DISTANCE) + 1;
 		m_nZRegion             = (int) (worldWidth / VIEW_DISTANCE) + 1;
 

@@ -68,6 +68,7 @@ enum class NameType : uint8_t
 };
 
 class CUser;
+class BotManager;
 class EbenezerLogger;
 class EbenezerApp : public AppThread
 {
@@ -212,6 +213,9 @@ public:
 	{
 		return _botRegistry;
 	}
+
+	BotManager& GetBotManager();
+	const BotManager& GetBotManager() const;
 
 	inline std::shared_ptr<CUser> GetUserPtrUnchecked(int socketId) const
 	{
@@ -387,6 +391,7 @@ protected:
 	bool OnStart() override;
 
 private:
+	std::unique_ptr<BotManager> _botManager;
 	std::unique_ptr<TimerThread> _gameTimeThread;
 	std::unique_ptr<TimerThread> _smqHeartbeatThread;
 	std::unique_ptr<TimerThread> _aliveTimeThread;
