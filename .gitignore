@@ -52,6 +52,7 @@ warfare_config.h
 server_config.h
 *.idea
 *.txt
+/.superpowers/
 last-build-states/
 .env
 
