@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="BotCapacity_test.cpp" />
     <ClCompile Include="BotRegistry_test.cpp" />
+    <ClCompile Include="BotUserIntegration_test.cpp" />
     <ClCompile Include="EventLogic_test.cpp" />
     <ClCompile Include="ItemExchange_test.cpp" />
     <ClCompile Include="data\ItemExchange_test_data.h">

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "BotRegistry.h"
 #include "EbenezerSocketManager.h"
 #include "Map.h"
 #include "Define.h"
@@ -200,9 +201,16 @@ public:
 
 	std::shared_ptr<CUser> GetUserPtr(const char* userid, NameType type);
 
-	inline std::shared_ptr<CUser> GetUserPtr(int socketId) const
+	std::shared_ptr<CUser> GetUserPtr(int userId) const;
+
+	BotRegistry& GetBotRegistry()
 	{
-		return _serverSocketManager.GetUser(socketId);
+		return _botRegistry;
+	}
+
+	const BotRegistry& GetBotRegistry() const
+	{
+		return _botRegistry;
 	}
 
 	inline std::shared_ptr<CUser> GetUserPtrUnchecked(int socketId) const
@@ -215,15 +223,13 @@ public:
 		return _serverSocketManager.GetSocketCount();
 	}
 
-	inline bool IsValidUserId(int socketId) const
-	{
-		return _serverSocketManager.IsValidSocketId(socketId);
-	}
+	bool IsValidUserId(int userId) const;
 
 	EbenezerApp(EbenezerLogger& logger);
 	~EbenezerApp() override;
 
 	EbenezerSocketManager _serverSocketManager;
+	BotRegistry _botRegistry;
 	TcpClientSocketManager _aiSocketManager;
 
 	SharedMemoryQueue m_LoggerSendQueue;

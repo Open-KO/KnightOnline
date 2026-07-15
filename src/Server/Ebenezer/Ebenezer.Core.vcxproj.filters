@@ -17,6 +17,9 @@
     <ClCompile Include="BotRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BotUser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="EVENT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -89,6 +92,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BotRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotUser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Define.h">

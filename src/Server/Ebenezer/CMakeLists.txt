@@ -6,6 +6,9 @@ add_library(Ebenezer.Core
   AISocket.h
   BotRegistry.cpp
   BotRegistry.h
+  BotTypes.h
+  BotUser.cpp
+  BotUser.h
   db_resources.h
   Define.h
   Ebenezer.cpp

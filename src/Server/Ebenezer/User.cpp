@@ -1720,9 +1720,6 @@ void CUser::Attack(char* pBuf)
 	// USER
 	if (tid < NPC_BAND)
 	{
-		if (!_socketManager->IsValidSocketId(tid))
-			return;
-
 		pTUser = m_pMain->GetUserPtr(tid);
 		if (pTUser == nullptr || pTUser->m_bResHpType == USER_DEAD
 			|| pTUser->m_bAbnormalType == ABNORMAL_BLINKING

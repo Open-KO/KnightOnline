@@ -549,6 +549,19 @@ std::shared_ptr<CUser> EbenezerApp::GetUserPtr(const char* userid, NameType type
 	return nullptr;
 }
 
+std::shared_ptr<CUser> EbenezerApp::GetUserPtr(int userId) const
+{
+	if (_serverSocketManager.IsValidSocketId(userId))
+		return _serverSocketManager.GetUser(userId);
+
+	return _botRegistry.Get(userId);
+}
+
+bool EbenezerApp::IsValidUserId(int userId) const
+{
+	return GetUserPtr(userId) != nullptr;
+}
+
 // sungyong 2002.05.22
 bool EbenezerApp::AIServerConnect()
 {
