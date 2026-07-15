@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="BotCapacity_test.cpp" />
+    <ClCompile Include="BotRegistry_test.cpp" />
     <ClCompile Include="EventLogic_test.cpp" />
     <ClCompile Include="ItemExchange_test.cpp" />
     <ClCompile Include="data\ItemExchange_test_data.h">

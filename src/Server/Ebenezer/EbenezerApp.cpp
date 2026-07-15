@@ -268,7 +268,7 @@ bool EbenezerApp::OnStart()
 	_regionLogger            = spdlog::get(std::string(logger::EbenezerRegion));
 	_eventLogger             = spdlog::get(std::string(logger::EbenezerEvent));
 
-	_serverSocketManager.Init(MAX_USER, 4);
+	_serverSocketManager.Init(MAX_SOCKET_USER, 4);
 	_serverSocketManager.AllocateSockets<CUser>();
 
 	_aiSocketManager.Init(CLIENT_SOCKSIZE, 1);

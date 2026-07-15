@@ -14,6 +14,9 @@
     <ClCompile Include="AISocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BotRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="EVENT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,6 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AISocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Define.h">

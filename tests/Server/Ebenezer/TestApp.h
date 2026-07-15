@@ -18,7 +18,7 @@ public:
 	{
 		spdlog::set_level(spdlog::level::off);
 
-		InitSocketManager(Ebenezer::MAX_USER);
+		InitSocketManager(Ebenezer::MAX_SOCKET_USER);
 	}
 
 	void InitSocketManager(int serverSocketCount)

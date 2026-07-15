@@ -4,6 +4,8 @@ set(EBENEZER_VS_QUESTS_DIR "${OPENKO_SERVER_QUESTS_SRC_DIR}")
 add_library(Ebenezer.Core
   AISocket.cpp
   AISocket.h
+  BotRegistry.cpp
+  BotRegistry.h
   db_resources.h
   Define.h
   Ebenezer.cpp

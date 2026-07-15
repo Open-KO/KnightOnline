@@ -8,7 +8,11 @@
 namespace Ebenezer
 {
 
-inline constexpr int MAX_USER              = 3000;
+inline constexpr int MAX_SOCKET_USER       = 3000;
+inline constexpr int MAX_BOT_USER          = 500;
+inline constexpr int BOT_USER_ID_MIN       = MAX_SOCKET_USER;
+inline constexpr int MAX_USER              = MAX_SOCKET_USER + MAX_BOT_USER;
+inline constexpr int BOT_USER_ID_MAX       = MAX_USER - 1;
 
 inline constexpr int _LISTEN_PORT          = 15000;
 inline constexpr int _UDP_PORT             = 8888;
