@@ -14,7 +14,14 @@ function Get-OdbcDsnPropertyValue {
         [Parameter(Mandatory)][string] $Name
     )
 
-    foreach ($attribute in @($Dsn.Attribute)) {
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    foreach ($propertyName in @('Attribute','PropertyValue')) {
+        $property = $Dsn.PSObject.Properties[$propertyName]
+        if ($null -eq $property) { continue }
+        foreach ($value in @($property.Value)) { $candidates.Add($value) }
+    }
+
+    foreach ($attribute in $candidates) {
         if ($null -eq $attribute) { continue }
 
         $keywordProperty = $attribute.PSObject.Properties['Keyword']
@@ -25,7 +32,7 @@ function Get-OdbcDsnPropertyValue {
 
         $text = [string]$attribute
         if ($text -match '^\s*([^=]+)=(.*)$' -and $Matches[1].Trim() -ieq $Name) {
-            return $Matches[2]
+            return $Matches[2].Trim()
         }
     }
 
