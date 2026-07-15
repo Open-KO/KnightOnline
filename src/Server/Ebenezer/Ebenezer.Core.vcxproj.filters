@@ -14,7 +14,13 @@
     <ClCompile Include="AISocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BotBrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="BotRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BotTargetSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BotUser.cpp">
@@ -91,7 +97,13 @@
     <ClInclude Include="AISocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BotBrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="BotRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotTargetSelector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BotTypes.h">

@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BotBrain_test.cpp" />
     <ClCompile Include="BotCapacity_test.cpp" />
     <ClCompile Include="BotRegistry_test.cpp" />
+    <ClCompile Include="BotTargetSelector_test.cpp" />
     <ClCompile Include="BotUserIntegration_test.cpp" />
     <ClCompile Include="EventLogic_test.cpp" />
     <ClCompile Include="data\ItemExchange_test_data.h" />
