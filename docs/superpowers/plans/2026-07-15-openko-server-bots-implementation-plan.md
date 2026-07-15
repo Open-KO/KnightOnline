@@ -114,7 +114,7 @@ if ($null -eq $sql) { $failures.Add('SQL Server Express instance SQLEXPRESS is m
 $dsn = Get-OdbcDsn -Name 'KN_online' -DsnType User -Platform '64-bit' -ErrorAction SilentlyContinue
 if ($null -eq $dsn) { $failures.Add('64-bit user DSN KN_online is missing.') }
 
-foreach ($relative in @('assets\Client\Server.ini.default','deps\googletest\CMakeLists.txt','deps\db-models\CMakeLists.txt')) {
+foreach ($relative in @('assets\Client\Server.ini.default','deps\googletest\CMakeLists.txt','deps\db-models\Ebenezer\model\EbenezerModel.h')) {
     if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $relative))) {
         $failures.Add(('Submodule content missing: {0}' -f $relative))
     }
@@ -160,7 +160,7 @@ cmd /c .\build_scripts\sync_submodules.cmd Debug x64
 git submodule update --init --recursive
 ~~~
 
-Expected: assets\Client\Server.ini.default, deps\googletest\CMakeLists.txt, and deps\db-models\CMakeLists.txt exist.
+Expected: assets\Client\Server.ini.default, deps\googletest\CMakeLists.txt, and deps\db-models\Ebenezer\model\EbenezerModel.h exist.
 
 - [ ] **Step 6: Write the database setup script**
 

@@ -42,10 +42,21 @@ if (-not (Test-Path -LiteralPath $vswhere)) {
     }
 }
 
-if (-not (Get-Command go -ErrorAction SilentlyContinue)) {
+$goCommand = Get-Command go -ErrorAction SilentlyContinue
+if ($null -eq $goCommand -and $env:ProgramFiles) {
+    $standardGo = Join-Path $env:ProgramFiles 'Go\bin\go.exe'
+    if (Test-Path -LiteralPath $standardGo) { $goCommand = $standardGo }
+}
+
+if ($null -eq $goCommand) {
     $failures.Add('Go 1.24+ is missing.')
-} elseif ((go version) -notmatch 'go1\.(2[4-9]|[3-9][0-9])') {
-    $failures.Add(('Go is too old: {0}' -f (go version)))
+} else {
+    $goVersion = & $goCommand version
+    if ($LASTEXITCODE -ne 0) {
+        $failures.Add('Go version check failed.')
+    } elseif ($goVersion -notmatch 'go1\.(2[4-9]|[3-9][0-9])') {
+        $failures.Add(('Go is too old: {0}' -f $goVersion))
+    }
 }
 
 $sql = Get-Service -Name 'MSSQL$SQLEXPRESS' -ErrorAction SilentlyContinue
@@ -73,7 +84,7 @@ if ($null -eq $dsn) {
     }
 }
 
-foreach ($relative in @('assets\Client\Server.ini.default','deps\googletest\CMakeLists.txt','deps\db-models\CMakeLists.txt')) {
+foreach ($relative in @('assets\Client\Server.ini.default','deps\googletest\CMakeLists.txt','deps\db-models\Ebenezer\model\EbenezerModel.h')) {
     if (-not (Test-Path -LiteralPath (Join-Path $repoRoot $relative))) {
         $failures.Add(('Submodule content missing: {0}' -f $relative))
     }

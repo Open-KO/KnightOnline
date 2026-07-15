@@ -13,6 +13,33 @@ function ConvertTo-YamlDoubleQuotedScalar {
     return '"' + $Value.Replace('\', '\\').Replace('"', '\"') + '"'
 }
 
+function Get-GitBashPath {
+    $candidates = [System.Collections.Generic.List[string]]::new()
+    if ($env:ProgramFiles) { $candidates.Add((Join-Path $env:ProgramFiles 'Git\bin\bash.exe')) }
+    if (${env:ProgramFiles(x86)}) { $candidates.Add((Join-Path ${env:ProgramFiles(x86)} 'Git\bin\bash.exe')) }
+    if ($env:LOCALAPPDATA) { $candidates.Add((Join-Path $env:LOCALAPPDATA 'Programs\Git\bin\bash.exe')) }
+
+    foreach ($candidate in $candidates) {
+        if (Test-Path -LiteralPath $candidate) { return $candidate }
+    }
+
+    throw 'Git Bash was not found in a standard Git for Windows installation.'
+}
+
+function Invoke-GitBashSubmodule {
+    param(
+        [Parameter(Mandatory)][string] $RepositoryPath,
+        [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string[]] $Arguments
+    )
+
+    $gitBash = Get-GitBashPath
+    $bashCommand = 'repo_path=$(cygpath -u -- "$1") || exit $?; shift; git -C "$repo_path" submodule "$@"'
+    & $gitBash -lc $bashCommand -- $RepositoryPath @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw ('Git Bash git submodule {0} failed with exit code {1}.' -f ($Arguments -join ' '), $LASTEXITCODE)
+    }
+}
+
 $runtime = Join-Path $PSScriptRoot 'runtime'
 $util = Join-Path $runtime 'kodb-util'
 New-Item -ItemType Directory -Force -Path $runtime | Out-Null
@@ -20,8 +47,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $util '.git'))) {
     git clone https://github.com/Open-KO/kodb-util.git $util
     if ($LASTEXITCODE -ne 0) { throw 'git clone failed while fetching Open-KO/kodb-util.' }
 }
-git -C $util submodule update --init --recursive
-if ($LASTEXITCODE -ne 0) { throw 'git submodule update failed for kodb-util.' }
+Invoke-GitBashSubmodule -RepositoryPath $util -Arguments @('update','--init','--recursive')
 
 $configPath = Join-Path $util 'kodb-util-config.yaml'
 $gameDbPasswordYaml = ConvertTo-YamlDoubleQuotedScalar $GameDbPassword
