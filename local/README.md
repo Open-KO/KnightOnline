@@ -13,7 +13,6 @@ This setup is for single-machine development only. Configure every game and clie
 Initialize dependencies from a normal user PowerShell:
 
 ```powershell
-cmd /c .\build_scripts\sync_submodules.cmd Debug x64
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\local\Initialize-Submodules.ps1
 ```
 
