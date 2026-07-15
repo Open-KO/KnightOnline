@@ -44,19 +44,28 @@ function Apply-IdempotentGitPatch {
     }
 }
 
+function ConvertTo-KodbUtilSafeObservation {
+    param(
+        [Parameter(Mandatory)][AllowEmptyString()][string] $RawLine,
+        [Parameter(Mandatory)][string] $Password
+    )
+
+    $hasFailureMarker = $false
+    foreach ($marker in @('Recovered from panic','error executing batch')) {
+        if ($RawLine.IndexOf($marker, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) { $hasFailureMarker = $true }
+    }
+    $safeLine = $RawLine.Replace($Password, '[REDACTED]')
+    return [pscustomobject]@{ HasFailureMarker = $hasFailureMarker; SafeLine = $safeLine }
+}
+
 function Assert-KodbUtilImportSucceeded {
     param(
         [Parameter(Mandatory)][int] $ExitCode,
-        [Parameter(Mandatory)][AllowEmptyCollection()][string[]] $OutputLines
+        [Parameter(Mandatory)][bool] $FailureMarkerDetected
     )
 
     if ($ExitCode -ne 0) { throw ('kodb-util database clean/import exited with code {0}.' -f $ExitCode) }
-    $outputText = $OutputLines -join [Environment]::NewLine
-    foreach ($marker in @('Recovered from panic','error executing batch')) {
-        if ($outputText.IndexOf($marker, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
-            throw ('kodb-util reported a false-success marker: {0}' -f $marker)
-        }
-    }
+    if ($FailureMarkerDetected) { throw 'kodb-util reported a false-success failure marker.' }
 }
 
 function Assert-KnOnlineObjectInventory {
@@ -71,7 +80,7 @@ function Assert-KnOnlineObjectInventory {
     foreach ($table in @('USERDATA','ITEM','MAGIC')) {
         if ($Tables -notcontains $table) { $missing.Add(('table:{0}' -f $table)) }
     }
-    foreach ($procedure in @('ACCOUNT_LOGIN','LOAD_USER_DATA','UPDATE_USER_DATA','CHECK_KNIGHTS')) {
+    foreach ($procedure in @('ACCOUNT_LOGIN','LOAD_USER_DATA','UPDATE_USER_DATA','CHECK_KNIGHTS','EDITER_KNIGHTS')) {
         if ($Procedures -notcontains $procedure) { $missing.Add(('procedure:{0}' -f $procedure)) }
     }
     if ($missing.Count -gt 0) { throw ('KN_online import validation failed; missing {0}.' -f ($missing -join ', ')) }
@@ -90,7 +99,7 @@ function Assert-KnOnlineDatabaseReady {
         $reader = $command.ExecuteReader()
         try { while ($reader.Read()) { $tables.Add([string]$reader.GetString(0)) } } finally { $reader.Close() }
 
-        $command.CommandText = "SELECT [name] FROM sys.procedures WHERE [name] IN (N'ACCOUNT_LOGIN',N'LOAD_USER_DATA',N'UPDATE_USER_DATA',N'CHECK_KNIGHTS')"
+        $command.CommandText = "SELECT [name] FROM sys.procedures WHERE [name] IN (N'ACCOUNT_LOGIN',N'LOAD_USER_DATA',N'UPDATE_USER_DATA',N'CHECK_KNIGHTS',N'EDITER_KNIGHTS')"
         $procedures = [System.Collections.Generic.List[string]]::new()
         $reader = $command.ExecuteReader()
         try { while ($reader.Read()) { $procedures.Add([string]$reader.GetString(0)) } } finally { $reader.Close() }
@@ -159,19 +168,21 @@ try {
     & $goExecutable mod download
     if ($LASTEXITCODE -ne 0) { throw 'go mod download failed for kodb-util.' }
     $importOutput = [System.Collections.Generic.List[string]]::new()
+    $failureMarkerDetected = $false
     $previousErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
         & $goExecutable run kodb-util.go -clean -import 2>&1 | ForEach-Object {
-            $safeLine = ([string]$_).Replace($GameDbPassword, '[REDACTED]')
-            $importOutput.Add($safeLine)
-            Write-Host $safeLine
+            $observation = ConvertTo-KodbUtilSafeObservation -RawLine ([string]$_) -Password $GameDbPassword
+            if ($observation.HasFailureMarker) { $failureMarkerDetected = $true }
+            $importOutput.Add([string]$observation.SafeLine)
+            Write-Host $observation.SafeLine
         }
         $importExitCode = $LASTEXITCODE
     } finally {
         $ErrorActionPreference = $previousErrorActionPreference
     }
-    Assert-KodbUtilImportSucceeded -ExitCode $importExitCode -OutputLines $importOutput.ToArray()
+    Assert-KodbUtilImportSucceeded -ExitCode $importExitCode -FailureMarkerDetected $failureMarkerDetected
 } finally {
     Pop-Location
 }
