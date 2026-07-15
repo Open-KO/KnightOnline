@@ -52,6 +52,21 @@ bool BotMovement::Move(CBotUser& source, const BotSpawnPoint& destination, int16
 		|| !std::isfinite(destination.z) || destination.x < 0.0f || destination.z < 0.0f)
 		return false;
 
+	const float originX = std::isfinite(source.m_fWill_x) ? source.m_fWill_x
+														: source.m_pUserData->m_curx;
+	const float originY = std::isfinite(source.m_fWill_y) ? source.m_fWill_y
+														: source.m_pUserData->m_cury;
+	const float originZ = std::isfinite(source.m_fWill_z) ? source.m_fWill_z
+														: source.m_pUserData->m_curz;
+	if (!std::isfinite(originX) || !std::isfinite(originY) || !std::isfinite(originZ))
+		return false;
+
+	const float movementDistance = std::hypot(destination.x - originX, destination.z - originZ);
+	// NextStep uses float arithmetic; allow only a sub-millimetre accumulation tolerance.
+	constexpr float MAX_STEP_EPSILON = 0.001f;
+	if (!std::isfinite(movementDistance) || movementDistance > 1.5f + MAX_STEP_EPSILON)
+		return false;
+
 	C3DMap* map = source.m_pMain == nullptr ? nullptr
 											: source.m_pMain->GetMapByIndex(source.m_iZoneIndex);
 	if (map == nullptr || !map->IsValidPosition(destination.x, destination.z))
@@ -63,6 +78,12 @@ bool BotMovement::Move(CBotUser& source, const BotSpawnPoint& destination, int16
 		|| destination.y * scale < std::numeric_limits<int16_t>::min()
 		|| destination.y * scale > std::numeric_limits<int16_t>::max())
 		return false;
+
+	// MoveProcess advances current from the previous pending endpoint. Repair only invalid pending
+	// coordinates from the finite authoritative fallback before entering that legacy pipeline.
+	source.m_fWill_x = originX;
+	source.m_fWill_y = originY;
+	source.m_fWill_z = originZ;
 
 	char movement[16] {};
 	int index = 0;

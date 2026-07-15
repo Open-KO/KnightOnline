@@ -34,7 +34,8 @@ class IBotTimer
 public:
 	virtual ~IBotTimer() = default;
 	virtual void Start() = 0;
-	virtual void Shutdown() = 0;
+	// Postcondition on return: the timer is stopped and every callback has completed/joined.
+	virtual void Shutdown() noexcept = 0;
 };
 
 using BotTimerFactory = std::function<std::unique_ptr<IBotTimer>(
@@ -45,11 +46,11 @@ class BotManager
 public:
 	explicit BotManager(EbenezerApp& app);
 	BotManager(EbenezerApp& app, BotTimerFactory timerFactory);
-	~BotManager();
+	~BotManager() noexcept;
 	int Spawn(const BotSpawnRequest& request);
 	size_t RemoveAll();
 	void StartPk();
-	void Stop();
+	void Stop() noexcept;
 	void Tick(std::chrono::steady_clock::time_point now);
 	BotStatus Status() const;
 	std::shared_ptr<CUser> FindUser(int userId) const;

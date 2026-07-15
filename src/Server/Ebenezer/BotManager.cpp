@@ -28,8 +28,10 @@ public:
 		_timer.start();
 	}
 
-	void Shutdown() override
+	void Shutdown() noexcept override
 	{
+		// Thread::shutdown() signals and joins by default. If its join ever reports an unexpected
+		// system error, noexcept terminates rather than returning with a live callback.
 		_timer.shutdown();
 	}
 
@@ -61,7 +63,7 @@ BotManager::BotManager(EbenezerApp& app, BotTimerFactory timerFactory) :
 		throw std::invalid_argument("BotManager requires a timer factory");
 }
 
-BotManager::~BotManager()
+BotManager::~BotManager() noexcept
 {
 	Stop();
 	RemoveAll();
@@ -140,7 +142,7 @@ void BotManager::StartPk()
 	}
 }
 
-void BotManager::Stop()
+void BotManager::Stop() noexcept
 {
 	std::unique_ptr<IBotTimer> timer;
 	{
@@ -162,19 +164,8 @@ void BotManager::Stop()
 		timer = std::move(_timer);
 	}
 
-	try
-	{
-		if (timer != nullptr)
-			timer->Shutdown();
-	}
-	catch (const std::exception& ex)
-	{
-		spdlog::error("BotManager::Stop: timer shutdown failed: {}", ex.what());
-	}
-	catch (...)
-	{
-		spdlog::error("BotManager::Stop: timer shutdown failed with unknown error");
-	}
+	if (timer != nullptr)
+		timer->Shutdown();
 	{
 		std::lock_guard lock(_lifecycleMutex);
 		_lifecycle = Lifecycle::Shutdown;

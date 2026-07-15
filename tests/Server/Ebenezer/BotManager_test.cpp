@@ -21,6 +21,7 @@
 #include <limits>
 #include <memory>
 #include <mutex>
+#include <thread>
 #include <vector>
 
 using namespace Ebenezer;
@@ -29,49 +30,89 @@ using namespace std::chrono_literals;
 namespace
 {
 
-struct BlockingTimerState
+static_assert(noexcept(std::declval<IBotTimer&>().Shutdown()));
+static_assert(noexcept(std::declval<BotManager&>().Stop()));
+
+class ScopeRelease
+{
+public:
+	explicit ScopeRelease(std::function<void()> release) : _release(std::move(release)) {}
+	~ScopeRelease()
+	{
+		Release();
+	}
+	void Release()
+	{
+		if (_release)
+		{
+			auto release = std::move(_release);
+			release();
+		}
+	}
+
+private:
+	std::function<void()> _release;
+};
+
+struct LiveTimerState
 {
 	std::mutex mutex;
 	std::condition_variable cv;
+	bool callbackEntered = false;
+	bool callbackFinished = false;
 	bool shutdownEntered = false;
-	bool allowShutdown = false;
+	bool releaseCallback = false;
 	size_t factoryCalls = 0;
 	size_t starts = 0;
 	size_t callbackCalls = 0;
 	std::function<void()> callback;
 };
 
-class BlockingBotTimer final : public IBotTimer
+class LiveCallbackBotTimer final : public IBotTimer
 {
 public:
-	explicit BlockingBotTimer(std::shared_ptr<BlockingTimerState> state) : _state(std::move(state)) {}
+	explicit LiveCallbackBotTimer(std::shared_ptr<LiveTimerState> state) : _state(std::move(state)) {}
 
 	void Start() override
 	{
-		std::lock_guard lock(_state->mutex);
-		++_state->starts;
+		{
+			std::lock_guard lock(_state->mutex);
+			++_state->starts;
+		}
+		_thread = std::thread([this]()
+		{
+			std::function<void()> callback;
+			{
+				std::unique_lock lock(_state->mutex);
+				++_state->callbackCalls;
+				_state->callbackEntered = true;
+				_state->cv.notify_all();
+				_state->cv.wait(lock, [this]() { return _state->releaseCallback; });
+				callback = _state->callback;
+			}
+			callback();
+			{
+				std::lock_guard lock(_state->mutex);
+				_state->callbackFinished = true;
+			}
+			_state->cv.notify_all();
+		});
 	}
 
-	void Shutdown() override
+	void Shutdown() noexcept override
 	{
-		std::unique_lock lock(_state->mutex);
-		_state->shutdownEntered = true;
+		{
+			std::lock_guard lock(_state->mutex);
+			_state->shutdownEntered = true;
+		}
 		_state->cv.notify_all();
-		_state->cv.wait(lock, [this]() { return _state->allowShutdown; });
+		if (_thread.joinable())
+			_thread.join();
 	}
 
 private:
-	std::shared_ptr<BlockingTimerState> _state;
-};
-
-class ThrowingShutdownBotTimer final : public IBotTimer
-{
-public:
-	void Start() override {}
-	void Shutdown() override
-	{
-		throw std::runtime_error("timer shutdown failure");
-	}
+	std::shared_ptr<LiveTimerState> _state;
+	std::thread _thread;
 };
 
 class BotManagerTest : public testing::Test
@@ -351,7 +392,7 @@ TEST_F(BotManagerTest, MoveRejectsInvalidCoordinatesAndSerializesValidatedPacket
 	EXPECT_FLOAT_EQ(bot->m_fWill_x, originalX);
 	EXPECT_FLOAT_EQ(bot->m_fWill_z, originalZ);
 
-	EXPECT_TRUE(BotMovement::Move(*bot, { ZONE_FRONTIER, 123.5f, -2.0f, 125.5f }, 45));
+	EXPECT_TRUE(BotMovement::Move(*bot, { ZONE_FRONTIER, 121.0f, -2.0f, 121.0f }, 45));
 	char regionPacket[1024] {};
 	const int regionLength = observer->RegionPacketClear(regionPacket);
 	ASSERT_GT(regionLength, 0);
@@ -361,12 +402,55 @@ TEST_F(BotManagerTest, MoveRejectsInvalidCoordinatesAndSerializesValidatedPacket
 	EXPECT_EQ(GetShort(regionPacket, index), 12);
 	EXPECT_EQ(GetByte(regionPacket, index), WIZ_MOVE);
 	EXPECT_EQ(GetShort(regionPacket, index), bot->GetSocketID());
-	EXPECT_EQ(GetShort(regionPacket, index), 1235);
-	EXPECT_EQ(GetShort(regionPacket, index), 1255);
+	EXPECT_EQ(GetShort(regionPacket, index), 1210);
+	EXPECT_EQ(GetShort(regionPacket, index), 1210);
 	EXPECT_EQ(static_cast<int16_t>(GetShort(regionPacket, index)), -20);
 	EXPECT_EQ(GetShort(regionPacket, index), 45);
 	EXPECT_EQ(GetByte(regionPacket, index), 0);
 	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
+TEST_F(BotManagerTest, MoveRejectsOversizeDestinationWithoutMutationOrBroadcast)
+{
+	auto observer = _app->AddUser();
+	ASSERT_NE(observer, nullptr);
+	observer->m_pUserData->m_bZone = ZONE_FRONTIER;
+	observer->SetState(CONNECTION_STATE_GAMESTART);
+	ASSERT_TRUE(_map->Add(observer.get(), 2, 2));
+	observer->AddSendCallback([](const char*, int) {});
+	auto bot = Spawn("Bot_K_Oversize", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+	const float currentX = bot->m_pUserData->m_curx;
+	const float currentZ = bot->m_pUserData->m_curz;
+	const float pendingX = bot->m_fWill_x;
+	const float pendingZ = bot->m_fWill_z;
+	const int16_t regionX = bot->m_RegionX;
+	const int16_t regionZ = bot->m_RegionZ;
+
+	EXPECT_FALSE(BotMovement::Move(*bot, { ZONE_FRONTIER, 126.5f, 0.0f, 120.0f }, 45));
+	EXPECT_FLOAT_EQ(bot->m_pUserData->m_curx, currentX);
+	EXPECT_FLOAT_EQ(bot->m_pUserData->m_curz, currentZ);
+	EXPECT_FLOAT_EQ(bot->m_fWill_x, pendingX);
+	EXPECT_FLOAT_EQ(bot->m_fWill_z, pendingZ);
+	EXPECT_EQ(bot->m_RegionX, regionX);
+	EXPECT_EQ(bot->m_RegionZ, regionZ);
+	char regionPacket[64] {};
+	EXPECT_EQ(observer->RegionPacketClear(regionPacket), 0);
+	observer->SetState(CONNECTION_STATE_DISCONNECTED);
+}
+
+TEST_F(BotManagerTest, MoveFallsBackToFiniteCurrentPositionWhenPendingOriginIsInvalid)
+{
+	auto bot = Spawn("Bot_K_Origin", NATION_KARUS);
+	ASSERT_NE(bot, nullptr);
+	bot->m_fWill_x = std::numeric_limits<float>::quiet_NaN();
+	bot->m_fWill_z = std::numeric_limits<float>::infinity();
+
+	EXPECT_TRUE(BotMovement::Move(*bot, { ZONE_FRONTIER, 121.0f, 0.0f, 120.0f }, 45));
+	EXPECT_FLOAT_EQ(bot->m_pUserData->m_curx, 120.0f);
+	EXPECT_FLOAT_EQ(bot->m_pUserData->m_curz, 120.0f);
+	EXPECT_FLOAT_EQ(bot->m_fWill_x, 121.0f);
+	EXPECT_FLOAT_EQ(bot->m_fWill_z, 120.0f);
 }
 
 TEST_F(BotManagerTest, ZeroHpMarksDeadOnceAndSetsExactRespawnDeadline)
@@ -535,6 +619,17 @@ TEST_F(BotManagerTest, TickSerializesRemoveAllAndStatusAcrossRegionCallbacks)
 	std::condition_variable barrierCv;
 	bool callbackEntered = false;
 	bool releaseCallback = false;
+	std::future<void> tick;
+	std::future<size_t> remove;
+	std::future<BotStatus> status;
+	ScopeRelease releaseGuard([&]()
+	{
+		{
+			std::lock_guard lock(barrierMutex);
+			releaseCallback = true;
+		}
+		barrierCv.notify_all();
+	});
 	observer->AddSendCallback([&](const char*, int)
 	{
 		std::unique_lock lock(barrierMutex);
@@ -543,20 +638,42 @@ TEST_F(BotManagerTest, TickSerializesRemoveAllAndStatusAcrossRegionCallbacks)
 		barrierCv.wait(lock, [&]() { return releaseCallback; });
 	});
 
-	auto tick = std::async(std::launch::async, [&]() { _app->GetBotManager().Tick(_now); });
+	tick = std::async(std::launch::async, [&]() { _app->GetBotManager().Tick(_now); });
 	{
 		std::unique_lock lock(barrierMutex);
-		ASSERT_TRUE(barrierCv.wait_for(lock, 2s, [&]() { return callbackEntered; }));
+		const bool entered = barrierCv.wait_for(lock, 2s, [&]() { return callbackEntered; });
+		EXPECT_TRUE(entered);
+		if (!entered)
+		{
+			releaseGuard.Release();
+			return;
+		}
 	}
-	auto remove = std::async(std::launch::async, [&]() { return _app->GetBotManager().RemoveAll(); });
-	auto status = std::async(std::launch::async, [&]() { return _app->GetBotManager().Status(); });
+	std::promise<void> removeStartedPromise;
+	std::promise<void> statusStartedPromise;
+	auto removeStarted = removeStartedPromise.get_future();
+	auto statusStarted = statusStartedPromise.get_future();
+	remove = std::async(std::launch::async, [&]()
+	{
+		removeStartedPromise.set_value();
+		return _app->GetBotManager().RemoveAll();
+	});
+	status = std::async(std::launch::async, [&]()
+	{
+		statusStartedPromise.set_value();
+		return _app->GetBotManager().Status();
+	});
+	const bool workersStarted = removeStarted.wait_for(2s) == std::future_status::ready
+		&& statusStarted.wait_for(2s) == std::future_status::ready;
+	EXPECT_TRUE(workersStarted);
+	if (!workersStarted)
+	{
+		releaseGuard.Release();
+		return;
+	}
 	EXPECT_EQ(remove.wait_for(100ms), std::future_status::timeout);
 	EXPECT_EQ(status.wait_for(100ms), std::future_status::timeout);
-	{
-		std::lock_guard lock(barrierMutex);
-		releaseCallback = true;
-	}
-	barrierCv.notify_all();
+	releaseGuard.Release();
 	EXPECT_EQ(tick.wait_for(2s), std::future_status::ready);
 	EXPECT_EQ(remove.wait_for(2s), std::future_status::ready);
 	EXPECT_EQ(status.wait_for(2s), std::future_status::ready);
@@ -647,62 +764,74 @@ TEST_F(BotManagerTest, StartAndStopAreIdempotentAndDoNotAutoSpawn)
 	EXPECT_EQ(manager.Status().total, 0u);
 }
 
-TEST_F(BotManagerTest, StartPkCannotRestartWhileStopIsJoiningTimer)
+TEST_F(BotManagerTest, StopWaitsForLiveCallbackAndReturnsQuiescent)
 {
-	auto state = std::make_shared<BlockingTimerState>();
+	auto state = std::make_shared<LiveTimerState>();
 	BotTimerFactory factory = [state](std::chrono::milliseconds, std::function<void()> callback)
 	{
 		std::lock_guard lock(state->mutex);
 		++state->factoryCalls;
-		state->callback = [state, callback = std::move(callback)]()
-		{
-			{
-				std::lock_guard callbackLock(state->mutex);
-				++state->callbackCalls;
-			}
-			callback();
-		};
-		return std::make_unique<BlockingBotTimer>(state);
+		state->callback = std::move(callback);
+		return std::make_unique<LiveCallbackBotTimer>(state);
 	};
 	BotManager manager(*_app, std::move(factory));
 	manager.StartPk();
-	std::function<void()> firstCallback;
+	std::future<void> stop;
+	ScopeRelease releaseGuard([&]()
 	{
-		std::lock_guard lock(state->mutex);
-		firstCallback = state->callback;
-	}
-	ASSERT_TRUE(firstCallback);
-	firstCallback();
-	auto stop = std::async(std::launch::async, [&]() { manager.Stop(); });
+		{
+			std::lock_guard lock(state->mutex);
+			state->releaseCallback = true;
+		}
+		state->cv.notify_all();
+	});
 	{
 		std::unique_lock lock(state->mutex);
-		ASSERT_TRUE(state->cv.wait_for(lock, 2s, [&]() { return state->shutdownEntered; }));
+		const bool entered = state->cv.wait_for(lock, 2s, [&]() { return state->callbackEntered; });
+		EXPECT_TRUE(entered);
+		if (!entered)
+			return;
 	}
+	std::promise<void> stopStartedPromise;
+	auto stopStarted = stopStartedPromise.get_future();
+	stop = std::async(std::launch::async, [&]()
+	{
+		stopStartedPromise.set_value();
+		manager.Stop();
+	});
+	const bool stopWorkerStarted = stopStarted.wait_for(2s) == std::future_status::ready;
+	EXPECT_TRUE(stopWorkerStarted);
+	if (!stopWorkerStarted)
+		return;
+	{
+		std::unique_lock lock(state->mutex);
+		const bool shutdownEntered = state->cv.wait_for(
+			lock, 2s, [&]() { return state->shutdownEntered; });
+		EXPECT_TRUE(shutdownEntered);
+		if (!shutdownEntered)
+			return;
+	}
+	EXPECT_EQ(stop.wait_for(100ms), std::future_status::timeout);
 	manager.StartPk();
 	{
 		std::lock_guard lock(state->mutex);
 		EXPECT_EQ(state->factoryCalls, 1u);
 		EXPECT_EQ(state->starts, 1u);
 		EXPECT_EQ(state->callbackCalls, 1u);
-		state->allowShutdown = true;
 	}
-	state->cv.notify_all();
+	releaseGuard.Release();
 	EXPECT_EQ(stop.wait_for(2s), std::future_status::ready);
 	stop.get();
 	EXPECT_FALSE(manager.Status().running);
+	{
+		std::lock_guard lock(state->mutex);
+		EXPECT_TRUE(state->callbackFinished);
+		EXPECT_EQ(state->callbackCalls, 1u);
+	}
 	manager.StartPk();
+	std::lock_guard lock(state->mutex);
 	EXPECT_EQ(state->factoryCalls, 1u);
-}
-
-TEST_F(BotManagerTest, StopPublishesTerminalStateWhenTimerShutdownThrows)
-{
-	BotManager manager(*_app,
-		[](std::chrono::milliseconds, std::function<void()>)
-		{ return std::make_unique<ThrowingShutdownBotTimer>(); });
-	manager.StartPk();
-	EXPECT_NO_THROW(manager.Stop());
-	EXPECT_FALSE(manager.Status().running);
-	EXPECT_NO_THROW(manager.Stop());
+	EXPECT_EQ(state->callbackCalls, 1u);
 }
 
 } // namespace
