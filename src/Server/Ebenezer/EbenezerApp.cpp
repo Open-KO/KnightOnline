@@ -365,14 +365,17 @@ bool EbenezerApp::ValidateBotConfigZone()
 	return false;
 }
 
-bool EbenezerApp::SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t count)
+bool EbenezerApp::BuildBotBatchRequests(uint8_t nation, e_Class characterClass, size_t count,
+	std::vector<BotSpawnRequest>& requests) const
 {
+	const size_t initialRequestCount = requests.size();
 	if (count == 0 || count > MAX_BOT_USER || !IsSupportedBotClass(nation, characterClass)
-		|| count > static_cast<size_t>(MAX_BOT_USER) - _botRegistry.Size())
+		|| initialRequestCount > static_cast<size_t>(MAX_BOT_USER) - _botRegistry.Size()
+		|| count > static_cast<size_t>(MAX_BOT_USER) - _botRegistry.Size() - initialRequestCount)
 		return false;
 
 	C3DMap* map = GetMapByID(_botConfig.zoneId);
-	model::Home* home = m_HomeTableMap.GetData(nation);
+	const model::Home* home = m_HomeTableMap.GetData(nation);
 	if (map == nullptr || home == nullptr)
 		return false;
 
@@ -380,6 +383,8 @@ bool EbenezerApp::SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t c
 	for (const auto& entry : _botRegistry.Snapshot())
 		if (entry != nullptr && entry->m_pUserData != nullptr)
 			usedNames.insert(NormalizeBotToken(entry->m_pUserData->m_id));
+	for (const auto& request : requests)
+		usedNames.insert(NormalizeBotToken(request.name));
 	for (int socketId = 0; socketId < GetUserSocketCount(); ++socketId)
 	{
 		auto user = GetUserPtrUnchecked(socketId);
@@ -391,9 +396,9 @@ bool EbenezerApp::SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t c
 	const int maxOffsetX = std::clamp(static_cast<int>(home->FreeZoneLX), 0, 20);
 	const int maxOffsetZ = std::clamp(static_cast<int>(home->FreeZoneLZ), 0, 20);
 	const int positionCount = (maxOffsetX + 1) * (maxOffsetZ + 1);
-	std::vector<BotSpawnRequest> requests;
-	requests.reserve(count);
-	for (int nameIndex = 0; nameIndex < MAX_BOT_USER && requests.size() < count; ++nameIndex)
+	requests.reserve(initialRequestCount + count);
+	for (int nameIndex = 0;
+		nameIndex < MAX_BOT_USER && requests.size() < initialRequestCount + count; ++nameIndex)
 	{
 		const std::string name = fmt::format("Bot_{}_{:03}", nationMarker, nameIndex);
 		if (usedNames.contains(NormalizeBotToken(name)))
@@ -422,28 +427,41 @@ bool EbenezerApp::SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t c
 		usedNames.insert(NormalizeBotToken(name));
 	}
 
-	if (requests.size() != count)
+	return requests.size() == initialRequestCount + count;
+}
+
+bool EbenezerApp::SpawnBotBatch(uint8_t nation, e_Class characterClass, size_t count)
+{
+	std::vector<BotSpawnRequest> requests;
+	if (!BuildBotBatchRequests(nation, characterClass, count, requests))
 		return false;
 	return _botManager->SpawnBatch(requests).size() == count;
 }
 
 bool EbenezerApp::StartConfiguredBots()
 {
-	if (!_botConfig.enabled || !ValidateBotConfigZone() || _botManager->Status().total != 0)
+	if (!_botConfig.enabled || !ValidateBotConfigZone())
 		return false;
-	if (_botConfig.count == 0)
-		return true;
-
-	const size_t karusCount = (_botConfig.count + 1) / 2;
-	const size_t elmoradCount = _botConfig.count / 2;
-	const bool spawned = SpawnBotBatch(NATION_KARUS, CLASS_KA_WARRIOR, karusCount)
-		&& (elmoradCount == 0
-			|| SpawnBotBatch(NATION_ELMORAD, CLASS_EL_WARRIOR, elmoradCount));
-	if (!spawned)
+	if (_botConfig.count != 10)
 	{
-		_botManager->RemoveAll();
+		spdlog::info("EbenezerApp::StartConfiguredBots: Count={} is valid but automatic startup "
+			"is limited to the approved Count=10 roster", _botConfig.count);
+		return true;
+	}
+
+	std::vector<BotSpawnRequest> requests;
+	if (!BuildBotBatchRequests(NATION_KARUS, CLASS_KA_WARRIOR, 5, requests)
+		|| !BuildBotBatchRequests(NATION_ELMORAD, CLASS_EL_WARRIOR, 5, requests))
+	{
 		_botConfig.enabled = false;
-		spdlog::error("EbenezerApp::StartConfiguredBots: auto-roster failed; bots disabled");
+		spdlog::error("EbenezerApp::StartConfiguredBots: auto-roster planning failed; bots disabled");
+		return false;
+	}
+	const std::vector<int> createdIds = _botManager->SpawnBatch(requests, 0);
+	if (createdIds.size() != 10)
+	{
+		_botConfig.enabled = false;
+		spdlog::error("EbenezerApp::StartConfiguredBots: atomic auto-roster failed; bots disabled");
 		return false;
 	}
 
@@ -453,12 +471,19 @@ bool EbenezerApp::StartConfiguredBots()
 	}
 	catch (const std::exception& ex)
 	{
-		_botManager->RemoveAll();
+		_botManager->RemoveBatch(createdIds);
 		_botConfig.enabled = false;
 		spdlog::error("EbenezerApp::StartConfiguredBots: timer failed; bots disabled [{}]", ex.what());
 		return false;
 	}
-	return _botManager->Status().running;
+	if (!_botManager->Status().running)
+	{
+		_botManager->RemoveBatch(createdIds);
+		_botConfig.enabled = false;
+		spdlog::error("EbenezerApp::StartConfiguredBots: timer did not start; bots disabled");
+		return false;
+	}
+	return true;
 }
 
 bool EbenezerApp::OnStart()

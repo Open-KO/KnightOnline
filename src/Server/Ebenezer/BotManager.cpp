@@ -7,6 +7,7 @@
 #include <shared/TimerThread.h>
 
 #include <stdexcept>
+#include <unordered_set>
 #include <utility>
 
 using namespace std::chrono_literals;
@@ -113,12 +114,27 @@ void BotManager::RollbackUnlocked(const std::vector<int>& userIds) noexcept
 	}
 }
 
-std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requests)
+std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requests,
+	std::optional<size_t> expectedRegistrySize)
 {
 	std::lock_guard operationLock(_operationMutex);
-	if (requests.empty()
-		|| requests.size() > static_cast<size_t>(MAX_BOT_USER) - _app.GetBotRegistry().Size())
+	const size_t registrySize = _app.GetBotRegistry().Size();
+	if ((expectedRegistrySize.has_value() && registrySize != *expectedRegistrySize)
+		|| requests.empty()
+		|| requests.size() > static_cast<size_t>(MAX_BOT_USER) - registrySize)
 		return {};
+
+	std::unordered_set<std::string> names;
+	for (const auto& entry : _app.GetBotRegistry().Snapshot())
+	{
+		if (entry != nullptr && entry->m_pUserData != nullptr)
+			names.insert(NormalizeBotToken(entry->m_pUserData->m_id));
+	}
+	for (const auto& request : requests)
+	{
+		if (request.name.empty() || !names.insert(NormalizeBotToken(request.name)).second)
+			return {};
+	}
 
 	std::vector<int> created;
 	created.reserve(requests.size());
@@ -141,6 +157,20 @@ std::vector<int> BotManager::SpawnBatch(const std::vector<BotSpawnRequest>& requ
 		return {};
 	}
 	return created;
+}
+
+size_t BotManager::RemoveBatch(const std::vector<int>& userIds)
+{
+	std::lock_guard operationLock(_operationMutex);
+	std::unordered_set<int> uniqueIds(userIds.begin(), userIds.end());
+	size_t removed = 0;
+	for (int userId : uniqueIds)
+	{
+		auto bot = std::dynamic_pointer_cast<CBotUser>(_app.GetBotRegistry().Get(userId));
+		if (bot != nullptr && _commands.Despawn(*bot))
+			++removed;
+	}
+	return removed;
 }
 
 size_t BotManager::RemoveAll()

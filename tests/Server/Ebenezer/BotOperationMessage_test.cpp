@@ -12,7 +12,9 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <algorithm>
+#include <barrier>
 #include <filesystem>
+#include <future>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -229,6 +231,66 @@ TEST_F(BotOperationMessageTest, BatchFailureRollsBackOnlyBotsCreatedByThatBatch)
 	EXPECT_STREQ(_app->GetBotRegistry().Snapshot().front()->m_pUserData->m_id, "Existing");
 }
 
+TEST_F(BotOperationMessageTest, ConcurrentSameNameBatchesAllowExactlyOneAtomicWinner)
+{
+	BotSpawnRequest request { "Bot_K_Race", NATION_KARUS, CLASS_KA_WARRIOR, 60,
+		{ ZONE_FRONTIER, 121.0f, 0.0f, 121.0f } };
+	std::barrier start(3);
+	auto spawn = [&]()
+	{
+		start.arrive_and_wait();
+		return _app->GetBotManager().SpawnBatch({ request });
+	};
+	auto first = std::async(std::launch::async, spawn);
+	auto second = std::async(std::launch::async, spawn);
+	start.arrive_and_wait();
+	const auto firstResult = first.get();
+	const auto secondResult = second.get();
+
+	EXPECT_EQ(firstResult.size() + secondResult.size(), 1u);
+	ASSERT_EQ(_app->GetBotRegistry().Size(), 1u);
+	EXPECT_STREQ(_app->GetBotRegistry().Snapshot().front()->m_pUserData->m_id, "Bot_K_Race");
+}
+
+TEST_F(BotOperationMessageTest, DuplicateNamesInsideOneBatchFailWithoutPartialCreation)
+{
+	BotSpawnRequest first { "Bot_K_Duplicate", NATION_KARUS, CLASS_KA_WARRIOR, 60,
+		{ ZONE_FRONTIER, 121.0f, 0.0f, 121.0f } };
+	BotSpawnRequest second = first;
+	second.spawn.x = 122.0f;
+
+	EXPECT_TRUE(_app->GetBotManager().SpawnBatch({ first, second }).empty());
+	EXPECT_EQ(_app->GetBotRegistry().Size(), 0u);
+}
+
+TEST_F(BotOperationMessageTest, ExpectedRegistrySizePreconditionPreservesManualBot)
+{
+	BotSpawnRequest manual { "Manual", NATION_KARUS, CLASS_KA_WARRIOR, 60,
+		{ ZONE_FRONTIER, 120.0f, 0.0f, 120.0f } };
+	ASSERT_GE(_app->GetBotManager().Spawn(manual), 0);
+	BotSpawnRequest automatic { "Bot_E_000", NATION_ELMORAD, CLASS_EL_WARRIOR, 60,
+		{ ZONE_FRONTIER, 140.0f, 0.0f, 140.0f } };
+
+	EXPECT_TRUE(_app->GetBotManager().SpawnBatch({ automatic }, 0).empty());
+	ASSERT_EQ(_app->GetBotRegistry().Size(), 1u);
+	EXPECT_STREQ(_app->GetBotRegistry().Snapshot().front()->m_pUserData->m_id, "Manual");
+}
+
+TEST_F(BotOperationMessageTest, RemoveBatchLeavesUnrelatedManualBotRegistered)
+{
+	BotSpawnRequest manual { "Manual", NATION_KARUS, CLASS_KA_WARRIOR, 60,
+		{ ZONE_FRONTIER, 120.0f, 0.0f, 120.0f } };
+	ASSERT_GE(_app->GetBotManager().Spawn(manual), 0);
+	BotSpawnRequest automatic { "Bot_E_000", NATION_ELMORAD, CLASS_EL_WARRIOR, 60,
+		{ ZONE_FRONTIER, 140.0f, 0.0f, 140.0f } };
+	const auto automaticIds = _app->GetBotManager().SpawnBatch({ automatic });
+	ASSERT_EQ(automaticIds.size(), 1u);
+
+	EXPECT_EQ(_app->GetBotManager().RemoveBatch(automaticIds), 1u);
+	ASSERT_EQ(_app->GetBotRegistry().Size(), 1u);
+	EXPECT_STREQ(_app->GetBotRegistry().Snapshot().front()->m_pUserData->m_id, "Manual");
+}
+
 TEST_F(BotOperationMessageTest, StartAndStatusCommandsWorkButCannotRestartAfterPermanentStop)
 {
 	auto operation = Operation();
@@ -295,4 +357,28 @@ TEST(BotConfiguredStartupTest, AutoRosterFailureRollsBackAndDisablesOnlyBotConfi
 	EXPECT_EQ(app.GetBotManager().Status().total, 0u);
 	EXPECT_FALSE(app.GetBotManager().Status().running);
 }
+
+class BotConfiguredCountTest : public testing::TestWithParam<uint16_t>
+{
+};
+
+TEST_P(BotConfiguredCountTest, ValidNonMilestoneCountDoesNotAutoSpawnOrStartTimer)
+{
+	TestApp app;
+	ASSERT_NE(app.CreateMap(ZONE_FRONTIER, 256), nullptr);
+	ASSERT_TRUE(app.AddHomeEntry(NATION_KARUS, 120, 120));
+	ASSERT_TRUE(app.AddHomeEntry(NATION_ELMORAD, 140, 140));
+	CIni ini;
+	ini.SetInt("BOTS", "Enabled", 1);
+	ini.SetInt("BOTS", "Count", GetParam());
+	ASSERT_TRUE(app.LoadBotConfig(ini));
+	ASSERT_TRUE(app.ValidateBotConfigZone());
+
+	EXPECT_TRUE(app.StartConfiguredBots());
+	EXPECT_EQ(app.GetBotManager().Status().total, 0u);
+	EXPECT_FALSE(app.GetBotManager().Status().running);
+}
+
+INSTANTIATE_TEST_SUITE_P(NonMilestoneCounts, BotConfiguredCountTest,
+	testing::Values<uint16_t>(0, 1, 9, 11, 500));
 } // namespace

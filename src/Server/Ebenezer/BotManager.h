@@ -14,6 +14,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <vector>
 
 namespace Ebenezer
@@ -49,7 +50,9 @@ public:
 	BotManager(EbenezerApp& app, BotTimerFactory timerFactory);
 	~BotManager() noexcept;
 	int Spawn(const BotSpawnRequest& request);
-	std::vector<int> SpawnBatch(const std::vector<BotSpawnRequest>& requests);
+	std::vector<int> SpawnBatch(const std::vector<BotSpawnRequest>& requests,
+		std::optional<size_t> expectedRegistrySize = std::nullopt);
+	size_t RemoveBatch(const std::vector<int>& userIds);
 	size_t RemoveAll();
 	void StartPk();
 	void Stop() noexcept;
