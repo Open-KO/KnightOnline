@@ -2,6 +2,7 @@
 param([Parameter(Mandatory)][string] $GameDbPassword)
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'Local-Tooling.ps1')
 
 function ConvertTo-YamlDoubleQuotedScalar {
     param([Parameter(Mandatory)][AllowEmptyString()][string] $Value)
@@ -13,35 +14,10 @@ function ConvertTo-YamlDoubleQuotedScalar {
     return '"' + $Value.Replace('\', '\\').Replace('"', '\"') + '"'
 }
 
-function Get-GitBashPath {
-    $candidates = [System.Collections.Generic.List[string]]::new()
-    if ($env:ProgramFiles) { $candidates.Add((Join-Path $env:ProgramFiles 'Git\bin\bash.exe')) }
-    if (${env:ProgramFiles(x86)}) { $candidates.Add((Join-Path ${env:ProgramFiles(x86)} 'Git\bin\bash.exe')) }
-    if ($env:LOCALAPPDATA) { $candidates.Add((Join-Path $env:LOCALAPPDATA 'Programs\Git\bin\bash.exe')) }
-
-    foreach ($candidate in $candidates) {
-        if (Test-Path -LiteralPath $candidate) { return $candidate }
-    }
-
-    throw 'Git Bash was not found in a standard Git for Windows installation.'
-}
-
-function Invoke-GitBashSubmodule {
-    param(
-        [Parameter(Mandatory)][string] $RepositoryPath,
-        [Parameter(Mandatory)][ValidateNotNullOrEmpty()][string[]] $Arguments
-    )
-
-    $gitBash = Get-GitBashPath
-    $bashCommand = 'repo_path=$(cygpath -u -- "$1") || exit $?; shift; git -C "$repo_path" submodule "$@"'
-    & $gitBash -lc $bashCommand -- $RepositoryPath @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw ('Git Bash git submodule {0} failed with exit code {1}.' -f ($Arguments -join ' '), $LASTEXITCODE)
-    }
-}
-
 $runtime = Join-Path $PSScriptRoot 'runtime'
 $util = Join-Path $runtime 'kodb-util'
+$goExecutable = Resolve-GoExecutable
+if (-not $goExecutable) { throw 'Go 1.24+ executable not found.' }
 New-Item -ItemType Directory -Force -Path $runtime | Out-Null
 if (-not (Test-Path -LiteralPath (Join-Path $util '.git'))) {
     git clone https://github.com/Open-KO/kodb-util.git $util
@@ -76,9 +52,9 @@ Set-Content -LiteralPath $configPath -Value $yaml -Encoding UTF8
 
 Push-Location $util
 try {
-    go mod download
+    & $goExecutable mod download
     if ($LASTEXITCODE -ne 0) { throw 'go mod download failed for kodb-util.' }
-    go run kodb-util.go -clean -import
+    & $goExecutable run kodb-util.go -clean -import
     if ($LASTEXITCODE -ne 0) { throw 'kodb-util database clean/import failed.' }
 } finally {
     Pop-Location

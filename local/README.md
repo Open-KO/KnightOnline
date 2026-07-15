@@ -14,8 +14,10 @@ Initialize dependencies from a normal user PowerShell:
 
 ```powershell
 cmd /c .\build_scripts\sync_submodules.cmd Debug x64
-git submodule update --init --recursive
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\local\Initialize-Submodules.ps1
 ```
+
+The committed initializer uses Git Bash so submodule commands do not depend on the inherited PowerShell `PATH` bridge.
 
 Verify the host before continuing:
 

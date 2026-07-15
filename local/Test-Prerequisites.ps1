@@ -6,6 +6,7 @@ $failures = [System.Collections.Generic.List[string]]::new()
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $programFilesX86 = [Environment]::GetFolderPath('ProgramFilesX86')
 $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'
+. (Join-Path $PSScriptRoot 'Local-Tooling.ps1')
 
 function Get-OdbcDsnPropertyValue {
     param(
@@ -42,12 +43,7 @@ if (-not (Test-Path -LiteralPath $vswhere)) {
     }
 }
 
-$goCommand = Get-Command go -ErrorAction SilentlyContinue
-if ($null -eq $goCommand -and $env:ProgramFiles) {
-    $standardGo = Join-Path $env:ProgramFiles 'Go\bin\go.exe'
-    if (Test-Path -LiteralPath $standardGo) { $goCommand = $standardGo }
-}
-
+$goCommand = Resolve-GoExecutable
 if ($null -eq $goCommand) {
     $failures.Add('Go 1.24+ is missing.')
 } else {
