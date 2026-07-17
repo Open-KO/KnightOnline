@@ -334,6 +334,7 @@ bool AIServerApp::OnStart()
 	_checkAliveThread->start();
 
 	spdlog::info("AIServerApp::OnStart: AIServer successfully initialized");
+	spdlog::info("OPENKO_READY AIServer {}:{}", _listenAddress, GetListenPortByServerZoneType());
 
 	return true;
 }
@@ -349,13 +350,13 @@ bool AIServerApp::ListenByServerZoneType()
 		return false;
 	}
 
-	if (!_serverSocketManager.Listen(port))
+	if (!_serverSocketManager.Listen(_listenAddress, port))
 	{
 		spdlog::error("AIServerApp::ListenByServerZoneType: failed to listen on port {}", port);
 		return false;
 	}
 
-	spdlog::info("AIServerApp::ListenByServerZoneType: Listening on 0.0.0.0:{}", port);
+	spdlog::info("AIServerApp::ListenByServerZoneType: Listening on {}:{}", _listenAddress, port);
 	return true;
 }
 
@@ -1573,6 +1574,7 @@ std::filesystem::path AIServerApp::ConfigPath() const
 bool AIServerApp::LoadConfig(CIni& iniFile)
 {
 	_serverZoneType            = iniFile.GetInt("SERVER", "ZONE", 1);
+	_listenAddress             = iniFile.GetString("NETWORK", "LISTEN_IP", "127.0.0.1");
 
 	std::string datasourceName = iniFile.GetString("ODBC", "GAME_DSN", "KN_online");
 	std::string datasourceUser = iniFile.GetString("ODBC", "GAME_UID", "knight");

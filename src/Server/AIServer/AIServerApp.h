@@ -148,6 +148,7 @@ private:
 	// ~패킷 압축에 필요 변수   -------------
 
 	uint8_t _serverZoneType    = KARUS_ZONE;
+	std::string _listenAddress = "127.0.0.1";
 
 	std::unique_ptr<TimerThread> _checkAliveThread;
 

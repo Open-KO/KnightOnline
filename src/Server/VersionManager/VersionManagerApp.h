@@ -69,6 +69,7 @@ protected:
 protected:
 	std::string _ftpUrl;
 	std::string _ftpPath;
+	std::string _listenAddress = "127.0.0.1";
 
 	int _lastVersion = 0;
 

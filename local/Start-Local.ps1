@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [ValidateSet('Debug','Release')][string] $Configuration = 'Debug',
-    [ValidateRange(1,60)][int] $ReadinessTimeoutSeconds = 60
+    [ValidateRange(1,60)][int] $ReadinessTimeoutSeconds = 60,
+    [switch] $LibraryOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -9,6 +10,8 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $configurationDir = '{0}-x64' -f $Configuration
 $binDir = Join-Path $repoRoot ('bin\{0}' -f $configurationDir)
 $clientDir = Join-Path $repoRoot 'assets\Client'
+$mapDir = Join-Path $repoRoot 'assets\Server\MAP'
+$questsDir = Join-Path $repoRoot 'assets\Server\QUESTS'
 $logDir = Join-Path $PSScriptRoot 'logs'
 $statePath = Join-Path $PSScriptRoot 'pids.json'
 $envPath = Join-Path $PSScriptRoot '.env.local'
@@ -53,7 +56,9 @@ function Write-OwnedState {
         [System.IO.File]::Replace($temporaryPath, $statePath, $backupPath)
     } finally {
         Remove-Item -LiteralPath $temporaryPath -Force -ErrorAction SilentlyContinue
-        Remove-Item -LiteralPath $backupPath -Force -ErrorAction SilentlyContinue
+        if (Test-Path -LiteralPath $statePath) {
+            Remove-Item -LiteralPath $backupPath -Force -ErrorAction SilentlyContinue
+        }
     }
 }
 
@@ -68,14 +73,31 @@ function Get-GameDatabasePassword {
     }
 
     $value = $matches[0].Substring('GAME_DB_PASSWORD='.Length)
-    if ([string]::IsNullOrWhiteSpace($value) -or $value.IndexOfAny([char[]]"`r`n") -ge 0) {
-        throw 'GAME_DB_PASSWORD is empty or contains a line break.'
+    if ([string]::IsNullOrEmpty($value) -or $value -cne $value.Trim()) {
+        throw 'GAME_DB_PASSWORD must be non-empty and have no leading or trailing whitespace.'
+    }
+    foreach ($character in $value.ToCharArray()) {
+        if ([char]::IsControl($character)) {
+            throw 'GAME_DB_PASSWORD contains a control character.'
+        }
     }
     return $value
 }
 
+function Assert-AssetDirectories {
+    foreach ($asset in @($clientDir, $mapDir, $questsDir)) {
+        if (-not (Test-Path -LiteralPath $asset -PathType Container)) {
+            throw ('Required asset directory is missing: {0}' -f $asset)
+        }
+    }
+}
+
 function Write-LocalConfiguration {
     param([Parameter(Mandatory)][string] $GamePassword)
+
+    Assert-AssetDirectories
+    $absoluteMapDir = [System.IO.Path]::GetFullPath($mapDir)
+    $absoluteQuestsDir = [System.IO.Path]::GetFullPath($questsDir)
 
     $aujard = @"
 [ODBC]
@@ -98,6 +120,9 @@ IP=127.0.0.1
 "@
 
     $version = @"
+[NETWORK]
+LISTEN_IP=127.0.0.1
+
 [DOWNLOAD]
 URL=127.0.0.1
 PATH=/
@@ -117,6 +142,9 @@ USER_LIMIT_00=3000
     Write-Utf8File -Path (Join-Path $repoRoot 'Version.ini') -Content $version
 
     $aiServer = @"
+[NETWORK]
+LISTEN_IP=127.0.0.1
+
 [SERVER]
 ZONE=1
 
@@ -126,12 +154,15 @@ GAME_UID=knight
 GAME_PWD=$GamePassword
 
 [PATH]
-MAP_DIR=MAP
-EVENT_DIR=MAP
+MAP_DIR=$absoluteMapDir
+EVENT_DIR=$absoluteMapDir
 "@
     Write-Utf8File -Path (Join-Path $repoRoot 'server.ini') -Content $aiServer
 
     $gameServer = @"
+[NETWORK]
+LISTEN_IP=127.0.0.1
+
 [AI_SERVER]
 IP=127.0.0.1
 
@@ -150,8 +181,8 @@ AttackRange=2.5
 MoveStep=1.5
 
 [PATH]
-MAP_DIR=MAP
-QUESTS_DIR=QUESTS
+MAP_DIR=$absoluteMapDir
+QUESTS_DIR=$absoluteQuestsDir
 
 [SG_INFO]
 SERVER_INDEX=1
@@ -186,7 +217,7 @@ function Assert-LoopbackConfiguration {
 
     foreach ($path in $Paths) {
         foreach ($line in Get-Content -LiteralPath $path) {
-            if ($line -match '^\s*(IP(?:\d+)?|SERVER_IP_\d+|GSERVER_IP_\d+|URL)\s*=\s*(.*?)\s*$') {
+            if ($line -match '^\s*(IP(?:\d+)?|LISTEN_IP|SERVER_IP_\d+|GSERVER_IP_\d+|URL)\s*=\s*(.*?)\s*$') {
                 if ($Matches[2] -ne '127.0.0.1') {
                     throw ('Non-loopback address rejected in {0}: key {1}' -f $path, $Matches[1])
                 }
@@ -204,12 +235,15 @@ function Assert-LoopbackConfiguration {
 }
 
 function Test-TcpPort {
-    param([Parameter(Mandatory)][int] $Port)
+    param(
+        [Parameter(Mandatory)][int] $Port,
+        [ValidateRange(1,1000)][int] $TimeoutMilliseconds = 250
+    )
 
     $client = [System.Net.Sockets.TcpClient]::new()
     try {
         $async = $client.BeginConnect('127.0.0.1', $Port, $null, $null)
-        if (-not $async.AsyncWaitHandle.WaitOne(250)) { return $false }
+        if (-not $async.AsyncWaitHandle.WaitOne($TimeoutMilliseconds)) { return $false }
         $client.EndConnect($async)
         return $true
     } catch {
@@ -236,16 +270,14 @@ function Start-OwnedProcess {
     $stdout = Join-Path $logDir ($Name + '.out.log')
     $stderr = Join-Path $logDir ($Name + '.err.log')
     $process = Start-Process -FilePath $Path -WorkingDirectory $WorkingDirectory -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-    $process.Refresh()
-    if ($process.HasExited) {
-        throw ('{0} exited during startup (exit code {1}). Logs: {2}, {3}' -f $Name, $process.ExitCode, $stdout, $stderr)
-    }
-
     $record = [pscustomobject]@{
         Name = $Name
-        Id = $process.Id
+        Id = [int]$process.Id
         Path = [System.IO.Path]::GetFullPath($Path)
-        StartedAtUtc = $process.StartTime.ToUniversalTime().ToString('o')
+        StartTimeUtcTicks = [int64]$process.StartTime.ToUniversalTime().Ticks
+    }
+    if (-not (Test-OwnedProcessIdentity -Record $record -Process $process)) {
+        throw ('{0} exited or changed identity during startup. Logs: {1}, {2}' -f $Name, $stdout, $stderr)
     }
     $owned.Add($record)
     Write-OwnedState
@@ -259,47 +291,81 @@ function Test-OwnedProcessIdentity {
     )
 
     try {
-        if ($Process.ProcessName -ne [string]$Record.Name) { return $false }
+        $Process.Refresh()
+        if ($Process.HasExited) { return $false }
+        if ($Process.ProcessName -cne [string]$Record.Name) { return $false }
         if (-not [string]::Equals(
             [System.IO.Path]::GetFullPath($Process.Path),
             [System.IO.Path]::GetFullPath([string]$Record.Path),
             [System.StringComparison]::OrdinalIgnoreCase)) { return $false }
-        $recordedStart = [datetime]::Parse(
-            [string]$Record.StartedAtUtc,
-            [System.Globalization.CultureInfo]::InvariantCulture,
-            [System.Globalization.DateTimeStyles]::RoundtripKind).ToUniversalTime()
-        return [Math]::Abs(($Process.StartTime.ToUniversalTime() - $recordedStart).TotalSeconds) -le 2
+        return [int64]($Process.StartTime.ToUniversalTime().Ticks) -eq
+            [int64]($Record.StartTimeUtcTicks)
     } catch {
         return $false
     }
 }
 
-function Assert-OwnedAlive {
-    foreach ($record in $owned) {
-        $process = Get-Process -Id $record.Id -ErrorAction SilentlyContinue
-        if ($null -eq $process -or -not (Test-OwnedProcessIdentity -Record $record -Process $process)) {
-            $stdout = Join-Path $logDir ($record.Name + '.out.log')
-            $stderr = Join-Path $logDir ($record.Name + '.err.log')
-            throw ('{0} exited or changed identity before readiness. Logs: {1}, {2}' -f $record.Name, $stdout, $stderr)
-        }
+function Get-ValidatedOwnedProcess {
+    param([Parameter(Mandatory)] $Record)
+    $process = Get-Process -Id ([int]$Record.Id) -ErrorAction SilentlyContinue
+    if ($null -eq $process -or -not (Test-OwnedProcessIdentity -Record $Record -Process $process)) {
+        return $null
     }
+    $process.Refresh()
+    if (-not (Test-OwnedProcessIdentity -Record $Record -Process $process)) { return $null }
+    return $process
+}
+
+function Test-ReadyMarker {
+    param([Parameter(Mandatory)] $Record, [Parameter(Mandatory)][string] $Marker)
+    $stdout = Join-Path $logDir ([string]$Record.Name + '.out.log')
+    return (Test-Path -LiteralPath $stdout -PathType Leaf) -and
+        [bool](Select-String -LiteralPath $stdout -SimpleMatch $Marker -Quiet -ErrorAction SilentlyContinue)
+}
+
+function Test-ServiceReady {
+    param(
+        [Parameter(Mandatory)] $Record,
+        [Parameter(Mandatory)][int] $Port,
+        [Parameter(Mandatory)][string] $Marker,
+        [Parameter(Mandatory)][int] $TimeoutMilliseconds
+    )
+    return $null -ne (Get-ValidatedOwnedProcess -Record $Record) -and
+        (Test-TcpPort -Port $Port -TimeoutMilliseconds $TimeoutMilliseconds) -and
+        (Test-ReadyMarker -Record $Record -Marker $Marker)
 }
 
 function Wait-LocalReadiness {
     param(
         [Parameter(Mandatory)][datetime] $DeadlineUtc,
-        [Parameter(Mandatory)][hashtable] $RequiredPorts
+        [Parameter(Mandatory)][object[]] $Services
     )
 
-    do {
-        Assert-OwnedAlive
-        $missing = @($RequiredPorts.GetEnumerator() | Where-Object { -not (Test-TcpPort -Port $_.Value) })
+    while ($true) {
+        $missing = [System.Collections.Generic.List[string]]::new()
+        foreach ($service in $Services) {
+            $remainingMilliseconds = [Math]::Floor(($DeadlineUtc - [datetime]::UtcNow).TotalMilliseconds)
+            if ($remainingMilliseconds -le 0) { break }
+            $attemptMilliseconds = [int][Math]::Max(1, [Math]::Min(250, $remainingMilliseconds))
+            $ready = Test-ServiceReady -Record $service.Record -Port $service.Port `
+                -Marker $service.Marker -TimeoutMilliseconds $attemptMilliseconds
+            if (-not $ready) {
+                if ($null -eq (Get-ValidatedOwnedProcess -Record $service.Record)) {
+                    throw ('{0} exited or changed identity before readiness. Inspect logs in {1}.' -f
+                        $service.Record.Name, $logDir)
+                }
+                $missing.Add(('{0}=127.0.0.1:{1} marker={2}' -f
+                    $service.Record.Name, $service.Port, $service.Marker))
+            }
+        }
         if ($missing.Count -eq 0) { return }
-        Start-Sleep -Milliseconds 250
-    } while ([datetime]::UtcNow -lt $DeadlineUtc)
-
-    $summary = $missing | Sort-Object Name | ForEach-Object { '{0}=127.0.0.1:{1}' -f $_.Name, $_.Value }
-    throw ('Readiness timed out. Missing: {0}. Inspect logs in {1}.' -f ($summary -join ', '), $logDir)
+        $remainingMilliseconds = [Math]::Floor(($DeadlineUtc - [datetime]::UtcNow).TotalMilliseconds)
+        if ($remainingMilliseconds -le 0) {
+            throw ('Readiness timed out. Missing: {0}. Inspect logs in {1}.' -f
+                ($missing -join ', '), $logDir)
+        }
+        [System.Threading.Thread]::Sleep([int][Math]::Min(250, $remainingMilliseconds))
+    }
 }
 
 function Remove-OwnedRecord {
@@ -310,25 +376,38 @@ function Remove-OwnedRecord {
 }
 
 function Undo-NewProcesses {
+    param([ValidateRange(1,10000)][int] $TimeoutMilliseconds = 10000)
     $rollbackFailures = [System.Collections.Generic.List[string]]::new()
+    $deadlineUtc = [datetime]::UtcNow.AddMilliseconds($TimeoutMilliseconds)
     for ($index = $owned.Count - 1; $index -ge 0; $index--) {
         $record = $owned[$index]
-        $process = Get-Process -Id $record.Id -ErrorAction SilentlyContinue
-        if ($null -ne $process) {
-            if (-not (Test-OwnedProcessIdentity -Record $record -Process $process)) {
-                $rollbackFailures.Add(('{0} ({1}, identity mismatch)' -f $record.Name, $record.Id))
-                continue
-            }
-            try {
-                Stop-Process -Id $record.Id -Force -ErrorAction Stop
-                Wait-Process -Id $record.Id -Timeout 10 -ErrorAction SilentlyContinue
-            } catch {
-                $rollbackFailures.Add(('{0} ({1})' -f $record.Name, $record.Id))
-                continue
-            }
+        $existing = Get-Process -Id ([int]$record.Id) -ErrorAction SilentlyContinue
+        if ($null -eq $existing) {
+            Remove-OwnedRecord -Id $record.Id
+            Write-OwnedState
+            continue
         }
-        Remove-OwnedRecord -Id $record.Id
-        Write-OwnedState
+        $process = Get-ValidatedOwnedProcess -Record $record
+        if ($null -eq $process) {
+            $rollbackFailures.Add(('{0} ({1}, identity mismatch)' -f $record.Name, $record.Id))
+            continue
+        }
+        try {
+            $process.Refresh()
+            if (-not (Test-OwnedProcessIdentity -Record $record -Process $process)) {
+                throw 'identity changed before rollback stop'
+            }
+            Stop-Process -InputObject $process -Force -ErrorAction Stop
+            $remainingMilliseconds = [int][Math]::Max(0,
+                [Math]::Floor(($deadlineUtc - [datetime]::UtcNow).TotalMilliseconds))
+            [void]$process.WaitForExit($remainingMilliseconds)
+            $process.Refresh()
+            if (-not $process.HasExited) { throw 'captured process did not exit before rollback deadline' }
+            Remove-OwnedRecord -Id $record.Id
+            Write-OwnedState
+        } catch {
+            $rollbackFailures.Add(('{0} ({1}): {2}' -f $record.Name, $record.Id, $_.Exception.Message))
+        }
     }
 
     if ($owned.Count -eq 0) {
@@ -337,66 +416,83 @@ function Undo-NewProcesses {
     return $rollbackFailures
 }
 
-$executables = [ordered]@{
-    Aujard = Join-Path $binDir 'Aujard.exe'
-    ItemManager = Join-Path $binDir 'ItemManager.exe'
-    VersionManager = Join-Path $binDir 'VersionManager.exe'
-    AIServer = Join-Path $binDir 'AIServer.exe'
-    Ebenezer = Join-Path $binDir 'Ebenezer.exe'
-    KnightOnLine = Join-Path $binDir 'KnightOnLine.exe'
-}
-
-& (Join-Path $PSScriptRoot 'Test-Prerequisites.ps1')
-if ($LASTEXITCODE -ne 0) { throw 'Local prerequisite validation failed.' }
-
-$sql = Get-Service -Name 'MSSQL$SQLEXPRESS' -ErrorAction SilentlyContinue
-if ($null -eq $sql -or $sql.Status -ne 'Running') {
-    throw 'SQL Server Express service MSSQL$SQLEXPRESS must be Running.'
-}
-
-foreach ($entry in $executables.GetEnumerator()) {
-    if (-not (Test-Path -LiteralPath $entry.Value -PathType Leaf)) {
-        throw ('Required {0} executable is missing: {1}' -f $Configuration, $entry.Value)
+function Assert-NoOwnedState {
+    if (Test-Path -LiteralPath $statePath) {
+        throw ('Owned or stale process state already exists: {0}. Run Stop-Local.ps1 first.' -f $statePath)
     }
 }
-foreach ($port in @(15100, 10020, 15001)) { Assert-PortFree -Port $port }
 
-$password = Get-GameDatabasePassword
-Write-LocalConfiguration -GamePassword $password
-Assert-LoopbackConfiguration -Paths @(
-    (Join-Path $repoRoot 'Aujard.ini'),
-    (Join-Path $repoRoot 'ItemManager.ini'),
-    (Join-Path $repoRoot 'Version.ini'),
-    (Join-Path $repoRoot 'server.ini'),
-    (Join-Path $repoRoot 'gameserver.ini'),
-    (Join-Path $clientDir 'Server.ini'))
-
-New-Item -ItemType Directory -Path $logDir -Force | Out-Null
-New-OwnedState
-$deadlineUtc = [datetime]::UtcNow.AddSeconds($ReadinessTimeoutSeconds)
-
-try {
-    [void](Start-OwnedProcess -Name 'Aujard' -Path $executables.Aujard -WorkingDirectory $repoRoot)
-    [void](Start-OwnedProcess -Name 'ItemManager' -Path $executables.ItemManager -WorkingDirectory $repoRoot)
-    [void](Start-OwnedProcess -Name 'VersionManager' -Path $executables.VersionManager -WorkingDirectory $repoRoot)
-    [void](Start-OwnedProcess -Name 'AIServer' -Path $executables.AIServer -WorkingDirectory $repoRoot)
-    Wait-LocalReadiness -DeadlineUtc $deadlineUtc -RequiredPorts @{ VersionManager = 15100; AIServer = 10020 }
-
-    [void](Start-OwnedProcess -Name 'Ebenezer' -Path $executables.Ebenezer -WorkingDirectory $repoRoot)
-    Wait-LocalReadiness -DeadlineUtc $deadlineUtc -RequiredPorts @{ VersionManager = 15100; AIServer = 10020; Ebenezer = 15001 }
-
-    [void](Start-OwnedProcess -Name 'KnightOnLine' -Path $executables.KnightOnLine -WorkingDirectory $clientDir)
-    Assert-OwnedAlive
-} catch {
-    $startupError = $_.Exception.Message
-    $rollbackFailures = Undo-NewProcesses
-    if ($rollbackFailures.Count -gt 0) {
-        throw ('Startup failed: {0} Rollback incomplete for: {1}. Ownership state preserved at {2}.' -f $startupError, ($rollbackFailures -join ', '), $statePath)
-    }
-    throw ('Startup failed and newly started processes were rolled back: {0}' -f $startupError)
-} finally {
-    $password = $null
+function Assert-LocalPrerequisites {
+    & (Join-Path $PSScriptRoot 'Test-Prerequisites.ps1')
+    if ($LASTEXITCODE -ne 0) { throw 'Local prerequisite validation failed.' }
 }
 
-Write-Host ('OpenKO local stack started ({0}-x64). Owned PID state: {1}' -f $Configuration, $statePath)
-Write-Host ('Logs: {0}' -f $logDir)
+function Assert-SqlRunning {
+    $sql = Get-Service -Name 'MSSQL$SQLEXPRESS' -ErrorAction SilentlyContinue
+    if ($null -eq $sql -or $sql.Status -ne 'Running') {
+        throw 'SQL Server Express service MSSQL$SQLEXPRESS must be Running.'
+    }
+}
+
+function Invoke-StartLocal {
+    Assert-NoOwnedState
+    Assert-LocalPrerequisites
+    Assert-SqlRunning
+    Assert-AssetDirectories
+
+    $executables = [ordered]@{
+        Aujard = Join-Path $binDir 'Aujard.exe'
+        ItemManager = Join-Path $binDir 'ItemManager.exe'
+        VersionManager = Join-Path $binDir 'VersionManager.exe'
+        AIServer = Join-Path $binDir 'AIServer.exe'
+        Ebenezer = Join-Path $binDir 'Ebenezer.exe'
+        KnightOnLine = Join-Path $binDir 'KnightOnLine.exe'
+    }
+    foreach ($entry in $executables.GetEnumerator()) {
+        if (-not (Test-Path -LiteralPath $entry.Value -PathType Leaf)) {
+            throw ('Required {0} executable is missing: {1}' -f $Configuration, $entry.Value)
+        }
+    }
+    foreach ($port in @(15100, 10020, 15001)) { Assert-PortFree -Port $port }
+
+    $password = Get-GameDatabasePassword
+    try { Write-LocalConfiguration -GamePassword $password } finally { $password = $null }
+    Assert-LoopbackConfiguration -Paths @(
+        (Join-Path $repoRoot 'Aujard.ini'), (Join-Path $repoRoot 'ItemManager.ini'),
+        (Join-Path $repoRoot 'Version.ini'), (Join-Path $repoRoot 'server.ini'),
+        (Join-Path $repoRoot 'gameserver.ini'), (Join-Path $clientDir 'Server.ini'))
+
+    New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    New-OwnedState
+    $deadlineUtc = [datetime]::UtcNow.AddSeconds($ReadinessTimeoutSeconds)
+    try {
+        [void](Start-OwnedProcess -Name 'Aujard' -Path $executables.Aujard -WorkingDirectory $repoRoot)
+        [void](Start-OwnedProcess -Name 'ItemManager' -Path $executables.ItemManager -WorkingDirectory $repoRoot)
+        $version = Start-OwnedProcess -Name 'VersionManager' -Path $executables.VersionManager -WorkingDirectory $repoRoot
+        $ai = Start-OwnedProcess -Name 'AIServer' -Path $executables.AIServer -WorkingDirectory $repoRoot
+        Wait-LocalReadiness -DeadlineUtc $deadlineUtc -Services @(
+            [pscustomobject]@{ Record=$version; Port=15100; Marker='OPENKO_READY VersionManager 127.0.0.1:15100' },
+            [pscustomobject]@{ Record=$ai; Port=10020; Marker='OPENKO_READY AIServer 127.0.0.1:10020' })
+
+        $ebenezer = Start-OwnedProcess -Name 'Ebenezer' -Path $executables.Ebenezer -WorkingDirectory $repoRoot
+        Wait-LocalReadiness -DeadlineUtc $deadlineUtc -Services @(
+            [pscustomobject]@{ Record=$version; Port=15100; Marker='OPENKO_READY VersionManager 127.0.0.1:15100' },
+            [pscustomobject]@{ Record=$ai; Port=10020; Marker='OPENKO_READY AIServer 127.0.0.1:10020' },
+            [pscustomobject]@{ Record=$ebenezer; Port=15001; Marker='OPENKO_READY Ebenezer 127.0.0.1:15001' })
+
+        [void](Start-OwnedProcess -Name 'KnightOnLine' -Path $executables.KnightOnLine -WorkingDirectory $clientDir)
+    } catch {
+        $startupError = $_.Exception.Message
+        $rollbackFailures = @(Undo-NewProcesses)
+        if ($rollbackFailures.Count -gt 0) {
+            throw ('Startup failed: {0} Rollback incomplete: {1}. State preserved at {2}.' -f
+                $startupError, ($rollbackFailures -join '; '), $statePath)
+        }
+        throw ('Startup failed and newly started processes were rolled back: {0}' -f $startupError)
+    }
+
+    Write-Host ('OpenKO local stack started ({0}-x64). Owned PID state: {1}' -f $Configuration, $statePath)
+    Write-Host ('Logs: {0}' -f $logDir)
+}
+
+if (-not $LibraryOnly) { Invoke-StartLocal }

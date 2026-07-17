@@ -353,6 +353,23 @@ local/Stop-Local.ps1
   zamanını doğrular; yalnızca kaydedilmiş kesin PID'leri ters sırada kapatır.
   Süreç adına göre tarama veya toplu kapatma yapmaz.
 
+Yerel yaşam döngüsü güvenlik sözleşmesi şunları da zorunlu kılar:
+
+- Durum dosyası açık bir üst seviye JSON dizisidir. Tüm kayıtların benzersiz
+  ad/PID/kanonik yol şeması herhangi bir süreç durdurulmadan önce doğrulanır.
+- Sahiplik, süreç adı + kanonik executable yolu + tam `StartTimeUtcTicks`
+  eşleşmesidir. Başlatma geri alımı ve durdurma işlemi, yeniden doğrulanmış
+  yakalanan süreç nesnesini kullanır; tamamlanamayan işlemlerde yalnızca canlı
+  kalan sahiplik kayıtları korunur.
+- `VersionManager`, `AIServer` ve `Ebenezer` dinleyicileri açıkça
+  `127.0.0.1` adresine bağlanır. Hazır olma; canlı sahiplik, loopback portu ve
+  başarılı `OnStart` sonrasında yazılan servis-özel `OPENKO_READY` işaretinin
+  üçü birden doğrulandığında kabul edilir.
+- `assets/Server/MAP` ve `assets/Server/QUESTS` kanonik dizinleri süreç durumu
+  değiştirilmeden önce doğrulanır ve çalışma ayarlarına mutlak yol olarak yazılır.
+- Veritabanı parolası boşluk/kontrol karakterleri açısından tam round-trip
+  doğrulamasından geçer ve hiçbir konsol ya da uygulama loguna yazılmaz.
+
 Parolalar commit edilmez. Örnek yapılandırmalar yalnızca yer tutucu içerir;
 gerçek yerel değerler ignore edilen dosyalarda tutulur.
 

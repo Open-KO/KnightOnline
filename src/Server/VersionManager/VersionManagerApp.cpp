@@ -64,10 +64,6 @@ bool VersionManagerApp::OnStart()
 
 	spdlog::info("Version Manager initialized");
 
-	// print the ODBC connection string
-	// TODO: modelUtil::DbType::ACCOUNT;  Currently all models are assigned to GAME
-	spdlog::debug(db::ConnectionManager::GetOdbcConnectionString(modelUtil::DbType::GAME));
-
 	if (!DbProcess.InitDatabase())
 	{
 		spdlog::error("Database Connection Fail!!");
@@ -80,7 +76,7 @@ bool VersionManagerApp::OnStart()
 		return false;
 	}
 
-	if (!_serverSocketManager.Listen(_LISTEN_PORT))
+	if (!_serverSocketManager.Listen(_listenAddress, _LISTEN_PORT))
 	{
 		spdlog::error("FAIL TO CREATE LISTEN STATE");
 		return false;
@@ -88,9 +84,10 @@ bool VersionManagerApp::OnStart()
 
 	_serverSocketManager.StartAccept();
 
-	spdlog::info("Listening on 0.0.0.0:{}", _LISTEN_PORT);
+	spdlog::info("Listening on {}:{}", _listenAddress, _LISTEN_PORT);
 
 	_dbPoolCheckThread->start();
+	spdlog::info("OPENKO_READY VersionManager {}:{}", _listenAddress, _LISTEN_PORT);
 
 	return true;
 }
@@ -105,6 +102,7 @@ bool VersionManagerApp::LoadConfig(CIni& iniFile)
 	// ftp config
 	_ftpUrl                    = iniFile.GetString(ini::DOWNLOAD, ini::URL, "127.0.0.1");
 	_ftpPath                   = iniFile.GetString(ini::DOWNLOAD, ini::PATH, "/");
+	_listenAddress             = iniFile.GetString("NETWORK", "LISTEN_IP", "127.0.0.1");
 
 	// TODO: KN_online should be Knight_Account
 	std::string datasourceName = iniFile.GetString(ini::ODBC, ini::DSN, "KN_online");

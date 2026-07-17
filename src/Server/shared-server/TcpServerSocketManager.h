@@ -57,6 +57,7 @@ public:
 		std::string_view implName = "TcpServerSocketManager");
 	~TcpServerSocketManager() override;
 	bool Listen(int port);
+	bool Listen(std::string_view listenAddress, int port);
 	void Shutdown();
 	void StartAccept();
 	void StopAccept();

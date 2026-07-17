@@ -255,6 +255,7 @@ public:
 
 	char m_ppNotice[20][128];
 	std::string m_AIServerIP;
+	std::string _listenAddress = "127.0.0.1";
 
 	AISocketMap _aiSocketMap;
 	std::mutex _aiSocketMutex;

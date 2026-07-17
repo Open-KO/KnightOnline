@@ -507,13 +507,14 @@ bool EbenezerApp::OnStart()
 		return false;
 	}
 
-	if (!_serverSocketManager.Listen(pInfo->sPort))
+	if (!_serverSocketManager.Listen(_listenAddress, pInfo->sPort))
 	{
 		spdlog::error("FAIL TO CREATE LISTEN STATE");
 		return false;
 	}
 
-	spdlog::info("Listening on 0.0.0.0:{} - not accepting user connections yet", pInfo->sPort);
+	spdlog::info("Listening on {}:{} - not accepting user connections yet", _listenAddress,
+		pInfo->sPort);
 
 	if (!InitializeMMF())
 	{
@@ -747,6 +748,7 @@ bool EbenezerApp::OnStart()
 	_readQueueThread->start();
 
 	spdlog::info("EbenezerApp::OnStart: successfully initialized");
+	spdlog::info("OPENKO_READY Ebenezer {}:{}", _listenAddress, pInfo->sPort);
 	return true;
 }
 
@@ -1482,6 +1484,7 @@ bool EbenezerApp::LoadConfig(CIni& iniFile)
 		modelUtil::DbType::GAME, datasourceName, datasourceUser, datasourcePass);
 
 	m_AIServerIP     = iniFile.GetString("AI_SERVER", "IP", "127.0.0.1");
+	_listenAddress   = iniFile.GetString("NETWORK", "LISTEN_IP", "127.0.0.1");
 
 	// NOTE: officially this is required to be explicitly set, so it defaults to 0 and fails.
 	m_nServerIndex   = iniFile.GetInt("SG_INFO", "SERVER_INDEX", 1);

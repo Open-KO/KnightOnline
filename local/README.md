@@ -60,7 +60,9 @@ The default development login is `testing/testing`.
 GAME_DB_PASSWORD=<the local knight SQL password>
 ```
 
-The launcher regenerates the ignored `Aujard.ini`, `ItemManager.ini`, `Version.ini`, `server.ini`, and `gameserver.ini` files. It creates `assets\Client\Server.ini` from `assets\Client\Server.ini.default` when needed and forces every client IP entry to `127.0.0.1`. The generated bot configuration is:
+The password must round-trip exactly: empty values, leading or trailing whitespace, and control characters are rejected. It is passed only into ignored generated runtime INIs and is never written to console or application logs.
+
+The launcher verifies the canonical `assets\Server\MAP` and `assets\Server\QUESTS` directories before changing process state, then writes their absolute paths to the runtime INIs. It regenerates the ignored `Aujard.ini`, `ItemManager.ini`, `Version.ini`, `server.ini`, and `gameserver.ini` files. It creates `assets\Client\Server.ini` from `assets\Client\Server.ini.default` when needed and forces every client IP entry to `127.0.0.1`. VersionManager, AIServer, and Ebenezer also receive an explicit `[NETWORK] LISTEN_IP=127.0.0.1`; they do not bind their game listeners to wildcard interfaces. The generated bot configuration is:
 
 ```ini
 [AI_SERVER]
@@ -96,7 +98,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\local\Start-Local.ps1 
 Aujard -> ItemManager -> VersionManager -> AIServer -> Ebenezer -> KnightOnLine
 ```
 
-It waits no more than 60 seconds for VersionManager (`15100`), AIServer (`10020`), and Ebenezer (`15001`) on `127.0.0.1`. `KnightOnLine.exe` starts only after those readiness checks pass. Standard output and error are written under `local\logs`. Exact executable path, PID, logical executable name, and UTC start time are atomically recorded in `local\pids.json`. A partial startup stops only processes created by that invocation; incomplete rollback leaves ownership state for a safe retry.
+It waits no more than 60 seconds for VersionManager (`15100`), AIServer (`10020`), and Ebenezer (`15001`) on `127.0.0.1`; every poll and sleep is capped to the remaining shared deadline. A service is ready only when the exact owned process remains alive, its loopback port accepts a connection, and its redirected log contains the service-specific `OPENKO_READY` marker emitted after successful `OnStart`. `KnightOnLine.exe` starts only after all three checks pass. Standard output and error are written under `local\logs`. Exact canonical executable path, PID, logical executable name, and exact `StartTimeUtcTicks` are atomically recorded as an explicit top-level JSON array in `local\pids.json`. A partial startup revalidates and stops only process objects created by that invocation; incomplete rollback preserves only still-live owned records for a safe retry.
 
 Stop only the processes owned by the launcher:
 
@@ -104,7 +106,7 @@ Stop only the processes owned by the launcher:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\local\Stop-Local.ps1
 ```
 
-The stop script validates the state schema, executable name/path, PID, and start time before stopping an exact PID. It never enumerates or kills by process name. Already-exited PIDs are tolerated. A mismatch or incomplete stop preserves the remaining state instead of risking an unrelated process.
+The stop script requires an explicit top-level JSON array and validates every record before stopping anything. It validates unique service names, PIDs and canonical paths, then matches executable name, canonical path, and exact `StartTimeUtcTicks` twice before stopping the captured process object. It never enumerates or kills by process name. Already-exited PIDs are tolerated. A mismatch or incomplete stop preserves only the remaining owned records instead of risking an unrelated process.
 
 ## Bot administrator commands
 
