@@ -113,6 +113,12 @@ int CBotUser::Send(char* pBuf, int length)
 	return length;
 }
 
+void CBotUser::RegionPacketAdd(char* pBuf, int len)
+{
+	(void) pBuf;
+	(void) len;
+}
+
 BotRuntime& CBotUser::Runtime()
 {
 	return _runtime;

@@ -149,6 +149,19 @@ TEST_F(BotUserIntegrationTest, InitializesAndRegistersSocketlessBot)
 	EXPECT_EQ(bot->Runtime().patrolIndex, 0u);
 }
 
+TEST_F(BotUserIntegrationTest, RegionPacketsThroughBasePointerAreNotQueuedForSocketlessBot)
+{
+	auto bot = CreateBot();
+	ASSERT_NE(bot, nullptr);
+
+	CUser* user = bot.get();
+	char packet[] { WIZ_MOVE, 0x01, 0x02 };
+	user->RegionPacketAdd(packet, sizeof(packet));
+
+	char regionBuffer[REGION_BUFF_SIZE] {};
+	EXPECT_EQ(user->RegionPacketClear(regionBuffer), 0);
+}
+
 TEST_F(BotUserIntegrationTest, RejectsInvalidSpawnBeforeRegistration)
 {
 	auto request = MakeSpawnRequest();

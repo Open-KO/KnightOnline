@@ -234,7 +234,7 @@ public:
 	bool PullOutCore(char*& data, int& length) override;
 	int Send(char* pBuf, int length) override;
 	void SendCompressingPacket(const char* pData, int len);
-	void RegionPacketAdd(char* pBuf, int len);
+	virtual void RegionPacketAdd(char* pBuf, int len);
 	int RegionPacketClear(char* GetBuf);
 	void CloseProcess() override;
 	void Parsing(int len, char* pData) override;

@@ -15,6 +15,7 @@ public:
 	CBotUser();
 	bool InitializeBot(const BotSpawnRequest& request);
 	int Send(char* pBuf, int length) override;
+	void RegionPacketAdd(char* pBuf, int len) override;
 	BotRuntime& Runtime();
 	const BotRuntime& Runtime() const;
 
