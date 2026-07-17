@@ -256,6 +256,30 @@ function Assert-PortFree {
     }
 }
 
+function Wait-OwnedProcessIdentity {
+    param(
+        [Parameter(Mandatory)] $Record,
+        [Parameter(Mandatory)] $Process,
+        [ValidateRange(1,2000)][int] $TimeoutMilliseconds = 2000,
+        [ValidateRange(1,50)][int] $PollMilliseconds = 50
+    )
+
+    $deadlineUtc = [datetime]::UtcNow.AddMilliseconds($TimeoutMilliseconds)
+    while ($true) {
+        if (Test-OwnedProcessIdentity -Record $Record -Process $Process) { return $true }
+        try {
+            $Process.Refresh()
+            if ($Process.HasExited) { return $false }
+        } catch {
+            # Process metadata may be temporarily unavailable immediately after Start-Process.
+        }
+
+        $remainingMilliseconds = [Math]::Floor(($deadlineUtc - [datetime]::UtcNow).TotalMilliseconds)
+        if ($remainingMilliseconds -le 0) { return $false }
+        [System.Threading.Thread]::Sleep([int][Math]::Min($PollMilliseconds, $remainingMilliseconds))
+    }
+}
+
 function Start-OwnedProcess {
     param(
         [Parameter(Mandatory)][string] $Name,
@@ -272,11 +296,39 @@ function Start-OwnedProcess {
         Path = [System.IO.Path]::GetFullPath($Path)
         StartTimeUtcTicks = [int64]$process.StartTime.ToUniversalTime().Ticks
     }
-    if (-not (Test-OwnedProcessIdentity -Record $record -Process $process)) {
-        throw ('{0} exited or changed identity during startup. Logs: {1}, {2}' -f $Name, $stdout, $stderr)
-    }
     $owned.Add($record)
     Write-OwnedState
+    if (-not (Wait-OwnedProcessIdentity -Record $record -Process $process)) {
+        $cleanupFailure = $null
+        try {
+            $process.Refresh()
+            if (-not $process.HasExited) {
+                Stop-Process -InputObject $process -Force -ErrorAction Stop
+                if (-not $process.WaitForExit(2000)) {
+                    throw 'captured process did not exit before cleanup deadline'
+                }
+                $process.Refresh()
+                if (-not $process.HasExited) { throw 'captured process remained alive after cleanup' }
+            }
+        } catch {
+            $cleanupError = $_.Exception.Message
+            try {
+                $process.Refresh()
+                if (-not $process.HasExited) { $cleanupFailure = $cleanupError }
+            } catch {
+                $cleanupFailure = $_.Exception.Message
+            }
+        }
+
+        if ($null -eq $cleanupFailure) {
+            Remove-OwnedRecord -Id $record.Id
+            Write-OwnedState
+        } else {
+            throw ('{0} exited or changed identity during startup, and captured process cleanup failed: {1}. Ownership state preserved at {2}. Logs: {3}, {4}' -f
+                $Name, $cleanupFailure, $statePath, $stdout, $stderr)
+        }
+        throw ('{0} exited or changed identity during startup. Logs: {1}, {2}' -f $Name, $stdout, $stderr)
+    }
     return $record
 }
 
