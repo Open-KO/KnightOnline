@@ -217,18 +217,14 @@ function Assert-LoopbackConfiguration {
 
     foreach ($path in $Paths) {
         foreach ($line in Get-Content -LiteralPath $path) {
-            if ($line -match '^\s*(IP(?:\d+)?|LISTEN_IP|SERVER_IP_\d+|GSERVER_IP_\d+|URL)\s*=\s*(.*?)\s*$') {
-                if ($Matches[2] -ne '127.0.0.1') {
-                    throw ('Non-loopback address rejected in {0}: key {1}' -f $path, $Matches[1])
-                }
-            }
-            if ((Split-Path -Leaf $path) -eq 'Version.ini' -and $line -match '^\s*(SERVER_\d+)\s*=\s*(.*?)\s*$') {
-                if ($Matches[2] -ne '127.0.0.1') {
-                    throw ('Non-loopback address rejected in {0}: key {1}' -f $path, $Matches[1])
-                }
-            }
-            if ($line -match '(?i)localhost') {
-                throw ('Hostname localhost is not permitted in {0}; use literal 127.0.0.1.' -f $path)
+            if ($line -cnotmatch '^\s*([A-Za-z][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$') { continue }
+            $key = $Matches[1]
+            $value = $Matches[2]
+            $normalizedKey = $key.ToUpperInvariant()
+            $isAddressKey = $normalizedKey -cmatch '^(IP\d*|LISTEN_IP|SERVER_IP_\d+|GSERVER_IP_\d+|URL)$' -or
+                ((Split-Path -Leaf $path) -eq 'Version.ini' -and $normalizedKey -cmatch '^SERVER_\d+$')
+            if ($isAddressKey -and $value -cne '127.0.0.1') {
+                throw ('Non-loopback address rejected in {0}: key {1}' -f $path, $key)
             }
         }
     }
@@ -335,7 +331,7 @@ function Test-ServiceReady {
         (Test-ReadyMarker -Record $Record -Marker $Marker)
 }
 
-function Wait-LocalReadiness {
+function Wait-OwnedServicesReady {
     param(
         [Parameter(Mandatory)][datetime] $DeadlineUtc,
         [Parameter(Mandatory)][object[]] $Services
@@ -345,7 +341,9 @@ function Wait-LocalReadiness {
         $missing = [System.Collections.Generic.List[string]]::new()
         foreach ($service in $Services) {
             $remainingMilliseconds = [Math]::Floor(($DeadlineUtc - [datetime]::UtcNow).TotalMilliseconds)
-            if ($remainingMilliseconds -le 0) { break }
+            if ($remainingMilliseconds -le 0) {
+                throw ('Readiness timed out before every requested service was checked. Inspect logs in {0}.' -f $logDir)
+            }
             $attemptMilliseconds = [int][Math]::Max(1, [Math]::Min(250, $remainingMilliseconds))
             $ready = Test-ServiceReady -Record $service.Record -Port $service.Port `
                 -Marker $service.Marker -TimeoutMilliseconds $attemptMilliseconds
@@ -358,7 +356,7 @@ function Wait-LocalReadiness {
                     $service.Record.Name, $service.Port, $service.Marker))
             }
         }
-        if ($missing.Count -eq 0) { return }
+        if ($missing.Count -eq 0) { return $true }
         $remainingMilliseconds = [Math]::Floor(($DeadlineUtc - [datetime]::UtcNow).TotalMilliseconds)
         if ($remainingMilliseconds -le 0) {
             throw ('Readiness timed out. Missing: {0}. Inspect logs in {1}.' -f
@@ -470,15 +468,15 @@ function Invoke-StartLocal {
         [void](Start-OwnedProcess -Name 'ItemManager' -Path $executables.ItemManager -WorkingDirectory $repoRoot)
         $version = Start-OwnedProcess -Name 'VersionManager' -Path $executables.VersionManager -WorkingDirectory $repoRoot
         $ai = Start-OwnedProcess -Name 'AIServer' -Path $executables.AIServer -WorkingDirectory $repoRoot
-        Wait-LocalReadiness -DeadlineUtc $deadlineUtc -Services @(
+        [void](Wait-OwnedServicesReady -DeadlineUtc $deadlineUtc -Services @(
             [pscustomobject]@{ Record=$version; Port=15100; Marker='OPENKO_READY VersionManager 127.0.0.1:15100' },
-            [pscustomobject]@{ Record=$ai; Port=10020; Marker='OPENKO_READY AIServer 127.0.0.1:10020' })
+            [pscustomobject]@{ Record=$ai; Port=10020; Marker='OPENKO_READY AIServer 127.0.0.1:10020' }))
 
         $ebenezer = Start-OwnedProcess -Name 'Ebenezer' -Path $executables.Ebenezer -WorkingDirectory $repoRoot
-        Wait-LocalReadiness -DeadlineUtc $deadlineUtc -Services @(
+        [void](Wait-OwnedServicesReady -DeadlineUtc $deadlineUtc -Services @(
             [pscustomobject]@{ Record=$version; Port=15100; Marker='OPENKO_READY VersionManager 127.0.0.1:15100' },
             [pscustomobject]@{ Record=$ai; Port=10020; Marker='OPENKO_READY AIServer 127.0.0.1:10020' },
-            [pscustomobject]@{ Record=$ebenezer; Port=15001; Marker='OPENKO_READY Ebenezer 127.0.0.1:15001' })
+            [pscustomobject]@{ Record=$ebenezer; Port=15001; Marker='OPENKO_READY Ebenezer 127.0.0.1:15001' }))
 
         [void](Start-OwnedProcess -Name 'KnightOnLine' -Path $executables.KnightOnLine -WorkingDirectory $clientDir)
     } catch {

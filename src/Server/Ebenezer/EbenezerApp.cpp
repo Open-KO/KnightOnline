@@ -711,7 +711,7 @@ bool EbenezerApp::OnStart()
 
 	LoadNoticeData();
 
-	m_pUdpSocket = new CUdpSocket(this);
+	m_pUdpSocket = new CUdpSocket(this, _listenAddress);
 	if (!m_pUdpSocket->CreateSocket())
 	{
 		spdlog::error("EbenezerApp::OnStart: failed to create UDP socket");

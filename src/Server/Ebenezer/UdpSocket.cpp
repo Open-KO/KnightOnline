@@ -14,7 +14,8 @@
 namespace Ebenezer
 {
 
-CUdpSocket::CUdpSocket(EbenezerApp* main) : _recvUdpThread(this), _socket(_io)
+CUdpSocket::CUdpSocket(EbenezerApp* main, std::string listenAddress)
+	: _recvUdpThread(this), _socket(_io), _listenAddress(listenAddress)
 {
 	_main = main;
 }
@@ -26,8 +27,15 @@ CUdpSocket::~CUdpSocket()
 
 bool CUdpSocket::CreateSocket()
 {
-	asio::ip::udp::endpoint endpoint(asio::ip::udp::v4(), _UDP_PORT);
 	asio::error_code ec;
+	const asio::ip::address address = asio::ip::make_address(_listenAddress, ec);
+	if (ec || !address.is_v4() || !address.is_loopback())
+	{
+		spdlog::error("UdpSocket::CreateSocket: invalid non-loopback listen address: {}",
+			_listenAddress);
+		return false;
+	}
+	asio::ip::udp::endpoint endpoint(address, _UDP_PORT);
 
 	_socket.open(endpoint.protocol(), ec);
 	if (ec)

@@ -16,7 +16,7 @@ class CUdpSocket
 	friend class RecvUDPThread;
 
 public:
-	CUdpSocket(EbenezerApp* main = nullptr);
+	CUdpSocket(EbenezerApp* main = nullptr, std::string listenAddress = "127.0.0.1");
 	virtual ~CUdpSocket();
 
 	bool CreateSocket();
@@ -43,6 +43,7 @@ protected:
 
 	char _recvBuff[UDP_SOCKET_BUFFER_SIZE] = {};
 	EbenezerApp* _main                     = nullptr;
+	std::string _listenAddress;
 };
 
 } // namespace Ebenezer
