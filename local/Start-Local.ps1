@@ -284,12 +284,13 @@ function Start-OwnedProcess {
     param(
         [Parameter(Mandatory)][string] $Name,
         [Parameter(Mandatory)][string] $Path,
-        [Parameter(Mandatory)][string] $WorkingDirectory
+        [Parameter(Mandatory)][string] $WorkingDirectory,
+        [ValidateSet('Hidden','Normal')][string] $WindowStyle = 'Hidden'
     )
 
     $stdout = Join-Path $logDir ($Name + '.out.log')
     $stderr = Join-Path $logDir ($Name + '.err.log')
-    $process = Start-Process -FilePath $Path -WorkingDirectory $WorkingDirectory -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+    $process = Start-Process -FilePath $Path -WorkingDirectory $WorkingDirectory -WindowStyle $WindowStyle -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
     $record = [pscustomobject]@{
         Name = $Name
         Id = [int]$process.Id
@@ -530,7 +531,7 @@ function Invoke-StartLocal {
             [pscustomobject]@{ Record=$ai; Port=10020; Marker='OPENKO_READY AIServer 127.0.0.1:10020' },
             [pscustomobject]@{ Record=$ebenezer; Port=15001; Marker='OPENKO_READY Ebenezer 127.0.0.1:15001' }))
 
-        [void](Start-OwnedProcess -Name 'KnightOnLine' -Path $executables.KnightOnLine -WorkingDirectory $clientDir)
+        [void](Start-OwnedProcess -Name 'KnightOnLine' -Path $executables.KnightOnLine -WorkingDirectory $clientDir -WindowStyle Normal)
     } catch {
         $startupError = $_.Exception.Message
         $rollbackFailures = @(Undo-NewProcesses)
