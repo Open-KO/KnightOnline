@@ -401,6 +401,7 @@ protected:
 	bool OnStart() override;
 
 private:
+	bool ValidateConfiguredBotRoutes();
 	bool BuildBotBatchRequests(uint8_t nation, e_Class characterClass, size_t count,
 		std::vector<BotSpawnRequest>& requests);
 	std::unique_ptr<BotManager> _botManager;

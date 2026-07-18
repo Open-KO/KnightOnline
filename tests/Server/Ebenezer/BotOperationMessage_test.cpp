@@ -2,6 +2,7 @@
 
 #include <Ebenezer/BotManager.h>
 #include <Ebenezer/BotTypes.h>
+#include <Ebenezer/BotUser.h>
 #include <Ebenezer/OperationMessage.h>
 
 #include <shared/Ini.h>
@@ -82,9 +83,9 @@ protected:
 	void SetUp() override
 	{
 		_app = std::make_unique<TestApp>();
-		ASSERT_NE(_app->CreateMap(ZONE_FRONTIER, 256), nullptr);
-		ASSERT_TRUE(_app->AddHomeEntry(NATION_KARUS, 120, 120));
-		ASSERT_TRUE(_app->AddHomeEntry(NATION_ELMORAD, 140, 140));
+		ASSERT_NE(_app->CreateMap(ZONE_FRONTIER, 513, 4.0f), nullptr);
+		ASSERT_TRUE(_app->AddHomeEntry(NATION_KARUS, 848, 128));
+		ASSERT_TRUE(_app->AddHomeEntry(NATION_ELMORAD, 193, 898));
 		_gm = _app->AddUser();
 		ASSERT_NE(_gm, nullptr);
 		_gm->m_pUserData->m_bAuthority = AUTHORITY_MANAGER;
@@ -507,6 +508,35 @@ TEST_F(BotOperationMessageTest, AutoRosterCreatesExactlyFivePerNationAfterValida
 		{ return name.starts_with("Bot_K_"); }), 5);
 	EXPECT_EQ(std::count_if(names.begin(), names.end(), [](const std::string& name)
 		{ return name.starts_with("Bot_E_"); }), 5);
+	size_t karus = 0;
+	size_t elmorad = 0;
+	for (const auto& entry : _app->GetBotRegistry().Snapshot())
+	{
+		auto bot = std::dynamic_pointer_cast<CBotUser>(entry);
+		ASSERT_NE(bot, nullptr);
+		ASSERT_NE(bot->m_pUserData, nullptr);
+		if (bot->m_pUserData->m_bNation == NATION_KARUS)
+		{
+			++karus;
+			EXPECT_GE(bot->m_pUserData->m_curx, 848.0f);
+			EXPECT_LE(bot->m_pUserData->m_curx, 868.0f);
+			EXPECT_GE(bot->m_pUserData->m_curz, 128.0f);
+			EXPECT_LE(bot->m_pUserData->m_curz, 148.0f);
+		}
+		else
+		{
+			++elmorad;
+			EXPECT_EQ(bot->m_pUserData->m_bNation, NATION_ELMORAD);
+			EXPECT_GE(bot->m_pUserData->m_curx, 193.0f);
+			EXPECT_LE(bot->m_pUserData->m_curx, 213.0f);
+			EXPECT_GE(bot->m_pUserData->m_curz, 898.0f);
+			EXPECT_LE(bot->m_pUserData->m_curz, 918.0f);
+		}
+		EXPECT_EQ(bot->Runtime().routeIndex, 0u);
+		EXPECT_FALSE(bot->Runtime().reachedBowl);
+	}
+	EXPECT_EQ(karus, 5u);
+	EXPECT_EQ(elmorad, 5u);
 }
 
 TEST(BotConfiguredStartupTest, AutoRosterFailureRollsBackAndDisablesOnlyBotConfig)
@@ -523,6 +553,24 @@ TEST(BotConfiguredStartupTest, AutoRosterFailureRollsBackAndDisablesOnlyBotConfi
 	EXPECT_FALSE(app.StartConfiguredBots());
 	EXPECT_FALSE(app.GetBotConfig().enabled);
 	EXPECT_EQ(app.GetBotManager().Status().total, 0u);
+	EXPECT_FALSE(app.GetBotManager().Status().running);
+}
+
+TEST(BotConfiguredStartupTest, InvalidCzRouteDisablesBotsBeforeRosterCommit)
+{
+	TestApp app;
+	ASSERT_NE(app.CreateMap(ZONE_FRONTIER, 256, 1.0f), nullptr);
+	ASSERT_TRUE(app.AddHomeEntry(NATION_KARUS, 120, 120));
+	ASSERT_TRUE(app.AddHomeEntry(NATION_ELMORAD, 140, 140));
+	CIni ini;
+	ini.SetInt("BOTS", "Enabled", 1);
+	ini.SetInt("BOTS", "Count", 10);
+	ASSERT_TRUE(app.LoadBotConfig(ini));
+	ASSERT_TRUE(app.ValidateBotConfigZone());
+
+	EXPECT_FALSE(app.StartConfiguredBots());
+	EXPECT_FALSE(app.GetBotConfig().enabled);
+	EXPECT_EQ(app.GetBotRegistry().Size(), 0u);
 	EXPECT_FALSE(app.GetBotManager().Status().running);
 }
 

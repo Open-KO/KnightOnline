@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "EbenezerApp.h"
 #include "BotManager.h"
+#include "BotRoute.h"
 #include "EbenezerLogger.h"
 #include "EbenezerReadQueueThread.h"
 #include "OperationMessage.h"
@@ -365,6 +366,21 @@ bool EbenezerApp::ValidateBotConfigZone()
 	return false;
 }
 
+bool EbenezerApp::ValidateConfiguredBotRoutes()
+{
+	C3DMap* map = GetMapByID(_botConfig.zoneId);
+	if (map != nullptr
+		&& BotRoute::Validate(NATION_KARUS, _botConfig.zoneId, *map)
+		&& BotRoute::Validate(NATION_ELMORAD, _botConfig.zoneId, *map))
+	{
+		return true;
+	}
+	_botConfig.enabled = false;
+	spdlog::error(
+		"EbenezerApp::ValidateConfiguredBotRoutes: invalid zone 201 bot route; bots disabled");
+	return false;
+}
+
 bool EbenezerApp::BuildBotBatchRequests(uint8_t nation, e_Class characterClass, size_t count,
 	std::vector<BotSpawnRequest>& requests)
 {
@@ -451,6 +467,8 @@ bool EbenezerApp::StartConfiguredBots()
 			"is limited to the approved Count=10 roster", _botConfig.count);
 		return true;
 	}
+	if (!ValidateConfiguredBotRoutes())
+		return false;
 
 	std::vector<BotSpawnRequest> requests;
 	if (!BuildBotBatchRequests(NATION_KARUS, CLASS_KA_WARRIOR, 5, requests)
