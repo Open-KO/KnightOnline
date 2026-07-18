@@ -4,31 +4,34 @@
 #include "TestApp.h"
 #include "TestMap.h"
 
+#include <array>
 #include <memory>
 
 using namespace Ebenezer;
 
 TEST(BotRouteTest, NationsUseExactOutwardRoutesAndConvergeAtBowl)
 {
-	BotRuntime runtime;
-	auto karus = BotRoute::CurrentDestination(NATION_KARUS, ZONE_FRONTIER, runtime);
-	auto elmorad = BotRoute::CurrentDestination(NATION_ELMORAD, ZONE_FRONTIER, runtime);
+	constexpr std::array<BotRoutePoint, 4> expectedKarus {
+		BotRoutePoint { 890.0f, 350.0f }, BotRoutePoint { 930.0f, 600.0f },
+		BotRoutePoint { 970.0f, 820.0f }, BotRoutePoint { 1000.0f, 1000.0f }
+	};
+	constexpr std::array<BotRoutePoint, 4> expectedElmorad {
+		BotRoutePoint { 400.0f, 930.0f }, BotRoutePoint { 620.0f, 960.0f },
+		BotRoutePoint { 820.0f, 980.0f }, BotRoutePoint { 1000.0f, 1000.0f }
+	};
+	const auto karus = BotRoute::Resolve(NATION_KARUS, ZONE_FRONTIER);
+	const auto elmorad = BotRoute::Resolve(NATION_ELMORAD, ZONE_FRONTIER);
 	ASSERT_TRUE(karus.has_value());
 	ASSERT_TRUE(elmorad.has_value());
-	EXPECT_FLOAT_EQ(karus->x, 890.0f);
-	EXPECT_FLOAT_EQ(karus->z, 350.0f);
-	EXPECT_FLOAT_EQ(elmorad->x, 400.0f);
-	EXPECT_FLOAT_EQ(elmorad->z, 930.0f);
-
-	runtime.routeIndex = 3;
-	karus = BotRoute::CurrentDestination(NATION_KARUS, ZONE_FRONTIER, runtime);
-	elmorad = BotRoute::CurrentDestination(NATION_ELMORAD, ZONE_FRONTIER, runtime);
-	ASSERT_TRUE(karus.has_value());
-	ASSERT_TRUE(elmorad.has_value());
-	EXPECT_FLOAT_EQ(karus->x, 1000.0f);
-	EXPECT_FLOAT_EQ(karus->z, 1000.0f);
-	EXPECT_FLOAT_EQ(elmorad->x, 1000.0f);
-	EXPECT_FLOAT_EQ(elmorad->z, 1000.0f);
+	ASSERT_EQ(karus->travel.size(), expectedKarus.size());
+	ASSERT_EQ(elmorad->travel.size(), expectedElmorad.size());
+	for (size_t index = 0; index < expectedKarus.size(); ++index)
+	{
+		EXPECT_FLOAT_EQ(karus->travel[index].x, expectedKarus[index].x);
+		EXPECT_FLOAT_EQ(karus->travel[index].z, expectedKarus[index].z);
+		EXPECT_FLOAT_EQ(elmorad->travel[index].x, expectedElmorad[index].x);
+		EXPECT_FLOAT_EQ(elmorad->travel[index].z, expectedElmorad[index].z);
+	}
 }
 
 TEST(BotRouteTest, FinalTravelPointSwitchesToLoopAndLoopWraps)

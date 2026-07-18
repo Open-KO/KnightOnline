@@ -656,6 +656,10 @@ TEST_F(BotManagerTest, RespawnRejectsInvalidHomeWithoutRemovingLiveRegionEntry)
 	const int botId = bot->GetSocketID();
 	bool broadcast = false;
 	observer->AddSendCallback([&](const char*, int) { broadcast = true; });
+	bot->Runtime().patrolIndex = 3;
+	bot->Runtime().routeIndex = 2;
+	bot->Runtime().bowlPatrolIndex = 1;
+	bot->Runtime().reachedBowl = true;
 	bot->Runtime().home.x = std::numeric_limits<float>::quiet_NaN();
 	BotCommandFacade commands(*_app);
 
@@ -663,6 +667,10 @@ TEST_F(BotManagerTest, RespawnRejectsInvalidHomeWithoutRemovingLiveRegionEntry)
 	EXPECT_FALSE(broadcast);
 	EXPECT_EQ(_app->GetBotRegistry().Get(botId).get(), bot.get());
 	EXPECT_EQ(RegionOccurrenceCount(botId), 1u);
+	EXPECT_EQ(bot->Runtime().patrolIndex, 3u);
+	EXPECT_EQ(bot->Runtime().routeIndex, 2u);
+	EXPECT_EQ(bot->Runtime().bowlPatrolIndex, 1u);
+	EXPECT_TRUE(bot->Runtime().reachedBowl);
 	observer->SetState(CONNECTION_STATE_DISCONNECTED);
 }
 
