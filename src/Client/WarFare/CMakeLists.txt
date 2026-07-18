@@ -154,6 +154,7 @@ set(WARFARE_SCENE_INGAME_UI_SOURCES
 set(WARFARE_NETWORK_SOURCES
   APISocket.cpp
   APISocket.h
+  APISocketPayload.h
   PacketDef.h
 )
 

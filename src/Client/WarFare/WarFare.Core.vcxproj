@@ -222,6 +222,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="APISocket.h" />
+    <ClInclude Include="APISocketPayload.h" />
     <ClInclude Include="Bird.h" />
     <ClInclude Include="BirdMng.h" />
     <ClInclude Include="Bitset.h" />

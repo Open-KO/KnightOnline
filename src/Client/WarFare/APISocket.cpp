@@ -4,6 +4,7 @@
 
 #include "StdAfx.h"
 #include "APISocket.h"
+#include "APISocketPayload.h"
 #include "ClientResourceFormatter.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -261,6 +262,8 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 	if (INVALID_SOCKET == (SOCKET) m_hSocket || FALSE == m_bConnected)
 		return;
 
+	std::array<uint8_t, 2> compatibilityStorage {};
+	const uint8_t* frameData = nullptr;
 #ifdef _CRYPTION
 	DataPack DP;
 
@@ -283,8 +286,16 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 
 		nSize = DP.m_Size;
 		pData = DP.m_pData;
+		frameData = pData;
 	}
+	else
 #endif
+	{
+		const api_socket::PayloadView payload
+			= api_socket::ApplyMinimumUnencryptedPayloadCompatibility(pData, nSize, compatibilityStorage);
+		frameData = payload.Data;
+		nSize = payload.Size;
+	}
 
 	int nTotalSize            = nSize + 6;
 	char* pSendData           = m_SendBuf.data();
@@ -292,7 +303,7 @@ void CAPISocket::Send(uint8_t* pData, int nSize)
 	pSendData                += 2;
 	*((uint16_t*) pSendData)  = nSize;
 	pSendData                += 2;
-	memcpy(pSendData, pData, nSize);
+	memcpy(pSendData, frameData, nSize);
 	pSendData                += nSize;
 	*((uint16_t*) pSendData)  = htons(PACKET_TAIL);
 	// pSendData             += 2;
