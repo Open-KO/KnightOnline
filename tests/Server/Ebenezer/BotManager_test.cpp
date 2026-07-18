@@ -163,7 +163,7 @@ protected:
 		myrand          = [](int min, int) { return min; };
 
 		_app            = std::make_unique<TestApp>();
-		_map            = _app->CreateMap(ZONE_FRONTIER, 256);
+		_map            = _app->CreateMap(ZONE_FRONTIER, 513, 2.0f);
 		ASSERT_NE(_map, nullptr);
 		ASSERT_EQ(_app->GetBotManager().Status().total, 0u);
 	}
@@ -289,6 +289,52 @@ TEST_F(BotManagerTest, PatrolSkipsInvalidHomeOffsetsAndNeverExceedsMaximumStep)
 	EXPECT_GE(bot->m_fWill_z, 0.0f);
 	EXPECT_TRUE(_map->IsValidPosition(bot->m_fWill_x, bot->m_fWill_z));
 	EXPECT_LT(bot->m_fWill_x, 120.0f);
+}
+
+TEST_F(BotManagerTest, FrontierPatrolMovesKarusTowardFirstOutwardWaypoint)
+{
+	auto bot = Spawn("Bot_K_Route", NATION_KARUS, 848.0f, 128.0f);
+	ASSERT_NE(bot, nullptr);
+
+	_app->GetBotManager().Tick(_now);
+	_app->GetBotManager().Tick(_now + 200ms);
+
+	EXPECT_GT(bot->m_fWill_x, 848.0f);
+	EXPECT_GT(bot->m_fWill_z, 128.0f);
+	EXPECT_EQ(bot->Runtime().routeIndex, 0u);
+	EXPECT_FALSE(bot->Runtime().reachedBowl);
+}
+
+TEST_F(BotManagerTest, ReachingWaypointAdvancesOnceWithoutOvershoot)
+{
+	auto bot = Spawn("Bot_K_Reach", NATION_KARUS, 889.0f, 349.5f);
+	ASSERT_NE(bot, nullptr);
+	BotCommandFacade commands(*_app);
+
+	ASSERT_TRUE(commands.Patrol(*bot, 1.5f));
+	EXPECT_FLOAT_EQ(bot->m_fWill_x, 890.0f);
+	EXPECT_FLOAT_EQ(bot->m_fWill_z, 350.0f);
+	EXPECT_EQ(bot->Runtime().routeIndex, 1u);
+	ASSERT_TRUE(commands.Patrol(*bot, 1.5f));
+	EXPECT_EQ(bot->Runtime().routeIndex, 1u);
+}
+
+TEST_F(BotManagerTest, CombatDoesNotConsumeRouteCursorAndPatrolResumesStoredWaypoint)
+{
+	auto source = Spawn("Bot_K_Resume", NATION_KARUS, 925.0f, 595.0f);
+	auto enemy = Spawn("Bot_E_Resume", NATION_ELMORAD, 927.0f, 595.0f);
+	ASSERT_NE(source, nullptr);
+	ASSERT_NE(enemy, nullptr);
+	source->Runtime().routeIndex = 1;
+	BotCommandFacade commands(*_app);
+
+	ASSERT_TRUE(commands.BasicAttack(*source, enemy->GetSocketID(), _now));
+	EXPECT_EQ(source->Runtime().routeIndex, 1u);
+	enemy->m_pUserData->m_sHp = 0;
+	const float before = source->GetDistance2D(930.0f, 600.0f);
+	ASSERT_TRUE(commands.Patrol(*source, 1.5f));
+	EXPECT_EQ(source->Runtime().routeIndex, 1u);
+	EXPECT_LT(std::hypot(source->m_fWill_x - 930.0f, source->m_fWill_z - 600.0f), before);
 }
 
 TEST_F(BotManagerTest, NextStepEnforcesServerMaximumWhenCallerRequestsMore)
@@ -534,6 +580,10 @@ TEST_F(BotManagerTest, RespawnsOnlyAtExactBoundaryAtHomeWithCleanRuntimeAndRegio
 	ASSERT_TRUE(_map->RegionUserAdd(4, 4, id));
 	bot->Runtime().targetId     = 123;
 	bot->Runtime().nextAttackAt = _now + 20s;
+	bot->Runtime().patrolIndex = 3;
+	bot->Runtime().routeIndex = 3;
+	bot->Runtime().bowlPatrolIndex = 2;
+	bot->Runtime().reachedBowl = true;
 
 	_app->GetBotManager().Tick(_now);
 	_app->GetBotManager().Tick(_now + 14999ms);
@@ -553,6 +603,10 @@ TEST_F(BotManagerTest, RespawnsOnlyAtExactBoundaryAtHomeWithCleanRuntimeAndRegio
 	EXPECT_EQ(bot->Runtime().targetId, -1);
 	EXPECT_EQ(bot->Runtime().nextAttackAt, std::chrono::steady_clock::time_point {});
 	EXPECT_EQ(bot->Runtime().respawnAt, std::chrono::steady_clock::time_point {});
+	EXPECT_EQ(bot->Runtime().patrolIndex, 0u);
+	EXPECT_EQ(bot->Runtime().routeIndex, 0u);
+	EXPECT_EQ(bot->Runtime().bowlPatrolIndex, 0u);
+	EXPECT_FALSE(bot->Runtime().reachedBowl);
 	EXPECT_EQ(RegionOccurrenceCount(id), 1u);
 	EXPECT_TRUE(RegionContains(bot->m_RegionX, bot->m_RegionZ, id));
 }

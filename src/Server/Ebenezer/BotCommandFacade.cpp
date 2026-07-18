@@ -2,10 +2,12 @@
 #include "BotCommandFacade.h"
 
 #include "BotMovement.h"
+#include "BotRoute.h"
 #include "BotUser.h"
 #include "EbenezerApp.h"
 #include "Map.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <utility>
@@ -73,6 +75,30 @@ bool BotCommandFacade::Patrol(CBotUser& source, float moveStep)
 {
 	if (source.m_pUserData == nullptr)
 		return false;
+	const auto destination = BotRoute::CurrentDestination(
+		source.m_pUserData->m_bNation, source.m_pUserData->m_bZone, source.Runtime());
+	if (destination.has_value())
+	{
+		C3DMap* routeMap = _app.GetMapByID(destination->zoneId);
+		if (routeMap == nullptr || !routeMap->IsValidPosition(destination->x, destination->z))
+			return false;
+		const float originX = std::isfinite(source.m_fWill_x)
+			? source.m_fWill_x : source.m_pUserData->m_curx;
+		const float originZ = std::isfinite(source.m_fWill_z)
+			? source.m_fWill_z : source.m_pUserData->m_curz;
+		const float remaining = std::hypot(destination->x - originX, destination->z - originZ);
+		if (!std::isfinite(remaining))
+			return false;
+		const float reachThreshold = std::min(moveStep, 1.5f);
+		const BotSpawnPoint step = BotMovement::NextStep(
+			source, destination->x, destination->z, moveStep);
+		if (!BotMovement::Move(source, step, MOVE_SPEED))
+			return false;
+		if (remaining <= reachThreshold)
+			BotRoute::Advance(source.Runtime(), source.m_pUserData->m_bNation,
+				source.m_pUserData->m_bZone);
+		return true;
+	}
 	C3DMap* map = _app.GetMapByID(source.Runtime().home.zoneId);
 	if (map == nullptr)
 		return false;
@@ -146,6 +172,7 @@ bool BotCommandFacade::Respawn(CBotUser& source)
 	runtime.targetId     = -1;
 	runtime.nextAttackAt = {};
 	runtime.respawnAt    = {};
+	BotRoute::Reset(runtime);
 	source.UserInOut(USER_REGENE);
 	return true;
 }

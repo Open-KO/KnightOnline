@@ -147,6 +147,9 @@ TEST_F(BotUserIntegrationTest, InitializesAndRegistersSocketlessBot)
 	EXPECT_EQ(bot->Runtime().nextAttackAt, std::chrono::steady_clock::time_point {});
 	EXPECT_EQ(bot->Runtime().respawnAt, std::chrono::steady_clock::time_point {});
 	EXPECT_EQ(bot->Runtime().patrolIndex, 0u);
+	EXPECT_EQ(bot->Runtime().routeIndex, 0u);
+	EXPECT_EQ(bot->Runtime().bowlPatrolIndex, 0u);
+	EXPECT_FALSE(bot->Runtime().reachedBowl);
 }
 
 TEST_F(BotUserIntegrationTest, RegionPacketsThroughBasePointerAreNotQueuedForSocketlessBot)
