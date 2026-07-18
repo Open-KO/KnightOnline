@@ -14,6 +14,8 @@ add_library(Ebenezer.Core
   BotMovement.h
   BotRegistry.cpp
   BotRegistry.h
+  BotRoute.cpp
+  BotRoute.h
   BotTargetSelector.cpp
   BotTargetSelector.h
   BotTypes.h

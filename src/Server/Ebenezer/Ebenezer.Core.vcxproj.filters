@@ -29,6 +29,9 @@
     <ClCompile Include="BotRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BotRoute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="BotTargetSelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,6 +122,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BotRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BotRoute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BotTargetSelector.h">

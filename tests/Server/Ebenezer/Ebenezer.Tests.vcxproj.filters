@@ -6,6 +6,7 @@
     <ClCompile Include="BotManager_test.cpp" />
     <ClCompile Include="BotOperationMessage_test.cpp" />
     <ClCompile Include="BotRegistry_test.cpp" />
+    <ClCompile Include="BotRoute_test.cpp" />
     <ClCompile Include="BotTargetSelector_test.cpp" />
     <ClCompile Include="BotUserIntegration_test.cpp" />
     <ClCompile Include="EventLogic_test.cpp" />

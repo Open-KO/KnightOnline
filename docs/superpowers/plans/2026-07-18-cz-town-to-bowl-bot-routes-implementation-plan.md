@@ -30,10 +30,12 @@
 - Modify `src/Server/Ebenezer/EbenezerApp.h`: declare configured-route startup validation.
 - Modify `src/Server/Ebenezer/EbenezerApp.cpp`: validate both routes atomically before building the automatic roster.
 - Modify `src/Server/Ebenezer/CMakeLists.txt`: compile the new route source into `Ebenezer.Core`.
+- Modify `src/Server/Ebenezer/Ebenezer.Core.vcxproj` and `.filters`: compile and display the new route source in the checked-in MSBuild project.
 - Create `tests/Server/Ebenezer/BotRoute_test.cpp`: exact route data, cursor transitions, Bowl looping, reset, and map validation tests.
 - Modify `tests/Server/Ebenezer/BotManager_test.cpp`: route movement, waypoint threshold, combat interruption/resume, and respawn reset integration tests.
 - Modify `tests/Server/Ebenezer/BotOperationMessage_test.cpp`: exact nation HOME startup and invalid-route atomic rollback tests.
 - Modify `tests/Server/Ebenezer/CMakeLists.txt`: compile `BotRoute_test.cpp` into `Ebenezer.Tests`.
+- Modify `tests/Server/Ebenezer/Ebenezer.Tests.vcxproj` and `.filters`: compile and display the new route test in the checked-in MSBuild project.
 
 ---
 
@@ -44,8 +46,12 @@
 - Create: `src/Server/Ebenezer/BotRoute.cpp`
 - Modify: `src/Server/Ebenezer/BotTypes.h`
 - Modify: `src/Server/Ebenezer/CMakeLists.txt`
+- Modify: `src/Server/Ebenezer/Ebenezer.Core.vcxproj`
+- Modify: `src/Server/Ebenezer/Ebenezer.Core.vcxproj.filters`
 - Create: `tests/Server/Ebenezer/BotRoute_test.cpp`
 - Modify: `tests/Server/Ebenezer/CMakeLists.txt`
+- Modify: `tests/Server/Ebenezer/Ebenezer.Tests.vcxproj`
+- Modify: `tests/Server/Ebenezer/Ebenezer.Tests.vcxproj.filters`
 
 **Interfaces:**
 - Consumes: `BotRuntime`, `BotSpawnPoint`, nation constants, `ZONE_FRONTIER`, and `C3DMap::IsValidPosition(float, float) const`.
@@ -61,6 +67,8 @@ Create `tests/Server/Ebenezer/BotRoute_test.cpp` with the exact behavioral asser
 #include <Ebenezer/BotRoute.h>
 #include "TestApp.h"
 #include "TestMap.h"
+
+#include <memory>
 
 using namespace Ebenezer;
 
@@ -130,17 +138,17 @@ TEST(BotRouteTest, ResetReturnsEveryNavigationCursorToFirstOutwardWaypoint)
 TEST(BotRouteTest, ValidationRequiresZone201AndEveryPointInsideTheMap)
 {
 	TestApp app;
-	TestMap validMap(ZONE_FRONTIER, 513, 4.0f);
-	TestMap smallMap(ZONE_FRONTIER, 256, 1.0f);
-	EXPECT_TRUE(BotRoute::Validate(NATION_KARUS, ZONE_FRONTIER, validMap));
-	EXPECT_TRUE(BotRoute::Validate(NATION_ELMORAD, ZONE_FRONTIER, validMap));
-	EXPECT_FALSE(BotRoute::Validate(NATION_KARUS, ZONE_BATTLE, validMap));
-	EXPECT_FALSE(BotRoute::Validate(NATION_KARUS, ZONE_FRONTIER, smallMap));
-	EXPECT_FALSE(BotRoute::Validate(0, ZONE_FRONTIER, validMap));
+	auto validMap = std::make_unique<TestMap>(ZONE_FRONTIER, 513, 4.0f);
+	auto smallMap = std::make_unique<TestMap>(ZONE_FRONTIER, 256, 1.0f);
+	EXPECT_TRUE(BotRoute::Validate(NATION_KARUS, ZONE_FRONTIER, *validMap));
+	EXPECT_TRUE(BotRoute::Validate(NATION_ELMORAD, ZONE_FRONTIER, *validMap));
+	EXPECT_FALSE(BotRoute::Validate(NATION_KARUS, ZONE_BATTLE, *validMap));
+	EXPECT_FALSE(BotRoute::Validate(NATION_KARUS, ZONE_FRONTIER, *smallMap));
+	EXPECT_FALSE(BotRoute::Validate(0, ZONE_FRONTIER, *validMap));
 }
 ```
 
-Add `BotRoute_test.cpp` to `tests/Server/Ebenezer/CMakeLists.txt`.
+Add `BotRoute_test.cpp` to `tests/Server/Ebenezer/CMakeLists.txt`, `Ebenezer.Tests.vcxproj`, and `Ebenezer.Tests.vcxproj.filters`.
 
 - [ ] **Step 2: Build the test target and prove the new interface is missing**
 
@@ -316,7 +324,7 @@ bool BotRoute::Validate(uint8_t nation, uint8_t zoneId, const C3DMap& map) noexc
 } // namespace Ebenezer
 ```
 
-Add `BotRoute.cpp` and `BotRoute.h` beside the other bot sources in `src/Server/Ebenezer/CMakeLists.txt`.
+Add `BotRoute.cpp` and `BotRoute.h` beside the other bot sources in `src/Server/Ebenezer/CMakeLists.txt`, `Ebenezer.Core.vcxproj`, and `Ebenezer.Core.vcxproj.filters`.
 
 - [ ] **Step 5: Build and run the focused route tests**
 
@@ -330,7 +338,7 @@ Expected: build succeeds with zero errors and every `BotRouteTest.*` test passes
 - [ ] **Step 6: Commit the pure route model**
 
 ```powershell
-git add src/Server/Ebenezer/BotRoute.h src/Server/Ebenezer/BotRoute.cpp src/Server/Ebenezer/BotTypes.h src/Server/Ebenezer/CMakeLists.txt tests/Server/Ebenezer/BotRoute_test.cpp tests/Server/Ebenezer/CMakeLists.txt
+git add src/Server/Ebenezer/BotRoute.h src/Server/Ebenezer/BotRoute.cpp src/Server/Ebenezer/BotTypes.h src/Server/Ebenezer/CMakeLists.txt src/Server/Ebenezer/Ebenezer.Core.vcxproj src/Server/Ebenezer/Ebenezer.Core.vcxproj.filters tests/Server/Ebenezer/BotRoute_test.cpp tests/Server/Ebenezer/CMakeLists.txt tests/Server/Ebenezer/Ebenezer.Tests.vcxproj tests/Server/Ebenezer/Ebenezer.Tests.vcxproj.filters docs/superpowers/plans/2026-07-18-cz-town-to-bowl-bot-routes-implementation-plan.md
 git commit -m "feat: add fixed CZ bot routes"
 ```
 

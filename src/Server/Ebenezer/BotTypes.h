@@ -108,6 +108,9 @@ struct BotRuntime
 	std::chrono::steady_clock::time_point nextAttackAt {};
 	std::chrono::steady_clock::time_point respawnAt {};
 	size_t patrolIndex = 0;
+	size_t routeIndex = 0;
+	size_t bowlPatrolIndex = 0;
+	bool reachedBowl = false;
 };
 
 } // namespace Ebenezer

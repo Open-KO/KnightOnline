@@ -4,6 +4,7 @@ add_executable(Ebenezer.Tests
   BotManager_test.cpp
   BotOperationMessage_test.cpp
   BotRegistry_test.cpp
+  BotRoute_test.cpp
   BotTargetSelector_test.cpp
   BotUserIntegration_test.cpp
   EventLogic_test.cpp

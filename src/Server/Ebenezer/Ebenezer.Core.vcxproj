@@ -160,6 +160,7 @@
     <ClCompile Include="BotManager.cpp" />
     <ClCompile Include="BotMovement.cpp" />
     <ClCompile Include="BotRegistry.cpp" />
+    <ClCompile Include="BotRoute.cpp" />
     <ClCompile Include="BotTargetSelector.cpp" />
     <ClCompile Include="BotUser.cpp" />
     <ClCompile Include="EbenezerApp.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="BotManager.h" />
     <ClInclude Include="BotMovement.h" />
     <ClInclude Include="BotRegistry.h" />
+    <ClInclude Include="BotRoute.h" />
     <ClInclude Include="BotTargetSelector.h" />
     <ClInclude Include="BotTypes.h" />
     <ClInclude Include="BotUser.h" />
