@@ -149,6 +149,9 @@ public:
 	static void SetGameCursor(e_Cursor eCursor, bool bLocked = false);
 	static void RestoreGameCursor();
 
+	static std::string GetSymbolFilename(const int serverIndex, const int knightsId, const int markVersion);
+	static int GetServerIndex();
+
 protected:
 	virtual bool ProcessPacket(Packet& pkt);
 	void MsgRecv_ServerChange(Packet& pkt);

@@ -1905,7 +1905,7 @@ bool CUIInventory::IsValidRaceAndClass(__TABLE_ITEM_BASIC* pItem, __TABLE_ITEM_E
 			return false;
 		}
 
-		if (pInfoExt->iRank < pItem->byNeedRank + pItemExt->siNeedRank)
+		if (CGameBase::s_pPlayer->m_InfoBase.iRank < pItem->byNeedRank + pItemExt->siNeedRank)
 		{
 			szMsg = fmt::format_text_resource(IDS_MSG_VALID_CLASSNRACE_LOW_RANK);
 			CGameProcedure::s_pProcMain->MsgOutput(szMsg, 0xffff3b3b);

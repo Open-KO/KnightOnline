@@ -78,8 +78,8 @@ public:
 
 	bool InitChr(__TABLE_PLAYER_LOOKS* pTblUPC) override;
 	CN3CPart* PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt) override;
-	CN3CPlugBase* PlugSet(
-		e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt) override;
+	CN3CPlugBase* PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt,
+		bool isForce = false) override;
 
 	void Tick() override;
 	void Render(float fSunAngle) override;

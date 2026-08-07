@@ -304,9 +304,10 @@ void CPlayerBase::KnightsInfoSet(int iID, const std::string& /*szName*/, int iGr
 		szPlug = fmt::format("Item\\ClanAddOn_{:03}_{}.n3cplug", static_cast<int>(m_InfoBase.eRace), iGrade);
 	}
 
-	m_InfoBase.iKnightsID = iID;
+	m_InfoBase.iKnightsID    = iID;
+	m_InfoBase.iKnightsGrade = iGrade;
 
-	CN3CPlugBase* pPlug   = PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, nullptr, nullptr);
+	CN3CPlugBase* pPlug      = PlugSet(PLUG_POS_KNIGHTS_GRADE, szPlug, nullptr, nullptr);
 	if (pPlug == nullptr)
 		return;
 
@@ -528,12 +529,24 @@ void CPlayerBase::TickAnimation()
 	// 걷고 뛰고, 에니메이션등... 속도 적용
 	float fAniSpeedDelta = 1.0f;
 	if (PSM_STOP != m_eStateMove)
-		fAniSpeedDelta = m_fMoveDelta;                 // 이동중이면 스피드 적용..
+		fAniSpeedDelta = m_fMoveDelta;      // 이동중이면 스피드 적용..
 	else if (PSA_ATTACK == m_eState)
-		fAniSpeedDelta = m_fAttackDelta;               // 공격중이면 공격 스피드 적용..
+		fAniSpeedDelta = m_fAttackDelta;    // 공격중이면 공격 스피드 적용..
 	__ASSERT(fAniSpeedDelta >= 0.1f && fAniSpeedDelta < 10.0f, "Invalid Animation Speed Delta!!!");
-	m_Chr.AniSpeedDeltaSet(fAniSpeedDelta);            // 에니메이션 스피드 실제 적용..
-	m_Chr.Tick();                                      // 에니메이션 틱..
+	m_Chr.AniSpeedDeltaSet(fAniSpeedDelta); // 에니메이션 스피드 실제 적용..
+	m_Chr.Tick();                           // 에니메이션 틱..
+
+	if (m_Chr.CloakPlug() != nullptr)
+	{
+		e_CloakMove eCloakMove = CLOAK_MOVE_STOP;
+		if (m_eStateMove == PSM_RUN)
+			eCloakMove = CLOAK_MOVE_RUN;
+		else if (m_eStateMove == PSM_WALK)
+			eCloakMove = CLOAK_MOVE_WALK;
+		else if (m_eStateMove == PSM_WALK_BACKWARD)
+			eCloakMove = CLOAK_MOVE_WALK_BACKWARD;
+		m_Chr.CloakPlug()->GetCloak()->Tick(m_Chr.m_nLOD, m_fYawCur, eCloakMove);
+	}
 
 	m_bAnimationChanged = false;                       // 큐에 넣은 에니메이션이 변하는 순간만 세팅된다..
 	if (m_Chr.IsAnimEnd())                             // 에니메이션이 끝나면..
@@ -1702,14 +1715,22 @@ bool CPlayerBase::CheckCollisionToTargetByPlug(CPlayerBase* pTarget, int nPlug, 
 	return pTarget->CheckCollisionByBox(v1, v2, pVCol, nullptr);
 }
 
-CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)
+CN3CPlugBase* CPlayerBase::PlugSet(
+	e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce)
 {
 	if (ePos < PLUG_POS_RIGHTHAND || ePos >= PLUG_POS_COUNT)
 	{
 		__ASSERT(0, "Invalid Plug Position");
 		return nullptr;
 	}
-
+	if (m_InfoBase.bIsTransformed && !isForce) // Skip plug if player is transformed
+	{
+		if (pItemBasic)
+			m_pItemPlugBasics[ePos] = pItemBasic;
+		if (pItemExt)
+			m_pItemPlugExts[ePos] = pItemExt;
+		return nullptr;
+	}
 	int iJoint = 0;
 	if (PLUG_POS_RIGHTHAND == ePos)
 	{
@@ -1736,7 +1757,14 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	}
 	else if (PLUG_POS_BACK == ePos)
 	{
-		//m_pItemPlugBasics[PLUG_POS_BACK] = pItem;
+		m_pItemPlugBasics[ePos] = pItemBasic;
+		m_pItemPlugExts[ePos]   = pItemExt;
+
+		CN3CPlug_Cloak* pCloak  = m_Chr.CloakPlugSet(szFN);
+		if (pCloak != nullptr)
+			pCloak->m_nJointIndex = ITEM_POS_SHOULDER;
+
+		return pCloak;
 	}
 	else
 	{
@@ -1847,6 +1875,43 @@ CN3CPlugBase* CPlayerBase::PlugSet(e_PlugPosition ePos, const std::string& szFN,
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	return pPlug;
+}
+
+void CPlayerBase::AttachCloak(int16_t sCapeID, bool isForce)
+{
+	PlugSet(PLUG_POS_BACK, "", nullptr, nullptr, /*isForce=*/true);                                             // Remove cloak
+
+	if (sCapeID < 0)                                                                                            // No cloak
+		return;
+
+	const std::string sMeshPath = fmt::format("Item\\Cloak_{:03}.n3cplug", static_cast<int>(m_InfoBase.eRace)); // Cloak mesh for each race
+	CN3CPlug_Cloak* pCloak      = static_cast<CN3CPlug_Cloak*>(PlugSet(PLUG_POS_BACK, sMeshPath, nullptr, nullptr, isForce));
+	if (pCloak == nullptr)
+		return;
+
+	std::string SColourTexPath;
+	std::string sPatternTexPath;
+	std::string sClanMarkTexPath;
+
+	if (m_InfoBase.iRank == 1)
+	{
+		SColourTexPath = "Item\\Cloak_C_99.dxt"; // King cloak
+	}
+	else
+	{
+		int nColour      = sCapeID % 100;
+		int nPattern     = sCapeID / 100;
+
+		SColourTexPath   = fmt::format("Item\\Cloak_C_{:02}.dxt", nColour);  // Cloak colour
+		sPatternTexPath  = fmt::format("Item\\Cloak_M_{:02}.dxt", nPattern); // Cloak pattern
+		sClanMarkTexPath = "";                                               // No Clan Mark
+
+		if (m_InfoBase.iKnightsGrade <= 2)
+			sClanMarkTexPath = CGameProcedure::GetSymbolFilename(
+				CGameProcedure::GetServerIndex(), m_InfoBase.iKnightsID, m_InfoBase.iMarkVersion); // Clan Mark
+	}
+
+	pCloak->Init(pCloak->Mesh(), SColourTexPath, sClanMarkTexPath, sPatternTexPath);
 }
 
 CN3CPart* CPlayerBase::PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)

@@ -130,9 +130,11 @@ bool CPlayerOther::Init(e_Race eRace, int iFace, int iHair, uint32_t* pdwItemIDs
 				ePart = PART_POS_FEET;
 				eSlot = ITEM_SLOT_SHOES;
 			}
-			else if (5 == i)
+			else if (5 == i) // Clan cape
 			{
-			} // 망토
+				ePlug = PLUG_POS_BACK;
+				eSlot = ITEM_SLOT_SHOULDER;
+			}
 			else if (6 == i)
 			{
 				ePlug = PLUG_POS_RIGHTHAND;

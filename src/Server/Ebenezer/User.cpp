@@ -1893,6 +1893,16 @@ void CUser::Attack(char* pBuf)
 	}
 }
 
+void CUser::SendServerIndex()
+{
+	int index = 0;
+	char buf[8] {};
+	SetByte(buf, WIZ_SERVER_INDEX, index);
+	SetShort(buf, 1, index);
+	SetShort(buf, m_pMain->m_nServerNo, index);
+	Send(buf, index);
+}
+
 void CUser::SendMyInfo(int type)
 {
 	// TODO:
@@ -14458,6 +14468,7 @@ void CUser::GameStart(char* pBuf)
 	// Started loading
 	if (opcode == 1)
 	{
+		SendServerIndex();
 		SendMyInfo(0);
 		m_pMain->UserInOutForMe(this);
 		m_pMain->NpcInOutForMe(this);
@@ -14515,6 +14526,7 @@ void CUser::GameStart(char* pBuf)
 
 		// TODO:
 		// BlinkStart();
+
 
 		SetUserAbility();
 

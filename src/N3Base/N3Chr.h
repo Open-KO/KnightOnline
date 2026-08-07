@@ -12,6 +12,7 @@
 #include "N3Skin.h"
 #include "N3Cloak.h"
 #include "N3PMeshInstance.h"
+#include "N3Mesh.h"
 #include "N3Texture.h"
 #include "N3Joint.h"
 #include <list>
@@ -137,6 +138,7 @@ public:
 
 protected:
 	CN3PMeshInstance m_PMeshInst; // Progressive Mesh Instance
+	CN3Mesh* m_pMesh = nullptr;   // Set when the .n3cplug references .n3mesh instead of .n3pmesh
 	CN3Texture* m_pTexRef;        // Texture Reference Pointer
 	CN3Texture* m_pTexOverlapRef; // 위에 덧칠할 Texture Reference Pointer
 	__Matrix44 m_MtxRot;          // Rotation Matrix;
@@ -227,6 +229,11 @@ public:
 	}
 
 	void PMeshSet(const std::string& szFN);
+
+	CN3Mesh* Mesh()
+	{
+		return m_pMesh;
+	}
 };
 
 inline constexpr int MAX_PLUG_FX_POSITION = 5;
@@ -283,6 +290,8 @@ public:
 	void Release() override;
 
 	void SetLOD(int nLOD);
+	bool Init(CN3Mesh* pMesh, const std::string& sColourTex, const std::string& sClanMarkTex,
+		const std::string& sPatternTex);
 #ifdef _N3GAME
 	CN3Cloak* GetCloak()
 	{
@@ -293,6 +302,9 @@ protected:
 #ifdef _N3GAME
 	CN3Cloak m_Cloak;
 #endif
+	CN3Texture* m_pTexColour   = nullptr;
+	CN3Texture* m_pTexClanMark = nullptr;
+	CN3Texture* m_pTexPattern  = nullptr;
 };
 
 // 0 - 상체, 1 - 하체 ::: 관절들을 나누어서 나누어서 에니메이션 설정..
@@ -327,12 +339,13 @@ protected:
 
 	// 각 조인트의 행렬.. 포인터로 두지 않은 이유는 각 캐릭터마다 따로 에니메이션이 되기 위함이다..
 	std::vector<__Matrix44> m_MtxJoints;
-	std::vector<__Matrix44> m_MtxInverses; // 조인트에 대한 역행렬
+	std::vector<__Matrix44> m_MtxInverses;  // 조인트에 대한 역행렬
 
-	std::vector<CN3CPart*> m_Parts;        // 각 캐릭터의 부분별 Data Pointer List
-	std::vector<CN3CPlug*> m_Plugs;        // 이 캐릭터에 붙이는 무기등의 Data Pointer List
-	std::vector<__VertexColor*> m_vTraces; // Plug Trace Polygon
-	class CN3FXPlug* m_pFXPlug;            // 캐릭터에 FX를 붙이는 것.
+	std::vector<CN3CPart*> m_Parts;         // 각 캐릭터의 부분별 Data Pointer List
+	std::vector<CN3CPlug*> m_Plugs;         // 이 캐릭터에 붙이는 무기등의 Data Pointer List
+	std::vector<__VertexColor*> m_vTraces;  // Plug Trace Polygon
+	class CN3FXPlug* m_pFXPlug;             // 캐릭터에 FX를 붙이는 것.
+	CN3CPlug_Cloak* m_pCloakPlug = nullptr; // Cloak attachment
 
 	// 조인트의 일부분이 따로 에니메이션 되야 한다면.. 조인트 인덱스 시작 번호
 	int m_nJointPartStarts[MAX_CHR_ANI_PART];
@@ -469,6 +482,12 @@ public:
 			return nullptr;
 
 		return m_Plugs[iIndex];
+	}
+
+	CN3CPlug_Cloak* CloakPlugSet(const std::string& sMeshPath);
+	CN3CPlug_Cloak* CloakPlug()
+	{
+		return m_pCloakPlug;
 	}
 
 	void Tick(float fFrm = FRAME_SELFPLAY) override;

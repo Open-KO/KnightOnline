@@ -885,7 +885,7 @@ void CUIImageTooltipDlg::CalcTooltipStringNumAndWriteImpl(__IconItemSkill* spIte
 
 		m_pStr[iIndex]->SetStyle(UI_STR_TYPE_HALIGN, UISTYLE_STRING_ALIGNLEFT);
 
-		if (SetTooltipTextColor(pInfoExt->iRank, spItem->pItemBasic->byNeedRank + spItem->pItemExt->siNeedRank))
+		if (SetTooltipTextColor(CGameBase::s_pPlayer->m_InfoBase.iRank, spItem->pItemBasic->byNeedRank + spItem->pItemExt->siNeedRank))
 			m_pStr[iIndex]->SetColor(m_CWhite);
 		else
 			m_pStr[iIndex]->SetColor(m_CRed);

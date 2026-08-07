@@ -1088,6 +1088,9 @@ bool CGameProcMain::ProcessPacket(Packet& pkt)
 			}
 		}
 		break;
+		case WIZ_SERVER_INDEX:
+			this->MsgRecv_ServerIndex(pkt);
+			return true;
 
 		case WIZ_ITEM_UPGRADE:
 			MsgRecv_ItemUpgrade(pkt);
@@ -1867,7 +1870,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	__ASSERT(pLooks, "failed find character resource data");
 	s_pPlayer->InitChr(pLooks); // 관절 세팅..
 
-	s_pPlayer->m_InfoExt.iRank              = pkt.read<uint8_t>();
+	s_pPlayer->m_InfoBase.iRank             = pkt.read<uint8_t>();
 	s_pPlayer->m_InfoExt.iTitle             = pkt.read<uint8_t>();
 	s_pPlayer->m_InfoBase.iLevel            = pkt.read<uint8_t>();
 	s_pPlayer->m_InfoExt.iLevelPrev         = s_pPlayer->m_InfoBase.iLevel;
@@ -1890,16 +1893,17 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	/*int iAllianceID                       =*/pkt.read<int16_t>();
 	/*uint8_t byFlag                        =*/pkt.read<uint8_t>();
 
-	int iKnightNameLen = pkt.read<uint8_t>(); // 소속 기사단 이름 길이.
+	int iKnightNameLen = pkt.read<uint8_t>();                 // 소속 기사단 이름 길이.
 	pkt.readString(szKnightsName, iKnightNameLen);
-	int iKnightsGrade = pkt.read<uint8_t>();  // 소속 기사단 등급
-	int iKnightsRank  = pkt.read<uint8_t>();  // 소속 기사단 순위
+	int iKnightsGrade                  = pkt.read<uint8_t>(); // 소속 기사단 등급
+	int iKnightsRank                   = pkt.read<uint8_t>(); // 소속 기사단 순위
 
-	/*int16_t sMarkVersion            =*/pkt.read<int16_t>();
-	/*int16_t sCapeID                 =*/pkt.read<int16_t>();
+	int16_t sMarkVersion               = pkt.read<int16_t>(); // Clan mark
+	int16_t sCapeID                    = pkt.read<int16_t>(); // Clan cloak
 
 	// 기사단 관련 세팅..
-	s_pPlayer->m_InfoExt.eKnightsDuty = eKnightsDuty; // 기사단에서의 권한..
+	s_pPlayer->m_InfoExt.eKnightsDuty  = eKnightsDuty; // 기사단에서의 권한..
+	s_pPlayer->m_InfoBase.iMarkVersion = sMarkVersion; // Clan mark
 	s_pPlayer->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
 	m_pUIVar->UpdateKnightsInfo();
 
@@ -2177,16 +2181,8 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 
 	InitPlayerPosition(__Vector3(fX, fY, fZ)); // 플레이어 위치 초기화.. 일으켜 세우고, 기본동작을 취하게 한다.
 	s_pPlayer->RegenerateCollisionMesh();
-
-	// berserk temp
-	//s_pPlayer->PlugSet(PLUG_POS_BACK, "item/babacloak.n3cplug_cloak", nullptr);	// 파트를 셋팅..
-	// end berserk temp
-
-	// berserk
-	//s_pPlayer->AttachCloak();
-
-	//..
-	s_pOPMgr->Release(); // 다른 유저 관리 클래스 초기화..
+	s_pPlayer->AttachCloak(sCapeID);           // Cloak
+	s_pOPMgr->Release();                       // 다른 유저 관리 클래스 초기화..
 
 	if (m_pUICmdList != nullptr)
 		m_pUICmdList->CreateCategoryList();
@@ -2542,24 +2538,24 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 
 	/*int16_t sAllianceID      =*/pkt.read<int16_t>();
 
-	int iKnightNameLen = pkt.read<uint8_t>(); // 소속 기사단 이름 길이.
+	int iKnightNameLen = pkt.read<uint8_t>();   // 소속 기사단 이름 길이.
 	std::string szKnightsName;
 	pkt.readString(szKnightsName, iKnightNameLen);
-	int iKnightsGrade = pkt.read<uint8_t>();  // 등급
-	int iKnightsRank  = pkt.read<uint8_t>();  // 순위
+	int iKnightsGrade    = pkt.read<uint8_t>(); // 등급
+	int iKnightsRank     = pkt.read<uint8_t>(); // 순위
 
-	/*int16_t sMarkVersion =*/pkt.read<int16_t>();
-	/*int16_t sCapeID    =*/pkt.read<int16_t>();
+	int16_t sMarkVersion = pkt.read<int16_t>(); // Clan mark
+	int16_t sCapeID      = pkt.read<int16_t>(); // Cloak
 
-	int iLevel      = pkt.read<uint8_t>(); // 레벨...
-	e_Race eRace    = (e_Race) pkt.read<uint8_t>();
-	e_Class eClass  = (e_Class) pkt.read<int16_t>();
-	float fXPos     = (pkt.read<uint16_t>()) / 10.0f;
-	float fZPos     = (pkt.read<uint16_t>()) / 10.0f;
-	float fYPos     = (pkt.read<int16_t>()) / 10.0f;
+	int iLevel           = pkt.read<uint8_t>(); // 레벨...
+	e_Race eRace         = (e_Race) pkt.read<uint8_t>();
+	e_Class eClass       = (e_Class) pkt.read<int16_t>();
+	float fXPos          = (pkt.read<uint16_t>()) / 10.0f;
+	float fZPos          = (pkt.read<uint16_t>()) / 10.0f;
+	float fYPos          = (pkt.read<int16_t>()) / 10.0f;
 
-	float fYTerrain = ACT_WORLD->GetHeightWithTerrain(fXPos, fZPos);                          // 지형의 높이값 얻기..
-	float fYObject  = ACT_WORLD->GetHeightNearstPosWithShape(__Vector3(fXPos, fYPos, fZPos)); // 오브젝트에서 가장 가까운 높이값 얻기..
+	float fYTerrain      = ACT_WORLD->GetHeightWithTerrain(fXPos, fZPos);                          // 지형의 높이값 얻기..
+	float fYObject       = ACT_WORLD->GetHeightNearstPosWithShape(__Vector3(fXPos, fYPos, fZPos)); // 오브젝트에서 가장 가까운 높이값 얻기..
 	if (fYObject > fYTerrain)
 		fYPos = fYObject;
 	else
@@ -2581,7 +2577,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	/*uint8_t bInvisibilityType =*/pkt.read<uint8_t>();
 	/*int16_t sDirection        =*/pkt.read<int16_t>();
 	/*bool bIsChicken           =*/pkt.read<bool>();
-	/*uint8_t bRank             =*/pkt.read<uint8_t>();
+	uint8_t byRank = pkt.read<uint8_t>(); // Noble rank - used to identify high-ranking titles like King [1], Senator [2]
 	/*uint8_t bKnightsRank      =*/pkt.read<uint8_t>();
 	/*uint8_t bPersonalRank     =*/pkt.read<uint8_t>();
 
@@ -2629,9 +2625,12 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->m_InfoBase.eClass     = eClass;
 	pUPC->m_InfoBase.iLevel     = iLevel;
 	pUPC->m_InfoBase.iAuthority = byAuthority;
+	pUPC->m_InfoBase.iRank      = byRank;
 	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities, byItemFlags);
 	pUPC->RotateTo(DegreesToRadians(rand() % 360), true);
+	pUPC->m_InfoBase.iMarkVersion = sMarkVersion;
 	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
+	pUPC->AttachCloak(sCapeID);
 
 	//__KnightsInfoBase* pKIB = m_pUIKnightsOp->KnightsInfoFind(iKightsID);
 	//if(pKIB) pUPC->KnightsNameSet(pKIB->szName, 0xffff0000);
@@ -8050,4 +8049,12 @@ void CGameProcMain::MsgRecv_ZoneAbility(Packet& pkt)
 		s_pPlayer->m_InfoExt.bCanTalkToOtherNation    = pkt.read<bool>();
 		s_pPlayer->m_InfoExt.sZoneTariff              = pkt.read<int16_t>();
 	}
+}
+
+void CGameProcMain::MsgRecv_ServerIndex(Packet& pkt)
+{
+	int16_t sResult = pkt.read<int16_t>();
+	if (sResult == 0) // 1 = success, 0 = server index unavailable
+		return;
+	m_nServerIndex = pkt.read<int16_t>();
 }

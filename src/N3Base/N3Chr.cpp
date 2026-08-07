@@ -306,6 +306,7 @@ CN3CPlugBase::~CN3CPlugBase()
 {
 	s_MngTex.Delete(&m_pTexRef);
 	s_MngTex.Delete(&m_pTexOverlapRef);
+	s_MngMesh.Delete(&m_pMesh);
 }
 
 void CN3CPlugBase::Release()
@@ -316,6 +317,7 @@ void CN3CPlugBase::Release()
 
 	s_MngTex.Delete(&m_pTexRef);
 	s_MngTex.Delete(&m_pTexOverlapRef);
+	s_MngMesh.Delete(&m_pMesh);
 
 	m_Mtl.Init();
 	m_vPosition.Zero();
@@ -463,7 +465,7 @@ bool CN3CPlugBase::Load(File& file)
 	char szFN[512] = "";
 
 	file.Read(&m_ePlugType, 4); // Plug Type
-								//#ifdef _N3TOOL
+	//#ifdef _N3TOOL
 	if (m_ePlugType > PLUGTYPE_MAX)
 	{
 		m_ePlugType = PLUGTYPE_NORMAL;
@@ -481,8 +483,20 @@ bool CN3CPlugBase::Load(File& file)
 	if (nL > 0)
 	{
 		file.Read(szFN, nL);
-		szFN[nL] = '\0';
-		PMeshSet(szFN);
+		szFN[nL]             = '\0';
+
+		char szExt[_MAX_EXT] = "";
+		_splitpath_s(szFN, nullptr, 0, nullptr, 0, nullptr, 0, szExt, _MAX_EXT);
+
+		if (_stricmp(szExt, ".n3pmesh") == 0)
+		{
+			PMeshSet(szFN);
+		}
+		else if (_stricmp(szExt, ".n3mesh") == 0)
+		{
+			s_MngMesh.Delete(&m_pMesh);
+			m_pMesh = s_MngMesh.Get(szFN);
+		}
 	}
 
 	file.Read(&nL, 4);
@@ -514,13 +528,16 @@ bool CN3CPlugBase::Save(File& file)
 
 	file.Write(&m_Mtl, sizeof(__Material)); // 재질
 
-	nL               = 0;
-	CN3PMesh* pPMesh = m_PMeshInst.GetMesh();
-	if (pPMesh != nullptr)
-		nL = static_cast<int>(pPMesh->FileName().size());
+	nL = 0;
+	std::string szMeshFN;
+	if (CN3PMesh* pPMesh = m_PMeshInst.GetMesh())
+		szMeshFN = pPMesh->FileName();
+	else if (m_pMesh != nullptr)
+		szMeshFN = m_pMesh->FileName();
+	nL = static_cast<int>(szMeshFN.size());
 	file.Write(&nL, 4);
 	if (nL > 0)
-		file.Write(pPMesh->FileName().c_str(), nL);
+		file.Write(szMeshFN.c_str(), nL);
 
 	nL = 0;
 	if (m_pTexRef != nullptr)
@@ -1047,23 +1064,27 @@ CN3CPlug_Cloak::~CN3CPlug_Cloak()
 
 void CN3CPlug_Cloak::Release()
 {
+#ifdef _N3GAME
+	s_MngTex.Delete(&m_pTexColour);
+	s_MngTex.Delete(&m_pTexClanMark);
+	s_MngTex.Delete(&m_pTexPattern);
+#endif
 	CN3CPlugBase::Release();
 }
 
 bool CN3CPlug_Cloak::Load(File& file)
 {
-	CN3CPlugBase::Load(file);
-#ifdef _N3GAME
-	m_Cloak.Init(this);
-#endif
-	return 0;
+	if (!CN3CPlugBase::Load(file))
+		return false;
+
+	return m_pMesh != nullptr; // mesh file missing or wrong extension
 }
 
 #ifdef _N3TOOL
 bool CN3CPlug_Cloak::Save(File& file)
 {
 	CN3CPlugBase::Save(file);
-	return 0;
+	return false;
 }
 #endif
 void CN3CPlug_Cloak::Render(const __Matrix44& mtxParent, const __Matrix44& mtxJoint)
@@ -1076,7 +1097,7 @@ void CN3CPlug_Cloak::Render(const __Matrix44& mtxParent, const __Matrix44& mtxJo
 	mtx  = m_Matrix;
 	mtx *= mtxJoint;
 	mtx *= mtxParent;
-	m_Cloak.Render(mtx);
+	m_Cloak.Render(mtx, m_pTexColour, m_pTexPattern, m_pTexClanMark);
 #endif
 }
 
@@ -1086,6 +1107,37 @@ void CN3CPlug_Cloak::SetLOD(int nLOD)
 	m_Cloak.SetLOD(nLOD);
 #endif
 }
+
+bool CN3CPlug_Cloak::Init(CN3Mesh* pMesh, const std::string& sColourTex,
+	const std::string& sClanMarkTex, const std::string& sPatternTex)
+{
+	s_MngTex.Delete(&m_pTexColour);
+	s_MngTex.Delete(&m_pTexClanMark);
+	s_MngTex.Delete(&m_pTexPattern);
+
+	if (!pMesh)
+		return false;
+
+	//if (pMesh->VertexCount() != 49)
+	//	return false;
+	//if (pMesh->IndexCount() != 216)
+	//	return false;
+
+	m_pTexColour   = s_MngTex.Get(sColourTex, true, 0);
+	m_pTexClanMark = s_MngTex.Get(sClanMarkTex, true, 0);
+	m_pTexPattern  = s_MngTex.Get(sPatternTex, true, 0);
+	//__ASSERT(m_pMesh && m_pTex, "IN CN3Cloak, Mesh or m_pTex is null");
+
+	TexSet(sColourTex);
+#ifdef _N3GAME
+	m_Cloak.InitMeshTex(pMesh, Tex());
+	m_Cloak.InitPhysics();
+#endif
+	SetLOD(0);
+
+	return true;
+}
+
 // CN3cPlug_Cloak Codes End here
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -1122,6 +1174,9 @@ CN3Chr::~CN3Chr()
 	for (auto itr = m_Plugs.begin(); itr != m_Plugs.end(); ++itr)
 		delete *itr;
 	m_Plugs.clear();
+
+	delete m_pCloakPlug;
+	m_pCloakPlug = nullptr;
 
 	for (auto itr = m_vTraces.begin(); itr != m_vTraces.end(); ++itr)
 		delete *itr;
@@ -1892,6 +1947,12 @@ void CN3Chr::Render()
 		////////////////////////////////////////////////////
 	}
 
+	// Cloak render
+	if (m_pCloakPlug != nullptr && m_pCloakPlug->m_bVisible && m_pCloakPlug->m_nJointIndex >= 0)
+	{
+		m_pCloakPlug->Render(m_Matrix, m_MtxJoints[m_pCloakPlug->m_nJointIndex]);
+	}
+
 	//////////////////////////////////////////////////
 	//	Coded (By Dino On 2002-10-11 오전 11:20:19 )
 	//	FXPlug
@@ -2199,6 +2260,24 @@ void CN3Chr::PlugAlloc(int iCount)
 		for (int i = 0; i < iCount; i++)
 			m_Plugs[i] = new CN3CPlug();
 	}
+}
+
+CN3CPlug_Cloak* CN3Chr::CloakPlugSet(const std::string& sMeshPath)
+{
+	delete m_pCloakPlug;
+	m_pCloakPlug = nullptr;
+
+	if (sMeshPath.empty())
+		return nullptr;
+
+	m_pCloakPlug = new CN3CPlug_Cloak();
+	if (!m_pCloakPlug->LoadFromFile(sMeshPath))
+	{
+		delete m_pCloakPlug;
+		m_pCloakPlug = nullptr;
+		return nullptr;
+	}
+	return m_pCloakPlug;
 }
 
 /*

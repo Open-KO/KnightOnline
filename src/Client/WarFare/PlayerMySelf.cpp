@@ -566,7 +566,7 @@ void CPlayerMySelf::InventoryChrAnimationInitialize()
 }
 
 CN3CPlugBase* CPlayerMySelf::PlugSet(
-	e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)
+	e_PlugPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt, bool isForce)
 {
 	int iJoint = 0;
 	if (PLUG_POS_RIGHTHAND == ePos)
@@ -595,7 +595,7 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(
 	}
 	else if (PLUG_POS_BACK == ePos)
 	{
-		//m_pItemBasicPlugRefs[PLUG_POS_BACK] = pItem;
+		return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt, isForce);
 	}
 	else
 	{
@@ -613,13 +613,9 @@ CN3CPlugBase* CPlayerMySelf::PlugSet(
 		pPlug->ScaleSet(__Vector3(fScale, fScale, fScale));
 		pPlug->m_nJointIndex = iJoint; // 관절 번호 세팅..
 	}
-	//	else if(PLUG_POS_BACK == ePos)
-	//	{
-	//		CN3CPlug_Cloak *pPlugCloak = (CN3CPlug_Cloak*)pPlug;
-	//	}
 
 	this->SetSoundPlug(pItemBasic);
-	return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt);
+	return CPlayerBase::PlugSet(ePos, szFN, pItemBasic, pItemExt, isForce);
 }
 
 CN3CPart* CPlayerMySelf::PartSet(e_PartPosition ePos, const std::string& szFN, __TABLE_ITEM_BASIC* pItemBasic, __TABLE_ITEM_EXT* pItemExt)

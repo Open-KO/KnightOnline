@@ -711,6 +711,16 @@ std::string CGameProcedure::GetStrRegKeySetting()
 	return fmt::format("Software\\KnightOnline\\{}_{}_{}", s_szAccount, s_szServer, s_iChrSelectIndex);
 }
 
+std::string CGameProcedure::GetSymbolFilename(const int serverIndex, const int knightsId, const int markVersion)
+{
+	return fmt::format("symbol_us\\s_{}_{}_{}.dxt", serverIndex, knightsId, markVersion);
+}
+
+int CGameProcedure::GetServerIndex()
+{
+	return s_pProcMain ? s_pProcMain->m_nServerIndex : 0;
+}
+
 bool CGameProcedure::ProcessPacket(Packet& pkt)
 {
 	int iCmd = pkt.read<uint8_t>(); // 커멘드 파싱..

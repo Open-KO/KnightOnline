@@ -5,7 +5,6 @@
 #include "StdAfxBase.h"
 #include "N3Cloak.h"
 #include "N3Texture.h"
-#include "N3PMeshInstance.h"
 #include "N3Chr.h"
 
 CN3Cloak::CN3Cloak()
@@ -14,7 +13,7 @@ CN3Cloak::CN3Cloak()
 	m_pTex                = nullptr;
 	m_pParticle           = nullptr;
 	m_nLOD                = -1;
-	m_pPMesh              = nullptr;
+	m_pMesh               = nullptr;
 	m_pIndex              = nullptr;
 	m_pVertex             = nullptr;
 	m_fOffsetRecoveryTime = 0.0f;
@@ -36,6 +35,7 @@ CN3Cloak::~CN3Cloak()
 	delete[] m_pParticle;
 	delete[] m_pIndex;
 	delete[] m_pVertex;
+	delete[] m_pIndexMark;
 }
 
 void CN3Cloak::Release()
@@ -48,23 +48,10 @@ void CN3Cloak::Release()
 
 	delete[] m_pVertex;
 	m_pVertex = nullptr;
-}
 
-void CN3Cloak::Init(CN3CPlug_Cloak* pPlugCloak)
-{
-	m_pTex   = pPlugCloak->Tex();
-	m_pPMesh = pPlugCloak->PMesh();
-	__ASSERT(m_pPMesh && m_pTex, "IN CN3Cloak, PMesh or m_pTex is null");
-
-	SetLOD(0);
-
-	//
-	m_GravityForce.x = 0.0f;
-	m_GravityForce.z = 0.0005f;
-	//m_GravityForce.y = -0.0025f;
-	m_GravityForce.y = -0.0005f;
-
-	m_Force.x = m_Force.y = m_Force.z = 0.0f;
+	delete[] m_pIndexMark;
+	m_pIndexMark      = nullptr;
+	m_nIndexCountMark = 0;
 }
 
 void CN3Cloak::Tick(int /*nLOD*/, float fYaw, e_CloakMove eCloakMove)
@@ -86,57 +73,111 @@ void CN3Cloak::Tick(int /*nLOD*/, float fYaw, e_CloakMove eCloakMove)
 	//		fForceDelay = 0.0f;
 	//		fForceDelayLimit = 2.0f + rand()%10;
 	//	}
-	m_fAnchorPreserveTime -= s_fSecPerFrm;
-	if (m_eAnchorPattern != AMP_NONE)
-	{
-		if (m_fAnchorPreserveTime < 0.0f)
-		{
-			RestoreAnchorLine();
-		}
-	}
+	// m_fAnchorPreserveTime -= s_fSecPerFrm;
+	// if (m_eAnchorPattern != AMP_NONE)
+	// {
+	//	if (m_fAnchorPreserveTime < 0.0f)
+	//	{
+	//		RestoreAnchorLine();
+	//	}
+	// }
 
+	// const e_Cloak_AnchorMovePattern prevAnchor = m_eAnchorPattern;
 	TickByPlayerMotion(eCloakMove);
 	TickYaw(fYaw);
-
+	// if (m_eAnchorPattern == prevAnchor && m_eAnchorPattern == AMP_NONE)
+	//	MoveAnchorLine(AMP_NONE, 2.0f);
 	UpdateLocalForce();
 	ApplyForce();
 
 	m_Force.x = m_Force.y = m_Force.z = 0.0f;
 }
 
-void CN3Cloak::Render(__Matrix44& mtx)
+void CN3Cloak::Render(
+	__Matrix44& mtx, CN3Texture* pTexColour, CN3Texture* pTexPattern, CN3Texture* pTexClanMark)
 {
-	if (m_nLOD < 0)
+	if (m_nLOD < 0 || m_pTex == nullptr)
 		return;
 
 	s_lpD3DDev->SetTransform(D3DTS_WORLD, mtx.toD3D());
 
-	DWORD dwCull = 0, dwLight = 0;
-	s_lpD3DDev->GetRenderState(D3DRS_LIGHTING, &dwLight);
+	DWORD dwCull = 0;
 	s_lpD3DDev->GetRenderState(D3DRS_CULLMODE, &dwCull);
-
-	//
-	//s_lpD3DDev->SetRenderState( D3DRS_LIGHTING, FALSE);
 	if (dwCull != D3DCULL_NONE)
 		s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
+	// Mesh
 	s_lpD3DDev->SetTexture(0, m_pTex->Get());
-	s_lpD3DDev->SetTexture(1, nullptr);
-
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 	s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-	//	s_lpD3DDev->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	//	s_lpD3DDev->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-	//	s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+	// Colour
+	if (pTexColour != nullptr)
+	{
+		s_lpD3DDev->SetTexture(1, pTexColour->Get());
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
+	}
+	else
+	{
+		s_lpD3DDev->SetTexture(1, nullptr);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
+
+	// Pattern
+	if (pTexPattern != nullptr)
+	{
+		s_lpD3DDev->SetTexture(2, pTexPattern->Get());
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 0);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_CURRENT);
+		s_lpD3DDev->SetTextureStageState(3, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
+	else
+	{
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	}
 
 	s_lpD3DDev->SetFVF(FVF_VNT1);
 	s_lpD3DDev->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, m_nVertexCount, m_nIndexCount / 3,
 		m_pIndex, D3DFMT_INDEX16, m_pVertex, sizeof(__VertexT1));
 
-	//
+	if (pTexClanMark != nullptr && m_pIndexMark != nullptr && m_nIndexCountMark > 0)
+	{
+		const float fDepthBias = -0.001f;
+		s_lpD3DDev->SetRenderState(D3DRS_DEPTHBIAS, *reinterpret_cast<const DWORD*>(&fDepthBias));
+
+		s_lpD3DDev->SetTexture(0, pTexClanMark->Get());
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+		D3DMATRIX texMat = { 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+			-1.0f, -1.0f, 0.0f, 1.0f };
+		s_lpD3DDev->SetTransform(D3DTS_TEXTURE0, &texMat);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
+
+		s_lpD3DDev->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, m_nVertexCount, m_nIndexCountMark,
+			m_pIndexMark, D3DFMT_INDEX16, m_pVertex, sizeof(__VertexT1));
+
+		const float fZero = 0.0f;
+		s_lpD3DDev->SetRenderState(D3DRS_DEPTHBIAS, *reinterpret_cast<const DWORD*>(&fZero));
+
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+
+		// Restore stage 0
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+		s_lpD3DDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+	}
+
+	/* Grid for debugging the cloake movement
 	__VertexXyzColor Vtx[2] {};
-	/*
 	__VertexT1 *pTemp = m_pVertex;
 	Vtx[0].Set(pTemp->x, pTemp->y, pTemp->z, 0xffffffff);
 	Vtx[1].Set(1.0f, 1.0f, 1.0f, 0xffffffff);
@@ -147,7 +188,7 @@ void CN3Cloak::Render(__Matrix44& mtx)
 	Vtx[1].Set(1.0f, 1.0f, 1.0f, 0xffffffff);
 	s_lpD3DDev->SetVertexShader(FVF_CV);
 	s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vtx, sizeof(__VertexXyzColor));
-*/
+
 
 	for (int i = 0; i < m_nGridH; i++)
 	{
@@ -179,8 +220,13 @@ void CN3Cloak::Render(__Matrix44& mtx)
 			s_lpD3DDev->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vtx, sizeof(__VertexXyzColor));
 		}
 	}
+	*/
 
 	// restore renderstate.
+	s_lpD3DDev->SetTexture(1, nullptr);
+	s_lpD3DDev->SetTexture(2, nullptr);
+	s_lpD3DDev->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	s_lpD3DDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	if (dwCull != D3DCULL_NONE)
 		s_lpD3DDev->SetRenderState(D3DRS_CULLMODE, dwCull);
 }
@@ -335,17 +381,45 @@ void CN3Cloak::SetLOD(int nLevel)
 			m_nGridW         = 7;
 			m_nGridH         = 5;
 
-			int nVertexCount = m_pPMesh->GetMaxNumVertices();
-			int nIndexCount  = m_pPMesh->GetMaxNumIndices();
+			int nVertexCount = m_pMesh->VertexCount();
+			int nIndexCount  = m_pMesh->IndexCount();
 			m_pVertex        = new __VertexT1[nVertexCount];
-			memcpy(&m_pVertex, m_pPMesh->GetVertices(), sizeof(__VertexT1) * nVertexCount);
+			memcpy(m_pVertex, m_pMesh->Vertices(), sizeof(__VertexT1) * nVertexCount);
 			m_pIndex = new uint16_t[nIndexCount];
-			memcpy(m_pIndex, m_pPMesh->GetIndices(), sizeof(uint16_t) * nIndexCount);
+			memcpy(m_pIndex, m_pMesh->Indices(), sizeof(uint16_t) * nIndexCount);
 			m_nVertexCount = nVertexCount;
 			m_nIndexCount  = nIndexCount;
 			//
 		}
-		break;
+			// Center-quad index list for clan mark
+			{
+				constexpr int MARK_COL_MIN = 2, MARK_COL_MAX = 4; // exclusive
+				constexpr int MARK_ROW_MIN = 0, MARK_ROW_MAX = 2; // exclusive
+				int nMarkQuads = (MARK_COL_MAX - MARK_COL_MIN) * (MARK_ROW_MAX - MARK_ROW_MIN);
+				delete[] m_pIndexMark;
+				m_pIndexMark      = new uint16_t[nMarkQuads * 6];
+				m_nIndexCountMark = 0;
+				uint16_t* pDst    = m_pIndexMark;
+				for (int row = MARK_ROW_MIN; row < MARK_ROW_MAX; row++)
+				{
+					for (int col = MARK_COL_MIN; col < MARK_COL_MAX; col++)
+					{
+						uint16_t v0        = (row + CLOAK_SKIP_LINE) * m_nGridW + col;
+						uint16_t v1        = (row + CLOAK_SKIP_LINE) * m_nGridW + col + 1;
+						uint16_t v2        = (row + CLOAK_SKIP_LINE + 1) * m_nGridW + col;
+						uint16_t v3        = (row + CLOAK_SKIP_LINE + 1) * m_nGridW + col + 1;
+						pDst[0]            = v0;
+						pDst[1]            = v1;
+						pDst[2]            = v3;
+						pDst[3]            = v3;
+						pDst[4]            = v2;
+						pDst[5]            = v0;
+						pDst              += 6;
+						m_nIndexCountMark += 2;
+					}
+				}
+			}
+			break;
 
 		default:
 			break;
@@ -409,24 +483,30 @@ void CN3Cloak::ApplyOffset(__Vector3& vDif)
 void CN3Cloak::TickYaw(float fYaw)
 {
 	// 회전이 있었다.
-	if (fYaw != m_fPrevYaw)
+	/*  if (fYaw != m_fPrevYaw)
 	{
-		if (fYaw - m_fPrevYaw > 0.0f)
+		const float deltafYaw = fYaw - m_fPrevYaw;
+
+		if (deltafYaw > 2.0f)
 		{
 			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
 				MoveAnchorLine(AMP_YAWCCW, 2.0f);
 		}
-		else
+		else if (deltafYaw < -2.0f)
 		{
 			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
 				MoveAnchorLine(AMP_YAWCW, 2.0f);
 		}
-	}
+	}*/
 	m_fPrevYaw = fYaw;
 }
 
 void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 {
+	float angleFactor = 0.0f;
+	float angleMag    = 0.0f;
+	bool doWind       = false;
+
 	switch (eCurMove)
 	{
 		case CLOAK_MOVE_STOP:
@@ -434,19 +514,27 @@ void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 			break;
 
 		case CLOAK_MOVE_WALK:
-			m_Force.z        = 0.0005f;
-			m_GravityForce.y = -0.0025f;
-			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
-				MoveAnchorLine(AMP_MOVEXZ, 2.0f);
+			// m_Force.z        = 0.0005f;
+			m_GravityForce.y = -0.0015f;
+			angleFactor      = 0.314159f;
+			angleMag         = -0.0003f;
+			doWind           = true;
+			// if (m_eAnchorPattern == AMP_NONE
+			//	&& m_fAnchorPreserveTime < 0.0f)
+			//	MoveAnchorLine(AMP_MOVEXZ, 2.0f);
 			//m_GravityForce.y = (rand()%2+1)*-0.0015f;
 			//TRACE("Apply force {}", m_Force.z);
 			break;
 
 		case CLOAK_MOVE_RUN:
-			m_Force.z        = 0.0009f;
-			m_GravityForce.y = -0.0025f;
-			if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
-				MoveAnchorLine(AMP_MOVEXZ2, 2.0f);
+			//m_Force.z        = 0.0009f;
+			m_GravityForce.y = -0.0005f;
+			angleFactor      = 1.0472f;
+			angleMag         = -0.001f;
+			doWind           = true;
+			break;
+			// if (m_eAnchorPattern == AMP_NONE && m_fAnchorPreserveTime < 0.0f)
+			//	MoveAnchorLine(AMP_MOVEXZ2, 2.0f);
 			//m_GravityForce.y = (rand()%2+1)*-0.0015f;
 			//TRACE("Apply force {}", m_Force.z);
 			break;
@@ -454,9 +542,17 @@ void CN3Cloak::TickByPlayerMotion(e_CloakMove eCurMove)
 		default:
 			break;
 	}
+	if (doWind)
+	{
+		const int r       = rand() % 10;
+		const float angle = (r * 0.03f + 0.7f) * angleFactor;
+		m_Force.x         = 0.0f;
+		m_Force.y         = sinf(angle) * angleMag;
+		m_Force.z         = cosf(angle) * angleMag;
+	}
 }
 
-void CN3Cloak::MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTime)
+/* void CN3Cloak::MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTime)
 {
 	if (m_eAnchorPattern != AMP_NONE)
 		return;
@@ -523,7 +619,7 @@ void CN3Cloak::MoveAnchorLine(e_Cloak_AnchorMovePattern eType, float fPreserveTi
 
 	m_fAnchorPreserveTime = fPreserveTime;
 	m_eAnchorPattern      = eType;
-}
+}*/
 
 void CN3Cloak::RestoreAnchorLine()
 {
