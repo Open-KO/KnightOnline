@@ -2802,7 +2802,7 @@ bool CGameProcMain::MsgRecv_UserInAndRequest(Packet& pkt)
 
 		itID    = m_SetUPCID.begin();
 		itIDEnd = m_SetUPCID.end();
-		for (int i = 0; itID != itIDEnd; itID++, i++)
+		for (; itID != itIDEnd; itID++)
 		{
 			iID = *itID;
 			CAPISocket::MP_AddShort(&byBuff[0], iOffset, iID); // 자세한 정보가 필요한 아이디들..
@@ -3152,7 +3152,7 @@ bool CGameProcMain::MsgRecv_NPCInAndRequest(Packet& pkt)
 
 		itID    = m_SetNPCID.begin();
 		itIDEnd = m_SetNPCID.end();
-		for (int i = 0; itID != itIDEnd; itID++, i++)
+		for (; itID != itIDEnd; itID++)
 		{
 			iID = *itID;
 			CAPISocket::MP_AddShort(&byBuff[0], iOffset, iID); // 자세한 정보가 필요한 아이디들..
