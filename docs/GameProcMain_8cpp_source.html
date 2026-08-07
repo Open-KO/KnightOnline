@@ -2904,7 +2904,7 @@ $(function(){initNavTree('GameProcMain_8cpp_source.html',''); initResizable(true
 <div class="line"><a id="l02802" name="l02802"></a><span class="lineno"> 2802</span> </div>
 <div class="line"><a id="l02803" name="l02803"></a><span class="lineno"> 2803</span>        itID    = m_SetUPCID.begin();</div>
 <div class="line"><a id="l02804" name="l02804"></a><span class="lineno"> 2804</span>        itIDEnd = m_SetUPCID.end();</div>
-<div class="line"><a id="l02805" name="l02805"></a><span class="lineno"> 2805</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; itID != itIDEnd; itID++, i++)</div>
+<div class="line"><a id="l02805" name="l02805"></a><span class="lineno"> 2805</span>        <span class="keywordflow">for</span> (; itID != itIDEnd; itID++)</div>
 <div class="line"><a id="l02806" name="l02806"></a><span class="lineno"> 2806</span>        {</div>
 <div class="line"><a id="l02807" name="l02807"></a><span class="lineno"> 2807</span>            iID = *itID;</div>
 <div class="line"><a id="l02808" name="l02808"></a><span class="lineno"> 2808</span>            CAPISocket::MP_AddShort(&amp;byBuff[0], iOffset, iID); <span class="comment">// 자세한 정보가 필요한 아이디들..</span></div>
@@ -3254,7 +3254,7 @@ $(function(){initNavTree('GameProcMain_8cpp_source.html',''); initResizable(true
 <div class="line"><a id="l03152" name="l03152"></a><span class="lineno"> 3152</span> </div>
 <div class="line"><a id="l03153" name="l03153"></a><span class="lineno"> 3153</span>        itID    = m_SetNPCID.begin();</div>
 <div class="line"><a id="l03154" name="l03154"></a><span class="lineno"> 3154</span>        itIDEnd = m_SetNPCID.end();</div>
-<div class="line"><a id="l03155" name="l03155"></a><span class="lineno"> 3155</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; itID != itIDEnd; itID++, i++)</div>
+<div class="line"><a id="l03155" name="l03155"></a><span class="lineno"> 3155</span>        <span class="keywordflow">for</span> (; itID != itIDEnd; itID++)</div>
 <div class="line"><a id="l03156" name="l03156"></a><span class="lineno"> 3156</span>        {</div>
 <div class="line"><a id="l03157" name="l03157"></a><span class="lineno"> 3157</span>            iID = *itID;</div>
 <div class="line"><a id="l03158" name="l03158"></a><span class="lineno"> 3158</span>            CAPISocket::MP_AddShort(&amp;byBuff[0], iOffset, iID); <span class="comment">// 자세한 정보가 필요한 아이디들..</span></div>
