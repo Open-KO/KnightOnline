@@ -41,12 +41,12 @@ struct __InfoPlayerBase
 	int iHP;
 	int iMP;
 	int iMPMax;
-	int iAuthority; // 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
-	int iKnightsID; // Clan ID
+	int iAuthority;             // 권한 - 0 관리자, 1 - 일반유저, 255 - 블럭당한 유저...
+	int iKnightsID;             // Clan ID
 	int iAllianceID;
 	int iKnightsWarEnemyID;
-
-	bool bRenderID; // 화면에 ID 를 찍는지..
+	bool bRenderID;             // 화면에 ID 를 찍는지..
+	e_KnightsDuty eKnightsDuty; //Clan leader/ duty role
 
 	__InfoPlayerBase()
 	{
@@ -70,6 +70,7 @@ struct __InfoPlayerBase
 		iKnightsID         = 0;
 		iAllianceID        = 0;
 		iKnightsWarEnemyID = 0;
+		eKnightsDuty       = KNIGHTS_DUTY_UNKNOWN;
 		bRenderID          = true;
 	}
 };
@@ -371,7 +372,9 @@ public:
 	void InfoStringSet(const std::string& szInfo, D3DCOLOR crFont);
 	void BalloonStringSet(const std::string& szBalloon, D3DCOLOR crFont);
 	void IDSet(int iID, const std::string& szID, D3DCOLOR crID);
-	virtual void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank);
+	void DrawClanLeaderIndicator(const _POINT& pt);
+	virtual void RenderOverhead(_POINT pt);
+	virtual void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank, e_KnightsDuty eDuty = KNIGHTS_DUTY_UNKNOWN);
 
 	// ID 는 Character 포인터의 이름으로 대신한다.
 	const std::string& IDString() const

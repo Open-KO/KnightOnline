@@ -57,7 +57,7 @@ public:
 
 	// 갖고 있는 정보로 머리카락을 초기화 한다..
 	void InitHair() override;
-	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank) override;
+	void KnightsInfoSet(int iID, const std::string& szName, int iGrade, int iRank, e_KnightsDuty eDuty = KNIGHTS_DUTY_UNKNOWN) override;
 	void SetSoundAndInitFont(uint32_t dwFontFlag = 0U) override;
 
 	float AttackableDistance(CPlayerBase* pTarget);

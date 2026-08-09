@@ -18,6 +18,7 @@ public:
 	void MoveTo(float fPosX, float fPosY, float fPosZ, float fMoveSpeed, int iMoveMode); // 이 위치로 이동..
 	void Tick() override;
 	void SetSoundAndInitFont(uint32_t dwFontFlag = 0U) override;
+	void RenderOverhead(_POINT pt) override;                                             // Information over character
 
 	CPlayerNPC();
 	~CPlayerNPC() override;

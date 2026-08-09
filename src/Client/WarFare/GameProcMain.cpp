@@ -1883,10 +1883,10 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	s_pPlayer->m_InfoExt.iCity              = pkt.read<uint8_t>();
 
 	std::string szKnightsName               = "";
-	int iKnightsID                          = pkt.read<int16_t>();                 // 소속 기사단 ID
-	e_KnightsDuty eKnightsDuty              = (e_KnightsDuty) pkt.read<uint8_t>(); // 기사단에서의 권한..
+	int iKnightsID                          = pkt.read<int16_t>();                             // 소속 기사단 ID
+	e_KnightsDuty eKnightsDuty              = static_cast<e_KnightsDuty>(pkt.read<uint8_t>()); // 기사단에서의 권한..
 
-																				   // NOTE(srmeier): adding alliance ID and knight's byFlag
+	// NOTE(srmeier): adding alliance ID and knight's byFlag
 	/*int iAllianceID                       =*/pkt.read<int16_t>();
 	/*uint8_t byFlag                        =*/pkt.read<uint8_t>();
 
@@ -1899,8 +1899,7 @@ bool CGameProcMain::MsgRecv_MyInfo_All(Packet& pkt)
 	/*int16_t sCapeID                 =*/pkt.read<int16_t>();
 
 	// 기사단 관련 세팅..
-	s_pPlayer->m_InfoExt.eKnightsDuty = eKnightsDuty; // 기사단에서의 권한..
-	s_pPlayer->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
+	s_pPlayer->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank, eKnightsDuty);
 	m_pUIVar->UpdateKnightsInfo();
 
 	s_pPlayer->m_InfoBase.iHPMax             = pkt.read<int16_t>();
@@ -2534,11 +2533,11 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	int iNameLen = pkt.read<uint8_t>();
 	pkt.readString(szName, iNameLen);
 
-	e_Nation eNation = (e_Nation) pkt.read<uint8_t>(); // 소속 국가. 0 이면 없다. 1
+	e_Nation eNation           = (e_Nation) pkt.read<uint8_t>(); // 소속 국가. 0 이면 없다. 1
 
 	// 기사단 관련
-	int iKnightsID   = pkt.read<int16_t>();                               // 기사단 ID
-	/*e_KnightsDuty eKnightsDuty = (e_KnightsDuty)*/ pkt.read<uint8_t>(); // 소속 국가. 0 이면 없다. 1
+	int iKnightsID             = pkt.read<int16_t>();                             // 기사단 ID
+	e_KnightsDuty eKnightsDuty = static_cast<e_KnightsDuty>(pkt.read<uint8_t>()); // 소속 국가. 0 이면 없다. 1
 
 	/*int16_t sAllianceID      =*/pkt.read<int16_t>();
 
@@ -2631,7 +2630,7 @@ bool CGameProcMain::MsgRecv_UserIn(Packet& pkt, bool bWithFX)
 	pUPC->m_InfoBase.iAuthority = byAuthority;
 	pUPC->Init(eRace, iFace, iHair, dwItemIDs, iItemDurabilities, byItemFlags);
 	pUPC->RotateTo(DegreesToRadians(rand() % 360), true);
-	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank);
+	pUPC->KnightsInfoSet(iKnightsID, szKnightsName, iKnightsGrade, iKnightsRank, eKnightsDuty);
 
 	//__KnightsInfoBase* pKIB = m_pUIKnightsOp->KnightsInfoFind(iKightsID);
 	//if(pKIB) pUPC->KnightsNameSet(pKIB->szName, 0xffff0000);
@@ -5946,7 +5945,7 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 
 		case CMD_JOINCLAN:
 		{
-			if (s_pPlayer->m_InfoExt.eKnightsDuty == KNIGHTS_DUTY_CHIEF || s_pPlayer->m_InfoExt.eKnightsDuty == KNIGHTS_DUTY_VICECHIEF)
+			if (s_pPlayer->m_InfoBase.eKnightsDuty == KNIGHTS_DUTY_CHIEF || s_pPlayer->m_InfoBase.eKnightsDuty == KNIGHTS_DUTY_VICECHIEF)
 				MsgSend_KnightsJoin(s_pPlayer->m_iIDTarget);
 		}
 		break;
@@ -5957,7 +5956,7 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 
 		case CMD_FIRECLAN:
 		{
-			if (s_pPlayer->m_InfoExt.eKnightsDuty == KNIGHTS_DUTY_CHIEF)
+			if (s_pPlayer->m_InfoBase.eKnightsDuty == KNIGHTS_DUTY_CHIEF)
 			{
 				std::string szName = szCmds[1];
 				MsgSend_KnightsLeave(szName);
@@ -5967,7 +5966,7 @@ void CGameProcMain::ParseChattingCommand(const std::string& szCmd)
 
 		case CMD_APPOINTVICECHIEF:
 		{
-			if (s_pPlayer->m_InfoExt.eKnightsDuty == KNIGHTS_DUTY_CHIEF)
+			if (s_pPlayer->m_InfoBase.eKnightsDuty == KNIGHTS_DUTY_CHIEF)
 			{
 				std::string szName = szCmds[1];
 				MsgSend_KnightsAppointViceChief(szName);
@@ -6366,8 +6365,7 @@ void CGameProcMain::MsgRecv_Knights(Packet& pkt)
 					break;
 			}
 
-			s_pPlayer->m_InfoExt.eKnightsDuty = KNIGHTS_DUTY_UNKNOWN;
-			s_pPlayer->KnightsInfoSet(0, "", 0, 0);
+			s_pPlayer->KnightsInfoSet(0, "", 0, 0, KNIGHTS_DUTY_UNKNOWN);
 			m_pUIVar->UpdateKnightsInfo();
 		}
 		break;
@@ -6886,14 +6884,13 @@ void CGameProcMain::MsgRecv_Knights_Create(Packet& pkt)
 					m_pSubProcPerTrade->m_pUIPerTradeDlg->GoldUpdate();
 
 				//기사단(클랜)UI업데이트...해라...
-				s_pPlayer->m_InfoExt.eKnightsDuty = KNIGHTS_DUTY_CHIEF;
-				s_pPlayer->KnightsInfoSet(iID, szID, iGrade, iRank);
+				s_pPlayer->KnightsInfoSet(iID, szID, iGrade, iRank, KNIGHTS_DUTY_CHIEF);
 				m_pUIVar->UpdateKnightsInfo();
 
 				if (m_pUIVar->m_pPageKnights->IsVisible())
 				{
 					m_pUIVar->m_pPageKnights->MsgSend_MemberInfoAll();
-					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoExt.eKnightsDuty);
+					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoBase.eKnightsDuty);
 				}
 
 				//m_pUIKnightsOp->KnightsInfoInsert(iID, szID); // 기사단 정보 추가..
@@ -6944,8 +6941,8 @@ void CGameProcMain::MsgRecv_Knights_Withdraw(Packet& pkt)
 			int sid = pkt.read<int16_t>();
 			if (s_pPlayer->IDNumber() == sid)
 			{
-				s_pPlayer->m_InfoBase.iKnightsID  = pkt.read<int16_t>();
-				s_pPlayer->m_InfoExt.eKnightsDuty = (e_KnightsDuty) pkt.read<uint8_t>();
+				s_pPlayer->m_InfoBase.iKnightsID   = pkt.read<int16_t>();
+				s_pPlayer->m_InfoBase.eKnightsDuty = static_cast<e_KnightsDuty>(pkt.read<uint8_t>());
 				m_pUIVar->UpdateKnightsInfo();
 
 				s_pPlayer->KnightsInfoSet(s_pPlayer->m_InfoBase.iKnightsID, "", 0, 0);
@@ -6955,7 +6952,7 @@ void CGameProcMain::MsgRecv_Knights_Withdraw(Packet& pkt)
 				if (m_pUIVar->m_pPageKnights->IsVisible())
 				{
 					m_pUIVar->m_pPageKnights->MsgSend_MemberInfoAll();
-					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoExt.eKnightsDuty);
+					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoBase.eKnightsDuty);
 				}
 			}
 			else
@@ -7021,8 +7018,7 @@ void CGameProcMain::MsgRecv_Knights_Join(Packet& pkt)
 
 			if (s_pPlayer->IDNumber() == sid)
 			{
-				s_pPlayer->m_InfoExt.eKnightsDuty = eDuty;
-				s_pPlayer->KnightsInfoSet(iID, szKnightsName, iGrade, iRank);
+				s_pPlayer->KnightsInfoSet(iID, szKnightsName, iGrade, iRank, eDuty);
 				m_pUIVar->UpdateKnightsInfo();
 
 				szMsg = fmt::format_text_resource(IDS_CLAN_JOIN_SUCCESS);
@@ -7031,7 +7027,7 @@ void CGameProcMain::MsgRecv_Knights_Join(Packet& pkt)
 				if (m_pUIVar->m_pPageKnights->IsVisible())
 				{
 					m_pUIVar->m_pPageKnights->MsgSend_MemberInfoAll();
-					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoExt.eKnightsDuty);
+					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoBase.eKnightsDuty);
 				}
 			}
 			else
@@ -7120,8 +7116,7 @@ void CGameProcMain::MsgRecv_Knights_Leave(Packet& pkt)
 
 			if (s_pPlayer->IDNumber() == sid)
 			{
-				s_pPlayer->m_InfoExt.eKnightsDuty = eDuty;
-				s_pPlayer->KnightsInfoSet(iID, szKnightsName, iGrade, iRank);
+				s_pPlayer->KnightsInfoSet(iID, szKnightsName, iGrade, iRank, eDuty);
 				m_pUIVar->UpdateKnightsInfo();
 
 				szMsg = fmt::format_text_resource(IDS_CLAN_JOIN_SUCCESS);
@@ -7130,7 +7125,7 @@ void CGameProcMain::MsgRecv_Knights_Leave(Packet& pkt)
 				if (m_pUIVar->m_pPageKnights->IsVisible())
 				{
 					m_pUIVar->m_pPageKnights->MsgSend_MemberInfoAll();
-					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoExt.eKnightsDuty);
+					m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoBase.eKnightsDuty);
 				}
 			}
 			else
@@ -7206,11 +7201,11 @@ void CGameProcMain::MsgRecv_Knights_AppointViceChief(Packet& pkt)
 	{
 		case N3_SP_KNIGHTS_COMMON_SUCCESS: //클랜가입 성공
 		{
-			int iID                           = pkt.read<int16_t>();
-			e_KnightsDuty eDuty               = (e_KnightsDuty) pkt.read<uint8_t>();
+			int iID                            = pkt.read<int16_t>();
+			e_KnightsDuty eDuty                = (e_KnightsDuty) pkt.read<uint8_t>();
 
-			s_pPlayer->m_InfoBase.iKnightsID  = iID;
-			s_pPlayer->m_InfoExt.eKnightsDuty = eDuty;
+			s_pPlayer->m_InfoBase.iKnightsID   = iID;
+			s_pPlayer->m_InfoBase.eKnightsDuty = eDuty;
 			m_pUIVar->UpdateKnightsInfo();
 
 			szMsg = fmt::format_text_resource(IDS_CLAN_JOIN_SUCCESS);
@@ -7219,7 +7214,7 @@ void CGameProcMain::MsgRecv_Knights_AppointViceChief(Packet& pkt)
 			if (m_pUIVar->m_pPageKnights->IsVisible())
 			{
 				m_pUIVar->m_pPageKnights->MsgSend_MemberInfoAll();
-				m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoExt.eKnightsDuty);
+				m_pUIVar->m_pPageKnights->ChangeUIByDuty(s_pPlayer->m_InfoBase.eKnightsDuty);
 			}
 		}
 		break;
@@ -7343,12 +7338,12 @@ void CGameProcMain::MsgRecv_Knights_Duty_Change(Packet& pkt)
 		{
 			int sid             = pkt.read<int16_t>();
 			int iID             = pkt.read<int16_t>();
-			e_KnightsDuty eDuty = (e_KnightsDuty) pkt.read<uint8_t>();
+			e_KnightsDuty eDuty = static_cast<e_KnightsDuty>(pkt.read<uint8_t>());
 
 			if (s_pPlayer->IDNumber() == sid)
 			{
-				s_pPlayer->m_InfoBase.iKnightsID  = iID;
-				s_pPlayer->m_InfoExt.eKnightsDuty = eDuty;
+				s_pPlayer->m_InfoBase.iKnightsID   = iID;
+				s_pPlayer->m_InfoBase.eKnightsDuty = eDuty;
 				m_pUIVar->UpdateKnightsInfo();
 				if (s_pPlayer->m_InfoBase.iKnightsID == 0)
 					s_pPlayer->KnightsInfoSet(0, "", 0, 0);
