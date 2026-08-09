@@ -4,6 +4,8 @@
 #include "StdAfxBase.h"
 #include "N3Scene.h"
 
+#include <N3Base/N3Shape.h>
+
 CN3Scene::CN3Scene()
 {
 	m_dwType |= OBJ_SCENE;
@@ -262,7 +264,10 @@ void CN3Scene::Render()
 	s_lpD3DDev->SetRenderState(D3DRS_AMBIENT, m_AmbientLightColor);
 
 	for (CN3Shape* shape : m_Shapes)
+	{
 		shape->Render();
+		shape->RenderFX();
+	}
 
 	for (CN3Chr* chr : m_Chrs)
 		chr->Render();
@@ -335,7 +340,10 @@ void CN3Scene::TickLights()
 void CN3Scene::TickShapes()
 {
 	for (CN3Shape* shape : m_Shapes)
+	{
 		shape->Tick(m_fFrmCur);
+		shape->TickFX();
+	}
 }
 
 void CN3Scene::TickChrs()

@@ -151,6 +151,7 @@ public:
 
 typedef std::vector<CN3SPart*>::iterator it_SPart;
 
+class CN3FXBundle;
 class CN3Shape : public CN3TransformCollision
 {
 public:
@@ -164,6 +165,11 @@ public:
 	bool m_bVisible;                // ..
 
 	std::vector<CN3SPart*> m_Parts; // Part Data Pointer Linked List
+
+	CN3FXBundle* m_pFXB;
+	__Vector3 m_vFXBOffsetPos;
+	float m_fFXBScale;
+	__Quaternion m_qFXBRot;
 
 public:
 #ifdef _N3TOOL
@@ -180,6 +186,11 @@ public:
 		__Vector3* pVCol = nullptr, __Vector3* pVNormal = nullptr);
 	bool MakeCollisionMeshByParts();       // 충돌 메시를 박스 형태로 다시 만든다...
 	bool MakeCollisionMeshByPartsDetail(); // 현재 모습 그대로... 충돌 메시를 만든다...
+
+	void SetFXB(const std::string& strFN, const __Vector3& vOffsetPos, const __Quaternion& qRot,
+		float fScale);
+	void TickFX();
+	void RenderFX();
 
 	void FindMinMax() override;
 	void ReCalcMatrix() override;

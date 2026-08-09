@@ -4,6 +4,8 @@
 #include "StdAfxBase.h"
 #include "N3Shape.h"
 
+#include <N3Base/N3FXBundle.h>
+
 /////////////////////////////
 // CN3Shape Part ....
 CN3SPart::CN3SPart()
@@ -536,6 +538,9 @@ CN3Shape::CN3Shape()
 	m_iEventType   = 0; // Event Type
 	m_iNPC_ID      = 0; // NPC 로 쓰는 오브젝트일 경우 NPC ID
 	m_iNPC_Status  = 0; // NPC 로 쓰는 오브젝트일 경우 NPC Status
+
+	m_pFXB         = nullptr;
+	m_fFXBScale    = 1.0f;
 }
 
 CN3Shape::~CN3Shape()
@@ -543,6 +548,8 @@ CN3Shape::~CN3Shape()
 	for (CN3SPart* pPart : m_Parts)
 		delete pPart;
 	m_Parts.clear();
+
+	delete m_pFXB;
 }
 
 void CN3Shape::Release()
@@ -559,6 +566,9 @@ void CN3Shape::Release()
 	m_iEventType  = 0; // Event Type - 바인드포인트,성문,레버 등등...
 	m_iNPC_ID     = 0; // NPC 로 쓰는 오브젝트일 경우 NPC ID
 	m_iNPC_Status = 0; // NPC 로 쓰는 오브젝트일 경우 NPC Status
+
+	delete m_pFXB;
+	m_pFXB = nullptr;
 
 	CN3TransformCollision::Release();
 }
@@ -1284,3 +1294,52 @@ void CN3Shape::PartialGetCollision(int iIndex, __Vector3& vec)
 
 //	~(By Ecli666 On 2002-08-06 오후 4:33:32 )
 
+void CN3Shape::SetFXB(
+	const std::string& strFN, const __Vector3& vOffsetPos, const __Quaternion& qRot, float fScale)
+{
+	delete m_pFXB;
+	m_pFXB = nullptr;
+
+	if (strFN.empty())
+		return;
+
+	m_pFXB = new CN3FXBundle();
+	if (!m_pFXB->LoadFromFile(strFN))
+	{
+		delete m_pFXB;
+		m_pFXB = nullptr;
+		return;
+	}
+
+	m_vFXBOffsetPos = vOffsetPos;
+	m_qFXBRot       = qRot;
+	m_fFXBScale     = fScale;
+
+	m_pFXB->Init();
+	m_pFXB->Trigger();
+}
+
+void CN3Shape::TickFX()
+{
+	if (m_pFXB == nullptr)
+		return;
+
+	__Matrix44 mtxWorld;
+	mtxWorld.Scale(m_fFXBScale, m_fFXBScale, m_fFXBScale);
+	mtxWorld *= m_Matrix;
+
+	__Matrix44 mtxRot;
+	mtxRot.Rotation(m_qFXBRot.x, m_qFXBRot.y, m_qFXBRot.z);
+
+	__Matrix44 mtxFinal = mtxRot * mtxWorld;
+	mtxFinal.PosSet(mtxWorld.Pos() + m_vFXBOffsetPos);
+
+	m_pFXB->m_vPos = mtxFinal.Pos();
+	m_pFXB->Tick();
+}
+
+void CN3Shape::RenderFX()
+{
+	if (m_pFXB != nullptr)
+		m_pFXB->Render();
+}
